@@ -20,6 +20,7 @@
  */
 
 require_once('../include/config.inc.php');
+require_once('../include/misc.inc.php');
 require_once(SPKITLASSO.'/lassospkit_saml2_endpoint.inc.php');
 require_once(SPKITLASSO.'/lassospkit_public_api.inc.php');
 
@@ -97,7 +98,7 @@ class EndpointExemple extends LassoSPKitSaml2Endpoint {
 	      require_once("./include/session.inc.php");
 
 	      // See admin_view_connexions.php:67
-	      $sql = "SELECT session_id FROM grr_log
+	      $sql = "SELECT session_id FROM ".TABLE_PREFIX."_log
                       WHERE login = '" . protect_data_sql($id) . "'
                       AND end > NOW()";
 	      $res = grr_sql_query($sql);

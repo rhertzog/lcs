@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                            mysql.inc.php                              #
-#                                                                       #
-#               Bibliothèque de fonctions pour le support mysql         #
-#               Dernière modification : 10/07/2006                      #
-#                                                                       #
-#                                                                       #
-#########################################################################
-/*
- * D'après http://mrbs.sourceforge.net/
+/**
+ * mysql.inc.php
+ * Bibliothèque de fonctions pour le support mysql
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-09-29 18:02:57 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: mysql.inc.php,v 1.4 2009-09-29 18:02:57 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +27,19 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: mysql.inc.php,v $
+ * Revision 1.4  2009-09-29 18:02:57  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2009-06-04 15:30:18  grr
+ * *** empty log message ***
+ *
+ * Revision 1.2  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 // mysql.inc.php - Simple PHP database support for MySQL.
 // Include this file after defining the following variables:
@@ -35,23 +49,12 @@
 //   $dbDb = The database name.
 // Including this file connects you to the database, or exits on error.
 
-// Cas d'une authentification LCS
-// permet de savoir sur chaque script en testant $idpers si l'utilisateur est authentifié
-// Est utile dans le cas où GRR n'est pas installé sur LCS en tant que Plugin
-if (@file_exists("/var/www/lcs/includes/headerauth.inc.php")) {
-    include "/var/www/lcs/includes/headerauth.inc.php";
-    list ($idpers,$_login) = isauth();
-    if ($idpers)
-        $is_authentified_lcs = 'yes';
-    else
-        $is_authentified_lcs = 'no';
-}
 
 // Etablir la connexion à la base
 if (empty($db_nopersist))
-    $db_c = mysql_pconnect($dbHost, $dbUser, $dbPass);
+    $db_c = @mysql_pconnect($dbHost, $dbUser, $dbPass);
 else
-    $db_c = mysql_connect($dbHost, $dbUser, $dbPass);
+    $db_c = @mysql_connect($dbHost, $dbUser, $dbPass);
 
 if (!$db_c || !mysql_select_db ($dbDb))
 {

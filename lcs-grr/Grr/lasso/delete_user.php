@@ -21,7 +21,7 @@
 
 function delete_user($login)
 {
-  $sql = "SELECT source FROM grr_utilisateurs
+  $sql = "SELECT source FROM ".TABLE_PREFIX."_utilisateurs
 	    WHERE login LIKE '$login'";
   $res = grr_sql_query($sql);
   $row = grr_sql_row($res, 0);
@@ -33,12 +33,13 @@ function delete_user($login)
       // supprime
 
       // Cf. admin_user.php l99 et l203
-      $sql = "DELETE FROM grr_utilisateurs WHERE login='$login'";
+      $sql = "DELETE FROM ".TABLE_PREFIX."_utilisateurs WHERE login='$login'";
       if (grr_sql_command($sql) < 0) {fatal_error(1, "<p>" . grr_sql_error());}  else {
-	grr_sql_command("DELETE FROM grr_j_mailuser_room  WHERE login='$login'");
-	grr_sql_command("DELETE FROM grr_j_user_area      WHERE login='$login'");
-	grr_sql_command("DELETE FROM grr_j_user_room      WHERE login='$login'");
-	grr_sql_command("DELETE FROM grr_j_useradmin_area WHERE login='$login'");
+	grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_mailuser_room  WHERE login='$login'");
+	grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_area      WHERE login='$login'");
+	grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_room      WHERE login='$login'");
+	grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_area WHERE login='$login'");
+	grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_site WHERE login='$login'");
       }
 
       // Fin de la session

@@ -20,6 +20,7 @@
 chdir('..');
 require_once("./include/config.inc.php");
 include "./include/connect.inc.php";
+include "./include/misc.inc.php";
 require_once("./include/$dbsys.inc.php");
 require_once("./include/session.inc.php");
 require_once("./include/settings.inc.php");
@@ -28,9 +29,9 @@ require_once(SPKITLASSO.'/lassospkit_public_api.inc.php');
 require_once('./lasso/delete_user.php');
 
 $defederated = false;
-if (lassospkit_nameid() != NULL && (!empty($_SESSION['login'])))
+if (lassospkit_nameid() != NULL && (getUserName()!=''))
 {
-  $login = $_SESSION['login'];
+  $login = getUserName();
   $auto = 0;
   grr_closeSession($auto);
   delete_user($login);
@@ -48,7 +49,7 @@ require_once("./include/functions.inc.php");
 
 echo begin_page(getSettingValue("company").get_vocab("deux_points").get_vocab("mrbs"),"no_session");
 
-if (empty($_SESSION['login']) && !$defederated) {
+if ((getUserName()=='') && !$defederated) {
   echo get_vocab('lasso_please_connect');
 } else if (lassospkit_nameid() == NULL) {
   echo get_vocab('lasso_defederated');

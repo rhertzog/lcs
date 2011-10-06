@@ -1,4 +1,52 @@
 <?php
+/**
+ * language.inc.php
+ * Configuration de la langue
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-10-09 07:55:48 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: language.inc.php,v 1.7 2009-10-09 07:55:48 grr Exp $
+ * @filesource
+ *
+ * This file is part of GRR.
+ *
+ * GRR is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * GRR is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with GRR; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+/**
+ * $Log: language.inc.php,v $
+ * Revision 1.7  2009-10-09 07:55:48  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-09-29 18:02:57  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-04-14 12:59:18  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ *
+ */
+
 #####################
 # gestion des langues
 #####################
@@ -26,7 +74,7 @@ if (isset($_SESSION['default_language'])) {
 
 // $pass_leng est utilisé dans les fichiers langue, d'où la ligne ci-dessous
 $pass_leng = "";
-if (isset($fichier_mysql_inc_est_present)) $pass_leng = grr_sql_query1("select VALUE from grr_setting where NAME = 'pass_leng'");
+if (isset($fichier_mysql_inc_est_present)) $pass_leng = grr_sql_query1("select VALUE from ".TABLE_PREFIX."_setting where NAME = 'pass_leng'");
 
 // Fichier de traduction
 if (@file_exists("language/lang." . $locale)) {
@@ -34,12 +82,28 @@ if (@file_exists("language/lang." . $locale)) {
 } else {
     $lang_file = "language/lang.fr";
 }
+
+// Dans le cas où le script verif_auto_grr.php est utilisé en tâche cron, il faut ici, donner le chemin complet.
+if (defined("CHEMIN_COMPLET_GRR")){
+  chdir(CHEMIN_COMPLET_GRR);
+}
 include $lang_file;
+
 
 // Fichiers de personnalisation de langue
 if (@file_exists("language/lang_subst." . $locale))
     include "language/lang_subst." . $locale;
 
+
+// Fichiers de personnalisation de langue par domaine
+if (isset($_GET['area'])) { // Si l'id du domaine est passé en paramètre, on le récupère
+    $subst_id_area = $_GET['area'];
+} else if (isset($_GET['room'])) { // sinon, on essaye avec l'id de la ressource
+    $subst_id_area = mrbsGetRoomArea($_GET['room']);
+}
+if (isset($subst_id_area))
+  if (@file_exists("language/lang_subst_".$subst_id_area.".".$locale))
+    include "language/lang_subst_".$subst_id_area.".".$locale;
 
 
 // Pour l'affichage de la pendule javascript
@@ -278,12 +342,12 @@ function get_server_os()
 if (($unicode_encoding) && (!function_exists('iconv')))
 {
 exit("
-<P><B>Erreur:</B> Le module iconv, qui permet le support Unicode par PHP, n'est pas installé le serveur.</P>\n
-<P>Pour éviter cette erreur, suivez une des deux possibilités ci-dessous :</P>
+<p><B>Erreur:</B> Le module iconv, qui permet le support Unicode par PHP, n'est pas installé le serveur.</p>\n
+<p>Pour éviter cette erreur, suivez une des deux possibilités ci-dessous :</p>
 <UL>
-<LI><P>Installez et activez le module iconv.<br /></P></LI>
-<LI><P>Désactivez le support Unicode en donnant à la variable \$unicode_encoding la valeur 0 dans le fichier config.inc.php.
-</P></LI>
+<LI><p>Installez et activez le module iconv.<br /></p></LI>
+<LI><p>Désactivez le support Unicode en donnant à la variable \$unicode_encoding la valeur 0 dans le fichier config.inc.php.
+</p></LI>
 </UL>
 ");
 }
@@ -293,7 +357,7 @@ function get_vocab($tag)
 {
   global $vocab, $charset_html, $unicode_encoding;
   if (!isset($vocab[$tag])) {
-      return "<b><font color=\"#FF0000\"><i>(".$tag.")</i></font></b>";
+      return "<b><span style=\"color:#FF0000;\"><i>(".$tag.")</i></span></b>";
   } else {
       if ($unicode_encoding)
       {

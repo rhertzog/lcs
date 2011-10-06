@@ -1,15 +1,16 @@
 <?php
-#########################################################################
-#                        functions.inc.php                              #
-#                                                                       #
-#                Bibliothèque de fonctions                              #
-#                                                                       #
-#            Dernière modification : 28/03/2008                         #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * include/functions.inc.php
+ * fichier Bibliothèque de fonctions de GRR
+ * Dernière modification : $Date: 2010-04-07 15:38:14 $
+ * @author		Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @author		Marc-Henri PAMISEUX <marcori@users.sourceforge.net>
+ * @copyright	Copyright 2003-2005 Laurent Delineau
+ * @copyright	Copyright 2008 Marc-Henri PAMISEUX
+ * @link		http://www.gnu.org/licenses/licenses.html
+ * @package		include
+ * @version		$Id: functions.inc.php,v 1.33 2010-04-07 15:38:14 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -28,17 +29,425 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * $Log: functions.inc.php,v $
+ * Revision 1.33  2010-04-07 15:38:14  grr
+ * *** empty log message ***
+ *
+ * Revision 1.32  2010-03-03 14:41:57  grr
+ * *** empty log message ***
+ *
+ * Revision 1.31  2010-01-06 10:21:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.30  2009-12-16 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.29  2009-12-02 21:37:20  grr
+ * *** empty log message ***
+ *
+ * Revision 1.28  2009-12-02 20:11:08  grr
+ * *** empty log message ***
+ *
+ * Revision 1.27  2009-10-09 07:55:48  grr
+ * *** empty log message ***
+ *
+ * Revision 1.26  2009-09-29 18:02:57  grr
+ * *** empty log message ***
+ *
+ * Revision 1.25  2009-06-04 20:52:24  grr
+ * *** empty log message ***
+ *
+ * Revision 1.24  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.23  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.22  2009-04-10 21:05:45  grr
+ * *** empty log message ***
+ *
+ * Revision 1.21  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.20  2009-03-24 14:03:10  grr
+ * *** empty log message ***
+ *
+ * Revision 1.19  2009-03-24 13:30:07  grr
+ * *** empty log message ***
+ *
+ * Revision 1.18  2009-02-27 22:05:03  grr
+ * *** empty log message ***
+ *
+ * Revision 1.17  2009-01-28 16:01:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.16  2009-01-20 07:19:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.15  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ * Revision 1.14  2008-11-14 07:29:09  grr
+ * *** empty log message ***
+ *
+ * Revision 1.13  2008-11-13 21:32:51  grr
+ * *** empty log message ***
+ *
+ * Revision 1.12  2008-11-11 22:01:15  grr
+ * *** empty log message ***
+ *
+ * Revision 1.11  2008-11-10 08:17:34  grr
+ * *** empty log message ***
+ *
+ * Revision 1.10  2008-11-10 07:06:39  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2008-11-07 21:39:41  grr
+ * *** empty log message ***
+ *
+ *
+ */
+
+/*
+Affiche un lien email
+$option_affichage
+-----------------
+Si $option_affichage="afficher_toujours", en l'absence de mail, on affiche quand même l'intitulé
+Sinon, en l'absence de mail, on affiche rien.
+
+$_type_cible
+------------
+si "identifiant:non" -> $_cible n'est pas l'identifiant d'un utilisateur de la base
+si "identifiant:oui" -> $_cible est l'identifiant d'un utilisateur de la base
+*/
+
+
+function get_request_uri()
+{
+  global $grr_script_name;
+  $RequestUri = "";
+  if (isset($_SERVER['REQUEST_URI']))
+    $RequestUri = $_SERVER['REQUEST_URI'];
+  else if (isset($_ENV['REQUEST_URI']))
+    $RequestUri = $_ENV['REQUEST_URI'];
+  else if (isset($_SERVER['HTTP_X_REWRITE_URL']))
+    $RequestUri = $_SERVER['HTTP_X_REWRITE_URL'];
+  else {
+    if (!isset($_SERVER['QUERY_STRING'])) $_SERVER['QUERY_STRING']="";
+    // Dans certaines configuration (reverse proxy, ...) les variables $_SERVER["SCRIPT_NAME"] ou $_SERVER['PHP_SELF']
+    // sont mal interprétées entraînant des liens erronés sur certaines pages.
+    if ((getSettingValue("use_grr_url")=="y") and (getSettingValue("grr_url")!="")) {
+        if (substr(getSettingValue("grr_url"), -1) != "/") $ad_signe = "/"; else $ad_signe = "";
+        $RequestUri = getSettingValue("grr_url").$ad_signe.$grr_script_name.$_SERVER['QUERY_STRING'];
+    } else {
+      if (isset($_SERVER['PHP_SELF']))
+        $RequestUri = $_SERVER['PHP_SELF'].$_SERVER['QUERY_STRING'];
+    }
+  }
+  return $RequestUri;
+}
+
+/*
+Affiche un lien email
+$option_affichage
+-----------------
+Si $option_affichage="afficher_toujours", en l'absence de mail, on affiche quand même l'intitulé
+Sinon, en l'absence de mail, on affiche rien.
+
+$_type_cible
+------------
+si "identifiant:non" -> $_cible n'est pas l'identifiant d'un utilisateur de la base
+si "identifiant:oui" -> $_cible est l'identifiant d'un utilisateur de la base
+*/
+function affiche_lien_contact($_cible,$_type_cible,$option_affichage) {
+    /*
+    On commence par déterminer l'adresse email et l'identité de la personne
+    */
+    if ($_type_cible=="identifiant:non") {
+      if ($_cible=="contact_administrateur") {
+        $_email = getSettingValue("webmaster_email");
+        $_identite = get_vocab('administrator_contact');
+      } else if ($_cible=="contact_support") {
+        $_email = getSettingValue("technical_support_email");
+        $_identite = get_vocab('technical_contact');
+      } else {
+        $_email = "";
+        $_identite = "";
+      }
+    } else {
+        $sql_cible = "SELECT prenom, nom, email FROM ".TABLE_PREFIX."_utilisateurs WHERE login = '".$_cible."'";
+        $res_cible = grr_sql_query($sql_cible);
+        if ($res_cible) {
+            $row_cible = grr_sql_row($res_cible, 0);
+            $_email = $row_cible[2];
+            $_identite = $row_cible[0]." ".$row_cible[1];
+            grr_sql_free($res_cible);
+        } else {
+            $_email = "";
+            $_identite = "";
+        }
+    }
+
+  if (getSettingValue("envoyer_email_avec_formulaire")=="yes") {
+  /*
+   On affiche un lien qui renvoie vers un formulaire.
+  */
+      if ($_email == "") {
+        if ($option_affichage=="afficher_toujours")
+            $affichage = $_identite;
+        else
+            $affichage = "";
+      } else {
+          $affichage = "<a href='javascript:centrerpopup(\"contact.php?cible=$_cible&amp;type_cible=$_type_cible\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")' title=\"".$_identite."\">".$_identite."</a>";
+      }
+  } else {
+  /*
+   On affiche un lien avec l'adresse email
+   */
+    ?>
+    <script type="text/javascript">
+    function encode_adresse(user,domain,debut) {
+        var address = user+'@'+domain;
+        var toWrite = '';
+        if (debut > 0) {toWrite += '<'+'a href="mailto:';} else {toWrite +=';'};
+        toWrite +=address
+        document.write(toWrite);
+    }
+    function encode_fin_adresse(label) {
+        var toWrite = '';
+        toWrite +='">'+label+'</'+'a>';
+        document.write(toWrite);
+    }
+    </script>
+    <?php
+    $affichage = "";
+    if ($_email == "") {
+        if ($option_affichage=="afficher_toujours")
+            $affichage = $_identite;
+    } else {
+        $tab_email = explode(';',trim($_email));
+        $i=0;
+        foreach($tab_email as $item_email){
+            $item_email_explode = explode('@',$item_email);
+            $person = $item_email_explode[0];
+            if (isset($item_email_explode[1])) {
+                $i++;
+                $domain = $item_email_explode[1];
+                if ($i==1) { // Première adresse
+                    $affichage .= "<script type=\"text/javascript\">";
+                    $affichage .=  "encode_adresse('".$person."','".$domain."',1);";
+                } else {
+                    $affichage .=  "encode_adresse('".$person."','".$domain."',0);";
+                }
+            }
+        }
+        $affichage .=  "encode_fin_adresse('".AddSlashes($_identite)."');";
+        $affichage .=  "</script>";
+    }
+  }
+  return $affichage;
+}
+/*
+Fonction qui calcule $room, $area et $id_site à partir de $_GET['room'], $_GET['area'], $_GET['id_site']
+*/
+function Definition_ressource_domaine_site() {
+  global $room, $area, $id_site;
+  if (isset($_GET['room'])) {
+  $room = $_GET['room'];
+  settype($room,"integer");
+  // Todo : s'agit-il d'une ressource valide ?
+  // la ressource est définie, on peut en déduire le domaine et le site
+  $area=mrbsGetRoomArea($room);
+  $id_site=mrbsGetAreaSite($area);
+} else {
+  $room=NULL;
+  // la ressource n'est pas définie
+  if (isset($_GET['area'])) {
+    $area = $_GET['area'];
+    settype($area,"integer");
+    // Le domaine est définie, on peut en déduire le site
+    // Todo : s'agit-il d'un domaine valide ?
+    $id_site=mrbsGetAreaSite($area);
+  } else {
+     $area=NULL;
+     // le domaine n'est pas définie
+     if (isset($_GET["id_site"])) {
+         $id_site = $_GET["id_site"];
+         settype($id_site,"integer");
+         $area = get_default_area($id_site);
+     } else {
+         $id_site = get_default_site();
+         $area = get_default_area($id_site);
+     }
+  }
+}
+
+}
+
+
+
+/*
+function affiche_ressource_empruntee
+- $id_room : identifiant de la ressource
+- Si la ressource est empruntée, affiche une icône avec un lien vers la réservation pour laquelle la ressource est empruntée.
+*/
+function affiche_ressource_empruntee($id_room, $type="logo"){
+    $active_ressource_empruntee = grr_sql_query1("select active_ressource_empruntee from ".TABLE_PREFIX."_room where id = '".$id_room."'");
+    if ($active_ressource_empruntee == 'y') {
+        $id_resa = grr_sql_query1("select id from ".TABLE_PREFIX."_entry where room_id = '".$id_room."' and statut_entry='y'");
+        if ($id_resa !=-1) {
+            if ($type=="logo")
+                echo "<a href='view_entry.php?id=$id_resa'><img src=\"img_grr/buzy_big.png\"  alt=\"".get_vocab("ressource actuellement empruntee")."\" title=\"".get_vocab("reservation_en_cours")."\" width=\"30\" height=\"30\" class=\"image\"  /></a>";
+            else if ($type=="texte") {
+                $beneficiaire = grr_sql_query1("select beneficiaire from ".TABLE_PREFIX."_entry where room_id = '".$id_room."' and statut_entry='y'");
+                $beneficiaire_ext = grr_sql_query1("select beneficiaire_ext from ".TABLE_PREFIX."_entry where room_id = '".$id_room."' and statut_entry='y'");
+                echo "<br /><b><span class='avertissement'><img src=\"img_grr/buzy_big.png\" alt=\"".get_vocab("ressource actuellement empruntee")."\" title=\"".get_vocab("ressource actuellement empruntee")."\" width=\"30\" height=\"30\" class=\"image\"  />
+                &nbsp;".get_vocab("ressource actuellement empruntee")." ".get_vocab("nom emprunteur").get_vocab("deux_points").affiche_nom_prenom_email($beneficiaire,$beneficiaire_ext,"withmail").
+                ". <a href='view_entry?id=$id_resa'>".get_vocab("entryid").$id_resa.
+                "</a></span></b>";
+            } else
+               return "yes";
+        }
+    }
+}
+
+function bbCode($t,$type)
+// remplace les balises BBCode par des balises HTML
+{
+ // on nettoie le bbcode
+ if ($type=="nobbcode") {
+   // barre horizontale
+   $t=str_replace("[/]", "", $t);
+   $t=str_replace("[hr]", "", $t);
+
+   // alignement centré
+   $t=str_replace("[center]", "", $t);
+   $t=str_replace("[/center]", "", $t);
+
+   // alignement à droite
+   $t=str_replace("[right]", "", $t);
+   $t=str_replace("[/right]", "", $t);
+
+   // alignement justifié
+   $t=str_replace("[justify]", "", $t);
+   $t=str_replace("[/justify]", "", $t);
+
+   // lien
+   $regLienSimple="`\[url\] ?([^\[]*) ?\[/url\]`";
+   $regLienEtendu="`\[url ?=([^\[]*) ?] ?([^]]*) ?\[/url\]`";
+   if (preg_match($regLienSimple, $t)) $t=preg_replace($regLienSimple, "\\1", $t);
+   else $t=preg_replace($regLienEtendu, "\\1", $t);
+
+   // mail
+   $regMailSimple="`\[email\] ?([^\[]*) ?\[/email\]`";
+   $regMailEtendu="`\[email ?=([^\[]*) ?] ?([^]]*) ?\[/email\]`";
+   if (preg_match($regMailSimple, $t)) $t=preg_replace($regMailSimple, "\\1", $t);
+   else $t=preg_replace($regMailEtendu, "\\1", $t);
+
+   // image
+   $regImage="`\[img\] ?([^\[]*) ?\[/img\]`";
+   $regImageAlternatif="`\[img ?= ?([^\[]*) ?\]`";
+   if (preg_match($regImage, $t)) $t=preg_replace($regImage, "", $t);
+   else $t=preg_replace($regImageAlternatif, "", $t);
+
+
+   // gras
+   $t=str_replace("[b]", "", $t);
+   $t=str_replace("[/b]", "", $t);
+
+   // italique
+   $t=str_replace("[i]", "", $t);
+   $t=str_replace("[/i]", "", $t);
+
+   // soulignement
+   $t=str_replace("[u]", "", $t);
+   $t=str_replace("[/u]", "", $t);
+
+   // couleur
+   $t=str_replace("[/color]", "</span>", $t);
+   $regCouleur="`\[color= ?(([[:alpha:]]+)|(#[[:digit:][:alpha:]]{6})) ?\]`";
+   $t=preg_replace($regCouleur, "", $t);
+
+   // taille des caractères
+   $t=str_replace("[/size]", "</span>", $t);
+   $regCouleur="`\[size= ?([[:digit:]]+) ?\]`";
+   $t=preg_replace($regCouleur, "", $t);
+ }
+ // Dans le titre des réservations
+ if ($type!="titre") {
+   // barre horizontale
+   $t=str_replace("[/]", "<hr width=\"100%\" size=\"1\" />", $t);
+   $t=str_replace("[hr]", "<hr width=\"100%\" size=\"1\" />", $t);
+
+   // alignement centré
+   $t=str_replace("[center]", "<div style=\"text-align: center\">", $t);
+   $t=str_replace("[/center]", "</div>", $t);
+
+   // alignement à droite
+   $t=str_replace("[right]", "<div style=\"text-align: right\">", $t);
+   $t=str_replace("[/right]", "</div>", $t);
+
+   // alignement justifié
+   $t=str_replace("[justify]", "<div style=\"text-align: justify\">", $t);
+   $t=str_replace("[/justify]", "</div>", $t);
+
+   // lien
+   $regLienSimple="`\[url\] ?([^\[]*) ?\[/url\]`";
+   $regLienEtendu="`\[url ?=([^\[]*) ?] ?([^]]*) ?\[/url\]`";
+   if (preg_match($regLienSimple, $t)) $t=preg_replace($regLienSimple, "<a href=\"\\1\">\\1</a>", $t);
+   else $t=preg_replace($regLienEtendu, "<a href=\"\\1\" target=\"_blank\">\\2</a>", $t);
+ }
+   // mail
+   $regMailSimple="`\[email\] ?([^\[]*) ?\[/email\]\`";
+   $regMailEtendu="`\[email ?=([^\[]*) ?] ?([^]]*) ?\[/email\]`";
+   if (preg_match("'".$regMailSimple."'", $t)) $t=preg_replace($regMailSimple, "<a href=\"mailto:\\1\">\\1</a>", $t);
+   else $t=preg_replace($regMailEtendu, "<a href=\"mailto:\\1\">\\2</a>", $t);
+
+   // image
+   $regImage="`\[img\] ?([^\[]*) ?\[/img\]`";
+   $regImageAlternatif="`\[img ?= ?([^\[]*) ?\]`";
+   if (preg_match($regImage, $t)) $t=preg_replace($regImage, "<img src=\"\\1\" alt=\"\" class=\"image\" />", $t);
+   else $t=preg_replace($regImageAlternatif, "<img src=\"\\1\" alt=\"\" class=\"image\" />", $t);
+
+
+   // gras
+   $t=str_replace("[b]", "<strong>", $t);
+   $t=str_replace("[/b]", "</strong>", $t);
+
+   // italique
+   $t=str_replace("[i]", "<em>", $t);
+   $t=str_replace("[/i]", "</em>", $t);
+
+   // soulignement
+   $t=str_replace("[u]", "<u>", $t);
+   $t=str_replace("[/u]", "</u>", $t);
+
+   // couleur
+   $t=str_replace("[/color]", "</span>", $t);
+   $regCouleur="/\[color= ?(([[:alpha:]]+)|(#[[:digit:][:alpha:]]{6})) ?\]/";
+   $t=preg_replace($regCouleur, "<span style=\"color: \\1\">", $t);
+
+   // taille des caractères
+   $t=str_replace("[/size]", "</span>", $t);
+   $regCouleur="`\[size= ?([[:digit:]]+) ?\]`";
+   $t=preg_replace($regCouleur, "<span style=\"font-size: \\1px\">", $t);
+
+   return $t;
+}
+
 
 /**
  * FUNCTION: how_many_connected()
  * DESCRIPTION: Si c'est un admin qui est connecté, affiche le nombre de personnes actuellement connectées.
  */
 function how_many_connected() {
-    if(authGetUserLevel(getUserName(),-1) >= 5)
+    if(authGetUserLevel(getUserName(),-1) >= 6)
     {
-      $sql = "SELECT LOGIN FROM grr_log WHERE END > now()";
+      $sql = "SELECT LOGIN FROM ".TABLE_PREFIX."_log WHERE END > now()";
       $res = grr_sql_query($sql);
       $nb_connect = grr_sql_count($res);
+      grr_sql_free($res);
       if ($nb_connect == 1)
         echo "<a href='admin_view_connexions.php'>".$nb_connect.get_vocab("one_connected")."</a>";
       else
@@ -68,12 +477,14 @@ function plages_libre_semaine_ressource($id_room, $month_week, $day_week, $year_
     $plage_libre = 0;
     while ($t < $date_end) {
         $t += $resolution;
-        $test = grr_sql_query1("SELECT count(id) FROM grr_entry where
+        $test = grr_sql_query1("SELECT id FROM ".TABLE_PREFIX."_entry where
          room_id='".$id_room."' and
          start_time <= ".$t." AND
          end_time >= ".$t." ");
-        if ($test == 0)
+        if ($test == -1) {
             $plage_libre = TRUE;
+            break;
+        }
     }
     return $plage_libre ;
 }
@@ -91,17 +502,25 @@ function grr_help($mot_clef,$ancre="") {
     // lien aide sur la page d'accueil
     if  ($mot_clef=="") {
        if (getSettingValue("gestion_lien_aide")=='perso') {
-           $tag_help = "&nbsp;<A href='".getSettingValue("lien_aide")."' target='_blank'>".get_vocab("help")."</a>";
+        $tag_help = "&nbsp;<a href='javascript:centrerpopup(\"";
+        $tag_help .= getSettingValue("lien_aide");
+        $tag_help .= "\",800,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>";
+        $tag_help .= get_vocab("help")."</a>";
+        //$tag_help = "&nbsp;<a href='".getSettingValue("lien_aide")."' target='_blank'>".get_vocab("help")."</a>";
        } else {
-        $tag_help = "&nbsp;<A href='http://grr.mutualibre.org/documentation/index.php' target='_blank'>".get_vocab("help")."</a>";
+        $tag_help = "&nbsp;<a href='javascript:centrerpopup(\"";
+        $tag_help .= "http://grr.mutualibre.org/documentation/index.php";
+        $tag_help .= "\",800,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>";
+        $tag_help .= get_vocab("help")."</a>";
+        //$tag_help = "&nbsp;<a href='http://grr.mutualibre.org/documentation/index.php' target='_blank'>".get_vocab("help")."</a>";
        }
     } else {
-        $tag_help = "&nbsp;<A href='javascript:centrerpopup(\"";
+        $tag_help = "&nbsp;<a href='javascript:centrerpopup(\"";
         $tag_help .= "http://grr.mutualibre.org/documentation/index.php";
         $tag_help .= "?mot_clef=".$mot_clef;
             if ($ancre !="") $tag_help .="&amp;ancre=".$ancre;
         $tag_help .= "\",800,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>";
-        $tag_help .= "<img src=\"img_grr/help.png\" align=\"middle\" alt=\"Help\" title=\"Help\" width=\"16\" height=\"16\" border=\"0\"  />";
+        $tag_help .= "<img src=\"img_grr/help.png\" alt=\"Help\" title=\"Help\" width=\"16\" height=\"16\" class=\"image\"  />";
         $tag_help .= "</a>";
     }
     return $tag_help;
@@ -158,15 +577,16 @@ $id_entry : identifiant de la réservation
 $login_moderateur : identifiant du modérateur
 $motivation_moderation : texte facultatif
 
-Insère dans la table grr_entry_moderate les valeurs de grr_entry dont l'identifiant est $id_entry
+Insère dans la table ".TABLE_PREFIX."_entry_moderate les valeurs de ".TABLE_PREFIX."_entry dont l'identifiant est $id_entry
 */
 function  grr_backup($id_entry,$login_moderateur,$motivation_moderation) {
-    $sql = "SELECT * FROM grr_entry WHERE id='".$id_entry."'";
+    $sql = "SELECT * FROM ".TABLE_PREFIX."_entry WHERE id='".$id_entry."'";
     $res = grr_sql_query($sql);
     if (! $res)  return FALSE;
     $row = grr_sql_row_keyed($res, 0);
+    grr_sql_free($res);
 
-    $req = "insert into grr_entry_moderate set
+    $req = "insert into ".TABLE_PREFIX."_entry_moderate set
     id = '".$row['id']."',
     start_time = '".$row['start_time']."',
     end_time  = '".$row['end_time']."',
@@ -189,8 +609,10 @@ function  grr_backup($id_entry,$login_moderateur,$motivation_moderation) {
     $res = grr_sql_query($req);
     if (! $res)
         return FALSE;
-    else
+    else {
+        grr_sql_free($res);
         return TRUE;
+    }
 }
 /*
 Remplace la fonction PHP html_entity_decode(), pour les utilisateurs ayant des versions antérieures à PHP 4.3.0 :
@@ -282,21 +704,26 @@ function heure_ete_hiver($type, $annee, $heure)
 # magic_quotes_gpc setting.
 function unslashes($s)
 {
-    if (get_magic_quotes_gpc()) return stripslashes($s);
-    else return $s;
+//    if (get_magic_quotes_gpc())
+    if (function_exists('get_magic_quotes_gpc') && @get_magic_quotes_gpc())
+      return stripslashes($s);
+    else
+      return $s;
 }
 
 // Corrige les caracteres degoutants utilises par les Windozeries
 function corriger_caracteres($texte) {
     // 145,146,180 = simple quote ; 147,148 = double quote ; 150,151 = tiret long
     $texte = strtr($texte, chr(145).chr(146).chr(180).chr(147).chr(148).chr(150).chr(151), "'''".'""--');
-    return ereg_replace( chr(133), "...", $texte );
+    return $texte;
 }
 
 // Traite les données avant insertion dans une requête SQL
 function protect_data_sql($_value) {
     global $use_function_mysql_real_escape_string;
-    if (get_magic_quotes_gpc()) $_value = stripslashes($_value);
+//    if (get_magic_quotes_gpc())
+    if (function_exists('get_magic_quotes_gpc') && @get_magic_quotes_gpc())
+        $_value = stripslashes($_value);
     if (!is_numeric($_value)) {
         if (isset($use_function_mysql_real_escape_string) and ($use_function_mysql_real_escape_string==0))
              $_value = mysql_escape_string($_value);
@@ -319,48 +746,46 @@ function verif_page() {
 
 function page_accueil($param='no') {
    // Definition de $defaultroom
-   if (isset($_SESSION['default_room']) and ($_SESSION['default_room'] != '0')) {
+   if (isset($_SESSION['default_room']) and ($_SESSION['default_room'] >0)) {
       $defaultroom = $_SESSION['default_room'];
    } else {
       $defaultroom = getSettingValue("default_room");
    }
 
+   // Definition de $defaultsite
+   if (isset($_SESSION['default_site']) and ($_SESSION['default_site'] >0)) {
+      $defaultsite = $_SESSION['default_site'];
+   } else if (getSettingValue("default_site") > 0) {
+      $defaultsite = getSettingValue("default_site");
+   } else
+      $defaultsite = get_default_site();
+
    // Definition de $defaultarea
-   if (isset($_SESSION['default_area']) and ($_SESSION['default_area'] !='0')) {
+   if (isset($_SESSION['default_area']) and ($_SESSION['default_area'] >0)) {
       $defaultarea = $_SESSION['default_area'];
-   } else if (getSettingValue("default_area") != "") {
+   } else if (getSettingValue("default_area") > 0) {
       $defaultarea = getSettingValue("default_area");
    } else
-      $defaultarea = get_default_area();
-
+      $defaultarea = get_default_area($defaultsite);
 
    // Calcul de $page_accueil
    if ($defaultarea == -1) {
-      $page_accueil="day.php";
-      if ($param=='yes') $page_accueil=$page_accueil."?";
+      $page_accueil="day.php?noarea="; // le paramètre noarea ne sert à rien, il est juste là pour éviter un cas particulier à traiter avec &amp;id_site= et $param
    } else if ($defaultroom == -1) {
-      $area_accueil = $defaultarea;
-      $page_accueil="day.php?area=$area_accueil";
-      if ($param=='yes') $page_accueil=$page_accueil."&amp;";
+      $page_accueil="day.php?area=$defaultarea";
    } else if ($defaultroom == -2) {
-      $area_accueil = $defaultarea;
-      $page_accueil="week_all.php?area=$area_accueil";
-      if ($param=='yes') $page_accueil=$page_accueil."&amp;";
+      $page_accueil="week_all.php?area=$defaultarea";
    } else if ($defaultroom == -3) {
-      $area_accueil = $defaultarea;
-      $page_accueil="month_all.php?area=$area_accueil";
-      if ($param=='yes') $page_accueil=$page_accueil."&amp;";
+      $page_accueil="month_all.php?area=$defaultarea";
    } else if ($defaultroom == -4) {
-      $area_accueil = $defaultarea;
-      $page_accueil="month_all2.php?area=$area_accueil";
-      if ($param=='yes') $page_accueil=$page_accueil."&amp;";
+      $page_accueil="month_all2.php?area=$defaultarea";
    } else {
-      $area_accueil = $defaultarea;
-      $room_accueil = $defaultroom;
-      $page_accueil="week.php?area=$area_accueil&amp;room=$room_accueil";
-      if ($param=='yes') $page_accueil=$page_accueil."&amp;";
+      $page_accueil="week.php?area=$defaultarea&amp;room=$defaultroom";
    }
-   return $page_accueil;
+   if ((getSettingValue("module_multisite") == "Oui") and ($defaultsite>0))
+       $page_accueil .= "&amp;id_site=".$defaultsite;
+   if ($param=='yes') $page_accueil .= "&amp;";
+   return $page_accueil ;
 }
 
 function begin_page($title,$page="with_session")
@@ -372,11 +797,6 @@ if ($page=="with_session")
 
     if (isset($_GET['default_language']))
       {
-// Suppression des trois lignes suivantes afin de corriger le bug suivant :
-// Lorqu'un administrateur modifiait le réglage de la langue par défaut, son réglage personnel était écrasé et prenait la valeur du réglage par défaut.
-//        $sql = grr_sql_command("UPDATE grr_utilisateurs SET
-//        default_language = '" . $_GET['default_language']."'
-//        WHERE login='". $_SESSION['login']."'");
         $_SESSION['default_language'] = $_GET['default_language'];
         if (isset($_SESSION['chemin_retour']) and ($_SESSION['chemin_retour'] != ''))
             header("Location: ".$_SESSION['chemin_retour']);
@@ -418,24 +838,21 @@ if (!$fp) {
 
  header("Content-Type: text/html;charset=". ((isset($unicode_encoding) and ($unicode_encoding==1)) ? "utf-8" : $charset_html)); header("Pragma: no-cache");                          // HTTP 1.0
  header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past
-//$a='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
-//$a='<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">';
-$a='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
-//$a='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-
+//$a='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">';
+$a='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 $a.='<html>
 <head>
-<link rel="stylesheet" href="'.$sheetcss.'" type="text/css" />';
-$a.='<link href="include/admin_grr.css" rel="stylesheet" type="text/css" />';
+<link rel="stylesheet" href="'.$sheetcss.'" type="text/css" />'."\n";
+$a.='<link href="include/admin_grr.css" rel="stylesheet" type="text/css" />'."\n";
 // Pour le format imprimable, on impose un fond de page blanc
 if ((isset($_GET['pview'])) and ($_GET['pview'] == 1))
-    $a .= '<link rel="stylesheet" href="themes/print/css/style.css" type="text/css" />';
+    $a .= '<link rel="stylesheet" href="themes/print/css/style.css" type="text/css" />'."\n";
 /*
 if (function_exists("getSettingValue")) {
     $a.='<LINK REL="SHORTCUT ICON" href="'.traite_grr_url().'favicon.ico" />';
 }
 */
-$a.='<style type="text/css">div#fixe   { position: fixed; bottom: 5%; right: 5%;}</style>';
+$a.='<style type="text/css">div#fixe   { position: fixed; bottom: 5%; right: 5%;}</style>'."\n";
 $a.='<link rel="SHORTCUT ICON" href="./favicon.ico" />';
 $a .="\n<title>$title</title>";
 $a .="\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=";
@@ -444,31 +861,31 @@ if ($unicode_encoding)
 else
     $a .= $charset_html;
 $a .= "\" />";
-$a .="\n<meta NAME=\"Robots\" content=\"noindex\" />";
-
+$a .="\n<meta name=\"Robots\" content=\"noindex\" />";
 $a .="\n</head>\n
-<body text=\"black\" link=\"#5B69A6\" vlink=\"#5B69A6\" alink=\"red\">\n";
-
+<body>\n";
+$a .='<script src="functions.js" type="text/javascript" ></script>';
 if (@file_exists($clock_file)) {
-   $a .='<script type="text/javascript" LANGUAGE="JavaScript" SRC="'.$clock_file.'"></SCRIPT>';
+   $a .='<script type="text/javascript" src="'.$clock_file.'"></script>';
 }
 # show a warning if this is using a low version of php
 if (substr(phpversion(), 0, 1) == 3)  $a .=get_vocab('not_php3');
 return $a;
 }
 
-function print_header($day, $month, $year, $area, $type="with_session", $page="no_admin")
+function print_header($day='',$month='',$year='',$area='',$type_session='with_session',$page='no_admin',$room='')
 {
-   global $vocab, $search_str, $grrSettings, $session_statut, $clock_file, $is_authentified_lcs, $desactive_VerifNomPrenomUser, $grr_script_name;
-   global $use_prototype, $use_tooltip_js, $desactive_bandeau_sup;
+   global $vocab, $search_str, $grrSettings, $clock_file, $desactive_VerifNomPrenomUser, $grr_script_name;
+   global $use_prototype, $use_tooltip_js, $desactive_bandeau_sup, $id_site;
 
    if (!($desactive_VerifNomPrenomUser)) $desactive_VerifNomPrenomUser = 'n';
    // On vérifie que les noms et prénoms ne sont pas vides
-   VerifNomPrenomUser($type);
-   if ($type == "with_session")
+   VerifNomPrenomUser($type_session);
+   if ($type_session == "with_session")
        echo begin_page(get_vocab("mrbs").get_vocab("deux_points").getSettingValue("company"),"with_session");
    else
        echo begin_page(get_vocab("mrbs").get_vocab("deux_points").getSettingValue("company"),"no_session");
+
    // Si nous ne sommes pas dans un format imprimable
    if ((!isset($_GET['pview'])) or ($_GET['pview'] != 1)) {
 
@@ -488,212 +905,208 @@ function print_header($day, $month, $year, $area, $type="with_session", $page="n
    if (!(isset($search_str))) $search_str = get_vocab("search_for");
    if (empty($search_str)) $search_str = "";
    ?>
-   <SCRIPT type="text/javascript" LANGUAGE="JavaScript">
+   <script type="text/javascript">
     chaine_recherche = "<?php echo $search_str; ?>";
-    function encode_adresse(user,domain,label,link) {
-        var address = user+'@'+domain;
-        var toWrite = '';
-        if (link > 0) {toWrite += '<a href="mailto:'+address+'">';}
-        if (label != '') {toWrite += label;} else {toWrite += address;}
-        if (link > 0) {toWrite += '<\/a>';}
-        document.write(toWrite);
-    }
-
-   	function OnSubmitForm()
-		{
-			if(document.pressed == 'd')
-			{
-				document.myform.action ="day.php";
-			}
-			if(document.pressed == 'w')
-			{
-				document.myform.action ="week_all.php";
-			}
-			if(document.pressed == 'm')
-			{
-           <?php
-				echo "		document.myform.action = \"";
-				if (isset($_SESSION['type_month_all'])) {echo $_SESSION['type_month_all'].".php";}
-				else {echo "month_all.php";}
-				echo "\";\n";
-           ?>
-			}
-			return true;
+   	function onsubmitForm()
+	{
+	if(document.pressed == 'a')
+	{
+  	document.getElementById('day').selectedIndex=<?php $date_now = mktime();echo (date("d",$date_now)-1); ?>;
+		document.getElementById('month').selectedIndex=<?php echo (date("m",$date_now)-1);?>;
+		document.getElementById('year').selectedIndex=<?php echo (date("Y",$date_now)-strftime("%Y", getSettingValue("begin_bookings")));?>;
+  	var p=location.pathname;
+	   	if(!p.match("day.php") && !p.match("week.php") && !p.match("week_all.php") && !p.match("month.php") && !p.match("month_all.php") && !p.match("month_all2.php") && !p.match("year.php"))
+    document.getElementById('myform').action ="day.php";
+	}
+    if(document.pressed == 'd')
+      document.getElementById('myform').action ="day.php";
+    if(document.pressed == 'w')
+    <?php
+    echo "		document.getElementById('myform').action = \"";
+    if ($room=="")
+      echo "week_all.php";
+		else
+      echo "week.php";
+    echo "\";\n";
+    ?>
+    if(document.pressed == 'm')
+    <?php
+    echo "		document.getElementById('myform').action = \"";
+    if ($room=="") {
+      if (isset($_SESSION['type_month_all'])) {echo $_SESSION['type_month_all'].".php";}
+      else {echo "month_all.php";}
+    } else
+      echo "month.php";
+    echo "\";\n";
+    ?>
+    return true;
 		}
-		</SCRIPT>
-
-
+		</script>
     <?php
 
-    // Affichage du message d'erreur en cas d'échec de l'envoi de mails automatiques
-    if (!(getSettingValue("javascript_info_disabled"))) {
-      if ((isset($_SESSION['session_message_error'])) and ($_SESSION['session_message_error']!=''))  {
-        echo "<script type=\"text/javascript\" language=\"javascript\">";
-        echo "<!--\n";
-        echo " alert(\"".get_vocab("title_automatic_mail")."\\n".$_SESSION['session_message_error']."\\n".get_vocab("technical_contact")."\")";
-        echo "//-->";
-        echo "</script>";
-        $_SESSION['session_message_error'] = "";
-      }
-    }
-if (!(isset($desactive_bandeau_sup) and ($desactive_bandeau_sup==1) and ($type != 'with_session'))) {
+if (!(isset($desactive_bandeau_sup) and ($desactive_bandeau_sup==1) and ($type_session != 'with_session'))) {
+    // On fabrique une date valide pour la réservation si ce n'est pas le cas
+    $date_ = mktime(0, 0, 0, $month, $day, $year);
+    if ($date_ < getSettingValue("begin_bookings"))
+        $date_ = getSettingValue("begin_bookings");
+    else if ($date_ > getSettingValue("end_bookings"))
+        $date_ = getSettingValue("end_bookings");
+    $day   = date("d",$date_);
+    $month = date("m",$date_);
+    $year  = date("Y",$date_);
 ?>
 
-   <TABLE WIDTH="100%" border="0">
-    <TR>
-      <TD class="border_banner">
-       <TABLE WIDTH="100%" BORDER=0>
-        <TR>
-         <TD CLASS="banner">
-     <?php
-          $param= 'yes';
-          // On fabrique une date valide pour la réservation si ce n'est pas le cas
-          $date_ = mktime(0, 0, 0, $month, $day, $year);
-          if ($date_ < getSettingValue("begin_bookings"))
-              $date_ = getSettingValue("begin_bookings");
-          else if ($date_ > getSettingValue("end_bookings"))
-              $date_ = getSettingValue("end_bookings");
-          $day   = date("d",$date_);
-          $month = date("m",$date_);
-          $year  = date("Y",$date_);
-
-          echo "&nbsp;<A HREF=\"".page_accueil($param)."day=$day&amp;year=$year&amp;month=$month\">".get_vocab("welcome")."</A>";
+   <table width="100%" border="0">
+    <tr>
+      <td class="border_banner">
+       <table width="100%" border="0">
+        <tr>
+        <?php
+        $nom_picture = "./images/".getSettingValue("logo");
+        if ((getSettingValue("logo")!='') and (@file_exists($nom_picture)))
+         echo "<td class=\"banner\"><img src=\"".$nom_picture."\" class=\"image\" alt=\"logo\" /></td>\n";
+         echo "<td class=\"banner\">\n";
+          echo "&nbsp;<a href=\"".page_accueil('yes')."day=$day&amp;year=$year&amp;month=$month\">".get_vocab("welcome")."</a>";
           echo " - <b>".getSettingValue("company")."</b>";
-          if ($type == 'no_session') {
-
-//            echo "<br />&nbsp;<a href='login.php'>".get_vocab("connect")."</a>";
-
-				// (UT1-LC 05/2008) distinction connexion CAS-LDAP / locale
-				if ((getSettingValue('sso_statut') == 'cas_visiteur') or (getSettingValue('sso_statut') == 'cas_utilisateur'))
-					{
-					echo "<br />&nbsp;<a href='index.php'>".get_vocab("authentification")."</a>";
-					echo "<br />&nbsp;<small><i><a href='login.php'>".get_vocab("connect_local")."</a></i></small>";
-					}
-				else
-					{
-					echo "<br />&nbsp;<a href='login.php'>".get_vocab("connect")."</a>";
-					}
-
-
+          if ($type_session == 'no_session') {
+            if ((getSettingValue('sso_statut') == 'cas_visiteur') or (getSettingValue('sso_statut') == 'cas_utilisateur'))
+					  {
+					    echo "<br />&nbsp;<a href='index.php?force_authentification=y'>".get_vocab("authentification")."</a>";
+//					    echo "<br />&nbsp;<small><i><a href='login.php?url=".rawurlencode(str_replace('&amp;','&',get_request_uri()))."'>".get_vocab("connect_local")."</a></i></small>";
+// corrige un bug dans le calcul de la page d'accueil après connexion.
+					    echo "<br />&nbsp;<small><i><a href='login.php'>".get_vocab("connect_local")."</a></i></small>";
+					  }
+				    else
+					  {
+// echo "<br />&nbsp;<a href='login.php?url=".rawurlencode(str_replace('&amp;','&',get_request_uri()))."'>".get_vocab("connect")."</a>";
+// corrige un bug dans le calcul de la page d'accueil après connexion.
+					    echo "<br />&nbsp;<a href='login.php'>".get_vocab("connect")."</a>";
+            }
           } else {
-        echo "<br />&nbsp;<b>".get_vocab("welcome_to").$_SESSION['prenom']." ".$_SESSION['nom']."</b>";
-             if (IsAllowedToModifyMdp() or IsAllowedToModifyProfil())
-                echo "<br />&nbsp;<a href=\"my_account.php?day=".$day."&amp;year=".$year."&amp;month=".$month."\">".get_vocab("manage_my_account")."</a>";
-             //if ($type == "with_session") {
-                 $parametres_url = '';
+            echo "<br />&nbsp;<b>".get_vocab("welcome_to").htmlspecialchars($_SESSION['prenom'])." ".htmlspecialchars($_SESSION['nom'])."</b>";           
+            echo "<br />&nbsp;<a href=\"my_account.php?day=".$day."&amp;year=".$year."&amp;month=".$month."\">".get_vocab("manage_my_account")."</a>";
+            //if ($type_session == "with_session") {
+            $parametres_url = '';
                  $_SESSION['chemin_retour'] = '';
                  if (isset($_SERVER['QUERY_STRING']) and ($_SERVER['QUERY_STRING'] != '')) {
                      // Il y a des paramètres à passer
                      $parametres_url = htmlspecialchars($_SERVER['QUERY_STRING'])."&amp;";
                      $_SESSION['chemin_retour'] = traite_grr_url($grr_script_name)."?". $_SERVER['QUERY_STRING'];
                  }
-                 echo " - <a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=fr\"><img src=\"img_grr/fr_dp.png\" alt=\"France\" title=\"france\" width=\"20\" height=\"13\" align=\"middle\" border=\"0\" /></a>\n";
-                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=de\"><img src=\"img_grr/de_dp.png\" alt=\"Deutch\" title=\"deutch\" width=\"20\" height=\"13\" align=\"middle\" border=\"0\" /></a>\n";
-                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=en\"><img src=\"img_grr/en_dp.png\" alt=\"English\" title=\"English\" width=\"20\" height=\"13\" align=\"middle\" border=\"0\" /></a>\n";
-                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=it\"><img src=\"img_grr/it_dp.png\" alt=\"Italiano\" title=\"Italiano\" width=\"20\" height=\"13\" align=\"middle\" border=\"0\" /></a>\n";
-                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=es\"><img src=\"img_grr/es_dp.png\" alt=\"Spanish\" title=\"Spanish\" width=\"20\" height=\"13\" align=\"middle\" border=\"0\" /></a>\n";
+                 echo " - <a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=fr\"><img src=\"img_grr/fr_dp.png\" alt=\"France\" title=\"france\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
+                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=de\"><img src=\"img_grr/de_dp.png\" alt=\"Deutch\" title=\"deutch\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
+                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=en\"><img src=\"img_grr/en_dp.png\" alt=\"English\" title=\"English\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
+                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=it\"><img src=\"img_grr/it_dp.png\" alt=\"Italiano\" title=\"Italiano\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
+                 echo "<a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=es\"><img src=\"img_grr/es_dp.png\" alt=\"Spanish\" title=\"Spanish\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
 
-             //}
-             if (!((getSettingValue("sso_statut") == 'lcs') and ($_SESSION['source_login']=='ext') and ($is_authentified_lcs == "yes")))
+            //}
+            $disconnect_link = false;
+            if (!((getSettingValue("cacher_lien_deconnecter")=='y') and (isset($_SESSION['est_authentifie_sso'])))) {
+               // on n'affiche pas le lien logout dans le cas d'un utilisateur LCS connecté.
+               $disconnect_link = true;
                if (getSettingValue("authentification_obli") == 1) {
-                 echo "<br />&nbsp;<a href=\"./logout.php?auto=0\" >".get_vocab('disconnect')."</a>";
+                   echo "<br />&nbsp;<a href=\"./logout.php?auto=0\" >".get_vocab('disconnect')."</a>";
                } else {
-                 echo "<br />&nbsp;<a href=\"./logout.php?auto=0&amp;authentif_obli=no\" >".get_vocab('disconnect')."</a>";
+                   echo "<br />&nbsp;<a href=\"./logout.php?auto=0&amp;redirect_page_accueil=yes\" >".get_vocab('disconnect')."</a>";
                }
-	             if ((getSettingValue('sso_statut') == 'lasso_visiteur')
-		           or (getSettingValue('sso_statut') == 'lasso_utilisateur')) {
-		               echo "<br />";
-		               if ($_SESSION['lasso_nameid'] == NULL)
-		                   echo "<a href=\"lasso/federate.php\">".get_vocab('lasso_federate_this_account')."</a>";
-		               else
-		                   echo "<a href=\"lasso/defederate.php\">".get_vocab('lasso_defederate_this_account')."</a>";
-	            }
+            }
+            if ((getSettingValue("Url_portail_sso")!='') and (isset($_SESSION['est_authentifie_sso']))) {
+                if ($disconnect_link)
+                   echo "&nbsp;-&nbsp;";
+                else
+                   echo "<br />&nbsp;";
+                echo('<a href="'.getSettingValue("Url_portail_sso").'">'.get_vocab("Portail_accueil").'</a>');
+             }
+             // Cas d'une authentification LASSO
+             if ((getSettingValue('sso_statut') == 'lasso_visiteur') or (getSettingValue('sso_statut') == 'lasso_utilisateur')) {
+               echo "<br />&nbsp;";
+               if ($_SESSION['lasso_nameid'] == NULL)
+                 echo "<a href=\"lasso/federate.php\">".get_vocab('lasso_federate_this_account')."</a>";
+               else
+                 echo "<a href=\"lasso/defederate.php\">".get_vocab('lasso_defederate_this_account')."</a>";
+               }
           }
       ?>
-     </TD>
+     </td>
      <?php
-     if ($page=="no_admin") {
+	   if (((isset($area)) and ($area > 0)) or ((isset($room)) and ($room > 0)))
+	      // si aucune ressource ni domaine ne sont définis, on affiche pas la colonne de sélection du jour
+        $affiche_col_date = TRUE;
+	   else
+	      $affiche_col_date = FALSE;
+
+     if (($page=="no_admin") and ($affiche_col_date)) {
      ?>
-         <TD CLASS="banner"  ALIGN=center>
-           <form name="myform" action="" method="get" onSubmit="return OnSubmitForm();">
+         <td class="banner"  align="center">
+           <form id="myform" action="" method="get" onsubmit="return onsubmitForm();"><div>
            <?php
            genDateSelector("", $day, $month, $year,"");
-           if (!empty($area)) echo "<INPUT TYPE=\"hidden\" name=\"area\" value=\"$area\" />"
+    		   if ((isset($area)) and ($area > 0))
+             echo "<input type=\"hidden\" id=\"area_\" name=\"area\" value=\"$area\" />";
+    		   if ((isset($room)) and ($room > 0))
+             echo "<input type=\"hidden\" id=\"room_\" name=\"room\" value=\"$room\" />";
            ?>
+		   <input type="submit" value="<?php echo get_vocab("gototoday") ?>" onclick="document.pressed='a'" />
            <br />
-     		   <INPUT TYPE=submit VALUE="<?php echo get_vocab("allday") ?>" onClick="document.pressed='d'" />
-           <INPUT TYPE=submit VALUE="<?php echo get_vocab("week") ?>" onClick="document.pressed='w'" />
-           <INPUT TYPE=submit VALUE="<?php echo get_vocab("month") ?>" onClick="document.pressed='m'" />
            <br />
-           </form>
-           <form name="myform2" action="" method="get" onSubmit="return OnSubmitForm();">
-           <?php
-           if (!empty($area)) echo "<INPUT TYPE=\"hidden\" name=\"area\" value=\"$area\" />"
-           ?>
-     		   <INPUT TYPE=submit VALUE="<?php echo get_vocab("gototoday") ?>" onClick="document.pressed='d'" />
-           </FORM>
-         </TD>
+           <input type="submit" value="<?php echo get_vocab("allday") ?>" onclick="document.pressed='d'" />
+           <input type="submit" value="<?php echo get_vocab("week") ?>" onclick="document.pressed='w'" />
+           <input type="submit" value="<?php echo get_vocab("month") ?>" onclick="document.pressed='m'" />
+           </div></form>
+         </td>
          <?php
      }
-     if ($type == "with_session") {
+     if ($type_session == "with_session") {
           if ((authGetUserLevel(getUserName(),-1,'area') >= 4) or (authGetUserLevel(getUserName(),-1,'user') == 1))  {
-           echo "<TD CLASS=\"banner\" ALIGN=center>";
-           echo "<A HREF='admin_accueil.php?day=$day&amp;month=$month&amp;year=$year'>".get_vocab("admin")."</A>\n";
-           if(authGetUserLevel(getUserName(),-1,'area') >= 5)  {
-              echo "<br /><form action=\"admin_save_mysql.php\" method=\"get\" name=sav>\n
-              <input type=\"submit\" value=\"".get_vocab("submit_backup")."\" />\n
+           echo "<td class=\"banner\" align=\"center\">";
+           echo "<a href='admin_accueil.php?day=$day&amp;month=$month&amp;year=$year'>".get_vocab("admin")."</a>\n";
+           if(authGetUserLevel(getUserName(),-1,'area') >= 6)  {
+              echo "<br />\n<form action=\"admin_save_mysql.php\" method=\"get\"><div>\n
+              <input type=\"hidden\" name=\"flag_connect\" value=\"yes\" />\n
+              <input type=\"submit\" value=\"".get_vocab("submit_backup")."\" /></div>\n
               </form>";
               how_many_connected();
            }
-           echo "\n</TD>";
+           echo "\n</td>";
       }
      }
       ?>
-          <TD CLASS="banner" ALIGN=center>
+          <td class="banner" align="center">
       <?php
       if (@file_exists($clock_file)) {
-        echo "<script type=\"text/javascript\" LANGUAGE=\"javascript\">";
+        echo "<script type=\"text/javascript\">";
         echo "<!--\n";
         echo "new LiveClock();\n";
         echo "//-->";
-        echo "</SCRIPT><br />";
+        echo "</script><br />";
       }
 
       echo grr_help("","")."<br />";
       if (verif_access_search(getUserName())) {
-          echo "<A HREF=\"report.php\">".get_vocab("report")."</A><br />";
+          echo "<a href=\"report.php\">".get_vocab("report")."</a><br />";
       }
       echo "<span class=\"small\">".affiche_version()."</span> - ";
-      if ($type == "with_session") {
+      if ($type_session == "with_session") {
           if ($_SESSION['statut'] == 'administrateur') {
-              $email = explode('@',getSettingValue("technical_support_email"));
-              $person = $email[0];
-              $domain = $email[1];
-              echo "<script type=\"text/javascript\">encode_adresse('".$person."','".$domain."','".AddSlashes(get_vocab("technical_contact"))."',1);</script><br />";
+              echo affiche_lien_contact("contact_support","identifiant:non","seulement_si_email");
           } else {
-              $email = explode('@',getSettingValue("webmaster_email"));
-              $person = $email[0];
-              $domain = $email[1];
-              echo "<script type=\"text/javascript\">encode_adresse('".$person."','".$domain."','".AddSlashes(get_vocab("administrator_contact"))."',1);</script><br />";
+              echo affiche_lien_contact("contact_administrateur","identifiant:non","seulement_si_email");
           }
       } else {
-              $email = explode('@',getSettingValue("webmaster_email"));
-              $person = $email[0];
-              $domain = $email[1];
-              echo "<script type=\"text/javascript\">encode_adresse('".$person."','".$domain."','".AddSlashes(get_vocab("administrator_contact"))."',1);</script><br />";
+          echo affiche_lien_contact("contact_administrateur","identifiant:non","seulement_si_email");
       }
 
           ?>
-         </TD>
-        </TR>
-       </TABLE>
-      </TD>
-     </TR>
-    </TABLE>
+         </td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+    </table>
 <?php
 }
 if (isset($use_prototype))
-    echo "<script type=\"text/javascript\" src=\"./include/prototype-1.6.0.2.js\"></script>";
+    echo "<script type=\"text/javascript\" src=\"./include/prototype-1.6.0.3.js\"></script>";
 if (isset($use_tooltip_js))
     echo "<script type=\"text/javascript\" src=\"./include/tooltip.js\"></script>";
 echo getSettingValue('message_accueil');
@@ -706,7 +1119,7 @@ echo getSettingValue('message_accueil');
 function VerifNomPrenomUser($type) {
     global $desactive_VerifNomPrenomUser; // ne pas prendre en compte la page my_account.php
     if (($type == "with_session") and ($desactive_VerifNomPrenomUser!='y') and (IsAllowedToModifyProfil())) {
-        $test = grr_sql_query1("select login from grr_utilisateurs where (login = '".getUserName()."' and (nom='' or prenom = ''))");
+        $test = grr_sql_query1("select login from ".TABLE_PREFIX."_utilisateurs where (login = '".getUserName()."' and (nom='' or prenom = ''))");
         if ($test != -1) {
             header("Location:my_account.php");
             die();
@@ -717,15 +1130,11 @@ function VerifNomPrenomUser($type) {
 }
 
 /*
-  Vérifie que l'utilisateur est autorisé à changer ses noms et prénoms
-  Renvoie True (peut changer ses noms et prénoms) ou False (ne peut pas)
+  Vérifie si utilisateur autorisé à changer ses noms et prénoms et mail
+  Renvoie True (peut changer ses noms et prénoms et email) ou False (ne peut pas)
 */
-function IsAllowedToModifyProfil() {
-    // l'utilisateur connecté n'a pas le niveau suffisant pour modifier son compte
-    if (authGetUserLevel(getUserName(),-1) < getSettingValue("allow_users_modify_profil"))
-        return FALSE;
-    else if (getSettingValue("sso_statut") == "lcs") {
-        // ou bien on est dans un environnement LCS et l'utilisateur n'est pas un utilisateur local
+function sso_IsAllowedModify() {
+    if (getSettingValue("sso_IsNotAllowedModify")=="y") {
         $source = grr_sql_query1("select source from grr_utilisateurs where login = '".getUserName()."'");
         if ($source == "ext")
             return FALSE;
@@ -734,22 +1143,32 @@ function IsAllowedToModifyProfil() {
     } else
         return TRUE;
 }
+
+
+/*
+  Vérifie que l'utilisateur est autorisé à changer ses noms et prénoms
+  Renvoie True (peut changer ses noms et prénoms) ou False (ne peut pas)
+*/
+function IsAllowedToModifyProfil() {
+    if (!(sso_IsAllowedModify()))
+        return FALSE;
+    // l'utilisateur connecté n'a pas le niveau suffisant pour modifier son compte
+    if (authGetUserLevel(getUserName(),-1) < getSettingValue("allow_users_modify_profil"))
+        return FALSE;
+    else
+        return TRUE;
+}
 /*
   Vérifie que l'utilisateur est autorisé à changer son emai
   Renvoie True (peut changer son email) ou False (ne peut pas)
 */
 function IsAllowedToModifyEmail() {
+    if (!(sso_IsAllowedModify()))
+        return FALSE;
     // l'utilisateur connecté n'a pas le niveau suffisant pour modifier son compte
     if (authGetUserLevel(getUserName(),-1) < getSettingValue("allow_users_modify_email"))
         return FALSE;
-    else if (getSettingValue("sso_statut") == "lcs") {
-        // ou bien on est dans un environnement LCS et l'utilisateur n'est pas un utilisateur local
-        $source = grr_sql_query1("select source from grr_utilisateurs where login = '".getUserName()."'");
-        if ($source == "ext")
-            return FALSE;
-        else
-            return TRUE;
-    } else
+    else
         return TRUE;
 }
 
@@ -761,9 +1180,9 @@ function IsAllowedToModifyMdp() {
     // l'utilisateur connecté n'a pas le niveau suffisant pour modifier son compte
     if (authGetUserLevel(getUserName(),-1) < getSettingValue("allow_users_modify_mdp"))
         return FALSE;
-    else if ((getSettingValue("sso_statut") != "") or  (getSettingValue("ldap_statut") != '')) {
+    else if ((getSettingValue("sso_statut") != "") or  (getSettingValue("ldap_statut") != '') or  (getSettingValue("imap_statut") != '')) {
         // ou bien on est dans un environnement SSO ou ldap et l'utilisateur n'est pas un utilisateur local
-        $source = grr_sql_query1("select source from grr_utilisateurs where login = '".getUserName()."'");
+        $source = grr_sql_query1("select source from ".TABLE_PREFIX."_utilisateurs where login = '".getUserName()."'");
         if ($source == "ext")
             return FALSE;
         else
@@ -772,48 +1191,199 @@ function IsAllowedToModifyMdp() {
         return TRUE;
 }
 
-// Transforme $dur en un nombre entier
-// $dur : durée
-// $units : unité
-function toTimeString(&$dur, &$units)
+// Transforme $dur en une durée exprimée en années, semaines, jours, heures, minutes et secondes
+// OU en durée numérique exprimée dans l'une des unités de façon fixe, pour l'édition des
+// réservations par durée.
+// $dur : durée sous forme d'une chaine de caractère quandd $edition=false, sinon, durée en valeur numérique.
+// $units : variable conservée uniquement pour compatibilité avec la fonction toTimeString originale
+//          si $edition=false, sinon, contient l'unité utilisée pour $dur
+// $edition : Valeur par défaut : false. Indique si le retour est pour affichage ou pour modifier la durée.
+// Version écrite par David M - E-Concept Applications
+function toTimeString(&$dur, &$units, $edition = false)
 {
     global $vocab;
-    if($dur >= 60)
-    {
-        $dur = $dur/60;
 
+    if($edition)
+    {
         if($dur >= 60)
         {
-            $dur /= 60;
+            $dur = $dur/60;
 
-            if(($dur >= 24) && ($dur % 24 == 0))
+            if($dur >= 60)
             {
-                $dur /= 24;
+                $dur /= 60;
 
-                if(($dur >= 7) && ($dur % 7 == 0))
+                if(($dur >= 24) && ($dur % 24 == 0))
                 {
-                    $dur /= 7;
+                    $dur /= 24;
 
-                    if(($dur >= 52) && ($dur % 52 == 0))
+                    if(($dur >= 7) && ($dur % 7 == 0))
                     {
-                        $dur  /= 52;
-                        $units = get_vocab("years");
+                        $dur /= 7;
+
+                        if(($dur >= 52) && ($dur % 52 == 0))
+                        {
+                            $dur  /= 52;
+                            $units = get_vocab("years");
+                        }
+                        else
+                            $units = get_vocab("weeks");
                     }
                     else
-                        $units = get_vocab("weeks");
+                        $units = get_vocab("days");
                 }
                 else
-                    $units = get_vocab("days");
+                    $units = get_vocab("hours");
+
             }
             else
-                $units = get_vocab("hours");
-
+                $units = get_vocab("minutes");
         }
         else
-            $units = get_vocab("minutes");
+            $units = get_vocab("seconds");
     }
     else
-        $units = get_vocab("seconds");
+    {
+        $duree_formatee = "";
+        $not_first_unit = false;
+
+        // On définit la durée en secondes de chaque type d'unité
+        $annee   = 60 * 60 * 24 * 365;
+        $semaine = 60 * 60 * 24 * 7;
+        $jour    = 60 * 60 * 24;
+        $heure   = 60 * 60;
+        $minute  = 60;
+
+        // On calcule le nombre d'années.
+        $nb_annees = floor($dur / $annee);
+        if($nb_annees > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $nb_annees . " " . get_vocab("years");
+
+            // On soustrait le nombre d'années déjà déterminées à la durée initiale.
+            $dur = $dur - $nb_annees * $annee;
+        }
+
+
+
+
+        // On calcule le nombre de semaines.
+        $nb_semaines = floor($dur / $semaine);
+        if($nb_semaines > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $nb_semaines . " " . get_vocab("weeks");
+
+            // On soustrait le nombre de semaines déjà déterminées à la durée initiale.
+            $dur = $dur - $nb_semaines * $semaine;
+        }
+
+
+
+
+        // On calcule le nombre de jours.
+        $nb_jours = floor($dur / $jour);
+        if($nb_jours > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $nb_jours . " " . get_vocab("days");
+
+            // On soustrait le nombre de jours déjà déterminés à la durée initiale.
+            $dur = $dur - $nb_jours * $jour;
+        }
+
+
+
+
+        // On calcule le nombre d'heures.
+        $nb_heures = floor($dur / $heure);
+        if($nb_heures > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $nb_heures . " " . get_vocab("hours");
+
+            // On soustrait le nombre d'heures déjà déterminées à la durée initiale.
+            $dur = $dur - $nb_heures * $heure;
+        }
+
+
+
+
+        // On calcule le nombre de minutes.
+        $nb_minutes = floor($dur / $minute);
+        if($nb_minutes > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $nb_minutes . " " . get_vocab("minutes");
+
+            // On soustrait le nombre de minutes déjà déterminées à la durée initiale.
+            $dur = $dur - $nb_minutes * $minute;
+        }
+
+
+
+
+        // On calcule le nombre de secondes.
+        if($dur > 0)
+        {
+            if($not_first_unit)
+            {
+                $duree_formatee .= ", ";
+            }
+            else
+                $not_first_unit = true;
+
+            $duree_formatee .= $dur . " " . get_vocab("seconds");
+        }
+
+        // On sépare les différentes unités de la chaine.
+        $tmp = explode(", ", $duree_formatee);
+        // Si on a plus d'une unitée...
+        if(count($tmp) > 1)
+        {
+            // ... on dépile le tableau par la fin...
+            $tmp_fin = array_pop($tmp);
+            // ... on reconstiture la chaine avec les premiers éléments...
+            $duree_formatee = implode(", ", $tmp);
+            // ... et on ajoute le dernier élément
+            $duree_formatee .= " et " . $tmp_fin;
+        }
+        // Sinon, on ne change rien.
+
+        $dur = $duree_formatee;
+        $units = "";
+    }
 }
 
 // Transforme $dur en un nombre entier
@@ -821,35 +1391,33 @@ function toTimeString(&$dur, &$units)
 // $units : unité
 function toPeriodString($start_period, &$dur, &$units)
 {
-    global $enable_periods, $periods_name, $vocab;
-    $max_periods = count($periods_name);
+  // la durée est donnée en secondes
+  global $enable_periods, $periods_name, $vocab;
+  $max_periods = count($periods_name);
+  $dur /= 60; // on transforme la durée en minutes
+  // Chaque minute correspond à un créneau
+  if( $dur >= $max_periods || $start_period == 0 )
+  {
+    if( $start_period == 0 && $dur == $max_periods )
+    {
+      $units = get_vocab("periods");
+      $dur = $max_periods;
+     return;
+    }
     $dur /= 60;
-        if( $dur >= $max_periods || $start_period == 0 )
-        {
-                if( $start_period == 0 && $dur == $max_periods )
-                {
-                        $units = get_vocab("days");
-                        $dur = 1;
-                        return;
-                }
-
-                $dur /= 60;
-                if(($dur >= 24) && is_int($dur))
-                {
-                    $dur /= 24;
-            $units = get_vocab("days");
-                        return;
-                }
-                else
-                {
-            $dur *= 60;
-                        $dur = ($dur % $max_periods) + floor( $dur/(24*60) ) * $max_periods;
-                        $units = get_vocab("periods");
-                        return;
-        }
-        }
-        else
-        $units = get_vocab("periods");
+    if(($dur >= 24) && is_int($dur))
+    {
+      $dur /= 24;
+      $units = get_vocab("days");
+      return;
+    } else {
+      $dur *= 60;
+      $dur = ($dur % $max_periods) + floor( $dur/(24*60) ) * $max_periods;
+      $units = get_vocab("periods");
+      return;
+    }
+  } else
+    $units = get_vocab("periods");
 }
 
 
@@ -868,23 +1436,23 @@ function genDateSelectorForm($prefix, $day, $month, $year,$option)
     if($year  == 0) $year = date("Y");
 
     if ($day != "") {
-     $selector_data .= "<SELECT NAME=\"${prefix}day\">\n";
+     $selector_data .= "<select name=\"${prefix}day\" id=\"${prefix}day\">\n";
      for($i = 1; $i <= 31; $i++)
-      $selector_data .= "<OPTION" . ($i == $day ? " SELECTED" : "") . ">$i</OPTION>\n";
+      $selector_data .= "<option" . ($i == $day ? " selected=\"selected\"" : "") . ">$i</option>\n";
 
-     $selector_data .= "</SELECT>";
+     $selector_data .= "</select>";
     }
-    $selector_data .= "<SELECT NAME=\"${prefix}month\">\n";
+    $selector_data .= "<select name=\"${prefix}month\" id=\"${prefix}month\">\n";
 
     for($i = 1; $i <= 12; $i++)
     {
         $m = utf8_strftime("%b", mktime(0, 0, 0, $i, 1, $year));
 
-        $selector_data .=  "<OPTION VALUE=\"$i\"" . ($i == $month ? " SELECTED" : "") . ">$m</OPTION>\n";
+        $selector_data .=  "<option value=\"$i\"" . ($i == $month ? " selected=\"selected\"" : "") . ">$m</option>\n";
     }
 
-    $selector_data .=  "</SELECT>";
-    $selector_data .=  "<SELECT NAME=\"${prefix}year\">\n";
+    $selector_data .=  "</select>";
+    $selector_data .=  "<select name=\"${prefix}year\" id=\"${prefix}year\">\n";
 
     $min = strftime("%Y", getSettingValue("begin_bookings"));
     if ($option == "more_years") $min = date("Y") - $nb_year_calendar;
@@ -893,9 +1461,9 @@ function genDateSelectorForm($prefix, $day, $month, $year,$option)
     if ($option == "more_years") $max = date("Y") + $nb_year_calendar;
 
     for($i = $min; $i <= $max; $i++)
-      $selector_data .= "<OPTION" . ($i == $year ? " SELECTED" : "") . ">$i</OPTION>\n";
+      $selector_data .= "<option value=\"$i\" " . ($i == $year ? " selected=\"selected\"" : "") . ">$i</option>\n";
 
-    $selector_data .= "</SELECT>";
+    $selector_data .= "</select>";
 
     return $selector_data;
 }
@@ -923,49 +1491,144 @@ function fatal_error($need_header, $message)
     exit;
 }
 
+function compare_ip_adr($ip1,$ip2){
+  if ($ip2=="") {
+    return true;
+  }
+  $tab_ip1=explode(".",$ip1);
+  $tab_ip2=explode(".",$ip2);
+  $i=0;
+  $ip1 ="";
+  $ip2 ="";
+  while($i<4) {
+      // On traite ip1
+      if (strlen($tab_ip1[$i])==0) {
+          $ip1.="000";
+      } else if (strlen($tab_ip1[$i])==1) {
+          $ip1.="00".$tab_ip1[$i];
+      } else if (strlen($tab_ip1[$i])==2) {
+          $ip1.="0".$tab_ip1[$i];
+      } else
+          $ip1.=$tab_ip1[$i];
+      // On traite ip2
+      if (!isset($tab_ip2[$i]))
+          $ip2.="***";
+      else if (strlen($tab_ip2[$i])==0) {
+          $ip2.="***";
+      } else if (strlen($tab_ip2[$i])==1) {
+          if ($tab_ip2[$i]=="*")
+              $ip2.="**".$tab_ip2[$i];
+          else
+              $ip2.="00".$tab_ip2[$i];
+      } else if (strlen($tab_ip2[$i])==2) {
+          $ip2.="0".$tab_ip2[$i];
+      } else
+          $ip2.=$tab_ip2[$i];
+      $i++;
+  }
+  // On compare ip1 et ip2
+  $i=0;
+  while($i<12) {
+      if (($ip1[$i]!=$ip2[$i]) and ($ip2[$i]!="*")) {
+          return false;
+      }
+      $i++;
+  }
+  return true;
+}
 
 # Retourne le domaine par défaut; Utilisé si aucun domaine n'a été défini.
-function get_default_area()
+function get_default_area($id_site=-1)
 {
+    if (getSettingValue("module_multisite") == "Oui")
+      $use_multisite = TRUE;
+    else
+      $use_multisite = FALSE;
     if (OPTION_IP_ADR==1) {
         // Affichage d'un domaine par defaut en fonction de l'adresse IP de la machine cliente
-        $res = grr_sql_query("SELECT id FROM grr_area WHERE ip_adr='".protect_data_sql($_SERVER['REMOTE_ADDR'])."' ORDER BY access, order_display, area_name");
-        if ($res && grr_sql_count($res)>0 ) {
-            $row = grr_sql_row($res, 0);
-            return $row[0];
-
+        /*if (($id_site != -1) and ($use_multisite))
+          $sql= "SELECT a.ip_adr, a.id
+          FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j
+          WHERE a.id=j.id_area and j.id_site=$id_site and a.ip_adr!=''
+          ORDER BY a.access, a.order_display, a.area_name";
+        else */
+          $sql = "SELECT ip_adr, id FROM ".TABLE_PREFIX."_area WHERE ip_adr!='' ORDER BY access, order_display, area_name";
+        $res = grr_sql_query($sql);
+        if ($res) {
+          for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
+          {
+            if (compare_ip_adr($_SERVER['REMOTE_ADDR'],$row[0])) {
+                return $row[1];}
+          }
         }
     }
-    if(authGetUserLevel(getUserName(),-1) >= 5)
+    if(authGetUserLevel(getUserName(),-1) >= 6)
         // si l'admin est connecté, on cherche le premier domaine venu
-        $res = grr_sql_query("SELECT id FROM grr_area ORDER BY access, order_display, area_name");
+        if (($id_site != -1) and ($use_multisite))
+          $res = grr_sql_query("SELECT a.id
+          FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j
+          WHERE a.id=j.id_area and j.id_site=$id_site
+          ORDER BY a.order_display, a.area_name");
+        else
+          $res = grr_sql_query("SELECT id FROM ".TABLE_PREFIX."_area ORDER BY access, order_display, area_name");
     else
         // s'il ne s'agit pas de l'admin, on cherche le premier domaine à accès non restreint
-        $res = grr_sql_query("SELECT id FROM grr_area where access!='r' ORDER BY access, order_display, area_name");
+        if (($id_site != -1) and ($use_multisite))
+          $res = grr_sql_query("SELECT a.id
+          FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j
+          WHERE a.id=j.id_area and j.id_site=$id_site and a.access!='r'
+          ORDER BY a.order_display, a.area_name");
+        else
+          $res = grr_sql_query("SELECT id FROM ".TABLE_PREFIX."_area where access!='r' ORDER BY access, order_display, area_name");
 
     if ($res && grr_sql_count($res)>0 ) {
         $row = grr_sql_row($res, 0);
+        grr_sql_free($res);
         return $row[0];
     } else {
         // On cherche le premier domaine à accès restreint
-        $res = grr_sql_query("select id from grr_area, grr_j_user_area where
-        grr_area.id=grr_j_user_area.id_area and
-        login='" . getUserName() . "'
-        ORDER BY order_display, area_name");
+        if (($id_site != -1) and ($use_multisite))
+          $res = grr_sql_query("SELECT a.id
+          FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j, ".TABLE_PREFIX."_j_user_area u
+          WHERE a.id=j.id_area and j.id_site=$id_site and a.id=u.id_area and u.login='" . getUserName() . "'
+          ORDER BY a.order_display, a.area_name");
+        else
+          $res = grr_sql_query("select id from ".TABLE_PREFIX."_area, ".TABLE_PREFIX."_j_user_area where
+          ".TABLE_PREFIX."_area.id=".TABLE_PREFIX."_j_user_area.id_area and
+          login='" . getUserName() . "'
+          ORDER BY order_display, area_name");
         if ($res && grr_sql_count($res)>0 ) {
             $row = grr_sql_row($res, 0);
+            grr_sql_free($res);
             return $row[0];
         }
     else
-        return 0;
+        return -1;
     }
 
 }
+
+# Retourne le site par défaut;
+function get_default_site()
+{
+        $res = grr_sql_query1("SELECT min(id) FROM ".TABLE_PREFIX."_site");
+        return $res;
+}
+
 
 # Get the local day name based on language. Note 2000-01-02 is a Sunday.
 function day_name($daynumber)
 {
     return utf8_strftime("%A", mktime(0,0,0,1,2+$daynumber,2000));
+}
+
+function affiche_heure_creneau($t,$resolution) {
+    global $twentyfourhour_format;
+    if ($twentyfourhour_format)
+        $hour_min_format = "H:i";
+    else
+        $hour_min_format = "h:ia";
+    return date($hour_min_format,$t) ."&nbsp;-&nbsp;".date($hour_min_format,$t+$resolution);
 }
 
 function hour_min_format()
@@ -1026,11 +1689,11 @@ function time_date_string($t,$dformat)
         $ampm = date("a",$t);
         if ($twentyfourhour_format)
     {
-              return utf8_strftime("%H:%M:%S - ".$dformat,$t);
+              return utf8_strftime("%H:%M - ".$dformat,$t);
     }
     else
     {
-            return utf8_strftime("%I:%M:%S$ampm - ".$dformat,$t);
+            return utf8_strftime("%I:%M$ampm - ".$dformat,$t);
     }
 }
 
@@ -1056,7 +1719,7 @@ function span_bgground($colclass)
 {
     global $tab_couleur;
     static $ecolors;
-    $num_couleur = grr_sql_query1("select couleur from grr_type_area where type_letter='".$colclass."'");
+    $num_couleur = grr_sql_query1("select couleur from ".TABLE_PREFIX."_type_area where type_letter='".$colclass."'");
     echo "<span style=\"background-color: ".$tab_couleur[$num_couleur]."; background-image: none; background-repeat: repeat; background-attachment: scroll;\">";
 }
 
@@ -1068,8 +1731,8 @@ function tdcell($colclass, $width='')
     global $tab_couleur;
     static $ecolors;
     if (($colclass >= "A") and ($colclass <= "Z")) {
-        $num_couleur = grr_sql_query1("select couleur from grr_type_area where type_letter='".$colclass."'");
-        echo "<td bgcolor=\"".$tab_couleur[$num_couleur]."\" ".$temp.">";
+        $num_couleur = grr_sql_query1("select couleur from ".TABLE_PREFIX."_type_area where type_letter='".$colclass."'");
+        echo "<td style=\"background-color:".$tab_couleur[$num_couleur].";\" ".$temp.">";
     } else
         echo "<td class=\"$colclass\" ".$temp.">";
 }
@@ -1080,20 +1743,20 @@ function tdcell_rowspan($colclass , $step)
     global $tab_couleur;
     static $ecolors;
     if (($colclass >= "A") and ($colclass <= "Z")) {
-        $num_couleur = grr_sql_query1("select couleur from grr_type_area where type_letter='".$colclass."'");
-        echo "<td rowspan=$step bgcolor=\"".$tab_couleur[$num_couleur]."\">";
+        $num_couleur = grr_sql_query1("select couleur from ".TABLE_PREFIX."_type_area where type_letter='".$colclass."'");
+        echo "<td rowspan=\"$step\" style=\"background-color:".$tab_couleur[$num_couleur].";\">";
     } else
-        echo "<td rowspan=$step td class=\"".$colclass."\">";
+        echo "<td rowspan=\"$step\" td class=\"".$colclass."\">";
 }
 
 
 # Display the entry-type color key. This has up to 2 rows, up to 10 columns.
 function show_colour_key($area_id)
 {
-    echo "<table border=0><tr>\n";
+    echo "<table border=\"0\"><tr>\n";
     $nct = 0;
-    $sql = "SELECT DISTINCT t.id, t.type_name, t.type_letter FROM grr_type_area t
-    LEFT JOIN grr_j_type_area j on j.id_type=t.id
+    $sql = "SELECT DISTINCT t.id, t.type_name, t.type_letter FROM ".TABLE_PREFIX."_type_area t
+    LEFT JOIN ".TABLE_PREFIX."_j_type_area j on j.id_type=t.id
     WHERE (j.id_area  IS NULL or j.id_area != '".$area_id."')
     ORDER BY t.order_display";
     $res = grr_sql_query($sql);
@@ -1101,7 +1764,7 @@ function show_colour_key($area_id)
     for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
     {
         // La requête sql précédente laisse passer les cas où un type est non valide dans le domaine concerné ET au moins dans un autre domaine, d'où le test suivant
-        $test = grr_sql_query1("select id_type from grr_j_type_area where id_type = '".$row[0]."' and id_area='".$area_id."'");
+        $test = grr_sql_query1("select id_type from ".TABLE_PREFIX."_j_type_area where id_type = '".$row[0]."' and id_area='".$area_id."'");
         if ($test == -1) {
             $id_type        = $row[0];
             $type_name        = $row[1];
@@ -1142,93 +1805,296 @@ function round_t_up($t, $resolution, $am7)
         return $t;
     }
 }
+/**
+ * TODO: Enter description here...
+ *
+ * @param unknown_type $link
+ * @param unknown_type $site
+ * @param unknown_type $current
+ * @param unknown_type $year
+ * @param unknown_type $month
+ * @param unknown_type $day
+ * @param unknown_type $user
+ * @return unknown
+ */
+ function make_site_select_html($link,$current_site,$year,$month,$day,$user)
+ {
+   global $vocab;
+   $out_html = '<b><i>'.get_vocab('sites').get_vocab('deux_points').'</i></b>
+       <form id="site_001" action="'.$_SERVER['PHP_SELF'].'">
+         <div><select name="site" onchange="site_go()">';
+   // On vient lister les sites qui ont un domaine lié
+   // Pour mysql >= 4.1
+   /*
+   $sql = "SELECT id,sitename
+           FROM ".TABLE_PREFIX."_site
+           WHERE ".TABLE_PREFIX."_site.id IN (SELECT id_site FROM ".TABLE_PREFIX."_j_site_area GROUP BY id_site)
+           ORDER BY id ASC";
+   */
+   // Pour mysql < 4.1
+   $sql = "SELECT id, sitename
+           FROM ".TABLE_PREFIX."_site
+           left join ".TABLE_PREFIX."_j_site_area on ".TABLE_PREFIX."_site.id = ".TABLE_PREFIX."_j_site_area.id_site
+           where ".TABLE_PREFIX."_j_site_area.id_site is not null
+           GROUP BY id_site
+           ORDER BY id ASC
+           ";
+
+   $res = grr_sql_query($sql);
+   if ($res)
+   {
+     $nb_sites_a_afficher = 0;
+     for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
+     {
+       // Pour chaque site, on détermine le premier domaine disponible
+       $sql = "SELECT id_area
+               FROM ".TABLE_PREFIX."_j_site_area
+               WHERE ".TABLE_PREFIX."_j_site_area.id_site='".$row[0]."'";
+       $res2 = grr_sql_query($sql);
+
+       // A on un résultat ?
+       $default_area=-1;
+       if ($res2 && grr_sql_count($res2) > 0)
+       {
+         $row2 = grr_sql_row($res2, 0);
+         for ($j = 0; ($row2 = grr_sql_row($res2, $j)); $j++)
+         {
+           if (authUserAccesArea($user,$row2[0])==1) {
+             // on a trouvé un domaine autorisé
+             $default_area=$row2[0];
+             $j=grr_sql_count($res2)+1; // On arrête la boucle
+           }
+         }
+       }
+       // On libère la ressource2
+       grr_sql_free($res2);
+       if ($default_area!=-1) { // on affiche le site uniquement si au moins un domaine est visible par l'utilisateur
+         $nb_sites_a_afficher++;
+         $selected = ($row[0] == $current_site) ? 'selected="selected"' : '';
+         $link2 = $link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;area='.$default_area;
+         $out_html.="\n".'           <option '.$selected.' value="'.$link2.'">'.htmlspecialchars($row[1]).'</option>';
+       }
+     }
+   }
+   if ($nb_sites_a_afficher > 1) {
+     // s'il y a au moins deux sites à afficher, on met une liste déroulante, sinon, on affiche rien.
+     $out_html .= '
+         </select></div>
+         <script type="text/javascript">
+         <!--
+         function site_go()
+         {
+           box = document.getElementById("site_001").site;
+           destination = box.options[box.selectedIndex].value;
+           if (destination) location.href = destination;
+         }
+         // -->
+         </script>
+
+         <noscript>
+           <div><input type="submit" value="change" /></div>
+         </noscript>
+       </form>';
+     return $out_html;
+   }
+ }
 
 # generates some html that can be used to select which area should be
 # displayed.
-function make_area_select_html( $link, $current, $year, $month, $day, $user)
+function make_area_select_html( $link, $current_site, $current_area, $year, $month, $day, $user)
 {
-    global $vocab;
+   global $vocab;
+   if (getSettingValue("module_multisite") == "Oui")
+     $use_multi_site = 'y';
+   else
+     $use_multi_site = 'n';
+   if ($use_multi_site=='y') { // on a activé les sites
+     if ($current_site!=-1)
+       $sql = "SELECT a.id, a.area_name,a.access
+             FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j
+             WHERE a.id=j.id_area and j.id_site=$current_site
+             ORDER BY a.order_display, a.area_name";
+     else
+       $sql = "";
+   } else {
+     $sql = "SELECT id, area_name,access
+           FROM ".TABLE_PREFIX."_area
+           ORDER BY order_display, area_name";
+   }
+
     $out_html = "<b><i>".get_vocab("areas")."</i></b>\n";
-    $out_html .= "<form name=\"area\" action=\"".$_SERVER['PHP_SELF']."\">\n";
-    $out_html .= "<select name=\"area\"";
-    $out_html .= " onChange=\"area_go()\"";
+    $out_html .= "<form id=\"area_001\" action=\"".$_SERVER['PHP_SELF']."\">\n";
+    $out_html .= "<div><select name=\"area\"";
+    $out_html .= " onchange=\"area_go()\"";
     $out_html .= ">\n";
 
-    $sql = "select id, area_name from grr_area order by order_display, area_name";
+
        $res = grr_sql_query($sql);
        if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
        {
-        $selected = ($row[0] == $current) ? "selected" : "";
+        $selected = ($row[0] == $current_area) ? "selected=\"selected\"" : "";
         $link2 = "$link?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]";
         if (authUserAccesArea($user,$row[0])==1) {
             $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1])."</option>\n";
         }
        }
-    $out_html .= "</select>
-       <SCRIPT type=\"text/javascript\" language=\"JavaScript\">
+    $out_html .= "</select></div>
+       <script type=\"text/javascript\">
        <!--
        function area_go()
         {
-        box = document.forms[\"area\"].area;
+        box = document.getElementById(\"area_001\").area;
         destination = box.options[box.selectedIndex].value;
         if (destination) location.href = destination;
         }
         // -->
-        </SCRIPT>
+        </script>
 
         <noscript>
-        <input type=\"submit\" value=\"Change\" />
+        <div><input type=\"submit\" value=\"Change\" /></div>
         </noscript>";
      $out_html .= "</form>";
 
     return $out_html;
 } # end make_area_select_html
 
-function make_room_select_html( $link, $area, $current, $year, $month, $day )
+function make_room_select_html( $link, $current_area, $current_room, $year, $month, $day )
 {
     global $vocab;
-    $out_html = "<b><i>".get_vocab('rooms').get_vocab("deux_points")."</i></b><br /><form name=\"room\" action=\"".$_SERVER['PHP_SELF']."\">
-                 <select name=\"room\" onChange=\"room_go()\">";
+    $out_html = "<b><i>".get_vocab('rooms').get_vocab("deux_points")."</i></b><br /><form id=\"room_001\" action=\"".$_SERVER['PHP_SELF']."\">
+                 <div><select name=\"room\" onchange=\"room_go()\">";
 
-    $out_html .= "<option value=\"".$link."_all.php?year=$year&amp;month=$month&amp;day=$day&amp;area=$area\">".get_vocab("all_rooms")."</option>";
-    $sql = "select id, room_name, description from grr_room where area_id='".protect_data_sql($area)."' order by order_display,room_name";
+    $out_html .= "<option value=\"".$link."_all.php?year=$year&amp;month=$month&amp;day=$day&amp;area=$current_area\">".get_vocab("all_rooms")."</option>";
+    $sql = "select id, room_name, description from ".TABLE_PREFIX."_room where area_id='".protect_data_sql($current_area)."' order by order_display,room_name";
        $res = grr_sql_query($sql);
        if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
        {
-        if ($row[2]) {$temp = " (".htmlspecialchars($row[2]).")";} else {$temp="";}
-        $selected = ($row[0] == $current) ? "selected" : "";
-        $link2 = "$link.php?year=$year&amp;month=$month&amp;day=$day&amp;area=$area&amp;room=$row[0]";
-        $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1].$temp)."</option>";
+        if (verif_acces_ressource(getUserName(),$row[0])) {
+          if ($row[2]) {$temp = " (".htmlspecialchars($row[2]).")";} else {$temp="";}
+          $selected = ($row[0] == $current_room) ? "selected=\"selected\"" : "";
+          $link2 = "$link.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$row[0]";
+          $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1].$temp)."</option>";
+        }
        }
-    $out_html .= "</select>
-       <SCRIPT type=\"text/javascript\" language=\"JavaScript\">
+    $out_html .= "</select></div>
+       <script type=\"text/javascript\">
        <!--
        function room_go()
         {
-        box = document.forms[\"room\"].room;
+        box = document.getElementById(\"room_001\").room;
         destination = box.options[box.selectedIndex].value;
         if (destination) location.href = destination;
         }
         // -->
-        </SCRIPT>
+        </script>
 
         <noscript>
-        <input type=\"submit\" value=\"Change\" />
+        <div><input type=\"submit\" value=\"Change\" /></div>
         </noscript>
         </form>";
 
     return $out_html;
 } # end make_room_select_html
 
-function make_area_list_html($link, $current, $year, $month, $day, $user) {
+/**
+ * Affichage des domaines sous la forme d'une liste
+ *
+ * @param unknown_type $link
+ * @param unknown_type $current
+ * @param unknown_type $year
+ * @param unknown_type $month
+ * @param unknown_type $day
+ * @param unknown_type $id_site
+ * @param unknown_type $user
+ */
+ function make_site_list_html($link,$current_site,$year,$month,$day,$user)
+ {
    global $vocab;
+   // On affiche le site
+   if (getSettingValue("module_multisite") == "Oui") {
+     $out_html = '
+      <b><i><span class="bground">'.get_vocab('sites').get_vocab('deux_points').'</span></i></b>
+      <br />';
+     $sql = "SELECT id,sitename
+     FROM ".TABLE_PREFIX."_site
+     ORDER BY sitename";
+     $res = grr_sql_query($sql);
+     if ($res)
+     {
+       $nb_sites_a_afficher = 0;
+       for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
+       {
+       // Pour chaque site, on détermine s'il y a des domaines visibles par l'utilisateur
+       $sql = "SELECT id_area
+               FROM ".TABLE_PREFIX."_j_site_area
+               WHERE ".TABLE_PREFIX."_j_site_area.id_site='".$row[0]."'";
+       $res2 = grr_sql_query($sql);
+       $au_moins_un_domaine = FALSE;
+       if ($res2 && grr_sql_count($res2) > 0)
+       {
+         $row2 = grr_sql_row($res2, 0);
+         for ($j = 0; ($row2 = grr_sql_row($res2, $j)); $j++)
+         {
+           if (authUserAccesArea($user,$row2[0])==1) {
+             // on a trouvé un domaine autorisé
+             $au_moins_un_domaine=TRUE;
+             $j=grr_sql_count($res2)+1; // On arrête la boucle
+           }
+         }
+       }
+       // On libère la ressource2
+       grr_sql_free($res2);
+       if ($au_moins_un_domaine) { // on affiche le site uniquement si au moins un domaine est visible par l'utilisateur
+         $nb_sites_a_afficher++;
+         if ($row[0] == $current_site)
+         {
+           $out_html .= '
+       <b><span class="week">&gt;&nbsp;<a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.htmlspecialchars($row[1]).'</a></span></b>
+       <br />'."\n";
+         } else {
+           $out_html .= '
+      <a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.htmlspecialchars($row[1]).'</a>
+      <br />'."\n";
+         }
+       }
+       }
+       grr_sql_free($res2);
+     }
+     grr_sql_free($res2);
+     if ($nb_sites_a_afficher>1)
+       return $out_html;
+     else
+       return '';
+   }
+ }
+
+
+function make_area_list_html($link, $current_site, $current_area, $year, $month, $day, $user) {
+   global $vocab;
+   if (getSettingValue("module_multisite") == "Oui")
+     $use_multi_site = 'y';
+   else
+     $use_multi_site = 'n';
    echo "<b><i><span class=\"bground\">".get_vocab("areas")."</span></i></b><br />";
-   $sql = "select id, area_name from grr_area order by order_display, area_name";
-   $res = grr_sql_query($sql);
+   if ($use_multi_site=='y') { // on a activé les sites
+     if ($current_site!=-1)
+       $sql = "SELECT a.id, a.area_name,a.access
+             FROM ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_j_site_area j
+             WHERE a.id=j.id_area and j.id_site=$current_site
+             ORDER BY a.order_display, a.area_name";
+     else
+       $sql = "";
+   } else {
+     $sql = "SELECT id, area_name,access
+           FROM ".TABLE_PREFIX."_area
+           ORDER BY order_display, area_name";
+   }
+   if (($current_site!=-1) or ($use_multi_site=='n'))
+     $res = grr_sql_query($sql);
    if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
     {
     if (authUserAccesArea($user,$row[0])==1) {
-       if ($row[0] == $current)
+       if ($row[0] == $current_area)
           {
              echo "<b><span class=\"week\">&gt;&nbsp;<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]\">".htmlspecialchars($row[1])."</a></span></b><br />\n";
           } else {
@@ -1236,20 +2102,24 @@ function make_area_list_html($link, $current, $year, $month, $day, $user) {
           }
        }
    }
+   grr_sql_free($res);
 }
-function make_room_list_html($link, $area, $current, $year, $month, $day) {
+function make_room_list_html($link,$current_area, $current_room, $year, $month, $day) {
    global $vocab;
    echo "<b><i><span class=\"bground\">".get_vocab("rooms").get_vocab("deux_points")."</span></i></b><br />";
-   $sql = "select id, room_name, description from grr_room where area_id='".protect_data_sql($area)."' order by order_display,room_name";
+   $sql = "select id, room_name, description from ".TABLE_PREFIX."_room where area_id='".protect_data_sql($current_area)."' order by order_display,room_name";
    $res = grr_sql_query($sql);
    if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
    {
-      if ($row[0] == $current)
+     // On affiche uniquement les ressources autorisées
+     if (verif_acces_ressource(getUserName(), $row[0])) {
+      if ($row[0] == $current_room)
       {
         echo "<b><span class=\"week\">&gt;&nbsp;".htmlspecialchars($row[1])."</span></b><br />\n";
       } else {
-        echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$area&amp;room=$row[0]\">".htmlspecialchars($row[1]). "</a><br />\n";
+        echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;&amp;room=$row[0]\">".htmlspecialchars($row[1]). "</a><br />\n";
       }
+     }
    }
 }
 
@@ -1272,28 +2142,28 @@ function send_mail($id_entry,$action,$dformat,$tab_id_moderes=array())
 
     // Récupération des données concernant la réservation
     $sql = "
-    SELECT grr_entry.name,
-    grr_entry.description,
-    grr_entry.beneficiaire,
-    grr_room.room_name,
-    grr_area.area_name,
-    grr_entry.type,
-    grr_entry.room_id,
-    grr_entry.repeat_id,
-    " . grr_sql_syntax_timestamp_to_unix("grr_entry.timestamp") . ",
-    (grr_entry.end_time - grr_entry.start_time),
-    grr_entry.start_time,
-    grr_entry.end_time,
-    grr_room.area_id,
-    grr_room.delais_option_reservation,
-    grr_entry.option_reservation,
-    grr_entry.moderate,
-    grr_entry.beneficiaire_ext,
-    grr_entry.jours
-    FROM grr_entry, grr_room, grr_area
-    WHERE grr_entry.room_id = grr_room.id
-    AND grr_room.area_id = grr_area.id
-    AND grr_entry.id='".protect_data_sql($id_entry)."'
+    SELECT ".TABLE_PREFIX."_entry.name,
+    ".TABLE_PREFIX."_entry.description,
+    ".TABLE_PREFIX."_entry.beneficiaire,
+    ".TABLE_PREFIX."_room.room_name,
+    ".TABLE_PREFIX."_area.area_name,
+    ".TABLE_PREFIX."_entry.type,
+    ".TABLE_PREFIX."_entry.room_id,
+    ".TABLE_PREFIX."_entry.repeat_id,
+    " . grr_sql_syntax_timestamp_to_unix("".TABLE_PREFIX."_entry.timestamp") . ",
+    (".TABLE_PREFIX."_entry.end_time - ".TABLE_PREFIX."_entry.start_time),
+    ".TABLE_PREFIX."_entry.start_time,
+    ".TABLE_PREFIX."_entry.end_time,
+    ".TABLE_PREFIX."_room.area_id,
+    ".TABLE_PREFIX."_room.delais_option_reservation,
+    ".TABLE_PREFIX."_entry.option_reservation,
+    ".TABLE_PREFIX."_entry.moderate,
+    ".TABLE_PREFIX."_entry.beneficiaire_ext,
+    ".TABLE_PREFIX."_entry.jours
+    FROM ".TABLE_PREFIX."_entry, ".TABLE_PREFIX."_room, ".TABLE_PREFIX."_area
+    WHERE ".TABLE_PREFIX."_entry.room_id = ".TABLE_PREFIX."_room.id
+    AND ".TABLE_PREFIX."_room.area_id = ".TABLE_PREFIX."_area.id
+    AND ".TABLE_PREFIX."_entry.id='".protect_data_sql($id_entry)."'
     ";
     $res = grr_sql_query($sql);
     if (! $res) fatal_error(0, grr_sql_error());
@@ -1329,8 +2199,8 @@ $twentyfourhour_format
 
     get_planning_area_values($row[12]);
 
-    $breve_description        = removeMailUnicode(htmlspecialchars($row[0]));
-    $description  = removeMailUnicode(htmlspecialchars($row[1]));
+    $breve_description        = bbcode(removeMailUnicode(htmlspecialchars($row[0])),'nobbcode');
+    $description  = bbcode(removeMailUnicode(htmlspecialchars($row[1])),'nobbcode');
     $beneficiaire    = htmlspecialchars($row[2]);
     $room_name    = removeMailUnicode(htmlspecialchars($row[3]));
     $area_name    = removeMailUnicode(htmlspecialchars($row[4]));
@@ -1357,7 +2227,7 @@ $twentyfourhour_format
 
     if($repeat_id != 0)
     {
-        $res = grr_sql_query("SELECT rep_type, end_date, rep_opt, rep_num_weeks FROM grr_repeat WHERE id='".protect_data_sql($repeat_id)."'");
+        $res = grr_sql_query("SELECT rep_type, end_date, rep_opt, rep_num_weeks FROM ".TABLE_PREFIX."_repeat WHERE id='".protect_data_sql($repeat_id)."'");
         if (! $res) fatal_error(0, grr_sql_error());
 
         if (grr_sql_count($res) == 1)
@@ -1384,7 +2254,7 @@ $twentyfourhour_format
     // Le bénéficiaire
     $beneficiaire_email = affiche_nom_prenom_email($beneficiaire,$beneficiaire_ext,"onlymail");
     if ($beneficiaire != "") {
-         $beneficiaire_actif = grr_sql_query1("select etat from grr_utilisateurs where login='$beneficiaire'");
+         $beneficiaire_actif = grr_sql_query1("select etat from ".TABLE_PREFIX."_utilisateurs where login='$beneficiaire'");
          if ($beneficiaire_actif == -1)
              $beneficiaire_actif = 'actif'; // cas des administrateurs
     } else if (($beneficiaire_ext != "")  and ($beneficiaire_email!="")) {
@@ -1392,8 +2262,8 @@ $twentyfourhour_format
     } else $beneficiaire_actif = "inactif";
 
     // Utilisateur ayant agit sur la réservation
-    $user_login=$_SESSION['login'];
-    $user_email = grr_sql_query1("select email from grr_utilisateurs where login='$user_login'");
+    $user_login=getUserName();
+    $user_email = grr_sql_query1("select email from ".TABLE_PREFIX."_utilisateurs where login='$user_login'");
     //
     // Elaboration du message destiné aux utilisateurs désignés par l'admin dans la partie "Mails automatiques"
     //
@@ -1447,7 +2317,7 @@ $twentyfourhour_format
         // Décision de la modération
         $sujet = $sujet.$vocab["subject_mail_decision_moderation"];// - Traitement d'une réservation en attente de modération
         // On récupère les infos du traitement
-        $resmoderate = grr_sql_query("select moderate, motivation_moderation from grr_entry_moderate where id ='".protect_data_sql($id_entry)."'");
+        $resmoderate = grr_sql_query("select moderate, motivation_moderation from ".TABLE_PREFIX."_entry_moderate where id ='".protect_data_sql($id_entry)."'");
         if (! $resmoderate) fatal_error(0, grr_sql_error());
         if (grr_sql_count($resmoderate) < 1) fatal_error(0, get_vocab('invalid_entry_id'));
         $rowModerate = grr_sql_row($resmoderate, 0);
@@ -1504,7 +2374,7 @@ $twentyfourhour_format
         $message = $message.$vocab["the_user"].affiche_nom_prenom_email($beneficiaire,$beneficiaire_ext,"formail")." \n";
     }
 
-    if (($action == 4) or ($action == 5) or ($action == 7))
+    if (($action == 5) or ($action == 7))
         $repondre = getSettingValue("webmaster_email");
     else
         $repondre = $user_email;
@@ -1516,7 +2386,7 @@ $twentyfourhour_format
     $reservation = $reservation.$vocab["start_of_the_booking"]." ".$start_date."\n";
     $reservation = $reservation.$vocab["duration"]." ".$duration." ".$dur_units."\n";
     if (trim($breve_description) != "")
-        $reservation = $reservation.$vocab["namebooker"].ereg_replace("&nbsp;", " ",$vocab["deux_points"])." ".$breve_description."\n";
+        $reservation = $reservation.$vocab["namebooker"].preg_replace("/&nbsp;/", " ",$vocab["deux_points"])." ".$breve_description."\n";
     else
         $reservation = $reservation.$vocab["entryid"].$room_id."\n";
     if ($description !='') {
@@ -1526,9 +2396,9 @@ $twentyfourhour_format
     $reservation .= affichage_champ_add_mails($id_entry);
 
     #Type de réservation
-    $temp = grr_sql_query1("select type_name from grr_type_area where type_letter='".$row[5]."'");
+    $temp = grr_sql_query1("select type_name from ".TABLE_PREFIX."_type_area where type_letter='".$row[5]."'");
     if ($temp == -1) $temp = "?".$row[5]."?"; else $temp = removeMailUnicode($temp);
-    $reservation = $reservation.$vocab["type"].ereg_replace("&nbsp;", " ",$vocab["deux_points"])." ".$temp."\n";
+    $reservation = $reservation.$vocab["type"].preg_replace("/&nbsp;/", " ",$vocab["deux_points"])." ".$temp."\n";
     if($rep_type != 0) {
         $reservation = $reservation.$vocab["rep_type"]." ".$affiche_period."\n";
     }
@@ -1551,7 +2421,7 @@ $twentyfourhour_format
         // cas d'une periodicité "Jour Cycle", on affiche le numéro du jour cycle
         if ($rep_type == 6) {
             if (getSettingValue("jours_cycles_actif") == "Oui")
-            $reservation = $reservation.$vocab["rep_type_6"].ereg_replace("&nbsp;", " ",$vocab["deux_points"]).ucfirst(substr($vocab["rep_type_6"],0,1)).$jours_cycle."\n";
+            $reservation = $reservation.$vocab["rep_type_6"].preg_replace("/&nbsp;/", " ",$vocab["deux_points"]).ucfirst(substr($vocab["rep_type_6"],0,1)).$jours_cycle."\n";
         }
 
         $reservation = $reservation.$vocab["rep_end_date"]." ".$rep_end_date."\n";
@@ -1572,7 +2442,9 @@ $twentyfourhour_format
     //
     // maintenant, on envoie le message
     //
-    $sql = "SELECT u.email FROM grr_utilisateurs u, grr_j_mailuser_room j WHERE
+    // Décommenter la ligne suivante (et une ligne un peu plus bas) si on veut, pour une ressource modérée, ne pas envoyer de mails tant que la résa n'est pas acceptée
+    //if ((($action != 5) and ($action!=6)) or (($action==6) and ($moderate_decision==2))) {
+    $sql = "SELECT u.email FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_mailuser_room j WHERE
     (j.id_room='".protect_data_sql($room_id)."' and u.login=j.login and u.etat='actif')  order by u.nom, u.prenom";
     $res = grr_sql_query($sql);
     $nombre = grr_sql_count($res);
@@ -1599,7 +2471,8 @@ $twentyfourhour_format
     $m->ClearAddresses();
     $m->ClearBCCs();
     $m->ClearReplyTos();
-
+    // Décommenter la ligne suivante (voir également un peu plus haut) si on veut, pour une ressource modérée, ne pas envoyer de mails tant que la résa n'est pas acceptée
+    //}
 
     // Cas d'une notification de retard : on envoie le *** même message *** aus gestionnaires de la ressources
     // ou aux administrateurs du domaine
@@ -1623,6 +2496,7 @@ $twentyfourhour_format
         $m->ClearBCCs();
         $m->ClearReplyTos();
     }
+
     // Cas d'une notification de retard
     // On envoie un message à l'emprunteur
     if ($action == 7)  {
@@ -1646,6 +2520,22 @@ $twentyfourhour_format
         $m->ClearAddresses();
         $m->ClearReplyTos();
     }
+
+    // Cas d'une suppression automatique
+    // On envoie un message à l'emprunteur
+    if ($action == 4)  {
+        $destinataire4 = $beneficiaire_email;
+        $repondre4 = getSettingValue("webmaster_email");
+        $m->AddAddress( $destinataire4 );
+        $m->Subject = $sujet;
+        $m->Body = $message;
+        $m->AddReplyTo( $repondre4 );
+        if(!$m->Send())
+            $message_erreur .= $m->ErrorInfo;
+        $m->ClearAddresses();
+        $m->ClearReplyTos();
+    }
+
     // Cas d'une moderation
     // On envoie un message au gestionnaires de la ressources ou aux administrateurs du domaine
     // pour prévenir qu'une réservation est en attente de modération
@@ -1659,11 +2549,14 @@ $twentyfourhour_format
                 $m->AddAddress( $value );
           }
         $sujet5 = $vocab["subject_mail1"].$room_name." - ".$date_avis;
-        $sujet5 .= $vocab["subject_mail_moderation"];
+        $sujet5 .= $vocab["subject_mail_moderation"];// - Réservation en attente de modération
         $message5 = removeMailUnicode(getSettingValue("company"))." - ".$vocab["title_mail"];
         $message5 .= traite_grr_url("","y")."\n\n";
         $message5 .= $vocab["subject_a_moderer"];
         $message5 .= "\n".traite_grr_url("","y")."view_entry.php?id=".$id_entry;
+        $message5 .= "\n\n".$vocab['created_by'].affiche_nom_prenom_email($user_login,"","formail");
+        $message5 .= "\n".$vocab['room'].$vocab['deux_points'].$room_name." (".$area_name.") \n";
+
         $message5 = html_entity_decode_all_version($message5);
         $repondre5 = getSettingValue("webmaster_email");
         $m->Subject = $sujet5;
@@ -1726,7 +2619,7 @@ $twentyfourhour_format
     // Cas d'une création, modification ou suppression d'un message par un utilisateur différent du bénéficiaire :
     // On envoie un message au bénéficiaire de la réservation pour l'avertir d'une modif ou d'une suppression
     //
-    if ((($action == 1) or ($action == 2) or ($action==3))  and   (($user_login != $beneficiaire) or (getSettingValue('send_always_mail_to_creator')=='1')) and ($beneficiaire_email!='') and ($beneficiaire_actif=='actif')) {
+    if ((($action == 1) or ($action == 2) or ($action==3))  and   ((strtolower($user_login) != strtolower($beneficiaire)) or (getSettingValue('send_always_mail_to_creator')=='1')) and ($beneficiaire_email!='') and ($beneficiaire_actif=='actif')) {
         $sujet2 = $vocab["subject_mail1"].$room_name." - ".$date_avis;
         $message2 = removeMailUnicode(getSettingValue("company"))." - ".$vocab["title_mail"];
         $message2 = $message2.traite_grr_url("","y")."\n\n";
@@ -1763,7 +2656,10 @@ $twentyfourhour_format
 }
 function getUserName()
 {
-    if (isset($_SESSION['login'])) return $_SESSION['login'];
+    if (isset($_SESSION['login']))
+        return $_SESSION['login'];
+    else
+        return '';
 }
 
 /* getWritable($beneficiaire, $user, $id)
@@ -1772,36 +2668,61 @@ function getUserName()
  *
  * $beneficiaire - The beneficiaire of the entry
  * $user    - Who wants to modify it
- * $id -   Which room are we checking
+ * $id -   Which booking are we checking
  *
  * Returns:
  *   0        - The user does not have the required access
- *   non-zero - The user has the required access
+ *   1        - The user has the required access
  */
 function getWritable($beneficiaire, $user, $id)
 {
-    if ($beneficiaire == "") $beneficiaire = $user;  // Dans le cas d'un bénéficiaire extérieure, $beneficiaire est vide. On fait comme si $user était le bénéficiaire
-    $id_room = grr_sql_query1("SELECT room_id FROM grr_entry WHERE id='".protect_data_sql($id)."'");
-    $dont_allow_modify = grr_sql_query1("select dont_allow_modify from grr_room where id = '".$id_room."'");
-    if ($dont_allow_modify != 'y') {  // si la valeur de dont_allow_modify est "n" ou bien "-1"
-        // Always allowed to modify your own stuff
-        if($beneficiaire == $user)
-        return 1;
-    }
-    // l'utilisateur $user est-il propriétaire de la resa et a-t-il le droit de réserver la ressource pour $beneficiaire
-    $owner = grr_sql_query1("SELECT create_by FROM grr_entry WHERE id='".protect_data_sql($id)."'");
-    if ((strtolower($user) == strtolower($owner)) and (verif_qui_peut_reserver_pour($id_room, $owner, $beneficiaire))) {
-        return 1;
-        die();
-    }
-
-    // allowed to modify stuffs if utilisateur has spécifics rights or statut = admin
+    $id_room = grr_sql_query1("SELECT room_id FROM ".TABLE_PREFIX."_entry WHERE id='".protect_data_sql($id)."'");
+    // Modifications permises si l'utilisateur a les droits suffisants
     if (getSettingValue("allow_gestionnaire_modify_del") == 0)
         $temp = 3;
     else
         $temp = 2;
     if(authGetUserLevel($user,$id_room) > $temp)
         return 1;
+    //if ($beneficiaire == "") $beneficiaire = $user;  // Dans le cas d'un bénéficiaire extérieure, $beneficiaire est vide. On fait comme si $user était le bénéficiaire
+
+    $dont_allow_modify = grr_sql_query1("select dont_allow_modify from ".TABLE_PREFIX."_room where id = '".$id_room."'");
+    $owner = strtolower(grr_sql_query1("SELECT create_by FROM ".TABLE_PREFIX."_entry WHERE id='".protect_data_sql($id)."'"));
+    $beneficiaire = strtolower($beneficiaire);
+    $user = strtolower($user);
+
+    /* Il reste à étudier le cas d'un utilisateur sans droits particuliers. quatre cas possibles :
+    Cas 1 : l'utilisateur (U) n'est ni le créateur (C) ni le bénéficiaire (B)
+      R1 -> on retourne 0
+    Cas 2 : U=B et et U<>C  ou ...
+    Cas 3 : U=B et et U=C
+      R2 -> on retourne 0 si personne hormis les gestionnaires et les administrateurs ne peut modifier ou supprimer ses propres réservations.
+      R3 -> on retourne 1 sinon
+    Cas 4 : U=C et U<>B
+      R4 -> on retourne 0 si personne hormis les gestionnaires et les administrateurs ne peut modifier ou supprimer ses propres réservations.
+      -> sinon
+         R5 -> on retourne 1 si l'utilisateur U peut réserver la ressource pour B
+         R6 -> on retourne 0 sinon (si on permettait à U d'éditer la résa, il ne pourrait de toute façon pas la modifier)
+     */
+    if (($user!=$beneficiaire) and ($user!=$owner)) // Cas 1
+        return 0;
+    else if ($user==$beneficiaire) // Cas 2 et Cas 3
+        if ($dont_allow_modify == 'y')
+            return 0; //  on applique R2
+        else
+            return 1; //  on applique R3
+    else if ($user==$owner) // Cas 4 (pas la peine de préciser que U est différent de B)
+        if ($dont_allow_modify == 'y')
+            return 0; //  on applique R4
+        else {
+         $qui_peut_reserver_pour  = grr_sql_query1("select qui_peut_reserver_pour from ".TABLE_PREFIX."_room where id='".$id_room."'");
+         if(authGetUserLevel($user, $id_room) >= $qui_peut_reserver_pour)
+             return 1; //  on applique R5
+         else
+             return 0; //  on applique R6
+        }
+    else // A priori inutile car tous les cas ont été épuisés.
+        return 0;
 
     // Unathorised access
     return 0;
@@ -1822,11 +2743,11 @@ function auth_visiteur($user,$id_room)
     $level = "";
     // User not logged in, user level '0'
     if ((!isset($user)) or (!isset($id_room))) return 0;
-    $res = grr_sql_query("SELECT statut FROM grr_utilisateurs WHERE login ='".protect_data_sql($user)."'");
+    $res = grr_sql_query("SELECT statut FROM ".TABLE_PREFIX."_utilisateurs WHERE login ='".protect_data_sql($user)."'");
     if (!$res || grr_sql_count($res) == 0) return 0;
     $status = mysql_fetch_row($res);
     if (strtolower($status[0]) == 'visiteur') {
-        if (($id_room == $id_room_autorise) and ($id_room_autorise != ""))
+        if ((in_array($id_room,$id_room_autorise)) and ($id_room_autorise != ""))
             return 1;
         else
             return 0;
@@ -1846,66 +2767,155 @@ function auth_visiteur($user,$id_room)
  */
 function authGetUserLevel($user,$id,$type='room')
 {
-    $level = "";
-    // User not logged in, user level '0'
-    if(!isset($user)) return 0;
-    $res = grr_sql_query("SELECT statut FROM grr_utilisateurs WHERE login ='".protect_data_sql($user)."'");
-    if (!$res || grr_sql_count($res) == 0) return 0;
-    $status = mysql_fetch_row($res);
+  // Initialise les variables
+  $level = '';
 
-    // S'agit-il d'un gestionnaire d'utilisateurs ?
-    if ($type == 'user')
-        if (strtolower($status[0]) == 'gestionnaire_utilisateur')
-            return 1;
-        else
-            return 0;
+  /**
+  * user level '0': User not logged in, or User value is NULL (getUserName()='')
+  */
+  if(!isset($user) or ($user=='')) {
+    return 0;
+  }
+  // On vient lire le statut de l'utilisateur courant dans la database
+  $sql = "SELECT statut
+    FROM ".TABLE_PREFIX."_utilisateurs
+    WHERE login='".protect_data_sql($user)."' "."
+    AND etat='actif'";
+  $res = grr_sql_query($sql);
+  $nbraw = grr_sql_count($res);
+  /**
+  * user level '0': User not defined in database
+  */
+  if (!$res || $nbraw == 0)
+    return 0;
+  // On vient lire le résultat de la requète
+  $status = grr_sql_row($res,$nbraw-1);
+  /**
+  * user level '0': Same User defined multiple time in database !!!
+  */
+  if ($status === 0)
+    return 0;
 
-    if (strtolower($status[0]) == 'visiteur') return 1;
-    if (strtolower($status[0]) == 'administrateur') return 5;
+  // Teste si le type concerne la gestion des utilisateurs
+  if ($type === 'user')
+  {
+    if (strtolower($status[0]) == 'gestionnaire_utilisateur')
+      return 1;
+    else
+      return 0;
+  }
+  switch (strtolower($status[0]))
+  {
+    case 'visiteur':
+      return 1;
+    break;
+    case 'administrateur':
+      return 6;
+    break;
+    default:
+    break;
+  }
+  if ((strtolower($status[0]) == 'utilisateur') or (strtolower($status[0]) == 'gestionnaire_utilisateur')) {
+    if ($type == 'room')
+    {
+      // On regarde si l'utilisateur est administrateur du site auquel la ressource $id appartient
 
+      // calcul de l'id du domaine
+      $id_area = grr_sql_query1("SELECT area_id FROM ".TABLE_PREFIX."_room WHERE id='".protect_data_sql($id)."'");
+      // calcul de l'id du site
+      $id_site = grr_sql_query1("SELECT id_site FROM ".TABLE_PREFIX."_j_site_area  WHERE id_area='".protect_data_sql($id_area)."'");
 
-    if ((strtolower($status[0]) == 'utilisateur') or (strtolower($status[0]) == 'gestionnaire_utilisateur')) {
-        if ($type == 'room') {
-        // On regarde si l'utilisateur est administrateur du domaine auquel la ressource $id appartient
-            $id_area = grr_sql_query1("select area_id from grr_room where id='".protect_data_sql($id)."'");
-            $res3 = grr_sql_query("SELECT u.login FROM grr_utilisateurs u, grr_j_useradmin_area j
-            WHERE (u.login=j.login and j.id_area='".protect_data_sql($id_area)."' and u.login='".protect_data_sql($user)."')");
-            if (grr_sql_count($res3) > 0)
-                return 4;
-        // On regarde si l'utilisateur est gestionnaire des réservations pour une ressource
-            $str_res2 = "SELECT * FROM grr_utilisateurs u, grr_j_user_room j ";
-            $str_res2.= "WHERE u.login=j.login and u.login = '".protect_data_sql($user)."' ";
-            if ($id!=-1) $str_res2.="and j.id_room='".protect_data_sql($id)."'";
-            $res2 = grr_sql_query($str_res2);
-            if (grr_sql_count($res2) > 0)
-                return 3;
-            if (grr_sql_count($res2) > 0)
-                return 3;
-        // Sinon il s'agit d'un simple utilisateur
-        return 2;
-
+      if (getSettingValue("module_multisite") == "Oui") {
+        $res3 = grr_sql_query("SELECT login FROM ".TABLE_PREFIX."_j_useradmin_site j WHERE j.id_site='".protect_data_sql($id_site)."' AND j.login='".protect_data_sql($user)."'");
+        if (grr_sql_count($res3) > 0) {
+          grr_sql_free($res3);
+          return 5;
         }
-        // On regarde si l'utilisateur est administrateur d'un domaine
-        if ($type == 'area') {
-            if ($id == '-1') {
-                //On regarde si l'utilisateur est administrateur d'un domaine quelconque
-                $res2 = grr_sql_query("SELECT u.login FROM grr_utilisateurs u, grr_j_useradmin_area j
-                WHERE (u.login=j.login and u.login='".protect_data_sql($user)."')");
-                if (grr_sql_count($res2) > 0)
-                    return 4;
-            } else {
+      }
 
-                //On regarde si l'utilisateur est administrateur du domaine dont l'id est $id
-                $res3 = grr_sql_query("SELECT u.login FROM grr_utilisateurs u, grr_j_useradmin_area j
-                WHERE (u.login=j.login and j.id_area='".protect_data_sql($id)."' and u.login='".protect_data_sql($user)."')");
-                if (grr_sql_count($res3) > 0)
-                    return 4;
-            }
-        // Sinon il s'agit d'un simple utilisateur
-            return 2;
-        }
-
+      // On regarde si l'utilisateur est administrateur du domaine auquel la ressource $id appartient
+      $res3 = grr_sql_query("SELECT u.login
+            FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_area j
+                WHERE (u.login=j.login AND j.id_area='".protect_data_sql($id_area)."' AND u.login='".protect_data_sql($user)."')");
+      if (grr_sql_count($res3) > 0)
+        return 4;
+      // On regarde si l'utilisateur est gestionnaire des réservations pour une ressource
+      $str_res2 = "SELECT *
+          FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_user_room j
+     WHERE u.login=j.login and u.login='".protect_data_sql($user)."' ";
+      if ($id!=-1)
+        $str_res2.="AND j.id_room='".protect_data_sql($id)."'";
+      $res2 = grr_sql_query($str_res2);
+      if (grr_sql_count($res2) > 0)
+        return 3;
+      // Sinon il s'agit d'un simple utilisateur
+      return 2;
     }
+    // On regarde si l'utilisateur est administrateur d'un domaine
+    if ($type == 'area')
+    {
+      if ($id == '-1')
+      {
+       if (getSettingValue("module_multisite") == "Oui") {
+        //On regarde si l'utilisateur est administrateur d'un site quelconque
+        $res2 = grr_sql_query("SELECT u.login
+              FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_site j
+                    WHERE (u.login=j.login and u.login='".protect_data_sql($user)."')");
+        if (grr_sql_count($res2) > 0)
+          return 5;
+       }
+
+        //On regarde si l'utilisateur est administrateur d'un domaine quelconque
+        $res2 = grr_sql_query("SELECT u.login
+              FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_area j
+                    WHERE (u.login=j.login and u.login='".protect_data_sql($user)."')");
+        if (grr_sql_count($res2) > 0)
+          return 4;
+      }
+      else
+      {
+        if (getSettingValue("module_multisite") == "Oui") {
+         // On regarde si l'utilisateur est administrateur du site auquel le domaine $id appartient
+         $id_site = grr_sql_query1("SELECT id_site FROM ".TABLE_PREFIX."_j_site_area  WHERE id_area='".protect_data_sql($id)."'");
+         $res3 = grr_sql_query("SELECT login FROM ".TABLE_PREFIX."_j_useradmin_site j WHERE j.id_site='".protect_data_sql($id_site)."' AND j.login='".protect_data_sql($user)."'");
+         if (grr_sql_count($res3) > 0)
+         return 5;
+        }
+        //On regarde si l'utilisateur est administrateur du domaine dont l'id est $id
+        $res3 = grr_sql_query("SELECT u.login
+              FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_area j
+                    WHERE (u.login=j.login and j.id_area='".protect_data_sql($id)."' and u.login='".protect_data_sql($user)."')");
+        if (grr_sql_count($res3) > 0)
+          return 4;
+      }
+      // Sinon il s'agit d'un simple utilisateur
+      return 2;
+    }
+    // On regarde si l'utilisateur est administrateur d'un site
+    if (($type == 'site') and (getSettingValue("module_multisite") == "Oui"))
+    {
+      if ($id == '-1')
+      {
+        //On regarde si l'utilisateur est administrateur d'un site quelconque
+        $res2 = grr_sql_query("SELECT u.login
+              FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_site j
+                    WHERE (u.login=j.login and u.login='".protect_data_sql($user)."')");
+        if (grr_sql_count($res2) > 0)
+          return 5;
+      }
+      else
+      {
+        //On regarde si l'utilisateur est administrateur du domaine dont l'id est $id
+        $res3 = grr_sql_query("SELECT u.login
+              FROM ".TABLE_PREFIX."_utilisateurs u, ".TABLE_PREFIX."_j_useradmin_site j
+                    WHERE (u.login=j.login and j.id_site='".protect_data_sql($id)."' and u.login='".protect_data_sql($user)."')");
+        if (grr_sql_count($res3) > 0)
+          return 5;
+      }
+      // Sinon il s'agit d'un simple utilisateur
+      return 2;
+    }
+  }
 }
 
 /* authUserAccesArea($user,$id)
@@ -1922,17 +2932,27 @@ function authUserAccesArea($user,$id)
         return 0;
         die();
     }
-    $sql = "SELECT * FROM grr_utilisateurs WHERE (login = '".protect_data_sql($user)."' and statut='administrateur')";
+    $sql = "SELECT login FROM ".TABLE_PREFIX."_utilisateurs WHERE (login = '".protect_data_sql($user)."' and statut='administrateur')";
     $res = grr_sql_query($sql);
     if (grr_sql_count($res) != "0") return 1;
 
-    $sql = "SELECT * FROM grr_area WHERE (id = '".protect_data_sql($id)."' and access='r')";
+
+    if (getSettingValue("module_multisite") == "Oui") {
+        $id_site = mrbsGetAreaSite($id);
+        $sql = "SELECT login FROM ".TABLE_PREFIX."_j_useradmin_site j WHERE j.id_site='".$id_site."' AND j.login='".protect_data_sql($user)."'";
+        $res = grr_sql_query($sql);
+        if (grr_sql_count($res) != "0") return 1;
+    }
+
+
+
+    $sql = "SELECT id FROM ".TABLE_PREFIX."_area WHERE (id = '".protect_data_sql($id)."' and access='r')";
     $res = grr_sql_query($sql);
     $test = grr_sql_count($res);
     if ($test == "0") {
         return 1;
     } else {
-        $sql2 = "SELECT * FROM grr_j_user_area WHERE (login = '".protect_data_sql($user)."' and id_area = '".protect_data_sql($id)."')";
+        $sql2 = "SELECT login FROM ".TABLE_PREFIX."_j_user_area WHERE (login = '".protect_data_sql($user)."' and id_area = '".protect_data_sql($id)."')";
         $res2 = grr_sql_query($sql2);
         $test2 = grr_sql_count($res2);
         if ($test2 != "0") {
@@ -1946,68 +2966,111 @@ function authUserAccesArea($user,$id)
 // Cette fonction teste si l'utilisateur a la possibilité d'effectuer une réservation, compte tenu
 // des limitations éventuelles de la ressources et du nombre de réservations déjà effectuées.
 //
+
 function UserRoomMaxBooking($user, $id_room, $number) {
-  global $enable_periods;
+  global $enable_periods,$id_room_autorise;
+  $level = authGetUserLevel($user,$id_room);
   if ($id_room == '') return 0;
-  // On regarde si le nombre de réservation de la ressource est limité
-  $sql = "SELECT max_booking FROM grr_room WHERE id = '".protect_data_sql($id_room)."'";
-  $result = grr_sql_query1($sql);
-  if ($result > 0) {
-     if(authGetUserLevel($user,$id_room) < 2 ) {
-       return 0;
-     } else if(authGetUserLevel($user,$id_room) == 2) {
-       $day   = date("d");
-        $month = date("m");
-        $year  = date("Y");
-        $hour  = date("H");
-        $minute = date("i");
-        if ($enable_periods == 'y')
-            $now = mktime(0, 0, 0, $month, $day, $year);
-        else
-            $now = mktime($hour, $minute, 0, $month, $day, $year);
-        $max_booking = grr_sql_query1("SELECT max_booking FROM grr_room WHERE id='".protect_data_sql($id_room)."'");
-        $sql2 = "SELECT * FROM grr_entry WHERE (room_id = '".protect_data_sql($id_room)."' and beneficiaire = '".protect_data_sql($user)."' and end_time > '$now')";
-        $res = grr_sql_query($sql2);
-        $nb_bookings = grr_sql_count($res) + $number;
-        if ($nb_bookings > $max_booking) {
-          return 0;
-        } else {
-          return 1;
-        }
-      } else {
-        // l'utilisateur est soit admin, soit administrateur de la ressource.
-        return 1;
-      }
-    } else if ($result == 0) {
-     if(authGetUserLevel($user,$id_room) >= 3) {
-        return 1;
-     } else {
-        return 0;
-     }
-  } else {
+  if($level >= 3) {
+     // l'utilisateur est soit admin, soit gestionnaire de la ressource.
      return 1;
+     exit();
+  } else if (($level == 1 ) and  !((in_array($id_room,$id_room_autorise)) and ($id_room_autorise != ""))) {
+     // l'utilisateur est simple visiteur.
+     return 0;
+     exit();
+  } else if ($level  < 1 ) {
+     return 0;
+     exit();
   }
+  // A ce niveau, l'utilisateur est simple utilisateur ou bien simple visiteur sur un domaine autorisé
+
+  // On regarde si le nombre de réservation de la ressource est limité
+  $max_booking_per_room = grr_sql_query1("SELECT max_booking FROM ".TABLE_PREFIX."_room WHERE id = '".protect_data_sql($id_room)."'");
+  // Calcul de l'id de l'area de la ressource.
+  $id_area = mrbsGetRoomArea($id_room);
+  // On regarde si le nombre de réservation du domaine est limité
+  $max_booking_per_area = grr_sql_query1("SELECT max_booking FROM ".TABLE_PREFIX."_area WHERE id = '".protect_data_sql($id_area)."'");
+  // On regarde si le nombre de réservation pour l'ensemble des ressources est limité
+  $max_booking = getSettingValue("UserAllRoomsMaxBooking");
+  // Si aucune limitation
+  if (($max_booking_per_room<0) and ($max_booking_per_area<0) and ($max_booking<0)) {
+     return 1;
+     exit();
+  }
+  // A ce niveau, il s'agit d'un utilisateur et il y a au moins une limitation
+  $day   = date("d");
+  $month = date("m");
+  $year  = date("Y");
+  $hour  = date("H");
+  $minute = date("i");
+  if ($enable_periods == 'y')
+      $now = mktime(0, 0, 0, $month, $day, $year);
+  else
+      $now = mktime($hour, $minute, 0, $month, $day, $year);
+
+  // y-a-t-il dépassement pour l'ensemble des ressources ?
+  if ($max_booking > 0) {
+     $nb_bookings = grr_sql_query1("SELECT count(id) FROM ".TABLE_PREFIX."_entry r WHERE (beneficiaire = '".protect_data_sql($user)."' and end_time > '$now')");
+     $nb_bookings += $number;
+     if ($nb_bookings > $max_booking) {
+        return 0;
+        exit();
+     }
+  } else if ($max_booking == 0) {
+      return 0;
+      exit();
+  }
+
+  // y-a-t-il dépassement pour l'ensemble des ressources du domaine ?
+  if ($max_booking_per_area > 0) {
+     $nb_bookings = grr_sql_query1("SELECT count(e.id) FROM ".TABLE_PREFIX."_entry e, ".TABLE_PREFIX."_room r WHERE (e.room_id=r.id and r.area_id='".$id_area."' and e.beneficiaire = '".protect_data_sql($user)."' and e.end_time > '$now')");
+     $nb_bookings += $number;
+     if ($nb_bookings > $max_booking_per_area) {
+        return 0;
+        exit();
+     }
+  } else if ($max_booking_per_area == 0) {
+      return 0;
+      exit();
+  }
+
+  // y-a-t-il dépassement pour la ressource
+  if ($max_booking_per_room > 0) {
+     $nb_bookings = grr_sql_query1("SELECT count(id) FROM ".TABLE_PREFIX."_entry WHERE (room_id = '".protect_data_sql($id_room)."' and beneficiaire = '".protect_data_sql($user)."' and end_time > '$now')");
+     $nb_bookings += $number;
+     if ($nb_bookings > $max_booking_per_room) {
+        return 0;
+        exit();
+     }
+  } else if ($max_booking_per_room == 0) {
+      return 0;
+      exit();
+  }
+
+  // A ce stade, il s'agit d'un utilisateu et il n'y a pas eu de dépassement, ni pour l'ensemble des domaines, ni pour le domaine, ni pour la ressource
+  return 1;
 }
 
-// function verif_booking_date($user, $id, $date_booking, $date_now)
-// $user : le login de l'utilisateur
-// $id : l'id de la résa. Si -1, il s'agit d'une nouvelle réservation
-// $id_room : id de la ressource
-// $date_booking : la date de la réservation (n'est utile que si $id=-1)
-// $date_now : la date actuelle
-//
+/* function verif_booking_date($user, $id, $date_booking, $date_now)
+ $user : le login de l'utilisateur
+ $id : l'id de la résa. Si -1, il s'agit d'une nouvelle réservation
+ $id_room : id de la ressource
+ $date_booking : la date de la réservation (n'est utile que si $id=-1)
+ $date_now : la date actuelle
+*/
 function verif_booking_date($user, $id, $id_room, $date_booking, $date_now, $enable_periods, $endtime='') {
   global $correct_diff_time_local_serveur, $can_delete_or_create;
   $can_delete_or_create="y";
   // On teste si l'utilisateur est administrateur
-  $sql = "select statut from grr_utilisateurs WHERE login = '".protect_data_sql($user)."'";
+  $sql = "select statut from ".TABLE_PREFIX."_utilisateurs WHERE login = '".protect_data_sql($user)."'";
   $statut_user = grr_sql_query1($sql);
   if ($statut_user == 'administrateur') {
     return true;
     die();
   }
   // A-t-on le droit d'agir dans le passé ?
-  $allow_action_in_past = grr_sql_query1("select allow_action_in_past from grr_room where id = '".protect_data_sql($id_room)."'");
+  $allow_action_in_past = grr_sql_query1("select allow_action_in_past from ".TABLE_PREFIX."_room where id = '".protect_data_sql($id_room)."'");
   if ($allow_action_in_past == 'y') {
     return true;
     die();
@@ -2020,7 +3083,7 @@ function verif_booking_date($user, $id, $id_room, $date_booking, $date_now, $ena
   // Dans ce cas, on prend comme temps présent le jour même à minuit.
   // Cela signifie qu'il est possible de modifier/réserver/supprimer tout au long d'une journée
   // même si l'heure est passée.
-  // Cela demande donc à être amélioré en introduisant pour chaque créneau une heure limite de réservation.
+  // Cela demande donc à être améliorer en introduisant pour chaque créneau une heure limite de réservation.
   if ($enable_periods == "y") {
       $month =  date("m",$date_now);
       $day =  date("d",$date_now);
@@ -2034,9 +3097,9 @@ function verif_booking_date($user, $id, $id_room, $date_booking, $date_now, $ena
       die();
     }
     if ((getSettingValue("allow_user_delete_after_begin") == 1) or (getSettingValue("allow_user_delete_after_begin") == 2))
-        $sql = "SELECT end_time FROM grr_entry WHERE id = '".protect_data_sql($id)."'";
+        $sql = "SELECT end_time FROM ".TABLE_PREFIX."_entry WHERE id = '".protect_data_sql($id)."'";
     else
-        $sql = "SELECT start_time FROM grr_entry WHERE id = '".protect_data_sql($id)."'";
+        $sql = "SELECT start_time FROM ".TABLE_PREFIX."_entry WHERE id = '".protect_data_sql($id)."'";
     $date_booking = grr_sql_query1($sql);
     if ($date_booking < $date_now) {
       return false;
@@ -2045,7 +3108,7 @@ function verif_booking_date($user, $id, $id_room, $date_booking, $date_now, $ena
       // dans le cas où le créneau est entamé, on teste si l'utilisateur a le droit de supprimer la réservation
       // Si oui, on transmet la variable $only_modify = TRUE avant que la fonction de retourne true.
       if (getSettingValue("allow_user_delete_after_begin") == 2) {
-          $date_debut = grr_sql_query1("SELECT start_time FROM grr_entry WHERE id = '".protect_data_sql($id)."'");
+          $date_debut = grr_sql_query1("SELECT start_time FROM ".TABLE_PREFIX."_entry WHERE id = '".protect_data_sql($id)."'");
           if ($date_debut < $date_now) $can_delete_or_create = "n"; else $can_delete_or_create = "y";
       }
       return true;
@@ -2053,8 +3116,8 @@ function verif_booking_date($user, $id, $id_room, $date_booking, $date_now, $ena
 
   } else {
     if (getSettingValue("allow_user_delete_after_begin")==1) {
-        $id_area = grr_sql_query1("select area_id from grr_room where id = '".protect_data_sql($id_room)."'");
-        $resolution_area = grr_sql_query1("select resolution_area from grr_area where id = '".$id_area."'");
+        $id_area = grr_sql_query1("select area_id from ".TABLE_PREFIX."_room where id = '".protect_data_sql($id_room)."'");
+        $resolution_area = grr_sql_query1("select resolution_area from ".TABLE_PREFIX."_area where id = '".$id_area."'");
         if ($date_booking>$date_now-$resolution_area) {
           return true;
         } else {
@@ -2083,9 +3146,9 @@ function verif_duree_max_resa_area($user, $id_room, $starttime, $endtime) {
     return true;
     die();
   }
-  $id_area = grr_sql_query1("select area_id from grr_room where id='".protect_data_sql($id_room)."'");
-  $duree_max_resa_area = grr_sql_query1("select duree_max_resa_area from grr_area where id='".$id_area."'");
-  $enable_periods =  grr_sql_query1("select enable_periods from grr_area where id='".$id_area."'");
+  $id_area = grr_sql_query1("select area_id from ".TABLE_PREFIX."_room where id='".protect_data_sql($id_room)."'");
+  $duree_max_resa_area = grr_sql_query1("select duree_max_resa_area from ".TABLE_PREFIX."_area where id='".$id_area."'");
+  $enable_periods =  grr_sql_query1("select enable_periods from ".TABLE_PREFIX."_area where id='".$id_area."'");
   if ($enable_periods == 'y') $duree_max_resa_area = $duree_max_resa_area*24*60;
   if ($duree_max_resa_area < 0) {
     return true;
@@ -2116,7 +3179,7 @@ function verif_delais_max_resa_room($user, $id_room, $date_booking) {
     return true;
     die();
   }
-  $delais_max_resa_room = grr_sql_query1("select delais_max_resa_room from grr_room where id='".protect_data_sql($id_room)."'");
+  $delais_max_resa_room = grr_sql_query1("select delais_max_resa_room from ".TABLE_PREFIX."_room where id='".protect_data_sql($id_room)."'");
   if ($delais_max_resa_room == -1) {
     return true;
     die();
@@ -2145,7 +3208,7 @@ function verif_access_search($user) {
 // $id_room : l'id de la ressource.
 //
 function verif_display_fiche_ressource($user, $id_room) {
-    $show_fic_room = grr_sql_query1("select show_fic_room from grr_room where id='".$id_room."'");
+    $show_fic_room = grr_sql_query1("select show_fic_room from ".TABLE_PREFIX."_room where id='".$id_room."'");
     if ($show_fic_room == "y") {
         if(authGetUserLevel($user,$id_room) >= getSettingValue("visu_fiche_description"))
             return TRUE;
@@ -2155,6 +3218,55 @@ function verif_display_fiche_ressource($user, $id_room) {
         return FALSE;
     }
 }
+
+// function verif_acces_fiche_reservation : vérifier l'accès à la fiche de réservation d'une ressource
+// $user : le login de l'utilisateur
+// $id_room : l'id de la ressource.
+//
+function verif_acces_fiche_reservation($user, $id_room) {
+    if(authGetUserLevel($user,$id_room) >= getSettingValue("acces_fiche_reservation"))
+        return TRUE;
+    else
+        return FALSE;
+}
+
+/* function verif_display_email : vérifier l'accès à l'adresse email
+ *$user : le login de l'utilisateur
+ * $id_room : l'id de la ressource.
+ */
+function verif_display_email($user, $id_room) {
+    if(authGetUserLevel($user,$id_room) >= getSettingValue("display_level_email"))
+        return TRUE;
+    else
+        return FALSE;
+}
+
+/* function verif_acces_ressource : vérifier l'accès à la ressource
+ *$user : le login de l'utilisateur
+ * $id_room : l'id de la ressource.
+ */
+function verif_acces_ressource($user, $id_room) {
+  if ($id_room != 'all') {
+    $who_can_see = grr_sql_query1("select who_can_see from ".TABLE_PREFIX."_room where id='".$id_room."'");
+    if(authGetUserLevel($user,$id_room) >= $who_can_see)
+        return TRUE;
+    else
+        return FALSE;
+  } else {
+    $tab_rooms_noaccess = array();
+    $sql = "select id, who_can_see from ".TABLE_PREFIX."_room";
+    $res = grr_sql_query($sql);
+    if (! $res) fatal_error(0, grr_sql_error());
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+      if(authGetUserLevel($user,$row[0]) < $row[1])
+          $tab_rooms_noaccess[] = $row[0];
+    }
+    return $tab_rooms_noaccess;
+  }
+}
+
+
+
 
 // function verif_delais_min_resa_room($user, $id_room, $date_booking)
 // $user : le login de l'utilisateur
@@ -2168,7 +3280,7 @@ function verif_delais_min_resa_room($user, $id_room, $date_booking) {
     return true;
     die();
   }
-  $delais_min_resa_room = grr_sql_query1("select delais_min_resa_room from grr_room where id='".protect_data_sql($id_room)."'");
+  $delais_min_resa_room = grr_sql_query1("select delais_min_resa_room from ".TABLE_PREFIX."_room where id='".protect_data_sql($id_room)."'");
   if ($delais_min_resa_room == 0) {
     return true;
     die();
@@ -2206,18 +3318,18 @@ function verif_date_option_reservation($option_reservation, $starttime) {
 }
 
 // Vérifie que $_create_by peut réserver la ressource $_room_id pour $_beneficiaire
-function verif_qui_peut_reserver_pour($_room_id, $_create_by, $_beneficiaire) {
+function verif_qui_peut_reserver_pour($_room_id, $user, $_beneficiaire) {
     if ($_beneficiaire == "") {
     // cas où il s'agit d'un bénéficiaire extérieure : c'est normal que $_beneficiaire soir vide
         return TRUE;
         die();
     }
-    if (strtolower($_create_by) == strtolower($_beneficiaire)) {
+    if (strtolower($user) == strtolower($_beneficiaire)) {
         return TRUE;
         die();
     }
-    $qui_peut_reserver_pour  = grr_sql_query1("select qui_peut_reserver_pour from grr_room where id='".$_room_id."'");
-    if(authGetUserLevel($_create_by, $_room_id) >= $qui_peut_reserver_pour) {
+    $qui_peut_reserver_pour  = grr_sql_query1("select qui_peut_reserver_pour from ".TABLE_PREFIX."_room where id='".$_room_id."'");
+    if(authGetUserLevel($user, $_room_id) >= $qui_peut_reserver_pour) {
         return TRUE;
         die();
     } else {
@@ -2225,6 +3337,35 @@ function verif_qui_peut_reserver_pour($_room_id, $_create_by, $_beneficiaire) {
         die();
     }
 }
+/*
+function verif_heure_debut_fin($start_time,$end_time,$area)
+Vérifie si l'heure de début ou l'heure de fin de réservation est en dehors des créneaux autorisés.
+*/
+function verif_heure_debut_fin($start_time,$end_time,$area) {
+    global $enable_periods, $resolution, $morningstarts, $eveningends, $eveningends_minutes;
+    // Récupération des données concernant l'affichage du planning du domaine
+    get_planning_area_values($area);
+    // On ne traite pas le cas des plannings basés sur les intitulés prédéfinis
+    if ($enable_periods != "y") {
+        $day = date("d",$start_time);
+        $month = date("m",$start_time);
+        $year = date("Y",$start_time);
+        $startday = mktime($morningstarts, 0, 0, $month, $day  , $year);
+        $day = date("d",$end_time);
+        $month = date("m",$end_time);
+        $year = date("Y",$end_time);
+        $endday   = mktime($eveningends, $eveningends_minutes , $resolution, $month, $day, $year);
+        if ($start_time < $startday ) {
+            return FALSE;
+        } else if ($end_time > $endday ) {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+
+
 /* VerifyModeDemo()
  *
  * Affiche une page "opération non autorisée" pour certaines opérations dans le cas le mode demo est activé.
@@ -2235,10 +3376,10 @@ function VerifyModeDemo() {
     if (getSettingValue("ActiveModeDemo")=='y') {
       print_header("","","","","");
       ?>
-      <H1>Op&eacute;ration non autoris&eacute;e</H1>
-      <P>Vous êtes dans une <b>version de démonstration de GRR</b>.
-      <br />Certaines fonctions ont été volontairement bridées. C'est le cas pour l'opération que vous avez tenté d'effectuer.</P>
-      </BODY></HTML>
+      <h1>Op&eacute;ration non autoris&eacute;e</h1>
+      <p>Vous êtes dans une <b>version de démonstration de GRR</b>.
+      <br />Certaines fonctions ont été volontairement bridées. C'est le cas pour l'opération que vous avez tenté d'effectuer.</p>
+      </body></html>
       <?php
       die();
     }
@@ -2282,22 +3423,22 @@ function MajMysqlModeDemo() {
 function showAccessDenied($day, $month, $year, $area, $back)
 {
     global $vocab;
-    if ((getSettingValue("authentification_obli")==0) and (!isset($_SESSION['login']))) {
+    if ((getSettingValue("authentification_obli")==0) and (getUserName()=='')) {
         $type_session = "no_session";
     } else {
         $type_session = "with_session";
     }
     print_header($day, $month, $year, $area,$type_session);
     ?>
-   <H1><?php echo get_vocab("accessdenied")?></H1>
-   <P>
+   <h1><?php echo get_vocab("accessdenied")?></h1>
+   <p>
    <?php echo get_vocab("norights")?>
-   </P>
-   <P>
-   <A HREF="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></A>
-   </P>
-</BODY>
-</HTML>
+   </p>
+   <p>
+   <a href="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></a>
+   </p>
+</body>
+</html>
 <?php
 }
 
@@ -2310,22 +3451,22 @@ function showAccessDenied($day, $month, $year, $area, $back)
 function showNoReservation($day, $month, $year, $area, $back)
 {
     global $vocab;
-    if ((getSettingValue("authentification_obli")==0) and (!isset($_SESSION['login']))) {
+    if ((getSettingValue("authentification_obli")==0) and (getUserName()=='')) {
         $type_session = "no_session";
     } else {
         $type_session = "with_session";
     }
     print_header($day, $month, $year, $area,$type_session);
     ?>
-   <H1><?php echo get_vocab("accessdenied")?></H1>
-   <P>
+   <h1><?php echo get_vocab("accessdenied")?></h1>
+   <p>
    <?php echo get_vocab("noreservation")?>
-   </P>
-   <P>
-   <A HREF="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></A>
-   </P>
-</BODY>
-</HTML>
+   </p>
+   <p>
+   <a href="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></a>
+   </p>
+</body>
+</html>
 <?php
 }
 
@@ -2342,18 +3483,33 @@ function showAccessDeniedMaxBookings($day, $month, $year, $area, $id_room,$back)
 
     print_header($day, $month, $year, $area);
     ?>
-    <H1><?php echo get_vocab("accessdenied")?></H1>
-    <P>
+    <h1><?php echo get_vocab("accessdenied")?></h1>
+    <p>
     <?php
-    $max_booking = grr_sql_query1("SELECT max_booking FROM grr_room WHERE id='".protect_data_sql($id_room)."'");
-    echo get_vocab("msg_max_booking").$max_booking."<br /><br />".get_vocab("accessdeniedtoomanybooking");
+    // Limitation par ressource
+    $max_booking_per_room = grr_sql_query1("SELECT max_booking FROM ".TABLE_PREFIX."_room WHERE id='".protect_data_sql($id_room)."'");
+    if ($max_booking_per_room >= 0)
+        echo get_vocab("msg_max_booking").get_vocab("deux_points").$max_booking_per_room."<br />";
+    // Calcul de l'id de l'area de la ressource.
+    $id_area = mrbsGetRoomArea($id_room);
+    // Limitation par domaine
+    $max_booking_per_area = grr_sql_query1("SELECT max_booking FROM ".TABLE_PREFIX."_area WHERE id = '".protect_data_sql($id_area)."'");
+    if ($max_booking_per_area >= 0)
+        echo get_vocab("msg_max_booking_area").get_vocab("deux_points").$max_booking_per_area."<br />";
+    // Limitation sur l'ensemble des ressources
+    $max_booking_all = getSettingValue("UserAllRoomsMaxBooking");
+    if ($max_booking_all >= 0)
+        echo get_vocab("msg_max_booking_all").get_vocab("deux_points").$max_booking_all."<br />";
+
+    echo "<br />".get_vocab("accessdeniedtoomanybooking");
+
     ?>
-    </P>
-    <P>
-    <A HREF="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></A>
-    </P>
-    </BODY>
-    </HTML>
+    </p>
+    <p>
+    <a href="<?php echo $back; ?>"><?php echo get_vocab("returnprev"); ?></a>
+    </p>
+    </body>
+    </html>
     <?php
 }
 
@@ -2391,7 +3547,7 @@ function date_time_string($t,$dformat)
     else
     {
                 $ampm = date("a",$t);
-                $timeformat = "%I:%M:%S$ampm";
+                $timeformat = "%I:%M$ampm";
     }
     return utf8_strftime($dformat.$timeformat, $t);
 }
@@ -2429,7 +3585,7 @@ function describe_span($starts, $ends, $dformat)
     else
     {
                 $ampm = date("a",$starts);
-                $timeformat = "%I:%M:%S$ampm";
+                $timeformat = "%I:%M$ampm";
     }
     $start_time = strftime($timeformat, $starts);
     $duration = $ends - $starts;
@@ -2442,7 +3598,7 @@ function describe_span($starts, $ends, $dformat)
 function get_planning_area_values($id_area) {
     global $resolution, $morningstarts, $eveningends, $eveningends_minutes, $weekstarts, $twentyfourhour_format, $enable_periods, $periods_name, $display_day, $nb_display_day;
     $sql = "SELECT calendar_default_values, resolution_area, morningstarts_area, eveningends_area, eveningends_minutes_area, weekstarts_area, twentyfourhour_format_area, enable_periods, display_days
-    FROM grr_area
+    FROM ".TABLE_PREFIX."_area
     WHERE id = '".protect_data_sql($id_area)."'";
     $res = grr_sql_query($sql);
     if (! $res) {
@@ -2468,11 +3624,11 @@ function get_planning_area_values($id_area) {
         $resolution = 60;
         $morningstarts = 12;
         $eveningends = 12;
-        $sql_periode = grr_sql_query("SELECT nom_periode FROM grr_area_periodes where id_area='".$id_area."'");
+        $sql_periode = grr_sql_query("SELECT nom_periode FROM ".TABLE_PREFIX."_area_periodes where id_area='".$id_area."'");
         $eveningends_minutes = grr_sql_count($sql_periode)-1;
         $i = 0;
         while ($i < grr_sql_count($sql_periode)) {
-            $periods_name[$i] = grr_sql_query1("select nom_periode FROM grr_area_periodes where id_area='".$id_area."' and num_periode= '".$i."'");
+            $periods_name[$i] = grr_sql_query1("select nom_periode FROM ".TABLE_PREFIX."_area_periodes where id_area='".$id_area."' and num_periode= '".$i."'");
             $i++;
         }
         $enable_periods = "y";
@@ -2531,14 +3687,14 @@ function verify_confirm_reservation() {
     $year  = date("Y");
     $date_now = mktime(0,0,0,$month,$day,$year);
     if ((getSettingValue("date_verify_reservation") == "") or (getSettingValue("date_verify_reservation") < $date_now )) {
-        $res = grr_sql_query("select id from grr_room where delais_option_reservation > 0");
+        $res = grr_sql_query("select id from ".TABLE_PREFIX."_room where delais_option_reservation > 0");
         if (! $res) {
             //    fatal_error(0, grr_sql_error());
             include "trailer.inc.php";
             exit;
         } else {
             for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
-                $res2 = grr_sql_query("select id from grr_entry where option_reservation < '".$date_now."' and option_reservation != '-1' and room_id='".$row[0]."'");
+                $res2 = grr_sql_query("select id from ".TABLE_PREFIX."_entry where option_reservation < '".$date_now."' and option_reservation != '-1' and room_id='".$row[0]."'");
                 if (! $res2) {
                     //    fatal_error(0, grr_sql_error());
                     include "trailer.inc.php";
@@ -2547,9 +3703,9 @@ function verify_confirm_reservation() {
                     for ($j = 0; ($row2 = grr_sql_row($res2, $j)); $j++) {
                         if (getSettingValue("automatic_mail") == 'yes') $_SESSION['session_message_error'] = send_mail($row2[0],4,$dformat);
                         // On efface la réservation
-                        grr_sql_command("DELETE FROM grr_entry WHERE id=" . $row2[0]);
-                        // On efface le cas écheant également  dans grr_entry_moderate
-                        grr_sql_command("DELETE FROM grr_entry_moderate WHERE id=" . $row2[0]);
+                        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_entry WHERE id=" . $row2[0]);
+                        // On efface le cas écheant également  dans ".TABLE_PREFIX."_entry_moderate
+                        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_entry_moderate WHERE id=" . $row2[0]);
 
                      }
                 }
@@ -2571,15 +3727,15 @@ function verify_retard_reservation() {
     $year  = date("Y");
     $date_now = mktime(0,0,0,$month,$day,$year);
     if (((getSettingValue("date_verify_reservation2") == "") or (getSettingValue("date_verify_reservation2") < $date_now )) and (getSettingValue("automatic_mail") == 'yes')) {
-        //$res = grr_sql_query("SELECT r.id FROM grr_room r, grr_area a WHERE a.retour_resa_obli = 1 AND r.area_id = a.id");
-        $res = grr_sql_query("SELECT id FROM grr_room");
+        //$res = grr_sql_query("SELECT r.id FROM ".TABLE_PREFIX."_room r, ".TABLE_PREFIX."_area a WHERE a.retour_resa_obli = 1 AND r.area_id = a.id");
+        $res = grr_sql_query("SELECT id FROM ".TABLE_PREFIX."_room");
         if (! $res) {
                 // fatal_error(0, grr_sql_error());
             include "trailer.inc.php";
             exit;
         } else {
              for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
-                $res2 = grr_sql_query("select id from grr_entry where statut_entry='e' and end_time < '".$date_now."' and room_id='".$row[0]."'");
+                $res2 = grr_sql_query("select id from ".TABLE_PREFIX."_entry where statut_entry='e' and end_time < '".$date_now."' and room_id='".$row[0]."'");
                 if (! $res2) {
                        // fatal_error(0, grr_sql_error());
                     include "trailer.inc.php";
@@ -2600,30 +3756,51 @@ function verify_retard_reservation() {
 
 
 
-function est_hors_reservation($time) {
-    $test = grr_sql_query1("select DAY from grr_calendar where DAY = '".$time."'");
+function est_hors_reservation($time,$area="-1") {
+    // Premier test : s'agit-il d'un jour du calendrier "hors réservation" ?
+    $test = grr_sql_query1("select DAY from ".TABLE_PREFIX."_calendar where DAY = '".$time."'");
     if ($test != -1)
         return TRUE;
-    else
-        return FALSE;
-
+    // 2ème test : s'agit-il d'une journée qui n'est pas affichée pour le domaine considéré ?
+    if ($area!=-1) {
+        $sql = "SELECT display_days FROM ".TABLE_PREFIX."_area WHERE id = '".protect_data_sql($area)."'";
+        $result = grr_sql_query1($sql);
+        $jour_semaine = date("w",$time);
+        if (substr($result,$jour_semaine,1) == 'n')
+           return TRUE;
+    }
+    return FALSE;
 }
 
 function resa_est_hors_reservation($start_time,$end_time) {
-    $test = grr_sql_query1("select DAY from grr_calendar where DAY = '".$start_time."' or DAY = '".$end_time."'");
+    // On teste si la réservation est dans le calendrier "hors réservations"
+    $test = grr_sql_query1("select DAY from ".TABLE_PREFIX."_calendar where DAY = '".$start_time."' or DAY = '".$end_time."'");
     if ($test != -1)
         return TRUE;
     else
         return FALSE;
-
 }
+
+function resa_est_hors_reservation2($start_time,$end_time,$area) {
+    // S'agit-il d'une journée qui n'est pas affichée pour le domaine considéré ?
+    $sql = "SELECT display_days FROM ".TABLE_PREFIX."_area WHERE id = '".protect_data_sql($area)."'";
+    $result = grr_sql_query1($sql);
+    $jour_semaine = date("w",$start_time);
+    if (substr($result,$jour_semaine,1) == 'n')
+           return TRUE;
+    $jour_semaine = date("w",$end_time);
+    if (substr($result,$jour_semaine,1) == 'n')
+           return TRUE;
+    return FALSE;
+}
+
 
 // trouve les utilisateurs gestionnaires de ressource
 function find_user_room ($id_room)
 {
     $emails = array ();
-    $sql = "select email from grr_utilisateurs, grr_j_user_room
-    where grr_utilisateurs.login = grr_j_user_room.login and id_room='".$id_room."'";
+    $sql = "select email from ".TABLE_PREFIX."_utilisateurs, ".TABLE_PREFIX."_j_user_room
+    where ".TABLE_PREFIX."_utilisateurs.login = ".TABLE_PREFIX."_j_user_room.login and id_room='".$id_room."'";
     $res = grr_sql_query($sql);
     if ($res) {
         for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
@@ -2633,17 +3810,32 @@ function find_user_room ($id_room)
     // Si la table des emails des gestionnaires de la ressource est vide, on avertit les administrateurs du domaine
     if (count($emails) == 0) {
         $id_area = mrbsGetAreaIdFromRoomId($id_room);
-        $sql_admin = grr_sql_query("select email from grr_utilisateurs, grr_j_useradmin_area
-        where grr_utilisateurs.login = grr_j_useradmin_area.login and grr_j_useradmin_area.id_area='".$id_area."'");
+        $sql_admin = grr_sql_query("select email from ".TABLE_PREFIX."_utilisateurs, ".TABLE_PREFIX."_j_useradmin_area
+        where ".TABLE_PREFIX."_utilisateurs.login = ".TABLE_PREFIX."_j_useradmin_area.login and ".TABLE_PREFIX."_j_useradmin_area.id_area='".$id_area."'");
         if ($sql_admin) {
             for ($i = 0; ($row = grr_sql_row($sql_admin, $i)); $i++) {
                 if (validate_email($row[0])) $emails[] = $row[0];
             }
         }
     }
-    // Si la table des emails des administrateurs du domaines est vide, on avertit les administrateurs générauxd
+    // Si la table des emails des administrateurs du domaines est vide, on avertit les administrateurs des sites
+    if (getSettingValue("module_multisite") == "Oui") {
+     if (count($emails) == 0) {
+        $id_area = mrbsGetAreaIdFromRoomId($id_room);
+        $id_site = mrbsGetAreaSite($id_area);
+        $sql_admin = grr_sql_query("select email from ".TABLE_PREFIX."_utilisateurs, ".TABLE_PREFIX."_j_useradmin_site
+        where ".TABLE_PREFIX."_utilisateurs.login = ".TABLE_PREFIX."_j_useradmin_site.login and ".TABLE_PREFIX."_j_useradmin_site.id_site='".$id_site."'");
+        if ($sql_admin) {
+            for ($i = 0; ($row = grr_sql_row($sql_admin, $i)); $i++) {
+                if (validate_email($row[0])) $emails[] = $row[0];
+            }
+        }
+     }
+    }
+
+    // Si la table des emails des administrateurs des sites est vide, on avertit les administrateurs générauxd
     if (count($emails) == 0) {
-        $sql_admin = grr_sql_query("select email from grr_utilisateurs where statut = 'administrateur'");
+        $sql_admin = grr_sql_query("select email from ".TABLE_PREFIX."_utilisateurs where statut = 'administrateur'");
         if ($sql_admin) {
             for ($i = 0; ($row = grr_sql_row($sql_admin, $i)); $i++) {
                 if (validate_email($row[0])) $emails[] = $row[0];
@@ -2682,14 +3874,14 @@ function grrDelOverloadFromEntries($id_field)
   $begin_string = "<".$id_field.">";
   $end_string = "</".$id_field.">";
   // On cherche à quel domaine est rattaché le champ additionnel
-  $id_area = grr_sql_query1("select id_area from grr_overload where id='".$id_field."'");
+  $id_area = grr_sql_query1("select id_area from ".TABLE_PREFIX."_overload where id='".$id_field."'");
   if ($id_area == -1) fatal_error(0, get_vocab('error_area') . $id_area . get_vocab('not_found'));
   // On cherche toutes les ressources du domaine
-  $call_rooms = grr_sql_query("select id from grr_room where area_id = '".$id_area."'");
+  $call_rooms = grr_sql_query("select id from ".TABLE_PREFIX."_room where area_id = '".$id_area."'");
   if (! $call_rooms) fatal_error(0, get_vocab('error_room') . $id_room . get_vocab('not_found'));
   for ($i = 0; ($row = grr_sql_row($call_rooms, $i)); $i++) {
       // On cherche toutes les resas de cette resources
-      $call_resa = grr_sql_query("select id, overload_desc from grr_entry where room_id ='".$row[0]."'");
+      $call_resa = grr_sql_query("select id, overload_desc from ".TABLE_PREFIX."_entry where room_id ='".$row[0]."'");
       if (! $call_resa) fatal_error(0, get_vocab('invalid_entry_id'));
       for ($j = 0; ($row2 = grr_sql_row($call_resa, $j)); $j++) {
           $overload_desc = $row2[1];
@@ -2700,12 +3892,12 @@ function grrDelOverloadFromEntries($id_field)
               $debut_new_chaine = substr($overload_desc,0,$begin_pos);
               $fin_new_chaine = substr($overload_desc,$endpos);
               $new_chaine = $debut_new_chaine.$fin_new_chaine;
-              grr_sql_command("update grr_entry set overload_desc = '".$new_chaine."' where id = '".$row2[0]."'");
+              grr_sql_command("update ".TABLE_PREFIX."_entry set overload_desc = '".$new_chaine."' where id = '".$row2[0]."'");
           }
 
        }
       // On cherche toutes les resas de cette resources
-      $call_resa = grr_sql_query("select id, overload_desc from grr_repeat where room_id ='".$row[0]."'");
+      $call_resa = grr_sql_query("select id, overload_desc from ".TABLE_PREFIX."_repeat where room_id ='".$row[0]."'");
       if (! $call_resa) fatal_error(0, get_vocab('invalid_entry_id'));
       for ($j = 0; ($row2 = grr_sql_row($call_resa, $j)); $j++) {
           $overload_desc = $row2[1];
@@ -2716,7 +3908,7 @@ function grrDelOverloadFromEntries($id_field)
               $debut_new_chaine = substr($overload_desc,0,$begin_pos);
               $fin_new_chaine = substr($overload_desc,$endpos);
               $new_chaine = $debut_new_chaine.$fin_new_chaine;
-              grr_sql_command("update grr_repeat set overload_desc = '".$new_chaine."' where id = '".$row2[0]."'");
+              grr_sql_command("update ".TABLE_PREFIX."_repeat set overload_desc = '".$new_chaine."' where id = '".$row2[0]."'");
           }
 
        }
@@ -2736,7 +3928,7 @@ function traite_grr_url($grr_script_name="",$force_use_grr_url="n") {
 //Crée le calendrier Jours/Cycles
 function cree_calendrier_date_valide($n,$i) {
         if ($i <= getSettingValue("nombre_jours_Jours/Cycles")) {
-            $sql = "INSERT INTO grr_calendrier_jours_cycle set DAY='".$n."', Jours = $i";
+            $sql = "INSERT INTO ".TABLE_PREFIX."_calendrier_jours_cycle set DAY='".$n."', Jours = $i";
             if (grr_sql_command($sql) < 0) {
                 fatal_error(1, "<p>" . grr_sql_error());
             }
@@ -2744,7 +3936,7 @@ function cree_calendrier_date_valide($n,$i) {
         }
         else {
             $i = 1;
-            $sql = "INSERT INTO grr_calendrier_jours_cycle set DAY='".$n."', Jours = $i";
+            $sql = "INSERT INTO ".TABLE_PREFIX."_calendrier_jours_cycle set DAY='".$n."', Jours = $i";
             if (grr_sql_command($sql) < 0) {
                 fatal_error(1, "<p>" . grr_sql_error());
             }
@@ -2849,9 +4041,9 @@ function getFirstDays()
          $show = $basetime + ($i * 24 * 60 * 60);
          $fl = strftime('%a',$show);
          if ($display_day[$j] == 1)
-             $s .= "<td align=center valign=top class=\"calendarHeader\">$fl</td>\n";
+             $s .= "<td align=\"center\" valign=\"top\" class=\"calendarHeader\">$fl</td>\n";
          else
-             $s .= "<td align=center valign=top class=\"calendarHeader\"></td>\n";
+             $s .= "";
       }
       return $s;
 }
@@ -2865,7 +4057,7 @@ function affichage_lien_resa_planning($breve_description, $id_resa) {
     else {
         $affichage = get_vocab("entryid").$id_resa;
     }
-    return htmlspecialchars($affichage,ENT_NOQUOTES);
+    return bbCode(htmlspecialchars($affichage,ENT_NOQUOTES),'titre');
 }
 
 /*
@@ -2874,13 +4066,13 @@ Construit les informations à afficher sur les plannings
 function affichage_resa_planning($_description, $id_resa) {
     $affichage = "";
     if (getSettingValue("display_full_description")==1)
-        $affichage = htmlspecialchars($_description,ENT_NOQUOTES);
+        $affichage = bbCode(htmlspecialchars($_description,ENT_NOQUOTES),'');
     // Les champs add :
     $overload_data = mrbsEntryGetOverloadDesc($id_resa);
     foreach ($overload_data as $fieldname=>$field) {
         if (($field["affichage"] == 'y') and ($field["valeur"]!="")) {
             if ($affichage != "") $affichage .= "<br />";
-            $affichage .= htmlspecialchars($fieldname,ENT_NOQUOTES).get_vocab("deux_points").htmlspecialchars($field["valeur"],ENT_NOQUOTES);
+            $affichage .= bbCode(htmlspecialchars($fieldname,ENT_NOQUOTES).get_vocab("deux_points").htmlspecialchars($field["valeur"],ENT_NOQUOTES),'');
         }
     }
     return $affichage;
@@ -2895,7 +4087,7 @@ function affichage_champ_add_mails($id_resa) {
     $overload_data = mrbsEntryGetOverloadDesc($id_resa);
     foreach ($overload_data as $fieldname=>$field) {
         if (($field["overload_mail"] == 'y') and ($field["valeur"]!="")) {
-            $affichage .= htmlspecialchars($fieldname).get_vocab("deux_points").htmlspecialchars($field["valeur"])."\n";;
+            $affichage .= bbcode(htmlspecialchars($fieldname).get_vocab("deux_points").htmlspecialchars($field["valeur"]),'nobbcode')."\n";;
         }
     }
     return $affichage;
@@ -2916,20 +4108,20 @@ function affiche_pop_up($msg="",$type_affichage="user"){
     if ($msg != "") {
       if ($type_affichage == "user") {
         if (!(getSettingValue("javascript_info_disabled"))) {
-          echo "<script type=\"text/javascript\" language=\"javascript\">";
+          echo "<script type=\"text/javascript\">";
           if ((isset($_SESSION['displ_msg'])) and ($_SESSION['displ_msg']=='yes'))  echo " alert(\"".$msg."\")";
           echo "</script>";
        }
       } else if ($type_affichage == "admin") {
         if (!(getSettingValue("javascript_info_admin_disabled")))  {
-            echo "<script type=\"text/javascript\" language=\"javascript\">";
+            echo "<script type=\"text/javascript\">";
             echo "<!--\n";
             echo " alert(\"".$msg."\")";
             echo "//-->";
             echo "</script>";
         }
      } else {
-            echo "<script type=\"text/javascript\" language=\"javascript\">";
+            echo "<script type=\"text/javascript\">";
             echo "<!--\n";
             echo " alert(\"".$msg."\")";
             echo "//-->";
@@ -2981,17 +4173,21 @@ function concat_nom_email($_nom, $_email){
 }
 /*
 Formate les noms, prénom et email du bénéficiaire ou du bénéficiaire extérieur
-$type = nomail -> on affiche pas le mail
-$type = withmail -> on affiche le mail
-$type = formail -> on formate en utf8 pour l'envoi par mail
-$type = nolymail -> on affiche uniquement le mail
+$type = nomail -> on affiche les prénom et nom sans le mail.
+$type = withmail -> on affiche un lien avec le mail sur les prénom et nom.
+$type = formail -> on formate en utf8 pour l'envoi par mail (utilisé dans l'envoi de mails automatiques)
+$type = onlymail -> on affiche uniquement le mail (utilisé dans l'envoi de mails automatiques)
 */
 
 function affiche_nom_prenom_email($_beneficiaire,$_beneficiaire_ext,$type="nomail"){
     if ($_beneficiaire !="") {
-        $sql_beneficiaire = "SELECT prenom, nom, email FROM grr_utilisateurs WHERE login = '".$_beneficiaire."'";
+        $sql_beneficiaire = "SELECT prenom, nom, email FROM ".TABLE_PREFIX."_utilisateurs WHERE login = '".$_beneficiaire."'";
         $res_beneficiaire = grr_sql_query($sql_beneficiaire);
         if ($res_beneficiaire) {
+          $nb_result = grr_sql_count($res_beneficiaire);
+          if ($nb_result == 0) {
+            $chaine = get_vocab("utilisateur_inconnu").$_beneficiaire.")";
+          } else {
             $row_user = grr_sql_row($res_beneficiaire, 0);
             if ($type == "formail")  {
                 $chaine = removeMailUnicode($row_user[0])." ".removeMailUnicode($row_user[1]);
@@ -3000,23 +4196,17 @@ function affiche_nom_prenom_email($_beneficiaire,$_beneficiaire_ext,$type="nomai
                 }
             } else if ($type == "onlymail") {
             // Cas où en envoie uniquement le mail
-                $chaine = grr_sql_query1("select email from grr_utilisateurs where login='$_beneficiaire'");
+                $chaine = grr_sql_query1("select email from ".TABLE_PREFIX."_utilisateurs where login='$_beneficiaire'");
             } else if (($type == "withmail") and ($row_user[2] != "")) {
             // Cas où en envoie les noms, prénoms et mail
-                $email = explode('@',$row_user[2]);
-                $person = $email[0];
-                if (isset($email[1])) {
-                    $domain = $email[1];
-                    $chaine = "<script type=\"text/javascript\">encode_adresse('".$person."','".$domain."','".AddSlashes($row_user[1]." ".$row_user[0])."',1);</script>";
-                } else {
-                    $chaine = $row_user[0]." ".$row_user[1];
-                }
+                $chaine = affiche_lien_contact($_beneficiaire,"identifiant:oui","afficher_toujours");
             } else {
                 // Cas où en envoie les noms, prénoms sans le mail
                 $chaine = $row_user[0]." ".$row_user[1];
             }
-            return $chaine;
-            die();
+          }
+          return $chaine;
+          die();
         } else {
             return "";
             die();
@@ -3046,7 +4236,311 @@ function affiche_nom_prenom_email($_beneficiaire,$_beneficiaire_ext,$type="nomai
         die();
     }
 }
+/*
+ Fonction permettant d'effectuer une correspondance entre
+ le profil lu sous LDAP et les statuts existants dans GRR
+*/
+function effectuer_correspondance_profil_statut($codefonction, $libellefonction) {
+    # On récupère le statut par défaut des utilisateurs CAS
+    $sso = getSettingValue("sso_statut");
+    if ($sso == "cas_visiteur") $_statut = "visiteur";
+    else if ($sso == "cas_utilisateur") $_statut = "utilisateur";
 
+    # Le code fonction est défini
+    if ($codefonction != "") {
+        $sql = grr_sql_query1("select statut_grr from ".TABLE_PREFIX."_correspondance_statut where code_fonction='".$codefonction."'");
+        if ($sql != -1) { // Si la fonction existe dans la table de correspondance, on retourne le statut_grr associé
+            return $sql;
+        }	else {
+            // Le code n'existe pas dans la base, alors on l'insère en lui attribuant le statut par défaut.
+		        $libellefonction = protect_data_sql($libellefonction);
+			      $sql = grr_sql_command("insert into grr_correspondance_statut(code_fonction,libelle_fonction,statut_grr) values('$codefonction', '$libellefonction', '$_statut')");
+			      return $_statut;
+		    }
+    # Le code fonction n'est pas défini, alors on retourne le statut par défaut.
+    }	else {
+        return $_statut;
+    }
+}
+
+/** supprimerReservationsUtilisateursEXT()
+ *
+ * Supprime les réservations des membres qui proviennent d'une source "EXT"
+ *
+ *
+ * Returns:
+ *   0        - An error occured
+ *   non-zero - The entries were deleted
+ */
+function supprimerReservationsUtilisateursEXT($avec_resa,$avec_privileges)
+{
+  // Récupération de tous les utilisateurs de la source EXT
+	$requete_users_ext = "SELECT login FROM ".TABLE_PREFIX."_utilisateurs WHERE source='ext' and statut<>'administrateur'";
+	$res = grr_sql_query($requete_users_ext);
+	$logins = array();
+	$logins_liaison  = array();
+  if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+      $logins[]=$row[0];
+	}
+
+	// Construction des requêtes de suppression à partir des différents utilisateurs à supprimer
+  if ($avec_resa=='y') {
+	  // Pour chaque utilisateur, on supprime les réservations qu'il a créées et celles dont il est bénéficiaire
+  	// Table grr_entry
+	  $req_suppr_table_entry = "DELETE FROM ".TABLE_PREFIX."_entry WHERE create_by = ";
+  	$first=1; // 1er tour
+	  foreach($logins as $log) {
+		  if ($first == 1) { // pas de OR devant le login
+			  $req_suppr_table_entry .= "'$log' OR beneficiaire='$log'";
+  			$first=0;
+	  	}
+		  else {
+			  $req_suppr_table_entry .= " OR create_by = '$log' OR beneficiaire = '$log' ";
+  		}
+	  }
+
+	  // Pour chaque utilisateur, on supprime les réservations périodiques qu'il a créées et celles dont il est bénéficiaire
+  	// Table grr_repeat
+	  $req_suppr_table_repeat = "DELETE FROM ".TABLE_PREFIX."_repeat WHERE create_by = ";
+  	$first=1; // 1er tour
+	  foreach($logins as $log) {
+		  if ($first == 1) { // pas de OR devant le login
+			  $req_suppr_table_repeat .= "'$log' OR beneficiaire='$log'";
+  			$first=0;
+	  	}
+		  else {
+			  $req_suppr_table_repeat .= " OR create_by = '$log' OR beneficiaire = '$log' ";
+  		}
+	  }
+  	// Pour chaque utilisateur, on supprime les réservations périodiques qu'il a créées et celles dont il est bénéficiaire
+	  // Table grr_entry_moderate
+  	$req_suppr_table_entry_moderate = "DELETE FROM ".TABLE_PREFIX."_entry_moderate WHERE create_by = ";
+	  $first=1; // 1er tour
+  	foreach($logins as $log) {
+	  	if ($first == 1) { // pas de OR devant le login
+		  	$req_suppr_table_entry_moderate .= "'$log' OR beneficiaire='$log'";
+			  $first=0;
+  		}
+	  	else {
+		  	$req_suppr_table_entry_moderate .= " OR create_by = '$log' OR beneficiaire = '$log' ";
+  		}
+	  }
+  }
+
+  $req_j_mailuser_room = "";
+  $req_j_user_area = "";
+  $req_j_user_room = "";
+  $req_j_useradmin_area = "";
+  $req_j_useradmin_site = "";
+	foreach($logins as $log) {
+      // Table grr_j_mailuser_room
+	  	$test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_j_mailuser_room WHERE login='".$log."'");
+      if ($test >=1 ) {
+        if ($avec_privileges=="y") {
+          if ($req_j_mailuser_room == "") { // pas de OR devant le login
+            $req_j_mailuser_room = "DELETE FROM ".TABLE_PREFIX."_j_mailuser_room WHERE login='".$log."'";
+          } else {
+            $req_j_mailuser_room .= " OR login = '".$log."'";
+  		    }
+        } else {
+          $logins_liaison[]=strtolower($log);
+        }
+      }
+      // Table grr_j_user_area
+	  	$test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_j_user_area WHERE login='".$log."'");
+      if ($test >=1 ) {
+        if ($avec_privileges=="y") {
+          if ($req_j_user_area == "") { // pas de OR devant le login
+            $req_j_user_area = "DELETE FROM ".TABLE_PREFIX."_j_user_area WHERE login='".$log."'";
+          } else {
+            $req_j_user_area .= " OR login = '".$log."'";
+  		    }
+        } else {
+          $logins_liaison[]=strtolower($log);
+        }
+      }
+      // Table grr_j_user_room
+	  	$test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_j_user_room WHERE login='".$log."'");
+      if ($test >=1 ) {
+        if ($avec_privileges=="y") {
+          if ($req_j_user_room == "") { // pas de OR devant le login
+            $req_j_user_room = "DELETE FROM ".TABLE_PREFIX."_j_user_room WHERE login='".$log."'";
+          } else {
+            $req_j_user_room .= " OR login = '".$log."'";
+  		    }
+        } else {
+          $logins_liaison[]=strtolower($log);
+        }
+      }
+      // Table grr_j_useradmin_area
+	  	$test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_j_useradmin_area WHERE login='".$log."'");
+      if ($test >=1 ) {
+        if ($avec_privileges=="y") {
+          if ($req_j_useradmin_area == "") { // pas de OR devant le login
+            $req_j_useradmin_area = "DELETE FROM ".TABLE_PREFIX."_j_useradmin_area WHERE login='".$log."'";
+          } else {
+            $req_j_useradmin_area .= " OR login = '".$log."'";
+  		    }
+        } else {
+          $logins_liaison[]=strtolower($log);
+        }
+      }
+      // Table grr_j_useradmin_site
+	  	$test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_j_useradmin_site WHERE login='".$log."'");
+      if ($test >=1 ) {
+        if ($avec_privileges=="y") {
+          if ($req_j_useradmin_site == "") { // pas de OR devant le login
+            $req_j_useradmin_site = "DELETE FROM ".TABLE_PREFIX."_j_useradmin_site WHERE login='".$log."'";
+          } else {
+            $req_j_useradmin_site .= " OR login = '".$log."'";
+  		    }
+        } else {
+          $logins_liaison[]=strtolower($log);
+        }
+      }
+  }
+	// Suppression effective
+	echo "<hr />\n";
+	if ($avec_resa=='y') {
+	  $nb=0;
+    $s = grr_sql_command ($req_suppr_table_entry);
+	  if ($s != -1) $nb +=$s;
+	  $s = grr_sql_command (	$req_suppr_table_repeat);
+	  if ($s != -1) $nb +=$s;
+	  $s = grr_sql_command (	$req_suppr_table_entry_moderate);
+	  if ($s != -1) $nb +=$s;
+  echo "<p class='avertissement'>".get_vocab("tables_reservations").get_vocab("deux_points").$nb.get_vocab("entres_supprimees")."</p>\n";
+  }
+  $nb=0;
+
+  if ($avec_privileges=="y") {
+    if ($req_j_mailuser_room != "") {
+    	$s = grr_sql_command ($req_j_mailuser_room);
+      if ($s != -1) $nb +=$s;
+    }
+    if ($req_j_user_area != "") {
+  	  $s = grr_sql_command ($req_j_user_area);
+      if ($s != -1) $nb +=$s;
+    }
+    if ($req_j_user_room != "") {
+    	$s = grr_sql_command ($req_j_user_room);
+      if ($s != -1) $nb +=$s;
+    }
+    if ($req_j_useradmin_area != "") {
+  	  $s = grr_sql_command ($req_j_useradmin_area);
+      if ($s != -1) $nb +=$s;
+    }
+    if ($req_j_useradmin_site != "") {
+    	$s = grr_sql_command ($req_j_useradmin_site);
+      if ($s != -1) $nb +=$s;
+    }
+  }
+  echo "<p class='avertissement'>".get_vocab("tables_liaison").get_vocab("deux_points").$nb.get_vocab("entres_supprimees")."</p>\n";
+
+  if ($avec_privileges=="y") {
+    // Enfin, suppression des utilisateurs de la source EXT qui ne sont pas administrateur
+	  $requete_suppr_users_ext = "DELETE FROM ".TABLE_PREFIX."_utilisateurs WHERE source='ext' and statut<>'administrateur'";
+	  $s = grr_sql_command($requete_suppr_users_ext);
+    if ($s == -1) $s = 0;
+    echo "<p class='avertissement'>".get_vocab("table_utilisateurs").get_vocab("deux_points").$s.get_vocab("entres_supprimees")."</p>\n";
+  } else {
+    $n=0;
+    foreach($logins as $log) {
+      if (!in_array(strtolower($log),$logins_liaison)) {
+      	  grr_sql_command("DELETE FROM ".TABLE_PREFIX."_utilisateurs WHERE login='".$log."'");
+          $n++;
+      }
+    }
+    echo "<p class='avertissement'>".get_vocab("table_utilisateurs").get_vocab("deux_points").$n.get_vocab("entres_supprimees")."</p>\n";
+  }
+}
+
+/** NettoyerTablesJointure()
+ *
+ * Supprime les lignes inutiles dans les tables de liaison
+ *
+ */
+function NettoyerTablesJointure()
+{
+  $nb = 0;
+	// Table grr_j_mailuser_room
+	$req = "SELECT j.login FROM ".TABLE_PREFIX."_j_mailuser_room j
+      LEFT JOIN ".TABLE_PREFIX."_utilisateurs u on u.login=j.login
+      WHERE (u.login  IS NULL)";
+  $res = grr_sql_query($req);
+  if ($res) {
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+       $nb++;
+       grr_sql_command("delete from ".TABLE_PREFIX."_j_mailuser_room where login='".$row[0]."'");
+    }
+  }
+
+
+	// Table grr_j_user_area
+	$req = "SELECT j.login FROM ".TABLE_PREFIX."_j_user_area j
+      LEFT JOIN ".TABLE_PREFIX."_utilisateurs u on u.login=j.login
+      WHERE (u.login  IS NULL)";
+  $res = grr_sql_query($req);
+  if ($res) {
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+       $nb++;
+       grr_sql_command("delete from ".TABLE_PREFIX."_j_user_area where login='".$row[0]."'");
+    }
+  }
+
+
+	// Table grr_j_user_room
+	$req = "SELECT j.login FROM ".TABLE_PREFIX."_j_user_room j
+      LEFT JOIN ".TABLE_PREFIX."_utilisateurs u on u.login=j.login
+      WHERE (u.login  IS NULL)";
+  $res = grr_sql_query($req);
+  if ($res) {
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+       $nb++;
+       grr_sql_command("delete from ".TABLE_PREFIX."_j_user_room where login='".$row[0]."'");
+    }
+  }
+
+
+	// Table grr_j_useradmin_area
+	$req = "SELECT j.login FROM ".TABLE_PREFIX."_j_useradmin_area j
+      LEFT JOIN ".TABLE_PREFIX."_utilisateurs u on u.login=j.login
+      WHERE (u.login  IS NULL)";
+  $res = grr_sql_query($req);
+  if ($res) {
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+       $nb++;
+       grr_sql_command("delete from ".TABLE_PREFIX."_j_useradmin_area where login='".$row[0]."'");
+    }
+  }
+
+	// Table grr_j_useradmin_site
+	$req = "SELECT j.login FROM ".TABLE_PREFIX."_j_useradmin_site j
+      LEFT JOIN ".TABLE_PREFIX."_utilisateurs u on u.login=j.login
+      WHERE (u.login  IS NULL)";
+  $res = grr_sql_query($req);
+  if ($res) {
+    for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
+       $nb++;
+       grr_sql_command("delete from ".TABLE_PREFIX."_j_useradmin_site where login='".$row[0]."'");
+    }
+  }
+
+	// Suppression effective
+	echo "<hr />\n";
+  echo "<p class='avertissement'>".get_vocab("tables_liaison").get_vocab("deux_points").$nb.get_vocab("entres_supprimees")."</p>\n";
+}
+
+
+
+
+if ( !function_exists('htmlspecialchars_decode') )
+{
+    function htmlspecialchars_decode($text)
+    {
+        return strtr($text, array_flip(get_html_translation_table(HTML_SPECIALCHARS)));
+    }
+}
 // Les lignes suivantes permettent la compatibilité de GRR avec la variables register_global à off
 unset($day);
 if (isset($_GET["day"])) {
@@ -3069,12 +4563,4 @@ if (isset($_GET["year"])) {
     if ($year < 1900) $year = 1900;
     if ($year > 2100) $year = 2100;
 }
-
-unset($room);
-$room = isset($_GET["room"]) ? $_GET["room"] : NULL;
-settype($room,"integer");
-
-unset($area);
-$area = isset($_GET["area"]) ? $_GET["area"] : NULL;
-settype($area,"integer");
 ?>

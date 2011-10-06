@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                        setting.inc.php                                #
-#                                                                       #
-#    Bibliothèque de fonction pour la gestion de la table grr_setting   #
-#                                                                       #
-#            Dernière modification : 10/07/2006                         #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * setting.inc.php
+ * Bibliothèque de fonction pour la gestion de la table grr_setting
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-04-14 12:59:18 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: settings.inc.php,v 1.3 2009-04-14 12:59:18 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +27,16 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: settings.inc.php,v $
+ * Revision 1.3  2009-04-14 12:59:18  grr
+ * *** empty log message ***
+ *
+ * Revision 1.2  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 /**
  * Load settings from the database
@@ -42,12 +53,11 @@ function loadSettings()
 {
     global $grrSettings;
     // Pour tenir compte du changement de nom de la table setting à partir de la version 1.8
-    $test = grr_sql_query1("select NAME  from grr_setting where NAME='version'");
+    $test = grr_sql_query1("select NAME  from ".TABLE_PREFIX."_setting where NAME='version'");
     if ($test != -1)
-       $sql = "select `NAME`, `VALUE` from grr_setting";
+       $sql = "select `NAME`, `VALUE` from ".TABLE_PREFIX."_setting";
     else
         $sql = "select `NAME`, `VALUE` from setting";
-
     $res = grr_sql_query($sql);
     if (! $res) return (false);
     if (grr_sql_count($res) == 0) {
@@ -61,7 +71,7 @@ function loadSettings()
 }
 
 /**
- * Get the value of a grr_setting by its name
+ * Get the value of a ".TABLE_PREFIX."_setting by its name
  *
  * Use this function within other functions so you don'y have to declare
  * $grrSettings global
@@ -96,11 +106,11 @@ function saveSetting($_name, $_value)
 {
     global $grrSettings;
     if (isset($grrSettings[$_name])) {
-    $sql = "update grr_setting set VALUE = '" . protect_data_sql($_value) . "' where NAME = '" . protect_data_sql($_name) . "'";
+    $sql = "update ".TABLE_PREFIX."_setting set VALUE = '" . protect_data_sql($_value) . "' where NAME = '" . protect_data_sql($_name) . "'";
     $res = grr_sql_query($sql);
          if ( ! $res) return (false);
     } else {
-        $sql = "insert into grr_setting set NAME = '" . protect_data_sql($_name) . "', VALUE = '" . protect_data_sql($_value) . "'";
+        $sql = "insert into ".TABLE_PREFIX."_setting set NAME = '" . protect_data_sql($_name) . "', VALUE = '" . protect_data_sql($_value) . "'";
     $res = grr_sql_query($sql);
         if ( ! $res) return (false);
     }

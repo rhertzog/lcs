@@ -45,9 +45,9 @@ echo begin_page(getSettingValue("company").get_vocab("deux_points").get_vocab("m
 
 if (lassospkit_userid() == NULL)
 {
-  if (isset($_SESSION['login']))
+  if (getUserName()!='')
     {
-      lassospkit_set_userid($_SESSION['login']);
+      lassospkit_set_userid(getUserName());
       echo get_vocab('lasso_federated');
     }
   else

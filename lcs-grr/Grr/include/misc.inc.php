@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                           misc.inc.php                                #
-#                                                                       #
-#                       fichier de variables diverses                   #
-#                                                                       #
-#                  Dernière modification : 10/07/2006                   #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * misc.inc.php
+ * fichier de variables diverses
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2010-04-07 17:49:56 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: misc.inc.php,v 1.16 2010-04-07 17:49:56 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +27,28 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: misc.inc.php,v $
+ * Revision 1.16  2010-04-07 17:49:56  grr
+ * *** empty log message ***
+ *
+ * Revision 1.15  2009-12-02 20:11:08  grr
+ * *** empty log message ***
+ *
+ * Revision 1.14  2009-10-09 07:55:48  grr
+ * *** empty log message ***
+ *
+ * Revision 1.12  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.10  2009-04-14 12:59:18  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 ################################
 # Development information
@@ -33,32 +56,37 @@
 $grr_devel_email = "laurent.delineau@ac-poitiers.fr";
 $grr_devel_url = "http://grr.mutualibre.org";
 // Numéro de version actuel
-$version_grr = "1.9.5";
+$version_grr = "1.9.7";
 // Numéro de sous-version actuel (a, b, ...)
 // Utilisez cette variable pour des versions qui corrigent la la version finale sans toucher à la base.
-$sous_version_grr = "c";
+$sous_version_grr = "e";
 // Numéro de la release candidate (doit être strictement inférieure à 9). Laisser vide s'il s'agit de la version stable.
 $version_grr_RC = "";
 
 # Liste des tables
 $liste_tables = array(
-"grr_area_periodes",
-"grr_type_area",
-"grr_j_type_area",
-"grr_j_mailuser_room",
-"grr_j_user_area",
-"grr_j_user_room",
-"grr_log",
-"grr_area",
-"grr_entry",
-"grr_repeat",
-"grr_room",
-"grr_setting",
-"grr_utilisateurs",
-"grr_j_useradmin_area",
-"grr_calendar",
-"grr_overload",
-"grr_entry_moderate"
+"_area",
+"_area_periodes",
+"_calendar",
+"_calendrier_jours_cycle",
+"_entry",
+"_entry_moderate",
+"_type_area",
+"_j_type_area",
+"_j_mailuser_room",
+"_j_user_area",
+"_j_user_room",
+"_log",
+"_repeat",
+"_room",
+"_setting",
+"_utilisateurs",
+"_j_useradmin_area",
+"_overload",
+"_site",
+"_j_useradmin_site",
+"_j_site_area",
+"_correspondance_statut",
 );
 
 # Liste des feuilles de style
@@ -69,7 +97,8 @@ $liste_themes = array(
 "orange",
 "argent",
 "volcan",
-"toulouse"
+"toulouse",
+"sienne"
 );
 
 # Liste des noms des styles
@@ -80,7 +109,8 @@ $liste_name_themes = array(
 "Orange",
 "Argent",
 "Volcan",
-"Toulouse"
+"Toulouse",
+"Terre de sienne"
 );
 
 # Liste des langues
@@ -100,6 +130,13 @@ $liste_name_language = array(
 "Italiano",
 "Spanish"
 );
+
+# Compatibilité avec les version inférieures à 1.9.6
+if ((!isset($table_prefix)) or ($table_prefix==''))
+    $table_prefix="grr";
+# Définition de TABLE_PREFIX
+define("TABLE_PREFIX",$table_prefix);
+
 
 ################################################
 # Configuration du planning : valeurs par défaut
@@ -135,12 +172,15 @@ $twentyfourhour_format = 1;
 # Ci-dessous des fonctions non officielles (non documentées) de GRR
 # En attendant qu'elles soient implémentées dans GRR avec une interface en ligne
 
-# Vous pouvez indiquer ci-dessous l'id d'une ressource qui sera réservable, même par un simple visiteur
-$id_room_autorise = "";
+# Vous pouvez indiquer ci-dessous les identifiant de plusieurs ressources qui seront réservables, même par un simple visiteur
+# Par exemple la ligne suivante autorise les simples visiteurs à réserver les ressoures 8, 4 et 5 :
+# $id_room_autorise = array("8", "4", "5");
+$id_room_autorise = array();
 
 # Possibilité de désactiver le bandeau supérieur dans le cas de simples visiteurs
 # Pour se connecter il est alors nécessaire de se rendre directement à l'adresse du type http://mon-site.fr/grr/login.php
 # Mettre ci-dessous $desactive_bandeau_sup = 1;  pour désactiver le bandeau supérieur pour les simples visiteurs.
 # Mettre ci-dessous $desactive_bandeau_sup = 0;  pour ne pas désactiver le bandeau supérieur pour les simples visiteurs.
 $desactive_bandeau_sup = 0;
+
 ?>
