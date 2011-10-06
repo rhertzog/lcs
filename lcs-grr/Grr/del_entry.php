@@ -1,15 +1,15 @@
 <?php
-#########################################################################
-#                          del_entry.php                                #
-#                                                                       #
-#                  Interface de suppresssion d'une réservation          #
-#                                                                       #
-#                  Dernière modification : 20/03/2008                   #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * del_entry.php
+ * Interface de suppresssion d'une réservation
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-06-04 15:30:17 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: del_entry.php,v 1.7 2009-06-04 15:30:17 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -27,11 +27,28 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: del_entry.php,v $
+ * Revision 1.7  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-01-20 07:19:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/connect.inc.php";
 include "include/config.inc.php";
 include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
+include_once('include/misc.inc.php');
 include "include/mrbs_sql.inc.php";
 $grr_script_name = "del_entry.php";
 // Settings
@@ -45,7 +62,7 @@ require_once("./include/session.inc.php");
 
 // Resume session
 if (!grr_resumeSession()) {
-    header("Location: ./logout.php?auto=1");
+    header("Location: ./logout.php?auto=1&url=$url");
     die();
 };
 
@@ -81,7 +98,7 @@ if($info = mrbsGetEntryInfo($id))
         showAccessDenied($day, $month, $year, $area,$back);
         exit;
     }
-    if(authUserAccesArea($_SESSION['login'], $area)==0)
+    if(authUserAccesArea(getUserName(), $area)==0)
     {
         showAccessDenied($day, $month, $year, $area,$back);
         exit();
@@ -92,7 +109,7 @@ if($info = mrbsGetEntryInfo($id))
         $_SESSION['session_message_error'] = send_mail($id,3,$dformat);
     }
     // On vérifie les dates
-    $room_id = grr_sql_query1("SELECT grr_entry.room_id FROM grr_entry, grr_room WHERE grr_entry.room_id = grr_room.id AND grr_entry.id='".$id."'");
+    $room_id = grr_sql_query1("SELECT ".TABLE_PREFIX."_entry.room_id FROM ".TABLE_PREFIX."_entry, ".TABLE_PREFIX."_room WHERE ".TABLE_PREFIX."_entry.room_id = ".TABLE_PREFIX."_room.id AND ".TABLE_PREFIX."_entry.id='".$id."'");
     $date_now = mktime();
     get_planning_area_values($area); // Récupération des données concernant l'affichage du planning du domaine
     if ((!(verif_booking_date(getUserName(), $id, $room_id, -1, $date_now, $enable_periods))) or

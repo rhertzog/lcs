@@ -1,15 +1,15 @@
 <?php
-#########################################################################
-#                            report.php                                 #
-#                                                                       #
-#            interface afficheant un rapport des réservations           #
-#               Dernière modification : 10/07/2006                      #
-#                                                                       #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * report.php
+ * interface afficheant un rapport des réservations
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2010-01-06 10:21:19 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: report.php,v 1.17 2010-01-06 10:21:19 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -27,8 +27,30 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: report.php,v $
+ * Revision 1.17  2010-01-06 10:21:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.16  2009-12-02 20:11:07  grr
+ * *** empty log message ***
+ *
+ * Revision 1.15  2009-09-29 18:02:57  grr
+ * *** empty log message ***
+ *
+ * Revision 1.14  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.13  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ *
+ *
+ */
+
 include "include/connect.inc.php";
 include "include/config.inc.php";
+include "include/misc.inc.php";
 include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
 include "include/mrbs_sql.inc.php";
@@ -43,9 +65,11 @@ if (!loadSettings())
 require_once("./include/session.inc.php");
     #Si il n'y a pas de session crée, on déconnecte l'utilisateur.
 // Resume session
-if ((!grr_resumeSession())and (getSettingValue("authentification_obli")==1)) {
-    header("Location: ./logout.php?auto=1");
-    die();
+if (!grr_resumeSession()) {
+    if ((getSettingValue("authentification_obli")==1) or ((getSettingValue("authentification_obli")==0) and (isset($_SESSION['login'])))) {
+       header("Location: ./logout.php?auto=1&url=$url");
+       die();
+    }
 };
 
 // Paramètres langage
@@ -63,8 +87,20 @@ if (!verif_access_search(getUserName()))
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
+}
+
+// Construction des identifiants de la ressource $room, du domaine $area, du site $id_site
+Definition_ressource_domaine_site();
+
+if ((getSettingValue("authentification_obli")==0) and (getUserName()==''))
+{
+    $type_session = "no_session";
+}
+else
+{
+    $type_session = "with_session";
 }
 
     #Champs de création du rapport.
@@ -95,25 +131,25 @@ if (!isset($_GET["sumby"])) $_GET["sumby"] = "6"; else settype($_GET["sumby"],"i
 $sortby = isset($_GET["sortby"]) ? $_GET["sortby"] : "a";
 
 // Si la table j_user_area est vide, il faut modifier la requête
-$test_grr_j_user_area = grr_sql_count(grr_sql_query("SELECT * from grr_j_user_area"));
+$test_grr_j_user_area = grr_sql_count(grr_sql_query("SELECT * from ".TABLE_PREFIX."_j_user_area"));
 
 
 # Report on one entry. See below for columns in $row[].
 function reporton(&$row, $dformat)
 {
-    global $vocab, $enable_periods;
+  global $vocab, $enable_periods;
     echo "<tr>";
     #Affiche "area"
-    $area = htmlspecialchars($row[8]);
+    $area_nom = htmlspecialchars($row[8]);
     $areadescrip = htmlspecialchars($row[10]);
     if ($areadescrip != "") $titre_area_descript = "title=\"".$areadescrip."\""; else $titre_area_descript = "";
-    echo "<td ".$titre_area_descript." >".$area."</td>";
+    echo "<td ".$titre_area_descript." >".$area_nom."</td>";
     #Affiche "room"
     $room = htmlspecialchars($row[9]);
     echo "<td>".$room."</td>";
 
     # Breve description (title), avec un lien
-    $breve_description = htmlspecialchars(affichage_lien_resa_planning($row[3],$row[0]));
+    $breve_description = affichage_lien_resa_planning($row[3],$row[0]);
     $breve_description = "<a href=\"view_entry.php?id=$row[0]\">". $breve_description . "</a>";
     echo "<td>".$breve_description."</td>\n";
 
@@ -125,7 +161,11 @@ function reporton(&$row, $dformat)
 
     } else {
         echo describe_span($row[1], $row[2],$dformat);
-        echo "<br />".   date("d\/m\/Y\ \-\ H\:i",$row[1])." ==> ".date("d\/m\/Y\ \-\ H\:i",$row[2])."</td>\n";
+        if (date("d\/m\/Y",$row[1])==date("d\/m\/Y",$row[2]))
+            echo "<br />".   date("H\:i",$row[1])." ==> ".date("H\:i",$row[2])."</td>\n";
+        else
+            echo "<br />".   date("d\/m\/Y\ \-\ H\:i",$row[1])." ==> ".date("d\/m\/Y\ \-\ H\:i",$row[2])."</td>\n";
+
     }
     #Description
     if ($row[4] != "")
@@ -135,12 +175,12 @@ function reporton(&$row, $dformat)
     echo "<td>". $description . "</td>\n";
 
     #Type de réservation
-    $et = grr_sql_query1("select type_name from grr_type_area where type_letter='".$row[5]."'");
+    $et = grr_sql_query1("select type_name from ".TABLE_PREFIX."_type_area where type_letter='".$row[5]."'");
     if ($et == -1) $et = "?".$row[5]."?";
     echo "<td>".$et."</td>\n";
 
     #Affichage de "crée par"
-    $sql_beneficiaire = "SELECT prenom, nom FROM grr_utilisateurs WHERE login = '".$row[6]."'";
+    $sql_beneficiaire = "SELECT prenom, nom FROM ".TABLE_PREFIX."_utilisateurs WHERE login = '".$row[6]."'";
     $res_beneficiaire = grr_sql_query($sql_beneficiaire);
     if ($res_beneficiaire) $row_user = grr_sql_row($res_beneficiaire, 0);
 
@@ -163,9 +203,9 @@ function reporton(&$row, $dformat)
 function accumulate(&$row, &$count, &$hours, $report_start, $report_end,
     &$room_hash, &$breve_description_hash, $csv="n")
 {
-    global $vocab;
+  global $vocab;
     if ($_GET["sumby"] == "5")
-        $temp = grr_sql_query1("select type_name from grr_type_area where type_letter = '".$row[$_GET["sumby"]]."'");
+        $temp = grr_sql_query1("select type_name from ".TABLE_PREFIX."_type_area where type_letter = '".$row[$_GET["sumby"]]."'");
     else if (($_GET["sumby"] == "3") or ($_GET["sumby"] == "6"))
         $temp = $row[$_GET["sumby"]];
     else
@@ -198,10 +238,10 @@ function accumulate(&$row, &$count, &$hours, $report_start, $report_end,
 function accumulate_periods(&$row, &$count, &$hours, $report_start, $report_end,
     &$room_hash, &$breve_description_hash, $csv="n")
 {
-    global $vocab, $periods_name;
+  global $vocab, $periods_name;
     $max_periods = count($periods_name);
     if ($_GET["sumby"] == "5")
-        $temp = grr_sql_query1("select type_name from grr_type_area where type_letter = '".$row[$_GET["sumby"]]."'");
+        $temp = grr_sql_query1("select type_name from ".TABLE_PREFIX."_type_area where type_letter = '".$row[$_GET["sumby"]]."'");
     else if (($_GET["sumby"] == "3") or ($_GET["sumby"] == "6"))
         $temp = $row[$_GET["sumby"]];
     else
@@ -233,7 +273,7 @@ function accumulate_periods(&$row, &$count, &$hours, $report_start, $report_end,
 function cell($count, $hours, $csv="n", $decompte="heure")
 {
     if ($csv == "n")
-       echo "<td class=\"BR\" align=right>($count) ". sprintf("%.2f", $hours) . "</td>\n";
+       echo "<td class=\"BR\" align=\"right\">($count) ". sprintf("%.2f", $hours) . "</td>\n";
     else if (($csv == "y") and ($decompte=="heure"))     // Cas CSV : affichage du décompte des heures uniquement
        echo sprintf("%.2f", $hours) . ";";
     else if (($csv == "y") and ($decompte=="resa"))     // Cas CSV : affichage du décompte des réservations uniquement
@@ -268,19 +308,19 @@ function do_summary(&$count, &$hours, &$room_hash, &$breve_description_hash,$ena
         else if ($_GET["sumby"]=="5")
             $premiere_cellule = get_vocab("type");
         else
-            $premiere_cellule = grr_sql_query1("select fieldname from grr_overload where id='".$_GET["sumby"]."'");
+            $premiere_cellule = grr_sql_query1("select fieldname from ".TABLE_PREFIX."_overload where id='".$_GET["sumby"]."'");
 
       if ($enable_periods == 'y')
-        echo "<hr /><h1>".get_vocab("summary_header_per")."</h1><table border=2 cellspacing=4>\n";
+        echo "<hr /><h1>".get_vocab("summary_header_per")."</h1><table border=\"2\" cellspacing=\"4\">\n";
       else
-        echo "<hr /><h1>".get_vocab("summary_header")."</h1><table border=2 cellspacing=4>\n";
-      echo "<tr><td class=\"BL\" align=left><b>".$premiere_cellule." \ ".get_vocab("room")."</b></td>\n";
+        echo "<hr /><h1>".get_vocab("summary_header")."</h1><table border=\"2\" cellspacing=\"4\">\n";
+      echo "<tr><td class=\"BL\" align=\"left\"><b>".$premiere_cellule." \ ".get_vocab("room")."</b></td>\n";
     }
 
     for ($c = 0; $c < $n_rooms; $c++)
     {
         if ($csv == "n")
-            echo "<td class=\"BL\" align=left><b>$rooms[$c]</b></td>\n";
+            echo "<td class=\"BL\" align=\"left\"><b>$rooms[$c]</b></td>\n";
         else
             echo "$rooms[$c];";
 
@@ -288,7 +328,7 @@ function do_summary(&$count, &$hours, &$room_hash, &$breve_description_hash,$ena
         $col_hours_total[$c] = 0.0;
     }
     if ($csv == "n")
-         echo "<td class=\"BR\" align=right><br /><b>".get_vocab("total")."</b></td></tr>\n";
+         echo "<td class=\"BR\" align=\"right\"><br /><b>".get_vocab("total")."</b></td></tr>\n";
     else
         echo html_entity_decode_all_version($vocab['total']).";\r\n";
 
@@ -301,7 +341,7 @@ function do_summary(&$count, &$hours, &$room_hash, &$breve_description_hash,$ena
         $row_hours_total = 0.0;
         $breve_description = $breve_descriptions[$r];
         if ($csv == "n")
-            echo "<tr><td class=\"BR\" align=right><b>$breve_description</b></td>\n";
+            echo "<tr><td class=\"BR\" align=\"right\"><b>$breve_description</b></td>\n";
         else
             echo "$breve_description;";
         for ($c = 0; $c < $n_rooms; $c++)
@@ -332,7 +372,7 @@ function do_summary(&$count, &$hours, &$room_hash, &$breve_description_hash,$ena
         $grand_hours_total += $row_hours_total;
     }
     if ($csv == "n")
-        echo "<tr><td class=\"BR\" align=right><b>".get_vocab("total")."</b></td>\n";
+        echo "<tr><td class=\"BR\" align=\"right\"><b>".get_vocab("total")."</b></td>\n";
     else
         echo html_entity_decode_all_version($vocab['total']).";";
     for ($c = 0; $c < $n_rooms; $c++)
@@ -347,15 +387,11 @@ if(!isset($day) or !isset($month) or !isset($year))
     $month = date("m");
     $year  = date("Y");
 }
-if(empty($area))
-    $area = get_default_area();
 
 if (($summarize != 4) and ($summarize != 5)) {
     #Affiche les informations dans l'header
-    print_header($day, $month, $year, $area);
-    ?>
-    <script type="text/javascript" src="./functions.js" language="javascript"></script>
-    <?php
+    print_header($day, $month, $year, $area, $type_session,'no_admin','');
+
 }
 
 if (isset($champ[0]))
@@ -373,13 +409,13 @@ if (isset($champ[0]))
 }
 else
 {
-    $From_time = mktime(0, 0, 0, $month, $day - getSettingValue("default_report_days"), $year);
-    $To_day = $day;
-    $To_month = $month;
-    $To_year = $year;
-    $From_day   = date("d", $From_time);
-    $From_month = date("m", $From_time);
-    $From_year  = date("Y", $From_time);
+    $to_time = mktime(0, 0, 0, $month, $day + getSettingValue("default_report_days"), $year);
+    if (!isset($From_day)) $From_day = $day;
+    if (!isset($From_month)) $From_month = $month;
+    if (!isset($From_year)) $From_year = $year;
+    if (!isset($To_day)) $To_day   = date("d", $to_time);
+    if (!isset($To_month)) $To_month = date("m", $to_time);
+    if (!isset($To_year)) $To_year  = date("Y", $to_time);
 }
     #$summarize:
     # 1=Rapport seulement,
@@ -391,30 +427,30 @@ if (empty($summarize)) $summarize = 1;
 
 if (($summarize != 4) and ($summarize != 5)) {
 ?>
-<div align=center><h1><?php echo get_vocab("search report stats").grr_help("aide_grr_recherche");?></h1>
-<form method='get' action=report.php>
+<div class="page_sans_col_gauche"><h1><?php echo get_vocab("search report stats").grr_help("aide_grr_recherche");?></h1>
+<form method="get" action="report.php">
 <?php
 // Si format imprimable ($_GET['pview'] = 1), on n'affiche pas cette partie
 if ($_GET['pview'] != 1) {
 ?>
 <table border="0">
 <tr><td class="CR"><?php echo get_vocab("report_start").get_vocab("deux_points");?></td>
-    <td class="CL"> <font size="-1">
+    <td class="CL">
     <?php genDateSelector("From_", $From_day, $From_month, $From_year,""); ?>
-    </font></td></tr>
+    </td></tr>
 <tr><td class="CR"><?php echo get_vocab("report_end").get_vocab("deux_points");?></td>
-    <td class="CL"> <font size="-1">
+    <td class="CL">
     <?php genDateSelector("To_", $To_day, $To_month, $To_year,""); ?>
-    </font></td></tr>
+    </td></tr>
 <?php
 if (!isset($_GET["condition_et_ou"]) or ($_GET["condition_et_ou"] != "OR"))
     $_GET["condition_et_ou"] = "AND";
 echo "<tr><td align=\"right\"><input type=\"radio\" name=\"condition_et_ou\" value=\"AND\" ";
-if ($_GET["condition_et_ou"] == "AND") echo "checked";
+if ($_GET["condition_et_ou"] == "AND") echo "checked=\"checked\"";
 echo " /></td>\n";
 echo "<td>".get_vocab("valide toutes les conditions suivantes")."</td></tr>";
 echo "<tr><td align=\"right\"><input type=\"radio\" name=\"condition_et_ou\" value=\"OR\" ";
-if ($_GET["condition_et_ou"] != "AND") echo "checked";
+if ($_GET["condition_et_ou"] != "AND") echo "checked=\"checked\"";
 echo " /></td>\n";
 echo "<td>".get_vocab("Valide au moins une des conditions suivantes")."</td></tr>\n";
 
@@ -424,25 +460,25 @@ else
    $nb_ligne = 5;
 $k = 0;
 while($k < $nb_ligne) {
-    echo "<tr><td><select name=\"champ[]\" size=\"1\">\n";
+    echo "<tr><td align=\"right\"><select name=\"champ[]\" size=\"1\">\n";
     echo "<option value=''>".get_vocab("choose")."</option>\n";
     echo "<option value='area' ";
-    if (isset($champ[$k]) and ($champ[$k] == "area")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "area")) echo " selected=\"selected\" ";
     echo ">".get_vocab("match_area")."</option>\n";
     echo "<option value='room' ";
-    if (isset($champ[$k]) and ($champ[$k] == "room")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "room")) echo " selected=\"selected\" ";
     echo ">".get_vocab("room")."</option>\n";
     echo "<option value='type' ";
-    if (isset($champ[$k]) and ($champ[$k] == "type")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "type")) echo " selected=\"selected\" ";
     echo ">".get_vocab("type")."</option>\n";
     echo "<option value='name' ";
-    if (isset($champ[$k]) and ($champ[$k] == "name")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "name")) echo " selected=\"selected\" ";
     echo ">".get_vocab("namebooker")."</option>\n";
     echo "<option value='descr' ";
-    if (isset($champ[$k]) and ($champ[$k] == "descr")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "descr")) echo " selected=\"selected\" ";
     echo ">".get_vocab("match_descr")."</option>\n";
     echo "<option value='login' ";
-    if (isset($champ[$k]) and ($champ[$k] == "login")) echo " selected ";
+    if (isset($champ[$k]) and ($champ[$k] == "login")) echo " selected=\"selected\" ";
     echo ">".get_vocab("match_login")."</option>\n";
     // On récupère les infos sur le champ add
     $overload_fields = mrbsOverloadGetFieldslist("");
@@ -450,7 +486,7 @@ while($k < $nb_ligne) {
     foreach ($overload_fields as $fieldname=>$fieldtype) {
         if ($overload_fields[$fieldname]["confidentiel"] != 'y') {
             echo "<option value='addon_".$overload_fields[$fieldname]["id"]."' ";
-            if (isset($champ[$k]) and ($champ[$k] == "addon_".$overload_fields[$fieldname]["id"])) echo " selected ";
+            if (isset($champ[$k]) and ($champ[$k] == "addon_".$overload_fields[$fieldname]["id"])) echo " selected=\"selected\" ";
             echo ">".$fieldname."</option>\n";
         }
     }
@@ -459,10 +495,10 @@ while($k < $nb_ligne) {
     echo "<td>\n";
     echo "<select name=\"type_recherche[]\" size=\"1\">\n";
     echo "<option value=\"1\" ";
-    if (isset($type_recherche[$k]) and ($type_recherche[$k] == "1")) echo " selected ";
+    if (isset($type_recherche[$k]) and ($type_recherche[$k] == "1")) echo " selected=\"selected\" ";
     echo ">".get_vocab("contient").get_vocab("deux_points")."</option>\n";
     echo "<option value=\"0\" ";
-    if (isset($type_recherche[$k]) and ($type_recherche[$k] == "0")) echo " selected ";
+    if (isset($type_recherche[$k]) and ($type_recherche[$k] == "0")) echo " selected=\"selected\" ";
     echo ">".get_vocab("ne contient pas").get_vocab("deux_points")."</option>\n";
     echo "</select>";
     if (!isset($texte_default[$k])) $texte_default[$k] ="";
@@ -472,17 +508,17 @@ while($k < $nb_ligne) {
 
 ?>
 
-</table><table border="0" cellpadding="5"><tr><td class="CR"><?php echo get_vocab("include").get_vocab("deux_points");?></td>
+<tr><td class="CR"><?php echo get_vocab("include").get_vocab("deux_points");?></td>
     <td class="CL">
-      <input type=radio name=summarize value=1<?php if ($summarize==1) echo " checked";
+      <input type="radio" name="summarize" value="1"<?php if ($summarize==1) echo " checked=\"checked\"";
         echo " />" . get_vocab("report_only");?>
-      <input type=radio name=summarize value=2<?php if ($summarize==2) echo " checked";
+      <input type="radio" name="summarize" value="2"<?php if ($summarize==2) echo " checked=\"checked\"";
         echo " />" . get_vocab("summary_only");?>
-      <input type=radio name=summarize value=3<?php if ($summarize==3) echo " checked";
+      <input type="radio" name="summarize" value="3"<?php if ($summarize==3) echo " checked=\"checked\"";
         echo " />" . get_vocab("report_and_summary");?>
-      <br /><input type=radio name=summarize value=4<?php if ($summarize==4) echo " checked";
+      <br /><input type="radio" name="summarize" value="4"<?php if ($summarize==4) echo " checked=\"checked\"";
         echo " />" . get_vocab("dlrapportcsv");?>
-      <input type=radio name=summarize value=5<?php if ($summarize==4) echo " checked";
+      <input type="radio" name="summarize" value="5"<?php if ($summarize==4) echo " checked=\"checked\"";
         echo " />" . get_vocab("dlresumecsv");?>
 
     <br /></td></tr>
@@ -495,13 +531,13 @@ while($k < $nb_ligne) {
       # [12]  les champs additionnele -> e.overload_desc
       echo "<select name=\"sumby\" size=\"1\">\n";
       echo "<option value=\"6\" ";
-      if ($_GET["sumby"]=="6") echo " selected";
+      if ($_GET["sumby"]=="6") echo " selected=\"selected\"";
       echo ">".get_vocab("sum_by_creator")."</option>\n";
       echo "<option value=\"3\" ";
-      if ($_GET["sumby"]=="3") echo " selected";
+      if ($_GET["sumby"]=="3") echo " selected=\"selected\"";
       echo ">".get_vocab("sum_by_descrip")."</option>\n";
       echo "<option value=\"5\" ";
-      if ($_GET["sumby"]=="5") echo " selected";
+      if ($_GET["sumby"]=="5") echo " selected=\"selected\"";
       echo ">".get_vocab("type")."</option>\n";
       // On récupère les infos sur le champ add
       $overload_fields = mrbsOverloadGetFieldslist("");
@@ -509,7 +545,7 @@ while($k < $nb_ligne) {
       foreach ($overload_fields as $fieldname=>$fieldtype) {
        if ($overload_fields[$fieldname]["confidentiel"] != 'y') {
         echo "<option value='".$overload_fields[$fieldname]["id"]."' ";
-        if ($_GET["sumby"] == $overload_fields[$fieldname]["id"]) echo " selected ";
+        if ($_GET["sumby"] == $overload_fields[$fieldname]["id"]) echo " selected=\"selected\" ";
         echo ">".$fieldname."</option>\n";
        }
     }
@@ -517,7 +553,10 @@ while($k < $nb_ligne) {
       echo "</select>";
     ?>
     </td></tr>
-<tr><td colspan=2 align=center><input type=submit value="<?php echo get_vocab('submit') ?>" />
+<tr><td colspan="2" align="center">
+<input type="hidden" name="is_posted" value="y" />
+
+<input type="submit" value="<?php echo get_vocab('submit') ?>" />
 </td></tr>
 </table>
 <?php
@@ -530,14 +569,20 @@ while($k < $nb_ligne) {
 }
 
     # Résultats:
-if (isset($champ[0]))
+//if (isset($champ[0]))
+if (isset($_GET["is_posted"]))
 {
-    if (($summarize != 4) and ($summarize != 5)) echo "<hr />";
+    if (($summarize != 4) and ($summarize != 5)) {
+        echo "<div class=\"page_sans_col_gauche\">\n";
+        echo "<hr />\n";
+    }
     // Affichage d'un lien pour format imprimable
     if (( !isset($_GET['pview'])  or ($_GET['pview'] != 1)) and (($summarize != 4) and ($summarize != 5))) {
-        echo '<center><p><a href="' . traite_grr_url("","y")."report.php" . '?' . htmlspecialchars($_SERVER['QUERY_STRING']) . '&amp;pview=1" ';
+        echo '<p style="text-align:center;">
+        <a href="' . traite_grr_url("","y")."report.php" . '?' . htmlspecialchars($_SERVER['QUERY_STRING']) . '&amp;pview=1" ';
         if (getSettingValue("pview_new_windows")==1) echo ' target="_blank"';
-        echo '>' . get_vocab("ppreview") . '</a></p></center>';
+        echo '>' . get_vocab("ppreview") . '</a>
+        </p>';
     }
 
     #S'assurer que ces paramètres ne sont pas cités.
@@ -565,29 +610,38 @@ if (isset($champ[0]))
 #  11  [10]  Room description -> r.description
 #  12  [11]  id de l'area -> a.id
 #  13  [12]  les champs additionnele -> e.overload_desc
+    // Tableau des ressources invisibles pour l'utilisateur
+
     $sql = "SELECT distinct e.id, e.start_time, e.end_time, e.name, e.description, "
         . "e.type, e.beneficiaire, "
         .  grr_sql_syntax_timestamp_to_unix("e.timestamp")
         . ", a.area_name, r.room_name, r.description, a.id, e.overload_desc"
-        . " FROM grr_entry e, grr_area a, grr_room r, grr_type_area t";
+        . " FROM ".TABLE_PREFIX."_entry e, ".TABLE_PREFIX."_area a, ".TABLE_PREFIX."_room r, ".TABLE_PREFIX."_type_area t";
 
     // Si l'utilisateur n'est pas administrateur, seuls les domaines auxquels il a accès sont pris en compte
-    if(authGetUserLevel(getUserName(),-1) < 5)
+    if(authGetUserLevel(getUserName(),-1) < 6)
         if ($test_grr_j_user_area != 0)
-           $sql .= ", grr_j_user_area j ";
+           $sql .= ", ".TABLE_PREFIX."_j_user_area j ";
         $sql .= " WHERE e.room_id = r.id AND r.area_id = a.id";
+        // on ne cherche pas parmi les ressources invisibles pour l'utilisateur
+        $tab_rooms_noaccess = verif_acces_ressource(getUserName(), 'all');
+        foreach($tab_rooms_noaccess as $key){
+          $sql .= " and r.id != $key ";
+        }
+
     // Si l'utilisateur n'est pas administrateur, seuls les domaines auxquels il a accès sont pris en compte
-    if(authGetUserLevel(getUserName(),-1) < 5)
+    if(authGetUserLevel(getUserName(),-1) < 6)
         if ($test_grr_j_user_area == 0)
             $sql .= " and a.access='a' ";
         else
-            $sql .= " and ((j.login='".$_SESSION['login']."' and j.id_area=a.id and a.access='r') or (a.access='a')) ";
+            $sql .= " and ((j.login='".getUserName()."' and j.id_area=a.id and a.access='r') or (a.access='a')) ";
 
         $sql .= " AND e.start_time < $report_end AND e.end_time > $report_start";
 
     $k = 0;
-    $sql .= " AND (";
-    while ($k < count($texte)) {
+    if (isset($champ[0])) {
+      $sql .= " AND (";
+      while ($k < count($texte)) {
         if ($champ[$k] == "area")
             $sql .=  grr_sql_syntax_caseless_contains("a.area_name", $texte[$k], $type_recherche[$k]);
         if ($champ[$k] == "room")
@@ -612,8 +666,9 @@ if (isset($champ[0]))
         if ($k < (count($texte)-1))
             $sql .= " ".$_GET["condition_et_ou"]." ";
         $k++;
+      }
+      $sql .= ")";
     }
-    $sql .= ")";
     $sql .= " AND  t.type_letter = e.type ";
     if( $sortby == "a" )
         #Trié par: Area, room, debut, date/heure.
@@ -633,7 +688,7 @@ if (isset($champ[0]))
     else if( $sortby == "b" )
         #Trié par: réservant, Area, room, debut, date/heure.
         $sql .= " ORDER BY e.name,9,r.order_display,10,2";
-//    echo $sql." <br /><br />";
+    // echo $sql." <br /><br />";
         $res = grr_sql_query($sql);
     if (! $res) fatal_error(0, grr_sql_error());
 
@@ -641,24 +696,23 @@ if (isset($champ[0]))
 
     if (($nmatch == 0) and (($summarize != 4) and ($summarize != 5)))
     {
-        echo "<P><B>" . get_vocab("nothing_found") . "</B>\n";
+        echo "<p><b>" . get_vocab("nothing_found") . "</b>\n";
         grr_sql_free($res);
     }
     else
     {
         if (($summarize != 4) and ($summarize != 5)) {
-            echo "<P><B>" . $nmatch . " "
+            echo "<p><b>" . $nmatch . " "
             . ($nmatch == 1 ? get_vocab("entry_found") : get_vocab("entries_found"))
-            .  "</B>\n";
+            .  "</b></p>\n";
         }
 
         if (($summarize == 1) or ($summarize == 3)) {
-            echo "<center>";
-            echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"1\">";
+            echo "<table cellpadding=\"3\" cellspacing=\"0\" border=\"1\">\n";
             //    echo "<tr><td colspan=\"6\" align=\"center\">".get_vocab("trier_par").get_vocab("deux_points")."</td></tr>";
-            echo "<tr>";
+            echo "<tr>\n";
             // Colonne domaine
-            echo "<td>";
+            echo "<td>\n";
             $m = 0;
             $param="";
             while ($m < count($champ)) {
@@ -667,7 +721,7 @@ if (isset($champ[0]))
             }
             $param .= "&amp;condition_et_ou=".$_GET["condition_et_ou"]."&amp;sumby=".$_GET["sumby"];
             if ($sortby != "a") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=a";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=a&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("match_area")."</a>";
             } else
@@ -676,7 +730,7 @@ if (isset($champ[0]))
             // Colonne ressource
             echo "<td>";
             if ($sortby != "r") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=r";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=r&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("room")."</a>";
             } else
@@ -685,7 +739,7 @@ if (isset($champ[0]))
             // Colonne "nom"
              echo "<td>";
              if ($sortby != "b") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=b";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=b&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("namebooker")."</a>";
             } else
@@ -694,7 +748,7 @@ if (isset($champ[0]))
                 // Date de début
             echo "<td>";
             if ($sortby != "d") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=d";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=d&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("start_date")."</a>";
             } else
@@ -705,7 +759,7 @@ if (isset($champ[0]))
             // Colonne Type
             echo "<td>";
             if ($sortby != "t") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=t";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=t&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("type")."</a>";
            } else
@@ -714,7 +768,7 @@ if (isset($champ[0]))
             // Colonne bénéficiaire
             echo "<td>";
             if ($sortby != "c") {
-                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=c";
+                echo "<a href='report.php?From_day=$From_day&amp;From_month=$From_month&amp;From_year=$From_year&amp;To_day=$To_day&amp;To_month=$To_month&amp;To_year=$To_year$param&amp;summarize=$summarize&amp;sumby=".$_GET["sumby"]."&amp;sortby=c&amp;is_posted=y";
                 if ($_GET['pview'] != 0) echo "&amp;pview=1";
                 echo "'>".get_vocab("match_login")."</a>";
             } else
@@ -744,14 +798,12 @@ if (isset($champ[0]))
                 }
         }
         if (($summarize == 1) or ($summarize == 3))
-            echo "</table></center>";
+            echo "</table>";
         if (($summarize == 2) or ($summarize == 3)) {
-            echo "<center>";
             // Décompte des créneaux réservées
             if (isset($do_sum1)) do_summary($count, $hours, $room_hash, $breve_description_hash,'y','',"n");
             // Décompte des heures réservées
             if (isset($do_sum2)) do_summary($count2, $hours2, $room_hash2, $breve_description_hash2,'n','',"n");
-            echo "</center>";
         }
 
         if ($summarize == 4) {
@@ -767,7 +819,7 @@ if (isset($champ[0]))
                 grr_sql_free($res);
             } else {
                 // Ligne d'en-tête
-                echo html_entity_decode_all_version($vocab["reservee au nom de"]).";".html_entity_decode_all_version($vocab["areas"]).";".html_entity_decode_all_version($vocab["room"]).html_entity_decode_all_version(ereg_replace("&nbsp;", " ",$vocab["deux_points"])).";".html_entity_decode_all_version($vocab["description"]).";".html_entity_decode_all_version($vocab["time"])." - ".html_entity_decode_all_version($vocab["duration"]).";".html_entity_decode_all_version($vocab["namebooker"]).html_entity_decode_all_version(ereg_replace("&nbsp;", " ",$vocab["deux_points"])).";".html_entity_decode_all_version($vocab["match_descr"]).";".html_entity_decode_all_version($vocab["lastupdate"]).";\n";
+                echo html_entity_decode_all_version($vocab["reservee au nom de"]).";".html_entity_decode_all_version($vocab["areas"]).";".html_entity_decode_all_version($vocab["room"]).html_entity_decode_all_version(preg_replace("/&nbsp;/", " ",$vocab["deux_points"])).";".html_entity_decode_all_version($vocab["description"]).";".html_entity_decode_all_version($vocab["time"])." - ".html_entity_decode_all_version($vocab["duration"]).";".html_entity_decode_all_version($vocab["namebooker"]).html_entity_decode_all_version(preg_replace("/&nbsp;/", " ",$vocab["deux_points"])).";".html_entity_decode_all_version($vocab["match_descr"]).";".html_entity_decode_all_version($vocab["lastupdate"]).";\n";
             }
             for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
                 #Affichage de "crée par" et de la date de la dernière mise à jour
@@ -815,7 +867,7 @@ if (isset($champ[0]))
                 else if ($_GET["sumby"]=="5")
                     echo html_entity_decode_all_version($vocab["summarize_by"])." " .html_entity_decode_all_version($vocab["type"])." - $day $month $year;";
                 else {
-                    $fieldname = grr_sql_query1("select fieldname from grr_overload where id='".$_GET["sumby"]."'");
+                    $fieldname = grr_sql_query1("select fieldname from ".TABLE_PREFIX."_overload where id='".$_GET["sumby"]."'");
                     echo html_entity_decode_all_version($vocab["summarize_by"])." " .html_entity_decode_all_version($fieldname)." - $day $month $year;";
                 }
                 echo "\r\n";
@@ -854,5 +906,7 @@ if (isset($champ[0]))
 
     }
 }
-if (($summarize != 4) and ($summarize != 5))
+if (($summarize != 4) and ($summarize != 5)) {
+    echo "</div>";
     include "include/trailer.inc.php";
+}

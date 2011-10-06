@@ -12,20 +12,9 @@ function verifierJoursCycles(){
 function clicMenu(num)
 {
   var fermer; var ouvrir; var menu;
-  //Booléen reconnaissant le navigateur
-  isIE = (document.all)
-  isNN6 = (!isIE) && (document.getElementById)
-  //Compatibilité : l'objet menu est détecté selon le navigateur
-
-  if (isIE) {
-        menu = document.all['menu' + num];
-        if (document.all['fermer']) fermer = document.all['fermer'];
-        if (document.all['ouvrir']) ouvrir = document.all['ouvrir'];
-  }else if (isNN6) {
-         menu = document.getElementById('menu' + num);
-        if (document.getElementById('fermer')) fermer = document.getElementById('fermer');
-        if (document.getElementById('ouvrir')) ouvrir = document.getElementById('ouvrir');
-  }
+  menu = document.getElementById('menu' + num);
+  if (document.getElementById('fermer')) fermer = document.getElementById('fermer');
+  if (document.getElementById('ouvrir')) ouvrir = document.getElementById('ouvrir');
 
   // On ouvre ou ferme
   if (menu) {
@@ -84,6 +73,16 @@ function confirmlink(theLink, theSqlQuery, themessage)
     return is_confirmed;
 } // end of the 'confirmLink()' function
 
+
+function confirmButton(theform,themessage)
+{
+    var is_confirmed = window.confirm(themessage);
+    if (is_confirmed) {
+        document.forms[theform].submit();
+    }
+    return is_confirmed;
+} // end of the 'confirmButton()' function
+
 /**
  * Checks/unchecks les boites à cocher
  *
@@ -92,7 +91,24 @@ function confirmlink(theLink, theSqlQuery, themessage)
  * day la valaur de de la boite à cocher ou à décocher
  * return  boolean  always true
  */
-function setCheckboxesGrr(the_form, do_check, day)
+function setCheckboxesGrr(elts, do_check, day)
+{
+    for (i=0;i<elts.length;i++)
+    {
+        type = elts.type;
+        if (type="checkbox")
+        {
+            if ((elts[i].value== day) || (day=='all'))
+            {
+                elts[i].checked = do_check;
+            }
+        }
+    }
+
+    return true;
+} // end of the 'setCheckboxes()' function
+
+function _setCheckboxesGrr(the_form, do_check, day)
 {
     var elts = document.forms[the_form];
     for (i=0;i<elts.elements.length;i++)
@@ -210,4 +226,27 @@ function setCookie( cookieName, cookieValue, lifeTime, path, domain, isSecure ) 
 	//check if the cookie has been set/deleted as required
 	if( lifeTime < 0 ) { if( typeof( retrieveCookie( cookieName ) ) == "string" ) { return false; } return true; }
 	if( typeof( retrieveCookie( cookieName ) ) == "string" ) { return true; } return false;
+}
+
+/* fonction qui est utilisée pour basculer un élément d'une liste1 vers une liste2 et inversement (utilisé lors de la création d'une demande) */
+
+function Deplacer(liste1, liste2) {
+	while (liste1.options.selectedIndex >= 0) {
+		opt = new Option(liste1.options[liste1.options.selectedIndex].text,liste1.options[liste1.options.selectedIndex].value);
+		liste2.options[liste2.options.length] = opt;
+		liste1.options[liste1.options.selectedIndex] = null;
+	}
+}
+function vider_liste(IdListe) {
+  var l = IdListe.options.length;
+  for(var i=0;i<l;i++) {
+     IdListe.options[i] = null;
+  }
+}
+
+function selectionner_liste(IdListe) {
+  var l = IdListe.options.length;
+  for(var i=0;i<l;i++) {
+     IdListe.options[i].selected = true;
+  }
 }

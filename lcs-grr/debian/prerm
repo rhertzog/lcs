@@ -6,6 +6,7 @@
 set -e
 
 MODULE="Grr"
+module="grr"
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 # summary of how this script can be called:
 #        * <postrm> `remove'
@@ -28,7 +29,7 @@ CHEMIN=`pwd`
         #
         # Desinscription du module de la table lcs_db.applis
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';";
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE' OR name = '$module';";
         #
         
         #
@@ -42,7 +43,7 @@ CHEMIN=`pwd`
 			echo "Pas de script a executer"
 		fi
 		#
-		#Suppression d'entrée dans l'annuaire ldap
+		#Suppression d'entree dans l'annuaire ldap
         #
         if [ -e $PATHPLUG/Admin/desinstall_ldap.ldif ]; then
     		echo "Suppression des entrees dans l'annuaire ldap"

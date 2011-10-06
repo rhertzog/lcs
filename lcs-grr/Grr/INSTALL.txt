@@ -1,6 +1,4 @@
-Dernière modification du fichier : 15/07/2008
-
-GRR1.9.5  -- Procédure d'installation
+GRR -- Procédure d'installation
 =====================================
 
 ****************************************************
@@ -26,7 +24,7 @@ Dans le cas contraire, vous devez impérativement renseigner ce fichier :
 Installation - Etape 1 : Configuration de GRR
 ************************************************
 Bien qu'un grand nombre de paramètres de GRR soient modifiables directement dans l'interface web de GRR,
-le fichier "/include/config.inc.php" contient un certain nombres de paramètres à configurer avant de transférer les fichiers vers le serveur web. Ce fichier est important et à scruter en détail. Prenez le temps de l'examiner et de fixer correctement les paramètres qui conviennent à votre cas. Toutes les indications à la configuration de ce fichier sont disponibles dans la documentation ainsi que dans le fichier lui-même.
+le fichier "/include/config.inc.php" contient quelques paramètres à configurer avant de transférer les fichiers vers le serveur web. Toutes les indications à la configuration de ce fichier sont disponibles dans la documentation ainsi que dans le fichier lui-même.
 
 ************************************************
 Installation - Etape 2 : transfert des fichiers
@@ -43,7 +41,7 @@ web du serveur ("htdocs" dans le cas d'Apache).
 
 Modification des droits : les droits d'écriture doivent être attribués
 * au répertoire "/images"       (chargement d'images pour les fiches de présentation des ressources)
-* au fichier "connect.inc.php"      (dans le cas d'une installation automatisée)
+* au fichier "include/connect.inc.php"      (dans le cas d'une installation automatisée)
 * au fichier "include/config_ldap.inc.php"  (dans le cas d'une authentification ldap)
 
 ***************************************************
@@ -106,13 +104,3 @@ Pour installer et faire fonctionner GRR, vous avez besoin de :
 -> Un serveur web/php et un serveur mysql (éventuellement sur la même
 machine)
 -> Nécessité de disposer d'une version de php version supérieure ou égale à  4.3.0 (gestion des variables de type $_SESSION, fonction mysql_real_escape_string(),  ...)
-
--> Configuration du serveur web :
-* soit autoriser la fonction set_time_limit(0) dans les scripts php
-* soit fixer la valeur de max_execution_time suffisamment élevée.
-* autoriser l'utilisation des fichiers .htaccess (protection du répertoire
-"secure")
-
-En cas de problème, n'hésitez pas à me contacter.
-
-Laurent Delineau

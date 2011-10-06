@@ -1,15 +1,15 @@
 <?php
-#########################################################################
-#                         verif_auto_grr.php                            #
-#                                                                       #
-#                Exécution de taches automatiques                       #
-#                                                                       #
-#                  Dernière modification : 28/03/2008                   #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * verif_auto_grr.php
+ * Exécution de taches automatiques
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-10-09 07:55:48 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: verif_auto_grr.php,v 1.5 2009-10-09 07:55:48 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -29,31 +29,54 @@
  */
 
 
-// L'exécution de ce script requiert un mot de passe :
-// Exemple : si le mot de passe est jamesbond007, vous devrez indiquer une URL du type :
-// http://mon-site.fr/grr/verif_auto_grr.php?mdp=jamesbond007
-// Le mot de passe  est défini dans l'interface en ligne de GRR (configuration générale -> Interactivité)
+/*
+MOT DE PASSE
+------------
+  L'exécution de ce script requiert un mot de passe défini dans l'interface en ligne de GRR (configuration générale -> Interactivité)
 
-// Début du script
+*/
+
+$titre = "GRR - Ex&eacute;cution de t&acirc;ches automatiques";
 include "include/connect.inc.php";
 include "include/config.inc.php";
+include "include/misc.inc.php";
 include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
-include "include/language.inc.php";
+include "include/mrbs_sql.inc.php";
+
 $grr_script_name = "verif_auto_grr.php";
-require_once("./include/settings.inc.php");
+include("include/settings.inc.php");
 if (!loadSettings())
     die("Erreur chargement settings");
 
-
-if ((!isset($_GET['mdp'])) or ($_GET['mdp'] != getSettingValue("motdepasse_verif_auto_grr")) or (getSettingValue("motdepasse_verif_auto_grr")=='')) {
-    showHeaderPage();
-    echo "Le mot de passe fourni est invalide.";
-    showFooterPage();
+if ((!isset($_GET['mdp'])) and (!isset($argv[1]))) {
+    echo "Il manque des arguments pour executer ce script. Reportez-vous a la documentation.";
     die();
 }
 
-showHeaderPage();
+// Début du script
+if (isset($argv[1])) {
+  DEFINE("CHEMIN_COMPLET_GRR",getSettingValue("chemin_complet_grr"));
+  chdir(CHEMIN_COMPLET_GRR);
+}
+include "include/language.inc.php";
+
+if (!isset($_GET['mdp']))
+    $_GET['mdp']=$argv[1];
+
+if ((!isset($_GET['mdp'])) or ($_GET['mdp'] != getSettingValue("motdepasse_verif_auto_grr")) or (getSettingValue("motdepasse_verif_auto_grr")=='')) {
+    if (!isset($argv[1]))
+        echo begin_page($titre,$page="no_session")."<p>";
+    echo "Le mot de passe fourni est invalide.";
+    if (!isset($argv[1])) {
+        echo "</p>";
+        include "include/trailer.inc.php";
+    }
+    die();
+}
+
+if (!isset($argv[1]))
+    echo begin_page($titre,$page="no_session");
 // On vérifie une fois par jour si le délai de confirmation des réservations est dépassé
 // Si oui, les réservations concernées sont supprimées et un mail automatique est envoyé.
 verify_confirm_reservation();
@@ -61,30 +84,10 @@ verify_confirm_reservation();
 // On vérifie une fois par jour que les ressources ont été rendue en fin de réservation
 // Si non, une notification email est envoyée
 verify_retard_reservation();
-echo "Le script a été exécuté.";
-showFooterPage();
-
-function showHeaderPage()
-{
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html>
-<head>
-<title>GRR - Ex&eacute;cution de t&acirc;ches automatiques</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15"/>
-<meta http-equiv="expires" content="0">
-</head>
-<body>
-<?
+if (!isset($argv[1])) {
+    echo "<p>Le script a été exécuté.</p>";
+    include "include/trailer.inc.php";
+} else {
+    echo "Le script a ete execute.";
 }
-
-function showFooterPage()
-{
-?>
-</body>
-</html>
-<?
-}
-
-
 ?>

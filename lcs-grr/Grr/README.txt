@@ -1,11 +1,5 @@
-Dernière modification du fichier : 15/07/2008
-
-GRR1.9.5
+GRR
 =======================================
-
-Laurent DELINEAU <laurent.delineau@ac-poitiers.fr>
-Mathieu Ignacio <mignacio@april.org>
-
 http://grr.mutualibre.org
 
 

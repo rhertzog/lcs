@@ -1,15 +1,15 @@
 <?php
-#########################################################################
-#                         admin_accueil                                 #
-#                                                                       #
-#                       Interface d'accueil de l'administration         #
-#                     des domaines et des ressources                    #
-#                                                                       #
-#                  Dernière modification : 21/05/2005                   #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * admin_accueil
+ * Interface d'accueil de l'administration des domaines et des ressources
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-02-27 13:28:19 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_accueil.php,v 1.4 2009-02-27 13:28:19 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -27,6 +27,22 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: admin_accueil.php,v $
+ * Revision 1.4  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2009-01-20 07:19:16  grr
+ * *** empty log message ***
+ *
+ * Revision 1.2  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/admin.inc.php";
 $grr_script_name = "admin_accueil.php";
@@ -38,7 +54,7 @@ if ((authGetUserLevel(getUserName(),-1,'area') < 4) and  (authGetUserLevel(getUs
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
@@ -47,8 +63,7 @@ print_header("","","","",$type="with_session", $page="admin");
 
 include "admin_col_gauche.php";
 ?>
-<td>
-<table><tr><td><img src="img_grr/totem_grr.png" alt="GRR !"  border="0" /></td>
+<table><tr><td><img src="img_grr/totem_grr.png" alt="GRR !" class="image" /></td>
 <td align="center" ><br /><br /><p style="font-size:20pt"><?php echo get_vocab("admin"); ?> </p><p style="font-size:40pt"><i>GRR !</i></p></td></tr></table>
 </td>
 </tr>

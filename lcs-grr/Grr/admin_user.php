@@ -1,14 +1,14 @@
 <?php
-#########################################################################
-#                            admin_user.php                             #
-#                                                                       #
-#            interface de gestion des utilisateurs                      #
-#               Dernière modification : 28/03/2008                      #
-#                                                                       #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * admin_user.php
+ * interface de gestion des utilisateurs de l'application GRR
+ * Dernière modification : $Date: 2009-09-29 18:02:56 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   admin
+ * @version   $Id: admin_user.php,v 1.11 2009-09-29 18:02:56 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +26,39 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/**
+ * $Log: admin_user.php,v $
+ * Revision 1.11  2009-09-29 18:02:56  grr
+ * *** empty log message ***
+ *
+ * Revision 1.10  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.8  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-01-20 07:19:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-10 07:06:39  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-06 21:57:34  grr
+ * *** empty log message ***
+ *
+ *
+ */
+
 include "include/admin.inc.php";
 $grr_script_name = "admin_user.php";
 
@@ -34,12 +67,12 @@ if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REF
 $display = isset($_GET["display"]) ? $_GET["display"] : NULL;
 $order_by = isset($_GET["order_by"]) ? $_GET["order_by"] : NULL;
 $msg = '';
-if ((authGetUserLevel(getUserName(),-1) < 5) and (authGetUserLevel(getUserName(),-1,'user') !=  1))
+if ((authGetUserLevel(getUserName(),-1) < 6) and (authGetUserLevel(getUserName(),-1,'user') !=  1))
 {
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
@@ -52,10 +85,6 @@ if ((isset($_GET['action_del'])) and ($_GET['js_confirmed'] ==1)) {
 print_header("","","","",$type="with_session", $page="admin");
 // Affichage de la colonne de gauche
 include "admin_col_gauche.php";
-
-?>
-<script type="text/javascript" src="./functions.js" language="javascript"></script>
-<?php
 
 // Enregistrement de allow_users_modify_profil
 // Un gestionnaire d'utilisateurs ne peut pas Autoriser ou non la modification par un utilisateur de ses informations personnelles
@@ -88,7 +117,7 @@ if ((isset($_GET['action'])) and ($_GET['action'] =="modif_mdp") and (authGetUse
 // On propose de supprimer les utilisateurs ext de GRR qui ne sont plus présents dans la base LCS
 if ((isset($_GET['action'])) and ($_GET['action'] =="nettoyage") and (getSettingValue("sso_statut") == "lcs")) {
     // Sélection des utilisateurs non locaux
-    $sql = "SELECT login, etat, source FROM grr_utilisateurs where source='ext'";
+    $sql = "SELECT login, etat, source FROM ".TABLE_PREFIX."_utilisateurs where source='ext'";
     $res = grr_sql_query($sql);
     if ($res) {
         include LCS_PAGE_AUTH_INC_PHP;
@@ -111,12 +140,13 @@ if ((isset($_GET['action'])) and ($_GET['action'] =="nettoyage") and (getSetting
                 $db_c = mysql_connect($dbHost, $dbUser, $dbPass);
             if (!$db_c || !mysql_select_db ($dbDb))
                echo "\n<p>\n" . get_vocab('failed_connect_db') . "\n";
-            $sql = "DELETE FROM grr_utilisateurs WHERE login='".$user_login."'";
+            $sql = "DELETE FROM ".TABLE_PREFIX."_utilisateurs WHERE login='".$user_login."'";
             if (grr_sql_command($sql) < 0) {fatal_error(1, "<p>" . grr_sql_error());}  else {
-                grr_sql_command("DELETE FROM grr_j_mailuser_room WHERE login='".$user_login."'");
-                grr_sql_command("DELETE FROM grr_j_user_area WHERE login='".$user_login."'");
-                grr_sql_command("DELETE FROM grr_j_user_room WHERE login='".$user_login."'");
-                grr_sql_command("DELETE FROM grr_j_useradmin_area WHERE login='".$user_login."'");
+                grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_mailuser_room WHERE login='".$user_login."'");
+                grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_area WHERE login='".$user_login."'");
+                grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_room WHERE login='".$user_login."'");
+                grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_area WHERE login='".$user_login."'");
+                grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_site WHERE login='".$user_login."'");
                 $msg .= "\\n".$user_login;
             }
         }
@@ -164,10 +194,10 @@ if ((isset($_GET['action'])) and ($_GET['action'] =="synchro") and (getSettingVa
         if ($groupe == "") $groupe = "vide";
 
 
-        $test = grr_sql_query1("select count(login) from grr_utilisateurs where login = '".$user_login."'");
+        $test = grr_sql_query1("select count(login) from ".TABLE_PREFIX."_utilisateurs where login = '".$user_login."'");
         if ($test == 0) {
             // On insert le nouvel utilisteur
-            $sql = "INSERT INTO grr_utilisateurs SET
+            $sql = "INSERT INTO ".TABLE_PREFIX."_utilisateurs SET
             nom='".protect_data_sql($user_nom)."',
             prenom='".protect_data_sql($user_prenom)."',
             statut='".protect_data_sql($user_statut)."',
@@ -180,10 +210,10 @@ if ((isset($_GET['action'])) and ($_GET['action'] =="synchro") and (getSettingVa
             else
                 $liste_nouveaux .= $user_login." (".$user_prenom." ".$user_nom.")<br />";
         } else {
-            $test2 = grr_sql_query1("select source from grr_utilisateurs where login = '".$user_login."'");
+            $test2 = grr_sql_query1("select source from ".TABLE_PREFIX."_utilisateurs where login = '".$user_login."'");
             if ($test2 == 'ext') {
                 // On met à jour
-                $sql = "UPDATE grr_utilisateurs SET
+                $sql = "UPDATE ".TABLE_PREFIX."_utilisateurs SET
                 nom='".protect_data_sql($user_nom)."',
                 prenom='".protect_data_sql($user_prenom)."',
                 email='".protect_data_sql($user_email)."'
@@ -200,9 +230,9 @@ if ((isset($_GET['action'])) and ($_GET['action'] =="synchro") and (getSettingVa
     }
     $mess = "";
     if ($liste_pb_insertion != "")
-        $mess .= "<b><font color='red'>".get_vocab("liste_pb_insertion")."</b><br />".$liste_pb_insertion."</font><br />";
+        $mess .= "<b><span class=\"avertissement\">".get_vocab("liste_pb_insertion")."</b><br />".$liste_pb_insertion."</span><br />";
     if ($liste_pb_update != "")
-        $mess .= "<b><font color='red'>".get_vocab("liste_pb_update")."</b><br />".$liste_pb_update."</font><br />";
+        $mess .= "<b><font class=\"avertissement\">".get_vocab("liste_pb_update")."</b><br />".$liste_pb_update."</span><br />";
     if ($liste_nouveaux != "")
         $mess .= "<b>".get_vocab("liste_nouveaux_utilisateurs")."</b><br />".$liste_nouveaux."<br />";
     if ($liste_update != "")
@@ -218,18 +248,19 @@ if ((isset($_GET['action_del'])) and ($_GET['js_confirmed'] ==1)) {
     // un gestionnaire d'utilisateurs ne peut pas supprimer un administrateur général ou un gestionnaire d'utilisateurs
     $can_delete = "yes";
     if (authGetUserLevel(getUserName(),-1,'user') ==  1) {
-        $test_statut = grr_sql_query1("select statut from grr_utilisateurs where login='".$_GET['user_del']."'");
+        $test_statut = grr_sql_query1("select statut from ".TABLE_PREFIX."_utilisateurs where login='".$_GET['user_del']."'");
         if (($test_statut == "gestionnaire_utilisateur") or ($test_statut == "administrateur"))
             $can_delete = "no";
     }
 
-    if (($temp != $_SESSION['login']) and ($can_delete == "yes")) {
-        $sql = "DELETE FROM grr_utilisateurs WHERE login='$temp'";
+    if (($temp != getUserName()) and ($can_delete == "yes")) {
+        $sql = "DELETE FROM ".TABLE_PREFIX."_utilisateurs WHERE login='$temp'";
         if (grr_sql_command($sql) < 0) {fatal_error(1, "<p>" . grr_sql_error());}  else {
-            grr_sql_command("DELETE FROM grr_j_mailuser_room WHERE login='$temp'");
-            grr_sql_command("DELETE FROM grr_j_user_area WHERE login='$temp'");
-            grr_sql_command("DELETE FROM grr_j_user_room WHERE login='$temp'");
-            grr_sql_command("DELETE FROM grr_j_useradmin_area WHERE login='$temp'");
+            grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_mailuser_room WHERE login='$temp'");
+            grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_area WHERE login='$temp'");
+            grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_room WHERE login='$temp'");
+            grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_area WHERE login='$temp'");
+            grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_site WHERE login='$temp'");
             $msg=get_vocab("del_user_succeed");
         }
     }
@@ -237,9 +268,6 @@ if ((isset($_GET['action_del'])) and ($_GET['js_confirmed'] ==1)) {
 
 if (isset($mess) and ($mess != ""))
     echo "<p>".$mess."</p>";
-
-// Affichage d'un pop-up
-affiche_pop_up($msg,"admin");
 
 echo "<h2>".get_vocab('admin_user.php').grr_help("aide_grr_gestion_utilisateurs")."</h2>";
 if (empty($display)) { $display = 'actifs'; }
@@ -263,19 +291,19 @@ if (authGetUserLevel(getUserName(),-1,'user') !=  1) {
   echo "<tr>\n";
   echo "<td>".get_vocab("modification_parametres_personnels").get_vocab("deux_points")."<select name=\"allow_users_modify_profil\" size=\"1\">\n";
   echo "<option value = '1' ";
-  if (getSettingValue("allow_users_modify_profil")=='1') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_profil")=='1') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all")."</option>\n";
   echo "<option value = '2' ";
-  if (getSettingValue("allow_users_modify_profil")=='2') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_profil")=='2') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all_but_visitors")."</option>\n";
   echo "<option value = '5' ";
-  if (getSettingValue("allow_users_modify_profil")=='5') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_profil")=='5') {echo " selected=\"selected\"";}
   echo ">".get_vocab("only_administrators")."</option>\n";
   echo "</select>";
-  echo "</td><td><input type=\"submit\" value=\"".get_vocab("OK")."\" /></td></tr></table>";
-  echo "<input type=\"hidden\" name=\"action\" value=\"modif_profil\" />\n
-  <input type=\"hidden\" name=\"display\" value=\"$display\" />
-  </form>";
+  echo "</td>\n<td><div><input type=\"submit\" value=\"".get_vocab("OK")."\" /></div></td></tr></table>\n";
+  echo "<div><input type=\"hidden\" name=\"action\" value=\"modif_profil\" />\n
+  <input type=\"hidden\" name=\"display\" value=\"$display\" /></div>
+  </form>\n";
 }
 // Autoriser ou non la modification par un utilisateur de son email
 // Par ailleurs un gestionnaire d'utilisateurs ne peut pas Autoriser ou non la modification par un utilisateur de ses informations personnelles
@@ -285,19 +313,19 @@ if (authGetUserLevel(getUserName(),-1,'user') !=  1) {
   echo "<tr>\n";
   echo "<td>".get_vocab("modification_parametre_email").get_vocab("deux_points")."<select name=\"allow_users_modify_email\" size=\"1\">\n";
   echo "<option value = '1' ";
-  if (getSettingValue("allow_users_modify_email")=='1') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_email")=='1') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all")."</option>\n";
   echo "<option value = '2' ";
-  if (getSettingValue("allow_users_modify_email")=='2') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_email")=='2') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all_but_visitors")."</option>\n";
   echo "<option value = '5' ";
-  if (getSettingValue("allow_users_modify_email")=='5') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_email")=='5') {echo " selected=\"selected\"";}
   echo ">".get_vocab("only_administrators")."</option>\n";
   echo "</select>";
-  echo "</td><td><input type=\"submit\" value=\"".get_vocab("OK")."\" /></td></tr></table>";
-  echo "<input type=\"hidden\" name=\"action\" value=\"modif_email\" />\n
-  <input type=\"hidden\" name=\"display\" value=\"$display\" />
-  </form>";
+  echo "</td>\n<td><div><input type=\"submit\" value=\"".get_vocab("OK")."\" /></div></td></tr></table>\n";
+  echo "<div><input type=\"hidden\" name=\"action\" value=\"modif_email\" />\n
+  <input type=\"hidden\" name=\"display\" value=\"$display\" /></div>
+  </form>\n";
 }
 // Autoriser ou non la modification par un utilisateur de son mot de passe,
 // Par ailleurs un gestionnaire d'utilisateurs ne peut pas Autoriser ou non la modification par un utilisateur de son mot de passe
@@ -307,42 +335,42 @@ if (authGetUserLevel(getUserName(),-1,'user') !=  1) {
   echo "<tr>\n";
   echo "<td>".get_vocab("modification_mdp").get_vocab("deux_points")."<select name=\"allow_users_modify_mdp\" size=\"1\">\n";
   echo "<option value = '1' ";
-  if (getSettingValue("allow_users_modify_mdp")=='1') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_mdp")=='1') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all")."</option>\n";
   echo "<option value = '2' ";
-  if (getSettingValue("allow_users_modify_mdp")=='2') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_mdp")=='2') {echo " selected=\"selected\"";}
   echo ">".get_vocab("all_but_visitors")."</option>\n";
   echo "<option value = '5' ";
-  if (getSettingValue("allow_users_modify_mdp")=='5') {echo " SELECTED";}
+  if (getSettingValue("allow_users_modify_mdp")=='5') {echo " selected=\"selected\"";}
   echo ">".get_vocab("only_administrators")."</option>\n";
   echo "</select>";
-  echo "</td><td><input type=\"submit\" value=\"".get_vocab("OK")."\" /></td></tr></table>";
-  echo "<input type=\"hidden\" name=\"action\" value=\"modif_mdp\" />\n
+  echo "</td>\n<td><div><input type=\"submit\" value=\"".get_vocab("OK")."\" /></div></td></tr></table>\n";
+  echo "<div><input type=\"hidden\" name=\"action\" value=\"modif_mdp\" />\n
   <input type=\"hidden\" name=\"display\" value=\"$display\" />
-  </form>";
+  </div></form>\n";
 }
 
 
 echo "<form action=\"admin_user.php\" method=\"get\">\n";
 echo "<table border=\"1\">\n";
 echo "<tr>\n";
-echo "<td>".get_vocab("display_all_user.php")."<INPUT TYPE=\"radio\" NAME=\"display\" value=\"tous\"";
-if ($display=='tous') {echo " CHECKED";}
+echo "<td>".get_vocab("display_all_user.php")."<input type=\"radio\" name=\"display\" value=\"tous\"";
+if ($display=='tous') {echo " checked=\"checked\"";}
 echo " /></td>";
 ?>
 <td>
- &nbsp;&nbsp;<?php echo get_vocab("display_user_on.php"); ?><INPUT TYPE="radio" NAME="display" value='actifs' <?php if ($display=='actifs') {echo " CHECKED";} ?> /></td>
+ &nbsp;&nbsp;<?php echo get_vocab("display_user_on.php"); ?><input type="radio" name="display" value='actifs' <?php if ($display=='actifs') {echo " checked=\"checked\"";} ?> /></td>
  <td>
- &nbsp;&nbsp;<?php echo get_vocab("display_user_off.php"); ?><INPUT TYPE="radio" NAME="display" value='inactifs' <?php if ($display=='inactifs') {echo " CHECKED";} ?> /></td>
- <td><input type=submit value=<?php echo get_vocab("OK"); ?> /></td>
+ &nbsp;&nbsp;<?php echo get_vocab("display_user_off.php"); ?><input type="radio" name="display" value='inactifs' <?php if ($display=='inactifs') {echo " checked=\"checked\"";} ?> /></td>
+ <td><input type="submit" value="<?php echo get_vocab("OK");?>" /></td>
  </tr>
  </table>
 
-<input type=hidden name=order_by value=<?php echo $order_by; ?> />
+<div><input type="hidden" name="order_by" value="<?php echo $order_by;?>" /></div>
 </form>
 <?php
 // Affichage du tableau
-echo "<table border=1 cellpadding=3>";
+echo "<table border=\"1\" cellpadding=\"3\">";
 echo "<tr><td><b><a href='admin_user.php?order_by=login&amp;display=$display'>".get_vocab("login_name")."</a></b></td>";
 echo "<td><b><a href='admin_user.php?order_by=nom,prenom&amp;display=$display'>".get_vocab("names")."</a></b></td>";
 echo "<td><b>".get_vocab("privileges")."</b></td>";
@@ -352,14 +380,14 @@ echo "<td><b><a href='admin_user.php?order_by=source,nom,prenom&amp;display=$dis
 echo "<td><b>".get_vocab("delete")."</b></td>";
 echo "</tr>";
 
-$sql = "SELECT nom, prenom, statut, login, etat, source FROM grr_utilisateurs ORDER BY $order_by";
+$sql = "SELECT nom, prenom, statut, login, etat, source FROM ".TABLE_PREFIX."_utilisateurs ORDER BY $order_by";
 $res = grr_sql_query($sql);
 if ($res) {
     for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
     {
 
-    $user_nom = $row[0];
-    $user_prenom = $row[1];
+    $user_nom = htmlspecialchars($row[0]);
+    $user_prenom = htmlspecialchars($row[1]);
     $user_statut = $row[2];
     $user_login = $row[3];
     $user_etat[$i] = $row[4];
@@ -377,54 +405,61 @@ if ($res) {
     $col[$i][2] = "$user_nom $user_prenom";
 
     // Affichage des ressources gérées
-
+    $col[$i][3]="";
+    if (getSettingValue("module_multisite") == "Oui") {
+      // On teste si l'utilisateur administre un site
+      $test_admin_site = grr_sql_query1("select count(s.id) from ".TABLE_PREFIX."_site s
+      left join ".TABLE_PREFIX."_j_useradmin_site j on s.id=j.id_site
+      where j.login = '".$user_login."'");
+      if (($test_admin_site > 0) or ($user_statut== 'administrateur')) $col[$i][3] = "<span class=\"style_privilege\">S</span>"; else $col[$i][3] = "";
+    }
     // On teste si l'utilisateur administre un domaine
-    $test_admin = grr_sql_query1("select count(a.area_name) from grr_area a
-    left join grr_j_useradmin_area j on a.id=j.id_area
+    $test_admin = grr_sql_query1("select count(a.area_name) from ".TABLE_PREFIX."_area a
+    left join ".TABLE_PREFIX."_j_useradmin_area j on a.id=j.id_area
     where j.login = '".$user_login."'");
-    if (($test_admin > 0) or ($user_statut== 'administrateur')) $col[$i][3] = "<font color=\"#FF0000\"><b>A</b></font>"; else $col[$i][3] = "";
+    if (($test_admin > 0) or ($user_statut== 'administrateur')) $col[$i][3] .= "<span class=\"style_privilege\"> A</span>"; else $col[$i][3] .= "";
     // Si le domaine est restreint, on teste si l'utilateur a accès
-    $test_restreint = grr_sql_query1("select count(a.area_name) from grr_area a
-    left join grr_j_user_area j on a.id = j.id_area
+    $test_restreint = grr_sql_query1("select count(a.area_name) from ".TABLE_PREFIX."_area a
+    left join ".TABLE_PREFIX."_j_user_area j on a.id = j.id_area
     where j.login = '".$user_login."'");
-    if (($test_restreint > 0)  or ($user_statut== 'administrateur')) $col[$i][3] .= "<font color=\"#FF0000\"><b> R</b></font>"; else $col[$i][3] .= "";
+    if (($test_restreint > 0)  or ($user_statut== 'administrateur')) $col[$i][3] .= "<span class=\"style_privilege\"> R</span>"; else $col[$i][3] .= "";
     // On teste si l'utilisateur administre une ressource
-    $test_room = grr_sql_query1("select count(r.room_name) from grr_room r
-    left join grr_j_user_room j on r.id=j.id_room
+    $test_room = grr_sql_query1("select count(r.room_name) from ".TABLE_PREFIX."_room r
+    left join ".TABLE_PREFIX."_j_user_room j on r.id=j.id_room
     where j.login = '".$user_login."'");
-    if (($test_room > 0)  or ($user_statut== 'administrateur')) $col[$i][3] .= "<font color=\"#FF0000\"><b> G</b></font>"; else $col[$i][3] .= "";
+    if (($test_room > 0)  or ($user_statut== 'administrateur')) $col[$i][3] .= "<span class=\"style_privilege\"> G</span>"; else $col[$i][3] .= "";
     // On teste si l'utilisateur gère les utilisateurs
-    if ($user_statut == "gestionnaire_utilisateur") $col[$i][3] .= "<font color=\"#FF0000\"><b> U</b></font>"; else $col[$i][3] .= "";
+    if ($user_statut == "gestionnaire_utilisateur") $col[$i][3] .= "<span class=\"style_privilege\"> U</span>"; else $col[$i][3] .= "";
     // On teste si l'utilisateur reçoit des mails automatiques
-    $test_mail = grr_sql_query1("select count(r.room_name) from grr_room r
-    left join grr_j_mailuser_room j on r.id=j.id_room
+    $test_mail = grr_sql_query1("select count(r.room_name) from ".TABLE_PREFIX."_room r
+    left join ".TABLE_PREFIX."_j_mailuser_room j on r.id=j.id_room
     where j.login = '".$user_login."'");
-    if ($test_mail > 0) $col[$i][3] .= "<font color=\"#FF0000\"><b> E</b></font>"; else $col[$i][3] .= "&nbsp;";
+    if ($test_mail > 0) $col[$i][3] .= "<span class=\"style_privilege\"> E</span>"; else $col[$i][3] .= "&nbsp;";
 
 
     // Affichage du statut
     if ($user_statut == "administrateur") {
-        $color[$i]='red';
+        $color[$i]='style_admin';
         $col[$i][4]=get_vocab("statut_administrator");
         }
     if ($user_statut == "visiteur") {
-        $color[$i]='yellow';
+        $color[$i]='style_visiteur';
         $col[$i][4]=get_vocab("statut_visitor");
         }
     if ($user_statut == "utilisateur") {
-        $color[$i]='blue';
+        $color[$i]='style_utilisateur';
         $col[$i][4]=get_vocab("statut_user");
     }
     if ($user_statut == "gestionnaire_utilisateur") {
-        $color[$i]='red';
+        $color[$i]='style_gestionnaire_utilisateur';
         $col[$i][4]=get_vocab("statut_user_administrator");
     }
 
 
     if ($user_etat[$i] == 'actif') {
-        $bgcolor = '#E9E9E4';
+        $fond = 'fond1';
     } else {
-        $bgcolor = '#AAAAAA';
+        $fond = 'fond2';
     }
     // Affichage de la source
     if (($user_source == 'local') or ($user_source == '')) {
@@ -432,24 +467,24 @@ if ($res) {
     } else {
         $col[$i][5]="Ext.";
     }
-    echo "<tr><td bgcolor='$bgcolor'>{$col[$i][1]}</td>";
+    echo "\n<tr><td class=\"".$fond."\">{$col[$i][1]}</td>\n";
     // un gestionnaire d'utilisateurs ne peut pas modifier un administrateur général ou un gestionnaire d'utilisateurs
     if ((authGetUserLevel(getUserName(),-1,'user') ==  1) and (($user_statut == "gestionnaire_utilisateur") or ($user_statut == "administrateur"))  )
-        echo "<td bgcolor='$bgcolor'>{$col[$i][2]}</td>";
+        echo "<td class=\"".$fond."\">{$col[$i][2]}</td>\n";
     else
-        echo "<td bgcolor='$bgcolor'><a href='admin_user_modify.php?user_login=$user_login&amp;display=$display'>{$col[$i][2]}</a></td>";
-    echo "<td bgcolor='$bgcolor'>{$col[$i][3]}</td>";
-    echo "<td bgcolor='$bgcolor'><font color=$color[$i]>{$col[$i][4]}</font></td>";
-    echo "<td bgcolor='$bgcolor'>{$col[$i][5]}</td>";
+        echo "<td class=\"".$fond."\"><a href=\"admin_user_modify.php?user_login=".urlencode($user_login)."&amp;display=$display\">{$col[$i][2]}</a></td>\n";
+    echo "<td class=\"".$fond."\">{$col[$i][3]}</td>\n";
+    echo "<td class=\"".$fond."\"><span class=\"".$color[$i]."\">{$col[$i][4]}</span></td>\n";
+    echo "<td class=\"".$fond."\">{$col[$i][5]}</td>\n";
 
     // Affichage du lien 'supprimer'
     // un gestionnaire d'utilisateurs ne peut pas supprimer un administrateur général ou un gestionnaire d'utilisateurs
     // Un administrateur ne peut pas se supprimer lui-même
-    if (((authGetUserLevel(getUserName(),-1,'user') ==  1) and (($user_statut == "gestionnaire_utilisateur") or ($user_statut == "administrateur"))  ) or (strtolower($_SESSION['login']) == strtolower($user_login))) {
-        echo "<td bgcolor='$bgcolor'>&nbsp;</td>";
+    if (((authGetUserLevel(getUserName(),-1,'user') ==  1) and (($user_statut == "gestionnaire_utilisateur") or ($user_statut == "administrateur"))  ) or (strtolower(getUserName()) == strtolower($user_login))) {
+        echo "<td class=\"".$fond."\">&nbsp;</td>";
     } else {
         $themessage = get_vocab("confirm_del");
-        echo "<td bgcolor='$bgcolor'><a href='admin_user.php?user_del={$col[$i][1]}&amp;action_del=yes&amp;display=$display' onclick='return confirmlink(this, \"$user_login\", \"$themessage\")'>".get_vocab("delete")."</a></td>";
+        echo "<td class=\"".$fond."\"><a href='admin_user.php?user_del=".urlencode($col[$i][1])."&amp;action_del=yes&amp;display=$display' onclick='return confirmlink(this, \"$user_login\", \"$themessage\")'>".get_vocab("delete")."</a></td>";
     }
     // Fin de la ligne courante
     echo "</tr>";
@@ -461,6 +496,9 @@ echo "</table>";
 
 // fin de l'affichage de la colonne de droite
 echo "</td></tr></table>";
+// Affichage d'un pop-up
+affiche_pop_up($msg,"admin");
+
 
 ?>
 </body>

@@ -12,4 +12,6 @@ fi
 #
 # Fin
 #
+echo "Patch du fichier config.inc..."
+sed -i "s/sso_restrictions = false;/sso_restrictions = true;/g" /usr/share/lcs/Plugins/Grr/includes/config.inc.php
 echo "Fin des patches..."

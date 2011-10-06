@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                          admin_change_pwd.php                         #
-#                                                                       #
-#   Interface de changement du mot de passe pour les administrateurs    #
-#                                                                       #
-#            Dernière modification : 28/03/2008                         #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * admin_change_pwd.php
+ * Interface de changement du mot de passe pour les administrateurs
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-12-02 20:11:07 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_change_pwd.php,v 1.9 2009-12-02 20:11:07 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,18 +27,40 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: admin_change_pwd.php,v $
+ * Revision 1.9  2009-12-02 20:11:07  grr
+ * *** empty log message ***
+ *
+ * Revision 1.8  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/admin.inc.php";
 $grr_script_name = "admin_change_pwd.php";
 
 $back = '';
 if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
-if(authGetUserLevel(getUserName(),-1) < 5)
+if(authGetUserLevel(getUserName(),-1) < 6)
 {
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 // Restriction dans le cas d'une démo
@@ -51,15 +74,15 @@ $msg='';
 
 if ($valid == "yes") {
     unset($reg_password1);
-    $reg_password1 = $_POST["reg_password1"];
+    $reg_password1 = unslashes($_POST["reg_password1"]);
     unset($reg_password2);
-    $reg_password2 = $_POST["reg_password2"];
+    $reg_password2 = unslashes($_POST["reg_password2"]);
 
     $reg_password_c = md5($reg_password1);
     if (($reg_password1 != $reg_password2) or (strlen($reg_password1) < $pass_leng)) {
         $msg = get_vocab("passwd_error");
     } else {
-        $sql = "UPDATE grr_utilisateurs SET password='" . protect_data_sql($reg_password_c)."' WHERE login='$user_login'";
+        $sql = "UPDATE ".TABLE_PREFIX."_utilisateurs SET password='" . protect_data_sql($reg_password_c)."' WHERE login='$user_login'";
         if (grr_sql_command($sql) < 0)
             {fatal_error(0, get_vocab('update_pwd_failed') . grr_sql_error());
         } else {
@@ -70,7 +93,7 @@ if ($valid == "yes") {
 
 // On appelle les informations de l'utilisateur
 if (isset($user_login) and ($user_login!='')) {
-    $sql = "SELECT nom,prenom, source FROM grr_utilisateurs WHERE login='$user_login'";
+    $sql = "SELECT nom,prenom, source FROM ".TABLE_PREFIX."_utilisateurs WHERE login='$user_login'";
     $res = grr_sql_query($sql);
     if ($res) {
         for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
@@ -84,7 +107,7 @@ if (isset($user_login) and ($user_login!='')) {
 
 if (($user_source != 'local') and ($user_source != ''))
 {
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
@@ -98,19 +121,19 @@ affiche_pop_up($msg,"admin");
 <p>| <a href="admin_user_modify.php?user_login=<?php echo $user_login; ?>"><?php echo get_vocab("back");?></a> |</p>
 
 <?php
-echo "<h3>".get_vocab("pwd_change")."</h3>";
-if ($user_login != $_SESSION['login']) {
-    echo "<form action=\"admin_change_pwd.php\" method='post'>";
+echo "<h3>".get_vocab("pwd_change")."</h3>\n";
+if ($user_login != getUserName()) {
+    echo "<form action=\"admin_change_pwd.php\" method='post'>\n<div>";
     echo get_vocab("login")." : $user_login";
-    echo "<br />".get_vocab("last_name").get_vocab("deux_points").$user_nom."&nbsp;&nbsp;&nbsp;".get_vocab("first_name").get_vocab("deux_points").$user_prenom;
-    echo "<br />".get_vocab("pwd_msg_warning");
-    echo "<br /><br />".get_vocab("new_pwd1").get_vocab("deux_points")."<input type=\"password\" name=\"reg_password1\" size=\"20\" />";
-    echo "<br />".get_vocab("new_pwd2").get_vocab("deux_points")."<input type=\"password\" name=\"reg_password2\" size=\"20\" />";
-    echo "<input type=\"hidden\" name=\"valid\" value=\"yes\" />";
-    echo "<input type=\"hidden\" name=\"user_login\" value=\"$user_login\" />";
-    echo "<br /><input type=\"submit\" value=".get_vocab("save")." /></form>";
+    echo "\n<br />".get_vocab("last_name").get_vocab("deux_points").$user_nom."&nbsp;&nbsp;&nbsp;".get_vocab("first_name").get_vocab("deux_points").$user_prenom;
+    echo "\n<br />".get_vocab("pwd_msg_warning");
+    echo "\n<br /><br />".get_vocab("new_pwd1").get_vocab("deux_points")."<input type=\"password\" name=\"reg_password1\" value=\"\" size=\"20\" />";
+    echo "\n<br />".get_vocab("new_pwd2").get_vocab("deux_points")."<input type=\"password\" name=\"reg_password2\" value=\"\" size=\"20\" />";
+    echo "\n<input type=\"hidden\" name=\"valid\" value=\"yes\" />";
+    echo "\n<input type=\"hidden\" name=\"user_login\" value=\"$user_login\" />";
+    echo "\n<br /><input type=\"submit\" value=\"".get_vocab("save")."\" /></div></form>";
 } else {
-    echo "<br />".get_vocab("pwd_msg_warning2");
+    echo "<\ndiv><br />".get_vocab("pwd_msg_warning2")."</div>";
 }
 
 ?>

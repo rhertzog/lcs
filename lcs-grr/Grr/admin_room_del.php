@@ -1,16 +1,15 @@
 <?php
-#########################################################################
-#                           admin_room_del                              #
-#                                                                       #
-#                       Interface de confirmation                       #
-#             de suppression d'un domaine ou d'une ressource            #
-#                                                                       #
-#                  Dernière modification : 24/05/2005                   #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * admin_room_del
+ * Interface de confirmation de suppression d'un domaine ou d'une ressource
+ * de l'application GRR
+ * Dernière modification : $Date: 2009-09-29 18:02:56 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   admin
+ * @version   $Id: admin_room_del.php,v 1.11 2009-09-29 18:02:56 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -29,22 +28,54 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/**
+ * $Log: admin_room_del.php,v $
+ * Revision 1.11  2009-09-29 18:02:56  grr
+ * *** empty log message ***
+ *
+ * Revision 1.10  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.8  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2008-11-13 21:32:51  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2008-11-10 07:06:39  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-07 21:39:40  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-06 21:57:34  grr
+ * *** empty log message ***
+ *
+ *
+ */
+
 include "include/admin.inc.php";
 $grr_script_name = "admin_room_del.php";
 
 $type = isset($_GET["type"]) ? $_GET["type"] : NULL;
 $confirm = isset($_GET["confirm"]) ? $_GET["confirm"] : NULL;
-$area_id = isset($_POST["area_id"]) ? $_POST["area_id"] : (isset($_GET["area_id"]) ? $_GET["area_id"] : NULL);
-$area = isset($_POST["area"]) ? $_POST["area"] : (isset($_GET["area"]) ? $_GET["area"] : NULL);
-
+$room = isset($_GET["room"]) ? $_GET["room"] : NULL;
+$id_area = isset($_POST["id_area"]) ? $_POST["id_area"] : (isset($_GET["id_area"]) ? $_GET["id_area"] : NULL);
+$id_site = isset($_POST['id_site']) ? $_POST['id_site'] : (isset($_GET['id_site']) ? $_GET['id_site'] : -1);
+if (isset($room)) settype($room,"integer");
+if (isset($id_area)) settype($id_area,"integer");
+if (isset($id_site)) settype($id_site,"integer");
 
 if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
 
 
 #If we dont know the right date then make it up
-
-if (empty($area))
-    $area = get_default_area();
 
 $day   = date("d");
 $month = date("m");
@@ -57,10 +88,9 @@ $year  = date("Y");
 if($type == "room")
 {
     // Seuls les admin de la ressources peuvent supprimer la ressource
-
-    if(authGetUserLevel(getUserName(),$room) < 4)
+    if ((authGetUserLevel(getUserName(),$room) < 4) or (!verif_acces_ressource(getUserName(), $room)))
     {
-        showAccessDenied($day, $month, $year, $area,$back);
+        showAccessDenied($day, $month, $year, '',$back);
         exit();
     }
 
@@ -70,26 +100,30 @@ if($type == "room")
         # They have confirmed it already, so go blast!
         grr_sql_begin();
         # First take out all appointments for this room
-        grr_sql_command("delete from grr_entry where room_id=$room");
-        grr_sql_command("delete from grr_entry_moderate where room_id=$room");
+        grr_sql_command("delete from ".TABLE_PREFIX."_entry where room_id=$room");
+        grr_sql_command("delete from ".TABLE_PREFIX."_entry_moderate where room_id=$room");
+        #
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_mailuser_room  WHERE id_room=$room");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_room WHERE id_room=$room");
 
         # Now take out the room itself
-        grr_sql_command("delete from grr_room where id=$room");
+        grr_sql_command("delete from ".TABLE_PREFIX."_room where id=$room");
         grr_sql_commit();
 
         # Go back to the admin page
-        Header("Location: admin_room.php?area=$area_id");
+        Header("Location: admin_room.php?id_area=$id_area&id_site=$id_site");
     }
     else
     {
         # print the page header
         print_header("","","","",$type="with_session", $page="admin");
+        echo "<div class=\"page_sans_col_gauche\">";
 
 
         # We tell them how bad what theyre about to do is
         # Find out how many appointments would be deleted
 
-        $sql = "select name, start_time, end_time from grr_entry where room_id=$room";
+        $sql = "select name, start_time, end_time from ".TABLE_PREFIX."_entry where room_id=$room";
         $res = grr_sql_query($sql);
         if (! $res) echo grr_sql_error();
         elseif (grr_sql_count($res) > 0)
@@ -106,44 +140,48 @@ if($type == "room")
             echo "</ul>";
         }
 
-        echo "<center>";
-        echo "<H1>" .  get_vocab("sure") . "</h1>";
-        echo "<H1><a href=\"admin_room_del.php?type=room&amp;room=$room&amp;confirm=Y&amp;area_id=$area_id\">" . get_vocab("YES") . "!</a> &nbsp;&nbsp;&nbsp; <a href=admin_room.php?area=$area_id>" . get_vocab("NO") . "!</a></h1>";
-        echo "</center>";
+        echo "<h1 style=\"text-align:center;\">" .  get_vocab("sure") . "</h1>";
+        echo "<h1 style=\"text-align:center;\"><a href=\"admin_room_del.php?type=room&amp;room=$room&amp;confirm=Y&amp;id_area=$id_area\">" . get_vocab("YES") . "!</a> &nbsp;&nbsp;&nbsp; <a href=\"admin_room.php?id_area=$id_area\">" . get_vocab("NO") . "!</a></h1>";
+        echo "</div>";
     }
 }
 
 if($type == "area")
 {
     // Seul l'admin peut supprimer un domaine
-    if(authGetUserLevel(getUserName(),$room) < 5)
+    if(authGetUserLevel(getUserName(),$id_area,'area') < 5)
     {
-        showAccessDenied($day, $month, $year, $area,$back);
+        showAccessDenied($day, $month, $year, '',$back);
         exit();
     }
 
     # We are only going to let them delete an area if there are
     # no rooms. its easier
-    $n = grr_sql_query1("select count(*) from grr_room where area_id=$area");
+    $n = grr_sql_query1("select count(*) from ".TABLE_PREFIX."_room where area_id=$id_area");
     if ($n == 0)
     {
         // Suppression des champ additionnels
-        $sqlstring = "select id from grr_overload where id_area='".$area."'";
+        $sqlstring = "select id from ".TABLE_PREFIX."_overload where id_area='".$id_area."'";
         $result = grr_sql_query($sqlstring);
         for ($i = 0; ($field_row = grr_sql_row($result, $i)); $i++) {
             $id_overload = $field_row[0];
             // Suppression des données dans les réservations déjà effectuées
             grrDelOverloadFromEntries($id_overload);
-            $sql = "delete from grr_overload where id=$id_overload;";
+            $sql = "delete from ".TABLE_PREFIX."_overload where id=$id_overload;";
             grr_sql_command($sql);
         }
         # OK, nothing there, lets blast it away
-        grr_sql_command("delete from grr_area where id=$area");
-        grr_sql_command("update grr_utilisateurs set default_area = '0', default_room = '0' where default_area='".$area."'");
-        $test = grr_sql_query1("select VALUE from grr_setting where NAME='default_area'");
-        if ($test==$area) {
-            grr_sql_command("delete from grr_setting where NAME='default_area'");
-            grr_sql_command("delete from grr_setting where NAME='default_room'");
+        grr_sql_command("delete from ".TABLE_PREFIX."_area where id=$id_area");
+        grr_sql_command("update ".TABLE_PREFIX."_utilisateurs set default_area = '-1', default_room = '-1' where default_area='".$id_area."'");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_area_periodes WHERE id_area=$id_area");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_useradmin_area WHERE id_area=$id_area");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_type_area WHERE id_area=$id_area");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_user_area WHERE id_area=$id_area");
+        grr_sql_command("DELETE FROM ".TABLE_PREFIX."_j_site_area WHERE id_area=$id_area");
+        $test = grr_sql_query1("select VALUE from ".TABLE_PREFIX."_setting where NAME='default_area'");
+        if ($test==$id_area) {
+            grr_sql_command("delete from ".TABLE_PREFIX."_setting where NAME='default_area'");
+            grr_sql_command("delete from ".TABLE_PREFIX."_setting where NAME='default_room'");
             // Settings
             require_once("./include/settings.inc.php");
             //Chargement des valeurs de la table settingS
@@ -152,7 +190,7 @@ if($type == "area")
 
         }
         # Redirect back to the admin page
-        header("Location: admin_room.php");
+        header("Location: admin_room.php?id_site=$id_site");
     }
     else
     {
@@ -160,9 +198,9 @@ if($type == "area")
         # print the page header
         print_header("","","","",$type="with_session", $page="admin");
 
-
-        echo get_vocab('delarea');
-        echo "<a href=admin_room.php?area=$area>" . get_vocab('back') . "</a>";
+        echo "<div class=\"page_sans_col_gauche\">";
+        echo "<p>".get_vocab('delarea');
+        echo "<br /><a href=\"admin_room.php?id_area=$id_area&amp;id_site=$id_site\">" . get_vocab('back') . "</a></p></div>";
     }
 }
 ?>

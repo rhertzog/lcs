@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                    admin_config_calend2.php                           #
-#                                                                       #
-#            interface permettant la la réservation en bloc             #
-#                  de journées entières                                 #
-#               Dernière modification : 10/12/2007                      #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * admin_config_calend2.php
+ * interface permettant la la réservation en bloc de journées entières
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-04-14 12:59:17 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_config_calend2.php,v 1.8 2009-04-14 12:59:17 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,9 +27,24 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: admin_config_calend2.php,v $
+ * Revision 1.8  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 $grr_script_name = "admin_calend_jour_cycle.php";
-include "include/mrbs_sql.inc.php";
 
 $back = '';
 if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
@@ -39,21 +55,20 @@ $year  = date("Y");
 
 function cal($month, $year)
 {
-    global $weekstarts;
+    global $weekstarts, $display_day;
+    $display_day="1111111";
     if (!isset($weekstarts)) $weekstarts = 0;
     $s = "";
     $daysInMonth = getDaysInMonth($month, $year);
     $date = mktime(12, 0, 0, $month, 1, $year);
     $first = (strftime("%w",$date) + 7 - $weekstarts) % 7;
     $monthName = utf8_strftime("%B",$date);
-    $s .= "<table class=\"calendar2\" border=1 cellspacing=3>\n";
+    $s .= "<table class=\"calendar2\" border=\"1\" cellspacing=\"3\">\n";
     $s .= "<tr>\n";
-    $s .= "<td align=center valign=top class=\"calendarHeader2\" colspan=7>$monthName&nbsp;$year</td>\n";
-    $s .= "</tr>\n";
-    $s .= "<tr>\n";
-    $s .= getFirstDays();
+    $s .= "<td class=\"calendarHeader2\" colspan=\"7\">$monthName&nbsp;$year</td>\n";
     $s .= "</tr>\n";
     $d = 1 - $first;
+    $is_ligne1 = 'y';
     while ($d <= $daysInMonth)
     {
         $s .= "<tr>\n";
@@ -62,15 +77,16 @@ function cal($month, $year)
             $basetime = mktime(12,0,0,6,11+$weekstarts,2000);
             $show = $basetime + ($i * 24 * 60 * 60);
             $nameday = utf8_strftime('%A',$show);
-
-            $s .= "<td class=\"calendar2\" align=center valign=top>";
+            $temp = mktime(0,0,0,$month,$d,$year);
+            if ($i==0) $s .= "<td class=\"calendar2\" style=\"vertical-align:bottom;\"><b>S".numero_semaine($temp)."</b></td>\n";
+            $s .= "<td class=\"calendar2\" align=\"center\" valign=\"top\">";
+            if ($is_ligne1 == 'y') $s .=  '<b>'.ucfirst(substr($nameday,0,1)).'</b><br />';
             if ($d > 0 && $d <= $daysInMonth)
             {
-                $temp = mktime(0,0,0,$month,$d,$year);
                 $s .= $d;
-                $day = grr_sql_query1("SELECT day FROM grr_calendrier_jours_cycle WHERE day='$temp'");
-                $s .= "<br /><INPUT TYPE=\"checkbox\" NAME=\"$temp\" VALUE=\"$nameday\" ";
-                if (!($day < 0)) $s .= "checked ";
+                $day = grr_sql_query1("SELECT day FROM ".TABLE_PREFIX."_calendrier_jours_cycle WHERE day='$temp'");
+                $s .= "<br /><input type=\"checkbox\" name=\"$temp\" value=\"$nameday\" ";
+                if (!($day < 0)) $s .= "checked=\"checked\" ";
                 $s .= " />";
             } else {
                 $s .= "&nbsp;";
@@ -79,14 +95,15 @@ function cal($month, $year)
             $d++;
         }
         $s .= "</tr>\n";
+        $is_ligne1 = 'n';
     }
     $s .= "</table>\n";
     return $s;
 }
 
-if(authGetUserLevel(getUserName(),-1) < 5)
+if(authGetUserLevel(getUserName(),-1) < 6)
 {
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
@@ -96,13 +113,10 @@ print_header("","","","",$type="with_session", $page="admin");
 include "admin_col_gauche.php";
 // Affichage du tableau de choix des sous-configuration pour les Jours/Cycles (Créer et voir calendrier Jours/Cycle)
 include "include/admin_calend_jour_cycle.inc.php";
-?>
-<script src="functions.js" type="text/javascript" language="javascript"></script>
-<?php
 echo "<h3>".get_vocab('calendrier_jours/cycles').grr_help("aide_grr_jours_cycle")."</h3>";
 if (isset($_POST['record']) and  ($_POST['record'] == 'yes')) {
-    // On vide la table grr_calendar
-    $sql = "truncate table grr_calendrier_jours_cycle";
+    // On vide la table
+    $sql = "truncate table ".TABLE_PREFIX."_calendrier_jours_cycle";
     if (grr_sql_command($sql) < 0) fatal_error(1, "<p>" . grr_sql_error());
     $result = 0;
     $end_bookings = getSettingValue("end_bookings");
@@ -122,11 +136,11 @@ if (isset($_POST['record']) and  ($_POST['record'] == 'yes')) {
                  $starttime = mktime($morningstarts, 0, 0, $month, $day  , $year);
                  $endtime   = mktime($eveningends, 0, $resolution, $month, $day, $year);
                  // On efface toutes les résa en conflit
-                 $sql = "select id from grr_room";
+                 $sql = "select id from ".TABLE_PREFIX."_room";
                  $res = grr_sql_query($sql);
                  if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
                      $result += grrDelEntryInConflict($row[0], $starttime, $endtime, 0, 0, 1);
-                 // On enregistre la valeur dans grr_calendar
+                 // On enregistre la valeur
                  $m = cree_calendrier_date_valide($n,$m);
              }
              $day++;
@@ -153,15 +167,15 @@ if (isset($_POST['record']) and  ($_POST['record'] == 'yes')) {
         $show = $basetime + ($i * 24 * 60 * 60);
         $lday = utf8_strftime('%A',$show);
         echo "<tr>\n";
-        echo "<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr('formulaire', true, '$lday' ); return false;\">".get_vocab("check_all_the").$lday."s</a></span></td>\n";
-        echo "<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr('formulaire', false, '$lday' ); return false;\">".get_vocab("uncheck_all_the").$lday."s</a></span></td>\n";
+        echo "<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr(document.getElementById('formulaire'), true, '$lday' ); return false;\">".get_vocab("check_all_the").$lday."s</a></span></td>\n";
+        echo "<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr(document.getElementById('formulaire'), false, '$lday' ); return false;\">".get_vocab("uncheck_all_the").$lday."s</a></span></td>\n";
         echo "</tr>\n";
     }
-    echo "<tr>\n<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr('formulaire', false, 'all'); return false;\">".get_vocab("uncheck_all_")."</a></span></td>\n";
+    echo "<tr>\n<td><span class='small'><a href='admin_calend_jour_cycle.php' onclick=\"setCheckboxesGrr(document.getElementById('formulaire'), false, 'all'); return false;\">".get_vocab("uncheck_all_")."</a></span></td>\n";
     echo "<td></td></tr>\n";
     echo "</table>\n";
-    echo "<form action=\"admin_calend_jour_cycle.php?page_calend=2\" method=\"post\" name=\"formulaire\">\n";
-    echo "<table cellspacing=20>\n";
+    echo "<form action=\"admin_calend_jour_cycle.php?page_calend=2\" method=\"post\" id=\"formulaire\">\n";
+    echo "<table cellspacing=\"20\">\n";
 
     $n = getSettingValue("begin_bookings");
     $end_bookings = getSettingValue("end_bookings");
@@ -191,9 +205,18 @@ if (isset($_POST['record']) and  ($_POST['record'] == 'yes')) {
         }
         $n = mktime(0,0,0,$month,1,$year);
     }
+    if ($inc < 3) {
+      $k=$inc;
+      while($k < 3) {
+        echo "<td>&nbsp;</td>\n";
+        $k++;
+      } // while
+      echo "</tr>";
+    }
+
     echo "</table>";
-    echo "<center><div id=\"fixe\"><input type=\"submit\" onclick=\"return confirmlink(this, '".AddSlashes(get_vocab("avertissement_effacement"))."', '".get_vocab("admin_config_calend1.php")."')\" name=\"ok\" value=\"".get_vocab("save")."\" /></div></center>\n";
-    echo "<input type=\"hidden\" name=\"record\" value=\"yes\" />\n";
+    echo "<div id=\"fixe\" style=\"text-align:center;\"><input type=\"submit\" onclick=\"return confirmlink(this, '".AddSlashes(get_vocab("avertissement_effacement"))."', '".get_vocab("admin_config_calend1.php")."')\" name=\"ok\" value=\"".get_vocab("save")."\" /></div>\n";
+    echo "<div><input type=\"hidden\" name=\"record\" value=\"yes\" /></div>\n";
     echo "</form>";
 
 

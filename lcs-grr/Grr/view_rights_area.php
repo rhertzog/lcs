@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                            view_rights_area.php                       #
-#                                                                       #
-#                  Liste des privilèges d'un domaine                    #
-#               Dernière modification : 10/07/2006                      #
-#                                                                       #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * view_rights_area.php
+ * Liste des privilèges d'un domaine
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-12-02 20:11:08 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: view_rights_area.php,v 1.8 2009-12-02 20:11:08 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,10 +27,36 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: view_rights_area.php,v $
+ * Revision 1.8  2009-12-02 20:11:08  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2009-01-20 07:19:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-16 22:00:59  grr
+ * *** empty log message ***
+ *
+ * Revision 1.2  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ *
+ */
 include "include/connect.inc.php";
 include "include/config.inc.php";
 include "include/functions.inc.php";
 include "include/$dbsys.inc.php";
+include_once('include/misc.inc.php');
 include "include/mrbs_sql.inc.php";
 $grr_script_name = "view_rights_area.php";
 // Settings
@@ -41,15 +68,17 @@ if (!loadSettings())
 // Session related functions
 require_once("./include/session.inc.php");
 // Resume session
-if ((!grr_resumeSession())and (getSettingValue("authentification_obli")==1)) {
-    header("Location: ./logout.php?auto=1");
-    die();
+if (!grr_resumeSession()) {
+    if ((getSettingValue("authentification_obli")==1) or ((getSettingValue("authentification_obli")==0) and (isset($_SESSION['login'])))) {
+       header("Location: ./logout.php?auto=1&url=$url");
+       die();
+    }
 };
 
 // Paramètres langage
 include "include/language.inc.php";
 
-if ((getSettingValue("authentification_obli")==0) and (!isset($_SESSION['login']))) {
+if ((getSettingValue("authentification_obli")==0) and (getUserName()=='')) {
     $type_session = "no_session";
 } else {
     $type_session = "with_session";
@@ -63,30 +92,31 @@ if (authGetUserLevel(getUserName(),$area_id,"area") < 4)
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
 echo begin_page(getSettingValue("company").get_vocab("deux_points").get_vocab("mrbs"));
 
-$res = grr_sql_query("SELECT * FROM grr_area WHERE id='".$area_id."'");
+$res = grr_sql_query("SELECT * FROM ".TABLE_PREFIX."_area WHERE id='".$area_id."'");
 if (! $res) fatal_error(0, get_vocab('error_room') . $id_room . get_vocab('not_found'));
 
 $row = grr_sql_row_keyed($res, 0);
 grr_sql_free($res);
 
 ?>
-<h3 ALIGN=center><?php echo get_vocab("match_area").get_vocab("deux_points")."&nbsp;".htmlspecialchars($row["area_name"]);
+
+<h3 style="text-align:center;"><?php echo get_vocab("match_area").get_vocab("deux_points")."&nbsp;".htmlspecialchars($row["area_name"]);
 $area_access = $row["access"];
-if ($area_access == 'r') echo " (<font color=\"#FF0000\">".get_vocab("access")."</font>)";
-echo "</H3>";
+if ($area_access == 'r') echo " (<span class=\"avertissement\">".get_vocab("access")."</span>)";
+echo "</h3>";
 
 // On affiche pour les administrateurs les utilisateurs ayant des privilèges sur cette ressource
-    echo "<h2>".get_vocab('utilisateurs ayant privileges sur domaine')."</h2>";
+    echo "\n<h2>".get_vocab('utilisateurs ayant privileges sur domaine')."</h2>";
     $a_privileges = 'n';
     // on teste si des utilateurs administre le domaine
-    $req_admin = "select u.login, u.nom, u.prenom, u.etat from grr_utilisateurs u
-    left join grr_j_useradmin_area j on u.login=j.login
+    $req_admin = "select u.login, u.nom, u.prenom, u.etat from ".TABLE_PREFIX."_utilisateurs u
+    left join ".TABLE_PREFIX."_j_useradmin_area j on u.login=j.login
     where j.id_area = '".$area_id."' order by u.nom, u.prenom";
     $res_admin = grr_sql_query($req_admin);
     $is_admin = '';
@@ -99,14 +129,14 @@ echo "</H3>";
     }
     if ($is_admin != '') {
         $a_privileges = 'y';
-        echo "<H3><b>".get_vocab("utilisateurs administrateurs domaine")."</b></H3>";
+        echo "\n<h3><b>".get_vocab("utilisateurs administrateurs domaine")."</b></h3>";
         echo $is_admin;
     }
 
     // Si le domaine est restreint, on teste si des utilateurs y ont accès
     if ($area_access == 'r') {
-        $req_restreint = "select u.login, u.nom, u.prenom, u.etat  from grr_utilisateurs u
-        left join grr_j_user_area j on u.login=j.login
+        $req_restreint = "select u.login, u.nom, u.prenom, u.etat  from ".TABLE_PREFIX."_utilisateurs u
+        left join ".TABLE_PREFIX."_j_user_area j on u.login=j.login
         where j.id_area = '".$area_id."' order by u.nom, u.prenom";
         $res_restreint = grr_sql_query($req_restreint);
         $is_restreint = '';
@@ -119,11 +149,11 @@ echo "</H3>";
         }
         if ($is_restreint != '') {
             $a_privileges = 'y';
-            echo "<H3><b>".get_vocab("utilisateurs acces restreint domaine")."</b></H3>";
-            echo $is_restreint;
+            echo "\n<h3>".get_vocab("utilisateurs acces restreint domaine")."</h3>\n";
+            echo "<p>".$is_restreint."</p>";
         }
     }
     if ($a_privileges == 'n') {
-      echo get_vocab("aucun autilisateur").".";
+      echo "<p>".get_vocab("aucun autilisateur").".</p>";
   }
 include "include/trailer.inc.php";

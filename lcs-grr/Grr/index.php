@@ -1,11 +1,16 @@
 <?php
-#########################################################################
-#                            index.php                                  #
-#              Dernière modification : 28/03/2008                       #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * index.php
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2010-04-07 15:38:14 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @author    Marc-Henri PAMISEUX <marcori@users.sourceforge.net>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @copyright Copyright 2008 Marc-Henri PAMISEUX
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   admin
+ * @version   $Id: index.php,v 1.10 2010-04-07 15:38:14 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -23,21 +28,47 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: index.php,v $
+ * Revision 1.10  2010-04-07 15:38:14  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2009-12-16 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.8  2009-12-02 20:11:07  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-10-09 07:55:48  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.3  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ *
+ */
+
 
 /* Pour ce script, on cherche à afficher toutes les erreurs PHP
 (sauf dans le cas d'un serveur LCS car sinon, des erreurs dues à des scripts LCS apparaissent.
 */
 if (!@file_exists("/var/www/lcs/includes/headerauth.inc.php"))
     error_reporting (E_ALL);
-
 require_once("include/config.inc.php");
+if (file_exists("include/connect.inc.php"))
+   include "include/connect.inc.php";
 require_once("include/misc.inc.php");
 require_once("include/functions.inc.php");
 require_once("include/settings.inc.php");
 // Paramètres langage
 include "include/language.inc.php";
 // Dans le cas d'une base mysql, on teste la bonne installation de la base et on propose une installation automatisée.
-
 if ($dbsys == "mysql")
 {
   $flag='';
@@ -51,59 +82,70 @@ if ($dbsys == "mysql")
       if (@mysql_select_db("$dbDb"))
         {
           // Premier test
-          $liste2 = array();
-          $tableNames = mysql_list_tables($dbDb);
           $j = '0';
-
-          while ($j < mysql_num_rows($tableNames))
-        {
-          $liste2[$j] = mysql_tablename($tableNames, $j);
-          $j++;
-                }
-          $j = '0';
-
-          while ($j < count($liste_tables))
-        {
-          $temp = $liste_tables[$j];
-          if (!(in_array($temp, $liste2)))
-            {
-              $correct_install='no';
-              $flag = 'yes';
-                    }
-          $j++;
-                }
-                if ($flag == 'yes')
-          {
-                    $msg = "<p>La connection au serveur $dbsys est établie mais certaines tables sont absentes de la base $dbDb.</p>";
-                    $correct_install = 'no';
-          }
+          while ($j < count($liste_tables)) {
+            $test = mysql_query("select count(*) from ".$table_prefix.$liste_tables[$j]);
+            if (!$test) {
+                $flag = 'yes';
             }
+            $j++;
+          }
+          if ($flag == 'yes') {
+             $msg = "<p>La connection au serveur $dbsys est établie mais certaines tables sont absentes de la base $dbDb.</p>";
+             $correct_install = 'no';
+          }
+          /*
+          // Premier test (test remplacé par le précédent car il semblerait que sur certaines installation, l'utilisateur de la base n'avait pas le droit d'éxécuter "show tables" !)
+          $liste2 = array();
+          $tableNames = mysql_query("SHOW TABLES FROM ".$dbDb);
+          if ($tableNames) {
+             $j = '0';
+             while ($j < mysql_num_rows($tableNames)) {
+                $liste2[$j] = mysql_tablename($tableNames, $j);
+                $j++;
+             }
+             $j = '0';
+             while ($j < count($liste_tables)) {
+                $temp = $table_prefix.$liste_tables[$j];
+                if (!(in_array($temp, $liste2))) {
+                   $correct_install='no';
+                   $flag = 'yes';
+                }
+                $j++;
+             }
+             if ($flag == 'yes') {
+                $msg = "<p>La connection au serveur $dbsys est établie mais certaines tables sont absentes de la base $dbDb.</p>";
+                $correct_install = 'no';
+             }
+          }
+          */
+        }
       else
         {
-          $msg = "<p>La connection au serveur $dbsys est établie mais impossible de sélectionner la base contenant les tables GRR.</p>";
+          $msg = "La connection au serveur $dbsys est établie mais impossible de sélectionner la base contenant les tables GRR.";
           $correct_install = 'no';
             }
         }
       else
     {
-      $msg = "<p>Erreur de connection au serveur $dbsys. Le fichier \"connect.inc.php\" ne contient peut-être pas les bonnes informations de connection.</p>";
+      $msg = "Erreur de connection au serveur $dbsys. Le fichier \"connect.inc.php\" ne contient peut-être pas les bonnes informations de connection.";
       $correct_install = 'no';
         }
     }
   else
     {
-      $msg = "<p>Le fichier \"connect.inc.php\" contenant les informations de connection est introuvable.</p>";
+      $msg = "Le fichier \"connect.inc.php\" contenant les informations de connection est introuvable.";
       $correct_install = 'no';
     }
   if ($correct_install=='no')
     {
       echo begin_page("GRR (Gestion et Réservation de Ressources) ");
-      echo "<h1 class=\"center\">Gestion et Réservation de Ressources</h1>";
-      echo "<font face=\"Arial, Helvetica, sans-serif\" color=\"red\"><center><b>".$msg."</center></b></font>";
+      echo "<h1 class=\"center\">Gestion et Réservation de Ressources</h1>\n";
+      echo "<div style=\"text-align:center;\"><span style=\"color:red;font-weight:bold\">".$msg."</span>\n";
       echo "<ul><li>Soit vous procédez à une mise à jour vers une nouvelle version de GRR. Dans ce cas, vous devez procéder à une mise à jour de la base de données MySql.<br />";
-      echo "<center><b><a href='./admin_maj.php'>Mettre à jour la base Mysql</a></b></center><br /></li>";
+      echo "<b><a href='./admin_maj.php'>Mettre à jour la base Mysql</a></b><br /></li>";
       echo "<li>Soit l'installation de GRR n'est peut-être pas terminée. Vous pouvez procéder à une installation/réinstallation de la base.<br />";
-      echo "<center><a href='install_mysql.php'>Installer la base $dbsys</a></center></li></ul>";
+        echo "<a href='install_mysql.php'>Installer la base $dbsys</a></li></ul></div>";
         ?>
         </body>
     </html>
@@ -111,7 +153,6 @@ if ($dbsys == "mysql")
         die();
     }
 }
-include "include/connect.inc.php";
 require_once("include/$dbsys.inc.php");
 require_once("./include/session.inc.php");
 // Settings
@@ -122,7 +163,6 @@ if (!loadSettings())
 {
   die("Erreur chargement settings");
 }
-
 $cook = session_get_cookie_params();
 
 // Cas d'une authentification CAS
@@ -132,7 +172,22 @@ if ((getSettingValue('sso_statut') == 'cas_visiteur') or (getSettingValue('sso_s
   // A ce stade, l'utilisateur est authentifié par CAS
   $password = '';
   $user_ext_authentifie = 'cas';
-  $result = grr_opensession($login,$password,$user_ext_authentifie) ;
+  if (!isset($user_nom)) $user_nom='';
+  $cas_tab_login["user_nom"] = $user_nom;
+  if (!isset($user_prenom)) $user_prenom='';
+  $cas_tab_login["user_prenom"] = $user_prenom;
+  if (!isset($user_mail)) $user_mail='';
+  $cas_tab_login["user_email"] = $user_mail;
+  if (!isset($user_code_fonction)) $user_code_fonction='';
+  $cas_tab_login["user_code_fonction"] = $user_code_fonction;
+  if (!isset($user_libelle_fonction)) $user_libelle_fonction='';
+  $cas_tab_login["user_libelle_fonction"] = $user_libelle_fonction;
+  if (!isset($user_language)) $user_language='';
+  $cas_tab_login["user_language"] = $user_language;
+  if (!isset($user_default_style)) $user_default_style='';
+  $cas_tab_login["user_default_style"] = $user_default_style;
+
+  $result = grr_opensession($login,$password,$user_ext_authentifie,$cas_tab_login) ;
   // On écrit les données de session et ferme la session
   session_write_close();
   $message = '';
@@ -168,7 +223,7 @@ if ((getSettingValue('sso_statut') == 'cas_visiteur') or (getSettingValue('sso_s
 
   if (grr_resumeSession() )
   {
-   header("Location: ".page_accueil()."");
+   header("Location: ".htmlspecialchars_decode(page_accueil())."");
   }
 
 // Cas d'une authentification Lemonldap
@@ -179,7 +234,11 @@ else if ((getSettingValue('sso_statut') == 'lemon_visiteur') or (getSettingValue
   if (isset($_COOKIE['user'])) $cookie_user=$_COOKIE['user']; else $cookie_user="";
   if(empty($cookie_user) or $cookie_user != $login)
     {
-      header("Location: ./login.php");
+      if ((getSettingValue("Url_cacher_page_login")!="") and ((!isset($sso_super_admin)) or ($sso_super_admin==false))) {
+          header("Location: ".getSettingValue("Url_cacher_page_login"));
+      } else
+          header("Location: ".htmlspecialchars_decode(page_accueil())."");
+          //header("Location: ./login.php");
       // Echec de l'authentification lemonldap
       die();
       echo "</body></html>";
@@ -216,7 +275,7 @@ else if ((getSettingValue('sso_statut') == 'lemon_visiteur') or (getSettingValue
 
   if (grr_resumeSession() )
   {
-   header("Location: ".page_accueil()."");
+   header("Location: ".htmlspecialchars_decode(page_accueil())."");
   }
 // Cas d'une authentification LCS
 }
@@ -234,7 +293,7 @@ else if (getSettingValue('sso_statut') == 'lcs')
       foreach($groups as $value) {
           $lcs_groups[] = $value["cn"];
       }
-      // A ce stade, l'utilisateur est authentifié par CAS
+      // A ce stade, l'utilisateur est authentifié par LCS
       // Etablir à nouveau la connexion à la base
       if (empty($db_nopersist))
           $db_c = mysql_pconnect($dbHost, $dbUser, $dbPass);
@@ -277,12 +336,7 @@ else if (getSettingValue('sso_statut') == 'lcs')
           die();
       }
       if (grr_resumeSession() ) {
-      // Vérification du numéro de version et renvoi automatique vers la page de mise à jour
-		if (verif_version()) {
-    		header("Location: ./admin_maj.php");
-    	exit();
-		}
-           header("Location: ".page_accueil()."");
+           header("Location: ".htmlspecialchars_decode(page_accueil())."");
       }
   } else {
     // L'utilisateur n'a pas été identifié'
@@ -291,7 +345,7 @@ else if (getSettingValue('sso_statut') == 'lcs')
          grr_closeSession($_GET['auto']);
          header("Location:".LCS_PAGE_AUTHENTIF);
       } else {
-         header("Location: ".page_accueil().""); // authentification non obligatoire, l'utilisateur est simple visiteur
+         header("Location: ".htmlspecialchars_decode(page_accueil()).""); // authentification non obligatoire, l'utilisateur est simple visiteur
       }
    }
 }
@@ -312,7 +366,7 @@ if ((getSettingValue('sso_statut') == 'lasso_visiteur') or (getSettingValue('sso
 	}
 
       // Pas encore authentifié - on se connecte:
-      $return_url = $_SERVER['REQUEST_URI'];
+      $return_url = get_request_uri();
       lassospkit_redirect_federate($return_url);
       exit();
     }
@@ -324,7 +378,7 @@ if ((getSettingValue('sso_statut') == 'lasso_visiteur') or (getSettingValue('sso
   if (empty($login))
     {
       // Construit un identifiant unique
-      $sql = "SELECT login FROM grr_utilisateurs
+      $sql = "SELECT login FROM ".TABLE_PREFIX."_utilisateurs
 			WHERE login LIKE 'lasso_%'";
       $res = grr_sql_query($sql);
       $existing_users = array();
@@ -406,7 +460,7 @@ if ((getSettingValue('sso_statut') == 'lasso_visiteur') or (getSettingValue('sso
 
   if (grr_resumeSession() )
   {
-   header("Location: ".page_accueil()."");
+   header("Location: ".htmlspecialchars_decode(page_accueil())."");
   }
 // Cas d'une authentification apache
 }
@@ -506,7 +560,7 @@ else if ((getSettingValue('sso_statut') == 'http_visiteur') or (getSettingValue(
 
   if (grr_resumeSession() )
   {
-   header("Location: ".page_accueil()."");
+   header("Location: ".htmlspecialchars_decode(page_accueil())."");
   }
 }
 else
@@ -518,21 +572,28 @@ else
       if (grr_resumeSession())
         {
 
-          header("Location: ".page_accueil()."");
+          header("Location: ".htmlspecialchars_decode(page_accueil())."");
         }
       else
         {
-          header("Location: ./login.php");
+         if ((getSettingValue("Url_cacher_page_login")!="") and ((!isset($sso_super_admin)) or ($sso_super_admin==false))) {
+           header("Location: ".getSettingValue("Url_cacher_page_login"));
+         } else
+           header("Location: ./login.php");
         }
     }
       else
     {
-      header("Location: ./login.php");
+      if ((getSettingValue("Url_cacher_page_login")!="") and ((!isset($sso_super_admin)) or ($sso_super_admin==false))) {
+          header("Location: ".getSettingValue("Url_cacher_page_login"));
+      } else
+          header("Location: ./login.php");
+
     }
     }
   else
     {
-      header("Location: ".page_accueil()."");
+      header("Location: ".htmlspecialchars_decode(page_accueil())."");
     }
 }
 ?>

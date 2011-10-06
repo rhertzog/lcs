@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                       install_mysql.php                               #
-#                                                                       #
-#      Interface d'installation de GRR pour un environnement mysql      #
-#            Dernière modification : 06/03/2005                         #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * install_mysql.php
+ * Interface d'installation de GRR pour un environnement mysql
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2009-10-09 07:55:48 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: install_mysql.php,v 1.9 2009-10-09 07:55:48 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +27,22 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: install_mysql.php,v $
+ * Revision 1.9  2009-10-09 07:55:48  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 require_once("include/config.inc.php");
 require_once("include/misc.inc.php");
@@ -38,6 +55,7 @@ $login_db = isset($_GET["login_db"]) ? $_GET["login_db"] : NULL;
 $pass_db = isset($_GET["pass_db"]) ? $_GET["pass_db"] : NULL;
 $choix_db = isset($_GET["choix_db"]) ? $_GET["choix_db"] : NULL;
 $table_new = isset($_GET["table_new"]) ? $_GET["table_new"] : NULL;
+$table_prefix = isset($_GET["table_prefix"]) ? $_GET["table_prefix"] : NULL;
 
 // Pour cette page uniquement, on désactive l'UTF8 et on impose l'ISO-8859-1
 $unicode_encoding = 0;
@@ -45,17 +63,16 @@ $charset_html = "iso-8859-1";
 
 function begin_html() {
     ?>
-<br />
-<center>
-<table width="450">
-<tr><td width="450">
+<div style="margin-left:15%;margin-right:15%;">
+<table>
+<tr><td>
     <?php
 }
 
 function end_html() {
     echo '
     </td></tr></table>
-    </center>
+    </div>
     </body>
     </html>
     ';
@@ -66,24 +83,17 @@ if (@file_exists($nom_fic)) {
     if (@mysql_connect("$dbHost", "$dbUser", "$dbPass")) {
         if (@mysql_select_db("$dbDb")) {
             // Premier test
-            $liste2 = array();
-            $tableNames = @mysql_list_tables($dbDb);
-            $j = '0';
-            while ($j < @mysql_num_rows($tableNames)) {
-                $liste2[$j] = @mysql_tablename($tableNames, $j);
-                $j++;
-            }
             $j = '0';
             $test1 = 'yes';
             while ($j < count($liste_tables)) {
-                $temp = $liste_tables[$j];
-                if (!(in_array($temp, $liste2))) {
+              $test = mysql_query("select count(*) from ".$table_prefix.$liste_tables[$j]);
+              if (!$test) {
                     $correct_install='no';
                     $test1 = 'no';
-                }
-                $j++;
+              }
+              $j++;
             }
-            $call_test = @mysql_query("SELECT * FROM grr_setting WHERE NAME='sessionMaxLength'");
+            $call_test = @mysql_query("SELECT * FROM ".$table_prefix."_setting WHERE NAME='sessionMaxLength'");
             $test2 = @mysql_num_rows($call_test);
             if (($test2 !=0) and ($test1 != 'no')) {
                 echo begin_page("Installation de GRR");
@@ -99,6 +109,18 @@ if (@file_exists($nom_fic)) {
                 }
                 end_html();
                 die();
+            } else {
+                if ($etape == 5) {
+                  echo begin_page("Installation de GRR");
+                  begin_html();
+                  if ($test1=='no') {
+                      echo "<p>L'installation n'a pas pu se terminer normalement : des tables sont manquantes.</p>";
+                  }
+                  if ($test2==0) {
+                      echo "<p>L'installation n'a pas pu se terminer normalement : la table ".$table_prefix."_setting est vide ou bien n'existe pas.</p>";
+                  }
+                  end_html();
+                }
             }
         }
     }
@@ -125,10 +147,13 @@ if ($etape == 4) {
         while (!feof($fd)) {
             $query = fgets($fd, 5000);
             $query = trim($query);
+            $query = preg_replace("/DROP TABLE IF EXISTS grr/","DROP TABLE IF EXISTS ".$table_prefix,$query);
+            $query = preg_replace("/CREATE TABLE grr/","CREATE TABLE ".$table_prefix,$query);
+            $query = preg_replace("/INSERT INTO grr/","INSERT INTO ".$table_prefix,$query);
             if ($query != '') {
                 $reg = mysql_query($query);
                 if (!$reg) {
-                    echo "<br /><font color=red>ERROR</font> : '$query'";
+                    echo "<br /><font color=\"red\">ERROR</font> : '$query'";
                     $result_ok = 'no';
                 }
             }
@@ -153,6 +178,9 @@ if ($etape == 4) {
                 $conn .= "\$dbUser=\"$login_db\";\n";
                 $conn .= "# ligne suivante : le mot de passe de l'utilisateur sql ci-dessus\n";
                 $conn .= "\$dbPass=\"$pass_db\";\n";
+                $conn .= "# ligne suivante : préfixe du nom des tables de données\n";
+                $conn .= "\$table_prefix=\"$table_prefix\";\n";
+
                 $conn .= "?".">";
                 @fputs($f, $conn);
                 if (!@fclose($f)) $ok='no';
@@ -161,7 +189,7 @@ if ($etape == 4) {
                 echo "<b>La structure de votre base de données est installée.</b><br />Vous pouvez passer à l'étape suivante.";
                 echo "<form action='install_mysql.php' method='get'>";
                 echo "<input type='hidden' name='etape' value='5' />";
-                echo "<div align='right'><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /><div>";
+                echo "<div style=\"text-align:right;\"><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /><div>";
                 echo "</form>";
             }
         }
@@ -181,64 +209,70 @@ else if ($etape == 3) {
     echo begin_page("Installation de GRR");
     begin_html();
 
-    echo "<br /><h2>Troisième étape : Choix de votre base</h2>";
+    echo "<br /><h2>Troisième étape : Choix de votre base</h2>\n";
 
-    echo "<form action='install_mysql.php' method='get'>";
-    echo "<input type='hidden' name='etape' value='4' />";
-    echo "<input type='hidden' name='adresse_db'  value=\"$adresse_db\" size='40' />";
-    echo "<input type='hidden' name='login_db' value=\"$login_db\" />";
-    echo "<input type='hidden' name='pass_db' value=\"$pass_db\" />";
+    echo "<form action='install_mysql.php' method='get'><div>\n";
+    echo "<input type='hidden' name='etape' value='4' />\n";
+    echo "<input type='hidden' name='adresse_db'  value=\"$adresse_db\" size='40' />\n";
+    echo "<input type='hidden' name='login_db' value=\"$login_db\" />\n";
+    echo "<input type='hidden' name='pass_db' value=\"$pass_db\" />\n";
 
     $link = mysql_connect("$adresse_db","$login_db","$pass_db");
     $result = @mysql_list_dbs();
 
-    echo "<fieldset><label><b>Choisissez votre base :</b><br /></label>";
+    echo "<fieldset><label><b>Choisissez votre base :</b><br /></label>\n";
 
     if ($result AND (($n = @mysql_num_rows($result)) > 0)) {
-        echo "<p><b>Le serveur $dbsys contient plusieurs bases de données.<br />Sélectionnez celle dans laquelle vous voulez implanter GRR</b></p>";
-        echo "<ul>";
+        echo "<p><b>Le serveur $dbsys contient plusieurs bases de données.<br />Sélectionnez celle dans laquelle vous voulez implanter GRR</b></p>\n";
+        echo "<ul>\n";
         $bases = "";
         $checked = FALSE;
         for ($i = 0; $i < $n; $i++) {
             $table_nom = mysql_dbname($result, $i);
-            $base = "<li><input name=\"choix_db\" value=\"".$table_nom."\" type=radio id='tab$i'";
+            $base = "<li><input name=\"choix_db\" value=\"".$table_nom."\" type=\"radio\" id='tab$i'";
             $base_fin = " /><label for='tab$i'>".$table_nom."</label></li>\n";
             if ($table_nom == $login_db) {
-                $bases = "$base checked".$bases;
+                $bases = "$base checked=\"checked\"".$bases;
                 $checked = TRUE;
             }
             else {
                 $bases .= "$base$base_fin\n";
             }
         }
-        echo $bases."</ul>";
+        echo $bases."</ul>\n";
         echo "ou... ";
     }
     else {
-        echo "<b>Le programme d'installation n'a pas pu lire les noms des bases de données installées.</b>Soit aucune base n'est disponible, soit la fonction permettant de lister les bases a été désactivée pour des raisons de sécurité.<br />";
+        echo "<b>Le programme d'installation n'a pas pu lire les noms des bases de données installées.</b>Soit aucune base n'est disponible, soit la fonction permettant de lister les bases a été désactivée pour des raisons de sécurité.<br />\n";
         if ($login_db) {
             echo "Dans la seconde alternative, il est probable qu'une base portant votre nom de login soit utilisable :";
-            echo "<ul>";
-            echo "<input name=\"choix_db\" value=\"".$login_db."\" type=radio id='stand' checked />";
+            echo "<ul>\n";
+            echo "<input name=\"choix_db\" value=\"".$login_db."\" type=\"radio\" id=\"stand\" checked=\"checked\" />\n";
             echo "<label for='stand'>".$login_db."</label><br />\n";
-            echo "</ul>";
+            echo "</ul>\n";
             echo "ou... ";
             $checked = TRUE;
         }
     }
-    echo "<input name=\"choix_db\" value=\"new_grr\" type=radio id='nou'";
-    if (!$checked) echo " checked";
-    echo " /> <label for='nou'>Créer une nouvelle base de données :</label> ";
-    echo "<input type='text' name='table_new' class='fondo' value=\"grr\" size='20' /></fieldset>";
-    echo "<br /><b>Attention</b> : lors de la prochaine étape :";
-    echo "<ul>";
-    echo "<li>le fichier \"".$nom_fic."\" sera actualisé avec les données que vous avez fourni,</li>";
-    echo "<LI>les tables GRR seront créées dans la base sélectionnée. Si celle-ci contient déjà des tables GRR, ces tables, ainsi que les données qu'elles contiennent, seront supprimées et remplacées par une nouvelle structure.</LI></ul>";
+    echo "<input name=\"choix_db\" value=\"new_grr\" type=\"radio\" id='nou'";
+    if (!$checked) echo " checked=\"checked\"";
+    echo " />\n<label for='nou'>Créer une nouvelle base de données :</label>\n";
+    echo "<input type='text' name='table_new' class='fondo' value=\"grr\" size='20' /></fieldset>\n";
 
-    echo "<div align='right'><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>";
+    echo "<br /><fieldset><label><b>Préfixe des tables :</b><br /></label>\n";
+    echo "Vous pouvez modifier le préfixe du nom des tables de données (ceci est indispensable lorsque l'on souhaite installer plusieurs sites GRR dans la même base de données). Ce préfixe s'écrit en <b>lettres minuscules, non accentuées, et sans espace</b>.";
+    echo "<br /><input type='text' name='table_prefix' class='fondo' value=\"grr\" size='10' />\n";
+    echo "</fieldset>\n";
+
+    echo "<br /><b>Attention</b> : lors de la prochaine étape :\n";
+    echo "<ul>\n";
+    echo "<li>le fichier \"".$nom_fic."\" sera actualisé avec les données que vous avez fourni,</li>\n";
+    echo "<li>les tables GRR seront créées dans la base sélectionnée. Si celle-ci contient déjà des tables GRR, ces tables, ainsi que les données qu'elles contiennent, seront supprimées et remplacées par une nouvelle structure.</li>\n</ul>\n";
+
+    echo "<div style=\"text-align:right;\"><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>\n";
 
 
-    echo "</form>";
+    echo "</div></form>\n";
 
     end_html();
 
@@ -248,27 +282,28 @@ else if ($etape == 2) {
     echo begin_page("Installation de GRR");
     begin_html();
 
-    echo "<br /><h2>Deuxième étape : Essai de connexion au serveur $dbsys</h2>";
+    echo "<br /><h2>Deuxième étape : Essai de connexion au serveur $dbsys</h2>\n";
 
-    echo "<!--";
-    if ($adresse_db=="localhost") $adresse_db="";
+    //echo "<!--";
     $link = mysql_connect($adresse_db,$login_db,$pass_db);
     $db_connect = mysql_errno();
-    echo "-->";
-
-
+    if (($db_connect!="0") or (!$link)){
+        if ($adresse_db=="localhost") $adresse_db="";
+        $link = mysql_connect($adresse_db,$login_db,$pass_db);
+        $db_connect = mysql_errno();
+    }
 
     if (($db_connect=="0") && $link){
-        echo "<b>La connexion a réussi.</b><p> Vous pouvez passer à l'étape suivante.</p>";
+        echo "<b>La connexion a réussi.</b><p> Vous pouvez passer à l'étape suivante.</p>\n";
 
-        echo "<form action='install_mysql.php' method='get'>";
-        echo "<input type='hidden' name='etape' value='3' />";
-        echo "<input type='hidden' name='adresse_db'  value=\"$adresse_db\" size='40' />";
-        echo "<input type='hidden' name='login_db' value=\"$login_db\" />";
-        echo "<input type='hidden' name='pass_db' value=\"$pass_db\" />";
+        echo "<form action='install_mysql.php' method='get'>\n";
+        echo "<div><input type='hidden' name='etape' value='3' />\n";
+        echo "<input type='hidden' name='adresse_db'  value=\"$adresse_db\" size='40' />\n";
+        echo "<input type='hidden' name='login_db' value=\"$login_db\" />\n";
+        echo "<input type='hidden' name='pass_db' value=\"$pass_db\" />\n";
 
-        echo "<div align='right'><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>";
-        echo "</form>";
+        echo "<div style=\"text-align:right;\"><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>\n";
+        echo "</div></form>\n";
     }
     else {
         echo "<b>La connexion au serveur $dbsys a échoué.</b>";
@@ -290,17 +325,17 @@ else if ($etape == 1) {
     $login_db = '';
     $pass_db = '';
 
-    echo "<form action='install_mysql.php' method='get'>";
-    echo "<input type='hidden' name='etape' value='2' />";
-    echo "<fieldset><label><b>Adresse de la base de donnée</b><br /></label>";
-    echo "(Souvent cette adresse correspond à celle de votre site, parfois elle correspond à la mention &laquo;localhost&raquo;, parfois elle est laissée totalement vide.)<br />";
-    echo "<input type='text' name='adresse_db' class='formo' value=\"$adresse_db\" size='40' /></fieldset>";
-    echo "<fieldset><label><b>Le login de connexion</b><br /></label>";
-    echo "<input type='text' name='login_db' class='formo' value=\"$login_db\" size='40' /></fieldset>";
-    echo "<fieldset><label><b>Le mot de passe de connexion</b><br /></label>";
-    echo "<input type='password' name='pass_db' class='formo' value=\"$pass_db\" size='40' /></fieldset>";
-    echo "<div align='right'><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>";
-    echo "</form>";
+    echo "<form action='install_mysql.php' method='get'>\n";
+    echo "<div><input type='hidden' name='etape' value='2' />\n";
+    echo "<fieldset><label><b>Adresse de la base de donnée</b><br /></label>\n";
+    echo "(Souvent cette adresse correspond à celle de votre site, parfois elle correspond à la mention &laquo;localhost&raquo;, parfois elle est laissée totalement vide.)<br />\n";
+    echo "<input type='text' name='adresse_db' class='formo' value=\"$adresse_db\" size='40' /></fieldset>\n";
+    echo "<fieldset><label><b>Le login de connexion</b><br /></label>\n";
+    echo "<input type='text' name='login_db' class='formo' value=\"$login_db\" size='40' /></fieldset>\n";
+    echo "<fieldset><label><b>Le mot de passe de connexion</b><br /></label>\n";
+    echo "<input type='password' name='pass_db' class='formo' value=\"$pass_db\" size='40' /></fieldset>\n";
+    echo "<div style=\"text-align:right;\"><input type='submit' class='fondl' name='Valider' value='Suivant &gt;&gt;' /></div>\n";
+    echo "</div></form>\n";
 
     end_html();
 

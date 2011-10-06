@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                            admin_type.php                             #
-#                                                                       #
-#            interface de gestion des types de réservations             #
-#               Dernière modification : 28/03/2008                      #
-#                                                                       #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau - Pascal Ragot
+/**
+ * admin_type.php
+ * Interface de gestion des types de réservations
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2010-03-03 14:41:34 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_type.php,v 1.8 2010-03-03 14:41:34 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,14 +27,33 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: admin_type.php,v $
+ * Revision 1.8  2010-03-03 14:41:34  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-04-09 14:52:31  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2009-02-27 13:28:19  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/admin.inc.php";
 $grr_script_name = "admin_type.php";
 
 
-if(authGetUserLevel(getUserName(),-1) < 5)
+if(authGetUserLevel(getUserName(),-1) < 6)
 {
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 
@@ -50,23 +70,20 @@ print_header("","","","",$type="with_session", $page="admin");
 // Affichage de la colonne de gauche
 include "admin_col_gauche.php";
 
-?>
-<script src="./functions.js" type="text/javascript" language="javascript"></script>
-<?php
 //
 // Suppression d'un type de réservation
 //
 if ((isset($_GET['action_del'])) and ($_GET['js_confirmed'] ==1) and ($_GET['action_del']='yes')) {
     // faire le test si il existe une réservation en cours avec ce type de réservation
-    $type_id = grr_sql_query1("select type_letter from grr_type_area where id = '".$_GET['type_del']."'");
-    $test1 = grr_sql_query1("select count(id) from grr_entry where type= '".$type_id."'");
-    $test2 = grr_sql_query1("select count(id) from grr_repeat where type= '".$type_id."'");
+    $type_id = grr_sql_query1("select type_letter from ".TABLE_PREFIX."_type_area where id = '".$_GET['type_del']."'");
+    $test1 = grr_sql_query1("select count(id) from ".TABLE_PREFIX."_entry where type= '".$type_id."'");
+    $test2 = grr_sql_query1("select count(id) from ".TABLE_PREFIX."_repeat where type= '".$type_id."'");
     if (($test1 != 0) or ($test2 != 0)) {
         $msg =  "Suppression impossible : des réservations ont été enregistrées avec ce type.";
     } else {
-        $sql = "DELETE FROM grr_type_area WHERE id='".$_GET['type_del']."'";
+        $sql = "DELETE FROM ".TABLE_PREFIX."_type_area WHERE id='".$_GET['type_del']."'";
         if (grr_sql_command($sql) < 0) {fatal_error(1, "<p>" . grr_sql_error());}
-        $sql = "DELETE FROM grr_j_type_area WHERE id_type='".$_GET['type_del']."'";
+        $sql = "DELETE FROM ".TABLE_PREFIX."_j_type_area WHERE id_type='".$_GET['type_del']."'";
         if (grr_sql_command($sql) < 0) {fatal_error(1, "<p>" . grr_sql_error());}
 
     }
@@ -80,7 +97,7 @@ echo "<br />\n";
 echo "| <a href=\"admin_type_modify.php?id=0\">".get_vocab("display_add_type")."</a> |\n";
 echo "<br />\n";
 echo "<br />\n";
-$sql = "SELECT id, type_name, order_display, couleur, type_letter FROM grr_type_area
+$sql = "SELECT id, type_name, order_display, couleur, type_letter, disponible FROM ".TABLE_PREFIX."_type_area
 ORDER BY order_display,type_letter";
 $res = grr_sql_query($sql);
 $nb_lignes = grr_sql_count($res);
@@ -100,6 +117,7 @@ echo "<td><b>".get_vocab("type_num")."</b></td>\n";
 echo "<td><b>".get_vocab("type_name")."</b></td>\n";
 echo "<td><b>".get_vocab("type_color")."</b></td>\n";
 echo "<td><b>".get_vocab("type_order")."</b></td>\n";
+echo "<td><b>".get_vocab("disponible_pour")."</b></td>\n";
 echo "<td><b>".get_vocab("delete")."</b></td>";
 echo "</tr>";
 if ($res) {
@@ -110,6 +128,7 @@ if ($res) {
     $order_display     = $row[2];
     $couleur = $row[3];
     $type_letter = $row[4];
+    $disponible=$row[5] ;
     // Affichage des numéros et descriptions
     $col[$i][1] = $type_letter;
     $col[$i][2] = $id_type;
@@ -121,8 +140,13 @@ if ($res) {
     echo "<tr>\n";
     echo "<td>{$col[$i][1]}</td>\n";
     echo "<td><a href='admin_type_modify.php?id_type={$col[$i][2]}'>{$col[$i][3]}</a></td>\n";
-    echo "<td bgcolor='".$tab_couleur[$col[$i][5]]."'></td>\n";
+    echo "<td style=\"background-color:".$tab_couleur[$col[$i][5]]."\"></td>\n";
     echo "<td>{$col[$i][4]}</td>\n";
+	echo "<td>\n";
+	if ($disponible=='2') {echo get_vocab("all");}
+	if ($disponible=='3') {echo get_vocab("gestionnaires_et_administrateurs");}
+	if ($disponible=='5') {echo get_vocab("only_administrators");}
+	echo "</td>\n";
     $themessage = get_vocab("confirm_del");
     echo "<td><a href='admin_type.php?&amp;type_del={$col[$i][2]}&amp;action_del=yes' onclick='return confirmlink(this, \"{$col[$i][1]}\", \"$themessage\")'>".get_vocab("delete")."</a></td>";
     // Fin de la ligne courante
@@ -134,16 +158,16 @@ echo "</table>";
 
 // Test de cohérence des types de réservation
 
-    $res = grr_sql_query("select distinct type from grr_entry order by type");
+    $res = grr_sql_query("select distinct type from ".TABLE_PREFIX."_entry order by type");
     if ($res) {
         $liste = "";
         for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
         {
-            $test = grr_sql_query1("select type_letter from grr_type_area where type_letter='".$row[0]."'");
+            $test = grr_sql_query1("select type_letter from ".TABLE_PREFIX."_type_area where type_letter='".$row[0]."'");
             if ($test == -1) $liste .= $row[0]." ";
         }
         if ($liste != "") {
-            echo "<br /><table border=\"1\" cellpadding=\"5\"><tr><td><p><font color=red><b>ATTENTION : votre table des types de réservation n'est pas à jour :</b></font></p>";
+            echo "<br /><table border=\"1\" cellpadding=\"5\"><tr><td><p><font color=\"red\"><b>ATTENTION : votre table des types de réservation n'est pas à jour :</b></font></p>";
             echo "<p>Un ou plusieurs types sont actuellement utilisés dans les réservations
             mais ne figurent pas dans la tables des types. Cela risque d'engendrer des messages d'erreur. <b>Il s'agit du ou des types suivants : ".$liste."</b>";
             echo "<br /><br />Vous devez donc définir ci-dessus, le ou les types manquants.</p></td></tr></table>";

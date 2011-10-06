@@ -1,14 +1,15 @@
 <?php
-#########################################################################
-#                            admin_calend_jour_cycle.php                #
-#                                                                       #
-#        Interface permettant à l'administrateur                        #
-#        la configuration de certains paramètres généraux               #
-#                Dernière modification : 10/12/2007                     #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
+/**
+ * admin_calend_jour_cycle.php
+ * Interface permettant à l'administrateur la configuration de certains paramètres généraux
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2008-11-16 22:00:58 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: admin_calend_jour_cycle.php,v 1.3 2008-11-16 22:00:58 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -26,6 +27,13 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: admin_calend_jour_cycle.php,v $
+ * Revision 1.3  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/admin.inc.php";
 $grr_script_name = "admin_calend_jour_cycle.php";
@@ -35,12 +43,12 @@ if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REF
 
 $_SESSION['chemin_retour'] = "admin_calend_jour_cycle.php";
 
-if(authGetUserLevel(getUserName(),-1) < 5)
+if(authGetUserLevel(getUserName(),-1) < 6)
 {
     $day   = date("d");
     $month = date("m");
     $year  = date("Y");
-    showAccessDenied($day, $month, $year, $area,$back);
+    showAccessDenied($day, $month, $year, '',$back);
     exit();
 }
 

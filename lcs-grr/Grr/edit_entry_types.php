@@ -1,15 +1,15 @@
 <?php
-#########################################################################
-#                        edit_entry_types.php                           #
-#                                                                       #
-#            Page "Ajax" utilisée pour générer les types                #
-#                                                                       #
-#            Dernière modification : 09/04/2008                         #
-#                                                                       #
-#########################################################################
-/*
- * Copyright 2003-2005 Laurent Delineau
- * D'après http://mrbs.sourceforge.net/
+/**
+ * edit_entry_types.php
+ * Page "Ajax" utilisée pour générer les types
+ * Ce script fait partie de l'application GRR
+ * Dernière modification : $Date: 2010-04-07 17:49:56 $
+ * @author    Laurent Delineau <laurent.delineau@ac-poitiers.fr>
+ * @copyright Copyright 2003-2008 Laurent Delineau
+ * @link      http://www.gnu.org/licenses/licenses.html
+ * @package   root
+ * @version   $Id: edit_entry_types.php,v 1.10 2010-04-07 17:49:56 grr Exp $
+ * @filesource
  *
  * This file is part of GRR.
  *
@@ -27,9 +27,33 @@
  * along with GRR; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+/**
+ * $Log: edit_entry_types.php,v $
+ * Revision 1.10  2010-04-07 17:49:56  grr
+ * *** empty log message ***
+ *
+ * Revision 1.9  2010-03-03 14:41:34  grr
+ * *** empty log message ***
+ *
+ * Revision 1.8  2009-06-04 15:30:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.7  2009-04-14 12:59:17  grr
+ * *** empty log message ***
+ *
+ * Revision 1.6  2009-03-24 13:30:07  grr
+ * *** empty log message ***
+ *
+ * Revision 1.5  2008-11-16 22:00:58  grr
+ * *** empty log message ***
+ *
+ * Revision 1.4  2008-11-11 22:01:14  grr
+ * *** empty log message ***
+ *
+ *
+ */
 
 include "include/admin.inc.php";
-include "include/mrbs_sql.inc.php";
 
 /* Ce script a besoin de trois arguments passés par la méthode GET :
 $id : l'identifiant de la réservation (0 si nouvelle réservation)
@@ -60,26 +84,29 @@ if ((authGetUserLevel(getUserName(),-1) < 2) and (auth_visiteur(getUserName(),$r
     exit();
 }
 
-if(authUserAccesArea($_SESSION['login'], $areas)==0)
+if(authUserAccesArea(getUserName(), $areas)==0)
 {
     showAccessDenied("","","","","");
     exit();
 }
 
 // Type de réservation
-
+$qui_peut_reserver_pour  = grr_sql_query1("select qui_peut_reserver_pour from grr_room where id='".$room."'");
+$aff_default=((authGetUserLevel(getUserName(),-1,"room") >= $qui_peut_reserver_pour) or (authGetUserLevel(getUserName(),$areas,"area") >= $qui_peut_reserver_pour));
+$aff_type=max(authGetUserLevel(getUserName(),-1,"room"),authGetUserLevel(getUserName(),$areas,"area"));
 // Avant d'afficher la liste déroulante des types, on stocke dans $display_type et on teste le nombre de types à afficher
 // Si ne nombre est égal à 1, on ne laisse pas le choix
 $nb_type = 0;
 $type_nom_unique = "??";
 $type_id_unique = "??";
-$display_type = "<B>".get_vocab("type")." *".get_vocab("deux_points")."</B></TD></TR>\n";
-$display_type .= "<TR><TD class=\"CL\">";
-$display_type .= "<SELECT name=\"type\" size=\"1\">\n";
-$display_type .= "<OPTION VALUE='0'>".get_vocab("choose")."\n";
-$sql = "SELECT DISTINCT t.type_name, t.type_letter, t.id FROM grr_type_area t
-LEFT JOIN grr_j_type_area j on j.id_type=t.id
-WHERE (j.id_area  IS NULL or j.id_area != '".$areas."')
+$display_type = "<table width=100%><tr><td class=\"E\"><B>".get_vocab("type")." *".get_vocab("deux_points")."</B></td></tr>\n";
+$affiche_mess_asterisque=true;
+$display_type .= "<tr><td class=\"CL\">";
+$display_type .= "<select id=\"type\" name=\"type\" size=\"1\" onclick=\"setdefault('type_default','')\">\n";
+$display_type .= "<option value='0'>".get_vocab("choose")."\n";
+$sql = "SELECT DISTINCT t.type_name, t.type_letter, t.id FROM ".TABLE_PREFIX."_type_area t
+LEFT JOIN ".TABLE_PREFIX."_j_type_area j on j.id_type=t.id
+WHERE (j.id_area  IS NULL or j.id_area != '".$areas."') and (t.disponible<='".$aff_type."')
 ORDER BY t.order_display";
 $res = grr_sql_query($sql);
 
@@ -88,34 +115,44 @@ if ($res)
     {
       // La requête sql précédente laisse passer les cas où un type est non valide
       // dans le domaine concerné ET au moins dans un autre domaine, d'où le test suivant
-      $test = grr_sql_query1("select id_type from grr_j_type_area where id_type = '".$row[2]."' and id_area='".$areas."'");
+      $test = grr_sql_query1("select id_type from ".TABLE_PREFIX."_j_type_area where id_type = '".$row[2]."' and id_area='".$areas."'");
       if ($test == -1)
     {
       $nb_type ++;
       $type_nom_unique = $row[0];
       $type_id_unique = $row[1];
-      $display_type .= "<OPTION VALUE=\"".$row[1]."\" ";
+      $display_type .= "<option value=\"".$row[1]."\" ";
       // Modification d'une réservation
       if ($type != "") {
         if ($type == $row[1])  {
-          $display_type .=  " SELECTED";
+          $display_type .=  " selected=\"selected\"";
         }
       } else {
       // Nouvelle réservation
-          $id_type_par_defaut = grr_sql_query1("select id_type_par_defaut from grr_area where id = '".$areas."'");
-          if ($id_type_par_defaut == $row[2])  $display_type .=  " SELECTED";
+          $id_type_par_defaut = grr_sql_query1("select id_type_par_defaut from ".TABLE_PREFIX."_area where id = '".$areas."'");
+		  //Récupère le cookie par defaut
+		  if($aff_default and isset($_COOKIE['type_default'])) $cookie = $_COOKIE['type_default']; else $cookie="";
+          if ((!$cookie and ($id_type_par_defaut == $row[2])) or ($cookie and $cookie==$row[0])) $display_type .=  " selected=\"selected\"";
       }
       $display_type .=  " >".htmlentities(removeMailUnicode($row[0]))."</option>\n";
     }
     }
 
-$display_type .=  "</SELECT>\n";
-header("Content-Type: text/html;charset=".$charset_html);
+$display_type .=  "</select>";
+if($aff_default)
+	$display_type .= "&nbsp;<input type=\"button\" value=\"".get_vocab("definir par defaut")."\" onclick=\"setdefault('type_default',document.getElementById('main').type.options[document.getElementById('main').type.options.selectedIndex].text)\" />";
+$display_type .= "</td></tr></table>\n";
+
+if ($unicode_encoding)
+ header("Content-Type: text/html;charset=utf-8");
+else
+ header("Content-Type: text/html;charset=".$charset_html);
+
 header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 
 if ($nb_type > 1) {
     echo $display_type;
 } else {
-    echo "<b>".get_vocab("type").get_vocab("deux_points").htmlentities(removeMailUnicode($type_nom_unique))."</b><input type=\"hidden\" name=\"type\" value=\"".$type_id_unique."\" />\n";
+	echo "<table width=100%><tr><td class=\"E\"><b>".get_vocab("type").get_vocab("deux_points").htmlentities(removeMailUnicode($type_nom_unique))."</b>"."<input name=\"type\" type=\"hidden\" value=\"".$type_id_unique."\" /></td></tr></table>\n";
 }
 ?>
