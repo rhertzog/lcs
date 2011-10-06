@@ -14,7 +14,7 @@
 use LcSe;
 
 print "Content-Type: text/html\n\n";
-  if (isAdmin() ne 'Y') {
+  if (isRight("system_is_admin") ne 'Y') {
     print
       "<p><strong>Erreur :</strong> vous n'avez pas les droits necessaires",
       " pour consulter les statistiques du cache mandataire !</p>";

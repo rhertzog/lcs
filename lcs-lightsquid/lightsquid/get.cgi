@@ -13,7 +13,7 @@
 use LcSe;
 
 
-  if (isAdmin() ne 'Y') {
+  if (isRight("system_is_admin") ne 'Y') {
 	print "Content-Type: text/html\n\n";
     print
       "<p><strong>Erreur :</strong> vous n'avez pas les droits necessaires",

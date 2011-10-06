@@ -1,1 +1,1 @@
-Mandataire cache,../lightsquid/,lcs_is_admin
+Mandataire cache,../lightsquid/,system_is_admin

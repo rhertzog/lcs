@@ -9,8 +9,17 @@
 #
 # detail see in gnugpl.txt
 
+# LCS lightsquid
+use LcSe;
 
 print "Content-Type: text/html\n\n";
+  if (isRight("system_is_admin") ne 'Y') {
+    print
+      "<p><strong>Erreur :</strong> vous n'avez pas les droits necessaires",
+      " pour consulter les statistiques du cache mandataire !</p>";
+    &pdp(STDOUT);
+    exit(0);
+  }
 
 use File::Basename;
 push (@INC,(fileparse($0))[1]);
