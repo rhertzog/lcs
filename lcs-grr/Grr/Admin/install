@@ -11,7 +11,7 @@ echo "Script d'installation du plugin Grr";
 #
 DOMAIN=`hostname -d`
 
-#mysql -e "INSERT INTO grr_plug.grr_utilisateurs VALUES ('admin', 'Administrateur', 'grr', '', 'admin@$DOMAIN', 'administrateur', 'actif', 0, 0, '', '', '','ext');"
+mysql -e "INSERT INTO grr_plug.grr_utilisateurs VALUES ('admin', 'Administrateur', 'grr', '', 'admin@$DOMAIN', 'administrateur', 'actif', '0', '0', '0', '', '', '', 'ext');"
 mysql -e "UPDATE grr_plug.grr_setting SET VALUE = 'admin@$DOMAIN' WHERE grr_setting.NAME = 'webmaster_email';"
 mysql -e "UPDATE grr_plug.grr_setting SET VALUE = 'admin@$DOMAIN' WHERE grr_setting.NAME  ='technical_support_email';"
 mysql -e "UPDATE grr_plug.grr_setting SET VALUE = 'http://lcs.$DOMAIN/Plugins/Grr/' WHERE grr_setting.NAME = 'grr_url';"
