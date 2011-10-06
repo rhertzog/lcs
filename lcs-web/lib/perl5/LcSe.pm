@@ -16,7 +16,7 @@ require '/etc/LcSeConfig.ph';
 # Pour stoker les UID transmis par le fichier f_uid.txt
 %Admin_UID = ();
 
-# Définition des formats DBF
+# Definition des formats DBF
 # --------------------------
 %format = (
 	   'f_ele'  => 'A5A25A25xA8A1x163A5',
@@ -39,7 +39,7 @@ require '/etc/LcSeConfig.ph';
 		 'a_ind'  => '706,251'
 	  );
 
-# Définition des formats TXT
+# Definition des formats TXT
 # --------------------------
 %formatTxt = (
 	   'f_ele'  => '6',
@@ -65,20 +65,20 @@ if (($res->entries)[0]) {
   $domainSid = (($res->entries)[0])->get_value('sambaSID');
 }
 
-# Fonction d'écriture de l'entête HTML
+# Fonction d'ecriture de l'entete HTML
 # ====================================
 sub entete {
   $handle = shift(@_);
   print $handle header(-type=>'text/html') if $handle eq 'STDOUT';
   print $handle
-   start_html(-title  => 'Importation de données dans l\'annuaire LDAP',
-	       -author => 'olivier.le_monnier@tice.ac-caen.fr',
+   start_html(-title  => 'Importation de donn&eacute;es dans l\'annuaire LDAP',
+	       -author => 'LcsDevTeam@tice.ac-caen.fr',
 	       -style  => {-src=>"/$webDir/style/style.css"}),
-    h1("<a style=\"color: #404044; text-decoration: none\" href=\"/$webDir/result.$pid.html\">Importation</a> de données dans l\'annuaire LDAP"),
+    h1("<a style=\"color: #404044; text-decoration: none\" href=\"/$webDir/result.$pid.html\">Importation</a> de donn&eacute;es dans l\'annuaire LDAP"),
     hr();
 }
 
-# Fonction d'écriture du pied de page HTML
+# Fonction d'ecriture du pied de page HTML
 # ========================================
 sub pdp {
   $handle = shift(@_);
@@ -86,7 +86,7 @@ sub pdp {
     "<hr>\n",
     "<div style=\"font-size: xx-small; text-align: right\">\n",
     "<address><a href=\"mailto:LcsDevTeam\@tice.ac-caen.fr\">&lt; LcsDevTeam\@tice.ac-caen.fr &gt;</a></address>\n",
-    "Mis à jour : le 5 juillet 2004",
+    "Mis &agrave; jour : le 6 Octobre 2011",
     "</div>\n",
     end_html();
 }
@@ -95,17 +95,17 @@ sub dbf2txt {
   my $fichier = shift;
   open ( FICHTMP ,"</tmp/ApacheCgi.temp");
   seek FICHTMP, 4, 0;
-  # Séparation entête/corps
+  # Separation entete/corps
   read( FICHTMP, $header, 8);
   @param = unpack 'LSS', $header;
   ($nb_enreg, $h_size, $l_enreg) = @param;
-  # Vérification des tailles de l'entête et d'un enregistrement
+  # Verification des tailles de l'entete et d'un enregistrement
   # -----------------------------------------------------------
   if ($verif{$fichier} ne "$h_size".","."$l_enreg") {
     $res = "$h_size,$l_enreg,$verif{$fichier}";
   } else {
     $res = 0;
-    # Écriture du fichier nettoyé
+    # Ecriture du fichier nettoye
     # ---------------------------
     open DATA, ">/tmp/$fichier.temp";
     seek FICHTMP, $h_size+1, 0;
@@ -120,7 +120,7 @@ sub dbf2txt {
   close DATA;
   close FICHTMP;
   unlink '/tmp/ApacheCgi.temp';
-  # Renvoie 0 ou les valeurs comparées
+  # Renvoie 0 ou les valeurs comparees
   # ----------------------------------
   return $res;
 }
@@ -153,8 +153,8 @@ sub mkUid {
 
   my ( $prenom, $nom ) = @_;
 
-  # Génération de l'UID suivant la politique
-  # définie dans le fichier de conf commun
+  # Generation de l'UID suivant la politique
+  # definie dans le fichier de conf commun
 
   if (($uidPolicy == 0) || ($uidPolicy == 1)) {
     $uid = $prenom . "." . $nom;
@@ -194,7 +194,7 @@ sub sambaAttrs {
 }
 
 sub getFirstFreeUid {
-		my $FFuidNumber = 1001; # n° à partir duquel la recherche est lancée
+		my $FFuidNumber = 1001; # n° a partir duquel la recherche est lancee
 		my $increment = 1024; # doit etre une puissance de 2
 		if (defined(getpwuid($FFuidNumber))) {
 				do {
@@ -211,7 +211,7 @@ sub getFirstFreeUid {
 								$FFuidNumber -= $increment;
 						}
 				} while $increment > 1;
-				# la boucle suivante est normalement exécutée au plus une fois
+				# la boucle suivante est normalement executee au plus une fois
 				while (defined(getpwuid($FFuidNumber))) {
 						$FFuidNumber++;
 				}
@@ -220,7 +220,7 @@ sub getFirstFreeUid {
 }
 
 sub getFirstFreeGid {
-		my $FFgidNumber = 2000; # n° à partir duquel la recherche est lancée
+		my $FFgidNumber = 2000; # numero a partir duquel la recherche est lancee
 		my $increment = 1024; # doit etre une puissance de 2
 		if (defined(getgrgid($FFgidNumber))) {
 				do {
@@ -237,7 +237,7 @@ sub getFirstFreeGid {
 								$FFgidNumber -= $increment;
 						}
 				} while $increment > 1;
-				# la boucle suivante est normalement exécutée au plus une fois
+				# la boucle suivante est normalement executee au plus une fois
 				while (defined(getgrgid($FFgidNumber))) {
 						$FFgidNumber++;
 				}
@@ -268,11 +268,11 @@ sub processGepUser {
   #### Fin Correctif leb 
   warn $res->error if $res->code;
   if (($res->entries)[0] and $uniqueNumber ne 'undef') {
-    # S'il existe : actualisation des entrées CN et SN et employeeNumber
+    # S'il existe : actualisation des entrees CN et SN et employeeNumber
     $uid = (($res->entries)[0])->get_value('uid');
     updateUserCSn();
     $cn = encode('latin1', decode('utf8', $cn));
-    return ("<tr><td>Entrée <strong>$cn :</strong></td><td>compte $uniqueNumber déjà présent dans l'annuaire : <tt><strong>$uid</strong></tt>.</td></tr>\n");
+    return ("<tr><td>Entr&eacute;e <strong>$cn :</strong></td><td>compte $uniqueNumber d&eacute;j&agrave; pr&eacute;sent dans l'annuaire : <tt><strong>$uid</strong></tt>.</td></tr>\n");
   } else {
     $id = 1;
     if(($uid eq 'prof')||($uid eq 'docs')||($uid eq 'progs')||($uid eq 'netlogon')||($uid eq 'classes')||($uid eq 'homes')||($uid eq 'admhomes')||($uid eq 'profiles')) {
@@ -285,7 +285,7 @@ sub processGepUser {
 															 filter   => "uid=$uid");
       warn $res->error if $res->code;
       if (($res->entries)[0]) {
-					# S'il existe : vérification de la présence de l'EMPLOYEENUMBER
+					# S'il existe : verification de la presence de l'EMPLOYEENUMBER
 					$employeeNumber = (($res->entries)[0])->get_value('employeeNumber');
 					if (! $employeeNumber and $uniqueNumber ne 'undef') {
 							# En l'absence : Comparaison des CN
@@ -295,11 +295,11 @@ sub processGepUser {
 									$ldapUid = (($res->entries)[0])->get_value('uid');
 									updateUserEntry();
 									$cn = encode('latin1', decode('utf8', $cn));
-									return ("<tr><td>Entrée <strong>$cn :</strong></td><td>Mise à jour du 'numéro unique', compte <tt><strong>$ldapUid</strong></tt>.</td></tr>\n");
+									return ("<tr><td>Entr&eacute;e <strong>$cn :</strong></td><td>Mise &agrave; jour du 'num&eacute;ro unique', compte <tt><strong>$ldapUid</strong></tt>.</td></tr>\n");
 							} else {
-									# traitement des déchets...
+									# traitement des dechets...
 									$cn = encode('latin1', decode('utf8', $cn));
-									return ("<tr><td>Entrée <strong>$cn :</strong></td><td>Risque de conflits, entrée non traitée</td></tr>\n");
+									return ("<tr><td>Entr&eacute;e <strong>$cn :</strong></td><td>Risque de conflits, entr&eacute;e non trait&eacute;e</td></tr>\n");
 							}
 					} else {
 							# Sinon Gestion des doublons
@@ -312,10 +312,10 @@ sub processGepUser {
 							next DOUBLONS;
 					}
       } else {
-	# Création de l'entrée
+	# Creation de l'entree
 	addUserEntry($uid, $password);
 	$cn = encode('latin1', decode('utf8', $cn));
-        my $ValRetour =  "<tr><td>Entrée <strong>$cn :</strong></td><td>Création du compte <tt><strong>$uid</strong></tt>";
+        my $ValRetour =  "<tr><td>Entr&eacute;e <strong>$cn :</strong></td><td>Cr&eacute;ation du compte <tt><strong>$uid</strong></tt>";
         $ValRetour .= " fourni par f_uid" if $Admin_UID{$uniqueNumber} ;
         $ValRetour .= "</td></tr>\n";
         return ($ValRetour);
@@ -438,7 +438,7 @@ sub isAdmin {
   $isAdmin = 'N';
   # Identification de l'utilisateur
   # ===============================
-  # Récupération du cookie
+  # Recuperation du cookie
   %cookies = fetch CGI::Cookie;
    if (exists $cookies{'LCSAuth'} ) { $session = $cookies{'LCSAuth'}->value; }
   # Connexion MySql
@@ -453,14 +453,6 @@ sub isAdmin {
   $lcs_db->disconnect;
   $lcs_ldap = Net::LDAP->new("$ldap_server");
   $lcs_ldap->bind();
-#  $res = $lcs_ldap->search(base     => "$baseDn",
-#			   scope    => 'sub',
-#			   attrs    => 'gecos',
-#			   filter   => "(uid=$login)");
-#  foreach $entry ($res->entries) {
-#    @gecos = $entry->get_value('gecos');
-#  }
-#  $isAdmin = (split /,/,$gecos[0])[2];
   # Validation
   $admindn = 'uid=' . $login .",". $peopleDn;
   @attrs = ('cn');
@@ -474,7 +466,7 @@ sub isAdmin {
   foreach $entry ($res->entries) {
     @cn  = $entry->get('cn');
   }
-  if ($cn[0] eq 'Annu_is_admin') {
+  if ($cn[0] eq 'Annu_is_admin' ) {
      $isAdmin = "Y";
   }
   $lcs_ldap->unbind();
@@ -482,10 +474,52 @@ sub isAdmin {
 
 }
 
+sub isRight {
+  ($right) = @_;
+
+  $isRight = 'N';
+  # Identification de l'utilisateur
+  # ===============================
+  # Recuperation du cookie
+  %cookies = fetch CGI::Cookie;
+   if (exists $cookies{'LCSAuth'} ) { $session = $cookies{'LCSAuth'}->value; }
+  # Connexion MySql
+  $lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
+  $requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
+  $requete->execute();
+  $id = $requete->fetchrow_array;
+  $requete = $lcs_db->prepare("select login from personne where (id = $id)");
+  $requete->execute();
+  $login = $requete->fetchrow_array;
+  $requete->finish;
+  $lcs_db->disconnect;
+  $lcs_ldap = Net::LDAP->new("$ldap_server");
+  $lcs_ldap->bind();
+  # Validation
+  $admindn = 'uid=' . $login .",". $peopleDn;
+  @attrs = ('cn');
+  $lcs_ldap = Net::LDAP->new("$ldap_server");
+  $lcs_ldap->bind(dn       => "$adminDn",
+                  password => "$adminPw");
+  $res = $lcs_ldap->search(base     => "cn=$right,$droitsDn",
+                           scope    => 'subtree',
+                           attrs    => \@attrs,
+                           filter   => "(member=$admindn)");
+  foreach $entry ($res->entries) {
+    @cn  = $entry->get('cn');
+  }
+  if ($cn[0] eq $right) {
+     $isRight = "Y";
+  }
+  $lcs_ldap->unbind();
+  return $isRight;
+
+}
+
 sub annuelle {
-  # Préparation d'une importation annuelle
+  # Preparation d'une importation annuelle
   # --------------------------------------
-  print RES "<h2>Préparation à l'importation annuelle</h2>\n";
+  print RES "<h2>Pr&eacute;paration &agrave; l'importation annuelle</h2>\n";
   # Connexion LDAP
   $lcs_ldap = Net::LDAP->new("$slapdIp");
   $lcs_ldap->bind(
@@ -561,7 +595,7 @@ sub annuelle {
                          attrs => \@adminsEntry );
   warn $res->error if $res->code; 
   # 3.  Recopie des member de ElevesOld, ProfsOld et AdministratifsOld dont
-  #     l'employeeNumber est vide vers les branches renouvellées
+  #     l'employeeNumber est vide vers les branches renouvellees
   $res = $lcs_ldap->search(base     => "$peopleDn",
 			   scope    => 'one',
 			   filter   => "(!(employeeNumber=*))");
@@ -608,7 +642,7 @@ sub gep2posixAccount {
   @noms = ();
   $sn = '';
 
-  # « Minusculisation » et nettoyage du nom et du prénom
+  # « Minusculisation » et nettoyage du nom et du prenom
   # $nom =~ tr/A-Z/a-z/;
   $nom = lc($nom);
   $nom =~ s/'//; #';
@@ -636,12 +670,12 @@ sub gep2posixAccount {
 
   $uid = mkUid(unac_string('utf8', ($prenom1)), unac_string('utf8', ($nom1)));
 
-  # Génération du mot de passe crypté
+  # Generation du mot de passe crypte
   $salt  = chr (rand(75) + 48);
   $salt .= chr (rand(75) + 48);
   $crypt = crypt $password, $salt;
 
-  # Génération de cn, givenName et sn
+  # Generation de cn, givenName et sn
   $sn = unac_string('utf8',$sn);
   $prenom = unac_string('utf8',$prenom1);
   $Uprenom = ucfirst($prenom);
@@ -649,7 +683,7 @@ sub gep2posixAccount {
   $givenName = $Uprenom;
   $pseudo = $prenom . $firstletter_nom;
 
-  # Génération du gecos
+  # Generation du gecos
   if ($sexe eq '1') { $sexe = 'M' }
   if ($sexe eq '2') { $sexe = 'F' }
 
