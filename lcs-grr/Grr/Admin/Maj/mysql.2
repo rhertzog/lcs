@@ -1,2 +1,15 @@
 Use grr_plug;
-ALTER TABLE  grr_utilisateurs ADD default_site SMALLINT(6) NOT NULL  default '0' AFTER etat;
+delimiter '//'
+ CREATE PROCEDURE addcol() BEGIN IF NOT EXISTS(
+	SELECT * FROM information_schema.COLUMNS
+	WHERE COLUMN_NAME='default_site' AND TABLE_NAME='grr_utilisateurs' AND TABLE_SCHEMA='grr_plug'
+	)
+	THEN
+		ALTER TABLE `grr_plug`.`grr_utilisateurs`
+		ADD COLUMN `default_site` SMALLINT(6) NOT NULL  default '0' AFTER etat;
+ END IF;
+ END;
+ //
+ delimiter ';'
+ CALL addcol();
+DROP PROCEDURE addcol;
