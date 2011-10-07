@@ -1,3 +1,9 @@
+lcs-grr (2.4.8~2) unstable; urgency=low
+
+  * update doc html
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 07 Oct 2011 02:15:20 +0200
+
 lcs-grr (2.4.8~1) unstable; urgency=low
 
   * update to version 1.9.7e
