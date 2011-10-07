@@ -1,8 +1,12 @@
 lcs-openvpn (2.4.9~1) Lcs; urgency=low
+  
+  [Simon Cavey]
+  * Update windows and mac os client
 
-  * update windows and mac os client
+  [Jean Luc Chretien]
+  * Modify sed to delete include in named.conf
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 01 Jul 2011 11:35:38 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Oct 2011 10:57:54 +0200
 
 lcs-openvpn (2.4.8) Lcs; urgency=low
 
