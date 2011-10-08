@@ -24,13 +24,6 @@ if (!isset($_SESSION['login']) )exit;
 //si la page est appelée par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 
-function SansAccent($texte){
-
-$accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
-$noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
-$texte = strtr($texte,$accent,$noaccent);
-return $texte;
-} 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -92,8 +85,7 @@ if (isset($_POST['Valider']))
 			{
 			if ($_FILES["FileSelection1"]["size"]>0)
 				{
-				$nomFichier = SansAccent($_FILES["FileSelection1"]["name"]) ;
-				$nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
+				$nomFichier=mb_ereg_replace("[^A-Za-z0-9\.\-_]","",$_FILES["FileSelection1"]["name"]);
 				$nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
 				//chargement du fichier
 				copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));
@@ -120,7 +112,7 @@ if (isset($_POST['Valider']))
 	}
 
 ?>
-<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
+<form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data" >
     <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
 <legend id="legende">Transfert d'un fichier</legend>

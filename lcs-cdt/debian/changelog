@@ -1,3 +1,9 @@
+lcs-cdt (2.4.8.5~1) LCS; urgency=low
+
+  * fix problem  name of upload file
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 08 Oct 2011 07:32:22 +0200
+
 lcs-cdt (2.4.8.4) LCS; urgency=low
 
   * remove tilde

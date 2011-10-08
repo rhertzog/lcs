@@ -92,7 +92,7 @@ if (isset($_POST['Valider']))
 			{
 			if ($_FILES["FileSelection1"]["size"]>0)
 				{
-				$nomFichier = SansAccent($_FILES["FileSelection1"]["name"]) ;
+				$nomFichier =mb_ereg_replace("[^A-Za-z0-9\.\-_]","",$_FILES["FileSelection1"]["name"]) ;
 				$nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
 				$nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
 				//chargement du fichier
