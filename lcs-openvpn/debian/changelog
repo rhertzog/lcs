@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.9~2) Lcs; urgency=low
+
+  * change default config for debian squeeze
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 10 Oct 2011 11:54:46 +0200
+
 lcs-openvpn (2.4.9~1) Lcs; urgency=low
   
   [Simon Cavey]
