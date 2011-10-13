@@ -16,9 +16,10 @@ include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
 include "$BASEDIR/Annu/includes/ihm.inc.php";
 include "../Includes/config.inc.php";  
-include ("../Includes/functions2.inc.php");
-include ('../Includes/data.inc.php');
-require_once("../Includes/class.inputfilter_clean.php");
+include "../Includes/functions2.inc.php";
+include '../Includes/data.inc.php';
+include "../Includes/phpqrcode/qrlib.php";
+require_once "../Includes/class.inputfilter_clean.php";
 
 function SansAccent($texte){
 
@@ -285,16 +286,29 @@ if (isset($_POST['Valider']))
                         else
                             {
                             echo '<span id="legend2">';
-                            echo "<a href= '../index.php";
+                           echo "<a href= '../index.php";
                             for ($a = 1; $a <= $_POST['nbenrg']; $a++)
                                     {
-                                    if ($a==1) echo "?cl".$a."=".$clcrypt[$a];
-                                    else echo "&amp;cl".$a."=".$clcrypt[$a];
-                                    echo "&amp;ef".$a."=".$uidcrypt[$a];
+                                    if ($a==1) $UrlParent.= "?cl".$a."=".$clcrypt[$a];
+                                    else $UrlParent.= "&amp;cl".$a."=".$clcrypt[$a];
+                                    $UrlParent.= "&amp;ef".$a."=".$uidcrypt[$a];
                                     }
-                            echo "'> Acc&egrave;s direct au cahier de texte </a> ";
-                            echo '</span>';
-                            echo "<br /><br /><span class='reserve'> ( ajoutez ce lien &#224; vos favoris/marques-pages en faisant un clic droit dessus ) </span></div></div>";
+                           echo  $UrlParent;
+                           echo "'> Acc&egrave;s direct au cahier de texte </a> ";
+                           echo '</span>';
+                            echo "<br /><br /><span class='reserve'> &nbsp;( ajoutez le lien ci-dessus &#224; vos favoris/marques-pages en faisant un clic droit dessus )&nbsp; </span> </div> ";
+                            
+                            $content= $baseurl.'Plugins/Cdt/index.php'.$UrlParent;
+                            $content=str_replace("&amp;", "*amp*", $content);
+                            $filename = 'qrcode.png';
+                            $errorCorrectionLevel ='L';
+                            $matrixPointSize = 3;
+                            //QRcode::png($content, $filename, $errorCorrectionLevel, $matrixPointSize, 2);
+                            echo "<div>  </br>";
+                            echo '<img src="../Includes/phpqrcode/genRqrCode.php?qrurl='.$content.'" alt="" />';
+                             echo "<br /><br /><span class='reserve'> &nbsp;( Acc&#233dez au cahier de textes avec votre smartphone ou votre tablette, en scannant le QRcode ci-dessus  )&nbsp; </span> </div> ";
+                            echo " </div></div>";
+                            
                             }
         }//fin du traitement du formulaire
 	if (($Pb!="true") && (isset($_POST['howmany']))) 
@@ -307,3 +321,6 @@ include ('../Includes/pied.inc');
 ?>
 </body>
 </html>
+<?php
+//if (file_exists($filename)) unlink($filename);
+?>

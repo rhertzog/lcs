@@ -50,6 +50,7 @@ if ($login) {
                     for ($n = 0; $n < count($classe); $n++) {
                         if ((mb_ereg("(_$classe[$n])$", $groups[$loop]["cn"])) || ($classe[$n] == $groups[$loop]["cn"])) {
                             $_SESSION['saclasse'][1] = $classe[$n];
+                             $_SESSION['safullclasse'] =$groups[$loop]["cn"];
                             break;
                         }
                         else
@@ -87,6 +88,8 @@ elseif (isset($_GET['cl1'])) {
     $toto = array();
     for ($x = 1; $x <= 5; $x++) {
         if (isset($_GET['cl' . $x])) {
+            //parent
+            if (isset($_GET['ef' . $x])) {
             $toto = decripte_uid($_GET['ef' . $x], decripte_classe($_GET['cl' . $x]));
             if ((decripte_classe($_GET['cl' . $x]) != "") && ($toto[0] != "")) {
                 $_SESSION['saclasse'][$x] = decripte_classe($_GET['cl' . $x]);
@@ -100,6 +103,24 @@ elseif (isset($_GET['cl1'])) {
 
                 #
             }
+            }
+            //eleve
+             if (isset($_GET['el' . $x]) && $x==1) {
+            $toto = decripte_uid($_GET['el' . $x], decripte_classe($_GET['cl' . $x]));
+            if ((decripte_classe($_GET['cl' . $x]) != "") && ($toto[0] != "")) {
+                $_SESSION['saclasse'][$x] = decripte_classe($_GET['cl' . $x]);
+                $gugus = decripte_uid($_GET['el' . $x], $_SESSION['saclasse'][$x]);
+                //enregistrement stats
+                $date = date("YmdHis");
+                $Kl = $_SESSION['saclasse'][$x];
+                # Enregistrement dans la table statusages
+                #
+                $result = mysql_db_query("$DBAUTH", "INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')", $authlink);
+                break;
+                #
+            }
+           }
+            //
         }
     }
     if (isset($_SESSION['saclasse'])) {

@@ -17,4 +17,20 @@ $(document).ready(function() {
             }
       });
     });
+    
+    $(function() {
+        $( "#dialog" ).dialog({
+            autoOpen: false,
+            show: "blind",
+            hide: "explode",
+                        position: ['center','top'],
+                        width:430,
+                        resizable: true
+        });
+
+        $( "#bt-qrcode" ).click(function() {
+            $( "#dialog" ).dialog( "open" );
+            return false;
+        });
+    });
 });

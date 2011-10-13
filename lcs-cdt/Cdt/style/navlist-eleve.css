@@ -15,8 +15,9 @@
 #cfg-navlist-elv a:hover {background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a#courant:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
 #cfg-navlist-elv a:active{background:none;font-weight:bold;color: #fdb218;background: url('../images/menu-elv-on-cdt.png') no-repeat;padding: 0.25em 0.5em 0.4em 1.5em;}
-.bt-taf{background:url('../images/bt-cdt-taf.png') no-repeat;color:white;margin: 0 5px;padding:5px 62px;border:none;height:20px;width:120px;}
+.bt-taf{background:url('../images/bt-cdt-taf.png') no-repeat;color:white;margin: 0 5px;padding:-5px 62px;border:none;height:20px;width:120px;}
 #bt-abs{background:url('../images/bt-cdt-abs.png') no-repeat;color:white;margin: 0 5px;padding:5px 62px;border:none;height:20px;width:120px;}
+#bt-qrcode{background:url('../images/qrcode.png') no-repeat;color:white;margin: 0 5px;padding:-5px 62px;border:none;height:20px;width:120px;}
 #switch-postit{position:fixed; top:46px; right:182px;cursor:pointer;height:20px;padding:0;width:24px;}
 .postup{background:url('../images/up.png') no-repeat;}
 .postdown{background:url('../images/down.png') no-repeat;}

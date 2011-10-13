@@ -89,17 +89,20 @@ if(isset($_GET['div'])) $ch=$_GET['div'];
 <link  href="../style/style.css" rel="stylesheet" type="text/css" />
 <link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 <link  href="../style/navlist-eleve.css" rel="stylesheet" type="text/css" />
+<link href="../style/sequences.css" rel="stylesheet" type="text/css" />
+<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 	<script type="text/javascript" src="../Includes/cdt_eleve.js"></script>
 	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+                  <script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-ele-script.js"></script>
 	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
-        <script type="text/javascript" src="../Includes/sequence.js"></script>
-        <script type="text/javascript" src="../Includes/barre_java.js"></script>
-        <script type="text/javascript" src="../Includes/cdt.js"></script>
+                  <script type="text/javascript" src="../Includes/sequence.js"></script>
+                  <script type="text/javascript" src="../Includes/barre_java.js"></script>
+                  <script type="text/javascript" src="../Includes/cdt.js"></script>
 </head>
 
 <body>
@@ -305,9 +308,28 @@ $clcryt=substr(md5(crypt($ch,$Grain)),2);
 //$clcryt=substr($clcryt,2,12);
 ?>
 <input type="button" value="" class="bt-taf" title="Travail A Faire des 15 prochains jours" onclick="taf_popup('<?echo $ch;?>')" />
+<?php
+if ($_SESSION['cequi']=="eleve") echo '<input type="button" value="" id="bt-qrcode" title="Afficher un QRcode"/>';
+?>
 <a href="http://fusion.google.com/add?source=atgs&amp;feedurl=<?echo 'http://'.$hostn.'/Plugins/Cdt/scripts/flux_rss.php?div='.$ch.':'.$clcryt;?>" id="bt-google">&nbsp; </a>
 <a href="flux_rss.php?div=<?echo $ch.':'.$clcryt;?>" id="bt-rss">&nbsp; </a>
-<?php if ($_SESSION['cequi']=="eleve") echo '<a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';?>
+<?php 
+if ($_SESSION['cequi']=="eleve")
+    {
+    echo '<div id="dialog" title="G&#233;n&#233;ration d\'un QRcode">
+	<p>Scannez ce QRcode avec votre smartphone ou votre tablette pour acc&#233;der au cahier de textes. <br/>Ne le transmettez pas &#224; d\'autres personnes car 
+        il contient des donn&#233;es personnelles</p>';
+    $clcryptee =crypt(substr($_SESSION['safullclasse'],-8,8),$Grain);
+    $clcryptee=substr($clcryptee,2);
+    $uidcrypte=substr(md5($uid_actif),2,5).substr(md5($uid_actif),-5,5);
+    $UrlEleve.= "?cl1=".$clcryptee."&amp;el1=".$uidcrypte;
+    $content= $baseurl.'Plugins/Cdt/index.php'.$UrlEleve;
+    $content=str_replace("&amp;", "*amp*", $content);
+    echo '<img src="../Includes/phpqrcode/genRqrCode.php?qrurl='.$content.'" alt="Erreur QRcode" />';
+    echo'</div> ';
+    echo '<a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';  
+    }
+?>
 </div>
 </fieldset>
 </form>

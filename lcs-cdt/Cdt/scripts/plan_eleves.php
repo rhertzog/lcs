@@ -17,7 +17,7 @@ if (isset($_POST['quit']))
 	{$clas=$_POST['class'];
 	header ("location:cahier_text_eleve.php?div=$clas");
 	exit();}
-	
+$cren_off=array();	
 include ("../Includes/config.inc.php");
 include ("../Includes/fonctions.inc.php");
 include ("../Includes/creneau.inc.php");
@@ -35,7 +35,7 @@ foreach ($_SESSION['saclasse'] as $clé => $valeur)
 return $flg;
 }
 
-$cren_off=array();
+
 
 //contrôle des paramètres $_GET
 if ((isset($_GET['classe'])) && (isset($_SESSION['saclasse']))) {	
