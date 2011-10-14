@@ -7,8 +7,8 @@ install:
 
 
 # install doc
-	install -d $(DESTDIR)/usr/share/doc/lcs/Grr/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/Grr/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/grr/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/grr/html/
 
 # install Grr
 	install -d $(DESTDIR)/usr/share/lcs/Plugins/Grr
