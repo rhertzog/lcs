@@ -18,8 +18,8 @@ if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3"
         exit
 fi
 
-if [ "$3" != "lenny" -a "$3" != "etch" -a "$3" != "etch" ]; then
-    echo "Les distributions possibles sont : sarge etch"
+if [ "$3" != "squeeze" -a "$3" != "lenny" -a "$3" != "etch" ]; then
+    echo "Les distributions possibles sont : etch lenny squeeze"
     exit
 fi
 
