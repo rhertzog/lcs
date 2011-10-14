@@ -1,3 +1,9 @@
+lcs-dns (2.4.9~1) Lcs; urgency=low
+
+  * Use slis-common and handle-initial in install package process 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Oct 2011 15:28:05 +0200
+
 lcs-dns (2.4.8) Lcs; urgency=low
 
   * Fix bug with define function exit_fatal and get_lcsdb_params
