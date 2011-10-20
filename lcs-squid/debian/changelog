@@ -1,9 +1,11 @@
 lcs-squid (2.4.9~1) Lcs; urgency=low
 
   * Fix function get_lcsdb_params in postinst for squeeze 
+  * Fix bashism in postrm
+  * Fix squid-reconfigure for configuration of the partition size
   * Modify iptables rules 
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 13:38:04 +0200
+  
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 14:27:43 +0200
 
 lcs-squid (2.4.8~3) lucid; urgency=low
 

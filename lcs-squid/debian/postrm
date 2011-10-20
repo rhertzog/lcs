@@ -5,7 +5,7 @@ set -e
 case "$1" in
 	purge|remove)
         iptables -t nat -F
-        if [ "$1" == "purge" ];then
+        if [ "$1" = "purge" ];then
             if [ -e /etc/lcs/squid/squid.conf ];then
                 rm /etc/lcs/squid/squid.conf
             fi

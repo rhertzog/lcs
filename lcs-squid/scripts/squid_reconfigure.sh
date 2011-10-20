@@ -67,7 +67,7 @@ fi
 #
 #
 #
-if [ `grep '/var/spool/squid' /etc/fstab | wc -l` = 1 ]; then
+if [ `grep '/var/spool/squid' /etc/fstab | wc -l` != 0 ]; then
   echo "Configuration taille partition squid"
   dfsquid=`df -m | grep "/var/spool/squid" | awk '{ print $2 }'`
   # On marge pour les bloques de reserve
