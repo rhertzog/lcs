@@ -1,8 +1,9 @@
-lcs-preinstall (2.4.9~1) Lcs; urgency=low
+lcs-preinstall (2.4.9~2) Lcs; urgency=low
 
   * add init.d script for lcs-sftp in squeeze first boot
+  * reverse change in lcs-preinstall-config
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 20 Oct 2011 10:26:05 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 17:52:26 +0200
 
 lcs-preinstall (2.4.8) Lcs; urgency=low
 
