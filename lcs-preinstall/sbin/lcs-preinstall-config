@@ -78,10 +78,10 @@ case "$1" in
             -e "s|@@RIGHTSRDN@@|"ou=$LDAP_RIGHTS_RDN"|g" \
             -e "s|@@TRASHRDN@@|"ou=$LDAP_TRASH_RDN"|g" \
             -e "s|@@AD_AUTH_DELEGATION@@|${AD_AUTH_DELEGATION:-false}|g" \
-            -e "s|@@AD_SERVER@@|$AD_SERVER|g" \
-            -e "s|@@AD_BASE_DN@@|$AD_SERVER|g" \
-            -e "s|@@AD_BIND_DN@@|$AD_BIND_DN|g" \
-            -e "s|@@AD_BIND_PW@@|$AD_BIND_PW|g" \
+            -e "s|@@AD_SERVER@@|"$AD_SERVER"|g" \
+            -e "s|@@AD_BASE_DN@@|"$AD_SERVER"|g" \
+            -e "s|@@AD_BIND_DN@@|"$AD_BIND_DN"|g" \
+            -e "s|@@AD_BIND_PW@@|"$AD_BIND_PW"|g" \
             -e "s|@@NTP_SERVER@@|"$NTP_SERVER"|g" \
             -e "s|@@GATEWAY@@|"$GATEWAY"|g" \
             -e "s|@@IPLCS@@|"$IPADDR0"|g" \
@@ -110,12 +110,12 @@ case "$1" in
             -e "s|@@UIDPOLICY@@|"$UID_POLICY"|g" \
             -e "s|@@DEFAULTSHELL@@|"$DEFAULT_SHELL"|g" \
             -e "s|@@TYPEGROUPS@@|"$TYPE_GROUPS"|g" \
-            -e "s|@@COUNTRYNAME@@|$COUNTRYNAME|g" \
-            -e "s|@@PROVINCENAME@@|$PROVINCENAME|g" \
-            -e "s|@@LOCALITYNAME@@|$LOCALITYNAME|g" \
-            -e "s|@@ORGANIZATIONNAME@@|$ORGANIZATIONNAME|g" \
-            -e "s|@@ORGANIZATIONALUNITNAME@@|$ORGANIZATIONALUNITNAME|g" \
-            -e "s|@@RNE@@|$RNE|g" \
+            -e "s|@@COUNTRYNAME@@|"$COUNTRYNAME"|g" \
+            -e "s|@@PROVINCENAME@@|"$PROVINCENAME"|g" \
+            -e "s|@@LOCALITYNAME@@|"$LOCALITYNAME"|g" \
+            -e "s|@@ORGANIZATIONNAME@@|"$ORGANIZATIONNAME"|g" \
+            -e "s|@@ORGANIZATIONALUNITNAME@@|"$ORGANIZATIONALUNITNAME"|g" \
+            -e "s|@@RNE@@|"$RNE"|g" \
             /var/lib/lcs/preinstall/lcs_db.sql.in > /var/lib/lcs/preinstall/lcs_db.sql
             #
             # Create base lcs_db 
