@@ -1,13 +1,14 @@
 #! /bin/sh
 # postinst script for LCS squidguard
 set -e
-VER="2.1"
+
+PACKAGE="squidguard"
+VER=$(dpkg-query -f '${Version}' -W lcs-$PACKAGE)
 
 # lecture d'un parametre lcs dans lcs_db.params
-function get_lcsdb_params
-{
-PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
-echo "$PARAMS"
+get_lcsdb_params() {
+	PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+	echo "$PARAMS"
 }
 
 case "$1" in
@@ -25,10 +26,10 @@ case "$1" in
         echo "Fix rights on LCS squidGuard"
         chown root:root /var/lib/lcs/squidguard
         chmod 755 /var/lib/lcs/squidguard
-	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_wl
-	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_bl
+		chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_wl
+		chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_bl
         mkdir -p /var/lib/squidguard/db/blacklists
-	cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
+		cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
         chown -R proxy:www-data /var/lib/squidguard/db
         chown -R www-data:www-data /var/www/Squidguard
         #
@@ -103,7 +104,7 @@ EOF
                 squidGuard -C marketingware
                 squid -k reconfigure
         fi
-	## Upgrade phishing
+		## Upgrade phishing
         if grep -q phishing /etc/squid/squidGuard.conf ; then
                 echo "phishing deja present dans le fichier de configuration"
         else

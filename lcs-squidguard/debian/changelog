@@ -1,8 +1,9 @@
-lcs-squidguard (2.4.8.1~1) Lcs; urgency=low
+lcs-squidguard (2.4.9~1) Lcs; urgency=low
 
+  * Fix bashim in postinst
   * Move index.html in html
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 Oct 2011 14:28:53 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 15:22:49 +0200
 
 lcs-squidguard (2.4.8) Lcs; urgency=low
 
