@@ -1,14 +1,5 @@
 <?php
-/* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/people.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « oluve » olivier.le_monnier@crdp.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere mise a jour : 08/11/2008
-   ============================================= */
+/* Annu/people.php Derniere modification : 20/10/2011 */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
@@ -45,7 +36,7 @@
 				}
 			}
 		echo "<h4>Supprimer les groupes d'appartenance s&#233;lectionn&#233;s </h4>";
-		echo '<p align ="center"><input type="submit" name="delgrp" value="Lancer la requête"></p></form>';
+		echo '<p align ="center"><input type="submit" name="delgrp" value="Lancer la requ&#234;te"></p></form>';
 			
 		}
 		}//fin du formulaire

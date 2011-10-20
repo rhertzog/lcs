@@ -1,5 +1,5 @@
 <?php
-/* Annu/add_group.php Derniere modification : 22/04/2011 */
+/* Annu/add_group.php Derniere modification : 20/10/2011 */
 
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -51,7 +51,7 @@
 	      <td></td>
 	      <td >
                 <input type="hidden" name="add_group" value="true">
-                <input type="submit" value="Lancer la requête">
+                <input type="submit" value="Lancer la requ&#234;te">
               </td>
 	    </tr>
 	  </tbody>

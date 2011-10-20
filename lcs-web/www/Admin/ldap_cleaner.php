@@ -1,5 +1,5 @@
 <?php
- /* Admin/ldap_cleaner.php derniere mise a jour : 08/10/2010 */
+ /* Admin/ldap_cleaner.php derniere mise a jour : 20/10/2011 */
 
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -41,7 +41,7 @@ function search_people_trash_lcs ($filter) {
 	"rid",
 	"userPassword",
 	"gecos",
-        "employeenumber",
+	"employeenumber",
 	"homedirectory",
 	"gidNumber",
 	"uidNumber",
@@ -59,11 +59,11 @@ function search_people_trash_lcs ($filter) {
 	"sambapwdMustChange",
 	"sambantPassword",
 	"sambalmPassword",
-        "sambaSID",
-        "sambaPrimaryGroupSID",
+	"sambaSID",
+	"sambaPrimaryGroupSID",
 	"userPassword",
 	"gecos",
-        "employeenumber",
+	"employeenumber",
 	"homedirectory",
 	"gidNumber",
 	"uidNumber",
@@ -97,11 +97,11 @@ function search_people_trash_lcs ($filter) {
 		      "sambapwdmustchange"  => $info[$loop]["sambapwdmustchange"][0],
 		      "sambantpassword"     => $info[$loop]["sambantpassword"][0],
 		      "sambalmpassword"     => $info[$loop]["sambalmpassword"][0],
-                      "sambasid"            => $info[$loop]["sambasid"][0],
-                      "sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
+			  "sambasid"            => $info[$loop]["sambasid"][0],
+			  "sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
 		      "userpassword"        => $info[$loop]["userpassword"][0],
 		      "gecos"               => $info[$loop]["gecos"][0],
-                      "employeenumber"      => $info[$loop]["employeenumber"][0],
+              "employeenumber"      => $info[$loop]["employeenumber"][0],
 		      "homedirectory"       => $info[$loop]["homedirectory"][0],
 		      "gidnumber"           => $info[$loop]["gidnumber"][0],
 		      "uidnumber"           => $info[$loop]["uidnumber"][0],
@@ -122,7 +122,7 @@ function search_people_trash_lcs ($filter) {
 		      "primarygroupid"  => $info[$loop]["primarygroupid"][0],
 		      "rid"             => $info[$loop]["rid"][0],
 		      "gecos"           => $info[$loop]["gecos"][0],
-                      "employeenumber"  => $info[$loop]["employeenumber"][0],
+              "employeenumber"  => $info[$loop]["employeenumber"][0],
 		      "homedirectory"   => $info[$loop]["homedirectory"][0],
 		      "gidnumber"       => $info[$loop]["gidnumber"][0],
 		      "uidnumber"       => $info[$loop]["uidnumber"][0],
@@ -141,8 +141,8 @@ function search_people_trash_lcs ($filter) {
 		      "sambapwdmustchange"  => $info[$loop]["sambapwdmustchange"][0],
 		      "sambantpassword"     => $info[$loop]["sambantpassword"][0],
 		      "sambalmpassword"     => $info[$loop]["sambalmpassword"][0],
-                      "sambasid"            => $info[$loop]["sambasid"][0],
-                      "sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
+              "sambasid"            => $info[$loop]["sambasid"][0],
+              "sambaprimarygroupsid"   => $info[$loop]["sambaprimarygroupsid"][0],
 		      "userpassword"        => $info[$loop]["userpassword"][0],
 		      "gecos"               => $info[$loop]["gecos"][0],
 		      "homedirectory"       => $info[$loop]["homedirectory"][0],
@@ -286,7 +286,7 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 	if ($do !="1") 	$html .= "<li><a href=\"ldap_cleaner.php?do=1\" target=\"main\">Transfert des comptes orphelins dans la corbeille</a>".msgaide($msg1)."</li>\n";
 	if ($do !="2") 	$html .= "<li><a href=\"ldap_cleaner.php?do=2\" target=\"main\">Examiner le contenu de la corbeille</a>".msgaide($msg2)."</li>\n";
 			$html .= "<li><a href=\"ldap_cleaner.php?do=10\" target=\"main\">R&#233;cup&#233;ration de comptes orphelins depuis la corbeille</a>".msgaide($msg3)."</li>\n";
-	if ($do !="3") 	$html .= "<li><a href=\"ldap_cleaner.php?do=3\" target=\"main\">Effacer les «homes» des comptes orphelins</a>".msgaide($msg4)."</li>\n";
+	if ($do !="3") 	$html .= "<li><a href=\"ldap_cleaner.php?do=3\" target=\"main\">Effacer les &#171;homes&#187; des comptes orphelins</a>".msgaide($msg4)."</li>\n";
 	if ($do !="4") 	$html .= "<li><a href=\"ldap_cleaner.php?do=4\" target=\"main\">Vider la corbeille</a>".msgaide($msg5)."</li>\n";
 	$html.="</ul>";	
 	$html .="<p></p>";
@@ -474,46 +474,46 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 							$user[0]["objectclass"][3]="person";
 							$user[0]["objectclass"][4]="inetOrgPerson";
 							if ( $sambadomain!="0" ) $user[0]["objectclass"][5]="sambaSamAccount";
-                                                        else  $user[0]["objectclass"][5]="sambaAccount";
+                            else  $user[0]["objectclass"][5]="sambaAccount";
 							### DEBUG
-                                                        if ( $DEBUG=="true" ) {
-							 echo "------------------------------------------<br>";
-                                                         if ( $sambadomain!="0" ) {
-							     echo "sambaacctflags :".$user[0]["sambaacctflags"]."<br>";
-							     echo "sambapwdmustchange :".$user[0]["sambapwdmustchange"]."<br>";
-							     echo "sambantpassword :".$user[0]["sambantpassword"]."<br>";
-							     echo "sambalmpassword :".$user[0]["sambalmpassword"]."<br>";
-                                                             echo "sambaSID :".$user[0]["sambasid"]."<br>";
-                                                             echo "SambaprimaryGroup".$user[0]["sambaprimarygroupsid"]."<br>";
-                                                         } else {
-							     echo "acctflags :".$user[0]["acctflags"]."<br>";
-							     echo "pwdmustchange :".$user[0]["pwdmustchange"]."<br>";
-							     echo "ntpassword :".$user[0]["ntpassword"]."<br>";
-							     echo "lmpassword :".$user[0]["lmpassword"]."<br>";
-							     echo "userPassword :".$user[0]["userpassword"]."<br>";
-							     echo "primarygroupid :".$user[0]["primarygroupid"]."<br>";
-							     echo "rid :".$user[0]["rid"]."<br>";
-                                                         }
-                                                         echo "userPassword :".$user[0]["userpassword"]."<br>";
-							 echo "gecos :".$user[0]["gecos"]."<br>";
-                                                         echo "employeenumber :".$user[0]["employeenumber"]."<br>";
-							 echo "homedirectory :".$user[0]["homedirectory"]."<br>";
-							 echo "gidnumber :".$user[0]["gidnumber"]."<br>";
-							 echo "uidnumber :".$user[0]["uidnumber"]."<br>";
-							 echo "loginshell :".$user[0]["loginshell"]."<br>";			
-							 echo "objectclass :".$user[0]["objectclass"][0]."<br>";
-							 echo "objectclass :".$user[0]["objectclass"][1]."<br>";
-							 echo "objectclass :".$user[0]["objectclass"][2]."<br>";
-							 echo "objectclass :".$user[0]["objectclass"][3]."<br>";
-							 echo "objectclass :".$user[0]["objectclass"][4]."<br>";
-							 echo "objectclass :".$user[0]["objectclass"][5]."<br>";
-							 echo "mail :".$user[0]["mail"]."<br>";
-							 echo "sn :".$user[0]["sn"]."<br>";
-							 echo "givenname :".$user[0]["givenname"]."<br>";
-							 echo "cn :".$user[0]["cn"]."<br>";
-							 echo "uid :".$user[0]["uid"]."<br>"; 
-							 echo "------------------------------------------<br>";
-                                                        }
+                            if ( $DEBUG=="true" ) {
+							 	echo "------------------------------------------<br>";
+								if ( $sambadomain!="0" ) {
+									echo "sambaacctflags :".$user[0]["sambaacctflags"]."<br>";
+									echo "sambapwdmustchange :".$user[0]["sambapwdmustchange"]."<br>";
+									echo "sambantpassword :".$user[0]["sambantpassword"]."<br>";
+									echo "sambalmpassword :".$user[0]["sambalmpassword"]."<br>";
+									echo "sambaSID :".$user[0]["sambasid"]."<br>";
+									echo "SambaprimaryGroup".$user[0]["sambaprimarygroupsid"]."<br>";
+								} else {
+									echo "acctflags :".$user[0]["acctflags"]."<br>";
+									echo "pwdmustchange :".$user[0]["pwdmustchange"]."<br>";
+									echo "ntpassword :".$user[0]["ntpassword"]."<br>";
+									echo "lmpassword :".$user[0]["lmpassword"]."<br>";
+									echo "userPassword :".$user[0]["userpassword"]."<br>";
+									echo "primarygroupid :".$user[0]["primarygroupid"]."<br>";
+									echo "rid :".$user[0]["rid"]."<br>";
+								}
+								echo "userPassword :".$user[0]["userpassword"]."<br>";
+								echo "gecos :".$user[0]["gecos"]."<br>";
+								echo "employeenumber :".$user[0]["employeenumber"]."<br>";
+								echo "homedirectory :".$user[0]["homedirectory"]."<br>";
+								echo "gidnumber :".$user[0]["gidnumber"]."<br>";
+								echo "uidnumber :".$user[0]["uidnumber"]."<br>";
+								echo "loginshell :".$user[0]["loginshell"]."<br>";			
+								echo "objectclass :".$user[0]["objectclass"][0]."<br>";
+								echo "objectclass :".$user[0]["objectclass"][1]."<br>";
+								echo "objectclass :".$user[0]["objectclass"][2]."<br>";
+								echo "objectclass :".$user[0]["objectclass"][3]."<br>";
+								echo "objectclass :".$user[0]["objectclass"][4]."<br>";
+								echo "objectclass :".$user[0]["objectclass"][5]."<br>";
+								echo "mail :".$user[0]["mail"]."<br>";
+								echo "sn :".$user[0]["sn"]."<br>";
+								echo "givenname :".$user[0]["givenname"]."<br>";
+								echo "cn :".$user[0]["cn"]."<br>";
+								echo "uid :".$user[0]["uid"]."<br>"; 
+								echo "------------------------------------------<br>";
+                            }
 							### FIN DEBUG						
 							// Modification de l'entree dn ou=Trash -> ou=People
 	    	 					$ds = @ldap_connect ( $ldap_server, $ldap_port );

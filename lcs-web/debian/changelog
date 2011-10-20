@@ -1,4 +1,4 @@
-lcs-web (2.4.8.3~3) Lcs; urgency=low
+lcs-web (2.4.8.3~4) Lcs; urgency=low
 
   [ Philippe LECLERC ]    
   * Change the test status of a module in gestpack.sh
@@ -8,8 +8,12 @@ lcs-web (2.4.8.3~3) Lcs; urgency=low
   * Add test on folder Profile in open_session function 
   * Fix bug in setup_keys.php : Replace in js mb_substr by substr
   * Add function isRight in LcSe.pm
+  * Fix special char in ldap_cleaner.php, del_group_user.php, add_group.php
+ 
+  [ Franck Molle]
+  * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 Oct 2011 10:48:25 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 11:14:02 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
