@@ -480,9 +480,9 @@
 
 			$type_fichier_eleves=$_POST['type_fichier_eleves'];
 
-			$tmp_eleves_file=$HTTP_POST_FILES['eleves_file']['tmp_name'];
-			$eleves_file=$HTTP_POST_FILES['eleves_file']['name'];
-			$size_eleves_file=$HTTP_POST_FILES['eleves_file']['size'];
+			$tmp_eleves_file=$_FILES['eleves_file']['tmp_name'];
+			$eleves_file=$_FILES['eleves_file']['name'];
+			$size_eleves_file=$_FILES['eleves_file']['size'];
 
             /*
             //===============================================
@@ -524,7 +524,7 @@
 
 				// Si jamais un XML non dézippé a été fourni
 				$extension_fichier_emis=strtolower(strrchr($eleves_file,"."));
-				if (($extension_fichier_emis==".zip")||($HTTP_POST_FILES['eleves_file']['type']=="application/zip")) {
+				if (($extension_fichier_emis==".zip")||($_FILES['eleves_file']['type']=="application/zip")) {
 
 					//if(!file_exists($racine_www."/includes/pclzip.lib.php")) {
 					if(!file_exists($chemin_www_includes."/pclzip.lib.php")) {
@@ -590,9 +590,9 @@
 
             //====================================================
 
-			$tmp_sts_file=$HTTP_POST_FILES['sts_xml_file']['tmp_name'];
-			$sts_file=$HTTP_POST_FILES['sts_xml_file']['name'];
-			$size_sts_file=$HTTP_POST_FILES['sts_xml_file']['size'];
+			$tmp_sts_file=$_FILES['sts_xml_file']['tmp_name'];
+			$sts_file=$_FILES['sts_xml_file']['name'];
+			$size_sts_file=$_FILES['sts_xml_file']['size'];
 
 
             if(($sts_file!='')&&($tmp_sts_file=='')) {
@@ -629,9 +629,9 @@
 			//==========================================
 
 			// Fichier optionnel f_uid_file
-			$tmp_f_uid_file=$HTTP_POST_FILES['f_uid_file']['tmp_name'];
-			$f_uid_file=$HTTP_POST_FILES['f_uid_file']['name'];
-			$size_f_uid_file=$HTTP_POST_FILES['f_uid_file']['size'];
+			$tmp_f_uid_file=$_FILES['f_uid_file']['tmp_name'];
+			$f_uid_file=$_FILES['f_uid_file']['name'];
+			$size_f_uid_file=$_FILES['f_uid_file']['size'];
 
 			$dest_file="$dossier_tmp_import_comptes/f_uid.txt";
 			if(file_exists($dest_file)){
@@ -848,9 +848,9 @@ decompte(cpt);
 
 			$type_fichier_eleves=$_POST['type_fichier_eleves'];
 
-			$tmp_eleves_file=$HTTP_POST_FILES['eleves_file']['tmp_name'];
-			$eleves_file=$HTTP_POST_FILES['eleves_file']['name'];
-			$size_eleves_file=$HTTP_POST_FILES['eleves_file']['size'];
+			$tmp_eleves_file=$_FILES['eleves_file']['tmp_name'];
+			$eleves_file=$_FILES['eleves_file']['name'];
+			$size_eleves_file=$_FILES['eleves_file']['size'];
 
 			if(is_uploaded_file($tmp_eleves_file)){
 				$dest_file="tmp/$eleves_file";
