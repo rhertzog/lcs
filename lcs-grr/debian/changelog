@@ -1,3 +1,9 @@
+lcs-grr (2.4.8.1) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 16 Oct 2011 08:17:16 +0200
+
 lcs-grr (2.4.8.1~1) LCS; urgency=low
 
   * fix bug if desktop not installed
