@@ -80,7 +80,12 @@ else
 
 // Contrôler la liste des items transmis
 $tab_id = (isset($_POST['tab_id'])) ? array_map('clean_entier',explode(',',$_POST['tab_id'])) : array() ;
+$tab_id = array_map('clean_entier',$tab_id);
 $tab_id = array_filter($tab_id,'positif');
+// Contrôler la liste des profs transmis
+$tab_profs = (isset($_POST['f_prof_liste'])) ? explode('_',$_POST['f_prof_liste']) : array() ;
+$tab_profs = array_map('clean_entier',$tab_profs);
+$tab_profs = array_filter($tab_profs,'positif');
 // Contrôler la liste des items transmis
 $tab_items = (isset($_POST['f_compet_liste'])) ? explode('_',$_POST['f_compet_liste']) : array() ;
 $tab_items = array_map('clean_entier',$tab_items);
@@ -120,7 +125,8 @@ if( ($action=='Afficher_evaluations') && $aff_classe_txt && $aff_classe_id && ( 
 		$date_fin_mysql   = $DB_ROW['jointure_date_fin'];
 	}
 	// Lister les évaluations
-	$DB_TAB = DB_STRUCTURE_lister_devoirs_prof($_SESSION['USER_ID'],$aff_classe_id,$date_debut_mysql,$date_fin_mysql);
+	$classe_id = ($aff_classe_txt!='d2') ? $aff_classe_id : -1 ; // 'd2' est transmis si on veut toutes les classes / tous les groupes
+	$DB_TAB = DB_STRUCTURE_lister_devoirs_prof($_SESSION['USER_ID'],$classe_id,$date_debut_mysql,$date_fin_mysql);
 	foreach($DB_TAB as $DB_ROW)
 	{
 		// Formater la date et la référence de l'évaluation
@@ -128,18 +134,31 @@ if( ($action=='Afficher_evaluations') && $aff_classe_txt && $aff_classe_id && ( 
 		$date_visible = ($DB_ROW['devoir_date']==$DB_ROW['devoir_visible_date']) ? 'identique' : convert_date_mysql_to_french($DB_ROW['devoir_visible_date']);
 		$ref = $DB_ROW['devoir_id'].'_'.strtoupper($DB_ROW['groupe_type']{0}).$DB_ROW['groupe_id'];
 		$s = ($DB_ROW['items_nombre']>1) ? 's' : '';
+		if(!$DB_ROW['devoir_partage'])
+		{
+			$profs_liste = '';
+			$profs_nombre = 'vous seul';
+		}
+		else
+		{
+			$profs_liste = mb_substr($DB_ROW['devoir_partage'],1,-1);
+			$profs_nombre = mb_substr_count($DB_ROW['devoir_partage'],'_')-1;
+			$profs_nombre.= ' profs';
+		}
+		$proprio = ($DB_ROW['prof_id']==$_SESSION['USER_ID']) ? TRUE : FALSE ;
 		// Afficher une ligne du tableau
 		echo'<tr>';
 		echo	'<td><i>'.html($DB_ROW['devoir_date']).'</i>'.html($date_affich).'</td>';
 		echo	'<td>'.html($date_visible).'</td>';
 		echo	'<td>'.html($DB_ROW['groupe_nom']).'</td>';
 		echo	'<td>'.html($DB_ROW['devoir_info']).'</td>';
-		echo	'<td lang="'.html($DB_ROW['items_listing']).'">'.html($DB_ROW['items_nombre']).' item'.$s.'</td>';
+		echo	'<td lang="'.$DB_ROW['items_listing'].'">'.$DB_ROW['items_nombre'].' item'.$s.'</td>';
+		echo	'<td lang="'.$profs_liste.'">'.$profs_nombre.'</td>';
 		echo	'<td class="nu" lang="'.$ref.'">';
-		echo		'<q class="modifier" title="Modifier cette évaluation (date, description, ...)."></q>';
-		echo		'<q class="ordonner" title="Réordonner les items de cette évaluation."></q>';
+		echo		($proprio) ? '<q class="modifier" title="Modifier cette évaluation (date, description, ...)."></q>' : '<q class="modifier_non" title="Non modifiable (évaluation d\'un collègue)."></q>' ;
+		echo		($proprio) ? '<q class="ordonner" title="Réordonner les items de cette évaluation."></q>' : '<q class="ordonner_non" title="Non réordonnable (évaluation d\'un collègue)."></q>' ;
 		echo		'<q class="dupliquer" title="Dupliquer cette évaluation."></q>';
-		echo		'<q class="supprimer" title="Supprimer cette évaluation."></q>';
+		echo		($proprio) ? '<q class="supprimer" title="Supprimer cette évaluation."></q>' : '<q class="supprimer_non" title="Non supprimable (évaluation d\'un collègue)."></q>' ;
 		echo		'<q class="imprimer" title="Imprimer un cartouche pour cette évaluation."></q>';
 		echo		'<q class="saisir" title="Saisir les acquisitions des élèves à cette évaluation."></q>';
 		echo		'<q class="voir" title="Voir les acquisitions des élèves à cette évaluation."></q>';
@@ -168,19 +187,44 @@ if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $date && $
 	{
 		exit('Erreur : date trop éloignée !');
 	}
+	// Tester les profs, mais plus leur appartenance au groupe (pour qu'on prof puisse accéder à l'éval même s'il n'a pas le groupe, même si on duplique une évaluation pour un autre groupe...)
+	if(count($tab_profs))
+	{
+		if(!in_array($_SESSION['USER_ID'],$tab_profs))
+		{
+			exit('Erreur : absent de la liste des professeurs !');
+		}
+		/*
+		$tab_profs_groupe = array();
+		$DB_TAB_USER = DB_STRUCTURE_lister_professeurs_groupe($groupe_id);
+		foreach($DB_TAB_USER as $DB_ROW)
+		{
+			$tab_profs_groupe[] = $DB_ROW['user_id'];
+		}
+		$tab_profs = array_intersect( $tab_profs , $tab_profs_groupe );
+		*/
+		// Si y a que soi...
+		if(count($tab_profs)==1)
+		{
+			$tab_profs = array();
+		}
+	}
+	$listing_id_profs = count($tab_profs) ? implode('_',$tab_profs) : '' ;
 	// Insérer l'enregistrement de l'évaluation
-	$devoir_id2 = DB_STRUCTURE_ajouter_devoir($_SESSION['USER_ID'],$groupe_id,$date_mysql,$info,$date_visible_mysql);
+	$devoir_id2 = DB_STRUCTURE_ajouter_devoir($_SESSION['USER_ID'],$groupe_id,$date_mysql,$info,$date_visible_mysql,$listing_id_profs);
 	// Insérer les enregistrements des items de l'évaluation
 	DB_STRUCTURE_modifier_liaison_devoir_item($devoir_id2,$tab_items,'dupliquer',$devoir_id);
 	// Afficher le retour
 	$date_visible = ($date==$date_visible) ? 'identique' : $date_visible;
 	$ref = $devoir_id2.'_'.strtoupper($groupe_type{0}).$groupe_id;
 	$s = ($nb_items>1) ? 's' : '';
+	$profs_nombre = count($tab_profs) ? count($tab_profs).' profs' : 'vous seul' ;
 	echo'<td><i>'.html($date_mysql).'</i>'.html($date).'</td>';
 	echo'<td>'.html($date_visible).'</td>';
 	echo'<td>{{GROUPE_NOM}}</td>';
 	echo'<td>'.html($info).'</td>';
 	echo'<td lang="'.implode('_',$tab_items).'">'.$nb_items.' item'.$s.'</td>';
+	echo'<td lang="'.implode('_',$tab_profs).'">'.$profs_nombre.'</td>';
 	echo'<td class="nu" lang="'.$ref.'">';
 	echo	'<q class="modifier" title="Modifier cette évaluation (date, description, ...)."></q>';
 	echo	'<q class="ordonner" title="Réordonner les items de cette évaluation."></q>';
@@ -211,8 +255,31 @@ if( ($action=='modifier') && $devoir_id && $date && $date_visible && $groupe_typ
 	{
 		exit('Erreur : date trop éloignée !');
 	}
+	// Tester les profs, mais plus leur appartenance au groupe (pour qu'on prof puisse accéder à l'éval même s'il n'a pas le groupe, même si on duplique une évaluation pour un autre groupe...)
+	if(count($tab_profs))
+	{
+		if(!in_array($_SESSION['USER_ID'],$tab_profs))
+		{
+			exit('Erreur : absent de la liste des professeurs !');
+		}
+		/*
+		$tab_profs_groupe = array();
+		$DB_TAB_USER = DB_STRUCTURE_lister_professeurs_groupe($groupe_id);
+		foreach($DB_TAB_USER as $DB_ROW)
+		{
+			$tab_profs_groupe[] = $DB_ROW['user_id'];
+		}
+		$tab_profs = array_intersect( $tab_profs , $tab_profs_groupe );
+		*/
+		// Si y a que soi...
+		if(count($tab_profs)==1)
+		{
+			$tab_profs = array();
+		}
+	}
+	$listing_id_profs = count($tab_profs) ? implode('_',$tab_profs) : '' ;
 	// sacoche_devoir (maj des paramètres date & info)
-	DB_STRUCTURE_modifier_devoir($devoir_id,$_SESSION['USER_ID'],$date_mysql,$info,$date_visible_mysql,$tab_items);
+	DB_STRUCTURE_modifier_devoir($devoir_id,$_SESSION['USER_ID'],$date_mysql,$info,$date_visible_mysql,$tab_items,$listing_id_profs);
 	// sacoche_devoir (maj groupe_id) + sacoche_saisie pour les users supprimés
 	// DB_STRUCTURE_modifier_liaison_devoir_groupe($devoir_id,$groupe_id); // RETIRÉ APRÈS REFLEXION : IL N'Y A PAS DE RAISON DE CARRÉMENT CHANGER LE GROUPE D'UNE ÉVALUATION => AU PIRE ON LA DUPLIQUE POUR UN AUTRE GROUPE PUIS ON LA SUPPRIME.
 	// sacoche_jointure_devoir_item + sacoche_saisie pour les items supprimés
@@ -222,11 +289,13 @@ if( ($action=='modifier') && $devoir_id && $date && $date_visible && $groupe_typ
 	$date_visible = ($date==$date_visible) ? 'identique' : $date_visible;
 	$ref = $devoir_id.'_'.strtoupper($groupe_type{0}).$groupe_id;
 	$s = (count($tab_items)>1) ? 's' : '';
+	$profs_nombre = count($tab_profs) ? count($tab_profs).' profs' : 'vous seul' ;
 	echo'<td><i>'.html($date_mysql).'</i>'.html($date).'</td>';
 	echo'<td>'.html($date_visible).'</td>';
 	echo'<td>{{GROUPE_NOM}}</td>';
 	echo'<td>'.html($info).'</td>';
 	echo'<td lang="'.implode('_',$tab_items).'">'.$nb_items.' item'.$s.'</td>';
+	echo'<td lang="'.implode('_',$tab_profs).'">'.$profs_nombre.'</td>';
 	echo'<td class="nu" lang="'.$ref.'">';
 	echo	'<q class="modifier" title="Modifier cette évaluation (date, description, ...)."></q>';
 	echo	'<q class="ordonner" title="Réordonner les items de cette évaluation."></q>';
@@ -733,7 +802,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_type && $groupe_id && $dat
 			$sacoche_pdf->Cell($rect_largeur , $rect_hauteur , '' , 0 , 0 , 'C' , true , '');
 			// Écrire le %
 			$sacoche_pdf->SetXY($memo_X , $memo_Y);
-			$sacoche_pdf->SetFont('Helvetica' , '' , $sacoche_pdf->taille_police*(1+$coefficient));
+			$sacoche_pdf->SetFont('Arial' , '' , $sacoche_pdf->taille_police*(1+$coefficient));
 			$sacoche_pdf->Cell($sacoche_pdf->cases_largeur , $sacoche_pdf->cases_hauteur , pdf(round(100*$coefficient).'%') , 1 , 0 , 'C' , false , '');
 		}
 		$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->GetY()+$sacoche_pdf->cases_hauteur);
@@ -769,7 +838,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_type && $groupe_id && $dat
 				{
 					$taille_police -= 0.5 ;
 				}
-				$sacoche_pdf->SetFont('Helvetica' , '' , $taille_police);
+				$sacoche_pdf->SetFont('Arial' , '' , $taille_police);
 				$sacoche_pdf->Cell($sacoche_pdf->cases_largeur , $sacoche_pdf->lignes_hauteur , pdf($eleve_texte) , 0 , 2 , 'L' , false , '');
 			}
 			// Ajouter la bordure

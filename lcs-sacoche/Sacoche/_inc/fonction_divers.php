@@ -1344,6 +1344,62 @@ function Ecrire_Fichier($fichier_chemin,$fichier_contenu,$file_append=0)
 }
 
 /**
+ * Dezipper un fichier contenant un ensemble de fichiers dans un dossier, avec son arborescence.
+ * 
+ * Inspiré de http://fr.php.net/manual/fr/ref.zip.php#79057
+ * A l'origine pour remplacer $zip = new ZipArchive(); $result_open = $zip->open($fichier_import); qui plante sur le serveur Nantais s'il y a trop de fichiers dans le zip (code erreur "5 READ").
+ * Mais il s'avère finalement que ça ne fonctionne pas mieux...
+ * 
+ * @param string   $fichier_zip
+ * @param string   $dossier_dezip   sans le slash final
+ * @return bool    $use_ZipArchive
+ * @return int     code d'erreur (0 si RAS)
+ */
+function unzip($fichier_zip,$dossier_dezip,$use_ZipArchive)
+{
+	// Utiliser la classe ZipArchive http://fr.php.net/manual/fr/class.ziparchive.php (PHP 5 >= 5.2.0, PECL zip >= 1.1.0)
+	if($use_ZipArchive)
+	{
+		$zip = new ZipArchive();
+		$result_open = $zip->open($fichier_zip);
+		if($result_open!==true)
+		{
+			return $result_open;
+		}
+		$zip->extractTo($dossier_dezip);
+		$zip->close();
+	}
+	// Utiliser les fonctions Zip http://fr.php.net/manual/fr/ref.zip.php (PHP 4 >= 4.1.0, PHP 5 >= 5.2.0, PECL zip >= 1.0.0)
+	else
+	{
+		$dossier_dezip .= '/';
+		$contenu_zip = zip_open($fichier_zip);
+		if(!is_resource($contenu_zip))
+		{
+			return $contenu_zip;
+		}
+		while( $zip_element = zip_read($contenu_zip) )
+		{
+			zip_entry_open($contenu_zip, $zip_element);
+			if (substr(zip_entry_name($zip_element), -1) == '/')
+			{
+				// C'est un dossier
+				mkdir( $dossier_dezip.substr(zip_entry_name($zip_element), 0, -1) );
+			}
+			else
+			{
+				// C'est un fichier
+				file_put_contents( $dossier_dezip.zip_entry_name($zip_element) , zip_entry_read($zip_element,zip_entry_filesize($zip_element)) );
+			}
+			zip_entry_close($zip_element);
+		}
+		zip_close($contenu_zip);
+	}
+	// Tout c'est bien passé
+	return 0;
+}
+
+/**
  * Retourne le chemin du fichier RSS d'un prof ; s'il n'existe pas, en créer un vierge (pour recueillir les demandes d'évaluations des élèves).
  * 
  * @param int     $prof_id

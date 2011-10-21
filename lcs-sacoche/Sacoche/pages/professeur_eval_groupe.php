@@ -27,13 +27,13 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Évaluer une classe ou un groupe";
-$VERSION_JS_FILE += 22;
+$VERSION_JS_FILE += 25;
 ?>
 
 <?php
 // Élément de formulaire "f_aff_classe" pour le choix des élèves (liste des classes / groupes / besoins) du professeur, enregistré dans une variable javascript pour utilisation suivant le besoin, et utilisé pour un tri initial
 // Fabrication de tableaux javascript "tab_niveau" et "tab_groupe" indiquant le niveau et le nom d'un groupe
-$select_eleve  = '<option value=""></option>';
+$select_eleve  = '';
 $tab_niveau_js = 'var tab_niveau = new Array();';
 $tab_groupe_js = 'var tab_groupe = new Array();';
 $tab_id_classe_groupe = array();
@@ -60,10 +60,11 @@ foreach($tab_options as $type => $contenu)
 
 // Élément de formulaire "f_aff_periode" pour le choix d'une période
 $select_periode = afficher_select(DB_STRUCTURE_OPT_periodes_etabl() , $select_nom='f_aff_periode' , $option_first='val' , $selection=false , $optgroup='non');
+// On désactive les périodes prédéfinies pour le choix "toute classe / tout groupe" initialement sélectionné
+$select_periode = preg_replace( '#'.'value="([1-9].*?)"'.'#' , 'value="$1" disabled' , $select_periode );
 // Dates par défaut de début et de fin
-$annee_debut = (date('n')>8) ? date('Y') : date('Y')-1 ;
-$date_debut  = '01/09/'.$annee_debut;
-$date_fin    = date("d/m/Y");
+$date_debut  = date("d/m/Y",mktime(0,0,0,date("m")-2,date("d"),date("Y"))); // 2 mois avant
+$date_fin    = date("d/m/Y",mktime(0,0,0,date("m")+1,date("d"),date("Y"))); // 1 mois après
 
 // Fabrication du tableau javascript "tab_groupe_periode" pour les jointures groupes/périodes
 $tab_groupe_periode_js = 'var tab_groupe_periode = new Array();';
@@ -85,7 +86,7 @@ if(count($tab_id_classe_groupe))
 
 <script type="text/javascript">
 	// <![CDATA[
-	var select_groupe="<?php echo str_replace('"','\"',$select_eleve); ?>";
+	var select_groupe="<?php echo str_replace('"','\"','<option value=""></option>'.$select_eleve); ?>";
 	// ]]>
 	var input_date="<?php echo date("d/m/Y") ?>";
 	var date_mysql="<?php echo date("Y-m-d") ?>";
@@ -96,14 +97,14 @@ if(count($tab_id_classe_groupe))
 
 <ul class="puce">
 	<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion">DOC : Gestion des évaluations.</a></span></li>
-	<li><span class="astuce">Choisir des evaluations existantes à afficher, ou cliquer sur le "<span style="background:transparent url(./_img/sprite10.png) 0 0 no-repeat;background-position:-20px 0;width:16px;height:16px;display:inline-block;vertical-align:middle"></span>" pour créer une nouvelle évaluation.</span></li>
+	<li><span class="astuce">Choisir des evaluations existantes à afficher, ou cliquer sur le "<img alt="ajouter" src="./_img/bouton/ajouter.png" />" pour créer une nouvelle évaluation.</span></li>
 </ul>
 
 <hr />
 
-<form action="" method="post" id="form0"><fieldset>
-	<label class="tab" for="f_aff_classe">Classe / groupe :</label><select id="f_aff_classe" name="f_aff_classe"><?php echo $select_eleve ?></select>
-	<div id="zone_periodes" class="hide">
+<form action="" method="post" id="form0" class="hide"><fieldset>
+	<label class="tab" for="f_aff_classe">Classe / groupe :</label><select id="f_aff_classe" name="f_aff_classe"><option value="d2">Toute classe / tout groupe</option><?php echo $select_eleve ?></select>
+	<div id="zone_periodes">
 		<label class="tab" for="f_aff_periode">Période :</label><?php echo $select_periode ?>
 		<span id="dates_perso" class="show">
 			du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo $date_debut ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
@@ -113,7 +114,7 @@ if(count($tab_id_classe_groupe))
 	</div>
 </fieldset></form>
 
-<form action="" method="post" id="form1">
+<form action="" method="post" id="form1" class="hide">
 	<hr />
 	<p id="p_alerte" class="danger hide">Une évaluation dont la saisie a commencé ne devrait pas voir ses items modifiés.<br />En particulier, retirer des items d'une évaluation efface les scores correspondants qui sont saisis !</p>
 	<table class="form">
@@ -124,11 +125,12 @@ if(count($tab_id_classe_groupe))
 				<th>Classe / Groupe</th>
 				<th>Description</th>
 				<th>Items</th>
+				<th>Profs</th>
 				<th class="nu"><q class="ajouter" title="Ajouter une évaluation."></q></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr><td class="nu" colspan="6"></td></tr>
+			<tr><td class="nu" colspan="7"></td></tr>
 		</tbody>
 	</table>
 </form>
@@ -142,6 +144,27 @@ if(count($tab_id_classe_groupe))
 	$DB_TAB = DB_STRUCTURE_recuperer_arborescence($_SESSION['USER_ID'],$matiere_id=0,$niveau_id=0,$only_socle=false,$only_item=false,$socle_nom=false);
 	echo afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique=true,$reference=true,$aff_coef=false,$aff_cart=false,$aff_socle='texte',$aff_lien=false,$aff_input=true);
 	?>
+</form>
+
+<form action="" method="post" id="zone_profs" class="hide">
+	<p class="hc"><b id="titre_profs">Choix des collègues partageant l'évaluation</b><br /></p>
+	<p class="astuce">Vous pouvez permettre à des collègues de co-saisir les notes de ce devoir (et de le dupliquer).</span></p>
+	<p><button id="valider_profs" type="button"><img alt="" src="./_img/bouton/valider.png" /> Valider ce choix</button>&nbsp;&nbsp;&nbsp;<button id="annuler_profs" type="button"><img alt="" src="./_img/bouton/annuler.png" /> Annuler / Retour</button></p>
+	<div id="div_partage">
+	<?php
+	// Affichage de la liste des professeurs
+	$DB_TAB = DB_STRUCTURE_OPT_professeurs_etabl();
+	if(is_string($DB_TAB))
+	{
+		echo $DB_TAB;
+	}
+	foreach($DB_TAB as $DB_ROW)
+	{
+		$checked_and_disabled = ($DB_ROW['valeur']==$_SESSION['USER_ID']) ? ' checked disabled' : '' ; // readonly ne fonctionne pas sur un checkbox
+		echo'<input type="checkbox" name="f_profs[]" id="p_'.$DB_ROW['valeur'].'" value="'.$DB_ROW['valeur'].'"'.$checked_and_disabled.' /><label for="p_'.$DB_ROW['valeur'].'"> '.html($DB_ROW['texte']).'</label><br />';
+	}
+	?>
+	</div>
 </form>
 
 <form action="" method="post" id="zone_ordonner" class="hide">
