@@ -1,4 +1,4 @@
-lcs-web (2.4.8.9~1) Lcs; urgency=low
+lcs-web (2.4.9~1) Lcs; urgency=low
 
   [ Philippe LECLERC ]    
   * Change the test status of a module in gestpack.sh
@@ -14,7 +14,7 @@ lcs-web (2.4.8.9~1) Lcs; urgency=low
   [ Franck Molle]
   * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 21 Oct 2011 11:42:17 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 21 Oct 2011 12:44:25 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
