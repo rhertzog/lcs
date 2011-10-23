@@ -4,7 +4,7 @@
 # Install CAS service on LCS base on rubycas-server <http://code.google.com/p/rubycas-server/>
 # 
 # Get LCS params in lcs_db
-function get_lcsdb_params() {
+get_lcsdb_params() {
     PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
     echo "$PARAMS"
 }
