@@ -1,30 +1,11 @@
 #! /bin/sh
 #
-# Copyright (c) 2007 Urbacon Ltd.
+# System startup script for the rubycas-server
 #
-# System startup script for the RubyCAS-Lcs
-#
-# Instructions:
-#   1. Rename this file to 'rubycas-lcs'
-#   2. Copy it to your '/etc/init.d' directory
-#   3. chmod +x /etc/init.d/rubycas-lcs
-#
-# chkconfig - 85 15
-# description: Provides single-sign-on authentication for web applications.
-#
-### BEGIN INIT INFO
-# Provides: rubycas-lcs
-# Required-Start: $syslog
-# Should-Start:
-# Required-Stop:  $syslog
-# Should-Stop:
-# Default-Start:  3 5
-# Default-Stop:   0 1 2 6
-# Description:    Start the RubyCAS-Lcs
-### END INIT INFO
 
-CASSERVER_CTL='rubycas-server-ctl'
+CASSERVER='/var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/bin/rubycas-server'
 PIDFILE="/var/run/rubycas-server/casserver.pid"
+CONFFILE="/etc/rubycas-server/config.yml"
 USERRUN="casserver"
 LOGCASSERVER="/var/log/rubycas-server/casserver.log"
 TIME=$(date +"%Y-%m-%dT%H:%M:%S")
@@ -35,28 +16,45 @@ stopcasserver() {
         	kill -9 $PIDPROCESS
         	echo "I, [$TIME #$PIDPROCESS] INFO -- : Stoping CASServer as a WEBrick daemon with process id $PIDPROCESS" >> $LOGCASSERVER
         	rm -f $PIDFILE
+			echo "rubycas-server is stopped."
+	fi
+}
+
+startcasserver() {
+	if [ ! -e $PIDFILE ]; then
+		su -c "$CASSERVER -d -c $CONFFILE -P $PIDFILE" $USERRUN 1>/dev/null
+		if [ -e $PIDFILE ]; then
+			PIDPROCESS=`cat $PIDFILE`
+			echo "rubycas-server start and running with pid:$PIDPROCESS"
+		else
+			echo "ERR : rubycas-server will not start !"
+		fi
+	else
+		PIDPROCESS=`cat $PIDFILE`
+		echo "rubycas-server appears to be up and running (pid:$PIDPROCESS)."
 	fi
 }
 
 
-# Gracefully exit if the controller is missing.
-which $CASSERVER_CTL > /dev/null || exit 0
 
 case "$1" in
     start)
-        su -c "$CASSERVER_CTL start  -P $PIDFILE" $USERRUN
+		startcasserver
         ;;
     stop)
-        #su -c "$CASSERVER_CTL stop  -P  $PIDFILE" $USERRUN
-	stopcasserver
+		stopcasserver
         ;;
     restart)
-        #su -c "$CASSERVER_CTL stop  -P  $PIDFILE" $USERRUN
-	stopcasserver
-        su -c "$CASSERVER_CTL start  -P  $PIDFILE" $USERRUN
+		stopcasserver
+        startcasserver
         ;;
     status)
-                su -c "$CASSERVER_CTL status -P  $PIDFILE" $USERRUN
+    	if [ -e $PIDFILE ]; then
+        	PIDPROCESS=`cat $PIDFILE`    	
+    		echo "rubycas-server appears to be up and running (pid:$PIDPROCESS)."
+    	else	
+        	echo "rubycas-server does not appear to be running (pid file not found)."
+        fi        
         ;;
     *)
         echo "Usage: $0 {start|stop|status|restart}"

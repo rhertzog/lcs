@@ -2,8 +2,9 @@ lcs-cas (2.4.9~1) Lcs; urgency=low
 
   * Modify lcs-cas-install.sh for squeeze
   * Add lcs-cas-uninstall.sh
+  * Modify init.d rubycas-lcs start stop status script
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 23 Oct 2011 13:20:56 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 23 Oct 2011 18:10:25 +0200
 
 lcs-cas (2.4.8.1) Lcs; urgency=low
 
