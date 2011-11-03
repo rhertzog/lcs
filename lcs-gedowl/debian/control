@@ -7,6 +7,6 @@ Standards-Version: 3.7.2
 
 Package: lcs-gedowl
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, lcs-web
+Depends: lcs-web, xpdf-utils, imagemagick
 Description: Install Gestion Electronique de Documents on LCS server
  Gestion Electronique de Documents

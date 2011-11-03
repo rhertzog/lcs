@@ -35,24 +35,6 @@ cp -a ../admin/backup_owl.sql ../admin/backup_owl.sq
 	rm ../admin/backup_owl.sq1 
 	
 #
-# Recuperation du BASEDN de l'annuaire
-#
-BASEDN=`mysql -se "select value from lcs_db.params  where name='ldap_base_dn'"`
-#
-#
-# Patch des fichiers Maj/ldap.x
-#
-echo "patch des fichiers de maj"
-for dir in Maj/ldap.*; do
-   if [ -e $dir ]; then
-      mv $dir $dir.in
-      cat $dir.in | sed -e "s/#BASEDN#/$BASEDN/g" > $dir
-      chown www-data:www-data $dir 
-      chmod 600 $dir
-      rm $dir.in
-   fi
-done
-#
 # Fin
 #
 echo "Fin des patches..."

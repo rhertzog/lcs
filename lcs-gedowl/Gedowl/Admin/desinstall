@@ -1,48 +1,8 @@
 #!/bin/bash
-echo "Script de desinstallation du plugin gedowl";
-
-
-
-#cas d'un sarge et php4 (normalement le paquet est déjà installé sur un lcs etch) 
-if [  -e /etc/php4 ] ; then
-#
-echo "Effacement de la section apache gedowl";
-        #
-        # Suppression section gedowlplug
-        #
-        mv /etc/lcs/apache.conf /tmp/apache.conf
-        test=true
-        share=false
-        cat /tmp/apache.conf | while ($test)
-        do
-            read ligne || test=false
-            if [ $test = false ]; then
-                exit 0;
-            fi
-            if [ "$ligne" = "# Debut section gedowl plugin" ]; then
-                share=true
-            fi
-            if [ $share = false ]; then
-                echo "$ligne" >>  /etc/lcs/apache.conf
-            fi
-            if [ "$ligne" = "# Fin section gedowl plugin" ]; then
-                share=false
-            fi
-        done
-        rm /tmp/apache.conf 
-# Redémarrage apache
-#
-echo "Apache sera redémarré dans une minute"
-at now +1 minutes < /usr/share/lcs/Plugins/Cdt/Admin/jobat
-fi
-
-
-#cas d'un etch et php5 (normalement le paquet est déjà installé sur un lcs etch) 
-if [  -e /etc/php5 ] ; then
-#
+echo "Script de desinstallation du module gedowl";
 rm -f  /etc/apache2/lcs-main/70_gedowl.conf
-# Redémarrage apache2
+# Redemarrage apache2
 #
-echo "Apache2 sera redémarré dans une minute"
-at now +1 minutes < /usr/share/lcs/Plugins/Cdt/Admin/jobat2
-fi
+echo "Apache2 sera redemarre  dans une minute"
+at now +1 minutes < /usr/share/lcs/Plugins/Gedowl/Admin/jobat2
+
