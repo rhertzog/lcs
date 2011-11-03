@@ -23,7 +23,7 @@ PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 
 ###
 #recup parametre
-function get_lcsdb_params ()
+get_lcsdb_params ()
 {
 PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
 echo "$PARAMS"
