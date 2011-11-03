@@ -59,24 +59,11 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
 	echo "Pas de script d installation a executer"
 	fi
 	
-    #------------------------------
-    #Insertion dans l'annuaire ldap
-    #------------------------------
-    
-    if [ -e $PATHPLUG/Admin/install_ldap.ldif ]; then
-    echo "Insertion dans l'annuaire ldap"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/install_ldap.ldif
-    else
-	echo "Pas d entrees LDAP a inserer"
-	fi
-    
     #-------------------------------
     # Inscription dans applis.lcs_db
     #-------------------------------
     
-    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', '$DESCRIPT', '$INDICEMAJNBR', '$VER', '$MODULE', 'N');"
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$module', '1', '$DESCRIPT', '$INDICEMAJNBR', '$VER', '$MODULE', 'N');"
 
 else
 
@@ -90,7 +77,7 @@ else
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #-------------------------------------------------------
     
-    REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE' OR name='$module' ;"`
     MAJNBR=$REF
     let MAJNBR+=1
     if [ ! -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; then
@@ -109,25 +96,6 @@ else
         while [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; do
             echo " - Application du script mysql.$MAJNBR"
             mysql < $PATHPLUG/Admin/Maj/mysql.$MAJNBR
-            let MAJNBR+=1
-	done
-    fi
-
-    #--------------
-    #Insertion LDAP
-    #--------------
-    
-    MAJNBR=$REF
-    let MAJNBR+=1
-    if [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; then
-    echo "Insertion des entrees LDAP"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    
-   
-        while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
-            echo " - Application du script ldap.$MAJNBR"
-            ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
             let MAJNBR+=1
 	done
     fi
@@ -155,7 +123,7 @@ else
         #
         # Inscription du module dans applis.lcs_db
         #
-        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', type='N' WHERE name='$MODULE' ;" 
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', type='N' WHERE name='$MODULE' OR name='$module';" 
         #
         # Fin de la mise a jour
         #
