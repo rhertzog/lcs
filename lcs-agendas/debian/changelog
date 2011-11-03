@@ -1,3 +1,9 @@
+lcs-agendas (2.4.9~2) unstable; urgency=low
+
+  * fix bug name of module in prerm
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Nov 2011 19:14:42 +0100
+
 lcs-agendas (2.4.9~1) unstable; urgency=low
 
   * compatibilty squeeze
