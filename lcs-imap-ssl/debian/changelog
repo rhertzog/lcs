@@ -1,3 +1,9 @@
+lcs-imap-ssl (2.4.9~1) lucid; urgency=low
+
+  * Make a release for squeeze
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Nov 2011 13:38:54 +0100
+
 lcs-imap-ssl (2.4.7) Unreleased; urgency=low
 
   * now build for all Arch
