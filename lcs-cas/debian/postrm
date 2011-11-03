@@ -29,7 +29,17 @@ case "$1" in
 		#
 		# Uninstall gems rubycas-server and dependencies
 		#
-		/usr/sbin/lcs-cas-uninstall.sh
+		gem uninstall -a -I -x  rubycas-server
+		gem uninstall  -a -I -x mysql
+		gem uninstall  -a -I -x ruby-net-ldap
+		gem uninstall  -a -I -x picnic
+		gem uninstall  -a -I -x markaby
+		gem uninstall  -a -I -x activerecord
+		gem uninstall  -a -I -x activesupport
+		gem uninstall  -a -I -x rack
+		gem uninstall  -a -I -x locale
+		gem uninstall  -a -I -x gettext
+		gem uninstall  -a -I -x builder
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
