@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * $Id: lettre_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $
+ * $Id: lettre_pdf.php 8410 2011-10-03 16:12:05Z tbelliard $
  *
  * Last modification  : 19/03/2007
  *
@@ -492,7 +492,8 @@ while($cpt_i_cadre<$i_cadre)
 
 	$text = str_replace($variable, $remplacer_par, $text);
 
-	$pdf->MultiCellTag($l_cadre[$type_lettre][$cpt_i_cadre], $h_cadre[$type_lettre][$cpt_i_cadre], traite_accents_utf8($text), $encadre_cadre[$type_lettre][$cpt_i_cadre], "J", '');
+	//$pdf->MultiCellTag($l_cadre[$type_lettre][$cpt_i_cadre], $h_cadre[$type_lettre][$cpt_i_cadre], traite_accents_utf8($text), $encadre_cadre[$type_lettre][$cpt_i_cadre], "J", '');
+  $pdf->ext_MultiCellTag($l_cadre[$type_lettre][$cpt_i_cadre], $h_cadre[$type_lettre][$cpt_i_cadre], traite_accents_utf8($text), $encadre_cadre[$type_lettre][$cpt_i_cadre], "J", '');
 	$cpt_i_cadre = $cpt_i_cadre + 1;
  }
 

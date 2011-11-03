@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: edit_class.php 8350 2011-09-24 15:20:10Z crob $
+* $Id: edit_class.php 8444 2011-10-07 05:25:51Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -512,6 +512,8 @@ echo "</a>";
 //=========================
 
 echo " | <a href='menage_eleves_groupes.php?id_classe=$id_classe'>Désinscriptions par lots</a>";
+
+echo " | <a href='../groupes/repartition_ele_grp.php'>Répartir des élèves entre plusieurs groupes</a>";
 
 echo "</p>\n";
 echo "</form>\n";

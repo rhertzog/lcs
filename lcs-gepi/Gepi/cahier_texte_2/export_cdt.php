@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: export_cdt.php 8071 2011-08-31 09:57:56Z crob $
+* @version: $Id: export_cdt.php 8433 2011-10-05 16:37:54Z jjocal $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -744,6 +744,7 @@ if($action=='acces2') {
 	}
 
 	$chemin_acces="documents/".$dirname."/index.php";
+        $chemin_accessansRNE = $chemin_acces;
 	if((isset($GLOBALS['multisite']))&&($GLOBALS['multisite'] == 'y')&&(isset($_COOKIE['RNE']))&&($_COOKIE['RNE']!='')&&(preg_match("/^[A-Za-z0-9]*$/", $_COOKIE['RNE']))) {
 		$chemin_acces.="?rne=".$_COOKIE['RNE'];
 	}
@@ -755,10 +756,10 @@ if($action=='acces2') {
 		die();
 	}
 
-	$f=fopen("../$chemin_acces","w+");
+	$f=fopen("../$chemin_accessansRNE","w+");
 	fwrite($f,'<?php
 /*
-* @version: $Id: export_cdt.php 8071 2011-08-31 09:57:56Z crob $
+* @version: $Id: export_cdt.php 8433 2011-10-05 16:37:54Z jjocal $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *

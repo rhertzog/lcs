@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: create_eleve.php 7116 2011-06-05 07:59:30Z crob $
+ * $Id: create_eleve.php 8492 2011-10-19 05:41:08Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -250,8 +250,9 @@ else{
 	}
 	if ($session_gepi->auth_sso) {
 		echo "<option value='auth_sso'";
-		if(getSettingValue('auth_sso')=='lcs') {echo " selected='true'";}
-		echo ">Authentification unique (SSO)</option>";
+		if((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe")) {
+			echo ">Authentification unique (SSO)</option>";
+		}
 	}
 	echo "</select>";
 
@@ -399,7 +400,10 @@ else{
 		echo "<option value='auth_ldap'>Authentification LDAP</option>";
 	}
 	if ($session_gepi->auth_sso) {
-		echo "<option value='auth_sso'>Authentification unique (SSO)</option>";
+		echo "<option value='auth_sso'";
+		if((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe")) {
+			echo ">Authentification unique (SSO)</option>";
+		}
 	}
 	echo "</select>";
 	echo "</p>";

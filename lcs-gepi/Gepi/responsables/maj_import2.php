@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 8230 2011-09-14 19:05:42Z crob $
+ * $Id: maj_import2.php 8592 2011-11-03 14:37:46Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -4468,7 +4468,7 @@ else{
 					//===========================
 					// A FAIRE: boireaus 20071129
 					//          Ajouter l'association avec le PP et le CPE
-					$sql="SELECT login, nom, prenom FROM utilisateurs WHERE statut='cpe' ORDER BY nom, prenom;";
+					$sql="SELECT login, nom, prenom FROM utilisateurs WHERE statut='cpe' AND etat='actif' ORDER BY nom, prenom;";
 					info_debug($sql);
 					$res_cpe=mysql_query($sql);
 

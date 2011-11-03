@@ -2,7 +2,7 @@
 /**
  * Fichier de mise à jour de la version 1.5.4 à la version 1.5.5
  * 
- * $Id: 154_to_155.inc.php 8216 2011-09-14 08:17:09Z tbelliard $
+ * $Id: 154_to_155.inc.php 8556 2011-10-28 09:44:45Z crob $
  *
  * Le code PHP présent ici est exécuté tel quel.
  * Pensez à conserver le code parfaitement compatible pour une application
@@ -846,5 +846,127 @@ if ($result_inter == '') {
 	$result.=msj_erreur(" !".$result_inter);
 }
 $result.="<br />";
+
+
+$result.="<br />";
+$result.="<br />";
+$result.="<strong>Tables temporaires :</strong>";
+$result.="<br />";
+
+$test = sql_query1("SHOW TABLES LIKE 'temp_gep_import2'");
+if ($test == -1) {
+	$result .= "<strong>Ajout d'une table 'temp_gep_import2' :</strong><br />";
+	$result_inter = traite_requete("CREATE TABLE IF NOT EXISTS temp_gep_import2 (
+ID_TEMPO varchar(40) NOT NULL default '',
+LOGIN varchar(40) NOT NULL default '',
+ELENOM varchar(40) NOT NULL default '',
+ELEPRE varchar(40) NOT NULL default '',
+ELESEXE varchar(40) NOT NULL default '',
+ELEDATNAIS varchar(40) NOT NULL default '',
+ELENOET varchar(40) NOT NULL default '',
+ELE_ID varchar(40) NOT NULL default '',
+ELEDOUBL varchar(40) NOT NULL default '',
+ELENONAT varchar(40) NOT NULL default '',
+ELEREG varchar(40) NOT NULL default '',
+DIVCOD varchar(40) NOT NULL default '',
+ETOCOD_EP varchar(40) NOT NULL default '',
+ELEOPT1 varchar(40) NOT NULL default '',
+ELEOPT2 varchar(40) NOT NULL default '',
+ELEOPT3 varchar(40) NOT NULL default '',
+ELEOPT4 varchar(40) NOT NULL default '',
+ELEOPT5 varchar(40) NOT NULL default '',
+ELEOPT6 varchar(40) NOT NULL default '',
+ELEOPT7 varchar(40) NOT NULL default '',
+ELEOPT8 varchar(40) NOT NULL default '',
+ELEOPT9 varchar(40) NOT NULL default '',
+ELEOPT10 varchar(40) NOT NULL default '',
+ELEOPT11 varchar(40) NOT NULL default '',
+ELEOPT12 varchar(40) NOT NULL default '',
+LIEU_NAISSANCE varchar(50) NOT NULL default '',
+MEL varchar(255) NOT NULL default ''
+);");
+	if ($result_inter == '') {
+		$result .= msj_ok("SUCCES !");
+	}
+	else {
+		$result .= msj_erreur("ECHEC !");
+	}
+}
+else {
+	$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM temp_gep_import2 LIKE 'LIEU_NAISSANCE';"));
+	if ($test_champ==0) {
+		$result .= "<br />&nbsp;->Ajout d'un champ 'LIEU_NAISSANCE' à la table 'temp_gep_import2'<br />";
+		$query = mysql_query("ALTER TABLE temp_gep_import2 ADD LIEU_NAISSANCE VARCHAR( 50 ) NOT NULL AFTER ELEOPT12;");
+		if ($query) {
+			$result .= msj_present("Le champ 'LIEU_NAISSANCE' de la table 'temp_gep_import2' a été ajouté.");
+		} else {
+			$result .= msj_erreur(": Le champ 'LIEU_NAISSANCE' de la table 'temp_gep_import2' n'a pas été ajouté");
+		}
+	}
+	
+	$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM temp_gep_import2 LIKE 'MEL';"));
+	if ($test_champ==0) {
+		$result .= "<br />&nbsp;->Ajout d'un champ 'MEL' à la table 'temp_gep_import2'<br />";
+		$query = mysql_query("ALTER TABLE temp_gep_import2 ADD MEL VARCHAR( 255 ) NOT NULL AFTER LIEU_NAISSANCE;");
+		if ($query) {
+			$result .= msj_present("Le champ 'MEL' de la table 'temp_gep_import2' a été ajouté.");
+		} else {
+			$result .= msj_erreur(": Le champ 'MEL' de la table 'temp_gep_import2' n'a pas été ajouté");
+		}
+	}
+}
+
+
+$test = sql_query1("SHOW TABLES LIKE 'tempo_utilisateurs_resp';");
+if ($test == -1) {
+	$result .= "<strong>Ajout d'une table 'tempo_utilisateurs_resp' :</strong><br />";
+	$result_inter = traite_requete("CREATE TABLE IF NOT EXISTS tempo_utilisateurs_resp
+			(login VARCHAR( 50 ) NOT NULL PRIMARY KEY,
+			password VARCHAR(128) NOT NULL,
+			salt VARCHAR(128) NOT NULL,
+			email VARCHAR(50) NOT NULL,
+			pers_id VARCHAR( 10 ) NOT NULL ,
+			statut VARCHAR( 20 ) NOT NULL ,
+			auth_mode ENUM('gepi','ldap','sso') NOT NULL default 'gepi',
+			temoin VARCHAR( 50 ) NOT NULL
+			);");
+	if ($result_inter == '') {
+		$result .= msj_ok("SUCCES !");
+	}
+	else {
+		$result .= msj_erreur("ECHEC !");
+	}
+}
+else {
+	$query = mysql_query("ALTER TABLE tempo_utilisateurs_resp CHANGE password password VARCHAR( 128 ) NOT NULL DEFAULT '';");
+	if ($query) {
+		$result .= msj_present("Extension à 128 caractères du champ 'password' de la table 'tempo_utilisateurs_resp'");
+	} else {
+		$result .= msj_erreur("Echec de l'extension à 128 caractères du champ 'password' de la table 'tempo_utilisateurs_resp'");
+	}
+
+	$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM tempo_utilisateurs_resp LIKE 'salt';"));
+	if ($test_champ==0) {
+		$result .= "<br />&nbsp;->Ajout d'un champ 'salt' à la table 'tempo_utilisateurs_resp'<br />";
+		$query = mysql_query("ALTER TABLE tempo_utilisateurs_resp ADD salt VARCHAR( 128 ) NOT NULL AFTER password;");
+		if ($query) {
+			$result .= msj_present("Le champ 'salt' de la table 'tempo_utilisateurs_resp' a été ajouté");
+		} else {
+			$result .= msj_erreur(": Le champ 'salt' de la table 'tempo_utilisateurs_resp' n'a pas été ajouté");
+		}
+	}
+
+	$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM tempo_utilisateurs_resp LIKE 'email';"));
+	if ($test_champ==0) {
+		$result .= "<br />&nbsp;->Ajout d'un champ 'email' à la table 'tempo_utilisateurs_resp'<br />";
+		$query = mysql_query("ALTER TABLE tempo_utilisateurs_resp ADD email VARCHAR( 50 ) NOT NULL AFTER salt;");
+		if ($query) {
+			$result .= msj_present("Le champ 'email' de la table 'tempo_utilisateurs_resp' a été ajouté");
+		} else {
+			$result .= msj_erreur(": Le champ 'email' de la table 'tempo_utilisateurs_resp' n'a pas été ajouté");
+		}
+	}
+}
+
 
 ?>

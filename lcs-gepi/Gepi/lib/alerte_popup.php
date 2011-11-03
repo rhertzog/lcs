@@ -1,7 +1,7 @@
 <?php
 /** Affiche un popup
  * 
- * $Id: alerte_popup.php 7774 2011-08-15 22:50:16Z regis $
+ * $Id: alerte_popup.php 8457 2011-10-10 13:09:43Z crob $
  * 
  * @package General
  * @subpackage Alertes
@@ -10,10 +10,16 @@
 	$image_path=null;
 	
 	if (isset($niveau_arbo)) {
-		$niveau_arbo_count = $niveau_arbo;
-		while ($niveau_arbo_count != 0) {
-			$image_path .="../";
-			$niveau_arbo_count--;
+		//echo "\$niveau_arbo=$niveau_arbo<br />";
+		if($niveau_arbo=="public") {
+			$image_path.="../";
+		}
+		else {
+			$niveau_arbo_count = $niveau_arbo;
+			while ($niveau_arbo_count != 0) {
+				$image_path.="../";
+				$niveau_arbo_count--;
+			}
 		}
 	}
 	else {

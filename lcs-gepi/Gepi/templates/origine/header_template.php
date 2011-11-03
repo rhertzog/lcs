@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: header_template.php 7360 2011-07-02 08:40:41Z adminpaulbert $
+ * $Id: header_template.php 8457 2011-10-10 13:09:43Z crob $
 */
 ?>
  
@@ -79,7 +79,7 @@
 		";
 	}
 ?>
-	<script type="text/javascript" src="./lib/cookieClass.js"></script>
+	<script type="text/javascript" src="<?php echo $tbs_gepiPath?>/lib/cookieClass.js"></script>
 	<script type="text/javascript">
 		//<![CDATA[ 
 		function changement() {

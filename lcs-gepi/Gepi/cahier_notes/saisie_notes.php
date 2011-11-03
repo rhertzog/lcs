@@ -525,27 +525,29 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 		$id_grp_suiv=0;
 		$temoin_tmp=0;
 		for($loop=0;$loop<count($tab_groups);$loop++) {
-			// On ne retient que les groupes qui ont un nombre de périodes au moins égal à la période sélectionnée
-			if($tab_groups[$loop]["nb_periode"]>=$periode_num) {
-				if($tab_groups[$loop]['id']==$id_groupe){
-					$num_groupe=$loop;
-
-					$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-
-					$temoin_tmp=1;
-					if(isset($tab_groups[$loop+1])){
-						$id_grp_suiv=$tab_groups[$loop+1]['id'];
+			if((!isset($tab_groups[$loop]["visibilite"]["cahier_notes"]))||($tab_groups[$loop]["visibilite"]["cahier_notes"]=='y')) {
+				// On ne retient que les groupes qui ont un nombre de périodes au moins égal à la période sélectionnée
+				if($tab_groups[$loop]["nb_periode"]>=$periode_num) {
+					if($tab_groups[$loop]['id']==$id_groupe){
+						$num_groupe=$loop;
+	
+						$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+	
+						$temoin_tmp=1;
+						if(isset($tab_groups[$loop+1])){
+							$id_grp_suiv=$tab_groups[$loop+1]['id'];
+						}
+						else{
+							$id_grp_suiv=0;
+						}
 					}
-					else{
-						$id_grp_suiv=0;
+					else {
+						$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
 					}
-				}
-				else {
-					$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-				}
-
-				if($temoin_tmp==0){
-					$id_grp_prec=$tab_groups[$loop]['id'];
+	
+					if($temoin_tmp==0){
+						$id_grp_prec=$tab_groups[$loop]['id'];
+					}
 				}
 			}
 		}
@@ -1004,13 +1006,32 @@ foreach ($liste_eleves as $eleve) {
 			if ($current_group["classe"]["ver_periode"][$eleve_id_classe[$i]][$periode_num] == "N"){
 				if($mode_commentaire_20080422!="no_anti_inject") {
 					if ((isset($appreciations_import[$current_displayed_line])) and  ($appreciations_import[$current_displayed_line] != '')) {
-				     $eleve_comment = $appreciations_import[$current_displayed_line];
-				  }
-					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=60 class='wrap' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
+						$eleve_comment = $appreciations_import[$current_displayed_line];
+					}
+					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=60 class='wrap' onchange=\"changement()\"";
 				}
 				else {
-					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='no_anti_inject_comment_eleve".$i."' rows=1 cols=30 class='wrap' onchange=\"changement()\">".$eleve_comment."</textarea></td>\n";
+					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='no_anti_inject_comment_eleve".$i."' rows=1 cols=30 class='wrap' onchange=\"changement()\"";
 				}
+				if(getSettingValue("gepi_pmv")!="n"){
+					$mess_comment[$i][$k] .= " onfocus=\"";
+					$sql="SELECT elenoet FROM eleves WHERE login='$eleve_login[$i]';";
+					$res_ele=mysql_query($sql);
+					if(mysql_num_rows($res_ele)>0) {
+						$lig_ele=mysql_fetch_object($res_ele);
+						if (nom_photo($lig_ele->elenoet)){
+							$mess_comment[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
+						}
+						else {
+							$mess_comment[$i][$k].=";document.getElementById('div_photo_eleve').innerHTML='';";
+						}
+					}
+					else {
+						$mess_comment[$i][$k].=";document.getElementById('div_photo_eleve').innerHTML='';";
+					}
+					$mess_comment[$i][$k] .= "\"";
+				}
+				$mess_comment[$i][$k] .= ">".$eleve_comment."</textarea></td>\n";
 				
 			}
 			else{

@@ -1,7 +1,7 @@
 <?php
 /** Fonctions accessibles dans toutes les pages
  * 
- * $Id: share.inc.php 8275 2011-09-20 13:01:11Z crob $
+ * $Id: share.inc.php 8525 2011-10-24 20:52:28Z jjacquard $
  * 
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -95,25 +95,43 @@ function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
  * @todo on déclare $char_spec alors qu'on ne l'utilise pas, n'y aurait-il pas un problème ?
  */
 function verif_mot_de_passe($password,$flag) {
+	global $info_verif_mot_de_passe;
+
 	if ($flag == 1) {
 		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
+			$info_verif_mot_de_passe="Le mot de passe ne doit pas être uniquement numérique ou uniquement alphabétique.";
 			return FALSE;
 		}
 		elseif(preg_match("/^[[:alnum:]\W]{".getSettingValue("longmin_pwd").",}$/", $password) and preg_match("/[\W]+/", $password) and preg_match("/[0-9]+/", $password)) {
+			$info_verif_mot_de_passe="";
 			return TRUE;
 		}
 		else {
+			if(preg_match("/^[A-Za-z0-9]*$/", $password)) {
+				$info_verif_mot_de_passe="Le mot de passe doit comporter au moins un caractère spécial (#, *,...).";
+			}
+			elseif (strlen($password) < getSettingValue("longmin_pwd")) {
+				$info_verif_mot_de_passe="La longueur du mot de passe doit être supérieure ou égale à ".getSettingValue("longmin_pwd").".";
+				return FALSE;
+			}
+			else {
+				// Euh... qu'est-ce qui a été saisi?
+				$info_verif_mot_de_passe="";
+			}
 			return FALSE;
 		}
 	}
 	else {
 		if(preg_match("/(^[a-zA-Z]*$)|(^[0-9]*$)/", $password)) {
+			$info_verif_mot_de_passe="Le mot de passe ne doit pas être uniquement numérique ou uniquement alphabétique.";
 			return FALSE;
 		}
 		elseif (strlen($password) < getSettingValue("longmin_pwd")) {
+			$info_verif_mot_de_passe="La longueur du mot de passe doit être supérieure ou égale à ".getSettingValue("longmin_pwd").".";
 			return FALSE;
 		}
 		else {
+			$info_verif_mot_de_passe="";
 			return TRUE;
 		}
 	}
@@ -1563,6 +1581,47 @@ function get_enfants_from_resp_login($resp_login,$mode='simple'){
 }
 
 /**
+ * Renvoie les élèves liés à un responsable
+ *
+ * @param string $pers_id identifiant sconet du responsable
+ * @param string $mode Si avec_classe renvoie aussi la classe
+ * @return array 
+ * @see get_class_from_ele_login()
+ */
+function get_enfants_from_pers_id($pers_id,$mode='simple'){
+	$sql="SELECT e.nom,e.prenom,e.login FROM eleves e,
+											responsables2 r,
+											resp_pers rp
+										WHERE e.ele_id=r.ele_id AND
+											rp.pers_id=r.pers_id AND
+											rp.pers_id='$pers_id' AND
+											(r.resp_legal='1' OR r.resp_legal='2')
+										ORDER BY e.nom,e.prenom;";
+	$res_ele=mysql_query($sql);
+
+	$tab_ele=array();
+	if(mysql_num_rows($res_ele)>0){
+		while($lig_tmp=mysql_fetch_object($res_ele)){
+			$tab_ele[]=$lig_tmp->login;
+			if($mode=='avec_classe') {
+				$tmp_chaine_classes="";
+
+				$tmp_tab_clas=get_class_from_ele_login($lig_tmp->login);
+				if(isset($tmp_tab_clas['liste'])) {
+					$tmp_chaine_classes=" (".$tmp_tab_clas['liste'].")";
+				}
+
+				$tab_ele[]=ucfirst(strtolower($lig_tmp->prenom))." ".strtoupper($lig_tmp->nom).$tmp_chaine_classes;
+			}
+			else {
+				$tab_ele[]=ucfirst(strtolower($lig_tmp->prenom))." ".strtoupper($lig_tmp->nom);
+			}
+		}
+	}
+	return $tab_ele;
+}
+
+/**
  * Renvoie le statut avec des accents
  *
  * @param string $user_statut Statut à corriger
@@ -1626,11 +1685,19 @@ function get_nom_classe($id_classe){
  * @param string $date
  * @return string La date formatée
  */
-function formate_date($date){
+function formate_date($date) {
 	$tmp_date=explode(" ",$date);
 	$tab_date=explode("-",$tmp_date[0]);
 
-	return sprintf("%02d",$tab_date[2])."/".sprintf("%02d",$tab_date[1])."/".$tab_date[0];
+	if(isset($tab_date[2])) {
+		return sprintf("%02d",$tab_date[2])."/".sprintf("%02d",$tab_date[1])."/".$tab_date[0];
+	}
+	elseif(isset($tab_date[0])) {
+		return $tab_date[0];
+	}
+	else {
+		return $date;
+	}
 }
 
 /**
@@ -3396,15 +3463,15 @@ function deplacer_upload($source, $dest) {
  * @return string ok ou message d'erreur
  * @see deplacer_upload()
  */
-function telecharge_fichier($sav_file,$dirname,$type,$ext){
+function telecharge_fichier($sav_file,$dirname,$ext="",$type=""){
   if (!isset($sav_file['tmp_name']) or ($sav_file['tmp_name'] =='')) {
 	return ("Erreur de téléchargement.");
   } else if (!file_exists($sav_file['tmp_name'])) {
 	return ("Erreur de téléchargement 2.");
-  } else if (!preg_match('/'.$ext.'$/i',$sav_file['name'])){
+  } else if (($ext!="") && (!preg_match('/'.$ext.'$/i',$sav_file['name']))){
 	return ("Erreur : seuls les fichiers ayant l'extension .".$ext." sont autorisés.");
   //} else if ($sav_file['type']!=$type ){
-  } else if (strripos($type,$sav_file['type'])===false) {
+  } else if (($type!="") && (strripos($type,$sav_file['type'])===false)) {
 	return ("Erreur : seuls les fichiers de type '".$type."' sont autorisés<br />Votre fichier est de type ".$sav_file['type']);
   } else {
 	$nom_corrige = preg_replace("/[^.a-zA-Z0-9_=-]+/", "_", $sav_file['name']);
@@ -3807,6 +3874,10 @@ function del_acces_cdt($id_acces) {
 			return FALSE;
 		}
 		else {
+                  if ((isset($GLOBALS['multisite']))&&($GLOBALS['multisite'] == 'y')){
+                    $test = explode("?", $chemin);
+                    $chemin = count($test) > 1 ? $test[0] : $chemin;
+                  }
 			$suppr=deltree($chemin,TRUE);
 			if(!$suppr) {
 				echo "<p><span style='color:red'>Erreur lors de la suppression de $chemin</span></p>";

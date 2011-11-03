@@ -1,7 +1,7 @@
 <?php
 /**
  * Administration du trombinoscope
-* $Id: trombinoscopes_admin.php 8292 2011-09-21 13:38:34Z crob $
+* $Id: trombinoscopes_admin.php 8525 2011-10-24 20:52:28Z jjacquard $
 *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -203,7 +203,7 @@ if (isset($_POST['action']) and ($_POST['action'] == 'upload'))  {
 		// copie du fichier vers /temp
 		$dirname ="../temp";
 		//$reponse=telecharge_fichier($sav_file,$dirname,'application/zip',"zip" );
-		$reponse=telecharge_fichier($sav_file,$dirname,'application/zip application/octet-stream application/x-zip-compressed',"zip" );
+		$reponse=telecharge_fichier($sav_file,$dirname,"zip",'application/zip application/octet-stream application/x-zip-compressed');
 		if ($reponse!="ok") {
 			$msg = $reponse;
 		} else {

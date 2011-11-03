@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: param_bull_pdf.php 7490 2011-07-23 10:23:58Z crob $
+* $Id: param_bull_pdf.php 8389 2011-09-30 12:51:59Z crob $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -726,6 +726,28 @@ function DecocheCheckbox() {
 
 		echo "</p>\n";
 		echo "<br /><br />\n";
+
+		$sql="SHOW TABLES LIKE 'modele_bulletin';";
+		$test_modele_bulletin=mysql_query($sql);
+		if(mysql_num_rows($test_modele_bulletin)==0) {
+			echo "<p style='color:red'>La table 'modele_bulletin' n'existe pas.</p>\n";
+
+			if($_SESSION['statut']=='administrateur') {
+				echo "<p>Forcez une <a href='../utilitaires/maj.php'>mise à jour de la base</a> et si cela ne suffit pas, <a href='test_modele_bull.php'>testez les tables modèles de bulletins PDF</a>.</p>\n";
+			}
+			else {
+				echo "<p>Contactez l'administrateur pour qu'il effectuer une mise à jour de la base et peut-être un test des tables modèles PDF.</p>\n";
+			}
+
+			$titre="La table 'modele_bulletin' n'existe pas : ".strftime("%d/%m/%Y à %H:%M:%S");
+			$texte="Forcez une <a href='$gepiPath/utilitaires/maj.php'>mise à jour de la base</a> et si cela ne suffit pas, <a href='$gepiPath/bulletin/test_modele_bull.php'>testez les tables modèles de bulletins PDF</a>.";
+			$destinataire="administrateur";
+			$mode="statut";
+			$id_info=enregistre_infos_actions($titre,$texte,$destinataire,$mode);
+
+			require("../lib/footer.inc.php");
+			die();
+		}
 
 		echo "<center>
 		<form name ='form3' method='post' action='export_modele_pdf.php'>\n";

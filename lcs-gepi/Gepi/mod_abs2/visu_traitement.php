@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_traitement.php 7768 2011-08-15 20:39:18Z jjacquard $
+ * @version $Id: visu_traitement.php 8394 2011-09-30 19:22:14Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -114,7 +114,9 @@ echo '</td></tr>';
 echo '<tr><TD>';
 echo 'Créé par : ';
 echo '</TD><TD>';
-echo $traitement->getUtilisateurProfessionnel()->getCivilite().' '.$traitement->getUtilisateurProfessionnel()->getNom().' '.substr($traitement->getUtilisateurProfessionnel()->getPrenom(), 0, 1).'.';
+if ($traitement->getUtilisateurProfessionnel() != null) {
+	echo $traitement->getUtilisateurProfessionnel()->getCivilite().' '.$traitement->getUtilisateurProfessionnel()->getNom().' '.substr($traitement->getUtilisateurProfessionnel()->getPrenom(), 0, 1).'.';
+}
 echo '</TD></tr>';
 
 if ($traitement->getModifieParUtilisateurId() != null && $traitement->getUtilisateurId() != $traitement->getModifieParUtilisateurId()) {

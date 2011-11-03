@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: config_prefs.php 8383 2011-09-29 10:43:19Z crob $
+ * $Id: config_prefs.php 8407 2011-10-01 14:20:24Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -445,7 +445,7 @@ if(isset($enregistrer)) {
 }
 
 // Style spécifique pour la page:
-$style_specifique="gestion/config_prefs";
+//$style_specifique="gestion/config_prefs";
 
 // Couleur pour les cases dans lesquelles une modif est faite:
 $couleur_modif='orange';

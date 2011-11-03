@@ -2,7 +2,7 @@
 /**
  * Création d'évaluations cumules
  * 
- * @version: $Id: index_cc.php 7849 2011-08-20 18:19:12Z regis $
+ * @version: $Id: index_cc.php 8413 2011-10-04 12:19:16Z crob $
  *
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * @license GNU/GPL, 
@@ -205,11 +205,15 @@ $sql="SELECT DISTINCT ccn.id_cahier_notes, g.*, c.classe FROM cn_cahier_notes cc
 $res_grp=mysql_query($sql);
 echo " | <select name='id_racine' onchange=\"document.forms['form0'].submit();\">\n";
 while($lig=mysql_fetch_object($res_grp)) {
-	echo "<option value='$lig->id_cahier_notes'";
-	if($lig->id_cahier_notes==$id_racine) {echo " selected='true'";}
-	echo ">";
-	echo $lig->name." (<i>".$lig->description."</i>) en ".$lig->classe;
-	echo "</option>\n";
+	$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='' AND domaine='cahier_notes' AND visible='n';";
+	$test_vis=mysql_query($sql);
+	if(mysql_num_rows($test_vis)==0) {
+		echo "<option value='$lig->id_cahier_notes'";
+		if($lig->id_cahier_notes==$id_racine) {echo " selected='true'";}
+		echo ">";
+		echo $lig->name." (<i>".$lig->description."</i>) en ".$lig->classe;
+		echo "</option>\n";
+	}
 }
 echo "</select>\n";
 echo "</p>\n";

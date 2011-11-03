@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_notification.php 7437 2011-07-18 19:20:27Z dblanqui $
+ * @version $Id: visu_notification.php 8392 2011-09-30 16:15:02Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -422,12 +422,11 @@ if (($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_
     echo '<tr><td>';
     echo 'Adresse : ';
     echo '</td><td>';
+    if ($notification->getResponsableEleveAdresse() != null) {
 	//pour information : Nom du ou des responsables sélectionnés
 	echo 'De : <i> ';
 	echo $notification->getResponsableEleveAdresse()->getDescriptionHabitant();
 	echo '</i><br/><br/>';
-    if ($notification->getResponsableEleveAdresse() != null) {
-	//on ne modifie le statut si le type est courrier ou communication téléphonique
 	if ($notification->getResponsableEleveAdresse()->getAdr1() != null && $notification->getResponsableEleveAdresse()->getAdr1() != '') {
 	    echo $notification->getResponsableEleveAdresse()->getAdr1();
 	    echo '<br/>';

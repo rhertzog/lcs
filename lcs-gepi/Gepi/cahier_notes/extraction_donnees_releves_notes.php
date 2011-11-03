@@ -2,7 +2,7 @@
 /**
  * Extrait les données pour les relevés de notes
  * 
- * $Id: extraction_donnees_releves_notes.php 7766 2011-08-15 20:25:23Z regis $
+ * $Id: extraction_donnees_releves_notes.php 8590 2011-11-02 17:54:38Z crob $
  * 
  * @package Notes
  * @subpackage scripts
@@ -79,6 +79,8 @@
 
 	$tab_rn_retour_ligne=isset($_POST['rn_retour_ligne']) ? $_POST['rn_retour_ligne'] : array();
 	$tab_rn_rapport_standard_min_font=isset($_POST['rn_rapport_standard_min_font']) ? $_POST['rn_rapport_standard_min_font'] : array();
+
+	$chaine_coef=isset($_POST['chaine_coef']) ? $_POST['chaine_coef'] : "";
 
 	//+++++++++++++++++++++++++++++++++++
 	// A FAIRE
@@ -757,6 +759,14 @@
 									$tab_ele['etab_type']= $type_etablissement2[$tab_ele['etab_type']][$tab_ele['etab_niveau']];
 								}
 							}
+						}
+						else {
+							$tab_ele['etab_id'] = "";
+							$tab_ele['etab_nom'] = "Non renseigné";
+							$tab_ele['etab_niveau'] = "";
+							$tab_ele['etab_type'] = "";
+							$tab_ele['etab_cp'] = "";
+							$tab_ele['etab_ville'] = "";
 						}
 
 						// Récup infos CPE

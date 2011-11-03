@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: ajax_enregistrement_devoir.php 8369 2011-09-28 12:15:16Z crob $
+ * $Id: ajax_enregistrement_devoir.php 8435 2011-10-06 11:05:39Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -78,7 +78,7 @@ if ($uid_post==$uid_prime) {
 		$contenu_cor = traitement_magic_quotes(corriger_caracteres($contenu),'');
 		$contenu_cor = str_replace("\\r","",$contenu_cor);
 		$contenu_cor = str_replace("\\n","",$contenu_cor);
-		$contenu_cor = stripslashes($contenu_cor);
+		//$contenu_cor = stripslashes($contenu_cor);
 		if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
 	
 		$sql="INSERT INTO ct_private_entry SET date_ct='$date_devoir', heure_entry='".strftime("%H:%M:%S")."', id_login='".$_SESSION['login']."', id_groupe='$id_groupe', contenu='<b>COPIE DE SAUVEGARDE</b><br />$contenu_cor';";

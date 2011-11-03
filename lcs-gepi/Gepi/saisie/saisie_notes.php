@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_notes.php 6985 2011-05-23 15:07:43Z crob $
+* $Id: saisie_notes.php 8415 2011-10-04 12:28:08Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -439,31 +439,33 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 		$temoin_tmp=0;
 		//foreach($tab_groups as $tmp_group) {
 		for($loop=0;$loop<count($tab_groups);$loop++) {
-			if($tab_groups[$loop]['id']==$id_groupe){
-				$num_groupe=$loop;
-
-				//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-				$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-
-				$temoin_tmp=1;
-				if(isset($tab_groups[$loop+1])){
-					$id_grp_suiv=$tab_groups[$loop+1]['id'];
-
-					//$chaine_options_classes.="<option value='".$tab_groups[$loop+1]['id']."'>".$tab_groups[$loop+1]['name']." (".$tab_groups[$loop+1]['classlist_string'].")</option>\n";
+			if((!isset($tab_groups[$loop]["visibilite"]["bulletins"]))||($tab_groups[$loop]["visibilite"]["bulletins"]=='y')) {
+				if($tab_groups[$loop]['id']==$id_groupe){
+					$num_groupe=$loop;
+	
+					//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+					$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."' selected='true'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+	
+					$temoin_tmp=1;
+					if(isset($tab_groups[$loop+1])){
+						$id_grp_suiv=$tab_groups[$loop+1]['id'];
+	
+						//$chaine_options_classes.="<option value='".$tab_groups[$loop+1]['id']."'>".$tab_groups[$loop+1]['name']." (".$tab_groups[$loop+1]['classlist_string'].")</option>\n";
+					}
+					else{
+						$id_grp_suiv=0;
+					}
 				}
-				else{
-					$id_grp_suiv=0;
+				else {
+					//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+					$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
 				}
-			}
-			else {
-				//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-				$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['description']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
-			}
-
-			if($temoin_tmp==0){
-				$id_grp_prec=$tab_groups[$loop]['id'];
-
-				//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+	
+				if($temoin_tmp==0){
+					$id_grp_prec=$tab_groups[$loop]['id'];
+	
+					//$chaine_options_classes.="<option value='".$tab_groups[$loop]['id']."'>".$tab_groups[$loop]['name']." (".$tab_groups[$loop]['classlist_string'].")</option>\n";
+				}
 			}
 		}
 		// =================================

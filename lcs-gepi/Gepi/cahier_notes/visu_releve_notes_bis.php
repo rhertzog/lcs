@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: visu_releve_notes_bis.php 8071 2011-08-31 09:57:56Z crob $
+* $Id: visu_releve_notes_bis.php 8588 2011-11-02 15:23:21Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
 *
@@ -335,6 +335,7 @@ if ((!isset($tab_id_classe))&&(!isset($id_groupe))) {
 				WHERE (e.ele_id=r.ele_id AND
 						r.pers_id=rp.pers_id AND
 						rp.login='".$_SESSION['login']."' AND
+						(r.resp_legal='1' OR r.resp_legal='2') AND
 						c.id=jec.id_classe AND
 						jec.login=e.login);";
 	}
@@ -645,7 +646,7 @@ elseif(!isset($choix_periode)) {
 			if(!in_array($j,$tab_periode_exclue)) {
 				echo "<td style='background-color:lightgreen;'>";
 				//echo "<label for='choix_periode' style='cursor: pointer;'><input type=\"radio\" name=\"periode\" value='$j' /></label>\n";
-				echo "<label for='choix_periode' style='cursor: pointer;'><input type=\"checkbox\" name=\"tab_periode_num[]\" value='$j' ";
+				echo "<label for='choix_periode' style='cursor: pointer;'><input type=\"checkbox\" name=\"tab_periode_num[]\" id=\"tab_periode_num_$j\" value='$j' ";
 				// Dans le cas d'un retour en arrière, le champ peut avoir été préalablement coché
 				if((isset($tab_periode_num))&&(in_array($j,$tab_periode_num))) {
 					echo "checked ";
@@ -689,7 +690,12 @@ elseif(!isset($choix_periode)) {
 	}
 	*/
 
+	echo "<p><input type='button' name='valide_choix_periode' value='Valider' onclick='check_et_submit_choix_periode()' /></p>\n";
+
+	echo "<noscript>\n";
 	echo "<p><input type='submit' name='valide_choix_periode' value='Valider' /></p>\n";
+	echo "</noscript>\n";
+
 	echo "</form>\n";
 
 	echo "<p><br /></p>\n";
@@ -700,6 +706,29 @@ elseif(!isset($choix_periode)) {
 	echo "Les relevés pour une période complète en revanche font apparaître toutes les matières, même si aucune note n'est saisie.</p>\n";
 	echo "On choisit en général la période complète lorsqu'on veut imprimer un relevé en même temps que le bulletin (<i>au verso par exemple</i>) et en fin de période, il est bon d'avoir toutes les matières.</p>\n";
 	echo "</blockquote>\n";
+
+	echo "<script type='text/javascript'>
+	function check_et_submit_choix_periode() {
+		if(document.getElementById('choix_periode').checked==true) {
+			var une_periode_cochee='n';
+			for(j=1;j<=$max_per;j++) {
+				if((document.getElementById('tab_periode_num_'+j))&&(document.getElementById('tab_periode_num_'+j).checked==true)) {
+					une_periode_cochee='y';
+				}
+			}
+
+			if(une_periode_cochee=='n') {
+				alert('Vous n\'avez coché aucune période.');
+			}
+			else {
+				document.formulaire.submit();
+			}
+		}
+		else {
+			document.formulaire.submit();
+		}
+	}
+</script>\n";
 
 }
 //======================================================
@@ -757,6 +786,14 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 	}
 	echo "</form>\n";
 	//===========================
+
+	//debug_var();
+
+	if((isset($_POST['choix_periode']))&&($_POST['choix_periode']=='periode')&&(!isset($_POST['tab_periode_num']))) {
+		echo "<p style='color:red'>Vous avez choisi un relevé de période, mais omis de choisir la période.</p>\n";
+		require("../lib/footer.inc.php");
+		die();
+	}
 
 	echo "<p class='bold'>Sélection des élèves parmi les élèves de ";
 	for($i=0;$i<count($tab_id_classe);$i++) {
@@ -1742,7 +1779,7 @@ else {
 		/*****************************************
 		* début de la génération du fichier PDF  *
 		* ****************************************/
-		header('Content-type: application/pdf');
+		//header('Content-type: application/pdf');
 		//création du PDF en mode Portrait, unitée de mesure en mm, de taille A4
 		$pdf=new bul_PDF('p', 'mm', 'A4');
 		$nb_eleve_aff = 1;
@@ -1977,7 +2014,13 @@ else {
 		// Envoyer le PDF et quitter
 		$nom_releve = date("Ymd_Hi");
 		$nom_fichier = 'releve_notes_'.$nom_releve.'.pdf';
-		$pdf->Output($nom_fichier,'I');
+
+		if(((isset($bull_pdf_debug))&&($bull_pdf_debug=='y'))||((isset($releve_pdf_debug))&&($releve_pdf_debug=='y'))) {
+			echo $pdf->Output($nom_fichier,'S');
+		}
+		else {
+			$pdf->Output($nom_fichier,'I');
+		}
 
 		die();
 	}

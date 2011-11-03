@@ -1,7 +1,7 @@
 <?php
 /** Manipulation de la table setting
  * 
- * $Id: settings.inc 7639 2011-08-08 20:39:34Z regis $
+ * $Id: settings.inc 8526 2011-10-24 20:52:32Z jjacquard $
  * 
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
@@ -117,13 +117,14 @@ function getSettingAOui($_name)
 function saveSetting($_name, $_value)
 {
     global $gepiSettings;
-   if (isset($gepiSettings[$_name])) {
+    $R=mysql_query("SELECT * FROM setting WHERE NAME='".$_name."' LIMIT 1");
+   if (mysql_num_rows($R)>0) {
     $sql = "update setting set VALUE = \"" . $_value . "\" where NAME = \"" . $_name . "\"";
     $res = sql_query($sql);
-         if ( ! $res) return (FALSE);
+    if ( ! $res) return (FALSE);
     } else {
         $sql = "insert into setting set NAME = \"" . $_name . "\", VALUE = \"" . $_value . "\"";
-    $res = sql_query($sql);
+        $res = sql_query($sql);
         if ( ! $res) return (FALSE);
     }
     $gepiSettings[$_name] = $_value;

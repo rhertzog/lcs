@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: responsables.php 8209 2011-09-13 16:40:20Z crob $
+* $Id: responsables.php 8558 2011-10-28 09:46:34Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -109,7 +109,7 @@ if (!isset($_POST["action"])) {
 		}
 
 		// Suppression des comptes de responsables:
-		$sql="DELETE FROM utilisateurs WHERE statut='responsables';";
+		$sql="DELETE FROM utilisateurs WHERE statut='responsable';";
 		$del=mysql_query($sql);
 
 		$sql="SELECT * FROM temp_responsables;";

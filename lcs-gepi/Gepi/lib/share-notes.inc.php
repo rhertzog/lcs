@@ -1,7 +1,7 @@
 <?php
 /** Fonctions de manipulation des conteneurs
  * 
- * $Id: share-notes.inc.php 7747 2011-08-14 13:45:46Z regis $
+ * $Id: share-notes.inc.php 8538 2011-10-25 14:35:29Z crob $
  * 
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -627,12 +627,24 @@ calcul_moy_med();
 function calcule_moy_mediane_quartiles($tab) {
 	$tab2=array();
 
+	/*
+	echo "<p>";
+	foreach($tab as $key => $value) {
+		echo "\$tab[$key]=$value<br />";
+	}
+	*/
+
 	$total=0;
 	for($i=0;$i<count($tab);$i++) {
-		if(($tab[$i]!='')&&($tab[$i]!='-')&&($tab[$i]!='&nbsp;')&&($tab[$i]!='abs')&&($tab[$i]!='disp')) {
-			$tab2[]=preg_replace('/,/','.',$tab[$i]);
-			$total+=preg_replace('/,/','.',$tab[$i]);
+		if(isset($tab[$i])) {
+			if(($tab[$i]!='')&&($tab[$i]!='-')&&($tab[$i]!='&nbsp;')&&($tab[$i]!='abs')&&($tab[$i]!='disp')) {
+				$tab2[]=preg_replace('/,/','.',$tab[$i]);
+				$total+=preg_replace('/,/','.',$tab[$i]);
+			}
 		}
+		//else {
+		//	echo "\$tab[$i] not set.<br />";
+		//}
 	}
 
 	// Initialisation
@@ -658,6 +670,8 @@ function calcule_moy_mediane_quartiles($tab) {
 		$min=min($tab2);
 		$max=max($tab2);
 
+		$q1="-";
+		$q3="-";
 		if(count($tab2)>=4) {
 			$q1=$tab2[ceil(count($tab2)/4)-1];
 			$q3=$tab2[ceil(3*count($tab2)/4)-1];

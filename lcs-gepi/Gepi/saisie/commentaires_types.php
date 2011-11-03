@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: commentaires_types.php 7436 2011-07-18 17:47:38Z crob $
+ * $Id: commentaires_types.php 8449 2011-10-07 11:56:45Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -48,12 +48,13 @@ if (!checkAccess()) {
     die();
 }
 
-
+//==========================================
 // End standart header
 require_once("../lib/header.inc");
 if (!loadSettings()) {
 	die("Erreur chargement settings");
 }
+//==========================================
 
 $sql="CREATE TABLE IF NOT EXISTS `commentaires_types` (
 `id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
@@ -81,10 +82,10 @@ function get_classe_from_id($id){
 
 ?>
 
-<p class="bold">|<a href="../accueil.php">Retour</a>
-|<a href="commentaires_types.php">Saisir des commentaires</a>
-|<a href="commentaires_types.php?recopie=oui">Recopier des commentaires</a>
-|</p>
+<p class="bold"><a href="../accueil.php">Retour</a>
+ | <a href="commentaires_types.php">Saisir des commentaires</a>
+ | <a href="commentaires_types.php?recopie=oui">Recopier des commentaires</a>
+</p>
 
 <?php
 /*

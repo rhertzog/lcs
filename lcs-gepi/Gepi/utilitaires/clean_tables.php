@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: clean_tables.php 8307 2011-09-22 16:37:12Z crob $
+* $Id: clean_tables.php 8528 2011-10-25 12:52:04Z crob $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 * This file is part of GEPI.
@@ -3051,7 +3051,14 @@ else {
 	echo "<div style='margin-left: 3em;'>\n";
 
 		echo "<p>Il est très vivement conseillé de <b>faire une sauvegarde de la base MySql avant de lancer la procédure.</b></p>\n";
-		echo "<center><form enctype=\"multipart/form-data\" action=\"../gestion/accueil_sauve.php?action=dump\" method=post name='formulaire'>\n";
+		echo "<center><form enctype=\"multipart/form-data\" action=\"../gestion/accueil_sauve.php?action=";
+		if(getSettingValue('mode_sauvegarde')=='mysqldump') {
+			echo "system_dump";
+		}
+		else {
+			echo "dump";
+		}
+		echo "\" method=post name='formulaire'>\n";
 		echo add_token_field();
 		echo "<input type=\"submit\" value=\"Lancer une sauvegarde de la base de données\" /></form></center>\n";
 		echo "<p>Il est également vivement conseillé de <b><a href='../gestion/gestion_connect.php'>désactiver les connexions à GEPI</a> durant la phase de nettoyage</b>.</p>
