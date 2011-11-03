@@ -29,7 +29,7 @@ CHEMIN=`pwd`
         #
         # Desinscription du module de la table lcs_db.applis
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name ='$MODULE' name ='$module';";
+        mysql -e "DELETE FROM lcs_db.applis WHERE name ='$MODULE' OR name ='$module';";
         #
         
         #
