@@ -37,18 +37,7 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
 #install initiale 
 #----------------
     
-    #-----------------------------    
-    #installation de la base mysql
     #-----------------------------
-    
-    if [ -e $PATHPLUG/Admin/install_mysql.sql ]; then
-    echo "Installation de la base MySQL"
-    mysql < $PATHPLUG/Admin/install_mysql.sql
-    else
-	echo "Pas de base mysql a installer"
-	fi
-	
-	#-----------------------------
     #Execution du script d'install
     #-----------------------------
     
@@ -59,19 +48,6 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
 	echo "Pas de script d installation a executer"
 	fi
 	
-    #------------------------------
-    #Insertion dans l'annuaire ldap
-    #------------------------------
-    
-    if [ -e $PATHPLUG/Admin/install_ldap.ldif ]; then
-    echo "Insertion dans l'annuaire ldap"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/install_ldap.ldif
-    else
-	echo "Pas d entrees LDAP a inserer"
-	fi
-    
     #-------------------------------
     # Inscription dans applis.lcs_db
     #-------------------------------
@@ -98,41 +74,6 @@ else
 	echo "Pas de script de mise a jour a appliquer !"
     else
     
-    #--------------------------------
-    #Execution des instructions mysql
-    #--------------------------------
-    
-    MAJNBR=$REF
-    let MAJNBR+=1
-    if [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; then
-    echo "Execution des instructions MySQL des mises a jour"
-    
-        while [ -e $PATHPLUG/Admin/Maj/mysql.$MAJNBR ]; do
-            echo " - Application du script mysql.$MAJNBR"
-            mysql < $PATHPLUG/Admin/Maj/mysql.$MAJNBR
-            let MAJNBR+=1
-	done
-    fi
-
-    #--------------
-    #Insertion LDAP
-    #--------------
-    
-    MAJNBR=$REF
-    let MAJNBR+=1
-    if [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; then
-    echo "Insertion des entrees LDAP"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    
-   
-        while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
-            echo " - Application du script ldap.$MAJNBR"
-            ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
-            let MAJNBR+=1
-	done
-    fi
-
     #---------------------
     #Execution des scripts
     #---------------------
