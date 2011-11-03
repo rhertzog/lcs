@@ -76,7 +76,7 @@ function Imprime_seq($param) {
            {
             $rows = mysql_fetch_array($results, MYSQL_NUM);
               echo '<tbody><tr><th  >'.utf8_encode($rows[1])."</th></tr></tbody>";
-              echo '<tbody><tr><td class="description"  colspan="2" >'.$rows[2];
+              echo '<tbody><tr><td class="description"  colspan="2" >'.utf8_encode($rows[2]);
               echo ' </td></tr></tbody>';
               $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1." order by date asc ";
               $result2 = @mysql_query ($rq2) or die (mysql_error());
@@ -98,8 +98,8 @@ $result = @mysql_query ($rq) or die (mysql_error());
 if (mysql_num_rows($result) >0) {
     while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  {
-	  $textcours=stripslashes($ligne[1]);
-	  $textafaire=stripslashes($ligne[2]);
+	  $textcours=utf8_encode(stripslashes($ligne[1]));
+	  $textafaire=utf8_encode(stripslashes($ligne[2]));
 	  $jour=LeJour (strToTime($ligne[5]));
 	  //debut
 	  if ($ligne[1]!="") {

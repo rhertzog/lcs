@@ -76,7 +76,7 @@ echo '<div id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" v
 // Connexion à la base de données	
 include_once "/var/www/lcs/includes/headerauth.inc.php";
  				list ($idpers,$log) = isauth();
-  				if ($idpers)  $_LCSkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+  				if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
  				$nom_bdd=mb_ereg_replace("\.","",$_SESSION['login']);
  				DEFINE ('DBP_USER', $_SESSION['login']);
 				DEFINE ('DBP_PASSWORD', $_LCSkey);

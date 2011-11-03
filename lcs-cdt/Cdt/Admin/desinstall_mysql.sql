@@ -1,7 +1,6 @@
 -- MySQL dump 8.21
 --
 -- Host: localhost    Database:cdt_plug 
----------------------------------------------------------
 -- Server version	3.23.49-log
 
 --

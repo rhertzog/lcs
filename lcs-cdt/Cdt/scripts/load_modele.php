@@ -16,7 +16,7 @@ session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
-//si la page est appeleee par un utilisateur non identifié
+//si la page est appeleee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
 //si la page est appelee par un utilisateur non prof
@@ -28,6 +28,15 @@ header('Content-Type: text/xml');
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
 header("Pragma: no-cache");
+
+function xml_character_encode($string, $trans='') {
+  $trans = (is_array($trans)) ? $trans : get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+  foreach ($trans as $k=>$v)
+    $trans[$k]= "&#".ord($k).";";
+
+  return strtr($string, $trans);
+}  
+
 if( isset($_POST['cibl'])  )
 	{
 	if (get_magic_quotes_gpc()) require_once("/usr/share/lcs/Plugins/Cdt/Includes/class.inputfilter_clean.php");
@@ -44,10 +53,10 @@ if( isset($_POST['cibl'])  )
 		else
 			{
 			// htlmpurifier
-			$Cib = addSlashes($_REQUEST['cibl']);
+			$Cib = $_REQUEST['cibl'];
 			$config = HTMLPurifier_Config::createDefault();
-	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
-	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                                      $config->set('Core.Encoding', 'ISO-8859-15'); 
+                                                      $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
 	   		$purifier = new HTMLPurifier($config);
 	   		$cible= $purifier->purify($Cib);
 	   		}	
@@ -61,8 +70,8 @@ if( isset($_POST['cibl'])  )
 		$row = mysql_fetch_array($result, MYSQL_NUM);//) 
 		echo "<?xml version=\"1.0\"?>\n";
 		echo "<modele>\n";
-		echo "<donnee>" . htmlentities($row[0]) . "</donnee>\n";
-		echo "<donnee>" . htmlentities($row[1]) . "</donnee>\n";
+		echo "<donnee>" . xml_character_encode($row[0]) . "</donnee>\n";
+		echo "<donnee>" .  xml_character_encode($row[1]) . "</donnee>\n";
 		echo "</modele>\n";
 		}
 	if (!$result)  // Si l'enregistrement est incorrect

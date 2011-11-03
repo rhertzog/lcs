@@ -178,7 +178,7 @@ if (isset($_POST['Valider']))
                         // htlmpurifier
                         $config = HTMLPurifier_Config::createDefault();
                         $config->set('Core.Encoding', 'ISO-8859-15');
-                        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                        $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $nom_propre[$indecs] = $purifier->purify($nom_propre[$indecs]);
                         }
@@ -202,7 +202,7 @@ if (isset($_POST['Valider']))
                         // htlmpurifier
                         $config = HTMLPurifier_Config::createDefault();
                         $config->set('Core.Encoding', 'ISO-8859-15');
-                        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                        $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $prenom_propre[$indecs] = $purifier->purify($prenom_propre[$indecs]);
                         }

@@ -21,6 +21,15 @@ PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+###
+#recup parametre
+function get_lcsdb_params ()
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+###
+
 case "$1" in
     purge|remove)
  
@@ -47,9 +56,7 @@ CHEMIN=`pwd`
         #
         if [ -e $PATHPLUG/Admin/desinstall_ldap.ldif ]; then
     		echo "Suppression des entrees dans l'annuaire ldap"
-    		#recuperation des parametres LDAP
-			PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    		ldapmodify -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/desinstall_ldap.ldif
+    		ldapmodify -x -c -h $(get_lcsdb_params ldap_server) -D $(get_lcsdb_params adminRdn),$(get_lcsdb_params ldap_base_dn) -w $(get_lcsdb_params adminPw)  -f $PATHPLUG/Admin/desinstall_ldap.ldif
     	else
 			echo "Pas d entrees LDAP a supprimer"
 		fi

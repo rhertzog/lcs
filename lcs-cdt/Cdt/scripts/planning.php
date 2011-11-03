@@ -72,10 +72,10 @@ if (isset($_POST['enregistrer']) )
 		else
 			{
 			// htlmpurifier
-			$Sujet = addslashes($_POST['sujet']);
+			$Sujet = utf8_decode($_POST['sujet']);
 			$config = HTMLPurifier_Config::createDefault();
-	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
-	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                                      $config->set('Core.Encoding', 'ISO-8859-15'); 
+                                                      $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
 	   		$purifier = new HTMLPurifier($config);
 	   		$Sujet = $purifier->purify($Sujet);
 	   		$Sujet=mysql_real_escape_string($Sujet);
@@ -574,7 +574,9 @@ if ($nb>0)
 					$num[$j][$h][$col] = $row[0];//numero
 					$plan[$j][$h] [$col]= "R";//on pose une marque (Reserve) pour le creneau
 					$mat[$j][$h][$col] = utf8_encode($row[5]);//matiere
-					$suj[$j][$h][$col] = utf8_encode(stripslashes($row[6]));//sujet
+                                                                                          $Suj_=str_replace ( '"','&quot;',$row[6]);
+					if (get_magic_quotes_gpc()) $suj[$j][$h][$col] = utf8_encode(stripslashes($Suj_));//sujet
+                                                                                           else $suj[$j][$h][$col] = utf8_encode($Suj_);
 					$log[$j][$h][$col] = $row[7];//login de l'auteur
 					$dur[$j][$h][$col] = $row[8];//duree
 					//on marque les autres creneaux utilises par le devoir

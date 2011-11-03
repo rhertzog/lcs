@@ -33,7 +33,7 @@ if (isset($_POST['Fermer']))
 					
 include "/var/www/lcs/includes/headerauth.inc.php";
   list ($idpers,$log) = isauth();
-  if ($idpers) { $_LCSkey = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+  if ($idpers) { $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
      
  }
  

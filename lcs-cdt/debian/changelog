@@ -1,3 +1,12 @@
+lcs-cdt (2.4.8.5~4) LCS; urgency=low
+
+  * change posinst and prerm for squeeze
+  * update html purifier
+  * config htmlpurifier to generate XHTML 1.0 Strict
+  * fix new problems with french character in php 5.3
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Nov 2011 10:48:30 +0100
+
 lcs-cdt (2.4.8.5~2) LCS; urgency=low
 
   * add QRcode generator

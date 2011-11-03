@@ -166,8 +166,8 @@ if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descr
 			$Title2  =utf8_decode($_POST['titre2']);
 			$Desc = $_POST['descript'];
 			$config = HTMLPurifier_Config::createDefault();
-                        $config->set('Core.Encoding', 'ISO-8859-15');
-                        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                                      $config->set('Core.Encoding', 'ISO-8859-15');
+                                                      $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
 	   		$purifier = new HTMLPurifier($config);
 	   		//$Cours = addSlashes($Cours);
 	   		$cont1 = $purifier->purify($Title1);

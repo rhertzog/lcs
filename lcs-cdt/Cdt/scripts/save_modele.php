@@ -16,7 +16,7 @@ session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
-//si la page est appeleee par un utilisateur non identifié
+//si la page est appeleee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
 //si la page est appelee par un utilisateur non prof
@@ -50,8 +50,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 			$Contenuaf  =$_POST['afmod'];
 			$Cib = addSlashes($_POST['cibl']);
 			$config = HTMLPurifier_Config::createDefault();
-	    	$config->set('Core.Encoding', 'ISO-8859-15'); 
-	    	$config->set('HTML.Doctype', 'HTML 4.01 Transitional');
+                                                      $config->set('Core.Encoding', 'ISO-8859-15'); 
+                                                      $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
 	   		$purifier = new HTMLPurifier($config);
 	   		//$Cours = addSlashes($Cours);
 	   		$cont1 = $purifier->purify($Contenucours);

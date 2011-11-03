@@ -145,7 +145,7 @@ if (count ($list_dates)>0)
 				{
 				$id[$n]=$enrg[0];
 				$cours[$n]=utf8_encode(mb_ereg_replace("../../../","http://".$hostname.".".$domain."/",$enrg[1]));
-				$afR[$n]=utf8_encode(mb_ereg_replace("../../../","http://".$hostname.".".$domain."/",$enrg[1]));
+				$afR[$n]=utf8_encode(mb_ereg_replace("../../../","http://".$hostname.".".$domain."/",$enrg[2]));
 				$n++;
 				}
 			}

@@ -160,7 +160,7 @@ function Affiche_seq($param) {
               echo '<tbody><tr><td colspan="2" ><span class="malegende" ><span class="titre_seq">'.utf8_encode($rows[1])."</span></span></td></tr></tbody>";
               echo '<tbody class="field11"><tr><td colspan="2">';
              // if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])))
-                echo '<div class="switch_seq clos" id="_s'.$param.'" title="+ de d&eacute;tails"> &nbsp;</div ><div  id="d_s'.$param.'" class="descr_seq off">'.$rows[2].'</div>';
+                echo '<div class="switch_seq clos" id="_s'.$param.'" title="+ de d&eacute;tails"> &nbsp;</div ><div  id="d_s'.$param.'" class="descr_seq off">'.utf8_encode($rows[2]).'</div>';
              // else
               //    echo '<div  id="d_s'.$param.'"class="descr_seq">'.$rows[2].'</div>';
               echo ' </td></tr>';
