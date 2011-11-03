@@ -6,21 +6,15 @@
 #
 # rubycas-server configuration and path
 #
-LOGFOLDER="/var/log/rubycas-server"
-CONF="/etc/rubycas-server"
-RUN="/var/run/rubycas-server"
-USERRUN="casserver"
-GROUPRUN="casserver"
-USERHOME="/var/lib/lcs/cas"
-PATH_RUBYCAS_CERT=$CONF
-IN_CONFIG_PATH=$USERHOME
-RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
 
-
-gem uninstall rubycas-server
-gem uninstall ruby-net-ldap
-gem uninstall mysql
-gem uninstall ruby-net-ldap
-gem uninstall picnic
-gem uninstall markaby
-gem uninstall activerecord
+gem uninstall -a -I -x  rubycas-server
+gem uninstall  -a -I -x mysql
+gem uninstall  -a -I -x ruby-net-ldap
+gem uninstall  -a -I -x picnic
+gem uninstall  -a -I -x markaby
+gem uninstall  -a -I -x activerecord
+gem uninstall  -a -I -x activesupport
+gem uninstall  -a -I -x rack
+gem uninstall  -a -I -x locale
+gem uninstall  -a -I -x gettext
+gem uninstall  -a -I -x builder
