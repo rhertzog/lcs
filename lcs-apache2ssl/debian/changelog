@@ -1,3 +1,9 @@
+lcs-apache2ssl (2.4.9~1) Lcs; urgency=low
+
+  * Modify postinst for squeeze
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Nov 2011 14:09:17 +0100
+
 lcs-apache2ssl (2.4.7.1) Lcs; urgency=low
 
   * Modify package for new mnu.d structure 

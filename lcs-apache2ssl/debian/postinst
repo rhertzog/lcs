@@ -8,7 +8,7 @@ APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 
 # lecture d'un parametre lcs dans lcs_db.params
 
-function get_lcsdb_params() {
+get_lcsdb_params() {
   PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
   echo "$PARAMS"
 }
