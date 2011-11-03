@@ -3,7 +3,7 @@
 set -e
 
 # lecture d'un parametre lcs dans lcs_db.params
-function get_lcsdb_params
+get_lcsdb_params ()
 {
 PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
 echo "$PARAMS"
@@ -21,7 +21,7 @@ case "$1" in
         #
         NUM=`iptables -t nat -L --line-numbers | grep  2121 | cut -d ' ' -f 1`
         if [ -z $NUM ]; then
-            iptables -t nat -I PREROUTING -d ! $NETWORK/$NETMASK0 -p TCP --dport 21 -j REDIRECT --to-ports 2121
+            iptables -t nat -I PREROUTING ! -d $NETWORK/$NETMASK0 -p TCP --dport 21 -j REDIRECT --to-ports 2121
         fi
         #
         # Sauvegarde dans  /var/lib/iptables/

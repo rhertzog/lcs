@@ -1,3 +1,9 @@
+lcs-ftpproxy (2.4.9~1) lucid; urgency=low
+
+  * Modify postinst for squeeze
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Nov 2011 14:34:39 +0100
+
 lcs-ftpproxy (2.4) Lcs; urgency=low
 
   * Make a stable release 2.4
