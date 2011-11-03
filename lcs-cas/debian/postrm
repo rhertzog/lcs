@@ -15,9 +15,9 @@ case "$1" in
         #
         # Stop CAS service
         #
-        if [ -e /var/run/rubycas-lcs/casserver.pid ]; then
+        if [ -e $PIDFILE ]; then
         	PIDPROCESS=`cat $PIDFILE`
-        	kill -9 $PIDPROCESS            
+        	kill -9 $PIDPROCESS 
         fi
         #
         # Desactivate lcs log2cas
