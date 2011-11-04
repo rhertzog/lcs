@@ -1,9 +1,9 @@
 #!/bin/bash
 # Misterphi 
-# Version du : 22/01/2010 
+# Version du : 04/11/2011 
 # $1 : repertoire source du paquet ( doit commencer obligatoirement par lcs- )  
 # $2 : N° de version
-# $3 : Distribution : etch ou lenny
+# $3 : Distribution : etch, lenny ou squeeze
 # $4 : Branche : stable, testing ou xp
 # $5 : (optionnel) Necessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version anterieure). 
 # Ce parametre doit correspondre a la description du module qui sera inseree dans lcs_db.applis (voir le postinst)
@@ -13,7 +13,7 @@ if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3"
         echo "Script destine referencer un paquet Debian LCS-*"
         echo ""
         echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version> <Distribution> <branche de destination> <description>"
-        echo "Les distributions possibles sont etch ou lenny"
+        echo "Les distributions possibles sont etch, lenny ou squeeze"
         echo "Les branches possibles sont : stable testing experimentale (ou xp) "
         echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 lenny xp 'Administration web serveur LDAPLCS' "
         exit
@@ -64,6 +64,22 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 			echo "branche erronee"
 			exit 
 			fi
+
+		elif [ "$3" == "squeeze" ];then
+                        if [ "$4" == "stable" ];then
+                                depot="Lcsqueeze"
+                                br="Lcs"
+                        elif [ "$4" == "testing" ];then
+                                depot="LcsqueezeTesting"
+                                br="LcsTesting"
+                        elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
+                                depot="LcsqueezeXP"
+                                br="LcsXP"
+                        else 
+                        echo "branche erronee"
+                        exit 
+                        fi
+
 		else
 		echo "Distribution erronee"
 		exit 
@@ -141,12 +157,11 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		fi
 		cd $Repcourant
 		#suppression des .svn de la doc
-			
+
 		if [ -e $CheminDoc ];then
-		cp -r  $CheminDoc /tmp/$Module'_html'
-		rm -rf /tmp/$Module'_html'/.svn /tmp/$Module'_html'/*/.svn
+		svn export --force  $CheminDoc /tmp/$Module'_html'
 		scp -r -P 2222 /tmp/$Module'_html' pacman@193.49.64.20:/var/www/linux/modules$depot/Docs/
-						
+
 		#
 		#Nettoyage 
 		#
