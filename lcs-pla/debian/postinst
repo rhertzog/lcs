@@ -28,18 +28,17 @@ else
     #
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #
-MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
-    let MAJNBR+=1
-    if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
-        echo "Pas de script de mise a jour a appliquer !"
-    else
-        while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
-            echo "Application du script Maj$MAJNBR"
-            $CONF/Maj/maj$MAJNBR.sh
-            let MAJNBR+=1
-        done
-        fi	
-	fi
+    #MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE'"`
+    #let MAJNBR+=1
+    #if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
+    #    echo "Pas de script de mise a jour a appliquer !"
+    #else
+    #    while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
+    #        echo "Application du script Maj$MAJNBR"
+    #        $CONF/Maj/maj$MAJNBR.sh
+    #        let MAJNBR+=1
+    #    done
+    #    fi	
 	
 	#
 	# Mise a jour du Numero de version
@@ -48,7 +47,7 @@ MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
         #
         # Inscription du module dans applis.lcs_db
         #
-        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';" 
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE'" 
         #
         # Fin de la mise a jour
         #
