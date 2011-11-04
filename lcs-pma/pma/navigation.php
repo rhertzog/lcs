@@ -196,8 +196,7 @@ if (! $GLOBALS['server']) {
         }*/
 //ajout de cette ligne pour toujours afficher une selectbox
         $list = false;
-    }
-    if (!$list) {
+    }    if (!$list) {
         // more than one database available and LeftFrameLight is true
         // display db selectbox
         //
@@ -627,7 +626,8 @@ function PMA_displayTableList($tables, $visible = false,
                 .'&amp;goto=' . $GLOBALS['cfg']['LeftDefaultTabTable']
                 . '" >'
                 .'<img class="icon"';
-            if ('VIEW' === strtoupper($table['Comment'])) {
+
+            if (PMA_Table::isView($table_db, $table['Name'])) {
                 echo ' src="' . $GLOBALS['pmaThemeImage'] . 's_views.png"';
             } else {
                 echo ' src="' . $GLOBALS['pmaThemeImage'] . 'b_sbrowse.png"';

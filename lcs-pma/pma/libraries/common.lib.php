@@ -24,9 +24,10 @@
  include "/var/www/lcs/includes/headerauth.inc.php";
  list ($idpers,$login) = isauth();
  if ($idpers) {
-     $_LCS['pass']= urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+     $_LCS['pass']= urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
      $_LCS['login']=$login;
  }
+
  
 function PMA_pow($base, $exp, $use_function = false)
 {
@@ -623,12 +624,12 @@ function PMA_mysqlDie($error_message = '', $the_query = '',
             if (strlen($table)) {
                 $_url_params['db'] = $db;
                 $_url_params['table'] = $table;
-                $doedit_goto = '<a href="tbl_sql.php?' . PMA_generate_common_url($_url_params) . '">';
+                $doedit_goto = '<a href="tbl_sql.php' . PMA_generate_common_url($_url_params) . '">';
             } elseif (strlen($db)) {
                 $_url_params['db'] = $db;
-                $doedit_goto = '<a href="db_sql.php?' . PMA_generate_common_url($_url_params) . '">';
+                $doedit_goto = '<a href="db_sql.php' . PMA_generate_common_url($_url_params) . '">';
             } else {
-                $doedit_goto = '<a href="server_sql.php?' . PMA_generate_common_url($_url_params) . '">';
+                $doedit_goto = '<a href="server_sql.php' . PMA_generate_common_url($_url_params) . '">';
             }
 
             $error_msg_output .= $doedit_goto

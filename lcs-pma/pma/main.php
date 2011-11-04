@@ -102,6 +102,7 @@ if ($server > 0
 				}
             } // end if
 
+
             echo '    <li id="li_select_mysql_collation">';
             echo '        <form method="post" action="index.php" target="_parent">' . "\n"
            . PMA_generate_common_hidden_inputs(null, null, 4, 'collation_connection')
@@ -148,10 +149,12 @@ echo '</ul>';
 
 // User preferences
 
-echo '<ul>';
-echo PMA_printListItem(__('More settings'), 'li_user_preferences',
+if ($server > 0) {
+    echo '<ul>';
+    echo PMA_printListItem(__('More settings'), 'li_user_preferences',
                     './prefs_manage.php?' . $common_url_query);
-echo '</ul>';
+    echo '</ul>';
+}
 
 echo '</div>';
 
