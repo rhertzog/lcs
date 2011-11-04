@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Modules LCS Smbwebclient</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style type="text/css" media="all">@import "../../c/c.css";</style>
 </head>
 <body>
@@ -13,39 +13,44 @@
     <li>Paquet module : 2.4</li>
     <li>Smbweclient : 2.9</li>
 </ul>
-<h2>Dernières modifications :</h2>
+<h2>DerniÃ¨res modifications :</h2>
+    <li>Version 2.4.9
+    <ul>
+        <li>Encodage UTF-8 de la documentation.</li>
+    </ul>
+    </li>
     <li>Version 2.4.6.1
     <ul>
-        <li>Ajout dans la documenation, d'une section concernant la <a href="#restrict">restriction d'accès</a>.</li>
+        <li>Ajout dans la documenation, d'une section concernant la <a href="#restrict">restriction d'accÃ¨s</a>.</li>
     </ul>
     </li>
     <li>Version 2.4.1
     <ul>
-        <li>Prise en compte du droit <i class="emphasis">smbweb_is_open</i> et interdiction d'accès si le mot de passe est toujours celui par défaut.Merci à Stéphane Boireau pour cette contribution.</li>
+        <li>Prise en compte du droit <i class="emphasis">smbweb_is_open</i> et interdiction d'accÃ¨s si le mot de passe est toujours celui par dÃ©faut.Merci Ã  StÃ©phane Boireau pour cette contribution.</li>
     </ul>
     </li>
     <li>Version 1.3
     <ul>
-        <li>Possibilité de n'autoriser <a href="#rep">l'affichage que de certains répertoires</a></li>
+        <li>PossibilitÃ© de n'autoriser <a href="#rep">l'affichage que de certains rÃ©pertoires</a></li>
     </ul>
     </li>
     <li>Version 1.2
     <ul>
         <li>Mise en majuscule des variables <i class="emphasis">se3domain</i> et <i class="emphasis">se3netbios</i></li>
-        <li>Mise en commentaire de l'option "Télécharger le dossier (comprésser)"</li>
+        <li>Mise en commentaire de l'option "TÃ©lÃ©charger le dossier (comprÃ©sser)"</li>
     </ul>
     </li>
     <li>Version 1.1
     <ul>
-        <li>Correction variable <i class="emphasis">cfgDefaultServer</i> positionnée avec la variable <i class="emphasis">se3netbios</i></li>
+        <li>Correction variable <i class="emphasis">cfgDefaultServer</i> positionnÃ©e avec la variable <i class="emphasis">se3netbios</i></li>
     </ul>
     </li>
 </ul>
 <h3>Qu'est ce que <i class="emphasis">smbwebclient</i> :</h3>
-<p><i class="emphasis">SMB Web Client</i> est un script écrit par <strong><em>Victor M. Varela</em></strong> adapté au <i class="emphasis">LCS</i>, il permet d'accéder depuis son espace perso. <i class="emphasis">LCS</i> aux partages du serveur de fichiers <i class="emphasis">SE3</i>.</p>
+<p><i class="emphasis">SMB Web Client</i> est un script Ã©crit par <strong><em>Victor M. Varela</em></strong> adaptÃ© au <i class="emphasis">LCS</i>, il permet d'accÃ©der depuis son espace perso. <i class="emphasis">LCS</i> aux partages du serveur de fichiers <i class="emphasis">SE3</i>.</p>
 
-<h3>Pour démarrer :</h3>
-<p>On vérifiera sur le serveur <i class="emphasis">SE3</i> si il est en <i class="emphasis">Samba 3</i>, la présence du fichier <tt class="filename">/etc/samba/smb_Samba.conf</tt> et la présence de la section ci-dessous dans ce même fichier.</p>
+<h3>Pour dÃ©marrer :</h3>
+<p>On vÃ©rifiera sur le serveur <i class="emphasis">SE3</i> si il est en <i class="emphasis">Samba 3</i>, la prÃ©sence du fichier <tt class="filename">/etc/samba/smb_Samba.conf</tt> et la prÃ©sence de la section ci-dessous dans ce mÃªme fichier.</p>
 <pre class="programlisting">
 [home]
         comment = Home de %u
@@ -56,24 +61,24 @@
         root preexec = /usr/share/se3/sbin/mkhome.pl %u %m; \
                        /usr/share/se3/sbin/connexion.pl %u %m %I
 </pre>
-<!--p>On vérifiera que dans le menu <tt class="computeroutput">Administration > Parametres serveur</tt> que le parametre <tt class="computeroutput">se3Ip</tt> est correctement positionné car à partir de cette version, ce parametre n'est plus optionel.</p-->
+<!--p>On vÃ©rifiera que dans le menu <tt class="computeroutput">Administration > Parametres serveur</tt> que le parametre <tt class="computeroutput">se3Ip</tt> est correctement positionnÃ© car Ã  partir de cette version, ce parametre n'est plus optionel.</p-->
 <p>Pour arriver directement sur le pdc, on pourra positionner dans <tt class="computeroutput">Administration > Parametres serveur</tt> le parametre <tt class="computeroutput">se3domain</tt> comme ceci : <tt class="computeroutput">DOMAINE/NOM_NET_BIOS</tt>.</p>
-<a name="restrict"></a><h3>Restriction d'accès au service <i class="emphasis">smbwebclient</i></h3>
-<p>Pour accéder au service smbwebclient,</p>
+<a name="restrict"></a><h3>Restriction d'accÃ¨s au service <i class="emphasis">smbwebclient</i></h3>
+<p>Pour accÃ©der au service smbwebclient,</p>
 <ul>
-    <li>L'utilisateur doit avoir changé son mot de passe par défaut;</li>
-    <li>Il doit appartenir à un groupe possédant le droit <tt class="computeroutput">smbweb_is_open</tt> ou posséder lui même ce droit.</li>
+    <li>L'utilisateur doit avoir changÃ© son mot de passe par dÃ©faut;</li>
+    <li>Il doit appartenir Ã  un groupe possÃ©dant le droit <tt class="computeroutput">smbweb_is_open</tt> ou possÃ©der lui mÃªme ce droit.</li>
 </ul>
-<p>Si le droit <tt class="computeroutput">smbweb_is_open</tt> n'existe pas dans la branche Rights, celui-ci est créé à l'installation initiale ou à la mise à jour du paquet.</p>
-<p>Lors de la création de ce droit, celui-ci est alimenté avec <tt class="computeroutput">admin</tt>, et les groupes <tt class="computeroutput">Administratifs, Profs et Eleves</tt>... dans le but de conserver l'usage existant dans la limite de la restriction du changement de mot de passe par défaut.</p>
-<a name="rep"></a><h3>Restriction d'affichage de répertoires</h3>
-<p>Le paramètre <tt class="computeroutput">shareview</tt> accessible depuis le menu <tt class="computeroutput">Administration > Parametres serveur</tt> permet de n'autoriser la visualisation que de certains répertoires du serveur de fichiers.</p>
-<p>Par défaut, ce paramètre est positionné avec <tt class="computeroutput">Docs/Classes/Progs</tt>.</p>
-<p>Ce qui autorise la visualisation dans l'arborescence que des répertoires 
+<p>Si le droit <tt class="computeroutput">smbweb_is_open</tt> n'existe pas dans la branche Rights, celui-ci est crÃ©Ã© Ã  l'installation initiale ou Ã  la mise Ã  jour du paquet.</p>
+<p>Lors de la crÃ©ation de ce droit, celui-ci est alimentÃ© avec <tt class="computeroutput">admin</tt>, et les groupes <tt class="computeroutput">Administratifs, Profs et Eleves</tt>... dans le but de conserver l'usage existant dans la limite de la restriction du changement de mot de passe par dÃ©faut.</p>
+<a name="rep"></a><h3>Restriction d'affichage de rÃ©pertoires</h3>
+<p>Le paramÃ¨tre <tt class="computeroutput">shareview</tt> accessible depuis le menu <tt class="computeroutput">Administration > Parametres serveur</tt> permet de n'autoriser la visualisation que de certains rÃ©pertoires du serveur de fichiers.</p>
+<p>Par dÃ©faut, ce paramÃ¨tre est positionnÃ© avec <tt class="computeroutput">Docs/Classes/Progs</tt>.</p>
+<p>Ce qui autorise la visualisation dans l'arborescence que des rÃ©pertoires 
 <tt class="computeroutput">Docs</tt> 
 <tt class="computeroutput">Classes</tt> 
 <tt class="computeroutput">Progs</tt> 
-l'autorisation de l'accès au répertoire <tt class="computeroutput">homes</tt> de l'utilisateur est implicite, le séparateur est <b>/</b>.
+l'autorisation de l'accÃ¨s au rÃ©pertoire <tt class="computeroutput">homes</tt> de l'utilisateur est implicite, le sÃ©parateur est <b>/</b>.
 </p>
 </body>
 </html>
