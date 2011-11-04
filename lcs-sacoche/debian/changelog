@@ -1,3 +1,9 @@
+lcs-sacoche (2.4.9~2) LCS; urgency=low
+
+  * change script sh in bash
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 04 Nov 2011 18:55:44 +0100
+
 lcs-sacoche (2.4.9~1) LCS; urgency=low
 
   * tag in 2.4.9
