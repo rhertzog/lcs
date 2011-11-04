@@ -1,3 +1,9 @@
+lcs-gedowl (2.4.9~2) unstable; urgency=low
+
+  * change script sh in bash
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 04 Nov 2011 18:29:46 +0100
+
 lcs-gedowl (2.4.9~1) unstable; urgency=low
 
   * compatibility squeeze
