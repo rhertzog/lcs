@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # postinst script for lcs-pma
 #
 # see: dh_installdeb(1)
@@ -36,7 +36,7 @@ else
     #
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #
-    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE'"`
     let MAJNBR+=1
     if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
 	echo "Pas de script de mise a jour a appliquer !"
