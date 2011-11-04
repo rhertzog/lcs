@@ -1,3 +1,9 @@
+lcs-wiki (2.4.9~1) unstable; urgency=low
+
+  * change scripts sh in bash
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 04 Nov 2011 19:14:22 +0100
+
 lcs-wiki (2.0) unstable; urgency=low
 
   * Initial Release.
