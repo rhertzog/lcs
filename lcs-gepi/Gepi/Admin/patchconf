@@ -9,6 +9,4 @@ if [ ! -e ../secure/connect.inc.php ]; then
     chown www-data:www-data ../secure/connect.inc.php install_mysql.sql
     rm ../secure/connect.inc.ph	
 fi
-
-
 echo "Fin des patches..."

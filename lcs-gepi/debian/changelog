@@ -1,3 +1,9 @@
+lcs-gepi (2.4.9~3) LCS; urgency=low
+
+  * remove config apache2 section
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 04 Nov 2011 22:51:20 +0100
+
 lcs-gepi (2.4.9~2) LCS; urgency=low
 
   * change script sh in bash
