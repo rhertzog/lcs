@@ -42,7 +42,6 @@ CHEMIN=`pwd`
     	else
 			echo "Pas de script a executer"
 		fi
-		fi
         
         #-----------------------------    
     	#Desinstallation de la base mysql
