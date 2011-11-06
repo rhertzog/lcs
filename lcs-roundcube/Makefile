@@ -15,7 +15,9 @@ install:
 
 # install roundcube
 	install -d $(DESTDIR)/usr/share/lcs/roundcube
+	cp -a roundcube/.htaccess $(DESTDIR)/usr/share/lcs/roundcube/
 	cp -a roundcube/* $(DESTDIR)/usr/share/lcs/roundcube/
+
 
 # install etc conf 
 	install -d $(DESTDIR)/etc/apache2/lcs-main
