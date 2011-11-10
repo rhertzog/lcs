@@ -1,3 +1,9 @@
+lcs-spip (2.4.9~1) Lcs; urgency=low
+
+  * Fix let bashism in postinst 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 10:34:07 +0100
+
 lcs-spip (2.4.8.2) Lcs; urgency=low
 
     * Add ecran_securite.php in config folder 
@@ -21,8 +27,6 @@ lcs-spip (2.4.8) Lcs; urgency=low
   * Remove deprecated mes_options.php in postinst
   * Remove function "accorder compte"
   * Fix bug in count import with spip
-
-  [ Prepare 2.4.8~x version ]
   * Fix rights on IMG and tmp in chown.sh
   * Update spip 2.1.10
   * Fix bug in plugin.xml for tispip_skelet_lcs and recherche_multicriteres
@@ -43,7 +47,7 @@ lcs-spip (2.4.8) Lcs; urgency=low
 
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 24 May 2011 17:52:45 +0200
 
-lcs-spip (2.4.7.1~1) Lcs; urgency=low
+lcs-spip (2.4.7.1) Lcs; urgency=low
 
   * Fix bug in right column position
   * Remove dependency on "boucles_sans_tables" 
