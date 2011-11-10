@@ -52,7 +52,7 @@ else
         while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
             echo "Application du script Maj$MAJNBR"
             $CONF/Maj/maj$MAJNBR.sh
-            let MAJNBR+=1
+            MAJNBR=$((MAJNBR+1))
 	done
         #
         # Fin de la mise à jour

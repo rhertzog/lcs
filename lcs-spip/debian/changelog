@@ -1,8 +1,8 @@
-lcs-spip (2.4.9~1) Lcs; urgency=low
+lcs-spip (2.4.9~2) Lcs; urgency=low
 
   * Fix let bashism in postinst 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 10:34:07 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 11:36:43 +0100
 
 lcs-spip (2.4.8.2) Lcs; urgency=low
 
