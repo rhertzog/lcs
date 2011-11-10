@@ -64,7 +64,7 @@ foreach $people ($peoples->entries) {
   $dn  = $people->dn;
   $uid = $people->get_value('uid');
   #next if $uid eq 'admin';
-  next if ($uid eq 'admin' or $uid eq 'webmaster.etab' or $uid eq 'wetab' or $uid eq 'spip.manager' or $uid eq 'etabw' or $uid eq 'ldapadm');  
+  next if ($uid eq 'admin' or $uid eq 'adminse3' or $uid eq 'webmaster.etab' or $uid eq 'wetab' or $uid eq 'spip.manager' or $uid eq 'etabw' or $uid eq 'ldapadm');  
   # Vérification de l'appartenance à des groupes
   # --------------------------------------------
   $memberOfAGroupOfNames = $lcs_ldap->search(base     => "$groupsDn",

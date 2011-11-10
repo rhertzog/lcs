@@ -1,11 +1,12 @@
-lcs-maintenance (2.4.8~1) unstable; urgency=low
+lcs-maintenance (2.4.9~1) UNRELEASED; urgency=low
 
   * Modification of the application display
   * Fix bug with topology display on change
   * Add function to build structure of the classrooms
   * Add statistics
+  * Fix let bashism in postinst
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 17:22:20 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 13:47:26 +0100
 
 lcs-maintenance (2.4.7) unstable; urgency=low
 

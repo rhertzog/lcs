@@ -1,8 +1,9 @@
-lcs-smbwebclient (2.4.9~1) Lcs; urgency=low
+lcs-smbwebclient (2.4.9~2) Lcs; urgency=low
 
   * Modify charset in doc-html/index.html
+  * Fix let bashism in postinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 04 Nov 2011 10:32:35 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 13:46:49 +0100
 
 lcs-smbwebclient (2.4.6.2) Lcs; urgency=low
 
