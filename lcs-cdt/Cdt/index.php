@@ -3,7 +3,7 @@
 /* ==================================================
   Projet LCS : Linux Communication Server
   Plugin "cahier de textes"
-  VERSION 2.3 du 06/01/2011
+  VERSION 2.3 du 15/11/2011
   par philippe LECLERC
   philippe.leclerc1@ac-caen.fr
   - script de redirection -
@@ -99,8 +99,9 @@ elseif (isset($_GET['cl1'])) {
                 $Kl = $_SESSION['saclasse'][$x];
                 # Enregistrement dans la table statusages
                 #
-                $result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')", $authlink);
-
+                #$result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')", $authlink);
+                $query="INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')";
+                $result=@mysql_query($query, $authlink);
                 #
             }
             }
@@ -115,7 +116,9 @@ elseif (isset($_GET['cl1'])) {
                 $Kl = $_SESSION['saclasse'][$x];
                 # Enregistrement dans la table statusages
                 #
-                $result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')", $authlink);
+                #$result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')", $authlink);
+                $query="INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')";
+                 $result=@mysql_query($query, $authlink);
                 break;
                 #
             }
