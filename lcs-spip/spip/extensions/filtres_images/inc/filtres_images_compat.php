@@ -9,6 +9,8 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 /**
  * Ce fichier ne sert pas
  * Il est maintenu pour assurer la compatibilite des anciens scripts avec les anciens nommages de fonction

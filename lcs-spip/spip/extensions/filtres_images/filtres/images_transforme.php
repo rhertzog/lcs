@@ -9,6 +9,8 @@
  *  Pour plus de details voir le fichier COPYING.txt ou l'aide en ligne.   *
 \***************************************************************************/
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 /**
  * Toutes les fonctions image_xx de ce fichier :
  * 	- prennent une image en entree
@@ -1212,26 +1214,17 @@ function image_rotation($im, $angle, $crop=false)
 	if ($creer) {
 		$effectuer_gd = true;
 
-		if (function_exists('imagick_rotate')) {
-			$mask = imagick_getcanvas( "#ff0000", $x, $y );
-			$handle = imagick_readimage ($im);
-			if ($handle && imagick_isopaqueimage( $handle )) {
-				imagick_rotate( $handle, $angle);
-				imagick_writeimage( $handle, $dest);
-				$effectuer_gd = false;
-			}
-		}
-		elseif(is_callable(array('Imagick','rotateImage'))){
+		if(is_callable(array('Imagick','rotateImage'))){
 			$imagick = new Imagick();
 			$imagick->readImage($im);
-			$imagick->rotateImage(new ImagickPixel('#ffffff'), $angle);
+			$imagick->rotateImage(new ImagickPixel('none'), $angle);
 			$imagick->writeImage($dest);
 			$effectuer_gd = false;
 		}
 		else if ($GLOBALS['meta']['image_process'] == "convert") {
 			if (_CONVERT_COMMAND!='') {
 				@define ('_CONVERT_COMMAND', 'convert');
-				@define ('_ROTATE_COMMAND', _CONVERT_COMMAND.' -rotate %t %src %dest');
+				@define ('_ROTATE_COMMAND', _CONVERT_COMMAND.' -background none -rotate %t %src %dest');
 			} else
 				@define ('_ROTATE_COMMAND', '');
 			if (_ROTATE_COMMAND!=='') {
@@ -1247,6 +1240,17 @@ function image_rotation($im, $angle, $crop=false)
 				exec($commande);
 				if (file_exists($dest)) // precaution
 					$effectuer_gd = false;
+			}
+		}
+		// cette variante genere-t-elle un fond transparent
+		// dans les coins vide issus de la rotation ?
+		elseif (function_exists('imagick_rotate')) {
+			$handle = imagick_readimage ($im);
+			if ($handle && imagick_isopaqueimage( $handle )) {
+				imagick_setfillcolor($handle, 'transparent');
+				imagick_rotate( $handle, $angle);
+				imagick_writeimage( $handle, $dest);
+				$effectuer_gd = false;
 			}
 		}
 		if ($effectuer_gd) {

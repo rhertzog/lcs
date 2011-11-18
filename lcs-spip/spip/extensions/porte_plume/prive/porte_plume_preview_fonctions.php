@@ -1,5 +1,7 @@
 <?php
 
+if (!defined("_ECRIRE_INC_VERSION")) return;
+
 // retourner le charset SQL si on le connait, en priorite
 // sinon, on utilise le charset de l'affichage HTML.
 // Cependant, on peut forcer un charset donne avec une constante :

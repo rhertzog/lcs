@@ -11,6 +11,8 @@
 \***************************************************************************/
 
 
+if (!defined('_ECRIRE_INC_VERSION')) return;
+
 // http://doc.spip.org/@install_etape_ldap3_dist
 function install_etape_ldap3_dist()
 {
@@ -35,7 +37,7 @@ function install_etape_ldap3_dist()
 		@ldap_close($ldap_link);
 	}
 	
-	$checked = false;
+	$checked = defined('_INSTALL_BASE_LDAP');
 	$res = '';
 	if (is_array($info) AND $info["count"] > 0) {
 		$res .= "<p>"._T('info_selection_chemin_acces')."</p>";
@@ -60,7 +62,7 @@ function install_etape_ldap3_dist()
 		$res .= _T('info_ou')." ";
 	}
 	$res .= "<br />\n<input name=\"base_ldap\" value=\"\" type='radio' id='manuel'";
-	if (!$checked) {
+	if (!$checked OR defined('_INSTALL_BASE_LDAP')) {
 		$res .= " checked=\"checked\"";
 		$checked = true;
 	}

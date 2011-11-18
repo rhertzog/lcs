@@ -1,8 +1,10 @@
-lcs-spip (2.4.9~2) Lcs; urgency=low
+lcs-spip (2.4.9~3) Lcs; urgency=low
 
-  * Fix let bashism in postinst 
+  * Fix let bashism in postinst
+  * update ecran_securite.php 1.0.6
+  * Update spip 2.1.12
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 11:36:43 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Nov 2011 14:09:49 +0100
 
 lcs-spip (2.4.8.2) Lcs; urgency=low
 

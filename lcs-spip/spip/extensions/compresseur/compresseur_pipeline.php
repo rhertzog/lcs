@@ -1,5 +1,7 @@
 <?php
 
+if (!defined("_ECRIRE_INC_VERSION")) return;
+
 function compresseur_header_prive($flux){
 	include_spip('filtres/compresseur');
 	return compacte_head($flux);

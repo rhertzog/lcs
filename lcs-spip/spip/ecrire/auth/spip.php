@@ -18,6 +18,8 @@ function auth_spip_dist ($login, $pass, $serveur='') {
 
 	// retrouver le login
 	$login = auth_spip_retrouver_login($login);
+	// login inconnu, n'allons pas plus loin
+	if (!$login) return array();
 
 	$md5pass = $md5next = "";
 	$shapass = $shanext = "";
@@ -127,7 +129,7 @@ function auth_spip_autoriser_modifier_login($serveur=''){
  */
 function auth_spip_verifier_login($new_login, $id_auteur=0, $serveur=''){
 	// login et mot de passe
-	if (strlen($login)){
+	if (strlen($new_login)){
 		if (strlen($new_login) < _LOGIN_TROP_COURT)
 			return 'info_login_trop_court';
 		else {
@@ -179,6 +181,7 @@ function auth_spip_modifier_login($new_login, $id_auteur, $serveur=''){
  * @return string
  */
 function auth_spip_retrouver_login($login, $serveur=''){
+	if (!strlen($login)) return null; // pas la peine de requeter
 	$l = sql_quote($login);
 	if ($r = sql_getfetsel('login', 'spip_auteurs',
 			"statut<>'5poubelle'" .

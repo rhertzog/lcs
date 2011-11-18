@@ -1,5 +1,7 @@
 <?php
 
+if (!defined("_ECRIRE_INC_VERSION")) return;
+
 /**
  * Retourne la definition de la barre markitup designee.
  * (cette declaration est au format json)

@@ -117,8 +117,8 @@ function _image_valeurs_trans($img, $effet, $forcer_format = false, $fonction_cr
 	}
 
 	$terminaison_dest = "";
-	if (preg_match(",^(?>.*)(?<=\.(gif|jpg|png)),", $fichier, $regs)) {
-		$terminaison = $regs[1];
+	if (preg_match(",\.(gif|jpe?g|png)($|[?]),i", $fichier, $regs)) {
+		$terminaison = strtolower($regs[1]);
 		$terminaison_dest = $terminaison;
 		
 		if ($terminaison == "gif") $terminaison_dest = "png";
@@ -130,7 +130,7 @@ function _image_valeurs_trans($img, $effet, $forcer_format = false, $fonction_cr
 	$term_fonction = $terminaison;
 	if ($term_fonction == "jpg") $term_fonction = "jpeg";
 
-	$nom_fichier = substr($fichier, 0, strlen($fichier) - 4);
+	$nom_fichier = substr($fichier, 0, strlen($fichier) - (strlen($terminaison) + 1));
 	$fichier_dest = $nom_fichier;
 
 	if (@file_exists($f = $fichier)){
@@ -225,7 +225,7 @@ function _image_valeurs_trans($img, $effet, $forcer_format = false, $fonction_cr
 	$ret["fichier"] = $fichier;
 	$ret["fonction_image"] = "_image_image".$terminaison_dest;
 	$ret["fichier_dest"] = $fichier_dest;
-	$ret["format_source"] = $terminaison;
+	$ret["format_source"] = ($terminaison != 'jpeg' ? $terminaison : 'jpg');
 	$ret["format_dest"] = $terminaison_dest;
 	$ret["date_src"] = $date_src;
 	$ret["creer"] = $creer;

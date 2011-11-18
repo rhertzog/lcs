@@ -473,8 +473,9 @@ function PtoBR($texte){
 }
 
 // Couper les "mots" de plus de $l caracteres (souvent des URLs)
+// en mettant des espaces (par defaut, soft hyphen &#173: = &shy;)
 // http://doc.spip.org/@lignes_longues
-function lignes_longues($texte, $l = 70) {
+function lignes_longues($texte, $l = 70, $espace='&#173;') {
 	if ($l<1) return $texte;
 	if (!preg_match("/[\w,\/.]{".$l."}/UmsS", $texte))
 		return $texte;
@@ -499,7 +500,7 @@ function lignes_longues($texte, $l = 70) {
 	// note : on pourrait preferer couper sur les / , etc.
 	if (preg_match_all("/[\w,\/.]{".$l."}/UmsS", $texte, $longs, PREG_SET_ORDER)) {
 		foreach ($longs as $long) {
-			$texte = str_replace($long[0], $long[0].' ', $texte);
+			$texte = str_replace($long[0], $long[0].$espace, $texte);
 		}
 	}
 
@@ -1141,7 +1142,7 @@ function date_fin_semaine($annee, $mois, $jour) {
 // http://doc.spip.org/@agenda_connu
 function agenda_connu($type)
 {
-  return in_array($type, array('jour','mois','semaine','periode')) ? ' ' : '';
+  return in_array($type, array('jour','mois','semaine','periode', 'trimestre')) ? ' ' : '';
 }
 
 
@@ -1218,7 +1219,9 @@ function agenda_periode($type, $nb, $avec, $sans='')
 		$evt = array($sans, $avec, $min, $max);
 		$type = 'mois';
 	}
-	return http_calendrier_init($start, $type,  _request('echelle'), _request('partie_cal'), self('&'), $evt);
+	$ancre = _request('ancre');
+	$s =  self('&') . (preg_match('/^[\w-]+$/', $ancre) ? "#$ancre" : '');
+	return http_calendrier_init($start, $type,  _request('echelle'), _request('partie_cal'), $s, $evt);
 }
 
 
@@ -1229,7 +1232,7 @@ function agenda_controle($date='date', $jour='jour', $mois='mois', $annee='annee
 	$jour = _request($jour);
 	$mois = _request($mois);
 	$annee = _request($annee);
-	
+
 	if (!($jour||$mois||$anne)) {
 		if ($date = recup_date(_request($date))) {
 			list($annee, $mois, $jour ) = $date;
@@ -1600,6 +1603,10 @@ function modulo($nb, $mod, $add=0) {
 //  retourne false ou la  normalisation de la derniere adresse donnee
 // http://doc.spip.org/@email_valide
 function email_valide($adresses) {
+	// eviter d'injecter n'importe quoi dans preg_match
+	if (!is_string($adresses))
+		return false;
+
 	// Si c'est un spammeur autant arreter tout de suite
 	if (preg_match(",[\n\r].*(MIME|multipart|Content-),i", $adresses)) {
 		spip_log("Tentative d'injection de mail : $adresses");
@@ -2304,7 +2311,12 @@ function filtre_info_plugin_dist($plugin, $type_info) {
 		return $plugins_actifs[$plugin][$type_info];
 	else {
 		$get_infos = charger_fonction('get_infos','plugins');
-		if (!$infos = $get_infos($plugins_actifs[$plugin]['dir']))
+		// On prend en compte les extensions
+		if (!is_dir($plugins_actifs[$plugin]['dir_type']))
+			$dir_plugins = constant($plugins_actifs[$plugin]['dir_type']);
+		else
+			$dir_plugins = $plugins_actifs[$plugin]['dir_type'];
+		if (!$infos = $get_infos($plugins_actifs[$plugin]['dir'], false, $dir_plugins))
 			return '';
 		if ($type_info == 'tout')
 			return $infos;
