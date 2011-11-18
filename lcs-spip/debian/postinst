@@ -117,6 +117,14 @@ Alias /$MODULE/ /usr/share/lcs/$MODULE/
 EOF
       /etc/init.d/apache2 reload > /dev/null 2>&1
     fi
+	#
+	# Cleaning spip/tmp
+	#
+	cd /usr/share/lcs/spip/tmp
+	mv sessions /tmp/
+	rm -Rf /usr/share/lcs/spip/tmp/* > /dev/null 2>&1
+	mv /tmp/sessions .
+	echo "deny from all" >> /usr/share/lcs/spip/tmp/.htaccess
     #
     # Mise en place du lien symbolique vers la documentation
     #
