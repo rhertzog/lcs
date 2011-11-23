@@ -1,0 +1,67 @@
+#! /bin/bash
+# preinst script for LCS claro
+
+set -e
+case "$1" in
+install)
+#
+#duplication du plugin si migration
+#
+Test_Plugin=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='Claroline';"` 
+Test_Module=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='claro';"` 
+if [ "$Test_Module" != "N" ] && [ "$Test_Plugin" = "P" ]; then 
+#
+echo " Duplication de l'application installee"
+echo "1.Duplication des fichiers" 
+if [ -e /usr/share/lcs/Plugins/Claroline ]; 
+then 
+rm -rf /usr/share/lcs/Plugins/Claro
+cp -ar /usr/share/lcs/Plugins/Claroline /usr/share/lcs/Plugins/Claro 
+else 
+echo "Duplication impossible" 
+exit 1 
+fi 
+# duplication bdd
+nb_cours=`mysql -se "SELECT count( * ) FROM claroline_db.cl_cours  WHERE 1 ;"`
+duree=$(( $nb_cours / 15 +1 ))
+echo "2.Duplication de la base de donnees. SOYEZ PATIENT ! temps estime : $duree minute(s)" 
+Pass_sql=`cat /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php | grep "dbPass'" | cut -d "'" -f4` 
+#suppression eventuelle d'une bdd existante
+bbd_exist=`mysql -se "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA where SCHEMA_NAME='claro_plug';"`
+if [ "$bbd_exist" = "claro_plug" ]; then
+mysql -e "DROP DATABASE claro_plug;" 
+fi
+#creation bdd
+mysql -e "create DATABASE claro_plug;" 
+mysqldump --lock-tables=false claroline_db | mysql -C claro_plug 
+mysql -e "GRANT SELECT,UPDATE,DELETE,INSERT,ALTER,CREATE,DROP,INDEX,CREATE TEMPORARY TABLEs,LOCK TABLES ON claro_plug.* TO claro_user@localhost IDENTIFIED BY '$Pass_sql'; "
+sed -i "s/claroline_db/claro_plug/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
+sed -i "s/claroline_usr/claro_user/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
+sed -i "s#/Claroline#/Claro#g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
+echo "MISE A JOUR DE LA PLATEFORME EN VERSION 1.9"
+PATH2PLUGIN="/usr/share/lcs/Plugins/Claro"
+cd $PATH2PLUGIN
+echo "Telechargement de la version 1.9"
+wget ftp://debian.crdp.ac-caen.fr/debian/claro1_9.tgz 
+tar xzf claro1_9.tgz
+chown 33:33 -R $PATH2PLUGIN
+cd claroline/admin/upgrade/
+php -f my_upgrade_to_1_9.php
+cd $PATH2PLUGIN
+cat platform/currentVersion.inc.php | grep 'ersion'
+#exit 1
+fi
+ ;;
+ abort-upgrade)
+ ;;
+ upgrade)
+ ;;
+*)
+echo "preinst called with unknown argument \`$1'" >&2
+exit 1
+;;
+esac
+exit 0
+
+
+

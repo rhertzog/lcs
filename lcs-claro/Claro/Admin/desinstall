@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Script de desinstallation du Module  Claroline";
+mysqladmin reload

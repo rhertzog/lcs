@@ -1,0 +1,24 @@
+#!/bin/bash
+echo "Mise a jour de Claroline en version 1.8.6";
+PATH2PLUGIN="/usr/share/lcs/Plugins/Claroline"
+
+# Activation du mode Lcs - a faire a chaque fois
+mv $PATH2PLUGIN/claroline/auth/extauth/lcs/lcs.inc.php.dist $PATH2PLUGIN/claroline/auth/extauth/lcs/lcs.inc.php
+
+# Patchage de auth.drivers.conf.php
+mv $PATH2PLUGIN/platform/conf/auth.drivers.conf.php $PATH2PLUGIN/platform/conf/auth.drivers.conf.php.ori
+cat $PATH2PLUGIN/platform/conf/auth.drivers.conf.php.ori | sed -e "s/drivers\/lcs/lcs\/lcs/g" > $PATH2PLUGIN/platform/conf/auth.drivers.conf.php
+chmod 755 $PATH2PLUGIN/platform/conf/auth.drivers.conf.php
+
+# auth.extra.conf.php
+mv $PATH2PLUGIN/platform/conf/auth.extra.conf.php $PATH2PLUGIN/platform/conf/auth.extra.conf.php.old
+head -n -1 $PATH2PLUGIN/platform/conf/auth.extra.conf.php.old > $PATH2PLUGIN/platform/conf/auth.extra.conf.php
+echo "\$GLOBALS['claro_extauth_sso_system'] = 'lcs';" >> $PATH2PLUGIN/platform/conf/auth.extra.conf.php
+echo "?>" >> $PATH2PLUGIN/platform/conf/auth.extra.conf.php
+
+# creation de auth.lcs.conf.php
+echo "<?" > $PATH2PLUGIN/platform/conf/auth.lcs.conf.php
+echo "\$GLOBALS['claro_LcsEnabled'] = true;" >> $PATH2PLUGIN/platform/conf/auth.lcs.conf.php
+echo "?>" >> $PATH2PLUGIN/platform/conf/auth.lcs.conf.php
+
+exit 0;

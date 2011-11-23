@@ -1,0 +1,17 @@
+#!/bin/bash
+rep_courant=`pwd` 
+PATH2PLUGIN="/usr/share/lcs/Plugins/Claro"
+cd $PATH2PLUGIN
+rm -f index.html
+tar -xzf platform.tgz platform/conf/auth.cas.conf.php.dist platform/conf/auth.extra.conf.php platform/conf/auth.sso.conf.php.dist 
+cd $PATH2PLUGIN/Admin
+URL=`hostname -f`
+echo "Mise en pace de la configuration CAS"
+cat ../platform/conf/auth.cas.conf.php.dist | sed -e "s/#URL#/$URL/g" > ../platform/conf/auth.cas.conf.php
+echo "Mise en pace de la configuration SSO"
+cat ../platform/conf/auth.sso.conf.php.dist | sed -e "s/#URL#/$URL/g" > ../platform/conf/auth.sso.conf.php
+chown www-data:www-data ../platform/conf/claro_main.conf.php install_mysql.sql ../platform/conf/auth.cas.conf.php ../platform/conf/auth.sso.conf.php
+echo "MISE A JOUR DE LA PLATEFORME EN VERSION 1.10"
+cd $PATH2PLUGIN/claroline/admin/upgrade/
+php -f my_upgrade_to_1_10.php
+cd $rep_courant

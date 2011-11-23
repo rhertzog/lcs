@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+#### Variable a positionner en fonction du module
+NAMEPLUGIN="Claro"
+####
+#
+PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
+echo "Script d'installation du plugin Claroline";
+chown -R www-data.www-data $PATH2PLUGIN
+chmod -R 755 $PATH2PLUGIN
+/bin/rm -r $PATH2PLUGIN/claroline/install
+
+# Installation de l'editeur d'equation
+cp $PATH2PLUGIN/claroline/inc/lib/mimetex/mimetex.linux /usr/lib/cgi-bin/mimetex.cgi
+chmod 755 /usr/lib/cgi-bin/mimetex.cgi
+
+#
+# Nettoyage
+#
+rm $PATH2PLUGIN/Admin/install_mysql.sql
+mv $PATH2PLUGIN/Admin/install_mysql.sq $PATH2PLUGIN/Admin/install_mysql.sql
+
+mysqladmin reload

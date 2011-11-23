@@ -1,0 +1,24 @@
+#!/bin/bash
+
+PATH2PLUGIN="/usr/share/lcs/Plugins/Claro"
+URL=`hostname -f`
+# claro_main_conf
+if [ ! -e ../platform/conf/claro_main.conf.php ]; then
+    tar -zxf $PATH2PLUGIN/platform.tgz -C $PATH2PLUGIN
+    pass=`pwgen -1`
+    DOMAIN=`hostname -d`
+    PLID=`date | md5sum | cut -d" " -f1`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#DBPWD#/$pass/g" | sed -e "s/#DOMAIN#/$DOMAIN/g"  > install_mysql.sql
+    echo "Patch du fichier config.inc.php..."
+    cat ../platform/conf/claro_main.conf.php.dist | sed -e "s/#URL#/$URL/g" | sed -e "s/#DBPWD#/$pass/g" | sed -e "s/#DOMAIN#/$DOMAIN/g" | sed -e "s/#PLID#/$PLID/g"  > ../platform/conf/claro_main.conf.php
+    echo "Patch du fichier de configuration CAS"
+    cat ../platform/conf/auth.cas.conf.php.dist | sed -e "s/#URL#/$URL/g" > ../platform/conf/auth.cas.conf.php
+    echo "Patch du fichier  de configuration SSO"
+    cat ../platform/conf/auth.sso.conf.php.dist | sed -e "s/#URL#/$URL/g" > ../platform/conf/auth.sso.conf.php
+    chown www-data:www-data ../platform/conf/claro_main.conf.php install_mysql.sql ../platform/conf/auth.cas.conf.php ../platform/conf/auth.sso.conf.php
+fi
+
+
+echo "Fin des patches..."
