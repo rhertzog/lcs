@@ -49,7 +49,6 @@ cd claroline/admin/upgrade/
 php -f my_upgrade_to_1_9.php
 cd $PATH2PLUGIN
 cat platform/currentVersion.inc.php | grep 'ersion'
-#exit 1
 fi
  ;;
  abort-upgrade)

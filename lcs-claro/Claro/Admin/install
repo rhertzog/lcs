@@ -5,7 +5,7 @@ NAMEPLUGIN="Claro"
 ####
 #
 PATH2PLUGIN="/usr/share/lcs/Plugins/$NAMEPLUGIN"
-echo "Script d'installation du plugin Claroline";
+echo "Script d'installation du module Claroline";
 chown -R www-data.www-data $PATH2PLUGIN
 chmod -R 755 $PATH2PLUGIN
 /bin/rm -r $PATH2PLUGIN/claroline/install

@@ -42,18 +42,7 @@ CHEMIN=`pwd`
     	else
 			echo "Pas de script a executer"
 		fi
-		#
-		#Suppression d'entrée dans l'annuaire ldap
-        #
-        if [ -e $PATHPLUG/Admin/desinstall_ldap.ldif ]; then
-    		echo "Suppression des entrees dans l'annuaire ldap"
-    		#recuperation des parametres LDAP
-			PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    		ldapmodify -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/desinstall_ldap.ldif
-    	else
-			echo "Pas d entrees LDAP a supprimer"
-		fi
-        
+
         #-----------------------------    
     	#Desinstallation de la base mysql
     	#-----------------------------
