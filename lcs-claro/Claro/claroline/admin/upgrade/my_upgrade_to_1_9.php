@@ -514,7 +514,7 @@ switch ( $display )
 if ( $nbError == 0 )
         {
         $new_version_branch = '';
-        require 'upgrade_init_global.inc.php';
+        require_once 'upgrade_init_global.inc.php';
         /*
  * Initialize version variables
  */
@@ -884,7 +884,7 @@ if ( isset($_REQUEST['upgradeCoursesError']) )
         {
          $new_version_branch = '';
          $patternVarVersion = '/^1.9/'; 
-         require 'upgrade_init_global.inc.php';
+         require_once 'upgrade_init_global.inc.php';
          /*
  * Initialize version variables
  */

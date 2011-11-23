@@ -2,12 +2,12 @@
 # Config Apache
 if [ -e /etc/apache2 ] ; then 
 #
-echo "<Directory /usr/share/lcs/Plugins/Claroline>" >> /etc/apache2/lcs-main/73_claro.conf 
+echo "<Directory /usr/share/lcs/Plugins/Claro>" >> /etc/apache2/lcs-main/73_claro.conf 
 echo "AddDefaultCharset UTF-8">>/etc/apache2/lcs-main/73_claro.conf
 echo "</Directory>" >> /etc/apache2/lcs-main/73_claro.conf
 #
 # Redemarrage apache2
 #
 echo "Apache2 sera redemarre dans une minute" 
-at now +1 minutes < /usr/share/lcs/Plugins/Claroline/Admin/jobat2
+at now +1 minutes < /usr/share/lcs/Plugins/Claro/Admin/jobat2
 fi

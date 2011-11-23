@@ -555,7 +555,7 @@ switch ( $display )
     if ( $nbError == 0 )
         {
         $new_version_branch = '';
-        require 'upgrade_init_global.inc.php';
+        require_once 'upgrade_init_global.inc.php';
         require_once $includePath . '/lib/module/manage.lib.php';
 
 /*
@@ -985,7 +985,7 @@ if ( isset($_REQUEST['upgradeCoursesError']) )
         $new_version_branch = '';
         $patternVarVersion = '/^1.10/';
         // Initialise Upgrade
-        require 'upgrade_init_global.inc.php';
+        require_once 'upgrade_init_global.inc.php';
          
 
 /*
