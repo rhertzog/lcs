@@ -33,7 +33,8 @@ mysql -e "DROP DATABASE claro_plug;"
 fi
 #creation bdd
 mysql -e "create DATABASE claro_plug;" 
-mysqldump --lock-tables=false claroline_db | mysql -C claro_plug 
+#mysqldump --lock-tables=false claroline_db | mysql -C claro_plug 
+mysqldump  --quick --single-transaction --add-locks claroline_db | mysql -C claro_plug
 mysql -e "GRANT SELECT,UPDATE,DELETE,INSERT,ALTER,CREATE,DROP,INDEX,CREATE TEMPORARY TABLEs,LOCK TABLES ON claro_plug.* TO claro_user@localhost IDENTIFIED BY '$Pass_sql'; "
 sed -i "s/claroline_db/claro_plug/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
 sed -i "s/claroline_usr/claro_user/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
@@ -42,7 +43,7 @@ echo "MISE A JOUR DE LA PLATEFORME EN VERSION 1.9"
 PATH2PLUGIN="/usr/share/lcs/Plugins/Claro"
 cd $PATH2PLUGIN
 echo "Telechargement de la version 1.9"
-wget ftp://debian.crdp.ac-caen.fr/debian/claro1_9.tgz 
+wget -q --cache=off ftp://debian.crdp.ac-caen.fr/debian/claro1_9.tgz 
 tar xzf claro1_9.tgz
 chown 33:33 -R $PATH2PLUGIN
 cd claroline/admin/upgrade/

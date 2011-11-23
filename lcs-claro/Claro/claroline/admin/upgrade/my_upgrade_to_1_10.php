@@ -246,7 +246,7 @@ switch ($display)
 if ( !$error )
     {
     
-    require_once 'upgrade_init_global.inc.php';
+    //require_once 'upgrade_init_global.inc.php';
     require_once $includePath . '/lib/module/manage.lib.php';
 /*
  * Initialize version variables
@@ -262,7 +262,7 @@ $this_new_version = get_new_version();
 $new_version = $this_new_version['complete'];
 $new_version_branch = $this_new_version['branch'];
 // Define display
-DEFINE('DISPLAY_WELCOME_PANEL', 1);
+//DEFINE('DISPLAY_WELCOME_PANEL', 1);
 DEFINE('DISPLAY_RESULT_PANEL',  2);
 /*=====================================================================
   Main Section
@@ -555,7 +555,7 @@ switch ( $display )
     if ( $nbError == 0 )
         {
         $new_version_branch = '';
-        require_once 'upgrade_init_global.inc.php';
+       // require_once 'upgrade_init_global.inc.php';
         require_once $includePath . '/lib/module/manage.lib.php';
 
 /*
@@ -589,8 +589,8 @@ $tbl_course_tool       = $tbl_mdb_names['tool'];
  * Using __LINE__ to have an arbitrary value
  */
 
-DEFINE ('DISPLAY_WELCOME_PANEL', __LINE__ );
-DEFINE ('DISPLAY_RESULT_PANEL', __LINE__);
+//DEFINE ('DISPLAY_WELCOME_PANEL', __LINE__ );
+//DEFINE ('DISPLAY_RESULT_PANEL', __LINE__);
 $display = DISPLAY_RESULT_PANEL;
 // Get start time
 $mtime = microtime();
@@ -985,7 +985,7 @@ if ( isset($_REQUEST['upgradeCoursesError']) )
         $new_version_branch = '';
         $patternVarVersion = '/^1.10/';
         // Initialise Upgrade
-        require_once 'upgrade_init_global.inc.php';
+        //require_once 'upgrade_init_global.inc.php';
          
 
 /*

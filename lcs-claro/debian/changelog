@@ -1,3 +1,9 @@
+lcs-claro (2.4.8~2) unstable; urgency=low
+
+  * modif for squeeze and --add-lock option for mysqldump
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 23 Nov 2011 21:19:27 +0100
+
 lcs-claro (2.4.8~1) unstable; urgency=low
 
   * Initial Release.
