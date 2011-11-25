@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.9~3) Lcs; urgency=low
+lcs-roundcube (2.4.9~4) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
@@ -7,5 +7,7 @@ lcs-roundcube (2.4.9~3) Lcs; urgency=low
   * Add CAS authentication plugin
   * Fix $rcmail_config['mail_domain'] to %d in main.inc.php.dist
   * Fix path to cas config in lcs-roundcube-config
+  * Move logs in /var/log/lcs/roundcube
+  * Hide button logout
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 06 Nov 2011 17:00:56 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Nov 2011 17:33:49 +0100
