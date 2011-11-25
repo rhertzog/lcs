@@ -17,6 +17,7 @@ install:
 
 # install lightsquid 
 	install -d $(DESTDIR)/usr/share/lcs/lightsquid
+	cp -a lightsquid/.htaccess $(DESTDIR)/usr/share/lcs/lightsquid/
 	cp -a lightsquid/* $(DESTDIR)/usr/share/lcs/lightsquid/
 
 # install lightsquid menu

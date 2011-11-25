@@ -1,7 +1,8 @@
-lcs-lightsquid (2.4.9~7) Lcs; urgency=low
+lcs-lightsquid (2.4.9) Lcs; urgency=low
 
   * Initial release.
   * Change lcs_is_admin to systeme_is_admin in 40lightsquid.inc
   * Change isAdmin to isRight in all cgi
+  * Modify Makefile for .htaccess
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 06 Oct 2011 12:04:58 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Nov 2011 09:42:16 +0100
