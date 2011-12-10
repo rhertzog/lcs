@@ -35,6 +35,7 @@ fi
 mysql -e "create DATABASE claro_plug;" 
 #mysqldump --lock-tables=false claroline_db | mysql -C claro_plug 
 mysqldump  --quick --single-transaction --add-locks claroline_db | mysql -C claro_plug
+mysql -e  "UPDATE claro_plug.cl_cours SET versionDb = '1.8', versionClaro = '1.8.11' WHERE versionDb = '';"
 mysql -e "GRANT SELECT,UPDATE,DELETE,INSERT,ALTER,CREATE,DROP,INDEX,CREATE TEMPORARY TABLEs,LOCK TABLES ON claro_plug.* TO claro_user@localhost IDENTIFIED BY '$Pass_sql'; "
 sed -i "s/claroline_db/claro_plug/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php
 sed -i "s/claroline_usr/claro_user/g" /usr/share/lcs/Plugins/Claro/platform/conf/claro_main.conf.php

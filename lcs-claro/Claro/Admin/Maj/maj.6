@@ -15,3 +15,6 @@ echo "MISE A JOUR DE LA PLATEFORME EN VERSION 1.10"
 cd $PATH2PLUGIN/claroline/admin/upgrade/
 php -f my_upgrade_to_1_10.php
 cd $rep_courant
+if [  -e /usr/share/lcs/desktop ]; then
+sed -i "s/use=Claroline/use=claro/g" /home/*/Profile/*.json
+fi
