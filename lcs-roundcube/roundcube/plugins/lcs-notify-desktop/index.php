@@ -3,7 +3,7 @@ $IDPERS=0;$LOGIN="";
 if (! empty($_COOKIE["LCSAuth"])) { 
 	$SESS=$_COOKIE["LCSAuth"];
 
-	include ("/usr/share/lcs/roundcube/plugins/lcs_authentication/config.inc.php");
+	include ("/usr/share/lcs/roundcube/plugins/lcs_authentication/config_auth_lcs.inc.php");
 	# Search idpers
 	$IDPERS=exec ("mysql -e \"SELECT idpers from $DBAUTH.sessions where sess='$SESS'\" -u $USERAUTH -p$PASSAUTH");
 

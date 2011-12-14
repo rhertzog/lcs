@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.9~5) Lcs; urgency=low
+lcs-roundcube (2.4.9~6) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
@@ -9,5 +9,6 @@ lcs-roundcube (2.4.9~5) Lcs; urgency=low
   * Fix path to cas config in lcs-roundcube-config
   * Move logs in /var/log/lcs/roundcube
   * Hide button logout
+  * Fix path in lcs-notify-desktop plugin
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 08 Dec 2011 11:06:26 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 14 Dec 2011 16:25:41 +0100
