@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS sacoche_parametre;
 
 CREATE TABLE sacoche_parametre (
-	parametre_nom    VARCHAR(25)  COLLATE utf8_unicode_ci NOT NULL DEFAULT "",
+	parametre_nom    VARCHAR(30)  COLLATE utf8_unicode_ci NOT NULL DEFAULT "",
 	parametre_valeur VARCHAR(150) COLLATE utf8_unicode_ci NOT NULL DEFAULT "",
 	PRIMARY KEY (parametre_nom)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
@@ -32,6 +32,7 @@ INSERT INTO sacoche_parametre VALUES
 ( "droit_validation_pilier"        , "directeur,profprincipal" ),
 ( "droit_annulation_pilier"        , "directeur,aucunprof" ),
 ( "droit_voir_referentiels"        , "directeur,professeur,parent,eleve" ),
+( "droit_voir_grilles_items"       , "directeur,professeur,parent,eleve" ),
 ( "droit_voir_score_bilan"         , "directeur,professeur,parent,eleve" ),
 ( "droit_voir_algorithme"          , "directeur,professeur,parent,eleve" ),
 ( "droit_bilan_moyenne_score"      , "parent,eleve" ),

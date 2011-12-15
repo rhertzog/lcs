@@ -36,7 +36,7 @@ $TITRE = "Gérer ses groupes de besoin";
 
 <hr />
 
-<form action="" method="post">
+<form action="#" method="post">
 	<table class="form">
 		<thead>
 			<tr>
@@ -48,7 +48,7 @@ $TITRE = "Gérer ses groupes de besoin";
 		<tbody>
 			<?php
 			// Lister les groupes de besoin du prof dont il est propriétaire
-			$DB_TAB = DB_STRUCTURE_lister_groupes_besoins($_SESSION['USER_ID'],TRUE /* is_proprio */);
+			$DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_groupes_besoins($_SESSION['USER_ID'],TRUE /* is_proprio */);
 			foreach($DB_TAB as $DB_ROW)
 			{
 				// Afficher une ligne du tableau
@@ -77,7 +77,7 @@ $tab_niveau_groupe = array();
 $tab_eleve         = array();
 $tab_prof          = array();
 // Lister les groupes de besoin du prof dont il n'est pas propriétaire
-$DB_TAB = DB_STRUCTURE_lister_groupes_besoins($_SESSION['USER_ID'],FALSE /* is_proprio */);
+$DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_groupes_besoins($_SESSION['USER_ID'],FALSE /* is_proprio */);
 foreach($DB_TAB as $DB_ROW)
 {
 	$tab_niveau_groupe[$DB_ROW['niveau_id']][$DB_ROW['groupe_id']] = html($DB_ROW['groupe_nom']);
@@ -88,12 +88,12 @@ foreach($DB_TAB as $DB_ROW)
 if( count($tab_eleve) )
 {
 	$listing_groupes_id = implode(',',array_keys($tab_eleve));
-	$DB_TAB = DB_STRUCTURE_lister_users_avec_groupes_besoins( 'eleve' , $listing_groupes_id );
+	$DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_users_avec_groupes_besoins( 'eleve' , $listing_groupes_id );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_eleve[$DB_ROW['groupe_id']] .= html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'<br />';
 	}
-	$DB_TAB = DB_STRUCTURE_lister_users_avec_groupes_besoins( 'professeur' , $listing_groupes_id );
+	$DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_users_avec_groupes_besoins( 'professeur' , $listing_groupes_id );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_prof[$DB_ROW['groupe_id']] .= ($DB_ROW['jointure_pp']) ? '<span class="proprio">'.html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'</span><br />' : html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'<br />' ;
@@ -120,7 +120,7 @@ if( count($tab_eleve) )
 		echo'<thead><tr>'.$TH[$niveau_id].'</tr></thead>';
 		echo'<tbody><tr>'.$TB[$niveau_id].'</tr></tbody>';
 		echo'<tfoot><tr>'.$TF[$niveau_id].'</tr></tfoot>';
-		echo'</table><p />';
+		echo'</table><p>&nbsp;</p>';
 	}
 }
 else
@@ -135,7 +135,7 @@ $tab_niveau_ordre_js = 'var tab_niveau_ordre = new Array();';
 
 if($_SESSION['NIVEAUX'])
 {
-	$DB_TAB = DB_STRUCTURE_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$listing_cycles=false);
+	$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement($_SESSION['NIVEAUX'],$listing_cycles=false);
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$select_niveau .= '<option value="'.$DB_ROW['niveau_id'].'">'.html($DB_ROW['niveau_nom']).'</option>';

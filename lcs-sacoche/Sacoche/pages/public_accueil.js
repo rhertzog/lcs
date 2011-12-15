@@ -33,13 +33,6 @@ $(document).ready
 
 		arrondir_coins('#cadre_milieu','10px');
 
-		// Mis dans le js car incorrect en XHTML1 malgré l'intérêt de l'attribut (revenu en HTML5 et XHTML2)
-		function autocomplete()
-		{
-			$('#f_password').attr('autocomplete','off');
-			$('#f_login').attr('autocomplete','off');
-		}
-
 		function curseur()
 		{
 			if($("#f_profil").val()=='webmestre')
@@ -111,7 +104,6 @@ $(document).ready
 						else
 						{
 							$("fieldset").html(responseHTML);
-							autocomplete();
 							curseur();
 						}
 					}
@@ -126,7 +118,7 @@ $(document).ready
 			function()
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Chargement en cours... Veuillez patienter.");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Chargement en cours...");
 				$.ajax
 				(
 					{
@@ -150,7 +142,6 @@ $(document).ready
 							else
 							{
 								$("fieldset").html(responseHTML);
-								autocomplete();
 								curseur();
 							}
 						}
@@ -165,7 +156,7 @@ $(document).ready
 			function()
 			{
 				$('#f_changer').hide();
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Chargement en cours... Veuillez patienter.");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Chargement en cours...");
 				$.ajax
 				(
 					{
@@ -189,7 +180,6 @@ $(document).ready
 							else
 							{
 								$("fieldset").html(responseHTML);
-								autocomplete();
 								curseur();
 							}
 						}
@@ -281,7 +271,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Soumission du formulaire en cours... Veuillez patienter.");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Soumission du formulaire en cours...");
 			}
 			return readytogo;
 		}
@@ -290,7 +280,7 @@ $(document).ready
 		function retour_form_erreur(msg,string)
 		{
 			$('button').prop('disabled',false);
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion ! Veuillez valider de nouveau.");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
