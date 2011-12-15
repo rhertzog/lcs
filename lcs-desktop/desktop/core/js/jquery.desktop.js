@@ -571,7 +571,7 @@ var JQD = (function($, window, undefined) {
 			// JQD.init.wmsess() : ouverture de la session webmail (squirrelmail)
 			// TODO: A VERIFIER POUR ROUNDCUBE
 			wmsess: function() {
-				$('#tmp_squirrelmail').attr('src','../lcs/statandgo.php?use=squirrelmail');
+				$('#tmp_squirrelmail').attr('src','../lcs/statandgo.php?use='+JQD.options.applis.webmail.rev);
 				setTimeout(function(){
 					JQD.notify_wmail();
 				},10000);
@@ -1365,7 +1365,9 @@ var JQD = (function($, window, undefined) {
 			//#JQD.build.infusr( opt )
 			//
 			infusr: function( oiu ){
+				console.log('JQD.options.applis.webmail : ',JQD.options.applis.webmail);
 				var uiUlLg = $('<ul/>').addClass('infos_user list_groups'),
+				roundcube_url = '../roundcube/?_task=mail&_action=show&_uid=6&_mbox=INBOX#',
 				uiGp = oiu.user.infos.group ? oiu.user.infos.group.gp ? oiu.user.infos.group.gp.name : '' : '';
 				if( uiGp!=''){
 					uiUlLg.append( $('<li/>').addClass('group_title').html('Groupe Principal') )
@@ -1732,7 +1734,30 @@ var JQD = (function($, window, undefined) {
 		//
 		notify_wmail: function(o) {
 			// if squirrelmail is enable, notify new messages
-			$.get("../squirrelmail/plugins/notify/notify-desktop.php", function(data){
+			var notify_url=JQD.options.applis.webmail.rev=='roundcube'?'../roundcube/plugins/lcs-notify-desktop':"../squirrelmail/plugins/notify/notify-desktop.php";
+			if(JQD.options.applis.webmail.rev=='roundcube'){
+			$.ajax({
+				type: "GET",
+				url: notify_url,
+				cache: true,
+				success: function(msg){
+				//	console.log(msg);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+				//	alert("XMLHttpRequest="+XMLHttpRequest.responseText+"\ntextStatus="+textStatus+"\nerrorThrown="+errorThrown);
+				},
+				complete : function(data, status) {
+					if( status.match('error') ){
+						console.log("Erreur lors de l'enregistrement",data); 
+						return; 
+					} else {
+						console.log("roundcubemessage = ",data); 
+					}
+				}
+			});	
+				
+			} else {
+			$.get( notify_url, function(data){
 				if (data != '')
 					JQD.create_notify("withIcon", {
 						title:'Messagerie', 
@@ -1744,12 +1769,13 @@ var JQD = (function($, window, undefined) {
 						click: function(e,instance){
 						JQD.init_link_open_win('<a title="Webmail" '
 						+'rel="../lcs/statandgo.php?use=squirrelmail" '
-						+'rev="squirrelmail" href="#icon_dock_lcs_squirrelmail" '
+						+'rev="webmail" href="#icon_dock_lcs_squirrelmail" '
 						+'class="open_win ext_link">Messagerie</a>');
 						instance.close();
 					}
 				});
 			});
+			}
 		},
 		testacc: function(){
 			var dAcc= $('<div id="accordion"/>'), 
@@ -2642,7 +2668,9 @@ var JQD = (function($, window, undefined) {
 					//console.info('data = ', data);
 					JQD['options']  = $.extend( true, {}, JQD.defaults, data );
 					//console.info('JQD.options = ', JQD.options)
-                    JQD.connect( JQD.options );
+					JQD.connect( JQD.options );
+					JQD.webmail=JQD.options.applis.webmail.rev;
+					console.log('JQD.webmail : ', JQD.webmail);
 				}
 			});
                       //  return o.result;

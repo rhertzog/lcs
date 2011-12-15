@@ -1,3 +1,10 @@
+lcs-desktop (2.4.9~1) Lcs; urgency=low
+
+  [ Dominique Lepaisant ]
+  * Compatibility with RoundCube
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 16:03:24 +0200
+
 lcs-desktop (2.4.8) Lcs; urgency=low
   
   [ Dominique Lepaisant ]
