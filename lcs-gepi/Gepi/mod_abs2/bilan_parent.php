@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: bilan_parent.php 5751 2010-10-25 11:37:36Z dblanqui $
+ * @version $Id: bilan_parent.php 8695 2011-12-01 14:17:11Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -240,8 +240,10 @@ include('menu_bilans.inc.php');
       <?php
             } else {
               $priorite = 5;
+              $current_minus_4 = new DateTime();
+              $current_minus_4->modify('-4 hours');
               foreach ($abs_col as $abs) {
-                if (get_priorite($abs) < $priorite) {
+                if (($abs->getTraitee() || $abs->getCreatedAt(null) < $current_minus_4) && get_priorite($abs) < $priorite) {
                   $priorite = get_priorite($abs);
                 }
               }
@@ -283,7 +285,7 @@ include('menu_bilans.inc.php');
     </p>
     <p>
       <span style="background-color:fuchsia;">&nbsp;RNJ&nbsp;</span>
-              	Manquement aux obligations scolaires : Retard non justifiée
+              	Manquement aux obligations scolaires : Retard non justifié
     </p>
     <p>
       <span style="background-color:blue;">&nbsp;&nbsp;&nbsp;J&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -291,7 +293,7 @@ include('menu_bilans.inc.php');
     </p>
     <p>
       <span style="background-color:aqua;">&nbsp;&nbsp;RJ&nbsp;&nbsp;</span>
-              	Manquement aux obligations scolaires : Retard justifiée
+              	Manquement aux obligations scolaires : Retard justifié
     </p>
 
     <!-- Absences totales -->
@@ -384,7 +386,7 @@ include('menu_bilans.inc.php');
               } else {
                 $priorite = 5;
                 foreach ($abs_col as $abs) {
-                  if (get_priorite($abs) < $priorite) {
+                  if ($abs->getTraitee() && get_priorite($abs) < $priorite) {
                     $priorite = get_priorite($abs);
                   }
                 }

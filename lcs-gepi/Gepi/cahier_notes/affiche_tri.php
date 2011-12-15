@@ -1,6 +1,6 @@
 <?php
 /**
-* $Id: affiche_tri.php 7751 2011-08-14 20:38:17Z regis $
+* $Id: affiche_tri.php 8610 2011-11-08 20:17:59Z regis $
 *
 * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -114,12 +114,14 @@ echo "<td>\n";
 		echo "</td>\n";
 	
 		echo "<td>\n";
-		echo $tab2[$i];
-		if(($tab2[$i]!='')&&(preg_match("/^[0-9.]*$/",$tab2[$i]))&&($tab2[$i]>=0)) {
-			$tab3[$i]=$tab2[$i];
-		}
-		else {
-			$tab3[$i]=-1;
+		if (isset ($tab2[$i])) {
+		  echo $tab2[$i];
+		  if(($tab2[$i]!='')&&(preg_match("/^[0-9.]*$/",$tab2[$i]))&&($tab2[$i]>=0)) {
+			  $tab3[$i]=$tab2[$i];
+		  }
+		  else {
+			  $tab3[$i]=-1;
+		  }
 		}
 		echo "</td>\n";
 	
@@ -146,7 +148,9 @@ echo "<td>\n";
 		echo "</td>\n";
 	
 		echo "<td>\n";
-		echo $tab2[$rg[$i]];
+		if (isset ($tab2[$i])) {
+		  echo $tab2[$rg[$i]];
+		}
 		echo "</td>\n";
 	
 		echo "</tr>\n";

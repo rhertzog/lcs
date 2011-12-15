@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: Session.class.php 8236 2011-09-15 12:30:20Z crob $
+ * $Id: Session.class.php 8608 2011-11-08 13:37:51Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard
  *
@@ -808,15 +808,19 @@ class Session {
 
         static function change_password_gepi($user_login,$password) {
                 if (mysql_num_rows(mysql_query("SHOW COLUMNS FROM utilisateurs LIKE 'salt';"))>0) {
-                    $salt = md5(uniqid(rand(), 1));
-                    $hmac_password = hash_hmac('sha256', $password, $salt);
-                    $result = mysql_query("UPDATE utilisateurs SET password='$hmac_password', salt = '$salt' WHERE login='" . $user_login . "'");
+					if(getSettingValue('recover_pass_hasher_md5')=='y') {
+						$result = mysql_query("UPDATE utilisateurs SET password='".md5($password)."', salt = '' WHERE login='" . $user_login . "'");
+					}
+					else {
+						$salt = md5(uniqid(rand(), 1));
+						$hmac_password = hash_hmac('sha256', $password, $salt);
+						$result = mysql_query("UPDATE utilisateurs SET password='$hmac_password', salt = '$salt' WHERE login='" . $user_login . "'");
+					}
                     return $result;
                 } else {
                     $result = mysql_query("UPDATE utilisateurs SET password='".md5($password)."' WHERE login='" . $user_login . "'");
                     return $result;
                 }
-
         }
 
 	private function authenticate_ldap($_login,$_password) {

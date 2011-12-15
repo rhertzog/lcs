@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: visu_traitement.php 8394 2011-09-30 19:22:14Z jjacquard $
+ * @version $Id: visu_traitement.php 8637 2011-11-19 15:29:16Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -90,7 +90,7 @@ echo "<div class='css-panes' style='background-color:#ebedb5;' id='containDiv' s
 $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 if ($traitement == null) {
     $criteria = new Criteria();
-    $criteria->addDescendingOrderByColumn(AbsenceElevetraitementPeer::UPDATED_AT);
+    $criteria->addDescendingOrderByColumn(AbsenceEleveTraitementPeer::UPDATED_AT);
     $criteria->setLimit(1);
     $traitement = $utilisateur->getAbsenceEleveTraitements($criteria)->getFirst();
     if ($traitement == null) {

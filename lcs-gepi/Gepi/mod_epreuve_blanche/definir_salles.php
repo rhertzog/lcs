@@ -1,5 +1,5 @@
 <?php
-/* $Id: definir_salles.php 6760 2011-04-09 17:54:37Z crob $ */
+/* $Id: definir_salles.php 8702 2011-12-03 20:17:28Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -492,7 +492,7 @@ if(!isset($mode)) {
 				echo "<input type='text' name='salle[]' value='$tab_salles[$loop]' onchange='changement();' /><br />\n";
 			}
 			else {
-				echo $lig->salle;
+				echo $tab_id_salles[$loop];
 			}
 			//echo "<br />\n";
 			echo "</td>\n";

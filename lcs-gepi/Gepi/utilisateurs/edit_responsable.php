@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: edit_responsable.php 8501 2011-10-20 05:44:49Z crob $
+ * $Id: edit_responsable.php 8658 2011-11-23 19:47:57Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Eric Lebrun
  *
@@ -442,7 +442,7 @@ $sql.=") ORDER BY u.nom,u.prenom";
 //$nb1 = mysql_num_rows(mysql_query($sql));
 
 if($afficher_tous_les_resp!='y'){
-	if($critere_recherche==""){
+	if(($critere_recherche=="")&&($critere_recherche_login=="")) {
 		$sql.=" LIMIT 20";
 	}
 }
@@ -476,7 +476,7 @@ while ($current_parent = mysql_fetch_object($quels_parents)) {
 		$res_enfants=mysql_query($sql);
 		//echo "$sql<br />";
 		if(mysql_num_rows($res_enfants)==0){
-			echo "<span style='color:red;'>Aucun élève</span>";
+			echo "<span style='color:red;' title='Aucun élève, ou plus des élèves qui ne sont plus dans aucune classe'>Aucun élève</span>";
 		}
 		else{
 			while($current_enfant=mysql_fetch_object($res_enfants)){
@@ -487,12 +487,16 @@ while ($current_parent = mysql_fetch_object($quels_parents)) {
 		echo "<td align='center'>";
 			if ($current_parent->etat == "actif") {
 				echo "<font color='green'>".$current_parent->etat."</font>";
-				echo "<br />";
-				echo "<a href='edit_responsable.php?action=rendre_inactif&amp;mode=individual&amp;parent_login=".$current_parent->login.add_token_in_url()."'>Désactiver";
+				if($current_parent->login!='') {
+					echo "<br />";
+					echo "<a href='edit_responsable.php?action=rendre_inactif&amp;mode=individual&amp;parent_login=".$current_parent->login.add_token_in_url()."'>Désactiver";
+				}
 			} else {
 				echo "<font color='red'>".$current_parent->etat."</font>";
-				echo "<br />";
-				echo "<a href='edit_responsable.php?action=rendre_actif&amp;mode=individual&amp;parent_login=".$current_parent->login.add_token_in_url()."'>Activer";
+				if($current_parent->login!='') {
+					echo "<br />";
+					echo "<a href='edit_responsable.php?action=rendre_actif&amp;mode=individual&amp;parent_login=".$current_parent->login.add_token_in_url()."'>Activer";
+				}
 			}
 			echo "</a>";
 		echo "</td>\n";
@@ -502,6 +506,9 @@ while ($current_parent = mysql_fetch_object($quels_parents)) {
 		if($current_parent->etat == "actif" && ($current_parent->auth_mode == "gepi" || $gepiSettings['ldap_write_access'] == "yes")) {
 			echo "<br />";
 			echo "Réinitialiser le mot de passe : <a href=\"reset_passwords.php?user_login=".$current_parent->login."&amp;user_status=responsable&amp;mode=html".add_token_in_url()."\" onclick=\"javascript:return confirm('Êtes-vous sûr de vouloir effectuer cette opération ?\\n Celle-ci est irréversible, et réinitialisera le mot de passe de l\'utilisateur avec un mot de passe alpha-numérique généré aléatoirement.\\n En cliquant sur OK, vous lancerez la procédure, qui génèrera une page contenant la fiche-bienvenue à imprimer immédiatement pour distribution à l\'utilisateur concerné.')\" target='_blank'>Aléatoirement</a>";
+
+			echo " - <a href=\"reset_passwords.php?user_login=".$current_parent->login."&amp;user_status=responsable&amp;mode=html&amp;affiche_adresse_resp=y".add_token_in_url()."\" onclick=\"javascript:return confirm('Êtes-vous sûr de vouloir effectuer cette opération ?\\n Celle-ci est irréversible, et réinitialisera le mot de passe de l\'utilisateur avec un mot de passe alpha-numérique généré aléatoirement.\\n En cliquant sur OK, vous lancerez la procédure, qui génèrera une page contenant la fiche-bienvenue à imprimer immédiatement pour distribution à l\'utilisateur concerné.')\" target='_blank'>Aléa.avec&nbsp;adresse</a>";
+
 			echo " - <a href=\"change_pwd.php?user_login=".$current_parent->login.add_token_in_url()."\" onclick=\"javascript:return confirm('Êtes-vous sûr de vouloir effectuer cette opération ?\\n Celle-ci réinitialisera le mot de passe de l\'utilisateur avec un mot de passe que vous choisirez.\\n En cliquant sur OK, vous lancerez une page qui vous demandera de saisir un mot de passe et de le valider.')\" target='_blank'>choisi </a>";
 		}
 		echo "</td>\n";

@@ -1,5 +1,5 @@
 <?php
-/* $Id: class_page_accueil_autre.php 4934 2010-07-28 20:57:14Z regis $
+/* $Id: class_page_accueil_autre.php 8716 2011-12-06 11:40:11Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -669,7 +669,7 @@ class class_page_accueil_autre {
 
   }
 
-  private function plugins(){
+private function plugins(){
 	$this->b=0;
 
 	$query = mysql_query('SELECT * FROM plugins WHERE ouvert = "y" order by description');
@@ -700,14 +700,14 @@ class class_page_accueil_autre {
 
 		if (($menuItem->user_statut == $this->statutUtilisateur) and ($result_autorisation)) {
 		  $this->creeNouveauItemPlugin("/".$menuItem->lien_item,
-				supprimer_numero(iconv("utf-8","iso-8859-1",$menuItem->titre_item)),
-				iconv("utf-8","iso-8859-1",$menuItem->description_item));
+				supprimer_numero($menuItem->titre_item),
+				$menuItem->description_item);
 		}
 
 	  }
 
 	  if ($this->b>0){
-		$descriptionPlugin= iconv("utf-8","iso-8859-1",$plugin->description);
+        $descriptionPlugin = $plugin->description;
 		$this->creeNouveauTitre('accueil',"$descriptionPlugin",'images/icons/package.png');
 	  }
 

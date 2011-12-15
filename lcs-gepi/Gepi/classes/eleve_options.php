@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: eleve_options.php 6604 2011-03-03 13:46:55Z crob $
+* $Id: eleve_options.php 8665 2011-11-26 12:50:32Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -516,7 +516,7 @@ while ($i < $nombre_ligne) {
 
 			echo "<td style='text-align:center'>\n";
 			if($_SESSION['statut']=="administrateur"){
-				echo "<input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' \n";
+				echo "<input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' ";
 				if (mysql_num_rows($test)>0) {
 					echo "checked ";
 				}

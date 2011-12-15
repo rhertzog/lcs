@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: verif_bulletins.php 8451 2011-10-07 11:57:57Z crob $
+* $Id: verif_bulletins.php 8652 2011-11-22 12:36:34Z crob $
 *
 * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -626,7 +626,8 @@ if (!(isset($id_classe))) {
 				$group_id = mysql_result($groupeinfo, $i, "id_groupe");
 				$current_group = get_group($group_id);
 
-				if (in_array($id_eleve[$j], $current_group["eleves"][$per]["list"])) { // Si l'élève suit cet enseignement pour la période considérée
+				//if (in_array($id_eleve[$j], $current_group["eleves"][$per]["list"])) { // Si l'élève suit cet enseignement pour la période considérée
+				if (((!isset($current_group['visibilite']['bulletins']))||($current_group['visibilite']['bulletins']!='n'))&&(in_array($id_eleve[$j], $current_group["eleves"][$per]["list"]))) { // Si l'élève suit cet enseignement pour la période considérée
 					//
 					//Vérification des appréciations :
 					//
@@ -711,7 +712,8 @@ if (!(isset($id_classe))) {
 				$group_id = mysql_result($groupeinfo, $i, "id_groupe");
 				$current_group = get_group($group_id);
 
-				if (in_array($id_eleve[$j], $current_group["eleves"][$per]["list"])) { // Si l'élève suit cet enseignement pour la période considérée
+				//if (in_array($id_eleve[$j], $current_group["eleves"][$per]["list"])) { // Si l'élève suit cet enseignement pour la période considérée
+				if (((!isset($current_group['visibilite']['bulletins']))||($current_group['visibilite']['bulletins']!='n'))&&(in_array($id_eleve[$j], $current_group["eleves"][$per]["list"]))) { // Si l'élève suit cet enseignement pour la période considérée
 					//
 					//Vérification des moyennes :
 					//

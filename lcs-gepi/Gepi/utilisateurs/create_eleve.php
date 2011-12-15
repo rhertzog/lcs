@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: create_eleve.php 8492 2011-10-19 05:41:08Z crob $
+ * $Id: create_eleve.php 8663 2011-11-26 09:07:12Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -238,23 +238,24 @@ else{
 	echo "<p><b>Créer des comptes par lot</b> :</p>\n";
 	echo "<blockquote>\n";
 
-	echo "<p>Sélectionnez le mode d'authentification appliqué aux comptes :</p>";
+	echo "<p>Sélectionnez le mode d'authentification appliqué aux comptes&nbsp;:</p>\n";
 	echo "<form action='create_eleve.php' method='post'>\n";
 	echo add_token_field();
-	echo "<select name='reg_auth_mode' size='1'>";
+	echo "<select name='reg_auth_mode' size='1'>\n";
 	if ($session_gepi->auth_locale) {
-		echo "<option value='auth_locale'>Authentification locale (base Gepi)</option>";
+		echo "<option value='auth_locale'>Authentification locale (base Gepi)</option>\n";
 	}
 	if ($session_gepi->auth_ldap) {
-		echo "<option value='auth_ldap'>Authentification LDAP</option>";
+		echo "<option value='auth_ldap'>Authentification LDAP</option>\n";
 	}
 	if ($session_gepi->auth_sso) {
 		echo "<option value='auth_sso'";
 		if((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe")) {
-			echo ">Authentification unique (SSO)</option>";
+			echo " selected='selected'";
 		}
+		echo ">Authentification unique (SSO)</option>\n";
 	}
-	echo "</select>";
+	echo "</select>\n";
 
 	echo "<p>Sélectionnez une classe ou bien l'ensemble des classes puis cliquez sur 'valider'.</p>\n";
 
@@ -402,8 +403,9 @@ else{
 	if ($session_gepi->auth_sso) {
 		echo "<option value='auth_sso'";
 		if((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe")) {
-			echo ">Authentification unique (SSO)</option>";
+			echo " selected='selected'";
 		}
+		echo ">Authentification unique (SSO)</option>\n";
 	}
 	echo "</select>";
 	echo "</p>";

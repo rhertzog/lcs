@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import2.php 8592 2011-11-03 14:37:46Z crob $
+ * $Id: maj_import2.php 8631 2011-11-17 21:03:19Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -449,7 +449,8 @@ if(!isset($step)) {
 	echo "</form>\n";
 
 	echo "<p>Il est recommandé d'importer les informations élèves et de ne passer qu'ensuite à l'import des informations responsables.<br />\n";
-	echo "<a href='".$_SERVER['PHP_SELF']."?is_posted=y&amp;step=9'>Passer néanmoins à la page d'importation des responsables</a></p>\n";
+	//echo "<a href='".$_SERVER['PHP_SELF']."?is_posted=y&amp;step=9'>Passer néanmoins à la page d'importation des responsables</a></p>\n";
+	echo "<a href='".$destination_formulaire."?is_posted=y&amp;step=9'>Passer néanmoins à la page d'importation des responsables</a></p>\n";
 
 	echo "<p><br /></p>\n";
 
@@ -3509,7 +3510,7 @@ else{
 							$sql.=", ele_id='".$lig->ELE_ID."'";
 
 							if(getSettingValue('mode_email_ele')!="mon_compte") {
-								$sql.=", email='".addslashes($lig->$MEL)."'";
+								$sql.=", email='".addslashes($lig->MEL)."'";
 							}
 
 							$login_eleve=$lig_tmp->login;

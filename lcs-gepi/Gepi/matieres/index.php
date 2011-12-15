@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: index.php 6821 2011-04-26 12:07:08Z crob $
+ * $Id: index.php 8675 2011-11-30 14:10:19Z crob $
  *
- * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -108,6 +108,10 @@ if (isset($_POST['is_posted'])) {
     } else {
         $msg .= "<br/>Mise à jour effectuée.";
     }
+}
+
+if(isset($_GET['msg'])) {
+	$_GET['msg']=html_entity_decode($_GET['msg']);
 }
 
 $themessage = 'Des modifications ont été effectuées. Voulez-vous vraiment quitter sans enregistrer ?';

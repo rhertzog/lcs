@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: liste_pdf.php 8374 2011-09-28 16:24:51Z crob $
+ * $Id: liste_pdf.php 8701 2011-12-03 20:09:06Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -448,7 +448,8 @@ if ($id_liste_groupes!=NULL) {
 					if (($afficher_effectif == 1) and ($nb_ligne_avant == 1)) {
 					  //on indique ici le nombre d'élève dans la classe (option)
 					  $texte = 'Effectif : '.$nb_eleves;
-					  $pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',2,'C',2);
+					  //$pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',2,'C',2);
+					  $pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',2,'C',0);
 					} else {
 						//$pdf->Cell($l_nomprenom,$h_ligne1_avant,' ','R',2,'C',2);
 						// Avec le 'R' pas de bordure

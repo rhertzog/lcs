@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: tableau_des_appels.php 8214 2011-09-13 21:26:17Z dblanqui $
+ * @version $Id: tableau_des_appels.php 8684 2011-11-30 21:09:24Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -113,7 +113,7 @@ include('menu_bilans.inc.php');
             </td>    
         </tr>
         <tr>
-            <td style="background-color:green;">Appel fait.
+            <td style="background-color:#9f9;">Appel fait.
             </td>
         </tr>
     </table>    
@@ -286,7 +286,7 @@ foreach($classe_col as $classe){
 	if ($appel_manquant) {
 	    echo '<td style="min-width: 350px;">';
 	} else {
-	    echo '<td style="min-width: 350px; background-color:green">';
+	    echo '<td style="min-width: 350px; background-color:#9f9">';
 	}
 	echo $echo_str;
 
@@ -309,22 +309,26 @@ foreach($classe_col as $classe){
         }
         if($absenceSaisie->getManquementObligationPresenceSpecifie_NON_PRECISE()){
             continue;
-        }
+        }        
         if ($absenceSaisie->getEleve()->getIdEleve() !== $current_eleve) {
             if($current_eleve !=null) echo '<br/>';
             $num_saisie=1;
-                if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
+               if ($utilisateur->getAccesFicheEleve($absenceSaisie->getEleve())) {
                     echo "<a style='color: ".$absenceSaisie->getColor().";' href='../eleves/visu_eleve.php?ele_login=" . $absenceSaisie->getEleve()->getLogin() . "' target='_blank'>";
                     echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom().' : ';
                     echo "</a>";
                 } else {
                     echo $absenceSaisie->getEleve()->getCivilite() . ' ' . $absenceSaisie->getEleve()->getNom() . ' ' . $absenceSaisie->getEleve()->getPrenom().' : ';
                 }
+         }else{
+                 echo'-';
+             } 
+            echo "<a style='color: ".$absenceSaisie->getColor().";'  href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";             
+	    if($num_saisie==1){
+                echo ('Saisie '.$num_saisie); 
             }else{
-                echo'-';
-            }        
-            echo "<a style='color: ".$absenceSaisie->getColor().";'  href='visu_saisie.php?id_saisie=".$absenceSaisie->getPrimaryKey()."'>";            
-	    echo ($num_saisie);
+                echo ($num_saisie);
+            }           
 	    echo "</a>";	    
 	    $current_eleve=$absenceSaisie->getEleve()->getIdEleve();
             $num_saisie++;

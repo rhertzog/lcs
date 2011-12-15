@@ -810,9 +810,12 @@ function verifcol(num_id){
 	}
 	note=document.getElementById('n'+num_id).value;
 	if((note!='-')&&(note!='disp')&&(note!='abs')&&(note!='')){
+		note=note.replace(',','.');
+
 		//if((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0))){
+
 		if(((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0)))||
-	((note.search(/^[0-9,]+$/)!=-1)&&(note.lastIndexOf(',')==note.indexOf(',',0)))){
+		((note.search(/^[0-9,]+$/)!=-1)&&(note.lastIndexOf(',')==note.indexOf(',',0)))){
 			if((note>".$note_sur_verif.")||(note<0)){
 				couleur='red';
 			}
@@ -1956,8 +1959,8 @@ if ($id_devoir) {
 			num=tab_indices[i];
 
 			if(document.getElementById('n'+num)) {
-				if(chaine1!='') {chaine1=chaine1+'|';}
-				if(chaine2!='') {chaine2=chaine2+'|';}
+				if(chaine1!='') {chaine1=chaine1+'|';chaine2=chaine2+'|';}
+				//if(chaine2!='') {chaine2=chaine2+'|';}
 
 				chaine1=chaine1+document.getElementById('log_eleve_'+i).value;
 				chaine2=chaine2+document.getElementById('n'+num).value;
@@ -1978,8 +1981,8 @@ if ($id_devoir) {
 			num=tab_indices[i];
 
 			if(document.getElementById('n'+num)) {
-				if(chaine1!='') {chaine1=chaine1+'|';}
-				if(chaine2!='') {chaine2=chaine2+'|';}
+				if(chaine1!='') {chaine1=chaine1+'|';chaine2=chaine2+'|';}
+				//if(chaine2!='') {chaine2=chaine2+'|';}
 
 				chaine1=chaine1+document.getElementById('log_eleve_'+i).value;
 				chaine2=chaine2+document.getElementById('n'+num).value;

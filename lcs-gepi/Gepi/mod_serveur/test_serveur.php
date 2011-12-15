@@ -4,7 +4,7 @@
  * Fichier temporaire uniquement présent dans les versions RC pour teter les configurations serveur
  * et d'autres paramètres pour comprendre certaines erreurs.
  *
- * @version $Id: test_serveur.php 7849 2011-08-20 18:19:12Z regis $ 1.5.1RC1
+ * @version $Id: test_serveur.php 8596 2011-11-04 14:05:15Z jjacquard $ 1.5.1RC1
  *
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
@@ -36,6 +36,9 @@ require_once("../lib/initialisations.inc.php");
 
 // Définition de la classe php
 require_once("../class_php/serveur_infos.class.php");
+
+//fonction de tests d'encodage
+require_once(dirname(__FILE__)."/test_encoding_functions.php");
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -150,6 +153,57 @@ if ($test->versionGd()) {
 
 	echo "<br />\n";
 	echo "<hr />\n";
+       echo "<h4>Encodage des caractères : </h4>\n";
+       if (function_exists('iconv')) {
+           echo "iconv est installé sur votre système<br />";
+       } else {
+           echo "iconv n'est pas installé sur votre système, ça n'est pas indispensable mais c'est recomandé<br />";
+       }
+       if (function_exists('mb_convert_encoding')) {
+           echo "mbstring est installé sur votre système<br />";
+       } else {
+           echo "<p style=\"color:red;\">mbstring (Chaînes de caractères multi-octets) n'est pas installé sur votre système, c'est nécessaire à partir de la prochaine version 1.6.0</p>";
+       }
+
+       echo "<p style=\"color:red;\">";
+       if (!test_check_utf8()) {
+           echo ' : échec de test_check_utf8()</p>';
+       } else {
+           echo "</p>réussite de test_check_utf8()<br />\n";
+       }
+       echo "<p style=\"color:red;\">";
+       if (!test_detect_encoding()) {
+           echo ' : échec de test_detect_encoding()</p>';
+       } else {
+        echo "</p>réussite de test_detect_encoding()<br />\n";
+       }
+       echo "<p style=\"color:red;\">";
+       if (!test_ensure_utf8()) {
+           echo ' : échec de test_ensure_utf8()</p>';
+       } else {
+           echo "</p>réussite de test_ensure_utf8()<br />\n";
+       }
+       echo "<br />\n";
+       
+	
+	echo "<hr />\n";
+	echo "<h4>Locales du système : </h4>\n";
+	$locale = setlocale(LC_TIME,0);
+	echo "locale actuellement utilisée pour les dates : $locale";
+	
+	//on va tester les locale sur LC_NUMERIC
+	$locale_num = setlocale(LC_NUMERIC,0);
+	$return = @setlocale(LC_NUMERIC,'fr-utf-8','fr_FR.utf-8','fr_FR.utf8','fr_FR.UTF-8','fr_FR.UTF8');
+	if (!isset($return) || !$return) {
+	    echo "<p style=\"color:red;\">";
+	    echo 'Pour la prochaine version 1.6.0, votre système ne semble pas avoir de locale utf-8 d\'installée. Il est possible que sans locale utf-8 certains affichages de dates soient inéstétiques pour la version 1.6.0</p>';
+	}
+	@setlocale(LC_NUMERIC,$locale_num);//on remet comme avant le test
+	echo "<br />\n";
+	
+	
+       
+   echo "<hr />\n";
 	echo "<h4>Droits sur les dossiers : </h4>\n";
 	echo "Certains dossiers doivent être accessibles en écriture pour Gepi.<br />\n";
 	test_ecriture_dossier();

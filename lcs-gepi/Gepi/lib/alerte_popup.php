@@ -1,7 +1,7 @@
 <?php
 /** Affiche un popup
  * 
- * $Id: alerte_popup.php 8457 2011-10-10 13:09:43Z crob $
+ * $Id: alerte_popup.php 8726 2011-12-11 10:27:03Z crob $
  * 
  * @package General
  * @subpackage Alertes
@@ -11,7 +11,7 @@
 	
 	if (isset($niveau_arbo)) {
 		//echo "\$niveau_arbo=$niveau_arbo<br />";
-		if($niveau_arbo=="public") {
+		if("$niveau_arbo"=="public") {
 			$image_path.="../";
 		}
 		else {

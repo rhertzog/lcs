@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: import_absences_sconet.php 5971 2010-11-23 20:19:04Z crob $
+* @version: $Id: import_absences_sconet.php 8729 2011-12-13 20:04:12Z crob $
 */
 
 @set_time_limit(0);
@@ -23,6 +23,8 @@ if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+$temp_table_abs='temp_abs_import';
 
 //**************** EN-TETE *****************
 $titre_page = "Import absences SCONET";
@@ -190,12 +192,10 @@ function get_nom_class_from_id($id){
 					echo " | <a href='".$_SERVER['PHP_SELF']."'>Choisir une autre période</a>\n";
 					echo "</p>\n";
 
-					// Il faudra pouvoir gérer les cpe responsables seulement dans certaines classes...
-					//$sql="SELECT * FROM classes ORDER BY classe";
-					if ($_SESSION['statut']=="cpe") {
-						$sql="SELECT DISTINCT c.* FROM classes c, j_eleves_cpe e, j_eleves_classes jc WHERE (e.cpe_login = '".$_SESSION['login']."' AND jc.login = e.e_login AND c.id = jc.id_classe)  ORDER BY classe";
+					if ((($_SESSION['statut']=="cpe")&&(getSettingValue('GepiAccesAbsTouteClasseCpe')=='yes'))||($_SESSION['statut']!="cpe")) {
+						$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  AND p.num_periode='$num_periode' ORDER BY classe;";
 					} else {
-						$sql="SELECT * FROM classes ORDER BY classe";
+						$sql="SELECT DISTINCT c.* FROM classes c, j_eleves_cpe e, j_eleves_classes jc, periodes p WHERE (e.cpe_login = '".$_SESSION['login']."' AND jc.login = e.e_login AND c.id = jc.id_classe AND p.id_classe = c.id  AND p.num_periode='$num_periode')  ORDER BY classe;";
 					}
 					//echo "$sql<br />\n";
 
@@ -464,6 +464,8 @@ function get_nom_class_from_id($id){
 
 									// PARTIE <ELEVES>
 									$i=-1;
+									// Pour les fichiers XML bricoles sans les sections precedentes:
+									$cpt=0;
 									while($cpt<count($ligne)){
 										if(strstr($ligne[$cpt],"<eleve ")){
 											$i++;
@@ -496,6 +498,12 @@ function get_nom_class_from_id($id){
 									}
 
 									/*
+									echo "<pre>";
+									print_r($eleves);
+									echo "</pre>";
+									*/
+
+									/*
 									echo "<table border='1'>";
 									for($i=0;$i<count($eleves);$i++){
 										echo "<tr>";
@@ -517,6 +525,23 @@ function get_nom_class_from_id($id){
 									}
 									*/
 
+
+									//$suffixe_table_temp=preg_replace("/[^0-9]/","",time());
+									//$temp_table_abs='temp_abs_'.$suffixe_table_temp;
+									$sql="CREATE TABLE IF NOT EXISTS $temp_table_abs (
+									id INT(11) not null auto_increment,
+									login VARCHAR(50) not null,
+									cpe_login VARCHAR(50) not null,
+									nbret INT(11) not null,
+									nbabs INT(11) not null,
+									nbnj INT(11) not null,
+									primary key (id));";
+									$create_table = mysql_query($sql);
+
+									//$sql="TRUNCATE TABLE $temp_table_abs;";
+									$sql="DELETE FROM $temp_table_abs WHERE cpe_login='".$_SESSION['login']."';";
+									//echo "$sql<br />";
+									$res=mysql_query($sql);
 
 									echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 									// On a fait en sorte à l'étape précédente, qu'il n'y ait qu'une classe ou plusieurs, que l'on transmette un tableau id_classe[]
@@ -554,6 +579,7 @@ function get_nom_class_from_id($id){
 											// Est-ce que l'élève fait bien partie d'une des classes importées pour la période importée?
 											//$sql="SELECT 1=1 FROM j_eleves_classes jec, eleves e WHERE jec.login=e.login AND e.no_gep='".$eleves[$i]['elenoet']."' AND periode='$num_periode' AND $chaine_liste_classes;";
 											$sql="SELECT 1=1 FROM j_eleves_classes jec, eleves e WHERE jec.login=e.login AND (e.elenoet='".$eleves[$i]['elenoet']."' OR e.elenoet='0".$eleves[$i]['elenoet']."') AND periode='$num_periode' AND $chaine_liste_classes;";
+											//echo "$sql<br />";
 											//echo "<!--\n$sql\n-->\n";
 											$test=mysql_query($sql);
 
@@ -568,6 +594,7 @@ function get_nom_class_from_id($id){
 												$sql="SELECT e.login,e.nom,e.prenom,e.elenoet
 															FROM eleves e
 															WHERE (e.elenoet='".$eleves[$i]['elenoet']."' OR e.elenoet='0".$eleves[$i]['elenoet']."')";
+												//echo "$sql<br />";
 												//echo "<!--\n$sql\n-->\n";
 												$res1=mysql_query($sql);
 												if(mysql_num_rows($res1)==0){
@@ -582,14 +609,20 @@ function get_nom_class_from_id($id){
 
 													$lig1=mysql_fetch_object($res1);
 
-													// Le CPE a-t-il bien cet élève:
-													//$sql="SELECT 1=1 FROM j_eleves_cpe jec, eleves e WHERE jec.e_login=e.login AND jec.cpe_login='".$_SESSION['login']."'";
-													$sql="SELECT 1=1 FROM j_eleves_cpe jec WHERE jec.e_login='$lig1->login' AND jec.cpe_login='".$_SESSION['login']."'";
-													//echo "<!--\n$sql\n-->\n";
-													$test=mysql_query($sql);
-
-													//if(mysql_num_rows($test)>0){
-													if((mysql_num_rows($test)>0)||($_SESSION['statut']=='secours')) {
+													$acces_a_cet_eleve="y";
+													if (($_SESSION['statut']=="cpe")&&(getSettingValue('GepiAccesAbsTouteClasseCpe')!='yes')) {
+														// Le CPE a-t-il bien cet élève:
+														$sql="SELECT 1=1 FROM j_eleves_cpe jec WHERE jec.e_login='$lig1->login' AND jec.cpe_login='".$_SESSION['login']."'";
+														//echo "<!--\n$sql\n-->\n";
+														$test=mysql_query($sql);
+	
+														if((mysql_num_rows($test)==0)) {
+															$acces_a_cet_eleve="n";
+														}
+													}
+	
+													//if((mysql_num_rows($test)>0)||($_SESSION['statut']=='secours')) {
+													if($acces_a_cet_eleve=="y") {
 														$affiche_ligne="y";
 
 														//$lig1=mysql_fetch_object($res1);
@@ -598,7 +631,7 @@ function get_nom_class_from_id($id){
 														//$ligne_tableau.="<input type='hidden' name='log_eleve[$i]' value='$lig1->login' />\n";
 														//$ligne_tableau.="</td>\n";
 														$ligne_tableau.="<td>";
-														$ligne_tableau.="<input type='hidden' name='log_eleve[$i]' value='$lig1->login' />\n";
+														//$ligne_tableau.="<input type='hidden' name='log_eleve[$i]' value='$lig1->login' />\n";
 														$ligne_tableau.="$lig1->nom</td>\n";
 														$ligne_tableau.="<td>$lig1->prenom</td>\n";
 
@@ -624,30 +657,37 @@ function get_nom_class_from_id($id){
 
 
 													if("$affiche_ligne"=="y"){
+														$temoin_erreur="n";
+														$sql_tmp_abs="INSERT INTO $temp_table_abs SET cpe_login='".$_SESSION['login']."', login='".$lig1->login."'";
+
 														echo $ligne_tableau;
 														echo "<td>\n";
 														if(isset($eleves[$i]['nbAbs'])){
 															echo $eleves[$i]['nbAbs'];
-															echo "<input type='hidden' name='nbabs_eleve[$i]' value='".$eleves[$i]['nbAbs']."' />\n";
+															//echo "<input type='hidden' name='nbabs_eleve[$i]' value='".$eleves[$i]['nbAbs']."' />\n";
+															$sql_tmp_abs.=", nbabs='".$eleves[$i]['nbAbs']."'";
 														}
 														else{
 															//echo "&nbsp;";
 															echo "<span style='color:red;'>ERR</span>\n";
 															//echo "<input type='hidden' name='nbabs_eleve[$i]' value='0' />\n";
 															$nb_err++;
+															$temoin_erreur="y";
 														}
 														echo "</td>\n";
 
 														echo "<td>\n";
 														if(isset($eleves[$i]['nbNonJustif'])){
 															echo $eleves[$i]['nbNonJustif'];
-															echo "<input type='hidden' name='nbnj_eleve[$i]' value='".$eleves[$i]['nbNonJustif']."' />\n";
+															//echo "<input type='hidden' name='nbnj_eleve[$i]' value='".$eleves[$i]['nbNonJustif']."' />\n";
+															$sql_tmp_abs.=", nbnj='".$eleves[$i]['nbNonJustif']."'";
 														}
 														else{
 															//echo "&nbsp;";
 															echo "<span style='color:red;'>ERR</span>\n";
 															//echo "<input type='hidden' name='nbnj_eleve[$i]' value='0' />\n";
 															$nb_err++;
+															$temoin_erreur="y";
 														}
 														echo "</td>\n";
 
@@ -655,14 +695,26 @@ function get_nom_class_from_id($id){
 														if(isset($eleves[$i]['nbRet'])){
 															echo $eleves[$i]['nbRet'];
 															//echo " -&gt; <input type='text' size='4' name='nbret_eleve[$i]' value='".$eleves[$i]['nbRet']."' />\n";
-															echo "<input type='hidden' size='4' name='nbret_eleve[$i]' value='".$eleves[$i]['nbRet']."' />\n";
+															//echo "<input type='hidden' size='4' name='nbret_eleve[$i]' value='".$eleves[$i]['nbRet']."' />\n";
+															$sql_tmp_abs.=", nbret='".$eleves[$i]['nbRet']."'";
 														}
 														else{
 															//echo "&nbsp;";
 															echo "<span style='color:red;'>ERR</span>\n";
 															//echo "<input type='hidden' name='nbret_eleve[$i]' value='0' />\n";
 															$nb_err++;
+															$temoin_erreur="y";
 														}
+
+														if($temoin_erreur!="y") {
+															// Les absences de l'élève ont pu être importées par un autre cpe sans que l'opération soit menée à bout.
+															$sql="DELETE FROM $temp_table_abs WHERE login='$lig1->login';";
+															$menage=mysql_query($sql);
+
+															//echo "$sql_tmp_abs<br />";
+															$insert_tmp=mysql_query($sql_tmp_abs);
+														}
+
 														echo "</td>\n";
 
 														echo "</tr>\n";
@@ -678,6 +730,8 @@ function get_nom_class_from_id($id){
 									echo "<input type='hidden' name='is_posted' value='y' />\n";
 									echo "<input type='hidden' name='etape' value='2' />\n";
 
+									//echo "<input type='hidden' name='suffixe_table_temp' value='$suffixe_table_temp' />\n";
+
 									# A RENSEIGNER D'APRES L'EXTRACTION:
 									echo "<input type='hidden' name='num_periode' value='$num_periode' />\n";
 
@@ -692,10 +746,41 @@ function get_nom_class_from_id($id){
 								}
 							}
 							if($etape==2) {
+								/*
 								$log_eleve=isset($_POST['log_eleve']) ? $_POST['log_eleve'] : NULL;
 								$nbabs_eleve=isset($_POST['nbabs_eleve']) ? $_POST['nbabs_eleve'] : NULL;
 								$nbnj_eleve=isset($_POST['nbnj_eleve']) ? $_POST['nbnj_eleve'] : NULL;
 								$nbret_eleve=isset($_POST['nbret_eleve']) ? $_POST['nbret_eleve'] : NULL;
+								*/
+								/*
+								$suffixe_table_temp=isset($_POST['suffixe_table_temp']) ? $_POST['suffixe_table_temp'] : "";
+								if((!preg_match('/^[0-9]*$/', $suffixe_table_temp))||($suffixe_table_temp=='')) {
+									echo "<p style='color:red'>ERREUR sur le nom de la table temporaire.</p>\n";
+									require("../lib/footer.inc.php");
+									die();
+								}
+								*/
+
+								//$sql="SELECT * FROM temp_abs_$suffixe_table_temp;";
+								$sql="SELECT * FROM $temp_table_abs WHERE cpe_login='".$_SESSION['login']."';";
+								//echo "$sql<br />";
+								$res_tmp=mysql_query($sql);
+								if(mysql_num_rows($res_tmp)==0) {
+									echo "<p style='color:red'>Aucune donnée à importer.</p>\n";
+									require("../lib/footer.inc.php");
+									die();
+								}
+
+								$i=0;
+								while($lig_tmp=mysql_fetch_object($res_tmp)) {
+									$log_eleve[$i]=$lig_tmp->login;
+									$nbabs_eleve[$i]=$lig_tmp->nbabs;
+									$nbnj_eleve[$i]=$lig_tmp->nbnj;
+									$nbret_eleve[$i]=$lig_tmp->nbret;
+
+									$i++;
+								}
+
 								$num_periode=isset($_POST['num_periode']) ? $_POST['num_periode'] : NULL;
 
 								$nb_eleves=isset($_POST['nb_eleves']) ? $_POST['nb_eleves'] : NULL;
@@ -715,7 +800,7 @@ function get_nom_class_from_id($id){
 									$test_ver=mysql_query($sql);
 
 									if(mysql_num_rows($test_ver)>0) {
-										if($_SESSION['statut']=='secours'){
+										if((($_SESSION['statut']=="cpe")&&(getSettingValue('GepiAccesAbsTouteClasseCpe')=='yes'))||($_SESSION['statut']=='secours')) {
 											$sql="SELECT login FROM j_eleves_classes WHERE id_classe='$id_classe[$i]' AND periode='$num_periode';";
 										}
 										else{
@@ -739,7 +824,7 @@ function get_nom_class_from_id($id){
 
 								$nb_err=0;
 								$nb_ok=0;
-								echo "<p>Importation: ";
+								echo "<p>Importation&nbsp;: ";
 								//for($i=0;$i<count($log_eleve);$i++){
 								for($i=0;$i<$nb_eleves;$i++){
 									if((isset($log_eleve[$i]))&&
@@ -755,15 +840,18 @@ function get_nom_class_from_id($id){
 											$sql="SELECT 1=1 FROM periodes p,j_eleves_classes jec WHERE p.num_periode='$num_periode' AND (p.verouiller='N' OR p.verouiller='P') AND jec.login='$log_eleve[$i]' AND p.id_classe=jec.id_classe AND p.num_periode=jec.periode;";
 										}
 										else{
-											// L'élève est-il associé au CPE:
-											// Il faudrait vraiment une tentative frauduleuse pour que ce ne soit pas le cas...
-											$sql="SELECT 1=1 FROM j_eleves_cpe jec WHERE jec.e_login='".$log_eleve[$i]."' AND jec.cpe_login='".$_SESSION['login']."';";
-											$res_test0=mysql_query($sql);
-											if(mysql_num_rows($res_test0)!=0){
-												$test0=true;
-											}
-											else{
-												$test0=false;
+											$test0=true;
+											if (($_SESSION['statut']=="cpe")&&(getSettingValue('GepiAccesAbsTouteClasseCpe')!='yes')) {
+												// L'élève est-il associé au CPE:
+												// Il faudrait vraiment une tentative frauduleuse pour que ce ne soit pas le cas...
+												$sql="SELECT 1=1 FROM j_eleves_cpe jec WHERE jec.e_login='".$log_eleve[$i]."' AND jec.cpe_login='".$_SESSION['login']."';";
+												$res_test0=mysql_query($sql);
+												if(mysql_num_rows($res_test0)!=0){
+													$test0=true;
+												}
+												else{
+													$test0=false;
+												}
 											}
 
 											// Requête pour tester que la période est bien close pour cette classe
@@ -871,6 +959,12 @@ function get_nom_class_from_id($id){
 								echo "</tr>\n";
 								echo "</table>\n";
 
+								/*
+								// Menage
+								$sql="DELETE FROM $temp_table_abs WHERE cpe_login='".$_SESSION['login']."';";
+								//echo "$sql<br />";
+								$res_tmp=mysql_query($sql);
+								*/
 							}
 						} // Fin is_posted
 					//}

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @version $Id: saisir_groupe.php 7888 2011-08-22 11:20:19Z dblanqui $
+ * @version $Id: saisir_groupe.php 8697 2011-12-02 18:47:10Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -708,6 +708,23 @@ foreach($eleve_col as $eleve) {
 						}
 					    }
 					}
+
+					//on va afficher des renseignements sur les heures précédente
+					$traitee = false;
+					$hover = 'traitements - ';
+                                        foreach ($absences_du_creneau as $abs_saisie) {
+                                            if ($abs_saisie->getTraitee() && $abs_saisie->getManquementObligationPresence()) {
+                                                $traitee = true;
+                                                $txt = $abs_saisie->getTypesDescription();
+                                                if ($txt != '') {
+                                                    $hover .= $abs_saisie->getTypesDescription().'; ';
+                                                }
+                                            }
+                                        }
+                                        if ($traitee) {
+					echo '<span title="'.htmlspecialchars($hover).'"><img src="../images/info_traitement.png" /></span>';
+                                        }
+
 
 					if ($nb_creneau_a_saisir > 0) {
 					    $i = $i + $nb_creneau_a_saisir - 1;

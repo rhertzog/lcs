@@ -1,9 +1,9 @@
 <?php
 
 /*
-* $Id: index.php 5970 2010-11-23 19:45:11Z dblanqui $
+* $Id: index.php 8729 2011-12-13 20:04:12Z crob $
 *
-* Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -56,12 +56,12 @@ if (!isset($id_classe)) {
 	echo " | <a href='import_absences_sconet.php'>Importer les absences de Sconet par lots</a>\n";
 	echo "</p>\n";
 
-	if ($_SESSION['statut']=="cpe") {
-		$calldata = mysql_query("SELECT DISTINCT c.* FROM classes c, j_eleves_cpe e, j_eleves_classes jc WHERE (e.cpe_login = '".$_SESSION['login']."' AND jc.login = e.e_login AND c.id = jc.id_classe)  ORDER BY classe");
+	if ((($_SESSION['statut']=="cpe")&&(getSettingValue('GepiAccesAbsTouteClasseCpe')=='yes'))||($_SESSION['statut']!="cpe")) {
+		$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe;";
 	} else {
-		$calldata = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
+		$sql="SELECT DISTINCT c.* FROM classes c, j_eleves_cpe e, j_eleves_classes jc WHERE (e.cpe_login = '".$_SESSION['login']."' AND jc.login = e.e_login AND c.id = jc.id_classe)  ORDER BY classe;";
 	}
-
+	$calldata = mysql_query($sql);
 	$nombreligne = mysql_num_rows($calldata);
 
 	echo "<p>Total : $nombreligne classe";

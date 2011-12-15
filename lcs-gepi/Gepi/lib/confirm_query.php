@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: confirm_query.php 5907 2010-11-19 20:30:52Z crob $
+ * $Id: confirm_query.php 8686 2011-12-01 09:44:16Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -390,6 +390,8 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
     $test_nb[] = "SELECT * FROM j_eleves_regime WHERE login ='$cible1'";
     $req[] = "DELETE FROM j_eleves_regime WHERE login ='$cible1'";
 
+	$nombre_req++;
+
 	$test_existence=mysql_query("SHOW TABLES LIKE 'j_signalement';");
 	if(mysql_num_rows($test_existence)>0){
 		$mess[] = "Table des signalements d'erreurs d'affectation";
@@ -399,6 +401,9 @@ if (($k < $nb_cible1) and ($tab_cible1[$k] != '')){
 		$nombre_req++;
 	}
 
+	$mess[] = "Table jointure élève/cpe :";
+	$test_nb[] = "SELECT * FROM j_eleves_cpe WHERE e_login ='$cible1'";
+	$req[] = "DELETE FROM j_eleves_cpe WHERE e_login ='$cible1'";
 	$nombre_req++;
 
     break;

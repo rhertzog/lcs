@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 8355 2011-09-25 13:11:49Z crob $
+ * $Id: index.php 8616 2011-11-09 20:13:15Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -326,6 +326,8 @@ else{
 }
 
 if($_SESSION['statut']=="scolarite") {
+	echo " | <a href=\"modify_resp.php\">Ajouter un ".$gepiSettings['denomination_responsable']."</a>\n";
+
 	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
 	$test_resp=mysql_query($sql);
 	if(mysql_num_rows($test_resp)>0) {

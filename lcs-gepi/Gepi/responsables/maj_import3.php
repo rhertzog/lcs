@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import3.php 8592 2011-11-03 14:37:46Z crob $
+ * $Id: maj_import3.php 8643 2011-11-19 17:23:07Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -3336,7 +3336,7 @@ $update_tempo4=mysql_query($sql);
 							$sql.=", ele_id='".$lig->ELE_ID."'";
 
 							if(getSettingValue('mode_email_ele')!="mon_compte") {
-								$sql.=", email='".addslashes($lig->$MEL)."'";
+								$sql.=", email='".addslashes($lig->MEL)."'";
 							}
 
 							$login_eleve=$lig_tmp->login;
@@ -7301,6 +7301,12 @@ $update_tempo4=mysql_query($sql);
 							echo "</span>";
 
 							if((isset($update_utilisateurs))&&(!$update_utilisateurs)) {echo " <span style='color:red;'>Erreur lors de la mise à jour du mail du compte utilisateur.</span><br />\n";}
+
+							$sql_tmp="UPDATE utilisateurs SET nom='".mysql_real_escape_string(strtoupper($lig->nom))."',
+													prenom='".mysql_real_escape_string(maj_ini_prenom($lig->prenom))."',
+													civilite='".casse_mot($lig->civilite,'majf2')."' WHERE statut='responsable' AND login IN (SELECT login FROM resp_pers WHERE pers_id='$lig1->col2' AND login!='');";
+							info_debug($sql_tmp);
+							$update_nom_prenom_utilisateur=mysql_query($sql_tmp);
 
 						}
 

@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: droits_acces.php 7619 2011-08-08 12:30:53Z crob $
+* $Id: droits_acces.php 8695 2011-12-01 14:17:11Z jjacquard $
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -2021,7 +2021,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 		 */
 $statutItem='responsable';
 $titreItem='active_absences_parents';
-$texteItem="a accès aux absences des ".$gepiSettings['denomination_eleves']." dont il est responsable";
+$texteItem="a accès aux absences des ".$gepiSettings['denomination_eleves']." dont il est responsable (affichage des saisies non traitées 4 heures après la création)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 

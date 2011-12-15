@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: trombinoscopes.php 7950 2011-08-24 13:53:46Z jjocal $
+* $Id: trombinoscopes.php 8724 2011-12-10 11:10:24Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue,Eric Lebrun, Christian Chapel
 *
@@ -180,6 +180,10 @@ function reactiver(mavar) {
 
 	if($_SESSION['statut']=='administrateur') {
 		echo " | <a href='trombino_decoupe.php'>Découpe trombinoscope</a>";
+	}
+
+	if(($_SESSION['statut']=='professeur')&&(file_exists("./plan_de_classe.php"))) {
+		echo " | <a href='plan_de_classe.php'>Plan de classe</a>";
 	}
 
 	if( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $equipepeda != 'toutes' and $discipline != 'toutes' and ( $classe != '' or $groupe != '' or $equipepeda != '' or $discipline != '' or $statusgepi != '' ) ) {
