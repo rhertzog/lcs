@@ -19,8 +19,7 @@
  *
  * @access  public
  */
- 
- //  modif 
+//  modif 
    if ( isset($_LCS['login']) ) {
        $PHP_AUTH_USER =  $_LCS['login'];
        $PHP_AUTH_PW = $_LCS['pass'];
@@ -213,6 +212,10 @@ function PMA_auth_set_user()
 
     $cfg['Server']['user']     = $PHP_AUTH_USER;
     $cfg['Server']['password'] = $PHP_AUTH_PW;
+
+    // Avoid showing the password in phpinfo()'s output
+    unset($GLOBALS['PHP_AUTH_PW']);
+    unset($_SERVER['PHP_AUTH_PW']);
 
     return true;
 } // end of the 'PMA_auth_set_user()' function

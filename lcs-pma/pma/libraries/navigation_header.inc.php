@@ -61,8 +61,8 @@ if ($GLOBALS['cfg']['LeftDisplayLogo']) {
             : __('Home'))
         .'</a>' . "\n";
     // if we have chosen server
-     if ($server != 0) {
-        // Logout for advanced authentication
+    if ($server != 0) {
+       // Logout for advanced authentication
         if ($GLOBALS['cfg']['Server']['auth_type'] != 'config') {
             echo ($GLOBALS['cfg']['MainPageIconic'] ? '' : ' - ');
             // jlcf modif 1/1

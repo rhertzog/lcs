@@ -31,14 +31,20 @@ input, select, textarea {
 }
 
 body {
-      margin:             0.5em;
-     padding:            0;
-     font-family:        arial;
-     color:              #000000;
-     background-image:   url(../themes/original/img/vertical_line.png);
-     background-repeat:  repeat-y;
-     background:   #FAF9FF url(../../lcs/fdecran/gestionbdd.jpg) top center repeat-y;
-  }
+<?php if (! empty($GLOBALS['cfg']['FontFamily'])) { ?>
+    font-family:        <?php echo $GLOBALS['cfg']['FontFamily']; ?>;
+<?php } ?>
+    padding:            0;
+    margin:             0.5em;
+    color:              <?php echo $GLOBALS['cfg']['MainColor']; ?>;
+    background:         <?php echo $GLOBALS['cfg']['MainBackground']; ?>;
+}
+
+<?php if (! empty($GLOBALS['cfg']['FontFamilyFixed'])) { ?>
+textarea, tt, pre, code {
+    font-family:        <?php echo $GLOBALS['cfg']['FontFamilyFixed']; ?>;
+}
+<?php } ?>
 h1 {
     font-size:          140%;
     font-weight:        bold;
