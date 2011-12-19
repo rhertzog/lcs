@@ -152,15 +152,13 @@ echo "6. Preparation service slapd avant mise à lour LCS ldapedu-server..."
 /ect/init.d/slapd stop
 sed -i "s/#SLAPD_CONF=/SLAPD_CONF=\"\/etc\/ldap\/slapd.conf\"/g" /etc/default/slapd
 cp /root/migresqueeze/slapd.conf /etc/ldap/slapd.conf
-/ect/init.d/slapd stop
+chown openldap:openldap /etc/ldap/slapd.conf
+/ect/init.d/slapd start
 
 echo "7. Mise a jour LCS"
 sed -i 's|#||g' /etc/apt/sources.list
 aptitude update
 aptitude dist-upgrade -y
-# Restart slapd
-/etc/init.d/slapd stop
-/etc/init.d/slapd start
 #######
 echo "8. Mise a jour des droits sur les repertoires MAILDIR"
 for MAILDIR in `find /home -name Maildir`
@@ -173,9 +171,9 @@ echo "9. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
 apt-get install -y --force-yes lcs-sysinfo
 
 echo "10. Modification du referentiel des modules" 
-mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycs/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcs/';" 
-mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsTesting/' WHERE value ='http://linux.crdp.ac-caen.fr/modulesLcsTesting/';"
-mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLcsXP/';"
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueeze/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLennycs/';" 
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueezeTesting/' WHERE value ='http://linux.crdp.ac-caen.fr/modulesLennycsTesting/';"
+mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueezeXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/';"
 
 rm /etc/apt/apt.conf.d/lcs-upgrade-squeeze
 echo -e "$COLTITRE"
