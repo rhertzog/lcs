@@ -180,8 +180,8 @@ mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modules
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueezeXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/';"
 
 echo "11. Redemarrage service ldap suite a la mise a jour"
-/ect/init.d/slapd stop
-/ect/init.d/slapd start
+/etc/init.d/slapd stop
+/etc/init.d/slapd start
 
 rm /etc/apt/apt.conf.d/lcs-upgrade-squeeze
 echo -e "$COLTITRE"
