@@ -118,6 +118,10 @@ grub-pc grub2/kfreebsd_cmdline_default  string  quiet
 grub-pc grub-pc/install_devices_disks_changed   multiselect
 grub-pc grub2/linux_cmdline_default     string  quiet
 grub-pc grub-pc/mixed_legacy_and_grub2  boolean true
+# debconf
+debconf	debconf/frontend	select	Noninteractive
+debconf	debconf/priority	select	critical
+
 EOF
 
 debconf-set-selections < /tmp/preseed-squeeze   
