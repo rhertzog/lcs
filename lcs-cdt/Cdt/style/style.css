@@ -244,7 +244,7 @@ table#plan-cdt thead td.abs{width:13%;text-align: center;}
 .cadrecheck {margin: 2px;border: solid 1px ;-moz-border-radius: 5px;-webkit-border-radius: 5px;}
 /*********************************************************** Impression du cdt ************************************************************/
 table#impr {text-align:left;padding:1px 0;width:980px;}
-table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;font-size: 20pt;}
+table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;font-size: 15pt;}
 table#impr caption h2 {float:left;margin:20px 0;color:#1b2c68;text-align:center;width:100%}
 table#impr caption h6 {float:right;margin:0 50px;color:red;}
 table#impr caption img {float:right;}
@@ -261,6 +261,10 @@ table#impr tbody tr th.seance {color: #660000;font-style:italic;background:#eee 
 #bt-rss{background:url('../images/lcs-cdt.png') no-repeat;margin: 0 5px;padding:2px 50px 0px 50px;border:none;width:60px;height:20px;}
 #bt-google{background:url('http://gmodules.com/ig/images/plus_google.gif') no-repeat;margin: 0 5px;padding:2px 12px 3px 60px;border:none;width:62px;height:20px;}
 .field7d ul.perso,.field7d ol.perso {float:left;color: #1b2c68;margin:5px 25px;text-align: left;font-weight: normal;}
+table#plan-cdt.vac {width:50%;margin-left:5px;}
+table#plan-cdt thead th.vac{color:#0D6A1E ;}
+table#plan-cdt thead td.vac{text-align: center;padding:3px;}
+table#plan-cdt th.vac{width:180px;text-align: center;opacity:1;}
 /***********************************************************Archives *********************************************************************/
 .bt-copier {background:url('../images/bt-cdt-copiercoller.png') no-repeat;border:none;font-size:14px;height:20px;width:120px;cursor:pointer;}
 .bt2-fermer {background:url('../images/bt-cdt-fermer.png') no-repeat;margin:0 0 0 10px;padding:0;border:none;font-size:13px;width:120px;height:20px;cursor:pointer;}
@@ -333,11 +337,37 @@ table#tb-cdt tbody.field11 {
     background:url('../images/zoom_in.png') no-repeat;
    margin : 5px;
    cursor:pointer;
+   padding : 6px;
+   width:16px;
    }
 
 .switch_seq.open {
    background:url('../images/zoom_out.png') no-repeat;
    margin : 5px;
+   padding : 6px;
+   cursor:pointer;
+   width:16px;
+   }
+   
+.order.down {
+   background:url('../images/arrow_up.png') no-repeat;
+   margin-left :30px;
+   padding : 6px;
    cursor:pointer;
    }
-.agauche {float:left;color: #486591;margin:5px 25px;text-align: left;font-family: arial;font-weight: normal;}
+   
+.order.up {
+   background:url('../images/arrow_down.png') no-repeat;
+   margin-left :30px;
+   padding : 6px;
+   cursor:pointer;
+   }
+      
+.agauche {
+    float:left;
+    color: #486591;
+    margin:5px 25px;
+    text-align: left;
+    font-family: arial;
+    font-weight: normal;}
+

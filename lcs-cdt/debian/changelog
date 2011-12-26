@@ -1,3 +1,10 @@
+lcs-cdt (2.4.9~4) LCS; urgency=low
+
+  * change the display order of the sequences
+  * add setting of the holiday periods
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 26 Dec 2011 22:39:44 +0100
+
 lcs-cdt (2.4.9~3) LCS; urgency=low
 
   * fix bug mysql_query

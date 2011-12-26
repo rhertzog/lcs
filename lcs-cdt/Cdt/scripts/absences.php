@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de carnet absence-
@@ -18,10 +18,10 @@ session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit; 
-//si la page est appelée par un utilisateur non identifié
+//si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelée par un utilisateur non prof
+//si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 
 if (isset($_POST['Fermer'])) 
@@ -38,49 +38,48 @@ $tsmp=time();
 $tsmp2=time() + 604800;//j+7
 $cren_off=array();
 
-//fichiers nécessaires à l'exploitation de l'API
+//fichiers necessaires a l'exploitation de l'API
 $BASEDIR="/var/www";
 //include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
 include "$BASEDIR/Annu/includes/ihm.inc.php";  
 
-// Connexion à la base de données
+// Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
 
 function is_present($kan,$logprof,$logelev) {
-	$Sql= "SELECT id_abs FROM absences WHERE  uidprof='$logprof' AND  uideleve='$logelev' AND date='$kan'";
-	$res = @mysql_query ($Sql) or die (mysql_error());
-	$tst=mysql_fetch_array($res, MYSQL_NUM);
-	if (mysql_num_rows($res)>0) return $tst[0] ;	
-
+    $Sql= "SELECT id_abs FROM absences WHERE  uidprof='$logprof' AND  uideleve='$logelev' AND date='$kan'";
+    $res = @mysql_query ($Sql) or die (mysql_error());
+    $tst=mysql_fetch_array($res, MYSQL_NUM);
+    if (mysql_num_rows($res)>0) return $tst[0] ;	
 }
 
 // Recherche des classes du prof
 $rq = "SELECT classe,id_prof FROM onglets
  WHERE login='{$_SESSION['login']}'  OR  cologin='{$_SESSION['login']}' GROUP BY classe ORDER BY classe ASC ";
  
-// lancer la requête
+// lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error()); 
 $loop=0;
 while ($row = mysql_fetch_object($result))
-	{
-                  $data1[$loop]=$row->classe;
-	$data2[$loop]=$row->id_prof;
-	$loop++;
-	}
+    {
+    $data1[$loop]=$row->classe;
+    $data2[$loop]=$row->id_prof;
+    $loop++;
+    }
 	
-//récupération du paramètre classe pour mémorisation
+//recuperation du parametre classe pour memorisation
 if (isset($_GET['mlec547trg2s5hy'])) 
-	{
-	$ch=$_GET['mlec547trg2s5hy'];
-	} 
+    {
+    $ch=$_GET['mlec547trg2s5hy'];
+    } 
 if (isset($_POST['mlec547trg2s5hy'])) 
-	{
-	$ch=$_POST['mlec547trg2s5hy'];
-	}
+    {
+    $ch=$_POST['mlec547trg2s5hy'];
+    }
 
-//Recherche des élèves de la classe
+//Recherche des eleves de la classe
 	 
 $filtre="cn=".$ch;	
 $grp_cl=search_groups($filtre);
@@ -90,24 +89,24 @@ $users = search_people_groups ($uids,"(sn=*)","cat");
 
 //date  au jour courant
 if (!isset($_POST['datejavac_dif'])) 
-	{	
-	$datjc_dif=getdate($tsmp);
-	$jo_dif=date('d',$datjc_dif['0']);
-	$mo_dif=date('m',$datjc_dif['0']);
-	$ann_dif=date('Y',$datjc_dif['0']);
-	$dtajac_dif=$jo_dif."/".$mo_dif."/".$ann_dif;
-	$dtajac= $ann_dif."/".$mo_dif."/".$jo_dif;
-	}
-	else
+    {	
+    $datjc_dif=getdate($tsmp);
+    $jo_dif=date('d',$datjc_dif['0']);
+    $mo_dif=date('m',$datjc_dif['0']);
+    $ann_dif=date('Y',$datjc_dif['0']);
+    $dtajac_dif=$jo_dif."/".$mo_dif."/".$ann_dif;
+    $dtajac= $ann_dif."/".$mo_dif."/".$jo_dif;
+    }
+    else
 //date a la valeur selectionnee	
-	{
-	$Morceauc=explode('/',$_POST['datejavac_dif']);
-	$jour_c=$Morceauc[0];
-	$mois_c=$Morceauc[1];
-	$an_c=$Morceauc[2];
-	$dtajac= $an_c."/".$mois_c."/".$jour_c;
-	$dtajac_dif=$jour_c."/".$mois_c."/".$an_c;
-	}
+    {
+    $Morceauc=explode('/',$_POST['datejavac_dif']);
+    $jour_c=$Morceauc[0];
+    $mois_c=$Morceauc[1];
+    $an_c=$Morceauc[2];
+    $dtajac= $an_c."/".$mois_c."/".$jour_c;
+    $dtajac_dif=$jour_c."/".$mois_c."/".$an_c;
+    }
 
 //creation tableaux "creneaux existants" et "creneaux nouveaux"
 //$cren_y contient le nom des creneaux existants (Mi, Si)
@@ -115,20 +114,20 @@ if (!isset($_POST['datejavac_dif']))
 
 if (isset($_POST['cren'])) 
     {
-     $y=0;$n=0;
+    $y=0;$n=0;
     for ($i = 0; $i < count($_POST['cren']); $i++) 
-            {
-            $tab_cren=$_POST['cren'];	
-            $cr=$_POST['cren'][$i];
-            $rq= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'   AND classe='$ch' AND date ='$dtajac' AND $cr!='' ";
-            $result = @mysql_query ($rq) or die (mysql_error()); 
-            $nb = mysql_fetch_array($result, MYSQL_NUM); 
-            if ($nb[0]!=0) 
+        {
+        $tab_cren=$_POST['cren'];	
+        $cr=$_POST['cren'][$i];
+        $rq= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'   AND classe='$ch' AND date ='$dtajac' AND $cr!='' ";
+        $result = @mysql_query ($rq) or die (mysql_error()); 
+        $nb = mysql_fetch_array($result, MYSQL_NUM); 
+        if ($nb[0]!=0) 
             {
             $cren_y[$y]=$cr;$y++;// creneau existant (des donnees existent pour ce creneau) 
-            } else 
-            $cren_n[$n]=$cr;$n++; //creneau nouveau
-            }
+            } 
+        else  $cren_n[$n]=$cr;$n++; //creneau nouveau
+        }
     }
     else
     $tab_cren=array();
@@ -142,15 +141,15 @@ if (isset($_POST['Valider']))
 
     //tableau des absences et retards creneaux existants donc a updater
     if (count($cren_y)>0)
-            {
-            foreach ( $cren_y as $clé => $valeur)
-              {
-              $taba="tab_abs".$valeur;
-              $tabr="tab_ret".$valeur;
-              if (!isset($_POST['abs_'.$valeur.''])) $$taba=array(); else $$taba=$_POST['abs_'.$valeur.''];
-              if (!isset($_POST['ret_'.$valeur.''])) $$tabr=array(); else $$tabr=$_POST['ret_'.$valeur.''];
-              }
-            }	
+        {
+        foreach ( $cren_y as $cle => $valeur)
+          {
+          $taba="tab_abs".$valeur;
+          $tabr="tab_ret".$valeur;
+          if (!isset($_POST['abs_'.$valeur.''])) $$taba=array(); else $$taba=$_POST['abs_'.$valeur.''];
+          if (!isset($_POST['ret_'.$valeur.''])) $$tabr=array(); else $$tabr=$_POST['ret_'.$valeur.''];
+          }
+        }	
 
     //traitement pour chaque membre de la classe 
     for ($loop=0; $loop<count($users);$loop++) 
@@ -208,7 +207,7 @@ if (isset($_POST['Valider']))
                             {
                             if (count($cren_n)>0)
                                     {
-                                     foreach ( $cren_n as $clé => $valeur)
+                                     foreach ( $cren_n as $cle => $valeur)
                                             {
                                             $id_absence=is_present($dtajac,$_SESSION['login'],$uidpot);
                                             if (($id_absence != "")) 
@@ -217,8 +216,8 @@ if (isset($_POST['Valider']))
                                                  $result6  =  mysql_query($rq6); 
                                                  if (!$result)  
                                                      {                           
-                                                      echo "<p>Votre commentaire n'a pas pu &#234;tre enregistré &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error() . "<p></p>";
-                                                      mysql_close();     // refermer la connexion avec la base de données
+                                                      echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error() . "<p></p>";
+                                                      mysql_close();     // refermer la connexion avec la base de donnees
                                                       exit();
                                                       }
                                                  else $crd="Okey";
@@ -230,8 +229,8 @@ if (isset($_POST['Valider']))
                                                 $result6  =  mysql_query($rq6);
                                                 if (!$result)  // Si l'enregistrement est incorrect
                                                     {                           
-                                                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistré &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                                                    mysql_close();     // refermer la connexion avec la base de données
+                                                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
+                                                    mysql_close();     // refermer la connexion avec la base de donnees
                                                     exit(); 
                                                     }
                                                 else $crd="Okey";
@@ -244,7 +243,7 @@ if (isset($_POST['Valider']))
     //traitement des creneaux existants pour cet eleve
     if (count($cren_y)>0)
             {	
-            foreach ( $cren_y as $clé => $valeur)
+            foreach ( $cren_y as $cle => $valeur)
                 {
                 $taba="tab_abs".$valeur;
                 $tabr="tab_ret".$valeur;
@@ -302,8 +301,8 @@ if (isset($_POST['Valider']))
                 $result6  =  mysql_query($rq6); 
                 if (!$result) 
                     {                           
-                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistré &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error() . "<p></p>";
-                    mysql_close();     // refermer la connexion avec la base de données
+                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error() . "<p></p>";
+                    mysql_close();     // refermer la connexion avec la base de donnees
                     exit();
                     }
       else $crd="Okey";
@@ -314,8 +313,8 @@ if (isset($_POST['Valider']))
         $result6  =  mysql_query($rq6);
         if (!$result)  // Si l'enregistrement est incorrect
             {                           
-             echo "<p>Votre commentaire n'a pas pu &#234;tre enregistré &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-             mysql_close();     // refermer la connexion avec la base de données
+             echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
+             mysql_close();     // refermer la connexion avec la base de donnees
              exit(); 
              }
         else $crd="Okey";
@@ -325,7 +324,7 @@ if (isset($_POST['Valider']))
     //fin traitement des creneaux existants pour un eleve
 
 
-    //suppression de l'enregistrement si aucun retard	et aucune absence (suite à une modification)		
+    //suppression de l'enregistrement si aucun retard	et aucune absence (suite e une modification)		
 
             $rq61="SELECT * FROM absences WHERE id_abs='$id_absence' ";
             $result61=  mysql_query($rq61);
@@ -341,7 +340,7 @@ if (isset($_POST['Valider']))
                         if (!$result7)  // Si l'enregistrement est incorrect
                             {                           
                             echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                            mysql_close();     // refermer la connexion avec la base de données
+                            mysql_close();     // refermer la connexion avec la base de donnees
                             exit(); 
                             }
                             else $crd="Okey"; 
@@ -353,12 +352,12 @@ if (isset($_POST['Valider']))
 	// pour chaque nouveau creneau enregistrer touspresents
 	if (count($cren_n)>0)
                     {
-                    foreach ( $cren_n as $clé => $valeur)
+                    foreach ( $cren_n as $cle => $valeur)
                             {
                             $rq= "SELECT count(*) FROM absences WHERE classe='$ch' AND date ='$dtajac' AND $valeur!='' ";
                             $result = @mysql_query ($rq) or die (mysql_error()); 
                             $nb_enrg = mysql_fetch_array($result, MYSQL_NUM);
-                            //si tous présents 
+                            //si tous presents 
                             if ($nb_enrg[0]==0) 
                                     {
                                     $rqq ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur." ) VALUES ( '$dtajac','{$_SESSION['login']}', 'touspresents', '$ch', '-')";
@@ -366,7 +365,7 @@ if (isset($_POST['Valider']))
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {                           
                                         echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de données
+                                        mysql_close();     // refermer la connexion avec la base de donnees
                                         exit(); 
                                         }
                                     else $crd="Okey"; 
@@ -379,17 +378,17 @@ if (isset($_POST['Valider']))
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {                           
                                         echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de données
+                                        mysql_close();     // refermer la connexion avec la base de donnees
                                         exit(); 
                                         }
                                    else $crd="Okey";
                                     }
                             }
                     }
-	//pour les creneaux existants, updater si tousprésents
+	//pour les creneaux existants, updater si touspresents
 	if (count($cren_y)>0)
                     {	
-                    foreach ( $cren_y as $clé => $valeur)
+                    foreach ( $cren_y as $cle => $valeur)
                             {
                             $rq= "SELECT count(*) FROM absences WHERE uideleve!='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur!='' ";
                             $result = @mysql_query ($rq) or die (mysql_error()); 
@@ -400,7 +399,7 @@ if (isset($_POST['Valider']))
                                     $rqt= "SELECT count(*) FROM absences WHERE uideleve='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur='-' ";
                                     $resultat = @mysql_query ($rqt) or die (mysql_error()); 
                                     $nb_ = mysql_fetch_array($resultat, MYSQL_NUM); 
-                                    //si tous presents n'est pas enregistré
+                                    //si tous presents n'est pas enregistre
                                     if ($nb_[0]==0) 
                                             {
                                             $rqq ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur." ) VALUES ( '$dtajac','{$_SESSION['login']}', 'touspresents', '$ch', '-')";
@@ -408,7 +407,7 @@ if (isset($_POST['Valider']))
                                             if (!$resultt)  // Si l'enregistrement est incorrect
                                                 {                           
                                                 echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                                                mysql_close();     // refermer la connexion avec la base de données
+                                                mysql_close();     // refermer la connexion avec la base de donnees
                                                 exit(); 
                                                 }
                                             else $crd="Okey";
@@ -422,7 +421,7 @@ if (isset($_POST['Valider']))
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {                           
                                         echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error() . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de données
+                                        mysql_close();     // refermer la connexion avec la base de donnees
                                         exit(); 
                                         }
                                     else $crd="Okey";
@@ -456,9 +455,9 @@ if (isset($_POST['cren']))
 	else
 	$tab_cren=array(); 
  
-//existe-il déjà un enregistrement ?
+//existe-il deja un enregistrement ?
 $rq2 = "SELECT id_abs FROM absences WHERE uidprof='{$_SESSION['login']}'  AND classe='$ch' AND date ='$dtajac' ";
- // lancer la requête
+ // lancer la requete
 $result2 = @mysql_query ($rq2) or die (mysql_error()); 
 $test=mysql_fetch_object($result2);
 if (mysql_num_rows($result2)==0) $exist="false"; else $exist="true";		
@@ -528,14 +527,14 @@ if ($exist=="true")
 <?php
 //affichage du formulaire
 echo '<div id="abs-contenu">';
-//si pas de classe de même niveau dans la matière
+//si pas de classe de meme niveau dans la matiere
 if (!mysql_num_rows($result)==0) 
         {
         echo '<p>Ce carnet vous permet de consigner les <b>A</b>bsences/<b>R</b>etards de vos &eacute;l&egrave;ves, de sortir un bilan pour une p&eacute;riode donn&eacute;e et de consulter par semaine, les absences/retards dans toutes les mati&egrave;res.</p>';
         echo '<div id="crenos">';
         echo '<p>Date : <input id="cpe-abs" size="10" name="datejavac_dif" value="'.$dtajac_dif.'" readonly="readonly" style="cursor: text" />';
         echo ' Classe :<select name="mlec547trg2s5hy" class="cdt-select">';
-        foreach ( $data1 as $clé => $valeur)
+        foreach ( $data1 as $cle => $valeur)
           {
            echo "<option value=\"$valeur\"";
           if ($valeur==$ch) {echo ' selected="selected"';}
@@ -566,7 +565,7 @@ if (!mysql_num_rows($result)==0)
         echo '</p></div>';
 
     //affichage des boutons fermer et enregistrer
-    //pas de tableau avant la sélection des creneaux
+    //pas de tableau avant la selection des creneaux
     if (!isset($_GET['mlec547trg2s5hy'])  && count($_POST['cren'])>0)
 	{	
 	echo '<div id="bt-fixe" ><input class="bt-enregistre" type="submit" name="Valider" value="" />';
@@ -596,7 +595,7 @@ if (!mysql_num_rows($result)==0)
              {
              echo '<td  class="enbas">';
              echo '<table border="0"  class="motif"><tr><td colspan="3" class="h-motif">';
-             foreach ( $cren_n as $clé => $valeur) echo $valeur ." ";
+             foreach ( $cren_n as $cle => $valeur) echo $valeur ." ";
              echo '</td></tr><tr><td colspan="3" >&nbsp;</td></tr><tr><td class="AR">A</td>';
              if (count($cren_n)==1) echo '<td class="AR">R</td>';
              echo '<td>Motif</td></tr></table></td>';
@@ -604,7 +603,7 @@ if (!mysql_num_rows($result)==0)
 		 
             if (count($cren_y)>0)
                 {
-                 foreach ( $cren_y as $clé => $valeur)
+                 foreach ( $cren_y as $cle => $valeur)
                      {
                      echo '<td >' ;
                      echo '<table border="0" class="motif"><tr><td colspan="3">'.$valeur .'</td></tr><tr><td colspan="3" >&nbsp;</td></tr>';
@@ -622,7 +621,7 @@ if (!mysql_num_rows($result)==0)
                 //recherche des absences et retards
                 $potache=$users[$loop]["uid"];
                 $nbabs=0;$nbrtd=0;
-                foreach ( $horaire as $clé => $val)
+                foreach ( $horaire as $cle => $val)
                         {
                         $rq4= "SELECT count(*) FROM absences WHERE  uidprof='{$_SESSION['login']}'  AND $val='A'  AND uideleve='$potache' AND date<='$dtajac' ";
                         $result4 = @mysql_query ($rq4) or die (mysql_error()); 
@@ -638,7 +637,7 @@ if (!mysql_num_rows($result)==0)
                                 }	
                         }//fin foreach $horaire	
 
-                //existe t-il des données 
+                //existe t-il des donnees 
                 for ($a = 0; $a <= count($uid_eleve); $a++) 
                         {
                         if ($users[$loop]["uid"]==$uid_eleve[$a])

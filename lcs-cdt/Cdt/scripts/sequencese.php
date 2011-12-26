@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-  VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de gestion des sequences -
@@ -16,40 +16,32 @@ header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache"); 
 session_name("Cdt_Lcs");
 @session_start();
-
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
-
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
-
 include "../Includes/functions2.inc.php";
 $tsmp=time();
 $tsmp2=time() + 604800;//j+7
-
-
 // Connexion a la base de donnaes
 require_once ('../Includes/config.inc.php');
 // Creer la requete (Recuperer les rubriques de l'utilisateur// doit etre identique  a la requete du cdt prof) 
-$rq = "SELECT classe,matiere,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
-
- // lancer la requ&egrave;ete
+$rq = "SELECT classe,matiere,id_prof FROM onglets  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
+// lancer la requ&egrave;ete
 $result = mysql_query ($rq) or die (mysql_error());
-
 if ( mysql_num_rows($result)>0) 
-	{
-	$loop=0;
-	while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
-		{
-		$clas[$loop]=$enrg[0];
-		$mat[$loop]=utf8_encode($enrg[1]);
-		$numero[$loop]=$enrg[2];
-		if ($numero[$loop]==$_GET['rubrique'] || $numero[$loop]==$_POST['numongl'] ) $ind=$loop;
-		$loop++;
-		}
-		
-	}
+    {
+    $loop=0;
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+        {
+        $clas[$loop]=$enrg[0];
+        $mat[$loop]=utf8_encode($enrg[1]);
+        $numero[$loop]=$enrg[2];
+        if ($numero[$loop]==$_GET['rubrique'] || $numero[$loop]==$_POST['numongl'] ) $ind=$loop;
+        $loop++;
+        }
+
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -57,25 +49,21 @@ if ( mysql_num_rows($result)>0)
 <title>Gestion des s&eacute;quences</title>
 <meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link href="../style/style.css" rel="stylesheet" type="text/css" />
-                  <link href="../style/sequences.css" rel="stylesheet" type="text/css" />
-	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
-	
-	<!--[if IE]>
-        <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
-        <![endif]-->
-
-	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
-	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
-	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
-	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
-	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
-                  <script type="text/javascript" src="../Includes/JQ/JQ-sequences.js"></script>
-
-	
+<link href="../style/style.css" rel="stylesheet" type="text/css" />
+<link href="../style/sequences.css" rel="stylesheet" type="text/css" />
+<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+<!--[if IE]>
+<link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
+<![endif]-->
+<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
+<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
+<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
+<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
+<script type="text/javascript" src="../Includes/JQ/JQ-sequences.js"></script>
 </head>
 <body>
-    <p></p>
+<p></p>
 <?php
 $ru = (isset($_GET['rubrique'])) ? $_GET['rubrique'] :  $_POST['numongl'];
 $ru = (isset($_POST['numongl'])) ? $_POST['numongl'] : $_GET['rubrique'];
@@ -94,34 +82,31 @@ echo 'setTimeout("reorganise(\'sortable'.$ind.'\')",1);';
 echo '</script> ';
 //fin des scripts
 //html
-echo '<div id="tabs">
-	<ul>';
-	for ($loop=0; $loop < count ($clas); $loop++)
-		{
-		echo '<li class="ong"><a  href="#tabs-'.$loop.'" tabindex="'.$numero[$loop].'">'.$mat[$loop].'<br />'. $clas[$loop].'</a></li>';
-		}
-	
-	echo '</ul>';
+echo '<div id="tabs"><ul>';
+for ($loop=0; $loop < count ($clas); $loop++)
+    {
+    echo '<li class="ong"><a  href="#tabs-'.$loop.'" tabindex="'.$numero[$loop].'">'.$mat[$loop].'<br />'. $clas[$loop].'</a></li>';
+    }
+echo '</ul>';
  ?>
 <button id="showr" >Cr&eacute;er une s&eacute;quence </button>
 <span id="aide">&nbsp;</span>
-
 <div id="masquable">
 <form id="form_seq" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
-	<p>Titre Court : <input type="text"  id="tc" value="" size="20" maxlength="20" /></p>
-	<p>Titre Long : <input type="text" id="tl" value="" size="100" maxlength="100" /> </p>
-	<p>Description de la s&#233;quence  :</p>
-        <div><textarea id="contenu_sequence" name="Cont_seq" class="SeqmceAdvanced"  style="width:100%" rows="30" cols="90"></textarea>
-	<input type="hidden" name="numongl" id="numong" value= "<?php echo $ru; ?>" />
-	<input type="hidden" id="numseq" value= "" />
-	<input type="hidden" id="closeandsubmit" value= "" />
-        </div>
+<p>Titre Court : <input type="text"  id="tc" value="" size="20" maxlength="20" /></p>
+<p>Titre Long : <input type="text" id="tl" value="" size="100" maxlength="100" /> </p>
+<p>Description de la s&#233;quence  :</p>
+<div><textarea id="contenu_sequence" name="Cont_seq" class="SeqmceAdvanced"  style="width:100%" rows="30" cols="90"></textarea>
+<input type="hidden" name="numongl" id="numong" value= "<?php echo $ru; ?>" />
+<input type="hidden" id="numseq" value= "" />
+<input type="hidden" id="closeandsubmit" value= "" />
+</div>
 </form> 
 <button id="record">Enregistrer</button> <button id="update">Enregistrer les modifications </button> <button id="hider">Fermer</button>
 </div>
 <!-- End masquable -->
 <div id="dialog" title="Aide sur l'utilisation des s&eacute;quences">
-	<p>Le dispositif de <span style="color: #993300;">s&eacute;quences</span> p&eacute;dagogiques permet de regrouper visuellement plusieurs s&eacute;ances dans l'affichage du cahier de textes.</p>
+<p>Le dispositif de <span style="color: #993300;">s&eacute;quences</span> p&eacute;dagogiques permet de regrouper visuellement plusieurs s&eacute;ances dans l'affichage du cahier de textes.</p>
 <ol >
 <li>Une s&eacute;quence p&eacute;dagogique comporte :
 <ul>
@@ -143,42 +128,40 @@ s&eacute;quence apparaisse dans la boite de selection (page saisie du cdt), il f
 </div>
 <?php
 echo '<div id="sortable">';
-
 //creation des onglets (identiques au cdt)
 for ($loop=0; $loop < count ($clas); $loop++)
-	{
-	echo '<div id="tabs-'.$loop.'"><ul id="sortable'.$loop.'" class="connectedSortable ui-helper-reset seq ">';
-	$rq = "SELECT id_seq,titre,titrecourt,contenu,ordre FROM sequences
-	WHERE id_ong='$numero[$loop]' order by ordre ASC";
-	// lancer la requête
-	$result = @mysql_query ($rq) or die (mysql_error());
-	// Combien y a-t-il d'enregistrements ?
-	$nb = mysql_num_rows($result); 
-	//on récupère les données
-	$j=0;
-	$TitreSeq=array();
-	while ($row = mysql_fetch_object($result))
-		{
-		$IdSeq[$j]=$row->id_seq;
-		$TitreSeq[$j]=utf8_encode($row->titre);
-		$TitreCourSeq[$j]=utf8_encode($row->titrecourt);
-		$ContenuSeq[$j]=utf8_encode($row->contenu);
-		$OrdreSeq[$j]=$row->ordre;
-		$j++;
-		} 
-	//affichage des sequences de l'onglet
-	for ($i=0; $i< count ($TitreSeq); $i++)
-		{	
-		echo '<li class="ui-state-default sequ" id="li'.$IdSeq[$i].'"  title="'.$TitreCourSeq[$i].'">
-		<span class="ui-icon ui-icon-arrow-4 handdle"></span>
-                <span class="order" >'.$OrdreSeq[$i].'</span>
-		- '.$TitreCourSeq[$i].'
-		<span class="buttons"><button class="showform" tabindex="'.$IdSeq[$i].'">Editer</button>
-		<button class="delet" tabindex="'.$IdSeq[$i].'">Supprimer</button></span></li>';
-		}
-	echo '</ul></div>';
-	}
-	
+    {
+    echo '<div id="tabs-'.$loop.'"><ul id="sortable'.$loop.'" class="connectedSortable ui-helper-reset seq ">';
+    $rq = "SELECT id_seq,titre,titrecourt,contenu,ordre FROM sequences
+    WHERE id_ong='$numero[$loop]' order by ordre ASC";
+    // lancer la requete
+    $result = @mysql_query ($rq) or die (mysql_error());
+    // Combien y a-t-il d'enregistrements ?
+    $nb = mysql_num_rows($result); 
+    //on recupère les donnees
+    $j=0;
+    $TitreSeq=array();
+    while ($row = mysql_fetch_object($result))
+        {
+        $IdSeq[$j]=$row->id_seq;
+        $TitreSeq[$j]=utf8_encode($row->titre);
+        $TitreCourSeq[$j]=utf8_encode($row->titrecourt);
+        $ContenuSeq[$j]=utf8_encode($row->contenu);
+        $OrdreSeq[$j]=$row->ordre;
+        $j++;
+        } 
+    //affichage des sequences de l'onglet
+    for ($i=0; $i< count ($TitreSeq); $i++)
+        {	
+        echo '<li class="ui-state-default sequ" id="li'.$IdSeq[$i].'"  title="'.$TitreCourSeq[$i].'">
+        <span class="ui-icon ui-icon-arrow-4 handdle"></span>
+        <span class="order" >'.$OrdreSeq[$i].'</span>
+        - '.$TitreCourSeq[$i].'
+        <span class="buttons"><button class="showform" tabindex="'.$IdSeq[$i].'">Editer</button>
+        <button class="delet" tabindex="'.$IdSeq[$i].'">Supprimer</button></span></li>';
+        }
+    echo '</ul></div>';
+    }
 echo '</div><!-- fin sortable -->
 </div><!-- fin tabs -->
 </fieldset>';

@@ -1,4 +1,4 @@
-<?
+<?php
 /* =============================================
    Projet LCS : Linux Communication Server
    functions2.inc.php
@@ -6,15 +6,11 @@
    « wawa » olivier.lecluse@ac-caen.fr
    [LCS CoreTeam]
    jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   V 1.4 maj : 11/05/2004
-   modif par ph lelclerc pour la VERSION 2.0 du 10/10/20010
+   Equipe Tice academie de Caen
+   modif par ph lelclerc pour la VERSION 2.3 du 31/12/2011
    ============================================= */
 
-// Clé privée pour cryptage du cookie LCSuser dans fonction open_session()
-   
-
-    function is_prof ($login) {
+function is_prof ($login) {
         global $ldap_server, $ldap_port, $dn;
         global $error;
         $error="";
@@ -51,7 +47,7 @@
     }
 
 
-	function is_administratif ($login) {
+function is_administratif ($login) {
         global $ldap_server, $ldap_port, $dn;
         global $error;
         $error="";
@@ -87,21 +83,19 @@
         return $is_administratif;
     }
 
-// Cette fonction crée un menu calendier : mois, jours et années, initialisé à la date du timestamp précisé  + offset 
+// Cette fonction crée un menu calendier : mois, jours et années, initialisé à la date du timestamp précisé  + offset
 function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
 //offset=nbre de jours / au timestmp ,var_j,var_m,var_a=nom des variables associées pour la bd ,$tsmp=timestamp
-{ 
+{
 // Tableau indexé des jours
-$jours = array (1 => '01', '02', '03', '04', '05','06', '07', '08', '09', '10', '11','12','13','14','15',
-						'16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31');
+$jours = array (1 => '01', '02', '03', '04', '05','06', '07', '08', '09', '10', '11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31');
 
 // Tableau indexé des mois
-  $mois = array (1 => '01', '02', '03', '04', '05', 
-          '06', '07', '08', '09', '10', '11','12');
+$mois = array (1 => '01', '02', '03', '04', '05','06', '07', '08', '09', '10', '11','12');
 $dateinfo=getdate($tsmp);
 $jo=date('d',$dateinfo['0']+($offset*86400));
 $mo=date('m',$dateinfo['0']+($offset*86400));
-$ann=date('Y',$dateinfo['0']+($offset*86400)); 
+$ann=date('Y',$dateinfo['0']+($offset*86400));
 // Création des menus déroulants
  //les jours
   echo '<select name="'.$var_j.'">';
@@ -134,71 +128,62 @@ $ann=date('Y',$dateinfo['0']+($offset*86400));
   echo "</select>\n";
 }
 
-    
+
 function decripte_classe($classe_criptee){
+    include "config.inc.php";
+    include "data.inc.php";
+    $groups=search_groups('cn=classe*');
+    if (count($groups))
+        {
+        for ($loup=0; $loup < count($groups); $loup++)
+            {
 
-include "config.inc.php";
-include "data.inc.php";
-
-$groups=search_groups('cn=classe*');
-
-		  if (count($groups))
-		  	{    
-			for ($loup=0; $loup < count($groups); $loup++)
-			        {
-			        
-						if ($classe_criptee==substr(crypt(substr($groups[$loup]["cn"],-8,8),$Grain),2))
-							{
-							$classe_en_clair=$groups[$loup]["cn"];
-							break;
-							}
-						}
-			}
-
- for($n=0; $n<count($classe); $n++)
-						{
-						if (mb_ereg("(_$classe[$n])$",$classe_en_clair) || $classe[$n]==$classe_en_clair)
-							{
-							$classe_decriptee=$classe[$n];
-							break;
-							}
-						}
-return $classe_decriptee;				
+            if ($classe_criptee==substr(crypt(substr($groups[$loup]["cn"],-8,8),$Grain),2))
+                {
+                $classe_en_clair=$groups[$loup]["cn"];
+                break;
+                }
+            }
+        }
+    for($n=0; $n<count($classe); $n++)
+        {
+        if (mb_ereg("(_$classe[$n])$",$classe_en_clair) || $classe[$n]==$classe_en_clair)
+                {
+                $classe_decriptee=$classe[$n];
+                break;
+                }
+        }
+    return $classe_decriptee;
 }
 
 function decripte_uid($uid_cripte,$saclasse) {
-	$uid_decrypte=array();
-	$groups=search_groups('cn=classe*');
-
-		  if (count($groups))
-		  	{    
-			for ($loup=0; $loup < count($groups); $loup++)
-			        {
-			        
-						if ((mb_ereg("(_$saclasse)$",$groups[$loup]["cn"])) || ($saclasse == $groups[$loup]["cn"]))
-							{
-							$full_classe =$groups[$loup]["cn"];
-							break;
-							}
-						}
-			}	
-	
-	$membres = search_uids ("(cn=".$full_classe.")", "half");
-	
-	for ($iteration = 0; $iteration <= count($membres); $iteration++) 
-   	{
-   	$uidgugus=$membres[$iteration]["uid"]; 
-   	if ( (substr(md5($uidgugus),2,5).substr(md5($uidgugus),-5,5))==  $uid_cripte) 
- 			{
- 			$uid_decrypte[0]=$membres[$iteration]["uid"];
- 			list($user, $groups)=people_get_variables($uidgugus, true);
- 			$uid_decrypte[1]=getprenom($user['fullname'],$user['nom']);
- 			$uid_decrypte[2]=$saclasse;
- 			break;
- 			}
- 			 												
-   	}
-	return $uid_decrypte;
+    $uid_decrypte=array();
+    $groups=search_groups('cn=classe*');
+    if (count($groups))
+        {
+        for ($loup=0; $loup < count($groups); $loup++)
+            {
+            if ((mb_ereg("(_$saclasse)$",$groups[$loup]["cn"])) || ($saclasse == $groups[$loup]["cn"]))
+                {
+                $full_classe =$groups[$loup]["cn"];
+                break;
+                }
+            }
+        }
+    $membres = search_uids ("(cn=".$full_classe.")", "half");
+    for ($iteration = 0; $iteration <= count($membres); $iteration++)
+        {
+        $uidgugus=$membres[$iteration]["uid"];
+        if ( (substr(md5($uidgugus),2,5).substr(md5($uidgugus),-5,5))==  $uid_cripte)
+            {
+            $uid_decrypte[0]=$membres[$iteration]["uid"];
+            list($user, $groups)=people_get_variables($uidgugus, true);
+            $uid_decrypte[1]=getprenom($user['fullname'],$user['nom']);
+            $uid_decrypte[2]=$saclasse;
+            break;
+            }
+        }
+    return $uid_decrypte;
 }
 
 function people_get_classe ($uid)
@@ -238,9 +223,8 @@ function people_get_classe ($uid)
   return $ret_group;
 }
 
-function people_get_cours ($uid)
-{
-  
+function people_get_cours ($uid){
+
   global $ldap_server, $ldap_port, $dn;
   global $error;
   $error="";
@@ -249,8 +233,6 @@ function people_get_cours ($uid)
   $ldap_people_attr = array(
     "uid",				// login
       );
-
-
   $ldap_group_attr = array (
     "cn",
       );
@@ -272,7 +254,7 @@ function people_get_cours ($uid)
               $ret_group[$loop] = array (
                 "cn"           => $info[$loop]["cn"][0]              );
             }
-            
+
             //usort($ret_group, "cmp_cn");
           }
           @ldap_free_result ( $result );
@@ -315,7 +297,7 @@ function people_get_datenaissance ($uid)
              }
         @ldap_free_result ( $result );
       }
-       
+
     @ldap_close ( $ds );
   } else {
     $error = "Erreur de connection au serveur LDAP";
@@ -326,7 +308,7 @@ function people_get_datenaissance ($uid)
 /*********************/
 
 function validkey($qui,$quand,$thekey) {
-include "config.inc.php";
-return (substr((crypt($qui.$quand,'$1$'.$Grain.'$')),-20,20) == $thekey ? "OK" : "KO");
+    include "config.inc.php";
+    return (substr((crypt($qui.$quand,'$1$'.$Grain.'$')),-20,20) == $thekey ? "OK" : "KO");
 }
 ?>

@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    modif : 20/12/2010
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
@@ -37,8 +37,7 @@ if (isset($_POST['planning']))
 include ('../Includes/config.inc.php');
 
 // Creer la requ&egrave;ete.
-$rq = "SELECT classe,matiere,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY classe ASC ";
+$rq = "SELECT classe,matiere,id_prof FROM onglets WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY classe ASC ";
 
 // lancer la requ&egrave;ete
 $result = @mysql_query ($rq) or die (mysql_error());
@@ -72,7 +71,6 @@ if (mysql_num_rows($result)==0)
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
-//include_once ('/usr/share/lcs/Plugins/Cdt/Includes/markdown.php'); //convertisseur txt-->HTML
 ?>
 
 <!-- Fin de la page de premiere utilisation -->
@@ -115,19 +113,12 @@ $cours="";//variable temporaire de $Cours (avec une majuscule) pour un UPDATE
 $afaire="";//variable temporaire de $Afaire (avec une majuscule) pour un UPDATE
 $article="";
 if (isset ($_POST['sequence']))
-    $Seq= $_POST['sequence'] ;
-    else $Seq="";
+$Seq= $_POST['sequence'] ;
+else $Seq="";
 
 //on recupere le parametre de la rubrique
-if (isset($_GET['rubrique']))
-    {
-    $cible=$_GET['rubrique'];
-    }
-elseif (isset($_POST['rubriq']))
-    {
-    $cible=$_POST['rubriq'];
-    }
-
+if (isset($_GET['rubrique'])) $cible=$_GET['rubrique'];
+elseif (isset($_POST['rubriq'])) $cible=$_POST['rubriq'];
 //rubrique edt si agenda present
 elseif (is_dir("../../Agendas"))
     {
@@ -136,19 +127,18 @@ elseif (is_dir("../../Agendas"))
     $aujourdhui=date('Ymd');
     $date=gmdate('His');
     //entrees edt ?
-    $rq="SELECT cal_time,cal_duration,cal_name,cal_description FROM webcal_entry WHERE cal_date = '".$aujourdhui
-    ."' AND cal_id IN
+    $rq="SELECT cal_time,cal_duration,cal_name,cal_description FROM webcal_entry WHERE cal_date = '".$aujourdhui ."' AND cal_id IN
     (SELECT cal_id FROM webcal_entry_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_id IN
     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
     // lancer la requete
     $result = @mysql_query ($rq);
     if ($result)
-     {
-     //on recupere les donnees
-     $tab=array();
-     $loop=0;
-     while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        {
+        //on recupere les donnees
+        $tab=array();
+        $loop=0;
+        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
             {
             //calcul heure de fin
             $s=substr($enrg[0],-2,2);
@@ -159,10 +149,13 @@ elseif (is_dir("../../Agendas"))
             if ($date > date('His',$heure) && $date < date('His',$heurefin))
                 {
                 $mati= explode(":",$enrg[3]);
-                $mati[1]=preg_replace ( "/[\r\n]+/", "", $mati[1] );
+                //matiere sans retour ligne
+                $mat_current=preg_replace ( "/[\r\n]+/", "", $mati[1] );
+                //matiere telle que decrite dans edt
+                //$mati[1]=substr($mati[1]); 
                 if ( $enrg[2]!="" && $mati[1]!="")
                     {
-                    $match= $enrg[2].":".$mati[1];
+                    $match= $enrg[2].":".$mat_current;
                     //recherche du cours suivant
                     $rq="SELECT cal_date,cal_id FROM webcal_entry WHERE cal_date > '".$aujourdhui
                     ."'  AND cal_name='".$enrg[2]."' AND cal_description LIKE '%".$mati[1]."%' AND cal_id IN
@@ -174,18 +167,18 @@ elseif (is_dir("../../Agendas"))
                     if ($result)
                         {
                         $row = mysql_fetch_object($result);
-                        $tsmp2=mkTime(0,0,1,substr($row->cal_date,2,2),substr($row->cal_date,-2,2),substr($row->cal_date,0,4));
+                        $tsmp2=mkTime(0,0,1,substr($row->cal_date,4,2),substr($row->cal_date,-2,2),substr($row->cal_date,0,4));
                         }
                     break;
                     }
                 }
-       }
-    }
+        }
+        }
     mysql_close();
-    // Connexion a la base de donnees Cdt
+    // recherche de l'onglet correspondant au cours edt
     include ('../Includes/config.inc.php');
     $rq = "SELECT id_prof FROM onglets
-     WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' AND edt='".$match."'";
+     WHERE (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') AND edt='".$match."'";
     $result = @mysql_query ($rq) or die (mysql_error());
     if (mysql_num_rows($result) >0)
         {
@@ -205,11 +198,10 @@ else $cible="";
   //Suppression d'un commentaire apres confirmation
 if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])) )
     {
-
     //l'article existe il ?
     $rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' )";
 
-    // lancer la requ&egrave;ete
+    // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
     $nb = mysql_num_rows($result);
     if ($nb==1)
@@ -251,29 +243,29 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
 
     // Verifier $Afaire et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['Afaire']) > 0)
+        {
+        //$Afaire= addSlashes(strip_tags(stripslashes($_POST['Afaire'])));
+        if (get_magic_quotes_gpc())
             {
-            //$Afaire= addSlashes(strip_tags(stripslashes($_POST['Afaire'])));
-            if (get_magic_quotes_gpc())
-                {
-                $Afaire  = htmlentities($_POST['Afaire']);
-                $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-                $Afaire = $oMyFilter->process($Afaire);
-                }
-            else
-                {
-                $Afaire = $_POST['Afaire'];
-                $config = HTMLPurifier_Config::createDefault();
-                $config->set('Core.Encoding', 'ISO-8859-15');
-                $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
-                 $purifier = new HTMLPurifier($config);
-                $Afaire = $purifier->purify($Afaire);
-                $Afaire = mysql_real_escape_string($Afaire);
-                }
+            $Afaire  = htmlentities($_POST['Afaire']);
+            $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+            $Afaire = $oMyFilter->process($Afaire);
             }
+        else
+            {
+            $Afaire = $_POST['Afaire'];
+            $config = HTMLPurifier_Config::createDefault();
+            $config->set('Core.Encoding', 'ISO-8859-15');
+            $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
+             $purifier = new HTMLPurifier($config);
+            $Afaire = $purifier->purify($Afaire);
+            $Afaire = mysql_real_escape_string($Afaire);
+            }
+        }
     else
-            { // Si aucun commentaire n'a ete saisi
-             $Afaire= "";
-            }
+        { // Si aucun commentaire n'a ete saisi
+         $Afaire= "";
+        }
 
     //Traitement de dates
     $Morceauc=explode('/',$_POST['datejavac']);
@@ -288,85 +280,85 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
     $date_af = $an_f.$mois_f.$jour_f;
 
     if  ($_POST['datejav']!="idem Cours")
-    {
-    $Morceauv=explode('/',$_POST['datejav']);
-    $jour_v=$Morceauv[0];
-    $mois_v=$Morceauv[1];
-    $an_v=$Morceauv[2];
-    $date_v = $an_v.$mois_v.$jour_v;
-    }
+        {
+        $Morceauv=explode('/',$_POST['datejav']);
+        $jour_v=$Morceauv[0];
+        $mois_v=$Morceauv[1];
+        $an_v=$Morceauv[2];
+        $date_v = $an_v.$mois_v.$jour_v;
+        }
     else
     $date_v=$date_c;
 
     // Creer la requete d'ecriture pour l'enregistrement des donnees
     if (isset($_POST['enregistrer']) && ((strlen($Cours) > 1) || (strlen($Afaire) > 1)))
-                    {
+        {
         $Sequ=($_POST['sequence']);
-                    $rq = "INSERT INTO cahiertxt (id_auteur,login,date,contenu,afaire,datafaire,datevisibi,seq_id )
-                     VALUES ( '$cible','{$_SESSION['login']}', '$date_c', '$Cours', '$Afaire', '$date_af', '$date_v', '$Sequ')";
-                    }
+        $rq = "INSERT INTO cahiertxt (id_auteur,login,date,contenu,afaire,datafaire,datevisibi,seq_id )
+        VALUES ( '$cible','{$_SESSION['login']}', '$date_c', '$Cours', '$Afaire', '$date_af', '$date_v', '$Sequ')";
+        }
 
     //Creer la requete pour la mise a  jour des donnees
     if (isset($_POST['modifier']))
-                    {
-                    $artic= ($_POST['numart']);
-                    $Sequ=($_POST['sequence']);
-                    $rq = "UPDATE  cahiertxt SET date='$date_c', contenu='$Cours', afaire='$Afaire',datafaire='$date_af',datevisibi='$date_v',seq_id='$Sequ'
-                    WHERE id_rubrique='$artic'";
-                    }
+        {
+        $artic= ($_POST['numart']);
+        $Sequ=($_POST['sequence']);
+        $rq = "UPDATE  cahiertxt SET date='$date_c', contenu='$Cours', afaire='$Afaire',datafaire='$date_af',datevisibi='$date_v',seq_id='$Sequ'
+        WHERE id_rubrique='$artic'";
+        }
     // lancer la requete
         $result = mysql_query($rq);
         if (!$result)  // Si l'enregistrement est incorrect
-                {
-                 echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
-         mysql_close();     // refermer la connexion avec la base de donnees
-         exit();
-         }
+            {
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
+            mysql_close();     // refermer la connexion avec la base de donnees
+            exit();
+            }
 
     //diffusion des commentaires vers les classes de meme niveau
     if ((isset($_SESSION['grp']) ) && (isset($_SESSION['dif_c']) ) && (isset($_SESSION['dif_af']) ) && (isset($_SESSION['dif_vi']) )
      && ((isset($_POST['enregistrer'] ) || isset($_POST['modifier'])) && ((strlen($Cours) > 1) || (strlen($Afaire) > 1))))
+        {
+        for ($loop=0; $loop < count ($_SESSION['grp'])  ; $loop++)
             {
-            for ($loop=0; $loop < count ($_SESSION['grp'])  ; $loop++)
+            $cibledif=$_SESSION['grp'][$loop];
+            $seqdif=$_SESSION['dif_sq'][$loop];
+            $Morceauc_dif=explode('/',$_SESSION['dif_c'][$loop]);
+            $jour_c_dif=$Morceauc_dif[0];
+            $mois_c_dif=$Morceauc_dif[1];
+            $an_c_dif=$Morceauc_dif[2];
+            $date_c_dif = $an_c_dif.$mois_c_dif.$jour_c_dif;
+            $Morceauf_dif=explode('/',$_SESSION['dif_af'][$loop]);
+            $jour_f_dif=$Morceauf_dif[0];
+            $mois_f_dif=$Morceauf_dif[1];
+            $an_f_dif=$Morceauf_dif[2];
+            $date_af_dif = $an_f_dif.$mois_f_dif.$jour_f_dif;
+            if ($_SESSION['dif_vi'][$loop]!="idem Cours")
                 {
-                $cibledif=$_SESSION['grp'][$loop];
-                $seqdif=$_SESSION['dif_sq'][$loop];
-                $Morceauc_dif=explode('/',$_SESSION['dif_c'][$loop]);
-                $jour_c_dif=$Morceauc_dif[0];
-                $mois_c_dif=$Morceauc_dif[1];
-                $an_c_dif=$Morceauc_dif[2];
-                $date_c_dif = $an_c_dif.$mois_c_dif.$jour_c_dif;
-                $Morceauf_dif=explode('/',$_SESSION['dif_af'][$loop]);
-                $jour_f_dif=$Morceauf_dif[0];
-                $mois_f_dif=$Morceauf_dif[1];
-                $an_f_dif=$Morceauf_dif[2];
-                $date_af_dif = $an_f_dif.$mois_f_dif.$jour_f_dif;
-                if ($_SESSION['dif_vi'][$loop]!="idem Cours")
-                    {
-                    $Morceauv_dif=explode('/',$_SESSION['dif_vi'][$loop]);
-                    $jour_v_dif=$Morceauv_dif[0];
-                    $mois_v_dif=$Morceauv_dif[1];
-                    $an_v_dif=$Morceauv_dif[2];
-                    $date_v_dif = $an_v_dif.$mois_v_dif.$jour_v_dif;
-                    }
-                else  $date_v_dif=$date_c_dif;
-                $rq = "INSERT INTO cahiertxt (id_auteur,login,date,contenu,afaire,datafaire,datevisibi,seq_id )
-                VALUES ( '$cibledif','{$_SESSION['login']}', '$date_c_dif', '$Cours', '$Afaire', '$date_af_dif','$date_v_dif',$seqdif )";
-                // lancer la requete
-                $result = mysql_query($rq);
-                if (!$result)  // Si l'enregistrement est incorrect
-                    {
-                    echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
-                    mysql_close();     // refermer la connexion avec la base de donnees
-                    exit();
-                    }
+                $Morceauv_dif=explode('/',$_SESSION['dif_vi'][$loop]);
+                $jour_v_dif=$Morceauv_dif[0];
+                $mois_v_dif=$Morceauv_dif[1];
+                $an_v_dif=$Morceauv_dif[2];
+                $date_v_dif = $an_v_dif.$mois_v_dif.$jour_v_dif;
                 }
-            //desruction des variables de session
-            unset ($_SESSION['grp']);
-            unset ($_SESSION['dif_c']);
-            unset ($_SESSION['dif_af']);
-            unset ($_SESSION['dif_sq']);
+            else  $date_v_dif=$date_c_dif;
+            $rq = "INSERT INTO cahiertxt (id_auteur,login,date,contenu,afaire,datafaire,datevisibi,seq_id )
+            VALUES ( '$cibledif','{$_SESSION['login']}', '$date_c_dif', '$Cours', '$Afaire', '$date_af_dif','$date_v_dif',$seqdif )";
+            // lancer la requete
+            $result = mysql_query($rq);
+            if (!$result)  // Si l'enregistrement est incorrect
+                {
+                echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
+                mysql_close();     // refermer la connexion avec la base de donnees
+                exit();
+                }
             }
+        //desruction des variables de session
+        unset ($_SESSION['grp']);
+        unset ($_SESSION['dif_c']);
+        unset ($_SESSION['dif_af']);
+        unset ($_SESSION['dif_sq']);
+        }
     }
 
 //fin traitement formulaire
@@ -399,7 +391,7 @@ while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
     }
 
 //on calcule la largeur des onglets
-if($cible==""){$cible=($numero[0]);}
+if($cible=="") $cible=($numero[0]);
 $nmax=$nb;
 
 //cr&eacute;ation de la barre de menu
@@ -410,27 +402,27 @@ echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
     {
     if ($cible == ($numero[$x]))
-            {//cellule active
-            echo '<li id="select"><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'"
-            onmouseover="window.status=\'\';return true" id="courant">'.$mat[$x].'<br />'.$clas[$x].' </a></li>';
-            $contenu_postit = stripslashes($com[$x]);
-            if ($visa[$x])
-               {
-               $vis=$visa[$x];
-               $datv=$datvisa[$x];
-               }
-            }
+        {//cellule active
+        echo '<li id="select"><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'"
+        onmouseover="window.status=\'\';return true" id="courant">'.$mat[$x].'<br />'.$clas[$x].' </a></li>';
+        $contenu_postit = stripslashes($com[$x]);
+        if ($visa[$x])
+           {
+           $vis=$visa[$x];
+           $datv=$datvisa[$x];
+           }
+        }
     else
+        {
+        if (!isset($mat[$x])) $mat[$x]="&nbsp;";
+        if (!isset($clas[$x])) $clas[$x]="&nbsp;";
+        if (!isset($numero[$x]))
+        echo '<li><a href="#">$clas[$x]'.'</a></li>';
+        else
             {
-            if (!isset($mat[$x])) $mat[$x]="&nbsp;";
-            if (!isset($clas[$x])) $clas[$x]="&nbsp;";
-            if (!isset($numero[$x]))
-            echo '<li><a href="#">$clas[$x]'.'</a></li>';
-            else
-                {
-                echo '<li><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'" onmouseover="window.status=\'\';return true">'.$mat[$x].'<br />'.$clas[$x].'</a></li>';
-                }
+            echo '<li><a href="cahier_texte_prof.php?rubrique='.$numero[$x].'" onmouseover="window.status=\'\';return true">'.$mat[$x].'<br />'.$clas[$x].'</a></li>';
             }
+        }
     }
 echo '</ul>';
 echo '</div>';
@@ -506,7 +498,6 @@ if (isset($cible))
         }
      }
 
-
 /*================================
    -      Affichage du formulaire  -
    ================================*/
@@ -529,8 +520,7 @@ if (isset($tsmp3))
     $annv=date('Y',$datjv['0']);
     $dtajav=$jov."/".$mov."/".$annv;
     }
-else
-$dtajav="idem Cours";
+else $dtajav="idem Cours";
 
 //affichage visa
  if ($vis) echo '<div id="visa-cdt'.$vis.'">'.$datv.'</div>';
@@ -565,29 +555,29 @@ echo '<option value="0">-----------------</option>';
 //foreach ($TitreCourSeq as $cle => $valeur)
 if ($nb>0)
     {
-       while ($row = mysql_fetch_object($result))
-      {
+    while ($row = mysql_fetch_object($result))
+        {
         echo "<option value=\"$row->id_seq\"";
         if ($row->id_seq==$Seq) {echo ' selected';}
         echo ">".utf8_encode($row->titrecourt)."</option>\n";
-       }
+        } 
      }
  echo "</select>";
 ?>
- 	</div>
-			<textarea id="coursfield"  name="Cours"  class="mceAdvanced" cols="1" rows="1" style="background-color:#F0F0FA"><?echo $cours;?> </textarea>
-			<input type="hidden" name="numart" value= "<?php echo $article ; ?>" /> <br />
-            </div><!--fin du div boite 1-->
+</div>
+<textarea id="coursfield"  name="Cours"  class="mceAdvanced" cols="1" rows="1" style="background-color:#F0F0FA"><?echo $cours;?> </textarea>
+<input type="hidden" name="numart" value= "<?php echo $article ; ?>" /> <br />
+</div><!--fin du div boite 1-->
 
-            <div id="boite2">
-			<div id="afRle">A faire pour le :
-			<input id="datejaf" size="10" name="datejaf" value="<?echo $dtajaf?>" readonly="readonly" style="cursor: text" />
-			</div>
-			<textarea id="afairefield"  name="Afaire" class="mceAdvanced" cols="1" rows="1"  style="background-color:#F0F0FA"><?echo $afaire;?></textarea><br />
-            </div><!--fin du div boite 2-->
+<div id="boite2">
+            <div id="afRle">A faire pour le :
+            <input id="datejaf" size="10" name="datejaf" value="<?echo $dtajaf?>" readonly="readonly" style="cursor: text" />
+            </div>
+            <textarea id="afairefield"  name="Afaire" class="mceAdvanced" cols="1" rows="1"  style="background-color:#F0F0FA"><?echo $afaire;?></textarea><br />
+</div><!--fin du div boite 2-->
 
-	</div><!--fin de la boite 3-->
-	<div id="boite4">
+</div><!--fin de la boite 3-->
+<div id="boite4">
 <?php
 if (isset($_POST['modif'])&& isset($_POST['number']))
     {
@@ -618,7 +608,7 @@ else
      }
 ?>
 
-	</div><!--fin du div boite 4-->
+</div><!--fin du div boite 4-->
 </form>
 </div><!--fin du div saisie-->
 
@@ -642,106 +632,107 @@ else
  <?php
  if ($contenu_postit !="") echo htmlentities($contenu_postit);
  else echo htmlentities("Penser &agrave; ...");?>
-            </textarea></div>
-            <div><input name="button"  id="bt-erg" type="button" onclick="go(<?php echo $cible.",'".md5($_SESSION['RT'].htmlentities('/Plugins/Cdt/scripts/posti1.php'))."'"; ?>);" value="" title="Enregistrer le post-it" /></div>
-            </form></div>
-            </div><!--fin du div deroulant_1-->
+</textarea></div>
+<div><input name="button"  id="bt-erg" type="button" onclick="go(<?php echo $cible.",'".md5($_SESSION['RT'].htmlentities('/Plugins/Cdt/scripts/posti1.php'))."'"; ?>);" value="" title="Enregistrer le post-it" /></div>
+</form></div>
+</div><!--fin du div deroulant_1-->
 
-    <div class="deroulant" id="deroulant_2">
-    	<div class="t3">Archives</div>
-<?	/* Affichage des archives */
-        echo (' <hr /><p class="archive">Vos anciens cahiers de textes :</p> ');
-        //recherche du  nom des archives
+<div class="deroulant" id="deroulant_2">
+<div class="t3">Archives</div>
+<?php
+/* Affichage des archives */
+echo (' <hr /><p class="archive">Vos anciens cahiers de textes :</p> ');
+//recherche du  nom des archives
+$TablesExist= mysql_query("show tables");
+$x=0;
+while ($table=mysql_fetch_row($TablesExist))
+if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
+    {
+    $archive=explode('s',$table[0]);
+    $x++;
+    $archnum=$archive[1];
+    echo '<a href="#" onclick="arch_popup(\''.$archive[1].'\'); return false" >- '.$archive[1].' </a> <br /> ';
+    }
+//s'il n'esiste pas d'archive
+if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
+else echo '<hr /><p class="archive">Anciens cahiers de textes &#233;l&#232;ves</p>
+<a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve_arch.php\')"> -  Ils sont ici </a>';
+echo '<hr />';
+mysql_close();
+//archives perso
+echo ' <p class="archive"> Cahiers de textes import&#233;s :</p> ';
+//recherche du  nom des archives
+include_once "/var/www/lcs/includes/headerauth.inc.php";
+list ($idpers,$log) = isauth();
+if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
+$nom_bdd=mb_ereg_replace("\.","",$_SESSION['login']);
+DEFINE ('DBP_USER', $_SESSION['login']);
+DEFINE ('DBP_PASSWORD', $_LCSkey);
+DEFINE ('DBP_HOST', 'localhost');
+DEFINE ('DBP_NAME', $nom_bdd.'_db');
+
+// Ouvrir la connexion et selectionner la base de donnees
+$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD);
+//OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
+if ($dbcp)
+    {
+    $db_selected = mysql_select_db (DBP_NAME);
+    //OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
+    if ($db_selected)
+        {
         $TablesExist= mysql_query("show tables");
         $x=0;
         while ($table=mysql_fetch_row($TablesExist))
-        if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
-                {
-                $archive=explode('s',$table[0]);
-                $x++;
-                $archnum=$archive[1];
-                echo '<a href="#" onclick="arch_popup(\''.$archive[1].'\'); return false" >- '.$archive[1].' </a> <br /> ';
-                }
+        if (mb_ereg("^onglets",$table[0]))
+            {
+            $archive=explode('s',$table[0]);
+            $x++;
+            if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
+            echo '<a href="#" onclick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br />  ';
+            }
         //s'il n'esiste pas d'archive
         if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
-        else echo '<hr /><p class="archive">Anciens cahiers de textes &#233;l&#232;ves</p>
-        <a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve_arch.php\')"> -  Ils sont ici </a>';
-        echo '<hr />';
-        mysql_close();
-        //archives perso
-        echo ' <p class="archive"> Cahiers de textes import&#233;s :</p> ';
-        //recherche du  nom des archives
-        include_once "/var/www/lcs/includes/headerauth.inc.php";
-        list ($idpers,$log) = isauth();
-        if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
-        $nom_bdd=mb_ereg_replace("\.","",$_SESSION['login']);
-        DEFINE ('DBP_USER', $_SESSION['login']);
-        DEFINE ('DBP_PASSWORD', $_LCSkey);
-        DEFINE ('DBP_HOST', 'localhost');
-        DEFINE ('DBP_NAME', $nom_bdd.'_db');
-
-        // Ouvrir la connexion et selectionner la base de donnees
-        $dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD);
-        //OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
-        if ($dbcp)
-            {
-            $db_selected = mysql_select_db (DBP_NAME);
-            //OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
-            if ($db_selected)
-                {
-                $TablesExist= mysql_query("show tables");
-                $x=0;
-                while ($table=mysql_fetch_row($TablesExist))
-                if (mb_ereg("^onglets",$table[0]))
-                    {
-                    $archive=explode('s',$table[0]);
-                    $x++;
-                    if ($archive[1]!="") $archnum=$archive[1]; else $archnum="An dernier";
-                    echo '<a href="#" onclick="arch_perso_popup(\''.$archive[1].'\'); return false" >- '.$archnum.' </a> <br />  ';
-                    }
-                //s'il n'esiste pas d'archive
-                if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
-                 }
-            else { echo 'Erreur : '.mysql_error();}
-            }
-        else  echo 'Erreur : '.mysql_error();
-        echo '<hr />';
-        mysql_close();
+         }
+    else { echo 'Erreur : '.mysql_error();}
+    }
+else  echo 'Erreur : '.mysql_error();
+echo '<hr />';
+mysql_close();
 
 ?>
     </div><!--fin du div deroulant_2-->
     <div class="deroulant" id="deroulant_3">
     	<div class="t3">Liens</div>
        		<p>Ces liens s'ouvrent dans une nouvelle fen&ecirc;tre</p>
- <?php if (!mb_ereg("^Cours",$classe_active))
-        {
-        echo '<p><a href="# " class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php?mlec547trg2s5hy='.$classe_active.'\')"> - CAHIER DE TEXTE ELEVES	</a></p>';
-        echo '<p><a href="#" class="open_wi"  onclick="open_new_win(\'absences.php?mlec547trg2s5hy='.$classe_active. ' \')" > - CARNET D\'ABSENCES - </a></p>';
-         }
-        else
-        {
-         echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php\')" > - CAHIER DE TEXTE ELEVES	</a></p> ';
-         echo '<p><a href="#"class="open_wi"  onclick="open_new_win(\'absences.php\')" > - CARNET D\'ABSENCES - </a></p>';
-        }
-
-    echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'export_perso.php\')" > - EXPORT DE SES DONNEES - </a></p>';
-    echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'import_perso.php\')" > - IMPORT DE DONNEES - </a></p>';
+ <?php 
+ if (!mb_ereg("^Cours",$classe_active))
+    {
+    echo '<p><a href="# " class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php?mlec547trg2s5hy='.$classe_active.'\')"> - CAHIER DE TEXTE ELEVES	</a></p>';
+    echo '<p><a href="#" class="open_wi"  onclick="open_new_win(\'absences.php?mlec547trg2s5hy='.$classe_active. ' \')" > - CARNET D\'ABSENCES - </a></p>';
+     }
+    else
+    {
+     echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php\')" > - CAHIER DE TEXTE ELEVES	</a></p> ';
+     echo '<p><a href="#"class="open_wi"  onclick="open_new_win(\'absences.php\')" > - CARNET D\'ABSENCES - </a></p>';
+    }
+echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'export_perso.php\')" > - EXPORT DE SES DONNEES - </a></p>';
+echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'import_perso.php\')" > - IMPORT DE DONNEES - </a></p>';
 ?>
-        </div><!--fin du div deroulant_3-->
+</div><!--fin du div deroulant_3-->
 
-     <div class="deroulant" id="deroulant_4">
-     	<div class="t3">Contacts</div>
-     		<p>Pour toutes remarques ou suggestions:</p>
-     			<p>. <a href="mailto:philippe.leclerc1@ac-caen.fr"><b> Philippe LECLERC </b><i>Misterphi</i></a></p>
-     			<p>. <a href="mailto:yannick.chistel@crdp.ac-caen.fr"><b> Yannick CHISTEL </b></a></p>
-     			<p>. <a href="mailto:lcs-devel@listes.tice.ac-caen.fr"><b> Equipe-TICE-CRDP-CAEN</b></a></p>
+<div class="deroulant" id="deroulant_4">
+<div class="t3">Contacts</div>
+        <p>Pour toutes remarques ou suggestions:</p>
+                <p>. <a href="mailto:philippe.leclerc1@ac-caen.fr"><b> Philippe LECLERC </b><i>Misterphi</i></a></p>
+                <p>. <a href="mailto:yannick.chistel@crdp.ac-caen.fr"><b> Yannick CHISTEL </b></a></p>
+                <p>. <a href="mailto:lcs-devel@listes.tice.ac-caen.fr"><b> Equipe-TICE-CRDP-CAEN</b></a></p>
 
-     	</div><!--fin du div deroulant_4-->
+</div><!--fin du div deroulant_4-->
 
-      <div class="deroulant" id="deroulant_5">
-     	<div class="t3">Aide</div>
-     		<p><a href="#" class="open_wi"   onclick="open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php')"> Aide pour bien utiliser le cahier de textes num&#233;rique</a></p>
-     </div><!--fin du div deroulant_5-->
+<div class="deroulant" id="deroulant_5">
+<div class="t3">Aide</div>
+        <p><a href="#" class="open_wi"   onclick="open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php')"> Aide pour bien utiliser le cahier de textes num&#233;rique</a></p>
+</div><!--fin du div deroulant_5-->
 
 </div><!--fin du div deroul-contenu-->
 </div><!--fin du div deroulants-->
@@ -754,8 +745,6 @@ else
 /*========================================================================
    - Affichage du contenu du cahier de textes  -
    =======================================================================*/
-
-//include_once ('../Includes/markdown.php'); //convertisseur txt-->HTML
 
 if ($_SESSION['version'] == ">=432") setlocale(LC_TIME,"french"); else setlocale("LC_TIME","french");
 echo '<div id="boite5">';

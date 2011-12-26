@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de diffusion -
@@ -18,10 +18,10 @@ session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
-//si la page est appelée par un utilisateur non identifié
+//si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
-//si la page est appelée par un utilisateur non prof
+//si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 
 include "../Includes/functions2.inc.php";
@@ -29,60 +29,39 @@ $tsmp=time();
 $tsmp2=time() + 604800;//j+7
 
 
-// Connexion à la base de données
+// Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
 
 if (isset($_GET['rubrique']))
-	{ $ru=$_GET['rubrique'];
-	$rq = "SELECT classe,matiere FROM onglets
-	WHERE id_prof='$ru'";
-	// lancer la requête
-	$result = @mysql_query ($rq) or die (mysql_error());
-	// Combien y a-t-il d'enregistrements ?
-	$nb = mysql_num_rows($result); 
-	//on récupère les données
-	$enrg = mysql_fetch_array($result, MYSQL_NUM); 
-	if (mb_ereg("^(Classe)",$enrg[0]))
-	{
-	//recherche du niveau de la classe pour le format long
-	$classe_courte=explode('_',$enrg[0]);
-	//on isole le nom court de la classe
-	$niveau=$classe_courte[count($classe_courte)-1];
-	$FirstCar="";
-	//on recolle les premiers morceaux du nom long
-	for ($loop=0; $loop <= count($classe_courte)-2  ; $loop++)
-			{
-			$FirstCar.=$classe_courte[$loop]."_";
-			}
-	//on ajoute le premier caractère du nom court
-	$FirstCar.=$niveau[0];		
-	}
-		else
-	{
-	//cas du format court
-	//premier caractère de la classe active
-	$FirstCar=$enrg[0][0];
-	}
-	//classe active 
-	$clas_act=$enrg[0];
-	//matière de la classe active
-	$mat=utf8_encode($enrg[1]);
-	$mat_iso=$enrg[1];
-	}
+    { 
+    $ru=$_GET['rubrique'];
+    $rq = "SELECT classe,matiere FROM onglets
+    WHERE id_prof='$ru'";
+    // lancer la requete
+    $result = @mysql_query ($rq) or die (mysql_error());
+    // Combien y a-t-il d'enregistrements ?
+    $nb = mysql_num_rows($result); 
+    //on recupere les donnees
+    $enrg = mysql_fetch_array($result, MYSQL_NUM); 
+    //classe active 
+    $clas_act=$enrg[0];
+    //matiere de la classe active
+    $mat=utf8_encode($enrg[1]);
+    $mat_iso=$enrg[1];
+    }
 	
-// Recherche des classes de même niveau dans la matière
-$rq = "SELECT classe,id_prof FROM onglets
- WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat_iso' ORDER BY classe ASC ";
+// Recherche des classes de meme niveau dans la matiere
+$rq = "SELECT classe,id_prof FROM onglets WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat_iso' ORDER BY classe ASC ";
  
-// lancer la requête
+// lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error()); 
 $loop=0;
 while ($row = mysql_fetch_object($result))
-	{
+    {
     $data1[$loop]=$row->classe;
-	$data2[$loop]=$row->id_prof;
-	$loop++;
-	}
+    $data2[$loop]=$row->id_prof;
+    $loop++;
+    }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -101,18 +80,18 @@ while ($row = mysql_fetch_object($result))
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-	{
-	//initialisation des variables de session
-	unset ($_SESSION['sel_cl']);
-	//mémorisation des données dans des variables de session		
-	$_SESSION['sel_cl']=$_POST['sel_cl'];
-	//fermeture du popup
-	echo '<script type="text/javascript">
-                    //<![CDATA[
-                    window.close();
-                   //]]>
-                    </script>';
-	}
+    {
+    //initialisation des variables de session
+    unset ($_SESSION['sel_cl']);
+    //memorisation des donnees dans des variables de session		
+    $_SESSION['sel_cl']=$_POST['sel_cl'];
+    //fermeture du popup
+    echo '<script type="text/javascript">
+            //<![CDATA[
+            window.close();
+           //]]>
+            </script>';
+    }
 
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
@@ -125,29 +104,29 @@ if (isset($_POST['Valider']))
 //affichage du formulaire
 
 if (!isset($_POST['Valider']))
-	{
-	//si pas de classe de même niveau dans la matière
-	if (mysql_num_rows($result)==0) 
-		echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
-		pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /></h4><div><input type="submit" name="Valider"
-		value="OK " /></div>';
-	//sinon, affichage des classes de même niveau 	
-	else
-		{
-		echo '<ul class="perso"> <li>Si vous avez un cours compos&eacute; d\'&eacute;l&egrave;ves issus de plusieurs classes,
-		 vous pouvez planifier en une fois, ce devoir pour tous vos &eacute;l&egrave;ves.</li>
-		<li>Lorsque vous enregistrerez votre devoir de <b>'.$mat.'</b> en <b>'.$clas_act.'</b> , il sera aussi planifi&eacute;  pour  les classes que vous aurez s&eacute;lectionn&eacute;es ci-dessous </li></ul>';
-		echo '<div id="sel-classe"><table id="diff-dev"><tr>';
-		for ($loop=1; $loop < count ($data1)+1  ; $loop++)
-			{
-			echo '<td><input type="checkbox" name="sel_cl[]" value="'.$data1[$loop-1].'#'.$data2[$loop-1].'" />'.$data1[$loop-1].'</td>';
-			if (($loop %5)==0 ) echo'</tr><tr>';
-			}
-		echo '</tr></table></div>';
-		echo '<div><input type="submit" name="Valider" value="Valider la s&eacute;lection" class="bt" /></div>';
-		echo '<br /><div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <b>Enregistrer </b>dans la page "Planning" </div>';
-		}
-	}
+    {
+    //si pas de classe de meme niveau dans la matiere
+    if (mysql_num_rows($result)==0) 
+    echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
+    pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /></h4><div><input type="submit" name="Valider"
+    value="OK " /></div>';
+    //sinon, affichage des classes de meme niveau 	
+    else
+        {
+        echo '<ul class="perso"> <li>Si vous avez un cours compos&eacute; d\'&eacute;l&egrave;ves issus de plusieurs classes,
+         vous pouvez planifier en une fois, ce devoir pour tous vos &eacute;l&egrave;ves.</li>
+        <li>Lorsque vous enregistrerez votre devoir de <b>'.$mat.'</b> en <b>'.$clas_act.'</b> , il sera aussi planifi&eacute;  pour  les classes que vous aurez s&eacute;lectionn&eacute;es ci-dessous </li></ul>';
+        echo '<div id="sel-classe"><table id="diff-dev"><tr>';
+        for ($loop=1; $loop < count ($data1)+1  ; $loop++)
+            {
+            echo '<td><input type="checkbox" name="sel_cl[]" value="'.$data1[$loop-1].'#'.$data2[$loop-1].'" />'.$data1[$loop-1].'</td>';
+            if (($loop %5)==0 ) echo'</tr><tr>';
+            }
+        echo '</tr></table></div>';
+        echo '<div><input type="submit" name="Valider" value="Valider la s&eacute;lection" class="bt" /></div>';
+        echo '<br /><div class="notabene"> N\'oubliez pas apr&egrave;s avoir Valider la s&eacute;lection, de cliquer sur <b>Enregistrer </b>dans la page "Planning" </div>';
+        }
+    }
 ?>
 </fieldset>	
 </div>

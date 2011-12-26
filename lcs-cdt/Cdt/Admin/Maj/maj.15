@@ -1,0 +1,6 @@
+#!/bin/bash
+current=`pwd`
+cd /usr/share/lcs/Plugins/Cdt
+rm -rf tinymce Includes/JQ/ui* Includes/JQ/jquery* Includes/Calendrier Includes/source Includes/markdown.php style/images style/ui*
+cd $current
+

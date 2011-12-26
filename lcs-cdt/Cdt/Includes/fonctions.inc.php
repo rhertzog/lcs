@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - fonctions -
@@ -155,29 +155,48 @@ function Affiche_seq($param) {
     if (mysql_num_rows($results)>0)
            {
             $rows = mysql_fetch_array($results, MYSQL_NUM);
-             echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
-             //echo '<tbody>';
-              echo '<tbody><tr><td colspan="2" ><span class="malegende" ><span class="titre_seq">'.utf8_encode($rows[1])."</span></span></td></tr></tbody>";
-              echo '<tbody class="field11"><tr><td colspan="2">';
-             // if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])))
-                echo '<div class="switch_seq clos" id="_s'.$param.'" title="+ de d&eacute;tails"> &nbsp;</div ><div  id="d_s'.$param.'" class="descr_seq off">'.utf8_encode($rows[2]).'</div>';
-             // else
-              //    echo '<div  id="d_s'.$param.'"class="descr_seq">'.$rows[2].'</div>';
-              echo ' </td></tr>';
-              $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1.$dlm2." order by date asc ";
-              $result2 = @mysql_query ($rq2) or die (mysql_error());
-              while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
+            echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
+            //echo '<tbody>';
+            echo '<tbody><tr><td colspan="2" ><span class="malegende" ><span class="titre_seq">'.utf8_encode($rows[1])."</span></span></td></tr></tbody>";
+            echo '<tbody class="field11"><tr><td colspan="2">';
+            // if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])))
+            echo '<span class="switch_seq clos" id="_s'.$param.'" title="+ de d&eacute;tails"> &nbsp;</span>
+            <span class="order up" id="_ord'.$param.'" title="Afficher par date croissante">&nbsp;</span >                    
+            <div  id="d_s'.$param.'" class="descr_seq off">'.utf8_encode($rows[2]).'</div>
+            <input type="hidden" id="r_ord'.$param.'" value="'.$param.' ' .$dlm1.$dlm2 .'" />';
+            if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI']))) 
+                {
+                echo'<input type="hidden" id="b_ord'.$param.'" value="true" />
+                <input name="TA" type="hidden" id="t_ord'.$param.'" value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" /> ';
+                }
+            echo ' </td></tr>';
+            echo '<tbody id="c_ord'.$param.'" class="field11">';
+            $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1.$dlm2." order by date desc ";
+            $result2 = @mysql_query ($rq2) or die (mysql_error());
+            while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
               {
-                Affiche_seance_seq ($ligne[0]);
+                Affiche_seance_seq ($ligne[0],$buton);
               }
-              echo '</tbody>';
-              echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
+            echo '</tbody></tbody>';
+            echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
             }
 }
 
-function Affiche_seance_seq ($param) {
+function Affiche_seance_seq ($param,$boutons=FALSE,$tick="") {
     //affiche une sequence associee a une sequence
      global $cible;
+     if ($cible =="") 
+         {
+         $my_rq="SELECT `id_auteur` FROM `cahiertxt` WHERE `id_rubrique` =".$param;
+         $r = @mysql_query ($my_rq) or die (mysql_error());
+         $ret=mysql_fetch_array($r, MYSQL_NUM);
+         $cible=$ret[0];
+         }
+    if ($tick =="") 
+        { 
+        $tick=md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']));
+        }
+     
    $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
  WHERE (id_rubrique=$param) ";
 
@@ -192,67 +211,72 @@ if (mysql_num_rows($result) >0) {
 	  //$day="1,0,0,12,1,2007";echo $day;
 	  $jour=LeJour (strToTime($ligne[5]));
 	  //debut
-	  if ($ligne[1]!="") {
-	  echo '<tr>';
-	  //affichage de la seance
-	  echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7].' </td>';
-	  if($ligne[1]!="" && $ligne[6]==1) echo '<td class="contenu2">';
-	  elseif($ligne[1]!="" && $ligne[6]==2) echo '<td class="contenu3">';
-	  else echo '<td class="contenu">';
-	  echo $textcours.'</td></tr>';
-	  //affichage, s'il existe, du travail a effectuer
-	  if ($ligne[2]!="") {
-	  echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">';
-	  echo $textafaire.'</td></tr>';
-	  }
-	  //fin
-          echo '<tr><th class="bas" colspan="2">';
-	 if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI']))) {
-             echo '<form action="';
-              echo 'cahier_texte_prof.php';
-              echo '" method="post"><div><input type="hidden" name="number" value="';
-              echo $ligne[4];
-               echo '" /><input type="hidden" name="rubriq" value="';
-              echo $cible ;
-              echo ' " /><input name="date" type="hidden" value="'.$date.'" />';
-              if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
-              <input type="submit" name="suppr" value="" class="bt-supprimer" />';
-              echo '<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />';
-              echo '</div></form>';
-              }
-	  echo '</th></tr>';
-	  }
+	  if ($ligne[1]!="")
+                        {
+                        echo '<tr>';
+                        //affichage de la seance
+                        echo '<td class="seance">S&eacute;ance du <br/>'.$jour.'&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7].' </td>';
+                        if($ligne[1]!="" && $ligne[6]==1) echo '<td class="contenu2">';
+                        elseif($ligne[1]!="" && $ligne[6]==2) echo '<td class="contenu3">';
+                        else echo '<td class="contenu">';
+                        echo $textcours.'</td></tr>';
+                        //affichage, s'il existe, du travail a effectuer
+                        if ($ligne[2]!="") 
+                            {
+                            echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">';
+                            echo $textafaire.'</td></tr>';
+                            }
+                        //fin
+                        echo '<tr><th class="bas" colspan="2">';
+                        if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])) || $boutons==true) 
+                                    {
+                                     echo '<form action="';
+                                      echo 'cahier_texte_prof.php';
+                                      echo '" method="post"><div><input type="hidden" name="number" value="';
+                                      echo $ligne[4];
+                                       echo '" /><input type="hidden" name="rubriq" value="';
+                                      echo $cible ;
+                                      echo ' " /><input name="date" type="hidden" value="'.$date.'" />';
+                                      if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
+                                      <input type="submit" name="suppr" value="" class="bt-supprimer" />';
+                                      echo '<input name="TA" type="hidden"  value="'. $tick.'" />';
+                                      echo '</div></form>';
+                                      }
+                          echo '</th></tr>';
+                          }
 	  else
-          {
-	   echo '<tr>';
-	  //affichage de la seance
-	  echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7];
-	  //affichage, s'il existe, du travail a effectuer
-	  if ($ligne[2]!="") {
-	  echo '<br />Pour le :&nbsp;'.$ligne[3].'</td>';
-	  if($ligne[6]==1) echo '<td class="contenu2">';
-	  elseif($ligne[6]==2) echo '<td class="contenu3">';
-	  else echo '<td class="contenu">';
-	   echo $textafaire.'</td></tr>';
-	  }
-	  //fin
-          echo '<tr><th class="bas" colspan="2">';
-	  if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI']))) {
-              echo '<form action="';
-              echo 'cahier_texte_prof.php';
-              echo '" method="post"><div><input type="hidden" name="number" value="';
-              echo $ligne[4];
-               echo '" /><input type="hidden" name="rubriq" value="';
-              echo $cible ;
-              echo ' " /><input name="date" type="hidden"  value="'.$date.'" />';
-              if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
-              <input type="submit" name="suppr" value="" class="bt-supprimer" />';
-              echo '<input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />';
-              echo '</div></form>';
-              }
-	  echo '</th></tr>';
-	  }
-        }
+                           {
+                        echo '<tr>';
+                        //affichage de la seance
+                        echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7];
+                        //affichage, s'il existe, du travail a effectuer
+                        if ($ligne[2]!="") 
+                                {
+                                echo '<br />Pour le :&nbsp;'.$ligne[3].'</td>';
+                                if($ligne[6]==1) echo '<td class="contenu2">';
+                                elseif($ligne[6]==2) echo '<td class="contenu3">';
+                                else echo '<td class="contenu">';
+                                echo $textafaire.'</td></tr>';
+                                }
+                        //fin
+                echo '<tr><th class="bas" colspan="2">';
+                if ($_SESSION['cequi']=="prof" && (mb_ereg('prof\.', $_SERVER['REQUEST_URI'])) || $boutons==true) 
+                    {
+                    echo '<form action="';
+                    echo 'cahier_texte_prof.php';
+                    echo '" method="post"><div><input type="hidden" name="number" value="';
+                    echo $ligne[4];
+                    echo '" /><input type="hidden" name="rubriq" value="';
+                    echo $cible ;
+                    echo ' " /><input name="date" type="hidden"  value="'.$date.'" />';
+                    if($ligne[6]=="0") echo '<input type="submit" name="modif" value="" class="bt-modifier" />&nbsp;
+                    <input type="submit" name="suppr" value="" class="bt-supprimer" />';
+                    echo '<input name="TA" type="hidden"  value="'. $tick.'" />';
+                    echo '</div></form>';
+                    }
+                echo '</th></tr>';
+                }
+         }
     }
 }
 ?>

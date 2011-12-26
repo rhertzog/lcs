@@ -2,7 +2,7 @@
 /* ===================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011 
+   VERSION 2.3 du 31/12/2011 
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultationd'un  cahier de textes PROF -
@@ -27,32 +27,25 @@ $result = @mysql_query ($rq) or die (mysql_error());
 
 // si pas de rubrique, on redirige vers config_ctxt.php
 if (mysql_num_rows($result)==0) 
-	{
-	
-
-echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html  xmlns="http://www.w3.org/1999/xhtml" >
-<head>
-<title>Cahier de textes num&eacute;rique</title>
-<meta name="author" content="Philippe LECLERC -TICE CAEN" />
-<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<link href="../style/style.css" rel="stylesheet" type="text/css" />
-        
-</head>
- 
-<body>
-	<div id="first">
-	<div class="prg">
-	<h2><br /><br />Le cahier de textes de '. $_SESSION['proffull'].' ne comporte actuellement aucune rubrique.</h2>
-		
-	</div></div>
-</body>
-</html>';
-  
-
-	mysql_close();	
-	exit;
-	}
+    {
+    echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    <html  xmlns="http://www.w3.org/1999/xhtml" >
+    <head>
+    <title>Cahier de textes num&eacute;rique</title>
+    <meta name="author" content="Philippe LECLERC -TICE CAEN" />
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <link href="../style/style.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+    <div id="first">
+    <div class="prg">
+    <h2><br /><br />Le cahier de textes de '. $_SESSION['proffull'].' ne comporte actuellement aucune rubrique.</h2>
+    </div></div>
+    </body>
+    </html>';
+    mysql_close();	
+    exit;
+    }
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");	
 
 ?>
@@ -77,41 +70,31 @@ include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 <?php
 
 //on recupere le parametre de la rubrique
-if (isset($_GET['rubrique']))
-	{
-	$cible=$_GET['rubrique'];
-	} 
-elseif (isset($_POST['rubriq']))
-	{
-	$cible=$_POST['rubriq'];
-	}
-
+if (isset($_GET['rubrique'])) $cible=$_GET['rubrique'];
+elseif (isset($_POST['rubriq'])) $cible=$_POST['rubriq'];
 if ( isset($_POST['viser']))
-	{
-	 $dat_vis= date('Y-m-d');
-	 //$rub_vis=$_POST['rub_activ'];
-	 //echo $dat_vis." ".$rub_vis."-";
-	 if (!isset($_SESSION['login'])) $numvisa=2; else $numvisa=1;
-	 $rq = "UPDATE  onglets SET visa='$numvisa', datevisa='$dat_vis'  
-				WHERE id_prof='$cible'"; 
-				
-	// lancer la requête
-		$result = mysql_query($rq); 
-		if (!$result)  // Si l'enregistrement est incorrect
-			{                           
-			 echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
-			"<p></p>" . mysql_error() . "<p></p>";
-			}
-	 $dat_la=date('Y-m-d');
-	 $rq = "UPDATE cahiertxt SET on_off='$numvisa' WHERE id_auteur='$cible' AND date<'$dat_la' AND datevisibi<='$dat_la' AND on_off='0' ";
-	 // lancer la requête
-		$result = mysql_query($rq); 
-		if (!$result)  // 
-			{                           
-			 echo "<p>L'apposition du visa n'a pu\352tre r\351alis\351e \340 cause d'une erreur syst\350me".
-			"<p></p>" . mysql_error() . "<p></p>";
-			}					
-	}	
+    {
+     $dat_vis= date('Y-m-d');
+    if (!isset($_SESSION['login'])) $numvisa=2; else $numvisa=1;
+     $rq = "UPDATE  onglets SET visa='$numvisa', datevisa='$dat_vis'  WHERE id_prof='$cible'"; 
+
+    // lancer la requete
+    $result = mysql_query($rq); 
+    if (!$result)  // Si l'enregistrement est incorrect
+        {                           
+         echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
+        "<p></p>" . mysql_error() . "<p></p>";
+        }
+     $dat_la=date('Y-m-d');
+     $rq = "UPDATE cahiertxt SET on_off='$numvisa' WHERE id_auteur='$cible' AND date<'$dat_la' AND datevisibi<='$dat_la' AND on_off='0' ";
+     // lancer la requête
+    $result = mysql_query($rq); 
+    if (!$result)  // 
+        {                           
+         echo "<p>L'apposition du visa n'a pu\352tre r\351alis\351e \340 cause d'une erreur syst\350me".
+        "<p></p>" . mysql_error() . "<p></p>";
+        }					
+    }	
 	
 /*
    ================================
@@ -130,13 +113,14 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 //on recupere les donnees
 $loop=0;
 while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
-	{$clas[$loop]=$enrg[0];
-	$mat[$loop]=utf8_encode($enrg[1]);
-	$numero[$loop]=$enrg[2];
-	$visa[$loop]=$enrg[3];// 
-	$datvisa[$loop]=$enrg[4];
-	$loop++;
-	}
+    {
+    $clas[$loop]=$enrg[0];
+    $mat[$loop]=utf8_encode($enrg[1]);
+    $numero[$loop]=$enrg[2];
+    $visa[$loop]=$enrg[3];// 
+    $datvisa[$loop]=$enrg[4];
+    $loop++;
+    }
 	
 //on calcule la largeur des onglets
 if($cible==""){$cible=($numero[0]);}
@@ -148,31 +132,25 @@ echo '<br />';
 echo '<div id="navcontainer">';
 echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
-	{	
-		
-		if ($cible == ($numero[$x]))
-			{//cellule active	
-			echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
-			 id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
-			if ($visa[$x])
-				{
-				$vis=$visa[$x];
-				$datv=$datvisa[$x];
-				}
-			}
-		else 
-			{
-			if (!isset($mat[$x])) $mat[$x]="&nbsp;";
-			if (!isset($clas[$x])) $clas[$x]="&nbsp;";
-			if (!isset($numero[$x]))
-			echo ("<li><a href='#'>$clas[$x]"."</a></li>");
-			else
-			{
-			echo "<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]'
-			>".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>";
-			}
-			}
-	}
+    {	
+    if ($cible == ($numero[$x]))
+        {//cellule active	
+        echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
+        if ($visa[$x])
+            {
+            $vis=$visa[$x];
+            $datv=$datvisa[$x];
+            }
+        }
+    else 
+        {
+        if (!isset($mat[$x])) $mat[$x]="&nbsp;";
+        if (!isset($clas[$x])) $clas[$x]="&nbsp;";
+        if (!isset($numero[$x]))
+        echo ("<li><a href='#'>$clas[$x]"."</a></li>");
+        else  echo "<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' >".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>";
+        }
+    }
 echo '</ul>';
 echo '</div>';
 echo '</div>';
@@ -202,9 +180,12 @@ if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
 else setlocale("LC_TIME","french");
 echo '<div id="boite5">';
 include_once  ('./contenu.php');
-echo "</div>";  //fin du div de la boite 5 : contenu du cahier de texte
-echo '</fieldset>';include ('../Includes/pied.inc');
-echo '</div>'; //fin du div container
-echo '</body>
-</html>';
+echo '</div>';
 ?>
+</fieldset>
+ <?php
+include ('../Includes/pied.inc');
+?>
+</div>
+</body>
+</html>

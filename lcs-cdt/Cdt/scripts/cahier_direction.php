@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 06/01/2011
+   VERSION 2.3 du 31/12/2011
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'interface personnel de direction  -
@@ -23,6 +23,7 @@ include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
 include "$BASEDIR/Annu/includes/ihm.inc.php";   
 include "../Includes/config.inc.php";
+
 //si la page est appelee par un utilisateur non "direction"
 if (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="N") exit;
 $cmd="hostname -f"; 
@@ -31,38 +32,39 @@ $hostn= $hn[0];
 
 //redirection
 if (isset($_POST['Laclasse']))
-	{
-	$cla=$_POST['CLASSE'];
-	header ("location: cahier_text_eleve.php?mlec547trg2s5hy=$cla");
-	exit();
-	}
+    {
+    $cla=$_POST['CLASSE'];
+    header ("location: cahier_text_eleve.php?mlec547trg2s5hy=$cla");
+    exit();
+    }
 	
 if (isset($_POST['Leprof']))
-	{
-	$prof2=preg_split('/#/',$_POST['PROF']);
-	$_SESSION['aliasprof']=$prof2[0];
-	$_SESSION['proffull']=$prof2[1];
-	header("location: cahier_texte_prof_ro.php");
-	}
+    {
+    $prof2=preg_split('/#/',$_POST['PROF']);
+    $_SESSION['aliasprof']=$prof2[0];
+    $_SESSION['proffull']=$prof2[1];
+    header("location: cahier_texte_prof_ro.php");
+    }
 	
 if (isset($_POST['Exporter']))
-	{	
-	header ("location: ./exporthtml.php");
-	}
+    {	
+    header ("location: ./exporthtml.php");
+    }
 	
 if (isset($_POST['Abs']))
-	{	
-	header ("location: ./cpe.php");
-	}
+    {	
+    header ("location: ./cpe.php");
+    }
 	
 if (isset($_POST['datelim']))
-	{
-	$dtajaf=$_POST['datelim'];
-	}	
+    {
+    $dtajaf=$_POST['datelim'];
+    }	
 else 
-	{$nextWeek = time() + (7 * 24 * 60 * 60);
-	$dtajaf= date ('d/m/Y',$nextWeek);
-	}
+    {
+    $nextWeek = time() + (7 * 24 * 60 * 60);
+    $dtajaf= date ('d/m/Y',$nextWeek);
+    }
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -99,7 +101,7 @@ echo '<select name="CLASSE" style="background-color:#E6E6FA">';
 foreach ($classe as $clef => $valeur)
   { 
   echo '<option value="'.$valeur.'"';
-  if ($valeur==$jo) {echo 'selected="selected"';}
+  if ($valeur==$jo) echo ' selected="selected"';
   echo '>'.$valeur.'</option>';
   }
 echo '</select></li></ul><input type="submit" name="Laclasse" value="" class="bt-valid" />';
@@ -120,13 +122,13 @@ $uids = search_uids ("cn=Profs", "half");
 $people = search_people_groups ($uids,"(sn=*)","cat");
 echo '<select name="PROF" style="background-color:#E6E6FA">';
 for ($loop=0; $loop <count($people); $loop++) 
- 	{
- 	$uname = $people[$loop]['uid'];
- 	$nom = $people[$loop]["fullname"];
- 	echo '<option value="'.$uname.'#'.$nom.'"';
- 	if ($uname.'#'.$nom ==$_POST['PROF']) {echo 'selected="selected"';}
-	echo '>'.$nom.'</option>';
-	}
+    {
+    $uname = $people[$loop]['uid'];
+    $nom = $people[$loop]["fullname"];
+    echo '<option value="'.$uname.'#'.$nom.'"';
+    if ($uname.'#'.$nom ==$_POST['PROF']) echo ' selected="selected"';
+    echo '>'.$nom.'</option>';
+    }
 echo ' </select></li></ul><input type="submit" name="Leprof" value="" class="bt-valid" />';
 ?>
 </fieldset>
@@ -135,15 +137,15 @@ echo ' </select></li></ul><input type="submit" name="Leprof" value="" class="bt-
 
 <?php
 if ($FLAG_ABSENCE==1) 
-	{
-	echo '<form action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post"  >
-	<div><input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />
-	<fieldset class="field7d">
-	<legend class="legended">Absences</legend>';
-	echo '<p>Visualisation des absences par cr&#233;neau, par classe ou par &#233;l&#232;ve </p>';
-	echo '<input type="submit" name="Abs" value="" class="bt-valid" />';
-	echo '</fieldset></div></form>';
-	}
+    {
+    echo '<form action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post"  >
+    <div><input name="TA" type="hidden"  value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" />
+    <fieldset class="field7d">
+    <legend class="legended">Absences</legend>';
+    echo '<p>Visualisation des absences par cr&#233;neau, par classe ou par &#233;l&#232;ve </p>';
+    echo '<input type="submit" name="Abs" value="" class="bt-valid" />';
+    echo '</fieldset></div></form>';
+    }
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#cryp'; ?>" method="post">
 <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
@@ -155,13 +157,13 @@ echo "<p>G&#233;n&#233;ration d'un lien d'acc&#232;s crypt&#233; au cahier de te
 echo '<ul id="afRle"><li>S&#233;lectionner le professeur : ';
 echo "<select name='PROF2' style='background-color:#E6E6FA'>";
 for ($loop=0; $loop <count($people); $loop++) 
- 	{
- 	$uname = $people[$loop]['uid'];
- 	$nom = $people[$loop]["fullname"];
- 	echo "<option value=\"$uname#$nom\"";
- 	if ($uname.'#'.$nom ==$_POST['PROF2']) {echo 'selected="selected"';}
-	echo ">$nom</option>\n";
-	}
+    {
+    $uname = $people[$loop]['uid'];
+    $nom = $people[$loop]["fullname"];
+    echo "<option value=\"$uname#$nom\"";
+    if ($uname.'#'.$nom ==$_POST['PROF2']) {echo 'selected="selected"';}
+    echo ">$nom</option>\n";
+    }
 echo '</select></li>
 <li>Date limite de validit&#233; :
 <input id="datejaf" size="10" name="datelim" value="'. $dtajaf.'" readonly="readonly" style="cursor: text" /></li>
@@ -172,47 +174,45 @@ echo ' />Informer par mail le professeur concern&#233;</li>
 <input type="submit" name="Lien" value="" class="bt-valid" />';
 //generation du lien
 if (isset($_POST['Lien']))
-	{
-	$Morceaux=explode('/',$_POST['datelim']);
-	$datelimite=mktime (23,59,1,$Morceaux[1],$Morceaux[0],$Morceaux[2]);	
-	$prof=preg_split('/#/',$_POST['PROF2']);
-	$aliasprof=$prof[0];
-	$grain='$1$'.$Grain.'$';
-	$chaine=$aliasprof.$datelimite;
-	$logcrypt=crypt($chaine,$grain);
-	$key= substr($logcrypt,-20,20);
-	echo '<br /><br />';
-	//if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))
-	echo '<span id=legend2>';
-	echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
-	echo "?prof=".$aliasprof.'&limit='.$datelimite.'&key='.$key;
-	echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>	";
-	//if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))
-	echo '</span>';
-	echo '<ol>';
-        echo '<h4 class="perso">
-	<li> Copiez ce lien avec  un clic droit, et collez le dans un mail destin&#233; au demandeur.</li>
-	<li> N\'essayez pas ce lien, il n\'est pas valide lorsque vous &#234;tes connect&#233; au LCS.</li>';
-	//envoi du mail
-	if ($_POST['mel']=="yes")
-		{
-		//Le destinataire 
-		$mailTo = $aliasprof;
-		//Le sujet
-		$mailSubject = "Lien d'acc\350s ";
-		//Le message
-		$mailBody1 = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.\n \n ";
-		$mailBody2 = " Un lien d'acc\350s \340 votre cahier de textes a \351t\351 g\351n\351r\351 par  "
-		. $_SESSION['nomcomplet'].".\n\nCe lien est valide jusqu'au ". $_POST['datelim'];
-		//l'expediteur
-		$mailHeaders = "From: Cahier\ de\ textes\n";
-		//envoi du mail
-		 mail($mailTo, $mailSubject, $mailBody1.$mailBody2, $mailHeaders);
-		 echo '<li> Le message suivant a &#233;t&#233; envoy&#233; &#224 '.$prof[1].' :<p class="absmod">'.htmlentities($mailBody2).'</p></li>';
-		 echo '</ol>';
-                 echo '</h4>';
-                }
-	}
+    {
+    $Morceaux=explode('/',$_POST['datelim']);
+    $datelimite=mktime (23,59,1,$Morceaux[1],$Morceaux[0],$Morceaux[2]);	
+    $prof=preg_split('/#/',$_POST['PROF2']);
+    $aliasprof=$prof[0];
+    $grain='$1$'.$Grain.'$';
+    $chaine=$aliasprof.$datelimite;
+    $logcrypt=crypt($chaine,$grain);
+    $key= substr($logcrypt,-20,20);
+    echo '<br /><br />';
+    echo '<span id=legend2>';
+    echo "<a href= 'http://".$hostn."/Plugins/Cdt/index.php";
+    echo "?prof=".$aliasprof.'&limit='.$datelimite.'&key='.$key;
+    echo "'> Lien d'acc&egrave;s au cahier de texte de $prof[1]</a>	";
+    echo '</span>';
+    echo '<ol>';
+    echo '<h4 class="perso">
+    <li> Copiez ce lien avec  un clic droit, et collez le dans un mail destin&#233; au demandeur.</li>
+    <li> N\'essayez pas ce lien, il n\'est pas valide lorsque vous &#234;tes connect&#233; au LCS.</li>';
+    //envoi du mail
+    if ($_POST['mel']=="yes")
+        {
+        //Le destinataire 
+        $mailTo = $aliasprof;
+        //Le sujet
+        $mailSubject = "Lien d'acc\350s ";
+        //Le message
+        $mailBody1 = " CECI EST UN MESSAGE AUTOMATIQUE, MERCI DE NE PAS REPONDRE.\n \n ";
+        $mailBody2 = " Un lien d'acc\350s \340 votre cahier de textes a \351t\351 g\351n\351r\351 par  "
+        . $_SESSION['nomcomplet'].".\n\nCe lien est valide jusqu'au ". $_POST['datelim'];
+        //l'expediteur
+        $mailHeaders = "From: Cahier\ de\ textes\n";
+        //envoi du mail
+         mail($mailTo, $mailSubject, $mailBody1.$mailBody2, $mailHeaders);
+         echo '<li> Le message suivant a &#233;t&#233; envoy&#233; &#224 '.$prof[1].' :<p class="absmod">'.htmlentities($mailBody2).'</p></li>';
+         echo '</ol>';
+         echo '</h4>';
+        }
+    }
     
  ?>
 </fieldset>
