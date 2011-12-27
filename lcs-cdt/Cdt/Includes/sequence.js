@@ -48,7 +48,8 @@ $(document).ready(function() {
                         if (data =="error")   
                          alert('Erreur' +data);
                         else 
-                        document.getElementById("c"+no).innerHTML =  data;
+                        $("#c"+no).html(data);
+			//document.getElementById("c"+no).innerHTML =  data;
                        }
              });
         });
