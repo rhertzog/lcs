@@ -135,7 +135,7 @@ for($x=0;$x < $nmax;$x++)
     {	
     if ($cible == ($numero[$x]))
         {//cellule active	
-        echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
+        echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' id='courant'>".$mat[$x]."<br />$clas[$x] "."</a></li>";	
         if ($visa[$x])
             {
             $vis=$visa[$x];
@@ -148,7 +148,7 @@ for($x=0;$x < $nmax;$x++)
         if (!isset($clas[$x])) $clas[$x]="&nbsp;";
         if (!isset($numero[$x]))
         echo ("<li><a href='#'>$clas[$x]"."</a></li>");
-        else  echo "<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' >".htmlentities($mat[$x])."<br />$clas[$x]"."</a></li>";
+        else  echo "<li><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' >".$mat[$x]."<br />$clas[$x]"."</a></li>";
         }
     }
 echo '</ul>';
