@@ -40,7 +40,35 @@ elseif ($_SESSION['cequi']!="prof") exit;
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-    {	
+    {
+    $file_autorised= array(
+"application/vnd.oasis.opendocument.text" ,
+"application/vnd.oasis.opendocument.spreadsheet" ,
+"application/vnd.oasis.opendocument.presentation" ,
+"application/vnd.oasis.opendocument.graphics" ,
+"application/vnd.ms-excel" ,
+"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ,
+"application/vnd.ms-powerpoint" ,
+"application/msword" ,
+"application/vnd.openxmlformats-officedocument.wordprocessingml.document" ,
+"application/vnd.mozilla.xul+xml" ,
+"video/mpeg" ,
+"video/mp4" ,
+"video/quicktime" ,
+"video/x-ms-wmv" ,
+"video/x-msvideo" ,
+"video/x-flv" ,
+"text/plain",
+"text/xml",
+"text/html",
+"audio/mpeg",
+"audio/x-ms-wma",
+"audio/vnd.rn-realaudio",
+"audio/x-wav",
+"application/pdf",
+"application/xhtml+xml",
+"application/x-shockwave-flash",
+"application/zip" );
     // Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['nom_lien']) > 0) $nom_lien= addSlashes(strip_tags(stripslashes($_POST['nom_lien'])));
     else $nom_lien= "Fichier joint";
@@ -70,29 +98,33 @@ if (isset($_POST['Valider']))
         {
         if ($_FILES["FileSelection1"]["size"]>0)
             {
-            $nomFichier=mb_ereg_replace("[^A-Za-z0-9\.\-_]","",$_FILES["FileSelection1"]["name"]);
-            $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
-            //chargement du fichier
-            copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));
-
-            //test de la presence du fichier uploade
-            if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier)))
+            if (in_array($_FILES["FileSelection1"]["type"], $file_autorised))
                 {
-                $pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
-                //insertion du lien
-                $Doc ="<a href= '../../..". $pj."' > ". $nom_lien." </a> ";
-                echo '<script type="text/javascript">
-                 //<![CDATA[
-                opener.tinyMCE.execCommand("mceInsertContent",false,"'.$Doc.'");
-                //opener.tinyMCE.activeEditor.selection.setContent("'.$Doc.'");
-                window.close();
-                 //]]>
-                 </script>';
-                $Doc ="";
+                $nomFichier=mb_ereg_replace("[^A-Za-z0-9\.\-_]","",$_FILES["FileSelection1"]["name"]);
+                $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
+                //chargement du fichier
+                copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));
+
+                //test de la presence du fichier uploade
+                if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier)))
+                    {
+                    $pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
+                    //insertion du lien
+                    $Doc ="<a href= '../../..". $pj."' > ". $nom_lien." </a> ";
+                    echo '<script type="text/javascript">
+                     //<![CDATA[
+                    opener.tinyMCE.execCommand("mceInsertContent",false,"'.$Doc.'");
+                    //opener.tinyMCE.activeEditor.selection.setContent("'.$Doc.'");
+                    window.close();
+                     //]]>
+                     </script>';
+                    $Doc ="";
+                    }
+                else $mess1= "<h3 class='nook'> Erreur dans le transfert du fichier"."<br /></h3>";
                 }
-            else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier"."<br /></h3>";
+            else $mess1= "<h3 class='nook'> Type de fichier non autoris&eacute; "."<br /></h3>";
             }
-        else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier "."<br /></h3>";
+        else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier "."<br /></h3>";
         }
     }
 

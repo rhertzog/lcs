@@ -59,7 +59,7 @@ if (isset($_POST['Valider']))
         {
         if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
             {
-            $mess1= "<h3 class='ko'>1. le nom indiqu&#233; ne correspond pas &agrave; un r&#233;pertoire"."<br /></h3>";
+            $mess1= "<h3 class='ko'>Le nom indiqu&#233; ne correspond pas &agrave; un r&#233;pertoire"."<br /></h3>";
             $pb=1;
             }
         else $pb=0;
@@ -81,24 +81,41 @@ if (isset($_POST['Valider']))
             $nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
             $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
             //chargement du fichier
-            copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));							
-            //test de la presence du fichier uploade
-            if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier)))
+            $size = getimagesize($nomTemporaire);
+            if ($size[2] >0 &&  $size[2] <=16)
                 {
-                $pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
-                $image="<img src= '../../..". $pj."' >";
-                echo '<script type="text/javascript">
-                //<![CDATA[
-                opener.tinyMCE.execCommand("mceInsertContent",false,"'.$image.'");			
-                //opener.tinyMCE.activeEditor.selection.setContent("'.$image.'");//marche pas avec IE :(
-                window.close();
-                //]]>
-                </script>';
-                $image="";
+                $max_width = 700;
+                if ($size[0] > $max_width)
+                    {
+                    $ratio = $max_width/$size[0];
+                    $width = intval($ratio*$size[0]);
+                    $height = intval($ratio*$size[1]); 
+                    }
+                else 
+                    {
+                    $width=$size[0];
+                    $height =$size[1];
+                    }
+                copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));							
+                //test de la presence du fichier uploade
+                if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier)))
+                    {
+                    $pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
+                    $image="<img src= '../../..". $pj."' height='".$height."' width='".$width."' >";
+                    echo '<script type="text/javascript">
+                    //<![CDATA[
+                    opener.tinyMCE.execCommand("mceInsertContent",false,"'.$image.'");			
+                    //opener.tinyMCE.activeEditor.selection.setContent("'.$image.'");//marche pas avec IE :(
+                    window.close();
+                    //]]>
+                    </script>';
+                    $image="";
+                    }
+                else $mess1= "<h3 class='nook'> Erreur dans le transfert du fichier"."<br /></h3>";
                 }
-            else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier"."<br /></h3>";
+            else $mess1= "<h3 class='nook'> Fichier non conforme "."<br /></h3>";
             }
-        else $mess1= "<h3 class='ko'>2. Erreur dans l'importation du fichier "."<br /></h3>";
+        else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier "."<br /></h3>";
         }
     }
 ?>

@@ -45,21 +45,57 @@ if (isset($_POST['Valider']))
     else $nom_lien= "site";
     if (strlen($_POST['lien']) > 0) $lien= addSlashes(strip_tags(stripslashes($_POST['lien'])));
     else  $lien= "";
-    //traitement  	
-    $Url="<a href= '". $lien ."' > ". $nom_lien." </a> ";			
-    //insertion du lien
-    echo '<script type="text/javascript">
-     //<![CDATA[
-    opener.tinyMCE.execCommand("mceInsertContent",false,"'.$Url.'");
-    //opener.tinyMCE.activeEditor.selection.setContent("'.$Url.'");
-    window.close();
-     //]]>
-     </script>';
-    $Url="";
+    //traitement
+    $url_parsee = parse_url($lien);  
+    $host = $url_parsee["host"];
+    $path = isset($url_parsee["path"]) ? trim($url_parsee['path']) : '';
+    $no_code = 0;
+    //connexion par socket
+    if ($fp = @fsockopen($host,80))
+        {
+        //traitement du path
+        if(substr($path,strlen($path)-1) != '/')
+            {
+            if(!ereg("\.",$path))
+            $path .= "/";
+            }
+        //envoi de la requete HTTP
+        fputs($fp,"GET ".$path." HTTP/1.1\r\n"); 
+        fputs($fp,"Host: ".$host."\r\n");
+        fputs($fp,"Connection: close\r\n\r\n");
+        //on lit le fichier
+        $line = fread($fp,255);
+        $en_tete = $line;
+        //on lit tant qu'on n'est pas la fin du fichier ou
+        // qu'on trouve le debut du code html...
+        while (!feof($fp) && !ereg("<",$line) )
+            {
+            $en_tete .= $line;
+            $line = fread($fp,255);
+            }
+        fclose($fp);
+        //on switch sur le code HTTP renvoye
+        $no_code = substr($en_tete,9,3);
+         if ($no_code >200 && $no_code < 303 )
+            {
+            $Url="<a href= '". $lien ."' > ". $nom_lien." </a> ";			
+            //insertion du lien
+            echo '<script type="text/javascript">
+             //<![CDATA[
+            opener.tinyMCE.execCommand("mceInsertContent",false,"'.$Url.'");
+            //opener.tinyMCE.activeEditor.selection.setContent("'.$Url.'");
+            window.close();
+             //]]>
+             </script>';
+            $Url="";
+            }
+        else $mess1= "<h3 class='ko'> l'URL fournie n'est pas valide"."</h3>";
+        }
+       else $mess1= "<h3 class='nook'> l'URL fournie n'est pas valide"."</h3>"; 
     }
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">
-    <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
+<div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
 <fieldset id="field7">
 <legend id="legende">D&eacute;finition du lien</legend>
 <?php
@@ -72,6 +108,9 @@ if (!isset($_POST['Valider']))
     echo '</ol>';
     echo '<input type="submit" name="Valider" value="Valider" class="bt" />';
     }
+else 
+    
+    if ($mess1!="") echo $mess1;
 ?>
 </fieldset>
 </div>

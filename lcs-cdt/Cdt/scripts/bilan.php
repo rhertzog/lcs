@@ -73,14 +73,14 @@ function affiche_abs($potache) {
 
     if ($nbabs>0)
         {
-         echo "<h3 class='perso'>".$nbabs."h d'absence  - ";
+         echo "<h3 class='perso'><i>".$nbabs."h d'absence  - ";
         }
-        else echo "<h3 class='perso'>Aucune absence - ";
+        else echo "<h3 class='perso'><i>Aucune absence - ";
     if ($nbrtd>0)
         {
-        if ($nbrtd>1) echo $nbrtd." retards  <br />"; else echo $nbrtd." retard  </h3>";
+        if ($nbrtd>1) echo $nbrtd." retards  <br /></i>"; else echo $nbrtd." retard  <br /></i>";
         }
-        else echo "Aucun retard </h3>";
+        else echo "Aucun retard <br /></i>";
 
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),M1,motifM1,M2,motifM2,M3,motifM3,M4,motifM4,M5,motifM5,
     S1,motifS1,S2,motifS2,S3,motifS3,S4,motifS4,S5,motifS5,date FROM absences WHERE  uidprof='{$_SESSION['login']}' 
@@ -100,6 +100,7 @@ function affiche_abs($potache) {
             }
         echo "&nbsp;&nbsp;- Le ".LeJour(strToTime($ligne[21]))." ".$ligne[0]." " . $typmat ."<br />";
         }
+        echo '</h3>';
     }//fin function
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
