@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9~6) LCS; urgency=low
+
+  * add tests sécurity in upload files
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 28 Dec 2011 23:24:16 +0100
+
 lcs-cdt (2.4.9~5) LCS; urgency=low
 
   * fix bug with IE in sequences.js
