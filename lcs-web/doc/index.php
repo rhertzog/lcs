@@ -19,7 +19,7 @@ if ( is_dir( "/usr/share/doc/lcs/spip" ) ) {
     echo "<h3><a href=\"spip/html/\">CMS spip</a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/smbwebclient" ) ) {
-    echo "<h3><a href=\"smbwebclient/html/\">Acc&egarve;s serveur SE3 <em>smbwebclient</em></a></h3>";
+    echo "<h3><a href=\"smbwebclient/html/\">Acc&egrave;s serveur SE3 <em>smbwebclient</em></a></h3>";
 }
 if ( is_dir( "/usr/share/doc/lcs/clientftp" ) ) {
     echo "<h3><a href=\"clientftp/html/\">Acc&egrave;s espace personnel <em>clientftp</em></a></h3>";

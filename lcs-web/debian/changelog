@@ -3,6 +3,7 @@ lcs-web (2.4.9~3) Lcs; urgency=low
   [ Jean-Luc Chretien ]
   * Modify lcs/logout.php with logout spip ajax request
   * Add first version of lcs-lenny2squeeze
+  * Fix a typo erreor in doc/index.php
 
   [ Philippe LECLERC ]    
   * Change the test status of a module in gestpack.sh
@@ -19,7 +20,7 @@ lcs-web (2.4.9~3) Lcs; urgency=low
   [ Franck Molle]
   * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 18 Dec 2011 14:43:09 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Jan 2012 10:52:25 +0100
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
