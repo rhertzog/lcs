@@ -27,7 +27,7 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
       		echo "<p>".gettext("Vous avez s&#233;lectionn&#233; ") ."". count($newrights)."".gettext(" droit(s)")."<br />\n";
       		for ($loop=0; $loop < count($newrights); $loop++) {
         		$right=$newrights[$loop];
-        		echo gettext("D&#233;l&#233;gation du droit")." <U>$right</U> ".gettext("&#224; l'utilisateur")." $uid<br />";
+        		echo gettext("D&#233;l&#233;gation du droit")." <u>$right</u> ".gettext("&#224; l'utilisateur")." $uid<br />";
         		$cDn = "cn=$uid,$groupsRdn,$ldap_base_dn";
         		$pDn = "cn=$right,$rightsRdn,$ldap_base_dn";
         		exec ("$scriptsbinpath/groupAddEntry.pl \"$cDn\" \"$pDn\"");
@@ -53,7 +53,7 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
     	list($user, $groups)=people_get_variables($uid, true);
     	// Affichage du nom et de la description de l'utilisateur
     	echo "<h3>".gettext("D&#233;l&#233;gation de droits &#224; ")."". $user["fullname"] ." (<u>$uid</u>)</h3>\n";
-    	echo gettext("S&#233;lectionnez les droits &#224; supprimer (liste de gauche) ou &#224; ajouter (liste de droite)");
+    	echo gettext("S&#233;lectionnez les droits &#224; supprimer (liste de gauche) ou &#224; ajouter (liste de droite) ");
     	echo gettext("et validez &#224; l'aide du bouton correspondant.")."<br /><br />\n";
     	// Lecture des droits disponibles
     	$userDn="cn=$uid,$groupsRdn,$ldap_base_dn";
