@@ -196,7 +196,7 @@ if (isset($_POST['enregistrer']) )
                 if ($classe_dest!="") mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
                 }
             //enregistrement dans le travail a faire
-            $Dev= "Pr&#233;parer le Devoir surveill&#233; : ".$Sujet;
+            $Dev= "Pr&#233;parer le Devoir surveill&#233; : ".htmlentities($Sujet);
             $date_c=date("Ymd");
             $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire ) 
             VALUES ( '{$_POST['numrubri']}','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
