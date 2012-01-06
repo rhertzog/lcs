@@ -1,5 +1,5 @@
 <?php
-/* functions.inc.php Derniere mise a jour 08/09/2011  */
+/* functions.inc.php Derniere mise a jour 05/01/2012  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -304,11 +304,11 @@ include ("/var/www/lcs/includes/xoft.php");
 		setcookie("LCSAuth","", 0,"/","",0);
 		setcookie("LCSuser","", 0,"/","",0);
 		// Destruction du cookie spip_admin
-		setcookie("spip_admin","", 0,"/spip/","",0);
+		// setcookie("spip_admin","", 0,"/spip/","",0);
 		// Destruction du cookie spip_session
-		setcookie("spip_session","", 0,"/spip/","",0);
+		// setcookie("spip_session","", 0,"/spip/","",0);
 		// Destruction du cookie admin du Forum
-		setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
+		// setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
 		// Destruction du cookie smbwebclient
 		setcookie("SmbWebClientID","", 0,"/","",0);
 		// Destruction cookie tgt service CAS
@@ -320,10 +320,10 @@ include ("/var/www/lcs/includes/xoft.php");
 			setcookie("tgt","", 0,"/","",0);
 		}
 		// Destruction des cookies Squirrelmail
-		setcookie("SQMSESSID","", 0,"/","",0);
-		setcookie("key","", 0,"/squirrelmail/","",0);
+		// setcookie("SQMSESSID","", 0,"/","",0);
+		// setcookie("key","", 0,"/squirrelmail/","",0);
 		// Destruction du cookie de session Roundcube
-		setcookie("roundcube_sessid","", 0,"/","",0);
+		// setcookie("roundcube_sessid","", 0,"/","",0);
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
 		$result=@mysql_query($query);

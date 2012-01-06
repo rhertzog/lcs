@@ -5,6 +5,15 @@ lcs-web (2.4.9~3) Lcs; urgency=low
   * Add first version of lcs-lenny2squeeze
   * Fix a typo erreor in doc/index.php
   * Fix bug in Annu/add_group_right.php
+  * Add and modify scripts for AUTH LCS ENT :
+     lcs-web/www/lcs/ajax_ent.php
+     lcs-web/www/lcs/barre.php
+     lcs-web/www/lcs/auth_ent.php
+     lcs-web/www/lcs/ent.js
+     lcs-web/www/lcs/includes/config.inc.in
+     lcs-web/www/lcs/includes/log2lcsentcas_ajax.php
+     lcs-web/www/lcs/includes/functions.inc.php
+     lcs-web/www/c/ent.css
 
   [ Philippe LECLERC ]    
   * Change the test status of a module in gestpack.sh
@@ -21,7 +30,7 @@ lcs-web (2.4.9~3) Lcs; urgency=low
   [ Franck Molle]
   * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Jan 2012 14:58:58 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 06 Jan 2012 11:21:48 +0100
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 

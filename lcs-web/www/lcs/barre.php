@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 13/01/2011 */
+/* lcs/barre.php derniere mise a jour : 06/01/2012 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 session_start();
@@ -136,14 +136,21 @@ function MM_preloadImages() { //v3.0
 <body bgcolor="#f8f8ff" onLoad="MM_preloadImages('images/<? echo $path ?>/BP_r1_c3_f2.gif','images/<? echo $path ?>/BP_r1_c3_f3.gif','images/<? echo $path ?>/BP_r1_c4_f2.gif','images/<? echo $path ?>/BP_r1_c4_f3.gif','images/<? echo $path ?>/BP_r1_c5_f2.gif','images/<? echo $path ?>/BP_r1_c5_f3.gif','images/<? echo $path ?>/BP_r1_c6_f2.gif','images/<? echo $path ?>/BP_r1_c6_f3.gif','images/<? echo $path ?>/BP_r1_c7_f2.gif','images/<? echo $path ?>/BP_r1_c7_f3.gif','images/<? echo $path ?>/BP_r1_c8_f2.gif','images/<? echo $path ?>/BP_r1_c8_f3.gif','images/<? echo $path ?>/BP_r1_c10_f2.gif','images/<? echo $path ?>/BP_r1_c10_f3.gif');">
 
 <?php
-
 // Cas service
+	// Select PATH request with mod_auth params (LCS or ENT)	
+	if ( $auth_mod != "ENT" ) {
+		$log2cas="log2cas_ajax.php";
+		$path2auth="auth.php";
+	} else {
+		$log2cas="log2lcsentcas_ajax.php";
+		$path2auth="auth_ent.php";
+	}
    if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) {
 	echo "<script type='text/javascript'>
         // <![CDATA[
 		$.ajax({
                     type: 'POST',
-                    url : 'includes/log2cas_ajax.php',
+                    url : 'includes/$log2cas',
                     async: true,
                     error: function() {
                         alert('Echec authentification CAS');

@@ -1,11 +1,5 @@
-<?
-/* =============================================
-   Projet LCS : Linux Communication Server
-   config.inc.php
-   jLCF : jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice academie de Caen
-   Derniere modification 24/03/2011
-   ============================================= */
+<?php
+/* includes/config.inc.php Derniere modification 06/01/2012 */
 
 # Mode DEBUG LCS 
 #---------------
@@ -71,7 +65,12 @@ if(getenv("HTTP_X_FORWARDED_HOST")) {
 $baseurl = $baseurl."/";
 if ( @$_SERVER['SERVER_PORT']=="443" ) 
     $baseurl=ereg_replace("http","https",$baseurl);
-$urlauth=$baseurl."lcs/auth.php";
+
+if ( $auth_mod != "ENT" ) 
+	$urlauth=$baseurl."lcs/auth.php";
+else
+	$urlauth=$baseurl."lcs/auth_ent.php";
+
 $imagespath="../images";
 $logpath="/var/log/lcs/";
 $scriptsbinpath="/usr/share/lcs/sbin";
