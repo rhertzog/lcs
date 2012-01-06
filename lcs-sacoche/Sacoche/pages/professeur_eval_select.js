@@ -277,7 +277,7 @@ $(document).ready
 			var date_visible = $(this).parent().prev().prev().prev().prev().prev().html();
 			var info         = $(this).parent().prev().prev().prev().html();
 			var objet_date   = new Date();
-			var timestamp    = parseInt(objet_date.getTime()/1000); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
+			var timestamp    = parseInt(objet_date.getTime()/1000,10); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
 			date1 = date.substring(3,13); // garder la date mysql
 			date2 = date.substring(17,date.length); // garder la date française
 			// Masquer le tableau ; Afficher la zone associée et charger son contenu
@@ -343,7 +343,7 @@ $(document).ready
 			var info = $(this).parent().prev().prev().prev().html();
 			    date = date.substring(17,date.length); // garder la date française
 			var objet_date = new Date();
-			var timestamp  = parseInt(objet_date.getTime()/1000); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
+			var timestamp  = parseInt(objet_date.getTime()/1000,10); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
 			// Masquer le tableau ; Afficher la zone associée et charger son contenu
 			$('#form0 , #form1').hide('fast');
 			$('#zone_voir').css("display","block");
@@ -397,7 +397,7 @@ $(document).ready
 			var info = $(this).parent().prev().prev().prev().html();
 			    date = date.substring(17,date.length); // garder la date française
 			var objet_date = new Date();
-			var timestamp  = parseInt(objet_date.getTime()/1000); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
+			var timestamp  = parseInt(objet_date.getTime()/1000,10); // timestamp pour éviter les pbs de mise en cache de PDF de mêmes noms
 			$('#form0 , #form1').hide('fast');
 			$('#zone_voir_repart').css("display","block");
 			$('#titre_voir_repart').html('Voir les répartitions des élèves à une évaluation | '+date+' | '+info);
@@ -544,7 +544,7 @@ $(document).ready
 					success : function(responseHTML)
 					{
 						initialiser_compteur();
-						if(responseHTML.substring(0,10)!='<div id="i')
+						if(responseHTML.substring(0,18)!='<ul id="sortable">')
 						{
 							$('#msg_ordonner').removeAttr("class").addClass("alerte").html(responseHTML+' <button id="fermer_zone_ordonner" type="button" class="retourner">Retour</button>');
 						}
@@ -553,11 +553,21 @@ $(document).ready
 							modification = false;
 							$('#msg_ordonner').removeAttr("class").html('&nbsp;');
 							$('#div_ordonner').html(responseHTML);
+							$('#sortable').sortable( { cursor:'n-resize' , update:function(event,ui){modif_ordre();} } );
 						}
 					}
 				}
 			);
 		};
+		function modif_ordre()
+		{
+			if(modification==false)
+			{
+				$('#fermer_zone_ordonner').removeAttr("class").addClass("annuler").html('Annuler / Retour');
+				modification = true;
+				$('#ajax_msg').removeAttr("class").html("&nbsp;");
+			}
+		}
 
 		/**
 		 * Choisir les professeurs associés à une évaluation : mise en place du formulaire
@@ -1024,8 +1034,8 @@ $(document).ready
 				if(memo_pilotage=='clavier')
 				{
 					var id = $(this).attr("id");
-					var colonne = parseInt(id.substring(1,id.indexOf('L')));
-					var ligne   = parseInt(id.substring(id.indexOf('L')+1));
+					var colonne = parseInt(id.substring(1,id.indexOf('L')),10);
+					var ligne   = parseInt(id.substring(id.indexOf('L')+1),10);
 					var findme = '.'+e.which+'.';
 					if('.8.46.49.50.51.52.65.68.78.97.98.99.100.'.indexOf(findme)!=-1)
 					{
@@ -1237,29 +1247,6 @@ $(document).ready
 		);
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une image pour modifier l'ordre des items d'une évaluation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-
-		$('#div_ordonner input[type=image]').live
-		('click',
-			function()
-			{
-				para_clic = $(this).parent();
-				para_prev = para_clic.prev('div');
-				para_next = para_clic.next('div');
-				para_clic.before(para_next);
-				para_clic.after(para_prev);
-				if(modification==false)
-				{
-					$('#fermer_zone_ordonner').removeAttr("class").addClass("annuler").html('Annuler / Retour');
-					modification = true;
-					$('#ajax_msg').removeAttr("class").html("&nbsp;");
-				}
-				return false;
-			}
-		);
-
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 //	Clic sur le lien pour mettre à jour l'ordre des items d'une évaluation
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
@@ -1275,7 +1262,7 @@ $(document).ready
 				{
 					// On récupère la liste des items dans l'ordre de la page
 					var tab_id = new Array();
-					$('#div_ordonner').children('div').each
+					$('#sortable').children('li').each
 					(
 						function()
 						{

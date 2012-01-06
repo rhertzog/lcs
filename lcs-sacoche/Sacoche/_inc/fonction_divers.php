@@ -249,7 +249,7 @@ function declaration_entete( $is_meta_robots ,$is_favicon , $is_rss , $tab_fichi
 		switch($type)
 		{
 			case 'css'    : echo'<link rel="stylesheet" type="text/css" href="'.$url.'" />'; break;
-			case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'; break;
+	//  case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'; break;
 			case 'js'     : echo'<script type="text/javascript" charset="'.CHARSET.'" src="'.$url.'"></script>'; break;
 		}
 	}
@@ -988,11 +988,12 @@ function contenu_courriel_nouveau_mdp($base_id,$denomination,$contact_nom,$conta
  * @param bool        $aff_coef    affichage des coefficients des items (sous forme d'image)
  * @param bool        $aff_cart    affichage des possibilités de demandes d'évaluation des items (sous forme d'image)
  * @param bool|string $aff_socle   false | 'texte' | 'image' : affichage de la liaison au socle
- * @param bool|string $aff_lien    false | 'image' | 'click' : affichage des ressources de remédiation
+ * @param bool|string $aff_lien    false | 'image' | 'click' : affichage des liens (ressources pour travailler)
  * @param bool        $aff_input   affichage ou pas des input checkbox avec label
+ * @param string      $aff_id_li   vide par défaut, "n3" pour ajouter des id aux li_n3
  * @return string
  */
-function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$aff_coef,$aff_cart,$aff_socle,$aff_lien,$aff_input)
+function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$aff_coef,$aff_cart,$aff_socle,$aff_lien,$aff_input,$aff_id_li='')
 {
 	$input_all = ($aff_input) ? ' <input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." />' : '' ;
 	$input_texte = '';
@@ -1111,7 +1112,8 @@ function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$a
 									{
 										foreach($tab_item[$matiere_id][$niveau_id][$domaine_id][$theme_id] as $item_id => $item_texte)
 										{
-											$retour .= '<li class="li_n3">'.$item_texte.'</li>'."\r\n";
+											$id = ($aff_id_li=='n3') ? ' id="n3_'.$item_id.'"' : '' ;
+											$retour .= '<li class="li_n3"'.$id.'>'.$item_texte.'</li>'."\r\n";
 										}
 									}
 									$retour .= '</ul>'."\r\n";
@@ -1329,6 +1331,51 @@ function url_get_contents($url,$tab_post=false,$timeout=5)
 	{                                                 // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 3);         // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
+	}
+	else
+	{                                                 // Solution de remplacement inspirée de http://fr.php.net/manual/fr/function.curl-setopt.php#102121
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
+		$maxredirs = 3 ;
+		$url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+		$rch = curl_copy_handle($ch);
+		curl_setopt($rch, CURLOPT_HEADER, TRUE);
+		curl_setopt($rch, CURLOPT_NOBODY, TRUE);
+		curl_setopt($rch, CURLOPT_FORBID_REUSE, FALSE);
+		curl_setopt($rch, CURLOPT_RETURNTRANSFER, TRUE);
+		do
+		{
+			curl_setopt($rch, CURLOPT_URL, $url);
+			$header = curl_exec($rch);
+			if (curl_errno($rch))
+			{
+				$code = 0;
+			}
+			else
+			{
+				$code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
+				if ($code == 301 || $code == 302)
+				{
+					preg_match('/Location:(.*?)\n/', $header, $matches);
+					$newurl = trim(array_pop($matches));
+					// Pb : l'URL peut être relative, et si on perd le domaine alors après ça plante
+					if( (substr($newurl,0,4)!='http') && (substr($newurl,0,3)!='ftp') )
+					{
+						$pos_last_slash = strrpos($url,'/');
+						$newurl_debut = ($pos_last_slash>7) ? substr($url,0,$pos_last_slash+1) : $url.'/' ;
+						$newurl_fin   = ($newurl{0}=='/')   ? substr($newurl,1)                : $newurl ;
+						$newurl = $newurl_debut.$newurl_fin;
+					}
+					$url = $newurl;
+				}
+				else
+				{
+					$code = 0;
+				}
+			}
+		}
+		while ($code && --$maxredirs);
+		curl_close($rch);
+		curl_setopt($ch, CURLOPT_URL, $url);
 	}
 	if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
 	{                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
