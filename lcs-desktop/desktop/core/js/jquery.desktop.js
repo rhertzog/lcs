@@ -759,14 +759,13 @@ var JQD = (function($, window, undefined) {
 						}) 
 					);
 				}
-				var btrAuth = $('<a/>').addClass('auth');
+				var btrAuth = $('<a/>').addClass('auth'), imgConnect = parseInt(opts.user.idpers) == 0 ? 'connect':'stop';
 				if ( $('img.auth').length==0 ) 
 				$('<li/>').addClass('auth').append( 
 					btrAuth.attr({
-						href:opts.apps.auth.url, 
-						title:opts.apps.auth.txt
+						title: parseInt(opts.user.idpers) == 0 ? 'Se connecter' : 'Se déconnecter'
 					}).append( 
-						$('<img/>').attr({src:opts.apps.auth.img, alt:''}).addClass('auth')
+						$('<img/>').attr({src:'core/images/icons/icon_22_'+imgConnect+'.png', alt:''}).addClass('auth '+imgConnect)
 					).click(function(){
 						JQD.logform(parseInt(opts.user.idpers) == 0 ? '../lcs/auth.php' : JQD.logform('../lcs/logout.php'));
 						return false;
