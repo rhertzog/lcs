@@ -11,15 +11,10 @@ lcs-desktop (2.4.9~2) Lcs; urgency=low
   * All rights of administration allowed if user have right [lcs_is_admin]
   * Total rewrite display of form of user prefs
   * Add color choice for icons text in user prefs (black||white)
-
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:33:26 +0200
-
-lcs-desktop (2.4.9~1) Lcs; urgency=low
-
-  [ Dominique Lepaisant ]
+  (2.4.9~1) 
   * Compatibility with RoundCube
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 16:03:24 +0200
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Sat, 07 Jan 2012 15:31:36 +0100
 
 lcs-desktop (2.4.8) Lcs; urgency=low
   
