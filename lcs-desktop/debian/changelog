@@ -1,3 +1,19 @@
+lcs-desktop (2.4.9~2) Lcs; urgency=low
+
+  * Fix bug on default size parameter when windows opening
+  * Fix bug on windows positions when they are biggest than desktop
+  * Fix bug on color palet display in context menu
+  * Fix bug on display of window title
+  * Fix bug on iframe content if this content is hosted on external server
+  * Fix bug on text of the last connexion user 
+  * Fix bug with roundcube 
+  * Total rewrite load_setting.php to desktop_settings.php for call of params
+  * All rights of administration allowed if user have right [lcs_is_admin]
+  * Total rewrite display of form of user prefs
+  * Add color choice for icons text in user prefs (black||white)
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:33:26 +0200
+
 lcs-desktop (2.4.9~1) Lcs; urgency=low
 
   [ Dominique Lepaisant ]

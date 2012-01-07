@@ -28,20 +28,20 @@ include("core/includes/functions.inc.php");
 <meta name="keywords" content="Environnement Num&eacute;rique de Travail, Web Desktop, Bureau web, Education, FOAD, Formation &agrave; distance, communication, LCS, linux, e-learning" />
 <meta name="author" content="LcsDevTeam" />
 <link href="core/css/html.css" rel="stylesheet" />
-<link href="core/css/jquery-ui-1.8.7.custom.css" rel="stylesheet" type="text/css" />
-<link href="core/finder/ui.theme.css" rel="stylesheet" type="text/css" media="screen">
+<link href="core/libs/jquery-ui/css/smoothness/jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css" />
+<!--<link href="core/finder/ui.theme.css" rel="stylesheet" type="text/css" media="screen"> -->
 <link href="core/css/desktop.css" rel="stylesheet" />
 <link href="core/css/ui.notify.css" t ype="text/css" rel="stylesheet" />
 <link href="core/css/jquery.context_menu.css" rel="stylesheet" type="text/css" />
 <link href="core/css/tip-twitter/tip-twitter.css" rel="stylesheet" type="text/css" />
-<script src="../libjs/jquery/jquery.js"></script>
+<link href="core/libs/colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css" /><link href='core/libs/uniform/css/uniform.agent.css' rel="stylesheet" type='text/css' media='screen' /><script src="../libjs/jquery/jquery.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
 <script src="core/js/i18n/desktop_fr.js"></script>
 <script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/js/jquery.context_menu.js"></script>
 <script src="core/js/jquery.poshytip.min.js"></script>
-<link rel="shortcut-icon" href="../lcs/images/favicon.ico">
+<script type="text/javascript" src="core/libs/colorpicker/js/colorpicker.js"></script><script type='text/javascript' src='core/libs/uniform/jquery.uniform.min.js'></script><link rel="shortcut-icon" href="../lcs/images/favicon.ico">
 <!--[if lt IE 8]>
 	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
 <![endif]-->
@@ -79,7 +79,19 @@ include("core/includes/functions.inc.php");
 <!--- container to hold notifications, and default templates --->
 <script>
 $(document).ready(function(){
+			var tmpWpp = {opts:{pos_wallpaper:'center_v center_h', wallpaper:"core/images/gui/loading81.gif"}};
+			//$('body').addClass('loading');
+	//		JQD.init.wpp(tmpWpp);JQD.init.place_wppr(tmpWpp);
 	JQD.settings();
+/*
+	JQD.defaults['iconcolor'] ='black';
+	JQD.testfunc= function(){
+		console.log('this =>', this);
+		console.log('$(this) =>', $(this).jquery);
+	//	console.log('e =>', e);
+	}
+	JQD.testfunc();
+*/
 });
 
 </script>
