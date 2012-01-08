@@ -672,24 +672,6 @@ var JQD = (function($, window, undefined) {
 				
 			},
 			/*
-			* JQD.init.forumess() - notification dernier message forum (spip)
-			*@type : function
-			*@param : o - JQD.options (id dernier article du forum)
-			*@TODO : A Confirmer 
-			forumess: function(o) {
-				var spipidart = $('<input/>').attr({
-					type: 'hidden', 
-					id: 's_idart',
-					name:'s_idart',
-					value:o.prms.s_idart
-				}).appendTo('body');
-				setTimeout(function(){
-					JQD.notify_forum();
-				},15000);
-				
-			},
-			*/
-			/*
 			* JQD.init.myurl() 
 			*@type : function
 			*@TODO : A Confirmer n'a rien a faire ici A deplacer dans JQD.buildbuild
@@ -744,7 +726,7 @@ var JQD = (function($, window, undefined) {
 					JQD.btr.wmail.url= JQD.options.apps.webmail.smn.compose.url;
 					JQD.btr.maint.url= JQD.options.prms.maintUrl;
 					$.each( JQD.btr, function( i, v ) {
-						btrUl.append( JQD.utils.btrLi( i, v ) );
+						btrUl.append( JQD.utils.btrLi( v ) );
 					});
 					btrUl.appendTo('#bar_top');
 					var btrDate = $('<div/>').append( $('<ul/>') ),
@@ -857,12 +839,12 @@ var JQD = (function($, window, undefined) {
 					parseInt(o.monlcs) == 1 ? $('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('monLcs')
 					) : ''
-				)/**/.append(
+				).append(
 					$('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('iLcs')
 					)
 				).appendTo( $('#otBuro_2').addClass('menu_trigger').parent('li').addClass('spaces') );
-				//$('li.spaces ul.menu li').each(function(i, v){
+
 				space.find('li').each(function(i, v){
 					$(v).find('a').prepend($('<span/>').text(i+1) );
 				});
@@ -929,11 +911,6 @@ var JQD = (function($, window, undefined) {
 			quicklaunch: function( o ) {
 				if( parseInt( o.opts.quicklaunch ) == 1 ) {
 					$('<ul/>').addClass('abs').attr('id', 'quicklaunch').appendTo($('#desktop'));
-					//if (o.pref == "nul" ) {  
-						ql = o.applis;
-					//}else{
-					//	ql = o.pref;
-					//}
 					$.each(o.icns, function(i, v){
 						$('<li/>').append(
 							$('<a/>').addClass('launch open_win ext_link screenshot').attr({
@@ -1020,12 +997,8 @@ var JQD = (function($, window, undefined) {
 								}
 								else {
 									JQD.save_icon({ icon:icnOpts, where:gpChecked, ou:'group', myress:myress});
-									// on inserre sur le bureau
-									//icn.appendTo('#desktop');
 									// on insere dans le menu
 									$('li a.ress ul').append(JQD.utils.itemnu( icnOpts,icnOpts).find('a').prepend($('<img src="'+icnOpts.img+'"/>')));
-									// on inserre dans le tableau d'options
-									// voir JQD.save_icon()
 								}
 							}
 							// on ferme le form dialog
@@ -1341,9 +1314,11 @@ var JQD = (function($, window, undefined) {
 				JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 				}
 			},
-			//
-			//#JQD.utils.editIcon() : fonction supprimer icone
-			//
+			/*
+			* JQD.utils.editIcon : editer icone
+			*@type: Function
+			*@param: icon tableau des params de l'icone
+			*/
 			editIcon: function ( itm ) {
 				var txt = itm.find('span').text(),
 				himg = itm.find('img').height()+10,
@@ -1379,17 +1354,20 @@ var JQD = (function($, window, undefined) {
 					editDiv.remove();
 			    })
    			},
-   			//
-   			//#JQD.utils.cancel_editIcon()
-   			//
+			/*
+			* JQD.utils.cancel_editIcon : 
+			*@type: Function
+			*/
    			cancel_editIcon: function() {
    				$('a.icon span').show();
    				$('.slctname').remove();
    			},
 
-			//
-			// #JQD.utls.sortIcons( ops ):.  Sort icons
-			//
+			/*
+			* JQD.utls.sortIcons :  range les icones sur le bureau
+			*@type: Function
+			*@param: icon tableau des icones/params
+			*/
 			sortIcons: function( opts ) {
 				// reposition icons
 				var nb_icons = $('#desktop a.abs.icon').not('.launch, .group').length,
@@ -1404,17 +1382,20 @@ var JQD = (function($, window, undefined) {
 				t += h_i;
 				});
 			},
-			//
-			//#JQD.utils.clear_active() Clear active states, hide menus.
-			//
+			/*
+			* JQD.utils.clear_active :   Clear active states, hide menus.
+			*@type: Function
+			*/
 			clear_active: function() {
 				$('a.active, tr.active').removeClass('active');
 				$('ul.menu,#otBuro_1 ul').hide();
 			},
-			//
-			//#JQD.utils.btrLi( ) : contruction du menu top-right
-			//
-			btrLi: function( t, o ){
+			/*
+			* JQD.utils.btrLi :  contruction du menu top-right
+			*@type: Function
+			*@param: o tableau des params de l'itrm
+			*/
+			btrLi: function( o ){
 				var btrLi = $('<li/>').append( $('<a/>').attr({
 					href: o.url,
 					id: o.id,
@@ -1422,9 +1403,12 @@ var JQD = (function($, window, undefined) {
 				}).addClass( o.cls) );
 				return btrLi;
 			},
-            //
-            // JQD.utils.sortLi( ul )
-            //
+			/*
+			* JQD.utils.sortLi : ordonne les items
+			*@type: Function
+			*@param: ul le conteneur des items
+			*@param: li le tableau des itrm
+			*/
             sortLi: function( ul, li ) {
 				var mylist = ul;
 				var listitems = mylist.children(li).get();
@@ -1435,9 +1419,12 @@ var JQD = (function($, window, undefined) {
 				})
 				$.each(listitems, function(idx, itm) { mylist.append(itm); });
 			},
-			//
-			//
-			//
+			/*
+			* JQD.utils.sortArray: ordonne les array
+			*@type: Function
+			*@param: a
+			*@param: b
+			*/
 			sortArray: function(a,b)
 				{
 				return ((a.txt < b.txt) ? -1 : (a.txt > b.txt) ? 1 : 0);
@@ -1862,15 +1849,13 @@ var JQD = (function($, window, undefined) {
 					var n_idart= $(data.responseText).find('span.forum_date').text();
 					var oldidart= JQD.options.opts.s_idart;
 					var newidart_a= n_idart.split(' - ');
-					var newidart = parseInt( newidart_a[0].replace(/-/g, '') );
-					//alert ( 'newidart: '+newidart+' \noldidart: '+oldidart); 
+					var newidart = parseInt( newidart_a[0].replace(/-/g, '') +newidart_a[1].replace(/\:/g, '') );
 					if(newidart > oldidart){
 						JQD.create_notify("withIcon", 
 							{title:'<span style="color:#509fda;">Information Forum</span>', text:data.responseText, icon:'core/images/icons/info.png'},
 							{
 							expires:true,
 							open: function(e,instance){
-								//alert($('#notify_container').length);
 								$('#notify_container').find('a').each(function(){
 									$(this).remove();
 								});

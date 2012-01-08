@@ -167,7 +167,7 @@ JQD.forms.bg=function() {
 	if (JQD.setdefault==1) 
 	{
 		$('#defaultBg').attr('checked','checked')  ;
-		$('.admin_only').show();
+		//$('.admin_only').show();
 	}
 	$('#contentSlider, #contentFormBg').css('background-color', JQD.setdefault==1 ? '#660000': '#000000') ;
 	
