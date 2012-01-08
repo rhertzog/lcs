@@ -260,12 +260,12 @@ function menuApplis($login, $idpers, $_ssmn) {
 	};
 	
 	// on va chercher les aplis dans la bdd
-	$query = "SELECT * from applis where type='N' or type='M' or type='P' or name ='squirrelmail' or name ='roundcube' and name !='desktop' order by name";
+	$query = "SELECT * from applis where name != 'desktop' and type='N' or type='M' or type='P' or name ='squirrelmail' or name ='roundcube' order by name";
 	$result=mysql_query($query);
 	if ($result) {
 		while ($r=mysql_fetch_object($result)) {
 			// on verifie que l'appli est bien validee -> is't correct, misterFi ?
-			if ( ( $r->value == "1" ) and !file_exists("/usr/share/lcs/Plugins/".$r->chemin."/.applihide") ) {
+			if ( ( $r->value == "1" ) &&  $r->name !="desktop" and !file_exists("/usr/share/lcs/Plugins/".$r->chemin."/.applihide") ) {
 
 				// on fixe le chemin des images
 				$imgdktp= "images/app/lcslogo-".strtolower($r->name).".png";
