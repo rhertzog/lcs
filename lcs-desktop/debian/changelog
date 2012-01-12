@@ -1,3 +1,12 @@
+lcs-desktop (2.4.9~3) Lcs; urgency=low
+
+  * Fix bug in saving of prefs
+  * Fix bug whith user icon default
+  * Add jquerry plugin poshytip v-1.1 
+  * Cleaning and comments in jquery.desktop.js 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 13:36:12 +0200
+
 lcs-desktop (2.4.9~2) Lcs; urgency=low
 
   * Fix bug on default size parameter when windows opening

@@ -535,10 +535,6 @@ input.wp_url{
 	min-width: 120px;
 	width: 120px;
 }
-#bar_top ul.bar_top_right img{
-	vertical-align:middle;
-	cursor:pointer;
-}
 #bar_top ul.bar_top_right li,#bar_top ul.bar_top_right li a,#bar_top ul.bar_top_right li a span{
 	cursor:pointer;
 }
@@ -1504,9 +1500,9 @@ form.jqd_form{
 	color:#ffffff;
 }
 #btrUsrInf>img{
-	height:22px;
-	vertical-align:middle;
+	vertical-align:text-bottom;
 	margin:0 5px 0 -5px;
+	max-width:16px;
 }
 #user_infos{
 /*	overflow:hidden;*/

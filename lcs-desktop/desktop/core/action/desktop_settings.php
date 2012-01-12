@@ -426,14 +426,72 @@ function infosUser($login, $idpers, $pwchg) {
 	}
 	return $_usr;
 }
-
+/**
+*  saveApps() :  sauvegarde des applis du jour
+*@type : function
+*/
+function saveApps( $apps, $login ) {
+        $fp=fopen('/home/'.$login.'/Profile/APPS_du_jour_'.$login.'.json',"w");
+        $json_fp=json_encode($apps);
+        fwrite($fp,$json_fp);
+        fclose($fp);
+}
+/**
+*  verifApps() :  verification de la presence d'une nouvelle appli
+*@type : function
+*/
+function verifApps( $apps, $login ) {
+ 	if ( is_file('/home/'.$login.'/Profile/APPS_du_jour_'.$login.'.json') ) {
+		$url='/home/'.$login.'/Profile/APPS_du_jour_'.$login.'.json';
+		$objsn = json_decode(file_get_contents($url));
+		foreach( $objsn as $k=>$val) {
+			$verif[$k]=$val ;
+		}
+		// log
+		$mess =  array("json_fp"=>json_encode($apps), "objsn"=>json_encode($objsn));
+		$mess["countApps"] = count($apps) ;
+		$mess["countJson"] =count($objsn) ;
+		$mess["countVerif"] =count($verif) ;
+		
+		// y a t'i du nouveau ?
+		if (json_encode($apps) == json_encode($objsn) ) // pas de chagement
+		{
+			$mess["log"] =  "C tout bon. Rien d'nouveau à l'ouest !!!";
+		}
+		else if ( count($apps) != count($verif) )
+		{
+			if ( count( $apps ) < count($verif) ) // une appli supprimee
+			{
+				foreach ( $verif as $k=>$val) !in_array($k, $apps) ? $icon_del=$k : '';// laquelle
+				$mess["alert"] = "Une appli supprimée !!! celle-là: ".$icon_del ;
+			}
+			else if ( count( $apps ) > count($verif) )// une appli ajoutée
+			{  
+				foreach ( $apps as $k=>$val) !in_array($k, $verif) ? $icon_add=$k : '';// laquelle
+				$mess["alert"] = "Youpiiii !! Une nouvelle appli !!! celle-là: ".$icon_add ;
+			}
+		}
+		else
+		{
+			foreach ( $verif as $k=>$val) {
+		$mess["Apps".$k] =  json_encode($apps[$k]) ;
+		$mess["Json".$k] = json_encode($verif[$k]) ;
+				if (  json_encode($verif[$k]) != json_encode($apps[$k]) ){
+				$mess["alert"] = "Ya du nouveau d'ce côté là !!!<br/>l'appli ".$k." semble modifiée";
+				return $mess;
+				}
+			}
+		}
+		return  $mess;
+	}
+	else	return  array("log"=>"Ya po d'fichier");
+}
 /**
 *  loadOpts() : 
 *@type : function
 *@return : Object   opts: prefs user
 */
-function loadOpts($login) {
-	$opts=array();
+function loadOpts($login, $opts) {
 
 	//si un fichier prefs existe, on va le chercher
 	if ( is_file('/home/'.$login.'/Profile/PREFS_'.$login.'.json') ) {
@@ -441,9 +499,8 @@ function loadOpts($login) {
 		// compat version precedente
 		$objsn = json_decode(file_get_contents($url));
 		foreach( $objsn as $k=>$val) {
-			if ( $k!="icons" ) $opts[$k]=$val ;
+			if ( $k!="icons" )  $opts[$k]=$val ;
 		}
-	return $opts;
 	}
 	//sinon on prends le fichier prefs_defaut s'il existe
 	else if( is_file('../json/PREFS_default.json') ) {
@@ -453,10 +510,9 @@ function loadOpts($login) {
 		{
 			$opts[$k]=$val ;
 		}
-	return $opts;
 	}
 	
-	else return false;
+	return $opts;
 	
 }
 
@@ -503,6 +559,7 @@ function loadIcons($login, $apps) {
 	else {
 		foreach ($apps as $app=>$icon) 
 		{
+			// c'est ici qu'on peut aussi filtrer les icones
 			if( $app!="admin" && $app!="auth" && $app!="apdesk" && $icon['typ']!="buro" && $icon['typ']!="aide") {
 				array_push($icns, $icon);
 			}
@@ -595,7 +652,8 @@ $_srvr	= array(
 	"domain" 		=> $domain, // domains
 	"baseurl" 		=> $baseurl, // url lcs
 	"url_accueil" 	=> urlAccueil(), // url page d'accueil definie ds la conf generale serveur 
-	"stgo"			=> "../lcs/statandgo.php?use=" // url redirigee par les stats
+	"stgo"			=> "../lcs/statandgo.php?use=", // url redirigee par les stats
+	"monlcs" 		=> is_dir("/var/www/monlcs") ? 1 : 0
 );
 
 // infos etab
@@ -621,8 +679,9 @@ else
 	
 	//user
 	$_user = infosUser($login, $idpers, pwdMustChange($login) );
-	//les prefs user 
-	$_opts = loadOpts('default') != false ? array_merge( $_opts, loadOpts( $login ) ) : $_opts;
+
+	//les prefs du user 
+	$_opts = loadOpts( $login, $_opts ) ;
 	
 	//les options admin 
 	$_prms = array_merge( $_prms, loadPrms() );
@@ -636,7 +695,13 @@ else
 	if ( isset( $_apps["maintenance"]) &&  $_prms["maintUrl"] == "" ) $_prms["maintUrl"] = $_apps["maintenance"]["smn"]["call"]["url"];
 	// else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]. $_prms["maintUrl"]=="" ? "admin@".$_srvr["domain"] :  $_prms["maintUrl"];
 	else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]."admin@".$_srvr["domain"] ;
+
 	
+$_mess = verifApps( $_apps, $login ) ;
+
+	// on enregistre les applis du jour
+	saveApps( $_apps , $login) ;
+
 	// les icones
 	$_icns = loadIcons( $login, $_apps );
 	// compatibilite version anterieure.
@@ -675,6 +740,7 @@ else
 		"ress" 	=> $_ress,
 		'test'=>count($_icns[0]),
 		'test2'=>!is_array($_icns),
+		'mess'=>$_mess ,
 	);
 }
 // et hop!

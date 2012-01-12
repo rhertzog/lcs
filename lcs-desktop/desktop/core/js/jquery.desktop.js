@@ -98,42 +98,6 @@ var JQD = (function($, window, undefined) {
 					img : "core/images/app/lcslogo-lcs.png",
 					typ : "buro"
 				}
-				/*
-				*/
-				/*,
-				pape : {
-					txt : "Partage de ressources",
-					url : "core/learning_path.php",
-					rev : "pape",
-					img : "core/images/app/lcslogo-lcs.png",
-					typ : "srvc"
-				}
-				*/
-				/*,
-				paintweb : {
-					txt : "Editeur graphique",
-					url : "paintweb/",
-					rev : "paintweb",
-					img : "core/images/app/lcslogo-default.png",
-					typ : "srvc"
-				}
-				*/
-				/*,
-				tinymce : {
-					txt : "Editeur de texte",
-					url : "tinymce/examples/full_jquery.html",
-					rev : "tinymce",
-					img : "core/images/app/lcslogo-lcs.png",
-					typ : "srvc"
-				},
-				formallin : {
-					txt : "G&eacute;n&eacute;rateur de formulaires",
-					url : "formallin/admin.php?page=index",
-					rev : "formallin",
-					img : "core/images/app/lcslogo-formallin.png",
-					typ : "srvc"
-				}*/
-				
 			}
 		},
 		/*
@@ -672,6 +636,15 @@ var JQD = (function($, window, undefined) {
 				
 			},
 			/*
+			* JQD.init.isAppChange() - alert so modif dans les applis
+			*@type : function
+			*/
+			isAppChange: function() {
+				return;
+				//if (typeof JQD.options.mess.error != "undefined" || typeof JQD.options.mess.alert != "undefined"  )
+				//	JQD.utils.dialog_mess({title:"Alerte", txt: JQD.options.mess.error || JQD.options.mess.alert || JQD.options.mess.success, intro:'Attention'});
+			},
+			/*
 			* JQD.init.myurl() 
 			*@type : function
 			*@TODO : A Confirmer n'a rien a faire ici A deplacer dans JQD.buildbuild
@@ -680,11 +653,11 @@ var JQD = (function($, window, undefined) {
 				JQD.mnuzonurl();
 			}
 		},
-			/*
-			* JQD.buid - Tableau de tous les elements a construire
-			* en general chaque fonction retourne un objet html
-			*@type : Object
-			*/
+		/*
+		* JQD.buid - Tableau de tous les elements a construire
+		* en general chaque fonction retourne un objet html
+		*@type : Object
+		*/
 		build: {
 			/*
 			* JQD.build.btop() berrre top (contenant les menus)
@@ -738,8 +711,11 @@ var JQD = (function($, window, undefined) {
 					usri.html(opts.user.fullname).prepend( 
 						$('<img/>').attr({
 							src: usrIcon.toLowerCase()
-						}) 
-					);
+						})
+					).find('img').error(function() {
+						//alert('Handler for .error() called.');
+						$(this).attr("src", "core/images/annu/16/user_silhouette.png")
+					});
 				}
 				var btrAuth = $('<a/>').addClass('auth'), imgConnect = parseInt(opts.user.idpers) == 0 ? 'connect':'stop';
 				if ( $('img.auth').length==0 ) 
@@ -758,7 +734,7 @@ var JQD = (function($, window, undefined) {
 			},
 
 			/*
-			* JQD.clock_date() block date/heure
+			* JQD.build.clock_date() block date/heure
 			*@type : function
 			*/
 			clock_date: function() {
@@ -836,14 +812,14 @@ var JQD = (function($, window, undefined) {
 						$('<a/>').html('Desktop')
 					)
 				).append(
-					parseInt(o.monlcs) == 1 ? $('<li/>').css({'float':'left'}).append(
+					parseInt(JQD.options.srvr.monlcs) == 1 ? $('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('monLcs')
 					) : ''
-				).append(
+				)/*.append(
 					$('<li/>').css({'float':'left'}).append(
 						$('<a/>').html('iLcs')
 					)
-				).appendTo( $('#otBuro_2').addClass('menu_trigger').parent('li').addClass('spaces') );
+				)*/.appendTo( $('#otBuro_2').addClass('menu_trigger').parent('li').addClass('spaces') );
 
 				space.find('li').each(function(i, v){
 					$(v).find('a').prepend($('<span/>').text(i+1) );
@@ -1429,18 +1405,24 @@ var JQD = (function($, window, undefined) {
 				{
 				return ((a.txt < b.txt) ? -1 : (a.txt > b.txt) ? 1 : 0);
 				},
-			//
-			//#JQD.utils.tymenu() : construction des categories du menu deroulant
-			//
+			/*
+			* JQD.utils.tymenu: construction des categories du menu deroulant
+			*@type: Function
+			*@param: t
+			*@param: txt
+			*/
 			tymenu: function ( t, txt) {
 				this.itm = $('<li>').addClass( t )
 				.append( $('<a href="#"/>').html( txt ).addClass('menu_trigger') )
 				.append( $('<ul/>').addClass('menu') );
 				return this.itm;
 			},
-			//
-			//#JQD.utils.ssmenu() :
-			//
+			/*
+			* JQD.utils.ssmenu: 
+			*@type: Function
+			*@param: appl 
+			*@TODO: A revoir
+			*/
 			ssmenu : function( appl ) {
 				this.it = JQD.utils.itemnu( appl, appl );
 				//$('.'+ appl.typ +' .menu').append( this.it );
@@ -1456,9 +1438,12 @@ var JQD = (function($, window, undefined) {
 					return sitUl;
 				}
 			},
-			//
-			//#JQD.utils.itemnu()
-			//
+			/*
+			* JQD.utils.itemnu: 
+			*@type: Function
+			*@param: o 
+			*@param: p 
+			*/
 			itemnu : function( o , p) {
 				var itLi = $('<li>').append( 
 					$('<a href="#"/>').addClass('open_win '+ o.rev).html('<span>'+ o.txt +'</span>' ).attr({
@@ -1468,9 +1453,11 @@ var JQD = (function($, window, undefined) {
 				);
 				return itLi;
 			},
-			//
-			//
-			//
+			/*
+			* JQD.utils.idispIcnForm: 
+			*@type: Function
+			*@param: opts 
+			*/
 			dispIcnForm: function(opts) {
 				if( !typeof opts ) {
 					var opts={title:'Ajouter une icone'}
@@ -1484,9 +1471,12 @@ var JQD = (function($, window, undefined) {
 					close: function(event, ui) {$('#icondialog').hide();}
 				});
 			},
-			//
-			//#JQD.dialog_mess(opts)
-			//
+			/*
+			* JQD.utils.dialog_mess: 
+			*@type: Function
+			*@param: opts 
+			*@TODO: Verifier utilisation 
+			*/
 			dialog_mess: function(opts) {
 				$( "#dialog-message" ).dialog( "destroy" );
 				var dm = $('<div id="dialog-message"/>').attr({title: opts.title}).append(
@@ -1505,9 +1495,12 @@ var JQD = (function($, window, undefined) {
 				});
 
 			},
-            //
-            // #JQD.utils.gqtSelectValue( slct )
-            //
+			/*
+			* JQD.utils.gqtSelectValue: 
+			*@type: Function
+			*@param: slct 
+			*@TODO: Verifier utilisation 
+			*/
             getSelectValue: function (slct) {
                 if($(slct).attr('multiple') == false) {
                     return $(slct).children('option:selected').val();
@@ -1518,15 +1511,24 @@ var JQD = (function($, window, undefined) {
                 });
                 return optGroup;
             },
+			/*
+			* JQD.utils.isValidEmailAddress: 
+			*@type: Function
+			*@param: emailAddress 
+			*@TODO: Verifier utilisation 
+			*/
             isValidEmailAddress: function(emailAddress) {
     			var pattern = new RegExp(/^(("[\w-+\s]+")|([\w-+]+(?:\.[\w-+]+)*)|("[\w-+\s]+")([\w-+]+(?:\.[\w-+]+)*))(@((?:[\w-+]+\.)*\w[\w-+]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][\d]\.|1[\d]{2}\.|[\d]{1,2}\.))((25[0-5]|2[0-4][\d]|1[\d]{2}|[\d]{1,2})\.){2}(25[0-5]|2[0-4][\d]|1[\d]{2}|[\d]{1,2})\]?$)/i);
     			return pattern.test(emailAddress);
 			}                        
 		},
 		
-		//
-		//#JQD.build.infusr( opt )
-		//
+		/*
+		* JQD.build.infusr : infos user
+		*@type: Function
+		*@param: opts 
+		*@TODO: A optimiser 
+		*/
 		infusr: function( oiu ){
 			var uiUlLg = $('<ul/>').addClass('infos_user list_groups'),
 			uiGp = oiu.user.grps ? oiu.user.grps.gp ? oiu.user.grps.gp  : '' : '';
@@ -1654,9 +1656,11 @@ var JQD = (function($, window, undefined) {
 
 			return uiUl;
 		},
-		//
-		//#JQD.showTeam - info LcsDevTeam
-		//
+		/*
+		* JQD.showTeam : info LcsDevTeam
+		*@type: Function
+		*@return : panneau infos user
+		*/
 		showTeam: function() {
 			// 
 			$('#LDT').remove();
@@ -1689,73 +1693,77 @@ var JQD = (function($, window, undefined) {
 			.appendTo('#desktop')
 			.slideDown('slow');
 		},
-			//
-			//
-			//
-			mnuzonurl: function() {
-			// cas du champ d'url navigateur
-			// construction du champ url
-				var urlInputField = $('<div/>').addClass('float_left').css({position: 'relative'})
-				.append(
-					$('<input type="text"/>').addClass('wp_url').attr({id: 'wp_url_m', name: 'wp_url', value:''})
-					.click(function(){return false;})
-					.focus(function(){$(this).next('img').show();})
-					.bind('keypress', function(e) {
-						if(e.keyCode==13){
-							if ( $('#wp_url_m').val()!='' ) {
-								var zisurl = $('#wp_url_m').val();
-								zisurl.match(/^http/) ? '' : zisurl='http://'+zisurl;
-								JQD.buildwin(zisurl,zisurl,zisurl.replace('http://',''),'' );
-							}
-						}
-					})
-				)
-				.append($('<img id="wp_url_go_m" />').attr({src: 'core/images/gui/arrow-right-blue_16.png'})
-					.css({position:'absolute',top:'8px',right:'5px',display:'none',height:'12px'})
-					.click(function(){
-						//JQD.utils.zonurlgo();
+		/*
+		* JQD.mnuzonurl : 
+		*@type: Function
+		*@return : 
+		*/
+		mnuzonurl: function() {
+		// cas du champ d'url navigateur
+		// construction du champ url
+			var urlInputField = $('<div/>').addClass('float_left').css({position: 'relative'})
+			.append(
+				$('<input type="text"/>').addClass('wp_url').attr({id: 'wp_url_m', name: 'wp_url', value:''})
+				.click(function(){return false;})
+				.focus(function(){$(this).next('img').show();})
+				.bind('keypress', function(e) {
+					if(e.keyCode==13){
 						if ( $('#wp_url_m').val()!='' ) {
 							var zisurl = $('#wp_url_m').val();
-							// ####### A REVOIR #######
 							zisurl.match(/^http/) ? '' : zisurl='http://'+zisurl;
-							// ########################
-							JQD.buildwin(zisurl,zisurl,zisurl,'' );
+							JQD.buildwin(zisurl,zisurl,zisurl.replace('http://',''),'' );
 						}
-					})
-				);
-				var opzurl = ({
-						txt : "Navigateur web",
-						url : "../doc/desktop/html/",
-						rev : "navigator",
-						img : "core/images/app/lcslogo-doc.png",
-						typ : "srvc"
-					}),
-					lizurl= JQD.utils.ssmenu( opzurl );
-					$('a.navigator').append(
-						$('<ul/>').addClass('input_url_nav').css({left:'-5px',top:'20px'}).append(
-							$('<li/>').append(
-								$('<a/>').css({'padding':'5px 5px 10px'}).append(urlInputField)
-							)
-						)
-					);
+					}
+				})
+			)
+			.append($('<img id="wp_url_go_m" />').attr({src: 'core/images/gui/arrow-right-blue_16.png'})
+				.css({position:'absolute',top:'8px',right:'5px',display:'none',height:'12px'})
+				.click(function(){
+					if ( $('#wp_url_m').val()!='' ) {
+						var zisurl = $('#wp_url_m').val();
+						// ####### A REVOIR #######
+						zisurl.match(/^http/) ? '' : zisurl='http://'+zisurl;
+						// ########################
+						JQD.buildwin(zisurl,zisurl,zisurl,'' );
+					}
+				})
+			);
+			var opzurl = ({
+				txt : "Navigateur web",
+				url : "../doc/desktop/html/",
+				rev : "navigator",
+				img : "core/images/app/lcslogo-doc.png",
+				typ : "srvc"
+			}),
+			lizurl= JQD.utils.ssmenu( opzurl );
+			$('a.navigator').append(
+				$('<ul/>').addClass('input_url_nav').css({left:'-5px',top:'20px'}).append(
+					$('<li/>').append(
+						$('<a/>').css({'padding':'5px 5px 10px'}).append(urlInputField)
+					)
+				)
+			);
 
-					// appel de l'url ds une nouvelle fenetre
-					$('a.navigator').hover(function(){
-						return false;
-					});
-			
-			},
+			// appel de l'url ds une nouvelle fenetre
+			$('a.navigator').hover(function(){
+				return false;
+			});
+		
+		},
 
-		//
-		// Zero out window z-index.
-		//
+		/*
+		* JQD.window_flat: Zero out window z-index.
+		*@type: Function
+		*/
 		window_flat: function() {
 			$('div.window, #user_infos').removeClass('window_stack');
 		},
 
-		//
-		// Resize modal window.
-		//
+		/*
+		* JQD.window_resize : Resize modal window.
+		*@type: Function
+		*@param : el - fenetre a resizer
+		*/
 		window_resize: function(el) {
 			// Nearest parent window.
 			var win = $(el).closest('div.window');
@@ -1806,7 +1814,15 @@ var JQD = (function($, window, undefined) {
 			win.addClass('window_stack');
 		},
 		
-		// Suppression fichier
+		/*
+		* JQD.rm :  Suppression fichier
+		*@type: Function
+		*@param : file - fichier a supprimer
+		*@param : usr - 
+		*@param : ou - 
+		*@param : force - 
+		*@TODO : a transformer en fonction generique
+		*/
 		rm: function(file, usr, ou, force) { 
 			var force = typeof force ? force : 0;
 			$.ajax({
@@ -1829,17 +1845,24 @@ var JQD = (function($, window, undefined) {
 			});	
 		},
 
-		//
-		// Notification
-		// 
+		/*
+		* JQD.create_notify : Notification
+		*@type: Function
+		*@param : template - fichier a supprimer
+		*@param : vars - 
+		*@param : opts - 
+		*@TODO : creer le html notif ici (il est ds index.php)
+		*/
 		create_notify: function( template, vars, opts ){
 						// init notify container
 			var notifContainer = $("#container").notify();
 			return notifContainer.notify("create", template, vars, opts);
 		},
-		//
-		//.:LCS:. Notification Forum_spip
-		//
+		
+		/*
+		* JQD.notify_forum : Notification Forum_spip
+		*@type: Function
+		*/
 		notify_forum: function(){
 			$.ajax({
 				type:'GET',
@@ -1874,10 +1897,11 @@ var JQD = (function($, window, undefined) {
 					JQD.notify_forum();
 			},parseInt(JQD.options.prms.notifForumFreq)*60000);	
 		},
-		//
-		//
-		//
-		notify_wmail: function(o) {
+		/*
+		* JQD.notify_wmail : Notification webmail
+		*@type: Function
+		*/
+		notify_wmail: function() {
 			// if squirrelmail is enable, notify new messages
 			$.get(JQD.options.apps.webmail.notifurl, function(data){
 				if (data != '')
@@ -1909,9 +1933,11 @@ var JQD = (function($, window, undefined) {
 				).accordion()
 			});
 		},
-		//
-		//
-		//
+		
+		/*
+		* JQD.buildform : construction des formulaires
+		*@type: Function
+		*/
 		buildform: function() {
 			var divFrm = $('<div/>').addClass('jqd_formulaires').append(
 				JQD.bFrm().append( JQD.bFrmUl() )
@@ -1946,12 +1972,16 @@ var JQD = (function($, window, undefined) {
 			return bfItm;
 		},
 		bFrmIptLbl: function(opts) { // opts:{ type:"text, radio, chackbox'}
-			var bfIptLbl = $('<div/>').append( JQD.bFrmIpt(opts) ).append( JQD.bFrmLbl(opts).css({'margin-left':'0', width:'auto',display:'inline',float:'none'}) );
+			var bfIptLbl = $('<div/>').append( JQD.bFrmIpt(opts) ).append( JQD.bFrmLbl(opts)
+			.css({'margin-left':'0', width:'auto',display:'inline',float:'none'}) );
 			return bfIptLbl;
 		},
-		//
-		//#JQD.bDialog( opts )
-		// opts={id:'id_div_dialog', class:'class_div_dialog',title:'titre_de_la_boite_dialog', ctn:'contenu,peut_etre_1_fonction'}
+
+		/*
+		* JQD.bDialog : boite de dialogue
+		*@type: Function
+		*@param: o = {id:'id_div_dialog', class:'class_div_dialog',title:'titre_de_la_boite_dialog', ctn:'contenu,peut_etre_1_fonction'}
+		*/
 		bDialog: function(o){
 			JQD.utils.clear_active();
 			var bdialog= $('<div id="'+o.id+'"/>').addClass('ui-widget')
@@ -1973,9 +2003,11 @@ var JQD = (function($, window, undefined) {
 			});
 			return bdialog;	
 		},
-		//
-		//
-		//
+		/*
+		* JQD.bTable : tableeaux
+		*@type: Function
+		*@param: opts - 
+		*/
 		bTable: function( opts ) {
 			var esc=opts.tb.esc,
 			btable=$('<table/>').css({width:'100%',border:'1px solid #aaa'}).addClass('data ui-widget ui-widget-content').append( JQD.bThead(opts.th, esc) ).append( JQD.bTboby(opts.tb, esc) );
@@ -2007,9 +2039,11 @@ var JQD = (function($, window, undefined) {
 			var btd=$('<td>'+t+'</td>' ).addClass( td ).css({padding:'5px',border:'1px solid #acf','border-width':'0 1px','line-height':'24px'});
 			return btd;
 		},
-		//
-		//
-		//
+		/*
+		* JQD.bTrInit : init des ligne du tableau ressources
+		*@type: Function
+		*@param: tr - 
+		*/
 		bTrInit: function( tr ) {
 			var bGroups= tr.find('td:last-child').text().split(',');
 			tr.find('td:eq(0) img').click(function(){
@@ -2043,9 +2077,10 @@ var JQD = (function($, window, undefined) {
 				$(this).html( gtxt );
 			})
 		},
-		//
-		//#JQD.ressEdit()
-		//
+		/*
+		* JQD.ressEdit : edition d'une ressource
+		*@type: Function
+		*/
 		ressEdit: function() {
 			var thR=['-','-','Nom du lien','Url','Img','Couleur','Propri\u00e9taire','Partage avec'];
 			var ctnTab={th:thR, tb:JQD.options.ress };
@@ -2067,9 +2102,14 @@ var JQD = (function($, window, undefined) {
 			JQD.bDialog(optTable);
 			
 		},			
-		//
-		//__/__/sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].xml__/__/
-		//
+		/*
+		* JQD.save_prefs_dev : sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].json
+		*@type: Function
+		*@param: koa
+		*@param: ki
+		*@param: ou
+		*@TODO: A optimiser
+		*/
 		save_prefs_dev: function(koa, ki, ou) {
 			var optionIcons = [];
 			$('#desktop a.icon').not('.group').each(function() { 
@@ -2107,7 +2147,7 @@ var JQD = (function($, window, undefined) {
 					winsize        : JQD.options.opts.winsize,
 					win_w          : JQD.options.opts.win_w,
 					win_h          : JQD.options.opts.win_h,
-					s_idart        : JQD.options.opts.s_idart || '0',
+					s_idart        : JQD.options.opts.s_idart,
 					defaulticons   : JQD.options.prms.defaulticons,
 					maintUrl       : JQD.options.prms.maintUrl,
 					showGroups     : JQD.options.prms.showGroups,
@@ -2127,9 +2167,14 @@ var JQD = (function($, window, undefined) {
 				}
 			});	
 		},
-		//
-		// #JQD.save_icon
-		//
+		/*
+		* JQD.save_icon : sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].json
+		*@type: Function
+		*@param: koa
+		*@param: ki
+		*@param: ou
+		*@TODO: A optimiser
+		*/
 		save_icon: function( opts) {
 			$.ajax({
 				type: "POST",
@@ -2144,7 +2189,6 @@ var JQD = (function($, window, undefined) {
 				success: function(msg){
 					if( typeof msg.filename && msg.filename!='') JQD['tmpfile']=msg.filename;
                             // on inserre dans le tableau d'options
-                            //rev iconsize left top
                             // si on est en mode modification, on recupere l'id de la ligne du tableau
                             opts.icon['name']= typeof opts.trId ? opts.trId : JQD.tmpfile;
                             
@@ -2163,29 +2207,20 @@ var JQD = (function($, window, undefined) {
 							}
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
-					//console.error("XMLHttpRequest= ",XMLHttpRequest);
-					//console.error("textStatus= ",textStatus);
-					//console.error("errorThrown= ",errorThrown);
 				},
 				complete : function(data, status) {
 				}
 			});	
 		},
-		view : {
-			/**
-			*
-			*/
-			win: function(){
-			},
-			/**
-			* Function. Tabs fo forms of prefs
-			*/
-			formtabs : function() {
-			}
-		},
-		//
-		//__/__/ Construction de l'objet fenetre __/__/
-		//
+
+		/*
+		* JQD.buildwin : Construction de l'objet fenetre
+		*@type: Function
+		*@param: url
+		*@param: text
+		*@param: imgsrc
+		*@TODO: A optimiser
+		*/
 		buildwin: function(url, text, title, imgsrc) {
 			
 			var win = 'win-'+Math.random().toString().substring(2);
@@ -2414,6 +2449,7 @@ var JQD = (function($, window, undefined) {
 			// traitement du iframe
 			self.count_load = 0 ;
 			this.iframe.attr('src', url).load(function()  {
+				
 				if ( url.match(/squirrelmail/g) ) {
 					//alert('squirrelmail');
 					$(this).show();
@@ -2440,9 +2476,7 @@ var JQD = (function($, window, undefined) {
 					ww > dw ? tcw.css({left:0,width:'100%'}) : wr>dw ? tcw.css({left:0}) : ''; 
 					wh > dh ? tcw.css({top:0,height:'100%'}) : wb>dh ? tcw.css({top:0}) : ''; 
 				}
-				// cas du choix "Plein ecran"
-				// TODO: A supprimer
-				//if( $('#tmp_winsize').val() == 'fullwin' && self.count_load == 0 ) JQD.window_resize( $(this) );
+				// cas du choix perso
 				if( JQD.options.opts.winsize == 'perso' && self.count_load == 0 ) 
 				{
 					var tcw = $(this).closest('.window').width( (JQD.options.win_w || '66')+'%' ).height( (JQD.options.win_h || '66')+'%' )
@@ -2482,10 +2516,13 @@ var JQD = (function($, window, undefined) {
 				});
 			});
 		},
-		
-		//
-		//__/__/ contronle - modif des liens ouvrant une fenetre __/__/
-		//
+
+		/*
+		* JQD.init_link_open_win : controle - modif des liens ouvrant une fenetre
+		*@type: Function
+		*@param: el 
+		*@TODO: A optimiser
+		*/
 		init_link_open_win: function(el){
 			if (el.url  ) 
 			{
@@ -2531,9 +2568,13 @@ var JQD = (function($, window, undefined) {
 				JQD.utils.clear_active();
 			}
 		},
-		//
-		// JQD.pgaccueil( opt ) : appel de la page d'accueil hors connexion'
-		// 
+
+		/*
+		* JQD.pgaccueil :appel de la page d'accueil
+		*@type: Function
+		*@param: opt 
+		*@TODO: A optimiser
+		*/
 		pgaccueil: function(opt) {
 			var u_a = opt.srvr.url_accueil;
 			if (!u_a.match("auth\.php|accueil\.phps|monlcs") ) {
@@ -2565,11 +2606,13 @@ var JQD = (function($, window, undefined) {
 			}
 			else JQD.logform('../lcs/auth.php') ;
 		},
-		//
-		// JQD.desktop_space() : Gestion des multi-bureaux
-		//
+		/*
+		* JQD.desktop_space : Gestion des multi-bureaux
+		*@type: function
+		*@TODO:  A REVOIR ENTIEREMENT
+		*/
 		desktop_space: function(){
-			// gestion des bureaux secondaires // A REVOIR ENTIEREMENT
+			// gestion des bureaux secondaires 
 			var left_o = $('#desktop').width(),
 			inettuts = $('<div id="inettuts"/>').addClass('abs').append(
 				$('<iframe/>').attr({name: 'ifr_iLcs'}).css({width:'100%', height:'100%'}) 
@@ -2588,13 +2631,13 @@ var JQD = (function($, window, undefined) {
 			*/
 			$('li.spaces>ul>li>a').click(function(){
 				if($(this).not('.space')){
-				JQD.utils.clear_active();
+					JQD.utils.clear_active();
 					$('#inettuts, #monLcs').show();
 					var ind=$(this).parent().index();
-						var _WPP  = $('body').find('#wallpaper');
-						var _WPPO = _WPP.offset();
-						// inettuts
-					/**/if((ind==2) && ($('#inettuts').position().left!=0)){
+					var _WPP  = $('body').find('#wallpaper');
+					var _WPPO = _WPP.offset();
+					// inettuts
+					if((ind==2) && ($('#inettuts').position().left!=0)){
 						// reduction des fenetres window_full
 						$('.window_full').each( function(){
 							JQD.window_resize(this);
@@ -2602,12 +2645,10 @@ var JQD = (function($, window, undefined) {
 						if($('#wallpaper_b').length == 0){
 							var _WPP_b = $('#wallpaper').clone().attr('id', 'wallpaper_b').css({'position': 'absolute', 'left': _WPPO.left}).hide().prependTo('body');
 						}
-						//$('#desktop, #wallpaper').animate({left:  -left_o, right: left_o},1500);
 						$('#desktop').animate({left: -left_o+'px'},1500);
 						$('#wallpaper').css('position','absolute').animate({left: '-='+left_o},1500, function(){});$('#wallpaper_b').show();
 						$('#monLcs').animate({left: (-left_o*2), right: (left_o*2)},1500, function(){$('#monLcs iframe').removeAttr('src');});
 						$('#inettuts').animate({left: 0, right: 0},1500, function(){
-					//		$('#inettuts iframe').attr('src', 'core/inettuts.php')
 							$('#inettuts iframe').attr('src', 'core/inettuts.html')
 							.css('height',$(this).height()-3+'px');
 						});
@@ -2643,9 +2684,10 @@ var JQD = (function($, window, undefined) {
 			
 		},
 		 
-		//
-		//.:LCS:. Quicklaunch (Dock MacOs)
-		//
+		/*
+		* JQD.init_docks : Quicklaunch (Dock MacOs)
+		*@type: function
+		*/
 		init_docks: function() {
 			var x_d = ($('#desktop').width() - $('#quicklaunch').width())/2;
 			$('#quicklaunch').css("left", x_d+"px").each(function() {
@@ -2660,11 +2702,8 @@ var JQD = (function($, window, undefined) {
 					$(this).data("new_h", y * 2);
 				});
 				$(this).find('a').hover( function(e){
-	//				t = $(this).attr('title');
-	//				$(this).attr('title','');
 					var offset = $(this).closest('ul').offset();
 					var nel = parseInt($(this).parent('li').index());
-	//				var c = (this.t != "") ? "<br/>" + this.t : "Pas d'info";
 					$("#desktop").append("<p id='screenshot' class='abs'>"+ this.title +"</p>");  
 					var wtip = $("#screenshot").width()/2;
 					$("#screenshot")
@@ -2686,9 +2725,11 @@ var JQD = (function($, window, undefined) {
 				});
 			});
 		},
-		 //
-		 //#JQD.logform() : Affichage du formulaire de login
-		 //
+
+		/*
+		* JQD.logform : Affichage du formulaire de login
+		*@type: function
+		*/
 		 logform: function(u){
 			var logdialog=$('<div id="logdialog"/>').attr({'title':'Formulaire de connexion'}).append(
 				$('<iframe/>').attr({id:'logFrame',src:''}).css({width:'100%', height: '95%'})
@@ -2707,15 +2748,20 @@ var JQD = (function($, window, undefined) {
 				});
 			},1000);
 		},
-		//
-		//#JQD._(str, args) : Permet d'appeler la chaine de lang plus simplement
-		// alert(JQD._('Year')); // returns "Année"
+		/*
+		* JQD._ : Permet d'appeler la chaine de lang plus simplement
+		*@type: function
+		*@param: str
+		*@param: args
+		*/
 		_:function(str, args){
      	   return $.i18n('jqd', str, args); 
 		},
-		//
-		//#JQD.connect() : Affichage de base si non connecte ou mot de passe inchange
-		//
+		/*
+		* JQD.connect : Affichage du formulaire de login
+		*@type: function
+		*@param: opts - tableau des options
+		*/
 		connect: function( opts ){
 			if(parseInt(opts.user.idpers) == 0 ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
@@ -2735,9 +2781,11 @@ var JQD = (function($, window, undefined) {
 				},20000);	
 			}
 		},
-		//
-		//#JQD.settings : chargement total du desktop
-		//
+		/*
+		* JQD.settings : chargement total du desktop
+		*@type: function
+		*@return: tableau des options+appel de JQD.connect
+		*/
 		settings : function() {
 			var o = {};
  			$.ajax({

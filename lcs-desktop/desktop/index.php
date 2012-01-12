@@ -20,8 +20,9 @@ include("core/includes/functions.inc.php");
 <!DOCTYPE html> 
 <html lang="fr">
 <head>
-<meta charset="utf-8"><!-- iso-8859-1 du a la directive apache ?  -->
+<meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=emulateie8" />
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
 <meta http-equiv="content-language" content="fr">
 <title>...::: Bureau LCS :::...</title><!-- recuperation des params etab ds lcs.conf -->
 <meta name="description" content="LCS - Environnement Num&eacute;rique de Travail du <?php echo $organizationalunit."  ".$organization." de ".$locality." - ".$province; ?>. Le num&eacute;rique au service de l'&eacute;ducation." />
@@ -33,14 +34,14 @@ include("core/includes/functions.inc.php");
 <link href="core/css/desktop.css" rel="stylesheet" />
 <link href="core/css/ui.notify.css" t ype="text/css" rel="stylesheet" />
 <link href="core/css/jquery.context_menu.css" rel="stylesheet" type="text/css" />
-<link href="core/css/tip-twitter/tip-twitter.css" rel="stylesheet" type="text/css" />
-<link href="core/libs/colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css" /><link href='core/libs/uniform/css/uniform.agent.css' rel="stylesheet" type='text/css' media='screen' /><script src="../libjs/jquery/jquery.js"></script>
+<link href="core/libs/poshytip/src/tip-twitter/tip-twitter.css" rel="stylesheet" type="text/css" />
+<link href="core/libs/colorpicker/css/colorpicker.css" rel="stylesheet" type="text/css" /><link href='core/libs/uniform/css/uniform.agent.css' rel="stylesheet" type='text/css' media='screen' /><script src="core/js/jquery-1.7.js"></script>
 <script src="core/js/jquery.desktop.js"></script>
 <script src="core/js/i18n/desktop_fr.js"></script>
 <script src="../libjs/jquery-ui/jquery-ui.js"></script>
 <script src="core/js/jquery.notify.min.js"></script>
 <script src="core/js/jquery.context_menu.js"></script>
-<script src="core/js/jquery.poshytip.min.js"></script>
+<script src="core/libs/poshytip/src/jquery.poshytip.min.js"></script>
 <script type="text/javascript" src="core/libs/colorpicker/js/colorpicker.js"></script><script type='text/javascript' src='core/libs/uniform/jquery.uniform.min.js'></script><link rel="shortcut-icon" href="../lcs/images/favicon.ico">
 <!--[if lt IE 8]>
 	<link href="core/finder/ui.finder.ie.css" rel="stylesheet" media="screen" type="text/css" />
