@@ -1,4 +1,5 @@
 <?php
+/* lcs/ajax_ent.php derniere mise a jour : 12/01/2012 */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Content-Type: text/plain" );
@@ -34,9 +35,23 @@ if (isset($_POST['string_mdp']) && (isset($_POST['string_login']))&& (isset($_PO
             //If password account is different than date of birth
 			// Insert data in ent_lcs table
 			if (!@mysql_select_db($DBAUTH, $authlink)) 
-    				die ("S&#233;lection de base de donn&#233;es impossible.");    				
+    				die ("S&#233;lection de base de donn&#233;es impossible.");
+			// Verification si une entree login existe dans la table ent_lcs.login_lcs
+			$query="SELECT id FROM ent_lcs WHERE login_lcs='$login'";
+			$result=@mysql_query($query,$authlink);
+			if ( mysql_num_rows($result) == "0" ) {
+				// Creation
+				$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$_POST['string_lilie']."', '".$_POST['string_login']."', '$token')";					
+			} else {
+				// Update
+				$query="UPDATE ent_lcs SET id_ent='".$_POST['string_lilie']."', token='$token' WHERE login_lcs='".$_POST['string_login']."'";
+			}
+        	$result=mysql_query($query,$authlink);
+
+/*			
 			$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$_POST['string_lilie']."', '".$_POST['string_login']."', '$token')";
-        	$result=mysql_query($query,$authlink);				
+        	$result=mysql_query($query,$authlink);
+*/
 			// And return string OK
 			$cr='OK';
 			// If password account is egal than date of birth then return string "MustChange"

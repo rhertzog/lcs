@@ -1,5 +1,5 @@
 <?php
-/* functions.inc.php Derniere mise a jour 05/01/2012  */
+/* functions.inc.php Derniere mise a jour 12/01/2012  */
 
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -224,45 +224,61 @@ include ("/var/www/lcs/includes/xoft.php");
                 * true en cas de succes de la creation du home et de la bdd
                 * false dans les autres cas
       */
-        global $urlauth, $scriptsbinpath, $authlink, $DBAUTH, $key_priv;
+        global $urlauth, $scriptsbinpath, $authlink, $DBAUTH, $key_priv, $auth_mod;
         // Verifie le couple login/password sur l'annuaire ldap
         $auth_ldap = user_valid_passwd ( $login , $passwd );
-        if ($auth_ldap) :
+        if ($auth_ldap) {
 	        if (!@mysql_select_db($DBAUTH, $authlink)) 
     			die ("S&#233;lection de base de donn&#233;es impossible.");
                 // Ouvre une session et la stocke dans la table sessions de lcs_db
                 $query="SELECT id, stat FROM personne WHERE login='$login'";
                 //$result=mysql_db_query("$DBAUTH",$query, $authlink);
                 $result=@mysql_query($query,$authlink);
-                if ($result && mysql_num_rows($result)):
+                if ($result && mysql_num_rows($result)) {
                         $idpers=mysql_result($result,0,0);
                         $stat=mysql_result($result,0,1)+1;
                         mysql_free_result($result);
-                else :
-                       // le login n'est pas encore dans la base... creation de l'entree
-                        //$result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
-			$query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
-			$result=@mysql_query($query,$authlink);
+                } else {
+                        // le login n'est pas encore dans la base... creation de l'entree
+                        // $result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
+						$query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
+						$result=@mysql_query($query,$authlink);
                         $query="SELECT id, stat FROM personne WHERE login='$login'";
                         //$result=mysql_db_query("$DBAUTH",$query, $authlink);
-			$result=@mysql_query($query,$authlink);
-                        if ($result && mysql_num_rows($result)):
+						$result=@mysql_query($query,$authlink);
+                        if ($result && mysql_num_rows($result)) {
                                 $idpers=mysql_result($result,0,0);
                                 $stat=mysql_result($result,0,1)+1;
                                 mysql_free_result($result);
-                        endif;
-                endif;
+                        }
+                }
                 $sessid=mksessid();
-                //Poste du cookie LCS
+                // Poste du cookie LCS
                 setcookie("LCSAuth", "$sessid", 0,"/","",0);
-                //Poste du cookie LCSuser
-                setcookie("LCSuser", xoft_encode( urlencode($passwd) ,$key_priv), 0,"/","",0);
+                // Poste du cookie LCSuser
+				if ( $auth_mod != "ENT" )
+                	setcookie("LCSuser", xoft_encode( urlencode($passwd) ,$key_priv), 0,"/","",0);
+				else { 
+					// Verification si une entree login existe dans la table ent_lcs.login_lcs
+					$query="SELECT id FROM ent_lcs WHERE login_lcs='$login'";
+					$result=@mysql_query($query,$authlink);
+					$token = substr(sha1(uniqid('', TRUE)),0,30);
+					if ( mysql_num_rows($result) == "0" ) {
+						// Creation du token
+						$query="INSERT INTO ent_lcs (login_lcs, token) VALUES ('$login', '$token')";			
+					} else {
+						// Update du token
+						$query="UPDATE ent_lcs SET token='$token' WHERE login_lcs='$login'";
+					}
+					$result=mysql_query($query,$authlink);	
+					system ("echo \"DBG >> login : $login token : $token mod auth ENT\" >> /tmp/log.lcs");
+				}
                 // lecture IP du client
                 $ip = remote_ip();
                 // Stocke la session et met a jour la table personne avec les stats
                 //$result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
                 //$result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
-		$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')";
+				$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')";
                 $result=@mysql_query($query,$authlink);
                 $query="UPDATE personne SET stat=$stat WHERE id=$idpers";
                 $result=@mysql_query($query,$authlink);
@@ -273,9 +289,9 @@ include ("/var/www/lcs/includes/xoft.php");
                                                   || !@is_dir("/home/".$login."/Maildir")
                                                   || !@is_dir("/home/".$login."/Documents")
                                                   || !@is_dir("/home/".$login."/Profile"))) ) {
-                      #system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs"); 
-		      if ( is_eleve($login) ) $group="eleves"; else $group="profs";
-		      exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
+					#system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs"); 
+					if ( is_eleve($login) ) $group="eleves"; else $group="profs";
+					exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
                 } else { 
                       // Verification acces bdd et reinitialisation le cas echeant
                       #
@@ -289,7 +305,7 @@ include ("/var/www/lcs/includes/xoft.php");
                       @mysql_close();
                 }      
                 return true;
-        endif;
+        }
         return false;
     }
 
@@ -304,11 +320,11 @@ include ("/var/www/lcs/includes/xoft.php");
 		setcookie("LCSAuth","", 0,"/","",0);
 		setcookie("LCSuser","", 0,"/","",0);
 		// Destruction du cookie spip_admin
-		// setcookie("spip_admin","", 0,"/spip/","",0);
+		//setcookie("spip_admin","", 0,"/spip/","",0);
 		// Destruction du cookie spip_session
-		// setcookie("spip_session","", 0,"/spip/","",0);
+		//setcookie("spip_session","", 0,"/spip/","",0);
 		// Destruction du cookie admin du Forum
-		// setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
+		//setcookie(md5($Nom_Appli.$VER."_admin"),"",0,"/","",0);
 		// Destruction du cookie smbwebclient
 		setcookie("SmbWebClientID","", 0,"/","",0);
 		// Destruction cookie tgt service CAS
@@ -320,10 +336,10 @@ include ("/var/www/lcs/includes/xoft.php");
 			setcookie("tgt","", 0,"/","",0);
 		}
 		// Destruction des cookies Squirrelmail
-		// setcookie("SQMSESSID","", 0,"/","",0);
-		// setcookie("key","", 0,"/squirrelmail/","",0);
+		//setcookie("SQMSESSID","", 0,"/","",0);
+		//setcookie("key","", 0,"/squirrelmail/","",0);
 		// Destruction du cookie de session Roundcube
-		// setcookie("roundcube_sessid","", 0,"/","",0);
+		//setcookie("roundcube_sessid","", 0,"/","",0);
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
 		$result=@mysql_query($query);
@@ -354,8 +370,8 @@ include ("/var/www/lcs/includes/xoft.php");
         endif;
         // transfert dans last_log
         //$result=mysql_db_query("$DBAUTH","UPDATE personne SET last_log=$act_log WHERE id=$idpers", $authlink);
-	$query="UPDATE personne SET last_log=$act_log WHERE id=$idpers";
-	$result=@mysql_query($query,$authlink);
+		$query="UPDATE personne SET last_log=$act_log WHERE id=$idpers";
+		$result=@mysql_query($query,$authlink);
     }
 
 function ldap_get_right_search ($type,$search_filter,$ldap)
