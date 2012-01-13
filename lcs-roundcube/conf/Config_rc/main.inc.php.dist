@@ -277,7 +277,8 @@ $rcmail_config['email_dns_check'] = false;
 
 // List of active plugins (in plugins/ directory)
 #$rcmail_config['plugins'] = array('cas_authentication');
-$rcmail_config['plugins'] = array('lcs_authentication');
+#$rcmail_config['plugins'] = array('lcs_authentication');
+$rcmail_config['plugins'] = array('#MODAUTHENTICATION#');
 // ----------------------------------
 // USER INTERFACE
 // ----------------------------------

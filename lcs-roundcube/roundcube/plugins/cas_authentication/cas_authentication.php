@@ -248,7 +248,7 @@ EOF;
             $cfg = rcmail::get_instance()->config->all();
 
             // include phpCAS
-            require_once('/usr/share/php/CAS-1.1.0/CAS.php');
+            require_once('CAS-1.1.0/CAS.php');
 			phpCAS::setDebug('/var/log/lcs/casdebug.log');
             
             // initialize CAS client

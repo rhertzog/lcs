@@ -37,6 +37,18 @@ configure() {
 	sed -i "s|#CRYPT24#|"$CRYPT24"|g" $CONFIGRC_PATH/main.inc.php
 	MAILDOMAIN=`hostname -d`
 	sed -i "s|#MAILDOMAIN#|"$MAILDOMAIN"|g" $CONFIGRC_PATH/main.inc.php
+	# Config Roundcube authentication mode
+    AUTH_MOD=$(get_lcsdb_params auth_mod)
+	if [ ! -z $AUTH_MOD ]; then
+		if [ $AUTH_MOD == "ENT" ]; then
+ 			MODAUTHENTICATION="cas_authentication"
+		else
+			MODAUTHENTICATION="lcs_authentication"
+		fi
+	else
+		MODAUTHENTICATION="lcs_authentication"
+	fi
+    sed -i "s|#MODAUTHENTICATION#|"$MODAUTHENTICATION"|g" $CONFIGRC_PATH/main.inc.php
 	# Make lcs_authentication config
 	cp $CONFIG_PATH/config_auth_lcs.inc.php.dist $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
 	sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
