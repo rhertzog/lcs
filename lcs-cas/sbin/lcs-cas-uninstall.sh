@@ -6,7 +6,6 @@
 #
 # rubycas-server configuration and path
 #
-
 gem uninstall -a -I -x  rubycas-server
 gem uninstall  -a -I -x mysql
 gem uninstall  -a -I -x ruby-net-ldap

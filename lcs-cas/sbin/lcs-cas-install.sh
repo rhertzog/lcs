@@ -99,20 +99,48 @@ if [ `getent passwd $USERRUN | wc -l` = "0" ]; then
     adduser  $USERRUN --disabled-password --gecos 'CAS Server Account,,,' --shell /bin/bash --no-create-home --home $USERHOME
 fi
 mkdir -p $CONF
-#cp /usr/lib/ruby/gems/1.8/gems/rubycas-lcs-$VER/config.example.yml  $CONF/config.yml
-cp $USERHOME/config.yml.in $CONF/config.yml
+#Configure authentication ldap or mysql
+AUTH_MOD=$(get_lcsdb_params auth_mod)
+if [ ! -z $AUTH_MOD ]; then
+	if [ $AUTH_MOD == "ENT" ]; then
+		MODAUTHENTICATION="mysql"
+	else
+		MODAUTHENTICATION="ldap"
+	fi
+else
+	MODAUTHENTICATION="ldap"
+fi
+# 
+if [ $MODAUTHENTICATION == "ldap" ]; then
+	# Ldap authentication
+	cp $USERHOME/config.yml.ldap.in $CONF/config.yml
+	# LCSMGR PASS
+	sed -i s/#LCSPASS#/$LCSMGRPASS/g $CONF/config.yml
+	#LDAP_SERVER
+	sed -i s/#LDAP_SERVER#/$LDAP_SERVER/g $CONF/config.yml
+	#LDAP_BASE_DN
+	sed -i s/#LDAP_BASE_DN#/$LDAP_BASE_DN/g $CONF/config.yml
+else
+	# Mysql authentication
+	cp $USERHOME/config.yml.mysql.in $CONF/config.yml
+	# LCSMGR PASS
+	sed -i s/#LCSPASS#/$LCSMGRPASS/g $CONF/config.yml
+fi
+####
+#cp $USERHOME/config.yml.in $CONF/config.yml
 #
 # LCSMGR PASS
 # 
-sed -i s/#LCSPASS#/$LCSMGRPASS/g $CONF/config.yml
+#sed -i s/#LCSPASS#/$LCSMGRPASS/g $CONF/config.yml
 #
 #LDAP_SERVER
 #
-sed -i s/#LDAP_SERVER#/$LDAP_SERVER/g $CONF/config.yml
+#sed -i s/#LDAP_SERVER#/$LDAP_SERVER/g $CONF/config.yml
 #
 #LDAP_BASE_DN#
 #
-sed -i s/#LDAP_BASE_DN#/$LDAP_BASE_DN/g $CONF/config.yml
+#sed -i s/#LDAP_BASE_DN#/$LDAP_BASE_DN/g $CONF/config.yml
+####
 #
 # Bdd
 #create database casserver;

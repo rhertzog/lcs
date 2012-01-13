@@ -1,10 +1,16 @@
 lcs-cas (2.4.9~2) Lcs; urgency=low
-
+  2.4.9~3 :
+  * Add possibility to select authentication mode : ldap or mysql fot LCS/ENT authentication :
+	* Rename config.yml.in to config.yml.ldap.in
+        * Add config.yml.mysql.in
+	* Modify lcs-cas-install.sh for select authentication ldap or mysql
+	* Add lcs-cas-configure-authentication.sh 
+  2.4.9~2 :
   * Modify lcs-cas-install.sh for squeeze
-  * Add unisntall gems section in postrm
+  * Add uninstall gems section in postrm
   * Modify init.d rubycas-lcs start stop status script
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Nov 2011 10:13:02 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Jan 2012 16:18:37 +0100
 
 lcs-cas (2.4.8.1) Lcs; urgency=low
 
