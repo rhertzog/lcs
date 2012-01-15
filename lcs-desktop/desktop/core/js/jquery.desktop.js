@@ -2577,7 +2577,7 @@ var JQD = (function($, window, undefined) {
 		*/
 		pgaccueil: function(opt) {
 			var u_a = opt.srvr.url_accueil;
-			if (!u_a.match("auth\.php|accueil\.phps|monlcs") ) {
+			if (!u_a.match("auth\.php|accueil\.php|monlcs") ) {
 				u_a = u_a.match(/^http/) ? u_a : '../'+u_a;
 				setTimeout(function(){
 					JQD.build.btopr( opt );
@@ -2765,7 +2765,7 @@ var JQD = (function($, window, undefined) {
 		connect: function( opts ){
 			if(parseInt(opts.user.idpers) == 0 ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
-                if ( opts.prms.url_accueil !='' &&  opts.prms.url_accueil !='../lcs/auth.php' && opts.prms.url_accueil !='../lcs/accueil.php') JQD.pgaccueil( opts );
+                if ( opts.srvr.url_accueil !='' &&  opts.srvr.url_accueil !='../lcs/auth.php' && opts.srvr.url_accueil !='../lcs/accueil.php') JQD.pgaccueil( opts );
                 else JQD.logform('../lcs/auth.php') ;
             }
 			else if(opts.user.pwchg == 'N' ) {
