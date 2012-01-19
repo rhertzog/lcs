@@ -165,6 +165,9 @@ cat $IN_CONFIG_PATH/$RUBYCAS_CERT_TT \
  
 openssl req  -config $IN_CONFIG_PATH/openssl.cas -x509 -nodes -days 365 \
                 -newkey rsa:1024 -out $PATH_RUBYCAS_CERT/server.crt -keyout $PATH_RUBYCAS_CERT/server.key
+# Make pem certificat
+openssl x509 -in $PATH_RUBYCAS_CERT/server.crt -out $PATH_RUBYCAS_CERT/server.der -outform DER
+openssl x509 -in $PATH_RUBYCAS_CERT/server.der -inform DER -out $PATH_RUBYCAS_CERT/server.pem -outform PEM
 #
 # Fix owner on folders and files rubycas
 #
