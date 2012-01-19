@@ -1,0 +1,39 @@
+/*
+    Document   : print
+    Created on : 14 janv. 2012, 14:06:51
+    Author     : misterphi
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/*
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+body {margin:0; padding:0; line-height: 1.4em; word-spacing:1px; letter-spacing:0.2px; font: 10pt Arial, Helvetica,"Lucida Grande", serif; color: #000;}
+
+
+@page { size:21.0cm 29.7cm;
+        margin-top:1.7cm;
+        margin-bottom:1.4cm;
+        margin-left:0.5cm;
+        margin-right:0.5cm}
+
+
+
+h2.title {text-align: center;}
+.column { width: 230px; float: left; padding-bottom: 100px; }
+.portlet { margin: 0 1em 1em 0; }
+.portlet-header { margin: 0.3em; padding-bottom: 4px; padding-left: 0.2em; font-size:10pt;}
+.portlet-header .ui-icon { float: right; }
+.portlet-content { padding: 0.4em; }
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 20px !important; }
+.ui-sortable-placeholder * { visibility: hidden; }
+ li.at {list-style-type: none;padding:1px; margin-top:3px;font-size:9pt;}
+ .ui-widget { font-family: Verdana, Arial, sans-serif; font-size: 8pt; }
+.ui-widget .ui-widget { font-size: 8pt; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Verdana,Arial, sans-serif; font-size: 8pt; }
+.ui-widget-content { border: 1px solid #a6c9e2; background: #fcfdfd   ;color: #222222; }
+.ui-widget-content a { color: #222222; }
+.ui-widget-header { border: 1px solid #4297d7; background-color: #a6c9e2 ; color: #000; font-weight: bold; }
+.ui-widget-header a { color: #ffffff; }

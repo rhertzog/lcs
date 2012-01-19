@@ -1,0 +1,79 @@
+/*
+    Document   : sequences
+    Created on : 24 dec. 2010, 16:30:59
+    Author     : misterphi
+    Description:
+        Purpose of the stylesheet follows.
+*/
+body {margin: 0 auto;padding: 0;overflow: auto;text-align:center;background: #f8f8ff;font-size:14px;color: #000000;font-family: arial ,Helvetica, sans-serif, verdana;width:100%}
+a:link { font-family:   arial, verdana ; font-size : 12px}
+a:visited { font-family: arial, verdana ; font-size: 12px}
+a:active {  font-family: arial, verdana ; font-size: 12px}
+a:hover { font-family: arial, verdana ; font-size: 12px}
+ul.seq  { list-style-type: none; margin-top:5px; padding: 2px;width: 50% ;float :left; }
+li.ui-state-default.sequ  {position: relative; margin-top: 15px; padding: 0.5em 0.4em .5em 1em; font-size: .8em; height: 16px;color:#1b2c68; }
+li.sequ span { position: absolute; margin-left: -1.3em; }
+li.sequ span.buttons {float: right; position: relative;font-size: .8em;}
+li.sequ span.handdle {position:absolute;margin-left: 250px;cursor: pointer; }
+li.sequ span.order {float: left; position: relative;margin-left:0px;margin-right:2px;font-size: 1em;}
+li.sequ.prop {border: solid 3px #77a9cf;}
+li.sequ.sel { border: solid 3px #d40000;color:#d40000;}
+li.sequ.propose {margin :5px;width: 40%;display:inline-block;}
+li .item{cursor:pointer;}
+.showform {margin-right: 5px; cursor: pointer;}
+#dialog,#dialogbis ,#dialog1 , #dialog2 , #dialog3, #dialog4,#dialog5,#dialog6,#dialog7{text-align: left; font-size:1em;}
+/*#aide {padding-left:10px;margin-left: 20px;vertical-align:bottom;background:url(../images/planifier-cdt-aide.png) no-repeat;}*/
+#showr.v_no, #record.v_no, #update.v_no, button.showform.v_no,#sortable li.v_no, #aide.v_no { display:none; }
+ .buttons {font-size:0.8em;}
+#masquable { position: relative;display:none; float: left;margin-top:25px;text-align: left;font-family: Arial, Helvetica, sans-serif, verdana;color:#1b2c68;padding:2px;font-size: .8em;}
+#dialog label,#dialogbis label, #dialog3 label, #dialog3 input ,#dialog4 label, #dialog input  { display:block;}
+#dialog label,#dialogbis label,#dialog1 label ,#dialog2 label ,#dialog3 label ,#dialog4 label { margin-top: 0.5em; }
+#dialog input, #dialogbis input,#dialog1 textarea,#dialog2 input,#dialog2 textarea,#dialog3 input,#dialog4 input { width:80%; }
+ #dialog1 input { width:50%; }
+#dialog select ,#dialogbis select {width: 40%;color: #2E6E9E;}
+#add_tab,#showr,#prop,#repa,#helpp { cursor: pointer; font-size:0.8em;margin-right: 5px;margin-bottom:3px;}
+#dialog1 input.boxcheck,#dialog2 input.boxcheck, #dialog3 input.boxcheck  { display:inline-block;width:10%; }
+ #tabs li .ui-icon-close, #tabs li .ui-icon-pencil{ float: left; margin: 0.4em 0.2em 0 0; cursor: pointer; }
+#legende, #legend2,#legendter {color:#E17009 ;background:#fff;padding:3px 10px;font-size:16px;-moz-border-radius: 12px;-webkit-border-radius: 12px;border:solid 1px #4297D7;}
+#field10 {
+    text-align:left;
+    -moz-border-radius: 12px;
+    -webkit-border-radius: 12px;
+
+    }
+ .liste {margin :12px;}
+ .classe {margin :2px;padding: 2px; }
+  #dialog3 input.date {display:inline-block;width :15%;}
+  .flottante {
+  margin: 2px;
+  width: 100px;
+  display:inline-block;
+  text-align: center;
+}
+.validateTips { border: 1px solid transparent; padding: 0.3em;margin: 5px; }
+#propos { width: 465px;  padding: 10px; float: left; margin: 10px 10px 10px 0px; }
+#droppable { width: 600px;  padding: 0.5em; float: left; margin: 10px; }
+#droppable p{margin-left:118px}
+#droppable-inner { width: 470px; height: 150px;  float: right; margin: 5px 10px 10px; background: url('../images/fondvoeux.png')}
+.voeu {width: 50px; height:18px;  float: left; margin: 10px; padding : 5px;}
+#sortable2 {list-style-type: none;padding:5px}
+#sortable2 li{margin: -11px 18px 27px;  height:19px; }
+#listevoeux{width:70px;float: left;margin: 5px 10px 10px;}
+/*---*/
+#dialog4 .column { width: 300px; float: left; padding-bottom: 100px; }
+#dialog4 .portlet { margin: 0 1em 1em 0; }
+#dialog4 .portlet-header { margin: 0.3em; padding-bottom: 4px; padding-left: 0.2em; font-size:0.8em;}
+#dialog4 .portlet-header .ui-icon { float: right; }
+#dialog4 .portlet-content { padding: 0.4em; }
+#dialog4 .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 20px !important; }
+#dialog4 .ui-sortable-placeholder * { visibility: hidden; }
+ li.at {list-style-type: none;padding:1px; margin-top:3px;font-size:0.8em;}
+ .c1 {background: #CC0000; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .c2 {background:  #6666ff; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .c3 {background: #EEEE00 ; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .c4 {background: #0d6a1e; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .c5 {background: #E17009 ; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .c6 {background: #000 ; width:10px;height:10px;border:solid 1px #FFF;margin-right :3px;float: right;}
+ .validateTips { border: 1px solid transparent; padding: 0.3em; }
+ .v_no { display:none; }
+ .help {margin-bottom:0px;margin-left:0px;}
