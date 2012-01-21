@@ -28,7 +28,7 @@ function SansAccent($texte){
     $noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
     $texte = strtr($texte,$accent,$noaccent);
     return $texte;
-} 
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -47,7 +47,7 @@ function SansAccent($texte){
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-    {	
+    {
     // Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['nom_lien']) > 0) $nom_lien= addSlashes(strip_tags(stripslashes($_POST['nom_lien'])));
     else $nom_lien= "Fichier joint";
@@ -55,7 +55,7 @@ if (isset($_POST['Valider']))
     if (strlen($_POST['sousrep']) > 0) $sousrep= addSlashes(strip_tags(stripslashes($_POST['sousrep'])));
     else $sousrep= "";
     //verification de l'existence du repertoire
-    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
+    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep))
         {
         if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
             {
@@ -63,8 +63,8 @@ if (isset($_POST['Valider']))
             $pb=1;
             }
         else $pb=0;
-        } 
-    else 
+        }
+    else
         {
         //creation du repertoire
         mkdir("/home/".$_SESSION['login']."/public_html/".$sousrep);
@@ -72,7 +72,7 @@ if (isset($_POST['Valider']))
         $pb=0;
         }
 
-    //traitement du  fichier 	
+    //traitement du  fichier
     if ((!empty($_FILES["FileSelection1"]["name"])) && $pb==0)
         {
         if ($_FILES["FileSelection1"]["size"]>0)
@@ -89,22 +89,23 @@ if (isset($_POST['Valider']))
                     {
                     $ratio = $max_width/$size[0];
                     $width = intval($ratio*$size[0]);
-                    $height = intval($ratio*$size[1]); 
+                    $height = intval($ratio*$size[1]);
                     }
-                else 
+                else
                     {
                     $width=$size[0];
                     $height =$size[1];
                     }
-                copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));							
+                copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier));
                 //test de la presence du fichier uploade
                 if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep."/".stripslashes($nomFichier)))
                     {
                     $pj="/~".$_SESSION['login']."/".$sousrep."/".$nomFichier;
-                    $image="<img src= '../../..". $pj."' height='".$height."' width='".$width."' >";
+                    if (isset($_POST['only_lien']))   $image="<a href= '". $pj ."' > image </a> ";
+                    else $image="<img src= '../../..". $pj."' height='".$height."' width='".$width."' >";
                     echo '<script type="text/javascript">
                     //<![CDATA[
-                    opener.tinyMCE.execCommand("mceInsertContent",false,"'.$image.'");			
+                    opener.tinyMCE.execCommand("mceInsertContent",false,"'.$image.'");
                     //opener.tinyMCE.activeEditor.selection.setContent("'.$image.'");//marche pas avec IE :(
                     window.close();
                     //]]>
@@ -132,12 +133,14 @@ if (!isset($_POST['Valider']))
     echo ini_get( 'upload_max_filesize');
     echo '  maxi): <br /><input type="file" name="FileSelection1" size="40" /></li>';
     echo '<li>Indiquer le sous-r&#233;pertoire de votre "public_html" dans lequel sera enregistr&#233;e l\'image :  s\'il n\'existe pas, il sera cr&#233;&#233; <br /><input class="text" type="text" name="sousrep" value="Images_Cdt" size="30" /></li>';
+    echo '<li><input type="checkbox" name="only_lien"  />
+              <label for="boxcheck"> Afficher le lien &agrave; la place de l\'image </label></li>';
     echo '<li>Le bouton <b> Valider </b> transfert le fichier s&#233;lectionn&#233; sur le serveur et ins&#232;re automatiquement le lien.</li>';
     echo '</ol>';
     echo '<input type="submit" name="Valider" value="Valider" class="bt" />';
     }
 //affichage du resultat
-else 
+else
     {
     if ($mess1!="") echo $mess1;
     if ($mess2!="") echo $mess2;

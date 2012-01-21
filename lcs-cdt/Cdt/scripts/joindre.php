@@ -76,7 +76,7 @@ if (isset($_POST['Valider']))
     if (strlen($_POST['sousrep']) > 0) $sousrep= addSlashes(strip_tags(stripslashes($_POST['sousrep'])));
     else $sousrep= "";
     //verification de l'existence du repertoire
-    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
+    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep))
         {
         if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
             {
@@ -84,8 +84,8 @@ if (isset($_POST['Valider']))
             $pb=1;
             }
         else $pb=0;
-        } 
-    else 
+        }
+    else
         {
         //creation du repertoire
         mkdir("/home/".$_SESSION['login']."/public_html/".$sousrep);
@@ -93,7 +93,7 @@ if (isset($_POST['Valider']))
         $pb=0;
         }
 
-    //traitement du  fichier 	
+    //traitement du  fichier
     if ((!empty($_FILES["FileSelection1"]["name"])) && $pb==0)
         {
         if ($_FILES["FileSelection1"]["size"]>0)
@@ -122,7 +122,7 @@ if (isset($_POST['Valider']))
                     }
                 else $mess1= "<h3 class='nook'> Erreur dans le transfert du fichier"."<br /></h3>";
                 }
-            else $mess1= "<h3 class='nook'> Type de fichier non autoris&eacute; "."<br /></h3>";
+            else $mess1= "<h3 class='nook'> Type de fichier <b>".$_FILES["FileSelection1"]["type"]."</b> non  autoris&eacute; "."<br /></h3>";
             }
         else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier "."<br /></h3>";
         }
@@ -149,7 +149,7 @@ if (!isset($_POST['Valider']))
     echo '<input type="submit" name="Valider" value="Valider" class="bt" />';
     }
 //affichage du resultat
-else 
+else
     {
     if ($mess1!="") echo $mess1;
     if ($mess2!="") echo $mess2;

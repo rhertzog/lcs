@@ -1,3 +1,11 @@
+lcs-cdt (2.4.10) LCS; urgency=low
+
+  * add option : no display picture attached
+  * modify the Url filter
+  * display type file not authorized 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 19 Jan 2012 08:57:16 +0100
+
 lcs-cdt (2.4.9) LCS; urgency=low
 
   *remove tilde 

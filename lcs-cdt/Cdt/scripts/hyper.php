@@ -76,7 +76,7 @@ if (isset($_POST['Valider']))
         fclose($fp);
         //on switch sur le code HTTP renvoye
         $no_code = substr($en_tete,9,3);
-         if ($no_code >200 && $no_code < 303 )
+         if ($no_code >=200 && $no_code < 303 )
             {
             $Url="<a href= '". $lien ."' > ". $nom_lien." </a> ";			
             //insertion du lien
