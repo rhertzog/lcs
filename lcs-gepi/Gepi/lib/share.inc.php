@@ -1,7 +1,7 @@
 <?php
 /** Fonctions accessibles dans toutes les pages
  * 
- * $Id: share.inc.php 8654 2011-11-22 18:00:13Z crob $
+ * $Id: share.inc.php 8733 2011-12-22 15:22:19Z crob $
  * 
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -4802,4 +4802,30 @@ function check_utf8_and_convert($var) {
 } 
 
 
+/** fonction retournant le jour traduit en français
+ *
+ * @param string $jour_en Le jour en anglais (Mon, Tue, Wed,...)
+ * @return string La date en français 
+ */
+function jour_fr($jour_en, $mode="") {
+	$tab['mon']="lun";
+	$tab['tue']="mar";
+	$tab['wed']="mer";
+	$tab['thu']="jeu";
+	$tab['fri']="ven";
+	$tab['sat']="sam";
+	$tab['sun']="dim";
+
+	if(isset($tab[mb_strtolower($jour_en)])) {
+		if($mode=='majf2') {
+			return casse_mot($tab[mb_strtolower($jour_en)], 'majf2');
+		}
+		else {
+			return $tab[mb_strtolower($jour_en)];
+		}
+	}
+	else {
+		return $jour_en;
+	}
+}
 ?>
