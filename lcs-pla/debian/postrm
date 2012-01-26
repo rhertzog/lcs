@@ -6,7 +6,6 @@
 set -e
 
 MODULE="pla"
-APACHECONF="/etc/lcs/apache.conf"
 APACHE2CONF="/etc/apache2/lcs-main/67_pla.conf"
 # summary of how this script can be called:
 #        * <postrm> `remove'
@@ -26,17 +25,6 @@ case "$1" in
         #
         # Suppression de l'alias 
         #
-        # cas de l'ancienne conf apache
-        if [ -e $APACHECONF ]; then
-          grep -v 'Alias /$MODULE/ /usr/share/lcs/$MODULE/' $APACHECONF > /tmp/apache.conf
-          mv /tmp/apache.conf $APACHECONF
-          if [ -e /etc/init.d/apache2 ]; then
-            invoke-rc.d apache2 force-reload > /dev/null 2>&1
-	  else
-	     /etc/init.d/apache reload > /dev/null 2>&1
-	   fi
-        fi
-        # cas de la nouvelle configuration apache
         if [ -e $APACHE2CONF ]; then
           rm -r $APACHE2CONF
           /etc/init.d/apache2 reload > /dev/null 2>&1
