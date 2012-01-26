@@ -115,9 +115,8 @@ if( ($action=='Afficher_evaluations') && $date_debut && $date_fin )
 		}
 		else
 		{
-			$profs_liste = mb_substr($DB_ROW['devoir_partage'],1,-1);
-			$profs_nombre = mb_substr_count($DB_ROW['devoir_partage'],'_')-1;
-			$profs_nombre.= ' profs';
+			$profs_liste  = str_replace(',','_',mb_substr($DB_ROW['devoir_partage'],1,-1));
+			$profs_nombre = (mb_substr_count($DB_ROW['devoir_partage'],',')-1).' profs';
 		}
 		$proprio = ($DB_ROW['prof_id']==$_SESSION['USER_ID']) ? TRUE : FALSE ;
 		// Afficher une ligne du tableau
@@ -183,14 +182,13 @@ if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $date && $
 			$tab_profs = array();
 		}
 	}
-	$listing_id_profs = count($tab_profs) ? implode('_',$tab_profs) : '' ;
 	// Commencer par créer un nouveau groupe de type "eval", utilisé uniquement pour cette évaluation (c'est transparent pour le professeur)
 	$groupe_id = DB_STRUCTURE_PROFESSEUR::DB_ajouter_groupe_par_prof($groupe_type,'',0);
 	// Y associer le prof, en responsable du groupe
 	DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_user_groupe_par_prof($_SESSION['USER_ID'],'professeur',$groupe_id,$groupe_type,TRUE);
 	DB_STRUCTURE_PROFESSEUR::DB_ajouter_liaison_professeur_responsable($_SESSION['USER_ID'],$groupe_id);
 	// Insèrer l'enregistrement de l'évaluation
-	$devoir_id2 = DB_STRUCTURE_PROFESSEUR::DB_ajouter_devoir($_SESSION['USER_ID'],$groupe_id,$date_mysql,$info,$date_visible_mysql,$listing_id_profs);
+	$devoir_id2 = DB_STRUCTURE_PROFESSEUR::DB_ajouter_devoir($_SESSION['USER_ID'],$groupe_id,$date_mysql,$info,$date_visible_mysql,$tab_profs);
 	// Affecter tous les élèves choisis
 	DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_user($devoir_id2,$groupe_id,$tab_eleves,'creer');
 	// Insérer les enregistrements des items de l'évaluation
@@ -259,9 +257,8 @@ if( ($action=='modifier') && $devoir_id && $groupe_id && $date && $date_visible 
 			$tab_profs = array();
 		}
 	}
-	$listing_id_profs = count($tab_profs) ? implode('_',$tab_profs) : '' ;
 	// sacoche_devoir (maj des paramètres date & info)
-	DB_STRUCTURE_PROFESSEUR::DB_modifier_devoir($devoir_id,$_SESSION['USER_ID'],$date_mysql,$info,$date_visible_mysql,$tab_items,$listing_id_profs);
+	DB_STRUCTURE_PROFESSEUR::DB_modifier_devoir($devoir_id,$_SESSION['USER_ID'],$date_mysql,$info,$date_visible_mysql,$tab_items,$tab_profs);
 	// sacoche_jointure_user_groupe + sacoche_saisie pour les users supprimés
 	DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_user($devoir_id,$groupe_id,$tab_eleves,'substituer');
 	// sacoche_jointure_devoir_item + sacoche_saisie pour les items supprimés
@@ -493,7 +490,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date && $date_visible &&
 if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $date française pour le csv ; $descriptif séparé par :::
 {
 	// liste des items
-	$DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_items_devoir($devoir_id);
+	$DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_items_devoir($devoir_id,TRUE /*with_lien*/);
 	// liste des élèves
 	$DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_actifs_regroupement('eleve',$groupe_type,$groupe_id);
 	// Let's go
@@ -534,7 +531,9 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $
 	{
 		$item_ref = $DB_ROW['item_ref'];
 		$texte_socle = ($DB_ROW['entree_id']) ? ' [S]' : ' [–]';
-		$tab_affich[$DB_ROW['item_id']][0] = '<th><b>'.html($item_ref.$texte_socle).'</b> <img alt="" src="./_img/bulle_aide.png" title="'.html($DB_ROW['item_nom']).'" /><div>'.html($DB_ROW['item_nom']).'</div></th>';
+		$texte_lien_avant = ($DB_ROW['item_lien']) ? '<a class="lien_ext" href="'.html($DB_ROW['item_lien']).'">' : '';
+		$texte_lien_apres = ($DB_ROW['item_lien']) ? '</a>' : '';
+		$tab_affich[$DB_ROW['item_id']][0] = '<th><b>'.$texte_lien_avant.html($item_ref.$texte_socle).$texte_lien_apres.'</b> <img alt="" src="./_img/bulle_aide.png" title="'.html($DB_ROW['item_nom']).'" /><div>'.html($DB_ROW['item_nom']).'</div></th>';
 		$tab_comp_id[$DB_ROW['item_id']] = $item_ref;
 		$csv_lignes_scores[$DB_ROW['item_id']][0] = $DB_ROW['item_id'];
 		$csv_colonne_texte[$DB_ROW['item_id']]    = $item_ref.$texte_socle.' '.$DB_ROW['item_nom'];
@@ -665,7 +664,7 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date && $descriptif ) // $
 if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif ) // $date française pour le csv ; $descriptif séparé par :::
 {
 	// liste des items
-	$DB_TAB_ITEM = DB_STRUCTURE_PROFESSEUR::DB_lister_items_devoir($devoir_id);
+	$DB_TAB_ITEM = DB_STRUCTURE_PROFESSEUR::DB_lister_items_devoir($devoir_id,TRUE /*with_lien*/);
 	// liste des élèves
 	$DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_actifs_regroupement('eleve',$groupe_type,$groupe_id);
 	// Let's go
@@ -690,7 +689,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 	foreach($DB_TAB_ITEM as $DB_ROW)
 	{
 		$texte_socle = ($DB_ROW['entree_id']) ? ' [S]' : ' [–]';
-		$tab_item_id[$DB_ROW['item_id']] = array( $DB_ROW['item_ref'].$texte_socle , $DB_ROW['item_nom'] );
+		$tab_item_id[$DB_ROW['item_id']] = array( $DB_ROW['item_ref'].$texte_socle , $DB_ROW['item_nom'] , $DB_ROW['item_lien'] );
 	}
 	// tableaux utiles ou pour conserver les infos
 	$tab_dossier = array( 'RR'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'R'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'V'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'VV'=>$_SESSION['NOTE_DOSSIER'].'/h/' );
@@ -728,8 +727,10 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 	echo'<thead><tr>'.$affichage_repartition_head.'</tr></thead><tbody>';
 	foreach($tab_item_id as $item_id=>$tab_infos_item)
 	{
+		$texte_lien_avant = ($tab_infos_item[2]) ? '<a class="lien_ext" href="'.html($tab_infos_item[2]).'">' : '';
+		$texte_lien_apres = ($tab_infos_item[2]) ? '</a>' : '';
 		echo'<tr>';
-		echo'<th><b>'.html($tab_infos_item[0]).'</b><br />'.html($tab_infos_item[1]).'</th>';
+		echo'<th><b>'.$texte_lien_avant.html($tab_infos_item[0]).$texte_lien_apres.'</b><br />'.html($tab_infos_item[1]).'</th>';
 		foreach($tab_repartition_quantitatif[$item_id] as $code=>$note_nb)
 		{
 			echo'<td style="font-size:'.round(75+100*$note_nb/$eleve_nb).'%">'.round(100*$note_nb/$eleve_nb).'%</td>';
@@ -743,8 +744,10 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date && $descriptif
 	echo'<thead><tr>'.$affichage_repartition_head.'</tr></thead><tbody>';
 	foreach($tab_item_id as $item_id=>$tab_infos_item)
 	{
+		$texte_lien_avant = ($tab_infos_item[2]) ? '<a class="lien_ext" href="'.html($tab_infos_item[2]).'">' : '';
+		$texte_lien_apres = ($tab_infos_item[2]) ? '</a>' : '';
 		echo'<tr>';
-		echo'<th><b>'.html($tab_infos_item[0]).'</b><br />'.html($tab_infos_item[1]).'</th>';
+		echo'<th><b>'.$texte_lien_avant.html($tab_infos_item[0]).$texte_lien_apres.'</b><br />'.html($tab_infos_item[1]).'</th>';
 		foreach($tab_repartition_nominatif[$item_id] as $code=>$tab_eleves)
 		{
 			echo'<td>'.implode('<br />',$tab_eleves).'</td>';
@@ -874,25 +877,28 @@ if( ($action=='Enregistrer_saisie') && $devoir_id && $date && $date_visible && c
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$key = $DB_ROW['item_id'].'x'.$DB_ROW['eleve_id'];
-		if($tab_post[$key]!=$DB_ROW['saisie_note'])
+		if(isset($tab_post[$key])) // Test nécessaire si élève ou item évalués dans ce devoir, mais retiré depuis (donc non transmis dans la nouvelle saisie, mais à conserver).
 		{
-			if($tab_post[$key]=='X')
+			if($tab_post[$key]!=$DB_ROW['saisie_note'])
 			{
-				// valeur de la base à supprimer
-				$tab_nouveau_supprimer[$key] = $key;
-			}
-			else
-			{
-				// valeur de la base à modifier
-				$tab_nouveau_modifier[$key] = $tab_post[$key];
-				if($DB_ROW['saisie_note']=='REQ')
+				if($tab_post[$key]=='X')
 				{
-					// demande d'évaluation à supprimer
-					$tab_demande_supprimer[$key] = $key;
+					// valeur de la base à supprimer
+					$tab_nouveau_supprimer[$key] = $key;
+				}
+				else
+				{
+					// valeur de la base à modifier
+					$tab_nouveau_modifier[$key] = $tab_post[$key];
+					if($DB_ROW['saisie_note']=='REQ')
+					{
+						// demande d'évaluation à supprimer
+						$tab_demande_supprimer[$key] = $key;
+					}
 				}
 			}
+			unset($tab_post[$key]);
 		}
-		unset($tab_post[$key]);
 	}
 	// Il reste dans $tab_post les données à ajouter (mises dans $tab_nouveau_ajouter) et les données qui ne servent pas (non enregistrées et non saisies)
 	$tab_nouveau_ajouter = array_filter($tab_post,'non_note');
