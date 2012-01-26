@@ -6,10 +6,11 @@
 <description>New Posix Group</description>
 <icon>ldap-ou.png</icon>
 <invalid>0</invalid>
+<noleaf>1</noleaf>
 <rdn>cn</rdn>
 <!-- <regexp>^ou=.*,</regexp> -->
 <title>Generic: Posix Group</title>
-<visible>1</visible>
+<visible>0</visible>
 
 <objectClasses>
 <objectClass id="posixGroup"></objectClass>

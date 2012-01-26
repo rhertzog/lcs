@@ -13,9 +13,6 @@
  * @subpackage DataStore
  */
 class ldap_pla extends ldap {
-	# Attributes that should be treated as MAY attributes, even though the scheme has them as MUST attributes.
-	private $force_may = array();
-
 	function __construct($index) {
 		parent::__construct($index);
 
@@ -26,6 +23,10 @@ class ldap_pla extends ldap {
 		$this->default->appearance['show_create'] = array(
 			'desc'=>'Whether to show the "Create new Entry here" in the tree browser',
 			'default'=>true);
+
+		$this->default->appearance['open_tree'] = array(
+			'desc'=>'Whether to initially open each tree',
+			'default'=>false);
 
 		$this->default->login['fallback_dn'] = array(
 			'desc'=>'If the attribute base login fails, see if a DN was entered',
@@ -50,6 +51,10 @@ class ldap_pla extends ldap {
 		$this->default->server['custom_sys_attrs'] = array(
 			'desc'=>'Custom operational attributes to be treated as internal attributes',
 			'default'=>array('+'));
+
+		$this->default->server['jpeg_attributes'] = array(
+			'desc'=>'Additional attributes to treat as Jpeg Attributes',
+			'default'=>array());
 
 		# This was added in case the LDAP server doesnt provide them with a base +,* query.
 		$this->default->server['root_dse_attributes'] = array(
@@ -83,6 +88,11 @@ class ldap_pla extends ldap {
 				'dseType',
 				'+',
 				'*'
+			));
+
+		$this->default->server['force_may'] = array(
+			'desc'=>'Force server MUST attributes as MAY attributes',
+			'default'=>array(
 			));
 
 		# Settings for auto_number
@@ -121,6 +131,19 @@ class ldap_pla extends ldap {
 		$this->default->unique['pass'] = array(
 			'desc'=>'Password for DN to use when evaluating attribute uniqueness',
 			'default'=>null);
+	}
+
+	public function __get($key) {
+		switch ($key) {
+			case 'name':
+				return $this->getValue('server','name');
+
+			default:
+				system_message(array(
+					'title'=>_('Unknown request for Object value.'),
+					'body'=>sprintf(_('Attempt to obtain value %s from %s'),$key,get_class($this)),
+					'type'=>'error'));
+		}
 	}
 
 	/**
@@ -337,6 +360,11 @@ class ldap_pla extends ldap {
 			if ($result) {
 				# Update the tree
 				$tree = get_cached_item($this->index,'tree');
+
+				# If we created the base, delete it, then add it back
+				if (get_request('create_base'))
+					$tree->delEntry($dn);
+
 				$tree->addEntry($dn);
 
 				set_cached_item($this->index,'tree','null',$tree);

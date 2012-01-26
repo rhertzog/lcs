@@ -19,8 +19,6 @@ class ldap extends DS {
 	private $_schema_entries = null;
 	# Schema DN
 	private $_schemaDN = null;
-	# Attributes that should be treated as MAY attributes, even though the scheme has them as MUST attributes.
-	private $force_may = array();
 
 	public function __construct($index) {
 		if (defined('DEBUG_ENABLED') && DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
@@ -82,14 +80,9 @@ class ldap extends DS {
 			'default'=>array());
 
 		# SASL configuration
-		$this->default->server['sasl'] = array(
-			'desc'=>'Use SASL authentication when binding LDAP server',
-			'default'=>false);
-
 		$this->default->sasl['mech'] = array(
 			'desc'=>'SASL mechanism used while binding LDAP server',
-			'untested'=>true,
-			'default'=>'PLAIN');
+			'default'=>'GSSAPI');
 
 		$this->default->sasl['realm'] = array(
 			'desc'=>'SASL realm name',
@@ -312,8 +305,6 @@ class ldap extends DS {
 		if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 			debug_log('Entered (%%)',17,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-		$size_limit = 500;
-		$time_limit = 0;
 		$attrs_only = 0;
 
 		# Defaults
@@ -335,7 +326,9 @@ class ldap extends DS {
 		if (! isset($query['scope']))
 			$query['scope'] = 'sub';
 		if (! isset($query['size_limit']))
-			$query['size_limit'] = $size_limit;
+			$query['size_limit'] = 0;
+		if (! isset($query['time_limit']))
+			$query['time_limit'] = 0;
 
 		if ($query['scope'] == 'base' && ! isset($query['baseok']))
 			system_message(array(
@@ -362,16 +355,16 @@ class ldap extends DS {
 
 		switch ($query['scope']) {
 			case 'base':
-				$search = @ldap_read($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$time_limit,$query['deref']);
+				$search = @ldap_read($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$query['time_limit'],$query['deref']);
 				break;
 
 			case 'one':
-				$search = @ldap_list($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$time_limit,$query['deref']);
+				$search = @ldap_list($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$query['time_limit'],$query['deref']);
 				break;
 
 			case 'sub':
 			default:
-				$search = @ldap_search($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$time_limit,$query['deref']);
+				$search = @ldap_search($resource,$query['base'],$query['filter'],$query['attrs'],$attrs_only,$query['size_limit'],$query['time_limit'],$query['deref']);
 				break;
 		}
 
@@ -477,6 +470,7 @@ class ldap extends DS {
 			$this->getLoginClass() ? sprintf('(objectclass=%s)',join(')(objectclass=',$this->getLoginClass())) : '');
 		$query['attrs'] = array('dn');
 
+		$result = array();
 		foreach ($this->getLoginBaseDN() as $base) {
 			$query['base'] = $base;
 			$result = $this->query($query,$method);
@@ -576,7 +570,7 @@ class ldap extends DS {
 	 *
 	 * Users may configure phpLDAPadmin to use SASL in config,php thus:
 	 * <code>
-	 *	$servers->setValue('server','sasl',true|false);
+	 *	$servers->setValue('login','auth_type','sasl');
 	 * </code>
 	 *
 	 * @return boolean
@@ -585,12 +579,17 @@ class ldap extends DS {
 		if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 			debug_log('Entered (%%)',17,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-		if ($this->getValue('server','sasl') && ! function_exists('ldap_sasl_bind')) {
-				error(_('SASL has been enabled in your config, but your PHP install does not support SASL. SASL will be disabled.'),'warn');
+		if ($this->getValue('login','auth_type') != 'sasl')
 			return false;
 
-		} else
-			return $this->getValue('server','sasl');
+		if (! function_exists('ldap_sasl_bind')) {
+			error(_('SASL has been enabled in your config, but your PHP install does not support SASL. SASL will be disabled.'),'warn');
+
+			return false;
+		}
+
+		# If we get here, SASL must be configured.
+		return true;
 	}
 
 	/**
@@ -605,60 +604,61 @@ class ldap extends DS {
 
 		static $CACHE = array();
 
-		switch (strtolower($this->getValue('sasl','mech'))) {
-			case 'gssapi':
-				if (isset($_ENV['REDIRECT_KRB5CCNAME']))
-					putenv(sprintf('KRB5CCNAME={%s}',$_ENV['REDIRECT_KRB5CCNAME']));
-
-				break;
-
-			default:
-				error(sprintf('%s (%s) has NOT been tested, please let us know if it works and which version of PHP you are using.',__METHOD__,$this->getValue('sasl','mech')),'info');
-		}
-
-		if (! $this->getValue('server','sasl') || ! function_exists('ldap_start_tls'))
+		# We shouldnt be doing SASL binds for anonymous queries?
+		if ($method == 'anon')
 			return false;
 
-		if (! isset($CACHE['login_dn'])) {
-			$CACHE['login_dn'] = is_null($this->getLogin($method)) ? $this->getLogin('user') : $this->getLogin($method);
-			$CACHE['login_pass'] = is_null($this->getPassword($method)) ? $this->getPassword('user') : $this->getPassword($method);
+		# At the moment, we have only implemented GSSAPI
+		if (! in_array(strtolower($this->getValue('sasl','mech')),array('gssapi'))) {
+			system_message(array(
+				'title'=>_('SASL Method not implemented'),
+				'body'=>sprintf('<b>%s</b>: %s %s',_('Error'),$this->getValue('sasl','mech'),_('has not been implemented yet')),
+				'type'=>'error'));
+
+			return false;
 		}
 
+		if (! isset($CACHE['login_dn']))
+			$CACHE['login_dn'] = is_null($this->getLogin($method)) ? $this->getLogin('user') : $this->getLogin($method);
+
+		$CACHE['authz_id'] = '';
+
+		/*
 		# Do we need to rewrite authz_id?
 		if (! isset($CACHE['authz_id']))
-			if (! trim($this->getValue('sasl','authz_id'))) {
+			if (! trim($this->getValue('sasl','authz_id')) && strtolower($this->getValue('sasl','mech')) != 'gssapi') {
+				if (DEBUG_ENABLED)
+					debug_log('Rewriting bind DN [%s] -> authz_id with regex [%s] and replacement [%s].',9,0,__FILE__,__LINE__,__METHOD__,
+						$CACHE['login_dn'],
+						$this->getValue('sasl','authz_id_regex'),
+						$this->getValue('sasl','authz_id_replacement'));
 
-			if (DEBUG_ENABLED)
-				debug_log('Rewriting bind DN [%s] -> authz_id with regex [%s] and replacement [%s].',9,0,__FILE__,__LINE__,__METHOD__,
-					$CACHE['login_dn'],
-					$this->getValue('sasl','authz_id_regex'),
-					$this->getValue('sasl','authz_id_replacement'));
+				$CACHE['authz_id'] = @preg_replace($this->getValue('sasl','authz_id_regex'),
+					$this->getValue('sasl','authz_id_replacement'),$CACHE['login_dn']);
 
-			$CACHE['authz_id'] = @preg_replace($this->getValue('sasl','authz_id_regex'),
-				$this->getValue('sasl','authz_id_replacement'),$CACHE['login_dn']);
+				# Invalid regex?
+				if (is_null($CACHE['authz_id']))
+					error(sprintf(_('It seems that sasl_authz_id_regex "%s" contains invalid PCRE regular expression. The error is "%s".'),
+						$this->getValue('sasl','authz_id_regex'),(isset($php_errormsg) ? $php_errormsg : '')),
+						'error','index.php');
 
-			# Invalid regex?
-			if (is_null($CACHE['authz_id']))
-				error(sprintf(_('It seems that sasl_authz_id_regex "%s" contains invalid PCRE regular expression. The error is "%s".'),
-					$this->getValue('sasl','authz_id_regex'),(isset($php_errormsg) ? $php_errormsg : '')),
-					'error','index.php');
-
-			if (DEBUG_ENABLED)
-				debug_log('Resource [%s], SASL OPTIONS: mech [%s], realm [%s], authz_id [%s], props [%s]',9,0,__FILE__,__LINE__,__METHOD__,
-					$resource,
-					$this->getValue('sasl','mech'),
-					$this->getValue('sasl','realm'),
-					$CACHE['authz_id'],
-					$this->getValue('sasl','props'));
+				if (DEBUG_ENABLED)
+					debug_log('Resource [%s], SASL OPTIONS: mech [%s], realm [%s], authz_id [%s], props [%s]',9,0,__FILE__,__LINE__,__METHOD__,
+						$resource,
+						$this->getValue('sasl','mech'),
+						$this->getValue('sasl','realm'),
+						$CACHE['authz_id'],
+						$this->getValue('sasl','props'));
 
 			} else
 				$CACHE['authz_id'] = $this->getValue('sasl','authz_id');
+		*/
 
 		# @todo this function is different in PHP5.1 and PHP5.2
-		return @ldap_sasl_bind($resource,$CACHE['login_dn'],$CACHE['login_pass'],
+		return @ldap_sasl_bind($resource,NULL,'',
 			$this->getValue('sasl','mech'),
 			$this->getValue('sasl','realm'),
-			$CACH['authz_id'],
+			$CACHE['authz_id'],
 			$this->getValue('sasl','props'));
 	}
 
@@ -1375,6 +1375,40 @@ class ldap extends DS {
 			}
 		}
 
+		# Option 3: try cn=config
+		$olc_schema = 'olc'.$schema_to_fetch;
+		$olc_schema_found = false;
+		if (is_null($schema_search)) {
+			if (DEBUG_ENABLED)
+				debug_log('Attempting cn=config work-around...',24,0,__FILE__,__LINE__,__METHOD__);
+
+			$ldap_dn = 'cn=schema,cn=config';
+			$ldap_filter = '(objectClass=*)';
+
+			$schema_search = @ldap_search($this->connect($method),$ldap_dn,$ldap_filter,array($olc_schema),false,0,10,LDAP_DEREF_NEVER);
+
+			if (! is_null($schema_search)) {
+				$schema_entries = @ldap_get_entries($this->connect($method),$schema_search);
+
+				if (DEBUG_ENABLED)
+					debug_log('Search returned [%s]',24,0,__FILE__,__LINE__,__METHOD__,$schema_entries);
+
+				if ($schema_entries) {
+					if (DEBUG_ENABLED)
+						debug_log('Found schema with filter of (%s) and attribute filter (%s)',24,0,__FILE__,__LINE__,__METHOD__,$ldap_filter,$olc_schema);
+
+					$olc_schema_found = true;
+
+				} else {
+					if (DEBUG_ENABLED)
+						debug_log('Didnt find schema with filter (%s) and attribute filter (%s)',24,0,__FILE__,__LINE__,__METHOD__,$ldap_filter,$olc_schema);
+
+					unset($schema_entries);
+					$schema_search = null;
+				}
+			}
+		}
+
 		if (is_null($schema_search)) {
 			/* Still cant find the schema, try with the RootDSE
 			 * Attempt to pull schema from Root DSE with scope "base", or
@@ -1444,9 +1478,35 @@ class ldap extends DS {
 			return $return;
 		}
 
-		if(! isset($schema_entries[0][$schema_to_fetch])) {
+		if ($olc_schema_found) {
+			unset ($schema_entries['count']);
+
+			foreach ($schema_entries as $entry) {
+				if (isset($entry[$olc_schema])) {
+					unset($entry[$olc_schema]['count']);
+
+					foreach ($entry[$olc_schema] as $schema_definition)
+						/* Schema definitions in child nodes prefix the schema entries with "{n}"
+						  the preg_replace call strips out this prefix. */
+						$schema[] = preg_replace('/^\{\d*\}\(/','(',$schema_definition);
+				}
+			}
+
+			if (isset($schema)) {
+				$this->_schema_entries[$olc_schema] = $schema;
+
+				if (DEBUG_ENABLED)
+					debug_log('Returning (%s)',25,0,__FILE__,__LINE__,__METHOD__,$schema);
+
+				return $schema;
+
+			} else
+				return null;
+		}
+
+		if (! isset($schema_entries[0][$schema_to_fetch])) {
 			if (in_array($schema_to_fetch,$schema_error_message_array)) {
-				error(sprintf('Our attempts to find your SCHEMA for "%s" has return UNEXPECTED results.<br /><br /><small>(We expected a "%s" in the $schema array but it wasnt there.)</small><br /><br />%s<br /><br />Dump of $schema_search:<hr /><pre><small>%s</small></pre>',
+				error(sprintf('Our attempts to find your SCHEMA for "%s" have return UNEXPECTED results.<br /><br /><small>(We expected a "%s" in the $schema array but it wasnt there.)</small><br /><br />%s<br /><br />Dump of $schema_search:<hr /><pre><small>%s</small></pre>',
 					$schema_to_fetch,gettype($schema_search),$schema_error_message,serialize($schema_entries)),'error','index.php');
 
 			} else {
@@ -1910,14 +1970,13 @@ class ldap extends DS {
 	 * This function determines if the specified attribute is contained in the force_may list
 	 * as configured in config.php.
 	 *
-	 * @return boolean True if the specified attribute is in the $force_may list and false
-	 *              otherwise.
+	 * @return boolean True if the specified attribute is configured to be force as a may attribute
 	 */
 	function isForceMay($attr_name) {
 		if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 			debug_log('Entered (%%)',17,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-		return in_array($attr_name,$this->force_may);
+		return in_array($attr_name,unserialize(strtolower(serialize($this->getValue('server','force_may')))));
 	}
 
 	/**
@@ -2002,7 +2061,7 @@ class ldap extends DS {
 	 * @see getDNSysAttrs
 	 * @see getDNAttrValue
 	 */
-	public function getDNAttrValues($dn,$method=null,$deref=LDAP_DEREF_NEVER,$attrs=array('*','+')) {
+	public function getDNAttrValues($dn,$method=null,$deref=LDAP_DEREF_NEVER,$attrs=array('*','+'),$nocache=false) {
 		if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 			debug_log('Entered (%%)',17,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
@@ -2018,7 +2077,7 @@ class ldap extends DS {
 		elseif (in_array('*',$attrs))
 			$cacheindex = '*';
 
-		if (! is_null($cacheindex) && isset($CACHE[$this->index][$method][$dn][$cacheindex])) {
+		if (! $nocache && ! is_null($cacheindex) && isset($CACHE[$this->index][$method][$dn][$cacheindex])) {
 			$results = $CACHE[$this->index][$method][$dn][$cacheindex];
 
 			if (DEBUG_ENABLED)

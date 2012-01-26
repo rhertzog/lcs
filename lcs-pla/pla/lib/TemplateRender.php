@@ -48,11 +48,12 @@ class TemplateRender extends PageRender {
 
 		$this->page = get_request('page','REQUEST',false,1);
 
-		if ($this->template_id) {
-			parent::accept();
+		if ($this->template_id AND $this->template_id != 'invalid') {
+			if (! $this->template)
+				parent::accept();
 
 			$this->url_base = sprintf('server_id=%s&dn=%s',
-				$this->getServerID(),rawurlencode($this->template->getDN()));
+				$this->getServerID(),$this->template->getDNEncode());
 			$this->layout['hint'] = sprintf('<td class="icon"><img src="%s/light.png" alt="%s" /></td><td colspan="3"><span class="hint">%%s</span></td>',
 				IMGDIR,_('Hint'));
 			$this->layout['action'] = '<td class="icon"><img src="%s/%s" alt="%s" /></td><td><a href="cmd.php?%s" title="%s">%s</a></td>';
@@ -266,8 +267,6 @@ class TemplateRender extends PageRender {
 			 */
 			case 'MultiList':
 			case 'PickList':
-				$args[2] = strtolower($args[2]);
-
 				# arg5 overrides our container
 				if (empty($args[5]))
 					$container = $server->getContainerPath($container,$args[0]);
@@ -440,6 +439,8 @@ class TemplateRender extends PageRender {
 			return 'modification';
 		elseif ($this->container)
 			return 'creation';
+		elseif (get_request('create_base'))
+			return 'creation';
 		else
 			debug_dump_backtrace(sprintf('Unknown mode for %s',__METHOD__),1);
 	}
@@ -500,17 +501,21 @@ class TemplateRender extends PageRender {
 
 		$avail_templates = $this->getTemplates();
 		$templates = $avail_templates->getTemplates($this->getMode(),$this->getModeContainer());
-		printf('<center><h3>%s</h3></center>',$msg);
+		printf('<h3 style="text-align: center;">%s</h3>',$msg);
 
 		$href_parms = array_to_query_string($_GET,array('meth'));
-		printf('<form name="template_choice_form" action="cmd.php?%s" method="post">',htmlspecialchars($href_parms));
+		printf('<form id="template_choice_form" action="cmd.php?%s" method="post">',htmlspecialchars($href_parms));
 		echo "\n\n";
 
-		foreach ($_POST as $p => $v)
-			printf('<input type="hidden" name="%s" value="%s">',$p,$v);
-		echo "\n\n";
+		if (count($_POST)) {
+			echo '<div>';
+			foreach ($_POST as $p => $v)
+				printf('<input type="hidden" name="%s" value="%s" />',$p,$v);
+			echo '</div>';
+			echo "\n\n";
+		}
 
-		echo '<table class="forminput" width="100%" border=0>';
+		echo '<table class="forminput" width="100%" border="0">';
 		echo '<tr>';
 		printf('<td class="heading" style="vertical-align: top">%s:</td>',_('Templates'));
 		echo '<td>';
@@ -542,9 +547,9 @@ class TemplateRender extends PageRender {
 			else {
 				if (isAjaxEnabled())
 					printf('<td><input type="radio" name="template" value="%s" id="%s" onclick="return ajDISPLAY(\'BODY\',\'%s&amp;template=%s\',\'%s\');" /></td>',
-						htmlspecialchars($details->getID()),htmlspecialchars($details->getID()),htmlspecialchars($href_parms),$details->getID(),_('Retieving DN'));
+						htmlspecialchars($details->getID()),htmlspecialchars($details->getID()),htmlspecialchars($href_parms),$details->getID(),str_replace('\'','\\\'',_('Retrieving DN')));
 				else
-					printf('<td><input type="radio" name="template" value="%s" id="%s" onclick="document.forms.template_choice_form.submit()" /></td>',
+					printf('<td><input type="radio" name="template" value="%s" id="%s" onclick="document.getElementById(\'template_choice_form\').submit()" /></td>',
 						htmlspecialchars($details->getID()),htmlspecialchars($details->getID()));
 			}
 
@@ -554,7 +559,7 @@ class TemplateRender extends PageRender {
 				htmlspecialchars($details->getID()));
 
 			if ($isInValid)
-				printf('<span style="color: gray"><acronym title="%s">',_($isInValid));
+				printf('<span id="%s" style="color: gray"><acronym title="%s">',htmlspecialchars($details->getID()),_($isInValid));
 
 			echo _($details->getTitle());
 
@@ -579,9 +584,9 @@ class TemplateRender extends PageRender {
 			echo '<tr>';
 			if (isAjaxEnabled())
 				printf('<td><input type="radio" name="template" value="none" id="none" onclick="return ajDISPLAY(\'BODY\',\'%s&amp;template=%s\',\'%s\');" /></td>',
-					htmlspecialchars($href_parms),'none',_('Retieving DN'));
+					htmlspecialchars($href_parms),'none',str_replace('\'','\\\'',_('Retrieving DN')));
 			else
-				echo '<td><input type="radio" name="template" value="none" id="none" onclick="document.forms.template_choice_form.submit()" /></td>';
+				echo '<td><input type="radio" name="template" value="none" id="none" onclick="document.getElementById(\'template_choice_form\').submit()" /></td>';
 
 			printf('<td class="icon"><label for="none"><img src="%s/ldap-default.png" alt="" /></label></td>',IMGDIR);
 			printf('<td class="label"><label for="none">%s</label></td>',_('Default'));
@@ -609,11 +614,11 @@ class TemplateRender extends PageRender {
 
 		# If we have a DN, then we are an editing template
 		if ($this->dn)
-			$this->template->setDN(get_request('dn','REQUEST'));
+			$this->template->setDN($this->dn);
 
 		# Else if we have a container, we are a creating template
-		elseif ($this->container)
-			$this->template->setContainer(get_request('container','REQUEST'));
+		elseif ($this->container || get_request('create_base'))
+			$this->template->setContainer($this->container);
 
 		else
 			debug_dump_backtrace('Dont know what type of template we are - no DN or CONTAINER?',1);
@@ -639,10 +644,19 @@ class TemplateRender extends PageRender {
 			$this->drawStepForm($this->page);
 			$this->drawStepFormEnd();
 
+		} elseif ($this->template->getContext() == 'copyasnew') {
+			$this->drawStepFormStart($this->page);
+			printf('<input type="hidden" name="container" value="%s" />',$this->template->getContainer(false));
+			echo '<div><table>';
+			$this->drawRDNChooser();
+			echo '</table></div>';
+			$this->drawForm(true);
+			$this->drawStepFormSubmitButton($this->page);
+
 		} else {
 			# Draw internal attributes
 			if (get_request('show_internal_attrs','REQUEST')) {
-				echo '<table class="entry" cellspacing="0" align="center" border=0>';
+				echo '<table class="entry" cellspacing="0" border="0" style="margin-left: auto; margin-right: auto;">';
 				$this->drawInternalAttributes();
 				echo '</table><br/>';
 				echo "\n";
@@ -665,7 +679,10 @@ class TemplateRender extends PageRender {
 
 		# Title
 		$this->drawTitle();
-		$this->drawSubTitle();
+		if (get_request('create_base'))
+			$this->drawSubTitle(sprintf('<b>%s</b>: %s',_('Creating Base DN'),$this->template->getDN()));
+		else
+			$this->drawSubTitle();
 		echo "\n";
 
 		# Menu
@@ -682,7 +699,7 @@ class TemplateRender extends PageRender {
 					break;
 
 				case 'modification':
-					$title = get_rdn($this->dn);
+					$title = htmlspecialchars(get_rdn($this->dn));
 					break;
 
 				default:
@@ -702,7 +719,7 @@ class TemplateRender extends PageRender {
 			case 'creation':
 				$subtitle = sprintf('%s: <b>%s</b>&nbsp;&nbsp;&nbsp;%s: <b>%s</b>',
 					_('Server'),$this->getServer()->getName(),
-					_('Container'),$this->container);
+					_('Container'),htmlspecialchars($this->container));
 
 				if ($this->template_id) {
 					$subtitle .= '<br />';
@@ -716,7 +733,7 @@ class TemplateRender extends PageRender {
 			case 'modification':
 				$subtitle = sprintf('%s: <b>%s</b>&nbsp;&nbsp;&nbsp;%s: <b>%s</b>',
 					_('Server'),$this->getServer()->getName(),
-					_('Distinguished Name'),$this->dn);
+					_('Distinguished Name'),htmlspecialchars($this->dn));
 
 				if ($this->template_id) {
 					$subtitle .= '<br />';
@@ -739,7 +756,7 @@ class TemplateRender extends PageRender {
 		# We only have a menu for editing entries.
 		if ($this->template->getContext() == 'edit') {
 
-			echo '<table class="menu" width="100%" border=0>';
+			echo '<table class="menu" width="100%" border="0">';
 			echo '<tr>';
 			$menuitem_number = 0;
 
@@ -769,7 +786,7 @@ class TemplateRender extends PageRender {
 						if ($ms) {
 							if (($menuitem_number % 2) == 1) {
 								$menuitem_number++;
-								echo '<td colspan=2>&nbsp;</td>';
+								echo '<td colspan="2">&nbsp;</td>';
 								$endofrow = false;
 								$start = false;
 							}
@@ -794,7 +811,7 @@ class TemplateRender extends PageRender {
 					} elseif ($ms) {
 						if (($menuitem_number % 2) == 1) {
 							$menuitem_number++;
-							echo '<td colspan=2>&nbsp;</td>';
+							echo '<td colspan="2">&nbsp;</td>';
 							$endofrow = false;
 							$start = false;
 						}
@@ -1041,7 +1058,7 @@ class TemplateRender extends PageRender {
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'refresh.png',_('Refresh'),
-				htmlspecialchars($href),_('Refresh this entry'),htmlspecialchars($href),_('Reloading'),_('Refresh'));
+				htmlspecialchars($href),_('Refresh this entry'),htmlspecialchars($href),str_replace('\'','\\\'',_('Reloading')),_('Refresh'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'refresh.png',_('Refresh'),
 				htmlspecialchars($href),_('Refresh this entry'),_('Refresh'));
@@ -1055,7 +1072,7 @@ class TemplateRender extends PageRender {
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'switch.png',_('Switch Template'),
-				htmlspecialchars($href),_('Change to another template'),htmlspecialchars($href),_('Loading'),_('Switch Template'));
+				htmlspecialchars($href),_('Change to another template'),htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Switch Template'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'switch.png',_('Switch Template'),
 				htmlspecialchars($href),_('Change to another template'),_('Switch Template'));
@@ -1071,7 +1088,7 @@ class TemplateRender extends PageRender {
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'export.png',_('Export'),
-				htmlspecialchars($href),_('Save a dump of this object'),htmlspecialchars($href),_('Loading'),_('Export'));
+				htmlspecialchars($href),_('Save a dump of this object'),htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Export'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'export.png',_('Export'),
 				htmlspecialchars($href),_('Save a dump of this object'),_('Export'));
@@ -1088,7 +1105,7 @@ class TemplateRender extends PageRender {
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'cut.png',_('Cut'),
 				htmlspecialchars($href),_('Copy this object to another location, a new DN, or another server'),
-				htmlspecialchars($href),_('Loading'),_('Copy or move this entry'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Copy or move this entry'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'cut.png',_('Cut'),
 				htmlspecialchars($href),_('Copy this object to another location, a new DN, or another server'),
@@ -1126,7 +1143,7 @@ class TemplateRender extends PageRender {
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'trash.png',_('Trash'),
 				htmlspecialchars($href),_('You will be prompted to confirm this decision'),
-				htmlspecialchars($href),_('Loading'),_('Delete this entry'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Delete this entry'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'trash.png',_('Trash'),
 				htmlspecialchars($href),_('You will be prompted to confirm this decision'),_('Delete this entry'));
@@ -1142,7 +1159,7 @@ class TemplateRender extends PageRender {
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'rename.png',_('Rename'),
-				htmlspecialchars($href),_('Rename this entry'),htmlspecialchars($href),_('Loading'),_('Rename'));
+				htmlspecialchars($href),_('Rename this entry'),htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Rename'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'rename.png',_('Rename'),
 				htmlspecialchars($href),_('Rename this entry'),_('Rename'));
@@ -1159,7 +1176,7 @@ class TemplateRender extends PageRender {
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'compare.png',_('Compare'),
 				htmlspecialchars($href),_('Compare this entry with another'),
-				htmlspecialchars($href),_('Loading'),_('Compare with another entry'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Compare with another entry'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'compare.png',_('Compare'),
 				htmlspecialchars($href),_('Compare this entry with another'),_('Compare with another entry'));
@@ -1171,12 +1188,12 @@ class TemplateRender extends PageRender {
 
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
-		$href = sprintf('cmd=template_engine&server_id=%s&container=%s',$this->getServerID(),rawurlencode($this->template->getDN()));
+		$href = sprintf('cmd=template_engine&server_id=%s&container=%s',$this->getServerID(),$this->template->getDNEncode());
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'create.png',_('Create'),
 				htmlspecialchars($href),_('Create a child entry'),
-				htmlspecialchars($href),_('Loading'),_('Create a child entry'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Create a child entry'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'create.png',_('Create'),
 				htmlspecialchars($href),_('Create a child entry'),_('Create a child entry'));
@@ -1197,7 +1214,7 @@ class TemplateRender extends PageRender {
 		if (isAjaxEnabled())
 			return sprintf($layout,IMGDIR,'add.png',_('Add'),
 				htmlspecialchars($href),_('Add new attribute to this object'),
-				htmlspecialchars($href),_('Add new attribute'),_('Add new attribute'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Add new attribute')),_('Add new attribute'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'add.png',_('Add'),
 				htmlspecialchars($href),_('Add new attribute to this object'),_('Add new attribute'));
@@ -1210,12 +1227,12 @@ class TemplateRender extends PageRender {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		$href = sprintf('cmd=query_engine&server_id=%s&filter=%s&base=%s&scope=one&query=none&size_limit=0&search=true',
-			$this->getServerID(),rawurlencode('objectClass=*'),rawurlencode($this->template->getDN()));
+			$this->getServerID(),rawurlencode('objectClass=*'),$this->template->getDNEncode());
 
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'children.png',_('Children'),
 				htmlspecialchars($href),_('View the children of this object'),
-				htmlspecialchars($href),_('Loading'),
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),
 				($children_count == 1) ? _('View 1 child') : sprintf(_('View %s children'),$children_count));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'children.png',_('Children'),
@@ -1234,7 +1251,7 @@ class TemplateRender extends PageRender {
 		if (isAjaxEnabled())
 			return sprintf($this->layout['actionajax'],IMGDIR,'export.png',_('Save'),
 				htmlspecialchars($href),_('Save a dump of this object and all of its children'),
-				htmlspecialchars($href),_('Loading'),_('Export subtree'));
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Loading')),_('Export subtree'));
 		else
 			return sprintf($this->layout['action'],IMGDIR,'export.png',_('Save'),
 				htmlspecialchars($href),_('Save a dump of this object and all of its children'),_('Export subtree'));
@@ -1251,7 +1268,7 @@ class TemplateRender extends PageRender {
 		if (! count($this->template->getRDNAttrs())) {
 			printf('<tr><th colspan="2">%s</th></tr>','RDN');
 
-			echo '<tr><td class="value" colspan="2"><center><select name="rdn_attribute[]" id="rdn_attribute">';
+			echo '<tr><td class="value" colspan="2" style="text-align: center;"><select name="rdn_attribute[]" id="rdn_attribute" />';
 			printf('<option value="">%s</option>',_('select the rdn attribute'));
 
 			if ($_SESSION[APPCONFIG]->getValue('appearance','rdn_all_attrs'))
@@ -1269,12 +1286,16 @@ class TemplateRender extends PageRender {
 				}
 			}
 
-			echo '</select></center></td></tr>';
+			echo '</select></td></tr>';
 
 		} else {
 			echo '<tr><td colspan="2">';
 			foreach ($this->template->getRDNAttrs() as $rdn)
 				printf('<input type="hidden" name="rdn_attribute[]" value="%s" id="rdn_attribute"/>',htmlspecialchars($rdn));
+
+			if (get_request('create_base'))
+				echo '<input type="hidden" name="create_base" value="true" />';
+
 			echo '</td></tr>';
 		}
 	}
@@ -1287,8 +1308,13 @@ class TemplateRender extends PageRender {
 
 		echo '<tr>';
 		printf('<td class="heading">%s</td>',_('Container'));
-		printf('<td><input type="text" name="container" size="40" value="%s" />',htmlspecialchars($default_container));
-		draw_chooser_link('entry_form.container');
+		echo '<td>';
+		if (get_request('create_base'))
+			printf('%s<input type="hidden" name="container" size="40" value="%s" />',$default_container,htmlspecialchars($default_container));
+		else {
+			printf('<input type="text" name="container" size="40" value="%s" />',htmlspecialchars($default_container));
+			draw_chooser_link('entry_form','container');
+		}
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -1305,7 +1331,7 @@ class TemplateRender extends PageRender {
 
 		echo '<tr>';
 		printf('<td class="heading">%s</td>',_('ObjectClasses'));
-		echo '<td><select name="new_values[objectclass][]" multiple="true" size="15">';
+		echo '<td><select name="new_values[objectclass][]" multiple="multiple" size="15">';
 
 		foreach ($socs as $name => $oclass) {
 			if (! strcasecmp('top',$name))
@@ -1348,33 +1374,51 @@ class TemplateRender extends PageRender {
 	/** FORM METHODS **/
 
 	public function drawFormStart() {
-		echo '<form action="cmd.php" method="post" enctype="multipart/form-data" name="entry_form" onSubmit="return submitForm(this)">';
+		echo '<form action="cmd.php" method="post" enctype="multipart/form-data" id="entry_form" onsubmit="return submitForm(this)">';
 
+		echo '<div>';
 		if ($_SESSION[APPCONFIG]->getValue('confirm','update'))
 			echo '<input type="hidden" name="cmd" value="update_confirm" />';
 		else
 			echo '<input type="hidden" name="cmd" value="update" />';
+		echo '</div>';
 	}
 
-	protected function drawForm() {
+	protected function drawForm($nosubmit=false) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
+		echo '<div>';
 		printf('<input type="hidden" name="server_id" value="%s" />',$this->getServerID());
-		printf('<input type="hidden" name="dn" value="%s" />',htmlspecialchars($this->template->getDN()));
+		printf('<input type="hidden" name="dn" value="%s" />',$this->template->getDNEncode(false));
 		printf('<input type="hidden" name="template" value="%s" />',$this->template->getID());
+		echo '</div>';
 
-		echo '<table class="entry" cellspacing="0" align="center" border=0>';
+		echo '<table class="entry" cellspacing="0" border="0" style="margin-left: auto; margin-right: auto;">';
 
 		$this->drawShownAttributes();
-		$this->drawFormSubmitButton();
+		if (! $nosubmit)
+			$this->drawFormSubmitButton();
 
 		echo '</table>';
 
+		echo '<div>&nbsp;';
 		$this->drawHiddenAttributes();
+		echo '</div>';
 	}
 
 	public function drawFormEnd() {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
+
+		# Include the RDN details to support creating the base
+		if (get_request('create_base')) {
+			if (get_request('rdn')) {
+				$rdn = explode('=',get_request('rdn'));
+				echo '<div>';
+				printf('<input type="hidden" name="new_values[%s][]" value="%s" />',$rdn[0],$rdn[1]);
+				printf('<input type="hidden" name="rdn_attribute[]" value="%s" />',$rdn[0]);
+				echo '</div>';
+			}
+		}
 
 		echo '</form>';
 
@@ -1384,11 +1428,11 @@ class TemplateRender extends PageRender {
 		# For debugging, show the template object.
 		if (! $_SESSION[APPCONFIG]->getValue('appearance','hide_debug_info') && get_request('debug','GET')) {
 			echo "\n\n";
-			printf('<img src="%s/plus.png" alt="Plus" onClick="if (document.getElementById(\'DEBUGtemplate\').style.display == \'none\') { document.getElementById(\'DEBUGtemplate\').style.display = \'block\' } else { document.getElementById(\'DEBUGtemplate\').style.display = \'none\' };"/>',IMGDIR);
+			printf('<img src="%s/plus.png" alt="Plus" onclick="if (document.getElementById(\'DEBUGtemplate\').style.display == \'none\') { document.getElementById(\'DEBUGtemplate\').style.display = \'block\' } else { document.getElementById(\'DEBUGtemplate\').style.display = \'none\' };"/>',IMGDIR);
 			echo '<div id="DEBUGtemplate" style="display: none">';
 			echo '<fieldset>';
 			printf('<legend>DEBUG: %s</legend>',$this->template->getDescription());
-			echo '<textarea cols=120 rows=20>';
+			echo '<textarea cols="120" rows="20">';
 			debug_dump($this);
 			echo '</textarea>';
 			echo '</fieldset>';
@@ -1400,7 +1444,9 @@ class TemplateRender extends PageRender {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		if (! $this->template->isReadOnly())
-			printf('<tr><td colspan=2><center><input type="submit" id="create_button" name="submit" value="%s" /></center></td></tr>',_('Update Object'));
+			// @todo cant use AJAX here, it affects file uploads.
+			printf('<tr><td colspan="2" style="text-align: center;"><input type="submit" id="create_button" name="submit" value="%s" /></td></tr>',
+				_('Update Object'));
 	}
 
 	/** STEP FORM METHODS **/
@@ -1414,7 +1460,7 @@ class TemplateRender extends PageRender {
 			# The default template only uses 2 pages
 			$this->pagelast = 2;
 
-			echo '<center><h4>';
+			echo '<h4 style="text-align: center;">';
 			printf('%s: ',sprintf(_('Step %s of %s'),$page,$this->pagelast));
 
 			if ($page == 1)
@@ -1422,10 +1468,10 @@ class TemplateRender extends PageRender {
 			else
 				echo _('Specify attributes and values');
 
-			echo '</h4></center>';
+			echo '</h4>';
 
 		} elseif ($this->template->getDescription())
-			printf('<center><h4>%s (%s)</h4></center>',
+			printf('<h4 style="text-align: center;">%s (%s)</h4>',
 				_($this->template->getDescription()),
 				sprintf(_('Step %s of %s'),$page,$this->pagelast));
 	}
@@ -1434,12 +1480,14 @@ class TemplateRender extends PageRender {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		if (($this->template->isType('default') && $this->template->getContext() == 'create' && $page == 1) || $page < $this->pagelast) {
-			echo '<form action="cmd.php?cmd=template_engine" method="post" enctype="multipart/form-data" name="entry_form" onSubmit="return submitForm(this)">';
+			echo '<form action="cmd.php?cmd=template_engine" method="post" enctype="multipart/form-data" id="entry_form" onsubmit="return submitForm(this)">';
+			echo '<div>';
 
 		} else {
-			echo '<form action="cmd.php" method="post" enctype="multipart/form-data" name="entry_form" onSubmit="return submitForm(this)">';
+			echo '<form action="cmd.php" method="post" enctype="multipart/form-data" id="entry_form" onsubmit="return submitForm(this)">';
+			echo '<div>';
 
-			if ($_SESSION[APPCONFIG]->getValue('confirm','create'))
+			if ($_SESSION[APPCONFIG]->getValue('confirm','create') && ! get_request('create_base'))
 				echo '<input type="hidden" name="cmd" value="create_confirm" />';
 			else
 				echo '<input type="hidden" name="cmd" value="create" />';
@@ -1452,19 +1500,24 @@ class TemplateRender extends PageRender {
 		printf('<input type="hidden" name="server_id" value="%s" />',$this->getServerID());
 		printf('<input type="hidden" name="template" value="%s" />',$this->template->getID());
 		printf('<input type="hidden" name="page" value="%s" />',$page+1);
+		if (get_request('create_base'))
+			echo '<input type="hidden" name="create_base" value="true" />';
 
 		$this->drawHiddenAttributes();
 
 		if ($this->template->isType('default') && $page == 1) {
-				echo '<table class="forminput" align="center" border=0>';
+				echo '</div>';
+
+				echo '<table class="forminput" border="0" style="margin-left: auto; margin-right: auto;">';
 
 				$this->drawContainerChooser($this->template->getContainer());
 				$this->drawObjectClassChooser();
 
 		} else {
-			printf('<input type="hidden" name="container" value="%s" />',htmlspecialchars($this->template->getContainer()));
+			printf('<input type="hidden" name="container" value="%s" />',$this->template->getContainerEncode(false));
+			echo '</div>';
 
-			echo '<table class="entry" cellspacing="0" align="center" border=0>';
+			echo '<table class="entry" cellspacing="0" border="0" style="margin-left: auto; margin-right: auto;">';
 
 			$this->drawRDNChooser();
 
@@ -1492,7 +1545,9 @@ class TemplateRender extends PageRender {
 		if ($page < $this->pagelast)
 			printf('<td>&nbsp;</td><td><input type="submit" id="create_button" value="%s" /></td>',_('Proceed &gt;&gt;'));
 		else
-			printf('<td><center><input type="submit" id="create_button" name="submit" value="%s"/></center></td>',_('Create Object'));
+			// @todo cant use AJAX here, it affects file uploads.
+			printf('<td style="text-align: center;"><input type="submit" id="create_button" name="submit" value="%s" /></td>',
+				_('Create Object'));
 		echo '</tr>';
 	}
 
@@ -1524,7 +1579,7 @@ class TemplateRender extends PageRender {
 				$this->draw('Template',$attribute);
 
 		else
-			printf('<tr class="noinput"><td colspan="2"><center>(%s)</center></td></tr>',_('none'));
+			printf('<tr class="noinput"><td colspan="2" style="text-align: center;">(%s)</td></tr>',_('none'));
 
 		printf('<tr><th colspan="2">%s</th></tr>',_('Optional Attributes'));
 		if (count($attrs['optional']))
@@ -1532,7 +1587,7 @@ class TemplateRender extends PageRender {
 				$this->draw('Template',$attribute);
 
 		else
-			printf('<tr class="noinput"><td colspan="2"><center>(%s)</center></td></tr>',_('none'));
+			printf('<tr class="noinput"><td colspan="2" style="text-align: center;">(%s)</td></tr>',_('none'));
 
 		echo "\n";
 	}
@@ -1558,14 +1613,14 @@ class TemplateRender extends PageRender {
 		printf('<!-- START: %s -->',__METHOD__);
 		echo "\n";
 
-		printf('<script type="text/javascript" language="javascript" src="%sTemplateRender.js"></script>',JSDIR);
-		printf('<script type="text/javascript" language="javascript" src="%stoAscii.js"></script>',JSDIR);
-		printf('<script type="text/javascript" language="javascript" src="%sdnChooserPopup.js"></script>',JSDIR);
+		printf('<script type="text/javascript" src="%sTemplateRender.js"></script>',JSDIR);
+		printf('<script type="text/javascript" src="%stoAscii.js"></script>',JSDIR);
+		printf('<script type="text/javascript" src="%sdnChooserPopup.js"></script>',JSDIR);
 		echo "\n";
 
 		printf('<!-- START: MAIN FORM VALIDATION: %s -->',__METHOD__);
 		echo '
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 function validateForm(silence) {
 	var i = 0;
 	var valid = true;
@@ -1600,7 +1655,7 @@ function validateForm(silence) {
 
 		# For DateAttributes, we need to set some defaults for the js_calendar.
 		echo '<!-- START: GLOBAL SETTINGS FOR THE js_calendar -->'."\n";
-		echo '<script type="text/javascript" language="javascript">'."\n";
+		echo '<script type="text/javascript">'."\n";
 		echo 'var defaults = new Array();'."\n";
 		printf('var default_date_format = "%s";',$_SESSION[APPCONFIG]->getValue('appearance','date'));
 		echo "\n";
@@ -1611,7 +1666,25 @@ function validateForm(silence) {
 		foreach ($this->template->getAttributesShown() as $attribute)
 			$this->draw('Javascript',$attribute);
 
-		echo '<script type="text/javascript" language="javascript">validateForm(true);</script>'."\n";
+		// @todo We need to sleep here a little bit, because our JS may not have loaded yet.
+		echo '<script type="text/javascript">
+		if (typeof getAttributeComponents == "undefined")
+			setTimeout("isJSComplete()",1000);
+		else
+			validateForm(true);
+
+		function isJSComplete() {
+			if (typeof getAttributeComponents == "undefined") {
+				alert("Our Javascript didnt load in time, you may need to reload this page");
+
+				// Sometimes the alert gives us enough time!
+				if (typeof getAttributeComponents != "undefined")
+					alert("Dont bother, our JS is loaded now!");
+			}
+
+			validateForm(true);
+		}
+		</script>'."\n";
 		printf('<!-- END: %s -->',__METHOD__);
 		echo "\n";
 	}
@@ -1635,7 +1708,7 @@ function validateForm(silence) {
 		printf('<!-- START: %s -->',__METHOD__);
 
 		echo '
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 var attrTrace;
 function fill(id,value) {
 	attrTrace = new Array();
@@ -1720,7 +1793,7 @@ function fillRec(id,value) {
 		else
 			echo '<tr>';
 
-		echo '<td class="value" colspan=2>';
+		echo '<td class="value" colspan="2">';
 	}
 
 	protected function drawEndValueLineAttribute($attribute) {
@@ -1786,7 +1859,7 @@ function fillRec(id,value) {
 
 		else {
 			if ($icon = $attribute->getIcon())
-				printf('<img src="%s" alt="Icon" align="top" />&nbsp;',$icon);
+				printf('<img src="%s" alt="Icon" style="float: right;" />&nbsp;',$icon);
 		}
 	}
 
@@ -1794,7 +1867,7 @@ function fillRec(id,value) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		if (strlen($val) <= 0)
-			printf('<img src="%s/ldap-alias.png" alt="Go" align="top" />&nbsp;',IMGDIR);
+			printf('<img src="%s/ldap-alias.png" alt="Go" style="float: right;" />&nbsp;',IMGDIR);
 		elseif ($this->getServer()->dnExists($val))
 			printf('<a href="cmd.php?cmd=template_engine&amp;server_id=%s&amp;dn=%s" title="%s %s"><img src="%s/ldap-alias.png" alt="Go" /></a>&nbsp;',
 				$this->getServerID(),rawurlencode($val),_('Go to'),$val,IMGDIR);
@@ -1805,7 +1878,7 @@ function fillRec(id,value) {
 	protected function drawMailValueIconAttribute($attribute,$val) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
-		$img = sprintf('<img src="%s/mail.png" alt="%s" align="top" />',IMGDIR,_('Mail'));
+		$img = sprintf('<img src="%s/mail.png" alt="%s" style="float: right;" />',IMGDIR,_('Mail'));
 		if (strlen($val) <= 0)
 			echo $img;
 		else
@@ -1816,13 +1889,13 @@ function fillRec(id,value) {
 	protected function drawUrlValueIconAttribute($attribute,$val) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
-		$img = sprintf('<img src="%s/ldap-dc.png" alt="%s" align="top" />',IMGDIR,_('URL'));
+		$img = sprintf('<img src="%s/ldap-dc.png" alt="%s" style="float: right;" />',IMGDIR,_('URL'));
 		$url = explode(' +',$val,2);
 
 		if (strlen($val) <= 0)
 			echo $img;
 		else
-			printf('<a href="%s" target="new">%s</a>',htmlspecialchars($url[0]),$img);
+			printf('<a href="%s" onclick="target=\'new\';">%s</a>',htmlspecialchars($url[0]),$img);
 		echo '&nbsp;';
 	}
 
@@ -1840,7 +1913,7 @@ function fillRec(id,value) {
 		printf('<!-- START: ATTRIBUTE %s (%s)-->',__METHOD__,$attribute->getName());
 		echo "\n";
 
-		echo '<script type="text/javascript" language="javascript">'."\n";
+		echo '<script type="text/javascript">'."\n";
 
 		echo '// focus'."\n";
 		if ($attribute->needJS('focus')) {
@@ -1859,9 +1932,10 @@ function fillRec(id,value) {
 		}
 
 		echo '// validate'."\n";
+		printf('function validate_%s(component,silence) {',$attribute->getName());
+		echo "\n";
+
 		if ($attribute->needJS('validate')) {
-			printf('function validate_%s(component,silence) {',$attribute->getName());
-			echo "\n";
 			echo '	var valid = true;';
 			echo "\n";
 			$this->draw('ValidateJavascript',$attribute,'component','silence','valid');
@@ -1869,8 +1943,12 @@ function fillRec(id,value) {
 			echo '	if (valid) { component.style.backgroundColor = "white"; component.style.color = "black"; }';
 			echo '	else { component.style.backgroundColor = \'#FFFFA0\'; component.style.color = "black"; }';
 			echo '	return valid;';
-			echo '}'."\n";
+
+		} else {
+			echo '	return true;'."\n";
 		}
+
+		echo '}'."\n";
 
 		echo '</script>'."\n";
 
@@ -1909,7 +1987,7 @@ function fillRec(id,value) {
 
 	protected function drawFillJavascriptAttribute($attribute,$component_id,$component_value) {
 		if ($attribute->needJS('validate'))
-			printf("\tvalidate_%s(pla_getComponentById(%s),false);\n",$attribute->getName(),$component_id);
+			printf("\tvalidate_%s(pla_getComponentById(%s),true);\n",$attribute->getName(),$component_id);
 	}
 
 	protected function drawValidateJavascriptAttribute($attribute,$component,$silence,$var_valid) {
@@ -1931,13 +2009,18 @@ function fillRec(id,value) {
 	protected function drawMenuAttribute($attribute) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
+		$result = '';
 		$item = '';
 
-		echo '<table class="entry" border=0><tr><td width=25>&nbsp;</td>';
-		echo '<td>';
 		foreach (array('add','modify','rename') as $action)
 			if ($item = $this->get('MenuItem',$attribute,$action))
-				printf('<div class="add_value">%s</div>',$item);
+				$result .= sprintf('<div class="add_value">%s</div>',$item);
+
+		if (! $result)
+			return;
+
+		echo '<table class="entry" border="0"><tr><td style="width: 25px;">&nbsp;</td>';
+		printf('<td>%s</td>',$result);
 		echo '</td>';
 		echo '</tr></table>';
 	}
@@ -1992,12 +2075,30 @@ function fillRec(id,value) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		$href_parm = htmlspecialchars(sprintf('cmd=add_value_form&server_id=%s&dn=%s&attr=%s',
-			$this->getServerID(),rawurlencode($this->template->getDN()),rawurlencode($attribute->getName(false))));
+			$this->getServerID(),$this->template->getDNEncode(),rawurlencode($attribute->getName(false))));
 
 		if (isAjaxEnabled())
-			return sprintf('(<a href="cmd.php?%s" title="%s %s" onclick="return ajDISPLAY(\'ADDVALUE%s\',\'%s&amp;raw=1\',\'%s\');">%s</a>)',
+			return sprintf('(<a href="cmd.php?%s" title="%s %s" onclick="return ajDISPLAY(\'ADDVALUE%s\',\'%s&amp;raw=1\',\'%s\',1);">%s</a>)',
 				$href_parm,_('Add an additional value to attribute'),$attribute->getName(false),$attribute->getName(),
-				$href_parm,_('Add Value to Attribute'),_('add value'));
+				$href_parm,str_replace('\'','\\\'',_('Add Value to Attribute')),_('add value'));
+		else
+			return sprintf('(<a href="cmd.php?%s" title="%s %s">%s</a>)',
+				$href_parm,_('Add an additional value to attribute'),$attribute->getName(false),_('add value'));
+	}
+
+	protected function getAddValueMenuItemObjectClassAttribute($attribute) {
+		if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
+			debug_log('Entered (%%)',129,0,__FILE__,__LINE__,__METHOD__,$fargs);
+
+		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
+
+		$href_parm = htmlspecialchars(sprintf('cmd=add_value_form&server_id=%s&dn=%s&attr=%s',
+			$this->getServerID(),$this->template->getDNEncode(),rawurlencode($attribute->getName(false))));
+
+		if (isAjaxEnabled())
+			return sprintf('(<a href="cmd.php?%s" title="%s %s" onclick="return ajDISPLAY(\'BODY\',\'%s\',\'%s\');">%s</a>)',
+				$href_parm,_('Add an additional value to attribute'),$attribute->getName(false),
+				$href_parm,str_replace('\'','\\\'',_('Add Value to Attribute')),_('add value'));
 		else
 			return sprintf('(<a href="cmd.php?%s" title="%s %s">%s</a>)',
 				$href_parm,_('Add an additional value to attribute'),$attribute->getName(false),_('add value'));
@@ -2010,12 +2111,12 @@ function fillRec(id,value) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		$href = sprintf('cmd=modify_member_form&server_id=%s&dn=%s&attr=%s',
-			$this->getServerID(),rawurlencode($this->template->getDN()),rawurlencode($attribute->getName()));
+			$this->getServerID(),$this->template->getDNEncode(),rawurlencode($attribute->getName()));
 
 		if (isAjaxEnabled())
 			return sprintf('(<a href="cmd.php?%s" title="%s: %s" onclick="return ajDISPLAY(\'BODY\',\'%s\',\'%s\');">%s</a>)',
 				htmlspecialchars($href),_('Modify members for'),$this->template->getDN(),
-				htmlspecialchars($href),_('Modify group membership'),
+				htmlspecialchars($href),str_replace('\'','\\\'',_('Modify group membership')),
 				_('modify group members'));
 		else
 			return sprintf('(<a href="cmd.php?%s" title="%s: %s">%s</a>)',
@@ -2029,7 +2130,7 @@ function fillRec(id,value) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
 		$href = sprintf('cmd.php?cmd=rename_form&server_id=%s&dn=%s&template=%s',
-			$this->getServerID(),rawurlencode($this->template->getDN()),$this->template->getID());
+			$this->getServerID(),$this->template->getDNEncode(),$this->template->getID());
 
 		return sprintf('<small>(<a href="%s">%s</a>)</small>',htmlspecialchars($href),_('rename'));
 	}
@@ -2039,10 +2140,13 @@ function fillRec(id,value) {
 	protected function drawValueAttribute($attribute,$i) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
+		if ($attribute->isMultiple() && $i > 0)
+			return;
+
 		$val = $attribute->getValue($i);
 
 		if ($attribute->isVisible()) {
-			echo '<table cellspacing="0" cellpadding="0" width="100%" border=0><tr><td class="icon" width=25>';
+			echo '<table cellspacing="0" cellpadding="0" width="100%" border="0"><tr><td class="icon" style="width: 25px;">';
 			$this->draw('Icon',$attribute,$val);
 			echo '</td>';
 
@@ -2057,7 +2161,7 @@ function fillRec(id,value) {
 		if ($attribute->isVisible()) {
 			echo '</td>';
 
-			echo '<td valign="top" align="right">';
+			echo '<td valign="top" style="text-align: right;">';
 			$this->draw('RequiredSymbol',$attribute);
 			echo '</td></tr></table>';
 		}
@@ -2123,14 +2227,14 @@ function fillRec(id,value) {
 				$id,htmlspecialchars($attribute->getName()),$i);
 
 			foreach ($vals as $v) {
-				printf('<option value="%s" %s>%s</option>',$v,($v == $default) ? 'selected' : '',$v);
+				printf('<option value="%s" %s>%s</option>',$v,($v == $default) ? 'selected="selected"' : '',$v);
 
 				if ($v == $default)
 					$found = true;
 			}
 
 			if (! $found)
-				printf('<option value="%s" selected>%s</option>',$default,$default ? $default : '&nbsp;');
+				printf('<option value="%s" selected="selected">%s</option>',$default,$default ? $default : '&nbsp;');
 
 			echo '</select>';
 
@@ -2179,22 +2283,22 @@ function fillRec(id,value) {
 		echo "\n";
 
 		echo '<!-- This form is submitted by JavaScript when the user clicks "Delete attribute" on a binary attribute -->';
-		echo '<form name="delete_attribute_form" action="cmd.php?cmd=delete_attr" method="post">';
+		echo '<form id="delete_attribute_form" action="cmd.php?cmd=delete_attr" method="post">';
 		printf('<input type="hidden" name="server_id" value="%s" />',$this->getServerID());
-		printf('<input type="hidden" name="dn" value="%s" />',htmlspecialchars($this->template->getDN()));
+		printf('<input type="hidden" name="dn" value="%s" />',$this->template->getDNEncode(false));
 		printf('<input type="hidden" name="template" value="%s" />',$this->template->getID());
 		echo '<input type="hidden" name="attr" value="FILLED IN BY JAVASCRIPT" />';
 		echo '<input type="hidden" name="index" value="FILLED IN BY JAVASCRIPT" />';
 		echo '</form>';
 
 		echo '
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 function deleteAttribute(attrName,friendlyName,i)
 {
 	if (confirm("'._('Really delete value from attribute').' \'" + friendlyName + "\'?")) {
-		document.delete_attribute_form.attr.value = attrName;
-		document.delete_attribute_form.index.value = i;
-		document.delete_attribute_form.submit();
+		document.getElementById(\'delete_attribute_form\').attr.value = attrName;
+		document.getElementById(\'delete_attribute_form\').index.value = i;
+		document.getElementById(\'delete_attribute_form\').submit();
 	}
 }
 </script>';
@@ -2218,9 +2322,9 @@ function deleteAttribute(attrName,friendlyName,i)
 
 		# This JS may have been rendered by multiple Date attributes
 		if (! $drawn) {
-			printf('<script type="text/javascript" language="javascript" src="%sjscalendar/lang/calendar-en.js"></script>',JSDIR);
-			printf('<script type="text/javascript" language="javascript" src="%sjscalendar/calendar-setup.js"></script>',JSDIR);
-			printf('<script type="text/javascript" language="javascript" src="%sdate_selector.js"></script>',JSDIR);
+			printf('<script type="text/javascript" src="%sjscalendar/lang/calendar-en.js"></script>',JSDIR);
+			printf('<script type="text/javascript" src="%sjscalendar/calendar-setup.js"></script>',JSDIR);
+			printf('<script type="text/javascript" src="%sdate_selector.js"></script>',JSDIR);
 
 			$drawn = true;
 		}
@@ -2234,10 +2338,10 @@ function deleteAttribute(attrName,friendlyName,i)
 			$config['format'] = $config['date'][$attribute->getName()];
 
 		for ($i=0;$i<=$attribute->getValueCount();$i++) {
-			printf('<script type="text/javascript" language="javascript">defaults[\'f_date_%s_%s\'] = \'%s\';</script>',$attribute->getName(),$i,$config['format']);
+			printf('<script type="text/javascript">defaults[\'new_values_%s_%s\'] = \'%s\';</script>',$attribute->getName(),$i,$config['format']);
 
 			if (in_array_ignore_case($attribute->getName(),array_keys($config['time'])) && ($config['time'][$attribute->getName()]))
-				printf('<script type="text/javascript" language="javascript">defaults[\'f_time_%s_%s\'] = \'%s\';</script>',$attribute->getName(),$i,'true');
+				printf('<script type="text/javascript">defaults[\'f_time_%s_%s\'] = \'%s\';</script>',$attribute->getName(),$i,'true');
 
 			echo "\n";
 		}
@@ -2250,7 +2354,7 @@ function deleteAttribute(attrName,friendlyName,i)
 	 * Draws an HTML date selector button which, when clicked, pops up a date selector dialog.
 	 */
 	protected function drawSelectorPopupDateAttribute($attribute,$i) {
-		printf('<a href="javascript:dateSelector(\'%s_%s\');" title="%s"><img class="chooser" src="%s/calendar.png" id="f_trigger_%s_%s" style="cursor: pointer;" alt="Calendar" /></a>',
+		printf('<a href="javascript:dateSelector(\'%s_%s\');" title="%s"><img src="%s/calendar.png" alt="Calendar" class="chooser" id="f_trigger_%s_%s" style="cursor: pointer;" /></a>',
 			$attribute->getName(),$i,_('Click to popup a dialog to select a date graphically'),IMGDIR,$attribute->getName(),$i);
 	}
 
@@ -2267,6 +2371,9 @@ function deleteAttribute(attrName,friendlyName,i)
 	protected function drawIconObjectClassAttribute($attribute,$val) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
+		if (! $_SESSION[APPCONFIG]->getValue('appearance','show_schema_link') || !$_SESSION[APPCONFIG]->isCommandAvailable('script','schema'))
+			return;
+
 		if (strlen($val) > 0) {
 			$href = sprintf('cmd.php?cmd=schema&server_id=%s&view=objectclasses&viewvalue=%s',
 				$this->getServerID(),$val);
@@ -2278,13 +2385,13 @@ function deleteAttribute(attrName,friendlyName,i)
 	/** PASSWORD ATTRIBUTES **/
 
 	protected function drawJavascriptPasswordAttribute($attribute) {
-		static $drawn = false;
+		static $drawn = array();
 
 		# This JS may have been rendered by multiple Binary attributes
-		if ($drawn)
+		if (isset($drawn[$attribute->getName()]) && $drawn[$attribute->getName()])
 			return;
 		else
-			$drawn = true;
+			$drawn[$attribute->getName()] = true;
 
 		printf('<!-- START: PASSWORD ATTRIBUTE %s (%s)-->',__METHOD__,$attribute->getName());
 		echo "\n";
@@ -2293,10 +2400,10 @@ function deleteAttribute(attrName,friendlyName,i)
 
 		# Add the javascript so we can call check password later.
 		echo '
-<script type="text/javascript" language="javascript">
-	function passwordComparePopup(component_id) {
+<script type="text/javascript">
+	function passwordComparePopup(component_id,attr) {
 		mywindow = open(\'password_checker.php\',\'myname\',\'resizable=no,width=500,height=200,scrollbars=1\');
-		mywindow.location.href = \'password_checker.php?componentid=\'+component_id;
+		mywindow.location.href = \'password_checker.php?componentid=\'+component_id+\'&attr=\'+attr;
 		if (mywindow.opener == null) mywindow.opener = self;
 	}
 </script>';
@@ -2309,8 +2416,8 @@ function deleteAttribute(attrName,friendlyName,i)
 	protected function drawCheckLinkPasswordAttribute($attribute,$component_id) {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 
-		printf('<small><a href="javascript:passwordComparePopup(\'%s\')">%s...</a></small><br />',
-			$component_id,_('Check password'));
+		printf('<small><a href="javascript:passwordComparePopup(\'%s\',\'%s\')">%s...</a></small><br />',
+			$component_id,$attribute->getName(),_('Check password'));
 	}
 
 	/** RANDOM PASSWORD **/
@@ -2331,7 +2438,7 @@ function deleteAttribute(attrName,friendlyName,i)
 		$pwd = str_replace("'","\\'",$pwd);
 
 		printf("\n<!-- %s -->\n",__METHOD__);
-		echo '<script type="text/javascript" language="javascript">'."\n";
+		echo '<script type="text/javascript">'."\n";
 		echo 'var i = 0;'."\n";
 		printf('var component = document.getElementById(\'new_values_%s_\'+i);',$attribute->getName());
 		echo "\n";
@@ -2362,14 +2469,14 @@ function deleteAttribute(attrName,friendlyName,i)
 			$default = $this->getServer()->getValue('appearance','password_hash');
 
 		if (! $attribute->getPostValue())
-			printf('<input type="hidden" name="post_value[%s][]" value="%s"/>',$attribute->getName(),$i);
+			printf('<input type="hidden" name="post_value[%s][]" value="%s" />',$attribute->getName(),$i);
 
 		printf('<select name="%s[%s][%s]" id="%s_%s_%s">',
 			$id,htmlspecialchars($attribute->getName()),$i,
 			$id,htmlspecialchars($attribute->getName()),$i);
 
 		foreach (password_types() as $v => $display)
-			printf('<option value="%s" %s>%s</option>',$v,($v == $default) ? 'selected' : '',$display);
+			printf('<option value="%s" %s>%s</option>',$v,($v == $default) ? 'selected="selected"' : '',$display);
 
 		echo '</select>';
 	}
@@ -2378,7 +2485,7 @@ function deleteAttribute(attrName,friendlyName,i)
 		$id = 'enc';
 
 		if (! $attribute->getPostValue())
-			printf('<input type="hidden" name="post_value[%s][]" value="%s"/>',$attribute->getName(),$i);
+			printf('<input type="hidden" name="post_value[%s][]" value="%s" />',$attribute->getName(),$i);
 
 		switch ($attribute->getName()) {
 			case 'sambalmpassword' : $enc = 'lm'; break;
@@ -2388,7 +2495,7 @@ function deleteAttribute(attrName,friendlyName,i)
 				return '';
 		}
 
-		printf('<input type="hidden" name="%s[%s][%s]" id="%s_%s_%s" value="%s">',
+		printf('<input type="hidden" name="%s[%s][%s]" id="%s_%s_%s" value="%s" />',
 			$id,htmlspecialchars($attribute->getName()),$i,
 			$id,htmlspecialchars($attribute->getName()),$i,$enc);
 	}

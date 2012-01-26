@@ -19,10 +19,6 @@ $www['meth'] = get_request('meth','REQUEST');
 ob_start();
 
 switch ($www['cmd']) {
-	case '_debug':
-		debug_dump($_REQUEST,1);
-		break;
-
 	default:
 		if (defined('HOOKSDIR') && file_exists(HOOKSDIR.$www['cmd'].'.php'))
 			$app['script_cmd'] = HOOKSDIR.$www['cmd'].'.php';
@@ -51,9 +47,12 @@ if (trim($www['cmd'])) {
 		error(_('You cannot perform updates while server is in read-only mode'),'error','index.php');
 
 	# If this command has been disabled by the config.
-	if (! $_SESSION[APPCONFIG]->isCommandAvailable('script',$www['cmd']))
+	if (! $_SESSION[APPCONFIG]->isCommandAvailable('script',$www['cmd'])) {
 		system_message(array('title'=>_('Command disabled by the server configuration'),
-			_('Error'),'body'=>sprintf('%s: <b>%s</b>.',_('The command could not be run'),$www['cmd']),'type'=>'error'),'index.php');
+			_('Error'),'body'=>sprintf('%s: <b>%s</b>.',_('The command could not be run'),htmlspecialchars($www['cmd'])),'type'=>'error'),'index.php');
+
+		$app['script_cmd'] = null;
+	}
 }
 
 if ($app['script_cmd'])
@@ -62,7 +61,7 @@ if ($app['script_cmd'])
 # Refresh a frame - this is so that one frame can trigger another frame to be refreshed.
 if (isAjaxEnabled() && get_request('refresh','REQUEST') && get_request('refresh','REQUEST') != get_request('frame','REQUEST')) {
 	echo '<script type="text/javascript" language="javascript">';
-	printf("ajDISPLAY('%s','cmd=refresh&server_id=%s&meth=ajax&noheader=%s','%s');",
+	printf("ajDISPLAY('%s','cmd=refresh&server_id=%s&noheader=%s','%s');",
 		get_request('refresh','REQUEST'),$app['server']->getIndex(),get_request('noheader','REQUEST',false,0),_('Auto refresh'));
 	echo '</script>';
 }

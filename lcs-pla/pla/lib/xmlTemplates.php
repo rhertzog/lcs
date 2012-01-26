@@ -57,7 +57,7 @@ abstract class xmlTemplates {
 						'type'=>'info','special'=>true));
 
 					$changed = true;
-					eval(sprintf('$this->templates[$index] = new %s($this->server_id,$template->getName(false),$template->getFileName(),$template->getType(),$index);',$class['name']));
+					$this->templates[$index] = new $class['name']($this->server_id,$template->getName(false),$template->getFileName(),$template->getType(),$index);
 				}
 			}
 
@@ -87,7 +87,7 @@ abstract class xmlTemplates {
 					if (! in_array($filename,$this->getTemplateFiles())) {
 						$templatename = preg_replace('/.xml$/','',$file);
 	
-						eval(sprintf('$this->templates[$index] = new %s($this->server_id,$templatename,$filename,$type,$index);',$class['name']));
+						$this->templates[$index] = new $class['name']($this->server_id,$templatename,$filename,$type,$index);
 						$index++;
 
 						$changed = true;
@@ -129,7 +129,7 @@ abstract class xmlTemplates {
 
 					# Store the template
 					$templatename = preg_replace('/.xml$/','',$file);
-					eval(sprintf('$this->templates[$counter] = new %s($this->server_id,$templatename,$filename,$type,$counter);',$class['name']));
+					$this->templates[$counter] = new $class['name']($this->server_id,$templatename,$filename,$type,$counter);
 					$counter++;
 				}
 			}
@@ -198,8 +198,12 @@ abstract class xmlTemplates {
 
 				# Clone this, as we'll disable some templates, as a result of the container being requested.
 				$template = clone $details;
-				if (! is_null($container) && ($regexp = $template->getRegExp()) && (! @preg_match('/'.$regexp.'/i',$container)))
+				if (! is_null($container) && ($regexp = $template->getRegExp()) && (! @preg_match('/'.$regexp.'/i',$container))) {
 					$template->setInvalid(_('This template is not valid in this container'),true);
+
+					if ($_SESSION[APPCONFIG]->getValue('appearance','hide_template_regexp'))
+						$template->setInvisible();
+				}
 
 				if ($template->isVisible() && (! $disabled || ! $template->isAdminDisabled()))
 					if (is_null($type) || (! is_null($type) && $template->isType($type)))
@@ -226,7 +230,7 @@ abstract class xmlTemplates {
 				return clone $template;
 
 		# If we get here, the template ID didnt exist, so return a blank template, which be interpreted as the default template
-		eval(sprintf('$object = new %s($this->server_id,null,null,"default");',$class['name']));
+		$object = new $class['name']($this->server_id,null,null,'default');
 		return $object;
 	}
 
@@ -433,6 +437,12 @@ abstract class xmlTemplate {
 		# Initialise the Attribute Factory.
 		$attribute_factory = new AttributeFactory();
 
+		if (preg_match('/;/',$name))
+			system_message(array(
+				'title'=>'phpLDAPadmin doesnt support RFC3866.',
+				'body'=>sprintf('%s {%s} (%s)','PLA might not do what you expect...',$name,(is_array($value) ? serialize($value) : $value)),
+				'type'=>'warn'));
+
 		# If there isnt a schema item for this attribute
 		$attribute = $attribute_factory->newAttribute($name,$value,$server->getIndex(),$source);
 
@@ -440,11 +450,6 @@ abstract class xmlTemplate {
 
 		if (is_null($attrid))
 			array_push($this->attributes,$attribute);
-		else
-			debug_dump_backtrace(sprintf('There was a request to add an attribute (%s), but it was already defined? (%s)',$attrid,__METHOD__),true);
-
-		if ($this->getID() == 'none')
-			usort($this->attributes,'sortAttrs');
 
 		return $attribute;
 	}

@@ -167,7 +167,7 @@ function app_error_handler($errno,$errstr,$file,$lineno) {
 		$body .= sprintf('<tr><td>Web server:</td><td><b>%s</b></td></tr>',isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : 'SCRIPT');
 
 		if (function_exists('get_href'))
-			$body .= sprintf('<tr><td colspan="2"><a href="%s" target="_blank"><center>%s.</center></a></td></tr>',
+			$body .= sprintf('<tr><td colspan="2"><a href="%s" onclick="target=\'_blank\';"><center>%s.</center></a></td></tr>',
 				get_href('search_bug',"&summary_keyword=".rawurlencode($errstr)),
 				_('Please check and see if this bug has been reported'));
 		$body .= '</table>';
@@ -375,31 +375,31 @@ function cmd_control_pane($type) {
 				'forum'=>array(
 					'title'=>_('Forum'),
 					'enable'=>isset($_SESSION[APPCONFIG]) ? $_SESSION[APPCONFIG]->isCommandAvailable('cmd','oslinks') : true,
-					'link'=>sprintf('href="%s" title="%s" target="_blank"',get_href('forum'),_('Forum')),
+					'link'=>sprintf('href="%s" title="%s" onclick="target=\'_blank\';"',get_href('forum'),_('Forum')),
 					'image'=>sprintf('<img src="%s/forum-big.png" alt="%s" />',IMGDIR,_('Forum'))),
 
 				'feature'=>array(
 					'title'=>_('Request feature'),
 					'enable'=>isset($_SESSION[APPCONFIG]) ? $_SESSION[APPCONFIG]->isCommandAvailable('cmd','oslinks') : true,
-					'link'=>sprintf('href="%s" title="%s" target="_blank"',get_href('add_rfe'),_('Request feature')),
+					'link'=>sprintf('href="%s" title="%s" onclick="target=\'_blank\';"',get_href('add_rfe'),_('Request feature')),
 					'image'=>sprintf('<img src="%s/request-feature-big.png" alt="%s" />',IMGDIR,_('Request feature'))),
 
 				'bug'=>array(
 					'title'=>_('Report a bug'),
 					'enable'=>isset($_SESSION[APPCONFIG]) ? $_SESSION[APPCONFIG]->isCommandAvailable('cmd','oslinks') : true,
-					'link'=>sprintf('href="%s" title="%s" target="_blank"',get_href('add_bug'),_('Report a bug')),
+					'link'=>sprintf('href="%s" title="%s" onclick="target=\'_blank\';"',get_href('add_bug'),_('Report a bug')),
 					'image'=>sprintf('<img src="%s/bug-big.png" alt="%s" />',IMGDIR,_('Report a bug'))),
 
 				'donation'=>array(
 					'title'=>_('Donate'),
 					'enable'=>isset($_SESSION[APPCONFIG]) ? $_SESSION[APPCONFIG]->isCommandAvailable('cmd','oslinks') : true,
-					'link'=>sprintf('href="%s" title="%s" target="_blank"',get_href('donate'),_('Donate')),
+					'link'=>sprintf('href="%s" title="%s" onclick="target=\'_blank\';"',get_href('donate'),_('Donate')),
 					'image'=>sprintf('<img src="%s/smile-big.png" alt="%s" />',IMGDIR,_('Donate'))),
 
 				'help'=>array(
 					'title'=>_('Help'),
 					'enable'=>isset($_SESSION[APPCONFIG]) ? $_SESSION[APPCONFIG]->isCommandAvailable('cmd','oslinks') : true,
-					'link'=>sprintf('href="%s" title="%s" target="_blank"',get_href('documentation'),_('Help')),
+					'link'=>sprintf('href="%s" title="%s" onclick="target=\'_blank\';"',get_href('documentation'),_('Help')),
 					'image'=>sprintf('<img src="%s/help-big.png" alt="%s" />',IMGDIR,_('Help')))
 			);
 
@@ -612,10 +612,10 @@ function error($msg,$type='note',$redirect=null,$fatal=false,$backtrace=false) {
 				_('Function'),$line['function']);
 
 			if (isset($line['args'])) {
-				$display = strlen(serialize($line['args'])) < 50 ? serialize($line['args']) : substr(serialize($line['args']),0,50).'...<TRUNCATED>';
+				$display = strlen(serialize($line['args'])) < 50 ? htmlspecialchars(serialize($line['args'])) : htmlspecialchars(substr(serialize($line['args']),0,50)).'...<TRUNCATED>';
 				$_SESSION['backtrace'][$error]['args'] = $line['args'];
 				if (file_exists(LIBDIR.'../tools/unserialize.php'))
-					$body .= sprintf('&nbsp;(<a href="%s?index=%s" target="backtrace">%s</a>)',
+					$body .= sprintf('&nbsp;(<a href="%s?index=%s" onclick="target=\'backtrace\';">%s</a>)',
 						'../tools/unserialize.php',$error,$display);
 				else
 					$body .= sprintf('&nbsp;(%s)',$display);
@@ -648,20 +648,20 @@ function error($msg,$type='note',$redirect=null,$fatal=false,$backtrace=false) {
 function get_request($attr,$type='POST',$die=false,$default=null) {
 	switch($type) {
 		case 'GET':
-			$value = isset($_GET[$attr]) ? (is_array($_GET[$attr]) ? $_GET[$attr] : rawurldecode($_GET[$attr])) : $default;
+			$value = isset($_GET[$attr]) ? (is_array($_GET[$attr]) ? $_GET[$attr] : (empty($_GET['nodecode'][$attr]) ? rawurldecode($_GET[$attr]) : $_GET[$attr])) : $default;
 			break;
 
 		case 'REQUEST':
-			$value = isset($_REQUEST[$attr]) ? (is_array($_REQUEST[$attr]) ? $_REQUEST[$attr] : rawurldecode($_REQUEST[$attr])) : $default;
+			$value = isset($_REQUEST[$attr]) ? (is_array($_REQUEST[$attr]) ? $_REQUEST[$attr] : (empty($_REQUEST['nodecode'][$attr]) ? rawurldecode($_REQUEST[$attr]) : $_REQUEST[$attr])) : $default;
 			break;
 
 		case 'SESSION':
-			$value = isset($_SESSION[$attr]) ? (is_array($_SESSION[$attr]) ? $_SESSION[$attr] : rawurldecode($_SESSION[$attr])) : $default;
+			$value = isset($_SESSION[$attr]) ? (is_array($_SESSION[$attr]) ? $_SESSION[$attr] : (empty($_SESSION['nodecode'][$attr]) ? rawurldecode($_SESSION[$attr]) : $_SESSION[$attr])) : $default;
 			break;
 
 		case 'POST':
 		default:
-			$value = isset($_POST[$attr]) ? (is_array($_POST[$attr]) ? $_POST[$attr] : rawurldecode($_POST[$attr])) : $default;
+			$value = isset($_POST[$attr]) ? (is_array($_POST[$attr]) ? $_POST[$attr] : (empty($_POST['nodecode'][$attr]) ? rawurldecode($_POST[$attr]) : $_POST[$attr])) : $default;
 			break;
 	}
 
@@ -745,6 +745,16 @@ function blowfish_encrypt($data,$secret=null) {
 	if (! trim($secret))
 		return $data;
 
+	if (function_exists('mcrypt_module_open') && ! empty($data)) {
+		$td = mcrypt_module_open(MCRYPT_BLOWFISH,'',MCRYPT_MODE_ECB,'');
+		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td),MCRYPT_DEV_URANDOM);
+		mcrypt_generic_init($td,substr($secret,0,mcrypt_enc_get_key_size($td)),$iv);
+		$encrypted_data = base64_encode(mcrypt_generic($td,$data));
+		mcrypt_generic_deinit($td);
+
+		return $encrypted_data;
+	}
+
 	if (file_exists(LIBDIR.'blowfish.php'))
 		require_once LIBDIR.'blowfish.php';
 	else
@@ -761,6 +771,7 @@ function blowfish_encrypt($data,$secret=null) {
 
 		$encrypt .= $pma_cipher->encryptBlock($block, $secret);
 	}
+
 	return base64_encode($encrypt);
 }
 
@@ -790,6 +801,16 @@ function blowfish_decrypt($encdata,$secret=null) {
 	if (! trim($secret))
 		return $encdata;
 
+	if (function_exists('mcrypt_module_open') && ! empty($encdata)) {
+		$td = mcrypt_module_open(MCRYPT_BLOWFISH,'',MCRYPT_MODE_ECB,'');
+		$iv = mcrypt_create_iv(mcrypt_enc_get_iv_size($td),MCRYPT_DEV_URANDOM);
+		mcrypt_generic_init($td,substr($secret,0,mcrypt_enc_get_key_size($td)),$iv);
+		$decrypted_data = trim(mdecrypt_generic($td,base64_decode($encdata)));
+		mcrypt_generic_deinit($td);
+
+		return $decrypted_data;
+	}
+
 	if (file_exists(LIBDIR.'blowfish.php'))
 		require_once LIBDIR.'blowfish.php';
 	else
@@ -802,7 +823,8 @@ function blowfish_decrypt($encdata,$secret=null) {
 	for ($i=0; $i<strlen($data); $i+=8)
 		$decrypt .= $pma_cipher->decryptBlock(substr($data, $i, 8), $secret);
 
-	$return = trim($decrypt);
+	// Strip off our \0's that were added.
+	$return = preg_replace("/\\0*$/",'',$decrypt);
 	$CACHE[$encdata] = $return;
 	return $return;
 }
@@ -980,11 +1002,12 @@ function get_custom_file($index,$filename,$path) {
  * @return array Sorted multi demension array.
  */
 function masort(&$data,$sortby,$rev=0) {
-	if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
+	if (defined('DEBUG_ENABLED') && DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 		debug_log('Entered (%%)',1,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-	# if the array to sort is null or empty
-	if (! $data) return;
+	# if the array to sort is null or empty, or if we have some nasty chars
+	if (! preg_match('/^[a-zA-Z0-9_]+(\([a-zA-Z0-9_,]*\))?$/',$sortby) || ! $data)
+		return;
 
 	static $CACHE = array();
 
@@ -1422,11 +1445,8 @@ function get_next_number($base,$attr,$increment=false,$filter=false,$startmin=nu
 			$query['filter'] = sprintf('(%s=*)',$attr);
 			$search = $server->query($query,'auto_number');
 
-			if (! count($search))
-				return;
-
 			# Construct a list of used numbers
-			$autonum = array();
+			$autonum = array(0);
 
 			foreach ($search as $dn => $values) {
 				$values = array_change_key_case($values);
@@ -1604,6 +1624,9 @@ function get_icon($server_id,$dn,$object_classes=array()) {
 	elseif (in_array('room',$object_classes))
 		return 'door.png';
 
+	elseif (in_array('iphost',$object_classes))
+		return 'host.png';
+
 	elseif (in_array('device',$object_classes))
 		return 'device.png';
 
@@ -1640,9 +1663,6 @@ function get_icon($server_id,$dn,$object_classes=array()) {
 
 	elseif (in_array('groupofuniquenames',$object_classes))
 		return 'ldap-uniquegroup.png';
-
-	elseif (in_array('iphost',$object_classes))
-		return 'host.png';
 
 	elseif (in_array('nlsproductcontainer',$object_classes))
 		return 'n.png';
@@ -1919,7 +1939,7 @@ function support_oid_to_text($key) {
 			if ($oid_id) {
 				$CACHE[$oid_id]['title'] = isset($entry[4]) ? $entry[4] : null;
 				$CACHE[$oid_id]['ref'] = isset($entry[6]) ? $entry[6] : null;
-				$desc = isset($entry[8]) ? $entry[8] : sprintf('<acryonym title="%s"><small>%s</small></acryonym>',$unknown['desc'],$unknown['title']);
+				$desc = isset($entry[8]) ? $entry[8] : sprintf('<acronym title="%s">%s</acronym>',$unknown['desc'],$unknown['title']);
 				$CACHE[$oid_id]['desc'] = preg_replace('/\s+/',' ',$desc);
 			}
 		}
@@ -1931,7 +1951,7 @@ function support_oid_to_text($key) {
 		return array(
 			'title'=>$key,
 			'ref'=>null,
-			'desc'=>sprintf('<acryonym title="%s"><small>%s</small></acryonym>',$unknown['desc'],$unknown['title']));
+			'desc'=>sprintf('<acronym title="%s">%s</acronym>',$unknown['desc'],$unknown['title']));
 }
 
 /**
@@ -1941,7 +1961,7 @@ function ldap_error_msg($msg,$errnum) {
 	if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 		debug_log('Entered (%%)',1,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-	$body = '<table border=0>';
+	$body = '<table border="0">';
 
 	$errnum = ('0x'.str_pad(dechex($errnum),2,0,STR_PAD_LEFT));
 	$verbose_error = pla_verbose_error($errnum);
@@ -2003,7 +2023,7 @@ function draw_jpeg_photo($server,$dn,$attr_name='jpegphoto',$index,$draw_delete_
 			'type'=>'warn'));
 
 		# This should atleast generate some text that says "Image not available"
-		echo '<img src="view_jpeg_photo.php?location=session" alt="Photo" />';
+		printf('<img src="view_jpeg_photo.php?location=session&attr=%s" alt="Photo" />',$attr_name);
 
 		return;
 	}
@@ -2056,7 +2076,7 @@ function draw_jpeg_photo($server,$dn,$attr_name='jpegphoto',$index,$draw_delete_
 		$img_height = $height;
 	}
 
-	$href = sprintf('view_jpeg_photo.php?dn=%s&index=%s',rawurlencode($dn),$index);
+	$href = sprintf('view_jpeg_photo.php?dn=%s&index=%s&attr=%s',rawurlencode($dn),$index,$attr_name);
 
 	printf('<acronym title="%s %s. %s x %s %s.">',number_format($outjpeg),_('bytes'),$width,$height,_('pixels'));
 
@@ -2085,11 +2105,12 @@ function password_types() {
 		debug_log('Entered (%%)',1,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
 	return array(
-		'blowfish'=>'blowfish',
 		''=>'clear',
+		'blowfish'=>'blowfish',
 		'crypt'=>'crypt',
 		'ext_des'=>'ext_des',
 		'md5'=>'md5',
+		'k5key'=>'k5key',
 		'md5crypt'=>'md5crypt',
 		'sha'=>'sha',
 		'smd5'=>'smd5',
@@ -2112,6 +2133,15 @@ function password_hash($password_clear,$enc_type) {
 	$enc_type = strtolower($enc_type);
 
 	switch($enc_type) {
+		case 'blowfish':
+			if (! defined('CRYPT_BLOWFISH') || CRYPT_BLOWFISH == 0)
+				error(_('Your system crypt library does not support blowfish encryption.'),'error','index.php');
+
+			# Hardcoded to second blowfish version and set number of rounds
+			$new_value = sprintf('{CRYPT}%s',crypt($password_clear,'$2a$12$'.random_salt(13)));
+
+			break;
+
 		case 'crypt':
 			if ($_SESSION[APPCONFIG]->getValue('password', 'no_random_crypt_salt'))
 				$new_value = sprintf('{CRYPT}%s',crypt($password_clear,substr($password_clear,0,2)));
@@ -2129,25 +2159,26 @@ function password_hash($password_clear,$enc_type) {
 
 			break;
 
+		case 'k5key':
+			$new_value = sprintf('{K5KEY}%s',$password_clear);
+
+			system_message(array(
+				'title'=>_('Unable to Encrypt Password'),
+				'body'=>'phpLDAPadmin cannot encrypt K5KEY passwords',
+				'type'=>'warn'));
+
+			break;
+
+		case 'md5':
+			$new_value = sprintf('{MD5}%s',base64_encode(pack('H*',md5($password_clear))));
+			break;
+
 		case 'md5crypt':
 			if (! defined('CRYPT_MD5') || CRYPT_MD5 == 0)
 				error(_('Your system crypt library does not support md5crypt encryption.'),'error','index.php');
 
 			$new_value = sprintf('{CRYPT}%s',crypt($password_clear,'$1$'.random_salt(9)));
 
-			break;
-
-		case 'blowfish':
-			if (! defined('CRYPT_BLOWFISH') || CRYPT_BLOWFISH == 0)
-				error(_('Your system crypt library does not support blowfish encryption.'),'error','index.php');
-
-			# Hardcoded to second blowfish version and set number of rounds
-			$new_value = sprintf('{CRYPT}%s',crypt($password_clear,'$2a$12$'.random_salt(13)));
-
-			break;
-
-		case 'md5':
-			$new_value = sprintf('{MD5}%s',base64_encode(pack('H*',md5($password_clear))));
 			break;
 
 		case 'sha':
@@ -2177,7 +2208,7 @@ function password_hash($password_clear,$enc_type) {
 			if (function_exists('mhash') && function_exists('mhash_keygen_s2k')) {
 				mt_srand((double)microtime()*1000000);
 				$salt = mhash_keygen_s2k(MHASH_MD5,$password_clear,substr(pack('h*',md5(mt_rand())),0,8),4);
-				$new_value = spritnf('{SMD5}%s',base64_encode(mhash(MHASH_MD5,$password_clear.$salt).$salt));
+				$new_value = sprintf('{SMD5}%s',base64_encode(mhash(MHASH_MD5,$password_clear.$salt).$salt));
 
 			} else {
 				error(_('Your PHP install does not have the mhash() or mhash_keygen_s2k() function. Cannot do S2K hashes.'),'error','index.php');
@@ -2201,9 +2232,29 @@ function password_hash($password_clear,$enc_type) {
  * @param String The password in clear text to test.
  * @return Boolean True if the clear password matches the hash, and false otherwise.
  */
-function password_check($cryptedpassword,$plainpassword) {
+function password_check($cryptedpassword,$plainpassword,$attribute='userpassword') {
 	if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 		debug_log('Entered (%%)',1,0,__FILE__,__LINE__,__METHOD__,$fargs);
+
+	if (in_array($attribute,array('sambalmpassword','sambantpassword'))) {
+		$smb = new smbHash;
+
+		switch($attribute) {
+			case 'sambalmpassword':
+				if (strcmp($smb->lmhash($plainpassword),$cryptedpassword) == 0)
+					return true;
+				else
+					return false;
+
+			case 'sambantpassword':
+				if (strcmp($smb->nthash($plainpassword),$cryptedpassword) == 0)
+					return true;
+				else
+					return false;
+		}
+
+		return false;
+	}
 
 	if (preg_match('/{([^}]+)}(.*)/',$cryptedpassword,$matches)) {
 		$cryptedpassword = $matches[2];
@@ -2240,7 +2291,7 @@ function password_check($cryptedpassword,$plainpassword) {
 			# Check php mhash support before using it
 			if (function_exists('mhash')) {
 				$hash = base64_decode($cryptedpassword);
-				$salt = substr($hash,-4);
+				$salt = substr($hash,16);
 				$new_hash = base64_encode(mhash(MHASH_MD5,$plainpassword.$salt).$salt);
 
 				if (strcmp($cryptedpassword,$new_hash) == 0)
@@ -2296,7 +2347,7 @@ function password_check($cryptedpassword,$plainpassword) {
 				if (! defined('CRYPT_MD5') || CRYPT_MD5 == 0)
 					error(_('Your system crypt library does not support md5crypt encryption.'),'error','index.php');
 
-				list($type,$salt,$hash) = explode('$',$cryptedpassword);
+				list($dummy,$type,$salt,$hash) = explode('$',$cryptedpassword);
 
 				if (crypt($plainpassword,'$1$'.$salt) == $cryptedpassword)
 					return true;
@@ -2386,15 +2437,11 @@ function get_enc_type($user_password) {
  *         "edit_form.member_uid". See /templates/modification/default.php for example usage.
  * @param boolean (optional) If true, the function draws the localized text "choose" to the right of the button.
  */
-function draw_chooser_link($form_element,$include_choose_text=true,$rdn='none') {
+function draw_chooser_link($form,$element,$include_choose_text=true,$rdn='none') {
 	if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
 		debug_log('Entered (%%)',1,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
-	if ($rdn == 'none')
-		$href = sprintf("javascript:dnChooserPopup('%s','');",$form_element);
-	else
-		$href = sprintf("javascript:dnChooserPopup('%s','%s');",$form_element,$rdn);
-
+	$href = sprintf("javascript:dnChooserPopup('%s','%s','%s');",$form,$element,$rdn == 'none' ? '' : rawurlencode($rdn));
 	$title = _('Click to popup a dialog to select an entry (DN) graphically');
 
 	printf('<a href="%s" title="%s"><img class="chooser" src="%s/find.png" alt="Find" /></a>',$href,$title,IMGDIR);
@@ -2537,7 +2584,12 @@ function get_href($type,$extra_info='') {
 		case 'forum':
 			return sprintf('%s/mailarchive/forum.php?forum_name=%s',$sf,$forum_id);
 		case 'logo':
-			return isset($_SESSION) && ! $_SESSION[APPCONFIG]->getValue('appearance','remoteurls') ? '' : sprintf('http://sflogo.sourceforge.net/sflogo.php?group_id=%s&amp;type=8',$group_id);
+			if (! isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) != 'on')
+				$proto = 'http';
+			else
+				$proto = 'https';
+
+			return isset($_SESSION) && ! $_SESSION[APPCONFIG]->getValue('appearance','remoteurls') ? '' : sprintf('%s://sflogo.sourceforge.net/sflogo.php?group_id=%s&amp;type=10',$proto,$group_id);
 		case 'sf':
 			return sprintf('%s/projects/phpldapadmin',$sf);
 		case 'web':
@@ -2795,7 +2847,7 @@ function server_select_list($selected=null,$logged_on=false,$name='index',$isVis
 
 			$count++;
 			$server_menu_html .= sprintf('<option value="%s" %s>%s</option>',
-				$server->getIndex(),($server->getIndex() == $selected ? 'selected' : ''),$server->getName());
+				$server->getIndex(),($server->getIndex() == $selected ? 'selected="selected"' : ''),$server->getName());
 
 			# We will set this variable, in case there is only 1 hit.
 			$selected_server = $server;
@@ -2860,7 +2912,6 @@ function binSIDtoText($binsid) {
  *                or true to have the returned array sorted by DN (uses ksort)
  *                or an array of attribute names to sort by attribute values
  * @return array Array of values keyed by $key.
- * @todo sort is not being performed
  */
 function return_ldap_hash($base,$filter,$key,$attrs,$sort=true) {
 	if (DEBUG_ENABLED && (($fargs=func_get_args())||$fargs='NOARGS'))
@@ -2882,11 +2933,12 @@ function return_ldap_hash($base,$filter,$key,$attrs,$sort=true) {
 			if (is_array($values[$key]))
 				foreach ($values[$key] as $i => $k)
 					foreach ($attrs as $attr) {
-						if (isset($values[$attr])) {
+						$lattr = strtolower($attr);
+						if (isset($values[$lattr])) {
 							$v = '';
 
-							if (is_array($values[$attr]) && isset($values[$attr][$i]))
-								$v = $values[$attr][$i];
+							if (is_array($values[$lattr]) && isset($values[$lattr][$i]))
+								$v = $values[$lattr][$i];
 
 							if (is_string($v) && (strlen($v) > 0))
 								$results[$k][$attr] = $v;
@@ -2894,9 +2946,14 @@ function return_ldap_hash($base,$filter,$key,$attrs,$sort=true) {
 					}
 
 			else
-				foreach ($attrs as $attr)
-					if (isset($values[$attr]))
-						$results[$values[$key]][$attr] = $values[$attr];
+				foreach ($attrs as $attr) {
+					$lattr = strtolower($attr);
+					if (isset($values[$lattr]))
+						$results[$values[$key]][$attr] = $values[$lattr];
+				}
+
+	if ($sort)
+		masort($results,is_array($sort) ? implode(',',$sort) : 'dn');
 
 	return $results;
 }

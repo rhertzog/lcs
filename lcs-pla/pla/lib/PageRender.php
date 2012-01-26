@@ -97,6 +97,9 @@ class PageRender extends Visitor {
 
 				$this->visit('',$attribute);
 			}
+
+			// Sort our attribute values for display.
+			$this->template->sort();
 		}
 	}
 
@@ -189,7 +192,10 @@ class PageRender extends Visitor {
 								$blank++;
 							}
 
-						} elseif (count($attribute2->getValues()) !=1) {
+						} elseif (count($attribute2->getValues()) == 0) {
+							return;
+
+						} elseif (count($attribute2->getValues()) != 1) {
 							array_push($values,'');
 							$blank++;
 
@@ -230,6 +236,9 @@ class PageRender extends Visitor {
 
 					return;
 				}
+
+				if (! $attribute->hasBeenModified())
+					return;
 
 				# Get the attribute.
 				if (preg_match_all('/%(\w+)(\|.+)?(\/[lU])?%/U',strtolower($args[1]),$matchall)) {
@@ -272,7 +281,7 @@ class PageRender extends Visitor {
 
 					case 'nt':
 						$sambapassword = new smbHash;
-						$vals[$i] = $sambapassword->nthash($passwordvalue); break;
+						$vals[$i] = $sambapassword->nthash($passwordvalue);
 
 						break;
 
@@ -288,7 +297,7 @@ class PageRender extends Visitor {
 				$vals = $this->get('AutoPost',$attribute,$i);
 		}
 
-		if (! $vals)
+		if (! $vals || $vals == $attribute->getValues())
 			return;
 
 		$attribute->clearValue();
@@ -325,7 +334,17 @@ class PageRender extends Visitor {
 			if (DEBUGTMP) printf('<font size=-2>%s:<u>%s</u></font><br />',__METHOD__,'Choosing the DEFAULT template, no other template applicable');
 
 			# Since getTemplate() returns a default template if the one we want doesnt exist, we can return $templates->getID(), it should be the default.
-			return $template->getID();
+			if ($_SESSION[APPCONFIG]->getValue('appearance','disable_default_template') AND $this->getMode() == 'creation') {
+
+				system_message(array(
+					'title'=>_('No available templates'),
+					'body'=>_('There are no available active templates for this container.'),
+					'type'=>'warn'));
+
+				return 'invalid';
+
+			} else
+				return $template->getID();
 
 		# If there is only 1 defined template, and no default available, then that is our template.
 		} elseif ((count($templates->getTemplates($this->getMode(),$this->getModeContainer(),true)) == 1) && ! $this->haveDefaultTemplate()) {
@@ -359,7 +378,7 @@ class PageRender extends Visitor {
 		$href = sprintf('cmd.php?cmd=schema&server_id=%s&view=attributes&viewvalue=%s',
 			$this->getServerID(),$attribute->getName());
 
-		if (! $_SESSION[APPCONFIG]->getValue('appearance','show_schema_link'))
+		if (! $_SESSION[APPCONFIG]->getValue('appearance','show_schema_link') || !$_SESSION[APPCONFIG]->isCommandAvailable('script','schema'))
 			printf('%s',_($attribute->getFriendlyName()));
 
 		elseif ($attribute->getLDAPtype())
@@ -474,7 +493,7 @@ class PageRender extends Visitor {
 
 		# Is there a hint for this attribute
 		if ($attribute->getHint())
-			return sprintf('<acronym title="%s">%s</acronym>',$attribute->getHint(),_('hint'));
+			return sprintf('<acronym title="%s">%s</acronym>',_($attribute->getHint()),_('hint'));
 		else
 			return '';
 	}
@@ -501,7 +520,7 @@ class PageRender extends Visitor {
 			debug_log('Entered (%%)',129,0,__FILE__,__LINE__,__METHOD__,$fargs);
 
 		foreach ($this->template->getAttributes(true) as $attribute)
-			if ($attribute->hasbeenModified())
+			if ($attribute->hasbeenModified()) {
 				if ($attribute->getValues())
 					foreach ($attribute->getValues() as $index => $details)
 						$this->draw('HiddenValue',$attribute,$index);
@@ -509,6 +528,7 @@ class PageRender extends Visitor {
 				# We are deleting this attribute, so we need to display an empty value
 				else
 					$this->draw('HiddenValue',$attribute,0);
+			}
 	}
 
 	/**
@@ -558,7 +578,7 @@ class PageRender extends Visitor {
 		if (DEBUGTMP) printf('<font size=-2>%s</font><br />',__METHOD__);
 		if (DEBUGTMPSUB) printf(' <small>[%s]</small>',__METHOD__);
 
-		echo $attribute->getValue($i);
+		echo htmlspecialchars($attribute->getValue($i));
 	}
 
 	/**
@@ -588,7 +608,7 @@ class PageRender extends Visitor {
 
 		$val = $attribute->getValue($i);
 
-		printf('<input type="text" class="roval" name="new_values[%s][%s]" id="new_values_%s_%s" value="%s" readonly />',
+		printf('<input type="text" class="roval" name="new_values[%s][%s]" id="new_values_%s_%s" value="%s" readonly="readonly" />',
 			htmlspecialchars($attribute->getName()),$i,htmlspecialchars($attribute->getName()),$i,htmlspecialchars($val));
 	}
 
@@ -598,14 +618,14 @@ class PageRender extends Visitor {
 		$val = $attribute->getValue($i);
 
 		if ($attribute->getHelper() || $attribute->getVerify())
-			echo '<table cellspacing="0" cellpadding="0" border=1><tr><td valign="top">';
+			echo '<table cellspacing="0" cellpadding="0" border="0"><tr><td valign="top">';
 
 		printf('<input type="text" class="value" name="new_values[%s][%s]" id="new_values_%s_%s" value="%s" %s%s %s %s/>',
 			htmlspecialchars($attribute->getName()),$i,
 			htmlspecialchars($attribute->getName()),$i,
 			htmlspecialchars($val),
-			$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-			$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 			($attribute->getSize() > 0) ? sprintf('size="%s"',$attribute->getSize()) : '',
 			($attribute->getMaxLength() > 0) ? sprintf('maxlength="%s"',$attribute->getMaxLength()) : '');
 
@@ -689,8 +709,8 @@ class PageRender extends Visitor {
 			printf('<input type="file" class="value" name="new_values[%s][%s]" id="new_values_%s_%s" value="" %s%s %s %s/><br />',
 				htmlspecialchars($attribute->getName()),$i,
 				htmlspecialchars($attribute->getName()),$i,
-				$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-				$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+				$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+				$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 				($attribute->getSize() > 0) ? 'size="'.$attribute->getSize().'"' : '',
 				($attribute->getMaxLength() > 0) ? 'maxlength="'.$attribute->getMaxLength().'"' : '');
 		}
@@ -702,11 +722,11 @@ class PageRender extends Visitor {
 		$val = $attribute->getValue($i);
 
 		echo '<span style="white-space: nowrap;">';
-		printf('<input type="text" class="value" id="f_date_%s_%s" name="new_values[%s][%s]" value="%s" %s%s %s %s/>&nbsp;',
+		printf('<input type="text" class="value" id="new_values_%s_%s" name="new_values[%s][%s]" value="%s" %s%s %s %s/>&nbsp;',
 			$attribute->getName(),$i,
 			htmlspecialchars($attribute->getName()),$i,htmlspecialchars($val),
-			$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-			$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 			($attribute->getSize() > 0) ? sprintf('size="%s"',$attribute->getSize()) : '',
 			($attribute->getMaxLength() > 0) ? sprintf('maxlength="%s"',$attribute->getMaxLength()) : '');
 
@@ -727,13 +747,13 @@ class PageRender extends Visitor {
 
 		printf('<span style="white-space: nowrap;"><input type="text" class="value" name="%s" id="%s" value="%s" %s%s %s %s/>&nbsp;',
 			$input_name,$id,htmlspecialchars($val),
-			$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-			$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 			($attribute->getSize() > 0) ? 'size="'.$attribute->getSize().'"' : '',
 			($attribute->getMaxLength() > 0) ? 'maxlength="'.$attribute->getMaxLength().'"' : '');
 
 		# Draw a link for popping up the entry browser if this is the type of attribute that houses DNs.
-		draw_chooser_link(sprintf('entry_form.%s',$id),false);
+		draw_chooser_link('entry_form',$id,false);
 		echo '</span>';
 
 		if ($attribute->getHelper()) {
@@ -829,7 +849,10 @@ class PageRender extends Visitor {
 	}
 
 	protected function drawFormReadOnlyValueJpegAttribute($attribute,$i) {
-		draw_jpeg_photo($this->getServer(),$this->template->getDN(),$attribute->getName(),$i,false,false);
+		$this->draw('HiddenValue',$attribute,$i);
+		$_SESSION['tmp'][$attribute->getName()][$i] = $attribute->getValue($i);
+
+		draw_jpeg_photo(null,$this->template->getDN(),$attribute->getName(),$i,false,false);
 	}
 
 	protected function drawFormReadOnlyValueMultiLineAttribute($attribute,$i) {
@@ -837,9 +860,9 @@ class PageRender extends Visitor {
 
 		$val = $attribute->getValue($i);
 
-		printf('<textarea class="roval" %s %s name="new_values[%s][%s]" id="new_values_%s_%s" readonly>%s</textarea>',
-			($attribute->getRows() > 0) ? 'rows="'.$attribute->getRows().'"' : '',
-			($attribute->getCols() > 0) ? 'cols="'.$attribute->getCols().'"' : '',
+		printf('<textarea class="roval" rows="%s" cols="%s" name="new_values[%s][%s]" id="new_values_%s_%s" readonly="readonly">%s</textarea>',
+			($attribute->getRows() > 0) ? $attribute->getRows() : 5,
+			($attribute->getCols() > 0) ? $attribute->getCols() : 100,
 			htmlspecialchars($attribute->getName()),$i,
 			htmlspecialchars($attribute->getName()),$i,
 			$val);
@@ -850,13 +873,13 @@ class PageRender extends Visitor {
 
 		$val = $attribute->getValue($i);
 
-		printf('<textarea class="value" %s %s name="new_values[%s][%s]" id="new_values_%s_%s" %s%s>%s</textarea>',
-			($attribute->getRows() > 0) ? 'rows="'.$attribute->getRows().'"' : '',
-			($attribute->getCols() > 0) ? 'cols="'.$attribute->getCols().'"' : '',
+		printf('<textarea class="value" rows="%s" cols="%s" name="new_values[%s][%s]" id="new_values_%s_%s" %s%s>%s</textarea>',
+			($attribute->getRows() > 0) ? $attribute->getRows() : 5,
+			($attribute->getCols() > 0) ? $attribute->getCols() : 100,
 			htmlspecialchars($attribute->getName()),$i,
 			htmlspecialchars($attribute->getName()),$i,
-			$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-			$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 			$val);
 	}
 
@@ -937,7 +960,7 @@ class PageRender extends Visitor {
 
 		$obfuscate_password = obfuscate_password_display($enc_type);
 
-		printf('<input type="%s" class="roval" name="new_values[%s][%s]" id="new_values_%s_%s" value="%s" %s readonly /><br />',
+		printf('<input type="%s" class="roval" name="new_values[%s][%s]" id="new_values_%s_%s" value="%s" %s readonly="readonly" /><br />',
 			($obfuscate_password ? 'password' : 'text'),
 			htmlspecialchars($attribute->getName()),$i,htmlspecialchars($attribute->getName()),
 			$i,htmlspecialchars($val),($attribute->getSize() > 0) ? 'size="'.$attribute->getSize().'"' : '');
@@ -969,8 +992,8 @@ class PageRender extends Visitor {
 			($obfuscate_password ? 'password' : 'text'),
 			htmlspecialchars($attribute->getName()),$i,$id,
 			htmlspecialchars($val),
-			$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-			$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+			$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 			($attribute->getSize() > 0) ? sprintf('size="%s"',$attribute->getSize()) : '',
 			($attribute->getMaxLength() > 0) ? sprintf('maxlength="%s"',$attribute->getMaxLength()) : '');
 
@@ -1011,26 +1034,29 @@ class PageRender extends Visitor {
 			$vals = $attribute->getValues();
 			$j = 0;
 
+			if (! $vals && ! is_null($attribute->getDefault()) && ! is_array($vals = $attribute->getDefault()))
+				$vals = array($attribute->getDefault());
+
 			if (($attribute->getSize() > 0) && ($attribute->getSize() < $attribute->getOptionCount())) {
 
-				printf('<select name="new_values[%s][]" size="%s" multiple>',
+				printf('<select name="new_values[%s][]" size="%s" multiple="multiple">',
 					htmlspecialchars($attribute->getName()),$attribute->getSize());
 
 				foreach ($attribute->getSelection() as $value => $description) {
 					if (in_array($value,$vals))
 						$selected[$value] = true;
 
-					printf('<option id="new_values_%s_%s" value="%s" onMouseDown="focus_%s(this);" onClick="blur_%s(this);" %s>%s</option>',
+					printf('<option id="new_values_%s_%s" value="%s" onmouseDown="focus_%s(this);" onclick="blur_%s(this);" %s>%s</option>',
 						htmlspecialchars($attribute->getName()),$j++,
 						$value,htmlspecialchars($attribute->getName()),htmlspecialchars($attribute->getName()),
-						isset($selected[$value]) ? 'selected' : '',$description);
+						isset($selected[$value]) ? 'selected="selected"' : '',$description);
 
 					echo "\n";
 				}
 
 				foreach ($vals as $val) {
 					if (! isset($selected[$val]))
-						printf('<option id="new_values_%s_%s" value="%s" onMouseDown="focus_%s(this);" onClick="blur_%s(this);" selected>%s</option>',
+						printf('<option id="new_values_%s_%s" value="%s" onmousedown="focus_%s(this);" onclick="blur_%s(this);" selected="selected">%s</option>',
 							htmlspecialchars($attribute->getName()),$j++,
 							$val,htmlspecialchars($attribute->getName()),
 							htmlspecialchars($attribute->getName()),$val);
@@ -1041,7 +1067,12 @@ class PageRender extends Visitor {
 				echo '</select>';
 
 			} else {
-				echo '<table cellspacing="0" cellpadding="0" border=0>';
+				echo '<table cellspacing="0" cellpadding="0" border="0">';
+
+				// For checkbox items, we need to render a blank entry, so that we detect an all-unselect situation
+				printf('<tr><td colspan="2"><input type="hidden" id="new_values_%s_%s" name="new_values[%s][]" value="%s"/></td></tr>',
+					htmlspecialchars($attribute->getName()),$j++,
+					htmlspecialchars($attribute->getName()),'');
 
 				foreach ($attribute->getSelection() as $value => $description) {
 					if (in_array($value,$vals))
@@ -1050,19 +1081,19 @@ class PageRender extends Visitor {
 					printf('<tr><td><input type="checkbox" id="new_values_%s_%s" name="new_values[%s][]" value="%s" %s%s %s/></td><td><span style="white-space: nowrap;">&nbsp;%s</span></td></tr>',
 						htmlspecialchars($attribute->getName()),$j++,
 						htmlspecialchars($attribute->getName()),$value,
-						$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-						$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
-						isset($selected[$value]) ? 'checked' : '',
+						$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+						$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
+						isset($selected[$value]) ? 'checked="checked"' : '',
 						$description);
 				}
 
 				foreach ($vals as $val)
 					if (! isset($selected[$val]))
-						printf('<tr><td><input type="checkbox" id="%s" name="new_values[%s][]" value="%s" %s%s checked/></td><td><span style="white-space: nowrap;">&nbsp;%s</span></td></tr>',
+						printf('<tr><td><input type="checkbox" id="new_values_%s_%s" name="new_values[%s][]" value="%s" %s%s checked="checked"/></td><td><span style="white-space: nowrap;">&nbsp;%s</span></td></tr>',
 							htmlspecialchars($attribute->getName()),$j++,
 							htmlspecialchars($attribute->getName()),$val,
-							$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-							$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '',
+							$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+							$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '',
 							$val);
 
 				echo '</table>';
@@ -1088,15 +1119,12 @@ class PageRender extends Visitor {
 			printf('<select name="new_values[%s][]" id="new_values_%s_%s" %s%s>',
 				htmlspecialchars($attribute->getName()),
 				htmlspecialchars($attribute->getName()),$i,
-				$attribute->needJS('focus') ? sprintf('onFocus="focus_%s(this);" ',$attribute->getName()) : '',
-				$attribute->needJS('blur') ? sprintf('onBlur="blur_%s(this);" ',$attribute->getName()) : '');
+				$attribute->needJS('focus') ? sprintf('onfocus="focus_%s(this);" ',$attribute->getName()) : '',
+				$attribute->needJS('blur') ? sprintf('onblur="blur_%s(this);" ',$attribute->getName()) : '');
 
 			foreach ($attribute->getSelection() as $value => $description) {
 				printf('<option value="%s" %s>%s</option>',$value,
-					($value == $val) ? 'selected' : '',$description);
-
-				if ($value == $val)
-					$found = true;
+					((strcasecmp($value,$val) == 0) && $found = true) ? 'selected="selected"' : '',$description);
 
 				if ($value == '')
 					$empty_value = true;
@@ -1105,7 +1133,7 @@ class PageRender extends Visitor {
 			}
 
 			if (!$found) {
-				printf('<option value="%s" selected>%s</option>',$val,$val == '' ? '&nbsp;' : $val);
+				printf('<option value="%s" selected="selected">%s</option>',$val,$val == '' ? '&nbsp;' : $val);
 				if ($val == '')
 					$empty_value = true;
 				echo "\n";
