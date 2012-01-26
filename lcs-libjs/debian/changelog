@@ -1,8 +1,8 @@
-lcs-libjs (2.4.8.1+nmu1) Lcs; urgency=low
+lcs-libjs (2.4.9.1) Lcs; urgency=low
  
- * update jquery to 1.7.1, jquery-ui to 1.8.16, tinymce to 3.4.7 
+  * update jquery to 1.7.1, jquery-ui to 1.8.16, tinymce to 3.4.7 
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Jan 2012 10:21:46 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Jan 2012 10:50:25 +0100
 
 lcs-libjs (2.4.8.1) Lcs; urgency=low
 
