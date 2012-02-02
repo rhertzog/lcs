@@ -15,8 +15,8 @@ if (! empty($_COOKIE["LCSAuth"])) {
 		$PASS = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );	
 }
 				  				  
-$mbox = imap_open("{localhost:143}INBOX", $LOGIN, $PASS);
-$status = imap_status($mbox, "{localhost:143}INBOX", SA_UNSEEN);
+$mbox = imap_open("{localhost:143/imap/novalidate-cert}INBOX", $LOGIN, $PASS);
+$status = imap_status($mbox,"{localhost:143/imap/novalidate-cert}INBOX", SA_UNSEEN);
 
 if ($status) {
 	// Form message and output HTML
