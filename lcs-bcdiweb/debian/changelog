@@ -1,3 +1,9 @@
+lcs-bcdiweb (2.4.9~3) Lcs; urgency=low
+
+  * update to version 2.21
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 03 Feb 2012 14:33:11 +0100
+
 lcs-bcdiweb (2.4.9~2) Lcs; urgency=low
 
   * change script sh in bash

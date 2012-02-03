@@ -3,7 +3,7 @@
 #############################################################
 # Script d'installation des lib. BcdiWeb dans /usr/lib      #
 #                                                           #
-# Alexis Abramé - CRDP de Poitou-Charentes - nov. 2008      #
+# Alexis AbramÃ© - CRDP de Poitou-Charentes - nov. 2008      #
 #############################################################
 
 #A lancer en tant que SuperUtilisateur (su ou root)
@@ -12,8 +12,8 @@ repinst=/usr/lib
 function accueil () {
 WHOAMI=`whoami`
 if [ ! $WHOAMI == "root" ]; then
-    echo "Cette installation doit être lancée par l'utilisateur 'root'"
-    echo "Vous pouvez forcer l'installation sans vérification de l'utilisateur avec l'option -f"
+    echo "Cette installation doit Ãªtre lancÃ©e par l'utilisateur 'root'"
+    echo "Vous pouvez forcer l'installation sans vÃ©rification de l'utilisateur avec l'option -f"
     exit 1 
 else menu
 fi
@@ -25,7 +25,7 @@ emplacementbcdiweb=$bcdiwebdefaut
 
 #Emplacement d'installation
 echo "Emplacement de BcdiWeb : $emplacementbcdiweb"
-echo "Nouvel emplacement (entrée pour garder la valeur par défaut) :"
+echo "Nouvel emplacement (entrÃ©e pour garder la valeur par dÃ©faut) :"
 read emplacementbcdiweb
 if [ -z $emplacementbcdiweb ] 
 then 
@@ -39,8 +39,8 @@ function install_lib (){
   LIB[2]="libxerces-c1_6_0.so"
   LIB[3]="libxercesxmldom.so.1"
   for i in 1 2 3 ;do
-    if [ -e "/usr/lib/${LIB[$i]}" ]; then echo "La bibliothèque ${LIB[$i]} existe déjà dans le répertoire $repinst : copie annulée !";
-    else ln -s --target-directory=$repinst $emplacementbcdiweb/${LIB[$i]}&&echo "Création du lien symbolique (${LIB[$i]}) : ok"||echo "L'opération a échoué !"
+    if [ -e "/usr/lib/${LIB[$i]}" ]; then echo "La bibliothÃ¨que ${LIB[$i]} existe dÃ©jÃ  dans le rÃ©pertoire $repinst : copie annulÃ©e !";
+    else ln -s --target-directory=$repinst $emplacementbcdiweb/${LIB[$i]}&&echo "CrÃ©ation du lien symbolique (${LIB[$i]}) : ok"||echo "L'opÃ©ration a Ã©chouÃ© !"
 fi  
   done
 
@@ -51,8 +51,8 @@ function remove_lib (){
   LIB[2]="libxerces-c1_6_0.so"
   LIB[3]="libxercesxmldom.so.1"
   for i in 1 2 3 ;do
-    if [ -e "/usr/lib/${LIB[$i]}" ]; then unlink /usr/lib/${LIB[$i]}&&echo "Suppression du lien vers la  bibliothèque ${LIB[$i]} : ok"|| echo "L'opération a échoué !";
-    else echo "Le lien vers ${LIB[$i]} n'existe pas : opération annulée !"
+    if [ -e "/usr/lib/${LIB[$i]}" ]; then unlink /usr/lib/${LIB[$i]}&&echo "Suppression du lien vers la  bibliothÃ¨que ${LIB[$i]} : ok"|| echo "L'opÃ©ration a Ã©chouÃ© !";
+    else echo "Le lien vers ${LIB[$i]} n'existe pas : opÃ©ration annulÃ©e !"
 fi  
   done
 
@@ -67,24 +67,24 @@ clear
 
 cat <<EOF
                   *************************************************
-                  *   Installation des bibliothèques de BcdiWeb   *
+                  *   Installation des bibliothÃ¨ques de BcdiWeb   *
                   *                                               *
                   *************************************************
 
 
 
 
-    1. Installation des bibliothèques
-    2. Désinstallation des bibliothèques
+    1. Installation des bibliothÃ¨ques
+    2. DÃ©sinstallation des bibliothÃ¨ques
     3. Quitter
 
 Notes :
 #######
-Ce programme installe dans $repinst des liens symboliques permettant à BcdiWeb
-d'atteindre ses bibliothèque dans le cas où la directive SetEnv n'est pas 
+Ce programme installe dans $repinst des liens symboliques permettant Ã  BcdiWeb
+d'atteindre ses bibliothÃ¨que dans le cas oÃ¹ la directive SetEnv n'est pas 
 comprise par Apache.
-Ce programme utilise le jeu de caractère ISO-8859-15, réglez votre terminal en
-conséquence.
+Ce programme utilise le jeu de caractÃ¨re UTF-8, rÃ©glez votre terminal en
+consÃ©quence.
 EOF
 
 while [ "$REPLY" != "3" ] ; do
@@ -92,20 +92,20 @@ echo -n "Votre choix : "
 read
 case "$REPLY" in
 
-1 ) clear;echo "Installation des bibliothèques"
+1 ) clear;echo "Installation des bibliothÃ¨ques"
 echo ""
 modif_param
 install_lib
 echo ""
-echo "Installation terminée"
+echo "Installation terminÃ©e"
 retour
 ;;
 
-2 ) clear;echo "Désinstallation des bibliothèques"
+2 ) clear;echo "DÃ©sinstallation des bibliothÃ¨ques"
 echo ""
 remove_lib
 echo ""
-echo "Désinstallation terminée"
+echo "DÃ©sinstallation terminÃ©e"
 retour
 ;;
 
@@ -140,7 +140,7 @@ o ) menu;;
 
 n ) exit 0 ;;
 
-* ) echo "Réponse incorrecte !"; retour;;
+* ) echo "RÃ©ponse incorrecte !"; retour;;
 
 esac
 }
@@ -152,14 +152,14 @@ o ) menu;;
 
 n ) exit 0 ;;
 
-* ) echo "Réponse incorrecte !"; continuer;;
+* ) echo "RÃ©ponse incorrecte !"; continuer;;
 
 esac
 }
 
 
 ###############################
-# Test d'un éventuel argument #
+# Test d'un Ã©ventuel argument #
 ###############################
 if [ -n "$1"  ]; then
     if [ $1 == "-f" ];then

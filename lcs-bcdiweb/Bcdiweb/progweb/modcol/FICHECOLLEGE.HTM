@@ -1,4 +1,4 @@
-<!-- 01/04/2009 FicheCollege.htm -->
+<!-- 01/06/2009 FicheCollege.htm -->
 <div class="zoneafftxt">
   <div class="fiche100pr100">
 	<script type="text/javascript">
@@ -14,7 +14,7 @@
 	  if (noticeGenerale)
 	  {
 		ch_aff=supportNotice;
-		ch_aff+=" (<#Champ /Java Notices Date parution>) ";
+		ch_aff+=" (<#Champ /Java NotGen Date parution>) ";
 		ch_aff+="<#Champ /Java Notices Natures><br/><br/>";
 		chNoticeGenerale="<#Champ /Java /Couleur Notices Titre>";
 		nbNotices=<#Champ Notices Nombre Notices>;
@@ -26,7 +26,7 @@
 	  {
 		ch_aff=typeNotice+" de "+supportNotice;
 		ch_aff+=" dans <i><#Champ /Java /Couleur Notices Titre Ng></i>";
-		ch_aff+=" (<#Champ /Java Notices Date parution>) ";
+		ch_aff+=" (<#Champ /Java NotGen Date parution>) ";
 		ch_aff+=", <#Champ /Java Notices Collation><br/>";
 		ch_aff+="<div class='titre'><#Champ /Java /Couleur Notices Titre></div>";
 	  }
@@ -67,16 +67,16 @@
 	  rajouterStrong("<#Intitule Notices ISSN> ","<#Champ /Java Notices ISSN>");
 	  rajouterStrong("<#Intitule Notices N° Normalisé> ","<#Champ /Java Notices N° Normalisé>");
 	  ch_aff+="<br/><table width=96%><tr>";
-	  if (noticeGenerale) {
-		vel='<#Champ /Java /Liaison Notices Lien>';
-		if ((vel>"!") && (vel.toUpperCase().indexOf("HTTP://")>=0)) ch_aff+="<td width=24%>Lien : "+vel+"</td>";
-	  }
-          <#SI AFFRESSOURCEFICHECOMPLETE=OUI>
-		if (rajouterStrong("<td width=24%>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 1>")) ch_aff+="</td>";
-          <#FINSI AFFRESSOURCEFICHECOMPLETE=OUI>
-		if (rajouterStrong("<td width=24%>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 2>")) ch_aff+="</td>";
-		if (rajouterStrong("<td>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 3>")) ch_aff+="</td>";
-	  ch_aff+="</tr></table><br/>";
+  
+		vel='<#Champ /Java /Ressource Notices Ressource 1>';
+		<#SI AFFRESSOURCEFICHECOMPLETE=OUI>
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 1></td>";    
+		<#FINSI AFFRESSOURCEFICHECOMPLETE=OUI>	
+		vel='<#Champ /Java /Ressource Notices Ressource 2>'; 
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 2></td>";  	
+		vel='<#Champ /Java /Ressource Notices Ressource 3>'; 
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 3></td>";  			
+		 ch_aff+="</tr></table><br/>";
 
 
 	  ch_aff+="<i><b>Pour citer le document : </b></i><BR>";
@@ -89,7 +89,7 @@
         if (noticeGenerale) ch_aff+="<#Champ /Java Notices Titre> [en ligne], ";
 		if (!noticeGenerale) ch_aff+="<#Champ /Java Notices Titre> [en ligne]. ";
 		if (!noticeGenerale) ch_aff+=" <#Champ /Java Notices Titre Ng>, ";
-		dateNotice="<#Champ /Java Notices Date parution> ";
+		dateNotice="<#Champ /Java NotGen Date parution> ";
 		ch_aff+=dateNotice;
 		dateNotice="<#Champ /Java Notices Date modif.>";
 		if (dateNotice=="") dateNotice="<#Champ /Java Notices Date saisie>";
@@ -100,7 +100,7 @@
 	  {
 		ch_aff+="<#Champ /Java Notices Titre>. ";
 		ch_aff+="<#Champ /Java Notices Collection> [en ligne], ";
-		ch_aff+="<#Champ /Java Notices Date parution>, ";
+		ch_aff+="<#Champ /Java NotGen Date parution>, ";
 		ch_aff+="<#Champ /Java Notices N° Collection> ";
 		dateNotice="<#Champ /Java Notices Date modif.>";
 		if (dateNotice=="") dateNotice="<#Champ /Java Notices Date saisie>";
@@ -126,7 +126,7 @@
 		  ch_aff+="[<#Champ /Java Notices Support>]. ";
 		  NoticesEditeur="<#Champ /Java Notices Editeurs>";
 		  if (NoticesEditeur!="") ch_aff+=NoticesEditeur+", ";
-		  ch_aff+="<#Champ /Java Notices Date parution>. ";
+		  ch_aff+="<#Champ /Java NotGen Date parution>. ";
 		  ch_aff+="<#Champ /Java Notices Titre>";
 		}
 		else
@@ -135,7 +135,7 @@
 		  NoticesCollection="<#Champ /Java Notices Collection>";
 		  if (NoticesCollection!="") ch_aff+="<#Champ /Java Notices Collection> ";
 		  ch_aff+="[<#Champ /Java Notices Support>], ";
-		  ch_aff+="<#Champ /Java Notices Date parution>";
+		  ch_aff+="<#Champ /Java NotGen Date parution>";
 		  ch_aff+=", <#Champ /Java Notices N° Collection>";
 		}
 		// cas IV
@@ -144,7 +144,7 @@
 	  {
 		ch_aff+="<#Champ /Java Notices Titre>. ";
 		ch_aff+="<#Champ /Java Notices Collection>, ";
-		ch_aff+="<#Champ /Java Notices Date parution>";
+		ch_aff+="<#Champ /Java NotGen Date parution>";
 		ch_aff+=", <#Champ /Java Notices N° Collection>";
 		ch_aff+=", <#Champ /Java Notices Collation>";
 	  }
@@ -161,7 +161,7 @@
 		ch_aff+="<#Champ /Java Notices Titre Ng>. ";
 		NoticesEditeur="<#Champ /Java Notices Editeurs>";
 		if (NoticesEditeur!="") ch_aff+=NoticesEditeur+", ";
-		ch_aff+="<#Champ /Java Notices Date parution>. ";
+		ch_aff+="<#Champ /Java NotGen Date parution>. ";
 		ch_aff+="<#Champ /Java Notices Titre>, ";
 		ch_aff+="<#Champ /Java Notices Collation>";
 	  }

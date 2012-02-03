@@ -1,5 +1,5 @@
 <!-- 17/11/2008 INCLUDE-PANIER-COMPTE.HTM -->
-<!-- saved from url=(0022)http://internet.e-mail -->
+<!-- Modifié RM 24/04/11 chU -->
   <script type="text/javascript">
   var nbTry = 0
   function tryClose()
@@ -51,15 +51,16 @@
       document.write('<div class="menuOFFgauche">&nbsp;</div>')
       document.write('<div class="menuOFFtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier='+fichierEnCours+'&modele=AccueilCompte.htm">Mon compte</a></div>')
       document.write('<div class="menuOFFdroite">&nbsp;</div>')
-      document.write('</div>')
+	  document.write('</div>')
 
-      document.write('<div class="menuOFF">')
-      document.write('<div class="menuOFFgauche">&nbsp;</div>')
+	  document.write('<div class="menuOFF">')
+	  document.write('<div class="menuOFFgauche">&nbsp;</div>')
+	  chU="<#UTILISATEUR>";
 // on ferme
-//      document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
+//      document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter '+chU+')">Déconnexion</div>')
 // ou on réinitialise
 	  ch="'?DECONNECTER=OUI'";
-	  document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
+	  document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter '+chU+')">Déconnexion</div>')
 
       document.write('<div class="menuOFFdroite">&nbsp;</div>')
       document.write('</div>')

@@ -1,34 +1,45 @@
-<!--  15/04/2009 FICHEEXE.HTM -->
-<!-- Modele FICHEEXE Ecrans Oct modifié RM 07/02/08-->
+<!-- Modele FICHEEXE.HTM Modifié pour 2011 RM 11/05/11 -->
   <#SI VALEUR BASEBIBLIO=0><div>
   <script type="text/javascript">
-    ch_aff="";
-	val="<#MARGUERITE>"
-	if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>'+val+'.gif" height=30> &nbsp;';
-	val="<#PICTOGRAMME>"
-	if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>Picto-'+val+'.gif" height=30> &nbsp;';
-	if ("<#Champ Exemplaires Statut>"!="Mis au pilon") {
-	  val="<#Champ /Java Exemplaires Cote E.>";
-	  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
-	  <#SI AFFNUMEXE=OUI>
-	  val="<#Champ /Java Exemplaires Code Exemplaire>" ;
-	  if (val=="") val="<#Champ Exemplaires N° Exemplaire>";
-	  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
-	  <#FINSI AFFNUMEXE=OUI>
-	  val="<#Champ /Java Exemplaires Emplacement>";
-	  <#SI AFFINTITULEEMPLACEMENT=OUI>
-	     if (val!="") ch_aff+="<b>Lieu :</b> <#Champ /Java Exemplaires Emplacement>";
-	<#SINON AFFINTITULEEMPLACEMENT=OUI>
-		 if (val!="") ch_aff+="<#Champ /Java Exemplaires Emplacement>";
-	<#FINSI AFFINTITULEEMPLACEMENT=OUI>
-	  ces="<#Champ /Java Exemplaires Situation>";
-	  if(ces=="Disponible") ces='OK'
-	  else
-	   if(ces=="Sorti") ces='PE'
-	  else ces='NO'
-	  ch_aff+='<div class=\"disponibilite'+ces+'\">';
-	  ch_aff+="<#Champ /Java Exemplaires Statut> - <#Champ /Java Exemplaires Situation><\/div>"
-	  document.write(ch_aff);
+	if ("<#Champ /Java Exemplaires Catalogue>".substring(0,1)=="O")
+	{
+	  serie="<#Champ /Java Exemplaires Serie>";
+	  if (serie.indexOf("Ex.")<0)
+	  {
+		ch_aff="";
+		val="<#MARGUERITE>"
+		if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>'+val+'.gif" height=30> &nbsp;';
+		val="<#PICTOGRAMME>"
+		if (val>"") ch_aff+='<img src="<#CONST REP_MODELES>Picto-'+val+'.gif" height=30> &nbsp;';
+		if (serie.indexOf("te")>0) { // "te" pour "Tête" sans accents
+		  nbSerie="<#NBEXEMPLAIRESERIE>";
+		  if (nbSerie>"") nbSerie="("+nbSerie+" ex.)";
+		  ch_aff+="<br/><b>Série "+nbSerie+"</b>";
+		}
+		if ("<#Champ Exemplaires Statut>"!="Mis au pilon") {
+		  val="<#Champ /Java Exemplaires Cote E.>";          
+		  if (val!="") ch_aff+="<BR>Cote&nbsp;<B>"+val+"</B><BR>";
+		  <#SI AFFNUMEXE=OUI>
+		  val="<#Champ /Java Exemplaires Code Exemplaire>" ;
+		  if (val=="") val="<#Champ Exemplaires N° Exemplaire>";
+		  if (val!="") ch_aff+="Ex.&nbsp;"+val+"<BR>";
+		  <#FINSI AFFNUMEXE=OUI>
+		  val="<#Champ /Java Exemplaires Emplacement>";
+		  <#SI AFFINTITULEEMPLACEMENT=OUI>
+			if (val!="") ch_aff+="<b>Lieu :</b> <#Champ /Java Exemplaires Emplacement>";
+		  <#SINON AFFINTITULEEMPLACEMENT=OUI>
+			if (val!="") ch_aff+="<#Champ /Java Exemplaires Emplacement>";
+		  <#FINSI AFFINTITULEEMPLACEMENT=OUI>
+		  ces="<#Champ /Java Exemplaires Situation>";
+		  if(ces=="Disponible") ces='OK'
+		  else
+		   if(ces=="Sorti") ces='PE'
+		  else ces='NO'
+		  ch_aff+='<div class=\"disponibilite'+ces+'\">';
+		  ch_aff+="<#Champ /Java Exemplaires Statut> - <#Champ /Java Exemplaires Situation><\/div>"
+		  document.write(ch_aff);
+		}
+	  }
 	}
   </script>
   </div><#FINSI VALEUR BASEBIBLIO=0>

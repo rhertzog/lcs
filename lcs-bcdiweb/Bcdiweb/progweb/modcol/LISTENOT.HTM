@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!-- venant du formulaire <#VAR FICHIER-MAITRE> -->
-<!-- 20/11/2008 ListeNot.htm -->
+<!-- 27/05/2010 ListeNot.htm -->
 <#VAR ENLISTE=OUI>
 <html>
 <head>                         
@@ -17,10 +17,11 @@
 <noscript>Votre navigateur n'autorise pas la gestion des scripts Javascript, vous ne pouvez pas utiliser BCDI Web</noscript>
 
 <SCRIPT type="text/javascript">
+var afficherTempsPage=false;
 var fichierEnCours="LISTENOT.HTM"
 var vel="";
 var ch_aff="";
-
+if (afficherTempsPage) var topDebut=new Date().getTime();
 var FicPanier='PANIER.HTM';
 var FicOrigine=<#SI RESULTAT=PANIER>FicPanier<#SINON RESULTAT=PANIER>"<#VAR FICHIER-MAITRE>"<#FINSI RESULTAT=PANIER>;
 if (FicOrigine=="") FicOrigine="<#FICHIERORIGINE>";
@@ -49,16 +50,19 @@ function fonctionnementElectre(n)
 	}
 }
 
-function reserver(num,nbResa,nbDispo,nbSortis,ancre) {
-  sDis=(nbDispo==0) ? "" : ((nbDispo==1) ? "  1 exemplaire disponible\n" : "  "+nbDispo+" exemplaires disponibles\n")
-  sSor=(nbSortis==0) ? "" : ((nbSortis==1) ? "  1 exemplaire sorti\n" : "  "+nbSortis+" exemplaires sortis\n")
+function reserver(num,nbResa,nbDispo,nbSortis,ancre,serie) {
+  if (serie==1) {quoi="série"; genre="e";} else {quoi="exemplaire"; genre="";}; 
+  sDis=(nbDispo==0) ? "" : ((nbDispo==1) ? "  1 "+quoi+" disponible\n" : "  "+nbDispo+" "+quoi+"s disponibles\n")
+  sSor=(nbSortis==0) ? "" : ((nbSortis==1) ? "  1 "+quoi+" sorti"+genre+"\n" : "  "+nbSortis+" "+quoi+"s sorti"+genre+"s\n")
   ch="Votre réservation sera en position "+(nbResa+1)+" pour\n"+sDis+sSor+"\n"
+  if (serie==1) {chSerie="&SERIE=OUI"; libelle=" la série";}
+  else {chSerie=""; libelle="";}
   if (<#VALEUR NUMERO_UTILISATEUR><1)
-   ch+="S\'identifier en vue de réserver ?"
+   ch+="S\'identifier en vue de réserver"+libelle+" ?"
   else
-   ch+="Confirmer votre demande de réservation ?"
+   ch+="Confirmer votre demande de réservation"+libelle+" ?"
   if (confirm(ch))
-   window.location.href="?FAIRE=ENREGISTRER_RESERVATION&NR=<#VALEUR NUMERO_RECHERCHE>&NP=<#VALEUR NUMERO_PANIER>&B=<#VALEUR NUMERO_PAGE>&FICHIERORIGINE=LISTENOT&NUMERO_NOTICE="+num+"&RESULTAT=<#RESULTAT>&IDENTIFIANT=<#VALEUR NUMERO_UTILISATEUR>&ANCRE=FICHE"+ancre
+   window.location.href="?FAIRE=ENREGISTRER_RESERVATION&NR=<#VALEUR NUMERO_RECHERCHE>&NP=<#VALEUR NUMERO_PANIER>&B=<#VALEUR NUMERO_PAGE>&FICHIERORIGINE=LISTENOT&NUMERO_NOTICE="+num+"&RESULTAT=<#RESULTAT>&IDENTIFIANT=<#VALEUR NUMERO_UTILISATEUR>&ANCRE=FICHE"+ancre+chSerie
 }
 
 function rajouterClass(nom,valeur)
@@ -73,6 +77,21 @@ function antiSlash(mot) {
 
 function perluette(mot) {
   return mot.replace(regPerluette,"%26");
+}
+
+function openAutoSize(url,nom) // Ouvrir une image à sa taille exacte
+{
+  image = new Image()
+  image.src = url;
+  if (url.indexOf("lectre")>0) {
+	l=400; h=600;
+  }
+  else {
+	l=400; h=250;
+  }
+  if(image.width>0) l=image.width;
+  if(image.height>0) h=image.height;
+  window.open(image.src,nom,'toolbar=0,location=0,directories=0,status=0,menubar=0,resizable=0,scrollbars=0,copyhistory=0, width='+l+', height='+h);
 }
 
 function oeil(quoi,valeur)
@@ -121,7 +140,7 @@ function rajouterStrong(nom,valeur)
     ch_aff+='<strong>'+nom+'</strong>'+valeur+'<br>';
     return true;
   }
-  else                                              
+  else
   return false;
 }
 
@@ -148,7 +167,7 @@ function onCheckBoxClic(obj)
     {
       nom=document.forms[0].elements[i].name;
       if ((nom>"CKPANIER0") && (nom<"CKPANIER:") && !(document.forms[0].elements[i].checked==(coche)))
-      {
+	  {
         document.forms[0].elements[i].checked=(coche);
         nb_coche_change++;
       }
@@ -189,6 +208,10 @@ function init()
 	  ref=ref.substring(0,p)
 	window.location.href=ref+"#"+ch;
   }
+if (afficherTempsPage) {
+t=new Date().getTime()-topDebut;
+document.getElementById('TEMPS_AFFICHAGE').innerHTML=' Page affichée en '+t+' ms.';
+}
 }
 
 function ChangeFormat(obj)
@@ -249,7 +272,7 @@ function cachtxtvide(ordre)
 
 function ouvrirTable(tr) {
   if (!tableOuverte) {
-    tableOuverte=true;
+	tableOuverte=true;
     document.write('<TABLE>');
     if (tr) document.write('<TR>');
   }
@@ -341,10 +364,10 @@ document.write("<title>"+ch+"</title>")
 		  document.write("<div class='infosequation'><strong>&#8226;</strong> Mot(s) recherché(s) : <strong><#EQUATION><\/strong><\/div>");
 		  document.write("<strong>&#8226;</strong> Résultat de votre recherche : ");
 		}
-      </script>
-       <strong><#VALEUR NOMBRE_REPONSES> notice<#SI VALEUR NOMBRE_REPONSES»1>s<#FINSI VALEUR NOMBRE_REPONSES»1></strong>
-       </strong>
-    </div>
+	  </script>
+	   <strong><#VALEUR NOMBRE_REPONSES> notice<#SI VALEUR NOMBRE_REPONSES»1>s<#FINSI VALEUR NOMBRE_REPONSES»1></strong>
+	   </strong>
+	</div>
 
 	<div class="txt100pr100">&nbsp;</div>
 	<div class="txt100pr100">
@@ -369,9 +392,9 @@ document.write("<title>"+ch+"</title>")
 			<#FINSI RESULTAT#PANIER>
 
 			  <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="TITRE" onClick="ChangeClassement(this)">Titre</div>
-		      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="AUTEUR, TITRE" onClick="ChangeClassement(this)">Auteur</div>
-		      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="SUPPORT, TITRE" onClick="ChangeClassement(this)">Type de doc.</div>
-		      <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="DATE PARUTION, TITRE" onClick="ChangeClassement(this)">Date</div>
+			  <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="AUTEUR, TITRE" onClick="ChangeClassement(this)">Auteur</div>
+			  <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="SUPPORT, TITRE" onClick="ChangeClassement(this)">Type de doc.</div>
+			  <div class="alignpuce"><input id="CHANGER_CLASSEMENT" name="CHANGER_CLASSEMENT" type="radio" value="DATE PARUTION, TITRE" onClick="ChangeClassement(this)">Date</div>
 		<#FINSI VALEUR NOMBRE_REPONSES»1>
 	</div>
 	<#SI VALEUR NOMBRE_REPONSES=0>
@@ -400,11 +423,11 @@ document.write("<title>"+ch+"</title>")
 			<#FINSI PUBLIC=SPECIAL>
 	</div>
 	<#FINSI VALEUR NOMBRE_REPONSES=0>
-    <div class="pointille">&nbsp;</div>
+	<div class="pointille">&nbsp;</div>
 	<div class="menuzonedata">
 		<div class="txt100pr100">
-		      <SCRIPT type="text/javascript">
-		        if(FicOrigine==FicPanier){document.write('<INPUT type="submit" Name="VIDERPANIER" Value="Vider le panier" class=\"boutviderpanier\">');}
+			  <SCRIPT type="text/javascript">
+				if(FicOrigine==FicPanier){document.write('<INPUT type="submit" Name="VIDERPANIER" Value="Vider le panier" class=\"boutviderpanier\">');}
 				else {
 				  document.write('<a class="modif" href=<#HREF MODIFIER_RECHERCHE>>Modifier la recherche<\/a> ');
 				  <#SI LANGAGE=DICO><#SI AUTOPOSTAGE#SPECIFIQUE>
@@ -413,12 +436,15 @@ document.write("<title>"+ch+"</title>")
 				  <#FINSI AUTOPOSTAGE#SPECIFIQUE><#FINSI LANGAGE=DICO>
 				}
 				if ((nbReponses != 0) && (FicOrigine!=FicPanier) && ("<#FORMAT>"=="LISTENOT")) document.write('<div class="ajout2">Tout ajouter au panier&nbsp;<INPUT TYPE="CHECKBOX" id="CKPANIER" NAME="CKPANIER0" onclick="onCheckBoxClic(this)"><\/div>');
-		      </script>
+			  </script>
 		</div>
 		<div class="txt100pr100">
 				<script type="text/javascript">pagination();</script>
 		</div>
-		<br><table width=90%><tr><td class="titre" align="center" ><span id="FONCTIONNEMENT_ELECTRE"></span></td></tr></table>
+		<table width=90%><tr>
+		<td class="titre" align="center" ><span id="FONCTIONNEMENT_ELECTRE"></span></td>
+		<td class="titre" align="center" ><span id="TEMPS_AFFICHAGE"></span></td>
+		</tr></table>
 
 		<#DEBUT_LISTE>
 
@@ -427,26 +453,34 @@ document.write("<title>"+ch+"</title>")
 				<a name="FICHE<#VALEUR RANG_FICHE>"></a><img src="<#CONST REP_MODELES>SUPPORT-<#Champ Notices Support MAJ>.gif" alt="">
 				<div>N°<#VALEUR RANG_FICHE>/<#VALEUR NOMBRE_REPONSES></div><div class="exemplairesmall"><#Champ Notices Support></div>
 				<script type="text/javascript">
-		          if (<#ELECTRE Ok> == 1)
-		          {
-		            nudoc="<#ELECTRE Ean>"
-		            if (<#ELECTRE imagette> == 1) {
-		              ch='<img src="<#CONST REP_ELECTRE><#ELECTRE ICONE>" width=60 height=98 hspace=2 border=0 alt="Couverture"'
+				  nudoc="<#Champ /Java Notices Identite>";
+				  if (("<#MEMODOCNET>" == "1") && (nudoc.substr(0,3)=="MDN")) {
+					ch='<img src="<#URL_MEMODOCNET>small/'+nudoc+'.jpg" width=100 height=75 hspace=2 border=0 alt="Page d\'accueil"'
+					ch+=' style="cursor:pointer;" onClick="openAutoSize('
+					ch+="'<#URL_MEMODOCNET>large/<#Champ /Java Notices Identite>.jpg','<#Champ /Java Notices Identite>');";
+					ch+='">'
+					document.write(ch)
+				  }
+				  else
+				  if (<#ELECTRE Ok> == 1)
+				  {
+					nudoc="<#ELECTRE Ean>"
+					urlElectre="<#URL_ELECTRE>&ean="+nudoc
+					if (<#ELECTRE imagette> == 1) {
+					  ch='<img src="'+urlElectre+'&Size=Scaled" width=60 height=98 hspace=2 border=0 alt="Couverture"'
 					  if (<#ELECTRE image> == 1)
-		                if ("<#LOGICIEL>"=="BCDIWEB") {
-						ch+=' style="cursor:pointer;" onClick="javascript:window.open(\'<#URLDLL>?IMAGE=<#ELECTRE Ean>\',\'IMAGE\','
-		                ch+='\'toolbar=no,location=no,directories=no,status=no,menubar=no,copyhistory=no\' )"'
-		              }
-					  else
-						ch='<A HREF="<#URLDLL>?IMAGE=<#ELECTRE Ean>">'+ch+'></A'
-		              document.write(ch+'>')
+					  ch+=' style="cursor:pointer;" onClick="openAutoSize('
+					  ch+="'<#URL_ELECTRE>&ean=<#ELECTRE Ean>','<#ELECTRE Ean>');"
+					  ch+='">'
+					  document.write(ch)
 					}
-		            if (<#ELECTRE bio> == 1) envoyerTexte('BIO')
-		            if (<#ELECTRE argument> == 1) envoyerTexte('ARGUMENT')
-		            if (<#ELECTRE Tdm> == 1) envoyerTexte('TDM')
-		            fermerTable(false);
-		          }
+					if (<#ELECTRE bio> == 1) envoyerTexte('BIO')
+					if (<#ELECTRE argument> == 1) envoyerTexte('ARGUMENT')
+					if (<#ELECTRE Tdm> == 1) envoyerTexte('TDM')
+					fermerTable(false);
+				  }
 				</script>
+			<#FORUM>
 			</div class="ficheicone">
 			<div class="fiche">
 				<#SI PUBLIC=COLLEGE>
@@ -482,28 +516,42 @@ document.write("<title>"+ch+"</title>")
 						<#FINSI Champ Notices Type Doc. # Ressource en ligne>
 					<#FINSI Champ Notices Support = Périodique>
 					<#SI Champ Notices Lien#>
-						<div>
-							<B><br><center><a href="<#Champ /Java Notices Lien>" target="_blank">
-							<#SI Champ Notices Support = Internet>
+						  <div>
+						   <B><br><center><a href="<#Champ /Java Notices Lien>" target="_blank">
+						   <#SI Champ Notices Support = Internet>
 								Visiter le site
-							<#SINON Champ Notices Support = Internet>
-								Consulter la ressource
-							<#FINSI Champ Notices Support = Internet>
-							</a></center></B>
-						</div>
+						   <#SINON Champ Notices Support = Internet>
+							   <script type="text/javascript">
+							   vel='<#Champ /Java /Liaison Notices Lien>';
+							   aff='Consulter la ressource';
+							   if (vel.toUpperCase().indexOf("HTTP://WWW.AMAZON")>=0) (aff='www.amazon.fr');
+							   document.write(aff);
+							   </script>
+							   <!-- Consulter la ressource-->
+						   <#FINSI Champ Notices Support = Internet>
+						   </a></center></B>
+						  </div>
 					<#FINSI Champ Notices Lien#>
 					<#SI Champ Exemplaires Exemplaire#>
 						<div class="zoneexemplairetxt"><#LISTE_EXEMPLAIRES FICHEEXE.HTM></div>
-					<#FINSI Champ Exemplaires Exemplaire#> 
+					<#FINSI Champ Exemplaires Exemplaire#>
 				</div>
 				<div class="fiche100pr100">&nbsp;</div>
 			</div class="fiche">
 			<div class="ajout"><a href="javascript:DivStatus( 'txtaffiche-', '<#VALEUR RANG_FICHE>' )">Afficher / Masquer la fiche complète</a></div>
 			<div class="ajout2">Ajouter au panier&nbsp;<#COCHE_PANIER></div>
 				<script type="text/javascript">
-				val='<#RESERVATION>'
+					val='<#AVIS>'
+					if ((val!="") && (val.indexOf("!--")<0))
+					document.write('<div class="ajout2">'+val+'</div>');
+				val='<#RESERVATION>';
+				p=val.indexOf("|"); if (p>=0) {
+				  val2=val.substring(p+1); val=val.substring(0,p);
+				} else val2='';
 				if ((val!="") && (val.indexOf("!--")<0))
 				document.write('<div class="ajout2">'+val+'</div>');
+				if ((val2!="") && (val2.indexOf("!--")<0))
+				document.write('<div class="ajout2">'+val2+'</div>');
 			</script>
 		</div class="zoneclaire">
 		<#FIN_LISTE>
@@ -549,7 +597,6 @@ document.write("<title>"+ch+"</title>")
 <INPUT TYPE="HIDDEN" NAME="FICHIERORIGINE" VALUE="<#FICHIERORIGINE>">
 <INPUT TYPE="HIDDEN" NAME="LANGAGE" VALUE="<#LANGAGE>">
 <INPUT TYPE="HIDDEN" NAME="AFFOPTIONS" VALUE="<#AFFOPTIONS>">
-<INPUT type="HIDDEN" NAME="NB_FICHES_PAR_PAGE" VALUE="<#NB_FICHES_PAR_PAGE>">
 <INPUT type="HIDDEN" NAME="ANCRE" VALUE="<#ANCRE>">
 <INPUT type="HIDDEN" NAME="RESULTAT" VALUE="<#RESULTAT>">
 <INPUT type="HIDDEN" NAME="AUTOPOSTAGE" VALUE="<#AUTOPOSTAGE>">
@@ -558,4 +605,7 @@ document.write("<title>"+ch+"</title>")
 </body>
 <#VAR ENLISTE=NON>
 </html>
+
+
+
 

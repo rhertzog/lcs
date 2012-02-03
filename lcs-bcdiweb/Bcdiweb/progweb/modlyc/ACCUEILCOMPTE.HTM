@@ -1,4 +1,4 @@
-<!-- 17/11/2008 ACCUEILCOMPTE.HTM -->
+<!-- AccueilCompte.htm - 01/06/2011 -->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
 <!-- 23/01/07 -->
@@ -9,11 +9,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <link rel="stylesheet" href="<#CONST REP_MODELES>print.css" type="text/css" media="print">
 <link href="<#CONST REP_MODELES>bcdi.css" rel="stylesheet" type="text/css" media="screen">
-
-
-
 <script type="text/javascript">
-<!--
 var fichierEnCours="ACCUEILCOMPTE.HTM"
 function supprimer(num) {
   if (confirm("Confirmation de la suppression ?"))
@@ -21,7 +17,7 @@ function supprimer(num) {
 }
 
   function DivStatus( nom, numero )
-    {
+	{
       var divID = nom + numero;
       if ( document.getElementById && document.getElementById( divID ) ) // Pour les navigateurs récents
         {
@@ -29,7 +25,7 @@ function supprimer(num) {
           PcH = true;
          }
       else if ( document.all && document.all[ divID ] ) // Pour les veilles versions
-        {
+		{
           Pdiv = document.all[ divID ];
           PcH = true;
         }
@@ -38,13 +34,13 @@ function supprimer(num) {
           Pdiv = document.layers[ divID ];
           PcH = true;
         }
-      else
+	  else
         {
 
           PcH = false;
         }
       if ( PcH )
-        {
+		{
           Pdiv.className = ( Pdiv.className == 'cachediv' ) ? '' : 'cachediv';
         }
     }
@@ -56,7 +52,7 @@ function CacheTout( nom )
           while ( document.getElementById( nom + NumDiv) )
             {
               SetDiv = document.getElementById( nom + NumDiv );
-              if ( SetDiv && SetDiv.className != 'cachediv' )
+			  if ( SetDiv && SetDiv.className != 'cachediv' )
                 {
                   DivStatus( nom, NumDiv );
                 }
@@ -65,29 +61,29 @@ function CacheTout( nom )
         }
       else if ( document.all ) // Pour les veilles versions
         {
-          while ( document.all[ nom + NumDiv ] )
+		  while ( document.all[ nom + NumDiv ] )
             {
               SetDiv = document.all[ nom + NumDiv ];
               if ( SetDiv && SetDiv.className != 'cachediv' )
                 {
                   DivStatus( nom, NumDiv );
-                }
-              NumDiv++;
-            }
-        }
-      else if ( document.layers ) // Pour les très veilles versions
-        {
-          while ( document.layers[ nom + NumDiv ] )
-            {
-              SetDiv = document.layers[ nom + NumDiv ];
-              if ( SetDiv && SetDiv.className != 'cachediv' )
-                {
-                  DivStatus( nom, NumDiv );
-                }
-              NumDiv++;
-            }
-        }
-    }
+				}
+			  NumDiv++;
+			}
+		}
+	  else if ( document.layers ) // Pour les très veilles versions
+		{
+		  while ( document.layers[ nom + NumDiv ] )
+			{
+			  SetDiv = document.layers[ nom + NumDiv ];
+			  if ( SetDiv && SetDiv.className != 'cachediv' )
+				{
+				  DivStatus( nom, NumDiv );
+				}
+			  NumDiv++;
+			}
+		}
+	}
 
 function init() {
   CacheTout('a');
@@ -97,137 +93,136 @@ function init() {
   if ("<#FICHIER>"=="ACCUEILCOMPTE") {DivStatus('c','1')}
 }
 
--->
 </script>
 </head>
 
-
-
 <body onLoad="javascript:init()">
-
 <div class="zonemenu">
   <div class="fxcal">
-    <div class="menucalibre">&nbsp;</div>
-    <div class="menuOFF">
-	  <div class="menuOFFgauche"></div>
-	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=index.htm">Recherche th&eacute;matique</a></div>
-	  <div class="menuOFFdroite"></div>
-	</div>
-	<div class="menuOFF">
-	  <div class="menuOFFgauche"></div>
-	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=rech-criteres.htm">Recherche par crit&egrave;res</a></div>
-	  <div class="menuOFFdroite"></div>
-	</div>
-	<div class="menuOFF">
-	  <div class="menuOFFgauche"></div>
-	  <div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM&MODELE=rech-thesaurus.htm">Recherche par Th&eacute;saurus</a></div>
-	  <div class="menuOFFdroite"></div>
-	</div>
+  <div class="fxcal">
+  <div class="menucalibre">&nbsp;</div>
+  <div class="menuOFF">
+    <div class="menuOFFgauche"></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=index.htm">Recherche th&eacute;matique</a></div>
+	<div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuOFF">
+	<div class="menuOFFgauche"></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-criteres.htm">Recherche par crit&egrave;res</a></div>
+	<div class="menuOFFdroite"></div>
+  </div>
+  <div class="menuOFF">
+	<div class="menuOFFgauche"></div>
+	<div class="menuOFFtxt"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=rech-thesaurus.htm">Recherche par Th&eacute;saurus</a></div>
+    <div class="menuOFFdroite"></div>
+  </div>
 
    <#VAR SWITCH=OFF>
 <#SI ENLISTE=OUI><#SI RESULTAT=PANIER><#VAR SWITCH=ON><#FINSI RESULTAT=PANIER><#FINSI ENLISTE=OUI>
 	<div class="menu<#VAR SWITCH>">
 	  <div class="menu<#VAR SWITCH>gauche"></div><div class="menu<#VAR SWITCH>txt">
   <#SI VALEUR NOMBRE_PANIER#0>
-<a href="<#URLDLL>?np=-<#NUMERO_PANIER>&nr=0&b=1">Mon panier (<#VALEUR NOMBRE_PANIER> fiche<#SI VALEUR NOMBRE_PANIER#1>s<#FINSI VALEUR NOMBRE_PANIER#1>)</a>
+	  <a href="<#URLDLL>?np=-<#NUMERO_PANIER>&nr=0&b=1">Mon panier (<#VALEUR NOMBRE_PANIER> fiche<#SI VALEUR NOMBRE_PANIER#1>s<#FINSI VALEUR NOMBRE_PANIER#1>)</a>
 <#SINON VALEUR NOMBRE_PANIER#0>
-        <span class="pasdepanier">Mon panier</span>
+		<span class="pasdepanier">Mon panier</span>
 <#FINSI VALEUR NOMBRE_PANIER#0>
 	  </div><div class="menu<#VAR SWITCH>droite"></div>
 	</div>
 
-    <div class='txt'>&nbsp;&nbsp;</div>
+	<div class='txt'>&nbsp;&nbsp;</div>
 
-    <div class="menuON"><div class="menuONgauche"></div><div class="menuONtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=ACCUEILCOMPTE.HTM">Mon compte</a></div><div class="menuONdroite"></div>
-    </div>
+	<div class="menuON"><div class="menuONgauche"></div><div class="menuONtxtcompte"><a href="<#URLDLL>?np=<#NUMERO_PANIER>&fichier=AccueilCompte.htm">Mon compte</a></div><div class="menuONdroite"></div>
+	</div>
 
   <script type="text/javascript">
-  <!--
   var nbTry = 0
   function tryClose()
   {
-    nbTry++
-    ch="La configuration de ce navigateur n'autorise pas sa fermeture programmée.\nFermez vous-même la fenêtre pour vous déconnecter !"
-    if (nbTry>1)
-      alert(ch)
-    else
-    {
-      t1 = new Date();
-      window.close();
-      t2 = new Date();
-      possible = (t2.getTime()-t1.getTime()>50) // il y a eu une demande de confirmation
-      if (possible) {nbTry = 0} else {alert(ch)}
-    }
+	nbTry++
+	ch="La configuration de ce navigateur n'autorise pas sa fermeture programmée.\nFermez vous-même la fenêtre pour vous déconnecter !"
+	if (nbTry>1)
+	  alert(ch)
+	else
+	{
+	  t1 = new Date();
+	  window.close();
+	  t2 = new Date();
+	  possible = (t2.getTime()-t1.getTime()>50) // il y a eu une demande de confirmation
+	  if (possible) {nbTry = 0} else {alert(ch)}
+	}
   }
   if(<#VALEUR NUMERO_UTILISATEUR>>0 && "<#LOGICIEL>"=="BCDIWEB"){
-    document.write('<div class="menuOFF">')
-    document.write('<div class="menuOFFgauche">&nbsp;</div>')
+	document.write('<div class="menuOFF">')
+	document.write('<div class="menuOFFgauche">&nbsp;</div>')
 // on ferme
-//    document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
+//	document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:tryClose();" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
 // ou on réinitialise
 //
 	ch="'?DECONNECTER=OUI'";
 	document.write('<div class="menuOFFtxt" style="cursor:pointer" onClick="javascript:window.location.href='+ch+'" title="(déconnecter <#UTILISATEUR>)">Déconnexion</div>')
 //
-    document.write('<div class="menuOFFdroite">&nbsp;</div>')
-    document.write('</div>')
+	document.write('<div class="menuOFFdroite">&nbsp;</div>')
+	document.write('</div>')
   }
-   -->
   </script>
   </div>
 
 
   <div class="menuseparat">&nbsp;</div>
   <div class="menuzonedatag">
-    <div class="menuzonedata">
-      <div class="fiche100pr100"><br>Compte lecteur : <b><#UTILISATEUR></b></div>
-      <div class="fiche100pr100">&nbsp;</div>
+	<div class="menuzonedata">
+	  <div class="fiche100pr100"><br>Compte lecteur : <b><#UTILISATEUR></b></div>
+	  <div class="fiche100pr100">&nbsp;</div>
 
-      <div class="fiche100pr100">
-        <div class="prerecapcompte">&nbsp;</div>
-        <div class="recapcompte">
-          <div class="titre">Récapitulatif de vos prêts</div>
-                <SCRIPT type="text/javascript">
-                <!--
-                <#INIT_PRETS>
-                nb=<#NB_PRETS_EN_COURS>
-                if(nb<=0)
-                  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucun prêt en cours<\/span><\/div>');
-                else{
-                  if (nb>1) m="s"; else  m="";
-                  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('a','1');javascript:CacheTout('b');javascript:CacheTout('c');javascript:CacheTout('d')\"  class=\"consult\">Le"+m+" consulter<\/a>");
-                  document.write('<span class="comptetxt"><strong>'+nb+'<\/strong> prêt'+m+' en cours <\/span><\/div>');
-                  }
+	  <div class="fiche100pr100">
+		<div class="prerecapcompte">&nbsp;</div>
+		<div class="recapcompte">
+		  <div class="titre">Récapitulatif de vos prêts</div>
+				<SCRIPT type="text/javascript">
+				// INIT_PRETS avant LISTE_RESERVATIONS FICHERESERVATION
+				<#INIT_PRETS>
+				var nbResasReelles=0; var chListeResas="";
+				<#LISTE_RESERVATIONS FICHERESERVATION>
+//				document.getElementById("TableResas").innerHTML=chListeResas;
+				nb=<#NB_PRETS_EN_COURS>
+				if(nb<=0)
+				  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucun prêt en cours<\/span><\/div>');
+				else{
+				  if (nb>1) m="s"; else  m="";
+				  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('a','1');javascript:CacheTout('b');javascript:CacheTout('c');javascript:CacheTout('d')\"  class=\"consult\">Le"+m+" consulter<\/a>");
+				  document.write('<span class="comptetxt"><strong>'+nb+'<\/strong> prêt'+m+' en cours <\/span><\/div>');
+				  }
 
-                nb=<#NB_PRETS_EN_RETARD>
-                if(nb<=0)
-                  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucun prêt en retard<\/span><\/div>');
-                else{
-                  if (nb>1) m="s"; else  m="";
-                  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('b','1');javascript:CacheTout('a');javascript:CacheTout('c');javascript:CacheTout('d')\"  class=\"consult\">Le"+m+" consulter<\/a>");
+				nb=<#NB_PRETS_EN_RETARD>
+				if(nb<=0)
+				  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucun prêt en retard<\/span><\/div>');
+				else{
+				  if (nb>1) m="s"; else  m="";
+				  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('b','1');javascript:CacheTout('a');javascript:CacheTout('c');javascript:CacheTout('d')\"  class=\"consult\">Le"+m+" consulter<\/a>");
 				  document.write('<span class="comptetxt"><strong>'+nb+'<\/strong> prêt'+m+' en retard <\/span><\/div>');
-                  }
+				  }
 
-                nb=<#NB_RESERVATIONS>
-                if(nb<=0)
-                  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucune réservation<\/span><\/div>');
-                else{
-                  if (nb>1) {m="s";art="Les";} else {m="";art="La";};
-                  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('c','1');javascript:CacheTout('a');javascript:CacheTout('b');javascript:CacheTout('d')\" class=\"consult\">"+art+" consulter<\/a>");
-                  document.write('<span class="comptetxt"><strong>'+nb+'<\/strong> réservation'+m+'<\/span><\/div>');
-                  }
-                if(<#NB_PRETS>>0){
-                  document.write("<div class=\"comptehisto\"><a href=\"javascript:DivStatus('d','1');javascript:CacheTout('b');javascript:CacheTout('c');javascript:CacheTout('a')\">");
-                  document.write("Consulter votre historique de prêt<\/a><\/div>");
-                  }
-                else{document.write('')}
-                -->
-                </SCRIPT>
-        </div>
-      </div>
+				nb=nbResasReelles;
+				if(nb<=0)
+				  document.write('<div class=\"comptehisto\"><span class="comptetxt">Aucune réservation<\/span><\/div>');
+				else{
+				  if (nb>1) {m="s";art="Les";} else {m="";art="La";};
+				  document.write("<div class=\"compte\"><a href=\"javascript:DivStatus('c','1');javascript:CacheTout('a');javascript:CacheTout('b');javascript:CacheTout('d')\" class=\"consult\">"+art+" consulter<\/a>");
+				  document.write('<span class="comptetxt"><strong>'+nb+'<\/strong> réservation'+m+'<\/span><\/div>');
+				  }
+
+				if(<#NB_PRETS>>0){
+				  document.write("<div class=\"comptehisto\"><a href=\"javascript:DivStatus('d','1');javascript:CacheTout('b');javascript:CacheTout('c');javascript:CacheTout('a')\">");
+				  document.write("Consulter votre historique de prêt<\/a><\/div>");
+				  }
+				else{document.write('')}
+				-->
+				</SCRIPT>
+		</div>
+	  </div>
 
 
-      <div class="fiche100pr100">&nbsp;</div>
+	  <div class="fiche100pr100">&nbsp;</div>
 
 	  <div id="b1" class="cachediv">
 				  <table class="blockblanccompte" width=100%><tr>
@@ -239,36 +234,38 @@ function init() {
 				  </table>
 	  </div>
 
-      <div id="a1" class="cachediv">
-                  <table class="blockblanccompte" width=100%><tr>
-                    <td class="titre">Liste des prêts en cours : </td>
-                    <td align="right"><a href="javascript:DivStatus( 'a', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
-                  </tr></table>
-                  <table class="comptetxtblock" border="1" rules="rows">
-                    <#LISTE_PRETS_EN_COURS FICHEPRETENCOURS>
-                  </table>
-      </div>
+	  <div id="a1" class="cachediv">
+				  <table class="blockblanccompte" width=100%><tr>
+					<td class="titre">Liste des prêts en cours : </td>
+					<td align="right"><a href="javascript:DivStatus( 'a', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
+				  </tr></table>
+				  <table class="comptetxtblock" border="1" rules="rows">
+					<#LISTE_PRETS_EN_COURS FICHEPRETENCOURS>
+				  </table>
+	  </div>
 
 	  <div id="c1" class="cachediv">
-                  <table class="blockblanccompte" width=100%><tr>
-                    <td class="titre">Liste des réservations : </td>
-                    <td align="right"><a href="javascript:DivStatus( 'c', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
-                  </tr></table>
-                  <table class="comptetxtblock" border="1" rules="rows">
-                   <#LISTE_RESERVATIONS FICHERESERVATION>
-                  </table>
-      </div>
+				  <table class="blockblanccompte" width=100%><tr>
+					<td class="titre">Liste des réservations : </td>
+					<td align="right"><a href="javascript:DivStatus( 'c', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
+				  </tr></table>
+				  <table class="comptetxtblock" border="1" rules="rows">
+					<SCRIPT type="text/javascript">
+					  document.write(chListeResas); 
+					</SCRIPT>
+				  </table>
+	  </div>
 
-      <div id="d1" class="cachediv">
-                  <table class="blockblanccompte" width=100%><tr>
-                    <td class="titre">Historique de vos prêts : </td>
-                    <td align="right"><a href="javascript:DivStatus( 'd', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
-                  </tr></table>
-                  <table class="comptetxtblock" border="1" rules="rows">
-                  <#LISTE_PRETS_TOUS FICHEPRETTOUS>
-                  </table>
-      </div>
-      <div class="txt100pr100">&nbsp;</div>
+	  <div id="d1" class="cachediv">
+				  <table class="blockblanccompte" width=100%><tr>
+					<td class="titre">Historique de vos prêts : </td>
+					<td align="right"><a href="javascript:DivStatus( 'd', '1' )" class="close">&nbsp;</a>&nbsp;&nbsp;</td>
+				  </tr></table>
+				  <table class="comptetxtblock" border="1" rules="rows">
+				  <#LISTE_PRETS_TOUS FICHEPRETTOUS>
+				  </table>
+	  </div>
+	  <div class="txt100pr100">&nbsp;</div>
     </div>
   </div>
 </div>

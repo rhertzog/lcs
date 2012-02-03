@@ -5,7 +5,15 @@
    ============================================= */
    
 /* $Id: sauv.php 626 2005-10-25 07:59:18Z plouf $ */
-
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</HEAD>
+<BODY>
+<?php
 require ("en-tete.php");
 $min=$_GET["min"];
 $hour=$_GET["hour"];
@@ -35,7 +43,7 @@ echo "<br>";
 
 echo "<form method=\"get\" action=\"majbaz.php\">";
 echo "<H2>Mise &#224; jour automatique</H2>";
-echo "Heure de mise &#224; jour ";
+echo "Heure de mise &#224; jour : ";
 echo "<INPUT type='hidden' name='cron' value='1'>";
 echo "<select size='1' name='hour'>";
 echo "<OPTION VALUE='*'>*</OPTION>";
@@ -61,7 +69,7 @@ for ($i=0;$i<60;$i+=5) {
 echo "</select> mn ";
 echo "&nbsp;<input type=\"submit\" value=\"Enregistrer\">\n";
 echo "</form>";
-echo "(R&#233;gler l'heure sur * pour faire mise &#224; jour toutes les heures)";
+echo "(R&#233;gler l'heure sur * pour faire la mise &#224; jour toutes les heures)";
 echo "<br><br>";
 
 $filename = "synchro.log"; 
@@ -70,7 +78,7 @@ if (file_exists($filename)) {
 	$handle = fopen ($filename, "r"); 
 	$contenu = fread ($handle, filesize ($filename));
 	fclose ($handle);
-	echo utf8_decode($contenu);
+	echo $contenu;
 	}
 echo "<br><br>";
 

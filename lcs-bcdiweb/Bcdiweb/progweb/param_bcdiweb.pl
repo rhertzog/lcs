@@ -3,17 +3,18 @@
 use strict;
 use File::Basename;
 use File::Copy;
+use Encode;
 
 
 #############################################################
-# Script de mise ‡ jour de BCDIWEB  sur un serveur Linux    #
-# Alexis AbramÈ - CRDP de Poitou-Charentes - novembre 2007  #
+# Script de mise √† jour de BCDIWEB  sur un serveur Linux    #
+# Alexis Abram√© - CRDP de Poitou-Charentes - novembre 2007  #
 #############################################################
 
 #A lancer en tant que SuperUtilisateur (su ou root)
 my $sourcearchori=`pwd`;
 chomp $sourcearchori;
-my $version_cgi="Bcdi Web v. 2.0";
+my $version_cgi="Bcdi Web v. 2.12";
 my $archivebcdiweb="BcdiWebLinux.tar.gz";
 my $emplacement_installation_cgi="/usr/bcdiserv/progweb";
 my $chemin_apacheconf="/etc/httpd/conf/httpd.conf";
@@ -23,13 +24,13 @@ my $group_bcdi;
 my $alias_bcdi;
 my $fichier_mdl="bcdiweb_init.mdl";
 
-#structure pour stocker les infos trouvÈes dans les fichiers ini existants 
+#structure pour stocker les infos trouv√©es dans les fichiers ini existants 
 my $rbases=[
 	     {
 		 'nom'=>"",
 	     }
 	    ];
-#structure pour stocker les questions posÈes au lancement du script
+#structure pour stocker les questions pos√©es au lancement du script
 my $rconfig=[
 	     {
 		 'message'=>"Emplacement du fichier $archivebcdiweb :",
@@ -47,22 +48,22 @@ my $rconfig=[
 		 'creation'=>0,
 	     },
 	     ];
-#hachage des paramËtres d'une base pour lesquels une question sera posÈe
+#hachage des param√®tres d'une base pour lesquels une question sera pos√©e
 
 my %conseil_ini=(
-		 "nom"=>"Nom de cette base.\nCe mot qui servira ‡ l'appel d'une base dans l'URL sera composÈ de caractËres non accentuÈs uniquement sans espace.",
-		 "DONNEES"=>"\nChemin UNIX d'accËs ‡ cette base.",
-		 "ELECTRE"=>"\nActivation de l'accËs aux objets Electre (couvertures, sommaires, biographies...).\nAttention : l'abonnement ‡ MemoElectre ou MemoElectre plus est nÈcessaire.",
-		 "ORGANISME"=>"\nNom de l'Ètablissement abonnÈ ‡ Bcdi tel qu'indiquÈ sur la licence.",
-		 "CODE"=>"\nCode d'accËs de l'abonnÈ Bcdi tel qu'indiquÈ sur la licence.",
+		 "nom"=>"Nom de cette base.\nCe mot qui servira √† l'appel d'une base dans l'URL sera compos√© de caract√®res non accentu√©s uniquement sans espace.",
+		 "DONNEES"=>"\nChemin UNIX d'acc√®s √† cette base.",
+		 "ELECTRE"=>"\nActivation de l'acc√®s aux objets Electre (couvertures, sommaires, biographies...).\nAttention : l'abonnement √† MemoElectre ou MemoElectre plus est n√©cessaire.",
+		 "ORGANISME"=>"\nNom de l'√©tablissement abonn√© √† Bcdi tel qu'indiqu√© sur la licence.",
+		 "CODE"=>"\nCode d'acc√®s de l'abonn√© Bcdi tel qu'indiqu√© sur la licence.",
 		 "BASEBIBLIO"=>"\nBase bibliographique (base sans exemplaires).",
-		 "COMPTE"=>"\nAffichage de l'onglet Compte dans les Ècrans de recherche.",
-		 "RESERVATIONS"=>"\nPossibilitÈ d'effectuer les rÈservations ‡ distance.",
-		 "NOM_BASE"=>"\nIntitulÈ de votre base dans les Ècrans de recherche.",
-		 "MARGUERITE"=>"\nAffichage de la marguerite (codage en couleur de la cote Dewey) dans les rÈsultats de recherche.",
-		 "MODELES"=>"\nChoix du rÈpertoire des modËles. Choix autorisÈs :\n1 : modËles pour le collËge,\n2 : modËles pour le lycÈe,\n3 : modËles pour utilisateurs adultes.",
-		 #"EMAIL"=>"\nAdresse mail du responsable du site.",#non gÈrÈ
-		 #"AFFDICO"=>"\nActivation de la recherche avec Dico (recherche plein-texte amÈliorÈe).",#non gÈrÈ
+		 "COMPTE"=>"\nAffichage de l'onglet Compte dans les √©crans de recherche.",
+		 "RESERVATIONS"=>"\nPossibilit√© d'effectuer les r√©servations √† distance.",
+		 "NOM_BASE"=>"\nIntitul√© de votre base dans les √©crans de recherche.",
+		 "MARGUERITE"=>"\nAffichage de la marguerite (codage en couleur de la cote Dewey) dans les r√©sultats de recherche.",
+		 "MODELES"=>"\nChoix du r√©pertoire des mod√®les. Choix autoris√©s :\n1 : mod√®les pour le coll√®ge,\n2 : mod√®les pour le lyc√©e,\n3 : mod√®les pour utilisateurs adultes.",
+		 #"EMAIL"=>"\nAdresse mail du responsable du site.",#non g√©r√©
+		 #"AFFDICO"=>"\nActivation de la recherche avec Dico (recherche plein-texte am√©lior√©e).",#non g√©r√©
 		 );
 
 my $option_script=shift;
@@ -80,7 +81,7 @@ sub verif_root{
 my $whoami=`whoami`;
 chomp $whoami;
     if ($whoami ne "root"){
-	print "Vous Ítes $whoami.\nCette installation doit Ítre lancÈe par l'utilisateur 'root'.\nVous pouvez forcer l'installation sans vÈrification de l'utilisateur avec l'option -f\n";
+	print "Vous √™tes $whoami.\nCette installation doit √™tre lanc√©e par l'utilisateur 'root'.\nVous pouvez forcer l'installation sans v√©rification de l'utilisateur avec l'option -f\n";
 	exit 1; 
     }
     else {	
@@ -95,27 +96,27 @@ sub menu{
     system("clear");
     my $menu=<<"FIN_MENU";
                    *************************************************
-                   *      ParamÈtrage d\'une base de donnÈes       *
-                   *        pour BCDIWEB v. 2.0 sous Linux         *
+                   *      Param√©trage d\'une base de donn√©es       *
+                   *        pour BCDIWEB v. 2.12 sous Linux        *
                    *************************************************
 
   
 
 
-    1. ParamÈtrage d\'une base
+    1. Param√©trage d\'une base
     2. Quitter
 
 
 
-ProblËmes d\'affichage ?
-Ce programme utilise le jeu de caractËres ISO-8859-15. RÈglez votre 
-console en consÈquence.
-La plupart des questions posÈes sont accompagnÈes d\'une valeur par
-dÈfaut (chemin d\'installation par ex.) ou des valeurs possibles de 
-la rÈponse (O/n pour oui ou non par ex.). Dans ce dernier cas la
-valeur par dÈfaut est en majuscules.
-Pour sÈlectionner la valeur par dÈfaut proposÈe dans la question, 
-appuyez simplement sur EntrÈe. 
+Probl√®mes d\'affichage ?
+Ce programme utilise le jeu de caract√®res UTF-8. R√©glez votre 
+console en cons√©quence.
+La plupart des questions pos√©es sont accompagn√©es d\'une valeur par
+d√©faut (chemin d\'installation par ex.) ou des valeurs possibles de 
+la r√©ponse (O/n pour oui ou non par ex.). Dans ce dernier cas la
+valeur par d√©faut est en majuscules.
+Pour s√©lectionner la valeur par d√©faut propos√©e dans la question, 
+appuyez simplement sur Entr√©e. 
 
 FIN_MENU
 
@@ -133,15 +134,15 @@ print $menu;
 	$reponse_menu{$reponse_utilisateur}->();
     }
     else{
-	print "RÈponse incorrecte !\n";
+	print "R√©ponse incorrecte !\n";
 	goto QUESTION;
     }
 }
 
 sub creation_ini{
 ############################################################
-# Fonction d'installation du cgi avec rÈcupÈration         #
-# du paramÈtrage d'une ancien cgi Bcdi                     #
+# Fonction d'installation du cgi avec r√©cup√©ration         #
+# du param√©trage d'une ancien cgi Bcdi                     #
 ############################################################
     &chemin_installation("1");
     &parametrage_nouvelle_base;
@@ -153,7 +154,7 @@ sub chemin_installation{
     system("clear");
      print << "DEBUT_PARAM";
 #####################################################
-# DÈclaration des paramËtres d'installation du cgi  #
+# D√©claration des param√®tres d'installation du cgi  #
 #####################################################
 
 DEBUT_PARAM
@@ -162,7 +163,7 @@ DEBUT_PARAM
     
     for ($debut_option..$fin_option){
 EMPLACEMENT_INSTALLATION:
-	print "$rconfig->[$_]->{message}\n(par dÈfaut : ${$rconfig->[$_]->{chemin}})\n";
+	print "$rconfig->[$_]->{message}\n(par d√©faut : ${$rconfig->[$_]->{chemin}})\n";
 	my $chemin_reponse=<>;
 	chomp $chemin_reponse;
 	if ($chemin_reponse){
@@ -172,7 +173,7 @@ EMPLACEMENT_INSTALLATION:
 	if (! $testemplacement){
 	    if ($rconfig->[$_]->{creation}){
 	      #QUESTION_CREATION_EMPLACEMENT:
-		print "Le rÈpertoire n'existe pas. Voulez-vous le crÈer ? (o/n)\n";
+		print "Le r√©pertoire n'existe pas. Voulez-vous le cr√©er ? (o/n)\n";
 		my $reponse_utilisateur="";
 		while ( ! $reponse_utilisateur ){
 		    $reponse_utilisateur=<>;
@@ -182,10 +183,10 @@ EMPLACEMENT_INSTALLATION:
 						   my $chemin=shift;
 						   my $creation_chemin=mkdir $chemin,0770;
 						   if ($creation_chemin){
-						       print "L'emplacement $chemin a ÈtÈ crÈÈ !\n";
+						       print "L'emplacement $chemin a √©t√© cr√©√© !\n";
 						   }
 						   else {
-						       print "La crÈation de l'emplacement $chemin a ÈchouÈ !\n($!)\n";
+						       print "La cr√©ation de l'emplacement $chemin a √©chou√© !\n($!)\n";
 						       goto EMPLACEMENT_INSTALLATION;
 						   }
 					       },
@@ -196,25 +197,25 @@ EMPLACEMENT_INSTALLATION:
 			$reponse_configuration{$reponse_utilisateur}->(${$rconfig->[$_]->{chemin}});
 		    }
 		    else{
-			print "RÈponse incorrecte !\n";
+			print "R√©ponse incorrecte !\n";
 			$reponse_utilisateur="";
 		    }
 		}
 	    }
 	    else{
-		print "L'emplacement indiquÈ n'est pas correct !\n\n";
+		print "L'emplacement indiqu√© n'est pas correct !\n\n";
 		goto EMPLACEMENT_INSTALLATION;
 	    }
 	}
 	print "\n";
     }
-#rÈcupÈration du groupe et de l'utilisateur web :
+#r√©cup√©ration du groupe et de l'utilisateur web :
     my @stat_progweb=stat (${$rconfig->[1]->{chemin}});
     $user_web=$stat_progweb[4];
     $group_web=$stat_progweb[5];
-#test de compatibilitÈ :$emplacement_installation_cgi
+#test de compatibilit√© :$emplacement_installation_cgi
     if ( -e "$emplacement_installation_cgi/bcdi3web.cgi"){
-	print "Le rÈpertoire $emplacement_installation_cgi semble contenir le cgi Bcdi 3 Web :\nMise ‡ jour impossible.\nVeuillez procÈder ‡ une installation complËte de $version_cgi.\n";
+	print "Le r√©pertoire $emplacement_installation_cgi semble contenir le cgi Bcdi 3 Web :\nMise √† jour impossible.\nVeuillez proc√©der √† une installation compl√®te de $version_cgi.\n";
 	exit 0;
     }
 }
@@ -223,7 +224,7 @@ sub parametrage_nouvelle_base{
     system('clear');
      print << "DEBUT_PARAM";
 #####################################################
-# ParamÈtrage d'une nouvelle base                   #
+# Param√©trage d'une nouvelle base                   #
 #####################################################
 
 DEBUT_PARAM
@@ -233,7 +234,7 @@ my %repertoire_modeles=(
 			"3"=>"$emplacement_installation_cgi/modspe",
 			);
 
-#Question Nom de la base : pour crÈer le fichier d'ini 
+#Question Nom de la base : pour cr√©er le fichier d'ini 
 ######################################################
     print "$conseil_ini{nom}\n";
     my $nom_base;
@@ -241,17 +242,17 @@ my %repertoire_modeles=(
     $nom_base=<>;
     chomp($nom_base);
     while (! verif_nom_base($nom_base)){
-	print "RÈponse incorrecte !\nVotre choix :\n";
+	print "R√©ponse incorrecte !\nVotre choix :\n";
 	$nom_base=<>;
 	chomp ($nom_base);
     }
     while (! verif_absence_fichier_ini($nom_base)){
-	print "Le fichier ". "bcdiweb_"."$nom_base".".ini "."existe dÈj‡ !\nAutre choix :\n";
+	print "Le fichier ". "bcdiweb_"."$nom_base".".ini "."existe d√©j√† !\nAutre choix :\n";
 	$nom_base=<>;
 	chomp ($nom_base);
     }
     my $fichier_ini="bcdiweb_"."$nom_base".".ini";
-    open (INI,">$emplacement_installation_cgi/$fichier_ini") or die "Impossible de crÈer $fichier_ini : $!\n";
+    open (INI,">$emplacement_installation_cgi/$fichier_ini") or die "Impossible de cr√©er $fichier_ini : $!\n";
     open (MDL,"<$emplacement_installation_cgi/$fichier_mdl") or die "Impossible d'ouvrir le fichier $fichier_mdl : $!\n";
     my $repertoire_modeles="";
   while (my $ligne=<MDL>){
@@ -276,7 +277,7 @@ my %repertoire_modeles=(
 		  $reponse_defaut="n";
 	      }
 	      print "\n";
-#Les rÈponses : analyse et Ècriture :
+#Les r√©ponses : analyse et √©criture :
 #####################################
 	      $reponse=<>;
 	      chomp ($reponse);
@@ -292,10 +293,10 @@ my %repertoire_modeles=(
 		      chomp ($reponse);
 		  }
 		  if (&ajouter_droits($reponse)){
-		      print "Ajout des droits d'Ècriture pour le groupe sur le rÈpertoire $reponse\n";
+		      print "Ajout des droits d'√©criture pour le groupe sur le r√©pertoire $reponse\n";
 		  }
 		  else{
-		      print "Impossible d'ajouter les droits d'Ècriture pour le groupe sur le rÈpertoire $ligne\n";
+		      print "Impossible d'ajouter les droits d'√©criture pour le groupe sur le r√©pertoire $ligne\n";
 		  }
 		  my @stat_donnees=stat ($reponse);
 		  $group_bcdi=$stat_donnees[5];
@@ -326,7 +327,7 @@ my %repertoire_modeles=(
 	      elsif ( $param[0] eq "MARGUERITE" || $param[0] eq "BASEBIBLIO" || $param[0] eq "COMPTE" || $param[0] eq "RESERVATIONS" || $param[0] eq "AFFDICO" ){
 		  
 		  while (! &verif_ouinon($reponse)){
-		      print "RÈponse incorrecte (o/n) !\nVotre choix :\n";
+		      print "R√©ponse incorrecte (o/n) !\nVotre choix :\n";
 		      $reponse=<>;
 		      chomp ($reponse);
 		  }
@@ -343,7 +344,7 @@ my %repertoire_modeles=(
 	      }
 	      elsif ( $param[0] eq "ELECTRE" ){
 		  while (! &verif_commentaire($reponse)){
-		      print "RÈponse incorrecte (o/n) !\nVotre choix :\n";
+		      print "R√©ponse incorrecte (o/n) !\nVotre choix :\n";
 		      $reponse=<>;
 		      chomp ($reponse);
 		  }
@@ -356,7 +357,7 @@ my %repertoire_modeles=(
 		  else{
 		      $param[1]="$emplacement_installation_cgi"."/electre";
 		      if ( ! -e $param[1] ){
-			  mkdir ($param[1],0770) or die "Impossible de crÈer $param[1] : $:!\n";
+			  mkdir ($param[1],0770) or die "Impossible de cr√©er $param[1] : $:!\n";
 		      }
 		      $ligne="$param[0]"."="."$param[1]";
 		      $ligne=&unix2dos("$ligne\n");
@@ -366,7 +367,7 @@ my %repertoire_modeles=(
 	      }
 	      elsif ( $param[0] eq "EMAIL" ){
 		  while (! &verif_mail($reponse)){
-		      print "RÈponse incorrecte !\nVotre choix :\n";
+		      print "R√©ponse incorrecte !\nVotre choix :\n";
 		      $reponse=<>;
 		      chomp ($reponse);
 		  }
@@ -378,7 +379,7 @@ my %repertoire_modeles=(
 	      }
 	      elsif ( $param[0] eq "CODE" ){
 		  while (! &verif_code($reponse)){
-		      print "RÈponse incorrecte (8 lettres majuscules) !\nVotre choix :\n";
+		      print "R√©ponse incorrecte (8 lettres majuscules) !\nVotre choix :\n";
 		      $reponse=<>;
 		      chomp ($reponse);
 		  }
@@ -390,7 +391,7 @@ my %repertoire_modeles=(
 	      }
 	      else{
 		  while (! $reponse){
-		      print "RÈponse vide !\nVotre choix :\n";
+		      print "R√©ponse vide !\nVotre choix :\n";
 		      $reponse=<>;
 		      chomp ($reponse);
 		  }
@@ -399,20 +400,20 @@ my %repertoire_modeles=(
 		  next;
 	      }
 	  }
-# Il n'existe pas de conseil concernant ces options : pas de question posÈe 
+# Il n'existe pas de conseil concernant ces options : pas de question pos√©e 
 ###########################################################################
 	  else{
 	      if ($param[0] eq "TRAVAIL"){
 		  if ($param[1]){
 		      if ( ! -e $param[1] ){
-			  mkdir ($param[1],0770) or die "Impossible de crÈer $param[1] : $:!\n";
+			  mkdir ($param[1],0770) or die "Impossible de cr√©er $param[1] : $:!\n";
 		      }
 		  }
 		  else{
 		      my $copie_nom_base=lc($nom_base);
 		      $param[1]="$emplacement_installation_cgi/trav"."$copie_nom_base";
 		      if ( ! -e $param[1] ){
-			  mkdir ($param[1],0770) or die "Impossible de crÈer $param[1] : $:!\n";
+			  mkdir ($param[1],0770) or die "Impossible de cr√©er $param[1] : $:!\n";
 		      }
 		  }
 		  $ligne=&unix2dos("$param[0]=$param[1]\n");
@@ -435,7 +436,7 @@ my %repertoire_modeles=(
 			  next;
 		      }
 		      elsif ( ! -e $param[1] ){
-			  mkdir ($param[1],0770) or die "Impossible de crÈer $param[1] : $:!\n";
+			  mkdir ($param[1],0770) or die "Impossible de cr√©er $param[1] : $:!\n";
 		      }
 		  }
 		  else{
@@ -443,7 +444,7 @@ my %repertoire_modeles=(
 		      $param[1]="$emplacement_installation_cgi"."/cache";
 		    #  $param[1]="$emplacement_installation_cgi/trav"."$copie_nom_base"."/cache";
 		      if ( ! -e $param[1] ){
-			  mkdir ($param[1],0770) or die "Impossible de crÈer $param[1] : $:!\n";
+			  mkdir ($param[1],0770) or die "Impossible de cr√©er $param[1] : $:!\n";
 		      }
 		  }
 		  $ligne=&unix2dos("$param[0]=$param[1]\n");
@@ -465,12 +466,12 @@ my %repertoire_modeles=(
   }
     close MDL;
     close INI;
-    print "La base $nom_base a ÈtÈ paramÈtrÈe avec succËs !\n\n";
+    print "La base $nom_base a √©t√© param√©tr√©e avec succ√®s !\n\n";
 &question_nouvelle_base ();
 }
 
 sub question_nouvelle_base {
-print "\nVoulez-vous effectuer le paramÈtrage d'une nouvelle base ? (o/n)\n";
+print "\nVoulez-vous effectuer le param√©trage d'une nouvelle base ? (o/n)\n";
     my $reponse_utilisateur="";
     while (! $reponse_utilisateur ){
 	$reponse_utilisateur=<>;
@@ -484,7 +485,7 @@ print "\nVoulez-vous effectuer le paramÈtrage d'une nouvelle base ? (o/n)\n";
 	    $reponse_parametres{$reponse_utilisateur}->();
 	}
 	else{
-	    print "RÈponse incorrecte !\n";
+	    print "R√©ponse incorrecte !\n";
 	    $reponse_utilisateur="";
 	}
     }
@@ -498,7 +499,7 @@ sub verif_nom_base{
     if (! $nom_base){
 	return 0;
     }
-#si le nom contient autre chose qu'un caractËre alphanumÈrique ou un _ :
+#si le nom contient autre chose qu'un caract√®re alphanum√©rique ou un _ :
     elsif ($nom_base=~m/[\W_]/){
 	return 0;
     }
@@ -561,7 +562,13 @@ sub dos2unix {
 }
 sub unix2dos {
     my $ligne=shift;
+    $ligne=utf8_2_8859($ligne);
     $ligne=~s/\n/\r\n/g;
+    return $ligne;
+}
+sub utf8_2_8859{
+    my $ligne=shift;
+    $ligne=encode("iso-8859-1", decode ("utf-8", $ligne));
     return $ligne;
 }
 sub verif_absence_fichier_ini{
@@ -578,7 +585,7 @@ sub ajouter_droits{
     my $repertoire=shift;
     my $test_droits=system ("chmod -R g+rwx $repertoire");
     if ($test_droits){
-	print "ProblËme pendant le changement des droits sur le rÈpertoire $repertoire :\npour permettre ‡ Bcdi Web d'accÈder ‡ la base, vous devrez donner les droits de lecture et d'Ècriture pour le groupe sur ce rÈpertoire et son contenu.\n";
+	print "Probl√®me pendant le changement des droits sur le r√©pertoire $repertoire :\npour permettre √† Bcdi Web d'acc√©der √† la base, vous devrez donner les droits de lecture et d'√©criture pour le groupe sur ce r√©pertoire et son contenu.\n";
 	return 0;
     }else{
 	return 1;
@@ -598,18 +605,18 @@ sub reglage_droits {
     my $chemin=shift;
     print << "DEBUT_REGLAGES_DROITS";
 ########################
-# RÈglage des droits   #
+# R√©glage des droits   #
 ########################
 
 DEBUT_REGLAGES_DROITS
 
     my $test_droits=system ("chown -R $user_web.$group_web $chemin >/dev/null 2>&1");
     if ($test_droits){
-	print "ProblËme pendant le rÈglage des droits sur le rÈpertoire $chemin (code de retour Unix : $test_droits) : $!\n";
+	print "Probl√®me pendant le r√©glage des droits sur le r√©pertoire $chemin (code de retour Unix : $test_droits) : $!\n";
 	exit 0;
     }
     else{
-	print "RÈglage des droits sur $chemin : Ok !\n\n";
+	print "R√©glage des droits sur $chemin : Ok !\n\n";
     }
 }
 sub info_web {
@@ -617,7 +624,7 @@ sub info_web {
     chomp ($option_info);
     my $nom_base="";
     $alias_bcdi=~s/\///g;
-    opendir(PROGWEB,$emplacement_installation_cgi) or die "Impossible d'ouvrir le rÈpertoire progweb : $!\n";
+    opendir(PROGWEB,$emplacement_installation_cgi) or die "Impossible d'ouvrir le r√©pertoire progweb : $!\n";
     my $compteur_base=0;
     my @base=();
     while (defined( my $nom_fichier = readdir(PROGWEB))){
@@ -641,7 +648,7 @@ sub info_web {
 # Infos sur l\'utilisation du cgi           #
 ############################################
 	
-Installation terminÈe !
+Installation termin√©e !
 Pour interroger une de vos bases, dans la barre d\'url
 d\'un navigateur, tapez :
 
@@ -655,21 +662,21 @@ FIN_INFO
 # Infos sur l\'utilisation du cgi           #
 ############################################
 	
-Installation terminÈe !
+Installation termin√©e !
 
-Vous devez ‡ prÈsent attribuer le rÈpertoire ci-dessous
-‡ l\'utilisateur web et ‡ son groupe. Par exemple :
+Vous devez √† pr√©sent attribuer le r√©pertoire ci-dessous
+√† l\'utilisateur web et √† son groupe. Par exemple :
 chown -R apache.apache $emplacement_installation_cgi
 
-Vous devez aussi ajouter l\'utilisateur web au groupe du propriÈtaire
-des fichiers de vos bases (gestbcdi, normalement). Pour cela, Èditez
-le fichier /etc/group et ajouter ‡ la fin de la ligne concernant le groupe
+Vous devez aussi ajouter l\'utilisateur web au groupe du propri√©taire
+des fichiers de vos bases (gestbcdi, normalement). Pour cela, √©ditez
+le fichier /etc/group et ajouter √† la fin de la ligne concernant le groupe
 gestbcdi, l\'utilisateur web. La ligne ci-dessous, par exemple, ajoute l\'utilisateur
 apache au groupe gestbcdi :
 gestbcdi:x:501:apache
 
-Puis vous devrez dÈclarer le cgi dans le fichier de configuration
-d\'Apache, en ajoutant ‡ la fin de ce fichier (souvent httpd.conf)
+Puis vous devrez d√©clarer le cgi dans le fichier de configuration
+d\'Apache, en ajoutant √† la fin de ce fichier (souvent httpd.conf)
 la ligne :
 include $emplacement_installation_cgi/confhttp/
 
@@ -689,8 +696,8 @@ FIN_INFO
 # Infos sur l\'utilisation du cgi           #
 ############################################
 	
-Installation terminÈe !
-Le fichier de conf d\'Apache a ÈtÈ sauvegardÈ sous le nom :
+Installation termin√©e !
+Le fichier de conf d\'Apache a √©t√© sauvegard√© sous le nom :
 $emplacement_installation_cgi/sauvehttpd.conf
 
 Pour interroger une de vos bases, dans la barre d\'url

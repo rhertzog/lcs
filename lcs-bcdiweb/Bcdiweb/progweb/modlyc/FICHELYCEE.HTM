@@ -1,5 +1,4 @@
-<!-- 17/11/2008 FicheLycee.htm -->
-<!-- FicheLycee.htm -->
+<!-- 01/06/2009 FicheLycee.htm -->
 <div class="zoneafftxt">
   <div class="fiche100pr100">
 	<script type="text/javascript">
@@ -27,7 +26,7 @@
 	  {
 		ch_aff=typeNotice+" de "+supportNotice;
 		ch_aff+=" dans <i><#Champ /Java /Couleur Notices Titre Ng></i>";
-		ch_aff+=" (<#Champ /Java Notices Date parution>) ";
+		ch_aff+=" (<#Champ /Java NotGen Date parution>) ";
 		ch_aff+=", <#Champ /Java Notices Collation>  <i>(<#Champ /Java Notices Type Doc.>)</i><br/>";
 		ch_aff+="<div class='titre'><#Champ /Java /Couleur Notices Titre></div>";
 	  }
@@ -65,16 +64,15 @@
 	  rajouterStrong("<#Intitule Notices ISSN> ","<#Champ /Java Notices ISSN>");
 	  rajouterStrong("<#Intitule Notices N° Normalisé> ","<#Champ /Java Notices N° Normalisé>");
 	  ch_aff+="<br/><table width=96%><tr>";
-	  if (noticeGenerale) {
-		vel='<#Champ /Java /Liaison Notices Lien>';
-		if ((vel>"!") && (vel.toUpperCase().indexOf("HTTP://")>=0)) ch_aff+="<td width=24%>Lien : "+vel+"</td>";
-	  }
-          <#SI AFFRESSOURCEFICHECOMPLETE=OUI>
-		if (rajouterStrong("<td width=24%>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 1>")) ch_aff+="</td>";
-          <#FINSI AFFRESSOURCEFICHECOMPLETE=OUI>
-		if (rajouterStrong("<td width=24%>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 2>")) ch_aff+="</td>";
-		if (rajouterStrong("<td>Ressource liée : ","<#Champ /Java /Ressource Notices Ressource 3>")) ch_aff+="</td>";
-	  ch_aff+="</tr></table><br/>";
+		vel='<#Champ /Java /Ressource Notices Ressource 1>';
+		<#SI AFFRESSOURCEFICHECOMPLETE=OUI>
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 1></td>";    
+		<#FINSI AFFRESSOURCEFICHECOMPLETE=OUI>	
+		vel='<#Champ /Java /Ressource Notices Ressource 2>'; 
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 2></td>";  	
+		vel='<#Champ /Java /Ressource Notices Ressource 3>'; 
+		if (vel>'!') ch_aff+="<td width=24%>Ressource liée : <#Champ /Java /Ressource Notices Ressource 3></td>";  			
+		 ch_aff+="</tr></table><br/>";
 
 // Pour Citer lycée
 	  ch_aff+="<i></b><b>Pour citer le document : </b></i><BR>";
@@ -108,7 +106,7 @@
 			ch_aff+="<#Champ /Java Notices Titre Ng> [en ligne]. ";
 			NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			dateNotice="<#Champ /Java Notices Date parution>"
+			dateNotice="<#Champ /Java NotGen Date parution>"
 			ch_aff+=dateNotice + ', ';
 			dateNotice="<#Champ /Java Notices Date parution>";
 			ch_aff+='date de mise à jour ' + dateNotice + ' ';
@@ -126,7 +124,7 @@
 			ch_aff+="In <#Champ /Java Notices Titre Ng> [en ligne]. ";
 			NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			dateNotice="<#Champ /Java Notices Date parution>"
+			dateNotice="<#Champ /Java NotGen Date parution>"
 			ch_aff+=dateNotice + ', ';
 			dateNotice="<#Champ /Java Notices Date parution>";
 			ch_aff+='date de mise à jour ' + dateNotice + ' ';
@@ -143,7 +141,7 @@
 	  {
 		ch_aff+="<#Champ /Java Notices Titre>. ";
 		ch_aff+="<#Champ /Java Notices Collection> [en ligne], ";
-		ch_aff+="<#Champ /Java Notices Date parution>, ";
+		ch_aff+="<#Champ /Java NotGen Date parution>, ";
 		ch_aff+="<#Champ /Java Notices N° Collection>, ";
 		dateNotice="<#Champ /Java Notices Date parution>";
 		ch_aff+='date de mise à jour ' + dateNotice + ' ';
@@ -178,7 +176,7 @@
 			  ch_aff+="[<#Champ /Java Notices Support>]. ";
 			  NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			  if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			  ch_aff+="<#Champ /Java Notices Date parution>. ";
+			  ch_aff+="<#Champ /Java NotGen Date parution>. ";
 			  ch_aff+="<#Champ /Java Notices Titre>";
 			  NoticesCollation="<#Champ /Java Notices Collation>";
 			  if (NoticesCollation!="") ch_aff+=", <#Champ /Java Notices Collation>. ";
@@ -190,7 +188,7 @@
 			  ch_aff+="[<#Champ /Java Notices Support>]. ";
 			  NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			  if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			  ch_aff+="<#Champ /Java Notices Date parution>";
+			  ch_aff+="<#Champ /Java NotGen Date parution>";
 			  NoticesCollation="<#Champ /Java Notices Collation>";
 			  if (NoticesCollation!="") ch_aff+=". <#Champ /Java Notices Collation>. ";
 		  <#FINSI Champ Notices Type Notice = Contribution>
@@ -201,7 +199,7 @@
 		  NoticesCollection="<#Champ /Java Notices Collection>";
 		  if (NoticesCollection!="") ch_aff+="<#Champ /Java Notices Collection> ";
 		  ch_aff+="[<#Champ /Java Notices Support>], ";
-		  ch_aff+="<#Champ /Java Notices Date parution>, ";
+		  ch_aff+="<#Champ /Java NotGen Date parution>, ";
 		  ch_aff+="<#Champ /Java Notices N° Collection>"
 		  NoticesCollation="<#Champ /Java Notices Collation>";
 		  if (NoticesCollation!="") ch_aff+=", <#Champ /Java Notices Collation>";
@@ -212,7 +210,7 @@
 	  {
 		ch_aff+="<#Champ /Java Notices Titre>. ";
 		ch_aff+="<#Champ /Java Notices Collection>, ";
-		ch_aff+="<#Champ /Java Notices Date parution>, ";
+		ch_aff+="<#Champ /Java NotGen Date parution>, ";
 		ch_aff+="<#Champ /Java Notices N° Collection>, ";
 		ch_aff+="<#Champ /Java Notices Collation>";
 	  }
@@ -235,7 +233,7 @@
 			ch_aff+="<#Champ /Java Notices Titre Ng>. ";
 			NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			ch_aff+="<#Champ /Java Notices Date de parution>. ";
+			ch_aff+="<#Champ /Java NotGen Date de parution>. ";
 			ch_aff+="<#Champ /Java Notices Titre>";
 			NoticesCollation="<#Champ /Java Notices Collation>";
 			if (NoticesCollation!="") ch_aff+=", <#Champ /Java Notices Collation>";
@@ -246,7 +244,7 @@
 			ch_aff+="In <#Champ /Java Notices Titre Ng>. ";
 			NoticesEditeur="<#Champ /Java Notices Editeurs>";
 			if (NoticesEditeur!="") ch_aff+="<#Champ /Java Notices Editeurs>, ";
-			ch_aff+="<#Champ /Java Notices Date parution>. ";
+			ch_aff+="<#Champ /Java NotGen Date parution>. ";
 			ch_aff+="<#Champ /Java Notices Collation>";
 		<#FINSI Champ Notices Type Notice = Contribution>
 	  }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # prerm script
 #
 # see: dh_installdeb(1)
@@ -40,9 +40,8 @@ CHEMIN=`pwd`
     		cd $PATHPLUG/Admin
     	$PATHPLUG/Admin/desinstall
     	else
-			echo "Pas de script a executer"
+	  echo "Pas de script a executer"
 	fi
-		
         #
         # Suppression du repertoire
         #

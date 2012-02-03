@@ -5,9 +5,9 @@
 <#VAR AFFNIVEAUX=OUI><!-- Afficher le choix Niveaux en recherche -->
 <#VAR AFFPUBLICS=OUI><!-- Afficher le choix Publics en recherche -->
 <#VAR AFFCENTRESINTERET=OUI><!-- Afficher le choix Centres d'intérêt en recherche -->
-<#VAR AFFDISPONIBLE=NON><!-- Afficher le choix Disponibles en recherche -->
+<#VAR AFFDISPONIBLE=OUI><!-- Afficher le choix Disponibles en recherche -->
 <#VAR AFFLANGUE=OUI><!-- Afficher le choix Langues en recherche -->
-<#VAR AFFDISPONIBLE=NON><!-- Afficher le choix Disponibilité en recherche -->
+<#VAR AFFDISPONIBLE=OUI><!-- Afficher le choix Disponibilité en recherche -->
 <#VAR AFFNATURES=OUI><!-- Afficher le choix Natures en recherche -->
 <#VAR AFFGENRES=OUI><!-- Afficher le choix Genres en recherche -->
 <#VAR AFFDICO=OUI><!-- Afficher le choix avec/sans Dico en recherche -->
@@ -238,7 +238,6 @@ function InitChecked()
 			 <INPUT  type="Checkbox" name="AUTOPOSTAGE" value="SPECIFIQUE">&nbsp;Elargir&nbsp;
 -->
 			 <INPUT  type="hidden" name="AUTOPOSTAGE" value="">
-<input name="DISPONIBLES" value="" type="hidden">
 			 <font size=-1><i>&nbsp;</i></font>
            </p>
 		   <#SINON AFFDICO=OUI>
@@ -258,5 +257,3 @@ function InitChecked()
 </form>
 </body>
 </html>
-
-

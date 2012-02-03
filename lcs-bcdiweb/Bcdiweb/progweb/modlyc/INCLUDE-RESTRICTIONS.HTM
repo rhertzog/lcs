@@ -237,25 +237,20 @@
 		</tr>
 </table>
           </div>
-        </div>
-		<#SI AFFDISPONIBLE=OUI>
-        <script type="text/javascript">
-        <!--
-        if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('<div class="cachediv">');}
-        -->
-        </script>
-          <div class="txt4"><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Documents disponibles</b>
-          <input name="DISPONIBLES" value="DISPONIBLE" type="checkbox">
-<input name="DISPONIBLES" value="" type="hidden">
-          </div>
-        <script type="text/javascript">
-        <!--
-        if("<#CONST AFFDISPONIBILITE>"=="NON"){document.write('</div>');}
-        -->
-        </script>
-      </div>
-	  <#FINSI AFFDISPONIBLE=OUI>
-    </div>
+		</div>
+<#SI AFFDISPONIBLE=OUI>
+<Table>
+	<tr>
+		<Td><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Ne chercher que les documents disponibles</b>
+			<input name="DISPONIBLES" value="DISPONIBLE" type="checkbox"/>&nbsp;
+		</td>
+	</tr>
+</table>
+<#SINON AFFDISPONIBLE=OUI>
+<input name="DISPONIBLES" value="" type="hidden"/>
+<#FINSI AFFDISPONIBLE=OUI>
+	  </div>
+	</div>
     <div class="menuzonedatafooter">
       <div class="menuzonedatafooterg"></div>
       <div class="menuzonedatafooterd"></div>

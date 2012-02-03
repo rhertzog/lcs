@@ -1,7 +1,7 @@
 <?
 /* =============================================
    Projet LCS-SE3
-   Distribué selon les termes de la licence GPL
+   DistribuÃ© selon les termes de la licence GPL
    ============================================= */
    
 /* $Id: sauv.php 626 2005-10-25 07:59:18Z plouf $ */

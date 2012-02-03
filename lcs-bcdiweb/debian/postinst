@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # postinst script 
 #
 # see: dh_installdeb(1)
@@ -69,25 +69,22 @@ else
     
     REF=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE' OR name='$module';"`
     MAJNBR=$REF
-    let MAJNBR+=1
+    MAJNBR=$((MAJNBR+1))
     if [ ! -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; then
 	echo "Pas de script de mise a jour a appliquer !"
     else
     
     #---------------------
     #Execution des scripts
-    #---------------------
-    
-    MAJNBR=$REF
-    let MAJNBR+=1
-        while [ -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; do
+    #--------------------
+    while [ -e $PATHPLUG/Admin/Maj/maj.$MAJNBR ]; do
             echo "Application du script Maj$MAJNBR"
             $PATHPLUG/Admin/Maj/maj.$MAJNBR
-            let MAJNBR+=1
+            MAJNBR=$((MAJNBR+1))
 	done
 	
   fi
-  # fin de la maj par les scripts mysql,ldap,bash
+  # fin de la maj par les scripts bash
 	
 	#---------------------------------
 	# Mise a jour du Numero de version
@@ -103,7 +100,9 @@ else
         #
 	    
 fi
+	#Changement  numero de version dans pied de page
 	#
+	sed -i "s/#VERSION#/$VER/g" /usr/share/lcs/Plugins/Bcdiweb/pieds_de_page.php
 	# 
 	echo "Changement des droits sur l'arborescence du module"
 	#

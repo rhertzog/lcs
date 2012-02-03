@@ -1,6 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- saved from url=(0022)http://internet.e-mail --><title>Installation manuelle de Bcdi Web pour Apache / Linux</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> <style type="text/css"> <!--
+<html lang="fr-fr"><head><!-- saved from url=(0022)http://internet.e-mail -->
+
+
+<title>Installation manuelle de Bcdi Web pour Apache / Linux</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css"> <!--
 .Titre1{
 font-family: verdana, arial, helvetica, sans-serif;
 font-size: 18pt;
@@ -37,30 +40,58 @@ font-size: 9pt;
 .bg {
 background-color: #D1F3F5;
 width: 50%;
+font-family: verdana, arial, helvetica, sans-serif;
+font-size: 9pt;
 }
 -->
-</style><link rel="stylesheet" type="text/css" href="http://club-bcdi.crdp-poitiers.cndp.fr/style/style.css"></head>
-<body style="background-color: rgb(255, 255, 255);"><blockquote>&nbsp;</blockquote>
-<table border="0" cellpadding="0" cellspacing="0" width="750"> <tbody> <tr> <td height="72" width="31">&nbsp;</td> <td height="65" width="105"><a class="lien-fiche-detail-noir" href="http://club-bcdi.crdp-poitiers.cndp.fr/"><img src="images/logo.gif" alt="Retour au menu principal" border="0" height="65" width="105"></a></td>
+</style>
+<link rel="stylesheet" type="text/css" href="http://club-bcdi.crdp-poitiers.cndp.fr/style/style.css"></head>
+<body style="background-color: rgb(255, 255, 255);">
+<blockquote>&nbsp;</blockquote>
+<table border="0" cellpadding="0" cellspacing="0" width="750">
+<tbody>
+<tr>
+<td height="72" width="31">&nbsp;</td>
+<td height="65" width="105"><a class="lien-fiche-detail-noir" href="http://club-bcdi.crdp-poitiers.cndp.fr/"><img src="images/logo.gif" alt="Retour au menu principal" border="0" height="65" width="105"></a></td>
 <td class="Titre1" height="72" width="669"><a name="haut"></a>Installation
-manuelle de BcdiWeb<br>&nbsp;pour Linux
-version 1.80</td> <td height="72" width="25">&nbsp;</td>
-</tr> </tbody></table><blockquote> <h1 align="left"><font face="Arial, Helvetica, sans-serif"><a name="somm"></a></font><font face="Arial, Helvetica, sans-serif">Sommaire
-:</font></h1> <blockquote> <p><a class="lien-fiche-detail-noir" href="#pre">Présentation</a><br>
+manuelle de BcdiWeb<br>
+&nbsp;pour Linux
+version 2.12</td>
+<td height="72" width="25">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h1 align="left"><font face="Arial, Helvetica, sans-serif"><a name="somm"></a></font><font face="Arial, Helvetica, sans-serif">Sommaire
+:</font></h1>
+<blockquote>
+<p><a class="lien-fiche-detail-noir" href="#pre">Présentation</a><br>
 <a class="lien-fiche-detail-noir" href="#ins">Installation</a><br>
 <a class="lien-fiche-detail-noir" href="#config">Configuration</a><br>
 <a class="lien-fiche-detail-noir" href="#prep">Préparation
-du serveur Apache</a><br> <a class="lien-fiche-detail-noir" href="#con">Consultation
-de la base</a><a class="lien-fiche-detail-noir" href="#quest"> </a></p> </blockquote>
+du serveur Apache</a><br>
+<a class="lien-fiche-detail-noir" href="#con">Consultation
+de la base</a><a class="lien-fiche-detail-noir" href="#quest"> </a><br>
+<a class="lien-fiche-detail-noir" href="#con">Paramétrage
+des
+interfaces de recherche (COLLEGE et LYCEE)</a></p>
 </blockquote>
-<h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="pre"></a></font><font face="Arial, Helvetica, sans-serif"><b>Présentation
+</blockquote>
+<h1>
+<p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="pre"></a></font><font face="Arial, Helvetica, sans-serif"><b>Présentation
 :</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
-</font></p></h1><p>L'installation
+</font></p>
+</h1>
+<p>L'installation
 manuelle de Bcdi Web sera effectuée à partir de l'archive contenue dans
-l'archive téléchargée. Pour les fonctionnalités générales de BcdiWeb, se reporter à documentation d'installation.</p>
-<h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="ins"></a></font><font face="Arial, Helvetica, sans-serif"><b>Installation
+l'archive téléchargée. Pour les fonctionnalités générales de BcdiWeb,
+se reporter à documentation d'installation.</p>
+<h1>
+<p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="ins"></a></font><font face="Arial, Helvetica, sans-serif"><b>Installation
 :</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
-</font></p></h1><p><font face="Arial, Helvetica, sans-serif">BcdiWeb
+</font></p>
+</h1>
+<p><font face="Arial, Helvetica, sans-serif">BcdiWeb
 peut être installé à l'emplacement de
 votre choix. Nous vous conseillons de le placer dans un
 répertoire progweb à l'intérieur du
@@ -105,57 +136,107 @@ défaut) : umask 002. Si le compte utilisateur n'existe pas,
 introduisez dans le script de lancement de Bcdi (consolebcdi ou
 servbcdi) une commande rétablissant les droits
 indiqués ci-dessus.<br>
-</font></p><h1><p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font face="Arial, Helvetica, sans-serif"><b><a name="config"></a>Configuration
+</font></p>
+<h1>
+<p><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font face="Arial, Helvetica, sans-serif"><b><a name="config"></a>Configuration
 :</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
-</font></p></h1><p> <img src="http://club-bcdi.crdp-poitiers.cndp.fr/images/nouveau_site/carre_blue_fleche_banche.gif" border="0">Configuration de BcdiWeb pour une seule base
+</font></p>
+</h1>
+<p> <img src="http://club-bcdi.crdp-poitiers.cndp.fr/images/nouveau_site/carre_blue_fleche_banche.gif" border="0">Configuration de BcdiWeb pour une seule base
 (par exemple Data) ou plusieurs bases :</p>
 <p><font face="Arial, Helvetica, sans-serif">
 <font face="Arial, Helvetica, sans-serif">Déplacez-vous
 dans le
 répertoire contenant le cgi BcdiWeb&nbsp;et, en tant
 que root, lancez le script de paramétrage d'une nouvelle
-base&nbsp;: "./parambcdiweb.pl" ou "perl parambcdiweb.pl"<br>Le
+base&nbsp;: "./parambcdiweb.pl" ou "perl parambcdiweb.pl"<br>
+Le
 menu ci-dessous
-s'affiche :</font><br></font></p><blockquote><div class="bg"><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-*************************************************<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+s'affiche :</font><br>
+</font></p>
+<blockquote>
+<div class="bg"><font face="Arial, Helvetica, sans-serif">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*************************************************<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 *&nbsp;&nbsp; Paramétrage d'une base de
-données&nbsp;&nbsp; *<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-*&nbsp;&nbsp;&nbsp;&nbsp; pour BCDIWEB v. 1.80 sous
-Linux&nbsp; &nbsp; *<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-*************************************************<br><br><br>&nbsp;&nbsp;&nbsp;
-1. Paramétrage d'une base<br>&nbsp;&nbsp;&nbsp; 2.
-Quitter<br><br><br>Problèmes d'affichage ?<br>Ce
-programme utilise le jeu de caractères ISO-8859-15. Réglez votre<br>console
-en conséquence.<br>La plupart des questions posées sont
-accompagnées d'une valeur par<br>défaut (chemin d'installation
-par ex.) ou des valeurs possibles de<br>la réponse (O/n pour oui
-ou non par ex.). Dans ce dernier cas la<br>valeur par défaut est
-en majuscules.<br>Pour sélectionner la valeur par défaut proposée
-dans la question,<br>appuyez simplement sur Entrée.<br><br>Votre
-choix :<br></font></font><p></p>
-</div></blockquote><p><font face="Arial, Helvetica, sans-serif">Tapez le chiffre correspondant
+données&nbsp; &nbsp; &nbsp; *<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*&nbsp;&nbsp;&nbsp;&nbsp; pour BCDIWEB v. 2.12 sous
+Linux &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+*<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+*************************************************<br>
+<br>
+<br>
+&nbsp;&nbsp;&nbsp;
+1. Paramétrage d'une base<br>
+&nbsp;&nbsp;&nbsp; 2.
+Quitter<br>
+<br>
+<br>
+Problèmes d'affichage ?<br>
+Ce
+programme utilise le jeu de caractères UTF-8. Réglez votre<br>
+console
+en conséquence.<br>
+La plupart des questions posées sont
+accompagnées d'une valeur par<br>
+défaut (chemin d'installation
+par ex.) ou des valeurs possibles de<br>
+la réponse (O/n pour oui
+ou non par ex.). Dans ce dernier cas la<br>
+valeur par défaut est
+en majuscules.<br>
+Pour sélectionner la valeur par défaut proposée
+dans la question,<br>
+appuyez simplement sur Entrée.<br>
+<br>
+Votre
+choix :<br>
+</font>
+<p></p>
+</div>
+</blockquote>
+<p><font face="Arial, Helvetica, sans-serif">Tapez
+le chiffre correspondant
 à l'action souhaitée et suivez les indications à l'écran.</font></p>
 <p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">Pour
 chacune des bases,
-vous devrez indiquer :</font></font></p><ul><li><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">le chemin de la base,
+vous devrez indiquer :</font></font></p>
+<ul>
+<li><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">le chemin de la base,
 son nom dans l'url du site et le nom sous lequel elle doit apparaître
-dans les écrans de BcdiWeb ;</font></font></li><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><li>le nom de
-l'établissement et sa griffe ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si les objets
+dans les écrans de BcdiWeb ;</font></font></li>
+<font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><li>le nom de
+l'établissement et sa griffe ;</li>
+</font><font face="Arial, Helvetica, sans-serif"><li>si
+les objets
 Electre
 (biographies, tables des matières, 4e de couv., couverture) doivent
-être affichés (se reporter à la <a href="http://doc-partage.crdp-poitiers.cndp.fr/betatest/majbcdi/bcdi2007septembre.htm">présentation
-des nouveautés</a> pour les conditions d'utilisation) ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si les
+être affichés &nbsp;;</li>
+</font><font face="Arial, Helvetica, sans-serif"><li>si
+les
 réservations en
-ligne sont autorisées ;</li></font><font face="Arial, Helvetica, sans-serif"><li>si la
+ligne sont autorisées ;</li>
+</font><font face="Arial, Helvetica, sans-serif"><li>si
+la
 consultation du
-compte de chaque emprunteur par celui-ci est autorisée ;</li></font><font face="Arial, Helvetica, sans-serif"><li>s'il s'agit
+compte de chaque emprunteur par celui-ci est autorisée ;</li>
+</font><font face="Arial, Helvetica, sans-serif"><li>s'il
+s'agit
 d'une base
 bibliographique (sans mention des exemplaires dans les résultats
-affichés).</li></font></font></ul><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">La présence du
+affichés)</li>
+<li><font face="Arial, Helvetica, sans-serif">les
+écrans de recherche choisis parmi 3 jeux (collège, lycée, adultes).</font>.</li>
+</font></font>
+</ul>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">La présence du
 documentaliste à cette phase du paramétrage est nécessaire (ou celui-ci
 doit avoir répondu préalablement aux questions qui relèvent de son
 choix).</font></font></p>
-<font face="Arial, Helvetica, sans-serif"></font><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><br></font><font face="Arial, Helvetica, sans-serif">Attention
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><br>
+</font><font face="Arial, Helvetica, sans-serif">Attention
 ! Si vous devez mettre en ligne les bases de plusieurs
 établissements, vous devrez, pour rester dans la
 légalité, indiquer dans le fichier de
@@ -174,10 +255,15 @@ l'utilisateur web (et à son groupe) tels qu'ils apparaissent
 dans le fichier de configuration d'Apache (lignes "user" et "group").
 Pour le réglage des droits sur le répertoire de la base,
 reportez-vous à la rubrique Installation <a href="#ins">ci-dessus</a>.<br>
-</font></font></p><font face="Arial, Helvetica, sans-serif">&nbsp;
-</font><h1><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="prep"></a></font><font face="Arial, Helvetica, sans-serif"><b>Préparation
+</font></font></p>
+<font face="Arial, Helvetica, sans-serif">&nbsp;
+</font>
+<h1>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="prep"></a></font><font face="Arial, Helvetica, sans-serif"><b>Préparation
 du serveur Apache :</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
-</font></font></p></h1><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">Le
+</font></font></p>
+</h1>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">Le
 cgi
 BcdiWeb</font><font face="Arial, Helvetica, sans-serif">
 est normalement utilisable sur tout serveur Web fonctionnant sous
@@ -187,7 +273,8 @@ paramétrage d'un serveur Apache (1.3, 2.0 ou 2.2).</font><br>
 pouvoir
 utiliser le cgi, il est nécessaire de modifier le fichier de
 configuration d'Apache.</font></font></p>
-<p><font face="Arial, Helvetica, sans-serif">La déclaration
+<p><font face="Arial, Helvetica, sans-serif">La
+déclaration
 correcte de BcdiWeb (déclaration du cgi, alias,&nbsp;
 droits sur le répertoire progweb) conforme à
 l'installation par défaut est déjà
@@ -198,7 +285,9 @@ suffit d'introduire à la fin du fichier de configuration
 d'Apache la ligne :</font></p>
 <p><font face="Arial, Helvetica, sans-serif">include
 /usr/bcdiserv/progweb/confhttp/<br>
-</font></p><p><font face="Arial, Helvetica, sans-serif">Après avoir
+</font></p>
+<p><font face="Arial, Helvetica, sans-serif">Après
+avoir
 placé cette unique ligne dans le fichier de configuration d'Apache,
 tout fichier placé dans confhttp sera lu par le serveur Web
 à son
@@ -208,29 +297,63 @@ paramètres par
 défaut ne vous conviennent
 pas</span>, le fichier
 bcdiweb.conf&nbsp; peut être modifié
-à votre convenance, dans le cas d'une installation à un emplacement différent du chemin par défaut, par exemple.</font><font face="Arial, Helvetica, sans-serif"><i></i></font></p><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">Pour
+à votre convenance, dans le cas d'une installation à un emplacement
+différent du chemin par défaut, par exemple.</font></p>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">Pour
 permettre la prise en
 compte des modifications effectuées, relancez
 Apache.<br>
-</font></font></p><h1><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="con"></a></font><font face="Arial, Helvetica, sans-serif"><b>Consultation
+</font></font></p>
+<h1>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="con"></a></font><font face="Arial, Helvetica, sans-serif"><b>Consultation
 de
 la base :</b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif">
-</font></font></p></h1><p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">La
+</font></font></p>
+</h1>
+<p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif">La
 base
 Bcdi est accessible par un simple navigateur à l'adresse : </font></font></p>
 <p><font face="Arial, Helvetica, sans-serif"><font face="Arial, Helvetica, sans-serif"><i>http://adresse_du_serveur/bcdi/bcdiweb.cgi/Data</i>
 (vers les écrans de recherche de la base Data)</font><br>
 ou<br>
 <font face="Arial, Helvetica, sans-serif"><i>http://adresse_du_serveur/bcdi/bcdiweb.cgi/Xxxx</i>
-(vers les écrans de recherche de la base Xxxx).</font></font></p><p><font face="Arial, Helvetica, sans-serif">
-Dans
+(vers les écrans de recherche de la base Xxxx).</font></font></p>
+<p><font face="Arial, Helvetica, sans-serif">Dans
 chaque répertoire de travail, un fichier de log, appelé par exemple
 bcdiweb_Data.log, stocke les requêtes adressées à Bcdi Web. Ce fichier
 au format csv (séparateur ";") est exploitable par un simple tableur.
 L'enregistrement des requêtes est automatique mais peut être débrayé en
 modifiant le paramètre correspondant dans le fichier d'ini de la base
 concernée.</font></p>
-<p><font face="Arial, Helvetica, sans-serif">&nbsp;</font></p>
+&nbsp;&nbsp;&nbsp;
+<h1>
+<p><b><font face="Arial, Helvetica, sans-serif"><b><a href="#somm"><img src="images/retour.gif" border="0" height="14" width="24"></a></b></font><font color="#5a86ff" face="Arial, Helvetica, sans-serif"><a name="par"></a></font><font face="Arial, Helvetica, sans-serif"><b>Paramétrage des
+interfaces de recherche (COLLEGE et LYCEE) :</b></font></b></p>
+</h1>
+<p>Il est possible dans BCDI
+(Client-Serveur et Web), de paramétrer
+certaines options de la recherche, ainsi que l&#8217;'affichage de certains
+champs en page de résultats.
+<br>
+Par exemple :<br>
+- dans les écrans de recherche, on peut choisir de ne pas afficher la
+recherche par Disciplines, par Niveaux, etc.<br>
+- dans les écrans de résultats, on peut enlever l&#8217;'affichage du N°
+d&#8217;exemplaire (dans la partie « Pour trouver le document »), on peut
+demander l&#8217;affichage du champ Divers, etc.<br>
+<br>
+Dans BCDI Web, &nbsp;depuis un navigateur, ajouter après l&#8217;URL de
+lancement de BCDI Web, la
+mention : <br>
+&nbsp;<br>
+?EDITER_VAR=XXXXXXXX (par exemple
+:&nbsp;http://monserveurweb/monaliasbcdi/bcdiweb.cgi/mabase?EDITER_VAR=123A56B)<br>
+&nbsp;<br>
+XXXXXXXX correspond au code d'installation de BCDI Abonnement
+</p>
+<p><font face="Arial, Helvetica, sans-serif">&nbsp;</font>Dans
+l'écran qui s'affiche alors, choisissez les options souhaitées puis
+confirmez.</p>
 <p><font face="Arial, Helvetica, sans-serif">&nbsp;</font></p>
 <p><font face="Arial, Helvetica, sans-serif">&nbsp;</font></p>
 <p><font face="Arial, Helvetica, sans-serif">&nbsp;</font></p>

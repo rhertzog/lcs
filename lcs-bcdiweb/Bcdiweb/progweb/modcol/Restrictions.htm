@@ -186,12 +186,12 @@
 <Table>
 	<tr>
 		<Td><img src="<#CONST REP_MODELES>puceoptions.gif" width="10" height="12" alt=""><b>Ne chercher que les documents disponibles</b>
-			<input name="DISPONIBLES" value="DISPONIBLE"
-			type="checkbox"/>&nbsp;
-<input name="DISPONIBLES" value="" type="hidden"/>
+			<input name="DISPONIBLES" value="DISPONIBLE" type="checkbox"/>&nbsp;
 		</td>
 	</tr>
 </table>
+<#SINON AFFDISPONIBLE=OUI>
+<input name="DISPONIBLES" value="" type="hidden"/>
 <#FINSI AFFDISPONIBLE=OUI>
 	  </div>
 	</div>
