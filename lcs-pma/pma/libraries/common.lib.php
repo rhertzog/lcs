@@ -20,7 +20,7 @@
  * @return  mixed  string or float
  */
 
-// modif 1/3 
+// modif 1/3
  include "/var/www/lcs/includes/headerauth.inc.php";
  list ($idpers,$login) = isauth();
  if ($idpers) {
@@ -820,8 +820,8 @@ function PMA_getTableList($db, $tables = null, $limit_offset = 0, $limit_count =
         if ($GLOBALS['cfg']['ShowTooltipAliasTB']
           && $GLOBALS['cfg']['ShowTooltipAliasTB'] !== 'nested') {
             // switch tooltip and name
-            $table['Comment'] = $table['Name'];
             $table['disp_name'] = $table['Comment'];
+            $table['Comment'] = $table['Name'];
         } else {
             $table['disp_name'] = $table['Name'];
         }
