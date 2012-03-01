@@ -21,7 +21,7 @@ cp /etc/lcs/squirrelmail/page_header.php /usr/share/squirrelmail/functions/
 #
 cp /etc/lcs/squirrelmail/left_main.php /usr/share/squirrelmail/src/
 #
-#
+# Desactivation des options personelles
 #
 cp /etc/lcs/squirrelmail/options.php /usr/share/squirrelmail/src/
 #
