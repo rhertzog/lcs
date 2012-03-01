@@ -21,6 +21,10 @@ cp /etc/lcs/squirrelmail/page_header.php /usr/share/squirrelmail/functions/
 #
 cp /etc/lcs/squirrelmail/left_main.php /usr/share/squirrelmail/src/
 #
+#
+#
+cp /etc/lcs/squirrelmail/options.php /usr/share/squirrelmail/src/
+#
 # Configuration squirrelmail
 #
 cp /etc/lcs/squirrelmail/config.php.in /etc/squirrelmail/config.php

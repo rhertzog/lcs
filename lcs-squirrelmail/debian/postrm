@@ -8,9 +8,15 @@ case "$1" in
     		rm -f /usr/share/squirrelmail/src/redirect.php
     		dpkg-divert --package lcs-squirrelmail \
         		--rename --remove /usr/share/squirrelmail/src/redirect.php
-    		rm -f /usr/share/squirrelmail/functions/page_header.php             
+    		rm -f /usr/share/squirrelmail/functions/page_header.php
     		dpkg-divert --package lcs-squirrelmail \
-        		--rename --remove /usr/share/squirrelmail/functions/page_header.php            
+        		--rename --remove /usr/share/squirrelmail/functions/page_header.php
+    		rm -f /usr/share/squirrelmail/src/left_main.php
+    		dpkg-divert --package lcs-squirrelmail \
+        		--rename --remove /usr/share/squirrelmail/src/left_main.php
+    		rm -f /usr/share/squirrelmail/src/options.php
+    		dpkg-divert --package lcs-squirrelmail \
+        		--rename --remove /usr/share/squirrelmail/src/options.php
 		fi
 		if pgrep -u mysql mysqld >/dev/null; then
 	    	mysql -e "DELETE FROM lcs_db.applis WHERE name = 'squirrelmail';"

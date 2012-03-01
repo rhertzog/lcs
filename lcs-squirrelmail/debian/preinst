@@ -8,6 +8,8 @@ then
         --divert /usr/share/squirrelmail/functions/page_header.php.lcs /usr/share/squirrelmail/functions/page_header.php
     dpkg-divert --add --package lcs-squirrelmail --rename \
         --divert /usr/share/squirrelmail/src/left_main.php.lcs /usr/share/squirrelmail/src/left_main.php
+    dpkg-divert --add --package lcs-squirrelmail --rename \
+        --divert /usr/share/squirrelmail/src/options.php.lcs /usr/share/squirrelmail/src/options.php
 fi
 
 exit 0
