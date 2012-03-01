@@ -57,11 +57,11 @@ $(document).ready
 				var groupe_val = $("#f_groupe").val();
 				if(groupe_val!='0')
 				{
-					$("#option_groupe").show("slow");
+					$("#option_groupe").show();
 				}
 				else
 				{
-					$("#option_groupe").hide("slow");
+					$("#option_groupe").hide();
 				}
 			}
 		);
@@ -92,7 +92,7 @@ $(document).ready
 			palier_id = $("#f_palier").val();
 			if(palier_id)
 			{
-				$('#ajax_maj_pilier').removeAttr("class").addClass("loader").html("Actualisation en cours...");
+				$('#ajax_maj_pilier').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 				$.ajax
 				(
 					{
@@ -172,7 +172,7 @@ $(document).ready
 				if(groupe_val)
 				{
 					type = $("#f_groupe option:selected").parent().attr('label');
-					$('#ajax_maj').removeAttr("class").addClass("loader").html("Actualisation en cours...");
+					$('#ajax_maj').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 					maj_eleve(groupe_val,type);
 				}
 				else
@@ -260,7 +260,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Génération du relevé en cours...");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 			}
 			return readytogo;
 		}

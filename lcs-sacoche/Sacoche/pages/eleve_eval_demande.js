@@ -155,7 +155,7 @@ $(document).ready
 			{
 				please_wait = true;
 				$('#ajax_msg').parent().children('q').hide();
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Demande envoyée...");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 			}
 			return readytogo;
 		}
@@ -181,7 +181,7 @@ $(document).ready
 			else
 			{
 				$('#ajax_msg').removeAttr("class").addClass("valide").html("Demande réalisée !");
-				$('q.valider').parent().parent().parent().remove();
+				$('q.valider').closest('tr').remove();
 				afficher_masquer_images_action('show');
 			}
 		} 

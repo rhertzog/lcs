@@ -50,11 +50,11 @@ $(document).ready
 			{
 				if( $('#f_infos_responsables option:selected').val() == 'oui_force' )
 				{
-					$("#p_enveloppe").show('slow');
+					$("#p_enveloppe").show();
 				}
 				else
 				{
-					$("#p_enveloppe").hide('slow');
+					$("#p_enveloppe").hide();
 				}
 			}
 		);
@@ -80,7 +80,7 @@ $(document).ready
 					}
 				}
 				$("#bouton_valider_mise_en_page").prop('disabled',true);
-				$('#ajax_msg_mise_en_page').removeAttr("class").addClass("loader").html("Soumission du formulaire en cours...");
+				$('#ajax_msg_mise_en_page').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 				$.ajax
 				(
 					{

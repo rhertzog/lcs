@@ -53,7 +53,7 @@ $(document).ready
 			if(typeof(profil)=='undefined')
 			{
 				$('#ajax_msg').removeAttr("class").html("&nbsp;");
-				$('#bilan').addClass("hide");
+				$('#div_bilan').addClass("hide");
 				return false
 			}
 			// On récupère le regroupement
@@ -61,7 +61,7 @@ $(document).ready
 			if(!groupe_val)
 			{
 				$('#ajax_msg').removeAttr("class").html("&nbsp;");
-				$('#bilan').addClass("hide");
+				$('#div_bilan').addClass("hide");
 				return false
 			}
 			// Pour un directeur ou un administrateur, groupe_val est de la forme d3 / n2 / c51 / g44
@@ -76,7 +76,7 @@ $(document).ready
 				groupe_type = $("#f_groupe option:selected").parent().attr('label').substring(0,1).toLowerCase();
 				groupe_id   = groupe_val;
 			}
-			$('#ajax_msg').removeAttr("class").addClass("loader").html("Veuillez patienter...");
+			$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 			$('#bilan tbody').html('');
 			$.ajax
 			(
@@ -95,14 +95,14 @@ $(document).ready
 						if( (responseHTML.substring(0,4)!='<tr>') && (responseHTML!='') )
 						{
 							$('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
-							$('#bilan').addClass("hide");
+							$('#div_bilan').addClass("hide");
 						}
 						else
 						{
 							$('#ajax_msg').removeAttr("class").addClass("valide").html("Demande réalisée !");
 							$('#bilan tbody').html(responseHTML);
 							trier_tableau();
-							$('#bilan').removeAttr("class");
+							$('#div_bilan').removeAttr("class");
 						}
 					}
 				}

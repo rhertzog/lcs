@@ -38,7 +38,7 @@ $(document).ready
 		(
 			function()
 			{
-				$("#div_proxy_used").toggle("slow");
+				$("#div_proxy_used").toggle();
 			}
 		);
 
@@ -46,7 +46,7 @@ $(document).ready
 		(
 			function()
 			{
-				$("#div_proxy_auth_used").toggle("slow");
+				$("#div_proxy_auth_used").toggle();
 			}
 		);
 
@@ -73,7 +73,7 @@ $(document).ready
 			function()
 			{
 				$('#retour_test').html('&nbsp;');
-				$('#ajax_msg_tester').removeAttr("class").addClass("loader").html("Demande envoyée...");
+				$('#ajax_msg_tester').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 				$.ajax
 				(
 					{
@@ -176,7 +176,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg_enregistrer').removeAttr("class").addClass("loader").html("Demande envoyée...");
+				$('#ajax_msg_enregistrer').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 			}
 			return readytogo;
 		}

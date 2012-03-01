@@ -54,7 +54,15 @@ $(document).ready
 		(
 			function()
 			{
-				$("#options_individuel").toggle("slow");
+				$("#options_individuel").toggle();
+			}
+		);
+
+		$('#f_type_synthese').click
+		(
+			function()
+			{
+				$("#options_synthese").toggle();
 			}
 		);
 
@@ -218,7 +226,7 @@ $(document).ready
 				if(groupe_val)
 				{
 					groupe_type = $("#f_groupe option:selected").parent().attr('label');
-					$('#ajax_maj').removeAttr("class").addClass("loader").html("Actualisation en cours...");
+					$('#ajax_maj').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 					maj_eleve(groupe_val,groupe_type);
 				}
 				else
@@ -235,42 +243,16 @@ $(document).ready
 		var choisir_compet = function()
 		{
 			// Ne pas changer ici la valeur de "mode" (qui est à "ajouter" ou "modifier" ou "dupliquer").
-			$('#zone_compet ul').css("display","none");
-			$('#zone_compet ul.ul_m1').css("display","block");
-			liste = $('#f_compet_liste').val();
-			// Décocher tout
-			$("#zone_compet input[type=checkbox]").each
-			(
-				function()
-				{
-					this.checked = false;
-				}
-			);
-			// Cocher ce qui doit l'être (initialisation)
-			if(liste.length)
-			{
-				var tab_id = liste.split('_');
-				for(i in tab_id)
-				{
-					id = 'id_'+tab_id[i];
-					if($('#'+id).length)
-					{
-						$('#'+id).prop('checked',true);
-						$('#'+id).parent().parent().css("display","block");	// les items
-						$('#'+id).parent().parent().parent().parent().css("display","block");	// le thème
-						$('#'+id).parent().parent().parent().parent().parent().parent().css("display","block");	// le domaine
-						$('#'+id).parent().parent().parent().parent().parent().parent().parent().parent().css("display","block");	// le niveau
-					}
-				}
-			}
-			$.fancybox( { 'href':'#zone_compet' , onStart:function(){$('#zone_compet').css("display","block");} , onClosed:function(){$('#zone_compet').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+			cocher_matieres_items( $('#f_compet_liste').val() );
+			$.fancybox( { 'href':'#zone_matieres_items' , onStart:function(){$('#zone_matieres_items').css("display","block");} , onClosed:function(){$('#zone_matieres_items').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
 		};
 
 		$('q.choisir_compet').click( choisir_compet );
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
 		$('#annuler_compet').click
 		(
 			function()
@@ -280,16 +262,17 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour valider le choix des items associés à une évaluation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	Clic sur le bouton pour valider le choix des items associés à une évaluation
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
 		$('#valider_compet').click
 		(
 			function()
 			{
 				var liste = '';
 				var nombre = 0;
-				$("#zone_compet input[type=checkbox]:checked").each
+				$("#zone_matieres_items input[type=checkbox]:checked").each
 				(
 					function()
 					{
@@ -297,11 +280,82 @@ $(document).ready
 						nombre++;
 					}
 				);
-				liste = liste.substring(0,liste.length-1);
-				s = (nombre>1) ? 's' : '';
-				$('#f_compet_liste').val(liste);
-				$('#f_compet_nombre').val(nombre+' item'+s);
+				var compet_liste  = liste.substring(0,liste.length-1);
+				var compet_nombre = (nombre==0) ? 'aucun' : ( (nombre>1) ? nombre+' items' : nombre+' item' ) ;
+				$('#f_compet_liste').val(compet_liste);
+				$('#f_compet_nombre').val(compet_nombre);
 				$('#annuler_compet').click();
+			}
+		);
+
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	Demande pour sélectionner d'une liste d'items mémorisés
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
+		$('#f_selection_items').change
+		(
+			function()
+			{
+				cocher_matieres_items( $("#f_selection_items").val() );
+			}
+		);
+
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		//	Clic sur le bouton pour mémoriser un choix d'items
+		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
+		$('#f_enregistrer_items').click
+		(
+			function()
+			{
+				var liste_nom = $("#f_liste_items_nom").val();
+				if(!liste_nom)
+				{
+					$('#ajax_msg_memo').removeAttr("class").addClass("erreur").html("nom manquant");
+					$("#f_liste_items_nom").focus();
+					return false;
+				}
+				var compet_liste = '';
+				$("#zone_matieres_items input[type=checkbox]:checked").each
+				(
+					function()
+					{
+						compet_liste += $(this).val()+'_';
+					}
+				);
+				if(!compet_liste)
+				{
+					$('#ajax_msg_memo').removeAttr("class").addClass("erreur").html("Aucun item coché !");
+					return false;
+				}
+				var compet_liste  = compet_liste.substring(0,compet_liste.length-1);
+				$('#ajax_msg_memo').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$.ajax
+				(
+					{
+						type : 'POST',
+						url : 'ajax.php?page=compte_selection_items',
+						data : 'f_action='+'ajouter'+'&f_compet_liste='+compet_liste+'&f_nom='+encodeURIComponent(liste_nom),
+						dataType : "html",
+						error : function(msg,string)
+						{
+							$('#ajax_msg_memo').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						},
+						success : function(responseHTML)
+						{
+							initialiser_compteur();
+							if(responseHTML.substring(0,3)=='<tr')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+							{
+								$('#ajax_msg_memo').removeAttr("class").addClass("valide").html("Sélection mémorisée.");
+							}
+						else
+							{
+								$('#ajax_msg_memo').removeAttr("class").addClass("alerte").html(responseHTML);
+								$("#f_liste_items_nom").focus();
+							}
+						}
+					}
+				);
 			}
 		);
 
@@ -318,49 +372,59 @@ $(document).ready
 			{
 				rules :
 				{
-					f_orientation  : { required:true },
-					f_marge_min    : { required:true },
-					f_pages_nb     : { required:true },
-					f_couleur      : { required:true },
-					f_legende      : { required:true },
- 					f_cases_nb     : { required:true },
-					f_cases_larg   : { required:true },
-					'f_type[]'     : { required:true },
-					f_coef         : { required:false },
-					f_socle        : { required:false },
-					f_lien         : { required:false },
-					f_bilan_MS     : { required:false },
-					f_bilan_PA     : { required:false },
-					f_conv_sur20   : { required:false },
-					f_periode      : { required:true },
-					f_date_debut   : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
-					f_date_fin     : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
-					f_compet_liste : { required:true },
-					f_groupe       : { required:true },
-					'f_eleve[]'    : { required:true }
+					'f_type[]'      : { required:true },
+					f_bilan_MS      : { required:false },
+					f_bilan_PA      : { required:false },
+					f_conv_sur20    : { required:false },
+					f_tri_objet     : { required:true },
+					f_tri_mode      : { required:true },
+					f_compet_nombre : { accept:'item|items' },
+					f_groupe        : { required:true },
+					'f_eleve[]'     : { required:true },
+					f_periode       : { required:true },
+					f_date_debut    : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
+					f_date_fin      : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
+					f_retroactif    : { required:true },
+					f_coef          : { required:false },
+					f_socle         : { required:false },
+					f_lien          : { required:false },
+					f_domaine       : { required:false },
+					f_theme         : { required:false },
+					f_orientation   : { required:true },
+					f_couleur       : { required:true },
+					f_legende       : { required:true },
+					f_marge_min     : { required:true },
+					f_pages_nb      : { required:true },
+ 					f_cases_nb      : { required:true },
+					f_cases_larg    : { required:true }
 				},
 				messages :
 				{
-					f_orientation  : { required:"orientation manquante" },
-					f_marge_min    : { required:"marge mini manquante" },
-					f_pages_nb     : { required:"choix manquant" },
-					f_couleur      : { required:"couleur manquante" },
-					f_legende      : { required:"légende manquante" },
-					f_cases_nb     : { required:"nombre manquant" },
-					f_cases_larg   : { required:"largeur manquante" },
-					'f_type[]'     : { required:"type(s) manquant(s)" },
-					f_coef         : { },
-					f_socle        : { },
-					f_lien         : { },
-					f_bilan_MS     : { },
-					f_bilan_PA     : { },
-					f_conv_sur20   : { },
-					f_periode      : { required:"période manquante" },
-					f_date_debut   : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
-					f_date_fin     : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
-					f_compet_liste : { required:"item(s) manquant(s)" },
-					f_groupe       : { required:"groupe manquant" },
-					'f_eleve[]'    : { required:"élève(s) manquant(s)" }
+					'f_type[]'      : { required:"type(s) manquant(s)" },
+					f_bilan_MS      : { },
+					f_bilan_PA      : { },
+					f_conv_sur20    : { },
+					f_tri_objet     : { required:"choix manquant" },
+					f_tri_mode      : { required:"choix manquant" },
+					f_compet_nombre : { accept:"item(s) manquant(s)" },
+					f_groupe        : { required:"groupe manquant" },
+					'f_eleve[]'     : { required:"élève(s) manquant(s)" },
+					f_periode       : { required:"période manquante" },
+					f_date_debut    : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_date_fin      : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_retroactif    : { required:"choix manquant" },
+					f_coef          : { },
+					f_socle         : { },
+					f_lien          : { },
+					f_domaine       : { },
+					f_theme         : { },
+					f_orientation   : { required:"orientation manquante" },
+					f_couleur       : { required:"couleur manquante" },
+					f_legende       : { required:"légende manquante" },
+					f_marge_min     : { required:"marge mini manquante" },
+					f_pages_nb      : { required:"choix manquant" },
+					f_cases_nb      : { required:"nombre manquant" },
+					f_cases_larg    : { required:"largeur manquante" }
 				},
 				errorElement : "label",
 				errorClass : "erreur",
@@ -411,7 +475,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Génération du relevé en cours...");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
 				$('#bilan').html('');
 			}
 			return readytogo;
