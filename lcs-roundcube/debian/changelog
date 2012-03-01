@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.9~8) Lcs; urgency=low
+lcs-roundcube (2.4.9~9) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
@@ -13,5 +13,6 @@ lcs-roundcube (2.4.9~8) Lcs; urgency=low
   * Add phpCAS 1.1.0 in cas_authentication plugin
   * Modify lcs-roundcube-config for select auth_mod CAS or LCS
   * Modify imap_open and imap_status in lcs-notify-desktop
+  * Hide the form identity modify in skins/default/templates/editidentity.html
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 02 Feb 2012 14:14:05 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Mar 2012 17:01:44 +0100
