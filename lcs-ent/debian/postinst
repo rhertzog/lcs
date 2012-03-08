@@ -1,0 +1,49 @@
+#! /bin/sh
+# postinst script for LCS ent
+set -e
+
+VER=$(dpkg-query -f '${Version}' -W lcs-ent)
+MODULE="ent"
+DESCRIPTION="Authentification LCS sur plateforme ENT"
+
+if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+    #
+    # Inscription du module dans applis.lcs_db
+    #
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', '$DESCRIPTION', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+	#
+	# Mise en place parametres et table ent
+	#
+	mysql lcs_db < /var/lib/lcs/ent/sql/ent_lcs.sql
+	mysql lcs_db < /var/lib/lcs/ent/sql/ent_lcs_params.sql
+
+else
+    echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
+    #
+    # Lecture de l'indice de maj dans la table lcs_db.applis
+    #
+    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    MAJNBR=$((MAJNBR+1))
+    if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
+	echo "Pas de script de mise à jour à appliquer !"
+    else
+        while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
+            echo "Application du script Maj$MAJNBR"
+            $CONF/Maj/maj$MAJNBR.sh
+            MAJNBR=$((MAJNBR+1))
+	done
+        #
+        # Fin de la mise à jour
+        #
+        echo "Application des maj terminée."
+    fi
+    #
+    # Mise à jour de l'indice de Maj
+    #
+    /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+fi
+#
+# Actions non liées a une installation initiale ou à une mise à jour.
+#
+
+exit 0
