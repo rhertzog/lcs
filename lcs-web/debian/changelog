@@ -1,4 +1,4 @@
-lcs-web (2.4.9~3) Lcs; urgency=low
+lcs-web (2.4.9~4) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Modify lcs/logout.php with logout spip ajax request
@@ -15,6 +15,7 @@ lcs-web (2.4.9~3) Lcs; urgency=low
      lcs-web/www/lcs/includes/log2lcsentcas_ajax.php
      lcs-web/www/lcs/includes/functions.inc.php
      lcs-web/www/c/ent.css
+  * Modify postinst to update config.in.php
 
   [ Philippe LECLERC ]    
   * Change the test status of a module in gestpack.sh
@@ -31,7 +32,7 @@ lcs-web (2.4.9~3) Lcs; urgency=low
   [ Franck Molle]
   * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Jan 2012 15:55:22 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 08 Mar 2012 11:10:28 +0100
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
