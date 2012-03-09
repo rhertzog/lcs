@@ -102,7 +102,7 @@ mkdir -p $CONF
 #Configure authentication ldap or mysql
 AUTH_MOD=$(get_lcsdb_params auth_mod)
 if [ ! -z $AUTH_MOD ]; then
-	if [ $AUTH_MOD == "ENT" ]; then
+	if [ "$AUTH_MOD" = "ENT" ]; then
 		MODAUTHENTICATION="mysql"
 	else
 		MODAUTHENTICATION="ldap"
@@ -111,7 +111,7 @@ else
 	MODAUTHENTICATION="ldap"
 fi
 # 
-if [ $MODAUTHENTICATION == "ldap" ]; then
+if [ "$MODAUTHENTICATION" = "ldap" ]; then
 	# Ldap authentication
 	cp $USERHOME/config.yml.ldap.in $CONF/config.yml
 	# LCSMGR PASS
