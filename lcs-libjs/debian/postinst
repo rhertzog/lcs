@@ -17,11 +17,23 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
+MODULE="libjs"
+PATHMOD="/usr/share/lcs/$MODULE"
 
 case "$1" in
-    configure)
-                    # force-reload apache2
-                    invoke-rc.d apache2 force-reload
+    install | configure)
+	#    
+	#
+	# Mise en place de MathJax 
+    	#
+    	if [  -e $PATHMOD/mathjax.tgz ]; then
+		cd $PATHMOD
+		tar xzf mathjax.tgz
+    	fi
+    	#
+        # force-reload apache2
+        invoke-rc.d apache2 force-reload
+    
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
