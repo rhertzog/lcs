@@ -14,7 +14,7 @@ get_lcsdb_params() {
 #Configure authentication ldap or mysql
 AUTH_MOD=$(get_lcsdb_params auth_mod)
 if [ ! -z $AUTH_MOD ]; then
-	if [ $AUTH_MOD == "ENT" ]; then
+	if [ "$AUTH_MOD" = "ENT" ]; then
 		MODAUTHENTICATION="mysql"
 	else
 		MODAUTHENTICATION="ldap"
@@ -27,7 +27,7 @@ LCSMGRPASS=`cat /var/www/lcs/includes/config.inc.php | grep "PASSAUTH=" | cut -d
 LDAP_SERVER=$(get_lcsdb_params ldap_server)
 LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 # 
-if [ $MODAUTHENTICATION == "ldap" ]; then
+if [ "$MODAUTHENTICATION" = "ldap" ]; then
  	echo "ldap config"
 	# Ldap authentication
 	cp $USERHOME/config.yml.ldap.in $CONF/config.yml
