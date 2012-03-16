@@ -1,5 +1,5 @@
 <?php
-/* lcs/barre.php derniere mise a jour : 06/01/2012 */
+/* lcs/barre.php derniere mise a jour : 16/03/2012 */
 
 // HelpDesk Ajout variable session userHD pour memoriser choix user helpdesk autre qu'admin
 session_start();
@@ -175,7 +175,7 @@ function MM_preloadImages() { //v3.0
 <?php
 if ( $idpers==0 ) {
  	// Un utilisateur n'est pas authentifie  
-   	echo "<div class=\"bouton\"><a href=\"auth.php\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/BP_r1_c3_f2.gif','images/$path/BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Authentification\" alt=\"Authentification\" src=\"images/$path/BP_r1_c3.gif\"  border=\"0\"></a></div>\n";
+   	echo "<div class=\"bouton\"><a href=\"$path2auth\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c3','images/$path/BP_r1_c3_f2.gif','images/$path/BP_r1_c3_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c3','images/$path/BP_r1_c3_f3.gif',1);\" ><img name=\"BP_r1_c3\" title=\"Authentification\" alt=\"Authentification\" src=\"images/$path/BP_r1_c3.gif\"  border=\"0\"></a></div>\n";
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Aide\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c8','images/$path/BP_r1_c8_f2.gif','images/$path/BP_r1_c8_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c8','images/$path/BP_r1_c8_f3.gif',1);\" ><img name=\"BP_r1_c8\" title=\"Aide\" alt=\"Aide\" src=\"images/$path/BP_r1_c8.gif\"  border=\"0\"></a></div>\n";
         echo "<div class=\"bouton\"></div>\n";	
 	echo "<div class=\"deconnect\"><img title=\"D&#233;connect&#233;\" alt=\"D&#233;connect&#233;\" src=\"images/deconnect.png\" width=\"26\" height=\"9\"  hspace=\"5\" align=\"bottom\" border=\"0\"></div>\n";

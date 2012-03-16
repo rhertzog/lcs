@@ -1,10 +1,11 @@
 <?php
+/* lcs/auth_ent.php version du :  16/03/2012 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
 
 //Authentication on  ENT CAS service
-include_once('/usr/share/php/CAS.php');
+include_once('/usr/share/php/CAS/CAS.php');
 phpCAS::setDebug();
 
 // initialise phpCAS

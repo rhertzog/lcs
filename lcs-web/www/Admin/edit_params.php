@@ -1,12 +1,6 @@
  <?
-/* =============================================
-   Projet LCS-SE3
-   Administration serveur LCS «Editions des parametres»
-   AdminLCS/edit_params.php
-   Equipe Tice academie de Caen
-   derniere mise a jour : 17/06/2011
-   Distribue selon les termes de la licence GPL
-   ============================================= */
+/* Admin/edit_params.php derniere mise a jour : 16/03/2012 */
+
 if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
 	include ("../lcs/includes/headerauth.inc.php");
 	include ("../Annu/includes/ldap.inc.php");
@@ -70,6 +64,8 @@ if ((!isset($submit)) and (!isset($queri))) {
 		mktable("Param&#232;tres serveur",aff_param_form(1));
 	if ( $cat==0 || $cat==2 )
 		mktable("Param&#232;tres LDAP",aff_param_form(2));
+	if ( $cat==0 || $cat==6 )
+		mktable("Param&#232;tres ENT",aff_param_form(2));
 	if ( $cat==0 || $cat==3 )
 		mktable("Param&#232;tres R&#233;seau",aff_param_form(3));
 	if ( $cat==0 || $cat==4 )

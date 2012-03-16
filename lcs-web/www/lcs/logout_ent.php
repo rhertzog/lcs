@@ -1,8 +1,8 @@
 <?php
-/* lcs/logout_ent.php version du :  14/12/2011 */
+/* lcs/logout_ent.php version du :  16/03/2012 */
 include ("./includes/headerauth.inc.php");
 //Logout  ENT CAS service
-include_once('/usr/share/php/CAS.php');
+include_once('/usr/share/php/CAS/CAS.php');
 #phpCAS::setDebug();
 // initialise phpCAS
 phpCAS::client(CAS_VERSION_2_0,$ent_hostname,intval($ent_port),$ent_uri);
