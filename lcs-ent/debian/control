@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-ent
 Architecture: all
-Depends: lcs-web, lcs-cas, libpam-cas
+Depends: lcs-web, lcs-apache2ssl, lcs-cas, libpam-cas, lcs-roundcube
 Description: Install ENT CAS SSO on LCS server
  This package install ENT CAS SSO on LCS server.

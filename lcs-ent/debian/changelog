@@ -1,5 +1,6 @@
-lcs-ent (2.4.9~1) UNRELEASED; urgency=low
+lcs-ent (2.4.9~2) UNRELEASED; urgency=low
 
   * Initial release.
+  * Add lcs-apache2ssl and lcs-roundcube in control depends
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 02 Mar 2012 13:24:58 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 16 Mar 2012 13:04:38 +0100
