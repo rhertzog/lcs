@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.9~9) Lcs; urgency=low
+lcs-roundcube (2.4.9~10) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
@@ -15,4 +15,4 @@ lcs-roundcube (2.4.9~9) Lcs; urgency=low
   * Modify imap_open and imap_status in lcs-notify-desktop
   * Hide the form identity modify in skins/default/templates/editidentity.html
   * Fix test authentication and subscribe module in lcs-roundcube-config
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Mar 2012 15:55:47 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Mar 2012 17:10:26 +0100
