@@ -1,3 +1,9 @@
+lcs-claro (2.4.8) LCS; urgency=low
+
+  * modif to preserve mediacenter
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 22 Mar 2012 20:15:53 +0100
+
 lcs-claro (2.4.8~4) unstable; urgency=low
 
   * add doc html
