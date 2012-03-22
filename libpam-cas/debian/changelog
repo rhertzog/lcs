@@ -1,7 +1,8 @@
-libpam-cas (2.0.11-1~3) Lcs; urgency=low
+libpam-cas (2.0.11-1~4) Lcs; urgency=low
 
   * Initial release 
   * Modif pam_cas.conf for roundcube proxy
+  * Fix path for server.pem
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 24 Jun 2011 09:29:44 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Mar 2012 15:50:52 +0100
 
