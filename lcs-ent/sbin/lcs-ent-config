@@ -1,0 +1,27 @@
+#!/bin/bash
+# Configure auth ENT
+# Jean-Luc Chretien on 22 Mars 2012
+#
+
+
+get_lcsdb_params() {
+mysqlpass=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
+echo "$PARAMS"
+}
+
+configure_imap() {
+    LDAP_SERVER=$(get_lcsdb_params ldap_server)
+    LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
+    LDAP_ADMIN_RDN=$(get_lcsdb_params adminRdn)
+    LDAP_ADMIN_PW=$(get_lcsdb_params adminPw)
+    # imap_reconfigure.sh 
+    /usr/share/lcs/scripts/imap_reconfigure.sh $LDAP_SERVER $LDAP_BASE_DN $LDAP_ADMIN_RDN $LDAP_ADMIN_PW
+}
+
+# Configure CAS
+/usr/sbin/lcs-cas-configure-authentication.sh
+# Configure imap
+configure_imap
+# Configure roundcube
+/usr/sbin/lcs-roundcube-config
