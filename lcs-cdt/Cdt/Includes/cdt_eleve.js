@@ -4,14 +4,16 @@ function refresh_coms(quoi,quand){
     // On défini ce qu'on va faire quand on aura la réponse
      function resultat2(){
             // On ne fait quelque chose que si on a tout reçu et que le serveur est ok
-            if(xhr.readyState == 4) 
+            if(xhr.readyState == 4)
                 {
-                if(xhr.status == 200) 
-                    { 
-                    if (xhr.responseText =='OK') alert(xhr.responseText);
-                    else 
+                if(xhr.status == 200)
+                    {
+                    if (xhr.responseText =='error') alert(xhr.responseText);
+                    else
                         {
                         document.getElementById("boite5elv").innerHTML =  xhr.responseText;
+                        var math = document.getElementById("boite5elv");
+                        MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
                         $(function(){
                             $(".switch_seq").click(function(){
                                 var  no=$(this).attr('id');
@@ -56,16 +58,17 @@ function refresh_coms(quoi,quand){
                                     async: false,
                                     success :function(data)
                                     {
-                                    if (data =="error")   
+                                    if (data =="error")
                                     alert('Erreur' +data);
-                                    else 
-                               	    $("#c"+no).html(data);    
-				//document.getElementById("c"+no).innerHTML =  data;
+                                    else
+                                    $("#c"+no).html(data);
+                                    var math = document.getElementById("boite5elv");
+                                    MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
                                     }
                                 });
                             });
                         });
-                        //popup qrcode   
+                        //popup qrcode
                         $(function() {
                                 $( "#dialog" ).dialog({
                                     autoOpen: false,
@@ -86,14 +89,14 @@ function refresh_coms(quoi,quand){
                 {
                 alert('Probleme Ajax');
                 }
-            }	
+            }
     }
     xhr.onreadystatechange = resultat2;
     xhr.open("POST","refresh-coms_eleve.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send(data);
     }
-		
+
 function refresh_cdt(cible,tmstp) {
     var xhr = getXhr();
     var les_datas = "rubrik=" + cible + "&thedate=" + tmstp ;
@@ -102,20 +105,20 @@ function refresh_cdt(cible,tmstp) {
         // On ne fait quelque chose que si on a tout reçu et que le serveur est ok
         if(xhr.readyState == 4) {
             if(xhr.status == 200) {
-                if(xhr.responseText =='Erreur lecture ')	
+                if(xhr.responseText =='Erreur lecture ')
                 alert(xhr.responseText);
-                else 
+                else
                     {
                     document.getElementById("onglev_refresh").innerHTML =  xhr.responseText;
-                    refresh_coms(cible,tmstp);   
+                    refresh_coms(cible,tmstp);
                     }
                  }
             else    alert('Probleme Ajax');
-              }	
+              }
         }
     xhr.onreadystatechange = resultat;
     xhr.open("POST","refresh-ongl_eleve.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send(les_datas);
     }
 
@@ -127,9 +130,9 @@ function refresh_cdt_arch(cible,tmstp,arch_an) {
         // On ne fait quelque chose que si on a tout reçu et que le serveur est ok
         if(xhr.readyState == 4) {
             if(xhr.status == 200){
-                if(xhr.responseText =='Erreur lecture ')	
+                if(xhr.responseText =='Erreur lecture ')
                 alert(xhr.responseText);
-                else 
+                else
                     {
                     document.getElementById("onglev_refresh").innerHTML =  xhr.responseText;
                     refresh_coms_arch(cible,tmstp,arch_an);
@@ -139,14 +142,14 @@ function refresh_cdt_arch(cible,tmstp,arch_an) {
                 {
                 alert('Probleme Ajax');
                 }
-            }	
+            }
         }
     xhr.onreadystatechange = resultat3;
     xhr.open("POST","refresh-ongl_eleve_arch.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send(les_datas2);
 }
-			
+
 function refresh_coms_arch(quoi,quand,ann_arc){
     var xhr = getXhr();
     var data2 = "blabla="+ quoi+ "&kan=" + quand + "&thean_arch=" + ann_arc;
@@ -155,21 +158,23 @@ function refresh_coms_arch(quoi,quand,ann_arc){
         // On ne fait quelque chose que si on a tout reçu et que le serveur est ok
         if(xhr.readyState == 4) {
             if(xhr.status == 200){
-                if(xhr.responseText =='OK')	
+                if(xhr.responseText =='OK')
                 alert(xhr.responseText);
-                else 
+                else
                     {
                      document.getElementById("boite5elv").innerHTML =  xhr.responseText;
+                     var math = document.getElementById("boite5elv");
+                     MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
                     }
                 }
             else
                 {
                 alert('Probleme Ajax');
                 }
-            }	
+            }
         }
     xhr.onreadystatechange = resultat4;
     xhr.open("POST","refresh-coms_eleve_arch.php",true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");				
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
     xhr.send(data2);
 }

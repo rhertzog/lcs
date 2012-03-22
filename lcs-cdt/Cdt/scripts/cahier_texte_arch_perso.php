@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives perso du cahier de textes -
@@ -14,20 +14,20 @@ session_name("Cdt_Lcs");
 
 // autorisation d'acces ?
 if ($_SESSION['cequi']!="prof")	exit;
-			
+
 if (isset($_GET['arch']))
     {
     $arch=$_GET['arch'];
     }
     else $arch="";
-	
-if (isset($_POST['Fermer'])) 
+
+if (isset($_POST['Fermer']))
 echo '<script type="text/javascript">
             //<![CDATA[
             window.close();
              //]]>
             </script>';
-					
+
 //si clic sur le bouton Copier-Coller
 if (isset($_POST['copie']))
     {
@@ -63,6 +63,14 @@ if (isset($_POST['copie']))
          <!--[if IE]>
         <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
         <![endif]-->
+                    <script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+                    MMLorHTML: { prefer: { Firefox: "HTML" } }
+                    });
+                   </script>
+                   <script type="text/javascript"  src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </head>
 
 <body >
@@ -73,7 +81,7 @@ echo htmlentities($_SERVER["PHP_SELF"]);
 echo "' method='post'>";
 echo '<div id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" value="" /></div></form>';
 
-// Connexion a la base de donnees	
+// Connexion a la base de donnees
 include_once "/var/www/lcs/includes/headerauth.inc.php";
 list ($idpers,$log) = isauth();
 if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
@@ -84,7 +92,7 @@ DEFINE ('DBP_HOST', 'localhost');
 DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD) 
+$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD)
 OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
 mysql_select_db (DBP_NAME)
 OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
@@ -95,7 +103,7 @@ echo ("<ul id='arch-navlist'>");
 /*================================
    -      Affichage des archives  -
    ================================*/
-	
+
 //recherche du  nom des archives
 $TablesExist= mysql_query("show tables");
 $x=0;
@@ -112,22 +120,22 @@ if (mb_ereg("^onglets",$table[0]))
     echo "<li><a href='cahier_texte_arch_perso.php?arch=$archive[1]'>$archnum</a></li> ";
     }
 //s'il n'esiste pas d'archive
-if ($x==0) 
+if ($x==0)
     {
     echo '<p class="vide">Aucune archive</p>';
     exit;
     }
 echo "</ul>";
-	
+
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch WHERE 1 ORDER BY classe ASC ";
 // lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error());
- 
+
 // si pas de rubrique
-if (mysql_num_rows($result)==0) 
+if (mysql_num_rows($result)==0)
     {
     echo("<br /> L'archive ".$arch."de votre cahier de textes ne comporte  aucune rubrique. ");exit;
-    mysql_close();	
+    mysql_close();
     exit;
     }
 
@@ -141,7 +149,7 @@ else $cible="";
    ================================
 */
 
-// Creer la requete (Recuperer les rubriques de l'utilisateur) 
+// Creer la requete (Recuperer les rubriques de l'utilisateur)
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
  WHERE 1 ORDER BY id_prof ASC ";
 
@@ -151,14 +159,14 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
     {
     $clas[$loop]=$enrg[0];
     $mat[$loop]=utf8_encode($enrg[1]);
     $numero[$loop]=$enrg[2];
     $loop++;
     }
-	
+
 //on calcule la largeur des onglets
 if($cible==""){$cible=($numero[0]);}
 $nmax=$nb;
@@ -167,12 +175,12 @@ echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
     {
     if ($cible == ($numero[$x]))
-        {//cellule active	
+        {//cellule active
         echo "<li id='select'><a href='cahier_texte_arch_perso.php?rubrique=$numero[$x]&amp;arch=$arch'
-        id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";	
+        id='courant'>".htmlentities($mat[$x])."<br />$clas[$x] "."</a></li>";
         $contenu_postit=stripslashes($com[$x]);
         }
-    else 
+    else
         {
         if (!isset($mat[$x])) $mat[$x]="&nbsp;";
         if (!isset($clas[$x])) $clas[$x]="&nbsp;";
@@ -183,7 +191,7 @@ for($x=0;$x < $nmax;$x++)
 echo '</ul>';
 echo '</div>';
 echo '</div>';
-echo '<div id="container">';	
+echo '<div id="container">';
 
 /*======================================
    - Affichage du contenu   -
@@ -191,12 +199,12 @@ echo '<div id="container">';
  //creer la requete
 $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique FROM cahiertxt$arch
  WHERE (id_auteur=$cible)  ORDER BY date desc ,id_rubrique desc";
- 
+
 // lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error());
 
 // Combien y a-t-il d'enregistrements ?
-$nb2 = mysql_num_rows($result); 
+$nb2 = mysql_num_rows($result);
 echo '<div id="boite5">';
 echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
 while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
@@ -205,7 +213,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
     $textafaire=stripslashes($ligne[2]);
     $textco=utf8_encode(stripslashes($ligne[1]));
     $textafa=utf8_encode(stripslashes($ligne[2]));
-    if ($ligne[1]!="") 
+    if ($ligne[1]!="")
         {
         echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
         echo '<tbody>';
@@ -215,7 +223,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
         echo '<td class="contenu">';
         echo $textco.'</td></tr>';
         //affichage, s'il existe, du travail a effectuer
-        if ($ligne[2]!="") 
+        if ($ligne[2]!="")
             {
             echo '<tr><td class="afaire">A faire pour le :<br/>'.$ligne[3].'</td><td class="contenu">';
             echo $textafa.'</td></tr>';
@@ -231,7 +239,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
         echo '</tbody>';
         echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
         }
-    else 
+    else
         {
         echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
         echo '<tbody>';
@@ -239,7 +247,7 @@ while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
         //affichage de la seance
         echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0].'<br />';
         //affichage, s'il existe, du travail a effectuer
-        if ($ligne[2]!="") 
+        if ($ligne[2]!="")
             {
             echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
             echo '<td class="contenu">';

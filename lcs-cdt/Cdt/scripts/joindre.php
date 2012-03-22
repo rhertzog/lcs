@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des pieces jointes-
@@ -58,6 +58,7 @@ if (isset($_POST['Valider']))
 "video/x-ms-wmv" ,
 "video/x-msvideo" ,
 "video/x-flv" ,
+"video/ogg",
 "text/plain",
 "text/xml",
 "text/html",
@@ -65,10 +66,15 @@ if (isset($_POST['Valider']))
 "audio/x-ms-wma",
 "audio/vnd.rn-realaudio",
 "audio/x-wav",
+"audio/wav",
+"audio/ogg",
+"audio/mp3",
 "application/pdf",
 "application/xhtml+xml",
 "application/x-shockwave-flash",
-"application/zip" );
+"application/zip",
+"application/force-download",
+"binary/octet-stream");
     // Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['nom_lien']) > 0) $nom_lien= addSlashes(strip_tags(stripslashes($_POST['nom_lien'])));
     else $nom_lien= "Fichier joint";

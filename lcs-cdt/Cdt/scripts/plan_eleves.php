@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultation du planning des devoirs -

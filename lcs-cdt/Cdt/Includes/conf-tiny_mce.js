@@ -17,9 +17,11 @@ tinymce.create('tinymce.plugins.ExamplePlugin', {
                      title : 'INSERER',
                      onselect : function(v) {
                          if ( v == 'val1' ) image_popup();
-                         else if ( v == 'val2' ) joint_popup();				                         
+                         else if ( v == 'val2' ) joint_popup();
                          else if  (v == 'val3' ) lien_popup();
-                         else if ( v== 'val4' ) form_popup();
+                         else if ( v== 'val4' ) video_popup();
+                         else if ( v== 'val5' ) form_popup();
+                         else if ( v== 'val6' ) latex_popup();
                      }
                 });
 
@@ -27,10 +29,12 @@ tinymce.create('tinymce.plugins.ExamplePlugin', {
                 mlb.add('une image', 'val1');
                 mlb.add('une piece jointe', 'val2');
                 mlb.add('un lien', 'val3');
-                mlb.add('une expr math', 'val4');
+                mlb.add('une vid\351o', 'val4');
+                mlb.add('une expr math', 'val5');
+                mlb.add('une expr LaTeX', 'val6');
 
                 // Return the new listbox instance
-                return mlb;            
+                return mlb;
         		}
 
         return null;
@@ -85,13 +89,13 @@ tinyMCE.init({
         // Add a custom button
         ed.addButton('mybutton', {
             title : 'Ins&#233;rer',
-            onclick : function() {image_popup();}          
-        });       
+            onclick : function() {image_popup();}
+        });
     }
 });
 
 tinyMCE.init({
-    
+
     mode : "textareas",
 	theme : "advanced",
 	skin : "cdt",
@@ -105,11 +109,11 @@ tinyMCE.init({
 	theme_advanced_toolbar_align : "center",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
-	
+
 });
 
 tinyMCE.init({
-    
+
     mode : "textareas",
 	theme : "advanced",
 	skin : "cdt",
@@ -123,11 +127,11 @@ tinyMCE.init({
 	theme_advanced_toolbar_align : "center",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
-	
+
 });
 
 tinyMCE.init({
-    
+
     mode : "textareas",
 	theme : "advanced",
 	width: "800",
@@ -143,5 +147,5 @@ tinyMCE.init({
 	theme_advanced_toolbar_align : "center",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
-	
+
 });

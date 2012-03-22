@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des hyper-liens -
@@ -76,7 +76,7 @@ if (isset($_POST['Valider']))
         fclose($fp);
         //on switch sur le code HTTP renvoye
         $no_code = substr($en_tete,9,3);
-         if ($no_code >=200 && $no_code <= 307 )
+         if ($no_code >=200 && $no_code < 308 )
             {
             $Url="<a href= '". $lien ."' > ". $nom_lien." </a> ";			
             //insertion du lien

@@ -7,7 +7,7 @@
    [LCS CoreTeam]
    jLCF >:>  jean-luc.chretien@tice.ac-caen.fr
    Equipe Tice academie de Caen
-   modif par ph lelclerc pour la VERSION 2.3 du 31/12/2011
+   modif par ph lelclerc pour la VERSION 2.4 du 22/03/2012
    ============================================= */
 
 function is_prof ($login) {

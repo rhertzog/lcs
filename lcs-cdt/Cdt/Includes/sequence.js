@@ -18,7 +18,7 @@ $(document).ready(function() {
             }
         });
     });
- 
+
  //modification ordre afffichage contenu sequence
     $(function(){
           $(".order").click(function(){
@@ -45,16 +45,17 @@ $(document).ready(function() {
                     async: false,
                      success :function(data)
                         {
-                        if (data =="error")   
+                        if (data =="error")
                          alert('Erreur' +data);
-                        else 
+                        else
                         $("#c"+no).html(data);
-			//document.getElementById("c"+no).innerHTML =  data;
+                        var math = document.getElementById("boite5elv");
+                        MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
                        }
              });
         });
     });
- //popup qrcode   
+ //popup qrcode
  $(function() {
         $( "#dialog" ).dialog({
             autoOpen: false,

@@ -2,14 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 04/01/20110
-	par philippe LECLERC
+   VERSION 2.4 du 22/03/2012
+   par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de connexion a la base de donnees -
 			_-=-_
    ============================================= */
 $NAME_PLUG = "Cahier de textes";
-$VER_PLUG = "2.3";
+$VER_PLUG = "2.4";
 $FLAG_ABSENCE=1;
 $Grain="#PASS2#";
 
@@ -20,7 +20,7 @@ DEFINE ('DB_HOST', 'localhost');
 DEFINE ('DB_NAME', 'cdt_plug');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbc = @mysql_connect (DB_HOST, DB_USER, DB_PASSWORD) 
+$dbc = @mysql_connect (DB_HOST, DB_USER, DB_PASSWORD)
        OR die ('Connexion a MySQL impossible : '.mysql_error().'<br>');
 mysql_select_db (DB_NAME)
        OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br>');

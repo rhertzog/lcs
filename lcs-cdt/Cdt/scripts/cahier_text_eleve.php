@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes ELEVE -
@@ -12,12 +12,12 @@
 session_name("Cdt_Lcs");
 @session_start();
 
-if ((!isset($_SESSION['version'])) || (!isset( $_SESSION['saclasse']) && !isset($_SESSION['login'])) ) exit; 
+if ((!isset($_SESSION['version'])) || (!isset( $_SESSION['saclasse']) && !isset($_SESSION['login'])) ) exit;
 include ('../Includes/data.inc.php');
 include_once("../Includes/fonctions.inc.php");
-include ("/var/www/Annu/includes/ldap.inc.php");	
+include ("/var/www/Annu/includes/ldap.inc.php");
 include ("/var/www/lcs/includes/headerauth.inc.php");
-include ("/var/www/Annu/includes/ihm.inc.php");  
+include ("/var/www/Annu/includes/ihm.inc.php");
 include "../Includes/functions2.inc.php";
 
 //destruction des variables de sessions
@@ -28,7 +28,7 @@ unset ($_SESSION['pref']);
 unset ($_SESSION['visa']);
 unset ($_SESSION['datvisa']);
 //echo $delta."-".count($_SESSION['prof'])."-".$ch;exit;
-//si clic sur Planning des  devoirs  
+//si clic sur Planning des  devoirs
 if (isset($_POST['plan']))
     {
     $clas=$_POST['numrub'];
@@ -36,11 +36,11 @@ if (isset($_POST['plan']))
     exit();
     }
 
-//teste si $x fait partie des classes autorisees 
+//teste si $x fait partie des classes autorisees
 function is_authorized($x) {
     $flg="false";
     foreach ($_SESSION['saclasse'] as $cle => $valeur)
-      { 
+      {
       if ($valeur==$x)
         {
         $flg="true";
@@ -52,7 +52,7 @@ function is_authorized($x) {
 
 //contrôle des parametres $_GET
 if ((isset($_GET['div'])) && (isset($_SESSION['saclasse'])))
-    {	
+    {
     if (is_authorized($_GET['div'])=="false")   exit;
     }
 
@@ -60,20 +60,20 @@ if ((isset($_GET['mlec547trg2s5hy'])) && (isset($_SESSION['saclasse'])))
     {
     if (is_authorized($_GET['mlec547trg2s5hy'])=="false")  exit;
     }
-		
-//si clic sur un lien 	
-if(isset($_GET['nvlkzei5qd1egz65'])) 
-$code=$_GET['nvlkzei5qd1egz65'];	
+
+//si clic sur un lien
+if(isset($_GET['nvlkzei5qd1egz65']))
+$code=$_GET['nvlkzei5qd1egz65'];
 else
 $code="";
 
 //premiere passe
-if ($code!='cv5e8daerfz8ge69') 
-    {//initialisation de la variable 
-    if (isset($_SESSION['saclasse'][1])) $ch=$_SESSION['saclasse'][1]; 
+if ($code!='cv5e8daerfz8ge69')
+    {//initialisation de la variable
+    if (isset($_SESSION['saclasse'][1])) $ch=$_SESSION['saclasse'][1];
     else $ch=$classe[0];
-    } 
-//initialisation 
+    }
+//initialisation
 $tsmp=0;
 if (count($_SESSION['saclasse'])==1) $ch=$_SESSION['saclasse'][1];
 if(isset($_GET['div'])) $ch=$_GET['div'];
@@ -102,26 +102,34 @@ if(isset($_GET['div'])) $ch=$_GET['div'];
                   <script type="text/javascript" src="../Includes/sequence.js"></script>
                   <script type="text/javascript" src="../Includes/barre_java.js"></script>
                   <script type="text/javascript" src="../Includes/cdt.js"></script>
+                  <script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+                    MMLorHTML: { prefer: { Firefox: "HTML" } }
+                    });
+                   </script>
+                    <script type="text/javascript" src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>
 </head>
 
 <body>
 <?php
+
 // Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
 // si eleve on recupere le postit
-if ($_SESSION['cequi']=="eleve" ) 
+if ($_SESSION['cequi']=="eleve" )
     {
     $rq = "SELECT texte FROM postit_eleve WHERE login='{$_SESSION['login']}'  ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error()); 
-    if (mysql_num_rows($result)>0) 
+    $result = @mysql_query ($rq) or die (mysql_error());
+    if (mysql_num_rows($result)>0)
         {
         $enrg = mysql_fetch_array($result, MYSQL_NUM);
         $contenu_aide_memoire=$enrg[0];
         }
     else  $contenu_aide_memoire="";
     echo '
-    <div id="postit-eleve"> 
+    <div id="postit-eleve">
     <div id="deroul-contenu_ele">
     <div class="deroulant" id="deroulant_1">
     <div class="t3_ele">Aide m&eacute;moire</div>
@@ -149,53 +157,53 @@ if (isset($_GET['tsmp'])) $tsmp=$_GET['tsmp'];
 
 // si OK a ete clique
 if ((isset($_POST['valider'])) || (isset($_POST['viser'])))
-    { 
+    {
     //la classe
     if (strlen($_POST['mlec547trg2s5hy']) > 0)
-        { 
+        {
         $ch = stripslashes($_POST['mlec547trg2s5hy']);
         }
-    //la date, le timestamp 
+    //la date, le timestamp
     $date_c = $_POST['an_c'].$_POST['mois_c'].$_POST['jour_c'];
     $tsmp=mkTime(0,0,1,$_POST['mois_c'],$_POST['jour_c'],$_POST['an_c']) + 5184000;
     }
-	
+
 if ( isset($_POST['viser']))
     {
     $dat_vis= date('Y-m-d');
     $rub_vis=$_POST['rub_activ'];
     //echo $dat_vis." ".$rub_vis."-";
-    $rq = "UPDATE  onglets SET visa='1', datevisa='$dat_vis'  WHERE id_prof='$rub_vis'"; 
+    $rq = "UPDATE  onglets SET visa='1', datevisa='$dat_vis'  WHERE id_prof='$rub_vis'";
 
     // lancer la requete
-    $result = mysql_query($rq); 
+    $result = mysql_query($rq);
     if (!$result)  // Si l'enregistrement est incorrect
-        {                           
+        {
          echo "<p>Votre rubrique n'a pas pu etre enregistree a cause d'une erreur systeme".
         "<p></p>" . mysql_error() . "<p></p>";
         }
     $dat_la=date('Y-m-d');
     $rq = "UPDATE cahiertxt SET on_off='1' WHERE id_auteur='$rub_vis' AND date<'$dat_la' AND datevisibi<='$dat_la'";
     // lancer la requete
-    $result = mysql_query($rq); 
-    if (!$result)  // 
-        {                           
+    $result = mysql_query($rq);
+    if (!$result)  //
+        {
          echo "<p>L'apposition du visa n'a pu etre realisee a cause d'une erreur systeme".
         "<p></p>" . mysql_error() . "<p></p>";
-        }					
-    }	
-	
+        }
+    }
+
 //on recupere le parametre de la rubrique (prof/matiere/classe)
-if (isset($_GET['rubrique'])) 
+if (isset($_GET['rubrique']))
 $cible=$_GET['rubrique'];
 else $cible="";
-	
+
 if ((isset($_POST['rub_activ'])) &&  (isset($_POST['viser']))) $cible=$_POST['rub_activ'];
 
 //fin traitement formulaire
 //Traitement de la barre des menus
 
-// Creer la requete (Recuperer les rubriques de la classe) 
+// Creer la requete (Recuperer les rubriques de la classe)
 $rq = "SELECT id_prof FROM onglets WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
  // lancer la requete
@@ -205,12 +213,12 @@ if ($nb>0)
     {
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {
         $num_ero[$loop]=$enrg[0];//numero de l'onglet
         $loop++;
         }
-    if($cible=="") $cible=($num_ero[0]);	
+    if($cible=="") $cible=($num_ero[0]);
     }
 
 //affichage du formulaire
@@ -218,27 +226,27 @@ if ($nb>0)
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?nvlkzei5qd1egz65=cv5e8daerfz8ge69" method="post">
 <fieldset id="field7">
 <legend id="legende">Cahier de textes &#233;l&#232;ve</legend>
-Contenu du cahier de textes de 
+Contenu du cahier de textes de
 <?php
-//si on ne  connait pas la classe , on affiche un menu deroulant  
+//si on ne  connait pas la classe , on affiche un menu deroulant
 if (!isset($_SESSION['saclasse']))
     {
     echo "<select name='mlec547trg2s5hy' style='background-color:#E6E6FA'>";
     foreach ($classe as $cle => $valeur)
-        { 
+        {
         echo "<option value=\"$valeur\"";
         if ($valeur==$ch) {echo ' selected="selected"';}
         echo ">$valeur</option>\n";
         }
     echo "</select>";
     }
-//sinon on affiche uniquement la classe de l'eleve 
+//sinon on affiche uniquement la classe de l'eleve
 elseif (count($_SESSION['saclasse'])==1)   echo '<b>'.$_SESSION['saclasse'][1].'</b>';
-else 
+else
     {
     echo "<select name='mlec547trg2s5hy' style='background-color:#E6E6FA'>";
     foreach ($_SESSION['saclasse'] as $cle => $valeur)
-        { 
+        {
         echo "<option value=\"$valeur\"";
         if ($valeur==$ch) {echo ' selected="selected"';}
         echo ">$valeur</option>\n";
@@ -256,7 +264,7 @@ depuis le :	<?calendrier_auto(-60,'jour_c','mois_c','an_c',$tsmp);?>
 <input type="submit" name="plan" value="" class="bt-plan-dev" />
 <?php
 
-//Affichage du lien des absences 
+//Affichage du lien des absences
 if (ldap_get_right("Cdt_is_cpe",$_SESSION['login'])=="Y")
     {
     echo '<a href="#" class="open_wi" onclick="open_new_win(\'cpe.php\')"  id="bt-consult"></a>';
@@ -264,11 +272,11 @@ if (ldap_get_right("Cdt_is_cpe",$_SESSION['login'])=="Y")
 
 if (( isset($_SESSION['parentde']))  && (!isset($_SESSION['login'])))
     {
-    if ($FLAG_ABSENCE==1)	
+    if ($FLAG_ABSENCE==1)
         {
         foreach ( $_SESSION['parentde'] as $cle => $valcla)
             {
-            if ($valcla[2]==$ch) 
+            if ($valcla[2]==$ch)
                 {
                 echo '<a href="#" id="bt-abs" title="Absences de '.$valcla[1].'" onclick="abs_popup(\''.$valcla[0].'\',\''.$valcla[1].'\'); return false" ></a>';
                 $uid_actif=$valcla[0];
@@ -279,16 +287,16 @@ if (( isset($_SESSION['parentde']))  && (!isset($_SESSION['login'])))
             {
             foreach ( $_SESSION['parentde'] as $cle => $valcla)
                 {
-                if ($valcla[2]==$ch) 
+                if ($valcla[2]==$ch)
                     {
                     $uid_actif=$valcla[0];
                     }
-                }	
+                }
             }
 
     }
-//------	
-if ($_SESSION['cequi']=="eleve") $uid_actif=$_SESSION['login'];	
+//------
+if ($_SESSION['cequi']=="eleve") $uid_actif=$_SESSION['login'];
 $cmd="hostname -f";
 exec($cmd,$hn,$retour);
 $hostn= $hn[0];
@@ -301,11 +309,11 @@ if ($_SESSION['cequi']=="eleve") echo '<input type="button" value="" id="bt-qrco
 ?>
 <a href="http://fusion.google.com/add?source=atgs&amp;feedurl=<?echo 'http://'.$hostn.'/Plugins/Cdt/scripts/flux_rss.php?div='.$ch.':'.$clcryt;?>" id="bt-google">&nbsp; </a>
 <a href="flux_rss.php?div=<?echo $ch.':'.$clcryt;?>" id="bt-rss">&nbsp; </a>
-<?php 
+<?php
 if ($_SESSION['cequi']=="eleve")
     {
     echo '<div id="dialog" title="G&#233;n&#233;ration d\'un QRcode">
-    <p>Scannez ce QRcode avec votre smartphone ou votre tablette pour acc&#233;der au cahier de textes. <br/>Ne le transmettez pas &#224; d\'autres personnes car 
+    <p>Scannez ce QRcode avec votre smartphone ou votre tablette pour acc&#233;der au cahier de textes. <br/>Ne le transmettez pas &#224; d\'autres personnes car
     il contient des donn&#233;es personnelles</p>';
     $clcryptee =crypt(substr($_SESSION['safullclasse'],-8,8),$Grain);
     $clcryptee=substr($clcryptee,2);
@@ -315,7 +323,7 @@ if ($_SESSION['cequi']=="eleve")
     $content=str_replace("&amp;", "*amp*", $content);
     echo '<img src="../Includes/phpqrcode/genRqrCode.php?qrurl='.$content.'" alt="Erreur QRcode" />';
     echo'</div> ';
-    echo '<a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';  
+    echo '<a href="#" class="open_wi" onclick="open_new_win(\'http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/aide_eleve.php\')"  ><img src="../images/planifier-cdt-aide.png" alt="Aide" title="Aide" /></a>';
     }
 ?>
 </div>
@@ -324,50 +332,50 @@ if ($_SESSION['cequi']=="eleve")
 <?php
 $prof=$mat=$numero=$pref=$restr=$visa=$datvisa=array();
 
-// Creer la requete (Recuperer les rubriques de la classe) 
+// Creer la requete (Recuperer les rubriques de la classe)
 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
  // lancer la requete
 $result = @mysql_query ($rq) or die (mysql_error());
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
+$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
-    //on recupere les donnees 
+    //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {
         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
-        $mat[$loop]=utf8_encode($enrg[1]);//matiere 
+        $mat[$loop]=utf8_encode($enrg[1]);//matiere
         $numero[$loop]=$enrg[2];//numero de l'onglet
         $pref[$loop]=utf8_encode($enrg[3]);// prefixe
         $restr[$loop]=$enrg[4];//restric
-        $visa[$loop]=$enrg[5];// 
+        $visa[$loop]=$enrg[5];//
         $datvisa[$loop]=$enrg[6];
         $loop++;
         }
     //recherche des onglets "cours d'un eleve"
-    if ($uid_actif!="") 
+    if ($uid_actif!="")
         {
         $groups=people_get_cours($uid_actif);
-        if ( count($groups) > 0 ) 
+        if ( count($groups) > 0 )
             {
-            for ($loopo=0; $loopo < count ($groups) ; $loopo++) 
+            for ($loopo=0; $loopo < count ($groups) ; $loopo++)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
                 WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
                 $result = @mysql_query ($rq) or die (mysql_error());
-                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
+                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {
-                    //on recupere les donnees 
-                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                    //on recupere les donnees
+                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
                         {
                         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
-                        $mat[$loop]=utf8_encode($enrg[1]);//matiere 
+                        $mat[$loop]=utf8_encode($enrg[1]);//matiere
                         $numero[$loop]=$enrg[2];//numero de l'onglet
                         $pref[$loop]=utf8_encode($enrg[3]);// prefixe
                         $restr[$loop]=$enrg[4];//restric
-                        $visa[$loop]=$enrg[5];// 
+                        $visa[$loop]=$enrg[5];//
                         $datvisa[$loop]=$enrg[6];
                         $loop++;
                         }
@@ -375,12 +383,12 @@ if ($nb>0)
                 }
             }
 
-        //fin onglets cours eleve 
+        //fin onglets cours eleve
         }
-    else 
+    else
         {
         //recherche des onglets "Cours" de la classe
-        if (!mb_ereg("^Classe",$ch)) 
+        if (!mb_ereg("^Classe",$ch))
             {
             $grp_cl=search_groups("cn=Classe_*".$ch);
             $grp_cl=$grp_cl[0]["cn"];
@@ -388,21 +396,21 @@ if ($nb>0)
         else $grp_cl=$ch;
         if ($grp_cl !="")
             {
-            $uids = search_uids ("(cn=".$grp_cl.")", "half");	
+            $uids = search_uids ("(cn=".$grp_cl.")", "half");
             $liste_cours=array();
             $i=0;
             for ($loup=0; $loup < count($uids); $loup++)
                 {
                 $logun= $uids[$loup]["uid"];
-                if (is_eleve($logun)) 
+                if (is_eleve($logun))
                     {
                     $groops=people_get_cours($logun);
                     if (count($groops))
                         {
                         for($n=0; $n<count($groops); $n++)
-                            { 
-                            if (!in_array($groops[$n]["cn"], $liste_cours)) 
-                                {	
+                            {
+                            if (!in_array($groops[$n]["cn"], $liste_cours))
+                                {
                                 $liste_cours[$i]=$groops[$n]["cn"];
                                 $i++;
                                 }
@@ -417,18 +425,18 @@ if ($nb>0)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
                 $result = @mysql_query ($rq) or die (mysql_error());
-                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
+                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {
-                    //on recupere les donnees 
-                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                    //on recupere les donnees
+                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
                         {
                         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
-                        $mat[$loop]=utf8_encode($enrg[1]);//matiere 
+                        $mat[$loop]=utf8_encode($enrg[1]);//matiere
                         $numero[$loop]=$enrg[2];//numero de l'onglet
                         $pref[$loop]=utf8_encode($enrg[3]);// prefixe
                         $restr[$loop]=$enrg[4];//restric
-                        $visa[$loop]=$enrg[5];// 
+                        $visa[$loop]=$enrg[5];//
                         $datvisa[$loop]=$enrg[6];
                         $loop++;
                         }
@@ -445,23 +453,23 @@ if ($nb>0)
     $delta=($loop -7) *40 > 0 ? (($loop -7) *40) :0;
     echo '<script type="text/javascript" >
     var offset = '.$delta.'
-    </script>';	
+    </script>';
 
     //modif
     echo '<div id="onglev">';
-    if ($delta >0) 
+    if ($delta >0)
         {
         echo '<div id="switch-ongletsup" ></div>';
         echo '<div id="switch-ongletsdown"></div>';
         }
     echo '<div id="onglev_refresh">';
     // Affichage de la colonne de gauche
-    if($cible==""){$cible=($numero[0]);}	
+    if($cible==""){$cible=($numero[0]);}
     //creation de la barre de menu , couleur de fond # pour cellule active
     echo '<ul id="navlist-elv">';
     for($x=0;$x < $loop;$x++)
         {
-        if ($cible == ($numero[$x])) 
+        if ($cible == ($numero[$x]))
             {
             echo '<li id="active"><a href="#" title="" onclick="refresh_cdt('. $numero[$x].','.$tsmp.')" id="courant">&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
             if ($visa[$x])
@@ -470,7 +478,7 @@ if ($nb>0)
                     $datv=$datvisa[$x];
                     }
             }
-        else 
+        else
             {
             echo '<li><a href="#" title="" onclick="refresh_cdt('. $numero[$x].','.$tsmp.')" >&nbsp;'.$mat[$x].'&nbsp;<br />&nbsp;'.$pref[$x].'  '.$prof[$x].'&nbsp;</a></li>';
             }
@@ -479,15 +487,15 @@ if ($nb>0)
     if ($vis) echo '<div id="visa-cdt'.$vis.'e">'.$datv.'</div>';
     echo '</div>';
     echo '</div>';
-    }	
+    }
 else
-    { 
+    {
 // Il y a eu un os !
     echo '<p class="vide">Aucun enregistrement dans le cahier de textes de '. $ch.' !</p><p></p>';
     }
 
 //affichage du contenu du cahier de textes
-if ($cible!="") 
+if ($cible!="")
     {
     //elaboration de la date limite a partir de la date selectionnee
     $dat=date('Ymd',$tsmp-5184000);//2592000=nbre de secondes dans 30 jours
@@ -500,7 +508,7 @@ if ($cible!="")
     echo "</div>"; //fin du div boite5elv
     }
 echo '</div>';//fin du div container
-if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  
+if (!stripos($_SERVER['HTTP_USER_AGENT'], "msie"))
 {include ('../Includes/pied.inc');}
 ?>
 </body>

@@ -2,8 +2,8 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011
-   modif : 20/12/2010
+   VERSION 2.4 du 22/03/2012
+   modif : 15/03/2012
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script du cahier de textes PROF -
@@ -104,9 +104,16 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
  	setTimeout("finsession()",(duree + 2) * 1000);
     //]]>
 	</script>
+                  <script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+                    MMLorHTML: { prefer: { Firefox: "HTML" } }
+                    });
+                   </script>
+                    <script type="text/javascript" src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>
     </head>
 <body onload="tinyMCE.execCommand('mceFocus',false,'coursfield')">
-<?php
+    <?php
 $tsmp=time();
 $tsmp2=time() + 604800;
 $cours="";//variable temporaire de $Cours (avec une majuscule) pour un UPDATE
@@ -152,7 +159,7 @@ elseif (is_dir("../../Agendas"))
                 //matiere sans retour ligne
                 $mat_current=preg_replace ( "/[\r\n]+/", "", $mati[1] );
                 //matiere telle que decrite dans edt
-                //$mati[1]=substr($mati[1]); 
+                //$mati[1]=substr($mati[1]);
                 if ( $enrg[2]!="" && $mati[1]!="")
                     {
                     $match= $enrg[2].":".$mat_current;
@@ -231,6 +238,9 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config = HTMLPurifier_Config::createDefault();
             $config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
+            $config->set('Filter.MyTube', true);
+            $config->set('Filter.MyDaily', true);
+            $config->set('Filter.MyLcs', true);
             $purifier = new HTMLPurifier($config);
             $Cours = $purifier->purify($Cours);
             $Cours=mysql_real_escape_string($Cours);
@@ -257,7 +267,10 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config = HTMLPurifier_Config::createDefault();
             $config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
-             $purifier = new HTMLPurifier($config);
+            $config->set('Filter.MyTube', true);
+            $config->set('Filter.MyDaily', true);
+            $config->set('Filter.MyLcs', true);
+            $purifier = new HTMLPurifier($config);
             $Afaire = $purifier->purify($Afaire);
             $Afaire = mysql_real_escape_string($Afaire);
             }
@@ -560,7 +573,7 @@ if ($nb>0)
         echo "<option value=\"$row->id_seq\"";
         if ($row->id_seq==$Seq) {echo ' selected';}
         echo ">".utf8_encode($row->titrecourt)."</option>\n";
-        } 
+        }
      }
  echo "</select>";
 ?>
@@ -704,7 +717,7 @@ mysql_close();
     <div class="deroulant" id="deroulant_3">
     	<div class="t3">Liens</div>
        		<p>Ces liens s'ouvrent dans une nouvelle fen&ecirc;tre</p>
- <?php 
+ <?php
  if (!mb_ereg("^Cours",$classe_active))
     {
     echo '<p><a href="# " class="open_wi" onclick="open_new_win(\'cahier_text_eleve.php?mlec547trg2s5hy='.$classe_active.'\')"> - CAHIER DE TEXTE ELEVES	</a></p>';

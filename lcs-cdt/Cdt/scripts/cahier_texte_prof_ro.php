@@ -2,7 +2,7 @@
 /* ===================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.3 du 31/12/2011 
+   VERSION 2.4 du 22/03/2012
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultationd'un  cahier de textes PROF -
@@ -21,12 +21,12 @@ include ('../Includes/config.inc.php');
 // Creer la requ&egrave;ete.
 $rq = "SELECT classe,matiere,id_prof FROM onglets
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY classe ASC ";
- 
+
 // lancer la requ&egrave;ete
-$result = @mysql_query ($rq) or die (mysql_error()); 
+$result = @mysql_query ($rq) or die (mysql_error());
 
 // si pas de rubrique, on redirige vers config_ctxt.php
-if (mysql_num_rows($result)==0) 
+if (mysql_num_rows($result)==0)
     {
     echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -43,10 +43,10 @@ if (mysql_num_rows($result)==0)
     </div></div>
     </body>
     </html>';
-    mysql_close();	
+    mysql_close();
     exit;
     }
-include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");	
+include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -57,13 +57,20 @@ include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-        <script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
-        <script type="text/javascript" src="../Includes/sequence.js"></script>
-	
+                  <script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
+                    <script type="text/javascript" src="../Includes/sequence.js"></script>
+
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
-	
+                    <script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+                    MMLorHTML: { prefer: { Firefox: "HTML" } }
+                    });
+                   </script>
+                   <script type="text/javascript"  src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 </head>
 
 <body >
@@ -76,33 +83,33 @@ if ( isset($_POST['viser']))
     {
      $dat_vis= date('Y-m-d');
     if (!isset($_SESSION['login'])) $numvisa=2; else $numvisa=1;
-     $rq = "UPDATE  onglets SET visa='$numvisa', datevisa='$dat_vis'  WHERE id_prof='$cible'"; 
+     $rq = "UPDATE  onglets SET visa='$numvisa', datevisa='$dat_vis'  WHERE id_prof='$cible'";
 
     // lancer la requete
-    $result = mysql_query($rq); 
+    $result = mysql_query($rq);
     if (!$result)  // Si l'enregistrement est incorrect
-        {                           
+        {
          echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
         "<p></p>" . mysql_error() . "<p></p>";
         }
      $dat_la=date('Y-m-d');
      $rq = "UPDATE cahiertxt SET on_off='$numvisa' WHERE id_auteur='$cible' AND date<'$dat_la' AND datevisibi<='$dat_la' AND on_off='0' ";
      // lancer la requête
-    $result = mysql_query($rq); 
-    if (!$result)  // 
-        {                           
+    $result = mysql_query($rq);
+    if (!$result)  //
+        {
          echo "<p>L'apposition du visa n'a pu\352tre r\351alis\351e \340 cause d'une erreur syst\350me".
         "<p></p>" . mysql_error() . "<p></p>";
-        }					
-    }	
-	
+        }
+    }
+
 /*
    ================================
    - Traitement de la barre des menus  -
    ================================
 */
 
-// Creer la requete (Recuperer les rubriques de l'utilisateur) 
+// Creer la requete (Recuperer les rubriques de l'utilisateur)
 $rq = "SELECT classe,matiere,id_prof,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY id_prof ASC ";
 
@@ -112,37 +119,37 @@ $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
     {
     $clas[$loop]=$enrg[0];
     $mat[$loop]=utf8_encode($enrg[1]);
     $numero[$loop]=$enrg[2];
-    $visa[$loop]=$enrg[3];// 
+    $visa[$loop]=$enrg[3];//
     $datvisa[$loop]=$enrg[4];
     $loop++;
     }
-	
+
 //on calcule la largeur des onglets
 if($cible==""){$cible=($numero[0]);}
 $nmax=$nb;
- 
-//cr&eacute;ation de la barre de menu 
+
+//cr&eacute;ation de la barre de menu
 echo '<div id="entete">';
 echo '<br />';
 echo '<div id="navcontainer">';
 echo ("<ul id='navlist'>");
 for($x=0;$x < $nmax;$x++)
-    {	
+    {
     if ($cible == ($numero[$x]))
-        {//cellule active	
-        echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' id='courant'>".$mat[$x]."<br />$clas[$x] "."</a></li>";	
+        {//cellule active
+        echo "<li id='select'><a href='cahier_texte_prof_ro.php?rubrique=$numero[$x]' id='courant'>".$mat[$x]."<br />$clas[$x] "."</a></li>";
         if ($visa[$x])
             {
             $vis=$visa[$x];
             $datv=$datvisa[$x];
             }
         }
-    else 
+    else
         {
         if (!isset($mat[$x])) $mat[$x]="&nbsp;";
         if (!isset($clas[$x])) $clas[$x]="&nbsp;";
@@ -161,7 +168,7 @@ if ($vis) echo '<div id="visa-cdt'.$vis.'">'.$datv.'</div>';
 <!--bloc qui contient la saisie et le contenu du cahier de texte-->
 <div id="container2">
 <fieldset id="field7">
-<legend id="legende"> Cahier de textes de <?echo $_SESSION['proffull']; ?>  &nbsp; 
+<legend id="legende"> Cahier de textes de <?echo $_SESSION['proffull']; ?>  &nbsp;
 </legend>
 
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post">

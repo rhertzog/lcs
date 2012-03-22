@@ -1,0 +1,11 @@
+Filter.MyTube
+TYPE: bool
+VERSION: 3.1.0
+DEFAULT: false
+--DESCRIPTION--
+
+<p>
+  This directive enables YouTube video  in HTML Purifier.
+by misterphi
+</p>
+--# vim: et sw=4 sts=4
