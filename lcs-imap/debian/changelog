@@ -1,11 +1,11 @@
-lcs-imap (2.4.9~1) Lcs; urgency=low
+lcs-imap (2.4.9~2) Lcs; urgency=low
 
-  * Modify pacakage for ENT authentication base on pam_cas
+  * Modify package for ENT authentication base on pam_cas
     courier/authdaemonrc.ent courier/aithdaemonrc.lcs 
     pam.d/imap.ent pam.d/imap.lcs
     scripts/imap_reconfigure.sh
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 24 Jun 2011 12:06:02 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Mar 2012 16:00:47 +0100
 
 lcs-imap (2.4.8) Lcs; urgency=low
 

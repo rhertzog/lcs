@@ -1,6 +1,6 @@
 #!/bin/bash
 # Configure courrier imap for LCS
-# Jean-Luc Chretien on 24 Juin 2011
+# Jean-Luc Chretien on 22 Mars 2012
 #
 
 if [ "$4" = "" ];
@@ -14,19 +14,34 @@ LDAP_BASE_DN="$2"
 LDAP_ADMIN_RDN="$3"
 LDAP_ADMIN_PW="$4"
 
-MODAUTH=`mysql -se "select value from lcs_db.params where name='auth_mod';"`
+#MODAUTH=`mysql -se "select value from lcs_db.params where name='auth_mod';"`
 
-if [ $MODAUTH == "ENT" ];
+# Get LCS params in lcs_db
+get_lcsdb_params() {
+    PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+    echo "$PARAMS"
+}
+
+#Configure authentication ldap or mysql
+AUTH_MOD=$(get_lcsdb_params auth_mod)
+
+if [ "$AUTH_MOD" = "ENT"  ];
 then
 	# Configure authdaemonrc for pam_cas
 	cp /etc/lcs/courier/authdaemonrc.ent /etc/courier/authdaemonrc
 	# Configure pam.d/imap
 	cp /etc/lcs/pam.d/imap.ent /etc/pam.d/imap
+	# Configure pam-cas.conf
+	cp /usr/share/doc/libpam-cas/pam_cas.conf /etc/security/
+	DOMAINENAME=`hostname -f | tr A-Z a-z`
+	sed -i s/"# proxy https:\/\/lcs"/"proxy https:\/\/$DOMAINENAME"/g /etc/security/pam_cas.conf
 else
 	# Configure authdaemonrc for pamldap
 	cp /etc/lcs/courier/authdaemonrc.lcs /etc/courier/authdaemonrc
 	# Configure pam.d/imap
 	cp /etc/lcs/pam.d/imap.lcs /etc/pam.d/imap
+	# Configure pam-cas.conf
+	rm /etc/security/pam_cas.conf
 fi
 
 # Configure authldaprc
