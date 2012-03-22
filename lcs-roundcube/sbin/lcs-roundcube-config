@@ -15,8 +15,8 @@ configure() {
 	CONFIGRCPLUG_PATH="/usr/share/lcs/roundcube/plugins"
 	MYSQLDUMP="/var/lib/lcs/roundcube/Sql"
     MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
-    # Subscribe Module lcs-roundcube dans lcs_db.params
-    ROUNDCUBE=`echo "SELECT id from lcs_db.applis WHERE name='webmail';"| mysql -u lcsmgr -p$MYSQLPASS lcs_db -N`
+    # Subscribe Module lcs-roundcube in lcs_db.applis
+    ROUNDCUBE=`echo "SELECT id from lcs_db.applis WHERE name='roundcube';"| mysql -u lcsmgr -p$MYSQLPASS lcs_db -N`
     VER=$(dpkg-query -f '${Version}' -W lcs-roundcube)
     if [ -z "$ROUNDCUBE" ]; then
 		echo "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', 'roundcube', '1', 'Webmail Roundcube', '0', '$VER', '/usr/share/lcs/roundcube', 'S');"| mysql -u lcsmgr -p$MYSQLPASS lcs_db 
@@ -40,7 +40,7 @@ configure() {
 	# Config Roundcube authentication mode
     AUTH_MOD=$(get_lcsdb_params auth_mod)
 	if [ ! -z $AUTH_MOD ]; then
-		if [ $AUTH_MOD == "ENT" ]; then
+		if [ "$AUTH_MOD" = "ENT" ]; then
  			MODAUTHENTICATION="cas_authentication"
 		else
 			MODAUTHENTICATION="lcs_authentication"
