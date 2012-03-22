@@ -1,3 +1,9 @@
+lcs-libjs (2.4.9.2~2) Lcs; urgency=low
+
+  * add media css in skin cdt
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 22 Mar 2012 14:01:17 +0100
+
 lcs-libjs (2.4.9.2~1) Lcs; urgency=low
 
   * add MathJax library
