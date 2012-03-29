@@ -393,10 +393,12 @@ function supprimer_mono_structure()
 	DB_STRUCTURE_WEBMESTRE::DB_supprimer_tables_structure();
 	// Supprimer le fichier de connexion
 	unlink(CHEMIN_MYSQL.'serveur_sacoche_structure.php');
-	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires
-	Supprimer_Dossier('./__tmp/badge/'.'0');
-	Supprimer_Dossier('./__tmp/cookie/'.'0');
-	Supprimer_Dossier('./__tmp/rss/'.'0');
+	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
+	$tab_sous_dossier = array('badge','cookie','devoir','rss');
+	foreach($tab_sous_dossier as $sous_dossier)
+	{
+		Supprimer_Dossier('./__tmp/'.$sous_dossier.'/'.'0');
+	}
 	// Supprimer les éventuels fichiers de blocage
 	@unlink(CHEMIN_CONFIG.'blocage_webmestre_0.txt');
 	@unlink(CHEMIN_CONFIG.'blocage_administrateur_0.txt');
@@ -422,10 +424,12 @@ function supprimer_multi_structure($BASE)
 	unlink(CHEMIN_MYSQL.'serveur_sacoche_structure_'.$BASE.'.php');
 	// Retirer l'enregistrement d'une structure dans la base du webmestre
 	DB_WEBMESTRE_WEBMESTRE::DB_supprimer_structure($BASE);
-	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires
-	Supprimer_Dossier('./__tmp/badge/'.$BASE);
-	Supprimer_Dossier('./__tmp/cookie/'.$BASE);
-	Supprimer_Dossier('./__tmp/rss/'.$BASE);
+	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
+	$tab_sous_dossier = array('badge','cookie','devoir','rss');
+	foreach($tab_sous_dossier as $sous_dossier)
+	{
+		Supprimer_Dossier('./__tmp/'.$sous_dossier.'/'.$BASE);
+	}
 	// Supprimer les éventuels fichiers de blocage
 	@unlink(CHEMIN_CONFIG.'blocage_webmestre_'.$BASE.'.txt');
 	@unlink(CHEMIN_CONFIG.'blocage_administrateur_'.$BASE.'.txt');
@@ -517,13 +521,37 @@ function crypter_mdp($password)
 function fabriquer_fichier_hebergeur_info($tab_constantes_modifiees)
 {
 	$fichier_nom     = CHEMIN_CONFIG.'constantes.php';
-	$tab_constantes_requises = array('HEBERGEUR_INSTALLATION','HEBERGEUR_DENOMINATION','HEBERGEUR_UAI','HEBERGEUR_ADRESSE_SITE','HEBERGEUR_LOGO','CNIL_NUMERO','CNIL_DATE_ENGAGEMENT','CNIL_DATE_RECEPISSE','WEBMESTRE_NOM','WEBMESTRE_PRENOM','WEBMESTRE_COURRIEL','WEBMESTRE_PASSWORD_MD5','WEBMESTRE_ERREUR_DATE','SERVEUR_PROXY_USED','SERVEUR_PROXY_NAME','SERVEUR_PROXY_PORT','SERVEUR_PROXY_TYPE','SERVEUR_PROXY_AUTH_USED','SERVEUR_PROXY_AUTH_METHOD','SERVEUR_PROXY_AUTH_USER','SERVEUR_PROXY_AUTH_PASS');
+	$tab_constantes_requises = array(
+		'HEBERGEUR_INSTALLATION',
+		'HEBERGEUR_DENOMINATION',
+		'HEBERGEUR_UAI',
+		'HEBERGEUR_ADRESSE_SITE',
+		'HEBERGEUR_LOGO',
+		'CNIL_NUMERO',
+		'CNIL_DATE_ENGAGEMENT',
+		'CNIL_DATE_RECEPISSE',
+		'WEBMESTRE_NOM',
+		'WEBMESTRE_PRENOM',
+		'WEBMESTRE_COURRIEL',
+		'WEBMESTRE_PASSWORD_MD5',
+		'WEBMESTRE_ERREUR_DATE',
+		'SERVEUR_PROXY_USED',
+		'SERVEUR_PROXY_NAME',
+		'SERVEUR_PROXY_PORT',
+		'SERVEUR_PROXY_TYPE',
+		'SERVEUR_PROXY_AUTH_USED',
+		'SERVEUR_PROXY_AUTH_METHOD',
+		'SERVEUR_PROXY_AUTH_USER',
+		'SERVEUR_PROXY_AUTH_PASS',
+		'FICHIER_TAILLE_MAX',
+		'FICHIER_DUREE_CONSERVATION'
+	);
 	$fichier_contenu = '<?php'."\r\n";
 	$fichier_contenu.= '// Informations concernant l\'hébergement et son webmestre (n°UAI uniquement pour une installation de type mono-structure)'."\r\n";
 	foreach($tab_constantes_requises as $constante_nom)
 	{
 		$constante_valeur = (isset($tab_constantes_modifiees[$constante_nom])) ? $tab_constantes_modifiees[$constante_nom] : constant($constante_nom);
-		$espaces = str_repeat(' ',25-strlen($constante_nom));
+		$espaces = str_repeat(' ',26-strlen($constante_nom));
 		$fichier_contenu.= 'define(\''.$constante_nom.'\''.$espaces.',\''.str_replace('\'','\\\'',$constante_valeur).'\');'."\r\n";
 	}
 	$fichier_contenu.= '?>'."\r\n";
@@ -647,6 +675,51 @@ function annuler_blocage_anormal()
 }
 
 /**
+ * Nettoyer les fichiers temporaires
+ * Fonction appeler lors d'une nouvelle connexion d'un utilisateur (pas mis en page d'accueil sinon c'est appelé trop souvent)
+ * 
+ * @param int       $BASE
+ * @return void
+ */
+function nettoyer_fichiers_temporaires($BASE)
+{
+	// On essaye de faire en sorte que plusieurs nettoyages ne se lancent pas simultanément (sinon on trouve des warning php dans les logs)
+	$fichier_lock = './__tmp/lock.txt';
+	if(!file_exists($fichier_lock))
+	{
+		Ecrire_Fichier($fichier_lock,'');
+		// On verifie que certains sous-dossiers existent : 'devoir' n'a été ajouté qu'en mars 2012, 'cookie' et 'rss' étaient oublié depuis le formulaire Sésamath ('badge' a priori c'est bon)
+		$tab_sous_dossier = array( 'devoir' , 'cookie/'.$BASE , 'devoir/'.$BASE , 'rss/'.$BASE );
+		foreach($tab_sous_dossier as $sous_dossier)
+		{
+			$dossier = './__tmp/'.$sous_dossier;
+			if(!is_dir($dossier))
+			{
+				Creer_Dossier($dossier);
+				Ecrire_Fichier($dossier.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
+			}
+		}
+		effacer_fichiers_temporaires('./__tmp/login-mdp'     ,     10); // Nettoyer ce dossier des fichiers antérieurs à 10 minutes
+		effacer_fichiers_temporaires('./__tmp/export'        ,     60); // Nettoyer ce dossier des fichiers antérieurs à 1 heure
+		effacer_fichiers_temporaires('./__tmp/dump-base'     ,     60); // Nettoyer ce dossier des fichiers antérieurs à 1 heure
+		effacer_fichiers_temporaires('./__tmp/import'        ,  10080); // Nettoyer ce dossier des fichiers antérieurs à 1 semaine
+		effacer_fichiers_temporaires('./__tmp/rss/'.$BASE    ,  43800); // Nettoyer ce dossier des fichiers antérieurs à 1 mois
+		effacer_fichiers_temporaires('./__tmp/badge/'.$BASE  , 525600); // Nettoyer ce dossier des fichiers antérieurs à 1 an
+		effacer_fichiers_temporaires('./__tmp/cookie/'.$BASE , 525600); // Nettoyer ce dossier des fichiers antérieurs à 1 an
+		effacer_fichiers_temporaires('./__tmp/devoir/'.$BASE , 43800*FICHIER_DUREE_CONSERVATION); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
+		unlink($fichier_lock);
+	}
+	// Si le fichier témoin du nettoyage existe, on vérifie que sa présence n'est pas anormale (cela s'est déjà produit...)
+	else
+	{
+		if( time() - filemtime($fichier_lock) > 30 )
+		{
+			unlink($fichier_lock);
+		}
+	}
+}
+
+/**
  * Tester si mdp du webmestre transmis convient.
  * 
  * @param string    $password
@@ -698,6 +771,7 @@ function enregistrer_session_webmestre()
 	$_SESSION['ETABLISSEMENT']['DENOMINATION'] = 'Gestion '.HEBERGEUR_INSTALLATION;
 	$_SESSION['MODE_CONNEXION']                = 'normal';
 	$_SESSION['DUREE_INACTIVITE']              = 15;
+	$_SESSION['MDP_LONGUEUR_MINI']             = 6;
 }
 
 /**
@@ -779,6 +853,8 @@ function tester_authentification_user($BASE,$login,$password,$mode_connection)
  */
 function enregistrer_session_user($BASE,$DB_ROW)
 {
+	// On en profite pour effacer les fichiers inutiles
+	nettoyer_fichiers_temporaires($BASE);
 	// Enregistrer en session le numéro de la base
 	$_SESSION['BASE']             = $BASE;
 	// Enregistrer en session les données associées à l'utilisateur (indices du tableau de session en majuscules).

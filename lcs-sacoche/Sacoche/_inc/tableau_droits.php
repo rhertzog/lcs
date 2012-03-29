@@ -54,10 +54,8 @@ $tab_droits['public_logout_SSO']                       = $tab_droits_profil_publ
 $tab_droits['eleve_eval_demande']                      = $tab_droits_profil_eleve;
 $tab_droits['eleve_eval_demande_ajout']                = $tab_droits_profil_eleve;
 // Profil professeur
-$tab_droits['professeur_eval']                         = $tab_droits_profil_professeur;
 $tab_droits['professeur_eval_demande']                 = $tab_droits_profil_professeur;
-$tab_droits['professeur_eval_groupe']                  = $tab_droits_profil_professeur;
-$tab_droits['professeur_eval_select']                  = $tab_droits_profil_professeur;
+$tab_droits['professeur_eval_saisie']                  = $tab_droits_profil_professeur;
 $tab_droits['professeur_groupe_besoin']                = $tab_droits_profil_professeur;
 $tab_droits['professeur_referentiel']                  = $tab_droits_profil_professeur;
 $tab_droits['professeur_referentiel_gestion']          = $tab_droits_profil_professeur;
@@ -115,10 +113,11 @@ $tab_droits['administrateur_statut_traiter']           = $tab_droits_profil_admi
 // Profil webmestre
 $tab_droits['webmestre_configuration_proxy']           = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_database_test']                 = $tab_droits_profil_webmestre;
-$tab_droits['webmestre_mdp_admin']                     = $tab_droits_profil_webmestre;
+$tab_droits['webmestre_fichiers_deposes']              = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_geographie']                    = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_identite_installation']         = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_maintenance']                   = $tab_droits_profil_webmestre;
+$tab_droits['webmestre_mdp_admin']                     = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_newsletter']                    = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_resilier']                      = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_statistiques']                  = $tab_droits_profil_webmestre;
