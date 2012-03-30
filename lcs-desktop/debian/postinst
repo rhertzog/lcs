@@ -34,14 +34,14 @@ else
     # Lecture de l'indice de maj dans la table lcs_db.applis
     #
     MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
-    let MAJNBR+=1
+    MAJNBR=$((MAJNBR+1))
     if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
 	echo "Pas de script de mise à jour à appliquer !"
     else
         while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
             echo "Application du script Maj$MAJNBR"
             $CONF/Maj/maj$MAJNBR.sh
-            let MAJNBR+=1
+             MAJNBR=$((MAJNBR+1))
 	done
         #
         # Fin de la mise à jour

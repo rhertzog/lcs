@@ -1,12 +1,13 @@
-lcs-desktop (2.4.9~3) Lcs; urgency=low
+lcs-desktop (2.4.9~4) Lcs; urgency=low
 
   * Fix bug in saving of prefs
   * Fix bug whith user icon default
   * Add jquerry plugin poshytip v-1.1 
   * Cleaning and comments in jquery.desktop.js 
   * Fix bug when url_accueil is empty
+  * Fix bug with let in postinst
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Fri, 24 Sep 2010 09:03:28 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Mar 2012 19:39:12 +0200
 
 lcs-desktop (2.4.9~2) Lcs; urgency=low
 
