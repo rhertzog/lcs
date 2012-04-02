@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.9~2) Lcs; urgency=low
+
+  * Force safe mode in search engines
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 02 Apr 2012 10:55:42 +0200
+
 lcs-squidguard (2.4.9~1) Lcs; urgency=low
 
   * Fix bashim in postinst

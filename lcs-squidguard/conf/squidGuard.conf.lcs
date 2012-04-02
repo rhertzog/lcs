@@ -77,9 +77,20 @@ dest warez {
   urllist	blacklists/warez/urls
 }
 
+rewrite search_engine
+        {
+        s@(google..*/search?.*q=.*)@\1\&safe=active@i
+        s@(google..*/images.*q=.*)@\1\&safe=active@i
+        s@(google..*/groups.*q=.*)@\1\&safe=active@i
+        s@(google..*/news.*q=.*)@\1\&safe=active@i
+        s@(search.yahoo.[a-z]*/search.*p=.*)@\1\&vm=r@i
+        s@(bing..*/search?.*q=.*)@\1\&adlt=strict@i
+}
+
 acl {
   default {
-    pass !lcs !ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez any
+    rewrite search_engine
+    pass !lcs !ads !aggrssive !audio-video !drugs !gambling !hacking !porn !violence !warez any
     redirect 302:http://#REDIRECT#/Squidguard/pageinterdite.html
   }
 }
