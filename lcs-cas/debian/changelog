@@ -1,6 +1,7 @@
-lcs-cas (2.4.9~5) Lcs; urgency=low
-  2.4.9~5
+lcs-cas (2.4.9~6) Lcs; urgency=low
+  2.4.9~6
   * Fix bug for select authentication mode in lcs-cas-install.sh and lcs-cas-configure-authentication.sh
+  * Add sleep 1 in rubycas-lcs 
   2.4.9~3 :
   * Add possibility to select authentication mode : ldap or mysql fot LCS/ENT authentication :
 	* Rename config.yml.in to config.yml.ldap.in
@@ -12,7 +13,7 @@ lcs-cas (2.4.9~5) Lcs; urgency=low
   * Add uninstall gems section in postrm
   * Modify init.d rubycas-lcs start stop status script
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 09 Mar 2012 15:20:21 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Apr 2012 13:27:33 +0200
 
 lcs-cas (2.4.8.1) Lcs; urgency=low
 

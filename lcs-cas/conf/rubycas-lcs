@@ -23,6 +23,7 @@ stopcasserver() {
 startcasserver() {
 	if [ ! -e $PIDFILE ]; then
 		su -c "$CASSERVER -d -c $CONFFILE -P $PIDFILE" $USERRUN 1>/dev/null
+		sleep 1
 		if [ -e $PIDFILE ]; then
 			PIDPROCESS=`cat $PIDFILE`
 			echo "rubycas-server start and running with pid:$PIDPROCESS"
