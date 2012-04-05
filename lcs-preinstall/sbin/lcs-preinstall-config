@@ -146,7 +146,7 @@ case "$1" in
             if [ ! -e /root/.my.cnf ]; then
                 mysqladmin password "$MYSQLPW"
                 echo "[client]
-                password=$MYSQLPW
+                password='$MYSQLPW'
                 user=root" > /root/.my.cnf
                 chmod 600 /root/.my.cnf
                 mysqladmin reload -u root "-p$MYSQLPW"
