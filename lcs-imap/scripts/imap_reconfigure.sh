@@ -1,6 +1,6 @@
 #!/bin/bash
 # Configure courrier imap for LCS
-# Jean-Luc Chretien on 22 Mars 2012
+# Jean-Luc Chretien on 05 Avril 2012
 #
 
 if [ "$4" = "" ];
@@ -41,7 +41,7 @@ else
 	# Configure pam.d/imap
 	cp /etc/lcs/pam.d/imap.lcs /etc/pam.d/imap
 	# Configure pam-cas.conf
-	rm /etc/security/pam_cas.conf
+	rm -f /etc/security/pam_cas.conf
 fi
 
 # Configure authldaprc
