@@ -1,5 +1,5 @@
  <?
-/* Admin/edit_params.php derniere mise a jour : 16/03/2012 */
+/* Admin/edit_params.php derniere mise a jour : 05/04/2012 */
 
 if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
 	include ("../lcs/includes/headerauth.inc.php");
@@ -65,7 +65,7 @@ if ((!isset($submit)) and (!isset($queri))) {
 	if ( $cat==0 || $cat==2 )
 		mktable("Param&#232;tres LDAP",aff_param_form(2));
 	if ( $cat==0 || $cat==6 )
-		mktable("Param&#232;tres ENT",aff_param_form(2));
+		mktable("Param&#232;tres ENT",aff_param_form(6));
 	if ( $cat==0 || $cat==3 )
 		mktable("Param&#232;tres R&#233;seau",aff_param_form(3));
 	if ( $cat==0 || $cat==4 )
