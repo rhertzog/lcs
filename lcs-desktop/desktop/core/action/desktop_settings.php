@@ -670,7 +670,7 @@ if ( $idpers == "0" )
 	$resp=array(
 		"user"	=> $_user,
 		"srvr" 	=> $_srvr ,
-		"opts" 	=> loadOpts('default') != false ?  array_merge( $_opts, loadOpts( 'default' ) )  : $_opts ,
+		"opts" 	=> loadOpts('default', "") != false ?  array_merge( $_opts, loadOpts( 'default', "" ) )  : $_opts ,
 		"etab" 	=> $_etab 
 	);
 }

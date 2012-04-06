@@ -1,3 +1,10 @@
+lcs-desktop (2.4.9~5) Lcs; urgency=low
+
+  * Fix bug load_options function 
+  * Add admin icon
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:22:31 +0200
+
 lcs-desktop (2.4.9~4) Lcs; urgency=low
 
   * Fix bug in saving of prefs
