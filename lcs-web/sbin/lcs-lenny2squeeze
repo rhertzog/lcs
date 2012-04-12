@@ -3,6 +3,24 @@
 COLTITRE="\033[1;35m"          # Rose
 COLCMD="\033[1;37m"            # Blanc
 COLQUESTION="\033[1;32m"       # Vert
+COLPARTIE="\033[1;34m"         # Bleu
+COLERREUR="\033[1;31m"  # Rouge
+COLTXT="\033[0;37m"     # Gris
+COLINFO="\033[0;36m"	# Cyan
+
+ERREUR()
+{
+	echo -e "$COLERREUR"
+	echo "ERREUR!"
+	echo -e "$1"
+	echo -e "$COLTXT"
+	DEBIAN_PRIORITY="high"
+	DEBIAN_FRONTEND="dialog" 
+	export  DEBIAN_PRIORITY
+	export  DEBIAN_FRONTEND
+# 	exit 1
+}
+
 
 if  ! egrep -q "^5.0" /etc/debian_version;  then
         if egrep -q "^6.0" /etc/debian_version; then
@@ -21,7 +39,7 @@ echo "******************************"
 echo "* Migration Lenny vers Squeeze  *"
 echo "******************************"
 echo -e "$COLQUESTION\c"
-echo "Voulez vous continuez (O/n) ? "
+echo "Voulez vous continuez (o/N) ? "
 echo -e "$COLCMD\c"
 read REPLY
 if [ "$REPLY" != "O" ] &&  [ "$REPLY" != "o" ] && [ -n $REPLY ]; then
@@ -33,7 +51,136 @@ echo -e "$COLTITRE"
 echo "Migration LCS de Debian Lenny vers Squeeze"
 echo -e "$COLCMD\c"
 #######
-echo "1. Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
+# echo -e "$COLPARTIE"
+
+
+echo -e "$COLPARTIE"
+echo "1. Operations et tests preliminaires"
+echo -e "$COLCMD\c"
+
+[ -e /root/nodl ] && NODL="yes"
+# pour le moment cette partie est desactivee 
+NODL="yes"
+DEBUG="yes"
+
+SCREENOK=$(ps ax | grep screen | grep -v grep)
+
+if [ -z "$SCREENOK" ]; then
+	echo "Pas de session screen en cours....Il est conseille de l'utiliser lors de la migration"
+	echo "Voulez vous continuez (o/N) ? "
+	read REPLY
+	if [ "$REPLY" != "O" ] &&  [ "$REPLY" != "o" ] && [ -n $REPLY ]; then
+			ERREUR "Abandon !"
+			exit 1
+	fi
+
+fi
+
+if [ "$NODL" != "yes" ]; then
+	echo -e "$COLINFO"
+	echo "Verification en ligne que vous avez bien la derniere version des scripts de migration"
+	echo -e "$COLTXT"
+	cd /root
+	ARCHIVE_FILE="lcs-lenny2squeeze.sh"
+	ARCHIVE_FILE_MD5="lcs-lenny2squeeze.md5"
+	SCRIPTS_DIR="/usr/sbin"
+	
+	rm -f $ARCHIVE_FILE_MD5 $ARCHIVE_FILE
+	wget -N -q --tries=1 --connect-timeout=1 http://svn.tice.ac-caen.fr/svn/LcsSE3/LCS/migre/$ARCHIVE_FILE
+	wget -N -q --tries=1 --connect-timeout=1 http://svn.tice.ac-caen.fr/svn/LcsSE3/LCS/migre/$ARCHIVE_FILE_MD5
+	MD5_CTRL=$(cat $ARCHIVE_FILE_MD5)
+	MD5_CTRL_LOCAL=$(md5sum $ARCHIVE_FILE)
+	if [ "$MD5_CTRL" != "$MD5_CTRL_LOCAL" ]
+	then	
+		echo -e "$COLERREUR"
+		echo "Controle MD5 de l'archive incorrecte, relancez le script afin qu'elle soit de nouveau telechargee"
+		echo -e "$COLTXT"
+		exit 1
+	fi
+
+	cd $SCRIPTS_DIR
+	MD5_CTRL_LOCAL1=$(md5sum lcs-lenny2squeeze.sh)
+	# MD5_CTRL_LOCAL3=$(md5sum migration_UTF8.sh)
+	cd -
+	MD5_CTRL1=$(cat lcs-lenny2squeeze.md5)
+	#MD5_CTRL2=$(cat migration_ldap_lenny.md5)
+	# MD5_CTRL3=$(cat migration_UTF8.md5)
+	chmod +x *.sh
+
+	if [ "$MD5_CTRL1" != "$MD5_CTRL_LOCAL1" ]; then
+		RELANCE="YES" 
+		cp lcs-lenny2squeeze.sh $SCRIPTS_DIR/
+	fi
+	if [ "$RELANCE" == "YES" ]
+	then
+		echo -e "$COLINFO"
+		echo "Le scripts de migration a ete mis a jour depuis le serveur svn, veuillez relancer lcs-lenny2squeeze.sh"
+		echo "afin de prendre en compte les changements"
+		exit 1
+		echo -e "$COLTXT"
+	
+	
+	fi
+	echo -e "$COLINFO"
+	echo "Vous disposez de la derniere version du script de migration, la migration peut se poursuivre..."
+	sleep 2
+	echo -e "$COLTXT"
+# else
+# echo "mode debug pas de telechargement"
+# sleep 2
+fi
+
+
+
+echo -e "$COLINFO"
+echo "1.1 Mise a l'heure du serveur"
+echo -e "$COLCMD\c"
+/usr/sbin/ntpdate -s `/usr/bin/mysql -sne "select value from lcs_db.params where name='ntpserv'"`> /dev/null 2>&1
+
+echo -e "$COLINFO"
+echo "1.2 Test sur le statut de l'annuaire"
+echo -e "$COLCMD\c"
+replica_status=$(mysql -sne "select value from lcs_db.params where name='replica_status'" -N)
+if [ "$replica_status" == "" -o "$replica_status" == "0" ]
+then
+	echo -e "$COLTXT"
+	echo  "Etat replicat : $replica_status"
+	echo "Serveur ldap en standalone ---> OK"
+else
+	ERREUR "Le serveur ldap doit etre en standalone (pas de replication ldap) !!!\nModifiez cette valeur et relancez le script" 
+fi
+
+echo -e "$COLINFO"
+echo "1.3 Test place restante sur partitions / et /var"
+echo -e "$COLCMD\c"
+# On teste si on a de la place pour faire la maj
+PARTROOT=`df | grep "/\$" | sed -e "s/ .*//"`
+PARTROOT_SIZE=$(fdisk -s $PARTROOT)
+rm -f /root/dead.letter
+if [ "$PARTROOT_SIZE" -le 1800000 ]; then
+	ERREUR "La partition racine fait moins de 1.8Go, c'est insuffisant pour passer en Squeeze" | tee -a $fichier_log
+	exit 1
+fi
+
+
+[ "$DEBUG" != "yes" ] && apt-get clean
+
+USE_SPACE=$(df -h | grep "/var$" | awk '{print $5}' | sed -e s/%//)
+if [ -n "$USE_SPACE" ]; then 
+	if [ ! $USE_SPACE -le 80 ]; then 
+		ERREUR "Pas assez de place sur le disque (partition /var > 80% ) pour lancer la mise a jour" | tee -a $fichier_log
+		exit 1
+	fi
+fi
+
+echo -e "$COLINFO"
+echo "1.4 Installation si besoin de debian-archive-keyring"
+echo -e "$COLCMD\c"
+apt-get -qq update 
+apt-get install debian-archive-keyring --allow-unauthenticated
+
+echo "1.5 Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
+echo -e "$COLCMD\c"
 
 if grep LcsXP /etc/apt/sources.list; then
         LCSTREE="LcsXP"
@@ -44,27 +191,56 @@ else
 fi
 echo "Votre LCS est sur la branche :  $LCSTREE"
 #######
-echo "2. Changement du source list"
+
+
+
+echo -e "$COLPARTIE"
+echo "2 Configuration avant migration"
+
+echo -e "$COLINFO"
+echo "2.1 Changement du source list"
+echo -e "$COLCMD\c"
 
 cp /etc/apt/sources.list /etc/apt/sources.list.lenny
 
 echo "deb http://ftp.fr.debian.org/debian squeeze main
 deb-src http://ftp.fr.debian.org/debian squeeze main
 
-##deb http://lcs.crdp.ac-caen.fr/squeeze $LCSTREE main
+#deb http://lcs.crdp.ac-caen.fr/squeeze $LCSTREE main
 
-#deb http://security.debian.org/ squeeze/updates main
-#deb-src http://security.debian.org/ squeeze/updates main
+deb http://security.debian.org/ squeeze/updates main
+deb-src http://security.debian.org/ squeeze/updates main
 
-#deb http://volatile.debian.org/debian-volatile squeeze/volatile main
-#deb-src http://volatile.debian.org/debian-volatile squeeze/volatile main" > /etc/apt/sources.list
+deb http://ftp.debian.org/debian squeeze-updates main" > /etc/apt/sources.list
+
+
+
 #######
-echo "3. Test si on enleve pas des paquets LCS !"
+echo -e "$COLINFO"
+echo "2.2. Test si on enleve pas des paquets LCS !"
+echo -e "$COLCMD\c"
+
 aptitude update
 if aptitude dist-upgrade -s -y | grep Remv | grep lcs; then
+		echo -e "$COLERREUR"
         echo "Migration LENNY -> SQUEEZE interrompue par tentative de desinstallation des paquets LCS"
+		echo -e "$COLINFO"
         exit 1
 fi
+
+echo -e "$COLINFO"
+echo "2.3. Maj si besoin de debian-archive-keyring"
+echo -e "$COLCMD\c"
+echo ""
+# apt-get -qq update 
+apt-get install debian-archive-keyring --allow-unauthenticated
+apt-get -qq update 
+
+
+echo -e "$COLINFO"
+echo "2.4. Configuration apt et debconf"
+echo -e "$COLCMD\c"
+
 ### On demande a garder les fichiers de config.
 cat > /etc/apt/apt.conf.d/lcs-upgrade-squeeze <<EOF
 Dpkg::Options {
@@ -93,17 +269,17 @@ dash    dash/sh boolean true
 libpam0g        libpam0g/restart-services       string  cron courier-authdaemon atd
 sysv-rc sysv-rc/convert-legacy  boolean true
 libpam-runtime  libpam-runtime/override boolean false
-linux-base      linux-base/disk-id-manual-boot-loader   error
-linux-base      linux-base/disk-id-update-failed        error
-linux-base      linux-base/disk-id-manual       error
+# linux-base      linux-base/disk-id-manual-boot-loader   error
+# linux-base      linux-base/disk-id-update-failed        error
+# linux-base      linux-base/disk-id-manual       error
 linux-base      linux-base/disk-id-convert-plan-no-relabel      boolean true
 linux-base      linux-base/disk-id-convert-auto boolean true
-linux-base      linux-base/do-bootloader-default-changed        error
+# linux-base      linux-base/do-bootloader-default-changed        error
 linux-base      linux-base/disk-id-convert-plan boolean true
 # Grub
 grub    grub/migrate_from_legacy        note
 grub-pc grub2/kfreebsd_cmdline  string
-# Recréation de /boot/grub/device.map
+# Recreation de /boot/grub/device.map
 grub-pc grub2/device_map_regenerated    note
 grub-pc grub2/linux_cmdline     string
 grub-pc grub-pc/install_devices_empty   boolean false
@@ -126,23 +302,64 @@ EOF
 
 debconf-set-selections < /tmp/preseed-squeeze   
 #######
-echo "4. Nettoyage DB_CONFIG et sauvegarde slapd.conf."
-mkdir /root/migresqueeze
+echo -e "$COLINFO"
+echo "2.5. Nettoyage DB_CONFIG et sauvegarde slapd.conf."
+echo -e "$COLCMD\c"
+mkdir -p /root/migresqueeze
 slapcat > /root/migresqueeze/ldaplcslenny.ldif
 cat /var/lib/ldap/DB_CONFIG | grep -v "sactivation logs ldap" > /root/migresqueeze/DB_CONFIG
 cp /root/migresqueeze/DB_CONFIG /var/lib/ldap/DB_CONFIG
 cp /etc/ldap/slapd.conf /root/migresqueeze/
 
-echo "5. Upgrade de la distribution (Fournir les reponses par defaut)."
+
+
+## LDAP
+# purges trace slapd backup 
+rm -rf /var/backups/slapd*
+ldap_base_dn=$(cat /etc/ldap/ldap.conf | grep ^BASE | cut -d ' ' -f 2)
+rm -rf /var/backups/${ldap_base_dn}*
+
+
+###  A voir !!!
+# chown -R openldap:openldap /var/lib/ldap/
+
+
+# pas de nut sur LCS ????
+# /etc/init.d/nut stop
+# purge config nut
+# rm -f /etc/nut/*
+# rm -f /etc/default/nut 
+
+
+echo -e "$COLPARTIE"
+echo "3. Mise a jour des paquets prioritaires"
+echo -e "$COLINFO"
+echo "3.1 Mise a jour de la liste de paquets disponibles."
+
+echo -e "$COLCMD\c"
 aptitude update
-echo "5.1 Upgrade des paquets de base : libc6, locales et mysql-server (Fournir les reponses par defaut)."
+
+echo -e "$COLINFO"
+echo "3.2 Upgrade des paquets de base : libc6, locales et mysql-server (Fournir les reponses par defaut)."
+echo -e "$COLCMD\c"
 aptitude install -y libc6 locales mysql-server
-echo "5.2 Upgrade de la distribution par dist-upgrade (Fournir les reponses par defaut)."
+
+
+echo -e "$COLPARTIE"
+# echo -e "$COLINFO"
+echo "4. Upgrade de la distribution par dist-upgrade (Fournir les reponses par defaut)."
+echo -e "$COLCMD\c"
 aptitude dist-upgrade -y
-sed -i 's|^#||g' /etc/apt/sources.list
-aptitude update
-aptitude dist-upgrade -y
-echo "5.3 Test du service Mysql avant mise a jour LCS"
+# sed -i 's|^#||g' /etc/apt/sources.list
+# aptitude update
+# aptitude dist-upgrade -y
+
+
+echo -e "$COLPARTIE"
+echo "5 Mise a jour LCS"
+echo -e "$COLINFO"
+echo "5.1 Test du service Mysql avant mise a jour LCS"
+echo -e "$COLCMD\c"
 if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; then
         echo "mysql NOK"
         /etc/init.d/mysql start
@@ -152,34 +369,57 @@ if  ! mysqladmin --defaults-file=/etc/mysql/debian.cnf ping > /dev/null 2>&1 ; t
         echo "ERREUR : Le service Mysql ne demarre pas... Mise a jour LCS interrompue !"
         exit 1
 fi
-echo "6. Preparation service slapd avant mise à lour LCS ldapedu-server..."
-/ect/init.d/slapd stop
+
+echo -e "$COLINFO"
+echo "5.2. Preparation service slapd avant mise a lour LCS ldapedu-server..."
+echo -e "$COLCMD\c"
+/etc/init.d/slapd stop
 sed -i "s/#SLAPD_CONF=/SLAPD_CONF=\"\/etc\/ldap\/slapd.conf\"/g" /etc/default/slapd
 cp /root/migresqueeze/slapd.conf /etc/ldap/slapd.conf
 chown openldap:openldap /etc/ldap/slapd.conf
-/ect/init.d/slapd start
+/etc/init.d/slapd start
 
-echo "7. Mise a jour LCS"
+echo -e "$COLINFO"
+echo "5.3. upgrade des paquets LCS"
+echo -e "$COLCMD\c"
 sed -i 's|#||g' /etc/apt/sources.list
 aptitude update
+apt-get install ldapedu-server -y
+/etc/init.d/slapd start
 aptitude dist-upgrade -y
 #######
-echo "8. Mise a jour des droits sur les repertoires MAILDIR"
+
+
+echo -e "$COLPARTIE"
+echo "6 Finalisation de la migration"
+echo -e "$COLTXT"
+
+echo -e "$COLINFO"
+echo "6.1 Mise a jour des droits sur les repertoires MAILDIR"
+echo -e "$COLCMD\c"
 for MAILDIR in `find /home -name Maildir`
 do
         echo "$MAILDIR"
         chgrp -R lcs-users $MAILDIR
 done
 #######
-echo "9. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
+
+echo -e "$COLINFO"
+echo "6.2. Mise en place de lcs-sysinfo en remplacement de lcs-phpsysinfo"
+echo -e "$COLCMD\c"
 apt-get install -y --force-yes lcs-sysinfo
 
-echo "10. Modification du referentiel des modules" 
+
+echo -e "$COLINFO"
+echo "6.3. Modification du referentiel des modules" 
+echo -e "$COLCMD\c"
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueeze/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLennycs/';" 
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueezeTesting/' WHERE value ='http://linux.crdp.ac-caen.fr/modulesLennycsTesting/';"
 mysql -e "UPDATE lcs_db.params SET value = 'http://linux.crdp.ac-caen.fr/modulesLcsqueezeXP/' WHERE value = 'http://linux.crdp.ac-caen.fr/modulesLennycsXP/';"
 
-echo "11. Redemarrage service ldap suite a la mise a jour"
+echo -e "$COLINFO"
+echo "6.4. Redemarrage service ldap suite a la mise a jour"
+echo -e "$COLCMD\c"
 /etc/init.d/slapd stop
 /etc/init.d/slapd start
 
