@@ -1,9 +1,10 @@
-lcs-smbwebclient (2.4.9~2) Lcs; urgency=low
+lcs-smbwebclient (2.4.9~3) Lcs; urgency=low
 
   * Modify charset in doc-html/index.html
   * Fix let bashism in postinst
+  * Replace $_HTTP_COOKIE_VARS by $_COOKIE
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 13:46:49 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 17 Apr 2012 15:36:43 +0200
 
 lcs-smbwebclient (2.4.6.2) Lcs; urgency=low
 

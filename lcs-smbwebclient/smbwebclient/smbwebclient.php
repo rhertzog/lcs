@@ -761,7 +761,7 @@ function BasicAuth ($command = 'get')
 # Lcs auth authentification par le LCS (reprend les variables user et password du LCS)
 function LcsAuth ($command = 'get')
 {
-global $HTTP_COOKIE_VARS,$key_priv;
+global $_COOKIE,$key_priv;
 	
 	switch ($command) {
 		case 'get':
@@ -783,7 +783,7 @@ global $HTTP_COOKIE_VARS,$key_priv;
 		case 'submit':
 			list ($idpers, $login_LCS) = isauth();
 			if ( $idpers !=0 ) {
-	        		$password_LCS = urldecode( xoft_decode($HTTP_COOKIE_VARS['LCSuser'],$key_priv) );
+	        		$password_LCS = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
 				$this->user = $login_LCS;
 				$this->pw = $password_LCS;
 				$_SESSION['swcPw'] = $this->pw;
