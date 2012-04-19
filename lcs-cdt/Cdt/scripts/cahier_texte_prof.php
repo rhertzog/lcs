@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.4 du 22/03/2012
+   VERSION 2.5 du 20/04/2012
    modif : 15/03/2012
       par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
@@ -71,6 +71,7 @@ if (mysql_num_rows($result)==0)
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
 if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
+
 ?>
 
 <!-- Fin de la page de premiere utilisation -->
@@ -85,6 +86,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
 	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 
+
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
@@ -97,6 +99,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
                   <script type="text/javascript" src="../Includes/sequence.js"></script>
                   <script type="text/javascript" src="../Includes/cdt.js"></script>
+                  <script type="text/javascript" src="../Includes/jquery.tools.min.js"></script>
 	<script type="text/javascript">
     // <![CDATA[
 	var duree=<?echo ini_get( 'session.gc_maxlifetime' );?>;
@@ -111,14 +114,16 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
                     });
                    </script>
                     <script type="text/javascript" src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>
+
     </head>
 <body onload="tinyMCE.execCommand('mceFocus',false,'coursfield')">
     <?php
+
 $tsmp=time();
 $tsmp2=time() + 604800;
 $cours="";//variable temporaire de $Cours (avec une majuscule) pour un UPDATE
 $afaire="";//variable temporaire de $Afaire (avec une majuscule) pour un UPDATE
-$article="";
+$article=$match="";$onglet_match=false;
 if (isset ($_POST['sequence']))
 $Seq= $_POST['sequence'] ;
 else $Seq="";
@@ -126,6 +131,51 @@ else $Seq="";
 //on recupere le parametre de la rubrique
 if (isset($_GET['rubrique'])) $cible=$_GET['rubrique'];
 elseif (isset($_POST['rubriq'])) $cible=$_POST['rubriq'];
+
+//rubrique edt_cdt
+elseif (isset($_GET['id'])&& isset($_GET['start']))
+    {
+    if (is_numeric($_GET['id']) && is_numeric($_GET['start']))
+        {
+            $current_id=$_GET['id'];
+            $current_start=$tsmp=$_GET['start'];
+        }// a deplacer ptetre
+    $filename = "../json_files/" . $_SESSION['login'] . ".json";
+    $evenements = json_decode(file_get_contents($filename), true);
+    //recherche parametres cours courant
+    foreach ($evenements as $key => $value) {
+        if ($value['start'] == $current_start&& $value['id'] >= $current_id) {
+            $cours_edt[0] = $value['id'];
+            $classe_courante = $value['title'];
+            $matiere_courante = $value['matiere'];
+            $match=$classe_courante.':'.$matiere_courante;
+            break;
+        }
+    }
+    //recherche parametres cours suivant
+    if ($classe_courante != "" && $matiere_courante != "")
+        {
+        foreach ($evenements as $key => $row)
+            {
+            $id[$key]  = $row['id'];
+            $title[$key] = $row['title'];
+            $matiere[$key]=$row['matiere'];
+            $start[$key]=$row['start'];
+            $start[$key]=$row['start'];
+            }
+        array_multisort($start,$id,$title,$matiere);
+        foreach ($start as $key => $value)
+            {
+            if ($value > $current_start && $title[$key] == $classe_courante && $matiere[$key] == $matiere_courante)
+                {
+                $cours_edt[1] = $id[$key];
+                $tsmp2=$value;
+                break;
+                }
+            }
+        }
+    }
+
 //rubrique edt si agenda present
 elseif (is_dir("../../Agendas"))
     {
@@ -182,8 +232,13 @@ elseif (is_dir("../../Agendas"))
         }
         }
     mysql_close();
+    }
+else $cible="";
+include ('../Includes/config.inc.php');
+if ($match!="")
+    {
     // recherche de l'onglet correspondant au cours edt
-    include ('../Includes/config.inc.php');
+
     $rq = "SELECT id_prof FROM onglets
      WHERE (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') AND edt='".$match."'";
     $result = @mysql_query ($rq) or die (mysql_error());
@@ -192,11 +247,11 @@ elseif (is_dir("../../Agendas"))
         while ($idr = mysql_fetch_array($result, MYSQL_NUM))
             {
             $cible=$idr[0];
+            $onglet_match=true;
             }
         }
     else $cible="";
     }
-else $cible="";
 
 /*================================
    -      Traitement du formulaire  -
@@ -425,7 +480,7 @@ for($x=0;$x < $nmax;$x++)
            $datv=$datvisa[$x];
            }
         }
-    else
+    elseif (!isset($_GET['id']) || !isset($_GET['start']) || !$onglet_match )
         {
         if (!isset($mat[$x])) $mat[$x]="&nbsp;";
         if (!isset($clas[$x])) $clas[$x]="&nbsp;";
@@ -547,6 +602,8 @@ else $dtajav="idem Cours";
 
 <!--bloc de gauche pour la saisie-->
 <div id="saisie">
+    <div>
+        <form id="for" action="edt.php"><input type="submit" id="button_edt" value=""/></form></div>
 	<form id="form-saisie" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>" method="post">
     <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" /></div>
 	<div id="boite3">
@@ -730,6 +787,7 @@ mysql_close();
     }
 echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'export_perso.php\')" > - EXPORT DE SES DONNEES - </a></p>';
 echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'import_perso.php\')" > - IMPORT DE DONNEES - </a></p>';
+echo '<p><a href="#" class="open_wi" onclick="open_new_win(\'import_edt.php\')" > - IMPORT EMPLOI DU TEMPS - </a></p>';
 ?>
 </div><!--fin du div deroulant_3-->
 

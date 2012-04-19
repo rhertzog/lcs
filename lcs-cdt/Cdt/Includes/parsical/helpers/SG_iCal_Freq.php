@@ -47,7 +47,7 @@ class SG_iCal_Freq {
 	public function __construct( $rule, $start, $excluded=array(), $added=array()) {
 		$this->start = $start;
 		$this->excluded = array();
-
+                                    $excluded=(!isset($excluded)) ? array() :$excluded;
 		$rules = array();
 		foreach( explode(';', $rule) AS $v) {
 			list($k, $v) = explode('=', $v);

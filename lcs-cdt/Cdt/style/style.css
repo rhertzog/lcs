@@ -25,7 +25,7 @@ body.imprim {color: #000000;font-size: 12pt;font-weight: bold;}
 float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 #commande {float: left;width: 300px;margin: 5px;padding: 5px;}
 #form-saisie {float:left;height:525px;margin:0;}
-#boite1 {float:left;margin:20px 0 0 0;z-index:1;}
+#boite1 {float:left;margin:2px 0 0 0;z-index:1;}
 #boite2 {float: left;margin:0;z-index:1;}
 #boite3 {float: left;margin: 30px 5px 0 15px;width:562px;z-index:1;}
 #boite4 {float:left;width: 60px;margin: 25px 0px;}
@@ -37,7 +37,8 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 #visa-cdt2e {position:fixed; top:55px; left:29px;font-size:14px;color:red;text-align:center;padding:80px 15px 0;opacity:0.9;-moz-border-radius:0.5em;-webkit-border-radius: 0.5em;border:2px outset #1b2c68;background:#fff url('../images/tampon_e.png') no-repeat center ;}
 
 .bt-visa {background:url('../images/bt-cdt-visa.png') no-repeat;margin:0 10px 0 0;padding:0px;border:none;width:120px;height:20px;cursor:pointer;}
-
+#button_edt {background:url('../images/edt.png') no-repeat;color:#ffffff;border:none;height:20px;width:120px;cursor:pointer;position:relative; left:50px;top :25px;}
+/*#button_edt a {text-decoration: none;padding:2px;}*/
 /************************************ Blocs pour les boutons du menu de saisie ******************************************************/
 
 .submit-perso, .a-saveplus, .a-imprime, .submit-save, .submit-modif, .submit-seq, .submit-plan,.load-model,.save-model {float:left;border:none;color:#000000;width:56px;height:50px;margin-top: 3px;cursor: pointer;}
@@ -58,7 +59,7 @@ float:left;height:200px;margin:60px;opacity:0.9;padding:10px;width:520px;}
 #boutons a:link, #boutons a:hover {float:left;padding:0;margin:0;margin-top: 3px;}
 .cdt-select, #deb-abs, #fin-abs {margin: 0 10px;}
 
-h1.title {margin:5px 10px;text-align:left;font-family:arial;font-weight:bold;color:#0d6a1e;}
+h1.title {margin:5px 10px;text-align:center;font-family:arial;font-weight:bold;color:#0d6a1e;}
 h2 {color: #486591;margin:5px;text-align: left;font-weight: normal;}
 h3 {color: #1b2c68;text-align: center;font-weight: normal;font-size:14px;}
 h3.perso {text-align: left;}
@@ -102,7 +103,7 @@ table#tb-cdt th input.bt-supprimer {background:url('../images/bt-cdt-supprimer.p
 .nobord {border: 0px;}
 /******************************************************** Configuration du cdt **********************************************************/
 
-#cfg-container{margin: 0 10px;padding:0;width:979px;height:800px;background:url('../images/fond-cdt-cfg.png') #f8f8ff no-repeat;text-align:left;font-size:14px;font-family: Arial, Helvetica ,sans-serif, verdana;}
+#cfg-container{margin: 1px auto auto;padding:0;width:979px;height:800px;background:url('../images/fond-cdt-cfg.png') #f8f8ff no-repeat;text-align:left;font-size:14px;font-family: Arial, Helvetica ,sans-serif, verdana;}
 #cfg-contenu{float:left;margin:80px 0 10px 50px;padding:1px;width:820px;height:560px;background:white;text-align:left;font-size:14px;opacity:0.9;-moz-border-radius:12px;-webkit-border-radius: 12px}
 #cfg-onglet{position:relative;margin:0}
 #cfg-form{float:left;margin:0;text-align:left}

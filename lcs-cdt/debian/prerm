@@ -8,6 +8,8 @@ set -e
 MODULE="Cdt"
 module="cdt"
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
+APACHE2CONF="/etc/apache2/lcs-main/70_cdt.conf"
+
 # summary of how this script can be called:
 #        * <postrm> `remove'
 #        * <postrm> `purge'
@@ -34,7 +36,11 @@ case "$1" in
     purge|remove)
  
 CHEMIN=`pwd`   
-    
+  	
+	#
+		rm -f $APACHE2CONF
+        /etc/init.d/apache2 reload > /dev/null 2>&1
+        #  
         #
         # Desinscription du module de la table lcs_db.applis
         #

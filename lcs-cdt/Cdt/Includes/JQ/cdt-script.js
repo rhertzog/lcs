@@ -1,20 +1,20 @@
 $(document).ready(function() {
 //Deroulement de la partie droite du cdt.
 //Au clic sur la barre verticale de boutons, les div s'affichent en se deroulant
-    $(function(){ 
-        $("#deroulants .deroulant").hide(); 
-        $("#deroulants .deroulant:eq(0)").show(); 
-        }); 
-    $(function(){ 
-        $("#deroulants .deroulant").not(":first").hide(); 
-        $("#deroulants ul a").click(function(){ 
-        $("#deroulants .deroulant").slideUp("normal"); 
-        $(this.hash).slideDown("normal"); 
-        this.blur(); 
-        return false; 
-        }); 
+    $(function(){
+        $("#deroulants .deroulant").hide();
+        $("#deroulants .deroulant:eq(0)").show();
+        });
+    $(function(){
+        $("#deroulants .deroulant").not(":first").hide();
+        $("#deroulants ul a").click(function(){
+        $("#deroulants .deroulant").slideUp("normal");
+        $(this.hash).slideDown("normal");
+        this.blur();
+        return false;
+        });
     });
-	
+
 //Bouton pour switcher la barre de menu du lcs
     $(function(){
         if (window.parent.document.body.rows == "0,*") {
@@ -34,7 +34,7 @@ $(document).ready(function() {
             }
         });
     });
-	
+
     $.datepicker.setDefaults({
         closeText: 'Fermer',
         prevText: '&#x3c;Préc',
@@ -45,7 +45,7 @@ $(document).ready(function() {
         dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
         dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
         dayNamesMin: ['Di','Lu','Ma','Me','Je','Ve','Sa'],
-        dateFormat: 'dd/mm/yy', 
+        dateFormat: 'dd/mm/yy',
         firstDay: 1,
         isRTL: false,
         showButtonPanel: true
@@ -69,15 +69,15 @@ $(document).ready(function() {
         $('#datepot_deb').datepicker({});
 
     //Affichage du calendrier fin des absences pour cpe
-        $('#datepot_fin').datepicker({});	
+        $('#datepot_fin').datepicker({});
 
     //Affichage du calendrier visible le
-        $('#datejavav').datepicker({});	
+        $('#datejavav').datepicker({});
 
     //Affichage du calendrier cours diffusion
-        $('#datejavac0').datepicker({});	
-        $('#datejavac1').datepicker({});	
-        $('#datejavac2').datepicker({});	
+        $('#datejavac0').datepicker({});
+        $('#datejavac1').datepicker({});
+        $('#datejavac2').datepicker({});
         $('#datejavac3').datepicker({});
         $('#datejavac4').datepicker({});
         $('#datejavac5').datepicker({});
@@ -96,9 +96,9 @@ $(document).ready(function() {
         $('#datejavac18').datepicker({});
         $('#datejavac19').datepicker({});
         //Affichage du calendrier a faire diffusion
-        $('#datejaf0').datepicker({});	
-        $('#datejaf1').datepicker({});	
-        $('#datejaf2').datepicker({});	
+        $('#datejaf0').datepicker({});
+        $('#datejaf1').datepicker({});
+        $('#datejaf2').datepicker({});
         $('#datejaf3').datepicker({});
         $('#datejaf4').datepicker({});
         $('#datejaf5').datepicker({});
@@ -117,26 +117,41 @@ $(document).ready(function() {
         $('#datejaf18').datepicker({});
         $('#datejaf19').datepicker({});
         //Affichage du calendrier visible le diffusion
-        $('#datejavav0').datepicker({});	
-        $('#datejavav1').datepicker({});	
-        $('#datejavav2').datepicker({});	
-        $('#datejavav3').datepicker({});	
-        $('#datejavav4').datepicker({});	
-        $('#datejavav5').datepicker({});	
-        $('#datejavav6').datepicker({});	
-        $('#datejavav7').datepicker({});	
-        $('#datejavav8').datepicker({});	
-        $('#datejavav9').datepicker({});	
-        $('#datejavav10').datepicker({});	
-        $('#datejavav11').datepicker({});	
-        $('#datejavav12').datepicker({});	
-        $('#datejavav13').datepicker({});	
-        $('#datejavav14').datepicker({});	
-        $('#datejavav15').datepicker({});	
-        $('#datejavav16').datepicker({});	
-        $('#datejavav17').datepicker({});	
-        $('#datejavav18').datepicker({});	
-        $('#datejavav19').datepicker({});	
+        $('#datejavav0').datepicker({});
+        $('#datejavav1').datepicker({});
+        $('#datejavav2').datepicker({});
+        $('#datejavav3').datepicker({});
+        $('#datejavav4').datepicker({});
+        $('#datejavav5').datepicker({});
+        $('#datejavav6').datepicker({});
+        $('#datejavav7').datepicker({});
+        $('#datejavav8').datepicker({});
+        $('#datejavav9').datepicker({});
+        $('#datejavav10').datepicker({});
+        $('#datejavav11').datepicker({});
+        $('#datejavav12').datepicker({});
+        $('#datejavav13').datepicker({});
+        $('#datejavav14').datepicker({});
+        $('#datejavav15').datepicker({});
+        $('#datejavav16').datepicker({});
+        $('#datejavav17').datepicker({});
+        $('#datejavav18').datepicker({});
+        $('#datejavav19').datepicker({});
 
+        $("#deroul-menu img[title], #boutons input[title],#boutons a[title], #crsdu input[title]").tooltip({
+
+      // place tooltip on the right edge
+      position: "bottom right",
+
+      // a little tweaking of the position
+      offset: [-30, -10],
+
+      // use the built-in fadeIn/fadeOut effect
+      effect: "fade",
+
+      // custom opacity setting
+      //opacity: 0.9
+
+      });
 
     });
