@@ -24,6 +24,7 @@ chown root:www-data /usr/lib/cgi-bin/gep2.cgi
 chmod 750 /usr/lib/cgi-bin/gep2.cgi
 
 chown root:root /usr/share/lcs
+chmod 755 /usr/share/lcs
 chown -Rf www-data:www-data /usr/share/lcs/Plugins
 chown -Rf www-data:www-data /usr/share/lcs/Modules
 chown -Rf www-data:www-data /usr/share/lcs/privatekey

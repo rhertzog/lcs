@@ -81,7 +81,7 @@ if [ "$NODL" != "yes" ]; then
 	echo "Verification en ligne que vous avez bien la derniere version des scripts de migration"
 	echo -e "$COLTXT"
 	cd /root
-	ARCHIVE_FILE="lcs-lenny2squeeze.sh"
+	ARCHIVE_FILE="lcs-lenny2squeeze"
 	ARCHIVE_FILE_MD5="lcs-lenny2squeeze.md5"
 	SCRIPTS_DIR="/usr/sbin"
 	
@@ -99,22 +99,22 @@ if [ "$NODL" != "yes" ]; then
 	fi
 
 	cd $SCRIPTS_DIR
-	MD5_CTRL_LOCAL1=$(md5sum lcs-lenny2squeeze.sh)
-	# MD5_CTRL_LOCAL3=$(md5sum migration_UTF8.sh)
+	MD5_CTRL_LOCAL1=$(md5sum lcs-lenny2squeeze)
+	# MD5_CTRL_LOCAL3=$(md5sum migration_UTF8)
 	cd -
 	MD5_CTRL1=$(cat lcs-lenny2squeeze.md5)
 	#MD5_CTRL2=$(cat migration_ldap_lenny.md5)
-	# MD5_CTRL3=$(cat migration_UTF8.md5)
-	chmod +x *.sh
+	#MD5_CTRL3=$(cat migration_UTF8.md5)
+	chmod +x ARCHIVE_FILE
 
 	if [ "$MD5_CTRL1" != "$MD5_CTRL_LOCAL1" ]; then
 		RELANCE="YES" 
-		cp lcs-lenny2squeeze.sh $SCRIPTS_DIR/
+		cp lcs-lenny2squeeze $SCRIPTS_DIR/
 	fi
 	if [ "$RELANCE" == "YES" ]
 	then
 		echo -e "$COLINFO"
-		echo "Le scripts de migration a ete mis a jour depuis le serveur svn, veuillez relancer lcs-lenny2squeeze.sh"
+		echo "Le scripts de migration a ete mis a jour depuis le serveur svn, veuillez relancer lcs-lenny2squeeze"
 		echo "afin de prendre en compte les changements"
 		exit 1
 		echo -e "$COLTXT"
