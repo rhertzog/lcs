@@ -60,7 +60,7 @@ echo -e "$COLCMD\c"
 
 [ -e /root/nodl ] && NODL="yes"
 # pour le moment cette partie est desactivee 
-NODL="yes"
+NODL="no"
 DEBUG="yes"
 
 SCREENOK=$(ps ax | grep screen | grep -v grep)
@@ -105,7 +105,7 @@ if [ "$NODL" != "yes" ]; then
 	MD5_CTRL1=$(cat lcs-lenny2squeeze.md5)
 	#MD5_CTRL2=$(cat migration_ldap_lenny.md5)
 	#MD5_CTRL3=$(cat migration_UTF8.md5)
-	chmod +x ARCHIVE_FILE
+	chmod +x $ARCHIVE_FILE
 
 	if [ "$MD5_CTRL1" != "$MD5_CTRL_LOCAL1" ]; then
 		RELANCE="YES" 
