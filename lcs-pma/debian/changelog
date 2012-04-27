@@ -1,3 +1,9 @@
+lcs-pma (2.4.9~4) Lcs; urgency=low
+
+  * update to version 3.5.0
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 27 Apr 2012 11:58:55 +0200
+
 lcs-pma (2.4.9~3) Lcs; urgency=low
 
   * update to version 3.4.10.1
