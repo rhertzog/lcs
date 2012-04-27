@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.0.6'); // 05 nov. 2011
+define('_ECRAN_SECURITE', '1.0.10'); // 17 avril  2012
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -24,7 +24,7 @@ if (isset($_GET['test_ecran_securite']))
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
-		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex,i',
+		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex|INA dlweb|EC2LinkFinder,i',
 			(string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
@@ -53,7 +53,7 @@ $cjpeg_command='';
 /*     - controle la variable lang, var_recherche, aide (XSS)
  *
  */
-foreach(array('lang', 'var_recherche', 'aide') as $var) {
+foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r') as $var) {
 	if (isset($_GET[$var]))
 		$_REQUEST[$var] = $GLOBALS[$var] = $_GET[$var] = preg_replace(',[^\w-]+,',' ',(string)$_GET[$var]);
 	if (isset($_POST[$var]))
@@ -86,6 +86,10 @@ AND !preg_match(',^[\w-]+$,', (string)$_REQUEST['exec']))
 if (isset($_REQUEST['cherche_auteur'])
 AND preg_match(',[<],', (string)$_REQUEST['cherche_auteur']))
 	$ecran_securite_raison = "cherche_auteur";
+if (isset($_REQUEST['exec'])
+AND $_REQUEST['exec'] == 'auteurs'
+AND preg_match(',[<],', (string)$_REQUEST['recherche']))
+	$ecran_securite_raison = "recherche";
 if (isset($_REQUEST['action'])
 AND $_REQUEST['action'] == 'configurer') {
 	if (@file_exists('inc_version.php')
