@@ -30,11 +30,12 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 
 <?php
 Formulaire::load_choix_memo();
-$check_aff_coef    = (Formulaire::$tab_choix['aff_coef'])       ? ' checked' : '' ;
-$check_aff_socle   = (Formulaire::$tab_choix['aff_socle'])      ? ' checked' : '' ;
-$check_aff_lien    = (Formulaire::$tab_choix['aff_lien'])       ? ' checked' : '' ;
-$check_socle_PA    = (Formulaire::$tab_choix['aff_socle_PA'])   ? ' checked' : '' ;
-$check_socle_EV    = (Formulaire::$tab_choix['aff_socle_EV'])   ? ' checked' : '' ;
+$check_only_presence = (Formulaire::$tab_choix['only_presence']) ? ' checked' : '' ;
+$check_aff_coef      = (Formulaire::$tab_choix['aff_coef'])      ? ' checked' : '' ;
+$check_aff_socle     = (Formulaire::$tab_choix['aff_socle'])     ? ' checked' : '' ;
+$check_aff_lien      = (Formulaire::$tab_choix['aff_lien'])      ? ' checked' : '' ;
+$check_socle_PA      = (Formulaire::$tab_choix['aff_socle_PA'])  ? ' checked' : '' ;
+$check_socle_EV      = (Formulaire::$tab_choix['aff_socle_EV'])  ? ' checked' : '' ;
 if(in_array($_SESSION['USER_PROFIL'],array('parent','eleve')))
 {
 	// Une éventuelle restriction d'accès doit surcharger toute mémorisation antérieure de formulaire
@@ -104,10 +105,11 @@ $select_matiere = Formulaire::afficher_select($tab_matieres , $select_nom=false 
 	<label class="tab" for="f_palier">Palier :</label><?php echo $select_palier ?><input type="hidden" id="f_palier_nom" name="f_palier_nom" value="" /><label id="ajax_maj_pilier">&nbsp;</label><br />
 	<label class="tab" for="f_pilier"><img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo;&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo;&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /> Compétence(s) :</label><select id="f_pilier" name="f_pilier[]" multiple size="7" class="hide"><option></option></select>
 	<p class="<?php echo $class_form_eleve ?>">
-		<label class="tab" for="f_groupe">Classe / groupe :</label><?php echo $select_groupe ?><label id="ajax_maj">&nbsp;</label><br />
+		<label class="tab" for="f_groupe">Classe / groupe :</label><?php echo $select_groupe ?><input type="hidden" id="f_groupe_nom" name="f_groupe_nom" value="" /><label id="ajax_maj">&nbsp;</label><br />
 		<label class="tab" for="f_eleve"><img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo;&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo;&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /> Élève(s) :</label><select id="f_eleve" name="f_eleve[]"<?php echo $multiple_eleve ?>><?php echo $select_eleves ?></select>
 	</p>
 	<div id="option_groupe" class="<?php echo $class_option_groupe ?>">
+		<label class="tab">Restriction :</label><label for="f_only_presence"><input type="checkbox" id="f_only_presence" name="f_only_presence" value="1"<?php echo $check_only_presence ?> /> Uniquement les éléments ayant fait l'objet d'une évaluation ou d'une validation</label><br />
 		<label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Pour le format html, le détail des items peut être affiché." /> Infos items :</label><label for="f_coef"><input type="checkbox" id="f_coef" name="f_coef" value="1"<?php echo $check_aff_coef ?> /> Coefficients</label>&nbsp;&nbsp;&nbsp;<label for="f_socle"><input type="checkbox" id="f_socle" name="f_socle" value="1"<?php echo $check_aff_socle ?> /> Appartenance au socle</label>&nbsp;&nbsp;&nbsp;<label for="f_lien"><input type="checkbox" id="f_lien" name="f_lien" value="1"<?php echo $check_aff_lien ?> /> Liens (ressources pour travailler)</label><br />
 		<label class="tab">Indications :</label><?php echo $socle_PA.'&nbsp;&nbsp;&nbsp;'.$socle_EV ?>
 		<div id="option_mode" class="<?php echo $class_option_mode ?>">

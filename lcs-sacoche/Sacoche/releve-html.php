@@ -37,7 +37,7 @@ require_once('./_inc/fonction_redirection.php');
 require_once('./_inc/config_serveur.php');
 
 // Paramètre transmis ; attention à l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/)
-$FICHIER = (isset($_GET['fichier'])) ? str_replace(array('.','/','\\'),'',$_GET['fichier']) : '';
+$FICHIER = (isset($_GET['fichier'])) ? str_replace(array('/','\\'),'',$_GET['fichier']) : ''; // On ne nettoie pas le caractère "." car le paramètre peut le contenir.
 
 // Fonctions
 require_once('./_inc/fonction_divers.php');
@@ -78,7 +78,7 @@ $TITRE_NAVIGATEUR = 'SACoche - Relevé HTML';
 $tab_fichiers_head = array();
 $tab_fichiers_head[] = array( 'css' , compacter('./_css/style.css','mini') );
 $tab_fichiers_head[] = array( 'js'  , compacter('./_js/jquery-librairies.js','mini') );
-$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','mini') );
+$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // la minification plante à sur le contenu de testURL() avec le message Fatal error: Uncaught exception 'JSMinException' with message 'Unterminated string literal.'
 
 // Affichage de l'en-tête
 declaration_entete( FALSE /*is_meta_robots*/ , TRUE /*is_favicon*/ , FALSE /*is_rss*/ , $tab_fichiers_head , $TITRE_NAVIGATEUR , $CSS_PERSO );

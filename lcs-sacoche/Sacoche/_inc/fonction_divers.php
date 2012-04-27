@@ -496,7 +496,7 @@ function fabriquer_login($prenom,$nom,$profil)
  */
 function fabriquer_mdp()
 {
-	return mb_substr(str_shuffle('2345678923456789abcdfghknpqrstuvxyz'),0,8);
+	return mb_substr(str_shuffle('2345678923456789aaaaauuuuubcdfghknpqrstvxyz'),0,8);
 }
 
 /**
@@ -510,6 +510,29 @@ function fabriquer_mdp()
 function crypter_mdp($password)
 {
 	return md5('grain_de_sel'.$password);
+}
+
+/**
+ * Ajouter la date et une valeur aléatoire pour terminer un nom de fichier.
+ * 
+ * @param void
+ * @return string
+ */
+function fabriquer_fin_nom_fichier()
+{
+	// date
+	$chaine_date = date('Y-m-d_H\hi\m\i\ns\s'); // lisible par un humain et compatible avec le système de fichiers
+	// valeur aléatoire
+	$longueur_chaine = 15; // permet > 2x10^23 possibilités : même en en testant 1 milliard /s il faudrait plus de 7 millions d'années pour toutes les essayer
+	$caracteres = '0123456789abcdefghijklmnopqrstuvwxyz';
+	$alea_max = strlen($caracteres)-1;
+	$chaine_alea = '';
+	for( $i=0 ; $i<$longueur_chaine ; $i++ )
+	{
+		$chaine_alea .= $caracteres{mt_rand(0,$alea_max)};
+	}
+	// retour
+	return $chaine_date.'_'.$chaine_alea;
 }
 
 /**
@@ -728,15 +751,15 @@ function nettoyer_fichiers_temporaires($BASE)
 function tester_authentification_webmestre($password)
 {
 	// Si tentatives trop rapprochées...
-	$delai_attente_consomme = time() - WEBMESTRE_ERREUR_DATE ;
-	if($delai_attente_consomme<3)
+	$delai_tentative_secondes = time() - WEBMESTRE_ERREUR_DATE ;
+	if($delai_tentative_secondes<3)
 	{
 		fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>time()) );
 		return'Calmez-vous et patientez 10s avant toute nouvelle tentative !';
 	}
-	elseif($delai_attente_consomme<10)
+	elseif($delai_tentative_secondes<10)
 	{
-		$delai_attente_restant = 10-$delai_attente_consomme ;
+		$delai_attente_restant = 10-$delai_tentative_secondes ;
 		return'Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.';
 	}
 	// Si mdp incorrect...
@@ -812,30 +835,32 @@ function tester_authentification_user($BASE,$login,$password,$mode_connection)
 	tester_blocage_application($BASE,$DB_ROW['user_profil']);
 	annuler_blocage_anormal();
 	// Si tentatives trop rapprochées...
-	$delai_attente_consomme = time() - $DB_ROW['tentative_unix'] ;
-	if($delai_attente_consomme<3)
+	if($DB_ROW['user_tentative_date']!='0000-00-00 00:00:00') // Sinon $DB_ROW['delai_tentative_secondes'] vaut NULL
 	{
-		DB_STRUCTURE_PUBLIC::DB_modifier_date('tentative',$DB_ROW['user_id']);
-		return array('Calmez-vous et patientez 10s avant toute nouvelle tentative !',array());
-	}
-	elseif($delai_attente_consomme<10)
-	{
-		$delai_attente_restant = 10-$delai_attente_consomme ;
-		return array('Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.',array());
+		if($DB_ROW['delai_tentative_secondes']<3)
+		{
+			DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'tentative' , $DB_ROW['user_id'] );
+			return array('Calmez-vous et patientez 10s avant toute nouvelle tentative !',array());
+		}
+		elseif($DB_ROW['delai_tentative_secondes']<10)
+		{
+			$delai_attente_restant = 10 - $DB_ROW['delai_tentative_secondes'] ;
+			return array('Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.',array());
+		}
 	}
 	// Si mdp incorrect...
 	if( ($mode_connection=='normal') && ($DB_ROW['user_password']!=crypter_mdp($password)) )
 	{
-		DB_STRUCTURE_PUBLIC::DB_modifier_date('tentative',$DB_ROW['user_id']);
+		DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'tentative' , $DB_ROW['user_id'] );
 		return array('Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.',array());
 	}
 	// Si compte desactivé...
-	if($DB_ROW['user_statut']!=1)
+	if($DB_ROW['user_sortie_date']<=TODAY_MYSQL)
 	{
 		return array('Identification réussie mais ce compte est desactivé !',array());
 	}
 	// Mémoriser la date de la (dernière) connexion
-	DB_STRUCTURE_PUBLIC::DB_modifier_date('connexion',$DB_ROW['user_id']);
+	DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'connexion' , $DB_ROW['user_id'] );
 	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
 	setcookie(COOKIE_STRUCTURE,$BASE,time()+60*60*24*365,'');
 	// Enregistrement d'un cookie sur le poste client servant à retenir le dernier mode de connexion utilisé si identification avec succès
@@ -870,7 +895,9 @@ function enregistrer_session_user($BASE,$DB_ROW)
 	$_SESSION['ELEVE_CLASSE_ID']  = (int) $DB_ROW['eleve_classe_id'];
 	$_SESSION['ELEVE_CLASSE_NOM'] = $DB_ROW['groupe_nom'];
 	$_SESSION['ELEVE_LANGUE']     = (int) $DB_ROW['eleve_langue'];
-	// Récupérer et Enregistrer en session les données des élèves associées à un resposnable légal.
+	$_SESSION['DELAI_CONNEXION']  = (int) $DB_ROW['delai_connexion_secondes'];
+	$_SESSION['FIRST_CONNEXION']  = ($DB_ROW['user_connexion_date']=='0000-00-00 00:00:00') ? TRUE : FALSE ;
+	// Récupérer et Enregistrer en session les données des élèves associées à un responsable légal.
 	if($_SESSION['USER_PROFIL']=='parent')
 	{
 		$_SESSION['OPT_PARENT_ENFANTS'] = DB_STRUCTURE_COMMUN::DB_OPT_enfants_parent($_SESSION['USER_ID']);
@@ -1085,7 +1112,7 @@ function contenu_courriel_nouveau_mdp($base_id,$denomination,$contact_nom,$conta
  */
 function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$aff_coef,$aff_cart,$aff_socle,$aff_lien,$aff_input,$aff_id_li='')
 {
-	$input_all = ($aff_input) ? ' <input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." />' : '' ;
+	$input_all = ($aff_input) ? '<input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." />' : '' ;
 	$input_texte = '';
 	$coef_texte  = '';
 	$cart_texte  = '';
@@ -1173,7 +1200,8 @@ function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$a
 	// Affichage de l'arborescence
 	$span_avant = ($dynamique) ? '<span>' : '' ;
 	$span_apres = ($dynamique) ? '</span>' : '' ;
-	$retour = '<ul class="ul_m1">'."\r\n";
+	$retour  = '<ul class="ul_m1">';
+	$retour .= ($aff_input) ? '<input name="leurre" type="image" alt="" src="./_img/auto.gif" />'."\r\n" : "\r\n" ;
 	if(count($tab_matiere))
 	{
 		foreach($tab_matiere as $matiere_id => $matiere_texte)
@@ -1743,7 +1771,7 @@ function adresse_RSS($prof_id)
 		Creer_Dossier($dossier_nom);
 		Ecrire_Fichier($dossier_nom.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
 	}
-	// Le nom du RSS est tordu pour le rendre un minimum privé ; il peut être retrouvé, mais très difficilement, par un bidouilleur qui met le nez dans le code, mais il n'y a rien de confidentiel non plus.
+	// Le nom du RSS est tordu pour le rendre un minimum privé, sans être totalement aléatoire car il doit être fixe (mais il n'y a rien de confidentiel non plus).
 	$fichier_nom_debut = 'rss_'.$prof_id;
 	$fichier_nom_fin   = md5($fichier_nom_debut.$_SERVER['DOCUMENT_ROOT']);
 	$fichier_chemin    = $dossier_nom.'/'.$fichier_nom_debut.'_'.$fichier_nom_fin.'.xml';

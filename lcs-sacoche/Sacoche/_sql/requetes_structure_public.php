@@ -49,7 +49,8 @@ public function DB_recuperer_donnees_utilisateur($mode_connection,$login)
 		case 'gepi'   : $champ = 'user_id_gepi'; break;
 	}
 	$DB_SQL = 'SELECT sacoche_user.*, sacoche_groupe.groupe_nom, ';
-	$DB_SQL.= 'UNIX_TIMESTAMP(sacoche_user.user_tentative_date) AS tentative_unix ';
+	$DB_SQL.= 'TIME_TO_SEC(TIMEDIFF(NOW(),sacoche_user.user_tentative_date)) AS delai_tentative_secondes, '; // TIMEDIFF() est plafonné à 839h soit ~35j mais peu importe
+	$DB_SQL.= 'TIME_TO_SEC(TIMEDIFF(NOW(),sacoche_user.user_connexion_date)) AS delai_connexion_secondes  '; // TIMEDIFF() est plafonné à 839h soit ~35j mais peu importe
 	$DB_SQL.= 'FROM sacoche_user ';
 	$DB_SQL.= 'LEFT JOIN sacoche_groupe ON sacoche_user.eleve_classe_id=sacoche_groupe.groupe_id ';
 	$DB_SQL.= 'WHERE '.$champ.'=:identifiant ';
@@ -89,13 +90,13 @@ public function DB_lister_parametres($listing_param='')
 }
 
 /**
- * Modifier la date de connexion ou de tentative de connexion d'un utilisateur donné
+ * Modifier la date de connexion ou de tentative de connexion
  *
- * @param string  $champ   'connexion' ou 'tentative'
+ * @param string  $champ   'connexion' | 'tentative'
  * @param int     $user_id
  * @return void
  */
-public function DB_modifier_date($champ,$user_id)
+public function DB_enregistrer_date($champ,$user_id)
 {
 	$DB_SQL = 'UPDATE sacoche_user ';
 	$DB_SQL.= 'SET user_'.$champ.'_date=NOW() ';

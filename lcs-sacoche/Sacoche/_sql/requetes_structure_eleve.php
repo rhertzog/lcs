@@ -52,7 +52,7 @@ public function DB_recuperer_demandes_autorisees_matiere($matiere_id)
  * Récupérer les informations relatives à un item donné
  *
  * @param int   $item_id
- * @return int
+ * @return array
  */
 public function DB_recuperer_item_infos($item_id)
 {
@@ -143,10 +143,10 @@ public function DB_lister_classes_parent($parent_id)
 	$DB_SQL.= 'LEFT JOIN sacoche_jointure_user_groupe ON eleve_classe_id=groupe_id ';
 	$DB_SQL.= 'LEFT JOIN sacoche_groupe USING (groupe_id) ';
 	$DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
-	$DB_SQL.= 'WHERE parent_id=:parent_id AND user_profil="eleve" AND user_statut=:statut ';
+	$DB_SQL.= 'WHERE parent_id=:parent_id AND user_profil="eleve" AND user_sortie_date>NOW() ';
 	$DB_SQL.= 'GROUP BY groupe_id '; // si plusieurs enfants dans la même classe
 	$DB_SQL.= 'ORDER BY groupe_type ASC, niveau_ordre ASC, groupe_nom ASC';
-	$DB_VAR = array(':parent_id'=>$parent_id,':statut'=>1);
+	$DB_VAR = array(':parent_id'=>$parent_id);
 	return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -188,6 +188,21 @@ public function DB_lister_demandes_eleve($user_id)
 	$DB_SQL.= 'ORDER BY sacoche_demande.matiere_id ASC, niveau_ref ASC, domaine_ref ASC, theme_ordre ASC, item_ordre ASC';
 	$DB_VAR = array(':user_id'=>$user_id);
 	return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * Récupérer la classe d'un élève
+ *
+ * @param int   $eleve_id
+ * @return int
+ */
+public function DB_recuperer_classe_eleve($eleve_id)
+{
+	$DB_SQL = 'SELECT eleve_classe_id ';
+	$DB_SQL.= 'FROM sacoche_user ';
+	$DB_SQL.= 'WHERE user_id=:user_id ';
+	$DB_VAR = array(':user_id'=>$eleve_id);
+	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -297,16 +312,17 @@ public function DB_tester_demande_existante($eleve_id,$matiere_id,$item_id)
  * @param int      $eleve_id
  * @param int      $matiere_id
  * @param int      $item_id
- * @param string   $demande_date_mysql
  * @param int|null $demande_score
  * @param string   $demande_statut
+ * @param string   $message
  * @return int
  */
-public function DB_ajouter_demande($eleve_id,$matiere_id,$item_id,$demande_date_mysql,$demande_score,$demande_statut)
+public function DB_ajouter_demande($eleve_id,$matiere_id,$item_id,$demande_score,$demande_statut,$message)
 {
-	$DB_SQL = 'INSERT INTO sacoche_demande(user_id,matiere_id,item_id,demande_date,demande_score,demande_statut) ';
-	$DB_SQL.= 'VALUES(:eleve_id,:matiere_id,:item_id,:demande_date,:demande_score,:demande_statut)';
-	$DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id,':item_id'=>$item_id,':demande_date'=>$demande_date_mysql,':demande_score'=>$demande_score,':demande_statut'=>$demande_statut);
+	$demande_messages = ($message) ? $_SESSION['USER_NOM'].' '.$_SESSION['USER_PRENOM']{0}.'.'."\r\n".$message : '' ;
+	$DB_SQL = 'INSERT INTO sacoche_demande(user_id,matiere_id,item_id,demande_date,demande_score,demande_statut,demande_messages) ';
+	$DB_SQL.= 'VALUES(:eleve_id,:matiere_id,:item_id,NOW(),:demande_score,:demande_statut,:demande_messages)';
+	$DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id,':item_id'=>$item_id,':demande_score'=>$demande_score,':demande_statut'=>$demande_statut,':demande_messages'=>$demande_messages);
 	DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 	return DB::getLastOid(SACOCHE_STRUCTURE_BD_NAME);
 }

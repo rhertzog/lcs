@@ -51,11 +51,11 @@ $tab_droits['public_accueil']                          = $tab_droits_profil_publ
 $tab_droits['public_installation']                     = $tab_droits_profil_public;
 $tab_droits['public_logout_SSO']                       = $tab_droits_profil_public;
 // Profil élève
-$tab_droits['eleve_eval_demande']                      = $tab_droits_profil_eleve;
-$tab_droits['eleve_eval_demande_ajout']                = $tab_droits_profil_eleve;
+$tab_droits['evaluation_demande_eleve']                = $tab_droits_profil_eleve;
+$tab_droits['evaluation_demande_eleve_ajout']          = $tab_droits_profil_eleve;
 // Profil professeur
-$tab_droits['professeur_eval_demande']                 = $tab_droits_profil_professeur;
-$tab_droits['professeur_eval_saisie']                  = $tab_droits_profil_professeur;
+$tab_droits['evaluation_demande_professeur']           = $tab_droits_profil_professeur;
+$tab_droits['evaluation_gestion']                      = $tab_droits_profil_professeur;
 $tab_droits['professeur_groupe_besoin']                = $tab_droits_profil_professeur;
 $tab_droits['professeur_referentiel']                  = $tab_droits_profil_professeur;
 $tab_droits['professeur_referentiel_gestion']          = $tab_droits_profil_professeur;
@@ -63,7 +63,6 @@ $tab_droits['professeur_referentiel_edition']          = $tab_droits_profil_prof
 $tab_droits['professeur_referentiel_ressources']       = $tab_droits_profil_professeur;
 // Profil directeur
 $tab_droits['consultation_statistiques']               = $tab_droits_profil_directeur;
-$tab_droits['validation_socle_fichier']                = $tab_droits_profil_directeur;
 // Profil administrateur
 $tab_droits['administrateur_administrateur']           = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_algorithme_gestion']       = $tab_droits_profil_administrateur;
@@ -73,6 +72,7 @@ $tab_droits['administrateur_bulletins']                = $tab_droits_profil_admi
 $tab_droits['administrateur_classe']                   = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_classe_gestion']           = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_codes_couleurs']           = $tab_droits_profil_administrateur;
+$tab_droits['administrateur_comptes']                  = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_directeur']                = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_dump']                     = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_eleve']                    = $tab_droits_profil_administrateur;
@@ -108,8 +108,6 @@ $tab_droits['administrateur_professeur_matiere']       = $tab_droits_profil_admi
 $tab_droits['administrateur_professeur_principal']     = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_releves_bilans']           = $tab_droits_profil_administrateur;
 $tab_droits['administrateur_resilier']                 = $tab_droits_profil_administrateur;
-$tab_droits['administrateur_statut_desactiver']        = $tab_droits_profil_administrateur;
-$tab_droits['administrateur_statut_traiter']           = $tab_droits_profil_administrateur;
 // Profil webmestre
 $tab_droits['webmestre_configuration_proxy']           = $tab_droits_profil_webmestre;
 $tab_droits['webmestre_database_test']                 = $tab_droits_profil_webmestre;
@@ -141,6 +139,7 @@ $tab_droits['_maj_select_professeurs_directeurs']      = array( 'public'=>0 , 'e
 $tab_droits['administrateur_eleve_langue']             = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 );
 $tab_droits['compte_daltonisme']                       = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['compte_info_serveur']                     = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'administrateur'=>1 , 'webmestre'=>1 );
+$tab_droits['compte_message']                          = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 );
 $tab_droits['compte_selection_items']                  = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['consultation_algorithme']                 = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['consultation_date_connexion']             = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 );
@@ -148,7 +147,7 @@ $tab_droits['consultation_groupe_periode']             = array( 'public'=>0 , 'e
 $tab_droits['consultation_referentiel_interne']        = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 );
 $tab_droits['consultation_referentiel_externe']        = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['date_calendrier']                         = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>1 );
-$tab_droits['eleve_eval_bilan']                        = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>0 , 'directeur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 );
+$tab_droits['evaluation_voir']                         = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['export_fichier']                          = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['public_login_SSO']                        = array( 'public'=>1 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 ); // Attention ! Il faut inclure "public" car un échange est encore effectué avec ce fichier après enregistrement des données de session...
 $tab_droits['releve']                                  = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
@@ -162,6 +161,7 @@ $tab_droits['releve_synthese_matiere']                 = array( 'public'=>0 , 'e
 $tab_droits['releve_synthese_multimatiere']            = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['releve_synthese_socle']                   = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['validation_socle']                        = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
+$tab_droits['validation_socle_fichier']                = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 );
 $tab_droits['validation_socle_item']                   = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['validation_socle_pilier']                 = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );
 $tab_droits['validation_socle_pilier_annuler']         = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 );

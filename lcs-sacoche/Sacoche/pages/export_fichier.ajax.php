@@ -53,7 +53,7 @@ if( ($type_export=='listing_users') && $groupe_id && isset($tab_types[$groupe_ty
 	// Préparation de l'export HTML
 	$export_html = '<table class="p"><thead><tr><th>Id</th><th>Login</th><th>Nom</th><th>Prénom</th><th>Groupe</th></tr></thead><tbody>'."\r\n";
 	// Récupérer les élèves de la classe ou du groupe
-	$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_actifs_regroupement('eleve',$tab_types[$groupe_type],$groupe_id,'user_id,user_login,user_nom,user_prenom');
+	$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $tab_types[$groupe_type] , $groupe_id , 'user_id,user_login,user_nom,user_prenom' );
 	if(count($DB_TAB))
 	{
 		foreach($DB_TAB as $DB_ROW)
@@ -64,7 +64,7 @@ if( ($type_export=='listing_users') && $groupe_id && isset($tab_types[$groupe_ty
 	}
 
 	// Finalisation de l'export CSV (archivage dans un fichier zippé)
-	$fnom = 'export_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_listing-eleves_'.$groupe_id.'_'.time();
+	$fnom = 'export_listing-eleves_'.clean_fichier($groupe_nom).'_'.fabriquer_fin_nom_fichier();
 	$zip = new ZipArchive();
 	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
 	if($result_open!==TRUE)
@@ -109,7 +109,7 @@ if( ($type_export=='listing_matiere') && $matiere_id && $matiere_nom )
 	}
 
 	// Finalisation de l'export CSV (archivage dans un fichier zippé)
-	$fnom = 'export_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_listing-items_'.$matiere_id.'_'.time();
+	$fnom = 'export_listing-items_'.clean_fichier($matiere_nom).'_'.fabriquer_fin_nom_fichier();
 	$zip = new ZipArchive();
 	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
 	if($result_open!==TRUE)
@@ -221,7 +221,7 @@ if( ($type_export=='arbre_matiere') && $matiere_id && $matiere_nom )
 	$export_html .= '</ul>'."\r\n";
 
 	// Finalisation de l'export CSV (archivage dans un fichier zippé)
-	$fnom = 'export_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_arbre-matiere_'.$matiere_id.'_'.time();
+	$fnom = 'export_arbre-matiere_'.clean_fichier($matiere_nom).'_'.fabriquer_fin_nom_fichier();
 	$zip = new ZipArchive();
 	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
 	if($result_open!==TRUE)
@@ -314,7 +314,7 @@ if( ($type_export=='arbre_socle') && $palier_id && $palier_nom )
 	$export_html .= '</ul>'."\r\n";
 
 	// Finalisation de l'export CSV (archivage dans un fichier zippé)
-	$fnom = 'export_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_arbre-socle_'.$palier_id.'_'.time();
+	$fnom = 'export_arbre-socle_'.clean_fichier(substr($palier_nom,0,strpos($palier_nom,' ('))).'_'.fabriquer_fin_nom_fichier();
 	$zip = new ZipArchive();
 	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
 	if($result_open!==TRUE)
@@ -434,7 +434,7 @@ if( ($type_export=='jointure_socle_matiere') && $palier_id && $palier_nom )
 	$export_html .= '</ul>'."\r\n";
 
 	// Finalisation de l'export CSV (archivage dans un fichier zippé)
-	$fnom = 'export_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_jointure_'.$palier_id.'_'.time();
+	$fnom = 'export_jointures_'.clean_fichier(substr($palier_nom,0,strpos($palier_nom,' ('))).'_'.fabriquer_fin_nom_fichier();
 	$zip = new ZipArchive();
 	$result_open = $zip->open($dossier_export.$fnom.'.zip', ZIPARCHIVE::CREATE);
 	if($result_open!==TRUE)

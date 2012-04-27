@@ -182,7 +182,7 @@ $CSS_PERSO = (isset($_SESSION['CSS'])) ? '<style type="text/css">'.$_SESSION['CS
 $tab_fichiers_head = array();
 $tab_fichiers_head[] = array( 'css' , compacter('./_css/style.css','mini') );
 $tab_fichiers_head[] = array( 'js'  , compacter('./_js/jquery-librairies.js','mini') );
-$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','mini') );
+$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // la minification plante à sur le contenu de testURL() avec le message Fatal error: Uncaught exception 'JSMinException' with message 'Unterminated string literal.'
 $filename_js_normal = './pages/'.$PAGE.'.js';
 if(is_file($filename_js_normal)) $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
 
@@ -231,7 +231,7 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
 		echo'<div id="cadre_milieu">'."\r\n";
 		$hebergeur_img  = ( (defined('HEBERGEUR_LOGO')) && (is_file('./__tmp/logo/'.HEBERGEUR_LOGO)) ) ? '<img alt="Hébergeur" src="./__tmp/logo/'.HEBERGEUR_LOGO.'" />' : '' ;
 		$hebergeur_lien = ( (defined('HEBERGEUR_ADRESSE_SITE')) && HEBERGEUR_ADRESSE_SITE && ($hebergeur_img) ) ? '<a href="'.html(HEBERGEUR_ADRESSE_SITE).'">'.$hebergeur_img.'</a>' : $hebergeur_img ;
-		$SACoche_lien   = '<a href="'.SERVEUR_PROJET.'"><img alt="Suivi d\'Acquisition de Compétences" src="./_img/logo_grand.gif" /></a>' ;
+		$SACoche_lien   = '<a href="'.SERVEUR_PROJET.'"><img alt="Suivi d\'Acquisition de Compétences" src="./_img/logo_grand.gif" width="208" height="71" /></a>' ;
 		echo ($PAGE=='public_accueil') ? '<h1 class="logo">'.$SACoche_lien.$hebergeur_lien.'</h1>' : '<h1>» '.$TITRE.'</h1>' ;
 		echo 	$CONTENU_PAGE;
 		echo'</div>'."\r\n";
