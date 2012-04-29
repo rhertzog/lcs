@@ -177,10 +177,10 @@ fi
 	# Configuration apache
 	if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
   	cat >$APACHE2CONF <<EOF
-	<Directory /usr/share/lcs/Plugins/Cdt/json_files>
-       		Deny From all 
-	</Directory>
-	EOF
+<Directory /usr/share/lcs/Plugins/Cdt/json_files>
+Deny From all 
+</Directory>
+EOF
    	/etc/init.d/apache2 reload > /dev/null 2>&1
 	fi
 	# 
