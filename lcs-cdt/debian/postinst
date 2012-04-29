@@ -9,7 +9,7 @@ MODULE="Cdt"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
-INDICEMAJNBR="16"
+INDICEMAJNBR="17"
 DESCRIPT="Cahier de textes"
 CONF="/var/lib/lcs/$MODULE"
 LCSAPACH2PATH="/etc/apache2/lcs-main/"
@@ -175,14 +175,14 @@ else
 fi
 	#
 	# Configuration apache
-if [ -d $LCSAPACHE2PATH ]; then
-  cat >$APACHE2CONF <<EOF
-<Directory /usr/share/lcs/Plugins/Cdt/json_files>
-       Deny From all 
-</Directory>
-EOF
-   /etc/init.d/apache2 reload > /dev/null 2>&1
-fi
+	if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
+  	cat >$APACHE2CONF <<EOF
+	<Directory /usr/share/lcs/Plugins/Cdt/json_files>
+       		Deny From all 
+	</Directory>
+	EOF
+   	/etc/init.d/apache2 reload > /dev/null 2>&1
+	fi
 	# 
 	echo "Changement des droits sur l'arborescence du module"
 	#

@@ -1,4 +1,14 @@
 <?php
+/* ==================================================
+   Projet LCS : Linux Communication Server
+   Plugin "cahier de textes"
+   VERSION 2.5 du 20/04/2012
+   par philippe LECLERC
+   philippe.leclerc1@ac-caen.fr
+   - script d'affichage edt-
+			_-=-_
+    "Valid XHTML 1.0 Strict"
+   =================================================== */
 session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
@@ -21,7 +31,7 @@ if (isset($_GET['from']))
     function my_cours_search($ref, $haystack) {
         if ($ref == "") $ref = time();
         foreach ($haystack as $key => $value) {
-            if ($value['start'] <= $ref && $value['end'] >= $ref) {
+            if ($value['start'] <= $ref && $value['end'] >= $ref && $value['matiere']!="") {
                 $encours[0] = $value['id'];
                 $encours[1] = $value['start'];
                 break;
@@ -35,8 +45,11 @@ if (isset($_GET['from']))
     //chercher un event depuis son id
     $maintenant=time();
     $rep = my_cours_search(  $maintenant, $evenements);
-    header("location: cahier_texte_prof.php?id=".$rep[0] . '&start=' . $rep[1]);
-    exit;
+    if (count($rep)==2)
+        {
+        header("location: cahier_texte_prof.php?id=".$rep[0] . '&start=' . $rep[1]);
+        exit;
+        }
     }
 // fin redir
 $mats=array();
