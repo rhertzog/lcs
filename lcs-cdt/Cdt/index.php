@@ -3,7 +3,7 @@
 /* ==================================================
   Projet LCS : Linux Communication Server
   Plugin "cahier de textes"
-  VERSION 2.3 du 15/11/2011
+  VERSION 2.5 du 20/04/2012
   par philippe LECLERC
   philippe.leclerc1@ac-caen.fr
   - script de redirection -
@@ -76,7 +76,7 @@ if ($login) {
         header("location: ./scripts/cahier_text_eleve.php");
         exit;
     } elseif ($_SESSION['cequi'] == "prof") {
-        header("location: ./scripts/cahier_texte_prof.php");
+        header("location: ./scripts/edt.php?from=ind");
         exit;
     }
     else

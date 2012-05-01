@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9.3~3) LCS; urgency=low
+
+  * add redirect to edt.php'
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 01 May 2012 17:41:56 +0200
+
 lcs-cdt (2.4.9.3~2) LCS; urgency=low
 
   * add timetable feature
