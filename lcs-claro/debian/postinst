@@ -12,6 +12,8 @@ PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
 INDICEMAJNBR="6"
 DESCRIPT="Plateforme de formation"
 CONF="/var/lib/lcs/$MODULE"
+LCSAPACH2PATH="/etc/apache2/lcs-main/"
+APACHE2CONF=$LCSAPACH2PATH"73_claro_module.conf"
 
 case "$1" in
    install| configure)
@@ -153,6 +155,17 @@ else
 
 fi
 	#
+	#
+	# Configuration apache
+	if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
+  	cat >$APACHE2CONF <<EOF
+<Directory /usr/share/lcs/Plugins/Claro>
+AddDefaultCharset UTF-8
+</Directory>
+EOF
+   	/etc/init.d/apache2 reload > /dev/null 2>&1
+	fi
+	# 
 	# 
 	echo "Changement des droits sur l'arborescence du module"
 	#

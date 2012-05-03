@@ -8,6 +8,7 @@ set -e
 MODULE="Claro"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
+APACHE2CONF=$LCSAPACH2PATH"73_claro_module.conf"
 # summary of how this script can be called:
 #        * <postrm> `remove'
 #        * <postrm> `purge'
@@ -26,6 +27,9 @@ case "$1" in
  
 CHEMIN=`pwd`   
     
+        # suppression conf apache
+	rm -f $APACHE2CONF
+        /etc/init.d/apache2 reload > /dev/null 2>&1
         #
         # Desinscription du module de la table lcs_db.applis
         #
