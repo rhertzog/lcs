@@ -154,13 +154,20 @@ else
         #
 
 fi
-	#
+	#creation du repertoire pour mediacenter
+	if [ ! -e /usr/share/lcs/Plugins/Claro/module/INWICAST ] ; then
+	mkdir /usr/share/lcs/Plugins/Claro/module/INWICAST
+	chown -R www-data:www-data /usr/share/lcs/Plugins/Claro/module/INWICAST
+	fi 
 	#
 	# Configuration apache
 	if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
   	cat >$APACHE2CONF <<EOF
 <Directory /usr/share/lcs/Plugins/Claro>
 AddDefaultCharset UTF-8
+</Directory>
+<Directory /usr/share/lcs/Plugins/Claro/module/INWICAST>
+AddDefaultCharset iso-8859-1
 </Directory>
 EOF
    	/etc/init.d/apache2 reload > /dev/null 2>&1
