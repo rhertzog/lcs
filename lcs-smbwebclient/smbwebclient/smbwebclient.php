@@ -190,10 +190,10 @@ var $cfgFacility = LOG_DAEMON;
 
 
 ###################################################################
-# User authentication (BasicAuth or FormAuth)
+# User authentication (BasicAuth, FormAuth or LcsAuth)
 #
 
-var $cfgUserAuth = 'LcsAuth';
+var $cfgUserAuth = '';
 
 
 ###################################################################
@@ -387,11 +387,12 @@ function smbwebclient ()
 	$this->order = @$_SESSION['swcOrder'];
 
 	# load MIME types
-	foreach (split("\n",$this->GetInlineFile('data/mime.types')) as $line) {
-		$a = split(" ", $line);
+	foreach (mb_split("\n",$this->GetInlineFile('data/mime.types')) as $line) {
+		$a = mb_split(" ", $line);
 		$this->mimeTypes[$a[0]] = $a[1];
 	}
 }
+
 function NoRun ($condition)
 {
     $msg_head="
@@ -423,6 +424,15 @@ function NoRun ($condition)
             </div>
                         ";
         $page = $this->Page('Acc&#232;s non autoris&#233;',$msg_noright);
+    } elseif ( $condition == "noauth" ) {
+        $msg_noright = $msg_head;
+        $msg_noright .= "
+            <div>
+                <h5>Vous n'avez pas le droit d'acc&#233;der &#225; l'application Client SE3.</h5>
+                <h5>Veuillez vous authentifier sur le LCS.</h5>
+            </div>
+                        ";
+        $page = $this->Page('Acc&#232;s non autoris&#233;',$msg_noright);    	
     }
     print $page;
     exit;
@@ -437,12 +447,12 @@ function Run ()
 		exit;
 	}
 
-	$this->Go(ereg_replace('/$','',ereg_replace('^/','',$this->cfgSambaRoot.'/'.$path)));
+	$this->Go(mb_ereg_replace('/$','',mb_ereg_replace('^/','',$this->cfgSambaRoot.'/'.$path)));
 
 	$this->GetCachedAuth();
 
 	if (isset($_REQUEST['action'])) {
-		if (ereg('^UpAction([0-9]+)$', $_REQUEST['action'], $regs)) {
+		if (mb_ereg('^UpAction([0-9]+)$', $_REQUEST['action'], $regs)) {
 			$this->UpAction($regs[1]);
 		} elseif (method_exists($this, $_REQUEST['action'])) {
 			$action = $_REQUEST['action'];
@@ -473,7 +483,7 @@ function InitSession ()
 	set_time_limit(1200);
 	error_reporting(E_ALL ^ E_NOTICE);
 
-	define_syslog_variables();
+	# Deprecated : define_syslog_variables();
 	openlog("smbwebclient", LOG_ODELAY | LOG_PID, $this->cfgFacility);
 
 	if ($this->cfgSessionName <> '') session_name($this->cfgSessionName);
@@ -483,8 +493,8 @@ function InitSession ()
 function InitLanguage ()
 {
 	# load languages
-	foreach (split("\n",$this->GetInlineFile('data/languages.csv')) as $line) {
-		$a = split(";", $line);
+	foreach (mb_split("\n",$this->GetInlineFile('data/languages.csv')) as $line) {
+		$a = mb_split(";", $line);
 		$this->languages[$a[0]] = $a[1];
 	}
 
@@ -501,9 +511,9 @@ function InitLanguage ()
 		$this->lang = $_SESSION['swcLanguage'];
 	} else {
 		# take a look at HTTP_ACCEPT_LANGUAGE
-		foreach (split(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang)
+		foreach (mb_split(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang)
 		foreach ($this->languages as $key => $filter)
-		if (isset($this->strings[$key]) AND eregi('^('.$filter.')(;q=[0-9]\\.[0-9])?$', $lang)) {
+		if (isset($this->strings[$key]) AND mb_eregi('^('.$filter.')(;q=[0-9]\\.[0-9])?$', $lang)) {
 			$this->lang = $key;
 			$langOK = true;
 		}
@@ -512,7 +522,7 @@ function InitLanguage ()
 			reset($this->languages);
 			foreach ($this->languages as $key => $filter)
 			if (isset($this->strings[$key])
-			AND eregi('(\(|\[|;[[:space:]])(' . $filter . ')(;|\]|\))', $_SERVER['HTTP_USER_AGENT'])) {
+			AND mb_eregi('(\(|\[|;[[:space:]])(' . $filter . ')(;|\]|\))', $_SERVER['HTTP_USER_AGENT'])) {
 				$this->lang = $key;
 				$langOK = true;
 			}
@@ -548,13 +558,13 @@ function _($str)
 function DumpFile($file='', $name='', $isAttachment=false, $isCacheable=false)
 {
 	if ($name == '') $name = basename($file);
-	$pi = pathinfo(strtolower($name));
+	$pi = pathinfo(mb_strtolower($name));
 	$mimeType = @$this->mimeTypes[@$pi['extension']];
 	if ($mimeType == '') $mimeType = 'application/octet-stream';
 
 	# dot bug with IE
-	if (strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) {
-		$name = preg_replace('/\./','%2e', $name, substr_count($name, '.') - 1);
+	if (mb_strstr($_SERVER['HTTP_USER_AGENT'], "MSIE")) {
+		$name = preg_replace('/\./','%2e', $name, mb_substr_count($name, '.') - 1);
 	}
 
 	header("Cache-control: ".($isCacheable ? "public" : "private"));
@@ -618,7 +628,7 @@ function GetIP()
 function Debug ($message, $level=0)
 {
 	if ($level <= $this->debug) {
-		foreach (split("\n",$message) as $line) {
+		foreach (mb_split("\n",$message) as $line) {
 			syslog(LOG_INFO, $this->user.'['.$this->GetIP().']: '.$line);
 		}
 	}
@@ -876,7 +886,7 @@ function View ()
 	$res2=array();
 	$lescles=array_keys($this->results);
 	foreach ($lescles as $cle) 
-          if (strpos("#/home/homes/".$this->ShareView."/".$this->Login."/","/".$this->results[$cle]['name']."/"))
+          if (mb_strpos("#/home/homes/".$this->ShareView."/".$this->Login."/","/".$this->results[$cle]['name']."/"))
 	    $res2[$cle]=$this->results[$cle];
 	$this->results=$res2;
     }
@@ -896,7 +906,7 @@ function View ()
 		$url = $this->GetUrl($this->where, 'O', $order.$ad);
 		$header .= "<th>".$this->Link($this->_($title), $url).' '.$icon."</th>";
 	}
-	$lang = $this->Link(strtoupper($this->lang),$this->GetUrl($this->where,'action','ChangeLanguageInput'));
+	$lang = $this->Link(mb_strtoupper($this->lang),$this->GetUrl($this->where,'action','ChangeLanguageInput'));
 	$time = date("H:i");
 	$logout = $this->Icon('logout', $this->GetUrl($this->where, 'auth', '1'));
 	$header .= "<th width=\"100%\">&nbsp;</th><th class=\"language\">{$lang}</th><th class=\"toolbar\"><nobr>{$logout}&nbsp;&nbsp;{$time}</nobr></th></tr>";
@@ -905,8 +915,8 @@ function View ()
 	foreach ($this->results as $file => $data) {
 
 	# jLCF modif (a cause de la limitation des 13 caracteres de samba 2)
-    	$tmp = split (" ",$data['comment'],3);
-        if ($tmp[0] == "Home" && $file == substr( $tmp[2],0,13) ) $file = $tmp[2];
+    	$tmp = mb_split (" ",$data['comment'],3);
+        if ($tmp[0] == "Home" && $file == mb_substr( $tmp[2],0,13) ) $file = $tmp[2];
 	# Fin jLCF modif
 	    
 
@@ -914,9 +924,9 @@ function View ()
 		if ($this->cfgHideDotFiles AND $file[0] == '.') continue;
 		if ($data['type']=='file' OR $data['type']=='printjob') {
 			$size = $this->PrintableBytes($data['size']);
-			$pi = pathinfo(strtolower($file));
+			$pi = pathinfo(mb_strtolower($file));
 			if (@$this->mimeTypes[$pi['extension']] <> '') {
-				$type = sprintf($this->_("File %s"), strtoupper($pi['extension']));
+				$type = sprintf($this->_("File %s"), mb_strtoupper($pi['extension']));
 			} else {
 				$type = '';
 			}
@@ -1047,7 +1057,7 @@ function ViewForm ($type, $style, $headers)
 	}
 	if (@$_REQUEST['action'] == 'ChangeLanguageInput') {
 		$amenu = array();
-		foreach (array_keys($this->strings) as $lang) $amenu[$lang] = strtoupper($lang);
+		foreach (array_keys($this->strings) as $lang) $amenu[$lang] = mb_strtoupper($lang);
 		$widget = $this->Select("lang", "", $amenu) . $this->Input('ok', $this->_("Ok"), 'submit');
 		$_GET['action'] = '';
 	} elseif (count($amenu)) {
@@ -1132,8 +1142,8 @@ function NewFileAction ()
 
 function ClamAV ($file)
 {
-	$out = split("\n",`clamscan $file`);
-	if (ereg('^'.$file.': (.*) FOUND$', $out[0], $regs)) {
+	$out = mb_split("\n",`clamscan $file`);
+	if (mb_ereg('^'.$file.': (.*) FOUND$', $out[0], $regs)) {
 		$this->status = 'VIRUS: '.$regs[1];
 		return true;
 	} else {
@@ -1252,7 +1262,7 @@ function FromPath ($relative='')
 		case '.':
 		case '':		$path = $this->where; break;
 		case '..':	$path = $this->_DirectoryName($this->where); break;
-		default:		$path = ereg_replace('^/', '', $this->where.'/'.$relative);
+		default:		$path = mb_ereg_replace('^/', '', $this->where.'/'.$relative);
 	}
 	return $this->GetUrl($path);
 }
@@ -1327,7 +1337,7 @@ function samba ($path='')
 # path: WORKGROUP/SERVER/SHARE/PATH
 function Go ($path = '')
 {
-	$a = ($path <> '') ? split('/',$path) : array();
+	$a = ($path <> '') ? mb_split('/',$path) : array();
 	for ($i=0, $ap=array(); $i<count($a); $i++)
 	switch ($i) {
 		case 0: $this->workgroup = $a[$i]; break;
@@ -1453,13 +1463,13 @@ function _GreaterThan ($a, $b)
 		return ($a['type'] == 'file') ? $yes : $no;
 	} else {
 		switch ($SMBWEBCLIENT_SORT_BY[0]) {
-			case 'N': return (strtolower($a['name']) > strtolower($b['name'])) ? $yes : $no;
+			case 'N': return (mb_strtolower($a['name']) > mb_strtolower($b['name'])) ? $yes : $no;
 			case 'D': return (@$a['time'] > @$b['time']) ? $yes : $no;
 			case 'S': return (@$a['size'] > @$b['size']) ? $yes : $no;
-			case 'C': return (strtolower(@$a['comment']) > strtolower(@$b['comment'])) ? $yes : $no;
+			case 'C': return (mb_strtolower(@$a['comment']) > mb_strtolower(@$b['comment'])) ? $yes : $no;
 			case 'T': 
-				$pia = pathinfo(strtolower($a['name']));
-				$pib = pathinfo(strtolower($b['name']));
+				$pia = pathinfo(mb_strtolower($a['name']));
+				$pib = pathinfo(mb_strtolower($b['name']));
 				return (@$pia['extension'] > @$pib['extension']) ? $yes : $no;
 		}
 	}
@@ -1568,13 +1578,13 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 	}
 	$this->Debug("{$sec_cmdline}{$debug_command}",1);
 	$lineType = $mode = '';
-	foreach (split("\n", $output) as $line) if ($line <> '') {
+	foreach (mb_split("\n", $output) as $line) if ($line <> '') {
 		$regs = array();
 		reset ($this->parser);
 		$linetype = 'skip';
 		$regs = array();
 		foreach ($this->parser as $regexp => $type) {
-			# preg_match is much faster than ereg (Bram Daams)
+			# preg_match is much faster than mb_ereg (Bram Daams)
 			if (preg_match('/'.$regexp.'/', $line, $regs)) {
 				$lineType = $type;
 				break;
@@ -1587,8 +1597,8 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 			case 'WORKGROUPS_MODE': $mode = 'workgroups'; break;
 			case 'SHARES':
 				$name = trim($regs[1]);
-				$type = strtolower($regs[2]);
-				if ($this->cfgHideSystemShares == true AND $name[strlen($name)-1] == '$') break;
+				$type = mb_strtolower($regs[2]);
+				if ($this->cfgHideSystemShares == true AND $name[mb_strlen($name)-1] == '$') break;
 				if ($this->cfgHidePrinterShares == true AND $type == 'printer') break;
 				$this->shares[$name] = array (
 						'name' => $name,
@@ -1597,8 +1607,8 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 				);
 				break;
 			case 'SERVERS_OR_WORKGROUPS':
-				$name = trim(substr($line,1,21));
-				$comment = trim(substr($line, 22));
+				$name = trim(mb_substr($line,1,21));
+				$comment = trim(mb_substr($line, 22));
 				if ($mode == 'servers') {
 					$this->servers[$name] = array ('name' => $name, 'type' => 'server', 'comment' => $comment);
 				} else {
@@ -1609,7 +1619,7 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 				# with attribute ?
 				if (preg_match("/^(.*)[ ]+([D|H|A|S|R]+)$/", trim($regs[1]), $regs2)) {
 					$attr = trim($regs2[2]);
-                                        $val=(strpos($attr,'H') === false) ? 'Pas Cach�' : 'Cach�';
+                                        $val=(mb_strpos($attr,'H') === false) ? 'Pas Cach�' : 'Cach�';
 					if ($val!='Cach�') $name = trim($regs2[1]);
                                         #$name = trim($regs2[1]);
                                         #exec ("echo \"nom : $name attr : $attr pst : $val\n\" >> /tmp/smblog");
@@ -1618,7 +1628,7 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 					$name = trim($regs[1]);
 				}
 				if ($name <> '.' AND $name <> '..') {
-					$type = (strpos($attr,'D') === false) ? 'file' : 'folder';
+					$type = (mb_strpos($attr,'D') === false) ? 'file' : 'folder';
 					$this->files[$name] = array (
 						'name' => $name,
 						'attr' => $attr,
@@ -1650,15 +1660,15 @@ function _ParseSmbClient ($cmdline, $dumpFile=false)
 # returns unix time from smbclient output
 function _ParseTime ($m, $d, $y, $hhiiss)
 {
-	$his= split(':', $hhiiss);
-	$im = 1 + strpos("JanFebMarAprMayJunJulAugSepOctNovDec", $m) / 3;
+	$his= mb_split(':', $hhiiss);
+	$im = 1 + mb_strpos("JanFebMarAprMayJunJulAugSepOctNovDec", $m) / 3;
 	return mktime($his[0], $his[1], $his[2], $im, $d, $y);
 }
 
 # make a directory recursively
 function _MakeDirectoryRecursively ($path, $mode = 0777)
 {
-	if (strlen($path) == 0) return 0;
+	if (mb_strlen($path) == 0) return 0;
 	if (is_dir($path)) return 1;
 	elseif ($this->_DirectoryName($path) == $path) return 1;
 	return ($this->_MakeDirectoryRecursively($this->_DirectoryName($path), $mode)
@@ -1668,7 +1678,7 @@ function _MakeDirectoryRecursively ($path, $mode = 0777)
 # I do not like PHP dirname
 function _DirectoryName ($path='')
 {
-	$a = split('/', $path);
+	$a = mb_split('/', $path);
 	$n = (trim($a[count($a)-1]) == '') ? (count($a)-2) : (count($a)-1);
 	for ($dir=array(),$i=0; $i<$n; $i++) $dir[] = $a[$i];
 	return join('/',$dir);
@@ -1677,9 +1687,74 @@ function _DirectoryName ($path='')
 }
 
 ###################################################################
-# MAIN SECTION - come on !
+# MAIN SECTION
 ###################################################################
 
+if (! isset($SMBWEBCLIENT_CLASS)) {
+	
+	include "/var/www/lcs/includes/headerauth.inc.php";
+	include "/var/www/Annu/includes/ldap.inc.php";
+
+
+	list ($idpers,$login)= isauth();		
+	if ($idpers == "0") {   
+		$swc = new smbwebclient;
+		$swc->NoRun('noauth');		
+	}
+			
+	if ( $auth_mod != "ENT" ) {
+		### Auth SSO LCS
+		if(@ldap_get_right("smbweb_is_open",$login)!='Y') {
+                $swc = new smbwebclient;
+                $swc->NoRun('noright');
+		} else {
+			if(@ldap_get_right("lcs_is_admin",$login)=='Y') {
+				$acces="y";
+			} else {
+				// Test du changement du mot de passe
+				include("/var/www/Annu/includes/crob_ldap_functions.php");
+				$attribut=array("gecos");
+				$tab=get_tab_attribut("people", "uid=$login", $attribut);
+				// On ne doit avoir (au plus (*)) qu'un gecos par utilisateur.
+				// (*) admin n'a pas de gecos
+				$tab2=explode(",",$tab[0]);
+			
+				//echo "<p>\$login=$login<br />";
+				//echo "Naissance=".$tab2[1]."<br />";
+				if(user_valid_passwd($login,$tab2[1])) {$acces="n";} else {$acces="y";}
+			}
+
+			if($acces=="y") {
+				//echo "Acces autorise.";
+				$swc = new smbwebclient;
+				$swc->cfgUserAuth = 'LcsAuth';
+				$swc->cfgSambaRoot = strtoupper($se3domain);
+				$swc->cfgDefaultServer = strtoupper($se3netbios);
+				$swc->ShareView = $shareview;
+				$swc->Login = $login;
+				$swc->Run();
+			} else {
+				$swc = new smbwebclient;
+                $swc->NoRun('passdef');
+			}
+		}
+	} else {
+		### Auth ENT no SSO LCS for smbwebclient
+		if (@ldap_get_right("smbweb_is_open",$login)!='Y') {
+			$swc = new smbwebclient;
+            $swc->NoRun('noright');			
+		} else {
+			$swc = new smbwebclient;
+			$swc->cfgUserAuth = 'FormAuth';		
+			$swc->cfgSambaRoot = strtoupper($se3domain);
+			$swc->cfgDefaultServer = strtoupper($se3netbios);
+			$swc->ShareView = $shareview;
+			$swc->Run();
+		}	
+	}
+}
+
+/* 
 if (! isset($SMBWEBCLIENT_CLASS)) {
 	include "/var/www/lcs/includes/headerauth.inc.php";
 	include "/var/www/Annu/includes/ldap.inc.php";
@@ -1710,8 +1785,8 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 		if($acces=="y") {
 			//echo "Acces autorise.";
 			$swc = new smbwebclient;
-			$swc->cfgSambaRoot = strtoupper($se3domain);
-			$swc->cfgDefaultServer = strtoupper($se3netbios);
+			$swc->cfgSambaRoot = mb_strtoupper($se3domain);
+			$swc->cfgDefaultServer = mb_strtoupper($se3netbios);
 			$swc->ShareView = $shareview;
 			$swc->Login = $login;
 			$swc->Run();
@@ -1722,5 +1797,6 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 		}
 	}
 }
+*/
 
 ?>
