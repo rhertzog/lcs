@@ -1,8 +1,8 @@
-lcs-spip (2.4.9.1~1) Lcs; urgency=low
+lcs-spip (2.4.9.1) Lcs; urgency=low
 
   * Update ecran_securite.php 1.0.10
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Apr 2012 14:30:12 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 04 May 2012 13:01:06 +0200
 
 lcs-spip (2.4.9) Lcs; urgency=low
 
