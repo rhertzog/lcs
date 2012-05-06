@@ -725,7 +725,9 @@ var JQD = (function($, window, undefined) {
 					}).append( 
 						$('<img/>').attr({src:'core/images/icons/icon_22_'+imgConnect+'.png', alt:''}).addClass('auth '+imgConnect)
 					).click(function(){
-						JQD.logform(parseInt(opts.user.idpers) == 0 ? '../lcs/auth.php' : JQD.logform('../lcs/logout.php'));
+						//JQD.logform(parseInt(opts.user.idpers) == 0 ? '../lcs/auth.php' : JQD.logform('../lcs/logout.php'));
+						JQD.logform(opts.apps.auth.url );
+
 						return false;
 					}) 
 				).prependTo( btrUl );
@@ -2572,15 +2574,15 @@ var JQD = (function($, window, undefined) {
 		/*
 		* JQD.pgaccueil :appel de la page d'accueil
 		*@type: Function
-		*@param: opt 
+		*@param: opts 
 		*@TODO: A optimiser
 		*/
-		pgaccueil: function(opt) {
-			var u_a = opt.srvr.url_accueil;
+		pgaccueil: function(opts) {
+			var u_a = opts.srvr.url_accueil;
 			if (!u_a.match("auth\.php|accueil\.php|monlcs") ) {
 				u_a = u_a.match(/^http/) ? u_a : '../'+u_a;
 				setTimeout(function(){
-					JQD.build.btopr( opt );
+					JQD.build.btopr( opts );
 					var cacc=0;
 					var spipAccueil = $('<iframe/>').css({opacity: 0})
 					.addClass('abs iframe_accueil')
@@ -2597,14 +2599,14 @@ var JQD = (function($, window, undefined) {
 					}).insertAfter('#desktop');
 					cacc+=1;
 					$('#bar_bottom').hide();
-					$('#bar_top').append( JQD.build.btopr(opt) )
+					$('#bar_top').append( JQD.build.btopr(opts) )
 					.find('a.auth').prepend(
 						$('<span/>').addClass('connect').html('&nbsp;&nbsp;&nbsp;Se connecter >>')
-						.click(function(){JQD.logform('../lcs/auth.php')})
+						.click(function(){JQD.logform(opts.apps.auth.url)})
 					);
 				},100)
 			}
-			else JQD.logform('../lcs/auth.php') ;
+			else JQD.logform(opts.apps.auth.url) ;
 		},
 		/*
 		* JQD.desktop_space : Gestion des multi-bureaux
@@ -2765,14 +2767,14 @@ var JQD = (function($, window, undefined) {
 		connect: function( opts ){
 			if(parseInt(opts.user.idpers) == 0 ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
-                if ( opts.srvr.url_accueil !='' &&  opts.srvr.url_accueil !='../lcs/auth.php' && opts.srvr.url_accueil !='../lcs/accueil.php') JQD.pgaccueil( opts );
-                else JQD.logform('../lcs/auth.php') ;
+                if ( opts.srvr.url_accueil !='' &&  opts.srvr.url_accueil !=opts.apps.auth.url && opts.srvr.url_accueil !='../lcs/accueil.php') JQD.pgaccueil( opts );
+                else JQD.logform(opts.apps.auth.url) ;
             }
 			else if(opts.user.pwchg == 'N' ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
                 JQD.logform('../Annu/mod_pwd.php')
                 $('#bar_top').append( JQD.build.btopr(opts) );
-                JQD.logform('../lcs/auth.php') ;
+                JQD.logform(opts.apps.auth.url) ;
             }
 			else {
 				JQD.mk(  opts  );

@@ -239,26 +239,6 @@ function menuApplis($login, $idpers, $_ssmn) {
 		)
 	);
 
-	// lien de connexion
-	// peut-être a deplacer 
-	if ( $idpers==0 ) {
-		$_applis['auth'] = array(
-			"txt" => "Se connecter",
-			"url" => "../lcs/auth.php",
-			"rev" => "auth",
-			"img" => "core/images/icons/icon_22_connect.png",
-			"typ" => "buro"
-		);
-	}else{
-		$_applis['auth'] = array(
-			"txt" => "Se d&eacute;connecter",
-			"url" => "../lcs/logout.php",
-			"rev" => "auth",
-			"img" => "core/images/icons/icon_22_stop.png",
-			"typ" => "buro"
-		);
-	};
-	
 	// on va chercher les aplis dans la bdd
 	$query = "SELECT * from applis where name != 'desktop' and type='N' or type='M' or type='P' or name ='squirrelmail' or name ='roundcube' order by name";
 	$result=mysql_query($query);
@@ -663,15 +643,29 @@ $_etab	=  infosEtab();
 // On pourrait ajouter la verif php du pwdMustChange
 // pour plus de securite et ne renvoyer que ce qu'il faut
 // c'est fait en js mais la fonction est-elle ultra sensible ?
+
+	
 if ( $idpers == "0" ) 
 {
 	$_user["idpers"]=0;
+	
+	// lien de connexion
+	$_applis['auth'] = array(
+		"txt" => "Se connecter",
+		"url" => $urlauth,
+		"rev" => "auth",
+		"img" => "core/images/icons/icon_22_connect.png",
+		"typ" => "buro"
+	);
+	
 	// tableau renvoye
 	$resp=array(
 		"user"	=> $_user,
 		"srvr" 	=> $_srvr ,
+		//"opts" 	=> loadOpts('default') != false ?  array_merge( $_opts, loadOpts( 'default' ) )  : $_opts ,
 		"opts" 	=> loadOpts('default', "") != false ?  array_merge( $_opts, loadOpts( 'default', "" ) )  : $_opts ,
-		"etab" 	=> $_etab 
+		"etab" 	=> $_etab,
+		"apps"	=> $_applis
 	);
 }
 else 
@@ -695,6 +689,15 @@ else
 	if ( isset( $_apps["maintenance"]) &&  $_prms["maintUrl"] == "" ) $_prms["maintUrl"] = $_apps["maintenance"]["smn"]["call"]["url"];
 	// else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]. $_prms["maintUrl"]=="" ? "admin@".$_srvr["domain"] :  $_prms["maintUrl"];
 	else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]."admin@".$_srvr["domain"] ;
+	
+	// lien de connexion
+	$_apps['auth'] = array(
+		"txt" => "Se d&eacute;connecter",
+		"url" => "../lcs/logout.php",
+		"rev" => "auth",
+		"img" => "core/images/icons/icon_22_stop.png",
+		"typ" => "buro"
+	);
 
 	
 $_mess = verifApps( $_apps, $login ) ;

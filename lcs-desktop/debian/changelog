@@ -1,9 +1,17 @@
-lcs-desktop (2.4.9~5) Lcs; urgency=low
+lcs-desktop (2.4.9~6) Lcs; urgency=low
 
   * Fix bug load_options function 
   * Add admin icon
+  * Modify desktop for ENT authentication :
+	* index.php
+        * core/js/jquery.desktop.js
+	* core/action/desktop_settings.php
+  * Remove deprecated scripts :
+	* core/include/inc-win.php
+        * core/includes/inc-bars_topbottom.php
+        * core/actions/load_settings.php
 
- -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 05:22:31 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 06 May 2012 16:24:34 +0200
 
 lcs-desktop (2.4.9~4) Lcs; urgency=low
 
