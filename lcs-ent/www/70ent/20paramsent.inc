@@ -1,0 +1,1 @@
+Param&#232;tres ENT,edit_params.php?cat=6,lcs_is_admin

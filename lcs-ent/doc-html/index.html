@@ -15,12 +15,34 @@
 </ul>
 
 <h2>LCS ENT</h2>
+<p>Le module <span class="acronym">LCS ENT</span>, permet l'authentification <span class="acronym">LCS</span> sur un <span class="acronym">ENT</span> pourvu d'un service <span class="acronym">CAS</span>.</p>
+<p>Lors de l'installation du module <tt class="filename">lcs-ent</tt>, le webmail <span class="acronym">LCS Squirrelmail</span>, est remplacé par <a href="http://roundcube.net/" title="roundcube">Roundcube</a> (module <span class="acronym">LCS</span> <tt class="filename">lcs-roundcube</tt>).</p>
 
-<p>Le module LCS ENT, permet l'authentification LCS sur un ENT pourvu d'un service CAS.</p>
-<img style="border: solid 1px #0080ff; margin-bottom: 10px" src="AuthentificationLCSENT.jpg" alt="Carte mentale du module LCS ENT"/>
+<h3>Configuration du mode d'authentification <span class="acronym">LCS</span> ou <span class="acronym">ENT</span></h3>
+
+<p>Un utilisateur, ayant le droit <tt class="filename">lcs_is_admin</tt>, dispose d'une section <span class="acronym">ENT</span> dans le menu d'administration.</p>
+<h4>Le lien Paramètres <span class="acronym">ENT</span> :</h4>
+
+<p>Il permet de choisir le mode d'authentification <tt class="param">(auth_mod)</tt>:</p>
+<ul>
+	<li><span class="acronym">LCS</span> : C'est le mode d'authentification "traditionnel", l'authentification, se fait sur la base de compte <span class="acronym">LDAP</span> du <span class="acronym">LCS</span> ou du <span class="acronym">SE3</span>;</li>
+	<li><span class="acronym">ENT</span> : Ce mode, permet l'uthentification sur une plateforme d'authentification tierse, typiquement le service d'authentification centralisée d'une plateforme <span class="acronym">ENT</span>.</li>	
+</ul>
+<p>Le nom d'hôte de la plateforme d'authentification <span class="acronym">ENT</span> <tt class="param">(ent_hosyname)</tt>, exemple : <tt class="computeroutput">ent.crdp.ac-caen.fr</tt></p>
+<p>Le port d'écoute du service d'authentification <tt class="param">(ent_port)</tt>, exemple : <tt class="computeroutput">443</tt></p>
+<p>L'<span class="acronym">URI</span> de l'<span class="acronym">ENT</span> <tt class="param">(ent_uri)</tt>, exemple : <tt class="computeroutput">connexion</tt></p>
+
+<h3>Principe du rapprochement de compte <span class="acronym">LCS / ENT</span> : </h3>
+<p>Lors de la phase d'authentification <span class="acronym">LCS</span>, c'est le formulaire d'authentification de la plateforme <span class="acronym">ENT</span> qui vous est présenté, vous devez donc saisir le login, mot de passe de votre compte <span class="acronym">ENT</span>.</p>
+<p>Dans le cas de la 1ere authentification, il vous est demandé de rapprocher votre compte <span class="acronym">LCS</span> de votre compte <span class="acronym">ENT</span>, pour cela un formulaire de rapprochement vous est présenté, vous devez saisir le login mot de passe de votre compte <span class="acronym">LCS</span>. Cette opération, est nécessaire qu'une seule fois.</p>
+<img class="borderblue" src="rapprochement.jpg" alt="Rapprochement compte LCS / ENT" />
+<p>Si l'utilisateur <span class="acronym">LCS</span>, ne possède pas de compte <span class="acronym">ENT</span>, le mode d'authentification <span class="acronym">LCS</span> "traditionnel" est bien entendu toujours possible.</p>
+
+<h3>Chaine d'authentification <span class="acronym">LCS</span> sur une plateforme <span class="acronym">ENT</span></h3>
+<img class="borderblue" src="AuthentificationLCSENT.jpg" alt="Carte mentale du module LCS ENT"/>
 <ul>
 	<li><a href="AuthentificationLCSENT.mm">Carte mentale au format Freeplane.</a></li>
-	<li><a href="AuthentificationLCSENT.pdf">Carte mentale au format pdf.</a></li>
+	<li><a href="AuthentificationLCSENT.pdf.gz">Carte mentale au format pdf.gz.</a></li>
 </ul>
 
 </body>

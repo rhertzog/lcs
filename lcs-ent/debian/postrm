@@ -2,11 +2,15 @@
 # postrm script for LCS ent
 
 set -e
+
+MODULE="ent"
+
 case "$1" in
 	purge|remove)
 		# Remove params ENT
 		mysql -e "DROP TABLE lcs_db.ent-lcs;" > /dev/null 2>&1
 		mysql -e "DELETE FROM lcs_db.params WHERE params.cat = 6;" > /dev/null 2>&1
+		mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)

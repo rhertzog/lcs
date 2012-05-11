@@ -14,7 +14,9 @@ install:
 # install lcs-ent doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/ent/html
 	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/ent/html/
-
+# install www 70ent menu
+	install -d $(DESTDIR)/var/www/lcs/includes/mnu.d/
+	cp -a www/* $(DESTDIR)/var/www/lcs/includes/mnu.d/
 clean:
 
 
