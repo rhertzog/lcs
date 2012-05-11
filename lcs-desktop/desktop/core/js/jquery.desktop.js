@@ -2743,7 +2743,7 @@ var JQD = (function($, window, undefined) {
 				$('#logdialog').dialog({
 					width: 600,
 					modal: true,
-					height:360 ,
+					height:430 ,
 					open: function(event, ui) {$('#logFrame').attr({src:u}).show()},
 					close: function(event, ui) {
 						$('#logFrame').empty().hide();window.location = './';}
