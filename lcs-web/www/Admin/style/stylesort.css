@@ -10,3 +10,5 @@ body {font:10px Verdana,Arial}
 .sortable .head:hover, .sortable .desc:hover, .sortable .asc:hover {color:#fff}
 .sortable .even td {background:#f2f2f2}
 .sortable .odd td {background:#fff}
+
+.remove {width:823px; text-align:right}

@@ -144,6 +144,12 @@ tt.filename {
 	font-family: monospace;
 	font-size: 120%;
 	}
+	
+tt.param {
+	font-family: monospace;
+	font-size: 120%;
+	color: red;
+	}	
 
 p.copyright {
 	text-align: right;
@@ -178,3 +184,5 @@ pre.programlisting {
 }
 
 img { border-style: none;}
+
+img.borderblue {border: solid 1px #0080ff; margin-bottom: 10px}

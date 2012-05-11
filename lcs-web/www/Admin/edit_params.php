@@ -107,12 +107,12 @@ if (isset($submit)) {
 				else
 					print gettext("oops: la requete ") . "<strong>$queri</strong>" . gettext(" a provoqu&#233; une erreur");
 				// Recuperation des variables qui ont change et qui necessitent une modification des fichiers de conf
-				if (($r["cat"]==2) && ($r["name"] != "pla_bind")) {
-                    			if ($r["name"]=="adminPw") {
-                        			$ldappass_old=$r["value"];
-                        			$ldappass_new=$_POST[$formname];
+				if ( ($r["cat"]==2) && ($r["name"] != "pla_bind") || $r["cat"]==6 ) {
+                    if ($r["name"]=="adminPw") {
+                        $ldappass_old=$r["value"];
+                        $ldappass_new=$_POST[$formname];
 						fwrite ($fp,"adminPw	$ldappass_old	$ldappass_new\n");
-                    			}
+                    }
 					if ($r["name"]=="ldap_server") {
 						$ldap_server_old = $r["value"];
 						$ldap_server_new = $_POST[$formname];
@@ -129,6 +129,11 @@ if (isset($submit)) {
 						$ldap_adminRdn_old = $r["value"];
 						$ldap_adminRdn_new = $_POST[$formname];
 						fwrite ($fp,"adminRdn	$ldap_adminRdn_old	$ldap_adminRdn_new\n");
+					} else if ( $r["name"]=="auth_mod" ) {
+						// Cas du parametre auth_mod
+						$auth_mod_old = $r["value"];
+						$auth_mod_new = $_POST[$formname];	
+						fwrite ($fp,"auth_mod	$auth_mod_old	$ldap_adminRdn_new\n");												
 					}
 				}
 
