@@ -13,11 +13,14 @@
     <div id="accordion_ent">
     <h3><a href="#">Authentification ENT</a></h3>
 	    <div id="form_ent" >
+	    <p class="ui-state-highlight validateTips"> &nbsp; Permet d'acc&#232;der aux applications ENT <b>et</b> LCS</p>
 	    <iframe  id="frame_ent" src="auth_Cas.php"width="99%" height="210px" >
 		</iframe>
 		</div>
-	<h3><a href="#">Authentification Locale</a></h3>
+	<h3><a href="#">Authentification LCS</a></h3>
+		
 	    <div id="form_lcs">
+	    <p class="ui-state-highlight validateTips"> &nbsp; Permet d'acc&#232;der aux applications  LCS pour les utilisateurs n'ayant pas de compte sur l'ENT </p>
 	    <iframe  id="frame_lcs" src="auth.php"width="99%" height="200px" >
 		</iframe>
 		</div>
