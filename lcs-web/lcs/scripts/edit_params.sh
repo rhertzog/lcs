@@ -207,6 +207,11 @@ while read TYPE OLD NEW; do
       echo -e "$SE3IP\t$SE3NETBIOS" >>$PATH2LMHOSTS
     fi
   fi
+  # Modification du mode d'authentification
+  # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  if [ $TYPE = "auth_mod" ]; then
+  	/usr/sbin/lcs-ent-config
+  fi 
 done < /tmp/params_lcs
 
 # Start/Stop ldap service
