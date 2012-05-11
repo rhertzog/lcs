@@ -2741,9 +2741,9 @@ var JQD = (function($, window, undefined) {
 			).hide().appendTo('#desktop');
 			setTimeout(function(  ) {
 				$('#logdialog').dialog({
-					width: 530,
+					width: 600,
 					modal: true,
-					height:350 ,
+					height:360 ,
 					open: function(event, ui) {$('#logFrame').attr({src:u}).show()},
 					close: function(event, ui) {
 						$('#logFrame').empty().hide();window.location = './';}
