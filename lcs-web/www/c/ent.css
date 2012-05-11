@@ -52,3 +52,17 @@ padding:0.3em;
 border:1px solid transparent;
 padding:0.3em;
 }
+#form_ent, #form_lcs, #frame_lcs, #frame_ent {
+padding: 1px;
+margin :0px;
+overflow : visible;
+}
+#accordion_ent {
+padding: 1px;
+margin :0 auto;
+overflow:hidden;
+width:550px;
+}
+#frame_lcs, #frame_ent {
+border : 0px;
+}

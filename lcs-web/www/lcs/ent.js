@@ -228,4 +228,10 @@ $(function(){
           });
   });
 
+  $(function() {
+	$( "#accordion_ent" ).accordion();
+	});
+	  
+	
+
 });

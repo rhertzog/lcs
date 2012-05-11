@@ -9,6 +9,7 @@ lcs-web (2.4.9~8) Lcs; urgency=low
   * Add chmod 755 on /usr/share/lcs in lcs-web-fixrights
   * Add log_rapprochements.php
   * Modify edit_params.php 
+  * Add accordion for authentication LCS or ENT (by misterphi)
   2.4.9~4
   * Modify lcs/logout.php with logout spip ajax request
   * Add first version of lcs-lenny2squeeze
@@ -41,7 +42,7 @@ lcs-web (2.4.9~8) Lcs; urgency=low
   [ Franck Molle]
   * Modify assist.sh for LCS and SE3
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 11 May 2012 17:12:42 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 11 May 2012 18:17:49 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
