@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9.3~4) LCS; urgency=low
+
+  * fix bug in cdt-scripts.js
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 11 May 2012 14:25:56 +0200
+
 lcs-cdt (2.4.9.3~3) LCS; urgency=low
 
   * add redirect to edt.php'

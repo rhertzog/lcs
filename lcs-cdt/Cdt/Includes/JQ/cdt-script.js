@@ -138,20 +138,11 @@ $(document).ready(function() {
         $('#datejavav18').datepicker({});
         $('#datejavav19').datepicker({});
 
-        $("#deroul-menu img[title], #boutons input[title],#boutons a[title], #crsdu input[title]").tooltip({
-
-      // place tooltip on the right edge
-      position: "bottom right",
-
-      // a little tweaking of the position
-      offset: [-30, -10],
-
-      // use the built-in fadeIn/fadeOut effect
-      effect: "fade",
-
-      // custom opacity setting
-      //opacity: 0.9
-
-      });
-
+        $(function(){
+            $('#deroul-menu img[title], #boutons input[title],#boutons a[title], #crsdu input[title]').tooltip({
+            position: "bottom right",
+            offset: [-30, -10],
+            effect: "fade"
+            });
+       });
     });
