@@ -5,7 +5,7 @@
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
 * version 0.2~20 Lcs-2.4.8
-* Derniere mise a jour" => "28/02/2011
+* Derniere mise a jour " => " 24/05/2012
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
@@ -107,20 +107,29 @@ $(document).ready(function(){
 	echo SwekeyIntegrationScript();
 }
 
-// Cas service authentification
-   if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) 
-	echo "<script type='text/javascript'>
+// Cas service
+	// Select PATH request with mod_auth params (LCS or ENT)        
+	if ( $auth_mod != "ENT" ) {
+		$log2cas="log2cas_ajax.php";
+		$path2auth="auth.php";
+	} else {
+		$log2cas="log2lcsentcas_ajax.php";
+		$path2auth="auth_Cas.php";
+	}
+	if ( $login && ($lcs_cas == 1) && !isset($_COOKIE['tgt'])) {
+		echo "<script type='text/javascript'>
         // <![CDATA[
-		$.ajax({
+                $.ajax({
                     type: 'POST',
-                    url : '../lcs/includes/log2cas_ajax.php',
+                    url : '../lcs/includes/$log2cas',
                     async: true,
                     error: function() {
-                        alert('Echec authentification CAS');
+                        alert('Echec authentification CAS LCS');
                     }
          });
         //]]>
         </script>\n";
+	}
 ?>
 </body>
 </html>
