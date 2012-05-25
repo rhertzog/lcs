@@ -1,39 +1,34 @@
 <?php
-$IDPERS=0;$LOGIN="";
-if (! empty($_COOKIE["LCSAuth"])) { 
-	$SESS=$_COOKIE["LCSAuth"];
+#error_reporting(E_ALL);
+#ini_set('display_errors','On');
 
-	include ("/usr/share/lcs/roundcube/plugins/lcs_authentication/config_auth_lcs.inc.php");
-	# Search idpers
-	$IDPERS=exec ("mysql -e \"SELECT idpers from $DBAUTH.sessions where sess='$SESS'\" -u $USERAUTH -p$PASSAUTH");
+include ("/var/www/lcs/includes/headerauth.inc.php");
 
-	# Search login
-	$LOGIN=exec ("mysql -e \"SELECT login FROM $DBAUTH.personne WHERE id=$IDPERS \" -u $USERAUTH -p$PASSAUTH");
-	
+if ( $auth_mod != "ENT" ) {
+	list ($idpers, $login)= isauth();		
 	# Search and decode LCS cookie pass
-	if ($IDPERS != "0") 
-		$PASS = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );	
-}
-				  				  
-$mbox = imap_open("{localhost:143/imap/novalidate-cert}INBOX", $LOGIN, $PASS);
-$status = imap_status($mbox,"{localhost:143/imap/novalidate-cert}INBOX", SA_UNSEEN);
+	if ($idpers != "0") {
+		$pass = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );				  				  
+		$mbox = imap_open("{localhost:143/imap/novalidate-cert}INBOX", $login, $pass);
+		$status = imap_status($mbox,"{localhost:143/imap/novalidate-cert}INBOX", SA_UNSEEN);
 
-if ($status) {
-	// Form message and output HTML
-	if ($status->unseen > 0) {
-  		$msg = '<p STYLE="FONT-SIZE:11pt;FONT-WEIGHT:BOLD;COLOR:#fdb218">Vous avez '.$status->unseen;
-  		if ($status->unseen == 1) 
-    		$msg .= ' nouveau message';
-  		else 
-    		$msg .= ' nouveaux messages';
-  	
-  		$msg .= "</p>\n";
-	} else 
-  		$msg = "";
-} else
-	$msg = "<p>Erreur imap : " . imap_last_error() . "</p>";
-	
+		if ($status) {
+			// Form message and output HTML
+			if ($status->unseen > 0) {
+  				$msg = '<p STYLE="FONT-SIZE:11pt;FONT-WEIGHT:BOLD;COLOR:#fdb218">Vous avez '.$status->unseen;
+  				if ($status->unseen == 1) 
+    				$msg .= ' nouveau message';
+  				else 
+    				$msg .= ' nouveaux messages';
+				$msg .= "</p>\n";
+			} else 
+  				$msg = "";
+		} else
+			$msg = "<p>Erreur imap : " . imap_last_error() . "</p>";
+		imap_close($mbox);
+	} else {
+		$msg ="DTQ";	
+	}
+}		
 echo $msg;
-imap_close($mbox);
-
 ?>
