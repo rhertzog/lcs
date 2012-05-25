@@ -1,8 +1,10 @@
-lcs-ent (2.4.9~2) Lcs; urgency=low
+lcs-ent (2.4.9~3) Lcs; urgency=low
 
   * Initial release.
   * Add lcs-apache2ssl and lcs-roundcube in control depends
   * Add /usr/sbin/lcs-ent-config
   * Add lcs-libjs depend
+  * Add prerm script
+  * Add menu 70ent
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 11 May 2012 18:20:27 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 May 2012 16:29:40 +0200
