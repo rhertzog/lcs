@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # prerm script for lcs-ent
 #
 # see: dh_installdeb(1)
@@ -21,7 +21,7 @@ MODULE="ent"
 
 case "$1" in
     remove|deconfigure)
-		/usr/bin/mysql -e "UPDATE lcs_db.applis SET auth_mod='LCS' WHERE name='$MODULE';" > /dev/null 2>&1
+		/usr/bin/mysql -e "UPDATE lcs_db.applis SET value='LCS' WHERE name='auth_mod';" > /dev/null 2>&1
 		/usr/sbin/lcs-ent-config
     ;;
     upgrade)
