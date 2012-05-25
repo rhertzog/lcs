@@ -1,3 +1,9 @@
+lcs-libjs (2.4.9.2~3) Lcs; urgency=low
+
+  * add jqGrid plugin
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 25 May 2012 22:11:21 +0200
+
 lcs-libjs (2.4.9.2~2) Lcs; urgency=low
 
   * add media css in skin cdt
