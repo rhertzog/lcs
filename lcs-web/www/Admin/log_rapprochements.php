@@ -38,16 +38,6 @@ if ($mod_auth=="LCS") {
     echo $head;
     die (gettext("<div class='error_msg'>Le mode d'authentification LCS doit etre ENT pour acceder a cette page.</div>")."</body></html>");
 }
-    $logins=$_POST['logins'];
-
-	// On efface les comptes rapproches selectionnes
-    if ( count ($logins) > 0 ) {
-    	for ($loop=0; $loop < count ($logins)  ; $loop++) {
-    		//echo "login :".$logins[$loop]."</br>";
-    		$query="DELETE FROM ent_lcs WHERE login_lcs='$logins[$loop]'";
-			$result=@mysql_query($query) or die($query);
-    	}
-    }
     	
     echo $head;	
 	echo $msgIntro;
