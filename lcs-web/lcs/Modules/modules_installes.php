@@ -71,13 +71,13 @@ if ($ret_val== 0)
 $url=explode('/',$urlmajmod);
 switch ($url[count($url)-2]) 
 	{
-	case "modulesLennycs":
+	case "modulesLcsqueeze":
 	    $urlmaj = 'stable';
 	    break;
-	case "modulesLennycsTesting":
+	case "modulesLcsqueezeTesting":
 	    $urlmaj = 'testing';
 	    break;
-	case "modulesLennycsXP":
+	case "modulesLcsqueezeXP":
 	    $urlmaj = 'exp&#233;rimentale';
 	    break;
 	}
@@ -117,9 +117,9 @@ if ($result)
 			  echo "<TD>" . utf8_encode($r->descr) . "</TD>\n";
 			  echo "<TD>" . $r->version . "</TD>\n";
 	          echo "<TD class=\"centr\"><A HREF=\"../../doc/" . $r->name . "/html/index.html\" TITLE=\"Aide\"><IMG SRC=\"../Plugins/Images/plugins_help.png\" ALT=\"Aide\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\" /></A></TD>\n";
-	          if ($r->type =='N' && $r->value != "0")
+	          if (($r->type =='N'|| $r->type =='M') && $r->value != "0")
 			  	echo "<TD class=\"centr\"><A HREF=\"modules_installes.php?pid=" . $r->id . "&a=0\"><IMG SRC=\"../Plugins/Images/plugins_desactiver.png\" TITLE=\"D&#233;sactiver\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
-			  elseif ($r->type =='N' && $r->value != "1")
+			  elseif (($r->type =='N'|| $r->type =='M') && $r->value != "1")
 			  	echo "<TD class=\"centr\"><A HREF=\"modules_installes.php?pid=" . $r->id . "&a=1\"><IMG SRC=\"../Plugins/Images/plugins_activer.png\" TITLE=\"Activer\" BORDER=\"0\" WIDTH=\"29\" HEIGHT=\"28\"/></A></TD>\n";
 			  else
 			  	echo "<TD>&nbsp;</TD>\n";
