@@ -1,5 +1,5 @@
  <?
-/* Admin/edit_params.php derniere mise a jour : 05/04/2012 */
+/* Admin/edit_params.php derniere mise a jour : 31/05/2012 */
 
 if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
 	include ("../lcs/includes/headerauth.inc.php");
@@ -133,7 +133,7 @@ if (isset($submit)) {
 						// Cas du parametre auth_mod
 						$auth_mod_old = $r["value"];
 						$auth_mod_new = $_POST[$formname];	
-						fwrite ($fp,"auth_mod	$auth_mod_old	$ldap_adminRdn_new\n");												
+						fwrite ($fp,"auth_mod	$auth_mod_old	$auth_mod_new\n");												
 					}
 				}
 
