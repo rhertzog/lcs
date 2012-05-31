@@ -1,4 +1,7 @@
-lcs-cas (2.4.9~7) Lcs; urgency=low
+lcs-cas (2.4.9~8) Lcs; urgency=low
+  2.4.9~8 
+  * Modify cas.rb for consumed st ticket
+  * Modify generate .pem certificat
   2.4.9~6
   * Fix bug for select authentication mode in lcs-cas-install.sh and lcs-cas-configure-authentication.sh
   * Add sleep 1 in rubycas-lcs 
@@ -14,7 +17,7 @@ lcs-cas (2.4.9~7) Lcs; urgency=low
   * Add uninstall gems section in postrm
   * Modify init.d rubycas-lcs start stop status script
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Apr 2012 17:05:31 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 31 May 2012 13:40:46 +0200
 
 lcs-cas (2.4.8.1) Lcs; urgency=low
 

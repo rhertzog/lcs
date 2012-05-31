@@ -166,8 +166,9 @@ cat $IN_CONFIG_PATH/$RUBYCAS_CERT_TT \
 openssl req  -config $IN_CONFIG_PATH/openssl.cas -x509 -nodes -days 365 \
                 -newkey rsa:1024 -out $PATH_RUBYCAS_CERT/server.crt -keyout $PATH_RUBYCAS_CERT/server.key
 # Make pem certificat
-openssl x509 -in $PATH_RUBYCAS_CERT/server.crt -out $PATH_RUBYCAS_CERT/server.der -outform DER
-openssl x509 -in $PATH_RUBYCAS_CERT/server.der -inform DER -out $PATH_RUBYCAS_CERT/server.pem -outform PEM
+#openssl x509 -in $PATH_RUBYCAS_CERT/server.crt -out $PATH_RUBYCAS_CERT/server.der -outform DER
+#openssl x509 -in $PATH_RUBYCAS_CERT/server.der -inform DER -out $PATH_RUBYCAS_CERT/server.pem -outform PEM
+cat $PATH_RUBYCAS_CERT/server.crt $PATH_RUBYCAS_CERT/server.key > $PATH_RUBYCAS_CERT/server.pem
 #
 # Fix owner on folders and files rubycas
 #
@@ -197,6 +198,10 @@ apt-get -y remove --purge binutils build-essential cpp cpp-4.3 dpkg-dev g++ g++-
 # Validate CAS service
 #
 /usr/bin/mysql -e "UPDATE lcs_db.params SET value='1' WHERE name='lcs_cas';"
+#
+# Modify cas.rb for consumed st ticket
+#
+cp /var/lib/lcs/cas/cas_new.rb /usr/bin/patch /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
 #
 # Start rubycas-lcs service
 #

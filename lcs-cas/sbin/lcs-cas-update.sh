@@ -59,4 +59,8 @@ if [ ! -z "$CASINSTALL" ]; then
 	#END
 	/usr/sbin/lcs-cas-install.sh
 fi
+#
+# Modify cas.rb for consumed st ticket
+#
+cp /var/lib/lcs/cas/cas_new.rb /usr/bin/patch /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
 exit 0
