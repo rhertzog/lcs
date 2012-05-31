@@ -201,7 +201,7 @@ apt-get -y remove --purge binutils build-essential cpp cpp-4.3 dpkg-dev g++ g++-
 #
 # Modify cas.rb for consumed st ticket
 #
-cp /var/lib/lcs/cas/cas_new.rb /usr/bin/patch /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
+cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
 #
 # Start rubycas-lcs service
 #
