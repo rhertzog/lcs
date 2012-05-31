@@ -54,13 +54,13 @@ if(!function_exists('array_fill_keys'))
 // Fixer le niveau de rapport d'erreurs PHP
 if(SERVEUR_TYPE == 'PROD')
 {
-	// Rapporter toutes les erreurs à part les E_NOTICE ; c'est la configuration par défaut de php.ini.
-	ini_set('error_reporting',E_ALL ^ E_NOTICE);
+	// Rapporter toutes les erreurs à part les E_NOTICE (c'est la configuration par défaut de php.ini) et E_STRICT qui est englobé dans E_ALL à compter de PHP 5.4.
+	ini_set('error_reporting',E_ALL & ~E_STRICT & ~E_NOTICE);
 }
 else
 {
-	// Rapporter toutes les erreurs PHP sur le serveur local
-	ini_set('error_reporting',E_ALL);
+	// Rapporter toutes les erreurs PHP sur le serveur local (http://fr.php.net/manual/fr/errorfunc.constants.php)
+	ini_set('error_reporting',E_ALL | E_STRICT);
 }
 
 // Définir le décalage horaire par défaut de toutes les fonctions date/heure 
@@ -104,6 +104,8 @@ function __autoload($class_name)
 		'FirePHP'                     => '_lib'.DIRECTORY_SEPARATOR.'FirePHPCore'.DIRECTORY_SEPARATOR.'FirePHP.class.php' ,
 		'FPDF'                        => '_lib'.DIRECTORY_SEPARATOR.'FPDF'.DIRECTORY_SEPARATOR.'fpdf.php' ,
 		'PDF_Label'                   => '_lib'.DIRECTORY_SEPARATOR.'FPDF'.DIRECTORY_SEPARATOR.'PDF_Label.php' ,
+		'FPDI'                        => '_lib'.DIRECTORY_SEPARATOR.'FPDI'.DIRECTORY_SEPARATOR.'fpdi.php' ,
+		'PDFMerger'                   => '_lib'.DIRECTORY_SEPARATOR.'FPDI'.DIRECTORY_SEPARATOR.'PDFMerger.php' ,
 		'phpCAS'                      => '_lib'.DIRECTORY_SEPARATOR.'phpCAS'.DIRECTORY_SEPARATOR.'CAS.php' ,
 		'SimpleSAML_Auth_Simple'      => '_lib'.DIRECTORY_SEPARATOR.'SimpleSAMLphp'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'_autoload.php' ,
 
@@ -123,6 +125,7 @@ function __autoload($class_name)
 		'DB_STRUCTURE_WEBMESTRE'      => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_webmestre.php' ,
 
 		'DB_STRUCTURE_BILAN'          => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_bilan.php' ,
+		'DB_STRUCTURE_OFFICIEL'       => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_officiel.php' ,
 		'DB_STRUCTURE_COMMUN'         => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_commun.php' ,
 		'DB_STRUCTURE_MAJ_BASE'       => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_maj_base.php' ,
 		'DB_STRUCTURE_REFERENTIEL'    => '_sql'.DIRECTORY_SEPARATOR.'requetes_structure_referentiel.php' ,

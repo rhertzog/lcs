@@ -32,6 +32,7 @@ if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
 //	Générer une synthèse multi-matières
 //	////////////////////////////////////////////////////////////////////////////////////////////////////
 
+$format      = 'multimatiere' ;
 $groupe_id   = (isset($_POST['f_groupe']))             ? clean_entier($_POST['f_groupe'])     : 0;
 $groupe_nom  = (isset($_POST['f_groupe_nom']))         ? clean_texte($_POST['f_groupe_nom'])  : '';
 $periode_id  = (isset($_POST['f_periode']))            ? clean_entier($_POST['f_periode'])    : 0;
@@ -46,106 +47,36 @@ $only_socle  = (isset($_POST['f_restriction_socle']))  ? 1                      
 $only_niveau = (isset($_POST['f_restriction_niveau'])) ? $niveau_id                           : 0;
 $couleur     = (isset($_POST['f_couleur']))            ? clean_texte($_POST['f_couleur'])     : '';
 $legende     = (isset($_POST['f_legende']))            ? clean_texte($_POST['f_legende'])     : '';
+$marge_min   = (isset($_POST['f_marge_min']))          ? clean_entier($_POST['f_marge_min'])  : 0;
 // Normalement c'est un tableau qui est transmis, mais au cas où...
 $tab_eleve = (isset($_POST['f_eleve'])) ? ( (is_array($_POST['f_eleve'])) ? $_POST['f_eleve'] : explode(',',$_POST['f_eleve']) ) : array() ;
 $tab_eleve = array_filter( array_map( 'clean_entier' , $tab_eleve ) , 'positif' );
 
 $liste_eleve = implode(',',$tab_eleve);
 
-if( !$groupe_id || !$groupe_nom || !count($tab_eleve) || ( !$periode_id && (!$date_debut || !$date_fin) ) || !$retroactif || !$couleur || !$legende )
+if( !$groupe_id || !$groupe_nom || !count($tab_eleve) || ( !$periode_id && (!$date_debut || !$date_fin) ) || !$retroactif || !$couleur || !$legende || !$marge_min )
 {
 	exit('Erreur avec les données transmises !');
 }
 
 Formulaire::save_choix('synthese_multimatiere');
 
+$marge_gauche = $marge_droite = $marge_haut = $marge_bas = $marge_min ;
+
 // Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
-// ajouter_log_PHP( $log_objet='Demande de bilan' , $log_contenu=serialize($_POST) , $log_fichier=__FILE__ , $log_ligne=__LINE__ , $only_sesamath=true );
-
-// Période concernée
-if($periode_id==0)
-{
-	$date_mysql_debut = convert_date_french_to_mysql($date_debut);
-	$date_mysql_fin   = convert_date_french_to_mysql($date_fin);
-}
-else
-{
-	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($groupe_id,$periode_id);
-	if(!count($DB_ROW))
-	{
-		exit('La classe et la période ne sont pas reliées !');
-	}
-	$date_mysql_debut = $DB_ROW['jointure_date_debut'];
-	$date_mysql_fin   = $DB_ROW['jointure_date_fin'];
-	$date_debut = convert_date_mysql_to_french($date_mysql_debut);
-	$date_fin   = convert_date_mysql_to_french($date_mysql_fin);
-}
-if($date_mysql_debut>$date_mysql_fin)
-{
-	exit('La date de début est postérieure à la date de fin !');
-}
-
-$tab_item       = array();	// [item_id] => array(item_ref,item_nom,item_coef,item_cart,item_socle,item_lien,matiere_id,calcul_methode,calcul_limite,synthese_ref);
-$tab_liste_item = array();	// [i] => item_id
-$tab_eleve      = array();	// [i] => array(eleve_id,eleve_nom,eleve_prenom)
-$tab_matiere    = array();	// [matiere_id] => matiere_nom
-$tab_synthese   = array();	// [synthese_ref] => synthese_nom
-$tab_eval       = array();	// [eleve_id][item_id][devoir] => array(note,date,info) On utilise un tableau multidimensionnel vu qu'on ne sait pas à l'avance combien il y a d'évaluations pour un élève et un item donnés.
-
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-// Récupération de la liste des items travaillés durant la période choisie, pour les élèves selectionnés, toutes matières confondues
-// Récupération de la liste des synthèses concernées (nom de thèmes ou de domaines suivant les référentiels)
-// Récupération de la liste des matières concernées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-
-list($tab_item,$tab_synthese,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_arborescence_synthese($liste_eleve,$matiere_id=false,$only_socle,$only_niveau,$mode_synthese='predefini',$date_mysql_debut,$date_mysql_fin);
-// $tab_matiere déjà renseigné à la requête précédente.
-
-$item_nb = count($tab_item);
-if(!$item_nb)
-{
-	exit('Aucun item évalué sur cette période selon les critères indiqués !');
-}
-$tab_liste_item = array_keys($tab_item);
-$liste_item = implode(',',$tab_liste_item);
-
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-// Récupération de la liste des élèves
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-$tab_eleve = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles($liste_eleve,$with_gepi=FALSE,$with_langue=FALSE);
-if(!is_array($tab_eleve))
-{
-	exit('Aucun élève trouvé correspondant aux identifiants transmis !');
-}
-$eleve_nb = count($tab_eleve);
-
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-// Récupération de la liste des résultats des évaluations associées à ces items donnés de plusieurs matieres, pour les élèves selectionnés, sur la période sélectionnée
-// Attention, il faut éliminer certains items qui peuvent potentiellement apparaitre dans des relevés d'élèves alors qu'ils n'ont pas été interrogés sur la période considérée (mais un camarade oui).
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-$tab_score_a_garder = array();
-$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_date_last_eleves_items($liste_eleve,$liste_item);
-foreach($DB_TAB as $DB_ROW)
-{
-	$tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']] = ($DB_ROW['date_last']<$date_mysql_debut) ? false : true ;
-}
-
-$date_mysql_debut = ($retroactif=='non') ? $date_mysql_debut : false;
-$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_matieres($liste_eleve , $liste_item , $date_mysql_debut , $date_mysql_fin , $_SESSION['USER_PROFIL']);
-foreach($DB_TAB as $DB_ROW)
-{
-	if($tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']])
-	{
-		$tab_eval[$DB_ROW['eleve_id']][$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note'],'date'=>$DB_ROW['date'],'info'=>$DB_ROW['info']);
-	}
-}
+// ajouter_log_PHP( 'Demande de bilan' /*log_objet*/ , serialize($_POST) /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , TRUE /*only_sesamath*/ );
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 // INCLUSION DU CODE COMMUN À PLUSIEURS PAGES
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
-$format = 'multimatiere' ;
-require('./_inc/code_releve_synthese.php');
+$make_officiel = FALSE;
+$make_action   = '';
+$make_html     = TRUE;
+$make_pdf      = TRUE;
+$make_graph    = FALSE;
+
+require('./_inc/code_items_synthese.php');
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 // On retourne les résultats

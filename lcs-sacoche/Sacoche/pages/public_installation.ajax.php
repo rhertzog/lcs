@@ -47,7 +47,7 @@ if( $step==1 )
 	// Création des sous-dossiers, et vérification de leur accès en éciture
 	if($poursuivre)
 	{
-		$tab_dossier = array('./__private/config','./__private/log','./__private/mysql','./__tmp/badge','./__tmp/cookie','./__tmp/devoir','./__tmp/dump-base','./__tmp/export','./__tmp/import','./__tmp/login-mdp','./__tmp/logo','./__tmp/rss');
+		$tab_dossier = array('./__private/config','./__private/log','./__private/mysql','./__tmp/badge','./__tmp/cookie','./__tmp/devoir','./__tmp/dump-base','./__tmp/export','./__tmp/import','./__tmp/login-mdp','./__tmp/logo','./__tmp/officiel','./__tmp/rss');
 		foreach($tab_dossier as $dossier)
 		{
 			$poursuivre = $poursuivre && Creer_Dossier($dossier);
@@ -67,7 +67,7 @@ if( $step==2 )
 {
 	// Création des fichiers index.htm
 	$poursuivre1 = true;
-	$tab_dossier = array('badge','cookie','devoir','dump-base','export','import','login-mdp','logo','rss');
+	$tab_dossier = array('badge','cookie','devoir','dump-base','export','import','login-mdp','logo','officiel','rss');
 	foreach($tab_dossier as $dossier)
 	{
 		@umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
@@ -391,7 +391,8 @@ if( $step==6 )
 	if($nb_tables_presentes)
 	{
 		$s = ($nb_tables_presentes>1) ? 's' : '' ;
-		$affichage .= '<p><label class="alerte">'.$nb_tables_presentes.' table'.$s.' de SACoche étant déjà présente'.$s.' dans la base &laquo;&nbsp;<b>'.$BASE_NOM.'</b>&nbsp;&raquo;, les tables n\'ont pas été installées.</label></p>'."\r\n";
+		$base_nom = (HEBERGEUR_INSTALLATION=='mono-structure') ? SACOCHE_STRUCTURE_BD_NAME : SACOCHE_WEBMESTRE_BD_NAME ;
+		$affichage .= '<p><label class="alerte">'.$nb_tables_presentes.' table'.$s.' de SACoche étant déjà présente'.$s.' dans la base &laquo;&nbsp;<b>'.$base_nom.'</b>&nbsp;&raquo;, les tables n\'ont pas été installées.</label></p>'."\r\n";
 		$affichage .= '<p class="astuce">Si besoin, supprimez les tables manuellement, puis <a href="#" class="step6">relancer l\'étape 6.</a><label id="ajax_msg">&nbsp;</label></p>'."\r\n";
 		$affichage .= '<hr />'."\r\n";
 		$affichage .= '<h2>Installation logicielle terminée</h2>'."\r\n";
@@ -423,7 +424,7 @@ if( $step==6 )
 				De même, en multi-structures, il faudrait tester la présence de tous les dossiers éventuels...
 				Peut-être qu'une étape supplémentaire serait bienvenue, même si dans ce cas on n'a plus ensuite les identifiants admin sous les yeux...
 			*/
-			$tab_sous_dossier = array('badge','cookie','devoir','rss');
+			$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 			foreach($tab_sous_dossier as $sous_dossier)
 			{
 				Creer_Dossier('./__tmp/'.$sous_dossier.'/'.'0');

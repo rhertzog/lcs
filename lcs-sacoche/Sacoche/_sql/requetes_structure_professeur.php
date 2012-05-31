@@ -41,7 +41,7 @@ class DB_STRUCTURE_PROFESSEUR extends DB
  * @param string $listing_user_id      id des élèves séparés par des virgules
  * @return array   [i]=>array('item_id','popularite')
  */
-public function DB_recuperer_item_popularite($listing_demande_id,$listing_user_id)
+public static function DB_recuperer_item_popularite($listing_demande_id,$listing_user_id)
 {
 	$DB_SQL = 'SELECT item_id , COUNT(item_id) AS popularite ';
 	$DB_SQL.= 'FROM sacoche_demande ';
@@ -56,7 +56,7 @@ public function DB_recuperer_item_popularite($listing_demande_id,$listing_user_i
  * @param int  $user_id
  * @return array
  */
-public function DB_lister_matieres_niveaux_referentiels_professeur($user_id)
+public static function DB_lister_matieres_niveaux_referentiels_professeur($user_id)
 {
 	$DB_SQL = 'SELECT matiere_id, matiere_ref, matiere_nom, niveau_id, niveau_nom, jointure_coord ';
 	$DB_SQL.= 'FROM sacoche_referentiel ';
@@ -75,7 +75,7 @@ public function DB_lister_matieres_niveaux_referentiels_professeur($user_id)
  * @param int $user_id
  * @return array|string
  */
-public function DB_lister_matieres_professeur_infos_referentiel($user_id)
+public static function DB_lister_matieres_professeur_infos_referentiel($user_id)
 {
 	$DB_SQL = 'SELECT matiere_id, matiere_nom, matiere_nb_demandes, jointure_coord ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_matiere ';
@@ -92,7 +92,7 @@ public function DB_lister_matieres_professeur_infos_referentiel($user_id)
  * @param int $prof_id
  * @return array
  */
-public function DB_lister_groupes_professeur($prof_id)
+public static function DB_lister_groupes_professeur($prof_id)
 {
 	$DB_SQL = 'SELECT * ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
@@ -111,7 +111,7 @@ public function DB_lister_groupes_professeur($prof_id)
  * @return array
  */
 /*
-public function DB_lister_professeurs_groupe($groupe_id)
+public static function DB_lister_professeurs_groupe($groupe_id)
 {
 	$DB_SQL = 'SELECT user_id, user_nom, user_prenom ';
 	$DB_SQL.= 'FROM sacoche_groupe ';
@@ -130,9 +130,9 @@ public function DB_lister_professeurs_groupe($groupe_id)
  * @param int $prof_id
  * @return array
  */
-public function DB_lister_classes_groupes_professeur($prof_id)
+public static function DB_lister_classes_groupes_professeur($prof_id)
 {
-	$DB_SQL = 'SELECT groupe_id, groupe_nom, groupe_type ';
+	$DB_SQL = 'SELECT groupe_id, groupe_nom, groupe_type, jointure_pp ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
 	$DB_SQL.= 'LEFT JOIN sacoche_groupe USING (groupe_id) ';
 	$DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
@@ -143,13 +143,30 @@ public function DB_lister_classes_groupes_professeur($prof_id)
 }
 
 /**
+ * lister_classes_eleves_from_groupes
+ *
+ * @param string   $listing_groupe_id   id des groupes séparés par des virgules
+ * @return array
+ */
+public static function DB_lister_classes_eleves_from_groupes($listing_groupe_id)
+{
+	$DB_SQL = 'SELECT groupe_id, eleve_classe_id ';
+	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
+	$DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
+	$DB_SQL.= 'WHERE groupe_id IN ('.$listing_groupe_id.') AND user_profil=:profil AND user_sortie_date>NOW() AND eleve_classe_id!=0 ';
+	$DB_SQL.= 'GROUP BY groupe_id, eleve_classe_id ';
+	$DB_VAR = array(':profil'=>'eleve');
+	return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR , TRUE);
+}
+
+/**
  * lister_groupes_besoins
  * Il s'agit des groupes de besoins auxquels un prof est rattaché, propriétaire ou pas.
  *
  * @param int    $prof_id
  * @return array
  */
-public function DB_lister_groupes_besoins($prof_id)
+public static function DB_lister_groupes_besoins($prof_id)
 {
 	$DB_SQL = 'SELECT jointure_pp, groupe_id, groupe_nom, niveau_id, niveau_ordre, niveau_nom ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
@@ -169,7 +186,7 @@ public function DB_lister_groupes_besoins($prof_id)
  * @return array
  */
 /*
-public function DB_lister_groupes_besoins_non_proprietaire_avec_infos($prof_id)
+public static function DB_lister_groupes_besoins_non_proprietaire_avec_infos($prof_id)
 {
 	$DB_SQL = 'SELECT groupe_id, groupe_nom, user_nom, user_prenom ';
 	$DB_SQL.= 'FROM sacoche_user AS locataire ';
@@ -189,7 +206,7 @@ public function DB_lister_groupes_besoins_non_proprietaire_avec_infos($prof_id)
  * @param string   $listing_classe_id   id des classes séparés par des virgules
  * @return array
  */
-public function DB_lister_eleves_classes($listing_classe_id)
+public static function DB_lister_eleves_classes($listing_classe_id)
 {
 	$DB_SQL = 'SELECT * ';
 	$DB_SQL.= 'FROM sacoche_user ';
@@ -205,7 +222,7 @@ public function DB_lister_eleves_classes($listing_classe_id)
  * @param string   $listing_groupe_id   id des groupes séparés par des virgules
  * @return array
  */
-public function DB_lister_eleves_groupes($listing_groupe_id)
+public static function DB_lister_eleves_groupes($listing_groupe_id)
 {
 	$DB_SQL = 'SELECT * ';
 	$DB_SQL.= 'FROM sacoche_user ';
@@ -222,7 +239,7 @@ public function DB_lister_eleves_groupes($listing_groupe_id)
  * @param string   $listing_groupes_id   liste des ids des groupes séparés par des virgules
  * @return array
  */
-public function DB_lister_users_avec_groupes_besoins($listing_groupes_id)
+public static function DB_lister_users_avec_groupes_besoins($listing_groupes_id)
 {
 	$DB_SQL = 'SELECT groupe_id, user_id, user_nom, user_prenom, user_profil, jointure_pp ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
@@ -239,7 +256,7 @@ public function DB_lister_users_avec_groupes_besoins($listing_groupes_id)
  * @param int    $listing_user_id   id des élèves du prof séparés par des virgules
  * @return array
  */
-public function DB_lister_demandes_prof($matiere_id,$listing_user_id)
+public static function DB_lister_demandes_prof($matiere_id,$listing_user_id)
 {
 	$DB_SQL = 'SELECT sacoche_demande.*, ';
 	$DB_SQL.= 'CONCAT(niveau_ref,".",domaine_ref,theme_ordre,item_ordre) AS item_ref , ';
@@ -265,7 +282,7 @@ public function DB_lister_demandes_prof($matiere_id,$listing_user_id)
  * @param string $date_debut_mysql
  * @return array
  */
-public function DB_lister_eleves_devoirs($prof_id,$devoir_info,$date_debut_mysql)
+public static function DB_lister_eleves_devoirs($prof_id,$devoir_info,$date_debut_mysql)
 {
 	$DB_SQL = 'SELECT user_id, devoir_date ';
 	$DB_SQL.= 'FROM sacoche_devoir ';
@@ -289,7 +306,7 @@ public function DB_lister_eleves_devoirs($prof_id,$devoir_info,$date_debut_mysql
  * @param string $date_fin_mysql
  * @return array
  */
-public function DB_lister_devoirs_prof($prof_id,$groupe_id,$date_debut_mysql,$date_fin_mysql)
+public static function DB_lister_devoirs_prof($prof_id,$groupe_id,$date_debut_mysql,$date_fin_mysql)
 {
 	// DB::query(SACOCHE_STRUCTURE_BD_NAME , 'SET group_concat_max_len = ...'); // Pour lever si besoin une limitation de GROUP_CONCAT (group_concat_max_len est par défaut limité à une chaine de 1024 caractères).
 	// Il faut ajouter dans la requête des "DISTINCT" sinon la liaison avec "sacoche_jointure_user_groupe" duplique tout x le nb d'élèves associés pour une évaluation sur une sélection d'élèves.
@@ -327,7 +344,7 @@ public function DB_lister_devoirs_prof($prof_id,$groupe_id,$date_debut_mysql,$da
  * @param string $groupe_type   groupe | select
  * @return array
  */
-public function DB_lister_devoirs_prof_groupe_sans_infos_last($prof_id,$groupe_id,$groupe_type)
+public static function DB_lister_devoirs_prof_groupe_sans_infos_last($prof_id,$groupe_id,$groupe_type)
 {
 	$DB_SQL = 'SELECT sacoche_devoir.* ';
 	$DB_SQL.= 'FROM sacoche_devoir ';
@@ -349,7 +366,7 @@ public function DB_lister_devoirs_prof_groupe_sans_infos_last($prof_id,$groupe_i
  * @param bool  $with_coef
  * @return array
  */
-public function DB_lister_items_devoir($devoir_id,$with_lien,$with_coef)
+public static function DB_lister_items_devoir($devoir_id,$with_lien,$with_coef)
 {
 	$DB_SQL = 'SELECT item_id, item_nom, entree_id, ';
 	$DB_SQL.= ($with_lien) ? 'item_lien, ' : '' ;
@@ -374,7 +391,7 @@ public function DB_lister_items_devoir($devoir_id,$with_lien,$with_coef)
  * @param bool  $with_REQ   // Avec ou sans les repères de demandes d'évaluations
  * @return array
  */
-public function DB_lister_saisies_devoir($devoir_id,$with_REQ)
+public static function DB_lister_saisies_devoir($devoir_id,$with_REQ)
 {
 	// On évite les élèves désactivés pour ces opérations effectuées sur les pages de saisies d'évaluations
 	$DB_SQL = 'SELECT eleve_id, item_id, saisie_note ';
@@ -393,7 +410,7 @@ public function DB_lister_saisies_devoir($devoir_id,$with_REQ)
  * @param int   $user_id
  * @return array
  */
-public function DB_lister_selection_items($user_id)
+public static function DB_lister_selection_items($user_id)
 {
 	$DB_SQL = 'SELECT selection_item_id, selection_item_nom, selection_item_liste ';
 	$DB_SQL.= 'FROM sacoche_selection_item ';
@@ -403,12 +420,31 @@ public function DB_lister_selection_items($user_id)
 }
 
 /**
+ * lister_jointure_groupe_periode ; le rangement par ordre de période permet, si les périodes se chevauchent, que javascript choisisse la 1ère par défaut
+ *
+ * @param string   $listing_user_id   id des élèves séparés par des virgules
+ * @return array
+ */
+public static function DB_lister_periodes_bulletins_saisies_ouvertes($listing_user_id)
+{
+	$DB_SQL = 'SELECT periode_id, periode_nom, GROUP_CONCAT(user_id SEPARATOR "_") AS eleves_listing ';
+	$DB_SQL.= 'FROM sacoche_user ';
+	$DB_SQL.= 'LEFT JOIN sacoche_jointure_groupe_periode ON sacoche_user.eleve_classe_id=sacoche_jointure_groupe_periode.groupe_id ';
+	$DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
+	$DB_SQL.= 'WHERE user_id IN ('.$listing_user_id.') AND officiel_bulletin=:etat ';
+	$DB_SQL.= 'GROUP BY periode_id ';
+	$DB_SQL.= 'ORDER BY periode_ordre ASC';
+	$DB_VAR = array(':etat'=>'2rubrique');
+	return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
  * tester_prof_principal
  *
  * @param int $user_id
  * @return int
  */
-public function DB_tester_prof_principal($user_id)
+public static function DB_tester_prof_principal($user_id)
 {
 	$DB_SQL = 'SELECT groupe_id ';
 	$DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
@@ -425,7 +461,7 @@ public function DB_tester_prof_principal($user_id)
  * @param int    $groupe_id    inutile si recherche pour un ajout, mais id à éviter si recherche pour une modification
  * @return int
  */
-public function DB_tester_groupe_nom($groupe_nom,$groupe_id=FALSE)
+public static function DB_tester_groupe_nom($groupe_nom,$groupe_id=FALSE)
 {
 	$DB_SQL = 'SELECT groupe_id ';
 	$DB_SQL.= 'FROM sacoche_groupe ';
@@ -444,7 +480,7 @@ public function DB_tester_groupe_nom($groupe_nom,$groupe_id=FALSE)
  * @param int    $selection_item_id    inutile si recherche pour un ajout, mais id à éviter si recherche pour une modification
  * @return int
  */
-public function DB_tester_selection_items_nom($user_id,$selection_item_nom,$selection_item_id=FALSE)
+public static function DB_tester_selection_items_nom($user_id,$selection_item_nom,$selection_item_id=FALSE)
 {
 	$DB_SQL = 'SELECT selection_item_id ';
 	$DB_SQL.= 'FROM sacoche_selection_item ';
@@ -463,7 +499,7 @@ public function DB_tester_selection_items_nom($user_id,$selection_item_nom,$sele
  * @param int    $niveau_id
  * @return int
  */
-public function DB_ajouter_groupe_par_prof($groupe_type,$groupe_nom,$niveau_id)
+public static function DB_ajouter_groupe_par_prof($groupe_type,$groupe_nom,$niveau_id)
 {
 	$DB_SQL = 'INSERT INTO sacoche_groupe(groupe_type,groupe_ref,groupe_nom,niveau_id) ';
 	$DB_SQL.= 'VALUES(:groupe_type,:groupe_ref,:groupe_nom,:niveau_id)';
@@ -493,7 +529,7 @@ public function DB_ajouter_groupe_par_prof($groupe_type,$groupe_nom,$niveau_id)
  * @param string $tab_id_profs   tableau des id des profs avec qui l'évaluation est partagée ; facultatif car non transmis si éval sur des élèves sélectionnés
  * @return int
  */
-public function DB_ajouter_devoir($prof_id,$groupe_id,$date_mysql,$info,$date_visible_mysql,$date_autoeval_mysql,$doc_sujet,$doc_corrige,$tab_id_profs=array())
+public static function DB_ajouter_devoir($prof_id,$groupe_id,$date_mysql,$info,$date_visible_mysql,$date_autoeval_mysql,$doc_sujet,$doc_corrige,$tab_id_profs=array())
 {
 	$listing_id_profs = count($tab_id_profs) ? ','.implode(',',$tab_id_profs).',' : '' ;
 	$DB_SQL = 'INSERT INTO sacoche_devoir(prof_id,groupe_id,devoir_date,devoir_info,devoir_visible_date,devoir_autoeval_date,devoir_partage,devoir_doc_sujet,devoir_doc_corrige) ';
@@ -511,7 +547,7 @@ public function DB_ajouter_devoir($prof_id,$groupe_id,$date_mysql,$info,$date_vi
  * @param string $tab_id_items   tableau des id des items
  * @return int
  */
-public function DB_ajouter_selection_items($user_id,$selection_item_nom,$tab_id_items)
+public static function DB_ajouter_selection_items($user_id,$selection_item_nom,$tab_id_items)
 {
 	$listing_id_items = ','.implode(',',$tab_id_items).',' ;
 	$DB_SQL = 'INSERT INTO sacoche_selection_item(user_id,selection_item_nom,selection_item_liste) ';
@@ -535,7 +571,7 @@ public function DB_ajouter_selection_items($user_id,$selection_item_nom,$tab_id_
  * @param string $item_date_visible_mysql
  * @return void
  */
-public function DB_ajouter_saisie($prof_id,$eleve_id,$devoir_id,$item_id,$item_date_mysql,$item_note,$item_info,$item_date_visible_mysql)
+public static function DB_ajouter_saisie($prof_id,$eleve_id,$devoir_id,$item_id,$item_date_mysql,$item_note,$item_info,$item_date_visible_mysql)
 {
 	$commande = ($item_note!='REQ') ? 'INSERT' : 'REPLACE' ;
 	$DB_SQL = $commande.' INTO sacoche_saisie ';
@@ -552,7 +588,7 @@ public function DB_ajouter_saisie($prof_id,$eleve_id,$devoir_id,$item_id,$item_d
  * @param int    $niveau_id
  * @return void
  */
-public function DB_modifier_groupe_par_prof($groupe_id,$groupe_nom,$niveau_id)
+public static function DB_modifier_groupe_par_prof($groupe_id,$groupe_nom,$niveau_id)
 {
 	$DB_SQL = 'UPDATE sacoche_groupe ';
 	$DB_SQL.= 'SET groupe_nom=:groupe_nom,niveau_id=:niveau_id ';
@@ -568,7 +604,7 @@ public function DB_modifier_groupe_par_prof($groupe_id,$groupe_nom,$niveau_id)
  * @param array  $tab_items   tableau des id des items
  * @return void
  */
-public function DB_modifier_ordre_item($devoir_id,$tab_items)
+public static function DB_modifier_ordre_item($devoir_id,$tab_items)
 {
 	$DB_SQL = 'UPDATE sacoche_jointure_devoir_item ';
 	$DB_SQL.= 'SET jointure_ordre=:ordre ';
@@ -592,7 +628,7 @@ public function DB_modifier_ordre_item($devoir_id,$tab_items)
  * @param string $saisie_info
  * @return void
  */
-public function DB_modifier_saisie($eleve_id,$devoir_id,$item_id,$saisie_note,$saisie_info)
+public static function DB_modifier_saisie($eleve_id,$devoir_id,$item_id,$saisie_note,$saisie_info)
 {
 	$DB_SQL = 'UPDATE sacoche_saisie ';
 	$DB_SQL.= 'SET saisie_note=:saisie_note,saisie_info=:saisie_info ';
@@ -609,7 +645,7 @@ public function DB_modifier_saisie($eleve_id,$devoir_id,$item_id,$saisie_note,$s
  * @param array  $tab_id_items
  * @return void
  */
-public function DB_modifier_selection_items($selection_item_id,$selection_item_nom,$tab_id_items)
+public static function DB_modifier_selection_items($selection_item_id,$selection_item_nom,$tab_id_items)
 {
 	$listing_id_items = ','.implode(',',$tab_id_items).',' ;
 	$DB_SQL = 'UPDATE sacoche_selection_item ';
@@ -633,7 +669,7 @@ public function DB_modifier_selection_items($selection_item_id,$selection_item_n
  * @param string $tab_id_profs   tableau des id des profs avec qui l'évaluation est partagée ; facultatif car non transmis si éval sur des élèves sélectionnés
  * @return void
  */
-public function DB_modifier_devoir($devoir_id,$prof_id,$date_mysql,$info,$date_visible_mysql,$date_autoeval_mysql,$doc_sujet,$doc_corrige,$tab_id_profs=array())
+public static function DB_modifier_devoir($devoir_id,$prof_id,$date_mysql,$info,$date_visible_mysql,$date_autoeval_mysql,$doc_sujet,$doc_corrige,$tab_id_profs=array())
 {
 	$listing_id_profs = count($tab_id_profs) ? ','.implode(',',$tab_id_profs).',' : '' ;
 	// sacoche_devoir (maj)
@@ -660,7 +696,7 @@ public function DB_modifier_devoir($devoir_id,$prof_id,$date_mysql,$info,$date_v
  * @param string $fichier_nom
  * @return void
  */
-public function DB_modifier_devoir_document($devoir_id,$prof_id,$objet,$fichier_nom)
+public static function DB_modifier_devoir_document($devoir_id,$prof_id,$objet,$fichier_nom)
 {
 	$DB_SQL = 'UPDATE sacoche_devoir ';
 	$DB_SQL.= 'SET devoir_doc_'.$objet.'=:fichier_nom ';
@@ -678,7 +714,7 @@ public function DB_modifier_devoir_document($devoir_id,$prof_id,$objet,$fichier_
  * @param int    $devoir_ordonne_id   Dans le cas d'une duplication, id du devoir dont il faut récupérer l'ordre des items.
  * @return void
  */
-public function DB_modifier_liaison_devoir_item($devoir_id,$tab_items,$mode,$devoir_ordonne_id=0)
+public static function DB_modifier_liaison_devoir_item($devoir_id,$tab_items,$mode,$devoir_ordonne_id=0)
 {
 	if( ($mode=='creer') || ($mode=='dupliquer') )
 	{
@@ -764,7 +800,7 @@ public function DB_modifier_liaison_devoir_item($devoir_id,$tab_items,$mode,$dev
  * @param int    $devoir_id    pour supprimer les notes saisies associées (uniquement pour [1]) ; sert aussi à savoir si on est dans le cas [1] ou [2]
  * @return void
  */
-public function DB_modifier_liaison_user_groupe_par_prof($groupe_id,$tab_eleves,$tab_profs,$mode,$devoir_id)
+public static function DB_modifier_liaison_user_groupe_par_prof($groupe_id,$tab_eleves,$tab_profs,$mode,$devoir_id)
 {
 	$tab_users = array_merge($tab_eleves,$tab_profs);
 	// -> on récupère la liste des users actuels déjà associés au groupe (pour la comparer à la liste transmise)
@@ -832,7 +868,7 @@ public function DB_modifier_liaison_user_groupe_par_prof($groupe_id,$tab_eleves,
  * @param string $mode         'creer' pour un insert dans un nouveau devoir || 'substituer' pour une maj delete / insert || 'ajouter' pour maj insert uniquement
  * @return void
  */
-public function DB_modifier_liaison_devoir_user($devoir_id,$groupe_id,$tab_eleves,$mode)
+public static function DB_modifier_liaison_devoir_user($devoir_id,$groupe_id,$tab_eleves,$mode)
 {
 	DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_user_groupe_par_prof($groupe_id,$tab_eleves,array() /*tab_profs*/,$mode,$devoir_id);
 }
@@ -847,7 +883,7 @@ public function DB_modifier_liaison_devoir_user($devoir_id,$groupe_id,$tab_eleve
  * @return void
  */
 /*
-public function DB_modifier_liaison_devoir_groupe($devoir_id,$groupe_id)
+public static function DB_modifier_liaison_devoir_groupe($devoir_id,$groupe_id)
 {
 	// -> on récupère l'id du groupe antérieurement associé au devoir
 	$DB_SQL = 'SELECT groupe_id ';
@@ -879,7 +915,7 @@ public function DB_modifier_liaison_devoir_groupe($devoir_id,$groupe_id)
  * @param string $message              facultatif
  * @return void
  */
-public function DB_modifier_statut_demandes($listing_demande_id,$statut,$message)
+public static function DB_modifier_statut_demandes($listing_demande_id,$statut,$message)
 {
 	$message_complementaire = ($message) ? "\r\n\r\n".$_SESSION['USER_NOM'].' '.$_SESSION['USER_PRENOM']{0}.'.'."\r\n".$message : '' ;
 	$DB_SQL = 'UPDATE sacoche_demande ';
@@ -899,7 +935,7 @@ public function DB_modifier_statut_demandes($listing_demande_id,$statut,$message
  * @param bool   $with_devoir
  * @return void
  */
-public function DB_supprimer_groupe_par_prof($groupe_id,$groupe_type,$with_devoir=TRUE)
+public static function DB_supprimer_groupe_par_prof($groupe_id,$groupe_type,$with_devoir=TRUE)
 {
 	// Il faut aussi supprimer les jointures avec les utilisateurs
 	// Il faut aussi supprimer les jointures avec les périodes
@@ -934,7 +970,7 @@ public function DB_supprimer_groupe_par_prof($groupe_id,$groupe_type,$with_devoi
  * @param int   $prof_id   Seul un prof peut se supprimer une évaluation avec ses scores ; son id sert de sécurité.
  * @return void
  */
-public function DB_supprimer_devoir_et_saisies($devoir_id,$prof_id)
+public static function DB_supprimer_devoir_et_saisies($devoir_id,$prof_id)
 {
 	// Il faut aussi supprimer les jointures du devoir avec les items
 	$DB_SQL = 'DELETE sacoche_devoir, sacoche_jointure_devoir_item, sacoche_saisie ';
@@ -954,7 +990,7 @@ public function DB_supprimer_devoir_et_saisies($devoir_id,$prof_id)
  * @param int   $item_id
  * @return void
  */
-public function DB_supprimer_saisie($eleve_id,$devoir_id,$item_id)
+public static function DB_supprimer_saisie($eleve_id,$devoir_id,$item_id)
 {
 	$DB_SQL = 'DELETE FROM sacoche_saisie ';
 	$DB_SQL.= 'WHERE eleve_id=:eleve_id AND devoir_id=:devoir_id AND item_id=:item_id ';
@@ -968,7 +1004,7 @@ public function DB_supprimer_saisie($eleve_id,$devoir_id,$item_id)
  * @param string   $listing_demande_id   id des demandes séparées par des virgules
  * @return void
  */
-public function DB_supprimer_demandes_devoir($listing_demande_id)
+public static function DB_supprimer_demandes_devoir($listing_demande_id)
 {
 	$DB_SQL = 'DELETE FROM sacoche_demande ';
 	$DB_SQL.= 'WHERE demande_id IN('.$listing_demande_id.') ';
@@ -982,7 +1018,7 @@ public function DB_supprimer_demandes_devoir($listing_demande_id)
  * @param int   $item_id
  * @return void
  */
-public function DB_supprimer_demande_precise($eleve_id,$item_id)
+public static function DB_supprimer_demande_precise($eleve_id,$item_id)
 {
 	$DB_SQL = 'DELETE FROM sacoche_demande ';
 	$DB_SQL.= 'WHERE user_id=:eleve_id AND item_id=:item_id ';
@@ -996,7 +1032,7 @@ public function DB_supprimer_demande_precise($eleve_id,$item_id)
  * @param int   $selection_item_id
  * @return void
  */
-public function DB_supprimer_selection_items($selection_item_id)
+public static function DB_supprimer_selection_items($selection_item_id)
 {
 	$DB_SQL = 'DELETE FROM sacoche_selection_item ';
 	$DB_SQL.= 'WHERE selection_item_id=:selection_item_id ';

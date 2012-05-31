@@ -42,14 +42,6 @@ function non_zero($n)
 	return $n!=0 ;
 }
 /**
- * Fonctions utilisées avec array_filter() ; teste si différent de "".
- * @return bool
- */
-function non_vide($n)
-{
-	return $n!='' ;
-}
-/**
  * Fonctions utilisées avec array_filter() ; teste si strictement positif.
  * @return bool
  */
@@ -170,6 +162,220 @@ function calculer_score($tab_devoirs,$calcul_methode,$calcul_limite)
 		$tab_notes = array_slice( $tab_notes , 0 , $nb_best );
 		return round( array_sum($tab_notes)/count($tab_notes) , 0 );
 	}
+}
+
+/**
+ * Pour un bulletin d'une période et d'une classe donnée, calculer et mettre à jour toutes les moyennes qui en ont besoin et qui ne sont pas figées manuellement.
+ * Si demandé, calcule et met en session les moyennes des classe.
+ * 
+ * @param int    $periode_id
+ * @param int    $classe_id
+ * @param string $liste_eleve_id
+ * @param string $liste_matiere_id   renseigné pour un prof effectuant une saisie, vide sinon
+ * @param bool   $memo_moyennes_classe
+ * @param bool   $memo_moyennes_generale
+ * @return void
+ */
+function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id,$liste_eleve_id,$liste_matiere_id,$memo_moyennes_classe,$memo_moyennes_generale)
+{
+	if(!$liste_eleve_id) return FALSE;
+	// Dates période
+	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($classe_id,$periode_id);
+	if(!count($DB_ROW)) return FALSE;
+	// Récupération de la liste des items travaillés et affiner la liste des matières concernées
+	$date_mysql_debut = $DB_ROW['jointure_date_debut'];
+	$date_mysql_fin   = $DB_ROW['jointure_date_fin'];
+	list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles($liste_eleve_id,$liste_matiere_id,$date_mysql_debut,$date_mysql_fin);
+	$item_nb = count($tab_item);
+	if(!$item_nb) return FALSE;
+	$tab_liste_item = array_keys($tab_item);
+	$liste_item_id = implode(',',$tab_liste_item);
+	// Récupération de la liste des résultats des évaluations associées à ces items donnés d'une ou plusieurs matieres, pour les élèves selectionnés, sur la période sélectionnée
+	// Attention, il faut éliminer certains items qui peuvent potentiellement apparaitre dans des relevés d'élèves alors qu'ils n'ont pas été interrogés sur la période considérée (mais un camarade oui).
+	$tab_score_a_garder = array();
+	$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_date_last_eleves_items($liste_eleve_id,$liste_item_id);
+	foreach($DB_TAB as $DB_ROW)
+	{
+		$tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']] = ($DB_ROW['date_last']<$date_mysql_debut) ? FALSE : TRUE ;
+	}
+	$date_mysql_debut = false;
+	$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_debut , $date_mysql_fin , $_SESSION['USER_PROFIL']);
+	foreach($DB_TAB as $DB_ROW)
+	{
+		if($tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']])
+		{
+			$tab_eval[$DB_ROW['eleve_id']][$DB_ROW['matiere_id']][$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note']);
+		}
+	}
+	// On calcule les moyennes des élèves dans chaque matière
+	$tab_eleve_id = explode(',',$liste_eleve_id);
+	// On ne calcule pas les moyennes de classe à partir de ces données car on peut n'avoir ici qu'une partie de la classe
+	$tab_moyennes_calculees = array();	// $tab_moyennes_calculees[$matiere_id][$eleve_id]         Retenir la moyenne des scores d'acquisitions / matière / élève
+	// Pour chaque élève...
+	foreach($tab_eleve_id as $eleve_id)
+	{
+		// Si cet élève a été évalué...
+		if(isset($tab_eval[$eleve_id]))
+		{
+			// Pour chaque matiere...
+			foreach($tab_matiere as $matiere_id)
+			{
+				// Si cet élève a été évalué dans cette matière...
+				if(isset($tab_eval[$eleve_id][$matiere_id]))
+				{
+					$tab_score = array();
+					// Pour chaque item...
+					foreach($tab_eval[$eleve_id][$matiere_id] as $item_id => $tab_devoirs)
+					{
+						extract($tab_item[$item_id][0]);	// $item_ref $item_nom $item_coef $item_socle $item_lien $calcul_methode $calcul_limite
+						// calcul du bilan de l'item
+						$tab_score[$item_id] = calculer_score($tab_devoirs,$calcul_methode,$calcul_limite);
+					}
+					// calcul des bilans des scores
+					$tableau_score_filtre = array_filter($tab_score,'non_nul');
+					$nb_scores = count( $tableau_score_filtre );
+					// la moyenne peut être pondérée par des coefficients
+					$somme_scores_ponderes = 0;
+					$somme_coefs = 0;
+					if($nb_scores)
+					{
+						foreach($tableau_score_filtre as $item_id => $item_score)
+						{
+							$somme_scores_ponderes += $item_score*$tab_item[$item_id][0]['item_coef'];
+							$somme_coefs += $tab_item[$item_id][0]['item_coef'];
+						}
+					}
+					// et voilà la moyenne des pourcentages d'acquisition
+					$tab_moyennes_calculees[$matiere_id][$eleve_id] = ($somme_coefs) ? round($somme_scores_ponderes/$somme_coefs,0) / 5 : NULL ; // initialise à NULL pour les matières où il y a des saisies mais seulement ABS NN etc.
+				}
+			}
+		}
+	}
+	// Rechercher les notes déjà enregistrées, et si elles ont été calculées automatiquement ou imposées
+	$tab_moyennes_enregistrees      = array();
+	$tab_appreciations_enregistrees = array();
+	$DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_notes($periode_id,$tab_eleve_id);
+	foreach($DB_TAB as $DB_ROW)
+	{
+		$tab_moyennes_enregistrees[$DB_ROW['rubrique_id']][$DB_ROW['eleve_id']] = ($DB_ROW['saisie_note']!==NULL) ? (float)$DB_ROW['saisie_note'] : FALSE ; // Pas NULL car un test isset() sur une valeur NULL renvoie FALSE !!! (voir qq lignes plus bas)
+		$tab_appreciations_enregistrees[$DB_ROW['rubrique_id']][$DB_ROW['eleve_id']] = $DB_ROW['saisie_appreciation'];
+	}
+	// Mettre à jour les notes qui le nécessitent
+	foreach($tab_moyennes_calculees as $matiere_id => $tab)
+	{
+		foreach($tab as $eleve_id => $note)
+		{
+			if( (!isset($tab_moyennes_enregistrees[$matiere_id][$eleve_id])) || ( ($tab_moyennes_enregistrees[$matiere_id][$eleve_id]!=$note) && ($tab_appreciations_enregistrees[$matiere_id][$eleve_id]=='') ) )
+			{
+				DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( 'bulletin' , $periode_id , $eleve_id , $matiere_id , 0 /*prof_id*/ , $note , '' /*appreciation*/ );
+				$tab_moyennes_enregistrees[$matiere_id][$eleve_id] = $note;
+			}
+		}
+	}
+	// Calculer les moyennes de classe ; elles sont mises en session car on en a besoin si on consulte un par un les bulletins des élèves.
+	if($memo_moyennes_classe)
+	{
+		$_SESSION['tmp_moyenne_classe'][$periode_id][$classe_id] = array();
+		foreach($tab_moyennes_enregistrees as $matiere_id => $tab)
+		{
+			if($matiere_id!=0)
+			{
+				$somme  = array_sum($tab_moyennes_enregistrees[$matiere_id]);
+				$nombre = count( array_filter($tab_moyennes_enregistrees[$matiere_id],'non_nul') );
+				$_SESSION['tmp_moyenne_classe'][$periode_id][$classe_id][$matiere_id] = ($nombre) ? round($somme/$nombre,1) : NULL ;
+			}
+		}
+	}
+	// Calculer les moyennes générales ; elles sont mises en session car on en a besoin si on consulte un par un les bulletins des élèves.
+	if($memo_moyennes_generale)
+	{
+		$_SESSION['tmp_moyenne_generale'][$periode_id][$classe_id] = array();
+		$tab_moyennes_enregistrees_par_eleve = array();
+		// inverser les clefs du tableau pour pouvoir effectuer les totaux par élève
+		foreach($tab_moyennes_enregistrees as $matiere_id => $tab)
+		{
+			if($matiere_id!=0)
+			{
+				foreach($tab as $eleve_id => $note)
+				{
+					$tab_moyennes_enregistrees_par_eleve[$eleve_id][$matiere_id] = $note;
+				}
+			}
+		}
+		foreach($tab_moyennes_enregistrees_par_eleve as $eleve_id => $tab)
+		{
+			$somme  = array_sum($tab_moyennes_enregistrees_par_eleve[$eleve_id]);
+			$nombre = count( array_filter($tab_moyennes_enregistrees_par_eleve[$eleve_id],'non_nul') );
+			$_SESSION['tmp_moyenne_generale'][$periode_id][$classe_id][$eleve_id] = ($nombre) ? round($somme/$nombre,1) : NULL ;
+		}
+		// Enfin, moyenne de classe des moyennes générales...
+		if($memo_moyennes_classe)
+		{
+			$somme  = array_sum($_SESSION['tmp_moyenne_generale'][$periode_id][$classe_id]);
+			$nombre = count( array_filter($_SESSION['tmp_moyenne_generale'][$periode_id][$classe_id],'non_nul') );
+			$_SESSION['tmp_moyenne_generale'][$periode_id][$classe_id][0] = ($nombre) ? round($somme/$nombre,1) : NULL ;
+		}
+	}
+}
+
+/**
+ * Pour un bulletin d'une période / d'un élève et d'une matière donné, calculer et forcer la mise à jour d'une moyenne (effacée ou figée).
+ * 
+ * @param int    $periode_id
+ * @param int    $classe_id
+ * @param int    $eleve_id
+ * @param array  $matiere_id
+ * @return float   la moyenne en question (FALSE si pb)
+ */
+function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id,$eleve_id,$matiere_id)
+{
+	// Dates période
+	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($classe_id,$periode_id);
+	if(!count($DB_ROW)) return FALSE;
+	// Récupération de la liste des items travaillés
+	$date_mysql_debut = $DB_ROW['jointure_date_debut'];
+	$date_mysql_fin   = $DB_ROW['jointure_date_fin'];
+	list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles($eleve_id,$matiere_id,$date_mysql_debut,$date_mysql_fin);
+	$item_nb = count($tab_item);
+	if(!$item_nb) return FALSE;
+	$tab_liste_item = array_keys($tab_item);
+	$liste_item_id = implode(',',$tab_liste_item);
+	// Récupération de la liste des résultats des évaluations associées à ces items donnés d'une ou plusieurs matieres, pour les élèves selectionnés, sur la période sélectionnée
+	$date_mysql_debut = false;
+	$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_debut , $date_mysql_fin , $_SESSION['USER_PROFIL']);
+	if(!count($DB_TAB)) return FALSE;
+	foreach($DB_TAB as $DB_ROW)
+	{
+		$tab_eval[$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note']);
+	}
+	// On calcule la moyenne voulue
+	$tab_score = array();
+	// Pour chaque item...
+	foreach($tab_eval as $item_id => $tab_devoirs)
+	{
+		extract($tab_item[$item_id][0]);	// $item_ref $item_nom $item_coef $item_socle $item_lien $calcul_methode $calcul_limite
+		// calcul du bilan de l'item
+		$tab_score[$item_id] = calculer_score($tab_devoirs,$calcul_methode,$calcul_limite);
+	}
+	// calcul des bilans des scores
+	$tableau_score_filtre = array_filter($tab_score,'non_nul');
+	$nb_scores = count( $tableau_score_filtre );
+	// la moyenne peut être pondérée par des coefficients
+	$somme_scores_ponderes = 0;
+	$somme_coefs = 0;
+	if($nb_scores)
+	{
+		foreach($tableau_score_filtre as $item_id => $item_score)
+		{
+			$somme_scores_ponderes += $item_score*$tab_item[$item_id][0]['item_coef'];
+			$somme_coefs += $tab_item[$item_id][0]['item_coef'];
+		}
+	}
+	// et voilà la moyenne des pourcentages d'acquisition
+	if(!$somme_coefs) return FALSE;
+	$moyennes_calculee = round($somme_scores_ponderes/$somme_coefs,0) / 5 ;
+	DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie('bulletin',$periode_id,$eleve_id,$matiere_id,0,$moyennes_calculee,'');
+	return $moyennes_calculee;
 }
 
 /**
@@ -394,7 +600,7 @@ function supprimer_mono_structure()
 	// Supprimer le fichier de connexion
 	unlink(CHEMIN_MYSQL.'serveur_sacoche_structure.php');
 	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
-	$tab_sous_dossier = array('badge','cookie','devoir','rss');
+	$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 	foreach($tab_sous_dossier as $sous_dossier)
 	{
 		Supprimer_Dossier('./__tmp/'.$sous_dossier.'/'.'0');
@@ -425,7 +631,7 @@ function supprimer_multi_structure($BASE)
 	// Retirer l'enregistrement d'une structure dans la base du webmestre
 	DB_WEBMESTRE_WEBMESTRE::DB_supprimer_structure($BASE);
 	// Supprimer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
-	$tab_sous_dossier = array('badge','cookie','devoir','rss');
+	$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 	foreach($tab_sous_dossier as $sous_dossier)
 	{
 		Supprimer_Dossier('./__tmp/'.$sous_dossier.'/'.$BASE);
@@ -513,12 +719,12 @@ function crypter_mdp($password)
 }
 
 /**
- * Ajouter la date et une valeur aléatoire pour terminer un nom de fichier.
+ * Fabrique une date et une valeur aléatoire pour terminer un nom de fichier.
  * 
  * @param void
  * @return string
  */
-function fabriquer_fin_nom_fichier()
+function fabriquer_fin_nom_fichier__date_et_alea()
 {
 	// date
 	$chaine_date = date('Y-m-d_H\hi\m\i\ns\s'); // lisible par un humain et compatible avec le système de fichiers
@@ -533,6 +739,38 @@ function fabriquer_fin_nom_fichier()
 	}
 	// retour
 	return $chaine_date.'_'.$chaine_alea;
+}
+
+/**
+ * Fabrique une fin se fichier pseudo-aléatoire pour terminer un nom de fichier.
+ * 
+ * Le suffixe est suffisamment tordu pour le rendre un privé et non retrouvable par un utilisateur, mais sans être totalement aléatoire car il doit fixe (retrouvé).
+ * Utilisé pour les flux RSS et les bilans officiels PDF.
+ * 
+ * @param string   $fichier_nom_debut
+ * @return string
+ */
+function fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut)
+{
+	return md5($fichier_nom_debut.$_SERVER['DOCUMENT_ROOT']);
+}
+
+/**
+ * Fabrique une fin se fichier pseudo-aléatoire pour terminer un nom de fichier.
+ * 
+ * Le suffixe est suffisamment tordu pour le rendre un privé et non retrouvable par un utilisateur, mais sans être totalement aléatoire car il doit fixe (retrouvé).
+ * Utilisé pour les flux RSS et les bilans officiels PDF.
+ * 
+ * @param int      $eleve_id
+ * @param string   $bilan_type
+ * @param int      $periode_id
+ * @return string
+ */
+function fabriquer_nom_fichier_bilan_officiel( $eleve_id , $bilan_type , $periode_id )
+{
+	$fichier_bilan_officiel_nom_debut = 'user'.$eleve_id.'_officiel_'.$bilan_type.'_periode'.$periode_id;
+	$fichier_bilan_officiel_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_bilan_officiel_nom_debut);
+	return $fichier_bilan_officiel_nom_debut.'_'.$fichier_bilan_officiel_nom_fin.'.pdf';
 }
 
 /**
@@ -711,8 +949,8 @@ function nettoyer_fichiers_temporaires($BASE)
 	if(!file_exists($fichier_lock))
 	{
 		Ecrire_Fichier($fichier_lock,'');
-		// On verifie que certains sous-dossiers existent : 'devoir' n'a été ajouté qu'en mars 2012, 'cookie' et 'rss' étaient oublié depuis le formulaire Sésamath ('badge' a priori c'est bon)
-		$tab_sous_dossier = array( 'devoir' , 'cookie/'.$BASE , 'devoir/'.$BASE , 'rss/'.$BASE );
+		// On verifie que certains sous-dossiers existent : 'devoir' n'a été ajouté qu'en mars 2012, 'officiel' n'a été ajouté qu'en mai 2012, 'cookie' et 'rss' étaient oublié depuis le formulaire Sésamath ('badge' a priori c'est bon)
+		$tab_sous_dossier = array( 'devoir' , 'officiel' , 'cookie/'.$BASE , 'devoir/'.$BASE , 'officiel/'.$BASE , 'rss/'.$BASE );
 		foreach($tab_sous_dossier as $sous_dossier)
 		{
 			$dossier = './__tmp/'.$sous_dossier;
@@ -722,14 +960,15 @@ function nettoyer_fichiers_temporaires($BASE)
 				Ecrire_Fichier($dossier.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
 			}
 		}
-		effacer_fichiers_temporaires('./__tmp/login-mdp'     ,     10); // Nettoyer ce dossier des fichiers antérieurs à 10 minutes
-		effacer_fichiers_temporaires('./__tmp/export'        ,     60); // Nettoyer ce dossier des fichiers antérieurs à 1 heure
-		effacer_fichiers_temporaires('./__tmp/dump-base'     ,     60); // Nettoyer ce dossier des fichiers antérieurs à 1 heure
-		effacer_fichiers_temporaires('./__tmp/import'        ,  10080); // Nettoyer ce dossier des fichiers antérieurs à 1 semaine
-		effacer_fichiers_temporaires('./__tmp/rss/'.$BASE    ,  43800); // Nettoyer ce dossier des fichiers antérieurs à 1 mois
-		effacer_fichiers_temporaires('./__tmp/badge/'.$BASE  , 525600); // Nettoyer ce dossier des fichiers antérieurs à 1 an
-		effacer_fichiers_temporaires('./__tmp/cookie/'.$BASE , 525600); // Nettoyer ce dossier des fichiers antérieurs à 1 an
-		effacer_fichiers_temporaires('./__tmp/devoir/'.$BASE , 43800*FICHIER_DUREE_CONSERVATION); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
+		effacer_fichiers_temporaires('./__tmp/login-mdp'       ,     10); // Nettoyer ce dossier des fichiers antérieurs à 10 minutes
+		effacer_fichiers_temporaires('./__tmp/export'          ,     60); // Nettoyer ce dossier des fichiers antérieurs à  1 heure
+		effacer_fichiers_temporaires('./__tmp/dump-base'       ,     60); // Nettoyer ce dossier des fichiers antérieurs à  1 heure
+		effacer_fichiers_temporaires('./__tmp/import'          ,  10080); // Nettoyer ce dossier des fichiers antérieurs à  1 semaine
+		effacer_fichiers_temporaires('./__tmp/rss/'.$BASE      ,  43800); // Nettoyer ce dossier des fichiers antérieurs à  1 mois
+		effacer_fichiers_temporaires('./__tmp/officiel/'.$BASE , 438000); // Nettoyer ce dossier des fichiers antérieurs à 10 mois
+		effacer_fichiers_temporaires('./__tmp/badge/'.$BASE    , 481800); // Nettoyer ce dossier des fichiers antérieurs à 11 mois
+		effacer_fichiers_temporaires('./__tmp/cookie/'.$BASE   , 525600); // Nettoyer ce dossier des fichiers antérieurs à  1 an
+		effacer_fichiers_temporaires('./__tmp/devoir/'.$BASE   , 43800*FICHIER_DUREE_CONSERVATION); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
 		unlink($fichier_lock);
 	}
 	// Si le fichier témoin du nettoyage existe, on vérifie que sa présence n'est pas anormale (cela s'est déjà produit...)
@@ -917,11 +1156,14 @@ function enregistrer_session_user($BASE,$DB_ROW)
 		'CAS_SERVEUR_PORT',
 		'ENVELOPPE_HORIZONTAL_GAUCHE','ENVELOPPE_HORIZONTAL_MILIEU','ENVELOPPE_HORIZONTAL_DROITE',
 		'ENVELOPPE_VERTICAL_HAUT','ENVELOPPE_VERTICAL_MILIEU','ENVELOPPE_VERTICAL_BAS',
-		'BULLETIN_MARGE_GAUCHE','BULLETIN_MARGE_DROIT','BULLETIN_MARGE_HAUT','BULLETIN_MARGE_BAS'
+		'OFFICIEL_MARGE_GAUCHE','OFFICIEL_MARGE_DROITE','OFFICIEL_MARGE_HAUT','OFFICIEL_MARGE_BAS',
+		'OFFICIEL_RELEVE_APPRECIATION_RUBRIQUE','OFFICIEL_RELEVE_APPRECIATION_GENERALE','OFFICIEL_RELEVE_MOYENNE_SCORES','OFFICIEL_RELEVE_POURCENTAGE_ACQUIS','OFFICIEL_RELEVE_CASES_NB','OFFICIEL_RELEVE_AFF_COEF','OFFICIEL_RELEVE_AFF_SOCLE','OFFICIEL_RELEVE_AFF_DOMAINE','OFFICIEL_RELEVE_AFF_THEME',
+		'OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE','OFFICIEL_BULLETIN_APPRECIATION_GENERALE','OFFICIEL_BULLETIN_MOYENNE_SCORES','OFFICIEL_BULLETIN_NOTE_SUR_20','OFFICIEL_BULLETIN_MOYENNE_CLASSE','OFFICIEL_BULLETIN_MOYENNE_GENERALE',
+		'OFFICIEL_SOCLE_APPRECIATION_RUBRIQUE','OFFICIEL_SOCLE_APPRECIATION_GENERALE','OFFICIEL_SOCLE_ONLY_PRESENCE','OFFICIEL_SOCLE_POURCENTAGE_ACQUIS','OFFICIEL_SOCLE_ETAT_VALIDATION'
 	);
 	$tab_type_tableau = array(
 		'CSS_BACKGROUND-COLOR','CALCUL_VALEUR','CALCUL_SEUIL','NOTE_TEXTE','NOTE_LEGENDE','ACQUIS_TEXTE','ACQUIS_LEGENDE',
-		'ETABLISSEMENT','ENVELOPPE','BULLETIN'
+		'ETABLISSEMENT','ENVELOPPE','OFFICIEL'
 	);
 	foreach($DB_TAB as $DB_ROW)
 	{
@@ -1009,9 +1251,9 @@ function actualiser_style_session()
 	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag0 {background:'.$_SESSION['BACKGROUND_V0'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
 	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag1 {background:'.$_SESSION['BACKGROUND_V1'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
 	$_SESSION['CSS'] .= '#tableau_validation tbody th.diag2 {background:'.$_SESSION['BACKGROUND_V2'].' url(./_img/socle/arrow_diag.gif) no-repeat center center;opacity:'.$_SESSION['OPACITY'].'}';
-	$_SESSION['CSS'] .= 'th.v0 , td.v0 {background:'.$_SESSION['BACKGROUND_V0'].'}';
-	$_SESSION['CSS'] .= 'th.v1 , td.v1 {background:'.$_SESSION['BACKGROUND_V1'].'}';
-	$_SESSION['CSS'] .= 'th.v2 , td.v2 {background:'.$_SESSION['BACKGROUND_V2'].'}';
+	$_SESSION['CSS'] .= 'th.v0 , td.v0 , span.v0 {background:'.$_SESSION['BACKGROUND_V0'].'}';
+	$_SESSION['CSS'] .= 'th.v1 , td.v1 , span.v1 {background:'.$_SESSION['BACKGROUND_V1'].'}';
+	$_SESSION['CSS'] .= 'th.v2 , td.v2 , span.v2 {background:'.$_SESSION['BACKGROUND_V2'].'}';
 	$_SESSION['CSS'] .= '#zone_information .v0 {background:'.$_SESSION['BACKGROUND_V0'].';padding:0 1em;margin-right:1ex}';
 	$_SESSION['CSS'] .= '#zone_information .v1 {background:'.$_SESSION['BACKGROUND_V1'].';padding:0 1em;margin-right:1ex}';
 	$_SESSION['CSS'] .= '#zone_information .v2 {background:'.$_SESSION['BACKGROUND_V2'].';padding:0 1em;margin-right:1ex}';
@@ -1201,7 +1443,7 @@ function afficher_arborescence_matiere_from_SQL($DB_TAB,$dynamique,$reference,$a
 	$span_avant = ($dynamique) ? '<span>' : '' ;
 	$span_apres = ($dynamique) ? '</span>' : '' ;
 	$retour  = '<ul class="ul_m1">';
-	$retour .= ($aff_input) ? '<input name="leurre" type="image" alt="" src="./_img/auto.gif" />'."\r\n" : "\r\n" ;
+	$retour .= ($aff_input) ? '<input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" />'."\r\n" : "\r\n" ;
 	if(count($tab_matiere))
 	{
 		foreach($tab_matiere as $matiere_id => $matiere_texte)
@@ -1701,6 +1943,28 @@ function Ecrire_Fichier($fichier_chemin,$fichier_contenu,$file_append=0)
 }
 
 /**
+ * zipper_fichiers
+ * Zipper les fichiers de svg
+ *
+ * @param string $dossier_fichiers_a_zipper
+ * @param string $dossier_zip_final
+ * @param string $fichier_zip_nom
+ * @return void
+ */
+
+function zipper_fichiers($dossier_fichiers_a_zipper,$dossier_zip_final,$fichier_zip_nom)
+{
+	$zip = new ZipArchive();
+	$zip->open($dossier_zip_final.$fichier_zip_nom, ZIPARCHIVE::CREATE);
+	$tab_fichier = Lister_Contenu_Dossier($dossier_fichiers_a_zipper);
+	foreach($tab_fichier as $fichier_sql_nom)
+	{
+		$zip->addFile($dossier_fichiers_a_zipper.$fichier_sql_nom,$fichier_sql_nom);
+	}
+	$zip->close();
+}
+
+/**
  * Dezipper un fichier contenant un ensemble de fichiers dans un dossier, avec son arborescence.
  * 
  * Inspiré de http://fr.php.net/manual/fr/ref.zip.php#79057
@@ -1764,16 +2028,10 @@ function unzip($fichier_zip,$dossier_dezip,$use_ZipArchive)
  */
 function adresse_RSS($prof_id)
 {
-	// Si le dossier n'existe pas, on le créé (possible car au début tous les RSS des établissements étaient dans un même dossier commun).
-	$dossier_nom = './__tmp/rss/'.$_SESSION['BASE'];
-	if(!is_dir($dossier_nom))
-	{
-		Creer_Dossier($dossier_nom);
-		Ecrire_Fichier($dossier_nom.'/index.htm','Circulez, il n\'y a rien à voir par ici !');
-	}
 	// Le nom du RSS est tordu pour le rendre un minimum privé, sans être totalement aléatoire car il doit être fixe (mais il n'y a rien de confidentiel non plus).
+	$dossier_nom = './__tmp/rss/'.$_SESSION['BASE'];
 	$fichier_nom_debut = 'rss_'.$prof_id;
-	$fichier_nom_fin   = md5($fichier_nom_debut.$_SERVER['DOCUMENT_ROOT']);
+	$fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
 	$fichier_chemin    = $dossier_nom.'/'.$fichier_nom_debut.'_'.$fichier_nom_fin.'.xml';
 	if(!file_exists($fichier_chemin))
 	{
@@ -1922,6 +2180,29 @@ function tester_date($date)
 {
 	$date_unix = strtotime($date);
 	return ( ($date_unix!==FALSE) && ($date_unix!==-1) ) ? TRUE : FALSE ;
+}
+
+/**
+ * Renvoyer les dimensions d'une image à mettre dans les attributs HTML si on veut limiter son affichage à une largeur / hauteur données.
+ * 
+ * @param int   $largeur_reelle
+ * @param int   $hauteur_reelle
+ * @param int   $largeur_maxi
+ * @param int   $hauteur_maxi
+ * @return array   [$largeur_imposee,$hauteur_imposee]
+ */
+function dimensions_affichage_image($largeur_reelle,$hauteur_reelle,$largeur_maxi,$hauteur_maxi)
+{
+	if( ($largeur_reelle>$largeur_maxi) || ($hauteur_reelle>$hauteur_maxi) )
+	{
+		$coef_reduction_largeur = $largeur_maxi/$largeur_reelle;
+		$coef_reduction_hauteur = $hauteur_maxi/$hauteur_reelle;
+		$coef_reduction = min($coef_reduction_largeur,$coef_reduction_hauteur);
+		$largeur_imposee = round($largeur_reelle*$coef_reduction);
+		$hauteur_imposee = round($hauteur_reelle*$coef_reduction);
+		return array($largeur_imposee,$hauteur_imposee);
+	}
+	return array($largeur_reelle,$hauteur_reelle);
 }
 
 ?>
