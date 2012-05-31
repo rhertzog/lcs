@@ -64,7 +64,7 @@ if(getenv("HTTP_X_FORWARDED_HOST")) {
 }
 $baseurl = $baseurl."/";
 if ( @$_SERVER['SERVER_PORT']=="443" ) 
-    $baseurl=ereg_replace("http","https",$baseurl);
+    $baseurl=mb_ereg_replace("http","https",$baseurl);
 
 if ( $auth_mod != "ENT" ) 
 	$urlauth=$baseurl."lcs/auth.php";

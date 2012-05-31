@@ -52,11 +52,7 @@ if ($test_squir=="0") {
 }
 echo $head;	
 echo $msgIntro;
-
 echo '<table id="sorter"></table>
-<div id="pager"></div>';     
-
-mysql_free_result($result);
-mysql_close();
+      <div id="pager"></div>';     
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>

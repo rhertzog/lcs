@@ -40,10 +40,8 @@ if ($mod_auth=="LCS") {
 }
     	
     echo $head;	
-	echo $msgIntro;
-	echo '<table id="sorter_rappro"></table>
-	<div id="pager_rappro"></div>';   
-	mysql_free_result($result);
-    mysql_close();
-	include ("/var/www/lcs/includes/pieds_de_page.inc.php");
+    echo $msgIntro;
+    echo '<table id="sorter_rappro"></table>
+ 	  <div id="pager_rappro"></div>';   
+    include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>
