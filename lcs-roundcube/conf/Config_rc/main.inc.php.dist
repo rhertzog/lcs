@@ -72,7 +72,7 @@ $rcmail_config['default_port'] = 143;
 
 // IMAP auth type. Can be "auth" (CRAM-MD5), "plain" (PLAIN) or "check" to auto detect.
 // Optional, defaults to "check"
-$rcmail_config['imap_auth_type'] = null;
+$rcmail_config['imap_auth_type'] = 'PLAIN';
 
 // If you know your imap's root directory and its folder delimiter,
 // you can specify them here. Otherwise they will be determined automatically.
@@ -115,7 +115,7 @@ $rcmail_config['smtp_pass'] = '';
 
 // SMTP AUTH type (DIGEST-MD5, CRAM-MD5, LOGIN, PLAIN or empty to use
 // best server supported one)
-$rcmail_config['smtp_auth_type'] = '';
+$rcmail_config['smtp_auth_type'] = 'PLAIN';
 
 // SMTP HELO host 
 // Hostname to give to the remote server for SMTP 'HELO' or 'EHLO' messages 

@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.9~11) Lcs; urgency=low
+lcs-roundcube (2.4.9~12) Lcs; urgency=low
 
   * Initial release.
   * Add plugin lcs-notify-desktop
@@ -16,5 +16,5 @@ lcs-roundcube (2.4.9~11) Lcs; urgency=low
   * Hide the form identity modify in skins/default/templates/editidentity.html
   * Fix test authentication and subscribe module in lcs-roundcube-config
   * Fix and tentatively invalid lcs-notify-desktop when ENT authentication is used
-
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 May 2012 16:12:21 +0200
+  * Modify options in main config for best performances
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 01 Jun 2012 15:27:29 +0200
