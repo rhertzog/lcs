@@ -1036,9 +1036,16 @@ var JQD = (function($, window, undefined) {
 			* JQD.build.iconForm() : Formulaire de config des prefs
 			*@type : function
 			*/
-			settingBg: function(){				var setBg=JQD.settingForms();
-								var btnSetBg= $('<a class="float_left" id="btnsetbg"/>')				.click( 					function() {
-						if ( $('#setbg').length ==0 ) setBg.append( $('<div/>').load('core/forms/forms_prefs.php', function(){					$( "#tabs" ).tabs({						load: function(event, ui){							//
+			settingBg: function(){
+				var setBg=JQD.settingForms();
+				
+				var btnSetBg= $('<a class="float_left" id="btnsetbg"/>')
+				.click( 
+					function() {
+						if ( $('#setbg').length ==0 ) setBg.append( $('<div/>').load('core/forms/forms_prefs.php', function(){
+					$( "#tabs" ).tabs({
+						load: function(event, ui){
+							//
 							if ( parseInt(ui.index)==4 ||  parseInt(ui.index)==3 ) {
 								var ind = parseInt(ui.index),
 								selectIcons = ind==4?'select#dispIcons4' : 'select#dispQuick' ;
@@ -1081,9 +1088,21 @@ var JQD = (function($, window, undefined) {
 									JQD.utils.isValidEmailAddress($(this).val()) ? JQD.options.prms.maintUrl=$(this).val() : '';
 								})
 							}
-			 			},						ajaxOptions: {
-							error: function( xhr, status, index, anchor ) {								$( anchor.hash ).html( "Désolé, cette page n'existe pas " );							}						}					});				})).appendTo('#desktop');
-						setBg.hasClass('active') ? $('#setbg').find('span.jqd-close').trigger('click') : setBg.animate({ bottom:0, opacity:1 }, 1000 ).addClass('active');						$(this).toggleClass('selected');					} 				)				.insertAfter('#show_desktop');			},			/*
+			 			},
+						ajaxOptions: {
+							error: function( xhr, status, index, anchor ) {
+								$( anchor.hash ).html( "Désolé, cette page n'existe pas " );
+							}
+						}
+					});
+				})).appendTo('#desktop');
+						setBg.hasClass('active') ? $('#setbg').find('span.jqd-close').trigger('click') : setBg.animate({ bottom:0, opacity:1 }, 1000 ).addClass('active');
+						$(this).toggleClass('selected');
+					} 
+				)
+				.insertAfter('#show_desktop');
+			},
+			/*
 			* JQD.build.go() : lancement de l'init
 			*@type : function
 			*@param : opts - JQD.options
@@ -1099,7 +1118,9 @@ var JQD = (function($, window, undefined) {
 		* JQD.settingForms() : lancement de l'init des formulaiores de conf
 		*@type : function
 		*/
-		settingForms: function(){			var setFrm=$('<div class="abs" id="setbg"/>').css({opacity:0})			.append( $('<h3/>').html('Préférences Lcs-Bureau') );
+		settingForms: function(){
+			var setFrm=$('<div class="abs" id="setbg"/>').css({opacity:0})
+			.append( $('<h3/>').html('Préférences Lcs-Bureau') );
 			var btnSetFrmClose = $('<span class="float_right jqd-close"/>').click(function(){
 				setFrm.animate({ opacity:0, bottom:'-350px' },1000, function(){
 					$("#btnsetbg").toggleClass('selected');
@@ -1108,7 +1129,8 @@ var JQD = (function($, window, undefined) {
 					$('#defaultBg').removeAttr('checked')  ;
 					$('#contentSlider, #contentFormBg').css('background-color','#000000') ;
 					$('.admin_only').hide();
-					setFrm.find('div>div').tabs('select', 0);				})
+					setFrm.find('div>div').tabs('select', 0);
+				})
 			}) ;
 			return setFrm.prepend(btnSetFrmClose);
 		},
@@ -2772,9 +2794,9 @@ var JQD = (function($, window, undefined) {
             }
 			else if(opts.user.pwchg == 'N' ) {
                 JQD.build.btop() ;JQD.build.bbttm();JQD.init.wpp( opts );
-                JQD.logform('../Annu/mod_pwd.php')
+                JQD.logform('../Annu/mod_pwd.php');
                 $('#bar_top').append( JQD.build.btopr(opts) );
-                JQD.logform(opts.apps.auth.url) ;
+                //JQD.logform(opts.apps.auth.url) ;
             }
 			else {
 				JQD.mk(  opts  );
