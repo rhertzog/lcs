@@ -3,6 +3,7 @@ jQuery("#sorter").jqGrid({
 url:'redir_mail_list.php', 
 datatype: "xml",
  height: 250,
+ width: 900,
   colNames:['Id','Auteur','Login redirig&eacute;', 'Adresse personnelle', 'Copie','Date','Adresse'],
   colModel:[ {name:'id',index:'id', width:30, sorttype:"int",align:"right"},
    {name:'Auteur',index:'faitpar', width:90,align:"right"},

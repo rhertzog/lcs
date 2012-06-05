@@ -116,6 +116,7 @@ if ( stristr($_SERVER["HTTP_ACCEPT"],"application/xhtml+xml") ) {
  echo "<row id='". $row[id]."'>"; 
  echo "<cell>". $row[id]."</cell>"; 
  list($user, $groups)=people_get_variables($row[login_lcs], true);
+ if ($user["fullname"]=="") $user["fullname"]="-";
  echo "<cell>". $user["fullname"]."</cell>"; 
  echo "<cell><![CDATA[". $row[login_lcs]."]]></cell>"; 
  echo "<cell>". $row[id_ent]."</cell>";  

@@ -2,8 +2,10 @@ lcs-web (2.4.9~10) Lcs; urgency=low
 
   * fix warning in log_rapprochement.php and mails_rediriges.php
   * replace deprecated function in  /var/www/lcs/includes/config.inc.in
+  * specific display for "deprecated users" in log_rapprochements
+  * disable search with name/firstanme in log_rapprochements
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 31 May 2012 17:26:14 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 01 Jun 2012 18:04:36 +0200
 
 lcs-web (2.4.9~9) Lcs; urgency=low
   [ Jean-Luc Chretien ]

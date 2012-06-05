@@ -25,7 +25,7 @@ $head .= "         <script type='text/javascript' src='../libjs/jqGrid/js/jquery
 $head .= "         <script type='text/javascript' src='./js/script_rapproche.js'></script>\n";
 $head .= "	</head>\n";
 $head .= "	<body>\n";
-$msgIntro = "<h1> Comptes LCS / ENT rapproch&eacute;s</h1>\n";
+$msgIntro = "<h1> Comptes LCS / ENT rapproch&eacute;s</h1>\n <br />";
 
 list ($idpers, $login)= isauth();
 
@@ -40,8 +40,10 @@ if ($mod_auth=="LCS") {
 }
     	
     echo $head;	
-    echo $msgIntro;
-    echo '<table id="sorter_rappro"></table>
- 	  <div id="pager_rappro"></div>';   
-    include ("/var/www/lcs/includes/pieds_de_page.inc.php");
+	echo $msgIntro;
+	echo '<table id="sorter_rappro"></table>
+	<div id="pager_rappro"></div>';   
+	//mysql_free_result($result);
+    //mysql_close();
+	include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>

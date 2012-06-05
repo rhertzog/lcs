@@ -26,7 +26,7 @@ $head .= "         <script type='text/javascript' src='./js/script_redir.js'></s
 $head .= "	</head>\n";
 $head .= "	<body>\n";
 
-$msgIntro = "<h1>Redirection des mails</h1>\n";
+$msgIntro = "<h1>Redirection des mails</h1>\n <br/>";
 
 list ($idpers, $login)= isauth();
 if (ldap_get_right("lcs_is_admin",$login)!="Y") {
@@ -52,7 +52,11 @@ if ($test_squir=="0") {
 }
 echo $head;	
 echo $msgIntro;
+
 echo '<table id="sorter"></table>
-      <div id="pager"></div>';     
+<div id="pager"></div>';     
+
+mysql_free_result($result);
+mysql_close();
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>
