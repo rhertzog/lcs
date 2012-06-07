@@ -5,7 +5,7 @@
    Log des comptes LCS / ENT rapproches
    log_rapprochements.php
    Equipe Tice academie de Caen
-   07/12/2012 
+   07/06/2012 
    Distribue selon les termes de la licence GPL
    ============================================= */
 
@@ -39,11 +39,9 @@ if ($mod_auth=="LCS") {
     die (gettext("<div class='error_msg'>Le mode d'authentification LCS doit etre ENT pour acceder a cette page.</div>")."</body></html>");
 }
     	
-    echo $head;	
-	echo $msgIntro;
-	echo '<table id="sorter_rappro"></table>
-	<div id="pager_rappro"></div>';   
-	//mysql_free_result($result);
-    //mysql_close();
-	include ("/var/www/lcs/includes/pieds_de_page.inc.php");
+echo $head;	
+echo $msgIntro;
+echo '<table id="sorter_rappro"></table>
+<div id="pager_rappro"></div>';   
+include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>

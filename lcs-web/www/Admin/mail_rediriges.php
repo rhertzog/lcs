@@ -5,7 +5,7 @@
    Log des redirections de mails
    mail_rediriges.php
    Equipe Tice academie de Caen
-   06/11/2009 
+   07/06/2012 
    Distribue selon les termes de la licence GPL
    ============================================= */
 
@@ -55,8 +55,5 @@ echo $msgIntro;
 
 echo '<table id="sorter"></table>
 <div id="pager"></div>';     
-
-mysql_free_result($result);
-mysql_close();
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>
