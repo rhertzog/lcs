@@ -46,4 +46,7 @@ fi
 # Actions non liées a une installation initiale ou à une mise à jour.
 #
 
+# Reload apache2
+invoke-rc.d apache2 reload
+
 exit 0
