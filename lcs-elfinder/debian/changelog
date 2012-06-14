@@ -1,4 +1,4 @@
-lcs-elfinder (2.4.9~1) Lcs; urgency=low
+lcs-elfinder (2.4.9) Lcs; urgency=low
 
   * Changing the folder structure
   * Deleting unnecessary files
@@ -6,7 +6,7 @@ lcs-elfinder (2.4.9~1) Lcs; urgency=low
   * Fix bug when downloading file in public_html
   * Fix let bashism in postinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 13:44:47 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 16:16:41 +0200
 
 lcs-elfinder (2.4.8~10) Lcs; urgency=low
 
