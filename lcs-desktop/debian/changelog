@@ -1,4 +1,4 @@
-lcs-desktop (2.4.9~10) Lcs; urgency=low
+lcs-desktop (2.4.9) Lcs; urgency=low
 
   * Fix bug load_options function 
   * Add admin icon
@@ -13,7 +13,7 @@ lcs-desktop (2.4.9~10) Lcs; urgency=low
   * Fix bug for Change passwd in jquery.desktop.js
   * Modify desktop_settings.php for ENT description
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 11:16:05 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 14:44:53 +0200
 
 lcs-desktop (2.4.9~4) Lcs; urgency=low
 
