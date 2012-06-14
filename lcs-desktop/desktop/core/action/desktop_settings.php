@@ -224,7 +224,7 @@ function menuApplis($login, $idpers, $_ssmn) {
 	
 	// Tableau des noms affiches dans le menu, certains etant beaucoup trop longs ou techniques.
 	// Voir pour une modif en amont ?
-	$_ttl = array("pma"=>"Gestion base de donn&#233;es", "spip"=>"Forum LCS", "elfinder"=>"Explorateur de fichiers", "clientftp"=>"Explorateur de fichiers", "smbwebclient"=>"Client SE3", "squirrelmail"=>"Webmail", "roundcube"=>"Webmail");
+	$_ttl = array("pma"=>"Gestion base de donn&#233;es", "spip"=>"Forum LCS", "elfinder"=>"Explorateur de fichiers", "clientftp"=>"Explorateur de fichiers", "smbwebclient"=>"Client SE3", "squirrelmail"=>"Webmail", "roundcube"=>"Webmail", "ent"=>"Portail ENT");
 	
 	// Creation du tableau du menu deroulant des applis et ajout de l'item Preferences
 	$_applis= array(

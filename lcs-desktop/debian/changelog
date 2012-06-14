@@ -1,4 +1,4 @@
-lcs-desktop (2.4.9~9) Lcs; urgency=low
+lcs-desktop (2.4.9~10) Lcs; urgency=low
 
   * Fix bug load_options function 
   * Add admin icon
@@ -10,9 +10,10 @@ lcs-desktop (2.4.9~9) Lcs; urgency=low
 	* core/include/inc-win.php
         * core/includes/inc-bars_topbottom.php
         * core/actions/load_settings.php
-  * Fix bug for Chang pawd in jquery.desktop.js
+  * Fix bug for Change passwd in jquery.desktop.js
+  * Modify desktop_settings.php for ENT description
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 03 Jun 2012 17:04:51 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 11:16:05 +0200
 
 lcs-desktop (2.4.9~4) Lcs; urgency=low
 
