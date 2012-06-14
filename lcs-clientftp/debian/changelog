@@ -1,8 +1,8 @@
-lcs-clientftp (2.4.9~1) Lcs; urgency=low
+lcs-clientftp (2.4.9) Lcs; urgency=low
 
   * Fix let bashism in postinst 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 10 Nov 2011 13:45:54 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 14:06:00 +0200
 
 lcs-clientftp (2.4.8) Lcs; urgency=low
   [Cyril Bouthors]
