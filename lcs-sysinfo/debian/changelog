@@ -1,8 +1,8 @@
-lcs-sysinfo (2.4.8) Lcs; urgency=low
+lcs-sysinfo (2.4.9) Lcs; urgency=low
 
-  * Make a 2.4.8 release for Lenny and Squeeze
+  * Make a 2.4.9 release for Lenny and Squeeze
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 May 2011 13:45:04 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 18:06:51 +0200
 
 lcs-sysinfo (2.4.6.1) Lcs; urgency=low
 
