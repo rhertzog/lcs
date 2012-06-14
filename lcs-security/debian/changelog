@@ -1,8 +1,8 @@
-lcs-security (2.4.8) Lcs; urgency=low
+lcs-security (2.4.9) Lcs; urgency=low
 
-  * Make a 2.4.8 release 
+  * Make a 2.4.9 release 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 07 Oct 2011 13:49:47 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 17:26:27 +0200
 
 lcs-security (2.4.7.1) Lcs; urgency=low
 
