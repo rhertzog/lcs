@@ -1,27 +1,12 @@
-lcs-web (2.4.9~10) Lcs; urgency=low
-
-  * fix warning in log_rapprochement.php and mails_rediriges.php
-  * replace deprecated function in  /var/www/lcs/includes/config.inc.in
-  * specific display for "deprecated users" in log_rapprochements
-  * disable search with name/firstanme in log_rapprochements
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 01 Jun 2012 18:04:36 +0200
-
-lcs-web (2.4.9~9) Lcs; urgency=low
-  [ Jean-Luc Chretien ]
-  * Fix bug in edit_aprams.php
+lcs-web (2.4.9) Lcs; urgency=low
 
   [ Philippe LECLERC ]
   * Change display for "comptes rapprochés" and "mails redirigés"
   * Add enable/disable module type M
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 31 May 2012 14:44:42 +0200
-
-lcs-web (2.4.9~8) Lcs; urgency=low
-
   [ Jean-Luc Chretien ]
   2.4.9~9
-  * Fix bug in edit_aprams.php
+  * Fix bug in edit_params.php
   2.4.9~8
   * Add cat 6 params ENT in  edit_params.php 
   * Fix path in auth_ent.php and logout_ent.php
@@ -61,9 +46,9 @@ lcs-web (2.4.9~8) Lcs; urgency=low
   * Add adminse3 in searchAndDelete.pl
 
   [ Franck Molle]
-  * Modify assist.sh for LCS and SE3
+  * Modify assist.sh for LCS and SE3 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 31 May 2012 14:36:16 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 18:14:23 +0200
 
 lcs-web (2.4.8.2) Lcs; urgency=low
 
