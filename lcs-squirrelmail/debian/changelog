@@ -1,8 +1,8 @@
-lcs-squirrelmail (2.4.9~1) Lcs; urgency=low
+lcs-squirrelmail (2.4.9) Lcs; urgency=low
 
   * Unvalidate personnal options
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Mar 2012 12:11:22 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 18:05:13 +0200
 
 lcs-squirrelmail (2.4.8) Lcs; urgency=low
  
