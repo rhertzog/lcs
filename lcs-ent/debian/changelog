@@ -1,4 +1,4 @@
-lcs-ent (2.4.9~4) Lcs; urgency=low
+lcs-ent (2.4.9) Lcs; urgency=low
 
   * Initial release.
   * Add lcs-apache2ssl and lcs-roundcube in control depends
@@ -8,4 +8,4 @@ lcs-ent (2.4.9~4) Lcs; urgency=low
   * Add menu 70ent
   * Add ent folder in /usr/share/lcs/
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 13:15:57 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 16:20:09 +0200
