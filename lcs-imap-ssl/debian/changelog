@@ -1,8 +1,8 @@
-lcs-imap-ssl (2.4.9~1) lucid; urgency=low
+lcs-imap-ssl (2.4.9) Lcs; urgency=low
 
   * Make a release for squeeze
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Nov 2011 13:38:54 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 16:27:53 +0200
 
 lcs-imap-ssl (2.4.7) Unreleased; urgency=low
 
