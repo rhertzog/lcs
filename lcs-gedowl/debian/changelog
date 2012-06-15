@@ -1,3 +1,9 @@
+lcs-gedowl (2.4.9) unstable; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 11:26:19 +0200
+
 lcs-gedowl (2.4.9~2) unstable; urgency=low
 
   * change script sh in bash
