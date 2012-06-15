@@ -1,3 +1,9 @@
+lcs-wiki (2.4.9.1) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 14:36:42 +0200
+
 lcs-wiki (2.4.9.1~2) Lcs; urgency=low
 
   * change indicemajnbr in postinst
