@@ -61,7 +61,7 @@ if ($user = $this->GetUser())
 		{
 		if ($page["comment_on"] == $nompage) {
 		$nomcomment=$page["tag"]; ?>
-		<a href="<?php echo  $this->href("supcomment", "", "supp=Comment8") ?>"><? echo $page["tag"] ?></a>
+		<a href="<?php echo  $this->href("supcomment", "", "supp=Comment8") ?>"><?php echo $page["tag"] ?></a>
 		<?
 		
 		echo "<br />";

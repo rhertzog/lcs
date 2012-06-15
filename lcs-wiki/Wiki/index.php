@@ -2,7 +2,7 @@
 /*
 Copyright (c) 2002, Hendrik Mans <hendrik@mans.de>
 
-All rights reserved.
+All rights reserved.ccc
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
 are met:

@@ -27,13 +27,13 @@ if  ($this->GetUserName()== $this->config[admin_wiki] && $this->config[comments_
 			{
 			?>
 			Aucun mot inscrit.
-			<? 
+			<?php 
 			}
 		$r="insert into antispam (aspm_string) values ('$_POST[motspam]')";
 		mysql_query($r) or die (mysql_error());
 		?>
-		<? echo "$_POST[motspam]"; ?> est inséré dans la base de données.
-	<?
+		<?php echo "$_POST[motspam]"; ?> est inséré dans la base de données.
+	<?php
 		
 	}
 	?> 

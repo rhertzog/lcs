@@ -6,6 +6,7 @@ Copyright 2002, 2003 David DELON
 Copyright 2002, 2003 Charles NEPOTE
 Copyright  2003  Eric DELORD
 Copyright  2003  Eric FELDSTEIN
+Copyright  2009 Pierre Lachance
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -50,6 +51,8 @@ echo $this->Header();
 ?>
 <div class="page">
 <?php
+//Modif LLB
+//if ($HasAccessRead=$this->HasAccess("read"))
 if ($HasAccessRead=$this->HasAccess("read")||$this->UserInGroup("admins"))
 {
 	if (!$this->page)
@@ -196,6 +199,7 @@ if ($HasAccessRead)
 		echo "<br />" ;
 		// display comment form
 		echo "<div class=\"commentform\">\n" ;
+		//Modif LLB
 		if ($this->HasAccess("comment")||$this->UserInGroup("admins"))
 		{
 		$c1 = rand(0,9);
@@ -203,18 +207,18 @@ if ($HasAccessRead)
 		$calcul = ($c1 + $c2);
 		//echo $calcul;
 			?>
-			Ajouter un commentaire &agrave; cette page<? 
-				if ($this->config[ask_question_comment]=="1") { ?> <span class="question">(n'oubliez pas de donner la réponse au calcul)</span><? } ?>:<br />
+			Ajouter un commentaire &agrave; cette page<?php 
+				if ($this->config[ask_question_comment]=="1") { ?> <span class="question">(n'oubliez pas de donner la réponse au calcul)</span><?php } ?>:<br />
 				<?php echo  $this->FormOpen("addcomment"); ?>
-				<textarea name="body" rows="6" style="width: 99%" value="<? echo $_POST[body]; ?>"></textarea><br />
+				<textarea name="body" rows="6" style="width: 99%" value="<?php echo $_POST[body]; ?>"></textarea><br />
 					
-				<? 
+				<?php 
 				if ($this->config[ask_question_comment]=="1") {
 				echo "<span class=\"question\">$c1 + $c2 =</span>"; 
 				?>
 				<input name="rep" id="rep" type="text" size="3" maxlength="5" />
 				<input name="calcul" value="<?php echo $calcul; ?>" type="hidden" />
-				<? } ?>
+				<?php } ?>
 				<input type="submit" value="Ajouter Commentaire" accesskey="s" />
 				<?php echo  $this->FormClose(); ?>
 			<?php

@@ -1,11 +1,9 @@
 <?php
 
 /*
-backlinks.php
+prez.php
 
-Copyright 2002  Patrick PAUL
-Copyright 2003  David DELON
-Copyright 2003  Charles NEPOTE
+Copyright 2009 Pierre Lachance
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

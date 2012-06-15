@@ -5,6 +5,7 @@ Copyright (c) 2002, Hendrik Mans <hendrik@mans.de>
 Copyright 2002, 2003 David DELON
 Copyright 2002, 2003 Patrick PAUL
 Copyright  2003  Jean-Pascal MILCENT
+Copyright  2009 Pierre Lachance
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -38,6 +39,7 @@ $config = array_merge($wakkaConfig, $config);
 // set version to current version, yay!
 $config["wikini_version"] = WIKINI_VERSION;
 $config["wakka_version"] = WAKKA_VERSION;
+$config["wikinimst_version"] = WIKINIMST_VERSION;
 $config["url_site"] = "http://votreserveur.com/wikinimst";
 $config["upload_permission"] = "non";
 $config["admin_group"] = "admins";
@@ -64,6 +66,9 @@ $config["view_csv"] = "0";
 $config["view_flv"] = "0";
 $config["view_obj"] = "0";
 $config["view_freemind"] = "0";
+$config["view_squeak"] = "0";
+$config["view_scratch"] = "0";
+$config["view_iep"] = "0";
 $config["ask_question_page"] = "0";
 $config["ask_question_comment"] = "0";
 $config["comments_spam_enable"] = "0";
@@ -86,14 +91,14 @@ if ($fp)
 	// write
 	fclose($fp);
 	
-	echo "<p>Voila c'est termin&eacute; ! Vous pouvez <a href=\"",$config["base_url"],"\">retourner sur votre site WikiNi</a>. Il est conseill&eacute; de retirer l'acc&egrave;s en &eacute;criture au fichier <tt>wakka.config.php</tt>. Ceci peut &ecirc;tre une faille dans la s&eacute;curit&eacute;.</p>";
+	echo "<p>Voila c'est termin&eacute; ! Vous pouvez <a href=\"",$config["base_url"],"\">retourner sur votre site propuls&eacute; par WikiNiMST</a>. Il est conseill&eacute; de retirer l'acc&egrave;s en &eacute;criture au fichier <tt>wakka.config.php</tt>. Ceci peut &ecirc;tre une faille dans la s&eacute;curit&eacute;.</p>";
 }
 else
 {
 	// complain
 	echo"<p><span class=\"failed\">AVERTISSEMENT:</span> Le
 fichier de configuration <tt>",$wakkaConfigLocation,"</tt> n'a pu &ecirc;tre
-cr&eacute;&eacute;. Veuillez vous assurez que votre serveur a les droits d'acc&egrave;s en &eacute;criture pour ce fichier. Si pour une raison quelconque vous ne pouvez pas faire &ccedil;a vous devez copier les informations suivantes dans un fichier et les transf&eacute;rer au moyen d'un logiciel de transfert de fichier (ftp) sur le serveur dans un fichier <tt>wakka.config.php</tt> directement dans le r&eacute;pertoire de WikiNi. Une fois que vous aurez fait cela, votre site WikiNi devrait fonctionner correctement.</p>\n";
+cr&eacute;&eacute;. Veuillez vous assurez que votre serveur a les droits d'acc&egrave;s en &eacute;criture pour ce fichier. Si pour une raison quelconque vous ne pouvez pas faire &ccedil;a vous devez copier les informations suivantes dans un fichier et les transf&eacute;rer au moyen d'un logiciel de transfert de fichier (ftp) sur le serveur dans un fichier <tt>wakka.config.php</tt> directement dans le r&eacute;pertoire de WikiNiMST. Une fois que vous aurez fait cela, votre site WikiNiMST devrait fonctionner correctement.</p>\n";
 	?>
 	<form action="<?php echo  myLocation() ?>?installAction=writeconfig" method="POST">
 	<input type="hidden" name="config" value="<?php echo  htmlentities(serialize($config2)) ?>">

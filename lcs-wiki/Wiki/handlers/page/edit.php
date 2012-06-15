@@ -96,10 +96,8 @@ if ($this->HasAccess("write") && $this->HasAccess("read"))
 				$this->ClearLinkTable();
 				$this->StartLinkTracking();
 				//$dummy = $this->Header();
-				//$dummy .= $this->Format($body);
+				$dummy .= $this->Format($body);
 				//$dummy .= $this->Footer();
-				$dummy = $this->Format($body);
-				 //$dummy .= $this->Footer();
 				$this->StopLinkTracking();
 				$this->WriteLinkTable();
 				$this->ClearLinkTable();

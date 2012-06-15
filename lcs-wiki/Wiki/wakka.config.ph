@@ -2,7 +2,7 @@
 // wakka.config.php cr&eacute;&eacute;e Sat Apr 12 10:56:41 2008
 // Ne changez pas la wikini_version manuellement!
 
-require ("config.php");
+require ("/var/www/lcs/includes/config.inc.php");
 
 $wakkaConfig = array(
 	"wakka_version" => "0.1.1",
@@ -31,7 +31,7 @@ $wakkaConfig = array(
 	"default_comment_acl" => "+",
 	"referrers_disable" => "1",
 	"preview_before_save" => "0",
-	"url_site" => $baseurl."Plugins/Wiki",
+	"url_site" => $baseurl."Plugins/Wiki/",
 	"upload_permission" => "oui",
 	"admin_group" => "admins",
 	"admin_wiki" => "admin",

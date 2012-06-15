@@ -1,10 +1,8 @@
 <?php
 /*
-usersettings.php
-Copyright (c) 2002, Hendrik Mans <hendrik@mans.de>
-Copyright 2002, 2003 David DELON
-Copyright 2002, 2003 Charles NEPOTE
-Copyright 2002  Patrick PAUL
+userlogin.php
+Copyright (c) 2009 Pierre Lachance
+
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions

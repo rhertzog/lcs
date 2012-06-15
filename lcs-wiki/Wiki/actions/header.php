@@ -50,11 +50,12 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="stylesheet" type="text/css" media="screen" href="wakka.basic.css" />
 <style type="text/css" media="all"> @import "<?php echo (!isset($_COOKIE["sitestyle"]))?'wakka':$_COOKIE["sitestyle"] ?>.css";</style>
 
+<!--//Modif LLB-->
 <!-- include du script function.js contenant toutes les fonctions javascript-->
 <script type="text/javascript" src="lcs_scripts/js/function.js"></script>
 <!-- include pour le module freemind-->
 <script type="text/javascript" src="flashobject.js"></script>
-
+<!--//fin Modif LLB-->
 
 
 <script type="text/javascript">
@@ -117,10 +118,9 @@ if (!empty($header_page))
 	<?php echo $this->ComposeLinkToPage($this->config["root_page"]); ?> ::
 	<?php echo $this->config["navigation_links"] ? $this->Format($this->config["navigation_links"])." :: \n" : "" ?>
 	Vous &ecirc;tes <?php echo $this->Format($this->GetUserName()); 
-	
+	//Modif LLB
 	//permet l'affichage du lien "déconnexion"
-	//if ($user = $this->GetUser()) echo " (<a href=\"".$this->config["base_url"] ."ParametresUtilisateur&amp;action=logout\">D&eacute;connexion</a>)\n"; 
-	?>
+	//if ($user = $this->GetUser()) echo " (<a href=\"".$this->config["base_url"] ."ParametresUtilisateur&amp;action=logout\">D&eacute;connexion</a>)\n"; ?>
 </div>
 
 <?php
@@ -133,5 +133,4 @@ if (!empty($menu_page)){
     echo '</div>';
     echo '<div id="content">';
 }
-?>
-
+?> 

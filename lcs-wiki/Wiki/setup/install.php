@@ -5,6 +5,7 @@ Copyright (c) 2002, Hendrik Mans <hendrik@mans.de>
 Copyright 2002, 2003 David DELON
 Copyright 2002, 2003 Patrick PAUL
 Copyright  2003  Eric FELDSTEIN
+Copyright  2009 Pierre Lachance
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -35,7 +36,7 @@ $config = $_POST["config"];
 // test configuration
 echo "<b>Test de la configuration</b><br>\n";
 test("Test connexion MySQL ...", $dblink = @mysql_connect($config["mysql_host"], $config["mysql_user"], $config["mysql_password"]));
-test("Recherche base de donn&eacute;es ...", @mysql_select_db($config["mysql_database"], $dblink), "La base de donn&eacute;es que vous avez choisie n'existe pas, vous devez la cr&eacute;er avant d'installer WikiNi !");
+test("Recherche base de donn&eacute;es ...", @mysql_select_db($config["mysql_database"], $dblink), "La base de donn&eacute;es que vous avez choisie n'existe pas, vous devez la cr&eacute;er avant d'installer WikiNiMST !");
 echo "<br>\n" ;
 
 // do installation stuff
@@ -128,7 +129,7 @@ case "0":
 				$sql = "Insert into ".$config["table_prefix"]."pages ".
 				"set tag = '$pagename', ".
 				"body = '".mysql_escape_string($pagecontent)."', ".
-				"user = 'WikiNiInstaller', ".
+				"user = 'WikiNiMSTInstalleur', ".
 				"time = now(), ".
 				"latest = 'Y'";
 

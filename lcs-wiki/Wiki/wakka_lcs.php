@@ -17,7 +17,6 @@ Class WikiniLCS
 		#Utilisation de l'authentification du LCS
 		#La fonction isauth() teste si une session est en cours. Si oui, retourne $idpers!=0 et $login, si non retourne $idpers=0
 		list($idpers,$login) = isauth();
-                
 		if ($idpers != 0) {
 	                
 			$name = $login;

@@ -63,6 +63,8 @@ function fKeyDown()	{
 <div id="page_v">
 <div class="page">
 <?php
+//Modif LLB
+//if ($HasAccessRead=$this->HasAccess("read"))
 if ($HasAccessRead=$this->HasAccess("read")||$this->UserInGroup("admins"))
 {
 	if (!$this->page)

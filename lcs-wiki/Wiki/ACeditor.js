@@ -21,11 +21,11 @@
 		var s2 = (txtarea.value).substring(selStart, selEnd)
 		var s3 = (txtarea.value).substring(selEnd, selLength);
 		txtarea.value = s1 + lft + s2 + rgt + s3;
-	}
-	*/
+	}*/
+	
 
 	//Essai nouvelle fonction
-
+	// Modif LLB
 	function mozWrap(txtarea, lft, rgt) {
 		// mémorisation de la position du scroll
 		oldPos = txtarea.scrollTop;
@@ -54,6 +54,8 @@
 		txtarea.scrollTop = oldPos + newHght;
 		txtarea.focus();
         }
+
+	
 
 	function IEWrap(lft, rgt) {
 		strSelection = document.selection.createRange().text;

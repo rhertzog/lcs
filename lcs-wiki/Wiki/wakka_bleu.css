@@ -176,6 +176,8 @@ hr { border: 0px; color: #ccc; /* Internet Explorer */ background-color: #ccc; h
 	font-size: 11px; 
 	color: #557; 
 	text-align: right; 
+	padding-right: 10px;
+	padding-top: 10px;
 }
 .copyright A { 
 	color: #557; 

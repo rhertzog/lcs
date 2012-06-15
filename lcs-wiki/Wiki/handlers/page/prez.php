@@ -68,6 +68,8 @@ if (!eregi("wakka.php", $_SERVER['PHP_SELF'])) {
 <div class="presentation">
 
 <?php
+//Modif LLB
+//if ($HasAccessRead=$this->HasAccess("read"))
 if ($HasAccessRead=$this->HasAccess("read")||$this->UserInGroup("admins"))
 {
 	if (!$this->page)

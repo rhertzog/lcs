@@ -463,7 +463,7 @@ class attach {
 	* Formulaire d'upload
 	*/
 	function showUploadForm(){
-		echo $this->wiki->Format("====Formulaire d'envois de fichier====\n---");
+		echo $this->wiki->Format("====Formulaire d'envois de fichier====\n#R#IMP: Avez-vous mis l'extension du fichier?#R#--- ---");
 		$this->file = $_GET['file'];
 		echo 	$this->wiki->Format("**Envois du fichier $this->file :**\n")
 				."<form enctype=\"multipart/form-data\" name=\"frmUpload\" method=\"POST\" action=\"".$_SERVER["PHP_SELF"]."\">\n"
@@ -736,10 +736,11 @@ class attach {
 	$large=$this->large;
 	if (!$haut) $haut = "650";
        	if (!$large) $large = "100%";
+	$urlmst = $this->wiki->config[url_site];
 	$mindmap_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 
 		$output =
-		"<script type=\"text/javascript\" src=\"flashobject.js\"></script><br />\n".
+		"<script type=\"text/javascript\" src=\"".$urlmst."flashobject.js\"></script><br />\n".
 		"<div id=\"flashcontent\">Flash plugin or Javascript are turned off. Activate both  and reload to view the mindmap</div>\n".
 	
 		"<script type=\"text/javascript\">\n".
@@ -752,11 +753,11 @@ class attach {
 		  }
 		  return result;
 		}\n".
-		"var fo = new FlashObject(\"visorFreemind.swf\", \"visorFreeMind\", \"$large\", \"$haut\", 6, \"#9999ff\");\n".
+		"var fo = new FlashObject(\"".$urlmst."visorFreemind.swf\", \"visorFreeMind\", \"$large\", \"$haut\", 6, \"#9999ff\");\n".
 		"fo.addParam(\"quality\", \"high\");\n".
 		"fo.addParam(\"bgcolor\", \"#ffffff\");\n".
 		"fo.addVariable(\"openUrl\", \"_blank\");\n".
-		"fo.addVariable(\"initLoadFile\", \"$fullFilename\");\n".
+		"fo.addVariable(\"initLoadFile\", \"".$urlmst."$fullFilename\");\n".
 		"fo.addVariable(\"startCollapsedToLevel\",\"5\");\n".
 		"fo.write(\"flashcontent\");\n".
 		"// ]]></script>\n".
@@ -776,11 +777,11 @@ class attach {
 	$large=$this->large;
 	if (!$haut) $haut = "450";
        	if (!$large) $large = "100%";
+	$urlmst = $this->wiki->config[url_site];
 	$geogebra_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
-	
 		$output =
 	
-		"<applet code=\"geogebra.GeoGebraApplet\" archive=\"geogebra.jar\" width=\"$large\" height=\"$haut\">\n".	
+		"<applet code=\"geogebra.GeoGebraApplet\" archive=\"".$urlmst."geogebra/geogebra.jar\" width=\"$large\" height=\"$haut\">\n".	
 		"	<param name=\"filename\" value=\"$geogebra_url\" />\n".
 		"	<param name=\"framePossible\" value=\"false\" />\n".
 		"</applet>\n".
@@ -800,11 +801,12 @@ class attach {
 	$large=$this->large;
 	if (!$haut) $haut = "450";
        	if (!$large) $large = "100%";
+	$urlmst = $this->wiki->config[url_site];
 	$geonext_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
-		
+	$contents = file_get_contents("$urlmst$fullFilename");
 		$output =
-		"<applet id=\"umf_rect\" code=\"geonext.Geonext.class\" archive=\"geonext.jar\" width=\"$large\" height=\"$haut\">\n".
-		"	<param name=\"geonext\" value=\"file:$fullFilename\" />\n".
+		"<applet id=\"umf_rect\" codebase=\"$urlmst\" code=\"geonext.Geonext.class\" archive=\"".$urlmst."geonext.jar\" width=\"$large\" height=\"$haut\">\n".
+		"	<param name=\"geonext\" value=\"$contents\" />\n".
 		"	<param name=\"scriptable\" value=\"true\" />\n".
 		"	<param name=\"MAYSCRIPT\" value=\"true\" />\n".
 	
@@ -818,6 +820,7 @@ class attach {
 		$this->showUpdateLink();
 		echo "</span><div style=\"clear:both;\"></div>";
 	}
+
  	/**
 	* Affiche le fichier geolabo dans une boite.
 	*/
@@ -826,10 +829,11 @@ class attach {
 	$large=$this->large;
 	if (!$haut) $haut = "450";
        	if (!$large) $large = "100%";
+	$urlmst = $this->wiki->config[url_site];
 	$geolabo_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 		$output =
 				
-		"<applet code=\"geolabo.geoweb.class\" codebase=\".\" archive=\"geoweb.jar\" width=\"$large\" height=\"$haut\">\n".
+		"<applet code=\"geolabo.geoweb.class\" codebase=\"$urlmst\" archive=\"".$urlmst."geoweb.jar\" width=\"$large\" height=\"$haut\">\n".
 			
 		"	<param name=\"figure\" value=\"$fullFilename\" />\n".
 		"	<param name=\"framePossible\" value=\"false\" />\n".
@@ -876,10 +880,16 @@ class attach {
 	function showAsMp3($fullFilename){
 	$titre=$this->desc;
 	$mp3_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
+	$urlmst = $this->wiki->config[url_site];
 	if (!$this->classes) {$laclass="nul";} else {$laclass=$this->classes;}
 		$output =
 		
-		"<div class=\"$laclass\"><object type=\"application/x-shockwave-flash\" data=\"xspf.swf?song_url=$fullFilename&amp;song_title=$titre\" width=\"300\" height=\"20\"><param name=\"quality\" value=\"high\" /><param name=\"movie\" value=\"xspf.swf?song_url=$fullFilename&amp;song_title=$titre\" /> </object>\n".	
+		"<div class=\"$laclass\"><object type=\"application/x-shockwave-flash\" data=\"".$urlmst."player_mp3_maxi.swf\" width=\"250\" height=\"35\">
+		<param name=\"movie\" value=\"".$urlmst."player_mp3_maxi.swf\" />
+		<param name=\"bgcolor\" value=\"#ffffff\" />
+		<param name=\"FlashVars\" value=\"mp3=$urlmst$fullFilename&amp;showstop=1&amp;showinfo=1&amp;showvolume=1&amp;showloading=always\" />
+		</object>\n".
+	
 		"<br />\n".
 		"<a href=\"$mp3_url\">T&eacute;l&eacute;charger $this->desc</a>\n";
 		
@@ -894,10 +904,11 @@ class attach {
 	function showAsMp3mini($fullFilename){
 	$titre=$this->desc;
 	$mp3_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
+	$urlmst = $this->wiki->config[url_site];
 	if (!$this->classes) {$laclass="nul";} else {$laclass=$this->classes;}
 		$output =
 		
-		"<div class=\"$laclass\"><object type=\"application/x-shockwave-flash\" data=\"emff_standard.swf?src=$fullFilename&amp;song_title=$titre\" width=\"130\" height=\"50\"><param name=\"quality\" value=\"high\" /><param name=\"movie\" value=\"emff_standard.swf?src=$fullFilename&amp;song_title=$titre\" /> </object>\n".	
+		"<div class=\"$laclass\"><object type=\"application/x-shockwave-flash\" data=\"".$urlmst."emff_standard.swf?src=$urlmst$fullFilename&amp;song_title=$titre\" width=\"130\" height=\"50\"><param name=\"quality\" value=\"high\" /><param name=\"movie\" value=\"".$urlmst."emff_standard.swf?src=$urlmst$fullFilename&amp;song_title=$titre\" /> </object>\n".	
 		"<br />\n".
 		"<a href=\"$mp3_url\">Télécharger $this->desc</a>\n";
 		
@@ -933,18 +944,21 @@ class attach {
 	/**
 	* Affiche le fichier flv dans un player flash.
 	*/
+
 	function showAsFlv($fullFilename){
 	$haut=$this->haut;
 	$large=$this->large;
+	$urlmst = $this->wiki->config[url_site];
 	if (!$haut) $haut = "260";
        	if (!$large) $large = "340";
 	$titre=$this->desc;
+	$titre=enlever_accents($titre);
 	$flv_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 	if (!$this->classes) {$laclass="nul";} else {$laclass=$this->classes;}
 		$output =
 		"<div class=\"$laclass\">\n".
-		"<object type=\"application/x-shockwave-flash\" width=\"$large\" height=\"$haut\" data=\"player_flv.swf?flv=$fullFilename&amp;bgcolor1=cccccc&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=66FF33&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;showvolume=1&amp;srt=1&amp;textcolor=0&amp;showstop=1&amp;title=$titre&amp;startimage=preview.jpg\" />\n".
-		"<param name=\"movie\" value=\"player_flv.swf?flv=$fullFilename&amp;width=$large&amp;height=$haut&amp;bgcolor1=cccccc&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=66FF33&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;showvolume=1&amp;srt=1&amp;textcolor=0&amp;showstop=1&amp;title=$titre&amp;startimage=preview.jpg\" />\n".
+		"<object type=\"application/x-shockwave-flash\" width=\"$large\" height=\"$haut\" data=\"".$urlmst."player_flv.swf?flv=$urlmst$fullFilename&amp;width=$large&amp;height=$haut&amp;bgcolor1=cccccc&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=66FF33&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;showvolume=1&amp;srt=1&amp;textcolor=0&amp;showstop=1&amp;title=$titre&amp;startimage=preview.jpg\" />\n".
+		"<param name=\"movie\" value=\"".$urlmst."player_flv.swf?flv=$urlmst$fullFilename&amp;width=$large&amp;height=$haut&amp;bgcolor1=cccccc&amp;bgcolor2=cccccc&amp;buttoncolor=999999&amp;buttonovercolor=66FF33&amp;slidercolor1=cccccc&amp;slidercolor2=999999&amp;sliderovercolor=666666&amp;showvolume=1&amp;srt=1&amp;textcolor=0&amp;showstop=1&amp;title=$titre&amp;startimage=preview.jpg\" />\n".
 		"<param name=\"wmode\" value=\"transparent\" />\n".
 		"</object>\n".
 		"<br />\n".
@@ -965,6 +979,7 @@ class attach {
        	if (!$large) $large = "790";
 	$titre=$this->desc;
 	$titre = str_replace(' ', '', $titre); 
+	$urlmst = $this->wiki->config[url_site];
 	$obj_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 	if (!$this->classes) {$laclass="nul";} else {$laclass=$this->classes;}
 		$output =
@@ -1079,9 +1094,9 @@ class attach {
 		<object id=\"applet1$titre\"
 			classid=\"java:JMath3D.class\"
 			type=\"application/x-java-applet\"
-			archive=\"JMath3D.jar\"
+			archive=\"".$urlmst."JMath3D.jar\"
 			width=\"$large\" height=\"$haut\">
-			<param name=\"archive\" value=\"JMath3D.jar\" />
+			<param name=\"archive\" value=\"".$urlmst."JMath3D.jar\" />
 			<param name=\"patron\" value=\"0.5 curseur\" />
 			<param name=\"fichier\"       value=\"$obj_url\" />
 			<param name=\"epaisseur\"     value=\"2\" />
@@ -1093,7 +1108,7 @@ class attach {
 			id=\"appletIE1$titre\" width=\"$large\" height=\"$haut\" >
 			<param name=\"code\"          value=\"JMath3D\" />
 			<param name=\"patron\" value=\"0.5 curseur\" />
-			<param name=\"archive\"       value=\"JMath3D.jar\" />
+			<param name=\"archive\"       value=\"".$urlmst."JMath3D.jar\" />
 			<param name=\"fichier\"       value=\"$obj_url\" />
 			<param name=\"epaisseur\"     value=\"2\" />
 			<param name=\"animation\" value=\"0.02 0 .01\" />
@@ -1203,9 +1218,9 @@ class attach {
 		<object id=\"applet1$titre\"
 			classid=\"java:JMath3D.class\"
 			type=\"application/x-java-applet\"
-			archive=\"JMath3D.jar\"
+			archive=\"".$urlmst."JMath3D.jar\"
 			width=\"$large\" height=\"$haut\">
-			<param name=\"archive\" value=\"JMath3D.jar\" />
+			<param name=\"archive\" value=\"".$urlmst."JMath3D.jar\" />
 			<param name=\"patron\" value=\"\" />
 			<param name=\"fichier\"       value=\"$obj_url\" />
 			<param name=\"epaisseur\"     value=\"2\" />
@@ -1217,7 +1232,7 @@ class attach {
 			id=\"appletIE1$titre\" width=\"$large\" height=\"$haut\" >
 			<param name=\"code\"          value=\"JMath3D\" />
 			<param name=\"patron\" value=\"0.5 curseur\" />
-			<param name=\"archive\"       value=\"JMath3D.jar\" />
+			<param name=\"archive\"       value=\"".$urlmst."JMath3D.jar\" />
 			<param name=\"fichier\"       value=\"$obj_url\" />
 			<param name=\"epaisseur\"     value=\"2\" />
 			<param name=\"animation\" value=\"0.02 0 .01\" />
@@ -1261,11 +1276,12 @@ class attach {
 	if (!$haut) $haut = "400";
        	if (!$large) $large = "500";
 	$titre=$this->desc;
+	$urlmst = $this->wiki->config[url_site];
 	$scratch_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 		$output =
 		
 		"<div class=\"$this->classes\">\n".
-		"<applet id=\"ProjectApplet$titre\" style=\"display:block\" code=\"ScratchApplet\" codebase=\"./\" archive=\"ScratchApplet.jar\" height=\"$haut\" width=\"$large\"><param name=\"project\" value=\"$fullFilename\"></applet>".
+		"<applet id=\"ProjectApplet$titre\" style=\"display:block\" code=\"ScratchApplet\" codebase=\"$urlmst\" archive=\"".$urlmst."ScratchApplet.jar\" height=\"$haut\" width=\"$large\"><param name=\"project\" value=\"$fullFilename\"></applet>".
 		
 		"<br />\n".
 
@@ -1281,6 +1297,7 @@ class attach {
 	if (!$haut) $haut = "500";
        	if (!$large) $large = "100%";
 	$titre=$this->desc;
+	$urlmst = $this->wiki->config[url_site];
 	$iep_url = $this->wiki->href("download",$this->wiki->GetPageTag(),"file=$this->file");
 		$output =
 		
@@ -1288,11 +1305,11 @@ class attach {
 		"<object classid=\"clsid:d27cdb6e-ae6d-11cf-96b8-444553540000\" codebase=\"http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0\" id=\"instrumenpoche\" width=\"100%\" height=\"600\" align=\"middle\">
 		
 		<param name=\"allowScriptAccess\" value=\"sameDomain\" />
-		<param name=\"movie\" value=\"Animation.swf?$fullFilename\" />
+		<param name=\"movie\" value=\"".$urlmst."Animation.swf?$fullFilename\" />
 		
 		<param name=\"quality\" value=\"high\" />
 		<param name=\"bgcolor\" value=\"#ffffff\" />
-		<embed src=\"Animation.swf?anim=$fullFilename\" loop=\"false\" quality=\"high\" bgcolor=\"#ffffff\" width=\"800\" height=\"600\" swLiveConnect=true id=\"instrumenpoche\" name=\"instrumenpoche\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />
+		<embed src=\"".$urlmst."Animation.swf?anim=$fullFilename\" loop=\"false\" quality=\"high\" bgcolor=\"#ffffff\" width=\"800\" height=\"600\" swLiveConnect=true id=\"instrumenpoche\" name=\"instrumenpoche\" align=\"middle\" allowScriptAccess=\"sameDomain\" type=\"application/x-shockwave-flash\" pluginspage=\"http://www.macromedia.com/go/getflashplayer\" />
 		</object>".
 		
 		"<br />\n".

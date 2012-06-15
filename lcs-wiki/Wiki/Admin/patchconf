@@ -44,7 +44,7 @@ done
 #si il existe déjà un wakka.config.php, on ne l'écrase pas
 if [ ! -e ../wakka.config.php ]; then
  { 
-  echo "Patch du fichier wakka.config.php : le fichier existe"
+  echo "Patch du fichier wakka.config.php : le fichier n'existe pas"
   mv ../wakka.config.ph ../wakka.config.php
   chown www-data.www-data ../wakka.config.php
  }
@@ -52,13 +52,30 @@ if [ ! -e ../wakka.config.php ]; then
  {
   echo "il existe un wakka.config.php"
   rm ../wakka.config.ph
+  #on modifie le fichier existant
+  echo "sauvegarde du fichier wakka.config.php en wakka.config.php.sauv"
+  #on renomme le fichier existant
+  mv ../wakka.config.php ../wakka.config.php.sauv
+  cat ../wakka.config.php.sauv | awk -F"\"" '
+  {
+  if ($1 ~ /^require/) { print "require (\"/var/www/lcs/includes/config.inc.php\");">> "../wakka.config.php" }
+  else {
+  if ($2=="url_site") {
+  print "\t\"url_site\""$3"\""$4"/\""$5 >> "../wakka.config.php"
+  }
+  else {
+  print $0 >> "../wakka.config.php"
+  }
+  }
+  }';
+  chown www-data.www-data ../wakka.config.php
  }
 fi
 
 #si il existe déjà un repertoire upload_dir, on ne l'écrase pas
 if [ ! -e ../upload_dir ]; then
  { 
-  echo "Patch du repertoire uplaod_dir : le dossier existe"
+  echo "Patch du repertoire uplaod_dir : le dossier n'existe pas"
   mv ../upload_dir.ori ../upload_dir
   chown -R www-data.www-data ../upload_dir
  }

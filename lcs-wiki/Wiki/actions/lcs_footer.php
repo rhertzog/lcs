@@ -117,7 +117,7 @@ echo '</div>'; //fin de wrap
 <div class="copyright">
 <a href="http://validator.w3.org/check/referer"><img src="images/valid_xhtml.png" alt="xhtmlvalid" /></a>
 <a href="http://jigsaw.w3.org/css-validator/check/referer"><img src="images/valid_css.png" alt="xhtmlvalid" /></a>
-<?php echo $this->GetWakkaName(); ?> fonctionne avec <a href="http://recitmst.qc.ca/wikinimst/wakka.php?wiki=SourcesDuWikiniMST">WikiNiMST 7.12.3</a>
+<?php echo $this->GetWakkaName(); ?> fonctionne avec <a href="http://recitmst.qc.ca/wikinimst/wakka.php?wiki=SourcesDuWikiniMST">WikiNiMST 9.06</a>
 </div>
 
 <?php

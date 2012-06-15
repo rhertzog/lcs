@@ -4,6 +4,7 @@ header.php
 Copyright (c) 2002, Hendrik Mans <hendrik@mans.de>
 Copyright 2002, 2003 David DELON
 Copyright 2002  Patrick PAUL
+Copyright  2009 Pierre Lachance
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -52,7 +53,7 @@ function myLocation()
 ?>
 <html>
 <head>
-  <title>Installation de WikiNi</title>
+  <title>Installation de WikiNiMST</title>
   <style>
     P, BODY, TD, LI, INPUT, SELECT, TEXTAREA { font-family: Verdana; font-size: 13px; }
     INPUT { color: #880000; }
@@ -63,4 +64,3 @@ function myLocation()
 </head>
 
 <body>
-

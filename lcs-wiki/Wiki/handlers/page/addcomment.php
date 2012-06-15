@@ -33,7 +33,7 @@ if (!eregi("wakka.php", $_SERVER['PHP_SELF'])) {
     die ("acc&egrave;s direct interdit");
 }
 echo $this->Header();
- 
+//Modif LLB 
 if ($this->HasAccess("comment")|| $this->UserInGroup("admins"))
 {
 	// find number

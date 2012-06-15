@@ -8,11 +8,11 @@ Copyright 2002, 2003 Charles NEPOTE
 Copyright 2002, 2003 Patrick PAUL
 Copyright  2003  Eric DELORD
 Copyright  2003  Eric FELDSTEIN
-
+Copyright  2009 Pierre Lachance
 ---------------------------------------------------------
 Modifié par le lycée laetitia Bonaparte 2008 pour le LCS
+Dernière modification Octobre 2009
 ---------------------------------------------------------
-
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -48,6 +48,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // do not change this line, you fool. In fact, don't change anything! Ever!
 define("WAKKA_VERSION", "0.1.1");
 define("WIKINI_VERSION", "0.4.3");
+define("WIKINIMST_VERSION", "9.06");
 // constant for parsing rules
 define("WN_UPPER", "[A-Z]"); // \xC0-\xD6\xD8-\xDE]");
 define("WN_LOWER", "[a-z]"); // \xDF-\xF6\xF8-\xFF]");
@@ -60,6 +61,7 @@ list($g_usec, $g_sec) = explode(" ",microtime());
 define ("t_start", (float)$g_usec + (float)$g_sec);
 $t_SQL=0;
 
+//Modif LLB
 # Pour l'authentification LDAP du LCS
 include("/var/www/lcs/includes/headerauth.inc.php");
 include("/var/www/Annu/includes/ldap.inc.php");
@@ -67,6 +69,7 @@ include("/var/www/Annu/includes/ihm.inc.php");
 
 include("wakka_lcs.php");
 
+//Modif LLB (rajout extends WikiniLCS)
 class Wiki extends WikiniLCS
 {
 	var $dblink;
@@ -98,27 +101,11 @@ class Wiki extends WikiniLCS
 		}
 		$this->VERSION = WAKKA_VERSION;
 
-
       //determine le chemin pour le cookie
       $a = parse_url($this->GetConfigValue('base_url'));
       $this->CookiePath = dirname($a['path']);
  	if ($this->CookiePath != '/') $this->CookiePath .= '/';
 	}
-
-	//Une autre fonction a été écrite dans le wakka_lcs.php
-	/*function GetUserName() { 
-                
-		if ($user = $this->GetUser()) {
-		      $name = $user["name"];
-		}
-		else if (!$name = gethostbyaddr($_SERVER["REMOTE_ADDR"])) {
-		      $name = $_SERVER["REMOTE_ADDR"];
-		} 
-
-		return $name;
-	
-    	}*/
-
 
 
 
@@ -128,7 +115,7 @@ class Wiki extends WikiniLCS
 		if($this->GetConfigValue("debug")) $start = $this->GetMicroTime();
 		if (!$result = mysql_query($query, $this->dblink))
 		{
-		ob_end_clean();
+			ob_end_clean();
 			die("Query failed: ".$query." (".mysql_error().")");
 		}
 		if($this->GetConfigValue("debug"))
@@ -243,8 +230,9 @@ class Wiki extends WikiniLCS
 		//die($tag);
 
 		// TODO: check write privilege
+		//Modif LLB
 		if ($comment_on ? $this->HasAccess("comment", $comment_on)||$this->UserInGroup("admins")
-		                : $this->HasAccess("write", $tag))
+			: $this->HasAccess("write", $tag))
 		{
 			// is page new?
 			if (!$oldPage = $this->LoadPage($tag))
@@ -596,7 +584,9 @@ class Wiki extends WikiniLCS
 	// USERS
 	function LoadUser($name, $password = 0) { return $this->LoadSingle("select * from ".$this->config["table_prefix"]."users where name = '".mysql_escape_string($name)."' ".($password === 0 ? "" : "and password = '".mysql_escape_string($password)."'")." limit 1"); }
 	function LoadUsers() { return $this->LoadAll("select * from ".$this->config["table_prefix"]."users order by name"); }
+	//Modif LLB (suppression de le fonction GetUserName()) ré-ecrite dans wakka_lcs
 	//function GetUserName() { if ($user = $this->GetUser()) $name = $user["name"]; else if (!$name = gethostbyaddr($_SERVER["REMOTE_ADDR"])) $name = $_SERVER["REMOTE_ADDR"]; return $name; }
+	//function GetUserName() { if ($user = $this->GetUser()) $name = $user["name"]; else if (!$name = ($_SERVER["REMOTE_ADDR"])) $name = $_SERVER["REMOTE_ADDR"]; return $name; }
 	function UserName() { /* deprecated! */ return $this->GetUserName(); }
 	function GetUser() { return (isset($_SESSION["user"]) ? $_SESSION["user"] : '');}
 	function SetUser($user, $remember=0) { $_SESSION["user"] = $user; $this->SetPersistentCookie("name", $user["name"], $remember); $this->SetPersistentCookie("password", $user["password"], $remember); $this->SetPersistentCookie("remember", $remember, $remember); }
@@ -825,35 +815,18 @@ class Wiki extends WikiniLCS
 				case "*":
 					return !$negate;
 				// a group entry
-                            /*   case "@":
+                               case "@":
                                  {
                                    if (! preg_match("/^[@](.*)$/",
                                                    $line, $matches))
                                     break;
                                   $line = $matches[1];
-                                  if (!$this->UserInGroup($line))
+                                  if ($this->UserInGroup($line))
                                     {
-                                      return $negate;
-                                    }
-                                  else
-                                   {
                                       return !$negate;
-			     	                                           }
-                                 }
-			     */
-                           case "@":
-			   {
-				if (! preg_match("/^[@](.*)$/",
-					$line, $matches))
-				break;
-				$line = $matches[1];
-				if ($this->UserInGroup($line))
-				{	
-					return !$negate;
-				}
-				break;
-			   }
-				
+                                    }
+				    break;                                 
+                                  }
 				// aha! a user entry.
 				case "+":
 					if (!$this->LoadUser($user)) 
@@ -940,14 +913,15 @@ $wakkaConfig= array();
 $wakkaDefaultConfig = array(
 	'wakka_version'		=> '',
 	'wikini_version'	=> '',
+	'wikinimst_version'	=> '',
 	'debug'			=> 'no',
 	"mysql_host"		=> "localhost",
-	"mysql_database"		=> "wikini",
-	"mysql_user"		=> "wikini",
+	"mysql_database"		=> "wikinimst",
+	"mysql_user"		=> "wikinimst",
 	"mysql_password"		=> '',
-	"table_prefix"		=> "wikini_",
+	"table_prefix"		=> "wikinimst_",
 	"root_page"			=> "PagePrincipale",
-	"wakka_name"		=> "MonSiteWikiNi",
+	"wakka_name"		=> "MonSiteWikiNiMST",
 	"base_url"			=> "http://".$_SERVER["SERVER_NAME"].($_SERVER["SERVER_PORT"] != 80 ? ":".$_SERVER["SERVER_PORT"] : "").$_SERVER["REQUEST_URI"].(preg_match("/".preg_quote("wakka.php")."$/", $_SERVER["REQUEST_URI"]) ? "?wiki=" : ""),
 	"rewrite_mode"		=> (preg_match("/".preg_quote("wakka.php")."$/", $_SERVER["REQUEST_URI"]) ? "0" : "1"),
 	'meta_keywords'		=> '',
@@ -959,9 +933,9 @@ $wakkaDefaultConfig = array(
 	"navigation_links"		=> "DerniersChangements :: DerniersCommentaires :: ParametresUtilisateur",
 	"referrers_purge_time"	=> 24,
 	"pages_purge_time"	=> 365,
-	"default_write_acl"	=> "*",
+	"default_write_acl"	=> "+",
 	"default_read_acl"	=> "*",
-	"default_comment_acl"	=> "*",
+	"default_comment_acl"	=> "+",
 	"referrers_disable" => "1",
 	"preview_before_save"	=> "0");
 
@@ -1057,6 +1031,18 @@ if (strstr ($HTTP_SERVER_VARS['HTTP_ACCEPT_ENCODING'], 'gzip') && function_exist
 	header ("Content-Encoding: gzip"); 
 } 
 
+//fonction pour l'affichage de titre dans le lecteur flv
+function enlever_accents($texte){
+if (!(is_string($texte)))
+
+   return ("");
+
+ $sortie = strtr($texte,
+"ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜàâãäåçèéêëìíîïòóôõöùúûüÿ",
+
+"AAAAAACEEEEIIIIOOOOOUUUUaaaaaceeeeiiiioooouuuuy");
+ return $sortie;
+}
 
 // go!
 if (!isset($method)) $method='';

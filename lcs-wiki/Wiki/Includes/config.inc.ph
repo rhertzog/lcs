@@ -10,13 +10,13 @@ $DEBUG = false;
 #-------------------------
 $HOSTAUTH 	= "localhost";
 $USERAUTH	= "wikiuser";
-$PASSAUTH	= "#PASS#";
+$PASSAUTH	= "wiphobio";
 $DBAUTHWIKI	= "wikini_lcs";
 # Chemin
 $PATH2PLUG      = "/usr/share/lcs/Plugins/Wiki";
 
 $NAME_PLUG	= "Wiki";
-$VER_PLUG	= "0.1";
+$VER_PLUG	= "0.3";
 
 $authlinkwiki = @mysql_connect("$HOSTAUTH", "$USERAUTH", "$PASSAUTH");
 $resultwiki = @mysql_select_db($DBAUTHWIKI)or die("Impossible de se connecter à la base $DBAUTHWIKI.") ;

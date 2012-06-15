@@ -4,7 +4,7 @@ recentchangesrss.php
 
 Copyright 2003  David DELON
 Copyright 2005  Didier LOISEAU
-Copyright 2007 Pierre Lachance
+Copyright 2009 Pierre Lachance
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2 of the License, or

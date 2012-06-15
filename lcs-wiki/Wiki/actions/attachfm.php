@@ -7,6 +7,7 @@ Copyright 2002, 2003 David DELON
 Copyright 2002, 2003 Charles NEPOTE
 Copyright  2003,2004  Eric FELDSTEIN
 Copyright  2003  Jean-Pascal MILCENT
+Copyright  2009 Pierre Lachance
 All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -34,5 +35,5 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 $url = $this->href('filemanager',$this->GetPageTag());
-echo '<a href="'.$url.'" title="Gestion des fichiers attachés"><span class="attachfm"><span><img src="images/gestion.png" alt="geston" /></span></span></a>';
+echo '<a href="'.$url.'" title="Gestion des fichiers attachés"><span class="attachfm"><span><img src="images/gestion.png" alt="gestion" class="handout" /></span></span></a>';
 ?>
