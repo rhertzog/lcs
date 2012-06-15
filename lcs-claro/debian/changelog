@@ -1,3 +1,9 @@
+lcs-claro (2.4.9) LCS; urgency=low
+
+  * stable release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 11:25:06 +0200
+
 lcs-claro (2.4.8.1) LCS; urgency=low
 
   * add conf apache
