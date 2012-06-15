@@ -1,8 +1,8 @@
-lcs-gepi (2.4.9~5) LCS; urgency=low
+lcs-gepi (2.4.9) LCS; urgency=low
 
   * update to revision 8744
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Jan 2012 07:22:33 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 10:55:06 +0200
 
 lcs-gepi (2.4.9~4) LCS; urgency=low
 
