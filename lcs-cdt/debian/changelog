@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9.3) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 11:14:16 +0200
+
 lcs-cdt (2.4.9.3~4) LCS; urgency=low
 
   * fix bug in cdt-scripts.js
