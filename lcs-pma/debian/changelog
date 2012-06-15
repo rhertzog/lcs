@@ -1,3 +1,9 @@
+lcs-pma (2.4.9) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 15 Jun 2012 11:12:09 +0200
+
 lcs-pma (2.4.9~4) Lcs; urgency=low
 
   * update to version 3.5.0
