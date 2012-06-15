@@ -9,7 +9,7 @@ MODULE="Wiki"
 module=`echo $MODULE | tr [:upper:] [:lower:]`
 VER=$(dpkg-query -f '${Version}' -W lcs-$module)
 PATHPLUG="/usr/share/lcs/Plugins/$MODULE"
-INDICEMAJNBR="1"
+INDICEMAJNBR="2"
 DESCRIPT="LCS-WIKI"
 CONF="/var/lib/lcs/$MODULE"
 
