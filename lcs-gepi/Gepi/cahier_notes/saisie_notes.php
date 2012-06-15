@@ -1775,7 +1775,10 @@ if ($id_devoir==0) {
 	n.statut='y' AND
 	n.id_conteneur='$id_conteneur'
 	)");
-	$moy_moy = mysql_result($call_moy_moy, 0, "moyenne");
+	$moy_moy="";
+	if(mysql_num_rows($call_moy_moy)>0) {
+		$moy_moy = mysql_result($call_moy_moy, 0, "moyenne");
+	}
 	if ($moy_moy != '') {
 		echo "<td class='cn'><center><b>".number_format($moy_moy,1, ',', ' ')."</b></center></td>\n";
 		$data_pdf[$tot_data_pdf][] = number_format($moy_moy,1, ',', ' ');

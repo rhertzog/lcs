@@ -1,6 +1,6 @@
 <?php
 /*
-* @version: $Id: cdt_lib.php 7926 2011-08-23 16:24:17Z crob $
+* @version: $Id: cdt_lib.php 8750 2012-02-08 14:27:54Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -286,6 +286,8 @@ require_once("'.$pref_arbo.'/entete.php");
 			$pref_documents="";
 		}
 
+		$nb_doc_joints_visibles=0;
+
 		// documents joints
 		$html = '';
 		//$architecture="/documents/cl_dev";
@@ -321,12 +323,14 @@ require_once("'.$pref_arbo.'/entete.php");
 					$html_tmp.= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"$emplacement\">$titre</a></li>";
 
 					$tab_chemin_url[]=$emplacement;
+					$nb_doc_joints_visibles++;
 				}
 			}
-			$html .= "</ul>";
-
-
+			$html_tmp .= "</ul>";
 		}
+
+		if($nb_doc_joints_visibles>0) {$html.=$html_tmp;}
+
 		return $html;
 	}
 

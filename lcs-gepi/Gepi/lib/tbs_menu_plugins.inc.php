@@ -2,7 +2,7 @@
 /**
  * Construction de la barre de menu des gabarits
  *
- * @version $Id: tbs_menu_plugins.inc.php 8001 2011-08-26 11:53:47Z jjocal $
+ * @version $Id: tbs_menu_plugins.inc.php 8745 2012-02-01 06:44:48Z crob $
  * @copyright 2008-2011
  * @license GNU/GPL v2
  * @package General
@@ -18,7 +18,7 @@
  */
 function tbs_menu_plugins()
 {
-	global $gepiPath;
+	global $gepiPath,$niveau_arbo;
 	$menu_plugins=array();
 	// quels sont les plugins ouverts et autorisés au statut de l'utilisateur?
 	$r_sql="SELECT DISTINCT `plugins`.* FROM `plugins`,`plugins_autorisations`
@@ -30,7 +30,12 @@ function tbs_menu_plugins()
 		$t_abr_statuts=array('administrateur'=>'A', 'professeur'=>'P', 'cpe'=>'C', 'scolarite'=>'S', 'secours'=>'sec', 'eleve'=>'E', 'responsable'=>'R', 'autre'=>'autre');
 		while ($plugin=mysql_fetch_assoc($R_plugins))
 			{
-			$plugin_xml=$_SERVER['DOCUMENT_ROOT'].$gepiPath."/mod_plugins/".$plugin['repertoire']."/plugin.xml";
+			$plugins_path="";
+			if (isset($niveau_arbo))
+				for ($i=1;$i<=$niveau_arbo;$i++) $plugins_path.="../";
+			else $plugins_path="../";
+			$plugins_path.="mod_plugins/";
+			$plugin_xml=$plugins_path.$plugin['repertoire']."/plugin.xml";
 			// on continue uniquement si le plugin est encore présent
 			if (file_exists($plugin_xml))
 				{
@@ -47,11 +52,11 @@ function tbs_menu_plugins()
 						// si la fonction cacul_autorisation_... existe on vérifie si l'utilisateur est autorisé à accéder au script
 						$autorise=true; // a priori l'utilisateur a acces à ce script
 						$nom_fonction_autorisation = "calcul_autorisation_".$plugin['nom'];
-						if (file_exists($_SERVER['DOCUMENT_ROOT'].$gepiPath."/mod_plugins/".$plugin['nom']."/functions_".$plugin['nom'].".php"))
+						if (file_exists($plugins_path.$plugin['nom']."/functions_".$plugin['nom'].".php"))
 							{
 							// on évite de redéclarer la fonction $nom_fonction_autorisation
 							if (!function_exists($nom_fonction_autorisation))
-								include($_SERVER['DOCUMENT_ROOT'].$gepiPath."/mod_plugins/".$plugin['nom']."/functions_".$plugin['nom'].".php");
+								include($plugins_path.$plugin['nom']."/functions_".$plugin['nom'].".php");
 							if (function_exists($nom_fonction_autorisation))
 								$autorise = $nom_fonction_autorisation($_SESSION['login'],$menu_script);
 							}

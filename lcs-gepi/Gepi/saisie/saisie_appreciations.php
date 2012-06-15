@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: saisie_appreciations.php 8415 2011-10-04 12:28:08Z crob $
+* $Id: saisie_appreciations.php 8776 2012-03-24 15:32:56Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -838,9 +838,11 @@ while ($k < $nb_periode) {
 	$mess[$k]="";
 	$mess[$k].="<td>".$moyenne_t[$k]."</td>\n";
 	$mess[$k].="<td>\n";
+	//$mess[$k].="\$current_group['classe']['ver_periode']['all'][$k]=".$current_group["classe"]["ver_periode"]['all'][$k]."<br />";
 	//if ($current_group["classe"]["ver_periode"]['all'][$k] == 0){
 	//if(($current_group["classe"]["ver_periode"]['all'][$k] == 0)||($current_group["classe"]["ver_periode"]['all'][$k] == 1)) {
-	if(((($current_group["classe"]["ver_periode"]['all'][$k] == 0)||($current_group["classe"]["ver_periode"]['all'][$k] == 1))&&($_SESSION['statut']!='secours'))||
+	//if(((($current_group["classe"]["ver_periode"]['all'][$k] == 0)||($current_group["classe"]["ver_periode"]['all'][$k] == 1))&&($_SESSION['statut']!='secours'))||
+	if((($current_group["classe"]["ver_periode"]['all'][$k] != 3)&&($_SESSION['statut']!='secours'))||
 	(($current_group["classe"]["ver_periode"]['all'][$k]==0)&&($_SESSION['statut']=='secours'))) {
 
 		//$mess[$k].=htmlentities(nl2br($app_grp[$k]));

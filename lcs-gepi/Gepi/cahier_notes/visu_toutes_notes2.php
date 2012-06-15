@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: visu_toutes_notes2.php 8661 2011-11-24 21:10:06Z crob $
+ * $Id: visu_toutes_notes2.php 8788 2012-04-09 19:09:23Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -1187,7 +1187,8 @@ if ($ligne_supl == 1) {
 			$rg[$k]=$k;
 
 			//echo $col[1][$k+1].": ".$col[$nb_col][$k+1]." et total_coef:".$total_coef_eleve[$k+1]."<br />";
-			$tmp_tab[$k]=$col[$nb_col][$k+$ligne_supl];
+			//$tmp_tab[$k]=$col[$nb_col][$k+$ligne_supl];
+			$tmp_tab[$k]=preg_replace("/,/",".",$col[$nb_col][$k+$ligne_supl]);
 
 			// Initialisation:
 			$col[$ind_colonne_rang][$k]="-";

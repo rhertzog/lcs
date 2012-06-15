@@ -1,5 +1,5 @@
 <?php
-/* $Id: lib_exb.php 8270 2011-09-19 14:33:21Z crob $ */
+/* $Id: lib_exb.php 8793 2012-04-17 13:24:07Z crob $ */
 
 function bull_exb($tab_ele,$i) {
 	global
@@ -252,7 +252,8 @@ function bull_exb($tab_ele,$i) {
 		//Police Arial Gras 6
 		$pdf->SetFont('Arial','B',8);
 		// $fomule = 'Bulletin à conserver précieusement. Aucun duplicata ne sera délivré. - GEPI : solution libre de gestion et de suivi des résultats scolaires.'
-		$pdf->Cell(0,4.5, $bull_formule_bas,0,0,'C');
+		//$pdf->Cell(0,4.5, $bull_formule_bas,0,0,'C');
+		$pdf->Cell(0,4.5, traite_accents_utf8($bull_formule_bas),0,0,'C');
 		//= = = == = = == = = == = = == = = == = = == = = == = = =
 
 		// A VERIFIER: CETTE VARIABLE NE DOIT PAS ETRE UTILE
@@ -1992,6 +1993,7 @@ function bull_exb($tab_ele,$i) {
 								$h_cell=$espace_entre_matier;
 
 								cell_ajustee(traite_accents_utf8($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_cell,$taille_max_police,$taille_min_police,'LRBT');
+								//cell_ajustee($texte,$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_cell,$taille_max_police,$taille_min_police,'LRBT');
 							}
 
 							$pdf->SetFont($tab_modele_pdf["caractere_utilse"][$classe_id],'',10);
@@ -2245,7 +2247,7 @@ function bull_exb($tab_ele,$i) {
 */
 				$tt_avis = 'Avis général :';
 
-				$pdf->Cell($tab_modele_pdf["longeur_avis_cons"][$classe_id],5, $tt_avis,0,2,'');
+				$pdf->Cell($tab_modele_pdf["longeur_avis_cons"][$classe_id],5, traite_accents_utf8($tt_avis),0,2,'');
 
 				//$pdf->SetXY($tab_modele_pdf["X_avis_cons"][$classe_id]+2.5,$tab_modele_pdf["Y_avis_cons"][$classe_id]+5);
 				$pdf->SetXY($tab_modele_pdf["X_avis_cons"][$classe_id]+2.5,$Y_avis_cons_init+5);
@@ -2492,20 +2494,24 @@ setTimeout('calcul_moy_med_".$pref_id."()',1000);
 function is_pp_proprio_exb($id_exam) {
 	$retour=true;
 
+	$prof_login=$_SESSION['login'];
+
 	$sql="SELECT * FROM ex_classes WHERE id_exam='$id_exam';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)>0) {
-		//$retour=false;
-
 		while($lig=mysql_fetch_object($res)) {
-			$sql="SELECT 1=1 FROM j_eleves_professeurs jep, j_eleves_classes jec WHERE jec.login=jep.login AND jep.id_classe=jec.id_classe AND jec.id_classe='$lig->id_classe';";
-			$test=mysql_query($sql);
-			if(mysql_num_rows($test)==0) {
+			if(!is_pp($prof_login,$lig->id_classe)) {
 				$retour=false;
 				break;
 			}
 		}
 	}
+	/*
+	elseif($mode=='index') {
+		$retour=false;
+	}
+	*/
+	// Inconvénient: Un PP peut supprimer les examens d'autres personnes tant qu'aucune classe n'est associée.
 
 	return $retour;
 }

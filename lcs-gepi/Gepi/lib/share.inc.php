@@ -1,7 +1,7 @@
 <?php
 /** Fonctions accessibles dans toutes les pages
  * 
- * $Id: share.inc.php 8733 2011-12-22 15:22:19Z crob $
+ * $Id: share.inc.php 8795 2012-05-07 12:17:45Z crob $
  * 
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -225,7 +225,7 @@ function test_unique_e_login($s, $indice) {
  */
 function generate_unique_login($_nom, $_prenom, $_mode) {
 
-	if ($_mode == NULL) {
+	if (($_mode == NULL)||($_mode == "")) {
 		$_mode = "fname8";
 	}
     // On génère le login

@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: lib_brevets.php 7260 2011-06-19 13:12:04Z crob $
+$Id: lib_brevets.php 8797 2012-05-08 15:04:43Z crob $
  */
 
 $tab_type_brevet=array();
@@ -45,6 +45,7 @@ function get_classe_from_id($id){
 }
 
 
+
 function accent_min($texte){
 	return strtr($texte,"ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕÛÜÙÚÝ¾","âäàáãåçêëèéîïìíñôöòóõûüùúýÿ");
 }
@@ -52,6 +53,7 @@ function accent_min($texte){
 function accent_maj($texte){
 	return strtr($texte,"âäàáãåçêëèéîïìíñôöòóõûüùúýÿ","ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕÛÜÙÚÝ¾");
 }
+
 /*
 function get_commune($code_commune_insee,$mode){
 	$retour="";
@@ -91,7 +93,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			//$tabmatieres[101][0]='FRANCAIS';
 			$tabmatieres[101][0]='FRANÇAIS';
@@ -107,7 +109,6 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
 			$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE OU DECOUVERTE PROFESSIONNELLE (module de 6 heures)';
-			$tabmatieres[111][0]='';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			//$tabmatieres[113][0]='OPTION FACULTATIVE (1)';
 			$tabmatieres[113][0]='OPTION FACULTATIVE';
@@ -116,11 +117,6 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='';
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE';
 			$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
@@ -131,7 +127,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			// Optionnelle
 			$tabmatieres[113][-1]='PTSUP';
@@ -145,7 +141,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			$tabmatieres[121][-2]=0;
 			$tabmatieres[122][-2]=0;
@@ -156,14 +152,14 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
-			$tabmatieres[107][-3]='AB DI NN';
-			$tabmatieres[108][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
+			$tabmatieres[107][-3]='AB DI';
+			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[109][-3]='AB DI';
 			$tabmatieres[110][-3]='AB DI';
 			$tabmatieres[113][-3]='AB DI';
@@ -239,7 +235,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
@@ -263,11 +259,6 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
-			$tabmatieres[118][0]='';
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE';
 			$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
@@ -278,7 +269,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[113][-1]='PTSUP';
 			$tabmatieres[121][-1]='NOTNONCA';
@@ -290,7 +281,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			// DP6
 			$tabmatieres[110][-2]=2;
@@ -304,14 +295,14 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
-			$tabmatieres[107][-3]='AB DI NN';
-			$tabmatieres[108][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
+			$tabmatieres[107][-3]='AB DI';
+			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[109][-3]='AB DI';
 			$tabmatieres[110][-3]='AB DI';
 			$tabmatieres[113][-3]='AB DI';
@@ -517,11 +508,11 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
-			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU ';
 			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			//$tabmatieres[103][0]='LANGUE VIVANTE';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU SCIENCES PHYSIQUES';
@@ -532,24 +523,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
-			$tabmatieres[109][0]='';
-			$tabmatieres[110][0]='';
-			$tabmatieres[111][0]='';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
-			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
@@ -558,7 +540,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
@@ -578,7 +560,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			$tabmatieres[108][-2]=3;
 			$tabmatieres[121][-2]=0;
@@ -589,13 +571,13 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
-			$tabmatieres[107][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
+			$tabmatieres[107][-3]='AB DI';
 			$tabmatieres[108][-3]='AB DI';
 
 			//$tabmatieres[114][-3]='MS ME MN AB';
@@ -668,13 +650,13 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
-			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
+			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU ';
 			//$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE OU SCIENCES PHYSIQUES';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
 			//$tabmatieres[104][0]='';
@@ -683,26 +665,18 @@ function tabmatieres($type_brevet){
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
-			$tabmatieres[109][0]='';
 			// DP6 A PLACER....
-			$tabmatieres[110][0]='';
 			$tabmatieres[111][0]='DÉCOUVERTE PROFESSIONNELLE (module 6 heures)';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
-			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
@@ -712,7 +686,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
@@ -732,26 +706,25 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			$tabmatieres[108][-2]=2;
 			$tabmatieres[111][-2]=3;
-			// DP6: $tabmatieres[???][-2]=3;
+
 			$tabmatieres[121][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=$indice_premiere_matiere;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
-			$tabmatieres[107][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
+			$tabmatieres[107][-3]='AB DI';
 			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[111][-3]='AB DI';
 
@@ -816,21 +789,23 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='';
-			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
+			//$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
+			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION SOCIO-CULTURELLE';
 			// CES TROIS Là DEVRAIENT ETRE SUR UNE MEME LIGNE POUR LES FICHES BREVET
-			$tabmatieres[108][0]='TECHNOLOGIE';
-			$tabmatieres[109][0]='SCIENCES BIOLOGIQUES';
-			$tabmatieres[110][0]='SCIENCES PHYSIQUES';
-			$tabmatieres[111][0]='';
+			//$tabmatieres[108][0]='TECHNOLOGIE';
+			//$tabmatieres[109][0]='SCIENCES BIOLOGIQUES';
+			//$tabmatieres[110][0]='SCIENCES PHYSIQUES';
+			$tabmatieres[109][0]='TECHNOLOGIE: SCIENCES BILOGIQUES ET SCIENCES PHYSIQUES';
+
 			$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
@@ -838,14 +813,11 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
+
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
+
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
@@ -856,7 +828,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 			//$tabmatieres[122][-1]='NOTNONCA';
@@ -864,21 +836,19 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[118][-1]='PTSUP';
 
 			// Coefficients:
-			//for($j=$indice_premiere_matiere;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			//$tabmatieres[108][-2]=3;
-			//$tabmatieres[109][-2]=3;
+			$tabmatieres[109][-2]=3;
 			//$tabmatieres[110][-2]=3;
 			$tabmatieres[121][-2]=0;
 			//$tabmatieres[122][-2]=0;
 
 			// Notes spéciales autorisées:
-			//for($j=$indice_premiere_matiere;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-3]='AB';
 			}
@@ -887,11 +857,11 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
 			$tabmatieres[107][-3]='AB DI';
-			$tabmatieres[108][-3]='AB DI';
+			//$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[109][-3]='AB DI';
-			$tabmatieres[110][-3]='AB DI';
+			//$tabmatieres[110][-3]='AB DI';
 
 			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
@@ -952,7 +922,7 @@ function tabmatieres($type_brevet){
 
 			// POUR NE PAS FAIRE D'ASSOCIATION AVEC DES MATIERES
 			// ET NE PAS FAIRE L'EXTRATION DES MOYENNES DANS LES MEMES TABLES
-			//for($j=$indice_premiere_matiere;$j<=122;$j++){
+
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j]['socle']='n';
 			}
@@ -970,7 +940,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
@@ -981,35 +951,25 @@ function tabmatieres($type_brevet){
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
-			$tabmatieres[109][0]='';
-			$tabmatieres[110][0]='';
-			$tabmatieres[111][0]='';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
-			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; //20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
 
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
 
-			//for($j=$indice_premiere_matiere;$j<=122;$j++){
 			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 
@@ -1025,7 +985,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			$tabmatieres[108][-2]=2;
 			$tabmatieres[121][-2]=0;
@@ -1037,13 +997,13 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
-			$tabmatieres[107][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
+			$tabmatieres[107][-3]='AB DI';
 			$tabmatieres[108][-3]='AB DI';
 
 			//$tabmatieres[114][-3]='MS ME MN AB';
@@ -1116,22 +1076,15 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][0]='TECHNOLOGIE';
 			$tabmatieres[109][0]='';
 			$tabmatieres[110][0]='DÉCOUVERTE PROFESSIONNELLE (module 6 heures)';
-			$tabmatieres[111][0]='';
 			$tabmatieres[112][0]='VIE SCOLAIRE';
-			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100512
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
@@ -1141,7 +1094,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 
@@ -1155,7 +1108,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
 			//$tabmatieres[108][-2]=2;
 			$tabmatieres[110][-2]=2;
@@ -1168,7 +1121,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
@@ -1235,34 +1188,28 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][0]='';
 			}
 
-			$tabmatieres[5][0]='HISTOIRE DES ARTS';
+			//$tabmatieres[5][0]='HISTOIRE DES ARTS';
 
 			$tabmatieres[101][0]='FRANÇAIS';
 			$tabmatieres[102][0]='MATHÉMATIQUES';
 			$tabmatieres[103][0]='PREMIERE LANGUE VIVANTE';
 			//$tabmatieres[103][0]='LANGUE VIVANTE 1';
 			$tabmatieres[104][0]='SCIENCES PHYSIQUES';
-			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
+			//$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
+			$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION SOCIOCULTURELLE';
-			$tabmatieres[108][0]='SCIENCES BIOLOGIQUES';
-			$tabmatieres[109][0]='TECHNO SECTEUR TECHNIQUES AGRICOLES, ACTIVITES TERTIAIRES';
-			$tabmatieres[110][0]='';
-			$tabmatieres[111][0]='';
+			//$tabmatieres[108][0]='SCIENCES BIOLOGIQUES';
+			$tabmatieres[109][0]='TECHNOLOGIE: SECTEUR SCIENCES BIOLOGIQUES, TECHNIQUES AGRICOLES ET AGROALIMENTAIRES, ACTIVITES TERTIAIRES';
+
 			$tabmatieres[112][0]='VIE SCOLAIRE';
-			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
 
-			$tabmatieres[116][0]='';
-			$tabmatieres[117][0]='';
 			//$tabmatieres[118][0]='HISTOIRE DES ARTS'; // 20100425
-			$tabmatieres[119][0]='';
-			$tabmatieres[120][0]='';
 			$tabmatieres[121][0]='HISTOIRE-GÉOGRAPHIE EDUCATION CIVIQUE';
 			//$tabmatieres[121][0]='HISTOIRE-GEOGRAPHIE';
-			$tabmatieres[122][0]='';
 			//$tabmatieres[122][0]='EDUCATION CIVIQUE';
 
 			$tabmatieres[130][0]='NIVEAU A2 DE LANGUE REGIONALE'; // 20100425
@@ -1272,7 +1219,7 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-1]='POINTS';
 			}
 
-			$tabmatieres[5][-1]='POINTS';
+			//$tabmatieres[5][-1]='POINTS';
 
 			$tabmatieres[121][-1]='NOTNONCA';
 
@@ -1284,9 +1231,9 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-2]=1;
 			}
 
-			$tabmatieres[5][-2]=2;
+			//$tabmatieres[5][-2]=2;
 
-			//$tabmatieres[109][-2]=2;
+			$tabmatieres[109][-2]=2;
 			$tabmatieres[121][-2]=0;
 
 			// Notes spéciales autorisées:
@@ -1295,12 +1242,12 @@ function tabmatieres($type_brevet){
 				$tabmatieres[$j][-3]='AB';
 			}
 
-			$tabmatieres[5][-3]='AB';
+			//$tabmatieres[5][-3]='AB';
 
 			$tabmatieres[103][-3]='AB DI';
 			$tabmatieres[104][-3]='AB DI';
 			$tabmatieres[105][-3]='AB DI';
-			$tabmatieres[106][-3]='AB DI NN';
+			$tabmatieres[106][-3]='AB DI';
 			$tabmatieres[107][-3]='AB DI';
 			$tabmatieres[108][-3]='AB DI';
 			$tabmatieres[109][-3]='AB DI';
@@ -2056,7 +2003,6 @@ function adjust_size_font($texte,$largeur_dispo,$h_max_font,$increment,$multilig
 		while($grandeur_texte!='ok') {
 			if($largeur_dispo<$taille_texte_total) {
 				$hauteur_texte=$hauteur_texte-$increment;
-				//$pdf->SetFont('Arial','',$hauteur_texte);
 				$pdf->SetFontSize($hauteur_texte);
 				$taille_texte_total = $pdf->GetStringWidth($texte);
 			}
@@ -2081,7 +2027,6 @@ function adjust_size_font($texte,$largeur_dispo,$h_max_font,$increment,$multilig
 		while($grandeur_texte!='ok') {
 			if($largeur_dispo<$taille_texte_total) {
 				$hauteur_texte=$hauteur_texte-$increment;
-				//$pdf->SetFont('Arial','',$hauteur_texte);
 				$pdf->SetFontSize($hauteur_texte);
 				//echo "\$hauteur_texte=$hauteur_texte<br />";
 				$taille_texte_total = $pdf->GetStringWidth($texte)/$nb_lig;
@@ -2096,312 +2041,6 @@ function adjust_size_font($texte,$largeur_dispo,$h_max_font,$increment,$multilig
 	}
 }
 
-/*
-function cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
-	global $pdf;
-
-	// $increment:     nombre dont on réduit la police à chaque essai
-	// $r_interligne:  proportion de la taille de police pour les interlignes
-	// $bordure:       LRBT
-	// $v_align:       C(enter) ou T(op)
-
-	$texte=trim($texte);
-	$hauteur_texte=$hauteur_max_font;
-	$pdf->SetFontSize($hauteur_texte);
-	$taille_texte_total=$pdf->GetStringWidth($texte);
-
-	// Ca nous donne le nombre max de lignes en hauteur avec la taille de police maxi
-	// Il faudrait plutôt déterminer ce nombre d'après une taille minimale acceptable de police
-	$nb_max_lig=max(1,floor($h_cell/((1+$r_interligne)*($hauteur_min_font*26/100))));
-	// echo "\$nb_max_lig=$nb_max_lig<br />";
-
-	//$ifmax=0;
-	//$ifmax=1;
-	$fmax=0;
-
-	$tab_lig=array();
-	for($j=1;$j<=$nb_max_lig;$j++) {
-		$hauteur_texte=$hauteur_max_font;
-
-		unset($ligne);
-		$ligne=array();
-	
-		$tab=split(" ",$texte);
-		$cpt=0;
-		$i=0;
-		while(true) {
-			if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-			if(my_ereg("\n",$tab[$i])) {
-				$tmp_tab=split("\n",$tab[$i]);
-
-				for($k=0;$k<count($tmp_tab)-1;$k++) {
-					if(!isset($ligne[$cpt])) {$ligne[$cpt]="";}
-					$ligne[$cpt].=$tmp_tab[$k];
-					$cpt++;
-				}
-				if(!isset($ligne[$cpt])) {$ligne[$cpt]="";}
-				$ligne[$cpt].=$tmp_tab[$k];
-			}
-			else {
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-			}
-			$i++;
-			if(!isset($tab[$i])) {break;}
-		}
-	
-		// Recherche de la plus longue ligne:
-		$taille_texte_ligne=0;
-		$num=0;
-		for($i=0;$i<count($ligne);$i++) {
-			// echo "\$ligne[$i]=$ligne[$i]<br />";
-			$l=$pdf->GetStringWidth($ligne[$i]);
-			if($taille_texte_ligne<$l) {$taille_texte_ligne=$l;$num=$i;}
-		}
-
-		// On calcule la hauteur en mm de la police (proportionnalité: 100pt -> 26mm)
-		$hauteur_texte_mm=$hauteur_texte*26/100;
-		// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
-		$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-	
-		// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
-		// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
-		// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
-		$grandeur_texte='test';
-		while($grandeur_texte!='ok') {
-			//if($largeur_dispo<$taille_texte_ligne) {
-			if(($largeur_dispo<$taille_texte_ligne)||($hauteur_totale>$h_cell)) {
-				$hauteur_texte=$hauteur_texte-$increment;
-				if($hauteur_texte<$hauteur_min_font) {break;}
-				$hauteur_texte_mm=$hauteur_texte*26/100;
-				$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-				//$pdf->SetFont('Arial','',$hauteur_texte);
-				$pdf->SetFontSize($hauteur_texte);
-				$taille_texte_ligne=$pdf->GetStringWidth($ligne[$num]);
-				// echo "\$hauteur_texte=$hauteur_texte -&gt; \$taille_texte_ligne=".$taille_texte_ligne."<br/>";
-			}
-			else {
-				$grandeur_texte='ok';
-			}
-		}
-
-		if($grandeur_texte=='ok') {
-			// Hauteur de la police en mm
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-			// Hauteur de la police en pt
-			$tab_lig[$j]['taille_police']=$hauteur_texte;
-			// Hauteur totale du texte
-			$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-			// Marge verticale en mm entre les lignes
-			$marge_verticale=$hauteur_texte_mm*$r_interligne;
-			$tab_lig[$j]['marge_verticale']=$marge_verticale;
-			// Tableau des lignes
-			$tab_lig[$j]['lignes']=$ligne;
-	
-			// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur 
-			// (la largeur a déjà été utilisée pour découper en lignes).
-			if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
-				$ifmax=$j;
-			}
-		}
-	}
-
-	if((!isset($ifmax))||($tab_lig[$ifmax]['taille_police']<$hauteur_min_font)) {
-		// On relance en remplaçant les retours forcés à la ligne (\n) par des espaces.
-
-		$fmax=0;
-
-		$tab_lig=array();
-		for($j=1;$j<=$nb_max_lig;$j++) {
-			$hauteur_texte=$hauteur_max_font;
-
-			unset($ligne);
-			$ligne=array();
-		
-			$tab=split(" ",trim(my_ereg_replace("\n"," ",$texte)));
-			$cpt=0;
-			$i=0;
-			while(true) {
-				if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-				$i++;
-				if(!isset($tab[$i])) {break;}
-			}
-		
-			// Recherche de la plus longue ligne:
-			$taille_texte_ligne=0;
-			$num=0;
-			for($i=0;$i<count($ligne);$i++) {
-				// echo "\$ligne[$i]=$ligne[$i]<br />";
-				$l=$pdf->GetStringWidth($ligne[$i]);
-				if($taille_texte_ligne<$l) {$taille_texte_ligne=$l;$num=$i;}
-			}
-
-			// On calcule la hauteur en mm de la police (proportionnalité: 100pt -> 26mm)
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			// Hauteur totale: Nombre de lignes multiplié par la hauteur de police avec les marges verticales
-			$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-		
-			// echo "On calcule la taille de la police d'après \$ligne[$num]=".$ligne[$num]."<br/>";
-			// On ajuste la taille de police avec la plus grande ligne pour que cela tienne en largeur
-			// et on contrôle aussi que cela tient en hauteur, sinon on continue à réduire la police.
-			$grandeur_texte='test';
-			while($grandeur_texte!='ok') {
-				//if($largeur_dispo<$taille_texte_ligne) {
-				if(($largeur_dispo<$taille_texte_ligne)||($hauteur_totale>$h_cell)) {
-					$hauteur_texte=$hauteur_texte-$increment;
-					if($hauteur_texte<$hauteur_min_font) {break;}
-					$hauteur_texte_mm=$hauteur_texte*26/100;
-					$hauteur_totale=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-					//$pdf->SetFont('Arial','',$hauteur_texte);
-					$pdf->SetFontSize($hauteur_texte);
-					$taille_texte_ligne=$pdf->GetStringWidth($ligne[$num]);
-					// echo "\$hauteur_texte=$hauteur_texte -&gt; \$taille_texte_ligne=".$taille_texte_ligne."<br/>";
-				}
-				else {
-					$grandeur_texte='ok';
-				}
-			}
-
-			if($grandeur_texte=='ok') {
-				// Hauteur de la police en mm
-				$hauteur_texte_mm=$hauteur_texte*26/100;
-				$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-				// Hauteur de la police en pt
-				$tab_lig[$j]['taille_police']=$hauteur_texte;
-				// Hauteur totale du texte
-				$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-				// Marge verticale en mm entre les lignes
-				$marge_verticale=$hauteur_texte_mm*$r_interligne;
-				$tab_lig[$j]['marge_verticale']=$marge_verticale;
-				// Tableau des lignes
-				$tab_lig[$j]['lignes']=$ligne;
-		
-				// On choisit la hauteur de police la plus grande possible pour laquelle les lignes tiennent en hauteur 
-				// (la largeur a déjà été utilisée pour découper en lignes).
-				if(($hauteur_texte>$fmax)&&($tab_lig[$j]['hauteur_totale']<=$h_cell)) {
-					$ifmax=$j;
-				}
-			}
-		}
-
-
-		// Si ça ne passe toujours pas, on prend $hauteur_min_font sans retours à la ligne et on tronque
-		if(!isset($ifmax)) {
-			
-		//	$tab_lig=array();
-		//	$j=1;
-		//	$ifmax=$j;
-		//	$hauteur_texte=$hauteur_min_font;
-		//	$hauteur_texte_mm=$hauteur_texte*26/100;
-		//	$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-		//	// Hauteur de la police en pt
-		//	$tab_lig[$j]['taille_police']=$hauteur_texte;
-		//	// Hauteur totale du texte
-		//	$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-		//	// Marge verticale en mm entre les lignes
-		//	$marge_verticale=$hauteur_texte_mm*$r_interligne;
-		//	$tab_lig[$j]['marge_verticale']=$marge_verticale;
-		//	// Tableau des lignes
-		//	$tab_lig[$j]['lignes'][]="Texte trop long";
-			
-
-			$fmax=0;
-
-			$tab_lig=array();
-			$hauteur_texte=$hauteur_min_font;
-			unset($ligne);
-			$ligne=array();
-
-			$tab=split(" ",trim(my_ereg_replace("\n"," ",$texte)));
-			$cpt=0;
-			$i=0;
-			while(true) {
-				if(isset($ligne[$cpt])) {$ligne[$cpt].=" ";} else {$ligne[$cpt]="";}
-
-				if($pdf->GetStringWidth($ligne[$cpt].$tab[$i])>=$largeur_dispo) {
-
-					if(($cpt+2)*$hauteur_texte*(1+$r_interligne)*26/100>$h_cell) {
-						$d=1;
-						while(($pdf->GetStringWidth(substr($ligne[$cpt],0,strlen($ligne[$cpt])-$d)."...")>=$largeur_dispo)&&($d<strlen($ligne[$cpt]))) {
-							$d++;
-						}
-						$ligne[$cpt]=substr($ligne[$cpt],0,strlen($ligne[$cpt])-$d)."...";
-						break;
-					}
-
-					$cpt++;
-					$ligne[$cpt]=$tab[$i];
-				}
-				else {
-					$ligne[$cpt].=$tab[$i];
-				}
-				$i++;
-				if(!isset($tab[$i])) {break;} // On ne devrait pas quitter sur ça puisque le texte va être trop long
-			}
-
-			$j=1;
-			$ifmax=$j;
-			$hauteur_texte_mm=$hauteur_texte*26/100;
-			$tab_lig[$j]['hauteur_texte_mm']=$hauteur_texte_mm;
-			// Hauteur de la police en pt
-			$tab_lig[$j]['taille_police']=$hauteur_texte;
-			// Hauteur totale du texte
-			$tab_lig[$j]['hauteur_totale']=($cpt+1)*$hauteur_texte_mm*(1+$r_interligne);
-			// Marge verticale en mm entre les lignes
-			$marge_verticale=$hauteur_texte_mm*$r_interligne;
-			$tab_lig[$j]['marge_verticale']=$marge_verticale;
-			// Tableau des lignes
-			$tab_lig[$j]['lignes']=$ligne;
-
-		}
-	}
-
-	// On trace le rectangle (vide) du cadre:
-	$pdf->SetXY($x,$y);
-	$pdf->Cell($largeur_dispo,$h_cell, '',$bordure,2,'');
-
-	// On va écrire les lignes avec la taille de police optimale déterminée (cf. $ifmax)	
-	//$marge_h=round(($h_cell-(count($ligne)*$hauteur_texte_mm+(count($ligne)-1)*$marge_verticale))/2);
-	//$marge_h=round(($h_cell-$tab_lig[$ifmax]['hauteur_totale'])/2);
-	$nb_lig=count($tab_lig[$ifmax]['lignes']);
-	$h=count($tab_lig[$ifmax]['lignes'])*$tab_lig[$ifmax]['hauteur_texte_mm']*(1+$r_interligne);
-	$t=$h_cell-$h;
-	$bord_debug='';
-	//$bord_debug='LRBT';
-	for($i=0;$i<count($tab_lig[$ifmax]['lignes']);$i++) {
-		
-		//$pdf->SetXY(10,$y+$i*($hauteur_texte_mm+$marge_verticale)+$marge_h);
-		$pdf->SetXY($x,$y+$i*($tab_lig[$ifmax]['hauteur_texte_mm']+$tab_lig[$ifmax]['marge_verticale']));
-
-		//if($i==1) {$bord_debug='LRBT';} else {$bord_debug='';}
-		//$pdf->Cell($largeur_dispo-4,$h_cell/count($tab_lig[$ifmax]['lignes']), $tab_lig[$ifmax]['lignes'][$i],$bord_debug,2,'');
-
-		if($v_align=='T') {
-			$pdf->Cell($largeur_dispo,$tab_lig[$ifmax]['hauteur_texte_mm']+2*$tab_lig[$ifmax]['marge_verticale'], $tab_lig[$ifmax]['lignes'][$i],$bord_debug,1,$align);
-		}
-		else {
-			$pdf->Cell($largeur_dispo,$h_cell/count($tab_lig[$ifmax]['lignes']), $tab_lig[$ifmax]['lignes'][$i],$bord_debug,1,$align);
-		}
-	}
-	//if($tab_lig[$ifmax]['taille_police']!=$hauteur_max_font) {$pdf->Cell(20,$h_cell, $tab_lig[$ifmax]['taille_police'],$bord_debug,2,'');}
-
-}
-*/
 function fs_pt2mm($fs) {
 	//(proportionnalité: 100pt -> 26mm)
 	return $fs*26/100;

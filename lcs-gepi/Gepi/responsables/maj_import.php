@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: maj_import.php 4023 2010-01-16 17:10:24Z crob $
+ * $Id: maj_import.php 8812 2012-05-30 20:01:41Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -106,7 +106,7 @@ else{
 			echo "<tr class='lig$alt'>\n";
 			echo "<td>".$lig->ele_id."</td>\n";
 			echo "<td>".$lig->elenoet."</td>\n";
-			echo "<td>".$lig->login."</td>\n";
+			echo "<td><a href='../eleves/modify_eleve.php?eleve_login=$lig->login'>".$lig->login."</a></td>\n";
 			echo "<td>".strtoupper($lig->nom)."</td>\n";
 			echo "<td>".ucfirst(strtolower($lig->prenom))."</td>\n";
 			echo "<td>\n";

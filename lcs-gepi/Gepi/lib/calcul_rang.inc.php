@@ -1,7 +1,7 @@
 <?php
 /** Mise à jour des rangs
  * 
- * $Id: calcul_rang.inc.php 7765 2011-08-15 15:03:46Z regis $
+ * $Id: calcul_rang.inc.php 8784 2012-04-05 19:31:29Z crob $
  * 
  * Script à appeler dans le code
  * 
@@ -161,6 +161,9 @@ while ($j < $nombre_groupes) {
     $j++;
 }
 
+$login_debug="COTTIER_M";
+$debug_rang="n";
+
 // S'il existe des matières coefficientées ou si le champ rang de la table j_eleves_classes n'est pas à jour :
 if (($test_coef != '0') and ($calcul_moy_gen == 'yes')) {
     $j=0;
@@ -210,22 +213,58 @@ if (($test_coef != '0') and ($calcul_moy_gen == 'yes')) {
                 if ($coef_eleve != 0) {
                     if (($current_eleve_note[$j][$i] != '') and ($current_eleve_statut[$j][$i] == '')) {
                         if($current_mode_moy[$j]=='sup10') {
-                            if($moy_gen_eleve[$i]>=10) {
+                            //if($moy_gen_eleve[$i]>=10) {
+                            if($current_eleve_note[$j][$i]>=10) {
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo "\$total_coef[$i]=".$total_coef[$i]."+".$coef_eleve."=";
+								}
                                 $total_coef[$i] += $coef_eleve;
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo $total_coef[$i]."<br />";
+								}
+
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo "\$moy_gen_eleve[$i]=".$moy_gen_eleve[$i]."+".$coef_eleve."*".$current_eleve_note[$j][$i]."=";
+								}
                                 $moy_gen_eleve[$i] += $coef_eleve*$current_eleve_note[$j][$i];
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo $moy_gen_eleve[$i]."<br />";
+								}
                             }
                             $moy_gen_classe[$i] += $coef_eleve*$current_classe_matiere_moyenne[$j];
                         }
                         elseif($current_mode_moy[$j]=='bonus') {
-                            if($moy_gen_eleve[$i]>=10) {
+                            //if($moy_gen_eleve[$i]>=10) {
+                            if($current_eleve_note[$j][$i]>=10) {
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo "Bonus<br />";
+									echo "\$moy_gen_eleve[$i]=".$moy_gen_eleve[$i]."+".$coef_eleve."*(".$current_eleve_note[$j][$i]."-10)=";
+								}
                                 $moy_gen_eleve[$i] += $coef_eleve*($current_eleve_note[$j][$i]-10);
+								if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+									echo $moy_gen_eleve[$i]."<br />";
+								}
                             }
                             $moy_gen_classe[$i] += $coef_eleve*$current_classe_matiere_moyenne[$j];
                         }
                         else {
+							if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+								echo "\$total_coef[$i]=".$total_coef[$i]."+".$coef_eleve."=";
+							}
                             $total_coef[$i] += $coef_eleve;
+							if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+								echo $total_coef[$i]."<br />";
+							}
+
                             $moy_gen_classe[$i] += $coef_eleve*$current_classe_matiere_moyenne[$j];
+
+							if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+								echo "\$moy_gen_eleve[$i]=".$moy_gen_eleve[$i]."+".$coef_eleve."*".$current_eleve_note[$j][$i]."=";
+							}
                             $moy_gen_eleve[$i] += $coef_eleve*$current_eleve_note[$j][$i];
+							if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+								echo $moy_gen_eleve[$i]."<br />";
+							}
                         }
                     }
                }
@@ -238,7 +277,15 @@ if (($test_coef != '0') and ($calcul_moy_gen == 'yes')) {
     $i = 0;
     while ($i < $nombre_eleves) {
         if ($total_coef[$i] != 0) {
+			if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+		        echo $current_eleve_login[$i]." : ";
+		        echo "\$moy_gen_eleve[$i]/\$total_coef[$i]=".$moy_gen_eleve[$i]."/".$total_coef[$i]."=";
+			}
             $temp[$i] = round($moy_gen_eleve[$i]/$total_coef[$i],1);
+			if(($debug_rang=='y')&&($current_eleve_login[$i]==$login_debug)) {
+		        echo $temp[$i];
+		        echo "<br />";
+            }
             $moy_gen_eleve[$i] = number_format($moy_gen_eleve[$i]/$total_coef[$i],1, ',', ' ');
             $moy_gen_classe[$i] = number_format($moy_gen_classe[$i]/$total_coef[$i],1, ',', ' ');
         } else {

@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_aid.php 6611 2011-03-03 15:23:08Z crob $
+* $Id: saisie_aid.php 8772 2012-03-19 18:44:41Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -108,7 +108,9 @@ if (isset($_POST['is_posted'])) {
 				//echo "<p>Période $k<br />";
 				if (($k >= $display_begin) and ($k <= $display_end)) {
 					$ver_periode[$k] = mysql_result($periode_query, $k-1, "verouiller");
-					if ($ver_periode[$k] == "N"){
+					//if ($ver_periode[$k] == "N"){
+					if ((($_SESSION['statut']=='secours')&&($ver_periode[$k] != "O"))||
+						(($_SESSION['statut']!='secours')&&($ver_periode[$k] == "N"))) {
 						//echo "La période n'est pas fermée en saisie.<br />";
 						//=========================
 						// AJOUT: boireaus 20071003
@@ -230,21 +232,36 @@ if (isset($_POST['is_posted'])) {
 //
 // on calcule le nombre maximum de périodes dans une classe
 //
+$infos_debug="";
 
 $call_data = mysql_query("DROP TABLE IF EXISTS $nom_table");
 $call_data = mysql_query("CREATE TEMPORARY TABLE $nom_table (id_classe integer, num integer NOT NULL)");
+$msg_pb="";
+if($call_data) {
+	$infos_debug.="Succes de la creation de $nom_table<br />";
+}
+else {
+	$infos_debug.="Echec de la creation de $nom_table<br />";
+	$msg_pb="ERREUR&nbsp;: La création d'une table temporaire a échoué.<br />Le droit de créer des tables temporaires n'est peut-être pas attribué à l'utilisateur MySQL.<br />La présente page risque de ne pas fonctionner.";
+}
 $call_data = mysql_query("SELECT * FROM classes");
 $nombre_lignes = mysql_num_rows($call_data);
+$infos_debug.="\$nombre_lignes=$nombre_lignes classes trouvees<br />";
 $i = 0;
 while ($i < $nombre_lignes){
 	$id_classe = mysql_result($call_data, $i, "id");
 	$periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe' ORDER BY num_periode");
 	$k = mysql_num_rows($periode_query);
-	$call_reg = mysql_query("insert into $nom_table Values('$id_classe', '$k')");
+	$sql="insert into $nom_table Values('$id_classe', '$k')";
+	$call_reg = mysql_query($sql);
+	if($call_reg) {$infos_debug.="Succes de $sql<br />";} else {$infos_debug.="Echec de $sql<br />";}
 	$i++;
 }
-$call_data = mysql_query("SELECT max(num) as max FROM $nom_table");
+$sql="SELECT max(num) as max FROM $nom_table";
+$call_data = mysql_query($sql);
+if($call_data) {$infos_debug.="Succes de $sql<br />";} else {$infos_debug.="Echec de $sql<br />";}
 $nb_periode_max = mysql_result($call_data, 0, "max");
+$infos_debug.="\$nb_periode_max=$nb_periode_max<br />";
 
 $message_enregistrement = "Les modifications ont été enregistrées !";
 $themessage  = 'Des notes ou des appréciations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
@@ -253,6 +270,12 @@ $titre_page = "Saisie des appréciations ".$nom_aid;
 require_once("../lib/header.inc");
 //**************** FIN EN-TETE *****************
 //debug_var();
+/*
+echo "<p style='color:red'>Table temporaire&nbsp;: '$nom_table'<br />
+\$nb_periode_max=$nb_periode_max<br />
+$infos_debug
+</p>";
+*/
 ?>
 <script type="text/javascript" language="javascript">
 change = 'no';
@@ -305,6 +328,10 @@ if (!isset($aid_id)) {
 
 	echo " | <a href='saisie_aid.php?indice_aid=$indice_aid' onclick=\"return confirm_abandon (this, change, '$themessage')\">Choix $nom_aid</a></p>\n";
 
+	if($msg_pb!='') {
+		echo "<p style='color:red'>$msg_pb</p>\n";
+	}
+
 	echo "<form enctype='multipart/form-data' action='saisie_aid.php' method='post'>\n";
 	echo "<center><input type='submit' value='Enregistrer' /></center>\n";
 
@@ -324,15 +351,19 @@ if (!isset($aid_id)) {
 		if ($type_note == 'last') {
 			$last_periode_aid = min($num,$display_end);
 		}
-		$appel_login_eleves = mysql_query("SELECT DISTINCT a.login
-									FROM j_eleves_classes cc, j_aid_eleves a, $nom_table c, eleves e
-									WHERE (a.id_aid='$aid_id' AND
-									cc.login = a.login AND
-									a.login = e.login AND
-									cc.id_classe = c.id_classe AND
-									c.num = $num AND
-									a.indice_aid='$indice_aid') ORDER BY e.nom, e.prenom");
+
+		$sql="SELECT DISTINCT a.login
+FROM j_eleves_classes cc, j_aid_eleves a, $nom_table c, eleves e 
+WHERE (a.id_aid='$aid_id' AND 
+cc.login = a.login AND 
+a.login = e.login AND 
+cc.id_classe = c.id_classe AND 
+c.num = '$num' AND 
+a.indice_aid='$indice_aid') ORDER BY e.nom, e.prenom";
+		//echo "<tr><td style='color:red'>$sql</td>";
+		$appel_login_eleves = mysql_query($sql);
 		$nombre_lignes = mysql_num_rows($appel_login_eleves);
+		//echo "<td style='color:red'>\$nombre_lignes=$nombre_lignes</td></tr>";
 		if ($nombre_lignes != '0') {
 			echo "<tr>\n";
 			echo "<th><b>Nom Prénom</b></th>\n";
@@ -382,7 +413,9 @@ if (!isset($aid_id)) {
 						$current_eleve_login_n_t[$k] = $current_eleve_login."_n_t".$k;
 
 						$ver_periode[$k] = mysql_result($periode_query, $k-1, "verouiller");
-						if ($ver_periode[$k] != "N") {
+						//if ($ver_periode[$k] != "N") {
+						if ((($_SESSION['statut']=='secours')&&($ver_periode[$k] == "O"))||
+							(($_SESSION['statut']!='secours')&&($ver_periode[$k] != "N"))) {
 							echo "<td><b>";
 							if ($current_eleve_app_t[$k] != '') {
 								echo "$current_eleve_app_t[$k]";

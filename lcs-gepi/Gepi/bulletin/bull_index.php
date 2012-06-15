@@ -2,7 +2,7 @@
 /**
  * Edition des bulletins
  *
- * $Id: bull_index.php 8084 2011-08-31 16:00:21Z crob $
+ * $Id: bull_index.php 8816 2012-06-13 16:12:45Z crob $
  *
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
  * @todo Les bulletins HTML utilisent les infos display_rang, display_coef,... de la table 'classes'.
@@ -1410,6 +1410,7 @@ else {
 					$res_model=mysql_query($sql);
 					if(mysql_num_rows($res_model)==0) {
 						$sql="SELECT * FROM modele_bulletin WHERE id_model_bulletin='1';";
+						//echo "$sql<br />";
 					}
 					else {
 						$lig_mb=mysql_fetch_object($res_model);
@@ -1421,9 +1422,11 @@ else {
 						else {
 							$sql="SELECT * FROM modele_bulletin WHERE id_model_bulletin='".$lig_mb->modele_bulletin_pdf."';";
 						}
+						//echo "$sql<br />";
 					}
 				} else {
 					$sql="SELECT * FROM modele_bulletin WHERE id_model_bulletin='".$type_bulletin."';";
+					//echo "$sql<br />";
 				}
 				//echo "$sql<br />";
 			}
@@ -1645,6 +1648,7 @@ else {
 
 			// Informations sur la période
 			$sql="SELECT * FROM periodes WHERE id_classe='$id_classe' AND num_periode='$periode_num';";
+			//echo "$sql<br />";
 			$res_per=mysql_query($sql);
 			if(mysql_num_rows($res_per)>0) {
 				$lig_per=mysql_fetch_object($res_per);
@@ -1861,9 +1865,39 @@ else {
 			//echo "\$eff_classe=$eff_classe<br />\n";
 
 			if($eff_classe==0) {
-				echo "<p>La classe '$classe' est vide sur la période '$periode_num'.<br />Il n'est pas possible de poursuivre.</p>\n";
-				require("../lib/footer.inc.php");
-				die();
+				if($mode_bulletin!="pdf") {
+					echo "<p>La classe '$classe' est vide sur la période '$periode_num'.<br />Il n'est pas possible de poursuivre.</p>\n";
+					require("../lib/footer.inc.php");
+					die();
+				}
+				else {
+
+					$pdf=new bul_PDF('p', 'mm', 'A4');
+					$pdf->SetCreator($gepiSchoolName);
+					$pdf->SetAuthor($gepiSchoolName);
+					$pdf->SetKeywords('');
+					$pdf->SetSubject('Bulletin');
+					$pdf->SetTitle('Bulletin');
+					$pdf->SetDisplayMode('fullwidth', 'single');
+					$pdf->SetCompression(TRUE);
+					$pdf->SetAutoPageBreak(TRUE, 5);
+
+					$pdf->AddPage(); //ajout d'une page au document
+					$pdf->SetFont('Arial');
+					$pdf->SetXY(20,20);
+					$pdf->SetFontSize(14);
+					$pdf->Cell(90,7, "ERREUR",0,2,'');
+
+					$pdf->SetXY(20,40);
+					$pdf->SetFontSize(10);
+					$pdf->Cell(150,7, "La classe '$classe' est vide sur la période '$periode_num'.",0,2,'');
+					$pdf->SetXY(20,45);
+					$pdf->Cell(150,7, "Il n'est pas possible de poursuivre.",0,2,'');
+
+					$nom_bulletin = 'Erreur_bulletin.pdf';
+					$pdf->Output($nom_bulletin,'I');
+					die();
+				}
 			}
 
 			//==============================
@@ -1877,7 +1911,12 @@ else {
 			//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 			// 20100615
 			//$moyennes_periodes_precedentes="y";
-			if(((isset($moyennes_periodes_precedentes))||(isset($evolution_moyenne_periode_precedente )))&&($periode_num>1)&&(!isset($tab_bulletin[$id_classe][$periode_num]['note_prec']))) {
+			if((
+					((isset($moyennes_periodes_precedentes))&&($moyennes_periodes_precedentes=='y'))||
+					((isset($evolution_moyenne_periode_precedente))&&($evolution_moyenne_periode_precedente=='y'))
+				)&&($periode_num>1)&&(!isset($tab_bulletin[$id_classe][$periode_num]['note_prec']))) {
+				//echo "\$moyennes_periodes_precedentes=$moyennes_periodes_precedentes<br />\n";
+				//echo "\$evolution_moyenne_periode_precedente=$evolution_moyenne_periode_precedente<br />\n";
 				$reserve_periode_num=$periode_num;
 				for($periode_num=1;$periode_num<$reserve_periode_num;$periode_num++) {
 					//echo "\$periode_num=$periode_num<br />";
@@ -1885,8 +1924,12 @@ else {
 
 					$tab_bulletin[$id_classe][$reserve_periode_num]['login_prec'][$periode_num]=$current_eleve_login;
 					$tab_bulletin[$id_classe][$reserve_periode_num]['group_prec'][$periode_num]=$current_group;
-					$tab_bulletin[$id_classe][$reserve_periode_num]['note_prec'][$periode_num]=$current_eleve_note;
-					$tab_bulletin[$id_classe][$reserve_periode_num]['statut_prec'][$periode_num]=$current_eleve_statut;
+					if(isset($current_eleve_note)) {
+						$tab_bulletin[$id_classe][$reserve_periode_num]['note_prec'][$periode_num]=$current_eleve_note;
+					}
+					if(isset($current_eleve_statut)) {
+						$tab_bulletin[$id_classe][$reserve_periode_num]['statut_prec'][$periode_num]=$current_eleve_statut;
+					}
 					$tab_bulletin[$id_classe][$reserve_periode_num]['moy_gen_eleve_prec'][$periode_num]=$moy_gen_eleve;
 
 					//============================
@@ -2462,6 +2505,14 @@ else {
 
 										$n++;
 									}
+
+									// Initialisation pour le cas d'une période avec appréciation seule (note sur une autre préiode)
+									$tab_ele['aid_b'][$zz]['aid_note']='-';
+									$tab_ele['aid_b'][$zz]['aid_statut']='';
+									$tab_ele['aid_b'][$zz]['aid_note_moyenne']='-';
+									$tab_ele['aid_b'][$zz]['aid_note_max']='-';
+									$tab_ele['aid_b'][$zz]['aid_note_min']='-';
+
 									//------
 									// On appelle l'appréciation de l'élève, et sa note
 									//------
@@ -2619,6 +2670,14 @@ else {
 
 										$n++;
 									}
+
+									// Initialisation pour le cas d'une période avec appréciation seule (note sur une autre préiode)
+									$tab_ele['aid_e'][$zz]['aid_note']='-';
+									$tab_ele['aid_e'][$zz]['aid_statut']='';
+									$tab_ele['aid_e'][$zz]['aid_note_moyenne']='-';
+									$tab_ele['aid_e'][$zz]['aid_note_max']='-';
+									$tab_ele['aid_e'][$zz]['aid_note_min']='-';
+
 									//------
 									// On appelle l'appréciation de l'élève, et sa note
 									//------
@@ -3001,7 +3060,11 @@ else {
 	document.getElementById('td_classe').innerHTML='".$classe."';
 </script>\n";
 		}
-
+		/*
+		echo "<pre>";
+		echo print_r($tab_bulletin);
+		echo "</pre>\n";
+		*/
 		for($loop_periode_num=0;$loop_periode_num<count($tab_periode_num);$loop_periode_num++) {
 
 			$periode_num=$tab_periode_num[$loop_periode_num];
@@ -3053,10 +3116,20 @@ else {
 			//$compteur=0;
 			//for($i=0;$i<count($tab_bulletin[$id_classe][$periode_num]['eleve']);$i++) {
 			for($i=0;$i<$tab_bulletin[$id_classe][$periode_num]['eff_classe'];$i++) {
+
+				//echo "<pre>";
+				//print_r($tab_bulletin[$id_classe][$periode_num]['eleve']);
+				//echo "</pre>\n";
+
 				if($tri_par_etab_orig=='n') {$rg[$i]=$i;}
 
 				if(isset($tab_bulletin[$id_classe][$periode_num]['selection_eleves'])) {
 					//if(isset($tab_bulletin[$id_classe][$periode_num]['eleve'][$i]['login'])) {
+					/*
+					if(isset($rg[$i])) {
+						echo "\$rg[$i]=$rg[$i]<br />\n";
+					}
+					*/
 					if((isset($rg[$i]))&&(isset($tab_bulletin[$id_classe][$periode_num]['eleve'][$rg[$i]]['login']))) {
 					//if((isset($tab_bulletin[$id_classe][$periode_num]['eleve'][$rg[$i]]))&&(isset($tab_bulletin[$id_classe][$periode_num]['eleve'][$rg[$i]]['login']))) {
 
@@ -3106,6 +3179,7 @@ else {
 							else {
 								//bulletin_pdf($tab_bulletin[$id_classe][$periode_num],$i,$tab_releve[$id_classe][$periode_num]);
 								bulletin_pdf($tab_bulletin[$id_classe][$periode_num],$rg[$i],$tab_releve[$id_classe][$periode_num]);
+								//echo "bulletin_pdf(\$tab_bulletin[$id_classe][$periode_num],\$rg[$i],^$tab_releve[$id_classe][$periode_num]);<br />\n";
 							}
 
 

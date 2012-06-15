@@ -2,7 +2,7 @@
 /**
  * calcul de la moyenne générale
  * 
- * $Id: calcul_moy_gen.inc.php 8655 2011-11-22 18:01:00Z crob $
+ * $Id: calcul_moy_gen.inc.php 8816 2012-06-13 16:12:45Z crob $
  * 
  * Script à appeler dans le code
  * 
@@ -724,8 +724,12 @@ if($moy_min_classe1==21) {
 	$moy_min_classe1="-";
 }
 
-$moy_max_classe = max($moy_gen_eleve);
-$moy_max_classe1 = max($moy_gen_eleve1);
+if(count($moy_gen_eleve)>0) {
+	$moy_max_classe = max($moy_gen_eleve);
+}
+if(count($moy_gen_eleve1)>0) {
+	$moy_max_classe1 = max($moy_gen_eleve1);
+}
 
 //Calcul de la moyenne générale de la classe
 $nb_elv_classe=sizeof($moy_gen_eleve);

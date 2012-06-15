@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 8045 2011-08-30 07:54:40Z crob $
+* $Id: index_template.php 8748 2012-02-04 18:18:31Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -275,7 +275,7 @@ echo add_token_field();
 	  <h2>Délai de visualisation des devoirs</h2>
 	  <p class="italic">
 		Indiquez ici le délai en jours pendant lequel les devoirs seront visibles, à compter du jour de
-		visualisation sélectionné, dans l'interface publique de consulation des cahiers de textes.
+		visualisation sélectionné, dans l'interface publique de consultation des cahiers de textes.
 		<br />
 		Mettre la valeur 0 si vous ne souhaitez pas activer le module de remplissage des devoirs.
 		Dans ce cas, les professeurs font figurer les devoirs à faire dans la même case que le contenu des
