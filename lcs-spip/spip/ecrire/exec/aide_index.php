@@ -172,7 +172,7 @@ function help_body($aide) {
 function help_section($aide, $contenu, $prof=2)
 {
 	$maxprof = ($prof >=2) ? "12" : "1";
-	$r = "@<h$prof" . '(?: class="spip")?' . '>\s*' . $aide 
+	$r = "@<h$prof" . '(?: class="spip")?' . '>\s*' . preg_quote($aide) 
 	  ."\s*(?:/.+?)?</h$prof>(.*?)<(?:(?:h[$maxprof])|/body)@ism";
 
 	if (preg_match($r, $contenu, $m))
@@ -305,11 +305,12 @@ function exec_aide_index_dist()
 	global $help_server;
 	if (!is_array($help_server)) $help_server = array($help_server);
 	if (!preg_match(_HELP_PLACE_IMG,  _request('img'), $r)) {
-		aide_index_frame(_request('var_lang_r'),
-				 _request('lang_r'),
-				 _request('frame'),
-				 strtr(_request('aide'),'<>"\'', '____'),
-				 $help_server);
+		aide_index_frame(
+				preg_replace(',[^\w-]+,', '', _request('var_lang_r')),
+				preg_replace(',[^\w-]+,', '', _request('lang_r')),
+				_request('frame'),
+				strtr(_request('aide'),'<>"\'', '____'),
+				$help_server);
 	} else {
 		list (,$server, $cache, $rep, $lang, $file, $ext) = $r;
 		if ($rep=="IMG" AND $lang=="cache"

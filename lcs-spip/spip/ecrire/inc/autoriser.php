@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -573,8 +573,8 @@ function autoriser_auteur_modifier_dist($faire, $type, $id, $qui, $opt) {
 	// ou si les webmestres sont fixes par constante (securite)
 	elseif ($opt['webmestre'] AND (defined('_ID_WEBMESTRES') OR !autoriser('webmestre')))
 		return false;
-	// et toucher au statut d'un webmestre si il ne l'est pas lui meme
-	elseif ($opt['statut'] AND autoriser('webmestre','',0,$id) AND !autoriser('webmestre'))
+	// et modifier un webmestre si il ne l'est pas lui meme
+	elseif (intval($id) AND autoriser('webmestre','',0,$id) AND !autoriser('webmestre'))
 		return false;
 	else
 		return true;

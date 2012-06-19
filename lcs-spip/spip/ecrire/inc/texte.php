@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -258,7 +258,7 @@ function echappe_retour($letexte, $source='', $filtre = "") {
 	if (strpos($letexte,"base64$source")) {
 		# spip_log(htmlspecialchars($letexte));  ## pour les curieux
 		if (strpos($letexte,"<")!==false AND
-		  preg_match_all(',<(span|div) class=[\'"]base64'.$source.'[\'"]\s(.*)>\s*</\1>,UmsS',
+		  preg_match_all(',<(span|div)\sclass=[\'"]base64'.$source.'[\'"]\s(.*)>\s*</\1>,UmsS',
 		$letexte, $regs, PREG_SET_ORDER)) {
 			foreach ($regs as $reg) {
 				$rempl = base64_decode(extraire_attribut($reg[0], 'title'));
@@ -306,7 +306,7 @@ function couper($texte, $taille=50, $suite = '&nbsp;(...)') {
 	if (	$offset<$length
 			&& ($p_tag_ouvrant = strpos($texte,'<',$offset))!==NULL){
 		$p_tag_fermant = strpos($texte,'>',$offset);
-		if ($p_tag_fermant<$p_tag_ouvrant)
+		if ($p_tag_fermant && ($p_tag_fermant<$p_tag_ouvrant))
 			$offset = $p_tag_fermant+1; // prolonger la coupe jusqu'au tag fermant suivant eventuel
 	}
 	$texte = substr($texte, 0, $offset); /* eviter de travailler sur 10ko pour extraire 150 caracteres */

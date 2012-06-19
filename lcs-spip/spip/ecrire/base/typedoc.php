@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -88,6 +88,7 @@ $tables_documents = array(
 			'doc' => 'Word',
 			'djvu' => 'DjVu',
 			'dvi' => 'LaTeX DVI',
+			'epub' => 'ePub',
 			'eps' => 'PostScript',
 			'gz' => 'GZ',
 			'h' => 'C header',
@@ -225,6 +226,7 @@ $tables_mime = array(
 		'doc' => 'application/msword',
 		'djvu' => 'image/vnd.djvu',
 		'dvi' => 'application/x-dvi',
+		'epub' => 'application/epub+zip',
 		'eps' => 'application/postscript',
 		'gz' => 'application/x-gzip',
 		'h'  => 'text/x-chdr',

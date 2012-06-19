@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -350,9 +350,8 @@ function traiter_lien_implicite ($ref, $texte='', $pour='url', $connect='')
 
 	// dans le cas d'un lien vers un doc, ajouter le type='mime/type'
 	if ($type == 'document'
-	AND $mime = sql_getfetsel('mime_type', 'spip_types_documents',
-			"extension IN (SELECT extension FROM spip_documents where id_document =".sql_quote($id).")",
-			'','','','',$connect)
+	  AND $extension = sql_getfetsel("extension","spip_documents", " id_document =".sql_quote($id), '', '', '', '', $connect)
+		AND $mime = sql_getfetsel('mime_type', 'spip_types_documents',"extension=".sql_quote($extension),'','','','',$connect)
 	)
 		$r['mime'] = $mime;
 

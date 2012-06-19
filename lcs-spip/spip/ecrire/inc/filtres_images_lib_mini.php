@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -103,6 +103,18 @@ function _image_valeurs_trans($img, $effet, $forcer_format = false, $fonction_cr
 	if (strlen($source) < 1){
 		$source = $img;
 		$img = "<img src='$source' />";
+	}
+	# gerer img src="data:....base64"
+	else if (preg_match('@^data:image/(jpe?g|png|gif);base64,(.*)$@isS', $source, $regs)) {
+		$local = sous_repertoire(_DIR_VAR,'image-data').md5($regs[2]).'.'.str_replace('jpeg', 'jpg', $regs[1]);
+		if (!file_exists($local)) {
+			ecrire_fichier($local, base64_decode($regs[2]));
+		}
+		$source = $local;
+		$img = inserer_attribut($img, 'src', $source);
+		# eviter les mauvaises surprises lors de conversions de format
+		$img = inserer_attribut($img, 'width', '');
+		$img = inserer_attribut($img, 'height', '');
 	}
 
 	// les protocoles web prennent au moins 3 lettres

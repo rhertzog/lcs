@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -87,6 +87,16 @@ function calendrier_args_date($script, $annee, $mois, $jour, $type, $finurl) {
 	return $script . $finurl;
 }
 
+function calendrier_args_time($time, $script, $type, $fin='')
+{
+	if (!is_numeric($time)) $time = strtotime($time);
+	$jour = date("d",$time);
+	$mois = date("m",$time);
+	$annee = date("Y",$time);
+
+	return calendrier_args_date($script, $annee, $mois, $jour, $type, $fin);
+}
+
 /// utilise la precedente pour produire une balise A avec tous les accessoires
 
 // http://doc.spip.org/@calendrier_href
@@ -101,12 +111,7 @@ function calendrier_href($script, $annee, $mois, $jour, $type, $fin, $ancre, $im
 		: '';
 	}
 	$d = mktime (1,1,1, $mois, $jour, $annee);
-	$jour = date("d",$d);
-	$mois = date("m",$d);
-	$annee = date("Y",$d);
-
-	$h = calendrier_args_date($script, $annee, $mois, $jour, $type, $fin);
-	$url = $h . ($ancre ? "#$ancre" : '');
+	$url = calendrier_args_time($d, $script, $type, $fin) . ($ancre ? "#$ancre" : '');
 	$c = ($class ? " class=\"$class\"" : '');
 	
 	if ($img) $clic =  http_img_pack($img, ($alt ? $alt : $titre), $c);
@@ -607,15 +612,16 @@ function http_calendrier_jour_sept($annee, $mois, $jour, $echelle,  $partie_cal,
 function http_calendrier_ics($annee, $mois, $jour, $echelle, $partie_cal, $largeur, $evt, $style='', $class='') {
 	global $spip_lang_left;
 
-	if (is_array($GLOBALS['calendrier_partie'][$partie_cal]))
-	  list($debut, $fin) = $GLOBALS['calendrier_partie'][$partie_cal];
-	elseif (preg_match('/^(\d+)\D(\d+)$/', $partie_cal, $m))
-	  list(,$debut, $fin)  = $m;
+	if (is_array($GLOBALS['calendrier_partie'][$partie_cal])) {
+		$debut = $GLOBALS['calendrier_partie'][$partie_cal]['debut'];
+		$fin = $GLOBALS['calendrier_partie'][$partie_cal]['fin'];
+	} elseif (preg_match('/^(\d+)\D(\d+)$/', $partie_cal, $m))
+		list(,$debut, $fin)  = $m;
 	else {
 		$debut = 7;
 		$fin =21;
 	}
-	
+
 	if ($echelle==0) $echelle = DEFAUT_D_ECHELLE;
 
 	list($dimheure, $dimjour, $fontsize, $padding) =

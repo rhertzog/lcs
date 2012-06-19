@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -314,7 +314,8 @@ function spip_mysql_selectdb($db) {
 
 // http://doc.spip.org/@spip_mysql_listdbs
 function spip_mysql_listdbs($serveur='',$requeter=true) {
-	return @mysql_list_dbs();
+	$res = spip_mysql_query("SHOW DATABASES");
+	return $res;
 }
 
 // Fonction de creation d'une table SQL nommee $nom

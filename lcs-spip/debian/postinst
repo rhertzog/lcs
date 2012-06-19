@@ -2,7 +2,7 @@
 MODULE="spip"
 VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
 VERAPPLI="2.1.12"
-INDICEMAJNBR="7"
+INDICEMAJNBR="8"
 CONF="/var/lib/lcs/$MODULE"
 PATHMOD="/usr/share/lcs/$MODULE"
 PATHMAJ="/var/lib/lcs/$MODULE"

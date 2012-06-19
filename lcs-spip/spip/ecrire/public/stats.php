@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -18,8 +18,8 @@ function public_stats_dist() {
 	if (isset($_SERVER['HTTP_REFERER'])) $referer = $_SERVER['HTTP_REFERER'];
 	else if (isset($GLOBALS["HTTP_SERVER_VARS"]["HTTP_REFERER"])) $referer = $GLOBALS["HTTP_SERVER_VARS"]["HTTP_REFERER"];
 	
-	// Rejet des robots (qui sont pourtant des humains comme les autres)
-	if (_IS_BOT) return;
+	// Rejeter pirates et robots (qui sont pourtant des humains comme les autres)
+	if (_IS_BOT OR strlen($referer)!=strcspn($referer,'<>"\'')) return;
 
 	// Ne pas tenir compte des tentatives de spam des forums
 	if ($_SERVER['REQUEST_METHOD'] !== 'GET'

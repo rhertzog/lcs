@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -541,6 +541,7 @@ function majuscules($texte) {
 // "127.4 ko" ou "3.1 Mo"
 // http://doc.spip.org/@taille_en_octets
 function taille_en_octets ($taille) {
+	if ($taille < 1) return '';
 	if ($taille < 1024) {$taille = _T('taille_octets', array('taille' => $taille));}
 	else if ($taille < 1024*1024) {
 		$taille = _T('taille_ko', array('taille' => ((floor($taille / 102.4))/10)));

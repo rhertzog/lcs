@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2011                                                *
+ *  Copyright (c) 2001-2012                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -239,9 +239,11 @@ function chargeur_charger_zip($quoi = array())
 	AND array_values($paths[$i]) == array($total))
 		$i++;
 
-	$racine = $i
-		? array_pop(array_keys($paths[$i-1])).'/'
-		: '';
+	$racine = '';
+	if ($i){
+		$racine = array_keys($paths[$i-1]);
+		$racine = array_pop($racine).'/';
+	}
 
 	$quoi['remove'] = $racine;
 

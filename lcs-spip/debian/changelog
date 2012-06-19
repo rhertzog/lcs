@@ -1,3 +1,9 @@
+lcs-spip (2.4.9.2~1) lucid; urgency=low
+
+  * Update to spip 2.1.15
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 19 Jun 2012 18:00:23 +0200
+
 lcs-spip (2.4.9.1) Lcs; urgency=low
 
   * Update ecran_securite.php 1.0.10
