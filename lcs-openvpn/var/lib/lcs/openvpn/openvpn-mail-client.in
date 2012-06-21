@@ -11,8 +11,8 @@ Si vous etes sous Windows:
 3) Decompressez le contenu du fichier zip dans : 
    c:\Program Files\openvpn\config\
    Accessible dans le menu demarrer sous le nom :
-   OpenVPN configuration Directory
-4) une fois les fichiers en place, un simple clique droits sur l'icone 
+   "OpenVPN configuration Directory"
+4) une fois les fichiers en place, un simple clique droit sur l'icone 
    OpenVPN-GUI situe dans la barre des taches, puis Connect vous ouvre 
    la connexion.
 
@@ -43,7 +43,7 @@ Puis quittez en cliquant sur le tunnel puis quitter
 
 ------------------------------
 
-Si vous etes sous Linux Debian ou Ubuntu
+Si vous etes sous Linux Debian ou Ubuntu : methode en ligne de commande
 
 1) ouvrez un terminal
 2) installez le client openvpn 
@@ -59,6 +59,23 @@ Si vous etes sous Linux Debian ou Ubuntu
 	sudo /etc/init.d/openvpn restart
 	
 Par defaut le vpn sera lance au demarrage de votre ordinateur linux
+
+
+------------------------------
+
+Si vous etes sous Linux Debian ou Ubuntu : methode pour interface Gnome / Ubuntu
+
+1) ouvrez votre gestionnaire de logiciels (Software center)
+2) installez le client openvpn pour network-manager
+       install network-manager-openvpn
+3)  connectez vous sur le LCS, Utilisez l'application Client FTP
+           puis dans Documents/vpn
+              Telechargez le fichier configuration-vpn.zip
+4) dans les connexions réseau cliquez sur + :
+	type de connexion : openvpn
+	importer : indiquez le chemin du fichier .zip
+5) le VPN doit fonctionner :-)
+
 
 Pour plus de details consultez la documentation LCS.
 ------------------------------

@@ -1,3 +1,10 @@
+lcs-openvpn (2.4.9.1) Lcs; urgency=low
+
+  * update windows and mac os client
+  * update documentation for Ubuntu
+  
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 21 Jun 2012 10:47:07 +0200
+
 lcs-openvpn (2.4.9) Lcs; urgency=low
   [Simon Cavey]
   * Update windows and mac os client
