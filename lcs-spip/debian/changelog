@@ -1,8 +1,9 @@
-lcs-spip (2.4.9.2~1) lucid; urgency=low
+lcs-spip (2.4.9.2) lucid; urgency=low
 
   * Update to spip 2.1.15
+  * Update version_installee in sql
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 19 Jun 2012 18:00:23 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Jun 2012 11:44:27 +0200
 
 lcs-spip (2.4.9.1) Lcs; urgency=low
 
