@@ -1,4 +1,4 @@
-lcs-openvpn (2.4.9~3) Lcs; urgency=low
+lcs-openvpn (2.4.9) Lcs; urgency=low
   [Simon Cavey]
   * Update windows and mac os client
   * change default config for debian squeeze
@@ -6,8 +6,10 @@ lcs-openvpn (2.4.9~3) Lcs; urgency=low
   [Jean Luc Chretien]
   * Modify sed to delete include in named.conf
   * Fix typo in postinst
+  * Add .htaccess in openvpn for Default Charset
+  * Modify path in 70_lcsopenvpn.conf
  
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Oct 2011 15:58:56 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Jun 2012 09:49:28 +0200
 
 
 lcs-openvpn (2.4.8) Lcs; urgency=low
