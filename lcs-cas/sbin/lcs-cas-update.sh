@@ -63,4 +63,9 @@ fi
 # Modify cas.rb for consumed st ticket
 #
 cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
+#
+# Re-Start rubycas-lcs service
+#
+invoke-rc.d rubycas-lcs restart
+
 exit 0
