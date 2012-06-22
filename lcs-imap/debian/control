@@ -7,7 +7,7 @@ Standards-Version: 3.6.2
 
 Package: lcs-imap
 Architecture: all
-Depends: slis-common, courier-imap, courier-ldap, mailx
+Depends: slis-common, courier-imap, courier-ldap, mailx, gamin
 Description: Setup IMAP service on LCS server
  This package will configure the courier IMAP server for use within the
  LCS server project.
