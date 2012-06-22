@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##### Met en place la replication LDAP avec syncrepl #####
-##### LCS/SE3 derniere modification : 04/12/2010
+##### LCS/SE3 derniere modification : 22/06/2012
 if [ "$1" = "--help" -o "$1" = "-h" ]
 then
 	echo "Met en place la replication LDAP (syncrepl) a partir des donnees de la base sql"
@@ -186,10 +186,10 @@ allow bind_v2
 
 # Where the pid file is put. The init.d script
 # will not stop the server if you change this.
-pidfile		/var/run/slapd.pid
+pidfile		/var/run/slapd/slapd.pid
 
 # List of arguments that were passed to the server
-argsfile	/var/run/slapd.args
+argsfile	/var/run/slapd/slapd.args
 
 # Read slapd.conf(5) for possible values
 loglevel	0
@@ -455,6 +455,9 @@ TLS_CACERT /etc/ldap/slapd.pem" > /etc/ldap/ldap.conf
 
 chmod 550 /etc/ldap/slapd.conf
 chmod 400 /etc/ldap/slapd.pem
+
+chown -R openldap:openldap /etc/ldap
+chown -R openldap:openldap /var/lib/ldap
 
 /etc/init.d/slapd start
 

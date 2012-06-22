@@ -382,6 +382,7 @@ sub addUserEntry {
 	      'sambaLMPassword',     $lmPassword,
 	      'sambaNTPassword',     $ntPassword,
 	      'sambaPwdMustChange',  '2147483648',
+	      'sambaPwdLastSet',  '1',
 	      'sambaAcctFlags',      '[U          ]'
 	   );
   } else {
@@ -400,6 +401,7 @@ sub addUserEntry {
 	      'sambaLMPassword',     $lmPassword,
 	      'sambaNTPassword',     $ntPassword,
 	      'sambaPwdMustChange',  '2147483648',
+	      'sambaPwdLastSet',  '1',
 	      'sambaAcctFlags',      '[U          ]'
 	     );
   }

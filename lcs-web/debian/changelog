@@ -1,3 +1,10 @@
+lcs-web (2.4.9.1~1) Lcs; urgency=low
+
+  * Modify rights on .pem and path for pid slapd
+  * Add SambaPwdLastSet in LcSe.pm
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Jun 2012 13:09:50 +0200
+
 lcs-web (2.4.9) Lcs; urgency=low
 
   [ Philippe LECLERC ]
