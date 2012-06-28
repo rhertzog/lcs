@@ -1,7 +1,8 @@
 #!/bin/bash
-# squidGuard.sh version du 25/03/2010
+# squidGuard.sh version du 28/06/2012
 ARG="$@"
 
+echo "ARG $ARG" >> /var/log/lcs/squidebug.log
 case $ARG in
    se3_internet)
 		echo "Mise en place du fichier squidguard.conf pour se3-internet"
@@ -26,10 +27,10 @@ case $ARG in
 		/usr/bin/squidGuard -C whitelists/lcs/domains
        		/usr/bin/squidGuard -C whitelists/lcs/urls
 		chown proxy.www-data /var/lib/squidguard/db/whitelists -R
-        	chmod g+x /var/lib/squidguard/db/whitelists
-       		chmod g+x /var/lib/squidguard/db/whitelists/*
-       		chmod g+w /var/lib/squidguard/db/whitelists -R
-       		squid -k reconfigure
+        chmod g+x /var/lib/squidguard/db/whitelists
+       	chmod g+x /var/lib/squidguard/db/whitelists/*
+       	chmod g+w /var/lib/squidguard/db/whitelists -R
+       	squid -k reconfigure
 	   	# Inscription dans la base lcs_db.params
 	  	 /usr/bin/mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'se3-internet', '1', '0', 'Type de conf squidGuard', '0');"			
    ;;
@@ -57,14 +58,15 @@ case $ARG in
    ;;
    bl_lcs)
        echo "Liste noire sur Proxy academique + liste noire LCS sur le LCS"
-       cat /etc/squid/squidGuard.conf | sed -e "s/!ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez any/any/g" > /etc/squid/squidGuard.conf.tmp
+       cat /etc/squid/squidGuard.conf | sed -e "s/!aggressive !drugs !gambling !hacking !porn !violence !warez any/any/g" > /etc/squid/squidGuard.conf.tmp
        mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
    ;;
    bl_full)
        echo "Listes noires LCS + Nationale sur Proxy LCS"
-       RES=`grep '!ads' /etc/squid/squidGuard.conf`
-       if [ "x$RES" = "x" ]; then      
-         cat /etc/squid/squidGuard.conf | sed -e "s/any/!ads !aggressive !audio-video !drugs !gambling !hacking !porn !violence !warez any/g" > /etc/squid/squidGuard.conf.tmp
+       RES=`grep '!lcs any' /etc/squid/squidGuard.conf | wc -l`
+       echo "RES $RES"
+       if [ "$RES" = "1" ]; then      
+         cat /etc/squid/squidGuard.conf | sed -e "s/any/!aggressive !drugs !gambling !hacking !porn !violence !warez any/g" > /etc/squid/squidGuard.conf.tmp
          mv /etc/squid/squidGuard.conf.tmp /etc/squid/squidGuard.conf
        fi		     
    ;;
@@ -243,12 +245,15 @@ case $ARG in
         else
           RET="$RET redirecteursOn"
         fi
-   	RES=`grep '!bl_full' /etc/squid/squidGuard.conf`
-	if [ "x$RES" = "x" ]; then
-	  echo "$RET bl_lcs"
-	else
-	  echo "$RET bl_full"
-	fi
+	RES=`grep '!lcs any' /etc/squid/squidGuard.conf`	
+        if [ "x$RES" != "x" ]; then
+          RET="$RET bl_lcs"
+        fi	 
+	RES=`grep '!lcs !aggressive !drugs !gambling !hacking !porn !violence !warez' /etc/squid/squidGuard.conf`	
+        if [ "x$RES" != "x" ]; then
+          RET="$RET bl_full"
+        fi	
+	echo $RET
    ;;
    help)
    	# Aide en ligne

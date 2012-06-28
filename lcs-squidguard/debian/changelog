@@ -1,3 +1,10 @@
+lcs-squidguard (2.4.9.1) Lcs; urgency=low
+
+  * Update squidGuard.conf
+  * Modify index.php and squidGuard.sh
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 Jun 2012 14:31:37 +0200
+
 lcs-squidguard (2.4.9) Lcs; urgency=low
 
   * Force safe mode in search engines

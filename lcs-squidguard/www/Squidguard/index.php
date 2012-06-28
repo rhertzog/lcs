@@ -1,6 +1,5 @@
 <?php
-/* squidGuard/index.php Derniere modification : 19/05/2011*/
-
+/* squidGuard/index.php Derniere modification : 26/06/2012 */
 
 include "../lcs/includes/headerauth.inc.php";
 include "../Annu/includes/ldap.inc.php";
@@ -24,11 +23,26 @@ $malware = $_POST['malware'];
 $marketingware = $_POST['marketingware'];
 $phishing= $_POST['phishing'];
 $redirecteurs = $_POST['redirecteurs'];
-
-$bl_full = $_POST['bl_full'];
-$bl_lcs = $_POST['bl_lcs'];
+$bl = $_POST['bl'];
 $modif_status = $_POST['modif_status'];
 $action = $_POST['action'];
+
+// Messages
+$msg_webmail="Bloque l\'acc&egrave;s &agrave; une liste de services de webmail.";
+$msg_forums="Bloque l\'acc&egrave;s &agrave; une liste de forums.";
+$msg_audiovideo="Bloque l\'acc&egrave;s&agrave; une liste de sites de partage de contenus audios et vid&eacute;os (Youtube, DailyMotion, Deezer...).";
+$msg_blogs="Bloque l\'acc&egrave;s &agrave; une liste de forums (Skyblog, Myspace, Facebook...) mais uniquement en http.";
+$msg_pub="Bloque l\'acc&egrave;s &agrave; une liste de sites publicitaires.";
+$msg_malware="Bloque l\'acc&egrave;s &agrave; une liste de sites malveillants.";
+$msg_marketingware="Bloque l\'acc&egrave;s &agrave; une liste de sites de marketing publicitaires";
+$msg_phising="Bloque l\'acc&egrave;s &agrave; une liste de sites d'am&ccedil;onnages";
+$msg_redir="Bloque l\'acc&egrave;s &agrave; une liste de sites de proxy";
+$msg_lcsnat="Lorsque vous s&eacute;lectionnez cette option, le filtage ce fait sur la base de la lite noire LCS plus les listes noires nationales. Lorsque vous ne s&eacute;lectionnez pas cette option, le filtrage s\'effectue sur la base de la liste noire LCS ";
+$msg_raz="R&eacute;initialisation de la liste noire LCS.";
+
+function msgaide($msg) {
+    return ("&nbsp;<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('".$msg."')")."\"><img name=\"action_image2\"  src=\"../images/help-info.gif\"></u>");
+}
 
 function is_ip($ip) {
    $ip = trim($ip);
@@ -122,29 +136,30 @@ echo $html;
 
 // Modif de la configuration squidGuard.conf
 if ( $modif_status ) {
+
 	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
 	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
  	if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
 	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-        if ( $ads == "adsOn" ) $cmd = $ads; else $cmd = "adsOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $ads == "adsOn" ) $cmd = $ads; else $cmd = "adsOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-        if ( $marketingware == "marketingwareOn" ) $cmd = $marketingware; else $cmd = "marketingwareOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-        if ( $phishing == "phishingOn" ) $cmd = $phishing; else $cmd = "phishingOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-        if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $marketingware == "marketingwareOn" ) $cmd = $marketingware; else $cmd = "marketingwareOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $phishing == "phishingOn" ) $cmd = $phishing; else $cmd = "phishingOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
 	if ( $bl == "bl_full" ) $cmd = $bl; else $cmd = "bl_lcs";
 	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
  	if ( $raz_db == "1" ) exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh raz_db");
-       	// Recharger la configuration squid
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");	
+    // Recharger la configuration squid
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");	
 }
 
 if (ldap_get_right("lcs_is_admin",$login)=="Y") {
@@ -215,28 +230,28 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$status=explode(" ",$AllOutPut[0]); 
 		$html = "<div align='center'><h2>Configuration des &#171;Listes Noires&#187;</h2></div>\n";
 		$html .= "<form method='POST' action='index.php'>\n";
-                $html .= "RAZ liste noire LCS : <input type='checkbox' value='1' name='raz_db'><br>\n";
-		$html .= "Validation liste noire webmail : <input type='checkbox' value='webmailOn' name='webmail'";
-		if ( $status[0] == "webmailOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
+        //$html .= "RAZ liste noire LCS : <input type='checkbox' value='1' name='raz_db'><br>\n";
+		$html .= "Validation liste noire webmails : <input type='checkbox' value='webmailOn' name='webmail'";
+		if ( $status[0] == "webmailOn") $html.="checked>".msgaide($msg_webmail)."<br>\n"; else $html.=">".msgaide($msg_webmail)."<br>\n";
 		$html .= "Validation liste noire forums : <input type='checkbox' value='forumsOn' name='forums'";
-		if ( $status[1] == "forumsOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Validation liste noire audio et video (YouTube, DailyMotion, Deezer,...): <input type='checkbox' value='audiovideoOn' name='audiovideo'";
-                if ( $status[2] == "audiovideoOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-    		$html .= "Validation liste noire blog (Skyblog,...): <input type='checkbox' value='blogOn' name='blog'";
-                if ( $status[7] == "blogOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
+		if ( $status[1] == "forumsOn") $html.="checked>".msgaide($msg_forums)."<br>\n"; else $html.=">".msgaide($msg_forums)."<br>\n";
+		$html .= "Validation liste noire audio et video : <input type='checkbox' value='audiovideoOn' name='audiovideo'";
+        if ( $status[2] == "audiovideoOn") $html.="checked>".msgaide($msg_audiovideo)."<br>\n"; else $html.=">".msgaide($msg_audiovideo)."<br>\n";
+    	$html .= "Validation liste noire blogs : <input type='checkbox' value='blogOn' name='blog'";
+        if ( $status[7] == "blogOn") $html.="checked>".msgaide($msg_blogs)."<br>\n"; else $html.=">".msgaide($msg_blogs)."<br>\n";
 		$html .= "Validation liste noire publicit&eacute; : <input type='checkbox' value='adsOn' name='ads'";
-		if ( $status[3] == "adsOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Validation liste noire logiciels Malveillants : <input type='checkbox' value='malwareOn' name='malware'";
-		if ( $status[4] == "malwareOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
+		if ( $status[3] == "adsOn") $html.="checked>".msgaide($msg_pub)."<br>\n"; else $html.=">".msgaide($msg_pub)."<br>\n";
+		$html .= "Validation liste noire logiciels malveillants : <input type='checkbox' value='malwareOn' name='malware'";
+		if ( $status[4] == "malwareOn") $html.="checked>".msgaide($msg_malware)."<br>\n"; else $html.=">".msgaide($msg_malware)."<br>\n";
 		$html .= "Validation liste noire marketingware : <input type='checkbox' value='marketingwareOn' name='marketingware'";
-		if ( $status[5] == "marketingwareOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
+		if ( $status[5] == "marketingwareOn") $html.="checked>".msgaide($msg_marketingware)."<br>\n"; else $html.=">".msgaide($msg_marketingware)."<br>\n";
 		$html .= "Validation liste noire phishing : <input type='checkbox' value='phishingOn' name='phishing'";
-		if ( $status[6] == "phishingOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Validation liste noire redirecteurs (proxy en ligne,....) : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
-		if ( $status[8] == "redirecteursOn") $html.="CHECKED><br>\n"; else $html.="><br>\n";
-		$html .= "Liste noire LCS : <input type='checkbox' value='On' name='bl_lcs' CHECKED disabled><br>\n"; 
-		if ( $status[9] == "bl_full") $html.="CHECKED><br>\n"; else $html.="<br>\n";	
-		$html .= "Liste noire nationale : <input type='checkbox' value='bl_full' name='bl'><br>\n";
+		if ( $status[6] == "phishingOn") $html.="checked>".msgaide($msg_pishing)."<br>\n"; else $html.=">".msgaide($msg_pishing)."<br>\n";
+		$html .= "Validation liste noire redirecteurs : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
+		if ( $status[8] == "redirecteursOn") $html.="checked>".msgaide($msg_redir)."<br>\n"; else $html.=">".msgaide($msg_redir)."<br>\n";	
+		$html .= "Validation liste noire LCS + listes Nationales sur Proxy LCS : <input type='checkbox' value='bl_full' name='bl'";
+		if ( $status[9] == "bl_full") $html.="checked>".msgaide($msg_lcsnat)."<br>\n"; else $html.=">".msgaide($msg_lcsnat)."<br>\n";
+		$html .= "R&eacute;initialisation de la liste noire LCS : <input type='checkbox' value='1' name='raz_db'>".msgaide($msg_raz)."<br>\n";		
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
 		$html .= "	<input type='submit' value='Modifier'></td>\n";	
 		$html .= "</form>\n";

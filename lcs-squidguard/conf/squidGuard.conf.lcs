@@ -90,7 +90,7 @@ rewrite search_engine
 acl {
   default {
     rewrite search_engine
-    pass !lcs !ads !aggrssive !audio-video !drugs !gambling !hacking !porn !violence !warez any
+    pass !lcs !aggressive !drugs !gambling !hacking !porn !violence !warez any
     redirect 302:http://#REDIRECT#/Squidguard/pageinterdite.html
   }
 }
