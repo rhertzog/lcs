@@ -104,6 +104,19 @@ if($type_generique)
 	$type_synthese   = 0 ;
 }
 
+// La récupération de beaucoup d'informations peut provoquer un dépassement de mémoire.
+// Et la classe FPDF a besoin de mémoire, malgré toutes les optimisations possibles, pour générer un PDF comportant parfois entre 100 et 200 pages.
+// De plus la consommation d'une classe PHP n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF en l'occurrence...
+// Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
+// D'où le ini_set(), même si cette directive peut être interdite dans la conf PHP ou via Suhosin (http://www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit)
+// En complément, register_shutdown_function() permet de capter une erreur fatale de dépassement de mémoire, sauf si CGI.
+// D'où une combinaison avec une détection par javascript du statusCode.
+
+augmenter_memory_limit();
+register_shutdown_function('rapporter_erreur_fatale');
+
+// Initialisation de tableaux
+
 $tab_domaine        = array();	// [domaine_id] => array(domaine_ref,domaine_nom,domaine_nb_lignes);
 $tab_theme          = array();	// [domaine_id][theme_id] => array(theme_ref,theme_nom,theme_nb_lignes);
 $tab_item           = array();	// [theme_id][item_id] => array(item_ref,item_nom,item_coef,item_cart,item_socle,item_lien);
@@ -136,7 +149,7 @@ if(count($DB_TAB))
 		{
 			$theme_id  = $DB_ROW['theme_id'];
 			$theme_ref = $DB_ROW['niveau_ref'].'.'.$DB_ROW['domaine_ref'].$DB_ROW['theme_ordre'];
-			$first_theme_of_domaine = (isset($tab_theme[$domaine_id])) ? false : true ;
+			$first_theme_of_domaine = (isset($tab_theme[$domaine_id])) ? FALSE : TRUE ;
 			$tab_theme[$domaine_id][$theme_id] = array('theme_ref'=>$theme_ref,'theme_nom'=>$DB_ROW['theme_nom'],'theme_nb_lignes'=>1);
 			$lignes_nb++;
 		}
@@ -192,13 +205,6 @@ $eleve_nb = count($tab_eleve);
 if( !$type_generique && ( ($remplissage=='plein') || ($colonne_bilan=='oui') || $type_synthese || ($_SESSION['USER_PROFIL']=='eleve') ) )
 {
 	$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve , $liste_item , $matiere_id , $date_debut=false , $date_fin=false , $_SESSION['USER_PROFIL']) ;
-
-	// Permet d'avoir des informations accessibles en cas d'erreur type « PHP Warning : Invalid argument supplied for foreach() ».
-	if(!is_array($DB_TAB))
-	{
-		ajouter_log_PHP( 'Demande de bilan' /*log_objet*/ , serialize($_POST) /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , TRUE /*only_sesamath*/ );
-	}
-
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$user_id = ($_SESSION['USER_PROFIL']=='eleve') ? $_SESSION['USER_ID'] : $DB_ROW['eleve_id'] ;
@@ -283,7 +289,7 @@ if(count($tab_eval))
 			}
 			else
 			{
-				$tab_moyenne_scores_eleve[$eleve_id] = false;
+				$tab_moyenne_scores_eleve[$eleve_id] = FALSE;
 			}
 			// ... un pour le nombre d\'items considérés acquis ou pas
 			if($nb_scores)
@@ -295,7 +301,7 @@ if(count($tab_eval))
 			}
 			else
 			{
-				$tab_pourcentage_acquis_eleve[$eleve_id] = false;
+				$tab_pourcentage_acquis_eleve[$eleve_id] = FALSE;
 			}
 		}
 	}
@@ -325,8 +331,8 @@ if($type_synthese)
 		}
 		else
 		{
-			$tab_moyenne_scores_item[$item_id]     = false;
-			$tab_pourcentage_acquis_item[$item_id] = false;
+			$tab_moyenne_scores_item[$item_id]     = FALSE;
+			$tab_pourcentage_acquis_item[$item_id] = FALSE;
 		}
 	}
 }
@@ -348,11 +354,11 @@ if( $type_synthese )
 	// $moyenne_moyenne_scores
 	$somme  = array_sum($tab_moyenne_scores_eleve);
 	$nombre = count( array_filter($tab_moyenne_scores_eleve,'non_nul') );
-	$moyenne_moyenne_scores = ($nombre) ? round($somme/$nombre,0) : false;
+	$moyenne_moyenne_scores = ($nombre) ? round($somme/$nombre,0) : FALSE;
 	// $moyenne_pourcentage_acquis
 	$somme  = array_sum($tab_pourcentage_acquis_eleve);
 	$nombre = count( array_filter($tab_pourcentage_acquis_eleve,'non_nul') );
-	$moyenne_pourcentage_acquis = ($nombre) ? round($somme/$nombre,0) : false;
+	$moyenne_pourcentage_acquis = ($nombre) ? round($somme/$nombre,0) : FALSE;
 }
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
@@ -377,12 +383,6 @@ if( $type_individuel )
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 // Elaboration de la grille d'items d'un référentiel, en HTML et PDF
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-
-// La classe FPDF est gourmande en mémoire malgré toutes les optimisations possibles.
-// De plus cette consommation n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF...
-// Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
-// D'où le ini_set(), même si cette directive peut être interdite dans la conf PHP ou via Suhosin (http://www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit)
-if($type_individuel) { @ini_set('memory_limit','256M'); @ini_alter('memory_limit','256M'); }
 
 $affichage_direct   = ( ( in_array($_SESSION['USER_PROFIL'],array('eleve','parent')) ) && (SACoche!='webservices') ) ? TRUE : FALSE ;
 $affichage_checkbox = ( $type_synthese && ($_SESSION['USER_PROFIL']=='professeur') && (SACoche!='webservices') )     ? TRUE : FALSE ;
@@ -466,13 +466,13 @@ if( $type_generique || $type_individuel )
 									}
 									if($remplissage=='plein')
 									{
-										$releve_HTML_individuel .= '<td>'.affich_note_html($note,$date,$info,false).'</td>';
+										$releve_HTML_individuel .= '<td>'.affich_note_html($note,$date,$info,FALSE).'</td>';
 										$releve_PDF->afficher_note_lomer($note,$border=1,$br=floor(($i+1)/$colspan));
 									}
 									else
 									{
 										$releve_HTML_individuel .= '<td>&nbsp;</td>';
-										$releve_PDF->Cell($cases_largeur , $releve_PDF->cases_hauteur , '' , 1 , floor(($i+1)/$colspan) , 'C' , true , '');
+										$releve_PDF->Cell($cases_largeur , $releve_PDF->cases_hauteur , '' , 1 , floor(($i+1)/$colspan) , 'C' , TRUE , '');
 									}
 								}
 								// Case bilan
@@ -519,7 +519,7 @@ if($type_synthese)
 	$releve_PDF->bilan_periode_synthese_initialiser($eleve_nb,$item_nb,$tableau_tri_objet);
 	$releve_PDF->bilan_periode_synthese_entete($tab_titre,$matiere_et_niveau,''/*texte_periode*/);
 	// 1ère ligne
-	$releve_PDF->Cell($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , '' , 0 , 0 , 'C' , false , '');
+	$releve_PDF->Cell($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , '' , 0 , 0 , 'C' , FALSE , '');
 	$releve_PDF->choisir_couleur_fond('gris_clair');
 	$th = ($tableau_tri_objet=='eleve') ? 'Elève' : 'Item' ;
 	$releve_HTML_table_head = '<thead><tr><th>'.$th.'</th>';
@@ -527,7 +527,7 @@ if($type_synthese)
 	{
 		foreach($tab_liste_item as $item_id)	// Pour chaque item...
 		{
-			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, $tab_item_synthese[$item_id]['item_ref'], 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
+			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, pdf($tab_item_synthese[$item_id]['item_ref']), 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
 			$releve_HTML_table_head .= '<th title="'.html($tab_item_synthese[$item_id]['item_nom']).'"><img alt="'.html($tab_item_synthese[$item_id]['item_ref']).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($tab_item_synthese[$item_id]['item_ref']).'&amp;size=8" /></th>';
 		}
 	}
@@ -536,14 +536,14 @@ if($type_synthese)
 		foreach($tab_eleve as $tab)	// Pour chaque élève...
 		{
 			extract($tab);	// $eleve_id $eleve_nom $eleve_prenom
-			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, $eleve_nom.' '.$eleve_prenom, 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
+			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, pdf($eleve_nom.' '.$eleve_prenom), 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
 			$releve_HTML_table_head .= '<th><img alt="'.html($eleve_nom.' '.$eleve_prenom).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($eleve_nom).'&amp;prenom='.urlencode($eleve_prenom).'&amp;size=8" /></th>';
 		}
 	}
 	$releve_PDF->SetX( $releve_PDF->GetX()+2 );
 	$releve_PDF->choisir_couleur_fond('gris_moyen');
-	$releve_PDF->VertCell($releve_PDF->cases_largeur , $releve_PDF->etiquette_hauteur , '[ * ]'  , 1 , 0 , 'C' , true , '');
-	$releve_PDF->VertCell($releve_PDF->cases_largeur , $releve_PDF->etiquette_hauteur , '[ ** ]' , 1 , 1 , 'C' , true , '');
+	$releve_PDF->VertCell($releve_PDF->cases_largeur , $releve_PDF->etiquette_hauteur , '[ * ]'  , 1 , 0 , 'C' , TRUE , '');
+	$releve_PDF->VertCell($releve_PDF->cases_largeur , $releve_PDF->etiquette_hauteur , '[ ** ]' , 1 , 1 , 'C' , TRUE , '');
 	$checkbox_vide = ($affichage_checkbox) ? '<th class="nu">&nbsp;</th>' : '' ;
 	$releve_HTML_table_head .= '<th class="nu">&nbsp;</th><th>[ * ]</th><th>[ ** ]</th>'.$checkbox_vide.'</tr></thead>'."\r\n";
 	// lignes suivantes
@@ -554,11 +554,11 @@ if($type_synthese)
 		{
 			extract($tab);	// $eleve_id $eleve_nom $eleve_prenom
 			$releve_PDF->choisir_couleur_fond('gris_clair');
-			$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 , 0 , 'L' , true , '');
+			$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 , 0 , 'L' , TRUE , '');
 			$releve_HTML_table_body .= '<tr><td>'.html($eleve_nom.' '.$eleve_prenom).'</td>';
 			foreach($tab_liste_item as $item_id)	// Pour chaque item...
 			{
-				$score = (isset($tab_score_eleve_item[$eleve_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$item_id] : false ;
+				$score = (isset($tab_score_eleve_item[$eleve_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$item_id] : FALSE ;
 				$releve_PDF->afficher_score_bilan($score,$br=0);
 				$releve_HTML_table_body .= affich_score_html($score,$tableau_tri_mode);
 			}
@@ -574,12 +574,12 @@ if($type_synthese)
 		foreach($tab_liste_item as $item_id)	// Pour chaque item...
 		{
 			$releve_PDF->choisir_couleur_fond('gris_clair');
-			$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , pdf($tab_item_synthese[$item_id]['item_ref']) , 1 , 0 , 'L' , true , '');
+			$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , pdf($tab_item_synthese[$item_id]['item_ref']) , 1 , 0 , 'L' , TRUE , '');
 			$releve_HTML_table_body .= '<tr><td title="'.html($tab_item_synthese[$item_id]['item_nom']).'">'.html($tab_item_synthese[$item_id]['item_ref']).'</td>';
 			foreach($tab_eleve as $tab)	// Pour chaque élève...
 			{
 				$eleve_id = $tab['eleve_id'];
-				$score = (isset($tab_score_eleve_item[$eleve_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$item_id] : false ;
+				$score = (isset($tab_score_eleve_item[$eleve_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$item_id] : FALSE ;
 				$releve_PDF->afficher_score_bilan($score,$br=0);
 				$releve_HTML_table_body .= affich_score_html($score,$tableau_tri_mode);
 			}
@@ -595,8 +595,8 @@ if($type_synthese)
 	$memo_y = $releve_PDF->GetY()+2;
 	$releve_PDF->SetY( $memo_y );
 	$releve_PDF->choisir_couleur_fond('gris_moyen');
-	$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , 'moyenne scores [*]' , 1 , 2 , 'C' , true , '');
-	$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , '% validations [**]' , 1 , 0 , 'C' , true , '');
+	$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , 'moyenne scores [*]' , 1 , 2 , 'C' , TRUE , '');
+	$releve_PDF->CellFit($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , '% validations [**]' , 1 , 0 , 'C' , TRUE , '');
 	$releve_HTML_table_foot1 = '<tr><th>moyenne scores [*]</th>';
 	$releve_HTML_table_foot2 = '<tr><th>% validations [**]</th>';
 	$checkbox = ($affichage_checkbox) ? '<tr><th class="nu">&nbsp;</th>' : '' ;

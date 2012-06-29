@@ -1944,7 +1944,7 @@ public static function DB_maj_base($version_actuelle)
 	}
 
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//	MAJ 2012-05-14 => 2012-05-19
+	//	MAJ 2012-05-14 => 2012-05-21
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if($version_actuelle=='2012-05-14')
@@ -1971,6 +1971,82 @@ public static function DB_maj_base($version_actuelle)
 			// La supprimer si elle existe : sinon dans le cas d'une restauration de base à une version antérieure (suivie de cette mise à jour), cette ancienne table éventuellement existante ne serait pas réinitialisée.
 			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'DROP TABLE IF EXISTS sacoche_officiel_fichier' );
 			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'CREATE TABLE sacoche_officiel_fichier ( user_id MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT 0, officiel_type ENUM("releve","bulletin","palier1","palier","palier3") COLLATE utf8_unicode_ci NOT NULL DEFAULT "bulletin", periode_id MEDIUMINT(8) UNSIGNED NOT NULL DEFAULT 0, fichier_date DATE NOT NULL DEFAULT "0000-00-00", UNIQUE KEY user_id (user_id,officiel_type,periode_id), KEY officiel_type (officiel_type), KEY periode_id (periode_id) ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci ' );
+		}
+	}
+
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	MAJ 2012-05-21 => 2012-06-03
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-05-21')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-06-03';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// enregistrement des signatures en base64 sinon souci lors de sauvegarde/restauration de bases
+			$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , 'SELECT user_id, signature_contenu FROM sacoche_signature');
+			if(count($DB_TAB))
+			{
+				foreach($DB_TAB as $DB_ROW)
+				{
+					DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_signature SET signature_contenu=:signature_contenu WHERE user_id='.$DB_ROW['user_id'] , array(':signature_contenu'=>base64_encode($DB_ROW['signature_contenu'])) );
+				}
+			}
+		}
+	}
+
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	MAJ 2012-06-03 => 2012-06-07
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-06-03')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-06-07';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// ajout d'un champs pour enregistrer les préférences de l'utilisateur relatives aux messages d'accueil
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD user_param_accueil VARCHAR( 30 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "user,alert,info,help,ecolo"' );
+		}
+	}
+
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	MAJ 2012-06-07 => 2012-06-25
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-06-07')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-06-25';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// valeur renommée dans sacoche_niveau_famille
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_niveau_famille SET niveau_famille_nom="Cycles (primaire, collège, lycée)" WHERE niveau_famille_id=1' );
+			// ajout de matières
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9911, 0, 1,  99, 0, 255, "APS"  , "Apprendre à porter secours") ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9912, 0, 1,  99, 0, 255, "PSC1" , "Prévention et secours civiques de niveau 1") ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9913, 0, 1,  99, 0, 255, "PSC2" , "Prévention et secours civiques de niveau 2") ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9921, 0, 1,  99, 0, 255, "APER" , "Attestation de première éducation à la route") ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9922, 0, 1,  99, 0, 255, "ASSR1", "Attestation scolaire de sécurité routière de niveau 1") ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_matiere VALUES (9923, 0, 1,  99, 0, 255, "ASSR2", "Attestation scolaire de sécurité routière de niveau 2") ' );
+		}
+	}
+
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//	MAJ 2012-06-25 => 2012-06-28
+	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-06-25')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-06-28';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// correctifs de champs mal initialisés
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_officiel_releve_modifier_statut"   WHERE parametre_nom="droit_officiel_releve_changer_etat"' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_officiel_bulletin_modifier_statut" WHERE parametre_nom="droit_officiel_bulletin_changer_etat"' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_officiel_socle_modifier_statut"    WHERE parametre_nom="droit_officiel_socle_changer_etat"' );
 		}
 	}
 

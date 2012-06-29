@@ -39,6 +39,7 @@ $mode          = (isset($_POST['f_mode']))          ? clean_texte($_POST['f_mode
 $aff_coef      = (isset($_POST['f_coef']))          ? 1                                   : 0;
 $aff_socle     = (isset($_POST['f_socle']))         ? 1                                   : 0;
 $aff_lien      = (isset($_POST['f_lien']))          ? 1                                   : 0;
+$aff_start     = (isset($_POST['f_start']))         ? 1                                   : 0;
 $couleur       = (isset($_POST['f_couleur']))       ? clean_texte($_POST['f_couleur'])    : '';
 $legende       = (isset($_POST['f_legende']))       ? clean_texte($_POST['f_legende'])    : '';
 $marge_min     = (isset($_POST['f_marge_min']))     ? clean_entier($_POST['f_marge_min']) : 0;
@@ -71,9 +72,6 @@ if( (!$palier_id) || (!$palier_nom) || (!count($tab_pilier_id)) || (!in_array($m
 Formulaire::save_choix('releve_socle');
 
 $marge_gauche = $marge_droite = $marge_haut = $marge_bas = $marge_min ;
-
-// Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
-// ajouter_log_PHP( 'Demande de bilan' /*log_objet*/ , serialize($_POST) /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , TRUE /*only_sesamath*/ );
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 // INCLUSION DU CODE COMMUN À PLUSIEURS PAGES

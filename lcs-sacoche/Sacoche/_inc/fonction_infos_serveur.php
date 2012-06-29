@@ -318,7 +318,7 @@ $tab_commentaires['version_mysql']        = 'Version 5.1 ou ultérieure conseill
 $tab_commentaires['version_sacoche_prog'] = 'Dernière version disponible : '.$tester_version;
 $tab_commentaires['version_sacoche_base'] = $complement.'Version attendue : '.VERSION_BASE;
 $tab_commentaires['max_execution_time']   = 'Par défaut 30 secondes.<br />Une valeur trop faible pourrait gêner les sauvegardes / restaurations de grosses bases.';
-$tab_commentaires['memory_limit']         = 'Par défaut 128Mo (largement assez) mais souvent placée à 32Mo.<br />Doit être plus grand que post_max_size (ci-dessous).<br />Une valeur inférieure à 32Mo peut poser problème (pour générer des bilans ou sauvegarder/restaurer).';
+$tab_commentaires['memory_limit']         = 'Par défaut 128Mo (convient très bien).<br />Doit être plus grand que post_max_size (ci-dessous).<br />Une valeur inférieure à 128Mo peut poser problème (pour générer des bilans PDF en particulier).<br />Mais 64Mo voire 32Mo peuvent aussi convenir, tout dépend de l\'usage (nombre d\'élèves considérés à la fois, quantité de données&hellip;).';
 $tab_commentaires['post_max_size']        = 'Par défaut 8Mo.<br />Doit être plus grand que upload_max_filesize (ci-dessous).';
 $tab_commentaires['upload_max_filesize']  = 'Par défaut 2Mo.<br />A augmenter si on doit envoyer un fichier d\'une taille supérieure.';
 $tab_commentaires['safe_mode']            = 'Fonctionnalité obsolète depuis PHP 5.3.0, à ne plus utiliser.<br />Son activation peut poser problème (pour échanger avec le serveur communautaire).';
@@ -394,7 +394,7 @@ function tableau_reglages_Suhosin()
 	$tab_lignes   = array(1=>'get','post','request');
 	$tab_colonnes = array(1=>'max_name_length','max_totalname_length','max_value_length','max_vars');
 	$tab_tr = array();
-	$tab_suhosin_options  = @ini_get_all( 'suhosin' , FALSE /*details*/ );
+	$tab_suhosin_options = (version_compare(PHP_VERSION,5.3,'<')) ? @ini_get_all( 'suhosin' ) : @ini_get_all( 'suhosin' , FALSE /*details*/ ) ; // http://fr.php.net/ini_get_all
 	$tab_tr[0] = '<tr><th>Suhosin</th>';
 	foreach($tab_lignes as $i_ligne => $categorie)
 	{

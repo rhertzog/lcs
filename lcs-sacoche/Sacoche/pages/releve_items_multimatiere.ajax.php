@@ -33,7 +33,7 @@ $aff_bilan_MS   = (isset($_POST['f_bilan_MS']))    ? 1                          
 $aff_bilan_PA   = (isset($_POST['f_bilan_PA']))    ? 1                                    : 0;
 $aff_conv_sur20 = (isset($_POST['f_conv_sur20']))  ? 1                                    : 0;
 $with_coef      = 1; // Il n'y a que des relevés par matière et pas de synthèse commune : on prend en compte les coefficients pour chaque relevé matière.
-$matiere_id     = true;
+$matiere_id     = TRUE;
 $matiere_nom    = '';
 $groupe_id      = (isset($_POST['f_groupe']))      ? clean_entier($_POST['f_groupe'])     : 0;
 $groupe_nom     = (isset($_POST['f_groupe_nom']))  ? clean_texte($_POST['f_groupe_nom'])  : '';
@@ -89,9 +89,6 @@ if( !$orientation || !$couleur || !$legende || !$marge_min || !$pages_nb || !$ca
 Formulaire::save_choix('items_multimatiere');
 
 $marge_gauche = $marge_droite = $marge_haut = $marge_bas = $marge_min ;
-
-// Permet d'avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted ».
-// ajouter_log_PHP( 'Demande de bilan' /*log_objet*/ , serialize($_POST) /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , TRUE /*only_sesamath*/ );
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 // INCLUSION DU CODE COMMUN À PLUSIEURS PAGES

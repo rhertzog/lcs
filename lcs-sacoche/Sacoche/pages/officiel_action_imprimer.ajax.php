@@ -240,9 +240,9 @@ if( ($ACTION!='imprimer') || ($etape!=1) )
 // Initialiser les signatures numériques
 
 $tab_saisie    = array();	// [eleve_id][rubrique_id][prof_id] => array(prof_info,appreciation,note,info);
-$tab_signature = array();	// [prof_id] => array(contenu,format,largeur,hauteur);
+$tab_signature = array(0=>NULL);	// [prof_id] => array(contenu,format,largeur,hauteur);
 $tab_prof_id = array();
-$DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies($BILAN_TYPE,$periode_id,$liste_eleve_id);
+$DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies( $BILAN_TYPE , $periode_id , $liste_eleve_id , 0 /*prof_id*/ );
 foreach($DB_TAB as $DB_ROW)
 {
 	$tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$DB_ROW['prof_info'] , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
@@ -269,7 +269,7 @@ if($_SESSION['OFFICIEL']['TAMPON_SIGNATURE']!='sans')
 	$DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_signatures($listing_prof_id);
 	foreach($DB_TAB as $DB_ROW)
 	{
-		$tab_signature[$DB_ROW['user_id']] = array( $DB_ROW['signature_contenu'] , $DB_ROW['signature_format'] , $DB_ROW['signature_largeur'] , $DB_ROW['signature_hauteur'] );
+		$tab_signature[$DB_ROW['user_id']] = array( base64_decode($DB_ROW['signature_contenu']) , $DB_ROW['signature_format'] , $DB_ROW['signature_largeur'] , $DB_ROW['signature_hauteur'] );
 	}
 }
 
@@ -360,7 +360,7 @@ if($BILAN_TYPE=='releve')
 	$aff_bilan_PA    = $_SESSION['OFFICIEL']['RELEVE_POURCENTAGE_ACQUIS'];
 	$aff_conv_sur20  = 0; // pas jugé utile de le mettre en option...
 	$with_coef       = 1; // Il n'y a que des relevés par matière et pas de synthèse commune : on prend en compte les coefficients pour chaque relevé matière.
-	$matiere_id      = true;
+	$matiere_id      = TRUE;
 	$matiere_nom     = '';
 	$groupe_id       = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
 	$groupe_nom      = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
@@ -405,6 +405,7 @@ elseif($BILAN_TYPE=='bulletin')
 	$aff_coef       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$aff_socle      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$aff_lien       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
+	$aff_start      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$only_socle     = 0; // pas jugé utile de le mettre en option...
 	$only_niveau    = 0; // pas jugé utile de le mettre en option...
 	$couleur        = $_SESSION['OFFICIEL']['BULLETIN_COULEUR'];
@@ -432,6 +433,7 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
 	$aff_coef       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$aff_socle      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$aff_lien       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
+	$aff_start      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
 	$couleur        = $_SESSION['OFFICIEL']['SOCLE_COULEUR'];
 	$legende        = $_SESSION['OFFICIEL']['SOCLE_LEGENDE'];
 	$marge_gauche   = $_SESSION['OFFICIEL']['MARGE_GAUCHE'];

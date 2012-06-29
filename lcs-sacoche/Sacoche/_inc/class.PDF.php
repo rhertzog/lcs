@@ -439,6 +439,7 @@ class PDF extends FPDF
 	private $eleve_id     = 0;
 	private $eleve_nom    = '';
 	private $eleve_prenom = '';
+	private $doc_titre    = '';
 	// Définition de qqs variables supplémentaires
 	private $cases_nb             = 0;
 	private $cases_largeur        = 0;
@@ -730,8 +731,9 @@ class PDF extends FPDF
 		{
 			$this->choisir_couleur_fond($this->tab_choix_couleur[$etat]);
 			$largeur_case = $largeur*$nb/$total ;
-			$texte = ($largeur_case>$hauteur) ? $nb.' '.$_SESSION['ACQUIS_TEXTE'][$etat] : $nb ;
-			$this->Cell($largeur_case , $hauteur , pdf($texte) , 0 /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
+			$texte_complet = $nb.' '.$_SESSION['ACQUIS_TEXTE'][$etat];
+			$texte = (strlen($texte_complet)<$largeur_case) ? $texte_complet : $nb ;
+			$this->CellFit($largeur_case , $hauteur , pdf($texte) , 0 /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
 		}
 		// Bordure unique autour
 		$this->SetXY($abscisse , $ordonnee);
@@ -745,6 +747,11 @@ class PDF extends FPDF
 	public function afficher_appreciation($largeur_autorisee,$hauteur_autorisee,$taille_police,$taille_interligne,$texte)
 	{
 		$this->SetFont('Arial' , '' , $taille_police);
+		// Ajout d'espaces insécables judicieux et retrait d'espaces de mise en forme inappropriés
+		$e = chr(0xC2).chr(0xA0); // espace insécable en UTF-8 (http://fr.wikipedia.org/wiki/Espace_ins%C3%A9cable ; http://fr.wikipedia.org/wiki/UTF-8)
+		$tab_bad = array(   ' !' ,   ' ?' ,   ' :' ,   ' ;' ,   ' %' , ' .' , ' ,' );
+		$tab_bon = array( $e.'!' , $e.'?' , $e.':' , $e.';' , $e.'%' ,  '.' ,  ',' );
+		$texte = str_replace( $tab_bad , $tab_bon , $texte );
 		// Ajustement de la taille de la police et de l'interligne si appréciation trop longue
 		do
 		{
@@ -782,16 +789,25 @@ class PDF extends FPDF
 	public function afficher_signature($largeur_cadre_appreciation,$hauteur_autorisee,$tab_image_tampon_signature)
 	{
 		list($img_contenu,$img_format,$img_largeur,$img_hauteur) = $tab_image_tampon_signature;
+		// Les dimensions sont données en pixels, il faut les convertir en mm/
+		// Problème : dpi inconnue ! On prend 96 par défaut... mais ça peut être 72 ou 300 ou ... ça dépend de chaque image...
+		// mm = (pixels * 25.4) / dpi
+		// pixels = (mm * dpi) / 25.4
+		$coef_conversion = 25.4 / 96 ;
+		$img_largeur *= $coef_conversion;
+		$img_hauteur *= $coef_conversion;
 		$largeur_autorisee = $hauteur_autorisee * 2 ;
 		$coef_largeur = $largeur_autorisee / $img_largeur ;
 		$coef_hauteur = $hauteur_autorisee / $img_hauteur ;
 		$ratio = min( $coef_largeur , $coef_hauteur , 1 ) ;
 		$img_largeur *= $ratio;
 		$img_hauteur *= $ratio;
-		$img_pos_x = $this->GetX() + $largeur_cadre_appreciation - $img_largeur ;
+		$retrait_x = max($hauteur_autorisee,$img_largeur);
+		$img_pos_x = $this->GetX() + $largeur_cadre_appreciation - $retrait_x ;
 		$img_pos_y = $this->GetY() + ( $hauteur_autorisee - $img_hauteur ) / 2 ;
+		// echo'*'.$ratio.'*'.$img_largeur.'*'.$img_hauteur;
 		$this->MemImage($img_contenu,$img_pos_x,$img_pos_y,$img_largeur,$img_hauteur,strtoupper($img_format));
-		return $img_largeur;
+		return $retrait_x;
 	}
 
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -881,6 +897,8 @@ class PDF extends FPDF
 	//	bilan_synthese_entete()        c'est là que les calculs se font pour une sortie "multimatiere"
 	//	bilan_synthese_ligne_matiere()
 	//	bilan_synthese_ligne_synthese()
+	//	bilan_synthese_appreciation_rubrique()
+	//	bilan_synthese_appreciation_generale()
 	//	bilan_synthese_legende()
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -938,6 +956,7 @@ class PDF extends FPDF
 			{
 				// Ecrire l'entête (qui ne dépend pas de la taille de la police calculée ensuite) et récupérer la place requise par cette entête.
 				list( $tab_etabl_coords , $etabl_coords__bloc_hauteur , $tab_bloc_titres , $tab_adresse , $tag_date_heure_initiales ) = $tab_infos_entete;
+				$this->doc_titre = $tab_bloc_titres[0].' - '.$tab_bloc_titres[1];
 				// Bloc adresse en positionnement contraint
 				if( (is_array($tab_adresse)) && ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']=='oui_force') )
 				{
@@ -980,11 +999,9 @@ class PDF extends FPDF
 			}
 			else
 			{
-				list( $texte_format , $texte_periode , $groupe_nom ) = $tab_infos_entete;
 				$hauteur_entete = 2*4 ; // HG L1 intitulé L2 période ; HD L1 structure L2 élève classe
 			}
 			// On calcule la hauteur de la ligne et la taille de la police pour tout faire rentrer sur une page si possible (personnalisée par élève), un minimum de pages sinon
-			// On calcule la hauteur de la ligne et la taille de la police pour tout faire rentrer sur une page (personnalisée par élève)
 			$hauteur_dispo_par_page = $this->page_hauteur - $this->marge_haut - $this->marge_bas ;
 			$lignes_nb = ( $hauteur_entete / 4 ) + $eleve_nb_lignes + ($this->legende*1.5) ; // entête + synthèses + légendes
 			$hauteur_ligne_minimale = ($this->officiel) ? 4.5 : 3.5 ;
@@ -993,7 +1010,8 @@ class PDF extends FPDF
 			do
 			{
 				$nb_pages++;
-				$hauteur_ligne_calcule = $nb_pages*$hauteur_dispo_par_page / $lignes_nb ;
+				$lignes_rabe = ($nb_pages-1)*10; // Prendre un peu de marge pour tenir compte des sauts de page laissant du blanc en bas de page si une rubrique ne rentre pas.
+				$hauteur_ligne_calcule = $nb_pages*$hauteur_dispo_par_page / ($lignes_nb+$lignes_rabe) ;
 			}
 			while($hauteur_ligne_calcule < $hauteur_ligne_minimale);
 			$this->lignes_hauteur = floor($hauteur_ligne_calcule*10)/10 ; // round($hauteur_ligne_calcule,1,PHP_ROUND_HALF_DOWN) à partir de PHP 5.3
@@ -1003,6 +1021,8 @@ class PDF extends FPDF
 		}
 		if(!$this->officiel)
 		{
+			list( $texte_format , $texte_periode , $groupe_nom ) = $tab_infos_entete;
+			$this->doc_titre = 'Synthèse '.$texte_format.' - '.$texte_periode;
 			// Intitulé (dont éventuellement matière) / structure
 			$largeur_demi_page = ( $this->page_largeur - $this->marge_gauche - $this->marge_droite ) / 2;
 			$this->SetFont('Arial' , 'B' , $this->taille_police*1.5);
@@ -1035,7 +1055,9 @@ class PDF extends FPDF
 			{
 				$this->AddPage($this->orientation , 'A4');
 				$this->SetFont('Arial' , 'B' , $this->taille_police);
-				$this->Cell( $this->page_largeur - $this->marge_gauche - $this->marge_droite , $this->lignes_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+				$this->choisir_couleur_texte('gris_fonce');
+				$this->Cell( $this->page_largeur - $this->marge_gauche - $this->marge_droite , $this->lignes_hauteur , pdf($this->doc_titre.' - '.$this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+				$this->choisir_couleur_texte('noir');
 			}
 			else
 			{
@@ -1103,21 +1125,18 @@ class PDF extends FPDF
 	public function bilan_synthese_ligne_synthese($synthese_nom,$tab_infos_synthese,$total,$hauteur_ligne_synthese)
 	{
 		$hauteur_ligne = $this->lignes_hauteur * $hauteur_ligne_synthese ;
-		if(!$this->officiel)
-		{
-			// Proportions acquis synthèse
-			$this->SetFont('Arial' , '' , $this->taille_police*0.8);
-			$this->afficher_proportion_acquis(40,$hauteur_ligne,$tab_infos_synthese,$total);
-			$intitule_synthese_largeur = $this->page_largeur - $this->marge_gauche - $this->marge_droite - 40 ;
-		}
-		else
-		{
+		$largeur_diagramme = ($this->officiel) ? 20 : 40 ;
+		$this->SetFont('Arial' , '' , $this->taille_police*0.8);
+		$this->afficher_proportion_acquis($largeur_diagramme,$hauteur_ligne,$tab_infos_synthese,$total);
+		$intitule_synthese_largeur = ( ($this->officiel) && ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE']) ) ? ( $this->page_largeur - $this->marge_gauche - $this->marge_droite ) / 2 - $largeur_diagramme : $this->page_largeur - $this->marge_gauche - $this->marge_droite - $largeur_diagramme ;
+		// else
+		// {
 			// Pourcentage acquis synthèse
-			$this->pourcentage_largeur = 10;
-			$this->cases_hauteur = $hauteur_ligne;
-			$this->afficher_pourcentage_acquis( '' /*gras*/ , $tab_infos_synthese , 'rien' /*affich*/ );
-			$intitule_synthese_largeur = ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE']) ? ( $this->page_largeur - $this->marge_gauche - $this->marge_droite ) / 2 - $this->pourcentage_largeur : $this->page_largeur - $this->marge_gauche - $this->marge_droite - $this->pourcentage_largeur ;
-		}
+			// $this->pourcentage_largeur = 10;
+			// $this->cases_hauteur = $hauteur_ligne;
+			// $this->afficher_pourcentage_acquis( '' /*gras*/ , $tab_infos_synthese , 'rien' /*affich*/ );
+			// $intitule_synthese_largeur = ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE']) ? ( $this->page_largeur - $this->marge_gauche - $this->marge_droite ) / 2 - $this->pourcentage_largeur : $this->page_largeur - $this->marge_gauche - $this->marge_droite - $this->pourcentage_largeur ;
+		// }
 		// Intitulé synthèse
 		$this->SetFont('Arial' , '' , $this->taille_police);
 		$couleur_fond = ($this->couleur=='oui') ? 'gris_clair' : 'blanc' ;
@@ -1135,7 +1154,7 @@ class PDF extends FPDF
 		{
 			unset($tab_saisie[0]); // la note
 			$memo_y = $this->GetY();
-			$this->officiel_bloc_appreciation_intermediaire( $tab_saisie , $demi_largeur , $this->lignes_hauteur , 'bulletin' , $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE'] );
+			$this->officiel_bloc_appreciation_intermediaire( $tab_saisie , $demi_largeur , $this->lignes_hauteur , 'bulletin' , $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE'] , $cadre_hauteur );
 			$this->SetXY( $this->marge_gauche , $memo_y + $cadre_hauteur );
 		}
 		else
@@ -1152,7 +1171,9 @@ class PDF extends FPDF
 		{
 			// Prendre une nouvelle page si ça ne rentre pas, avec recopie de l'identité de l'élève
 			$this->AddPage($this->orientation , 'A4');
-			$this->Cell($this->page_largeur/2 , $this->lignes_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('gris_fonce');
+			$this->Cell( $this->page_largeur - $this->marge_gauche - $this->marge_droite , $this->lignes_hauteur , pdf($this->doc_titre.' - '.$this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('noir');
 			$this->SetXY( $this->marge_gauche , $this->GetY() + 2 );
 		}
 		else
@@ -1176,6 +1197,8 @@ class PDF extends FPDF
 	//	bilan_item_individuel_initialiser()   c'est là que les calculs se font pour une sortie "matiere"
 	//	bilan_item_individuel_entete()        c'est là que les calculs se font pour une sortie "multimatiere" ou "selection"
 	//	bilan_item_individuel_transdisciplinaire_ligne_matiere()
+	//	bilan_item_individuel_appreciation_rubrique()
+	//	bilan_item_individuel_appreciation_generale()
 	//	bilan_item_individuel_debut_ligne_item()
 	//	bilan_item_individuel_ligne_synthese()
 	//	bilan_item_individuel_legende()
@@ -1248,6 +1271,7 @@ class PDF extends FPDF
 			{
 				// Ecrire l'entête (qui ne dépend pas de la taille de la police calculée ensuite) et récupérer la place requise par cette entête.
 				list( $tab_etabl_coords , $etabl_coords__bloc_hauteur , $tab_bloc_titres , $tab_adresse , $tag_date_heure_initiales ) = $tab_infos_entete;
+				$this->doc_titre = $tab_bloc_titres[0].' - '.$tab_bloc_titres[1];
 				// Bloc adresse en positionnement contraint
 				if( (is_array($tab_adresse)) && ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']=='oui_force') )
 				{
@@ -1291,6 +1315,7 @@ class PDF extends FPDF
 			else
 			{
 				list( $texte_format , $texte_periode , $groupe_nom ) = $tab_infos_entete;
+				$this->doc_titre = 'Bilan '.$texte_format.' - '.$texte_periode;
 				$hauteur_entete = 2*4 ; // HG L1 intitulé L2 période ; HD L1 structure L2 élève classe
 			}
 			// On calcule la hauteur de la ligne et la taille de la police pour tout faire rentrer sur une page si possible (personnalisée par élève), un minimum de pages sinon
@@ -1363,7 +1388,9 @@ class PDF extends FPDF
 		{
 			$this->Cell($largeur_demi_page , $this->lignes_hauteur , pdf($matiere_nom)                            , 0 /*bordure*/ , 0 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
 			$this->SetFont('Arial' , 'B' , $this->taille_police);
-			$this->Cell($largeur_demi_page , $this->lignes_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('gris_fonce');
+			$this->Cell( $largeur_demi_page , $this->lignes_hauteur , pdf($this->doc_titre.' - '.$this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('noir');
 		}
 		else
 		{
@@ -1385,7 +1412,9 @@ class PDF extends FPDF
 		{
 			// Prendre une nouvelle page si ça ne rentre pas, avec recopie de l'identité de l'élève
 			$this->AddPage($this->orientation , 'A4');
-			$this->Cell($this->page_largeur/2 , $this->lignes_hauteur , pdf($this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('gris_fonce');
+			$this->Cell( $this->page_largeur - $this->marge_gauche - $this->marge_droite , $this->lignes_hauteur , pdf($this->doc_titre.' - '.$this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
+			$this->choisir_couleur_texte('noir');
 			$this->SetXY( $this->marge_gauche+$this->reference_largeur , $this->GetY() + 2 );
 		}
 		else
@@ -1431,6 +1460,7 @@ class PDF extends FPDF
 	//	grille_referentiel_domaine()
 	//	grille_referentiel_theme()
 	//	grille_referentiel_item()
+	//	grille_referentiel_legende()
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public function grille_referentiel_initialiser($cases_nb,$cases_largeur,$lignes_nb,$colonne_bilan,$colonne_vide)
@@ -1628,7 +1658,6 @@ class PDF extends FPDF
 	{
 		// Placer les marques des pliures
 		$longueur_tiret = 1; // <= 5
-		$distance_tiret_bord_feuille = 5-$longueur_tiret;
 		$this->SetLineWidth(0.1);
 		$enveloppe_hauteur = $_SESSION['ENVELOPPE']['VERTICAL_HAUT'] + $_SESSION['ENVELOPPE']['VERTICAL_MILIEU'] + $_SESSION['ENVELOPPE']['VERTICAL_BAS'] ;
 		$enveloppe_largeur = $_SESSION['ENVELOPPE']['HORIZONTAL_GAUCHE'] + $_SESSION['ENVELOPPE']['HORIZONTAL_MILIEU'] + $_SESSION['ENVELOPPE']['HORIZONTAL_DROITE'] ;
@@ -1636,11 +1665,11 @@ class PDF extends FPDF
 		$jeu_horizontal = $enveloppe_largeur - $this->page_largeur - $jeu_minimum ;
 		$jeu_vertical   = $jeu_minimum ;
 		$ligne2_y = $this->page_hauteur - $enveloppe_hauteur - $jeu_vertical ;
-		$this->Line( $distance_tiret_bord_feuille , $ligne2_y , $this->marge_gauche , $ligne2_y );
-		$this->Line( $this->page_largeur-$this->marge_droite , $ligne2_y , $this->page_largeur-$distance_tiret_bord_feuille , $ligne2_y );
+		$this->Line( $this->marge_gauche-$longueur_tiret , $ligne2_y , $this->marge_gauche , $ligne2_y );
+		$this->Line( $this->page_largeur-$this->marge_droite , $ligne2_y , $this->page_largeur-$this->marge_droite+$longueur_tiret , $ligne2_y );
 		$ligne1_y = $ligne2_y - $enveloppe_hauteur - $jeu_vertical ;
-		$this->Line( $distance_tiret_bord_feuille , $ligne1_y , $this->marge_gauche , $ligne1_y );
-		$this->Line( $this->page_largeur-$this->marge_droite , $ligne1_y , $this->page_largeur-$distance_tiret_bord_feuille , $ligne1_y );
+		$this->Line( $this->marge_gauche-$longueur_tiret , $ligne1_y , $this->marge_gauche , $ligne1_y );
+		$this->Line( $this->page_largeur-$this->marge_droite , $ligne1_y , $this->page_largeur-$this->marge_droite+$longueur_tiret , $ligne1_y );
 		$jeu_vertical -= 1 ; // Le pliage est manuel donc imparfait et il y a l'épaisseur du papier ;)
 		// Déterminer et dessiner l'emplacement du bloc adresse
 		$interieur_coin_hg_x = $_SESSION['ENVELOPPE']['HORIZONTAL_GAUCHE'] ;
@@ -1680,7 +1709,7 @@ class PDF extends FPDF
 		return array($bloc_hauteur,$bloc_gauche_largeur_restante) ;
 	}
 
-	private function officiel_bloc_appreciation_intermediaire( $tab_saisie , $bloc_largeur , $ligne_hauteur , $bilan_type , $nb_caracteres_maxi )
+	private function officiel_bloc_appreciation_intermediaire( $tab_saisie , $bloc_largeur , $ligne_hauteur , $bilan_type , $nb_caracteres_maxi , $cadre_hauteur=0 )
 	{
 		// Récupération des données des appréciations
 		if($bilan_type!='bulletin')
@@ -1715,7 +1744,7 @@ class PDF extends FPDF
 		$this->SetXY( $memoX , $memoY+$hauteur_ligne_auteurs );
 		// cadre appréciations : affichage
 		$largeur_autorisee = $bloc_largeur;
-		$hauteur_autorisee = $ligne_hauteur*$nb_lignes_prevues;
+		$hauteur_autorisee = ($bilan_type!='bulletin') ? $ligne_hauteur*$nb_lignes_prevues : $cadre_hauteur-$hauteur_ligne_auteurs ;
 		$taille_police = $this->taille_police*1.2;
 		$taille_interligne = $ligne_hauteur*0.8;
 		$this->afficher_appreciation( $largeur_autorisee , $hauteur_autorisee , $taille_police , $taille_interligne , $texte );
@@ -1765,14 +1794,7 @@ class PDF extends FPDF
 		$memoX = $this->GetX();
 		$memoY = $this->GetY();
 		// signature
-		if(!$tab_image_tampon_signature)
-		{
-			$largeur_signature = $hauteur_autorisee;
-		}
-		else
-		{
-			$largeur_signature = $this->afficher_signature( $largeur_autorisee , $hauteur_autorisee , $tab_image_tampon_signature );
-		}
+		$largeur_signature = ($tab_image_tampon_signature) ? $this->afficher_signature( $largeur_autorisee , $hauteur_autorisee , $tab_image_tampon_signature ) : $hauteur_autorisee ;
 		// contour cadre
 		$this->SetXY($memoX,$memoY);
 		$this->Cell( $largeur_autorisee , $hauteur_autorisee , '' , 1 /*bordure*/ , 2 /*br*/ , '' /*alignement*/ , FALSE /*remplissage*/ );
@@ -1790,11 +1812,13 @@ class PDF extends FPDF
 	//	Méthodes pour la mise en page d'un releve d'attestation de socle commun
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//	releve_socle_initialiser()
+	//	releve_socle_identite()
 	//	releve_socle_entete()
 	//	releve_socle_pilier()
 	//	releve_socle_section()
 	//	releve_socle_item()
 	//	releve_socle_appreciation_rubrique()
+	//	releve_socle_appreciation_generale()
 	//	releve_socle_legende()
 	//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1884,7 +1908,6 @@ class PDF extends FPDF
 				}
 				else
 				{
-					list( $titre , $palier_nom ) = $tab_infos_entete;
 					$hauteur_entete = 3*4.5 ; // HG L1 intitulé L2 palier-pilier ; HD L1 structure L2 élève
 				}
 				// On optimise la hauteur de ligne pour limiter le nombre de pages si possible dans le cas d'un palier avec tous les piliers.
@@ -1951,6 +1974,7 @@ class PDF extends FPDF
 		}
 		if(!$this->officiel)
 		{
+			list( $titre , $palier_nom ) = $tab_infos_entete;
 			// Intitulé
 			$this->SetFont('Arial' , 'B' , $this->taille_police*1.5);
 			$this->Cell( $this->page_largeur-$this->marge_droite-75 , $this->cases_hauteur , pdf($titre)      , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
@@ -2139,7 +2163,7 @@ class PDF extends FPDF
 		$this->pourcentage_largeur = $this->cases_largeur;
 		$this->choisir_couleur_fond('gris_moyen');
 		$this->SetFont('Arial' , '' , $this->taille_police);
-		$this->Cell( $this->eleve_largeur , $this->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 /*bordure*/ , 0 /*br*/ , 'L' /*alignement*/ , TRUE /*remplissage*/ );
+		$this->CellFit( $this->eleve_largeur , $this->cases_hauteur , pdf($eleve_nom.' '.$eleve_prenom) , 1 /*bordure*/ , 0 /*br*/ , 'L' /*alignement*/ , TRUE /*remplissage*/ );
 		if($drapeau_langue)
 		{
 			$taille_image = min($this->cases_hauteur,5);
@@ -2173,7 +2197,10 @@ class PDF extends FPDF
 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	//	Méthodes pour la mise en page d'un bilan de synthèse d'un groupe sur une période
-	//	bilan_periode_synthese_initialiser() bilan_periode_synthese_entete() bilan_periode_synthese_pourcentages()
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	//	bilan_periode_synthese_initialiser()
+	//	bilan_periode_synthese_entete()
+	//	bilan_periode_synthese_pourcentages()
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
 	public function bilan_periode_synthese_initialiser($eleve_nb,$item_nb,$tableau_tri_objet)
@@ -2284,7 +2311,14 @@ class PDF extends FPDF
 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	//	Méthodes pour la mise en page d'un tableau vierge de saisie d'évaluation
-	//	tableau_saisie_initialiser() tableau_saisie_reference_devoir() tableau_saisie_reference_eleve() tableau_saisie_reference_item() tableau_saisie_cellule()
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	//	tableau_saisie_initialiser()
+	//	tableau_saisie_reference_devoir()
+	//	tableau_saisie_reference_eleve()
+	//	tableau_saisie_reference_item()
+	//	tableau_devoir_repartition_quantitative_initialiser()
+	//	tableau_devoir_repartition_nominative_initialiser()
+	//	tableau_devoir_repartition_nominative_entete()
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
 	public function tableau_saisie_initialiser($eleve_nb,$item_nb)
@@ -2342,7 +2376,7 @@ class PDF extends FPDF
 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	//	Méthodes pour la mise en page d'un bilan d'un devoir : répartition quantitative ou nominative
-	//	tableau_devoir_repartition_quantitative_initialiser() tableau_devoir_repartition_nominative_initialiser()
+	//	tableau_devoir_repartition_quantitative_initialiser() tableau_devoir_repartition_nominative_initialiser() tableau_devoir_repartition_nominative_entete()
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
 	public function tableau_devoir_repartition_quantitative_initialiser($item_nb)
@@ -2404,7 +2438,12 @@ class PDF extends FPDF
 
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 	//	Méthodes pour la mise en page d'un cartouche
-	//	cartouche_initialiser() cartouche_entete() cartouche_minimal_competence() cartouche_complet_competence() cartouche_interligne()
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	//	cartouche_initialiser()
+	//	cartouche_entete()
+	//	cartouche_minimal_competence()
+	//	cartouche_complet_competence()
+	//	cartouche_interligne()
 	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
 	public function cartouche_initialiser($detail,$item_nb)
@@ -2467,6 +2506,69 @@ class PDF extends FPDF
 	public function cartouche_interligne($nb_lignes)
 	{
 		$this->SetXY($this->marge_gauche , $this->GetY() + $nb_lignes*$this->cases_hauteur);
+	}
+
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	//	Méthodes pour la mise en page d'un tableau d'appréciation d'un prof sur un bulletin
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+	//	tableau_appreciation_initialiser()
+	//	tableau_appreciation_intitule()
+	//	tableau_appreciation_interligne()
+	//	tableau_appreciation_rubrique()
+	//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+
+	public function tableau_appreciation_initialiser($nb_appreciations,$nb_eleves,$with_moyenne)
+	{
+		$eleve_matiere_largeur = 50; // valeur fixe
+		$note_largeur          = ($with_moyenne) ? 10 : 0 ; // valeur fixe
+		$nb_lignes_necessaires   = 1 + 2*$nb_appreciations + 0.5*$nb_eleves ; // titre + appreciations (2 lignes / app) + marges entre élèves (0.5 ligne / eleve)
+		$this->cases_largeur     = $this->page_largeur - $this->marge_gauche - $this->marge_droite - $eleve_matiere_largeur - $note_largeur ;
+		$this->lignes_hauteur    = ($this->page_hauteur - $this->marge_haut - $this->marge_bas) / $nb_lignes_necessaires;
+		$this->lignes_hauteur    = min($this->lignes_hauteur,8);
+		$this->taille_police     = $this->lignes_hauteur * 2;
+		$this->SetMargins($this->marge_gauche , $this->marge_haut , $this->marge_droite);
+		$this->AddPage($this->orientation , 'A4');
+		$this->SetAutoPageBreak(FALSE);
+	}
+
+	public function tableau_appreciation_intitule($intitule)
+	{
+		$this->SetFont('Arial' , 'B' , $this->taille_police*1.2);
+		$this->CellFit( $this->page_largeur - $this->marge_gauche - $this->marge_droite , $this->lignes_hauteur , pdf($intitule)  , 0 /*bordure*/ , 1 /*br*/ , 'C' /*alignement*/ , FALSE /*remplissage*/ );
+	}
+
+	public function tableau_appreciation_interligne()
+	{
+		$this->SetXY($this->marge_gauche , $this->GetY() + 0.5*$this->lignes_hauteur);
+	}
+
+	public function tableau_appreciation_rubrique($eleve_nom_prenom,$matiere_nom,$appreciation,$note,$with_moyenne)
+	{
+		$eleve_matiere_largeur = 50; // valeur fixe
+		$note_largeur          = 10; // valeur fixe
+		// cadre
+		$memo_x = $this->GetX();
+		$memo_y = $this->GetY();
+		$this->Cell( $this->page_largeur - $this->marge_gauche - $this->marge_droite , 2*$this->lignes_hauteur , '' , 1 /*bordure*/ , 0 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
+		// nom-prénom + rubrique
+		$this->SetXY($memo_x , $memo_y);
+		$this->SetFont('Arial' , '' , $this->taille_police);
+		$this->CellFit( $eleve_matiere_largeur , $this->lignes_hauteur , pdf($eleve_nom_prenom) , 0 /*bordure*/ , 1 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
+		$this->CellFit( $eleve_matiere_largeur , $this->lignes_hauteur , pdf($matiere_nom)      , 0 /*bordure*/ , 1 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
+		// moyenne
+		$this->SetXY($memo_x+$eleve_matiere_largeur , $memo_y);
+		if($with_moyenne)
+		{
+			$moyenne_eleve = ($note!==NULL) ? ( ($_SESSION['OFFICIEL']['BULLETIN_NOTE_SUR_20']) ? number_format($note,1,',','') : ($note*5).'%' ) : '-' ;
+			$this->CellFit( $note_largeur , 2*$this->lignes_hauteur , pdf($moyenne_eleve) , 1 /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , FALSE /*remplissage*/ );
+		}
+		else
+		{
+			$this->Line( $memo_x+$eleve_matiere_largeur , $memo_y , $memo_x+$eleve_matiere_largeur , $memo_y+2*$this->lignes_hauteur );
+		}
+		// appréciation
+		$this->afficher_appreciation( $this->cases_largeur , 2*$this->lignes_hauteur , $this->taille_police , $this->lignes_hauteur , $appreciation );
+		$this->SetXY($memo_x , $memo_y+2*$this->lignes_hauteur);
 	}
 
 }

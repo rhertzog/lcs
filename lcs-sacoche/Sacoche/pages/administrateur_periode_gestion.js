@@ -40,7 +40,7 @@ $(document).ready
 		$('table.form').tablesorter({ headers:{2:{sorter:false}} });
 		function trier_tableau()
 		{
-			if($('table.form tbody tr').length)
+			if($('table.form tbody tr').length>1)
 			{
 				$('table.form').trigger('update');
 				$('table.form').trigger('sorton',[sorting]);
@@ -262,7 +262,7 @@ $(document).ready
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
-		function retour_form_erreur(msg,string)
+		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			please_wait = false;
 			$('#ajax_msg').parent().children('q').show();

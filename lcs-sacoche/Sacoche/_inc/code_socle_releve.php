@@ -32,6 +32,17 @@
  * 
  */
 
+// La récupération de beaucoup d'informations peut provoquer un dépassement de mémoire.
+// Et la classe FPDF a besoin de mémoire, malgré toutes les optimisations possibles, pour générer un PDF comportant parfois entre 100 et 200 pages.
+// De plus la consommation d'une classe PHP n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF en l'occurrence...
+// Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
+// D'où le ini_set(), même si cette directive peut être interdite dans la conf PHP ou via Suhosin (http://www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit)
+// En complément, register_shutdown_function() permet de capter une erreur fatale de dépassement de mémoire, sauf si CGI.
+// D'où une combinaison avec une détection par javascript du statusCode.
+
+augmenter_memory_limit();
+register_shutdown_function('rapporter_erreur_fatale');
+
 // Chemins d'enregistrement
 
 $dossier     = './__tmp/export/';
@@ -69,6 +80,8 @@ if( ($make_html) || ($make_pdf) )
 	if(!$aff_socle) { $texte_socle      = ''; }
 	if(!$aff_lien)  { $texte_lien_avant = ''; }
 	if(!$aff_lien)  { $texte_lien_apres = ''; }
+	$toggle_img   = ($aff_start) ? 'toggle_moins' : 'toggle_plus' ;
+	$toggle_class = ($aff_start) ? '' : ' class="hide"' ;
 }
 
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
@@ -445,12 +458,6 @@ if(!isset($tab_destinataires))
 // Elaboration du bilan relatif au socle, en HTML et PDF => Production et mise en page
 //	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
-// La classe FPDF a besoin de mémoire, malgré toutes les optimisations possibles, pour générer un PDF comportant parfois entre 100 et 200 pages.
-// De plus cette consommation n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF...
-// Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
-// D'où le ini_set(), même si cette directive peut être interdite dans la conf PHP ou via Suhosin (http://www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit)
-if($make_pdf) { @ini_set('memory_limit','256M'); @ini_alter('memory_limit','256M'); }
-
 $affichage_direct = ( ( ( in_array($_SESSION['USER_PROFIL'],array('eleve','parent')) ) && (SACoche!='webservices') ) || ($make_officiel) ) ? TRUE : FALSE ;
 
 $titre1 = ($mode=='manuel') ? 'Relevé de maîtrise du socle commun [matières resteintes]' : 'Relevé de maîtrise du socle commun' ;
@@ -460,7 +467,7 @@ if($make_html)
 	$releve_html  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>';
 	$releve_html .= $affichage_direct ? '' : '<h1>'.html($titre1).'</h1>';
 	$releve_html .= $affichage_direct ? '' : '<h2>'.html($titre2).'</h2>';
-	$releve_html .= '<div class="astuce">Cliquer sur les icones &laquo;<img src="./_img/toggle_plus.gif" alt="+" />&raquo; pour accéder au détail.</div>';
+	$releve_html .= '<div class="astuce">Cliquer sur <img src="./_img/toggle_plus.gif" alt="+" /> / <img src="./_img/toggle_moins.gif" alt="+" /> pour afficher / masquer le détail.</div>';
 	$separation = (count($tab_eleve)>1) ? '<hr />' : '' ;
 	$legende_html = ($legende=='oui') ? affich_legende_html( FALSE /*codes_notation*/ , FALSE /*etat_acquisition*/ , $test_affichage_Pourcentage /*pourcentage_acquis*/ , $test_affichage_Validation /*etat_validation*/ ) : '' ;
 }
@@ -553,8 +560,8 @@ foreach($tab_eleve as $tab)
 													$socle_nom  = (mb_strlen($socle_nom)<160) ? $socle_nom : mb_substr($socle_nom,0,150).' [...] <img src="./_img/bulle_aide.png" alt="" title="'.$socle_nom.'" />';
 													if( $tab_infos_socle_eleve[$socle_id][$eleve_id] )
 													{
-														$lien_toggle = '<a href="#" id="to_'.$socle_id.'_'.$eleve_id.'"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer le détail des items associés." class="toggle" /></a> ';
-														$div_competences = '<div id="'.$socle_id.'_'.$eleve_id.'" class="hide">'.'<div>'.implode('</div><div>',$tab_infos_socle_eleve[$socle_id][$eleve_id]).'</div>'.'</div>';
+														$lien_toggle = '<a href="#" id="to_'.$socle_id.'_'.$eleve_id.'"><img src="./_img/'.$toggle_img.'.gif" alt="" title="Voir / masquer le détail des items associés." class="toggle" /></a> ';
+														$div_competences = '<div id="'.$socle_id.'_'.$eleve_id.'"'.$toggle_class.'>'.'<div>'.implode('</div><div>',$tab_infos_socle_eleve[$socle_id][$eleve_id]).'</div>'.'</div>';
 													}
 													else
 													{

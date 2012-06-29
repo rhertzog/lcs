@@ -47,7 +47,7 @@ foreach($tab_profils as $profil)
 {
 	$str_objet = str_replace($profil,$tab_profil_libelle[$profil]['long'][2],$str_objet);
 }
-$profils_modifier_statut = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===false) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
+$profils_modifier_statut = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===FALSE) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
 
 // Indication des profils ayant accès à l'appréciation générale
 $str_objet = str_replace( array(',aucunprof','aucunprof,','aucunprof') , '' , $_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_GENERALE'] );
@@ -55,7 +55,7 @@ foreach($tab_profils as $profil)
 {
 	$str_objet = str_replace($profil,$tab_profil_libelle[$profil]['long'][2],$str_objet);
 }
-$profils_appreciation_generale = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===false) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
+$profils_appreciation_generale = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===FALSE) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
 
 // Indication des profils ayant accès à l'impression PDF
 $str_objet = str_replace( array(',aucunprof','aucunprof,','aucunprof') , '' , $_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_IMPRESSION_PDF'] );
@@ -63,7 +63,7 @@ foreach($tab_profils as $profil)
 {
 	$str_objet = str_replace($profil,$tab_profil_libelle[$profil]['long'][2],$str_objet);
 }
-$profils_impression_pdf = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===false) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
+$profils_impression_pdf = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===FALSE) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
 
 // Indication des profils ayant accès aux copies des impressions PDF
 $tab_profils = array('directeur','professeur','eleve','parent');
@@ -72,7 +72,7 @@ foreach($tab_profils as $profil)
 {
 	$str_objet = str_replace($profil,$tab_profil_libelle[$profil]['long'][2],$str_objet);
 }
-$profils_archives_pdf = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===false) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
+$profils_archives_pdf = ($str_objet=='') ? 'aucun' : ( (strpos($str_objet,',')===FALSE) ? 'uniquement les '.$str_objet : str_replace(',',' + ',$str_objet) ) ;
 
 // Droit de modifier le statut d'un bilan (dans le cas PP, restera à affiner classe par classe...).
 $affichage_formulaire_statut = 
@@ -299,15 +299,15 @@ if(count($tab_classe))
 			{
 				if($etat=='1vide')
 				{
-					$icone_voir_html = '<q class="voir_non" title="Consultation du contenu en cours d\'élaboration sans objet (bilan déclaré vide)."></q>';
+					$icone_voir_html = '<q class="voir_non" title="Consultation du contenu sans objet (bilan déclaré vide)."></q>';
 				}
-				elseif($etat=='4complet')
+				elseif( ($etat=='4complet') && ($tab_types[$BILAN_TYPE]['droit']=='SOCLE') )
 				{
-					$icone_voir_html = '<q class="voir_non" title="Consultation du contenu en cours d\'élaboration sans objet (bilan déclaré finalisé)."></q>';
+					$icone_voir_html = '<q class="voir_non" title="Consultation du contenu inopportun (bilan finalisé : utiliser les archives PDF)."></q>';
 				}
 				else
 				{
-					$icone_voir_html = '<q class="voir" title="Consulter le contenu en cours d\'élaboration (format HTML)."></q>';
+					$icone_voir_html = '<q class="voir" title="Consulter le contenu (format HTML)."></q>';
 				}
 			}
 			else
@@ -509,6 +509,7 @@ if(count($tab_classe))
 		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
 
 		echo'<div id="zone_action_eleve"></div>';
+		echo'<div id="bilan"></div>';
 		echo'
 			<div id="zone_action_classe" class="hide">
 				<h2>Recherche de saisies manquantes | Imprimer le bilan (PDF)</h2>
