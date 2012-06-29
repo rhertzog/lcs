@@ -342,6 +342,9 @@ aptitude update
 echo -e "$COLINFO"
 echo "3.2 Upgrade des paquets de base : libc6, locales et mysql-server (Fournir les reponses par defaut)."
 echo -e "$COLCMD\c"
+# On assure la comptibilite mysql superieur a 5.1.12
+sed -i 's/^skip-bdb/#skip-bdb/g'  /etc/mysql/my.cnf
+
 aptitude install -y libc6 locales mysql-server
 
 
