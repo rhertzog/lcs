@@ -25,7 +25,9 @@ case "$1" in
 	else
 		/etc/init.d/fail2ban restart
 	fi
-
+	if dpkg --compare-versions $preversion lt 2.4.9.1 ; then
+		    	/usr/sbin/lcs-make-sudoers
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

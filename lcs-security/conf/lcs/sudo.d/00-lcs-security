@@ -1,0 +1,1 @@
+Defaults:www-data        logfile=/var/log/lcs/sudo.log,timestamp_timeout=3

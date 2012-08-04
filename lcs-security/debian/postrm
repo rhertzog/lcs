@@ -26,6 +26,7 @@ case "$1" in
         else
                 /etc/init.d/fail2ban restart
         fi
+        /usr/sbin/lcs-make-sudoers
     ;;
 
     *)
