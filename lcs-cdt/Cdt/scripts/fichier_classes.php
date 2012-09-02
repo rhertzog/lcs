@@ -299,7 +299,7 @@ if (isset($_POST['Vider']))
     echo "<script type='text/javascript'>";
     echo " if (confirm('Confirmer l\'effacement du contenu des tables cahiertxt, absences, devoir, onglets,post-it eleves, et sequences? ')){";
     echo ' location.href = "';
-    echo $_SERVER['PHP_SELF'].'#bdd';
+    echo $_SERVER['PHP_SELF'];
     echo '"+ "?vidtab=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'";} else {';
     echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"   ;} </script> ';
     }

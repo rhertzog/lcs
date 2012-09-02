@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9.4) LCS; urgency=low
+
+  * fix bug truncate tables
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 02 Sep 2012 20:44:11 +0200
+
 lcs-cdt (2.4.9.3) LCS; urgency=low
 
   * remove tilde
