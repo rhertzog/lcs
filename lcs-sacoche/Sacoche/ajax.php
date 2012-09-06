@@ -31,11 +31,8 @@
 // Atteste l'appel de cette page avant l'inclusion d'une autre
 define('SACoche','ajax');
 
-// Constantes / Fonctions de redirections / Configuration serveur
-require_once('./_inc/constantes.php');
-require_once('./_inc/fonction_redirection.php');
-require_once('./_inc/config_serveur.php');
-require_once('./_inc/fonction_sessions.php');
+// Constantes / Configuration serveur / Autoload classes / Fonction de sortie
+require('./_inc/_loader.php');
 
 // Détermination du CHARSET d'en-tête
 /*
@@ -49,30 +46,29 @@ header('Content-Type: text/html; charset=utf-8');
 // Page appelée
 if(!isset($_GET['page']))
 {
-	affich_message_exit($titre='Référence manquante',$contenu='Référence de page manquante.');
+	exit_error( 'Référence manquante' /*titre*/ , 'Référence de page manquante.' /*contenu*/ );
 }
 $PAGE = $_GET['page'];
 
 // Fichier d'informations sur l'hébergement (requis avant la gestion de la session).
-$fichier_constantes = CHEMIN_CONFIG.'constantes.php';
-if(is_file($fichier_constantes))
+if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 {
-	require_once($fichier_constantes);
+	require(CHEMIN_FICHIER_CONFIG_INSTALL);
 }
 elseif($PAGE!='public_installation')
 {
-	affich_message_exit($titre='Informations hébergement manquantes',$contenu='Informations concernant l\'hébergeur manquantes.',$lien='<a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a>');
+	exit_error( 'Informations hébergement manquantes' /*titre*/ , 'Les informations relatives à l\'hébergeur n\'ont pas été trouvées.' /*contenu*/ , TRUE /*setup*/ );
 }
 
 // Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
-require_once('./_inc/tableau_droits.php');
+require(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php');
 if(!isset($tab_droits[$PAGE]))
 {
-	affich_message_exit($titre='Droits manquants',$contenu='Droits de la page "'.$PAGE.'" manquants.');
+	exit_error( 'Droits manquants' /*titre*/ , 'Droits de la page "'.$PAGE.'" manquants.' /*contenu*/ );
 }
 
 // Ouverture de la session et gestion des droits d'accès
-gestion_session($tab_droits[$PAGE]);
+Session::execute($tab_droits[$PAGE]);
 
 // Pour le devel
 if (DEBUG) afficher_infos_debug();
@@ -86,25 +82,20 @@ if($PAGE=='conserver_session_active')
 // Arrêt s'il fallait seulement fermer la session
 if($PAGE=='fermer_session')
 {
-	close_session();
+	Session::close();
 	// $_SESSION['USER_PROFIL'] = 'public'; // En ne faisant que ça on oblige à une reconnexion sans détruire la session (donc les infos des fournisseurs de SSO).
 	exit('ok');
 }
 
-// Blocage éventuel par le webmestre ou un administrateur
-tester_blocage_application($_SESSION['BASE'],$demande_connexion_profil=false);
+// Blocage éventuel par le webmestre ou un administrateur ou l'automate (on ne peut pas le tester avant car il faut avoir récupéré les données de session)
+LockAcces::stopper_si_blocage( $_SESSION['BASE'] , FALSE /*demande_connexion_profil*/ );
 
 // Autres fonctions à charger
-require_once('./_inc/fonction_clean.php');
-require_once('./_inc/fonction_divers.php');
-require_once('./_inc/fonction_appel_serveur_communautaire.php');
-require_once('./_inc/fonction_affichage.php');
-
-// Annuler un blocage par l'automate anormalement long
-annuler_blocage_anormal();
+require(CHEMIN_DOSSIER_INCLUDE.'fonction_divers.php');
+require(CHEMIN_DOSSIER_INCLUDE.'fonction_appel_serveur_communautaire.php');
 
 // Patch fichier de config
-if(is_file($fichier_constantes))
+if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 {
 	// DEBUT PATCH CONFIG 1
 	// A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [TODO] peut être retiré dans un an environ
@@ -129,8 +120,8 @@ if(is_file($fichier_constantes))
 	// FIN PATCH CONFIG 3
 }
 
-// Interface de connexion à la base, chargement et config (test sur $fichier_constantes car à éviter si procédure d'installation non terminée).
-if(is_file($fichier_constantes))
+// Interface de connexion à la base, chargement et config (test sur CHEMIN_FICHIER_CONFIG_INSTALL car à éviter si procédure d'installation non terminée).
+if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 {
 	// Choix des paramètres de connexion à la base de données adaptée...
 	// ...multi-structure ; base sacoche_structure_***
@@ -153,25 +144,23 @@ if(is_file($fichier_constantes))
 	}
 	else
 	{
-		affich_message_exit($titre='Configuration anormale',$contenu='Une anomalie dans les données d\'hébergement et/ou de session empêche l\'application de se poursuivre.');
+		exit_error( 'Configuration anormale' /*titre*/ , 'Une anomalie dans les données d\'hébergement et/ou de session empêche l\'application de se poursuivre.' /*contenu*/ );
 	}
-	// Ajout du chemin correspondant
-	$fichier_mysql_config = CHEMIN_MYSQL.$fichier_mysql_config.'.php';
-	$fichier_class_config = './_inc/'.$fichier_class_config.'.php';
 	// Chargement du fichier de connexion à la BDD
-	if(is_file($fichier_mysql_config))
+	define('CHEMIN_FICHIER_CONFIG_MYSQL',CHEMIN_DOSSIER_MYSQL.$fichier_mysql_config.'.php');
+	if(is_file(CHEMIN_FICHIER_CONFIG_MYSQL))
 	{
-		require_once($fichier_mysql_config);
-		require_once($fichier_class_config);
+		require(CHEMIN_FICHIER_CONFIG_MYSQL);
+		require(CHEMIN_DOSSIER_INCLUDE.$fichier_class_config.'.php');
 	}
 	elseif($PAGE!='public_installation')
 	{
-		affich_message_exit($titre='Paramètres BDD manquants',$contenu='Paramètres de connexion à la base de données manquants.',$lien='<a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a>');
+		exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.' /*contenu*/ , TRUE /*setup*/ );
 	}
 }
 
 // Chargement de la page concernée
-$filename_php = './pages/'.$PAGE.'.ajax.php';
+$filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.ajax.php';
 if(is_file($filename_php))
 {
 	require($filename_php);
