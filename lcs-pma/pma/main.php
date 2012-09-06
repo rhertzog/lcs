@@ -101,6 +101,12 @@ if ($server > 0
                     $conditional_class
                 );
             }
+            //modif lcs
+     		if ( !isset($_LCS['login']) ) {
+         		PMA_printListItem('<strong>' . $strLogout . '</strong> ' . $http_logout,
+             	'li_log_out',
+             	'./index.php?' . $common_url_query . '&amp;old_usr=' . urlencode($PHP_AUTH_USER), null, '_parent');
+ 				}
         } // end if
         echo '    <li id="li_select_mysql_collation">';
         echo '        <form method="post" action="index.php" target="_parent">' . "\n"
@@ -228,10 +234,9 @@ echo '<div class="group pmagroup">';
 echo '<h2>phpMyAdmin</h2>';
 echo '<ul>';
 $class = null;
-// workaround for bug 3302733; some browsers don't like the situation
-// where phpMyAdmin is called on a secure page but a part of the page
-// (the version check) refers to a non-secure page
-if ($GLOBALS['cfg']['VersionCheck'] && ! $GLOBALS['PMA_Config']->get('is_https')) {
+// We rely on CSP to allow access to http://www.phpmyadmin.net, but IE lacks
+// support here and does not allow request to http once using https.
+if ($GLOBALS['cfg']['VersionCheck'] && (! $GLOBALS['PMA_Config']->get('is_https') || PMA_USR_BROWSER_AGENT != 'IE')) {
     $class = 'jsversioncheck';
 }
 PMA_printListItem(__('Version information') . ': ' . PMA_VERSION, 'li_pma_version', null, null, null, null, $class);
@@ -375,12 +380,10 @@ if ($cfg['SuhosinDisableWarning'] == false
     && @ini_get('suhosin.request.max_value_length')
 ) {
     trigger_error(
-        PMA_sanitize(
-            sprintf(
-                __('Server running with Suhosin. Please refer to %sdocumentation%s for possible issues.'),
-                '[a@./Documentation.html#faq1_38@_blank]',
-                '[/a]'
-            )
+        sprintf(
+            __('Server running with Suhosin. Please refer to %sdocumentation%s for possible issues.'),
+            '[a@./Documentation.html#faq1_38@_blank]',
+            '[/a]'
         ),
         E_USER_WARNING
     );

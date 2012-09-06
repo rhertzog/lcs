@@ -75,7 +75,7 @@ if (version_compare(phpversion(), '5.3', 'lt')) {
 if (version_compare(phpversion(), '5.4', 'lt')) {
     /**
      * Avoid problems with magic_quotes_runtime
-     */ 
+     */
     @ini_set('magic_quotes_runtime', false);
 }
 
@@ -336,11 +336,26 @@ if (isset($_COOKIE)
  * check HTTPS connection
  */
 if ($GLOBALS['PMA_Config']->get('ForceSSL')
-  && !$GLOBALS['PMA_Config']->get('is_https')) {
-    PMA_sendHeaderLocation(
-        preg_replace('/^http/', 'https',
-            $GLOBALS['PMA_Config']->get('PmaAbsoluteUri'))
-        . PMA_generate_common_url($_GET, 'text'));
+    && ! $GLOBALS['PMA_Config']->get('is_https')
+) {
+    // grab current URL
+    $url = $GLOBALS['PMA_Config']->get('PmaAbsoluteUri');
+    // Parse current URL
+    $parsed = parse_url($url);
+    // In case parsing has failed do stupid string replacement
+    if ($parsed === false) {
+        // Replace http protocol
+        $url = preg_replace('@^http:@', 'https:', $url);
+    } else {
+        if($GLOBALS['PMA_Config']->get('SSLPort')) {
+            $port_number = $GLOBALS['PMA_Config']->get('SSLPort');
+        } else {
+            $port_number = 443;
+        }
+        $url = 'https://' . $parsed['host'] . ':' . $port_number . '/' . $parsed['path'];
+    }
+    // Actually redirect
+    PMA_sendHeaderLocation($url . PMA_generate_common_url($_GET, 'text'));
     // delete the current session, otherwise we get problems (see bug #2397877)
     $GLOBALS['PMA_Config']->removeCookie($GLOBALS['session_name']);
     exit;
@@ -812,7 +827,11 @@ if (! defined('PMA_MINIMUM_COMMON')) {
      * @todo should be done in PMA_Config
      */
     $GLOBALS['PMA_Config']->setCookie('pma_lang', $GLOBALS['lang']);
-    $GLOBALS['PMA_Config']->setCookie('pma_collation_connection', $GLOBALS['collation_connection']);
+    if (isset($GLOBALS['collation_connection'])) {
+        $GLOBALS['PMA_Config']->setCookie(
+            'pma_collation_connection',
+            $GLOBALS['collation_connection']);
+    }
 
     $_SESSION['PMA_Theme_Manager']->setThemeCookie();
 

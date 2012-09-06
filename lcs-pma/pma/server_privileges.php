@@ -1068,7 +1068,7 @@ if (isset($_REQUEST['adduser_submit']) || isset($_REQUEST['change_copy'])) {
                 }
 
                 $q = 'GRANT ALL PRIVILEGES ON '
-                    . PMA_backquote(PMA_sqlAddSlashes($username)) . '.* TO \''
+                    . PMA_backquote(PMA_escape_mysql_wildcards(PMA_sqlAddSlashes($username))) . '.* TO \''
                     . PMA_sqlAddSlashes($username) . '\'@\'' . PMA_sqlAddSlashes($hostname) . '\';';
                 $sql_query .= $q;
                 if (! PMA_DBI_try_query($q)) {
@@ -2176,7 +2176,7 @@ if (empty($_REQUEST['adduser']) && (! isset($checkprivs) || ! strlen($checkprivs
         if (! isset($dbname) && ! $user_does_not_exists) {
             include_once './libraries/display_change_password.lib.php';
 
-            echo '<form action="server_privileges.php" method="post" onsubmit="return checkPassword(this);">' . "\n"
+            echo '<form action="server_privileges.php" method="post" class="copyUserForm">' . "\n"
                . PMA_generate_common_hidden_inputs('', '')
                . '<input type="hidden" name="old_username" value="' . htmlspecialchars($username) . '" />' . "\n"
                . '<input type="hidden" name="old_hostname" value="' . htmlspecialchars($hostname) . '" />' . "\n"

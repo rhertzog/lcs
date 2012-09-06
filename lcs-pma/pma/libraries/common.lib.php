@@ -6,7 +6,6 @@
  * @package PhpMyAdmin
  */
 
-
 // modif lcs
  include "/var/www/lcs/includes/headerauth.inc.php";
  list ($idpers,$login) = isauth();
@@ -838,6 +837,7 @@ function PMA_getTableList($db, $tables = null, $limit_offset = 0, $limit_count =
         if ($GLOBALS['cfg']['ShowTooltipAliasTB']
             && $GLOBALS['cfg']['ShowTooltipAliasTB'] !== 'nested'
             && $table['Comment'] // do not switch if the comment is empty
+            && $table['Comment'] != 'VIEW' // happens in MySQL 5.1
         ) {
             // switch tooltip and name
             $table['disp_name'] = $table['Comment'];
@@ -1096,6 +1096,7 @@ function PMA_showMessage($message, $sql_query = null, $type = 'notice', $is_view
             ) {
                 $query_base = $analyzed_display_query[0]['section_before_limit']
                     . "\n" . $GLOBALS['sql_order_to_append']
+                    . $analyzed_display_query[0]['limit_clause'] . ' '
                     . $analyzed_display_query[0]['section_after_limit'];
 
                 // Need to reparse query
@@ -3645,6 +3646,7 @@ function PMA_getFunctionsForField($field, $insert_mode)
         && empty($field['Default'])
         && empty($data)
         && ! isset($analyzed_sql[0]['create_table_fields'][$field['Field']]['on_update_current_timestamp'])
+        && $analyzed_sql[0]['create_table_fields'][$field['Field']]['default_value'] != 'NULL'
     ) {
         $default_function = $cfg['DefaultFunctions']['first_timestamp'];
     }
@@ -3716,8 +3718,8 @@ function PMA_getFunctionsForField($field, $insert_mode)
  * @param string $priv The privilege to check
  * @param mixed  $db   null, to only check global privileges
  *                     string, db name where to also check for privileges
- * @param mixed  $tbl  null, to only check global privileges
- *                     string, db name where to also check for privileges
+ * @param mixed  $tbl  null, to only check global/db privileges
+ *                     string, table name where to also check for privileges
  *
  * @return bool
  */
@@ -3753,6 +3755,8 @@ function PMA_currentUserHasPrivilege($priv, $db = null, $tbl = null)
     // If a database name was provided and user does not have the
     // required global privilege, try database-wise permissions.
     if ($db !== null) {
+        // need to escape wildcards in db and table names, see bug #3518484
+        $db = str_replace(array('%', '_'), array('\%', '\_'), $db);
         $query .= " AND TABLE_SCHEMA='%s'";
         if (PMA_DBI_fetch_value(
             sprintf(
@@ -3774,6 +3778,8 @@ function PMA_currentUserHasPrivilege($priv, $db = null, $tbl = null)
     // If a table name was also provided and we still didn't
     // find any valid privileges, try table-wise privileges.
     if ($tbl !== null) {
+        // need to escape wildcards in db and table names, see bug #3518484
+        $tbl = str_replace(array('%', '_'), array('\%', '\_'), $tbl);
         $query .= " AND TABLE_NAME='%s'";
         if ($retval = PMA_DBI_fetch_value(
             sprintf(
@@ -3841,4 +3847,48 @@ function PMA_printButton()
     echo '<input type="button" id="print" value="' . __('Print') . '" />';
     echo '</p>';
 }
+
+/**
+ * Parses ENUM/SET values
+ *
+ * @param string $definition The definition of the column
+ *                           for which to parse the values
+ *
+ * @return array
+ */
+function PMA_parseEnumSetValues($definition)
+{
+    $values_string = htmlentities($definition);
+    // There is a JS port of the below parser in functions.js
+    // If you are fixing something here,
+    // you need to also update the JS port.
+    $values = array();
+    $in_string = false;
+    $buffer = '';
+    for ($i=0; $i<strlen($values_string); $i++) {
+        $curr = $values_string[$i];
+        $next = $i == strlen($values_string)-1 ? '' : $values_string[$i+1];
+        if (! $in_string && $curr == "'") {
+            $in_string = true;
+        } else if ($in_string && $curr == "\\" && $next == "\\") {
+            $buffer .= "&#92;";
+            $i++;
+        } else if ($in_string && $next == "'" && ($curr == "'" || $curr == "\\")) {
+            $buffer .= "&#39;";
+            $i++;
+        } else if ($in_string && $curr == "'") {
+            $in_string = false;
+            $values[] = $buffer;
+            $buffer = '';
+        } else if ($in_string) {
+             $buffer .= $curr;
+        }
+    }
+    if (strlen($buffer) > 0) {
+        // The leftovers in the buffer are the last value (if any)
+        $values[] = $buffer;
+    }
+    return $values;
+}
+
 ?>
