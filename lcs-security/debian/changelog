@@ -1,9 +1,11 @@
-lcs-security (2.4.9.1~1) Lcs; urgency=low
+lcs-security (2.4.9.1~2) Lcs; urgency=low
 
   * add log for sudo
   * adding apache security mod
+  * fix post install
+  * add security rules instead of download them
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 10 Sep 2012 15:32:02 +0200
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon, 10 Sep 2012 16:01:49 +0200
 
 lcs-security (2.4.9) Lcs; urgency=low
 

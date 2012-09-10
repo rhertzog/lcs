@@ -11,6 +11,7 @@ install:
 	install -d $(DESTDIR)/etc/cron.weekly
 	install -d $(DESTDIR)/etc/lcs
 	install -d $(DESTDIR)/etc/lcs/sudo.d
+	install -d $(DESTDIR)/etc/apache2/modsecurity.d
 	install -d $(DESTDIR)/usr/share/lcs/scripts
         # copy and chmod
 	cp -a conf/* $(DESTDIR)/etc/

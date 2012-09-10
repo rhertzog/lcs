@@ -1,0 +1,22 @@
+#!/bin/bash
+# Simon Cavey - Projet LCS
+# Activation du mode security d'apache sur LCS
+# apt-get install libapache2-modsecurity
+a2dismod mod-security
+rm /etc/apache2/conf.d/00_modsecurity.conf <<EOF
+rm /etc/apache2/conf.d/modsecurity_crs_10_config.conf <<EOF
+
+/etc/init.d/apache2 restart
+
+
+rm -rf /var/asl
+rm -rf /var/asl/tmp
+rm -rf /var/asl/data
+rm -rf /var/asl/data/msa
+rm -rf /var/asl/data/audit
+rm -rf /var/asl/data/suspicious
+rm -rf /etc/apache2/modsecurity.d
+rm -rf /etc/asl/
+rm /etc/asl/whitelist
+rm /var/log/apache2/audit_log
+

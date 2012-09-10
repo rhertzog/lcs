@@ -5,6 +5,11 @@
 
 set -e
 
+preversion=$2
+MODULE="security"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+INDICEMAJNBR="0"
+
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -25,8 +30,11 @@ case "$1" in
 	else
 		/etc/init.d/fail2ban restart
 	fi
-	if dpkg --compare-versions $preversion lt 2.4.9.1 ; then
+	if dpkg --compare-versions $preversion lt 2.4.9 ; then
+		    	# Activation des logs sudo
 		    	/usr/sbin/lcs-make-sudoers
+		    	# Activation du mod security d'apache
+		    	/usr/sbin/lcs-enable-apache-security 
 	fi
     ;;
 
