@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Activation du mode security d'apache sur LCS
+# apt-get install libapache2-modsecurity
+a2enmod mod-security
+
+mkdir /var/asl
+mkdir /var/asl/tmp
+mkdir /var/asl/data
+mkdir /var/asl/data/msa
+mkdir /var/asl/data/audit
+mkdir /var/asl/data/suspicious
+mkdir /etc/apache2/modsecurity.d
+mkdir /etc/asl/
+touch /etc/asl/whitelist
+touch /var/log/apache2/audit_log
+
+wget http://www.atomicorp.com/channels/rules/delayed/modsec-2.5-free-latest.tar.gz
+tar zxvf modsec-2.5-free-latest.tar.gz
+cp modsec/*  /etc/apache2/modsecurity.d/
+
+cat > /etc/apache2/conf.d/00_modsecurity.conf <<EOF
+<IfModule mod_security.c>
+Include /etc/apache2/modsecurity.d/*asl*.conf
+</IfModule>
+EOF
+
+cat > /etc/apache2/conf.d/modsecurity_crs_10_config.conf <<EOF
+<IfModule mod_security.c>
+  SecRuleEngine On
+  SecRequestBodyAccess On
+  SecResponseBodyAccess On
+  SecResponseBodyMimeType (null) text/html text/plain text/xml
+  SecResponseBodyLimit 2621440
+  SecServerSignature Apache
+  SecComponentSignature 201207291052
+  SecUploadDir /var/asl/data/suspicious
+  SecUploadKeepFiles Off
+  SecAuditEngine RelevantOnly
+  SecAuditLogRelevantStatus "^(?:5|4(?!04))"
+  SecAuditLogType Concurrent
+  SecAuditLog /var/log/apache2/audit_log
+  SecAuditLogParts ABIFHZ
+  SecArgumentSeparator "&"
+  SecCookieFormat 0
+  SecRequestBodyInMemoryLimit 131072
+  SecDataDir /var/asl/data/msa
+  SecTmpDir /tmp
+  SecAuditLogStorageDir /var/asl/data/audit
+  SecResponseBodyLimitAction ProcessPartial
+  SecPcreMatchLimit 100000
+  SecPcreMatchLimitRecursion 100000
+</IfModule>
+EOF
+
+
+
+
+chown www-data.www-data /var/asl/data/msa
+chown www-data.www-data /var/asl/data/audit
+chown www-data.www-data /var/asl/data/suspicious
+chmod o-rx -R /var/asl/data/*
+chmod ug+rwx -R /var/asl/data/*
