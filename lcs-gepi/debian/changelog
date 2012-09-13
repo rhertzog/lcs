@@ -2,7 +2,7 @@ lcs-gepi (2.4.9.2~1) LCS; urgency=low
 
   * upgrade to version 1.6.1 
 
--- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 Sep 2012 14:40:18 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 Sep 2012 14:40:18 +0200
 
 lcs-gepi (2.4.9.1) LCS; urgency=low
 
