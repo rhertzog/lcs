@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: extraction_demi-journees.php 8056 2011-08-30 20:43:42Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -50,9 +49,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
@@ -62,7 +61,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
 include_once 'lib/function.php';
 
 // Initialisation des variables
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
 $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom_eleve"]) ? $_GET["nom_eleve"] :(isset($_SESSION["nom_eleve"]) ? $_SESSION["nom_eleve"] : NULL));
 $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_classe"]) ? $_GET["id_classe"] :(isset($_SESSION["id_classe_abs"]) ? $_SESSION["id_classe_abs"] : NULL));
 $date_absence_eleve_debut = isset($_POST["date_absence_eleve_debut"]) ? $_POST["date_absence_eleve_debut"] :(isset($_GET["date_absence_eleve_debut"]) ? $_GET["date_absence_eleve_debut"] :(isset($_SESSION["date_absence_eleve_debut"]) ? $_SESSION["date_absence_eleve_debut"] : NULL));
@@ -91,7 +90,7 @@ if($dt_date_absence_eleve_debut->format("U")>$dt_date_absence_eleve_fin->format(
     $date2=clone $dt_date_absence_eleve_fin;
     $dt_date_absence_eleve_fin= $dt_date_absence_eleve_debut;
     $dt_date_absence_eleve_debut= $date2;
-    $message="Les dates de début et de fin ont été inversées.";
+    $message="Les dates de dÃ©but et de fin ont Ã©tÃ© inversÃ©es.";
     $inverse_date=true;
     $_SESSION['date_absence_eleve_debut'] = $dt_date_absence_eleve_debut->format('d/m/Y');
     $_SESSION['date_absence_eleve_fin'] = $dt_date_absence_eleve_fin->format('d/m/Y'); 
@@ -104,11 +103,13 @@ $style_specifique[] = "templates/DefaultEDT/css/small_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
 //$javascript_specifique[] = "mod_abs2/lib/include";
 $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
+$javascript_specifique[] = "lib/tablekit";
 $dojo=true;
+$utilisation_tablekit="ok";
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 if ($affichage != 'ods') {// on affiche pas de html
-    require_once("../lib/header.inc");
+    require_once("../lib/header.inc.php");
 
     include('menu_abs2.inc.php');
     include('menu_bilans.inc.php');
@@ -118,10 +119,10 @@ if ($affichage != 'ods') {// on affiche pas de html
           echo'<h2 class="no">'.$message.'</h2>';
         }?>
     <p>
-      <strong>Précision:</strong> Un manquement à l'obligation de présence sur une heure, entraine le décompte de la demi-journée correspondante pour l'élève.
+      <strong>PrÃ©cision:</strong> Un manquement Ã  l'obligation de prÃ©sence sur une heure, entraine le dÃ©compte de la demi-journÃ©e correspondante pour l'Ã©lÃ¨ve.
     </p>
     <form dojoType="dijit.form.Form" id="choix_extraction" name="choix_extraction" action="<?php $_SERVER['PHP_SELF']?>" method="post">
-    <h2>Les demi-journées
+    <h2>Les demi-journÃ©es
     du	
     <input style="width : 8em;font-size:14px;" type="text" dojoType="dijit.form.DateTextBox" id="date_absence_eleve_debut" name="date_absence_eleve_debut" value="<?php echo $dt_date_absence_eleve_debut->format('Y-m-d')?>" />
     au               
@@ -148,7 +149,7 @@ if ($affichage != 'ods') {// on affiche pas de html
 	    }
 	    echo "</select> ";
     } else {
-	echo 'Aucune classe avec élève affecté n\'a été trouvée';
+	echo 'Aucune classe avec Ã©lÃ¨ve affectÃ© n\'a Ã©tÃ© trouvÃ©e';
     }
     ?>
     </p>
@@ -172,97 +173,125 @@ if ($affichage != null && $affichage != '') {
     if ($nom_eleve !== null && $nom_eleve != '') {
 		$eleve_query->filterByNomOrPrenomLike($nom_eleve);
     }
-    $eleve_col = $eleve_query->distinct()->find();
 
-    foreach ($eleve_col as $eleve) {
-	$eleve->setVirtualColumn('DemiJourneesAbsencePreRempli', $eleve->getDemiJourneesAbsence($dt_date_absence_eleve_debut, $dt_date_absence_eleve_fin)->count());
-	$eleve->setVirtualColumn('DemiJourneesNonJustifieesPreRempli', $eleve->getDemiJourneesNonJustifieesAbsence($dt_date_absence_eleve_debut, $dt_date_absence_eleve_fin)->count());
-	$eleve->setVirtualColumn('RetardsPreRempli', $eleve->getRetards($dt_date_absence_eleve_debut, $dt_date_absence_eleve_fin)->count());
-    }
+    $eleve_query->where('Eleve.DateSortie<?','0')
+                ->orWhere('Eleve.DateSortie is NULL')
+                ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve_debut->format('U'));
+    
+    $eleve_col = $eleve_query->find();
+    $table_synchro_ok = AbsenceAgregationDecomptePeer::checkSynchroAbsenceAgregationTable($dt_date_absence_eleve_debut,$dt_date_absence_eleve_fin);
+    if (!$table_synchro_ok) {//la table n'est pas synchronisÃ©e. On va vÃ©rifier individuellement les Ã©lÃ¨ves qui se sont pas synchronisÃ©s
+		if ($eleve_col->count()>150) {
+			echo 'Il semble que vous demander des statistiques sur trop d\'Ã©lÃ¨ves et votre table de statistiques n\'est pas synchronisÃ©e. Veuillez faire une demande pour moins d\'Ã©lÃ¨ves ou demander Ã  votre administrateur de remplir la table d\'agrÃ©gation.';
+			if (ob_get_contents()) {
+				ob_flush();
+			}
+			flush();
+		}
+		foreach ($eleve_col as $eleve) {
+			$eleve->checkAndUpdateSynchroAbsenceAgregationTable($dt_date_absence_eleve_debut, $dt_date_absence_eleve_fin);
+		}
+	}
+    
+    //on recommence la requetes, maintenant que la table est synchronisÃ©, avec les donnÃ©es d'absence
+    $eleve_query = EleveQuery::create()->filterById($eleve_col->toKeyValue('Id','Id'));
+    $eleve_query->useAbsenceAgregationDecompteQuery()->distinct()->filterByDateIntervalle($dt_date_absence_eleve_debut,  $dt_date_absence_eleve_fin)->endUse();
+    $eleve_query->withColumn('SUM(AbsenceAgregationDecompte.ManquementObligationPresence)', 'NbAbsences')
+    	->withColumn('SUM(AbsenceAgregationDecompte.NonJustifiee)', 'NbNonJustifiees')
+    	->withColumn('SUM(AbsenceAgregationDecompte.Retards)', 'NbRetards')
+   		->withColumn('SUM(AbsenceAgregationDecompte.ManquementObligationPresence) - SUM(AbsenceAgregationDecompte.NonJustifiee)', 'NbJustifiees')
+    	->groupBy('Eleve.Id');
+    
+    $eleve_col = $eleve_query->find();
 }
 
 if ($affichage == 'html') {
-    echo 'Total élèves : '.$eleve_col->count();
-    echo '<table style="border:1px solid">';
+    echo 'Total Ã©lÃ¨ves : '.$eleve_col->count();
+    echo '<table class="sortable resizable" style="border-width:1px; border-style:outset">';
     $precedent_eleve_id = null;
-    echo '<tr style="border:1px solid">';
+    echo '<thead>';
+    echo '<tr>';
 
-    echo '<td style="border:1px solid;">';
-    echo 'Nom Prénom';
-    echo '</td>';
+    echo '<th class="text" style="border-width:1px; border-style: inset;" title ="Cliquez pour trier sur la colonne">';
+    echo 'Nom PrÃ©nom';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th class="text" style="border-width:1px; border-style: inset;" title ="Cliquez pour trier sur la colonne">';
     echo 'Classe';
-    echo '</td>';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
-    echo 'nbre de demi-journées d\'absence';
-    echo '</td>';
+    echo '<th class="number" style="border-width:1px; border-style: inset;" title ="Cliquez pour trier sur la colonne">';
+    echo 'nbre de demi-journÃ©es d\'absence';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th class="number" style="border-width:1px; border-style: inset;" title ="Cliquez pour trier sur la colonne">';
     echo 'non justifiees';
-    echo '</td>';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th class="number" style="border-width:1px; border-style: inset;" title ="Cliquez pour trier sur la colonne">';
     echo 'nbre de retards';
-    echo '</td>';
+    echo '</th>';
 
     echo '</tr>';
-
+    echo '</thead>';
+    echo '<tbody>';
     $nb_demijournees = 0;
     $nb_nonjustifiees = 0;
     $nb_retards = 0;
     foreach ($eleve_col as $eleve) {
-	    echo '<tr style="border:1px solid">';
+	    echo '<tr>';
 	    
-	    echo '<td style="border:1px solid;">';
+	    echo '<td style="border:1px; border-style: inset;">';
 	    echo $eleve->getNom().' '.$eleve->getPrenom();
 	    echo '</td>';
 
-	    echo '<td style="border:1px solid;">';
+	    echo '<td style="border:1px; border-style: inset;">';
 	    echo $eleve->getClasseNom();
 	    echo '</td>';
 
-	    echo '<td style="border:1px solid;">';
-	    echo $eleve->getDemiJourneesAbsencePreRempli();
-	    $nb_demijournees = $nb_demijournees + $eleve->getDemiJourneesAbsencePreRempli();
+	    echo '<td style="border:1px; border-style: inset;">';
+	    echo $eleve->getNbAbsences();
+	    $nb_demijournees = $nb_demijournees + $eleve->getNbAbsences();
 	    echo '</td>';
 
-	    echo '<td style="border:1px solid;">';
-	    echo $eleve->getDemiJourneesNonJustifieesPreRempli();
-	    $nb_nonjustifiees = $nb_nonjustifiees + $eleve->getDemiJourneesNonJustifieesPreRempli();
+	    echo '<td style="border:1px; border-style: inset;">';
+	    echo $eleve->getNbNonJustifiees();
+	    $nb_nonjustifiees = $nb_nonjustifiees + $eleve->getNbNonJustifiees();
 	    echo '</td>';
 
-	    echo '<td style="border:1px solid;">';
-	    echo $eleve->getRetardsPreRempli();
-	    $nb_retards = $nb_retards + $eleve->getRetardsPreRempli();
+	    echo '<td style="border:1px; border-style: inset;">';
+	    echo $eleve->getNbRetards();
+	    $nb_retards = $nb_retards + $eleve->getNbRetards();
 	    echo '</td>';
 
 	    echo '</tr>';
     }
-    echo '<tr style="border:1px solid">';
+    echo '<tbody>';
+    echo '<tfoot>';
+    echo '<tr>';
 
-    echo '<td style="border:1px solid;">';
-    echo 'Total élèves : ';
+    echo '<th style="border:1px; border-style: inset;">';
+    echo 'Total Ã©lÃ¨ves : ';
     echo $eleve_col->count();
-    echo '</td>';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
-    echo '</td>';
+    echo '<th style="border:1px; border-style: inset;">';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th style="border:1px; border-style: inset;">';
     echo $nb_demijournees;
-    echo '</td>';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th style="border:1px; border-style: inset;">';
     echo $nb_nonjustifiees;
-    echo '</td>';
+    echo '</th>';
 
-    echo '<td style="border:1px solid;">';
+    echo '<th style="border:1px; border-style: inset;">';
     echo $nb_retards;
-    echo '</td>';
+    echo '</th>';
 
     echo '</tr>';
+     echo '</tfoot>';
     echo '<h5>Extraction faite le '.date("d/m/Y - h:i").'</h5>';
 } else if ($affichage == 'ods') {
     // load the TinyButStrong libraries    
@@ -275,9 +304,9 @@ if ($affichage == 'html') {
 
     // Load the template
 	$extraction_demi_journees=repertoire_modeles('absence_extraction_demi-journees.ods');
-    $TBS->LoadTemplate($extraction_demi_journees);
+    $TBS->LoadTemplate($extraction_demi_journees, OPENTBS_ALREADY_UTF8);
 
-    $titre = 'Extrait des demi-journées d\'absences du '.$dt_date_absence_eleve_debut->format('d/m/Y').' au '.$dt_date_absence_eleve_fin->format('d/m/Y');
+    $titre = 'Extrait des demi-journÃ©es d\'absences du '.$dt_date_absence_eleve_debut->format('d/m/Y').' au '.$dt_date_absence_eleve_fin->format('d/m/Y');
     $classe = null;
     if ($id_classe != null && $id_classe != '') {
 	$classe = ClasseQuery::create()->findOneById($id_classe);
@@ -286,7 +315,7 @@ if ($affichage == 'html') {
 	}
     }
     if ($nom_eleve != null && $nom_eleve != '' ) {
-	$titre .= ' pour les élèves dont le nom ou le prénom contient '.$nom_eleve;
+	$titre .= ' pour les Ã©lÃ¨ves dont le nom ou le prÃ©nom contient '.$nom_eleve;
     }
     $TBS->MergeField('titre', $titre);
 
@@ -297,14 +326,14 @@ if ($affichage == 'html') {
     foreach ($eleve_col as $eleve) {
 	$eleve_array_avec_data[$eleve->getPrimaryKey()] = Array(
 	    'eleve' => $eleve
-	    , 'getDemiJourneesAbsencePreRempli' => $eleve->getDemiJourneesAbsencePreRempli()
-	    , 'getDemiJourneesNonJustifieesPreRempli' => $eleve->getDemiJourneesNonJustifieesPreRempli()
-	    , 'getRetardsPreRempli' => $eleve->getRetardsPreRempli()
+	    , 'getDemiJourneesAbsencePreRempli' => $eleve->getNbAbsences()
+	    , 'getDemiJourneesNonJustifieesPreRempli' => $eleve->getNbNonJustifiees()
+	    , 'getRetardsPreRempli' => $eleve->getNbRetards()
 		);
 
-	    $nb_demijournees = $nb_demijournees + $eleve->getDemiJourneesAbsencePreRempli();
-	    $nb_nonjustifiees = $nb_nonjustifiees + $eleve->getDemiJourneesNonJustifieesPreRempli();
-	    $nb_retards = $nb_retards + $eleve->getRetardsPreRempli();
+	    $nb_demijournees = $nb_demijournees + $eleve->getNbAbsences();
+	    $nb_nonjustifiees = $nb_nonjustifiees + $eleve->getNbNonJustifiees();
+	    $nb_retards = $nb_retards + $eleve->getNbRetards();
     }
 
 

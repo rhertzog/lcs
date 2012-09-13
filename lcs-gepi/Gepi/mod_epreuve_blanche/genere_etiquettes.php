@@ -1,5 +1,4 @@
 <?php
-/* $Id: genere_etiquettes.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -48,13 +47,13 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Epreuve blanche: Génération étiquettes',
+description='Epreuve blanche: GÃ©nÃ©ration Ã©tiquettes',
 statut='';";
 $insert=mysql_query($sql);
 }
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -71,7 +70,7 @@ type VARCHAR( 255 ) NOT NULL ,
 nom VARCHAR( 255 ) NOT NULL ,
 valeur smallint(6) unsigned NOT NULL ,
 PRIMARY KEY ( id )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 // Enregistrement des valeurs
@@ -107,7 +106,7 @@ if((isset($mode))&&($mode=='parametrer')) {
 		//echo "<br />";
 	}
 
-	if($cpt>0) {$msg="$cpt enregistrements effectués.";}
+	if($cpt>0) {$msg="$cpt enregistrements effectuÃ©s.";}
 }
 
 // Initialisation des valeurs
@@ -122,31 +121,31 @@ $MargeBas=10;
 $x0=$MargeGauche;
 $y0=$MargeHaut;
 
-// Hauteur de l'étiquette
+// Hauteur de l'Ã©tiquette
 $haut_etq=30;
 
-// Largeur de l'étiquette
+// Largeur de l'Ã©tiquette
 $larg_etq=80;
 
-// Espace vertical entre deux étiquettes
+// Espace vertical entre deux Ã©tiquettes
 $dy=10;
 
-// Récupération des valeurs enregistrées
+// RÃ©cupÃ©ration des valeurs enregistrÃ©es
 $sql="SELECT * FROM eb_param WHERE type='etiquette';";
 $res=mysql_query($sql);
 while($lig=mysql_fetch_object($res)) {
 	$nom=$lig->nom;
 	$$nom=$lig->valeur;
 }
-// Espace horizontal entre deux étiquettes
+// Espace horizontal entre deux Ã©tiquettes
 $dx=$largeur_page-$MargeDroite-$MargeGauche-2*$larg_etq;
 // AJOUTER UN TEST
-// Si $dx est négatif:
-// - réduire la largeur de l'étiquette
+// Si $dx est nÃ©gatif:
+// - rÃ©duire la largeur de l'Ã©tiquette
 // ou 
-// - ne mettre qu'une étiquette par largeur de page
+// - ne mettre qu'une Ã©tiquette par largeur de page
 
-// Abscisse de l'étiquette de la colonne de droite
+// Abscisse de l'Ã©tiquette de la colonne de droite
 $x1=$x0+$larg_etq+$dx;
 
 // Pour pouvoir ne pas imprimer le Footer
@@ -160,7 +159,7 @@ if((isset($mode))&&($mode=='imprime')) {
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		$msg="L'épreuve n°$id_epreuve n'existe pas.";
+		$msg="L'Ã©preuve nÂ°$id_epreuve n'existe pas.";
 	}
 	else {
 		$lig_ep=mysql_fetch_object($res);
@@ -174,12 +173,11 @@ if((isset($mode))&&($mode=='imprime')) {
 			$id_salle[]=$lig_salle->id;
 		}
 
-if (!defined('FPDF_VERSION')) {
-	require_once('../fpdf/fpdf.php');
-}
-		require('../fpdf/ex_fpdf.php');
+		if (!defined('FPDF_VERSION')) {
+		  require_once('../fpdf/fpdf.php');
+		}
 		
-		define('FPDF_FONTPATH','../fpdf/font/');
+		
 		//define('LargeurPage','210');
 		//define('HauteurPage','297');
 		define('LargeurPage',$largeur_page);
@@ -208,7 +206,7 @@ if (!defined('FPDF_VERSION')) {
 				if($no_footer=='n') {
 
 					$this->SetXY(5,$hauteur_page-10);
-					$this->SetFont('arial','',7.5);
+					$this->SetFont('DejaVu','',7.5);
 	
 					//$texte=getSettingValue("gepiSchoolName")."  ";
 					$texte=$intitule_epreuve." ($date_epreuve) - ".$salle_courante;
@@ -225,7 +223,7 @@ if (!defined('FPDF_VERSION')) {
 			}
 		}
 
-		// Définition de la page
+		// DÃ©finition de la page
 		$pdf=new rel_PDF("P","mm","A4");
 		//$pdf=new FPDF("P","mm","A4");
 		$pdf->SetTopMargin($MargeHaut);
@@ -237,7 +235,7 @@ if (!defined('FPDF_VERSION')) {
 		$pdf->SetDrawColor(0,0,0);
 		$pdf->SetLineWidth(0.2);
 
-		$fonte='arial';
+		$fonte='DejaVu';
 		$fs=10;
 		$sc_interligne=1.3;
 
@@ -257,21 +255,21 @@ if (!defined('FPDF_VERSION')) {
 				$pdf->AddPage("P");
 				$salle_courante=$salle[$i];
 
-				//Entête du PDF
+				//EntÃªte du PDF
 				//$pdf->SetLineWidth(0.7);
 				/*
-				$pdf->SetFont($fonte,'B',14);
+				$pdf->SetFont('DejaVu','B',14);
 				$pdf->Setxy(10,10);
-				$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - Année scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
+				$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - AnnÃ©e scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
 
 				$x1=$pdf->GetX();
 				$y1=$pdf->GetY();
 				*/
 
-				$pdf->SetFont($fonte,'',10);
+				$pdf->SetFont('DejaVu','',10);
 				$pdf->SetXY($x0,$y0);
 
-				// Paramètres pour cell_ajustee()
+				// ParamÃ¨tres pour cell_ajustee()
 				$largeur_dispo=$larg_etq/2;
 				$h_cell=$haut_etq/2;
 				$hauteur_max_font=10;
@@ -304,37 +302,37 @@ if (!defined('FPDF_VERSION')) {
 					else {
 						$x=$x1;
 					}
-					// Cadre de l'étiquette
+					// Cadre de l'Ã©tiquette
 					$pdf->SetXY($x,$y);
 					$pdf->Cell($larg_etq,$haut_etq,$texte,'LRBT',1,'L');
 					$pdf->SetXY($x,$y);
 
-					// Partie haut/gauche de l'étiquette
+					// Partie haut/gauche de l'Ã©tiquette
 					$texte="Epreuve $id_epreuve:\n";
 					$texte.="$intitule_epreuve ($date_epreuve)\n";
 					//cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
 					cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align);
 
-					// Partie haut/droite de l'étiquette
+					// Partie haut/droite de l'Ã©tiquette
 					$x+=$largeur_dispo;
 					$texte="Epreuve $id_epreuve:\n";
 					$texte.="$intitule_epreuve ($date_epreuve)\n";
 					cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align);
 
 
-					// Partie bas/gauche de l'étiquette
+					// Partie bas/gauche de l'Ã©tiquette
 					$x-=$largeur_dispo;
 					$y=$y+$h_cell;
 					$pdf->SetXY($x,$y);
 					$texte=casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2')."\n";
 					$texte.="Naissance: ".formate_date($lig->naissance)."\n";
-					$texte.="Numéro: ".$lig->n_anonymat;
+					$texte.="NumÃ©ro: ".$lig->n_anonymat;
 					//cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
 					cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align);
 
-					// Partie bas/droite de l'étiquette
+					// Partie bas/droite de l'Ã©tiquette
 					$x+=$largeur_dispo;
-					$texte="Numéro: ".$lig->n_anonymat;
+					$texte="NumÃ©ro: ".$lig->n_anonymat;
 					//cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align='C',$align='L',$increment=0.3,$r_interligne=0.3) {
 					cell_ajustee($texte,$x,$y,$largeur_dispo,$h_cell,$hauteur_max_font,$hauteur_min_font,$bordure,$v_align,$align);
 
@@ -361,7 +359,7 @@ include('lib_eb.php');
 //**************** EN-TETE *****************
 $titre_page = "Epreuve blanche: Etiquettes";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
@@ -378,11 +376,11 @@ if((!isset($mode))||($mode!='parametrer')) {
 
 	//========================================================
 
-	echo "<p class='bold'>Epreuve n°$id_epreuve</p>\n";
+	echo "<p class='bold'>Epreuve nÂ°$id_epreuve</p>\n";
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>L'épreuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
+		echo "<p>L'Ã©preuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -400,16 +398,16 @@ if((!isset($mode))||($mode!='parametrer')) {
 
 	//========================================================
 
-	//echo "<p style='color:red;'>A FAIRE&nbsp;: Contrôler si certains élèves n'ont pas été affectés dans des salles.</p>\n";
+	//echo "<p style='color:red;'>A FAIRE&nbsp;: ContrÃ´ler si certains Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND id_salle='-1';";
 	//echo "$sql<br />";
 	$test=mysql_query($sql);
 	$nb_tmp=mysql_num_rows($test);
 	if($nb_tmp==1) {
-		echo "<p style='color:red;'>$nb_tmp élève n'est pas affecté dans une salle.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ve n'est pas affectÃ© dans une salle.</p>\n";
 	}
 	elseif($nb_tmp>1) {
-		echo "<p style='color:red;'>$nb_tmp élèves n'ont pas été affectés dans des salles.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	}
 
 	//========================================================
@@ -420,7 +418,7 @@ if((!isset($mode))||($mode!='parametrer')) {
 	$sql="SELECT DISTINCT n_anonymat FROM eb_copies WHERE id_epreuve='$id_epreuve';";
 	$test2=mysql_query($sql);
 	if(mysql_num_rows($test1)!=mysql_num_rows($test2)) {
-		echo "<p style='color:red;'>Les numéros anonymats ne sont pas uniques sur l'épreuve (<i>cela ne devrait pas arriver</i>).</p>\n";
+		echo "<p style='color:red;'>Les numÃ©ros anonymats ne sont pas uniques sur l'Ã©preuve (<i>cela ne devrait pas arriver</i>).</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -428,7 +426,7 @@ if((!isset($mode))||($mode!='parametrer')) {
 	$sql="SELECT login_ele FROM eb_copies WHERE n_anonymat='' AND id_epreuve='$id_epreuve';";
 	$test3=mysql_query($sql);
 	if(mysql_num_rows($test3)>0) {
-		echo "<p style='color:red;'>Un ou des numéros anonymats ne sont pas valides sur l'épreuve&nbsp;: ";
+		echo "<p style='color:red;'>Un ou des numÃ©ros anonymats ne sont pas valides sur l'Ã©preuve&nbsp;: ";
 		$cpt=0;
 		while($lig=mysql_fetch_object($test3)) {
 			if($cpt>0) {echo ", ";}
@@ -445,12 +443,12 @@ if((!isset($mode))||($mode!='parametrer')) {
 
 	echo "<p class='bold'>Etiquettes&nbsp;:</p>\n";
 	echo "<ul>\n";
-	echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=parametrer".add_token_in_url()."'>Paramétrer</a> les étiquettes</li>\n";
-	echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=imprime".add_token_in_url()."'>Imprimer</a> les étiquettes</li>\n";
+	echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=parametrer".add_token_in_url()."'>ParamÃ©trer</a> les Ã©tiquettes</li>\n";
+	echo "<li><a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=imprime".add_token_in_url()."'>Imprimer</a> les Ã©tiquettes</li>\n";
 	echo "</ul>\n";
 }
 else {
-	// Paramétrage des étiquettes
+	// ParamÃ©trage des Ã©tiquettes
 	echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve'>Etiquettes</a>";
 	echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=imprime".add_token_in_url()."'>Imprimer</a>";
 	echo "</p>\n";
@@ -458,7 +456,7 @@ else {
 	echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
 	echo add_token_field();
 
-	echo "<p>L'impression est prévue au format A4 avec deux colonnes d'étiquettes.<br />Vous pouvez ajuster quelques paramètres concernant les étiquettes.</p>\n";
+	echo "<p>L'impression est prÃ©vue au format A4 avec deux colonnes d'Ã©tiquettes.<br />Vous pouvez ajuster quelques paramÃ¨tres concernant les Ã©tiquettes.</p>\n";
 
 	echo "<div style='float:right; border: 1px solid black; background-color: white;'>\n";
 	echo "<table class='boireaus' summary='Page' style='height:270px;'>\n";
@@ -548,7 +546,7 @@ else {
 	echo "</table>\n";
 	echo "</div>\n";
 
-	echo "<table class='boireaus' summary='Tableau des paramètres'>\n";
+	echo "<table class='boireaus' summary='Tableau des paramÃ¨tres'>\n";
 
 	echo "<tr style='background-color:gray;'>\n";
 	echo "<td colspan='2'>\n";
@@ -622,7 +620,7 @@ else {
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 	echo "<td style='text-align:left;'>\n";
-	echo "Largeur de l'étiquette&nbsp;:\n";
+	echo "Largeur de l'Ã©tiquette&nbsp;:\n";
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<input type='text' autocomplete='off' name='larg_etq' value='$larg_etq' ";
@@ -636,7 +634,7 @@ else {
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 	echo "<td style='text-align:left;'>\n";
-	echo "Hauteur de l'étiquette&nbsp;:\n";
+	echo "Hauteur de l'Ã©tiquette&nbsp;:\n";
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<input type='text' autocomplete='off' name='haut_etq' value='$haut_etq' \n";
@@ -650,7 +648,7 @@ else {
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
 	echo "<td style='text-align:left;'>\n";
-	echo "Espace vertical entre deux étiquettes&nbsp;:\n";
+	echo "Espace vertical entre deux Ã©tiquettes&nbsp;:\n";
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<input type='text' autocomplete='off' name='dy' value='$dy' ";

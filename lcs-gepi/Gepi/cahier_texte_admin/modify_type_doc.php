@@ -1,8 +1,7 @@
 <?php
 /*
- * @version: $Id: modify_type_doc.php 5940 2010-11-21 20:23:57Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -45,19 +44,19 @@ if (isset($_POST['modif'])) {
 	check_token();
   if ($_POST['id'] !='ajout') {
      $req = sql_query("UPDATE ct_types_documents SET extension='".$_POST['ext']."', titre='".$_POST['description']."', upload='".$_POST['upload']."' WHERE id_type='".$_POST['id']."'");
-     if ($req) $msg = "Les modifications ont ÈtÈ enregistrÈes."; else $msg = "Il y a eu un problËme lors de l'enregistrement.";
+     if ($req) $msg = "Les modifications ont √©t√© enregistr√©es."; else $msg = "Il y a eu un probl√®me lors de l'enregistrement.";
   } else {
      $ext = $_POST['ext'];
      if ($ext != '') {
         $req = sql_query("INSERT INTO ct_types_documents SET extension='".$ext."', titre='".$_POST['description']."', upload='".$_POST['upload']."'");
-        if ($req) $msg = "L'enregistrement a bien ÈtÈ effectuÈ."; else $msg = "Il y a eu un problËme lors de l'enregistrement.";
+        if ($req) $msg = "L'enregistrement a bien √©t√© effectu√©."; else $msg = "Il y a eu un probl√®me lors de l'enregistrement.";
      } else {
-        $msg = "Enregistrement impossible. Veuillez dÈfinir une extension correcte.";
+        $msg = "Enregistrement impossible. Veuillez d√©finir une extension correcte.";
      }
   }
 }
 
-// Suppression des types selectionnÈs
+// Suppression des types selectionn√©s
 if (isset($_POST['bouton_sup'])) {
 	check_token();
   $query = "SELECT id_type FROM ct_types_documents";
@@ -74,19 +73,93 @@ if (isset($_POST['bouton_sup'])) {
       }
   }
   if ($nb_sup == "0") {
-     $msg = "Aucune suppression n'a ÈtÈ effectuÈe.";
+     $msg = "Aucune suppression n'a √©t√© effectu√©e.";
   } else if ($nb_sup == "1") {
-     if ($ok_sup=='yes') $msg = "La suppression a ÈtÈ effectuÈe avec succËs."; else $msg = "Il y a eu un problËme lors de la suppression.";
+     if ($ok_sup=='yes') $msg = "La suppression a √©t√© effectu√©e avec succ√®s."; else $msg = "Il y a eu un probl√®me lors de la suppression.";
   } else {
-     if ($ok_sup=='yes') $msg = "Les suppressions ont ÈtÈ effectuÈes avec succËs."; else $msg = "Il y a eu un problËme lors de la suppression.";
+     if ($ok_sup=='yes') $msg = "Les suppressions ont √©t√© effectu√©es avec succ√®s."; else $msg = "Il y a eu un probl√®me lors de la suppression.";
   }
 
 }
 
+if (isset($_POST['reinit_assoc_fichiers'])) {
+	$msg="";
+
+	check_token();
+	$tab_sql=array();
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Adobe Illustrator', extension='ai', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='AIFF', extension='aiff', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Windows Media', extension='asf', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Windows Media', extension='avi', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='BMP', extension='bmp', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='BZip', extension='bz2', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='C source', extension='c', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Debian', extension='deb', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Word', extension='doc', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='LaTeX DVI', extension='dvi', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='PostScript', extension='eps', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='GeoGebra', extension='ggb', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='GIF', extension='gif', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='gr', extension='gr', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='GZ', extension='gz', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='C header', extension='h', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='HTML', extension='html', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='JPEG', extension='jpg', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Midi', extension='mid', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='QuickTime', extension='mov', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='MP3', extension='mp3', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='MPEG', extension='mpg', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Base de donn√©es OpenDocument', extension='odb', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Dessin OpenDocument', extension='odg', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Pr√©sentation OpenDocument', extension='odp', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Classeur OpenDocument', extension='ods', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Texte OpenDocument', extension='odt', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Ogg', extension='ogg', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Pascal', extension='pas', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='PDF', extension='pdf', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='PNG', extension='png', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='PowerPoint', extension='ppt', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='PostScript', extension='ps', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Photoshop', extension='psd', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='QuickTime', extension='qt', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='RealAudio', extension='ra', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='RealAudio', extension='ram', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='RealAudio', extension='rm', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='RTF', extension='rtf', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='StarOffice', extension='sdd', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='StarOffice', extension='sdw', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Stuffit', extension='sit', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Flash', extension='swf', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='OpenOffice Calc', extension='sxc', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='OpenOffice Impress', extension='sxi', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='OpenOffice', extension='sxw', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='LaTeX', extension='tex', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='TGZ', extension='tgz', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='TIFF', extension='tif', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='texte', extension='txt', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='WAV', extension='wav', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Windows Media', extension='wmv', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='GIMP multi-layer', extension='xcf', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Excel', extension='xls', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='XML', extension='xml', upload='oui';";
+	$tab_sql[]="INSERT INTO ct_types_documents SET titre='Zip', extension='zip', upload='oui';";
+
+	$sql="TRUNCATE ct_types_documents;";
+	$menage=mysql_query($sql);
+
+	$nb_reg=0;
+	for($loop=0;$loop<count($tab_sql);$loop++) {
+		$insert=mysql_query($tab_sql[$loop]);
+		if(!$insert) {$msg.="Erreur lors de l'insertion : <br />".$tab_sql[$loop]."<br />";} else {$nb_reg++;}
+	}
+
+	if($nb_reg>0) {$msg.="$nb_reg enregistrement(s) effectu√©(s).<br />";}
+}
+
 //===========================================================
 // header
-$titre_page = "Types de fichiers autorisÈs en tÈlÈchargement";
-require_once("../lib/header.inc");
+$titre_page = "Types de fichiers autoris√©s en t√©l√©chargement";
+require_once("../lib/header.inc.php");
 //===========================================================
 //debug_var();
 
@@ -94,15 +167,15 @@ if (isset($_GET['id'])) {
 	check_token(false);
   // Ajout ou modification d'un type de fichier
   ?>
-  <p class=bold><a href="modify_type_doc.php?a=a<?php echo add_token_in_url();?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
+  <p class="bold"><a href="modify_type_doc.php?a=a<?php echo add_token_in_url();?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
   <?php
   if ($_GET['id']=='ajout') {
-     echo "<h2>Type de fichier autorisÈ en tÈlÈchargement - Ajout d'un type de fichier</h2>";
+     echo "<h2>Type de fichier autoris√© en t√©l√©chargement - Ajout d'un type de fichier</h2>";
      $ext = '';
      $description = '';
      $upload = 'oui';
   } else {
-     echo "<h2>Type de fichier autorisÈ en tÈlÈchargement - Modification</h2>";
+     echo "<h2>Type de fichier autoris√© en t√©l√©chargement - Modification</h2>";
      $query = "SELECT extension, titre, upload  FROM ct_types_documents WHERE id_type='".$_GET['id']."' ORDER BY extension";
      $result = sql_query($query);
      $row=sql_row($result,0);
@@ -110,6 +183,7 @@ if (isset($_GET['id'])) {
      $description = $row[1];
      $upload = $row[2];
   }
+
   ?>
   <form action="modify_type_doc.php" name="formulaire1" method="post">
 <?php
@@ -118,7 +192,7 @@ if (isset($_GET['id'])) {
   <table>
   <tr><td>Extension : </td><td><input type="text" name="ext" value="<?php echo $ext; ?>" size="20" /></td></tr>
   <tr><td>Type/Description : </td><td><input type="text" name="description" value="<?php echo $description; ?>" size="20" /></td></tr>
-  <tr><td>AutorisÈ : </td><td><select name="upload" size="1">
+  <tr><td>Autoris√© : </td><td><select name="upload" size="1">
   <option <?php if ($upload=='oui') echo "selected"; ?>>oui</option>
   <option <?php if ($upload=='non') echo "selected"; ?>>non</option>
   </select></td></tr>
@@ -130,8 +204,17 @@ if (isset($_GET['id'])) {
 } else {
   // Affichage du tableau complet
   ?>
-  <p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>|<a href="modify_type_doc.php?id=ajout<?php echo add_token_in_url();?>"> Ajouter un type de fichier </a></p>
-  <H2>Types de fichiers autorisÈs en tÈlÈchargement</h2>
+
+  <form action="modify_type_doc.php" name="formulaire_reinit" method="post">
+<?php
+	echo add_token_field();
+?>
+  <p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>|<a href="modify_type_doc.php?id=ajout<?php echo add_token_in_url();?>"> Ajouter un type de fichier </a>
+  | <input type='submit' name='reinit_assoc_fichiers' value='R√©initialiser les extensions autoris√©es' />
+  </p>
+  </form>
+
+  <h2>Types de fichiers autoris√©s en t√©l√©chargement</h2>
   <form action="modify_type_doc.php" name="formulaire2" method="post">
 <?php
 	echo add_token_field();
@@ -140,7 +223,7 @@ if (isset($_GET['id'])) {
 <tr>
 <th><b>Extension</b></th>
 <th><b>Type/Description</b></th>
-<th><b>AutorisÈ</b></th>
+<th><b>Autoris√©</b></th>
 <th><input type="submit" name="bouton_sup" value="Supprimer" onclick="return confirmlink(this, '', 'Confirmation de la suppression')" /></th>
 </tr>
   <?php
@@ -157,5 +240,6 @@ if (isset($_GET['id'])) {
   }
   echo "</table></form>";
 }
+echo "<p><br /></p>\n";
 require("../lib/footer.inc.php");
 ?>

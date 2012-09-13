@@ -14,51 +14,92 @@
  * @package    propel.generator.gepi
  */
 class JTraitementSaisieEleve extends BaseJTraitementSaisieEleve {
-
+    
 	/**
-	 * Removes this object from datastore and sets delete attribute. Custom : suppression des notifications et jointures associ�es et calcul de la table d'agr�gation
-	 *
-	 * @param      PropelPDO $con
-	 * @return     void
-	 * @throws     PropelException
-	 * @see        BaseObject::setDeleted()
-	 * @see        BaseObject::isDeleted()
+	 * Code to be run after deleting the object in database
+	 * @param PropelPDO $con
 	 */
-	public function delete(PropelPDO $con = null)
-	{
-		$saisie = $this->getAbsenceEleveSaisie();
+	public function postDelete(PropelPDO $con = null) {
 		$traitement = $this->getAbsenceEleveTraitement();
-		parent::delete($con);
 		if ($traitement != null && !$traitement->getAlreadyInSave()) {
-			$traitement->setUpdatedAt('now'); //au lieu d'utiliser un champ suppl�mentaire pour la date de mise � jours des jointures entre saisies et traitement, on pr�cise la date de mise � jour des jointure dans le traitement directement
+			$traitement->setUpdatedAt('now'); //au lieu d'utiliser un champ supplémentaire pour la date de mise à jours des jointures entre saisies et traitement, on précise la date de mise à jour des jointure dans le traitement directement
 			$traitement->save();
+		}
+		$saisie = $this->getAbsenceEleveSaisie();
+		if ($saisie != null && $saisie->getEleve() != null && !$saisie->getAlreadyInSave() && AbsenceEleveSaisiePeer::isAgregationEnabled()) {
+			$saisie->getEleve()->clearAbsenceEleveSaisiesParJour();
+			$saisie->updateSynchroAbsenceAgregationTable();
+			$saisie->checkAndUpdateSynchroAbsenceAgregationTable();
 		}
 	}
 	
 	/**
-	 * Ajout manuel : renseignement automatique de la date de modification du traitement correspondant.
-	 * Appel de la mise � jour de la table d'agr�gation
-	 *
-	 * If the object is new, it inserts it; otherwise an update is performed.
-	 * All modified related objects will also be persisted in the doSave()
-	 * method.  This method wraps all precipitate database operations in a
-	 * single transaction.
-	 *
-	 * @param      PropelPDO $con
-	 * @return     int The number of rows affected by this insert/update and any referring fk objects' save() operations.
-	 * @throws     PropelException
-	 * @see        doSave()
+	 * Code to be run after persisting the object
+	 * @param PropelPDO $con
 	 */
-	public function save(PropelPDO $con = null) {
-		//$this->
-		$result = parent::save();
-		$saisie = $this->getAbsenceEleveSaisie();
+	public function postSave(PropelPDO $con = null) {
 		$traitement = $this->getAbsenceEleveTraitement();
 		if ($traitement != null && !$traitement->getAlreadyInSave()) {
-			$traitement->setUpdatedAt('now'); //au lieu d'utiliser un champ suppl�mentaire pour la date de mise � jours des jointures entre saisies et traitement, on pr�cise la date de mise � jour des jointure dans le traitement directement
+			$traitement->setUpdatedAt('now'); //au lieu d'utiliser un champ supplémentaire pour la date de mise à jours des jointures entre saisies et traitement, on précise la date de mise à jour des jointure dans le traitement directement
 			$traitement->save();
 		}
-		//le traitement est sauv� ci dessus, ou alors il est en cours de sauvegarde. La table d'agr�gation va �tre recalcul� pour les saisies de ce traitement, ce n'est donc pas necessaire de le faire ici
-		return $result;
+		//le traitement est sauvé ci dessus, ou alors il est en cours de sauvegarde. La table d'agrégation va être recalculé pour les saisies de ce traitement, ce n'est donc pas necessaire de le faire ici
 	}
+	
+	/**
+	 * Declares an association between this object and a AbsenceEleveTraitement object.
+	 *
+	 * @param      AbsenceEleveTraitement $v
+	 * @return     JTraitementSaisieEleve The current object (for fluent API support)
+	 * @throws     PropelException
+	 */
+	public function setAbsenceEleveTraitement(AbsenceEleveTraitement $v = null) {
+	    if ($this->getATraitementId() != null && $v != null && $this->getATraitementId() != $v->getId()){
+	        throw new PropelException('Il ne faut pas modifier une jointure existante jTraitementSaisieEleve car la mise à jour de la table d agrégation non implémentée pour cette méthode');
+	    }
+	    return parent::setAbsenceEleveTraitement($v);
+	}
+	
+	/**
+	 * Declares an association between this object and a AbsenceEleveSaisie object.
+	 *
+	 * @param      AbsenceEleveSaisie $v
+	 * @return     JTraitementSaisieEleve The current object (for fluent API support)
+	 * @throws     PropelException
+	 */
+	public function setAbsenceEleveSaisie(AbsenceEleveSaisie $v = null) {
+	    if ($this->getASaisieId() != null && $v != null && $this->getASaisieId() != $v->getId()){
+	        throw new PropelException('Il ne faut pas modifier une jointure existante jTraitementSaisieEleve car la mise à jour de la table d agrégation non implémentée pour cette méthode');
+	    }
+	    return parent::setAbsenceEleveSaisie($v);
+	}
+	
+	/**
+	 * Set the value of [a_traitement_id] column.
+	 * cle etrangere du traitement de ces absences
+	 * @param      int $v new value
+	 * @return     JTraitementSaisieEleve The current object (for fluent API support)
+	 */
+	public function setATraitementId($v)
+	{
+	    if ($this->getATraitementId() != null && $this->getATraitementId() != $v){
+	        throw new PropelException('Il ne faut pas modifier une jointure existante jTraitementSaisieEleve car la mise à jour de la table d agrégation non implémentée pour cette méthode');
+	    }
+	    return parent::setATraitementId($v);
+	}
+	
+	/**
+	 * Set the value of [a_saisie_id] column.
+	 * cle etrangere de l'absence saisie
+	 * @param      int $v new value
+	 * @return     JTraitementSaisieEleve The current object (for fluent API support)
+	 */
+	public function setASaisieId($v)
+	{
+	    if ($this->getASaisieId() != null && $this->getASaisieId() != $v){
+	        throw new PropelException('Il ne faut pas modifier une jointure existante jTraitementSaisieEleve car la mise à jour de la table d agrégation non implémentée pour cette méthode');
+	    }
+	    return parent::setASaisieId($v);
+	}
+
 } // JTraitementSaisieEleve

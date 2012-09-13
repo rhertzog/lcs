@@ -25,6 +25,12 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	protected static $peer;
 
 	/**
+	 * The flag var to prevent infinit loop in deep copy
+	 * @var       boolean
+	 */
+	protected $startCopy = false;
+
+	/**
 	 * The value for the id field.
 	 * @var        int
 	 */
@@ -109,6 +115,11 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	protected $collMatieres;
 
 	/**
+	 * @var        array Classe[] Collection to store aggregation of Classe objects.
+	 */
+	protected $collClasses;
+
+	/**
 	 * Flag to prevent endless save loop, if this object is referenced
 	 * by another object which falls in this transaction.
 	 * @var        boolean
@@ -121,6 +132,84 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $utilisateurProfessionnelsScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $matieresScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $classesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $jGroupesProfesseurssScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $jGroupesMatieressScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $jGroupesClassessScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $cahierTexteCompteRendusScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $cahierTexteTravailAFairesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $cahierTexteNoticePriveesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $jEleveGroupesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $absenceEleveSaisiesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $creditEctssScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $edtEmplacementCourssScheduledForDeletion = null;
 
 	/**
 	 * Get the [id] column value.
@@ -370,6 +459,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 
 			$this->collUtilisateurProfessionnels = null;
 			$this->collMatieres = null;
+			$this->collClasses = null;
 		} // if (deep)
 	}
 
@@ -394,18 +484,18 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 
 		$con->beginTransaction();
 		try {
+			$deleteQuery = GroupeQuery::create()
+				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
 			if ($ret) {
-				GroupeQuery::create()
-					->filterByPrimaryKey($this->getPrimaryKey())
-					->delete($con);
+				$deleteQuery->delete($con);
 				$this->postDelete($con);
 				$con->commit();
 				$this->setDeleted(true);
 			} else {
 				$con->commit();
 			}
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -457,7 +547,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -480,27 +570,69 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-			if ($this->isNew() ) {
-				$this->modifiedColumns[] = GroupePeer::ID;
+			if ($this->isNew() || $this->isModified()) {
+				// persist changes
+				if ($this->isNew()) {
+					$this->doInsert($con);
+				} else {
+					$this->doUpdate($con);
+				}
+				$affectedRows += 1;
+				$this->resetModified();
 			}
 
-			// If this object has been modified, then save it to the database.
-			if ($this->isModified()) {
-				if ($this->isNew()) {
-					$criteria = $this->buildCriteria();
-					if ($criteria->keyContainsValue(GroupePeer::ID) ) {
-						throw new PropelException('Cannot insert a value for auto-increment primary key ('.GroupePeer::ID.')');
-					}
-
-					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows = 1;
-					$this->setId($pk);  //[IMV] update autoincrement primary key
-					$this->setNew(false);
-				} else {
-					$affectedRows = GroupePeer::doUpdate($this, $con);
+			if ($this->utilisateurProfessionnelsScheduledForDeletion !== null) {
+				if (!$this->utilisateurProfessionnelsScheduledForDeletion->isEmpty()) {
+					JGroupesProfesseursQuery::create()
+						->filterByPrimaryKeys($this->utilisateurProfessionnelsScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->utilisateurProfessionnelsScheduledForDeletion = null;
 				}
 
-				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
+				foreach ($this->getUtilisateurProfessionnels() as $utilisateurProfessionnel) {
+					if ($utilisateurProfessionnel->isModified()) {
+						$utilisateurProfessionnel->save($con);
+					}
+				}
+			}
+
+			if ($this->matieresScheduledForDeletion !== null) {
+				if (!$this->matieresScheduledForDeletion->isEmpty()) {
+					JGroupesMatieresQuery::create()
+						->filterByPrimaryKeys($this->matieresScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->matieresScheduledForDeletion = null;
+				}
+
+				foreach ($this->getMatieres() as $matiere) {
+					if ($matiere->isModified()) {
+						$matiere->save($con);
+					}
+				}
+			}
+
+			if ($this->classesScheduledForDeletion !== null) {
+				if (!$this->classesScheduledForDeletion->isEmpty()) {
+					JGroupesClassesQuery::create()
+						->filterByPrimaryKeys($this->classesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->classesScheduledForDeletion = null;
+				}
+
+				foreach ($this->getClasses() as $classe) {
+					if ($classe->isModified()) {
+						$classe->save($con);
+					}
+				}
+			}
+
+			if ($this->jGroupesProfesseurssScheduledForDeletion !== null) {
+				if (!$this->jGroupesProfesseurssScheduledForDeletion->isEmpty()) {
+					JGroupesProfesseursQuery::create()
+						->filterByPrimaryKeys($this->jGroupesProfesseurssScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->jGroupesProfesseurssScheduledForDeletion = null;
+				}
 			}
 
 			if ($this->collJGroupesProfesseurss !== null) {
@@ -508,6 +640,15 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->jGroupesMatieressScheduledForDeletion !== null) {
+				if (!$this->jGroupesMatieressScheduledForDeletion->isEmpty()) {
+					JGroupesMatieresQuery::create()
+						->filterByPrimaryKeys($this->jGroupesMatieressScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->jGroupesMatieressScheduledForDeletion = null;
 				}
 			}
 
@@ -519,11 +660,29 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				}
 			}
 
+			if ($this->jGroupesClassessScheduledForDeletion !== null) {
+				if (!$this->jGroupesClassessScheduledForDeletion->isEmpty()) {
+					JGroupesClassesQuery::create()
+						->filterByPrimaryKeys($this->jGroupesClassessScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->jGroupesClassessScheduledForDeletion = null;
+				}
+			}
+
 			if ($this->collJGroupesClassess !== null) {
 				foreach ($this->collJGroupesClassess as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->cahierTexteCompteRendusScheduledForDeletion !== null) {
+				if (!$this->cahierTexteCompteRendusScheduledForDeletion->isEmpty()) {
+					CahierTexteCompteRenduQuery::create()
+						->filterByPrimaryKeys($this->cahierTexteCompteRendusScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->cahierTexteCompteRendusScheduledForDeletion = null;
 				}
 			}
 
@@ -535,11 +694,29 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				}
 			}
 
+			if ($this->cahierTexteTravailAFairesScheduledForDeletion !== null) {
+				if (!$this->cahierTexteTravailAFairesScheduledForDeletion->isEmpty()) {
+					CahierTexteTravailAFaireQuery::create()
+						->filterByPrimaryKeys($this->cahierTexteTravailAFairesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->cahierTexteTravailAFairesScheduledForDeletion = null;
+				}
+			}
+
 			if ($this->collCahierTexteTravailAFaires !== null) {
 				foreach ($this->collCahierTexteTravailAFaires as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->cahierTexteNoticePriveesScheduledForDeletion !== null) {
+				if (!$this->cahierTexteNoticePriveesScheduledForDeletion->isEmpty()) {
+					CahierTexteNoticePriveeQuery::create()
+						->filterByPrimaryKeys($this->cahierTexteNoticePriveesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->cahierTexteNoticePriveesScheduledForDeletion = null;
 				}
 			}
 
@@ -551,11 +728,29 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				}
 			}
 
+			if ($this->jEleveGroupesScheduledForDeletion !== null) {
+				if (!$this->jEleveGroupesScheduledForDeletion->isEmpty()) {
+					JEleveGroupeQuery::create()
+						->filterByPrimaryKeys($this->jEleveGroupesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->jEleveGroupesScheduledForDeletion = null;
+				}
+			}
+
 			if ($this->collJEleveGroupes !== null) {
 				foreach ($this->collJEleveGroupes as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->absenceEleveSaisiesScheduledForDeletion !== null) {
+				if (!$this->absenceEleveSaisiesScheduledForDeletion->isEmpty()) {
+					AbsenceEleveSaisieQuery::create()
+						->filterByPrimaryKeys($this->absenceEleveSaisiesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->absenceEleveSaisiesScheduledForDeletion = null;
 				}
 			}
 
@@ -567,11 +762,29 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				}
 			}
 
+			if ($this->creditEctssScheduledForDeletion !== null) {
+				if (!$this->creditEctssScheduledForDeletion->isEmpty()) {
+					CreditEctsQuery::create()
+						->filterByPrimaryKeys($this->creditEctssScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->creditEctssScheduledForDeletion = null;
+				}
+			}
+
 			if ($this->collCreditEctss !== null) {
 				foreach ($this->collCreditEctss as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->edtEmplacementCourssScheduledForDeletion !== null) {
+				if (!$this->edtEmplacementCourssScheduledForDeletion->isEmpty()) {
+					EdtEmplacementCoursQuery::create()
+						->filterByPrimaryKeys($this->edtEmplacementCourssScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->edtEmplacementCourssScheduledForDeletion = null;
 				}
 			}
 
@@ -588,6 +801,92 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 		}
 		return $affectedRows;
 	} // doSave()
+
+	/**
+	 * Insert the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @throws     PropelException
+	 * @see        doSave()
+	 */
+	protected function doInsert(PropelPDO $con)
+	{
+		$modifiedColumns = array();
+		$index = 0;
+
+		$this->modifiedColumns[] = GroupePeer::ID;
+		if (null !== $this->id) {
+			throw new PropelException('Cannot insert a value for auto-increment primary key (' . GroupePeer::ID . ')');
+		}
+
+		 // check the columns in natural order for more readable SQL queries
+		if ($this->isColumnModified(GroupePeer::ID)) {
+			$modifiedColumns[':p' . $index++]  = 'ID';
+		}
+		if ($this->isColumnModified(GroupePeer::NAME)) {
+			$modifiedColumns[':p' . $index++]  = 'NAME';
+		}
+		if ($this->isColumnModified(GroupePeer::DESCRIPTION)) {
+			$modifiedColumns[':p' . $index++]  = 'DESCRIPTION';
+		}
+		if ($this->isColumnModified(GroupePeer::RECALCUL_RANG)) {
+			$modifiedColumns[':p' . $index++]  = 'RECALCUL_RANG';
+		}
+
+		$sql = sprintf(
+			'INSERT INTO groupes (%s) VALUES (%s)',
+			implode(', ', $modifiedColumns),
+			implode(', ', array_keys($modifiedColumns))
+		);
+
+		try {
+			$stmt = $con->prepare($sql);
+			foreach ($modifiedColumns as $identifier => $columnName) {
+				switch ($columnName) {
+					case 'ID':
+						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+						break;
+					case 'NAME':
+						$stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
+						break;
+					case 'DESCRIPTION':
+						$stmt->bindValue($identifier, $this->description, PDO::PARAM_STR);
+						break;
+					case 'RECALCUL_RANG':
+						$stmt->bindValue($identifier, $this->recalcul_rang, PDO::PARAM_STR);
+						break;
+				}
+			}
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
+		}
+
+		try {
+			$pk = $con->lastInsertId();
+		} catch (Exception $e) {
+			throw new PropelException('Unable to get autoincrement id.', $e);
+		}
+		$this->setId($pk);
+
+		$this->setNew(false);
+	}
+
+	/**
+	 * Update the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @see        doSave()
+	 */
+	protected function doUpdate(PropelPDO $con)
+	{
+		$selectCriteria = $this->buildPkeyCriteria();
+		$valuesCriteria = $this->buildCriteria();
+		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
+	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -996,10 +1295,12 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 		$copyObj->setDescription($this->getDescription());
 		$copyObj->setRecalculRang($this->getRecalculRang());
 
-		if ($deepCopy) {
+		if ($deepCopy && !$this->startCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
 			// the getter/setter methods for fkey referrer objects.
 			$copyObj->setNew(false);
+			// store object hash to prevent cycle
+			$this->startCopy = true;
 
 			foreach ($this->getJGroupesProfesseurss() as $relObj) {
 				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
@@ -1061,6 +1362,8 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 				}
 			}
 
+			//unflag object copy
+			$this->startCopy = false;
 		} // if ($deepCopy)
 
 		if ($makeNew) {
@@ -1110,7 +1413,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 
 	/**
 	 * Initializes a collection based on the name of a relation.
-	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * Avoids crafting an 'init[$relationName]s' method name
 	 * that wouldn't work when StandardEnglishPluralizer is used.
 	 *
 	 * @param      string $relationName The name of the relation to initialize
@@ -1219,6 +1522,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of JGroupesProfesseurs objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $jGroupesProfesseurss A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setJGroupesProfesseurss(PropelCollection $jGroupesProfesseurss, PropelPDO $con = null)
+	{
+		$this->jGroupesProfesseurssScheduledForDeletion = $this->getJGroupesProfesseurss(new Criteria(), $con)->diff($jGroupesProfesseurss);
+
+		foreach ($jGroupesProfesseurss as $jGroupesProfesseurs) {
+			// Fix issue with collection modified by reference
+			if ($jGroupesProfesseurs->isNew()) {
+				$jGroupesProfesseurs->setGroupe($this);
+			}
+			$this->addJGroupesProfesseurs($jGroupesProfesseurs);
+		}
+
+		$this->collJGroupesProfesseurss = $jGroupesProfesseurss;
+	}
+
+	/**
 	 * Returns the number of related JGroupesProfesseurs objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1251,8 +1578,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the JGroupesProfesseurs foreign key attribute.
 	 *
 	 * @param      JGroupesProfesseurs $l JGroupesProfesseurs
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addJGroupesProfesseurs(JGroupesProfesseurs $l)
 	{
@@ -1260,9 +1586,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initJGroupesProfesseurss();
 		}
 		if (!$this->collJGroupesProfesseurss->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJGroupesProfesseurss[]= $l;
-			$l->setGroupe($this);
+			$this->doAddJGroupesProfesseurs($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	JGroupesProfesseurs $jGroupesProfesseurs The jGroupesProfesseurs object to add.
+	 */
+	protected function doAddJGroupesProfesseurs($jGroupesProfesseurs)
+	{
+		$this->collJGroupesProfesseurss[]= $jGroupesProfesseurs;
+		$jGroupesProfesseurs->setGroupe($this);
 	}
 
 
@@ -1359,6 +1695,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of JGroupesMatieres objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $jGroupesMatieress A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setJGroupesMatieress(PropelCollection $jGroupesMatieress, PropelPDO $con = null)
+	{
+		$this->jGroupesMatieressScheduledForDeletion = $this->getJGroupesMatieress(new Criteria(), $con)->diff($jGroupesMatieress);
+
+		foreach ($jGroupesMatieress as $jGroupesMatieres) {
+			// Fix issue with collection modified by reference
+			if ($jGroupesMatieres->isNew()) {
+				$jGroupesMatieres->setGroupe($this);
+			}
+			$this->addJGroupesMatieres($jGroupesMatieres);
+		}
+
+		$this->collJGroupesMatieress = $jGroupesMatieress;
+	}
+
+	/**
 	 * Returns the number of related JGroupesMatieres objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1391,8 +1751,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the JGroupesMatieres foreign key attribute.
 	 *
 	 * @param      JGroupesMatieres $l JGroupesMatieres
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addJGroupesMatieres(JGroupesMatieres $l)
 	{
@@ -1400,9 +1759,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initJGroupesMatieress();
 		}
 		if (!$this->collJGroupesMatieress->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJGroupesMatieress[]= $l;
-			$l->setGroupe($this);
+			$this->doAddJGroupesMatieres($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	JGroupesMatieres $jGroupesMatieres The jGroupesMatieres object to add.
+	 */
+	protected function doAddJGroupesMatieres($jGroupesMatieres)
+	{
+		$this->collJGroupesMatieress[]= $jGroupesMatieres;
+		$jGroupesMatieres->setGroupe($this);
 	}
 
 
@@ -1499,6 +1868,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of JGroupesClasses objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $jGroupesClassess A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setJGroupesClassess(PropelCollection $jGroupesClassess, PropelPDO $con = null)
+	{
+		$this->jGroupesClassessScheduledForDeletion = $this->getJGroupesClassess(new Criteria(), $con)->diff($jGroupesClassess);
+
+		foreach ($jGroupesClassess as $jGroupesClasses) {
+			// Fix issue with collection modified by reference
+			if ($jGroupesClasses->isNew()) {
+				$jGroupesClasses->setGroupe($this);
+			}
+			$this->addJGroupesClasses($jGroupesClasses);
+		}
+
+		$this->collJGroupesClassess = $jGroupesClassess;
+	}
+
+	/**
 	 * Returns the number of related JGroupesClasses objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1531,8 +1924,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the JGroupesClasses foreign key attribute.
 	 *
 	 * @param      JGroupesClasses $l JGroupesClasses
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addJGroupesClasses(JGroupesClasses $l)
 	{
@@ -1540,9 +1932,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initJGroupesClassess();
 		}
 		if (!$this->collJGroupesClassess->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJGroupesClassess[]= $l;
-			$l->setGroupe($this);
+			$this->doAddJGroupesClasses($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	JGroupesClasses $jGroupesClasses The jGroupesClasses object to add.
+	 */
+	protected function doAddJGroupesClasses($jGroupesClasses)
+	{
+		$this->collJGroupesClassess[]= $jGroupesClasses;
+		$jGroupesClasses->setGroupe($this);
 	}
 
 
@@ -1566,31 +1968,6 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	{
 		$query = JGroupesClassesQuery::create(null, $criteria);
 		$query->joinWith('Classe', $join_behavior);
-
-		return $this->getJGroupesClassess($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this Groupe is new, it will return
-	 * an empty collection; or if this Groupe has previously
-	 * been saved, it will retrieve related JGroupesClassess from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in Groupe.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array JGroupesClasses[] List of JGroupesClasses objects
-	 */
-	public function getJGroupesClassessJoinCategorieMatiere($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = JGroupesClassesQuery::create(null, $criteria);
-		$query->joinWith('CategorieMatiere', $join_behavior);
 
 		return $this->getJGroupesClassess($query, $con);
 	}
@@ -1664,6 +2041,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of CahierTexteCompteRendu objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $cahierTexteCompteRendus A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setCahierTexteCompteRendus(PropelCollection $cahierTexteCompteRendus, PropelPDO $con = null)
+	{
+		$this->cahierTexteCompteRendusScheduledForDeletion = $this->getCahierTexteCompteRendus(new Criteria(), $con)->diff($cahierTexteCompteRendus);
+
+		foreach ($cahierTexteCompteRendus as $cahierTexteCompteRendu) {
+			// Fix issue with collection modified by reference
+			if ($cahierTexteCompteRendu->isNew()) {
+				$cahierTexteCompteRendu->setGroupe($this);
+			}
+			$this->addCahierTexteCompteRendu($cahierTexteCompteRendu);
+		}
+
+		$this->collCahierTexteCompteRendus = $cahierTexteCompteRendus;
+	}
+
+	/**
 	 * Returns the number of related CahierTexteCompteRendu objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1696,8 +2097,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the CahierTexteCompteRendu foreign key attribute.
 	 *
 	 * @param      CahierTexteCompteRendu $l CahierTexteCompteRendu
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addCahierTexteCompteRendu(CahierTexteCompteRendu $l)
 	{
@@ -1705,9 +2105,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initCahierTexteCompteRendus();
 		}
 		if (!$this->collCahierTexteCompteRendus->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collCahierTexteCompteRendus[]= $l;
-			$l->setGroupe($this);
+			$this->doAddCahierTexteCompteRendu($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	CahierTexteCompteRendu $cahierTexteCompteRendu The cahierTexteCompteRendu object to add.
+	 */
+	protected function doAddCahierTexteCompteRendu($cahierTexteCompteRendu)
+	{
+		$this->collCahierTexteCompteRendus[]= $cahierTexteCompteRendu;
+		$cahierTexteCompteRendu->setGroupe($this);
 	}
 
 
@@ -1829,6 +2239,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of CahierTexteTravailAFaire objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $cahierTexteTravailAFaires A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setCahierTexteTravailAFaires(PropelCollection $cahierTexteTravailAFaires, PropelPDO $con = null)
+	{
+		$this->cahierTexteTravailAFairesScheduledForDeletion = $this->getCahierTexteTravailAFaires(new Criteria(), $con)->diff($cahierTexteTravailAFaires);
+
+		foreach ($cahierTexteTravailAFaires as $cahierTexteTravailAFaire) {
+			// Fix issue with collection modified by reference
+			if ($cahierTexteTravailAFaire->isNew()) {
+				$cahierTexteTravailAFaire->setGroupe($this);
+			}
+			$this->addCahierTexteTravailAFaire($cahierTexteTravailAFaire);
+		}
+
+		$this->collCahierTexteTravailAFaires = $cahierTexteTravailAFaires;
+	}
+
+	/**
 	 * Returns the number of related CahierTexteTravailAFaire objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1861,8 +2295,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the CahierTexteTravailAFaire foreign key attribute.
 	 *
 	 * @param      CahierTexteTravailAFaire $l CahierTexteTravailAFaire
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addCahierTexteTravailAFaire(CahierTexteTravailAFaire $l)
 	{
@@ -1870,9 +2303,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initCahierTexteTravailAFaires();
 		}
 		if (!$this->collCahierTexteTravailAFaires->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collCahierTexteTravailAFaires[]= $l;
-			$l->setGroupe($this);
+			$this->doAddCahierTexteTravailAFaire($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	CahierTexteTravailAFaire $cahierTexteTravailAFaire The cahierTexteTravailAFaire object to add.
+	 */
+	protected function doAddCahierTexteTravailAFaire($cahierTexteTravailAFaire)
+	{
+		$this->collCahierTexteTravailAFaires[]= $cahierTexteTravailAFaire;
+		$cahierTexteTravailAFaire->setGroupe($this);
 	}
 
 
@@ -1994,6 +2437,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of CahierTexteNoticePrivee objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $cahierTexteNoticePrivees A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setCahierTexteNoticePrivees(PropelCollection $cahierTexteNoticePrivees, PropelPDO $con = null)
+	{
+		$this->cahierTexteNoticePriveesScheduledForDeletion = $this->getCahierTexteNoticePrivees(new Criteria(), $con)->diff($cahierTexteNoticePrivees);
+
+		foreach ($cahierTexteNoticePrivees as $cahierTexteNoticePrivee) {
+			// Fix issue with collection modified by reference
+			if ($cahierTexteNoticePrivee->isNew()) {
+				$cahierTexteNoticePrivee->setGroupe($this);
+			}
+			$this->addCahierTexteNoticePrivee($cahierTexteNoticePrivee);
+		}
+
+		$this->collCahierTexteNoticePrivees = $cahierTexteNoticePrivees;
+	}
+
+	/**
 	 * Returns the number of related CahierTexteNoticePrivee objects.
 	 *
 	 * @param      Criteria $criteria
@@ -2026,8 +2493,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the CahierTexteNoticePrivee foreign key attribute.
 	 *
 	 * @param      CahierTexteNoticePrivee $l CahierTexteNoticePrivee
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addCahierTexteNoticePrivee(CahierTexteNoticePrivee $l)
 	{
@@ -2035,9 +2501,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initCahierTexteNoticePrivees();
 		}
 		if (!$this->collCahierTexteNoticePrivees->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collCahierTexteNoticePrivees[]= $l;
-			$l->setGroupe($this);
+			$this->doAddCahierTexteNoticePrivee($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	CahierTexteNoticePrivee $cahierTexteNoticePrivee The cahierTexteNoticePrivee object to add.
+	 */
+	protected function doAddCahierTexteNoticePrivee($cahierTexteNoticePrivee)
+	{
+		$this->collCahierTexteNoticePrivees[]= $cahierTexteNoticePrivee;
+		$cahierTexteNoticePrivee->setGroupe($this);
 	}
 
 
@@ -2159,6 +2635,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of JEleveGroupe objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $jEleveGroupes A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setJEleveGroupes(PropelCollection $jEleveGroupes, PropelPDO $con = null)
+	{
+		$this->jEleveGroupesScheduledForDeletion = $this->getJEleveGroupes(new Criteria(), $con)->diff($jEleveGroupes);
+
+		foreach ($jEleveGroupes as $jEleveGroupe) {
+			// Fix issue with collection modified by reference
+			if ($jEleveGroupe->isNew()) {
+				$jEleveGroupe->setGroupe($this);
+			}
+			$this->addJEleveGroupe($jEleveGroupe);
+		}
+
+		$this->collJEleveGroupes = $jEleveGroupes;
+	}
+
+	/**
 	 * Returns the number of related JEleveGroupe objects.
 	 *
 	 * @param      Criteria $criteria
@@ -2191,8 +2691,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the JEleveGroupe foreign key attribute.
 	 *
 	 * @param      JEleveGroupe $l JEleveGroupe
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addJEleveGroupe(JEleveGroupe $l)
 	{
@@ -2200,9 +2699,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initJEleveGroupes();
 		}
 		if (!$this->collJEleveGroupes->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJEleveGroupes[]= $l;
-			$l->setGroupe($this);
+			$this->doAddJEleveGroupe($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	JEleveGroupe $jEleveGroupe The jEleveGroupe object to add.
+	 */
+	protected function doAddJEleveGroupe($jEleveGroupe)
+	{
+		$this->collJEleveGroupes[]= $jEleveGroupe;
+		$jEleveGroupe->setGroupe($this);
 	}
 
 
@@ -2299,6 +2808,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of AbsenceEleveSaisie objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $absenceEleveSaisies A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setAbsenceEleveSaisies(PropelCollection $absenceEleveSaisies, PropelPDO $con = null)
+	{
+		$this->absenceEleveSaisiesScheduledForDeletion = $this->getAbsenceEleveSaisies(new Criteria(), $con)->diff($absenceEleveSaisies);
+
+		foreach ($absenceEleveSaisies as $absenceEleveSaisie) {
+			// Fix issue with collection modified by reference
+			if ($absenceEleveSaisie->isNew()) {
+				$absenceEleveSaisie->setGroupe($this);
+			}
+			$this->addAbsenceEleveSaisie($absenceEleveSaisie);
+		}
+
+		$this->collAbsenceEleveSaisies = $absenceEleveSaisies;
+	}
+
+	/**
 	 * Returns the number of related AbsenceEleveSaisie objects.
 	 *
 	 * @param      Criteria $criteria
@@ -2331,8 +2864,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the AbsenceEleveSaisie foreign key attribute.
 	 *
 	 * @param      AbsenceEleveSaisie $l AbsenceEleveSaisie
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addAbsenceEleveSaisie(AbsenceEleveSaisie $l)
 	{
@@ -2340,9 +2872,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initAbsenceEleveSaisies();
 		}
 		if (!$this->collAbsenceEleveSaisies->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collAbsenceEleveSaisies[]= $l;
-			$l->setGroupe($this);
+			$this->doAddAbsenceEleveSaisie($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	AbsenceEleveSaisie $absenceEleveSaisie The absenceEleveSaisie object to add.
+	 */
+	protected function doAddAbsenceEleveSaisie($absenceEleveSaisie)
+	{
+		$this->collAbsenceEleveSaisies[]= $absenceEleveSaisie;
+		$absenceEleveSaisie->setGroupe($this);
 	}
 
 
@@ -2589,6 +3131,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of CreditEcts objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $creditEctss A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setCreditEctss(PropelCollection $creditEctss, PropelPDO $con = null)
+	{
+		$this->creditEctssScheduledForDeletion = $this->getCreditEctss(new Criteria(), $con)->diff($creditEctss);
+
+		foreach ($creditEctss as $creditEcts) {
+			// Fix issue with collection modified by reference
+			if ($creditEcts->isNew()) {
+				$creditEcts->setGroupe($this);
+			}
+			$this->addCreditEcts($creditEcts);
+		}
+
+		$this->collCreditEctss = $creditEctss;
+	}
+
+	/**
 	 * Returns the number of related CreditEcts objects.
 	 *
 	 * @param      Criteria $criteria
@@ -2621,8 +3187,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the CreditEcts foreign key attribute.
 	 *
 	 * @param      CreditEcts $l CreditEcts
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addCreditEcts(CreditEcts $l)
 	{
@@ -2630,9 +3195,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initCreditEctss();
 		}
 		if (!$this->collCreditEctss->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collCreditEctss[]= $l;
-			$l->setGroupe($this);
+			$this->doAddCreditEcts($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	CreditEcts $creditEcts The creditEcts object to add.
+	 */
+	protected function doAddCreditEcts($creditEcts)
+	{
+		$this->collCreditEctss[]= $creditEcts;
+		$creditEcts->setGroupe($this);
 	}
 
 
@@ -2729,6 +3304,30 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of EdtEmplacementCours objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $edtEmplacementCourss A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setEdtEmplacementCourss(PropelCollection $edtEmplacementCourss, PropelPDO $con = null)
+	{
+		$this->edtEmplacementCourssScheduledForDeletion = $this->getEdtEmplacementCourss(new Criteria(), $con)->diff($edtEmplacementCourss);
+
+		foreach ($edtEmplacementCourss as $edtEmplacementCours) {
+			// Fix issue with collection modified by reference
+			if ($edtEmplacementCours->isNew()) {
+				$edtEmplacementCours->setGroupe($this);
+			}
+			$this->addEdtEmplacementCours($edtEmplacementCours);
+		}
+
+		$this->collEdtEmplacementCourss = $edtEmplacementCourss;
+	}
+
+	/**
 	 * Returns the number of related EdtEmplacementCours objects.
 	 *
 	 * @param      Criteria $criteria
@@ -2761,8 +3360,7 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * through the EdtEmplacementCours foreign key attribute.
 	 *
 	 * @param      EdtEmplacementCours $l EdtEmplacementCours
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     Groupe The current object (for fluent API support)
 	 */
 	public function addEdtEmplacementCours(EdtEmplacementCours $l)
 	{
@@ -2770,9 +3368,19 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->initEdtEmplacementCourss();
 		}
 		if (!$this->collEdtEmplacementCourss->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collEdtEmplacementCourss[]= $l;
-			$l->setGroupe($this);
+			$this->doAddEdtEmplacementCours($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	EdtEmplacementCours $edtEmplacementCours The edtEmplacementCours object to add.
+	 */
+	protected function doAddEdtEmplacementCours($edtEmplacementCours)
+	{
+		$this->collEdtEmplacementCourss[]= $edtEmplacementCours;
+		$edtEmplacementCours->setGroupe($this);
 	}
 
 
@@ -2964,6 +3572,37 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of UtilisateurProfessionnel objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_professeurs cross-reference table.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $utilisateurProfessionnels A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setUtilisateurProfessionnels(PropelCollection $utilisateurProfessionnels, PropelPDO $con = null)
+	{
+		$jGroupesProfesseurss = JGroupesProfesseursQuery::create()
+			->filterByUtilisateurProfessionnel($utilisateurProfessionnels)
+			->filterByGroupe($this)
+			->find($con);
+
+		$this->utilisateurProfessionnelsScheduledForDeletion = $this->getJGroupesProfesseurss()->diff($jGroupesProfesseurss);
+		$this->collJGroupesProfesseurss = $jGroupesProfesseurss;
+
+		foreach ($utilisateurProfessionnels as $utilisateurProfessionnel) {
+			// Fix issue with collection modified by reference
+			if ($utilisateurProfessionnel->isNew()) {
+				$this->doAddUtilisateurProfessionnel($utilisateurProfessionnel);
+			} else {
+				$this->addUtilisateurProfessionnel($utilisateurProfessionnel);
+			}
+		}
+
+		$this->collUtilisateurProfessionnels = $utilisateurProfessionnels;
+	}
+
+	/**
 	 * Gets the number of UtilisateurProfessionnel objects related by a many-to-many relationship
 	 * to the current object by way of the j_groupes_professeurs cross-reference table.
 	 *
@@ -2999,18 +3638,26 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * @param      UtilisateurProfessionnel $utilisateurProfessionnel The JGroupesProfesseurs object to relate
 	 * @return     void
 	 */
-	public function addUtilisateurProfessionnel($utilisateurProfessionnel)
+	public function addUtilisateurProfessionnel(UtilisateurProfessionnel $utilisateurProfessionnel)
 	{
 		if ($this->collUtilisateurProfessionnels === null) {
 			$this->initUtilisateurProfessionnels();
 		}
 		if (!$this->collUtilisateurProfessionnels->contains($utilisateurProfessionnel)) { // only add it if the **same** object is not already associated
-			$jGroupesProfesseurs = new JGroupesProfesseurs();
-			$jGroupesProfesseurs->setUtilisateurProfessionnel($utilisateurProfessionnel);
-			$this->addJGroupesProfesseurs($jGroupesProfesseurs);
+			$this->doAddUtilisateurProfessionnel($utilisateurProfessionnel);
 
 			$this->collUtilisateurProfessionnels[]= $utilisateurProfessionnel;
 		}
+	}
+
+	/**
+	 * @param	UtilisateurProfessionnel $utilisateurProfessionnel The utilisateurProfessionnel object to add.
+	 */
+	protected function doAddUtilisateurProfessionnel($utilisateurProfessionnel)
+	{
+		$jGroupesProfesseurs = new JGroupesProfesseurs();
+		$jGroupesProfesseurs->setUtilisateurProfessionnel($utilisateurProfessionnel);
+		$this->addJGroupesProfesseurs($jGroupesProfesseurs);
 	}
 
 	/**
@@ -3077,6 +3724,37 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of Matiere objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_matieres cross-reference table.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $matieres A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setMatieres(PropelCollection $matieres, PropelPDO $con = null)
+	{
+		$jGroupesMatieress = JGroupesMatieresQuery::create()
+			->filterByMatiere($matieres)
+			->filterByGroupe($this)
+			->find($con);
+
+		$this->matieresScheduledForDeletion = $this->getJGroupesMatieress()->diff($jGroupesMatieress);
+		$this->collJGroupesMatieress = $jGroupesMatieress;
+
+		foreach ($matieres as $matiere) {
+			// Fix issue with collection modified by reference
+			if ($matiere->isNew()) {
+				$this->doAddMatiere($matiere);
+			} else {
+				$this->addMatiere($matiere);
+			}
+		}
+
+		$this->collMatieres = $matieres;
+	}
+
+	/**
 	 * Gets the number of Matiere objects related by a many-to-many relationship
 	 * to the current object by way of the j_groupes_matieres cross-reference table.
 	 *
@@ -3112,18 +3790,178 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	 * @param      Matiere $matiere The JGroupesMatieres object to relate
 	 * @return     void
 	 */
-	public function addMatiere($matiere)
+	public function addMatiere(Matiere $matiere)
 	{
 		if ($this->collMatieres === null) {
 			$this->initMatieres();
 		}
 		if (!$this->collMatieres->contains($matiere)) { // only add it if the **same** object is not already associated
-			$jGroupesMatieres = new JGroupesMatieres();
-			$jGroupesMatieres->setMatiere($matiere);
-			$this->addJGroupesMatieres($jGroupesMatieres);
+			$this->doAddMatiere($matiere);
 
 			$this->collMatieres[]= $matiere;
 		}
+	}
+
+	/**
+	 * @param	Matiere $matiere The matiere object to add.
+	 */
+	protected function doAddMatiere($matiere)
+	{
+		$jGroupesMatieres = new JGroupesMatieres();
+		$jGroupesMatieres->setMatiere($matiere);
+		$this->addJGroupesMatieres($jGroupesMatieres);
+	}
+
+	/**
+	 * Clears out the collClasses collection
+	 *
+	 * This does not modify the database; however, it will remove any associated objects, causing
+	 * them to be refetched by subsequent calls to accessor method.
+	 *
+	 * @return     void
+	 * @see        addClasses()
+	 */
+	public function clearClasses()
+	{
+		$this->collClasses = null; // important to set this to NULL since that means it is uninitialized
+	}
+
+	/**
+	 * Initializes the collClasses collection.
+	 *
+	 * By default this just sets the collClasses collection to an empty collection (like clearClasses());
+	 * however, you may wish to override this method in your stub class to provide setting appropriate
+	 * to your application -- for example, setting the initial array to the values stored in database.
+	 *
+	 * @return     void
+	 */
+	public function initClasses()
+	{
+		$this->collClasses = new PropelObjectCollection();
+		$this->collClasses->setModel('Classe');
+	}
+
+	/**
+	 * Gets a collection of Classe objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_classes cross-reference table.
+	 *
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this Groupe is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
+	 *
+	 * @param      Criteria $criteria Optional query object to filter the query
+	 * @param      PropelPDO $con Optional connection object
+	 *
+	 * @return     PropelCollection|array Classe[] List of Classe objects
+	 */
+	public function getClasses($criteria = null, PropelPDO $con = null)
+	{
+		if(null === $this->collClasses || null !== $criteria) {
+			if ($this->isNew() && null === $this->collClasses) {
+				// return empty collection
+				$this->initClasses();
+			} else {
+				$collClasses = ClasseQuery::create(null, $criteria)
+					->filterByGroupe($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collClasses;
+				}
+				$this->collClasses = $collClasses;
+			}
+		}
+		return $this->collClasses;
+	}
+
+	/**
+	 * Sets a collection of Classe objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_classes cross-reference table.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $classes A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setClasses(PropelCollection $classes, PropelPDO $con = null)
+	{
+		$jGroupesClassess = JGroupesClassesQuery::create()
+			->filterByClasse($classes)
+			->filterByGroupe($this)
+			->find($con);
+
+		$this->classesScheduledForDeletion = $this->getJGroupesClassess()->diff($jGroupesClassess);
+		$this->collJGroupesClassess = $jGroupesClassess;
+
+		foreach ($classes as $classe) {
+			// Fix issue with collection modified by reference
+			if ($classe->isNew()) {
+				$this->doAddClasse($classe);
+			} else {
+				$this->addClasse($classe);
+			}
+		}
+
+		$this->collClasses = $classes;
+	}
+
+	/**
+	 * Gets the number of Classe objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_classes cross-reference table.
+	 *
+	 * @param      Criteria $criteria Optional query object to filter the query
+	 * @param      boolean $distinct Set to true to force count distinct
+	 * @param      PropelPDO $con Optional connection object
+	 *
+	 * @return     int the number of related Classe objects
+	 */
+	public function countClasses($criteria = null, $distinct = false, PropelPDO $con = null)
+	{
+		if(null === $this->collClasses || null !== $criteria) {
+			if ($this->isNew() && null === $this->collClasses) {
+				return 0;
+			} else {
+				$query = ClasseQuery::create(null, $criteria);
+				if($distinct) {
+					$query->distinct();
+				}
+				return $query
+					->filterByGroupe($this)
+					->count($con);
+			}
+		} else {
+			return count($this->collClasses);
+		}
+	}
+
+	/**
+	 * Associate a Classe object to this object
+	 * through the j_groupes_classes cross reference table.
+	 *
+	 * @param      Classe $classe The JGroupesClasses object to relate
+	 * @return     void
+	 */
+	public function addClasse(Classe $classe)
+	{
+		if ($this->collClasses === null) {
+			$this->initClasses();
+		}
+		if (!$this->collClasses->contains($classe)) { // only add it if the **same** object is not already associated
+			$this->doAddClasse($classe);
+
+			$this->collClasses[]= $classe;
+		}
+	}
+
+	/**
+	 * @param	Classe $classe The classe object to add.
+	 */
+	protected function doAddClasse($classe)
+	{
+		$jGroupesClasses = new JGroupesClasses();
+		$jGroupesClasses->setClasse($classe);
+		$this->addJGroupesClasses($jGroupesClasses);
 	}
 
 	/**
@@ -3215,6 +4053,11 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 					$o->clearAllReferences($deep);
 				}
 			}
+			if ($this->collClasses) {
+				foreach ($this->collClasses as $o) {
+					$o->clearAllReferences($deep);
+				}
+			}
 		} // if ($deep)
 
 		if ($this->collJGroupesProfesseurss instanceof PropelCollection) {
@@ -3265,6 +4108,10 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 			$this->collMatieres->clearIterator();
 		}
 		$this->collMatieres = null;
+		if ($this->collClasses instanceof PropelCollection) {
+			$this->collClasses->clearIterator();
+		}
+		$this->collClasses = null;
 	}
 
 	/**
@@ -3275,25 +4122,6 @@ abstract class BaseGroupe extends BaseObject  implements Persistent
 	public function __toString()
 	{
 		return (string) $this->exportTo(GroupePeer::DEFAULT_STRING_FORMAT);
-	}
-
-	/**
-	 * Catches calls to virtual methods
-	 */
-	public function __call($name, $params)
-	{
-		if (preg_match('/get(\w+)/', $name, $matches)) {
-			$virtualColumn = $matches[1];
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-			// no lcfirst in php<5.3...
-			$virtualColumn[0] = strtolower($virtualColumn[0]);
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-		}
-		return parent::__call($name, $params);
 	}
 
 } // BaseGroupe

@@ -1,16 +1,16 @@
 <?php
 /*
- * $Id: header_template.php 8457 2011-10-10 13:09:43Z crob $
+ * $Id$
 */
 ?>
  
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Cache-Control" content="no-cache" />
 	<meta http-equiv="Expires" content="0" />
 	<!-- <meta http-equiv="refresh" content="[tbs_refresh.tempsmax]; URL=[tbs_refresh.lien]/logout.php?auto=3&amp;debut_session=[tbs_refresh.debut]&amp;session_id=[tbs_refresh.id_session]" /> -->
 
-	<!-- déclaration par défaut pour les scripts et les mises en page -->
+	<!-- dÃ©claration par dÃ©faut pour les scripts et les mises en page -->
 	<meta http-equiv="Content-Script-Type" content="text/javascript" />
 	<meta http-equiv="Content-Style-Type" content="text/css" />
 
@@ -20,22 +20,29 @@
 <!-- ================= Affichage du favicon =================== -->
 	<link rel="SHORTCUT ICON" href="<?php echo $tbs_gepiPath?>/favicon.ico" />
 
-<!-- Début des styles -->
+<!-- DÃ©but des styles -->
 	<?php
 		if (count($tbs_CSS)) {
 			foreach ($tbs_CSS as $value) {
 				if ($value!="") {
 					echo "<link rel=\"$value[rel]\" type=\"$value[type]\" href=\"$value[fichier]\" media=\"$value[media]\" />\n";
-		// [tbs_CSS.title;att=title]
+					echo "<link rel=\"$value[rel]\" type=\"$value[type]\" href=\"$value[fichier]\" media=\"$value[media] and (max-width: 800px)\" />\n";
 				}
 			}
 			unset($value);
 		}
+		
+		if (isset($CSS_smartphone)) {
+	?>
+			<link rel="stylesheet" type="text/css" href="<?php echo $gepiPath.'/'.$CSS_smartphone; ?>.css" media="screen and (max-width: 800px)" />
+	<?php
+		}
+		
 	?>
 	
 <!-- Fin des styles -->
 
-<!-- Début des fichiers en javascript -->
+<!-- DÃ©but des fichiers en javascript -->
 	<!-- christian -->
 	<script type="text/javascript">
 		//<![CDATA[ 
@@ -59,7 +66,7 @@
 		}
 	?>
 
-	<!-- Variable passée à 'ok' en fin de page via le /lib/footer.inc.php -->
+	<!-- Variable passÃ©e Ã  'ok' en fin de page via le /lib/footer.inc.php -->
 	<script type='text/javascript'>
 		//<![CDATA[ 
 			temporisation_chargement='n';
@@ -73,7 +80,7 @@
 		echo "
 			<script type='text/javascript'>
 				//<![CDATA[ 
-					alert($tbs_message_enregistrement);
+					alert(\"$tbs_message_enregistrement\");
 				//]]>
 			</script>
 		";
@@ -188,7 +195,7 @@
 				//if (1==1) {
 				  if (seconds>=<?php echo getSettingValue("sessionMaxLength")*60; ?>) {
 				  	if (!warn_msg2_already_displayed) {
-						var message = "vous avez été probablement déconnecté du serveur, votre travail ne pourra pas être enregistré dans gepi depuis cette page, merci de le sauvegarder dans un bloc note.";
+						var message = "vous avez Ã©tÃ© probablement dÃ©connectÃ© du serveur, votre travail ne pourra pas Ãªtre enregistrÃ© dans gepi depuis cette page, merci de le sauvegarder dans un bloc note.";
 						display_alert(message);				  
 						warn_msg2_already_displayed = true;
 					}
@@ -202,7 +209,7 @@
 						var secs=now.getSeconds();
 
 						var heure = hrs + " H " + mins + "' " + secs + "'' ";
-						var message = "A "+ heure + ", il vous reste moins de 3 minutes avant d'être déconnecté ! \nPour éviter cela, rechargez cette page en ayant pris soin d'enregistrer votre travail !";
+						var message = "A "+ heure + ", il vous reste moins de 3 minutes avant d'Ãªtre dÃ©connectÃ© ! \nPour Ã©viter cela, rechargez cette page en ayant pris soin d'enregistrer votre travail !";
 						display_alert(message);
 						warn_msg1_already_displayed = true;
 					}

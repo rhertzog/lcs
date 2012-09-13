@@ -1,5 +1,4 @@
 /*
- * $Id$
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -20,39 +19,56 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation... pour que le tableau existe, même si on ne définit pas le tableau dans ../temp/info_jours.js
+// Initialisation... pour que le tableau existe, mÃªme si on ne dÃ©finit pas le tableau dans ../temp/info_jours.js
 var tab_jours_ouverture=new Array();
 
-//page initialisation: Déplacé en fin de fichier pour que les fonctions soient chargées avant
+//page initialisation: DÃ©placÃ© en fin de fichier pour que les fonctions soient chargÃ©es avant
 //Event.observe(window, 'load', initPage);
 
 function initPage () {
-	// On ajoute un délais pour que Calendar et calendarInstanciation soient définies via les lib JS calendar.js et calendar-setup.js
+	// On ajoute un dÃ©lais pour que Calendar et calendarInstanciation soient dÃ©finies via les lib JS calendar.js et calendar-setup.js
 	//getWinCalendar();
 	setTimeout('getWinCalendar();', 500);
 
-	//si id_group_init est renseigné on affiche le groupe concerné, sinon on affiche les dernieres notices
+
+	// Si id_groupe_init, type_notice_init (cr|dev|np) et id_ct_init sont renseignÃ©s (non vides), on ouvre la notice indiquÃ©e
 	var id_groupe_init = $('id_groupe_init').value;
-	if (id_groupe_init != '') {
-	    id_groupe = id_groupe_init;
+	var type_notice_init = $('type_notice_init').value;
+	var id_ct_init = $('id_ct_init').value;
+	if ((id_groupe_init != '')&&(type_notice_init != '')&&(id_ct_init != '')) {
+	    //id_ct = id_ct_init;
+		id_groupe = id_groupe_init;
 	    getWinDernieresNotices().hide();
 	    getWinListeNotices();
-		/*
-	    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'ISO-8859-1'});
-	    getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe_init + '&today='+getCalendarUnixDate(), {
-		    encoding: 'ISO-8859-1',
-		    onComplete :
-		    function() {
-			    initWysiwyg();
-				debut_alert = new Date();
-				    }
-			    }
-	    );
-		*/
-		// On ajoute un délais pour que le calendrier soit chargé avant
-		setTimeout('initFenetreNotice('+id_groupe_init+')',500);
-	} else {
-            getWinDernieresNotices().hide();
+
+		// On ajoute un dÃ©lais pour que le calendrier soit chargÃ© avant
+		//alert('initFenetreNoticePrecise('+id_groupe_init+','+id_ct_init+',"'+type_notice_init+'")')
+		setTimeout('initFenetreNoticePrecise('+id_groupe_init+','+id_ct_init+',"'+type_notice_init+'")',500);
+	}
+	else {
+		// Si id_group_init est renseignÃ© on affiche le groupe concernÃ©, sinon on affiche les dernieres notices
+		var id_groupe_init = $('id_groupe_init').value;
+		if (id_groupe_init != '') {
+			id_groupe = id_groupe_init;
+			getWinDernieresNotices().hide();
+			getWinListeNotices();
+			/*
+			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'utf-8'});
+			getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe_init + '&today='+getCalendarUnixDate(), {
+				encoding: 'utf-8',
+				onComplete :
+				function() {
+					initWysiwyg();
+					debut_alert = new Date();
+						}
+					}
+			);
+			*/
+			// On ajoute un dÃ©lais pour que le calendrier soit chargÃ© avant
+			setTimeout('initFenetreNotice('+id_groupe_init+',"'+type_notice_init+'")',500);
+		} else {
+			getWinDernieresNotices().hide();
+		}
 	}
 }
 
@@ -76,9 +92,9 @@ function temporiser_init() {
 }
 
 function initFenetreNotice(id_groupe_init) {
-	    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'ISO-8859-1'});
+	    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'UTF-8'});
 	    getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=' + id_groupe_init + '&today='+getCalendarUnixDate(), {
-		    encoding: 'ISO-8859-1',
+		    encoding: 'UTF-8',
 		    onComplete :
 		    function() {
 			    initWysiwyg();
@@ -86,6 +102,52 @@ function initFenetreNotice(id_groupe_init) {
 				    }
 			    }
 	    );
+}
+
+function initFenetreNoticePrecise(id_groupe_init,id_ct_init,type_notice_init) {
+
+	new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe_init, {encoding: 'UTF-8'});
+	if(type_notice_init=='cr') {
+		page="ajax_edition_compte_rendu.php";
+		getWinEditionNotice().setAjaxContent('./'+page+'?id_ct=' + id_ct_init + '&id_groupe=' + id_groupe_init + '&mettre_a_jour_cal=y', {
+			encoding: 'UTF-8',
+			onComplete :
+			function() {
+				initWysiwyg();
+				debut_alert = new Date();
+					}
+				}
+		);
+			// Pb: On arrive Ã  la bonne date dans la notice, mais le calendrier n'est pas Ã  la bonne date.
+			//     Du coup, Enr. et passer aux devoirs du jour suivant Ã©choue.
+	}
+	else {
+		if(type_notice_init=='dev') {
+			page="ajax_edition_devoir.php";
+			getWinEditionNotice().setAjaxContent('./'+page+'?id_devoir=' + id_ct_init + '&id_groupe=' + id_groupe_init + '&mettre_a_jour_cal=y', {
+				encoding: 'UTF-8',
+				onComplete :
+				function() {
+					initWysiwyg();
+					debut_alert = new Date();
+						}
+					}
+			);
+			// Pb: On arrive Ã  la bonne date dans la notice, mais le calendrier n'est pas Ã  la bonne date.
+		}
+		else {
+			page="ajax_edition_notice_privee.php";
+			getWinEditionNotice().setAjaxContent('./'+page+'?id_ct=' + id_ct_init + '&id_groupe=' + id_groupe_init + '&mettre_a_jour_cal=y', {
+				encoding: 'UTF-8',
+				onComplete :
+				function() {
+					initWysiwyg();
+					debut_alert = new Date();
+						}
+					}
+			);
+		}
+	}
 }
 
 function include(filename)
@@ -106,13 +168,13 @@ function include(filename)
 //include('./ajax_functions.js');
 
 include('../lib/DHTMLcalendar/calendar.js');
-// Les deux suivants sont insérés plus bas pour tenter d'éviter des erreurs du type:
-//	Erreur : Calendar is not defined
-//	Fichier Source : https://.../Gepi/lib/DHTMLcalendar/lang/calendar-fr.js
-//	Ligne : 13
-//	Erreur : Calendar is not defined
-//	Fichier Source : https://.../Gepi/lib/DHTMLcalendar/calendar-setup.js
-//	Ligne : 63
+// Les deux suivants sont insÃ©rÃ©s plus bas pour tenter d'Ã©viter des erreurs du type:
+//	ErreurÂ : Calendar is not defined
+//	Fichier SourceÂ : https://.../Gepi/lib/DHTMLcalendar/lang/calendar-fr.js
+//	LigneÂ : 13
+//	ErreurÂ : Calendar is not defined
+//	Fichier SourceÂ : https://.../Gepi/lib/DHTMLcalendar/calendar-setup.js
+//	LigneÂ : 63
 //include('../lib/DHTMLcalendar/lang/calendar-fr.js');
 //include('../lib/DHTMLcalendar/calendar-setup.js');
 
@@ -162,7 +224,7 @@ function getWinEditionNotice() {
 	if (typeof winEditionNotice=="undefined") {
 		winEditionNotice = new Window(
 				{id: 'win_edition_notice',
-				title: 'Edition de Notice',
+				title: 'Ã‰dition de Notice',
 				showEffect: Element.show,
 				hideEffect: Element.hide,
 				top:160,
@@ -197,7 +259,7 @@ function getWinDernieresNotices() {
 	if (typeof winDernieresNotices=="undefined") {
 		winDernieresNotices = new Window(
 				{id: 'win_dernieres_notices',
-				title: 'Dernières Notices',
+				title: 'DerniÃ¨res Notices',
 				showEffect: Element.show,
 				hideEffect: Element.hide,
 				top:155,
@@ -258,7 +320,7 @@ function getWinCalendar() {
 				height:170}
 			);
 /*
-		// Pour ajouter un délais... on a parfois des pb avec l'ouverture des fenêtres
+		// Pour ajouter un dÃ©lais... on a parfois des pb avec l'ouverture des fenÃªtres
 		// Web Developper signale des pb d'init avec Calendar...
 		if(!$('win_calendar_content')) {
 			setTimeout('setWinCalendarContent();winCalendar.show();winCalendar.toFront();return winCalendar;',500);
@@ -443,6 +505,7 @@ function initWysiwyg() {
 			resize_enabled : false,
 			startupFocus : true,
                         removePlugins : 'elementspath',
+			extraPlugins : 'equation',
 			toolbar :
 			[
 			    ['Source','Cut','Copy','Paste','PasteText','PasteFromWord'],
@@ -451,7 +514,7 @@ function initWysiwyg() {
 			    ['NumberedList','BulletedList'],
 			    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
 			    ['Outdent','Indent'],
-			    ['Link','Unlink','Table','HorizontalRule','SpecialChar'],
+			    ['Link','Unlink','Table','HorizontalRule','SpecialChar','equation'],
 			    ['Styles','Format','Font','FontSize'],
 			    ['TextColor','BGColor'],
 			    ['Maximize', 'About','-','Print']
@@ -463,7 +526,8 @@ function initWysiwyg() {
 			skin : 'kama',
 			resize_enabled : false,
 			startupFocus : true,
-                        removePlugins : 'elementspath',
+		        removePlugins : 'elementspath',
+			extraPlugins : 'equation',
 			toolbar :
 			[
 			    ['Source','Cut','Copy','Paste','PasteText','PasteFromWord'],
@@ -473,7 +537,7 @@ function initWysiwyg() {
 			    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
 			    '/',
 			    ['Outdent','Indent'],
-			    ['Link','Unlink','Table','HorizontalRule','SpecialChar'],
+			    ['Link','Unlink','Table','HorizontalRule','SpecialChar','equation'],
 			    ['Styles','Format','Font','FontSize'],
 			    ['TextColor','BGColor'],
 			    ['Maximize', 'About','-','Print']
@@ -506,7 +570,7 @@ function suppressionCompteRendu(message, id_ct_a_supprimer, csrf_alea) {
 }
 
 function suppressionDevoir(message, id_devoir_a_supprimer, id_groupe, csrf_alea) {
-	if (confirmlink(this,'suppression du travail à faire pour le ' + message + ' ?','Confirmez vous ')) {
+	if (confirmlink(this,'suppression du travail Ã  faire pour le ' + message + ' ?','Confirmez vous ')) {
     	new Ajax.Request('./ajax_suppression_notice.php?type=CahierTexteTravailAFaire&id_objet='+id_devoir_a_supprimer+'&csrf_alea='+csrf_alea,
     		{ onComplete:
     			function(transport) {
@@ -600,11 +664,6 @@ function completeEnregistrementCompteRenduCallback(response) {
 		id_ct_en_cours = response;
 		var url;
 		if ($F('passer_a') == 'passer_devoir') {
-			/*
-			url = './ajax_edition_devoir.php?today=' + getTomorrowCalendarUnixDate() +'&id_groupe=' + id_groupe;
-			object_en_cours_edition = 'devoir';
-			updateCalendarWithUnixDate(getTomorrowCalendarUnixDate());
-			*/
 			url = './ajax_edition_devoir.php?today=' + GetNextOpenDayUnixDate() +'&id_groupe=' + id_groupe;
 			object_en_cours_edition = 'devoir';
 			updateCalendarWithUnixDate(GetNextOpenDayUnixDate());
@@ -613,14 +672,13 @@ function completeEnregistrementCompteRenduCallback(response) {
 			url = './ajax_edition_compte_rendu.php?succes_modification=oui&id_ct=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
 		}
 
-
-		// Pour ne pas mettre à jour la fenêtre Liste des notices si on a délié la fenêtre Edition et la fenêtre Liste des notices:
+		// Pour ne pas mettre Ã  jour la fenÃªtre Liste des notices si on a dÃ©liÃ© la fenÃªtre Edition et la fenÃªtre Liste des notices:
 		if(chaineActive==true) {
 			getWinListeNotices();
 			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
 		}
 		else {
-			//alert('Pas de mise à jour de la fenêtre Liste des notices');
+			//alert('Pas de mise Ã  jour de la fenÃªtre Liste des notices');
 		}
 		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();debut_alert = new Date();	}});
 
@@ -654,15 +712,15 @@ function completeEnregistrementDevoirCallback(response) {
 			url = './ajax_edition_devoir.php?succes_modification=oui&id_devoir=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
  		}
 
-		// Pour ne pas mettre à jour la fenêtre Liste des notices si on a délié la fenêtre Edition et la fenêtre Liste des notices:
+		// Pour ne pas mettre Ã  jour la fenÃªtre Liste des notices si on a dÃ©liÃ© la fenÃªtre Edition et la fenÃªtre Liste des notices:
 		if(chaineActive==true) {
 			getWinListeNotices();
 	 		new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
 		}
 		else {
-			//alert('Pas de mise à jour de la fenêtre Liste des notices');
+			//alert('Pas de mise Ã  jour de la fenÃªtre Liste des notices');
 		}
- 		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();debut_alert = new Date();	}});
+		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function(transport) {initWysiwyg();debut_alert = new Date();	}});
 
  		//on attend 5 secondes et on enleve les messages de confirmation d'enregistrement.
        	$('bouton_enregistrer_1');
@@ -684,13 +742,13 @@ function completeEnregistrementNoticePriveeCallback(response) {
 
 		var url = './ajax_edition_notice_privee.php?succes_modification=oui&id_ct=' + id_ct_en_cours + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
 
-		// Pour ne pas mettre à jour la fenêtre Liste des notices si on a délié la fenêtre Edition et la fenêtre Liste des notices:
+		// Pour ne pas mettre Ã  jour la fenÃªtre Liste des notices si on a dÃ©liÃ© la fenÃªtre Edition et la fenÃªtre Liste des notices:
 		if(chaineActive==true) {
 			getWinListeNotices();
 			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=' + id_groupe,{ onComplete:function() {updateDivModification();debut_alert = new Date();}});
 		}
 		else {
-			//alert('Pas de mise à jour de la fenêtre Liste des notices');
+			//alert('Pas de mise Ã  jour de la fenÃªtre Liste des notices');
 		}
 		getWinEditionNotice().setAjaxContent(url ,{ onComplete:	function() {initWysiwyg();debut_alert = new Date();	}});
 
@@ -713,7 +771,7 @@ function completeDeplacementNoticeCallback(response) {
 	    $('id_ct').value = response;
 
 	    if ($F('id_groupe_deplacement') == -1) {
-		    updateWindows('Pas de groupe spécifié');
+		    updateWindows('Pas de groupe spÃ©cifiÃ©');
 		    return false;
 	    } else {
 		    if (typeof calendarDeplacementInstanciation != 'undefined' && calendarDeplacementInstanciation != null) {
@@ -728,7 +786,7 @@ function completeDeplacementNoticeCallback(response) {
 			    $('date_deplacement').value = 0;
 		    }
 		    $('deplacement_notice_form').request({
-			    //une fois le deplacement effectué en base, on mets à jour la fenetre d'edition puis la liste des notices'
+			    //une fois le deplacement effectuÃ© en base, on mets Ã  jour la fenetre d'edition puis la liste des notices'
 			    onComplete: function (transport) {updateWindows(transport.responseText);debut_alert = new Date();}
 		    });
 	    }
@@ -746,7 +804,7 @@ function completeDuplicationNoticeCallback(response) {
 	    $('id_ct').value = response;
 
 	    if ($F('id_groupe_duplication') == -1) {
-		    updateWindows('Pas de groupe spécifié');
+		    updateWindows('Pas de groupe spÃ©cifiÃ©');
 		    return false;
 	    } else {
 		    if (typeof calendarDuplicationInstanciation != 'undefined' && calendarDuplicationInstanciation != null) {
@@ -761,7 +819,7 @@ function completeDuplicationNoticeCallback(response) {
 			    $('date_duplication').value = 0;
 		    }
 		    $('duplication_notice_form').request({
-			    //une fois le deplacement effectué en base, on mets à jour la fenetre d'edition puis la liste des notices'
+			    //une fois le deplacement effectuÃ© en base, on mets Ã  jour la fenetre d'edition puis la liste des notices'
 			    onComplete: function (transport) {updateWindows(transport.responseText);debut_alert = new Date();}
 		    });
 	    }
@@ -780,7 +838,9 @@ function updateWindows(message){
 		url = 'ajax_edition_notice_privee.php?id_ct=' + $('id_ct').value + '&id_groupe=' + id_groupe + '&today=' + getCalendarUnixDate();
 	}
 
-	// Pour ne pas mettre à jour la fenêtre Liste des notices si on a délié la fenêtre Edition et la fenêtre Liste des notices:
+	//alert("id_groupe="+id_groupe+" et id_groupe_colonne_gauche="+$('id_groupe_colonne_gauche').value);
+
+	// Pour ne pas mettre Ã  jour la fenÃªtre Liste des notices si on a dÃ©liÃ© la fenÃªtre Edition et la fenÃªtre Liste des notices:
 	if(chaineActive==true) {
 		var id_groupe = $('id_groupe').value;
 	}
@@ -795,7 +855,8 @@ function updateWindows(message){
 				initWysiwyg();
 			}
 		});
-	if (message != '') {
+
+	if (message != 'undefined' && message != '') {
 	    alert(message);
 	}
 }
@@ -871,14 +932,14 @@ function GetNextOpenDayUnixDate() {
 		//alert('Date='+jour+'/'+mois+'/'+annee);
 		//alert('timestamp='+timestamp);
 
-		// On crée une date de test
+		// On crÃ©e une date de test
 		var testDate = new Date();
 		testDate.setTime(timestamp*1000);
 
 		// Initialisation pour faire au moins un tour dans la boucle
 		jour_ouvert='n';
 
-		var cpt_tmp=0; // Sécurité pour éviter une boucle infinie
+		var cpt_tmp=0; // SÃ©curitÃ© pour Ã©viter une boucle infinie
 		while((jour_ouvert=='n')&&(cpt_tmp<7)) {
 
 			timestamp+=3600*24;
@@ -889,7 +950,7 @@ function GetNextOpenDayUnixDate() {
 
 			for(i=0;i<tab_jours_ouverture.length;i++) {
 				//alert("tab_jours_ouverture["+i+"]="+tab_jours_ouverture[i]+" et testDate.getDay()="+testDate.getDay())
-				// testDate.getDay() donne le numéro du jour avec 0 pour dimanche
+				// testDate.getDay() donne le numÃ©ro du jour avec 0 pour dimanche
 				if(tab_jours_ouverture[i]==testDate.getDay()) {
 					jour_ouvert='y';
 					break;
@@ -897,13 +958,13 @@ function GetNextOpenDayUnixDate() {
 			}
 			cpt_tmp++;
 		}
-		// Il faut retourner timestamp (calculé d'après le jour en cours d'édition) et ne pas effectuer de setTime() modifiant la date courante parce qu'on appelle deux fois la fonction en cliquant sur Passer aux devoirs du lendemain... et on passerait alors deux jours au lieu d'un
+		// Il faut retourner timestamp (calculÃ© d'aprÃ¨s le jour en cours d'Ã©dition) et ne pas effectuer de setTime() modifiant la date courante parce qu'on appelle deux fois la fonction en cliquant sur Passer aux devoirs du lendemain... et on passerait alors deux jours au lieu d'un
 		//calendarInstanciation.date.setTime(timestamp*1000);
 		//return Math.round(calendarInstanciation.date.getTime()/1000);
 		return timestamp;
 	}
 	else {
-		// On n'a pas récupéré de jours ouverts dans la base
+		// On n'a pas rÃ©cupÃ©rÃ© de jours ouverts dans la base
 		return Math.round(calendarInstanciation.date.getTime()/1000 + 3600*24);
 	}
 }
@@ -1011,6 +1072,69 @@ function modif_visibilite_doc_joint(notice, id_ct, id_document) {
 	}
 }
 
+function getWinBanqueTexte() {
+	if (typeof winBanqueTexte=="undefined") {
+		winBanqueTexte = new Window(
+				{id: 'win_banque_texte',
+				title: 'Banque de textes',
+				showEffect: Element.show,
+				hideEffect: Element.hide,
+				top:10,
+				left:40,
+				width:300,
+				height:200}
+			);
+		$('win_banque_texte_content').setStyle({
+			backgroundColor: '#d0d0d0',
+			fontSize: '14px',
+			color: '#000000'
+		});
+	}
+
+	winBanqueTexte.show();
+	winBanqueTexte.toFront();
+	return winBanqueTexte;
+}
+/*
+function initFenetreBanque() {
+	new Ajax.Updater('affichage_banque_texte', './ajax_affichage_banque_texte.php', {encoding: 'UTF-8'});
+	getWinBanqueTexte().setAjaxContent('./ajax_affichage_banque_texte.php', {
+		encoding: 'UTF-8',
+		onComplete :
+		function() {
+			initWysiwyg();
+			debut_alert = new Date();
+				}
+			}
+	);
+}
+*/
+
+function getWinArchives() {
+	if (typeof winArchives=="undefined") {
+		winArchives = new Window(
+				{id: 'win_archives',
+				title: 'Archives CDT',
+				showEffect: Element.show,
+				hideEffect: Element.hide,
+				top:100,
+				left:400,
+				width:800,
+				height:400}
+			);
+		$('win_archives_content').setStyle({
+			backgroundColor: '#d0d0d0',
+			fontSize: '14px',
+			color: '#000000'
+		});
+	}
+
+	winArchives.show();
+	winArchives.toFront();
+	return winArchives;
+}
+
+
 //include('../lib/DHTMLcalendar/lang/calendar-fr.js');
 //include('../lib/DHTMLcalendar/calendar-setup.js');
 
@@ -1020,6 +1144,34 @@ function modif_visibilite_doc_joint(notice, id_ct, id_document) {
 Event.observe(window, 'load', temporiser_chargement_js);
 
 //setTimeout('getWinCalendar();', 5000);
+
+
+function insere_texte_dans_ckeditor(texte) {
+	CKEDITOR.instances['contenu'].insertHtml(texte);
+}
+
+function insere_texte_dans_ckeditor_2(texte) {
+	CKEDITOR.instances['contenu'].insertHtml(unescape(texte));
+}
+
+function insere_texte_type_dans_ckeditor(id) {
+	if(document.getElementById(id)) {
+		CKEDITOR.instances['contenu'].insertHtml(document.getElementById(id).innerHTML);
+	}
+	else {
+		alert("L'identifiant de texte-type proposÃ© ne correspond Ã  aucun texte-type.");
+	}
+}
+
+function insere_image_dans_ckeditor(url, largeur, hauteur) {
+	texte="<img src='"+url+"'";
+	if((largeur!='')&&(hauteur!='')) {
+		texte=texte+" width='"+largeur+"' height='"+hauteur+"'";
+	}
+	texte=texte+" />";
+	CKEDITOR.instances['contenu'].insertHtml(texte);
+}
+
 
 /**
 *

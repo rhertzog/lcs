@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: saisie_message_connexion.php 5920 2010-11-20 21:04:58Z crob $
  *
  * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -21,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// On indique qu'il faut creer des variables non protÈgÈes (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non prot√©g√©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -37,7 +36,6 @@ if ($resultat_session == 'c') {
     header("Location: ../logout.php?auto=1");
 	die();
 }
-//include("../fckeditor/fckeditor.php") ;
 
 
 //INSERT INTO droits VALUES ('/gestion/saisie_message_connexion.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Saisie de messages de connexion.', '');
@@ -49,7 +47,7 @@ if (!checkAccess()) {
 
 //================================
 $titre_page = "Saisie de messages de connexion";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //================================
 
 if (!loadSettings()) {
@@ -60,7 +58,7 @@ $sql="CREATE TABLE message_login (
 id int(11) NOT NULL auto_increment,
 texte text NOT NULL,
 PRIMARY KEY  (id)
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $resultat_creation_table=mysql_query($sql);
 
 ?>
@@ -108,7 +106,7 @@ elseif(isset($valide_import_message)) {
 	$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
 
 	if (trim($csv_file['name'])=='') {
-		echo "<p>Aucun fichier n'a ÈtÈ sÈlectionnÈ !<br />\n";
+		echo "<p>Aucun fichier n'a √©t√© s√©lectionn√© !<br />\n";
 		echo "<a href='".$_SERVER['PHP_SELF']."?import_message=y'>Cliquer ici</a> pour recommencer !</p>\n";
 	}
 	else{
@@ -158,7 +156,7 @@ elseif(isset($valide_import_message)) {
 				}
 				fclose($fp);
 
-				if(($nb_reg>0)&&($temoin_erreur=='n')) {echo "<span style='color:red;'>Import effectuÈ.</span><br />";}
+				if(($nb_reg>0)&&($temoin_erreur=='n')) {echo "<span style='color:red;'>Import effectu√©.</span><br />";}
 			}
 		}
 	}
@@ -207,7 +205,7 @@ if(isset($compteur_nb_messages)){
 }
 
 
-// Recherche des messages dÈj‡ saisis:
+// Recherche des messages d√©j√† saisis:
 $sql="SELECT * FROM message_login ORDER BY texte;";
 //echo "$sql";
 $resultat_messages=mysql_query($sql);

@@ -1,8 +1,6 @@
 <?php
 /*
- * Last modification  : 10/02/2007
- *
- * Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
  * This file is part of GEPI.
  *
@@ -22,36 +20,28 @@
  */
 
 //INSERT INTO droits VALUES ('/impression/password_pdf.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F','Impression des des mots de passe. Module PDF', '');
- 
-// Global configuration file
-// Quand on est en SSL, IE n'arrive pas à ouvrir le PDF.
-//Le problème peut être résolu en ajoutant la ligne suivante :
-Header('Pragma: public');
 
-header('Content-Type: application/pdf');
 //=============================
-// REMONTé:
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 //=============================
 
-require('../fpdf/fpdf.php');
-require('../fpdf/ex_fpdf.php');
+$date=date("Ymd_Hi");
+$nom_releve = "export_csv_password_".$date.".pdf";
 
-define('FPDF_FONTPATH','../fpdf/font/');
+send_file_download_headers('application/pdf',$nom_releve);
+
+require_once('../fpdf/fpdf.php');
+
+
 define('LargeurPage','210');
 define('HauteurPage','297');
 
-/*
-// Initialisations files
-require_once("../lib/initialisations.inc.php");
-*/
-
 require_once("./class_pdf.php");
-require_once ("./liste.inc.php"); //fonction qui retourne le nombre d'élèves par classe (ou groupe) pour une période donnée.
+require_once ("./liste.inc.php"); //fonction qui retourne le nombre d'Ã©lÃ¨ves par classe (ou groupe) pour une pÃ©riode donnÃ©e.
 
 // Lorsque qu'on utilise une session PHP, parfois, IE n'affiche pas le PDF
-// C'est un problème qui affecte certaines versions d'IE.
+// C'est un problÃ¨me qui affecte certaines versions d'IE.
 // Pour le contourner, on ajoutez la ligne suivante avant session_start() :
 session_cache_limiter('private');
 
@@ -64,7 +54,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
 	header("Location: ../logout.php?auto=1");
 	die();
-};
+}
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -79,7 +69,7 @@ if (!isset($_SESSION['marge_bas'])) { $MargeBas = 8 ; } else {$MargeBas =  $_SES
 if (!isset($_SESSION['marge_reliure'])) { $avec_reliure = 0 ; } else {$avec_reliure =  $_SESSION['marge_reliure'];}
 if (!isset($_SESSION['avec_emplacement_trous'])) { $avec_emplacement_trous = 0 ; } else {$avec_emplacement_trous =  $_SESSION['avec_emplacement_trous'];}
 
-//Gestion de la marge à gauche pour une reliure éventuelle ou des feuilles perforées.
+//Gestion de la marge Ã  gauche pour une reliure Ã©ventuelle ou des feuilles perforÃ©es.
 if ($avec_reliure==1) {
   if ($MargeGauche < 18) {$MargeGauche = 18;}
 }
@@ -90,24 +80,24 @@ $EspaceY = HauteurPage - $MargeHaut - $MargeBas;
 $X_tableau = $MargeGauche;
 
 
-// Définition de la page
+// DÃ©finition de la page
 $pdf=new rel_PDF("P","mm","A4");
 $pdf->SetTopMargin($MargeHaut);
 $pdf->SetRightMargin($MargeDroite);
 $pdf->SetLeftMargin($MargeGauche);
 $pdf->SetAutoPageBreak(true, $MargeBas);
 
-//On récupère la session
+//On rÃ©cupÃ¨re la session
 if (!isset($_SESSION['donnees_export_csv_password'])) { $MargeHaut = false ; } else {$donnees_personne_csv =  $_SESSION['donnees_export_csv_password'];}
 $nb_enr_tableau = sizeof ($donnees_personne_csv['login']);
 
-$texte_presentation = 'Attention : Votre mot de passe est confidentiel. A votre première connexion, vous devrez changer votre mot de passe.';
+$texte_presentation = 'Attention : Votre mot de passe est confidentiel. A votre premiÃ¨re connexion, vous devrez changer votre mot de passe.';
 
-//recherche du dossier racine de GEPI pour obtenir l'adresse de l'application à saisir dans le navigateur
+//recherche du dossier racine de GEPI pour obtenir l'adresse de l'application Ã  saisir dans le navigateur
 $url = parse_url($_SERVER['REQUEST_URI']);
 $temp = $url['path'];
-$d = strlen($temp) - strlen("impression/password_pdf.php") ;
-$gepi_path = substr($temp, 0, $d);
+$d = mb_strlen($temp) - mb_strlen("impression/password_pdf.php") ;
+$gepi_path = mb_substr($temp, 0, $d);
 
 if (!isset($_SERVER['HTTPS']) OR (isset($_SERVER['HTTPS']) AND strtolower($_SERVER['HTTPS']) != "on")) {
    $adresse_site_gepi = "HTTP://".$_SERVER["SERVER_NAME"] . $gepi_path;         
@@ -118,12 +108,12 @@ if (!isset($_SERVER['HTTPS']) OR (isset($_SERVER['HTTPS']) AND strtolower($_SERV
 $pdf->AddPage("P");
 // Couleur des traits
 $pdf->SetDrawColor(0,0,0);
-// caractère utilisé dans le document
-$caractere_utilise = 'arial';
+// caractÃ¨re utilisÃ© dans le document
+$caractere_utilise = 'DejaVu';
 $y_tmp = $MargeHaut;
 $j=0;
 if (($donnees_personne_csv)) {
-	// Cette boucle crée les différentes pages du PDF
+	// Cette boucle crÃ©e les diffÃ©rentes pages du PDF
 	for ($i=0; $i<$nb_enr_tableau ; $i++) {
 		
         $classe = $donnees_personne_csv['classe'][$i];
@@ -134,32 +124,32 @@ if (($donnees_personne_csv)) {
 		$email = $donnees_personne_csv['user_email'][$i];
 		
 		$pdf->SetLineWidth(0.2);
-		$pdf->SetFont($caractere_utilise,'',9);
+		$pdf->SetFont('DejaVu','',9);
 		$pdf->SetDash(4,4);
 
 
 		$pdf->Setxy($X_tableau,$y_tmp);
-		$pdf->SetFont($caractere_utilise,'B',8);
+		$pdf->SetFont('DejaVu','B',8);
 		$texte = "\nA l'attention de ".$prenom." ".$nom." , classe de ".$classe.
-				 " :                         Voici vos identifiant et mot de passe pour accéder à vos notes.\nIdentifiant : ".$login.
+				 " :                         Voici vos identifiant et mot de passe pour accÃ©der Ã  vos notes.\nIdentifiant : ".$login.
 				 "\nMot de passe : ".$password.
 				// "\nEmail : ".$email.
-				 "\nAdresse du site Gepi à saisir dans votre navigateur Internet : ".$adresse_site_gepi."\n".$texte_presentation."\n\n";
+				 "\nAdresse du site Gepi Ã  saisir dans votre navigateur Internet : ".$adresse_site_gepi."\n".$texte_presentation."\n\n";
 		//$pdf->MultiCell($EspaceX,3.5,$texte,'B',2,'L',0);
 		$pdf->MultiCell($EspaceX,3.5,$texte,'B','L',0);
 				
 		$y_tmp = $pdf->GetY();
 		
-		if ($j==10) { // saut de page  après 8 fiches sur la page.
+		if ($j==10) { // saut de page  aprÃ¨s 8 fiches sur la page.
 		  $pdf->AddPage("P");
 		  $y_tmp = $MargeHaut;
 		  $j=0;
 		}
         $j++;
 		
-		//génération d'un saut de page PDF pour un changement de classe
+		//gÃ©nÃ©ration d'un saut de page PDF pour un changement de classe
 		$classe_elv = $classe;
-		if ($i+1<$nb_enr_tableau) { //pour éviter le débordement sur le dernier elv
+		if ($i+1<$nb_enr_tableau) { //pour Ã©viter le dÃ©bordement sur le dernier elv
 		   $classe_elv_suivant = $donnees_personne_csv['classe'][$i+1];
 		} else {
 		  $classe_elv_suivant = $classe;
@@ -173,11 +163,10 @@ if (($donnees_personne_csv)) {
 		
 		} // FOR
 } else {  //variable de session OK 		
-// problème de variable de session
+// problÃ¨me de variable de session
   $pdf->CellFitScale($l_cell_avis,$h_cell,"Erreur de session export PDF",1,0,'L',0); //le quadrillage
 }
-	// sortie PDF sur écran
-	$date=date("Ymd_Hi");
-	$nom_releve = "export_csv_password_".$date.".pdf";
-	$pdf->Output($nom_releve,'I');
+
+// sortie PDF sur Ã©cran
+$pdf->Output($nom_releve,'I');
 ?>

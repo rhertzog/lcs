@@ -2,7 +2,6 @@
 
 /**
  *
- * @version $Id: visu_prof_jour.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -31,7 +30,7 @@ $niveau_arbo = 1;
 require_once("../lib/initialisations.inc.php");
 include("../edt_organisation/fonctions_calendrier.php");
 
-// fonctions complémentaires et/ou librairies utiles
+// fonctions complÃ©mentaires et/ou librairies utiles
 
 
 // Resume session
@@ -44,7 +43,7 @@ if ($resultat_session == "c") {
     die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 // SQL : INSERT INTO droits VALUES ( './cahier_texte/visu_prof_jour.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Acces_a_son_cahier_de_textes_personnel', '');
 // maj : $tab_req[] = "INSERT INTO droits VALUES ( './cahier_texte/visu_prof_jour.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Acces_a_son_cahier_de_textes_personnel', '');";
 //
@@ -53,19 +52,19 @@ if (!checkAccess()) {
     die();
 }
 
-// ======================== Initialisation des données ==================== //
+// ======================== Initialisation des donnÃ©es ==================== //
 
 
 
 
 
-// ======================== Traitement des données ======================== //
+// ======================== Traitement des donnÃ©es ======================== //
 $today_ts = mktime(23, 59, 00, date("m"), date("d"), date("Y"));
 $une_semaine = 604800; // en secondes
-$semaine_prec = $une_semaine - 86400; // permet de construire la requête qui cherche les notices à afficher
+$semaine_prec = $une_semaine - 86400; // permet de construire la requÃªte qui cherche les notices Ã  afficher
 $ts_semaine_avant = $today_ts - $une_semaine;
 
-$today_jour = retourneJour(""); // retourne le jour de la semaine en toutes lettres et en Français
+$today_jour = retourneJour(""); // retourne le jour de la semaine en toutes lettres et en FranÃ§ais
 
 $sql = "SELECT * FROM ct_entry WHERE id_login = '".$_SESSION['login']."'
 								AND date_ct
@@ -98,7 +97,7 @@ $utilisation_jsdivdrag = "non";
 //$style_specifique = "";
 
 // ===================== entete Gepi ======================================//
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 // ===================== fin entete =======================================//
 
 echo "<!-- page Cahier_de_textes_du_jour.-->";

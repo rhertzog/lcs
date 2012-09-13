@@ -1,9 +1,9 @@
 <?php
 /**
  *
- * @version $Id: serveur_infos.class.php 7857 2011-08-21 12:50:45Z jjocal $
+ * @version $Id$
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
  * This file is part of GEPI.
  *
@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-// Sécurité : éviter que quelqu'un appelle ce fichier seul
+// SÃ©curitÃ© : Ã©viter que quelqu'un appelle ce fichier seul
 $serveur_script = $_SERVER["SCRIPT_NAME"];
 $analyse = explode("/", $serveur_script);
 $analyse[3] = isset($analyse[3]) ? $analyse[3] : NULL;
@@ -31,7 +31,7 @@ $analyse[3] = isset($analyse[3]) ? $analyse[3] : NULL;
 	}
 /**
  * Classe qui renvoie l'ensemble des infos utiles
- * sur les paramètres du serveur
+ * sur les paramÃ¨tres du serveur
  */
 class infos{
 
@@ -51,10 +51,10 @@ class infos{
 	function versionPhp(){
 		$test = phpversion();
 		// on teste le premier chiffre
-		$version = substr($test, 0, 1);
+		$version = mb_substr($test, 0, 1);
 		if ($version == 5) {
-			$retour = '<span style="color: green;">'.phpversion().' (Gepi nécessite php 5.2.x minimum)</span>';
-		}elseif($version == 4 AND substr($test, 2, 2) >= 3){
+			$retour = '<span style="color: green;">'.phpversion().' (Gepi nÃ©cessite php 5.2.x minimum)</span>';
+		}elseif($version == 4 AND mb_substr($test, 2, 2) >= 3){
 			$retour = '<span style="color: green;">'.phpversion().'(Attention, Gepi ne fonctionne pas avec cette version, elle est trop ancienne)</span>';
 		}else{
 			$retour = '<span style="color: red;">'.phpversion().'(version ancienne !)</span>';
@@ -72,7 +72,7 @@ class infos{
 	function versionMysql(){
 		$test = mysql_get_server_info();
 		// On regarde si c'est une version 4 ou 5
-		$version = substr($test, 0, 1);
+		$version = mb_substr($test, 0, 1);
 		if ($version == 4 OR $version == 5) {
 			$retour = '<span style="color: green;">'.mysql_get_server_info().'</span>';
 		}else{
@@ -119,9 +119,11 @@ class infos{
 		}
 		$retour .= '</table><br />';
 
-		if(!in_array('pdo_mysql',$extensions)) {$retour.="<span style='color:red'>ATTENTION&nbsp;</span> Il semble que le module 'pdo_mysql' ne soit pas présent.<br />Cela risque de rendre impossible l'utilisation des modules cahier_texte_2, mod_ects, mod_plugins,...<br />";}
+		if(!in_array('pdo_mysql',$extensions)) {$retour.="<span style='color:red'>ATTENTION&nbsp;</span> Il semble que le module 'pdo_mysql' ne soit pas prÃ©sent.<br />Cela risque de rendre impossible l'utilisation des modules cahier_texte_2, mod_ects, mod_plugins,...<br />";}
 
-		if(in_array('suhosin',$extensions)) {$retour.="<span style='color:red'>ATTENTION&nbsp;</span> Il semble que le module '<b>suhosin</b>' soit présent.<br />Si les restrictions imposées par ce module sont trop sévères, certaines pages de Gepi peuvent être perturbées.<br /><em>Exemple de perturbation&nbsp;:</em> Seule une partie des valeurs des formulaires est transmise parce que le module limite le nombre de variables pouvant être envoyées en POST par un formulaire.<br />";}
+		if(in_array('suhosin',$extensions)) {$retour.="<span style='color:red'>ATTENTION&nbsp;</span> Il semble que le module '<b>suhosin</b>' soit prÃ©sent.<br />Si les restrictions imposÃ©es par ce module sont trop sÃ©vÃ¨res, certaines pages de Gepi peuvent Ãªtre perturbÃ©es.<br /><em>Exemple de perturbation&nbsp;:</em> Seule une partie des valeurs des formulaires est transmise parce que le module limite le nombre de variables pouvant Ãªtre envoyÃ©es en POST par un formulaire.<br />";}
+
+		if(!in_array('curl',$extensions)) {$retour.= "<span style='color:red'>ATTENTION&nbsp;</span>  Il semble que votre serveur ne soit pas configurÃ© pour l'envoi de SMS.<br />Cette fonctionnalitÃ© du module Absence2 nÃ©cessite l'extension PHP CURL.<br />";} 
 
 		return $retour;
 	}
@@ -143,7 +145,7 @@ class infos{
 		}elseif(ini_get('register_globals') == ''){
 			$register_g = "off";
 		}else{
-			$register_g = "paramètre inconnu";
+			$register_g = "paramÃ¨tre inconnu";
 		}
 		$retour = $register_g;
 
@@ -151,15 +153,20 @@ class infos{
 	}
 	function defautCharset(){
 		$rep['defaut'] = $rep['toutes'] = NULL;
-		if (strpos($_SERVER['HTTP_ACCEPT_CHARSET'], "ISO-8859-1") === 0) {
+		if((isset($_SERVER['HTTP_ACCEPT_CHARSET']))&&(strpos($_SERVER['HTTP_ACCEPT_CHARSET'], "ISO-8859-1") === 0)) {
 			$rep['defaut'] = "ISO-8859-1";
-		}elseif (strpos($_SERVER['HTTP_ACCEPT_CHARSET'], "utf-8") === 0) {
+		}elseif((isset($_SERVER['HTTP_ACCEPT_CHARSET']))&&(strpos($_SERVER['HTTP_ACCEPT_CHARSET'], "utf-8") === 0)) {
 			$rep['defaut'] = "utf-8";
 		}else{
 			$rep['defaut'] = "inconnu";
 		}
 
-		$rep['toutes'] = $_SERVER['HTTP_ACCEPT_CHARSET'];
+		if(isset($_SERVER['HTTP_ACCEPT_CHARSET'])) {
+			$rep['toutes'] = $_SERVER['HTTP_ACCEPT_CHARSET'];
+		}
+		else {
+			$rep['toutes'] = "inconnu";
+		}
 
 		return $rep;
 	}

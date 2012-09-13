@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: disc_stat.php 6727 2011-03-29 15:14:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -34,33 +33,18 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-// SQL : INSERT INTO droits VALUES ( '/mod_discipline/disc_stat.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Statistiques', '');
-// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/disc_stat.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Statistiques', '');";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
-/*
-function get_nom_prenom_eleve($login_ele) {
-	$sql="SELECT nom,prenom FROM eleves WHERE login='$login_ele';";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
-		return "Elève inconnu";
-	}
-	else {
-		$lig=mysql_fetch_object($res);
-		return casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2');
-	}
-}
-*/
 function get_denomination_prof($login) {
 	$sql="SELECT nom,prenom,civilite FROM utilisateurs WHERE login='$login';";
 	$res=mysql_query($sql);
@@ -69,7 +53,7 @@ function get_denomination_prof($login) {
 	}
 	else {
 		$lig=mysql_fetch_object($res);
-		return $lig->civilite." ".casse_mot($lig->nom)." ".strtoupper(substr($lig->prenom,0,1));
+		return $lig->civilite." ".casse_mot($lig->nom)." ".mb_strtoupper(mb_substr($lig->prenom,0,1));
 	}
 }
 
@@ -93,8 +77,8 @@ else {
 	$date_debut_annee=($annee-1)."-09-01";
 	$date_du_jour=($annee-1)."-$mois-$jour";
 }
-$date_debut_disc=isset($_POST['date_debut_disc']) ? $_POST['date_debut_disc'] : (isset($_SESSION['date_debut_disc']) ? $_SESSION['date_debut_disc'] : $date_debut_tmp);
-$date_fin_disc=isset($_POST['date_fin_disc']) ? $_POST['date_fin_disc'] : (isset($_SESSION['date_fin_disc']) ? $_SESSION['date_fin_disc'] : "$jour/$mois/$annee");
+$date_debut_disc=isset($_POST['date_debut_disc']) ? $_POST['date_debut_disc'] : (isset($_POST['date_debut_disc1']) ? $_POST['date_debut_disc1'] : (isset($_SESSION['date_debut_disc']) ? $_SESSION['date_debut_disc'] : $date_debut_tmp));
+$date_fin_disc=isset($_POST['date_fin_disc']) ? $_POST['date_fin_disc'] : (isset($_POST['date_fin_disc1']) ? $_POST['date_fin_disc1'] : (isset($_SESSION['date_fin_disc']) ? $_SESSION['date_fin_disc'] : "$jour/$mois/$annee"));
 
 
 $nature=isset($_POST['nature']) ? $_POST['nature'] : NULL;
@@ -104,7 +88,7 @@ $id_nature_sanction=isset($_POST['id_nature_sanction']) ? $_POST['id_nature_sanc
 
 //**************** EN-TETE *****************
 $titre_page = "Discipline: Statistiques";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //debug_var();
@@ -119,26 +103,28 @@ if(!isset($is_posted)) {
 
 	echo "<div style='border:1px solid black; padding: 1em;'>\n";
 	echo "<p class='bold'>Totaux&nbsp;:</p>\n";
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='form1'>\n";
 
 	echo add_token_field();
 
 	//=======================
 	//Configuration du calendrier
 	include("../lib/calendrier/calendrier.class.php");
-	$cal1 = new Calendrier("form_date_disc", "date_debut_disc");
-	$cal2 = new Calendrier("form_date_disc", "date_fin_disc");
+	$cal1 = new Calendrier("form1", "date_debut_disc");
+	$cal2 = new Calendrier("form1", "date_fin_disc");
 	//=======================
 
 	echo "<p>Intervalle de dates&nbsp;: du ";
 	//echo "<input type='text' name='date_debut_disc' value='' />\n";
 	echo "<input type='text' name = 'date_debut_disc1' id='date_debut_disc' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-	echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	//echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	echo "<a href=\"javascript:".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 	echo " au ";
 	//echo "<input type='text' name='date_fin_disc' value='' />\n";
 	echo "<input type='text' name = 'date_fin_disc1' id='date_fin_disc' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-	echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	//echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	echo "<a href=\"javascript:".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	echo "</p>\n";
 
 
@@ -149,19 +135,19 @@ if(!isset($is_posted)) {
 	echo "Nature<br />d'incidents\n";
 	echo "<br />\n";
 	echo "<a href='javascript:modif_case(\"nature\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-	echo "<a href='javascript:modif_case(\"nature\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+	echo "<a href='javascript:modif_case(\"nature\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 	echo "</th>\n";
 	echo "<th>\n";
 	echo "Mesures prises\n";
 	echo "<br />\n";
 	echo "<a href='javascript:modif_case(\"id_mesure\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-	echo "<a href='javascript:modif_case(\"id_mesure\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+	echo "<a href='javascript:modif_case(\"id_mesure\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 	echo "</th>\n";
 	echo "<th>\n";
 	echo "Sanctions\n";
 	echo "<br />\n";
 	echo "<a href='javascript:modif_case(\"nature_sanction\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-	echo "<a href='javascript:modif_case(\"nature_sanction\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+	echo "<a href='javascript:modif_case(\"nature_sanction\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 	echo "</th>\n";
 	echo "</tr>\n";
 
@@ -239,7 +225,7 @@ if(!isset($is_posted)) {
 
 </script>\n";
 
-	//echo "<p style='color:red;'>Ajouter des liens Tout cocher/décocher.</p>\n";
+	//echo "<p style='color:red;'>Ajouter des liens Tout cocher/dÃ©cocher.</p>\n";
 	echo "<p style='color:red;'>A FAIRE: Totaux par classes...</p>\n";
 	echo "<p style='color:red;'>A FAIRE: Pouvoir faire des tableaux mois par mois.</p>\n";
 	echo "</div>\n";
@@ -248,33 +234,35 @@ if(!isset($is_posted)) {
 
 	echo "<div style='border:1px solid black; padding: 1em;'>\n";
 	echo "<p class='bold'>Top ten&nbsp;:</p>\n";
-	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='form2'>\n";
 
 	echo add_token_field();
 
 	//=======================
 	//Configuration du calendrier
 	//include("../lib/calendrier/calendrier.class.php");
-	$cal3 = new Calendrier("form_date_disc", "date_debut_disc");
-	$cal4 = new Calendrier("form_date_disc", "date_fin_disc");
+	$cal3 = new Calendrier("form2", "date_debut_disc");
+	$cal4 = new Calendrier("form2", "date_fin_disc");
 	//=======================
 
 	echo "<p>Intervalle de dates&nbsp;: du ";
 	//echo "<input type='text' name='date_debut_disc' value='' />\n";
 	echo "<input type='text' name = 'date_debut_disc' id = 'date_debut_disc2' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-	echo "<a href=\"#\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	//echo "<a href=\"#\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	echo "<a href=\"javascript:".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 
 	echo " au ";
 	//echo "<input type='text' name='date_fin_disc' value='' />\n";
 	echo "<input type='text' name = 'date_fin_disc' id = 'date_fin_disc2' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-	echo "<a href=\"#\" onClick=\"".$cal4->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	//echo "<a href=\"#\" onClick=\"".$cal4->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+	echo "<a href=\"javascript:".$cal4->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	echo "</p>\n";
 
 	echo "<p>Choisissez ce que vous souhaitez afficher&nbsp;:</p>\n";
 
-	echo "<p>Les élèves \n";
+	echo "<p>Les Ã©lÃ¨ves \n";
 	echo "<a href='javascript:topten_coche(true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-	echo "<a href='javascript:topten_coche(false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+	echo "<a href='javascript:topten_coche(false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 	echo "<br />\n";
 	echo "<input type='checkbox' name='topten_incidents' id='topten_incidents' value='y' /><label for='topten_incidents'>responsables du plus grand nombre d'incidents,</label><br />\n";
 	echo "<input type='checkbox' name='topten_sanctions' id='topten_sanctions' value='y' /><label for='topten_sanctions'>qui ont le plus de sanctions (<i>travail, retenue, exclusion,...</i>),</label><br />\n";
@@ -300,7 +288,7 @@ elseif($mode=='totaux') {
 	echo "<p><b>Dates&nbsp;:</b> ";
 	if($date_debut_disc!="") {
 
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
 		if(preg_match("#/#",$date_debut_disc)) {
 			$tmp_tab_date=explode("/",$date_debut_disc);
@@ -324,7 +312,7 @@ elseif($mode=='totaux') {
 		}
 
 		if($date_debut_disc=="") {
-			// Si la date proposée est invalide, on force la date initiale au début de l'année:
+			// Si la date proposÃ©e est invalide, on force la date initiale au dÃ©but de l'annÃ©e:
 			$date_debut_disc=$date_debut_annee;
 		}
 
@@ -334,9 +322,9 @@ elseif($mode=='totaux') {
 	}
 
 	if($date_fin_disc!="") {
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
 		if(preg_match("#/#",$date_fin_disc)) {
 			$tmp_tab_date=explode("/",$date_fin_disc);
@@ -360,7 +348,7 @@ elseif($mode=='totaux') {
 		}
 
 		if($date_fin_disc=="") {
-			// Si la date proposée est invalide, on force la date finale à la date du jour:
+			// Si la date proposÃ©e est invalide, on force la date finale Ã  la date du jour:
 			$date_fin_disc=$date_du_jour;
 		}
 
@@ -419,7 +407,7 @@ elseif($mode=='totaux') {
 			echo "&nbsp;";
 		}
 		else {
-			// PROBLEME: ON RECUPERE LE TRIPLE DE L'EFFECTIF: On compte autant de fois un élève pour un incident qu'il appartient à des périodes de j_eleves_classes
+			// PROBLEME: ON RECUPERE LE TRIPLE DE L'EFFECTIF: On compte autant de fois un Ã©lÃ¨ve pour un incident qu'il appartient Ã  des pÃ©riodes de j_eleves_classes
 			$sql="SELECT DISTINCT c.classe, COUNT(sp.login) AS nb FROM classes c, j_eleves_classes jec, s_protagonistes sp, s_incidents si WHERE c.id=jec.id_classe AND jec.login=sp.login AND sp.id_incident=si.id_incident AND si.nature='$nature[$i]' AND sp.qualite='responsable' $restriction_date GROUP BY c.classe ORDER BY count(sp.login) DESC;";
 			echo "$sql<br />\n";
 			$res2=mysql_query($sql);
@@ -586,7 +574,7 @@ elseif($mode=='topten') {
 	echo "<p><b>Dates&nbsp;:</b> ";
 	if($date_debut_disc!="") {
 
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
 		if(preg_match("#/#",$date_debut_disc)) {
 			$tmp_tab_date=explode("/",$date_debut_disc);
@@ -610,7 +598,7 @@ elseif($mode=='topten') {
 		}
 
 		if($date_debut_disc=="") {
-			// Si la date proposée est invalide, on force la date initiale au début de l'année:
+			// Si la date proposÃ©e est invalide, on force la date initiale au dÃ©but de l'annÃ©e:
 			$date_debut_disc=$date_debut_annee;
 		}
 
@@ -620,9 +608,9 @@ elseif($mode=='topten') {
 	}
 
 	if($date_fin_disc!="") {
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
-		// Tester la validité de la date
+		// Tester la validitÃ© de la date
 		// Si elle n'est pas valide... la vider
 		if(preg_match("#/#",$date_fin_disc)) {
 			$tmp_tab_date=explode("/",$date_fin_disc);
@@ -646,7 +634,7 @@ elseif($mode=='topten') {
 		}
 
 		if($date_fin_disc=="") {
-			// Si la date proposée est invalide, on force la date finale à la date du jour:
+			// Si la date proposÃ©e est invalide, on force la date finale Ã  la date du jour:
 			$date_fin_disc=$date_du_jour;
 		}
 
@@ -678,13 +666,13 @@ elseif($mode=='topten') {
 	//echo "$sql<br />\n";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>Aucun incident avec élève responsable n'est enregistré.</p>\n";
+		echo "<p>Aucun incident avec Ã©lÃ¨ve responsable n'est enregistrÃ©.</p>\n";
 	}
 	else {
-		echo "<p>Les $nb_ele élèves responsables du plus grand nombre d'incidents&nbsp;:</p>\n";
+		echo "<p>Les $nb_ele Ã©lÃ¨ves responsables du plus grand nombre d'incidents&nbsp;:</p>\n";
 		echo "<table class='boireaus' summary='Tableau des fauteurs d incidents'>\n";
 		echo "<tr>\n";
-		echo "<th>Elève</th>\n";
+		echo "<th>ElÃ¨ve</th>\n";
 		echo "<th>Classe</th>\n";
 		echo "<th>Nombre d'incidents</th>\n";
 		echo "</tr>\n";
@@ -716,13 +704,13 @@ elseif($mode=='topten') {
 	//echo "$sql<br />\n";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>Aucun avec élève avec sanction n'est enregistré.</p>\n";
+		echo "<p>Aucun avec Ã©lÃ¨ve avec sanction n'est enregistrÃ©.</p>\n";
 	}
 	else {
-		echo "<p>Les $nb_ele élèves qui ont le plus de sanctions&nbsp;:</p>\n";
-		echo "<table class='boireaus' summary='Tableau des sanctionnés'>\n";
+		echo "<p>Les $nb_ele Ã©lÃ¨ves qui ont le plus de sanctions&nbsp;:</p>\n";
+		echo "<table class='boireaus' summary='Tableau des sanctionnÃ©s'>\n";
 		echo "<tr>\n";
-		echo "<th>Elève</th>\n";
+		echo "<th>ElÃ¨ve</th>\n";
 		echo "<th>Classe</th>\n";
 		echo "<th>Nombre de sanctions</th>\n";
 		echo "</tr>\n";
@@ -754,13 +742,13 @@ elseif($mode=='topten') {
 	//echo "$sql<br />\n";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>Aucun élève avec retenue n'est enregistré.</p>\n";
+		echo "<p>Aucun Ã©lÃ¨ve avec retenue n'est enregistrÃ©.</p>\n";
 	}
 	else {
-		echo "<p>Les $nb_ele élèves qui ont le plus de retenues&nbsp;:</p>\n";
-		echo "<table class='boireaus' summary='Tableau des sanctionnés par des retenues'>\n";
+		echo "<p>Les $nb_ele Ã©lÃ¨ves qui ont le plus de retenues&nbsp;:</p>\n";
+		echo "<table class='boireaus' summary='Tableau des sanctionnÃ©s par des retenues'>\n";
 		echo "<tr>\n";
-		echo "<th>Elève</th>\n";
+		echo "<th>ElÃ¨ve</th>\n";
 		echo "<th>Classe</th>\n";
 		echo "<th>Nombre de retenues</th>\n";
 		echo "</tr>\n";
@@ -794,13 +782,13 @@ elseif($mode=='topten') {
 	//echo "$sql<br />\n";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>Aucun élève avec exclusion n'est enregistré.</p>\n";
+		echo "<p>Aucun Ã©lÃ¨ve avec exclusion n'est enregistrÃ©.</p>\n";
 	}
 	else {
-		echo "<p>Les $nb_ele élèves qui ont le plus d'exclusions&nbsp;:</p>\n";
-		echo "<table class='boireaus' summary='Tableau des sanctionnés par des exclusions'>\n";
+		echo "<p>Les $nb_ele Ã©lÃ¨ves qui ont le plus d'exclusions&nbsp;:</p>\n";
+		echo "<table class='boireaus' summary='Tableau des sanctionnÃ©s par des exclusions'>\n";
 		echo "<tr>\n";
-		echo "<th>Elève</th>\n";
+		echo "<th>ElÃ¨ve</th>\n";
 		echo "<th>Classe</th>\n";
 		echo "<th>Nombre d'exclusions</th>\n";
 		echo "</tr>\n";

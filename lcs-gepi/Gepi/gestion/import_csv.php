@@ -1,8 +1,6 @@
 <?php
 /*
- * Last modification  : 14/03/2005
- *
- * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -44,16 +42,33 @@ if (!checkAccess()) {
 
 //**************** EN-TETE *****************
 $titre_page = "Outil de gestion | Importation";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
-// $long_max : doit Ítre plus grand que la plus grande ligne trouvÈe dans le fichier CSV
+
+$longmax_login_eleve=getSettingValue('longmax_login_eleve');
+if($longmax_login_eleve=="") {
+	$mode_generation_login_eleve=getSettingValue('mode_generation_login_eleve');
+	if(!check_format_login($mode_generation_login_eleve)) {
+		echo "<p class=bold><a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a></p>";
+
+		echo "<p style='color:red'>Le format de login √©l√®ve est invalide.<br />Veuillez d√©finir le format dans <a href='../gestion/param_gen.php'>Configuration g√©n√©rale</a></p>\n";
+
+		require("../lib/footer.inc.php");
+		die();
+	}
+
+	$longmax_login_eleve=mb_strlen($mode_generation_login_eleve);
+	saveSetting('longmax_login_eleve',$longmax_login_eleve);
+}
+
+// $long_max : doit √™tre plus grand que la plus grande ligne trouv√©e dans le fichier CSV
 $long_max = 8000;
 if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
     ?><p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>| <a href='javascript:centrerpopup("help_import.php",600,480,"scrollbars=yes,statusbar=no,resizable=yes")'>Aide</a></p>
-    <p><b>Remarque importante</b> : vous allez importer dans la base GEPI des donnÈes "ÈlËve" ‡ partir d'un fichier au format csv (sÈparateur point-virgule).<br />
-    Il peut s'agir de nouveaux ÈlËves ou bien d'ÈlËves dÈj‡ prÈsents dans la base. Dans ce dernier cas,  les donnÈes existantes seront ÈcrasÈes par les donnÈes prÈsentes dans le fichier ‡ importer.
-    <br /><b>Attention </b> : certaines modifications en cours d'annÈe sur des ÈlËves dÈj‡ prÈsents dans la base peuvent entraÓner des incohÈrences dans les bases et par suite un mauvais fonctionnement de l'application.
+    <p><b>Remarque importante</b> : vous allez importer dans la base GEPI des donn√©es "√©l√®ve" √† partir d'un fichier au format csv (s√©parateur point-virgule).<br />
+    Il peut s'agir de nouveaux √©l√®ves ou bien d'√©l√®ves d√©j√† pr√©sents dans la base. Dans ce dernier cas,  les donn√©es existantes seront √©cras√©es par les donn√©es pr√©sentes dans le fichier √† importer.
+    <br /><b>Attention </b> : certaines modifications en cours d'ann√©e sur des √©l√®ves d√©j√† pr√©sents dans la base peuvent entra√Æner des incoh√©rences dans les bases et par suite un mauvais fonctionnement de l'application.
 
     </p>
 
@@ -62,25 +77,25 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
 		$csv_file="";
 		echo add_token_field();
 	?>
-    <p>Fichier CSV ‡ importer : <input TYPE=FILE NAME="csv_file"></p>
+    <p>Fichier CSV √† importer : <input TYPE=FILE NAME="csv_file"></p>
     <input TYPE=HIDDEN name=is_posted value = 1>
-    <p>Le fichier ‡ importer comporte une premiËre ligne d'en-tÍte, ‡ ignorer&nbsp;
+    <p>Le fichier √† importer comporte une premi√®re ligne d'en-t√™te, √† ignorer&nbsp;
     <input TYPE=CHECKBOX NAME="en_tete" VALUE="yes" CHECKED></p>
     <input TYPE=SUBMIT value = "Valider"><br />
     </form>
     <?php
-    echo "<p>Le fichier d'importation doit Ítre au format csv (sÈparateur : point-virgule)<br />";
-    echo "Le fichier doit contenir les diffÈrents champs suivants, tous obligatoires :<br />";
-    echo "--> <B>IDENTIFIANT</B> : l'identifiant de l'ÈlËve (".$longmax_login." caractËres maximum)<br />";
+    echo "<p>Le fichier d'importation doit √™tre au format csv (s√©parateur : point-virgule)<br />";
+    echo "Le fichier doit contenir les diff√©rents champs suivants, tous obligatoires :<br />";
+    echo "--> <B>IDENTIFIANT</B> : l'identifiant de l'√©l√®ve (".$longmax_login_eleve." caract√®res maximum)<br />";
     echo "--> <B>Nom</B><br />";
-    echo "--> <B>PrÈnom</B><br />";
+    echo "--> <B>Pr√©nom</B><br />";
     echo "--> <B>Sexe</B>  : F ou M<br />";
     echo "--> <B>Date de naissance</B> : jj/mm/aaaa<br />";
-    echo "--> <B>Classe (fac.)</B> : le nom court d'une classe dÈj‡ dÈfinie dans la base GEPI ou bien le caractËre - si l'ÈlËve n'est pas affectÈ ‡ une classe.<br />";
-    echo "--> <B>RÈgime</B> : d/p (demi-pensionnaire) ext. (externe) int. (interne) ou i-e (interne externÈ(e))<br />";
+    echo "--> <B>Classe (fac.)</B> : le nom court d'une classe d√©j√† d√©finie dans la base GEPI ou bien le caract√®re - si l'√©l√®ve n'est pas affect√© √† une classe.<br />";
+    echo "--> <B>R√©gime</B> : d/p (demi-pensionnaire) ext. (externe) int. (interne) ou i-e (interne extern√©(e))<br />";
     echo "--> <B>Doublant</B> : R (pour un doublant)  - (pour un non-doublant)<br />";
-    echo "--> <B>".ucfirst(getSettingValue("gepi_prof_suivi"))."</B> : l'identifiant d'un ".getSettingValue("gepi_prof_suivi")." dÈj‡ dÈfini dans la base GEPI ou bien le caractËre - si l'ÈlËve n'a pas de ".getSettingValue("gepi_prof_suivi").".<br />";
-    echo "--> <B>Identifiant de l'Ètablissement d'origine </B> : le code RNE identifiant chaque Ètablissement scolaire et dÈj‡ dÈfini dans la base GEPI, ou bien le caractËre - si l'Ètablissement n'est pas connu.<br /></p>";
+    echo "--> <B>".ucfirst(getSettingValue("gepi_prof_suivi"))."</B> : l'identifiant d'un ".getSettingValue("gepi_prof_suivi")." d√©j√† d√©fini dans la base GEPI ou bien le caract√®re - si l'√©l√®ve n'a pas de ".getSettingValue("gepi_prof_suivi").".<br />";
+    echo "--> <B>Identifiant de l'√©tablissement d'origine </B> : le code RNE identifiant chaque √©tablissement scolaire et d√©j√† d√©fini dans la base GEPI, ou bien le caract√®re - si l'√©tablissement n'est pas connu.<br /></p>";
 } else {
     ?><p class=bold><a href="import_csv.php?is_posted=R"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>| <a href='javascript:centrerpopup("help_import.php",600,480,"scrollbars=yes,statusbar=no,resizable=yes")'>Aide</a></p>
     <?php
@@ -98,7 +113,7 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
             echo "Impossible d'ouvrir le fichier CSV.";
         } else {
             $row = 0;
-            echo "<table border=1><tr><td><p>Identifiant</p></td><td><p>Nom</p></td><td><p>PrÈnom</p></td><td><p>Sexe</p></td><td><p>Date de naissance</p></td><td><p>Classe</p></td><td><p>RÈgime</p></td><td><p>Doublant</p></td><td><p>".ucfirst(getSettingValue("gepi_prof_suivi"))."</p></td><td><p>Id. Ètab.</p></td></tr>";
+            echo "<table border=1><tr><td><p>Identifiant</p></td><td><p>Nom</p></td><td><p>Pr√©nom</p></td><td><p>Sexe</p></td><td><p>Date de naissance</p></td><td><p>Classe</p></td><td><p>R√©gime</p></td><td><p>Doublant</p></td><td><p>".ucfirst(getSettingValue("gepi_prof_suivi"))."</p></td><td><p>Id. √©tab.</p></td></tr>";
             $valid = 1;
             while(!feof($fp)) {
                 if (isset($en_tete) and ($en_tete=='yes')) {
@@ -117,10 +132,10 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
                     switch ($c) {
                     case 0:
                         //login
-                        if (preg_match ("/^[a-zA-Z0-9_]{1,".$longmax_login."}$/", $data[$c])) {
+                        if (preg_match ("/^[a-zA-Z0-9_]{1,".$longmax_login_eleve."}$/", $data[$c])) {
                             $reg_login = "reg_".$row."_login";
                             $reg_statut = "reg_".$row."_statut";
-                            $data[$c] =    strtoupper($data[$c]);
+                            $data[$c] =    my_strtoupper($data[$c]);
                             $call_login = mysql_query("SELECT login FROM eleves WHERE login='$data[$c]'");
                             $test = mysql_num_rows($call_login);
                             if ($test != 0) {
@@ -179,7 +194,7 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
                         break;
                     case 3:
                         // Sexe
-                        $data[$c] =    strtoupper($data[$c]);
+                        $data[$c] =    my_strtoupper($data[$c]);
                         if (preg_match ("/^[MF]$/", $data[$c])) {
                             echo "<td><p>$data[$c]</p></td>";
                             $reg_sexe = "reg_".$row."_sexe";
@@ -245,8 +260,8 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
                         }
                         break;
                     case 6:
-                        //RÈgime
-                        $data[$c] =    strtolower($data[$c]);
+                        //R√©gime
+                        $data[$c] =    my_strtolower($data[$c]);
                         if (preg_match ("#^(d/p|ext.|int.|i-e)$#", $data[$c])) {
                             echo "<td><p>$data[$c]</p></td>";
                             $reg_regime = "reg_".$row."_regime";
@@ -259,7 +274,7 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
 
                    case 7:
                         // Doublant
-                        $data[$c] =    strtoupper($data[$c]);
+                        $data[$c] =    my_strtoupper($data[$c]);
                         if (preg_match ("/^[R\-]{1}$/", $data[$c])) {
                             echo "<td><p>$data[$c]</p></td>";
                             $reg_doublant = "reg_".$row."_doublant";
@@ -272,7 +287,7 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
                     case 8:
                         //Prof de suivi
                         if (($valeur_classe == '????') or ($valeur_classe == '-')) {
-                            // si la classe n'est pas dÈfinie, le professeur de suivi ne peut pas l'Ítre non plus !
+                            // si la classe n'est pas d√©finie, le professeur de suivi ne peut pas l'√™tre non plus !
                             if ($data[$c] != '-') {
                                 $valeur_prof = '????';
                             } else {
@@ -302,7 +317,7 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
                         }
                         break;
                         case 9:
-                        //Ètablissement d'origine
+                        //√©tablissement d'origine
                         $call_etab = mysql_query("SELECT * FROM etablissements WHERE id = '$data[$c]'");
                         $test = mysql_num_rows($call_etab);
                         if (($test != 0) or ($data[$c] == '-')) {
@@ -323,29 +338,29 @@ if (!isset($is_posted) or (isset($is_posted) and ($is_posted == 'R')) ) {
             }
             fclose($fp);
             echo "</table>";
-            echo "<p>PremiËre phase de l'importation : $row entrÈes importÈes !</p>";
+            echo "<p>Premi√®re phase de l'importation : $row entr√©es import√©es !</p>";
             if ($row > 0) {
                 if ($test_login_existant == "oui") {
-                    echo "<p>--> Les identifiants qui apparaissent en rouge correspondent ‡ des identifiants dÈj‡ existant dans la base GEPI. Les donnÈes existantes seront donc ÈcrasÈes par les donnÈes prÈsentes dans le fichier ‡ importer !</p>";
+                    echo "<p>--> Les identifiants qui apparaissent en rouge correspondent √† des identifiants d√©j√† existant dans la base GEPI. Les donn√©es existantes seront donc √©cras√©es par les donn√©es pr√©sentes dans le fichier √† importer !</p>";
                 }
                 if ($test_nom_prenom_existant == 'yes') {
-                    echo "<p>--> Les noms et prÈnoms qui apparaissent en bleu correspondent ‡ des ÈlËves dÈj‡ prÈsents dans la base GEPI et portant les mÍmes noms et prÈnoms.
-                    <br />Si le nouvel identifiant est diffÈrent, un nouvel ÈlËve sera crÈe. Sinon, les donnÈes de GEPI seront modifiÈes. </p>";
+                    echo "<p>--> Les noms et pr√©noms qui apparaissent en bleu correspondent √† des √©l√®ves d√©j√† pr√©sents dans la base GEPI et portant les m√™mes noms et pr√©noms.
+                    <br />Si le nouvel identifiant est diff√©rent, un nouvel √©l√®ve sera cr√©e. Sinon, les donn√©es de GEPI seront modifi√©es. </p>";
                 }
                 if ($valid == '1') {
-                    echo "<input type=submit value='Enregistrer les donnÈes'>";
+                    echo "<input type=submit value='Enregistrer les donn√©es'>";
                     echo "<INPUT TYPE=HIDDEN name=nb_row value = $row>";
                     echo "</FORM>";
                 } else {
-                    echo "<p>AVERTISSEMENT : Les symboles ??? signifient que le champ en question n'est pas valide. L'opÈration d'importation des donnÈes ne peut continuer normalement. Veuillez corriger le fichier ‡ importer ou bien effectuer les opÈrations nÈcessaires dans la base GEPI !<br /></p>";
+                    echo "<p>AVERTISSEMENT : Les symboles ??? signifient que le champ en question n'est pas valide. L'op√©ration d'importation des donn√©es ne peut continuer normalement. Veuillez corriger le fichier √† importer ou bien effectuer les op√©rations n√©cessaires dans la base GEPI !<br /></p>";
                     echo "</FORM>";
                 }
             } else {
-                echo "<p>L'importation a ÈchouÈ !</p>";
+                echo "<p>L'importation a √©chou√© !</p>";
             }
         }
     } else {
-        echo "<p>Aucun fichier n'a ÈtÈ sÈlectionnÈ !</p>";
+        echo "<p>Aucun fichier n'a √©t√© s√©lectionn√© !</p>";
     }
 }
 

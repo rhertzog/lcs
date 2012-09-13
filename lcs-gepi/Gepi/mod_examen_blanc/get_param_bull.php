@@ -1,9 +1,8 @@
 <?php
 /*
-$Id: get_param_bull.php 3746 2009-11-20 08:58:25Z crob $
 */
 
-	$val_defaut_champ_bull_pdf["nom_model_bulletin"]="Nom du modèle";
+	$val_defaut_champ_bull_pdf["nom_model_bulletin"]="Nom du modÃ¨le";
 	$val_defaut_champ_bull_pdf["active_bloc_datation"]=1;
 	$val_defaut_champ_bull_pdf["active_bloc_eleve"]=1;
 	$val_defaut_champ_bull_pdf["active_bloc_adresse_parent"]=1;
@@ -33,7 +32,7 @@ $Id: get_param_bull.php 3746 2009-11-20 08:58:25Z crob $
 	$val_defaut_champ_bull_pdf["affiche_nom_court"]=0;
 	$val_defaut_champ_bull_pdf["affiche_effectif_classe"]=0;
 	$val_defaut_champ_bull_pdf["affiche_numero_impression"]=0;
-	$val_defaut_champ_bull_pdf["caractere_utilse"]="Arial";
+	$val_defaut_champ_bull_pdf["caractere_utilse"]="DejaVu";
 	$val_defaut_champ_bull_pdf["X_parent"]=110;
 	$val_defaut_champ_bull_pdf["Y_parent"]=40;
 	$val_defaut_champ_bull_pdf["X_eleve"]=5;
@@ -91,11 +90,11 @@ $Id: get_param_bull.php 3746 2009-11-20 08:58:25Z crob $
 	$val_defaut_champ_bull_pdf["couleur_moy_general1"]=239;
 	$val_defaut_champ_bull_pdf["couleur_moy_general2"]=239;
 	$val_defaut_champ_bull_pdf["couleur_moy_general3"]=239;
-	$val_defaut_champ_bull_pdf["titre_entete_matiere"]="Matière";
+	$val_defaut_champ_bull_pdf["titre_entete_matiere"]="MatiÃ¨re";
 	$val_defaut_champ_bull_pdf["titre_entete_coef"]="coef.";
 	$val_defaut_champ_bull_pdf["titre_entete_nbnote"]="nb. n.";
 	$val_defaut_champ_bull_pdf["titre_entete_rang"]="rang";
-	$val_defaut_champ_bull_pdf["titre_entete_appreciation"]="Appréciation / Conseils";
+	$val_defaut_champ_bull_pdf["titre_entete_appreciation"]="ApprÃ©ciation / Conseils";
 	$val_defaut_champ_bull_pdf["active_coef_sousmoyene"]=0;
 	$val_defaut_champ_bull_pdf["arrondie_choix"]=0.01;
 	$val_defaut_champ_bull_pdf["nb_chiffre_virgule"]=2;

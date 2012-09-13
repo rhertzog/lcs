@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: eleve_options.php 8665 2011-11-26 12:50:32Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -42,16 +41,16 @@ if (!checkAccess()) {
 	die();
 }
 
-// Seuls les comptes Administrateur et Scolarité ont accès
+// Seuls les comptes Administrateur et ScolaritÃ© ont accÃ¨s
 if($_SESSION['statut']=="scolarite") {
-	// Tester si le compte scolarité a accès à cette classe...
+	// Tester si le compte scolaritÃ© a accÃ¨s Ã  cette classe...
 	// Si ce n'est pas le cas -> intrusion...
 
 	$sql="SELECT 1=1 FROM j_scol_classes jsc WHERE jsc.id_classe='$id_classe' AND jsc.login='".$_SESSION['login']."';";
 	$test=mysql_query($sql);
 	if ($test == "0") {
-		tentative_intrusion("2", "Tentative d'accès par un compte scolarité à une classe à laquelle il n'est pas associé.");
-		echo "Vous ne pouvez pas accéder à cette classe car vous n'y êtes pas référent !";
+		tentative_intrusion("2", "Tentative d'accÃ¨s par un compte scolaritÃ© Ã  une classe Ã  laquelle il n'est pas associÃ©.");
+		echo "Vous ne pouvez pas accÃ©der Ã  cette classe car vous n'y Ãªtes pas rÃ©fÃ©rent !";
 		require ("../lib/footer.inc.php");
 		die();
 	}
@@ -100,7 +99,7 @@ if($_SESSION['statut']=="administrateur") {
 					$nb_test2 = mysql_num_rows($test2);
 
 					if (($nb_test1 != 0) or ($nb_test2 != 0)) {
-						$msg = $msg."--> Impossible de supprimer cette option pour l'élève $login_eleve car des moyennes ou appréciations ont déjà été rentrées pour le groupe $nom_groupe pour la période $j ! Commencez par supprimer ces données !<br />";
+						$msg = $msg."--> Impossible de supprimer cette option pour l'Ã©lÃ¨ve $login_eleve car des moyennes ou apprÃ©ciations ont dÃ©jÃ  Ã©tÃ© rentrÃ©es pour le groupe $nom_groupe pour la pÃ©riode $j ! Commencez par supprimer ces donnÃ©es !<br />";
 					} else {
 						if ($test != "0") {
 							$sql="DELETE FROM j_eleves_groupes WHERE (login='".$login_eleve."' and id_groupe='".$id_groupe."' and periode = '".$j."')";
@@ -120,9 +119,9 @@ if($_SESSION['statut']=="administrateur") {
 		$del=mysql_query($sql);
 
 		//$affiche_message = 'yes';
-		if($msg=='') {$msg= "Les modifications ont été enregistrées !";}
+		if($msg=='') {$msg= "Les modifications ont Ã©tÃ© enregistrÃ©es !";}
 	}
-	//$message_enregistrement = "Les modifications ont été enregistrées !";
+	//$message_enregistrement = "Les modifications ont Ã©tÃ© enregistrÃ©es !";
 }
 
 
@@ -172,11 +171,11 @@ if(mysql_num_rows($res_ele_tmp)>0){
 
 
 if($_SESSION['statut']=="administrateur"){
-	$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+	$themessage  = 'Des informations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 }
 //**************** EN-TETE **************************************
-$titre_page = "Gestion des classes | Gestion des matières par élève";
-require_once("../lib/header.inc");
+$titre_page = "Gestion des classes | Gestion des matiÃ¨res par Ã©lÃ¨ve";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 
 //=============================
@@ -197,7 +196,7 @@ if(!isset($quitter_la_page)) {
 		if($_SESSION['statut']=="administrateur"){
 			echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 		}
-		echo ">Elève précédent</a>";
+		echo ">ElÃ¨ve prÃ©cÃ©dent</a>";
 	}
 
 
@@ -239,15 +238,15 @@ if(!isset($quitter_la_page)) {
 		if($_SESSION['statut']=="administrateur"){
 			echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
 		}
-		echo ">Elève suivant</a>";
+		echo ">ElÃ¨ve suivant</a>";
 	}
 
 	echo "</p>\n";
 	echo "</form>\n";
 }
 else{
-	// Cette page a été ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
-	// Après modification éventuelle, il faut quitter cette page.
+	// Cette page a Ã©tÃ© ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
+	// AprÃ¨s modification Ã©ventuelle, il faut quitter cette page.
 	//echo "<p class=bold><a href=\"#\" onclick=\"return confirm_abandon (this, change, '$themessage');\">Refermer la page</a></p>\n";
 	//echo "<p class=bold><a href=\"#\" onclick=\"if(return confirm_abandon (this, change, '$themessage')){self.close()};\">Refermer la page</a></p>\n";
 	if($_SESSION['statut']=="administrateur"){
@@ -293,8 +292,8 @@ if($_SESSION['statut']=="administrateur"){
 	echo add_token_field();
 
 	if(isset($quitter_la_page)){
-		// Cette page a été ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
-		// Après modification éventuelle, il faut quitter cette page.
+		// Cette page a Ã©tÃ© ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
+		// AprÃ¨s modification Ã©ventuelle, il faut quitter cette page.
 		echo "<input type='hidden' name='quitter_la_page' value='y' />\n";
 	}
 }
@@ -315,7 +314,7 @@ if($_SESSION['statut']=="administrateur"){
 	echo "<p align='center'><input type='submit' value='Enregistrer les modifications' /></p>\n";
 }
 
-// J'appelle les différents groupes existants pour la classe de l'élève
+// J'appelle les diffÃ©rents groupes existants pour la classe de l'Ã©lÃ¨ve
 
 //$call_group = mysql_query("SELECT DISTINCT g.id, g.name FROM groupes g, j_groupes_classes jgc WHERE (g.id = jgc.id_groupe and jgc.id_classe = '" . $id_classe ."') ORDER BY jgc.priorite, g.name");
 $call_group = mysql_query("SELECT DISTINCT g.id, g.name,g.description FROM groupes g, j_groupes_classes jgc WHERE (g.id = jgc.id_groupe and jgc.id_classe = '" . $id_classe ."') ORDER BY jgc.priorite, g.name");
@@ -335,11 +334,11 @@ if(mysql_num_rows($res_sig)>0) {
 
 //=========================
 // MODIF: boireaus
-//echo "<table border = '1' cellpadding='5' cellspacing='0'>\n<tr><td><b>Matière</b></td>";
+//echo "<table border = '1' cellpadding='5' cellspacing='0'>\n<tr><td><b>MatiÃ¨re</b></td>";
 //echo "<table border = '1' cellpadding='5' cellspacing='0'>\n";
 echo "<table border='1' cellpadding='5' cellspacing='0' class='boireaus'>\n";
 echo "<tr align='center'>\n";
-echo "<th><b>Matière</b></th>\n";
+echo "<th><b>MatiÃ¨re</b></th>\n";
 //=========================
 $j = 1;
 $chaine_coche="";
@@ -352,11 +351,16 @@ while ($j < $nb_periode) {
 	if($_SESSION['statut']=="administrateur"){
 		echo "<br />\n";
 		//echo "<input type='button' name='coche_col_$j' id='id_coche_col_$j' value='Coche' onClick='coche($j,\"col\")' />/\n";
-		//echo "<input type='button' name='decoche_col_$j' id='id_decoche_col_$j' value='Décoche' onClick='decoche($j,\"col\")' />\n";
+		//echo "<input type='button' name='decoche_col_$j' id='id_decoche_col_$j' value='DÃ©coche' onClick='decoche($j,\"col\")' />\n";
 		//echo "<input type='button' name='coche_col_$j' value='C' onClick='modif_case($j,\"col\",true)' />/\n";
 		//echo "<input type='button' name='decoche_col_$j' value='D' onClick='modif_case($j,\"col\",false)' />\n";
 		echo "<a href='javascript:modif_case($j,\"col\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-		echo "<a href='javascript:modif_case($j,\"col\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+		echo "<a href='javascript:modif_case($j,\"col\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
+
+		if($j>1) {
+			echo "/<a href=\"javascript:copieEnseignementsPeriode1(".$j.")\"><img src='../images/icons/copy-16.png' width='16' height='16' alt='Copier les affectations de la premiÃ¨re pÃ©riode' title='Copier les affectations de la premiÃ¨re pÃ©riode' /></a>";
+		}
+
 	}
 	echo "</th>\n";
 
@@ -371,7 +375,7 @@ while ($j < $nb_periode) {
 if($_SESSION['statut']=="administrateur"){
 	echo "<th>\n";
 	echo "<a href='javascript:$chaine_coche'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-	echo "<a href='javascript:$chaine_decoche'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+	echo "<a href='javascript:$chaine_decoche'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 	echo "</th>\n";
 }
 
@@ -384,7 +388,7 @@ while ($i < $nombre_ligne) {
 	$id_groupe = mysql_result($call_group, $i, "id");
 	$nom_groupe = mysql_result($call_group, $i, "name");
 	//$description_groupe = mysql_result($call_group, $i, "description");
-	$description_groupe = htmlentities(mysql_result($call_group, $i, "description"));
+	$description_groupe = htmlspecialchars(mysql_result($call_group, $i, "description"));
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt white_hover'>\n";
 	echo "<td>";
@@ -398,9 +402,9 @@ while ($i < $nombre_ligne) {
 	if(mysql_num_rows($res_prof)>0){
 		$texte_alternatif="";
 		while($ligne=mysql_fetch_object($res_prof)){
-			$texte_alternatif.=", ".ucfirst(strtolower($ligne->prenom))." ".strtoupper($ligne->nom);
+			$texte_alternatif.=", ".casse_mot($ligne->prenom,'majf2')." ".my_strtoupper($ligne->nom);
 		}
-		$texte_alternatif=substr($texte_alternatif,2);
+		$texte_alternatif=mb_substr($texte_alternatif,2);
 	}
 
 	$sql="SELECT DISTINCT c.classe FROM classes c, j_groupes_classes jgc WHERE jgc.id_groupe='$id_groupe' AND c.id=jgc.id_classe ORDER BY c.classe;";
@@ -409,7 +413,7 @@ while ($i < $nombre_ligne) {
 	while($lig_classe=mysql_fetch_object($res_clas_grp)) {
 		$liste_classes_du_groupe.=", ".$lig_classe->classe;
 	}
-	if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=substr($liste_classes_du_groupe,2);}
+	if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=mb_substr($liste_classes_du_groupe,2);}
 
 	$texte_alternatif.=" (".$liste_classes_du_groupe.")";
 
@@ -459,13 +463,13 @@ while ($i < $nombre_ligne) {
 						$temoin=$clas_tmp;
 					}
 				}
-				//if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=substr($liste_classes_du_groupe,2);}
+				//if($liste_classes_du_groupe!='') {$liste_classes_du_groupe=mb_substr($liste_classes_du_groupe,2);}
 
 				echo "<td style='text-align:center'>";
 				if($temoin!="") {
 					echo $temoin;
 					if($_SESSION['statut']=="administrateur") {
-						echo "<input type='hidden' name=".$id_groupe."_".$j." value='checked' />";
+						echo "<input type='hidden' name='".$id_groupe."_".$j."' value='y' />";
 					}
 					else {
 						echo "<img src='../images/enabled.png' width='15' height='15' alt='Inscrit' />";
@@ -473,34 +477,34 @@ while ($i < $nombre_ligne) {
 				}
 				else {
 					if($_SESSION['statut']=="administrateur") {
-						$msg_erreur="Cette case est validée et ne devrait pas l être. Validez le formulaire pour corriger.";
+						$msg_erreur="Cette case est validÃ©e et ne devrait pas l Ãªtre. Validez le formulaire pour corriger.";
 						echo "<a href='#' alt='$msg_erreur' title='$msg_erreur'><font color='red'>ERREUR</font></a>";
 					}
 					else{
-						$msg_erreur="Cette case est validée et ne devrait pas l être. Contactez l administrateur pour corriger.";
+						$msg_erreur="Cette case est validÃ©e et ne devrait pas l Ãªtre. Contactez l administrateur pour corriger.";
 						echo "<a href='#' alt='$msg_erreur' title='$msg_erreur'><font color='red'>ERREUR</font></a>";
 					}
 					$nb_erreurs++;
 				}
 
 
-				// Test sur la présence de notes dans cn ou de notes/app sur bulletin
+				// Test sur la prÃ©sence de notes dans cn ou de notes/app sur bulletin
 				if (!test_before_eleve_removal($login_eleve, $id_groupe, $j)) {
-					echo "<img id='img_bull_non_vide_".$j."_".$i."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+					echo "<img id='img_bull_non_vide_".$i."_".$j."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
 				}
 	
 				$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$login_eleve."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$id_groupe."' AND ccn.periode = '".$j."')";
 				$test_cn=mysql_query($sql);
 				$nb_notes_cn=mysql_num_rows($test_cn);
 				if($nb_notes_cn>0) {
-					echo "<img id='img_cn_non_vide_".$j."_".$i."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+					echo "<img id='img_cn_non_vide_".$i."_".$j."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
 					//echo "$sql<br />";
 				}
 
 				//echo "A".$tab_sig[$j][$id_groupe]."<br />";
 				if((isset($tab_sig[$j]))&&(isset($tab_sig[$j][$id_groupe]))) {
 					$info_erreur=$tab_sig[$j][$id_groupe];
-					echo "<img id='img_erreur_affect_".$j."_".$i."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
+					echo "<img id='img_erreur_affect_".$i."_".$j."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
 				}
 
 				echo "</td>\n";
@@ -509,14 +513,14 @@ while ($i < $nombre_ligne) {
 		else {
 
 			/*
-			// Un autre test à faire:
-			// Si l'élève est resté dans le groupe alors qu'il n'est plus dans cette classe pour la période
+			// Un autre test Ã  faire:
+			// Si l'Ã©lÃ¨ve est restÃ© dans le groupe alors qu'il n'est plus dans cette classe pour la pÃ©riode
 			$sql="SELECT 1=1 FROM j_eleves_classes WHERE id_classe='$id_classe' AND periode='$j' AND login='$login_eleve'";
 			*/
 
 			echo "<td style='text-align:center'>\n";
 			if($_SESSION['statut']=="administrateur"){
-				echo "<input type=checkbox id=case".$i."_".$j." name=".$id_groupe."_".$j." onchange='changement();' ";
+				echo "<input type='checkbox' id='case".$i."_".$j."' name='".$id_groupe."_".$j."' onchange='changement();' value='y' ";
 				if (mysql_num_rows($test)>0) {
 					echo "checked ";
 				}
@@ -531,22 +535,22 @@ while ($i < $nombre_ligne) {
 				}
 			}
 
-			// Test sur la présence de notes dans cn ou de notes/app sur bulletin
+			// Test sur la prÃ©sence de notes dans cn ou de notes/app sur bulletin
 			if (!test_before_eleve_removal($login_eleve, $id_groupe, $j)) {
-				echo "<img id='img_bull_non_vide_".$j."_".$i."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+				echo "<img id='img_bull_non_vide_".$i."_".$j."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
 			}
 
 			$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$login_eleve."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$id_groupe."' AND ccn.periode = '".$j."')";
 			$test_cn=mysql_query($sql);
 			$nb_notes_cn=mysql_num_rows($test_cn);
 			if($nb_notes_cn>0) {
-				echo "<img id='img_cn_non_vide_".$j."_".$i."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+				echo "<img id='img_cn_non_vide_".$i."_".$j."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
 				//echo "$sql<br />";
 			}
 
 			if((isset($tab_sig[$j]))&&(isset($tab_sig[$j][$id_groupe]))) {
 				$info_erreur=$tab_sig[$j][$id_groupe];
-				echo "<img id='img_erreur_affect_".$j."_".$i."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
+				echo "<img id='img_erreur_affect_".$i."_".$j."' src='../images/icons/flag2.gif' width='17' height='18' title='".$info_erreur."' alt='".$info_erreur."' />";
 			}
 
 			echo "</td>\n";
@@ -587,22 +591,58 @@ while ($i < $nombre_ligne) {
 		//echo "<input type='button' name='coche_lig_$i' value='C' onClick='modif_case($i,\"lig\",true)' />/\n";
 		//echo "<input type='button' name='decoche_lig_$i' value='D' onClick='modif_case($i,\"lig\",false)' />\n";
 		echo "<a href='javascript:modif_case($i,\"lig\",true)'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-		echo "<a href='javascript:modif_case($i,\"lig\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+		echo "<a href='javascript:modif_case($i,\"lig\",false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 		echo "</td>\n";
 	}
 	//=========================
 	echo "</tr>\n";
 	$i++;
 }
+
+echo "<tr>\n";
+echo "<th>\n";
+echo "&nbsp;";
+echo "</th>\n";
+$j = 1;
+while ($j < $nb_periode) {
+
+	echo "<th>\n";
+	echo "<a href='javascript:DecocheColonne_si_bull_et_cn_vide($j)'><img src='../images/icons/wizard.png' width='16' height='16' alt='DÃ©cocher les Ã©lÃ¨ves sans note/app sur les bulletin et carnet de notes' title='DÃ©cocher les Ã©lÃ¨ves sans note/app sur les bulletin et carnet de notes' /></a>\n";
+	echo "</th>\n";
+
+	$j++;
+}
+echo "<th>\n";
+echo "&nbsp;";
+echo "</th>\n";
+echo "</tr>\n";
+
 echo "</table>\n";
 
 
 //============================================
 // AJOUT: boireaus
 echo "<script type='text/javascript' language='javascript'>
+	function DecocheColonne_si_bull_et_cn_vide(i) {
+		for (var ki=0;ki<$nombre_ligne;ki++) {
+			if((document.getElementById('case'+ki+'_'+i))&&(!document.getElementById('img_bull_non_vide_'+ki+'_'+i))&&(!document.getElementById('img_cn_non_vide_'+ki+'_'+i))) {
+				document.getElementById('case'+ki+'_'+i).checked = false;
+			}
+		}
+		changement();
+	}
+
+	function copieEnseignementsPeriode1(num_periode) {
+		for (var ki=0;ki<$nombre_ligne;ki++) {
+			if((document.getElementById('case'+ki+'_1'))&&(document.getElementById('case'+ki+'_'+num_periode))) {
+				document.getElementById('case'+ki+'_'+num_periode).checked=document.getElementById('case'+ki+'_1').checked;
+			}
+		}
+	}
+
 	function modif_case(rang,type,statut){
 		// type: col ou lig
-		// rang: le numéro de la colonne ou de la ligne
+		// rang: le numÃ©ro de la colonne ou de la ligne
 		// statut: true ou false
 		if(type=='col'){
 			for(k=0;k<$nombre_ligne;k++){
@@ -623,9 +663,9 @@ echo "<script type='text/javascript' language='javascript'>
 </script>\n";
 
 if($nb_erreurs>0){
-	echo "<p style='color:red;'>Cet élève est affecté dans des groupes sur des périodes pour lesquelles il n'est pas dans la classe.<br />";
+	echo "<p style='color:red;'>Cet Ã©lÃ¨ve est affectÃ© dans des groupes sur des pÃ©riodes pour lesquelles il n'est pas dans la classe.<br />";
 	if($_SESSION['statut']=="administrateur"){
-		echo "Pour supprimer l'élève de ces groupes, validez le présent formulaire.";
+		echo "Pour supprimer l'Ã©lÃ¨ve de ces groupes, validez le prÃ©sent formulaire.";
 	}
 	else{
 		echo "Contactez l'administrateur pour corriger.";

@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: inscription_index.php 6608 2011-03-03 14:50:57Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -63,13 +62,13 @@ if (isset($_POST['is_posted'])) {
         }
         $i++;
     }
-    $msg = "Les modifications ont été enregistrées.";
+    $msg = "Les modifications ont Ã©tÃ© enregistrÃ©es.";
 }
 
 
 //**************** EN-TETE *****************
 $titre_page = getSettingValue("mod_inscription_titre")." - Inscription";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 
@@ -84,12 +83,12 @@ echo add_token_field();
 echo "<table width=\"100%\" border=\"1\" cellspacing=\"1\" cellpadding=\"5\">\n";
 
 echo "<tr>\n";
-echo "<td><p class='bold'><a href='inscription_index.php?order_by=id'>N°</a></p></td>\n";
+echo "<td><p class='bold'><a href='inscription_index.php?order_by=id'>NÂ°</a></p></td>\n";
 echo "<td><p class='bold'>Date</p></td>\n";
 echo "<td><p class='bold'>Heure</p></td>\n";
 //echo "<td><p class='bold'><a href='inscription_index.php?order_by=date'>Date</a></p></td>\n";
 //echo "<td><p class='bold'><a href='inscription_index.php?order_by=heure'>Heure</a></p></td>\n";
-echo "<td><p class='bold'><a href='inscription_index.php?order_by=description'>Intitulé</a></p></td>\n";
+echo "<td><p class='bold'><a href='inscription_index.php?order_by=description'>IntitulÃ©</a></p></td>\n";
 echo "<td><p class='bold'>Personnes actuellement inscrites</p></td>\n";
 echo "<td><p class='bold'>S'inscrire</p></td>\n";
 echo "</tr>\n";
@@ -99,9 +98,9 @@ $i = 0;
 while ($i < $nombre_lignes){
     $id = mysql_result($call_data, $i, "id");
     $date = mysql_result($call_data, $i, "date");
-    $day = substr($date, 8, 2);
-    $month = substr($date, 5, 2);
-    $year = substr($date, 0, 4);
+    $day = mb_substr($date, 8, 2);
+    $month = mb_substr($date, 5, 2);
+    $year = mb_substr($date, 0, 4);
     $date = mktime(0,0,0,$month,$day,$year);
     $date = strftime("%A %d %B %Y", $date);
 

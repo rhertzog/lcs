@@ -37,9 +37,10 @@ class JNotificationResponsableEleveTableMap extends TableMap
 		$this->setClassname('JNotificationResponsableEleve');
 		$this->setPackage('gepi');
 		$this->setUseIdGenerator(false);
+		$this->setIsCrossRef(true);
 		// columns
 		$this->addForeignPrimaryKey('A_NOTIFICATION_ID', 'ANotificationId', 'INTEGER' , 'a_notifications', 'ID', true, 12, null);
-		$this->addForeignPrimaryKey('PERS_ID', 'PersId', 'VARCHAR' , 'resp_pers', 'PERS_ID', true, 10, null);
+		$this->addForeignPrimaryKey('PERS_ID', 'ResponsableEleveId', 'VARCHAR' , 'resp_pers', 'PERS_ID', true, 10, null);
 		// validators
 	} // initialize()
 

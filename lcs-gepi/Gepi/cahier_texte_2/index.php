@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: index.php 7938 2011-08-24 07:57:41Z jjocal $
  *
- * Copyright 2009 Josselin Jacquard
+ * Copyright 2009-2012 Josselin Jacquard
  *
  * This file is part of GEPI.
  *
@@ -23,7 +22,7 @@
 
 $filtrage_extensions_fichiers_table_ct_types_documents='y';
 
-// On dÈsamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
+// On d√©samorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) || isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
 
 // Initialisations files
@@ -49,16 +48,16 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
-//if (!checkAccess()) {
-//    header("Location: ../logout.php?auto=1");
-//    die();
-//}
+if (!checkAccess()) {
+    header("Location: ../logout.php?auto=1");
+    die();
+}
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_cahiers_texte")!='y') {
-    die("Le module n'est pas activÈ.");
+    die("Le module n'est pas activ√©.");
 }
 
 //recherche de l'utilisateur avec propel
@@ -68,7 +67,7 @@ if ($utilisateur == null) {
 	die();
 }
 
-// On met le header en petit par dÈfaut
+// On met le header en petit par d√©faut
 $_SESSION['cacher_header'] = "y";
 //**************** EN-TETE *****************
 $titre_page = "Cahier de textes";
@@ -104,12 +103,14 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6' ) !== FALSE) {
 //
 //=================================
 include("../edt_organisation/cdt_initialisation.php");
-
-require_once("../lib/header.inc");
+$pas_de_message_deconnexion = 1;
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************
 //-----------------------------------------------------------------------------------
 
-// si l'id d'un groupe est spÈcifiÈ, on l'enregistre dans un champ hidden, il sera utilisÈ par le javascript d'initialisation pour basculer vers le groupe concernÈ
+//debug_var();
+
+// si l'id d'un groupe est sp√©cifi√©, on l'enregistre dans un champ hidden, il sera utilis√© par le javascript d'initialisation pour basculer vers le groupe concern√©
 echo "<input type='hidden' name='id_groupe_init' id='id_groupe_init' value='";
 $id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 if ($id_groupe != NULL) {
@@ -117,16 +118,33 @@ if ($id_groupe != NULL) {
 } else if (isset($_SESSION['id_groupe_session'])) {
 	echo $_SESSION['id_groupe_session'];
 }
-echo "' />";
+echo "' />\n";
 
-echo "<table width=\"98%\" cellspacing=0 align=\"center\" summary=\"Tableau d'entËte\">\n";
+//============================================
+// Pour pouvoir pointer une notice pr√©cise depuis une page externe:
+echo "<input type='hidden' name='type_notice_init' id='type_notice_init' value='";
+$type_notice = isset($_POST["type_notice"]) ? $_POST["type_notice"] :(isset($_GET["type_notice"]) ? $_GET["type_notice"] :NULL);
+if ($type_notice != NULL) {
+	echo $type_notice;
+}
+echo "' />\n";
+
+echo "<input type='hidden' name='id_ct_init' id='id_ct_init' value='";
+$id_ct = isset($_POST["id_ct"]) ? $_POST["id_ct"] :(isset($_GET["id_ct"]) ? $_GET["id_ct"] :NULL);
+if ($id_ct != NULL) {
+	echo $id_ct;
+}
+echo "' />\n";
+//============================================
+
+echo "<table width=\"98%\" cellspacing=0 align=\"center\" summary=\"Tableau d'ent√®te\">\n";
 echo "<tr>\n";
 echo "<td valign='center'>\n";
 echo "<button style='width: 200px;' onclick=\"javascript:
 						getWinDernieresNotices().show();
 						getWinDernieresNotices().toFront();
 						return false;
-				\">Voir les derniËres notices</button>\n";
+				\">Voir les derni√®res notices</button>\n";
 echo "<br />";
 echo "<button style='width: 200px;' onclick=\"javascript:
 						getWinDernieresNotices().setLocation(155, 40);
@@ -147,8 +165,8 @@ echo "<img src='../images/icons/cdt2_1.png' alt='Utiliser la version 1 du cahier
 //				\">Utiliser la version 1 du cahier de textes</button>\n";
 echo "</td>";
 // **********************************************
-// Affichage des diffÈrents groupes du professeur
-// RÈcupÈration de toutes les infos sur le groupe
+// Affichage des diff√©rents groupes du professeur
+// R√©cup√©ration de toutes les infos sur le groupe
 echo "<td valign='center'>";
 $groups = $utilisateur->getGroupes();
 if ($groups->isEmpty()) {
@@ -163,9 +181,9 @@ $a = 1;
 			id_groupe = '".$group->getId()."';
 			getWinDernieresNotices().hide();
 			getWinListeNotices();
-			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=".$group->getId()."', {encoding: 'ISO-8859-1'});
+			new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=".$group->getId()."', {encoding: 'utf-8'});
 			getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe=".$group->getId()."&today='+getCalendarUnixDate(), { 
-	            		encoding: 'ISO-8859-1',
+	            		encoding: 'utf-8',
 	            		onComplete : 
 	            		function() {
 	            			initWysiwyg();
@@ -185,7 +203,7 @@ $a = 1;
 	}
 }
 echo "<a href='creer_sequence.php'>Pr&eacute;parer une s&eacute;quence enti&egrave;re</a></td>";
-// Fin Affichage des diffÈrents groupes du professeur
+// Fin Affichage des diff√©rents groupes du professeur
 // **********************************************
 echo "<td width='250 px'></td>";
 echo "</tr>\n";
@@ -195,6 +213,7 @@ echo "</table>\n<hr />";
 //	emplois du temps - affichage
 //
 //=================================
+$edt_avec_semAB="y";
 require_once("../edt_organisation/cdt_voir_view.php");
 
 require("../lib/footer.inc.php");

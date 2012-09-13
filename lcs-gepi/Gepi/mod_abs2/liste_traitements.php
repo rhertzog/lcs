@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: liste_traitements.php 7826 2011-08-19 10:26:47Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,9 +52,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
@@ -68,6 +67,7 @@ include('include_pagination.php');
 
 $affichage = isset($_POST["affichage"]) ? $_POST["affichage"] :(isset($_GET["affichage"]) ? $_GET["affichage"] : NULL);
 $menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : Null);
+$imprime = isset($_POST["imprime"]) ? $_POST["imprime"] :(isset($_GET["imprime"]) ? $_GET["imprime"] : Null);
 
 //==============================================
 $style_specifique[] = "mod_abs2/lib/abs_style";
@@ -173,9 +173,9 @@ if (getFiltreRechercheParam('order') == "asc_id") {
 } else if (getFiltreRechercheParam('order') == "des_utilisateur") {
     $query->useUtilisateurProfessionnelQuery()->orderBy('Nom', Criteria::DESC)->endUse();
 } else if (getFiltreRechercheParam('order') == "asc_eleve") {
-    $query->useJTraitementSaisieEleveQuery()->useAbsenceEleveSaisieQuery()->useEleveQuery()->orderBy('Nom', Criteria::ASC)->endUse()->endUse()->endUse();
+    $query->useJTraitementSaisieEleveQuery()->useAbsenceEleveSaisieQuery()->useEleveQuery()->orderBy('Nom', Criteria::ASC)->orderBy('Prenom', Criteria::ASC)->orderBy('Login', Criteria::ASC)->endUse()->endUse()->endUse();
 } else if (getFiltreRechercheParam('order') == "des_eleve") {
-    $query->useJTraitementSaisieEleveQuery()->useAbsenceEleveSaisieQuery()->useEleveQuery()->orderBy('Nom', Criteria::DESC)->endUse()->endUse()->endUse();
+    $query->useJTraitementSaisieEleveQuery()->useAbsenceEleveSaisieQuery()->useEleveQuery()->orderBy('Nom', Criteria::DESC)->orderBy('Prenom', Criteria::ASC)->orderBy('Login', Criteria::ASC)->endUse()->endUse()->endUse();
 } else if (getFiltreRechercheParam('order') == "asc_classe") {
     $query->useJTraitementSaisieEleveQuery()->useAbsenceEleveSaisieQuery()->useClasseQuery()->orderBy('NomComplet', Criteria::ASC)->endUse()->endUse()->endUse();
 } else if (getFiltreRechercheParam('order') == "des_classe") {
@@ -227,7 +227,7 @@ if ($affichage == 'tableur') {
 
     // Load the template
     $extraction_traitement=repertoire_modeles('absence_extraction_traitements.ods');
-    $TBS->LoadTemplate($extraction_traitement);
+    $TBS->LoadTemplate($extraction_traitement, OPENTBS_ALREADY_UTF8);
 
     $titre = 'Extrait des traitement d\'absences';
 
@@ -304,9 +304,12 @@ if ($affichage == 'tableur') {
     $now = new DateTime();
     $nom_fichier .=  $now->format("d_m_Y").'.ods';
     $TBS->Show(OPENTBS_DOWNLOAD+TBS_EXIT, $nom_fichier);
+} elseif ('lot' == $imprime) {
+	include 'lib/traitements_vers_imprime_lot.php';
+	
 }
 
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 if(!$menu){
@@ -336,7 +339,11 @@ echo "&nbsp;&nbsp;&nbsp;";
 echo '<button type="submit">Rechercher</button>';
 echo '<button type="submit" name="reinit_filtre" value="y" >Reinitialiser les filtres</button> ';
 echo '<button type="submit" name="affichage" value="tableur" >Exporter au format ods</button> ';
-
+?>
+<button type="submit" name="imprime" value="lot" title="CrÃ©e un courrier pour chaque Ã©lÃ¨ve de la liste affichÃ©e ci-dessous" >
+	Courriers par lot
+</button>
+<?php
 echo "</p>";
 
 echo '<table id="table_liste_absents" class="tb_absences" style="border-spacing:0; width:100%">';
@@ -359,7 +366,7 @@ echo 'border-width:1px;" alt="" name="order" value="des_id" onclick="this.form.o
 //echo '</nobr> ';
 echo '</span>';
 echo '<br/> ';
-echo 'N°';
+echo 'NÂ°';
 echo '<input type="text" name="filter_traitement_id" value="'.getFiltreRechercheParam('filter_traitement_id').'" size="3"/>';
 echo '</th>';
 
@@ -383,7 +390,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Élève';
+echo 'Ã‰lÃ¨ve';
 echo '<input type="image" src="../images/up.png" title="monter" style="vertical-align: middle;width:15px; height:15px; ';
 if ($order == "asc_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_eleve" onclick="this.form.order.value = this.value"/>';
@@ -463,13 +470,13 @@ echo '</th>';
 echo '<th>';
 echo ("<select name=\"filter_manqement_obligation\" onchange='submit()'>");
 echo "<option value=''";
-if (isFiltreRechercheParam('filter_manqement_obligation') && getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "checked='checked'";}
+if (!isFiltreRechercheParam('filter_manqement_obligation')) {echo "selected='selected'";}
 echo "></option>\n";
 echo "<option value='y' ";
-if (getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "selected'";}
+if (getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "selected='selected'";}
 echo ">oui</option>\n";
 echo "<option value='n' ";
-if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') {echo "selected'";}
+if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') {echo "selected='selected'";}
 echo ">non</option>\n";
 echo "</select>";
 echo '<br/>Manquement obligation scolaire (bulletin)';
@@ -480,7 +487,7 @@ echo '<th>';
 //echo '<input type="checkbox" value="y" name="filter_sous_responsabilite_etablissement" onchange="submit()"';
 //if (isFiltreRechercheParam('filter_sous_responsabilite_etablissement') && getFiltreRechercheParam('filter_sous_responsabilite_etablissement') == 'y') {echo "checked='checked'";}
 //echo '/><br/>sous resp. etab.';
-echo 'Sous resp. étab.';
+echo 'Sous resp. Ã©tab.';
 echo '</th>';
 //en tete motif d'absence
 echo '<th>';
@@ -579,7 +586,7 @@ echo '</th>';
 echo '<th>';
 echo '<span style="white-space: nowrap;"> ';
 //echo '<nobr>';
-echo 'Date création';
+echo 'Date crÃ©ation';
 echo '<input type="image" src="../images/up.png" title="monter" style="vertical-align: middle;width:15px; height:15px; ';
 if ($order == "asc_date_creation") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_date_creation" onclick="this.form.order.value = this.value"/>';
@@ -648,7 +655,7 @@ echo '<span style="white-space: nowrap;"> ';
 echo '<input type="hidden" value="y" name="filter_checkbox_posted"/>';
 echo '<input type="checkbox" value="y" name="filter_date_modification" onchange="submit()"';
 if (isFiltreRechercheParam('filter_date_modification') != null && getFiltreRechercheParam('filter_date_modification') == 'y') {echo "checked";}
-echo '/> Modifié';
+echo '/> ModifiÃ©';
 echo '</span>';
 //echo '</nobr>';
 echo '</th>';
@@ -709,7 +716,7 @@ foreach ($results as $traitement) {
 	echo ($eleve->getCivilite().' '.$eleve->getNom().' '.$eleve->getPrenom());
 	echo "</a>";
 	if ($utilisateur->getAccesFicheEleve($eleve)) {
-	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
+	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank'>";
 	    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' >";
 	    echo ' (voir fiche)';
 	    echo "</a>";
@@ -723,7 +730,6 @@ foreach ($results as $traitement) {
     echo "' style='display: block; height: 100%;'> ";
  	if ((getSettingValue("active_module_trombinoscopes")=='y')) {
 	    $nom_photo = $eleve->getNomPhoto(1);
-	    //$photos = "../photos/eleves/".$nom_photo;
 	    $photos = $nom_photo;
 	    //if (($nom_photo != "") && (file_exists($photos))) {
 	    if (($nom_photo != NULL) && (file_exists($photos))) {
@@ -743,7 +749,7 @@ foreach ($results as $traitement) {
     }
     foreach ($traitement->getAbsenceEleveSaisies() as $saisie) {
 	echo "<tr style='border-spacing:0px; border-style : solid; border-size : 1px; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; çargin : 0px; padding-top : 3px; font-size:100%;'>";
+	echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; Ã§argin : 0px; padding-top : 3px; font-size:100%;'>";
 	echo "<a href='visu_saisie.php?id_saisie=".$saisie->getPrimaryKey()."";
     if($menu){
                 echo"&menu=false";
@@ -850,7 +856,7 @@ foreach ($results as $traitement) {
     echo "<table style='border-spacing:0px; border-style : none; margin : 0px; padding : 0px; font-size:100%; min-width:150px; width: 100%;'>";
     foreach ($traitement->getAbsenceEleveNotifications() as $notification) {
 	echo "<tr style='border-spacing:0px; border-style : solid; border-size : 1px; margin : 0px; padding : 0px; font-size:100%;'>";
-	echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; çargin : 0px; padding-top : 3px; font-size:100%;'>";
+	echo "<td style='border-spacing:0px; border-style : solid; border-size : 1px; Ã§argin : 0px; padding-top : 3px; font-size:100%;'>";
 	echo "<a href='visu_notification.php?id_notification=".$notification->getPrimaryKey()."";
     if($menu){
                 echo"&menu=false";
@@ -922,7 +928,7 @@ function redimensionne_image_petit($photo)
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
+    // largeur et/ou hauteur maximum Ã  afficher
              $taille_max_largeur = 35;
              $taille_max_hauteur = 35;
 
@@ -931,7 +937,7 @@ function redimensionne_image_petit($photo)
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // définit largeur et hauteur pour la nouvelle image
+    // dÃ©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

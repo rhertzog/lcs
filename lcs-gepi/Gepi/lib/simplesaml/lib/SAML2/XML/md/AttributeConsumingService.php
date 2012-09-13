@@ -4,7 +4,6 @@
  * Class representing SAML 2 Metadata AttributeConsumingService element.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SAML2_XML_md_AttributeConsumingService {
 
@@ -73,12 +72,12 @@ class SAML2_XML_md_AttributeConsumingService {
 
 		$this->isDefault = SAML2_Utils::parseBoolean($xml, 'isDefault', NULL);
 
-		$this->ServiceName = SAML2_Utils::extractLocalizedStrings($xml, './saml_metadata:ServiceName');
+		$this->ServiceName = SAML2_Utils::extractLocalizedStrings($xml, SAML2_Const::NS_MD, 'ServiceName');
 		if (empty($this->ServiceName)) {
 			throw new Exception('Missing ServiceName in AttributeConsumingService.');
 		}
 
-		$this->ServiceDescription = SAML2_Utils::extractLocalizedStrings($xml, './saml_metadata:ServiceDescription');
+		$this->ServiceDescription = SAML2_Utils::extractLocalizedStrings($xml, SAML2_Const::NS_MD, 'ServiceDescription');
 
 		foreach (SAML2_Utils::xpQuery($xml, './saml_metadata:RequestedAttribute') as $ra) {
 			$this->RequestedAttribute[] = new SAML2_XML_md_RequestedAttribute($ra);

@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: step1.php 5936 2010-11-21 17:32:17Z crob $
+* $Id$
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -27,7 +27,6 @@
 require_once("../lib/initialisations.inc.php");
 extract($_POST, EXTR_OVERWRITE);
 
-
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -38,38 +37,53 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+$debug_ele="n";
+
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'annÈe : Importation des ÈlËves - Etape 1";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'ann√©e : Importation des √©l√®ves - Etape 1";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class="bold"><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 <?php
 
-// On vÈrifie si l'extension d_base est active
+// On v√©rifie si l'extension d_base est active
 //verif_active_dbase();
 
-echo "<center><h3 class='gepi'>PremiËre phase d'initialisation<br />Importation des ÈlËves, constitution des classes et affectation des ÈlËves dans les classes</h3></center>\n";
+echo "<center><h3 class='gepi'>Premi√®re phase d'initialisation<br />Importation des √©l√®ves, constitution des classes et affectation des √©l√®ves dans les classes</h3></center>\n";
 
 
 if (!isset($is_posted)) {
-	echo "<p>Vous allez effectuer la premiËre Ètape : elle consiste ‡ importer le fichier <b>ELEVES.CSV</b> (<i>gÈnÈrÈ ‡ partir des exports XML de Sconet</i>) contenant toutes les donnÈes dans une table temporaire de la base de donnÈes de <b>GEPI</b>.";
-	echo "<p>Veuillez prÈciser le nom complet du fichier <b>ELEVES.CSV</b>.";
+	echo "<p>Vous allez effectuer la premi√®re √©tape&nbsp;: elle consiste √† importer le fichier <b>ELEVES.CSV</b> (<em>g√©n√©r√© √† partir des exports XML de Sconet</em>) contenant toutes les donn√©es dans une table temporaire de la base de donn√©es de <b>GEPI</b>.";
+	echo "<p>Veuillez pr√©ciser le nom complet du fichier <b>ELEVES.CSV</b>.";
 	echo "<form enctype='multipart/form-data' action='step1.php' method=post>\n";
 	echo add_token_field();
 	echo "<input type=hidden name='is_posted' value='yes' />\n";
 	echo "<p><input type=\"file\" size=\"80\" name=\"csv_file\" /></p>\n";
 	echo "<p><input type=submit value='Valider' /></p>\n";
 	echo "</form>\n";
+
+	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='eleve';";
+	if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
+	$test=mysql_query($sql);
+	if(mysql_num_rows($test)>0) {
+		$sql="SELECT 1=1 FROM tempo_utilisateurs WHERE statut='eleve';";
+		if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)==0) {
+			echo "<p style='color:red'>Il existe un ou des comptes √©l√®ves de l'ann√©e pass√©e, et vous n'avez pas mis ces comptes en r√©serve pour imposer le m√™me login/mot de passe cette ann√©e.<br />Est-ce bien un choix d√©lib√©r√© ou un oubli de votre part?<br />Pour conserver ces login/mot de de passe de fa√ßon √† ne pas devoir re-distribuer ces informations (<em>et √©viter de perturber ces utilisateurs</em>), vous pouvez proc√©der √† la mise en r√©serve avant d'initialiser l'ann√©e dans la page <a href='../gestion/changement_d_annee.php'>Changement d'ann√©e</a> (<em>vous y trouverez aussi la possibilit√© de conserver les comptes parents et bien d'autres actions √† ne pas oublier avant l'initialisation</em>).</p>\n";
+		}
+	}
+
 } else {
 	check_token(false);
 	$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
-	if(strtoupper($csv_file['name']) == "ELEVES.CSV"){
+	if(mb_strtoupper($csv_file['name']) == "ELEVES.CSV"){
 		//$fp = dbase_open($csv_file['tmp_name'], 0);
 		$fp=fopen($csv_file['tmp_name'],"r");
 
@@ -104,11 +118,11 @@ if (!isset($is_posted)) {
 			`ELEOPT10` varchar(40) NOT NULL default '',
 			`ELEOPT11` varchar(40) NOT NULL default '',
 			`ELEOPT12` varchar(40) NOT NULL default ''
-			);";
+			) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 			$create_table = mysql_query($sql);
 
 			$del = @mysql_query("DELETE FROM temp_gep_import2");
-			// on constitue le tableau des champs ‡ extraire
+			// on constitue le tableau des champs √† extraire
 			$tabchamps = array("ELENOM","ELEPRE","ELESEXE","ELEDATNAIS","ELENOET","ELE_ID","ELEDOUBL","ELENONAT","ELEREG","DIVCOD","ETOCOD_EP", "ELEOPT1", "ELEOPT2", "ELEOPT3", "ELEOPT4", "ELEOPT5", "ELEOPT6", "ELEOPT7", "ELEOPT8", "ELEOPT9", "ELEOPT10", "ELEOPT11", "ELEOPT12");
 
 			//$nblignes = dbase_numrecords($fp); //number of rows
@@ -118,7 +132,7 @@ if (!isset($is_posted)) {
 			while (!feof($fp)) {
 				$ligne = fgets($fp, 4096);
 				if($nblignes==0){
-					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommÈs avec l'ajout de ',...' en fin de nom de champ.
+					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renomm√©s avec l'ajout de ',...' en fin de nom de champ.
 					// On ne retient pas ces ajouts pour $en_tete
 					$temp=explode(";",$ligne);
 					for($i=0;$i<sizeof($temp);$i++){
@@ -139,35 +153,6 @@ if (!isset($is_posted)) {
 			}
 			fclose ($fp);
 
-
-			/*
-			// On range dans un tableau les en-tÍtes des champs
-			if (@dbase_get_record_with_names($fp,1)) {
-				$temp = @dbase_get_record_with_names($fp,1);
-			} else {
-				echo "<p>Le fichier sÈlectionnÈ n'est pas valide !<br />";
-				echo "<a href='step1.php'>Cliquer ici </a> pour recommencer !</center></p>";
-				die();
-			}
-
-			$nb = 0;
-			foreach($temp as $key => $val){
-				$en_tete[$nb] = "$key";
-				$nb++;
-			}
-			*/
-
-
-			// On range dans tabindice les indices des champs retenus
-			/*
-			for ($k = 0; $k < count($tabchamps); $k++) {
-				for ($i = 0; $i < count($en_tete); $i++) {
-					if (trim($en_tete[$i]) == $tabchamps[$k]) {
-						$tabindice[] = $i;
-					}
-				}
-			}
-			*/
 			$cpt_tmp=0;
 			for ($k = 0; $k < count($tabchamps); $k++) {
 				for ($i = 0; $i < count($en_tete); $i++) {
@@ -180,20 +165,15 @@ if (!isset($is_posted)) {
 
 			//=========================
 			$fp=fopen($csv_file['tmp_name'],"r");
-			// On lit une ligne pour passer la ligne d'entÍte:
+			// On lit une ligne pour passer la ligne d'ent√™te:
 			$ligne = fgets($fp, 4096);
 			//=========================
 			$nb_reg_ok = 0;
 			$nb_reg_no = 0;
 			for($k = 1; ($k < $nblignes+1); $k++){
 				$enregistre = "yes";
-				//$ligne = dbase_get_record($fp,$k);
 				if(!feof($fp)){
-					//=========================
-					// MODIF: boireaus 20071024
-					//$ligne = fgets($fp, 4096);
-					$ligne = my_ereg_replace('"','',fgets($fp, 4096));
-					//=========================
+					$ligne = preg_replace('/"/','',fgets($fp, 4096));
 					if(trim($ligne)!=""){
 						$tabligne=explode(";",$ligne);
 						//$query = "INSERT INTO temp_gep_import2 VALUES ('$k',''";
@@ -202,19 +182,14 @@ if (!isset($is_posted)) {
 							//$query = $query.",";
 
 							$ind = $tabindice[$i];
-							//$affiche = dbase_filter(trim($ligne[$ind]));
-							//$affiche = dbase_filter(trim($tabligne[$ind]));
 							// On vire en plus les apostrophes dans les noms,...
-							$affiche = my_ereg_replace("'"," ",dbase_filter(trim($tabligne[$ind])));
-							//$query = $query."\"".$affiche."\"";
+							$affiche = trim(preg_replace("/'/"," ",nettoyer_caracteres_nom($tabligne[$ind], "an", " '_-", "")));
 							if($tabchamps[$ind]!=''){
 								$query = $query.",";
-								$query = $query."$tabchamps[$ind]='".$affiche."'";
+								$query = $query."$tabchamps[$ind]='".mysql_real_escape_string($affiche)."'";
 							}
 							if (($en_tete[$ind] == 'DIVCOD') and ($affiche == '')) {$enregistre = "no";}
 						}
-						//$query = $query.")";
-						//echo "$query<br />";
 						if ($enregistre == "yes") {
 							$register = mysql_query($query);
 							if (!$register) {
@@ -222,34 +197,32 @@ if (!isset($is_posted)) {
 								$nb_reg_no++;
 							} else {
 								$nb_reg_ok++;
-					//                        echo ".";
 							}
 						} else {
-				//                    echo ".";
+							//echo ".";
 						}
 					}
 				}
 			}
 
-			//dbase_close($fp);
 			fclose($fp);
 			if ($nb_reg_no != 0) {
-				echo "<p>Lors de l'enregistrement des donnÈes il y a eu $nb_reg_no erreurs, vous ne pouvez pas procÈder ‡ la suite de l'initialisation. Trouvez la cause de l'erreur et recommencez la procÈdure, aprËs avoir vidÈ la table temporaire.";
+				echo "<p>Lors de l'enregistrement des donn√©es il y a eu $nb_reg_no erreurs, vous ne pouvez pas proc√©der √† la suite de l'initialisation. Trouvez la cause de l'erreur et recommencez la proc√©dure, apr√®s avoir vid√© la table temporaire.";
 			}
 			else {
-				echo "<p>Les $nblignes lignes du fichier ELEVES.CSV ont ÈtÈ analysÈes.<br />$nb_reg_ok lignes de donnÈes correspondant ‡ des ÈlËves de l'annÈe en cours ont ÈtÈ enregistrÈes dans une table temporaire.<br />Il n'y a pas eu d'erreurs, vous pouvez procÈder ‡ l'Ètape suivante.</p>";
-				echo "<center><p><a href='step2.php?a=a".add_token_in_url()."'>AccÈder ‡ l'Ètape 2</a></p></center>";
+				echo "<p>Les $nblignes lignes du fichier ELEVES.CSV ont √©t√© analys√©es.<br />$nb_reg_ok lignes de donn√©es correspondant √† des √©l√®ves de l'ann√©e en cours ont √©t√© enregistr√©es dans une table temporaire.<br />Il n'y a pas eu d'erreurs, vous pouvez proc√©der √† l'√©tape suivante.</p>";
+				echo "<center><p><a href='step2.php?a=a".add_token_in_url()."'>Acc√©der √† l'√©tape 2</a></p></center>";
 			}
 		}
 	}
 	else if (trim($csv_file['name'])=='') {
 
-		echo "<p>Aucun fichier n'a ÈtÈ sÈlectionnÈ !<br />";
+		echo "<p>Aucun fichier n'a √©t√© s√©lectionn√© !<br />";
 		echo "<a href='step1.php'>Cliquer ici </a> pour recommencer !</center></p>";
 
 	}
 	else {
-		echo "<p>Le fichier sÈlectionnÈ n'est pas valide !<br />";
+		echo "<p>Le fichier s√©lectionn√© n'est pas valide !<br />";
 		echo "<a href='step1.php'>Cliquer ici </a> pour recommencer !</center></p>";
 	}
 }

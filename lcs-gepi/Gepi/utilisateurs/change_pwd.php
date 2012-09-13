@@ -1,8 +1,7 @@
 <?php
 /*
- * @version $Id: change_pwd.php 8386 2011-09-29 15:10:28Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -21,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// On indique qu'il faut crée des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut crÃ©e des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -60,22 +59,22 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
         $flag = 0;
 	}
     else {
-        // Mot de passe comportant des lettres et des chiffres et au moins un caractère spécial
+        // Mot de passe comportant des lettres et des chiffres et au moins un caractÃ¨re spÃ©cial
         $flag = 1;
 	}
 
 	if(($mdp_INE=='y')&&($user_statut=='eleve')&&($ine_password!="")) {
 		$auth_mode = mysql_result(mysql_query("SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
 		if ($auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == 'yes') {
-			// On est en mode d'écriture LDAP
+			// On est en mode d'Ã©criture LDAP
 			$ldap_server = new LDAPServer;
 			$reg_data = $ldap_server->update_user($user_login, '', '', '', '', $ine_password,'');
 		} else {
-			// On est en mode base de données
+			// On est en mode base de donnÃ©es
 			$reg_data = Session::change_password_gepi($user_login,$ine_password);
 		}
 
-		//ajout Eric En cas de réinitialisation par l'admin, il faut forcer à la première connexion la changement du mot de passe
+		//ajout Eric En cas de rÃ©initialisation par l'admin, il faut forcer Ã  la premiÃ¨re connexion la changement du mot de passe
 		if ($_SESSION['statut'] == 'administrateur') {
 			$reg_data = mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
 		}
@@ -83,7 +82,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 		if (!$reg_data) {
 			$msg = "Erreur lors de l'enregistrement du mot de passe !";
 		} else {
-			$msg="Le mot de passe a été changé ($user_login:$ine_password) !";
+			$msg="Le mot de passe a Ã©tÃ© changÃ© ($user_login:$ine_password) !";
 		}
 	}
 	else {
@@ -95,15 +94,15 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 		} else {
 			$auth_mode = mysql_result(mysql_query("SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
 			if ($auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == 'yes') {
-				// On est en mode d'écriture LDAP
+				// On est en mode d'Ã©criture LDAP
 				$ldap_server = new LDAPServer;
 				$reg_data = $ldap_server->update_user($user_login, '', '', '', '', $NON_PROTECT['password'],'');
 			} else {
-				// On est en mode base de données
+				// On est en mode base de donnÃ©es
                                 $reg_data = Session::change_password_gepi($user_login,$NON_PROTECT['password']);
 			}
 
-			//ajout Eric En cas de réinitialisation par l'admin, il faut forcer à la première connexion la changement du mot de passe
+			//ajout Eric En cas de rÃ©initialisation par l'admin, il faut forcer Ã  la premiÃ¨re connexion la changement du mot de passe
 			if ($_SESSION['statut'] == 'administrateur') {
 				$reg_data = mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
 			}
@@ -111,7 +110,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 			if (!$reg_data) {
 				$msg = "Erreur lors de l'enregistrement du mot de passe !";
 			} else {
-				$msg="Le mot de passe a été changé !";
+				$msg="Le mot de passe a Ã©tÃ© changÃ© !";
 			}
 		}
 	}
@@ -128,50 +127,63 @@ if (isset($user_login) and ($user_login!='')) {
 
 //**************** EN-TETE *****************
 $titre_page = "Gestion des utilisateurs | Modifier un mot de passe";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | <a href="help.php">Aide</a></p>
 <?php
-// dans le cas de LCS, existence d'utilisateurs locaux reprérés grâce au champ password non vide.
+// dans le cas de LCS, existence d'utilisateurs locaux reprÃ©rÃ©s grÃ¢ce au champ password non vide.
 $testpassword = sql_query1("select password from utilisateurs where login = '".$user_login."'");
 if ($testpassword == -1) $testpassword = '';
 if ($auth_mode != "gepi" && $gepiSettings['ldap_write_access'] != "yes") {
-    echo "Vous ne pouvez pas changer le mot de passe des utilisateurs lorsque Gepi est configuré pour utiliser une authentification extérieure et que vous n'avez pas accès à l'annuaire LDAP en écriture.";
+    echo "Vous ne pouvez pas changer le mot de passe des utilisateurs lorsque Gepi est configurÃ© pour utiliser une authentification extÃ©rieure et que vous n'avez pas accÃ¨s Ã  l'annuaire LDAP en Ã©criture.";
     echo "</div>\n";
     echo "</body></html>\n";
     die();
 }
 
-echo "<p class='grand'>Changement du mot de passe</p>\n";
-//if ($user_login != $_SESSION['login']) {
-if (strtoupper($user_login) != strtoupper($_SESSION['login'])) {
+echo "<h2>Changement du mot de passe</h2>\n";
+
+if (mb_strtoupper($user_login) != mb_strtoupper($_SESSION['login'])) {
     if (($user_statut == 'professeur') or ($user_statut == 'cpe') or ($user_statut == 'responsable')) {
         // Mot de passe comportant des lettres et des chiffres
         $flag = 0;
 	}
     else {
-        // Mot de passe comportant des lettres et des chiffres et au moins un caractère spécial
+        // Mot de passe comportant des lettres et des chiffres et au moins un caractÃ¨re spÃ©cial
         $flag = 1;
 	}
     echo "<form enctype=\"multipart/form-data\" action=\"change_pwd.php\" method='post'>\n";
 
 	echo add_token_field();
 
-    echo "<div class=\"norme\">";
-    echo "Identifiant : ".$user_login;
-    echo "<br />Nom : $user_nom&nbsp;&nbsp;&nbsp;Prénom : $user_prenom";
-	//echo "</span>\n";
-    echo "<p>Il est fortement conseillé de ne pas choisir un mot de passe trop simple.
-    <br /><br /><b>Attention : le mot de passe doit comporter ".getSettingValue("longmin_pwd")." caractères minimum. ";
+	echo "<table class='boireaus'>\n";
+	echo "<tr class='lig1'>\n";
+	echo "<th>Identifiant&nbsp;: </th>\n";
+	echo "<td>$user_login</td>\n";
+	echo "</tr>\n";
+
+	echo "<tr class='lig-1'>\n";
+	echo "<th>Nom&nbsp;: </th>\n";
+	echo "<td>$user_nom</td>\n";
+	echo "</tr>\n";
+
+	echo "<tr class='lig1'>\n";
+	echo "<th>PrÃ©nom&nbsp;: </th>\n";
+	echo "<td>$user_prenom</td>\n";
+	echo "</tr>\n";
+	echo "</table>\n";
+
+    echo "<p>Il est fortement conseillÃ© de ne pas choisir un mot de passe trop simple.
+    <br /><br /><b>Attention : le mot de passe doit comporter ".getSettingValue("longmin_pwd")." caractÃ¨res minimum. ";
     if ($flag == 1)
-        echo "Il doit comporter au moins une lettre, au moins un chiffre et au moins un caractère spécial parmi&nbsp;: ".$char_spec;
+        echo "Il doit comporter au moins une lettre, au moins un chiffre et au moins un caractÃ¨re spÃ©cial (#, *,...)";
     else
         echo "Il doit comporter au moins une lettre et au moins un chiffre.";
     echo "</b></p>\n";
     echo "<br />\n";
-	echo "<table summary='Mot de passe'>\n<tr><td>Nouveau mot de passe (".getSettingValue("longmin_pwd")." caractères minimum) : </td>\n<td><input type='password' name='no_anti_inject_password' size='20' /></td></tr>\n";
-    echo "<tr><td>Nouveau mot de passe (à confirmer) :</td><td><input type='password' name='reg_password2' size='20' /></td></tr>\n";
+	echo "<table summary='Mot de passe'>\n<tr><td>Nouveau mot de passe (<em>".getSettingValue("longmin_pwd")." caractÃ¨res minimum</em>) : </td>\n<td><input type='password' name='no_anti_inject_password' size='20' /></td></tr>\n";
+    echo "<tr><td>Nouveau mot de passe (<em>Ã  confirmer</em>) :</td><td><input type='password' name='reg_password2' size='20' /></td></tr>\n";
     echo "</table><input type='hidden' name='valid' value=\"yes\" />\n";
     echo "<input type='hidden' name='user_login' value='".$user_login."' />\n";
 
@@ -185,14 +197,14 @@ if (strtoupper($user_login) != strtoupper($_SESSION['login'])) {
 			$lig_ine=mysql_fetch_object($res_ine);
 			if($lig_ine->no_gep!='') {
 				echo "<input type='hidden' name='ine_password' value=\"$lig_ine->no_gep\" />\n";
-				echo "<p><input type='checkbox' name='mdp_INE' id='mdp_INE' value='y' /> <label for='mdp_INE' style='cursor:pointer'>Utiliser le numéro national de l'élève (<i>INE</i>) comme mot de passe initial lorsqu'il est renseigné.</label></p>\n";
+				echo "<p><input type='checkbox' name='mdp_INE' id='mdp_INE' value='y' /> <label for='mdp_INE' style='cursor:pointer'>Utiliser le numÃ©ro national de l'Ã©lÃ¨ve (<em>INE</em>) comme mot de passe initial lorsqu'il est renseignÃ©.</label></p>\n";
 			}
 		}
 	}
 
-	echo "</div></form>\n";
+	echo "</form>\n";
 } else {
-    echo "<p>Pour des raisons de sécurité, veuillez utiliser le module \"mon compte\" accessible à partir de la page d'accueil pour changer votre mot de passe !</p>";
+    echo "<p>Pour des raisons de sÃ©curitÃ©, veuillez utiliser le module \"mon compte\" accessible Ã  partir de la page d'accueil pour changer votre mot de passe !</p>";
 }
 require("../lib/footer.inc.php");
 ?>

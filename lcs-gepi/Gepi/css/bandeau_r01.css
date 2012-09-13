@@ -1,6 +1,5 @@
 
 /*
-*@version $Id: bandeau_r01.css 7804 2011-08-17 12:18:24Z regis $
 *
 * bandeau_r01.css
 * Mise en page du bandeau
@@ -86,7 +85,7 @@
 	color: white;
 }
 
-/* Dernière connexion */
+/* DerniÃ¨re connexion */
 #dern_connect {
 	float:left;
 	margin-top: 0em;
@@ -118,14 +117,10 @@
 	margin:0.1em 0.1em 0em 0.1em;
 	padding:0.1em 0.1em 0.1em 0.1em;
 	display: block;
-	/* border-top: 1px solid #4a4a59;
-	border-left: 1px solid #4a4a59;
-	border-bottom: 1px solid #040404;
-	border-right: 1px solid #040404; */
 }
 
 
-/* Deuxième menu */
+/* DeuxiÃ¨me menu */
 #deux_menu {
 	margin:0em 0em 0em auto;
 	padding:0em;
@@ -144,7 +139,7 @@
 	width:49%;
 }
 
-/* Numéro de version */
+/* NumÃ©ro de version */
 #num_version {
 	margin-top:-1.8em;
 	padding-bottom:0.2em;
@@ -252,4 +247,8 @@ div.headerMessage {
 	color: #FF0000;
 	font-variant: small-caps;
 	text-align: center;
+}
+
+.invisible {
+	display:none;
 }

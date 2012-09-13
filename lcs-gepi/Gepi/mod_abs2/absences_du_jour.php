@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: absences_du_jour.php 8359 2011-09-25 16:08:28Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,9 +52,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
@@ -64,10 +63,9 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
 
 if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_traitement"])) {
     include('creation_traitement.php');
-    die();
 }
 
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
 //contrairement aux autres pages, on ne recupere pas les parametres dans la session
 $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom_eleve"]) ? $_GET["nom_eleve"] : NULL);
 $id_eleve = isset($_POST["id_eleve"]) ? $_POST["id_eleve"] :(isset($_GET["id_eleve"]) ? $_GET["id_eleve"] : NULL);
@@ -129,26 +127,12 @@ $utilisation_scriptaculous="ok";
 $utilisation_win = 'oui';
 $_SESSION['cacher_header'] = "y";
 $dojo = true;
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 include('menu_abs2.inc.php');
 include('menu_bilans.inc.php');
 //===========================
-
-?><!--//affichage d'une page blanche de chargement pour les widget dojo.-->
-<div id="overlay_container"></div>
-<script language="javascript">
-   dojo.style("overlay_container", "opacity", "0");
-   dojo.byId("overlay_container").innerHTML = '<div id="overlay" style="background:#fff; width:100%; height:100%; position:absolute; top:0; left:0;"><div class="innerOverlay">Chargement</div></div>';
-    var fadeArgs = {
-	node: "overlay_container",
-	duration: 250
-    };
-    dojo.fadeIn(fadeArgs).play();
-</script>
-<?php
-
 
 echo "<div class='css-panes' id='containDiv'>\n";
 
@@ -179,7 +163,7 @@ if (!$groupe_col->isEmpty()) {
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les Ã©lÃ¨ves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
@@ -207,12 +191,12 @@ if (!$classe_col->isEmpty()) {
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les Ã©lÃ¨ves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
 } else {
-    echo '<td>Aucune classe avec élève affecté n\'a été trouvée</td>';
+    echo '<td>Aucune classe avec Ã©lÃ¨ve affectÃ© n\'a Ã©tÃ© trouvÃ©e</td>';
 }
 
 
@@ -238,7 +222,7 @@ if (!$aid_col->isEmpty()) {
     }
     echo "</select>&nbsp;";
     echo"<input type='hidden' name='date_absence_eleve' value='$date_absence_eleve'/>";
-    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les élèves</button>';
+    echo '<button style="font-size:12px" dojoType="dijit.form.Button" type="submit">Afficher les Ã©lÃ¨ves</button>';
 	echo "</p>\n";
     echo "</form>";
     echo "</td>";
@@ -259,8 +243,8 @@ echo '</td>';
 echo "<td style='border : 1px solid; padding : 10 px;'>";
 echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo "<p>\n";
-    echo ("Régime : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"filter_regime\" onchange='submit()' class=\"small\">");
-    echo "<option value='-1'>choisissez un régime</option>\n";
+    echo ("RÃ©gime : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"width :12em;font-size:12px;\" name=\"filter_regime\" onchange='submit()' class=\"small\">");
+    echo "<option value='-1'>choisissez un rÃ©gime</option>\n";
     	    echo "<option value='d/p'";
 	    if (getFiltreRechercheParam('filter_regime') == 'd/p') echo " selected='SELECTED' ";
 	    echo ">";
@@ -278,7 +262,7 @@ echo "<form action=\"./absences_du_jour.php\" method=\"post\" style=\"width: 100
     echo "</p>\n";
     echo "<p>\n";
     echo ("Afficher : <select dojoType=\"dijit.form.Select\" maxheight=\"-1\" style=\"font-size:12px;\" name=\"filter_manqement_obligation\" onchange='submit()' class=\"small\">");
-    echo "<option value='y'>Manquements à l'obligation de présence</option>";
+    echo "<option value='y'>Manquements Ã  l'obligation de prÃ©sence</option>";
     	    echo "<option value='n'";
 	    if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') echo " selected='SELECTED' ";
 	    echo ">";
@@ -295,7 +279,7 @@ echo '</td>';
 echo "</tr></table>";
 ?>
 <div class="legende">
-    <h3 class="legende">Légende  </h3>
+    <h3 class="legende">LÃ©gende  </h3>
     <table class="legende">
         <tr>
             <td>
@@ -305,14 +289,14 @@ echo "</tr></table>";
               Saisie et traitements  
             </td>
             <td>
-              Notifications : Courrier,téléphone,mail ou SMS    
+              Notifications : Courrier,tÃ©lÃ©phone,mail ou SMS    
             </td>
         </tr>
         <tr>
             <td>
                 <font color="orange">&#9632;</font> Retard<br />
-                <font color="red">&#9632;</font> Manquement aux obligations de présence<br />
-                <font color="blue">&#9632;</font> Non manquement aux obligations de présence<br /> 
+                <font color="red">&#9632;</font> Manquement aux obligations de prÃ©sence<br />
+                <font color="blue">&#9632;</font> Non manquement aux obligations de prÃ©sence<br /> 
                 <font color="green">&#9632;</font> Autre saisie.<br />  
                 <?php if (getSettingValue("abs2_alleger_abs_du_jour")!='y'): ?>
                 <font color="purple">&#9632;</font> Saisie conflictuelle<br />
@@ -320,12 +304,12 @@ echo "</tr></table>";
             </td>
             <td>
                 <img src="../images/icons/saisie.png" /> Modifier la saisie<br/>  
-               <!-- <img src="../images/icons/flag_green.png" /> Saisie traitée<br/> -->
-                <img src="../images/icons/ico_attention.png" /> Saisie non traitée.<br/>                
+               <!-- <img src="../images/icons/flag_green.png" /> Saisie traitÃ©e<br/> -->
+                <img src="../images/icons/ico_attention.png" /> Saisie non traitÃ©e.<br/>                
             </td>
             <td>
-            <img src="../images/icons/courrier_envoi.png" /> Saisie en cours de notification (état initial ou en cours).<br/>
-            <img src="../images/icons/courrier_retour.png" /> Saisie notifiée (reçue ou reçue avec accusé de réception).<br/>
+            <img src="../images/icons/courrier_envoi.png" /> Saisie en cours de notification (Ã©tat initial ou en cours).<br/>
+            <img src="../images/icons/courrier_retour.png" /> Saisie notifiÃ©e (reÃ§ue ou reÃ§ue avec accusÃ© de rÃ©ception).<br/>
             </td>    
         </tr>
     </table>     
@@ -346,10 +330,10 @@ $dt_debut = clone $dt_date_absence_eleve;
 $dt_debut->setTime(0,0,0);
 $dt_fin = clone $dt_date_absence_eleve;
 $dt_fin->setTime(23,59,59);
-//on récupere les saisies car avant puis on va filtrer avec les ids car filterManquementObligationPresence bug un peu avec les requetes imbriquées
+//on rÃ©cupere les saisies car avant puis on va filtrer avec les ids car filterManquementObligationPresence bug un peu avec les requetes imbriquÃ©es
 $saisie_query = AbsenceEleveSaisieQuery::create()->filterByPlageTemps($dt_debut, $dt_fin)->setFormatter(ModelCriteria::FORMAT_ARRAY);
 if (!isFiltreRechercheParam('filter_manqement_obligation') || getFiltreRechercheParam('filter_manqement_obligation') != 'n') {
-    //par défaut on filtre les manquement à l'obligation de présence
+    //par dÃ©faut on filtre les manquement Ã  l'obligation de prÃ©sence
     $saisie_query->filterByManquementObligationPresence();
 }
 $saisie_col = $saisie_query->find();
@@ -372,7 +356,7 @@ if ($type_selection == 'id_eleve') {
 } elseif ($current_classe != null) {   
     $query->useJEleveClasseQuery()->filterByIdClasse($current_classe->getId())->enduse();    
 } else {
-    //rien à faire
+    //rien Ã  faire
 }
 if ($type_selection != 'id_eleve' && $type_selection != 'nom_eleve') {
     //on filtre
@@ -381,7 +365,7 @@ if ($type_selection != 'id_eleve' && $type_selection != 'nom_eleve') {
     }
 }
 $eleve_col = $query
-                ->where('Eleve.DateSortie<?','0')                
+                ->where('Eleve.DateSortie<?','0')
                 ->orWhere('Eleve.DateSortie is NULL')
                 ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
                 ->distinct()->paginate($page_number, $item_per_page);
@@ -411,7 +395,7 @@ $eleve_col = $query
                                         document.absences_du_jour.filter_regime.value='';
 					document.absences_du_jour.date_absence_eleve.value='';
 					document.absences_du_jour.reinit_filtre.value='y';
-					return true;">Réinitialiser les filtres</button>
+					return true;">RÃ©initialiser les filtres</button>
 			    </p>
 			<?php
            if ($eleve_col->count() != 0) {
@@ -445,14 +429,14 @@ $eleve_col = $query
 			    <span>Ajouter au traitement</span>
 			    <div dojoType="dijit.Menu" style="display: inline">
 				<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.creer_traitement.submit();">
-				    Créer un nouveau traitement
+				    CrÃ©er un nouveau traitement
 				</button>
 			<?php
 			$id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
 			if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 			    $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 			    echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">'."\n";
-			    echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')'."\n";
+			    echo '	    Ajouter les saisies au traitement nÂ° '.$id_traitement.' ('.$traitement->getDescription().')'."\n";
 			    echo '	</button>'."\n";
 			}
 			?>
@@ -466,22 +450,22 @@ $eleve_col = $query
 			if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 			    $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 			    echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">'."\n";
-			    echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup'."\n";
+			    echo '	    Ajouter les saisies au traitement nÂ° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup'."\n";
 			    echo '	</button>'."\n";
 			}
 			?>
 			    </div>
 			</div>
 			</p>
-    <!-- Afichage du tableau de la liste des élèves -->
+    <!-- Afichage du tableau de la liste des Ã©lÃ¨ves -->
     <!-- <table style="text-align: left; width: 600px;" border="0" cellpadding="0" cellspacing="1"> -->
-	    <table class="tb_absences" summary="Liste des élèves pour l'appel. Colonne 1 : élèves, colonne 2 : absence, colonne3 : retard, colonnes suivantes : suivi de la journée par créneaux, dernière colonne : photos si actif">
+	    <table class="tb_absences" summary="Liste des Ã©lÃ¨ves pour l'appel. Colonne 1 : Ã©lÃ¨ves, colonne 2 : absence, colonne3 : retard, colonnes suivantes : suivi de la journÃ©e par crÃ©neaux, derniÃ¨re colonne : photos si actif">
 		    <caption class="invisible no_print">Absences</caption>
 		    <tbody>
 			    <tr class="titre_tableau_gestion" style="white-space: nowrap;">
 				    <th style="text-align : center;" >Veille</th>
-				    <th style="text-align : center;" abbr="élèves">Liste des &eacute;l&egrave;ves</th>
-				    <th colspan="<?php echo (EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime()->count());?>" class="th_abs_suivi" abbr="Créneaux">Suivi sur la journ&eacute;e</th>
+				    <th style="text-align : center;" abbr="Ã©lÃ¨ves">Liste des &eacute;l&egrave;ves</th>
+				    <th colspan="<?php echo (EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime()->count());?>" class="th_abs_suivi" abbr="CrÃ©neaux">Suivi sur la journ&eacute;e</th>
 			    </tr>
 			    <tr>
 				    <td></td>
@@ -522,7 +506,7 @@ $eleve_col = $query
 			echo $eleve->getClasseNom($dt_date_absence_eleve);
 			if ($utilisateur->getAccesFicheEleve($eleve)) {
 			    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
-			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' >";
+			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank'>";
 			    echo ' (voir&nbsp;fiche)';
 			    echo "</a>";
 			}
@@ -564,8 +548,8 @@ $eleve_col = $query
                         if ($saisie->getNotifiee()) {echo 'saisie_notifiee="true"';}
 					    if ($saisie->getTraitee()) {echo 'saisie_traitee="true"';}
 					    echo '/>';                        
-                        echo '<a style="font-size:88%;" href="#" onClick="javascript:showwindow(\'visu_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&menu=false\',\'Modifier,traiter ou notifier une saisie\');return false"><img src="../images/icons/saisie.png" title="Voir la saisie n°'.$saisie->getPrimaryKey().'"/>';
-                        //if ($saisie->getNotifiee()) {echo " (notifiée)";}
+                        echo '<a style="font-size:88%;" href="#" onClick="javascript:showwindow(\'visu_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&menu=false\',\'Modifier,traiter ou notifier une saisie\');return false"><img src="../images/icons/saisie.png" title="Voir la saisie nÂ°'.$saisie->getPrimaryKey().'"/>';
+                        //if ($saisie->getNotifiee()) {echo " (notifiÃ©e)";}
 					    echo '</nobr> ';                        
 					    //echo $saisie->getTypesDescription();
 					    echo '</a>';                        
@@ -577,7 +561,7 @@ $eleve_col = $query
                         }
                         echo '<br/>';
                         if(!$saisie->getTraitee()){
-                            echo '<img src="../images/icons/ico_attention.png" title="Saisie non traitée" />';
+                            echo '<img src="../images/icons/ico_attention.png" title="Saisie non traitÃ©e" />';
                         }else{
                             //echo '<img src="../images/icons/flag_green.png" title="'.$saisie->getTypesDescription().'" />';
                              echo $saisie->getTypesDescription();
@@ -590,9 +574,7 @@ $eleve_col = $query
 					       // Avec ou sans photo
 			if ((getSettingValue("active_module_trombinoscopes")=='y')) {
 			    $nom_photo = $eleve->getNomPhoto(1);
-			    //$photos = "../photos/eleves/".$nom_photo;
 			    $photos = $nom_photo;
-			    //if (($nom_photo == "") or (!(file_exists($photos)))) {
 			    if (($nom_photo == NULL) or (!(file_exists($photos)))) {
 				    $photos = "../mod_trombinoscopes/images/trombivide.jpg";
 			    }
@@ -610,23 +592,23 @@ $eleve_col = $query
 			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';              		
 			foreach ($traitement_col as $traitement) {
 			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.creer_traitement.submit();">';
-			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
+			    echo ' Ajouter au traitement nÂ° '.$traitement->getId().' ('.$traitement->getDescription().')';
 			    echo '</button>';
 			}
             echo'	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.creer_traitement.submit();">
-				    Créer un nouveau traitement
+				    CrÃ©er un nouveau traitement
 				</button>';
 			echo '</div></div><br/>';
 			echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
-			    <span>Ajouter (fenêtre)</span>
+			    <span>Ajouter (fenÃªtre)</span>
 			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';				
 			foreach ($traitement_col as $traitement) {
 			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">';
-			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
+			    echo ' Ajouter au traitement nÂ° '.$traitement->getId().' ('.$traitement->getDescription().')';
 			    echo '</button>';
 			}
             echo'<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
-				    Créer un nouveau traitement (fenêtre)
+				    CrÃ©er un nouveau traitement (fenÃªtre)
 				 </button>';
 			echo '</div></div><br/>';
             echo '<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
@@ -634,11 +616,11 @@ $eleve_col = $query
 			    <div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';				
 			foreach ($traitement_col as $traitement) {
 			    echo '<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; pop_it(document.creer_traitement);">';
-			    echo ' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
+			    echo ' Ajouter au traitement nÂ° '.$traitement->getId().' ('.$traitement->getDescription().')';
 			    echo '</button>';
 			}
             echo'<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; pop_it(document.creer_traitement);">
-				    Créer un nouveau traitement (popup)
+				    CrÃ©er un nouveau traitement (popup)
 				 </button>';
 			echo '</div></div>';
 			echo '</td>';
@@ -649,23 +631,23 @@ $eleve_col = $query
     echo "</table>";   
     ?>
     <div dojoType="dijit.form.DropDownButton" style="display: inline">
-	<span>Ajouter Les saisies cochées à un traitement</span>
+	<span>Ajouter Les saisies cochÃ©es Ã  un traitement</span>
 	<div dojoType="dijit.Menu" style="display: inline">
 	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.creer_traitement.submit();">
-		Créer un nouveau traitement
+		CrÃ©er un nouveau traitement
 	    </button>
 	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement)">
-		Créer un nouveau traitement dans une popup
+		CrÃ©er un nouveau traitement dans une popup
 	    </button>
     <?php
     $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
     if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 	$traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">'."\n";
-	echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')'."\n";
+	echo '	    Ajouter les saisies au traitement nÂ° '.$id_traitement.' ('.$traitement->getDescription().')'."\n";
 	echo '	</button>'."\n";
 	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">'."\n";
-	echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup'."\n";
+	echo '	    Ajouter les saisies au traitement nÂ° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup'."\n";
 	echo '	</button>'."\n";
     }
     ?>
@@ -718,7 +700,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 	    menu.addChild(menuItem2);
 
 	    var menuItem3 = new dijit.MenuItem({
-		label: "non traités",
+		label: "non traitÃ©s",
 		onClick: function() {
 		    var eleve_id = dojo.attr(node,\'eleve_id\');
 		    var query_string = \'input[type=checkbox][eleve_id=\'+eleve_id+\']\';
@@ -730,7 +712,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 	    menu.addChild(menuItem3);
         
 	    var menuItem4 = new dijit.MenuItem({
-		label: "sans notification créée",
+		label: "sans notification crÃ©Ã©e",
 		onClick: function() {
 		    var eleve_id = dojo.attr(node,\'eleve_id\');
 		    var query_string = \'input[type=checkbox][eleve_id=\'+eleve_id+\']\';
@@ -742,7 +724,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 	    menu.addChild(menuItem4);
 
 	    var menuItem5 = new dijit.MenuItem({
-		label: "non notifiés",
+		label: "non notifiÃ©s",
 		onClick: function() {
 		    var eleve_id = dojo.attr(node,\'eleve_id\');
 		    var query_string = \'input[type=checkbox][eleve_id=\'+eleve_id+\']\';
@@ -758,17 +740,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 		dropDown: menu
 	    });
 	    node.appendChild(button.domNode);
-	});
-
-	//effacement de la page blanche de chargement
-	dojo.fadeOut({
-		      node:"overlay",
-                      onEnd: function(){
-                             // hide it completely after fadeout
-                             dojo.style("overlay","display","none");
-                      }
-                }).play();
-	//dojo.byId("overlay").hide();
+	});	
     });
 </script>';
 
@@ -781,7 +753,7 @@ function redimensionne_image_petit($photo) {
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
+    // largeur et/ou hauteur maximum Ã  afficher
              $taille_max_largeur = 45;
              $taille_max_hauteur = 45;
 
@@ -790,7 +762,7 @@ function redimensionne_image_petit($photo) {
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // définit largeur et hauteur pour la nouvelle image
+    // dÃ©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

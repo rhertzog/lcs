@@ -1,9 +1,9 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: prof_disc_classe_csv.php 5936 2010-11-21 17:32:17Z crob $
+* $Id$
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -69,34 +69,34 @@ function affiche_debug($texte){
 
 
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'année : Importation des relations professeurs/classes/matières";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'annÃ©e : Importation des relations professeurs/classes/matiÃ¨res";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class="bold"><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 <?php
 
-// On vérifie si l'extension d_base est active
+// On vÃ©rifie si l'extension d_base est active
 //verif_active_dbase();
 
-echo "<center><h3 class='gepi'>Cinquième phase d'initialisation" .
-		"<br />Affectation des matières à chaque professeur," .
+echo "<center><h3 class='gepi'>CinquiÃ¨me phase d'initialisation" .
+		"<br />Affectation des matiÃ¨res Ã  chaque professeur," .
 		"<br />Affectation des professeurs dans chaque classe," .
-		"<br />Importation des options suivies par les élèves" .
+		"<br />Importation des options suivies par les Ã©lÃ¨ves" .
 		"</h3></center>";
 
-echo "<h3 class='gepi'>Première étape : affectation des matières à chaque professeur et affectation des professeurs dans chaque classe.</h3>";
+echo "<h3 class='gepi'>PremiÃ¨re Ã©tape : affectation des matiÃ¨res Ã  chaque professeur et affectation des professeurs dans chaque classe.</h3>";
 
 if (!isset($step1)) {
 	$test = mysql_result(mysql_query("SELECT count(*) FROM j_groupes_professeurs"),0);
 	if ($test != 0) {
 		echo "<p><b>ATTENTION ...</b><br />";
-		echo "Des données concernant l'affectation de professeurs dans des classes sont actuellement présentes dans la base GEPI<br /></p>";
-		echo "<p>Si vous poursuivez la procédure ces données seront effacées.</p>";
+		echo "Des donnÃ©es concernant l'affectation de professeurs dans des classes sont actuellement prÃ©sentes dans la base GEPI<br /></p>";
+		echo "<p>Si vous poursuivez la procÃ©dure ces donnÃ©es seront effacÃ©es.</p>";
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>";
 		echo add_token_field();
 		echo "<input type=hidden name='step1' value='y' />";
-		echo "<input type='submit' name='confirm' value='Poursuivre la procédure' />";
+		echo "<input type='submit' name='confirm' value='Poursuivre la procÃ©dure' />";
 		echo "</form>";
 		die();
 	}
@@ -107,12 +107,12 @@ if (!isset($is_posted)) {
 	$del = @mysql_query("DELETE FROM j_professeurs_matieres");
 
 
-	echo "<p>Importation des fichiers <b>F_men.csv</b> et <b>F_gpd.csv</b> contenant les données de relations entre professeurs, matière et classes.";
+	echo "<p>Importation des fichiers <b>F_men.csv</b> et <b>F_gpd.csv</b> contenant les donnÃ©es de relations entre professeurs, matiÃ¨re et classes.";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method=post>";
 	echo add_token_field();
-	echo "<p>Veuillez préciser le nom complet du fichier <b>F_men.csv</b>.";
+	echo "<p>Veuillez prÃ©ciser le nom complet du fichier <b>F_men.csv</b>.";
 	echo "<p><input type='file' size='80' name='dbf_file' />";
-	echo "<p>Veuillez préciser le nom complet du fichier <b>F_gpd.csv</b>.";
+	echo "<p>Veuillez prÃ©ciser le nom complet du fichier <b>F_gpd.csv</b>.";
 	echo "<p><input type='file' size='80' name='dbf_file2' />";
 	echo "<input type='hidden' name='is_posted' value='yes' />";
 	echo "<input type='hidden' name='step1' value='y' />";
@@ -122,8 +122,7 @@ if (!isset($is_posted)) {
 } else {
 	$dbf_file = isset($_FILES["dbf_file"]) ? $_FILES["dbf_file"] : NULL;
 	$dbf_file2 = isset($_FILES["dbf_file2"]) ? $_FILES["dbf_file2"] : NULL;
-	//if ((strtoupper($dbf_file['name']) == "F_MEN.DBF") or (strtoupper($dbf_file2['name']) == "F_GPD.DBF")) {
-	if ((strtoupper($dbf_file['name']) == "F_MEN.CSV") or (strtoupper($dbf_file2['name']) == "F_GPD.CSV")) {
+	if ((mb_strtoupper($dbf_file['name']) == "F_MEN.CSV") or (mb_strtoupper($dbf_file2['name']) == "F_GPD.CSV")) {
 
 		//$fp = @dbase_open($dbf_file['tmp_name'], 0);
 		//$fp2 = @dbase_open($dbf_file2['tmp_name'], 0);
@@ -142,7 +141,7 @@ if (!isset($is_posted)) {
 			fclose($fp);
 			echo "<a href='".$_SERVER['PHP_SELF']."?a=a".add_token_in_url()."'>Cliquer ici </a> pour recommencer !</center></p>";
 		} else {
-			// on constitue le tableau des champs à extraire dans $fp2
+			// on constitue le tableau des champs Ã  extraire dans $fp2
 			$tabchamps2 = array("GROCOD","DIVCOD");
 			//$nblignes2 = dbase_numrecords($fp2); //number of rows
 
@@ -151,7 +150,7 @@ if (!isset($is_posted)) {
 			while (!feof($fp2)) {
 				$ligne = fgets($fp2, 4096);
 				if($nblignes2==0){
-					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommés avec l'ajout de ',...' en fin de nom de champ.
+					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommÃ©s avec l'ajout de ',...' en fin de nom de champ.
 					// On ne retient pas ces ajouts pour $en_tete
 					$temp=explode(";",$ligne);
 					for($i=0;$i<sizeof($temp);$i++){
@@ -169,7 +168,7 @@ if (!isset($is_posted)) {
 			if (@dbase_get_record_with_names($fp2,1)) {
 				$temp = @dbase_get_record_with_names($fp2,1);
 			} else {
-				echo "<p>Le fichier F_GPD.DBF sélectionné n'est pas valide !<br />";
+				echo "<p>Le fichier F_GPD.DBF sÃ©lectionnÃ© n'est pas valide !<br />";
 				echo "<a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>";
 				die();
 			}
@@ -182,7 +181,7 @@ if (!isset($is_posted)) {
 			affiche_debug("==========================<br />\n");
 */
 			// On range dans tabindice les indices des champs retenus
-			// On repère l'indice des colonnes GROCOD et DIVCOD
+			// On repÃ¨re l'indice des colonnes GROCOD et DIVCOD
 			$cpt_tmp=0;
 			for ($k = 0; $k < count($tabchamps2); $k++) {
 				for ($i = 0; $i < count($en_tete); $i++) {
@@ -199,19 +198,18 @@ if (!isset($is_posted)) {
 			affiche_debug("==========================<br />\n");
 			//=========================
 			$fp2=fopen($dbf_file2['tmp_name'],"r");
-			// On lit une ligne pour passer la ligne d'entête:
+			// On lit une ligne pour passer la ligne d'entÃªte:
 			$ligne = fgets($fp2, 4096);
 			//=========================
 			for($k = 1; ($k < $nblignes2+1); $k++){
-				// Pour chaque ligne du fichier F_GPD, on récupère dans $affiche[0] le GROCOD et dans $affiche[1] le DIVCOD
-				//$ligne = dbase_get_record($fp2,$k);
+				// Pour chaque ligne du fichier F_GPD, on rÃ©cupÃ¨re dans $affiche[0] le GROCOD et dans $affiche[1] le DIVCOD
 				if(!feof($fp2)){
 					$ligne = fgets($fp2, 4096);
 					if(trim($ligne)!=""){
 						$tabligne=explode(";",$ligne);
 						for($i = 0; $i < count($tabchamps2); $i++) {
 							//$affiche[$i] = dbase_filter(trim($ligne[$tabindice2[$i]]));
-							$affiche[$i] = dbase_filter(trim($tabligne[$tabindice2[$i]]));
+							$affiche[$i] = nettoyer_caracteres_nom($tabligne[$tabindice2[$i]], "an", "_ -", "");
 							affiche_debug("\$affiche[$i]=$affiche[$i]<br />\n");
 						}
 						$tab_groupe[$affiche[0]] = $affiche[1];
@@ -226,12 +224,12 @@ if (!isset($is_posted)) {
 			}
 			//dbase_close($fp2);
 			fclose($fp2);
-			// Jusque là, on s'est arrangé pour renseigner un tableau du type:
+			// Jusque lÃ , on s'est arrangÃ© pour renseigner un tableau du type:
 			// $tab_groupe[GROCOD] = DIVCOD;
-			// Du coup, on ne récupère qu'une seule des classes... la dernière de la liste des classes/membres du groupe.
-			// Corrigé avec le tab_groupe2
+			// Du coup, on ne rÃ©cupÃ¨re qu'une seule des classes... la derniÃ¨re de la liste des classes/membres du groupe.
+			// CorrigÃ© avec le tab_groupe2
 			affiche_debug("=======================================================<br />\n");
-			affiche_debug("On a fini l'épluchage du fichier F_GPD<br />\n");
+			affiche_debug("On a fini l'Ã©pluchage du fichier F_GPD<br />\n");
 			affiche_debug("=======================================================<br />\n");
 			unset($en_tete2);
 
@@ -240,14 +238,14 @@ if (!isset($is_posted)) {
 			$nb_classes = mysql_num_rows($req);
 			$n = 0;
 
-			// on constitue le tableau des champs à extraire
+			// on constitue le tableau des champs Ã  extraire
 			$tabchamps = array("MATIMN","NUMIND","ELSTCO");
 			//$nblignes = dbase_numrecords($fp); //number of rows
 			$nblignes=0;
 			while (!feof($fp)) {
 				$ligne = fgets($fp, 4096);
 				if($nblignes==0){
-					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommés avec l'ajout de ',...' en fin de nom de champ.
+					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommÃ©s avec l'ajout de ',...' en fin de nom de champ.
 					// On ne retient pas ces ajouts pour $en_tete
 					$temp=explode(";",$ligne);
 					//echo "\$ligne=".$ligne."<br />\n";
@@ -269,40 +267,11 @@ if (!isset($is_posted)) {
 			}
 			fclose ($fp);
 
-/*
-			if (@dbase_get_record_with_names($fp,1)) {
-				$temp = @dbase_get_record_with_names($fp,1);
-			} else {
-				echo "<p>Le fichier sélectionné n'est pas valide !<br />";
-				echo "<a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>";
-				die();
-			}
-
-			$nb = 0;
-			foreach($temp as $key => $val){
-				$en_tete[$nb] = "$key";
-				affiche_debug("\$en_tete[$nb]=$en_tete[$nb]<br />\n");
-				$nb++;
-			}
-			affiche_debug("==========================<br />\n");
-*/
 			// On range dans tabindice les indices des champs retenus
 			affiche_debug("count(\$tabchamps)=".count($tabchamps)."<br />\n");
 			//affiche_debug("count(\$en_tete)=".count($en_tete)."<br />\n");
 			affiche_debug("count(\$en_tete2)=".count($en_tete2)."<br />\n");
-			/*
-			for ($k = 0; $k < count($tabchamps); $k++) {
-				//for ($i = 0; $i < count($en_tete); $i++) {
-				for ($i = 0; $i < count($en_tete2); $i++) {
-					//echo "\$en_tete2[$i]=".$en_tete2[$i]." et \$tabchamps[$k]=".$tabchamps[$k]."<br />\n";
-					//if ($en_tete2[$i] == $tabchamps[$k]) {
-					if (trim($en_tete2[$i]) == $tabchamps[$k]) {
-						$tabindice[] = $i;
-						affiche_debug("\$tabindice[]=$i<br />\n");
-					}
-				}
-			}
-			*/
+
 			$cpt_tmp=0;
 			for ($k = 0; $k < count($tabchamps); $k++) {
 				for ($i = 0; $i < count($en_tete2); $i++) {
@@ -318,24 +287,19 @@ if (!isset($is_posted)) {
 
 			//=========================
 			$fp=fopen($dbf_file['tmp_name'],"r");
-			// On lit une ligne pour passer la ligne d'entête:
+			// On lit une ligne pour passer la ligne d'entÃªte:
 			$ligne = fgets($fp, 4096);
 			//=========================
 			$nb_reg_no = 0;
 			for($k = 1; ($k < $nblignes+1); $k++){
-				//$ligne = dbase_get_record($fp,$k);
 				if(!feof($fp)){
-					//=========================
-					// MODIF: boireaus 20071024
-					//$ligne = fgets($fp, 4096);
 					$ligne = my_ereg_replace('"','',fgets($fp, 4096));
-					//=========================
 					if(trim($ligne)!=""){
 						$tabligne=explode(";",$ligne);
 						for($i = 0; $i < count($tabchamps); $i++) {
 							//$affiche[$i] = dbase_filter(trim($ligne[$tabindice[$i]]));
 							//affiche_debug("\$affiche[$i]=dbase_filter(trim(\$ligne[$tabindice[$i]]))=$affiche[$i]<br />\n");
-							$affiche[$i] = dbase_filter(trim($tabligne[$tabindice[$i]]));
+							$affiche[$i] = nettoyer_caracteres_nom($tabligne[$tabindice[$i]], "an", "_ -", "");
 							affiche_debug("\$affiche[$i]=dbase_filter(trim(\$tabligne[".$tabindice[$i]."]))=".$affiche[$i]."<br />\n");
 						}
 						affiche_debug("==========================<br />\n");
@@ -343,34 +307,34 @@ if (!isset($is_posted)) {
 						affiche_debug("On recherche si un prof assure le cours correspondant au groupe: select col1 from tempo2 where col2 = '$affiche[1]'<br />\n");
 						$login_prof = @mysql_result($req, 0, 'col1');
 
-						// A REVOIR... IL FAUDRAIT PEUT-ETRE CREER QUAND MEME LE GROUPE POUR L'ASSOCIATION groupe/matiere/classe même si il n'y a pas encore de prof (dans le F_MEN)
+						// A REVOIR... IL FAUDRAIT PEUT-ETRE CREER QUAND MEME LE GROUPE POUR L'ASSOCIATION groupe/matiere/classe mÃªme si il n'y a pas encore de prof (dans le F_MEN)
 						if ($login_prof != '') {
-							// On relie les profs aux matières
-							affiche_debug("Un (au moins) prof trouvé: $login_prof<br />\n");
+							// On relie les profs aux matiÃ¨res
+							affiche_debug("Un (au moins) prof trouvÃ©: $login_prof<br />\n");
 							$verif = mysql_query("select id_professeur from j_professeurs_matieres where (id_matiere='$affiche[0]' and id_professeur='$login_prof')");
 							affiche_debug("select id_professeur from j_professeurs_matieres where (id_matiere='$affiche[0]' and id_professeur='$login_prof')<br />\n");
 							$resverif = mysql_num_rows($verif);
 							if($resverif == 0) {
-								// On arrive jusque là.
+								// On arrive jusque lÃ .
 								$req = mysql_query("insert into j_professeurs_matieres set id_matiere='$affiche[0]', id_professeur='$login_prof', ordre_matieres=''");
 								affiche_debug("insert into j_professeurs_matieres set id_matiere='$affiche[0]', id_professeur='$login_prof', ordre_matieres=''<br />\n");
-								//echo "Ajout de la correspondance prof/matière suivante: $login_prof/$affiche[0]<br />\n";
-								echo "<p>Ajout de la correspondance prof/matière suivante: $login_prof/$affiche[0]<br />\n";
+								//echo "Ajout de la correspondance prof/matiÃ¨re suivante: $login_prof/$affiche[0]<br />\n";
+								echo "<p>Ajout de la correspondance prof/matiÃ¨re suivante: $login_prof/$affiche[0]<br />\n";
 								if(!$req) $nb_reg_no++;
 							}
 
-							// On relie prof, matières et classes dans un nouveau groupe de Gepi
+							// On relie prof, matiÃ¨res et classes dans un nouveau groupe de Gepi
 
-							// On vide le tableau de la liste des classes associées au groupe:
+							// On vide le tableau de la liste des classes associÃ©es au groupe:
 							unset($tabtmp);
 
 							$test = mysql_query("select id from classes where classe='$affiche[2]'");
-							// On initialise le tableau pour que par défaut il contienne $affiche[2] au cas où ce serait une classe...
+							// On initialise le tableau pour que par dÃ©faut il contienne $affiche[2] au cas oÃ¹ ce serait une classe...
 							$tabtmp[0]=$affiche[2];
 							affiche_debug("select id from classes where classe='$affiche[2]'<br />\n");
 							$nb_test = mysql_num_rows($test) ;
 							if ($nb_test == 0) {
-								// dans ce cas, $affiche[2] désigne un groupe
+								// dans ce cas, $affiche[2] dÃ©signe un groupe
 								// on convertit le groupe en classe
 					/*
 								$affiche[2] = $tab_groupe[$affiche[2]];
@@ -379,14 +343,14 @@ if (!isset($is_posted)) {
 								echo "select id from classes where classe='$affiche[2]'<br />\n";
 					*/
 								// MODIF: boireaus
-								// On modifie/remplit le tableau $tabtmp avec la liste des classes associées au groupe.
+								// On modifie/remplit le tableau $tabtmp avec la liste des classes associÃ©es au groupe.
 								for($i=0;$i<count($tab_groupe2[$affiche[2]]);$i++){
 									$tabtmp[$i]=$tab_groupe2[$affiche[2]][$i];
 									affiche_debug("\$tabtmp[$i]=$tabtmp[$i]<br />\n");
 								}
 							}
 							// On boucle sur la liste des classes:
-							// On initialise un témoin pour ne pas recréer le groupe pour la deuxième, troisième,... classe:
+							// On initialise un tÃ©moin pour ne pas recrÃ©er le groupe pour la deuxiÃ¨me, troisiÃ¨me,... classe:
 							$temoin_groupe_deja_cree="non";
 							for($i=0;$i<count($tabtmp);$i++){
 								$test = mysql_query("select id from classes where classe='$tabtmp[$i]'");
@@ -423,7 +387,7 @@ if (!isset($is_posted)) {
 									$resverif = mysql_num_rows($verif);
 									if($resverif == 0) {
 
-										// Avant d'enregistrer, il faut quand même vérifier si le groupe existe déjà ou pas
+										// Avant d'enregistrer, il faut quand mÃªme vÃ©rifier si le groupe existe dÃ©jÃ  ou pas
 										// ... pour cette classe...
 										$verif2 = mysql_query("select g.id from " .
 											"groupes g, j_groupes_matieres jgm, j_groupes_classes jgc " .
@@ -444,7 +408,7 @@ if (!isset($is_posted)) {
 										if ($resverif2 == 0) {
 											affiche_debug("Le groupe n'existe pas encore pour la classe \$id_classe=$id_classe<br />\n");
 
-											// ordre d'affichage par défaut :
+											// ordre d'affichage par dÃ©faut :
 											$priority = sql_query("select priority from matieres where matiere='".$affiche[0]."'");
 											if ($priority == "-1") $priority = "0";
 
@@ -456,8 +420,8 @@ if (!isset($is_posted)) {
 												$temoin_groupe_deja_cree=$group_id;
 
 												echo "<p>\n";
-												//echo "Création d'un groupe pour la matière $affiche[0], \n";
-												echo "Création d'un groupe (n°$group_id) pour la matière $affiche[0], \n";
+												//echo "CrÃ©ation d'un groupe pour la matiÃ¨re $affiche[0], \n";
+												echo "CrÃ©ation d'un groupe (nÂ°$group_id) pour la matiÃ¨re $affiche[0], \n";
 
 
 												$res2 = mysql_query("insert into j_groupes_matieres set id_groupe = '" . $group_id . "', id_matiere = '" . $affiche[0] . "'");
@@ -469,7 +433,7 @@ if (!isset($is_posted)) {
 											}
 											else{
 												$group_id=$temoin_groupe_deja_cree;
-												affiche_debug("Groupe déjà créé avec \$group_id=$group_id<br />");
+												affiche_debug("Groupe dÃ©jÃ  crÃ©Ã© avec \$group_id=$group_id<br />");
 											}
 
 
@@ -487,8 +451,8 @@ if (!isset($is_posted)) {
 											//$res4 = mysql_query("insert into j_groupes_professeurs set id_groupe = '" . $group_id . "', login ='" . $login_prof . "'");
 											//echo "insert into j_groupes_professeurs set id_groupe = '" . $group_id . "', login ='" . $login_prof . "'<br />\n";
 
-											// On ajoute tous les élèves de la classe considérée aux groupes. On enlèvera ceux qui ne suivent pas les enseignements
-											// à la prochaine étape
+											// On ajoute tous les Ã©lÃ¨ves de la classe considÃ©rÃ©e aux groupes. On enlÃ¨vera ceux qui ne suivent pas les enseignements
+											// Ã  la prochaine Ã©tape
 
 											$get_eleves = mysql_query("SELECT distinct(login) FROM j_eleves_classes WHERE id_classe = '" . $id_classe . "'");
 											$nb_eleves = mysql_num_rows($get_eleves);
@@ -498,7 +462,7 @@ if (!isset($is_posted)) {
 
 											// DEBUG :: echo "<br/>Classe : " . $id_classe . "<br/>Nb el. : " . $nb_eleves . "<br/>Nb per.: " . $nb_per . "<br/><br/>";
 											if($nb_eleves>0){
-												echo "Ajout à ce groupe des élèves suivants: ";
+												echo "Ajout Ã  ce groupe des Ã©lÃ¨ves suivants: ";
 												for ($m=0;$m<$nb_eleves;$m++) {
 													$e_login = mysql_result($get_eleves, $m, "login");
 													for ($n=1;$n<=$nb_per;$n++) {
@@ -515,18 +479,18 @@ if (!isset($is_posted)) {
 												echo "<br />\n";
 											}
 											else{
-												echo "Aucun élève dans ce groupe???<br />\n";
+												echo "Aucun Ã©lÃ¨ve dans ce groupe???<br />\n";
 											}
 
 										} else {
-											// Si on est là, c'est que le groupe existe déjà, mais que le professeur que l'on
-											// est en train de traiter n'est pas encore associé au groupe
-											// C'est le cas de deux professeurs pour un même groupe/classe dans une matière.
-											affiche_debug("Le groupe existe déjà pour la classe \$id_classe=$id_classe, on ajoute le professeur $login_prof au groupe:<br />\n");
+											// Si on est lÃ , c'est que le groupe existe dÃ©jÃ , mais que le professeur que l'on
+											// est en train de traiter n'est pas encore associÃ© au groupe
+											// C'est le cas de deux professeurs pour un mÃªme groupe/classe dans une matiÃ¨re.
+											affiche_debug("Le groupe existe dÃ©jÃ  pour la classe \$id_classe=$id_classe, on ajoute le professeur $login_prof au groupe:<br />\n");
 											$group_id = mysql_result($verif2, 0);
 											$res = mysql_query("insert into j_groupes_professeurs set id_groupe = '" . $group_id . "', login ='" . $login_prof . "'");
 											affiche_debug("insert into j_groupes_professeurs set id_groupe = '" . $group_id . "', login ='" . $login_prof . "'<br />\n");
-											echo "Ajout de $login_prof à un groupe existant (<i>plus d'un professeur pour ce groupe</i>).<br />\n";
+											echo "Ajout de $login_prof Ã  un groupe existant (<i>plus d'un professeur pour ce groupe</i>).<br />\n";
 										}
 									}
 									//echo "</p>\n";
@@ -541,19 +505,19 @@ if (!isset($is_posted)) {
 			fclose($fp);
 
 			if ($nb_reg_no != 0) {
-				echo "<p>Lors de l'enregistrement des données il n'y a eu $nb_reg_no erreurs. Essayez de trouvez la cause de l'erreur et recommencez la procédure avant de passer à l'étape suivante.";
+				echo "<p>Lors de l'enregistrement des donnÃ©es il n'y a eu $nb_reg_no erreurs. Essayez de trouvez la cause de l'erreur et recommencez la procÃ©dure avant de passer Ã  l'Ã©tape suivante.";
 			} else {
-				echo "<p>L'importation des relations professeurs/matières et professeurs/classes dans la base GEPI a été effectuée avec succès !<br />Vous pouvez procéder à l'étape suivante d'importation des options suivies par les élèves.</p>";
+				echo "<p>L'importation des relations professeurs/matiÃ¨res et professeurs/classes dans la base GEPI a Ã©tÃ© effectuÃ©e avec succÃ¨s !<br />Vous pouvez procÃ©der Ã  l'Ã©tape suivante d'importation des options suivies par les Ã©lÃ¨ves.</p>";
 
 			}
-			echo "<center><p><a href='init_options.php?a=a".add_token_in_url()."'>Importer les options suivies par les élèves</a></p></center>";
+			echo "<center><p><a href='init_options.php?a=a".add_token_in_url()."'>Importer les options suivies par les Ã©lÃ¨ves</a></p></center>";
 		}
 	} else if ((trim($dbf_file['name'])=='') or (trim($dbf_file2['name'])=='')) {
-		echo "<p>Veuillez préciser les fichiers !<br />";
+		echo "<p>Veuillez prÃ©ciser les fichiers !<br />";
 		echo "<a href='".$_SERVER['PHP_SELF']."?a=a".add_token_in_url()."'>Cliquer ici </a> pour recommencer !</center></p>";
 
 	} else {
-		echo "<p>Fichier(s) sélectionné(s) non valide(s) !<br />";
+		echo "<p>Fichier(s) sÃ©lectionnÃ©(s) non valide(s) !<br />";
 		echo "<a href='".$_SERVER['PHP_SELF']."?a=a".add_token_in_url()."'>Cliquer ici </a> pour recommencer !</center></p>";
 	}
 }

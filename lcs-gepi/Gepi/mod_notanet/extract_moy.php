@@ -1,5 +1,5 @@
 <?php
-/* $Id: extract_moy.php 8810 2012-05-25 08:20:39Z crob $ */
+/* $Id: extract_moy.php 7260 2011-06-19 13:12:04Z crob $ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -37,9 +37,9 @@ if ($resultat_session == 'c') {
 
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 // INSERT INTO droits VALUES('/mod_notanet/extract_moy.php','V','F','F','F','F','F','F','F','Extraction des moyennes pour Notanet','');
-// Pour décommenter le passage, il suffit de supprimer le 'slash-etoile' ci-dessus et l'étoile-slash' ci-dessous.
+// Pour dÃ©commenter le passage, il suffit de supprimer le 'slash-etoile' ci-dessus et l'Ã©toile-slash' ci-dessous.
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -50,22 +50,22 @@ if (!checkAccess()) {
 $extract_mode=isset($_POST['extract_mode']) ? $_POST['extract_mode'] : (isset($_GET['extract_mode']) ? $_GET['extract_mode'] : NULL);
 $nb_tot_eleves=isset($_POST['nb_tot_eleves']) ? $_POST['nb_tot_eleves'] : (isset($_GET['nb_tot_eleves']) ? $_GET['nb_tot_eleves'] : NULL);
 
-$themessage = "Des changements ont eu lieu sur cette page et n\'ont pas été enregistrés. Si vous cliquez sur OK les changements seront perdus.";
+$themessage = "Des changements ont eu lieu sur cette page et n\'ont pas Ã©tÃ© enregistrÃ©s. Si vous cliquez sur OK les changements seront perdus.";
 
 //**************** EN-TETE *****************
 $titre_page = "Notanet: Extraction des moyennes";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
 //debug_var();
 
-// Bibliothèque pour Notanet et Fiches brevet
+// BibliothÃ¨que pour Notanet et Fiches brevet
 include("lib_brevets.php");
 
 echo "<div class='noprint'>\n";
-echo "<p class='bold'><a href='../accueil.php'".insert_confirm_abandon().">Accueil</a> | <a href='index.php'".insert_confirm_abandon().">Retour à l'accueil Notanet</a>";
+echo "<p class='bold'><a href='../accueil.php'".insert_confirm_abandon().">Accueil</a> | <a href='index.php'".insert_confirm_abandon().">Retour Ã  l'accueil Notanet</a>";
 
 $sql="SELECT DISTINCT type_brevet FROM notanet_ele_type ORDER BY type_brevet";
 $res=mysql_query($sql);
@@ -73,7 +73,7 @@ if(mysql_num_rows($res)==0) {
 	echo "</p>\n";
 	echo "</div>\n";
 
-	echo "<p>Aucune association élève/type de brevet n'a encore été réalisée.<br />Commencez par <a href='select_eleves.php'>sélectionner les élèves</a></p>\n";
+	echo "<p>Aucune association Ã©lÃ¨ve/type de brevet n'a encore Ã©tÃ© rÃ©alisÃ©e.<br />Commencez par <a href='select_eleves.php'>sÃ©lectionner les Ã©lÃ¨ves</a></p>\n";
 
 	require("../lib/footer.inc.php");
 	die();
@@ -85,7 +85,7 @@ if(mysql_num_rows($res)==0) {
 	echo "</p>\n";
 	echo "</div>\n";
 
-	echo "<p>Aucune association matières/type de brevet n'a encore été réalisée.<br />Commencez par <a href='select_matieres.php'>sélectionner les matières</a></p>\n";
+	echo "<p>Aucune association matiÃ¨res/type de brevet n'a encore Ã©tÃ© rÃ©alisÃ©e.<br />Commencez par <a href='select_matieres.php'>sÃ©lectionner les matiÃ¨res</a></p>\n";
 
 	require("../lib/footer.inc.php");
 	die();
@@ -99,14 +99,14 @@ if(!isset($extract_mode)) {
 	//echo "<br />\n";
 	echo "</p>\n";
 	echo "<ul>\n";
-	echo "<li><a href='".$_SERVER['PHP_SELF']."?extract_mode=tous'>Extraire les moyennes pour tous les élèves associés à un type de brevet.</a></li>\n";
-	echo "<li><a href='".$_SERVER['PHP_SELF']."?extract_mode=select'>Extraire une sélection d'élèves</a></li>\n";
+	echo "<li><a href='".$_SERVER['PHP_SELF']."?extract_mode=tous'>Extraire les moyennes pour tous les Ã©lÃ¨ves associÃ©s Ã  un type de brevet.</a></li>\n";
+	echo "<li><a href='".$_SERVER['PHP_SELF']."?extract_mode=select'>Extraire une sÃ©lection d'Ã©lÃ¨ves</a></li>\n";
 	while($lig=mysql_fetch_object($res)) {
 		echo "<li><a href='".$_SERVER['PHP_SELF']."?extract_mode=".$lig->type_brevet."'>Extraire les moyennes pour ".$tab_type_brevet[$lig->type_brevet]."</a></li>\n";
 	}
 	echo "</ul>\n";
 
-	echo "<p><i>ATTENTION&nbsp;:</i></p><p style='margin-left: 3em;'>Il ne faut faire l'<b>extraction</b> qu'<b>une seule fois</b> par type de brevet.<br />Lors de l'extraction, les valeurs préalablement saisies/enregistrées sont supprimées/remplacées.<br />Si vous devez corriger une extraction, il faut passer par le choix suivant&nbsp;: <a href='corrige_extract_moy.php'>Corriger l'extraction des moyennes</a>.</p>\n";
+	echo "<p><i>ATTENTION&nbsp;:</i></p><p style='margin-left: 3em;'>Il ne faut faire l'<b>extraction</b> qu'<b>une seule fois</b> par type de brevet.<br />Lors de l'extraction, les valeurs prÃ©alablement saisies/enregistrÃ©es sont supprimÃ©es/remplacÃ©es.<br />Si vous devez corriger une extraction, il faut passer par le choix suivant&nbsp;: <a href='corrige_extract_moy.php'>Corriger l'extraction des moyennes</a>.</p>\n";
 
 	$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
 	if($suhosin_post_max_totalname_length!='') {
@@ -177,7 +177,7 @@ else {
 
 	if(!isset($_POST['enregistrer_extract_moy'])) {
 		if(isset($_POST['INE'])) {
-			echo "<p style='color:red'>Il semble que des champs INE élèves aient été soumis, mais que cela n'ait pas donné lieu à un enregistrement.<br />C'est une anomalie.<br />Cela peut se produire si un module 'suhosin' est activé.<br />Il peut alors limiter le nombre de variables POSTées dans un formulaire.<br />Vous pouvez contrôler l'activation de 'suhosin' dans <a href='../mod_serveur/test_serveur.php' target='_blank'>Configuration serveur</a></p>\n";
+			echo "<p style='color:red'>Il semble que des champs INE Ã©lÃ¨ves aient Ã©tÃ© soumis, mais que cela n'ait pas donnÃ© lieu Ã  un enregistrement.<br />C'est une anomalie.<br />Cela peut se produire si un module 'suhosin' est activÃ©.<br />Il peut alors limiter le nombre de variables POSTÃ©es dans un formulaire.<br />Vous pouvez contrÃ´ler l'activation de 'suhosin' dans <a href='../mod_serveur/test_serveur.php' target='_blank'>Configuration serveur</a></p>\n";
 		}
 
 		$compteur_champs_notes=0;
@@ -192,7 +192,7 @@ else {
 						ORDER BY id_classe";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)==0) {
-				echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sauté des étapes?</p>\n";
+				echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sautÃ© des Ã©tapes?</p>\n";
 
 				require("../lib/footer.inc.php");
 				die();
@@ -210,7 +210,7 @@ else {
 			echo "<form action='".$_SERVER['PHP_SELF']."' name='form_extract' method='post' target='_blank'>\n";
 			echo add_token_field();
 
-			// Boucle élèves:
+			// Boucle Ã©lÃ¨ves:
 			$num_eleve=0;
 			for($i=0;$i<count($id_classe);$i++){
 				$classe=get_classe_from_id($id_classe[$i]);
@@ -254,7 +254,7 @@ else {
 						flush();
 					}
 					else {
-						echo "<p><b>".strtoupper($ligne->nom)." ".ucfirst(strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matières effectuées pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
+						echo "<p><b>".mb_strtoupper($ligne->nom)." ".ucfirst(mb_strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matiÃ¨res effectuÃ©es pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
 
 						echo "INE: <input type='hidden' name='INE[$num_eleve]' value='$ligne->no_gep' onchange='changement()' />\n";
 						echo "<input type='hidden' name='nom_eleve[$num_eleve]' value=\"".$tab_ele['nom']." ".$tab_ele['prenom']." ($classe)\" />\n";
@@ -269,7 +269,6 @@ else {
 			$tab_selection_ele=isset($_POST['tab_selection_ele']) ? $_POST['tab_selection_ele'] : array();
 
 			if((!isset($_POST['choix_eleves']))||(count($tab_selection_ele)==0)) {
-
 				$sql="SELECT DISTINCT jec.id_classe FROM j_eleves_classes jec,
 								notanet_ele_type n,
 								notanet_corresp nc
@@ -278,7 +277,7 @@ else {
 							ORDER BY id_classe";
 				$res=mysql_query($sql);
 				if(mysql_num_rows($res)==0) {
-					echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sauté des étapes?</p>\n";
+					echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sautÃ© des Ã©tapes?</p>\n";
 
 					require("../lib/footer.inc.php");
 					die();
@@ -298,7 +297,7 @@ else {
 
 				$max_eff_classe=0;
 
-				// Boucle élèves:
+				// Boucle Ã©lÃ¨ves:
 				for($i=0;$i<count($id_classe);$i++){
 					$classe=get_classe_from_id($id_classe[$i]);
 					echo "<h4>Classe de ".$classe."</h4>\n";
@@ -321,9 +320,9 @@ else {
 					}
 
 					echo "<table class='boireaus'>\n";
-					echo "<th>Élève</th>\n";
+					echo "<th>Ã‰lÃ¨ve</th>\n";
 					echo "<th>\n";
-					echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+					echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 					echo "</th>\n";
 					echo "</tr>\n";
 					$alt=1;
@@ -339,7 +338,6 @@ else {
 						$k++;
 					}
 					echo "</table>\n";
-					echo "<p>$nombreligne élèves.</p>\n";
 					echo "</blockquote>\n";
 				}
 
@@ -422,9 +420,9 @@ function DecocheColonneSelectEleves(i,j) {
 							flush();
 						}
 						else {
-							echo "<p><b>".strtoupper($ligne->nom)." ".ucfirst(strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matières effectuées pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
+							echo "<p><b>".mb_strtoupper($ligne->nom)." ".ucfirst(mb_strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matiÃ¨res effectuÃ©es pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
 
-							// Pas de id="INE_$num_eleve" pour cet élève (inutile)
+							// Pas de id="INE_$num_eleve" pour cet Ã©lÃ¨ve (inutile)
 							echo "INE: <input type='hidden' name='INE[$num_eleve]' value='$ligne->no_gep' onchange='changement()' />\n";
 							echo "<input type='hidden' name='nom_eleve[$num_eleve]' value=\"".$tab_ele['nom']." ".$tab_ele['prenom']."\" />\n";
 						}
@@ -444,7 +442,7 @@ function DecocheColonneSelectEleves(i,j) {
 						ORDER BY id_classe";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)==0) {
-				echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sauté des étapes?</p>\n";
+				echo "<p>Il semble que des associations soient manquantes.<br />Auriez-vous sautÃ© des Ã©tapes?</p>\n";
 
 				require("../lib/footer.inc.php");
 				die();
@@ -471,7 +469,7 @@ function DecocheColonneSelectEleves(i,j) {
 					//echo "$sql<br />";
 					$test=mysql_query($sql);
 					if(mysql_num_rows($test)>0) {
-						// Ce devrait toujours être le cas
+						// Ce devrait toujours Ãªtre le cas
 						while($lig=mysql_fetch_object($test)) {
 							if((($lig->statut=='imposee')||($lig->statut=='optionnelle'))&&($lig->matiere!='')) {
 								$temoin_assoc="y";
@@ -483,14 +481,14 @@ function DecocheColonneSelectEleves(i,j) {
 					}
 
 					if($temoin_assoc=='n') {
-						//echo "<span style='color:red;'>La matière Notanet ".$tabmatieres[$i][0]." n'est associée à aucune matière Gepi. Avez-vous correctement effectué l'<a href='select_matieres.php?type_brevet=$extract_mode'>étape 2</a>&nbsp;?</span><br />\n";
-						echo "<span style='color:red;'>La matière Notanet ".$tabmatieres[$i][0]." n'est associée à aucune matière Gepi.</span><br />\n";
+						//echo "<span style='color:red;'>La matiÃ¨re Notanet ".$tabmatieres[$i][0]." n'est associÃ©e Ã  aucune matiÃ¨re Gepi. Avez-vous correctement effectuÃ© l'<a href='select_matieres.php?type_brevet=$extract_mode'>Ã©tape 2</a>&nbsp;?</span><br />\n";
+						echo "<span style='color:red;'>La matiÃ¨re Notanet ".$tabmatieres[$i][0]." n'est associÃ©e Ã  aucune matiÃ¨re Gepi.</span><br />\n";
 						$cpt_non_assoc++;
 					}
 				}
 			}
 			if($cpt_non_assoc>0) {
-				echo "<span style='color:red;'>Avez-vous correctement effectué l'<a href='select_matieres.php?type_brevet=$extract_mode'".insert_confirm_abandon().">étape 2</a>&nbsp;?</span><br />\n";
+				echo "<span style='color:red;'>Avez-vous correctement effectuÃ© l'<a href='select_matieres.php?type_brevet=$extract_mode'".insert_confirm_abandon().">Ã©tape 2</a>&nbsp;?</span><br />\n";
 			}
 			unset($tabmatieres);
 
@@ -498,7 +496,7 @@ function DecocheColonneSelectEleves(i,j) {
 			echo "<form action='".$_SERVER['PHP_SELF']."' name='form_extract' method='post' target='_blank'>\n";
 			echo add_token_field();
 
-			// Boucle élèves:
+			// Boucle Ã©lÃ¨ves:
 			$num_eleve=0;
 			for($i=0;$i<count($id_classe);$i++){
 				$classe=get_classe_from_id($id_classe[$i]);
@@ -544,7 +542,7 @@ function DecocheColonneSelectEleves(i,j) {
 						flush();
 					}
 					else {
-						echo "<p><b>".strtoupper($ligne->nom)." ".ucfirst(strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matières effectuées pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
+						echo "<p><b>".mb_strtoupper($ligne->nom)." ".ucfirst(mb_strtolower($ligne->prenom))."</b>: <span style='color:red;'>Pas d'associations de matiÃ¨res effectuÃ©es pour <b>".$tab_type_brevet[$ligne->type_brevet]."</b></span></p>\n";
 
 						echo "INE: <input type='hidden' name='INE[$num_eleve]' value='$ligne->no_gep' onchange='changement()' />\n";
 						echo "<input type='hidden' name='nom_eleve[$num_eleve]' value=\"".$tab_ele['nom']." ".$tab_ele['prenom']." ($classe)\" />\n";
@@ -559,18 +557,19 @@ function DecocheColonneSelectEleves(i,j) {
 		echo "<input type='hidden' name='nb_tot_eleves' value='$num_eleve' />\n";
 		//echo "<input type='submit' name='choix_corrections' value='Valider les corrections' />\n";
 		echo "<input type='submit' name='enregistrer_extract_moy' id='enregistrer_extract_moy' value='Enregistrer' />\n";
-		//echo "<p>Valider les corrections ci-dessus permet de générer un nouveau fichier d'export tenant compte de vos modifications.</p>";
+		//echo "<p>Valider les corrections ci-dessus permet de gÃ©nÃ©rer un nouveau fichier d'export tenant compte de vos modifications.</p>";
 		echo "</form>\n";
 
 		echo "<p><i>NOTES:</i></p>\n";
 		echo "<ul>\n";
-		echo "<li><p><i>Rappel:</i> Seuls les élèves pour lesquels aucune erreur/indétermination n'est signalée auront leur exportation réalisée.</p></li>\n";
-		echo "<li><p>Si pour une raison ou une autre (<i>départ en cours d'année,...</i>), vous souhaitez ne pas effectuer l'export pour un/des élève(s) particulier(s), il suffit de vider la moyenne dans une matière non optionnelle.</p></li>\n";
+		echo "<li><p><i>Rappel:</i> Seuls les Ã©lÃ¨ves pour lesquels aucune erreur/indÃ©termination n'est signalÃ©e auront leur exportation rÃ©alisÃ©e.</p></li>\n";
+		echo "<li><p>Si pour une raison ou une autre (<i>dÃ©part en cours d'annÃ©e,...</i>), vous souhaitez ne pas effectuer l'export pour un/des Ã©lÃ¨ve(s) particulier(s), il suffit de vider la moyenne dans une matiÃ¨re non optionnelle.</p></li>\n";
 
-		echo "<li><p><i>ATTENTION&nbsp;:</i> Il ne faut faire l'<b>extraction</b> qu'<b>une seule fois</b> par type de brevet.<br />Lors de l'extraction, les valeurs préalablement saisies/enregistrées sont supprimées/remplacées.<br />Si vous devez corriger une extraction, il faut passer par le choix suivant&nbsp;: <a href='corrige_extract_moy.php'>Corriger l'extraction des moyennes</a>.</p>\n";
+		echo "<li><p><i>ATTENTION&nbsp;:</i> Il ne faut faire l'<b>extraction</b> qu'<b>une seule fois</b> par type de brevet.<br />Lors de l'extraction, les valeurs prÃ©alablement saisies/enregistrÃ©es sont supprimÃ©es/remplacÃ©es.<br />Si vous devez corriger une extraction, il faut passer par le choix suivant&nbsp;: <a href='corrige_extract_moy.php'>Corriger l'extraction des moyennes</a>.</p>\n";
 		//echo "<p><a href='#' onclick='bourriner_les_notes(); return false;'>Bourriner les notes</a></p>\n";
-		echo "<p id='js_retablir_notes_enregistrees' style='display:none'>Si vous avez déjà fait une extraction, et que vous souhaitez réinjecter vos modifications précédemment enregistrées, vous pouvez cependant utiliser le lien suivant&nbsp;<br /><a href='#' onclick='retablir_notes_enregistrees(); return false;'>Rétablir toutes les notes précédemment enregistrées</a></p>\n";
+		echo "<p id='js_retablir_notes_enregistrees' style='display:none'>Si vous avez dÃ©jÃ  fait une extraction, et que vous souhaitez rÃ©injecter vos modifications prÃ©cÃ©demment enregistrÃ©es, vous pouvez cependant utiliser le lien suivant&nbsp;<br /><a href='#' onclick='retablir_notes_enregistrees(); return false;'>RÃ©tablir toutes les notes prÃ©cÃ©demment enregistrÃ©es</a></p>\n";
 		echo "</li>\n";
+
 
 		$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
 		if($suhosin_post_max_totalname_length!='') {
@@ -579,11 +578,11 @@ function DecocheColonneSelectEleves(i,j) {
 				echo alerte_config_suhosin();
 
 				$suhosin_post_max_vars=ini_get('suhosin.post.max_vars');
-				echo "<p>Si le nombre de champs 'input' dépasse la valeur de '<span style='color:red'>suhosin.post.max_vars</span>' (<em style='color:red'>$suhosin_post_max_vars</em>), vous devriez opter pour une <a href='".$_SERVER['PHP_SELF']."?extract_mode=select'>extraction partielle en sélectionnant une partie seulement des élèves</a>";
+				echo "<p>Si le nombre de champs 'input' dÃ©passe la valeur de '<span style='color:red'>suhosin.post.max_vars</span>' (<em style='color:red'>$suhosin_post_max_vars</em>), vous devriez opter pour une <a href='".$_SERVER['PHP_SELF']."?extract_mode=select'>extraction partielle en sÃ©lectionnant une partie seulement des Ã©lÃ¨ves</a>";
 				if((is_numeric($suhosin_post_max_vars))&&($suhosin_post_max_vars>0)) {
-					echo " <span style='color:red'>en se limitant à environ ";
+					echo " <span style='color:red'>en se limitant Ã  environ ";
 					echo floor($suhosin_post_max_vars/22);
-					echo " élèves</span>";
+					echo " Ã©lÃ¨ves</span>";
 				}
 				echo ".</p>\n";
 
@@ -597,7 +596,7 @@ function DecocheColonneSelectEleves(i,j) {
 		echo "<script type='text/javascript'>
 var tab_input=document.getElementsByTagName('input');
 //alert(tab_input.length);
-if(document.getElementById('p_nombre_de_champs_input')) {document.getElementById('p_nombre_de_champs_input').innerHTML='Vous avez <span style=\'color:red\'>'+tab_input.length+'</span> champs à poster.';}
+if(document.getElementById('p_nombre_de_champs_input')) {document.getElementById('p_nombre_de_champs_input').innerHTML='Vous avez <span style=\'color:red\'>'+tab_input.length+'</span> champs Ã  poster.';}
 </script>\n";
 
 		echo "<script type='text/javascript'>
@@ -645,12 +644,12 @@ function retablir_notes_enregistrees() {
 		$id_classe_eleve=0;
 		//$fich_notanet=$_POST['fich_notanet'];
 
-		echo "<p>Suppression d'éventuels enregistrements antérieurs.</p>\n";
+		echo "<p>Suppression d'Ã©ventuels enregistrements antÃ©rieurs.</p>\n";
 		if($extract_mode=="tous") {
 			$sql="DELETE FROM notanet;";
 			$nettoyage=mysql_query($sql);
 		}
-		elseif((preg_match("/[0-9]/",$extract_mode))&&(strlen(preg_replace("/[0-9]/","",$extract_mode))==0)) {
+		elseif((preg_match("/[0-9]/",$extract_mode))&&(mb_strlen(preg_replace("/[0-9]/","",$extract_mode))==0)) {
 			$sql="SELECT login FROM notanet_ele_type WHERE type_brevet='$extract_mode';";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
@@ -661,7 +660,7 @@ function retablir_notes_enregistrees() {
 			}
 		}
 
-		// Boucle sur la liste des élèves...
+		// Boucle sur la liste des Ã©lÃ¨ves...
 		//for($m=0;$m<count($INE);$m++){
 		for($m=0;$m<$nb_tot_eleves;$m++) {
 			unset($moy_NOTANET);
@@ -669,7 +668,7 @@ function retablir_notes_enregistrees() {
 			//echo "INE[$m]=$INE[$m]<br />";
 			echo "<p><b>$nom_eleve[$m]</b><br />\n";
 			if($INE[$m]==""){
-				echo "<span style='color:red'>ERREUR</span>: Pas de numéro INE pour cet élève.<br />\n";
+				echo "<span style='color:red'>ERREUR</span>: Pas de numÃ©ro INE pour cet Ã©lÃ¨ve.<br />\n";
 				$erreur="oui";
 			}
 			else{
@@ -691,25 +690,25 @@ function retablir_notes_enregistrees() {
 						$id_classe_eleve=$lig_classe_ele->id_classe;
 					}
 					else{
-						echo "<span style='color:red'>ERREUR</span>: La classe de l'élève n'a pas été récupérée.<br />Sa fiche brevet ne sera pas générée.<br />\n";
+						echo "<span style='color:red'>ERREUR</span>: La classe de l'Ã©lÃ¨ve n'a pas Ã©tÃ© rÃ©cupÃ©rÃ©e.<br />Sa fiche brevet ne sera pas gÃ©nÃ©rÃ©e.<br />\n";
 					}
 				}
 				else{
-					echo "<span style='color:red'>ERREUR</span>: Le LOGIN de l'élève n'a pas été récupéré.<br />Son export notanet ne sera pas généré, pas plus que sa fiche brevet.<br />\n";
+					echo "<span style='color:red'>ERREUR</span>: Le LOGIN de l'Ã©lÃ¨ve n'a pas Ã©tÃ© rÃ©cupÃ©rÃ©.<br />Son export notanet ne sera pas gÃ©nÃ©rÃ©, pas plus que sa fiche brevet.<br />\n";
 					$erreur="oui";
 				}
 			}
 
 
 			if($erreur!="oui"){
-				// On ne poursuit que si on a pu récupérer un login d'élève.
+				// On ne poursuit que si on a pu rÃ©cupÃ©rer un login d'Ã©lÃ¨ve.
 
 				$sql="SELECT n.type_brevet FROM notanet_ele_type n
 							WHERE n.login='$login_eleve';";
 				//echo "$sql<br />";
 				$res_type_brevet_eleve=mysql_query($sql);
 				if(mysql_num_rows($res_type_brevet_eleve)==0) {
-					echo "<span style='color:red'>ERREUR</span>: Le type de brevet n'a pas été choisi pour cet élève.<br />\n";
+					echo "<span style='color:red'>ERREUR</span>: Le type de brevet n'a pas Ã©tÃ© choisi pour cet Ã©lÃ¨ve.<br />\n";
 				}
 				else {
 					$lig_type_brevet_eleve=mysql_fetch_object($res_type_brevet_eleve);
@@ -719,7 +718,7 @@ function retablir_notes_enregistrees() {
 					$tabmatieres=tabmatieres($lig_type_brevet_eleve->type_brevet);
 
 					if(!isset($tab_mat[$lig_type_brevet_eleve->type_brevet])) {
-						echo "<span style='color:red'>ERREUR</span>: Les associations de matières n'ont pas été définies pour le type de brevet ".$tab_type_brevet[$lig_type_brevet_eleve->type_brevet].".<br />\n";
+						echo "<span style='color:red'>ERREUR</span>: Les associations de matiÃ¨res n'ont pas Ã©tÃ© dÃ©finies pour le type de brevet ".$tab_type_brevet[$lig_type_brevet_eleve->type_brevet].".<br />\n";
 					}
 					else {
 						$id_matiere=$tab_mat[$lig_type_brevet_eleve->type_brevet]['id_matiere'];
@@ -734,17 +733,17 @@ function retablir_notes_enregistrees() {
 						for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 							//if($tabmatieres[$j][0]!=''){
 							if(($tabmatieres[$j][0]!='')&&($statut_matiere[$j]!='non dispensee dans l etablissement')){
-								// Liste des valeurs spéciales autorisées pour la matière courante:
+								// Liste des valeurs spÃ©ciales autorisÃ©es pour la matiÃ¨re courante:
 								unset($tabvalautorisees);
 								$tabvalautorisees=explode(" ",$tabmatieres[$j][-3]);
 
 								if($tabmatieres[$j]['socle']=='n') {
 
 									$temoin_moyenne=0;
-									// On passe en revue les différentes options d'une même matière (LV1($j): AGL1 ou ALL1($k))
+									// On passe en revue les diffÃ©rentes options d'une mÃªme matiÃ¨re (LV1($j): AGL1 ou ALL1($k))
 									for($k=0;$k<count($id_matiere[$j]);$k++){
 
-										// Récupération des moyennes postées via le formulaire
+										// RÃ©cupÃ©ration des moyennes postÃ©es via le formulaire
 										//$moy[$j][$k]=$_POST['moy_'.$j.'_'.$k];
 										$moy[$j][$k]=isset($_POST['moy_'.$j.'_'.$k]) ? $_POST['moy_'.$j.'_'.$k] : NULL;
 
@@ -753,14 +752,14 @@ function retablir_notes_enregistrees() {
 											$temoin_moyenne++;
 
 
-											// L'élève fait-il ALL1 ou AGL1 parmi les options de LV1
+											// L'Ã©lÃ¨ve fait-il ALL1 ou AGL1 parmi les options de LV1
 											$tab_opt_matiere_eleve[$j]=$id_matiere[$j][$k];
 
 
-											// A EFFECTUER: Contrôle des valeurs
+											// A EFFECTUER: ContrÃ´le des valeurs
 											//...
 											//if(($moy[$j][$k][$m]!="AB")&&($moy[$j][$k][$m]!="DI")&&($moy[$j][$k][$m]!="NN")){
-											// Il faudrait pour chaque matière ($j) contrôler les valeurs autorisées pour la matière...
+											// Il faudrait pour chaque matiÃ¨re ($j) contrÃ´ler les valeurs autorisÃ©es pour la matiÃ¨re...
 											$test_valeur_speciale_autorisee="non";
 											for($n=0;$n<count($tabvalautorisees);$n++){
 												if($moy[$j][$k][$m]==$tabvalautorisees[$n]){
@@ -768,14 +767,14 @@ function retablir_notes_enregistrees() {
 												}
 											}
 											if($test_valeur_speciale_autorisee!="oui"){
-												if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
+												if(mb_strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 													echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 													echo $id_matiere[$j][$k]."=".$moy[$j][$k][$m];
 													echo "<br />\n";
 													$erreur="oui";
 												}
 												else{
-													// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
+													// Le test ci-dessous convient parce que la premiÃ¨re matiÃ¨re n'est pas optionnelle...
 													//if(($j!=101)||($k!=0)){
 													if(($j!=$indice_premiere_matiere)||($k!=0)){
 														echo " - ";
@@ -786,7 +785,7 @@ function retablir_notes_enregistrees() {
 												}
 											}
 											else{
-												// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
+												// Le test ci-dessous convient parce que la premiÃ¨re matiÃ¨re n'est pas optionnelle...
 												//if(($j!=101)||($k!=0)){
 												if(($j!=$indice_premiere_matiere)||($k!=0)){
 													echo " - ";
@@ -799,8 +798,8 @@ function retablir_notes_enregistrees() {
 
 									if($temoin_moyenne==0){
 										if($statut_matiere[$j]=="imposee"){
-											//echo "<br /><span style='color:red'>ERREUR</span>: Pas de moyenne à une matière non optionnelle.";
-											echo "<br /><span style='color:red'>ERREUR</span>: Pas de moyenne à une matière non optionnelle: ".$id_matiere[$j][0]."<br />(<i>valeurs non numériques autorisées: ".$tabmatieres[$j][-3]."</i>)";
+											//echo "<br /><span style='color:red'>ERREUR</span>: Pas de moyenne Ã  une matiÃ¨re non optionnelle.";
+											echo "<br /><span style='color:red'>ERREUR</span>: Pas de moyenne Ã  une matiÃ¨re non optionnelle: ".$id_matiere[$j][0]."<br />(<i>valeurs non numÃ©riques autorisÃ©es: ".$tabmatieres[$j][-3]."</i>)";
 											echo "<br />\n";
 											$erreur="oui";
 										}
@@ -808,10 +807,10 @@ function retablir_notes_enregistrees() {
 									else{
 										if($temoin_moyenne==1){
 											// OK!
-											// On n'a pas d'erreur jusque là...
+											// On n'a pas d'erreur jusque lÃ ...
 										}
 										else{
-											echo "<br /><span style='color:red'>ERREUR</span>: Il y a plus d'une moyenne à deux options d'une même matière: ";
+											echo "<br /><span style='color:red'>ERREUR</span>: Il y a plus d'une moyenne Ã  deux options d'une mÃªme matiÃ¨re: ";
 											for($k=0;$k<count($id_matiere[$j]);$k++){
 												if($moy[$j][$k][$m]!=""){
 													echo $id_matiere[$j][$k]."=".$moy[$j][$k][$m]." -\n";
@@ -836,14 +835,14 @@ function retablir_notes_enregistrees() {
 											}
 										}
 										if($test_valeur_speciale_autorisee!="oui"){
-											if(strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
+											if(mb_strlen(preg_replace("/[0-9\.]/","",$moy[$j][$k][$m]))!=0){
 												echo "<br /><span style='color:red'>ERREUR</span>: La valeur saisie n'est pas valide: ";
 												echo $tabmatieres[$j][0]."=".$moy[$j][$k][$m];
 												echo "<br />\n";
 												$erreur="oui";
 											}
 											else{
-												// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
+												// Le test ci-dessous convient parce que la premiÃ¨re matiÃ¨re n'est pas optionnelle...
 												//if(($j!=101)||($k!=0)){
 												if(($j!=$indice_premiere_matiere)||($k!=0)){
 													echo " - ";
@@ -854,7 +853,7 @@ function retablir_notes_enregistrees() {
 											}
 										}
 										else{
-											// Le test ci-dessous convient parce que la première matière n'est pas optionnelle...
+											// Le test ci-dessous convient parce que la premiÃ¨re matiÃ¨re n'est pas optionnelle...
 											//if(($j!=101)||($k!=0)){
 											if(($j!=$indice_premiere_matiere)||($k!=0)){
 												echo " - ";
@@ -871,7 +870,7 @@ function retablir_notes_enregistrees() {
 						}
 						echo "<br />\n";
 						if($erreur!="oui"){
-							// On génère l'export pour cet élève:
+							// On gÃ©nÃ¨re l'export pour cet Ã©lÃ¨ve:
 							$TOT=0;
 							for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 								//if(isset($tabmatieres[$j][0])){
@@ -976,14 +975,14 @@ function retablir_notes_enregistrees() {
 											//echo "$sql<br />";
 											$res_insert=mysql_query($sql);
 											if(!$res_insert){
-												echo "<span style='color:red'>ERREUR</span> lors de l'insertion des informations dans la table 'notanet'.<br />La fiche brevet ne pourra pas être générée.<br />\n";
+												echo "<span style='color:red'>ERREUR</span> lors de l'insertion des informations dans la table 'notanet'.<br />La fiche brevet ne pourra pas Ãªtre gÃ©nÃ©rÃ©e.<br />\n";
 											}
 										}
 									}
 								}
 							}
 
-							// Dans le cas brevet PRO, il ne faut retenir qu'une seule des deux matières 103 et 104
+							// Dans le cas brevet PRO, il ne faut retenir qu'une seule des deux matiÃ¨res 103 et 104
 							if(($extract_mode==2)||($extract_mode==3)) {
 								$num_matiere_LV1=103;
 								$num_matiere_ScPhy=104;
@@ -1015,7 +1014,7 @@ function retablir_notes_enregistrees() {
 			echo "=========================</p>\n";
 		}
 
-		echo "<input type='submit' name='generer_csv' value='Générer un CSV de cet enregistrement' />\n";
+		echo "<input type='submit' name='generer_csv' value='GÃ©nÃ©rer un CSV de cet enregistrement' />\n";
 		echo "</form>\n";
 		echo "<p><br /></p>\n";
 	}

@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: update_champs_periode.php 6750 2011-04-06 13:14:44Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -38,17 +37,17 @@ if ($resultat_session == 'c') {
 $sql="SELECT 1=1 FROM droits WHERE id='/groupes/update_champs_periode.php';";
 $test=mysql_query($sql);
 if(mysql_num_rows($test)==0) {
-$sql="INSERT INTO droits VALUES ('/groupes/update_champs_periode.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Ajax: Mise à jour de champs', '');";
+$sql="INSERT INTO droits VALUES ('/groupes/update_champs_periode.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Ajax: Mise Ã  jour de champs', '');";
 $insert=mysql_query($sql);
 }
 
-// INSERT INTO droits VALUES ('/groupes/update_champs_periode.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Ajax: Mise à jour de champs', '');
+// INSERT INTO droits VALUES ('/groupes/update_champs_periode.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Ajax: Mise Ã  jour de champs', '');
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 	die();
 }
 
-header('Content-Type: text/xml; charset=ISO-8859-1');
+header('Content-Type: text/xml; charset=utf-8');
 
 $id_groupe=isset($_GET['id_groupe']) ? $_GET['id_groupe'] : NULL;
 $id_classe=isset($_GET['id_classe']) ? $_GET['id_classe'] : NULL;
@@ -71,7 +70,7 @@ if((isset($id_groupe))&&(is_numeric($id_groupe))&&($id_groupe!=0)) {
 			else {
 				if($i==1) {echo "checked ";}
 			}
-			echo "/><label for='periode_num_$i'> Période $i</label><br />\n";
+			echo "/><label for='periode_num_$i'> PÃ©riode $i</label><br />\n";
 		}
 	}
 }
@@ -93,7 +92,7 @@ elseif((isset($id_classe))&&(is_numeric($id_classe))&&($id_classe!=0)) {
 			else {
 				if($i==1) {echo "checked ";}
 			}
-			echo "/><label for='periode_num_$i'> Période $i</label><br />\n";
+			echo "/><label for='periode_num_$i'> PÃ©riode $i</label><br />\n";
 		}
 	}
 }

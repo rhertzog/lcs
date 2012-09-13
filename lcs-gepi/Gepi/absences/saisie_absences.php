@@ -1,8 +1,6 @@
 <?php
 
 /*
-* $Id: saisie_absences.php 8729 2011-12-13 20:04:12Z crob $
-*
 * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
@@ -22,7 +20,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -51,9 +49,9 @@ if (!checkAccess()) {
 
 include "../lib/periodes.inc.php";
 
-// Vérifications
+// VÃ©rifications
 if((!isset($id_classe))||(!isset($id_classe))) {
-	$msg="Il faut choisir une classe et une période.";
+	$msg="Il faut choisir une classe et une pÃ©riode.";
 	header("Location:index.php?msg=$msg");
 }
 
@@ -66,7 +64,7 @@ elseif(($ver_periode[$periode_num]=="P")&&($_SESSION['statut']=='secours')) {
 }
 
 if($acces=="n") {
-	$msg="La période $periode_num est close pour cette classe.";
+	$msg="La pÃ©riode $periode_num est close pour cette classe.";
 	header("Location:index.php?id_classe=$id_classe&msg=$msg");
 }
 
@@ -97,7 +95,7 @@ if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 
 		//=========================
 		// AJOUT: boireaus 20071007
-		// Récupération du numéro de l'élève dans les saisies:
+		// RÃ©cupÃ©ration du numÃ©ro de l'Ã©lÃ¨ve dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
 			if($reg_eleve_login==$log_eleve[$i]){
@@ -109,26 +107,12 @@ if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 			//=========================
 
 			//=========================
-			// MODIF: boireaus 20071007
-			/*
-			$nom_log_nb_abs = $reg_eleve_login."_nb_abs";
-			$nb_absences = $_POST[$nom_log_nb_abs];
-
-			$nom_log_nb_nj = $reg_eleve_login."_nb_nj";
-			$nb_nj = $_POST[$nom_log_nb_nj];
-
-			$nom_log_nb_retard = $reg_eleve_login."_nb_retard";
-			$nb_retard = $_POST[$nom_log_nb_retard];
-
-			$nom_log_ap = $reg_eleve_login."_ap";
-			$ap = $_POST[$nom_log_ap];
-			*/
 
 			$nb_absences=$nb_abs_ele[$num_eleve];
 			$nb_nj=$nb_nj_ele[$num_eleve];
 			$nb_retard=$nb_retard_ele[$num_eleve];
 			//$ap=$app_ele[$num_eleve];
-			//$ap = traitement_magic_quotes(corriger_caracteres(html_entity_decode_all_version($ap)));
+			//$ap = traitement_magic_quotes(corriger_caracteres(html_entity_decode($ap)));
 
 
 			$app_ele_courant="app_eleve_".$num_eleve;
@@ -141,9 +125,8 @@ if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 			}
 			//echo "\$ap=$ap<br />";
 
-			// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
-			//$ap=my_ereg_replace('(\\\r\\\n)+',"\r\n",$ap);
-			$ap=preg_replace('/(\\\r\\\n)+/',"\r\n",$ap);
+			// ContrÃ´le des saisies pour supprimer les sauts de lignes surnumÃ©raires.
+			$ap=nettoyage_retours_ligne_surnumeraires($ap);
 			//=========================
 
 			if (!(preg_match ("/^[0-9]{1,}$/", $nb_absences))) {
@@ -164,21 +147,21 @@ if (isset($_POST['is_posted']) and $_POST['is_posted'] == "yes") {
 					$register = mysql_query("INSERT INTO absences SET login='$reg_eleve_login', periode='$periode_num',nb_absences='$nb_absences',non_justifie='$nb_nj', nb_retards='$nb_retard',appreciation='$ap'");
 				}
 			if (!$register) {
-					$msg = "Erreur lors de l'enregistrement des données";
+					$msg = "Erreur lors de l'enregistrement des donnÃ©es";
 			}
 		}
 		$j++;
 	}
 	//$affiche_message = 'yes';
-	if(!isset($msg)){$msg='Les modifications ont été enregistrées !';}
+	if(!isset($msg)){$msg='Les modifications ont Ã©tÃ© enregistrÃ©es !';}
 }
-$themessage  = 'Des champs ont été modifiés. Voulez-vous vraiment quitter sans enregistrer ?';
-//$message_enregistrement = 'Les modifications ont été enregistrées !';
+$themessage  = 'Des champs ont Ã©tÃ© modifiÃ©s. Voulez-vous vraiment quitter sans enregistrer ?';
+//$message_enregistrement = 'Les modifications ont Ã©tÃ© enregistrÃ©es !';
 
 $javascript_specifique = "saisie/scripts/js_saisie";
 //**************** EN-TETE *****************
 $titre_page = "Saisie des absences";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <script type="text/javascript" language="javascript">
@@ -190,7 +173,7 @@ change = 'no';
 echo add_token_field(true);
 ?>
 <p class="bold">
-<a href="index.php?id_classe=<?php echo $id_classe; ?>" onclick="return confirm_abandon (this, change, '<?php echo $themessage; ?>')"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Choisir une autre période</a> |
+<a href="index.php?id_classe=<?php echo $id_classe; ?>" onclick="return confirm_abandon (this, change, '<?php echo $themessage; ?>')"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Choisir une autre pÃ©riode</a> |
 <a href="index.php" onclick="return confirm_abandon (this, change, '<?php echo $themessage; ?>')">Choisir une autre classe</a> | <input type="submit" value="Enregistrer" /> | <a href="<?php echo "consulter_absences.php?id_classe=$id_classe&amp;periode_num=$periode_num";?>">Consulter les absences de la classe</a></p>
 
 
@@ -198,14 +181,14 @@ echo add_token_field(true);
 $call_classe = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'");
 $classe = mysql_result($call_classe, "0", "classe");
 ?>
-<p><b>Classe de <?php echo "$classe"; ?> - Saisie des absences : <?php $temp = strtolower($nom_periode[$periode_num]); echo "$temp"; ?></b>
+<p><b>Classe de <?php echo "$classe"; ?> - Saisie des absences : <?php $temp = my_strtolower($nom_periode[$periode_num]); echo "$temp"; ?></b>
 <br />
 <!--table border=1 cellspacing=2 cellpadding=5-->
 <table class='boireaus' cellspacing='2' cellpadding='5'>
 <tr>
-	<th align='center'><b>Nom Prénom</b></th>
-	<th align='center'><b>Nb. total de 1/2 journées d'absence</b></th>
-	<th align='center'><b>Nb. absences non justifiées</b></th>
+	<th align='center'><b>Nom PrÃ©nom</b></th>
+	<th align='center'><b>Nb. total de 1/2 journÃ©es d'absence</b></th>
+	<th align='center'><b>Nb. absences non justifiÃ©es</b></th>
 	<th align='center'><b>Nb. de retard</b></th>
 	<th align='center'><b>Observations</b></th>
 </tr>
@@ -237,21 +220,13 @@ while($i < $nombre_lignes) {
 	$current_eleve_login_ap = $current_eleve_login."_ap";
 
 	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'><td align='center'>".strtoupper($current_eleve_nom)." $current_eleve_prenom\n";
+	echo "<tr class='lig$alt'><td align='center'>".my_strtoupper($current_eleve_nom)." ".casse_mot($current_eleve_prenom,'majf2')."\n";
 	//=========================
-	// MODIF: boireaus 20071010
 	echo "<input type='hidden' name='log_eleve[$i]' value='$current_eleve_login' />\n";
 	echo "</td>\n";
-	/*
-	echo "<td><input id=\"".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type=text size=4 name=$current_eleve_login_nb value=\"".$current_eleve_nb_absences."\" onchange=\"changement()\" /></td>\n";
-	echo "<td><input id=\"1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type=text size=4 name=$current_eleve_login_nj value=\"".$current_eleve_nb_nj."\" onchange=\"changement()\" /></td>\n";
-	echo "<td><input id=\"2".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type=text size=4 name=$current_eleve_login_retard value=\"".$current_eleve_nb_retards."\" onchange=\"changement()\" /></td>\n";
-	echo "<td><textarea id=\"3".$num_id."\" onKeyDown=\"clavier(this.id,event);\" onchange=\"changement()\" name=$current_eleve_login_ap rows=2 cols=50  wrap=\"virtual\">$current_eleve_ap_absences</textarea></td></tr>\n";
-	*/
 	echo "<td align='center'><input id=\"n".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type='text' size='4' name='nb_abs_ele[$i]' value=\"".$current_eleve_nb_absences."\" onchange=\"changement()\" /></td>\n";
 	echo "<td align='center'><input id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type='text' size='4' name='nb_nj_ele[$i]' value=\"".$current_eleve_nb_nj."\" onchange=\"changement()\" /></td>\n";
 	echo "<td align='center'><input id=\"n2".$num_id."\" onKeyDown=\"clavier(this.id,event);\" type='text' size='4' name='nb_retard_ele[$i]' value=\"".$current_eleve_nb_retards."\" onchange=\"changement()\" /></td>\n";
-	//echo "<td><textarea id=\"n3".$num_id."\" onKeyDown=\"clavier(this.id,event);\" onchange=\"changement()\" name='app_ele[$i]' rows='2' cols='50'  wrap=\"virtual\">$current_eleve_ap_absences</textarea></td></tr>\n";
 	echo "<td>\n";
 	echo "<textarea id=\"n3".$num_id."\" onKeyDown=\"clavier(this.id,event);\" onchange=\"changement()\" name='no_anti_inject_app_eleve_$i' rows='2' cols='50'  wrap=\"virtual\" ";
 
@@ -260,7 +235,7 @@ while($i < $nombre_lignes) {
 
 	echo ">$current_eleve_ap_absences</textarea>\n";
 
-	// Espace pour afficher les éventuelles fautes de frappe
+	// Espace pour afficher les Ã©ventuelles fautes de frappe
 	echo "<div id='div_verif_n3".$num_id."' style='color:red;'></div>\n";
 
 	echo "</td>\n";
@@ -280,10 +255,10 @@ while($i < $nombre_lignes) {
 
 <?php
 
-echo "<p>Il est impératif que vous ne laissiez pas de 'champ absence', 'absence_non_justifiee', 'retard' vide.<br />
-Un champ retard vide n'est pas compris comme zéro retard, mais comme une absence de remplissage du champ.<br />
-Si vous n'avez rempli que les champs non nuls, vous pouvez compléter d'un coup ci-dessous&nbsp;:<br />\n";
-echo "<a href='javascript:complete_a_zero_champs_vides()'>Compléter les champs vides par des zéros</a>";
+echo "<p>Il est impÃ©ratif que vous ne laissiez pas de 'champ absence', 'absence_non_justifiee', 'retard' vide.<br />
+Un champ retard vide n'est pas compris comme zÃ©ro retard, mais comme une absence de remplissage du champ.<br />
+Si vous n'avez rempli que les champs non nuls, vous pouvez complÃ©ter d'un coup ci-dessous&nbsp;:<br />\n";
+echo "<a href='javascript:complete_a_zero_champs_vides()'>ComplÃ©ter les champs vides par des zÃ©ros</a>";
 echo "</p>\n";
 
 echo "<script type='text/javascript'>\n";

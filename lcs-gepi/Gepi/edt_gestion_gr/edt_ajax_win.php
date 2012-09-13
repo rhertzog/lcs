@@ -2,7 +2,6 @@
 /**
  *
  *
- * @version $Id: edt_ajax_win.php 2147 2008-07-23 09:01:04Z tbelliard $
  *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -38,7 +37,7 @@ if ($resultat_session == 'c') {
     die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 if (!checkAccess()) {
     header("Location: ./logout.php?auto=2");
     die();
@@ -50,10 +49,10 @@ if (!checkAccess()) {
 $id_gr = isset($_GET["id_gr"]) ? $_GET["id_gr"] : NULL;
 $classe = isset($_GET["classe"]) ? $_GET["classe"] : NULL;
 $action = isset($_GET["action"]) ? $_GET["action"] : NULL;
-$id = isset($id_gr) ? substr($id_gr, 3) : NULL;
-$id2 = isset($id_gr) ? substr($id_gr, 4) : NULL;
-$id3 = isset($id_gr) ? substr($id_gr, 5) : NULL;
-$id4 = isset($id_gr) ? substr($id_gr, 6) : NULL;
+$id = isset($id_gr) ? mb_substr($id_gr, 3) : NULL;
+$id2 = isset($id_gr) ? mb_substr($id_gr, 4) : NULL;
+$id3 = isset($id_gr) ? mb_substr($id_gr, 5) : NULL;
+$id4 = isset($id_gr) ? mb_substr($id_gr, 6) : NULL;
 
 // ==========================fin des variables ==================
 
@@ -72,7 +71,7 @@ if ($action == 'modifier') {
 		for($i = 0; $i < $nbre; $i++){
 			$classes[$i] = mysql_result($query, $i, "id");
 			$nom[$i] = mysql_result($query, $i, "classe");
-			// On détermine le selected si c'est possible
+			// On dÃ©termine le selected si c'est possible
 			if ($classes[$i] == $classe) {
 				$selected = ' selected="selected"';
 			}else{
@@ -85,7 +84,7 @@ if ($action == 'modifier') {
 		echo '</select>'."\n";
 
 }elseif($action == 'enregistrer'){
-	// On récupère le nom de la classe et on l'affiche après l'avoir enregistré
+	// On rÃ©cupÃ¨re le nom de la classe et on l'affiche aprÃ¨s l'avoir enregistrÃ©
 	$sql_maj = "UPDATE edt_gr_nom SET subdivision = '".$classe."' WHERE id = '".$id."'";
 	$query_maj = mysql_query($sql_maj)
 										OR trigger_error('Impossible de modifier la classe', E_USER_ERROR);
@@ -106,7 +105,7 @@ if ($action == 'modifier') {
 
 }elseif($action == 'type_en'){
 
-	$type = $classe; // car on garde la variable du début (c'est plus simple)
+	$type = $classe; // car on garde la variable du dÃ©but (c'est plus simple)
 	// On enregistre les modifications
 
 	$sql_type = "UPDATE edt_gr_nom SET subdivision_type = '".$type."' WHERE id = '".$id2."'";
@@ -123,10 +122,10 @@ if ($action == 'modifier') {
 	}
 
 }elseif($action == "nom_gr"){
-	// On vérifie quelques petits trucs
+	// On vÃ©rifie quelques petits trucs
 	if (is_numeric($id3)) {
 
-		$infos =  ($classe) ? urldecode($classe) : NULL; // car on garde la variable du début
+		$infos =  ($classe) ? urldecode($classe) : NULL; // car on garde la variable du dÃ©but
 		// On envoie alors le bon input qui permet d'afficher le nom cours et le nom long
 
 		echo '
@@ -136,10 +135,10 @@ if ($action == 'modifier') {
 	}
 }elseif($action == "nom_gr2"){
 
-	// On vérifie quelques petits trucs
+	// On vÃ©rifie quelques petits trucs
 	if (is_numeric($id4)) {
 
-		$infos = (isset($classe) AND $classe != "-") ? urldecode($classe) : NULL; // car on garde la variable du début
+		$infos = (isset($classe) AND $classe != "-") ? urldecode($classe) : NULL; // car on garde la variable du dÃ©but
 
 		// On envoie alors le bon input qui permet d'afficher le nom cours et le nom long
 
@@ -153,9 +152,9 @@ if ($action == 'modifier') {
 
 	if (is_numeric($id3)) {
 
-		$nom =  ($classe) ? urldecode($classe) : NULL;; // car on garde la variable du début
+		$nom =  ($classe) ? urldecode($classe) : NULL;; // car on garde la variable du dÃ©but
 		// On enregistre la modification
-		$sql_nom = "UPDATE edt_gr_nom SET nom = '".utf8_decode($nom)."' WHERE id = '".$id3."'";
+		$sql_nom = "UPDATE edt_gr_nom SET nom = '".$nom."' WHERE id = '".$id3."'";
 		$query_nom = mysql_query($sql_nom);
 
 		if ($query_nom) {
@@ -175,9 +174,9 @@ if ($action == 'modifier') {
 
 	if (is_numeric($id4)) {
 
-		$nom_lg =  ($classe) ? urldecode($classe) : NULL;; // car on garde la variable du début
+		$nom_lg =  ($classe) ? urldecode($classe) : NULL;; // car on garde la variable du dÃ©but
 		// On enregistre la modification
-		$sql_nom_lg = "UPDATE edt_gr_nom SET nom_long = '".utf8_decode($nom_lg)."' WHERE id = '".$id4."'";
+		$sql_nom_lg = "UPDATE edt_gr_nom SET nom_long = '".$nom_lg."' WHERE id = '".$id4."'";
 		$query_nom_lg = mysql_query($sql_nom_lg);
 
 		if ($query_nom_lg) {

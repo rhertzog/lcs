@@ -1,29 +1,20 @@
-﻿<?php
-/*
-
-
-if(!empty($this->data['htmlinject']['htmlContentPost'])) {
-	foreach($this->data['htmlinject']['htmlContentPost'] AS $c) {
-		echo $c;
-	}
-}
-*/
-
+<?php
+$gepiPath=$this->data['baseurlpath'].'/../../../..';
 ?>
 
-
-
-		<!--hr />
-
-		<img src="/<?php echo $this->data['baseurlpath']; ?>resources/icons/ssplogo-fish-small.png" alt="Small fish logo" style="float: right" />		
-		Copyright &copy; 2007-2010 <a href="http://rnd.feide.no/">Feide RnD</a>
-		
-		<br style="clear: right" /-->
-	
 	</div><!-- #content -->
 
 </div><!-- #wrap -->
+			<a href="/<?php echo $gepiPath;?>/gestion/info_vie_privee.php" onclick="centrerpopup('gestion/info_vie_privee.php',700,480,'scrollbars=yes,statusbar=no,resizable=yes');return false;">
+			<!-- <a href="gestion/info_vie_privee.php" id="info_vie_privee"> -->
+				<img src='./images/icons/vie_privee.png' alt='' class='link' />
+				Informations vie privée
+			</a><br/><br/>
 
+	<?php if(getSettingValue("gepiAdminAdressPageLogin")!='n'){
+		$gepiAdminAdress=explode(",",getSettingValue("gepiAdminAdress"));?>
+			<a href="mailto:<?php echo $gepiAdminAdress[0];?>?subject=GEPI">Contacter l'administrateur</a><br/><br/>
+	<?php } ?>
 	<div id="new_login_footer">
 		<a href="http://gepi.mutualibre.org/" title="vers le site de GEPI : Gestion des Élèves Par Internet" >
 			GEPI : Outil de gestion, de suivi, et de visualisation graphique des résultats scolaires (écoles, collèges, lycées)
@@ -37,11 +28,6 @@ if(!empty($this->data['htmlinject']['htmlContentPost'])) {
 		, <a href="mailto:st%65phane&#46;boireau%40ac%2drouen%2efr?subject=GEPI">Stéphane Boireau</a> 
 
 		, <a href="mailto:coll%65gerb%40f&#114;ee.%66r?subject=GEPI">Julien Jocal</a>
-				<!--<a href="javascript:pigeon('thomas.belliard','free.fr');">Thomas Belliard</a>
-		, <a href="javascript:pigeon('laurent.delineau','ac-poitiers.fr');">Laurent Delineau</a> 
-		, <a href="javascript:pigeon('eric.lebrun','ac-poitiers.fr');">Eric Lebrun</a> 
-		, <a href="javascript:pigeon('stephane.boireau','ac-rouen.fr');">Stéphane Boireau</a> 
-		, <a href="javascript:pigeon('collegerb','free.fr');">Julien Jocal</a>  --> 
 	</div> 
 
 </body>

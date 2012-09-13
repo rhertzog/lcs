@@ -1,6 +1,5 @@
 /**
  *
- * @version $Id: include.js 7541 2011-07-31 16:26:31Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -125,4 +124,13 @@ function postwindow(the_form,title){
 function postform(the_form){ 
  my_form = eval(the_form)
  my_form.submit();
+}
+
+
+function click_active_absence(elv) {
+	if (document.getElementById("active_absence_eleve_"+elv).checked) {
+		document.getElementById("label_active_absence_eleve_"+elv).className='policeRouge';
+	} else {
+		document.getElementById("label_active_absence_eleve_"+elv).className='policeBlack';
+	}
 }

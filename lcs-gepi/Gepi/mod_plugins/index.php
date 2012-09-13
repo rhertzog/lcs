@@ -1,6 +1,5 @@
 <?php
 /**
- * @version : $Id: index.php 7841 2011-08-20 09:33:35Z mleygnac $
  *
  * Copyright 2001, 2011 Thomas Belliard, Julien Jocal
  *
@@ -22,7 +21,7 @@
  */
 
 /**
- * Ce fichier est destiné à organiser les plugins de Gepi.
+ * Ce fichier est destinÃ© Ã  organiser les plugins de Gepi.
  * Il permet d'ajouter ses propres plugins.
  * Une documentation est disponible : http://projects.sylogix.org/gepi/wiki/plugin
  */
@@ -37,7 +36,7 @@ include("../lib/initialisationsPropel.inc.php");
 include 'traiterXml.class.php';
 include 'traiterRequetes.class.php';
 
-// Resume session et on vérifie les droits de l'utilisateur
+// Resume session et on vÃ©rifie les droits de l'utilisateur
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
   header("Location:utilisateurs/mon_compte.php?change_mdp=yes&retour=accueil#changemdp");
@@ -67,13 +66,13 @@ function aff_debug($tab){
   echo '</pre>';
 }
 
-# On traite d'un plugin qui n'est pas installé
+# On traite d'un plugin qui n'est pas installÃ©
 if (isset($nom_plugin)) {
   check_token();
   if ($action == "installer"){
-    // On ouvre le répertoire et on scanne le contenu, il faut y trouver un fichier xml et un fichier index.php au minimum
+    // On ouvre le rÃ©pertoire et on scanne le contenu, il faut y trouver un fichier xml et un fichier index.php au minimum
     $plugin = scandir($nom_plugin);
-    // On vérifie que le plugin.xml est bien présent
+    // On vÃ©rifie que le plugin.xml est bien prÃ©sent
     $testXML = false;
     foreach ($plugin as $fichier){
       if ($fichier == "plugin.xml"){
@@ -82,7 +81,7 @@ if (isset($nom_plugin)) {
     }
 
     if ($testXML){
-	  // On charge les fonctions d'un éventuel le_plugin/fichier functions_le_plugin.php
+	  // On charge les fonctions d'un Ã©ventuel le_plugin/fichier functions_le_plugin.php
 	  $fichier_fonctions=$nom_plugin."/functions_".$nom_plugin.".php";
 	  if (file_exists($fichier_fonctions)) include_once($fichier_fonctions);
       // On lit le fichier xml
@@ -104,11 +103,11 @@ if (isset($nom_plugin)) {
         // alors on peut envoyer le xml pour installer le plugin
         $new_plugin = PlugInPeer::addPluginComplet($xml);
         /**
-         * On traite les requêtes demandées lors de l'installation
+         * On traite les requÃªtes demandÃ©es lors de l'installation
          */
         $traitement_requetes = new traiterRequetes($xml->installation->requetes);
         if ($traitement_requetes->getReponse() === true){
-          // C'est fait les requêtes ont été exécutées
+          // C'est fait les requÃªtes ont Ã©tÃ© exÃ©cutÃ©es
 		  // traitement post_installation
 		  $fonction_post="post_installation_".$nom_plugin;
 		  if (function_exists($fonction_post))
@@ -138,13 +137,13 @@ if (isset($nom_plugin)) {
     }
 
   }
-# On traite des plugin déjà installés
+# On traite des plugin dÃ©jÃ  installÃ©s
 }elseif(isset($plugin_id)) {
   check_token();
-  // On s'attache à faire les actions demandées sur ce plugin déjà installé
+  // On s'attache Ã  faire les actions demandÃ©es sur ce plugin dÃ©jÃ  installÃ©
   $pluginAmodifier = PlugInPeer::retrieveByPK($plugin_id);
   $nom_plugin=$pluginAmodifier->getNom();
-  // On charge les fonctions d'un éventuel fichier le_plugin/functions_le_plugin.php
+  // On charge les fonctions d'un Ã©ventuel fichier le_plugin/functions_le_plugin.php
   $fichier_fonctions=$nom_plugin."/functions_".$nom_plugin.".php";
   if (file_exists($fichier_fonctions)) include_once($fichier_fonctions);
   switch ($action) {
@@ -198,7 +197,7 @@ $open_dir       = scandir("./");
 
 foreach ($open_dir as $dir) {
 
-  // On vérifie la présence d'un point dans le nom retourné
+  // On vÃ©rifie la prÃ©sence d'un point dans le nom retournÃ©
   $test = explode(".", $dir);
   if (count($test) <= 1){
 
@@ -220,7 +219,7 @@ switch ($_erreur) {
     $_msg = "<p class=\"red\">Il manque le fichier plugin.xml &agrave; ce plugin, impossible de l'installer !</p>";
     break;
   case "2":
-    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voyez <a href=\"https://www.sylogix.org/wiki/gepi/plugin\">la documentation collaborative (wiki)</a></p>";
+    $_msg = "<p class=\"red\">Le fichier plugin.xml ne respecte pas la struture demand&eacute;e ! voyez <a href=\"http://www.sylogix.org/wiki/gepi/plugin\">la documentation collaborative (wiki)</a></p>";
     break;
   case "10":
 	$_msg="<p class=\"red\">".stripslashes($_msg)."</p>";
@@ -231,7 +230,7 @@ switch ($_erreur) {
 }
 // ================= HEADER ========================//
 $titre_page = "Param&eacute;trer les plugins";
-include '../lib/header.inc';
+include '../lib/header.inc.php';
 // ================ FIN HEADER =====================//
 //print_r($liste_plugins);
 //aff_debug($testXML);
@@ -241,7 +240,7 @@ echo "<p class='bold'><a href='../accueil_modules.php'><img src='../images/icons
 <?php if ($_msg!="") echo "<br/><br/>".$_msg; ?>
 <h3 class="Gepi">Liste des plugins install&eacute;s</h3>
 <p>Pour plus d'informations concernant les plugins de Gepi, voyez
-  <a onclick="window.open(this.href, '_blank'); return false;" href="https://www.sylogix.org/projects/gepi/wiki/GuideAdministrateur#Syst%C3%A8me-de-plugins">la documentation collaborative (wiki)</a>
+  <a onclick="window.open(this.href, '_blank'); return false;" href="http://www.sylogix.org/projects/gepi/wiki/GuideAdministrateur#Syst%C3%A8me-de-plugins">la documentation collaborative (wiki)</a>
 </p>
  <table class="table">
   <tr>
@@ -255,7 +254,7 @@ echo "<p class='bold'><a href='../accueil_modules.php'><img src='../images/icons
 <?php
 foreach($liste_plugins as $plugin){
   if (!is_object($plugin)){
-    // le plugin n'est pas installé
+    // le plugin n'est pas installÃ©
     echo '
     <tr>
       <td>'.str_replace("_", " ", $plugin).'</td>
@@ -266,7 +265,7 @@ foreach($liste_plugins as $plugin){
       <td>NON</td>
     </tr>';
   }else{
-    // Le plugin est installé
+    // Le plugin est installÃ©
     $xml = simplexml_load_file($plugin->getNom() . "/plugin.xml");
     // On teste s'il est ouvert
     if ($plugin->getOuvert() == 'y'){
@@ -277,10 +276,10 @@ foreach($liste_plugins as $plugin){
     echo '
     <tr>
       <td>'.str_replace("_", " ", $plugin->getNom()).'</td>
-      <td>'.iconv("utf-8","iso-8859-1",$xml->description).'</td>
-      <td>'.iconv("utf-8","iso-8859-1",$xml->auteur).'</td>
-      <td>'.iconv("utf-8","iso-8859-1",$xml->version).'</td>
-      <td><a href="index.php?plugin_id='.$plugin->getId().'&amp;action=desinstaller'.add_token_in_url().'" title="Voulez-vous le d&eacute;sinstaller ?" onclick="return confirm('."'La desinstallation d\'un plugin entraîne la suppression des tables éventuellement associées et des données qu\'elles contiennent. Etes-vous sûr de vouloir désinstaller ce plugin ?'".');">OUI</a></td>
+      <td>'.$xml->description.'</td>
+      <td>'.$xml->auteur.'</td>
+      <td>'.$xml->version.'</td>
+      <td><a href="index.php?plugin_id='.$plugin->getId().'&amp;action=desinstaller'.add_token_in_url().'" title="Voulez-vous le d&eacute;sinstaller ?" onclick="return confirm('."'La desinstallation d\'un plugin entraÃ®ne la suppression des tables Ã©ventuellement associÃ©es et des donnÃ©es qu\'elles contiennent. Etes-vous sÃ»r de vouloir dÃ©sinstaller ce plugin ?'".');">OUI</a></td>
       <td>'.$aff_ouvert.'</td>
     </tr>';
   }

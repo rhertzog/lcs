@@ -1,7 +1,5 @@
 <?php
 /*
- * @version: $Id: help.php 2147 2008-07-23 09:01:04Z tbelliard $
- *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
@@ -39,28 +37,28 @@ die();
 
 //**************** EN-TETE *****************
 $titre_page = "Aide en ligne";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 ?>
 
-<H2>Outils complémentaires de gestion des AIDs</H2>
-<p>En activant les <b>outils complémentaires de gestion des AIDs</b>, vous avez
-accès à des champs supplémentaires (attribution d'une salle, possibilité
-de définir un résumé, le type de production, des mots_clés, un public
+<H2>Outils complÃ©mentaires de gestion des AIDs</H2>
+<p>En activant les <b>outils complÃ©mentaires de gestion des AIDs</b>, vous avez
+accÃ¨s Ã  des champs supplÃ©mentaires (attribution d'une salle, possibilitÃ©
+de dÃ©finir un rÃ©sumÃ©, le type de production, des mots_clÃ©s, un public
 destinataire...).</p>
 
-<p>Ces données supplémentaires sont accessibles à travers des fiches dite
+<p>Ces donnÃ©es supplÃ©mentaires sont accessibles Ã  travers des fiches dite
 "fiches projet".</p>
 
-<p>Ces fiches sont accessibles dans GEPI à différents
-types d'utilisateurs connectés (administrateur, professeur, cpe, élève ou responsable)</p>
+<p>Ces fiches sont accessibles dans GEPI Ã  diffÃ©rents
+types d'utilisateurs connectÃ©s (administrateur, professeur, cpe, Ã©lÃ¨ve ou responsable)</p>
 
-<p>Ces fiches sont également en partie accessibles dans l'interface publique de GEPI à différents. Un paramètrage permet de déterminer les champs visibles ou non par le public.</p>
+<p>Ces fiches sont Ã©galement en partie accessibles dans l'interface publique de GEPI Ã  diffÃ©rents. Un paramÃ¨trage permet de dÃ©terminer les champs visibles ou non par le public.</p>
 
-<p>Selon son statut (professeurs responsables, cpe ou élèves responsables) et lorsque l'administrateur a ouvert cette possibilité,
-l'utilisateur a accès en modification à certains champs de cette fiche.</p>
-<p>En plus des professeurs responsable de chaque AID, l'administrateur peut désigner des utilisateurs (professeurs ou CPE) ayant le droit de
-modifier les fiches projet même lorsque l'administrateur a désactivé
-cette possibilité pour les professeurs responsables.</p>
+<p>Selon son statut (professeurs responsables, cpe ou Ã©lÃ¨ves responsables) et lorsque l'administrateur a ouvert cette possibilitÃ©,
+l'utilisateur a accÃ¨s en modification Ã  certains champs de cette fiche.</p>
+<p>En plus des professeurs responsable de chaque AID, l'administrateur peut dÃ©signer des utilisateurs (professeurs ou CPE) ayant le droit de
+modifier les fiches projet mÃªme lorsque l'administrateur a dÃ©sactivÃ©
+cette possibilitÃ© pour les professeurs responsables.</p>
 <?php require("../lib/footer.inc.php");?>

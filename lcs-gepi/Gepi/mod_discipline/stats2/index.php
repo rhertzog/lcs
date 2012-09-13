@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: index.php 7916 2011-08-23 09:50:31Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -39,18 +38,18 @@ $sql="CREATE TABLE IF NOT EXISTS `s_categories` ( `id` INT(11) NOT NULL
                 auto_increment, `categorie` varchar(50) NOT NULL
                 default '',`sigle` varchar(20) NOT NULL
                 default '', PRIMARY KEY (`id`) )
-                ENGINE=MyISAM;";
+                 ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $test=mysql_query($sql);
 $sql="SELECT 1=1 FROM `s_categories`;";
 $test=mysql_query($sql);
 if(mysql_num_rows($test)==0) {
     $categories[]=Array('categorie'=>'Travail','sigle'=>'T');
     $categories[]=Array('categorie'=>'Degradation','sigle'=>'D');
-    $categories[]=Array('categorie'=>'Retards Répétés','sigle'=>'R');
-    $categories[]=Array('categorie'=>'Oubli de matériel','sigle'=>'O');
+    $categories[]=Array('categorie'=>'Retards RÃ©pÃ©tÃ©s','sigle'=>'R');
+    $categories[]=Array('categorie'=>'Oubli de matÃ©riel','sigle'=>'O');
     $categories[]=Array('categorie'=>'Insolence et comportement','sigle'=>'IC');
     $categories[]=Array('categorie'=>'Violence verbale ou physique','sigle'=>'V');
-    $categories[]=Array('categorie'=>'Bavardages répétés','sigle'=>'B');    
+    $categories[]=Array('categorie'=>'Bavardages rÃ©pÃ©tÃ©s','sigle'=>'B');    
     foreach($categories as $categorie) {
         $sql="INSERT INTO `s_categories`(categorie,sigle) VALUES ('".$categorie['categorie']."','".$categorie['sigle']."');";
         $test=mysql_query($sql);
@@ -96,7 +95,7 @@ $scriptaculous_effet="effects,controls,builder,dragdrop";
 $style_specifique = "mod_discipline/stats2/apps/css/stats";
 $javascript_specifique = "mod_discipline/stats2/apps/js/stats";
 
-require_once("../../lib/header.inc");
+require_once("../../lib/header.inc.php");
 
 //**************** FIN EN-TETE *****************
 
@@ -118,7 +117,7 @@ try {
     require("../../lib/footer.inc.php");
 }
 catch(Exception $e) {
-    echo "Exception levée dans l'application. <br />"
+    echo "Exception levÃ©e dans l'application. <br />"
             . "<b>Message</b> " . $e->getMessage() . "<br />"
             . "<b>Fichier</b> " . $e->getFile() . "<br />"
             . "<b>Ligne</b> " . $e->getLine() . "<br />";

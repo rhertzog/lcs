@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: export_cmnt_type_prof.php 3323 2009-08-05 10:06:18Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -40,7 +39,7 @@ if (!checkAccess()) {
     die();
 }
 
-// On n'autorise que les profs à accéder à cette page
+// On n'autorise que les profs Ã  accÃ©der Ã  cette page
 if($_SESSION['statut']!='professeur') {
     header("Location: ../logout.php?auto=1");
     die();

@@ -1,7 +1,6 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: init_options.php 7602 2011-08-07 14:17:29Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -53,40 +52,66 @@ if($_SESSION['statut']!='administrateur') {
 //===========================================
 
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'annÈe | Initialisation  des options par GEP";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'ann√©e | Initialisation  des options par GEP";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class="bold"><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 <?php
-// On vÈrifie si l'extension d_base est active
-//verif_active_dbase();
 
-echo "<center><h3 class='gepi'>CinquiËme phase d'initialisation<br />Affectation des matiËres ‡ chaque professeur,<br />Affectation des professeurs dans chaque classe,<br />Importation des options suivies par les ÈlËves</h3></center>";
+echo "<center><h3 class='gepi'>Cinqui√®me phase d'initialisation<br />Affectation des mati√®res √† chaque professeur,<br />Affectation des professeurs dans chaque classe,<br />Importation des options suivies par les √©l√®ves</h3></center>";
 
-echo "<h3 class='gepi'>DeuxiËme Ètape : importation des options suivies par les ÈlËves.</h3>";
+echo "<h3 class='gepi'>Deuxi√®me √©tape : importation des options suivies par les √©l√®ves.</h3>";
 
 $test1 = mysql_result(mysql_query("SELECT count(*) FROM eleves"),0);
 if ($test1 ==0) {
-	echo "<p class='grand'>Aucun ÈlËve actuellement dans la base : la procÈdure d'initialisation des options ne peut continuer !</p>";
+	echo "<p class='grand'>Aucun √©l√®ve actuellement dans la base : la proc√©dure d'initialisation des options ne peut continuer !</p>";
+	require("../lib/footer.inc.php");
 	die();
 } else {
 	$test2 = mysql_result(mysql_query("SELECT count(*) FROM j_eleves_classes"),0);
 	if ($test2 ==0) {
-		echo "<p class='grand'>Les classes n'ont pas encore ÈtÈ constituÈes : la procÈdure d'initialisation des options ne peut continuer !</p>";
+		echo "<p class='grand'>Les classes n'ont pas encore √©t√© constitu√©es : la proc√©dure d'initialisation des options ne peut continuer !</p>";
+		require("../lib/footer.inc.php");
 		die();
 	} else {
 
 		//$test3 = mysql_result(mysql_query("SELECT count(*) FROM temp_gep_import WHERE LOGIN !=''"),0);
 		$test3 = mysql_result(mysql_query("SELECT count(*) FROM temp_gep_import2 WHERE LOGIN !=''"),0);
 		if ($test3 ==0) {
-			//echo "<p class='grand'>Afin de procÈder ‡ la phase de dÈfinition des options suivies par les ÈlËves, vous devez d'abord effectuer la premiËre phase d'importation des ÈlËves ‡ partir du fichier ELEVES.CSV</p>";
-			echo "<p class='grand'>Afin de procÈder ‡ la phase de dÈfinition des options suivies par les ÈlËves, vous devez d'abord effectuer la premiËre phase d'importation des ÈlËves ‡ partir du fichier ElevesSansAdresses.xml</p>";
+			//echo "<p class='grand'>Afin de proc√©der √† la phase de d√©finition des options suivies par les √©l√®ves, vous devez d'abord effectuer la premi√®re phase d'importation des √©l√®ves √† partir du fichier ELEVES.CSV</p>";
+			echo "<p class='grand'>Afin de proc√©der √† la phase de d√©finition des options suivies par les √©l√®ves, vous devez d'abord effectuer la premi√®re phase d'importation des √©l√®ves √† partir du fichier ElevesSansAdresses.xml</p>";
+			require("../lib/footer.inc.php");
 			die();
 		}
 	}
 }
-//$del = @mysql_query("delete from j_eleves_groupes");
+
+if(!isset($_GET['confirmer'])) {
+	$sql="SELECT 1=1 FROM matieres_notes;";
+	$test1=mysql_query($sql);
+
+	$sql="SELECT 1=1 FROM matieres_appreciations;";
+	$test2=mysql_query($sql);
+
+	$sql="SELECT 1=1 FROM cn_cahier_notes ccn, cn_conteneurs cc, cn_devoirs cd, cn_notes_devoirs cnd WHERE ccn.id_cahier_notes=cc.id_racine AND cc.id=cd.id_conteneur AND cd.id=cnd.id_devoir;";
+	$test3=mysql_query($sql);
+
+	if((mysql_num_rows($test1)!=0)||(mysql_num_rows($test2)!=0)||(mysql_num_rows($test3)!=0)) {
+		echo "<p><span style='font-weight:bold; color:red'>ATTENTION&nbsp;:</span> Il existe des notes de devoirs, des notes sur les bulletins ou des appr√©ciations sur les bulletins.</p>\n";
+
+		echo "<p>En poursuivant ici, vous risquez de suprimer ces informations pour certains √©l√®ves (<em>plus p√©cisemment, vous risquez de d√©sinscrire des √©l√®ves de groupes dans lesquels ils ont des notes ou appr√©ciations</em>).</p>\n";
+
+		echo "<p>La pr√©sente page n'est normalement consult√©e qu'en d√©but d'ann√©e pour l'initialisation de l'ann√©e.</p>\n";
+
+		echo "<p>Etes-vous s√ªr de vouloir poursuivre&nbsp;?</p>\n";
+
+		echo "<p><a href='".$_SERVER['PHP_SELF']."?confirmer=y".add_token_in_url()."'>Confirmer malgr√© tout la prise en compte des options de la table 'temp_gep_import2'</a></p>\n";
+
+		require("../lib/footer.inc.php");
+		die();
+	}
+}
 
 $sql="SELECT id, classe FROM classes;";
 //echo "$sql<br />\n";
@@ -98,7 +123,7 @@ while ($classe_row = mysql_fetch_object($appel_donnees_classes)) {
 	$id_classe = $classe_row->id;
 	$classe = $classe_row->classe;
 
-	// Initialisation de la variable pour indiquer qu'un groupe n'existe pas pour la matiËre indiquÈe en option
+	// Initialisation de la variable pour indiquer qu'un groupe n'existe pas pour la mati√®re indiqu√©e en option
 	$no_group = array();
 
 	$sql="SELECT count(*) FROM periodes WHERE id_classe = '" . $id_classe . "';";
@@ -112,7 +137,7 @@ while ($classe_row = mysql_fetch_object($appel_donnees_classes)) {
 		$tempo .= "ELEOPT".$i.", ";
 		$i++;
 	}
-	$tempo = substr($tempo, 0, -2);
+	$tempo = mb_substr($tempo, 0, -2);
 
 	//$call_data = mysql_query("SELECT $tempo FROM temp_gep_import WHERE DIVCOD = '$classe'");
 	$sql="SELECT $tempo FROM temp_gep_import2 WHERE DIVCOD = '$classe'";
@@ -125,7 +150,7 @@ while ($classe_row = mysql_fetch_object($appel_donnees_classes)) {
 			$tempo = "ELEOPT".$i;
 			$temp = $row->$tempo;
 			if ($temp!='') {
-				// On s'assure de ne pas ranger dans le tableau tab_options, plusieurs fois la mÍme option
+				// On s'assure de ne pas ranger dans le tableau tab_options, plusieurs fois la m√™me option
 				$n = 0;
 				$double = 'no';
 
@@ -161,7 +186,7 @@ while ($classe_row = mysql_fetch_object($appel_donnees_classes)) {
 
 				if ($suit_option == 'no') {
 
-					// On commence par rÈcupÈrer l'ID du groupe concernÈ
+					// On commence par r√©cup√©rer l'ID du groupe concern√©
 
 					if (!in_array($tab_options[$j], $no_group)) {
 						/*
@@ -203,9 +228,9 @@ while ($classe_row = mysql_fetch_object($appel_donnees_classes)) {
 	}
 }
 
-//echo "<p>L'importation des options suivies par les ÈlËves dans la base GEPI a ÈtÈ effectuÈe avec succËs !<br />Vous pouvez procÈder ‡ l'Ètape suivante de nettoyage des tables GEPI.</p>\n";
-//echo "<center><p><a href='clean_tables.php'>Suppression des donnÈes inutiles</a></p></center>\n";
-echo "<p>L'importation des options suivies par les ÈlËves dans la base GEPI a ÈtÈ effectuÈe avec succËs !<br />Vous pouvez procÈder ‡ l'Ètape suivante d'import des professeurs principaux.</p>\n";
+//echo "<p>L'importation des options suivies par les √©l√®ves dans la base GEPI a √©t√© effectu√©e avec succ√®s !<br />Vous pouvez proc√©der √† l'√©tape suivante de nettoyage des tables GEPI.</p>\n";
+//echo "<center><p><a href='clean_tables.php'>Suppression des donn√©es inutiles</a></p></center>\n";
+echo "<p>L'importation des options suivies par les √©l√®ves dans la base GEPI a √©t√© effectu√©e avec succ√®s !<br />Vous pouvez proc√©der √† l'√©tape suivante d'import des professeurs principaux.</p>\n";
 echo "<center><p><a href='init_pp.php'>Import des professeurs principaux</a></p></center>\n";
 require("../lib/footer.inc.php");
 ?>

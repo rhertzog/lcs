@@ -1,7 +1,6 @@
 <?php
 /*
  *
- * $Id: admin_motifs_absences.php 5946 2010-11-22 16:02:12Z crob $
  *
  * Copyright 2010-2011 Josselin Jacquard
  *
@@ -90,7 +89,7 @@ if ($action == 'supprimer') {
 
 // header
 $titre_page = "Gestion des motifs d'absence";
-require_once("../../lib/header.inc");
+require_once("../../lib/header.inc.php");
 
 echo "<p class=bold>";
 echo "<a href=\"index.php\">";
@@ -99,7 +98,7 @@ echo "</p>";
 ?>
 
 <div style="text-align:center">
-    <h2>Définition des motifs d'absence</h2>
+    <h2>DÃ©finition des motifs d'absence</h2>
 <?php if ($action == "ajouter" OR $action == "modifier") { ?>
 <div style="text-align:center">
     <?php
@@ -144,7 +143,7 @@ echo add_token_field();
 
 	<a href="admin_motifs_absences.php?action=ajouter"><img src='../../images/icons/add.png' alt='' class='back_link' /> Ajouter un motif</a>
 	<br/><br/>
-	<a href="admin_motifs_absences.php?action=ajouterdefaut<?php echo add_token_in_url();?>"><img src='../../images/icons/add.png' alt='' class='back_link' /> Ajouter les motifs par défaut</a>
+	<a href="admin_motifs_absences.php?action=ajouterdefaut<?php echo add_token_in_url();?>"><img src='../../images/icons/add.png' alt='' class='back_link' /> Ajouter les motifs par dÃ©faut</a>
 	<br/><br/>
     <table cellpadding="0" cellspacing="1" class="menu">
       <tr>
@@ -163,7 +162,7 @@ echo add_token_field();
 	  <td><?php echo $motif->getNom(); ?></td>
 	  <td><?php echo $motif->getCommentaire(); ?></td>
           <td><a href="admin_motifs_absences.php?action=modifier&amp;id_motif=<?php echo $motif->getId(); echo add_token_in_url();?>"><img src="../../images/icons/configure.png" title="Modifier" border="0" alt="" /></a></td>
-          <td><a href="admin_motifs_absences.php?action=supprimer&amp;id_motif=<?php echo $motif->getId(); echo add_token_in_url();?>" onClick="return confirm('Etes-vous sûr de vouloir supprimer ce motif ?')"><img src="../../images/icons/delete.png" width="22" height="22" title="Supprimer" border="0" alt="" /></a></td>
+          <td><a href="admin_motifs_absences.php?action=supprimer&amp;id_motif=<?php echo $motif->getId(); echo add_token_in_url();?>" onClick="return confirm('Etes-vous sÃ»r de vouloir supprimer ce motif ?')"><img src="../../images/icons/delete.png" width="22" height="22" title="Supprimer" border="0" alt="" /></a></td>
           <td><a href="admin_motifs_absences.php?action=monter&amp;id_motif=<?php echo $motif->getId(); echo add_token_in_url();?>"><img src="../../images/up.png" width="22" height="22" title="monter" border="0" alt="" /></a></td>
           <td><a href="admin_motifs_absences.php?action=descendre&amp;id_motif=<?php echo $motif->getId(); echo add_token_in_url();?>"><img src="../../images/down.png" width="22" height="22" title="descendre" border="0" alt="" /></a></td>
         </tr>

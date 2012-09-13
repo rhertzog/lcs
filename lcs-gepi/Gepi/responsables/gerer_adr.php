@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: gerer_adr.php 6618 2011-03-03 18:25:55Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -60,19 +59,19 @@ if(isset($suppr_ad)) {
 			$sql="DELETE FROM resp_adr WHERE adr_id='$suppr_ad[$i]'";
 			$res_suppr=mysql_query($sql);
 			if(!$res_suppr){
-				$msg.="Erreur lors de la suppression de l'adresse n°$suppr_ad[$i]. ";
+				$msg.="Erreur lors de la suppression de l'adresse nÂ°$suppr_ad[$i]. ";
 				$temoin_suppr++;
 			}
 		}
 		else{
-			$msg.="Suppression impossible de l'adresse n°$suppr_ad[$i] associée ";
+			$msg.="Suppression impossible de l'adresse nÂ°$suppr_ad[$i] associÃ©e ";
 			$temoin_suppr++;
 			if(mysql_num_rows($test)==1){
 				$lig_resp=mysql_fetch_object($test);
-				$msg.="au responsable n°<a href='modify_resp.php?pers_id=".$lig_resp->pers_id."'>".$lig_resp->pers_id."</a>. ";
+				$msg.="au responsable nÂ°<a href='modify_resp.php?pers_id=".$lig_resp->pers_id."'>".$lig_resp->pers_id."</a>. ";
 			}
 			else{
-				$msg.="aux responsables n°";
+				$msg.="aux responsables nÂ°";
 				$lig_resp=mysql_fetch_object($test);
 				$msg.="<a href='modify_resp.php?pers_id=".$lig_resp->pers_id."'>".$lig_resp->pers_id."</a>";
 				while($lig_resp=mysql_fetch_object($test)){
@@ -82,13 +81,13 @@ if(isset($suppr_ad)) {
 		}
 	}
 	if($temoin_suppr==0){
-		$msg="Suppression(s) réussie(s).";
+		$msg="Suppression(s) rÃ©ussie(s).";
 	}
 }
 
 //**************** EN-TETE *******************************
 $titre_page = "Gestion des adresses de responsables";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE ***************************
 
 //debug_var();
@@ -97,7 +96,7 @@ if(!getSettingValue('conv_new_resp_table')){
 	$sql="SELECT 1=1 FROM responsables";
 	$test=mysql_query($sql);
 	if(mysql_num_rows($test)>0){
-		echo "<p>Une conversion des données responsables est requise.</p>\n";
+		echo "<p>Une conversion des donnÃ©es responsables est requise.</p>\n";
 		echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 		require("../lib/footer.inc.php");
 		die();
@@ -106,7 +105,7 @@ if(!getSettingValue('conv_new_resp_table')){
 	$sql="SHOW COLUMNS FROM eleves LIKE 'ele_id'";
 	$test=mysql_query($sql);
 	if(mysql_num_rows($test)==0){
-		echo "<p>Une conversion des données élèves/responsables est requise.</p>\n";
+		echo "<p>Une conversion des donnÃ©es Ã©lÃ¨ves/responsables est requise.</p>\n";
 		echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 		require("../lib/footer.inc.php");
 		die();
@@ -115,7 +114,7 @@ if(!getSettingValue('conv_new_resp_table')){
 		$sql="SELECT 1=1 FROM eleves WHERE ele_id=''";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)>0){
-			echo "<p>Une conversion des données élèves/responsables est requise.</p>\n";
+			echo "<p>Une conversion des donnÃ©es Ã©lÃ¨ves/responsables est requise.</p>\n";
 			echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 			require("../lib/footer.inc.php");
 			die();
@@ -124,7 +123,7 @@ if(!getSettingValue('conv_new_resp_table')){
 }
 
 ?>
-<p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <a href="dedoublonnage_adresses.php">Dédoublonner les adresses</a></p>
+<p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <a href="dedoublonnage_adresses.php">DÃ©doublonner les adresses</a></p>
 
 <?php
 	//debug_var();
@@ -136,18 +135,18 @@ if(!getSettingValue('conv_new_resp_table')){
 	*/
 
 	$critere_recherche=isset($_POST['critere_recherche']) ? $_POST['critere_recherche'] : "";
-	$critere_recherche=preg_replace("/[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü0-9_ -]/", "", $critere_recherche);
+	$critere_recherche=preg_replace("/[^a-zA-ZÃ€Ã„Ã‚Ã‰ÃˆÃŠÃ‹ÃŽÃÃ”Ã–Ã™Ã›ÃœÂ½Â¼Ã‡Ã§Ã Ã¤Ã¢Ã©Ã¨ÃªÃ«Ã®Ã¯Ã´Ã¶Ã¹Ã»Ã¼0-9_ -]/", "", $critere_recherche);
 	$afficher_toutes_les_adr=isset($_POST['afficher_toutes_les_adr']) ? $_POST['afficher_toutes_les_adr'] : "n";
 
 	$champ_rech=isset($_POST['champ_rech']) ? $_POST['champ_rech'] : "commune";
 	if(($champ_rech!='commune')&&($champ_rech!='cp')&&($champ_rech!='adrX')&&($champ_rech!='non_assoc')) {$champ_rech="commune";}
 
 	$nb_adr=isset($_POST['nb_adr']) ? $_POST['nb_adr'] : 20;
-	if(strlen(preg_replace("/[0-9]/","",$nb_adr))!=0) {
+	if(mb_strlen(preg_replace("/[0-9]/","",$nb_adr))!=0) {
 		$nb_adr=20;
 	}
 	$num_premier_adr_rech=isset($_POST['num_premier_adr_rech']) ? $_POST['num_premier_adr_rech'] : 0;
-	if((strlen(preg_replace("/[0-9]/","",$num_premier_adr_rech))!=0)||($num_premier_adr_rech=="")) {
+	if((mb_strlen(preg_replace("/[0-9]/","",$num_premier_adr_rech))!=0)||($num_premier_adr_rech=="")) {
 		$num_premier_adr_rech=0;
 	}
 
@@ -203,8 +202,8 @@ if(!getSettingValue('conv_new_resp_table')){
 	echo "<td valign='top' colspan='3'>\n";
 	echo "<input type='submit' name='filtrage' value='Afficher' /> les ";
 	echo "<input type='text' name='nb_adr' id='nb_adr' value='$nb_adr' size='3' />\n";
-	echo " premières adresses ";
-	echo " à partir de l'enregistrement ";
+	echo " premiÃ¨res adresses ";
+	echo " Ã  partir de l'enregistrement ";
 
 	echo "<input type='button' name='prec' value='<<' onclick=\"document.getElementById('num_premier_adr_rech').value=Math.max(0,eval(document.getElementById('num_premier_adr_rech').value)-eval(document.getElementById('nb_adr').value));document.form_rech.submit();\" />\n";
 	echo "<input type='text' name='num_premier_adr_rech' id='num_premier_adr_rech' value='$num_premier_adr_rech' size='4' />\n";
@@ -242,7 +241,7 @@ if(!getSettingValue('conv_new_resp_table')){
 	echo "<td valign='top' colspan='2'>\n";
 	echo "<input type='radio' name='champ_rech' id='champ_rech_nonAssoc' value='non_assoc' ";
 	if($champ_rech=="non_assoc") {echo "checked ";}
-	echo "/><label for='champ_rech_nonAssoc' style='cursor:pointer;'> non associées.</label>";
+	echo "/><label for='champ_rech_nonAssoc' style='cursor:pointer;'> non associÃ©es.</label>";
 	echo "</td>\n";
 	echo "</tr>\n";
 
@@ -284,7 +283,7 @@ echo "$sql<br />\n";
 
 $res_adr=mysql_query($sql);
 if(mysql_num_rows($res_adr)>0){
-	//echo "<b>ou</b> <input type='checkbox' name='select_ad_existante' id='select_ad_existante' value='y' onchange='modif_div_ad()' /> Sélectionner une adresse existante.";
+	//echo "<b>ou</b> <input type='checkbox' name='select_ad_existante' id='select_ad_existante' value='y' onchange='modif_div_ad()' /> SÃ©lectionner une adresse existante.";
 
 	echo "<form enctype=\"multipart/form-data\" name=\"choix_adr\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
 	echo add_token_field();
@@ -300,11 +299,11 @@ if(mysql_num_rows($res_adr)>0){
 
 	echo "<p align='center'><a href=\"javascript:modif_suppr_adr_id_non_assoc('coche')\">Cocher</a>\n";
 	echo " / ";
-	echo "<a href=\"javascript:modif_suppr_adr_id_non_assoc('decoche')\">décocher</a>\n";
-	echo " les adresses non associées.</p>";
+	echo "<a href=\"javascript:modif_suppr_adr_id_non_assoc('decoche')\">dÃ©cocher</a>\n";
+	echo " les adresses non associÃ©es.</p>";
 
 
-	// Ajouter un lien pour cocher les adresses non associées.
+	// Ajouter un lien pour cocher les adresses non associÃ©es.
 	unset($tab_adr_id_non_assoc);
 	$tab_adr_id_non_assoc=array();
 
@@ -319,13 +318,13 @@ if(mysql_num_rows($res_adr)>0){
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#AAE6AA;'>Code postal</td>\n";
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#AAE6AA;'>Commune</td>\n";
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#AAE6AA;'>Pays</td>\n";
-	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#96C8F0;'>Responsable associé</td>\n";
+	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:#96C8F0;'>Responsable associÃ©</td>\n";
 	$ligne_titre.="<td style='text-align:center; font-weight:bold; background-color:red;'>Supprimer adresse(s)<br />\n";
 	$ligne_titre.="<a href=\"javascript:modif_case(true)\">";
 	$ligne_titre.="<img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>";
 	$ligne_titre.=" / ";
 	$ligne_titre.="<a href=\"javascript:modif_case(false)\">";
-	$ligne_titre.="<img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+	$ligne_titre.="<img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 	$ligne_titre.="</td>\n";
 	$ligne_titre.="</tr>\n";
 
@@ -419,11 +418,9 @@ if(mysql_num_rows($res_adr)>0){
 			$res_pers=mysql_query($sql);
 			if(mysql_num_rows($res_pers)>0){
 				$ligtmp=mysql_fetch_object($res_pers);
-				//$chaine="<a href='modify_resp.php?pers_id=$pers_id'>".strtoupper($ligtmp->nom)." ".ucfirst(strtolower($ligtmp->prenom))."</a>";
-				$chaine="<a href='modify_resp.php?pers_id=$ligtmp->pers_id'>".strtoupper($ligtmp->nom)." ".ucfirst(strtolower($ligtmp->prenom))."</a>";
+				$chaine="<a href='modify_resp.php?pers_id=$ligtmp->pers_id'>".mb_strtoupper($ligtmp->nom)." ".ucfirst(mb_strtolower($ligtmp->prenom))."</a>";
 				while($ligtmp=mysql_fetch_object($res_pers)){
-					//$chaine.=",<br />\n<a href='modify_resp.php?pers_id=$pers_id'>".strtoupper($ligtmp->nom)." ".ucfirst(strtolower($ligtmp->prenom))."</a>";
-					$chaine.=",<br />\n<a href='modify_resp.php?pers_id=$ligtmp->pers_id'>".strtoupper($ligtmp->nom)." ".ucfirst(strtolower($ligtmp->prenom))."</a>";
+					$chaine.=",<br />\n<a href='modify_resp.php?pers_id=$ligtmp->pers_id'>".mb_strtoupper($ligtmp->nom)." ".ucfirst(mb_strtolower($ligtmp->prenom))."</a>";
 				}
 				echo "$chaine";
 			}
@@ -485,7 +482,7 @@ if(mysql_num_rows($res_adr)>0){
 	function reporter_valeur(){
 		for (i=0;i<$cpt;i++) {
 			if (document.forms.choix_adr.adr_id_existant[i].checked==true) {
-				//alert('C est le choix '+Number(i+1)+' qui est sélectionné');
+				//alert('C est le choix '+Number(i+1)+' qui est sÃ©lectionnÃ©');
 				adr_id=document.forms.choix_adr.adr_id_existant[i].value;
 				break;
 			}
@@ -528,7 +525,7 @@ if(mysql_num_rows($res_adr)>0){
 		window.opener.document.forms.resp.elements['cp'].value=cp;
 		window.opener.document.forms.resp.elements['pays'].value=pays;
 
-		// Je ne parviens pas à modifier l'adr_id affiché dans la page modify_resp.php
+		// Je ne parviens pas Ã  modifier l'adr_id affichÃ© dans la page modify_resp.php
 		//window.opener.document.getElementById['num_adr_id'].innerHTML='MODIF';
 		//tmp=window.opener.document.getElementById['num_adr_id'];
 		//tmp.innerHTML='MODIF';

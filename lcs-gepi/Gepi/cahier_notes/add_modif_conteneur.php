@@ -2,7 +2,6 @@
 /**
  * Ajouter, modifier un conteneur
  * 
- * $Id: add_modif_conteneur.php 7743 2011-08-14 00:15:49Z regis $
 *
 *  @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -63,9 +62,9 @@ if (!checkAccess()) {
     die();
 }
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_carnets_notes")!='y') {
-    die("Le module n'est pas activÈ.");
+    die("Le module n'est pas activ√©.");
 }
 
 isset($id_conteneur);
@@ -87,9 +86,9 @@ if ($id_conteneur)  {
     header("Location: ../logout.php?auto=1");
     die();
 }
-// On teste si le carnet de notes appartient bien ‡ la personne connectÈe
+// On teste si le carnet de notes appartient bien √† la personne connect√©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pÈnÈtrer dans un carnet de notes qui ne vous appartient pas !");
+    $mess=rawurlencode("Vous tentez de p√©n√©trer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -102,13 +101,13 @@ $current_group = get_group($id_groupe);
 
 $periode_num = mysql_result($appel_cahier_notes, 0, 'periode');
 /**
- * Gestion des pÈriodes
+ * Gestion des p√©riodes
  */
 include "../lib/periodes.inc.php";
 
-// On teste si la periode est vÈrouillÈe !
+// On teste si la periode est v√©rouill√©e !
 if ($current_group["classe"]["ver_periode"]["all"][$periode_num] <= 1) {
-    $mess=rawurlencode("Vous tentez de pÈnÈtrer dans un carnet de notes dont la pÈriode est bloquÈe !");
+    $mess=rawurlencode("Vous tentez de p√©n√©trer dans un carnet de notes dont la p√©riode est bloqu√©e !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -119,7 +118,7 @@ $nom_classe = $current_group["classlist_string"];
 
 
 
-// enregistrement des donnÈes
+// enregistrement des donn√©es
 if (isset($_POST['ok'])) {
 	check_token();
     $reg_ok = "yes";
@@ -208,12 +207,12 @@ if (isset($_POST['ok'])) {
     //==========================================================
     // MODIF: boireaus
     //
-    // Mise ‡ jour des moyennes du conteneur et des conteneurs parent, grand-parent, etc...
+    // Mise √† jour des moyennes du conteneur et des conteneurs parent, grand-parent, etc...
     //
     $arret = 'no';
     if (!isset($_POST['new_conteneur'])){
         mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur,$arret);
-        // La boite courante est mise ‡ jour...
+        // La boite courante est mise √† jour...
         // ... mais pas la boite destination.
         
         recherche_enfant($id_racine);
@@ -221,10 +220,10 @@ if (isset($_POST['ok'])) {
     //==========================================================
 
     if ($reg_ok=='yes') {
-        if ($new=='yes') $msg = "Nouvel enregistrement rÈussi.";
-        else $msg="Les modifications ont ÈtÈ effectuÈes avec succËs.";
+        if ($new=='yes') $msg = "Nouvel enregistrement r√©ussi.";
+        else $msg="Les modifications ont √©t√© effectu√©es avec succ√®s.";
     } else {
-        $msg = "Il y a eu un problËme lors de l'enregistrement";
+        $msg = "Il y a eu un probl√®me lors de l'enregistrement";
     }
 
     //
@@ -260,13 +259,15 @@ if ($id_conteneur)  {
     $id_sous_cont  = array();
     $coef_sous_cont = array();
     $display_bulletin_sous_cont = array();
+    $ponderation_sous_cont=array();
+
     $nb_sous_cont = 0;
     if ($mode==1) {
-        // on s'intÈresse ‡ tous les conteneurs fils, petit-fils, ...
-        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all');
+        // on s'int√©resse √† tous les conteneurs fils, petit-fils, ...
+        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all',$ponderation_sous_cont);
     } else {
-        // On s'intÈresse uniquement au conteneur fils
-        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'');
+        // On s'int√©resse uniquement au conteneur fils
+        sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'',$ponderation_sous_cont);
     }
     $appel_nom_racine = mysql_query("SELECT * FROM cn_conteneurs WHERE id ='$id_racine'");
 
@@ -277,10 +278,10 @@ if ($id_conteneur)  {
 
 } else {
 	if(getSettingValue("gepi_denom_boite_genre")=='f'){
-		$nom_court = "Nouvelle ".strtolower(getSettingValue("gepi_denom_boite"));
+		$nom_court = "Nouvelle ".my_strtolower(getSettingValue("gepi_denom_boite"));
 	}
 	else{
-		$nom_court = "Nouveau ".strtolower(getSettingValue("gepi_denom_boite"));
+		$nom_court = "Nouveau ".my_strtolower(getSettingValue("gepi_denom_boite"));
 	}
 	$nom_complet = '';
 	$new_conteneur = 'yes';
@@ -296,15 +297,15 @@ if ($id_conteneur)  {
 }
 //**************** EN-TETE *****************
 if(getSettingValue("gepi_denom_boite_genre")=='f'){
-	$titre_page = "Carnet de notes - Ajout/modification d'une ".strtolower(getSettingValue("gepi_denom_boite"));
+	$titre_page = "Carnet de notes - Ajout/modification d'une ".my_strtolower(getSettingValue("gepi_denom_boite"));
 }
 else{
-	$titre_page = "Carnet de notes - Ajout/modification d'un ".strtolower(getSettingValue("gepi_denom_boite"));
+	$titre_page = "Carnet de notes - Ajout/modification d'un ".my_strtolower(getSettingValue("gepi_denom_boite"));
 }
 /**
- * EntÍte de la page
+ * Ent√™te de la page
  */
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 
@@ -316,7 +317,7 @@ if(($mode_navig == 'retour_saisie')&&(isset($id_retour))) {
     echo "<div class='norme'><p class=bold><a href='index.php?id_racine=$id_racine'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 }
 
-// Interface simplifiÈe
+// Interface simplifi√©e
 
 $interface_simplifiee=isset($_POST['interface_simplifiee']) ? $_POST['interface_simplifiee'] : (isset($_GET['interface_simplifiee']) ? $_GET['interface_simplifiee'] : getPref($_SESSION['login'],'add_modif_conteneur_simpl','n'));
 
@@ -331,31 +332,33 @@ if(isset($mode_navig)){
 
 if($interface_simplifiee=="y"){
 	echo "&amp;interface_simplifiee=n";
-	echo "'>Interface complËte</a>\n";
+	echo "'>Interface compl√®te</a>\n";
 }
 else{
 	echo "&amp;interface_simplifiee=y";
-	echo "'>Interface simplifiÈe</a>\n";
+	echo "'>Interface simplifi√©e</a>\n";
 }
+
+echo " | <a href='../gestion/config_prefs.php'>Param√©trer l'interface simplifi√©e</a>";
 
 echo "</p>\n";
 echo "</div>\n";
-echo "<p class='bold'> Classe(s) : $nom_classe | MatiËre : $matiere_nom ($matiere_nom_court)| PÈriode : $nom_periode[$periode_num] <input type=\"submit\" name='ok' value=\"Enregistrer\" style=\"font-variant: small-caps;\" /></p>\n";
+echo "<p class='bold'> Classe(s) : $nom_classe | Mati√®re : $matiere_nom ($matiere_nom_court)| P√©riode : $nom_periode[$periode_num] <input type=\"submit\" name='ok' value=\"Enregistrer\" style=\"font-variant: small-caps;\" /></p>\n";
 
 
 if(getSettingValue("gepi_denom_boite_genre")=='f'){
-	echo "<h2 class='gepi'>Configuration de la ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court :</h2>\n";
+	echo "<h2 class='gepi'>Configuration de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court :</h2>\n";
 }
 else{
-	echo "<h2 class='gepi'>Configuration du ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court :</h2>\n";
+	echo "<h2 class='gepi'>Configuration du ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court :</h2>\n";
 }
 
 
 if($interface_simplifiee=="y"){
 
-	// RÈcupÈrer les paramËtres ‡ afficher.
+	// R√©cup√©rer les param√®tres √† afficher.
 	// Dans un premier temps, un choix pour tous.
-	// Dans le futur, permettre un paramÈtrage par utilisateur
+	// Dans le futur, permettre un param√©trage par utilisateur
 
 	$aff_nom_court=getPref($_SESSION['login'],'add_modif_conteneur_nom_court','y');
 	$aff_nom_complet=getPref($_SESSION['login'],'add_modif_conteneur_nom_complet','n');
@@ -428,10 +431,10 @@ if($interface_simplifiee=="y"){
 
 			echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
 			if(getSettingValue("gepi_denom_boite_genre")=='f'){
-				echo "Emplacement de la ".strtolower(getSettingValue("gepi_denom_boite")).":\n";
+				echo "Emplacement de la ".my_strtolower(getSettingValue("gepi_denom_boite")).":\n";
 			}
 			else{
-				echo "Emplacement du ".strtolower(getSettingValue("gepi_denom_boite")).":\n";
+				echo "Emplacement du ".my_strtolower(getSettingValue("gepi_denom_boite")).":\n";
 			}
 			echo "</td>\n";
 			echo "<td>\n";
@@ -478,15 +481,15 @@ if($interface_simplifiee=="y"){
 			echo "</tr>\n";
 		}
 		else{
-			// Il n'est pas prudent de ne pas laisser choisir/vÈrifier l'emplacement de la boite...
+			// Il n'est pas prudent de ne pas laisser choisir/v√©rifier l'emplacement de la boite...
 			// ... ou alors c'est pour imposer des boites avec la racine pour parent uniquement?
 			echo "<tr style='display:none;'>\n";
 			echo "<td>";
 			if(getSettingValue("gepi_denom_boite_genre")=='f'){
-				echo "Emplacement de la ".strtolower(getSettingValue("gepi_denom_boite")).":\n";
+				echo "Emplacement de la ".my_strtolower(getSettingValue("gepi_denom_boite")).":\n";
 			}
 			else{
-				echo "Emplacement du ".strtolower(getSettingValue("gepi_denom_boite")).":\n";
+				echo "Emplacement du ".my_strtolower(getSettingValue("gepi_denom_boite")).":\n";
 			}
 			echo "</td>\n";
 			echo "<td>\n";
@@ -506,10 +509,10 @@ if($interface_simplifiee=="y"){
 			echo "<tr>\n";
 			echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
 			if(getSettingValue("gepi_denom_boite_genre")=='f'){
-				echo "Coefficient de la ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
+				echo "Coefficient de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
 			}
 			else{
-				echo "Coefficient du ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
+				echo "Coefficient du ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
 			}
 
 			echo " (<a href='#' onmouseover=\"document.getElementById('coefinfo').style.display='block';\" onmouseout=\"document.getElementById('coefinfo').style.display='none';\">*</a>)\n";
@@ -525,10 +528,10 @@ if($interface_simplifiee=="y"){
 			echo "<tr style='display:none;'>\n";
 			echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
 			if(getSettingValue("gepi_denom_boite_genre")=='f'){
-				echo "Coefficient de la ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
+				echo "Coefficient de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
 			}
 			else{
-				echo "Coefficient du ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
+				echo "Coefficient du ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court\n";
 			}
 			echo "</td>\n";
 			echo "<td>\n";
@@ -541,7 +544,7 @@ if($interface_simplifiee=="y"){
 		if($aff_display_releve_notes=='y'){
 			echo "<tr>\n";
 			echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
-			echo "Affichage de la moyenne de $nom_court sur le relevÈ de notes destinÈ aux parents: \n";
+			echo "Affichage de la moyenne de $nom_court sur le relev√© de notes destin√© aux parents: \n";
 			echo "</td>\n";
 			echo "<td>\n";
 			echo "<input type='checkbox' name='display_parents' ";
@@ -553,7 +556,7 @@ if($interface_simplifiee=="y"){
 			if($display_parents==1){
 				echo "<tr style='display:none;'>\n";
 				echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
-				echo "Affichage de la moyenne de $nom_court sur le relevÈ de notes destinÈ aux parents: \n";
+				echo "Affichage de la moyenne de $nom_court sur le relev√© de notes destin√© aux parents: \n";
 				echo "</td>\n";
 				echo "<td>\n";
 				echo "<td><input type='hidden' name='display_parents' value='$display_parents' /></td>\n";
@@ -564,7 +567,7 @@ if($interface_simplifiee=="y"){
 		if($aff_display_bull=='y'){
 			echo "<tr>\n";
 			echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
-			echo "Affichage de la moyenne de $nom_court sur le bulletin scolaire en plus de la moyenne gÈnÈrale, ‡ titre d'information: \n";
+			echo "Affichage de la moyenne de $nom_court sur le bulletin scolaire en plus de la moyenne g√©n√©rale, √† titre d'information: \n";
 			echo "</td>\n";
 			echo "<td>\n";
 			echo "<input type='checkbox' name='display_bulletin' ";
@@ -576,7 +579,7 @@ if($interface_simplifiee=="y"){
 			if($display_bulletin==1){
 				echo "<tr style='display:none;'>\n";
 				echo "<td style='background-color: #aae6aa; font-weight: bold;'>\n";
-				echo "Affichage de la moyenne de $nom_court sur le bulletin scolaire en plus de la moyenne gÈnÈrale, ‡ titre d'information: \n";
+				echo "Affichage de la moyenne de $nom_court sur le bulletin scolaire en plus de la moyenne g√©n√©rale, √† titre d'information: \n";
 				echo "</td>\n";
 				echo "<td><input type='hidden' name='display_bulletin' value='$display_bulletin' /></td>\n";
 				echo "</tr>\n";
@@ -592,7 +595,7 @@ if($interface_simplifiee=="y"){
 
 	echo "<input type='hidden' name='interface_simplifiee' value='$interface_simplifiee' />\n";
 
-	// Je laisse (pour le moment?) ceux qui suivent sur l'interface complËte...
+	// Je laisse (pour le moment?) ceux qui suivent sur l'interface compl√®te...
 	echo "<input type='hidden' name='mode' value='$mode' />\n";
 	echo "<input type='hidden' name='precision' value='$arrondir' />\n";
 	echo "<input type='hidden' name = 'ponderation' value='".$ponderation."' />\n";
@@ -612,14 +615,14 @@ else{
 	echo "<tr><td>Description : </td><td><input type='text' name = 'description' size='40' value = \"".$description."\" onfocus=\"javascript:this.select()\" /></td></tr></table>\n";
 
 	// $parent=0 pour une boite racine.
-	// On ne peut pas la dÈplacer,... ni modifier son coeff d'ici.
+	// On ne peut pas la d√©placer,... ni modifier son coeff d'ici.
 	if ($parent != 0) {
 		echo "<br />\n";
 		if(getSettingValue("gepi_denom_boite_genre")=='f'){
-			echo "<table><tr><td><h3 class='gepi'>Emplacement de la ".strtolower(getSettingValue("gepi_denom_boite"))." : </h3></td>\n<td>\n";
+			echo "<table><tr><td><h3 class='gepi'>Emplacement de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." : </h3></td>\n<td>\n";
 		}
 		else{
-			echo "<table><tr><td><h3 class='gepi'>Emplacement du ".strtolower(getSettingValue("gepi_denom_boite"))." : </h3></td>\n<td>\n";
+			echo "<table><tr><td><h3 class='gepi'>Emplacement du ".my_strtolower(getSettingValue("gepi_denom_boite"))." : </h3></td>\n<td>\n";
 		}
 		echo "<select size='1' name='parent'>\n";
 		
@@ -661,12 +664,12 @@ else{
 
 
 		if(getSettingValue("gepi_denom_boite_genre")=='f'){
-			echo "<h3 class='gepi'>Coefficient de la ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
+			echo "<h3 class='gepi'>Coefficient de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
 		}
 		else{
-			echo "<h3 class='gepi'>Coefficient du ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
+			echo "<h3 class='gepi'>Coefficient du ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
 		}
-		echo "<table><tr><td>Valeur de la pondÈration dans le calcul de la moyenne ";
+		echo "<table><tr><td>Valeur de la pond√©ration dans le calcul de la moyenne ";
 		if (isset($nom_racine)){
 			if($nom_racine==""){
 				echo "de <b>$matiere_nom</b>";
@@ -690,65 +693,65 @@ else{
 		}
 
 		if(getSettingValue("gepi_denom_boite_genre")=='f'){
-			echo "<h3 class='gepi'>Notes prises en comptes dans le calcul de la moyenne de la ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
+			echo "<h3 class='gepi'>Notes prises en comptes dans le calcul de la moyenne de la ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
 		}
 		else{
-			echo "<h3 class='gepi'>Notes prises en comptes dans le calcul de la moyenne du ".strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
+			echo "<h3 class='gepi'>Notes prises en comptes dans le calcul de la moyenne du ".my_strtolower(getSettingValue("gepi_denom_boite"))." $nom_court</h3>\n";
 		}
 		if($i>1){
 			echo "<table>\n<tr>";
 			echo "<td>";
-			echo "la moyenne s'effectue sur toutes les notes contenues ‡ la racine de <b>$nom_court</b> et sur les moyennes des ";
-			echo strtolower(getSettingValue("gepi_denom_boite"))."s ";
+			echo "la moyenne s'effectue sur toutes les notes contenues √† la racine de <b>$nom_court</b> et sur les moyennes des ";
+			echo my_strtolower(getSettingValue("gepi_denom_boite"))."s ";
 			echo " $chaine_sous_cont";
 			echo "en tenant compte des options dans ces ";
-			echo strtolower(getSettingValue("gepi_denom_boite"))."s.";
+			echo my_strtolower(getSettingValue("gepi_denom_boite"))."s.";
 			echo "</td><td><input type='radio' name='mode' value='2' "; if ($mode=='2') echo "checked"; echo " /></td>";
 			echo "</tr>\n";
 
 			echo "<tr>";
 			echo "<td>";
 			echo "la moyenne s'effectue sur toutes les notes contenues dans <b>$nom_court</b> et dans les ";
-			echo strtolower(getSettingValue("gepi_denom_boite"))."s";
+			echo my_strtolower(getSettingValue("gepi_denom_boite"))."s";
 			echo " $chaine_sous_cont";
-			echo "sans tenir compte des options dÈfinies dans ces ";
-			echo strtolower(getSettingValue("gepi_denom_boite"))."s.";
+			echo "sans tenir compte des options d√©finies dans ces ";
+			echo my_strtolower(getSettingValue("gepi_denom_boite"))."s.";
 		}
 		else{
 			if(getSettingValue("gepi_denom_boite_genre")=='f'){
 				echo "<table>\n<tr>";
 				echo "<td>";
-				echo "la moyenne s'effectue sur toutes les notes contenues ‡ la racine de <b>$nom_court</b> et sur les moyennes de la ";
-				echo strtolower(getSettingValue("gepi_denom_boite"));
+				echo "la moyenne s'effectue sur toutes les notes contenues √† la racine de <b>$nom_court</b> et sur les moyennes de la ";
+				echo my_strtolower(getSettingValue("gepi_denom_boite"));
 				echo " $chaine_sous_cont";
 				echo "en tenant compte des options dans cette ";
-				echo strtolower(getSettingValue("gepi_denom_boite"));
+				echo my_strtolower(getSettingValue("gepi_denom_boite"));
 				echo "</td><td><input type='radio' name='mode' value='2' "; if ($mode=='2') echo "checked"; echo " /></td>";
 				echo "</tr>\n";
 
 				echo "<tr>";
 				echo "<td>";
 				echo "la moyenne s'effectue sur toutes les notes contenues dans <b>$nom_court</b> et dans la ";
-				echo strtolower(getSettingValue("gepi_denom_boite"));
+				echo my_strtolower(getSettingValue("gepi_denom_boite"));
 				echo " $chaine_sous_cont";
-				echo "sans tenir compte des options dÈfinies dans cette ";
-				echo strtolower(getSettingValue("gepi_denom_boite"));
+				echo "sans tenir compte des options d√©finies dans cette ";
+				echo my_strtolower(getSettingValue("gepi_denom_boite"));
 			}
 			else{
 				echo "<table>\n<tr>";
 				echo "<td>";
-				echo "la moyenne s'effectue sur toutes les notes contenues ‡ la racine de <b>$nom_court</b> et sur les moyennes du ".strtolower(getSettingValue("gepi_denom_boite"));
+				echo "la moyenne s'effectue sur toutes les notes contenues √† la racine de <b>$nom_court</b> et sur les moyennes du ".my_strtolower(getSettingValue("gepi_denom_boite"));
 				echo " $chaine_sous_cont";
-				echo "en tenant compte des options dans ce ".strtolower(getSettingValue("gepi_denom_boite")).".";
+				echo "en tenant compte des options dans ce ".my_strtolower(getSettingValue("gepi_denom_boite")).".";
 				echo "</td><td><input type='radio' name='mode' value='2' "; if ($mode=='2') echo "checked"; echo " /></td>";
 				echo "</tr>\n";
 
 				echo "<tr>";
 				echo "<td>";
 				echo "la moyenne s'effectue sur toutes les notes contenues dans <b>$nom_court</b>";
-				echo " et dans le ".strtolower(getSettingValue("gepi_denom_boite"))."";
+				echo " et dans le ".my_strtolower(getSettingValue("gepi_denom_boite"))."";
 				echo " $chaine_sous_cont";
-				echo "sans tenir compte des options dÈfinies dans ce ".strtolower(getSettingValue("gepi_denom_boite")).".";
+				echo "sans tenir compte des options d√©finies dans ce ".my_strtolower(getSettingValue("gepi_denom_boite")).".";
 			}
 		}
 		echo "</td><td><input type='radio' name='mode' value='1' "; if ($mode=='1') echo "checked"; echo " /></td>";
@@ -758,7 +761,7 @@ else{
 
 
 
-	echo "<h3 class='gepi'>PrÈcision du calcul de la moyenne de $nom_court : </h3>\n";
+	echo "<h3 class='gepi'>Pr√©cision du calcul de la moyenne de $nom_court : </h3>\n";
 	echo "<table>\n";
 	echo "<tr>\n";
 	echo "<td valign='top'>\n";
@@ -766,7 +769,7 @@ else{
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<label for='precision_s1' style='cursor: pointer;'>";
-	echo "Arrondir au dixiËme de point supÈrieur";
+	echo "Arrondir au dixi√®me de point sup√©rieur";
 	echo "</label>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -777,7 +780,7 @@ else{
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<label for='precision_s5' style='cursor: pointer;'>";
-	echo "Arrondir au demi-point supÈrieur";
+	echo "Arrondir au demi-point sup√©rieur";
 	echo "</label>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -788,7 +791,7 @@ else{
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<label for='precision_se' style='cursor: pointer;'>";
-	echo "Arrondir au point entier supÈrieur";
+	echo "Arrondir au point entier sup√©rieur";
 	echo "</label>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -799,7 +802,7 @@ else{
 	echo "</td>\n";
 	echo "<td>\n";
 	echo "<label for='precision_p1' style='cursor: pointer;'>";
-	echo "Arrondir au dixiËme de point le plus proche";
+	echo "Arrondir au dixi√®me de point le plus proche";
 	echo "</label>\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -830,13 +833,13 @@ else{
 
 
 
-	echo "<h3 class='gepi'>PondÈration</h3>\n";
+	echo "<h3 class='gepi'>Pond√©ration</h3>\n";
 	echo "<table>\n<tr><td>";
-	echo "Pour chaque ÈlËve, le coefficient de la meilleure note de <b>$nom_court</b> augmente ou diminue de : &nbsp;</td>\n";
-	echo "<td><input type='text' name = 'ponderation' size='4' value = \"".$ponderation."\" onfocus=\"javascript:this.select()\" /></td></tr>\n</table>\n";
+	echo "Pour chaque √©l√®ve, le coefficient de la meilleure note de <b>$nom_court</b> augmente ou diminue de : &nbsp;</td>\n";
+	echo "<td><input type='text' name='ponderation' id='ponderation' size='4' value = \"".$ponderation."\" onfocus=\"javascript:this.select()\" onkeydown=\"clavier_2(this.id,event,0,10);\" autocomplete=\"off\" /></td></tr>\n</table>\n";
 
 	if ($parent != 0) {
-		//s'il s'agit d'une boite ‡ l'intÈrieur du conteneur principal, on laisse la possibilitÈ d'afficher la note de la boite sur le bulletin.
+		//s'il s'agit d'une boite √† l'int√©rieur du conteneur principal, on laisse la possibilit√© d'afficher la note de la boite sur le bulletin.
 		echo "<h3 class='gepi'>Affichage de la moyenne de $nom_court :</h3>\n";
 		echo "<table>\n";
 		echo "<tr>\n";
@@ -848,7 +851,7 @@ else{
 
 		echo "<td>\n";
 		echo "<label for='display_parents' style='cursor: pointer;'>";
-		echo "Faire apparaÓtre la moyenne sur le relevÈ de notes destinÈ aux parents";
+		echo "Faire appara√Ætre la moyenne sur le relev√© de notes destin√© aux parents";
 		echo "</label>";
 		echo "</td>\n";
 
@@ -863,10 +866,10 @@ else{
 
 		echo "<td>\n";
 		echo "<label for='display_bulletin' style='cursor: pointer;'>";
-		echo "Faire apparaÓtre la moyenne sur le bulletin scolaire.";
-		echo "<br /><i>Si la case ci-contre est cochÈe, la moyenne de ce";
+		echo "Faire appara√Ætre la moyenne sur le bulletin scolaire.";
+		echo "<br /><i>Si la case ci-contre est coch√©e, la moyenne de ce";
 		if(getSettingValue("gepi_denom_boite_genre")=='f'){echo "tte";}
-		echo " ".strtolower(getSettingValue("gepi_denom_boite"))." apparaÓt sur le bulletin scolaire, en plus de la moyenne gÈnÈrale, ‡ titre d'information.</i>";
+		echo " ".my_strtolower(getSettingValue("gepi_denom_boite"))." appara√Æt sur le bulletin scolaire, en plus de la moyenne g√©n√©rale, √† titre d'information.</i>";
 		echo "</label>";
 		echo "</td>\n";
 

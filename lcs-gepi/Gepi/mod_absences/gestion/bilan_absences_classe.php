@@ -3,7 +3,7 @@
 /**
  *
  *
- * @version $Id: bilan_absences_classe.php 1427 2008-01-30 10:36:23Z jjocal $
+ * @version $Id$
  * @copyright 2007
  */
 
@@ -13,7 +13,7 @@ $choix_classe = isset($_GET["id_classe"]) ? $_GET["id_classe"] : (isset($_POST["
 
 
 echo '
-	<h2>Cette fonctionnalité n\'est pas encore opérationnelle.</h2>
+	<h2>Cette fonctionnalitÃ© n\'est pas encore opÃ©rationnelle.</h2>
 	<br />
 	<p><a href="./bilan_absences_quotidien.php">RETOUR</a></p>
 

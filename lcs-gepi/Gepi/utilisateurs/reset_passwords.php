@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: reset_passwords.php 8612 2011-11-09 13:41:10Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -55,17 +54,17 @@ $affiche_adresse_resp=isset($_GET["affiche_adresse_resp"]) ? $_GET["affiche_adre
 
 $nouveaux_seulement=isset($_GET["nouveaux_seulement"]) ? $_GET["nouveaux_seulement"] : "n";
 
-//comme il y a une redirection pour une page Csv ou PDF, il ne faut pas envoyer les entêtes dans ces 2 cas
+//comme il y a une redirection pour une page Csv ou PDF, il ne faut pas envoyer les entÃªtes dans ces 2 cas
 if (!(($mode_impression=='csv') or ($mode_impression=='pdf'))) {
 //**************** EN-TETE *****************************
-//$titre_page = "Gestion des utilisateurs | Réinitialisation des mots de passe";
-require_once("../lib/header.inc");
+//$titre_page = "Gestion des utilisateurs | RÃ©initialisation des mots de passe";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 }
 
 //debug_var();
 
-// On appelle la lib utilisée pour la génération des mots de passe
+// On appelle la lib utilisÃ©e pour la gÃ©nÃ©ration des mots de passe
 include("randpass.php");
 
 
@@ -77,44 +76,44 @@ $user_classe = isset($_POST["user_classe"]) ? $_POST["user_classe"] : (isset($_G
 // REMARQUE:
 // C'est un peu le bazar: on a un '$user_status' et un '$user_statut' extrait plus loin dans la boucle sur la liste des utilisateurs
 
-// Il faut être sûr que l'on ne fait pas de réinitialisation accidentelle de tous les utilisateurs...
-// On bloque donc l'opération si jamais un des trois paramètres n'a pas été passé correctement, pour une raison ou une autre.
+// Il faut Ãªtre sÃ»r que l'on ne fait pas de rÃ©initialisation accidentelle de tous les utilisateurs...
+// On bloque donc l'opÃ©ration si jamais un des trois paramÃ¨tres n'a pas Ã©tÃ© passÃ© correctement, pour une raison ou une autre.
 
 if ($user_login AND strtoupper($user_login) == strtoupper($_SESSION['login'])) {
 	$user_login = false;
-	echo "<p>ERREUR ! Utilisez l'interface 'Gérer mon compte' pour changer votre mot de passe !</p>";
+	echo "<p>ERREUR ! Utilisez l'interface 'GÃ©rer mon compte' pour changer votre mot de passe !</p>";
 	echo "</div></body></html>";
 	die();
 }
 
 if ($user_status and !in_array($user_status, array("scolarite", "professeur", "cpe", "secours", "responsable", "eleve", "autre"))) {
-	echo "<p>ERREUR ! L'identifiant de statut est erroné. L'opération ne peut pas continuer.</p>";
+	echo "<p>ERREUR ! L'identifiant de statut est erronÃ©. L'opÃ©ration ne peut pas continuer.</p>";
 	echo "</div></body></html>";
 	die();
 }
 
 if ($user_classe AND !is_numeric($user_classe)) {
-	echo "<p>ERREUR ! L'identifiant de la classe est erroné. L'opération ne peut pas continuer.</p>";
+	echo "<p>ERREUR ! L'identifiant de la classe est erronÃ©. L'opÃ©ration ne peut pas continuer.</p>";
 	echo "</div></body></html>";
 	die();
 }
 //----
 
-//Ajout Eric ==> les données à sortir sont différentes suivant la demande de réinitialisation faite (elv / resp) et au niveau du responsable en fonction du fait classe / tous (dans ce cas, il faut rechercher la classe
+//Ajout Eric ==> les donnÃ©es Ã  sortir sont diffÃ©rentes suivant la demande de rÃ©initialisation faite (elv / resp) et au niveau du responsable en fonction du fait classe / tous (dans ce cas, il faut rechercher la classe
 $cas_traite = 0;
 
 //echo "\$user_login=$user_login<br />";
 //echo "\$mode_impression=$mode_impression<br />";
 
 
-//TODO: Sans doute faudrait-il ajouter des tests ici, si jamais un jour quelqu'un d'autre que l'administrateur peut accéder à la page.
+//TODO: Sans doute faudrait-il ajouter des tests ici, si jamais un jour quelqu'un d'autre que l'administrateur peut accÃ©der Ã  la page.
 if ($user_login) {
-	// Si on est ici, c'est qu'on a demandé la réinitialisation du mot de passe d'un seul utilisateur. C'est simple :)
+	// Si on est ici, c'est qu'on a demandÃ© la rÃ©initialisation du mot de passe d'un seul utilisateur. C'est simple :)
 
-	// Sauf que si on réinitialise le mot de passe d'un prof ou d'un responsable, afficher 'classe' n'est pas approprié
+	// Sauf que si on rÃ©initialise le mot de passe d'un prof ou d'un responsable, afficher 'classe' n'est pas appropriÃ©
 	//echo "temoin<br />";
 
-	// On ne récupère pas les infos responsable si statut='responsable'
+	// On ne rÃ©cupÃ¨re pas les infos responsable si statut='responsable'
 
 	// ATTENTION: Un utilisateur inactif n'apparaitra pas...
 	/*
@@ -125,13 +124,13 @@ if ($user_login) {
 	*/
 
 	// GROS DOUTE:
-	// Qui peut accéder à la page... NON: si seul l'administrateur peut accéder, c'est OK.
+	// Qui peut accÃ©der Ã  la page... NON: si seul l'administrateur peut accÃ©der, c'est OK.
 	/*
 	mysql> select * from droits where id like '%reset_password%';
 	+-----------------------------------+----------------+------------+-----+-----------+-------+-------------+---------+------------------------------------+--------+
 	| id                                | administrateur | professeur | cpe | scolarite | eleve | responsable | secours | description                        | statut |
 	+-----------------------------------+----------------+------------+-----+-----------+-------+-------------+---------+------------------------------------+--------+
-	| /utilisateurs/reset_passwords.php | V              | F          | F   | F         | F     | F           | F       | Réinitialisation des mots de passe |        |
+	| /utilisateurs/reset_passwords.php | V              | F          | F   | F         | F     | F           | F       | RÃ©initialisation des mots de passe |        |
 	+-----------------------------------+----------------+------------+-----+-----------+-------+-------------+---------+------------------------------------+--------+
 	1 row in set (0.06 sec)
 
@@ -189,7 +188,7 @@ if ($user_login) {
 		//echo "mysql_num_rows(\$call_user_info)=".mysql_num_rows($call_user_info)."<br />";
 
 		//$cas_traite=2;
-		// AVEC 2, il cherche à récupérer la classe... et je l'ai virée de la requête...
+		// AVEC 2, il cherche Ã  rÃ©cupÃ©rer la classe... et je l'ai virÃ©e de la requÃªte...
 		$cas_traite=1;
 
 	}
@@ -206,7 +205,7 @@ if ($user_login) {
 		$call_user_info = mysql_query($sql_user_info);
 	}
 	*/
-	else{
+	else {
 		$sql="SELECT * FROM utilisateurs WHERE (" .
 				"login = '" . $user_login ."' and " .
 				"etat='actif' and " .
@@ -219,10 +218,10 @@ else {
 
 	if ($user_status) {
 		if ($user_classe) {
-			// On a un statut et une classe. Cette opération s'applique soit aux élèves soit aux parents
+			// On a un statut et une classe. Cette opÃ©ration s'applique soit aux Ã©lÃ¨ves soit aux parents
 
 			if ($user_status == "responsable") {
-				// Sélection de tous les responsables d'élèves de la classe donnée
+				// SÃ©lection de tous les responsables d'Ã©lÃ¨ves de la classe donnÃ©e
 				/*$call_user_info = mysql_query("SELECT distinct(u.login), u.nom, u.prenom, u.statut, u.password, u.email " .
 						"FROM utilisateurs u, resp_pers r, responsables2 re, classes c, j_eleves_classes jec, eleves e WHERE (" .
 						"u.login = r.login AND " .
@@ -259,7 +258,7 @@ else {
 				$classe_resp= mysql_result($data_user_classe, 0, "classe");
 
 			} elseif ($user_status == "eleve") {
-				// Sélection de tous les utilisateurs élèves de la classe donnée
+				// SÃ©lection de tous les utilisateurs Ã©lÃ¨ves de la classe donnÃ©e
 				$call_user_info = mysql_query("SELECT distinct(u.login), u.nom, u.prenom, u.statut, u.password, u.email, u.auth_mode " .
 						"FROM utilisateurs u, classes c, j_eleves_classes jec WHERE (" .
 						"u.login = jec.login AND " .
@@ -267,9 +266,9 @@ else {
 			}
 		}
 		else {
-			// Ici, on ne s'occupe pas de la classe, donc on sélectionne tous les utilisateurs pour le statut considéré,
+			// Ici, on ne s'occupe pas de la classe, donc on sÃ©lectionne tous les utilisateurs pour le statut considÃ©rÃ©,
 			// quel qu'il soit
-			//pour les différentes impressions, on va trier les informations par classe (pour faciliter la distribution) problème avec les ajouts en cours d'année
+			//pour les diffÃ©rentes impressions, on va trier les informations par classe (pour faciliter la distribution) problÃ¨me avec les ajouts en cours d'annÃ©e
 			if ($user_status == "responsable") {
 				/*$call_user_info = mysql_query("SELECT * FROM utilisateurs WHERE (" .
 					"login != '" . $_SESSION['login'] . "' AND " .
@@ -277,7 +276,7 @@ else {
 					"statut = '" . $user_status . "')");*/
 				//$sql_user_info =   "SELECT DISTINCT (e.ele_id), u.civilite, u.statut, u.password, u.email, u.auth_mode, rp.login, rp.nom, rp.prenom, rp.civilite, rp.pers_id, ra.* , r2.ele_id, r2.resp_legal, e.login, jec.id_classe
 				$sql_user_info =   "SELECT DISTINCT (e.ele_id), u.civilite, u.statut, u.password, u.email, u.auth_mode, rp.login, rp.nom, rp.prenom, rp.civilite, rp.pers_id, ra.* , r2.ele_id, r2.resp_legal, jec.id_classe
-									FROM utilisateurs u, resp_pers rp, resp_adr ra, responsables2 r2, eleves e, j_eleves_classes jec
+									FROM utilisateurs u, resp_pers rp, resp_adr ra, responsables2 r2, eleves e, j_eleves_classes jec, classes c
 									WHERE (
 									u.login != 'ADMIN'
 									AND u.etat = 'actif'
@@ -288,8 +287,9 @@ else {
 									AND r2.ele_id = e.ele_id
 									AND jec.login = e.login
 									AND (r2.resp_legal='1' OR r2.resp_legal='2')
+									AND jec.id_classe=c.id
 									)
-									ORDER BY jec.id_classe, rp.nom, rp.prenom";
+									ORDER BY c.classe, rp.nom, rp.prenom";
 				//echo $sql_user_info;
 				$call_user_info = mysql_query($sql_user_info);
 				$cas_traite=2;
@@ -297,20 +297,22 @@ else {
 			} elseif ($user_status == "eleve"){
 				$login_en_cours = $_SESSION['login'];
 				$sql_user_info = "SELECT DISTINCT (u.login), u.nom, u.prenom, u.statut, u.password, u.email, u.auth_mode, jec.id_classe
-								FROM utilisateurs u, j_eleves_classes jec
+								FROM utilisateurs u, j_eleves_classes jec, classes c
 								WHERE ( u.login != 'ADMIN'
 								AND jec.login = u.login
 								AND u.etat = 'actif'
-								AND u.statut = 'eleve' )
-								ORDER BY jec.id_classe ASC, u.nom ASC";
+								AND u.statut = 'eleve'
+								AND jec.id_classe=c.id
+								)
+								ORDER BY c.classe ASC, u.nom ASC";
 				//echo $sql_user_info;
 				$call_user_info = mysql_query($sql_user_info);
 			}
 		}
 	}
 	else {
-		// Ni statut ni classe ni login n'ont été transmis. On sélectionne alors tous les personnels de l'établissement,
-		// c'est à dire tout le monde sauf l'administrateur connecté actuellement, les parents, et les élèves.
+		// Ni statut ni classe ni login n'ont Ã©tÃ© transmis. On sÃ©lectionne alors tous les personnels de l'Ã©tablissement,
+		// c'est Ã  dire tout le monde sauf l'administrateur connectÃ© actuellement, les parents, et les Ã©lÃ¨ves.
 
 		$call_user_info = mysql_query("SELECT * FROM utilisateurs WHERE (" .
 				"login!='" . $_SESSION['login'] . "' and " .
@@ -358,6 +360,12 @@ if(($mode_impression!='pdf')&&($mode_impression!='csv')) {
 }
 // =====================
 
+
+$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
+if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
+$sujet_mail=$gepiPrefixeSujetMail." Compte et mot de passe";
+
+
 $p = 0;
 $pcsv=0;
 $saut = 1;
@@ -388,7 +396,7 @@ while ($p < $nb_users) {
 		$resp_pays=mysql_result($call_user_info, $p, "pays");
 		$resp_pers_id=mysql_result($call_user_info, $p, "pers_id");
 
-		//recherche des élèves + leur classe associés aux responsables
+		//recherche des Ã©lÃ¨ves + leur classe associÃ©s aux responsables
 		$sql_resp_eleves="SELECT DISTINCT c.id, e.* , c.*
 							FROM responsables2 r2, eleves e, classes c, j_eleves_classes jec
 							WHERE (
@@ -415,12 +423,13 @@ while ($p < $nb_users) {
 			$elv_resp['nom_complet_classe'][$i] = '';
 		}
 		*/
-		// Réinitialisation du tableau des enfants à la charge du responsable courant:
+		// RÃ©initialisation du tableau des enfants Ã  la charge du responsable courant:
 		unset($elv_resp);
 		$elv_resp=array();
 		// =====================
 
 		$liste_elv_resp="";
+		$liste_elv_resp_non_html="";
 
 		$i = 0;
 		while ($i < $nb_elv_resp){
@@ -428,8 +437,8 @@ while ($p < $nb_users) {
 			// =====================
 			// MODIF: boireaus 20071102
 			// A quoi cela sert-il?
-			// A la réinitialisation du tableau $elv_resp?
-			// Mais si on dépasse 7 enfants?
+			// A la rÃ©initialisation du tableau $elv_resp?
+			// Mais si on dÃ©passe 7 enfants?
 			for ($j=$i;$j<7;$j++) {
 				$elv_resp['nom'][$j] = '';
 				$elv_resp['prenom'][$j] = '';
@@ -447,20 +456,15 @@ while ($p < $nb_users) {
 
 			if($i>0){
 				$liste_elv_resp.=", ";
+				$liste_elv_resp_non_html.=", ";
 			}
-			$liste_elv_resp.=strtoupper($elv_resp['nom'][$i])." ".ucfirst(strtolower($elv_resp['prenom'][$i]))." (<i>".$elv_resp['classe'][$i]."</i>)";
-
-			/*
-			echo "\$elv_resp['nom'][$i]=".$elv_resp['nom'][$i]."<br />";
-			echo "\$elv_resp['prenom'][$i]=".$elv_resp['prenom'][$i]."<br />";
-			echo "\$elv_resp['classe'][$i]=".$elv_resp['classe'][$i]."<br />";
-			echo "\$elv_resp['nom_complet_classe'][$i]=".$elv_resp['nom_complet_classe'][$i]."<br />";
-			*/
+			$liste_elv_resp.=casse_mot($elv_resp['nom'][$i],'maj')." ".casse_mot($elv_resp['prenom'][$i],'majf2')." (<i>".$elv_resp['classe'][$i]."</i>)";
+			$liste_elv_resp_non_html.=casse_mot($elv_resp['nom'][$i],'maj')." ".casse_mot($elv_resp['prenom'][$i],'majf2')." (".$elv_resp['classe'][$i].")";
 
 			$i++;
 		}
 
-		// il va y avoir la classe à récuperer
+		// il va y avoir la classe Ã  rÃ©cuperer
 		if ($cas_traite==2) {
 			$user_classe = $resp_pers_id=mysql_result($call_user_info, $p, "id_classe");
 			//recherche du nom court de la classe de la prsonne en cours
@@ -474,7 +478,7 @@ while ($p < $nb_users) {
 	}
 
 
-	// On réinitialise le mot de passe
+	// On rÃ©initialise le mot de passe
 
 	// =====================
 	// MODIF: boireaus 20071102
@@ -489,7 +493,7 @@ while ($p < $nb_users) {
 			$sql="SELECT 1=1 FROM utilisateurs WHERE login='$user_login' AND password!='';";
 			$test_pass_non_vide=mysql_query($sql);
 			if(mysql_num_rows($test_pass_non_vide)>0){
-				$new_password="<span style='color:red;'>Non modifié</span>";
+				$new_password="<span style='color:red;'>Non modifiÃ©</span>";
 				$temoin_user_deja_traite="y";
 			}
 			else{
@@ -517,10 +521,10 @@ while ($p < $nb_users) {
 
 				$tab_password[$user_login]=$new_password;
 
-                                $save_new_pass = Session::change_password_gepi($user_login,$new_password);
-                                if ($save_new_pass) {
-                                    mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='$user_login'");
-                                }
+				$save_new_pass = Session::change_password_gepi($user_login,$new_password);
+				if ($save_new_pass) {
+					mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='$user_login'");
+				}
 			}
 		}
 	}
@@ -558,21 +562,21 @@ while ($p < $nb_users) {
 				// L'utilisateur est un utilisateur SSO. On enregistre un mot de passe vide.
 					$save_new_pass = mysql_query("UPDATE utilisateurs SET password='', change_mdp = 'n' WHERE login='" . $user_login . "'");
 
-				// Si l'accès LDAP en écriture est paramétré, on va mettre à jour le mot de passe de l'utilisateur
+				// Si l'accÃ¨s LDAP en Ã©criture est paramÃ©trÃ©, on va mettre Ã  jour le mot de passe de l'utilisateur
 				// directement dans l'annuaire.
 				if ($gepiSettings['ldap_write_access'] == "yes") {
 					$ldap_server = new LDAPServer;
 					$reg_data = $ldap_server->update_user($user_login, '', '', '', '', $new_password,'');
 				} else {
-					// On réinitialise la variable $new_password à zéro, pour être sûr
+					// On rÃ©initialise la variable $new_password Ã  zÃ©ro, pour Ãªtre sÃ»r
 					// qu'il n'y ait pas de confusion par la suite.
 					$new_password = '';
 				}
 			} else {
-                                $save_new_pass = Session::change_password_gepi($user_login,$new_password);
-                                if ($save_new_pass) {
-                                    mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='$user_login'");
-                                }
+				$save_new_pass = Session::change_password_gepi($user_login,$new_password);
+				if ($save_new_pass) {
+					mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='$user_login'");
+				}
 			}
 		}
 	}
@@ -601,113 +605,113 @@ while ($p < $nb_users) {
 	*/
 
 	// nouveaux_seulement
-	if((!isset($nouveaux_seulement))||($nouveaux_seulement!="y")||(!preg_match("/Non modifié/i", $new_password))) {
+	if((!isset($nouveaux_seulement))||($nouveaux_seulement!="y")||(!preg_match("/Non modifiÃ©/i", $new_password))) {
 
-	// Ajout Eric
-	switch ($mode_impression) {
-
-	case 'html':
-		//echo "TEMOIN 1<br />";
-
-		if ($user_statut == "responsable") {
-			$impression = getSettingValue("ImpressionFicheParent");
-			$nb_fiches = getSettingValue("ImpressionNombreParent");
-		} elseif ($user_statut == "eleve") {
-			$impression = getSettingValue("ImpressionFicheEleve");
-			$nb_fiches = getSettingValue("ImpressionNombreEleve");
-		} else {
-			$impression = getSettingValue("Impression");
-			$nb_fiches = getSettingValue("ImpressionNombre");
-		}
-
-		//echo "get_class_from_ele_login($user_login)=".get_class_from_ele_login($user_login)."<br />";
-		$tab_tmp_classe=get_class_from_ele_login($user_login);
-
-		//$affiche_adresse_resp="y";
-		if($affiche_adresse_resp=='y') {
-			// Récupération des variables du bloc adresses:
-			// Liste de récupération à extraire de la boucle élèves pour limiter le nombre de requêtes... A FAIRE
-			// Il y a d'autres récupération de largeur et de positionnement du bloc adresse à extraire...
-			// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
-			$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
-			$largeur2=100-$largeur1;
-
-			// Taille des polices sur le bloc adresse:
-			$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
-
-			// Taille de la cellule Classe et Année scolaire sur le bloc adresse:
-			$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
-			// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, Année,...
-			$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
-
-			// Débug sur l'entête pour afficher les cadres
-			$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
-
-			$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
-			$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
-			$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
-			$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
-
-			//$addressblock_debug="y";
-
-			/*
-			$ligne1="NOM PRENOM";
-			$ligne2="3 rue de....";
-			$ligne3="27300 BERNAY";
-			*/
-
-			$sql="SELECT ra.*,rp.nom,rp.prenom,rp.civilite FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.login='$user_login';";
-			$res_adr_resp=mysql_query($sql);
-			if(mysql_num_rows($res_adr_resp)==0) {
-				$ligne1="<font color='red'><b>ADRESSE MANQUANTE</b></font>";
-				$ligne2="";
-				$ligne3="";
+		// Ajout Eric
+		switch ($mode_impression) {
+	
+		case 'html':
+			//echo "TEMOIN 1<br />";
+	
+			if ($user_statut == "responsable") {
+				$impression = getSettingValue("ImpressionFicheParent");
+				$nb_fiches = getSettingValue("ImpressionNombreParent");
+			} elseif ($user_statut == "eleve") {
+				$impression = getSettingValue("ImpressionFicheEleve");
+				$nb_fiches = getSettingValue("ImpressionNombreEleve");
+			} else {
+				$impression = getSettingValue("Impression");
+				$nb_fiches = getSettingValue("ImpressionNombre");
 			}
-			else {
-				$lig_adr_resp=mysql_fetch_object($res_adr_resp);
-
-				$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
-				$ligne2=$lig_adr_resp->adr1;
-				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
-
-				if($lig_adr_resp->civilite!="") {
-					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+	
+			//echo "get_class_from_ele_login($user_login)=".get_class_from_ele_login($user_login)."<br />";
+			$tab_tmp_classe=get_class_from_ele_login($user_login);
+	
+			//$affiche_adresse_resp="y";
+			if($affiche_adresse_resp=='y') {
+				// RÃ©cupÃ©ration des variables du bloc adresses:
+				// Liste de rÃ©cupÃ©ration Ã  extraire de la boucle Ã©lÃ¨ves pour limiter le nombre de requÃªtes... A FAIRE
+				// Il y a d'autres rÃ©cupÃ©ration de largeur et de positionnement du bloc adresse Ã  extraire...
+				// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
+				$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
+				$largeur2=100-$largeur1;
+	
+				// Taille des polices sur le bloc adresse:
+				$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
+	
+				// Taille de la cellule Classe et AnnÃ©e scolaire sur le bloc adresse:
+				$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
+				// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, AnnÃ©e,...
+				$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
+	
+				// DÃ©bug sur l'entÃªte pour afficher les cadres
+				$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
+	
+				$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
+				$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
+				$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
+				$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
+	
+				//$addressblock_debug="y";
+	
+				/*
+				$ligne1="NOM PRENOM";
+				$ligne2="3 rue de....";
+				$ligne3="27300 BERNAY";
+				*/
+	
+				$sql="SELECT ra.*,rp.nom,rp.prenom,rp.civilite FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.login='$user_login';";
+				$res_adr_resp=mysql_query($sql);
+				if(mysql_num_rows($res_adr_resp)==0) {
+					$ligne1="<font color='red'><b>ADRESSE MANQUANTE</b></font>";
+					$ligne2="";
+					$ligne3="";
 				}
 				else {
-					$ligne1="M.".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
-				}
-
-				$ligne2=$lig_adr_resp->adr1;
-				if($lig_adr_resp->adr2!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr2;
-				}
-				if($lig_adr_resp->adr3!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr3;
-				}
-				if($lig_adr_resp->adr4!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr4;
-				}
-				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
-
-				if(($lig_adr_resp->pays!="")&&(strtolower($lig_adr_resp->pays)!=strtolower(getSettingValue('gepiSchoolPays')))) {
-					if($ligne3!=" "){
-						$ligne3.="<br />";
+					$lig_adr_resp=mysql_fetch_object($res_adr_resp);
+	
+					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+					$ligne2=$lig_adr_resp->adr1;
+					$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
+	
+					if($lig_adr_resp->civilite!="") {
+						$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
 					}
-					$ligne3.=$lig_adr_resp->pays;
+					else {
+						$ligne1="M.".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+					}
+	
+					$ligne2=$lig_adr_resp->adr1;
+					if($lig_adr_resp->adr2!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr2;
+					}
+					if($lig_adr_resp->adr3!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr3;
+					}
+					if($lig_adr_resp->adr4!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr4;
+					}
+					$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
+	
+					if(($lig_adr_resp->pays!="")&&(casse_mot($lig_adr_resp->pays,'min')!=casse_mot(getSettingValue('gepiSchoolPays'),'min'))) {
+						if($ligne3!=" "){
+							$ligne3.="<br />";
+						}
+						$ligne3.=$lig_adr_resp->pays;
+					}
+	
 				}
-
-			}
-
-			echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
-
-			// Cadre adresse du responsable:
-			echo "<div style='float:right;
+	
+				echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+	
+				// Cadre adresse du responsable:
+				echo "<div style='float:right;
 width:".$addressblock_length."mm;
 padding-top:".$addressblock_padding_top."mm;
 padding-bottom:".$addressblock_padding_text."mm;
 padding-right:".$addressblock_padding_right."mm;\n";
-			if($addressblock_debug=="y"){echo "border: 1px solid blue;\n";}
-			echo "font-size: ".$addressblock_font_size."pt;
+				if($addressblock_debug=="y"){echo "border: 1px solid blue;\n";}
+				echo "font-size: ".$addressblock_font_size."pt;
 '>
 <div align='left'>
 $ligne1<br />
@@ -715,342 +719,353 @@ $ligne2<br />
 $ligne3
 </div>
 </div>\n";
-
-
-
-			// Cadre contenant le tableau Logo+Ad_etab et le nom, prénom,... de l'élève:
-			echo "<div style='float:left;
+	
+	
+	
+				// Cadre contenant le tableau Logo+Ad_etab et le nom, prÃ©nom,... de l'Ã©lÃ¨ve:
+				echo "<div style='float:left;
 left:0px;
 top:0px;
 width:".$largeur1."%;\n";
-			if($addressblock_debug=="y"){echo "border: 1px solid green;\n";}
-			echo "'>\n";
-
-		}
-
-		echo "<table border='0' summary=\"$user_login\">\n";
-		echo "<tr><td>A l'attention de </td><td><span class = \"bold\">" . $user_prenom . " " . $user_nom . "</span></td></tr>\n";
-		//echo "<tr><td>Nom de login : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
-		echo "<tr><td>Identifiant : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
-		if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] != 'yes') {
-			// En mode SSO ou LDAP sans accès en écriture, le mot de passe n'est pas modifiable par Gepi.
-			echo "<tr><td>Le mot de passe de cet utilisateur n'est pas géré par Gepi.</td></tr>\n";
-		}
-		else {
-			echo "<tr><td>Mot de passe : </td><td><span class = \"bold\">" . $new_password . "</span></td></tr>\n";
-		}//if($cas_traite!=0){
-		if ($user_statut == "responsable") {
-			echo "<tr><td>Responsable de : </td><td><span class = \"bold\">";
-			if($liste_elv_resp==""){
-				echo "&nbsp;";
-			}
-			else{
-				echo $liste_elv_resp;
+				if($addressblock_debug=="y"){echo "border: 1px solid green;\n";}
+				echo "'>\n";
+	
 			}
 
-			//echo "<br />".$classe_resp;
+			$texte_email="A l'attention de $user_prenom $user_nom\n";
+			$texte_email.="Identifiant : $user_login\n";
 
-			echo "</span></td></tr>\n";
-		}
-		//else{
-		elseif ($user_statut == "eleve") {
-			echo "<tr><td>Classe : </td><td><span class = \"bold\">";
-			if(count($tab_tmp_classe)>0){
-				$chaine="";
-				foreach ($tab_tmp_classe as $key => $value){
-					//echo "\$key=$key et \$value=$value et my_ereg_replace(\"[0-9]\",\"\",$key)=".my_ereg_replace("[0-9]","",$key)."<br />";
-					// Avant il n'y avait qu'un $key=$id_classe... maintenant, on a aussi $key=id$id_classe dans get_class_from_ele_login() (de /lib/share.inc.php)
-					if(strlen(my_ereg_replace("[0-9]","",$key))==0) {
-						//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
-						$chaine.=", $value";
+			echo "<table border='0' summary=\"$user_login\">\n";
+			echo "<tr><td>A l'attention de </td><td><span class = \"bold\">" . $user_prenom . " " . $user_nom . "</span></td></tr>\n";
+			//echo "<tr><td>Nom de login : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
+			echo "<tr><td>Identifiant : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
+			if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] != 'yes') {
+				// En mode SSO ou LDAP sans accÃ¨s en Ã©criture, le mot de passe n'est pas modifiable par Gepi.
+				echo "<tr><td>Le mot de passe de cet utilisateur n'est pas gÃ©rÃ© par Gepi.</td></tr>\n";
+				$texte_email.="Le mot de passe de cet utilisateur n'est pas gÃ©rÃ© par Gepi.\n";
+			}
+			else {
+				echo "<tr><td>Mot de passe : </td><td><span class = \"bold\">" . $new_password . "</span></td></tr>\n";
+				$texte_email.="Mot de passe : $new_password\n";
+			}//if($cas_traite!=0){
+
+			if ($user_statut == "responsable") {
+				echo "<tr><td>Responsable de : </td><td><span class = \"bold\">";
+				if($liste_elv_resp==""){
+					echo "&nbsp;";
+				}
+				else{
+					echo $liste_elv_resp;
+				}
+	
+				//echo "<br />".$classe_resp;
+	
+				echo "</span></td></tr>\n";
+
+				$texte_email.="Responsable de $liste_elv_resp_non_html\n";
+			}
+			//else{
+			elseif ($user_statut == "eleve") {
+				echo "<tr><td>Classe : </td><td><span class = \"bold\">";
+				if(count($tab_tmp_classe)>0){
+					$chaine="";
+					foreach ($tab_tmp_classe as $key => $value){
+						//echo "\$key=$key et \$value=$value et my_ereg_replace(\"[0-9]\",\"\",$key)=".my_ereg_replace("[0-9]","",$key)."<br />";
+						// Avant il n'y avait qu'un $key=$id_classe... maintenant, on a aussi $key=id$id_classe dans get_class_from_ele_login() (de /lib/share.inc.php)
+						if(mb_strlen(my_ereg_replace("[0-9]","",$key))==0) {
+							//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
+							$chaine.=", $value";
+						}
+					}
+					$chaine=mb_substr($chaine,2);
+					echo $chaine;
+
+					$texte_email.="Classe : $chaine\n";
+				}
+				echo "</span></td></tr>\n";
+			}
+
+			echo "<tr><td>Adresse de courriel : </td><td><span class = \"bold\">";
+			if($user_email!='') {echo "<a href='mailto:$user_email?subject=".rawurlencode($sujet_mail)."&amp;body=".rawurlencode($texte_email)."'>".$user_email."</a>";}
+			echo "&nbsp;</span></td></tr>\n";
+			echo "</table>\n";
+	
+			if($affiche_adresse_resp=='y') {
+				echo "</div>\n";
+	
+				echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+			}
+	
+			// La fiche bienvenue:
+			echo $impression;
+	
+			// Saut de page toutes les $nb_fiches fiches
+			if ($saut == $nb_fiches) {
+				echo "<p class='saut'>&nbsp;</p>\n";
+				$saut = 1;
+			} else {
+				$saut++;
+			}
+	
+			//$p++;
+	
+			break;
+	
+		case 'csv' :
+			//===========================
+			// MODIF: boireaus 20071102
+			// Dans le cas du CSV, on ne gÃ©nÃ¨re pas plusieurs fois la ligne correspondant Ã  un mÃªme parent
+			// Dans le cas du HTML et PDF par contre, on affiche autant de fois qu'il y a d'Ã©lÃ¨ve Ã  qui distribuer l'info, mais sans gÃ©nÃ©rer plusieurs fois le mot de passe pour le parent (le mÃªme mot de passe pour le parent sur les fiches distribuÃ©es Ã  ses diffÃ©rents enfants).
+			if($temoin_user_deja_traite!="y") {
+	
+				// crÃ©ation d'un tableau contenant toutes les informations Ã  exporter
+				$donnees_personne_csv['login'][$pcsv] = $user_login;
+				$donnees_personne_csv['nom'][$pcsv] = $user_nom;
+				$donnees_personne_csv['prenom'][$pcsv] = $user_prenom;
+				$donnees_personne_csv['new_password'][$pcsv] = $new_password ;
+				$donnees_personne_csv['user_email'][$pcsv] = $user_email;
+	
+				//echo "\$donnees_personne_csv['login'][$pcsv]=".$donnees_personne_csv['login'][$pcsv]."<br />";
+	
+				if ($user_status) {
+	
+					//recherche de la classe de l'Ã©lÃ¨ve si mode
+					if ($user_status == 'eleve') {
+						$sql_classe = "SELECT DISTINCT classe FROM `classes` c, `j_eleves_classes` jec WHERE (jec.login='".$user_login."' AND jec.id_classe=c.id)";
+						$data_user_classe = mysql_query($sql_classe);
+						$classe_eleve = mysql_result($data_user_classe, 0, "classe");
+						$donnees_personne_csv['classe'][$pcsv] = $classe_eleve;
+					}
+	
+					//on poursuit le tableau $donnees_personne_csv avec l'adresse pour un mailling et des Ã©lÃ¨ves associÃ©es
+					if ($user_status =='responsable') {
+	
+						$donnees_personne_csv['classe'][$pcsv] = $classe_resp;
+	
+						/*
+						$resp_num_legal= mysql_result($call_user_info, $pcsv, "resp_legal");
+						$resp_civilite= mysql_result($call_user_info, $pcsv, "civilite");
+						$resp_adr1=mysql_result($call_user_info, $pcsv, "adr1");
+						$resp_adr1=mysql_result($call_user_info, $pcsv, "adr1");
+						$resp_adr2=mysql_result($call_user_info, $pcsv, "adr2");
+						$resp_adr3=mysql_result($call_user_info, $pcsv, "adr3");
+						$resp_adr4=mysql_result($call_user_info, $pcsv, "adr4");
+						$resp_cp=mysql_result($call_user_info, $pcsv, "cp");
+						$resp_commune=mysql_result($call_user_info, $pcsv, "commune");
+						$resp_pays=mysql_result($call_user_info, $pcsv, "pays");
+						*/
+						$resp_num_legal= mysql_result($call_user_info, $p, "resp_legal");
+						$resp_civilite= mysql_result($call_user_info, $p, "civilite");
+						$resp_adr1=mysql_result($call_user_info, $p, "adr1");
+						$resp_adr1=mysql_result($call_user_info, $p, "adr1");
+						$resp_adr2=mysql_result($call_user_info, $p, "adr2");
+						$resp_adr3=mysql_result($call_user_info, $p, "adr3");
+						$resp_adr4=mysql_result($call_user_info, $p, "adr4");
+						$resp_cp=mysql_result($call_user_info, $p, "cp");
+						$resp_commune=mysql_result($call_user_info, $p, "commune");
+						$resp_pays=mysql_result($call_user_info, $p, "pays");
+	
+						//on met les donnÃ©es dans le tableau
+						$donnees_personne_csv['resp_legal'][$pcsv] = $resp_num_legal;
+						$donnees_personne_csv['civilite'][$pcsv] = $resp_civilite;
+						$donnees_personne_csv['adr1'][$pcsv] = $resp_adr1;
+						$donnees_personne_csv['adr2'][$pcsv] = $resp_adr2;
+						$donnees_personne_csv['adr3'][$pcsv] = $resp_adr3;
+						$donnees_personne_csv['adr4'][$pcsv] = $resp_adr4;
+						$donnees_personne_csv['cp'][$pcsv] = $resp_cp;
+						$donnees_personne_csv['commune'][$pcsv] = $resp_commune;
+						$donnees_personne_csv['pays'][$pcsv] = $resp_pays;
+	
+						//echo "\$donnees_personne_csv['adr1'][$pcsv]=".$donnees_personne_csv['adr1'][$pcsv]."<br />";
+						//echo "\$donnees_personne_csv['commune'][$pcsv]=".$donnees_personne_csv['commune'][$pcsv]."<br />";
+	
+						// On crÃ©e une chaine de caractÃ¨res par Ã©lÃ¨ves (PrÃ©nom, Nom, classe nom long et classe nom court)
+						$nb_elv=sizeof($elv_resp['nom']);
+						$i=0;
+						while ($i < $nb_elv){
+							$chaine_elv = "";
+							$chaine_elv.=$elv_resp['prenom'][$i];
+							$chaine_elv.=" ".$elv_resp['nom'][$i];
+							$chaine_elv.=" ".$elv_resp['nom_complet_classe'][$i];
+							if ($elv_resp['nom'][$i]!='') {$chaine_elv.=" (".$elv_resp['classe'][$i].")";}
+	
+							switch ($i) {
+								case 0 : $donnees_personne_csv['elv1'][$pcsv] = $chaine_elv; Break;
+								case 1 : $donnees_personne_csv['elv2'][$pcsv] = $chaine_elv; Break;
+								case 2 : $donnees_personne_csv['elv3'][$pcsv] = $chaine_elv; Break;
+								case 3 : $donnees_personne_csv['elv4'][$pcsv] = $chaine_elv; Break;
+								case 4 : $donnees_personne_csv['elv5'][$pcsv] = $chaine_elv; Break;
+								case 5 : $donnees_personne_csv['elv6'][$pcsv] = $chaine_elv; Break;
+								case 6 : $donnees_personne_csv['elv7'][$pcsv] = $chaine_elv; Break;
+							}
+							switch ($i) {
+								case 0 : $donnees_personne_csv['elv1_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 1 : $donnees_personne_csv['elv2_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 2 : $donnees_personne_csv['elv3_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 3 : $donnees_personne_csv['elv4_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 4 : $donnees_personne_csv['elv5_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 5 : $donnees_personne_csv['elv6_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+								case 6 : $donnees_personne_csv['elv7_login'][$pcsv] = $elv_resp['login'][$i]; Break;
+							}
+	
+							$i++;
+						}
 					}
 				}
-				$chaine=substr($chaine,2);
-				echo $chaine;
+				$pcsv++;
 			}
-			echo "</span></td></tr>\n";
-		}
-
-
-		echo "<tr><td>Adresse de courriel : </td><td><span class = \"bold\">" . $user_email . "&nbsp;</span></td></tr>\n";
-		echo "</table>\n";
-
-		if($affiche_adresse_resp=='y') {
-			echo "</div>\n";
-
-			echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
-		}
-
-		// La fiche bienvenue:
-		echo $impression;
-
-		// Saut de page toutes les $nb_fiches fiches
-		if ($saut == $nb_fiches) {
-			echo "<p class='saut'>&nbsp;</p>\n";
-			$saut = 1;
-		} else {
-			$saut++;
-		}
-
-		//$p++;
-
-		break;
-
-	case 'csv' :
-		//===========================
-		// MODIF: boireaus 20071102
-		// Dans le cas du CSV, on ne génère pas plusieurs fois la ligne correspondant à un même parent
-		// Dans le cas du HTML et PDF par contre, on affiche autant de fois qu'il y a d'élève à qui distribuer l'info, mais sans générer plusieurs fois le mot de passe pour le parent (le même mot de passe pour le parent sur les fiches distribuées à ses différents enfants).
-		if($temoin_user_deja_traite!="y") {
-
-			// création d'un tableau contenant toutes les informations à exporter
-			$donnees_personne_csv['login'][$pcsv] = $user_login;
-			$donnees_personne_csv['nom'][$pcsv] = $user_nom;
-			$donnees_personne_csv['prenom'][$pcsv] = $user_prenom;
-			$donnees_personne_csv['new_password'][$pcsv] = $new_password ;
-			$donnees_personne_csv['user_email'][$pcsv] = $user_email;
-
-			//echo "\$donnees_personne_csv['login'][$pcsv]=".$donnees_personne_csv['login'][$pcsv]."<br />";
-
+			//===========================
+	
+			break;
+	
+		case 'pdf': //uniquement pour les Ã©lÃ¨ves
+			// crÃ©ation d'un tableau contenant toutes les informations Ã  exporter
+			$donnees_personne_csv['login'][$p] = $user_login;
+			$donnees_personne_csv['nom'][$p] = $user_nom;
+			$donnees_personne_csv['prenom'][$p] = $user_prenom;
+			$donnees_personne_csv['new_password'][$p] = $new_password ;
+			$donnees_personne_csv['user_email'][$p] = $user_email;
+	
+			//recherche de la classe de l'Ã©lÃ¨ve si mode
 			if ($user_status) {
-
-				//recherche de la classe de l'élève si mode
 				if ($user_status == 'eleve') {
 					$sql_classe = "SELECT DISTINCT classe FROM `classes` c, `j_eleves_classes` jec WHERE (jec.login='".$user_login."' AND jec.id_classe=c.id)";
 					$data_user_classe = mysql_query($sql_classe);
 					$classe_eleve = mysql_result($data_user_classe, 0, "classe");
-					$donnees_personne_csv['classe'][$pcsv] = $classe_eleve;
-				}
-
-				//on poursuit le tableau $donnees_personne_csv avec l'adresse pour un mailling et des élèves associées
-				if ($user_status =='responsable') {
-
-					$donnees_personne_csv['classe'][$pcsv] = $classe_resp;
-
-					/*
-					$resp_num_legal= mysql_result($call_user_info, $pcsv, "resp_legal");
-					$resp_civilite= mysql_result($call_user_info, $pcsv, "civilite");
-					$resp_adr1=mysql_result($call_user_info, $pcsv, "adr1");
-					$resp_adr1=mysql_result($call_user_info, $pcsv, "adr1");
-					$resp_adr2=mysql_result($call_user_info, $pcsv, "adr2");
-					$resp_adr3=mysql_result($call_user_info, $pcsv, "adr3");
-					$resp_adr4=mysql_result($call_user_info, $pcsv, "adr4");
-					$resp_cp=mysql_result($call_user_info, $pcsv, "cp");
-					$resp_commune=mysql_result($call_user_info, $pcsv, "commune");
-					$resp_pays=mysql_result($call_user_info, $pcsv, "pays");
-					*/
-					$resp_num_legal= mysql_result($call_user_info, $p, "resp_legal");
-					$resp_civilite= mysql_result($call_user_info, $p, "civilite");
-					$resp_adr1=mysql_result($call_user_info, $p, "adr1");
-					$resp_adr1=mysql_result($call_user_info, $p, "adr1");
-					$resp_adr2=mysql_result($call_user_info, $p, "adr2");
-					$resp_adr3=mysql_result($call_user_info, $p, "adr3");
-					$resp_adr4=mysql_result($call_user_info, $p, "adr4");
-					$resp_cp=mysql_result($call_user_info, $p, "cp");
-					$resp_commune=mysql_result($call_user_info, $p, "commune");
-					$resp_pays=mysql_result($call_user_info, $p, "pays");
-
-					//on met les données dans le tableau
-					$donnees_personne_csv['resp_legal'][$pcsv] = $resp_num_legal;
-					$donnees_personne_csv['civilite'][$pcsv] = $resp_civilite;
-					$donnees_personne_csv['adr1'][$pcsv] = $resp_adr1;
-					$donnees_personne_csv['adr2'][$pcsv] = $resp_adr2;
-					$donnees_personne_csv['adr3'][$pcsv] = $resp_adr3;
-					$donnees_personne_csv['adr4'][$pcsv] = $resp_adr4;
-					$donnees_personne_csv['cp'][$pcsv] = $resp_cp;
-					$donnees_personne_csv['commune'][$pcsv] = $resp_commune;
-					$donnees_personne_csv['pays'][$pcsv] = $resp_pays;
-
-					//echo "\$donnees_personne_csv['adr1'][$pcsv]=".$donnees_personne_csv['adr1'][$pcsv]."<br />";
-					//echo "\$donnees_personne_csv['commune'][$pcsv]=".$donnees_personne_csv['commune'][$pcsv]."<br />";
-
-					// On crée une chaine de caractères par élèves (Prénom, Nom, classe nom long et classe nom court)
-					$nb_elv=sizeof($elv_resp['nom']);
-					$i=0;
-					while ($i < $nb_elv){
-						$chaine_elv = "";
-						$chaine_elv.=$elv_resp['prenom'][$i];
-						$chaine_elv.=" ".$elv_resp['nom'][$i];
-						$chaine_elv.=" ".$elv_resp['nom_complet_classe'][$i];
-						if ($elv_resp['nom'][$i]!='') {$chaine_elv.=" (".$elv_resp['classe'][$i].")";}
-
-						switch ($i) {
-							case 0 : $donnees_personne_csv['elv1'][$pcsv] = $chaine_elv; Break;
-							case 1 : $donnees_personne_csv['elv2'][$pcsv] = $chaine_elv; Break;
-							case 2 : $donnees_personne_csv['elv3'][$pcsv] = $chaine_elv; Break;
-							case 3 : $donnees_personne_csv['elv4'][$pcsv] = $chaine_elv; Break;
-							case 4 : $donnees_personne_csv['elv5'][$pcsv] = $chaine_elv; Break;
-							case 5 : $donnees_personne_csv['elv6'][$pcsv] = $chaine_elv; Break;
-							case 6 : $donnees_personne_csv['elv7'][$pcsv] = $chaine_elv; Break;
-						}
-						switch ($i) {
-							case 0 : $donnees_personne_csv['elv1_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 1 : $donnees_personne_csv['elv2_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 2 : $donnees_personne_csv['elv3_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 3 : $donnees_personne_csv['elv4_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 4 : $donnees_personne_csv['elv5_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 5 : $donnees_personne_csv['elv6_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-							case 6 : $donnees_personne_csv['elv7_login'][$pcsv] = $elv_resp['login'][$i]; Break;
-						}
-
-						$i++;
-					}
 				}
 			}
-			$pcsv++;
-		}
-		//===========================
-
-		break;
-
-	case 'pdf': //uniquement pour les élèves
-		// création d'un tableau contenant toutes les informations à exporter
-		$donnees_personne_csv['login'][$p] = $user_login;
-		$donnees_personne_csv['nom'][$p] = $user_nom;
-		$donnees_personne_csv['prenom'][$p] = $user_prenom;
-		$donnees_personne_csv['new_password'][$p] = $new_password ;
-		$donnees_personne_csv['user_email'][$p] = $user_email;
-
-		//recherche de la classe de l'élève si mode
-		if ($user_status) {
-			if ($user_status == 'eleve') {
-				$sql_classe = "SELECT DISTINCT classe FROM `classes` c, `j_eleves_classes` jec WHERE (jec.login='".$user_login."' AND jec.id_classe=c.id)";
-				$data_user_classe = mysql_query($sql_classe);
-				$classe_eleve = mysql_result($data_user_classe, 0, "classe");
+	
+			$donnees_personne_csv['classe'][$p] = $classe_eleve;
+	
+			//$p++;
+	
+			break;
+	
+		default:
+			//echo "TEMOIN 2<br />";
+	
+			if ($user_statut == "responsable") {
+				$impression = getSettingValue("ImpressionFicheParent");
+				$nb_fiches = getSettingValue("ImpressionNombreParent");
+			} elseif ($user_statut == "eleve") {
+				$impression = getSettingValue("ImpressionFicheEleve");
+				$nb_fiches = getSettingValue("ImpressionNombreEleve");
+			} else {
+				$impression = getSettingValue("Impression");
+				$nb_fiches = getSettingValue("ImpressionNombre");
 			}
-		}
-
-		$donnees_personne_csv['classe'][$p] = $classe_eleve;
-
-		//$p++;
-
-		break;
-
-	default:
-		//echo "TEMOIN 2<br />";
-
-		if ($user_statut == "responsable") {
-			$impression = getSettingValue("ImpressionFicheParent");
-			$nb_fiches = getSettingValue("ImpressionNombreParent");
-		} elseif ($user_statut == "eleve") {
-			$impression = getSettingValue("ImpressionFicheEleve");
-			$nb_fiches = getSettingValue("ImpressionNombreEleve");
-		} else {
-			$impression = getSettingValue("Impression");
-			$nb_fiches = getSettingValue("ImpressionNombre");
-		}
-
-		$tab_tmp_classe=get_class_from_ele_login($user_login);
-		/*
-		echo "get_class_from_ele_login($user_login)=".get_class_from_ele_login($user_login)."<br />";
-		foreach($tab_tmp_classe as $key => $value) {
-			echo "\$tab_tmp_classe[$key]=".$value."<br />";
-		}
-		*/
-
-		//$affiche_adresse_resp="y";
-		if($affiche_adresse_resp=='y') {
-			// Récupération des variables du bloc adresses:
-			// Liste de récupération à extraire de la boucle élèves pour limiter le nombre de requêtes... A FAIRE
-			// Il y a d'autres récupération de largeur et de positionnement du bloc adresse à extraire...
-			// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
-			$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
-			$largeur2=100-$largeur1;
-
-			// Taille des polices sur le bloc adresse:
-			$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
-
-			// Taille de la cellule Classe et Année scolaire sur le bloc adresse:
-			$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
-			// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, Année,...
-			$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
-
-			// Débug sur l'entête pour afficher les cadres
-			$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
-
-			$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
-			$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
-			$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
-			$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
-
-			$addressblock_debug="y";
-			// Récupération des variables du bloc adresses:
-			// Liste de récupération à extraire de la boucle élèves pour limiter le nombre de requêtes... A FAIRE
-			// Il y a d'autres récupération de largeur et de positionnement du bloc adresse à extraire...
-			// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
-			$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
-			$largeur2=100-$largeur1;
-
-			// Taille des polices sur le bloc adresse:
-			$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
-
-			// Taille de la cellule Classe et Année scolaire sur le bloc adresse:
-			$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
-			// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, Année,...
-			$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
-
-			// Débug sur l'entête pour afficher les cadres
-			$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
-
-			$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
-			$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
-			$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
-			$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
-
-			//$addressblock_debug="y";
-
+	
+			$tab_tmp_classe=get_class_from_ele_login($user_login);
 			/*
-			$ligne1="NOM PRENOM";
-			$ligne2="3 rue de....";
-			$ligne3="27300 BERNAY";
-			*/
-
-			$sql="SELECT ra.*,rp.nom,rp.prenom,rp.civilite FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.login='$user_login';";
-			$res_adr_resp=mysql_query($sql);
-			if(mysql_num_rows($res_adr_resp)==0) {
-				$ligne1="<font color='red'><b>ADRESSE MANQUANTE</b></font>";
-				$ligne2="";
-				$ligne3="";
+			echo "get_class_from_ele_login($user_login)=".get_class_from_ele_login($user_login)."<br />";
+			foreach($tab_tmp_classe as $key => $value) {
+				echo "\$tab_tmp_classe[$key]=".$value."<br />";
 			}
-			else {
-				$lig_adr_resp=mysql_fetch_object($res_adr_resp);
-
-				$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
-				$ligne2=$lig_adr_resp->adr1;
-				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
-
-				if($lig_adr_resp->civilite!="") {
-					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+			*/
+	
+			//$affiche_adresse_resp="y";
+			if($affiche_adresse_resp=='y') {
+				// RÃ©cupÃ©ration des variables du bloc adresses:
+				// Liste de rÃ©cupÃ©ration Ã  extraire de la boucle Ã©lÃ¨ves pour limiter le nombre de requÃªtes... A FAIRE
+				// Il y a d'autres rÃ©cupÃ©ration de largeur et de positionnement du bloc adresse Ã  extraire...
+				// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
+				$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
+				$largeur2=100-$largeur1;
+	
+				// Taille des polices sur le bloc adresse:
+				$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
+	
+				// Taille de la cellule Classe et AnnÃ©e scolaire sur le bloc adresse:
+				$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
+				// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, AnnÃ©e,...
+				$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
+	
+				// DÃ©bug sur l'entÃªte pour afficher les cadres
+				$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
+	
+				$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
+				$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
+				$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
+				$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
+	
+				$addressblock_debug="y";
+				// RÃ©cupÃ©ration des variables du bloc adresses:
+				// Liste de rÃ©cupÃ©ration Ã  extraire de la boucle Ã©lÃ¨ves pour limiter le nombre de requÃªtes... A FAIRE
+				// Il y a d'autres rÃ©cupÃ©ration de largeur et de positionnement du bloc adresse Ã  extraire...
+				// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
+				$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
+				$largeur2=100-$largeur1;
+	
+				// Taille des polices sur le bloc adresse:
+				$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
+	
+				// Taille de la cellule Classe et AnnÃ©e scolaire sur le bloc adresse:
+				$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
+				// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, AnnÃ©e,...
+				$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
+	
+				// DÃ©bug sur l'entÃªte pour afficher les cadres
+				$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
+	
+				$addressblock_length=getSettingValue("addressblock_length") ? getSettingValue("addressblock_length") : 6;
+				$addressblock_padding_top=getSettingValue("addressblock_padding_top") ? getSettingValue("addressblock_padding_top") : 0;
+				$addressblock_padding_text=getSettingValue("addressblock_padding_text") ? getSettingValue("addressblock_padding_text") : 0;
+				$addressblock_padding_right=getSettingValue("addressblock_padding_right") ? getSettingValue("addressblock_padding_right") : 0;
+	
+				//$addressblock_debug="y";
+	
+				/*
+				$ligne1="NOM PRENOM";
+				$ligne2="3 rue de....";
+				$ligne3="27300 BERNAY";
+				*/
+	
+				$sql="SELECT ra.*,rp.nom,rp.prenom,rp.civilite FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.login='$user_login';";
+				$res_adr_resp=mysql_query($sql);
+				if(mysql_num_rows($res_adr_resp)==0) {
+					$ligne1="<font color='red'><b>ADRESSE MANQUANTE</b></font>";
+					$ligne2="";
+					$ligne3="";
 				}
 				else {
-					$ligne1="M.".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
-				}
-
-				$ligne2=$lig_adr_resp->adr1;
-				if($lig_adr_resp->adr2!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr2;
-				}
-				if($lig_adr_resp->adr3!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr3;
-				}
-				if($lig_adr_resp->adr4!=""){
-					$ligne2.="<br />\n".$lig_adr_resp->adr4;
-				}
-				$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
-
-				if(($lig_adr_resp->pays!="")&&(strtolower($lig_adr_resp->pays)!=strtolower(getSettingValue('gepiSchoolPays')))) {
-					if($ligne3!=" "){
-						$ligne3.="<br />";
+					$lig_adr_resp=mysql_fetch_object($res_adr_resp);
+	
+					$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+					$ligne2=$lig_adr_resp->adr1;
+					$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
+	
+					if($lig_adr_resp->civilite!="") {
+						$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
 					}
-					$ligne3.=$lig_adr_resp->pays;
+					else {
+						$ligne1="M.".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
+					}
+	
+					$ligne2=$lig_adr_resp->adr1;
+					if($lig_adr_resp->adr2!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr2;
+					}
+					if($lig_adr_resp->adr3!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr3;
+					}
+					if($lig_adr_resp->adr4!=""){
+						$ligne2.="<br />\n".$lig_adr_resp->adr4;
+					}
+					$ligne3=$lig_adr_resp->cp." ".$lig_adr_resp->commune;
+	
+					if(($lig_adr_resp->pays!="")&&(casse_mot($lig_adr_resp->pays,'min')!=casse_mot(getSettingValue('gepiSchoolPays'),'min'))) {
+						if($ligne3!=" "){
+							$ligne3.="<br />";
+						}
+						$ligne3.=$lig_adr_resp->pays;
+					}
+	
 				}
-
-			}
-
-			echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
-
-			// Cadre adresse du responsable:
-			echo "<div style='float:right;
+	
+				echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+	
+				// Cadre adresse du responsable:
+				echo "<div style='float:right;
 width:".$addressblock_length."mm;
 padding-top:".$addressblock_padding_top."mm;
 padding-bottom:".$addressblock_padding_text."mm;
@@ -1064,150 +1079,148 @@ $ligne2<br />
 $ligne3
 </div>
 </div>\n";
-
-
-
-			// Cadre contenant le tableau Logo+Ad_etab et le nom, prénom,... de l'élève:
-			echo "<div style='float:left;
+	
+	
+	
+				// Cadre contenant le tableau Logo+Ad_etab et le nom, prÃ©nom,... de l'Ã©lÃ¨ve:
+				echo "<div style='float:left;
 left:0px;
 top:0px;
 width:".$largeur1."%;\n";
-			if($addressblock_debug=="y"){echo "border: 1px solid green;\n";}
-			echo "'>\n";
-
-		}
-
-		echo "<table border='0' summary=\"$user_login\">\n";
-		echo "<tr><td>A l'attention de </td><td><span class = \"bold\">" . $user_prenom . " " . $user_nom . "</span></td></tr>\n";
-		//echo "<tr><td>Nom de login : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
-		echo "<tr><td>Identifiant : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
-		if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] != 'yes') {
-			// En mode SSO ou LDAP sans accès en écriture, le mot de passe n'est pas modifiable par Gepi.
-			echo "<tr><td>Le mot de passe de cet utilisateur n'est pas géré par Gepi.</td></tr>\n";
-		}
-		else {
-			echo "<tr><td>Mot de passe : </td><td><span class = \"bold\">" . $new_password . "</span></td></tr>\n";
-		}
-
-		if ($user_statut == "responsable") {
-			echo "<tr><td>Responsable de : </td><td><span class = \"bold\">";
-			if($liste_elv_resp==""){
-				echo "&nbsp;";
+				if($addressblock_debug=="y"){echo "border: 1px solid green;\n";}
+				echo "'>\n";
+	
 			}
-			else{
-				echo $liste_elv_resp;
+	
+			echo "<table border='0' summary=\"$user_login\">\n";
+			echo "<tr><td>A l'attention de </td><td><span class = \"bold\">" . $user_prenom . " " . $user_nom . "</span></td></tr>\n";
+			//echo "<tr><td>Nom de login : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
+			echo "<tr><td>Identifiant : </td><td><span class = \"bold\">" . $user_login . "</span></td></tr>\n";
+			if ($user_auth_mode != "gepi" && $gepiSettings['ldap_write_access'] != 'yes') {
+				// En mode SSO ou LDAP sans accÃ¨s en Ã©criture, le mot de passe n'est pas modifiable par Gepi.
+				echo "<tr><td>Le mot de passe de cet utilisateur n'est pas gÃ©rÃ© par Gepi.</td></tr>\n";
 			}
-
-			//echo "<br />".$classe_resp;
-
-			echo "</span></td></tr>\n";
-		}
-		//else{
-		elseif ($user_statut == "eleve") {
+			else {
+				echo "<tr><td>Mot de passe : </td><td><span class = \"bold\">" . $new_password . "</span></td></tr>\n";
+			}
+	
+			if ($user_statut == "responsable") {
+				echo "<tr><td>Responsable de : </td><td><span class = \"bold\">";
+				if($liste_elv_resp==""){
+					echo "&nbsp;";
+				}
+				else{
+					echo $liste_elv_resp;
+				}
+	
+				//echo "<br />".$classe_resp;
+	
+				echo "</span></td></tr>\n";
+			}
+			//else{
+			elseif ($user_statut == "eleve") {
+				echo "<tr><td>Classe : </td><td><span class = \"bold\">";
+				if(count($tab_tmp_classe)>0){
+					$chaine="";
+					foreach ($tab_tmp_classe as $key => $value){
+						//echo "\$key=$key et \$value=$value et my_ereg_replace(\"[0-9]\",\"\",$key)=".my_ereg_replace("[0-9]","",$key)."<br />";
+						// Avant il n'y avait qu'un $key=$id_classe... maintenant, on a aussi $key=id$id_classe dans get_class_from_ele_login() (de /lib/share.inc.php)
+						if(mb_strlen(my_ereg_replace("[0-9]","",$key))==0) {
+							//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
+							$chaine.=", $value";
+						}
+					}
+					$chaine=mb_substr($chaine,2);
+					echo $chaine;
+	
+				}
+				echo "</span></td></tr>\n";
+			}
+	
+			/*
 			echo "<tr><td>Classe : </td><td><span class = \"bold\">";
 			if(count($tab_tmp_classe)>0){
 				$chaine="";
 				foreach ($tab_tmp_classe as $key => $value){
-					//echo "\$key=$key et \$value=$value et my_ereg_replace(\"[0-9]\",\"\",$key)=".my_ereg_replace("[0-9]","",$key)."<br />";
-					// Avant il n'y avait qu'un $key=$id_classe... maintenant, on a aussi $key=id$id_classe dans get_class_from_ele_login() (de /lib/share.inc.php)
-					if(strlen(my_ereg_replace("[0-9]","",$key))==0) {
-						//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
-						$chaine.=", $value";
-					}
+					//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
+					$chaine.=", $value";
 				}
-				$chaine=substr($chaine,2);
+				$chaine=mb_substr($chaine,2);
 				echo $chaine;
-
 			}
 			echo "</span></td></tr>\n";
-		}
-
-		/*
-		echo "<tr><td>Classe : </td><td><span class = \"bold\">";
-		if(count($tab_tmp_classe)>0){
-			$chaine="";
-			foreach ($tab_tmp_classe as $key => $value){
-				//$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
-				$chaine.=", $value";
+			*/
+	
+			echo "<tr><td>Adresse de courriel : </td><td><span class = \"bold\">" . $user_email . "&nbsp;</span></td></tr>\n";
+			echo "</table>";
+	
+			if($affiche_adresse_resp=='y') {
+				echo "</div>\n";
 			}
-			$chaine=substr($chaine,2);
-			echo $chaine;
-		}
-		echo "</span></td></tr>\n";
-		*/
-
-		echo "<tr><td>Adresse de courriel : </td><td><span class = \"bold\">" . $user_email . "&nbsp;</span></td></tr>\n";
-		echo "</table>";
-
-		if($affiche_adresse_resp=='y') {
-			echo "</div>\n";
-		}
-
-		/*
-		// Bloc adresse responsable
-		$addressblock_padding_right,
-		$addressblock_padding_top,
-		$addressblock_padding_text,
-		$addressblock_length,
-		$addressblock_font_size,
-		*/
-
-		echo $impression;
-		if ($saut == $nb_fiches) {
-			echo "<p class='saut'>&nbsp;</p>\n";
-			$saut = 1;
-		} else {
-			$saut++;
-		}
-
-		//$p++;
-
-	} //fin switch
-
-	} // FIN nouveaux_seulement
+	
+			/*
+			// Bloc adresse responsable
+			$addressblock_padding_right,
+			$addressblock_padding_top,
+			$addressblock_padding_text,
+			$addressblock_length,
+			$addressblock_font_size,
+			*/
+	
+			echo $impression;
+			if ($saut == $nb_fiches) {
+				echo "<p class='saut'>&nbsp;</p>\n";
+				$saut = 1;
+			} else {
+				$saut++;
+			}
+	
+			//$p++;
+	
+		} //fin switch
+	}
 
 	$p++;
 
 }
 
-
-// redirection à la fin de la génération des mots de passe
+// redirection Ã  la fin de la gÃ©nÃ©ration des mots de passe
 switch ($mode_impression) {
 	case 'csv' :
 		if(isset($donnees_personne_csv)){
-			//sauvegarde des données dans la session Admin
+			//sauvegarde des donnÃ©es dans la session Admin
 			$_SESSION['donnees_export_csv_password']=$donnees_personne_csv;
 
 			//redirection vers password_csv.php
 			header("Location: ./password_csv.php"); die();
 		}
 		else{
-			echo "<p>Tous les comptes sont déjà initialisés.<br />On ne modifie pas les mots de passe.</p>\n";
+			echo "<p>Tous les comptes sont dÃ©jÃ  initialisÃ©s.<br />On ne modifie pas les mots de passe.</p>\n";
 		}
 		break;
 	case 'pdf' :
 		if(isset($donnees_personne_csv)){
-			//sauvegarde des données dans la session Admin
+			//sauvegarde des donnÃ©es dans la session Admin
 			$_SESSION['donnees_export_csv_password']=$donnees_personne_csv;
 
 			//redirection vers password_csv.php
 			header("Location: ../impression/password_pdf.php"); die();
 		}
 		else{
-			echo "<p>Tous les comptes sont déjà initialisés.<br />On ne modifie pas les mots de passe.</p>\n";
+			echo "<p>Tous les comptes sont dÃ©jÃ  initialisÃ©s.<br />On ne modifie pas les mots de passe.</p>\n";
 		}
 		break;
 }
 
 
 
-// On n'arrive là que si on n'a pas imprimé en CSV ou PDF
+// On n'arrive lÃ  que si on n'a pas imprimÃ© en CSV ou PDF
 if(count($tab_non_INE_password)>0) {
 	if(count($tab_non_INE_password)==1) {
-		$chaine="L'élève suivant n'a pas le numéro INE renseigné.<br />Il a donc obtenu un mot de passe aléatoire:<br />";
+		$chaine="L'Ã©lÃ¨ve suivant n'a pas le numÃ©ro INE renseignÃ©.<br />Il a donc obtenu un mot de passe alÃ©atoire:<br />";
 	}
 	else {
-		$chaine="Les élèves suivants n'ont pas le numéro INE renseigné.<br />Ils ont donc obtenu un mot de passe aléatoire:<br />";
+		$chaine="Les Ã©lÃ¨ves suivants n'ont pas le numÃ©ro INE renseignÃ©.<br />Ils ont donc obtenu un mot de passe alÃ©atoire:<br />";
 	}
 
 	for($i=0;$i<count($tab_non_INE_password);$i++) {

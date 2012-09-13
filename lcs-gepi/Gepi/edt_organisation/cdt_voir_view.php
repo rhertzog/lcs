@@ -3,10 +3,9 @@
 /**
  * Vue pour afficher les emplois du temps
  *
- * @version     $Id: view_edt_view.php 4059 2010-01-31 20:03:48Z adminpaulbert $
  * @package		GEPI
  * @subpackage	EmploisDuTemps
- * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
+ * @copyright	Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
  * @license		GNU/GPL, see COPYING.txt
  * 
  * This file is part of GEPI.
@@ -28,7 +27,7 @@
 
 if ( getSettingValue("autorise_edt_tous") === 'y') {
 	if ($IE6) {
-		echo "<div class=\"cadreInformation\">Votre navigateur (Internet Explorer 6) est obsolète et se comporte mal vis à vis de l'affichage des emplois du temps. Faites absolument une mise à jour vers les versions 7 ou 8 ou changez de navigateur (FireFox, Chrome, Opera, Safari)</div>";
+		echo "<div class=\"cadreInformation\">Votre navigateur (Internet Explorer 6) est obsolÃ¨te et se comporte mal vis Ã  vis de l'affichage des emplois du temps. Faites absolument une mise Ã  jour vers les versions 7 ou 8 ou changez de navigateur (FireFox, Chrome, Opera, Safari)</div>";
 	}
 
 
@@ -50,13 +49,18 @@ if ( getSettingValue("autorise_edt_tous") === 'y') {
 	// ========================= AFFICHAGE DE LA BARRE DE COMMUTATION DES PERIODES
 
 	if (($DisplayPeriodBar) AND ($DisplayEDT)) {
-			AfficheBarCommutateurPeriodes($login_edt, $visioedt, $type_edt_2);
+		AfficheBarCommutateurPeriodes($login_edt, $visioedt, $type_edt_2);
 	}
 
 	// ========================= AFFICHAGE DE LA BARRE DE COMMUTATION DES SEMAINES
 
 	if (($DisplayWeekBar) AND ($DisplayEDT)) {
+		if((isset($edt_avec_semAB))&&(($edt_avec_semAB=='y')||($edt_avec_semAB=='n'))) {
+			AfficheBarCommutateurSemaines_CDT($login_edt, $visioedt, $type_edt_2, $week_min, $_SESSION['week_selected'],$edt_avec_semAB);
+		}
+		else {
 			AfficheBarCommutateurSemaines_CDT($login_edt, $visioedt, $type_edt_2, $week_min, $_SESSION['week_selected']);
+		}
 	}
 
 

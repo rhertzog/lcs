@@ -3,10 +3,9 @@
 /**
  * Fonctions pour l' affichage des EdT
  *
- * @version     $Id: fonctions_affichage.php $
  * @package		GEPI
  * @subpackage	EmploisDuTemps
- * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
+ * @copyright	Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
  * @license		GNU/GPL, see COPYING.txt
  * 
  * This file is part of GEPI.
@@ -41,12 +40,12 @@
 
 // =============================================================================
 //
-//                  Constantes utilisÈes par les edt
+//                  Constantes utilis√©es par les edt
 //
 // =============================================================================
-	// Affiche le contenu des crÈneaux directement
+	// Affiche le contenu des cr√©neaux directement
 	define('NO_INFOBULLE', 0);
-	// Affiche le contenu des crÈneaux dans l'infobulle d'une image
+	// Affiche le contenu des cr√©neaux dans l'infobulle d'une image
 	define('INFOBULLE', 1);
 	
 	// Affiche l'edt verticalement
@@ -54,9 +53,9 @@
 	// Affiche l'edt horizontalement
 	define('HORIZONTAL', 2);
 
-	// Affiche les intitulÈs des crÈneaux (M1, M2...)
+	// Affiche les intitul√©s des cr√©neaux (M1, M2...)
 	define('CRENEAUX_VISIBLES', 0);
-	// Masque les intitulÈs des crÈneaux
+	// Masque les intitul√©s des cr√©neaux
 	define('CRENEAUX_INVISIBLES', 4);
 
 // =============================================================================
@@ -119,7 +118,7 @@ function EdtDuJourVertical($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule\" style=\"height : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             
             if (strpos($tab_data[$jour]['couleur'][$index_box], "Repas") !== FALSE) {
                 $result .= "<div class=\"cadreRepas\">\n";
@@ -146,7 +145,7 @@ function EdtDuJourVertical($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule\" style = \"height : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             $result .= "<div class=\"cadreRouge\">\n";
             $result .= $tab_data[$jour]['contenu'][$index_box];
             $result .= "</div></div>\n";  
@@ -180,7 +179,7 @@ function EdtDuJourVertical($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule\" style=\"height : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             if (strpos($tab_data[$jour]['couleur'][$index_box], "Couleur") !== FALSE) {
                 $result .= "<div class=\"cadreCouleur\">\n";
             }
@@ -210,7 +209,7 @@ function EdtDuJourVertical($tab_data, $jour, $flags)
         }
         else 
         {
-            // ========= type de box non implÈmentÈe
+            // ========= type de box non impl√©ment√©e
 
         }
 
@@ -224,7 +223,7 @@ function EdtDuJourVertical($tab_data, $jour, $flags)
 		$result .= '</div>';
 	}
 	else {
-		// ===== affichage de la colonne crÈneaux
+		// ===== affichage de la colonne cr√©neaux
 
 		$result .= "<div class=\"colonne_creneaux\">\n";
 		$result .= "<div class=\"entete_creneaux\" style=\"height : ".$hauteur_demicreneaux."px;\">";
@@ -291,7 +290,7 @@ function EdtDuJourHorizontal($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule_h\" style=\"width : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             
             if (strpos($tab_data[$jour]['couleur'][$index_box], "Repas") !== FALSE) {
                 $result .= "<div class=\"cadreRepas\">\n";
@@ -318,7 +317,7 @@ function EdtDuJourHorizontal($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule_h\" style = \"width : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             $result .= "<div class=\"cadreRouge\">\n";
             $result .= $tab_data[$jour]['contenu'][$index_box];
             $result .= "</div></div>\n";  
@@ -367,7 +366,7 @@ function EdtDuJourHorizontal($tab_data, $jour, $flags)
             else {
                 $result .= "<div class=\"cellule_h\" style=\"width : ".$hauteur.";\">";
             }
-            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
+            $result .= "<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n";
             if (strpos($tab_data[$jour]['couleur'][$index_box], "Couleur") !== FALSE) {
                 $result .= "<div class=\"cadreCouleur\">\n";
             }
@@ -402,7 +401,7 @@ function EdtDuJourHorizontal($tab_data, $jour, $flags)
         }
         else 
         {
-            // ========= type de box non implÈmentÈe
+            // ========= type de box non impl√©ment√©e
 
         }
 
@@ -417,7 +416,7 @@ function EdtDuJourHorizontal($tab_data, $jour, $flags)
 	
 	}
 	else {
-		// ===== affichage de la colonne crÈneaux
+		// ===== affichage de la colonne cr√©neaux
 
 		$result .= "<div class=\"ligne_creneaux\" style=\"width : ".$width."\">\n";
 		$result .= "<div class=\"entete_creneaux_h\" style=\"width : ".$hauteur_creneaux."px;\"><div class=\"cadre\" style=\"width : ".$hauteur_creneaux."px;\">";
@@ -463,7 +462,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
 
 
 // ===== affichage des colonnes
-// ===== Les "display:none" sont utilisÈs pour l'accessibilitÈ
+// ===== Les "display:none" sont utilis√©s pour l'accessibilit√©
     $jour = 0;
     $isIconeAddUsable = true;
     while (isset($entetes['entete'][$jour])) {
@@ -477,7 +476,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
             if ($tab_data[$jour]['type'][$index_box] == "vide") {
                 
                 echo("<div class=\"".$tab_data[$jour]['duree'][$index_box]."\">");
-                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
+                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
                 echo ("<div class=\"".$tab_data[$jour]['couleur'][$index_box]."\">\n");
                 echo ("<div class=\"ButtonBar\">");
                 AfficheIconePlusNew($type_edt,$tab_data[$jour]['heuredeb_dec'][$index_box],$login_edt,$jour_sem,$tab_data[$jour]['id_creneau'][$index_box], $period);
@@ -489,7 +488,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
             {
     
                 echo("<div class=\"".$tab_data[$jour]['duree'][$index_box]."\">");
-                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
+                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
                 echo("<div class=\"cadreRouge\">\n");
                 echo $tab_data[$jour]['contenu'][$index_box];
                 echo ("<div class=\"ButtonBar\">");
@@ -506,7 +505,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
             else if ($tab_data[$jour]['type'][$index_box] == "cours")
             {
                 echo("<div class=\"".$tab_data[$jour]['duree'][$index_box]."\">");
-                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - durÈe = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
+                echo("<div style=\"display:none;\">".$tab_data[$jour]['affiche_creneau'][$index_box]." - dur√©e = ".$tab_data[$jour]['duree_valeur'][$index_box]." heure(s)</div>\n");
                 echo ("<div class=\"".$tab_data[$jour]['couleur'][$index_box]."\">");
                 echo $tab_data[$jour]['contenu'][$index_box];
                 echo ("<div class=\"ButtonBar\">");
@@ -527,7 +526,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
             }
             else 
             {
-                // ========= type de box non implÈmentÈe
+                // ========= type de box non impl√©ment√©e
     
             }
 
@@ -539,7 +538,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
         $jour++;
     }
 
-// ===== affichage de la colonne crÈneaux
+// ===== affichage de la colonne cr√©neaux
 
     echo ("<div class=\"creneaux".$creneaux['nb_creneaux']."\">\n");
     echo ("<div class=\"entete_creneaux\"></div>\n");
@@ -555,7 +554,7 @@ function AfficherEDT($tab_data, $entetes, $creneaux, $type_edt, $login_edt, $per
 // ======================================================
 //
 //      Lorsqu'on est en mode "emplois du temps semaines"
-//      permet de passer d'une semaine ‡ l'autre
+//      permet de passer d'une semaine √† l'autre
 //
 // ======================================================
 function AfficheBarCommutateurSemaines($login_edt, $visioedt, $type_edt_2, $week_min, $week_selected)
@@ -604,7 +603,7 @@ function AfficheBarCommutateurSemaines($login_edt, $visioedt, $type_edt_2, $week
     echo "<div class=\"spacer\"></div>";
 
     echo "<div style=\"float:left;width:100%;\";>";
-    echo "<p>Semaine sÈlectionnÈe : ";
+    echo "<p>Semaine s√©lectionn√©e : ";
     echo $tab[$week_selected-1]["lundis"]." - ";      
     echo $tab[$week_selected-1]["vendredis"];
     echo "</p>";
@@ -616,8 +615,8 @@ function AfficheBarCommutateurSemaines($login_edt, $visioedt, $type_edt_2, $week
 
 // ======================================================
 //
-//      Lorsqu'on est en mode "emplois du temps pÈriodes"
-//      permet de passer d'une pÈriode ‡ l'autre
+//      Lorsqu'on est en mode "emplois du temps p√©riodes"
+//      permet de passer d'une p√©riode √† l'autre
 //
 // ======================================================
 function AfficheBarCommutateurPeriodes($login_edt, $visioedt, $type_edt_2)
@@ -644,7 +643,7 @@ function AfficheBarCommutateurPeriodes($login_edt, $visioedt, $type_edt_2)
     $rep_periode = mysql_fetch_array($req_periode);
 
     echo "<ul class=\"Period\">";
-    echo "<li>PÈriode visualisÈe : ".$rep_periode['nom_calendrier']."</li>";
+    echo "<li>P√©riode visualis√©e : ".$rep_periode['nom_calendrier']."</li>";
     echo "</ul>";
 
 
@@ -663,8 +662,8 @@ function AfficheBarCommutateurPeriodes($login_edt, $visioedt, $type_edt_2)
 // ======================================================
 //
 //      Lorsqu'on est en mode "emploi du temps"
-//      permet de passer d'une pÈriode ‡ l'autre
-//      fonction associÈe ‡ gepi/edt_organisation/edt_eleve.php
+//      permet de passer d'une p√©riode √† l'autre
+//      fonction associ√©e √† gepi/edt_organisation/edt_eleve.php
 //
 // ======================================================
 function AfficheBarCommutateurPeriodesEleve()
@@ -691,7 +690,7 @@ function AfficheBarCommutateurPeriodesEleve()
     $rep_periode = mysql_fetch_array($req_periode);
 
     echo "<ul class=\"Period\">";
-    echo "PÈriode visualisÈe : ".$rep_periode['nom_calendrier'];
+    echo "P√©riode visualis√©e : ".$rep_periode['nom_calendrier'];
     echo "</ul>";
 
 
@@ -726,7 +725,7 @@ function AfficheImprimante($display_print)
 
 // =============================================================================
 //
-//          Affiche la bascule pour passer des emplois du temps pÈriodes aux
+//          Affiche la bascule pour passer des emplois du temps p√©riodes aux
 //          emplois du temps semaines
 //
 // =============================================================================
@@ -754,14 +753,14 @@ function AfficheBascule($display_commutator, $login_edt, $visioedt, $type_edt_2)
 
 // =============================================================================
 //
-//          Affiche un "+" pour crÈer un nouveau cours sur un crÈneau vide
+//          Affiche un "+" pour cr√©er un nouveau cours sur un cr√©neau vide
 //
 // =============================================================================
 function AfficheIconePlusNew($type_edt,$heuredeb_dec,$login_edt,$jour_sem,$id_creneaux, $period)
 {
 
-    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donnÈ le droit aux professeurs
-    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND strtolower($login_edt) == strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
+    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donn√© le droit aux professeurs
+    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND my_strtolower($login_edt) == my_strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
         $deb = "milieu";
         if ($heuredeb_dec == 0) 
         {
@@ -778,14 +777,14 @@ function AfficheIconePlusNew($type_edt,$heuredeb_dec,$login_edt,$jour_sem,$id_cr
 
 // =============================================================================
 //
-//              Affiche un "+" pour ajouter un cours sur un crÈneau contenant dÈj‡ quelque chose
+//              Affiche un "+" pour ajouter un cours sur un cr√©neau contenant d√©j√† quelque chose
 //
 // =============================================================================
 function AfficheIconePlusAdd($type_edt,$heuredeb_dec,$login_edt,$jour_sem,$id_creneaux, $period)
 {
 
-    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donnÈ le droit aux professeurs
-    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND strtolower($login_edt) == strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
+    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donn√© le droit aux professeurs
+    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND my_strtolower($login_edt) == my_strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
         $deb = "milieu";
         if ($heuredeb_dec == 0) 
         {
@@ -800,14 +799,14 @@ function AfficheIconePlusAdd($type_edt,$heuredeb_dec,$login_edt,$jour_sem,$id_cr
 }
 // =============================================================================
 //
-//          Affiche un petit crayon pour Èditer le cours
+//          Affiche un petit crayon pour √©diter le cours
 //
 // =============================================================================
 function AfficheModifierIcone($type_edt,$login_edt,$id_cours, $period)
 {
 
-    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donnÈ le droit aux professeurs
-    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND strtolower($login_edt) == strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
+    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donn√© le droit aux professeurs
+    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND my_strtolower($login_edt) == my_strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
         echo ("<span class=\"image\">");
 	    //echo "<a href='javascript:centrerpopup(\"modifier_cours_popup.php?period_id=".$period."&amp;id_cours=".$id_cours."&amp;type_edt=".$type_edt."&amp;identite=".$login_edt."\",700,205,\"scrollbars=no,statusbar=no,resizable=no,menubar=no,toolbar=no,status=no\")'>
 	    echo "<a href='modifier_cours.php?period_id=".$period."&amp;id_cours=".$id_cours."&amp;type_edt=".$type_edt."&amp;identite=".$login_edt."' onClick='centrerpopup(\"modifier_cours_popup.php?period_id=".$period."&amp;id_cours=".$id_cours."&amp;type_edt=".$type_edt."&amp;identite=".$login_edt."\",700,205,\"scrollbars=no,statusbar=no,resizable=no,menubar=no,toolbar=no,status=no\");return false;'>
@@ -825,8 +824,8 @@ function AfficheModifierIcone($type_edt,$login_edt,$id_cours, $period)
 function AfficheEffacerIcone($type_edt,$login_edt,$id_cours, $period)
 {
 
-    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donnÈ le droit aux professeurs
-    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND strtolower($login_edt) == strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
+    // On envoie le lien si et seulement si c'est un administrateur ou un scolarite ou si l'admin a donn√© le droit aux professeurs
+    if (($_SESSION["statut"] == "administrateur" OR $_SESSION["statut"] == "scolarite" OR ($_SESSION["statut"] == "professeur" AND getSettingValue("edt_remplir_prof") == 'y' AND my_strtolower($login_edt) == my_strtolower($_SESSION["login"]))) AND $type_edt == "prof") {
         echo ("<span class=\"image\">");
 	    //echo "<a href=\"./index_edt.php?visioedt=prof1&amp;login_edt=".$login_edt."&amp;type_edt_2=prof&amp;supprimer_cours=".$id_cours."&amp;type_edt=".$type_edt."&amp;identite=".$login_edt."\"onclick=\"return confirm('Confirmez-vous cette suppression ?')\")'>
         echo "<a href='javascript:centrerpopup(\"effacer_cours.php?period_id=".$period."&amp;supprimer_cours=".$id_cours."&amp;type_edt=".$type_edt."&amp;identite=".$login_edt."\",600,55,\"scrollbars=0,statusbar=0,resizable=0,menubar=no,toolbar=no,status=no\")'>        

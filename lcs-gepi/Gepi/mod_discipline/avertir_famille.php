@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: avertir_famille.php 7138 2011-06-05 17:37:14Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -43,9 +42,9 @@ if (!checkAccess()) {
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
@@ -60,13 +59,13 @@ $ele_login=isset($_POST['ele_login']) ? $_POST['ele_login'] : (isset($_GET['ele_
 
 $msg="";
 
-$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
 $titre_page = "Discipline: Avertir la famille";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
-$gepiSchoolPays=strtolower(getSettingValue('gepiSchoolPays'));
+$gepiSchoolPays=mb_strtolower(getSettingValue('gepiSchoolPays'));
 
 /*
 loadSettings();
@@ -77,14 +76,14 @@ foreach($gepiSettings as $key => $value) {
 
 echo "<p class='bold'><a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Index</a>\n";
 
-echo " | <a href='saisie_incident.php?id_incident=$id_incident' onclick=\"return confirm_abandon (this, change, '$themessage')\">Retour incident n°$id_incident</a>\n";
+echo " | <a href='saisie_incident.php?id_incident=$id_incident' onclick=\"return confirm_abandon (this, change, '$themessage')\">Retour incident nÂ°$id_incident</a>\n";
 
 echo " | <a href='traiter_incident.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Liste des incidents</a>\n";
 
 if(isset($id_communication)) {
 	// Est-ce qu'on propose de modifier?
-	// On ne garde pas trace de ce qui a déjà été envoyé...
-	// Ou alors il faudrait un champ Révision dans s_communication
+	// On ne garde pas trace de ce qui a dÃ©jÃ  Ã©tÃ© envoyÃ©...
+	// Ou alors il faudrait un champ RÃ©vision dans s_communication
 
 
 }
@@ -113,73 +112,6 @@ echo "</select>\n";
 echo "</td>\n";
 echo "</tr>\n";
 
-/*
-$sql="SELECT rp.nom, rp.prenom, rp.civilite, rp.pers_id, rp.adr_id, r.resp_legal FROM resp_pers rp, responsables2 r, eleves e WHERE e.ele_id=r.ele_id AND r.pers_id=rp.pers_id AND e.login='$ele_login' ORDER BY r.resp_legal;";
-$res_dest=mysql_query($sql);
-if(mysql_num_rows($res_dest)==0) {
-	echo "<tr class='lig-1'>\n";
-	echo "<td style='font-weight:bold; text-align:left; vertical-align: top;'>Destinataires&nbsp;:</td>\n";
-	echo "<td colspan='4'>Aucun destinataire n'a été trouvé dans la table 'resp_pers'.</td>\n";
-	echo "</tr>\n";
-}
-else {
-	echo "<tr class='lig-1'>\n";
-	echo "<td style='font-weight:bold; text-align:left; vertical-align: top;' rowspan='".mysql_num_rows($res_dest)."'>Destinataires&nbsp;:</td>\n";
-	$cpt=0;
-	while($lig_dest=mysql_fetch_object($res_dest)) {
-		if($cpt>0) {echo "<tr class='lig-1'>";}
-		echo "<td style='text-align:left;'>\n";
-
-		// Adresse:
-		$sql="SELECT * FROM resp_adr WHERE adr_id='$lig_dest->adr_id';";
-		$res_adr=mysql_query($sql);
-		if(mysql_num_rows($res_adr)==0) {
-			echo "<span style='color:red;'>-</span>\n";
-		}
-		else {
-			echo "<input type='checkbox' name='destinataire[]' id='destinataire_".$lig_dest->pers_id."' value='$lig_dest->pers_id' />";
-			//echo "<input type='checkbox' name='destinataire[]' id='destinataire_".$lig_dest->pers_id."' value='$lig_dest->resp_legal' />";
-		}
-		echo "</td>\n";
-
-		echo "<td style='text-align:left;'>\n";
-		echo "<label for='destinataire_".$lig_dest->pers_id."' style='cursor: pointer;'>\n";
-		echo " ".$lig_dest->civilite." ".strtoupper($lig_dest->nom)." ".ucwords(strtolower($lig_dest->prenom));
-		echo "</label>\n";
-		echo "</td>\n";
-
-		echo "<td style='text-align:center;'>\n";
-		echo " (<em>resp.légal ".$lig_dest->resp_legal."</em>)";
-		echo "</td>\n";
-
-		echo "<td style='text-align:left; font-size: x-small;'>\n";
-		// Adresse:
-		//$sql="SELECT * FROM resp_adr WHERE adr_id='$lig_dest->adr_id';";
-		//$res_adr=mysql_query($sql);
-		if(mysql_num_rows($res_adr)==0) {
-			echo "<span style='color:red;'>Pas d'adresse</span>\n";
-		}
-		else {
-			$lig_adr=mysql_fetch_object($res_adr);
-
-			if($lig_adr->adr1!="") {echo $lig_adr->adr1."<br />\n";}
-			if($lig_adr->adr2!="") {echo $lig_adr->adr2."<br />\n";}
-			if($lig_adr->adr3!="") {echo $lig_adr->adr3."<br />\n";}
-			if($lig_adr->adr4!="") {echo $lig_adr->adr4."<br />\n";}
-			if($lig_adr->cp!="") {echo $lig_adr->cp.", \n";}
-			if($lig_adr->commune!="") {echo $lig_adr->commune.", \n";}
-			if(($lig_adr->pays!="")&&(strtolower($lig_adr->pays)!=$gepiSchoolPays)) {echo "<br />\n$lig_adr->pays";}
-
-		}
-		echo "</td>\n";
-		//echo "<br />\n";
-		echo "</tr>\n";
-		$cpt++;
-	}
-}
-//echo "</td>\n";
-//echo "</tr>\n";
-*/
 
 
 $sql="SELECT 1=1 FROM resp_pers rp, responsables2 r, eleves e WHERE e.ele_id=r.ele_id AND r.pers_id=rp.pers_id AND e.login='$ele_login' AND (r.resp_legal='1' OR r.resp_legal='2') ORDER BY r.resp_legal;";
@@ -245,7 +177,7 @@ if(mysql_num_rows($res_dest)>0) {
 		if(mysql_num_rows($res_dest)>0) {
 			$nb_adr=2;
 
-			// Il y a un autre responsable légal
+			// Il y a un autre responsable lÃ©gal
 			$lig=mysql_fetch_object($res_dest);
 			$num=$lig->resp_legal-1;
 
@@ -270,7 +202,7 @@ else {
 		/*
 		echo "<tr class='lig-1'>\n";
 		echo "<td style='font-weight:bold; text-align:left; vertical-align: top;'>Destinataires&nbsp;:</td>\n";
-		echo "<td colspan='4'>Aucun destinataire n'a été trouvé dans la table 'resp_pers'.</td>\n";
+		echo "<td colspan='4'>Aucun destinataire n'a Ã©tÃ© trouvÃ© dans la table 'resp_pers'.</td>\n";
 		echo "</tr>\n";
 		*/
 	}
@@ -295,7 +227,7 @@ $cpt=0;
 if($nb_adr==0) {
 	echo "<tr class='lig-1'>\n";
 	echo "<td style='font-weight:bold; text-align:left; vertical-align: top;'>Destinataires&nbsp;:</td>\n";
-	echo "<td colspan='4'>Aucun responsable n'a été trouvé dans la table 'resp_pers'.</td>\n";
+	echo "<td colspan='4'>Aucun responsable n'a Ã©tÃ© trouvÃ© dans la table 'resp_pers'.</td>\n";
 	echo "</tr>\n";
 }
 elseif($nb_adr==1) {
@@ -325,7 +257,7 @@ elseif($nb_adr==1) {
 		if($i>0) {echo "<tr class='lig-1'>\n";}
 		echo "<td style='text-align: left;'>\n";
 		echo "<label for='destinataire_".$cpt."' style='cursor: pointer;'>\n";
-		echo " ".$tab_resp[$i]['civilite']." ".strtoupper($tab_resp[$i]['nom'])." ".ucwords(strtolower($tab_resp[$i]['prenom']));
+		echo " ".$tab_resp[$i]['civilite']." ".mb_strtoupper($tab_resp[$i]['nom'])." ".ucwords(mb_strtolower($tab_resp[$i]['prenom']));
 		echo "</label>\n";
 
 		//echo "<span style='color:green;'>".$tab_resp[$i]['adr_id']."</span>";
@@ -350,7 +282,7 @@ elseif($nb_adr==1) {
 				if($tab_resp[0]['adr4']!="") {echo $tab_resp[0]['adr4']."<br />\n";}
 				if($tab_resp[0]['cp']!="") {echo $tab_resp[0]['cp'].", \n";}
 				if($tab_resp[0]['commune']!="") {echo $tab_resp[0]['commune']."\n";}
-				if(($tab_resp[0]['pays']!="")&&(strtolower($tab_resp[0]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[0]['pays'];}
+				if(($tab_resp[0]['pays']!="")&&(mb_strtolower($tab_resp[0]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[0]['pays'];}
 			}
 			else {
 				if($tab_resp[1]['adr1']!="") {echo $tab_resp[1]['adr1']."<br />\n";}
@@ -359,7 +291,7 @@ elseif($nb_adr==1) {
 				if($tab_resp[1]['adr4']!="") {echo $tab_resp[1]['adr4']."<br />\n";}
 				if($tab_resp[1]['cp']!="") {echo $tab_resp[1]['cp'].", \n";}
 				if($tab_resp[1]['commune']!="") {echo $tab_resp[1]['commune']."\n";}
-				if(($tab_resp[1]['pays']!="")&&(strtolower($tab_resp[1]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[1]['pays'];}
+				if(($tab_resp[1]['pays']!="")&&(mb_strtolower($tab_resp[1]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[1]['pays'];}
 			}
 			echo "</td>\n";
 		}
@@ -384,7 +316,7 @@ else {
 
 		echo "<td style='text-align: left;'>\n";
 		echo "<label for='destinataire_".$i."' style='cursor: pointer;'>\n";
-		echo " ".$tab_resp[$i]['civilite']." ".strtoupper($tab_resp[$i]['nom'])." ".ucwords(strtolower($tab_resp[$i]['prenom']));
+		echo " ".$tab_resp[$i]['civilite']." ".mb_strtoupper($tab_resp[$i]['nom'])." ".ucwords(mb_strtolower($tab_resp[$i]['prenom']));
 		echo "</label>\n";
 		echo "</td>\n";
 
@@ -399,7 +331,7 @@ else {
 			if($tab_resp[$i]['adr4']!="") {echo $tab_resp[$i]['adr4']."<br />\n";}
 			if($tab_resp[$i]['cp']!="") {echo $tab_resp[$i]['cp'].", \n";}
 			if($tab_resp[$i]['commune']!="") {echo $tab_resp[$i]['commune']."\n";}
-			if(($tab_resp[$i]['pays']!="")&&(strtolower($tab_resp[$i]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[$i]['pays'];}
+			if(($tab_resp[$i]['pays']!="")&&(mb_strtolower($tab_resp[$i]['pays'])!=$gepiSchoolPays)) {echo "<br />\n".$tab_resp[$i]['pays'];}
 		}
 		echo "</td>\n";
 
@@ -415,12 +347,12 @@ echo "<td style='text-align:left;' colspan='4'>\n";
 echo "<textarea id=\"courrier\" class='wrap' name=\"no_anti_inject_courrier\" rows='12' cols='80' onchange=\"changement()\">";
 
 if(!isset($id_communication)) {
-	// Afficher les détails de l'incident.
+	// Afficher les dÃ©tails de l'incident.
 
 	$sql="SELECT * FROM s_incidents WHERE id_incident='$id_incident';";
 	$res_incident=mysql_query($sql);
 	if(mysql_num_rows($res_incident)==0) {
-		echo "??? L'incident n°$id_incident n'existe pas ???";
+		echo "??? L'incident nÂ°$id_incident n'existe pas ???";
 	}
 	else {
 		$lig_inc=mysql_fetch_object($res_incident);
@@ -445,10 +377,10 @@ echo "</blockquote>\n";
 
 echo "</form>\n";
 
-echo "<p style='color:red;'><b>A FAIRE:</b> Afficher aussi les numéros de téléphone.<br />
-Ne proposer 'mail' que si les adresses mail des resp sont renseignées.<br />
-Pouvoir enregistrer le fait que les parents ont été avertis.<br />
-Comment conserver aussi une trace des courriers envoyés? et pouvoir effacer les essais.</p>\n";
+echo "<p style='color:red;'><b>A FAIRE:</b> Afficher aussi les numÃ©ros de tÃ©lÃ©phone.<br />
+Ne proposer 'mail' que si les adresses mail des resp sont renseignÃ©es.<br />
+Pouvoir enregistrer le fait que les parents ont Ã©tÃ© avertis.<br />
+Comment conserver aussi une trace des courriers envoyÃ©s? et pouvoir effacer les essais.</p>\n";
 
 echo "<p><br /></p>\n";
 

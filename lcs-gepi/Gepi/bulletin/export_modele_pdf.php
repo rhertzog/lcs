@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: export_modele_pdf.php 8620 2011-11-10 18:42:06Z crob $
+* $Id$
 *
 * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
 *
@@ -97,5 +97,6 @@ if ( $action === 'export' ) {
 	}
 
 	echo $fd;
+
 }
 ?>

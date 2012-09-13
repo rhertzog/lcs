@@ -1,6 +1,5 @@
 <?php
 /*
-* $Id: accueil_simpl_prof.php 7414 2011-07-13 12:57:47Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -40,8 +39,8 @@ if ($resultat_session == 'c') {
 
 
 
-// INSERT INTO `droits` VALUES ('/cahier_notes/verif_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'Vérification des notes/appréciations saisies sur le bulletin', '');
-// INSERT INTO `droits` VALUES ('/accueil_simpl_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'Page d accueil simplifiée pour les profs', '');
+// INSERT INTO `droits` VALUES ('/cahier_notes/verif_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'VÃ©rification des notes/apprÃ©ciations saisies sur le bulletin', '');
+// INSERT INTO `droits` VALUES ('/accueil_simpl_prof.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'Page d accueil simplifiÃ©e pour les profs', '');
 if (!checkAccess()) {
 	//header("Location: ../logout.php?auto=1");
 	header("Location: ./logout.php?auto=1");
@@ -50,9 +49,9 @@ if (!checkAccess()) {
 
 
 /*
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_carnets_notes")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
 */
 
@@ -61,7 +60,7 @@ $active_cahiers_texte=getSettingValue("active_cahiers_texte");
 $active_module_trombinoscopes=getSettingValue("active_module_trombinoscopes");
 
 if(($active_carnets_notes!='y')&&($active_cahiers_texte!='y')&&($active_module_trombinoscopes!='y')) {
-	//die("Le module n'est pas activé.");
+	//die("Le module n'est pas activÃ©.");
 	$sql="UPDATE preferences SET value='n' WHERE name='accueil_simpl' AND login='".$_SESSION['login']."';";
 	$res=mysql_query($sql);
 
@@ -70,14 +69,14 @@ if(($active_carnets_notes!='y')&&($active_cahiers_texte!='y')&&($active_module_t
 }
 
 
-// Préférences des profs à récupérer par la suite dans la table 'preferences':
+// PrÃ©fÃ©rences des profs Ã  rÃ©cupÃ©rer par la suite dans la table 'preferences':
 /*
 $pref_accueil_ct="y";
 $pref_accueil_trombino="y";
-// Préférences jouant sur les colspan de période:
+// PrÃ©fÃ©rences jouant sur les colspan de pÃ©riode:
 $pref_accueil_cn="y";
 $pref_accueil_bull="y";
-// Le bulletin simplifié est inclus dans la partie Visualisation
+// Le bulletin simplifiÃ© est inclus dans la partie Visualisation
 //$pref_accueil_bullsimp="y";
 $pref_accueil_visu="y";
 $pref_accueil_liste_pdf="y";
@@ -101,7 +100,7 @@ function getPref($login,$item,$default){
 $pref_accueil_ct=getPref($_SESSION['login'],'accueil_ct',"y");
 $pref_accueil_trombino=getPref($_SESSION['login'],'accueil_trombino',"y");
 
-// Préférences jouant sur les colspan de période:
+// PrÃ©fÃ©rences jouant sur les colspan de pÃ©riode:
 $pref_accueil_cn=getPref($_SESSION['login'],'accueil_cn',"y");
 $pref_accueil_bull=getPref($_SESSION['login'],'accueil_bull',"y");
 $pref_accueil_visu=getPref($_SESSION['login'],'accueil_visu',"y");
@@ -120,7 +119,7 @@ if($pref_accueil_visu=="y"){
 if($pref_accueil_liste_pdf=="y"){$colspan++;}
 
 
-// Préférences des profs à récupérer par la suite dans la table 'preferences':
+// PrÃ©fÃ©rences des profs Ã  rÃ©cupÃ©rer par la suite dans la table 'preferences':
 // 1: icones
 // 2: textes
 // 3: icones et textes
@@ -131,32 +130,31 @@ $accueil_aff_txt_icon=1;
 // CELA A ETE DESACTIVE... PARCE QUE LISIBLE UNIQUEMENT EN MODE icones seuls
 
 
-// Styles spacifiques à la page avec chemin relatif à la racine du Gepi:
+// Styles spacifiques Ã  la page avec chemin relatif Ã  la racine du Gepi:
 //$style_specifique="accueil_simpl_prof.css";
 $style_specifique="accueil_simpl_prof";
 
 
 //**************** EN-TETE *****************
 $titre_page = "Accueil GEPI";
-//require_once("../lib/header.inc");
-require_once("./lib/header.inc");
+require_once("./lib/header.inc.php");
 //**************** FIN EN-TETE *************
 
 //echo "\$colspan=$colspan<br />";
 
 echo "<div class='norme'><p class='bold'>\n";
 //echo "<a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil </a> | \n";
-//echo "<a href=\"./accueil.php?accueil_simpl=n\"> Accès à l'interface complète </a>";
-echo "<a href=\"./accueil.php?accueil_simpl=n\">Accès au menu d'accueil</a>";
+//echo "<a href=\"./accueil.php?accueil_simpl=n\"> AccÃ¨s Ã  l'interface complÃ¨te </a>";
+echo "<a href=\"./accueil.php?accueil_simpl=n\">AccÃ¨s au menu d'accueil</a>";
 //echo " | \n";
 //echo "<a href='index.php'> Carnet de notes </a> | \n";
 echo " | \n";
-//echo "<a href='./gestion/config_prefs.php'> Paramétrer mes interfaces simplifiées </a>\n";
-echo "<a href='./gestion/config_prefs.php'> Paramétrer mon interface </a>\n";
+//echo "<a href='./gestion/config_prefs.php'> ParamÃ©trer mes interfaces simplifiÃ©es </a>\n";
+echo "<a href='./gestion/config_prefs.php'> ParamÃ©trer mon interface </a>\n";
 echo "</p>\n";
 echo "</div>\n";
 
-// Liste des Accès ouverts en consultation à vos CDT
+// Liste des AccÃ¨s ouverts en consultation Ã  vos CDT
 affiche_acces_cdt();
 
 echo "<center>\n";
@@ -178,7 +176,7 @@ if(mysql_num_rows($res_jgv)>0) {
 //================================
 
 
-// Récupérer le nombre max de périodes
+// RÃ©cupÃ©rer le nombre max de pÃ©riodes
 $groups=get_groups_for_prof($_SESSION["login"]);
 $maxper=0;
 $tab_noms_periodes=array();
@@ -301,7 +299,7 @@ echo "<script type='text/javascript'>
 				document.getElementById('h_liste_pdf_'+num_periode).style.display='';
 			}
 
-			// Pour afficher/cacher les lignes du tableau, évaluer count($groups)=$nb_groupes
+			// Pour afficher/cacher les lignes du tableau, Ã©valuer count(\$groups)=\$nb_groupes
 			for(i=0;i<=$nb_groupes;i++){
 				if(document.getElementById('h_cn_'+i+'_'+num_periode)){
 					document.getElementById('h_cn_'+i+'_'+num_periode).style.display='';
@@ -453,6 +451,15 @@ if(($active_carnets_notes=="y")&&($pref_accueil_cn=="y")&&($colspan>0)){echo " r
 echo ">\n";
 echo "Classes</th>\n";
 
+// mod_abs2
+if ((getSettingValue("active_module_absence_professeur")=='y')&&(getSettingValue("active_module_absence")=='2')) {
+	echo "<th";
+	if(($active_carnets_notes=="y")&&($pref_accueil_cn=="y")&&($colspan>0)){echo " rowspan='3'";}
+	echo ">\n";
+	echo "Absences\n";
+	echo "</th>\n";
+}
+
 //if($active_cahiers_texte=="y"){
 if(($active_cahiers_texte=="y")&&($pref_accueil_ct=="y")){
 	echo "<th";
@@ -485,7 +492,7 @@ if(($active_carnets_notes=="y")&&($pref_accueil_cn=="y")){
 				echo "<th colspan='".$colspan_per[$i]."'>";
 				/*
 				if($affiche_periode[$i]=="y"){
-					echo "Période $i";
+					echo "PÃ©riode $i";
 				}
 				else{
 				*/
@@ -497,7 +504,7 @@ if(($active_carnets_notes=="y")&&($pref_accueil_cn=="y")){
 	
 					echo "<span id='h_lien_cache_$i'>";
 					echo "<a href='#' onClick=\"modif_col($i,'cache');return false;\">";
-					echo "Période $i";
+					echo "PÃ©riode $i";
 					echo "</a>";
 					echo "</span>\n";
 				//}
@@ -680,8 +687,8 @@ echo "</th>\n";
 
 
 
-// On positionne le témoin de chargement pour éviter que les infobulles ne se ferment pas lors du chargement.
-// Il faudrait plutôt remplir un tableau des infobulles existantes et faire une boucle de cacher_div() en fin de page.
+// On positionne le tÃ©moin de chargement pour Ã©viter que les infobulles ne se ferment pas lors du chargement.
+// Il faudrait plutÃ´t remplir un tableau des infobulles existantes et faire une boucle de cacher_div() en fin de page.
 /*
 echo "<script type='text/javascript'>
 	temporisation_chargement='ok';
@@ -694,9 +701,9 @@ $tab_liste_infobulles=array();
 for($i=0;$i<count($groups);$i++){
 
 	echo "<tr valign='top'>\n";
-	echo "<td>".htmlentities($groups[$i]['description'])."</td>\n";
+	echo "<td>".htmlspecialchars($groups[$i]['description'])."</td>\n";
 
-	//echo "<td>".htmlentities($groups[$i]['classlist_string'])."</td>\n";
+	//echo "<td>".htmlspecialchars($groups[$i]['classlist_string'])."</td>\n";
 	echo "<td>\n";
 	$cpt=0;
 	$liste_classes_du_groupe="";
@@ -718,8 +725,8 @@ for($i=0;$i<count($groups);$i++){
 		$liste_classes_du_groupe.=" ".$classe['classe'];
 
 		if($pref_accueil_infobulles=="y"){
-			//echo "<div id='info_popup_".$i."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_popup_".$i."_".$cpt."');\">Cet outil vous permet de visualiser la composition du groupe ".htmlentities($groups[$i]['description'])."(<i>".$classe['classe']."</i>).</div>\n";
-			echo "<div id='info_popup_".$i."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_popup_".$i."_".$cpt."');\">Liste des élèves de ".htmlentities($groups[$i]['description'])." (<i>".preg_replace("/ /","&nbsp;",$classe['classe'])."</i>).</div>\n";
+			//echo "<div id='info_popup_".$i."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_popup_".$i."_".$cpt."');\">Cet outil vous permet de visualiser la composition du groupe ".htmlspecialchars($groups[$i]['description'])."(<i>".$classe['classe']."</i>).</div>\n";
+			echo "<div id='info_popup_".$i."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_popup_".$i."_".$cpt."');\">Liste des Ã©lÃ¨ves de ".htmlspecialchars($groups[$i]['description'])." (<i>".preg_replace("/ /","&nbsp;",$classe['classe'])."</i>).</div>\n";
 
 			$tab_liste_infobulles[]='info_popup_'.$i.'_'.$cpt;
 		}
@@ -735,6 +742,25 @@ for($i=0;$i<count($groups);$i++){
 	//$liste_classes_du_groupe=trim($liste_classes_du_groupe);
 	$liste_classes_du_groupe=preg_replace("/ /","&nbsp;",trim($liste_classes_du_groupe));
 
+	// mod_abs2
+	if ((getSettingValue("active_module_absence_professeur")=='y')&&(getSettingValue("active_module_absence")=='2')) {
+		echo "<td>";
+		echo "<a href='mod_abs2/index.php?type_selection=id_groupe&amp;id_groupe=".$groups[$i]['id']."'";
+		if($pref_accueil_infobulles=="y"){
+			echo " onmouseover=\"afficher_div('info_abs_$i','y',10,10);\" onmouseout=\"cacher_div('info_abs_$i');\"";
+		}
+		echo ">";
+			echo "<img src='images/icons/absences.png' width='32' height='32' alt='Absences' border='0' />";
+		echo "</a>";
+
+		if($pref_accueil_infobulles=="y"){
+			echo "<div id='info_abs_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_abs_$i');\">Absences de ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
+
+			$tab_liste_infobulles[]='info_abs_'.$i;
+		}
+
+		echo "</td>\n";
+	}
 
 	//if($active_cahiers_texte=="y"){
 	if(($active_cahiers_texte=="y")&&($pref_accueil_ct=="y")){
@@ -764,8 +790,8 @@ for($i=0;$i<count($groups);$i++){
 		echo "</a>";
 
 		if($pref_accueil_infobulles=="y"){
-			//echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ct_$i');\">Cet outil vous permet de constituer un cahier de textes pour le groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
-			echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_ct_$i');\">Cahier de textes de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
+			//echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ct_$i');\">Cet outil vous permet de constituer un cahier de textes pour le groupe ".htmlspecialchars($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
+			echo "<div id='info_ct_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_ct_$i');\">Cahier de textes de ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
 
 			$tab_liste_infobulles[]='info_ct_'.$i;
 		}
@@ -805,8 +831,8 @@ for($i=0;$i<count($groups);$i++){
 
 
 		if($pref_accueil_infobulles=="y"){
-			//echo "<div id='info_trombino_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_trombino_$i');\">Cet outil vous permet de visualiser le trombinoscope du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
-			echo "<div id='info_trombino_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_trombino_$i');\">Trombinoscope de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
+			//echo "<div id='info_trombino_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_trombino_$i');\">Cet outil vous permet de visualiser le trombinoscope du groupe ".htmlspecialchars($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>).</div>\n";
+			echo "<div id='info_trombino_$i' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_trombino_$i');\">Trombinoscope de ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>).</div>\n";
 
 			$tab_liste_infobulles[]='info_trombino_'.$i;
 		}
@@ -868,8 +894,8 @@ for($i=0;$i<count($groups);$i++){
 							echo "</a>";
 		
 							if($pref_accueil_infobulles=="y"){
-								//echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Cet outil vous permet de constituer un carnet de notes pour saisir les notes de toutes vos évaluations du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-								echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Carnet de notes de ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								//echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Cet outil vous permet de constituer un carnet de notes pour saisir les notes de toutes vos Ã©valuations du groupe ".htmlspecialchars($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_cn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 18em;' onmouseout=\"cacher_div('info_cn_".$i."_".$j."');\">Carnet de notes de ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 		
 								$tab_liste_infobulles[]='info_cn_'.$i.'_'.$j;
 							}
@@ -886,7 +912,7 @@ for($i=0;$i<count($groups);$i++){
 	
 	
 					if($pref_accueil_bull=="y"){
-						// Calcul du nombre de notes et du nombre d'appréciations présentes sur le bulletin
+						// Calcul du nombre de notes et du nombre d'apprÃ©ciations prÃ©sentes sur le bulletin
 						$sql="SELECT 1=1 FROM matieres_notes WHERE id_groupe='".$groups[$i]['id']."' AND periode='".$groups[$i]['periodes'][$j]['num_periode']."';";
 						// AND statut='' ?
 						$test=mysql_query($sql);
@@ -937,8 +963,8 @@ for($i=0;$i<count($groups);$i++){
 							echo "</span>";
 		
 							if($pref_accueil_infobulles=="y"){
-								//echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Cet outil permet de saisir les moyennes du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-								echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Saisie des moyennes ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								//echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Cet outil permet de saisir les moyennes du bulletin du groupe ".htmlspecialchars($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_bn_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_bn_".$i."_".$j."');\">Saisie des moyennes ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 		
 								$tab_liste_infobulles[]='info_bn_'.$i.'_'.$j;
 							}
@@ -954,8 +980,8 @@ for($i=0;$i<count($groups);$i++){
 						echo "</td>\n";
 	
 	
-						// Appréciation sur le bulletin:
-						//echo "<td class='$class_style'><a href='../saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'><img src='../images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' /></a>";
+						// ApprÃ©ciation sur le bulletin:
+						//echo "<td class='$class_style'><a href='../saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_num=".$groups[$i]['periodes'][$j]['num_periode']."&amp;retour_cn=yes'><img src='../images/icons/bulletin.png' width='32' height='34' alt='ApprÃ©ciations' border='0' /></a>";
 						echo "<td class='$class_style'>\n";
 						echo "<div id='h_ba_".$i."_".$j."'>";
 						if(!in_array($groups[$i]['id'],$invisibilite_groupe['bulletins'])) {
@@ -968,15 +994,15 @@ for($i=0;$i<count($groups);$i++){
 							echo ">";
 		
 							//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
-								//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
-								echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='Appréciations' border='0' />";
+								//echo "<img src='../images/icons/bulletin.png' width='32' height='34' alt='ApprÃ©ciations' border='0' />";
+								echo "<img src='images/icons/bulletin.png' width='32' height='34' alt='ApprÃ©ciations' border='0' />";
 							/*
 							}
 							if($accueil_aff_txt_icon==3){
 								echo "<br />";
 							}
 							if($accueil_aff_txt_icon>=2){
-								echo "Saisie des appréciations sur le bulletin";
+								echo "Saisie des apprÃ©ciations sur le bulletin";
 							}
 							*/
 							echo "</a>";
@@ -992,8 +1018,8 @@ for($i=0;$i<count($groups);$i++){
 		
 		
 							if($pref_accueil_infobulles=="y"){
-								//echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Cet outil permet de saisir les appréciations du bulletin du groupe ".htmlentities($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-								echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Saisie des appréciations ".htmlentities($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								//echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Cet outil permet de saisir les apprÃ©ciations du bulletin du groupe ".htmlspecialchars($groups[$i]['description'])."(<i>$liste_classes_du_groupe</i>) pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								echo "<div id='info_ba_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 15em;' onmouseout=\"cacher_div('info_ba_".$i."_".$j."');\">Saisie des apprÃ©ciations ".htmlspecialchars($groups[$i]['description'])." (<i>$liste_classes_du_groupe</i>)<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 		
 								$tab_liste_infobulles[]='info_ba_'.$i.'_'.$j;
 							}
@@ -1043,7 +1069,7 @@ for($i=0;$i<count($groups);$i++){
 	
 	
 							if($pref_accueil_infobulles=="y"){
-								//echo "<div id='info_graphe_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_graphe_".$i."_".$j."_".$cpt."');\">Visualisation graphique des résultats des élèves de la classe de ".$classe['classe']." pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+								//echo "<div id='info_graphe_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_graphe_".$i."_".$j."_".$cpt."');\">Visualisation graphique des rÃ©sultats des Ã©lÃ¨ves de la classe de ".$classe['classe']." pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 								echo "<div id='info_graphe_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 10em;' onmouseout=\"cacher_div('info_graphe_".$i."_".$j."_".$cpt."');\">Outil graphique<br />".$classe['classe']."<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 	
 								$tab_liste_infobulles[]='info_graphe_'.$i.'_'.$j.'_'.$cpt;
@@ -1060,7 +1086,7 @@ for($i=0;$i<count($groups);$i++){
 						echo "</td>\n";
 	
 	
-						// Bulletin simplifié:
+						// Bulletin simplifiÃ©:
 						// https://127.0.0.1/steph/gepi-trunk/prepa_conseil/index3.php?id_classe=4
 						// https://127.0.0.1/steph/gepi-trunk/prepa_conseil/edit_limite.php
 						// <input type=\"radio\" name=\"choix_edit\" value=\"1\" checked />
@@ -1096,9 +1122,9 @@ for($i=0;$i<count($groups);$i++){
 								}
 	
 								if($affiche_bull_simp_cette_classe=="y") {
-									//echo "<a href='../prepa_conseil/index3.php?id_classe=".$classe['id']."' onClick=\"valide_bull_simpl('".$classe['id']."','".$j."'); return false;\"><img src='../images/icons/bulletin_simpl.png' width='37' height='34' alt='Bulletin simplifié' border='0' />";
+									//echo "<a href='../prepa_conseil/index3.php?id_classe=".$classe['id']."' onClick=\"valide_bull_simpl('".$classe['id']."','".$j."'); return false;\"><img src='../images/icons/bulletin_simpl.png' width='37' height='34' alt='Bulletin simplifiÃ©' border='0' />";
 									//echo "<a href='../prepa_conseil/index3.php?id_classe=".$classe['id']."' onClick=\"valide_bull_simpl('".$classe['id']."','".$j."'); return false;\">";
-									echo "<a href='prepa_conseil/index3.php?id_classe=".$classe['id']."' onClick=\"valide_bull_simpl('".$classe['id']."','".$j."'); return false;\"";
+									echo "<a href='prepa_conseil/index3.php?id_classe=".$classe['id']."&amp;couleur_alterne=y' onClick=\"valide_bull_simpl('".$classe['id']."','".$j."'); return false;\"";
 	
 									if($pref_accueil_infobulles=="y"){
 										echo " onmouseover=\"afficher_div('info_bs_".$i."_".$j."_".$cpt."','y',10,10);\" onmouseout=\"cacher_div('info_bs_".$i."_".$j."_".$cpt."');\"";
@@ -1106,8 +1132,8 @@ for($i=0;$i<count($groups);$i++){
 									echo ">";
 	
 									//if(($accueil_aff_txt_icon==1)||($accueil_aff_txt_icon==3)){
-										//echo "<img src='../images/icons/bulletin_simp.png' width='34' height='34' alt='Bulletin simplifié' border='0' />";
-										echo "<img src='images/icons/bulletin_simp.png' width='34' height='34' alt='Bulletin simplifié' border='0' />";
+										//echo "<img src='../images/icons/bulletin_simp.png' width='34' height='34' alt='Bulletin simplifiÃ©' border='0' />";
+										echo "<img src='images/icons/bulletin_simp.png' width='34' height='34' alt='Bulletin simplifiÃ©' border='0' />";
 									/*
 									}
 									if($accueil_aff_txt_icon==3){
@@ -1123,8 +1149,8 @@ for($i=0;$i<count($groups);$i++){
 									echo "</a>\n";
 	
 									if($pref_accueil_infobulles=="y"){
-										//echo "<div id='info_bs_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bs_".$i."_".$j."_".$cpt."');\">Ceci vous permet de visulaliser les bulletins simplifiés des élèves de la classe de ".$classe['classe']." pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-										echo "<div id='info_bs_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 10em;' onmouseout=\"cacher_div('info_bs_".$i."_".$j."_".$cpt."');\">Bulletins simplifiés<br />".$classe['classe']."<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+										//echo "<div id='info_bs_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_bs_".$i."_".$j."_".$cpt."');\">Ceci vous permet de visulaliser les bulletins simplifiÃ©s des Ã©lÃ¨ves de la classe de ".$classe['classe']." pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+										echo "<div id='info_bs_".$i."_".$j."_".$cpt."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 10em;' onmouseout=\"cacher_div('info_bs_".$i."_".$j."_".$cpt."');\">Bulletins simplifiÃ©s<br />".$classe['classe']."<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 	
 										$tab_liste_infobulles[]='info_bs_'.$i.'_'.$j.'_'.$cpt;
 									}
@@ -1164,14 +1190,14 @@ for($i=0;$i<count($groups);$i++){
 							echo "<br />";
 						}
 						if($accueil_aff_txt_icon>=2){
-							echo "Liste PDF des élèves";
+							echo "Liste PDF des Ã©lÃ¨ves";
 						}
 						*/
 						echo "</a>";
 	
 						if($pref_accueil_infobulles=="y"){
-							//echo "<div id='info_liste_pdf_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_liste_pdf_".$i."_".$j."');\">Ceci vous permet d'imprimer en PDF des listes d'élèves de la classe de ".$classe['classe']." pour la période ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
-							echo "<div id='info_liste_pdf_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 12em;' onmouseout=\"cacher_div('info_liste_pdf_".$i."_".$j."');\">Listes PDF des élèves<br />".$classe['classe']."<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+							//echo "<div id='info_liste_pdf_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 300px;' onmouseout=\"cacher_div('info_liste_pdf_".$i."_".$j."');\">Ceci vous permet d'imprimer en PDF des listes d'Ã©lÃ¨ves de la classe de ".$classe['classe']." pour la pÃ©riode ".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
+							echo "<div id='info_liste_pdf_".$i."_".$j."' class='infobulle_corps' style='border: 1px solid #000000; color: #000000; padding: 0px; position: absolute; width: 12em;' onmouseout=\"cacher_div('info_liste_pdf_".$i."_".$j."');\">Listes PDF des Ã©lÃ¨ves<br />".$classe['classe']."<br />".$groups[$i]["periodes"][$j]["nom_periode"].".</div>\n";
 	
 							$tab_liste_infobulles[]='info_liste_pdf_'.$i.'_'.$j;
 						}
@@ -1193,7 +1219,7 @@ for($i=0;$i<count($groups);$i++){
 				*/
 			}
 	
-			// On complète les colonnes à laisser vides si jamais, par exemple, on traite une ligne à deux périodes alors que d'autres groupes ont trois périodes donc trois colonnes.
+			// On complÃ¨te les colonnes Ã  laisser vides si jamais, par exemple, on traite une ligne Ã  deux pÃ©riodes alors que d'autres groupes ont trois pÃ©riodes donc trois colonnes.
 			for($k=$j;$k<=$maxper;$k++){
 				for($n=0;$n<$colspan;$n++){
 					echo "<td>-</td>\n";
@@ -1221,17 +1247,18 @@ for($i=0;$i<count($groups);$i++){
 }
 echo "</table>\n";
 
-// Formulaire validé via JavaScript pour afficher les bulletins simplifiés
+// Formulaire validÃ© via JavaScript pour afficher les bulletins simplifiÃ©s
 //echo "<form enctype=\"multipart/form-data\" action=\"../prepa_conseil/edit_limite.php\" method=\"post\" name=\"form_choix_edit\" target=\"_blank\">";
 echo "<form enctype=\"multipart/form-data\" action=\"prepa_conseil/edit_limite.php\" method=\"post\" name=\"form_choix_edit\" target=\"_blank\">\n";
 echo "<input type=\"hidden\" name=\"choix_edit\" value=\"1\" />\n";
 echo "<input type=\"hidden\" name=\"periode1\" id=\"periode1\" value='1' />\n";
 echo "<input type=\"hidden\" name=\"periode2\" id=\"periode2\" value='1' />\n";
+echo "<input type=\"hidden\" name=\"couleur_alterne\" value='y' />\n";
 echo "<input type=\"hidden\" name=\"id_classe\" id=\"id_classe\" value='' />\n";
 echo "</form>\n";
 
 
-// Formulaire validé via JavaScript pour afficher le trombinoscope
+// Formulaire validÃ© via JavaScript pour afficher le trombinoscope
 //echo "<form enctype=\"multipart/form-data\" action=\"../mod_trombinoscopes/trombinoscopes.php\" method=\"post\" name=\"form_trombino\" target=\"_blank\">";
 echo "<form enctype=\"multipart/form-data\" action=\"mod_trombinoscopes/trombinoscopes.php\" method=\"post\" name=\"form_trombino\" target=\"_blank\">\n";
 echo "<input type=\"hidden\" name=\"etape\" value=\"2\" />\n";
@@ -1240,7 +1267,7 @@ echo "<input type=\"hidden\" name=\"groupe\" id=\"groupe\" value='' />\n";
 echo "</form>\n";
 
 
-// Formulaire validé via JavaScript pour afficher le trombinoscope
+// Formulaire validÃ© via JavaScript pour afficher le trombinoscope
 //echo "<form enctype=\"multipart/form-data\" action=\"../impression/liste_pdf.php\" method=\"post\" name=\"form_liste_pdf\" target=\"_blank\">";
 echo "<form enctype=\"multipart/form-data\" action=\"impression/liste_pdf.php\" method=\"post\" name=\"form_liste_pdf\" target=\"_blank\">\n";
 echo "<input type=\"hidden\" name=\"id_periode\" id=\"id_periode\" value=\"\" />\n";

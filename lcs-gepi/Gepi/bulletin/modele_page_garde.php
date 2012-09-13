@@ -1,6 +1,6 @@
 <?php
 /*
- * @version $Id: modele_page_garde.php 1725 2008-04-19 19:21:49Z crob $
+ * @version $Id$
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -24,10 +24,10 @@
 require_once("../lib/initialisations.inc.php");
 
 //**************** EN-TETE *****************
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************
 
-$info_eleve_page_garde="Elève: Durand Camille, 3 A2";
+$info_eleve_page_garde="ElÃ¨ve: Durand Camille, 3 A2";
 
 $ligne1 = "Durand Albert";
 $ligne2 = "1, Avenue de l'Europe";

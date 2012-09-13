@@ -6,7 +6,6 @@
  *
  * @author Danny Bollaert, UGent AS. <danny.bollaert@ugent.be>
  * @package simpleSAMLphp
- * @version $Id$
  */
 
 require_once('../../_include.php');
@@ -51,4 +50,5 @@ $artifactResponse = new SAML2_ArtifactResponse();
 $artifactResponse->setIssuer($idpEntityId);
 $artifactResponse->setInResponseTo($request->getId());
 $artifactResponse->setAny($responseXML);
+sspmod_saml_Message::addSign($idpMetadata, NULL, $artifactResponse);
 $binding->send($artifactResponse);

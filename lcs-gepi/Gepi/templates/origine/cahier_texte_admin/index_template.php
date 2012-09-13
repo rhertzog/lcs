@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 8748 2012-02-04 18:18:31Z crob $
+* $Id$
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 * ******************************************** *
-* Appelle les sous-modËles                     *
+* Appelle les sous-mod√®les                     *
 * templates/origine/header_template.php        *
 * templates/origine/bandeau_template.php       *
 * ******************************************** *
@@ -33,11 +33,84 @@
  * @author regis
  */
 
+/**
+ * V√©rifie que le dossier (et ses sous-dossiers) contient bien un fichier index.html
+ *
+ * @global int
+ * @param string $dossier Le dossier
+ * @return string Un message format√©
+ */
+function ajout_index_sous_dossiers($dossier) {
+	global $niveau_arbo;
+
+	$nb_creation=0;
+	$nb_erreur=0;
+	$nb_fich_existant=0;
+
+	$retour="";
+
+	//$dossier="../documents";
+	$dir= opendir($dossier);
+	if(!$dir) {
+		$retour.="<p style='color:red'>Erreur lors de l'acc√®s au dossier '$dossier'.</p>\n";
+	}
+	else {
+		$retour.="<p style='color:green'>Succ√®s de l'acc√®s au dossier '$dossier'.</p>\n";
+		while($entree=@readdir($dir)) {
+			if(is_dir($dossier.'/'.$entree)&&($entree!='.')&&($entree!='..')) {
+				if(!file_exists($dossier."/".$entree."/index.html")) {
+					if ($f = @fopen($dossier.'/'.$entree."/index.html", "w")) {
+						if((!isset($niveau_arbo))||($niveau_arbo==1)) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../login.php")</script>');
+						}
+						elseif($niveau_arbo==0) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("./login.php")</script>');
+						}
+						elseif($niveau_arbo==2) {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../../login.php")</script>');
+						}
+						else {
+							@fputs($f, '<script type="text/javascript">document.location.replace("../../../login.php")</script>');
+						}
+						@fclose($f);
+						$nb_creation++;
+					}
+					else {
+						$retour.="<span style='color:red'>Erreur lors de la cr√©ation de '$dir/$entree/index.html'.</span><br />\n";
+						$nb_erreur++;
+					}
+				}
+				else {
+					$nb_fich_existant++;
+				}
+			}
+		}
+
+		if($nb_erreur>0) {
+			$retour.="<p style='color:red'>$nb_erreur erreur(s) lors du traitement.</p>\n";
+		}
+		else {
+			$retour.="<p style='color:green'>Aucune erreur lors de la cr√©ation des fichiers index.html</p>\n";
+		}
+	
+		if($nb_creation>0) {
+			$retour.="<p style='color:green'>Cr√©ation de $nb_creation fichier(s) index.html</p>\n";
+		}
+		else {
+			$retour.="<p style='color:green'>Aucune cr√©ation de fichiers index.html n'a √©t√© effectu√©e.</p>\n";
+		}
+		$retour.="<p style='color:blue'>Il existait avant l'op√©ration $nb_fich_existant fichier(s) index.html</p>\n";
+	}
+
+	return $retour;
+}
+
+
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>
-<!-- on inclut l'entÍte -->
+<!-- on inclut l'ent√™te -->
 	<?php
 	  $tbs_bouton_taille = "..";
 	  include('../templates/origine/header_template.php');
@@ -80,7 +153,7 @@
 
 
 <!-- ************************* -->
-<!-- DÈbut du corps de la page -->
+<!-- D√©but du corps de la page -->
 <!-- ************************* -->
 <body onload="show_message_deconnexion();<?php echo $tbs_charger_observeur;?>">
 
@@ -95,7 +168,7 @@
 	if(isset($_GET['ajout_index_documents'])) {
 		echo ajout_index_sous_dossiers("../documents");
 
-		$sql="SELECT * FROM infos_actions WHERE titre='ContrÙle des index dans les documents des CDT requis';";
+		$sql="SELECT * FROM infos_actions WHERE titre='Contr√¥le des index dans les documents des CDT requis';";
 		$res_test=mysql_query($sql);
 		if(mysql_num_rows($res_test)>0) {
 			while($lig_ia=mysql_fetch_object($res_test)) {
@@ -120,8 +193,8 @@ echo add_token_field();
 	  </p>
 	<h2>Activation des cahiers de textes</h2>
 	  <p class="italic">
-		  La dÈsactivation des cahiers de textes n'entraÓne aucune suppression des donnÈes.
-		  Lorsque le module est dÈsactivÈ, les professeurs n'ont pas accËs au module et la consultation
+		  La d√©sactivation des cahiers de textes n'entra√Æne aucune suppression des donn√©es.
+		  Lorsque le module est d√©sactiv√©, les professeurs n'ont pas acc√®s au module et la consultation
 		  publique des cahiers de textes est impossible.
 	  </p>
 	<fieldset class="no_bordure">
@@ -134,7 +207,7 @@ echo add_token_field();
 			 onchange='changement();'
 				<?php if (getSettingValue("active_cahiers_texte")=='y') echo " checked='checked'"; ?> />
 		<label for='activer_y' style='cursor: pointer;'>
-		  Activer les cahiers de textes (consultation et Èdition)
+		  Activer les cahiers de textes (<em>consultation et √©dition</em>)
 		</label>
 	  <br />
 		<input type="radio" 
@@ -144,7 +217,7 @@ echo add_token_field();
 			 onchange='changement();'
 				<?php if (getSettingValue("active_cahiers_texte")=='n') echo " checked='checked'"; ?> />
 		<label for='activer_n' style='cursor: pointer;'>
-		  DÈsactiver les cahiers de textes (consultation et Èdition)
+		  D√©sactiver les cahiers de textes (<em>consultation et √©dition</em>)
 		</label>
 	  </fieldset>
 	  
@@ -157,7 +230,7 @@ echo add_token_field();
 		<span style='color:red'>
 		  ATTENTION
 		</span>
-	  Il semble que l'extension php 'pdo_mysql' ne soit pas prÈsente.
+	  Il semble que l'extension php 'pdo_mysql' ne soit pas pr√©sente.
 	  <br />
 	  Cela risque de rendre impossible l'utilisation de la version 2 du cahier de texte";
 	  </p>
@@ -178,9 +251,11 @@ echo add_token_field();
 		<label for='version_1' style='cursor: pointer;'>
 		  Cahier de texte version 1
 		</label>
+		<!--
 		(<span class="italic">
-		  le cahier de texte version 1 ne sera plus supportÈ dans la future version 1.5.3
+		  le cahier de texte version 1 ne sera plus support√© dans la future version 1.5.3
 		</span>)
+		-->
 		<br />
 		  <input type="radio"
 				 name="version"
@@ -193,17 +268,17 @@ echo add_token_field();
 		</label>
 	  </fieldset>
 	  
-	  <h2>DÈbut et fin des cahiers de textes</h2>
+	  <h2>D√©but et fin des cahiers de textes</h2>
 	  <p class="italic">
-		Seules les rubriques dont la date est comprise entre la date de dÈbut et la date de fin des cahiers
+		Seules les rubriques dont la date est comprise entre la date de d√©but et la date de fin des cahiers
 		de textes sont visibles dans l'interface de consultation publique.
 		<br />
-		L'Èdition (modification/suppression/ajout) des cahiers de textes par les utilisateurs de GEPI
-		n'est pas affectÈe par ces dates.
+		L'√©dition (<em>modification/suppression/ajout</em>) des cahiers de textes par les utilisateurs de GEPI
+		n'est pas affect√©e par ces dates.
 	  </p>
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Version</legend>
-        Date de dÈbut des cahiers de textes :
+        Date de d√©but des cahiers de textes :
 <?php
         $bday = strftime("%d", getSettingValue("begin_bookings"));
         $bmonth = strftime("%m", getSettingValue("begin_bookings"));
@@ -221,9 +296,9 @@ echo add_token_field();
 		<input type="hidden" name="is_posted" value="1" />
 	  </fieldset>
 
-	  <h2>AccËs public</h2>
+	  <h2>Acc√®s public</h2>
 	  <fieldset class="no_bordure">
-		<legend class="invisible">accËs public</legend>
+		<legend class="invisible">acc√®s public</legend>
 		  <input type='radio' 
 				 name='cahier_texte_acces_public' 
 				 id='cahier_texte_acces_public_n' 
@@ -231,8 +306,8 @@ echo add_token_field();
 			 onchange='changement();'
 				<?php if (getSettingValue("cahier_texte_acces_public") == "no") echo " checked='checked'";?> /> 
 		<label for='cahier_texte_acces_public_n' style='cursor: pointer;'>
-		  DÈsactiver la consultation publique des cahiers de textes 
-		  (seuls des utilisateurs loguÈs pourront y avoir accËs en consultation, s'ils y sont autorisÈs)
+		  D√©sactiver la consultation publique des cahiers de textes 
+		  (<em>seuls des utilisateurs logu√©s pourront y avoir acc√®s en consultation, s'ils y sont autoris√©s</em>)
 		</label>
 	  <br />
 		  <input type='radio' 
@@ -243,14 +318,14 @@ echo add_token_field();
 				<?php if (getSettingValue("cahier_texte_acces_public") == "yes") echo " checked='checked'";?> /> 
 		<label for='cahier_texte_acces_public_y' style='cursor: pointer;'>
 		  Activer la consultation publique des cahiers de textes 
-		  (tous les cahiers de textes visibles directement, ou par la saisie d'un login/mdp global)
+		  (<em>tous les cahiers de textes visibles directement, ou par la saisie d'un login/mdp global</em>)
 		</label>
 	  </fieldset>
 	  <p>
-		-&gt; AccËs ‡ l'<a href='../public/index.php?id_classe=-1'>interface publique de consultation des cahiers de textes</a>
+		-&gt; Acc√®s √† l'<a href='../public/index.php?id_classe=-1'>interface publique de consultation des cahiers de textes</a>
 	  </p>
 	  <p class="italic">
-		En l'absence de mot de passe et d'identifiant, l'accËs ‡ l'interface publique de consultation 
+		En l'absence de mot de passe et d'identifiant, l'acc√®s √† l'interface publique de consultation 
 		des cahiers de textes est totalement libre.
 	  </p>
 	  <p>
@@ -272,37 +347,37 @@ echo add_token_field();
 			   size="20" />
 	  </p>
 
-	  <h2>DÈlai de visualisation des devoirs</h2>
+	  <h2>D√©lai de visualisation des devoirs</h2>
 	  <p class="italic">
-		Indiquez ici le dÈlai en jours pendant lequel les devoirs seront visibles, ‡ compter du jour de
-		visualisation sÈlectionnÈ, dans l'interface publique de consultation des cahiers de textes.
+		Indiquez ici le d√©lai en jours pendant lequel les devoirs seront visibles, √† compter du jour de
+		visualisation s√©lectionn√©, dans l'interface publique de consultation des cahiers de textes.
 		<br />
 		Mettre la valeur 0 si vous ne souhaitez pas activer le module de remplissage des devoirs.
-		Dans ce cas, les professeurs font figurer les devoirs ‡ faire dans la mÍme case que le contenu des
-		sÈances.
+		Dans ce cas, les professeurs font figurer les devoirs √† faire dans la m√™me case que le contenu des
+		s√©ances.
 	  </p>
 	  <p>
-		DÈlai :
+		D√©lai :
 		<input type="text"
 			   name="delai_devoirs"
 			 onchange='changement();'
-			 title="DÈlai des devoirs"
+			 title="D√©lai des devoirs"
 			   value="<?php echo getSettingValue("delai_devoirs"); ?>"
 			   size="2" />
 		jours
 	  </p>
 
-	  <h2>VisibilitÈ des documents joints</h2>
+	  <h2>Visibilit√© des documents joints</h2>
 	  <p>
 		<input type="checkbox"
 			   name="cdt_possibilite_masquer_pj"
 			   id="cdt_possibilite_masquer_pj"
 			   onchange='changement();'
-			   title="VisibilitÈ des documents joints"
+			   title="Visibilit√© des documents joints"
 			   value="y"
 		       <?php if(getSettingValue("cdt_possibilite_masquer_pj")=="y") {echo " checked";} ?>
 			   />
-		<label for='cdt_possibilite_masquer_pj'> PossibilitÈ pour les professeurs de cacher aux ÈlËves et responsables les documents joints aux Cahiers de textes.</label>
+		<label for='cdt_possibilite_masquer_pj'> Possibilit√© pour les professeurs de cacher aux √©l√®ves et responsables les documents joints aux Cahiers de textes.</label>
 	  </p>
 
 	  <h2>Visa des cahiers de texte</h2>
@@ -315,7 +390,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if (getSettingValue("visa_cdt_inter_modif_notices_visees") == "yes") echo " checked='checked'";?> />
 		<label for='visa_cdt_inter_modif_notices_visees_y' style='cursor: pointer;'>
-		 Activer l'interdiction pour les enseignants de modifier une notice antÈrieure ‡ la date fixÈe lors du visa de leur cahier de textes.
+		 Activer l'interdiction pour les enseignants de modifier une notice ant√©rieure √† la date fix√©e lors du visa de leur cahier de textes.
 		</label>
 	  <br />
 		  <input type='radio'
@@ -325,7 +400,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if (getSettingValue("visa_cdt_inter_modif_notices_visees") == "no") echo " checked='checked'";?> />
 		<label for='visa_cdt_inter_modif_notices_visees_n' style='cursor: pointer;'>
-		  DÈsactiver l'interdiction pour les enseignants de modifier une notice aprËs la signature
+		  D√©sactiver l'interdiction pour les enseignants de modifier une notice apr√®s la signature
 		  des cahiers de textes
 		</label>
 	  </fieldset>
@@ -334,8 +409,8 @@ echo add_token_field();
 	  <h2>Cahiers de texte en commun</h2>
 	  <fieldset class="no_bordure">
 		<legend class="invisible">Cahiers de texte en commun</legend>
-			<p>Dans le CDT2, par dÈfaut, un professeur ne peut pas modifier une notice/devoir rÈalisÈ par un collËgue, mÍme si il s'agit d'un enseignement partagÈ (<i>plusieurs professeurs devant un mÍme groupe d'ÈlËves</i>).<br />
-			Pour modifier ce paramÈtrage&nbsp;:</p>
+			<p>Dans le CDT2, par d√©faut, un professeur ne peut pas modifier une notice/devoir r√©alis√© par un coll√®gue, m√™me si il s'agit d'un enseignement partag√© (<i>plusieurs professeurs devant un m√™me groupe d'√©l√®ves</i>).<br />
+			Pour modifier ce param√©trage&nbsp;:</p>
 		  <input type='radio'
 				 name='cdt_autoriser_modif_multiprof'
 				 id='cdt_autoriser_modif_multiprof_y'
@@ -343,7 +418,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if (getSettingValue("cdt_autoriser_modif_multiprof") == "yes") {echo " checked='checked'";}?> />
 		<label for='cdt_autoriser_modif_multiprof_y' style='cursor: pointer;'>
-		  Autoriser les collËgues travaillant en binome sur une enseignement ‡ modifier les notices/devoirs crÈÈs par leur collËgue.
+		  Autoriser les coll√®gues travaillant en binome sur une enseignement √† modifier les notices/devoirs cr√©√©s par leur coll√®gue.
 		</label>
 	  <br />
 		  <input type='radio'
@@ -353,7 +428,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if ((getSettingValue("cdt_autoriser_modif_multiprof") == "no")||(getSettingValue("cdt_autoriser_modif_multiprof") == "")) {echo " checked='checked'";}?> />
 		<label for='cdt_autoriser_modif_multiprof_n' style='cursor: pointer;'>
-		  Interdire la modification de notice/devoir crÈÈs par leur collËgue.
+		  Interdire la modification de notice/devoir cr√©√©s par leur coll√®gue.
 		</label>
 	  </fieldset>
 
@@ -368,12 +443,12 @@ echo add_token_field();
 	<h2>Gestion des cahiers de textes</h2>
 	<ul>
 	  <li><a href='modify_limites.php'>Espace disque maximal, taille maximale d'un fichier</a></li>
-	  <li><a href='modify_type_doc.php'>Types de fichiers autorisÈs en tÈlÈchargement</a></li>
-	  <li><a href='admin_ct.php'>Administration des cahiers de textes</a> (recherche des incohÈrences, modifications, suppressions)</li>
-	  <li><a href='visa_ct.php'>Viser les cahiers de textes</a> (Signer les cahiers de textes)</li>
-	  <li><a href='index.php?ajout_index_documents=y'>ProtÈger les sous-dossiers de 'documents/' contre des accËs anormaux</a></li>
-	  <li><a href='../cahier_texte_2/archivage_cdt.php'>Archivage des cahiers de textes en fin d'annÈe scolaire</a></li>
-	  <li><a href='../cahier_texte_2/export_cdt.php'>Export de cahiers de textes et accËs inspecteur (<i>sans authentification</i>)</a></li>
+	  <li><a href='modify_type_doc.php'>Types de fichiers autoris√©s en t√©l√©chargement</a></li>
+	  <li><a href='admin_ct.php'>Administration des cahiers de textes</a> (<em>recherche des incoh√©rences, modifications, suppressions</em>)</li>
+	  <li><a href='visa_ct.php'>Viser les cahiers de textes</a> (<em>Signer les cahiers de textes</em>)</li>
+	  <li><a href='index.php?ajout_index_documents=y'>Prot√©ger les sous-dossiers de 'documents/' contre des acc√®s anormaux</a></li>
+	  <li><a href='../cahier_texte_2/archivage_cdt.php'>Archivage des cahiers de textes en fin d'ann√©e scolaire</a></li>
+	  <li><a href='../cahier_texte_2/export_cdt.php'>Export de cahiers de textes et acc√®s inspecteur (<em>sans authentification</em>)</a></li>
 	</ul>
 	
 	<hr />
@@ -396,7 +471,7 @@ echo add_token_field();
 		echo $cdt_texte_bo;
 	?>
 
-<!-- DÈbut du pied -->
+<!-- D√©but du pied -->
 	<div id='EmSize' style='visibility:hidden; position:absolute; left:1em; top:1em;'></div>
 
 	<script type='text/javascript'>
@@ -415,7 +490,7 @@ echo add_token_field();
 		<?php
 			if ($tbs_microtime!="") {
 				echo "
-   <p class='microtime'>Page gÈnÈrÈe en ";
+   <p class='microtime'>Page g√©n√©r√©e en ";
    			echo $tbs_microtime;
 				echo " sec</p>
    			";

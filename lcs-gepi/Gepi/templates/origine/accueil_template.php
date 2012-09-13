@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_template.php 7332 2011-06-25 17:07:25Z adminpaulbert $
+ * $Id$
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>
-<!-- on inclut l'entête -->
+<!-- on inclut l'entÃªte -->
 	<?php include('templates/origine/header_template.php');?>
 
 	<link rel="stylesheet" type="text/css" href="./templates/origine/css/accueil.css" media="screen" />
@@ -43,14 +43,14 @@
 </head>
 
 <!-- ******************************************** -->
-<!-- Appelle les sous-modèles                     -->
+<!-- Appelle les sous-modÃ¨les                     -->
 <!-- templates/origine/header_template.php        -->
 <!-- templates/origine/accueil_menu_template.php  -->
 <!-- templates/origine/bandeau_template.php      -->
 <!-- ******************************************** -->
 
 <!-- ************************* -->
-<!-- Début du corps de la page -->
+<!-- DÃ©but du corps de la page -->
 <!-- ************************* -->
 <body onload="show_message_deconnexion();<?php if($tbs_charger_observeur) echo $tbs_charger_observeur;?>">
 
@@ -95,7 +95,7 @@
 	if ($afficheAccueil->gere_connect==1) {
 ?>
 	  <p>
-		Nombre de personnes actuellement connectées :
+		Nombre de personnes actuellement connectÃ©es :
 		<?php
 			if($afficheAccueil->nb_connect>1) {
 				echo "<a style='font-weight:bold;' href='$afficheAccueil->nb_connect_lien' onmouseover=\"delais_afficher_div('personnes_connectees','y',-10,20,500,20,20);\">$afficheAccueil->nb_connect</a>";
@@ -114,26 +114,26 @@
 	}
 ?>
 
-<!-- Alertes sécurités	-->
+<!-- Alertes sÃ©curitÃ© -->
 <?php
 	if ($afficheAccueil->alert_sums>0) {
 ?>
 	  <p>
-		Alertes sécurité (niveaux cumulés) : <?php echo "<b>".$afficheAccueil->alert_sums."</b>"; ?> (
-		<a href='gestion/security_panel.php'>Panneau de contrôle</a>)
+		Alertes sÃ©curitÃ© (niveaux cumulÃ©s) : <?php echo "<b>".$afficheAccueil->alert_sums."</b>"; ?> (
+		<a href='gestion/security_panel.php'>Panneau de contrÃ´le</a>)
 	  </p>
 <?php
 	}
 ?>
 
-<!-- Référencement	-->
+<!-- RÃ©fÃ©rencement	-->
 
 <?php
 	if (count($afficheAccueil->referencement)) {
 	  foreach ($afficheAccueil->referencement as $value) {
 ?>
 		<p class='referencement'>
-		Votre établissement n'est pas référencé parmi les utilisateurs de Gepi.
+		Votre Ã©tablissement n'est pas rÃ©fÃ©rencÃ© parmi les utilisateurs de Gepi.
 		<span>
 			<br />
 			<a href="javascript:ouvre_popup_reference('<?php echo $value['lien'];?>')" title="<?php echo $value['titre'];?>">
@@ -147,7 +147,7 @@
 	}
 ?>
 
-<!-- messages de sécurité -->
+<!-- messages de sÃ©curitÃ© -->
 <?php
 	if (count($afficheAccueil->probleme_dir)) {
 	
@@ -163,11 +163,11 @@
 	}
 ?>
 	
-<!-- erreurs d'affectation d'élèves -->
+<!-- erreurs d'affectation d'Ã©lÃ¨ves -->
 
 
 	</div>
-	<a name="contenu" class="invisible">Début de la page</a>
+	<a name="contenu" class="invisible">DÃ©but de la page</a>
 
 <!-- Signalements d'erreurs d'affectations -->
 <?php
@@ -181,12 +181,35 @@
 	}
 ?>
 
-<!-- Actions à effectuer -->
+<!-- Actions Ã  effectuer -->
 <?php
+
+	if((getSettingValue('active_cahiers_texte')=='y')&&(getSettingValue('GepiCahierTexteVersion')=='2')) {
+		if(!file_exists("./temp/info_jours.js")) {
+			creer_info_jours_js();
+			if(!file_exists("./temp/info_jours.js")) {
+				$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+				$test_info_jours=mysql_query($sql);
+				if(mysql_num_rows($test_info_jours)==0) {
+					enregistre_infos_actions("Fichier info_jours.js absent","Le fichier info_jours.js destinÃ© Ã  tenir compte des jours ouvrÃ©s dans les saisies du cahier de textes n'est pas renseignÃ©.\nVous pouvez le renseigner en <a href='$gepiPath/edt_organisation/admin_horaire_ouverture.php?action=visualiser'>saisissant ou re-validant les horaires d'ouverture</a> de l'Ã©tablissement.","administrateur",'statut');
+				}
+			}
+		}
+		else {
+			$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+			$test_info_jours=mysql_query($sql);
+			if(mysql_num_rows($test_info_jours)>0) {
+				while($lig_action=mysql_fetch_object($test_info_jours)) {
+					del_info_action($lig_action->id);
+				}
+			}
+		}
+	}
+
 	affiche_infos_actions();
 ?>
 
-<!-- Accès CDT ouverts -->
+<!-- AccÃ¨s CDT ouverts -->
 <?php
 	affiche_acces_cdt();
 ?>
@@ -260,10 +283,10 @@
 	}
 ?>
 
-<!-- début corps menu	-->
+<!-- dÃ©but corps menu	-->
 
 
-	<!-- menu	général -->
+	<!-- menu	gÃ©nÃ©ral -->
 
 	<?php
 	if (count($afficheAccueil->titre_Menu)) {
@@ -303,7 +326,7 @@
 			  Votre uri pour les cahiers de textes
 			</h3>
 			<p class="colonne ie_droite vert">
-			  Veuillez la demander à l'administration de votre établissement.
+			  Veuillez la demander Ã  l'administration de votre Ã©tablissement.
 			</p>
 <?php
 		  }
@@ -327,12 +350,12 @@
 					echo add_token_field();
 				?>
 				<input type='hidden' name='action' value='system_dump' />
-				<input type="submit" value="Lancer une sauvegarde de la base de données" />
+				<input type="submit" value="Lancer une sauvegarde de la base de donnÃ©es" />
 			</p>
 		</form>
 		<p class='small'>
-			Les répertoires "documents" (<em>contenant les documents joints aux cahiers de texte</em>) et "photos" (<em>contenant les photos du trombinoscope</em>) ne seront pas sauvegardés.<br />
-			Un outil de sauvegarde spécifique se trouve en bas de la page <a href='./gestion/accueil_sauve.php#zip'>gestion des sauvegardes</a>.
+			Les rÃ©pertoires "documents" (<em>contenant les documents joints aux cahiers de texte</em>) et "photos" (<em>contenant les photos du trombinoscope</em>) ne seront pas sauvegardÃ©s.<br />
+			Un outil de sauvegarde spÃ©cifique se trouve en bas de la page <a href='./gestion/accueil_sauve.php#zip'>gestion des sauvegardes</a>.
 		</p>
 	</div>
 <?php
@@ -340,7 +363,7 @@
 ?>
 
 				  <h3 class="colonne ie_gauche">
-					  <a href="<?php echo substr($newentree->chemin,1) ?>">
+					  <a href="<?php echo mb_substr($newentree->chemin,1) ?>">
 						  <?php echo $newentree->titre ?>
 					  </a>
 				  </h3>
@@ -363,7 +386,7 @@
 	}
 ?>
 
-<!-- début RSS	-->
+<!-- dÃ©but RSS	-->
 		<?php
 /*
 
@@ -406,7 +429,7 @@
 			Votre uri pour les cahiers de textes
 	</h3>
 	<p class=\"colonne ie_droite vert\">
-					Veuillez la demander à l'administration de votre établissement.
+					Veuillez la demander Ã  l'administration de votre Ã©tablissement.
 	</p>
 				";
 		}
@@ -416,7 +439,7 @@
 ?>
 <!-- fin RSS	-->
 
-<!-- Début du pied -->
+<!-- DÃ©but du pied -->
 	<div id='EmSize' style='visibility:hidden; position:absolute; left:1em; top:1em;'></div>
 
 	<script type='text/javascript'>
@@ -439,7 +462,7 @@
 				</a>
 			</div>
 			<span style="padding-left: 1px;">
-				Personnes connectées
+				Personnes connectÃ©es
 			</span>
 		</div>
 		<div>
@@ -453,14 +476,50 @@
 <?php
 		foreach ($afficheAccueil->nom_connecte as $newentree) {
 ?>
-						<tr  class='<?php echo $newentree['style']; ?>'>
+						<tr class='<?php echo $newentree['style']; ?>'>
 							<td>
-                               <a href='mailto:<?php echo $newentree['courriel']; ?>'>
-									<?php echo $newentree['texte']; ?>
-								</a>
+								<?php
+									if(($newentree['courriel']!="")&&(check_mail($newentree['courriel']))) {
+										echo "<a href='mailto:".$newentree['courriel']."' title='Envoyer un mail'>";
+										echo $newentree['texte'];
+										echo "</a>";
+									}
+									else {
+										echo $newentree['texte'];
+									}
+								?>
 							</td>
 							<td>
-								<?php echo $newentree['statut']; ?>
+								<?php
+									if(isset($newentree['login'])) {
+										if($newentree['statut']=='responsable') {
+											if(isset($newentree['pers_id'])) { ?>
+												<a href='<?php echo $gepiPath; ?>/responsables/modify_resp.php?pers_id=<?php echo $newentree['pers_id']; ?>' title='AccÃ©der Ã  la fiche du responsable'>
+												<?php echo $newentree['statut']; ?>
+												</a>
+								<?php
+											}
+											else {
+												echo $newentree['statut'];
+											}
+										}
+										elseif($newentree['statut']=='eleve') { ?>
+											<a href='<?php echo $gepiPath; ?>/eleves/modify_eleve.php?eleve_login=<?php echo $newentree['login']; ?>' title="AccÃ©der Ã  la fiche de l'Ã©lÃ¨ve">
+											<?php echo $newentree['statut']; ?>
+											</a>
+								<?php
+										}
+										else { ?>
+											<a href='<?php echo $gepiPath; ?>/utilisateurs/modify_user.php?user_login=<?php echo $newentree['login']; ?>' title="AccÃ©der Ã  la fiche de l'utilisateur">
+											<?php echo $newentree['statut']; ?>
+											</a>
+								<?php
+										}
+									}
+									else {
+										echo $newentree['statut'];
+									}
+								?>
 							</td>
 						</tr>
 
@@ -494,7 +553,7 @@
 		<?php
 			if ($tbs_microtime!="") {
 				echo "
-   <p class='microtime'>Page générée en ";
+   <p class='microtime'>Page gÃ©nÃ©rÃ©e en ";
    			echo $tbs_microtime;
 				echo " sec</p>
    			";
@@ -514,36 +573,12 @@
    			";
 		}
 ?>
+
+<!-- Alarme sonore -->
 <?php
-	$footer_sound=getPref($_SESSION['login'],'footer_sound',"");
-	if($footer_sound=='') {
-		$footer_sound=getSettingValue('footer_sound');
-		if($footer_sound=='') {
-			$footer_sound="KDE_Beep_Pop.wav";
-		}
-	}
-
-	if ($niveau_arbo == "0") {
-		$chemin_sound="./sounds/".$footer_sound;
-	} elseif ($niveau_arbo == "1") {
-		$chemin_sound="../sounds/".$footer_sound;
-	} elseif ($niveau_arbo == "2") {
-		$chemin_sound="../../sounds/".$footer_sound;
-	} elseif ($niveau_arbo == "3") {
-		$chemin_sound="../../../sounds/".$footer_sound;
-	}
+	echo joueAlarme();
 ?>
-
-<?php if(file_exists($chemin_sound)) : ?>
-<audio id='id_footer_sound' preload='auto' autobuffer><source src='<?php echo $chemin_sound; ?>' /></audio>
-<script type='text/javascript'>
-	function play_footer_sound() {
-		if ($('id_footer_sound')) {
-			$('id_footer_sound').play();
-		}
-	}
-</script>
-<?php endif ?>
+<!-- Fin alarme sonore -->
 
 <div id="alert_cache" style="z-index:2000;
 							display:none;

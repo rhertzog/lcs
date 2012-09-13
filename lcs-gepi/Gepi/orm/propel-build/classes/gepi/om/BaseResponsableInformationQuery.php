@@ -7,13 +7,13 @@
  * Table de jointure entre les eleves et leurs responsables legaux avec mention du niveau de ces responsables
  *
  * @method     ResponsableInformationQuery orderByEleId($order = Criteria::ASC) Order by the ele_id column
- * @method     ResponsableInformationQuery orderByPersId($order = Criteria::ASC) Order by the pers_id column
- * @method     ResponsableInformationQuery orderByRespLegal($order = Criteria::ASC) Order by the resp_legal column
+ * @method     ResponsableInformationQuery orderByResponsableEleveId($order = Criteria::ASC) Order by the pers_id column
+ * @method     ResponsableInformationQuery orderByNiveauResponsabilite($order = Criteria::ASC) Order by the resp_legal column
  * @method     ResponsableInformationQuery orderByPersContact($order = Criteria::ASC) Order by the pers_contact column
  *
  * @method     ResponsableInformationQuery groupByEleId() Group by the ele_id column
- * @method     ResponsableInformationQuery groupByPersId() Group by the pers_id column
- * @method     ResponsableInformationQuery groupByRespLegal() Group by the resp_legal column
+ * @method     ResponsableInformationQuery groupByResponsableEleveId() Group by the pers_id column
+ * @method     ResponsableInformationQuery groupByNiveauResponsabilite() Group by the resp_legal column
  * @method     ResponsableInformationQuery groupByPersContact() Group by the pers_contact column
  *
  * @method     ResponsableInformationQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
@@ -32,20 +32,20 @@
  * @method     ResponsableInformation findOneOrCreate(PropelPDO $con = null) Return the first ResponsableInformation matching the query, or a new ResponsableInformation object populated from the query conditions when no match is found
  *
  * @method     ResponsableInformation findOneByEleId(string $ele_id) Return the first ResponsableInformation filtered by the ele_id column
- * @method     ResponsableInformation findOneByPersId(string $pers_id) Return the first ResponsableInformation filtered by the pers_id column
- * @method     ResponsableInformation findOneByRespLegal(string $resp_legal) Return the first ResponsableInformation filtered by the resp_legal column
+ * @method     ResponsableInformation findOneByResponsableEleveId(string $pers_id) Return the first ResponsableInformation filtered by the pers_id column
+ * @method     ResponsableInformation findOneByNiveauResponsabilite(string $resp_legal) Return the first ResponsableInformation filtered by the resp_legal column
  * @method     ResponsableInformation findOneByPersContact(string $pers_contact) Return the first ResponsableInformation filtered by the pers_contact column
  *
  * @method     array findByEleId(string $ele_id) Return ResponsableInformation objects filtered by the ele_id column
- * @method     array findByPersId(string $pers_id) Return ResponsableInformation objects filtered by the pers_id column
- * @method     array findByRespLegal(string $resp_legal) Return ResponsableInformation objects filtered by the resp_legal column
+ * @method     array findByResponsableEleveId(string $pers_id) Return ResponsableInformation objects filtered by the pers_id column
+ * @method     array findByNiveauResponsabilite(string $resp_legal) Return ResponsableInformation objects filtered by the resp_legal column
  * @method     array findByPersContact(string $pers_contact) Return ResponsableInformation objects filtered by the pers_contact column
  *
  * @package    propel.generator.gepi.om
  */
 abstract class BaseResponsableInformationQuery extends ModelCriteria
 {
-
+	
 	/**
 	 * Initializes internal state of BaseResponsableInformationQuery object.
 	 *
@@ -82,10 +82,14 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	}
 
 	/**
-	 * Find object by primary key
+	 * Find object by primary key.
+	 * Propel uses the instance pool to skip the database if the object exists.
+	 * Go fast if the query is untouched.
+	 *
 	 * <code>
 	 * $obj = $c->findPk(array(12, 34), $con);
 	 * </code>
+	 *
 	 * @param     array[$ele_id, $resp_legal] $key Primary key to use for the query
 	 * @param     PropelPDO $con an optional connection object
 	 *
@@ -93,17 +97,74 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	 */
 	public function findPk($key, $con = null)
 	{
-		if ((null !== ($obj = ResponsableInformationPeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && $this->getFormatter()->isObjectFormatter()) {
+		if ($key === null) {
+			return null;
+		}
+		if ((null !== ($obj = ResponsableInformationPeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
 			// the object is alredy in the instance pool
 			return $obj;
-		} else {
-			// the object has not been requested yet, or the formatter is not an object formatter
-			$criteria = $this->isKeepQuery() ? clone $this : $this;
-			$stmt = $criteria
-				->filterByPrimaryKey($key)
-				->getSelectStatement($con);
-			return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 		}
+		if ($con === null) {
+			$con = Propel::getConnection(ResponsableInformationPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
+		if ($this->formatter || $this->modelAlias || $this->with || $this->select
+		 || $this->selectColumns || $this->asColumns || $this->selectModifiers
+		 || $this->map || $this->having || $this->joins) {
+			return $this->findPkComplex($key, $con);
+		} else {
+			return $this->findPkSimple($key, $con);
+		}
+	}
+
+	/**
+	 * Find object by primary key using raw SQL to go fast.
+	 * Bypass doSelect() and the object formatter by using generated code.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    ResponsableInformation A model object, or null if the key is not found
+	 */
+	protected function findPkSimple($key, $con)
+	{
+		$sql = 'SELECT ELE_ID, PERS_ID, RESP_LEGAL, PERS_CONTACT FROM responsables2 WHERE ELE_ID = :p0 AND RESP_LEGAL = :p1';
+		try {
+			$stmt = $con->prepare($sql);
+			$stmt->bindValue(':p0', $key[0], PDO::PARAM_STR);
+			$stmt->bindValue(':p1', $key[1], PDO::PARAM_STR);
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), $e);
+		}
+		$obj = null;
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$obj = new ResponsableInformation();
+			$obj->hydrate($row);
+			ResponsableInformationPeer::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+		}
+		$stmt->closeCursor();
+
+		return $obj;
+	}
+
+	/**
+	 * Find object by primary key.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    ResponsableInformation|array|mixed the result, formatted by the current formatter
+	 */
+	protected function findPkComplex($key, $con)
+	{
+		// As the query uses a PK condition, no limit(1) is necessary.
+		$criteria = $this->isKeepQuery() ? clone $this : $this;
+		$stmt = $criteria
+			->filterByPrimaryKey($key)
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 	}
 
 	/**
@@ -118,10 +179,15 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	 */
 	public function findPks($keys, $con = null)
 	{
+		if ($con === null) {
+			$con = Propel::getConnection($this->getDbName(), Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
-		return $this
+		$stmt = $criteria
 			->filterByPrimaryKeys($keys)
-			->find($con);
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->format($stmt);
 	}
 
 	/**
@@ -135,7 +201,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	{
 		$this->addUsingAlias(ResponsableInformationPeer::ELE_ID, $key[0], Criteria::EQUAL);
 		$this->addUsingAlias(ResponsableInformationPeer::RESP_LEGAL, $key[1], Criteria::EQUAL);
-		
+
 		return $this;
 	}
 
@@ -157,13 +223,13 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 			$cton0->addAnd($cton1);
 			$this->addOr($cton0);
 		}
-		
+
 		return $this;
 	}
 
 	/**
 	 * Filter the query on the ele_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByEleId('fooValue');   // WHERE ele_id = 'fooValue'
@@ -191,63 +257,63 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the pers_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByPersId('fooValue');   // WHERE pers_id = 'fooValue'
-	 * $query->filterByPersId('%fooValue%'); // WHERE pers_id LIKE '%fooValue%'
+	 * $query->filterByResponsableEleveId('fooValue');   // WHERE pers_id = 'fooValue'
+	 * $query->filterByResponsableEleveId('%fooValue%'); // WHERE pers_id LIKE '%fooValue%'
 	 * </code>
 	 *
-	 * @param     string $persId The value to use as filter.
+	 * @param     string $responsableEleveId The value to use as filter.
 	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    ResponsableInformationQuery The current query, for fluid interface
 	 */
-	public function filterByPersId($persId = null, $comparison = null)
+	public function filterByResponsableEleveId($responsableEleveId = null, $comparison = null)
 	{
 		if (null === $comparison) {
-			if (is_array($persId)) {
+			if (is_array($responsableEleveId)) {
 				$comparison = Criteria::IN;
-			} elseif (preg_match('/[\%\*]/', $persId)) {
-				$persId = str_replace('*', '%', $persId);
+			} elseif (preg_match('/[\%\*]/', $responsableEleveId)) {
+				$responsableEleveId = str_replace('*', '%', $responsableEleveId);
 				$comparison = Criteria::LIKE;
 			}
 		}
-		return $this->addUsingAlias(ResponsableInformationPeer::PERS_ID, $persId, $comparison);
+		return $this->addUsingAlias(ResponsableInformationPeer::PERS_ID, $responsableEleveId, $comparison);
 	}
 
 	/**
 	 * Filter the query on the resp_legal column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByRespLegal('fooValue');   // WHERE resp_legal = 'fooValue'
-	 * $query->filterByRespLegal('%fooValue%'); // WHERE resp_legal LIKE '%fooValue%'
+	 * $query->filterByNiveauResponsabilite('fooValue');   // WHERE resp_legal = 'fooValue'
+	 * $query->filterByNiveauResponsabilite('%fooValue%'); // WHERE resp_legal LIKE '%fooValue%'
 	 * </code>
 	 *
-	 * @param     string $respLegal The value to use as filter.
+	 * @param     string $niveauResponsabilite The value to use as filter.
 	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    ResponsableInformationQuery The current query, for fluid interface
 	 */
-	public function filterByRespLegal($respLegal = null, $comparison = null)
+	public function filterByNiveauResponsabilite($niveauResponsabilite = null, $comparison = null)
 	{
 		if (null === $comparison) {
-			if (is_array($respLegal)) {
+			if (is_array($niveauResponsabilite)) {
 				$comparison = Criteria::IN;
-			} elseif (preg_match('/[\%\*]/', $respLegal)) {
-				$respLegal = str_replace('*', '%', $respLegal);
+			} elseif (preg_match('/[\%\*]/', $niveauResponsabilite)) {
+				$niveauResponsabilite = str_replace('*', '%', $niveauResponsabilite);
 				$comparison = Criteria::LIKE;
 			}
 		}
-		return $this->addUsingAlias(ResponsableInformationPeer::RESP_LEGAL, $respLegal, $comparison);
+		return $this->addUsingAlias(ResponsableInformationPeer::RESP_LEGAL, $niveauResponsabilite, $comparison);
 	}
 
 	/**
 	 * Filter the query on the pers_contact column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByPersContact('fooValue');   // WHERE pers_contact = 'fooValue'
@@ -299,7 +365,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the Eleve relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -309,7 +375,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('Eleve');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -317,7 +383,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -325,7 +391,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'Eleve');
 		}
-		
+
 		return $this;
 	}
 
@@ -333,7 +399,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	 * Use the Eleve relation Eleve object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -359,13 +425,13 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	{
 		if ($responsableEleve instanceof ResponsableEleve) {
 			return $this
-				->addUsingAlias(ResponsableInformationPeer::PERS_ID, $responsableEleve->getPersId(), $comparison);
+				->addUsingAlias(ResponsableInformationPeer::PERS_ID, $responsableEleve->getResponsableEleveId(), $comparison);
 		} elseif ($responsableEleve instanceof PropelCollection) {
 			if (null === $comparison) {
 				$comparison = Criteria::IN;
 			}
 			return $this
-				->addUsingAlias(ResponsableInformationPeer::PERS_ID, $responsableEleve->toKeyValue('PrimaryKey', 'PersId'), $comparison);
+				->addUsingAlias(ResponsableInformationPeer::PERS_ID, $responsableEleve->toKeyValue('PrimaryKey', 'ResponsableEleveId'), $comparison);
 		} else {
 			throw new PropelException('filterByResponsableEleve() only accepts arguments of type ResponsableEleve or PropelCollection');
 		}
@@ -373,7 +439,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the ResponsableEleve relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -383,7 +449,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('ResponsableEleve');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -391,7 +457,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -399,7 +465,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'ResponsableEleve');
 		}
-		
+
 		return $this;
 	}
 
@@ -407,7 +473,7 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	 * Use the ResponsableEleve relation ResponsableEleve object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -432,10 +498,10 @@ abstract class BaseResponsableInformationQuery extends ModelCriteria
 	{
 		if ($responsableInformation) {
 			$this->addCond('pruneCond0', $this->getAliasedColName(ResponsableInformationPeer::ELE_ID), $responsableInformation->getEleId(), Criteria::NOT_EQUAL);
-			$this->addCond('pruneCond1', $this->getAliasedColName(ResponsableInformationPeer::RESP_LEGAL), $responsableInformation->getRespLegal(), Criteria::NOT_EQUAL);
+			$this->addCond('pruneCond1', $this->getAliasedColName(ResponsableInformationPeer::RESP_LEGAL), $responsableInformation->getNiveauResponsabilite(), Criteria::NOT_EQUAL);
 			$this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
-	  }
-	  
+		}
+
 		return $this;
 	}
 

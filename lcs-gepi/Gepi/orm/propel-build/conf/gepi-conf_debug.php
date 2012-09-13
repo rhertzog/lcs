@@ -44,7 +44,7 @@ $conf = array (
         array (
           'charset' => 
           array (
-            'value' => 'Latin1',
+            'value' => 'utf8',
           ),
         ),
       ),
@@ -71,14 +71,6 @@ $conf = array (
         ),
       ),
     ),
-  ),
-  'log' =>
-  array (
-    'type' => 'file',
-    'name' => 'propel.log',
-    'ident' => 'propel',
-    'level' => '7',
-    'conf' => '',
   ),
   'generator_version' => '1.5.3-dev',
 );

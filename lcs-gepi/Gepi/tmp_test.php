@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: tmp_test.php 2199 2008-07-26 14:01:11Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -36,28 +35,20 @@ if ($resultat_session == 'c') {
     die();
 };
 
-/*
-if (!checkAccess()) {
-    header("Location: ../logout.php?auto=1");
-    die();
-}
-*/
-
 if($_SESSION['statut']!='administrateur') {
     header("Location: ./logout.php?auto=1");
     die();
 }
 
-$revision_svn='$Id: tmp_test.php 2199 2008-07-26 14:01:11Z crob $';
 
 //**************** EN-TETE *********************
 $titre_page = "Page de test";
-require_once("./lib/header.inc");
+require_once("./lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
-echo "<p>Cette page est destinée à faire des tests de révision.</p>\n";
+echo "<p>Cette page est destinÃ©e Ã  faire des tests de rÃ©vision.</p>\n";
 
-echo "<p>La variable '\$revision_svn' déclarée dans cette page à la valeur suivante: <span style='color:green;'>$revision_svn</span></p>\n";
+echo "<p>La variable '\$revision_svn' dÃ©clarÃ©e dans cette page Ã  la valeur suivante: <span style='color:green;'>$revision_svn</span></p>\n";
 
 require ("./lib/footer.inc.php");
 ?>

@@ -3,7 +3,6 @@
 /**
  * Module EDT
  *
- * @version $Id: $
  *
  * Copyright 2011 Pascal Fautrero
  *
@@ -48,7 +47,7 @@ if ($resultat_session == 'c') {
 
 // ===============================================================
 //
-//                 Préparer les scripts, css, entête
+//                 PrÃ©parer les scripts, css, entÃªte
 //
 // ===============================================================
 $action = isset($_GET["action"]) ? $_GET["action"] : NULL;
@@ -70,7 +69,7 @@ if ($action != "ajaxrequest") {
 
 	
 	
-	require_once("../lib/header.inc");
+	require_once("../lib/header.inc.php");
 	// ===============================================================
 	//
 	//                       DEMARRER LE CONTROLLEUR

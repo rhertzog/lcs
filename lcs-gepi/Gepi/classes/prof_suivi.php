@@ -1,6 +1,5 @@
 <?php
 /*
-* $Id: prof_suivi.php 8096 2011-09-01 11:41:17Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -70,10 +69,10 @@ if (isset($is_posted) and ($is_posted == '1')) {
 
 		//=========================
 		// AJOUT: boireaus 20071010
-		// Récupération du numéro de l'élève dans les saisies:
+		// RÃ©cupÃ©ration du numÃ©ro de l'Ã©lÃ¨ve dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
-			if(strtolower($login_eleve)==strtolower($log_eleve[$i])){
+			if(my_strtolower($login_eleve)==my_strtolower($log_eleve[$i])){
 				$num_eleve=$i;
 				break;
 			}
@@ -106,10 +105,10 @@ if (isset($is_posted) and ($is_posted == '1')) {
 	die();
 }
 
-$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************
 $titre_page = "Gestion des classes | ".ucfirst(getSettingValue("gepi_prof_suivi"));
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 $call_classe = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'");
 $classe = mysql_result($call_classe, "0", "classe");
@@ -193,12 +192,12 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 	<p>
 	<?php
 		echo ucfirst(getSettingValue("gepi_prof_suivi"));
-	?> : précisez le nombre dans la classe :</p>
+	?> : prÃ©cisez le nombre dans la classe :</p>
 	<form enctype="multipart/form-data" action="prof_suivi.php" method="post">
 	<select size = '1' name='nb_prof' onchange='changement()'>
 	<?php for ($i=1;$i<6;$i++) {
 		echo "<option value='$i'";
-		// Si il existe déjà des profs de suivi dans la classe, on propose par défaut, un nombre de profs égal au nombre de profs de suivi.
+		// Si il existe dÃ©jÃ  des profs de suivi dans la classe, on propose par dÃ©faut, un nombre de profs Ã©gal au nombre de profs de suivi.
 		if ($i == $nb_prof) {echo " selected ";}
 		echo ">$i</option>\n";
 	}
@@ -210,7 +209,7 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 	<?php
 } else if (!isset($etape2) or ($etape2 != 'yes')) {
 ?>
-	<p>Pour chaque <?php echo getSettingValue("gepi_prof_suivi"); ?>, précisez le professeur : </p>
+	<p>Pour chaque <?php echo getSettingValue("gepi_prof_suivi"); ?>, prÃ©cisez le professeur : </p>
 	<?php
 	$call_profsuivi = mysql_query("SELECT DISTINCT professeur FROM j_eleves_professeurs WHERE id_classe='$id_classe'");
 	$nb_prof_exist = mysql_num_rows($call_profsuivi);
@@ -250,7 +249,7 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 				$k++;
 			}
 			//echo ">$prof_prenom $prof_nom</option>\n";
-			echo ">".ucwords(strtolower($prof_prenom))." ".strtoupper($prof_nom)."</option>\n";
+			echo ">".casse_mot($prof_prenom,'majf2')." ".my_strtoupper($prof_nom)."</option>\n";
 			$j++;
 		}
 		echo "</select></p>\n";
@@ -275,7 +274,7 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 		}
 	}
 	if ($etape2 == 'no') {
-		echo "<p>Vous n'avez pas défini de ".getSettingValue("gepi_prof_suivi")." !</p>\n";
+		echo "<p>Vous n'avez pas dÃ©fini de ".getSettingValue("gepi_prof_suivi")." !</p>\n";
 		echo "<form enctype=\"multipart/form-data\" action=\"prof_suivi.php\" method=post>\n";
 		echo "<input type='submit' value='Retour' /><br />\n";
 		echo "<input type='hidden' name='id_classe' value='$id_classe' />\n";
@@ -286,22 +285,22 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 		$call_eleves = mysql_query("SELECT DISTINCT j.login FROM j_eleves_classes j WHERE (j.id_classe = '$id_classe') ORDER BY login");
 		$nombreligne = mysql_num_rows($call_eleves);
 		if ($nombreligne == '0') {
-			echo "<p>Il n'y a pas d'élèves actuellement dans cette classe.</p>\n";
+			echo "<p>Il n'y a pas d'Ã©lÃ¨ves actuellement dans cette classe.</p>\n";
 			die();
 		} else {
 			//echo "<p>Cliquez sur le bouton \"Enregistrer\" en bas de la page pour enregistrer.</p>\n";
 			echo "<p>Cliquez sur le bouton \"Enregistrer\" pour valider.</p>\n";
 			echo "<center><input type='submit' value='Enregistrer' /></center><br />\n";
 			$k = '0';
-			echo "<table border='1' cellpadding='5' class='boireaus' summary='Choix des élèves'>\n";
-			echo "<tr><th>Nom Prénom</th>\n";
+			echo "<table border='1' cellpadding='5' class='boireaus' summary='Choix des Ã©lÃ¨ves'>\n";
+			echo "<tr><th>Nom PrÃ©nom</th>\n";
 			for ($i=1; $i < $nb_prof_suivi+1; $i++) {
 				$call_prof = mysql_query("SELECT * FROM utilisateurs WHERE login = '$tab_prof[$i]'");
 				$prof_nom = mysql_result($call_prof, 0, "nom");
 				$prof_prenom = mysql_result($call_prof, 0, "prenom");
 				echo "<th><p class='small'>".ucfirst(getSettingValue("gepi_prof_suivi"))." :<br />$prof_nom $prof_prenom<br />\n";
 				echo "<a href=\"javascript:CocheColonne(".$i.")\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>";
-				//echo " / <a href=\"javascript:DecocheColonne(".$i.")\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				//echo " / <a href=\"javascript:DecocheColonne(".$i.")\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</p></th>\n";
 			}
 			echo "<th><p class='small'>Pas de ".getSettingValue("gepi_prof_suivi")."<br />\n";
@@ -322,7 +321,7 @@ if (!isset($nb_prof) or ($nb_prof == '')) {
 
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
-				echo "<td><p>".strtoupper($nom_eleve)." $prenom_eleve\n";
+				echo "<td><p>".my_strtoupper($nom_eleve)." ".casse_mot($prenom_eleve,'majf2')."\n";
 				//=========================
 				// AJOUT: boireaus 20071010
 				echo "<input type='hidden' name='log_eleve[$k]' value=\"$login_eleve\" />\n";

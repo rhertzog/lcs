@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: ajax_signaler_faute.php 6678 2011-03-22 17:58:07Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -24,6 +23,9 @@
 
 @set_time_limit(0);
 
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
+$variables_non_protegees = 'yes';
+
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 
@@ -40,7 +42,7 @@ if ($resultat_session == 'c') {
     die();
 }
 
-//INSERT INTO droits SET id='/lib/ajax_signaler_faute.php',administrateur='V',professeur='V',cpe='V',scolarite='V',eleve='F',responsable='F',secours='F',autre='V',description='Envoi de mail pour signaler une faute dans une appréciation',statut='';
+//INSERT INTO droits SET id='/lib/ajax_signaler_faute.php',administrateur='V',professeur='V',cpe='V',scolarite='V',eleve='F',responsable='F',secours='F',autre='V',description='Envoi de mail pour signaler une faute dans une apprÃ©ciation',statut='';
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
@@ -48,27 +50,40 @@ if (!checkAccess()) {
 
 check_token();
 
-header('Content-Type: text/html; charset=ISO-8859-15');
+header('Content-Type: text/html; charset=utf-8');
 
-/*
+//debug_var();
+
 $signalement_login_eleve=isset($_POST['signalement_login_eleve']) ? $_POST['signalement_login_eleve'] : "";
 $signalement_id_groupe=isset($_POST['signalement_id_groupe']) ? $_POST['signalement_id_groupe'] : "";
-$signalement_message=isset($_POST['signalement_message']) ? $_POST['signalement_message'] : "";
+$signalement_id_classe=isset($_POST['signalement_id_classe']) ? $_POST['signalement_id_classe'] : "";
+$signalement_num_periode=isset($_POST['signalement_num_periode']) ? $_POST['signalement_num_periode'] : "";
+
+$signalement_message=isset($NON_PROTECT['signalement_message']) ? traitement_magic_quotes($NON_PROTECT['signalement_message']) : "";
+
+/*
+$f=fopen("/tmp/debug_mail_signalement_faute.txt","a+");
+fwrite($f,"========================================"."\n");
+fwrite($f,"++++++++++++++++++++++++++++++++++++++++"."\n");
+fwrite($f,"========================================"."\n");
+fwrite($f,strftime("%Y%m%d Ã  %H%M%S")."\n");
+fwrite($f,$signalement_message."\n");
+
+fwrite($f,"========================================"."\n");
+fwrite($f,strftime("%Y%m%d Ã  %H%M%S")."\n");
+fwrite($f,$signalement_message."\n");
 */
 
-$signalement_login_eleve=isset($_GET['signalement_login_eleve']) ? $_GET['signalement_login_eleve'] : "";
-$signalement_id_groupe=isset($_GET['signalement_id_groupe']) ? $_GET['signalement_id_groupe'] : "";
-
-$signalement_id_classe=isset($_GET['signalement_id_classe']) ? $_GET['signalement_id_classe'] : "";
-$signalement_num_periode=isset($_GET['signalement_num_periode']) ? $_GET['signalement_num_periode'] : "";
-
-$signalement_message=isset($_GET['signalement_message']) ? $_GET['signalement_message'] : "";
-
-//echo "<pre>$signalement_message</pre>";
-
-//$signalement_message=my_ereg_replace("\\\\n","<br />",$signalement_message);
-$signalement_message=my_ereg_replace("\\\\n","\n",$signalement_message);
+$signalement_message=preg_replace("/\\\\n/","\n",$signalement_message);
 $signalement_message=stripslashes($signalement_message);
+
+/*
+fwrite($f,"========================================"."\n");
+fwrite($f,$signalement_message."\n");
+fwrite($f,"========================================"."\n");
+fclose($f);
+*/
+
 
 if(($signalement_login_eleve=='')||($signalement_id_groupe=='')||($signalement_message=='')) {
 	echo "<span style='color:red'> KO</span>";
@@ -82,7 +97,7 @@ if(!preg_match('/^[0-9]*$/',$signalement_id_groupe)) {
 	die();
 }
 
-// Contrôler que la personne est autorisée à faire le signalement
+// ContrÃ´ler que la personne est autorisÃ©e Ã  faire le signalement
 
 
 
@@ -106,7 +121,7 @@ if($envoi_mail_actif!='n') {
 		$ajout_headers="Reply-to: $email_utilisateur";
 	}
 
-	// On considère que le signalement est un succès, si le mail est envoyé pour au moins un destinataire
+	// On considÃ¨re que le signalement est un succÃ¨s, si le mail est envoyÃ© pour au moins un destinataire
 	$temoin=false;
 	while($lig=mysql_fetch_object($res)) {
 		$destinataire=$lig->email;

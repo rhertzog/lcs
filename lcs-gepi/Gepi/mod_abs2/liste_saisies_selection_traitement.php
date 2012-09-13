@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies_selection_traitement.php 8157 2011-09-08 17:36:31Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,9 +52,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
@@ -100,7 +99,7 @@ if(!$menu){
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
 $dojo = true;
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 if(!$menu){
@@ -229,9 +228,9 @@ if (getFiltreRechercheParam('filter_saisies_supprimees')=='y') {
 	}
 }
 
-//on va filtrer sur les saisies possiblement rattachées à un traitement
+//on va filtrer sur les saisies possiblement rattachÃ©es Ã  un traitement
 $recherche_saisie_a_rattacher = getFiltreRechercheParam('filter_recherche_saisie_a_rattacher');
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
 $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
 if (isset($id_traitement) && $id_traitement != null) $_SESSION['id_traitement'] = $id_traitement;
 $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
@@ -320,6 +319,9 @@ if ($order == "asc_id") {
 }
 
 $query->distinct();
+$query_count_eleve = clone $query;
+$total_eleve = $query_count_eleve->groupByEleveId()->count();
+
 $saisies_col = $query->paginate($page_number, $item_per_page);
 
 $nb_pages = (floor($saisies_col->getNbResults() / $item_per_page) + 1);
@@ -348,7 +350,7 @@ echo '<form method="post" action="liste_saisies_selection_traitement.php" name="
 		document.liste_saisies.appendChild(element);
 		document.liste_saisies.submit();
 				">
-		Réinitialiser les filtres
+		RÃ©initialiser les filtres
 	    </button>
 	    <button type="submit" name="creation_traitement" value="yes" dojoType="dijit.MenuItem" onClick="
 		//Create an input type dynamically.
@@ -381,8 +383,8 @@ echo '<form method="post" action="liste_saisies_selection_traitement.php" name="
 		Ajouter les saisies au traitement 
 		<?php 
 	    $desc = $traitement->getDescription();
-	    if (strlen($desc)>300) {
-	    	echo substr($desc,0,300).' ... ';
+	    if (mb_strlen($desc)>300) {
+	    	echo mb_substr($desc,0,300).' ... ';
 	    } else {
 	    	echo $desc;
 	    }
@@ -418,7 +420,7 @@ echo '<form method="post" action="liste_saisies_selection_traitement.php" name="
 	</div>
     </div>
 <script language="javascript">
-   //on cache les boutons pas très jolis en attendant le parsing dojo
+   //on cache les boutons pas trÃ¨s jolis en attendant le parsing dojo
    dojo.byId("action_bouton").hide();
 </script>
 <?php
@@ -432,17 +434,17 @@ if ($saisies_col->haveToPaginate()) {
 }
 echo "Voir ";
 echo '<input type="text" name="item_per_page" size="1" value="'.$item_per_page.'"/>';
-echo "par page |  Nombre d'enregistrements : ";
+echo "par page |  Nbre de saisies : ";
 echo $saisies_col->count();
-
+echo " | Nbre d'Ã©lÃ¨ves : ".$total_eleve;
 echo ' | <input type="checkbox" name="filter_saisies_supprimees"  onchange="submit()" value="y"';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo "checked='checked'";}
 echo '/>';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo '<font color="red">';}
-echo 'Voir les saisies supprimées';
+echo 'Voir les saisies supprimÃ©es';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo '</font>';}
 if (getFiltreRechercheParam('filter_recherche_saisie_a_rattacher') == 'oui' && $traitement != null) {
-    echo " | filtre actif : recherche de saisies a rattacher au traitement n° ";
+    echo " | filtre actif : recherche de saisies a rattacher au traitement nÂ° ";
     echo "<a href='./visu_traitement.php?id_traitement=".$traitement->getId()."";
     if($menu){
                 echo"&menu=false";
@@ -476,7 +478,7 @@ echo 'border-width:1px;" alt="" name="order" value="des_id" onclick="this.form.o
 //echo '</nobr> ';
 echo '</span>';
 echo '<br/> ';
-echo 'N°';
+echo 'NÂ°';
 echo '<input type="text" name="filter_saisie_id" value="'.getFiltreRechercheParam('filter_saisie_id').'" size="3"/>';
 echo '</th>';
 
@@ -566,7 +568,7 @@ if ($order == "des_eleve") {echo "border-style: solid; border-color: red;";} els
 echo 'border-width:1px;" alt="" name="order" value="des_eleve" onclick="this.form.order.value = this.value"/>';
 //echo '</nobr>';
 echo '</span>';
-echo 'Élève';
+echo 'Ã‰lÃ¨ve';
 echo '<input type="hidden" value="y" name="filter_checkbox_posted"/>';echo '<br /><input type="text" name="filter_eleve" value="'.getFiltreRechercheParam('filter_eleve').'" size="11"/>';
 echo '<br /><nobr><input type="checkbox" name="filter_marqueur_appel"  onchange="submit()" value="y"';
 if (getFiltreRechercheParam('filter_marqueur_appel') == 'y') {echo "checked='checked'";}
@@ -615,7 +617,10 @@ echo '</span>';
 echo '<br />';
 echo ("<select name=\"filter_groupe\" onchange='submit()'>");
 echo "<option value=''></option>\n";
-foreach (GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()->find()  as $group) {
+foreach (GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()
+                                ->leftJoinWith('Groupe.JGroupesClasses')
+                                ->leftJoinWith('JGroupesClasses.Classe')
+                                ->find()  as $group) {
 	echo "<option value='".$group->getId()."'";
 	if (getFiltreRechercheParam('filter_groupe') === (string) $group->getId()) echo " SELECTED ";
 	echo ">";
@@ -656,7 +661,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Créneau';
+echo 'CrÃ©neau';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_creneau") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_creneau"/ onclick="this.form.order.value = this.value">';
@@ -682,7 +687,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Date début';
+echo 'Date dÃ©but';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_debut") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_date_debut"/ onclick="this.form.order.value = this.value">';
@@ -820,16 +825,16 @@ echo '</th>';
 echo '<th>';
 echo ("<select name=\"filter_manqement_obligation\" onchange='submit()'>");
 echo "<option value=''";
-if (isFiltreRechercheParam('filter_manqement_obligation') && getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "checked='checked'";}
+if (!isFiltreRechercheParam('filter_manqement_obligation')) {echo "selected='selected'";}
 echo "></option>\n";
 echo "<option value='y' ";
-if (getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "selected'";}
+if (getFiltreRechercheParam('filter_manqement_obligation') == 'y') {echo "selected='selected'";}
 echo ">oui</option>\n";
 echo "<option value='n' ";
-if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') {echo "selected'";}
+if (getFiltreRechercheParam('filter_manqement_obligation') == 'n') {echo "selected='selected'";}
 echo ">non</option>\n";
 echo "</select>";
-echo '<br/>Manquement obligation présence';
+echo '<br/>Manquement obligation prÃ©sence';
 echo '</th>';
 
 //en tete filtre sous_responsabilite_etablissement
@@ -837,7 +842,7 @@ echo '<th>';
 //echo '<input type="checkbox" value="y" name="filter_sous_responsabilite_etablissement" onchange="submit()"';
 //if (isFiltreRechercheParam('filter_sous_responsabilite_etablissement') && getFiltreRechercheParam('filter_sous_responsabilite_etablissement') == 'y') {echo "checked='checked'";}
 //echo '/><br/>sous resp. etab.';
-echo 'Sous resp. étab.';
+echo 'Sous resp. Ã©tab.';
 echo '</th>';
 
 //en tete filtre date traitement
@@ -904,7 +909,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Date création';
+echo 'Date crÃ©ation';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px;vertical-align: middle;';
 if ($order == "asc_date_creation") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_date_creation"/ onclick="this.form.order.value = this.value">';
@@ -971,7 +976,7 @@ echo '</span>';
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="checkbox" value="y" name="filter_date_modification" onchange="submit()"';
 if (isFiltreRechercheParam('filter_date_modification') && getFiltreRechercheParam('filter_date_modification') == 'y') {echo "checked='checked'";}
-echo '/></span><br/> Modifié';
+echo '/></span><br/> ModifiÃ©';
 echo '</th>';
 
 //en tete commentaire
@@ -1005,7 +1010,7 @@ echo '<tbody>';
 $results = $saisies_col->getResults();
 if ($recherche_saisie_a_rattacher == 'oui' && $traitement != null) {
     if($results->count()==0){
-        echo"<p class='red'>Aucune saisie (de + ou - 24 heures) à rattacher au traitement : ";
+        echo"<p class='red'>Aucune saisie (de + ou - 24 heures) Ã  rattacher au traitement : ";
         echo "<a href='visu_traitement.php?id_traitement=".$traitement->getId()."";
         if($menu){
                 echo"&menu=false";
@@ -1054,7 +1059,7 @@ foreach ($results as $saisie) {
 	    echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getDeletedAt('U')));
     	$suppr_utilisateur = UtilisateurProfessionnelQuery::create()->findPK($saisie->getDeletedBy());
     	if ($suppr_utilisateur != null) {
-    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
+    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.mb_substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
     	}
 	    echo "</a>";
 	    echo '</td>';
@@ -1080,7 +1085,7 @@ foreach ($results as $saisie) {
 	echo "</a>";
 	if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
 	    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' target='_blank'>";
-	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' >";
+	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank' >";
 	    echo ' (voir fiche)';
 	    echo "</a>";
 	}
@@ -1091,7 +1096,6 @@ foreach ($results as $saisie) {
 
 	echo "<a href='liste_saisies_selection_traitement.php?filter_eleve=".$saisie->getEleve()->getNom()."&order=asc_eleve' style='display: block; height: 100%;'> ";
 	$nom_photo = $saisie->getEleve()->getNomPhoto(1);
-	    //$photos = "../photos/eleves/".$nom_photo;
 	    $photos = $nom_photo;
 	    //if (($nom_photo != "") && (file_exists($photos))) {
 	    if (($nom_photo != NULL) && (file_exists($photos))) {
@@ -1103,7 +1107,7 @@ foreach ($results as $saisie) {
 //	echo "</a>";
 	echo "</td></tr></table>";
     } else {
-	echo "Marqueur d'appel effectué";
+	echo "Marqueur d'appel effectuÃ©";
     }
     echo '</td>';
 
@@ -1214,8 +1218,8 @@ foreach ($results as $saisie) {
 	echo "<table width='100%'><tr><td>";
 	echo "<a href='visu_traitement.php?id_traitement=".$traitement->getPrimaryKey()."' style='display: block; height: 100%;'> ";
     $desc = $traitement->getDescription();
-    if (strlen($desc)>300) {
-    	echo substr($desc,0,300).' ... ';
+    if (mb_strlen($desc)>300) {
+    	echo mb_substr($desc,0,300).' ... ';
     } else {
     	echo $desc;
     }
@@ -1247,7 +1251,7 @@ foreach ($results as $saisie) {
 	}else{
         $created_at = $saisie->getVersionCreatedAt('U');
         echo (strftime("%a %d/%m/%Y %H:%M", $created_at)); 
-    }
+	}
     echo "</a>";
     echo '</td>';
 
@@ -1306,7 +1310,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
         });
 
         var menuItem0 = new dijit.MenuItem({
-            label: "Sélectionner tous",
+            label: "SÃ©lectionner tous",
             onClick: function() {
 			SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\', \'\', true);
 	    }
@@ -1322,7 +1326,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
         menu.addChild(menuItem1);
 
         var menuItem2 = new dijit.MenuItem({
-            label: "non traitées",
+            label: "non traitÃ©es",
             onClick: function() {
 			SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\', \'\', false);
 			SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\', \'saisie_vierge\', true);			
@@ -1331,7 +1335,7 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
         menu.addChild(menuItem2);
 
         var menuItem3 = new dijit.MenuItem({
-            label: "non notifiées",
+            label: "non notifiÃ©es",
             onClick: function() {
 			SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\', \'\', true);
 			SetAllCheckBoxes(\'liste_saisies\', \'select_saisie[]\', \'saisie_notifie\', false);	    }
@@ -1361,7 +1365,7 @@ function redimensionne_image_petit($photo)
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
+    // largeur et/ou hauteur maximum Ã  afficher
              $taille_max_largeur = 35;
              $taille_max_hauteur = 35;
 
@@ -1370,7 +1374,7 @@ function redimensionne_image_petit($photo)
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // définit largeur et hauteur pour la nouvelle image
+    // dÃ©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

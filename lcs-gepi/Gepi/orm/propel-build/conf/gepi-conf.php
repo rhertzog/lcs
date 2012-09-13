@@ -11,7 +11,7 @@ $conf = array (
       array (
         'classname' => 'PropelPDO',
 //        'classname' => 'DebugPDO',
-        'dsn' => 'mysql:dbname='.$GLOBALS["dbDb"].';host='.$GLOBALS["dbHost"],
+        'dsn' => 'mysql:dbname='.$GLOBALS["dbDb"].';host='.$GLOBALS["dbHost"].';charset=UTF8',
         'user' => $GLOBALS["dbUser"],
         'password' => $GLOBALS["dbPass"],
         'options' => 
@@ -44,7 +44,7 @@ $conf = array (
         array (
           'charset' => 
           array (
-            'value' => 'Latin1',
+            'value' => 'utf8',
           ),
         ),
       ),
@@ -72,15 +72,7 @@ $conf = array (
 //      ),
 //    ),
 //  ),
-//  'log' =>
-//  array (
-//    'type' => 'file',
-//    'name' => dirname(__FILE__).'/../../propel.log',
-//    'ident' => 'propel',
-//    'level' => '7',
-//    'conf' => '',
-//  ),
-  'generator_version' => '1.6.1-dev',
+  'generator_version' => '1.6.4-dev',
 );
 $conf['classmap'] = include(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'classmap-gepi-conf.php');
 return $conf;

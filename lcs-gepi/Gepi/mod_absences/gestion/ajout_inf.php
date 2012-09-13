@@ -56,10 +56,10 @@ if (empty($_GET['id']) and empty($_POST['id'])) {$id="";}
 if (empty($_GET['fiche']) and empty($_POST['fiche'])) {$fiche="";}
     else { if (isset($_GET['fiche'])) {$fiche=$_GET['fiche'];} if (isset($_POST['fiche'])) {$fiche=$_POST['fiche'];} }
 
-// si pas de sélection on retourne à la sélection
+// si pas de sÃ©lection on retourne Ã  la sÃ©lection
 if((empty($classe_choix) or $classe_choix === 'tous') and empty($eleve_absent[0]) and empty($id) and $action_sql === '') { header("Location:select.php?type=$type"); }
 
-// si aucune sélection on redirige
+// si aucune sÃ©lection on redirige
 if(!isset($eleve_absent[0]) and empty($eleve_absent[0]) and $action_sql === '' and $id === '') { header("Location:select.php?type=$type"); }
 
 //$id_absence_eleve = $id;
@@ -84,7 +84,7 @@ if($action_sql == "ajouter" or $action_sql == "modifier")
 
       $eleve_absent[$total] = $eleve_absence_eleve ;
 
-           // vérification
+           // vÃ©rification
               if (verif_date($a_date_absence_eleve) == "pass")
                {
                      if ($d_heure_absence_eleve != "00:00" and $d_heure_absence_eleve != "")
@@ -110,11 +110,11 @@ if($action_sql == "ajouter" or $action_sql == "modifier")
                                                                    $erreur_aff_a_heure_absence_eleve = $data['a_heure_absence_eleve'];
                                                                }
                                                          }
-                                                  } else { $erreur='1'; $erreur_valu='2'; $texte_erreur="L'heure de début ne pas être égale à l'heure de fin."; }
+                                                  } else { $erreur='1'; $erreur_valu='2'; $texte_erreur="L'heure de dÃ©but ne pas Ãªtre Ã©gale Ã  l'heure de fin."; }
                                          } else { $erreur='1'; $erreur_valu='3'; $texte_erreur="Le format de l'heure (a) n'est pas correct."; }
                                    } else { $erreur='1'; $erreur_valu='4'; $texte_erreur="Le format de l'heure (de) n'est pas correct."; }
-                            } else { $erreur='1'; $erreur_valu='5'; $texte_erreur="Aucune heure n'a été dans (a) saisie."; }
-                     } else { $erreur='1'; $erreur_valu='6'; $texte_erreur="Aucune heure n'a été dans (de) saisie."; }
+                            } else { $erreur='1'; $erreur_valu='5'; $texte_erreur="Aucune heure n'a Ã©tÃ© dans (a) saisie."; }
+                     } else { $erreur='1'; $erreur_valu='6'; $texte_erreur="Aucune heure n'a Ã©tÃ© dans (de) saisie."; }
                } else { $erreur='1'; $erreur_valu='7'; $texte_erreur="La date n'est pas correct."; }
 
         if ($erreur === '1')
@@ -151,7 +151,7 @@ if ($action === 'supprimer')
 	   else { if (isset($_GET['date_ce_jour'])) { $date_ce_jour = $_GET['date_ce_jour']; } if (isset($_POST['date_ce_jour'])) { $date_ce_jour = $_POST['date_ce_jour']; } }
 
         $id_absence_eleve = $_GET['id'];
-        // Vérification des champs
+        // VÃ©rification des champs
         if($id_absence_eleve != "")
         {
           //Requete d'insertion MYSQL
@@ -207,7 +207,7 @@ if(isset($eleve_absence_eleve_erreur[0]) and !empty($eleve_absence_eleve_erreur[
 
 //**************** EN-TETE *****************
 $titre_page = "Gestion des absences";
-require_once("../../lib/header.inc");
+require_once("../../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class=bold>|<a href='gestion_absences.php?type=<?php echo $type; ?>'>Retour</a>|
@@ -274,7 +274,6 @@ $i = 0;
                   if (getSettingValue("active_module_trombinoscopes")=='y') {
                   	  $nom_photo = '';
                       $nom_photo = nom_photo($id_eleve_photo,"eleves",2);
-                      //$photo = "../../photos/eleves/".$nom_photo;
                       //if ( $nom_photo === '' or !file_exists($photo) ) { $photo = "../../mod_trombinoscopes/images/trombivide.jpg"; }
                       if ( $nom_photo === NULL or !file_exists($photo) ) { $photo = "../../mod_trombinoscopes/images/trombivide.jpg"; }
                       $valeur=redimensionne_image($photo);
@@ -322,7 +321,7 @@ $i = 0;
         $requete = "SELECT * FROM ".$prefix_base."absences_eleves WHERE eleve_absence_eleve='".$id_eleve."' AND d_date_absence_eleve = '".$datej."' AND type_absence_eleve = 'I'";
         $resultat = mysql_query($requete) or die('Erreur SQL !'.$requete.'<br />'.mysql_error());
 ?>
-                <div class="norme_absence_rouge"><strong>liste des passages à l'infirmerie déjas enregistré pour cette date</strong></div>
+                <div class="norme_absence_rouge"><strong>liste des passages Ã  l'infirmerie dÃ©jas enregistrÃ© pour cette date</strong></div>
                 <table style="margin: auto; width: 500px;" border="0" cellspacing="2" cellpadding="0">
                   <tr class="fond_rouge">
                      <td class="norme_absence_blanc_min"><strong>Le</strong></td>

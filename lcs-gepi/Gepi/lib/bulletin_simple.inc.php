@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: bulletin_simple.inc.php 8693 2011-12-01 13:40:09Z crob $
 *
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 */
 $delais_apres_cloture=getSettingValue('delais_apres_cloture');
 //echo "\$delais_apres_cloture=$delais_apres_cloture<br />";
@@ -25,7 +24,7 @@ function acces_appreciations($periode1, $periode2, $id_classe) {
 						$tab_acces_app[$i]="y";
 					}
 					elseif($lig->acces=="date") {
-						//echo "<p>Période $i: Date limite: $lig->date<br />";
+						//echo "<p>PÃ©riode $i: Date limite: $lig->date<br />";
 						$tab_date=explode("-",$lig->date);
 						$timestamp_limite=mktime(0,0,0,$tab_date[1],$tab_date[2],$tab_date[0]);
 						//echo "$timestamp_limite<br />";
@@ -83,7 +82,7 @@ function acces_appreciations($periode1, $periode2, $id_classe) {
 		}
 	}
 	else {
-		// Pas de limitations d'accès pour les autres statuts.
+		// Pas de limitations d'accÃ¨s pour les autres statuts.
 		for($i=$periode1;$i<=$periode2;$i++) {
 			$tab_acces_app[$i]="y";
 		}
@@ -117,23 +116,23 @@ $alt=1;
 $tab_statuts_signalement_faute_autorise=array('administrateur', 'professeur', 'cpe', 'scolarite');
 $afficher_signalement_faute="n";
 if(in_array($_SESSION['statut'],$tab_statuts_signalement_faute_autorise)) {
-	if(($_SESSION['statut']=='professeur')&&(substr(getSettingValue('autoriser_signalement_faute_app_prof'),0,1)=='y')) {
+	if(($_SESSION['statut']=='professeur')&&(mb_substr(getSettingValue('autoriser_signalement_faute_app_prof'),0,1)=='y')) {
 		$afficher_signalement_faute="y";
 	}
-	elseif(($_SESSION['statut']=='professeur')&&(substr(getSettingValue('autoriser_signalement_faute_app_pp'),0,1)=='y')) {
+	elseif(($_SESSION['statut']=='professeur')&&(mb_substr(getSettingValue('autoriser_signalement_faute_app_pp'),0,1)=='y')) {
 		// Tester si le prof est pp de la classe
 		if(is_pp($_SESSION['login'],$id_classe)) {$afficher_signalement_faute="y";}
 	}
-	elseif(($_SESSION['statut']=='scolarite')&&(substr(getSettingValue('autoriser_signalement_faute_app_scol'),0,1)=='y')) {
+	elseif(($_SESSION['statut']=='scolarite')&&(mb_substr(getSettingValue('autoriser_signalement_faute_app_scol'),0,1)=='y')) {
 		$afficher_signalement_faute="y";
 	}
-	elseif(($_SESSION['statut']=='cpe')&&(substr(getSettingValue('autoriser_signalement_faute_app_cpe'),0,1)=='y')) {
+	elseif(($_SESSION['statut']=='cpe')&&(mb_substr(getSettingValue('autoriser_signalement_faute_app_cpe'),0,1)=='y')) {
 		$afficher_signalement_faute="y";
 	}
 }
 
 if($afficher_signalement_faute=='y') {
-	// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de façon à éviter de donner les mails des profs à des élèves
+	// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de faÃ§on Ã  Ã©viter de donner les mails des profs Ã  des Ã©lÃ¨ves
 
 	if((!isset($necessaire_signalement_fautes_insere))||($necessaire_signalement_fautes_insere=="n")) {
 		lib_signalement_fautes();
@@ -143,19 +142,36 @@ if($afficher_signalement_faute=='y') {
 	$envoi_mail_actif=getSettingValue('envoi_mail_actif');
 }
 
-// données requise :
-//- le login de l'élève    : $current_eleve_login
+// 20120409
+if($_SESSION['statut']=='professeur') {
+	$tab_mes_groupes=array();
+	$sql = "SELECT jgp.id_groupe FROM j_groupes_professeurs jgp WHERE login = '" . $_SESSION['login'] . "';" ;
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$tab_mes_groupes[]=$lig->id_groupe;
+		}
+	}
+
+	if((!isset($necessaire_corriger_appreciation_insere))||($necessaire_corriger_appreciation_insere=="n")) {
+		lib_corriger_appreciation();
+	}
+	global $corriger_app_id_groupe;
+}
+
+// donnÃ©es requise :
+//- le login de l'Ã©lÃ¨ve    : $current_eleve_login
 //- $compteur : compteur
-//- $total : nombre total d'élèves
-//- $periode1 : numéro de la première période à afficher
-//- $periode2 : numéro de la dernière période à afficher
-//- $nom_periode : tableau des noms de période
-//- $gepiYear : année
+//- $total : nombre total d'Ã©lÃ¨ves
+//- $periode1 : numÃ©ro de la premiÃ¨re pÃ©riode Ã  afficher
+//- $periode2 : numÃ©ro de la derniÃ¨re pÃ©riode Ã  afficher
+//- $nom_periode : tableau des noms de pÃ©riode
+//- $gepiYear : annÃ©e
 //- $id_classe : identifiant de la classe.
 
 //==========================================================
 // AJOUT: boireaus 20080218
-//        Dispositif de restriction des accès aux appréciations pour les comptes responsables/eleves
+//        Dispositif de restriction des accÃ¨s aux apprÃ©ciations pour les comptes responsables/eleves
 //echo "\$_SESSION['statut']=".$_SESSION['statut']."<br />";
 //echo "\$periode1=$periode1<br />";
 //echo "\$periode2=$periode2<br />";
@@ -168,8 +184,8 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 $nb_periodes = $periode2 - $periode1 + 1;
 $on_continue = "yes";
 if ($nb_periodes == 1) {
-	// S'il n'est demandé qu'une seule période:
-	// Test pour savoir si l'élève appartient à la classe pour la période considérée
+	// S'il n'est demandÃ© qu'une seule pÃ©riode:
+	// Test pour savoir si l'Ã©lÃ¨ve appartient Ã  la classe pour la pÃ©riode considÃ©rÃ©e
 	$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$periode1."'");
 	if ($test_eleve_app == 0) {$on_continue = "no";}
 }
@@ -182,7 +198,7 @@ if ($on_continue == 'yes') {
 	//echo "\$affiche_categories=$affiche_categories<br />";
 	$data_eleve = mysql_query("SELECT * FROM eleves WHERE login='$current_eleve_login'");
 
-	// Récupération du champ auto_increment
+	// RÃ©cupÃ©ration du champ auto_increment
 	$current_id_eleve = mysql_result($data_eleve, 0, "id_eleve");
 
 	$current_eleve_nom = mysql_result($data_eleve, 0, "nom");
@@ -225,22 +241,22 @@ if ($on_continue == 'yes') {
 	$current_eleve_doublant = mysql_result($regime_doublant_eleve, 0, "doublant");
 	
 	//-------------------------------
-	// On affiche l'en-tête : Les données de l'élève
+	// On affiche l'en-tÃªte : Les donnÃ©es de l'Ã©lÃ¨ve
 	//-------------------------------
 	echo "<span class='bull_simpl'><span class='bold'>$current_eleve_nom $current_eleve_prenom</span>";
 	if ($current_eleve_sexe == "M") {
-		echo ", né le $current_eleve_naissance";
+		echo ", nÃ© le $current_eleve_naissance";
 		} else {
-		echo ", née le $current_eleve_naissance";
+		echo ", nÃ©e le $current_eleve_naissance";
 	}
 	if ($current_eleve_regime == "d/p") {echo ",&nbsp;demi-pensionnaire";}
 	if ($current_eleve_regime == "ext.") {echo ",&nbsp;externe";}
 	if ($current_eleve_regime == "int.") {echo ",&nbsp;interne";}
 	if ($current_eleve_regime == "i-e")
-		if ($current_eleve_sexe == "M") echo ",&nbsp;interne&nbsp;externé"; else echo ",&nbsp;interne&nbsp;externée";
+		if ($current_eleve_sexe == "M") echo ",&nbsp;interne&nbsp;externÃ©"; else echo ",&nbsp;interne&nbsp;externÃ©e";
 	if ($current_eleve_doublant == 'R')
 		if ($current_eleve_sexe == "M") echo ", <b>redoublant</b>"; else echo ", <b>redoublante</b>";
-	echo "&nbsp;&nbsp;-&nbsp;&nbsp;Classe de $current_eleve_classe, année scolaire $gepiYear<br />\n";
+	echo "&nbsp;&nbsp;-&nbsp;&nbsp;Classe de $current_eleve_classe, annÃ©e scolaire $gepiYear<br />\n";
 	
 	if ($current_eleve_etab_nom != '') {
 		echo "Etablissement d'origine : ";
@@ -251,7 +267,7 @@ if ($on_continue == 'yes') {
 		}
 	}
 	if ($periode1 < $periode2) {
-		echo "Résultats de : ";
+		echo "RÃ©sultats de : ";
 		$nb = $periode1;
 		while ($nb < $periode2+1) {
 		echo $nom_periode[$nb];
@@ -260,13 +276,13 @@ if ($on_continue == 'yes') {
 		}
 		echo ".</span>";
 	} else {
-		$temp = strtolower($nom_periode[$periode1]);
-		echo "Résultats du $temp.</span>";
+		$temp = my_strtolower($nom_periode[$periode1]);
+		echo "RÃ©sultats du $temp.</span>";
 	
 	}
 	//
 	//-------------------------------
-	// Fin de l'en-tête
+	// Fin de l'en-tÃªte
 	
 	// On initialise le tableau :
 	
@@ -279,7 +295,7 @@ if ($on_continue == 'yes') {
 	//=========================
 	// MODIF: boireaus 20080315
 	//echo "<table width=$larg_tab border=1 cellspacing=1 cellpadding=1>\n";
-	echo "<table width=$larg_tab class='boireaus' cellspacing='1' cellpadding='1' summary='Matières/Notes/Appréciations'>\n";
+	echo "<table width=$larg_tab class='boireaus' cellspacing='1' cellpadding='1' summary='MatiÃ¨res/Notes/ApprÃ©ciations'>\n";
 	//=========================
 	echo "<tr><td width=\"$larg_col1\" class='bull_simpl'>$compteur";
 	if ($total != '') {echo "/$total";}
@@ -293,19 +309,19 @@ if ($on_continue == 'yes') {
 	//====================
 	
 	echo "<td width=\"$larg_col2\" align=\"center\" class='bull_simpl'>Classe</td>\n";
-	echo "<td width=\"$larg_col3\" align=\"center\" class='bull_simpl'>&Eacute;lève</td>\n";
+	echo "<td width=\"$larg_col3\" align=\"center\" class='bull_simpl'>&Eacute;lÃ¨ve</td>\n";
 	if ($affiche_rang=='y') {
 		echo "<td width=$larg_col4 align=\"center\" class='bull_simpl'><i>Rang</i></td>\n";
 	}
 	echo "<td width=\"$larg_col5\" class='bull_simpl'>$bull_intitule_app</td>\n";
 	if($afficher_signalement_faute=='y') {
-		// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de façon à éviter de donner les mails des profs à des élèves
+		// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de faÃ§on Ã  Ã©viter de donner les mails des profs Ã  des Ã©lÃ¨ves
 		echo "<td class='bull_simpl noprint'>Signaler</td>\n";
 	}
 	echo "</tr>\n";
 
 	//echo "</table>";
-	// On attaque maintenant l'affichage des appréciations des Activités Interdisciplinaires devant apparaître en tête des bulletins :
+	// On attaque maintenant l'affichage des apprÃ©ciations des ActivitÃ©s Interdisciplinaires devant apparaÃ®tre en tÃªte des bulletins :
 	$call_data = mysql_query("SELECT * FROM aid_config WHERE order_display1 = 'b' ORDER BY order_display2");
 	$nb_aid = mysql_num_rows($call_data);
 	$z=0;
@@ -328,7 +344,7 @@ if ($on_continue == 'yes') {
 
 /*
 	if ($affiche_categories) {
-		// On utilise les valeurs spécifiées pour la classe en question
+		// On utilise les valeurs spÃ©cifiÃ©es pour la classe en question
 		$appel_liste_groupes = mysql_query("SELECT DISTINCT jgc.id_groupe ".
 		"FROM j_eleves_groupes jeg, j_groupes_classes jgc, j_groupes_matieres jgm, j_matieres_categories_classes jmcc, matieres m " .
 		"WHERE ( " .
@@ -352,7 +368,7 @@ if ($on_continue == 'yes') {
 		"ORDER BY jgc.priorite,jgm.id_matiere");
 	}
 	
-	// La ligne suivante a été remplacée par les requêtes intégrant le classement par catégories de matières
+	// La ligne suivante a Ã©tÃ© remplacÃ©e par les requÃªtes intÃ©grant le classement par catÃ©gories de matiÃ¨res
 	// $appel_liste_groupes = mysql_query("SELECT DISTINCT jeg.id_groupe id_groupe FROM j_eleves_groupes jeg, j_groupes_classes jgc WHERE (jeg.login = '" . $current_eleve_login . "' AND jeg.id_groupe = jgc.id_groupe AND jgc.id_classe = '" . $id_classe . "') ORDER BY jgc.priorite");
 	$nombre_groupes = mysql_num_rows($appel_liste_groupes);
 
@@ -364,7 +380,7 @@ if ($on_continue == 'yes') {
 	
 	$cat_names = array();
 	foreach ($categories as $cat_id) {
-		$cat_names[$cat_id] = html_entity_decode_all_version(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $cat_id . "'"), 0));
+		$cat_names[$cat_id] = html_entity_decode(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $cat_id . "'"), 0));
 	}
 	
 	$total_cat_eleve = array();
@@ -414,7 +430,7 @@ if ($on_continue == 'yes') {
 
 */
 
-	// Récupération des noms de catgories
+	// RÃ©cupÃ©ration des noms de catgories
 	$get_cat = mysql_query("SELECT id FROM matieres_categories");
 	$categories = array();
 	while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
@@ -423,27 +439,28 @@ if ($on_continue == 'yes') {
 	
 	$cat_names = array();
 	foreach ($categories as $cat_id) {
-		$cat_names[$cat_id] = html_entity_decode_all_version(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $cat_id . "'"), 0));
+		//$cat_names[$cat_id] = html_entity_decode(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $cat_id . "'"), 0));
+		$cat_names[$cat_id] = mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $cat_id . "'"), 0);
 	}
 
 	// Nombre de groupes sur la classe
 	$nombre_groupes=count($tab_moy['current_group']);
 
-	// Récupération des indices de l'élève $current_eleve_login dans $tab_moy
+	// RÃ©cupÃ©ration des indices de l'Ã©lÃ¨ve $current_eleve_login dans $tab_moy
 	unset($tab_login_indice);
 	$nb=$periode1;
 	while ($nb < $periode2+1) {
 		//$tab_login_indice[$nb]=$tab_moy['periodes'][$nb]['tab_login_indice'][$current_eleve_login];
-		// Un élève qui arrive ou part en cours d'année ne sera pas dans la classe ni dans les groupes sur certaines périodes
+		// Un Ã©lÃ¨ve qui arrive ou part en cours d'annÃ©e ne sera pas dans la classe ni dans les groupes sur certaines pÃ©riodes
 		//if(isset($tab_moy['periodes'][$nb]['tab_login_indice'][$current_eleve_login])) {
-		if(isset($tab_moy['periodes'][$nb]['tab_login_indice'][strtoupper($current_eleve_login)])) {
+		if(isset($tab_moy['periodes'][$nb]['tab_login_indice'][my_strtoupper($current_eleve_login)])) {
 			//$tab_login_indice[$nb]=$tab_moy['periodes'][$nb]['tab_login_indice'][$current_eleve_login];
-			$tab_login_indice[$nb]=$tab_moy['periodes'][$nb]['tab_login_indice'][strtoupper($current_eleve_login)];
+			$tab_login_indice[$nb]=$tab_moy['periodes'][$nb]['tab_login_indice'][my_strtoupper($current_eleve_login)];
 			//echo "\$tab_login_indice[$nb]=$tab_login_indice[$nb]<br />";
 		}
 		/*
 		else {
-			echo "\$tab_moy['periodes'][$nb]['tab_login_indice'][$current_eleve_login] n'est pas affecté.<br />";
+			echo "\$tab_moy['periodes'][$nb]['tab_login_indice'][$current_eleve_login] n'est pas affectÃ©.<br />";
 		}
 		*/
 		$nb++;
@@ -463,14 +480,14 @@ if ($on_continue == 'yes') {
 		//$group_id = mysql_result($appel_liste_groupes, $j, "id_groupe");
 		//$current_group = get_group($group_id);
 
-		// On récupère le groupe depuis $tab_moy
+		// On rÃ©cupÃ¨re le groupe depuis $tab_moy
 		$current_group=$tab_moy['current_group'][$j];
-		//echo "<p>Groupe n°$j: ".$current_group['name']."<br />\n";
+		//echo "<p>Groupe nÂ°$j: ".$current_group['name']."<br />\n";
 
 		// Coefficient pour le groupe
 		$current_coef=$current_group["classes"]["classes"][$id_classe]["coef"];
 	
-		// Pour les enseignements à bonus,...
+		// Pour les enseignements Ã  bonus,...
 		$mode_moy=$current_group["classes"]["classes"][$id_classe]["mode_moy"];
 	
 		$current_matiere_professeur_login = $current_group["profs"]["list"];
@@ -495,7 +512,7 @@ if ($on_continue == 'yes') {
 			*/
 			$current_classe_matiere_moyenne[$nb]=$tab_moy['periodes'][$nb]['current_classe_matiere_moyenne'][$j];
 
-			// On teste si des notes de une ou plusieurs boites du carnet de notes doivent être affichée
+			// On teste si des notes de une ou plusieurs boites du carnet de notes doivent Ãªtre affichÃ©e
 			$test_cn = mysql_query("select c.nom_court, c.id from cn_cahier_notes cn, cn_conteneurs c
 			where (cn.periode = '$nb' and cn.id_groupe='".$current_group["id"]."' and cn.id_cahier_notes = c.id_racine and c.id_racine!=c.id and c.display_bulletin = 1) ");
 			$nb_ligne_cn[$nb] = mysql_num_rows($test_cn);
@@ -511,29 +528,21 @@ if ($on_continue == 'yes') {
 	
 	
 	
-		// Maintenant on regarde si l'élève suit bien cette matière ou pas
+		// Maintenant on regarde si l'Ã©lÃ¨ve suit bien cette matiÃ¨re ou pas
 		//-----------------------------
 		$nb=$periode1;
 		while ($nb < $periode2+1) {
-			// Test supplémentaire pour savoir si l'élève appartient à la classe pour la période considérée
+			// Test supplÃ©mentaire pour savoir si l'Ã©lÃ¨ve appartient Ã  la classe pour la pÃ©riode considÃ©rÃ©e
 			$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
-			/*
-			if (((in_array(strtolower($current_eleve_login), $current_group["eleves"][$nb]["list"])) or
-			(in_array(strtoupper($current_eleve_login), $current_group["eleves"][$nb]["list"]))) and $test_eleve_app !=0)
-			{
-			*/
 			if(
 				(
 					(in_array($current_eleve_login, $current_group["eleves"][$nb]["list"])) or
-					(in_array(strtolower($current_eleve_login), $current_group["eleves"][$nb]["list"])) or
-					(in_array(strtoupper($current_eleve_login), $current_group["eleves"][$nb]["list"]))
+					(in_array(my_strtolower($current_eleve_login), $current_group["eleves"][$nb]["list"])) or
+					(in_array(my_strtoupper($current_eleve_login), $current_group["eleves"][$nb]["list"]))
 				) and 
 				($test_eleve_app!=0)
 			) {
 				$inser_ligne='yes';
-				/*
-				$current_eleve_note_query = mysql_query("SELECT * FROM matieres_notes mn, j_eleves_classes jec WHERE (mn.login='$current_eleve_login' AND mn.periode='$nb' AND mn.id_groupe='".$current_group["id"]."' and jec.periode='$nb' and jec.login='$current_eleve_login' and jec.id_classe='$id_classe')");
-				*/
 				$current_eleve_note[$nb]=$tab_moy['periodes'][$nb]['current_eleve_note'][$j][$tab_login_indice[$nb]];
 				$current_eleve_statut[$nb]=$tab_moy['periodes'][$nb]['current_eleve_statut'][$j][$tab_login_indice[$nb]];
 
@@ -541,7 +550,7 @@ if ($on_continue == 'yes') {
 				$current_eleve_appreciation[$nb] = @mysql_result($current_eleve_appreciation_query, 0, "appreciation");
 
 				/*
-				// Coefficient personnalisé pour l'élève?
+				// Coefficient personnalisÃ© pour l'Ã©lÃ¨ve?
 				$sql="SELECT value FROM eleves_groupes_settings WHERE (" .
 						"login = '".$current_eleve_login."' AND " .
 						"id_groupe = '".$group_id."' AND " .
@@ -554,7 +563,7 @@ if ($on_continue == 'yes') {
 					$coef_eleve = $current_coef;
 				}
 				//=========================
-				// MODIF: boireaus 20071217 On arrondira seulement à l'affichage
+				// MODIF: boireaus 20071217 On arrondira seulement Ã  l'affichage
 				//$coef_eleve=number_format($coef_eleve,1, ',', ' ');
 				//=========================
 				*/
@@ -570,7 +579,7 @@ if ($on_continue == 'yes') {
 	
 
 			//++++++++++++++++++++++++
-			// Modif d'après F.Boisson
+			// Modif d'aprÃ¨s F.Boisson
 			// notes dans appreciation
 			$sql="SELECT cnd.note, cd.note_sur FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE cnd.login='".$current_eleve_login."' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe='".$current_group["id"]."' AND ccn.periode='$nb' AND cnd.statut='';";
 			$result_nbct=mysql_query($sql);
@@ -596,13 +605,13 @@ if ($on_continue == 'yes') {
 
 		if ($inser_ligne == 'yes') {
 			if ($affiche_categories) {
-			// On regarde si on change de catégorie de matière
+			// On regarde si on change de catÃ©gorie de matiÃ¨re
 				if ($current_group["classes"]["classes"][$id_classe]["categorie_id"] != $prev_cat_id) {
 					$prev_cat_id = $current_group["classes"]["classes"][$id_classe]["categorie_id"];
-					// On est dans une nouvelle catégorie
-					// On récupère les infos nécessaires, et on affiche une ligne
+					// On est dans une nouvelle catÃ©gorie
+					// On rÃ©cupÃ¨re les infos nÃ©cessaires, et on affiche une ligne
 	
-					// On détermine le nombre de colonnes pour le colspan
+					// On dÃ©termine le nombre de colonnes pour le colspan
 					$nb_total_cols = 4;
 					//====================
 					// Modif: boireaus 20070626
@@ -612,7 +621,7 @@ if ($on_continue == 'yes') {
 					//====================
 					if ($affiche_rang == 'y') {$nb_total_cols++;}
 	
-					// On regarde s'il faut afficher la moyenne de l'élève pour cette catégorie
+					// On regarde s'il faut afficher la moyenne de l'Ã©lÃ¨ve pour cette catÃ©gorie
 					$affiche_cat_moyenne_query = mysql_query("SELECT affiche_moyenne FROM j_matieres_categories_classes WHERE (classe_id = '" . $id_classe . "' and categorie_id = '" . $prev_cat_id . "')");
 					if (mysql_num_rows($affiche_cat_moyenne_query) == "0") {
 						$affiche_cat_moyenne = false;
@@ -626,7 +635,7 @@ if ($on_continue == 'yes') {
 					echo "<p style='padding: 0; margin:0; font-size: 10px; text-align:left;'>".$cat_names[$prev_cat_id]."</p></td>\n";
 
 					if($afficher_signalement_faute=='y') {
-						// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de façon à éviter de donner les mails des profs à des élèves
+						// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de faÃ§on Ã  Ã©viter de donner les mails des profs Ã  des Ã©lÃ¨ves
 						echo "<td class='bull_simpl noprint'>-</td>\n";
 					}
 
@@ -644,7 +653,7 @@ if ($on_continue == 'yes') {
 			echo "<td ";
 			if ($nb_periodes > 1) echo " rowspan= ".$nb_periodes;
 			//echo" width=\"$larg_col1\" class='bull_simpl'><b>$current_matiere_nom_complet</b>";
-			echo " width=\"$larg_col1\" class='bull_simpl'><b>".htmlentities($current_matiere_nom_complet)."</b>";
+			echo " width=\"$larg_col1\" class='bull_simpl'><b>".htmlspecialchars($current_matiere_nom_complet)."</b>";
 			$k = 0;
 			//echo "(".$current_group['id'].")";
 			$liste_email_profs_du_groupe="";
@@ -738,7 +747,7 @@ if ($on_continue == 'yes') {
 				}
 				echo "</b></td>\n";
 
-				//Affichage des cellules rang le cas échéant
+				//Affichage des cellules rang le cas Ã©chÃ©ant
 				if ($affiche_rang == 'y')  {
 					/*
 					$rang = sql_query1("select rang from matieres_notes where (
@@ -761,7 +770,7 @@ if ($on_continue == 'yes') {
 					$rang="-";
 					if(isset($tab_login_indice[$nb])) {
 						if(isset($tab_moy['periodes'][$nb]['current_eleve_rang'][$j][$tab_login_indice[$nb]])) {
-							// Si l'élève n'est dans le groupe que sur une période (cas des IDD), son rang n'existera pas sur certaines périodes
+							// Si l'Ã©lÃ¨ve n'est dans le groupe que sur une pÃ©riode (cas des IDD), son rang n'existera pas sur certaines pÃ©riodes
 							//echo "\$tab_moy['periodes'][$nb]['current_eleve_rang'][$j][".$tab_login_indice[$nb]."]=";
 							$rang=$tab_moy['periodes'][$nb]['current_eleve_rang'][$j][$tab_login_indice[$nb]];
 							//echo "$rang<br />";
@@ -775,7 +784,7 @@ if ($on_continue == 'yes') {
 					echo "<td width=\"$larg_col4\" align=\"center\" class='bull_simpl' style='$style_bordure_cell'><i>".$rang."</i></td>\n";
 				}
 
-				// Affichage des cases appréciations
+				// Affichage des cases apprÃ©ciations
 				echo "<td width=\"$larg_col5\" class='bull_simpl' style='$style_bordure_cell; text-align:left;'>\n";
 				// Affichage des moyennes secondaires
 				if ($nb_ligne_cn[$nb] != 0) {
@@ -794,7 +803,7 @@ if ($on_continue == 'yes') {
 				}
 				//==========================================================
 				// MODIF: boireaus 20080218
-				//        Dispositif de restriction des accès aux appréciations pour les comptes responsables/eleves
+				//        Dispositif de restriction des accÃ¨s aux apprÃ©ciations pour les comptes responsables/eleves
 				//if ($current_eleve_appreciation[$nb]) {
 				if (($current_eleve_appreciation[$nb])&&($tab_acces_app[$nb]=="y")) {
 				//==========================================================
@@ -802,9 +811,15 @@ if ($on_continue == 'yes') {
 					// MODIF: boireaus
 					//echo $current_eleve_appreciation[$nb];
 					if ($current_eleve_appreciation[$nb]=="-1") {
+						// 20120409
+						echo "<div id='app_".$current_id_eleve."_".$current_group['id']."_$nb'>";
 						echo "<span class='noprint'>-</span>\n";
+						echo "</div>\n";
 					}
-					else{
+					else {
+						// 20120409
+						echo "<div id='app_".$current_id_eleve."_".$current_group['id']."_$nb'>";
+
 						if((strstr($current_eleve_appreciation[$nb],">"))||(strstr($current_eleve_appreciation[$nb],"<"))){
 							echo "$current_eleve_appreciation[$nb]";
 						}
@@ -812,12 +827,17 @@ if ($on_continue == 'yes') {
 							echo nl2br($current_eleve_appreciation[$nb]);
 						}
 
+						echo "</div>\n";
+
 						echo "<textarea name='appreciation_".$current_id_eleve."_".$current_group['id']."[$nb]' id='appreciation_".$current_id_eleve."_".$current_group['id']."_$nb' style='display:none;'>".$current_eleve_appreciation[$nb]."</textarea>\n";
 
 					}
 					//======================================
 				} else {
-					echo " -";
+					// 20120409
+					echo "<div id='app_".$current_id_eleve."_".$current_group['id']."_$nb'>";
+					echo "<span class='noprint'>-</span>\n";
+					echo "</div>\n";
 				}
 				echo "</td>\n";
 
@@ -828,22 +848,27 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 
 
 				if($afficher_signalement_faute=='y') {
-					// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de façon à éviter de donner les mails des profs à des élèves
+					// A N'INSERER QUE POUR LES COMPTES DE PERSONNELS... de faÃ§on Ã  Ã©viter de donner les mails des profs Ã  des Ã©lÃ¨ves
 					echo "<td class='bull_simpl noprint'>";
 
 					if($current_group["classe"]["ver_periode"][$id_classe][$nb]=='O') {
 						echo "-";
 					}
 					else {
-						// Tester si l'adresse mail du/des profs de l'enseignement est renseignée et si l'envoi de mail est actif.
+						// 20120409
+						if(($current_group["classe"]["ver_periode"][$id_classe][$nb]=='N')&&($_SESSION['statut']=='professeur')&&(in_array($current_group['id'],$tab_mes_groupes))) {
+							echo "<a href='#' onclick=\"modifier_une_appreciation('$current_eleve_login', '$current_id_eleve', '".$current_group['id']."', '$liste_profs_du_groupe', '$nb') ;return false;\"><img src='../images/edit16.png' width='16' height='16' /></a> ";
+						}
+
+						// Tester si l'adresse mail du/des profs de l'enseignement est renseignÃ©e et si l'envoi de mail est actif.
 						// Sinon, on pourrait enregistrer le signalement dans une table actions_signalements pour affichage comme le Panneau d'affichage
 	
-						echo "<a href=\"mailto:$liste_email_profs_du_groupe?Subject=[Gepi]: Signaler un problème/faute&body=Bonjour,Je pense que vous avez commis une faute de frappe pour $current_eleve_login dans l enseignement n°".$current_group['id'].".Cordialement.-- ".casse_mot($_SESSION['prenom'],'majf2')." ".$_SESSION['nom']."\"";
+						echo "<a href=\"mailto:$liste_email_profs_du_groupe?Subject=[Gepi]: Signaler un problÃ¨me/faute&body=Bonjour,Je pense que vous avez commis une faute de frappe pour $current_eleve_login dans l enseignement nÂ°".$current_group['id'].".Cordialement.-- ".casse_mot($_SESSION['prenom'],'majf2')." ".$_SESSION['nom']."\"";
 						if($envoi_mail_actif!='n') {
 							echo " onclick=\"signaler_une_faute('$current_eleve_login', '$current_id_eleve', '".$current_group['id']."', '$liste_profs_du_groupe', '$nb') ;return false;\"";
 						}
-						echo "><img src='../images/icons/mail.png' width='16' height='16' alt='Signaler un problème/faute par mail' /></a>";
-					
+						echo "><img src='../images/icons/mail.png' width='16' height='16' alt='Signaler un problÃ¨me/faute par mail' /></a>";
+
 						echo "<span id='signalement_effectue_".$current_id_eleve."_".$current_group['id']."_$nb'></span>";
 					}
 					echo "</td>\n";
@@ -855,7 +880,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 			}
 
 			/*
-			// On calcule les moyennes générales de l'élève et de la classe :
+			// On calcule les moyennes gÃ©nÃ©rales de l'Ã©lÃ¨ve et de la classe :
 			if ($test_coef != 0) {
 				$nb=$periode1;
 				while ($nb < $periode2+1) {
@@ -913,7 +938,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 	}
 
 	//echo "<table width=$larg_tab border=1 cellspacing=1 cellpadding=1>";
-	// On attaque maintenant l'affichage des appréciations des Activités Interdisciplinaires devant apparaître en fin de bulletin :
+	// On attaque maintenant l'affichage des apprÃ©ciations des ActivitÃ©s Interdisciplinaires devant apparaÃ®tre en fin de bulletin :
 	$call_data = mysql_query("SELECT * FROM aid_config WHERE order_display1 = 'e' ORDER BY order_display2");
 	$nb_aid = mysql_num_rows($call_data);
 	$z=0;
@@ -938,12 +963,12 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 	//====================================================================
 	//====================================================================
 
-	// Affichage des moyennes générales
+	// Affichage des moyennes gÃ©nÃ©rales
 	if($display_moy_gen=="y") {
 		if ($test_coef != 0) {
 			echo "<tr>\n<td";
 			if ($nb_periodes > 1) echo " rowspan=".$nb_periodes;
-			echo ">\n<p class='bull_simpl'><b>Moyenne générale</b></p>\n</td>\n";
+			echo ">\n<p class='bull_simpl'><b>Moyenne gÃ©nÃ©rale</b></p>\n</td>\n";
 			//====================
 			// Modif: boireaus 20070626
 			if($affiche_coef=='y'){
@@ -1049,7 +1074,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 					foreach($categories as $cat_id) {
 
 						// MODIF: boireaus 20070627 ajout du test et utilisation de $total_cat_coef_eleve, $total_cat_coef_classe
-						// Tester si cette catégorie doit avoir sa moyenne affichée
+						// Tester si cette catÃ©gorie doit avoir sa moyenne affichÃ©e
 						$affiche_cat_moyenne_query = mysql_query("SELECT affiche_moyenne FROM j_matieres_categories_classes WHERE (classe_id = '".$id_classe."' and categorie_id = '".$cat_id."')");
 						if (mysql_num_rows($affiche_cat_moyenne_query) == "0") {
 							$affiche_cat_moyenne = false;
@@ -1076,7 +1101,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 							}
 							*/
 
-							// Si l'élève est bien dans la classe sur la période $nb
+							// Si l'Ã©lÃ¨ve est bien dans la classe sur la pÃ©riode $nb
 							if(isset($tab_login_indice[$nb])) {
 								$moy_eleve=$tab_moy['periodes'][$nb]['moy_cat_eleve'][$tab_login_indice[$nb]][$cat_id];
 								$moy_classe=$tab_moy['periodes'][$nb]['moy_cat_classe'][$tab_login_indice[$nb]][$cat_id];
@@ -1103,7 +1128,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 	echo "<table width='$larg_tab' class='boireaus' cellspacing='1' cellpadding='1' summary='Absences et retards'>\n";
 	$nb=$periode1;
 	while ($nb < $periode2+1) {
-		//On vérifie si le module est activé
+		//On vÃ©rifie si le module est activÃ©
 		if (getSettingValue("active_module_absence")!='2' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
 		    $current_eleve_absences_query = mysql_query("SELECT * FROM absences WHERE (login='$current_eleve_login' AND periode='$nb')");
 		    $eleve_abs[$nb] = @mysql_result($current_eleve_absences_query, 0, "nb_absences");
@@ -1151,25 +1176,25 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 		//====================================
 	
 		echo "<tr>\n<td valign=top class='bull_simpl' style='$style_bordure_cell'>$nom_periode[$nb]</td>\n";
-	// Test pour savoir si l'élève appartient à la classe pour la période considérée
+	// Test pour savoir si l'Ã©lÃ¨ve appartient Ã  la classe pour la pÃ©riode considÃ©rÃ©e
 	$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
 	if ($test_eleve_app != 0) {
 		echo "<td valign=top class='bull_simpl' style='$style_bordure_cell'>\n";
 		if ($eleve_abs_j[$nb] == "1") {
-			echo "Absences justifiées : une demi-journée";
+			echo "Absences justifiÃ©es : une demi-journÃ©e";
 		} else if ($eleve_abs_j[$nb] != "0") {
-			echo "Absences justifiées : $eleve_abs_j[$nb] demi-journées";
+			echo "Absences justifiÃ©es : $eleve_abs_j[$nb] demi-journÃ©es";
 		} else {
-			echo "Aucune absence justifiée";
+			echo "Aucune absence justifiÃ©e";
 		}
 		echo "</td>\n";
 		echo "<td valign=top class='bull_simpl' style='$style_bordure_cell'>\n";
 		if ($eleve_abs_nj[$nb] == '1') {
-			echo "Absences non justifiées : une demi-journée";
+			echo "Absences non justifiÃ©es : une demi-journÃ©e";
 		} else if ($eleve_abs_nj[$nb] != '0') {
-			echo "Absences non justifiées : $eleve_abs_nj[$nb] demi-journées";
+			echo "Absences non justifiÃ©es : $eleve_abs_nj[$nb] demi-journÃ©es";
 		} else {
-			echo "Aucune absence non justifiée";
+			echo "Aucune absence non justifiÃ©e";
 		}
 		echo "</td>\n";
 		echo "<td valign=top class='bull_simpl' style='$style_bordure_cell'>Nb. de retards : $eleve_retards[$nb]</td>\n</tr>\n";
@@ -1230,7 +1255,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 		$current_eleve_mention[$nb] = @mysql_result($current_eleve_avis_query, 0, "id_mention");
 		// **** FIN D'AJOUT POUR LA MENTION ****
 
-		// Test pour savoir si l'élève appartient à la classe pour la période considérée
+		// Test pour savoir si l'Ã©lÃ¨ve appartient Ã  la classe pour la pÃ©riode considÃ©rÃ©e
 		$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
 		if (($current_eleve_avis[$nb]== '') or ($tab_acces_app[$nb]!="y") or ($test_eleve_app == 0)) {$current_eleve_avis[$nb] = ' -';}
 		
@@ -1238,7 +1263,7 @@ $current_group["classe"]["ver_periode"][$id_classe][$nb]
 		
 		echo "<td valign=\"top\"  width = \"$larg_col1b\" class='bull_simpl' style='text-align:left; $style_bordure_cell'>$current_eleve_avis[$nb]";
 
-		// Ajouter par la suite une option pour faire apparaître les mentions même si c'est "-"
+		// Ajouter par la suite une option pour faire apparaÃ®tre les mentions mÃªme si c'est "-"
 		//if(($current_eleve_mention[$nb]=="F")||($current_eleve_mention[$nb]=="M")||($current_eleve_mention[$nb]=="E")) {
 		$afficher_les_mentions="y";
 		if (($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')) {
@@ -1284,7 +1309,7 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 	$display_begin = @mysql_result($call_data, 0, "display_begin");
 	$display_end = @mysql_result($call_data, 0, "display_end");
 	$bull_simplifie = @mysql_result($call_data, 0, "bull_simplifie");
-	// On vérifie que cette AID soit autorisée à l'affichage dans le bulletin simplifié
+	// On vÃ©rifie que cette AID soit autorisÃ©e Ã  l'affichage dans le bulletin simplifiÃ©
 	if ($bull_simplifie == "n") {
 		return "";
 	}
@@ -1301,7 +1326,7 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 		$n++;
 	}
 	//------
-	// On appelle l'appréciation de l'élève, et sa note le cas échéant
+	// On appelle l'apprÃ©ciation de l'Ã©lÃ¨ve, et sa note le cas Ã©chÃ©ant
 	//------
 	$nb=$periode1;
 	while($nb < $periode2+1) {
@@ -1363,7 +1388,7 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 		$nb++;
 	}
 	//------
-	// On affiche l'appréciation aid :
+	// On affiche l'apprÃ©ciation aid :
 	//------
 
 	echo "<tr><td ";
@@ -1389,7 +1414,7 @@ $tab_acces_app = acces_appreciations($periode1, $periode2, $id_classe);
 		if ($print_tr == 'yes') echo "<tr>";
 		echo "<td align=\"center\" class='$style_bulletin' style='$style_bordure_cell'>$aid_note_moyenne[$nb]</td>";
 		echo "<td align=\"center\" class='$style_bulletin' style='$style_bordure_cell'><b>";
-		// L'élève fait-il partie de la classe pour la période considérée ?
+		// L'Ã©lÃ¨ve fait-il partie de la classe pour la pÃ©riode considÃ©rÃ©e ?
 		$test_eleve_app = sql_query1("select count(login) from j_eleves_classes where login='".$current_eleve_login."' and id_classe='".$id_classe."' and periode='".$nb."'");
     if ($test_eleve_app !=0) {
      if ($current_eleve_aid_statut[$nb] == '') {
@@ -1472,7 +1497,7 @@ echo "</form>\n";
 			info_eleve=document.getElementById('nom_prenom_eleve_'+id_eleve).value;
 		}
 
-		document.getElementById('titre_entete_signaler_faute').innerHTML='Signaler un problème/faute pour '+info_eleve+' période '+num_periode;
+		document.getElementById('titre_entete_signaler_faute').innerHTML='Signaler un problÃ¨me/faute pour '+info_eleve+' pÃ©riode '+num_periode;
 
 		document.getElementById('signalement_login_eleve').value=eleve_login;
 		document.getElementById('signalement_id_groupe').value=id_groupe;
@@ -1485,9 +1510,9 @@ echo "</form>\n";
 			info_groupe=document.getElementById('signalement_id_groupe_'+id_groupe).value;
 		}
 
-		message='Bonjour,\\n\\nL\'appréciation de l\'élève '+info_eleve+' sur l\'enseignement n°'+id_groupe+' ('+info_groupe+') en période n°'+num_periode+' présente un problème ou une faute:\\n';
+		message='Bonjour,\\n\\nL\'apprÃ©ciation de l\'Ã©lÃ¨ve '+info_eleve+' sur l\'enseignement nÂ°'+id_groupe+' ('+info_groupe+') en pÃ©riode nÂ°'+num_periode+' prÃ©sente un problÃ¨me ou une faute:\\n';
 		message=message+'================================\\n';
-		// Le champ textarea n'existe que si une appréciation a été enregistrée
+		// Le champ textarea n'existe que si une apprÃ©ciation a Ã©tÃ© enregistrÃ©e
 		if(document.getElementById('appreciation_'+id_eleve+'_'+id_groupe+'_'+num_periode)) {
 			//message=message+addslashes(document.getElementById('appreciation_'+id_eleve+'_'+id_groupe+'_'+num_periode).innerHTML);
 			message=message+document.getElementById('appreciation_'+id_eleve+'_'+id_groupe+'_'+num_periode).innerHTML;
@@ -1516,14 +1541,28 @@ echo "
 	function valider_signalement_faute() {
 		signalement_id_groupe=document.getElementById('signalement_id_groupe').value;
 		signalement_login_eleve=document.getElementById('signalement_login_eleve').value;
-		signalement_message=escape(document.getElementById('signalement_message').value);
-		//signalement_message=document.getElementById('signalement_message').value;
+
+		//signalement_message=escape(document.getElementById('signalement_message').value);
+		signalement_message=document.getElementById('signalement_message').value;
+
+		//signalement_message=encodeURIComponent(document.getElementById('signalement_message').value);
 
 		signalement_id_eleve=document.getElementById('signalement_id_eleve').value;
 		signalement_num_periode=document.getElementById('signalement_num_periode').value;
 		signalement_id_classe=document.getElementById('signalement_id_classe').value;
 
-		new Ajax.Updater($('signalement_effectue_'+signalement_id_eleve+'_'+signalement_id_groupe+'_'+signalement_num_periode),'../lib/ajax_signaler_faute.php?signalement_login_eleve='+signalement_login_eleve+'&signalement_id_groupe='+signalement_id_groupe+'&signalement_id_classe='+signalement_id_classe+'&signalement_num_periode='+signalement_num_periode+'&signalement_message='+signalement_message+'".add_token_in_url(false)."',{method: 'get'});
+		//alert(signalement_message);
+
+		//new Ajax.Updater($('signalement_effectue_'+signalement_id_eleve+'_'+signalement_id_groupe+'_'+signalement_num_periode),'../lib/ajax_signaler_faute.php?signalement_login_eleve='+signalement_login_eleve+'&signalement_id_groupe='+signalement_id_groupe+'&signalement_id_classe='+signalement_id_classe+'&signalement_num_periode='+signalement_num_periode+'&signalement_message='+signalement_message+'".add_token_in_url(false)."',{method: 'get'});
+
+		new Ajax.Updater($('signalement_effectue_'+signalement_id_eleve+'_'+signalement_id_groupe+'_'+signalement_num_periode),'../lib/ajax_signaler_faute.php?a=a&".add_token_in_url(false)."',{method: 'post',
+		parameters: {
+			signalement_login_eleve: signalement_login_eleve,
+			signalement_id_groupe: signalement_id_groupe,
+			signalement_id_classe: signalement_id_classe,
+			signalement_num_periode: signalement_num_periode,
+			no_anti_inject_signalement_message: signalement_message,
+		}});
 
 		cacher_div('div_signaler_faute');
 		//document.getElementById('signalement_message').innerHTML='';
@@ -1536,5 +1575,123 @@ echo "
 	}
 }
 
+// 20120409
+$necessaire_corriger_appreciation_insere="n";
+function lib_corriger_appreciation() {
+	global $necessaire_corriger_appreciation_insere, $id_classe;
+	global $inclusion_depuis_graphes;
+
+	if($necessaire_corriger_appreciation_insere=="n") {
+
+		//========================================================
+		echo "<div id='div_corriger_app' style='position: absolute; top: 220px; right: 20px; width: 700px; text-align:center; color: black; padding: 0px; border:1px solid black; display:none;'>\n";
+		
+			echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; width: 700px; font-weight: bold; padding: 0px;' onmousedown=\"dragStart(event, 'div_corriger_app')\">\n";
+				echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>\n";
+				echo "<a href='#' onClick=\"cacher_div('div_corriger_app');return false;\">\n";
+				echo "<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />\n";
+				echo "</a>\n";
+				echo "</div>\n";
+		
+				echo "<div id='titre_entete_corriger_app'></div>\n";
+			echo "</div>\n";
+			
+			echo "<div id='corps_corriger_app' class='infobulle_corps' style='color: #ffffff; cursor: auto; font-weight: bold; padding: 0px; height: 15em; width: 700px; overflow: auto;'>";
+
+echo "
+<form name='form_corriger_app' id='form_signalement_faute' action ='../lib/ajax_corriger_app.php' method='post' target='_blank'>
+<input type='hidden' name='corriger_app_login_eleve' id='corriger_app_login_eleve' value='' />
+<input type='hidden' name='corriger_app_id_groupe' id='corriger_app_id_groupe' value='' />
+<input type='hidden' name='corriger_app_id_eleve' id='corriger_app_id_eleve' value='' />
+<input type='hidden' name='corriger_app_num_periode' id='corriger_app_num_periode' value='' />
+<input type='hidden' name='corriger_app_id_classe' id='corriger_app_id_classe' value='$id_classe' />
+
+<div id='div_corriger_appreciation'></div>
+<!--textarea name='app' id='app' cols='50' rows='12'></textarea-->
+
+<input type='button' onclick='valider_corriger_app()' name='Valider' value='Valider' />\n";
+echo add_token_field();
+echo "</form>\n";
+
+			echo "</div>\n";
+		
+		echo "</div>\n";
+		//========================================================
+
+		//========================================================
+		echo "<script type='text/javascript'>
+	// <![CDATA[
+
+	function modifier_une_appreciation(eleve_login, id_eleve, id_groupe, liste_profs_du_groupe, num_periode) {
+
+		info_eleve=eleve_login;
+		if(document.getElementById('nom_prenom_eleve_'+id_eleve)) {
+			info_eleve=document.getElementById('nom_prenom_eleve_'+id_eleve).value;
+		}
+
+		document.getElementById('titre_entete_corriger_app').innerHTML='Corriger  l apprÃ©ciation pour '+info_eleve+' pÃ©riode '+num_periode;
+
+		document.getElementById('corriger_app_login_eleve').value=eleve_login;
+		document.getElementById('corriger_app_id_groupe').value=id_groupe;
+
+		document.getElementById('corriger_app_id_eleve').value=id_eleve;
+		document.getElementById('corriger_app_num_periode').value=num_periode;
+
+		info_groupe=''
+		if(document.getElementById('corriger_app_id_groupe_'+id_groupe)) {
+			info_groupe=document.getElementById('corriger_app_id_groupe_'+id_groupe).value;
+		}
+
+		message='';
+		// Le champ textarea n'existe que si une apprÃ©ciation a Ã©tÃ© enregistrÃ©e
+		if(document.getElementById('appreciation_'+id_eleve+'_'+id_groupe+'_'+num_periode)) {
+			message=message+document.getElementById('appreciation_'+id_eleve+'_'+id_groupe+'_'+num_periode).innerHTML;
+		}
+
+		//alert('message='+message);
+
+		document.getElementById('div_corriger_appreciation').innerHTML='<textarea name=\'app\' id=\'app\' cols=\'50\' rows=\'11\'>'+message+'</textarea>';
+
+		//document.getElementById('signalement_message').innerHTML=message;
+";
+
+		if((isset($inclusion_depuis_graphes))&&($inclusion_depuis_graphes=='y')) {
+			echo "		afficher_div('div_corriger_app','n',0,0);\n";
+		}
+		else {
+			echo "		afficher_div('div_corriger_app','y',100,100);\n";
+		}
+
+echo "
+	}
+
+	function valider_corriger_app() {
+		corriger_app_id_groupe=document.getElementById('corriger_app_id_groupe').value;
+		corriger_app_login_eleve=document.getElementById('corriger_app_login_eleve').value;
+
+		app=document.getElementById('app').value;
+
+		corriger_app_id_eleve=document.getElementById('corriger_app_id_eleve').value;
+		corriger_app_num_periode=document.getElementById('corriger_app_num_periode').value;
+		corriger_app_id_classe=document.getElementById('corriger_app_id_classe').value;
+
+		new Ajax.Updater($('app_'+corriger_app_id_eleve+'_'+corriger_app_id_groupe+'_'+corriger_app_num_periode),'../lib/ajax_corriger_app.php?a=a&".add_token_in_url(false)."',{method: 'post',
+		parameters: {
+			corriger_app_login_eleve: corriger_app_login_eleve,
+			corriger_app_id_groupe: corriger_app_id_groupe,
+			corriger_app_id_classe: corriger_app_id_classe,
+			corriger_app_num_periode: corriger_app_num_periode,
+			no_anti_inject_app: app,
+		}});
+
+		cacher_div('div_corriger_app');
+
+	}
+	//]]>
+</script>\n";
+		//========================================================
+
+	}
+}
 
 ?>

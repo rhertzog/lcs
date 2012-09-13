@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: enregistrement_modif_notification.php 8057 2011-08-30 20:43:44Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,16 +52,17 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
     die("acces interdit");
 }
 
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
+$menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : NULL);
 $id_notification = isset($_POST["id_notification"]) ? $_POST["id_notification"] :(isset($_GET["id_notification"]) ? $_GET["id_notification"] :NULL);
 $commentaire = isset($_POST["commentaire"]) ? $_POST["commentaire"] :(isset($_GET["commentaire"]) ? $_GET["commentaire"] :NULL);
 $modif = isset($_POST["modif"]) ? $_POST["modif"] :(isset($_GET["modif"]) ? $_GET["modif"] :NULL);
@@ -70,7 +70,7 @@ $modif = isset($_POST["modif"]) ? $_POST["modif"] :(isset($_GET["modif"]) ? $_GE
 $message_enregistrement = '';
 $notification = AbsenceEleveNotificationQuery::create()->findPk($id_notification);
 if ($notification == null && !isset($_POST["creation_notification"])) {
-    $message_enregistrement .= 'Modification impossible : notification non trouvée. ';
+    $message_enregistrement .= 'Modification impossible : notification non trouvÃ©e. ';
     include("visu_notification.php");
     die();
 }
@@ -79,7 +79,7 @@ if ( isset($_POST["creation_notification"])) {
     $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :NULL);
     $traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
     if ($traitement == null) {
-	$message_enregistrement .= 'Modification impossible : traitement non trouvé. ';
+	$message_enregistrement .= 'Modification impossible : traitement non trouvÃ©. ';
 	include("visu_notification.php");
 	die();
     } else {
@@ -87,27 +87,27 @@ if ( isset($_POST["creation_notification"])) {
 	$notification->setUtilisateurProfessionnel($utilisateur);
 	$notification->setAbsenceEleveTraitement($traitement);
 
-	//on met le type courrier par défaut
+	//on met le type courrier par dÃ©faut
 	$notification->setTypeNotification(AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER);
 
 	$responsable_eleve1 = null;
 	$responsable_eleve2 = null;
 	foreach ($traitement->getResponsablesInformationsSaisies() as $responsable_information) {
-	    if ($responsable_information->getRespLegal() == '1') {
+	    if ($responsable_information->getNiveauResponsabilite() == '1') {
 		$responsable_eleve1 = $responsable_information->getResponsableEleve();
-	    } else if ($responsable_information->getRespLegal() == '2') {
+	    } else if ($responsable_information->getNiveauResponsabilite() == '2') {
 		$responsable_eleve2 = $responsable_information->getResponsableEleve();
 	    }
 	}
 	if ($responsable_eleve1 != null) {
 	    $notification->setEmail($responsable_eleve1->getMel());
 	    $notification->setTelephone($responsable_eleve1->getTelPort());
-	    $notification->setAdrId($responsable_eleve1->getAdrId());
+	    $notification->setAdresseId($responsable_eleve1->getAdresseId());
 	    $notification->addResponsableEleve($responsable_eleve1);
 	}
 	if ($responsable_eleve2 != null) {
 	    if ($responsable_eleve1 == null
-		    || $responsable_eleve2->getAdrId() == $responsable_eleve1->getAdrId()) {
+		    || $responsable_eleve2->getAdresseId() == $responsable_eleve1->getAdresseId()) {
 		$notification->addResponsableEleve($responsable_eleve2);
 	    }
 	}
@@ -126,25 +126,28 @@ if ( $modif == 'type') {
 } else if ( $modif == 'commentaire') {
     $notification->setCommentaire($_POST["commentaire"]);
 } elseif ($modif == 'enlever_responsable') {
-    if (0 != JNotificationResponsableEleveQuery::create()->filterByAbsenceEleveNotification($notification)->filterByPersId($_POST["pers_id"])->limit(1)->delete()) {
-	$message_enregistrement .= 'Responsable supprimé';
+    if (0 != JNotificationResponsableEleveQuery::create()->filterByAbsenceEleveNotification($notification)->filterByResponsableEleveId($_POST["pers_id"])->limit(1)->delete()) {
+	$message_enregistrement .= 'Responsable supprimÃ©';
     } else {
 	$message_enregistrement .= 'Suppression impossible';
     }
     include("visu_notification.php");
     die;
 } elseif ($modif == 'ajout_responsable') {
-    $responsable = ResponsableEleveQuery::create()->findOneByPersId($_POST["pers_id"]);
+    $responsable = ResponsableEleveQuery::create()->findOneByResponsableEleveId($_POST["pers_id"]);
     if ($responsable != null && !$notification->getResponsableEleves()->contains($responsable)) {
 	$notification->addResponsableEleve($responsable);
 	$notification->save();
+        $message_enregistrement .= 'Responsable ajoutÃ©';
+        include("visu_notification.php");
+        die;
     }
 } elseif ($modif == 'email') {
     $notification->setEmail($_POST["email"]);
 } elseif ($modif == 'tel') {
     $notification->setTelephone($_POST["tel"]);
 } elseif ($modif == 'adresse') {
-    $notification->setAdrId($_POST["adr_id"]);
+    $notification->setAdresseId($_POST["adr_id"]);
 } elseif ($modif == 'duplication') {
     $clone = $notification->copy(); //no deep copy
     $clone->save();
@@ -161,6 +164,54 @@ if ( $modif == 'type') {
     $message_enregistrement .= 'Nouvelle notification';
     include("visu_notification.php");
     die();
+} elseif ($modif == 'duplication_par_responsable') {    
+    $responsablesToAdd = new PropelCollection;
+    $responsables_informations = $notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies();
+    Foreach ($responsables_informations as $responsable_information) {
+        $responsable = $responsable_information->getResponsableEleve();
+        if ($responsable == null || $notification->getResponsableEleves()->contains($responsable) || $responsable_information->getNiveauResponsabilite() == '0') {
+            continue;
+        }
+        $responsablesToAdd->append($responsable);
+    }
+    foreach ($responsablesToAdd as $responsableToAdd) {
+        $clone = $notification->copy(); //no deep copy
+        $clone->save();
+        $id = $clone->getId();
+        //this is done to avoid a bug in deepcopy
+        $notification->copyInto($clone, true); // deep copy        
+        $clone->setId($id);
+        $clone->setNew(false);
+        $clone->setEmail($responsableToAdd->getMel());
+        $clone->setTelephone($responsableToAdd->getTelPort());
+        $clone->setAdresseId($responsableToAdd->getAdresseId());
+        $clone->save();
+        // On supprime les anciens responsables de la notification initiale
+        $responsables = JNotificationResponsableEleveQuery::create()->filterByAbsenceEleveNotification($clone)->find();
+        foreach ($responsables as $responsable) {
+            $responsable->delete();
+        }
+        $clone->addResponsableEleve($responsableToAdd);
+        $clone->setStatutEnvoi(AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL);
+        $clone->setDateEnvoi(null);
+        $clone->setErreurMessageEnvoi(null);
+        $clone->save();        
+        $message_enregistrement .= 'Nouvelle notification <a href="./visu_notification.php?id_notification='.$clone->getId();
+        if ($menu) {
+            $message_enregistrement .='&menu=false';
+        }
+        $message_enregistrement .= '">'.$clone->getId().'</a> crÃ©Ã©e pour '.$responsableToAdd->getCivilite().' '.$responsableToAdd->getPrenom().' '.$responsableToAdd->getNom().' <br />';
+    }
+    include("visu_notification.php");
+    die();
+} elseif ($modif == 'supprimer') {
+    $notification->delete();
+    if ($menu) {
+        include("visu_traitement.php");
+    } else {
+        include("liste_notifications.php");
+    }
+    die;
 }
 
 if (!$notification->isModified()) {
@@ -168,7 +219,7 @@ if (!$notification->isModified()) {
 } else {
     if ($notification->validate()) {
 	$notification->save();
-	$message_enregistrement .= 'Modification enregistrée';
+	$message_enregistrement .= 'Modification enregistrÃ©e';
     } else {
 	$no_br = true;
 	foreach ($notification->getValidationFailures() as $erreurs) {

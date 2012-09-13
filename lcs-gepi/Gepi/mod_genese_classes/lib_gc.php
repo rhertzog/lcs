@@ -1,5 +1,4 @@
 <?php
-/* $Id: lib_gc.php 7357 2011-07-01 16:35:26Z crob $ */
 
 $tabcouleur=Array("aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","green","greenyellow","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgreen","lightgrey","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","snow","springgreen","steelblue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen");
 
@@ -56,11 +55,11 @@ $chaine_couleur_lv1="'palegoldenrod',
 $chaine_couleur_lv2="'lightgreen','lightpink','lightblue','gold','lightgray','gray','olive'";
 $chaine_couleur_lv3="'purple','greenyellow','violet','chartreuse','lightgray','gray','olive'";
 
-// Les variables $chaine_couleur_* sont utilisées pour initialiser des tableaux javascript.
+// Les variables $chaine_couleur_* sont utilisÃ©es pour initialiser des tableaux javascript.
 
 
 $tab_profil=array('GC','C','RAS','B','TB');
-// Pour le moment les valeurs testées dans les scripts javascript et les couleurs associées sont en dur dans les pages.
+// Pour le moment les valeurs testÃ©es dans les scripts javascript et les couleurs associÃ©es sont en dur dans les pages.
 // A modifier...
 $chaine_couleur_profil="'red','orangered','gray','green','blue'";
 $chaine_profil="'GC','C','RAS','B','TB'";
@@ -154,7 +153,7 @@ function necessaire_bull_simple() {
 	echo "<script type='text/javascript'>
 	// <![CDATA[
 	function affiche_bull_simp(login_eleve,id_classe,num_per1,num_per2) {
-		document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifié de '+login_eleve+' période '+num_per1+' à '+num_per2;
+		document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifiÃ© de '+login_eleve+' pÃ©riode '+num_per1+' Ã  '+num_per2;
 		new Ajax.Updater($('corps_bull_simp'),'../saisie/ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
 	}
 	//]]>
@@ -162,7 +161,7 @@ function necessaire_bull_simple() {
 }
 
 function image_sexe($sexe) {
-	if(strtolower($sexe)=='f') {
+	if(mb_strtolower($sexe)=='f') {
 		return "<img src='../images/symbole_femme16.png' width='16' height='16' title='F' />";
 	}
 	else {
@@ -170,307 +169,7 @@ function image_sexe($sexe) {
 	}
 }
 
-/*
-function tableau_eleves_req($id_req) {
 
-	echo "<table class='boireaus' border='1' summary='Requête n°$id_req'>\n";
-
-	//==========================================
-	echo "<tr>\n";
-
-	echo "<th>Elève</th>\n";
-
-	echo "<th>Profil</th>\n";
-	echo "<th>Niveau</th>\n";
-	echo "<th>Absences</th>\n";
-	echo "<th>Classe<br />actuelle</th>\n";
-	//$fich_csv.="Elève;Classe actuelle;";
-	$fich_csv.="Elève;Clas.act;";
-
-	if(count($lv1)>0) {echo "<th>LV1</th>\n";$fich_csv.="LV1;";}
-	if(count($lv2)>0) {echo "<th>LV2</th>\n";$fich_csv.="LV2;";}
-	if(count($lv3)>0) {echo "<th>LV3</th>\n";$fich_csv.="LV3;";}
-	if(count($autre_opt)>0) {echo "<th>Options</th>\n";$fich_csv.="Options;";}
-
-	echo "<th rowspan='2'>Observations</th>\n";
-
-	echo "</tr>\n";
-	$fich_csv.="\n";
-
-	//==========================================
-
-	echo "<tr>\n";
-	//echo "<th>Effectifs&nbsp;: <span id='eff_tot'>&nbsp;</span></th>\n";
-	echo "<th>Eff.select&nbsp;: <span id='eff_select$loop'>...</span></th>\n";
-	echo "<th id='eff_select_sexe$loop'>...</th>\n";
-
-	echo "<th>&nbsp;</th>\n";
-	echo "<th>&nbsp;</th>\n";
-	echo "<th>&nbsp;</th>\n";
-
-	if(count($lv1)>0) {echo "<th>&nbsp;</th>\n";}
-	if(count($lv2)>0) {echo "<th>&nbsp;</th>\n";}
-	if(count($lv3)>0) {echo "<th>&nbsp;</th>\n";}
-	if(count($autre_opt)>0) {echo "<th>&nbsp;</th>\n";}
-	echo "</tr>\n";
-
-	//==========================================
-	$lignes_tab="";
-	//==========================================
-
-	$eff_tot_select=0;
-	$eff_tot_select_M=0;
-	$eff_tot_select_F=0;
-
-	// Pour effectuer des moyennes, médiane,...
-	$tab_moy_eleves=array();
-
-	$chaine_id_classe="";
-	//$cpt=0;
-	// Boucle sur toutes les classes actuelles
-	for($j=0;$j<count($id_classe_actuelle);$j++) {
-		//$eff_tot_classe_M=0;
-		//$eff_tot_classe_F=0;
-
-		if($chaine_id_classe!="") {$chaine_id_classe.=",";}
-		$chaine_id_classe.="'$id_classe_actuelle[$j]'";
-
-		//==========================================
-		//$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe_actuelle[$j]' ORDER BY e.nom,e.prenom;";
-		$num_per2=-1;
-		if(($id_classe_actuelle[$j]!='Red')&&($id_classe_actuelle[$j]!='Arriv')) {
-			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe_actuelle[$j]' ORDER BY e.nom,e.prenom;";
-
-			$sql_per="SELECT num_periode FROM periodes WHERE id_classe='$id_classe_actuelle[$j]' ORDER BY num_periode DESC LIMIT 1;";
-			$res_per=mysql_query($sql_per);
-			if(mysql_num_rows($res_per)>0) {
-				$lig_per=mysql_fetch_object($res_per);
-				$num_per2=$lig_per->num_periode;
-			}
-		}
-		else {
-			$sql="SELECT DISTINCT e.* FROM eleves e, gc_ele_arriv_red gc WHERE gc.login=e.login AND gc.statut='$id_classe_actuelle[$j]' AND gc.projet='$projet' ORDER BY e.nom,e.prenom;";
-		}
-		//echo "<tr><td colspan='5'>$sql</tr></tr>\n";
-		$res=mysql_query($sql);
-		//$eff_tot_classe=mysql_num_rows($res);
-		//$eff_tot+=$eff_tot_classe;
-		//==========================================
-	
-		if(mysql_num_rows($res)>0) {
-			while($lig=mysql_fetch_object($res)) {
-
-				if(in_array($lig->login,$tab_ele)) {
-					$tab_ele_toutes_requetes[]=$lig->login;
-
-					$eff_tot_select++;
-					if(strtoupper($lig->sexe)=='F') {$eff_tot_select_F++;} else {$eff_tot_select_M++;}
-
-					//$num_eleve2_id_classe_actuelle[$j]=$cpt;
-
-					//echo "<tr id='tr_eleve_$cpt' class='white_hover'>\n";
-					echo "<tr id='tr_eleve_$cpt' class='white_hover'>\n";
-					//onmouseover=\"this.style.backgroundColor='white'\" onmouseout=\"this.style.backgroundColor='$tmp_bgcolor'\"
-					echo "<td>\n";
-					echo "<a name='eleve$cpt'></a>\n";
-					//if(file_exists("../photos/eleves/".$lig->elenoet.".jpg")) {
-					if(nom_photo($lig->elenoet)) {
-						//echo "<a href='#eleve$cpt' onmouseover=\"affiche_photo('".$lig->elenoet.".jpg','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);\" onmouseout=\"cacher_div('div_photo')\" onclick=\"return false;\">";
-						echo "<a href='#eleve$cpt' onmouseover=\"affiche_photo('".nom_photo($lig->elenoet)."','".addslashes(strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)))."');afficher_div('div_photo','y',100,100);\" onmouseout=\"cacher_div('div_photo')\" onclick=\"return false;\">";
-
-						echo strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom));
-						echo "</a>\n";
-					}
-					else {
-						echo strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom));
-					}
-					echo "<input type='hidden' name='eleve[$cpt]' value='$lig->login' />\n";
-					echo "</td>\n";
-					$lignes_tab.=strtoupper($lig->nom)." ".ucfirst(strtolower($lig->prenom)).";";
-
-					//===================================
-					// Initialisations
-					$profil='RAS';
-					$moy="-";
-					$nb_absences="-";
-					$non_justifie="-";
-					$nb_retards="-";
-
-					// On récupère les classe future, lv1, lv2, lv3 et autres options de l'élève $lig->login
-					$fut_classe="";
-
-					$tab_ele_opt=array();
-					$sql="SELECT * FROM gc_eleves_options WHERE projet='$projet' AND login='$lig->login';";
-					$res_opt=mysql_query($sql);
-					if(mysql_num_rows($res_opt)>0) {
-						$lig_opt=mysql_fetch_object($res_opt);
-
-						$fut_classe=$lig_opt->classe_future;
-
-						$profil=$lig_opt->profil;
-						$moy=$lig_opt->moy;
-						$nb_absences=$lig_opt->nb_absences;
-						$non_justifie=$lig_opt->non_justifie;
-						$nb_retards=$lig_opt->nb_retards;
-		
-						$tmp_tab=explode("|",$lig_opt->liste_opt);
-						for($n=0;$n<count($tmp_tab);$n++) {
-							if($tmp_tab[$n]!="") {
-								$tab_ele_opt[]=strtoupper($tmp_tab[$n]);
-							}
-						}
-					}
-					else {
-						// On récupère les options de l'année écoulée (année qui se termine)
-						$sql="SELECT * FROM j_eleves_groupes jeg, j_groupes_matieres jgm WHERE jeg.id_groupe=jgm.id_groupe AND jeg.login='$lig->login';";
-						$res_opt=mysql_query($sql);
-						if(mysql_num_rows($res_opt)>0) {
-							while($lig_opt=mysql_fetch_object($res_opt)) {
-								$tab_ele_opt[]=strtoupper($lig_opt->id_matiere);
-							}
-						}
-					}
-					//===================================
-					// Profil...
-					echo "<td>\n";
-					for($m=0;$m<count($tab_profil);$m++) {if($profil==$tab_profil[$m]) {echo "<span style='color:".$tab_couleur_profil[$m].";'>";break;}}
-					//echo $profil;
-					echo "<span id='div_profil_$cpt' onclick=\"affiche_set_profil($cpt);changement();return false;\">$profil</span>\n";
-
-					echo "</span>\n";
-					echo "<input type='hidden' name='profil[$cpt]' id='profil_$cpt' value='$profil' />\n";
-					echo "</td>\n";
-
-					// Niveau...
-					echo "<td>\n";
-					if(($moy!="")&&(strlen(preg_replace("/[0-9\.,]/","",$moy))==0)) {
-						if($num_per2>0) {
-							echo "<a href=\"#\" onclick=\"afficher_div('div_bull_simp','y',-100,40); affiche_bull_simp('$lig->login','".$id_classe_actuelle[$j]."','1','$num_per2');return false;\" style='text-decoration:none;'>";
-						}
-						if($moy<7) {
-							echo "<span style='color:red;'>";
-						}
-						elseif($moy<9) {
-							echo "<span style='color:orange;'>";
-						}
-						elseif($moy<12) {
-							echo "<span style='color:gray;'>";
-						}
-						elseif($moy<15) {
-							echo "<span style='color:green;'>";
-						}
-						else {
-							echo "<span style='color:blue;'>";
-						}
-						echo "$moy\n";
-						if($num_per2>0) {
-							echo "</a>\n";
-						}
-						echo "</span>";
-						echo "<input type='hidden' name='moy[$cpt]' id='moy_$cpt' value='$moy' />\n";
-
-						$tab_moy_eleves[]=$moy;
-					}
-					else {
-						echo "-\n";
-						echo "<input type='hidden' name='moy[$cpt]' id='moy_$cpt' value='-' />\n";
-					}
-					echo "</td>\n";
-
-					//===================================
-					echo "<td>\n";
-					echo colorise_abs($nb_absences,$non_justifie,$nb_retards);
-					echo "<input type='hidden' name='nb_absences[$cpt]' id='nb_absences_$cpt' value='$nb_absences' />\n";
-					echo "<input type='hidden' name='non_justifie[$cpt]' id='non_justifie_$cpt' value='$non_justifie' />\n";
-					echo "<input type='hidden' name='nb_retards[$cpt]' id='nb_retards_$cpt' value='$nb_retards' />\n";
-					echo "</td>\n";
-
-					//===================================
-					echo "<td>\n";
-					//echo "<input type='hidden' name='classe_fut[$cpt]' id='classe_fut_".$i."_".$cpt."' value='$fut_classe' />\n";
-					echo "<input type='hidden' name='ele_classe_fut[$cpt]' id='classe_fut_".$cpt."' value='$fut_classe' />\n";
-
-					echo $classe_actuelle[$j];
-					echo "</td>\n";
-					$lignes_tab.=$classe_actuelle[$j].";";
-
-					if(count($lv1)>0) {
-						echo "<td>\n";
-						for($i=0;$i<count($lv1);$i++) {
-							if(in_array(strtoupper($lv1[$i]),$tab_ele_opt)) {
-								echo $lv1[$i];
-
-								echo "<input type='hidden' name='ele_lv1[$cpt]' id='lv1_".$cpt."' value='$lv1[$i]' />\n";
-
-								$lignes_tab.=$lv1[$i].";";
-
-							}
-						}
-						echo "</td>\n";
-					}
-		
-
-					if(count($lv2)>0) {
-						echo "<td>\n";
-						for($i=0;$i<count($lv2);$i++) {
-							if(in_array(strtoupper($lv2[$i]),$tab_ele_opt)) {
-								echo $lv2[$i];
-								echo "<input type='hidden' name='ele_lv2[$cpt]' id='lv2_".$cpt."' value='$lv2[$i]' />\n";
-
-								$lignes_tab.=$lv2[$i].";";
-							}
-						}
-						echo "</td>\n";
-					}
-
-					if(count($lv3)>0) {
-						echo "<td>\n";
-						for($i=0;$i<count($lv3);$i++) {
-							if(in_array(strtoupper($lv3[$i]),$tab_ele_opt)) {
-								echo $lv3[$i];
-								echo "<input type='hidden' name='ele_lv3[$cpt]' id='lv3_".$cpt."' value='$lv3[$i]' />\n";
-
-								$lignes_tab.=$lv3[$i].";";
-							}
-						}
-						echo "</td>\n";
-					}
-
-
-					if(count($autre_opt)>0) {
-						echo "<td>\n";
-						$cpt_autre_opt=0;
-						for($i=0;$i<count($autre_opt);$i++) {
-							if(in_array(strtoupper($autre_opt[$i]),$tab_ele_opt)) {
-								if($cpt_autre_opt>0) {echo " ";}
-								echo $autre_opt[$i];
-
-								$lignes_tab.=$autre_opt[$i].";";
-								$cpt_autre_opt++;
-							}
-						}
-					}
-
-					echo "<td>\n";
-					if(($fut_classe!='Red')&&($fut_classe!='Dep')&&($fut_classe!='')) {
-						for($i=0;$i<count($tab_ele_opt);$i++) {
-							if(in_array($tab_ele_opt[$i],$tab_opt_exclue["$fut_classe"])) {
-								echo "<span style='color:red;'>ERREUR: L'option $tab_ele_opt[$i] est exclue en $fut_classe</span>";
-							}
-						}
-					}
-					echo "</td>\n";
-
-					echo "</tr>\n";
-					$lignes_tab.="\n";
-					$cpt++;
-				}
-			}
-		}
-	}
-	echo "</table>\n";
-}
-*/
 
 function afficher_contraintes($tab_clas_fut) {
 	global $projet;
@@ -575,7 +274,7 @@ function tableau_eleves_req($id_aff, $id_req) {
 	//}
 
 	//=========================
-	// Début de la requête à forger pour ne retenir que les élèves souhaités
+	// DÃ©but de la requÃªte Ã  forger pour ne retenir que les Ã©lÃ¨ves souhaitÃ©s
 	$sql_ele="SELECT DISTINCT login FROM gc_eleves_options WHERE projet='$projet' AND classe_future!='Dep' AND classe_future!='Red'";
 
 	$sql_ele_id_classe_act="";
@@ -766,17 +465,17 @@ function ligne_choix_classe_future($ele_login) {
 		$tmp_tab=explode("|",$lig_opt->liste_opt);
 		for($loop=0;$loop<count($tmp_tab);$loop++) {
 			if($tmp_tab[$loop]!="") {
-				$tab_ele_opt[]=strtoupper($tmp_tab[$loop]);
+				$tab_ele_opt[]=mb_strtoupper($tmp_tab[$loop]);
 			}
 		}
 	}
 	else {
-		// On récupère les options de l'année écoulée
+		// On rÃ©cupÃ¨re les options de l'annÃ©e Ã©coulÃ©e
 		$sql="SELECT * FROM j_eleves_groupes jeg, j_groupes_matieres jgm WHERE jeg.id_groupe=jgm.id_groupe AND jeg.login='ele_';";
 		$res_opt=mysql_query($sql);
 		if(mysql_num_rows($res_opt)>0) {
 			while($lig_opt=mysql_fetch_object($res_opt)) {
-				$tab_ele_opt[]=strtoupper($lig_opt->id_matiere);
+				$tab_ele_opt[]=mb_strtoupper($lig_opt->id_matiere);
 			}
 		}
 	}
@@ -797,7 +496,7 @@ function ligne_choix_classe_future($ele_login) {
 		if($coche_possible=='y') {
 			//$retour.="<input type='radio' name='classe_fut[$cpt]' id='classe_fut_".$i."_".$cpt."' value='$classe_fut[$i]' ";
 			$retour.="<input type='radio' name='classe_fut' id='classe_fut_choisie' value='$classe_fut[$i]' ";
-			if(strtoupper($fut_classe)==strtoupper($classe_fut[$i])) {$retour.="checked ";}
+			if(mb_strtoupper($fut_classe)==mb_strtoupper($classe_fut[$i])) {$retour.="checked ";}
 			//alert('bip');
 			//$retour.="onchange=\"calcule_effectif('classe_fut',".count($classe_fut).");colorise_ligne('classe_fut',$cpt,$i);changement();\" ";
 			//$retour.="title=\"$lig->login/$classe_fut[$i]\" ";

@@ -1,5 +1,4 @@
 <?php
-	// $Id: saisie_commentaires_types2b.php 6727 2011-03-29 15:14:30Z crob $
 
 	// Initialisations files
 	require_once("../lib/initialisations.inc.php");
@@ -28,21 +27,21 @@
 
 	//echo "<p>REQUEST_URI=".$_SERVER['REQUEST_URI']."</p>\n";
 	//REQUEST_URI=/steph/gepi-cvs/saisie/saisie_avis2.php?periode_num=1&id_classe=1&fiche=y&current_eleve_login=TOTO_G&ind_eleve_login_suiv=3
-	// Un accès direct à https://127.0.0.1/steph/gepi-cvs/saisie/saisie_commentaires_types.php se solde par un échec parce qu'aucun paramètre n'est initialisé pour l'accès à MySQL
+	// Un accÃ¨s direct Ã  https://127.0.0.1/steph/gepi-cvs/saisie/saisie_commentaires_types.php se solde par un Ã©chec parce qu'aucun paramÃ¨tre n'est initialisÃ© pour l'accÃ¨s Ã  MySQL
 
-	// L'appel à initialisations.inc.php est nécessaire pour récupérer le gepiPath
+	// L'appel Ã  initialisations.inc.php est nÃ©cessaire pour rÃ©cupÃ©rer le gepiPath
 	//echo "<p>gepiPath=".$gepiPath."</p>\n";
 
 	$tmp_chemin1=$gepiPath."/saisie/saisie_avis1.php";
 	$tmp_chemin2=$gepiPath."/saisie/saisie_avis2.php";
-	if((substr($_SERVER['REQUEST_URI'],0,strlen($tmp_chemin1))!=$tmp_chemin1)&&(substr($_SERVER['REQUEST_URI'],0,strlen($tmp_chemin2))!=$tmp_chemin2)){
+	if((mb_substr($_SERVER['REQUEST_URI'],0,mb_strlen($tmp_chemin1))!=$tmp_chemin1)&&(mb_substr($_SERVER['REQUEST_URI'],0,mb_strlen($tmp_chemin2))!=$tmp_chemin2)){
 		/*
 		echo "<html>\n";
 		echo "<head>\n";
-		echo "<title>Accès non autorisé!</title>\n";
+		echo "<title>AccÃ¨s non autorisÃ©!</title>\n";
 		echo "</head>\n";
 		echo "<body>\n";
-		echo "<p><b>ERREUR:</b> Accès non autorisé!</p>\n";
+		echo "<p><b>ERREUR:</b> AccÃ¨s non autorisÃ©!</p>\n";
 		echo "</body>\n";
 		echo "</html>\n";
 		*/
@@ -68,7 +67,7 @@
 
 		//echo "<input type='hidden' name='textarea_courant' id='textarea_courant' value='no_anti_inject_current_eleve_login_ap' />\n";
 
-		// On peut avoir plusieurs périodes ouvertes en saisie dans la même page de /saisie/saisie_avis1.php
+		// On peut avoir plusieurs pÃ©riodes ouvertes en saisie dans la mÃªme page de /saisie/saisie_avis1.php
 		//$sql="select * from commentaires_types where id_classe='$id_classe' and num_periode='$periode_num' order by commentaire";
 		$sql="select DISTINCT commentaire from commentaires_types where id_classe='$id_classe' order by commentaire";
 		//echo "<p>$sql</p>\n";
@@ -102,7 +101,7 @@
 				}
 				echo ">\n";
 
-				echo "<input type='hidden' name='commentaire_type_$cpt' id='commentaire_type_$cpt' value=\" ".htmlentities(stripslashes(trim($ligne_commentaire->commentaire)))."\" />\n";
+				echo "<input type='hidden' name='commentaire_type_$cpt' id='commentaire_type_$cpt' value=\" ".htmlspecialchars(stripslashes(trim($ligne_commentaire->commentaire)))."\" />\n";
 
 				if(!preg_match("/firefox/i",$_SERVER['HTTP_USER_AGENT'])){
 					// Avec konqueror, pour document.getElementById('textarea_courant').value, on obtient [Object INPUT]
@@ -112,15 +111,15 @@
 
 				// Pour conserver le code HTML saisi dans les commentaires-type...
 				if((preg_match("/</",$ligne_commentaire->commentaire))&&(preg_match("/>/",$ligne_commentaire->commentaire))){
-					/* Si le commentaire contient du code HTML, on ne remplace pas les retours à la ligne par des <br> pour éviter des doubles retours à la ligne pour un code comme celui-ci:
+					/* Si le commentaire contient du code HTML, on ne remplace pas les retours Ã  la ligne par des <br> pour Ã©viter des doubles retours Ã  la ligne pour un code comme celui-ci:
 						<p>Blabla<br>
 						Blibli</p>
 					*/
-					echo htmlentities(stripslashes(trim($ligne_commentaire->commentaire)));
+					echo htmlspecialchars(stripslashes(trim($ligne_commentaire->commentaire)));
 				}
 				else{
-					//Si le commentaire ne contient pas de code HTML, on remplace les retours à la ligne par des <br>:
-					echo htmlentities(stripslashes(nl2br(trim($ligne_commentaire->commentaire))));
+					//Si le commentaire ne contient pas de code HTML, on remplace les retours Ã  la ligne par des <br>:
+					echo htmlspecialchars(stripslashes(nl2br(trim($ligne_commentaire->commentaire))));
 				}
 
 				if(!preg_match("/firefox/i",$_SERVER['HTTP_USER_AGENT'])){
@@ -143,7 +142,7 @@
 echo "<script type='text/javascript'>
 // Pour konqueror...
 function complete_textarea_courant(num){
-	// Récupération de l'identifiant du TEXTAREA à remplir
+	// RÃ©cupÃ©ration de l'identifiant du TEXTAREA Ã  remplir
 	id_textarea_courant=document.getElementById('textarea_courant').value;
 	//alert('id_textarea_courant='+id_textarea_courant);
 
@@ -151,7 +150,7 @@ function complete_textarea_courant(num){
 	contenu_courant_textarea_courant=eval(\"document.getElementById('\"+id_textarea_courant+\"').value\");
 	//alert('contenu_courant_textarea_courant='+contenu_courant_textarea_courant);
 
-	// Commentaire à ajouter
+	// Commentaire Ã  ajouter
 	commentaire_a_ajouter=eval(\"document.getElementById('commentaire_type_\"+num+\"').value\");
 	//alert('commentaire_a_ajouter='+commentaire_a_ajouter);
 

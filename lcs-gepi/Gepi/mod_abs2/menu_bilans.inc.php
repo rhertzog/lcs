@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: menu_bilans.inc.php 8056 2011-08-30 20:43:42Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -32,7 +31,7 @@ $basename_serveur=explode("?", basename($_SERVER["REQUEST_URI"]));
 $onglet_abs = reset($basename_serveur);
 
 $_SESSION['abs2_onglet'] = $onglet_abs;
-// Tests � remplacer par des tests sur les droits attribu�s aux statuts
+// Tests à remplacer par des tests sur les droits attribués aux statuts
 if(($_SESSION['statut']=='cpe')||
     ($_SESSION['statut']=='scolarite')) {
 
@@ -40,32 +39,45 @@ if(($_SESSION['statut']=='cpe')||
 
     echo "<li><a href='tableau_des_appels.php' ";
     if($onglet_abs=='tableau_des_appels.php') {echo "class='current' ";}
-    echo "title='Tableau des appels'>Tableau des appels</a></li>\n";
+    echo "title='Tableau des appels'>Tableau appels</a></li>\n";
 
     echo "<li><a href='absences_du_jour.php' ";
     if($onglet_abs=='absences_du_jour.php') {echo "class='current' ";}
-    echo "title='Absences du jour'>Absences du jour</a></li>\n";
+    echo "title='Absences du jour'>Absences jour</a></li>\n";
 
     echo "<li><a href='bilan_du_jour.php' ";
     if($onglet_abs=='bilan_du_jour.php') {echo "class='current' ";}
-    echo "title='Bilan du jour'>Bilan du jour</a></li>\n";
+    echo "title='Bilan du jour'>Bilan jour</a></li>\n";
 
     echo "<li><a href='totaux_du_jour.php' ";
     if($onglet_abs=='totaux_du_jour.php') {echo "class='current' ";}
-    echo "title='Totaux du jour'>Totaux du jour</a></li>\n";
+    echo "title='Totaux du jour'>Totaux jour</a></li>\n";
 
     echo "<li><a href='extraction_saisies.php' ";
     if($onglet_abs=='extraction_saisies.php') {echo "class='current' ";}
-    echo "title='Extraction des saisies'>Extraction des saisies</a></li>\n";
+    echo "title='Extraction des saisies'>Ext. saisies</a></li>\n";
 
     echo "<li><a href='extraction_demi-journees.php' ";
     if($onglet_abs=='extraction_demi-journees.php') {echo "class='current' ";}
-    echo "title='Extraction des saisies'>Extraction des demi-journ�es</a></li>\n";
+    echo "title='Extraction des saisies'>Ext. demi-journées</a></li>\n";
 
     echo "<li><a href='bilan_individuel.php' ";
     if($onglet_abs=='bilan_individuel.php') {echo "class='current' ";}
     echo "title='Bilan individuel'>Bilan individuel</a></li>\n";
-        
+	
+    echo "<li><a href='statistiques.php' ";
+    if($onglet_abs=='statistiques.php') {echo "class='current' ";}
+    echo 'title="Taux d\'absentéisme">Taux d\'absent.</a></li>';
+    
+	
+    echo "<li><a href='stat_justifications.php' ";
+    if($onglet_abs=='stat_justifications.php') {echo "class='current' ";}
+    echo "title='Statistiques des justifications'>Justif.</a></li>\n";
+
+    echo "<li><a href='liste_eleves.php' ";
+    if($onglet_abs=='liste_eleves.php') {echo "class='current' ";}
+    echo "title='Liste des élèves'>Liste élèves</a></li>\n";
+
     echo "</ul>\n";
 
 }

@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: lib_tbs_courrier.php 6463 2011-02-05 17:57:13Z eabgrall $
  */
-//fonction tirée de la gestion des adresses pour les bulletins PDF
+//fonction tirÃ©e de la gestion des adresses pour les bulletins PDF
 function adresse_responsables($login_eleve) {	
     /* 
 	$tab_adresse[0]['civilite']="";
@@ -14,7 +13,7 @@ function adresse_responsables($login_eleve) {
 	$tab_adresse[0]['cp_ville']="";
 	$tab_adresse[0]['pays']="";
 	*/
-	// Récup infos responsables
+	// RÃ©cup infos responsables
 	$sql="SELECT rp.civilite,rp.nom,rp.prenom,ra.adr1,ra.adr2,ra.adr3,ra.adr4,ra.cp,ra.commune,ra.pays,ra.adr_id FROM resp_pers rp, resp_adr ra, responsables2 r,eleves e WHERE rp.pers_id=r.pers_id AND rp.adr_id=ra.adr_id AND r.ele_id=e.ele_id AND e.login='$login_eleve' AND (r.resp_legal='1' OR r.resp_legal='2') ORDER BY r.resp_legal;";
 	$res_resp=mysql_query($sql);
 	//echo "$sql<br />";
@@ -63,15 +62,15 @@ function adresse_responsables($login_eleve) {
 				(isset($tab_ele['resp'][1]['cp']))&&
 				(isset($tab_ele['resp'][1]['commune']))
 			) {
-				// Le deuxième responsable existe et est renseigné
+				// Le deuxiÃ¨me responsable existe et est renseignÃ©
 				if (($tab_ele['resp'][0]['adr_id']==$tab_ele['resp'][1]['adr_id']) OR
 					(
-						(strtolower($tab_ele['resp'][0]['adr1'])==strtolower($tab_ele['resp'][1]['adr1']))&&
-						(strtolower($tab_ele['resp'][0]['adr2'])==strtolower($tab_ele['resp'][1]['adr2']))&&
-						(strtolower($tab_ele['resp'][0]['adr3'])==strtolower($tab_ele['resp'][1]['adr3']))&&
-						(strtolower($tab_ele['resp'][0]['adr4'])==strtolower($tab_ele['resp'][1]['adr4']))&&
+						(mb_strtolower($tab_ele['resp'][0]['adr1'])==mb_strtolower($tab_ele['resp'][1]['adr1']))&&
+						(mb_strtolower($tab_ele['resp'][0]['adr2'])==mb_strtolower($tab_ele['resp'][1]['adr2']))&&
+						(mb_strtolower($tab_ele['resp'][0]['adr3'])==mb_strtolower($tab_ele['resp'][1]['adr3']))&&
+						(mb_strtolower($tab_ele['resp'][0]['adr4'])==mb_strtolower($tab_ele['resp'][1]['adr4']))&&
 						($tab_ele['resp'][0]['cp']==$tab_ele['resp'][1]['cp'])&&
-						(strtolower($tab_ele['resp'][0]['commune'])==strtolower($tab_ele['resp'][1]['commune']))
+						(mb_strtolower($tab_ele['resp'][0]['commune'])==mb_strtolower($tab_ele['resp'][1]['commune']))
 					)
 				   ) 
 				{
@@ -80,11 +79,11 @@ function adresse_responsables($login_eleve) {
 					//echo "<pre>Les adresses sont identique</pre>";
 					if(($tab_ele['resp'][0]['nom']!=$tab_ele['resp'][1]['nom'])&&
 						($tab_ele['resp'][1]['nom']!="")) {
-					// Les noms des responsables sont différents
+					// Les noms des responsables sont diffÃ©rents
 						$tab_adresse[0]['civilite']=$tab_ele['resp'][0]['civilite']." ".$tab_ele['resp'][0]['nom']." ".$tab_ele['resp'][0]['prenom']." et ".$tab_ele['resp'][1]['civilite']." ".$tab_ele['resp'][1]['nom']." ".$tab_ele['resp'][1]['prenom'];
 						$tab_adresse[0]['civilite_courrier']= "Madame, Monsieur";
 					}
-					else {// Les noms des responsables sont identique mais sans civilité
+					else {// Les noms des responsables sont identique mais sans civilitÃ©
 						if(($tab_ele['resp'][0]['civilite']!="")&&($tab_ele['resp'][1]['civilite']!="")) {
 							$tab_adresse[0]['civilite']=$tab_ele['resp'][0]['civilite']." et ".$tab_ele['resp'][1]['civilite']." ".$tab_ele['resp'][0]['nom']." ".$tab_ele['resp'][0]['prenom'];
 							$tab_adresse[0]['civilite_courrier']= "Madame, Monsieur";
@@ -107,16 +106,16 @@ function adresse_responsables($login_eleve) {
 					//}
 					$tab_adresse[0]['cp_ville']=$tab_ele['resp'][0]['cp']." ".$tab_ele['resp'][0]['commune'];
 
-					if(($tab_ele['resp'][0]['pays']!="")&&(strtolower($tab_ele['resp'][0]['pays'])!=strtolower($gepiSchoolPays))) {
+					if(($tab_ele['resp'][0]['pays']!="")&&(mb_strtolower($tab_ele['resp'][0]['pays'])!=mb_strtolower($gepiSchoolPays))) {
 						$tab_adresse[0]['pays']=$tab_ele['resp'][0]['pays'];
 					}
 				}
 				else {
 				    
-					//echo "<pre>Les adresses sont différentes</pre>";
-					// Les adresses sont différentes
+					//echo "<pre>Les adresses sont diffÃ©rentes</pre>";
+					// Les adresses sont diffÃ©rentes
 					//if ($un_seul_bull_par_famille!="oui") {
-					// On teste en plus si la deuxième adresse est valide
+					// On teste en plus si la deuxiÃ¨me adresse est valide
 					if (($un_seul_bull_par_famille!="oui")&&
 						($tab_ele['resp'][1]['adr1']!="")&&
 						($tab_ele['resp'][1]['commune']!="")
@@ -136,7 +135,7 @@ function adresse_responsables($login_eleve) {
 						}
 						else {
 							$tab_adresse[$cpt]['civilite']=$tab_ele['resp'][$cpt]['nom']." ".$tab_ele['resp'][$cpt]['prenom'];
-							$tab_adresse[$cpt]['civilite_courrier']= "Civilité manquante dans la base";
+							$tab_adresse[$cpt]['civilite_courrier']= "CivilitÃ© manquante dans la base";
 						}
 
 						$tab_adresse[$cpt]['adresse1']=$tab_ele['resp'][$cpt]['adr1'];
@@ -155,7 +154,7 @@ function adresse_responsables($login_eleve) {
 						
 						$tab_adresse[$cpt]['cp_ville']=$tab_ele['resp'][$cpt]['cp']." ".$tab_ele['resp'][$cpt]['commune'];
 
-						if(($tab_ele['resp'][$cpt]['pays']!="")&&(strtolower($tab_ele['resp'][$cpt]['pays'])!=strtolower($gepiSchoolPays))) {
+						if(($tab_ele['resp'][$cpt]['pays']!="")&&(mb_strtolower($tab_ele['resp'][$cpt]['pays'])!=mb_strtolower($gepiSchoolPays))) {
 							$tab_adresse[$cpt]['pays']=$tab_ele['resp'][$cpt]['pays'];
 						}
 					}
@@ -163,8 +162,8 @@ function adresse_responsables($login_eleve) {
 				}
 			}
 			else {
-				// Il n'y a pas de deuxième adresse, mais il y aurait un deuxième responsable???
-				// CA NE DEVRAIT PAS ARRIVER ETANT DONNé LA REQUETE EFFECTUEE QUI JOINT resp_pers ET resp_adr...
+				// Il n'y a pas de deuxiÃ¨me adresse, mais il y aurait un deuxiÃ¨me responsable???
+				// CA NE DEVRAIT PAS ARRIVER ETANT DONNÃ© LA REQUETE EFFECTUEE QUI JOINT resp_pers ET resp_adr...
 				if ($un_seul_bull_par_famille!="oui") {
 					$nb_bulletins=2;
 				$nb_bulletins=1;
@@ -179,7 +178,7 @@ function adresse_responsables($login_eleve) {
 					}
 					else {
 						$tab_adresse[$cpt]['civilite']=$tab_ele['resp'][$cpt]['nom']." ".$tab_ele['resp'][$cpt]['prenom'];
-						$tab_adresse[$cpt]['civilite_courrier']= "Civilité manquante dans la base";
+						$tab_adresse[$cpt]['civilite_courrier']= "CivilitÃ© manquante dans la base";
 					}
 
 					$tab_adresse[$cpt]['adresse1']=$tab_ele['resp'][$cpt]['adr1'];
@@ -196,14 +195,14 @@ function adresse_responsables($login_eleve) {
 					*/
 					$tab_adresse[$cpt]['cp_ville']=$tab_ele['resp'][$cpt]['cp']." ".$tab_ele['resp'][$cpt]['commune'];
 
-					if(($tab_ele['resp'][$cpt]['pays']!="")&&(strtolower($tab_ele['resp'][$cpt]['pays'])!=strtolower($gepiSchoolPays))) {
+					if(($tab_ele['resp'][$cpt]['pays']!="")&&(mb_strtolower($tab_ele['resp'][$cpt]['pays'])!=mb_strtolower($gepiSchoolPays))) {
 						$tab_adresse[$cpt]['pays']=$tab_ele['resp'][$cpt]['pays'];
 					}
 				}
 			}
 		}
 		else {
-			// Il n'y a pas de deuxième responsable
+			// Il n'y a pas de deuxiÃ¨me responsable
 			$nb_bulletins=1;
 
 			if($tab_ele['resp'][0]['civilite']!="") {
@@ -214,7 +213,7 @@ function adresse_responsables($login_eleve) {
 			}
 			else {
 				$tab_adresse[0]['civilite']=$tab_ele['resp'][0]['nom']." ".$tab_ele['resp'][0]['prenom'];
-				$tab_adresse[0]['civilite_courrier']= "Civilité manquante dans la base";
+				$tab_adresse[0]['civilite_courrier']= "CivilitÃ© manquante dans la base";
 			}
 
 			$tab_adresse[0]['adresse1']=$tab_ele['resp'][0]['adr1'];
@@ -224,26 +223,13 @@ function adresse_responsables($login_eleve) {
 			if($tab_ele['resp'][0]['adr3']!=""){
 				$tab_adresse[0]['adresse3']=$tab_ele['resp'][0]['adr3'];
 			}
-			/*
-			if($tab_ele['resp'][0]['adr4']!=""){
-				$tab_adresse[0]['adresse4']="<br />\n".$tab_ele['resp'][0]['adr4'];
-			}
-			*/
 			$tab_adresse[0]['cp_ville']=$tab_ele['resp'][0]['cp']." ".$tab_ele['resp'][0]['commune'];
 
-			if(($tab_ele['resp'][0]['pays']!="")&&(strtolower($tab_ele['resp'][0]['pays'])!=strtolower($gepiSchoolPays))) {
+			if(($tab_ele['resp'][0]['pays']!="")&&(mb_strtolower($tab_ele['resp'][0]['pays'])!=mb_strtolower($gepiSchoolPays))) {
 				$tab_adresse[0]['pays']=$tab_ele['resp'][0]['pays'];
 			}
 		}
 	}
-/*
-echo "<pre>";
-print_r($tab_ele);
-echo "</pre>";
-echo "<pre>";
-print_r($tab_adresse);
-echo "</pre>";
-*/
 
 return $tab_adresse;
 }

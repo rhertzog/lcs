@@ -6,6 +6,23 @@
  * @package Initialisation
  * @subpackage initialisation
  */
+/* Utilise l'encodage interne UTF-8 */
+ini_set('mbstring.language','UTF-8');
+ini_set('mbstring.internal_encoding','UTF-8');
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding("UTF-8");
+}
+
+if (date_default_timezone_get() == 'UTC') {
+    date_default_timezone_set('Europe/Paris');
+} else {
+    //dans le cas o√π on d√©tecte mal une zone UTC (donc non configur√©e √† priori),
+    //on fait comme si il y avait bien une conf de pr√©cis√©e pour √©viter l'erreur
+    //PHP Fatal error:  Uncaught exception 'Exception' with message 'DateTime::__construct(): It is not safe to rely on the system's timezone settings.
+    date_default_timezone_set(date_default_timezone_get());
+}
+
+//header('Content-Type: text/html; charset=UTF-8');
 
 /**
  * Niveau de la page dans l'arborescence de GEPI
@@ -15,11 +32,10 @@
  */
 $GLOBALS['niveau_arbo']=$niveau_arbo;
 
-
 /**
  * Chemin de la racine de GEPI
  * 
- * initialisÈe dans secure/connect.inc.php
+ * initialis√©e dans secure/connect.inc.php
  * 
  * On la retrouve en tant que global dans share.inc.php
  *
@@ -69,7 +85,7 @@ $GLOBALS['gepiRcVersion'] = NULL;
 $GLOBALS['gepiBetaVersion'] = NULL;
 
 /**
- * Les informations du groupes obtenues ‡ partir de get_group()
+ * Les informations du groupes obtenues √† partir de get_group()
  * 
  * @global array $GLOBALS['current_group']
  * @name $current_group
@@ -98,7 +114,7 @@ $GLOBALS['id_groupe']  = NULL;
 $GLOBALS['active_hostbyaddr'] = NULL;
 
 /**
- * Affichage des statistiques de la classe sur les bulletins si ‡ 1
+ * Affichage des statistiques de la classe sur les bulletins si √† 1
  * 
  * @global int $GLOBALS['min_max_moyclas']
  * @name $min_max_moyclas
@@ -122,7 +138,7 @@ $GLOBALS['eff_groupe']=NULL;
 $GLOBALS['tabdiv_infobulle']=NULL;
 
 /**
- * Texte ‡ afficher quand une pÈriode est close
+ * Texte √† afficher quand une p√©riode est close
  * 
  * @global string $GLOBALS['gepiClosedPeriodLabel']
  * @name $gepiClosedPeriodLabel
@@ -139,12 +155,12 @@ $GLOBALS['gepiClosedPeriodLabel']=NULL;
 
 
 
-// Initialisation de variables utilisÈes si javascript activÈ
+// Initialisation de variables utilis√©es si javascript activ√©
 $tabdiv_infobulle=array();
 $tabid_infobulle=array();
 
 // Initialisation des chemins relatifs
-// $chemin_relatif_gepi2 utilisÈ avec secure/connect.inc.php
+// $chemin_relatif_gepi2 utilis√© avec secure/connect.inc.php
 // $chemin_relatif_gepi pour les autres fichiers
 $chemin_relatif_gepi = $chemin_relatif_gepi2 = dirname(dirname(__FILE__));
 
@@ -176,14 +192,8 @@ if($is_lcs_plugin=='yes') {
 
 }
 
-$version = substr(phpversion(), 0, 1);
-if ($version == 4) {
-  $ldap_class = "/lib/LDAPServer.php4.class.php";
-  $session_class = "/lib/Session.php4.class.php";
-} else {
-  $ldap_class = "/lib/LDAPServer.class.php";
-  $session_class = "/lib/Session.class.php";
-}
+$ldap_class = "/lib/LDAPServer.class.php";
+$session_class = "/lib/Session.class.php";
 
 // Pour le multisite
 if (isset($_REQUEST['rne'])) {
@@ -191,17 +201,17 @@ if (isset($_REQUEST['rne'])) {
 } elseif (isset($_REQUEST['RNE'])) {
 	setcookie('RNE', $_REQUEST['RNE'], null, '/');
 }
-// Pour le choix de la prÈfÈrence de source d'authentification pour l'authentification multiauth
+// Pour le choix de la pr√©f√©rence de source d'authentification pour l'authentification multiauth
 if (isset($_REQUEST["source"])) {
 	setcookie('source', $_REQUEST["source"], null, '/');
 }
 
 /**
- * DonnÈes de connexion ‡ la base
+ * Donn√©es de connexion √† la base
  */
    require_once($chemin_relatif_gepi2."/secure/connect.inc.php");
 /**
- * Connection ‡ la base
+ * Connection √† la base
  */
    require_once($chemin_relatif_gepi."/lib/mysql.inc");
  /**
@@ -209,36 +219,22 @@ if (isset($_REQUEST["source"])) {
   */
    require_once($chemin_relatif_gepi."/lib/mb_ou_pas.php");
  /**
-  * Fichier de configuration gÈnÈrale
+  * Fichier de configuration g√©n√©rale
   */
    require_once($chemin_relatif_gepi."/lib/global.inc.php");
- /**
-  * Filtrage html
-  */
-   require_once($chemin_relatif_gepi."/lib/filtrage_html.inc.php");
-	if($filtrage_html=="htmlpurifier") {
- /**
-  * Utilisation de HTMLPurifier.standalone pour filtrer les saisies
-  */
-		require_once($chemin_relatif_gepi."/lib/HTMLPurifier.standalone.php");
-	}
-	elseif($filtrage_html=="inputfilter") {
- /**
-  * Utilisation de class.inputfilter_clean.php pour filtrer les saisies
-  */
-		require_once($chemin_relatif_gepi."/lib/class.inputfilter_clean.php");
-	}
 
- /**
-  * Traitement des donnÈes
-  */
-   require_once($chemin_relatif_gepi."/lib/traitement_data.inc.php");
  /**
   * Librairies
   * 
   * @see share.inc.php
   */
    include $chemin_relatif_gepi."/lib/share.inc.php";
+
+   /**
+  * Traitement des donn√©es (filtrage de s√©curit√©)
+  */
+   require_once($chemin_relatif_gepi."/lib/traitement_data.inc.php");
+
  /**
   * Fonctions relatives aux groupes
   * 
@@ -261,11 +257,11 @@ if (isset($_REQUEST["source"])) {
      die("Erreur chargement settings");
    }
    /**
-    * Fonctions relatives ‡ l'identification via LDAP
+    * Fonctions relatives √† l'identification via LDAP
     */
    require_once($chemin_relatif_gepi.$ldap_class);
    /**
-    * Fonctions relatives ‡ la session
+    * Fonctions relatives √† la session
     * 
     * @see class_exists()
     * @see get_include_path()
@@ -273,7 +269,7 @@ if (isset($_REQUEST["source"])) {
    require_once($chemin_relatif_gepi.$session_class);
 
 // Modif pour la longueur des logins par $longmax_login du global.inc.php
-// Si le champ de setting existe alors il faut l'utiliser car il est rÈglÈ par la page param_gen.php
+// Si le champ de setting existe alors il faut l'utiliser car il est r√©gl√© par la page param_gen.php
 if(isset($gepiSettings['longmax_login'])){
     $longmax_login = $gepiSettings['longmax_login'];
 }

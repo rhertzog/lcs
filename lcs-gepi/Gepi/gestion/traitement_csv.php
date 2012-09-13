@@ -2,7 +2,6 @@
 
 /*
 
- * $Id: traitement_csv.php 6609 2011-03-03 15:06:35Z crob $
 
  *
 
@@ -83,7 +82,7 @@ check_token();
 
 //**************** EN-TETE *****************
 $titre_page = "Outil de gestion | Traitement Importation";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 $nb_row++;
@@ -178,7 +177,7 @@ for ($row=1; $row<$nb_row; $row++) {
     if(mysql_num_rows($call_test)>0) {
 		$lig_elenoet=mysql_fetch_object($call_elenoet);
 		if($lig_elenoet->elenoet=='') {
-			// On initialise à OK $reg_data4 pour ne pas provoquer une erreur sous prétexte qu'il n'y a pas d'elenoet
+			// On initialise Ã  OK $reg_data4 pour ne pas provoquer une erreur sous prÃ©texte qu'il n'y a pas d'elenoet
 			$reg_data4 = 'ok';
 		}
 		else {
@@ -215,9 +214,9 @@ for ($row=1; $row<$nb_row; $row++) {
         }
     } else {
         if ($reg_statut == "nouveau") {
-            echo "<p>L'utilisateur $reg_login a été enregistré avec succès !</p>";
+            echo "<p>L'utilisateur $reg_login a Ã©tÃ© enregistrÃ© avec succÃ¨s !</p>";
         } else {
-            echo "<p>L'utilisateur $reg_login a été modifié avec succès !</p>";
+            echo "<p>L'utilisateur $reg_login a Ã©tÃ© modifiÃ© avec succÃ¨s !</p>";
         }
     }
 }

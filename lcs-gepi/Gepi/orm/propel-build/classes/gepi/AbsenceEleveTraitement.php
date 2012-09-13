@@ -5,7 +5,7 @@
 /**
  * Skeleton subclass for representing a row from the 'a_traitements' table.
  *
- * Un traitement peut gerer plusieurs saisies et consiste Ã  definir les motifs/justifications... de ces absences saisies
+ * Un traitement peut gerer plusieurs saisies et consiste Ã Â  definir les motifs/justifications... de ces absences saisies
  *
  * You should add additional methods to this class to meet the
  * application requirements.  This class will only be generated as
@@ -29,8 +29,8 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 */
 	public function getDescription() {
 	    if (!isset($description) || $description === null) {
-		$desc = 'n° '.$this->getId();
-		$desc .= ' créé le ';
+		$desc = 'nÂ° '.$this->getId();
+		$desc .= ' crÃ©Ã© le ';
 		$desc .= strftime("%a %d/%m/%Y", $this->getUpdatedAt('U'));
 		$eleve_col = new PropelCollection();
 		foreach ($this->getAbsenceEleveSaisies() as $abs_saisie) {
@@ -65,7 +65,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 		    }
 		}
 		if ($notif) {
-		    $desc .= "; Notifié";
+		    $desc .= "; NotifiÃ©";
 		}
 		if ($this->getCommentaire() != null && $this->getCommentaire() != '') {
 		    $desc .= "; Commentaire : ".$this->getCommentaire();
@@ -105,7 +105,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 */
 	public function getModifiable() {
 
-	    //modifiable uniquement si aucune notifications n'a été envoyé
+	    //modifiable uniquement si aucune notifications n'a Ã©tÃ© envoyÃ©
 	    foreach ($this->getAbsenceEleveNotifications() as $notification) {
 		if ($notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL) {
 		    return false;
@@ -116,7 +116,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 
 	/**
 	 *
-	 * Renvoi la liste de tout les responsables légaux des saisies associees a ce traitement
+	 * Renvoi la liste de tout les responsables lÃ©gaux des saisies associees a ce traitement
 	 *
 	 * @return     PropelObjectCollection collection d'objets de la classe ResponsableInformation
 	 *
@@ -141,7 +141,7 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 * Renvoi true ou false si l'eleve est en manque de ses obligation de presence
 	 * une saisie qui n'est pas un manquement ne sera pas comptee dans le bulletin
 	 * une saisie qui est un manquement sera comptee dans le bulletin
-	 * Cette propriété est calculé avec par l'intermediaire des types de traitement
+	 * Cette propriÃ©tÃ© est calculÃ© avec par l'intermediaire des types de traitement
 	 * si on a un type de manquement specifie a non_precise (comme le type 'erreur de saisie'),
 	 * on renvoi un non manquement (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 	 *
@@ -162,14 +162,14 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 	 * Renvoi true ou false si l'eleve etait sous la responsabilite de l'etablissement (infirmerie ou autre)
 	 * une saisie qui n'est pas sous la responsabilite de l'etablissement sere comptee dans le bulletin
 	 * une saisie qui est sous la responsabilite de l'etablissement ne sera pas comptee dans le bulletin
-	 * si on a un type de responsabilite specifié a non_precisé (comme le type 'erreur de saisie'),
+	 * si on a un type de responsabilite specifiÃ© a non_precisÃ© (comme le type 'erreur de saisie'),
 	 * on renvoi une resp etab a vrai (sinon l'utilisateur aurait specifier un type MANQU_OBLIG_PRESE_VRAI)
 	 * @return     boolean
 	 *
 	 */
 	public function getSousResponsabiliteEtablissement() {
 	    if ($this->getAbsenceEleveType() == null) {
-		return (getSettingValue("abs2_saisie_par_defaut_sous_responsabilite_etab")!='y');
+		return (getSettingValue("abs2_saisie_par_defaut_sous_responsabilite_etab") == 'y');
 	    } else {
 		return (
 			$this->getAbsenceEleveType()->getSousResponsabiliteEtablissement() == AbsenceEleveType::SOUS_RESP_ETAB_NON_PRECISE
@@ -179,21 +179,10 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 
 
 	/**
-	 * Ajout manuel : renseignement automatique de l'utilisateur qui a créé ou modifié la saisie
-	 * Persists this object to the database.
-	 *
-	 * If the object is new, it inserts it; otherwise an update is performed.
-	 * All modified related objects will also be persisted in the doSave()
-	 * method.  This method wraps all precipitate database operations in a
-	 * single transaction.
-	 *
-	 * @param      PropelPDO $con
-	 * @return     int The number of rows affected by this insert/update and any referring fk objects' save() operations.
-	 * @throws     PropelException
-	 * @see        doSave()
+	 * Code to be run after persisting the object
+	 * @param PropelPDO $con
 	 */
-	public function save(PropelPDO $con = null)
-	{
+	public function preSave(PropelPDO $con = null) {
 		if ($this->isNew()) {
 			if ($this->getUtilisateurId() == null) {
 				$utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
@@ -207,44 +196,30 @@ class AbsenceEleveTraitement extends BaseAbsenceEleveTraitement {
 				$this->setModifieParUtilisateur($utilisateur);
 			}
 		}
-	    $result = parent::save($con);
-	    
-	    
-	    return $result;
+		return true;
 	}
 	
 	/**
-	 * Removes this object from datastore and sets delete attribute. Custom : suppression des notifications et jointures associées et calcul de la table d'agrégation
-	 *
-	 * @param      PropelPDO $con
-	 * @return     void
-	 * @throws     PropelException
-	 * @see        BaseObject::setDeleted()
-	 * @see        BaseObject::isDeleted()
+	 * Code to be run after persisting the object
+	 * @param PropelPDO $con
 	 */
-	public function delete(PropelPDO $con = null)
-	{
-		$saisieColOld = $this->getAbsenceEleveSaisies();
-		AbsenceEleveNotificationQuery::create()->filterByAbsenceEleveTraitement($this)->delete();
-		//JTraitementSaisieEleveQuery::create()->filterByAbsenceEleveTraitement($this)->delete(); //ne pas supprimer pour pourvoir faire la jointure entre le traitement supprimé et l'élève saisi
-		parent::delete();
+	public function postSave(PropelPDO $con = null) { 
+		if (AbsenceEleveTraitementPeer::isAgregationEnabled()) {
+		    $this->updateAgregationTable();
+		}
 	}
-	
+
 	/**
-	 * Met à jour la table d'agrégation pour toutes les saisies de ce traitement
+	 * Met Ã  jour la table d'agrÃ©gation pour toutes les saisies de ce traitement
 	 *
 	 * @return     void
 	 */
 	public function updateAgregationTable() {
-		foreach($this->getAbsenceEleveSaisies() as $saisie) {
-			if ($saisie->getEleve() != null) {
-				$saisie->getEleve()->updateAbsenceAgregationTable($saisie->getDebutAbs(null),$saisie->getFinAbs(null));
-				$saisie->getEleve()->checkAndUpdateSynchroAbsenceAgregationTable($saisie->getDebutAbs(null),$saisie->getFinAbs(null));
-			}
-		}
+		AbsenceAgregationDecomptePeer::updateAgregationTable($this->getAbsenceEleveSaisies());
 	}
 	
 	public function getAlreadyInSave() {
 		return $this->alreadyInSave;
 	}
+	
 } // AbsenceEleveTraitement

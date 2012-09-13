@@ -1,6 +1,5 @@
 <?php
 /*
-* @version: $Id: cdt_lib.php 8750 2012-02-08 14:27:54Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -19,98 +18,6 @@
 * You should have received a copy of the GNU General Public License
 * along with GEPI; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-/*
-	function html_entete($titre='Cahier de textes',$niveau_arbo=1,$avec_init_php='n',$chaine_login_prof="") {
-		$entete="";
-
-		// trunk/documents/archives/etablissement/cahier_texte_2010_2011/cdt/index_classes.html
-
-		if($avec_init_php=='y') {
-			if($niveau_arbo==0) {
-				$pref_arbo="../../../..";
-				$n_arbo=4;
-			}
-			else {
-				$pref_arbo="../../../../..";
-				$n_arbo=5;
-			}
-
-			$entete.='<?php
-
-$niveau_arbo='.$n_arbo.';
-require_once("../../../../../lib/initialisations.inc.php");
-
-// Resume session
-$resultat_session = $session_gepi->security_check();
-if ($resultat_session == "c") {
-	header("Location: '.$pref_arbo.'/utilisateurs/mon_compte.php?change_mdp=yes");
-	die();
-} else if ($resultat_session == "0") {
-	header("Location: '.$pref_arbo.'/logout.php?auto=1");
-	die();
-}
-
-$tab_statuts=array("administrateur","professeur","scolarite","cpe","autre");
-if(!in_array($_SESSION["statut"],$tab_statuts)) {
-	header("Location: '.$pref_arbo.'/logout.php?auto=1");
-	die();
-}
-
-// Ajouter une autre filtrage selon le statut...
-// ... et des retours différents
-
-$tab_login=array('.$chaine_login_prof.');
-if(($_SESSION["statut"]=="professeur")&&(!in_array($_SESSION["login"],$tab_login))) {
-	header("Location: '.$pref_arbo.'/logout.php?auto=1");
-	die();
-}
-
-?>
-';
-
-			//$entete.="";
-		}
-
-		$entete.='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Cache-Control" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta http-equiv="Content-Style-Type" content="text/css" />';
-
-		if($niveau_arbo==0) {
-			$pref_arbo=".";
-		}
-		else {
-			$pref_arbo="..";
-		}
-
-		$entete.="<link rel='stylesheet' type='text/css' href='$pref_arbo/style.css' />
-<link rel='stylesheet' type='text/css' href='$pref_arbo/accessibilite.css' media='screen' />
-<link rel='stylesheet' type='text/css' href='$pref_arbo/accessibilite_print.css' media='print' />
-<link rel='stylesheet' type='text/css' href='$pref_arbo/portable.css' media='handheld' />
-<link title='bandeau' rel='stylesheet' type='text/css' href='$pref_arbo/css/bandeau_r01.css' media='screen' />
-<!--[if lte IE 7]>
-<link title='bandeau' rel='stylesheet' type='text/css' href='$pref_arbo/css/bandeau_r01_ie.css' media='screen' />
-<![endif]-->
-<!--[if lte IE 6]>
-<link title='bandeau' rel='stylesheet' type='text/css' href='$pref_arbo/css/bandeau_r01_ie6.css' media='screen' />
-<![endif]-->
-<!--[if IE 7]>
-<link title='bandeau' rel='stylesheet' type='text/css' href='$pref_arbo/css/bandeau_r01_ie7.css' media='screen' />
-<![endif]-->
-<link rel='stylesheet' type='text/css' href='$pref_arbo/style_screen_ajout.css' />\n";
-		$entete.="<title>$titre</title>\n";
-		$entete.="</head>\n";
-		$entete.="<body>\n";
-
-		return $entete;
-	}
 */
 
 	function html_entete($titre='Cahier de textes',$n_arbo=1,$avec_init_php='n',$chaine_login_prof="") {
@@ -148,7 +55,7 @@ require_once("'.$pref_arbo.'/entete.php");
 		$entete.='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Cache-Control" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
@@ -296,11 +203,9 @@ require_once("'.$pref_arbo.'/entete.php");
 		} else if ($type_notice == "c") {
 			$sql = "SELECT titre, emplacement, visible_eleve_parent FROM ct_documents WHERE id_ct='$id_ct' ORDER BY 'titre'";
 		}
-		
 		$res = sql_query($sql);
 		if (($res) and (sql_count($res)!=0)) {
 			$html_tmp= "<span class='petit'>Document(s) joint(s):</span>";
-			//$html .= "<ul type=\"disc\" style=\"padding-left: 15px;\">";
 			$html_tmp.= "<ul style=\"padding-left: 15px;\">";
 			for ($i=0; ($row = sql_row($res,$i)); $i++) {
 				if(isset($_SESSION['statut']) && ((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
@@ -308,19 +213,8 @@ require_once("'.$pref_arbo.'/entete.php");
 					((getSettingValue('cdt_possibilite_masquer_pj')=='y')&&($row[2]==true)&&(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable'))))
 				) {
 					$titre = $row[0];
-					/*
-					// Inutile: Les fichiers déplacés se retrouvent dans archives/<RNE>/cahier_texte_<ANNEE>/documents/<RNE>/
-					if(isset($_COOKIE["RNE"])) {
-						$emplacement = $pref_documents.preg_replace("#^\.\./documents/".$_COOKIE["RNE"]."/#", "../documents/", $row[1]);
-					}
-					else {
-					*/
 						$emplacement = $pref_documents.$row[1];
-					//}
-					//$html .= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a href=\"$emplacement\" target=\"blank\">$titre</a></li>";
-					// Ouverture dans une autre fenêtre conservée parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
-					// alternative, utiliser un javascript
-					$html_tmp.= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"$emplacement\">$titre</a></li>";
+					$html_tmp.= "<li style=\"padding: 0px; margin: 0px; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"$emplacement\">$titre</a></li>";
 
 					$tab_chemin_url[]=$emplacement;
 					$nb_doc_joints_visibles++;
@@ -374,7 +268,7 @@ require_once("'.$pref_arbo.'/entete.php");
 				//$res=creer_rep_docs_joints($dossier_documents, $dossier_courant, "../../../../../..");
 				$res=creer_rep_docs_joints($dossier_documents, $dossier_courant);
 				if(!$res) {
-					echo "<span style='color:red; margin-left: 3em;'>Erreur lors de la préparation de l'arborescence $dossier_documents/$dossier_courant</span><br />\n";
+					echo "<span style='color:red; margin-left: 3em;'>Erreur lors de la prÃ©paration de l'arborescence $dossier_documents/$dossier_courant</span><br />\n";
 					$transferer_doc="n";
 
 					$temoin_erreur="y";
@@ -398,7 +292,7 @@ require_once("'.$pref_arbo.'/entete.php");
 						}
 						/*
 						else {
-							echo "<span style='color:green; margin-left: 3em;'>Suppression de $tab_documents_joints[$loop] effectuée</span><br />\n";
+							echo "<span style='color:green; margin-left: 3em;'>Suppression de $tab_documents_joints[$loop] effectuÃ©e</span><br />\n";
 						}
 						*/
 					}
@@ -424,7 +318,7 @@ require_once("'.$pref_arbo.'/entete.php");
 
 	//function creer_index_logout($path, $pref_arbo_logout) {
 	function creer_index_logout($path) {
-		// $pref_arbo_logout n'est plus utilisé
+		// $pref_arbo_logout n'est plus utilisÃ©
 		global $gepiPath;
 
 		if (!file_exists($path)) {return false;}
@@ -448,7 +342,7 @@ require_once("'.$pref_arbo.'/entete.php");
 
 	//function creer_rep_docs_joints($base, $subdir, $pref_arbo_logout) {
 	function creer_rep_docs_joints($base, $subdir) {
-		// $pref_arbo_logout n'est plus utilisé
+		// $pref_arbo_logout n'est plus utilisÃ©
 		global $gepiPath;
 
 		$path = $base.'/'.$subdir;
@@ -491,12 +385,12 @@ require_once("'.$pref_arbo.'/entete.php");
 
 	/*
 	//=======================================================
-	// Fonction récupérée dans /mod_ooo/lib/lib_mod_ooo.php
+	// Fonction rÃ©cupÃ©rÃ©e dans /mod_ooo/lib/lib_mod_ooo.php
 
 	//$repaussi==true ~> efface aussi $rep
-	//retourne true si tout s'est bien passé,
-	//false si un fichier est resté (problème de permission ou attribut lecture sous Win
-	//dans tous les cas, le maximum possible est supprimé.
+	//retourne true si tout s'est bien passÃ©,
+	//false si un fichier est restÃ© (problÃ¨me de permission ou attribut lecture sous Win
+	//dans tous les cas, le maximum possible est supprimÃ©.
 	function deltree($rep,$repaussi=true) {
 		static $niv=0;
 		$niv++;
@@ -523,8 +417,8 @@ require_once("'.$pref_arbo.'/entete.php");
 	*/
 
 	function arbo_export_cdt($nom_export, $dirname) {
-		global $dossier_export; // Pour récupérer la valeur hors de la fonction
-		global $tab_fichiers_a_zipper; // Pour récupérer le tableau de valeurs hors de la fonction
+		global $dossier_export; // Pour rÃ©cupÃ©rer la valeur hors de la fonction
+		global $tab_fichiers_a_zipper; // Pour rÃ©cupÃ©rer le tableau de valeurs hors de la fonction
 		global $action;
 
 		if((isset($action))&&($action=='acces')) {
@@ -536,21 +430,21 @@ require_once("'.$pref_arbo.'/entete.php");
 
 		$creation=mkdir($dossier_export);
 		if(!$creation) {
-			echo "<p style='color:red;'>Erreur lors de la préparation de l'arborescence $dossier_export</p>\n";
+			echo "<p style='color:red;'>Erreur lors de la prÃ©paration de l'arborescence $dossier_export</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 
 		$creation=mkdir($dossier_export."/cahier_texte");
 		if(!$creation) {
-			echo "<p style='color:red;'>Erreur lors de la préparation de l'arborescence ".$dossier_export."/cahier_texte.</p>\n";
+			echo "<p style='color:red;'>Erreur lors de la prÃ©paration de l'arborescence ".$dossier_export."/cahier_texte.</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 		
 		$creation=mkdir($dossier_export."/css");
 		if(!$creation) {
-			echo "<p style='color:red;'>Erreur lors de la préparation de l'arborescence ".$dossier_export."/css</p>\n";
+			echo "<p style='color:red;'>Erreur lors de la prÃ©paration de l'arborescence ".$dossier_export."/css</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
@@ -588,7 +482,7 @@ require_once("'.$pref_arbo.'/entete.php");
 
 	function enregistrement_creation_acces_cdt($chemin, $description_acces, $date1_acces, $date2_acces, $id_groupe) {
 		if(count($id_groupe)==0) {
-			echo "<p style='color:red'>Aucun groupe n'a été sélectionné.</p>\n";
+			echo "<p style='color:red'>Aucun groupe n'a Ã©tÃ© sÃ©lectionnÃ©.</p>\n";
 			return false;
 		}
 		else {
@@ -597,27 +491,29 @@ require_once("'.$pref_arbo.'/entete.php");
 					chemin VARCHAR(255) NOT NULL DEFAULT '',
 					date1 DATETIME NOT NULL default '0000-00-00 00:00:00',
 					date2 DATETIME NOT NULL default '0000-00-00 00:00:00',
-					PRIMARY KEY (id));";
+					PRIMARY KEY (id)
+					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 			$create_table=mysql_query($sql);
 			if(!$create_table) {
-				echo "<p style='color:red'>Erreur lors de la création de la table 'acces_cdt':<br />$sql</p>\n";
+				echo "<p style='color:red'>Erreur lors de la crÃ©ation de la table 'acces_cdt':<br />$sql</p>\n";
 				return false;
 			}
 			else {
 				$sql="CREATE TABLE IF NOT EXISTS acces_cdt_groupes (id INT(11) NOT NULL auto_increment,
 						id_acces INT(11) NOT NULL,
 						id_groupe INT(11) NOT NULL,
-						PRIMARY KEY (id));";
+						PRIMARY KEY (id)
+						) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 				$create_table=mysql_query($sql);
 				if(!$create_table) {
-					echo "<p style='color:red'>Erreur lors de la création de la table 'acces_cdt_groupes':<br />$sql</p>\n";
+					echo "<p style='color:red'>Erreur lors de la crÃ©ation de la table 'acces_cdt_groupes':<br />$sql</p>\n";
 					return false;
 				}
 				else {
 					$sql="INSERT INTO acces_cdt SET description='".addslashes($description_acces)."', chemin='$chemin', date1='$date1_acces', date2='$date2_acces';";
 					$insert=mysql_query($sql);
 					if(!$insert) {
-						echo "<p style='color:red'>Erreur lors de la création de l'enregistrement dans la table 'acces_cdt':<br />$sql</p>\n";
+						echo "<p style='color:red'>Erreur lors de la crÃ©ation de l'enregistrement dans la table 'acces_cdt':<br />$sql</p>\n";
 						return false;
 					}
 					else {
@@ -628,7 +524,7 @@ require_once("'.$pref_arbo.'/entete.php");
 							$sql="INSERT INTO acces_cdt_groupes SET id_acces='$id_acces', id_groupe='$id_groupe[$loop]';";
 							$insert=mysql_query($sql);
 							if(!$insert) {
-								echo "<p style='color:red'>Erreur lors de la création de l'enregistrement dans la table 'acces_cdt_groupes'&nbsp;:<br />$sql</p>\n";
+								echo "<p style='color:red'>Erreur lors de la crÃ©ation de l'enregistrement dans la table 'acces_cdt_groupes'&nbsp;:<br />$sql</p>\n";
 								$retour=false;
 							}
 						}
@@ -641,7 +537,7 @@ require_once("'.$pref_arbo.'/entete.php");
 	}
 
 	function get_dates_notices_et_dev($id_groupe, $date_debut, $date_fin, $timestamp_debut, $timestamp_fin, $avec_notices="y", $avec_dev="y") {
-		// Passer en paramètres $date_debut et $date_fin (au format jj/mm/aaa) ou bien directement les $timestamp_debut et $timestamp_fin
+		// Passer en paramÃ¨tres $date_debut et $date_fin (au format jj/mm/aaa) ou bien directement les $timestamp_debut et $timestamp_fin
 
 		global $current_ordre;
 
@@ -752,13 +648,13 @@ require_once("'.$pref_arbo.'/entete.php");
 		$hier=$timestamp_debut-24*3600;
 		$demain=$timestamp_debut+24*3600;
 		$retour="<div style='float:right; width: 35px;'>\n";
-		$retour.="<a href=\"javascript: getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+$hier)\" title=\"Jour précédent\"><img src='../images/icons/back.png' width='16' height='16' alt='Jour précédent' /></a>\n";
+		$retour.="<a href=\"javascript: getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+$hier)\" title=\"Jour prÃ©cÃ©dent\"><img src='../images/icons/back.png' width='16' height='16' alt='Jour prÃ©cÃ©dent' /></a>\n";
 		$retour.="<a href=\"javascript: getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+$demain)\" title=\"Jour suivant\"><img src='../images/icons/forward.png' width='16' height='16' alt='Jour suivant' /></a>\n";
 		$retour.="</div>\n";
 
 		$retour.="<p class='bold'>";
-		// Jour précédents... comment gérer les liens selon que c'est affiché en infobulle ou en page classique
-		$retour.=get_class_from_id($id_classe)."&nbsp;: Travaux à faire pour le $date_jour";
+		// Jour prÃ©cÃ©dents... comment gÃ©rer les liens selon que c'est affichÃ© en infobulle ou en page classique
+		$retour.=get_class_from_id($id_classe)."&nbsp;: Travaux Ã  faire pour le $date_jour";
 		// Jour suivant
 		$retour.="</p>\n";
 		$retour.="<table class='boireaus' style='margin:3px;' border='1' summary='CDT'>\n";
@@ -822,7 +718,7 @@ require_once("'.$pref_arbo.'/entete.php");
 		}
 		$retour.="</table>\n";
 
-		if($cpt==0) {$retour.="<p>Aucun travail n'est (<i>encore</i>) demandé pour cette date.</p>\n";}
+		if($cpt==0) {$retour.="<p>Aucun travail n'est (<i>encore</i>) demandÃ© pour cette date.</p>\n";}
 
 		return $retour;
 
@@ -834,7 +730,7 @@ require_once("'.$pref_arbo.'/entete.php");
 		$timestamp_debut=timestamp_from_date_jour($date_jour);
 		$timestamp_fin=$timestamp_debut+24*3600-1;
 
-		// Date de la notice précédente/suivante
+		// Date de la notice prÃ©cÃ©dente/suivante
 		$precedent="";
 		$suivant="";
 
@@ -873,8 +769,8 @@ require_once("'.$pref_arbo.'/entete.php");
 		if(($suivant!='')||($precedent!='')) {
 			$retour.="<div style='float: left; width: 20px; margin-top: 0.5em;'>\n";
 			if($precedent!='') {
-				//$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$precedent',{ onComplete:function(transport) {initWysiwyg();}});\" title=\"Notice privée précédente\"><img src='../images/up.png' width='18' height='18' /></a>";
-				$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$precedent');\" title=\"Notice privée précédente\"><img src='../images/up.png' width='18' height='18' /></a>";
+				//$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$precedent',{ onComplete:function(transport) {initWysiwyg();}});\" title=\"Notice privÃ©e prÃ©cÃ©dente\"><img src='../images/up.png' width='18' height='18' /></a>";
+				$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$precedent');\" title=\"Notice privÃ©e prÃ©cÃ©dente\"><img src='../images/up.png' width='18' height='18' /></a>";
 				$retour.="<br />\n";
 			}
 			else {
@@ -882,8 +778,8 @@ require_once("'.$pref_arbo.'/entete.php");
 			}
 
 			if($suivant!='') {
-				//$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$suivant',{ onComplete:function(transport) {initWysiwyg();}});\" title=\"Notice privée suivante\"><img src='../images/down.png' width='18' height='18' /></a>";
-				$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$suivant');\" title=\"Notice privée suivante\"><img src='../images/down.png' width='18' height='18' /></a>";
+				//$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$suivant',{ onComplete:function(transport) {initWysiwyg();}});\" title=\"Notice privÃ©e suivante\"><img src='../images/down.png' width='18' height='18' /></a>";
+				$retour.="<a href=\"javascript: getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=$id_groupe&today=$suivant');\" title=\"Notice privÃ©e suivante\"><img src='../images/down.png' width='18' height='18' /></a>";
 			}
 			$retour.="</div>\n";
 		}
@@ -910,7 +806,7 @@ require_once("'.$pref_arbo.'/entete.php");
 				$retour.="</div>\n";
 			}
 		}
-		else {$retour.="Aucune Notice Privée pour cet enseignement (".$info_groupe.") le $date_jour.";}
+		else {$retour.="Aucune Notice PrivÃ©e pour cet enseignement (".$info_groupe.") le $date_jour.";}
 
 		return $retour;
 	}
@@ -937,7 +833,7 @@ require_once("'.$pref_arbo.'/entete.php");
 				$retour.="</div>\n";
 			}
 		}
-		else {$retour.="Aucune Notice Privée pour cet enseignement (".$info_groupe.").";}
+		else {$retour.="Aucune Notice PrivÃ©e pour cet enseignement (".$info_groupe.").";}
 
 		return $retour;
 	}
@@ -971,4 +867,5 @@ require_once("'.$pref_arbo.'/entete.php");
 
 		return $tab_dates;
 	}
+
 ?>

@@ -3,11 +3,11 @@
 /**
  *
  *
- * @version $Id: bulletin_donnees.php 1499 2008-02-12 22:09:24Z jjocal $
+ * @version $Id$
  * @copyright 2008
  */
 
-// Données relatives à l'établissement
+// DonnÃ©es relatives Ã  l'Ã©tablissement
 	$gepiSchoolName=getSettingValue("gepiSchoolName");
 	$gepiSchoolAdress1=getSettingValue("gepiSchoolAdress1");
 	$gepiSchoolAdress2=getSettingValue("gepiSchoolAdress2");
@@ -15,18 +15,18 @@
 	$gepiSchoolCity=getSettingValue("gepiSchoolCity");
 	$RneEtablissement=getSettingValue("gepiSchoolRne");
 
-// Données relatives au temps
+// DonnÃ©es relatives au temps
 	$gepiYear = getSettingValue('gepiYear');
 
-// Données relatives à l'en-tête
-	// le genre de la période (trimestre, période, semestre,...)
+// DonnÃ©es relatives Ã  l'en-tÃªte
+	// le genre de la pÃ©riode (trimestre, pÃ©riode, semestre,...)
 	if(getSettingValue("genre_periode")){
 		$genre_periode=getSettingValue("genre_periode");
 	}
 	else{
 		$genre_periode="M";
 	}
-	// Faire apparaitre le nom de l'établissement
+	// Faire apparaitre le nom de l'Ã©tablissement
 
 	// Faire apparaitre le tel, fax.
 	$gepiSchoolEmail = getSettingValue('gepiSchoolEmail');

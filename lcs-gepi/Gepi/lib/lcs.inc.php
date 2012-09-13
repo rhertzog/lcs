@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: lcs.inc.php 7109 2011-06-04 17:06:50Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
@@ -80,7 +79,7 @@ function get_lcs_login($elenoet, $statut) {
 				print_r($info);
 				echo "</pre>";
 				*/
-				// On récupère $info[0] et $info['count']
+				// On rÃ©cupÃ¨re $info[0] et $info['count']
 				//if((count($info)==1)&&(isset($info[0]["uid"][0]))) {
 				if((isset($info['count']))&&($info['count']==1)&&(isset($info[0]["uid"][0]))) {
 					//echo "\$info[0][\"uid\"][0]=".$info[0]["uid"][0]."<br />";

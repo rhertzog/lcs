@@ -1,5 +1,4 @@
 /*
-$Id: visu_eleve.css 7493 2011-07-23 11:57:37Z crob $
 */
 
 .t_onglet {
@@ -8,7 +7,7 @@ $Id: visu_eleve.css 7493 2011-07-23 11:57:37Z crob $
 	border: 1px solid black;
 	border-bottom-color: black;
 
-	border-radius: 6px 20px;
+	border-radius: 6px 20px 0px 0px;
 	-moz-border-radius-topleft: 6px;
 	-moz-border-radius-topright: 20px;
 

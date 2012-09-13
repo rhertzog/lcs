@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: saisie_avis1.php 8509 2011-10-22 09:15:37Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent ViÃ©not-Hauger
 *
 * This file is part of GEPI.
 *
@@ -21,7 +20,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -48,6 +47,25 @@ include "../lib/periodes.inc.php";
 
 $msg="";
 
+//debug_var();
+
+
+// On teste si un professeur peut saisir les avis
+if (($_SESSION['statut'] == 'professeur') and getSettingValue("GepiRubConseilProf")!='yes') {
+	die("Droits insuffisants pour effectuer cette opÃ©ration");
+}
+
+// On teste si le service scolaritÃ© peut saisir les avis
+if (($_SESSION['statut'] == 'scolarite') and getSettingValue("GepiRubConseilScol")!='yes') {
+	die("Droits insuffisants pour effectuer cette opÃ©ration");
+}
+
+// On teste si le service cpe peut saisir les avis
+if (($_SESSION['statut'] == 'cpe') and getSettingValue("GepiRubConseilCpe")!='yes' and getSettingValue("GepiRubConseilCpeTous")!='yes') {
+   die("Droits insuffisants pour effectuer cette opÃ©ration");
+}
+
+
 $gepi_denom_mention=getSettingValue("gepi_denom_mention");
 if($gepi_denom_mention=="") {
 	$gepi_denom_mention="mention";
@@ -70,53 +88,63 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 
-
-	// Synthèse
-	$i = '1';
-	while ($i < $nb_periode) {
-		if ($ver_periode[$i] != "O"){
-			if (isset($NON_PROTECT["synthese_".$i])){
-				// On enregistre la synthese
-				$synthese=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["synthese_".$i]));
-		
-				//$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
-				$synthese=preg_replace('/(\\\r\\\n)+/',"\r\n",$synthese);
-				$synthese=preg_replace('/(\\\r)+/',"\r",$synthese);
-				$synthese=preg_replace('/(\\\n)+/',"\n",$synthese);
-
-				$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$i';";
-				$test=mysql_query($sql);
-				if(mysql_num_rows($test)==0) {
-					$sql="INSERT INTO synthese_app_classe SET id_classe='$id_classe', periode='$i', synthese='$synthese';";
-					$insert=mysql_query($sql);
-					if(!$insert) {$msg.="Erreur lors de l'enregistrement de la synthèse.";}
-					//else {$msg.="La synthèse a été enregistrée.";}
-				}
-				else {
-					$sql="UPDATE synthese_app_classe SET synthese='$synthese' WHERE id_classe='$id_classe' AND periode='$i';";
-					$update=mysql_query($sql);
-					if(!$update) {$msg.="Erreur lors de la mise à jour de la synthèse.";}
-					//else {$msg.="La synthèse a été mise à jour.";}
-				}
-			}
-		}
-		$i++;
-	}
-
-	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours')) {
-		$quels_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
+	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') or (($_SESSION['statut'] == 'cpe')&&(getSettingAOui('GepiRubConseilCpeTous')))) {
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
 		WHERE (c.id_classe='$id_classe' AND
 		c.login = e.login
-		) ORDER BY nom");
+		) ORDER BY nom, prenom";
+	}
+	elseif(($_SESSION['statut'] == 'cpe')&&(getSettingAOui('GepiRubConseilCpe'))) {
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec, j_eleves_cpe jecpe
+		WHERE (jec.id_classe='$id_classe' AND
+		jec.login = e.login AND
+		jecpe.e_login = jec.login AND
+		jecpe.cpe_login = '".$_SESSION['login']."'
+		) ORDER BY nom, prenom";
 	} else {
-		$quels_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
 		WHERE (c.id_classe='$id_classe' AND
 		c.login = e.login AND
 		p.login = c.login AND
 		p.professeur = '".$_SESSION['login']."'
-		) ORDER BY nom");
+		) ORDER BY nom, prenom";
 	}
+	//echo "$sql<br />";
+	$quels_eleves = mysql_query($sql);
 	$lignes = mysql_num_rows($quels_eleves);
+
+	if($lignes>0) {
+		// SynthÃ¨se
+		$i = '1';
+		while ($i < $nb_periode) {
+			if ($ver_periode[$i] != "O"){
+				if (isset($NON_PROTECT["synthese_".$i])){
+					// On enregistre la synthese
+					$synthese=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["synthese_".$i]));
+		
+					//$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
+					$synthese=suppression_sauts_de_lignes_surnumeraires($synthese);
+
+					$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$i';";
+					$test=mysql_query($sql);
+					if(mysql_num_rows($test)==0) {
+						$sql="INSERT INTO synthese_app_classe SET id_classe='$id_classe', periode='$i', synthese='$synthese';";
+						$insert=mysql_query($sql);
+						if(!$insert) {$msg.="Erreur lors de l'enregistrement de la synthÃ¨se.";}
+						//else {$msg.="La synthÃ¨se a Ã©tÃ© enregistrÃ©e.";}
+					}
+					else {
+						$sql="UPDATE synthese_app_classe SET synthese='$synthese' WHERE id_classe='$id_classe' AND periode='$i';";
+						$update=mysql_query($sql);
+						if(!$update) {$msg.="Erreur lors de la mise Ã  jour de la synthÃ¨se.";}
+						//else {$msg.="La synthÃ¨se a Ã©tÃ© mise Ã  jour.";}
+					}
+				}
+			}
+			$i++;
+		}
+	}
+
 	$j = '0';
 	$pb_record = 'no';
 	while($j < $lignes) {
@@ -133,7 +161,7 @@ if (isset($_POST['is_posted'])) {
 					unset($log_eleve);
 					$log_eleve=$_POST['log_eleve_'.$i];
 
-					// Récupération du numéro de l'élève dans les saisies:
+					// RÃ©cupÃ©ration du numÃ©ro de l'Ã©lÃ¨ve dans les saisies:
 					$num_eleve=-1;
 					//for($k=0;$k<count($log_eleve);$k++){
 					for($k=0;$k<$lignes;$k++){
@@ -154,6 +182,9 @@ if (isset($_POST['is_posted'])) {
 						// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 
 						$avis = traitement_magic_quotes(corriger_caracteres($NON_PROTECT[$nom_log]));
+						$avis=suppression_sauts_de_lignes_surnumeraires($avis);
+
+						/*
 						$test_eleve_avis_query = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$reg_eleve_login' AND periode='$i')");
 						$test = mysql_num_rows($test_eleve_avis_query);
 						if ($test != "0") {
@@ -167,10 +198,20 @@ if (isset($_POST['is_posted'])) {
 							$sql.="statut=''";
 							$register = mysql_query($sql);
 						}
+						*/
+						$sql="DELETE FROM avis_conseil_classe WHERE (login='$reg_eleve_login' AND periode='$i');";
+						$menage=mysql_query($sql);
 
-						if (!$register) {
-							$msg.="Erreur lors de l'enregistrement des données de la période $i pour $reg_eleve_login<br />\n";
-							$pb_record = 'yes';
+						if(($avis!='')||((isset($id_mention)&&($id_mention!=0)))) {
+							$sql="INSERT INTO avis_conseil_classe SET login='$reg_eleve_login',periode='$i',avis='$avis',";
+							if(isset($id_mention)) {$sql.="id_mention='$id_mention',";}
+							$sql.="statut=''";
+							$register = mysql_query($sql);
+
+							if (!$register) {
+								$msg.="Erreur lors de l'enregistrement des donnÃ©es de la pÃ©riode $i pour $reg_eleve_login<br />\n";
+								$pb_record = 'yes';
+							}
 						}
 					}
 				}
@@ -182,12 +223,12 @@ if (isset($_POST['is_posted'])) {
 	}
 	if ($pb_record == 'no') $affiche_message = 'yes';
 }
-$themessage = 'Des appréciations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
-$message_enregistrement = "Les modifications ont été enregistrées !";
+$themessage = 'Des apprÃ©ciations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
+$message_enregistrement = "Les modifications ont Ã©tÃ© enregistrÃ©es !";
 $javascript_specifique = "saisie/scripts/js_saisie";
 //**************** EN-TETE *****************
 $titre_page = "Saisie des avis | Saisie";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 $tmp_timeout=(getSettingValue("sessionMaxLength"))*60;
@@ -196,29 +237,19 @@ $tmp_timeout=(getSettingValue("sessionMaxLength"))*60;
 <script type="text/javascript" language="javascript">
 change = 'no';
 </script>
-<?php
-// On teste si un professeur peut saisir les avis
-if (($_SESSION['statut'] == 'professeur') and getSettingValue("GepiRubConseilProf")!='yes') {
-	die("Droits insuffisants pour effectuer cette opération");
-}
 
-// On teste si le service scolarité peut saisir les avis
-if (($_SESSION['statut'] == 'scolarite') and getSettingValue("GepiRubConseilScol")!='yes') {
-	die("Droits insuffisants pour effectuer cette opération");
-}
-?>
 <form enctype="multipart/form-data" action="saisie_avis1.php" name="form1" method='post'>
 <p class='bold'><a href="saisie_avis.php" onclick="return confirm_abandon(this, change, '<?php echo $themessage; ?>')"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Mes classes</a>
 
 <?php
 
-// Ajout lien classe précédente / classe suivante
-if($_SESSION['statut']=='scolarite'){
+// Ajout lien classe prÃ©cÃ©dente / classe suivante
+if($_SESSION['statut']=='scolarite') {
 	$sql = "SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, j_scol_classes jsc WHERE p.id_classe = c.id  AND jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe";
 }
-elseif($_SESSION['statut']=='professeur'){
+elseif($_SESSION['statut']=='professeur') {
 
-	// On a filtré plus haut les profs qui n'ont pas getSettingValue("GepiRubConseilProf")=='yes'
+	// On a filtrÃ© plus haut les profs qui n'ont pas getSettingValue("GepiRubConseilProf")=='yes'
 	$sql="SELECT DISTINCT c.id,c.classe FROM classes c,
 										j_eleves_classes jec,
 										j_eleves_professeurs jep
@@ -227,7 +258,7 @@ elseif($_SESSION['statut']=='professeur'){
 										jep.professeur='".$_SESSION['login']."'
 								ORDER BY c.classe;";
 }
-elseif($_SESSION['statut']=='cpe'){
+elseif($_SESSION['statut']=='cpe') {
 	// On ne devrait pas arriver ici en CPE...
 	// Il n'y a pas de droit de saisie des avis du conseil.
 	$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, j_eleves_classes jec, j_eleves_cpe jecpe WHERE
@@ -238,11 +269,11 @@ elseif($_SESSION['statut']=='cpe'){
 		jecpe.cpe_login='".$_SESSION['login']."'
 		ORDER BY classe";
 }
-elseif($_SESSION['statut'] == 'autre'){
-	// On recherche toutes les classes pour ce statut qui n'est accessible que si l'admin a donné les bons droits
+elseif($_SESSION['statut'] == 'autre') {
+	// On recherche toutes les classes pour ce statut qui n'est accessible que si l'admin a donnÃ© les bons droits
 	$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe";
 }
-elseif($_SESSION['statut'] == 'secours'){
+elseif($_SESSION['statut'] == 'secours') {
 	$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe";
 }
 
@@ -286,7 +317,7 @@ if($nb_classes_suivies>0){
 
 // =================================
 if(isset($id_class_prec)){
-	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe précédente</a>";}
+	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe prÃ©cÃ©dente</a>";}
 }
 
 if(($chaine_options_classes!="")&&($nb_classes_suivies>1)) {
@@ -322,7 +353,7 @@ if(($chaine_options_classes!="")&&($nb_classes_suivies>1)) {
 if(isset($id_class_suiv)){
 	if($id_class_suiv!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_suiv' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe suivante</a>";}
 }
-//fin ajout lien classe précédente / classe suivante
+//fin ajout lien classe prÃ©cÃ©dente / classe suivante
 echo "</p>\n";
 
 echo "</form>\n";
@@ -346,19 +377,27 @@ if ($id_classe) {
 	}
 	?>
 	<?php
-	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours')) {
-		$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
+	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') or (($_SESSION['statut'] == 'cpe')&&(getSettingValue("GepiRubConseilCpeTous")=='yes'))) {
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
 		WHERE (c.id_classe='$id_classe' AND
 		c.login = e.login
-		) ORDER BY nom");
+		) ORDER BY nom, prenom";
+	} elseif ($_SESSION['statut'] == 'cpe') {
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec, j_eleves_cpe jecpe
+		WHERE (jec.id_classe='$id_classe' AND
+		jec.login = e.login AND
+		jecpe.e_login = jec.login AND
+		jecpe.cpe_login = '".$_SESSION['login']."'
+		) ORDER BY nom, prenom";
 	} else {
-		$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
 		WHERE (c.id_classe='$id_classe' AND
 		c.login = e.login AND
 		p.login = c.login AND
 		p.professeur = '".$_SESSION['login']."'
-		) ORDER BY nom");
+		) ORDER BY nom, prenom";
 	}
+	$appel_donnees_eleves=mysql_query($sql);
 	$nombre_lignes = mysql_num_rows($appel_donnees_eleves);
 
 
@@ -366,18 +405,19 @@ if ($id_classe) {
 /*
 	CommentairesTypesPP
 	CommentairesTypesScol
+	CommentairesTypesCpe
 */
 
-	// Fonction de renseignement du champ qui doit obtenir le focus après validation
+	// Fonction de renseignement du champ qui doit obtenir le focus aprÃ¨s validation
 	echo "<script type='text/javascript'>
 
 function focus_suivant(num){
 	temoin='';
-	// La variable 'dernier' peut dépasser de l'effectif de la classe... mais cela n'est pas dramatique
+	// La variable 'dernier' peut dÃ©passer de l'effectif de la classe... mais cela n'est pas dramatique
 	dernier=num+".$nombre_lignes."
-	// On parcourt les champs à partir de celui de l'élève en cours jusqu'à rencontrer un champ existant
-	// (pour réussir à passer un élève qui ne serait plus dans la période)
-	// Après validation, c'est ce champ qui obtiendra le focus si on n'était pas à la fin de la liste.
+	// On parcourt les champs Ã  partir de celui de l'Ã©lÃ¨ve en cours jusqu'Ã  rencontrer un champ existant
+	// (pour rÃ©ussir Ã  passer un Ã©lÃ¨ve qui ne serait plus dans la pÃ©riode)
+	// AprÃ¨s validation, c'est ce champ qui obtiendra le focus si on n'Ã©tait pas Ã  la fin de la liste.
 	for(i=num;i<dernier;i++){
 		suivant=i+1;
 		if(temoin==''){
@@ -420,10 +460,10 @@ if ($insert_mass_appreciation_type=="y") {
 		}
 
 		echo "<div style='margin:1em; padding:0.2em; width:40em; border: 1px solid black; background-color: white; font-size: small; text-align:center;'>\n";
-		echo "Insérer l'avis-type suivante pour tous les avis vides&nbsp;: ";
+		echo "InsÃ©rer l'avis-type suivant pour tous les avis vides&nbsp;: ";
 		echo "<textarea name='no_anti_inject_ajout_a_textarea_vide' id='ajout_a_textarea_vide' cols='50'>$default_mass_appreciation</textarea><br />\n";
 
-		echo "<input type='checkbox' name='enregistrer_ajout_a_textarea_vide' id='enregistrer_ajout_a_textarea_vide' value='y' /><label for='enregistrer_ajout_a_textarea_vide'>Enregistrer cet avis-type comme avis-type par défaut</label><br />\n";
+		echo "<input type='checkbox' name='enregistrer_ajout_a_textarea_vide' id='enregistrer_ajout_a_textarea_vide' value='y' /><label for='enregistrer_ajout_a_textarea_vide'>Enregistrer cet avis-type comme avis-type par dÃ©faut</label><br />\n";
 
 		echo "<input type='button' name='ajouter_a_textarea_vide' value='Ajouter' onclick='ajoute_a_textarea_vide(); changement()' /><br />\n";
 
@@ -444,7 +484,7 @@ if ($insert_mass_appreciation_type=="y") {
 	}
 
 	function vider_tous_les_avis() {
-		var is_confirmed = confirm('ATTENTION : Vous avez demandé à vider tous les avis saisis pour cette classe ! Etes-vous sûr de vouloir vider ces avis ?');
+		var is_confirmed = confirm('ATTENTION : Vous avez demandÃ© Ã  vider tous les avis saisis pour cette classe ! Etes-vous sÃ»r de vouloir vider ces avis ?');
 		if(is_confirmed){
 			champs_textarea=document.getElementsByTagName('textarea');
 			for(i=0;i<champs_textarea.length;i++){
@@ -463,7 +503,7 @@ if ($insert_mass_appreciation_type=="y") {
 	$k=1;
 	$commentaires_type_classe_periode=array();
 	while ($k < $nb_periode) {
-		// Existe-t-il des commentaires-types pour cette classe et cette période?
+		// Existe-t-il des commentaires-types pour cette classe et cette pÃ©riode?
 		$sql="select 1=1 from commentaires_types WHERE num_periode='$k' AND id_classe='$id_classe'";
 		$res_test=mysql_query($sql);
 		if(mysql_num_rows($res_test)!=0){
@@ -476,10 +516,10 @@ if ($insert_mass_appreciation_type=="y") {
 	}
 
 
-	echo "<table width=\"750\" class='boireaus' border='1' cellspacing='2' cellpadding='5' summary=\"Synthèse de classe\">\n";
+	echo "<table width=\"750\" class='boireaus' border='1' cellspacing='2' cellpadding='5' summary=\"SynthÃ¨se de classe\">\n";
 	echo "<tr>\n";
 	echo "<th width=\"200\"><div align=\"center\"><b>&nbsp;</b></div></th>\n";
-	echo "<th><div align=\"center\"><b>Synthèse de classe</b>\n";
+	echo "<th><div align=\"center\"><b>SynthÃ¨se de classe</b>\n";
 	echo "</div></th>\n";
 	echo "</tr>\n";
 	//========================
@@ -505,7 +545,9 @@ if ($insert_mass_appreciation_type=="y") {
 		if ($ver_periode[$k] != "N") {
 			echo "<tr class='lig$alt'>\n<td><span title=\"$gepiClosedPeriodLabel\">$nom_periode[$k]</span></td>\n";
 		} else {
-			echo "<tr class='lig$alt'>\n<td>$nom_periode[$k]</td>\n";
+			echo "<tr class='lig$alt'>\n<td>";
+			echo $nom_periode[$k];
+			echo "</td>\n";
 		}
 
 		if ($ver_periode[$k] != "O") {
@@ -553,7 +595,6 @@ if ($insert_mass_appreciation_type=="y") {
 		if("$photo"!=""){
 			$titre="$current_eleve_nom $current_eleve_prenom";
 			$texte="<div align='center'>\n";
-			//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$current_eleve_nom $current_eleve_prenom\" />";
 			$texte.="<img src='".$photo."' width='150' alt=\"$current_eleve_nom $current_eleve_prenom\" />";
 			$texte.="<br />\n";
 			$texte.="</div>\n";
@@ -574,7 +615,7 @@ if ($insert_mass_appreciation_type=="y") {
 		echo "<td><div align=\"center\"><b>$current_eleve_nom $current_eleve_prenom</b></div></td>\n";
 		echo "</tr>\n";
 		*/
-		echo "<table width=\"750\" class='boireaus' border='1' cellspacing='2' cellpadding='5' summary=\"Elève $current_eleve_nom $current_eleve_prenom\">\n";
+		echo "<table width=\"750\" class='boireaus' border='1' cellspacing='2' cellpadding='5' summary=\"ElÃ¨ve $current_eleve_nom $current_eleve_prenom\">\n";
 		echo "<tr>\n";
 		echo "<th width=\"200\"><div align=\"center\"><b>&nbsp;</b></div></th>\n";
 		echo "<th><div align=\"center\"><b>$current_eleve_nom $current_eleve_prenom</b>\n";
@@ -610,14 +651,30 @@ if ($insert_mass_appreciation_type=="y") {
 		$alt=1;
 		while ($k < $nb_periode) {
 			$alt=$alt*(-1);
-			if ($ver_periode[$k] != "N") {
-				echo "<tr class='lig$alt'>\n<td><span title=\"$gepiClosedPeriodLabel\">$nom_periode[$k]</span></td>\n";
-			} else {
-				echo "<tr class='lig$alt'>\n<td>$nom_periode[$k]</td>\n";
-			}
+
+			$result_test=0;
 			if ($ver_periode[$k] != "O") {
 				$call_eleve = mysql_query("SELECT login FROM j_eleves_classes WHERE (login = '$current_eleve_login' and id_classe='$id_classe' and periode='$k')");
 				$result_test = mysql_num_rows($call_eleve);
+			}
+
+			if ($ver_periode[$k] != "N") {
+				echo "<tr class='lig$alt'>\n<td><span title=\"$gepiClosedPeriodLabel\">$nom_periode[$k]</span></td>\n";
+			} elseif(($ver_periode[$k] != "O")&&($result_test>0)) {
+				echo "<tr class='lig$alt'>\n<td>";
+				echo "<a href='saisie_avis2.php?periode_num=".$k."&id_classe=".$id_classe."&fiche=y&current_eleve_login=".$current_eleve_login."&ind_eleve_login_suiv=$i#app'>";
+				echo $nom_periode[$k];
+				echo "</a>";
+				echo "</td>\n";
+			} else {
+				echo "<tr class='lig$alt'>\n<td>";
+				echo $nom_periode[$k];
+				echo "</td>\n";
+			}
+
+			if ($ver_periode[$k] != "O") {
+				//$call_eleve = mysql_query("SELECT login FROM j_eleves_classes WHERE (login = '$current_eleve_login' and id_classe='$id_classe' and periode='$k')");
+				//$result_test = mysql_num_rows($call_eleve);
 				if ($result_test != 0) {
 					echo "<td>\n";
 					echo "<input type='hidden' name='log_eleve_".$k."[$i]' value=\"".$current_eleve_login_t[$k]."\" />\n";
@@ -649,7 +706,7 @@ if ($insert_mass_appreciation_type=="y") {
 						echo "<option value='B'$selectedB> </option>\n";
 						echo "<option value='E'$selectedE>Encouragements</option>\n";
 						echo "<option value='M'$selectedM>Mention honorable</option>\n";
-						echo "<option value='F'$selectedF>Félicitations</option>\n";
+						echo "<option value='F'$selectedF>FÃ©licitations</option>\n";
 						echo "</select>\n";
 						*/
 					}
@@ -659,7 +716,8 @@ if ($insert_mass_appreciation_type=="y") {
 
 					if((file_exists('saisie_commentaires_types.php'))
 						&&(($_SESSION['statut'] == 'professeur')&&(getSettingValue("GepiRubConseilProf")=='yes')&&(getSettingValue('CommentairesTypesPP')=='yes'))
-						||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))) {
+						||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))
+						||(($_SESSION['statut'] == 'cpe')&&((getSettingValue("GepiRubConseilCpe")=='yes')||(getSettingValue("GepiRubConseilCpeTous")=='yes'))&&(getSettingValue('CommentairesTypesCpe')=='yes'))) {
 
 						if($commentaires_type_classe_periode[$k]=="y"){
 							echo "<a href='#' onClick=\"document.getElementById('textarea_courant').value='n".$k.$num_id."';afficher_div('commentaire_type','y',30,-50);return false;\">Ajouter un commentaire-type</a>\n";
@@ -703,7 +761,8 @@ if ($insert_mass_appreciation_type=="y") {
 
 	if((file_exists('saisie_commentaires_types.php'))
 		&&(($_SESSION['statut'] == 'professeur')&&(getSettingValue("GepiRubConseilProf")=='yes')&&(getSettingValue('CommentairesTypesPP')=='yes'))
-		||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))) {
+		||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))
+		||(($_SESSION['statut'] == 'cpe')&&((getSettingValue("GepiRubConseilCpe")=='yes')||(getSettingValue("GepiRubConseilCpeTous")=='yes'))&&(getSettingValue('CommentairesTypesCpe')=='yes'))) {
 		//include('saisie_commentaires_types.php');
 		//include('saisie_commentaires_types2.php');
 		include('saisie_commentaires_types2b.php');
@@ -717,17 +776,17 @@ if ($insert_mass_appreciation_type=="y") {
 		<input type='hidden' name='id_classe' value=<?php echo "$id_classe";?> />
 		<center><div id="fixe"><input type='submit' value='Enregistrer' />
 
-		<!-- DIV destiné à afficher un décompte du temps restant pour ne pas se faire piéger par la fin de session -->
+		<!-- DIV destinÃ© Ã  afficher un dÃ©compte du temps restant pour ne pas se faire piÃ©ger par la fin de session -->
 		<div id='decompte'></div>
 
-		<!-- Champ destiné à recevoir la valeur du champ suivant celui qui a le focus pour redonner le focus à ce champ après une validation -->
+		<!-- Champ destinÃ© Ã  recevoir la valeur du champ suivant celui qui a le focus pour redonner le focus Ã  ce champ aprÃ¨s une validation -->
 		<input type='hidden' id='info_focus' name='champ_info_focus' value='' size='3' />
 
 		</div></center>
 		<br /><br /><br /><br />
 
 		<?php
-			// Il faudra permettre de n'afficher ce décompte que si l'administrateur le souhaite.
+			// Il faudra permettre de n'afficher ce dÃ©compte que si l'administrateur le souhaite.
 
 			echo "<script type='text/javascript'>
 
@@ -754,7 +813,7 @@ decompte(cpt);
 
 ";
 
-		// Après validation, on donne le focus au champ qui suivait celui qui vien d'être rempli
+		// AprÃ¨s validation, on donne le focus au champ qui suivait celui qui vien d'Ãªtre rempli
 		if(isset($_POST['champ_info_focus'])){
 			if($_POST['champ_info_focus']!=""){
 				echo "// On positionne le focus...

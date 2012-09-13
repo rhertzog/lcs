@@ -1,8 +1,7 @@
 <?php
 /**
- * Ajouter, modifier une évaluation cumule
+ * Ajouter, modifier une Ã©valuation cumule
  * 
- * $Id: add_modif_cc_eval.php 7742 2011-08-13 23:37:55Z regis $
  * 
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -57,9 +56,9 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_carnets_notes")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
 /**
  * Calcul des arrondis
@@ -69,14 +68,14 @@ require('cc_lib.php');
 $id_racine=isset($_POST["id_racine"]) ? $_POST["id_racine"] : (isset($_GET["id_racine"]) ? $_GET["id_racine"] : NULL);
 
 if(!isset($id_racine)) {
-	$mess="Racine non précisée pour $nom_cc.<br />";
+	$mess="Racine non prÃ©cisÃ©e pour $nom_cc.<br />";
 	header("Location: index.php?msg=$mess");
 	die();
 }
 
-// On teste si le carnet de notes appartient bien à la personne connectée
+// On teste si le carnet de notes appartient bien Ã  la personne connectÃ©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+    $mess=rawurlencode("Vous tentez de pÃ©nÃ©trer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -87,13 +86,13 @@ $current_group=get_group($id_groupe);
 $periode_num=mysql_result($appel_cahier_notes, 0, 'periode');
 
 /**
- * Gestion des périodes
+ * Gestion des pÃ©riodes
  */
 include "../lib/periodes.inc.php";
 
 $id_dev=isset($_POST["id_dev"]) ? $_POST["id_dev"] : (isset($_GET["id_dev"]) ? $_GET["id_dev"] : NULL);
 if(!isset($id_dev)) {
-	$mess="$nom_cc non précisé.<br />";
+	$mess="$nom_cc non prÃ©cisÃ©.<br />";
 	header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 	die();
 }
@@ -107,40 +106,43 @@ if($query) {
 	$description_dev=mysql_result($query, 0, 'description');
 }
 else {
-	header("Location: index.php?msg=".rawurlencode("Le numéro de devoir n est pas associé à ce groupe."));
+	header("Location: index.php?msg=".rawurlencode("Le numÃ©ro de devoir n est pas associÃ© Ã  ce groupe."));
 	die();
 }
 
 $id_eval=isset($_POST["id_eval"]) ? $_POST["id_eval"] : (isset($_GET["id_eval"]) ? $_GET["id_eval"] : NULL);
 if(isset($id_eval))  {
 	$sql="SELECT * FROM cc_eval WHERE id='$id_eval';";
+	//echo "$sql<br />";
 	$query=mysql_query($sql);
 	if($query) {
-		// Vérifier que l'évaluation est bien associée au CC.
+		// VÃ©rifier que l'Ã©valuation est bien associÃ©e au CC.
 		$sql="SELECT * FROM cc_eval WHERE id='$id_eval' AND id_dev='$id_dev';";
+		//echo "$sql<br />";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)==0) {
-			$mess="L'évaluation n°$id_eval n'est pas associée au $nom_cc n°$id_dev.<br />";
+			$mess="L'Ã©valuation nÂ°$id_eval n'est pas associÃ©e au $nom_cc nÂ°$id_dev.<br />";
 			header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 			die();
 		}
 
-		$id_cn_dev=mysql_result($query, 0, 'id_cn_dev');
+		//$id_cn_dev=mysql_result($query, 0, 'id_cn_dev');
 		$nom_court=mysql_result($query, 0, 'nom_court');
 		$nom_complet=mysql_result($query, 0, 'nom_complet');
-		$description=mysql_result($query, 0, 'description');
+		$description=nettoyage_retours_ligne_surnumeraires(mysql_result($query, 0, 'description'));
+
 		$display_date=mysql_result($query, 0, 'date');
 		$note_sur=mysql_result($query, 0, 'note_sur');
 	}
 	else {
-		header("Location: index.php?msg=".rawurlencode("L évaluation n°$id_eval n'existe pas."));
+		header("Location: index.php?msg=".rawurlencode("L Ã©valuation nÂ°$id_eval n'existe pas."));
 		die();
 	}
 }
 else {
 
 	$nom_court="Ev";
-	$nom_complet="Evaluation n°";
+	$nom_complet="Evaluation nÂ°";
 	$description="";
 	$display_date=strftime('%d/%m/%Y');
 	$note_sur=5;
@@ -150,7 +152,7 @@ $matiere_nom=$current_group["matiere"]["nom_complet"];
 $matiere_nom_court=$current_group["matiere"]["matiere"];
 $nom_classe=$current_group["classlist_string"];
 
-// enregistrement des données
+// enregistrement des donnÃ©es
 if (isset($_POST['ok'])) {
 	check_token();
 
@@ -161,7 +163,7 @@ if (isset($_POST['ok'])) {
 	$note_sur=preg_replace('/[^0-9]/','',$_POST['note_sur']);
 
 	if($nom_court=='') {
-		$msg="Le nom_court de l'évaluation ne peut pas être vide.";
+		$msg="Le nom_court de l'Ã©valuation ne peut pas Ãªtre vide.";
 		header("Location: index_cc.php?id_racine=$id_racine&msg=$msg");
 		die();
 	}
@@ -175,7 +177,7 @@ if (isset($_POST['ok'])) {
 			$sql="INSERT INTO cc_eval SET id_dev='$id_dev';";
 			$insert=mysql_query($sql);
 			if(!$insert) {
-				$msg="Erreur lors de la création de l'évaluation associée au $nom_cc n°$id_dev.";
+				$msg="Erreur lors de la crÃ©ation de l'Ã©valuation associÃ©e au $nom_cc nÂ°$id_dev.";
 				header("Location: index_cc.php?id_racine=$id_racine&msg=$msg");
 				die();
 			}
@@ -186,9 +188,9 @@ if (isset($_POST['ok'])) {
 
 		if ($_POST['display_date']) {
 			if (my_ereg("([0-9]{2})/([0-9]{2})/([0-9]{4})", $_POST['display_date'])) {
-				$annee=substr($_POST['display_date'],6,4);
-				$mois=substr($_POST['display_date'],3,2);
-				$jour=substr($_POST['display_date'],0,2);
+				$annee=mb_substr($_POST['display_date'],6,4);
+				$mois=mb_substr($_POST['display_date'],3,2);
+				$jour=mb_substr($_POST['display_date'],0,2);
 			} else {
 				$annee=strftime("%Y");
 				$mois=strftime("%m");
@@ -204,10 +206,10 @@ if (isset($_POST['ok'])) {
 		$sql="UPDATE cc_eval SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', note_sur='$note_sur', date='".$date."' WHERE id='$id_eval';";
 		$update=mysql_query($sql);
 		if(!$insert) {
-			$msg="Erreur lors de la création ou mise à jour de l'évaluation associée au $nom_cc n°$id_dev. $sql";
+			$msg="Erreur lors de la crÃ©ation ou mise Ã  jour de l'Ã©valuation associÃ©e au $nom_cc nÂ°$id_dev. $sql";
 		}
 		else {
-			$msg="Création ou mise à jour de l'évaluation associée au $nom_cc n°$id_dev effectuée.";
+			$msg="CrÃ©ation ou mise Ã  jour de l'Ã©valuation associÃ©e au $nom_cc nÂ°$id_dev effectuÃ©e.";
 		}
 		header("Location: index_cc.php?id_racine=$id_racine&msg=$msg");
 		die();
@@ -224,9 +226,9 @@ $cal = new Calendrier("formulaire", "display_date");
 //**************** EN-TETE *****************
 $titre_page="Carnet de notes - Ajout/modification d'un $nom_cc";
 /**
- * Entête de la page
+ * EntÃªte de la page
  */
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 echo "<form enctype=\"multipart/form-data\" name= \"formulaire\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
@@ -238,7 +240,7 @@ echo "<a href='index_cc.php?id_racine=$id_racine'><img src='../images/icons/back
 echo "</p>\n";
 echo "</div>\n";
 
-echo "<h2 class='gepi'>Configuration d'une évaluation de $nom_court_dev (<i>$nom_complet_dev</i>)&nbsp;:</h2>\n";
+echo "<h2 class='gepi'>Configuration d'une Ã©valuation de $nom_court_dev (<i>$nom_complet_dev</i>)&nbsp;:</h2>\n";
 
 $aff_nom_court="y";
 $aff_nom_complet="y";
@@ -247,7 +249,7 @@ $aff_date="y";
 $aff_note_sur="y";
 
 echo "<div align='center'>\n";
-echo "<table class='boireaus' border='1' summary='Parametres de l évaluation'>\n";
+echo "<table class='boireaus' border='1' summary='Parametres de l Ã©valuation'>\n";
 
 if($aff_nom_court=='y'){
 	echo "<tr>\n";
@@ -296,7 +298,7 @@ else{
 	echo "<tr style='display:none;'>\n";
 	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Description&nbsp;:</td>\n";
 	echo "<td>\n";
-	echo "<input type='hidden' name='description' value='$description' />\n";
+	echo "<input type='hidden' name='description' value=\"$description\" />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
 }
@@ -305,7 +307,7 @@ if($aff_note_sur=='y'){
 	echo "<tr>\n";
 	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Note sur&nbsp;:</td>\n";
 	echo "<td>\n";
-	echo "<input type='text' name='note_sur' size='4' autocomplete='off' onfocus=\"javascript:this.select()\" value=\"".$note_sur."\" />\n";
+	echo "<input type='text' name='note_sur' id='note_sur' size='4' onfocus=\"javascript:this.select()\" value=\"".$note_sur."\" onkeydown=\"clavier_2(this.id,event,1,100);\" autocomplete=\"off\" />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
 }

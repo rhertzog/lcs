@@ -3,7 +3,6 @@
 /**
  * Fichier d'initialisation de l'EdT
  * Pour effacer la table avant une nouvelle initialisation il faut faire un TRUNCATE TABLE nom_table;
- * @version $Id: edt_initialiser.php 4592 2010-06-18 13:39:41Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -44,22 +43,22 @@ if ($resultat_session == 'c') {
     die();
 }
 
-// SÈcuritÈ
+// S√©curit√©
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=2");
     die();
 }
-// SÈcuritÈ supplÈmentaire par rapport aux paramËtres du module EdT / Calendrier
+// S√©curit√© suppl√©mentaire par rapport aux param√®tres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
 	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
-// CSS et js particulier ‡ l'EdT
+// CSS et js particulier √† l'EdT
 $utilisation_win = 'oui';
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
 $style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 
-// On insËre l'entÍte de Gepi
-require_once("../lib/header.inc");
+// On ins√®re l'ent√™te de Gepi
+require_once("../lib/header.inc.php");
 
 // On ajoute le menu EdT
 require_once("./menu.inc.php"); ?>
@@ -88,13 +87,14 @@ $aff_reglages = GetSettingEdt("edt_aff_init_infos");
 
 if ($aff_reglages == "oui") {
 	echo "
-	<p style=\"font-weight: bold;\">Avant de commencer la crÈation des cours dans l'emploi du temps, il faut prÈparer le logiciel.</p>
+	<p style=\"font-weight: bold;\">Avant de commencer la cr√©ation des cours dans l'emploi du temps, il faut pr√©parer le logiciel.</p>
 
 	<p>Une partie de l'initialisation est commune avec le module absences :
 	<br />&nbsp;-&nbsp;<a href=\"./admin_periodes_absences.php?action=visualiser\">les diff&eacute;rents cr&eacute;neaux</a> de la journ&eacute;e.
 	<br />&nbsp;-&nbsp;<a href=\"./admin_config_semaines.php?action=visualiser\">le type de semaine</a> (paire/impaire, A/B/C, 1/2,...).
 	<br />&nbsp;-&nbsp;<a href=\"./admin_horaire_ouverture.php?action=visualiser\">les horaires de l'&eacute;tablissement</a>.</p>
 
+	<p>Voir <a href='http://www.sylogix.org/projects/gepi/wiki/Edt_init_auto'>http://www.sylogix.org/projects/gepi/wiki/Edt_init_auto</a></p>
 <hr />
 
 	<p>Il faut renseigner le calendrier en cliquant sur le menu &agrave; gauche. Toutes les p&eacute;riodes
@@ -106,16 +106,16 @@ if ($aff_reglages == "oui") {
 	Pour entrer des informations dans l'emploi du temps de Gepi, il y a plusieurs possibilit&eacute;s.
 	<br /><br />
 	<p onclick=\"ouvrirWin2('id_manuel'); return false;\" style=\"float: left; border: 1px solid grey; background: #FFFFFF; width: 200px; text-align: center; cursor: pointer;\">
-	MÈthode manuelle</p>
+	M√©thode manuelle</p>
 
 	<p onclick=\"changerDisplayDiv('edt_init_import'); return false;\" style=\"position: relative; margin-left: 350px; border: 1px solid grey; background: #FFFFFF; width: 200px; text-align: center; cursor: pointer;\">
 	Importation</p>
 	";
 }
-// ============================= c'est l‡ que j'ai sorti la partie manuelle ==================
+// ============================= c'est l√† que j'ai sorti la partie manuelle ==================
 
-	// une fois initialisÈ, la partie suivante peut Ítre verrouillÈe
-			// Pour dÈverrouiller, le traitement se fait ici l‡
+	// une fois initialis√©, la partie suivante peut √™tre verrouill√©e
+			// Pour d√©verrouiller, le traitement se fait ici l√†
 
 echo '<div id="edt_init_import" style="display: none;">';
 
@@ -138,7 +138,7 @@ if ($aff_reglages2 == "oui") {
 	 qui est possible. Avant de vous lancer dans cette initialisation, vous devez vous assurer d\'avoir param&eacute;tr&eacute;
  	l\'ensemble des informations relatives aux horaires de l\'&eacute;tablissement.</h5>
 
- 	<h4 class="red">Pour les procÈdures suivantes, vous pouvez demander ‡ Gepi d\'effacer les cours existants ou dÈcider de les conserver.</h4>
+ 	<h4 class="red">Pour les proc√©dures suivantes, vous pouvez demander √† Gepi d\'effacer les cours existants ou d√©cider de les conserver.</h4>
 
  	<div id="lien" style="background: #fefefe; margin-left: 200px; width: 400px;">
  		<br />
@@ -148,6 +148,16 @@ if ($aff_reglages2 == "oui") {
 		<br />
 	</div>
  		';
+
+	if(file_exists("edt_xml.php")) {
+		echo '
+ 	<div id="lien" style="background: #fefefe; margin-left: 200px; width: 400px; margin-top:1em;">
+ 		<br />
+		<p class="edt_lien"><a href="./edt_xml.php">G√©n√©rer un export de type UnDeuxTemps √† partir d\'un export EXP_COURS.xml d\'IndexEducation.</a></p>
+		<br />
+	</div>
+';
+	}
 
  //<div id=\"lien\"><a href=\"./index_edt.php?initialiser=ok&xml=ok\">Cliquer ici pour une initialisation par fichiers xml (type export STSWeb)</a></div>
 }

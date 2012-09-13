@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: accueil_admin.php 7787 2011-08-16 12:19:46Z dblanqui $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -22,24 +21,24 @@
  */
  
  
-/* ---------Variables envoyées au gabarit
+/* ---------Variables envoyÃ©es au gabarit
 *
 *	$tbs_menu
 *				-> classe								classe CSS
 *				-> image								icone du lien
 *				-> texte								texte du titre du menu
-*				-> entree								entrées du menu
+*				-> entree								entrÃ©es du menu
 *							-> lien						lien vers la page
 *							-> titre   				texte du lien
 *							-> expli					explications
 *	$niveau_arbo									Niveau dans l'arborescence
 *	$titre_page										Titre de la page
 *	$tbs_last_connection					Vide, pour ne pas avoir d'erreur dans le bandeau
-*	$tbs_retour										Lien retour arrière
+*	$tbs_retour										Lien retour arriÃ¨re
 *	$tbs_ariane										Fil d'arianne
 *
 *
-*	Variables héritées de :
+*	Variables hÃ©ritÃ©es de :
 *
 *	header_template.inc
 *	header_barre_prof_template.inc
@@ -86,7 +85,7 @@ function affiche_ligne($chemin_,$statut_) {
 	$tmp_tab=explode("#",$chemin_);
 	//if (acces($chemin_,$statut_)==1)  {
 	if (acces($tmp_tab[0],$statut_)==1)  {
-		$temp = substr($chemin_,1);
+		$temp = mb_substr($chemin_,1);
 	/*
 		  echo "<tr>";
 		  //echo "<td width='30%'><a href=$temp>$titre_</a></span>";
@@ -112,24 +111,16 @@ $titre_page = "Accueil - Administration des bases";
 $tbs_last_connection="";
 
 // ====== Inclusion des balises head et du bandeau =====
-include_once("./lib/header_template.inc");
+include_once("./lib/header_template.inc.php");
 /****************************************************************
 			FIN HAUT DE PAGE
 ****************************************************************/
 if (!suivi_ariane($_SERVER['PHP_SELF'],"Administration des bases"))
-		echo "erreur lors de la création du fil d'ariane";
+		echo "erreur lors de la crÃ©ation du fil d'ariane";
 /****************************************************************
 
 ****************************************************************/
 
-//require_once("./lib/header.inc");
-
-//$tbs_retour="accueil.php";
-//$tbs_ariane[0]=array("titre" => "accueil" , "lien"=>"accueil.php");
-
-//if (isset($msg)) { echo "<font color='red' size='2'>$msg</font>"; }
-
-//<center>
 
 
 
@@ -148,9 +139,9 @@ $chemin = array(
 );
 
 $titre = array(
-"Gestion des établissements",
-"Gestion des matières",
-"Gestion des comptes d'accès des utilisateurs",
+"Gestion des Ã©tablissements",
+"Gestion des matiÃ¨res",
+"Gestion des comptes d'accÃ¨s des utilisateurs",
 "Gestion des ".$gepiSettings['denomination_eleves'],
 "Gestion des ".$gepiSettings['denomination_responsables'],
 "Gestion des classes",
@@ -162,22 +153,22 @@ $titre = array(
 );
 
 $expli = array(
-"Définir, modifier, supprimer des établissements de la base de données.",
-"Définir, modifier, supprimer des matières de la base de données.",
-"Gérer les comptes d'accès permettant aux utilisateurs de se connecter à Gepi (personnels de l'établissement, ".$gepiSettings['denomination_eleves']." et ".$gepiSettings['denomination_responsables'].").",
-"Définir, modifier, supprimer les ".$gepiSettings['denomination_eleves'].".",
-"Définir, modifier, supprimer les ".$gepiSettings['denomination_responsables'].".",
-"Définir, modifier, supprimer les classes.
-<br />Gérer les paramètres des classes : périodes, coefficients, affichage du rang, ...
-<br />Affecter les matières et les ".$gepiSettings['denomination_professeurs']." aux classes.
+"DÃ©finir, modifier, supprimer des Ã©tablissements de la base de donnÃ©es.",
+"DÃ©finir, modifier, supprimer des matiÃ¨res de la base de donnÃ©es.",
+"GÃ©rer les comptes d'accÃ¨s permettant aux utilisateurs de se connecter Ã  Gepi (personnels de l'Ã©tablissement, ".$gepiSettings['denomination_eleves']." et ".$gepiSettings['denomination_responsables'].").",
+"DÃ©finir, modifier, supprimer les ".$gepiSettings['denomination_eleves'].".",
+"DÃ©finir, modifier, supprimer les ".$gepiSettings['denomination_responsables'].".",
+"DÃ©finir, modifier, supprimer les classes.
+<br />GÃ©rer les paramÃ¨tres des classes : pÃ©riodes, coefficients, affichage du rang, ...
+<br />Affecter les matiÃ¨res et les ".$gepiSettings['denomination_professeurs']." aux classes.
 <br />Affecter les ".$gepiSettings['denomination_eleves']." aux classes.
-<br />Affecter le ".$gepiSettings['gepi_prof_suivi'].", les CPE, modifier le régime et la mention \"redoublant\".
-<br />Modifier les matières suivies par les ".$gepiSettings['denomination_eleves'].".
-<br />Modifier des paramètres du bulletin.",
-//"Définir, modifier, supprimer les groupes d'enseignement",
-"Définir, modifier, supprimer des AID (Activités Inter-Disciplinaires).
+<br />Affecter le ".$gepiSettings['gepi_prof_suivi'].", les CPE, modifier le rÃ©gime et la mention \"redoublant\".
+<br />Modifier les matiÃ¨res suivies par les ".$gepiSettings['denomination_eleves'].".
+<br />Modifier des paramÃ¨tres du bulletin.",
+//"DÃ©finir, modifier, supprimer les groupes d'enseignement",
+"DÃ©finir, modifier, supprimer des AID (ActivitÃ©s Inter-Disciplinaires).
 <br />Affecter les ".$gepiSettings['denomination_professeurs']." et les ".$gepiSettings['denomination_eleves'].".",
-"Repérer les personnels/".$gepiSettings['denomination_eleves']." n'ayant pas de photo.
+"RepÃ©rer les personnels/".$gepiSettings['denomination_eleves']." n'ayant pas de photo.
 <br />Vider le dossier des photos,...",
 "Gestion des mef (niveaux)",
 "Gestion de la table de correspondance des identifiants pour le SSO "     
@@ -232,7 +223,7 @@ $tbs_pmv="";
 require_once ("./lib/footer_template.inc.php");
 	
 //==================================
-// Décommenter la ligne ci-dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
+// DÃ©commenter la ligne ci-dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
 //debug_var();
 
 

@@ -1,13 +1,12 @@
 <?php
 /*
-$Id: lib_eb.php 3821 2009-11-27 08:33:24Z crob $
 */
 /*
 function get_nom_prenom_eleve($login_ele) {
 	$sql="SELECT nom,prenom FROM eleves WHERE login='$login_ele';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		return "Elève inconnu";
+		return "ElÃ¨ve inconnu";
 	}
 	else {
 		$lig=mysql_fetch_object($res);
@@ -23,7 +22,7 @@ function get_denomination_prof($login) {
 	}
 	else {
 		$lig=mysql_fetch_object($res);
-		return $lig->civilite." ".casse_mot($lig->nom)." ".strtoupper(substr($lig->prenom,0,1));
+		return $lig->civilite." ".casse_mot($lig->nom)." ".strtoupper(mb_substr($lig->prenom,0,1));
 	}
 }
 
@@ -74,7 +73,7 @@ function calcul_moy_med($tableau) {
 		$tab_valeur2=sort($tab_valeur);
 		$n=count($tab_valeur);
 		if($n/2==round($n/2)) {
-			// Les indices commencent à zéro
+			// Les indices commencent Ã  zÃ©ro
 			$tab_retour['mediane']=((100*$tab_valeur[$n/2-1]+100*$tab_valeur[$n/2])/100)/2;
 		}
 		else {

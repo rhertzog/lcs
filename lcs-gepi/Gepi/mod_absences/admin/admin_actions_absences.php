@@ -1,9 +1,9 @@
 <?php
 /*
  *
- * $Id: admin_actions_absences.php 3413 2009-09-12 08:05:14Z crob $
+ * $Id$
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
  * This file is part of GEPI.
  *
@@ -72,13 +72,13 @@ if ($action_sql == "ajouter" or $action_sql == "modifier")
 {
    while ($total < $nb_ajout)
       {
-            // VÈrifcation des variable
+            // V√©rifcation des variable
               $init_absence_action_ins = $_POST['init_absence_action'][$total];
               $def_absence_action_ins = securite_texte($_POST['def_absence_action'][$total]);
 
               if ($action_sql == "modifier") { $id_absence_action_ins = $_POST['id_motif'][$total]; }
 
-            // VÈrification des champs nom et prenom (si il ne sont pas vides ?)
+            // V√©rification des champs nom et prenom (si il ne sont pas vides ?)
             if($init_absence_action_ins != "" && $def_absence_action_ins != "")
             {
                  if($action_sql == "ajouter") { $test = mysql_result(mysql_query("SELECT count(*) FROM absences_actions WHERE init_absence_action = '".$init_absence_action_ins."'"),0); }
@@ -92,7 +92,7 @@ if ($action_sql == "ajouter" or $action_sql == "modifier")
                       }
                      if($action_sql == "modifier")
                       {
-                            // Requete de mise ‡ jour MYSQL
+                            // Requete de mise √† jour MYSQL
                               $requete = "UPDATE absences_actions SET
                                                   init_absence_action = '$init_absence_action_ins',
                                                   def_absence_action = '$def_absence_action_ins'
@@ -102,12 +102,12 @@ if ($action_sql == "ajouter" or $action_sql == "modifier")
                              mysql_query($requete) or die('Erreur SQL !'.$sql.'<br />'.mysql_error());
                              $verification[$total] = 1;
                     } else {
-                               // vÈrification = 2 - C'est initiale pour les motif existe dÈjas
+                               // v√©rification = 2 - C'est initiale pour les motif existe d√©jas
                                  $verification[$total] = 2;
                                  $erreur = 1;
                             }
             } else {
-                     // vÈrification = 3 - Tous les champs ne sont pas remplie
+                     // v√©rification = 3 - Tous les champs ne sont pas remplie
                      $verification[$total] = 3;
                      $erreur = 1;
                    }
@@ -148,9 +148,9 @@ if ($action_sql == "supprimer") {
             $requete = "DELETE FROM absences_actions WHERE id_absence_action ='$id_motif'";
          // Execution de cette requete
             mysql_query($requete) or die('Erreur SQL !'.$requete.'<br />'.mysql_error());
-            $msg = "La suppresion a ÈtÈ effectuÈe avec succËs.";
+            $msg = "La suppresion a √©t√© effectu√©e avec succ√®s.";
       } else {
-          $msg = "Suppression impossible car une ou plusieurs suivi ont ÈtÈ enregistrÈes avec ce type d'action. Commencez par supprimer les suivis concernÈes";
+          $msg = "Suppression impossible car une ou plusieurs suivi ont √©t√© enregistr√©es avec ce type d'action. Commencez par supprimer les suivis concern√©es";
       }
 
 }
@@ -162,24 +162,85 @@ if ($action == "modifier")
       $data_modif_motif = mysql_fetch_array($resultat_modif_motif);
  }
 
+if ($action == "reinit_lettres_pdf") {
+	check_token();
+
+	$f=fopen("../../sql/mod_absences_reinit.sql", "r");
+	if(!$f) {
+		$msg="Erreur lors de l'ouverture du fichier de r√©initialisation les lettres PDF du module Absences 1.<br />\n";
+	}
+	else {
+		$sql="TRUNCATE lettres_cadres;";
+		$res=mysql_query($sql);
+		$sql="TRUNCATE lettres_tcs;";
+		$res=mysql_query($sql);
+		$sql="TRUNCATE lettres_types;";
+		$res=mysql_query($sql);
+
+		$nb_err=0;
+		$nb_reg=0;
+		while(!feof($f)) {
+			$ligne=ensure_utf8(fgets($f, 4096));
+			if(trim($ligne)!="") {
+				$res=mysql_query($ligne);
+				if(!$res) {
+					$nb_err++;
+				}
+				else {
+					$nb_reg++;
+				}
+			}
+		}
+		fclose($f);
+		if($nb_err==0) {
+			if($nb_reg==0) {
+				$msg="Pas d'erreur relev√©e, mais aucun enregistrement effectu√©???<br />\n";
+			}
+			else {
+				$msg="$nb_reg enregistrement(s) effectu√©(s).<br />\n";
+			}
+		}
+		else {
+			if($nb_reg==0) {
+				$msg=$nb_err." erreur(s) relev√©e(s) et aucun enregistrement effectu√©???<br />\n";
+			}
+			else {
+				$msg=$nb_err." erreur(s) relev√©e(s) (???) et $nb_reg enregistrement(s) effectu√©(s).<br />\n";
+			}
+		}
+	}
+}
+
 // header
 $titre_page = "Gestion des actions de suivi";
-require_once("../../lib/header.inc");
+require_once("../../lib/header.inc.php");
 
 
-echo "<p class=bold>";
+echo "<p class='bold'>";
 if ($action=="modifier" OR $action=="ajouter") {
 	echo "<a href=\"admin_actions_absences.php?action=visualiser\">";
 } elseif ($action=="visualiser") {
 	echo "<a href='index.php'>";
 }
+elseif($action == "reinit_lettres_pdf") {
+	echo "<a href='index.php'>";
+}
 echo "<img src='../../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 echo "</p>";
+
+//echo "\$action=$action<br />";
+
+if ($action == "reinit_lettres_pdf") {
+	echo "<p>R√©initialisation des param√®tres des lettres PDF.</p>";
+	require("../../lib/footer.inc.php");
+	die();
+}
+
 ?>
 <?php if ($action === "visualiser") { ?>
 <?php /* div de centrage du tableau pour ie5 */ ?>
 <div style="text-align:center">
-    <h2>DÈfinition des actions de suivi</h2>
+    <h2>D√©finition des actions de suivi</h2>
     <p><a href="admin_actions_absences.php?action=ajouter"><img src='../../images/icons/add.png' alt='' class='back_link' /> Ajouter une ou des action(s)</a></p>
     <br/>
     <table cellpadding="0" cellspacing="1" class="tab_table">
@@ -217,10 +278,10 @@ echo "</p>";
      <fieldset class="fieldset_efface">
       <table cellpadding="2" cellspacing="2" class="tab_table">
         <tr>
-          <th class="tab_th">Nombre d'actions ‡ ajouter</th>
+          <th class="tab_th">Nombre d'actions √† ajouter</th>
         </tr>
         <tr style="text-align: right;">
-          <td class="couleur_ligne_1"><input name="nb_ajout" type="text" size="5" maxlength="5" value="<?php if(isset($nb_ajout)) { echo $nb_ajout; } else { ?>1<?php } ?>" class="input_sans_bord" />&nbsp;&nbsp;&nbsp;<input type="submit" name="Submit2" value="Mettre ‡ jour" /></td>
+          <td class="couleur_ligne_1"><input name="nb_ajout" type="text" size="5" maxlength="5" value="<?php if(isset($nb_ajout)) { echo $nb_ajout; } else { ?>1<?php } ?>" class="input_sans_bord" />&nbsp;&nbsp;&nbsp;<input type="submit" name="Submit2" value="Mettre √† jour" /></td>
         </tr>
       </table>
      </fieldset>
@@ -242,7 +303,7 @@ echo "</p>";
          <tr>
           <td class="centre"><img src="../images/attention.png" width="28" height="28" alt="" /></td>
           <td colspan="2" class="erreur_rouge_jaune"><b>- Erreur -<br />
-          <?php if ($verification_erreur[$nb] === 2) { ?>Le code saisi existe dÈj‡<?php } ?>
+          <?php if ($verification_erreur[$nb] === 2) { ?>Le code saisi existe d√©j√†<?php } ?>
           <?php if ($verification_erreur[$nb] === 3) { ?>Tous les champs ne sont pas remplis<?php } ?>
           </b><br /></td>
          </tr>

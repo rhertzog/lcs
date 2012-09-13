@@ -1,12 +1,11 @@
 <?php
 
 /**
- * @version $Id: index.php 7950 2011-08-24 13:53:46Z jjocal $
  *
- * Module d'intÈgration de Gepi dans un ENT rÈalisÈ au moment de l'intÈgration de Gepi dans ARGOS dans l'acadÈmie de Bordeaux
- * Fichier permettant de rÈcupÈrer de nouveaux ÈlËves dans le ldap de l'ENT
+ * Module d'int√©gration de Gepi dans un ENT r√©alis√© au moment de l'int√©gration de Gepi dans ARGOS dans l'acad√©mie de Bordeaux
+ * Fichier permettant de r√©cup√©rer de nouveaux √©l√®ves dans le ldap de l'ENT
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Eric Lebrun, StÈphane boireau, Julien Jocal
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Eric Lebrun, St√©phane boireau, Julien Jocal
  *
  * This file is part of GEPI.
  *
@@ -43,7 +42,7 @@ if (!checkAccess()) {
 	die();
 }
 
-// SÈcuritÈ supplÈmentaire pour Èviter d'aller voir ce fichier si on n'est pas dans un ent
+// S√©curit√© suppl√©mentaire pour √©viter d'aller voir ce fichier si on n'est pas dans un ent
 if (getSettingValue("use_ent") != 'y') {
 	die('Fichier interdit.');
 }
@@ -55,14 +54,14 @@ $msg2 = NULL;
 $etape = isset($_GET["etape"]) ? $_GET["etape"] : NULL;
 
 
-// ======================= Traitement des donnÈes ================================
-// On rÈcupËre le RNE de l'Ètablissement en question
+// ======================= Traitement des donn√©es ================================
+// On r√©cup√®re le RNE de l'√©tablissement en question
 $RNE = (isset($multisite) && $multisite == 'y') ? $_COOKIE['RNE'] : getSettingValue("gepiSchoolRne");
 if ($RNE === '') {
-	$msg = "Attention, votre RNE n'est pas renseignÈ dans la page des <a href=\"gestion/param_gen.php\">paramËtres gÈnÈraux.</a>";
+	$msg = "Attention, votre RNE n'est pas renseign√© dans la page des <a href=\"gestion/param_gen.php\">param√®tres g√©n√©raux.</a>";
 } else {
 
-	$msg = "<p>Votre RNE est ".$RNE.". S'il est exact, vous pouvez passer ‡ l'Ètape suivante.
+	$msg = "<p>Votre RNE est ".$RNE.". S'il est exact, vous pouvez passer √† l'√©tape suivante.
 				&nbsp;<a href=\"index.php?etape=2".add_token_in_url()."\">Enregistrer les utilisateurs</a>";
 
 }
@@ -72,7 +71,7 @@ if ($etape == 2) {
 	check_token();
 
 	$msg = NULL;
-	// On crÈe la table si nÈcessaire
+	// On cr√©e la table si n√©cessaire
 
 	$result = "&nbsp;->Ajout de la table ldap_bx. <br />";
 	$test1 = mysql_num_rows(mysql_query("SHOW TABLES LIKE 'ldap_bx'"));
@@ -84,7 +83,8 @@ if ($etape == 2) {
 					`prenom_u` VARCHAR( 200 ) NOT NULL ,
 					`statut_u` VARCHAR( 50 ) NOT NULL ,
 					`identite_u` VARCHAR( 50 ) NOT NULL ,
-					PRIMARY KEY ( `id` ));";
+					PRIMARY KEY ( `id` )
+					) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 		$query = mysql_query($sql);
 		if ($query) {
 			$msg = "<font style=\"color: green;\">Ok !</font><br />";
@@ -92,7 +92,7 @@ if ($etape == 2) {
 			$msg = "<font style=\"color: red;\">Erreur</font><br />";
 		}
 	}else{
-		$msg = "<font style=\"color: blue;\">La table existe dÈj‡.</font><br />";
+		$msg = "<font style=\"color: blue;\">La table existe d√©j√†.</font><br />";
 	}
 
 	// On truncate la table
@@ -130,26 +130,26 @@ if ($etape == 2) {
 		$query = mysql_query($sql);
 
 		if ($query) {
-			$msg2 .= '<br />L\'utilisateur '.$info[$a][$ldap_login][0].' a ÈtÈ enregistrÈ.';
+			$msg2 .= '<br />L\'utilisateur '.$info[$a][$ldap_login][0].' a √©t√© enregistr√©.';
 		}else{
-			$msg2 .= '<br /><span style="color: red;">L\'utilisateur '.$info[$a][$ldap_login][0].' n\'a pas ÈtÈ enregistrÈ.</span>';
+			$msg2 .= '<br /><span style="color: red;">L\'utilisateur '.$info[$a][$ldap_login][0].' n\'a pas √©t√© enregistr√©.</span>';
 		}
 	}
 	$aff_continuer = '<p>Vous pouvez retourner sur la page d\'initialisation par sconet/STSweb <a href="../init_xml2/index.php">CONTINUER</a></p>
-	<p><a href="miseajour_ent_eleves.php">Ajouter de nouveaux utilisateurs arrivÈs en cours d\'annÈe</a></p>';
+	<p><a href="miseajour_ent_eleves.php">Ajouter de nouveaux utilisateurs arriv√©s en cours d\'ann√©e</a></p>';
 
 }
 
-// =========== fichiers spÈciaux ==========
+// =========== fichiers sp√©ciaux ==========
 $style_specifique = "edt_organisation/style_edt";
 //**************** EN-TETE *****************
 $titre_page = "Les utilisateurs de l'ENT";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
-//debug_var(); // ‡ enlever en production
+//debug_var(); // √† enlever en production
 ?>
 
-<!-- Mise ‡ jour ‡ partir de l'ENT -->
+<!-- Mise √† jour √† partir de l'ENT -->
 <p class="bold"><a href="../accueil.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
 
 <h2>R&eacute;cup&eacute;ration des informations de l'ENT</h2>

@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: import_class_csv.php 4374 2010-04-29 12:19:47Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -168,7 +167,7 @@ if ($current_group) {
 		}
 	}
 } else {
-	// Cas où on demande un fichier pour importation d'appréciations du conseil
+	// Cas oÃ¹ on demande un fichier pour importation d'apprÃ©ciations du conseil
 	$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.*
 		FROM eleves e, j_eleves_classes j
 		WHERE (
@@ -232,5 +231,7 @@ if ($current_group) {
 	}
 }
 
-echo $fd;
+//echo $fd;
+echo echo_csv_encoded($fd);
+
 ?>

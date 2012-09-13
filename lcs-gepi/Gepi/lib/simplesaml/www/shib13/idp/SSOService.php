@@ -4,12 +4,11 @@
  * from a Shibboleth 1.3 SP, parses, and process it, and then authenticates the user and sends the user back
  * to the SP with an Authentication Response.
  *
- * @author Andreas Åkre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
+ * @author Andreas Ã…kre Solberg, UNINETT AS. <andreas.solberg@uninett.no>
  * @package simpleSAMLphp
- * @version $Id$
  */
 
-require_once('../../../www/_include.php');
+require_once('../../_include.php');
 
 SimpleSAML_Logger::info('Shib1.3 - IdP.SSOService: Accessing Shibboleth 1.3 IdP endpoint SSOService');
 

@@ -463,7 +463,7 @@ class phpCAS {
 		}
 
 		if (empty ($PHPCAS_DEBUG['unique_id'])) {
-			$PHPCAS_DEBUG['unique_id'] = substr(strtoupper(md5(uniqid(''))), 0, 4);
+			$PHPCAS_DEBUG['unique_id'] = mb_substr(mb_strtoupper(md5(uniqid(''))), 0, 4);
 		}
 
 		$PHPCAS_DEBUG['filename'] = $filename;
@@ -534,7 +534,7 @@ class phpCAS {
 				}
 			}
 		}
-		echo "<br />\n<b>phpCAS error</b>: <font color=\"FF0000\"><b>" . __CLASS__ . "::" . $function . '(): ' . htmlentities($msg) . "</b></font> in <b>" . $file . "</b> on line <b>" . $line . "</b><br />\n";
+		echo "<br />\n<b>phpCAS error</b>: <font color=\"FF0000\"><b>" . __CLASS__ . "::" . $function . '(): ' . htmlspecialchars($msg) . "</b></font> in <b>" . $file . "</b> on line <b>" . $line . "</b><br />\n";
 		phpCAS :: trace($msg);
 		phpCAS :: traceExit();
 		exit ();

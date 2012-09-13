@@ -2,7 +2,6 @@
 /* 
  * Configuration for the OAuth module.
  * 
- * $Id$
  */
 
 $config = array (
@@ -24,11 +23,6 @@ $config = array (
 	// useridattr is the attribute-name that contains the userid as returned from idp
 	'auth' => 'default-sp',
         'useridattr', 'user',
-
-        // default OAuth version, defines behaviour of requestToken/accessToken-handling 
-	// supported are '1.0' or '1.0a'; default to '1.0'
-//      'defaultversion' => '1.0a',
-        'defaultversion' => '1.0',
 
 );
 

@@ -6,7 +6,6 @@
  * Provides the same interface as Auth_Simple.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SimpleSAML_Auth_BWC extends SimpleSAML_Auth_Simple {
 
@@ -56,6 +55,16 @@ class SimpleSAML_Auth_BWC extends SimpleSAML_Auth_Simple {
 		$this->authority = $authority;
 
 		parent::__construct($authority);
+	}
+
+
+	/**
+	 * Retrieve the implementing authentication source.
+	 *
+	 * @return NULL  There is never an authentication source behind this class.
+	 */
+	public function getAuthSource() {
+		return NULL;
 	}
 
 

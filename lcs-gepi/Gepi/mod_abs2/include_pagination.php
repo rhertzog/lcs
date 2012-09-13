@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id$
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -26,7 +25,7 @@
  */
 
 /**
- * Ce fichier sert a gérer les parametre de requete pour paginer les listes de abs2
+ * Ce fichier sert a gÃ©rer les parametre de requete pour paginer les listes de abs2
  *
 */
 

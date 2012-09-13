@@ -1,8 +1,8 @@
 <?php
 /*
- * $Id: stats_classe.php 7120 2011-06-05 08:59:33Z crob $
+ * $Id$
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -41,7 +41,7 @@ if (!checkAccess()) {
 
 //**************** EN-TETE *****************
 $titre_page = "Outil de visualisation | Statistiques de la classe";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 $id_classe = isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id_classe']) ? $_GET['id_classe'] : NULL);
 
@@ -64,6 +64,30 @@ if (!isset($id_classe)) {
 		$sql="SELECT DISTINCT c.* FROM classes c, periodes p, j_groupes_classes jgc, j_groupes_professeurs jgp WHERE p.id_classe = c.id AND jgc.id_classe=c.id AND jgp.id_groupe=jgc.id_groupe AND jgp.login='".$_SESSION['login']."' ORDER BY c.classe";
 	}
 	elseif($_SESSION['statut']=='cpe'){
+		/*
+		$sql="SELECT DISTINCT c.* FROM classes c, periodes p, j_eleves_classes jec, j_eleves_cpe jecpe WHERE
+			p.id_classe = c.id AND
+			jec.id_classe=c.id AND
+			jec.periode=p.num_periode AND
+			jecpe.e_login=jec.login AND
+			jecpe.cpe_login='".$_SESSION['login']."'
+			ORDER BY classe";
+		*/
+		// Les cpe ont accÃ¨s Ã  tous les bulletins, donc aussi aux courbes
+		$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id ORDER BY classe";
+	}
+
+	if(((getSettingValue("GepiAccesReleveProfToutesClasses")=="yes")&&($_SESSION['statut']=='professeur'))||
+		((getSettingValue("GepiAccesReleveScol")=='yes')&&($_SESSION['statut']=='scolarite'))) {
+		$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id ORDER BY classe";
+	}
+	/*
+	if(((getSettingValue("GepiAccesReleveProfToutesClasses")=="yes")&&($_SESSION['statut']=='professeur'))||
+		((getSettingValue("GepiAccesReleveScol")=='yes')&&($_SESSION['statut']=='scolarite'))||
+		((getSettingValue("GepiAccesReleveCpeTousEleves")=='yes')&&($_SESSION['statut']=='cpe'))) {
+		$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id ORDER BY classe";
+	}
+	elseif((getSettingValue("GepiAccesReleveCpe")=='yes')&&($_SESSION['statut']=='cpe')) {
 		$sql="SELECT DISTINCT c.* FROM classes c, periodes p, j_eleves_classes jec, j_eleves_cpe jecpe WHERE
 			p.id_classe = c.id AND
 			jec.id_classe=c.id AND
@@ -72,12 +96,7 @@ if (!isset($id_classe)) {
 			jecpe.cpe_login='".$_SESSION['login']."'
 			ORDER BY classe";
 	}
-
-	if(((getSettingValue("GepiAccesReleveProfToutesClasses")=="yes")&&($_SESSION['statut']=='professeur'))||
-		((getSettingValue("GepiAccesReleveScol")=='yes')&&($_SESSION['statut']=='scolarite'))||
-		((getSettingValue("GepiAccesReleveCpe")=='yes')&&($_SESSION['statut']=='cpe'))) {
-		$sql="SELECT DISTINCT c.* FROM classes c ORDER BY classe";
-	}
+	*/
 
 	$call_classes=mysql_query($sql);
     $nombreligne = mysql_num_rows($call_classes);
@@ -161,7 +180,7 @@ if (!isset($id_classe)) {
 	if($id_class_prec!=0){
 		echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec";
 		//if(isset($periode)) {echo "&amp;periode=$periode";}
-		echo "#graph'>Classe précédente</a>";
+		echo "#graph'>Classe prÃ©cÃ©dente</a>";
 	}
 	if($chaine_options_classes!="") {
 		echo " | <select name='id_classe' onchange=\"document.forms['form1'].submit();\">\n";
@@ -192,9 +211,9 @@ if (!isset($id_classe)) {
 	//echo "<a href='stats_classe.php'>Choisir une autre classe</a></p>\n";
 
     // On appelle les informations de l'utilisateur pour les afficher :
-    $graph_title = "Classe de ".$classe.", évolution sur l'année";
-    echo "<table class='boireaus' border='1' cellspacing='2' cellpadding='5' summary='Matières/Notes'>\n";
-    echo "<tr><th width='100'>Matière</th>";
+    $graph_title = "Classe de ".$classe.", Ã©volution sur l'annÃ©e";
+    echo "<table class='boireaus' border='1' cellspacing='2' cellpadding='5' summary='MatiÃ¨res/Notes'>\n";
+    echo "<tr><th width='100'>MatiÃ¨re</th>";
     $k = '1';
     while ($k < $nb_periode) {
         echo "<th width='100'>$nom_periode[$k]</th>";
@@ -210,7 +229,7 @@ if (!isset($id_classe)) {
     }
 
     if ($affiche_categories) {
-            // On utilise les valeurs spécifiées pour la classe en question
+            // On utilise les valeurs spÃ©cifiÃ©es pour la classe en question
             $call_groupes = mysql_query("SELECT DISTINCT jgc.id_groupe, jgc.coef, jgc.categorie_id ".
             "FROM j_groupes_classes jgc, j_groupes_matieres jgm, j_matieres_categories_classes jmcc, matieres m " .
             "WHERE ( " .
@@ -244,13 +263,14 @@ if (!isset($id_classe)) {
         $current_group = get_group($group_id);
 
         if ($affiche_categories) {
-        // On regarde si on change de catégorie de matière
+        // On regarde si on change de catÃ©gorie de matiÃ¨re
             if ($current_group["classes"]["classes"][$id_classe]["categorie_id"] != $prev_cat_id) {
                 $prev_cat_id = $current_group["classes"]["classes"][$id_classe]["categorie_id"];
-                // On est dans une nouvelle catégorie
-                // On récupère les infos nécessaires, et on affiche une ligne
-                $cat_name = html_entity_decode_all_version(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $current_group["classes"]["classes"][$id_classe]["categorie_id"] . "'"), 0));
-                // On détermine le nombre de colonnes pour le colspan
+                // On est dans une nouvelle catÃ©gorie
+                // On rÃ©cupÃ¨re les infos nÃ©cessaires, et on affiche une ligne
+                //$cat_name = html_entity_decode(mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $current_group["classes"]["classes"][$id_classe]["categorie_id"] . "'"), 0));
+                $cat_name = mysql_result(mysql_query("SELECT nom_complet FROM matieres_categories WHERE id = '" . $current_group["classes"]["classes"][$id_classe]["categorie_id"] . "'"), 0);
+                // On dÃ©termine le nombre de colonnes pour le colspan
                 $nb_total_cols = 1;
                 $k = '1';
                 while ($k < $nb_periode) {
@@ -267,7 +287,7 @@ if (!isset($id_classe)) {
 
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
-        echo "<td>" . htmlentities($current_group["description"]) . "</td>\n";
+        echo "<td>" . htmlspecialchars($current_group["description"]) . "</td>\n";
         $k = '1';
         while ($k < $nb_periode) {
             $moyenne_classe_query = mysql_query("SELECT round(avg(note),1) as moyenne FROM matieres_notes WHERE (periode='$k' AND id_groupe='" . $current_group["id"] . "' AND statut ='')");
@@ -284,7 +304,7 @@ if (!isset($id_classe)) {
         $compteur++;
     $i++;
     }
-/*    echo "<tr><td>Moyenne générale :</td>";
+/*    echo "<tr><td>Moyenne gÃ©nÃ©rale :</td>";
     $k = '1';
     while ($k < $nb_periode) {
         $moyenne_generale_classe_query = mysql_query("SELECT round(avg(n.note),1) moyenne_generale FROM matieres_notes n, j_eleves_classes c WHERE (c.id_classe='$id_classe' AND c.login = n.login AND n.periode='$k' AND n.statut ='')");

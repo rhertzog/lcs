@@ -1,8 +1,7 @@
 <?php
 /*
- * @version: $Id: releve_pdf.php 8061 2011-08-30 22:01:10Z jjacquard $
 *
-* Copyright 2001, 2006 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
 *
 * This file is part of GEPI.
 *
@@ -22,18 +21,17 @@
 */
 
 // Global configuration file
-// Quand on est en SSL, IE n'arrive pas à ouvrir le PDF.
-//Le problème peut être résolu en ajoutant la ligne suivante :
+// Quand on est en SSL, IE n'arrive pas Ã  ouvrir le PDF.
+//Le problÃ¨me peut Ãªtre rÃ©solu en ajoutant la ligne suivante :
 Header('Pragma: public');
-// On ajoute le bon en tête sur le type de document envoyé sinon FF3 se plante
+// On ajoute le bon en tÃªte sur le type de document envoyÃ© sinon FF3 se plante
 header('Content-type: application/pdf');
 
 if (!defined('FPDF_VERSION')) {
 	require('../fpdf/fpdf.php');
 }
-require('../fpdf/ex_fpdf.php');
 
-define('FPDF_FONTPATH','../fpdf/font/');
+
 define('TopMargin','5');
 define('RightMargin','5');
 define('LeftMargin','5');
@@ -45,7 +43,7 @@ define('HauteurPage','297');
 require_once("../lib/initialisations.inc.php");
 
 // Lorsque qu'on utilise une session PHP, parfois, IE n'affiche pas le PDF
-// C'est un problème qui affecte certaines versions d'IE.
+// C'est un problÃ¨me qui affecte certaines versions d'IE.
 // Pour le contourner, on ajoutez la ligne suivante avant session_start() :
 session_cache_limiter('private');
 
@@ -72,7 +70,7 @@ echo "\$_SESSION['classe'][$key] = $value<br />";
 }
 */
 
-// fonction qui recoit une date heure est recompose la date en français
+// fonction qui recoit une date heure est recompose la date en franÃ§ais
 function date_fr_dh($var)
 {
 
@@ -84,13 +82,13 @@ function date_fr_dh($var)
 
 }
 
-// fonction pour mettre la date en français
+// fonction pour mettre la date en franÃ§ais
 function date_frc($var)
 {
 
 	$var = explode("/",$var);
 	$date = "$var[0],$var[1],$var[2]";
-	$tab_mois = array('01'=>"Jan.", '02'=>"Fev.", '03'=>"Mar.", '04'=>"Avr.", '05'=>"Mai", '06'=>"Juin", '07'=>"Juil.", '08'=>"Août", '09'=>"Sept.", '10'=>"Oct.", '11'=>"Nov.", '12'=>"Dec.");
+	$tab_mois = array('01'=>"Jan.", '02'=>"Fev.", '03'=>"Mar.", '04'=>"Avr.", '05'=>"Mai", '06'=>"Juin", '07'=>"Juil.", '08'=>"AoÃ»t", '09'=>"Sept.", '10'=>"Oct.", '11'=>"Nov.", '12'=>"Dec.");
 	//$tab_jour = array("Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.");
 	$tab_date = explode(',', $date);
 
@@ -133,7 +131,7 @@ function redimensionne_image($photo, $L_max, $H_max)
 	// largeur et hauteur de l'image d'origine
 	$largeur = $info_image[0];
 	$hauteur = $info_image[1];
-	// largeur et/ou hauteur maximum à afficher en pixel
+	// largeur et/ou hauteur maximum Ã  afficher en pixel
 	$taille_max_largeur = $L_max;
 	$taille_max_hauteur = $H_max;
 
@@ -142,7 +140,7 @@ function redimensionne_image($photo, $L_max, $H_max)
 	$ratio_h = $hauteur / $taille_max_hauteur;
 	$ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-	// définit largeur et hauteur pour la nouvelle image
+	// dÃ©finit largeur et hauteur pour la nouvelle image
 	$nouvelle_largeur = $largeur / $ratio;
 	$nouvelle_hauteur = $hauteur / $ratio;
 
@@ -156,19 +154,19 @@ function redimensionne_image($photo, $L_max, $H_max)
 
 // variable de session
 
-	// nombre d'élève par page
+	// nombre d'Ã©lÃ¨ve par page
 	$nb_releve_par_page = $_SESSION['type'];
 	// afficher les adresses des responsables
 	$avec_adresse_responsable = $_SESSION['avec_adresse_responsable'];
-	// choix des adresse à affiché
+	// choix des adresse Ã  affichÃ©
 	$choix_adr_parent = $_SESSION['choix_adr_parent'];
-	// élève sélectionné
+	// Ã©lÃ¨ve sÃ©lectionnÃ©
 	if(!empty($_SESSION['eleve'][0]) and $_SESSION['eleve'] != "")
 	{ $id_eleve = $_SESSION['eleve']; unset($_SESSION["classe"]); } else { unset($_SESSION["eleve"]); }
-	// classe sélectionné
+	// classe sÃ©lectionnÃ©
 	if(!empty($_SESSION['classe'][0]) and $_SESSION['classe'][0] != "")
 	{ $id_classe = $_SESSION['classe']; } else { unset($_SESSION["classe"]); }
-	// date de début et de un de sélection
+	// date de dÃ©but et de un de sÃ©lection
 	$date_debut = $_SESSION['date_debut_exp'];
 	$date_fin = $_SESSION['date_fin_exp'];
 	//si trie par regroupement
@@ -204,9 +202,9 @@ function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=1)
 		$this->Rect($xi,$yi,$w,$h,'DF');
 
 	$dy=0;
-	if (strtoupper($valign)=='M')
+	if (mb_strtoupper($valign)=='M')
 		$dy=($h-$rows*$this->FontSize)/2;
-	if (strtoupper($valign)=='B')
+	if (mb_strtoupper($valign)=='B')
 		$dy=$h-$rows*$this->FontSize;
 
 	$this->SetY($yi+$dy);
@@ -223,7 +221,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 		$w=$this->w-$this->rMargin-$this->x;
 	$wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
 	$s=str_replace("\r",'',$txt);
-	$nb=strlen($s);
+	$nb=mb_strlen($s);
 	if($nb>0 and $s[$nb-1]=="\n")
 		$nb--;
 	$b=0;
@@ -264,7 +262,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 				if ($prn==1) $this->_out('0 Tw');
 			}
 			if ($prn==1) {
-				$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+				$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 			}
 			$i++;
 			$sep=-1;
@@ -275,7 +273,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 			if($border and $nl==2)
 				$b=$b2;
 			if ( $maxline && $nl > $maxline )
-				return substr($s,$i);
+				return mb_substr($s,$i);
 			continue;
 		}
 		if($c==' ')
@@ -298,7 +296,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 					if ($prn==1) $this->_out('0 Tw');
 				}
 				if ($prn==1) {
-					$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+					$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 				}
 			}
 			else
@@ -309,7 +307,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 					if ($prn==1) $this->_out(sprintf('%.3f Tw',$this->ws*$this->k));
 				}
 				if ($prn==1){
-					$this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+					$this->Cell($w,$h,mb_substr($s,$j,$sep-$j),$b,2,$align,$fill);
 				}
 				$i=$sep+1;
 			}
@@ -321,7 +319,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 			if($border and $nl==2)
 				$b=$b2;
 			if ( $maxline && $nl > $maxline )
-				return substr($s,$i);
+				return mb_substr($s,$i);
 		}
 		else
 			$i++;
@@ -335,7 +333,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 	if($border and is_int(strpos($border,'B')))
 		$b.='B';
 	if ($prn==1) {
-		$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+		$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 	}
 	$this->x=$this->lMargin;
 	return $nl;
@@ -384,15 +382,15 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 // fin de la class
 
 
-// variable de la création du document
+// variable de la crÃ©ation du document
 
-	// entête
+	// entÃªte
 	$X_entete_etab='5';
-	$caractere_utilse='arial'; // caractère utilisé dans le document
-	$affiche_logo_etab='1'; // affiché le logo de l'établissement
-	$entente_mel='0'; // afficher dans l'entête le mel de l'établissement
-	$entente_tel='0'; // afficher dans l'entête le téléphone de l'établissement
-	$entente_fax='0'; // afficher dans l'entête le fax de l'établissement
+	$caractere_utilse='DejaVu'; // caractÃ¨re utilisÃ© dans le document
+	$affiche_logo_etab='1'; // affichÃ© le logo de l'Ã©tablissement
+	$entente_mel='0'; // afficher dans l'entÃªte le mel de l'Ã©tablissement
+	$entente_tel='0'; // afficher dans l'entÃªte le tÃ©lÃ©phone de l'Ã©tablissement
+	$entente_fax='0'; // afficher dans l'entÃªte le fax de l'Ã©tablissement
 	$L_max_logo='75'; // Longeur maxi du logo
 	$H_max_logo='75'; // hauteur maxi du logo
 
@@ -400,16 +398,16 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 	$active_bloc_adresse_parent=$avec_adresse_responsable;
 	$X_parent=110; $Y_parent=40;
 
-	//information année
+	//information annÃ©e
 	$gepiYear = getSettingValue('gepiYear');
 	$annee_scolaire = $gepiYear;
 	$X_cadre_eleve = '130';
 
 	// cadre note
-	$titre_du_cadre='Relevé de notes du';
+	$titre_du_cadre='RelevÃ© de notes du';
 	$largeur_cadre_matiere='50';
 	$texte_observation='Observations:';
-	$cadre_titre='0'; // affiche le cadre autour du titre ici: "relevé de notes..."
+	$cadre_titre='0'; // affiche le cadre autour du titre ici: "relevÃ© de notes..."
 	$largeur_cadre_note_global = '200'; //largeur du cadre note global nom matiere | note | observation
 	$hauteur_dun_regroupement='4'; // hauteur de la cellule regroupement
 
@@ -436,16 +434,16 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 	if(isset($_SESSION['aff_classe_nom']) and !empty($_SESSION['aff_classe_nom']) ) {
 	  $aff_classe_nom = $_SESSION['aff_classe_nom'];
 	} else { $aff_classe_nom = '1'; }
-	// affichage des appréciations par devoir si le professeurs à choisi de l'affiché
+	// affichage des apprÃ©ciations par devoir si le professeurs Ã  choisi de l'affichÃ©
 	if(isset($_SESSION['avec_appreciation_devoir']) and !empty($_SESSION['avec_appreciation_devoir']) ) {
 	  $avec_appreciation_devoir = $_SESSION['avec_appreciation_devoir'];
 	} else { $avec_appreciation_devoir = ''; }
 
 
-	//recherche d'information de la sélection
+	//recherche d'information de la sÃ©lection
 	$cpt_i='1';
 
-	//requête des classes sélectionné
+	//requÃªte des classes sÃ©lectionnÃ©
 	if (isset($id_classe[0]))
 	{
 
@@ -461,7 +459,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 	}
 
-	//requête des élèves sélectionné
+	//requÃªte des Ã©lÃ¨ves sÃ©lectionnÃ©
 	if (!empty($id_eleve[0]))
 	{
 		$o=0; $prepa_requete = "";
@@ -476,7 +474,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 	}
 
-	//tableau des données élève
+	//tableau des donnÃ©es Ã©lÃ¨ve
 		if (isset($id_classe[0])) {
 			//$call_eleve = mysql_query('SELECT * FROM '.$prefix_base.'eleves, '.$prefix_base.'j_eleves_classes, '.$prefix_base.'classes WHERE '.$prefix_base.'j_eleves_classes.id_classe = '.$prefix_base.'classes.id AND '.$prefix_base.'eleves.login = '.$prefix_base.'j_eleves_classes.login AND ('.$prepa_requete.') GROUP BY '.$prefix_base.'eleves.login ORDER BY '.$prefix_base.'j_eleves_classes.id_classe ASC, '.$prefix_base.'eleves.nom ASC, '.$prefix_base.'eleves.prenom ASC');
 			$sql='SELECT * FROM '.$prefix_base.'eleves, '.$prefix_base.'j_eleves_classes, '.$prefix_base.'classes WHERE '.$prefix_base.'j_eleves_classes.id_classe = '.$prefix_base.'classes.id AND '.$prefix_base.'eleves.login = '.$prefix_base.'j_eleves_classes.login AND ('.$prepa_requete.') GROUP BY '.$prefix_base.'eleves.login ORDER BY '.$prefix_base.'j_eleves_classes.id_classe ASC, '.$prefix_base.'eleves.nom ASC, '.$prefix_base.'eleves.prenom ASC';
@@ -488,12 +486,12 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 		//echo "$sql<br />";
 		$call_eleve = mysql_query($sql);
 
-		//on compte les élèves sélectionnés
+		//on compte les Ã©lÃ¨ves sÃ©lectionnÃ©s
 		$nb_eleves = mysql_num_rows($call_eleve);
 		while ( $donner = mysql_fetch_array( $call_eleve ))
 		{
 
-			// information élèves
+			// information Ã©lÃ¨ves
 			$login[$cpt_i] = $donner['login'];
 			$sexe[$cpt_i] = $donner['sexe'];
 
@@ -522,13 +520,13 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 				if ($donner['sexe'] == "M")
 				{
 
-						$regime[$cpt_i]="interne externé";
+						$regime[$cpt_i]="interne externÃ©";
 
 				}
 				else
 				{
 
-						$regime[$cpt_i]="interne externée";
+						$regime[$cpt_i]="interne externÃ©e";
 
 				}
 
@@ -628,23 +626,23 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 			$cpt_i = $cpt_i + 1;
 
 		}
-	// fin de recherche d'information de la sélection
+	// fin de recherche d'information de la sÃ©lection
 
-// rechercher maintenant les information par eleve sur leurs notes dans chaques matières
+// rechercher maintenant les information par eleve sur leurs notes dans chaques matiÃ¨res
 
-//on recherche les groupes qui ont des notes pour un élève donnée ($login[$nb_eleves_i])
+//on recherche les groupes qui ont des notes pour un Ã©lÃ¨ve donnÃ©e ($login[$nb_eleves_i])
 	$nb_eleves_i='1';
 	while($nb_eleves_i <= $nb_eleves)
 	{
 
-		// système de classement par ordre
+		// systÃ¨me de classement par ordre
 		if(!isset($active_entete_regroupement)) { $active_entete_regroupement = '0'; }
 		if(!isset($active_regroupement_cote)) { $active_regroupement_cote = '0'; }
 		$systeme_de_classement='m.nom_complet ASC';
 		if($active_regroupement_cote==='1' or $active_entete_regroupement==='1') { $systeme_de_classement = ' jmcc.priority ASC, jgc.priorite ASC, mc.id ASC,'.$systeme_de_classement; }
 		if($active_regroupement_cote!='1' and $active_entete_regroupement!='1') { $systeme_de_classement = ' jgc.priorite ASC, '.$systeme_de_classement; }
 
-		// requête dans la base
+		// requÃªte dans la base
 		$sql = 'SELECT *,m.nom_complet AS matiere_nom_complet,cd.nom_court AS nom_devoir,cd.coef AS coef_devoir, cd.note_sur AS note_sur, mc.nom_complet AS mat_cat_nom_complet FROM '.$prefix_base.'cn_devoirs cd, '.$prefix_base.'cn_notes_devoirs cnd, '.$prefix_base.'cn_cahier_notes ccn, '.$prefix_base.'groupes g, '.$prefix_base.'j_groupes_matieres jgm, '.$prefix_base.'j_groupes_classes jgc, '.$prefix_base.'matieres m, '.$prefix_base.'.j_matieres_categories_classes jmcc, '.$prefix_base.'matieres_categories mc
 				 WHERE jgc.id_groupe = g.id
 				   AND jgc.id_classe = "'.$classe_id_eleve[$nb_eleves_i].'"
@@ -666,7 +664,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 		$base_complete_information = mysql_query($sql);
 
-		// répartition des informations pour un relevé
+		// rÃ©partition des informations pour un relevÃ©
 		$id_groupe_avant = "";
 		$nb_matiere_cpt='1';
 		$eleve_select=$login[$nb_eleves_i];
@@ -683,7 +681,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 				if($donne_requete['login']!=$login_passe) { $nb_matiere_cpt='1'; }
 
-				//on vérifie si c'est le même id de groupe pour mettre toutes les notes d'un groupe en même temps puis compter le nombre de groupe
+				//on vÃ©rifie si c'est le mÃªme id de groupe pour mettre toutes les notes d'un groupe en mÃªme temps puis compter le nombre de groupe
 				if($donne_requete['id_groupe']!=$id_groupe_avant)
 				{
 
@@ -747,7 +745,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					}
 					//=======================
 
-					// si affiché l'appréciation
+					// si affichÃ© l'apprÃ©ciation
 					if ( $avec_appreciation_devoir == 'oui' )
 					{
 
@@ -764,10 +762,10 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					//=======================
 
 					// =======================================
-					// Modif: boireaus d'après C.Chapel
+					// Modif: boireaus d'aprÃ¨s C.Chapel
 					//$notes[$eleve_select][$nb_matiere_cpt] = $donne_requete['note']."".$nom_devoir_oui;
-					// gestion de la notation si statut est défini alors on l'affiche à la place de la note
-					// si le statut est égale = - alors on considère que l'élève n'a pas participé au devoir donc il ne sera pas affiché sur son relevé.
+					// gestion de la notation si statut est dÃ©fini alors on l'affiche Ã  la place de la note
+					// si le statut est Ã©gale = - alors on considÃ¨re que l'Ã©lÃ¨ve n'a pas participÃ© au devoir donc il ne sera pas affichÃ© sur son relevÃ©.
 					//=================
 					if ( $donne_requete['note'] == '0.0' )
 					{
@@ -785,7 +783,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 							{
 
 								// Si c'est vide 'v', on ne met rien...
-								// Faudrait-il indiquer 'Non Noté'?
+								// Faudrait-il indiquer 'Non NotÃ©'?
 								$notes[$eleve_select][$nb_matiere_cpt]="";
 
 							}
@@ -806,7 +804,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					else
 					{
 
-						// si différent de 0
+						// si diffÃ©rent de 0
 						if(getSettingValue("note_autre_que_sur_referentiel")=="V" || $donne_requete['note_sur']!=getSettingValue("referentiel_note")) {
 							$notes[$eleve_select][$nb_matiere_cpt] = $donne_requete['note']."/".$donne_requete['note_sur'];
 						} else {
@@ -816,11 +814,11 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					}
 					//=======================
 
-					// si une note est validé
+					// si une note est validÃ©
 					if ( $notes[$eleve_select][$nb_matiere_cpt] != '' )
 					{
 
-						// on affiche sur le relevé
+						// on affiche sur le relevÃ©
 						$notes[$eleve_select][$nb_matiere_cpt] = $notes[$eleve_select][$nb_matiere_cpt]."".$nom_devoir_oui."".$coef_oui."".$date_devoir_oui."".$appdevoir;
 
 					}
@@ -835,7 +833,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					}
 					$regroupement_passer=$nom_regroupement[$eleve_select][$nb_matiere_cpt];
 
-					// autre requete pour rechercher les professeur responsable de la matière sélectionné
+					// autre requete pour rechercher les professeur responsable de la matiÃ¨re sÃ©lectionnÃ©
 					if(empty($prof_groupe[$id_groupe_selectionne][0]))
 					{
 
@@ -908,7 +906,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					}
 					//=======================
 
-					// si affiché l'appréciation
+					// si affichÃ© l'apprÃ©ciation
 					if ( $avec_appreciation_devoir == 'oui' )
 					{
 
@@ -926,7 +924,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					//=======================
 
 					// =======================================
-					// Modif: boireaus d'après C.Chapel
+					// Modif: boireaus d'aprÃ¨s C.Chapel
 
 					if ( $donne_requete['note'] === '0.0' )
 					{
@@ -944,7 +942,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 							{
 
 								// Si c'est vide 'v', on ne met rien...
-								// Faudrait-il indiquer 'Non Noté'?
+								// Faudrait-il indiquer 'Non NotÃ©'?
 								$notes_actif="";
 
 							}
@@ -965,7 +963,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 					else
 					{
 
-						// si note différent de 0
+						// si note diffÃ©rent de 0
 							if(getSettingValue("note_autre_que_sur_referentiel")=="V" || $donne_requete['note_sur']!=getSettingValue("referentiel_note")) {
 								$notes_actif = $donne_requete['note']."/".$donne_requete['note_sur'];
 							} else {
@@ -985,7 +983,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 						}
 
-						// information sur le relevé
+						// information sur le relevÃ©
 						$notes[$eleve_select][$nb_num_matiere_passe].=$notes_actif."".$nom_devoir_oui."".$coef_oui."".$date_devoir_oui."".$appdevoir;
 
 					}
@@ -1006,7 +1004,7 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 //echo "\$nb_eleves_i=$nb_eleves_i<br />";
 
-// Définition de la page
+// DÃ©finition de la page
 $pdf=new rel_PDF("P","mm","A4");
 $pdf->SetTopMargin(TopMargin);
 $pdf->SetRightMargin(RightMargin);
@@ -1016,8 +1014,8 @@ $pdf->SetAutoPageBreak(true, BottomMargin);
 // Couleur des traits
 $pdf->SetDrawColor(0,0,0);
 
-// Caractères utilisés
-$caractere_utilse = 'arial';
+// CaractÃ¨res utilisÃ©s
+$caractere_utilse = 'DejaVu';
 
 // on appelle une nouvelle page pdf
 // modif eric 16022008
@@ -1035,7 +1033,7 @@ switch ($choix_adr_parent) {
 		$nb_boucle_a_faire = 1;
 	break;
 	case '4' :
-	    $responsable_place = 1; // les responsables N°2 uniquement
+	    $responsable_place = 1; // les responsables NÂ°2 uniquement
 		$nb_boucle_a_faire = 1;
 	break;
     default :
@@ -1045,20 +1043,20 @@ switch ($choix_adr_parent) {
 
 
 $nb_eleves_i = 1;
-$nb_boucle = 0; //compteur de boucle à faire pour R1 et R2 != R1
+$nb_boucle = 0; //compteur de boucle Ã  faire pour R1 et R2 != R1
 //while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle <= $nb_boucle_a_faire))
 while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 {
 
-	//cas N°4 uniquement les responsables 2 différent de responsable 1
-	// et Cas N°2 lors de la 2ème boucle
+	//cas NÂ°4 uniquement les responsables 2 diffÃ©rent de responsable 1
+	// et Cas NÂ°2 lors de la 2Ã¨me boucle
 	if (($active_bloc_adresse_parent == '1') and ($choix_adr_parent == '4') or
 		((($active_bloc_adresse_parent == '1') and ($choix_adr_parent == '2')) and ($nb_boucle == 1)) )	{
 
 		//test si les adresses sont identiques
 
 		$temoin = true;
-		//tant que l'on ne trouve pas 2 adresses différentes on boucle et on incrément le compteur $nb_eleves_i
+		//tant que l'on ne trouve pas 2 adresses diffÃ©rentes on boucle et on incrÃ©ment le compteur $nb_eleves_i
 		while ($temoin) {
 			$ident_eleve=$login[$nb_eleves_i];
 
@@ -1068,7 +1066,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				($cp_parents[$ident_eleve][0] != $cp_parents[$ident_eleve][1]) ) {
 
 				$adresse2_vide = false;
-				//si l'adresse N°2 est vide, (pas de nom de famille)
+				//si l'adresse NÂ°2 est vide, (pas de nom de famille)
 				if ($nom_parents[$ident_eleve][1] == '') {
 					/*($adresse1_parents[$ident_eleve][1] == '') and
 					($adresse2_parents[$ident_eleve][1] == '') and
@@ -1085,7 +1083,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if (!$adresse2_vide) {$temoin=false;}
 
 			} else {
-				// R1 et R2 sont différentes
+				// R1 et R2 sont diffÃ©rentes
 				$nb_eleves_i++;
 			}
 
@@ -1093,8 +1091,8 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				$temoin = false;
 				$nb_eleves_i = $nb_eleves_i - 1;
 
-				//si on dépase le nombre d'élèves, on clos le fichier PDF
-				// sortie PDF sur écran
+				//si on dÃ©pase le nombre d'Ã©lÃ¨ves, on clos le fichier PDF
+				// sortie PDF sur Ã©cran
 				$nom_releve=date("Ymd_Hi");
 				$nom_releve = 'Releve_'.$nom_releve.'.pdf';
 				$pdf->Output($nom_releve,'I');
@@ -1114,10 +1112,10 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 
 		while($passage_i <= $nb_releve_par_page and $nb_eleves_i <= $nb_eleves)
 		{
-			// login de l'élève
+			// login de l'Ã©lÃ¨ve
 			$eleve_select=$login[$nb_eleves_i];
 
-			// différente Y pour les présentation sur 1 ou 2 par page avec ident parents
+			// diffÃ©rente Y pour les prÃ©sentation sur 1 ou 2 par page avec ident parents
 			if($nb_releve_par_page=='1' and $passage_i == '1' and $active_bloc_adresse_parent!='1') { $Y_cadre_note = '32'; $Y_cadre_eleve = '5'; $Y_entete_etab='5'; }
 			if($nb_releve_par_page=='1' and $passage_i == '1' and $active_bloc_adresse_parent==='1') { $Y_cadre_note = '75'; $Y_cadre_eleve = '5'; $Y_entete_etab='5'; }
 			if($nb_releve_par_page=='2' and $passage_i == '1') { $Y_cadre_note = '32'; $Y_cadre_eleve = '5'; $Y_entete_etab='5'; }
@@ -1125,12 +1123,12 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 
 		//BLOC IDENTITE ELEVE
 			$pdf->SetXY($X_cadre_eleve,$Y_cadre_eleve);
-			$pdf->SetFont($caractere_utilse,'B',14);
-			$pdf->Cell(90,7,strtoupper($nom[$nb_eleves_i])." ".ucfirst($prenom[$nb_eleves_i]),0,2,'');
-			$pdf->SetFont($caractere_utilse,'',10);
-			//$pdf->Cell(90,5,'Né le '.affiche_date_naissance($naissance[$nb_eleves_i]).', demi-pensionnaire',0,2,'');
+			$pdf->SetFont('DejaVu','B',14);
+			$pdf->Cell(90,7,my_strtoupper($nom[$nb_eleves_i])." ".casse_mot($prenom[$nb_eleves_i],'majf2'),0,2,'');
+			$pdf->SetFont('DejaVu','',10);
+			//$pdf->Cell(90,5,'NÃ© le '.affiche_date_naissance($naissance[$nb_eleves_i]).',Â demi-pensionnaire',0,2,'');
 			if($sexe[$nb_eleves_i]=="M"){$e_au_feminin="";}else{$e_au_feminin="e";}
-			$pdf->Cell(90,5,'Né'.$e_au_feminin.' le '.affiche_date_naissance($naissance[$nb_eleves_i]).', '.$regime[$nb_eleves_i],0,2,'');
+			$pdf->Cell(90,5,'NÃ©'.$e_au_feminin.' le '.affiche_date_naissance($naissance[$nb_eleves_i]).',Â '.$regime[$nb_eleves_i],0,2,'');
 			$pdf->Cell(90,5,'',0,2,'');
 
 			if ( $aff_classe_nom === '1' or $aff_classe_nom === '3' ) {
@@ -1145,8 +1143,8 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 
 			$pdf->Cell(90,5,$classe_aff,0,2,'');
 			$pdf->SetX($X_cadre_eleve);
-			$pdf->SetFont($caractere_utilse,'',10);
-			$pdf->Cell(90,5,'Année scolaire '.$annee_scolaire,0,2,'');
+			$pdf->SetFont('DejaVu','',10);
+			$pdf->Cell(90,5,'AnnÃ©e scolaire '.$annee_scolaire,0,2,'');
 
 		// BLOC IDENTITE DE L'ETABLISSEMENT
 			$logo = '../images/'.getSettingValue('logo_etab');
@@ -1154,7 +1152,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 			if($affiche_logo_etab==='1' and file_exists($logo) and getSettingValue('logo_etab') != '' and ($format_du_logo==='jpg' or $format_du_logo==='png'))
 			{
 			$valeur=redimensionne_image($logo, $L_max_logo, $H_max_logo);
-			//$X_logo et $Y_logo; placement du bloc identite de l'établissement
+			//$X_logo et $Y_logo; placement du bloc identite de l'Ã©tablissement
 			$X_logo=$X_entete_etab; $Y_logo=$Y_entete_etab; $L_logo=$valeur[0]; $H_logo=$valeur[1];
 			$X_etab=$X_logo+$L_logo; $Y_etab=$Y_logo;
 			//logo
@@ -1165,10 +1163,10 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 
 		// BLOC ADRESSE ETABLISSEMENT
 			$pdf->SetXY($X_etab,$Y_etab);
-			$pdf->SetFont($caractere_utilse,'',14);
+			$pdf->SetFont('DejaVu','',14);
 			$gepiSchoolName = getSettingValue('gepiSchoolName');
 			$pdf->Cell(90,7, $gepiSchoolName,0,2,'');
-			$pdf->SetFont($caractere_utilse,'',10);
+			$pdf->SetFont('DejaVu','',10);
 			$gepiSchoolAdress1 = getSettingValue('gepiSchoolAdress1');
 			$pdf->Cell(90,5, $gepiSchoolAdress1,0,2,'');
 			$gepiSchoolAdress2 = getSettingValue('gepiSchoolAdress2');
@@ -1178,8 +1176,8 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 			$pdf->Cell(90,5, $gepiSchoolZipCode." ".$gepiSchoolCity,0,2,'');
 			$gepiSchoolTel = getSettingValue('gepiSchoolTel');
 			$gepiSchoolFax = getSettingValue('gepiSchoolFax');
-			if($entente_tel==='1' and $entente_fax==='1') { $entete_communic = 'Tél: '.$gepiSchoolTel.' / Fax: '.$gepiSchoolFax; }
-			if($entente_tel==='1' and empty($entete_communic)) { $entete_communic = 'Tél: '.$gepiSchoolTel; }
+			if($entente_tel==='1' and $entente_fax==='1') { $entete_communic = 'TÃ©l: '.$gepiSchoolTel.' / Fax: '.$gepiSchoolFax; }
+			if($entente_tel==='1' and empty($entete_communic)) { $entete_communic = 'TÃ©l: '.$gepiSchoolTel; }
 			if($entente_fax==='1' and empty($entete_communic)) { $entete_communic = 'Fax: '.$gepiSchoolFax; }
 			if(isset($entete_communic) and $entete_communic!='') {
 			$pdf->Cell(90,5, $entete_communic,0,2,'');
@@ -1202,7 +1200,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
             if(isset($prenom_parents[$ident_eleve_aff][$responsable_place])) {$texte_1_responsable.=$prenom_parents[$ident_eleve_aff][$responsable_place]." ";}
             //==========================================
 				$hauteur_caractere=12;
-				$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+				$pdf->SetFont('DejaVu','B',$hauteur_caractere);
 				$val = $pdf->GetStringWidth($texte_1_responsable);
 				$taille_texte = 90;
 				$grandeur_texte='test';
@@ -1210,15 +1208,15 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if($taille_texte<$val)
 				{
 					$hauteur_caractere = $hauteur_caractere-0.3;
-					$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','B',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($texte_1_responsable);
 				} else { $grandeur_texte='ok'; }
 					}
 			$pdf->Cell(90,7, $texte_1_responsable,0,2,'');
-			$pdf->SetFont($caractere_utilse,'',10);
+			$pdf->SetFont('DejaVu','',10);
 			$texte_1_responsable = $adresse1_parents[$ident_eleve_aff][$responsable_place];
 				$hauteur_caractere=10;
-				$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+				$pdf->SetFont('DejaVu','',$hauteur_caractere);
 				$val = $pdf->GetStringWidth($texte_1_responsable);
 				$taille_texte = 90;
 				$grandeur_texte='test';
@@ -1226,14 +1224,14 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if($taille_texte<$val)
 				{
 					$hauteur_caractere = $hauteur_caractere-0.3;
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($texte_1_responsable);
 				} else { $grandeur_texte='ok'; }
 					}
 			$pdf->Cell(90,5, $texte_1_responsable,0,2,'');
 			$texte_1_responsable = $adresse2_parents[$ident_eleve_aff][$responsable_place];
 				$hauteur_caractere=10;
-				$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+				$pdf->SetFont('DejaVu','',$hauteur_caractere);
 				$val = $pdf->GetStringWidth($texte_1_responsable);
 				$taille_texte = 90;
 				$grandeur_texte='test';
@@ -1241,7 +1239,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if($taille_texte<$val)
 				{
 					$hauteur_caractere = $hauteur_caractere-0.3;
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($texte_1_responsable);
 				} else { $grandeur_texte='ok'; }
 					}
@@ -1249,7 +1247,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 			$pdf->Cell(90,5, '',0,2,'');
 			$texte_1_responsable = $cp_parents[$ident_eleve_aff][$responsable_place]." ".$ville_parents[$ident_eleve_aff][$responsable_place];
 				$hauteur_caractere=10;
-				$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+				$pdf->SetFont('DejaVu','',$hauteur_caractere);
 				$val = $pdf->GetStringWidth($texte_1_responsable);
 				$taille_texte = 90;
 				$grandeur_texte='test';
@@ -1257,7 +1255,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if($taille_texte<$val)
 				{
 					$hauteur_caractere = $hauteur_caractere-0.3;
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($texte_1_responsable);
 				} else { $grandeur_texte='ok'; }
 					}
@@ -1267,18 +1265,18 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 		// BLOC NOTATION ET OBSERVATION
 			//Titre du tableau
 			$pdf->SetXY($X_cadre_note,$Y_cadre_note);
-			$pdf->SetFont($caractere_utilse,'B',12);
+			$pdf->SetFont('DejaVu','B',12);
 			if($cadre_titre==='1') { $var_encadrement_titre='LTR'; } else { $var_encadrement_titre=''; }
 			$pdf->Cell(0, $hauteur_du_titre, $titre_du_cadre.' '.date_frc($_SESSION['date_debut_aff']).' au '.date_frc($_SESSION['date_fin_aff']), $var_encadrement_titre,0,'C');
 			$hauteur_utilise = $hauteur_du_titre;
 
 		//s'il y des notes alors on affiche le cadre avec les notes
 		if(isset($nb_matiere[$eleve_select]) and !empty($nb_matiere[$eleve_select])) {
-			// Hauteur d'une ligne pour une matière
+			// Hauteur d'une ligne pour une matiÃ¨re
 			if($active_entete_regroupement === '1') { $hauteur_cadre_matiere=($hauteur_cadre_note_global-($nb_regroupement[$eleve_select]*$hauteur_dun_regroupement))/$nb_matiere[$eleve_select]; }
 			if($active_entete_regroupement != '1') { $hauteur_cadre_matiere=$hauteur_cadre_note_global/$nb_matiere[$eleve_select]; }
 
-			// Tableau des matières et des notes de l'élève
+			// Tableau des matiÃ¨res et des notes de l'Ã©lÃ¨ve
 			$cpt_i='1';
 			$nom_regroupement_passer='';
 			while($cpt_i<=$nb_matiere[$eleve_select])
@@ -1290,16 +1288,16 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					// on affiche les nom des regroupement
 					if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
 					{
-						$pdf->SetFont($caractere_utilse,'',8);
+						$pdf->SetFont('DejaVu','',8);
 						$pdf->Cell($largeur_cadre_matiere, $hauteur_dun_regroupement, unhtmlentities($nom_regroupement[$eleve_select][$cpt_i]), 'LTB', 2, '');
 						$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
 						$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
 						$pdf->SetXY($X_cadre_note,$Y_cadre_note+$hauteur_utilise);
 					}
-				$pdf->SetFont($caractere_utilse,'B','9');
+				$pdf->SetFont('DejaVu','B','9');
 				$nom_matiere = $name[$eleve_select][$cpt_i];
 					$hauteur_caractere = 9;
-					$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','B',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($nom_matiere);
 					$taille_texte = $largeur_cadre_matiere;
 					$grandeur_texte='test';
@@ -1307,7 +1305,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					if($taille_texte<$val)
 					{
 						$hauteur_caractere = $hauteur_caractere-0.3;
-						$pdf->SetFont($caractere_utilse,'B',$hauteur_caractere);
+						$pdf->SetFont('DejaVu','B',$hauteur_caractere);
 						$val = $pdf->GetStringWidth($nom_matiere);
 					} else { $grandeur_texte='ok'; }
 						}
@@ -1332,12 +1330,12 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				if ( $nb_prof_matiere != 1 ) { $espace_matiere_prof = $espace_matiere_prof/$nb_prof_matiere; }
 				while ($nb_prof_matiere > $nb_pass_count)
 				{
-					// calcule de la hauteur du caractère du prof
+					// calcule de la hauteur du caractÃ¨re du prof
 					if ( $nb_releve_par_page === '1' ) { $text_prof = $prof_groupe[$id_groupe_selectionne][$nb_pass_count]; }
 					if ( $nb_prof_matiere <= 2 ) { $hauteur_caractere_prof = 9; }
 					elseif ( $nb_prof_matiere == 3) { $hauteur_caractere_prof = 7; }
 					elseif ( $nb_prof_matiere > 3) { $hauteur_caractere_prof = 2; }
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
+					$pdf->SetFont('DejaVu','',$hauteur_caractere_prof);
 					$val = $pdf->GetStringWidth($text_prof);
 					$taille_texte = ($largeur_cadre_matiere-0.6);
 					$grandeur_texte='test';
@@ -1345,7 +1343,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					if($taille_texte<$val)
 					{
 						$hauteur_caractere_prof = $hauteur_caractere_prof-0.3;
-						$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_prof);
+						$pdf->SetFont('DejaVu','',$hauteur_caractere_prof);
 						$val = $pdf->GetStringWidth($text_prof);
 					} else { $grandeur_texte='ok'; }
 							}
@@ -1365,7 +1363,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 	//			if(isset($prof_groupe[$id_groupe_selectionne][2]) and $prof_groupe[$id_groupe_selectionne][2] != '') { $prof_3 = $prof_groupe[$id_groupe_selectionne][2]; } else { $prof_3 = ''; }
 	/*			 $nom_prof = $prof_1;
 					$hauteur_caractere = 8;
-					$pdf->SetFont($caractere_utilse,'I',$hauteur_caractere);
+					$pdf->SetFont('DejaVu','I',$hauteur_caractere);
 					$val = $pdf->GetStringWidth($nom_prof);
 					$taille_texte = $largeur_cadre_matiere;
 					$grandeur_texte='test';
@@ -1373,7 +1371,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					if($taille_texte<$val)
 					{
 						$hauteur_caractere = $hauteur_caractere-0.3;
-						$pdf->SetFont($caractere_utilse,'I',$hauteur_caractere);
+						$pdf->SetFont('DejaVu','I',$hauteur_caractere);
 						$val = $pdf->GetStringWidth($nom_prof);
 					} else { $grandeur_texte='ok'; }
 						}
@@ -1402,16 +1400,16 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					// on affiche les nom des regroupement
 					if($nom_regroupement[$eleve_select][$cpt_i]!=$nom_regroupement_passer and $active_entete_regroupement === '1')
 					{
-						$pdf->SetFont($caractere_utilse,'',8);
+						$pdf->SetFont('DejaVu','',8);
 						$pdf->Cell($largeur_cadre_note, $hauteur_dun_regroupement, '', 'RTB', 2, '');
 						$hauteur_utilise=$hauteur_utilise+$hauteur_dun_regroupement;
 						$nom_regroupement_passer=$nom_regroupement[$eleve_select][$cpt_i];
 						$pdf->SetXY($X_cadre_note+$largeur_utilise,$Y_cadre_note+$hauteur_utilise);
 					}
-				// détermine la taille de la police de caractère
-				// on peut allez jusqu'a 275mm de caractère dans trois cases de notes
+				// dÃ©termine la taille de la police de caractÃ¨re
+				// on peut allez jusqu'a 275mm de caractÃ¨re dans trois cases de notes
 					$hauteur_caractere_notes=9;
-					$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
+					$pdf->SetFont('DejaVu','',$hauteur_caractere_notes);
 					$val = $pdf->GetStringWidth($notes[$eleve_select][$cpt_i]);
 					$taille_texte = (($hauteur_cadre_matiere/4)*$largeur_cadre_note);
 					$grandeur_texte='test';
@@ -1419,7 +1417,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 					if($taille_texte<$val)
 					{
 						$hauteur_caractere_notes = $hauteur_caractere_notes-0.3;
-						$pdf->SetFont($caractere_utilse,'',$hauteur_caractere_notes);
+						$pdf->SetFont('DejaVu','',$hauteur_caractere_notes);
 						$val = $pdf->GetStringWidth($notes[$eleve_select][$cpt_i]);
 					} else { $grandeur_texte='ok'; }
 							}
@@ -1443,7 +1441,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 				} else { $hauteur_cadre_observation=$hauteur_cadre_note_global; }
 				$pdf->Rect($X_cadre_note+$largeur_utilise, $Y_cadre_note+$hauteur_utilise, $largeur_restant, $hauteur_cadre_observation, 'D');
 				$pdf->SetXY($X_cadre_note+$largeur_utilise, $Y_cadre_note+$hauteur_utilise);
-				$pdf->SetFont($caractere_utilse,'',11);
+				$pdf->SetFont('DejaVu','',11);
 				$pdf->Cell($largeur_restant,7, $texte_observation,0,1,'C');
 			}
 			//=======================
@@ -1461,7 +1459,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 			$hauteur_cadre_signature=$hauteur_cadre_note_global-$hauteur_cadre_observation;
 			$largeur_cadre_signature=$largeur_cadre_note_global-$largeur_utilise;
 
-			$pdf->SetFont($caractere_utilse,'',8);
+			$pdf->SetFont('DejaVu','',8);
 			$pdf->Rect($X_signature, $Y_signature, $largeur_cadre_signature, $hauteur_cadre_signature, 'D');
 
 			if($affiche_cachet_pp==='1')
@@ -1484,15 +1482,15 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 
 		//PUB ;)
 			$pdf->SetXY($X_cadre_note, $Y_cadre_note+$hauteur_cadre_note_global+$hauteur_du_titre);
-			$pdf->SetFont('arial','',8);
-			$pdf->Cell(200,5,'GEPI - Solution libre de Gestion des élèves par Internet',0,1,'');
+			$pdf->SetFont('DejaVu','',8);
+			$pdf->Cell(200,5,'GEPI - Solution libre de Gestion des Ã©lÃ¨ves par Internet',0,1,'');
 
 		$passage_i=$passage_i+1;
 		$nb_eleves_i = $nb_eleves_i + 1;
 		}
 
-  // on prépare la 2ème boucle pour faire R1 et R2 != R1 si nécessaire
-  if ($nb_eleves_i > $nb_eleves) { // dans ce cas on a fait la première boucle, on prépare la 2éme pour les R2 != à R1
+  // on prÃ©pare la 2Ã¨me boucle pour faire R1 et R2 != R1 si nÃ©cessaire
+  if ($nb_eleves_i > $nb_eleves) { // dans ce cas on a fait la premiÃ¨re boucle, on prÃ©pare la 2Ã©me pour les R2 != Ã  R1
     $nb_boucle++;
     $responsable_place = 1;
 	$nb_eleves_i = 1;
@@ -1510,7 +1508,7 @@ while (($nb_eleves_i <= $nb_eleves) and ($nb_boucle < $nb_boucle_a_faire))
 //    unset($_SESSION["date_fin_aff"]);
 //    unset($_SESSION["avec_nom_devoir"]);
 
-// sortie PDF sur écran
+// sortie PDF sur Ã©cran
 $nom_releve=date("Ymd_Hi");
 $nom_releve = 'Releve_'.$nom_releve.'.pdf';
 $pdf->Output($nom_releve,'I');

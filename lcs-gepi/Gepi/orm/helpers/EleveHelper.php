@@ -1,18 +1,18 @@
 <?php
 
 /**
- * Classe de méthodes statiques qui permettent d'eviter de repeter du code en liaison avec l'affichage des listes d'eleves.
+ * Classe de mÃ©thodes statiques qui permettent d'eviter de repeter du code en liaison avec l'affichage des listes d'eleves.
  *
  * @author jjocal
  */
 class EleveHelper {
 
   /**
-   * Affiche une liste d'élèves en menu déroulant (balises select et option en xhtml)
+   * Affiche une liste d'Ã©lÃ¨ves en menu dÃ©roulant (balises select et option en xhtml)
    *
-   * @param   array $options Pour parametrer l'affichage : @todo à terminer
+   * @param   array $options Pour parametrer l'affichage : @todo Ã  terminer
    * @param   array $liste_leves tableau d'objet Eleve
-   * @return  string Liste déroulante Xhtml
+   * @return  string Liste dÃ©roulante Xhtml
    */
   public static function afficheHtmlSelectListeEleves($options, $liste_eleves){
 
@@ -36,7 +36,7 @@ class EleveHelper {
     $nbre = count($liste_eleves);
     if ($nbre === 0) {
       $retour .= '
-      <option value="r">Pas d\'élève dans la base</option>';
+      <option value="r">Pas d\'Ã©lÃ¨ve dans la base</option>';
     }else{
 
       for($a = 0 ; $a < $nbre ; $a++){
@@ -44,18 +44,18 @@ class EleveHelper {
         if (!is_a($liste_eleves[0], 'Eleve')){
           $classe_fin     = ($aff_classe == 'fin') ? '  '.$liste_eleves[$a]->getClasse()->getNomComplet() : '';
           $classe_debut   = ($aff_classe == 'debut') ? $liste_eleves[$a]->getClasse()->getNomComplet().'&nbsp;&nbsp;' : '';
-          $_id_eleve      = $liste_eleves[$a]->getEleve()->getIdEleve();
+          $_id_eleve      = $liste_eleves[$a]->getEleve()->getId();
           $_nom_eleve     = $liste_eleves[$a]->getEleve()->getNom();
           $_prenom_eleve  = $liste_eleves[$a]->getEleve()->getPrenom();
 
         }else{
           $classe_debut = $classe_fin = NULL;
-          $_id_eleve      = $liste_eleves[$a]->getIdEleve();
+          $_id_eleve      = $liste_eleves[$a]->getId();
           $_nom_eleve     = $liste_eleves[$a]->getNom();
           $_prenom_eleve  = $liste_eleves[$a]->getPrenom();
         }
 
-        // On gère également le selected
+        // On gÃ¨re Ã©galement le selected
         $aff_selected = ($_id_eleve == $_selected) ? ' selected="selected"' : NULL;
 
         $retour .= '

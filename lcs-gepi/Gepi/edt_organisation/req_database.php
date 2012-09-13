@@ -1,8 +1,7 @@
 <?php
 /**
- * Fichier req_database.php pour accéder à la base de données
+ * Fichier req_database.php pour accÃ©der Ã  la base de donnÃ©es
  *
- * @version     $Id: req_database.php 7726 2011-08-12 23:37:39Z regis $
  * @package		EmploisDuTemps
  * @copyright	Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal, Pascal Fautrero
  * @license		GNU/GPL, see COPYING.txt

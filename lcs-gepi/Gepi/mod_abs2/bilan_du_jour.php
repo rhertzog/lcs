@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: bilan_du_jour.php 8359 2011-09-25 16:08:28Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -50,9 +49,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
@@ -77,16 +76,16 @@ $javascript_specifique[] = "edt_organisation/script/fonctions_edt";
 $dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 include('menu_abs2.inc.php');
 include('menu_bilans.inc.php');
 ?>
 <div id="contain_div" class="css-panes">
 <div class="legende">
-    <h3 class="legende">Légende  </h3>
+    <h3 class="legende">LÃ©gende  </h3>
     <font color="orange">&#9632;</font> Retard<br />
-    <font color="red">&#9632;</font> Manquement aux obligations de présence<br />
-    <font color="blue">&#9632;</font> Non manquement aux obligations de présence<br />     
+    <font color="red">&#9632;</font> Manquement aux obligations de prÃ©sence<br />
+    <font color="blue">&#9632;</font> Non manquement aux obligations de prÃ©sence<br />     
 </div>        
 <form dojoType="dijit.form.Form" id="choix_date" name="choix_date" action="<?php $_SERVER['PHP_SELF']?>" method="post">
 <h2>Les saisies du
@@ -101,7 +100,7 @@ include('menu_bilans.inc.php');
 		<th style="border: 1px solid black; background-color: gray;">Classe</th>
 		<th style="border: 1px solid black; background-color: gray; min-width: 300px; max-width: 500px;">Nom Pr&eacute;nom</th>
 <?php
-		//afficher les créneaux
+		//afficher les crÃ©neaux
 		foreach(EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime() as $creneau){
 			echo "<th style=\"border: 1px solid black; background-color: grey;\">".$creneau->getNomDefiniePeriode()."</th>\n";
 		}
@@ -120,7 +119,7 @@ if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getSta
 }
 if ($classe_col->isEmpty()) {
     echo '	<tr>
-			<td colspan="'.($creneau_col->count() + 2).'">Aucune classe avec élève affecté n\'a été trouvée</td>
+			<td colspan="'.($creneau_col->count() + 2).'">Aucune classe avec Ã©lÃ¨ve affectÃ© n\'a Ã©tÃ© trouvÃ©e</td>
 		</tr>';
 }
 foreach($classe_col as $classe) {
@@ -162,14 +161,14 @@ foreach($classe_col as $classe) {
 			<td>';
 			if ($utilisateur->getAccesFicheEleve($eleve)) {
 			    //echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' target='_blank'>";
-			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."' >";
+			    echo "<a href='../eleves/visu_eleve.php?ele_login=".$eleve->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank'>";
 			    echo $eleve->getNom().' '.$eleve->getPrenom();
 			    echo "</a>";
 			} else {
 			    echo $eleve->getNom().' '.$eleve->getPrenom();
 			}
 			echo '</td>';
-			// On traite alors pour chaque créneau
+			// On traite alors pour chaque crÃ©neau
 			foreach($creneau_col as $creneau) {
 			    $abs_col = $eleve->getAbsenceEleveSaisiesDuCreneau($creneau, $dt_date_absence_eleve);
 			    if ($abs_col->isEmpty()){

@@ -1,8 +1,7 @@
 <?php
 /*
- * @version: $Id: saisie_notes_cc.php 8671 2011-11-29 12:11:13Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -22,8 +21,8 @@
 */
 //==============================
 // PREPARATIFS boireaus 20080422
-// Pour passer à no_anti_inject comme pour les autres saisies d'appréciations
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// Pour passer Ã  no_anti_inject comme pour les autres saisies d'apprÃ©ciations
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $mode_commentaire_20080422="";
 //$mode_commentaire_20080422="no_anti_inject";
 
@@ -51,18 +50,18 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_carnets_notes")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
 
 require('cc_lib.php');
 
 unset($id_racine);
 $id_racine = isset($_POST["id_racine"]) ? $_POST["id_racine"] : (isset($_GET["id_racine"]) ? $_GET["id_racine"] : NULL);
-// On teste si le carnet de notes appartient bien à la personne connectée
+// On teste si le carnet de notes appartient bien Ã  la personne connectÃ©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+    $mess=rawurlencode("Vous tentez de pÃ©nÃ©trer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -76,7 +75,7 @@ include "../lib/periodes.inc.php";
 unset($id_dev);
 $id_dev = isset($_POST["id_dev"]) ? $_POST["id_dev"] : (isset($_GET["id_dev"]) ? $_GET["id_dev"] : NULL);
 if(!isset($id_dev)) {
-	$mess="$nom_cc non précisé.<br />";
+	$mess="$nom_cc non prÃ©cisÃ©.<br />";
 	header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 	die();
 }
@@ -90,21 +89,21 @@ if($query) {
 	$description_dev=mysql_result($query, 0, 'description');
 }
 else {
-	header("Location: index.php?msg=".rawurlencode("Le numéro de devoir n est pas associé à ce groupe."));
+	header("Location: index.php?msg=".rawurlencode("Le numÃ©ro de devoir n est pas associÃ© Ã  ce groupe."));
 	die();
 }
 
 unset($id_eval);
 $id_eval = isset($_POST["id_eval"]) ? $_POST["id_eval"] : (isset($_GET["id_eval"]) ? $_GET["id_eval"] : NULL);
 if(!isset($id_eval)) {
-	header("Location: index.php?msg=".rawurlencode("Numéro d évaluation non valide."));
+	header("Location: index.php?msg=".rawurlencode("NumÃ©ro d Ã©valuation non valide."));
 	die();
 }
 
 $sql="SELECT * FROM cc_eval WHERE id='$id_eval' AND id_dev='$id_dev';";
 $query=mysql_query($sql);
 if(mysql_num_rows($query)==0) {
-	$mess="L'évaluation n°$id_eval n'est pas associée au $nom_cc n°$id_dev.<br />";
+	$mess="L'Ã©valuation nÂ°$id_eval n'est pas associÃ©e au $nom_cc nÂ°$id_dev.<br />";
 	header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 	die();
 }
@@ -140,21 +139,10 @@ if(isset($_GET['export_csv'])) {
 		}
 	}
 
-	header('Content-Type:  text/x-csv');
-	$now = gmdate('D, d M Y H:i:s') . ' GMT';
-	header('Expires: ' . $now);
-	// lem9 & loic1: IE need specific headers
-	//nom du fichier à telecharger
-
-	if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-		header('Content-Disposition: inline; filename="cc_dev_'.$id_dev.'_eval_'.$id_eval.'_'.date("dmY").'.csv"');
-		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-		header('Pragma: public');
-	} else {
-		header('Content-Disposition: attachment; filename="cc_dev_'.$id_dev.'_eval_'.$id_eval.'_'.date("dmY").'.csv"');
-		header('Pragma: no-cache');
-	}
-	echo $csv;
+	$nom_fic="cc_dev_".$id_dev."_eval_".$id_eval."_".date("dmY").".csv";
+	send_file_download_headers('text/x-csv',$nom_fic);
+	//echo $csv;
+	echo echo_csv_encoded($csv);
 	die();
 }
 
@@ -175,14 +163,14 @@ if (isset($_POST['notes'])) {
 	$temp = my_ereg_replace("\\\\n","\n",$temp);
 	//echo "\$temp=$temp<br />";
 	//echo "</pre>";
-	$longueur = strlen($temp);
+	$longueur = mb_strlen($temp);
 	$i = 0;
 	$fin_note = 'yes';
 	$indice = $_POST['debut_import']-2;
 	$tempo = '';
 	if(!isset($note_sur_dev_choisi)) {$note_sur_dev_choisi=20;}
 	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
-		$car = substr($temp, $i, 1);
+		$car = mb_substr($temp, $i, 1);
 		//echo "<p>\$car='$car'<br />";
 		//if (my_ereg ("^[0-9\.\,\a-z\A-Z\-]{1}$", $car)) {
 		if (my_ereg('^[0-9.,a-zA-Z-]{1}$', $car)) {
@@ -213,39 +201,7 @@ if (isset($_POST['notes'])) {
 		$i++;
 	}
 }
-/*
-// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
-//-------------------------------------------------------------------------------------------------------------------
-if (isset($_POST['appreciations'])) {
-	check_token();
 
-	$temp = $_POST['appreciations']." 1";
-	$temp = my_ereg_replace("\\\\r","`",$temp);
-	$temp = my_ereg_replace("\\\\n","",$temp);
-	$temp = unslashes($temp);
- 	$longueur = strlen($temp);
-	$i = 0;
-	$fin_app = 'yes';
-	$indice = $_POST['debut_import']-2;
-	$tempo = "";
-	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
-		$car = substr($temp, $i, 1);
-		if (!my_ereg ("^[`]{1}$", $car)) {
-			if (($fin_app=='yes') or ($i == $longueur-1)) {
-				$fin_app = 'no';
-				$appreciations_import[$indice] = $tempo;
-				$indice++;
-				$tempo = '';
-			}
-			$tempo=$tempo.$car;
-		} else {
-  			$fin_app = 'yes';
-		}
-		$i++;
-	}
-}
-// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
-*/
 
 
 if (isset($_POST['is_posted'])) {
@@ -265,7 +221,7 @@ if (isset($_POST['is_posted'])) {
 	//for($i=0;$i<count($log_eleve);$i++){
 	for($i=0;$i<$indice_max_log_eleve;$i++){
 		if(isset($log_eleve[$i])) {
-			// La période est-elle ouverte? On s'en fiche: les évaluations cumul peuvent être à cheval sur plusieurs périodes avant de donner lieu à une note dans le carnet de notes
+			// La pÃ©riode est-elle ouverte? On s'en fiche: les Ã©valuations cumul peuvent Ãªtre Ã  cheval sur plusieurs pÃ©riodes avant de donner lieu Ã  une note dans le carnet de notes
 			$reg_eleve_login=$log_eleve[$i];
 			if(isset($current_group["eleves"][$periode_num]["users"][$reg_eleve_login]["classe"])){
 				$id_classe = $current_group["eleves"][$periode_num]["users"][$reg_eleve_login]["classe"];
@@ -275,11 +231,11 @@ if (isset($_POST['is_posted'])) {
 
 					//==============================
 					// PREPARATIFS boireaus 20080422
-					// Pour passer à no_anti_inject comme pour les autres saisies d'appréciations
+					// Pour passer Ã  no_anti_inject comme pour les autres saisies d'apprÃ©ciations
 					if($mode_commentaire_20080422!="no_anti_inject") {
-						// Problème: les accents sont codés en HTML...
+						// ProblÃ¨me: les accents sont codÃ©s en HTML...
 						$comment=$comment_eleve[$i];
-						// Cela fonctionne chez moi avec cette correction (accents, apostrophes et retours à la ligne):
+						// Cela fonctionne chez moi avec cette correction (accents, apostrophes et retours Ã  la ligne):
 						$comment=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("&#039;","'",html_entity_decode($comment))));
 					}
 					else {
@@ -290,7 +246,7 @@ if (isset($_POST['is_posted'])) {
 							$comment = "";
 						}
 						//echo "$i: $comment<br />";
-						// Contrôle des saisies pour supprimer les sauts de lignes surnuméraires.
+						// ContrÃ´le des saisies pour supprimer les sauts de lignes surnumÃ©raires.
 						$comment=my_ereg_replace('(\\\r\\\n)+',"\r\n",$comment);
 					}
 					//==============================
@@ -326,9 +282,13 @@ if (isset($_POST['is_posted'])) {
 					$test_eleve_note_query = mysql_query("SELECT * FROM cc_notes_eval WHERE (login='$reg_eleve_login' AND id_eval = '$id_eval')");
 					$test = mysql_num_rows($test_eleve_note_query);
 					if ($test != "0") {
-						$register = mysql_query("UPDATE cc_notes_eval SET comment='".$comment."', note='$note',statut='$elev_statut' WHERE (login='".$reg_eleve_login."' AND id_eval='".$id_eval."')");
+						$sql="UPDATE cc_notes_eval SET comment='".$comment."', note='$note',statut='$elev_statut' WHERE (login='".$reg_eleve_login."' AND id_eval='".$id_eval."')";
+						//echo "$sql<br />";
+						$register = mysql_query($sql);
 					} else {
-						$register = mysql_query("INSERT INTO cc_notes_eval SET login='".$reg_eleve_login."', id_eval='".$id_eval."',note='".$note."',statut='".$elev_statut."',comment='".$comment."'");
+						$sql="INSERT INTO cc_notes_eval SET login='".$reg_eleve_login."', id_eval='".$id_eval."',note='".$note."',statut='".$elev_statut."',comment='".$comment."'";
+						//echo "$sql<br />";
+						$register = mysql_query($sql);
 					}
 
 				//}
@@ -339,22 +299,22 @@ if (isset($_POST['is_posted'])) {
 	/*
     //==========================================================
     // Ajout d'un test:
-    // Si on modifie un devoir alors que des notes ont été reportées sur le bulletin, il faut penser à mettre à jour la recopie vers le bulletin.
+    // Si on modifie un devoir alors que des notes ont Ã©tÃ© reportÃ©es sur le bulletin, il faut penser Ã  mettre Ã  jour la recopie vers le bulletin.
     $sql="SELECT 1=1 FROM matieres_notes WHERE periode='".$periode_num."' AND id_groupe='".$id_groupe."';";
     $test_bulletin=mysql_query($sql);
     if(mysql_num_rows($test_bulletin)>0) {
-        $msg=" ATTENTION: Des notes sont présentes sur le bulletin.<br />Si vous avez modifié ou ajouté des notes, pensez à mettre à jour la recopie vers le bulletin.";
+        $msg=" ATTENTION: Des notes sont prÃ©sentes sur le bulletin.<br />Si vous avez modifiÃ© ou ajoutÃ© des notes, pensez Ã  mettre Ã  jour la recopie vers le bulletin.";
     }
     //==========================================================
 	*/
 	$affiche_message = 'yes';
 }
 
-$message_enregistrement = "Les modifications ont été enregistrées !";
-$themessage  = 'Des notes ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$message_enregistrement = "Les modifications ont Ã©tÃ© enregistrÃ©es !";
+$themessage  = 'Des notes ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
 $titre_page = "Saisie des notes CC";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 //debug_var();
 
@@ -415,7 +375,7 @@ if(mysql_num_rows($res_eval)>1) {
 
 	echo "| Evaluation ";
 	if($id_eval_prec!="-1") {
-		echo " <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;id_eval=$id_eval_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">précédente</a>";
+		echo " <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;id_eval=$id_eval_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">prÃ©cÃ©dente</a>";
 	}
 	//echo " <select name='id_eval' onchange=\"document.forms['form0'].submit()\">\n";
 	echo " <select name='id_eval' id='id_eval_change' onchange=\"confirm_changement_eval(change, '$themessage');\">\n";
@@ -458,8 +418,8 @@ echo "</form>\n";
 
 echo "<h2>".$current_group['name']." (<i>".$current_group['description']."</i>) en ".$current_group['classlist_string']."</h2>\n";
 
-//echo "<h2>$nom_cc n°$id_dev&nbsp;: $nom_court_dev (<i>$nom_complet_dev</i>)</h2>\n";
-//echo "<h3>Evaluation n°$id_eval&nbsp;: $nom_court (<i>$nom_complet</i>) sur $note_sur du ".formate_date($display_date)."</h3>\n";
+//echo "<h2>$nom_cc nÂ°$id_dev&nbsp;: $nom_court_dev (<i>$nom_complet_dev</i>)</h2>\n";
+//echo "<h3>Evaluation nÂ°$id_eval&nbsp;: $nom_court (<i>$nom_complet</i>) sur $note_sur du ".formate_date($display_date)."</h3>\n";
 
 echo "<h3><b>$nom_cc</b>&nbsp;: $nom_court_dev (<i>$nom_complet_dev</i>)</h3>\n";
 echo "<h4><b>Evaluation</b>&nbsp;: $nom_court (<i>$nom_complet</i>) sur $note_sur du ".formate_date($display_date)."</h4>\n";
@@ -469,7 +429,7 @@ echo "<form enctype=\"multipart/form-data\" name= \"form1\" action=\"".$_SERVER[
 echo add_token_field();
 echo "<center><input type='submit' value='Enregistrer' /></center>\n";
 
-// Couleurs utilisées
+// Couleurs utilisÃ©es
 $couleur_devoirs = '#AAE6AA';
 $couleur_moy_cont = '#96C8F0';
 $couleur_moy_sous_cont = '#FAFABE';
@@ -480,9 +440,9 @@ $note_sur_verif = $note_sur;
 if ($id_eval != 0) {
         $appel_note_sur = mysql_query("SELECT NOTE_SUR FROM cn_devoirs WHERE id = '$id_eval'");
         $note_sur_verif = mysql_result($appel_note_sur,'0' ,'note_sur');
-	//echo "<p class='cn'>Taper une note de 0 à 20 pour chaque élève, ou à défaut le code 'abs' pour 'absent', le code 'disp' pour 'dispensé', le code '-' pour absence de note.</p>\n";
-	echo "<p class='cn'>Taper une note de 0 à ".$note_sur_verif." pour chaque élève, ou à défaut le code 'a' pour 'absent', le code 'd' pour 'dispensé', le code '-' ou 'n' pour absence de note.</p>\n";
-	echo "<p class='cn'>Vous pouvez également <b>importer directement vos notes par \"copier/coller\"</b> à partir d'un tableur ou d'une autre application : voir tout en bas de cette page.</p>\n";
+	//echo "<p class='cn'>Taper une note de 0 Ã  20 pour chaque Ã©lÃ¨ve, ou Ã  dÃ©faut le code 'abs' pour 'absent', le code 'disp' pour 'dispensÃ©', le code '-' pour absence de note.</p>\n";
+	echo "<p class='cn'>Taper une note de 0 Ã  ".$note_sur_verif." pour chaque Ã©lÃ¨ve, ou Ã  dÃ©faut le code 'a' pour 'absent', le code 'd' pour 'dispensÃ©', le code '-' ou 'n' pour absence de note.</p>\n";
+	echo "<p class='cn'>Vous pouvez Ã©galement <b>importer directement vos notes par \"copier/coller\"</b> Ã  partir d'un tableur ou d'une autre application : voir tout en bas de cette page.</p>\n";
 
 }
 echo "<p class=cn><b>Enseignement : ".$current_group['description']." (" . $current_group["classlist_string"] . ")";
@@ -558,30 +518,30 @@ while ($i < $nb_dev) {
 	$i++;
 }
 */
-// Tableau destiner à stocker l'id du champ de saisie de note (n$num_id) correspondant à l'élève $i
+// Tableau destiner Ã  stocker l'id du champ de saisie de note (n$num_id) correspondant Ã  l'Ã©lÃ¨ve $i
 $indice_ele_saisie=array();
 
 $i = 0;
 $num_id=10;
 $current_displayed_line = 0;
 
-// On commence par mettre la liste dans l'ordre souhaité
+// On commence par mettre la liste dans l'ordre souhaitÃ©
 if ($order_by != "classe") {
 	$liste_eleves = $current_group["eleves"][$periode_num]["users"];
 } else {
 	// Ici, on tri par classe
-	// On va juste créer une liste des élèves pour chaque classe
+	// On va juste crÃ©er une liste des Ã©lÃ¨ves pour chaque classe
 	$tab_classes = array();
 	foreach($current_group["classes"]["list"] as $classe_id) {
 		$tab_classes[$classe_id] = array();
         //echo "\$tab_classes[$classe_id]=".$tab_classes[$classe_id]."<br />";
 	}
-	// On passe maintenant élève par élève et on les met dans la bonne liste selon leur classe
+	// On passe maintenant Ã©lÃ¨ve par Ã©lÃ¨ve et on les met dans la bonne liste selon leur classe
 	foreach($current_group["eleves"][$periode_num]["list"] as $e_login) {
 		$classe = $current_group["eleves"][$periode_num]["users"][$e_login]["classe"];
 		$tab_classes[$classe][$e_login] = $current_group["eleves"][$periode_num]["users"][$e_login];
 	}
-	// On met tout ça à la suite
+	// On met tout Ã§a Ã  la suite
 	$liste_eleves = array();
 	foreach($current_group["classes"]["list"] as $classe_id) {
 		$liste_eleves = array_merge($liste_eleves, $tab_classes[$classe_id]);
@@ -617,13 +577,13 @@ if(isset($note_import)) {
 */
 echo "<table class='boireaus' summary='Notes'>\n";
 echo "<tr>\n";
-echo "<th><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;id_eval=$id_eval&amp;order_by=nom' onclick=\"return confirm_abandon (this, change,'$themessage')\">Nom Prénom</a></th>\n";
+echo "<th><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;id_eval=$id_eval&amp;order_by=nom' onclick=\"return confirm_abandon (this, change,'$themessage')\">Nom PrÃ©nom</a></th>\n";
 echo "<th><a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;id_eval=$id_eval&amp;order_by=classe' onclick=\"return confirm_abandon (this, change,'$themessage')\">Classe</a></th>\n";
 echo "<th>Note</th>\n";
 echo "<th>Commentaire</th>\n";
 echo "</tr>\n";
 
-// A FAIRE: AJOUTER EN ENTETE Note_sur, lien vers config de l'évaluation,...
+// A FAIRE: AJOUTER EN ENTETE Note_sur, lien vers config de l'Ã©valuation,...
 
 $alt=1;
 foreach ($liste_eleves as $eleve) {
@@ -658,7 +618,7 @@ foreach ($liste_eleves as $eleve) {
 	*/
 
 	echo "<input type='text' name='note_eleve[$i]' size='4' autocomplete='off' id=\"n".$num_id."\" onKeyDown=\"clavier(this.id,event);\" onfocus=\"javascript:this.select()";
-	if($elenoet!="") {echo ";affiche_photo('".nom_photo($elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";}
+	if($elenoet!="") {echo ";affiche_photo('".nom_photo($elenoet)."','".addslashes(my_strtoupper($eleve_nom[$i])." ".casse_mot($eleve_prenom[$i],'majf2'))."')";}
 	echo "\" onchange=\"verifcol($num_id);changement();\" value='";
 	if ((isset($note_import[$current_displayed_line])) and  ($note_import[$current_displayed_line] != '')) {
 		echo $note_import[$current_displayed_line];
@@ -671,7 +631,7 @@ foreach ($liste_eleves as $eleve) {
 
 	echo "<td>\n";
 	echo "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows='1' cols='60' class='wrap' onfocus=\"javascript:this.select()";
-	if($elenoet!="") {echo ";affiche_photo('".nom_photo($elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";}
+	if($elenoet!="") {echo ";affiche_photo('".nom_photo($elenoet)."','".addslashes(my_strtoupper($eleve_nom[$i])." ".casse_mot($eleve_prenom[$i],'majf2'))."')";}
 	echo "\" onchange=\"changement()\">";
 	if(isset($commentaire[$eleve_login[$i]])) {echo $commentaire[$eleve_login[$i]];}
 	echo "</textarea>\n";
@@ -696,7 +656,7 @@ echo "</form>\n";
 echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method='post'>\n";
 echo add_token_field();
-echo "<h3 class='gepi'>Importation directe des notes par copier/coller à partir d'un tableur</h3>\n";
+echo "<h3 class='gepi'>Importation directe des notes par copier/coller Ã  partir d'un tableur</h3>\n";
 echo "<table summary=\"Tableau d'import\"><tr>\n";
 echo "<td>De la ligne : ";
 echo "<select name='debut_import' size='1'>\n";
@@ -707,7 +667,7 @@ while ($k < $current_displayed_line+1) {
 }
 echo "</select>\n";
 
-echo "<br /> à la ligne : \n";
+echo "<br /> Ã  la ligne : \n";
 echo "<SELECT name='fin_import' size='1'>\n";
 $k = 1;
 while ($k < $current_displayed_line+1) {
@@ -718,7 +678,7 @@ while ($k < $current_displayed_line+1) {
 }
 echo "</select>\n";
 echo "</td><td>\n";
-echo "Coller ci-dessous les données à importer : <br />\n";
+echo "Coller ci-dessous les donnÃ©es Ã  importer : <br />\n";
 if (isset($_POST['notes'])) {$notes=preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['notes']));} else {$notes='';}
 //echo "<textarea name='notes' rows='3' cols='40' wrap='virtual'>$notes</textarea>\n";
 echo "<textarea name='notes' rows='3' cols='40' class='wrap'>$notes</textarea>\n";
@@ -734,42 +694,42 @@ echo "<input type='hidden' name='order_by' value='$order_by' />\n";
 //=========================
 
 echo "<center><input type='submit' value='Importer'  onclick=\"return confirm_abandon (this, change, '$themessage')\" /></center>\n";
-echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les élèves dont le nom est affiché ci-dessus !<br />Soyez donc vigilant à ne coller que les notes de ces élèves, dans le bon ordre.</p>\n";
+echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les Ã©lÃ¨ves dont le nom est affichÃ© ci-dessus !<br />Soyez donc vigilant Ã  ne coller que les notes de ces Ã©lÃ¨ves, dans le bon ordre.</p>\n";
 echo "</form></fieldset>\n";
 
 //=======================================================
 // MODIF: boireaus
-// Avertissement redescendu ici pour éviter d'avoir une page web avec une section Javascript avant même la balise <html>
+// Avertissement redescendu ici pour Ã©viter d'avoir une page web avec une section Javascript avant mÃªme la balise <html>
 if (isset($_POST['notes'])) {
 	echo "<script type=\"text/javascript\" language=\"javascript\">
 	<!--
-	alert(\"Attention, les notes importées ne sont pas encore enregistrées dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
+	alert(\"Attention, les notes importÃ©es ne sont pas encore enregistrÃ©es dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
 	changement();
 	//-->
 	</script>\n";
 }
 
 /*
-	// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+	// Ajout delineau -> fonctionnalitÃ© de copier/coller d'apprÃ©ciations
   if (isset($_POST['appreciations'])) {
   	echo "<script type=\"text/javascript\" language=\"javascript\">
   	<!--
-  	alert(\"Attention, les appréciations importées ne sont pas encore enregistrées dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
+  	alert(\"Attention, les apprÃ©ciations importÃ©es ne sont pas encore enregistrÃ©es dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
   	//-->
   	</script>\n";
   }
-	// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
+	// Fin ajout delineau -> fonctionnalitÃ© de copier/coller d'apprÃ©ciations
 
 	//=======================================================
 
 }
 
-// Ajout delineau -> fonctionnalité de copier/coller d'appréciations
+// Ajout delineau -> fonctionnalitÃ© de copier/coller d'apprÃ©ciations
 if ($id_eval) {
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
 	echo add_token_field();
-	echo "<h3 class='gepi'>Importation directe des appréciations par copier/coller à partir d'un tableur</h3>\n";
+	echo "<h3 class='gepi'>Importation directe des apprÃ©ciations par copier/coller Ã  partir d'un tableur</h3>\n";
 	echo "<table summary=\"Tableau d'import\"><tr>\n";
 	echo "<td>De la ligne : ";
 		echo "<SELECT name='debut_import' size='1'>\n";
@@ -780,7 +740,7 @@ if ($id_eval) {
 	}
 	echo "</select>\n";
 
-	echo "<br /> à la ligne : \n";
+	echo "<br /> Ã  la ligne : \n";
 	echo "<SELECT name='fin_import' size='1'>\n";
 	$k = 1;
 	while ($k < $current_displayed_line+1) {
@@ -791,7 +751,7 @@ if ($id_eval) {
 	}
 	echo "</select>\n";
 	echo "</td><td>\n";
-	echo "Coller ci-dessous les données à importer&nbsp;: <br />\n";
+	echo "Coller ci-dessous les donnÃ©es Ã  importer&nbsp;: <br />\n";
 	//if (isset($_POST['appreciations'])) $appreciations = $_POST['appreciations']; $appreciations='';
 	if (isset($_POST['appreciations'])) {$appreciations = preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['appreciations']));} else {$appreciations='';}
 	echo "<textarea name='appreciations' rows='3' cols='40' class='wrap'>$appreciations</textarea>\n";
@@ -800,25 +760,25 @@ if ($id_eval) {
 	echo "<input type='hidden' name='id_eval' value='$id_eval' />\n";
 	echo "<input type='hidden' name='order_by' value='$order_by' />\n";
 	echo "<center><input type='submit' value='Importer'  onclick=\"return confirm_abandon (this, change, '$themessage')\" /></center>\n";
-	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les élèves dont le nom est affiché ci-dessus !<br />Soyez donc vigilant à ne coller que les appréciations de ces élèves, dans le bon ordre.</p>\n";
+	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les Ã©lÃ¨ves dont le nom est affichÃ© ci-dessus !<br />Soyez donc vigilant Ã  ne coller que les apprÃ©ciations de ces Ã©lÃ¨ves, dans le bon ordre.</p>\n";
 	echo "</form></fieldset>\n";
 }
-// Fin ajout delineau -> fonctionnalité de copier/coller d'appréciations
+// Fin ajout delineau -> fonctionnalitÃ© de copier/coller d'apprÃ©ciations
 
 */
 ?>
 <br />
-* En conformité avec la CNIL, le professeur s'engage à ne faire figurer dans le carnet de notes que des notes et commentaires portés à la connaissance de l'élève (note et commentaire portés sur la copie, ...).
+* En conformitÃ© avec la CNIL, le professeur s'engage Ã  ne faire figurer dans le carnet de notes que des notes et commentaires portÃ©s Ã  la connaissance de l'Ã©lÃ¨ve (note et commentaire portÃ©s sur la copie, ...).
 <script type="text/javascript" language="javascript">
 chargement = true;
 
-// La vérification ci-dessous est effectuée après le remplacement des notes supérieures à 20 par des zéros.
-// Ces éventuelles erreurs de frappe ne sauteront pas aux yeux.
+// La vÃ©rification ci-dessous est effectuÃ©e aprÃ¨s le remplacement des notes supÃ©rieures Ã  20 par des zÃ©ros.
+// Ces Ã©ventuelles erreurs de frappe ne sauteront pas aux yeux.
 for(i=10;i<<?php echo $num_id; ?>;i++){
 	eval("verifcol("+i+")");
 }
 
-// On donne le focus à la première cellule lors du chargement de la page:
+// On donne le focus Ã  la premiÃ¨re cellule lors du chargement de la page:
 if(document.getElementById('n10')){
 	document.getElementById('n10').focus();
 }

@@ -10,7 +10,6 @@
  *
  * @author Olav Morken, UNINETT AS.
  * @package simpleSAMLphp
- * @version $Id$
  */
 abstract class sspmod_core_Auth_UserPassOrgBase extends SimpleSAML_Auth_Source {
 
@@ -25,6 +24,12 @@ abstract class sspmod_core_Auth_UserPassOrgBase extends SimpleSAML_Auth_Source {
 	 * The key of the AuthId field in the state.
 	 */
 	const AUTHID = 'sspmod_core_Auth_UserPassOrgBase.AuthId';
+
+
+	/**
+	 * The key of the OrgId field in the state, identifies which org was selected.
+	 */
+	const ORGID = 'sspmod_core_Auth_UserPassOrgBase.SelectedOrg';
 
 
 	/**
@@ -193,6 +198,10 @@ abstract class sspmod_core_Auth_UserPassOrgBase extends SimpleSAML_Auth_Source {
 		} catch (SimpleSAML_Error_Error $e) {
 			return $e->getErrorCode();
 		}
+
+		// Add the selected Org to the state
+		$state[self::ORGID] = $organization;
+		$state['PersistentAuthData'][] = self::ORGID;
 
 		$state['Attributes'] = $attributes;
 		SimpleSAML_Auth_Source::completeAuth($state);

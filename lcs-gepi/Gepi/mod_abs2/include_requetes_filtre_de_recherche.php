@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: include_requetes_filtre_de_recherche.php 7294 2011-06-22 15:06:01Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -39,10 +38,10 @@ if ($reinit_filtre == 'y') {
 	'filter_date_fin_saisie_debut_plage', 'filter_date_fin_saisie_fin_plage',
 	'filter_creneau', 'filter_cours', 'filter_date_creation_traitement_debut_plage', 'filter_date_creation_traitement_fin_plage','filter_date_creation_saisie_debut_plage', 'filter_date_creation_saisie_fin_plage','filter_date_creation_notification_debut_plage', 'filter_date_creation_notification_fin_plage',
 	'filter_date_traitement_absence_debut_plage', 'filter_date_traitement_absence_fin_plage', 'filter_statut', 'filter_manqement_obligation', 'filter_sous_responsabilite_etablissement'
-	    , 'filter_recherche_saisie_a_rattacher', 'filter_regime', 'filter_date_suppression_saisie_debut_plage', 'filter_date_suppression_saisie_fin_plage');
+	    , 'filter_recherche_saisie_a_rattacher', 'filter_regime', 'filter_regime', 'filter_date_suppression_saisie_debut_plage', 'filter_date_suppression_saisie_fin_plage');
     $liste_parametres_checkbox = array('filter_date_modification', 'filter_discipline', 'filter_marqueur_appel', 'filter_saisies_supprimees');
 
-    //récupération des paramètres de la requète
+    //rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
     foreach ($liste_parametres_sauf_checkbox as $param_name) {
 	//echo $param_name.' : '.$_POST[$param_name].'<br/>';
 	if (isset($_POST[$param_name])) {

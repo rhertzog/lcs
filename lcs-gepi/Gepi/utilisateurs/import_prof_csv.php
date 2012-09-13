@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: import_prof_csv.php 6499 2011-02-12 20:53:19Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -52,6 +51,7 @@ if(!in_array($export_statut, $tab_statut)) {
 }
 
 $nom_fic = "base_".$export_statut."_gepi.csv";
+send_file_download_headers('text/x-csv',$nom_fic);
 
 $fd = '';
 
@@ -65,6 +65,8 @@ else {
 //echo "$sql<br />";
 $appel_donnees = mysql_query($sql);
 $nombre_lignes = mysql_num_rows($appel_donnees);
+
+//echo "\$nombre_lignes=$nombre_lignes<br />";
 
 $j= 0;
 while($j< $nombre_lignes) {
@@ -87,6 +89,8 @@ while($j< $nombre_lignes) {
 	$fd.=";\n";
 	$j++;
 }
-send_file_download_headers('text/x-csv',$nom_fic);
-echo $fd;
+
+//echo $fd;
+
+echo echo_csv_encoded($fd);
 ?>

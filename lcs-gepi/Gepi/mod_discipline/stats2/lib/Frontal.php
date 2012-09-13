@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: Frontal.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -22,12 +21,12 @@
  */
 
 /**
- * Classe gÈrant les requÍtes HTTP et les routant
- * vers le controleur et l'action appropriÈe
- * Code adaptÈ du controleur de Philippe Rigaux:
+ * Classe g√©rant les requ√™tes HTTP et les routant
+ * vers le controleur et l'action appropri√©e
+ * Code adapt√© du controleur de Philippe Rigaux:
  *  http://www.lamsade.dauphine.fr/rigaux/mysqlphp
  */
-// On empÍche l'accËs direct au fichier
+// On emp√™che l'acc√®s direct au fichier
 if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
     die();
 };
@@ -44,12 +43,12 @@ class Frontal {
         return self::$instance;
     }
     /**
-     * Execution d'une requÍte HTTP
+     * Execution d'une requ√™te HTTP
      */
 
     function execute ()
     {
-        // D'abord, on rÈcupËre les noms du contrÙleur et de l'action
+        // D'abord, on r√©cup√®re les noms du contr√¥leur et de l'action
         if (isSet($_GET[Frontal::NOM_CTRL]))
             $controleur = ucfirst($_GET[Frontal::NOM_CTRL]) . "Ctrl";
         else
@@ -64,15 +63,15 @@ class Frontal {
         if (file_exists("apps" . DIRECTORY_SEPARATOR . $chemin)) {
             require_once($chemin);
         } else {
-            throw new Exception ("Le contrÙleur <b>$controleur</b> n'existe pas");
+            throw new Exception ("Le contr√¥leur <b>$controleur</b> n'existe pas");
         }
         // On instancie un objet
         eval ("\$ctrl = new $controleur();");
-        // Il faut vÈrifier que l'action existe
+        // Il faut v√©rifier que l'action existe
         if (!method_exists($ctrl, $action)) {
             throw new Exception ("L'action <b>$action</b> n'existe pas");
         }
-        // Et pour finir il n'y a plus qu'‡ exÈcuter l'action
+        // Et pour finir il n'y a plus qu'√† ex√©cuter l'action
         call_user_func(array($ctrl, $action));
     }
 

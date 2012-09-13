@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: class_menu_general.php 5237 2010-09-11 19:02:56Z regis $
+ * $Id$
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -24,11 +24,11 @@
 
 class itemGeneral {
  
-	// déclaration des propriétés
+	// dÃ©claration des propriÃ©tÃ©s
 	
 	public $indexMenu = 0;
 	public $indexItem = 0;
-	public $icone = array('chemin'=>'','titre'=>'','alt'=>'');	//données de l'icône
+	public $icone = array('chemin'=>'','titre'=>'','alt'=>'');	//donnÃ©es de l'icÃ´ne
 	public $key_setting = '' ;																	//test dans setting pour choisir l'icÃ´ne
 	public $chemin="" ;																						//chemin du lien
 	public $titre="" ;																					//titre court
@@ -38,7 +38,7 @@ class itemGeneral {
 	// constructeur
 /** * @class: itemGeneral :
  *
- * Regroupe les données nécessaires au remplissage d'un item de menu du type accueil.php ou accueil_modules.php
+ * Regroupe les donnÃ©es nÃ©cessaires au remplissage d'un item de menu du type accueil.php ou accueil_modules.php
  */
 	function __construct() 
 	{
@@ -48,14 +48,14 @@ class itemGeneral {
   {
   }
 
-	// déclaration des méthodes
+	// dÃ©claration des mÃ©thodes
 
 /**
  *
- * Vérifie qu'un utilisateur à le droit de voir la page en lien
+ * VÃ©rifie qu'un utilisateur Ã  le droit de voir la page en lien
  *
  * @var string $id l'adresse de la page
- * telle qu'enregistrée dans la base droits
+ * telle qu'enregistrÃ©e dans la base droits
  * @var string $statut le statut de l'utilisateur
  *
  * @return entier 1 si l'utilisateur a le droit de voir la page
@@ -97,7 +97,7 @@ class itemGeneral {
 
 /**
  * 
- * Met à jour l'icone à afficher avant un item de menu
+ * Met Ã  jour l'icone Ã  afficher avant un item de menu
  * en interrogeant la table setting
  *
  * @var string $key_setting
@@ -139,7 +139,7 @@ class itemGeneral {
 
 class menuGeneral
 {
-	// déclaration des propriétés
+	// dÃ©claration des propriÃ©tÃ©s
 
 	public $indexMenu = 0;
 	public $classe='accueil';
@@ -151,7 +151,7 @@ class menuGeneral
 	// constructeur
 /** * @class: menuGeneral :
  *
- * Regroupe les données nécessaires au remplissage des entêtes de menu du type accueil.php ou accueil_modules.php
+ * Regroupe les donnÃ©es nÃ©cessaires au remplissage des entÃªtes de menu du type accueil.php ou accueil_modules.php
  */
 	function __construct()
 	{
@@ -160,7 +160,7 @@ class menuGeneral
   function __destruct()
   {
   }
-	// déclaration des méthodes
+	// dÃ©claration des mÃ©thodes
 
 }
 

@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: occupation_lieu_heure.php 7138 2011-06-05 17:37:14Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -34,16 +33,14 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-// SQL : INSERT INTO droits VALUES ( '/mod_discipline/occupation_lieu_heure.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Occupation lieu', '');
-// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/occupation_lieu_heure.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Occupation lieu', '');;";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
@@ -64,21 +61,21 @@ if(!checkdate($tmp_date[1],$tmp_date[0],$tmp_date[2])) {
 	$msg.="La date saisie n'est pas valide.<br />";
 }
 
-$l_duree=strlen($duree);
+$l_duree=mb_strlen($duree);
 $duree=preg_replace("/,/",".",preg_replace("/[^0-9.]/","",$duree));
 if($duree=="") {
 	$duree=1;
-	$msg.="La durée de retenue saisie n'était pas correcte. Elle a été remplacée par '1'.<r />";
+	$msg.="La durÃ©e de retenue saisie n'Ã©tait pas correcte. Elle a Ã©tÃ© remplacÃ©e par '1'.<r />";
 }
-elseif($l_duree!=strlen($duree)) {
-	$msg.="La durée de retenue saisie n'était pas correcte. Elle a été modifiée.<r />";
+elseif($l_duree!=mb_strlen($duree)) {
+	$msg.="La durÃ©e de retenue saisie n'Ã©tait pas correcte. Elle a Ã©tÃ© modifiÃ©e.<r />";
 }
 
 $utilisation_prototype="ok";
 $mode_header_reduit="y";
 //**************** EN-TETE *****************
 $titre_page = "Discipline: Occupation d'un lieu";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //debug_var();
@@ -87,7 +84,7 @@ echo "<p class='bold'><a href='index.php'><img src='../images/icons/back.png' al
 echo "</p>\n";
 
 /*
-// On arrive à récupérer les infos sur la page source via JavaScript, mais on ne peut pas ensuite aisément faire des requêtes PHP/MySQL
+// On arrive Ã  rÃ©cupÃ©rer les infos sur la page source via JavaScript, mais on ne peut pas ensuite aisÃ©ment faire des requÃªtes PHP/MySQL
 echo "<script type='text/javascript'>
 	alert(window.opener.document.getElementById('lieu_retenue').value);
 </script>\n";
@@ -96,7 +93,7 @@ echo "<script type='text/javascript'>
 //if((!isset($lieu))||(!isset($date))||(!isset($heure))) {
 //if(!isset($id_sanction)) {
 if((!isset($lieu))||(!isset($date))||(!isset($heure))||(!isset($duree))||(!isset($id_sanction))) {
-	echo "<p><strong>Erreur&nbsp;:</strong> Des paramètres n'ont pas été transmis.</p>\n";
+	echo "<p><strong>Erreur&nbsp;:</strong> Des paramÃ¨tres n'ont pas Ã©tÃ© transmis.</p>\n";
 	require("../lib/footer.inc.php");
 	die();
 }
@@ -104,7 +101,7 @@ if((!isset($lieu))||(!isset($date))||(!isset($heure))||(!isset($duree))||(!isset
 $sql="SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode;";
 $res_abs_cren=mysql_query($sql);
 if(mysql_num_rows($res_abs_cren)==0) {
-	echo "<p>La table edt_creneaux n'est pas renseignée!</p>\n";
+	echo "<p>La table edt_creneaux n'est pas renseignÃ©e!</p>\n";
 	require("../lib/footer.inc.php");
 	die();
 }
@@ -135,9 +132,9 @@ if($lieu!="") {
 	echo $lieu;
 }
 else {
-	echo "<span style='color:red;'>lieu indéfini</span>";
+	echo "<span style='color:red;'>lieu indÃ©fini</span>";
 }
-echo " le ".$date." pouvant se chevaucher avec le créneau ".$heure." (<em>".$tab_creneaux["$heure"]['debut']." à ";
+echo " le ".$date." pouvant se chevaucher avec le crÃ©neau ".$heure." (<em>".$tab_creneaux["$heure"]['debut']." Ã  ";
 if($duree==1) {
 	echo $tab_creneaux["$heure"]['fin'];
 }
@@ -154,7 +151,7 @@ $sql="SELECT * FROM s_retenues sr, s_sanctions s WHERE sr.id_sanction!='$id_sanc
 //echo "$sql<br />";
 $res=mysql_query($sql);
 if(mysql_num_rows($res)==0) {
-	echo "<p>Aucune autre retenue de la journée dans ce lieu.</p>\n";
+	echo "<p>Aucune autre retenue de la journÃ©e dans ce lieu.</p>\n";
 	echo "</blockquote>\n";
 	require("../lib/footer.inc.php");
 	die();
@@ -162,7 +159,7 @@ if(mysql_num_rows($res)==0) {
 
 $chaine_retenues="";
 $alt=1;
-// Mettre dans un tableau les retenues pour calculer heure+durée s'il y a des intersections.
+// Mettre dans un tableau les retenues pour calculer heure+durÃ©e s'il y a des intersections.
 while($lig=mysql_fetch_object($res)) {
 	if(
 		(($heure_debut_sec>=$tab_creneaux["$lig->heure_debut"]['debut_sec'])&&($heure_debut_sec<=$tab_creneaux["$lig->heure_debut"]['fin_sec']))||
@@ -198,14 +195,14 @@ while($lig=mysql_fetch_object($res)) {
 }
 
 if($chaine_retenues=="") {
-	echo "<p>Aucune autre retenue de la journée ne se chevauche avec la retenue choisie dans ce lieu.</p>\n";
+	echo "<p>Aucune autre retenue de la journÃ©e ne se chevauche avec la retenue choisie dans ce lieu.</p>\n";
 }
 else {
-	echo "<table class='boireaus' border='1' summary='Autres retenues sur le créneau'>\n";
+	echo "<table class='boireaus' border='1' summary='Autres retenues sur le crÃ©neau'>\n";
 	echo "<tr>\n";
 	echo "<th colspan='3'>Heure</th>\n";
-	echo "<th>Durée<br />(<em>en heures</em>)</th>\n";
-	echo "<th colspan='2'>Elève</th>\n";
+	echo "<th>DurÃ©e<br />(<em>en heures</em>)</th>\n";
+	echo "<th colspan='2'>ElÃ¨ve</th>\n";
 	echo "</tr>\n";
 	echo $chaine_retenues;
 	echo "</table>\n";
@@ -216,7 +213,7 @@ echo "<p><br /></p>\n";
 
 echo "<p><em>Remarque&nbsp;:</em></p>\n";
 echo "<blockquote>\n";
-echo "<p>Cette page est destinée à déterminer si certains regroupements d'élèves sont à éviter pour des retenues.</p>\n";
+echo "<p>Cette page est destinÃ©e Ã  dÃ©terminer si certains regroupements d'Ã©lÃ¨ves sont Ã  Ã©viter pour des retenues.</p>\n";
 echo "</blockquote>\n";
 echo "<p><br /></p>\n";
 

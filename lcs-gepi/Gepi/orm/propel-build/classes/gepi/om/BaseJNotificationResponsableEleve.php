@@ -25,6 +25,12 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	protected static $peer;
 
 	/**
+	 * The flag var to prevent infinit loop in deep copy
+	 * @var       boolean
+	 */
+	protected $startCopy = false;
+
+	/**
 	 * The value for the a_notification_id field.
 	 * @var        int
 	 */
@@ -75,7 +81,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	 * cle etrangere des personnes
 	 * @return     string
 	 */
-	public function getPersId()
+	public function getResponsableEleveId()
 	{
 		return $this->pers_id;
 	}
@@ -110,7 +116,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	 * @param      string $v new value
 	 * @return     JNotificationResponsableEleve The current object (for fluent API support)
 	 */
-	public function setPersId($v)
+	public function setResponsableEleveId($v)
 	{
 		if ($v !== null) {
 			$v = (string) $v;
@@ -121,12 +127,12 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 			$this->modifiedColumns[] = JNotificationResponsableElevePeer::PERS_ID;
 		}
 
-		if ($this->aResponsableEleve !== null && $this->aResponsableEleve->getPersId() !== $v) {
+		if ($this->aResponsableEleve !== null && $this->aResponsableEleve->getResponsableEleveId() !== $v) {
 			$this->aResponsableEleve = null;
 		}
 
 		return $this;
-	} // setPersId()
+	} // setResponsableEleveId()
 
 	/**
 	 * Indicates whether the columns in this object are only set to default values.
@@ -196,7 +202,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 		if ($this->aAbsenceEleveNotification !== null && $this->a_notification_id !== $this->aAbsenceEleveNotification->getId()) {
 			$this->aAbsenceEleveNotification = null;
 		}
-		if ($this->aResponsableEleve !== null && $this->pers_id !== $this->aResponsableEleve->getPersId()) {
+		if ($this->aResponsableEleve !== null && $this->pers_id !== $this->aResponsableEleve->getResponsableEleveId()) {
 			$this->aResponsableEleve = null;
 		}
 	} // ensureConsistency
@@ -264,18 +270,18 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 
 		$con->beginTransaction();
 		try {
+			$deleteQuery = JNotificationResponsableEleveQuery::create()
+				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
 			if ($ret) {
-				JNotificationResponsableEleveQuery::create()
-					->filterByPrimaryKey($this->getPrimaryKey())
-					->delete($con);
+				$deleteQuery->delete($con);
 				$this->postDelete($con);
 				$con->commit();
 				$this->setDeleted(true);
 			} else {
 				$con->commit();
 			}
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -327,7 +333,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -369,19 +375,15 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 				$this->setResponsableEleve($this->aResponsableEleve);
 			}
 
-
-			// If this object has been modified, then save it to the database.
-			if ($this->isModified()) {
+			if ($this->isNew() || $this->isModified()) {
+				// persist changes
 				if ($this->isNew()) {
-					$criteria = $this->buildCriteria();
-					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows += 1;
-					$this->setNew(false);
+					$this->doInsert($con);
 				} else {
-					$affectedRows += JNotificationResponsableElevePeer::doUpdate($this, $con);
+					$this->doUpdate($con);
 				}
-
-				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
+				$affectedRows += 1;
+				$this->resetModified();
 			}
 
 			$this->alreadyInSave = false;
@@ -389,6 +391,69 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 		}
 		return $affectedRows;
 	} // doSave()
+
+	/**
+	 * Insert the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @throws     PropelException
+	 * @see        doSave()
+	 */
+	protected function doInsert(PropelPDO $con)
+	{
+		$modifiedColumns = array();
+		$index = 0;
+
+
+		 // check the columns in natural order for more readable SQL queries
+		if ($this->isColumnModified(JNotificationResponsableElevePeer::A_NOTIFICATION_ID)) {
+			$modifiedColumns[':p' . $index++]  = 'A_NOTIFICATION_ID';
+		}
+		if ($this->isColumnModified(JNotificationResponsableElevePeer::PERS_ID)) {
+			$modifiedColumns[':p' . $index++]  = 'PERS_ID';
+		}
+
+		$sql = sprintf(
+			'INSERT INTO j_notifications_resp_pers (%s) VALUES (%s)',
+			implode(', ', $modifiedColumns),
+			implode(', ', array_keys($modifiedColumns))
+		);
+
+		try {
+			$stmt = $con->prepare($sql);
+			foreach ($modifiedColumns as $identifier => $columnName) {
+				switch ($columnName) {
+					case 'A_NOTIFICATION_ID':
+						$stmt->bindValue($identifier, $this->a_notification_id, PDO::PARAM_INT);
+						break;
+					case 'PERS_ID':
+						$stmt->bindValue($identifier, $this->pers_id, PDO::PARAM_STR);
+						break;
+				}
+			}
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
+		}
+
+		$this->setNew(false);
+	}
+
+	/**
+	 * Update the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @see        doSave()
+	 */
+	protected function doUpdate(PropelPDO $con)
+	{
+		$selectCriteria = $this->buildPkeyCriteria();
+		$valuesCriteria = $this->buildCriteria();
+		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
+	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -510,7 +575,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 				return $this->getANotificationId();
 				break;
 			case 1:
-				return $this->getPersId();
+				return $this->getResponsableEleveId();
 				break;
 			default:
 				return null;
@@ -542,7 +607,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 		$keys = JNotificationResponsableElevePeer::getFieldNames($keyType);
 		$result = array(
 			$keys[0] => $this->getANotificationId(),
-			$keys[1] => $this->getPersId(),
+			$keys[1] => $this->getResponsableEleveId(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aAbsenceEleveNotification) {
@@ -586,7 +651,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 				$this->setANotificationId($value);
 				break;
 			case 1:
-				$this->setPersId($value);
+				$this->setResponsableEleveId($value);
 				break;
 		} // switch()
 	}
@@ -613,7 +678,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 		$keys = JNotificationResponsableElevePeer::getFieldNames($keyType);
 
 		if (array_key_exists($keys[0], $arr)) $this->setANotificationId($arr[$keys[0]]);
-		if (array_key_exists($keys[1], $arr)) $this->setPersId($arr[$keys[1]]);
+		if (array_key_exists($keys[1], $arr)) $this->setResponsableEleveId($arr[$keys[1]]);
 	}
 
 	/**
@@ -657,7 +722,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	{
 		$pks = array();
 		$pks[0] = $this->getANotificationId();
-		$pks[1] = $this->getPersId();
+		$pks[1] = $this->getResponsableEleveId();
 
 		return $pks;
 	}
@@ -671,7 +736,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	public function setPrimaryKey($keys)
 	{
 		$this->setANotificationId($keys[0]);
-		$this->setPersId($keys[1]);
+		$this->setResponsableEleveId($keys[1]);
 	}
 
 	/**
@@ -680,7 +745,7 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	 */
 	public function isPrimaryKeyNull()
 	{
-		return (null === $this->getANotificationId()) && (null === $this->getPersId());
+		return (null === $this->getANotificationId()) && (null === $this->getResponsableEleveId());
 	}
 
 	/**
@@ -697,7 +762,19 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
 	{
 		$copyObj->setANotificationId($this->getANotificationId());
-		$copyObj->setPersId($this->getPersId());
+		$copyObj->setResponsableEleveId($this->getResponsableEleveId());
+
+		if ($deepCopy && !$this->startCopy) {
+			// important: temporarily setNew(false) because this affects the behavior of
+			// the getter/setter methods for fkey referrer objects.
+			$copyObj->setNew(false);
+			// store object hash to prevent cycle
+			$this->startCopy = true;
+
+			//unflag object copy
+			$this->startCopy = false;
+		} // if ($deepCopy)
+
 		if ($makeNew) {
 			$copyObj->setNew(true);
 		}
@@ -800,9 +877,9 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	public function setResponsableEleve(ResponsableEleve $v = null)
 	{
 		if ($v === null) {
-			$this->setPersId(NULL);
+			$this->setResponsableEleveId(NULL);
 		} else {
-			$this->setPersId($v->getPersId());
+			$this->setResponsableEleveId($v->getResponsableEleveId());
 		}
 
 		$this->aResponsableEleve = $v;
@@ -880,25 +957,6 @@ abstract class BaseJNotificationResponsableEleve extends BaseObject  implements 
 	public function __toString()
 	{
 		return (string) $this->exportTo(JNotificationResponsableElevePeer::DEFAULT_STRING_FORMAT);
-	}
-
-	/**
-	 * Catches calls to virtual methods
-	 */
-	public function __call($name, $params)
-	{
-		if (preg_match('/get(\w+)/', $name, $matches)) {
-			$virtualColumn = $matches[1];
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-			// no lcfirst in php<5.3...
-			$virtualColumn[0] = strtolower($virtualColumn[0]);
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-		}
-		return parent::__call($name, $params);
 	}
 
 } // BaseJNotificationResponsableEleve

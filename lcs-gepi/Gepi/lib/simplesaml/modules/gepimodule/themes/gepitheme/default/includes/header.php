@@ -119,16 +119,17 @@ if($onLoad !== '') {
 }
 ?>
 <body<?php echo $onLoad; ?>>
-
+	<?php if (getSettingValue("active_cahiers_texte")=='y' and getSettingValue("cahier_texte_acces_public") == "yes" and getSettingValue("disable_login")!='yes') {
+		echo "<div style=\"text-align: center; font-size: 120%;\"><a href='/$gepiPath/public/index.php?id_classe=-1'>Consulter les cahiers de textes (accès public)</a></div>";
+	}?>
 <div id="wrap">
-	
 	<div id="header">
 		<!--h1><a style="text-decoration: none; color: white" href="/<?php echo $this->data['baseurlpath']; ?>"><?php 
 			echo (isset($this->data['header']) ? $this->data['header'] : 'simpleSAMLphp'); 
 		?></a></h1-->
         <h1 style="text-align: center;">
           <img src="/<?php echo $this->data['baseurlpath']; ?>resources/gepitheme/logo_gepi_48_2.png" style="float: left;" alt="logo GEPI" />
-          <?php echo utf8_encode($gepiSchoolName)."<br />".$gepiYear; ?>
+          <?php echo $gepiSchoolName."<br />".$gepiYear; ?>
         </h1>
 	</div>
 

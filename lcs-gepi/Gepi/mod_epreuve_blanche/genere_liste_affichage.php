@@ -1,7 +1,6 @@
 <?php
-/* $Id: genere_liste_affichage.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 /*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -48,13 +47,13 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Epreuve blanche: Génération liste affichage',
+description='Epreuve blanche: GÃ©nÃ©ration liste affichage',
 statut='';";
 $insert=mysql_query($sql);
 }
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -74,7 +73,7 @@ if(isset($imprime)) {
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		$msg="L'épreuve n°$id_epreuve n'existe pas.";
+		$msg="L'Ã©preuve nÂ°$id_epreuve n'existe pas.";
 	}
 	else {
 		$lig_ep=mysql_fetch_object($res);
@@ -114,7 +113,7 @@ if(isset($imprime)) {
 						
 						switch ($imprime) {
 							case "sans_num_anonymat":
-								// PROBLEME: ON PEUT AVOIR DES HOMONYMES DANS UNE MÊME SALLE...
+								// PROBLEME: ON PEUT AVOIR DES HOMONYMES DANS UNE MÃŠME SALLE...
 								$csv.=casse_mot($lig->nom).";".casse_mot($lig->prenom,'majf2').";".formate_date($lig->naissance).";".$lig->classe.";".$salle[$i].";\n";
 							break;
 							case "avec_num_anonymat":
@@ -128,18 +127,18 @@ if(isset($imprime)) {
 	
 			$now = gmdate('D, d M Y H:i:s') . ' GMT';
 			send_file_download_headers('text/x-csv',$nom_fic);
-			echo $csv;
+			//echo $csv;
+			echo echo_csv_encoded($csv);
 			die();
 	
 		}
 		elseif($mode=='pdf') {
 
-if (!defined('FPDF_VERSION')) {
-	require_once('../fpdf/fpdf.php');
-}
-			require('../fpdf/ex_fpdf.php');
+			if (!defined('FPDF_VERSION')) {
+			  require_once('../fpdf/fpdf.php');
+			}
 			
-			define('FPDF_FONTPATH','../fpdf/font/');
+			
 			define('LargeurPage','210');
 			define('HauteurPage','297');
 
@@ -159,14 +158,16 @@ if (!defined('FPDF_VERSION')) {
 					global $intitule_epreuve;
 					global $date_epreuve;
 					global $salle_courante;
+					global $effectif_salle_courante;
 					//global $num_page;
 					//global $decompte_page;
 
 					$this->SetXY(5,287);
-					$this->SetFont('arial','',7.5);
+					$this->SetFont('DejaVu','',7.5);
 
 					//$texte=getSettingValue("gepiSchoolName")."  ";
-					$texte=$intitule_epreuve." ($date_epreuve) - ".$salle_courante;
+					//$texte=$intitule_epreuve." ($date_epreuve) - ".$salle_courante;
+					$texte=$intitule_epreuve." ($date_epreuve) - ".$salle_courante." - (effectif : $effectif_salle_courante)";
 					$lg_text=$this->GetStringWidth($texte);
 					$this->SetXY(10,287);
 					$this->Cell(0,5,$texte,0,0,'L');
@@ -177,7 +178,7 @@ if (!defined('FPDF_VERSION')) {
 					//$this->Cell(0,5,'Page '.$this->PageNo().'-'.$decompte_page.'='.($this->PageNo()-$decompte_page),"0",1,'C');
 					//$this->Cell(0,5,'Page '.$num_page,"0",1,'C');
 
-					// Je ne parviens pas à faire reprendre la numérotation à 1 lors d'un changement de salle
+					// Je ne parviens pas Ã  faire reprendre la numÃ©rotation Ã  1 lors d'un changement de salle
 				}
 
 				function EnteteListe()
@@ -189,32 +190,32 @@ if (!defined('FPDF_VERSION')) {
 					//global $num_page;
 					//global $decompte_page;
 
-					$this->SetFont($fonte,'B',14);
+					$this->SetFont('DejaVu','B',14);
 					$this->Setxy(10,10);
-					$this->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - Année scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
+					$this->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - AnnÃ©e scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
 
 					$x1=$this->GetX();
 					$y1=$this->GetY();
 
-					$this->SetFont($fonte,'B',12);
+					$this->SetFont('DejaVu','B',12);
 					$texte='Epreuve : ';
 					$largeur_tmp=$this->GetStringWidth($texte);
 					$this->Cell($largeur_tmp,$this->FontSize*$sc_interligne,$texte,'',0,'L');
-					$this->SetFont($fonte,'',12);
+					$this->SetFont('DejaVu','',12);
 					$texte=$intitule_epreuve;
 					$this->Cell($this->GetStringWidth($texte),$this->FontSize*$sc_interligne,$texte,'',1,'L');
 
-					$this->SetFont($fonte,'B',12);
+					$this->SetFont('DejaVu','B',12);
 					$texte='Date : ';
 					$this->Cell($largeur_tmp,$this->FontSize*$sc_interligne,$texte,'',0,'L');
-					$this->SetFont($fonte,'',12);
+					$this->SetFont('DejaVu','',12);
 					$texte=$date_epreuve;
 					$this->Cell($this->GetStringWidth($texte),$this->FontSize*$sc_interligne,$texte,'',1,'L');
 
 					//$x2=$this->GetX();
 					$y2=$this->GetY();
 
-					$this->SetFont($fonte,'B',12);
+					$this->SetFont('DejaVu','B',12);
 					$texte="Salle $salle[$i]";
 					$larg_tmp=$sc_interligne*($this->GetStringWidth($texte));
 					$this->SetXY($largeur_page-$larg_tmp-$MargeDroite,$y1+($y2-$y1)/4);
@@ -222,7 +223,7 @@ if (!defined('FPDF_VERSION')) {
 				}
 			}
 
-			// Définition de la page
+			// DÃ©finition de la page
 			$pdf=new rel_PDF("P","mm","A4");
 			//$pdf=new FPDF("P","mm","A4");
 			$pdf->SetTopMargin($MargeHaut);
@@ -237,19 +238,21 @@ if (!defined('FPDF_VERSION')) {
 			// hauteur de chaque ligne d'information
 			$hauteur_ligne = 10;
 			
-			$fonte='arial';
+			$fonte='DejaVu';
 			$sc_interligne=1.3;
 
 			$num_page=0;
 
 			$compteur=0;
 			for($i=0;$i<count($id_salle);$i++) {
+
 				$decompte_page=$num_page;
 
 				$sql="SELECT DISTINCT e.nom, e.prenom, e.login, e.naissance, c.classe, ec.n_anonymat FROM eb_copies ec, eleves e, j_eleves_classes jec, classes c WHERE e.login=ec.login_ele AND ec.id_salle='$id_salle[$i]' AND ec.id_epreuve='$id_epreuve' AND jec.id_classe=c.id AND jec.login=e.login ORDER BY e.nom,e.prenom,e.naissance;";
 				//echo "$sql<br />";
 				$res=mysql_query($sql);
-				if(mysql_num_rows($res)>0) {
+				$effectif_salle_courante=mysql_num_rows($res);
+				if($effectif_salle_courante>0) {
 
 					//if($compteur>0) {$pdf->Footer();}
 					$num_page++;
@@ -263,34 +266,34 @@ if (!defined('FPDF_VERSION')) {
 
 					$pdf->EnteteListe();
 /*
-					//Entête du PDF
+					//EntÃªte du PDF
 					//$pdf->SetLineWidth(0.7);
-					$pdf->SetFont($fonte,'B',14);
+					$pdf->SetFont('DejaVu','B',14);
 					$pdf->Setxy(10,10);
-					$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - Année scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
+					$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - AnnÃ©e scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
 
 					$x1=$pdf->GetX();
 					$y1=$pdf->GetY();
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					$texte='Epreuve : ';
 					$largeur_tmp=$pdf->GetStringWidth($texte);
 					$pdf->Cell($largeur_tmp,$pdf->FontSize*$sc_interligne,$texte,'',0,'L');
-					$pdf->SetFont($fonte,'',12);
+					$pdf->SetFont('DejaVu','',12);
 					$texte=$intitule_epreuve;
 					$pdf->Cell($pdf->GetStringWidth($texte),$pdf->FontSize*$sc_interligne,$texte,'',1,'L');
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					$texte='Date : ';
 					$pdf->Cell($largeur_tmp,$pdf->FontSize*$sc_interligne,$texte,'',0,'L');
-					$pdf->SetFont($fonte,'',12);
+					$pdf->SetFont('DejaVu','',12);
 					$texte=$date_epreuve;
 					$pdf->Cell($pdf->GetStringWidth($texte),$pdf->FontSize*$sc_interligne,$texte,'',1,'L');
 
 					//$x2=$pdf->GetX();
 					$y2=$pdf->GetY();
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					$texte="Salle $salle[$i]";
 					$larg_tmp=$sc_interligne*($pdf->GetStringWidth($texte));
 					$pdf->SetXY($largeur_page-$larg_tmp-$MargeDroite,$y1+($y2-$y1)/4);
@@ -310,7 +313,7 @@ if (!defined('FPDF_VERSION')) {
 					$pdf->SetXY($x,$y);
 					*/
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$tab_nom=array();
 					$tab_naissance=array();
 					$tab_classe=array();
@@ -331,13 +334,13 @@ if (!defined('FPDF_VERSION')) {
 
 					$larg_col2=0;
 					if($imprime=='avec_num_anonymat') {
-						$texte='Numéro';
+						$texte='NumÃ©ro';
 						$larg_col2=$pdf->GetStringWidth($texte)+4;
 						$pdf->Cell($larg_col2,10,$texte,'LRBT',0,'C');
 					}
 
-					//$pdf->SetFont($fonte,'B',10);
-					$texte='Nom prénom';
+					//$pdf->SetFont('DejaVu','B',10);
+					$texte='Nom prÃ©nom';
 					//$larg_col1=$pdf->GetStringWidth($texte);
 					$larg_col1=$larg_max+4;
 					$pdf->Cell($larg_col1,10,$texte,'LRBT',0,'C');
@@ -352,7 +355,7 @@ if (!defined('FPDF_VERSION')) {
 					$texte='Salle';
 					$pdf->Cell($larg_col3,10,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					/*
 					while($lig=mysql_fetch_object($res)) {
 						$texte=casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2');
@@ -371,11 +374,11 @@ if (!defined('FPDF_VERSION')) {
 							$pdf->SetXY($x1,$y2);
 
 							if($imprime=='avec_num_anonymat') {
-								$texte='Numéro';
+								$texte='NumÃ©ro';
 								$pdf->Cell($larg_col2,$hauteur_ligne,$texte,'LRBT',0,'C');
 							}
 		
-							$texte='Nom prénom';
+							$texte='Nom prÃ©nom';
 							$pdf->Cell($larg_col1,$hauteur_ligne,$texte,'LRBT',0,'C');
 		
 							$texte='Naissance';
@@ -388,7 +391,7 @@ if (!defined('FPDF_VERSION')) {
 							$pdf->Cell($larg_col3,$hauteur_ligne,$texte,'LRBT',1,'C');
 						}
 
-						$pdf->SetFont($fonte,'B',10);
+						$pdf->SetFont('DejaVu','B',10);
 
 						$largeur_dispo=$larg_col1;
 						$h_cell=$hauteur_ligne;
@@ -438,6 +441,7 @@ if (!defined('FPDF_VERSION')) {
 					}
 
 					$compteur++;
+
 				}
 			}
 
@@ -457,7 +461,7 @@ if (!defined('FPDF_VERSION')) {
 //**************** EN-TETE *****************
 $titre_page = "Epreuve blanche: Affichage";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
@@ -472,13 +476,13 @@ echo "<p class='bold'><a href='index.php?id_epreuve=$id_epreuve&amp;mode=modif_e
 if(!isset($imprime)) {
 	echo "</p>\n";
 
-	// Générer des fiches par salles
+	// GÃ©nÃ©rer des fiches par salles
 
-	echo "<p class='bold'>Epreuve n°$id_epreuve</p>\n";
+	echo "<p class='bold'>Epreuve nÂ°$id_epreuve</p>\n";
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>L'épreuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
+		echo "<p>L'Ã©preuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -501,7 +505,7 @@ if(!isset($imprime)) {
 	$sql="SELECT DISTINCT n_anonymat FROM eb_copies WHERE id_epreuve='$id_epreuve';";
 	$test2=mysql_query($sql);
 	if(mysql_num_rows($test1)!=mysql_num_rows($test2)) {
-		echo "<p style='color:red;'>Les numéros anonymats ne sont pas uniques sur l'épreuve (<i>cela ne devrait pas arriver</i>).</p>\n";
+		echo "<p style='color:red;'>Les numÃ©ros anonymats ne sont pas uniques sur l'Ã©preuve (<i>cela ne devrait pas arriver</i>).</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -509,7 +513,7 @@ if(!isset($imprime)) {
 	$sql="SELECT login_ele FROM eb_copies WHERE n_anonymat='' AND id_epreuve='$id_epreuve';";
 	$test3=mysql_query($sql);
 	if(mysql_num_rows($test3)>0) {
-		echo "<p style='color:red;'>Un ou des numéros anonymats ne sont pas valides sur l'épreuve&nbsp;: ";
+		echo "<p style='color:red;'>Un ou des numÃ©ros anonymats ne sont pas valides sur l'Ã©preuve&nbsp;: ";
 		$cpt=0;
 		while($lig=mysql_fetch_object($test3)) {
 			if($cpt>0) {echo ", ";}
@@ -524,20 +528,20 @@ if(!isset($imprime)) {
 	//========================================================
 
 	//========================================================
-	//echo "<p style='color:red;'>A FAIRE&nbsp;: Contrôler si certains élèves n'ont pas été affectés dans des salles.</p>\n";
+	//echo "<p style='color:red;'>A FAIRE&nbsp;: ContrÃ´ler si certains Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND id_salle='-1';";
 	//echo "$sql<br />";
 	$test=mysql_query($sql);
 	$nb_tmp=mysql_num_rows($test);
 	if($nb_tmp==1) {
-		echo "<p style='color:red;'>$nb_tmp élève n'est pas affecté dans une salle.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ve n'est pas affectÃ© dans une salle.</p>\n";
 	}
 	elseif($nb_tmp>1) {
-		echo "<p style='color:red;'>$nb_tmp élèves n'ont pas été affectés dans des salles.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	}
 	//========================================================
 
-	echo "<p>Choisissez le type de liste à imprimer&nbsp;:</p>\n";
+	echo "<p>Choisissez le type de liste Ã  imprimer&nbsp;:</p>\n";
 	echo "<ul>\n";
 	echo "<li><b>CSV</b>&nbsp;:\n";
 	 	echo "<ul>\n";

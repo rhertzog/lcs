@@ -2,7 +2,6 @@
 /* 
  * The configuration of simpleSAMLphp
  * 
- * $Id$
  */
 
 $config = array (
@@ -324,16 +323,6 @@ $config = array (
 		 * by checking the 'attributes' parameter in metadata on IdP hosted and SP remote.
 		 */
 		50 => 'core:AttributeLimit', 
-
-		60 => array(
-		    'class' => 'core:PHP',
-		    'code' => '
-		    	$path = dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))));
-		    	require_once($path."/lib/share.inc.php");
-			    if(function_exists("mb_check_encoding")){
-			    	$attributes = array_map_deep("check_utf8_and_convert", $attributes);
-				}
-		    '),
 		
 		/* 
 		 * Search attribute "distinguishedName" for pattern and replaces if found

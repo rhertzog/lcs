@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
-* $Id: index_template.php 7866 2011-08-21 14:33:24Z jjacquard $
+* $Id$
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -22,7 +22,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *
 * ******************************************** *
-* Appelle les sous-modèles                     *
+* Appelle les sous-modÃ¨les                     *
 * templates/origine/header_template.php        *
 * templates/origine/bandeau_template.php       *
 * ******************************************** *
@@ -37,7 +37,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>
-<!-- on inclut l'entête -->
+<!-- on inclut l'entÃªte -->
 	<?php
 	  $tbs_bouton_taille = "..";
 	  include('../templates/origine/header_template.php');
@@ -80,7 +80,7 @@
 
 
 <!-- ************************* -->
-<!-- Début du corps de la page -->
+<!-- DÃ©but du corps de la page -->
 <!-- ************************* -->
 <body onload="show_message_deconnexion();<?php echo $tbs_charger_observeur;?>">
 
@@ -100,13 +100,13 @@
 	  <input type="submit" value="Enregistrer" />
 	</p>
 	
-	<h2 class="colleHaut">Configuration générale</h2>
+	<h2 class="colleHaut">Configuration gÃ©nÃ©rale</h2>
 	<p class="italic">
-	  La désactivation des carnets de notes n'entraîne aucune suppression des données. 
-	  Lorsque le module est désactivé, les professeurs n'ont pas accès au module.
+	  La dÃ©sactivation des carnets de notes n'entraÃ®ne aucune suppression des donnÃ©es. 
+	  Lorsque le module est dÃ©sactivÃ©, les professeurs n'ont pas accÃ¨s au module.
 	</p>
 	<fieldset class="no_bordure">
-	  <legend class="invisible">Activé ou non</legend>
+	  <legend class="invisible">ActivÃ© ou non</legend>
 	  <input type="radio" 
 			 name="activer" 
 			 id='activer_y' 
@@ -124,13 +124,13 @@
 			<?php if (getSettingValue("active_carnets_notes")=='n') echo " checked='checked'"; ?>
 			 onchange='changement();' />
 	  <label for='activer_n' style='cursor: pointer;'>
-		Désactiver les carnets de notes
+		DÃ©sactiver les carnets de notes
 	  </label>
 	</fieldset>
 	
 	<p class="grandEspaceHaut">
 <?php
-	if(file_exists("../lib/ss_zip.class.php")){ 
+	//if(file_exists("../lib/ss_zip.class.php")){ 
 ?>
 	  <input type='checkbox' 
 			 name='export_cn_ods'
@@ -149,17 +149,18 @@
 		Permettre l'export des carnets de notes au format ODS.
 	  </label>
 	  <br />
-	  (<em>si les professeurs ne font pas le ménage après génération des exports, ces fichiers peuvent prendre de la place sur le serveur</em>)\n";
+	  (<em>si les professeurs ne font pas le mÃ©nage aprÃ¨s gÃ©nÃ©ration des exports, ces fichiers peuvent prendre de la place sur le serveur</em>)<br />
 <?php
-	}
-	else{
+	//}
+	//else{
 ?>
-	  En mettant en place la bibliothèque 'ss_zip_.class.php' dans le dossier '/lib/', vous pouvez générer des fichiers tableur ODS pour permettre des saisies hors ligne, la conservation de données,...
+	  <br /><p>La gÃ©nÃ©ration de fichiers ODS utilise maintenant la bibliothÃ¨que pclzip, prÃ©sente par dÃ©faut dans Gepi.<br /><br />
+	  Dans les versions prÃ©cÃ©dentes de Gepi, en mettant en place la bibliothÃ¨que 'ss_zip.class.php' dans le dossier '/lib/', vous pouviez gÃ©nÃ©rer des fichiers tableur ODS pour permettre des saisies hors ligne, la conservation de donnÃ©es,...
 	  <br />
 	  Voir <a href='http://smiledsoft.com/demos/phpzip/'>http://smiledsoft.com/demos/phpzip/</a>
 	</p>
 	<p>
-	  Une version limitée est disponible gratuitement.
+	  Une version limitÃ©e est disponible gratuitement.
 	  <br />
 	  Emplacement alternatif:
 	  <a href='http://stephane.boireau.free.fr/informatique/gepi/ss_zip.class.php.zip'>
@@ -167,17 +168,17 @@
 	  </a>
 
 <?php
-	  // Comme la bibliothèque n'est pas présente, on force la valeur à 'n':
-	  $svg_param=saveSetting("export_cn_ods", 'n');
-	}
+	  // Comme la bibliothÃ¨que n'est pas prÃ©sente, on force la valeur Ã  'n':
+	  //$svg_param=saveSetting("export_cn_ods", 'n');
+	//}
 ?>
 	</p>
 
 	<h2>
-	  Référentiel des notes :
+	  RÃ©fÃ©rentiel des notes :
 	</h2>
 	<p>
-	  Référentiel des notes par défaut : 
+	  RÃ©fÃ©rentiel des notes par dÃ©faut : 
 	  <input type="text" 
 			 name="referentiel_note" 
 			 size="8"
@@ -185,14 +186,14 @@
 			 value="<?php echo(getSettingValue("referentiel_note")); ?>" />
 	</p>
 	<fieldset class="no_bordure">
-	  <legend class="invisible">Référentiel ou non</legend>
+	  <legend class="invisible">RÃ©fÃ©rentiel ou non</legend>
 	  <input type="radio" 
 			 name="note_autre_que_sur_referentiel" 
 			 id="note_sur_referentiel" 
 			 value="V" 
 			 <?php if(getSettingValue("note_autre_que_sur_referentiel")=="V"){echo "checked='checked'";} ?> />
 	  <label for='note_sur_referentiel'> 
-		Autoriser les notes autre que sur le référentiel par défaut
+		Autoriser les notes autre que sur le rÃ©fÃ©rentiel par dÃ©faut
 	  </label>
 	  <br />
 	  <input type="radio" 
@@ -201,15 +202,15 @@
 			 value="F" 
 			 <?php if(getSettingValue("note_autre_que_sur_referentiel")=="F"){echo "checked='checked'";} ?> />
 	  <label for='note_autre_que_referentiel'> 
-		Notes uniquement sur le référentiel par défaut
+		Notes uniquement sur le rÃ©fÃ©rentiel par dÃ©faut
 	  </label>
 	</fieldset>
 
 	<h2>
-	  Évaluation par compétence
+	  Ã‰valuation par compÃ©tence
 	</h2>
 	<p>
-	  Utilisation d'un logiciel externe pour l'évaluation par compétence (beta)
+	  Utilisation d'un logiciel externe pour l'Ã©valuation par compÃ©tence (beta)
 	  <input type="checkbox" 
 			 name="utiliser_sacoche" 
 			 size="8"
@@ -217,13 +218,25 @@
 			 <?php if (getSettingValue("utiliser_sacoche") == 'yes') {echo 'checked="checked"';} ?> />
 	 <br/>
 	 <?php if (getSettingValue("utiliser_sacoche") == 'yes') {
-	 	echo '<a href="'.getSettingValue("sacocheUrl").'?id='.getSettingValue('sacoche_base').'">Accéder à l\'administration de l\'Évaluation par compétence</a>';
+	 	echo '<a href="'.getSettingValue("sacocheUrl").'?id='.getSettingValue('sacoche_base').'">AccÃ©der Ã  l\'administration de l\'Ã‰valuation par compÃ©tence</a>';
 	 } ?>
 	 <br/>
-	 <label for='sacocheUrl' style='cursor: pointer;'>Adresse du service d'évaluation par compétence si possible en https (exemple : https://localhost/panier) </label>
+	 <label for='sacocheUrl' style='cursor: pointer;'>Adresse du service d'Ã©valuation par compÃ©tence si possible en https (exemple : https://localhost/panier) </label>
 	 <input type='text' size='60' name='sacocheUrl' value='<?php echo(getSettingValue("sacocheUrl")); ?>' id='sacocheUrl' /><br/>
-	 <label for='sacoche_base' style='cursor: pointer;'>Numéro technique de «base» (laisser vide si votre instalation du logiciel d'évaluation par compétence est mono établissement)</label>
+	 <label for='sacoche_base' style='cursor: pointer;'>NumÃ©ro technique de Â«baseÂ» (laisser vide si votre instalation du logiciel d'Ã©valuation par compÃ©tence est mono Ã©tablissement)</label>
 	 <input type='text' size='5' name='sacoche_base' value='<?php echo(getSettingValue("sacoche_base")); ?>' id='sacoche_base' /><br/>
+         Empreinte du certificat actuellement intallÃ© dans gepi : <?php
+         $file_path = dirname(__FILE__).'/../../../lib/simplesaml/cert/server.crt';
+         if (file_exists($file_path)) {
+            $cert = file_get_contents($file_path);
+            $cert = str_replace('-----BEGIN CERTIFICATE-----', '', $cert);
+            $cert = str_replace('-----END CERTIFICATE-----', '', $cert);
+            echo sha1(base64_decode($cert));
+         } else {
+             echo "pas de certificat trouvÃ©";
+         }
+
+        ?>
 	</p>
 	
 	<p class="center">
@@ -238,7 +251,7 @@
 
 
 
-<!-- Début du pied -->
+<!-- DÃ©but du pied -->
 	<div id='EmSize' style='visibility:hidden; position:absolute; left:1em; top:1em;'></div>
 
 	<script type='text/javascript'>
@@ -257,7 +270,7 @@
 		<?php
 			if ($tbs_microtime!="") {
 				echo "
-   <p class='microtime'>Page générée en ";
+   <p class='microtime'>Page gÃ©nÃ©rÃ©e en ";
    			echo $tbs_microtime;
 				echo " sec</p>
    			";

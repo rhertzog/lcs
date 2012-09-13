@@ -1,6 +1,6 @@
 <?php
 
-// $Id: mincals_absences.inc 2491 2008-09-30 10:47:31Z jjocal $
+// $Id$
 
 function minicals($year, $month, $day, $id_classe, $type, $dmy) {
 
@@ -49,7 +49,7 @@ class Calendar
 
    function getDateLink($day, $month, $year) {
     global $vocab;
-      if ($this->dmy=='gestion_absences') return "<a title=\"Voir le cahier de texte pour cette journée\" href=\"".$this->dmy.".php?year=$year&amp;month=$month&amp;day=$day&amp;id_classe=".$this->id_classe."&amp;type=".$this->type."\"";
+      if ($this->dmy=='gestion_absences') return "<a title=\"Voir le cahier de texte pour cette journÃ©e\" href=\"".$this->dmy.".php?year=$year&amp;month=$month&amp;day=$day&amp;id_classe=".$this->id_classe."&amp;type=".$this->type."\"";
 
 
    }

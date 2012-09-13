@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: edit_limite.php 8770 2012-03-14 17:13:58Z crob $
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -46,36 +45,35 @@ if (!checkAccess()) {
 }
 
 
-// Ebauche de liste des variables reçues:
-// $choix_edit correspond au choix de ce qui doit être affiché:
+// Ebauche de liste des variables reÃ§ues:
+// $choix_edit correspond au choix de ce qui doit Ãªtre affichÃ©:
 // Pour $choix_edit=1:
-//    - Tous les élèves que le prof a en cours, ou rattaché à une classe qu'a le prof, ou tous les élèves selon le choix paramétré en admin dans Droits d'accès
-//    - En compte scolarité ou cpe: Tous les élèves de la classe
+//    - Tous les Ã©lÃ¨ves que le prof a en cours, ou rattachÃ© Ã  une classe qu'a le prof, ou tous les Ã©lÃ¨ves selon le choix paramÃ©trÃ© en admin dans Droits d'accÃ¨s
+//    - En compte scolaritÃ© ou cpe: Tous les Ã©lÃ¨ves de la classe
 // $choix_edit=2
-//    - Uniquement l'élève sélectionné: la variable $login_eleve, qui est de toute façon affectée, doit alors être prise en compte pour limiter l'affichage à cet élève
+//    - Uniquement l'Ã©lÃ¨ve sÃ©lectionnÃ©: la variable $login_eleve, qui est de toute faÃ§on affectÃ©e, doit alors Ãªtre prise en compte pour limiter l'affichage Ã  cet Ã©lÃ¨ve
 // $choix_edit=3
-//    - Ce choix correspond aux classes avec plusieur professeurs principaux
-//      On a alors une variable $login_prof affectée pour limiter les affichages aux élèves suivi par un des profs principaux seulement
-//      Cette variable $login_prof ne devrait être prise en compte que dans le cas $choix_edit==3
+//    - Ce choix correspond aux classes avec plusieurs professeurs principaux
+//      On a alors une variable $login_prof affectÃ©e pour limiter les affichages aux Ã©lÃ¨ves suivi par un des profs principaux seulement
+//      Cette variable $login_prof ne devrait Ãªtre prise en compte que dans le cas $choix_edit==3
 // $choix_edit=4
 //    - Affichage du bulletin des avis sur la classe
 
 
-// Vérification sur $id_classe
+// VÃ©rification sur $id_classe
 if(!isset($id_classe)) {
-	header("Location: ../accueil.php?msg=Classe non choisie pour les bulletins simplifiés");
+	header("Location: ../accueil.php?msg=Classe non choisie pour les bulletins simplifiÃ©s");
 	die();
 }
 elseif(!is_numeric($id_classe)) {
-	header("Location: ../accueil.php?msg=Classe invalide ($id_classe) pour les bulletins simplifiés");
+	header("Location: ../accueil.php?msg=Classe invalide ($id_classe) pour les bulletins simplifiÃ©s");
 	die();
 }
 $nom_classe=get_nom_classe($id_classe);
 if(!$nom_classe) {
-	header("Location: ../accueil.php?msg=Classe invalide ($id_classe) pour les bulletins simplifiés");
+	header("Location: ../accueil.php?msg=Classe invalide ($id_classe) pour les bulletins simplifiÃ©s");
 	die();
 }
-
 
 include "../lib/periodes.inc.php";
 include "../lib/bulletin_simple.inc.php";
@@ -85,20 +83,20 @@ include "../lib/bulletin_simple.inc.php";
 include "../lib/bulletin_simple_classe.inc.php";
 //include "../lib/bulletin_simple_classe_bis.inc.php";
 //==============================
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 
-// Vérifications de sécurité
+// VÃ©rifications de sÃ©curitÃ©
 if (
 	($_SESSION['statut'] == "responsable" AND getSettingValue("GepiAccesBulletinSimpleParent") != "yes") OR
 	($_SESSION['statut'] == "eleve" AND getSettingValue("GepiAccesBulletinSimpleEleve") != "yes")
 	) {
-	tentative_intrusion(2, "Tentative de visualisation d'un bulletin simplifié sans y être autorisé.");
-	echo "<p>Vous n'êtes pas autorisé à visualiser cette page.</p>";
+	tentative_intrusion(2, "Tentative de visualisation d'un bulletin simplifiÃ© sans y Ãªtre autorisÃ©.");
+	echo "<p>Vous n'Ãªtes pas autorisÃ© Ã  visualiser cette page.</p>";
 	require "../lib/footer.inc.php";
 	die();
 }
 
-// Et une autre vérification de sécurité : est-ce que si on a un statut 'responsable' le $login_eleve est bien un élève dont le responsable a la responsabilité
+// Et une autre vÃ©rification de sÃ©curitÃ© : est-ce que si on a un statut 'responsable' le $login_eleve est bien un Ã©lÃ¨ve dont le responsable a la responsabilitÃ©
 if ($_SESSION['statut'] == "responsable") {
 	$test = mysql_query("SELECT count(e.login) " .
 			"FROM eleves e, responsables2 re, resp_pers r " .
@@ -108,41 +106,39 @@ if ($_SESSION['statut'] == "responsable") {
 			"re.pers_id = r.pers_id AND " .
 			"r.login = '" . $_SESSION['login'] . "' AND (re.resp_legal='1' OR re.resp_legal='2'))");
 	if (mysql_result($test, 0) == 0) {
-	    tentative_intrusion(3, "Tentative d'un parent de visualiser un bulletin simplifié d'un élève ($login_eleve) dont il n'est pas responsable légal.");
-	    echo "Vous ne pouvez visualiser que les bulletins simplifiés des élèves pour lesquels vous êtes responsable légal.\n";
+	    tentative_intrusion(3, "Tentative d'un parent de visualiser un bulletin simplifiÃ© d'un Ã©lÃ¨ve ($login_eleve) dont il n'est pas responsable lÃ©gal.");
+	    echo "Vous ne pouvez visualiser que les bulletins simplifiÃ©s des Ã©lÃ¨ves pour lesquels vous Ãªtes responsable lÃ©gal.\n";
 	    require("../lib/footer.inc.php");
 		die();
 	}
 }
 
 // Et une autre...
-if ($_SESSION['statut'] == "eleve" AND strtoupper($_SESSION['login']) != strtoupper($login_eleve)) {
-    tentative_intrusion(3, "Tentative d'un élève de visualiser un bulletin simplifié d'un autre élève ($login_eleve).");
-    echo "Vous ne pouvez visualiser que vos bulletins simplifiés.\n";
+if ($_SESSION['statut'] == "eleve" AND my_strtoupper($_SESSION['login']) != my_strtoupper($login_eleve)) {
+    tentative_intrusion(3, "Tentative d'un Ã©lÃ¨ve de visualiser un bulletin simplifiÃ© d'un autre Ã©lÃ¨ve ($login_eleve).");
+    echo "Vous ne pouvez visualiser que vos bulletins simplifiÃ©s.\n";
     require("../lib/footer.inc.php");
 	die();
 }
 
-// Et encore une : si on a un reponsable ou un élève, alors seul l'édition pour un élève seul est autorisée
+// Et encore une : si on a un reponsable ou un Ã©lÃ¨ve, alors seul l'Ã©dition pour un Ã©lÃ¨ve seul est autorisÃ©e
 if (($_SESSION['statut'] == "responsable" OR $_SESSION['statut'] == "eleve") AND $choix_edit != "2") {
-    tentative_intrusion(3, "Tentative (élève ou parent) de changement du mode de visualisation d'un bulletin simplifié (le mode imposé est la visualisation pour un seul élève)");
+    tentative_intrusion(3, "Tentative (Ã©lÃ¨ve ou parent) de changement du mode de visualisation d'un bulletin simplifiÃ© (le mode imposÃ© est la visualisation pour un seul Ã©lÃ¨ve)");
     echo "N'essayez pas de tricher...\n";
     require("../lib/footer.inc.php");
 	die();
 }
 
-//if ($_SESSION['statut'] == "professeur" AND getSettingValue("GepiAccesMoyennesProfToutesClasses") != "yes") {
 if ($_SESSION['statut'] == "professeur" AND getSettingValue("GepiAccesBulletinSimpleProfToutesClasses") != "yes") {
 	$test = mysql_num_rows(mysql_query("SELECT jgc.* FROM j_groupes_classes jgc, j_groupes_professeurs jgp WHERE (jgp.login='".$_SESSION['login']."' AND jgc.id_groupe = jgp.id_groupe AND jgc.id_classe = '".$id_classe."')"));
 	if ($test == "0") {
-		tentative_intrusion("2", "Tentative d'accès par un prof à une classe (".$nom_classe.") dans laquelle il n'enseigne pas, sans en avoir l'autorisation.");
-		echo "Vous ne pouvez pas accéder à cette classe car vous n'y êtes pas professeur !";
+		tentative_intrusion("2", "Tentative d'accÃ¨s par un prof Ã  une classe (".$nom_classe.") dans laquelle il n'enseigne pas, sans en avoir l'autorisation.");
+		echo "Vous ne pouvez pas accÃ©der Ã  cette classe car vous n'y Ãªtes pas professeur !";
 		require ("../lib/footer.inc.php");
 		die();
 	}
 }
 
-//if ($_SESSION['statut'] == "professeur" AND getSettingValue("GepiAccesMoyennesProfToutesClasses") != "yes" AND getSettingValue("GepiAccesMoyennesProfTousEleves") != "yes" and $choix_edit == "2") {
 if ($_SESSION['statut'] == "professeur" AND
 getSettingValue("GepiAccesBulletinSimpleProfToutesClasses") != "yes" AND
 getSettingValue("GepiAccesBulletinSimpleProfTousEleves") != "yes" AND
@@ -150,16 +146,15 @@ $choix_edit == "2") {
 
 	$test = mysql_num_rows(mysql_query("SELECT jeg.* FROM j_eleves_groupes jeg, j_groupes_professeurs jgp WHERE (jgp.login='".$_SESSION['login']."' AND jeg.id_groupe = jgp.id_groupe AND jeg.login = '".$login_eleve."')"));
 	if ($test == "0") {
-		tentative_intrusion("2", "Tentative d'accès par un prof à un bulletin simplifié d'un élève ($login_eleve) qu'il n'a pas en cours, sans en avoir l'autorisation.");
-		echo "Vous ne pouvez pas accéder à cet élève !";
+		tentative_intrusion("2", "Tentative d'accÃ¨s par un prof Ã  un bulletin simplifiÃ© d'un Ã©lÃ¨ve ($login_eleve) qu'il n'a pas en cours, sans en avoir l'autorisation.");
+		echo "Vous ne pouvez pas accÃ©der Ã  cet Ã©lÃ¨ve !";
 		require ("../lib/footer.inc.php");
 		die();
 	}
 }
 
-//debug_var();
-
-// On a passé les barrières, on passe au traitement
+// debug_var();
+// On a passÃ© les barriÃ¨res, on passe au traitement
 
 $gepiYear = getSettingValue("gepiYear");
 
@@ -169,19 +164,19 @@ if ($periode1 > $periode2) {
   $periode1 = $temp;
 }
 
-// On teste la présence d'au moins un coeff pour afficher la colonne des coef
+// On teste la prÃ©sence d'au moins un coeff pour afficher la colonne des coef
 $test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 //echo "\$test_coef=$test_coef<br />";
-// Apparemment, $test_coef est réaffecté plus loin dans un des include()
+// Apparemment, $test_coef est rÃ©affectÃ© plus loin dans un des include()
 $nb_coef_superieurs_a_zero=$test_coef;
 
 
-// On regarde si on affiche les catégories de matières
+// On regarde si on affiche les catÃ©gories de matiÃ¨res
 $affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
 if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
 
 
-// Si le rang des élèves est demandé, on met à jour le champ rang de la table matieres_notes
+// Si le rang des Ã©lÃ¨ves est demandÃ©, on met Ã  jour le champ rang de la table matieres_notes
 $affiche_rang = sql_query1("SELECT display_rang FROM classes WHERE id='".$id_classe."'");
 if ($affiche_rang == 'y') {
     $periode_num=$periode1;
@@ -191,26 +186,11 @@ if ($affiche_rang == 'y') {
     }
 }
 
-/*
-// On regarde si on affiche les catégories de matières
-$affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
-if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
-*/
-//echo "\$choix_edit=$choix_edit<br />";
-
 //=========================
 // AJOUT: boireaus 20080316
 $coefficients_a_1="non";
 $affiche_graph = 'n';
-/*
-$get_cat = mysql_query("SELECT id FROM matieres_categories");
-$categories = array();
-while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
-  	$categories[] = $row["id"];
-}
-*/
 
-//$affiche_deux_moy_gen=1;
 
 for($loop=$periode1;$loop<=$periode2;$loop++) {
 	$periode_num=$loop;
@@ -220,13 +200,12 @@ for($loop=$periode1;$loop<=$periode2;$loop++) {
 	$tab_moy['periodes'][$periode_num]['tab_login_indice']=$tab_login_indice;         // [$login_eleve]
 	$tab_moy['periodes'][$periode_num]['moy_gen_eleve']=$moy_gen_eleve;               // [$i]
 	$tab_moy['periodes'][$periode_num]['moy_gen_eleve1']=$moy_gen_eleve1;             // [$i]
-	//$tab_moy['periodes'][$periode_num]['moy_gen_classe1']=$moy_gen_classe1;           // [$i]
 	$tab_moy['periodes'][$periode_num]['moy_generale_classe']=$moy_generale_classe;
 	$tab_moy['periodes'][$periode_num]['moy_generale_classe1']=$moy_generale_classe1;
 	$tab_moy['periodes'][$periode_num]['moy_max_classe']=$moy_max_classe;
 	$tab_moy['periodes'][$periode_num]['moy_min_classe']=$moy_min_classe;
 
-	// Il faudrait récupérer/stocker les catégories?
+	// Il faudrait rÃ©cupÃ©rer/stocker les catÃ©gories?
 	$tab_moy['periodes'][$periode_num]['moy_cat_eleve']=$moy_cat_eleve;               // [$i][$cat]
 	$tab_moy['periodes'][$periode_num]['moy_cat_classe']=$moy_cat_classe;             // [$i][$cat]
 	$tab_moy['periodes'][$periode_num]['moy_cat_min']=$moy_cat_min;                   // [$i][$cat]
@@ -241,13 +220,11 @@ for($loop=$periode1;$loop<=$periode2;$loop++) {
 	$tab_moy['periodes'][$periode_num]['place_eleve_classe']=$place_eleve_classe;
 
 	$tab_moy['periodes'][$periode_num]['current_eleve_login']=$current_eleve_login;   // [$i]
-	//$tab_moy['periodes'][$periode_num]['current_group']=$current_group;
 	if($loop==$periode1) {
 		$tab_moy['current_group']=$current_group;                                     // [$j]
 	}
 	$tab_moy['periodes'][$periode_num]['current_eleve_note']=$current_eleve_note;     // [$j][$i]
 	$tab_moy['periodes'][$periode_num]['current_eleve_statut']=$current_eleve_statut; // [$j][$i]
-	//$tab_moy['periodes'][$periode_num]['current_group']=$current_group;
 	$tab_moy['periodes'][$periode_num]['current_coef']=$current_coef;                 // [$j]
 	$tab_moy['periodes'][$periode_num]['current_classe_matiere_moyenne']=$current_classe_matiere_moyenne; // [$j]
 
@@ -255,7 +232,7 @@ for($loop=$periode1;$loop<=$periode2;$loop++) {
 	$tab_moy['periodes'][$periode_num]['moy_min_classe_grp']=$moy_min_classe_grp;     // [$j]
 	$tab_moy['periodes'][$periode_num]['moy_max_classe_grp']=$moy_max_classe_grp;     // [$j]
 	if(isset($current_eleve_rang)) {
-		// $current_eleve_rang n'est pas renseigné si $affiche_rang='n'
+		// $current_eleve_rang n'est pas renseignÃ© si $affiche_rang='n'
 		$tab_moy['periodes'][$periode_num]['current_eleve_rang']=$current_eleve_rang; // [$j][$i]
 	}
 	$tab_moy['periodes'][$periode_num]['quartile1_grp']=$quartile1_grp;               // [$j]
@@ -267,63 +244,7 @@ for($loop=$periode1;$loop<=$periode2;$loop++) {
 	$tab_moy['periodes'][$periode_num]['place_eleve_grp']=$place_eleve_grp;           // [$j][$i]
 
 	$tab_moy['periodes'][$periode_num]['current_group_effectif_avec_note']=$current_group_effectif_avec_note; // [$j]
-
-/*
-// De calcul_moy_gen.inc.php, on récupère en sortie:
-//     - $moy_gen_eleve[$i]
-//     - $moy_gen_eleve1[$i] idem avec les coef forcés à 1
-//     - $moy_gen_classe[$i]
-//     - $moy_gen_classe1[$i] idem avec les coef forcés à 1
-//     - $moy_generale_classe
-//     - $moy_max_classe
-//     - $moy_min_classe
-
-// A VERIFIER, mais s'il n'y a pas de coef spécifique pour un élève, on devrait avoir
-//             $moy_gen_classe[$i] == $moy_generale_classe
-// NON: Cela correspond à un mode de calcul qui ne retient que les matières suivies par l'élève pour calculer la moyenne générale
-//      Le LATIN n'est pas compté dans cette moyenne générale si l'élève ne fait pas latin.
-//      L'Allemand n'est pas comptabilisé si l'élève ne fait pas allemand
-// FAIRE LE TOUR DES PAGES POUR VIRER TOUS CES $moy_gen_classe s'il en reste?
-
-//     - $moy_cat_classe[$i][$cat]
-//     - $moy_cat_eleve[$i][$cat]
-
-//     - $moy_cat_min[$i][$cat] égale à $moy_min_categorie[$cat]
-//     - $moy_cat_max[$i][$cat] égale à $moy_max_categorie[$cat]
-
-// Là le positionnement au niveau moyenne générale:
-//     - $quartile1_classe_gen
-//       à
-//     - $quartile6_classe_gen
-//     - $place_eleve_classe[$i]
-
-// On a récupéré en intermédiaire les
-//     - $current_eleve_login[$i]
-//     - $current_group[$j]
-//     - $current_eleve_note[$j][$i]
-//     - $current_eleve_statut[$j][$i]
-//     - $current_coef[$j] (qui peut être différent du $coef_eleve pour une matière spécifique)
-//     - $categories -> id
-//     - $current_classe_matiere_moyenne[$j] (moyenne de la classe dans la matière)
-
-// AJOUTé:
-//     - $current_coef_eleve[$i][$j]
-//     - $moy_min_classe_grp[$j]
-//     - $moy_max_classe_grp[$j]
-//     - $current_eleve_rang[$j][$i] sous réserve que $affiche_rang=='y'
-//     - $quartile1_grp[$j] à $quartile6_grp[$j]
-//     - $place_eleve_grp[$j][$i]
-//     - $current_group_effectif_avec_note[$j] pour le nombre de "vraies" moyennes pour le rang (pas disp, abs,...)
-//     - $tab_login_indice[LOGIN_ELEVE]=$i
-
-//     $categories[] = $row["id"];
-//     $tab_noms_categories[$row["id"]]=$row["nom_complet"];
-//     $tab_id_categories[$row["nom_complet"]]=$row["id"];
-
-*/
-
 }
-
 $tab_moy['categories']['id']=$categories;
 $tab_moy['categories']['nom_from_id']=$tab_noms_categories;
 $tab_moy['categories']['id_from_nom']=$tab_id_categories;
@@ -339,14 +260,6 @@ $res_ele= mysql_query($sql);
 if(mysql_num_rows($res_ele)>0) {
 	while($lig_ele=mysql_fetch_object($res_ele)) {
 		$tab_moy['eleves'][]=$lig_ele->login;
-		/*
-		$tab_moy['ele'][$lig_ele->login]=array();
-		$tab_moy['ele'][$lig_ele->login]['nom']=$lig_ele->nom;
-		$tab_moy['ele'][$lig_ele->login]['prenom']=$lig_ele->prenom;
-		$tab_moy['ele'][$lig_ele->login]['sexe']=$lig_ele->sexe;
-		$tab_moy['ele'][$lig_ele->login]['naissance']=$lig_ele->naissance;
-		$tab_moy['ele'][$lig_ele->login]['elenoet']=$lig_ele->elenoet;
-		*/
 	}
 }
 
@@ -355,37 +268,54 @@ $display_moy_gen=sql_query1("SELECT display_moy_gen FROM classes WHERE id='".$id
 $affiche_coef=sql_query1("SELECT display_coef FROM classes WHERE id='".$id_classe."';");
 
 if(!getSettingValue("bull_intitule_app")){
-	$bull_intitule_app="Appréciations/Conseils";
+	$bull_intitule_app="ApprÃ©ciations/Conseils";
 }
 else{
 	$bull_intitule_app=getSettingValue("bull_intitule_app");
 }
 
 //=========================
-// Sauvegarde le temps de la session des paramètres pour le passage d'une classe à une autre
+// Sauvegarde le temps de la session des paramÃ¨tres pour le passage d'une classe Ã  une autre
 $_SESSION['choix_edit']=$choix_edit;
 $_SESSION['periode1']=$periode1;
 $_SESSION['periode2']=$periode2;
 if(isset($login_prof)) {$_SESSION['login_prof']=$login_prof;}
 //=========================
 
-if ($choix_edit == '2') {
-    //bulletin($login_eleve,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$test_coef,$affiche_categories);
-    //bulletin($login_eleve,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
+// Pour ajouter une marge:
+echo "<div id='div_prepa_conseil_bull_simp'";
+if(isset($_POST['bull_simp_pref_marges'])) {
+	$bull_simp_pref_marges=preg_replace('/[^0-9]/','',$_POST['bull_simp_pref_marges']);
+	if($bull_simp_pref_marges!='') {
+		echo " style='margin:".$bull_simp_pref_marges."px;'";
+		savePref($_SESSION['login'],'bull_simp_pref_marges',$bull_simp_pref_marges);
+	}
+	// Pour permettre de ne pas inserer de margin et memoriser ce choix, on accepte le champ vide:
+	$_SESSION['bull_simp_pref_marges']=$bull_simp_pref_marges;
+}
+echo ">\n";
 
-    //bulletin_bis($tab_moy,$login_eleve,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
-    bulletin($tab_moy,$login_eleve,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
+$couleur_alterne=isset($_POST['couleur_alterne']) ? $_POST['couleur_alterne'] : (isset($_GET['couleur_alterne']) ? $_GET['couleur_alterne'] : "n");
+if(($couleur_alterne!='y')&&($couleur_alterne!='n')) {
+	$couleur_alterne="n";
+}
+else {
+	savePref($_SESSION['login'],'bull_simp_pref_couleur_alterne',$couleur_alterne);
+}
+
+if ($choix_edit == '2') {
+	bulletin($tab_moy,$login_eleve,1,1,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories,$couleur_alterne);
 }
 
 if ($choix_edit != '2') {
-	// Si on arrive là, on n'est ni élève, ni responsable
+	// Si on arrive lÃ , on n'est ni Ã©lÃ¨ve, ni responsable
 
 	//if ($_SESSION['statut'] == "professeur" AND getSettingValue("GepiAccesMoyennesProfTousEleves") != "yes" AND getSettingValue("GepiAccesMoyennesProfToutesClasses") != "yes") {
 	if ($_SESSION['statut'] == "professeur" AND
 	getSettingValue("GepiAccesBulletinSimpleProfToutesClasses") != "yes" AND
 	getSettingValue("GepiAccesBulletinSimpleProfTousEleves") != "yes") {
 
-		// On ne sélectionne que les élèves que le professeur a en cours
+		// On ne sÃ©lectionne que les Ã©lÃ¨ves que le professeur a en cours
 	    //if ($choix_edit == '1') {
 	    if (($choix_edit == '1')||(!isset($login_prof))) {
 			// On a alors $choix_edit==1 ou $choix_edit==4
@@ -399,7 +329,7 @@ if ($choix_edit != '2') {
 				"jgp.login = '".$_SESSION['login']."') " .
 				"ORDER BY e.nom,e.prenom");
 	    } else {
-			// On a alors $choix_edit==3 uniquement les élèves du professeur principal $login_prof
+			// On a alors $choix_edit==3 uniquement les Ã©lÃ¨ves du professeur principal $login_prof
 	        $appel_liste_eleves = mysql_query("SELECT DISTINCT e.* " .
 				"FROM eleves e, j_eleves_classes jec, j_eleves_groupes jeg, j_groupes_professeurs jgp, j_eleves_professeurs jep " .
 				"WHERE (" .
@@ -413,7 +343,7 @@ if ($choix_edit != '2') {
 				"ORDER BY e.nom,e.prenom");
 	    }
 	} else {
-	    // On sélectionne sans restriction
+	    // On sÃ©lectionne sans restriction
 
 	    //if ($choix_edit == '1') {
 	    if (($choix_edit == '1')||(!isset($login_prof))) {
@@ -441,12 +371,8 @@ if ($choix_edit != '2') {
 
 	//=========================
 	// AJOUT: boireaus 20080209
-	// Affichage des appréciations saisies pour la classe
-	//echo "2 \$test_coef=$test_coef<br />";
-	//bulletin_classe($nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$test_coef,$affiche_categories);
-	//bulletin_classe($nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$nb_coef_superieurs_a_zero,$affiche_categories);
-	//bulletin_classe_bis($tab_moy,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$nb_coef_superieurs_a_zero,$affiche_categories);
-	bulletin_classe($tab_moy,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$nb_coef_superieurs_a_zero,$affiche_categories);
+	// Affichage des apprÃ©ciations saisies pour la classe
+	bulletin_classe($tab_moy,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$nb_coef_superieurs_a_zero,$affiche_categories,$couleur_alterne);
 	if ($choix_edit == '4') {
 		require("../lib/footer.inc.php");
 		die();
@@ -462,12 +388,14 @@ if ($choix_edit != '2') {
         //bulletin($current_eleve_login,$k,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$test_coef,$affiche_categories);
         //bulletin($current_eleve_login,$k,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
         //bulletin_bis($tab_moy,$current_eleve_login,$k,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
-        bulletin($tab_moy,$current_eleve_login,$k,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories);
+        bulletin($tab_moy,$current_eleve_login,$k,$nombre_eleves,$periode1,$periode2,$nom_periode,$gepiYear,$id_classe,$affiche_rang,$nb_coef_superieurs_a_zero,$affiche_categories,$couleur_alterne);
         if ($i != $nombre_eleves-1) {echo "<p class=saut>&nbsp;</p>";}
         $i++;
     }
 
 }
+
+echo "</div>\n"; // Fin du div_prepa_conseil_bull_simp
 
 echo "<div class='noprint'>\n";
 //===========================================================

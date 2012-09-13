@@ -27,7 +27,7 @@ class PeriodeNote extends BasePeriodeNote {
 	 * @param      string $format The date/time format string (either date()-style or strftime()-style).
 	 *							If format is NULL, then the raw DateTime object will be returned.
 	 *
-	 * @return DateTime $date ou null si non précisé
+	 * @return DateTime $date ou null si non prÃ©cisÃ©
 	 */
 	public function getDateDebut($format = null) {
 	    if(null === $this->dateDebut) {
@@ -36,21 +36,15 @@ class PeriodeNote extends BasePeriodeNote {
 		    } else {
 			    $dateDebut = null;
 			    if ($this->getNumPeriode() == 1) {
-				//on essaye de récupérer la date de début dans le calendrier des périodes
+				//on essaye de rÃ©cupÃ©rer la date de dÃ©but dans le calendrier des pÃ©riodes
 				$edt_periode = EdtCalendrierPeriodeQuery::create()->filterByNumeroPeriode($this->getNumPeriode())->orderByDebutCalendrierTs()->findOne();
 				if ($edt_periode != null) {
 				    $dateDebut = $edt_periode->getJourdebutCalendrier(null);
 				} else {
 				    //c'est la premiere periode
-				    //on va renvoyer par default le 31 aout
-				    $dateDebut = new DateTime('now');
-				    $dateDebut->setDate($dateDebut->format('Y'), 8, 31);
-				    $dateDebut->setTime(0,0,0);
-				    $now = new DateTime('now');
-				    if ($dateDebut->format('U') - $now->format('U') > 3600*24*30) {
-					//si la date est trop postérieure à maintenant c'est qu'on s'est trompé d'année
-					$dateDebut->setDate($dateDebut->format('Y') - 1, 8, 31);
-				    }
+				    //on va renvoyer par default le dÃ©but de l'annÃ©e scolaire
+				    include_once(dirname(__FILE__).'/../../../helpers/EdtHelper.php');
+				    $dateDebut = EdtHelper::getPremierJourAnneeScolaire($this->getDateFin());
 				}
 			    } else {
 				//on renvoi la date de fin de la periode precedente
@@ -92,11 +86,11 @@ class PeriodeNote extends BasePeriodeNote {
 
 
  	/**
-	 * Compare deux periodeNote par leur numéros
+	 * Compare deux periodeNote par leur numÃ©ros
 	 *
 	 * @param      PeriodeNote $groupeA Le premier PeriodeNote a comparer
 	 * @param      PeriodeNote $groupeB Le deuxieme PeriodeNote a comparer
-	 * @return     int un entier, qui sera inférieur, égal ou supérieur à zéro suivant que le premier argument est considéré comme plus petit, égal ou plus grand que le second argument.
+	 * @return     int un entier, qui sera infÃ©rieur, Ã©gal ou supÃ©rieur Ã  zÃ©ro suivant que le premier argument est considÃ©rÃ© comme plus petit, Ã©gal ou plus grand que le second argument.
 	 */
 	public static function comparePeriodeNote($a, $b) {
 		if ($a ==null || $b == null){
@@ -107,8 +101,7 @@ class PeriodeNote extends BasePeriodeNote {
 	}
 
 	/**
-	 * Get the [optionally formatted] temporal [date_fin] column value.
-	 * date de verrouillage de la periode
+	 * date de verrouillage de la periode. On rajoute le temps 23:59:59
 	 *
 	 * @param      string $format The date/time format string (either date()-style or strftime()-style).
 	 *							If format is NULL, then the raw DateTime object will be returned.

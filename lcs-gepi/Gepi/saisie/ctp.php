@@ -1,14 +1,13 @@
 <?php
 	/*
-		$Id: ctp.php 7004 2011-05-25 17:36:10Z crob $
 	*/
 
-	// Hauteur du DIV des appréciations-types
-	// Cela conditionne le nombre d'appréciations-types que l'on peut voir simultanément
+	// Hauteur du DIV des apprÃ©ciations-types
+	// Cela conditionne le nombre d'apprÃ©ciations-types que l'on peut voir simultanÃ©ment
 	$hauteur_div_ctp=10;
 
 	//============================================
-	// Dispositif dépendant de la présence des fonctions javascript un peu plus haut comme appliqué dans $mess[$k]:
+	// Dispositif dÃ©pendant de la prÃ©sence des fonctions javascript un peu plus haut comme appliquÃ© dans $mess[$k]:
 	//$mess[$k].=" onfocus=\"focus_suivant(".$k.$num_id.");document.getElementById('focus_courant').value='".$k.$num_id."';\"";
 
 	$sql="SELECT * FROM commentaires_types_profs WHERE login='".$_SESSION['login']."' ORDER BY app;";
@@ -27,10 +26,10 @@
 		while($lig_cmt=mysql_fetch_object($res_cmt)) {
 			$alt=$alt*(-1);
 			$texte_bulle.="<div class='lig$alt' style='border:1px solid black; margin: 1px; ' onClick=\"insere_cmt($cpt)\">\n";
-			$texte_bulle.=htmlentities($lig_cmt->app)."\n";
+			$texte_bulle.=htmlspecialchars($lig_cmt->app)."\n";
 			$texte_bulle.="</div>\n";
 
-			echo "<div id='cmt_".$cpt."' style='display:none;'>".htmlentities($lig_cmt->app)."</div>\n";
+			echo "<div id='cmt_".$cpt."' style='display:none;'>".htmlspecialchars($lig_cmt->app)."</div>\n";
 			$cpt++;
 		}
 		$texte_bulle.="</div>\n";

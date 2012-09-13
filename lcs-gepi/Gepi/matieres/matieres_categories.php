@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: matieres_categories.php 6181 2010-12-17 16:54:04Z crob $
+* $Id$
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -51,67 +51,67 @@ if (isset($_POST['action'])) {
 	check_token();
     $error = false;
     if ($_POST['action'] == "add") {
-        // On enregistre une nouvelle catégorie
+        // On enregistre une nouvelle catÃ©gorie
         // On filtre un peu
         if (!is_numeric($_POST['priority'])) $_POST['priority'] = "0";
-        // Le reste passera sans soucis, mais on coupe quand même si jamais c'est trop long
-        if (strlen($_POST['nom_court']) > 250) $_POST['nom_court'] = substr($_POST['nom_court'], 0, 250);
-        if (strlen($_POST['nom_complet']) > 250) $_POST['nom_complet'] = substr($_POST['nom_complet'], 0, 250);
+        // Le reste passera sans soucis, mais on coupe quand mÃªme si jamais c'est trop long
+        if (mb_strlen($_POST['nom_court']) > 250) $_POST['nom_court'] = mb_substr($_POST['nom_court'], 0, 250);
+        if (mb_strlen($_POST['nom_complet']) > 250) $_POST['nom_complet'] = mb_substr($_POST['nom_complet'], 0, 250);
         // On enregistre
         if ($_POST['nom_court'] == '') {
-            $msg .= "Le nom court ne peut pas être vide.<br/>";
+            $msg .= "Le nom court ne peut pas Ãªtre vide.<br/>";
             $error = true;
             $res = false;
         }
-        if (strtolower($_POST['nom_court']) == 'aucune') {
-            $msg .= "Le nom court ne peut pas être 'Aucune'.<br/>";
+        if (my_strtolower($_POST['nom_court']) == 'aucune') {
+            $msg .= "Le nom court ne peut pas Ãªtre 'Aucune'.<br/>";
             $error = true;
             $res = false;
         }
         if ($_POST['nom_complet'] == '') {
-            $msg .= "L'intitulé ne peut pas être vide.<br/>";
+            $msg .= "L'intitulÃ© ne peut pas Ãªtre vide.<br/>";
             $error = true;
             $res = false;
         }
 
         if (!$error) {
-            $res = mysql_query("INSERT INTO matieres_categories SET nom_court = '" . htmlentities($_POST['nom_court']) . "', nom_complet = '" . htmlentities($_POST['nom_complet']) . "', priority = '" . $_POST["priority"] . "'");
+            $res = mysql_query("INSERT INTO matieres_categories SET nom_court = '" . ($_POST['nom_court']) . "', nom_complet = '" . ($_POST['nom_complet']) . "', priority = '" . $_POST["priority"] . "'");
         }
         if (!$res) {
-            $msg .= "Erreur lors de l'enregistrement de la nouvelle catégorie.</br>";
+            $msg .= "Erreur lors de l'enregistrement de la nouvelle catÃ©gorie.</br>";
             echo mysql_error();
         }
     } elseif ($_POST['action'] == "edit") {
-        // On met à jour une catégorie
+        // On met Ã  jour une catÃ©gorie
         // On filtre un peu
         if (!is_numeric($_POST['priority'])) $_POST['priority'] = "0";
         if (!is_numeric($_POST['categorie_id'])) $_POST['categorie_id'] = "0";
-        // Le reste passera sans soucis, mais on coupe quand même si jamais c'est trop long
-        if (strlen($_POST['nom_court']) > 250) $_POST['nom_court'] = substr($_POST['nom_court'], 0, 250);
-        if (strlen($_POST['nom_complet']) > 250) $_POST['nom_complet'] = substr($_POST['nom_complet'], 0, 250);
+        // Le reste passera sans soucis, mais on coupe quand mÃªme si jamais c'est trop long
+        if (mb_strlen($_POST['nom_court']) > 250) $_POST['nom_court'] = mb_substr($_POST['nom_court'], 0, 250);
+        if (mb_strlen($_POST['nom_complet']) > 250) $_POST['nom_complet'] = mb_substr($_POST['nom_complet'], 0, 250);
 
         if ($_POST['nom_court'] == '') {
-            $msg .= "Le nom court ne peut pas être vide.<br/>";
+            $msg .= "Le nom court ne peut pas Ãªtre vide.<br/>";
             $error = true;
             $res = false;
         }
-        if (strtolower($_POST['nom_court']) == 'aucune') {
-            $msg .= "Le nom court ne peut pas être 'Aucune'.<br/>";
+        if (my_strtolower($_POST['nom_court']) == 'aucune') {
+            $msg .= "Le nom court ne peut pas Ãªtre 'Aucune'.<br/>";
             $error = true;
             $res = false;
         }
         if ($_POST['nom_complet'] == '') {
-            $msg .= "L'intitulé ne peut pas être vide.<br/>";
+            $msg .= "L'intitulÃ© ne peut pas Ãªtre vide.<br/>";
             $error = true;
             $res = false;
         }
 
         if (!$error) {
             // On enregistre
-            $res = mysql_query("UPDATE matieres_categories SET nom_court = '" . htmlentities($_POST['nom_court']) . "', nom_complet = '" . htmlentities($_POST['nom_complet']) . "', priority = '" . $_POST["priority"] . "' WHERE id = '".$_POST['categorie_id']."'");
+            $res = mysql_query("UPDATE matieres_categories SET nom_court = '" . ($_POST['nom_court']) . "', nom_complet = '" . ($_POST['nom_complet']) . "', priority = '" . $_POST["priority"] . "' WHERE id = '".$_POST['categorie_id']."'");
         }
 
-        if (!$res) $msg .= "Erreur lors de la mise à jour de la catégorie.";
+        if (!$res) $msg .= "Erreur lors de la mise Ã  jour de la catÃ©gorie.";
     } elseif ($_POST['action'] == "delete") {
         // On teste d'abord l'ID
         if (!is_numeric($_POST['categorie_id'])) {
@@ -119,12 +119,12 @@ if (isset($_POST['action'])) {
             $msg .= "Erreur.";
         } else {
             // On a un ID valide.
-            // Si c'est l'ID 1, on ne supprime pas. C'est la catégorie par défaut
+            // Si c'est l'ID 1, on ne supprime pas. C'est la catÃ©gorie par dÃ©faut
             if ($_POST['categorie_id'] == 1) {
-                $msg .= "Vous ne pouvez pas supprimer la catégorie par défaut !";
+                $msg .= "Vous ne pouvez pas supprimer la catÃ©gorie par dÃ©faut !";
             } else {
 
-                // On teste l'utilisation de cette catégorie
+                // On teste l'utilisation de cette catÃ©gorie
                 $res = mysql_query("SELECT matiere FROM matieres WHERE categorie_id = '" . $_POST['categorie_id'] ."'");
                 $test = mysql_num_rows($res);
 
@@ -132,13 +132,13 @@ if (isset($_POST['action'])) {
                 $test2 = mysql_num_rows($res2);
 
                 if ($test>0) {
-                    // On a des entrées... la catégorie a déjà été associée à des matières, donc on ne la supprime pas.
+                    // On a des entrÃ©es... la catÃ©gorie a dÃ©jÃ  Ã©tÃ© associÃ©e Ã  des matiÃ¨res, donc on ne la supprime pas.
 					$liste_matieres_associees="";
 					while($lig=mysql_fetch_object($res)) {
 						if($liste_matieres_associees!='') {$liste_matieres_associees.=", ";}
 						$liste_matieres_associees.="<a href='index.php' target='_blank'>".$lig->matiere."</a>";
 					}
-                    $msg .= "La catégorie n'a pas pu être supprimée, car elle a déjà été associée à des matières (<i>$liste_matieres_associees</i>).<br/>";
+                    $msg .= "La catÃ©gorie n'a pas pu Ãªtre supprimÃ©e, car elle a dÃ©jÃ  Ã©tÃ© associÃ©e Ã  des matiÃ¨res (<i>$liste_matieres_associees</i>).<br/>";
 				}
                 elseif ($test2>0) {
 					$liste_classes_associees="";
@@ -146,40 +146,64 @@ if (isset($_POST['action'])) {
 						if($liste_classes_associees!='') {$liste_classes_associees.=", ";}
 						$liste_classes_associees.="<a href='../groupes/edit_class.php?id_classe=$lig->id_classe' target='_blank'>".get_class_from_id($lig->id_classe)."</a>";
 					}
-                    $msg .= "La catégorie n'a pas pu être supprimée, car elle a déjà été associée à des enseignements pour des classes (<i>$liste_classes_associees</i>).<br/>";
+                    $msg .= "La catÃ©gorie n'a pas pu Ãªtre supprimÃ©e, car elle a dÃ©jÃ  Ã©tÃ© associÃ©e Ã  des enseignements pour des classes (<i>$liste_classes_associees</i>).<br/>";
                 }
 				else {
                     $res = mysql_query("DELETE FROM matieres_categories WHERE id = '" . $_POST['categorie_id']."'");
                     if (!$res) {
-                        $msg .= "Erreur lors de la suppression de la catégorie.<br/>";
+                        $msg .= "Erreur lors de la suppression de la catÃ©gorie.<br/>";
                     } else {
-                        $msg .= "La catégorie a bien été supprimée.<br/>";
+                        $msg .= "La catÃ©gorie a bien Ã©tÃ© supprimÃ©e.<br/>";
                     }
                 }
             }
         }
     }
 }
+elseif((isset($_GET['action']))&&($_GET['action'] == "corrige_accents_html")) {
+	check_token();
+
+	$tab = array_flip (get_html_translation_table(HTML_ENTITIES));
+	$sql="SELECT * FROM matieres_categories;";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$correction=ensure_utf8(strtr($lig->nom_complet, $tab));
+			if($lig->nom_complet!=$correction) {
+				$sql="UPDATE matieres_categories SET nom_complet='$correction' WHERE id='$lig->id';";
+				//echo "$sql<br />";
+				$update=mysql_query($sql);
+				if($update) {
+					$msg .= "Correction de l'encodage d'un nom de catÃ©gorie de matiÃ¨re en '$correction'<br />";
+				}
+				else {
+					$msg .= "Erreur lors de la correction de l'encodage du nom de catÃ©gorie de matiÃ¨re '$lig->nom_complet' en '$correction'<br />";
+				}
+			}
+		}
+	}
+	unset($_GET['action']);
+}
 
 //**************** EN-TETE **************************************
-$titre_page = "Gestion des catégories de matières";
-require_once("../lib/header.inc");
+$titre_page = "Gestion des catÃ©gories de matiÃ¨res";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 
 if (isset($_GET['action'])) {
-    // On a une action : soit on ajoute soit on édite soit on delete
+    // On a une action : soit on ajoute soit on Ã©dite soit on delete
     ?>
     <p class=bold><a href="matieres_categories.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
     <?php
     if ($_GET['action'] == "add") {
-        // On ajoute une catégorie
+        // On ajoute une catÃ©gorie
         // On affiche le formulaire d'ajout
         echo "<form enctype='multipart/form-data' action='matieres_categories.php' name='formulaire' method=post>";
 		echo add_token_field();
         echo "<input type='hidden' name='action' value='add'>";
-        echo "<p>Nom court (utilisé dans les outils de configuration) : <input type='text' name='nom_court'></p>";
-        echo "<p>Intitulé complet (utilisé sur les documents officiels) : <input type='text' name='nom_complet'></p>";
-        echo "<p>Priorité d'affichage par défaut : ";
+        echo "<p>Nom court (utilisÃ© dans les outils de configuration) : <input type='text' name='nom_court'></p>";
+        echo "<p>IntitulÃ© complet (utilisÃ© sur les documents officiels) : <input type='text' name='nom_complet'></p>";
+        echo "<p>PrioritÃ© d'affichage par dÃ©faut : ";
         echo "<select name='priority' size='1'>";
         for ($i=0;$i<11;$i++) {
             echo "<option value='$i'>$i</option>";
@@ -191,7 +215,7 @@ if (isset($_GET['action'])) {
         echo "</p>";
         echo "</form>";
     } elseif ($_GET['action'] == "edit") {
-        // On édite la catégorie existante
+        // On Ã©dite la catÃ©gorie existante
         if (!is_numeric($_GET['categorie_id'])) $_GET['categorie_id'] == 0;
 
         $res = mysql_query("SELECT id, nom_court, nom_complet, priority FROM matieres_categories WHERE id = '" . $_GET['categorie_id'] . "'");
@@ -199,15 +223,17 @@ if (isset($_GET['action'])) {
 
         if ($current_cat) {
 			if($current_cat["nom_court"]=='Aucune') {
-				echo "<p style='color:red'>ANOMALIE&nbsp;: Il ne devrait pas exister de catégorie intitulée 'Aucune'.<br />Voir <a href='http://www.sylogix.org/wiki/gepi/Enseignement_invisible'>http://www.sylogix.org/wiki/gepi/Enseignement_invisible</a> et <a href='http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune'>http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune</a> pour des explications</p>\n";
+				echo "<p style='color:red'>ANOMALIE&nbsp;: Il ne devrait pas exister de catÃ©gorie intitulÃ©e 'Aucune'.<br />Voir <a href='http://www.sylogix.org/wiki/gepi/Enseignement_invisible'>http://www.sylogix.org/wiki/gepi/Enseignement_invisible</a> et <a href='http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune'>http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune</a> pour des explications</p>\n";
 			}
             echo "<form enctype='multipart/form-data' action='matieres_categories.php' name='formulaire' method=post>";
 			echo add_token_field();
             echo "<input type='hidden' name='action' value='edit'>";
             echo "<input type='hidden' name='categorie_id' value='".$current_cat["id"] . "'>";
-            echo "<p>Nom court (utilisé dans les outils de configuration) : <input type='text' name='nom_court' value='".html_entity_decode_all_version($current_cat["nom_court"]) ."' /></p>";
-            echo "<p>Intitulé complet (utilisé sur les documents officiels) : <input type='text' name='nom_complet' value='".html_entity_decode_all_version($current_cat["nom_complet"]) ."' /></p>";
-            echo "<p>Priorité d'affichage par défaut : ";
+            //echo "<p>Nom court (utilisÃ© dans les outils de configuration) : <input type='text' name='nom_court' value='".html_entity_decode($current_cat["nom_court"]) ."' /></p>";
+            //echo "<p>IntitulÃ© complet (utilisÃ© sur les documents officiels) : <input type='text' name='nom_complet' value='".html_entity_decode($current_cat["nom_complet"]) ."' /></p>";
+            echo "<p>Nom court (utilisÃ© dans les outils de configuration) : <input type='text' name='nom_court' value='".$current_cat["nom_court"] ."' /></p>";
+            echo "<p>IntitulÃ© complet (utilisÃ© sur les documents officiels) : <input type='text' name='nom_complet' value='".$current_cat["nom_complet"] ."' /></p>";
+            echo "<p>PrioritÃ© d'affichage par dÃ©faut : ";
             echo "<select name='priority' size='1'>";
             for ($i=0;$i<11;$i++) {
                 echo "<option value='$i'";
@@ -229,14 +255,14 @@ if (isset($_GET['action'])) {
 } else {
     // Pas d'action. On affiche la liste des rubriques
     ?>
-    <p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <a href="matieres_categories.php?action=add">Ajouter une catégorie</a></p>
-    <p>Remarque : la catégorie par défaut ne peut pas être supprimée. Elle est automatiquement associée aux matières existantes et aux nouvelles matières, et pour tous les groupes. Vous pouvez la renommer (Autres, Hors catégories, etc.), mais laissez toujours un nom générique.</p>
+    <p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <a href="matieres_categories.php?action=add">Ajouter une catÃ©gorie</a></p>
+    <p><em>Remarque&nbsp;:</em> la catÃ©gorie par dÃ©faut ne peut pas Ãªtre supprimÃ©e. Elle est automatiquement associÃ©e aux matiÃ¨res existantes et aux nouvelles matiÃ¨res, et pour tous les groupes. Vous pouvez la renommer (<em>Autres, Hors catÃ©gories, etc.</em>), mais laissez toujours un nom gÃ©nÃ©rique.</p>
 
-    <table class='boireaus' width='100%' border='1' cellpadding='5' summary='Tableau des catégories'>
+    <table class='boireaus' width='100%' border='1' cellpadding='5' summary='Tableau des catÃ©gories'>
 <tr>
     <th><p class='bold'><a href='./matieres_categories.php?orderby=nom_court'>Nom court</a></p></th>
-    <th><p class='bold'><a href='./matieres_categories.php?orderby=m.nom_complet'>Intitulé complet</a></p></th>
-    <th><p class='bold'><a href='./matieres_categories.php?orderby=m.priority,m.nom_complet'>Ordre d'affichage<br />par défaut</a></p></th>
+    <th><p class='bold'><a href='./matieres_categories.php?orderby=m.nom_complet'>IntitulÃ© complet</a></p></th>
+    <th><p class='bold'><a href='./matieres_categories.php?orderby=m.priority,m.nom_complet'>Ordre d'affichage<br />par dÃ©faut</a></p></th>
     <th><p class='bold'>Supprimer</p></th>
 </tr>
     <?php
@@ -246,8 +272,10 @@ if (isset($_GET['action'])) {
     while ($current_cat = mysql_fetch_array($res, MYSQL_ASSOC)) {
 		$alt=$alt*(-1);
         echo "<tr class='lig$alt white_hover'>\n";
-        echo "<td><a href='matieres_categories.php?action=edit&categorie_id=".$current_cat["id"]."'>".html_entity_decode_all_version($current_cat["nom_court"])."</a></td>\n";
-        echo "<td>".html_entity_decode_all_version($current_cat["nom_complet"])."</td>\n";
+        //echo "<td><a href='matieres_categories.php?action=edit&categorie_id=".$current_cat["id"]."'>".html_entity_decode($current_cat["nom_court"])."</a></td>\n";
+        //echo "<td>".html_entity_decode($current_cat["nom_complet"])."</td>\n";
+        echo "<td><a href='matieres_categories.php?action=edit&categorie_id=".$current_cat["id"]."'>".$current_cat["nom_court"]."</a></td>\n";
+        echo "<td>".$current_cat["nom_complet"]."</td>\n";
         echo "<td>".$current_cat["priority"]."</td>\n";
         echo "<td>";
         if ($current_cat["id"] != "1") {
@@ -257,7 +285,7 @@ if (isset($_GET['action'])) {
             echo "<input type='hidden' name='categorie_id' value='".$current_cat["id"]."' />\n";
             echo "<input type='submit' value='Supprimer' />\n</form>\n";
         } else {
-            echo "Catégorie par défaut (suppression impossible)";
+            echo "CatÃ©gorie par dÃ©faut (<em>suppression impossible</em>)";
         }
 		echo "</td>\n";
         echo "</tr>\n";
@@ -265,8 +293,27 @@ if (isset($_GET['action'])) {
     }
     echo "</table>\n";
 	if($temoin_anomalie_categ_Aucune=='y') {
-		echo "<p style='color:red'>ANOMALIE&nbsp;: Il ne devrait pas exister de catégorie intitulée 'Aucune'.<br />Voir <a href='http://www.sylogix.org/wiki/gepi/Enseignement_invisible'>http://www.sylogix.org/wiki/gepi/Enseignement_invisible</a> et <a href='http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune'>http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune</a> pour des explications</p>\n";
+		echo "<p style='color:red'>ANOMALIE&nbsp;: Il ne devrait pas exister de catÃ©gorie intitulÃ©e 'Aucune'.<br />Voir <a href='http://www.sylogix.org/wiki/gepi/Enseignement_invisible'>http://www.sylogix.org/wiki/gepi/Enseignement_invisible</a> et <a href='http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune'>http://www.sylogix.org/wiki/gepi/Suppr_Cat_Aucune</a> pour des explications</p>\n";
 	}
+
+	$tab = array_flip (get_html_translation_table(HTML_ENTITIES));
+	$sql="SELECT * FROM matieres_categories;";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$alerte_accents_html="<br /><p><span style='color:red; font-weight:bold;'>Attention&nbsp;:</span> Une ou des catÃ©gories ont des accents HTML dans leur nom complet (<em>accents enregistrÃ©s sous forme HTML dans la base de donnÃ©es</em>).<br />Cela peut perturber l'affichage des noms de catÃ©gories de matiÃ¨res dans les bulletins PDF (<em>et ailleurs peut-Ãªtre</em>)</p>\n<ul>\n";
+		$ajout="";
+		while($lig=mysql_fetch_object($res)) {
+			$correction=ensure_utf8(strtr($lig->nom_complet, $tab));
+			if($lig->nom_complet!=$correction) {
+				$ajout.="<li>La catÃ©gorie de matiÃ¨re <strong>$lig->nom_complet</strong> a un ou des accents HTML</li>\n";
+			}
+		}
+		if($ajout!="") {
+			echo $alerte_accents_html.$ajout."</ul>\n";
+			echo "<p>Vous pouvez <a href='".$_SERVER['PHP_SELF']."?action=corrige_accents_html".add_token_in_url()."'>corriger d'un clic ce problÃ¨me</a>.</p>\n";
+		}
+	}
+
 }
 require("../lib/footer.inc.php");
 ?>

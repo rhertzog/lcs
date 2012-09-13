@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: savebackup.php 6370 2011-01-19 08:54:56Z tbelliard $
  *
  * Copyright 2001-2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -41,7 +40,7 @@ if (!checkAccess()) {
     die();
 }
 
-// Initialisation du répertoire actuel de sauvegarde
+// Initialisation du rÃ©pertoire actuel de sauvegarde
 $dirname = getSettingValue("backup_directory");
 //$fileid=isset($_POST['fileid']) ? $_POST['fileid'] : (isset($_GET['fileid']) ? $_GET['fileid'] : NULL);
 $fileid=isset($_GET['fileid']) ? $_GET['fileid'] : NULL;

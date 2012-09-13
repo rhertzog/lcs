@@ -116,7 +116,7 @@ Here we will list some examples for this authentication source.
 
     $dom = new DOMDocument();
     $ce = $dom->createElementNS('http://www.example.com/XFoo', 'xfoo:test', 'Test data!');
-    ext[] = new SAML2_XML_Chunk($ce);
+    $ext[] = new SAML2_XML_Chunk($ce);
 
     $auth = new SimpleSAML_Auth_Simple('default-sp');
     $auth->login(array(
@@ -215,6 +215,14 @@ Options
         ),
 
 :   *Note*: You must also specify at least one attribute in the `attributes` option for this element to be added to the metadata.
+
+`nameid.encryption`
+:   Whether NameIDs sent from this SP should be encrypted. The default
+    value is `FALSE`.
+
+:   Note that this option can be set for each IdP in the [IdP-remote metadata](./simplesamlphp-reference-idp-remote).
+
+:   *Note*: SAML 2 specific.
 
 `NameIDPolicy`
 :   The format of the NameID we request from the IdP.
@@ -319,6 +327,9 @@ Options
 :   The page the user should be redirected to after an IdP initiated SSO.
 
 :   *Note*: SAML 2 specific.
+    For SAML 1.1 SPs, you must specify the `TARGET` parameter in the authentication response.
+    How to set that parameter is depends on the IdP.
+    For simpleSAMLphp, see the documentation for [IdP-first flow](./simplesamlphp-idp-more#section_4_1).
 
 `url`
 :   An URL to your service provider. Will be added as an OrganizationURL-element in the metadata.

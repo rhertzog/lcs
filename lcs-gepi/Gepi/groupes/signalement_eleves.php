@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: signalement_eleves.php 6913 2011-05-13 15:58:05Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -46,7 +45,7 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Groupes: signalement des erreurs d affectation ÈlËve',
+description='Groupes: signalement des erreurs d affectation √©l√®ve',
 statut='';";
     $insert=mysql_query($sql);
 }
@@ -62,14 +61,17 @@ periode int(11) NOT NULL default '0',
 nature varchar(50) NOT NULL default '',
 valeur varchar(50) NOT NULL default '',
 declarant varchar(50) NOT NULL default '',
-PRIMARY KEY (id_groupe,login,periode,nature), INDEX (login));";
+PRIMARY KEY (id_groupe,login,periode,nature), INDEX (login)
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $test=mysql_query($sql);
 
-// Initialisation des variables utilisÈes dans le formulaire
+// Initialisation des variables utilis√©es dans le formulaire
 
 //$id_classe = isset($_GET['id_classe']) ? $_GET['id_classe'] : (isset($_POST['id_classe']) ? $_POST["id_classe"] : NULL);
 $id_groupe=isset($_GET['id_groupe']) ? $_GET['id_groupe'] : (isset($_POST['id_groupe']) ? $_POST["id_groupe"] : NULL);
 $order_by = isset($_GET['order_by']) ? $_GET['order_by'] : (isset($_POST['order_by']) ? $_POST["order_by"] : "classe");
+
+$mode_signalement=isset($_GET['mode_signalement']) ? $_GET['mode_signalement'] : (isset($_POST['mode_signalement']) ? $_POST["mode_signalement"] : "2");
 
 if(!isset($_SESSION['chemin_retour'])) {
 	$_SESSION['chemin_retour']=isset($_GET['chemin_retour']) ? $_GET['chemin_retour'] : (isset($_POST['chemin_retour']) ? $_POST['chemin_retour'] : "../cahier_notes/index.php?id_groupe=$id_groupe");
@@ -77,7 +79,7 @@ if(!isset($_SESSION['chemin_retour'])) {
 
 //$periode_cn=isset($_GET['periode_cn']) ? $_GET['periode_cn'] : (isset($_POST['periode_cn']) ? $_POST["periode_cn"] : NULL);
 //$id_conteneur = isset($_GET['id_conteneur']) ? $_GET['id_conteneur'] : (isset($_POST['id_conteneur']) ? $_POST["id_conteneur"] : NULL);
-// ContrÙler si $id_groupe et $id_conteneur sont bien associÈes
+// Contr√¥ler si $id_groupe et $id_conteneur sont bien associ√©es
 //$sql="";
 
 function debug_edit_eleves($texte) {
@@ -111,7 +113,7 @@ if (count($current_group["classes"]["list"]) > 1) {
 	$multiclasses = false;
 }
 
-// RequÍte utilisÈe pour la liste des logins	
+// Requ√™te utilis√©e pour la liste des logins	
 $reg_eleves = array();
 foreach ($current_group["periodes"] as $period) {
 	//echo '$period["num_periode"]='.$period["num_periode"]."<br />";
@@ -126,12 +128,12 @@ if (isset($_POST['is_posted'])) {
 	check_token();
 	//$error = false;
 
-	// MÈnage:
+	// M√©nage:
 	$sql="DELETE FROM j_signalement WHERE id_groupe='$id_groupe' AND nature='erreur_affect';";
 	//echo "$sql<br />";
 	$del=mysql_query($sql);
 	if($del) {
-		// ElËves
+		// El√®ves
 		$sql="SELECT DISTINCT jec.login FROM j_eleves_classes jec, j_groupes_classes jgc WHERE jgc.id_groupe='$id_groupe' AND jec.id_classe=jgc.id_classe ORDER BY login";
 		debug_edit_eleves($sql);
 		//echo "$sql<br />";
@@ -140,13 +142,10 @@ if (isset($_POST['is_posted'])) {
 			$tab_ele[]=$lig_eleve->login;
 			//echo " ".$lig_eleve->login;
 		}
-	
-		//=========================
-		// AJOUT: boireaus 20071010
-		$login_eleve=$_POST['login_eleve'];
-		//=========================
 
-		$nom_declarant="Non_IdentifiÈ";
+		$login_eleve=$_POST['login_eleve'];
+
+		$nom_declarant="Non_Identifi√©";
 		$email_declarant="";
 		$sql="select nom, prenom, civilite, email from utilisateurs where login = '".$_SESSION['login']."';";
 		$req=mysql_query($sql);
@@ -156,29 +155,97 @@ if (isset($_POST['is_posted'])) {
 			$email_declarant=$lig_u->email;
 		}
 
-		$sujet_mail="[GEPI] Signalement d'ÈlËves manquants ou en trop";
-		$texte_mail="Signalement par ".$nom_declarant." d'ÈlËves manquants ou en trop en ".$current_group["name"]." (".$current_group["description"]." en ".$current_group["classlist_string"].").\n";
-		foreach($current_group["periodes"] as $period) {
-			for($i=0;$i<count($login_eleve);$i++){
-				if(isset($_POST['eleve_'.$period["num_periode"].'_'.$i])) {
-					if(in_array($login_eleve[$i],$tab_ele)) {
-						$nom_eleve=get_nom_prenom_eleve($login_eleve[$i]);
+		$sujet_mail="[GEPI] Signalement d'√©l√®ves manquants ou en trop";
+		$texte_mail="Signalement par ".$nom_declarant." d'√©l√®ves manquants ou en trop en ".$current_group["name"]." (".$current_group["description"]." en ".$current_group["classlist_string"].").\n";
+/*
+echo "<pre>";
+print_r($reg_eleves);
+echo "</pre>";
 
-						$sql="INSERT INTO j_signalement SET id_groupe='$id_groupe', declarant='".$_SESSION['login']."', nature='erreur_affect', login='".$login_eleve[$i]."', periode='".$period["num_periode"]."', ";
-						if(in_array($login_eleve[$i],$reg_eleves[$period["num_periode"]])) {
-							$sql.="valeur='en_trop';";
-							$texte_mail.="$nom_eleve est en trop en pÈriode ".$period["num_periode"].".\n";
+echo "<pre>";
+print_r($current_group["periodes"]);
+echo "</pre>";
+*/
+		if((isset($_POST['mode_signalement']))&&($_POST['mode_signalement']==2)) {
+
+			for($loop=0;$loop<count($login_eleve);$loop++) {
+				//echo "\$login_eleve[$loop]=$login_eleve[$loop]<br />";
+				for($loop_per=0;$loop_per<=count($current_group["periodes"]);$loop_per++) {
+					if(isset($current_group["periodes"][$loop_per]['num_periode'])) {
+						if((isset($_POST['eleve_'.$current_group["periodes"][$loop_per]['num_periode'].'_'.$loop]))&&
+						($_POST['eleve_'.$current_group["periodes"][$loop_per]['num_periode'].'_'.$loop]=='y')) {
+							//echo "\$_POST['eleve_".$current_group['periodes'][$loop_per]['num_periode']."_$loop'] est d√©fini.<br />";
+							if(!in_array($login_eleve[$loop], $reg_eleves[$current_group["periodes"][$loop_per]['num_periode']])) {
+								$nom_eleve=get_nom_prenom_eleve($login_eleve[$loop]);
+		
+								$sql="INSERT INTO j_signalement SET id_groupe='$id_groupe', declarant='".$_SESSION['login']."', nature='erreur_affect', login='".$login_eleve[$loop]."', periode='".$current_group["periodes"][$loop_per]['num_periode']."', ";
+	
+								$sql.="valeur='manquant';";
+								$texte_mail.="$nom_eleve est manquant en p√©riode ".$current_group["periodes"][$loop_per]['num_periode'].".\n";
+	
+								//echo "$sql<br />\n";
+								$insert=mysql_query($sql);
+								if(!$insert) {
+									$msg.="Erreur pour ".$nom_eleve."<br />";
+								}
+							}
 						}
 						else {
-							$sql.="valeur='manquant';";
-							$texte_mail.="$nom_eleve est manquant en pÈriode ".$period["num_periode"].".\n";
+							if(in_array($login_eleve[$loop], $reg_eleves[$current_group["periodes"][$loop_per]['num_periode']])) {
+								$nom_eleve=get_nom_prenom_eleve($login_eleve[$loop]);
+		
+								$sql="INSERT INTO j_signalement SET id_groupe='$id_groupe', declarant='".$_SESSION['login']."', nature='erreur_affect', login='".$login_eleve[$loop]."', periode='".$current_group["periodes"][$loop_per]['num_periode']."', ";
+	
+								$sql.="valeur='en_trop';";
+								$texte_mail.="$nom_eleve est en trop en p√©riode ".$current_group["periodes"][$loop_per]['num_periode'].".\n";
+	
+								//echo "$sql<br />\n";
+								$insert=mysql_query($sql);
+								if(!$insert) {
+									$msg.="Erreur pour ".$nom_eleve."<br />";
+								}
+							}
 						}
-						//echo "$sql<br />\n";
-						$insert=mysql_query($sql);
-						if(!$insert) {
-							$msg.="Erreur pour ".$nom_eleve."<br />";
+					}
+					/*
+					else {
+						echo "\$current_group[\"periodes\"][$loop_per]['num_periode'] n'est pas d√©fini.<br />";
+					}
+					*/
+				}
+			}
+
+
+
+
+
+
+
+
+		}
+		else {
+			foreach($current_group["periodes"] as $period) {
+				for($i=0;$i<count($login_eleve);$i++){
+					if(isset($_POST['eleve_'.$period["num_periode"].'_'.$i])) {
+						if(in_array($login_eleve[$i],$tab_ele)) {
+							$nom_eleve=get_nom_prenom_eleve($login_eleve[$i]);
+	
+							$sql="INSERT INTO j_signalement SET id_groupe='$id_groupe', declarant='".$_SESSION['login']."', nature='erreur_affect', login='".$login_eleve[$i]."', periode='".$period["num_periode"]."', ";
+							if(in_array($login_eleve[$i],$reg_eleves[$period["num_periode"]])) {
+								$sql.="valeur='en_trop';";
+								$texte_mail.="$nom_eleve est en trop en p√©riode ".$period["num_periode"].".\n";
+							}
+							else {
+								$sql.="valeur='manquant';";
+								$texte_mail.="$nom_eleve est manquant en p√©riode ".$period["num_periode"].".\n";
+							}
+							//echo "$sql<br />\n";
+							$insert=mysql_query($sql);
+							if(!$insert) {
+								$msg.="Erreur pour ".$nom_eleve."<br />";
+							}
+							//flush();
 						}
-						//flush();
 					}
 				}
 			}
@@ -189,10 +256,10 @@ if (isset($_POST['is_posted'])) {
 
 		$envoi_mail_actif=getSettingValue('envoi_mail_actif');
 		if(($envoi_mail_actif!='n')&&($envoi_mail_actif!='y')) {
-			$envoi_mail_actif='y'; // Passer ‡ 'n' pour faire des tests hors ligne... la phase d'envoi de mail peut sinon ensabler.
+			$envoi_mail_actif='y'; // Passer √† 'n' pour faire des tests hors ligne... la phase d'envoi de mail peut sinon ensabler.
 		}
 		if($envoi_mail_actif=='y') {
-			// On utilise un tÈmoin
+			// On utilise un t√©moin
 			if((isset($nom_eleve))&&($nom_eleve!="")&&(getSettingValue("gepiAdminAdress")!='')) {
 				$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
 				if($gepiPrefixeSujetMail!='') {$gepiPrefixeSujetMail.=" ";}
@@ -204,17 +271,17 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 
-		// On utilise un tÈmoin
+		// On utilise un t√©moin
 		if((isset($nom_eleve))&&($nom_eleve!="")&&($msg=="")) {
-			$msg="Enregistrement effectuÈ.";
+			$msg="Enregistrement effectu√©.";
 		}
 	}
 }
 
-$themessage  = 'Des informations ont ÈtÈ modifiÈes. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont √©t√© modifi√©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************
 $titre_page = "Gestion des groupes";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 
 //debug_var();
@@ -229,11 +296,12 @@ if(mysql_num_rows($res_sig)>0) {
 		$tab_sig[$lig_sig->periode][]=$lig_sig->login;
 	}
 }
-
-//=========================
-// AJOUT: boireaus 20071010
+/*
+echo "<pre>";
+print_r($tab_sig);
+echo "</pre>";
+*/
 $nb_periode=$current_group['nb_periode'];
-//=========================
 
 echo "<script type='text/javascript' language='javascript'>
 
@@ -250,6 +318,8 @@ function CocheLigne(ki) {
 	for (var i=1;i<$nb_periode;i++) {
 		if(document.getElementById('case_'+i+'_'+ki)){
 			document.getElementById('case_'+i+'_'+ki).checked = true;
+			changement_couleur(i+'_'+ki);
+			teste_changement_couleur_ligne(ki);
 		}
 	}
 }
@@ -258,6 +328,8 @@ function DecocheLigne(ki) {
 	for (var i=1;i<$nb_periode;i++) {
 		if(document.getElementById('case_'+i+'_'+ki)){
 			document.getElementById('case_'+i+'_'+ki).checked = false;
+			changement_couleur(i+'_'+ki);
+			teste_changement_couleur_ligne(ki);
 		}
 	}
 }
@@ -293,6 +365,12 @@ if(mysql_num_rows($res_grp)>1) {
 	}
 	echo "</select>\n";
 
+	if($mode_signalement=="2") {
+		echo " | <a href='".$_SERVER['PHP_SELF']."?mode_signalement=1&amp;id_groupe=$id_groupe'>Ancien mode</a>\n";
+	}
+	else {
+		echo " | <a href='".$_SERVER['PHP_SELF']."?mode_signalement=2&amp;id_groupe=$id_groupe'>Nouveau mode</a>\n";
+	}
 	echo "</p>\n";
 
 	echo "<script type='text/javascript'>
@@ -319,6 +397,12 @@ if(mysql_num_rows($res_grp)>1) {
 
 }
 else {
+	if($mode_signalement=="2") {
+		echo " | <a href='".$_SERVER['PHP_SELF']."?mode_signalement=1&amp;id_groupe=$id_groupe'>Ancien mode</a>\n";
+	}
+	else {
+		echo " | <a href='".$_SERVER['PHP_SELF']."?mode_signalement=2&amp;id_groupe=$id_groupe'>Nouveau mode</a>\n";
+	}
 	echo "</p>\n";
 }
 echo "</form>\n";
@@ -326,23 +410,23 @@ echo "</form>\n";
 ?>
 
 <?php
-	echo "<h3>GÈrer les ÈlËves de l'enseignement&nbsp;: ";
-	echo htmlentities($current_group["description"]) . " (<i>" . $current_group["classlist_string"] . "</i>)";
+	echo "<h3>G√©rer les √©l√®ves de l'enseignement&nbsp;: ";
+	echo htmlspecialchars($current_group["description"]) . " (<i>" . $current_group["classlist_string"] . "</i>)";
 	echo "</h3>\n";
 	//$temp["profs"]["users"][$p_login] = array("login" => $p_login, "nom" => $p_nom, "prenom" => $p_prenom, "civilite" => $civilite);
 	if(count($current_group["profs"]["users"])>0){
-		echo "<p>Cours dispensÈ par ";
+		echo "<p>Cours dispens√© par ";
 		$cpt_prof=0;
 		foreach($current_group["profs"]["users"] as $tab_prof){
 			if($cpt_prof>0){echo ", ";}
-			echo ucfirst(strtolower($tab_prof['prenom']))." ".strtoupper($tab_prof['nom']);
+			echo casse_mot($tab_prof['prenom'],'majf2')." ".my_strtoupper($tab_prof['nom']);
 			$cpt_prof++;
 		}
 		echo ".</p>\n";
 	}
 
-	echo "<p>Cette page est destinÈe ‡ vous permettre de signaler ‡ l'administrateur des erreurs d'affectation d'ÈlËves (<i>ÈlËves en trop ou manquants</i>).<br />\n";
-	echo "L'administrateur pourra tenir compte de votre signalement.<br />\nNotez bien que la prise en compte de votre demande n'est pas instantanÈe.<br />Une intervention de la part de l'administrateur sera nÈcessaire.";
+	echo "<p>Cette page est destin√©e √† vous permettre de signaler √† l'administrateur des erreurs d'affectation d'√©l√®ves (<i>√©l√®ves en trop ou manquants</i>).<br />\n";
+	echo "L'administrateur pourra tenir compte de votre signalement.<br />\nNotez bien que la prise en compte de votre demande n'est pas instantan√©e.<br />Une intervention de la part de l'administrateur sera n√©cessaire.";
 	if(getSettingValue("gepiAdminAdress")!='') {
 		echo "<br />\nL'administrateur recevra un mail pour ce signalement.";
 	}
@@ -352,21 +436,437 @@ echo "</form>\n";
 
 
 <p>
-<b><a href="javascript:CocheCase(true);changement();">Tout cocher</a> - <a href="javascript:CocheCase(false);changement();">Tout dÈcocher</a></b>
+<b><a href="javascript:CocheCase(true);changement();">Tout cocher</a> - <a href="javascript:CocheCase(false);changement();">Tout d√©cocher</a></b>
 </p>
 <?php
+
+if((isset($mode_signalement))&&($mode_signalement=="2")) {
+	$maxper=0;
+
+	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' name='formulaire' method='post'>\n";
+	echo add_token_field();
+	echo "<p><input type='submit' value='Enregistrer' /></p>\n";
+
+	echo "<p>Cochez les cases de fa√ßon √† griser les √©l√®ves qui ne doivent pas faire partie du groupe et √† d√©-griser les √©l√®ves qui vous manquent dans le groupe&nbsp;: </p>\n";
+	
+	echo "<table border='1' class='boireaus' summary='Suivi de cet enseignement par les √©l√®ves en fonction des p√©riodes'>\n";
+	echo "<tr>\n";
+	echo "<th><a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;order_by=nom'>Nom/Pr√©nom</a></th>\n";
+	if ($multiclasses) {
+		echo "<th><a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;order_by=classe'>Classe</a></th>\n";
+	}
+	foreach ($current_group["periodes"] as $period) {
+		if($period["num_periode"]!=""){
+			echo "<th>" . $period["nom_periode"] . "</th>\n";
+		}
+	}
+	echo "<th>&nbsp;</th>\n";
+	//echo "<th>Coef</th>";
+	echo "</tr>\n";
+	
+	$conditions = "e.login = j.login and (";
+	foreach ($current_group["classes"]["list"] as $query_id_classe) {
+		$conditions .= "j.id_classe = '" . $query_id_classe . "' or ";
+	}
+	$conditions = mb_substr($conditions, 0, -4);
+	$conditions .= ") and c.id = j.id_classe";
+	
+	// D√©finition de l'ordre de la liste
+	if ($order_by == "classe") {
+		// Classement par classe puis nom puis pr√©nom
+		$order_conditions = "j.id_classe, e.nom, e.prenom";
+	} elseif ($order_by == "nom") {
+		$order_conditions = "e.nom, e.prenom";
+	}
+	
+	//=============================
+	echo "<tr>\n<th>\n";
+	//=============================
+	
+	//=========================
+	unset($login_eleve);
+	//=========================
+	
+	$sql="SELECT distinct(j.login), j.id_classe, c.classe, e.nom, e.prenom FROM eleves e, j_eleves_classes j, classes c WHERE (" . $conditions . ") ORDER BY ".$order_conditions;
+	$calldata = mysql_query($sql);
+	$nb = mysql_num_rows($calldata);
+	$eleves_list = array();
+	$eleves_list["list"]=array();
+	for ($i=0;$i<$nb;$i++) {
+		$e_login = mysql_result($calldata, $i, "login");
+		//================================
+		//echo "<input type='hidden' name='login_eleve[$i]' value='$e_login' />\n";
+		echo "<input type='hidden' name='login_eleve[$i]' id='login_eleve_$i' value='$e_login' />\n";
+		//=========================
+		$login_eleve[$i]=$e_login;
+		//=========================
+		//================================
+		$e_nom = mysql_result($calldata, $i, "nom");
+		$e_prenom = mysql_result($calldata, $i, "prenom");
+		$e_id_classe = mysql_result($calldata, $i, "id_classe");
+		$classe = mysql_result($calldata, $i, "classe");
+		$eleves_list["list"][] = $e_login;
+		$eleves_list["users"][$e_login] = array("login" => $e_login, "nom" => $e_nom, "prenom" => $e_prenom, "classe" => $classe, "id_classe" => $e_id_classe);
+	}
+	//echo "count(\$eleves_list)=".count($eleves_list)."<br />";
+	$total_eleves = $eleves_list["list"];
+	//echo "count(\$total_eleves)=".count($total_eleves)."<br />";
+	
+	foreach ($current_group["periodes"] as $period) {
+		if($period["num_periode"]!=""){
+			//$total_eleves = array_merge($total_eleves, (array)$reg_eleves[$period["num_periode"]]);
+			if(count($reg_eleves[$period["num_periode"]])>0) {$total_eleves = array_merge($total_eleves, (array)$reg_eleves[$period["num_periode"]]);}
+			//echo "count(\$reg_eleves[".$period["num_periode"]."])=".count($reg_eleves[$period["num_periode"]])."<br />";
+		}
+	}
+	//echo "count(\$total_eleves)=".count($total_eleves)."<br />";
+	$total_eleves = array_unique($total_eleves);
+	//echo "count(\$total_eleves)=".count($total_eleves)."<br />";
+	
+	$elements = array();
+	foreach ($current_group["periodes"] as $period) {
+		$elements[$period["num_periode"]] = null;
+		foreach($total_eleves as $e_login) {
+			$elements[$period["num_periode"]] .= "'eleve_" . $period["num_periode"] . "_"  . $e_login  . "',";
+		}
+		$elements[$period["num_periode"]] = mb_substr($elements[$period["num_periode"]], 0, -1);
+	}
+	
+	//=============================
+	//echo "<tr><td>&nbsp;</td>";
+	echo "&nbsp;</td>\n";
+	//=============================
+	
+	if ($multiclasses) { echo "<td>&nbsp;</td>"; }
+	echo "\n";
+	foreach ($current_group["periodes"] as $period) {
+		if($period["num_periode"]!=""){
+			echo "<th>";
+	
+			if(count($total_eleves)>0) {
+				echo "<a href=\"javascript:CocheColonne(".$period["num_periode"].");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' title='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne(".$period["num_periode"].");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' title='Tout d√©cocher' /></a>";
+			}
+			//=========================
+			echo "<br/>Inscrits&nbsp;: " . count($current_group["eleves"][$period["num_periode"]]["list"]);
+			echo "</th>\n";
+		}
+	}
+	echo "<th>&nbsp;</th>\n";
+	echo "</tr>\n";
+	
+	// Marqueurs pour identifier quand on change de classe dans la liste
+	$prev_classe = 0;
+	$new_classe = 0;
+	$empty_td = false;
+	
+	//=====================================
+	$chaine_sql_classe="(";
+	for($i=0;$i<count($current_group["classes"]["list"]);$i++) {
+		if($i>0) {$chaine_sql_classe.=" OR ";}
+		$chaine_sql_classe.="id_classe='".$current_group["classes"]["list"][$i]."'";
+	}
+	$chaine_sql_classe.=")";
+	//=====================================
+	
+	if(count($total_eleves)>0) {
+		$alt=1;
+		foreach($total_eleves as $e_login) {
+	
+			//=========================
+			// R√©cup√©ration du num√©ro de l'√©l√®ve:
+			$num_eleve=-1;
+			for($i=0;$i<count($login_eleve);$i++){
+				if($e_login==$login_eleve[$i]){
+					$num_eleve=$i;
+					break;
+				}
+			}
+			if($num_eleve!=-1) {
+	
+				//=========================
+				// Test de l'appartenance √† plusieurs classes
+				$sql="SELECT DISTINCT id_classe FROM j_eleves_classes WHERE login='$e_login';";
+				$test_plusieurs_classes=mysql_query($sql);
+				if(mysql_num_rows($test_plusieurs_classes)==1) {
+					$temoin_eleve_changeant_de_classe="n";
+				}
+				else {
+					$temoin_eleve_changeant_de_classe="y";
+				}
+				//=========================
+	
+				//=========================
+				//$new_classe = $eleves_list["users"][$e_login]["id_classe"];
+				if(isset($eleves_list["users"][$e_login])) {
+					$new_classe = $eleves_list["users"][$e_login]["id_classe"];
+				}
+				else {
+					$new_classe="BIZARRE";
+				}
+
+				if ($new_classe != $prev_classe and $order_by == "classe" and $multiclasses) {
+					echo "<tr style='background-color: #CCCCCC;'>\n";
+					echo "<td colspan='3' style='padding: 5px; font-weight: bold;'>";
+					echo "Classe de&nbsp;: " . $eleves_list["users"][$e_login]["classe"];
+					echo "</td>\n";
+					foreach ($current_group["periodes"] as $period) {
+						echo "<td>&nbsp;</td>\n";
+					}
+					//echo "<td>&nbsp;</td>\n";
+					echo "</tr>\n";
+					$prev_classe = $new_classe;
+				}
+
+				$alt=$alt*(-1);
+				echo "<tr id='tr_".$num_eleve."' class='lig$alt white_hover'>\n";
+				if (array_key_exists($e_login, $eleves_list["users"])) {
+					echo "<td id='td_eleve_".$num_eleve."'>";
+					echo $eleves_list["users"][$e_login]["nom"];
+					echo " ";
+					echo $eleves_list["users"][$e_login]["prenom"];
+					echo "</td>";
+	
+					if ($multiclasses) {echo "<td id='td_classe_".$num_eleve."'>" . $eleves_list["users"][$e_login]["classe"] . "</td>";}
+					echo "\n";
+				}
+				else {
+					echo "<td id='td_eleve_".$num_eleve."' >";
+					if($new_classe=="BIZARRE"){
+						echo "<font color='red'>$e_login</font>";
+					}
+					else{
+						echo "$e_login";
+					}
+					echo "</td>\n";
+					if ($multiclasses) {echo "<td id='td_classe_".$num_eleve."'>" . $current_group["eleves"]["users"][$e_login]["classe"] . "</td>";}
+					echo "\n";
+				}
+		
+		
+				foreach ($current_group["periodes"] as $period) {
+					if($period["num_periode"]!="") {
+						if($period["num_periode"]>$maxper) {$maxper=$period["num_periode"];}
+						//echo "<td align='center'>";
+						//echo "<td id='td_".$e_login."_".$period["num_periode"]."'>";
+		
+						$sql="SELECT 1=1 FROM j_eleves_classes WHERE login='$e_login' AND $chaine_sql_classe AND periode='".$period["num_periode"]."'";
+						$res_test=mysql_query($sql);
+						if(mysql_num_rows($res_test)>0){
+	
+							/*
+							// Test sur la pr√©sence de notes dans cn ou de notes/app sur bulletin
+							if (!test_before_eleve_removal($e_login, $current_group['id'], $period["num_periode"])) {
+								echo "<img id='img_bull_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+							}
+
+							$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$e_login."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$current_group['id']."' AND ccn.periode = '".$period["num_periode"]."')";
+							$test_cn=mysql_query($sql);
+							$nb_notes_cn=mysql_num_rows($test_cn);
+							if($nb_notes_cn>0) {
+								echo "<img id='img_cn_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+								//echo "$sql<br />";
+							}
+							*/
+							if (in_array($e_login, (array)$current_group["eleves"][$period["num_periode"]]["list"])) {
+								//echo "<img src='../images/enabled.png' width='15' height='15' title='El√®ve affect√© dans cet enseignement' alt='El√®ve affect√© dans cet enseignement' />\n";
+
+								echo "<td id='td_".$period["num_periode"]."_".$num_eleve."'>";
+							}
+							else {
+								//echo "<img src='../images/disabled.png' width='15' height='15' title='El√®ve non affect√© dans cet enseignement' alt='El√®ve non affect√© dans cet enseignement' />\n";
+
+								echo "<td id='td_".$period["num_periode"]."_".$num_eleve."' style='background-color: grey;'>";
+							}
+							
+							// Test sur la pr√©sence de notes dans cn ou de notes/app sur bulletin
+							$bull_non_vide="n";
+							if (!test_before_eleve_removal($e_login, $current_group['id'], $period["num_periode"])) {
+								$bull_non_vide="y";
+								echo "<img id='img_bull_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
+							}
+
+							$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$e_login."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$current_group['id']."' AND ccn.periode = '".$period["num_periode"]."')";
+							$test_cn=mysql_query($sql);
+							$nb_notes_cn=mysql_num_rows($test_cn);
+							if($nb_notes_cn>0) {
+								echo "<img id='img_cn_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
+								//echo "$sql<br />";
+							}
+
+							//=====================
+							// Signaler une erreur:
+							echo "<input type='checkbox' name='eleve_".$period["num_periode"]."_".$num_eleve."' id='case_".$period["num_periode"]."_".$num_eleve."' ";
+							//=========================
+							echo " onchange=\"changement_couleur('".$period["num_periode"]."_".$num_eleve."');teste_changement_couleur_ligne($num_eleve);changement();\"";
+	
+							/*
+							if (in_array($e_login, (array)$current_group["eleves"][$period["num_periode"]]["list"])) {
+								echo " value='en_trop'";
+							} else {
+								echo " value='manquant'";
+							}
+							*/
+							echo " value='y'";
+
+							if (in_array($e_login, (array)$current_group["eleves"][$period["num_periode"]]["list"])) {
+								echo " checked";
+							}
+
+							if($bull_non_vide=="y") {
+								echo " style='display: none'";
+							}
+
+							echo " />";
+
+							if ((isset($tab_sig[$period["num_periode"]]))&&(in_array($e_login, (array)$tab_sig[$period["num_periode"]]))) {
+								echo " <img src='../images/icons/flag.png' width='17' height='18' alt='Erreur signal√©e' title='Erreur signal√©e' />";
+							}
+							//=====================
+	
+
+							if($temoin_eleve_changeant_de_classe=="y") {
+								$sql="SELECT c.classe FROM classes c, j_eleves_classes jec WHERE jec.login='$e_login' AND jec.id_classe=c.id AND jec.periode='".$period["num_periode"]."';";
+								$res_classe_ele=mysql_query($sql);
+								if(mysql_num_rows($res_classe_ele)>0){
+									$lig_tmp=mysql_fetch_object($res_classe_ele);
+									echo " $lig_tmp->classe";
+								}
+							}
+						}
+						else{
+							echo "<td>\n";
+							echo "&nbsp;\n";
+							//echo "<input type='hidden' name='eleve_".$period["num_periode"] . "_" . $e_login."' />\n";
+						}
+						echo "</td>\n";
+					}
+				}
+		
+				$elementlist = null;
+				foreach ($current_group["periodes"] as $period) {
+					if($period["num_periode"]!="") {
+						$elementlist .= "'eleve_" . $period["num_periode"] . "_" . $e_login . "',";
+					}
+				}
+				$elementlist = mb_substr($elementlist, 0, -1);
+		
+				echo "<td><a href=\"javascript:CocheLigne($num_eleve);changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne($num_eleve);changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' /></a></td>\n";
+	
+				/*
+				$setting = get_eleve_groupe_setting($e_login, $id_groupe, "coef");
+				if (!$setting) {$setting = array(null);}
+				//echo "<td><input type='text' size='3' name='setting_coef[".$num_eleve."]' value='".$setting[0]."' /></td>\n";
+				echo "<td><input type='text' size='3' name='setting_coef_".$num_eleve."' value='".$setting[0]."' onchange='changement();' /></td>\n";
+				*/
+	
+				//=========================
+		
+				echo "</tr>\n";
+			}
+		}
+
+	}
+	echo "</table>\n";
+	echo "<input type='hidden' name='is_posted' value='1' />\n";
+	//echo "<input type='hidden' name='mode' value='" . $mode . "' />\n";
+	echo "<input type='hidden' name='id_groupe' value='" . $id_groupe . "' />\n";
+	//echo "<input type='hidden' name='id_classe' value='" . $id_classe . "' />\n";
+	echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
+
+	echo "<input type='hidden' name='mode_signalement' value='".$mode_signalement."' />\n";
+	
+	
+	$nb_eleves=count($total_eleves);
+	
+	echo "<script type='text/javascript'>
+	function changement_couleur(suffixe_id) {
+		if((document.getElementById('td_'+suffixe_id))&&(document.getElementById('case_'+suffixe_id))) {
+			if(document.getElementById('case_'+suffixe_id).checked==true) {
+				document.getElementById('td_'+suffixe_id).style.backgroundColor='';
+			}
+			else {
+				document.getElementById('td_'+suffixe_id).style.backgroundColor='grey';
+			}
+		}
+	}
+
+	function teste_changement_couleur_ligne(num_ligne) {
+		temoin_coche=0;
+		for(i=0;i<=$maxper;i++) {
+			if(document.getElementById('case_'+i+'_'+num_ligne)) {
+				if(document.getElementById('case_'+i+'_'+num_ligne).checked==true) {
+					temoin_coche++;
+				}
+			}
+		}
+
+
+		if(document.getElementById('td_eleve_'+num_ligne)) {
+			if(temoin_coche==0) {
+				document.getElementById('td_eleve_'+num_ligne).style.backgroundColor='grey';
+			}
+			else {
+				document.getElementById('td_eleve_'+num_ligne).style.backgroundColor='';
+			}
+		}
+
+		if(document.getElementById('td_classe_'+num_ligne)) {
+			if(temoin_coche==0) {
+				document.getElementById('td_classe_'+num_ligne).style.backgroundColor='grey';
+			}
+			else {
+				document.getElementById('td_classe_'+num_ligne).style.backgroundColor='';
+			}
+		}
+	}
+
+	for(ki=0;ki<=$nb_eleves;ki++) {
+		teste_changement_couleur_ligne(ki);
+	}
+
+	function CocheColonne(i) {
+		for (var ki=0;ki<$nb_eleves;ki++) {
+			if(document.getElementById('case_'+i+'_'+ki)){
+				document.getElementById('case_'+i+'_'+ki).checked = true;
+			}
+		}
+	}
+
+	function DecocheColonne(i) {
+		for (var ki=0;ki<$nb_eleves;ki++) {
+			if(document.getElementById('case_'+i+'_'+ki)){
+				document.getElementById('case_'+i+'_'+ki).checked = false;
+			}
+		}
+	}
+	</script>
+	";
+
+	echo "<p><br /></p>\n";
+
+	//echo "<a href='javascript:DecocheColonne_si_bull_et_cn_vide(1)'>1</a>";
+
+	echo "<p><i>NOTE&nbsp;:</i></p>\n";
+
+	echo "<p style='margin-left:3em;'>On ne peut d√©sinscrire que des √©l√®ves qui n'ont pas de note ni d'appr√©ciation sur les bulletins<br />(<em>si vous aviez inscrit '√©l√®ve absent' ou '-', vous pouvez supprimer votre appr√©ciation ou note, puis signaler l'erreur d'affectation</em>).<br />En revanche, la pr√©sence de notes dans le carnet de notes n'emp√™che pas la d√©sinscription.</p>\n";
+
+	echo "</form>\n";
+	require("../lib/footer.inc.php");
+	die();
+}
+
 
 echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' name='formulaire' method='post'>\n";
 echo add_token_field();
 echo "<p><input type='submit' value='Enregistrer' /></p>\n";
 
-// Edition des ÈlËves
+// Edition des √©l√®ves
 
-echo "<p>Cochez les ÈlËves qui manquent ou sont en trop dans cet enseignement, pour chaque pÈriode&nbsp;: </p>\n";
+echo "<p>Cochez les √©l√®ves qui manquent ou sont en trop dans cet enseignement, pour chaque p√©riode&nbsp;: </p>\n";
 
-echo "<table border='1' class='boireaus' summary='Suivi de cet enseignement par les ÈlËves en fonction des pÈriodes'>\n";
+echo "<table border='1' class='boireaus' summary='Suivi de cet enseignement par les √©l√®ves en fonction des p√©riodes'>\n";
 echo "<tr>\n";
-echo "<th><a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;order_by=nom'>Nom/PrÈnom</a></th>\n";
+echo "<th><a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;order_by=nom'>Nom/Pr√©nom</a></th>\n";
 if ($multiclasses) {
 	echo "<th><a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;order_by=classe'>Classe</a></th>\n";
 }
@@ -383,26 +883,22 @@ $conditions = "e.login = j.login and (";
 foreach ($current_group["classes"]["list"] as $query_id_classe) {
 	$conditions .= "j.id_classe = '" . $query_id_classe . "' or ";
 }
-$conditions = substr($conditions, 0, -4);
+$conditions = mb_substr($conditions, 0, -4);
 $conditions .= ") and c.id = j.id_classe";
 
-// DÈfinition de l'ordre de la liste
+// D√©finition de l'ordre de la liste
 if ($order_by == "classe") {
-	// Classement par classe puis nom puis prÈnom
+	// Classement par classe puis nom puis pr√©nom
 	$order_conditions = "j.id_classe, e.nom, e.prenom";
 } elseif ($order_by == "nom") {
 	$order_conditions = "e.nom, e.prenom";
 }
 
 //=============================
-// AJOUT: boireaus
 echo "<tr>\n<th>\n";
 //=============================
 
-//=========================
-// AJOUT: boireaus 20071010
 unset($login_eleve);
-//=========================
 
 $sql="SELECT distinct(j.login), j.id_classe, c.classe, e.nom, e.prenom FROM eleves e, j_eleves_classes j, classes c WHERE (" . $conditions . ") ORDER BY ".$order_conditions;
 $calldata = mysql_query($sql);
@@ -412,14 +908,11 @@ $eleves_list["list"]=array();
 for ($i=0;$i<$nb;$i++) {
 	$e_login = mysql_result($calldata, $i, "login");
 	//================================
-	// AJOUT: boireaus
 	//echo "<input type='hidden' name='login_eleve[$i]' value='$e_login' />\n";
 	echo "<input type='hidden' name='login_eleve[$i]' id='login_eleve_$i' value='$e_login' />\n";
 	//=========================
-	// AJOUT: boireaus 20071010
 	$login_eleve[$i]=$e_login;
 	//=========================
-	//================================
 	$e_nom = mysql_result($calldata, $i, "nom");
 	$e_prenom = mysql_result($calldata, $i, "prenom");
 	$e_id_classe = mysql_result($calldata, $i, "id_classe");
@@ -448,28 +941,20 @@ foreach ($current_group["periodes"] as $period) {
 	foreach($total_eleves as $e_login) {
 		$elements[$period["num_periode"]] .= "'eleve_" . $period["num_periode"] . "_"  . $e_login  . "',";
 	}
-    $elements[$period["num_periode"]] = substr($elements[$period["num_periode"]], 0, -1);
+    $elements[$period["num_periode"]] = mb_substr($elements[$period["num_periode"]], 0, -1);
 }
 
-//=============================
-// MODIF: boireaus
 //echo "<tr><td>&nbsp;</td>";
 echo "&nbsp;</td>\n";
-//=============================
 
 if ($multiclasses) { echo "<td>&nbsp;</td>"; }
 echo "\n";
 foreach ($current_group["periodes"] as $period) {
 	if($period["num_periode"]!=""){
-		//echo "<td>";
-		//echo "<a href=\"javascript:CochePeriode(" . $elements[$period["num_periode"]] . ")\">Tout</a> <br/> <a href=\"javascript:DecochePeriode(" . $elements[$period["num_periode"]] . ")\">Aucun</a>";
 		echo "<th>";
-		//=========================
-		// MODIF: boireaus 20071010
-		//echo "<a href=\"javascript:CochePeriode(" . $elements[$period["num_periode"]] . ")\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecochePeriode(" . $elements[$period["num_periode"]] . ")\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' /></a>";
 
 		if(count($total_eleves)>0) {
-			echo "<a href=\"javascript:CocheColonne(".$period["num_periode"].");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' title='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne(".$period["num_periode"].");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' title='Tout dÈcocher' /></a>";
+			echo "<a href=\"javascript:CocheColonne(".$period["num_periode"].");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' title='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne(".$period["num_periode"].");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' title='Tout d√©cocher' /></a>";
 		}
 		//=========================
 		echo "<br/>Inscrits&nbsp;: " . count($current_group["eleves"][$period["num_periode"]]["list"]);
@@ -486,7 +971,6 @@ $new_classe = 0;
 $empty_td = false;
 
 //=====================================
-// AJOUT: boireaus 20080229
 $chaine_sql_classe="(";
 for($i=0;$i<count($current_group["classes"]["list"]);$i++) {
 	if($i>0) {$chaine_sql_classe.=" OR ";}
@@ -500,8 +984,7 @@ if(count($total_eleves)>0) {
 	foreach($total_eleves as $e_login) {
 
 		//=========================
-		// AJOUT: boireaus 20071010
-		// RÈcupÈration du numÈro de l'ÈlËve:
+		// R√©cup√©ration du num√©ro de l'√©l√®ve:
 		$num_eleve=-1;
 		for($i=0;$i<count($login_eleve);$i++){
 			if($e_login==$login_eleve[$i]){
@@ -512,8 +995,7 @@ if(count($total_eleves)>0) {
 		if($num_eleve!=-1) {
 
 			//=========================
-			// AJOUT: boireaus 20080229
-			// Test de l'appartenance ‡ plusieurs classes
+			// Test de l'appartenance √† plusieurs classes
 			$sql="SELECT DISTINCT id_classe FROM j_eleves_classes WHERE login='$e_login';";
 			$test_plusieurs_classes=mysql_query($sql);
 			if(mysql_num_rows($test_plusieurs_classes)==1) {
@@ -549,11 +1031,6 @@ if(count($total_eleves)>0) {
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt white_hover'>\n";
 			if (array_key_exists($e_login, $eleves_list["users"])) {
-				/*
-				echo "<td>" . $eleves_list["users"][$e_login]["prenom"] . " " .
-					$eleves_list["users"][$e_login]["nom"] .
-					"</td>";
-				*/
 				echo "<td>";
 				echo $eleves_list["users"][$e_login]["nom"];
 				echo " ";
@@ -564,12 +1041,6 @@ if(count($total_eleves)>0) {
 				echo "\n";
 			}
 			else {
-				/*
-				echo "<td>" . $e_login . "</td>" .
-					"<td>" . $current_group["eleves"]["users"][$e_login]["prenom"] . " " .
-					$current_group["eleves"]["users"][$e_login]["nom"] .
-					"</td>";
-				*/
 				echo "<td>";
 				if($new_classe=="BIZARRE"){
 					echo "<font color='red'>$e_login</font>";
@@ -588,28 +1059,16 @@ if(count($total_eleves)>0) {
 					echo "<td align='center'>";
 	
 					//=========================
-					// MODIF: boireaus 20080229
 					//$sql="SELECT 1=1 FROM j_eleves_classes WHERE login='$e_login' AND id_classe='".$new_classe."' AND periode='".$period["num_periode"]."'";
 					$sql="SELECT 1=1 FROM j_eleves_classes WHERE login='$e_login' AND $chaine_sql_classe AND periode='".$period["num_periode"]."'";
 					//=========================
 					$res_test=mysql_query($sql);
 					if(mysql_num_rows($res_test)>0){
-						//=========================
-						// MODIF: boireaus 20071010
 
-						/*
-						echo "<input type='checkbox' name='eleve_".$period["num_periode"]."_".$num_eleve."' id='case_".$period["num_periode"]."_".$num_eleve."' ";
-						//=========================
-						echo " onchange='changement();'";
-						if (in_array($e_login, (array)$current_group["eleves"][$period["num_periode"]]["list"])) {
-							echo " checked />";
-						} else {
-							echo " />";
-						}
-						*/
-
-						// Test sur la prÈsence de notes dans cn ou de notes/app sur bulletin
+						// Test sur la pr√©sence de notes dans cn ou de notes/app sur bulletin
+						$bull_non_vide="n";
 						if (!test_before_eleve_removal($e_login, $current_group['id'], $period["num_periode"])) {
+							$bull_non_vide="y";
 							echo "<img id='img_bull_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
 						}
 
@@ -622,26 +1081,11 @@ if(count($total_eleves)>0) {
 						}
 
 						if (in_array($e_login, (array)$current_group["eleves"][$period["num_periode"]]["list"])) {
-							echo "<img src='../images/enabled.png' width='15' height='15' title='ElËve affectÈ dans cet enseignement' alt='ElËve affectÈ dans cet enseignement' />\n";
+							echo "<img src='../images/enabled.png' width='15' height='15' title='El√®ve affect√© dans cet enseignement' alt='El√®ve affect√© dans cet enseignement' />\n";
 						}
 						else {
-							echo "<img src='../images/disabled.png' width='15' height='15' title='ElËve non affectÈ dans cet enseignement' alt='ElËve non affectÈ dans cet enseignement' />\n";
+							echo "<img src='../images/disabled.png' width='15' height='15' title='El√®ve non affect√© dans cet enseignement' alt='El√®ve non affect√© dans cet enseignement' />\n";
 						}
-
-						/*
-						// Test sur la prÈsence de notes dans cn ou de notes/app sur bulletin
-						if (!test_before_eleve_removal($e_login, $current_group['id'], $period["num_periode"])) {
-							echo "<img id='img_bull_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/bulletin_16.png' width='16' height='16' title='Bulletin non vide' alt='Bulletin non vide' />";
-						}
-
-						$sql="SELECT DISTINCT id_devoir FROM cn_notes_devoirs cnd, cn_devoirs cd, cn_cahier_notes ccn WHERE (cnd.login = '".$e_login."' AND cnd.statut='' AND cnd.id_devoir=cd.id AND cd.id_racine=ccn.id_cahier_notes AND ccn.id_groupe = '".$current_group['id']."' AND ccn.periode = '".$period["num_periode"]."')";
-						$test_cn=mysql_query($sql);
-						$nb_notes_cn=mysql_num_rows($test_cn);
-						if($nb_notes_cn>0) {
-							echo "<img id='img_cn_non_vide_".$period["num_periode"]."_".$num_eleve."' src='../images/icons/cn_16.png' width='16' height='16' title='Carnet de notes non vide: $nb_notes_cn notes' alt='Carnet de notes non vide: $nb_notes_cn notes' />";
-							//echo "$sql<br />";
-						}
-						*/
 
 						//=====================
 						// Signaler une erreur:
@@ -655,6 +1099,10 @@ if(count($total_eleves)>0) {
 							echo " value='manquant'";
 						}
 
+						if($bull_non_vide=="y") {
+							echo " style='display: none'";
+						}
+
 						if ((isset($tab_sig[$period["num_periode"]]))&&(in_array($e_login, (array)$tab_sig[$period["num_periode"]]))) {
 							echo " checked />";
 						} else {
@@ -664,7 +1112,6 @@ if(count($total_eleves)>0) {
 
 
 						//=========================
-						// AJOUT: boireaus 20080229
 						if($temoin_eleve_changeant_de_classe=="y") {
 							$sql="SELECT c.classe FROM classes c, j_eleves_classes jec WHERE jec.login='$e_login' AND jec.id_classe=c.id AND jec.periode='".$period["num_periode"]."';";
 							$res_classe_ele=mysql_query($sql);
@@ -689,9 +1136,9 @@ if(count($total_eleves)>0) {
 					$elementlist .= "'eleve_" . $period["num_periode"] . "_" . $e_login . "',";
 				}
 			}
-			$elementlist = substr($elementlist, 0, -1);
+			$elementlist = mb_substr($elementlist, 0, -1);
 	
-			echo "<td><a href=\"javascript:CocheLigne($num_eleve);changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne($num_eleve);changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' /></a></td>\n";
+			echo "<td><a href=\"javascript:CocheLigne($num_eleve);changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne($num_eleve);changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' /></a></td>\n";
 
 			/*
 			$setting = get_eleve_groupe_setting($e_login, $id_groupe, "coef");
@@ -706,28 +1153,6 @@ if(count($total_eleves)>0) {
 		}
 	}
 
-/*
-	echo "<tr>\n";
-	echo "<th>\n";
-	echo "&nbsp;\n";
-	echo "</th>\n";
-	if ($multiclasses) {
-		echo "<th>&nbsp;</th>\n";
-	}
-	echo "\n";
-	foreach ($current_group["periodes"] as $period) {
-		if($period["num_periode"]!="") {
-			echo "<th>";
-			if(count($total_eleves)>0) {
-				echo "<a href=\"javascript:DecocheColonne_si_bull_et_cn_vide(".$period["num_periode"].");changement();\"><img src='../images/icons/wizard.png' width='16' height='16' alt='DÈcocher les ÈlËves sans note/app sur les bulletin et carnet de notes' title='DÈcocher les ÈlËves sans note/app sur les bulletin et carnet de notes' /></a>";
-			}
-			echo "</th>\n";
-		}
-	}
-	echo "<th>&nbsp;</th>\n";
-	//echo "<th>&nbsp;</th>\n";
-	echo "</tr>\n";
-*/
 
 	echo "</table>\n";
 	echo "<input type='hidden' name='is_posted' value='1' />\n";
@@ -735,7 +1160,9 @@ if(count($total_eleves)>0) {
 	echo "<input type='hidden' name='id_groupe' value='" . $id_groupe . "' />\n";
 	//echo "<input type='hidden' name='id_classe' value='" . $id_classe . "' />\n";
 	echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
-	
+
+	echo "<input type='hidden' name='mode_signalement' value='1' />\n";
+
 	
 	$nb_eleves=count($total_eleves);
 	
@@ -809,12 +1236,12 @@ if(count($total_eleves)>0) {
 
 	echo "<p><i>NOTE&nbsp;:</i></p>\n";
 
-	echo "<p style='margin-left:3em;'>On ne peut dÈsinscrire que des ÈlËves qui n'ont pas de note ni d'apprÈciation sur les bulletins.<br />En revanche, la prÈsence de notes dans le carnet de notes n'empÍche pas la dÈsinscription.</p>\n";
+	echo "<p style='margin-left:3em;'>On ne peut d√©sinscrire que des √©l√®ves qui n'ont pas de note ni d'appr√©ciation sur les bulletins<br />(<em>si vous aviez inscrit '√©l√®ve absent' ou '-', vous pouvez supprimer votre appr√©ciation ou note, puis signaler l'erreur d'affectation</em>).<br />En revanche, la pr√©sence de notes dans le carnet de notes n'emp√™che pas la d√©sinscription.</p>\n";
 }
 else {
 	echo "</table>\n";
 
-	echo "<p style='color:red;'>La ou les classes associÈes ‡ l'enseignement ne comportent encore aucun ÈlËve.</p>\n";
+	echo "<p style='color:red;'>La ou les classes associ√©es √† l'enseignement ne comportent encore aucun √©l√®ve.</p>\n";
 }
 ?>
 </form>

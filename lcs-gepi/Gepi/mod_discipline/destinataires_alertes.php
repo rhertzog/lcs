@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: destinataires_alertes.php 5989 2010-11-25 11:51:39Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
@@ -33,7 +32,7 @@ if ($resultat_session == 'c') {
     header("Location: ../logout.php?auto=1");
     die();
 }
-// Modif Eric : Table s_alerte_mail à modifier : ajout champs
+// Modif Eric : Table s_alerte_mail Ã  modifier : ajout champs
 // ALTER TABLE `s_alerte_mail` ADD `adresse` VARCHAR( 250 ) NULL 
 //INSERT INTO droits VALUES ('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', '');
 if (!checkAccess()) {
@@ -41,9 +40,9 @@ if (!checkAccess()) {
     die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
@@ -80,7 +79,7 @@ if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 						$notok = true;
 					}
 				}
-				// Sinon: l'enregistrement est déjà présent.
+				// Sinon: l'enregistrement est dÃ©jÃ  prÃ©sent.
 			}
 			else{
 				$test=mysql_query("SELECT 1=1 FROM s_alerte_mail WHERE id_classe='".$tab_id_clas[$j]."' AND destinataire='".$tab_statut[$i]."'");
@@ -98,27 +97,27 @@ if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 
 
 	if ($notok == true) {
-		$msg .= "Il y a eu des erreurs lors de l'enregistrement des données";
+		$msg .= "Il y a eu des erreurs lors de l'enregistrement des donnÃ©es";
 	} else {
-		$msg .= "L'enregistrement des données s'est bien passé.";
+		$msg .= "L'enregistrement des donnÃ©es s'est bien passÃ©.";
 	}
 }
 
 
-$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************
 $titre_page = "Destinataires des alertes";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 //debug_var();
-// Cette page a été ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
-// Après modification éventuelle, il faut quitter cette page.
+// Cette page a Ã©tÃ© ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
+// AprÃ¨s modification Ã©ventuelle, il faut quitter cette page.
 echo "<p class='bold'>";
 echo "<a href='index.php' onClick=\"if(confirm_abandon (this, change, '$themessage')){self.close()};return false;\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 echo "</p>\n";
 ?>
 
-<p>Choisissez les destinataires des mails d'alerte pour des incidents dont des élèves sont protagonistes.</p>
+<p>Choisissez les destinataires des mails d'alerte pour des incidents dont des Ã©lÃ¨ves sont protagonistes.</p>
 <?php
 
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
@@ -136,7 +135,7 @@ echo "</p>\n";
 	//$ligne_comptes_scol.="<td style='text-align:center; font-weight:bold;'>Comptes</td>\n";
 	$ligne_statuts.="<th style='text-align:center; font-weight:bold;'>Statuts</th>\n";
 	$ligne_statuts.="<th>CPE</th>\n";
-	$ligne_statuts.="<th>Scolarité<br />responsable<br />de la classe</th>\n";
+	$ligne_statuts.="<th>ScolaritÃ©<br />responsable<br />de la classe</th>\n";
 	$gepi_prof_suivi=ucfirst(getSettingValue("gepi_prof_suivi"));
 	$ligne_statuts.="<th>".$gepi_prof_suivi."</th>\n";
 	$ligne_statuts.="<th>Professeurs<br />de la classe</th>\n";
@@ -154,7 +153,7 @@ echo "</p>\n";
 		echo "<th style='text-align:center;'>\n";
 
 		echo "<a href=\"javascript:modif_case($i,true,'col');changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-		echo "<a href=\"javascript:modif_case($i,false,'col');changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+		echo "<a href=\"javascript:modif_case($i,false,'col');changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 
 		echo "<input type='hidden' name='tab_statut[$i]' value='$tab_statut[$i]' />";
 		//echo "</td>\n";
@@ -210,8 +209,8 @@ echo "</p>\n";
 			}
 			echo "<td>\n";
 			echo "<a href=\"javascript:modif_case($j,true,'lig');changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a>/\n";
-			//echo "<a href='javascript:modif_case($i,false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
-			echo "<a href=\"javascript:modif_case($j,false,'lig');changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+			//echo "<a href='javascript:modif_case($i,false)'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
+			echo "<a href=\"javascript:modif_case($j,false,'lig');changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 			echo "</td>\n";
 			echo "</tr>\n";
 			$j++;
@@ -222,7 +221,7 @@ echo "</p>\n";
 		echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
 	} else {
 		echo "</table>\n";
-		echo "<p class='grand'><b>Attention :</b> aucune classe n'a été définie dans la base GEPI !</p>\n";
+		echo "<p class='grand'><b>Attention :</b> aucune classe n'a Ã©tÃ© dÃ©finie dans la base GEPI !</p>\n";
 	}
 
 
@@ -234,7 +233,7 @@ echo "</p>\n";
 	// AJOUT: boireaus
 	echo "<script type='text/javascript' language='javascript'>
 		function modif_case(id,statut,mode){
-			// id: numéro de:
+			// id: numÃ©ro de:
 			//					. colonne correspondant au login
 			//					. ligne
 			// statut: true ou false

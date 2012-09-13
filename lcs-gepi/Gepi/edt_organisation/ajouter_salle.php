@@ -3,7 +3,6 @@
 /**
  * Fichier permettant d'ajouter des salles dans l'EdT de Gepi
  *
- * @version $Id: ajouter_salle.php 4053 2010-01-29 20:41:31Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -45,21 +44,21 @@ if ($resultat_session == 'c') {
     die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=2");
     die();
 }
-// Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
+// SÃ©curitÃ© supplÃ©mentaire par rapport aux paramÃ¨tres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
 	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
-// CSS et js particulier à l'EdT
+// CSS et js particulier Ã  l'EdT
 $javascript_specifique = "edt_organisation/script/fonctions_edt";
 $style_specifique = "templates/".NameTemplateEDT()."/css/style_edt";
 
-// On insère l'entête de Gepi
-require_once("../lib/header.inc");
+// On insÃ¨re l'entÃªte de Gepi
+require_once("../lib/header.inc.php");
 
 // On ajoute le menu EdT
 require_once("./menu.inc.php"); ?>
@@ -116,9 +115,9 @@ $new_name = isset($_POST["new_name"]) ? $_POST["new_name"] : NULL;
 
 <?php
 if (isset($nom_salle) AND isset($numero_salle)) {
-	// Si le nom de la salle n'est pas précisé
+	// Si le nom de la salle n'est pas prÃ©cisÃ©
 	if ($numero_salle == "") {
-		echo "<font color=\"red\">Vous devez précisez un numéro de salle !</font>\n<br />\n";
+		echo "<font color=\"red\">Vous devez prÃ©cisez un numÃ©ro de salle !</font>\n<br />\n";
 	}
 	if ($nom_salle == "") {
 		$nom_salle = "salle ".$numero_salle;
@@ -127,11 +126,11 @@ if (isset($nom_salle) AND isset($numero_salle)) {
 	}
 }
 
-// Quelques vérifications d'usage
+// Quelques vÃ©rifications d'usage
 
 $verif_champs = 0;
-	$verif_long_num = strlen($numero_salle);
-	$verif_long_nom = strlen($nom_salle);
+	$verif_long_num = mb_strlen($numero_salle);
+	$verif_long_nom = mb_strlen($nom_salle);
 
 	if ($verif_long_num > 0) {
 		if ($verif_long_num <= 5 OR $verif_long_nom <= 30) {
@@ -140,11 +139,11 @@ $verif_champs = 0;
 			$verif_champs = 1;
 
 		}else{
-			trigger_error('Une erreur de saisie a bloqué le système, veuillez recommencer. ', E_USER_ERROR);
+			trigger_error('Une erreur de saisie a bloquÃ© le systÃ¨me, veuillez recommencer. ', E_USER_ERROR);
 		}
 	}
 
-	// Ultime vérification avant de rentrer de nouvelles salles dans la base
+	// Ultime vÃ©rification avant de rentrer de nouvelles salles dans la base
 if (isset($add_new_numero) AND isset($add_new_salle)) {
 	if ($verif_champs = 1) {
 		$reche_salle = mysql_query("SELECT numero_salle FROM salle_cours WHERE numero_salle = '".$add_new_numero."'");
@@ -155,10 +154,10 @@ if (isset($add_new_numero) AND isset($add_new_salle)) {
 									('', '$add_new_numero', '$add_new_salle')")
 								OR trigger_error('Echec lors de l\'enregistrement : '.mysql_error(), E_USER_ERROR);
 
-			echo "<span class=\"accept\">La salle numéro ".unslashes($add_new_numero)." appelée \"".unslashes($add_new_salle)."\" a bien été enregistrée !</span>";
+			echo "<span class=\"accept\">La salle numÃ©ro ".unslashes($add_new_numero)." appelÃ©e \"".unslashes($add_new_salle)."\" a bien Ã©tÃ© enregistrÃ©e !</span>";
 		}
 		else{
-			echo "<span class=\"refus\">Cette salle existe déjà ! Veuillez changer son numéro</span>";
+			echo "<span class=\"refus\">Cette salle existe dÃ©jÃ  ! Veuillez changer son numÃ©ro</span>";
 		}
 	}else{
 		trigger_error('Impossible de rentrer de nouvelles salles. ', E_USER_WARNING);
@@ -241,7 +240,7 @@ if (isset($modif_salle)) {
 
 	// Traitement du nouveau nom de la salle
 if (isset($new_name) AND $new_name != "" ) {
-	$nettoyage1 = substr($new_name, 0, 30);
+	$nettoyage1 = mb_substr($new_name, 0, 30);
 	$new_name_propre = traitement_magic_quotes($nettoyage1); // cette fonction est dans le traitement_data.inc.php
 
 	$req_modif_nom = mysql_query("UPDATE salle_cours SET nom_salle = '$new_name_propre' WHERE id_salle = '$modif_salle'")
@@ -284,7 +283,7 @@ if ($_SESSION["statut"] == "administrateur" AND isset($del_salle) AND $del_salle
 			trigger_error("Vous essayez d'effacer une salle qui n'existe pas !", E_USER_ERROR);
 		}
 	$req_effacer = mysql_query("DELETE FROM salle_cours WHERE id_salle = '".$del_salle."'")
-						OR trigger_error('Cette salle n\'a pas pu être effacée', E_USER_WARNING);
+						OR trigger_error('Cette salle n\'a pas pu Ãªtre effacÃ©e', E_USER_WARNING);
 
 	if ($rep_nom["nom_salle"] != '') {
 		$aff_nom_salle = ' ('.$rep_nom["nom_salle"].')';
@@ -293,7 +292,7 @@ if ($_SESSION["statut"] == "administrateur" AND isset($del_salle) AND $del_salle
 	}
 
 	echo '
-	<font color="green">La salle '.$rep_nom["numero_salle"].$aff_nom_salle.' a été effacée de la base de Gepi.</font>';
+	<font color="green">La salle '.$rep_nom["numero_salle"].$aff_nom_salle.' a Ã©tÃ© effacÃ©e de la base de Gepi.</font>';
 }
 ?>
 			</td><td>

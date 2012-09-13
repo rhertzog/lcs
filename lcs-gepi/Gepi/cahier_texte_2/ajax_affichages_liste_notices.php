@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: ajax_affichages_liste_notices.php 7938 2011-08-24 07:57:41Z jjocal $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -20,8 +19,10 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-header('Content-Type: text/html; charset=ISO-8859-1');
-// On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
+ 
+header('Content-Type: text/html; charset=utf-8');
+
+// On dÃ©samorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
 
 // Initialisations files
@@ -45,16 +46,23 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_cahiers_texte")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
 
-//récupération des paramètres
+//rÃ©cupÃ©ration des paramÃ¨tres
 $id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 $affiche_tout = isset($_POST["affiche_tout"]) ? $_POST["affiche_tout"] :(isset($_GET["affiche_tout"]) ? $_GET["affiche_tout"] :NULL);
-//date présente
+//date prÃ©sente
 $aujourdhui = mktime(0,0,0,date("m"),date("d"),date("Y"));
+
+if (isset($_REQUEST["id_ct_a_importer"])) {
+    $classname = $_REQUEST["ct_a_importer_class"].'Query';
+    if (class_exists($classname)) {
+        $_SESSION['ct_a_importer'] = call_user_func($classname .'::create')->findOneByPrimaryKey($_REQUEST["id_ct_a_importer"]);
+    }
+}
 
 //utile uniquement pour la completion
 //$devoir = new CahierTexteTravailAFaire();
@@ -62,7 +70,7 @@ $aujourdhui = mktime(0,0,0,date("m"),date("d"),date("Y"));
 //$notice_privee = new CahierTexteNoticePrivee();
 //$liste_comptes_rendus = new PropelObjectCollection();
 
-//récupération du groupe courant
+//rÃ©cupÃ©ration du groupe courant
 $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
 if ($utilisateur == null) {
 	header("Location: ../logout.php?auto=1");
@@ -78,12 +86,12 @@ foreach ($groups as $group) {
 	}
 }
 if ($current_group == null) {
-	echo("groupe non spécifié ou non trouvé.");
+	echo("groupe non spÃ©cifiÃ© ou non trouvÃ©.");
 	die();
 }
 
 // **********************************************
-// Affichage des différents groupes du professeur
+// Affichage des diffÃ©rents groupes du professeur
 //\$A($('id_groupe_colonne_gauche').options).find(function(option) { return option.selected; }).value javascript trick to get selected value.
 echo ("<select id=\"id_groupe_colonne_gauche\" onChange=\"javascript:
 			updateEditionNoticeChaine();
@@ -104,7 +112,9 @@ echo "<div id=\"div_chaine_liste_notices\" style=\"display:inline;\"><img id=\"c
 
 echo "<p style='font-size:9pt'>";
 if(getSettingValue('cahier_texte_acces_public')!='no'){
-	echo "<a href='../public/see_all.php?id_groupe=" . $current_group->getId() ."' target='_blank'>Visualiser l'accès public</a>\n<br>";
+	echo "<a href='../public/see_all.php?id_groupe=" . $current_group->getId() ."' target='_blank'>Visualiser l'accÃ¨s public</a>\n";
+	echo " | <a href='consultation2.php?mode=professeur' target='_blank'>Aff.semaine</a>";
+	echo "<br>";
 } else {
 	//$classes_du_groupe = $current_group->getClasses();
 	//echo "<a href='./see_all.php?year=". date("Y") ."&month=". date("m") ."&day=". date("d") ."&id_classe=" . $classes_du_groupe[0]->getId() ."&id_groupe=" . $current_group->getId() ."'>Visualiser les cahiers de textes</a>\n<br>";
@@ -116,7 +126,7 @@ echo "Export au <a href='./exportcsv.php?id_groupe=".$current_group->getId()."'>
 if ((getSettingValue("cahiers_texte_login_pub") != '') and (getSettingValue("cahiers_texte_passwd_pub") != ''))
 echo "<br />(Identifiant : ".getSettingValue("cahiers_texte_login_pub")." - Mot de passe : ".getSettingValue("cahiers_texte_passwd_pub").")\n";
 
-// recherche des "travaux à faire" futurs, toute matieres confondues, pour afficher le nombre total de devoirs pour une classe
+// recherche des "travaux Ã  faire" futurs, toute matieres confondues, pour afficher le nombre total de devoirs pour une classe
 $debutCdt = getSettingValue("begin_bookings");
 foreach ($current_group->getClasses() as $classe) {
 	$total[$classe->getId()] = null;
@@ -135,11 +145,11 @@ foreach ($current_group->getClasses() as $classe) {
 	}
 }
 
-// Affichage des travaux à  faire futurs, toutes matières confondues
+// Affichage des travaux Ã Â  faire futurs, toutes matiÃ¨res confondues
 foreach ($current_group->getClasses() as $classe) {
 	if ($total[$classe->getId()] > 0) {
 		echo"La classe " . $classe->getNom() . " a  <a href=\"javascript:centrerpopup('liste_tous_devoirs.php?classe=". $classe->getId()."&amp;debut=$aujourdhui',260,320,'scrollbars=yes,statusbar=no,resizable=yes');\">" . $total[$classe->getId()];
-		echo (($total[$classe->getId()] == 1) ? " travail personnel" : "travaux personnels");
+		echo (($total[$classe->getId()] == 1) ? " travail personnel" : " travaux personnels");
 		echo "</a> jusqu'au " . strftime("%A %d %B %Y", $date[$classe->getId()]) . ".\n<br style='font-size:2px;'/>";
 	}
 }
@@ -147,7 +157,7 @@ foreach ($current_group->getClasses() as $classe) {
 echo "</p>";
 $compteur_nb_total_notices = 0;
 
-//récupération de $liste_comptes_rendus : comptes rendus pour la matière en cours
+//rÃ©cupÃ©ration de $liste_comptes_rendus : comptes rendus pour la matiÃ¨re en cours
 $criteria = new Criteria(CahierTexteCompteRenduPeer::DATABASE_NAME);
 $criteria->add(CahierTexteCompteRenduPeer::DATE_CT, "0", "!=");
 $criteria->add(CahierTexteCompteRenduPeer::DATE_CT, null, Criteria::ISNOTNULL);
@@ -157,14 +167,14 @@ $criteria->addAscendingOrderByColumn(CahierTexteCompteRenduPeer::HEURE_ENTRY);
 $liste_comptes_rendus = $current_group->getCahierTexteCompteRendus($criteria);
 $compteur_nb_total_notices = $compteur_nb_total_notices + $liste_comptes_rendus->count();
 
-//récupération de $liste_devoir : devoirs pour la matière en cours
+//rÃ©cupÃ©ration de $liste_devoir : devoirs pour la matiÃ¨re en cours
 $criteria = new Criteria(CahierTexteTravailAFairePeer::DATABASE_NAME);
 $criteria->add(CahierTexteTravailAFairePeer::DATE_CT, $debutCdt, ">=");
 $criteria->addDescendingOrderByColumn(CahierTexteTravailAFairePeer::DATE_CT);
 $liste_devoir = $current_group->getCahierTexteTravailAFaires($criteria);
 $compteur_nb_total_notices = $compteur_nb_total_notices + $liste_devoir->count();
 
-//récupération de $liste_notice_privee :
+//rÃ©cupÃ©ration de $liste_notice_privee :
 $criteria = new Criteria();
 $criteria->add(CahierTexteNoticePriveePeer::DATE_CT, $debutCdt, ">=");
 $criteria->addDescendingOrderByColumn(CahierTexteNoticePriveePeer::DATE_CT);
@@ -185,10 +195,10 @@ while (true) {
 	}
 
 	
-	//si $devoir n'est pas nul et que la date du devoir est posterieure à celle du compte rendu
+	//si $devoir n'est pas nul et que la date du devoir est posterieure Ã  celle du compte rendu
 	if ($compte_rendu != null && ($devoir == null || $compte_rendu->getDateCt() >= $devoir->getDateCt() ) && ($notice_privee == null || $compte_rendu->getDateCt() >= $notice_privee->getDateCt() )) {
 
-		//si $compte_rendu n'est pas nul et que la date du $compte_rendu est posterieure à celle du devoir
+		//si $compte_rendu n'est pas nul et que la date du $compte_rendu est posterieure Ã  celle du devoir
 		
 		$compteur_notices_affiches = $compteur_notices_affiches + 1;
 		affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_notice, $color_fond_notices);
@@ -208,14 +218,14 @@ while (true) {
 		$liste_devoir->getNext();
 
 	} else {
-		//on a tout affiché
+		//on a tout affichÃ©
 		break;
 	}
 }
 
 // Ajout d'un lien pour aficher plus de notices
 if ($compteur_nb_total_notices > 1)
-$legend = "Actuellement : ".$compteur_notices_affiches." notices affichées sur un total de ".$compteur_nb_total_notices."<br />";
+$legend = "Actuellement : ".$compteur_notices_affiches." notices affichÃ©es sur un total de ".$compteur_nb_total_notices."<br />";
 else if ($compteur_nb_total_notices == 1)
 $legend = "Actuellement : 1 notice.<br />";
 else
@@ -236,7 +246,7 @@ if ($compteur_nb_total_notices > $compteur_notices_affiches) {
 	echo "</fieldset>";
 }
 
-// Affichage des info générales
+// Affichage des info gÃ©nÃ©rales
 echo "<br>";
 $criteria = new Criteria(CahierTexteCompteRenduPeer::DATABASE_NAME);
 $criteria->add(CahierTexteCompteRenduPeer::DATE_CT, '0', '=');
@@ -244,11 +254,11 @@ $ctCompteRenduInfoGenerales = $current_group->getCahierTexteCompteRendus($criter
 if ($ctCompteRenduInfoGenerales->isEmpty()) {
 	$ctCompteRenduInfoGenerales->append(new CahierTexteCompteRendu());
 }
-echo "<b>Informations Générales</b><br>\n";
+echo "<b>Informations GÃ©nÃ©rales</b><br>\n";
 $i = 1;
 foreach ($ctCompteRenduInfoGenerales as $ctCompteRenduInfoGenerale) {
 	if (count($ctCompteRenduInfoGenerales) != 1) {
-		echo("Notice n° " . $i);
+		echo("Notice nÂ° " . $i);
 		$i = $i + 1;
 	}
 	echo "<table style=\"border-style:solid; border-width:0px; background-color: ".$color_fond_notices["i"] ."; padding: 2px; margin: 0px;\" width=\"100%\" cellpadding=\"2\" summary=\"Tableau d'information generale...\">";
@@ -268,7 +278,7 @@ foreach ($ctCompteRenduInfoGenerales as $ctCompteRenduInfoGenerale) {
 		  \">
 				<img style=\"border: 0px;\" src=\"../images/edit16.png\" alt=\"modifier\" title=\"modifier\" />
 		  </a>\n");
-	echo("<a href=\"#\" onclick=\"suppressionCompteRendu('Information générale',".$ctCompteRenduInfoGenerale->getIdCt().",'".add_token_in_js_func()."'); return false;\">
+	echo("<a href=\"#\" onclick=\"suppressionCompteRendu('Information gÃ©nÃ©rale',".$ctCompteRenduInfoGenerale->getIdCt().",'".add_token_in_js_func()."'); return false;\">
 			<img style=\"border: 0px;\" src=\"../images/delete16.png\" alt=\"supprimer\" title=\"supprimer\" />
 		</a>\n");
 	echo ("</div>\n");
@@ -292,7 +302,7 @@ echo "<p>\n";
 echo "<a href='./exportcsv.php?id_groupe=".$current_group->getId()."'>Export au format CSV</a>";
 echo "</p>\n";
 echo "<p style='margin-left:1em'>\n";
-echo "<em>Note&nbsp;:</em> pour ouvrir ce fichier CSV avec OpenOffice, garder les réglages par défaut lors de l'ouverture du fichier.";
+echo "<em>Note&nbsp;:</em> pour ouvrir ce fichier CSV avec OpenOffice, garder les rÃ©glages par dÃ©faut lors de l'ouverture du fichier.";
 echo "</p>\n";
 echo "<p>\n";
 echo "<a href='./export_cdt.php?id_groupe=".$current_group->getId()."' target=\"_blank\">Export au format HTML</a>.\n";

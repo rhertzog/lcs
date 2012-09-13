@@ -17,14 +17,14 @@
  */
 
 /*
- * Attention ce fichier contient des fonctions spécifiques au module d'import "annuaire federateur",
- * il ne doit être inclu que depuis le module init_annuaire de GEPI
+ * Attention ce fichier contient des fonctions spÃ©cifiques au module d'import "annuaire federateur",
+ * il ne doit Ãªtre inclu que depuis le module init_annuaire de GEPI
  * sinon des erreurs d'inclusion apparaitront
  */
 
 /*
  * Fonction permettant de vider les tables avant l'import depuis l'annuaire federateur
- * (paramétrables dans le fichier config_init_annuaire.inc.php)
+ * (paramÃ©trables dans le fichier config_init_annuaire.inc.php)
  */
 function vider_tables_avant_import() {
     include("config_init_annuaire.inc.php");
@@ -45,9 +45,9 @@ function vider_table_seule($table_name) {
 
 function formater_date_pour_mysql($date) {
     if ($date != '') {
-        $annee = substr($date, 0, 4);
-        $mois = substr($date, 4, 2);
-        $jour = substr($date, 6, 2);
+        $annee = mb_substr($date, 0, 4);
+        $mois = mb_substr($date, 4, 2);
+        $jour = mb_substr($date, 6, 2);
         return "$annee-$mois-$jour";
     }
     else return '';

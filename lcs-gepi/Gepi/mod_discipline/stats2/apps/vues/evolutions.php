@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: evolutions.php -1   $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,14 +19,14 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-// On empêche l'accès direct au fichier
+// On empÃªche l'accÃ¨s direct au fichier
 if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
     die();
 };
 ?>
 <div id="result">
   <div id="wrap">
-    <h3><font class="red">Evolutions des incidents sur l'année scolaire :</font> </h3>
+    <h3><font class="red">Evolutions des incidents sur l'annÃ©e scolaire :</font> </h3>
     <?php ClassVue::afficheVue('parametres.php',$vars) ;
     if (isset($incidents)) {
       ?>
@@ -39,16 +38,16 @@ if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
             foreach ($incidents as $titre=>$incidents_titre) :?>
               <?php if($titre=='L\'Etablissement') {
                 if($affichage_etab) : ?>
-          <li><a href="#tab<?php echo $i;?>" name="<?php echo $titre;?>-onglet-01" title="Evolution des incidents"><?php echo $titre;?></a></li>
+          <li><a href="#tab<?php echo $i;?>" name="Etablissement-onglet-01" title="Evolution des incidents"><?php echo $titre;?></a></li>
                   <?php $i=$i+1;
                 endif;
-              } else if ($titre=='Tous les élèves' ||$titre=='Tous les personnels' ) { ?>
+              } else if ($titre=='Tous les Ã©lÃ¨ves' ||$titre=='Tous les personnels' ) { ?>
           <li><a href="#tab<?php echo $i;?>" name="<?php echo $titre;?>-onglet-01" title="Evolution des incidents"><?php echo $titre;?> </a></li>
                 <?php  $i=$i+1;
               } else { ?>
           <li><a href="#tab<?php echo $i;?>" name="<?php echo $titre;?>-onglet-01" title="Evolution des incidents">
                     <?php if (isset($infos_individus[$titre])) {
-                      echo substr($infos_individus[$titre]['prenom'],0,1).'.'.$infos_individus[$titre]['nom'];
+                      echo mb_substr($infos_individus[$titre]['prenom'],0,1).'.'.$infos_individus[$titre]['nom'];
                       if (isset($infos_individus[$titre]['classe'])) echo'('.$infos_individus[$titre]['classe'].')';
                     }
                     else echo $titre;?></a>

@@ -1,7 +1,6 @@
 <?php
 @set_time_limit(0);
 /*
-* $Id: professeurs.php 8209 2011-09-13 16:40:20Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -46,114 +45,134 @@ include("../lib/initialisation_annee.inc.php");
 $liste_tables_del = $liste_tables_del_etape_professeurs;
 
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'année : Importation des professeurs";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'annÃ©e : Importation des professeurs";
+require_once("../lib/header.inc.php");
 //************** FIN EN-TETE ***************
 
 $en_tete=isset($_POST['en_tete']) ? $_POST['en_tete'] : "no";
 
 ?>
-<p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
+<p class="bold"><a href="index.php#professeurs"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 <?php
 
-echo "<center><h3 class='gepi'>Quatrième phase d'initialisation<br />Importation des professeurs</h3></center>\n";
+echo "<center><h3 class='gepi'>QuatriÃ¨me phase d'initialisation<br />Importation des professeurs</h3></center>\n";
 
 
 if (!isset($_POST["action"])) {
 	//
-	// On sélectionne le fichier à importer
+	// On sÃ©lectionne le fichier Ã  importer
 	//
 
-	echo "<p>Vous allez effectuer la quatrième étape : elle consiste à importer le fichier <b>g_professeurs.csv</b> contenant les données des professeurs.</p>\n";
-	echo "<p>Les champs suivants doivent être présents, dans l'ordre, et <b>séparés par un point-virgule</b> : </p>\n";
+	echo "<p>Vous allez effectuer la quatriÃ¨me Ã©tape : elle consiste Ã  importer le fichier <b>g_professeurs.csv</b> contenant les donnÃ©es des professeurs.</p>\n";
+	echo "<p>Les champs suivants doivent Ãªtre prÃ©sents, dans l'ordre, et <b>sÃ©parÃ©s par un point-virgule</b> : </p>\n";
 	echo "<ul><li>Nom</li>\n" .
-			"<li>Prénom</li>\n" .
-			"<li>Civilité</li>\n" .
+			"<li>PrÃ©nom</li>\n" .
+			"<li>CivilitÃ©</li>\n" .
 			"<li>Adresse e-mail</li>\n" .
 			"</ul>\n";
-	echo "<p>Veuillez préciser le nom complet du fichier <b>g_professeurs.csv</b>.</p>\n";
+	echo "<p>Veuillez prÃ©ciser le nom complet du fichier <b>g_professeurs.csv</b>.</p>\n";
 	echo "<form enctype='multipart/form-data' action='professeurs.php' method='post'>\n";
 	echo add_token_field();
 	echo "<input type='hidden' name='action' value='upload_file' />\n";
 	echo "<p><input type=\"file\" size=\"80\" name=\"csv_file\" />\n";
 
 	echo "<br />\n";
-	echo "<label for='en_tete' style='cursor:pointer;'>Si le fichier à importer comporte une première ligne d'en-tête (non vide) à ignorer, <br />cocher la case ci-contre</label>&nbsp;<input type='checkbox' name='en_tete' id='en_tete' value='yes' checked />\n";
+	echo "<label for='en_tete' style='cursor:pointer;'>Si le fichier Ã  importer comporte une premiÃ¨re ligne d'en-tÃªte (non vide) Ã  ignorer, <br />cocher la case ci-contre</label>&nbsp;<input type='checkbox' name='en_tete' id='en_tete' value='yes' checked />\n";
 
 
-	echo "<br /><br /><p>Quelle formule appliquer pour la génération du login ?<br />\n";
-	echo "<input type='radio' name='login_mode' value='name' checked /> nom";
-	echo "<br />\n<input type='radio' name='login_mode' value='name8' /> nom (tronqué à 8 caractères)";
-	echo "<br />\n<input type='radio' name='login_mode' value='fname8' /> pnom (tronqué à 8 caractères)";
-	echo "<br />\n<input type='radio' name='login_mode' value='fname19' /> pnom (tronqué à 19 caractères)";
-	echo "<br />\n<input type='radio' name='login_mode' value='firstdotname' /> prenom.nom";
-	echo "<br />\n<input type='radio' name='login_mode' value='firstdotname19' /> prenom.nom (tronqué à 19 caractères)";
-	echo "<br />\n<input type='radio' name='login_mode' value='namef8' /> nomp (tronqué à 8 caractères)";
-	echo "<br />\n<input type='radio' name='login_mode' value='lcs' /> pnom (façon LCS)";
-	echo "<br />\n</p>\n<p>Quel mode d'authentification est utilisé ?  (laissez 'Gepi' si vous ne savez pas de quoi il s'agit)</p>\n";
+	echo "<br /><br /><p>Quelle formule appliquer pour la gÃ©nÃ©ration du login ?<br />\n";
+
+	if(getSettingValue("use_ent")!='y') {
+		$default_login_gen_type=getSettingValue('mode_generation_login');
+		if(($default_login_gen_type=='')||(!check_format_login($default_login_gen_type))) {$default_login_gen_type='nnnnnnnnnnnnnnnnnnnn';}
+	}
+	else {
+		$default_login_gen_type="";
+	}
+
+	if(getSettingValue('auth_sso')=="lcs") {
+		echo "<span style='color:red'>Votre Gepi utilise une authentification LCS; Le format de login ci-dessous ne sera pas pris en compte. Les comptes doivent avoir Ã©tÃ© importÃ©s dans l'annuaire LDAP du LCS avant d'effectuer l'import dans GEPI.</span><br />\n";
+	}
+
+	echo champ_input_choix_format_login('login_gen_type', $default_login_gen_type);
+
+	if (getSettingValue("use_ent") == "y") {
+		echo "<input type='radio' name='login_gen_type' id='login_gen_type_ent' value='ent' checked=\"checked\" />\n";
+		echo "<label for='login_gen_type_ent'  style='cursor: pointer;'>Les logins sont produits par un ENT (<span title=\"cette case permet l'utilisation de la table 'ldap_bx', assurez vous qu'elle soit remplie avec les bonnes informations.\">Attention !</span>)</label>\n";
+		echo "<br />\n";
+	}
+	echo "<br />\n";
+
+	echo "<br />\n</p>\n<p>Quel mode d'authentification est utilisÃ© ?  (laissez 'Gepi' si vous ne savez pas de quoi il s'agit)</p>\n";
 	echo "<p>\n<input type='radio' name='sso' value='gepi' checked /> Gepi";
-	echo "<br />\n<input type='radio' name='sso' value='sso' /> SSO (aucun mot de passe ne sera généré)";
-	echo "<br />\n<input type='radio' name='sso' value='ldap' /> Ldap (aucun mot de passe ne sera généré)</p>\n";
+	echo "<br />\n<input type='radio' name='sso' value='sso' /> SSO (aucun mot de passe ne sera gÃ©nÃ©rÃ©)";
+	echo "<br />\n<input type='radio' name='sso' value='ldap' /> Ldap (aucun mot de passe ne sera gÃ©nÃ©rÃ©)</p>\n";
 	echo "<p><input type='submit' value='Valider' /></p>\n";
 	echo "</form>\n";
 
 } else {
 	//
-	// Quelque chose a été posté
+	// Quelque chose a Ã©tÃ© postÃ©
 	//
 	if ($_POST['action'] == "save_data") {
 		check_token(false);
 		//
-		// On enregistre les données dans la base.
-		// Le fichier a déjà été affiché, et l'utilisateur est sûr de vouloir enregistrer
+		// On enregistre les donnÃ©es dans la base.
+		// Le fichier a dÃ©jÃ  Ã©tÃ© affichÃ©, et l'utilisateur est sÃ»r de vouloir enregistrer
 		//
 
-		// Première étape : on vide les tables
+		// PremiÃ¨re Ã©tape : on vide les tables
 
+		echo "<p><em>On vide d'abord les tables suivantes&nbsp;:</em> ";
 		$j=0;
+		$k=0;
 		while ($j < count($liste_tables_del)) {
-			//if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
-			$sql="SELECT count(*) FROM $liste_tables_del[$j];";
-			$res_test_tab=mysql_query($sql);
-			if($res_test_tab) {
-				if (mysql_result($res_test_tab,0)!=0) {
+			$sql="SHOW TABLES LIKE '".$liste_tables_del[$j]."';";
+			//echo "$sql<br />";
+			$test = sql_query1($sql);
+			if ($test != -1) {
+				if($k>0) {echo ", ";}
+				$sql="SELECT 1=1 FROM $liste_tables_del[$j];";
+				$res_test_tab=mysql_query($sql);
+				if(mysql_num_rows($res_test_tab)>0) {
 					$sql="DELETE FROM $liste_tables_del[$j];";
 					$del = @mysql_query($sql);
+					echo "<b>".$liste_tables_del[$j]."</b>";
+					echo " (".mysql_num_rows($res_test_tab).")";
 				}
+				else {
+					echo $liste_tables_del[$j];
+				}
+				$k++;
 			}
 			$j++;
 		}
 
 		// On passe tous les utilisateurs en etat "inactif"
+		echo "<br />\n";
+		echo "<p><em>On passe tous les utilisateurs en etat 'inactif' pour ne rÃ©activer par la suite que les professeurs encore prÃ©sents.</em> ";
 
 		$res = mysql_query("UPDATE utilisateurs SET etat='inactif' WHERE statut = 'professeur'");
 
 		$sql="SELECT * FROM temp_profs;";
 		$res_temp=mysql_query($sql);
 		if(mysql_num_rows($res_temp)==0) {
-			echo "<p style='color:red'>ERREUR&nbsp;: Aucun professeur n'a été trouvé&nbsp;???</p>\n";
+			echo "<p style='color:red'>ERREUR&nbsp;: Aucun professeur n'a Ã©tÃ© trouvÃ©&nbsp;???</p>\n";
 			echo "<p><br /></p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 
-		//$go = true;
+		echo "<br />\n";
+		echo "<p><em>On remplit la table 'utilisateurs' pour crÃ©er les nouveaux comptes et on rÃ©-active d'anciens comptes&nbsp;:</em> ";
+
 		$i = 0;
 		// Compteur d'erreurs
 		$error = 0;
 		// Compteur d'enregistrement
 		$total = 0;
 		$total_deja_presents = 0;
-		//while ($go) {
 		while ($lig=mysql_fetch_object($res_temp)) {
-			/*
-			$reg_nom = $_POST["ligne".$i."_nom"];
-			$reg_prenom = $_POST["ligne".$i."_prenom"];
-			$reg_civilite = $_POST["ligne".$i."_civilite"];
-			$reg_email = $_POST["ligne".$i."_email"];
-			$reg_login = $_POST["ligne".$i."_login"];
-			$reg_sso = $_POST["ligne".$i."_sso"];
-			*/
 			$reg_nom = $lig->nom;
 			$reg_prenom = $lig->prenom;
 			$reg_civilite = $lig->civilite;
@@ -161,59 +180,58 @@ if (!isset($_POST["action"])) {
 			$reg_login = $lig->login;
 			$reg_sso = $lig->sso;
 
-			// On nettoie et on vérifie :
-			//$reg_nom = preg_replace("/[^A-Za-z .\-]/","",trim(strtoupper($reg_nom)));
-			$reg_nom = preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe",preg_replace("/[^A-Za-z .\-àâäéèêëîïôöùûüçÀÄÂÉÈÊËÎÏÔÖÙÛÜÇ]/","",trim(strtoupper($reg_nom)))))));
-			if (strlen($reg_nom) > 50) $reg_nom = substr($reg_nom, 0, 50);
-			//$reg_prenom = preg_replace("/[^A-Za-z .\-éèüëïäê]/","",trim($reg_prenom));
-			$reg_prenom = preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe",preg_replace("/[^A-Za-z .\-àâäéèêëîïôöùûüçÀÄÂÉÈÊËÎÏÔÖÙÛÜÇ]/","",trim($reg_prenom))))));
-			if (strlen($reg_prenom) > 50) $reg_prenom = substr($reg_prenom, 0, 50);
+			// On nettoie et on vÃ©rifie :
+			$reg_nom=my_strtoupper(nettoyer_caracteres_nom($reg_nom, "a", " '_-", ""));
+			if (mb_strlen($reg_nom) > 50) $reg_nom = mb_substr($reg_nom, 0, 50);
 
-			//if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") $reg_civilite = "M.";
+			$reg_prenom=nettoyer_caracteres_nom($reg_prenom, "a", " '_-", "");
+			if (mb_strlen($reg_prenom) > 50) $reg_prenom = mb_substr($reg_prenom, 0, 50);
+
 			if ($reg_civilite != "M." AND $reg_civilite != "MME" AND $reg_civilite != "MLLE") { $reg_civilite = "";}
 
 			if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i", $reg_email)) $reg_email = "-";
 
-			$reg_login = preg_replace("/[^A-Za-z0-9._]/","",trim(strtoupper($reg_login)));
-			if (strlen($reg_login) > 50) $reg_login = substr($reg_login, 0, 50);
+			// DÃ©jÃ  fait avant:
+			$reg_login = preg_replace("/[^A-Za-z0-9._]/","",trim(my_strtoupper($reg_login)));
+			if (mb_strlen($reg_login) > 50) $reg_login = mb_substr($reg_login, 0, 50);
 
-			// Maintenant que tout est propre, on fait un test pour voir si le compte n'existe pas déjà
+			// Maintenant que tout est propre, on fait un test pour voir si le compte n'existe pas dÃ©jÃ 
 
 			$test = mysql_result(mysql_query("SELECT count(login) FROM utilisateurs WHERE login = '" . $reg_login . "'"), 0);
 
 			if ($test == 0) {
-				// Test négatif : aucun professeur avec ce login. On enregistre.
+				// Test nÃ©gatif : aucun professeur avec ce login. On enregistre.
 
 				$reg_password = "";
 				switch($reg_sso){
 					case "ldap":
-					$auth_mode = "ldap";
-					$change_mdp = "n";
-					break;
+						$auth_mode = "ldap";
+						$change_mdp = "n";
+						break;
 					case "sso":
-					$auth_mode = "sso";
-					$change_mdp = "n";
-					break;
+						$auth_mode = "sso";
+						$change_mdp = "n";
+						break;
 					default:
-					$auth_mode = "gepi";
-					$change_mdp = "y";
-					// On génère un password :
-					$feed = "0123456789abcdefghijklmnopqrstuvwxyz";
+						$auth_mode = "gepi";
+						$change_mdp = "y";
+						// On gÃ©nÃ¨re un password :
+						$feed = "0123456789abcdefghijklmnopqrstuvwxyz";
 						for ($t=0; $t < 20; $t++){
-							$reg_password .= substr($feed, rand(0, strlen($feed)-1), 1);
+							$reg_password .= mb_substr($feed, rand(0, mb_strlen($feed)-1), 1);
 						}
 						$reg_password = md5($reg_password);
-					break;
+						break;
 				}
 
 
 				$insert = mysql_query("INSERT INTO utilisateurs SET " .
 						"login = '" . $reg_login . "', " .
-						"nom = '" . $reg_nom . "', " .
-						"prenom = '" . $reg_prenom . "', " .
+						"nom = '" . mysql_real_escape_string($reg_nom) . "', " .
+						"prenom = '" . mysql_real_escape_string($reg_prenom) . "', " .
 						"civilite = '" . $reg_civilite . "', " .
 						"password = '" . $reg_password . "', " .
-						"email = '" . $reg_email . "', " .
+						"email = '" . mysql_real_escape_string($reg_email) . "', " .
 						"statut = 'professeur', " .
 						"etat = 'actif', " .
 						"change_mdp = '" . $change_mdp . "', " .
@@ -221,47 +239,46 @@ if (!isset($_POST["action"])) {
 
 				if (!$insert) {
 					$error++;
-					echo mysql_error();
+					echo "<span style='color:red'>".mysql_error().'<span><br />';
 				} else {
 					$total++;
 				}
 			} else {
-				// Le login existe déjà. On passe l'utilisateur à nouveau en état 'actif'
+				// Le login existe dÃ©jÃ . On passe l'utilisateur Ã  nouveau en Ã©tat 'actif'
 				$res = mysql_query("UPDATE utilisateurs SET etat = 'actif' WHERE login = '" . $reg_login . "'");
 				$total_deja_presents++;
 			}
 
 
 			$i++;
-			//if (!isset($_POST['ligne'.$i.'_nom'])) {$go = false;}
 		}
 
-		if ($error > 0) {echo "<p><span style='color:red'>Il y a eu " . $error . " erreurs.</span></p>\n";}
-		if ($total > 0) {echo "<p>" . $total . " professeurs ont été enregistrés.</p>\n";}
-		if($total_deja_presents>0) {echo "<p>" . $total_deja_presents . " professeurs déjà présents.</p>\n";}
+		if ($error > 0) {echo "<p style='color:red'>Il y a eu " . $error . " erreurs.</p>\n";}
+		if ($total > 0) {echo "<p>" . $total . " professeurs ont Ã©tÃ© enregistrÃ©s.</p>\n";}
+		if($total_deja_presents>0) {echo "<p>" . $total_deja_presents . " professeurs dÃ©jÃ  prÃ©sents.</p>\n";}
 
-		echo "<p><a href='index.php'>Revenir à la page précédente</a></p>\n";
+		echo "<p><a href='index.php#professeurs'>Revenir Ã  la page prÃ©cÃ©dente</a></p>\n";
 
 
 	} else if ($_POST['action'] == "upload_file") {
 		check_token(false);
 		//
-		// Le fichier vient d'être envoyé et doit être traité
-		// On va donc afficher le contenu du fichier tel qu'il va être enregistré dans Gepi
-		// en proposant des champs de saisie pour modifier les données si on le souhaite
+		// Le fichier vient d'Ãªtre envoyÃ© et doit Ãªtre traitÃ©
+		// On va donc afficher le contenu du fichier tel qu'il va Ãªtre enregistrÃ© dans Gepi
+		// en proposant des champs de saisie pour modifier les donnÃ©es si on le souhaite
 		//
 
 		$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
 
-		// On vérifie le nom du fichier... Ce n'est pas fondamentalement indispensable, mais
-		// autant forcer l'utilisateur à être rigoureux
-		if(strtolower($csv_file['name']) == "g_professeurs.csv") {
+		// On vÃ©rifie le nom du fichier... Ce n'est pas fondamentalement indispensable, mais
+		// autant forcer l'utilisateur Ã  Ãªtre rigoureux
+		if(my_strtolower($csv_file['name']) == "g_professeurs.csv") {
 
 			// Le nom est ok. On ouvre le fichier
 			$fp=fopen($csv_file['tmp_name'],"r");
 
 			if(!$fp) {
-				// Aie : on n'arrive pas à ouvrir le fichier... Pas bon.
+				// Aie : on n'arrive pas Ã  ouvrir le fichier... Pas bon.
 				echo "<p>Impossible d'ouvrir le fichier CSV !</p>\n";
 				echo "<p><a href='professeurs.php'>Cliquer ici </a> pour recommencer !</p>\n";
 			} else {
@@ -269,11 +286,11 @@ if (!isset($_POST["action"])) {
 				// Fichier ouvert ! On attaque le traitement
 
 				// On va stocker toutes les infos dans un tableau
-				// Une ligne du CSV pour une entrée du tableau
+				// Une ligne du CSV pour une entrÃ©e du tableau
 				$data_tab = array();
 
 				//=========================
-				// On lit une ligne pour passer la ligne d'entête:
+				// On lit une ligne pour passer la ligne d'entÃªte:
 				if($en_tete=="yes") {
 					$ligne = fgets($fp, 4096);
 				}
@@ -287,129 +304,86 @@ if (!isset($_POST["action"])) {
 						$tabligne=explode(";",$ligne);
 
 						// 0 : Nom
-						// 1 : Prénom
-						// 2 : Civilité
+						// 1 : PrÃ©nom
+						// 2 : CivilitÃ©
 						// 3 : Adresse email
 
-						// On nettoie et on vérifie :
-						//$tabligne[0] = preg_replace("/[^A-Za-z .\-]/","",trim(strtoupper($tabligne[0])));
-						$tabligne[0] = preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe",preg_replace("/[^A-Za-z .\-àâäéèêëîïôöùûüçÀÄÂÉÈÊËÎÏÔÖÙÛÜÇ]/","",trim(strtoupper($tabligne[0])))))));
-						if (strlen($tabligne[0]) > 50) $tabligne[0] = substr($tabligne[0], 0, 50);
+						// On nettoie et on vÃ©rifie :
+						$tabligne[0]=my_strtoupper(nettoyer_caracteres_nom($tabligne[0], "a", " '_-", ""));
+						$tabligne[0]=preg_replace("/'/"," ",$tabligne[0]);
+						if (mb_strlen($tabligne[0]) > 50) $tabligne[0] = mb_substr($tabligne[0], 0, 50);
 
-						//$tabligne[1] = preg_replace("/[^A-Za-z .\-éèüëïäê]/","",trim($tabligne[1]));
-						$tabligne[1] = preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/¼/","OE",preg_replace("/½/","oe",preg_replace("/[^A-Za-z .\-àâäéèêëîïôöùûüçÀÄÂÉÈÊËÎÏÔÖÙÛÜÇ]/","",trim($tabligne[1]))))));
-						if (strlen($tabligne[1]) > 50) $tabligne[1] = substr($tabligne[1], 0, 50);
+						$tabligne[1]=nettoyer_caracteres_nom($tabligne[1], "a", " '_-", "");
+						$tabligne[1]=preg_replace("/'/"," ",$tabligne[1]);
+						if (mb_strlen($tabligne[1]) > 50) $tabligne[1] = mb_substr($tabligne[1], 0, 50);
 
-						//if ($tabligne[2] != "M." AND $tabligne[2] != "MME" AND $tabligne[2] != "MLLE") $tabligne[2] = "M.";
 						if ($tabligne[2] != "M." AND $tabligne[2] != "MME" AND $tabligne[2] != "MLLE") { $tabligne[2] = "";}
 
 						$tabligne[3] = preg_replace("/\"/", "", trim($tabligne[3]));
-						if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i", $tabligne[3])) $tabligne[3] = "-";
+						if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/i", $tabligne[3])) {$tabligne[3] = "-";}
 
 
-						// On regarde si le prof existe déjà dans la base
+						// On regarde si le prof existe dÃ©jÃ  dans la base
 						$test = mysql_query("SELECT login FROM utilisateurs WHERE (nom = '" . $tabligne[0] . "' AND prenom = '" . $tabligne[1] . "')");
 						$prof_exists = false;
 						if (mysql_num_rows($test) == 0) {
 
-							// On génère le login
+							// On gÃ©nÃ¨re le login
 
 							$reg_nom_login = preg_replace("/\040/","_", $tabligne[0]);
-							$reg_prenom_login = strtr($tabligne[1], "éèüëïäê", "eeueiae");
+							$reg_prenom_login = remplace_accents($tabligne[1]);
 							$reg_prenom_login = preg_replace("/[^a-zA-Z.\-]/", "", $reg_prenom_login);
-							if ($_POST['login_mode'] == "name") {
-									$temp1 = $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									//$temp1 = substr($temp1,0,8);
 
-								} elseif ($_POST['login_mode'] == "name8") {
-									$temp1 = $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									$temp1 = substr($temp1,0,8);
-								} elseif ($_POST['login_mode'] == "fname8") {
-									$temp1 = $reg_prenom_login{0} . $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									$temp1 = substr($temp1,0,8);
-								} elseif ($_POST['login_mode'] == "fname19") {
-									$temp1 = $reg_prenom_login{0} . $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									$temp1 = substr($temp1,0,19);
-								} elseif ($_POST['login_mode'] == "firstdotname") {
-
-									$temp1 = $reg_prenom_login . "." . $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-
-								$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									//$temp1 = substr($temp1,0,19);
-								} elseif ($_POST['login_mode'] == "firstdotname19") {
-									$temp1 = $reg_prenom_login . "." . $reg_nom_login;
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									$temp1 = substr($temp1,0,19);
-								} elseif ($_POST['login_mode'] == "namef8") {
-									$temp1 =  substr($reg_nom_login,0,7) . $reg_prenom_login{0};
-									$temp1 = strtoupper($temp1);
-									$temp1 = preg_replace("/ /","", $temp1);
-									$temp1 = preg_replace("/-/","_", $temp1);
-									$temp1 = preg_replace("/'/","", $temp1);
-									//$temp1 = substr($temp1,0,8);
-								} elseif ($_POST['login_mode'] == "lcs") {
-									$nom = $reg_nom_login;
-								$nom = strtolower($nom);
-								if (preg_match("/\s/",$nom)) {
-									$noms = preg_split("/\s/",$nom);
-									$nom1 = $noms[0];
-									if (strlen($noms[0]) < 4) {
-										$nom1 .= "_". $noms[1];
-										$separator = " ";
-										} else {
-										$separator = "-";
+							if($_POST['login_gen_type'] == 'ent'){
+		
+								if (getSettingValue("use_ent") == "y") {
+									// Charge Ã  l'organisme utilisateur de pourvoir Ã  cette fonctionnalitÃ©
+									// le code suivant n'est qu'une mÃ©thode proposÃ©e pour relier Gepi Ã  un ENT
+									$bx = 'oui';
+									if (isset($bx) AND $bx == 'oui') {
+										// On va chercher le login de l'utilisateur dans la table crÃ©Ã©e
+										$sql_p = "SELECT login_u FROM ldap_bx
+													WHERE nom_u = '".my_strtoupper($reg_nom_login)."'
+													AND prenom_u = '".my_strtoupper($reg_prenom_login)."'
+													AND statut_u = 'teacher'";
+										$query_p = mysql_query($sql_p);
+										$nbre = mysql_num_rows($query_p);
+										if ($nbre >= 1 AND $nbre < 2) {
+											$login_prof = mysql_result($query_p, 0,"login_u");
+										}else{
+											// Il faudrait alors proposer une alternative Ã  ce cas
+											$login_prof = "erreur_".$k;
 										}
-									} else {
-									$nom1 = $nom;
-										$sn = ucfirst($nom);
-									}
-									$firstletter_nom = $nom1{0};
-									$firstletter_nom = strtoupper($firstletter_nom);
-									$prenom = $reg_prenom_login;
-									$prenom1 = $affiche[1]{0};
-									$temp1 = $prenom1 . $nom1;
-								}
-
-								$login_prof = $temp1;
-								// On teste l'unicité du login que l'on vient de créer
-								$m = 2;
-								$test_unicite = 'no';
-								$temp = $login_prof;
-								while ($test_unicite != 'yes') {
-									$test_unicite = test_unique_login($login_prof);
-									if ($test_unicite != 'yes') {
-										$login_prof = $temp.$m;
-										$m++;
 									}
 								}
-								$login_prof = substr($login_prof, 0, 50);
-								$login_prof = preg_replace("/[^A-Za-z0-9._]/","",trim(strtoupper($login_prof)));
+								else{
+									die('Vous n\'avez pas autorisÃ© Gepi Ã  utiliser un ENT');
+								}
+							}
+							else {
+								$login_prof=generate_unique_login($reg_nom_login, $reg_prenom_login, $_POST['login_gen_type'], $_POST['login_gen_type_casse']);
+							}
 						} else {
-							// Le prof semble déjà exister. On récupère son login actuel
+							// Le prof semble dÃ©jÃ  exister. On rÃ©cupÃ¨re son login actuel
 							$login_prof = mysql_result($test, 0, "login");
 							$prof_exists = true;
+						}
+
+						if((!$login_prof)||($login_prof=="")) {
+
+							$login_prof = "erreur_";
+
+							// On teste l'unicitÃ© du login que l'on vient de crÃ©er
+							$m = 2;
+							$test_unicite = 'no';
+							$temp = $login_prof;
+							while ($test_unicite != 'yes') {
+								$test_unicite = test_unique_login($login_prof);
+								if ($test_unicite != 'yes') {
+									$login_prof = $temp.$m;
+									$m++;
+								}
+							}
 						}
 
 						$data_tab[$k] = array();
@@ -419,7 +393,7 @@ if (!isset($_POST["action"])) {
 						$data_tab[$k]["email"] = $tabligne[3];
 						$data_tab[$k]["reg_login"] = $login_prof;
 						$data_tab[$k]["prof_exists"] = $prof_exists;
-						//$data_tab[$k]["sso"] = $_POST['login_mode'];
+						//$data_tab[$k]["sso"] = $_POST['login_gen_type'];
 						$data_tab[$k]["sso"] = $_POST['sso'];
 
 					}
@@ -429,7 +403,7 @@ if (!isset($_POST["action"])) {
 				fclose($fp);
 
 				// Fin de l'analyse du fichier.
-				// Maintenant on va afficher tout ça.
+				// Maintenant on va afficher tout Ã§a.
 
 				$sql="CREATE TABLE IF NOT EXISTS temp_profs (
 				id int(11) NOT NULL auto_increment,
@@ -452,7 +426,7 @@ if (!isset($_POST["action"])) {
 				echo add_token_field();
 				echo "<input type='hidden' name='action' value='save_data' />\n";
 				echo "<table border='1' class='boireaus' summary='Tableau des professeurs'>\n";
-				echo "<tr><th>Login</th><th>Nom</th><th>Prénom</th><th>Civilité</th><th>Email</th><th>Authentification</th></tr>\n";
+				echo "<tr><th>Login</th><th>Nom</th><th>PrÃ©nom</th><th>CivilitÃ©</th><th>Email</th><th>Authentification</th></tr>\n";
 
 				$alt=1;
 				for ($i=0;$i<$k-1;$i++) {
@@ -464,12 +438,12 @@ if (!isset($_POST["action"])) {
 						echo "<td>\n";
 					}
 
-					$sql="INSERT INTO temp_profs SET login='".addslashes($data_tab[$i]["reg_login"])."',
-					nom='".addslashes($data_tab[$i]["nom"])."',
-					prenom='".addslashes($data_tab[$i]["prenom"])."',
-					civilite='".addslashes($data_tab[$i]["civilite"])."',
-					email='".addslashes($data_tab[$i]["email"])."',
-					sso='".addslashes($data_tab[$i]["sso"])."';";
+					$sql="INSERT INTO temp_profs SET login='".mysql_real_escape_string($data_tab[$i]["reg_login"])."',
+					nom='".mysql_real_escape_string($data_tab[$i]["nom"])."',
+					prenom='".mysql_real_escape_string($data_tab[$i]["prenom"])."',
+					civilite='".mysql_real_escape_string($data_tab[$i]["civilite"])."',
+					email='".mysql_real_escape_string($data_tab[$i]["email"])."',
+					sso='".mysql_real_escape_string($data_tab[$i]["sso"])."';";
 					$insert=mysql_query($sql);
 					if(!$insert) {
 						echo "<span style='color:red'>";
@@ -481,27 +455,21 @@ if (!isset($_POST["action"])) {
 						echo $data_tab[$i]["reg_login"];
 					}
 
-					//echo "<input type='hidden' name='ligne".$i."_login' value='" . $data_tab[$i]["reg_login"] . "' />\n";
 					echo "</td>\n";
 					echo "<td>\n";
 					echo $data_tab[$i]["nom"];
-					//echo "<input type='hidden' name='ligne".$i."_nom' value='" . $data_tab[$i]["nom"] . "' />\n";
 					echo "</td>\n";
 					echo "<td>\n";
 					echo $data_tab[$i]["prenom"];
-					//echo "<input type='hidden' name='ligne".$i."_prenom' value='" . $data_tab[$i]["prenom"] . "' />\n";
 					echo "</td>\n";
 					echo "<td>\n";
 					echo $data_tab[$i]["civilite"];
-					//echo "<input type='hidden' name='ligne".$i."_civilite' value='" . $data_tab[$i]["civilite"] . "' />\n";
 					echo "</td>\n";
 					echo "<td>\n";
 					echo $data_tab[$i]["email"];
-					//echo "<input type='hidden' name='ligne".$i."_email' value='" . $data_tab[$i]["email"] . "' />\n";
 					echo "</td>\n";
 					echo "<td>\n";
 					echo $data_tab[$i]["sso"];
-					//echo "<input type='hidden' name='ligne".$i."_sso' value='" . $data_tab[$i]["sso"] . "' />\n";
 					echo "</td>\n";
 					echo "</tr>\n";
 				}
@@ -509,21 +477,21 @@ if (!isset($_POST["action"])) {
 				echo "</table>\n";
 
 				if($nb_error>0) {
-					echo "<span style='color:red'>$nb_error erreur(s) détectée(s) lors de la préparation.</style><br />\n";
+					echo "<p><span style='color:red'>$nb_error erreur(s) dÃ©tectÃ©e(s) lors de la prÃ©paration.</span></p>\n";
 				}
 
-				echo "<input type='submit' value='Enregistrer' />\n";
+				echo "<p><input type='submit' value='Enregistrer' /></p>\n";
 
 				echo "</form>\n";
 			}
 
 		} else if (trim($csv_file['name'])=='') {
 
-			echo "<p>Aucun fichier n'a été sélectionné !<br />\n";
+			echo "<p>Aucun fichier n'a Ã©tÃ© sÃ©lectionnÃ© !<br />\n";
 			echo "<a href='professeurs.php'>Cliquer ici </a> pour recommencer !</p>\n";
 
 		} else {
-			echo "<p>Le fichier sélectionné n'est pas valide !<br />\n";
+			echo "<p>Le fichier sÃ©lectionnÃ© n'est pas valide !<br />\n";
 			echo "<a href='professeurs.php'>Cliquer ici </a> pour recommencer !</p>\n";
 		}
 	}

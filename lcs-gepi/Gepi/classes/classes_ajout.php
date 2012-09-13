@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: classes_ajout.php 8177 2011-09-10 09:00:42Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -53,7 +52,7 @@ else {
 	$classes_ajout_sans_regime="n";
 }
 
-// On ne propose pas de dÈfinir le rÈgime quand suhosin est actif... on a alors trop de variables postÈes s'il y a beaucoup d'ÈlËves
+// On ne propose pas de d√©finir le r√©gime quand suhosin est actif... on a alors trop de variables post√©es s'il y a beaucoup d'√©l√®ves
 $suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
 if($suhosin_post_max_totalname_length!='') {
 	$classes_ajout_sans_regime="y";
@@ -62,7 +61,7 @@ if($suhosin_post_max_totalname_length!='') {
 $sql="SELECT classe FROM classes WHERE id = '$id_classe';";
 $call_classe = mysql_query($sql);
 if(mysql_num_rows($call_classe)==0) {
-	echo "La classe n∞$id_classe (id_classe) n'existe pas.<br />\n";
+	echo "La classe n¬∞$id_classe (id_classe) n'existe pas.<br />\n";
 	die();
 }
 $classe = mysql_result($call_classe, "0", "classe");
@@ -87,18 +86,22 @@ if (isset($is_posted) and ($is_posted == 1)) {
 
 	$reg_data = 'yes';
 
+	$tab_ele_sans_cpe_defini=array();
+	$tab_ele_sans_pp_defini=array();
+
 	$k = '0';
 	while ($k < $nombreligne) {
 		$pb = 'no';
 		$login_eleve = mysql_result($call_eleves, $k, 'login');
 		$id_eleve = mysql_result($call_eleves, $k, 'id_eleve');
 
+
 		if(isset($_POST['ajout_eleve_'.$id_eleve])) {
 			$i=1;
 			while ($i < $nb_periode) {
 				$tab_per_ajout_eleve=$_POST['ajout_eleve_'.$id_eleve];
 				if(isset($tab_per_ajout_eleve[$i])) {
-					// ContrÙler que l'ÈlËve n'est pas dÈj‡ dans une autre classe
+					// Contr√¥ler que l'√©l√®ve n'est pas d√©j√† dans une autre classe
 					$sql="SELECT id_classe FROM j_eleves_classes WHERE
 					(login = '$login_eleve' and
 					id_classe!='$id_classe' and
@@ -106,7 +109,7 @@ if (isset($is_posted) and ($is_posted == 1)) {
 					$test_clas_per=mysql_query($sql);
 					if(mysql_num_rows($test_clas_per)>0) {
 						$lig_clas_per=mysql_fetch_object($test_clas_per);
-						$msg_complement.=get_nom_prenom_eleve($login_eleve)." est dÈj‡ dans une autre classe&nbsp;: ".get_class_from_id($lig_clas_per->id_classe)."<br />\n";
+						$msg_complement.=get_nom_prenom_eleve($login_eleve)." est d√©j√† dans une autre classe&nbsp;: ".get_class_from_id($lig_clas_per->id_classe)." en p√©riode $i<br />\n";
 						$reg_ok = 'no';
 					}
 					else {
@@ -120,8 +123,9 @@ if (isset($is_posted) and ($is_posted == 1)) {
 							$reg_data = mysql_query($sql);
 							if (!($reg_data))  {$reg_ok = 'no';}
 						}
+
 		
-						// UPDATE: Ajouter l'ÈlËve ‡ tous les groupes pour la pÈriode:
+						// UPDATE: Ajouter l'√©l√®ve √† tous les groupes pour la p√©riode:
 						$sql="SELECT id_groupe FROM j_groupes_classes WHERE id_classe='$id_classe'";
 						$res_liste_grp_classe=mysql_query($sql);
 						if(mysql_num_rows($res_liste_grp_classe)>0){
@@ -155,7 +159,12 @@ if (isset($is_posted) and ($is_posted == 1)) {
 							$insert_cpe=mysql_query($sql);
 						}
 						else {
-							$msg_complement.="<br />L'ÈlËve $login_eleve n'a pas ÈtÈ associÈ ‡ un CPE.";
+							if(!in_array($login_eleve, $tab_ele_sans_cpe_defini)) {
+								$msg_complement.="<br />L'√©l√®ve $login_eleve n'a pas √©t√© <a href='";
+								$msg_complement.="classes_const.php?id_classe=$id_classe&amp;quitter_la_page=y";
+								$msg_complement.="' target='_blank'>associ√©</a> √† un CPE.";
+								$tab_ele_sans_cpe_defini[]=$login_eleve;
+							}
 						}
 			
 						$sql="SELECT DISTINCT professeur FROM j_eleves_professeurs jep
@@ -175,7 +184,17 @@ if (isset($is_posted) and ($is_posted == 1)) {
 							$insert_pp=mysql_query($sql);
 						}
 						else {
-							$msg_complement.="<br />L'ÈlËve $login_eleve n'a pas ÈtÈ associÈ ‡ un ".$gepiProfSuivi.".";
+							if(!in_array($login_eleve, $tab_ele_sans_pp_defini)) {
+								$msg_complement.="<br />L'√©l√®ve $login_eleve n'a pas √©t√© <a href='";
+								if(mysql_num_rows($res_pp)==0) {
+									$msg_complement.="prof_suivi.php?id_classe=$id_classe";
+								}
+								else {
+									$msg_complement.="classes_const.php?id_classe=$id_classe&amp;quitter_la_page=y";
+								}
+								$msg_complement.="' target='_blank'>associ√©</a> √† un ".$gepiProfSuivi.".";
+								$tab_ele_sans_pp_defini[]=$login_eleve;
+							}
 						}
 					}
 				}
@@ -217,9 +236,9 @@ if (isset($is_posted) and ($is_posted == 1)) {
 	}
 
 	if (($reg_data) == 'yes') {
-	$msg = "L'enregistrement des donnÈes a ÈtÈ correctement effectuÈ !";
+		$msg = "L'enregistrement des donn√©es a √©t√© correctement effectu√© !";
 	} else {
-	$msg = "Il y a eu un problËme lors de l'enregistrement !";
+		$msg = "Il y a eu un probl√®me lors de l'enregistrement !";
 	}
 	$msg.=$msg_complement;
 }
@@ -265,10 +284,10 @@ if(mysql_num_rows($res_class_tmp)>0){
 // =================================
 
 
-$themessage  = 'Des informations ont ÈtÈ modifiÈes. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont √©t√© modifi√©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************
-$titre_page = "Gestion des classes | Ajout d'ÈlËves ‡ une classe";
-require_once("../lib/header.inc");
+$titre_page = "Gestion des classes | Ajout d'√©l√®ves √† une classe";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 
 //debug_var();
@@ -294,11 +313,12 @@ function DecocheLigne(ki) {
 
 <form enctype="multipart/form-data" action="classes_ajout.php" name="form1" method=post>
 
+
 <p class="bold">
-<a href="classes_const.php?id_classe=<?php echo $id_classe;?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour ‡ la page de gestion des ÈlËves</a>
+<a href="classes_const.php?id_classe=<?php echo $id_classe;?>"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour √† la page de gestion des √©l√®ves</a>
 
 <?php
-if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec'>Classe prÈcÈdente</a>";}
+if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec'>Classe pr√©c√©dente</a>";}
 if($chaine_options_classes!="") {
 
 	echo "<script type='text/javascript'>
@@ -334,7 +354,16 @@ if($id_class_suiv!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_c
 </form>
 
 <form enctype="multipart/form-data" action="classes_ajout.php" name="formulaire" method=post>
-<p><b>Ajout d'ÈlËves ‡ la classe de <?php echo $classe; ?></b><br />Liste des ÈlËves non affectÈs ‡ une classe :</p>
+<p><b>Ajout d'√©l√®ves √† la classe de <?php echo $classe; ?></b><br />
+<?php
+	if($nb_periode<=1) {
+		// On a $nb_periode = Nombre de p√©riodes + 1
+		echo "<p class='red'>Il n'est pas possible d'ajouter des √©l√®ves dans une classe virtuelle (<em>sans aucune p√©riode</em>).<br />Commencez par <a href='periodes.php?id_classe=$id_classe'>ajouter des p√©riodes</a> √† la classe.</p>\n";
+		require("../lib/footer.inc.php");
+		die();
+	}
+?>
+Liste des √©l√®ves non affect√©s √† une classe&nbsp;:</p>
 
 <?php
 
@@ -343,14 +372,15 @@ echo add_token_field();
 $call_eleves = mysql_query("SELECT * FROM eleves ORDER BY nom, prenom");
 $nombreligne = mysql_num_rows($call_eleves);
 if ($nombreligne == '0') {
-	echo "<p>Il n'y a pas d'ÈlËves actuellement dans la base.</p>\n";
+	echo "<p>Il n'y a pas d'√©l√®ves actuellement dans la base.</p>\n";
 } else {
 	$eleves_non_affectes = 'no';
 	echo "<table class='boireaus' cellpadding='5'>\n";
 	echo "<tr>\n";
-	echo "<th><p><b>Nom PrÈnom </b></p></th>\n";
+
+	echo "<th><p><b>Nom Pr√©nom </b></p></th>\n";
 	if($classes_ajout_sans_regime!="y") {
-		echo "<th><p><b>RÈgime</b></p></th>\n";
+		echo "<th><p><b>R√©gime</b></p></th>\n";
 	}
 	echo "<th><p><b>Redoublant</b></p></th>\n";
 	$i="1";
@@ -359,12 +389,14 @@ if ($nombreligne == '0') {
 		$i++;
 	}
 
-	echo "<th><p style='font-weight:bold; text-align:center;'>cocher / dÈcocher <br />toutes pÈriodes</p></th>\n";
+
+	echo "<th><p style='font-weight:bold; text-align:center;'>cocher / d√©cocher <br />toutes p√©riodes</p></th>\n";
 	echo "</tr>";
 	$k = '0';
 	//=========================
 	// AJOUT: boireaus 20071010
-	// Compteur des ÈlËves effectivement non affectÈs:
+	// Compteur des √©l√®ves effectivement non affect√©s:
+
 	//$ki=0;
 	//=========================
 	$alt=1;
@@ -399,14 +431,14 @@ if ($nombreligne == '0') {
 			$id_classe_eleve = mysql_result($call_data, 0, "id_classe");
 			$query_periode_max = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe_eleve'");
 			$periode_max = mysql_num_rows($query_periode_max) + 1 ;
-			// si l'ÈlËve est dÈj‡ dans une classe dont le nombre de pÈriodes est diffÈrent du nombre de pÈriodes de la classe selctionnÈe, on ne fait rien. Dans la cas contraire :
+			// si l'√©l√®ve est d√©j√† dans une classe dont le nombre de p√©riodes est diff√©rent du nombre de p√©riodes de la classe selctionn√©e, on ne fait rien. Dans la cas contraire :
 			if ($periode_max == $nb_periode) {
 				$i = '1';
 				while ($i < $nb_periode) {
 					$call_data2 = mysql_query("SELECT id_classe FROM j_eleves_classes WHERE (login = '$login_eleve' and periode = '$i')");
 					$test2 = mysql_num_rows($call_data2);
 					if ($test2 == 0) {
-						// l'ÈlËve n'est affectÈ ‡ aucune classe pour cette pÈriode
+						// l'√©l√®ve n'est affect√© √† aucune classe pour cette p√©riode
 						$inserer_ligne = 'yes';
 						$eleves_non_affectes = 'yes';
 						$nom_classe[$i] = 'vide';
@@ -424,7 +456,7 @@ if ($nombreligne == '0') {
 			echo "<tr class='lig$alt'><td>\n";
 
 			//echo "<input type='hidden' name='log_eleve[$ki]' value=\"$login_eleve\" />\n";
-			echo "<p>".strtoupper($nom_eleve)." $prenom_eleve</p></td>\n";
+			echo "<p>".my_strtoupper($nom_eleve)." ".casse_mot($prenom_eleve,'majf2')."</p></td>\n";
 
 			if($classes_ajout_sans_regime!="y") {
 				echo "<td><p>Ext.|Int.|D/P|I-ext.<br /><input type='radio' name='regime_$id_eleve' value='ext.'";
@@ -466,8 +498,9 @@ if ($nombreligne == '0') {
 				//echo $ajout_login[$i]."<br>";
 				$elementlist .= "'".$ajout_login[$i]."',";
 			}
-			$elementlist = substr($elementlist, 0, -1);
-			echo "<td><center><a href=\"javascript:CocheLigne($id_eleve);changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne($id_eleve);changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' /></a></center></td>\n";
+			$elementlist = mb_substr($elementlist, 0, -1);
+
+			echo "<td><center><a href=\"javascript:CocheLigne($id_eleve);changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheLigne($id_eleve);changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' /></a></center></td>\n";
 			echo "</tr>\n";
 
 			//$ki++;
@@ -477,7 +510,7 @@ if ($nombreligne == '0') {
 	echo "</table>\n";
 
 	if ($eleves_non_affectes == 'no') {
-		echo "<p>Il n'y a aucun ÈlËve de disponible ‡ ajouter !";
+		echo "<p>Il n'y a aucun √©l√®ve de disponible √† ajouter !";
 	} else {
 		echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
 	}

@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: TopCtrl.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,7 +19,7 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-// On empêche l'accès direct au fichier
+// On empÃªche l'accÃ¨s direct au fichier
 if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
     die();
 };
@@ -43,7 +42,7 @@ class TopCtrl extends Controleur {
       
     }
     catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
+      echo 'Exception reÃ§ue : ',  $e->getMessage(), "\n";
     }
   }
 }

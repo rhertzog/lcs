@@ -1,5 +1,4 @@
 <?php
-/* $Id: bilan.php 8061 2011-08-30 22:01:10Z jjacquard $ */
 /*
 * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -54,7 +53,7 @@ $insert=mysql_query($sql);
 }
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -78,7 +77,7 @@ if(isset($imprime)) {
 	//echo "$sql<br />";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		$msg="L'épreuve n°$id_epreuve n'existe pas.";
+		$msg="L'Ã©preuve nÂ°$id_epreuve n'existe pas.";
 	}
 	else {
 		$lig_ep=mysql_fetch_object($res);
@@ -100,7 +99,7 @@ if(isset($imprime)) {
 			$groupe_desc[]=$lig_groupe->description;
 			$id_groupe[]=$lig_groupe->id;
 
-			// Récupérer la liste des classes associées
+			// RÃ©cupÃ©rer la liste des classes associÃ©es
 			$sql="SELECT DISTINCT c.classe FROM classes c, j_groupes_classes jgc WHERE c.id=jgc.id_classe AND jgc.id_groupe='$lig_groupe->id' ORDER BY c.classe;";
 			//echo "$sql<br />";
 			$res_clas=mysql_query($sql);
@@ -117,12 +116,12 @@ if(isset($imprime)) {
 
 		if($mode=='pdf') {
 
-if (!defined('FPDF_VERSION')) {
-	require_once('../fpdf/fpdf.php');
-}
-			require('../fpdf/ex_fpdf.php');
+
+            if (!defined('FPDF_VERSION')) {
+            	require_once('../fpdf/fpdf.php');
+            }
 			
-			define('FPDF_FONTPATH','../fpdf/font/');
+			
 			define('LargeurPage','210');
 			define('HauteurPage','297');
 
@@ -147,7 +146,7 @@ if (!defined('FPDF_VERSION')) {
 					//global $decompte_page;
 
 					$this->SetXY(5,287);
-					$this->SetFont('arial','',7.5);
+					$this->SetFont('DejaVu','',7.5);
 
 					//$texte=getSettingValue("gepiSchoolName")."  ";
 					//$texte=$intitule_epreuve." ($date_epreuve) - ".$salle_courante;
@@ -162,11 +161,11 @@ if (!defined('FPDF_VERSION')) {
 					//$this->Cell(0,5,'Page '.$this->PageNo().'-'.$decompte_page.'='.($this->PageNo()-$decompte_page),"0",1,'C');
 					//$this->Cell(0,5,'Page '.$num_page,"0",1,'C');
 
-					// Je ne parviens pas à faire reprendre la numérotation à 1 lors d'un changement de salle
+					// Je ne parviens pas Ã  faire reprendre la numÃ©rotation Ã  1 lors d'un changement de salle
 				}
 			}
 
-			// Définition de la page
+			// DÃ©finition de la page
 			$pdf=new rel_PDF("P","mm","A4");
 			//$pdf=new FPDF("P","mm","A4");
 			$pdf->SetTopMargin($MargeHaut);
@@ -178,7 +177,6 @@ if (!defined('FPDF_VERSION')) {
 			$pdf->SetDrawColor(0,0,0);
 			$pdf->SetLineWidth(0.2);
 
-			$fonte='arial';
 			$sc_interligne=1.3;
 
 			$num_page=0;
@@ -202,34 +200,34 @@ if (!defined('FPDF_VERSION')) {
 					$pdf->AddPage("P");
 					//$salle_courante=$salle[$i];
 
-					//Entête du PDF
+					//EntÃªte du PDF
 					//$pdf->SetLineWidth(0.7);
-					$pdf->SetFont($fonte,'B',14);
+					$pdf->SetFont('DejaVu','B',14);
 					$pdf->Setxy(10,10);
-					$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - Année scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
+					$pdf->Cell($largeur_page-$MargeDroite-$MargeGauche,20,getSettingValue('gepiSchoolName').' - AnnÃ©e scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
 
 					$x1=$pdf->GetX();
 					$y1=$pdf->GetY();
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					$texte='Epreuve : ';
 					$largeur_tmp=$pdf->GetStringWidth($texte);
 					$pdf->Cell($largeur_tmp,$pdf->FontSize*$sc_interligne,$texte,'',0,'L');
-					$pdf->SetFont($fonte,'',12);
+					$pdf->SetFont('DejaVu','',12);
 					$texte=$intitule_epreuve;
 					$pdf->Cell($pdf->GetStringWidth($texte),$pdf->FontSize*$sc_interligne,$texte,'',1,'L');
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					$texte='Date : ';
 					$pdf->Cell($largeur_tmp,$pdf->FontSize*$sc_interligne,$texte,'',0,'L');
-					$pdf->SetFont($fonte,'',12);
+					$pdf->SetFont('DejaVu','',12);
 					$texte=$date_epreuve;
 					$pdf->Cell($pdf->GetStringWidth($texte),$pdf->FontSize*$sc_interligne,$texte,'',1,'L');
 
 					//$x2=$pdf->GetX();
 					$y2=$pdf->GetY();
 
-					$pdf->SetFont($fonte,'B',12);
+					$pdf->SetFont('DejaVu','B',12);
 					//$texte="Salle $salle[$i]";
 					$texte=$current_group;
 					$larg_tmp=$sc_interligne*($pdf->GetStringWidth($texte));
@@ -245,7 +243,7 @@ if (!defined('FPDF_VERSION')) {
 					$pdf->SetXY($x,$y);
 					*/
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$tab_nom=array();
 					$tab_n_anonymat=array();
 					$tab_note=array();
@@ -289,8 +287,7 @@ if (!defined('FPDF_VERSION')) {
 						$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'C');
 					}
 
-					//$pdf->SetFont($fonte,'B',10);
-					$texte='Nom prénom';
+					$texte='Nom prÃ©nom';
 					//$larg_col1=$pdf->GetStringWidth($texte);
 					$larg_col2=$larg_max+4;
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',0,'C');
@@ -341,8 +338,7 @@ if (!defined('FPDF_VERSION')) {
 					//$larg_col3=$largeur_page-$MargeDroite-$MargeGauche-$larg_col1-$larg_col2;
 					//$pdf->Cell($larg_col3,$h_cell,$texte,'LRBT',1,'C');
 
-					//$pdf->SetFont($fonte,'B',10);
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					/*
 					while($lig=mysql_fetch_object($res)) {
 						$texte=casse_mot($lig->nom)." ".casse_mot($lig->prenom,'majf2');
@@ -387,56 +383,56 @@ if (!defined('FPDF_VERSION')) {
 					//===========================================================
 
 					$pdf->SetY($pdf->GetY()+$h_cell);
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$pdf->Cell($largeur_page,$h_cell,"Statistiques :",'',1,'L');
 
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$tab_stat=calcul_moy_med($tab_note);
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$texte="1er quartile";
 					$larg_col1=$pdf->GetStringWidth($texte)+4;
 					$larg_col2=$pdf->GetStringWidth("20.0")+4;
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$texte="Moyenne";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['moyenne'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$texte="1er quartile";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['q1'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
-					$texte="Médiane";
+					$pdf->SetFont('DejaVu','B',10);
+					$texte="MÃ©diane";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['mediane'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
-					$texte="3è quartile";
+					$pdf->SetFont('DejaVu','B',10);
+					$texte="3Ã¨ quartile";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['q3'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$texte="Min";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['min'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
-					$pdf->SetFont($fonte,'B',10);
+					$pdf->SetFont('DejaVu','B',10);
 					$texte="Max";
 					$pdf->Cell($larg_col1,$h_cell,$texte,'LRBT',0,'L');
-					$pdf->SetFont($fonte,'',10);
+					$pdf->SetFont('DejaVu','',10);
 					$texte=$tab_stat['max'];
 					$pdf->Cell($larg_col2,$h_cell,$texte,'LRBT',1,'C');
 
@@ -461,8 +457,7 @@ if (!defined('FPDF_VERSION')) {
 				$csv.='Num.anonymat;';
 			}
 
-			//$pdf->SetFont($fonte,'B',10);
-			$csv.='Nom prénom;';
+			$csv.='Nom prÃ©nom;';
 			
 			if($avec_sexe=='y') {
 				$csv.='Sexe;';
@@ -502,7 +497,7 @@ if (!defined('FPDF_VERSION')) {
 				}
 				for($i=0;$i<$maxper;$i++) {
 					$j=$i+1;
-					$csv.="Période $j;";
+					$csv.="PÃ©riode $j;";
 				}
 			}
 			$csv.="\n";
@@ -621,7 +616,8 @@ if (!defined('FPDF_VERSION')) {
 	
 			$now = gmdate('D, d M Y H:i:s') . ' GMT';
 			send_file_download_headers('text/x-csv',$nom_fic);	
-			echo $csv;
+			//echo $csv;
+			echo echo_csv_encoded($csv);
 			die();
 
 		}
@@ -632,7 +628,7 @@ if (!defined('FPDF_VERSION')) {
 //**************** EN-TETE *****************
 $titre_page = "Epreuve blanche: Bilan";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
@@ -642,20 +638,20 @@ require_once("../lib/header.inc");
 //echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
 echo "<p class='bold'><a href='index.php?id_epreuve=$id_epreuve&amp;mode=modif_epreuve'>Retour</a>";
 echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=csv&amp;imprime=standard&amp;avec_n_anonymat=y&amp;avec_correcteur=y&amp;avec_salle=y'>Export CSV</a>";
-echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=csv&amp;imprime=etendu&amp;avec_n_anonymat=y&amp;avec_correcteur=y&amp;avec_salle=y&amp;avec_sexe=y''>Export CSV étendu</a>";
+echo " | <a href='".$_SERVER['PHP_SELF']."?id_epreuve=$id_epreuve&amp;mode=csv&amp;imprime=etendu&amp;avec_n_anonymat=y&amp;avec_correcteur=y&amp;avec_salle=y&amp;avec_sexe=y''>Export CSV Ã©tendu</a>";
 //echo "</p>\n";
 //echo "</div>\n";
 
 if(!isset($imprime)) {
 	echo "</p>\n";
 
-	// Générer des fiches par salles
+	// GÃ©nÃ©rer des fiches par salles
 
-	echo "<p class='bold'>Epreuve n°$id_epreuve</p>\n";
+	echo "<p class='bold'>Epreuve nÂ°$id_epreuve</p>\n";
 	$sql="SELECT * FROM eb_epreuves WHERE id='$id_epreuve';";
 	$res=mysql_query($sql);
 	if(mysql_num_rows($res)==0) {
-		echo "<p>L'épreuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
+		echo "<p>L'Ã©preuve choisie (<i>$id_epreuve</i>) n'existe pas.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -678,7 +674,7 @@ if(!isset($imprime)) {
 	$sql="SELECT DISTINCT n_anonymat FROM eb_copies WHERE id_epreuve='$id_epreuve';";
 	$test2=mysql_query($sql);
 	if(mysql_num_rows($test1)!=mysql_num_rows($test2)) {
-		echo "<p style='color:red;'>Les numéros anonymats ne sont pas uniques sur l'épreuve (<i>cela ne devrait pas arriver</i>).</p>\n";
+		echo "<p style='color:red;'>Les numÃ©ros anonymats ne sont pas uniques sur l'Ã©preuve (<i>cela ne devrait pas arriver</i>).</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -686,7 +682,7 @@ if(!isset($imprime)) {
 	$sql="SELECT login_ele FROM eb_copies WHERE n_anonymat='' AND id_epreuve='$id_epreuve';";
 	$test3=mysql_query($sql);
 	if(mysql_num_rows($test3)>0) {
-		echo "<p style='color:red;'>Un ou des numéros anonymats ne sont pas valides sur l'épreuve&nbsp;: ";
+		echo "<p style='color:red;'>Un ou des numÃ©ros anonymats ne sont pas valides sur l'Ã©preuve&nbsp;: ";
 		$cpt=0;
 		while($lig=mysql_fetch_object($test3)) {
 			if($cpt>0) {echo ", ";}
@@ -701,26 +697,26 @@ if(!isset($imprime)) {
 	//========================================================
 
 	//========================================================
-	//echo "<p style='color:red;'>A FAIRE&nbsp;: Contrôler si certains élèves n'ont pas été affectés dans des salles.</p>\n";
+	//echo "<p style='color:red;'>A FAIRE&nbsp;: ContrÃ´ler si certains Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	$sql="SELECT 1=1 FROM eb_copies WHERE id_epreuve='$id_epreuve' AND id_salle='-1';";
 	//echo "$sql<br />";
 	$test=mysql_query($sql);
 	$nb_tmp=mysql_num_rows($test);
 	if($nb_tmp==1) {
-		echo "<p style='color:red;'>$nb_tmp élève n'est pas affecté dans une salle.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ve n'est pas affectÃ© dans une salle.</p>\n";
 	}
 	elseif($nb_tmp>1) {
-		echo "<p style='color:red;'>$nb_tmp élèves n'ont pas été affectés dans des salles.</p>\n";
+		echo "<p style='color:red;'>$nb_tmp Ã©lÃ¨ves n'ont pas Ã©tÃ© affectÃ©s dans des salles.</p>\n";
 	}
 	//========================================================
 
 	echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\" name='form1'>\n";
 
-	echo "<p class='bold'>Bilan de l'épreuve&nbsp;:</p>\n";
+	echo "<p class='bold'>Bilan de l'Ã©preuve&nbsp;:</p>\n";
 
-	echo "<p>Choisissez les informations à faire apparaître en plus du nom/prénom de l'élève et de la note&nbsp;:</p>\n";
+	echo "<p>Choisissez les informations Ã  faire apparaÃ®tre en plus du nom/prÃ©nom de l'Ã©lÃ¨ve et de la note&nbsp;:</p>\n";
 	echo "<blockquote>\n";
-	echo "<input type='checkbox' name='avec_n_anonymat' id='avec_n_anonymat' value='y' /><label for='avec_n_anonymat'>Numéro anonymat</label><br />\n";
+	echo "<input type='checkbox' name='avec_n_anonymat' id='avec_n_anonymat' value='y' /><label for='avec_n_anonymat'>NumÃ©ro anonymat</label><br />\n";
 	echo "<input type='checkbox' name='avec_correcteur' id='avec_correcteur' value='y' /><label for='avec_correcteur'>Correcteur</label><br />\n";
 	echo "<input type='checkbox' name='avec_salle' id='avec_salle' value='y' /><label for='avec_salle'>Salle</label>\n";
 	//echo "<input type='checkbox' name='avec_sexe' id='avec_sexe' value='y' /><label for='avec_sexe'>Sexe</label>\n";
@@ -735,7 +731,7 @@ if(!isset($imprime)) {
 	echo "<p><br /></p>\n";
 	echo "<p><i>NOTES&nbsp;:</i></p>\n";
 	echo "<ul>\n";
-	echo "<li style='color:red;'>A FAIRE&nbsp;: Calculer les largeurs dans le PDF pour contrôler que cela tient.<br />Avec des noms longs, on pourrait dépasser.</li>\n";
+	echo "<li style='color:red;'>A FAIRE&nbsp;: Calculer les largeurs dans le PDF pour contrÃ´ler que cela tient.<br />Avec des noms longs, on pourrait dÃ©passer.</li>\n";
 	echo "</ul>\n";
 }
 

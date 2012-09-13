@@ -2,7 +2,7 @@
 /**
  * saisie des Notes
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
  * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -26,7 +26,6 @@
  * @see recherche_enfant()
  * @see Session::security_check()
  * @see sous_conteneurs()
- * @see traite_accents_utf8()
  * @see traitement_magic_quotes()
  * @see Verif_prof_cahier_notes()
  */
@@ -48,17 +47,6 @@
 * along with GEPI; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-//==============================
-// PREPARATIFS boireaus 20080422
-// Pour passer ‡ no_anti_inject comme pour les autres saisies d'apprÈciations
-// On indique qu'il faut creer des variables non protÈgÈes (voir fonction cree_variables_non_protegees())
-$mode_commentaire_20080422="";
-//$mode_commentaire_20080422="no_anti_inject";
-
-if($mode_commentaire_20080422=="no_anti_inject") {
-	$variables_non_protegees = 'yes';
-}
-//==============================
 
 /**
  * Fichiers d'initialisation
@@ -81,16 +69,24 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_carnets_notes")!='y') {
-	die("Le module n'est pas activÈ.");
+	die("Le module n'est pas activ√©.");
 }
+
+$msg="";
+
+// 20120509
+$delta_modif_note=0.5;
+
 unset($id_devoir);
 $id_devoir = isset($_POST["id_devoir"]) ? $_POST["id_devoir"] : (isset($_GET["id_devoir"]) ? $_GET["id_devoir"] : NULL);
+//if($id_devoir=='') {$id_devoir=NULL;}
+
 unset($affiche_message);
 $affiche_message = isset($_POST["affiche_message"]) ? $_POST["affiche_message"] : (isset($_GET["affiche_message"]) ? $_GET["affiche_message"] : NULL);
 
-$order_by = isset($_GET['order_by']) ? $_GET['order_by'] : (isset($_POST['order_by']) ? $_POST["order_by"] : "classe");
+$order_by = isset($_GET['order_by']) ? $_GET['order_by'] : (isset($_POST['order_by']) ? $_POST["order_by"] : getPref($_SESSION['login'], 'cn_order_by', 'classe'));
 
 if ($id_devoir)  {
 	$sql="SELECT * FROM cn_devoirs WHERE id ='$id_devoir';";
@@ -125,6 +121,16 @@ if ($id_devoir)  {
 		if (is_numeric($id_groupe) && $id_groupe > 0) {
 			$current_group = get_group($id_groupe);
 
+			// Avec des classes qui n'ont pas le m√™me nombre de p√©riode, on peut arriver avec un periode_num impossible pour un id_groupe
+			while((!isset($current_group["classe"]["ver_periode"]["all"][$periode_num]))&&($periode_num>0)) {
+				$periode_num--;
+			}
+			if($periode_num<1) {
+				$mess=rawurlencode("ERREUR: Aucune p√©riode n'a √©t√© trouv√©e pour le groupe choisi !");
+				header("Location: index.php?msg=$mess");
+				die();
+			}
+
 			$login_prof = $_SESSION['login'];
 			$appel_cahier_notes = mysql_query("SELECT id_cahier_notes FROM cn_cahier_notes WHERE (id_groupe='$id_groupe' and periode='$periode_num')");
 			$nb_cahier_note = mysql_num_rows($appel_cahier_notes);
@@ -156,15 +162,12 @@ if ($id_devoir)  {
 
 //Initialisation pour le pdf
 $w_pdf=array();
-$w1 = "i"; //largeur de la premiËre colonne
-$w1b = "d"; //largeur de la colonne "classe" si prÈsente
+$w1 = "i"; //largeur de la premi√®re colonne
+$w1b = "d"; //largeur de la colonne "classe" si pr√©sente
 $w2 = "n"; // largeur des colonnes "notes"
 $w3 = "c"; // largeur des colonnes "commentaires"
 $header_pdf=array();
 $data_pdf=array();
-
-$mode_utf8_pdf=getSettingValue("mode_utf8_visu_notes_pdf");
-if($mode_utf8_pdf=="") {$mode_utf8_pdf="n";}
 
 $appel_conteneur = mysql_query("SELECT * FROM cn_conteneurs WHERE id ='$id_conteneur'");
 $nom_conteneur = mysql_result($appel_conteneur, 0, 'nom_court');
@@ -173,9 +176,9 @@ $arrondir = mysql_result($appel_conteneur, 0, 'arrondir');
 $ponderation = mysql_result($appel_conteneur, 0, 'ponderation');
 $display_bulletin = mysql_result($appel_conteneur, 0, 'display_bulletin');
 
-// On teste si le carnet de notes appartient bien ‡ la personne connectÈe
+// On teste si le carnet de notes appartient bien √† la personne connect√©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-	$mess=rawurlencode("Vous tentez de pÈnÈtrer dans un carnet de notes qui ne vous appartient pas !");
+	$mess=rawurlencode("Vous tentez de p√©n√©trer dans un carnet de notes qui ne vous appartient pas !");
 	header("Location: index.php?msg=$mess");
 	die();
 }
@@ -198,13 +201,25 @@ if (count($current_group["classes"]["list"]) > 1) {
 	$order_by = "nom";
 }
 /**
- * Gestion des pÈriodes
+ * Gestion des p√©riodes
  */
 include "../lib/periodes.inc.php";
 
-// On teste si la periode est vÈrouillÈe !
+/*
+// Pour g√©rer les classes avec des nombres de p√©riodes diff√©rents
+while((!isset($current_group["classe"]["ver_periode"]["all"][$periode_num]))&&($periode_num>0)) {
+	$periode_num--;
+}
+if($periode_num<1) {
+	$mess=rawurlencode("ERREUR: Aucune p√©riode n'a √©t√© trouv√©e pour le groupe choisi !");
+	header("Location: index.php?msg=$mess");
+	die();
+}
+*/
+
+// On teste si la periode est v√©rouill√©e !
 if (($current_group["classe"]["ver_periode"]["all"][$periode_num] <= 1) and (isset($id_devoir)) and ($id_devoir!='') ) {
-	$mess=rawurlencode("Vous tentez de pÈnÈtrer dans un carnet de notes dont la pÈriode est bloquÈe !");
+	$mess=rawurlencode("Vous tentez de p√©n√©trer dans un carnet de notes dont la p√©riode est bloqu√©e !");
 	header("Location: index.php?msg=$mess");
 	die();
 }
@@ -219,19 +234,20 @@ $periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_clas
 $nom_periode = mysql_result($periode_query, $periode_num-1, "nom_periode");
 
 //
-// DÈtermination des sous-conteneurs
+// D√©termination des sous-conteneurs
 //
 $nom_sous_cont = array();
 $id_sous_cont  = array();
 $coef_sous_cont = array();
+$ponderation_sous_cont = array();
 $display_bulletin_sous_cont = array();
 $nb_sous_cont = 0;
 if ($mode==1) {
-	// on s'intÈresse ‡ tous les conteneurs fils, petit-fils, ...
-	sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all');
+	// on s'int√©resse √† tous les conteneurs fils, petit-fils, ...
+	sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'all',$ponderation_sous_cont);
 } else {
-	// On s'intÈresse uniquement au conteneurs fils
-	sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'');
+	// On s'int√©resse uniquement au conteneurs fils
+	sous_conteneurs($id_conteneur,$nb_sous_cont,$nom_sous_cont,$coef_sous_cont,$id_sous_cont,$display_bulletin_sous_cont,'',$ponderation_sous_cont);
 }
 
 //debug_var();
@@ -241,14 +257,14 @@ if (isset($_POST['notes'])) {
 	$temp = $_POST['notes']." 1";
 	$temp = my_ereg_replace("\\\\r","\r",$temp);
 	$temp = my_ereg_replace("\\\\n","\n",$temp);
-	$longueur = strlen($temp);
+	$longueur = mb_strlen($temp);
 	$i = 0;
 	$fin_note = 'yes';
 	$indice = $_POST['debut_import']-2;
 	$tempo = '';
 	if(!isset($note_sur_dev_choisi)) {$note_sur_dev_choisi=20;}
 	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
-		$car = substr($temp, $i, 1);
+		$car = mb_substr($temp, $i, 1);
 		if (my_ereg('^[0-9.,a-zA-Z-]{1}$', $car)) {
 			if (($fin_note=='yes') or ($i == $longueur-1)) {
 				$fin_note = 'no';
@@ -296,13 +312,13 @@ if (isset($_POST['appreciations'])) {
 	$temp = my_ereg_replace("\\\\r","`",$temp);
 	$temp = my_ereg_replace("\\\\n","",$temp);
 	$temp = unslashes($temp);
- 	$longueur = strlen($temp);
+ 	$longueur = mb_strlen($temp);
 	$i = 0;
 	$fin_app = 'yes';
 	$indice = $_POST['debut_import']-2;
 	$tempo = "";
 	while (($i < $longueur) and ($indice < $_POST['fin_import'])) {
-		$car = substr($temp, $i, 1);
+		$car = mb_substr($temp, $i, 1);
 		if (!my_ereg ("^[`]{1}$", $car)) {
 			if (($fin_app=='yes') or ($i == $longueur-1)) {
 				$fin_app = 'no';
@@ -321,17 +337,24 @@ if (isset($_POST['appreciations'])) {
 if (isset($_POST['is_posted'])) {
 	check_token();
 
+	$tab_precision=array('s1', 's5', 'se', 'p1', 'p5', 'pe');
+	$cn_precision=isset($_POST['cn_precision']) ? $_POST['cn_precision'] : "";
+	if(in_array($cn_precision, $tab_precision)) {
+		savePref($_SESSION['login'],'cn_precision',$cn_precision);
+	}
+	else {
+		unset($cn_precision);
+	}
+
 	$log_eleve=$_POST['log_eleve'];
 	$note_eleve=$_POST['note_eleve'];
-	if($mode_commentaire_20080422!="no_anti_inject") {
-		$comment_eleve=$_POST['comment_eleve'];
-	}
+	$comment_eleve=$_POST['comment_eleve'];
 
 	$indice_max_log_eleve=$_POST['indice_max_log_eleve'];
 
 	for($i=0;$i<$indice_max_log_eleve;$i++){
 		if(isset($log_eleve[$i])) {
-			// La pÈriode est-elle ouverte?
+			// La p√©riode est-elle ouverte?
 			$reg_eleve_login=$log_eleve[$i];
 			if(isset($current_group["eleves"][$periode_num]["users"][$reg_eleve_login]["classe"])){
 				$id_classe = $current_group["eleves"][$periode_num]["users"][$reg_eleve_login]["classe"];
@@ -339,24 +362,9 @@ if (isset($_POST['is_posted'])) {
 					$note=$note_eleve[$i];
 					$elev_statut='';
 
-					// PREPARATIFS boireaus 20080422
-					// Pour passer ‡ no_anti_inject comme pour les autres saisies d'apprÈciations
-					if($mode_commentaire_20080422!="no_anti_inject") {
-						// ProblËme: les accents sont codÈs en HTML...
-						$comment=$comment_eleve[$i];
-						$comment=addslashes(my_ereg_replace('(\\\r\\\n)+',"\r\n",my_ereg_replace("&#039;","'",html_entity_decode($comment))));
-					}
-					else {
-						if (isset($NON_PROTECT["comment_eleve".$i])){
-							$comment = traitement_magic_quotes(corriger_caracteres($NON_PROTECT["comment_eleve".$i]));
-						}
-						else{
-							$comment = "";
-						}
-						// ContrÙle des saisies pour supprimer les sauts de lignes surnumÈraires.
-						$comment=my_ereg_replace('(\\\r\\\n)+',"\r\n",$comment);
-					}
-					
+					$comment=$comment_eleve[$i];
+					$comment=trim(suppression_sauts_de_lignes_surnumeraires($comment));
+
 					if (($note == 'disp')||($note == 'd')) {
 						$note = '0';
 						$elev_statut = 'disp';
@@ -399,18 +407,18 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 
-	// Mise ‡ jour des moyennes du conteneur et des conteneurs parent, grand-parent, etc...
+	// Mise √† jour des moyennes du conteneur et des conteneurs parent, grand-parent, etc...
 	
 	$arret = 'no';
 	mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_conteneur,$arret);
 
     //==========================================================
     // Ajout d'un test:
-    // Si on modifie un devoir alors que des notes ont ÈtÈ reportÈes sur le bulletin, il faut penser ‡ mettre ‡ jour la recopie vers le bulletin.
+    // Si on modifie un devoir alors que des notes ont √©t√© report√©es sur le bulletin, il faut penser √† mettre √† jour la recopie vers le bulletin.
     $sql="SELECT 1=1 FROM matieres_notes WHERE periode='".$periode_num."' AND id_groupe='".$id_groupe."';";
     $test_bulletin=mysql_query($sql);
     if(mysql_num_rows($test_bulletin)>0) {
-        $msg=" ATTENTION: Des notes sont prÈsentes sur le bulletin.<br />Si vous avez modifiÈ ou ajoutÈ des notes, pensez ‡ mettre ‡ jour la recopie vers le bulletin.";
+        $msg=" ATTENTION: Des notes sont pr√©sentes sur le bulletin.<br />Si vous avez modifi√© ou ajout√© des notes, pensez √† mettre √† jour la recopie vers le bulletin.";
     }
     //==========================================================
 
@@ -423,20 +431,26 @@ if((isset($_GET['recalculer']))&&(isset($id_conteneur))&&(isset($periode_num))&&
 	if((isset($id_conteneur))&&($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)) {
 
 		recherche_enfant($id_conteneur);
+
+		$msg.="Recalcul des moyennes du carnet de notes effectu√©.<br />";
 	}
 }
 if (isset($_POST['import_sacoche'])) {
-	$message_enregistrement = "Vos notes ne sont pas encore enregistrÈes, veuillez les vÈrifier et cliquer sur le bouton d'enregistrement";
+	$message_enregistrement = "Vos notes ne sont pas encore enregistr√©es, veuillez les v√©rifier et cliquer sur le bouton d'enregistrement";
 } else {
-	$message_enregistrement = "Les modifications ont ÈtÈ enregistrÈes !";
+	$message_enregistrement = "Les modifications ont √©t√© enregistr√©es !";
 }
-$themessage  = 'Des notes ont ÈtÈ modifiÈes. Voulez-vous vraiment quitter sans enregistrer ?';
+
+require('cc_lib.php');
+
+$themessage  = 'Des notes ont √©t√© modifi√©es. Voulez-vous vraiment quitter sans enregistrer ?';
+$message_cnil_commentaires="* En conformit√© avec la CNIL, le professeur s'engage √† ne faire figurer dans le carnet de notes que des notes et commentaires port√©s √† la connaissance de l'√©l√®ve (<em>note et commentaire port√©s sur la copie, ...</em>).";
 //**************** EN-TETE *****************
 $titre_page = "Saisie des notes";
     /**
-     * EntÍte de la page
+     * Ent√™te de la page
      */
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 //debug_var();
 
@@ -450,17 +464,18 @@ chargement = false;
 <?php
 if($id_conteneur==$id_racine){
 	if($nom_conteneur==""){
-		$titre=htmlentities($current_group['description'])." (".$nom_periode.")";
+		$titre=$current_group['description']." (".$nom_periode.")";
 	}
 	else{
 		$titre=$nom_conteneur." (".$nom_periode.")";
 	}
 }
 else{
-	$titre=htmlentities(ucfirst(strtolower(getSettingValue("gepi_denom_boite"))))." : ".$nom_conteneur." (".$nom_periode.")";
+	$titre=casse_mot(getSettingValue("gepi_denom_boite"),'majf2')." : ".$nom_conteneur." (".$nom_periode.")";
 }
 
-$titre_pdf = urlencode(traite_accents_utf8(html_entity_decode($titre)));
+//$titre_pdf = urlencode(utf8_decode($titre));
+$titre_pdf = urlencode($titre);
 if ($id_devoir != 0) {$titre .= " - SAISIE";} else {$titre .= " - VISUALISATION";}
 
 echo "<script type=\"text/javascript\" language=\"javascript\">";
@@ -473,11 +488,11 @@ if (isset($_POST['debut_import'])) {
 echo "</script>";
 
 
-// DÈtermination du nombre de devoirs ‡ afficher
+// D√©termination du nombre de devoirs √† afficher
 $appel_dev = mysql_query("select * from cn_devoirs where (id_conteneur='$id_conteneur' and id_racine='$id_racine') order by date");
 $nb_dev  = mysql_num_rows($appel_dev);
 
-// DÈtermination des noms et identificateurs des devoirs
+// D√©termination des noms et identificateurs des devoirs
 $j = 0;
 while ($j < $nb_dev) {
 	$nom_dev[$j] = mysql_result($appel_dev, $j, 'nom_court');
@@ -488,9 +503,9 @@ while ($j < $nb_dev) {
 	$facultatif[$j] = mysql_result($appel_dev, $j, 'facultatif');
 	$display_parents[$j] = mysql_result($appel_dev, $j, 'display_parents');
 	$date = mysql_result($appel_dev, $j, 'date');
-	$annee = substr($date,0,4);
-	$mois =  substr($date,5,2);
-	$jour =  substr($date,8,2);
+	$annee = mb_substr($date,0,4);
+	$mois =  mb_substr($date,5,2);
+	$jour =  mb_substr($date,8,2);
 	$display_date[$j] = $jour."/".$mois."/".$annee;
 	$j++;
 }
@@ -498,7 +513,7 @@ while ($j < $nb_dev) {
 echo "<form enctype=\"multipart/form-data\" name= \"form1\" action=\"saisie_notes.php\" method=\"get\">\n";
 echo "<p class='bold'>\n";
 echo "<a href=\"../accueil.php\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil </a>|";
-echo "<a href='index.php'  onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes enseignements </a>|";
+echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes enseignements </a>|";
 
 
 
@@ -513,7 +528,7 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 		$login_prof_groupe_courant=$tmp_current_group["profs"]["list"][0];
 	}
 
-	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matiËre");
+	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis mati√®re");
 
 	if(!empty($tab_groups)) {
 
@@ -526,7 +541,7 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 		$temoin_tmp=0;
 		for($loop=0;$loop<count($tab_groups);$loop++) {
 			if((!isset($tab_groups[$loop]["visibilite"]["cahier_notes"]))||($tab_groups[$loop]["visibilite"]["cahier_notes"]=='y')) {
-				// On ne retient que les groupes qui ont un nombre de pÈriodes au moins Ègal ‡ la pÈriode sÈlectionnÈe
+				// On ne retient que les groupes qui ont un nombre de p√©riodes au moins √©gal √† la p√©riode s√©lectionn√©e
 				if($tab_groups[$loop]["nb_periode"]>=$periode_num) {
 					if($tab_groups[$loop]['id']==$id_groupe){
 						$num_groupe=$loop;
@@ -578,9 +593,19 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 </script>\n";
 
 			echo "<input type='hidden' name='periode_num' value='$periode_num' />\n";
-			echo "PÈriode $periode_num: <select name='id_groupe' id='id_groupe' onchange=\"confirm_changement_classe(change, '$themessage');\">\n";
+			echo "P√©riode $periode_num&nbsp;:";
+			if((isset($id_grp_prec))&&($id_grp_prec!=0)) {
+				//arrow-left.png
+				echo " <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_grp_prec&amp;periode_num=$periode_num' title='Groupe pr√©c√©dent' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' width='16' height='16' alt='Groupe pr√©c√©dent' /></a>\n";
+			}
+			echo "<select name='id_groupe' id='id_groupe' onchange=\"confirm_changement_classe(change, '$themessage');\">\n";
 			echo $chaine_options_classes;
-			echo "</select> | \n";
+			echo "</select>\n";
+			if((isset($id_grp_suiv))&&($id_grp_suiv!=0)) {
+				//arrow-right.png
+				echo "<a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_grp_suiv&amp;periode_num=$periode_num' title='Groupe suivant' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/forward.png' width='16' height='16' alt='Groupe suivant' /></a>\n";
+			}
+			echo " | \n";
 		}
 
 	}
@@ -591,11 +616,14 @@ $sql="SELECT * FROM cn_cahier_notes ccn where id_groupe='$id_groupe' ORDER BY pe
 $res_cn=mysql_query($sql);
 if(mysql_num_rows($res_cn)>1) {
 	// On ne propose pas de champ SELECT pour un seul canier de notes
+	$max_per=0;
 	$chaine_options_periodes="";
 	while($lig_cn=mysql_fetch_object($res_cn)) {
 		$chaine_options_periodes.="<option value='$lig_cn->id_cahier_notes'";
 		if($lig_cn->periode==$periode_num) {$chaine_options_periodes.=" selected='true'";}
 		$chaine_options_periodes.=">$lig_cn->periode</option>\n";
+
+		if($lig_cn->periode>$max_per) {$max_per=$lig_cn->periode;}
 	}
 
 	$index_num_periode=$periode_num-1;
@@ -624,21 +652,31 @@ if(mysql_num_rows($res_cn)>1) {
 	}
 </script>\n";
 
-	echo "<span title='AccÈder au cahier de notes de la pÈriode (ne sont proposÈes que les pÈriodes pour lesquelles le cahier de notes a ÈtÈ initialisÈ)'>PÈriode </span><select name='tmp_id_conteneur' id='id_conteneur' onchange=\"confirm_changement_periode(change, '$themessage');\">\n";
+	echo "<span title='Acc√©der au cahier de notes de la p√©riode (ne sont propos√©es que les p√©riodes pour lesquelles le cahier de notes a √©t√© initialis√©)'>P√©riode</span>";
+	if($periode_num>1) {
+		$periode_prec=$periode_num-1;
+		echo " <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_prec' title='P√©riode pr√©c√©dente'><img src='../images/icons/back.png' width='16' height='16' alt='P√©riode pr√©c√©dente' /></a>\n";
+	}
+	echo "<select name='tmp_id_conteneur' id='id_conteneur' onchange=\"confirm_changement_periode(change, '$themessage');\">\n";
 	echo $chaine_options_periodes;
-	echo "</select> | \n";
+	echo "</select>";
+	if($periode_num<$max_per) {
+		$periode_suiv=$periode_num+1;
+		echo "<a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_suiv' title='P√©riode suivante'><img src='../images/icons/forward.png' width='16' height='16' alt='P√©riode suivante' /></a> \n";
+	}
+	echo " | \n";
 
 }
 
-echo "<a href=\"index.php?id_racine=$id_racine\" onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes Èvaluations</a> |";
+echo "<a href=\"index.php?id_racine=$id_racine\" onclick=\"return confirm_abandon (this, change, '$themessage')\"> Mes √©valuations</a> |";
 
-// On dÈ-cache le champ si javascript est actif
+// On d√©-cache le champ si javascript est actif
 echo "<span id='span_chgt_dev' style='display: none;'>\n";
 $sql="select * from cn_devoirs where id_conteneur='$id_conteneur' order by date;";
 $res_devoirs=mysql_query($sql);
 if(mysql_num_rows($res_devoirs)>1) {
 
-	$chaine_options_devoirs="";
+	$chaine_options_devoirs="<option value=''>Choix √©val.</option>";
 	$num_devoir=0;
 	$cpt_dev=0;
 	while($lig_dev=mysql_fetch_object($res_devoirs)) {
@@ -647,7 +685,7 @@ if(mysql_num_rows($res_devoirs)>1) {
 		$chaine_options_devoirs.=">$lig_dev->nom_court (".formate_date($lig_dev->date).")</option>\n";
 		$cpt_dev++;
 	}
-	// Seulement avec javascript... parce qu'on a plusieurs submit dans ce formulaire l‡...
+	// Seulement avec javascript... parce qu'on a plusieurs submit dans ce formulaire l√†...
 	echo "<select name='select_id_devoir' id='select_id_devoir' onchange=\"confirm_changement_devoir(change, '$themessage');\">\n";
 	echo $chaine_options_devoirs;
 	echo "</select>";
@@ -658,18 +696,21 @@ echo "</span>\n";
 if((isset($id_devoir))&&($id_devoir!=0)) {echo "<a href=\"saisie_notes.php?id_conteneur=$id_racine\" onclick=\"return confirm_abandon (this, change, '$themessage')\"> Visualisation du CN </a>|";}
 
 if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
-	//echo "<a href='add_modif_conteneur.php?id_racine=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\">CrÈer une boÓte</a>|";
-	echo "<a href='add_modif_conteneur.php?id_racine=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\"> CrÈer un";
+	//echo "<a href='add_modif_conteneur.php?id_racine=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\">Cr√©er une bo√Æte</a>|";
+	echo "<a href='add_modif_conteneur.php?id_racine=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\"> Cr√©er un";
 
 	if(getSettingValue("gepi_denom_boite_genre")=='f'){echo "e";}
 
-	echo " ".htmlentities(strtolower(getSettingValue("gepi_denom_boite")))." </a>|";
+	echo " ".htmlspecialchars(my_strtolower(getSettingValue("gepi_denom_boite")))." </a>|";
 
-	echo "<a href='add_modif_dev.php?id_conteneur=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\"> CrÈer une Èvaluation </a>|";
+	echo "<a href='add_modif_dev.php?id_conteneur=$id_racine&amp;mode_navig=retour_saisie&amp;id_retour=$id_conteneur' onclick=\"return confirm_abandon (this, change,'$themessage')\"> Cr√©er une √©valuation </a>|";
 }
-echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;nom_pdf_en_detail=oui\" onclick=\"return VerifChargement()\"> Imprimer au format PDF </a>|";
+echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;nom_pdf_en_detail=oui\" onclick=\"return VerifChargement()\" target=\"_blank\"> Imprimer au format PDF </a>|";
 
 echo "<a href=\"../groupes/signalement_eleves.php?id_groupe=$id_groupe&amp;chemin_retour=../cahier_notes/saisie_notes.php?id_conteneur=$id_conteneur\"> Signaler des erreurs d'affectation</a>";
+
+echo "|<a href=\"index_cc.php?id_racine=$id_racine\"> ".ucfirst($nom_cc)."</a>";
+
 echo "</p>\n";
 echo "</form>\n";
 
@@ -715,17 +756,17 @@ if (!isset($_SESSION['affiche_comment'])) {$_SESSION['affiche_comment'] = 'yes';
 if (!isset($_SESSION['affiche_tous'])) {$_SESSION['affiche_tous'] = 'no';}
 $nb_dev_sous_cont = 0;
 
-// Premier formulaire pour masquer ou non les colonnes "commentaires" non vides des Èvaluations verrouillÈes
+// Premier formulaire pour masquer ou non les colonnes "commentaires" non vides des √©valuations verrouill√©es
 if ($id_devoir == 0) {
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post name=\"form1b\">\n";
 	echo "<fieldset style=\"padding-top: 0px; padding-bottom: 0px;  margin-left: 0px; margin-right: 100px;\">\n";
-	echo "<table summary='ParamËtres'><tr><td>Masquer les colonnes \"commentaires\" non vides (mode visualisation uniquement) :
+	echo "<table summary='Param√®tres'><tr><td>Masquer les colonnes \"commentaires\" non vides (mode visualisation uniquement) :
 	</td><td><input type=\"checkbox\" name=\"affiche_comment\"  ";
 	if ($_SESSION['affiche_comment'] != 'yes') echo "checked";
 	echo " /></td><td><input type=\"submit\" name=\"ok\" value=\"OK\" /></td></tr>\n";
 	$nb_dev_sous_cont = mysql_num_rows(mysql_query("select d.id from cn_devoirs d, cn_conteneurs c where (d.id_conteneur = c.id and c.parent='$id_conteneur')"));
 	if ($nb_dev_sous_cont != 0) {
-		echo "<tr><td>Afficher les Èvaluations des \"sous-".htmlentities(strtolower(getSettingValue("gepi_denom_boite")))."s\" : </td><td><input type=\"checkbox\" name=\"affiche_tous\"  ";
+		echo "<tr><td>Afficher les √©valuations des \"sous-".htmlspecialchars(my_strtolower(getSettingValue("gepi_denom_boite")))."s\" : </td><td><input type=\"checkbox\" name=\"affiche_tous\"  ";
 		if ($_SESSION['affiche_tous'] == 'yes') {echo "checked";}
 		echo " /></td><td></td></tr>\n";
 	}
@@ -735,7 +776,7 @@ if ($id_devoir == 0) {
 	echo "</form>\n";
 }
 else {
-	// Formulaire destinÈ ‡ permettre via javascript de passer ‡ une autre pÈriode... on accËde alors au mode Visualisation parce que le $id_devoir n'existe pas dans une autre pÈriode.
+	// Formulaire destin√© √† permettre via javascript de passer √† une autre p√©riode... on acc√®de alors au mode Visualisation parce que le $id_devoir n'existe pas dans une autre p√©riode.
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post name=\"form1b\">\n";
 	echo "<input type='hidden' name='id_conteneur' id='form1b_id_conteneur' value=\"".$id_conteneur."\" />\n";
 	//echo "<input type='hidden' name='id_devoir' value=\"".$id_devoir."\" />\n";
@@ -745,24 +786,24 @@ else {
 
 // Construction de la variable $detail qui affiche dans un pop-up le mode de calcul de la moyenne
 $detail = "Mode de calcul de la moyenne :\\n";
-$detail = $detail."La moyenne s\\'effectue sur les colonnes repÈrÈes par les cellules de couleur violette.\\n";
+$detail = $detail."La moyenne s\\'effectue sur les colonnes rep√©r√©es par les cellules de couleur violette.\\n";
 if (($nb_dev_sous_cont != 0) and ($_SESSION['affiche_tous'] == 'no'))
-	$detail = $detail."ATTENTION : cliquez sur \'Afficher les Èvaluations des sous-".htmlentities(strtolower(getSettingValue("gepi_denom_boite")))."s\' pour faire apparaÓtre toutes les Èvaluations qui interviennent dans la moyenne.\\n";
-if ($arrondir == 's1') $detail = $detail."La moyenne est arrondie au dixiËme de point supÈrieur.\\n";
-if ($arrondir == 's5') $detail = $detail."La moyenne est arrondie au demi-point supÈrieur.\\n";
-if ($arrondir == 'se') $detail = $detail."La moyenne est arrondie au point entier supÈrieur.\\n";
-if ($arrondir == 'p1') $detail = $detail."La moyenne est arrondie au dixiËme de point le plus proche.\\n";
+	$detail = $detail."ATTENTION : cliquez sur \'Afficher les √©valuations des sous-".htmlspecialchars(my_strtolower(getSettingValue("gepi_denom_boite")))."s\' pour faire appara√Ætre toutes les √©valuations qui interviennent dans la moyenne.\\n";
+if ($arrondir == 's1') $detail = $detail."La moyenne est arrondie au dixi√®me de point sup√©rieur.\\n";
+if ($arrondir == 's5') $detail = $detail."La moyenne est arrondie au demi-point sup√©rieur.\\n";
+if ($arrondir == 'se') $detail = $detail."La moyenne est arrondie au point entier sup√©rieur.\\n";
+if ($arrondir == 'p1') $detail = $detail."La moyenne est arrondie au dixi√®me de point le plus proche.\\n";
 if ($arrondir == 'p5') $detail = $detail."La moyenne est arrondie au demi-point le plus proche.\\n";
 if ($arrondir == 'pe') $detail = $detail."La moyenne est arrondie au point entier le plus proche.\\n";
-if ($ponderation != 0) $detail = $detail."PondÈration : ".$ponderation." (s\\'ajoute au coefficient de la meilleur note de chaque ÈlËve).\\n";
+if ($ponderation != 0) $detail = $detail."Pond√©ration : ".$ponderation." (s\\'ajoute au coefficient de la meilleur note de chaque √©l√®ve).\\n";
 
 // Titre
-echo "<h2 class='gepi'>".$titre."</h2>\n";
+echo "<h2 class='gepi'>".htmlspecialchars($titre)."</h2>\n";
 if (($nb_dev == 0) and ($nb_sous_cont==0)) {
 
 	echo "<p class=cn>";
 	if(getSettingValue("gepi_denom_boite_genre")=='f'){echo "La ";}else{echo "Le ";}
-	echo htmlentities(strtolower(getSettingValue("gepi_denom_boite")))." $nom_conteneur ne contient aucune Èvaluation. </p>\n";
+	echo htmlspecialchars(my_strtolower(getSettingValue("gepi_denom_boite")))." $nom_conteneur ne contient aucune √©valuation. </p>\n";
 
 /**
  * Pied de page
@@ -771,14 +812,14 @@ if (($nb_dev == 0) and ($nb_sous_cont==0)) {
 	die();
 }
 
-// DÈbut du deuxiËme formulaire
+// D√©but du deuxi√®me formulaire
 echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post  name=\"form2\">\n";
 if ($id_devoir != 0) {
 	echo add_token_field();
 	echo "<center><input type='submit' value='Enregistrer' /></center>\n";
 }
 
-// Couleurs utilisÈes
+// Couleurs utilis√©es
 $couleur_devoirs = '#AAE6AA';
 $couleur_moy_cont = '#96C8F0';
 $couleur_moy_sous_cont = '#FAFABE';
@@ -787,8 +828,8 @@ $note_sur_verif = 20;
 if ($id_devoir != 0) {
         $appel_note_sur = mysql_query("SELECT NOTE_SUR FROM cn_devoirs WHERE id = '$id_devoir'");
         $note_sur_verif = mysql_result($appel_note_sur,'0' ,'note_sur');
-	echo "<p class='cn'>Taper une note de 0 ‡ ".$note_sur_verif." pour chaque ÈlËve, ou ‡ dÈfaut le code 'a' pour 'absent', le code 'd' pour 'dispensÈ', le code '-' ou 'n' pour absence de note.</p>\n";
-	echo "<p class='cn'>Vous pouvez Ègalement <b>importer directement vos notes par \"copier/coller\"</b> ‡ partir d'un tableur ou d'une autre application : voir tout en bas de cette page.</p>\n";
+	echo "<p class='cn'>Taper une note de 0 √† ".$note_sur_verif." pour chaque √©l√®ve, ou √† d√©faut le code 'a' pour 'absent', le code 'd' pour 'dispens√©', le code '-' ou 'n' pour absence de note.</p>\n";
+	echo "<p class='cn'>Vous pouvez √©galement <b>importer directement vos notes par \"copier/coller\"</b> √† partir d'un tableur ou d'une autre application : voir <a href='#import_notes_tableur'>tout en bas de cette page</a>.</p>\n";
 
 }
 echo "<p class=cn><b>Enseignement : ".$current_group['description']." (" . $current_group["classlist_string"] . ")";
@@ -808,7 +849,9 @@ function verifcol(num_id){
 	if(document.getElementById('n'+num_id).value=='n'){
 		document.getElementById('n'+num_id).value='-';
 	}
+
 	note=document.getElementById('n'+num_id).value;
+
 	if((note!='-')&&(note!='disp')&&(note!='abs')&&(note!='')){
 		note=note.replace(',','.');
 
@@ -841,29 +884,29 @@ while ($i < $nb_dev) {
 	$i++;
 }
 
-// Tableau destiner ‡ stocker l'id du champ de saisie de note (n$num_id) correspondant ‡ l'ÈlËve $i
+// Tableau destiner √† stocker l'id du champ de saisie de note (n$num_id) correspondant √† l'√©l√®ve $i
 $indice_ele_saisie=array();
 
 $i = 0;
 $num_id=10;
 $current_displayed_line = 0;
 
-// On commence par mettre la liste dans l'ordre souhaitÈ
+// On commence par mettre la liste dans l'ordre souhait√©
 if ($order_by != "classe") {
 	$liste_eleves = $current_group["eleves"][$periode_num]["users"];
 } else {
 	// Ici, on tri par classe
-	// On va juste crÈer une liste des ÈlËves pour chaque classe
+	// On va juste cr√©er une liste des √©l√®ves pour chaque classe
 	$tab_classes = array();
 	foreach($current_group["classes"]["list"] as $classe_id) {
 		$tab_classes[$classe_id] = array();
 	}
-	// On passe maintenant ÈlËve par ÈlËve et on les met dans la bonne liste selon leur classe
+	// On passe maintenant √©l√®ve par √©l√®ve et on les met dans la bonne liste selon leur classe
 	foreach($current_group["eleves"][$periode_num]["list"] as $e_login) {
 		$classe = $current_group["eleves"][$periode_num]["users"][$e_login]["classe"];
 		$tab_classes[$classe][$e_login] = $current_group["eleves"][$periode_num]["users"][$e_login];
 	}
-	// On met tout Áa ‡ la suite
+	// On met tout √ßa √† la suite
 	$liste_eleves = array();
 	foreach($current_group["classes"]["list"] as $classe_id) {
 		$liste_eleves = array_merge($liste_eleves, $tab_classes[$classe_id]);
@@ -929,7 +972,7 @@ foreach ($liste_eleves as $eleve) {
 			$mess_note[$i][$k] =$mess_note[$i][$k]."</b></center></td>\n";
 			if ($eleve_comment != '') {
 				$mess_comment[$i][$k] = "<td class=cn>".$eleve_comment."</td>\n";
-				$mess_comment_pdf[$i][$k] = traite_accents_utf8($eleve_comment);
+				$mess_comment_pdf[$i][$k] = ($eleve_comment);
 
 			} else {
 				$mess_comment[$i][$k] = "<td class=cn>&nbsp;</td>\n";
@@ -965,7 +1008,7 @@ foreach ($liste_eleves as $eleve) {
 					$mess_note[$i][$k] = $mess_note[$i][$k].$eleve_note;
 
 					if($eleve_note=="") {
-						// Ca ne devrait pas arriver... si: quand le devoir est crÈÈ, mais qu'aucune note n'est saisie, ni enregistrement encore effectuÈ.
+						// Ca ne devrait pas arriver... si: quand le devoir est cr√©√©, mais qu'aucune note n'est saisie, ni enregistrement encore effectu√©.
 						// Le simple fait de cliquer sur Enregistrer remplit la table cn_notes_devoirs avec eleve_note='0.0' et eleve_statut='v' et on n'a plus l'erreur
 						$mess_note_pdf[$i][$k] = $eleve_note;
 					}
@@ -992,7 +1035,7 @@ foreach ($liste_eleves as $eleve) {
 					if(mysql_num_rows($res_ele)>0) {
 						$lig_ele=mysql_fetch_object($res_ele);
 						if (nom_photo($lig_ele->elenoet)){
-							$mess_note[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
+							$mess_note[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(my_strtoupper($eleve_nom[$i])." ".casse_mot($eleve_prenom[$i],'majf2'))."')";
 						}
 						else {
 							$mess_note[$i][$k].=";document.getElementById('div_photo_eleve').innerHTML='';";
@@ -1003,19 +1046,18 @@ foreach ($liste_eleves as $eleve) {
 					}
 				}
 				$mess_note[$i][$k].="\" onchange=\"verifcol($num_id);calcul_moy_med();changement();\" />";
+
+				// 20120509
+				$mess_note[$i][$k].="<span id='modif_note_$i' style='display:none'><a href='#' onclick=\"modif_note($num_id, $delta_modif_note);return false;\"><img src='../images/icons/add.png' width='16' height='16' alt='Augmenter la note de $delta_modif_note' title='Augmenter la note de $delta_modif_note' /></a><a href='#' onclick=\"modif_note($num_id, -$delta_modif_note);return false;\"><img src='../images/icons/remove.png' width='16' height='16' alt='Diminuer la note de $delta_modif_note' title='Diminuer la note de $delta_modif_note' /></a></span>";
 			}
 			$mess_note[$i][$k] .= "</td>\n";
 			$mess_comment[$i][$k] = "<td class='cn' bgcolor='$couleur_devoirs'>";
 			if ($current_group["classe"]["ver_periode"][$eleve_id_classe[$i]][$periode_num] == "N"){
-				if($mode_commentaire_20080422!="no_anti_inject") {
-					if ((isset($appreciations_import[$current_displayed_line])) and  ($appreciations_import[$current_displayed_line] != '')) {
-						$eleve_comment = $appreciations_import[$current_displayed_line];
-					}
-					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=60 class='wrap' onchange=\"changement()\"";
-				}
-				else {
-					$mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='no_anti_inject_comment_eleve".$i."' rows=1 cols=30 class='wrap' onchange=\"changement()\"";
-				}
+				if ((isset($appreciations_import[$current_displayed_line])) and  ($appreciations_import[$current_displayed_line] != '')) {
+                                        $eleve_comment = $appreciations_import[$current_displayed_line];
+                                }
+                                $mess_comment[$i][$k] .= "<textarea id=\"n1".$num_id."\" onKeyDown=\"clavier(this.id,event);\" name='comment_eleve[$i]' rows=1 cols=60 class='wrap' onchange=\"changement()\"";
+
 				if(getSettingValue("gepi_pmv")!="n"){
 					$mess_comment[$i][$k] .= " onfocus=\"";
 					$sql="SELECT elenoet FROM eleves WHERE login='$eleve_login[$i]';";
@@ -1023,7 +1065,7 @@ foreach ($liste_eleves as $eleve) {
 					if(mysql_num_rows($res_ele)>0) {
 						$lig_ele=mysql_fetch_object($res_ele);
 						if (nom_photo($lig_ele->elenoet)){
-							$mess_comment[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(strtoupper($eleve_nom[$i])." ".ucfirst(strtolower($eleve_prenom[$i])))."')";
+							$mess_comment[$i][$k].=";affiche_photo('".nom_photo($lig_ele->elenoet)."','".addslashes(my_strtoupper($eleve_nom[$i])." ".casse_mot($eleve_prenom[$i],'majf2'))."')";
 						}
 						else {
 							$mess_comment[$i][$k].=";document.getElementById('div_photo_eleve').innerHTML='';";
@@ -1035,12 +1077,12 @@ foreach ($liste_eleves as $eleve) {
 					$mess_comment[$i][$k] .= "\"";
 				}
 				$mess_comment[$i][$k] .= ">".$eleve_comment."</textarea></td>\n";
-				
+
 			}
 			else{
 				$mess_comment[$i][$k] .= $eleve_comment."</td>\n";
 			}
-			$mess_comment_pdf[$i][$k] = traite_accents_utf8($eleve_comment);
+			$mess_comment_pdf[$i][$k] = ($eleve_comment);
 			$num_id++;
 		}
 		$k++;
@@ -1048,14 +1090,16 @@ foreach ($liste_eleves as $eleve) {
 	$current_displayed_line++;
 	$i++;
 }
+// 20120509
+$max_indice_eleve=$i;
 
 // Affichage du tableau
 
 echo "<table class='boireaus' cellspacing='2' cellpadding='1' summary=\"Tableau de notes\">\n";
 
-// PremiËre ligne
+// Premi√®re ligne
 
-// on calcule le nombre de colonnes ‡ scinder
+// on calcule le nombre de colonnes √† scinder
 if ($id_devoir==0) {
 	// Mode consultation
 	$nb_colspan = $nb_dev;
@@ -1065,11 +1109,11 @@ if ($id_devoir==0) {
 		$i++;
 	}
 } else {
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	$nb_colspan = 2;
 }
 
-// Affichage premiËre ligne
+// Affichage premi√®re ligne
 
 echo "<tr><th class='cn'>&nbsp;</th>\n";
 if ($multiclasses) {echo "<th class='cn'>&nbsp;</th>\n";}
@@ -1080,6 +1124,11 @@ if ($nb_dev != 0) {
 		echo "<div style='float:right; width:16;'><a href='javascript:affichage_quartiles();'><img src='../images/icons/histogramme.png' width='16' height='16' alt='Afficher les quartiles' title='Afficher les quartiles' /></a></div>\n";
 
 		echo "$nom_conteneur\n";
+
+		if($ponderation!='0.0') {
+			$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pond√©r√©e dun coefficient $ponderation";
+			echo " <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
+		}
 		echo "</th>\n";
 	}
 	else{
@@ -1104,9 +1153,9 @@ if ($id_devoir==0) {
 				$ramener_sur_referentiel_s_dev[$i][$m] = mysql_result($query_nb_dev, $m, 'ramener_sur_referentiel');
 				$fac_s_dev[$i][$m]  = mysql_result($query_nb_dev, $m, 'facultatif');
 				$date = mysql_result($query_nb_dev, $m, 'date');
-				$annee = substr($date,0,4);
-				$mois =  substr($date,5,2);
-				$jour =  substr($date,8,2);
+				$annee = mb_substr($date,0,4);
+				$mois =  mb_substr($date,5,2);
+				$jour =  mb_substr($date,8,2);
 				$display_date_s_dev[$i][$m] = $jour."/".$mois."/".$annee;
 
 				$m++;
@@ -1135,10 +1184,16 @@ if ($id_devoir==0) {
 		$i++;
 	}
 }
-// En mode saisie, on n'affiche que le devoir ‡ saisir
+// En mode saisie, on n'affiche que le devoir √† saisir
 if (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) and ($id_devoir==0)){
 	if($nom_conteneur!=""){
-		echo "<td class=cn  valign='top'><center><b>$nom_conteneur</b><br />";
+		echo "<td class=cn  valign='top'><center><b>$nom_conteneur</b>";
+
+		if($ponderation!='0.0') {
+			$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pond√©r√©e dun coefficient $ponderation";
+			echo " <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
+		}
+		echo "<br />";
 	}
 	else{
 		echo "<td class=cn  valign='top'><center><b>&nbsp;</b><br />";
@@ -1148,9 +1203,18 @@ if (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) and ($id
 
 echo "</tr>\n";
 
-// DeuxiËme ligne
+// Deuxi√®me ligne
 echo "<tr>\n";
-echo "<td class=cn valign='top'>&nbsp;</td>\n";
+echo "<td class=cn valign='top'>";
+//echo "&nbsp;";
+echo "<p id='p_ramener_sur_N' style='display:none'><a href='#' onclick=\"afficher_div('div_ramener_sur_N','y',20,20); return false;\" target=\'_blank\'>Ramener sur N</a>";
+// 20120509
+//if(getSettingAOui('cn_increment_notes')) {
+	echo " - <a href='#' onclick=\"affichage_modif_note();return false;\" title='Incr√©menter/d√©cr√©menter les notes de $delta_modif_note'>+/-</a>";
+//}
+echo "</p>";
+echo "<input type='hidden' name='cn_precision' id='cn_precision' value='' />\n";
+echo "</td>\n";
 $header_pdf[] = "Evaluation :";
 if ($multiclasses) {$header_pdf[] = "";}
 $w_pdf[] = $w1;
@@ -1158,34 +1222,34 @@ if ($multiclasses) {echo "<td class='cn'>&nbsp;</td>\n";}
 if ($multiclasses) {$w_pdf[] = $w2;}
 $i = 0;
 while ($i < $nb_dev) {
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	if (($id_devoir==0) or ($id_dev[$i] == $id_devoir)) {
 		if ($coef[$i] != 0) {$tmp = " bgcolor = $couleur_calcul_moy ";} else {$tmp = '';}
-		$header_pdf[] = traite_accents_utf8($nom_dev[$i]." (".$display_date[$i].")");
+		$header_pdf[] = ($nom_dev[$i]." (".$display_date[$i].")");
 		$w_pdf[] = $w2;
 		if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
 			echo "<td class=cn".$tmp." valign='top'><center><b><a href=\"./add_modif_dev.php?mode_navig=retour_saisie&amp;id_retour=$id_conteneur&amp;id_devoir=$id_dev[$i]\"  onclick=\"return confirm_abandon (this, change,'$themessage')\">$nom_dev[$i]</a></b><br /><font size=-2>($display_date[$i])</font>\n";
 			if($display_parents[$i]!=0) {
-				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevÈ de notes' alt='Evaluation visible sur le relevÈ de notes' />\n";
+				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relev√© de notes' alt='Evaluation visible sur le relev√© de notes' />\n";
 			}
 			else {
-				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevÈ de notes' alt='Evaluation non visible sur le relevÈ de notes' />\n";
+				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relev√© de notes' alt='Evaluation non visible sur le relev√© de notes' />\n";
 			}
 			echo "</center></td>\n";
 		}
 		else {
 			echo "<td class=cn".$tmp." valign='top'><center><b>".$nom_dev[$i]."</b><br /><font size=-2>($display_date[$i])</font>\n";
 			if($display_parents[$i]!=0) {
-				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevÈ de notes' alt='Evaluation visible sur le relevÈ de notes' />\n";
+				echo " <img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relev√© de notes' alt='Evaluation visible sur le relev√© de notes' />\n";
 			}
 			else {
-				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevÈ de notes' alt='Evaluation non visible sur le relevÈ de notes' />\n";
+				echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relev√© de notes' alt='Evaluation non visible sur le relev√© de notes' />\n";
 			}
 			echo "</center></td>\n";
 		}
 
 		if ((($nocomment[$i]!='yes') and ($_SESSION['affiche_comment'] == 'yes')) or ($id_dev[$i] == $id_devoir)) {
-			echo "<td class=cn  valign='top'><center>Commentaire&nbsp;*\n";
+			echo "<td class=cn  valign='top'><center><span title=\"$message_cnil_commentaires\">Commentaire&nbsp;*</span>\n";
 			echo "</center></td>\n";
 			$header_pdf[] = "Commentaire";
 			$w_pdf[] = $w3;
@@ -1204,7 +1268,7 @@ if ($id_devoir==0) {
 			while ($m < $nb_dev_s_cont[$i]) {
 				$tmp = '';
 				if (($mode == 1) and ($coef_s_dev[$i][$m] != 0)) $tmp = " bgcolor = $couleur_calcul_moy ";
-				$header_pdf[] = traite_accents_utf8($nom_sous_dev[$i][$m]." (".$display_date_s_dev[$i][$m].")");
+				$header_pdf[] = ($nom_sous_dev[$i][$m]." (".$display_date_s_dev[$i][$m].")");
 				$w_pdf[] = $w2;
 				echo "<td class=cn".$tmp." valign='top'><center><b><a href=\"./add_modif_dev.php?mode_navig=retour_saisie&amp;id_retour=$id_conteneur&amp;id_devoir=".$id_s_dev[$i][$m]."\"  onclick=\"return confirm_abandon (this, change,'$themessage')\">".$nom_sous_dev[$i][$m]."</a></b><br /><font size=-2>(".$display_date_s_dev[$i][$m].")</font></center></td>\n";
 				$m++;
@@ -1213,12 +1277,12 @@ if ($id_devoir==0) {
 			if (($mode == 2) and ($coef_sous_cont[$i] != 0)) $tmp = " bgcolor = $couleur_calcul_moy ";
 		}
 		echo "<td class=cn".$tmp." valign='top'><center>Moyenne</center></td>\n";
-		$header_pdf[] = traite_accents_utf8("Moyenne : ".$nom_sous_cont[$i]);
+		$header_pdf[] = ("Moyenne : ".$nom_sous_cont[$i]);
 		$w_pdf[] = $w2;
 		$i++;
 	}
 }
-// En mode saisie, on n'affiche que le devoir ‡ saisir
+// En mode saisie, on n'affiche que le devoir √† saisir
 if ($id_devoir==0) {
 	echo "<td class=cn valign='top'><center><b>Moyenne</b>\n";
 	if((isset($id_conteneur))&&($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)) {
@@ -1231,14 +1295,14 @@ if ($id_devoir==0) {
 echo "</tr>";
 
 //
-// TroisiËme ligne
+// Troisi√®me ligne
 //
 echo "<tr><td class=cn valign='top'>&nbsp;</td>";
 if ($multiclasses) {echo "<td class='cn'>&nbsp;</td>";}
 echo "\n";
 $i = 0;
 while ($i < $nb_dev) {
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	if (($id_devoir==0) or ($id_dev[$i] == $id_devoir)) {
 		if ($id_dev[$i] == $id_devoir) {
 			echo "<td class=cn valign='top'><center><a href=\"saisie_notes.php?id_conteneur=$id_conteneur&amp;id_devoir=0\" onclick=\"return confirm_abandon (this, change,'$themessage')\">Visualiser</a></center></td>\n";
@@ -1270,27 +1334,27 @@ if ($id_devoir==0) {
 		$i++;
 	}
 }
-// En mode saisie, on n'affiche que le devoir ‡ saisir
+// En mode saisie, on n'affiche que le devoir √† saisir
 if ($id_devoir==0) {echo "<td class='cn' valign='top'>&nbsp;</td>\n";}
 echo "</tr>";
 
-// quatriËme ligne
+// quatri√®me ligne
 
 echo "<tr><td class='cn' valign='top'><b>" .
-		"<a href='saisie_notes.php?id_conteneur=".$id_conteneur."&amp;id_devoir=".$id_devoir."&amp;order_by=nom' onclick=\"return confirm_abandon (this, change,'$themessage')\">Nom PrÈnom</a></b></td>";
+		"<a href='saisie_notes.php?id_conteneur=".$id_conteneur."&amp;id_devoir=".$id_devoir."&amp;order_by=nom' onclick=\"return confirm_abandon (this, change,'$themessage')\">Nom Pr√©nom</a></b></td>";
 if ($multiclasses) {echo "<td><a href='saisie_notes.php?id_conteneur=".$id_conteneur."&amp;id_devoir=".$id_devoir."&amp;order_by=classe' onclick=\"return confirm_abandon (this, change,'$themessage')\">Classe</a></td>";}
 echo "\n";
 
 if(getSettingValue("note_autre_que_sur_referentiel")=="V") {
-	$data_pdf[0][] = traite_accents_utf8("Nom PrÈnom /Note sur (coef)");
+	$data_pdf[0][] = ("Nom Pr√©nom /Note sur (coef)");
 } else {
-	$data_pdf[0][] = traite_accents_utf8("Nom PrÈnom \ (coef)");
+	$data_pdf[0][] = ("Nom Pr√©nom \ (coef)");
 }
 
 if ($multiclasses) {$data_pdf[0][] = "";}
 $i = 0;
 while ($i < $nb_dev) {
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	if (($id_devoir==0) or ($id_dev[$i] == $id_devoir)) {
 		echo "<td class='cn' valign='top'>";
 		if(getSettingValue("note_autre_que_sur_referentiel")=="V" || $note_sur[$i]!=getSettingValue("referentiel_note")) {
@@ -1298,7 +1362,7 @@ while ($i < $nb_dev) {
 			if ($ramener_sur_referentiel[$i] != 'V') {
 				echo "<font size=-2>Note sur ".$note_sur[$i]."<br />";
 			} else {
-				$tabdiv_infobulle[]=creer_div_infobulle('ramenersurReferentiel_'.$i,"","","La note est ramenÈe sur ".getSettingValue("referentiel_note")." pour le calcul de la moyenne","",15,0,'n','n','n','n');
+				$tabdiv_infobulle[]=creer_div_infobulle('ramenersurReferentiel_'.$i,"","","La note est ramen√©e sur ".getSettingValue("referentiel_note")." pour le calcul de la moyenne","",15,0,'n','n','n','n');
 				echo "<a href='#' onmouseover=\"delais_afficher_div('ramenersurReferentiel_$i','y',-150,20,1500,10,10);\"";
 				echo " onmouseout=\"cacher_div('ramenersurReferentiel_".$i."');\"";
 				echo ">";
@@ -1338,7 +1402,7 @@ if ($id_devoir==0) {
 					if ($ramener_sur_referentiel_s_dev[$i][$m] != 'V') {
 						echo "<font size=-2>Note sur ".$note_sur_s_dev[$i][$m]."<br />";
 					} else {
-						$tabdiv_infobulle[]=creer_div_infobulle("ramenersurReferentiel_s_dev_".$i."_".$m,"","","La note est ramenÈe sur ".getSettingValue("referentiel_note")." pour le calcul de la moyenne","",15,0,'n','n','n','n');
+						$tabdiv_infobulle[]=creer_div_infobulle("ramenersurReferentiel_s_dev_".$i."_".$m,"","","La note est ramen√©e sur ".getSettingValue("referentiel_note")." pour le calcul de la moyenne","",15,0,'n','n','n','n');
 						echo "<a href='#' onmouseover=\"delais_afficher_div('ramenersurReferentiel_s_dev_".$i."_".$m."','y',-150,20,1500,10,10);\"";
 						echo " onmouseout=\"cacher_div('ramenersurReferentiel_s_dev_".$i."_".$m."');\"";
 						echo ">";
@@ -1367,7 +1431,7 @@ if ($id_devoir==0) {
 	}
 }
 
-// En mode saisie, on n'affiche que le devoir ‡ saisir
+// En mode saisie, on n'affiche que le devoir √† saisir
 if ($id_devoir==0)  {
 	echo "<td class='cn' valign='top'><center><a href=\"javascript:alert('".$detail."')\">Informations</a></center></td>\n";
 	$data_pdf[0][] = "";
@@ -1377,7 +1441,7 @@ echo "</tr>\n";
 
 $graphe_largeurTotale=200;
 $graphe_hauteurTotale=150;
-$graphe_titre="RÈpartition des notes";
+$graphe_titre="R√©partition des notes";
 $graphe_taille_police=3;
 $graphe_epaisseur_traits=2;
 $graphe_nb_tranches=5;
@@ -1393,13 +1457,13 @@ if($id_devoir>0) {
 		}
 	}
 	echo "<tr>\n";
-	echo "<td>RÈpartition des notes";
+	echo "<td>R√©partition des notes";
 	echo "</td>\n";
 	if ($multiclasses) {echo "<td>&nbsp;</td>\n";}
 }
 elseif($nb_sous_cont==0) {
 	echo "<tr>\n";
-	echo "<td>RÈpartition des notes";
+	echo "<td>R√©partition des notes";
 	echo "</td>\n";
 	if ($multiclasses) {echo "<td>&nbsp;</td>\n";}
 }
@@ -1434,8 +1498,9 @@ if(($id_devoir>0)||($nb_sous_cont==0)) {
 			$tabdiv_infobulle[]=creer_div_infobulle('repartition_notes_'.$k,$titre,"",$texte,"",14,0,'y','y','n','n');
 
 			echo " <a href='#' onmouseover=\"delais_afficher_div('repartition_notes_$k','y',-100,20,1500,10,10);\"";
+			echo " onclick=\"afficher_div('repartition_notes_$k','y',-100,20);return false;\"";
 			echo ">";
-			echo "<img src='../images/icons/histogramme.png' alt='RÈpartition des notes' />";
+			echo "<img src='../images/icons/histogramme.png' alt='R√©partition des notes' />";
 			echo "</a>";
 		}
 		else {
@@ -1447,11 +1512,12 @@ if(($id_devoir>0)||($nb_sous_cont==0)) {
 		}
 	}
 	if($id_devoir==0) {
-		// Colonne Moyenne de l'ÈlËve
+		// Colonne Moyenne de l'√©l√®ve
 		echo "<td>";
 		echo " <a href='#' onmouseover=\"delais_afficher_div('repartition_notes_moyenne','y',-100,20,1500,10,10);\"";
+		echo " onclick=\"afficher_div('repartition_notes_moyenne','y',-100,20);return false;\"";
 		echo ">";
-		echo "<img src='../images/icons/histogramme.png' alt='RÈpartition des notes' />";
+		echo "<img src='../images/icons/histogramme.png' alt='R√©partition des notes' />";
 		echo "</a>";
 		echo "</td>\n";
 	}
@@ -1459,11 +1525,11 @@ if(($id_devoir>0)||($nb_sous_cont==0)) {
 }
 //========================
 
-// Pour permettre d'afficher moyenne, mÈdiane, quartiles,... en mode Visualisation du carnet de notes
+// Pour permettre d'afficher moyenne, m√©diane, quartiles,... en mode Visualisation du carnet de notes
 $chaine_input_moy="";
 
 //
-// Affichage des lignes "elËves"
+// Affichage des lignes "el√®ves"
 //
 $alt=1;
 $i = 0;
@@ -1474,12 +1540,12 @@ $nombre_lignes = count($current_group["eleves"][$periode_num]["list"]);
 while($i < $nombre_lignes) {
 	$pointer++;
 	$tot_data_pdf++;
-	$data_pdf[$pointer][] = traite_accents_utf8($eleve_nom[$i]." ".$eleve_prenom[$i]);
+	$data_pdf[$pointer][] = ($eleve_nom[$i]." ".$eleve_prenom[$i]);
 	if ($multiclasses) {
-		$data_pdf[$pointer][] = traite_accents_utf8($eleve_classe[$i]);
+		$data_pdf[$pointer][] = ($eleve_classe[$i]);
 	}
 	$alt=$alt*(-1);
-	echo "<tr class='lig$alt'>\n";
+	echo "<tr class='lig$alt white_hover'>\n";
 	if ($eleve_classe[$i] != $prev_classe && $prev_classe != null && $order_by == "classe") {
 		echo "<td class=cn style='border-top: 2px solid blue; text-align:left;'>\n";
 
@@ -1499,7 +1565,7 @@ while($i < $nombre_lignes) {
 			else {
 				echo "affiche_div_photo();";
 			}
-			echo "\"><img src='../images/icons/buddy.png' width='16' height='16' alt='Afficher la photo ÈlËve' title='Afficher la photo ÈlËve' /></a></div>\n";
+			echo "\"><img src='../images/icons/buddy.png' width='16' height='16' alt='Afficher la photo √©l√®ve' title='Afficher la photo √©l√®ve' /></a></div>\n";
 		}
 
 		echo "$eleve_nom[$i] $eleve_prenom[$i]\n";
@@ -1514,14 +1580,14 @@ while($i < $nombre_lignes) {
 	$prev_classe = $eleve_classe[$i];
 	$k=0;
 	while ($k < $nb_dev) {
-		// En mode saisie, on n'affiche que le devoir ‡ saisir
+		// En mode saisie, on n'affiche que le devoir √† saisir
 		if (($id_devoir==0) or ($id_dev[$k] == $id_devoir)) {
 			echo $mess_note[$i][$k];
 			$tab_ele_notes[$i][]=$mess_note_pdf[$i][$k];
 			$data_pdf[$pointer][] = $mess_note_pdf[$i][$k];
 			if ((($nocomment[$k]!='yes') and ($_SESSION['affiche_comment'] == 'yes')) or ($id_dev[$k] == $id_devoir)) {
 				echo $mess_comment[$i][$k];
-				$data_pdf[$pointer][] = traite_accents_utf8($mess_comment_pdf[$i][$k]);
+				$data_pdf[$pointer][] = ($mess_comment_pdf[$i][$k]);
 				$tab_ele_notes[$i][]="";
 			}
 		}
@@ -1599,9 +1665,9 @@ while($i < $nombre_lignes) {
 		}
 	}
 
-	// affichage des moyennes du conteneur (moyennes des ÈlËves sur le conteneur choisi (Èventuellement le conteneur racine))
+	// affichage des moyennes du conteneur (moyennes des √©l√®ves sur le conteneur choisi (√©ventuellement le conteneur racine))
 
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	if ($id_devoir==0)  {
 		$moyenne_query = mysql_query("SELECT * FROM cn_notes_conteneurs WHERE (login='$eleve_login[$i]' AND id_conteneur='$id_conteneur')");
 		
@@ -1643,7 +1709,7 @@ while($i < $nombre_lignes) {
 $nombre_lignes=$i;
 
 // AJOUT: boireaus 20080607
-// GÈnÈration de l'infobulle pour $tab_graph_moy[]
+// G√©n√©ration de l'infobulle pour $tab_graph_moy[]
 if($id_devoir==0) {
 	$graphe_serie="";
 	if(isset($tab_graph_moy)) {
@@ -1673,7 +1739,7 @@ if($id_devoir==0) {
 	$tabdiv_infobulle[]=creer_div_infobulle('repartition_notes_moyenne',$titre,"",$texte,"",14,0,'y','y','n','n');
 }
 
-// DerniËre ligne
+// Derni√®re ligne
 
 echo "<tr>";
 if ($multiclasses) {
@@ -1683,6 +1749,7 @@ if ($multiclasses) {
 }
 
 echo "<input type='hidden' name='indice_max_log_eleve' value='$i' />\n";
+$indice_max_log_eleve=$i;
 
 echo "<b>Moyennes :</b></td>\n";
 $w_pdf[] = $w2;
@@ -1690,7 +1757,7 @@ $data_pdf[$tot_data_pdf][] = "Moyennes";
 if ($multiclasses) {$data_pdf[$tot_data_pdf][] = "";}
 $k='0';
 while ($k < $nb_dev) {
-	// En mode saisie, on n'affiche que le devoir ‡ saisir
+	// En mode saisie, on n'affiche que le devoir √† saisir
 	if (($id_devoir==0) or ($id_dev[$k] == $id_devoir)) {
 		$call_moyenne[$k] = mysql_query("SELECT round(avg(n.note),1) moyenne FROM cn_notes_devoirs n, j_eleves_groupes j WHERE (
 		j.id_groupe='$id_groupe' AND
@@ -1775,10 +1842,7 @@ if ($id_devoir==0) {
 	n.statut='y' AND
 	n.id_conteneur='$id_conteneur'
 	)");
-	$moy_moy="";
-	if(mysql_num_rows($call_moy_moy)>0) {
-		$moy_moy = mysql_result($call_moy_moy, 0, "moyenne");
-	}
+	$moy_moy = mysql_result($call_moy_moy, 0, "moyenne");
 	if ($moy_moy != '') {
 		echo "<td class='cn'><center><b>".number_format($moy_moy,1, ',', ' ')."</b></center></td>\n";
 		$data_pdf[$tot_data_pdf][] = number_format($moy_moy,1, ',', ' ');
@@ -1835,9 +1899,9 @@ if(getPref($_SESSION['login'], 'cn_avec_min_max', 'y')=='y') {
 
 if(getPref($_SESSION['login'], 'cn_avec_mediane_q1_q3', 'y')=='y') {
 	$tot_data_pdf++;
-	$data_pdf[$tot_data_pdf][]='MÈdianes :';
+	$data_pdf[$tot_data_pdf][]='M√©dianes :';
 	echo "<tr>\n";
-	echo "<td class='cn bold'><b>MÈdianes&nbsp;:</b></td>\n";
+	echo "<td class='cn bold'><b>M√©dianes&nbsp;:</b></td>\n";
 	if ($multiclasses) {
 		echo "<td class='cn bold'>&nbsp;</td>\n";
 		$data_pdf[$tot_data_pdf][]='';
@@ -1863,9 +1927,9 @@ if(getPref($_SESSION['login'], 'cn_avec_mediane_q1_q3', 'y')=='y') {
 	echo "</tr>\n";
 	
 	$tot_data_pdf++;
-	$data_pdf[$tot_data_pdf][]='3Ë quartile :';
+	$data_pdf[$tot_data_pdf][]='3√® quartile :';
 	echo "<tr>\n";
-	echo "<td class='cn bold'><b>3Ë quartile&nbsp;:</b></td>\n";
+	echo "<td class='cn bold'><b>3√® quartile&nbsp;:</b></td>\n";
 	if ($multiclasses) {
 		echo "<td class='cn bold'>&nbsp;</td>\n";
 		$data_pdf[$tot_data_pdf][]='';
@@ -1906,7 +1970,7 @@ if((isset($id_devoir))&&($id_devoir!=0)) {
 }
 //===================================
 
-// PrÈparation du pdf
+// Pr√©paration du pdf
 $header_pdf=serialize($header_pdf);
 $_SESSION['header_pdf']=$header_pdf;
 
@@ -1950,7 +2014,8 @@ if ($id_devoir) {
 		}
 	}
 
-	echo "<p id='p_tri'></p>\n";
+	//echo "<p id='p_tri'></p>\n";
+	echo "<p id='p_liens_javascript' style='display:none;'><span id='p_tri'></span>\n";
 	echo "<script type='text/javascript'>
 	function affiche_lien_tri() {
 		var tab_indices=new Array($chaine_indices);
@@ -1971,7 +2036,7 @@ if ($id_devoir) {
 		}
 		//alert(chaine1);
 		//alert(chaine2);
-		document.getElementById('p_tri').innerHTML='<a href=\'affiche_tri.php?titre=Notes&chaine1='+chaine1+'&chaine2='+chaine2+'\' onclick=\"effectuer_tri(); afficher_div(\'div_tri\',\'y\',-150,20); return false;\" target=\'_blank\'>Afficher les notes triÈes</a>';
+		document.getElementById('p_tri').innerHTML='<a href=\'affiche_tri.php?titre=Notes&chaine1='+chaine1+'&chaine2='+chaine2+'\' onclick=\"effectuer_tri(); afficher_div(\'div_tri\',\'y\',-150,20); return false;\" target=\'_blank\'>Afficher les notes tri√©es</a>';
 	}
 
 	function effectuer_tri() {
@@ -1996,16 +2061,265 @@ if ($id_devoir) {
 	}
 
 	affiche_lien_tri();
+
+	// On affiche le paragraphe avec les liens javascript via javascript pour ne pas les proposer si javascript est d√©sactiv√©:
+	document.getElementById('p_liens_javascript').style.display='';
 </script>\n";
-	$titre_infobulle="Notes triÈes";
+	$titre_infobulle="Notes tri√©es";
 	$texte_infobulle="<div id='notes_triees'></div>";
 	$tabdiv_infobulle[]=creer_div_infobulle('div_tri',$titre_infobulle,"",$texte_infobulle,"",30,0,'y','y','n','n');
+
+	//=====================================================
+
+	echo " - ";
+
+	//=====================================================
+	// Ramener une note sur 20 (ou autre)
+	$cn_precision=getPref($_SESSION['login'], 'cn_precision', 's5');
+
+	$titre_infobulle="Ramener sur N";
+	$texte_infobulle="<p>Vous avez des notes sur 37 ou un autre nombre pas tr√®s parlant pour les √©l√®ves et les parents et vous souhaitez le ramener sur 20 (<em>ou autre</em>) pour plus d'accessibilit√© dans le carnet de notes.</p>
+<div align='center'>
+<table class='boireaus'>
+<tr class='lig1'><td>Total du bar√™me&nbsp;</td><td><input type='text' name='total_bareme' id='total_bareme' value='30' size='3' onkeydown='clavier_2(this.id,event,1,100);' autocomplete='off' /></td><td></td></tr>
+<tr class='lig-1'><td>Ramener sur&nbsp;</td><td><input type='text' name='ramener_sur_N' id='ramener_sur_N' value='20' size='3' onkeydown='clavier_2(this.id,event,1,100);' autocomplete='off' /></td><td></td></tr>
+<tr class='lig1'><td rowspan='6'>Arrondir&nbsp;</td><td><input type='radio' name='precision' id='precision_s1' value='s1' ";
+	if($cn_precision=='s1') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_s1' style='cursor: pointer;'>au dixi√®me de point sup√©rieur</label></td></tr>
+<tr class='lig-1'><td><input type='radio' name='precision' id='precision_s5' value='s5' ";
+	if($cn_precision=='s5') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_s5' style='cursor: pointer;'>au demi-point sup√©rieur</label></td></tr>
+<tr class='lig1'><td><input type='radio' name='precision' id='precision_se' value='se' ";
+	if($cn_precision=='se') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_se' style='cursor: pointer;'>au point entier sup√©rieur</label></td></tr>
+<tr class='lig-1'><td><input type='radio' name='precision' id='precision_p1' value='p1' ";
+	if($cn_precision=='p1') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_p1' style='cursor: pointer;'>au dixi√®me de point le plus proche</label></td></tr>
+<tr class='lig1'><td><input type='radio' name='precision' id='precision_p5' value='p5' ";
+	if($cn_precision=='p5') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_p5' style='cursor: pointer;'>au demi-point le plus proche</label></td></tr>
+<tr class='lig-1'><td><input type='radio' name='precision' id='precision_pe' value='pe' ";
+	if($cn_precision=='pe') {
+		$texte_infobulle.="checked ";
+	}
+	$texte_infobulle.="/></td><td><label for='precision_pe' style='cursor: pointer;'>au point entier le plus proche</label></td></tr>
+</table>
+<p><input type='button' name='valider_ramener_sur_N' value='Valider' onclick='effectuer_ramener_sur_N()' /></p>
+</div>";
+	$tabdiv_infobulle[]=creer_div_infobulle('div_ramener_sur_N',$titre_infobulle,"",$texte_infobulle,"",32,0,'y','y','n','n');
+	echo "<span id='p_ramener_sur_N2' style='display:none'><a href='#' onclick=\"afficher_div('div_ramener_sur_N','y',20,20); return false;\" target=\'_blank\'>Ramener sur N</a></span>";
+
+	//=====================================================
+
+	echo "<script type='text/javascript'>
+	function effectuer_ramener_sur_N() {
+		if((document.getElementById('ramener_sur_N'))&&(document.getElementById('ramener_sur_N').value!='')&&(document.getElementById('total_bareme'))&&(document.getElementById('total_bareme').value!='')) {
+
+			ramener_sur_N=document.getElementById('ramener_sur_N').value;
+			total_bareme=document.getElementById('total_bareme').value;
+
+			ramener_sur_N=ramener_sur_N.replace(',', '.');
+			total_bareme=total_bareme.replace(',', '.');
+
+			//precision=document.getElementById('precision').value;
+			if(document.getElementById('precision_s1').checked==true) {
+				precision='s1'
+			}
+			else {
+				if(document.getElementById('precision_s5').checked==true) {
+					precision='s5'
+				}
+				else {
+					if(document.getElementById('precision_se').checked==true) {
+						precision='se'
+					}
+					else {
+						if(document.getElementById('precision_p1').checked==true) {
+							precision='p1'
+						}
+						else {
+							if(document.getElementById('precision_p5').checked==true) {
+								precision='p5'
+							}
+							else {
+								if(document.getElementById('precision_pe').checked==true) {
+									precision='pe'
+								}
+								else {
+									precision='p5'
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if(document.getElementById('cn_precision')) {
+				document.getElementById('cn_precision').value=precision;
+			}
+
+			if((((total_bareme.search(/^[0-9.]+$/)!=-1)&&(total_bareme.lastIndexOf('.')==total_bareme.indexOf('.',0)))||
+			((total_bareme.search(/^[0-9,]+$/)!=-1)&&(total_bareme.lastIndexOf(',')==total_bareme.indexOf(',',0))))&&
+			(((ramener_sur_N.search(/^[0-9.]+$/)!=-1)&&(ramener_sur_N.lastIndexOf('.')==ramener_sur_N.indexOf('.',0)))||
+			((ramener_sur_N.search(/^[0-9,]+$/)!=-1)&&(ramener_sur_N.lastIndexOf(',')==ramener_sur_N.indexOf(',',0))))) {
+				var tab_indices=new Array($chaine_indices);
+				for(i=0;i<$nombre_lignes;i++) {
+					num=tab_indices[i];
+					if(document.getElementById('n'+num)) {
+						if(document.getElementById('n'+num).value!='') {
+							note=document.getElementById('n'+num).value;
+
+							note=note.replace(',', '.');
+
+							if(((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0)))||
+							((note.search(/^[0-9,]+$/)!=-1)&&(note.lastIndexOf(',')==note.indexOf(',',0)))){
+								note_modifiee=note*ramener_sur_N/total_bareme;
+								//document.getElementById('n'+num).value=note_modifiee;
+
+								if(precision=='p5') {
+									document.getElementById('n'+num).value=Math.round(2*note_modifiee)/2;
+								}
+								else {
+									if(precision=='p1') {
+										document.getElementById('n'+num).value=Math.round(10*note_modifiee)/10;
+									}
+									else {
+										if(precision=='pe') {
+											document.getElementById('n'+num).value=Math.round(note_modifiee);
+										}
+										else {
+											if(precision=='s5') {
+												document.getElementById('n'+num).value=Math.ceil(2*note_modifiee)/2;
+											}
+											else {
+												if(precision=='s1') {
+													document.getElementById('n'+num).value=Math.ceil(10*note_modifiee)/10;
+												}
+												else {
+													if(precision=='se') {
+														document.getElementById('n'+num).value=Math.ceil(note_modifiee);
+													}
+													else {
+														document.getElementById('n'+num).value=note_modifiee;
+													}
+												}
+											}
+										}
+									}
+								}
+
+								if((note_modifiee>".$note_sur_verif.")||(note_modifiee<0)){
+									couleur='red';
+								}
+								else{
+									couleur='$couleur_devoirs';
+								}
+								eval('document.getElementById(\'td_'+num+'\').style.background=couleur');
+
+								if(document.getElementById('n1'+num)) {
+									if(document.getElementById('n1'+num).value!='') {
+										document.getElementById('n1'+num).value=document.getElementById('n1'+num).value+' ('+note+'/'+total_bareme+')';
+									}
+									else {
+										document.getElementById('n1'+num).value='('+note+'/'+total_bareme+')';
+									}
+								}
+							}
+						}
+					}
+				}
+
+				calcul_moy_med();
+
+				alert('Op√©ration termin√©e.');
+				cacher_div('div_ramener_sur_N');
+			}
+			else {
+				alert('Valeur propos√©e invalide.');
+			}
+		}
+		else {
+			alert('Valeur propos√©e invalide.');
+		}
+	}
+
+	document.getElementById('p_ramener_sur_N').style.display='';
+	document.getElementById('p_ramener_sur_N2').style.display='';
+	
+	function recopier_notes_vers_textarea() {
+		if(document.getElementById('textarea_notes')) {
+			//document.getElementById('textarea_notes').value='';
+			liste_notes='';
+
+			var arr = document.getElementsByTagName('input');
+			for(j=0;j<$indice_max_log_eleve;j++) {
+				if(j>0) {liste_notes=liste_notes+'\\n';}
+
+				for(var i = 0; i < arr.length; i++) {
+					if(arr[i].name == 'note_eleve['+j+']') {
+						note_eleve=arr[i].value;
+
+						liste_notes=liste_notes+note_eleve;
+					}
+				}
+			}
+
+			document.getElementById('textarea_notes').value=liste_notes;
+		}
+	}
+	
+	// 20120509
+	function modif_note(num, delta) {
+		var reg_virgule=new RegExp('[,]', 'g');
+
+		if(document.getElementById('n'+num)) {
+			note=document.getElementById('n'+num).value;
+			if(((note.search(/^[0-9.]+$/)!=-1)&&(note.lastIndexOf('.')==note.indexOf('.',0)))||
+			((note.search(/^[0-9,]+$/)!=-1)&&(note.lastIndexOf(',')==note.indexOf(',',0)))){
+				note_modifiee=eval(note.replace(reg_virgule, '.'))+eval(delta);
+				if((note_modifiee>=0)&&(note_modifiee<=$note_sur_verif)) {
+					document.getElementById('n'+num).value=note_modifiee;
+					changement();
+				}
+			}
+		}
+	}
+
+	function affichage_modif_note() {
+		for(i=0;i<$max_indice_eleve;i++) {
+			if(document.getElementById('modif_note_'+i)) {
+				document.getElementById('modif_note_'+i).style.display='';
+			}
+		}
+	}
+</script>\n";
+	//=====================================================
+
+	echo " - ";
+
+	//=====================================================
+
+	echo "<a href='javascript:recopier_notes_vers_textarea()'>Recopier les notes vers le Textarea ci-dessous</a>";
+
+	echo "</p>\n";
+	//=====================================================
 
 
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
 	echo add_token_field();
-	echo "<h3 class='gepi'>Importation directe des notes par copier/coller ‡ partir d'un tableur</h3>\n";
+	echo "<a name='import_notes_tableur'></a>";
+	echo "<h3 class='gepi'>Importation directe des notes par copier/coller √† partir d'un tableur</h3>\n";
 	echo "<table summary=\"Tableau d'import\"><tr>\n";
 	echo "<td>De la ligne : ";
 		echo "<SELECT name='debut_import' size='1'>\n";
@@ -2016,7 +2330,7 @@ if ($id_devoir) {
 	}
 	echo "</select>\n";
 
-	echo "<br /> ‡ la ligne : \n";
+	echo "<br /> √† la ligne : \n";
 	echo "<SELECT name='fin_import' size='1'>\n";
 	$k = 1;
 	while ($k < $current_displayed_line+1) {
@@ -2027,10 +2341,10 @@ if ($id_devoir) {
 	}
 	echo "</select>\n";
 	echo "</td><td>\n";
-	echo "Coller ci-dessous les donnÈes ‡ importer : <br />\n";
+	echo "Coller ci-dessous les donn√©es √† importer : <br />\n";
 	if (isset($_POST['notes'])) {$notes=preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['notes']));} else {$notes='';}
 	//echo "<textarea name='notes' rows='3' cols='40' wrap='virtual'>$notes</textarea>\n";
-	echo "<textarea name='notes' rows='3' cols='40' class='wrap'>$notes</textarea>\n";
+	echo "<textarea name='notes' id='textarea_notes' rows='3' cols='40' class='wrap'>$notes</textarea>\n";
 	echo "</td></tr></table>\n";
 
 	echo "<input type='hidden' name='id_conteneur' value='$id_conteneur' />\n";
@@ -2039,13 +2353,13 @@ if ($id_devoir) {
 	echo "<input type='hidden' name='order_by' value='$order_by' />\n";
 
 	echo "<center><input type='submit' value='Importer'  onclick=\"return confirm_abandon (this, change, '$themessage')\" /></center>\n";
-	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les ÈlËves dont le nom est affichÈ ci-dessus !<br />Soyez donc vigilant ‡ ne coller que les notes de ces ÈlËves, dans le bon ordre.</p>\n";
+	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les √©l√®ves dont le nom est affich√© ci-dessus !<br />Soyez donc vigilant √† ne coller que les notes de ces √©l√®ves, dans le bon ordre.</p>\n";
 	echo "</form></fieldset>\n";
 
 	if (isset($_POST['notes'])) {
 		echo "<script type=\"text/javascript\" language=\"javascript\">
 		<!--
-		alert(\"Attention, les notes importÈes ne sont pas encore enregistrÈes dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
+		alert(\"Attention, les notes import√©es ne sont pas encore enregistr√©es dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
 		changement();
 		//-->
 		</script>\n";
@@ -2054,7 +2368,7 @@ if ($id_devoir) {
   if (isset($_POST['appreciations'])) {
   	echo "<script type=\"text/javascript\" language=\"javascript\">
   	<!--
-  	alert(\"Attention, les apprÈciations importÈes ne sont pas encore enregistrÈes dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
+  	alert(\"Attention, les appr√©ciations import√©es ne sont pas encore enregistr√©es dans la base GEPI. Vous devez confirmer l'importation (bouton 'Enregistrer') !\");
   	//-->
   	</script>\n";
   }
@@ -2064,7 +2378,7 @@ if ($id_devoir) {
 	echo "<fieldset style=\"padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;\">\n";
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_notes.php\" method=post>\n";
 	echo add_token_field();
-	echo "<h3 class='gepi'>Importation directe des apprÈciations par copier/coller ‡ partir d'un tableur</h3>\n";
+	echo "<h3 class='gepi'>Importation directe des appr√©ciations par copier/coller √† partir d'un tableur</h3>\n";
 	echo "<table summary=\"Tableau d'import\"><tr>\n";
 	echo "<td>De la ligne : ";
 		echo "<SELECT name='debut_import' size='1'>\n";
@@ -2075,7 +2389,7 @@ if ($id_devoir) {
 	}
 	echo "</select>\n";
 
-	echo "<br /> ‡ la ligne : \n";
+	echo "<br /> √† la ligne : \n";
 	echo "<SELECT name='fin_import' size='1'>\n";
 	$k = 1;
 	while ($k < $current_displayed_line+1) {
@@ -2086,7 +2400,7 @@ if ($id_devoir) {
 	}
 	echo "</select>\n";
 	echo "</td><td>\n";
-	echo "Coller ci-dessous les donnÈes ‡ importer&nbsp;: <br />\n";
+	echo "Coller ci-dessous les donn√©es √† importer&nbsp;: <br />\n";
 	if (isset($_POST['appreciations'])) {$appreciations = preg_replace("/\\\\n/","\n",preg_replace("/\\\\r/","\r",$_POST['appreciations']));} else {$appreciations='';}
 	echo "<textarea name='appreciations' rows='3' cols='40' class='wrap'>$appreciations</textarea>\n";
 	echo "</td></tr></table>\n";
@@ -2094,27 +2408,28 @@ if ($id_devoir) {
 	echo "<input type='hidden' name='id_devoir' value='$id_devoir' />\n";
 	echo "<input type='hidden' name='order_by' value='$order_by' />\n";
 	echo "<center><input type='submit' value='Importer'  onclick=\"return confirm_abandon (this, change, '$themessage')\" /></center>\n";
-	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les ÈlËves dont le nom est affichÈ ci-dessus !<br />Soyez donc vigilant ‡ ne coller que les apprÈciations de ces ÈlËves, dans le bon ordre.</p>\n";
+	echo "<p><b>Remarque importante :</b> l'importation ne prend en compte que les √©l√®ves dont le nom est affich√© ci-dessus !<br />Soyez donc vigilant √† ne coller que les appr√©ciations de ces √©l√®ves, dans le bon ordre.</p>\n";
 	echo "</form></fieldset>\n";
 }
 
-// Pour qu'un professeur puisse avoir une prÈfÈrence d'affichage par dÈfaut ou non des quartiles:
+// Pour qu'un professeur puisse avoir une pr√©f√©rence d'affichage par d√©faut ou non des quartiles:
 $aff_quartiles_par_defaut=getPref($_SESSION['login'],'aff_quartiles_cn',"n");
 $aff_photo_cn_par_defaut=getPref($_SESSION['login'],'aff_photo_cn',"n");
 
+echo "<br />";
+echo $message_cnil_commentaires."<br />";
 ?>
-<br />
-* En conformitÈ avec la CNIL, le professeur s'engage ‡ ne faire figurer dans le carnet de notes que des notes et commentaires portÈs ‡ la connaissance de l'ÈlËve (note et commentaire portÈs sur la copie, ...).
+
 <script type="text/javascript" language="javascript">
 chargement = true;
 
-// La vÈrification ci-dessous est effectuÈe aprËs le remplacement des notes supÈrieures ‡ 20 par des zÈros.
-// Ces Èventuelles erreurs de frappe ne sauteront pas aux yeux.
+// La v√©rification ci-dessous est effectu√©e apr√®s le remplacement des notes sup√©rieures √† 20 par des z√©ros.
+// Ces √©ventuelles erreurs de frappe ne sauteront pas aux yeux.
 for(i=10;i<<?php echo $num_id; ?>;i++){
 	eval("verifcol("+i+")");
 }
 
-// On donne le focus ‡ la premiËre cellule lors du chargement de la page:
+// On donne le focus √† la premi√®re cellule lors du chargement de la page:
 if(document.getElementById('n10')){
 	document.getElementById('n10').focus();
 }
@@ -2131,7 +2446,7 @@ function affichage_quartiles() {
 if($aff_quartiles_par_defaut=='y') {
 	echo "affichage_quartiles();\n";
 }
-if($aff_photo_cn_par_defaut=='y') {
+if((isset($id_devoir))&&($id_devoir!=NULL)&&($aff_photo_cn_par_defaut=='y')) {
 	echo "affiche_div_photo();\n";
 }
 ?>

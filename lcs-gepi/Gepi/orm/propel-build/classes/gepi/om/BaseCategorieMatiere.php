@@ -25,6 +25,12 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	protected static $peer;
 
 	/**
+	 * The flag var to prevent infinit loop in deep copy
+	 * @var       boolean
+	 */
+	protected $startCopy = false;
+
+	/**
 	 * The value for the id field.
 	 * @var        int
 	 */
@@ -47,11 +53,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 * @var        int
 	 */
 	protected $priority;
-
-	/**
-	 * @var        array JGroupesClasses[] Collection to store aggregation of JGroupesClasses objects.
-	 */
-	protected $collJGroupesClassess;
 
 	/**
 	 * @var        array Matiere[] Collection to store aggregation of Matiere objects.
@@ -81,6 +82,24 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 * @var        boolean
 	 */
 	protected $alreadyInValidation = false;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $classesScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $matieresScheduledForDeletion = null;
+
+	/**
+	 * An array of objects scheduled for deletion.
+	 * @var		array
+	 */
+	protected $jCategoriesMatieresClassessScheduledForDeletion = null;
 
 	/**
 	 * Get the [id] column value.
@@ -308,8 +327,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 
 		if ($deep) {  // also de-associate any related objects?
 
-			$this->collJGroupesClassess = null;
-
 			$this->collMatieres = null;
 
 			$this->collJCategoriesMatieresClassess = null;
@@ -339,18 +356,18 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 
 		$con->beginTransaction();
 		try {
+			$deleteQuery = CategorieMatiereQuery::create()
+				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
 			if ($ret) {
-				CategorieMatiereQuery::create()
-					->filterByPrimaryKey($this->getPrimaryKey())
-					->delete($con);
+				$deleteQuery->delete($con);
 				$this->postDelete($con);
 				$con->commit();
 				$this->setDeleted(true);
 			} else {
 				$con->commit();
 			}
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -402,7 +419,7 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -425,34 +442,38 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 		if (!$this->alreadyInSave) {
 			$this->alreadyInSave = true;
 
-			if ($this->isNew() ) {
-				$this->modifiedColumns[] = CategorieMatierePeer::ID;
+			if ($this->isNew() || $this->isModified()) {
+				// persist changes
+				if ($this->isNew()) {
+					$this->doInsert($con);
+				} else {
+					$this->doUpdate($con);
+				}
+				$affectedRows += 1;
+				$this->resetModified();
 			}
 
-			// If this object has been modified, then save it to the database.
-			if ($this->isModified()) {
-				if ($this->isNew()) {
-					$criteria = $this->buildCriteria();
-					if ($criteria->keyContainsValue(CategorieMatierePeer::ID) ) {
-						throw new PropelException('Cannot insert a value for auto-increment primary key ('.CategorieMatierePeer::ID.')');
-					}
-
-					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows = 1;
-					$this->setId($pk);  //[IMV] update autoincrement primary key
-					$this->setNew(false);
-				} else {
-					$affectedRows = CategorieMatierePeer::doUpdate($this, $con);
+			if ($this->classesScheduledForDeletion !== null) {
+				if (!$this->classesScheduledForDeletion->isEmpty()) {
+					JCategoriesMatieresClassesQuery::create()
+						->filterByPrimaryKeys($this->classesScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->classesScheduledForDeletion = null;
 				}
 
-				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
+				foreach ($this->getClasses() as $classe) {
+					if ($classe->isModified()) {
+						$classe->save($con);
+					}
+				}
 			}
 
-			if ($this->collJGroupesClassess !== null) {
-				foreach ($this->collJGroupesClassess as $referrerFK) {
-					if (!$referrerFK->isDeleted()) {
-						$affectedRows += $referrerFK->save($con);
-					}
+			if ($this->matieresScheduledForDeletion !== null) {
+				if (!$this->matieresScheduledForDeletion->isEmpty()) {
+					MatiereQuery::create()
+						->filterByPrimaryKeys($this->matieresScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->matieresScheduledForDeletion = null;
 				}
 			}
 
@@ -461,6 +482,15 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
+				}
+			}
+
+			if ($this->jCategoriesMatieresClassessScheduledForDeletion !== null) {
+				if (!$this->jCategoriesMatieresClassessScheduledForDeletion->isEmpty()) {
+					JCategoriesMatieresClassesQuery::create()
+						->filterByPrimaryKeys($this->jCategoriesMatieresClassessScheduledForDeletion->getPrimaryKeys(false))
+						->delete($con);
+					$this->jCategoriesMatieresClassessScheduledForDeletion = null;
 				}
 			}
 
@@ -477,6 +507,92 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 		}
 		return $affectedRows;
 	} // doSave()
+
+	/**
+	 * Insert the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @throws     PropelException
+	 * @see        doSave()
+	 */
+	protected function doInsert(PropelPDO $con)
+	{
+		$modifiedColumns = array();
+		$index = 0;
+
+		$this->modifiedColumns[] = CategorieMatierePeer::ID;
+		if (null !== $this->id) {
+			throw new PropelException('Cannot insert a value for auto-increment primary key (' . CategorieMatierePeer::ID . ')');
+		}
+
+		 // check the columns in natural order for more readable SQL queries
+		if ($this->isColumnModified(CategorieMatierePeer::ID)) {
+			$modifiedColumns[':p' . $index++]  = 'ID';
+		}
+		if ($this->isColumnModified(CategorieMatierePeer::NOM_COURT)) {
+			$modifiedColumns[':p' . $index++]  = 'NOM_COURT';
+		}
+		if ($this->isColumnModified(CategorieMatierePeer::NOM_COMPLET)) {
+			$modifiedColumns[':p' . $index++]  = 'NOM_COMPLET';
+		}
+		if ($this->isColumnModified(CategorieMatierePeer::PRIORITY)) {
+			$modifiedColumns[':p' . $index++]  = 'PRIORITY';
+		}
+
+		$sql = sprintf(
+			'INSERT INTO matieres_categories (%s) VALUES (%s)',
+			implode(', ', $modifiedColumns),
+			implode(', ', array_keys($modifiedColumns))
+		);
+
+		try {
+			$stmt = $con->prepare($sql);
+			foreach ($modifiedColumns as $identifier => $columnName) {
+				switch ($columnName) {
+					case 'ID':
+						$stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
+						break;
+					case 'NOM_COURT':
+						$stmt->bindValue($identifier, $this->nom_court, PDO::PARAM_STR);
+						break;
+					case 'NOM_COMPLET':
+						$stmt->bindValue($identifier, $this->nom_complet, PDO::PARAM_STR);
+						break;
+					case 'PRIORITY':
+						$stmt->bindValue($identifier, $this->priority, PDO::PARAM_INT);
+						break;
+				}
+			}
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
+		}
+
+		try {
+			$pk = $con->lastInsertId();
+		} catch (Exception $e) {
+			throw new PropelException('Unable to get autoincrement id.', $e);
+		}
+		$this->setId($pk);
+
+		$this->setNew(false);
+	}
+
+	/**
+	 * Update the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @see        doSave()
+	 */
+	protected function doUpdate(PropelPDO $con)
+	{
+		$selectCriteria = $this->buildPkeyCriteria();
+		$valuesCriteria = $this->buildCriteria();
+		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
+	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -542,14 +658,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 				$failureMap = array_merge($failureMap, $retval);
 			}
 
-
-				if ($this->collJGroupesClassess !== null) {
-					foreach ($this->collJGroupesClassess as $referrerFK) {
-						if (!$referrerFK->validate($columns)) {
-							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-						}
-					}
-				}
 
 				if ($this->collMatieres !== null) {
 					foreach ($this->collMatieres as $referrerFK) {
@@ -647,9 +755,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 			$keys[3] => $this->getPriority(),
 		);
 		if ($includeForeignObjects) {
-			if (null !== $this->collJGroupesClassess) {
-				$result['JGroupesClassess'] = $this->collJGroupesClassess->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-			}
 			if (null !== $this->collMatieres) {
 				$result['Matieres'] = $this->collMatieres->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
 			}
@@ -808,16 +913,12 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 		$copyObj->setNomComplet($this->getNomComplet());
 		$copyObj->setPriority($this->getPriority());
 
-		if ($deepCopy) {
+		if ($deepCopy && !$this->startCopy) {
 			// important: temporarily setNew(false) because this affects the behavior of
 			// the getter/setter methods for fkey referrer objects.
 			$copyObj->setNew(false);
-
-			foreach ($this->getJGroupesClassess() as $relObj) {
-				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-					$copyObj->addJGroupesClasses($relObj->copy($deepCopy));
-				}
-			}
+			// store object hash to prevent cycle
+			$this->startCopy = true;
 
 			foreach ($this->getMatieres() as $relObj) {
 				if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
@@ -831,6 +932,8 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 				}
 			}
 
+			//unflag object copy
+			$this->startCopy = false;
 		} // if ($deepCopy)
 
 		if ($makeNew) {
@@ -880,7 +983,7 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 
 	/**
 	 * Initializes a collection based on the name of a relation.
-	 * Avoids crafting an 'init[$relationName]s' method name 
+	 * Avoids crafting an 'init[$relationName]s' method name
 	 * that wouldn't work when StandardEnglishPluralizer is used.
 	 *
 	 * @param      string $relationName The name of the relation to initialize
@@ -888,180 +991,12 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 */
 	public function initRelation($relationName)
 	{
-		if ('JGroupesClasses' == $relationName) {
-			return $this->initJGroupesClassess();
-		}
 		if ('Matiere' == $relationName) {
 			return $this->initMatieres();
 		}
 		if ('JCategoriesMatieresClasses' == $relationName) {
 			return $this->initJCategoriesMatieresClassess();
 		}
-	}
-
-	/**
-	 * Clears out the collJGroupesClassess collection
-	 *
-	 * This does not modify the database; however, it will remove any associated objects, causing
-	 * them to be refetched by subsequent calls to accessor method.
-	 *
-	 * @return     void
-	 * @see        addJGroupesClassess()
-	 */
-	public function clearJGroupesClassess()
-	{
-		$this->collJGroupesClassess = null; // important to set this to NULL since that means it is uninitialized
-	}
-
-	/**
-	 * Initializes the collJGroupesClassess collection.
-	 *
-	 * By default this just sets the collJGroupesClassess collection to an empty array (like clearcollJGroupesClassess());
-	 * however, you may wish to override this method in your stub class to provide setting appropriate
-	 * to your application -- for example, setting the initial array to the values stored in database.
-	 *
-	 * @param      boolean $overrideExisting If set to true, the method call initializes
-	 *                                        the collection even if it is not empty
-	 *
-	 * @return     void
-	 */
-	public function initJGroupesClassess($overrideExisting = true)
-	{
-		if (null !== $this->collJGroupesClassess && !$overrideExisting) {
-			return;
-		}
-		$this->collJGroupesClassess = new PropelObjectCollection();
-		$this->collJGroupesClassess->setModel('JGroupesClasses');
-	}
-
-	/**
-	 * Gets an array of JGroupesClasses objects which contain a foreign key that references this object.
-	 *
-	 * If the $criteria is not null, it is used to always fetch the results from the database.
-	 * Otherwise the results are fetched from the database the first time, then cached.
-	 * Next time the same method is called without $criteria, the cached collection is returned.
-	 * If this CategorieMatiere is new, it will return
-	 * an empty collection or the current collection; the criteria is ignored on a new object.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @return     PropelCollection|array JGroupesClasses[] List of JGroupesClasses objects
-	 * @throws     PropelException
-	 */
-	public function getJGroupesClassess($criteria = null, PropelPDO $con = null)
-	{
-		if(null === $this->collJGroupesClassess || null !== $criteria) {
-			if ($this->isNew() && null === $this->collJGroupesClassess) {
-				// return empty collection
-				$this->initJGroupesClassess();
-			} else {
-				$collJGroupesClassess = JGroupesClassesQuery::create(null, $criteria)
-					->filterByCategorieMatiere($this)
-					->find($con);
-				if (null !== $criteria) {
-					return $collJGroupesClassess;
-				}
-				$this->collJGroupesClassess = $collJGroupesClassess;
-			}
-		}
-		return $this->collJGroupesClassess;
-	}
-
-	/**
-	 * Returns the number of related JGroupesClasses objects.
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct
-	 * @param      PropelPDO $con
-	 * @return     int Count of related JGroupesClasses objects.
-	 * @throws     PropelException
-	 */
-	public function countJGroupesClassess(Criteria $criteria = null, $distinct = false, PropelPDO $con = null)
-	{
-		if(null === $this->collJGroupesClassess || null !== $criteria) {
-			if ($this->isNew() && null === $this->collJGroupesClassess) {
-				return 0;
-			} else {
-				$query = JGroupesClassesQuery::create(null, $criteria);
-				if($distinct) {
-					$query->distinct();
-				}
-				return $query
-					->filterByCategorieMatiere($this)
-					->count($con);
-			}
-		} else {
-			return count($this->collJGroupesClassess);
-		}
-	}
-
-	/**
-	 * Method called to associate a JGroupesClasses object to this object
-	 * through the JGroupesClasses foreign key attribute.
-	 *
-	 * @param      JGroupesClasses $l JGroupesClasses
-	 * @return     void
-	 * @throws     PropelException
-	 */
-	public function addJGroupesClasses(JGroupesClasses $l)
-	{
-		if ($this->collJGroupesClassess === null) {
-			$this->initJGroupesClassess();
-		}
-		if (!$this->collJGroupesClassess->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJGroupesClassess[]= $l;
-			$l->setCategorieMatiere($this);
-		}
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this CategorieMatiere is new, it will return
-	 * an empty collection; or if this CategorieMatiere has previously
-	 * been saved, it will retrieve related JGroupesClassess from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in CategorieMatiere.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array JGroupesClasses[] List of JGroupesClasses objects
-	 */
-	public function getJGroupesClassessJoinGroupe($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = JGroupesClassesQuery::create(null, $criteria);
-		$query->joinWith('Groupe', $join_behavior);
-
-		return $this->getJGroupesClassess($query, $con);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this CategorieMatiere is new, it will return
-	 * an empty collection; or if this CategorieMatiere has previously
-	 * been saved, it will retrieve related JGroupesClassess from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in CategorieMatiere.
-	 *
-	 * @param      Criteria $criteria optional Criteria object to narrow the query
-	 * @param      PropelPDO $con optional connection object
-	 * @param      string $join_behavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-	 * @return     PropelCollection|array JGroupesClasses[] List of JGroupesClasses objects
-	 */
-	public function getJGroupesClassessJoinClasse($criteria = null, $con = null, $join_behavior = Criteria::LEFT_JOIN)
-	{
-		$query = JGroupesClassesQuery::create(null, $criteria);
-		$query->joinWith('Classe', $join_behavior);
-
-		return $this->getJGroupesClassess($query, $con);
 	}
 
 	/**
@@ -1133,6 +1068,30 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of Matiere objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $matieres A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setMatieres(PropelCollection $matieres, PropelPDO $con = null)
+	{
+		$this->matieresScheduledForDeletion = $this->getMatieres(new Criteria(), $con)->diff($matieres);
+
+		foreach ($matieres as $matiere) {
+			// Fix issue with collection modified by reference
+			if ($matiere->isNew()) {
+				$matiere->setCategorieMatiere($this);
+			}
+			$this->addMatiere($matiere);
+		}
+
+		$this->collMatieres = $matieres;
+	}
+
+	/**
 	 * Returns the number of related Matiere objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1165,8 +1124,7 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 * through the Matiere foreign key attribute.
 	 *
 	 * @param      Matiere $l Matiere
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     CategorieMatiere The current object (for fluent API support)
 	 */
 	public function addMatiere(Matiere $l)
 	{
@@ -1174,9 +1132,19 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 			$this->initMatieres();
 		}
 		if (!$this->collMatieres->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collMatieres[]= $l;
-			$l->setCategorieMatiere($this);
+			$this->doAddMatiere($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	Matiere $matiere The matiere object to add.
+	 */
+	protected function doAddMatiere($matiere)
+	{
+		$this->collMatieres[]= $matiere;
+		$matiere->setCategorieMatiere($this);
 	}
 
 	/**
@@ -1248,6 +1216,30 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of JCategoriesMatieresClasses objects related by a one-to-many relationship
+	 * to the current object.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $jCategoriesMatieresClassess A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setJCategoriesMatieresClassess(PropelCollection $jCategoriesMatieresClassess, PropelPDO $con = null)
+	{
+		$this->jCategoriesMatieresClassessScheduledForDeletion = $this->getJCategoriesMatieresClassess(new Criteria(), $con)->diff($jCategoriesMatieresClassess);
+
+		foreach ($jCategoriesMatieresClassess as $jCategoriesMatieresClasses) {
+			// Fix issue with collection modified by reference
+			if ($jCategoriesMatieresClasses->isNew()) {
+				$jCategoriesMatieresClasses->setCategorieMatiere($this);
+			}
+			$this->addJCategoriesMatieresClasses($jCategoriesMatieresClasses);
+		}
+
+		$this->collJCategoriesMatieresClassess = $jCategoriesMatieresClassess;
+	}
+
+	/**
 	 * Returns the number of related JCategoriesMatieresClasses objects.
 	 *
 	 * @param      Criteria $criteria
@@ -1280,8 +1272,7 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 * through the JCategoriesMatieresClasses foreign key attribute.
 	 *
 	 * @param      JCategoriesMatieresClasses $l JCategoriesMatieresClasses
-	 * @return     void
-	 * @throws     PropelException
+	 * @return     CategorieMatiere The current object (for fluent API support)
 	 */
 	public function addJCategoriesMatieresClasses(JCategoriesMatieresClasses $l)
 	{
@@ -1289,9 +1280,19 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 			$this->initJCategoriesMatieresClassess();
 		}
 		if (!$this->collJCategoriesMatieresClassess->contains($l)) { // only add it if the **same** object is not already associated
-			$this->collJCategoriesMatieresClassess[]= $l;
-			$l->setCategorieMatiere($this);
+			$this->doAddJCategoriesMatieresClasses($l);
 		}
+
+		return $this;
+	}
+
+	/**
+	 * @param	JCategoriesMatieresClasses $jCategoriesMatieresClasses The jCategoriesMatieresClasses object to add.
+	 */
+	protected function doAddJCategoriesMatieresClasses($jCategoriesMatieresClasses)
+	{
+		$this->collJCategoriesMatieresClassess[]= $jCategoriesMatieresClasses;
+		$jCategoriesMatieresClasses->setCategorieMatiere($this);
 	}
 
 
@@ -1383,6 +1384,37 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	}
 
 	/**
+	 * Sets a collection of Classe objects related by a many-to-many relationship
+	 * to the current object by way of the j_matieres_categories_classes cross-reference table.
+	 * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
+	 * and new objects from the given Propel collection.
+	 *
+	 * @param      PropelCollection $classes A Propel collection.
+	 * @param      PropelPDO $con Optional connection object
+	 */
+	public function setClasses(PropelCollection $classes, PropelPDO $con = null)
+	{
+		$jCategoriesMatieresClassess = JCategoriesMatieresClassesQuery::create()
+			->filterByClasse($classes)
+			->filterByCategorieMatiere($this)
+			->find($con);
+
+		$this->classesScheduledForDeletion = $this->getJCategoriesMatieresClassess()->diff($jCategoriesMatieresClassess);
+		$this->collJCategoriesMatieresClassess = $jCategoriesMatieresClassess;
+
+		foreach ($classes as $classe) {
+			// Fix issue with collection modified by reference
+			if ($classe->isNew()) {
+				$this->doAddClasse($classe);
+			} else {
+				$this->addClasse($classe);
+			}
+		}
+
+		$this->collClasses = $classes;
+	}
+
+	/**
 	 * Gets the number of Classe objects related by a many-to-many relationship
 	 * to the current object by way of the j_matieres_categories_classes cross-reference table.
 	 *
@@ -1418,18 +1450,26 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	 * @param      Classe $classe The JCategoriesMatieresClasses object to relate
 	 * @return     void
 	 */
-	public function addClasse($classe)
+	public function addClasse(Classe $classe)
 	{
 		if ($this->collClasses === null) {
 			$this->initClasses();
 		}
 		if (!$this->collClasses->contains($classe)) { // only add it if the **same** object is not already associated
-			$jCategoriesMatieresClasses = new JCategoriesMatieresClasses();
-			$jCategoriesMatieresClasses->setClasse($classe);
-			$this->addJCategoriesMatieresClasses($jCategoriesMatieresClasses);
+			$this->doAddClasse($classe);
 
 			$this->collClasses[]= $classe;
 		}
+	}
+
+	/**
+	 * @param	Classe $classe The classe object to add.
+	 */
+	protected function doAddClasse($classe)
+	{
+		$jCategoriesMatieresClasses = new JCategoriesMatieresClasses();
+		$jCategoriesMatieresClasses->setClasse($classe);
+		$this->addJCategoriesMatieresClasses($jCategoriesMatieresClasses);
 	}
 
 	/**
@@ -1461,11 +1501,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	public function clearAllReferences($deep = false)
 	{
 		if ($deep) {
-			if ($this->collJGroupesClassess) {
-				foreach ($this->collJGroupesClassess as $o) {
-					$o->clearAllReferences($deep);
-				}
-			}
 			if ($this->collMatieres) {
 				foreach ($this->collMatieres as $o) {
 					$o->clearAllReferences($deep);
@@ -1483,10 +1518,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 			}
 		} // if ($deep)
 
-		if ($this->collJGroupesClassess instanceof PropelCollection) {
-			$this->collJGroupesClassess->clearIterator();
-		}
-		$this->collJGroupesClassess = null;
 		if ($this->collMatieres instanceof PropelCollection) {
 			$this->collMatieres->clearIterator();
 		}
@@ -1509,25 +1540,6 @@ abstract class BaseCategorieMatiere extends BaseObject  implements Persistent
 	public function __toString()
 	{
 		return (string) $this->exportTo(CategorieMatierePeer::DEFAULT_STRING_FORMAT);
-	}
-
-	/**
-	 * Catches calls to virtual methods
-	 */
-	public function __call($name, $params)
-	{
-		if (preg_match('/get(\w+)/', $name, $matches)) {
-			$virtualColumn = $matches[1];
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-			// no lcfirst in php<5.3...
-			$virtualColumn[0] = strtolower($virtualColumn[0]);
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-		}
-		return parent::__call($name, $params);
 	}
 
 } // BaseCategorieMatiere

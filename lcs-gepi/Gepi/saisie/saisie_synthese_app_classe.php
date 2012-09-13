@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: saisie_synthese_app_classe.php 6727 2011-03-29 15:14:30Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -22,21 +21,18 @@
 */
 @set_time_limit(0);
 
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 
-//extract($_GET, EXTR_OVERWRITE);
-//extract($_POST, EXTR_OVERWRITE);
-
 // Classe choisie:
 $id_classe=isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id_classe']) ? $_GET['id_classe'] : NULL);
-// Périodes de visualisation:
+// PÃ©riodes de visualisation:
 $periode1=isset($_POST['periode1']) ? $_POST['periode1'] : NULL;
 $periode2=isset($_POST['periode2']) ? $_POST['periode2'] : NULL;
-// Période de saisie:
+// PÃ©riode de saisie:
 $num_periode=isset($_POST['num_periode']) ? $_POST['num_periode'] : (isset($_GET['num_periode']) ? $_GET['num_periode'] : NULL);
 
 $url_retour=isset($_POST['url_retour']) ? $_POST['url_retour'] : NULL;
@@ -68,27 +64,46 @@ if((isset($id_classe))&&(isset($num_periode))) {
 
 	if($_SESSION['statut']=='professeur') {
 		// Le prof est-il PP
-		$sql="SELECT 1=1 FROM j_eleves_professeurs jep, j_eleves_classes jec WHERE jep.professeur='".$_SESSION['login']."' AND jec.login=jep.login AND jec.periode='$num_periode';";
+		$sql="SELECT 1=1 FROM j_eleves_professeurs jep, j_eleves_classes jec WHERE jep.professeur='".$_SESSION['login']."' AND jec.login=jep.login AND jec.id_classe='$id_classe' AND jec.periode='$num_periode';";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)==0) {
-			//tentative_intrusion("2", "Tentative d'accès par un prof à un bulletin simplifié d'un élève qu'il n'a pas en cours, sans en avoir l'autorisation.");
-
-			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'êtes pas autorisé à saisir la synthèse pour cette classe."));
-
+			//tentative_intrusion("2", "Tentative d'accÃ¨s par un prof Ã  la saisie de synthÃ¨se d'une classe qu'il ne suit pas.");
+			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se pour cette classe."));
 			die();
 		}
 	}
-	else {
-		// Sinon, c'est un compte scolarité.
+	elseif($_SESSION['statut']=='cpe') {
+		if(getSettingAOui('GepiRubConseilCpeTous')) {
+			// On peut poursuivre: L'accÃ¨s Ã  toutes les classes est donnÃ©.
+		}
+		elseif(getSettingAOui('GepiRubConseilCpe')) {
+			$sql="SELECT 1=1 FROM j_eleves_cpe jecpe, j_eleves_classes jec WHERE jecpe.cpe_login='".$_SESSION['login']."' AND jec.login=jecpe.e_login AND jec.id_classe='$id_classe' AND jec.periode='$num_periode';";
+			$test=mysql_query($sql);
+			if(mysql_num_rows($test)==0) {
+				//tentative_intrusion("2", "Tentative d'accÃ¨s par un cpe Ã  la saisie de synthÃ¨se d'une classe qu'il ne suit pas.");
+				header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se pour cette classe."));
+				die();
+			}
+		}
+	}
+	elseif($_SESSION['statut']=='scolarite') {
 		$sql="SELECT 1=1 FROM j_scol_classes WHERE id_classe='$id_classe';";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)==0) {
-			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'êtes pas autorisé à saisir la synthèse pour cette classe."));
+			//tentative_intrusion("2", "Tentative d'accÃ¨s par un compte scolaritÃ© Ã  la saisie de synthÃ¨se d'une classe qu'il ne suit pas.");
+			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se pour cette classe."));
 			die();
 		}
 	}
+	elseif($_SESSION['statut']=='secours') {
+		// On peut poursuivre: L'accÃ¨s Ã  toutes les classes est donnÃ©.
+	}
+	else {
+		header('Location: ../accueil.php&msg='.rawurlencode("AccÃ¨s non autorisÃ© Ã  la saisir de la synthÃ¨se d'une classe."));
+		die();
+	}
 
-	// Tout est choisi, on va passer à l'affichage
+	// Tout est choisi, on va passer Ã  l'affichage
 
 	//$synthese="";
 
@@ -99,24 +114,21 @@ if((isset($id_classe))&&(isset($num_periode))) {
 		// On enregistre la synthese
 		$synthese=traitement_magic_quotes(corriger_caracteres($NON_PROTECT["synthese"]));
 
-		//$synthese=my_ereg_replace('(\\\r\\\n)+',"\r\n",$synthese);
-		$synthese=preg_replace('/(\\\r\\\n)+/',"\r\n",$synthese);
-		$synthese=preg_replace('/(\\\r)+/',"\r",$synthese);
-		$synthese=preg_replace('/(\\\n)+/',"\n",$synthese);
+		$synthese=suppression_sauts_de_lignes_surnumeraires($synthese);
 
 		$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$num_periode';";
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)==0) {
 			$sql="INSERT INTO synthese_app_classe SET id_classe='$id_classe', periode='$num_periode', synthese='$synthese';";
 			$insert=mysql_query($sql);
-			if(!$insert) {$msg="Erreur lors de l'enregistrement de la synthèse.";}
-			else {$msg="La synthèse a été enregistrée.";}
+			if(!$insert) {$msg="Erreur lors de l'enregistrement de la synthÃ¨se.";}
+			else {$msg="La synthÃ¨se a Ã©tÃ© enregistrÃ©e.";}
 		}
 		else {
 			$sql="UPDATE synthese_app_classe SET synthese='$synthese' WHERE id_classe='$id_classe' AND periode='$num_periode';";
 			$update=mysql_query($sql);
-			if(!$update) {$msg="Erreur lors de la mise à jour de la synthèse.";}
-			else {$msg="La synthèse a été mise à jour.";}
+			if(!$update) {$msg="Erreur lors de la mise Ã  jour de la synthÃ¨se.";}
+			else {$msg="La synthÃ¨se a Ã©tÃ© mise Ã  jour.";}
 		}
 	}
 
@@ -125,21 +137,23 @@ if((isset($id_classe))&&(isset($num_periode))) {
 	$res_current_synthese=mysql_query($sql);
 	$synthese=@mysql_result($res_current_synthese, 0, "synthese");
 
-	$titre_page="Synthèse classe";
-	require_once("../lib/header.inc");
+	//====================================
+	$titre_page="SynthÃ¨se classe";
+	require_once("../lib/header.inc.php");
+	//====================================
 	include "../lib/periodes.inc.php";
 	include "../lib/bulletin_simple.inc.php";
 	include "../lib/bulletin_simple_classe.inc.php";
 
 	echo "<p class=\"bold\">";
 	if(isset($url_retour)) {
-		echo "<a href=\"$url_retour\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à la saisie des avis</a>";
+		echo "<a href=\"$url_retour\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour Ã  la saisie des avis</a>";
 	}
 	else {
 		echo "<a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>";
 	}
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Autre classe</a>\n";
-	echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe'>Autre période</a>\n";
+	echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe'>Autre pÃ©riode</a>\n";
 	echo "</p>\n";
 
 	$gepiYear = getSettingValue("gepiYear");
@@ -149,17 +163,17 @@ if((isset($id_classe))&&(isset($num_periode))) {
 		$periode2 = $periode1;
 		$periode1 = $temp;
 	}
-	// On teste la présence d'au moins un coeff pour afficher la colonne des coef
+	// On teste la prÃ©sence d'au moins un coeff pour afficher la colonne des coef
 	$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 	//echo "\$test_coef=$test_coef<br />";
-	// Apparemment, $test_coef est réaffecté plus loin dans un des include()
+	// Apparemment, $test_coef est rÃ©affectÃ© plus loin dans un des include()
 	$nb_coef_superieurs_a_zero=$test_coef;
 	
-	// On regarde si on affiche les catégories de matières
+	// On regarde si on affiche les catÃ©gories de matiÃ¨res
 	$affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
 	if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
 	
-	// Si le rang des élèves est demandé, on met à jour le champ rang de la table matieres_notes
+	// Si le rang des Ã©lÃ¨ves est demandÃ©, on met Ã  jour le champ rang de la table matieres_notes
 	$affiche_rang = sql_query1("SELECT display_rang FROM classes WHERE id='".$id_classe."'");
 	if ($affiche_rang == 'y') {
 		$periode_num=$periode1;
@@ -168,25 +182,10 @@ if((isset($id_classe))&&(isset($num_periode))) {
 			$periode_num++;
 		}
 	}
-	
-	/*
-	// On regarde si on affiche les catégories de matières
-	$affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
-	if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
-	*/
-	//echo "\$choix_edit=$choix_edit<br />";
-	
-	//=========================
-	// AJOUT: boireaus 20080316
+
 	$coefficients_a_1="non";
 	$affiche_graph = 'n';
-	/*
-	$get_cat = mysql_query("SELECT id FROM matieres_categories");
-	$categories = array();
-	while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
-		$categories[] = $row["id"];
-	}
-	*/
+
 	unset($tab_moy_gen);
 	unset($tab_moy);
 	//unset($tab_moy_cat_classe);
@@ -206,7 +205,7 @@ if((isset($id_classe))&&(isset($num_periode))) {
 		$tab_moy['periodes'][$periode_num]['moy_max_classe']=$moy_max_classe;
 		$tab_moy['periodes'][$periode_num]['moy_min_classe']=$moy_min_classe;
 	
-		// Il faudrait récupérer/stocker les catégories?
+		// Il faudrait rÃ©cupÃ©rer/stocker les catÃ©gories?
 		$tab_moy['periodes'][$periode_num]['moy_cat_eleve']=$moy_cat_eleve;               // [$i][$cat]
 		$tab_moy['periodes'][$periode_num]['moy_cat_classe']=$moy_cat_classe;             // [$i][$cat]
 		$tab_moy['periodes'][$periode_num]['moy_cat_min']=$moy_cat_min;                   // [$i][$cat]
@@ -235,7 +234,7 @@ if((isset($id_classe))&&(isset($num_periode))) {
 		$tab_moy['periodes'][$periode_num]['moy_min_classe_grp']=$moy_min_classe_grp;     // [$j]
 		$tab_moy['periodes'][$periode_num]['moy_max_classe_grp']=$moy_max_classe_grp;     // [$j]
 		if(isset($current_eleve_rang)) {
-			// $current_eleve_rang n'est pas renseigné si $affiche_rang='n'
+			// $current_eleve_rang n'est pas renseignÃ© si $affiche_rang='n'
 			$tab_moy['periodes'][$periode_num]['current_eleve_rang']=$current_eleve_rang; // [$j][$i]
 		}
 		$tab_moy['periodes'][$periode_num]['quartile1_grp']=$quartile1_grp;               // [$j]
@@ -249,49 +248,49 @@ if((isset($id_classe))&&(isset($num_periode))) {
 		$tab_moy['periodes'][$periode_num]['current_group_effectif_avec_note']=$current_group_effectif_avec_note; // [$j]
 	
 		/*
-		// De calcul_moy_gen.inc.php, on récupère en sortie:
+		// De calcul_moy_gen.inc.php, on rÃ©cupÃ¨re en sortie:
 		//     - $moy_gen_eleve[$i]
-		//     - $moy_gen_eleve1[$i] idem avec les coef forcés à 1
+		//     - $moy_gen_eleve1[$i] idem avec les coef forcÃ©s Ã  1
 		//     - $moy_gen_classe[$i]
-		//     - $moy_gen_classe1[$i] idem avec les coef forcés à 1
+		//     - $moy_gen_classe1[$i] idem avec les coef forcÃ©s Ã  1
 		//     - $moy_generale_classe
 		//     - $moy_max_classe
 		//     - $moy_min_classe
 		
-		// A VERIFIER, mais s'il n'y a pas de coef spécifique pour un élève, on devrait avoir
+		// A VERIFIER, mais s'il n'y a pas de coef spÃ©cifique pour un Ã©lÃ¨ve, on devrait avoir
 		//             $moy_gen_classe[$i] == $moy_generale_classe
-		// NON: Cela correspond à un mode de calcul qui ne retient que les matières suivies par l'élève pour calculer la moyenne générale
-		//      Le LATIN n'est pas compté dans cette moyenne générale si l'élève ne fait pas latin.
-		//      L'Allemand n'est pas comptabilisé si l'élève ne fait pas allemand
+		// NON: Cela correspond Ã  un mode de calcul qui ne retient que les matiÃ¨res suivies par l'Ã©lÃ¨ve pour calculer la moyenne gÃ©nÃ©rale
+		//      Le LATIN n'est pas comptÃ© dans cette moyenne gÃ©nÃ©rale si l'Ã©lÃ¨ve ne fait pas latin.
+		//      L'Allemand n'est pas comptabilisÃ© si l'Ã©lÃ¨ve ne fait pas allemand
 		// FAIRE LE TOUR DES PAGES POUR VIRER TOUS CES $moy_gen_classe s'il en reste?
 		
 		//     - $moy_cat_classe[$i][$cat]
 		//     - $moy_cat_eleve[$i][$cat]
 		
-		//     - $moy_cat_min[$i][$cat] égale à $moy_min_categorie[$cat]
-		//     - $moy_cat_max[$i][$cat] égale à $moy_max_categorie[$cat]
+		//     - $moy_cat_min[$i][$cat] Ã©gale Ã  $moy_min_categorie[$cat]
+		//     - $moy_cat_max[$i][$cat] Ã©gale Ã  $moy_max_categorie[$cat]
 		
-		// Là le positionnement au niveau moyenne générale:
+		// LÃ  le positionnement au niveau moyenne gÃ©nÃ©rale:
 		//     - $quartile1_classe_gen
-		//       à
+		//       Ã 
 		//     - $quartile6_classe_gen
 		//     - $place_eleve_classe[$i]
 		
-		// On a récupéré en intermédiaire les
+		// On a rÃ©cupÃ©rÃ© en intermÃ©diaire les
 		//     - $current_eleve_login[$i]
 		//     - $current_group[$j]
 		//     - $current_eleve_note[$j][$i]
 		//     - $current_eleve_statut[$j][$i]
-		//     - $current_coef[$j] (qui peut être différent du $coef_eleve pour une matière spécifique)
+		//     - $current_coef[$j] (qui peut Ãªtre diffÃ©rent du $coef_eleve pour une matiÃ¨re spÃ©cifique)
 		//     - $categories -> id
-		//     - $current_classe_matiere_moyenne[$j] (moyenne de la classe dans la matière)
+		//     - $current_classe_matiere_moyenne[$j] (moyenne de la classe dans la matiÃ¨re)
 		
-		// AJOUTé:
+		// AJOUTÃ©:
 		//     - $current_coef_eleve[$i][$j]
 		//     - $moy_min_classe_grp[$j]
 		//     - $moy_max_classe_grp[$j]
-		//     - $current_eleve_rang[$j][$i] sous réserve que $affiche_rang=='y'
-		//     - $quartile1_grp[$j] à $quartile6_grp[$j]
+		//     - $current_eleve_rang[$j][$i] sous rÃ©serve que $affiche_rang=='y'
+		//     - $quartile1_grp[$j] Ã  $quartile6_grp[$j]
 		//     - $place_eleve_grp[$j][$i]
 		//     - $current_group_effectif_avec_note[$j] pour le nombre de "vraies" moyennes pour le rang (pas disp, abs,...)
 		//     - $tab_login_indice[LOGIN_ELEVE]=$i
@@ -346,7 +345,7 @@ if((isset($id_classe))&&(isset($num_periode))) {
 	if(isset($url_retour)) {echo "<input type='hidden' name='url_retour' value='$url_retour' />\n";}
 
 	echo "<a name='synthese'></a>\n";
-	echo "<p><b>Saisie de la synthèse pour le groupe classe&nbsp;:</b><br />\n";
+	echo "<p><b>Saisie de la synthÃ¨se pour le groupe classe en pÃ©riode $num_periode&nbsp;:</b><br />\n";
 	echo "<textarea class='wrap' name=\"no_anti_inject_synthese\" rows='5' cols='60' onchange=\"changement()\"";
 	echo ">".stripslashes($synthese)."</textarea>\n";
 
@@ -358,8 +357,8 @@ if((isset($id_classe))&&(isset($num_periode))) {
 }
 
 //********************************
-$titre_page="Synthèse classe";
-require_once("../lib/header.inc");
+$titre_page="SynthÃ¨se classe";
+require_once("../lib/header.inc.php");
 //********************************
 
 if(!isset($id_classe)) {
@@ -369,17 +368,47 @@ if(!isset($id_classe)) {
 		$sql="SELECT DISTINCT id, classe FROM j_eleves_professeurs jep, j_eleves_classes jec WHERE jep.professeur='".$_SESSION['login']."' AND jec.login=jep.login;";
 		$res_classe=mysql_query($sql);
 		if(mysql_num_rows($res_classe)==0) {
-			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'êtes pas autorisé à saisir la synthèse d'une classe."));
+			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se d'une classe."));
+			die();
+		}
+	}
+	elseif($_SESSION['statut']=='scolarite') {
+		$sql="SELECT DISTINCT id, classe FROM j_scol_classes jsc, classes c WHERE jsc.id_classe=c.id ORDER BY c.classe;";
+		$res_classe=mysql_query($sql);
+		if(mysql_num_rows($res_classe)==0) {
+			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se pour une classe."));
+			die();
+		}
+	}
+	elseif($_SESSION['statut']=='cpe') {
+		if(getSettingAOui('GepiRubConseilCpeTous')) {
+			$sql="SELECT DISTINCT id, classe FROM classes c ORDER BY c.classe;";
+			$res_classe=mysql_query($sql);
+			if(mysql_num_rows($res_classe)==0) {
+				header('Location: ../accueil.php&msg='.rawurlencode("Aucune classe n'a Ã©tÃ© trouvÃ©e."));
+				die();
+			}
+		}
+		elseif(getSettingAOui('GepiRubConseilCpe')) {
+			$sql="SELECT DISTINCT id, classe FROM j_eleves_cpe jecpe, j_eleves_classes jec, classes c WHERE jecpe.cpe_login='".$_SESSION['login']."' AND jec.login=jecpe.e_login AND jec.id_classe=c.id ORDER BY c.classe;";
+			$res_classe=mysql_query($sql);
+			if(mysql_num_rows($res_classe)==0) {
+				header('Location: ../accueil.php&msg='.rawurlencode("Vous n'Ãªtes pas autorisÃ© Ã  saisir la synthÃ¨se pour une classe."));
+				die();
+			}
+		}
+	}
+	elseif($_SESSION['statut']=='secours') {
+		$sql="SELECT DISTINCT id, classe FROM classes c ORDER BY c.classe;";
+		$res_classe=mysql_query($sql);
+		if(mysql_num_rows($res_classe)==0) {
+			header('Location: ../accueil.php&msg='.rawurlencode("Aucune classe n'a Ã©tÃ© trouvÃ©e."));
 			die();
 		}
 	}
 	else {
-		$sql="SELECT DISTINCT id, classe FROM j_scol_classes jsc, classes c WHERE jsc.id_classe=c.id ORDER BY c.classe;";
-		$res_classe=mysql_query($sql);
-		if(mysql_num_rows($res_classe)==0) {
-			header('Location: ../accueil.php&msg='.rawurlencode("Vous n'êtes pas autorisé à saisir la synthèse pour une classe."));
-			die();
-		}
+		header('Location: ../accueil.php&msg='.rawurlencode("Statut incorrect."));
+		die();
 	}
 
 	echo "<p class=\"bold\"><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>";
@@ -387,7 +416,7 @@ if(!isset($id_classe)) {
 	echo "</p>\n";
 
 	$nombreligne = mysql_num_rows($res_classe);
-	echo "<p>Cliquez sur la classe pour laquelle vous souhaitez saisir la synthèse des appréciations groupe classe.</p>\n";
+	echo "<p>Cliquez sur la classe pour laquelle vous souhaitez saisir la synthÃ¨se des apprÃ©ciations groupe classe.</p>\n";
 	//echo "<table border=0>\n";
 	$nb_class_par_colonne=round($nombreligne/3);
 		//echo "<table width='100%' border='1'>\n";
@@ -411,7 +440,7 @@ if(!isset($id_classe)) {
 
 }
 else {
-	// Choix de la période de saisie et des périodes d'affichage
+	// Choix de la pÃ©riode de saisie et des pÃ©riodes d'affichage
 	echo "<p class=\"bold\"><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil</a>";
 
 	echo "</p>\n";
@@ -432,14 +461,14 @@ else {
 	$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' AND verouiller!='O';";
 	$res_per=mysql_query($sql);
 	if(mysql_num_rows($res_classe)==0) {
-		echo "<p>Toutes les périodes sont closes pour cette classe.<br />Plus aucune modification n'est possible.</p>";
+		echo "<p>Toutes les pÃ©riodes sont closes pour cette classe.<br />Plus aucune modification n'est possible.</p>";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
 	echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
 
-	echo "<p>Choisissez la période pour laquelle vous souhaitez saisir la synthèse&nbsp;: <br />\n";
+	echo "<p>Choisissez la pÃ©riode pour laquelle vous souhaitez saisir la synthÃ¨se&nbsp;: <br />\n";
 	$cpt=0;
 	while($lig=mysql_fetch_object($res_per)) {
 		echo "<input type='radio' name='num_periode' id='num_periode_$lig->num_periode' value='$lig->num_periode' ";
@@ -448,15 +477,15 @@ else {
 		$cpt++;
 	}
 
-	echo "<p>Choisissez la(les) période(s) à afficher dans le bulletin de classe&nbsp;: <br />\n";
-	echo "De la période : <select onchange=\"change_periode()\" size=1 name=\"periode1\">\n";
+	echo "<p>Choisissez la(les) pÃ©riode(s) Ã  afficher dans le bulletin de classe&nbsp;: <br />\n";
+	echo "De la pÃ©riode : <select onchange=\"change_periode()\" size=1 name=\"periode1\">\n";
 	$i = "1" ;
 	while ($i < $nb_periode) {
 		echo "<option value=$i>$nom_periode[$i] </option>\n";
 		$i++;
 	}
 	echo "</select>\n";
-	echo "&nbsp;à la période : <select size=1 name=\"periode2\">\n";
+	echo "&nbsp;Ã  la pÃ©riode : <select size=1 name=\"periode2\">\n";
 	$i = "1" ;
 	while ($i < $nb_periode) {
 		echo "<option value=$i>$nom_periode[$i] </option>\n";

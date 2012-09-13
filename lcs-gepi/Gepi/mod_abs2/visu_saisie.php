@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: visu_saisie.php 7601 2011-08-07 12:49:03Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,16 +52,16 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()=="professeur" &&  getSettingValue("active_module_absence_professeur")!='y') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
 $id_saisie = isset($_POST["id_saisie"]) ? $_POST["id_saisie"] :(isset($_GET["id_saisie"]) ? $_GET["id_saisie"] :(isset($_SESSION["id_saisie"]) ? $_SESSION["id_saisie"] : NULL));
 $menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : NULL);
 if (isset($id_saisie) && $id_saisie != null) $_SESSION['id_saisie'] = $id_saisie;
@@ -76,7 +75,7 @@ $utilisation_jsdivdrag = "non";
 $dojo = true;
 $_SESSION['cacher_header'] = "y";
 
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 if(!$menu){
 include('menu_abs2.inc.php');
@@ -92,7 +91,7 @@ if ($saisie == null) {
     $saisie_col = $utilisateur->getAbsenceEleveSaisiesJoinEdtCreneau($criteria);
     $saisie = $saisie_col->getFirst();
     if ($saisie == null) {
-	echo "Saisie non trouvée";
+	echo "Saisie non trouvÃ©e";
 	die();
     }
 }
@@ -105,8 +104,8 @@ if ($saisie != null) {
 
 
 //la saisie est-elle modifiable ?
-//Une saisie est modifiable ssi : elle appartient à l'utilisateur de la session si c'est un prof,
-//elle date de moins d'une heure et l'option a ete coché partie admin
+//Une saisie est modifiable ssi : elle appartient Ã  l'utilisateur de la session si c'est un prof,
+//elle date de moins d'une heure et l'option a ete cochÃ© partie admin
 $modifiable = true;
 if ($utilisateur->getStatut() == 'professeur') {    
 	if (!getSettingValue("abs2_modification_saisie_une_heure")=='y' || !$saisie->getUtilisateurId() == $utilisateur->getPrimaryKey() || !($saisie->getVersionCreatedAt('U') > (time() - 3600))) {
@@ -127,21 +126,21 @@ if (isset($message_enregistrement)) {
 }
 
 echo '<table class="normal">';
-echo '<TBODY>';
-echo '<tr><TD>';
-echo 'N° de saisie : ';
-echo '</TD><TD>';
+echo '<tbody>';
+echo '<tr><td>';
+echo 'NÂ° de saisie : ';
+echo '</td><td>';
 echo $saisie->getPrimaryKey();
     if ($saisie->getDeletedAt()!=null) {
-    	echo ' <font color="red">(supprimée le ';
+    	echo ' <font color="red">(supprimÃ©e le ';
     	echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getDeletedAt('U')));
     	$suppr_utilisateur = UtilisateurProfessionnelQuery::create()->findPK($saisie->getDeletedBy());
     	if ($suppr_utilisateur != null) {
-    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
+    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.mb_substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
     	}
     	echo ')</font> ';
     }
-echo '</TD><TD>';
+echo '</td><td>';
 if ($modifiable) {   
     echo '<form dojoType="dijit.form.Form" jsId="suppression_restauration" id="suppression_restauration"  method="post" action="./enregistrement_modif_saisie.php">';
     echo '<input type="hidden" name="id_saisie" value="' . $saisie->getPrimaryKey() . '"/>';
@@ -164,28 +163,27 @@ if ($modifiable) {
     }
     echo'</form>';
 }
-echo '</TD></tr>';
-echo '</TBODY>';
+echo '</td></tr>';
+echo '</tbody>';
 
 echo '</table>';
 echo '<form dojoType="dijit.form.Form" jsId="modification" id="modification"  method="post" action="./enregistrement_modif_saisie.php">';
 echo '<input type="hidden" name="id_saisie" value="' . $saisie->getPrimaryKey() . '"/>';
 echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
 echo '<table class="normal">';
-echo '<TBODY>';
+echo '<tbody>';
 echo '<tr>';
 if ($saisie->getEleve() == null) {
-    echo '<TD colspan="3">';
-    echo "Marqueur d'appel effectué";
-    echo '</TD>';
+    echo '<td colspan="3">';
+    echo "Marqueur d'appel effectuÃ©";
+    echo '</td>';
 } else {
-    echo '<TD>Élève : </td>';
-    echo '<TD colspan="2">';
+    echo '<td>Ã‰lÃ¨ve : </td>';
+    echo '<td colspan="2">';
     echo $saisie->getEleve()->getCivilite().' '.$saisie->getEleve()->getNom().' '.$saisie->getEleve()->getPrenom();
     echo ' '.$saisie->getEleve()->getClasseNom();
     if ((getSettingValue("active_module_trombinoscopes")=='y') && $saisie->getEleve() != null) {
 	$nom_photo = $saisie->getEleve()->getNomPhoto(1);
-	//$photos = "../photos/eleves/".$nom_photo;
 	$photos = $nom_photo;
 	//if (($nom_photo == "") or (!(file_exists($photos)))) {
 	if (($nom_photo == NULL) or (!(file_exists($photos)))) {
@@ -195,64 +193,69 @@ if ($saisie->getEleve() == null) {
 	echo ' <img src="'.$photos.'" style="width: '.$valeur[0].'px; height: '.$valeur[1].'px; border: 0px; vertical-align: middle;" alt="" title="" />';
     }
     if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
-	echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' target='_blank'>";
+	echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."&amp;onglet=responsable&amp;quitter_la_page=y' target='_blank'>";
 	echo ' (voir fiche)';
 	echo "</a>";
     }
-echo '</TD>';
+echo '</td>';
 }
 echo '</tr>';
 
 if ($saisie->getClasse() != null) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Classe : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo $saisie->getClasse()->getNom();
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if ($saisie->getGroupe() != null) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Groupe : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo $saisie->getGroupe()->getNameAvecClasses();
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if ($saisie->getAidDetails() != null) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Aid : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo $saisie->getAidDetails()->getNom();
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if ($saisie->getEdtEmplacementCours() != null) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Cours : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo $saisie->getEdtEmplacementCours()->getDescription();
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if ($saisie->getEdtCreneau() != null) {
-    echo '<tr><TD>';
-    echo 'Créneau : ';
-    echo '</TD><TD colspan="2">';
+    echo '<tr><td>';
+    echo 'CrÃ©neau : ';
+    echo '</td><td colspan="2">';
     echo $saisie->getEdtCreneau()->getDescription();
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
-echo '<tr><TD>';
-echo 'Début : ';
-echo '</TD><TD colspan="2">';
+echo '<tr><td>';
+echo 'DÃ©but : ';
+echo '</td><td colspan="2">';
 if (!$modifiable || $saisie->getDeletedAt() != null ) {
     echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getDebutAbs('U')));
 } else {
-    echo '<nobr><input name="heure_debut" value="'.$saisie->getDebutAbs("H:i").'" type="text" maxlength="5" size="4"/>&nbsp;';
+    echo '<nobr><input name="heure_debut" id="heure_debut" value="'.$saisie->getDebutAbs("H:i").'" type="text" maxlength="5" size="4"/>&nbsp;';
     if ($utilisateur->getStatut() == 'professeur') {//on autorise pas au professeur a changer la date
 	echo (strftime(" %a %d/%m/%Y", $saisie->getDebutAbs('U')));
 	echo '<input name="date_debut" value="'.$saisie->getDebutAbs('d/m/Y').'" type="hidden"/></nobr> ';
+?>
+<button type="button" style="cursor:pointer;" onclick="heureActuelle('heure_debut')">
+  Maintenant
+</button>
+<?php
     } else {
 	echo '<input id="trigger_calendrier_debut" name="date_debut"  type="text" dojoType="dijit.form.DateTextBox"  value="'. $saisie->getDebutAbs('Y-m-d').'"  style="width : 8em"/></nobr> ';
 
@@ -270,19 +273,24 @@ if (!$modifiable || $saisie->getDeletedAt() != null ) {
 	</script>';*/
     }
 }
-echo '</TD></tr>';
+echo '</td></tr>';
 
-echo '<tr><TD>';
+echo '<tr><td>';
 echo 'Fin : ';
-echo '</TD><TD colspan="2">';
+echo '</td><td colspan="2">';
 if (!$modifiable || $saisie->getDeletedAt() != null) {
     echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getFinAbs('U')));
 } else {
-    echo '<nobr><input name="heure_fin" value="'.$saisie->getFinAbs("H:i").'" type="text" maxlength="5" size="4"/>&nbsp;';
+    echo '<nobr><input name="heure_fin" id="heure_fin" value="'.$saisie->getFinAbs("H:i").'" type="text" maxlength="5" size="4"/>&nbsp;';
     //if ($utilisateur->getStatut() == 'professeur' && getSettingValue("abs2_saisie_prof_decale") != 'y') {
     if ($utilisateur->getStatut() == 'professeur') {
 	echo (strftime(" %a %d/%m/%Y", $saisie->getFinAbs('U')));
 	echo '<input name="date_fin" value="'.$saisie->getFinAbs('d/m/Y').'" type="hidden"/></nobr> ';
+?>
+<button type="button" style="cursor:pointer;" onclick="heureActuelle('heure_fin')">
+  Maintenant
+</button>
+<?php
     } else {
 	echo '<input id="trigger_calendrier_fin" name="date_fin" type="text" dojoType="dijit.form.DateTextBox"  value="'. $saisie->getFinAbs('Y-m-d').'"  style="width : 8em"/></nobr> ';
 
@@ -300,15 +308,15 @@ if (!$modifiable || $saisie->getDeletedAt() != null) {
 	</script>';*/
     }
 }
-echo '</TD></tr>';
+echo '</td></tr>';
 
-echo '<tr><TD>';
+echo '<tr><td>';
 echo 'Traitement : ';
-echo '</TD><TD style="background-color:#ebedb5;" colspan="2">';
+echo '</td><td style="background-color:#ebedb5;" colspan="2">';
 $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->filterByStatut($utilisateur->getStatut())->useAbsenceEleveTypeQuery()->orderBySortableRank()->endUse()->find();
 $total_traitements_modifiable = 0;
 foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
-    //si c'est un traitement créé par un prof on va afficher une select box de modification si possible
+    //si c'est un traitement crÃ©Ã© par un prof on va afficher une select box de modification si possible
     echo "<nobr>";
     if ($utilisateur->getStatut() == 'professeur' && $traitement->getUtilisateurId() == $utilisateur->getPrimaryKey() && $traitement->getModifiable()) {
 	$total_traitements_modifiable = $total_traitements_modifiable + 1;
@@ -368,59 +376,59 @@ if ($total_traitements_modifiable == 0 && $utilisateur->getStatut() == 'professe
 
 echo '<input type="hidden" name="total_traitements" value="'.$total_traitements_modifiable.'"/>';
 
-echo '</TD></tr>';
+echo '</td></tr>';
 
 if ($modifiable  || ($saisie->getCommentaire() != null && $saisie->getCommentaire() != "")) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Commentaire : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     if (!$modifiable || $saisie->getDeletedAt() != null) {
 	echo ($saisie->getCommentaire());
     } else {
 	echo '<input name="commentaire" value="'.$saisie->getCommentaire().'" type="text" maxlength="150" size="25"/>';
     }
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
-echo '<tr><TD>';
+echo '<tr><td>';
 echo 'Saisie le : ';
-echo '</TD><TD colspan="2">';
+echo '</td><td colspan="2">';
 echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getCreatedAt('U')));
-echo ' par '.  $saisie->getUtilisateurProfessionnel()->getCivilite().' '.$saisie->getUtilisateurProfessionnel()->getNom().' '.substr($saisie->getUtilisateurProfessionnel()->getPrenom(), 0, 1).'.';
-echo '</TD></tr>';
+echo ' par '.  $saisie->getUtilisateurProfessionnel()->getCivilite().' '.$saisie->getUtilisateurProfessionnel()->getNom().' '.mb_substr($saisie->getUtilisateurProfessionnel()->getPrenom(), 0, 1).'.';
+echo '</td></tr>';
 
 if ($saisie->getCreatedAt('U') != $saisie->getVersionCreatedAt('U')) {
-    echo '<tr><TD>';
-    echo 'Modifiée le : ';
-    echo '</TD><TD colspan="2">';
+    echo '<tr><td>';
+    echo 'ModifiÃ©e le : ';
+    echo '</td><td colspan="2">';
     echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getVersionCreatedAt('U')));
     $modifie_par_utilisateur = UtilisateurProfessionnelQuery::create()->filterByLogin($saisie->getVersionCreatedBy())->findOne();
     if ($modifie_par_utilisateur != null) {
-		echo ' par '.  $modifie_par_utilisateur->getCivilite().' '.$modifie_par_utilisateur->getNom().' '.substr($modifie_par_utilisateur->getPrenom(), 0, 1).'.';
+		echo ' par '.  $modifie_par_utilisateur->getCivilite().' '.$modifie_par_utilisateur->getNom().' '.mb_substr($modifie_par_utilisateur->getPrenom(), 0, 1).'.';
     }
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if ($saisie->getIdSIncidents() !== null) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'Discipline : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo "<a href='../mod_discipline/saisie_incident.php?id_incident=".
     $saisie->getIdSIncidents()."&step=2&return_url=no_return'>Visualiser l'incident </a>";
-    echo '</TD></tr>';
-} elseif ($modifiable && $saisie->hasTypeSaisieDiscipline()) {
-    echo '<tr><TD>';
+    echo '</td></tr>';
+} elseif ($modifiable && $saisie->hasModeInterfaceDiscipline()) {
+    echo '<tr><td>';
     echo 'Discipline : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     echo "<a href='../mod_discipline/saisie_incident_abs2.php?id_absence_eleve_saisie=".
 	$saisie->getId()."&return_url=no_return'>Saisir un incident disciplinaire</a>";
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 $saisies_conflit_col = $saisie->getSaisiesContradictoiresManquementObligation();
 if (!$saisies_conflit_col->isEmpty()) {
-    echo '<tr><TD>';
+    echo '<tr><td>';
     echo 'La saisie est en contradiction avec : ';
-    echo '</TD><TD colspan="2">';
+    echo '</td><td colspan="2">';
     foreach ($saisies_conflit_col as $saisie_conflit) {
 	echo "<a href='visu_saisie.php?id_saisie=".$saisie_conflit->getPrimaryKey()."' style=''> ";
 	echo $saisie_conflit->getId();
@@ -429,12 +437,12 @@ if (!$saisies_conflit_col->isEmpty()) {
 	    echo ' - ';
 	}
     }
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
-echo '</TD></tr>';
+echo '</td></tr>';
 if ($modifiable) {
-    echo '<tr><TD colspan= "3" style="text-align : center;">';
+    echo '<tr><td colspan= "3" style="text-align : center;">';
     echo '<button dojoType="dijit.form.Button" type="submit"';
     if ($saisie->getDeletedAt() != null) echo 'disabled';
     echo '>Enregistrer les modifications</button>';
@@ -443,57 +451,57 @@ if ($modifiable) {
 }
 
 if ($utilisateur->getStatut()=="cpe" || $utilisateur->getStatut()=="scolarite") {
-    echo '<tr><TD colspan="3" style="text-align : center;">';
+    echo '<tr><td colspan="3" style="text-align : center;">';
     echo '<button dojoType="dijit.form.Button" type="submit" name="creation_traitement" value="oui"';
     if ($saisie->getDeletedAt() != null) echo 'disabled';
     echo '>Traiter la saisie</button>';
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
 if (($utilisateur->getStatut()=="cpe" || $utilisateur->getStatut()=="scolarite") && $saisie->getAllVersions()->count()!=1) {
-    echo '<tr><TD colspan="3" style="text-align : center;">';
-    echo 'Versions précédentes';
+    echo '<tr><td colspan="3" style="text-align : center;">';
+    echo 'Versions prÃ©cÃ©dentes';
     echo '<table>';
     foreach($saisie->getAllVersions() as $version) {
     	echo '<tr>';
     	echo '<td>'.$version->getVersion().'</td>';
-	    echo '<TD>';
+	    echo '<td>';
     	if ($saisie->getEleve() == null) {
-		    echo "Marqueur d'appel effectué";
+		    echo "Marqueur d'appel effectuÃ©";
 		} else {
 		    echo $saisie->getEleve()->getCivilite().' '.$saisie->getEleve()->getNom().' '.$saisie->getEleve()->getPrenom();
 		    echo ' '.$saisie->getEleve()->getClasseNom();
 		}
-	    echo '</TD>';
+	    echo '</td>';
 		echo '<td>'.$version->getDateDescription().'</td>';
-	    echo '<TD>';
+	    echo '<td>';
 	    if ($version->getVersion() == 1) {
-	    	echo 'Créée le : ';
+	    	echo 'CrÃ©Ã©e le : ';
 	    } else {
-	    	echo 'Modifiée le : ';
+	    	echo 'ModifiÃ©e le : ';
 	    }
 	    echo (strftime("%a %d/%m/%Y %H:%M", $version->getVersionCreatedAt('U')));
 	    $modifie_par_utilisateur = UtilisateurProfessionnelQuery::create()->filterByLogin($version->getVersionCreatedBy())->findOne();
 	    if ($modifie_par_utilisateur != null) {
-			echo ' par '.  $modifie_par_utilisateur->getCivilite().' '.$modifie_par_utilisateur->getNom().' '.substr($modifie_par_utilisateur->getPrenom(), 0, 1).'.';
+			echo ' par '.  $modifie_par_utilisateur->getCivilite().' '.$modifie_par_utilisateur->getNom().' '.mb_substr($modifie_par_utilisateur->getPrenom(), 0, 1).'.';
 	    }
-	    echo '</TD>';
+	    echo '</td>';
     	echo '<td>';
     	if ($version->getVersion() != $saisie->getVersion() && $saisie->getDeletedAt() == null) {
     		echo '<a href="enregistrement_modif_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&version='.$version->getVersion().'';
             if($menu){
                 echo'&menu=false';
             } 
-            echo' ">Revenir à cette version</a>';
+            echo' ">Revenir Ã  cette version</a>';
     	}
     	echo '</td>';
     	echo '</tr>';
     }
     echo '</table>';
-    echo '</TD></tr>';
+    echo '</td></tr>';
 }
 
-echo '</TBODY>';
+echo '</tbody>';
 
 echo '</table>';
 echo '</form>';
@@ -506,7 +514,17 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
     dojo.require("dijit.form.DateTextBox");
     dojo.require("dojo.parser");
 </script>';
-
+?>
+<script type="text/javascript">
+  //<![CDATA[
+  function heureActuelle(e) {
+	maintenant = new Date();
+	document.getElementById(e).value = maintenant.getHours()+':'+maintenant.getMinutes();
+	delete (maintenant);
+  }
+  //]]>
+</script>
+<?php
 require_once("../lib/footer.inc.php");
 
 //fonction redimensionne les photos petit format
@@ -517,7 +535,7 @@ function redimensionne_image_petit($photo)
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
+    // largeur et/ou hauteur maximum Ã  afficher
              $taille_max_largeur = 35;
              $taille_max_hauteur = 35;
 
@@ -526,7 +544,7 @@ function redimensionne_image_petit($photo)
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // définit largeur et hauteur pour la nouvelle image
+    // dÃ©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

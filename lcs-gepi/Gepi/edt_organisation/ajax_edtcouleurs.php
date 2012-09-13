@@ -1,9 +1,8 @@
 <?php
 
 /**
- * Fichier qui gère une requête ajax et qui renvoie la bonne couleur pour la matière
+ * Fichier qui gÃ¨re une requÃªte ajax et qui renvoie la bonne couleur pour la matiÃ¨re
  *
- * @version $Id: ajax_edtcouleurs.php 5502 2010-09-29 21:22:05Z adminpaulbert $
  *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -40,29 +39,29 @@ if ($resultat_session == 'c') {
     die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=2");
     die();
 }
-// Sécurité supplémentaire par rapport aux paramètres du module EdT / Calendrier
+// SÃ©curitÃ© supplÃ©mentaire par rapport aux paramÃ¨tres du module EdT / Calendrier
 if (param_edt($_SESSION["statut"]) != "yes") {
 	Die(ASK_AUTHORIZATION_TO_ADMIN);
 }
 // Initialisation des variables
 $M_couleur = isset($_GET["var1"]) ? $_GET["var1"] : NULL;
 $nouvelle_couleur = isset($_GET["var2"]) ? $_GET["var2"] : "non";
-$matiere = isset($M_couleur) ? substr($M_couleur, 2) : NULL; // pour récupérer le nom court de la matière
+$matiere = isset($M_couleur) ? mb_substr($M_couleur, 2) : NULL; // pour rÃ©cupÃ©rer le nom court de la matiÃ¨re
 $couleur = "";
 
-// on récupère les éléments sur la matière en question
+// on rÃ©cupÃ¨re les Ã©lÃ©ments sur la matiÃ¨re en question
 $sql = mysql_query("SELECT nom_complet FROM matieres WHERE matiere = '".$matiere."'");
 $matiere_long = mysql_fetch_array($sql);
-// les requêtes AJAX se font en utf8, il faut donc encoder utf8 pour être tranquille
+// les requÃªtes AJAX se font en utf8, il faut donc encoder utf8 pour Ãªtre tranquille
 //$aff_matiere_long = utf8_encode($matiere_long["nom_complet"]);
 $aff_matiere_long = $matiere_long["nom_complet"];
 
-// On récupère la couleur de la matière en question
+// On rÃ©cupÃ¨re la couleur de la matiÃ¨re en question
 $verif_couleur = GetSettingEdt($M_couleur);
 	if ($verif_couleur == "") {
 		$couleur = "";
@@ -72,7 +71,7 @@ $verif_couleur = GetSettingEdt($M_couleur);
 
 if ($nouvelle_couleur == "non") {
 	echo '
-<td>'.htmlentities($aff_matiere_long).'</td>
+<td>'.htmlspecialchars($aff_matiere_long).'</td>
 <td>'.$matiere.'</td>
 <td class="cadreCouleur'.$couleur.'">
 	<form id="choixCouleur" method="get" action="">
@@ -107,7 +106,7 @@ if ($nouvelle_couleur == "non") {
 </td>
 	';
 } else {
-	// On vérifie si le réglage existe et on le met à jour, sinon on le crée
+	// On vÃ©rifie si le rÃ©glage existe et on le met Ã  jour, sinon on le crÃ©e
 	$sql = mysql_query("SELECT valeur FROM edt_setting WHERE reglage = '".$M_couleur."'");
 	$nbre_rep = mysql_num_rows($sql);
 
@@ -121,7 +120,7 @@ if ($nouvelle_couleur == "non") {
 	}
 
 	echo '
-<td>'.htmlentities($aff_matiere_long).'</td>
+<td>'.htmlspecialchars($aff_matiere_long).'</td>
 <td>'.$matiere.'</td>
 <td class="cadreCouleur'.$nouvelle_couleur.'">
 	<p onclick="couleursEdtAjax(\''.$M_couleur.'\', \'non\');">'.MODIFY.'</p>

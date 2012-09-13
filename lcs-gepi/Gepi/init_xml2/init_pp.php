@@ -2,7 +2,6 @@
 
 @set_time_limit(0);
 /*
-* $Id: init_pp.php 6243 2010-12-28 16:19:40Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -47,16 +46,13 @@ if (!checkAccess()) {
 }
 
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'année : Importation des professeurs principaux";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'annÃ©e : Importation des professeurs principaux";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class="bold"><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil initialisation</a></p>
 
 <?php
-
-// On vérifie si l'extension d_base est active
-//verif_active_dbase();
 
 //debug_var();
 
@@ -64,18 +60,10 @@ if (!isset($step1)) {
 
 	$dirname=get_user_temp_directory();
 	if(@file_exists("../temp/".$dirname."/matiere_principale.csv")) {
-		/*
-		$fich_mp=fopen("../temp/".$dirname."/matiere_principale.csv","r");
-		while(!feof($fich_mp)) {
-			$ligne=trim(fgets($fich_mp, 4096));
-			echo "\$ligne=$ligne<br />\n";
-		}
-		fclose($fich_mp);
-		*/
 
 		$fich_mp=fopen("../temp/".$dirname."/matiere_principale.csv","r");
 		if($fich_mp) {
-			echo "<p class='bold'>Rétablissement de la matière principale de chaque professeur d'après les enregistrements de l'année précédente.</p>\n";
+			echo "<p class='bold'>RÃ©tablissement de la matiÃ¨re principale de chaque professeur d'aprÃ¨s les enregistrements de l'annÃ©e prÃ©cÃ©dente.</p>\n";
 
 			$temoin_erreur=0;
 
@@ -102,9 +90,9 @@ if (!isset($step1)) {
 					}
 	
 					if(in_array($matiere_prof,$tab_matiere_prof)) {
-						// On va contrôler si la matière est bien au premier rang
+						// On va contrÃ´ler si la matiÃ¨re est bien au premier rang
 						if($tab_matiere_prof[0]!=$matiere_prof) {
-							// Il faut réordonner
+							// Il faut rÃ©ordonner
 							$tab_matiere_prof_reordonne[]=$matiere_prof;
 							for($loop=0;$loop<count($tab_matiere_prof);$loop++) {
 								if($tab_matiere_prof[$loop]!=$matiere_prof) {
@@ -113,7 +101,7 @@ if (!isset($step1)) {
 							}
 	
 							if($temoin_debut_mp==0) {
-								echo "<p>Correction de la matière principale pour ";
+								echo "<p>Correction de la matiÃ¨re principale pour ";
 							}
 							else {
 								echo ", ";
@@ -148,7 +136,7 @@ if (!isset($step1)) {
 							$temoin_debut_mp++;
 						}
 						//else {
-						//	echo "$login_prof a déjà la bonne matière principale&nbsp;: $matiere_prof<br />";
+						//	echo "$login_prof a dÃ©jÃ  la bonne matiÃ¨re principale&nbsp;: $matiere_prof<br />";
 						//}
 					}
 				}
@@ -162,12 +150,12 @@ if (!isset($step1)) {
 			if($temoin_debut_mp>0) {
 				echo ".</p>\n";
 	
-				echo "<p><i>Remarque&nbsp;:</i> Les professeurs pour lesquels la matière principale est déjà la bonne n'apparaissent pas dans les corrections ci-dessus.</p>\n";
+				echo "<p><i>Remarque&nbsp;:</i> Les professeurs pour lesquels la matiÃ¨re principale est dÃ©jÃ  la bonne n'apparaissent pas dans les corrections ci-dessus.</p>\n";
 			}
 		}
 	}
 
-	echo "<center><h3 class='gepi'>Sixième phase<br />Importation des professeurs principaux</h3></center>\n";
+	echo "<center><h3 class='gepi'>SixiÃ¨me phase<br />Importation des professeurs principaux</h3></center>\n";
 
 	$j=0;
 	$flag=0;
@@ -180,14 +168,14 @@ if (!isset($step1)) {
 
 	if ($flag != 0){
 		echo "<p><b>ATTENTION ...</b><br />\n";
-		echo "Des professeurs principaux sont actuellement définis dans la base GEPI (<i>table 'j_eleves_professeurs'</i>)<br /></p>\n";
-		//echo "<p>Si vous poursuivez la procédure ces données seront supprimées et remplacées par celles de votre fichier F_DIV.CSV</p>\n";
-		echo "<p>Si vous poursuivez la procédure ces données seront supprimées et remplacées par celles de votre import XML.</p>\n";
+		echo "Des professeurs principaux sont actuellement dÃ©finis dans la base GEPI (<i>table 'j_eleves_professeurs'</i>)<br /></p>\n";
+		//echo "<p>Si vous poursuivez la procÃ©dure ces donnÃ©es seront supprimÃ©es et remplacÃ©es par celles de votre fichier F_DIV.CSV</p>\n";
+		echo "<p>Si vous poursuivez la procÃ©dure ces donnÃ©es seront supprimÃ©es et remplacÃ©es par celles de votre import XML.</p>\n";
 
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 		echo add_token_field();
 		echo "<input type='hidden' name='step1' value='y' />\n";
-		echo "<input type='submit' name='confirm' value='Poursuivre la procédure' />\n";
+		echo "<input type='submit' name='confirm' value='Poursuivre la procÃ©dure' />\n";
 		echo "</form>\n";
 		echo "<br />\n";
 		require("../lib/footer.inc.php");
@@ -195,12 +183,12 @@ if (!isset($step1)) {
 	}
 }
 else {
-	echo "<center><h3 class='gepi'>Sixième phase<br />Importation des professeurs principaux</h3></center>\n";
+	echo "<center><h3 class='gepi'>SixiÃ¨me phase<br />Importation des professeurs principaux</h3></center>\n";
 }
 
 $tempdir=get_user_temp_directory();
 if(!$tempdir){
-	echo "<p style='color:red'>Il semble que le dossier temporaire de l'utilisateur ".$_SESSION['login']." ne soit pas défini!?</p>\n";
+	echo "<p style='color:red'>Il semble que le dossier temporaire de l'utilisateur ".$_SESSION['login']." ne soit pas dÃ©fini!?</p>\n";
 	// Il ne faut pas aller plus loin...
 	// SITUATION A GERER
 }
@@ -219,13 +207,13 @@ if (!isset($is_posted)) {
 	}
 
 	if(!file_exists("../temp/$tempdir/f_div.csv")){
-		echo "<p>Le fichier <b>f_div.csv</b> n'est pas présent dans votre dossier temporaire.<br />Auriez-vous sauté l'étape de l'importation des professeurs???</p>\n";
+		echo "<p>Le fichier <b>f_div.csv</b> n'est pas prÃ©sent dans votre dossier temporaire.<br />Auriez-vous sautÃ© l'Ã©tape de l'importation des professeurs???</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
-	echo "<p><b>ATTENTION ...</b><br />Vous ne devez procéder à cette opération uniquement si la constitution des classes a été effectuée et si les professeurs ont été importés !</p>\n";
-	//echo "<p>Importation du fichier <b>F_div.csv</b> (<i>généré lors de l'importation des professeurs</i>) contenant les associations classe/professeur principal.</p>\n";
+	echo "<p><b>ATTENTION ...</b><br />Vous ne devez procÃ©der Ã  cette opÃ©ration uniquement si la constitution des classes a Ã©tÃ© effectuÃ©e et si les professeurs ont Ã©tÃ© importÃ©s !</p>\n";
+	//echo "<p>Importation du fichier <b>F_div.csv</b> (<i>gÃ©nÃ©rÃ© lors de l'importation des professeurs</i>) contenant les associations classe/professeur principal.</p>\n";
 	echo "<p>Importation des associations classe/professeur principal.</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 	echo add_token_field();
@@ -237,201 +225,140 @@ if (!isset($is_posted)) {
 
 } else {
 	check_token(false);
-	//$dbf_file = isset($_FILES["dbf_file"]) ? $_FILES["dbf_file"] : NULL;
-	//if(strtoupper($dbf_file['name']) == "F_TMT.DBF") {
-	//if(strtoupper($dbf_file['name']) == "F_DIV.CSV") {
-		//$fp = dbase_open($dbf_file['tmp_name'], 0);
-		//$fp = fopen($dbf_file['tmp_name'],"r");
-		$fp = fopen("../temp/$tempdir/f_div.csv","r");
-		if(!$fp) {
-			echo "<p>Impossible d'ouvrir le fichier CSV normalement généré lors de l'import des professeurs.</p>\n";
-			echo "<p><a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>\n";
-		} else {
-			// on constitue le tableau des champs à extraire
-			//$tabchamps = array("MATIMN","MATILC");
-			$tabchamps = array("DIVCOD","NUMIND");
 
-			//$nblignes = dbase_numrecords($fp); //number of rows
-			//$nbchamps = dbase_numfields($fp); //number of fields
+	$fp = fopen("../temp/$tempdir/f_div.csv","r");
+	if(!$fp) {
+		echo "<p>Impossible d'ouvrir le fichier CSV normalement gÃ©nÃ©rÃ© lors de l'import des professeurs.</p>\n";
+		echo "<p><a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>\n";
+	} else {
+		// on constitue le tableau des champs Ã  extraire
+		$tabchamps = array("DIVCOD","NUMIND");
 
-			$nblignes=0;
-			while (!feof($fp)) {
-				$ligne = fgets($fp, 4096);
-				if($nblignes==0){
-					// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommés avec l'ajout de ',...' en fin de nom de champ.
-					// On ne retient pas ces ajouts pour $en_tete
-					$temp=explode(";",$ligne);
-					for($i=0;$i<sizeof($temp);$i++){
-						$temp2=explode(",",$temp[$i]);
-						$en_tete[$i]=$temp2[0];
-					}
-
-					//$en_tete=explode(";",$ligne);
-					$nbchamps=sizeof($en_tete);
-				}
-				$nblignes++;
-			}
-			fclose ($fp);
-			/*
-			if (@dbase_get_record_with_names($fp,1)) {
-				$temp = @dbase_get_record_with_names($fp,1);
-			} else {
-				echo "<p>Le fichier sélectionné n'est pas valide !<br />";
-				echo "<a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>";
-				die();
-			}
-
-			$nb = 0;
-			foreach($temp as $key => $val){
-				$en_tete[$nb] = "$key";
-				$nb++;
-			}
-			*/
-			// On range dans tabindice les indices des champs retenus
-			/*
-			for ($k = 0; $k < count($tabchamps); $k++) {
-				for ($i = 0; $i < count($en_tete); $i++) {
-					//if ($en_tete[$i] == $tabchamps[$k]) {
-					if (trim($en_tete[$i]) == $tabchamps[$k]) {
-						$tabindice[] = $i;
-					}
-				}
-			}
-			*/
-			$cpt_tmp=0;
-			for ($k = 0; $k < count($tabchamps); $k++) {
-				for ($i = 0; $i < count($en_tete); $i++) {
-					if (trim($en_tete[$i]) == $tabchamps[$k]) {
-						$tabindice[$cpt_tmp]=$i;
-						$cpt_tmp++;
-					}
-				}
-			}
-			/*
-			echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent à des nouvelles matières dans la base GEPI. les identifiants en vert correspondent à des identifiants de matières détectés dans le fichier GEP mais déjà présents dans la base GEPI.<br /><br />Il est possible que certaines matières ci-dessous, bien que figurant dans le fichier GEP, ne soient pas utilisées dans votre établissement cette année. C'est pourquoi il vous sera proposé en fin de procédure d'initialsation, un nettoyage de la base afin de supprimer ces données inutiles.</p>";
-			*/
-			echo "<table border='1' class='boireaus' cellpadding='2' cellspacing='2' summary='Tableau des professeurs principaux'>\n";
-			echo "<tr><th><p class=\"small\">Classe</p></th><th><p class=\"small\">Professeur principal</p></th></tr>\n";
-
-
-			//=========================
-			//$fp=fopen($dbf_file['tmp_name'],"r");
-			$fp = fopen("../temp/$tempdir/f_div.csv","r");
-			// On lit une ligne pour passer la ligne d'entête:
+		$nblignes=0;
+		while (!feof($fp)) {
 			$ligne = fgets($fp, 4096);
-			//=========================
-			$nb_reg_no = 0;
-			$nb_reg_ok = 0;
-			for($k = 1; ($k < $nblignes+1); $k++){
-				//$ligne = dbase_get_record($fp,$k);
-				if(!feof($fp)){
-					//====================
-					// Suppression des guillemets éventuels
-					//$ligne = fgets($fp, 4096);
-					$ligne = my_ereg_replace('"','',fgets($fp, 4096));
-					//====================
-					if(trim($ligne)!=""){
-						$tabligne=explode(";",$ligne);
-						$temoin_erreur="non";
-						for($i = 0; $i < count($tabchamps); $i++) {
-							//$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($ligne[$tabindice[$i]]))));
-							$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($tabligne[$tabindice[$i]]))));
-							//echo "<tr><td colspan='2'>|\$affiche[$i]|=|$affiche[$i]|</td></tr>";
-							if($affiche[$i]==""){
-								$temoin_erreur="oui";
-								$nb_reg_no++;
-							}
-						}
-
-						if($temoin_erreur!="oui"){
-							$sql="SELECT id FROM classes WHERE classe='$affiche[0]'";
-							$res_classe=mysql_query($sql);
-							if(mysql_num_rows($res_classe)==1){
-								$lig_classe=mysql_fetch_object($res_classe);
-								$id_classe=$lig_classe->id;
-
-								/*
-								$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' ORDER BY num_periode"
-								$res_periodes=mysql_query($sql);
-								unset($tab_num_periode);
-								$tab_num_periode=array();
-								while($lig_periode=mysql_fetch_object($res_periodes)){
-									$tab_num_periode[]=$lig_periode->num_periode;
-								}
-								*/
-								$sql="SELECT col1 FROM tempo2 WHERE col2='$affiche[1]'";
-								//echo "<tr><td>$sql</td></tr>\n";
-								$res_prof=mysql_query($sql);
-								$lig_prof=mysql_fetch_object($res_prof);
-
-								//$sql="SELECT login,periode FROM j_eleves_classes WHERE id_classe='$id_classe' ORDER BY login,periode"
-								//$sql="SELECT login FROM j_eleves_classes WHERE id_classe='$id_classe' ORDER BY login";
-								$sql="SELECT DISTINCT login FROM j_eleves_classes WHERE id_classe='$id_classe' ORDER BY login";
-								$res_eleve=mysql_query($sql);
-								$temoin_erreur_classe=0;
-								while($lig_eleve=mysql_fetch_object($res_eleve)){
-									$sql="INSERT INTO j_eleves_professeurs VALUES('$lig_eleve->login','$lig_prof->col1','$id_classe')";
-									$res_prof_eleve=mysql_query($sql);
-									if(!$res_prof_eleve){
-										$temoin_erreur_classe++;
-										//echo "<tr><td>$sql</td></tr>\n";
-									}
-								}
-
-								if($temoin_erreur_classe==0){
-									echo "<tr style='background-color:#aae6aa;'><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
-									$nb_reg_ok++;
-								}
-								else{
-									echo "<tr style='background-color:red;'><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
-									$nb_reg_no++;
-								}
-								//echo "<tr><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
-							}
-						}
-						else{
-							echo "<tr style='background-color:red;'><td>$affiche[0]</td><td>$affiche[1]</td></tr>\n";
-						}
-					}
+			if($nblignes==0){
+				// Quand on enregistre en CSV des fichiers DBF de GEP avec OpenOffice, les champs sont renommÃ©s avec l'ajout de ',...' en fin de nom de champ.
+				// On ne retient pas ces ajouts pour $en_tete
+				$temp=explode(";",$ligne);
+				for($i=0;$i<sizeof($temp);$i++){
+					$temp2=explode(",",$temp[$i]);
+					$en_tete[$i]=$temp2[0];
 				}
+
+				//$en_tete=explode(";",$ligne);
+				$nbchamps=sizeof($en_tete);
 			}
-			echo "</table>\n";
-			//dbase_close($fp);
-			fclose($fp);
+			$nblignes++;
+		}
+		fclose ($fp);
 
-			if ($nb_reg_no != 0) {
-				echo "<p>Lors de l'enregistrement des données, il y a eu $nb_reg_no erreurs.<br />Essayez d'en trouver la cause et recommencez la procédure avant de passer à l'étape suivante.</p>\n";
-			} else {
-				if($nb_reg_ok>0){
-					echo "<p>L'importation des professeurs principaux dans la base GEPI a été effectuée avec succès !</p>\n";
+		$cpt_tmp=0;
+		for ($k = 0; $k < count($tabchamps); $k++) {
+			for ($i = 0; $i < count($en_tete); $i++) {
+				if (trim($en_tete[$i]) == $tabchamps[$k]) {
+					$tabindice[$cpt_tmp]=$i;
+					$cpt_tmp++;
 				}
-				else{
-					echo "<p>Aucun professeur principal n'a été inscrit dans la base GEPI !</p>\n";
-				}
-
-				if(getSettingValue("mode_sauvegarde")=="mysqldump") {$mode_sauvegarde="system_dump";}
-				else {$mode_sauvegarde="dump";}
-
-				echo "<p>Avant de procéder à un nettoyage des tables pour supprimer les données inutiles, vous devriez effectuer une <a href='../gestion/accueil_sauve.php?action=$mode_sauvegarde&amp;quitter_la_page=y".add_token_in_url()."' target='_blank'>sauvegarde</a><br />\n";
-				echo "Après cette sauvegarde, effectuez le nettoyage en repassant par 'Gestion générale/Initialisation des données à partir de fichiers DBF et XML/Procéder à la septième phase'.<br />\n";
-				echo "Si les données sont effectivement inutiles, c'est terminé.<br />\n";
-				echo "Sinon, vous pourrez restaurer votre sauvegarde et vous aurez pu noter les associations profs/matières/classes manquantes... à effectuer par la suite manuellement dans 'Gestion des bases'.</p>\n";
-
-				echo "<p>Vous pouvez procéder à l'étape suivante de nettoyage des tables GEPI.</p>\n";
-				echo "<center><p><a href='clean_tables.php?a=a".add_token_in_url()."'>Suppression des données inutiles</a></p></center>\n";
 			}
 		}
-	/*
-	}
-	else if (trim($dbf_file['name'])=='') {
-		echo "<p>Aucun fichier n'a été sélectionné !<br />";
-		echo "<a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>";
 
-	} else {
-		echo "<p>Le fichier sélectionné n'est pas valide !<br />";
-		echo "<a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>";
+		echo "<table border='1' class='boireaus' cellpadding='2' cellspacing='2' summary='Tableau des professeurs principaux'>\n";
+		echo "<tr><th><p class=\"small\">Classe</p></th><th><p class=\"small\">Professeur principal</p></th></tr>\n";
+
+
+		//=========================
+		$fp = fopen("../temp/$tempdir/f_div.csv","r");
+		// On lit une ligne pour passer la ligne d'entÃªte:
+		$ligne = fgets($fp, 4096);
+		//=========================
+		$nb_reg_no = 0;
+		$nb_reg_ok = 0;
+		for($k = 1; ($k < $nblignes+1); $k++){
+			if(!feof($fp)){
+				//====================
+				// Suppression des guillemets Ã©ventuels
+				$ligne = preg_replace('/"/','',fgets($fp, 4096));
+				//====================
+				if(trim($ligne)!=""){
+					$tabligne=explode(";",$ligne);
+					$temoin_erreur="non";
+					for($i = 0; $i < count($tabchamps); $i++) {
+						//$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($tabligne[$tabindice[$i]]))));
+						$affiche[$i] = trim($tabligne[$tabindice[$i]]);
+						//echo "<tr><td colspan='2'>|\$affiche[$i]|=|$affiche[$i]|</td></tr>";
+						if($affiche[$i]==""){
+							$temoin_erreur="oui";
+							$nb_reg_no++;
+						}
+					}
+
+					if($temoin_erreur!="oui"){
+						$sql="SELECT id FROM classes WHERE classe='$affiche[0]'";
+						$res_classe=mysql_query($sql);
+						if(mysql_num_rows($res_classe)==1){
+							$lig_classe=mysql_fetch_object($res_classe);
+							$id_classe=$lig_classe->id;
+
+							$sql="SELECT col1 FROM tempo2 WHERE col2='$affiche[1]'";
+							//echo "<tr><td>$sql</td></tr>\n";
+							$res_prof=mysql_query($sql);
+							$lig_prof=mysql_fetch_object($res_prof);
+
+							$sql="SELECT DISTINCT login FROM j_eleves_classes WHERE id_classe='$id_classe' ORDER BY login";
+							$res_eleve=mysql_query($sql);
+							$temoin_erreur_classe=0;
+							while($lig_eleve=mysql_fetch_object($res_eleve)){
+								$sql="INSERT INTO j_eleves_professeurs VALUES('$lig_eleve->login','$lig_prof->col1','$id_classe')";
+								$res_prof_eleve=mysql_query($sql);
+								if(!$res_prof_eleve){
+									$temoin_erreur_classe++;
+									//echo "<tr><td>$sql</td></tr>\n";
+								}
+							}
+
+							if($temoin_erreur_classe==0){
+								echo "<tr style='background-color:#aae6aa;'><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
+								$nb_reg_ok++;
+							}
+							else{
+								echo "<tr style='background-color:red;'><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
+								$nb_reg_no++;
+							}
+							//echo "<tr><td>$affiche[0]</td><td>$lig_prof->col1</td></tr>\n";
+						}
+					}
+					else{
+						echo "<tr style='background-color:red;'><td>$affiche[0]</td><td>$affiche[1]</td></tr>\n";
+					}
+				}
+			}
+		}
+		echo "</table>\n";
+		fclose($fp);
+
+		if ($nb_reg_no != 0) {
+			echo "<p>Lors de l'enregistrement des donnÃ©es, il y a eu $nb_reg_no erreurs.<br />Essayez d'en trouver la cause et recommencez la procÃ©dure avant de passer Ã  l'Ã©tape suivante.</p>\n";
+		} else {
+			if($nb_reg_ok>0){
+				echo "<p>L'importation des professeurs principaux dans la base GEPI a Ã©tÃ© effectuÃ©e avec succÃ¨s !</p>\n";
+			}
+			else{
+				echo "<p>Aucun professeur principal n'a Ã©tÃ© inscrit dans la base GEPI !</p>\n";
+			}
+
+			if(getSettingValue("mode_sauvegarde")=="mysqldump") {$mode_sauvegarde="system_dump";}
+			else {$mode_sauvegarde="dump";}
+
+			echo "<p>Avant de procÃ©der Ã  un nettoyage des tables pour supprimer les donnÃ©es inutiles, vous devriez effectuer une <a href='../gestion/accueil_sauve.php?action=$mode_sauvegarde&amp;quitter_la_page=y".add_token_in_url()."' target='_blank'>sauvegarde</a><br />\n";
+			echo "AprÃ¨s cette sauvegarde, effectuez le nettoyage en repassant par 'Gestion gÃ©nÃ©rale/Initialisation des donnÃ©es Ã  partir de fichiers DBF et XML/ProcÃ©der Ã  la septiÃ¨me phase'.<br />\n";
+			echo "Si les donnÃ©es sont effectivement inutiles, c'est terminÃ©.<br />\n";
+			echo "Sinon, vous pourrez restaurer votre sauvegarde et vous aurez pu noter les associations profs/matiÃ¨res/classes manquantes... Ã  effectuer par la suite manuellement dans 'Gestion des bases'.</p>\n";
+
+			echo "<p>Vous pouvez procÃ©der Ã  l'Ã©tape suivante de nettoyage des tables GEPI.</p>\n";
+			echo "<center><p><a href='clean_tables.php?a=a".add_token_in_url()."'>Suppression des donnÃ©es inutiles</a></p></center>\n";
+		}
 	}
-	*/
 }
 echo "<p><br /></p>\n";
 require("../lib/footer.inc.php");

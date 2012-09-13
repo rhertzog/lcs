@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: index.php 7950 2011-08-24 13:53:46Z jjocal $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -51,11 +50,11 @@ $msg="";
  if (empty($_FILES['photo'])) { $photo = ''; } else { $photo = $_FILES['photo']; }
  if (empty($_POST['quiestce'])) { $quiestce = ''; } else { $quiestce = $_POST['quiestce']; }
 
- //rÈpertoire des photos
+ //r√©pertoire des photos
 
-// En multisite, on ajoute le rÈpertoire RNE
+// En multisite, on ajoute le r√©pertoire RNE
 if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
-	  // On rÈcupËre le RNE de l'Ètablissement
+	  // On r√©cup√®re le RNE de l'√©tablissement
   $rep_photos='../photos/'.$_COOKIE['RNE'].'/personnels/';
 }else{
   $rep_photos='../photos/personnels/';
@@ -154,8 +153,8 @@ function test_ecriture_backup() {
     return $ok;
 }
 
-// fonction de sÈcuritÈ
-// uid de pour ne pas refaire renvoyer plusieurs fois le mÍme formulaire
+// fonction de s√©curit√©
+// uid de pour ne pas refaire renvoyer plusieurs fois le m√™me formulaire
 // autoriser la validation de formulaire $uid_post===$_SESSION['uid_prime']
  if(empty($_SESSION['uid_prime'])) { $_SESSION['uid_prime']=''; }
  if (empty($_GET['uid_post']) and empty($_POST['uid_post'])) {$uid_post='';}
@@ -165,7 +164,7 @@ function test_ecriture_backup() {
 	    $uid_post = my_eregi_replace('%20',' ',$uid_post);
 	if($uid_post===$_SESSION['uid_prime']) { $valide_form = 'oui'; } else { $valide_form = 'non'; }
 	$_SESSION['uid_prime'] = $uid;
-// fin de la fonction de sÈcuritÈ
+// fin de la fonction de s√©curit√©
 	
 
 //debug_var();
@@ -189,31 +188,31 @@ if (isset($action) and ($action == 'depot_photo') and $total_photo != 0 and $val
 				*/
 
 				if (!isset($sav_photo['tmp_name'][$cpt_photo]) or ($sav_photo['tmp_name'][$cpt_photo] =='')) {
-					//$msg = "Erreur de tÈlÈchargement niveau 1.";
-					$msg .= "Erreur de tÈlÈchargement niveau 1 pour la photo $cpt_photo: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
+					//$msg = "Erreur de t√©l√©chargement niveau 1.";
+					$msg .= "Erreur de t√©l√©chargement niveau 1 pour la photo $cpt_photo: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
 				} else if (!file_exists($sav_photo['tmp_name'][$cpt_photo])) {
-					//$msg = "Erreur de tÈlÈchargement niveau 2.";
-					$msg .= "Erreur de tÈlÈchargement niveau 2 pour la photo $cpt_photo: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
+					//$msg = "Erreur de t√©l√©chargement niveau 2.";
+					$msg .= "Erreur de t√©l√©chargement niveau 2 pour la photo $cpt_photo: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
 				//} else if ((!preg_match('/jpg$/',$sav_photo['name'][$cpt_photo])) and $sav_photo['type'][$cpt_photo] == "image/jpeg"){
-				} else if ((!preg_match('/jpg$/',$sav_photo['name'][$cpt_photo])) || $sav_photo['type'][$cpt_photo] != "image/jpeg"){
-					//$msg = "Erreur : seuls les fichiers ayant l'extension .jpg sont autorisÈs.";
-					$msg .= "Erreur : seuls les fichiers ayant l'extension .jpg sont autorisÈs: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
+				} else if (!(preg_match('/\.jpg/i',$sav_photo['name'][$cpt_photo]) || preg_match('/\.jpeg/i',$sav_photo['name'][$cpt_photo])) || $sav_photo['type'][$cpt_photo] != "image/jpeg"){
+					//$msg = "Erreur : seuls les fichiers ayant l'extension .jpg sont autoris√©s.";
+					$msg .= "Erreur : seuls les fichiers ayant l'extension .jpg ou .jpeg sont autoris√©s: '".$sav_photo['name'][$cpt_photo]."'<br />\n";
 				} else {
 					$dest = $rep_photos;
 					$n = 0;
 					//$nom_corrige = my_ereg_replace("[^.a-zA-Z0-9_=-]+", "_", $sav_photo['name'][$cpt_photo]);
 					if (!deplacer_fichier_upload($sav_photo['tmp_name'][$cpt_photo], $rep_photos.$quiestce[$cpt_photo].".jpg")) {
-						//$msg = "ProblËme de transfert : le fichier n'a pas pu Ítre transfÈrÈ sur le rÈpertoire photos/personnels/";
-						$msg = "ProblËme de transfert : le fichier '".$sav_photo['name'][$cpt_photo]."' n'a pas pu Ítre transfÈrÈ sur le rÈpertoire photos/personnels/<br />\n";
+						//$msg = "Probl√®me de transfert : le fichier n'a pas pu √™tre transf√©r√© sur le r√©pertoire photos/personnels/";
+						$msg = "Probl√®me de transfert : le fichier '".$sav_photo['name'][$cpt_photo]."' n'a pas pu √™tre transf√©r√© sur le r√©pertoire photos/personnels/<br />\n";
 					} else {
-						//$msg = "TÈlÈchargement rÈussi.";
+						//$msg = "T√©l√©chargement r√©ussi.";
 						$nb_succes_photos++;
 						if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
-							// si le redimensionnement des photos est activÈ on redimenssionne
+							// si le redimensionnement des photos est activ√© on redimenssionne
 							$source = imagecreatefromjpeg($rep_photos.$quiestce[$cpt_photo].".jpg"); // La photo est la source
-							if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On crÈe la miniature vide
-							if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On crÈe la miniature vide
-							//rotation de l'image si choix diffÈrent de rien
+							if (getSettingValue("active_module_trombinoscopes_rt")=='') { $destination = imagecreatetruecolor(getSettingValue("l_resize_trombinoscopes"), getSettingValue("h_resize_trombinoscopes")); } // On cr√©e la miniature vide
+							if (getSettingValue("active_module_trombinoscopes_rt")!='') { $destination = imagecreatetruecolor(getSettingValue("h_resize_trombinoscopes"), getSettingValue("l_resize_trombinoscopes")); } // On cr√©e la miniature vide
+							//rotation de l'image si choix diff√©rent de rien
 							//if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
 
 							// Les fonctions imagesx et imagesy renvoient la largeur et la hauteur d'une image
@@ -222,7 +221,7 @@ if (isset($action) and ($action == 'depot_photo') and $total_photo != 0 and $val
 							$largeur_destination = imagesx($destination);
 							$hauteur_destination = imagesy($destination);
 
-							// On crÈe la miniature
+							// On cr√©e la miniature
 							imagecopyresampled($destination, $source, 0, 0, 0, 0, $largeur_destination, $hauteur_destination, $largeur_source, $hauteur_source);
 							if (getSettingValue("active_module_trombinoscopes_rt")!='') { $degrees = getSettingValue("active_module_trombinoscopes_rt"); /* $destination = imagerotate($destination,$degrees); */$destination = ImageRotateRightAngle($destination,$degrees); }
 							// On enregistre la miniature sous le nom "mini_couchersoleil.jpg"
@@ -237,10 +236,10 @@ if (isset($action) and ($action == 'depot_photo') and $total_photo != 0 and $val
 
 	if(($nb_photos_proposees==$nb_succes_photos)&&($nb_photos_proposees>0)) {
 		if($nb_succes_photos==1){
-			$msg.="TÈlÈchargement rÈussi.";
+			$msg.="T√©l√©chargement r√©ussi.";
 		}
 		else{
-			$msg.="TÈlÈchargements rÈussis.";
+			$msg.="T√©l√©chargements r√©ussis.";
 		}
 	}
 }
@@ -260,7 +259,7 @@ if($mode=='personnels') {
 }
 /*
 elseif($mode=='eleves') {
-	$titre_page = "Gestion des comptes ÈlËves";
+	$titre_page = "Gestion des comptes √©l√®ves";
 }
 elseif($mode=='responsables') {
 	$titre_page = "Gestion des comptes responsables";
@@ -269,14 +268,14 @@ elseif($mode=='responsables') {
 else {
 	$titre_page = "Gestion des utilisateurs";
 }
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************************
 
 //echo "\$total_photo=$total_photo<br />\$nb_succes_photos=$nb_succes_photos<br />\$nb_photos_proposees=$nb_photos_proposees<br />";
 
 unset($display);
 $display = isset($_POST["display"]) ? $_POST["display"] : (isset($_GET["display"]) ? $_GET["display"] : (getSettingValue("display_users")!='' ? getSettingValue("display_users"): 'tous'));
-// on sauve le choix par dÈfaut
+// on sauve le choix par d√©faut
 saveSetting("display_users", $display);
 
 unset($order_by);
@@ -292,11 +291,11 @@ if ($mode != "personnels") {
 <p class="bold">
 <a href="../accueil_admin.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>
 <br/><br/>
-<p>Sur cette page, vous pouvez gÈrer les comptes d'accËs des utilisateurs ayant accËs ‡ Gepi gr‚ce ‡ un identifiant et un mot de passe.</p>
-<p>Cliquez sur le type d'utilisateurs que vous souhaitez gÈrer :</p>
-<p style='padding-left: 10%; margin-top: 15px;'><a href="index.php?mode=personnels"><img src='../images/icons/forward.png' alt='Personnels' class='back_link' /> Personnels de l'Ètablissement (professeurs, scolaritÈ, CPE, administrateurs)</a></p>
-<p style='padding-left: 10%; margin-top: 15px;'><a href="edit_responsable.php"><img src='../images/icons/forward.png' alt='Responsables' class='back_link' /> Responsables d'ÈlËves (parents)</a></p>
-<p style='padding-left: 10%; margin-top: 15px;'><a href="edit_eleve.php"><img src='../images/icons/forward.png' alt='Eleves' class='back_link' /> …lËves</a></p>
+<p>Sur cette page, vous pouvez g√©rer les comptes d'acc√®s des utilisateurs ayant acc√®s √† Gepi gr√¢ce √† un identifiant et un mot de passe.</p>
+<p>Cliquez sur le type d'utilisateurs que vous souhaitez g√©rer :</p>
+<p style='padding-left: 10%; margin-top: 15px;'><a href="index.php?mode=personnels"><img src='../images/icons/forward.png' alt='Personnels' class='back_link' /> Personnels de l'√©tablissement (professeurs, scolarit√©, CPE, administrateurs)</a></p>
+<p style='padding-left: 10%; margin-top: 15px;'><a href="edit_responsable.php"><img src='../images/icons/forward.png' alt='Responsables' class='back_link' /> Responsables d'√©l√®ves (parents)</a></p>
+<p style='padding-left: 10%; margin-top: 15px;'><a href="edit_eleve.php"><img src='../images/icons/forward.png' alt='Eleves' class='back_link' /> √âl√®ves</a></p>
 <?php
 } else {
 ?>
@@ -307,18 +306,20 @@ if ($mode != "personnels") {
 
 if ((getSettingValue('use_sso') != "cas" and getSettingValue("use_sso") != "lemon" and getSettingValue('use_sso') != "lcs" and getSettingValue("use_sso") != "ldap_scribe") OR $block_sso) {
     /*
-	echo " | RÈinitialiser mots de passe : " .
-    		"<a href=\"reset_passwords.php\" onclick=\"javascript:return confirm(' tes-vous s˚r de vouloir effectuer cette opÈration ?\\n Celle-ci est irrÈversible, et rÈinitialisera les mots de passe de tous les utilisateurs marquÈs actifs, avec un mot de passe alpha-numÈrique gÈnÈrÈ alÈatoirement.\\n En cliquant sur OK, vous lancerez la procÈdure, qui gÈnËrera une page contenant les fiches-bienvenue ‡ imprimer immÈdiatement pour distribution aux utilisateurs concernÈs.')\" target='_blank'>HTML</a>" .
-    		" - <a href=\"reset_passwords.php?mode=csv\" onclick=\"javascript:return confirm(' tes-vous s˚r de vouloir effectuer cette opÈration ?\\n Celle-ci est irrÈversible, et rÈinitialisera les mots de passe de tous les utilisateurs marquÈs actifs, avec un mot de passe alpha-numÈrique gÈnÈrÈ alÈatoirement.\\n En cliquant sur OK, vous lancerez la procÈdure, qui gÈnËrera un fichier CSV contenant les informations nÈcessaires ‡ un traitement automatisÈ.')\" target='_blank'>CSV</a>";
+	echo " | R√©initialiser mots de passe : " .
+    		"<a href=\"reset_passwords.php\" onclick=\"javascript:return confirm('√ätes-vous s√ªr de vouloir effectuer cette op√©ration ?\\n Celle-ci est irr√©versible, et r√©initialisera les mots de passe de tous les utilisateurs marqu√©s actifs, avec un mot de passe alpha-num√©rique g√©n√©r√© al√©atoirement.\\n En cliquant sur OK, vous lancerez la proc√©dure, qui g√©n√®rera une page contenant les fiches-bienvenue √† imprimer imm√©diatement pour distribution aux utilisateurs concern√©s.')\" target='_blank'>HTML</a>" .
+    		" - <a href=\"reset_passwords.php?mode=csv\" onclick=\"javascript:return confirm('√ätes-vous s√ªr de vouloir effectuer cette op√©ration ?\\n Celle-ci est irr√©versible, et r√©initialisera les mots de passe de tous les utilisateurs marqu√©s actifs, avec un mot de passe alpha-num√©rique g√©n√©r√© al√©atoirement.\\n En cliquant sur OK, vous lancerez la proc√©dure, qui g√©n√®rera un fichier CSV contenant les informations n√©cessaires √† un traitement automatis√©.')\" target='_blank'>CSV</a>";
 	*/
-    echo " | RÈinitialiser mots de passe : " .
-    		"<a href=\"reset_passwords.php?mode=html".add_token_in_url()."\" onclick=\"javascript:return confirm(' tes-vous s˚r de vouloir effectuer cette opÈration ?\\n Celle-ci est irrÈversible, et rÈinitialisera les mots de passe de tous les utilisateurs marquÈs actifs, avec un mot de passe alpha-numÈrique gÈnÈrÈ alÈatoirement.\\n En cliquant sur OK, vous lancerez la procÈdure, qui gÈnËrera une page contenant les fiches-bienvenue ‡ imprimer immÈdiatement pour distribution aux utilisateurs concernÈs.')\" target='_blank'>HTML</a>" .
-    		" - <a href=\"reset_passwords.php?mode=csv".add_token_in_url()."\" onclick=\"javascript:return confirm(' tes-vous s˚r de vouloir effectuer cette opÈration ?\\n Celle-ci est irrÈversible, et rÈinitialisera les mots de passe de tous les utilisateurs marquÈs actifs, avec un mot de passe alpha-numÈrique gÈnÈrÈ alÈatoirement.\\n En cliquant sur OK, vous lancerez la procÈdure, qui gÈnËrera un fichier CSV contenant les informations nÈcessaires ‡ un traitement automatisÈ.')\" target='_blank'>CSV</a>";
+    echo " | R√©initialiser mots de passe : " .
+    		"<a href=\"reset_passwords.php?mode=html".add_token_in_url()."\" onclick=\"javascript:return confirm('√ätes-vous s√ªr de vouloir effectuer cette op√©ration ?\\n Celle-ci est irr√©versible, et r√©initialisera les mots de passe de tous les utilisateurs marqu√©s actifs, avec un mot de passe alpha-num√©rique g√©n√©r√© al√©atoirement.\\n En cliquant sur OK, vous lancerez la proc√©dure, qui g√©n√®rera une page contenant les fiches-bienvenue √† imprimer imm√©diatement pour distribution aux utilisateurs concern√©s.')\" target='_blank'>HTML</a>" .
+    		" - <a href=\"reset_passwords.php?mode=csv".add_token_in_url()."\" onclick=\"javascript:return confirm('√ätes-vous s√ªr de vouloir effectuer cette op√©ration ?\\n Celle-ci est irr√©versible, et r√©initialisera les mots de passe de tous les utilisateurs marqu√©s actifs, avec un mot de passe alpha-num√©rique g√©n√©r√© al√©atoirement.\\n En cliquant sur OK, vous lancerez la proc√©dure, qui g√©n√®rera un fichier CSV contenant les informations n√©cessaires √† un traitement automatis√©.')\" target='_blank'>CSV</a>";
 
 	echo " | <a href='impression_bienvenue.php?mode=personnels'>Fiches bienvenue</a>";
 }
 ?>
- | <a href="tab_profs_matieres.php">Affecter les matiËres aux professeurs</a>
+ | Affecter les mati√®res aux professeurs&nbsp;: <a href="tab_profs_matieres.php">Mode 1</a>
+ - <a href='../init_xml2/init_alternatif.php?cat=profs'>Mode 2</a>
+
  | <a href="javascript:centrerpopup('help.php',600,480,'scrollbars=yes,statusbar=no,resizable=yes')">Aide</a>
  <?php
 if (getSettingValue("statuts_prives") == "y") {
@@ -327,8 +328,8 @@ if (getSettingValue("statuts_prives") == "y") {
 }
 ?>
 </p>
-<!--p class='small'><a href="import_prof_csv.php">TÈlÈcharger le fichier des professeurs au format csv</a>  (nom - prÈnom - identifiant GEPI)</p-->
-<p class='small'>TÈlÈcharger au format csv (<i>nom - prÈnom - identifiant GEPI</i>) le fichier des <a href="import_prof_csv.php?export_statut=professeur">professeurs</a>, <a href="import_prof_csv.php?export_statut=scolarite">"scolaritÈ"</a>, <a href="import_prof_csv.php?export_statut=cpe">cpe</a>, <a href="import_prof_csv.php?export_statut=secours">secours</a>, <a href="import_prof_csv.php?export_statut=administrateur">administrateurs</a>, <a href="import_prof_csv.php?export_statut=autre">autres</a>, <a href="import_prof_csv.php?export_statut=personnels">personnels</a></p>
+<!--p class='small'><a href="import_prof_csv.php">T√©l√©charger le fichier des professeurs au format csv</a>  (nom - pr√©nom - identifiant GEPI)</p-->
+<p class='small'>T√©l√©charger au format csv (<i>nom - pr√©nom - identifiant GEPI</i>) le fichier des <a href="import_prof_csv.php?export_statut=professeur">professeurs</a>, <a href="import_prof_csv.php?export_statut=scolarite">"scolarit√©"</a>, <a href="import_prof_csv.php?export_statut=cpe">cpe</a>, <a href="import_prof_csv.php?export_statut=secours">secours</a>, <a href="import_prof_csv.php?export_statut=administrateur">administrateurs</a>, <a href="import_prof_csv.php?export_statut=autre">autres</a>, <a href="import_prof_csv.php?export_statut=personnels">personnels</a></p>
 
 <form enctype="multipart/form-data" action="index.php" name="form1" method="post">
 <?php
@@ -360,7 +361,7 @@ if($afficher_statut=="professeur") {echo " selected='true'";}
 echo ">Professeurs</option>\n";
 echo "<option value='scolarite'\n";
 if($afficher_statut=="scolarite") {echo " selected='true'";}
-echo ">ScolaritÈ</option>\n";
+echo ">Scolarit√©</option>\n";
 echo "<option value='secours'\n";
 if($afficher_statut=="secours") {echo " selected='true'";}
 echo ">Secours</option>\n";
@@ -434,18 +435,18 @@ echo "'>Nom de login</a></b></p></th>\n";
 echo "<th><p class=small><b><a href='index.php?mode=$mode&amp;order_by=nom,prenom&amp;display=$display";
 if($afficher_statut!="") {echo "&amp;afficher_statut=$afficher_statut";}
 if($afficher_auth_mode!="") {echo "&amp;afficher_auth_mode=$afficher_auth_mode";}
-echo "'>Nom et prÈnom</a></b></p></th>\n";
+echo "'>Nom et pr√©nom</a></b></p></th>\n";
 echo "<th><p class=small><b><a href='index.php?mode=$mode&amp;order_by=statut,nom,prenom&amp;display=$display";
 if($afficher_statut!="") {echo "&amp;afficher_statut=$afficher_statut";}
 if($afficher_auth_mode!="") {echo "&amp;afficher_auth_mode=$afficher_auth_mode";}
 echo "'>Statut</a></b></p></th>\n";
-echo "<th><p class=small><b>matiËre(s) si professeur</b></p></th>\n";
+echo "<th><p class=small><b>mati√®re(s) si professeur</b></p></th>\n";
 echo "<th><p class=small><b>classe(s)</b></p></th>\n";
 echo "<th><p class=small><b>".getSettingValue('gepi_prof_suivi')."</b></p></th>\n";
 echo "<th><p class=small><b>supprimer</b></p></th>\n";
 echo "<th><p class=small><b>imprimer fiche bienvenue</b></p></th>\n";
     if (getSettingValue("active_module_trombinoscopes")=='y') {
-    	echo "<th><p><input type='submit' value='TÈlÈcharger les photos' name='bouton1' /></th>\n";
+    	echo "<th><p><input type='submit' value='T√©l√©charger les photos' name='bouton1' /></th>\n";
     }
 echo "</tr>\n";
 if(($afficher_statut!="")&&(in_array($afficher_statut,$tab_statuts))) {
@@ -504,7 +505,7 @@ while ($i < $nombreligne){
         $affiche = 'no';
     }
     if ($affiche == 'yes') {
-    // Affichage des login, noms et prÈnoms
+    // Affichage des login, noms et pr√©noms
     $col[$i][1] = $user_login;
     $col[$i][2] = "$user_nom $user_prenom";
     $col[$i][2] .= "<a name='$user_login'></a>";
@@ -512,7 +513,7 @@ while ($i < $nombreligne){
     $col[$i]['civ'] = $user_civilite;
     // fin ajout
 
-	//echo "<p>ContrÙle des matiËres de $user_login: <br />\n";
+	//echo "<p>Contr√¥le des mati√®res de $user_login: <br />\n";
     $call_matieres = mysql_query("SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '$user_login' ORDER BY ordre_matieres");
     $nb_mat = mysql_num_rows($call_matieres);
     $k = 0;
@@ -528,7 +529,7 @@ while ($i < $nombreligne){
 			$kk++;
 		}
 		else {
-			echo "<span style='color:red;'>Anomalie:</span> La matiËre '$user_matiere_id' n'existe plus mais reste asociÈe ‡ '$user_login'.<br />RecrÈez la matiËre (<i>puis supprimez la proprement si nÈcessaire</i>)<br />\n";
+			echo "<span style='color:red;'>Anomalie:</span> La mati√®re '$user_matiere_id' n'existe plus mais reste asoci√©e √† '$user_login'.<br />Recr√©ez la mati√®re (<i>puis supprimez la proprement si n√©cessaire</i>)<br />\n";
 		}
 		$k++;
     }
@@ -542,7 +543,7 @@ while ($i < $nombreligne){
     if ($user_statut != "administrateur" AND $user_statut != "professeur" AND $user_statut != "secours") { $color_='blue';}
     $col[$i][3] = "<font color=".$color_.">".$col[$i][3]."</font>";
 
-    // Cas LCS : on prÈcise le type d'utilisateur (local ou LCS)
+    // Cas LCS : on pr√©cise le type d'utilisateur (local ou LCS)
     if (getSettingValue("use_sso") == "lcs")
         if ($user_pwd != "")
             $col[$i][3] .= '<br />(utilisateur local)';
@@ -561,36 +562,86 @@ while ($i < $nombreligne){
     }
     if ($col[$i][4]=='') {$col[$i][4] = "&nbsp;";}
 
-    // Affichage des classes/enseignements
-    $sql="SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
-            "FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
-            "jgp.login = '$user_login' and " .
-            "g.id = jgp.id_groupe and " .
-            "jgc.id_groupe = jgp.id_groupe and " .
-            "c.id = jgc.id_classe) order by c.classe;";
-    $call_classes = mysql_query($sql);
-    $nb_classes = mysql_num_rows($call_classes);
-    $k = 0;
-    $col[$i][5] = '';
-    while ($k < $nb_classes) {
-        $user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
-        $user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
-        $user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
-        $user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
 
-    //======================================
-    // MODIF: boireaus
-        //$col[$i][5] = $col[$i][5]."<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&id_groupe=".$user_classe["group_id"] . "'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a><br />";
-        //$col[$i][5] = $col[$i][5]."<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;retour=oui'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a><br />";
-        $col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
+	$col[$i][5] = '';
+	// Pour les professeurs
+	if ($user_statut == "professeur") {
+		// Affichage des classes/enseignements
+		$sql="SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
+				"FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
+				"jgp.login = '$user_login' and " .
+				"g.id = jgp.id_groupe and " .
+				"jgc.id_groupe = jgp.id_groupe and " .
+				"c.id = jgc.id_classe) order by c.classe;";
+		$call_classes = mysql_query($sql);
+		$nb_classes = mysql_num_rows($call_classes);
+		$k = 0;
+		while ($k < $nb_classes) {
+			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
+			$user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
+			$user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
+			$user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
+	
+			$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
+	
+			// G√©n√©ration d'un CSV du groupe
+			//$col[$i][5] .= "<a href='../groupes/mes_listes.php?id_groupe=".$user_classe["group_id"] . "' target='_blank'><img src='../images/icons/document.png' width='16' height='16' /></a>\n";
+	
+			$col[$i][5] .= "<br />\n";
+	
+			$k++;
+		}
+	}
 
-		// GÈnÈration d'un CSV du groupe
-        //$col[$i][5] .= "<a href='../groupes/mes_listes.php?id_groupe=".$user_classe["group_id"] . "' target='_blank'><img src='../images/icons/document.png' width='16' height='16' /></a>\n";
+	// Pour les CPE
+	if ($user_statut == "cpe") {
+		$sql="SELECT DISTINCT c.id, c.classe " .
+				"FROM j_eleves_cpe jecpe, j_eleves_classes jec, classes c WHERE (" .
+				"jecpe.cpe_login = '$user_login' and " .
+				"jecpe.e_login = jec.login and " .
+				"jec.id_classe = c.id) order by c.classe;";
+		//echo "$sql<br />";
+		$call_classes = mysql_query($sql);
+		$nb_classes = mysql_num_rows($call_classes);
+		$k = 0;
+		$col[$i][5] = '';
+		while ($k < $nb_classes) {
+			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
+			$user_classe['classe_id'] = mysql_result($call_classes, $k, "id");
+	
+			//$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
+			$col[$i][5] .= $user_classe['classe_nom_court'];
+	
+			$col[$i][5] .= "<br />\n";
+	
+			$k++;
+		}
+	}
 
-        $col[$i][5] .= "<br />\n";
-    //======================================
-        $k++;
-    }
+	// Pour les comptes scolarit√©
+	if ($user_statut == "scolarite") {
+		$sql="SELECT DISTINCT c.id, c.classe " .
+				"FROM j_scol_classes jsc, classes c WHERE (" .
+				"jsc.login = '$user_login' and " .
+				"jsc.id_classe = c.id) order by c.classe;";
+		//echo "$sql<br />";
+		$call_classes = mysql_query($sql);
+		$nb_classes = mysql_num_rows($call_classes);
+		$k = 0;
+		$col[$i][5] = '';
+		while ($k < $nb_classes) {
+			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
+			$user_classe['classe_id'] = mysql_result($call_classes, $k, "id");
+	
+			//$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
+			$col[$i][5] .= $user_classe['classe_nom_court'];
+	
+			$col[$i][5] .= "<br />\n";
+	
+			$k++;
+		}
+	}
+
     if ($col[$i][5]=='') {$col[$i][5] = "&nbsp;";}
 
     // Affichage de la classe suivie
@@ -617,7 +668,7 @@ while ($i < $nombreligne){
     echo "<tr><td bgcolor='$bgcolor'><p class=small><span class=bold>{$col[$i][1]}</span></p></td>\n";
 	if ($col[$i][7] == "professeur") {
 		echo "<td bgcolor='$bgcolor'><p class=small><span class=bold><a href='modify_user.php?user_login=$user_login'>{$col[$i][2]}</a></span></p>\n";
-		echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'>CrÈer un remplaÁant</a>";
+		echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'>Cr√©er un rempla√ßant</a>";
 		echo "</td>\n";
 	} else {
 	  echo "<td bgcolor='$bgcolor'><p class=small><span class=bold><a href='modify_user.php?user_login=$user_login'>{$col[$i][2]}</a></span></p></td>\n";
@@ -629,7 +680,7 @@ while ($i < $nombreligne){
     echo "<td bgcolor='$bgcolor'><p class=small><span class=bold>{$col[$i][6]}</span></p></td>\n";
     // Affichage du lien 'supprimer'
     echo "<td bgcolor='$bgcolor'><p class=small><span class=bold><a href='../lib/confirm_query.php?liste_cible={$col[$i][1]}&amp;action=del_utilisateur&amp;chemin_retour=$chemin_retour'>supprimer</a></span></p></td>\n";
-    // Affichage du lien pour l'impression des paramËtres
+    // Affichage du lien pour l'impression des param√®tres
     echo "<td bgcolor='$bgcolor'><p class=small><span class=bold><a target=\"_blank\" href='impression_bienvenue.php?user_login={$col[$i][1]}'>imprimer la 'fiche bienvenue'</a></span></p></td>\n";
 	*/
 
@@ -644,16 +695,16 @@ while ($i < $nombreligne){
 	echo "<td><p class='small'><span class='bold'>{$col[$i][1]}</span></p></td>\n";
 	if ($col[$i][7] == "professeur") {
 		echo "<td><p class='small'><span class='bold'><a href='modify_user.php?user_login=$user_login'>{$col[$i][2]}</a></span></p>\n";
-		//echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'>CrÈer un remplaÁant</a>";
-		echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'><img src='../images/remplacant.png' width='29' height='16' alt='CrÈer un remplaÁant' title='CrÈer un remplaÁant' /></a>";
+		//echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'>Cr√©er un rempla√ßant</a>";
+		echo "<br /><a href='creer_remplacant.php?login_prof_remplace=$user_login'><img src='../images/remplacant.png' width='29' height='16' alt='Cr√©er un rempla√ßant' title='Cr√©er un rempla√ßant' /></a>";
 		echo "</td>\n";
 	} else {
 	  echo "<td><p class='small'><span class='bold'><a href='modify_user.php?user_login=$user_login'>{$col[$i][2]}</a></span></p></td>\n";
 	}
     echo "<td><p class='small'><span class='bold'>{$col[$i][3]}</span></p></td>\n";
-    // Si c'est un professeur : matiËres si c'est un "autre" alors on affiche son statut personnalisÈ
+    // Si c'est un professeur : mati√®res si c'est un "autre" alors on affiche son statut personnalis√©
     if ($col[$i][7] == "autre" AND getSettingValue("statuts_prives") == "y") {
-    	// On rÈcupËre son statut personnalisÈ
+    	// On r√©cup√®re son statut personnalis√©
 		$query_s = mysql_query("SELECT nom_statut FROM droits_statut ds, droits_utilisateurs du WHERE login_user = '".$user_login."' AND id_statut = ds.id");
 		if ($query_s) {
 
@@ -676,23 +727,22 @@ while ($i < $nombreligne){
     }else{
 	    echo "<td><p class='small'><span class='bold'>{$col[$i][4]}</span></p></td>\n";
 	}
-	// Liste des enseignements auxquels est associÈ le professeur
+	// Liste des enseignements auxquels est associ√© le professeur
     echo "<td><p class='small'><span class='bold'>{$col[$i][5]}</span></p></td>\n";
     // Affichage de la classe suivie
     echo "<td><p class='small'><span class='bold'>{$col[$i][6]}</span></p></td>\n";
     // Affichage du lien 'supprimer'
     echo "<td><p class='small'><span class='bold'><a href='../lib/confirm_query.php?liste_cible={$col[$i][1]}&amp;action=del_utilisateur&amp;chemin_retour=$chemin_retour".add_token_in_url()."'>supprimer</a></span></p></td>\n";
-    // Affichage du lien pour l'impression des paramËtres
+    // Affichage du lien pour l'impression des param√®tres
     echo "<td><p class='small'><span class='bold'><a target=\"_blank\" href='impression_bienvenue.php?user_login={$col[$i][1]}'>imprimer la 'fiche bienvenue'</a></span></p></td>\n";
 
-    // Affichage du tÈlÈchargement pour la photo si le module trombi est activÈ
+    // Affichage du t√©l√©chargement pour la photo si le module trombi est activ√©
 	if (getSettingValue("active_module_trombinoscopes")=='y') {
 
 
         	echo "<td style='white-space: nowrap;'><input name='photo[$i]' type='file' />\n";
 			echo "<input type='hidden' name='quiestce[$i]' value='";
-			//$codephoto = md5($col[$i][1].''.$col[$i][2]);
-			$codephoto = md5(strtolower($col[$i][1]));
+			$codephoto = md5(mb_strtolower($col[$i][1]));
 			echo $codephoto;
 			echo "' />\n";
 			$photo = $rep_photos.$codephoto.'.jpg';
@@ -704,15 +754,9 @@ while ($i < $nombreligne){
 				else {
 					echo "photo_g.png";
 				}
-				echo "' width='32' height='32'  align='middle' border='0' alt='photo prÈsente' title='photo prÈsente' /></a>\n";
+				echo "' width='32' height='32'  align='middle' border='0' alt='photo pr√©sente' title='photo pr√©sente' /></a>\n";
 			}
 			echo "</td>\n";
-
-			/*
-
-        	?><td style="white-space: nowrap;"><input name="photo[<?php echo $i; ?>]" type="file" /><input type="hidden" name="quiestce[<?php echo $i; ?>]" value="<?php $codephoto = md5($col[$i][1].''.$col[$i][2]); echo $codephoto; ?>" /><?php $photo = '../photos/personnels/'.$codephoto.'.jpg'; if(file_exists($photo)) { ?><a href="<?php echo $photo; ?>" target="_blank"><img src="../mod_trombinoscopes/images/<?php if($col[$i]['civ'] == 'Mme' or $col[$i]['civ'] == 'Mlle') { ?>photo_f.png<?php } else { ?>photo_g.png<?php } ?>" width="32" height="32"  align="middle" border="0" alt="photo prÈsente" title="photo prÈsente" /></a><?php } ?></td>
-        <?php
-			*/
 		}
     // Fin de la ligne courante
     echo "</tr>\n";

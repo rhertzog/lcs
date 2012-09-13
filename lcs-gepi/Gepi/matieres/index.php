@@ -1,6 +1,6 @@
 <?php
 /*
- * $Id: index.php 8675 2011-11-30 14:10:19Z crob $
+ * $Id$
  *
  * Copyright 2001-2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -40,13 +40,13 @@ if (!checkAccess()) {
 $msg = '';
 $error = false;
 if (isset($_POST['is_posted'])) {
-    // Les données ont été postées, on met à jour
+    // Les donnÃ©es ont Ã©tÃ© postÃ©es, on met Ã  jour
     check_token();
 
     $get_all_matieres = mysql_query("SELECT matiere, priority, categorie_id FROM matieres");
     while ($row = mysql_fetch_object($get_all_matieres)) {
-        // On passe les matières une par une et on met à jour
-        $varname_p = strtolower($row->matiere)."_priorite";
+        // On passe les matiÃ¨res une par une et on met Ã  jour
+        $varname_p = my_strtolower($row->matiere)."_priorite";
 		//echo "<p>Test \$varname_p=$varname_p<br />";
         if (isset($_POST[$varname_p])) {
 			//echo "isset(\$_POST[$varname_p]) oui<br />";
@@ -54,47 +54,47 @@ if (isset($_POST['is_posted'])) {
 				//echo "is_numeric(\$_POST[$varname_p]) oui<br />";
             	// La valeur est correcte
             	if ($_POST[$varname_p] != $row->priority) {
-                // On a une valeur différente. On met à jour.
+                // On a une valeur diffÃ©rente. On met Ã  jour.
                     $res = mysql_query("UPDATE matieres SET priority = '".$_POST[$varname_p] . "' WHERE matiere = '" . $row->matiere . "'");
                     if (!$res) {
-                        $msg .= "<br/>Erreur lors de la mise à jour de la priorité de la matière ".$row->matiere.".";
+                        $msg .= "<br/>Erreur lors de la mise Ã  jour de la prioritÃ© de la matiÃ¨re ".$row->matiere.".";
                         $error = true;
                     }
                 }
-                // On met à jour toutes les priorités dans les classes si ça a été demandé
+                // On met Ã  jour toutes les prioritÃ©s dans les classes si Ã§a a Ã©tÃ© demandÃ©
                 if (isset($_POST['forcer_defauts']) AND $_POST['forcer_defauts'] == "yes") {
 			        $sql="UPDATE j_groupes_matieres jgm, j_groupes_classes jgc SET jgc.priorite='".$_POST[$varname_p]."' " .
 			        		"WHERE (jgc.id_groupe = jgm.id_groupe AND jgm.id_matiere='".$row->matiere."')";
 					//echo "$sql<br />";
 					$req = mysql_query($sql);
 			        if (!$req) {
-			        	$msg .="<br/>Erreur lors de la mise à jour de la priorité de matière dans les classes pour la matière ".$row->matiere.".";
+			        	$msg .="<br/>Erreur lors de la mise Ã  jour de la prioritÃ© de matiÃ¨re dans les classes pour la matiÃ¨re ".$row->matiere.".";
 			        	$error = true;
 			        }
                 }
             }
         }
 
-        // La même chose pour la catégorie de matière
-        $varname_c = strtolower($row->matiere)."_categorie";
+        // La mÃªme chose pour la catÃ©gorie de matiÃ¨re
+        $varname_c = my_strtolower($row->matiere)."_categorie";
         if (isset($_POST[$varname_c])) {
         	if (is_numeric($_POST[$varname_c])) {
         		// On a une valeur correcte. On y va !
             	if ($_POST[$varname_c] != $row->categorie_id) {
-                	// On a une valeur différente. On met à jour.
+                	// On a une valeur diffÃ©rente. On met Ã  jour.
                     $res = mysql_query("UPDATE matieres SET categorie_id = '".$_POST[$varname_c] . "' WHERE matiere = '" . $row->matiere . "'");
                     if (!$res) {
-                        $msg .= "<br/>Erreur lors de la mise à jour de la catégorie de la matière ".$row->matiere.".";
+                        $msg .= "<br/>Erreur lors de la mise Ã  jour de la catÃ©gorie de la matiÃ¨re ".$row->matiere.".";
                         $error = true;
                     }
                 }
 
-                // On met à jour toutes les catégories dans les classes si ça a été demandé
+                // On met Ã  jour toutes les catÃ©gories dans les classes si Ã§a a Ã©tÃ© demandÃ©
                 if (isset($_POST['forcer_defauts']) AND $_POST['forcer_defauts'] == "yes") {
 			        $req = mysql_query("UPDATE j_groupes_classes jgc, j_groupes_matieres jgm SET jgc.categorie_id='".$_POST[$varname_c]."' " .
 			        		"WHERE (jgc.id_groupe = jgm.id_groupe AND jgm.id_matiere='".$row->matiere."')");
 			        if (!$req) {
-			        	$msg .="<br/>Erreur lors de la mise à jour de la catégorie de matière dans les classes pour la matière ".$row->matiere.".";
+			        	$msg .="<br/>Erreur lors de la mise Ã  jour de la catÃ©gorie de matiÃ¨re dans les classes pour la matiÃ¨re ".$row->matiere.".";
 			        	$error = true;
 			        }
                 }
@@ -104,43 +104,42 @@ if (isset($_POST['is_posted'])) {
 
     }
     if ($error) {
-        $msg .= "<br/>Des erreurs se sont produites lors de la mise à jour des données.";
+        $msg .= "<br/>Des erreurs se sont produites lors de la mise Ã  jour des donnÃ©es.";
     } else {
-        $msg .= "<br/>Mise à jour effectuée.";
+        $msg .= "<br/>Mise Ã  jour effectuÃ©e.";
     }
 }
 
-if(isset($_GET['msg'])) {
-	$_GET['msg']=html_entity_decode($_GET['msg']);
-}
-
-$themessage = 'Des modifications ont été effectuées. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage = 'Des modifications ont Ã©tÃ© effectuÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-$titre_page = "Gestion des matières";
-require_once("../lib/header.inc");
+$titre_page = "Gestion des matiÃ¨res";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 
 <p class=bold><a href="../accueil_admin.php"<?php echo insert_confirm_abandon();?>><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>
- | <a href="modify_matiere.php"<?php echo insert_confirm_abandon();?>>Ajouter matière</a>
- | <a href='matieres_param.php'<?php echo insert_confirm_abandon();?>>Paramétrage de plusieurs matières par lots</a>
- | <a href='matieres_categories.php'<?php echo insert_confirm_abandon();?>>Editer les catégories de matières</a>
- | <a href='matieres_csv.php'<?php echo insert_confirm_abandon();?>>Importer un CSV de la liste des matières</a>
+ | <a href="modify_matiere.php"<?php echo insert_confirm_abandon();?>>Ajouter matiÃ¨re</a>
+ | <a href='matieres_param.php'<?php echo insert_confirm_abandon();?>>ParamÃ©trage de plusieurs matiÃ¨res par lots</a>
+ | <a href='matieres_categories.php'<?php echo insert_confirm_abandon();?>>Editer les catÃ©gories de matiÃ¨res</a>
+ | <a href='matieres_csv.php'<?php echo insert_confirm_abandon();?>>Importer un CSV de la liste des matiÃ¨res</a>
 </p>
 <form enctype="multipart/form-data" action="index.php" method=post>
 <?php
 echo add_token_field();
 ?>
 <input type='submit' value='Enregistrer' style='margin-left: 10%; margin-bottom: 0px;' />
-<p><label for='forcer_defauts' style='cursor: pointer;'>Pour toutes les classes, forcer les valeurs définies pour toutes les matières ci-dessous <input type='checkbox' name='forcer_defauts' id='forcer_defauts' value='yes' /></label>
-<br/><b>Attention !</b> Cette fonction effacera tous vos changements manuels concernant la priorité et la catégorie de chaque matière dans les différentes classes !</p>
+<p><label for='forcer_defauts' style='cursor: pointer;'>Pour toutes les classes, forcer les valeurs dÃ©finies pour toutes les matiÃ¨res ci-dessous <input type='checkbox' name='forcer_defauts' id='forcer_defauts' value='yes' /></label>
+<br/><b>Attention !</b> Cette fonction effacera tous vos changements manuels concernant la prioritÃ© et la catÃ©gorie de chaque matiÃ¨re dans les diffÃ©rentes classes !</p>
 <input type='hidden' name='is_posted' value='1' />
 <table class='boireaus' width = '100%' cellpadding = '5'>
 <tr>
-    <th><p class='bold'><a href='./index.php?orderby=m.matiere'<?php echo insert_confirm_abandon();?>>Identifiant matière</a></p></th>
+    <th>
+    <p class='bold'><a href='./index.php?orderby=m.matiere'<?php echo insert_confirm_abandon();?>>Identifiant matiÃ¨re</a><br />
+    <a href="javascript:afficher_masquer_matieres_sans_grp('afficher')"><img src="../images/icons/visible.png" width="19" height="16" title="Afficher les matiÃ¨res sans enseignement associÃ©" alt="Afficher les matiÃ¨res sans enseignement associÃ©" /></a> / <a href="javascript:afficher_masquer_matieres_sans_grp('masquer')"><img src="../images/icons/invisible.png" width="19" height="16" title="Masquer les matiÃ¨res sans enseignement associÃ©" alt="Masquer les matiÃ¨res sans enseignement associÃ©" /></a>
+    </p></th>
     <th><p class='bold'><a href='./index.php?orderby=m.nom_complet'<?php echo insert_confirm_abandon();?>>Nom complet</a></p></th>
-    <th><p class='bold'><a href='./index.php?orderby=m.priority,m.nom_complet'<?php echo insert_confirm_abandon();?>>Ordre d'affichage<br />par défaut</a></p></th>
-    <th><p class='bold'>Catégorie par défaut</p></th>
+    <th><p class='bold'><a href='./index.php?orderby=m.priority,m.nom_complet'<?php echo insert_confirm_abandon();?>>Ordre d'affichage<br />par dÃ©faut</a></p></th>
+    <th><p class='bold'>CatÃ©gorie par dÃ©faut</p></th>
     <th><p class='bold'>Supprimer</p></th>
 </tr>
 <?php
@@ -149,7 +148,7 @@ if ($orderby != "m.matiere" AND $orderby != "m.nom_complet" AND $orderby != "m.p
     $orderby = "m.priority,m.nom_complet";
 }
 $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
-// On va chercher les classes déjà existantes, et on les affiche.
+// On va chercher les classes dÃ©jÃ  existantes, et on les affiche.
 
 $call_data = mysql_query("SELECT m.matiere, m.nom_complet, m.priority, m.categorie_id FROM matieres m ORDER BY $orderby");
 $get_cat = mysql_query("SELECT id, nom_court FROM matieres_categories");
@@ -164,18 +163,28 @@ while ($i < $nombre_lignes){
     $alt=$alt*(-1);
 
 	$current_matiere = mysql_result($call_data, $i, "matiere");
-    $current_matiere_nom = mysql_result($call_data, $i, "nom_complet");
+	$current_matiere_nom = mysql_result($call_data, $i, "nom_complet");
     $current_matiere_priorite = mysql_result($call_data, $i, "priority");
     $current_matiere_categorie_id = mysql_result($call_data, $i, "categorie_id");
 
-    if ($current_matiere_priorite > 1) $current_matiere_priorite -= 10;
-    echo "<tr class='lig$alt white_hover'><td><a href='modify_matiere.php?current_matiere=$current_matiere'".insert_confirm_abandon().">$current_matiere</a></td>\n";
+    if ($current_matiere_priorite > 1) {$current_matiere_priorite -= 10;}
+
+	$sql="SELECT 1=1 FROM j_groupes_matieres WHERE id_matiere='$current_matiere';";
+	$res_grp_associes=mysql_query($sql);
+	$nb_grp_assoc=mysql_num_rows($res_grp_associes);
+
+	if($nb_grp_assoc==0) {
+		echo "<tr style='background-color:grey;' class='white_hover' id='tr_sans_grp_assoc_$i'><td title=\"Aucun enseignement n'est associÃ© Ã  cette matiÃ¨re\"><a href='modify_matiere.php?current_matiere=$current_matiere'".insert_confirm_abandon()." style=\"color:#0000AA\">$current_matiere</a></td>\n";
+	}
+	else {
+		echo "<tr class='lig$alt white_hover'><td title=\"$nb_grp_assoc enseignement(s) associÃ©(s) Ã  cette matiÃ¨re\"><a href='modify_matiere.php?current_matiere=$current_matiere'".insert_confirm_abandon().">$current_matiere</a></td>\n";
+	}
     //echo "<td>$current_matiere_nom</td>";
     //echo "<td>".html_entity_decode($current_matiere_nom)."</td>";
-    echo "<td>".htmlentities($current_matiere_nom)."</td>\n";
-    // La priorité par défaut
+    echo "<td>".htmlspecialchars($current_matiere_nom)."</td>\n";
+    // La prioritÃ© par dÃ©faut
     echo "<td>\n";
-    echo "<select size=1 name='" . strtolower($current_matiere)."_priorite' onchange='changement()'>\n";
+    echo "<select size=1 name='" . my_strtolower($current_matiere)."_priorite' onchange='changement()'>\n";
     $k = '0';
     echo "<option value=0>0</option>\n";
     $k='11';
@@ -192,7 +201,7 @@ while ($i < $nombre_lignes){
     "</td>\n";
 
     echo "<td>\n";
-    echo "<select size=1 name='" . strtolower($current_matiere)."_categorie' onchange='changement()'>\n";
+    echo "<select size=1 name='" . my_strtolower($current_matiere)."_categorie' onchange='changement()'>\n";
 
 	echo "<option value='0'";
 	if ($current_matiere_categorie_id == '0') {echo " SELECTED";}
@@ -200,16 +209,34 @@ while ($i < $nombre_lignes){
     foreach ($categories as $row) {
         echo "<option value='".$row["id"]."'";
         if ($current_matiere_categorie_id == $row["id"]) {echo " SELECTED";}
-        echo ">".html_entity_decode_all_version($row["nom_court"])."</option>\n";
+        echo ">".html_entity_decode($row["nom_court"])."</option>\n";
     }
     echo "</select>\n";
     echo "</td>\n";
-    //echo "<td><a href=\"../lib/confirm_query.php?liste_cible=$current_matiere&amp;action=del_matiere\" onclick=\"return confirmlink(this, 'La suppression d\'une matière est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Etes-vous sûr de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a></td></tr>\n";
-    echo "<td><a href=\"suppr_matiere.php?matiere=$current_matiere\" onclick=\"return confirmlink(this, 'La suppression d\'une matière est irréversible. Une telle suppression ne devrait pas avoir lieu en cours d\'année. Si c\'est le cas, cela peut entraîner la présence de données orphelines dans la base. Etes-vous sûr de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a></td></tr>\n";
+    //echo "<td><a href=\"../lib/confirm_query.php?liste_cible=$current_matiere&amp;action=del_matiere\" onclick=\"return confirmlink(this, 'La suppression d\'une matiÃ¨re est irrÃ©versible. Une telle suppression ne devrait pas avoir lieu en cours d\'annÃ©e. Si c\'est le cas, cela peut entraÃ®ner la prÃ©sence de donnÃ©es orphelines dans la base. Etes-vous sÃ»r de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a></td></tr>\n";
+    echo "<td><a href=\"suppr_matiere.php?matiere=$current_matiere\" onclick=\"return confirmlink(this, 'La suppression d\'une matiÃ¨re est irrÃ©versible. Une telle suppression ne devrait pas avoir lieu en cours d\'annÃ©e. Si c\'est le cas, cela peut entraÃ®ner la prÃ©sence de donnÃ©es orphelines dans la base. Etes-vous sÃ»r de vouloir continuer ?', 'Confirmation de la suppression')\">Supprimer</a></td></tr>\n";
 	$i++;
 }
 ?>
 </table>
 <input type='submit' value='Enregistrer' style='margin-left: 70%; margin-top: 25px; margin-bottom: 100px;' />
 </form>
+
+<script type='text/javascript'>
+function afficher_masquer_matieres_sans_grp(mode) {
+	for(i=0;i<<?php
+	echo $nombre_lignes;
+	?>;i++) {
+		if(document.getElementById('tr_sans_grp_assoc_'+i)) {
+			//alert(i);
+			if(mode=='afficher') {
+				document.getElementById('tr_sans_grp_assoc_'+i).style.display='';
+			}
+			else {
+				document.getElementById('tr_sans_grp_assoc_'+i).style.display='none';
+			}
+		}
+	}
+}
+</script>
 <?php require("../lib/footer.inc.php");?>

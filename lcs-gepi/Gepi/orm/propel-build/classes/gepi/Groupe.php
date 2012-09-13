@@ -27,70 +27,6 @@ class Groupe extends BaseGroupe {
 	 */
 	protected $nameAvecClasses;
 
-
-	/**
-	 * @var        array Classe[] Collection to store aggregation of Classes objects.
-	 */
-	protected $collClasses;
-
-	/**
-	 *
-	 * Renvoi sous forme d'un tableau la liste des classes d'un groupe.
-	 * Manually added for N:M relationship
-	 *
-	 * @param      PropelPDO $con (optional) The PropelPDO connection to use.
-	 * @return     PropelObjectCollection Classes[]
-	 *
-	 */
-	public function getClasses($con = null) {
-		if(null === $this->collClasses) {
-			if ($this->isNew() && null === $this->collClasses) {
-				// return empty collection
-				$this->initClasses();
-			} else {
-				$collClasses = new PropelObjectCollection();
-				$collClasses->setModel('Classe');
-				if ($this->collJGroupesClassess !== null) {
-				    $collJGroupesClasses = $this->collJGroupesClassess;
-				} else {
-				    $collJGroupesClasses = $this->getJGroupesClassessJoinClasse($con);
-				}
-				foreach($collJGroupesClasses as $ref) {
-				    if ($ref != null) {
-					$collClasses->append($ref->getClasse());
-				    }
-				}
-				$this->collClasses = $collClasses;
-			}
-		}
-		return $this->collClasses;
-	}
-
-	/**
-	 * Initializes the collClasses collection.
-	 *
-	 * @param      integer $periode numero de la periode ou objet periodeNote
-	 * @return     void
-	 */
-	public function initClasses()
-	{
-		$this->collClasses = new PropelObjectCollection();
-		$this->collClasses->setModel('Classe');
-	}
-
-	/**
-	 * Clears out the collClasses collection
-	 *
-	 * This does not modify the database; however, it will remove any associated objects, causing
-	 * them to be refetched by subsequent calls to accessor method.
-	 *
-	 * @return     void
-	 */
-	public function clearClasses()
-	{
-		$this->collClasses = null; // important to set this to NULL since that means it is uninitialized
-	}
-
 	/**
 	 * Reloads this object from datastore based on primary key and (optionally) resets all associated objects.
 	 *
@@ -105,13 +41,12 @@ class Groupe extends BaseGroupe {
 	{
 	    parent::reload($deep,$con);
 	    if ($deep) {  // also de-associate any related objects?
-		$this->collClasses = null;
 		$this->clearJGroupesClassess();	
 	    }
 	}
 
 	/**
-	 * Renvoi la description du groupe avec la liste des classes associées
+	 * Renvoi la description du groupe avec la liste des classes associÃ©es
 	 * @return     String
 	 */
 	public function getDescriptionAvecClasses() {
@@ -123,7 +58,7 @@ class Groupe extends BaseGroupe {
 			foreach ($this->getClasses() as $classe) {
 				$str .= $classe->getNom() . ",&nbsp;";
 			}
-			$str = substr($str, 0, -7);
+			$str = mb_substr($str, 0, -7);
 			$str.= ")";
 			$this->descriptionAvecClasses = $str;
 			return $str;
@@ -131,7 +66,7 @@ class Groupe extends BaseGroupe {
 	}
 
 	/**
-	 * Renvoi le nom du groupe avec la liste des classes associées
+	 * Renvoi le nom du groupe avec la liste des classes associÃ©es
 	 * @return     string
 	 */
 	public function getNameAvecClasses() {
@@ -165,8 +100,8 @@ class Groupe extends BaseGroupe {
 	public function clearJGroupesClassess()
 	{
 		parent::clearJGroupesClassess();
-		$descriptionAvecClasses = null;
-		$nameAvecClasses = null;
+		$this->descriptionAvecClasses = null;
+		$this->nameAvecClasses = null;
 	}
 
 	/**
@@ -181,23 +116,22 @@ class Groupe extends BaseGroupe {
 	public function clearAllReferences($deep = false) {
 		parent::clearAllReferences($deep);
 		$this->clearJGroupesClassess();
-		$this->collClasses = null;
 	}
 
 	/**
 	 * Manually added
 	 *
-	 * La méthode renvoi true si le Groupe est affecté à l'utilisateur.
+	 * La mÃ©thode renvoi true si le Groupe est affectÃ© Ã  l'utilisateur.
 	 *
-	 * @param      Utilisateur $utilisateur l'utilisateur à qui appartient le groupe
-	 * @return     boolean true si le groupe appartient à l'utilisateur
+	 * @param      Utilisateur $utilisateur l'utilisateur Ã  qui appartient le groupe
+	 * @return     boolean true si le groupe appartient Ã  l'utilisateur
 	 * @throws     PropelException  - Any caught Exception will be rewrapped as a PropelException.
 	 */
 	public function belongsTo($utilisateur) {
 		if (!isset($utilisateur) || $utilisateur == null) {
 			return false;
 		} elseif (!($utilisateur instanceof UtilisateurProfessionnel)) {
-			throw new PropelException("L'objet pass� n'est pas de la classe Utilisateur");
+			throw new PropelException("L'objet passé n'est pas de la classe Utilisateur");
 		} else {
 			$group_appartient_utilisateur = false;
 			foreach ($utilisateur->getGroupes() as $group_iter) {
@@ -258,10 +192,10 @@ class Groupe extends BaseGroupe {
 
 	/**
 	 *
-	 * Renvoi sous forme la valeur ECTS par d�faut.
-	 * Cette valeur se trouve � la jointure d'un groupe et d'une classe, elle n'est pas sp�cifique � un groupe
-	 * En effet, il peut y avoir plusieurs eleves d'une meme classe qui sont regroup�s dans un groupe, et pour ces eleves il est possible
-	 * que la valeur par defaut soit diff�rente.
+	 * Renvoi sous forme la valeur ECTS par défaut.
+	 * Cette valeur se trouve à la jointure d'un groupe et d'une classe, elle n'est pas spécifique à un groupe
+	 * En effet, il peut y avoir plusieurs eleves d'une meme classe qui sont regroupés dans un groupe, et pour ces eleves il est possible
+	 * que la valeur par defaut soit différente.
 	 * @periode integer numero de la periode
 	 * @return     array Eleves[]
 	 *
@@ -289,14 +223,14 @@ class Groupe extends BaseGroupe {
     }
 
 	public function getCategorieMatiere($id_classe) {
-		$profs = array();
 		$criteria = new Criteria();
 		$criteria->add(JGroupesClassesPeer::ID_CLASSE,$id_classe);
 		$g = $this->getJGroupesClassess($criteria);
 		if ($g->isEmpty()) {
 		    return false;
 		} else {
-		    return $g->getFirst()->getCategorieMatiere();
+		    $jGroupeClasse = $g->getFirst();
+	        return CategorieMatiereQuery::create()->findOneById($jGroupeClasse->getCategorieId());
 		}
 	}
 
@@ -310,7 +244,7 @@ class Groupe extends BaseGroupe {
 	 * @return     array Eleves[]
 	 */
 	public function addEleve(Eleve $eleve, $num_periode_notes = null) {
-		if ($eleve->getIdEleve() == null) {
+		if ($eleve->getId() == null) {
 			throw new PropelException("Eleve id ne doit pas etre null");
 		}
 		if ($num_periode_notes == null) {
@@ -329,10 +263,10 @@ class Groupe extends BaseGroupe {
 
 	/**
 	 *
-	 * Retourne tous les emplacements de cours pour la periode pr�cis�e du calendrier.
+	 * Retourne tous les emplacements de cours pour la periode précisée du calendrier.
 	 * On recupere aussi les emplacements dont la periode n'est pas definie ou vaut 0.
 	 *
-	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonn�e chronologiquement
+	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonnée chronologiquement
 	 */
 	public function getEdtEmplacementCourssPeriodeCalendrierActuelle($v = 'now'){
 		if ( getSettingValue("autorise_edt_tous") != 'y') {
@@ -380,7 +314,7 @@ class Groupe extends BaseGroupe {
 	}
 
  	/**
-	 * Retourne la periode de note actuelle pour une classe donnee.
+	 * Retourne la periode de note actuelle
 	 *
 	 * @return     PeriodeNote $periode la periode actuellement ouverte
 	 */
@@ -393,10 +327,29 @@ class Groupe extends BaseGroupe {
 	    }
 	}
 
+	/**
+	 * Retourne la periode de note correspondante à la date donnée en paramètre.
+         * La recherche est faite sur un classe arbitraire associée au groupe
+         * On regarde proritairement les dates de fin des périodes de notes,
+         * puis les renseignements de l'edt.
+         * Si aucune période n'est trouvée on retourne la dernière période ouverte pour l'ordre chronologique,
+         * null sinon
+	 *
+	 * @return     PeriodeNote $periode la periode de la date précisée, ou null si non trouvé
+	 */
+	public function getPeriodeNote($v = 'now') {
+	    $classes = $this->getClasses();
+	    if ($classes->isEmpty()) {
+		return null;
+	    } else {
+		return $classes->getFirst()->getPeriodeNote($v);
+	    }
+	}
+
 
 	/**
 	 *
-	 * Renvoi une collection des mefs des eleves de ce groupe. Un seul mef de chaque type sera retourn�.
+	 * Renvoi une collection des mefs des eleves de ce groupe. Un seul mef de chaque type sera retourné.
 	 *
 	 * @periode integer numero de la periode
 	 * @return     PropelObjectCollection Eleves[]
@@ -409,4 +362,57 @@ class Groupe extends BaseGroupe {
             }
             return $mef_collection;
         }
+
+        /**
+	 * Gets a collection of Classe objects related by a many-to-many relationship
+	 * to the current object by way of the j_groupes_classes cross-reference table.
+	 *
+	 * If the $criteria is not null, it is used to always fetch the results from the database.
+	 * Otherwise the results are fetched from the database the first time, then cached.
+	 * Next time the same method is called without $criteria, the cached collection is returned.
+	 * If this Groupe is new, it will return
+	 * an empty collection or the current collection; the criteria is ignored on a new object.
+	 *
+	 * @param      Criteria $criteria Optional query object to filter the query
+	 * @param      PropelPDO $con Optional connection object
+	 *
+	 * @return     PropelCollection|array Classe[] List of Classe objects
+	 */
+	public function getClasses($criteria = null, PropelPDO $con = null)
+	{
+		if(null === $this->collClasses || null !== $criteria) {
+			if ($this->isNew() && null === $this->collClasses) {
+				// return empty collection
+				$this->initClasses();
+			} else {
+                            //si collJGroupesClassess est hydraté, on va regarder si les classes aussi sont hydratée
+                            $classe_hydrated = false;
+                            if (null !== $this->collJGroupesClassess) {
+                                $classe_hydrated = true;
+                                foreach($this->collJGroupesClassess as $jgroupeclasse) {
+                                    if ($jgroupeclasse === null) continue;
+                                    $classe_hydrated = $classe_hydrated && $jgroupeclasse->isClasseHydrated();
+                                    if (!$classe_hydrated) break;
+                                }
+                            }
+                            if (!$classe_hydrated || null !== $criteria) {//on refait une requete
+				$collClasses = ClasseQuery::create(null, $criteria)
+					->filterByGroupe($this)
+					->find($con);
+				if (null !== $criteria) {
+					return $collClasses;
+				}
+				$this->collClasses = $collClasses;
+                            } else {//on utilise ce qui est déjà hydraté
+                                $this->initClasses();
+                                foreach ($this->collJGroupesClassess as $jgroupeclasse) {
+                                    $this->collClasses->add($jgroupeclasse->getClasse());
+                                }
+                            }
+			}
+		}
+		return $this->collClasses;
+	}
+
+
 } // Groupe

@@ -1,7 +1,6 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: efface_base.php 5934 2010-11-21 13:33:58Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -46,8 +45,8 @@ if (isset($_POST['confirm']) and ($_POST['confirm']=='Non')) {
 }
 
 //**************** EN-TETE *****************
-$titre_page = "Outil de gestion | Effacement des données élèves";
-require_once("../lib/header.inc");
+$titre_page = "Outil de gestion | Effacement des donnÃ©es Ã©lÃ¨ves";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?><p class=bold><a href='index.php#efface_base'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
 <H2>Effacement de la base</H2>
@@ -56,44 +55,49 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == 1)) {
     if ($_POST['confirm']=='Oui') {
 		check_token(false);
 
-		echo add_token_field();
         ?>
-        <center><p class='grand'><font color='red'><b>ATTENTION, la suppression des données est irréversible !</b></font></p>
+        <center><p class='grand'><font color='red'><b>ATTENTION, la suppression des donnÃ©es est irrÃ©versible !</b></font></p>
         <form action="efface_base.php" method="post" name="formulaire">
-        <!--table border = 10 bordercolor='red'-->
-        <!--table style='border:10px solid red'-->
+		<?php
+			echo add_token_field();
+		?>
         <table class='bordercolor10'>
-        <tr><td><INPUT TYPE=SUBMIT value ="EFFACER LES DONNEES <?php echo strtoupper($gepiSettings['denomination_eleves']);?>" /></td></tr></table>
+        <tr><td><INPUT TYPE=SUBMIT value ="EFFACER LES DONNEES <?php echo my_strtoupper($gepiSettings['denomination_eleves']);?>" /></td></tr></table>
         <INPUT TYPE=HIDDEN name=is_posted value = 2 />
-        </FORM></center>
+        </form>
+		<p><br /></p>
+		</center>
         <?php
     }
 }
 
 if (!isset($_POST['is_posted'])) {
-    echo "<p><b>ATTENTION : Cette procédure efface tout le contenu de la base de données concernant les ".$gepiSettings['denomination_eleves']." (données personnelles, notes, appréciations, ...)</b>
-    <br />Si vous souhaitez initialiser l'année à l'aide de fichiers GEP, inutile d'utiliser cette procédure, l'effacement des données vous sera proposé au cours de la procédure d'initialisation.
+    echo "<p><b>ATTENTION : Cette procÃ©dure efface tout le contenu de la base de donnÃ©es concernant les ".$gepiSettings['denomination_eleves']." (donnÃ©es personnelles, notes, apprÃ©ciations, ...)</b>
+    <br />Si vous souhaitez initialiser l'annÃ©e Ã  l'aide de fichiers GEP, inutile d'utiliser cette procÃ©dure, l'effacement des donnÃ©es vous sera proposÃ© au cours de la procÃ©dure d'initialisation.
 
-    <br /><br />Les données suivantes sont conservées :
+    <br /><br />Les donnÃ©es suivantes sont conservÃ©es :
     <ul>
-    <li>Les classes (noms, périodes, ...)</li>
-    <li>Les catégories d'AID</li>
-    <li>La base établissement</li>
+    <li>Les classes (noms, pÃ©riodes, ...)</li>
+    <li>Les catÃ©gories d'AID</li>
+    <li>La base Ã©tablissement</li>
     <li>Les logs de connexion</li>
-    <li>La base des matières</li>
+    <li>La base des matiÃ¨res</li>
     <li>La base des utilisateurs</li>
-    <li>Le paramétrage général.</li>
+    <li>Le paramÃ©trage gÃ©nÃ©ral.</li>
     <li>Les cahiers de texte</li>
     </ul>";
 
+    echo "<p><b>Etes-vous sÃ»r de vouloir continuer ?</b></p>";
+    echo "<form action=\"efface_base.php\" method=\"post\" name=\"formulaire\">";
 
 	echo add_token_field();
 
-    echo "<p><b>Etes-vous sûr de vouloir continuer ?</b></p>";
-    echo "<form action=\"efface_base.php\" method=\"post\" name=\"formulaire\">";
     echo "<INPUT TYPE=HIDDEN name=is_posted value = '1' /> ";
+	echo "<p>";
     echo "<INPUT TYPE=SUBMIT name='confirm' value = 'Oui' />";
-    echo "<INPUT TYPE=SUBMIT name='confirm' value = 'Non' />";
+    echo " <INPUT TYPE=SUBMIT name='confirm' value = 'Non' />";
+	echo "</p>";
+	echo "<p><br /></p>";
     echo "</FORM>";
 
 }
@@ -223,7 +227,7 @@ if (isset($_POST['is_posted']) and ($_POST['is_posted'] == 2)) {
        $del = mysql_query("DELETE FROM $liste_tables_del[$j]");
        $j++;
    }
-   echo "<p class='grand'>Suppression des données réussie.</p>";
+   echo "<p class='grand'>Suppression des donnÃ©es rÃ©ussie.</p>";
 }
 require("../lib/footer.inc.php");
 ?>

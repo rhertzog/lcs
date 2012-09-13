@@ -1,9 +1,18 @@
 <?php
+// suppression d'un message du panneau d'affichage
+if (isset($_POST['supprimer_message']))
+	{
+	$r_sql="DELETE FROM `messages` WHERE `id`='".$_POST['supprimer_message']."'";
+	mysql_query($r_sql);
+	header("Location: ./accueil.php");
+	}
+
+
 // ----- Affichage des messages -----
 $today=mktime(0,0,0,date("m"),date("d"),date("Y"));
 $now=time();
 
-// on supprime les messages obsolètes
+// on supprime les messages obsolÃ¨tes
 $sql="DELETE FROM `messages` WHERE ((`date_fin`+86400 <= ".$today.") && (`statuts_destinataires`='_') && (`login_destinataire`='".$_SESSION['login']."'));";
 @mysql_query($sql);
 
@@ -18,18 +27,16 @@ $appel_messages = mysql_query($sql);
 
 
 $nb_messages = mysql_num_rows($appel_messages);
-//echo "\$nb_messages=$nb_messages<br />";
 $ind = 0;
 $texte_messages = '';
-$texte_messages_simpl_prof = ''; // variable uniquement utilisée dans accueil_simpl_prof.php
+$texte_messages_simpl_prof = ''; // variable uniquement utilisÃ©e dans accueil_simpl_prof.php
 $affiche_messages = 'no';
 while ($ind < $nb_messages) {
 	$statuts_destinataires1 = mysql_result($appel_messages, $ind, 'statuts_destinataires');
 	$login_destinataire1 = mysql_result($appel_messages, $ind, 'login_destinataire');
 	$autre_message = "";
 
-	if ((strpos($statuts_destinataires1, substr($_SESSION['statut'], 0, 1))) || ($_SESSION['login']==$login_destinataire1)) {
-	//if ((strtolower($_SESSION['login'])==strtolower($statuts_destinataires1)) || ((strpos(strtolower($statuts_destinataires1), substr(strtolower($_SESSION['statut']), 0, 1)))&&(substr($statuts_destinataires1,0,1)=="_"))) {
+	if ((strpos($statuts_destinataires1, mb_substr($_SESSION['statut'], 0, 1))) || ($_SESSION['login']==$login_destinataire1)) {
 		if ($affiche_messages == 'yes') {
 			$autre_message = "hr";
 			$texte_messages_simpl_prof .= "<hr />";
@@ -44,11 +51,11 @@ while ($ind < $nb_messages) {
 				$decompte_remplace="";
 			}
 			elseif($nb_sec==0) {
-				$decompte_remplace=" <span style='color:red'>Vous êtes à l'instant T</span> ";
+				$decompte_remplace=" <span style='color:red'>Vous Ãªtes Ã  l'instant T</span> ";
 			}
 			else {
 				$nb_sec=$nb_sec*(-1);
-				$decompte_remplace=" <span style='color:red'>date dépassée de</span> ";
+				$decompte_remplace=" <span style='color:red'>date dÃ©passÃ©e de</span> ";
 			}
 
 			$decompte_j=floor($nb_sec/(24*3600));
@@ -69,7 +76,7 @@ while ($ind < $nb_messages) {
 		// fin _DECOMPTE_
 		
 		// gestion du token (csrf_alea)
-		// si elle est présente la variable _CRSF_ALEA_ est remplacée lors de l'affichage du message
+		// si elle est prÃ©sente la variable _CRSF_ALEA_ est remplacÃ©e lors de l'affichage du message
 		// par la valeur du token de l'utilisateur, par exemple on peut ainsi inclure dans un message
 		// un lien appelant un script : <a href="module/script.php?id=33&csrf_alea=_CRSF_ALEA_">Vers le script</a>
 		$pos_crsf_alea=strpos($content,"_CRSF_ALEA_");

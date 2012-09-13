@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: accueil_admin_template.php 4896 2010-07-25 20:22:14Z regis $
+ * $Id$
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>
 
-<!-- on inclut l'entête -->
+<!-- on inclut l'entÃªte -->
 	<?php include('./templates/origine/header_template.php');?>
 	
 	<link rel="stylesheet" type="text/css" href="./accessibilite.css" media="screen" />
@@ -56,7 +56,7 @@
 
 <div id='container'>
 
-<a name="contenu" class="invisible">Début de la page</a>	
+<a name="contenu" class="invisible">DÃ©but de la page</a>	
 	
 <?php	
 				if (count($tbs_menu)) {
@@ -80,7 +80,7 @@
 							unset($newentree);
 						}
 							echo "
-<!-- Fin menu	général -->
+<!-- Fin menu	gÃ©nÃ©ral -->
 				";
 					}
 				unset($value);

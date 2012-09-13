@@ -1,6 +1,6 @@
 <?php
 /*
-* $Id: graph_double_ligne_fiche.php 2147 2008-07-23 09:01:04Z tbelliard $
+* $Id$
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
  * This file is part of GEPI.
@@ -62,7 +62,7 @@ date_default_timezone_set ('Europe/Paris');
 			}*/
 	$date_act = date('Y-m-d');
 
-// Variable non définit
+// Variable non dÃ©finit
 	if (empty($_GET['donnee_titre']) and empty($_POST['donnee_titre'])) { $donnee_titre = ''; }
 	   else { if (isset($_GET['donnee_titre'])) { $donnee_titre = $_GET['donnee_titre']; } if (isset($_POST['donnee_titre'])) { $donnee_titre = $_POST['donnee_titre']; } }
 	if (empty($_GET['echelle_x']) and empty($_POST['echelle_x'])) { $echelle_x = ''; }

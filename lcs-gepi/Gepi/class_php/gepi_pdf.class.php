@@ -3,9 +3,9 @@
 /**
  * Classe de gestion de l'impression PDF
  *
- * $Id: gepi_pdf.class.php 7774 2011-08-15 22:50:16Z regis $
+ * $Id$
  *
- * @copyright Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stéphane Boireau, Christian Chapel
+ * @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, StÃ©phane Boireau, Christian Chapel
  * @package General
  * @subpackage Impression
  */
@@ -62,9 +62,9 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 			$this->Rect($xi,$yi,$w,$h,'DF');
 
 		$dy=0;
-		if (strtoupper($valign)=='M')
+		if (mb_strtoupper($valign)=='M')
 			$dy=($h-$rows*$this->FontSize)/2;
-		if (strtoupper($valign)=='B')
+		if (mb_strtoupper($valign)=='B')
 			$dy=$h-$rows*$this->FontSize;
 
 		$this->SetY($yi+$dy);
@@ -93,8 +93,8 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 			$w=$this->w-$this->rMargin-$this->x;
 		$wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
 		$s=str_replace("\r",'',$txt);
-		$nb=strlen($s);
-		if($nb>0 and $s[$nb-1]=="\n")
+		$nb=mb_strlen($s);
+		if($nb>0 and mb_substr($s, $nb-1, 1)=="\n")
 			$nb--;
 		$b=0;
 		if($border){
@@ -121,7 +121,7 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 		while($i<$nb){
 
 			//Get next character
-			$c=$s[$i];
+			$c=mb_substr($s, $i, 1);
 			if($c=="\n"){
 				//Explicit line break
 				if($this->ws>0)
@@ -131,7 +131,7 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 						$this->_out('0 Tw');
 				}
 				if ($prn==1) {
-					$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+					$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 				}
 				$i++;
 				$sep=-1;
@@ -142,7 +142,7 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 				if($border and $nl==2)
 					$b=$b2;
 				if ( $maxline && $nl > $maxline )
-					return substr($s,$i);
+					return mb_substr($s,$i);
 				continue;
 			}
 			if($c==' ')
@@ -151,9 +151,10 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 				$ls=$l;
 				$ns++;
 			}
-			$l+=$cw[$c];
+			$l+=$this->GetStringWidth($c)*1000/($this->FontSize);
 			if($l>$wmax)
 			{
+
 				//Automatic line break
 				if($sep==-1)
 				{
@@ -165,16 +166,16 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 						if ($prn==1) $this->_out('0 Tw');
 					}
 					if ($prn==1) {
-						$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+						$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 					}
 				}else{
 					if($align=='J')
 					{
 						$this->ws=($ns>1) ? ($wmax-$ls)/1000*$this->FontSize/($ns-1) : 0;
-						if ($prn==1) $this->_out(sprintf('%.3f Tw',$this->ws*$this->k));
+						if ($prn==1) $this->_out(sprintf('%.3F Tw',$this->ws*$this->k));
 					}
 					if ($prn==1){
-						$this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+						$this->Cell($w,$h,mb_substr($s,$j,$sep-$j),$b,2,$align,$fill);
 					}
 					$i=$sep+1;
 				}
@@ -186,7 +187,7 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 				if($border and $nl==2)
 					$b=$b2;
 				if ( $maxline && $nl > $maxline )
-					return substr($s,$i);
+					return mb_substr($s,$i);
 			}
 			else
 				$i++;
@@ -200,7 +201,7 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 		if($border and is_int(strpos($border,'B')))
 			$b.='B';
 		if ($prn==1) {
-			$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+			$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 		}
 		$this->x=$this->lMargin;
 		return $nl;
@@ -216,16 +217,26 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 	function TextWithDirection($x,$y,$txt,$direction='R'){
 
 		$txt=str_replace(')','\\)',str_replace('(','\\(',str_replace('\\','\\\\',$txt)));
+                // Output a string
+                if ($this->unifontSubset)
+                {
+                        $txt2 = '('.$this->_escape($this->UTF8ToUTF16BE($txt, false)).')';
+                        foreach($this->UTF8StringToArray($txt) as $uni)
+                                $this->CurrentFont['subset'][$uni] = $uni;
+                }
+                else
+                        $txt2 = '('.$this->_escape($txt).')';
+
 		if ($direction=='R')
-			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET',1,0,0,1,$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm %s Tj ET',1,0,0,1,$x*$this->k,($this->h-$y)*$this->k,$txt2);
 		elseif ($direction=='L')
-			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET',-1,0,0,-1,$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm %s Tj ET',-1,0,0,-1,$x*$this->k,($this->h-$y)*$this->k,$txt2);
 		elseif ($direction=='U')
-			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET',0,1,-1,0,$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm %s Tj ET',0,1,-1,0,$x*$this->k,($this->h-$y)*$this->k,$txt2);
 		elseif ($direction=='D')
-			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET',0,-1,1,0,$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm %s Tj ET',0,-1,1,0,$x*$this->k,($this->h-$y)*$this->k,$txt2);
 		else
-			$s=sprintf('BT %.2f %.2f Td (%s) Tj ET',$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$s=sprintf('BT %.2f %.2f Td %s Tj ET',$x*$this->k,($this->h-$y)*$this->k,$txt);
 		if ($this->ColorFlag)
 			$s='q '.$this->TextColor.' '.$s.' Q';
 		$this->_out($s);
@@ -252,9 +263,19 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 		$font_dx=cos($font_angle);
 		$font_dy=sin($font_angle);
 
-		$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm (%s) Tj ET',
+                // Output a string
+                if ($this->unifontSubset)
+                {
+                        $txt2 = '('.$this->_escape($this->UTF8ToUTF16BE($txt, false)).')';
+                        foreach($this->UTF8StringToArray($txt) as $uni)
+                                $this->CurrentFont['subset'][$uni] = $uni;
+                }
+                else
+                        $txt2 = '('.$this->_escape($txt).')';
+
+		$s=sprintf('BT %.2f %.2f %.2f %.2f %.2f %.2f Tm %s Tj ET',
 			$txt_dx,$txt_dy,$font_dx,$font_dy,
-			$x*$this->k,($this->h-$y)*$this->k,$txt);
+			$x*$this->k,($this->h-$y)*$this->k,$txt2);
 		if ($this->ColorFlag)
 			$s='q '.$this->TextColor.' '.$s.' Q';
 		$this->_out($s);
@@ -271,8 +292,8 @@ class bul_PDF extends FPDF_MULTICELLTAG {
  */
 	function DiagBarre($X_placement, $Y_placement, $L_diagramme, $H_diagramme, $data, $place)
 	{
-		$this->SetFont('Courier', '', 10);
-		//encadrement général
+		$this->SetFont('DejaVu', '', 10);
+		//encadrement gÃ©nÃ©ral
 		$this->Rect($X_placement, $Y_placement, $L_diagramme, $H_diagramme, 'D');
 		//encadrement du diagramme
 		$this->SetDrawColor(180);
@@ -322,9 +343,10 @@ class bul_PDF extends FPDF_MULTICELLTAG {
 			$i++;
 		}
 	}
-    
+ 
+
 /**
- * En-tête du document
+ * En-tÃªte du document
  */
 	function Header(){
 
@@ -334,8 +356,8 @@ class bul_PDF extends FPDF_MULTICELLTAG {
  * Pied de page du document
  */
 	function Footer() {
-		// On utilise la classe bul_PDF pour les bulletins et pour les relevés de notes et la formule de bas de page ne doit pas nécessairement être la même.
-		// Traitement du footer déplacé dans les pages concernées.
+		// On utilise la classe bul_PDF pour les bulletins et pour les relevÃ©s de notes et la formule de bas de page ne doit pas nÃ©cessairement Ãªtre la mÃªme.
+		// Traitement du footer dÃ©placÃ© dans les pages concernÃ©es.
 	}
 
 }

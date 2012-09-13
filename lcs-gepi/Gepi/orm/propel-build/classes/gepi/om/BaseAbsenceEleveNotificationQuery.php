@@ -12,7 +12,7 @@
  * @method     AbsenceEleveNotificationQuery orderByTypeNotification($order = Criteria::ASC) Order by the type_notification column
  * @method     AbsenceEleveNotificationQuery orderByEmail($order = Criteria::ASC) Order by the email column
  * @method     AbsenceEleveNotificationQuery orderByTelephone($order = Criteria::ASC) Order by the telephone column
- * @method     AbsenceEleveNotificationQuery orderByAdrId($order = Criteria::ASC) Order by the adr_id column
+ * @method     AbsenceEleveNotificationQuery orderByAdresseId($order = Criteria::ASC) Order by the adr_id column
  * @method     AbsenceEleveNotificationQuery orderByCommentaire($order = Criteria::ASC) Order by the commentaire column
  * @method     AbsenceEleveNotificationQuery orderByStatutEnvoi($order = Criteria::ASC) Order by the statut_envoi column
  * @method     AbsenceEleveNotificationQuery orderByDateEnvoi($order = Criteria::ASC) Order by the date_envoi column
@@ -26,7 +26,7 @@
  * @method     AbsenceEleveNotificationQuery groupByTypeNotification() Group by the type_notification column
  * @method     AbsenceEleveNotificationQuery groupByEmail() Group by the email column
  * @method     AbsenceEleveNotificationQuery groupByTelephone() Group by the telephone column
- * @method     AbsenceEleveNotificationQuery groupByAdrId() Group by the adr_id column
+ * @method     AbsenceEleveNotificationQuery groupByAdresseId() Group by the adr_id column
  * @method     AbsenceEleveNotificationQuery groupByCommentaire() Group by the commentaire column
  * @method     AbsenceEleveNotificationQuery groupByStatutEnvoi() Group by the statut_envoi column
  * @method     AbsenceEleveNotificationQuery groupByDateEnvoi() Group by the date_envoi column
@@ -46,9 +46,9 @@
  * @method     AbsenceEleveNotificationQuery rightJoinAbsenceEleveTraitement($relationAlias = null) Adds a RIGHT JOIN clause to the query using the AbsenceEleveTraitement relation
  * @method     AbsenceEleveNotificationQuery innerJoinAbsenceEleveTraitement($relationAlias = null) Adds a INNER JOIN clause to the query using the AbsenceEleveTraitement relation
  *
- * @method     AbsenceEleveNotificationQuery leftJoinResponsableEleveAdresse($relationAlias = null) Adds a LEFT JOIN clause to the query using the ResponsableEleveAdresse relation
- * @method     AbsenceEleveNotificationQuery rightJoinResponsableEleveAdresse($relationAlias = null) Adds a RIGHT JOIN clause to the query using the ResponsableEleveAdresse relation
- * @method     AbsenceEleveNotificationQuery innerJoinResponsableEleveAdresse($relationAlias = null) Adds a INNER JOIN clause to the query using the ResponsableEleveAdresse relation
+ * @method     AbsenceEleveNotificationQuery leftJoinAdresse($relationAlias = null) Adds a LEFT JOIN clause to the query using the Adresse relation
+ * @method     AbsenceEleveNotificationQuery rightJoinAdresse($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Adresse relation
+ * @method     AbsenceEleveNotificationQuery innerJoinAdresse($relationAlias = null) Adds a INNER JOIN clause to the query using the Adresse relation
  *
  * @method     AbsenceEleveNotificationQuery leftJoinJNotificationResponsableEleve($relationAlias = null) Adds a LEFT JOIN clause to the query using the JNotificationResponsableEleve relation
  * @method     AbsenceEleveNotificationQuery rightJoinJNotificationResponsableEleve($relationAlias = null) Adds a RIGHT JOIN clause to the query using the JNotificationResponsableEleve relation
@@ -60,12 +60,12 @@
  * @method     AbsenceEleveNotification findOneById(int $id) Return the first AbsenceEleveNotification filtered by the id column
  * @method     AbsenceEleveNotification findOneByUtilisateurId(string $utilisateur_id) Return the first AbsenceEleveNotification filtered by the utilisateur_id column
  * @method     AbsenceEleveNotification findOneByATraitementId(int $a_traitement_id) Return the first AbsenceEleveNotification filtered by the a_traitement_id column
- * @method     AbsenceEleveNotification findOneByTypeNotification(string $type_notification) Return the first AbsenceEleveNotification filtered by the type_notification column
+ * @method     AbsenceEleveNotification findOneByTypeNotification(int $type_notification) Return the first AbsenceEleveNotification filtered by the type_notification column
  * @method     AbsenceEleveNotification findOneByEmail(string $email) Return the first AbsenceEleveNotification filtered by the email column
  * @method     AbsenceEleveNotification findOneByTelephone(string $telephone) Return the first AbsenceEleveNotification filtered by the telephone column
- * @method     AbsenceEleveNotification findOneByAdrId(string $adr_id) Return the first AbsenceEleveNotification filtered by the adr_id column
+ * @method     AbsenceEleveNotification findOneByAdresseId(string $adr_id) Return the first AbsenceEleveNotification filtered by the adr_id column
  * @method     AbsenceEleveNotification findOneByCommentaire(string $commentaire) Return the first AbsenceEleveNotification filtered by the commentaire column
- * @method     AbsenceEleveNotification findOneByStatutEnvoi(string $statut_envoi) Return the first AbsenceEleveNotification filtered by the statut_envoi column
+ * @method     AbsenceEleveNotification findOneByStatutEnvoi(int $statut_envoi) Return the first AbsenceEleveNotification filtered by the statut_envoi column
  * @method     AbsenceEleveNotification findOneByDateEnvoi(string $date_envoi) Return the first AbsenceEleveNotification filtered by the date_envoi column
  * @method     AbsenceEleveNotification findOneByErreurMessageEnvoi(string $erreur_message_envoi) Return the first AbsenceEleveNotification filtered by the erreur_message_envoi column
  * @method     AbsenceEleveNotification findOneByCreatedAt(string $created_at) Return the first AbsenceEleveNotification filtered by the created_at column
@@ -74,12 +74,12 @@
  * @method     array findById(int $id) Return AbsenceEleveNotification objects filtered by the id column
  * @method     array findByUtilisateurId(string $utilisateur_id) Return AbsenceEleveNotification objects filtered by the utilisateur_id column
  * @method     array findByATraitementId(int $a_traitement_id) Return AbsenceEleveNotification objects filtered by the a_traitement_id column
- * @method     array findByTypeNotification(string $type_notification) Return AbsenceEleveNotification objects filtered by the type_notification column
+ * @method     array findByTypeNotification(int $type_notification) Return AbsenceEleveNotification objects filtered by the type_notification column
  * @method     array findByEmail(string $email) Return AbsenceEleveNotification objects filtered by the email column
  * @method     array findByTelephone(string $telephone) Return AbsenceEleveNotification objects filtered by the telephone column
- * @method     array findByAdrId(string $adr_id) Return AbsenceEleveNotification objects filtered by the adr_id column
+ * @method     array findByAdresseId(string $adr_id) Return AbsenceEleveNotification objects filtered by the adr_id column
  * @method     array findByCommentaire(string $commentaire) Return AbsenceEleveNotification objects filtered by the commentaire column
- * @method     array findByStatutEnvoi(string $statut_envoi) Return AbsenceEleveNotification objects filtered by the statut_envoi column
+ * @method     array findByStatutEnvoi(int $statut_envoi) Return AbsenceEleveNotification objects filtered by the statut_envoi column
  * @method     array findByDateEnvoi(string $date_envoi) Return AbsenceEleveNotification objects filtered by the date_envoi column
  * @method     array findByErreurMessageEnvoi(string $erreur_message_envoi) Return AbsenceEleveNotification objects filtered by the erreur_message_envoi column
  * @method     array findByCreatedAt(string $created_at) Return AbsenceEleveNotification objects filtered by the created_at column
@@ -89,7 +89,7 @@
  */
 abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 {
-
+	
 	/**
 	 * Initializes internal state of BaseAbsenceEleveNotificationQuery object.
 	 *
@@ -126,11 +126,14 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	}
 
 	/**
-	 * Find object by primary key
-	 * Use instance pooling to avoid a database query if the object exists
+	 * Find object by primary key.
+	 * Propel uses the instance pool to skip the database if the object exists.
+	 * Go fast if the query is untouched.
+	 *
 	 * <code>
 	 * $obj  = $c->findPk(12, $con);
 	 * </code>
+	 *
 	 * @param     mixed $key Primary key to use for the query
 	 * @param     PropelPDO $con an optional connection object
 	 *
@@ -138,17 +141,73 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 */
 	public function findPk($key, $con = null)
 	{
-		if ((null !== ($obj = AbsenceEleveNotificationPeer::getInstanceFromPool((string) $key))) && $this->getFormatter()->isObjectFormatter()) {
+		if ($key === null) {
+			return null;
+		}
+		if ((null !== ($obj = AbsenceEleveNotificationPeer::getInstanceFromPool((string) $key))) && !$this->formatter) {
 			// the object is alredy in the instance pool
 			return $obj;
-		} else {
-			// the object has not been requested yet, or the formatter is not an object formatter
-			$criteria = $this->isKeepQuery() ? clone $this : $this;
-			$stmt = $criteria
-				->filterByPrimaryKey($key)
-				->getSelectStatement($con);
-			return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 		}
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceEleveNotificationPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
+		if ($this->formatter || $this->modelAlias || $this->with || $this->select
+		 || $this->selectColumns || $this->asColumns || $this->selectModifiers
+		 || $this->map || $this->having || $this->joins) {
+			return $this->findPkComplex($key, $con);
+		} else {
+			return $this->findPkSimple($key, $con);
+		}
+	}
+
+	/**
+	 * Find object by primary key using raw SQL to go fast.
+	 * Bypass doSelect() and the object formatter by using generated code.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    AbsenceEleveNotification A model object, or null if the key is not found
+	 */
+	protected function findPkSimple($key, $con)
+	{
+		$sql = 'SELECT ID, UTILISATEUR_ID, A_TRAITEMENT_ID, TYPE_NOTIFICATION, EMAIL, TELEPHONE, ADR_ID, COMMENTAIRE, STATUT_ENVOI, DATE_ENVOI, ERREUR_MESSAGE_ENVOI, CREATED_AT, UPDATED_AT FROM a_notifications WHERE ID = :p0';
+		try {
+			$stmt = $con->prepare($sql);
+			$stmt->bindValue(':p0', $key, PDO::PARAM_INT);
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), $e);
+		}
+		$obj = null;
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$obj = new AbsenceEleveNotification();
+			$obj->hydrate($row);
+			AbsenceEleveNotificationPeer::addInstanceToPool($obj, (string) $key);
+		}
+		$stmt->closeCursor();
+
+		return $obj;
+	}
+
+	/**
+	 * Find object by primary key.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    AbsenceEleveNotification|array|mixed the result, formatted by the current formatter
+	 */
+	protected function findPkComplex($key, $con)
+	{
+		// As the query uses a PK condition, no limit(1) is necessary.
+		$criteria = $this->isKeepQuery() ? clone $this : $this;
+		$stmt = $criteria
+			->filterByPrimaryKey($key)
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 	}
 
 	/**
@@ -163,10 +222,15 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 */
 	public function findPks($keys, $con = null)
 	{
+		if ($con === null) {
+			$con = Propel::getConnection($this->getDbName(), Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
-		return $this
+		$stmt = $criteria
 			->filterByPrimaryKeys($keys)
-			->find($con);
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->format($stmt);
 	}
 
 	/**
@@ -195,7 +259,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterById(1234); // WHERE id = 1234
@@ -221,7 +285,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the utilisateur_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByUtilisateurId('fooValue');   // WHERE utilisateur_id = 'fooValue'
@@ -249,7 +313,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the a_traitement_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByATraitementId(1234); // WHERE a_traitement_id = 1234
@@ -291,7 +355,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the type_notification column
-	 * 
+	 *
 	 * @param     mixed $typeNotification The value to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
@@ -323,7 +387,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the email column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByEmail('fooValue');   // WHERE email = 'fooValue'
@@ -351,7 +415,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the telephone column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByTelephone('fooValue');   // WHERE telephone = 'fooValue'
@@ -379,35 +443,35 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the adr_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByAdrId('fooValue');   // WHERE adr_id = 'fooValue'
-	 * $query->filterByAdrId('%fooValue%'); // WHERE adr_id LIKE '%fooValue%'
+	 * $query->filterByAdresseId('fooValue');   // WHERE adr_id = 'fooValue'
+	 * $query->filterByAdresseId('%fooValue%'); // WHERE adr_id LIKE '%fooValue%'
 	 * </code>
 	 *
-	 * @param     string $adrId The value to use as filter.
+	 * @param     string $adresseId The value to use as filter.
 	 *              Accepts wildcards (* and % trigger a LIKE)
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
-	public function filterByAdrId($adrId = null, $comparison = null)
+	public function filterByAdresseId($adresseId = null, $comparison = null)
 	{
 		if (null === $comparison) {
-			if (is_array($adrId)) {
+			if (is_array($adresseId)) {
 				$comparison = Criteria::IN;
-			} elseif (preg_match('/[\%\*]/', $adrId)) {
-				$adrId = str_replace('*', '%', $adrId);
+			} elseif (preg_match('/[\%\*]/', $adresseId)) {
+				$adresseId = str_replace('*', '%', $adresseId);
 				$comparison = Criteria::LIKE;
 			}
 		}
-		return $this->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $adrId, $comparison);
+		return $this->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $adresseId, $comparison);
 	}
 
 	/**
 	 * Filter the query on the commentaire column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByCommentaire('fooValue');   // WHERE commentaire = 'fooValue'
@@ -435,7 +499,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the statut_envoi column
-	 * 
+	 *
 	 * @param     mixed $statutEnvoi The value to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
@@ -467,7 +531,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the date_envoi column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByDateEnvoi('2011-03-14'); // WHERE date_envoi = '2011-03-14'
@@ -509,7 +573,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the erreur_message_envoi column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByErreurMessageEnvoi('fooValue');   // WHERE erreur_message_envoi = 'fooValue'
@@ -537,7 +601,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the created_at column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
@@ -579,7 +643,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the updated_at column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
@@ -645,7 +709,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the UtilisateurProfessionnel relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -655,7 +719,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('UtilisateurProfessionnel');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -663,7 +727,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -671,7 +735,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'UtilisateurProfessionnel');
 		}
-		
+
 		return $this;
 	}
 
@@ -679,7 +743,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 * Use the UtilisateurProfessionnel relation UtilisateurProfessionnel object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -719,7 +783,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the AbsenceEleveTraitement relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -729,7 +793,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('AbsenceEleveTraitement');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -737,7 +801,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -745,7 +809,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'AbsenceEleveTraitement');
 		}
-		
+
 		return $this;
 	}
 
@@ -753,7 +817,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 * Use the AbsenceEleveTraitement relation AbsenceEleveTraitement object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -768,42 +832,42 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	}
 
 	/**
-	 * Filter the query by a related ResponsableEleveAdresse object
+	 * Filter the query by a related Adresse object
 	 *
-	 * @param     ResponsableEleveAdresse|PropelCollection $responsableEleveAdresse The related object(s) to use as filter
+	 * @param     Adresse|PropelCollection $adresse The related object(s) to use as filter
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
-	public function filterByResponsableEleveAdresse($responsableEleveAdresse, $comparison = null)
+	public function filterByAdresse($adresse, $comparison = null)
 	{
-		if ($responsableEleveAdresse instanceof ResponsableEleveAdresse) {
+		if ($adresse instanceof Adresse) {
 			return $this
-				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $responsableEleveAdresse->getAdrId(), $comparison);
-		} elseif ($responsableEleveAdresse instanceof PropelCollection) {
+				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $adresse->getId(), $comparison);
+		} elseif ($adresse instanceof PropelCollection) {
 			if (null === $comparison) {
 				$comparison = Criteria::IN;
 			}
 			return $this
-				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $responsableEleveAdresse->toKeyValue('PrimaryKey', 'AdrId'), $comparison);
+				->addUsingAlias(AbsenceEleveNotificationPeer::ADR_ID, $adresse->toKeyValue('PrimaryKey', 'Id'), $comparison);
 		} else {
-			throw new PropelException('filterByResponsableEleveAdresse() only accepts arguments of type ResponsableEleveAdresse or PropelCollection');
+			throw new PropelException('filterByAdresse() only accepts arguments of type Adresse or PropelCollection');
 		}
 	}
 
 	/**
-	 * Adds a JOIN clause to the query using the ResponsableEleveAdresse relation
-	 * 
+	 * Adds a JOIN clause to the query using the Adresse relation
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
 	 * @return    AbsenceEleveNotificationQuery The current query, for fluid interface
 	 */
-	public function joinResponsableEleveAdresse($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	public function joinAdresse($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		$tableMap = $this->getTableMap();
-		$relationMap = $tableMap->getRelation('ResponsableEleveAdresse');
-		
+		$relationMap = $tableMap->getRelation('Adresse');
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -811,34 +875,34 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
 			$this->addJoinObject($join, $relationAlias);
 		} else {
-			$this->addJoinObject($join, 'ResponsableEleveAdresse');
+			$this->addJoinObject($join, 'Adresse');
 		}
-		
+
 		return $this;
 	}
 
 	/**
-	 * Use the ResponsableEleveAdresse relation ResponsableEleveAdresse object
+	 * Use the Adresse relation Adresse object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
-	 * @return    ResponsableEleveAdresseQuery A secondary query class using the current class as primary query
+	 * @return    AdresseQuery A secondary query class using the current class as primary query
 	 */
-	public function useResponsableEleveAdresseQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
+	public function useAdresseQuery($relationAlias = null, $joinType = Criteria::LEFT_JOIN)
 	{
 		return $this
-			->joinResponsableEleveAdresse($relationAlias, $joinType)
-			->useQuery($relationAlias ? $relationAlias : 'ResponsableEleveAdresse', 'ResponsableEleveAdresseQuery');
+			->joinAdresse($relationAlias, $joinType)
+			->useQuery($relationAlias ? $relationAlias : 'Adresse', 'AdresseQuery');
 	}
 
 	/**
@@ -857,7 +921,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		} elseif ($jNotificationResponsableEleve instanceof PropelCollection) {
 			return $this
 				->useJNotificationResponsableEleveQuery()
-					->filterByPrimaryKeys($jNotificationResponsableEleve->getPrimaryKeys())
+				->filterByPrimaryKeys($jNotificationResponsableEleve->getPrimaryKeys())
 				->endUse();
 		} else {
 			throw new PropelException('filterByJNotificationResponsableEleve() only accepts arguments of type JNotificationResponsableEleve or PropelCollection');
@@ -866,7 +930,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the JNotificationResponsableEleve relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -876,7 +940,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('JNotificationResponsableEleve');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -884,7 +948,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -892,7 +956,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'JNotificationResponsableEleve');
 		}
-		
+
 		return $this;
 	}
 
@@ -900,7 +964,7 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	 * Use the JNotificationResponsableEleve relation JNotificationResponsableEleve object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -927,10 +991,10 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	{
 		return $this
 			->useJNotificationResponsableEleveQuery()
-				->filterByResponsableEleve($responsableEleve, $comparison)
+			->filterByResponsableEleve($responsableEleve, $comparison)
 			->endUse();
 	}
-	
+
 	/**
 	 * Exclude object from result
 	 *
@@ -942,8 +1006,8 @@ abstract class BaseAbsenceEleveNotificationQuery extends ModelCriteria
 	{
 		if ($absenceEleveNotification) {
 			$this->addUsingAlias(AbsenceEleveNotificationPeer::ID, $absenceEleveNotification->getId(), Criteria::NOT_EQUAL);
-	  }
-	  
+		}
+
 		return $this;
 	}
 

@@ -1,9 +1,8 @@
 <?php
 
 /*
- * $Id: classes_ajax_lib.php 3323 2009-08-05 10:06:18Z crob $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -57,7 +56,7 @@ if($mode=='classes_param') {
 			echo "Pas de mati&egrave;re s&eacute;lectionn&eacute;e.";
 		}
 		else {
-			$sql="SELECT u.login,u.nom,u.prenom FROM utilisateurs u, j_professeurs_matieres jpm WHERE jpm.id_professeur=u.login AND id_matiere='$matiere' ORDER BY u.nom,u.prenom;";
+			$sql="SELECT u.login,u.nom,u.prenom FROM utilisateurs u, j_professeurs_matieres jpm WHERE jpm.id_professeur=u.login AND id_matiere='$matiere' AND etat='actif' ORDER BY u.nom,u.prenom;";
 			//echo "$sql<br />";
 			$res_prof=mysql_query($sql);
 
@@ -65,7 +64,7 @@ if($mode=='classes_param') {
 			//echo "<option value=''>---</option>\n";
 			if(mysql_num_rows($res_prof)>0) {
 				while($lig_prof=mysql_fetch_object($res_prof)) {
-					echo "<option value='$lig_prof->login'>".strtoupper($lig_prof->nom)." ".ucfirst(strtolower($lig_prof->prenom))."</option>\n";
+					echo "<option value='$lig_prof->login'>".my_strtoupper($lig_prof->nom)." ".casse_mot($lig_prof->prenom,'majf2')."</option>\n";
 				}
 			}
 			echo "</select>\n";

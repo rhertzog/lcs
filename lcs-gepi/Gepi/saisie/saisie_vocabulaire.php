@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: saisie_vocabulaire.php 6649 2011-03-10 20:58:21Z crob $
  *
- * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -21,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// On indique qu'il faut creer des variables non protÈgÈes (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non prot√©g√©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -37,7 +36,6 @@ if ($resultat_session == 'c') {
     header("Location: ../logout.php?auto=1");
 	die();
 }
-//include("../fckeditor/fckeditor.php") ;
 
 // Check access
 if (!checkAccess()) {
@@ -60,14 +58,15 @@ if((isset($export_vocab))&&($export_vocab=="y")) {
 	while($lig=mysql_fetch_object($txt)){
 		$fd.=$lig->terme.";".$lig->terme_corrige."\r\n";
 	}
-	echo $fd;
+	//echo $fd;
+	echo echo_csv_encoded($fd);
 	die();
 }
 
 
 //================================
 $titre_page = "Saisie de vocabulaire";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //================================
 
 if (!loadSettings()) {
@@ -86,7 +85,7 @@ $valide_import_vocab=isset($_POST['valide_import_vocab']) ? $_POST['valide_impor
 if(isset($import_vocab)) {
 	echo "<h3 class='gepi'>Import d'un fichier de vocabulaire&nbsp;:</h3>\n";
 
-	echo "<p>Le fichier doit contenir un couple 'terme ou enchaÓnement de mots mal \"orthographiÈs\" ou tapÈs;terme... corrigÈ' par ligne.<br />\n";
+	echo "<p>Le fichier doit contenir un couple 'terme ou encha√Ænement de mots mal \"orthographi√©s\" ou tap√©s;terme... corrig√©' par ligne.<br />\n";
 	echo "<i>Exemple&nbsp;:</i><br />\n";
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;il peu;il peut<br />\n";
 	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;un peut;un peu<br />\n";
@@ -102,7 +101,7 @@ if(isset($import_vocab)) {
 	echo "<p><br /></p>\n";
 
 	/*
-	echo "<p><i>NOTE&nbsp;</i> Le principe est le suivant&nbsp;: L'apprÈciation saisie est reformatÈe en remplaÁant les points, virgules, points-virgules par des espaces pour rechercher si l'apprÈciation contient des chaines ressemblant ‡ celles jugÈes comme mal tapÈes ou orthographiÈes.</p>\n";
+	echo "<p><i>NOTE&nbsp;</i> Le principe est le suivant&nbsp;: L'appr√©ciation saisie est reformat√©e en rempla√ßant les points, virgules, points-virgules par des espaces pour rechercher si l'appr√©ciation contient des chaines ressemblant √† celles jug√©es comme mal tap√©es ou orthographi√©es.</p>\n";
 	*/
 
 	echo "<p><br /></p>\n";
@@ -115,7 +114,7 @@ elseif(isset($valide_import_vocab)) {
 	$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
 
 	if (trim($csv_file['name'])=='') {
-		echo "<p>Aucun fichier n'a ÈtÈ sÈlectionnÈ !<br />\n";
+		echo "<p>Aucun fichier n'a √©t√© s√©lectionn√© !<br />\n";
 		echo "<a href='".$_SERVER['PHP_SELF']."?import_vocab=y'>Cliquer ici</a> pour recommencer !</p>\n";
 	}
 	else{
@@ -166,14 +165,14 @@ elseif(isset($valide_import_vocab)) {
 					}
 					/*
 					if($nb_reg>=$nb_max_reg) {
-						echo "<p style='color:red;'>On n'enregistre pas plus de $nb_max_reg apprÈciations lors d'un import.</p>";
+						echo "<p style='color:red;'>On n'enregistre pas plus de $nb_max_reg appr√©ciations lors d'un import.</p>";
 						break;
 					}
 					*/
 				}
 				fclose($fp);
 
-				if(($nb_reg>0)&&($temoin_erreur=='n')) {echo "<span style='color:red;'>Import effectuÈ.</span><br />";}
+				if(($nb_reg>0)&&($temoin_erreur=='n')) {echo "<span style='color:red;'>Import effectu√©.</span><br />";}
 			}
 		}
 	}
@@ -198,7 +197,8 @@ if(isset($compteur_nb_vocab)) {
 		$res_col=mysql_query($sql);
 		if(mysql_num_rows($res_col)>0) {
 			$lig_col=mysql_fetch_object($res_col);
-			if($lig_col->Collation!='utf8_unicode_ci') {$chaine_collate="COLLATE latin1_bin ";}
+			//if($lig_col->Collation!='utf8_unicode_ci') {$chaine_collate="COLLATE latin1_bin ";}
+			if($lig_col->Collation!='utf8_general_ci') {$chaine_collate="COLLATE latin1_bin ";}
 		}
 
 
@@ -211,7 +211,7 @@ if(isset($compteur_nb_vocab)) {
 				//echo "$sql<br />";
 				$insert=mysql_query($sql);
 				if($insert) {
-					echo "<span style='color:red;'><b>Enregistrement effectuÈ.</span><br />\n";
+					echo "<span style='color:red;'><b>Enregistrement effectu√©.</span><br />\n";
 				}
 				else {
 					echo "<span style='color:red;'><b>Erreur lors de l'insertion de :</b> $terme &gt; $terme_corrige</span><br />\n";
@@ -219,7 +219,7 @@ if(isset($compteur_nb_vocab)) {
 				}
 			}
 			else {
-				echo "<span style='color:red;'>Le couple <b>$terme</b> et <b>$terme_corrige</b> existe dÈj‡.</span><br />\n";
+				echo "<span style='color:red;'>Le couple <b>$terme</b> et <b>$terme_corrige</b> existe d√©j√†.</span><br />\n";
 			}
 		}
 	}
@@ -232,7 +232,7 @@ if(isset($compteur_nb_vocab)) {
 			//echo "sql=$sql<br />";
 			$del=mysql_query($sql);
 			if(!$del) {
-				echo "<span style='color:red;'>Erreur lors de la suppression du couple n∞".$suppr[$i].".</span><br />\n";
+				echo "<span style='color:red;'>Erreur lors de la suppression du couple n¬∞".$suppr[$i].".</span><br />\n";
 			}
 			else {
 				$nb_suppr++;
@@ -241,7 +241,7 @@ if(isset($compteur_nb_vocab)) {
 	}
 
 	if($nb_suppr>0) {
-		echo "<span style='color:red;'>$nb_suppr suppression(s) effectuÈe(s).</span><br />\n";
+		echo "<span style='color:red;'>$nb_suppr suppression(s) effectu√©e(s).</span><br />\n";
 	}
 }
 
@@ -250,7 +250,7 @@ echo "<blockquote>\n";
 echo "<table>\n";
 echo "<tr>\n";
 echo "<td>\n";
-echo "Formulation erronÈe&nbsp;: ";
+echo "Formulation erron√©e&nbsp;: ";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type='text' name='no_anti_inject_terme' id='no_anti_inject_terme' cols='60' onchange='changement()' />\n";
@@ -258,7 +258,7 @@ echo "</tr>\n";
 
 echo "<tr>\n";
 echo "<td>\n";
-echo "Formulation corrigÈe&nbsp;: ";
+echo "Formulation corrig√©e&nbsp;: ";
 echo "</td>\n";
 echo "<td>\n";
 echo "<input type='text' name='no_anti_inject_terme_corrige' id='no_anti_inject_terme_corrige' cols='60' onchange='changement()' />\n";
@@ -268,7 +268,7 @@ echo "</table>\n";
 echo "</blockquote>\n";
 
 
-// Recherche du vocabulaire dÈj‡ saisi:
+// Recherche du vocabulaire d√©j√† saisi:
 $sql="SELECT DISTINCT * FROM vocabulaire ORDER BY terme, terme_corrige;";
 //echo "$sql";
 $resultat_vocab=mysql_query($sql);
@@ -279,7 +279,7 @@ if(mysql_num_rows($resultat_vocab)!=0){
 	echo "<table class='boireaus' border='1' summary='Vocabulaire'>\n";
 	echo "<tr style='text-align:center;'>\n";
 	echo "<th>Terme</th>\n";
-	echo "<th>Terme corrigÈ</th>\n";
+	echo "<th>Terme corrig√©</th>\n";
 	echo "<th>Supprimer</th>\n";
 	echo "</tr>\n";
 
@@ -318,9 +318,9 @@ echo "<p><br /></p>\n";
 
 echo "<p><i>NOTES&nbsp;:</i></p>\n";
 echo "<ul>
-	<li>Les couples sont enregistrÈs en minuscules pour contourner.</li>
-	<li>Il ne s'agit pas de fournir un dictionnaire, mais de signaler des fautes de frappe qui correspondent malgrÈ tout ‡ des mots du dictionnaire et peuvent donner des rÈsultats malheureux.</li>
-	<li>Le principe dans la page de saisie des apprÈciations est le suivant&nbsp;: L'apprÈciation saisie est reformatÈe en remplaÁant les points, virgules, points-virgules par des espaces pour rechercher si l'apprÈciation contient des chaines ressemblant ‡ celles jugÈes comme mal tapÈes ou orthographiÈes.<br />Si une possible erreur est dÈtectÈe, un message est affichÈ.</li>
+	<li>Les couples sont enregistr√©s en minuscules pour limiter le nombre de versions √† prendre en compte.</li>
+	<li>Il ne s'agit pas de fournir un dictionnaire, mais de signaler des fautes de frappe qui correspondent malgr√© tout √† des mots du dictionnaire et peuvent donner des r√©sultats malheureux.</li>
+	<li>Le principe dans la page de saisie des appr√©ciations est le suivant&nbsp;: L'appr√©ciation saisie est reformat√©e en rempla√ßant les points, virgules, points-virgules par des espaces pour rechercher si l'appr√©ciation contient des chaines ressemblant √† celles jug√©es comme mal tap√©es ou orthographi√©es.<br />Si une possible erreur est d√©tect√©e, un message est affich√© en guise de suggestion de correction.</li>
 </ul>\n";
 echo "<p><br /></p>\n";
 

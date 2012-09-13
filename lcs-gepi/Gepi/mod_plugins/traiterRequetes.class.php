@@ -1,6 +1,5 @@
 <?php
 /**
- * @version : $Id: traiterRequetes.class.php 6738 2011-04-01 11:25:33Z crob $
  *
  * Copyright 2001, 2009 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -22,68 +21,69 @@
  */
 
 /**
- * Classe qui permet de vérifier les requêtes demandées par un plugin lors de son installation
- * Des méthodes permettent ensuite de lancer ces requêtes
+ * Classe qui permet de vÃ©rifier les requÃªtes demandÃ©es par un plugin lors de son installation
+ * Des mÃ©thodes permettent ensuite de lancer ces requÃªtes
  *
  * @author jjocal
  */
 class traiterRequetes {
 
     /**
-   * Réponse donnée après la vérification.
+   * RÃ©ponse donnÃ©e aprÃ¨s la vÃ©rification.
    *
    * @var boolean
    */
   private $_reponse = false;
 
   /**
-   * Message d'erreur renvoyé par les différentes vérifications
+   * Message d'erreur renvoyÃ© par les diffÃ©rentes vÃ©rifications
    *
    * @var string Message d'erreur
    */
   private $erreur = NULL;
 
   /**
-   * On stocke les requêtes dans cet attribut
+   * On stocke les requÃªtes dans cet attribut
    *
-   * @var string La requête demandée
+   * @var string La requÃªte demandÃ©e
    */
   private $_requetes = NULL;
 
   /**
-   * Détermine la liste des type de requêtes possibles
+   * DÃ©termine la liste des type de requÃªtes possibles
    *
-   * @var array Liste des requêtes possibles
+   * @var array Liste des requÃªtes possibles
    */
   //private $_requetes_possibles = array('insert', 'INSERT', 'create', 'CREATE', 'update', 'UPDATE', 'drop', 'DROP');
   private $_requetes_possibles = array('insert', 'INSERT', 'create', 'CREATE', 'update', 'UPDATE', 'drop', 'DROP', 'delete', 'DELETE');
 
   /**
-   * Vérification et envoie des requêtes par Propel::PDO
+   * VÃ©rification et envoie des requÃªtes par Propel::PDO
    *
    * @param object $requetes simpleXMLElement
    */
   public function  __construct(simpleXMLElement $requetes) {
 
     $this->_requetes = $requetes;
-    if (count($this->_requetes->requete)==0)
+    if (count($this->_requetes->requete)==0) {
             $this->_reponse = true;
-    foreach ($this->_requetes->requete as $requete) {
-      // On est face à une liste de requêtes
-      if (trim($requete)=='') {
-        $this->_reponse = true;
-      }else
-      if ($this->verifRequete($requete) === true){
-        $this->insertRequete($requete);
-      }else{
-        $this->retourneErreur(1, $requete);
-      }
-    }
-
+	} else {
+		foreach ($this->_requetes->requete as $requete) {
+		  // On est face Ã  une liste de requÃªtes
+		  if (trim($requete)=='') {
+			$this->_reponse = true;
+		  }else
+		  if ($this->verifRequete($requete) === true){
+			$this->insertRequete($requete);
+		  }else{
+			$this->retourneErreur(1, $requete);
+		  }
+		}
+	}
   }
 
   /**
-   * Méthode de vérification de la structure des requêtes SQL des plugins
+   * MÃ©thode de vÃ©rification de la structure des requÃªtes SQL des plugins
    *
    * @param string $requete
    * @return boolean false/true
@@ -107,9 +107,9 @@ class traiterRequetes {
   }
 
   /**
-   * Méthode qui permet de lancer des requêtes SQL vers la base lors de la création d'un plugin
+   * MÃ©thode qui permet de lancer des requÃªtes SQL vers la base lors de la crÃ©ation d'un plugin
    *
-   * @param string $requete Requête SQL
+   * @param string $requete RequÃªte SQL
    */
   protected function insertRequete($requete){
 
@@ -123,15 +123,15 @@ class traiterRequetes {
   }
 
   /**
-   * Méthode qui retourne un type d'erreur et un message qui précise où se situe l'erreur.
+   * MÃ©thode qui retourne un type d'erreur et un message qui prÃ©cise oÃ¹ se situe l'erreur.
    *
    * @param integer $_e Type d'erreur
-   * @param string $_m noeud lié à cette erreur
+   * @param string $_m noeud liÃ© Ã  cette erreur
    */
   private function retourneErreur($_e, $_m){
     switch ($_e) {
       case 1:
-        $message = 'La requête ' . $_m . ' dans le fichier plugin.xml ne passe pas !';
+        $message = 'La requÃªte ' . $_m . ' dans le fichier plugin.xml ne passe pas !';
         break;
       case 2:
         $message = '';
@@ -148,7 +148,7 @@ class traiterRequetes {
   }
 
   /**
-   * Méthode qui renvoie une erreur si elle existe
+   * MÃ©thode qui renvoie une erreur si elle existe
    *
    * @return string Message d'erreur
    */
@@ -157,7 +157,7 @@ class traiterRequetes {
   }
 
   /**
-   * Méthode qui renvoie la réponse après traitement des requêtes
+   * MÃ©thode qui renvoie la rÃ©ponse aprÃ¨s traitement des requÃªtes
    *
    * @return boolean false/true
    */

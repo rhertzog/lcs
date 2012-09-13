@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: ajax_edition_compte_rendu.php 8733 2011-12-22 15:22:19Z crob $
  *
- * Copyright 2009-2011 Josselin Jacquard
+ * Copyright 2009-2012 Josselin Jacquard
  *
  * This file is part of GEPI.
  *
@@ -21,8 +20,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-header('Content-Type: text/html; charset=ISO-8859-1');
-// On désamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
+header('Content-Type: text/html; charset=utf-8');
+
+// On dÃ©samorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) $traite_anti_inject = "yes";
 require_once("../lib/initialisationsPropel.inc.php");
 require_once("../lib/initialisations.inc.php");
@@ -43,9 +43,9 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_cahiers_texte")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
 
 $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
@@ -54,12 +54,12 @@ if ($utilisateur == null) {
 	die();
 }
 
-//récupération des parametres
+//rÃ©cupÃ©ration des parametres
 //id du compte rendu
 $id_ct = isset($_POST["id_ct"]) ? $_POST["id_ct"] :(isset($_GET["id_ct"]) ? $_GET["id_ct"] :NULL);
 //si on vient d'enregistrer des modification, on va afficher un message de confirmation
 $succes_modification = isset($_POST["succes_modification"]) ? $_POST["succes_modification"] :(isset($_GET["succes_modification"]) ? $_GET["succes_modification"] :NULL);
-//si pas de compte rendu passé en paramètre, on récupère la date du jour pour se caler dessus, sinon on prendra la date du compte rendu
+//si pas de compte rendu passÃ© en paramÃ¨tre, on rÃ©cupÃ¨re la date du jour pour se caler dessus, sinon on prendra la date du compte rendu
 $today = isset($_POST["today"]) ? $_POST["today"] :(isset($_GET["today"]) ? $_GET["today"] :NULL);
 $ajout_nouvelle_notice = isset($_POST["ajout_nouvelle_notice"]) ? $_POST["ajout_nouvelle_notice"] :(isset($_GET["ajout_nouvelle_notice"]) ? $_GET["ajout_nouvelle_notice"] :NULL);
 
@@ -69,39 +69,40 @@ if ($ctCompteRendu != null) {
 	$today = $ctCompteRendu->getDateCt();
 
 	if ($groupe == null) {
-		echo("Erreur enregistrement de devoir : Pas de groupe associé au compte-rendu");
+		echo("Erreur enregistrement de devoir : Pas de groupe associÃ© au compte-rendu");
 		die;
 	}
 
-	// Vérification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
+	// VÃ©rification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
 	if (!$groupe->belongsTo($utilisateur)) {
 		echo "Erreur edition de compte rendu : le groupe n'appartient pas au professeur";
 		die();
 	}
 
 } else {
-	//si pas de notice précisée, récupération du groupe dans la requete et recherche d'une notice pour la date précisée ou création d'une nouvelle notice
+	//si pas de notice prÃ©cisÃ©e, rÃ©cupÃ©ration du groupe dans la requete et recherche d'une notice pour la date prÃ©cisÃ©e ou crÃ©ation d'une nouvelle notice
 	$id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 	$groupe = GroupePeer::retrieveByPK($id_groupe);
 	if ($groupe == null) {
-		echo("Erreur edition de compte rendu : pas de groupe spécifié");
+		echo("Erreur edition de compte rendu : pas de groupe spÃ©cifiÃ©");
 		die;
 	}
 
-	// Vérification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
+	// VÃ©rification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
 	if (!$groupe->belongsTo($utilisateur)) {
 		echo "Erreur edition de compte rendu : le groupe n'appartient pas au professeur";
 		die();
 	}
 
 	if ($ajout_nouvelle_notice != "oui") {
-		//on cherche si il y a une notice pour le groupe à la date précisée
+		//on cherche si il y a une notice pour le groupe Ã  la date prÃ©cisÃ©e
 		$criteria = new Criteria(CahierTexteCompteRenduPeer::DATABASE_NAME);
 		$criteria->add(CahierTexteCompteRenduPeer::DATE_CT, $today, '=');
 		$criteria->add(CahierTexteCompteRenduPeer::ID_LOGIN, $utilisateur->getLogin());
 		$ctCompteRendus = $groupe->getCahierTexteCompteRendus($criteria);
 		$ctCompteRendu = isset($ctCompteRendus[0]) ? $ctCompteRendus[0] : NULL;
 	}
+
 	if ($ctCompteRendu == null) {
 		//pas de notices, on initialise un nouvel objet
 		$ctCompteRendu = new CahierTexteCompteRendu();
@@ -111,15 +112,15 @@ if ($ctCompteRendu != null) {
 	}
 }
 
-// Vérification : est-ce que l'utilisateur a le droit de modifier cette entré ?
-if((strtolower($ctCompteRendu->getIdLogin()) != strtolower($utilisateur->getLogin()))&&
+// VÃ©rification : est-ce que l'utilisateur a le droit de modifier cette entrÃ© ?
+if((my_strtolower($ctCompteRendu->getIdLogin()) != my_strtolower($utilisateur->getLogin()))&&
 (getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
-	echo("Erreur edition de compte rendu : vous n'avez pas le droit de modifier cette notice car elle appartient à un autre professeur.");
+	echo("Erreur edition de compte rendu : vous n'avez pas le droit de modifier cette notice car elle appartient Ã  un autre professeur.");
 	die();
 }
 if ($ctCompteRendu->getVise() == 'y') {
 	// interdire la modification d'un visa par le prof si c'est un visa
-	echo("Erreur edition de compte rendu : Notices signée, edition impossible");
+	echo("Erreur edition de compte rendu : Notices signÃ©e, edition impossible");
 	die();
 }
 
@@ -139,10 +140,10 @@ if(isset($_GET['change_visibilite'])) {
 			$res=mysql_query($sql);
 			if($res) {
 				if($visible_eleve_parent=='1') {
-					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des Ã©lÃ¨ves et responsables' title='Document visible des Ã©lÃ¨ves et responsables' />";
 				}
 				else {
-					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des Ã©lÃ¨ves et responsables' title='Document invisible des Ã©lÃ¨ves et responsables' />";
 				}
 			}
 		}
@@ -153,7 +154,7 @@ if(isset($_GET['change_visibilite'])) {
 
 // Initialisation du type de couleur (voir global.inc.php)
 if ($ctCompteRendu->getDateCt() == null) {
-	//CompteRendu information générale
+	//CompteRendu information gÃ©nÃ©rale
 	$info='yes';
 	$type_couleur = "i";
 } else {
@@ -165,7 +166,7 @@ if ($ctCompteRendu->getDateCt() == null) {
 $_SESSION['id_groupe_session'] = $ctCompteRendu->getIdGroupe();
 
 // **********************************************
-// Affichage des différents groupes du professeur
+// Affichage des diffÃ©rents groupes du professeur
 //\$A($('id_groupe_colonne_gauche').options).find(function(option) { return option.selected; }).value is a javascript trick to get selected value.
 echo "<div id=\"div_chaine_edition_notice\" style=\"display:inline;\"><img id=\"chaine_edition_notice\" onLoad=\"updateChaineIcones()\" HEIGHT=\"16\" WIDTH=\"16\" style=\"border: 0px; vertical-align : middle\" src=\"../images/blank.gif\"  alt=\"Lier\" title=\"Lier la liste avec la liste des notices\" /></div>&nbsp;\n";
 echo ("<select id=\"id_groupe_colonne_droite\" onChange=\"javascript:
@@ -188,11 +189,15 @@ foreach ($groups as $group_iter) {
 echo "</select>&nbsp;&nbsp;\n";
 //fin affichage des groupes
 
+//echo "<a href=\"javascript:alert(chaineActive)\">Test</a>";
+
+// Editer les devoirs:
 echo "<button style='background-color:".$color_fond_notices['t']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_devoir.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'devoir';
 					\">Editer les devoirs</button>\n";
 
+// Editer les notices privees:
 echo "<button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
 						getWinEditionNotice().setAjaxContent('./ajax_edition_notice_privee.php?id_groupe='+ ".$groupe->getId()." + '&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 						object_en_cours_edition = 'notice_privee';
@@ -203,18 +208,31 @@ echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"j
 						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate(),{ onComplete:function(transport) {initWysiwyg();}});
 					\">Voir NP</button>\n";
 */
+
+// Voir les notices privees:
 echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
 						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate());
 					\">Voir NP</button>\n";
 
-echo "<br><br>\n";
+echo "<button style='background-color:lightblue' onclick=\"javascript:
+						getWinBanqueTexte().setAjaxContent('./ajax_affichage_banque_texte.php',{});
+					\">Banque</button>\n";
+
+if(file_exists("./archives.php")) {
+	// Mon fichier contient juste:
+	/* <?php echo "<iframe src='../documents/archives/index.php' width='100%' height='100%'/>"; ?> */
+	echo "<button style='background-color:bisque' onclick=\"javascript:
+						getWinArchives().setAjaxContent('./archives.php',{});
+					\">Archives</button>\n";
+}
+echo "<br /><br />\n";
 
 // Nombre de notices pour ce jour :
 $num_notice = NULL;
 
 echo "<fieldset style=\"border: 1px solid grey; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto; background: ".$color_fond_notices[$type_couleur].";\">\n";
 if (isset($info)) {
-	echo "<legend style=\"border: 1px solid grey; background: ".$color_fond_notices[$type_couleur]."; font-variant: small-caps;\"> Informations générales - ".$groupe->getNameAvecClasses();
+	echo "<legend style=\"border: 1px solid grey; background: ".$color_fond_notices[$type_couleur]."; font-variant: small-caps;\"> Informations gÃ©nÃ©rales - ".$groupe->getNameAvecClasses();
 } else {
 	echo "<legend style=\"border: 1px solid grey; background: ".$color_fond_notices[$type_couleur]."; font-variant: small-caps;\"> Compte rendu - ".$groupe->getNameAvecClasses();
 }
@@ -281,69 +299,47 @@ echo "
 			\">
 	Deplacer la notice</a>\n";
 
+//il faut Ã©chapper les single quote pour le contenu Ã  importer
+$contenu_a_copier =  isset($_SESSION['ct_a_importer']) ? $_SESSION['ct_a_importer']->getContenu() : '';
+echo (" <a href=\"#\" onclick=\"javascript: /*contenu_a_copier est globale*/
+    if (window.contenu_a_copier == undefined) {
+        contenu_a_copier = '".addslashes(htmlspecialchars($contenu_a_copier))."';
+    }
+    CKEDITOR.instances['contenu'].insertHtml(contenu_a_copier);");
+echo("\"><img style=\"border: 0px;\" src=\"../images/icons/copy-16-gold.png");
+echo("\" alt=\"Coller\" title=\"Coller le contenu\" /></a>\n");
+
+//il faut Ã©chapper les single quote pour le contenu Ã  importer
+$ct_a_importer_class = isset($_SESSION['ct_a_importer']) ? get_class($_SESSION['ct_a_importer']) : '';
+$id_ct_a_importer = isset($_SESSION['ct_a_importer']) ? $_SESSION['ct_a_importer']->getPrimaryKey() : '';
+//pour le contenu Ã  copier, on regarde d'abord si on a du contenu en javascript puis dans la session php
+echo (" <a href=\"#\" onclick=\"javascript: /*ct_a_importer_class est globale*/
+    if (window.ct_a_importer_class == undefined) {
+        ct_a_importer_class='".$ct_a_importer_class."';
+        id_ct_a_importer='".$id_ct_a_importer."';
+    }
+    var hiddenField1 = document.createElement('input');
+    hiddenField1.setAttribute('type', 'hidden');
+    hiddenField1.setAttribute('name', 'ct_a_importer_class');
+    hiddenField1.setAttribute('value', ct_a_importer_class);
+    $('modification_compte_rendu_form').appendChild(hiddenField1);
+    var hiddenField2 = document.createElement('input');
+    hiddenField2.setAttribute('type', 'hidden');
+    hiddenField2.setAttribute('name', 'id_ct_a_importer');
+    hiddenField2.setAttribute('value', id_ct_a_importer);
+    $('modification_compte_rendu_form').appendChild(hiddenField2);
+    $('contenu').value = CKEDITOR.instances['contenu'].getData();
+    $('modification_compte_rendu_form').request({
+        onComplete : function (transport) {updateWindows('');}
+    });");
+echo("\"><img style=\"border: 0px;\" src=\"../images/icons/copy-16-gold-trombone.png");
+echo("\" alt=\"Coller\" title=\"Coller les fichiers joints\" /></a>\n");
+
 echo "</legend>\n";
-
-
-
-//=================================================
-/*
-//echo "<input type='text' name='tmp_test' id='tmp_test' value='' />\n";
-$tab_jours_ouverture=array();
-$sql="select jour_horaire_etablissement from horaires_etablissement where ouverture_horaire_etablissement!=fermeture_horaire_etablissement;";
-$res_jours_ouverture=mysql_query($sql);
-$chaine_jours="";
-if(mysql_num_rows($res_jours_ouverture)>0) {
-	$cpt_jo=0;
-	while($lig_jo=mysql_fetch_object($res_jours_ouverture)) {
-		if($cpt_jo>0) {$chaine_jours.=",";}
-
-		$tab_jours_ouverture[$cpt_jo]=$lig_jo->jour_horaire_etablissement;
-		if($tab_jours_ouverture[$cpt_jo]=='lundi') {
-			$tab_jours_ouverture[$cpt_jo]='mon';
-			$chaine_jours.="1";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='mardi') {
-			$tab_jours_ouverture[$cpt_jo]='tue';
-			$chaine_jours.="2";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='mercredi') {
-			$tab_jours_ouverture[$cpt_jo]='wed';
-			$chaine_jours.="3";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='jeudi') {
-			$tab_jours_ouverture[$cpt_jo]='thu';
-			$chaine_jours.="4";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='vendredi') {
-			$tab_jours_ouverture[$cpt_jo]='fri';
-			$chaine_jours.="5";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='samedi') {
-			$tab_jours_ouverture[$cpt_jo]='sat';
-			$chaine_jours.="6";
-		}
-		elseif($tab_jours_ouverture[$cpt_jo]=='dimanche') {
-			$tab_jours_ouverture[$cpt_jo]='sun';
-			$chaine_jours.="0";
-		}
-
-		//$chaine_jours.="'".$tab_jours_ouverture[$cpt_jo]."'";
-
-		$cpt_jo++;
-	}
-}
-echo "<script type='text/javascript'>
-var tab_jours_ouverture=new Array($chaine_jours);
-//getCurrentNameDay();
-//getCurrentNumDay();
-</script>\n";
-*/
-//=================================================
-
-
 
 echo "<div id=\"dupplication_notice\" style='display: none;'>oulalala</div>";
 echo "<div id=\"deplacement_notice\" style='display: none;'>oulalala</div>";
+
 echo "<form enctype=\"multipart/form-data\" name=\"modification_compte_rendu_form\" id=\"modification_compte_rendu_form\" action=\"ajax_enregistrement_compte_rendu.php\" method=\"post\" onsubmit=\"return AIM.submit(this, {'onComplete' : completeEnregistrementCompteRenduCallback})\" style=\"width: 100%;\">\n";
 echo add_token_field();
 // uid de pour ne pas refaire renvoyer plusieurs fois le mÃªme formulaire
@@ -362,15 +358,15 @@ if ($ctCompteRendu->getHeureEntry() == null) {
 echo "\" />\n";
 
 if (isset($info)) {
-	$titre = "Informations Générales : ";
+	$titre = "Informations GÃ©nÃ©rales : ";
 } elseif (!isset($info)) {
-	setlocale (LC_TIME, 'fr_FR','fra');
 	$titre = strftime("%A %d %B %Y", $ctCompteRendu->getDateCt());
 }
 
-//si on vient d'efftuer un enregistrement, le label du bonton enregistrer devient Succès
+//si on vient d'effectuer un enregistrement, le label du bouton enregistrer devient SuccÃ¨s
+
 $label_enregistrer = "Enregistrer";
-if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
+if ($succes_modification == 'oui') {$label_enregistrer='SuccÃ¨s';}
 ?>
 <table border="0" width="100%" summary="Tableau de saisie de notice">
 	<tr>
@@ -383,7 +379,19 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			onClick="javascript:$('passer_a').value = 'passer_devoir';">Enr. et
 		passer aux devoirs du lendemain</button>
 		<?php } ?>
-	
+
+		<?php
+			$sql="SELECT * FROM ct_devoirs_entry WHERE id_groupe='$id_groupe' AND date_ct='".$ctCompteRendu->getDateCt()."';";
+			//echo "$sql<br />";
+			$res_devoirs=mysql_query($sql);
+			if(mysql_num_rows($res_devoirs)==1) {
+				$lig_dev=mysql_fetch_object($res_devoirs);
+				echo "<button type='submit' style='font-variant: small-caps;'
+			onClick=\"javascript:$('get_devoirs_du_jour').value='y';\">Import trav.</button>";
+			}
+		?>
+		<input type='hidden' name='get_devoirs_du_jour' id='get_devoirs_du_jour' value='' />
+
 		<input type='hidden' id='passer_a' name='passer_a'
 			value='compte_rendu' /> <input type="hidden" name="date_ct"
 			value="<?php echo $ctCompteRendu->getDateCt(); ?>" /> <input
@@ -396,17 +404,18 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			$hier = $today - 3600*24;
 			$demain = $today + 3600*24;
 
+			$test_hier=get_timestamp_jour_precedent($today);
+			if($test_hier) {$hier=$test_hier;}
+
+			$test_demain=get_timestamp_jour_suivant($today);
+			if($test_demain) {$demain=$test_demain;}
+
+			// Semaine precedente et suivante
 			$semaine_precedente= $today - 3600*24*7;
 			$semaine_suivante= $today + 3600*24*7;
-			/*
-			if(count($tab_jours_ouverture)>0) {
-				$cpt_jo=0; // Pour éviter une boucle infinie en cas de blague
-				while((!in_array(strtolower(strftime("%a",$demain)),$tab_jours_ouverture))&&($cpt_jo<7)) {
-					$demain = $today + 3600*24;
-					$cpt_jo++;
-				}
-			}
-			*/
+			
+			//$date_du_jour=getdate();
+			//$date_de_la_notice=getdate($today);
 			echo "</td>\n";
 
 			echo "<td>\n";
@@ -416,10 +425,10 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			echo "</td>\n";
 
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo "<a title=\"Aller à la semaine précédente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller à la semaine précédente' alt='Aller à la semaine précédente' /></a> ";
+			echo "<a title=\"Aller Ã  la semaine prÃ©cÃ©dente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller Ã  la semaine prÃ©cÃ©dente' alt='Aller Ã  la semaine prÃ©cÃ©dente' /></a> ";
 			echo "</td>\n";
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo "<a title=\"Aller au jour précédent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour précédent' alt='Aller au jour précédent' /></a>\n";
+			echo "<a title=\"Aller au jour prÃ©cÃ©dent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour prÃ©cÃ©dent' alt='Aller au jour prÃ©cÃ©dent' /></a>\n";
 			echo "</td>\n";
 			echo "<td align='center'>";
 			if(date("d/m/Y")==date("d/m/Y",$today)) {
@@ -433,7 +442,7 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			echo "<a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right.png' width='16' height='16' title='Aller au jour suivant' alt='Aller au jour suivant' /></a>\n";
 			echo "</td>\n";
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo " <a title=\"Aller à la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller à la semaine suivante' alt='Aller à la semaine suivante' /></a>\n";
+			echo " <a title=\"Aller Ã  la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller Ã  la semaine suivante' alt='Aller Ã  la semaine suivante' /></a>\n";
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "\n";
@@ -443,17 +452,9 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 
 		echo "<textarea name=\"contenu\" style=\"background-color: white;\" id=\"contenu\">".$ctCompteRendu->getContenu()."</textarea>";
 
-		// lancement de FCKeditor
-//		$oFCKeditor = new FCKeditor('contenu') ;
-//		$oFCKeditor->BasePath = '../fckeditor/' ;
-//		$oFCKeditor->Config['DefaultLanguage']  = 'fr' ;
-//		$oFCKeditor->ToolbarSet = 'Basic' ;
-//		$oFCKeditor->Value = $ctCompteRendu->getContenu() ;
-//		$oFCKeditor->Create() ;
-
-		//// gestion des fichiers attaché
+		// gestion des fichiers attachÃ©
 		echo '<div style="border-style:solid; border-width:1px; border-color: '.$couleur_bord_tableau_notice.'; background-color: '.$couleur_cellule[$type_couleur].';  padding: 2px; margin: 2px;">';
-		echo "<b>Fichier(s) attaché(s) : </b><br />";
+		echo "<b>Fichier(s) attachÃ©(s) : </b><br />";
 		echo '<div id="div_fichier">';
 		$architecture= "/documents/cl_dev".$groupe->getId();
 		// Affichage des documents joints
@@ -465,9 +466,17 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			$nb_documents_joints=0;
 			foreach ($documents as $document) {
 				//if ($ic=='1') { $ic='2'; $couleur_cellule_=$couleur_cellule[$type_couleur]; } else { $couleur_cellule_=$couleur_cellule_alt[$type_couleur]; $ic='1'; }
-				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\"><td>
-						<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a></td>
-						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>\n";
+				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\">
+						<td>\n";
+
+				if(preg_match("/(png|gif|jpg)$/i",$document->getEmplacement())) {
+					echo insere_lien_insertion_image_dans_ckeditor($document->getEmplacement());
+				}
+
+				echo "
+							<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a>
+						</td>
+						<td style=\"text-align: center;\" title=\"Taille du fichier\">".round($document->getTaille()/1024,1)."</td>\n";
 				if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
 					//echo "<td style=\"text-align: center;\" id='td_document_joint_".$document->getId()."'>";
 					echo "<td style=\"text-align: center;\">";
@@ -475,10 +484,10 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 					echo "<a href='javascript:modif_visibilite_doc_joint(\"compte_rendu\", ".$ctCompteRendu->getIdCt().", ".$document->getId().")'>";
 					echo "<span id='span_document_joint_".$document->getId()."'>";
 					if($document->getVisibleEleveParent()) {
-						echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
+						echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des Ã©lÃ¨ves et responsables' title='Document visible des Ã©lÃ¨ves et responsables' />";
 					}
 					else {
-						echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+						echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des Ã©lÃ¨ves et responsables' title='Document invisible des Ã©lÃ¨ves et responsables' />";
 					}
 					echo "</span>";
 					echo "</a>";
@@ -488,8 +497,8 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 				$nb_documents_joints++;
 			}
 			echo "</table>\n";
-			//gestion de modification du nom d'un documents
 
+			//gestion de modification du nom d'un documents
 			if($nb_documents_joints>0) {
 				echo "Nouveau nom <input type=\"text\" name=\"doc_name_modif\" size=\"25\" /> pour\n";
 				echo "<select name=\"id_document\">\n";
@@ -540,7 +549,7 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			</tr>
 			<?php $nb_doc_choisi_compte++;
 			}
-			//fin gestion des fichiers attaché
+			//fin gestion des fichiers attachÃ©
 			?>
 
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice;?>; background-color: <?php echo $couleur_cellule[$type_couleur]; ?>;">
@@ -555,7 +564,7 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 				</td>
 			</tr>
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
-				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptés, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptÃ©s, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
 				</td>
 			</tr>
 		</table>
@@ -565,6 +574,13 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 			<?php echo "</form>";
 			echo "</fieldset>";
 
+if((isset($_GET['mettre_a_jour_cal']))&&($_GET['mettre_a_jour_cal']=='y')) {
+echo "<script type='text/javascript'>
+	object_en_cours_edition = 'compte_rendu';
+	updateCalendarWithUnixDate($today);
+	dateChanged(calendarInstanciation);
+</script>\n";
+}
 //echo "<a href=\"#\" onclick=\"javascript: document.getElementById('contenu').value=document.getElementById('contenu').value+'TRUC'; return false;\">CLIC</a>";
 //echo "<a href=\"#\" onclick=\"javascript: document.getElementById('contenu').value='TRUC'; return false;\">CLIC</a>";
 //echo "<a href=\"#\" onclick=\"javascript: alert(document.getElementById('contenu').value); return false;\">CLOC</a>";

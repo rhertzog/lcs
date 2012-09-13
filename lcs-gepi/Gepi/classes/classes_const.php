@@ -1,6 +1,5 @@
 <?php
 /*
-* $Id: classes_const.php 8642 2011-11-19 17:07:32Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -45,6 +44,7 @@ include "../lib/periodes.inc.php";
 
 $_SESSION['chemin_retour'] = $gepiPath."/classes/classes_const.php?id_classe=".$id_classe;
 
+$explication_motif_bloquant_suppression_eleve_de_la_classe="La pr√©sence de moyennes, appr√©ciations ou avis du conseil de classe est bloquante pour la suppression d'un √©l√®ve d'une classe.<br />Vous pouvez demander aux professeurs de vider leurs notes et appr√©ciations pour le ou les √©l√®ves en question.<br />Sinon, un compte de statut 'secours' permet de corriger/vider des moyennes, appr√©ciations et/ou avis du conseil de classe.";
 
 if (isset($is_posted)) {
 	check_token();
@@ -69,16 +69,16 @@ if (isset($is_posted)) {
 		//echo "<p>\$login_eleve=$login_eleve<br />\n";
 		//=========================
 		// AJOUT: boireaus 20071003
-		// RÈcupÈration du numÈro de l'ÈlËve dans les saisies:
+		// R√©cup√©ration du num√©ro de l'√©l√®ve dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
-			if(strtolower($login_eleve)==strtolower($log_eleve[$i])){
+			if(my_strtolower($login_eleve)==my_strtolower($log_eleve[$i])){
 				$num_eleve=$i;
 				break;
 			}
 		}
 		if($num_eleve!=-1){
-			//echo "ElËve n∞$num_eleve<br />\n";
+			//echo "El√®ve n¬∞$num_eleve<br />\n";
 
 			//=========================
 			// MODIF: boireaus 20071010
@@ -199,12 +199,12 @@ if (isset($is_posted)) {
 
 		//=========================
 		// AJOUT: boireaus 20071003
-		// RÈcupÈration du numÈro de l'ÈlËve dans les saisies:
+		// R√©cup√©ration du num√©ro de l'√©l√®ve dans les saisies:
 		$num_eleve=-1;
 		for($i=0;$i<count($log_eleve);$i++){
 			//if($eleve_login==$log_eleve[$i]){
-			if(strtolower($eleve_login)==strtolower($log_eleve[$i])) {
-				//echo " strtolower(".$log_eleve[$i].")=".strtolower($log_eleve[$i])." ";
+			if(my_strtolower($eleve_login)==my_strtolower($log_eleve[$i])) {
+				//echo " my_strtolower(".$log_eleve[$i].")=".my_strtolower($log_eleve[$i])." ";
 				$num_eleve=$i;
 				break;
 			}
@@ -227,16 +227,38 @@ if (isset($is_posted)) {
 
 
 				if ($del_eleve[$i] == 'yes') {
-					$test = mysql_query("SELECT * FROM matieres_notes WHERE (login='$eleve_login' and periode = '$i')");
+					$sql="SELECT * FROM matieres_notes WHERE (login='$eleve_login' and periode = '$i');";
+					//echo "$sql<br />";
+					$test = mysql_query($sql);
 					$nb_test = mysql_num_rows($test);
-					$test_app = mysql_query("SELECT * FROM matieres_appreciations WHERE (login='$eleve_login' and periode='$i')");
+
+					$sql="SELECT * FROM matieres_appreciations WHERE (login='$eleve_login' and periode='$i')";
+					//echo "$sql<br />";
+					$test_app = mysql_query($sql);
 					$nb_test_app = mysql_num_rows($test_app);
-					$test_app_conseil = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$eleve_login' and periode='$i' and avis!='')");
+
+					$sql="SELECT * FROM avis_conseil_classe WHERE (login='$eleve_login' and periode='$i' and avis!='')";
+					//echo "$sql<br />";
+					$test_app_conseil = mysql_query($sql);
 					$nb_test_app_conseil = mysql_num_rows($test_app_conseil);
 
 					if (($nb_test != 0) or ($nb_test_app != 0) or ($nb_test_app_conseil != 0)) {
+						$motif_bloquant="";
+						if ($nb_test != 0) {
+							$motif_bloquant.=$nb_test." moyenne(s)";
+						}
+						if ($nb_test_app != 0) {
+							if($motif_bloquant!="") {$motif_bloquant.=", ";}
+							$motif_bloquant.=$nb_test_app." appr√©ciation(s)";
+						}
+						if ($nb_test_app_conseil != 0) {
+							if($motif_bloquant!="") {$motif_bloquant.=", ";}
+							$motif_bloquant.="un avis du conseil de classe";
+						}
+
 						$autorisation_sup = 'no';
-						$msg = "<font color = 'red'>--> Impossible de retirer l'ÈlËve $eleve_login de la classe pour la pÈriode $i !<br />Celui-ci a des moyennes ou apprÈciations pour cette pÈriode. Commencez par supprimer les donnÈes de l'ÈlËve pour cette pÈriode !</font><br />\n";
+						if(!isset($msg)) {$msg="";}
+						$msg.="<font color = 'red'>--> Impossible de retirer l'√©l√®ve $eleve_login de la classe pour la p√©riode $i !<br />Cet(te) √©l√®ve a <strong>$motif_bloquant</strong> pour cette p√©riode. Commencez par supprimer les donn√©es de l'√©l√®ve pour cette p√©riode !</font><br />\n";
 						$reg_ok = "impossible";
 					} else {
 						$liste_cible .= $eleve_login.";";
@@ -252,20 +274,24 @@ if (isset($is_posted)) {
 
 	//debug_var();
 
+	if($autorisation_sup=='no') {
+		$msg.="De fa√ßon g√©n√©rale&nbsp;: ".$explication_motif_bloquant_suppression_eleve_de_la_classe."<br />";
+	}
+
 	if (($liste_cible != '') and ($autorisation_sup != 'no')) {
 		header("Location: ../lib/confirm_query.php?liste_cible=$liste_cible&liste_cible2=$liste_cible2&liste_cible3=$liste_cible3&action=retire_eleve".add_token_in_url(false));
 	}
 
 	if ($reg_ok == 'yes') {
-	//$message_enregistrement = "Les modifications ont ÈtÈ enregistrÈes !";
+	//$message_enregistrement = "Les modifications ont √©t√© enregistr√©es !";
 		if(!isset($msg)){$msg="";}
-	$msg.="Les modifications ont ÈtÈ enregistrÈes !";
+	$msg.="Les modifications ont √©t√© enregistr√©es !";
 	} else if ($reg_ok == "impossible") {
-		$message_enregistrement = "OpÈration Impossible (voir message d'avertissement en rouge).";
+		$message_enregistrement = "Op√©ration Impossible (voir message d'avertissement en rouge).";
 		$affiche_message = 'yes';
 	} else {
-	//$message_enregistrement = "Il y a eu un problËme lors de l'enregistrement";
-		$message_enregistrement="Il y a eu un problËme lors de l'enregistrement";
+	//$message_enregistrement = "Il y a eu un probl√®me lors de l'enregistrement";
+		$message_enregistrement="Il y a eu un probl√®me lors de l'enregistrement";
 		$affiche_message = 'yes';
 	}
 	//$affiche_message = 'yes';
@@ -278,10 +304,10 @@ if(isset($_GET['add_eleve_classe'])) {
 	$num_periode=isset($_GET['num_periode']) ? $_GET['num_periode'] : NULL;
 
 	if(($num_periode=='')||(preg_match("/[^0-9]/", $num_periode))) {
-		$msg="NumÈro de pÈriode $num_periode invalide pour l'ajout de $login_eleve dans la classe.";
+		$msg="Num√©ro de p√©riode $num_periode invalide pour l'ajout de $login_eleve dans la classe.";
 	}
 	elseif(($login_eleve=='')||(preg_match("/[^A-Za-z0-9\._-]/", $login_eleve))) {
-		$msg="Login ÈlËve $login_eleve invalide pour l'ajout dans la classe en pÈriode $num_periode.";
+		$msg="Login √©l√®ve $login_eleve invalide pour l'ajout dans la classe en p√©riode $num_periode.";
 	}
 	else {
 		//$sql="SELECT id_classe FROM j_eleves_classes WHERE login='$login_eleve' AND id_classe='$id_classe' AND periode='$num_periode';";
@@ -289,16 +315,16 @@ if(isset($_GET['add_eleve_classe'])) {
 		$test=mysql_query($sql);
 		if(mysql_num_rows($test)>0) {
 			$lig=mysql_fetch_object($test);
-			$msg="$login_eleve est dÈj‡ inscrit dans la classe ".get_class_from_id($lig->id_classe)." en pÈriode $num_periode.";
+			$msg="$login_eleve est d√©j√† inscrit dans la classe ".get_class_from_id($lig->id_classe)." en p√©riode $num_periode.";
 		}
 		else {
 			$sql="INSERT INTO j_eleves_classes SET login='$login_eleve', id_classe='$id_classe', periode='$num_periode';";
 			$insert=mysql_query($sql);
 			if(!$insert) {
-				$msg="Erreur lors de l'ajout de $login_eleve dans la classe en pÈriode $num_periode.";
+				$msg="Erreur lors de l'ajout de $login_eleve dans la classe en p√©riode $num_periode.";
 			}
 			else {
-				$msg="Ajout de $login_eleve dans la classe en pÈriode $num_periode effectuÈ.<br />Pensez ‡ dÈfinir les <a href='eleve_options.php?login_eleve=$login_eleve&id_classe=$id_classe'>matiËres suivies</a>.";
+				$msg="Ajout de $login_eleve dans la classe en p√©riode $num_periode effectu√©.<br />Pensez √† d√©finir les <a href='eleve_options.php?login_eleve=$login_eleve&id_classe=$id_classe'>mati√®res suivies</a>.";
 			}
 		}
 	}
@@ -346,11 +372,11 @@ if(mysql_num_rows($res_class_tmp)>0){
 // =================================
 
 
-$themessage  = 'Des informations ont ÈtÈ modifiÈes. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont √©t√© modifi√©es. Voulez-vous vraiment quitter sans enregistrer ?';
 
 //**************** EN-TETE **************************************
-$titre_page = "Gestion des classes | Gestion des ÈlËves";
-require_once("../lib/header.inc");
+$titre_page = "Gestion des classes | Gestion des √©l√®ves";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
 $call_classe = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'");
 $classe = mysql_result($call_classe, "0", "classe");
@@ -363,7 +389,7 @@ if(!isset($quitter_la_page)){
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
 	echo "<p class='bold'>\n";
 	echo "<a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a> | <a href='prof_suivi.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">".ucfirst(getSettingValue("gepi_prof_suivi"))." : saisie rapide</a>\n";
-	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe prÈcÈdente</a>";}
+	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe pr√©c√©dente</a>";}
 
 	if($chaine_options_classes!="") {
 
@@ -401,11 +427,11 @@ if(!isset($quitter_la_page)){
 	// AJOUT: boireaus 20081224
 	$titre="Navigation";
 	$texte="";
-	$texte.="<img src='../images/icons/date.png' alt='' /> <a href='periodes.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">PÈriodes</a><br />";
-	//$texte.="<img src='../images/icons/edit_user.png' alt='' /> <a href='classes_const.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">ElËves</a><br />";
+	$texte.="<img src='../images/icons/date.png' alt='' /> <a href='periodes.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">P√©riodes</a><br />";
+	//$texte.="<img src='../images/icons/edit_user.png' alt='' /> <a href='classes_const.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">El√®ves</a><br />";
 	$texte.="<img src='../images/icons/document.png' alt='' /> <a href='../groupes/edit_class.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">Enseignements</a><br />";
-	$texte.="<img src='../images/icons/document.png' alt='' /> <a href='../groupes/edit_class_grp_lot.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">config.simplifiÈe</a><br />";
-	$texte.="<img src='../images/icons/configure.png' alt='' /> <a href='modify_nom_class.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">ParamËtres</a>";
+	$texte.="<img src='../images/icons/document.png' alt='' /> <a href='../groupes/edit_class_grp_lot.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">config.simplifi√©e</a><br />";
+	$texte.="<img src='../images/icons/configure.png' alt='' /> <a href='modify_nom_class.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">Param√®tres</a>";
 
 	$ouvrir_infobulle_nav=getSettingValue("ouvrir_infobulle_nav");
 
@@ -438,12 +464,12 @@ if(!isset($quitter_la_page)){
 	echo "<form enctype='multipart/form-data' action='classes_const.php' method='post'>\n";
 }
 else {
-	// Cette page a ÈtÈ ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
-	// AprËs modification Èventuelle, il faut quitter cette page.
+	// Cette page a √©t√© ouverte en target='blank' depuis une autre page (par exemple /eleves/modify_eleve.php)
+	// Apr√®s modification √©ventuelle, il faut quitter cette page.
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
 	echo "<p class='bold'>";
 	echo "<a href='index.php' onClick='self.close();return false;'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Refermer la page </a> | <a href='prof_suivi.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">".ucfirst(getSettingValue("gepi_prof_suivi"))." : saisie rapide</a>\n";
-	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec&amp;quitter_la_page=y' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe prÈcÈdente</a>";}
+	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec&amp;quitter_la_page=y' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe pr√©c√©dente</a>";}
 
 	if($chaine_options_classes!="") {
 
@@ -498,10 +524,10 @@ echo add_token_field();
 <p>
 
 <?php
-echo "<img src='../images/icons/add_user.png' alt='' /> <a href='classes_ajout.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">Ajouter des ÈlËves ‡ la classe</a>";
+echo "<img src='../images/icons/add_user.png' alt='' /> <a href='classes_ajout.php?id_classe=$id_classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">Ajouter des √©l√®ves √† la classe</a>";
 ?>
 </p>
-<p class='small'><b>Remarque :</b> lors du retrait d'un ÈlËve de la classe pour une pÈriode donnÈe, celui-ci sera retirÈ de tous les enseignements auxquels il Ètait inscrit pour la pÈriode en question.</p>
+<p class='small'><b>Remarque :</b> lors du retrait d'un √©l√®ve de la classe pour une p√©riode donn√©e, celui-ci sera retir√© de tous les enseignements auxquels il √©tait inscrit pour la p√©riode en question.</p>
 <?php
 
 
@@ -529,7 +555,7 @@ function DecocheLigne(ki) {
 $call_eleves = mysql_query("SELECT DISTINCT j.login FROM j_eleves_classes j, eleves e WHERE (j.id_classe = '$id_classe' and e.login = j.login) ORDER BY e.nom, e.prenom");
 $nombreligne = mysql_num_rows($call_eleves);
 if ($nombreligne == '0') {
-	echo "<p>Il n'y a pas d'ÈlËves actuellement dans cette classe.</p>\n";
+	echo "<p>Il n'y a pas d'√©l√®ves actuellement dans cette classe.</p>\n";
 } else {
 
 	echo "<script type='text/javascript'>
@@ -608,10 +634,10 @@ function imposer_cpe() {
 
 
 	$k = '0';
-	echo "<table class='boireaus' border='1' cellpadding='5' class='boireaus' summary='ElËves'>\n";
+	echo "<table class='boireaus' border='1' cellpadding='5' class='boireaus' summary='El√®ves'>\n";
 	echo "<tr>\n";
-	echo "<th>Nom PrÈnom </th>\n";
-	echo "<th>RÈgime</th>\n";
+	echo "<th>Nom Pr√©nom </th>\n";
+	echo "<th>R√©gime</th>\n";
 	echo "<th>Redoublant</th>\n";
 	echo "<th>".ucfirst(getSettingValue("gepi_prof_suivi"));
 	echo "<select size='1' name='pp_a_imposer' id='pp_a_imposer' style='font-size:small;'";
@@ -621,10 +647,10 @@ function imposer_cpe() {
 		$ind=$loop+1;
 		echo "<option value='$ind'";
 		if($tab_profsuivi[$loop]==$login_pp_unique_actuel) {echo " selected='true'";}
-		echo ">".ucwords(strtolower($tab_profprenom[$loop]))." ".strtoupper($tab_profnom[$loop])."</option>\n";
+		echo ">".casse_mot($tab_profprenom[$loop],'majf2')." ".my_strtoupper($tab_profnom[$loop])."</option>\n";
 	}
 	echo "</select>\n";
-	echo "&nbsp;<a href='javascript: imposer_pp();' title='Imposer pour tous les ÈlËves'><img src='../images/icons/wizard.png' width='16' height='16' alt='Imposer pour tous les ÈlËves' /></a>\n";
+	echo "&nbsp;<a href='javascript: imposer_pp();' title='Imposer pour tous les √©l√®ves'><img src='../images/icons/wizard.png' width='16' height='16' alt='Imposer pour tous les √©l√®ves' /></a>\n";
 
 
 	echo "</th>\n";
@@ -636,10 +662,10 @@ function imposer_cpe() {
 		$ind=$loop+1;
 		echo "<option value='$ind'";
 		if($tab_cperesp[$loop]==$login_cpe_unique_actuel) {echo " selected='true'";}
-		echo ">".ucwords(strtolower($tab_cpeprenom[$loop]))." ".strtoupper($tab_cpenom[$loop])."</option>\n";
+		echo ">".casse_mot($tab_cpeprenom[$loop],'majf2')." ".my_strtoupper($tab_cpenom[$loop])."</option>\n";
 	}
 	echo "</select>\n";
-	echo "&nbsp;<a href='javascript: imposer_cpe();' title='Imposer pour tous les ÈlËves'><img src='../images/icons/wizard.png' width='16' height='16' alt='Imposer pour tous les ÈlËves' /></a>\n";
+	echo "&nbsp;<a href='javascript: imposer_cpe();' title='Imposer pour tous les √©l√®ves'><img src='../images/icons/wizard.png' width='16' height='16' alt='Imposer pour tous les √©l√®ves' /></a>\n";
 	echo "</th>\n";
 
 	$i="1";
@@ -647,7 +673,7 @@ function imposer_cpe() {
 		//echo "<th><p class=\"small\">Retirer de la classe<br />$nom_periode[$i]</p></th>\n";
 		echo "<th><p class=\"small\">Retirer de la classe<br />$nom_periode[$i]<br />\n";
 
-		echo "<a href=\"javascript:CocheColonne(".$i.");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne(".$i.");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' /></a>";
+		echo "<a href=\"javascript:CocheColonne(".$i.");changement();\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne(".$i.");changement();\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' /></a>";
 
 		echo "</p></th>\n";
 		$i++;
@@ -686,43 +712,23 @@ function imposer_cpe() {
 		echo "<tr class='lig$alt white_hover'>\n";
 		echo "<td><p>";
 
-		//echo "<a href='../eleves/modify_eleve.php?eleve_login=".$login_eleve."' onclick=\"return confirm_abandon (this, change, '$themessage')\" title='Editer la fiche ÈlËve' target='_blank' style='color: black;'>";
-		echo "<a href='../eleves/modify_eleve.php?eleve_login=".$login_eleve."' onclick=\"return confirm_abandon (this, change, '$themessage')\" title='Editer la fiche ÈlËve' target='_blank'>";
- 		echo strtoupper($nom_eleve)." ".$prenom_eleve;
+		echo "<a href='../eleves/modify_eleve.php?eleve_login=".$login_eleve."' onclick=\"return confirm_abandon (this, change, '$themessage')\" title='Editer la fiche √©l√®ve' target='_blank'>";
+ 		echo my_strtoupper($nom_eleve)." ".casse_mot($prenom_eleve,'majf2');
 		echo "</a>\n";
 
-		//=========================
-		// AJOUT: boireaus 20071010
 		echo "<input type='hidden' name='log_eleve[$k]' value=\"$login_eleve\" />\n";
-		//=========================
 
 		$ancre_login_eleve=preg_replace("/[^A-Za-z0-9_]/","",$login_eleve);
 		echo "<a name='$ancre_login_eleve'></a>\n";
 
-		echo "<br /><b><a href='eleve_options.php?login_eleve=".$login_eleve."&amp;id_classe=".$id_classe."' onclick=\"return confirm_abandon (this, change, '$themessage')\">MatiËres suivies</a></b>";
+		echo "<br /><b><a href='eleve_options.php?login_eleve=".$login_eleve."&amp;id_classe=".$id_classe."' onclick=\"return confirm_abandon (this, change, '$themessage')\">Mati√®res suivies</a></b>";
 		echo "</p></td>\n";
 		echo "<td style='padding: 0;'>\n";
 
 		echo "";
 
-		echo "<table style='border-collaspe: collapse;' summary='RÈgime'>\n";
+		echo "<table style='border-collaspe: collapse;' summary='R√©gime'>\n";
 		echo "<tr>\n";
-		//=========================
-		// MODIF: boireaus 20071010
-		/*
-		echo "<td style='text-align: center; border: 0px;'>I-ext<br /><input type='radio' name='$regime_login' value='i-e'";
-		if ($regime == 'i-e') {echo " checked";}
-		echo " /></td>\n";
-		echo "<td style='text-align: center; border: 0px; border-left: 1px solid #AAAAAA;'>Int<br/><input type='radio' name='$regime_login' value='int.'";
-		if ($regime == 'int.') {echo " checked";}
-		echo " /></td>\n";
-		echo "<td style='text-align: center; border: 0px; border-left: 1px solid #AAAAAA;'>D/P<br/><input type='radio' name='$regime_login' value='d/p'";
-		if ($regime == 'd/p') {echo " checked";}
-		echo " /></td>\n";
-		echo "<td style='text-align: center; border: 0px; border-left: 1px solid #AAAAAA;'>Ext<br/><input type='radio' name='$regime_login' value='ext.'";
-		if ($regime == 'ext.') {echo " checked";}
-		//echo " /></p></td><td><p><center><input type='checkbox' name='$doublant_login' value='yes'";
-		*/
 
 		echo "<td style='text-align: center; border: 0px;'>I-ext<br /><input type='radio' name='regime_eleve[$k]' value='i-e' ";
 		if ($regime == 'i-e') {echo " checked";}
@@ -746,20 +752,12 @@ function imposer_cpe() {
 
 		echo "</td>\n";
 
-		//=========================
-		// MODIF: boireaus 20071010
-		//echo "<td><p align='center'><input type='checkbox' name='$doublant_login' value='yes' ";
 		echo "<td><p align='center'><input type='checkbox' name='doublant_eleve[$k]' value='yes' ";
-		//=========================
 		if ($doublant == 'R') {echo " checked";}
-		//echo " /></center></p></td><td><p><select size='1' name='$prof_login'>";
 		echo " onchange='changement()'";
 		echo " /></p></td>\n";
 
 		echo "<td>\n";
-		//=========================
-		// MODIF: boireaus 20071010
-		//echo "<p><select size='1' name='$prof_login'>\n";
 		echo "<p><select size='1' name='prof_principal[$k]' id='prof_principal_$k'";
 		echo " onchange='changement()'";
 		echo ">\n";
@@ -769,25 +767,22 @@ function imposer_cpe() {
 		for($loop=0;$loop<count($tab_profsuivi);$loop++) {
 			echo "<option value='$tab_profsuivi[$loop]'";
 			if ($tab_profsuivi[$loop]==$eleve_profsuivi) { echo " selected";}
-			echo ">".ucwords(strtolower($tab_profprenom[$loop]))." ".strtoupper($tab_profnom[$loop])."</option>\n";
+			echo ">".casse_mot($tab_profprenom[$loop],'majf2')." ".my_strtoupper($tab_profnom[$loop])."</option>\n";
 		}
 		echo "</select></p>\n";
 		echo "</td>\n";
 
 		echo "<td>\n";
-		//=========================
-		// MODIF: boireaus 20071010
-		//echo "<p><select size='1' name='$cpe_login'>\n";
 		echo "<p><select size='1' name='cpe_resp[$k]' id='cpe_resp_$k'";
 		echo " onchange='changement()'";
 		echo ">\n";
-		//=========================
+
 		$cperesp = "(vide)";
 		echo "<option value='$cperesp'>(vide)</option>\n";
 		for($loop=0;$loop<count($tab_cperesp);$loop++) {
 			echo "<option value='$tab_cperesp[$loop]'";
 			if ($tab_cperesp[$loop]==$eleve_cperesp) { echo " selected";}
-			echo ">".ucwords(strtolower($tab_cpeprenom[$loop]))." ".strtoupper($tab_cpenom[$loop])."</option>\n";
+			echo ">".casse_mot($tab_cpeprenom[$loop],'majf2')." ".my_strtoupper($tab_cpenom[$loop])."</option>\n";
 		}
 		echo "</select></p>\n";
 		echo "</td>\n";
@@ -797,20 +792,21 @@ function imposer_cpe() {
 			$call_trim = mysql_query("SELECT periode FROM j_eleves_classes WHERE (id_classe = '$id_classe' and periode = '$i' and login = '$login_eleve')");
 			$nb_ligne = mysql_num_rows($call_trim);
 			if ($nb_ligne != 0) {
-				//echo "<td><p><center><input type='checkbox' name='$delete_login[$i]' value='yes' /></center></p></td>";
-				//=========================
-				// MODIF: boireaus 20071010
-				//echo "<td><p align='center'><input type='checkbox' name='$delete_login[$i]' id='case_".$i."_".$k."' value='yes' /></p></td>\n";
 				echo "<td>";
 				echo "<p align='center'>";
 
 				// Tester s'il y a des notes/app dans le bulletin
 				$sql="SELECT 1=1 FROM matieres_notes WHERE login='".$login_eleve."' AND periode='".$i."';";
 				$verif=mysql_query($sql);
+				$nb_verif1=mysql_num_rows($verif);
 				$sql="SELECT 1=1 FROM matieres_appreciations WHERE login='".$login_eleve."' AND periode='".$i."';";
 				$verif2=mysql_query($sql);
+				$nb_verif2=mysql_num_rows($verif2);
+				$sql="SELECT 1=1 FROM avis_conseil_classe WHERE login='".$login_eleve."' AND periode='".$i."';";
+				$verif3=mysql_query($sql);
+				$nb_verif3=mysql_num_rows($verif3);
 
-				if((mysql_num_rows($verif)==0)&&(mysql_num_rows($verif2)==0)) {
+				if(($nb_verif1==0)&&($nb_verif2==0)&&($nb_verif3==0)) {
 
 					echo "<input type='checkbox' name='delete_".$k."[$i]' id='case_".$i."_".$k."' value='yes'";
 					echo " onchange='changement()'";
@@ -822,7 +818,22 @@ function imposer_cpe() {
 					}
 				}
 				else {
-					echo "<img src='../images/icons/bulletin_16.png' width='16' height='16' title=\"Bulletin non vide : L'ÈlËve ne peut pas Ítre retirÈ de la classe\" alt=\"Bulletin non vide : L'ÈlËve ne peut pas Ítre retirÈ de la classe\" />";
+					$motif_bloquant="";
+					if($nb_verif1>0) {$motif_bloquant.="$nb_verif1 moyenne(s)";}
+					if($nb_verif2>0) {
+						if($motif_bloquant!="") {$motif_bloquant.=", ";}
+						$motif_bloquant.="$nb_verif2 appr√©ciation(s)";
+					}
+					if($nb_verif3>0) {
+						if($motif_bloquant!="") {$motif_bloquant.=", ";}
+						$motif_bloquant.="un avis du conseil de classe";
+					}
+
+					//onclick=\"afficher_div('div_bull_simp','y',-100,-200); affiche_bull_simp('$login_eleve','$id_classe','$i','$i');return false;\" 
+					echo "<a href=\"../prepa_conseil/edit_limite.php?choix_edit=2&login_eleve=".$login_eleve."&id_classe=$id_classe&periode1=$i&periode2=$i\" target=\"_blank\">";
+					echo "<img src='../images/icons/bulletin_16.png' width='16' height='16' title=\"Bulletin non vide ($motif_bloquant): L'√©l√®ve ne peut pas √™tre retir√© de la classe\" alt=\"Bulletin non vide ($motif_bloquant): L'√©l√®ve ne peut pas √™tre retir√© de la classe\" />";
+					echo "</a>";
+
 				}
 
 				echo "</p>";
@@ -831,18 +842,18 @@ function imposer_cpe() {
 			} else {
 				$call_classe = mysql_query("SELECT c.classe FROM classes c, j_eleves_classes j WHERE (c.id = j.id_classe and j.periode = '$i' and j.login = '$login_eleve')");
 				$nom_classe = @mysql_result($call_classe, 0, "classe");
-				//echo "<td><p><center>$nom_classe&nbsp;</center></p></td>";
+
 				if($nom_classe!="") {
 					echo "<td><p align='center'>$nom_classe</p></td>\n";
 				}
 				else {
-					echo "<td style='vertical-align: bottom; text-align: right;'><a href='".$_SERVER['PHP_SELF']."?add_eleve_classe=y&amp;num_periode=$i&amp;id_classe=$id_classe&amp;login_eleve=$login_eleve".add_token_in_url()."' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/add.png' width='16' height='16' alt=\"Ajouter ".strtoupper($nom_eleve)." ".$prenom_eleve." ‡ la classe $classe en pÈriode $i\" title=\"Ajouter ".strtoupper($nom_eleve)." ".$prenom_eleve." ‡ la classe $classe en pÈriode $i\" /></a></td>\n";
+					echo "<td style='vertical-align: bottom; text-align: right;'><a href='".$_SERVER['PHP_SELF']."?add_eleve_classe=y&amp;num_periode=$i&amp;id_classe=$id_classe&amp;login_eleve=$login_eleve".add_token_in_url()."' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/add.png' width='16' height='16' alt=\"Ajouter ".my_strtoupper($nom_eleve)." ".casse_mot($prenom_eleve,'majf2')." √† la classe $classe en p√©riode $i\" title=\"Ajouter ".my_strtoupper($nom_eleve)." ".casse_mot($prenom_eleve,'majf2')." √† la classe $classe en p√©riode $i\" /></a></td>\n";
 				}
 			}
 			$i++;
 		}
 
-		echo "<td><a href=\"javascript:CocheLigne(".$k.");changement()\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> <a href=\"javascript:DecocheLigne(".$k.");changement()\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÈcocher' /></a></td>";
+		echo "<td><a href=\"javascript:CocheLigne(".$k.");changement()\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> <a href=\"javascript:DecocheLigne(".$k.");changement()\"><img src='../images/disabled.png' width='15' height='15' alt='Tout d√©cocher' /></a></td>";
 
 		echo "</tr>\n";
 		$k++;
@@ -885,6 +896,8 @@ if($ouvrir_infobulle_nav=='y') {
 	setTimeout(\"afficher_div('navigation_classe','y',-100,20);\",1000)
 </script>\n";
 }
+
+echo "<p style='margin-left:4em; text-indent:-4em;'><em>NOTE&nbsp;:</em> ".$explication_motif_bloquant_suppression_eleve_de_la_classe."</p>\n";
 
 require("../lib/footer.inc.php");
 

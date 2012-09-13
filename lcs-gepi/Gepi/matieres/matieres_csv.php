@@ -2,7 +2,7 @@
 
 @set_time_limit(0);
 /*
-* $Id: matieres_csv.php 6616 2011-03-03 18:15:26Z crob $
+* $Id$
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -37,7 +37,7 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-//INSERT INTO `droits` ( `id` , `administrateur` , `professeur` , `cpe` , `scolarite` , `eleve` , `secours` , `description` , `statut` ) VALUES ('/matieres/matieres_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'Importation des matières depuis un fichier CSV', '');
+//INSERT INTO `droits` ( `id` , `administrateur` , `professeur` , `cpe` , `scolarite` , `eleve` , `secours` , `description` , `statut` ) VALUES ('/matieres/matieres_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'Importation des matiÃ¨res depuis un fichier CSV', '');
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
@@ -49,19 +49,19 @@ if (isset($is_posted)) {
 }
 
 //**************** EN-TETE *****************
-$titre_page = "Matières : Importation des matières depuis un CSV";
-require_once("../lib/header.inc");
+$titre_page = "MatiÃ¨res : Importation des matiÃ¨res depuis un CSV";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
-<p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil matières</a></p>
+<p class=bold><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil matiÃ¨res</a></p>
 
 <?php
 
-echo "<center><h3 class='gepi'>Importation des matières</h3></center>\n";
+echo "<center><h3 class='gepi'>Importation des matiÃ¨res</h3></center>\n";
 
 if (!isset($is_posted)) {
 
-    echo "<p>Importation d'un fichier CSV où chaque ligne est de la forme: <code>nom_court;nom_long</code><br /><i>Par exemple:</i><br />\n";
+    echo "<p>Importation d'un fichier CSV oÃ¹ chaque ligne est de la forme: <code>nom_court;nom_long</code><br /><i>Par exemple:</i><br />\n";
     echo "<pre>MATHS;MATHEMATIQUES
 FRANC;FRANCAIS
 ...</pre>\n";
@@ -77,8 +77,6 @@ FRANC;FRANCAIS
 }
 else {
     $csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
-    //if(strtoupper($csv_file['name']) == "F_TMT.DBF") {
-        //$fp = dbase_open($csv_file['tmp_name'], 0);
         $fp=fopen($csv_file['tmp_name'],"r");
         if(!$fp) {
             echo "<p>Impossible d'ouvrir le fichier CSV</p>\n";
@@ -87,9 +85,9 @@ else {
         else{
             $msg="";
 
-            echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent à des nouvelles matières dans la base GEPI. les identifiants en vert correspondent à des identifiants de matières détectés dans le fichier CSV mais déjà présents dans la base GEPI.</p>\n";
-            echo "<table class='boireaus' border='1' cellpadding='2' cellspacing='2' summary='Tableau des matières du CSV'>\n";
-            echo "<tr><th><p class=\"small\">Identifiant de la matière</p></th><th><p class=\"small\">Nom complet</p></th></tr>\n";
+            echo "<p>Dans le tableau ci-dessous, les identifiants en rouge correspondent Ã  des nouvelles matiÃ¨res dans la base GEPI. les identifiants en vert correspondent Ã  des identifiants de matiÃ¨res dÃ©tectÃ©s dans le fichier CSV mais dÃ©jÃ  prÃ©sents dans la base GEPI.</p>\n";
+            echo "<table class='boireaus' border='1' cellpadding='2' cellspacing='2' summary='Tableau des matiÃ¨res du CSV'>\n";
+            echo "<tr><th><p class=\"small\">Identifiant de la matiÃ¨re</p></th><th><p class=\"small\">Nom complet</p></th></tr>\n";
 
 			$alt=1;
 
@@ -101,8 +99,7 @@ else {
 					$ligne=explode(";",$tmp_lig);
 
 					$affiche[0]=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($ligne[0]))));
-					if((strlen(preg_replace("/[A-Za-z0-9_ &]/","",strtr($affiche[0],"-","_")))!=0)&&($affiche[0]!="")){
-					//if((strlen(my_ereg_replace("[A-Za-zÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü0-9_ &]","",strtr($affiche[$i],"-","_")))!=0)&&($affiche[$i]!="")){
+					if((mb_strlen(preg_replace("/[A-Za-z0-9_ &]/","",strtr($affiche[0],"-","_")))!=0)&&($affiche[0]!="")){
 						$temoin_erreur="oui";
 						//echo "<!--  -->\n";
 						$msg.="Le nom <font color='red'>$affiche[0]</font> ne convient pas.<br />\n";
@@ -110,10 +107,7 @@ else {
 					}
 
 					$affiche[1]=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($ligne[1]))));
-					//if((strlen(my_ereg_replace("[A-Za-z0-9_ &]","",strtr($affiche[$i],"-","_")))!=0)&&($affiche[$i]!="")){
-					//echo "\$affiche[1]=$affiche[1]<br />";
-					//echo "my_ereg_replace(\"[A-Za-zÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü0-9_ &]\",\"\",$affiche[1])=".my_ereg_replace("[A-Za-zÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü0-9_ &]","",$affiche[1])."<br />";
-					if((strlen(preg_replace("/[A-Za-zÀÄÂÉÈÊËÎÏÔÖÙÛÜÇçàäâéèêëîïôöùûü0-9_ &]/","",strtr($affiche[1],"-","_")))!=0)&&($affiche[1]!="")){
+					if((mb_strlen(preg_replace("/[A-Za-zÃ€Ã„Ã‚Ã‰ÃˆÃŠÃ‹ÃÃÃ”Ã–Ã™Ã›ÃœÃ‡Ã§Ã Ã¤Ã¢Ã©Ã¨ÃªÃ«Ã®Ã¯Ã´Ã¶Ã¹Ã»Ã¼0-9_ &]/","",strtr($affiche[1],"-","_")))!=0)&&($affiche[1]!="")){
 						$temoin_erreur="oui";
 						//echo "<!--  -->\n";
 						$msg.="Le nom <font color='red'>$affiche[1]</font> ne convient pas.<br />\n";
@@ -132,11 +126,11 @@ else {
 								//echo mysql_error();
 								echo "<tr class='lig$alt white_hover'><td colspan='2'><font color='red'>".mysql_error()."</font></td></tr>\n";
 							} else {
-								echo "<tr class='lig$alt white_hover'><td><p><font color='red'>".htmlentities($affiche[0])."</font></p></td><td><p>".htmlentities($affiche[1])."</p></td></tr>\n";
+								echo "<tr class='lig$alt white_hover'><td><p><font color='red'>".htmlspecialchars($affiche[0])."</font></p></td><td><p>".htmlspecialchars($affiche[1])."</p></td></tr>\n";
 							}
 						} else {
 							$nom_complet = mysql_result($verif,0,'nom_complet');
-							echo "<tr class='lig$alt white_hover'><td><p><font color='green'>".htmlentities($affiche[0])."</font></p></td><td><p>".htmlentities($nom_complet)."</p></td></tr>\n";
+							echo "<tr class='lig$alt white_hover'><td><p><font color='green'>".htmlspecialchars($affiche[0])."</font></p></td><td><p>".htmlspecialchars($nom_complet)."</p></td></tr>\n";
 						}
 					}
 				}
@@ -145,15 +139,15 @@ else {
             //dbase_close($fp);
             fclose($fp);
             if ($nb_reg_no != 0) {
-                echo "<p>Lors de l'enregistrement des données il y a eu <b>$nb_reg_no erreur(s)</b>.<br />Essayez de trouver la cause de l'erreur et recommencez la procédure.</p>\n";
+                echo "<p>Lors de l'enregistrement des donnÃ©es il y a eu <b>$nb_reg_no erreur(s)</b>.<br />Essayez de trouver la cause de l'erreur et recommencez la procÃ©dure.</p>\n";
                 if($msg!=""){
-                    echo "<p>Voici la liste des chaines non acceptées:</p>\n";
+                    echo "<p>Voici la liste des chaines non acceptÃ©es:</p>\n";
                     echo "<blockquote>\n";
                     echo "$msg";
                     echo "</blockquote>\n";
                 }
             } else {
-                echo "<p>L'importation des matières dans la base GEPI a été effectuée avec succès !<br />";
+                echo "<p>L'importation des matiÃ¨res dans la base GEPI a Ã©tÃ© effectuÃ©e avec succÃ¨s !<br />";
             }
         }
 }

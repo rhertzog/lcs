@@ -25,6 +25,12 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	protected static $peer;
 
 	/**
+	 * The flag var to prevent infinit loop in deep copy
+	 * @var       boolean
+	 */
+	protected $startCopy = false;
+
+	/**
 	 * The value for the login field.
 	 * @var        string
 	 */
@@ -37,12 +43,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	protected $professeur;
 
 	/**
-	 * The value for the id_classe field.
-	 * @var        int
-	 */
-	protected $id_classe;
-
-	/**
 	 * @var        Eleve
 	 */
 	protected $aEleve;
@@ -51,11 +51,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	 * @var        UtilisateurProfessionnel
 	 */
 	protected $aUtilisateurProfessionnel;
-
-	/**
-	 * @var        Classe
-	 */
-	protected $aClasse;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -89,16 +84,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	public function getProfesseur()
 	{
 		return $this->professeur;
-	}
-
-	/**
-	 * Get the [id_classe] column value.
-	 * cle etrangere, id de la classe
-	 * @return     int
-	 */
-	public function getIdClasse()
-	{
-		return $this->id_classe;
 	}
 
 	/**
@@ -150,30 +135,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	} // setProfesseur()
 
 	/**
-	 * Set the value of [id_classe] column.
-	 * cle etrangere, id de la classe
-	 * @param      int $v new value
-	 * @return     JEleveProfesseurPrincipal The current object (for fluent API support)
-	 */
-	public function setIdClasse($v)
-	{
-		if ($v !== null) {
-			$v = (int) $v;
-		}
-
-		if ($this->id_classe !== $v) {
-			$this->id_classe = $v;
-			$this->modifiedColumns[] = JEleveProfesseurPrincipalPeer::ID_CLASSE;
-		}
-
-		if ($this->aClasse !== null && $this->aClasse->getId() !== $v) {
-			$this->aClasse = null;
-		}
-
-		return $this;
-	} // setIdClasse()
-
-	/**
 	 * Indicates whether the columns in this object are only set to default values.
 	 *
 	 * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -207,7 +168,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 			$this->login = ($row[$startcol + 0] !== null) ? (string) $row[$startcol + 0] : null;
 			$this->professeur = ($row[$startcol + 1] !== null) ? (string) $row[$startcol + 1] : null;
-			$this->id_classe = ($row[$startcol + 2] !== null) ? (int) $row[$startcol + 2] : null;
 			$this->resetModified();
 
 			$this->setNew(false);
@@ -216,7 +176,7 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 				$this->ensureConsistency();
 			}
 
-			return $startcol + 3; // 3 = JEleveProfesseurPrincipalPeer::NUM_HYDRATE_COLUMNS.
+			return $startcol + 2; // 2 = JEleveProfesseurPrincipalPeer::NUM_HYDRATE_COLUMNS.
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating JEleveProfesseurPrincipal object", $e);
@@ -244,9 +204,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 		}
 		if ($this->aUtilisateurProfessionnel !== null && $this->professeur !== $this->aUtilisateurProfessionnel->getLogin()) {
 			$this->aUtilisateurProfessionnel = null;
-		}
-		if ($this->aClasse !== null && $this->id_classe !== $this->aClasse->getId()) {
-			$this->aClasse = null;
 		}
 	} // ensureConsistency
 
@@ -289,7 +246,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 			$this->aEleve = null;
 			$this->aUtilisateurProfessionnel = null;
-			$this->aClasse = null;
 		} // if (deep)
 	}
 
@@ -314,18 +270,18 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 		$con->beginTransaction();
 		try {
+			$deleteQuery = JEleveProfesseurPrincipalQuery::create()
+				->filterByPrimaryKey($this->getPrimaryKey());
 			$ret = $this->preDelete($con);
 			if ($ret) {
-				JEleveProfesseurPrincipalQuery::create()
-					->filterByPrimaryKey($this->getPrimaryKey())
-					->delete($con);
+				$deleteQuery->delete($con);
 				$this->postDelete($con);
 				$con->commit();
 				$this->setDeleted(true);
 			} else {
 				$con->commit();
 			}
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -377,7 +333,7 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 			}
 			$con->commit();
 			return $affectedRows;
-		} catch (PropelException $e) {
+		} catch (Exception $e) {
 			$con->rollBack();
 			throw $e;
 		}
@@ -419,26 +375,15 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 				$this->setUtilisateurProfessionnel($this->aUtilisateurProfessionnel);
 			}
 
-			if ($this->aClasse !== null) {
-				if ($this->aClasse->isModified() || $this->aClasse->isNew()) {
-					$affectedRows += $this->aClasse->save($con);
-				}
-				$this->setClasse($this->aClasse);
-			}
-
-
-			// If this object has been modified, then save it to the database.
-			if ($this->isModified()) {
+			if ($this->isNew() || $this->isModified()) {
+				// persist changes
 				if ($this->isNew()) {
-					$criteria = $this->buildCriteria();
-					$pk = BasePeer::doInsert($criteria, $con);
-					$affectedRows += 1;
-					$this->setNew(false);
+					$this->doInsert($con);
 				} else {
-					$affectedRows += JEleveProfesseurPrincipalPeer::doUpdate($this, $con);
+					$this->doUpdate($con);
 				}
-
-				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
+				$affectedRows += 1;
+				$this->resetModified();
 			}
 
 			$this->alreadyInSave = false;
@@ -446,6 +391,69 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 		}
 		return $affectedRows;
 	} // doSave()
+
+	/**
+	 * Insert the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @throws     PropelException
+	 * @see        doSave()
+	 */
+	protected function doInsert(PropelPDO $con)
+	{
+		$modifiedColumns = array();
+		$index = 0;
+
+
+		 // check the columns in natural order for more readable SQL queries
+		if ($this->isColumnModified(JEleveProfesseurPrincipalPeer::LOGIN)) {
+			$modifiedColumns[':p' . $index++]  = 'LOGIN';
+		}
+		if ($this->isColumnModified(JEleveProfesseurPrincipalPeer::PROFESSEUR)) {
+			$modifiedColumns[':p' . $index++]  = 'PROFESSEUR';
+		}
+
+		$sql = sprintf(
+			'INSERT INTO j_eleves_professeurs (%s) VALUES (%s)',
+			implode(', ', $modifiedColumns),
+			implode(', ', array_keys($modifiedColumns))
+		);
+
+		try {
+			$stmt = $con->prepare($sql);
+			foreach ($modifiedColumns as $identifier => $columnName) {
+				switch ($columnName) {
+					case 'LOGIN':
+						$stmt->bindValue($identifier, $this->login, PDO::PARAM_STR);
+						break;
+					case 'PROFESSEUR':
+						$stmt->bindValue($identifier, $this->professeur, PDO::PARAM_STR);
+						break;
+				}
+			}
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute INSERT statement [%s]', $sql), $e);
+		}
+
+		$this->setNew(false);
+	}
+
+	/**
+	 * Update the row in the database.
+	 *
+	 * @param      PropelPDO $con
+	 *
+	 * @see        doSave()
+	 */
+	protected function doUpdate(PropelPDO $con)
+	{
+		$selectCriteria = $this->buildPkeyCriteria();
+		$valuesCriteria = $this->buildCriteria();
+		BasePeer::doUpdate($selectCriteria, $valuesCriteria, $con);
+	}
 
 	/**
 	 * Array of ValidationFailed objects.
@@ -524,12 +532,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 				}
 			}
 
-			if ($this->aClasse !== null) {
-				if (!$this->aClasse->validate($columns)) {
-					$failureMap = array_merge($failureMap, $this->aClasse->getValidationFailures());
-				}
-			}
-
 
 			if (($retval = JEleveProfesseurPrincipalPeer::doValidate($this, $columns)) !== true) {
 				$failureMap = array_merge($failureMap, $retval);
@@ -575,9 +577,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 			case 1:
 				return $this->getProfesseur();
 				break;
-			case 2:
-				return $this->getIdClasse();
-				break;
 			default:
 				return null;
 				break;
@@ -609,7 +608,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 		$result = array(
 			$keys[0] => $this->getLogin(),
 			$keys[1] => $this->getProfesseur(),
-			$keys[2] => $this->getIdClasse(),
 		);
 		if ($includeForeignObjects) {
 			if (null !== $this->aEleve) {
@@ -617,9 +615,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 			}
 			if (null !== $this->aUtilisateurProfessionnel) {
 				$result['UtilisateurProfessionnel'] = $this->aUtilisateurProfessionnel->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
-			}
-			if (null !== $this->aClasse) {
-				$result['Classe'] = $this->aClasse->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
 			}
 		}
 		return $result;
@@ -658,9 +653,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 			case 1:
 				$this->setProfesseur($value);
 				break;
-			case 2:
-				$this->setIdClasse($value);
-				break;
 		} // switch()
 	}
 
@@ -687,7 +679,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 		if (array_key_exists($keys[0], $arr)) $this->setLogin($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setProfesseur($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setIdClasse($arr[$keys[2]]);
 	}
 
 	/**
@@ -701,7 +692,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 		if ($this->isColumnModified(JEleveProfesseurPrincipalPeer::LOGIN)) $criteria->add(JEleveProfesseurPrincipalPeer::LOGIN, $this->login);
 		if ($this->isColumnModified(JEleveProfesseurPrincipalPeer::PROFESSEUR)) $criteria->add(JEleveProfesseurPrincipalPeer::PROFESSEUR, $this->professeur);
-		if ($this->isColumnModified(JEleveProfesseurPrincipalPeer::ID_CLASSE)) $criteria->add(JEleveProfesseurPrincipalPeer::ID_CLASSE, $this->id_classe);
 
 		return $criteria;
 	}
@@ -719,7 +709,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 		$criteria = new Criteria(JEleveProfesseurPrincipalPeer::DATABASE_NAME);
 		$criteria->add(JEleveProfesseurPrincipalPeer::LOGIN, $this->login);
 		$criteria->add(JEleveProfesseurPrincipalPeer::PROFESSEUR, $this->professeur);
-		$criteria->add(JEleveProfesseurPrincipalPeer::ID_CLASSE, $this->id_classe);
 
 		return $criteria;
 	}
@@ -734,7 +723,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 		$pks = array();
 		$pks[0] = $this->getLogin();
 		$pks[1] = $this->getProfesseur();
-		$pks[2] = $this->getIdClasse();
 
 		return $pks;
 	}
@@ -749,7 +737,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	{
 		$this->setLogin($keys[0]);
 		$this->setProfesseur($keys[1]);
-		$this->setIdClasse($keys[2]);
 	}
 
 	/**
@@ -758,7 +745,7 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	 */
 	public function isPrimaryKeyNull()
 	{
-		return (null === $this->getLogin()) && (null === $this->getProfesseur()) && (null === $this->getIdClasse());
+		return (null === $this->getLogin()) && (null === $this->getProfesseur());
 	}
 
 	/**
@@ -776,7 +763,18 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	{
 		$copyObj->setLogin($this->getLogin());
 		$copyObj->setProfesseur($this->getProfesseur());
-		$copyObj->setIdClasse($this->getIdClasse());
+
+		if ($deepCopy && !$this->startCopy) {
+			// important: temporarily setNew(false) because this affects the behavior of
+			// the getter/setter methods for fkey referrer objects.
+			$copyObj->setNew(false);
+			// store object hash to prevent cycle
+			$this->startCopy = true;
+
+			//unflag object copy
+			$this->startCopy = false;
+		} // if ($deepCopy)
+
 		if ($makeNew) {
 			$copyObj->setNew(true);
 		}
@@ -921,62 +919,12 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	}
 
 	/**
-	 * Declares an association between this object and a Classe object.
-	 *
-	 * @param      Classe $v
-	 * @return     JEleveProfesseurPrincipal The current object (for fluent API support)
-	 * @throws     PropelException
-	 */
-	public function setClasse(Classe $v = null)
-	{
-		if ($v === null) {
-			$this->setIdClasse(NULL);
-		} else {
-			$this->setIdClasse($v->getId());
-		}
-
-		$this->aClasse = $v;
-
-		// Add binding for other direction of this n:n relationship.
-		// If this object has already been added to the Classe object, it will not be re-added.
-		if ($v !== null) {
-			$v->addJEleveProfesseurPrincipal($this);
-		}
-
-		return $this;
-	}
-
-
-	/**
-	 * Get the associated Classe object
-	 *
-	 * @param      PropelPDO Optional Connection object.
-	 * @return     Classe The associated Classe object.
-	 * @throws     PropelException
-	 */
-	public function getClasse(PropelPDO $con = null)
-	{
-		if ($this->aClasse === null && ($this->id_classe !== null)) {
-			$this->aClasse = ClasseQuery::create()->findPk($this->id_classe, $con);
-			/* The following can be used additionally to
-				guarantee the related object contains a reference
-				to this object.  This level of coupling may, however, be
-				undesirable since it could result in an only partially populated collection
-				in the referenced object.
-				$this->aClasse->addJEleveProfesseurPrincipals($this);
-			 */
-		}
-		return $this->aClasse;
-	}
-
-	/**
 	 * Clears the current object and sets all attributes to their default values
 	 */
 	public function clear()
 	{
 		$this->login = null;
 		$this->professeur = null;
-		$this->id_classe = null;
 		$this->alreadyInSave = false;
 		$this->alreadyInValidation = false;
 		$this->clearAllReferences();
@@ -1001,7 +949,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 
 		$this->aEleve = null;
 		$this->aUtilisateurProfessionnel = null;
-		$this->aClasse = null;
 	}
 
 	/**
@@ -1012,25 +959,6 @@ abstract class BaseJEleveProfesseurPrincipal extends BaseObject  implements Pers
 	public function __toString()
 	{
 		return (string) $this->exportTo(JEleveProfesseurPrincipalPeer::DEFAULT_STRING_FORMAT);
-	}
-
-	/**
-	 * Catches calls to virtual methods
-	 */
-	public function __call($name, $params)
-	{
-		if (preg_match('/get(\w+)/', $name, $matches)) {
-			$virtualColumn = $matches[1];
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-			// no lcfirst in php<5.3...
-			$virtualColumn[0] = strtolower($virtualColumn[0]);
-			if ($this->hasVirtualColumn($virtualColumn)) {
-				return $this->getVirtualColumn($virtualColumn);
-			}
-		}
-		return parent::__call($name, $params);
 	}
 
 } // BaseJEleveProfesseurPrincipal

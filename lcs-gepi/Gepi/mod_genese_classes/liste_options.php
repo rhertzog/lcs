@@ -1,7 +1,6 @@
 <?php
-/* $Id: liste_options.php 7706 2011-08-11 17:46:10Z crob $ */
 /*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -49,13 +48,13 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Génèse des classes: Liste des options de classes existantes',
+description='GenÃ¨se des classes: Liste des options de classes existantes',
 statut='';";
 $insert=mysql_query($sql);
 }
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -84,7 +83,7 @@ function LETTRE_COLONNE($num_col) {
 
 	if($num_col<26) {
 		$n=$num_col-1;
-		return substr($alpha,$n,1);
+		return mb_substr($alpha,$n,1);
 	}
 	else {
 		return "";
@@ -92,7 +91,7 @@ function LETTRE_COLONNE($num_col) {
 }
 
 function suppr_accents($chaine){
-	$caract_accentues=array("à","â","ä","ç","é","è","ê","ë","î","ï","ô","ö","ù","û","ü");
+	$caract_accentues=array("Ã ","Ã¢","Ã¤","Ã§","Ã©","Ã¨","Ãª","Ã«","Ã®","Ã¯","Ã´","Ã¶","Ã¹","Ã»","Ã¼");
 	$caract_sans_accent=array("a","a","a","c","e","e","e","e","i","i","o","o","u","u","u");
 
 	$retour=$chaine;
@@ -113,6 +112,7 @@ if(isset($_POST['valider_param'])) {
 		$cpt=0;
 		for($i=0;$i<count($id_classe);$i++) {
 			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe[$i]' ORDER BY nom,prenom;";
+			//$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe[$i]' AND (e.date_sortie IS NULL OR e.date_sortie NOT LIKE '20%') ORDER BY nom,prenom;";
 			$res=mysql_query($sql);
 			while($lig=mysql_fetch_object($res)) {
 				$ligne="";
@@ -196,22 +196,10 @@ if(isset($_POST['valider_param'])) {
 	
 	
 		$nom_fic="options_eleves_gepi_".suppr_accents(preg_replace("/'/","&apos;",preg_replace('/[" ]/','',$projet)))."_".date("Ymd_Hi").".csv";
-		/*
-		$now = gmdate('D, d M Y H:i:s') . ' GMT';
-		header('Content-Type: text/x-csv');
-		header('Expires: ' . $now);
-		if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
-			header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-		} else {
-			header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-			header('Pragma: no-cache');
-		}
-		*/
 		send_file_download_headers('text/x-csv',$nom_fic);
 	
-		echo $fich;
+		//echo $fich;
+		echo echo_csv_encoded($fich);
 		die();
 	}
 	else {
@@ -300,10 +288,11 @@ if(isset($_POST['valider_param'])) {
 
 		$nb_lig++;
 		//==========================================
-		// Lignes élèves
+		// Lignes Ã©lÃ¨ves
 
 		for($k=0;$k<count($id_classe);$k++) {
 			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe[$k]' ORDER BY nom,prenom;";
+			//$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe[$k]' AND (e.date_sortie IS NULL OR e.date_sortie NOT LIKE '20%') ORDER BY nom,prenom;";
 			$res=mysql_query($sql);
 			while($lig=mysql_fetch_object($res)) {
 				$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro2">');
@@ -375,32 +364,86 @@ if(isset($_POST['valider_param'])) {
 		$fermeture=fclose($fichier_content_xml);
 		
 		set_time_limit(3000);
-		//require_once("ss_zip.class.php");
-		require_once("../lib/ss_zip.class.php");
 
 		$fichier_liste="options_eleves_gepi_".suppr_accents(preg_replace("/'/","&apos;",preg_replace('/[" ]/','',$projet)))."_".date("Ymd_Hi");
 
-		$zip= new ss_zip('',6);
-		$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
-		$zip->add_file('liste_options_ods/meta.xml','meta.xml');
-		$zip->add_file('liste_options_ods/mimetype','mimetype');
-		$zip->add_file('liste_options_ods/settings.xml','settings.xml');
-		$zip->add_file('liste_options_ods/styles.xml','styles.xml');
-		$zip->add_file('liste_options_ods/META-INF/manifest.xml','META-INF/manifest.xml');
-		$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
+		if(file_exists("../lib/ss_zip.class.php")){
+			//require_once("ss_zip.class.php");
+			require_once("../lib/ss_zip.class.php");
 
-		rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/".$fichier_liste.".ods");
+			$zip= new ss_zip('',6);
+			$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
+			$zip->add_file('liste_options_ods/meta.xml','meta.xml');
+			$zip->add_file('liste_options_ods/mimetype','mimetype');
+			$zip->add_file('liste_options_ods/settings.xml','settings.xml');
+			$zip->add_file('liste_options_ods/styles.xml','styles.xml');
+			$zip->add_file('liste_options_ods/META-INF/manifest.xml','META-INF/manifest.xml');
+			$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
+
+			rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/".$fichier_liste.".ods");
+		}
+		else {
+
+			$path = path_niveau();
+			$chemin_temp = $path."temp/".get_user_temp_directory()."/";
+
+			if (!defined('PCLZIP_TEMPORARY_DIR') || constant('PCLZIP_TEMPORARY_DIR')!=$chemin_temp) {
+				@define( 'PCLZIP_TEMPORARY_DIR', $chemin_temp);
+			}
+
+			$nom_fic=$fichier_liste.".ods";
+			$chemin_stockage = $chemin_temp."/".$nom_fic;
+			$chemin_modele_ods='liste_options_ods';
+
+			$dossier_a_traiter=$chemin_temp."liste_options_".strftime("%Y%m%d%H%M%S");
+
+			@mkdir($dossier_a_traiter);
+			copy("../temp/".$user_temp_directory."/content.xml", $dossier_a_traiter."/content.xml");
+
+			@mkdir($dossier_a_traiter."/META-INF");
+
+			$tab_fich_tmp=array('META-INF/manifest.xml', 'settings.xml', 'meta.xml', 'mimetype', 'styles.xml');
+			for($loop=0;$loop<count($tab_fich_tmp);$loop++) {
+				copy($chemin_modele_ods.'/'.$tab_fich_tmp[$loop], $dossier_a_traiter."/".$tab_fich_tmp[$loop]);
+			}
+
+			require_once($path.'lib/pclzip.lib.php');
+
+			if ($chemin_stockage !='') {
+				if(file_exists("$chemin_stockage")) {unlink("$chemin_stockage");}
+
+				//echo "\$chemin_stockage=$chemin_stockage<br />";
+				//echo "\$dossier_a_traiter=$dossier_a_traiter<br />";
+
+				$archive = new PclZip($chemin_stockage);
+				$v_list = $archive->create($dossier_a_traiter,
+					  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
+					  PCLZIP_OPT_ADD_PATH, '');
+
+				if ($v_list == 0) {
+					echo "<p style='color:red'>Erreur : ".$archive->errorInfo(TRUE)."</p>";
+				}
+				/*
+				else {
+					$msg="Archive zip crÃ©Ã©e&nbsp;: <a href='$chemin_stockage'>$chemin_stockage</a>";
+				}
+				*/
+
+				deltree($dossier_a_traiter);
+			}
+
+		}
 
 		$lien_fichier_ods="<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods'>".$fichier_liste.".ods</a></p>\n";
 
 	}
 }
 
-$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$themessage  = 'Des informations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-$titre_page = "Génèse classe: Liste des options";
+$titre_page = "GenÃ¨se classe: Liste des options";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
@@ -435,7 +478,7 @@ while($lig=mysql_fetch_object($res)) {
 echo "<form method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n";
 echo "<input type='hidden' name='projet' value='".$projet."' />\n";
 if(!isset($_POST['choix_param'])) {
-	echo "<table summary='Choix des paramètres'>\n";
+	echo "<table summary='Choix des paramÃ¨tres'>\n";
 	echo "<tr>\n";
 	echo "<td valign='top'>\n";
 		echo "<p>Choix des classes&nbsp;:\n";
@@ -477,7 +520,7 @@ if(!isset($_POST['choix_param'])) {
 		echo "</table>\n";
 	echo "</td>\n";
 	echo "<td valign='top'>\n";
-		echo "<p>Choix des informations à faire apparaître&nbsp;:<br />\n";
+		echo "<p>Choix des informations Ã  faire apparaÃ®tre&nbsp;:<br />\n";
 		echo "<blockquote>\n";
 		echo "<p><input type='checkbox' name='nom' id='nom' value='y' checked ";
 		echo "onchange=\"checkbox_champ_change('nom')\" ";
@@ -485,7 +528,7 @@ if(!isset($_POST['choix_param'])) {
 
 		echo "<input type='checkbox' name='prenom' id='prenom' value='y' checked ";
 		echo "onchange=\"checkbox_champ_change('prenom')\" ";
-		echo "/><label for='prenom'><span id='texte_prenom'>Prénom</span></label><br />\n"; 
+		echo "/><label for='prenom'><span id='texte_prenom'>PrÃ©nom</span></label><br />\n"; 
 
 		echo "<input type='checkbox' name='sexe' id='sexe' value='y' checked ";
 		echo "onchange=\"checkbox_champ_change('sexe')\" ";
@@ -501,15 +544,15 @@ if(!isset($_POST['choix_param'])) {
 
 		echo "<input type='checkbox' name='elenoet' id='elenoet' value='y' checked ";
 		echo "onchange=\"checkbox_champ_change('elenoet')\" ";
-		echo "/><label for='elenoet'><span id='texte_elenoet'>Numéro elenoet</span></label><br />\n"; 
+		echo "/><label for='elenoet'><span id='texte_elenoet'>NumÃ©ro elenoet</span></label><br />\n"; 
 
 		echo "<input type='checkbox' name='ele_id' id='ele_id' value='y' ";
 		echo "onchange=\"checkbox_champ_change('ele_id')\" ";
-		echo "/><label for='ele_id'><span id='texte_ele_id'>Numéro ele_id</span></label><br />\n"; 
+		echo "/><label for='ele_id'><span id='texte_ele_id'>NumÃ©ro ele_id</span></label><br />\n"; 
 
 		echo "<input type='checkbox' name='no_gep' id='no_gep' value='y' ";
 		echo "onchange=\"checkbox_champ_change('no_gep')\" ";
-		echo "/><label for='no_gep'><span id='texte_no_gep'>Numéro INE</span></label><br />\n"; 
+		echo "/><label for='no_gep'><span id='texte_no_gep'>NumÃ©ro INE</span></label><br />\n"; 
 
 		echo "<input type='checkbox' name='email' id='email' value='y' ";
 		echo "onchange=\"checkbox_champ_change('email')\" ";
@@ -521,7 +564,7 @@ if(!isset($_POST['choix_param'])) {
 		echo "</blockquote>\n";
 	echo "</td>\n";
 	echo "<td valign='top'>\n";
-		echo "<p>Choix des matières à faire apparaître&nbsp;:<br />\n";
+		echo "<p>Choix des matiÃ¨res Ã  faire apparaÃ®tre&nbsp;:<br />\n";
 		echo "<blockquote>\n";
 	
 		$tab_options=array();
@@ -598,7 +641,7 @@ else {
 			$liste_champs.=$tab_champs[$i];
 		}
 	}
-	echo "<p>Vous souhaitez faire apparaître les champs&nbsp;: $liste_champs</p>\n";
+	echo "<p>Vous souhaitez faire apparaÃ®tre les champs&nbsp;: $liste_champs</p>\n";
 
 	$liste_matiere="";
 	$li_select_matiere="";
@@ -635,10 +678,10 @@ else {
 }
 echo "</form>\n";
 
-echo "<p>Cette page est destinée à générer un CSV des options à pointer en conseil de classe pour les préparatifs de conception de classe de l'année suivante.<br />
-Ce fichier correctement dûment sera réclamé à l'étape 4 'Importer les options futures des élèves d'après un CSV'.<br />
-Il conviendra d'ajouter des lignes de totaux (SOMME()) à l'aide du tableur si vous souhaitez faire un usage autre de ce fichier que l'import dans le module 'Génèse des classes'.<br />
-Les champs comme login, elenoet, ele_id,... sont destinés à faciliter l'import en retour des choix dans les tables 'gc_*'.</p>\n";
+echo "<p>Cette page est destinÃ©e Ã  gÃ©nÃ©rer un CSV des options Ã  pointer en conseil de classe pour les prÃ©paratifs de conception de classe de l'annÃ©e suivante.<br />
+Ce fichier correctement dÃ»ment sera rÃ©clamÃ© Ã  l'Ã©tape 4 'Importer les options futures des Ã©lÃ¨ves d'aprÃ¨s un CSV'.<br />
+Il conviendra d'ajouter des lignes de totaux (SOMME()) Ã  l'aide du tableur si vous souhaitez faire un usage autre de ce fichier que l'import dans le module 'GenÃ¨se des classes'.<br />
+Les champs comme login, elenoet, ele_id,... sont destinÃ©s Ã  faciliter l'import en retour des choix dans les tables 'gc_*'.</p>\n";
 
 
 require("../lib/footer.inc.php");

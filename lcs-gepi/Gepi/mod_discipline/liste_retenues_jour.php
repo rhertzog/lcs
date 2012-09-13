@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: liste_retenues_jour.php 6727 2011-03-29 15:14:30Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -36,26 +35,24 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-// SQL : INSERT INTO droits VALUES ( '/mod_discipline/liste_retenues_jour.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Liste des retenues du jour', '');
-// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/liste_retenues_jour.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Liste des retenues du jour', '');;";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
-// Page appelée via ajax depuis saisie_sanction.php->liste_retenues_jour.php
+// Page appelÃ©e via ajax depuis saisie_sanction.php->liste_retenues_jour.php
 
 $date=$_GET['date'];
 
 if(!isset($date)) {
-	echo "<p><strong>Erreur&nbsp;:</strong> Des paramètres n'ont pas été transmis.</p>\n";
+	echo "<p><strong>Erreur&nbsp;:</strong> Des paramÃ¨tres n'ont pas Ã©tÃ© transmis.</p>\n";
 }
 else {
 
@@ -106,12 +103,12 @@ else {
 				echo "<td style='font-size:x-small;'>$duree</td>\n";
 				echo "<td style='font-size:x-small;'>$lieu</td>\n";
 				echo "<td style='font-size:x-small;'>";
-				echo htmlentities(p_nom($current_eleve_login));
+				echo htmlspecialchars(p_nom($current_eleve_login));
 	
 				echo " (<em>";
 				$tmp_tab=get_class_from_ele_login($current_eleve_login);
-				//if(isset($tmp_tab['liste_nbsp'])) {echo htmlentities($tmp_tab['liste_nbsp']);}
-				if(isset($tmp_tab['liste'])) {echo preg_replace("/ /","&nbsp;",htmlentities($tmp_tab['liste']));}
+				//if(isset($tmp_tab['liste_nbsp'])) {echo htmlspecialchars($tmp_tab['liste_nbsp']);}
+				if(isset($tmp_tab['liste'])) {echo preg_replace("/ /","&nbsp;",htmlspecialchars($tmp_tab['liste']));}
 				echo "</em>)";
 	
 				echo "</td>\n";

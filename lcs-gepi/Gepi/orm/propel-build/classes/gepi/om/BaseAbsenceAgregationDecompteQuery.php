@@ -9,10 +9,10 @@
  * @method     AbsenceAgregationDecompteQuery orderByEleveId($order = Criteria::ASC) Order by the eleve_id column
  * @method     AbsenceAgregationDecompteQuery orderByDateDemiJounee($order = Criteria::ASC) Order by the date_demi_jounee column
  * @method     AbsenceAgregationDecompteQuery orderByManquementObligationPresence($order = Criteria::ASC) Order by the manquement_obligation_presence column
- * @method     AbsenceAgregationDecompteQuery orderByJustifiee($order = Criteria::ASC) Order by the justifiee column
+ * @method     AbsenceAgregationDecompteQuery orderByNonJustifiee($order = Criteria::ASC) Order by the non_justifiee column
  * @method     AbsenceAgregationDecompteQuery orderByNotifiee($order = Criteria::ASC) Order by the notifiee column
- * @method     AbsenceAgregationDecompteQuery orderByNbRetards($order = Criteria::ASC) Order by the nb_retards column
- * @method     AbsenceAgregationDecompteQuery orderByNbRetardsJustifies($order = Criteria::ASC) Order by the nb_retards_justifies column
+ * @method     AbsenceAgregationDecompteQuery orderByRetards($order = Criteria::ASC) Order by the retards column
+ * @method     AbsenceAgregationDecompteQuery orderByRetardsNonJustifies($order = Criteria::ASC) Order by the retards_non_justifies column
  * @method     AbsenceAgregationDecompteQuery orderByMotifsAbsences($order = Criteria::ASC) Order by the motifs_absences column
  * @method     AbsenceAgregationDecompteQuery orderByMotifsRetards($order = Criteria::ASC) Order by the motifs_retards column
  * @method     AbsenceAgregationDecompteQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -21,10 +21,10 @@
  * @method     AbsenceAgregationDecompteQuery groupByEleveId() Group by the eleve_id column
  * @method     AbsenceAgregationDecompteQuery groupByDateDemiJounee() Group by the date_demi_jounee column
  * @method     AbsenceAgregationDecompteQuery groupByManquementObligationPresence() Group by the manquement_obligation_presence column
- * @method     AbsenceAgregationDecompteQuery groupByJustifiee() Group by the justifiee column
+ * @method     AbsenceAgregationDecompteQuery groupByNonJustifiee() Group by the non_justifiee column
  * @method     AbsenceAgregationDecompteQuery groupByNotifiee() Group by the notifiee column
- * @method     AbsenceAgregationDecompteQuery groupByNbRetards() Group by the nb_retards column
- * @method     AbsenceAgregationDecompteQuery groupByNbRetardsJustifies() Group by the nb_retards_justifies column
+ * @method     AbsenceAgregationDecompteQuery groupByRetards() Group by the retards column
+ * @method     AbsenceAgregationDecompteQuery groupByRetardsNonJustifies() Group by the retards_non_justifies column
  * @method     AbsenceAgregationDecompteQuery groupByMotifsAbsences() Group by the motifs_absences column
  * @method     AbsenceAgregationDecompteQuery groupByMotifsRetards() Group by the motifs_retards column
  * @method     AbsenceAgregationDecompteQuery groupByCreatedAt() Group by the created_at column
@@ -44,10 +44,10 @@
  * @method     AbsenceAgregationDecompte findOneByEleveId(int $eleve_id) Return the first AbsenceAgregationDecompte filtered by the eleve_id column
  * @method     AbsenceAgregationDecompte findOneByDateDemiJounee(string $date_demi_jounee) Return the first AbsenceAgregationDecompte filtered by the date_demi_jounee column
  * @method     AbsenceAgregationDecompte findOneByManquementObligationPresence(boolean $manquement_obligation_presence) Return the first AbsenceAgregationDecompte filtered by the manquement_obligation_presence column
- * @method     AbsenceAgregationDecompte findOneByJustifiee(boolean $justifiee) Return the first AbsenceAgregationDecompte filtered by the justifiee column
+ * @method     AbsenceAgregationDecompte findOneByNonJustifiee(boolean $non_justifiee) Return the first AbsenceAgregationDecompte filtered by the non_justifiee column
  * @method     AbsenceAgregationDecompte findOneByNotifiee(boolean $notifiee) Return the first AbsenceAgregationDecompte filtered by the notifiee column
- * @method     AbsenceAgregationDecompte findOneByNbRetards(int $nb_retards) Return the first AbsenceAgregationDecompte filtered by the nb_retards column
- * @method     AbsenceAgregationDecompte findOneByNbRetardsJustifies(int $nb_retards_justifies) Return the first AbsenceAgregationDecompte filtered by the nb_retards_justifies column
+ * @method     AbsenceAgregationDecompte findOneByRetards(int $retards) Return the first AbsenceAgregationDecompte filtered by the retards column
+ * @method     AbsenceAgregationDecompte findOneByRetardsNonJustifies(int $retards_non_justifies) Return the first AbsenceAgregationDecompte filtered by the retards_non_justifies column
  * @method     AbsenceAgregationDecompte findOneByMotifsAbsences(array $motifs_absences) Return the first AbsenceAgregationDecompte filtered by the motifs_absences column
  * @method     AbsenceAgregationDecompte findOneByMotifsRetards(array $motifs_retards) Return the first AbsenceAgregationDecompte filtered by the motifs_retards column
  * @method     AbsenceAgregationDecompte findOneByCreatedAt(string $created_at) Return the first AbsenceAgregationDecompte filtered by the created_at column
@@ -56,10 +56,10 @@
  * @method     array findByEleveId(int $eleve_id) Return AbsenceAgregationDecompte objects filtered by the eleve_id column
  * @method     array findByDateDemiJounee(string $date_demi_jounee) Return AbsenceAgregationDecompte objects filtered by the date_demi_jounee column
  * @method     array findByManquementObligationPresence(boolean $manquement_obligation_presence) Return AbsenceAgregationDecompte objects filtered by the manquement_obligation_presence column
- * @method     array findByJustifiee(boolean $justifiee) Return AbsenceAgregationDecompte objects filtered by the justifiee column
+ * @method     array findByNonJustifiee(boolean $non_justifiee) Return AbsenceAgregationDecompte objects filtered by the non_justifiee column
  * @method     array findByNotifiee(boolean $notifiee) Return AbsenceAgregationDecompte objects filtered by the notifiee column
- * @method     array findByNbRetards(int $nb_retards) Return AbsenceAgregationDecompte objects filtered by the nb_retards column
- * @method     array findByNbRetardsJustifies(int $nb_retards_justifies) Return AbsenceAgregationDecompte objects filtered by the nb_retards_justifies column
+ * @method     array findByRetards(int $retards) Return AbsenceAgregationDecompte objects filtered by the retards column
+ * @method     array findByRetardsNonJustifies(int $retards_non_justifies) Return AbsenceAgregationDecompte objects filtered by the retards_non_justifies column
  * @method     array findByMotifsAbsences(array $motifs_absences) Return AbsenceAgregationDecompte objects filtered by the motifs_absences column
  * @method     array findByMotifsRetards(array $motifs_retards) Return AbsenceAgregationDecompte objects filtered by the motifs_retards column
  * @method     array findByCreatedAt(string $created_at) Return AbsenceAgregationDecompte objects filtered by the created_at column
@@ -69,7 +69,7 @@
  */
 abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 {
-
+	
 	/**
 	 * Initializes internal state of BaseAbsenceAgregationDecompteQuery object.
 	 *
@@ -106,10 +106,14 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	}
 
 	/**
-	 * Find object by primary key
+	 * Find object by primary key.
+	 * Propel uses the instance pool to skip the database if the object exists.
+	 * Go fast if the query is untouched.
+	 *
 	 * <code>
 	 * $obj = $c->findPk(array(12, 34), $con);
 	 * </code>
+	 *
 	 * @param     array[$eleve_id, $date_demi_jounee] $key Primary key to use for the query
 	 * @param     PropelPDO $con an optional connection object
 	 *
@@ -117,17 +121,74 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 */
 	public function findPk($key, $con = null)
 	{
-		if ((null !== ($obj = AbsenceAgregationDecomptePeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && $this->getFormatter()->isObjectFormatter()) {
+		if ($key === null) {
+			return null;
+		}
+		if ((null !== ($obj = AbsenceAgregationDecomptePeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
 			// the object is alredy in the instance pool
 			return $obj;
-		} else {
-			// the object has not been requested yet, or the formatter is not an object formatter
-			$criteria = $this->isKeepQuery() ? clone $this : $this;
-			$stmt = $criteria
-				->filterByPrimaryKey($key)
-				->getSelectStatement($con);
-			return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 		}
+		if ($con === null) {
+			$con = Propel::getConnection(AbsenceAgregationDecomptePeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
+		if ($this->formatter || $this->modelAlias || $this->with || $this->select
+		 || $this->selectColumns || $this->asColumns || $this->selectModifiers
+		 || $this->map || $this->having || $this->joins) {
+			return $this->findPkComplex($key, $con);
+		} else {
+			return $this->findPkSimple($key, $con);
+		}
+	}
+
+	/**
+	 * Find object by primary key using raw SQL to go fast.
+	 * Bypass doSelect() and the object formatter by using generated code.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    AbsenceAgregationDecompte A model object, or null if the key is not found
+	 */
+	protected function findPkSimple($key, $con)
+	{
+		$sql = 'SELECT ELEVE_ID, DATE_DEMI_JOUNEE, MANQUEMENT_OBLIGATION_PRESENCE, NON_JUSTIFIEE, NOTIFIEE, RETARDS, RETARDS_NON_JUSTIFIES, MOTIFS_ABSENCES, MOTIFS_RETARDS, CREATED_AT, UPDATED_AT FROM a_agregation_decompte WHERE ELEVE_ID = :p0 AND DATE_DEMI_JOUNEE = :p1';
+		try {
+			$stmt = $con->prepare($sql);
+			$stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+			$stmt->bindValue(':p1', $key[1], PDO::PARAM_STR);
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), $e);
+		}
+		$obj = null;
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$obj = new AbsenceAgregationDecompte();
+			$obj->hydrate($row);
+			AbsenceAgregationDecomptePeer::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+		}
+		$stmt->closeCursor();
+
+		return $obj;
+	}
+
+	/**
+	 * Find object by primary key.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    AbsenceAgregationDecompte|array|mixed the result, formatted by the current formatter
+	 */
+	protected function findPkComplex($key, $con)
+	{
+		// As the query uses a PK condition, no limit(1) is necessary.
+		$criteria = $this->isKeepQuery() ? clone $this : $this;
+		$stmt = $criteria
+			->filterByPrimaryKey($key)
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 	}
 
 	/**
@@ -142,10 +203,15 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 */
 	public function findPks($keys, $con = null)
 	{
+		if ($con === null) {
+			$con = Propel::getConnection($this->getDbName(), Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
-		return $this
+		$stmt = $criteria
 			->filterByPrimaryKeys($keys)
-			->find($con);
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->format($stmt);
 	}
 
 	/**
@@ -159,7 +225,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	{
 		$this->addUsingAlias(AbsenceAgregationDecomptePeer::ELEVE_ID, $key[0], Criteria::EQUAL);
 		$this->addUsingAlias(AbsenceAgregationDecomptePeer::DATE_DEMI_JOUNEE, $key[1], Criteria::EQUAL);
-		
+
 		return $this;
 	}
 
@@ -181,13 +247,13 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 			$cton0->addAnd($cton1);
 			$this->addOr($cton0);
 		}
-		
+
 		return $this;
 	}
 
 	/**
 	 * Filter the query on the eleve_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByEleveId(1234); // WHERE eleve_id = 1234
@@ -215,7 +281,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the date_demi_jounee column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByDateDemiJounee('2011-03-14'); // WHERE date_demi_jounee = '2011-03-14'
@@ -257,7 +323,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the manquement_obligation_presence column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByManquementObligationPresence(true); // WHERE manquement_obligation_presence = true
@@ -282,15 +348,15 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	}
 
 	/**
-	 * Filter the query on the justifiee column
-	 * 
+	 * Filter the query on the non_justifiee column
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByJustifiee(true); // WHERE justifiee = true
-	 * $query->filterByJustifiee('yes'); // WHERE justifiee = true
+	 * $query->filterByNonJustifiee(true); // WHERE non_justifiee = true
+	 * $query->filterByNonJustifiee('yes'); // WHERE non_justifiee = true
 	 * </code>
 	 *
-	 * @param     boolean|string $justifiee The value to use as filter.
+	 * @param     boolean|string $nonJustifiee The value to use as filter.
 	 *              Non-boolean arguments are converted using the following rules:
 	 *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
 	 *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
@@ -299,17 +365,17 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 *
 	 * @return    AbsenceAgregationDecompteQuery The current query, for fluid interface
 	 */
-	public function filterByJustifiee($justifiee = null, $comparison = null)
+	public function filterByNonJustifiee($nonJustifiee = null, $comparison = null)
 	{
-		if (is_string($justifiee)) {
-			$justifiee = in_array(strtolower($justifiee), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
+		if (is_string($nonJustifiee)) {
+			$non_justifiee = in_array(strtolower($nonJustifiee), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
 		}
-		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::JUSTIFIEE, $justifiee, $comparison);
+		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::NON_JUSTIFIEE, $nonJustifiee, $comparison);
 	}
 
 	/**
 	 * Filter the query on the notifiee column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByNotifiee(true); // WHERE notifiee = true
@@ -334,16 +400,16 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	}
 
 	/**
-	 * Filter the query on the nb_retards column
-	 * 
+	 * Filter the query on the retards column
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByNbRetards(1234); // WHERE nb_retards = 1234
-	 * $query->filterByNbRetards(array(12, 34)); // WHERE nb_retards IN (12, 34)
-	 * $query->filterByNbRetards(array('min' => 12)); // WHERE nb_retards > 12
+	 * $query->filterByRetards(1234); // WHERE retards = 1234
+	 * $query->filterByRetards(array(12, 34)); // WHERE retards IN (12, 34)
+	 * $query->filterByRetards(array('min' => 12)); // WHERE retards > 12
 	 * </code>
 	 *
-	 * @param     mixed $nbRetards The value to use as filter.
+	 * @param     mixed $retards The value to use as filter.
 	 *              Use scalar values for equality.
 	 *              Use array values for in_array() equivalent.
 	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -351,16 +417,16 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 *
 	 * @return    AbsenceAgregationDecompteQuery The current query, for fluid interface
 	 */
-	public function filterByNbRetards($nbRetards = null, $comparison = null)
+	public function filterByRetards($retards = null, $comparison = null)
 	{
-		if (is_array($nbRetards)) {
+		if (is_array($retards)) {
 			$useMinMax = false;
-			if (isset($nbRetards['min'])) {
-				$this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS, $nbRetards['min'], Criteria::GREATER_EQUAL);
+			if (isset($retards['min'])) {
+				$this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS, $retards['min'], Criteria::GREATER_EQUAL);
 				$useMinMax = true;
 			}
-			if (isset($nbRetards['max'])) {
-				$this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS, $nbRetards['max'], Criteria::LESS_EQUAL);
+			if (isset($retards['max'])) {
+				$this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS, $retards['max'], Criteria::LESS_EQUAL);
 				$useMinMax = true;
 			}
 			if ($useMinMax) {
@@ -370,20 +436,20 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 				$comparison = Criteria::IN;
 			}
 		}
-		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS, $nbRetards, $comparison);
+		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS, $retards, $comparison);
 	}
 
 	/**
-	 * Filter the query on the nb_retards_justifies column
-	 * 
+	 * Filter the query on the retards_non_justifies column
+	 *
 	 * Example usage:
 	 * <code>
-	 * $query->filterByNbRetardsJustifies(1234); // WHERE nb_retards_justifies = 1234
-	 * $query->filterByNbRetardsJustifies(array(12, 34)); // WHERE nb_retards_justifies IN (12, 34)
-	 * $query->filterByNbRetardsJustifies(array('min' => 12)); // WHERE nb_retards_justifies > 12
+	 * $query->filterByRetardsNonJustifies(1234); // WHERE retards_non_justifies = 1234
+	 * $query->filterByRetardsNonJustifies(array(12, 34)); // WHERE retards_non_justifies IN (12, 34)
+	 * $query->filterByRetardsNonJustifies(array('min' => 12)); // WHERE retards_non_justifies > 12
 	 * </code>
 	 *
-	 * @param     mixed $nbRetardsJustifies The value to use as filter.
+	 * @param     mixed $retardsNonJustifies The value to use as filter.
 	 *              Use scalar values for equality.
 	 *              Use array values for in_array() equivalent.
 	 *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
@@ -391,16 +457,16 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 *
 	 * @return    AbsenceAgregationDecompteQuery The current query, for fluid interface
 	 */
-	public function filterByNbRetardsJustifies($nbRetardsJustifies = null, $comparison = null)
+	public function filterByRetardsNonJustifies($retardsNonJustifies = null, $comparison = null)
 	{
-		if (is_array($nbRetardsJustifies)) {
+		if (is_array($retardsNonJustifies)) {
 			$useMinMax = false;
-			if (isset($nbRetardsJustifies['min'])) {
-				$this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS_JUSTIFIES, $nbRetardsJustifies['min'], Criteria::GREATER_EQUAL);
+			if (isset($retardsNonJustifies['min'])) {
+				$this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS_NON_JUSTIFIES, $retardsNonJustifies['min'], Criteria::GREATER_EQUAL);
 				$useMinMax = true;
 			}
-			if (isset($nbRetardsJustifies['max'])) {
-				$this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS_JUSTIFIES, $nbRetardsJustifies['max'], Criteria::LESS_EQUAL);
+			if (isset($retardsNonJustifies['max'])) {
+				$this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS_NON_JUSTIFIES, $retardsNonJustifies['max'], Criteria::LESS_EQUAL);
 				$useMinMax = true;
 			}
 			if ($useMinMax) {
@@ -410,12 +476,12 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 				$comparison = Criteria::IN;
 			}
 		}
-		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::NB_RETARDS_JUSTIFIES, $nbRetardsJustifies, $comparison);
+		return $this->addUsingAlias(AbsenceAgregationDecomptePeer::RETARDS_NON_JUSTIFIES, $retardsNonJustifies, $comparison);
 	}
 
 	/**
 	 * Filter the query on the motifs_absences column
-	 * 
+	 *
 	 * @param     array $motifsAbsences The values to use as filter.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
@@ -490,7 +556,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the motifs_retards column
-	 * 
+	 *
 	 * @param     array $motifsRetards The values to use as filter.
 	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
 	 *
@@ -565,7 +631,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the created_at column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByCreatedAt('2011-03-14'); // WHERE created_at = '2011-03-14'
@@ -607,7 +673,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the updated_at column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByUpdatedAt('2011-03-14'); // WHERE updated_at = '2011-03-14'
@@ -659,13 +725,13 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	{
 		if ($eleve instanceof Eleve) {
 			return $this
-				->addUsingAlias(AbsenceAgregationDecomptePeer::ELEVE_ID, $eleve->getIdEleve(), $comparison);
+				->addUsingAlias(AbsenceAgregationDecomptePeer::ELEVE_ID, $eleve->getId(), $comparison);
 		} elseif ($eleve instanceof PropelCollection) {
 			if (null === $comparison) {
 				$comparison = Criteria::IN;
 			}
 			return $this
-				->addUsingAlias(AbsenceAgregationDecomptePeer::ELEVE_ID, $eleve->toKeyValue('PrimaryKey', 'IdEleve'), $comparison);
+				->addUsingAlias(AbsenceAgregationDecomptePeer::ELEVE_ID, $eleve->toKeyValue('PrimaryKey', 'Id'), $comparison);
 		} else {
 			throw new PropelException('filterByEleve() only accepts arguments of type Eleve or PropelCollection');
 		}
@@ -673,7 +739,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the Eleve relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -683,7 +749,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('Eleve');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -691,7 +757,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -699,7 +765,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'Eleve');
 		}
-		
+
 		return $this;
 	}
 
@@ -707,7 +773,7 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 	 * Use the Eleve relation Eleve object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -734,8 +800,8 @@ abstract class BaseAbsenceAgregationDecompteQuery extends ModelCriteria
 			$this->addCond('pruneCond0', $this->getAliasedColName(AbsenceAgregationDecomptePeer::ELEVE_ID), $absenceAgregationDecompte->getEleveId(), Criteria::NOT_EQUAL);
 			$this->addCond('pruneCond1', $this->getAliasedColName(AbsenceAgregationDecomptePeer::DATE_DEMI_JOUNEE), $absenceAgregationDecompte->getDateDemiJounee(), Criteria::NOT_EQUAL);
 			$this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
-	  }
-	  
+		}
+
 		return $this;
 	}
 

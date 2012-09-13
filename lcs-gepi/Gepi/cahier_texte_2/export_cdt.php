@@ -1,8 +1,7 @@
 <?php
 /*
-* @version: $Id: export_cdt.php 8433 2011-10-05 16:37:54Z jjocal $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
 * This file is part of GEPI.
 *
@@ -21,7 +20,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -60,26 +59,21 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_cahiers_texte")!='y') {
-	die("Le module n'est pas activé.");
+	die("Le module n'est pas activÃ©.");
 }
-
-//$display_date_debut=isset($_POST['display_date_debut']) ? $_POST['display_date_debut'] : NULL;
-//$display_date_fin=isset($_POST['display_date_fin']) ? $_POST['display_date_fin'] : NULL;
 
 //=======================
 //Configuration du calendrier
 include("../lib/calendrier/calendrier.class.php");
-//$cal1 = new Calendrier("form_choix_edit", "display_date_debut");
-//$cal2 = new Calendrier("form_choix_edit", "display_date_fin");
 $cal1 = new Calendrier("formulaire", "display_date_debut");
 $cal2 = new Calendrier("formulaire", "display_date_fin");
 $cal3 = new Calendrier("formulaire", "date2_acces");
 //=======================
 
 //=======================
-// Pour éviter de refaire le choix des dates en revenant ici, on utilise la SESSION...
+// Pour Ã©viter de refaire le choix des dates en revenant ici, on utilise la SESSION...
 $annee = strftime("%Y");
 $mois = strftime("%m");
 $jour = strftime("%d");
@@ -88,13 +82,11 @@ $minute = strftime("%M");
 
 if($mois>8) {$date_debut_tmp="01/09/$annee";} else {$date_debut_tmp="01/09/".($annee-1);}
 
-//$display_date_debut=isset($_POST['display_date_debut']) ? $_POST['display_date_debut'] : (isset($_SESSION['display_date_debut']) ? $_SESSION['display_date_debut'] : $jour."/".$mois."/".$annee);
 $display_date_debut=isset($_POST['display_date_debut']) ? $_POST['display_date_debut'] : (isset($_SESSION['display_date_debut']) ? $_SESSION['display_date_debut'] : $date_debut_tmp);
 
 $display_date_fin=isset($_POST['display_date_fin']) ? $_POST['display_date_fin'] : (isset($_SESSION['display_date_fin']) ? $_SESSION['display_date_fin'] : $jour."/".$mois."/".$annee);
 //=======================
 
-//$id_groupe=isset($_POST['id_groupe']) ? $_POST['id_groupe'] : (isset($_GET['id_groupe']) ? $_GET['id_groupe'] : NULL);
 $id_groupe=isset($_POST['id_groupe']) ? $_POST['id_groupe'] : NULL;
 
 if(isset($_GET['id_groupe'])) {
@@ -111,14 +103,19 @@ $tab_fichiers_a_zipper=array();
 
 //**************** EN-TETE *****************
 $titre_page = "Cahier de textes - Export";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************
 
 //debug_var();
 
 echo "<p class='bold'>";
 if($_SESSION['statut']=='professeur') {
-	echo "<a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+	if(getSettingValue("GepiCahierTexteVersion")=='2') {
+		echo "<a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+	}
+	else {
+		echo "<a href='../cahier_texte/index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+	}
 	echo " | <a href='".$_SERVER['PHP_SELF']."'>Export de mes CDT</a>";
 }
 else {
@@ -140,10 +137,10 @@ else {
 	echo "'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 }
 
-// Création d'un espace entre le bandeau et le reste 
+// CrÃ©ation d'un espace entre le bandeau et le reste 
 //echo "<p></p>\n";
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_cahiers_texte")!='y') {
 	echo "</p>\n";
 
@@ -162,13 +159,13 @@ if(!isset($id_groupe)) {
 	
 			echo "<p class='bold'>Choix des classes&nbsp;:</p>\n";
 		
-			// Liste des classes avec élève:
+			// Liste des classes avec Ã©lÃ¨ve:
 			$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (c.id=jec.id_classe) ORDER BY c.classe;";
 			$call_classes=mysql_query($sql);
 		
 			$nb_classes=mysql_num_rows($call_classes);
 			if($nb_classes==0){
-				echo "<p>Aucune classe avec élève affecté n'a été trouvée.</p>\n";
+				echo "<p>Aucune classe avec Ã©lÃ¨ve affectÃ© n'a Ã©tÃ© trouvÃ©e.</p>\n";
 				require("../lib/footer.inc.php");
 				die();
 			}
@@ -202,7 +199,7 @@ if(!isset($id_groupe)) {
 			echo "</tr>\n";
 			echo "</table>\n";
 		
-			echo "<p><a href='#' onClick='ModifCase(true)'>Tout cocher</a> / <a href='#' onClick='ModifCase(false)'>Tout décocher</a></p>\n";
+			echo "<p><a href='#' onClick='ModifCase(true)'>Tout cocher</a> / <a href='#' onClick='ModifCase(false)'>Tout dÃ©cocher</a></p>\n";
 		
 			echo "<p><input type='submit' value='Valider' /></p>\n";
 			echo "</form>\n";
@@ -213,12 +210,11 @@ if(!isset($id_groupe)) {
 			$res_prof=mysql_query($sql);
 			$nb_profs=mysql_num_rows($res_prof);
 			if($nb_profs==0){
-				echo "<p>Aucun professeur assurant un enseignement n'a été trouvé.</p>\n";
+				echo "<p>Aucun professeur assurant un enseignement n'a Ã©tÃ© trouvÃ©.</p>\n";
 				require("../lib/footer.inc.php");
 				die();
 			}
 	
-			//echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 			echo "<p>Ou choisissez un professeur&nbsp;:</p>\n";
 	
 			$nb_prof_par_colonne=round($nb_profs/3);
@@ -237,7 +233,6 @@ if(!isset($id_groupe)) {
 					echo "<td align='left'>\n";
 				}
 		
-				//echo "<label id='label_tab_prof_$cpt' for='tab_prof_$cpt' style='cursor: pointer;'><input type='radio' name='login_prof' id='tab_prof_$cpt' value='$lig_prof->login' onchange='change_style_prof($cpt)' /> $lig_prof->nom $lig_prof->prenom</label>";
 				echo "<a href='".$_SERVER['PHP_SELF']."?login_prof=$lig_prof->login'>$lig_prof->nom $lig_prof->prenom</a>";
 				echo "<br />\n";
 				$cpt++;
@@ -246,10 +241,7 @@ if(!isset($id_groupe)) {
 			echo "</tr>\n";
 			echo "</table>\n";
 	
-			//echo "<p><input type='submit' value='Valider' /></p>\n";
-			//echo "</form>\n";
-	
-	
+			
 			echo "<script type='text/javascript'>
 	function ModifCase(mode) {
 		for (var k=0;k<$cpt;k++) {
@@ -278,10 +270,9 @@ if(!isset($id_groupe)) {
 			echo " | <a href='".$_SERVER['PHP_SELF']."'>Retour au choix des classes ou du professeur</a>";
 			echo "</p>\n";
 
-			echo "<p class='bold'>Choix des matières/enseignements&nbsp;:</p>\n";
+			echo "<p class='bold'>Choix des matiÃ¨res/enseignements&nbsp;:</p>\n";
 			echo "<blockquote>\n";
 	
-			//echo "<p></p>\n";
 			if(isset($login_prof)) {
 	
 				echo "<p class='bold'>Enseignements de ".civ_nom_prenom($login_prof)."&nbsp;:</p>\n";
@@ -296,10 +287,11 @@ if(!isset($id_groupe)) {
 				echo "<table class='boireaus' summary='Choix des enseignements'>\n";
 				echo "<tr>\n";
 				echo "<th>\n";
-				echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+				echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 				echo "</th>\n";
 				echo "<th>Enseignement</th>\n";
 				echo "<th>Description</th>\n";
+				//echo "<th>Professeurs</th>\n";
 				echo "<th>Classes</th>\n";
 				echo "</tr>\n";
 				$alt=1;
@@ -317,6 +309,12 @@ if(!isset($id_groupe)) {
 					echo $current_group['description'];
 					echo "</label>";
 					echo "</td>\n";
+					/*
+					echo "<td>\n";
+					$profs_grp=get_profs_for_group($current_group['id']);
+					echo $profs_grp['proflist_string'];
+					echo "</td>\n";
+					*/
 					echo "<td>\n";
 					echo $current_group['classlist_string'];
 					echo "</td>\n";
@@ -324,45 +322,50 @@ if(!isset($id_groupe)) {
 					$cpt++;
 				}
 				echo "</table>\n";
-			
+
 				//echo "<input type='hidden' name='choix_enseignements' value='y' />\n";
 			
-				//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au à ce niveau</p>\n";
+				//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au Ã  ce niveau</p>\n";
 				echo "<p>";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'> \nExporter le(s) cahier(s) de textes de la date : </label>";
 			
 				echo "<input type='text' name = 'display_date_debut' id = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 			
-				echo "&nbsp;à la date : </label>";
+				echo "&nbsp;Ã  la date : </label>";
 				echo "<input type='text' name = 'display_date_fin' id = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+
+
+				$date_end_bookings=strftime("%d/%m/%Y", getSettingValue('end_bookings'));
+				echo " <a href=\"#\" onclick=\"document.getElementById('display_date_fin').value='".$date_end_bookings."';return false;\"><img src='../images/icons/wizard.png' width='16' height='16' alt=\"Prendre la date de fin d'annÃ©e scolaire : ".getSettingValue('end_bookings')."\" title=\"Prendre la date de fin d'annÃ©e scolaire : ".getSettingValue('end_bookings')."\" /></a>";
+
 				echo "<br />\n";
-				echo " (<i>Veillez à respecter le format jj/mm/aaaa</i>)</label>\n";
+				echo " (<i>Veillez Ã  respecter le format jj/mm/aaaa</i>)</label>\n";
 				echo "</p>\n";
 
-				echo "<p><b>Action à réaliser&nbsp;:</b><br />\n";
-				echo "<input type='radio' name='action' id='action_export_zip' value='export_zip' checked onchange='modif_param_affichage()' /><label for='action_export_zip'> Générer un export de cahier(s) de textes et le zipper</label><br />\n";
+				echo "<p><b>Action Ã  rÃ©aliser&nbsp;:</b><br />\n";
+				echo "<input type='radio' name='action' id='action_export_zip' value='export_zip' checked onchange='modif_param_affichage()' /><label for='action_export_zip'> GÃ©nÃ©rer un export de cahier(s) de textes et le zipper</label><br />\n";
 				echo "ou<br />\n";
-				echo "Mettre en place un accès sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre à un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)";
+				echo "Mettre en place un accÃ¨s sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre Ã  un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)";
 				echo "<br />\n";
-				echo "<input type='radio' name='action' id='action_acces' value='acces' onchange='modif_param_affichage()' /><label for='action_acces'> Accès 'statique'&nbsp;: c'est-à-dire que seules les notices saisies à ce jour pourront être consultées.</label>";
+				echo "<input type='radio' name='action' id='action_acces' value='acces' onchange='modif_param_affichage()' /><label for='action_acces'> AccÃ¨s 'statique'&nbsp;: c'est-Ã -dire que seules les notices saisies Ã  ce jour pourront Ãªtre consultÃ©es.</label>";
 				echo "<br />\n";
 
-				echo "<input type='radio' name='action' id='action_acces2' value='acces2' onchange='modif_param_affichage()' /><label for='action_acces2'> Accès 'dynamique'&nbsp;: c'est-à-dire que les notices éventuellement saisies dans le futur pourront être consultées (<i>jusqu'à la date ci-dessus</i>).</label>";
+				echo "<input type='radio' name='action' id='action_acces2' value='acces2' onchange='modif_param_affichage()' /><label for='action_acces2'> AccÃ¨s 'dynamique'&nbsp;: c'est-Ã -dire que les notices Ã©ventuellement saisies dans le futur pourront Ãªtre consultÃ©es (<i>jusqu'Ã  la date ci-dessus</i>).</label>";
 				echo "</p>\n";
 
 				echo "<div id='div_param_action_acces' style='margin-left: 3em;'>\n";
-				echo "<p class='bold'>Paramètres de l'accès&nbsp;</p>\n";
+				echo "<p class='bold'>ParamÃ¨tres de l'accÃ¨s&nbsp;</p>\n";
 				echo "<blockquote>\n";
-				echo "<p>Description du motif de l'ouverture d'accès&nbsp;:<br />";
+				echo "<p>Description du motif de l'ouverture d'accÃ¨s&nbsp;:<br />";
 				echo "<textarea name='description_acces' cols='50' rows='4'></textarea>";
 				echo "</p>";
-				echo "<p>Date à laquelle vous souhaitez supprimer l'accès&nbsp;: ";
+				echo "<p>Date Ã  laquelle vous souhaitez supprimer l'accÃ¨s&nbsp;: ";
 				echo "<input type='text' name='date2_acces' id='date2_acces' size='10' value=\"".$display_date_fin."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<a href=\"#calend\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 				echo "<br />\n";
-				echo "(<i>la suppression n'est pas automatique à la date indiquée, mais fixer une date peut aider à savoir si l'accès doit être conservé ou non</i>)</p>\n";
+				echo "(<i>la suppression n'est pas automatique Ã  la date indiquÃ©e, mais fixer une date peut aider Ã  savoir si l'accÃ¨s doit Ãªtre conservÃ© ou non</i>)</p>\n";
 
 				echo "</blockquote>\n";
 				echo "</div>\n";
@@ -409,7 +412,7 @@ if(!isset($id_groupe)) {
 			}
 			elseif(isset($id_classe)) {
 	
-				echo "<p class='bold'>Choix des matières/enseignements&nbsp;:</p>\n";
+				echo "<p class='bold'>Choix des matiÃ¨res/enseignements&nbsp;:</p>\n";
 				echo "<blockquote>\n";
 	
 				echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
@@ -426,10 +429,11 @@ if(!isset($id_groupe)) {
 					echo "<table class='boireaus' summary=\"Choix des enseignements de $classe\">\n";
 					echo "<tr>\n";
 					echo "<th>\n";
-					echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+					echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 					echo "</th>\n";
 					echo "<th>Enseignement</th>\n";
 					echo "<th>Description</th>\n";
+					echo "<th>Professeurs</th>\n";
 					echo "<th>Classes</th>\n";
 					echo "</tr>\n";
 					$alt=1;
@@ -448,6 +452,10 @@ if(!isset($id_groupe)) {
 						echo "</label>";
 						echo "</td>\n";
 						echo "<td>\n";
+						$profs_grp=get_profs_for_group($current_group['id']);
+						echo $profs_grp['proflist_string'];
+						echo "</td>\n";
+						echo "<td>\n";
 						echo $current_group['classlist_string'];
 						echo "</td>\n";
 						echo "</tr>\n";
@@ -461,7 +469,7 @@ if(!isset($id_groupe)) {
 	
 				//echo "<input type='hidden' name='choix_enseignements' value='y' />\n";
 			
-				//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au à ce niveau</p>\n";
+				//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au Ã  ce niveau</p>\n";
 
 				echo "<p>";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'> \nExporter le(s) cahier(s) de textes de la date : </label>";
@@ -469,33 +477,34 @@ if(!isset($id_groupe)) {
 				echo "<input type='text' name = 'display_date_debut' id = 'display_date_debut2' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 			
-				echo "&nbsp;à la date : </label>";
+				echo "&nbsp;Ã  la date : </label>";
 				echo "<input type='text' name = 'display_date_fin' id = 'display_date_fin2' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 				echo "<br />\n";
-				echo " (<i>Veillez à respecter le format jj/mm/aaaa</i>)</label>\n";
+				echo " (<i>Veillez Ã  respecter le format jj/mm/aaaa</i>)</label>\n";
 				echo "</p>\n";
 	
-				echo "<p><b>Action à réaliser&nbsp;:</b><br />\n";
-				echo "<input type='radio' name='action' id='action_export_zip' value='export_zip' checked onchange='modif_param_affichage()' /><label for='action_export_zip'> Générer un export de cahier(s) de textes et le zipper</label><br />\n";
-				echo "<input type='radio' name='action' id='action_acces' value='acces' onchange='modif_param_affichage()' /><label for='action_acces'> Mettre en place un accès sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre à un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)</label><br />L'accès mis en place est 'statique', c'est-à-dire que seules les notices saisies à ce jour pourront être consultées.";
+				echo "<p><b>Action Ã  rÃ©aliser&nbsp;:</b><br />\n";
+				echo "<input type='radio' name='action' id='action_export_zip' value='export_zip' checked onchange='modif_param_affichage()' /><label for='action_export_zip'> GÃ©nÃ©rer un export de cahier(s) de textes et le zipper</label><br />\n";
+				echo "<input type='radio' name='action' id='action_acces' value='acces' onchange='modif_param_affichage()' /><label for='action_acces'> Mettre en place un accÃ¨s sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre Ã  un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)</label><br />L'accÃ¨s mis en place est 'statique', c'est-Ã -dire que seules les notices saisies Ã  ce jour pourront Ãªtre consultÃ©es.";
+
 				/*
 				echo "<br />\n";
-				echo "<input type='radio' name='action' id='action_acces2' value='acces2' onchange='modif_param_affichage()' /><label for='action_acces2'> Mettre en place un accès sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre à un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)<br />L'accès mis en place est 'dynamique', c'est-à-dire que les notices éventuellement saisies dans le futur pourront être consultées (<i>jusqu'à la date ci-dessus</i>).</label>";
+				echo "<input type='radio' name='action' id='action_acces2' value='acces2' onchange='modif_param_affichage()' /><label for='action_acces2'> Mettre en place un accÃ¨s sans authentification aux cahier(s) de textes choisis<br />(<i>pour par exemple, permettre Ã  un inspecteur de consulter les cahiers de textes d'un professeur lors d'une inspection</i>)<br />L'accÃ¨s mis en place est 'dynamique', c'est-Ã -dire que les notices Ã©ventuellement saisies dans le futur pourront Ãªtre consultÃ©es (<i>jusqu'Ã  la date ci-dessus</i>).</label>";
 				*/
 				echo "</p>\n";
 
 				echo "<div id='div_param_action_acces' style='margin-left: 3em;'>\n";
-				echo "<p class='bold'>Paramètres de l'accès&nbsp;</p>\n";
+				echo "<p class='bold'>ParamÃ¨tres de l'accÃ¨s&nbsp;</p>\n";
 				echo "<blockquote>\n";
-				echo "<p>Description du motif de l'ouverture d'accès&nbsp;:<br />";
+				echo "<p>Description du motif de l'ouverture d'accÃ¨s&nbsp;:<br />";
 				echo "<textarea name='description_acces' cols='50' rows='4'></textarea>";
 				echo "</p>";
-				echo "<p>Date à laquelle vous souhaitez supprimer l'accès&nbsp;: ";
-				echo "<input type='text' name='date2_acces' size='10' value=\"".$display_date_fin."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
+				echo "<p>Date Ã  laquelle vous souhaitez supprimer l'accÃ¨s&nbsp;: ";
+				echo "<input type='text' name='date2_acces' id='date2_acces' size='10' value=\"".$display_date_fin."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />";
 				echo "<a href=\"#calend\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 				echo "<br />\n";
-				echo "(<i>la suppression n'est pas automatique à la date indiquée, mais fixer une date peut aider à savoir si l'accès doit être conservé ou non</i>)</p>\n";
+				echo "(<i>la suppression n'est pas automatique Ã  la date indiquÃ©e, mais fixer une date peut aider Ã  savoir si l'accÃ¨s doit Ãªtre conservÃ© ou non</i>)</p>\n";
 
 				echo "</blockquote>\n";
 				echo "</div>\n";
@@ -548,10 +557,10 @@ if(!isset($id_groupe)) {
 		}
 	}
 	else {
-		// C'est un professeur qui est connecté
+		// C'est un professeur qui est connectÃ©
 		echo "</p>\n";
 	
-		echo "<p class='bold'>Choix des matières/enseignements&nbsp;:</p>\n";
+		echo "<p class='bold'>Choix des matiÃ¨res/enseignements&nbsp;:</p>\n";
 	
 		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 	
@@ -560,7 +569,7 @@ if(!isset($id_groupe)) {
 		echo "<table class='boireaus' summary='Choix des enseignements'>\n";
 		echo "<tr>\n";
 		echo "<th>\n";
-		echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>\n";
+		echo "<a href='#' onClick='tout_cocher(true);return false;'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href='#' onClick='tout_cocher(false);return false;'><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>\n";
 		echo "</th>\n";
 		echo "<th>Enseignement</th>\n";
 		echo "<th>Description</th>\n";
@@ -591,18 +600,18 @@ if(!isset($id_groupe)) {
 	
 		//echo "<input type='hidden' name='choix_enseignements' value='y' />\n";
 	
-		//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au à ce niveau</p>\n";
+		//echo "<p style='color:red'>A FAIRE: Ajouter le choix Du/Au Ã  ce niveau</p>\n";
 		echo "<p>";
 		echo "<label for='choix_periode_dates' style='cursor: pointer;'> \nExporter le(s) cahier(s) de textes de la date : </label>";
 	
 		echo "<input type='text' name = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" />";
 		echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 	
-		echo "&nbsp;à la date : </label>";
+		echo "&nbsp;Ã  la date : </label>";
 		echo "<input type='text' name = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" />";
 		echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
 		echo "<br />\n";
-		echo " (<i>Veillez à respecter le format jj/mm/aaaa</i>)</label>\n";
+		echo " (<i>Veillez Ã  respecter le format jj/mm/aaaa</i>)</label>\n";
 		echo "</p>\n";
 	
 		echo "<p><input type='submit' value='Valider' /></p>\n";
@@ -643,7 +652,7 @@ if(!isset($id_groupe)) {
 // Le choix des groupes est fait
 //==============================
 
-// Préparation de l'arborescence
+// PrÃ©paration de l'arborescence
 
 $gepiSchoolName=getSettingValue('gepiSchoolName');
 $gepiYear=getSettingValue('gepiYear');
@@ -652,7 +661,7 @@ require("cdt_lib.php");
 
 $dirname=get_user_temp_directory();
 if(!$dirname) {
-	echo "<p style='color:red;'>Problème avec le dossier temporaire.</p>\n";
+	echo "<p style='color:red;'>ProblÃ¨me avec le dossier temporaire.</p>\n";
 	require("../lib/footer.inc.php");
 	die();
 }
@@ -670,7 +679,7 @@ if($action!='acces2') {
 	echo "<p class='bold'>Affichage des cahiers de textes extraits</p>\n";
 }
 
-// Récupérer le max de getSettingValue("begin_bookings") et $display_date_debut
+// RÃ©cupÃ©rer le max de getSettingValue("begin_bookings") et $display_date_debut
 $tmp_tab=explode("/",$display_date_debut);
 $jour=$tmp_tab[0];
 $mois=$tmp_tab[1];
@@ -678,7 +687,7 @@ $annee=$tmp_tab[2];
 $date_debut_tmp=mktime(0,0,0,$mois,$jour,$annee);
 $timestamp_debut_export=max(getSettingValue("begin_bookings"),$date_debut_tmp);
 
-// Récupérer le min de getSettingValue("end_bookings") et $display_date_fin
+// RÃ©cupÃ©rer le min de getSettingValue("end_bookings") et $display_date_fin
 $tmp_tab=explode("/",$display_date_fin);
 $jour=$tmp_tab[0];
 $mois=$tmp_tab[1];
@@ -689,12 +698,9 @@ $timestamp_fin_export=max(getSettingValue("end_bookings"),$date_fin_tmp);
 // Permettre de choisir l'ordre dans lequel exporter?
 $current_ordre='ASC';
 
-//echo "\$action=$action<br />";
-
-//if($action=='acces') {
 if(($action=='acces')||($action=='acces2')) {
 	$length = rand(35, 45);
-	for($len=$length,$r='';strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
+	for($len=$length,$r='';mb_strlen($r)<$len;$r.=chr(!mt_rand(0,2)? mt_rand(48,57):(!mt_rand(0,1) ? mt_rand(65,90) : mt_rand(97,122))));
 
 	if((isset($GLOBALS['multisite']))&&($GLOBALS['multisite'] == 'y')&&(isset($_COOKIE['RNE']))&&($_COOKIE['RNE']!='')&&(preg_match("/^[A-Za-z0-9]*$/", $_COOKIE['RNE']))) {
 		$dirname = "acces_cdt_".$_COOKIE['RNE']."_".$r;
@@ -705,13 +711,13 @@ if(($action=='acces')||($action=='acces2')) {
 
 	$create = mkdir("../documents/".$dirname, 0700);
 	if(!$create) {
-		echo "<p style='color:red;'>Problème avec le dossier temporaire../documents/".$dirname."</p>\n";
+		echo "<p style='color:red;'>ProblÃ¨me avec le dossier temporaire../documents/".$dirname."</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
-	// Enregistrement dans la base de cet accès ouvert
-	// Il faut y stocker la liste des login profs concernés pour afficher en page d'accueil la présence d'un cdt ouvert en consultation
+	// Enregistrement dans la base de cet accÃ¨s ouvert
+	// Il faut y stocker la liste des login profs concernÃ©s pour afficher en page d'accueil la prÃ©sence d'un cdt ouvert en consultation
 	$date1_acces="$annee-$mois-$jour $heure:$minute:00";
 	$date2_acces=isset($_POST['date2_acces']) ? $_POST['date2_acces'] : "";
 
@@ -729,7 +735,7 @@ if(($action=='acces')||($action=='acces2')) {
 	$chemin_acces="documents/".$dirname."/index.html";
 	$res=enregistrement_creation_acces_cdt($chemin_acces, $description_acces, $date1_acces, $date2_acces, $id_groupe);
 	if(!$res) {
-		echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accès.</p>\n";
+		echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accÃ¨s.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -751,7 +757,7 @@ if($action=='acces2') {
 
 	$res=enregistrement_creation_acces_cdt($chemin_acces, $description_acces, $date1_acces, $date2_acces, $id_groupe);
 	if(!$res) {
-		echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accès.</p>\n";
+		echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accÃ¨s.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
@@ -759,7 +765,6 @@ if($action=='acces2') {
 	$f=fopen("../$chemin_accessansRNE","w+");
 	fwrite($f,'<?php
 /*
-* @version: $Id: export_cdt.php 8433 2011-10-05 16:37:54Z jjocal $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
 *
@@ -780,7 +785,7 @@ if($action=='acces2') {
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisation des feuilles de style après modification pour améliorer l accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l accessibilitÃ©
 $accessibilite="y";
 
 $niveau_arbo=2;
@@ -828,7 +833,7 @@ require($prefixe_arbo_acces_cdt."/cahier_texte_2/acces_cdt.inc.php");
 ');
 	fclose($f);
 
-	$chaine_info_texte="<br /><p><b>Information&nbsp;:</b><br />Le(s) cahier(s) de textes extrait(s) est(sont) accessible(s) sans authentification à l'adresse suivante&nbsp;:<br /><a href='../$chemin_acces' target='_blank'>../$chemin_acces</a><br />Consultez la page, copiez l'adresse en barre d'adresse et transmettez la à qui vous souhaitez.<br />N'oubliez pas de supprimer cet accès lorsqu'il ne sera plus utile.<br />&nbsp;</p>";
+	$chaine_info_texte="<br /><p><b>Information&nbsp;:</b><br />Le(s) cahier(s) de textes extrait(s) est(sont) accessible(s) sans authentification Ã  l'adresse suivante&nbsp;:<br /><a href='../$chemin_acces' target='_blank'>../$chemin_acces</a><br />Consultez la page, copiez l'adresse en barre d'adresse et transmettez la Ã  qui vous souhaitez.<br />N'oubliez pas de supprimer cet accÃ¨s lorsqu'il ne sera plus utile.<br />&nbsp;</p>";
 
 	echo $chaine_info_texte;
 
@@ -836,8 +841,6 @@ require($prefixe_arbo_acces_cdt."/cahier_texte_2/acces_cdt.inc.php");
 	require("../lib/footer.inc.php");
 	die();
 }
-
-//echo "\$dirname=$dirname<br />";
 
 if(($_SESSION['statut']=='professeur')||(isset($login_prof))) {
 
@@ -849,14 +852,14 @@ if(($_SESSION['statut']=='professeur')||(isset($login_prof))) {
 		$login_prof=$_SESSION['login'];
 	}
 
-	// Préparation de l'arborescence
+	// PrÃ©paration de l'arborescence
 	$nom_export="export_cdt_".$login_prof."_".strftime("%Y%m%d_%H%M%S");
 
 	if($action=='acces') {
 		$chemin_acces="documents/".$dirname."/".$nom_export."/index.html";
 		$res=enregistrement_creation_acces_cdt($chemin_acces, $description_acces, $date1_acces, $date2_acces, $id_groupe);
 		if(!$res) {
-			echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accès.</p>\n";
+			echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accÃ¨s.</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
@@ -866,9 +869,8 @@ if(($_SESSION['statut']=='professeur')||(isset($login_prof))) {
 
 	$chaine_id_groupe="";
 
-	// Générer la page d'index
+	// GÃ©nÃ©rer la page d'index
 	$html="";
-	//$html.=html_entete();
 	$html.="<h1 style='text-align:center;'>Cahiers de textes $chaine_info_prof(".$gepiSchoolName." - ".$gepiYear.")</h1>\n";
 	$html.="<p>Cahier de textes (<i>$display_date_debut - $display_date_fin</i>) de&nbsp;:</p>\n";
 	$html.="<ul>\n";
@@ -903,19 +905,18 @@ if(($_SESSION['statut']=='professeur')||(isset($login_prof))) {
 		$html.="<li><a id='lien_id_groupe_$id_groupe[$i]' href='cahier_texte/$nom_page_html_groupe'>".$current_group['name']." (<i>".$current_group['description']." en (".$current_group['classlist_string'].")</i>)</a></li>\n";
 	}
 	$html.="</ul>\n";
-	//$html.=html_pied_de_page();
 	
 	//================================================================
-	// Affichage dans la page d'export de ce qui va être fourni en zip
+	// Affichage dans la page d'export de ce qui va Ãªtre fourni en zip
 	echo "<a name='affichage_page_index'></a>";
 	echo "<div style='border: 1px solid black;'>\n";
 	echo $html;
 	echo "</div>\n";
 
-	// Précaution
+	// PrÃ©caution
 	$chaine_id_groupe=preg_replace("/^,/","",$chaine_id_groupe);
 
-	// Correctif des liens tels qu'affichés dans la page
+	// Correctif des liens tels qu'affichÃ©s dans la page
 	echo "<script type='text/javascript'>
 		tab_id_groupe=new Array($chaine_id_groupe);
 		for(i=0;i<tab_id_groupe.length;i++) {
@@ -937,7 +938,7 @@ if(($_SESSION['statut']=='professeur')||(isset($login_prof))) {
 
 }
 else {
-	// C'est une liste de classes/enseignements qui a été choisie
+	// C'est une liste de classes/enseignements qui a Ã©tÃ© choisie
 
 	$chaine_info_classes="";
 	$chaine_classes="";
@@ -957,17 +958,17 @@ else {
 		$chaine_id_classe.="'".$id_classe[$i]."'";
 	}
 
-	// Créer une page index.html de la liste des classes
+	// CrÃ©er une page index.html de la liste des classes
 	//if(count($id_classe)>1) {
 
-		// Préparation de l'arborescence
+		// PrÃ©paration de l'arborescence
 		$nom_export="export_cdt_classes_".$chaine_info_classes."_".strftime("%Y%m%d_%H%M%S");
 
 		if($action=='acces') {
 			$chemin_acces="documents/".$dirname."/".$nom_export."/index.html";
 			$res=enregistrement_creation_acces_cdt($chemin_acces, $description_acces, $date1_acces, $date2_acces, $id_groupe);
 			if(!$res) {
-				echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accès.</p>\n";
+				echo "<p style='color:red;'>Erreur lors de l'enregistrement de la mise en place de l'accÃ¨s.</p>\n";
 				require("../lib/footer.inc.php");
 				die();
 			}
@@ -975,9 +976,8 @@ else {
 
 		arbo_export_cdt($nom_export, $dirname);
 
-		// Générer la page d'index
+		// GÃ©nÃ©rer la page d'index
 		$html="";
-		//$html.=html_entete();
 		$html.="<h1 style='text-align:center;'>Cahiers de textes de $chaine_classes (".$gepiSchoolName." - ".$gepiYear.")</h1>\n";
 		$html.="<p>Cahier de textes (<i>$display_date_debut - $display_date_fin</i>) de&nbsp;:</p>\n";
 		$html.="<ul>\n";
@@ -991,13 +991,13 @@ else {
 		$html.="</ul>\n";
 		
 		//================================================================
-		// Affichage dans la page d'export de ce qui va être fourni en zip
+		// Affichage dans la page d'export de ce qui va Ãªtre fourni en zip
 		echo "<a name='affichage_page_index'></a>";
 		echo "<div style='border: 1px solid black;'>\n";
 		echo $html;
 		echo "</div>\n";
 		
-		// Correctif des liens tels qu'affichés dans la page
+		// Correctif des liens tels qu'affichÃ©s dans la page
 		echo "<script type='text/javascript'>
 			tab_id_classe=new Array($chaine_id_classe);
 			for(i=0;i<tab_id_classe.length;i++) {
@@ -1017,11 +1017,11 @@ else {
 		fclose($f);
 		
 		$tab_fichiers_a_zipper[]=$dossier_export."/index.html";
-		
+	
 	//}
 
 
-	// Créer une page index_$classe.html pour chaque classe
+	// CrÃ©er une page index_$classe.html pour chaque classe
 	for($j=0;$j<count($id_classe);$j++) {
 
 		echo "<hr width='200px' />\n";
@@ -1031,17 +1031,15 @@ else {
 		$chaine_id_groupe="";
 		$chaine_lien_id_groupe="";
 
-		// Générer la page d'index
+		// GÃ©nÃ©rer la page d'index
 		$html="";
-		//$html.=html_entete();
 		$html.="<h1 style='text-align:center;'>Cahiers de textes de ".$nom_classe[$j]."(".$gepiSchoolName." - ".$gepiYear.")</h1>\n";
 		$html.="<p>Cahier de textes (<i>$display_date_debut - $display_date_fin</i>) de&nbsp;:</p>\n";
 		$html.="<ul>\n";
 		for($i=0;$i<count($groups);$i++) {
 			$current_group=$groups[$i];
 			if(in_array($current_group['id'],$id_groupe)) {
-				//$current_group=get_group($id_groupe[$i]);
-			
+				
 				if($i>0) {
 					$chaine_id_groupe.=", ";
 					$chaine_lien_id_groupe.=", ";
@@ -1064,20 +1062,19 @@ else {
 			}
 		}
 		$html.="</ul>\n";
-		//$html.=html_pied_de_page();
 		
 		//================================================================
-		// Affichage dans la page d'export de ce qui va être fourni en zip
+		// Affichage dans la page d'export de ce qui va Ãªtre fourni en zip
 		echo "<a name='affichage_page_index_".$id_classe[$j]."'></a>";
 		echo "<div style='border: 1px solid black;'>\n";
 		echo $html;
 		echo "</div>\n";
 
-		// Précaution
+		// PrÃ©caution
 		$chaine_id_groupe=preg_replace("/^,/","",$chaine_id_groupe);
 		$chaine_lien_id_groupe=preg_replace("/^,/","",$chaine_lien_id_groupe);
 
-		// Correctif des liens tels qu'affichés dans la page
+		// Correctif des liens tels qu'affichÃ©s dans la page
 		echo "<script type='text/javascript'>
 			tab_id_groupe=new Array($chaine_id_groupe);
 			tab_lien_id_groupe=new Array($chaine_lien_id_groupe);
@@ -1093,7 +1090,6 @@ else {
 		$html=html_entete("Index des cahiers de textes de ".$nom_classe[$j],0).$html;
 		$html.=html_pied_de_page();
 
-		//echo "Ecriture de ".$dossier_export."/".$nom_fichier_index[$id_classe[$j]]."<br />";
 		$f=fopen($dossier_export."/".$nom_fichier_index[$id_classe[$j]],"w+");
 		fwrite($f,$html);
 		fclose($f);
@@ -1106,9 +1102,8 @@ else {
 
 echo "<hr width='200px' />\n";
 
-// Dans la page générée, permettre de masquer via JavaScript telle ou telle catégorie Notices ou devoirs,...
+// Dans la page gÃ©nÃ©rÃ©e, permettre de masquer via JavaScript telle ou telle catÃ©gorie Notices ou devoirs,...
 for($i=0;$i<count($id_groupe);$i++) {
-	//echo "\$id_groupe[$i]=$id_groupe[$i]<br />";
 
 	unset($chaine_cpt_classe);
 
@@ -1120,8 +1115,7 @@ for($i=0;$i<count($id_groupe);$i++) {
 	$tab_dev=array();
 
 	$html="";
-	//$html.=html_entete();
-
+	
 	if(isset($id_classe)) {
 		// On a choisi une liste de classes/enseignements
 
@@ -1159,63 +1153,7 @@ for($i=0;$i<count($id_groupe);$i++) {
 	$html.="<h1 style='text-align:center;'>Cahiers de textes (".$gepiSchoolName." - ".$gepiYear.")</h1>\n";
 	$html.="<p style='text-align:center;'>Extraction du $display_date_debut au $display_date_fin</p>\n";
 	$html.="<h2 style='text-align:center;'>Cahier de textes de ".$nom_detaille_groupe[$id_groupe[$i]]." (<i>$display_date_debut - $display_date_fin</i>)&nbsp;:</h2>\n";
-	/*
-	$sql="SELECT cte.* FROM ct_entry cte WHERE (contenu != ''
-		AND date_ct != ''
-		AND date_ct >= '".$timestamp_debut_export."'
-		AND date_ct <= '".$timestamp_fin_export."'
-		AND id_groupe='".$id_groupe[$i]."'
-		) ORDER BY date_ct DESC, heure_entry DESC;";
-	//echo "$sql<br />";
-	$res=mysql_query($sql);
-	$cpt=0;
-	while($lig=mysql_fetch_object($res)) {
 
-		//echo "$lig->date_ct<br />";
-		$date_notice=strftime("%a %d %b %y", $lig->date_ct);
-		if(!in_array($date_notice,$tab_dates)) {
-			$tab_dates[]=$date_notice;
-			$tab_dates2[]=$lig->date_ct;
-		}
-		$tab_notices[$date_notice][$cpt]['id_ct']=$lig->id_ct;
-		$tab_notices[$date_notice][$cpt]['id_login']=$lig->id_login;
-		$tab_notices[$date_notice][$cpt]['contenu']=$lig->contenu;
-		//echo " <span style='color:red'>\$tab_notices[$date_notice][$cpt]['contenu']=$lig->contenu</span><br />";
-		$cpt++;
-
-	}
-
-	$sql="SELECT ctd.* FROM ct_devoirs_entry ctd WHERE (contenu != ''
-		AND date_ct != ''
-		AND date_ct >= '".$timestamp_debut_export."'
-		AND date_ct <= '".$timestamp_fin_export."'
-		AND id_groupe='".$id_groupe[$i]."'
-		) ORDER BY date_ct DESC;";
-	//echo "$sql<br />";
-	$res=mysql_query($sql);
-	$cpt=0;
-	while($lig=mysql_fetch_object($res)) {
-		//echo "$lig->date_ct<br />";
-		$date_dev=strftime("%a %d %b %y", $lig->date_ct);
-		if(!in_array($date_dev,$tab_dates)) {
-			$tab_dates[]=$date_dev;
-			$tab_dates2[]=$lig->date_ct;
-		}
-		$tab_dev[$date_dev][$cpt]['id_ct']=$lig->id_ct;
-		$tab_dev[$date_dev][$cpt]['id_login']=$lig->id_login;
-		$tab_dev[$date_dev][$cpt]['contenu']=$lig->contenu;
-		//echo " <span style='color:green'>\$tab_dev[$date_dev][$cpt]['contenu']=$lig->contenu</span><br />";
-		$cpt++;
-	}
-	//echo "\$current_ordre=$current_ordre<br />";
-	//sort($tab_dates);
-	if($current_ordre=='ASC') {
-		array_multisort ($tab_dates, SORT_DESC, SORT_NUMERIC, $tab_dates2, SORT_ASC, SORT_NUMERIC);
-	}
-	else {
-		array_multisort ($tab_dates, SORT_ASC, SORT_NUMERIC, $tab_dates2, SORT_DESC, SORT_NUMERIC);
-	}
-	*/
 	unset($tmp_tab);
 	$tmp_tab=get_dates_notices_et_dev($id_groupe[$i], "", "", $timestamp_debut_export, $timestamp_fin_export, "y", "y");
 	$tab_dates=$tmp_tab[0];
@@ -1276,11 +1214,10 @@ for($i=0;$i<count($id_groupe);$i++) {
 }
 
 
-// Générer des fichiers URL_documents.txt (URL seule), URL_documents.csv (chemin;URL), script bash/batch/auto-it pour télécharger en créant/parcourant l'arborescence des documents
+// GÃ©nÃ©rer des fichiers URL_documents.txt (URL seule), URL_documents.csv (chemin;URL), script bash/batch/auto-it pour tÃ©lÃ©charger en crÃ©ant/parcourant l'arborescence des documents
 
 if(isset($_SERVER['HTTP_REFERER'])) {
 	$tmp=explode("?",$_SERVER['HTTP_REFERER']);
-	//$chemin_site=my_ereg_replace("/cahier_texte_2/export_cdt.php$","",$tmp[0]);
 	$chemin_site=preg_replace("#/cahier_texte_2#","",dirname($tmp[0]));
 
 	$fichier_url_site=$dossier_export."/url_site.txt";
@@ -1300,7 +1237,7 @@ if($action=='export_zip') {
 	if($v_list==0) {
 		echo "<p>Cahiers de textes extraits&nbsp;: <a href='$dossier_export'>$dossier_export</a></p>\n";
 	
-		echo "<p style='color:red;'>ERREUR lors de la création de l'archive&nbsp;:<br />";
+		echo "<p style='color:red;'>ERREUR lors de la crÃ©ation de l'archive&nbsp;:<br />";
 		echo $archive->errorInfo(true);
 		echo "</p>\n";
 	}
@@ -1315,10 +1252,8 @@ if($action=='export_zip') {
 </script>\n";
 	}
 
-	// On fait le ménage
+	// On fait le mÃ©nage
 	for($i=0;$i<count($tab_fichiers_a_zipper);$i++) {
-		//echo "unlink($tab_fichiers_a_zipper[$i]);<br />";
-		//unlink($tab_fichiers_a_zipper[$i]);
 		if(file_exists($tab_fichiers_a_zipper[$i])) {unlink($tab_fichiers_a_zipper[$i]);}
 	}
 	
@@ -1328,7 +1263,7 @@ if($action=='export_zip') {
 }
 elseif($action=='acces') {
 
-	$chaine_info_texte="<br /><p><b>Information&nbsp;:</b><br />Le(s) cahier(s) de textes extrait(s) est(sont) accessible(s) sans authentification à l'adresse suivante&nbsp;:<br /><a href='$dossier_export/index.html' target='_blank'>$dossier_export/index.html</a><br />Consultez la page, copiez l'adresse en barre d'adresse et transmettez la à qui vous souhaitez.<br />N'oubliez pas de supprimer cet accès lorsqu'il ne sera plus utile.<br />&nbsp;</p>";
+	$chaine_info_texte="<br /><p><b>Information&nbsp;:</b><br />Le(s) cahier(s) de textes extrait(s) est(sont) accessible(s) sans authentification Ã  l'adresse suivante&nbsp;:<br /><a href='$dossier_export/index.html' target='_blank'>$dossier_export/index.html</a><br />Consultez la page, copiez l'adresse en barre d'adresse et transmettez la Ã  qui vous souhaitez.<br />N'oubliez pas de supprimer cet accÃ¨s lorsqu'il ne sera plus utile.<br />&nbsp;</p>";
 
 	echo $chaine_info_texte;
 
@@ -1346,74 +1281,6 @@ elseif($action=='acces') {
 
 }
 
-
-
-/*
-require('../fpdf/fpdf.php');
-require('../fpdf/ex_fpdf.php');
-
-define('FPDF_FONTPATH','../fpdf/font/');
-define('LargeurPage','210');
-define('HauteurPage','297');
-
-require_once("../impression/class_pdf.php");
-require_once ("../impression/liste.inc.php");
-
-$marge_haut = 10 ;
-$marge_droite = 10 ;
-$marge_gauche = 10 ;
-$marge_bas = 10 ;
-$marge_reliure = 1 ;
-$avec_emplacement_trous = 1 ;
-
-if ($marge_reliure==1) {
-  if ($marge_gauche < 18) {$marge_gauche = 18;}
-}
-
-
-//Calcul de la Zone disponible
-$EspaceX = LargeurPage - $marge_droite - $marge_gauche ;
-$EspaceY = HauteurPage - $marge_haut - $marge_bas;
-
-$X_tableau = $marge_gauche;
-
-
-//entête classe et année scolaire
-$L_entete_classe = 65;
-$H_entete_classe = 14;
-$X_entete_classe = $EspaceX - $L_entete_classe + $marge_gauche;
-$Y_entete_classe = $marge_haut;
-
-$X_entete_matiere = $marge_gauche;
-$Y_entete_matiere = $marge_haut;
-$L_entete_discipline = 65;
-$H_entete_discipline = 14;
-
-$pdf=new rel_PDF("P","mm","A4");
-$pdf->SetTopMargin($marge_haut);
-$pdf->SetRightMargin($marge_droite);
-$pdf->SetLeftMargin($marge_gauche);
-$pdf->SetAutoPageBreak(true, $marge_bas);
-
-$pdf->AddPage("P"); //ajout d'une page au document
-$pdf->SetDrawColor(0,0,0);
-$pdf->SetFont('Arial');
-$pdf->SetXY(20,20);
-$pdf->SetFontSize(14);
-$pdf->Cell(90,7, "TEST",0,2,'');
-
-$pdf->SetXY(20,40);
-$pdf->SetFontSize(10);
-$pdf->Cell(150,7, "Blablabla.",0,2,'');
-
-$nom_releve=date("Ymd_Hi");
-$nom_releve = 'Test'.'.pdf';
-//send_file_download_headers('application/pdf',$nom_releve);
-$pdf->Output("../temp/".get_user_temp_directory()."/".$nom_releve,'F');
-
-echo "<p><a href='../temp/".get_user_temp_directory()."/".$nom_releve."'>$nom_releve</a></p>";
-//die();
-*/
 
 echo "<p><br /></p>\n";
 require("../lib/footer.inc.php");

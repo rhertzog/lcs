@@ -1,16 +1,19 @@
 <?php
-	// Envoi des en-têtes HTTP
-	if(((isset($bull_pdf_debug))&&($bull_pdf_debug=='y'))||((isset($releve_pdf_debug))&&($releve_pdf_debug=='y'))) {
-		echo "\nDEBUG\n";
-	}
-	else {
-		send_file_download_headers('application/pdf','bulletin.pdf');
-	}
 
-	if (!defined('FPDF_VERSION')) {
-		require_once('../fpdf/fpdf.php');
-	}
-	require('../fpdf/ex_fpdf.php');
+// Envoi des en-tÃªtes HTTP
+if(((isset($bull_pdf_debug))&&($bull_pdf_debug=='y'))||((isset($releve_pdf_debug))&&($releve_pdf_debug=='y'))) {
+	echo "\nDEBUG\n";
+}
+elseif((isset($generer_fichiers_pdf_archivage))&&($generer_fichiers_pdf_archivage=='y')) {
+	//echo "\nArchivage\n";
+}
+else {
+	send_file_download_headers('application/pdf','bulletin.pdf');
+}
+
+if (!defined('FPDF_VERSION')) {
+	require_once(dirname(__FILE__).'/../fpdf/fpdf.php');
+}
 	require_once("../fpdf/class.multicelltag.php");
 
 	// Fichier d'extension de fpdf pour le bulletin
@@ -18,10 +21,10 @@
 
 	// Fonctions php des bulletins pdf
 	require_once("bulletin_fonctions.php");
-	// Ensemble des données communes
+	// Ensemble des donnÃ©es communes
 	require_once("bulletin_donnees.php");
 
-	define('FPDF_FONTPATH','../fpdf/font/');
+	
 	define('TopMargin','5');
 	define('RightMargin','2');
 	define('LeftMargin','2');
@@ -41,7 +44,7 @@
 
 /*
 	//=========================================
-	//création du PDF en mode Portrait, unitée de mesure en mm, de taille A4
+	//crÃ©ation du PDF en mode Portrait, unitÃ©e de mesure en mm, de taille A4
 	$pdf=new bul_PDF('p', 'mm', 'A4');
 	$nb_eleve_aff = 1;
 	$categorie_passe = '';
@@ -56,14 +59,14 @@
 	$pdf->SetAutoPageBreak(TRUE, 5);
 
 	$pdf->AddPage(); //ajout d'une page au document
-	$pdf->SetFont('Arial');
+	$pdf->SetFont('DejaVu');
 
 	if ( !isset($X_etab) or empty($X_etab) ) {
 		$X_etab = '5';
 		$Y_etab = '5';
 	}
 	$pdf->SetXY($X_etab,$Y_etab);
-	$pdf->SetFont('Arial','',14);
+	$pdf->SetFont('DejaVu','',14);
 	$gepiSchoolName=getSettingValue("gepiSchoolName") ? getSettingValue("gepiSchoolName") : "gepiSchoolName";
 	$pdf->Cell(90,7, $gepiSchoolName,0,2,'');
 
@@ -192,9 +195,9 @@
       padding-right: 20%;
 }\n";
 
-	// Récupération des variables du bloc adresses:
-	// Liste de récupération à extraire de la boucle élèves pour limiter le nombre de requêtes... A FAIRE
-	// Il y a d'autres récupération de largeur et de positionnement du bloc adresse à extraire...
+	// RÃ©cupÃ©ration des variables du bloc adresses:
+	// Liste de rÃ©cupÃ©ration Ã  extraire de la boucle Ã©lÃ¨ves pour limiter le nombre de requÃªtes... A FAIRE
+	// Il y a d'autres rÃ©cupÃ©ration de largeur et de positionnement du bloc adresse Ã  extraire...
 	// PROPORTION 30%/70% POUR LE 1er TABLEAU ET ...
 	$largeur1=getSettingValue("addressblock_logo_etab_prop") ? getSettingValue("addressblock_logo_etab_prop") : 40;
 	$largeur2=100-$largeur1;
@@ -202,18 +205,18 @@
 	// Taille des polices sur le bloc adresse:
 	$addressblock_font_size=getSettingValue("addressblock_font_size") ? getSettingValue("addressblock_font_size") : 12;
 
-	// Taille de la cellule Classe et Année scolaire sur le bloc adresse:
+	// Taille de la cellule Classe et AnnÃ©e scolaire sur le bloc adresse:
 	$addressblock_classe_annee=getSettingValue("addressblock_classe_annee") ? getSettingValue("addressblock_classe_annee") : 35;
-	// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, Année,...
+	// Calcul du pourcentage par rapport au tableau contenant le bloc Classe, AnnÃ©e,...
 	$addressblock_classe_annee2=round(100*$addressblock_classe_annee/(100-$largeur1));
 
-	// Débug sur l'entête pour afficher les cadres
+	// DÃ©bug sur l'entÃªte pour afficher les cadres
 	$addressblock_debug=getSettingValue("addressblock_debug") ? getSettingValue("addressblock_debug") : "n";
 
-	// Nombre de sauts de lignes entre le tableau logo+etab et le nom, prénom,... de l'élève
+	// Nombre de sauts de lignes entre le tableau logo+etab et le nom, prÃ©nom,... de l'Ã©lÃ¨ve
 	$bull_ecart_bloc_nom=getSettingValue("bull_ecart_bloc_nom") ? getSettingValue("bull_ecart_bloc_nom") : 0;
 
-	// Afficher l'établissement d'origine de l'élève:
+	// Afficher l'Ã©tablissement d'origine de l'Ã©lÃ¨ve:
 	$bull_affiche_etab=getSettingValue("bull_affiche_etab") ? getSettingValue("bull_affiche_etab") : "n";
 
 	// Bordure classique ou trait-noir:
@@ -233,7 +236,7 @@
 	*/
 
 
-	// Affichage ou non du nom et de l'adresse de l'établissement
+	// Affichage ou non du nom et de l'adresse de l'Ã©tablissement
 	$bull_affich_nom_etab=getSettingValue("bull_affich_nom_etab") ? getSettingValue("bull_affich_nom_etab") : "y";
 	$bull_affich_adr_etab=getSettingValue("bull_affich_adr_etab") ? getSettingValue("bull_affich_adr_etab") : "y";
 	if(($bull_affich_nom_etab!="n")&&($bull_affich_nom_etab!="y")) {$bull_affich_nom_etab="y";}
@@ -260,7 +263,7 @@
 	$bull_affiche_appreciations=getSettingValue("bull_affiche_appreciations") ? getSettingValue("bull_affiche_appreciations") : "y";
 
 	$bull_affiche_formule=getSettingValue("bull_affiche_formule") ? getSettingValue("bull_affiche_formule") : "n";
-	$bull_formule_bas=getSettingValue("bull_formule_bas") ? getSettingValue("bull_formule_bas") : "Bulletin à conserver précieusement. Aucun duplicata ne sera délivré. - GEPI : solution libre de gestion et de suivi des résultats scolaires.";
+	$bull_formule_bas=getSettingValue("bull_formule_bas") ? getSettingValue("bull_formule_bas") : "Bulletin Ã  conserver prÃ©cieusement. Aucun duplicata ne sera dÃ©livrÃ©. - GEPI : solution libre de gestion et de suivi des rÃ©sultats scolaires.";
 
 	$bull_affiche_absences=getSettingValue("bull_affiche_absences") ? getSettingValue("bull_affiche_absences") : "y";
 	$bull_affiche_aid=getSettingValue("bull_affiche_aid") ? getSettingValue("bull_affiche_aid") : "y";
@@ -282,7 +285,7 @@
 	$bull_categ_font_size=getSettingValue("bull_categ_font_size") ? getSettingValue("bull_categ_font_size") : 10;
 	$bull_categ_bgcolor=getSettingValue("bull_categ_bgcolor") ? getSettingValue("bull_categ_bgcolor") : "";
 
-	$bull_intitule_app=getSettingValue("bull_intitule_app") ? getSettingValue("bull_intitule_app") : "Appréciations/Conseils";
+	$bull_intitule_app=getSettingValue("bull_intitule_app") ? getSettingValue("bull_intitule_app") : "ApprÃ©ciations/Conseils";
 
 	$bull_affiche_tel=getSettingValue("bull_affiche_tel") ? getSettingValue("bull_affiche_tel") : "n";
 	$bull_affiche_fax=getSettingValue("bull_affiche_fax") ? getSettingValue("bull_affiche_fax") : "n";
@@ -304,122 +307,5 @@
 
 
 	$option_affichage_bulletin=getSettingValue("choix_bulletin") ? getSettingValue("choix_bulletin") : 2;
-
-	/*
-	switch ($option_affichage_bulletin) {
-	case 1:
-		// La seule différence entre le 0 et le 1, c'est un ajout de "Pour la classe" au-dessus de min/classe/max
-		$fichier_bulletin = "bull_html_edit_0.inc";
-		break;
-	case 2:
-		$fichier_bulletin = "bull_html_edit_1.inc";
-		break;
-	case 3:
-		$fichier_bulletin = "bull_html_edit_2.inc";
-		break;
-	default:
-		$fichier_bulletin = "bull_html_edit_1.inc";
-	}
-	//
-	// Pour afficher les trois colonnes en une seule, on transmet '1':
-	$min_max_moyclas=getSettingValue("min_max_moyclas") ? getSettingValue("min_max_moyclas") : 0;
-
-
-	echo "</style>
-    <link rel='shortcut icon' type='image/x-icon' href='../favicon.ico' />
-    <link rel='icon' type='image/ico' href='../favicon.ico' />\n";
-
-	if(isset($style_screen_ajout)){
-		// Styles paramétrables depuis l'interface:
-		if($style_screen_ajout=='y'){
-			// La variable $style_screen_ajout se paramètre dans le /lib/global.inc
-			// C'est une sécurité... il suffit de passer la variable à 'n' pour désactiver ce fichier CSS et éventuellement rétablir un accès après avoir imposé une couleur noire sur noire
-			echo "<link rel='stylesheet' type='text/css' href='$gepiPath/style_screen_ajout.css' />\n";
-		}
-	}
-
-	echo "<style type='text/css'>
-	@media screen{
-		#infodiv {
-			float: right;
-			width: 20em;
-			background-color: white;
-		}
-	}
-	@media print{
-		#infodiv {
-			display:none;
-		}
-	}
-</style>\n";
-
-
-	echo "<style type='text/css'>
-	@media screen{
-		.espacement_bulletins {
-			width: 100%;
-			height: 50px;
-			border:1px solid red;
-			background-color: white;
-		}
-	}
-	@media print{
-		.espacement_bulletins {
-			display:none;
-		}
-
-		#remarques_bas_de_page {
-			display:none;
-		}
-
-		.alerte_erreur {
-			display:none;
-		}
-	}
-</style>\n";
-
-
-	echo "</head>\n";
-	echo "<body>\n";
-	echo "<div>\n";
-	echo "<div>\n";
-	*/
-
-/*
-	// Inclusion des librairies spécifiques pour la génération du pdf
-
-	require('../fpdf/fpdf.php');
-	require('../fpdf/ex_fpdf.php');
-	require_once("../fpdf/class.multicelltag.php");
-
-	// Fichier d'extension de fpdf pour le bulletin
-	require_once("../class_php/gepi_pdf.class.php");
-
-	// Fonctions php des bulletins pdf
-	require_once("bulletin_fonctions.php");
-	// Ensemble des données communes
-	require_once("bulletin_donnees.php");
-
-	define('FPDF_FONTPATH','../fpdf/font/');
-	define('TopMargin','5');
-	define('RightMargin','2');
-	define('LeftMargin','2');
-	define('BottomMargin','5');
-	define('LargeurPage','210');
-	define('HauteurPage','297');
-	session_cache_limiter('private');
-
-	$X1 = 0; $Y1 = 0; $X2 = 0; $Y2 = 0;
-	$X3 = 0; $Y3 = 0; $X4 = 0; $Y4 = 0;
-	$X5 = 0; $Y5 = 0; $X6 = 0; $Y6 = 0;
-
-	//variables invariables
-	$annee_scolaire = $gepiYear;
-	$date_bulletin = date("d/m/Y H:i");
-	$nom_bulletin = date("Ymd_Hi");
-
-*/
-
-
 
 ?>

@@ -1,8 +1,7 @@
 <?php
 /**
- * Fonctions crÈant du html
+ * Fonctions cr√©ant du html
  * 
- * $Id: share-html.inc.php 8807 2012-05-25 07:26:50Z crob $
  * 
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
@@ -63,14 +62,14 @@ $GLOBALS['selected_eleve'] = '';
 /**
  * Construit du html pour les cahiers de textes
  *
- * @deprecated La requÍte SQL n'est plus valide
+ * @deprecated La requ√™te SQL n'est plus valide
  * @param string $link Le lien
  * @param <type> $current_classe
  * @param <type> $current_matiere
- * @param integer $year annÈe
+ * @param integer $year ann√©e
  * @param integer $month le mois
  * @param integer $day le jour
- * @return string echo rÈsultat
+ * @return string echo r√©sultat
  */
 function make_area_list_html($link, $current_classe, $current_matiere, $year, $month, $day) {
   echo "<strong><em>Cahier&nbsp;de&nbsp;texte&nbsp;de&nbsp;:</em></strong><br />";
@@ -91,7 +90,7 @@ function make_area_list_html($link, $current_classe, $current_matiere, $year, $m
       $nombre_profs = mysql_num_rows($call_profs);
       $k = 0;
       while ($k < $nombre_profs) {
-        $temp = strtoupper(@mysql_result($call_profs, $k, "id_professeur"));
+        $temp = my_strtoupper(@mysql_result($call_profs, $k, "id_professeur"));
         if ($temp == $_SESSION['login']) {$flag2 = "yes";}
         $k++;
       }
@@ -122,9 +121,9 @@ function make_area_list_html($link, $current_classe, $current_matiere, $year, $m
  * @global int 
  * @global int 
  * @param int $id_conteneur Id du conteneur
- * @param int $periode_num NumÈro de la pÈriode
- * @param text $empty existance de notes, no si le conteneur contient des notes (passage par rÈfÈrence) 
- * @param int $ver_periode Etat du vÈrouillage de la pÈriode
+ * @param int $periode_num Num√©ro de la p√©riode
+ * @param text $empty existance de notes, no si le conteneur contient des notes (passage par r√©f√©rence) 
+ * @param int $ver_periode Etat du v√©rouillage de la p√©riode
  * @return text no si le conteneur contient des notes, yes sinon
  * @see getSettingValue()
  * @see get_nom_prenom_eleve()
@@ -145,14 +144,14 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 	// Cas particulier de la racine
 	$gepi_denom_boite=getSettingValue("gepi_denom_boite");
 	if(getSettingValue("gepi_denom_boite_genre")=='m'){
-		$message_cont = "Etes-vous s˚r de vouloir supprimer le ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
-		$message_cont_non_vide = "Le ".getSettingValue("gepi_denom_boite")." est non vide. Il ne peut pas Ítre supprimÈ.";
+		$message_cont = "Etes-vous s√ªr de vouloir supprimer le ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
+		$message_cont_non_vide = "Le ".getSettingValue("gepi_denom_boite")." est non vide. Il ne peut pas √™tre supprim√©.";
 	}
 	else{
-		$message_cont = "Etes-vous s˚r de vouloir supprimer la ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
-		$message_cont_non_vide = "La ".getSettingValue("gepi_denom_boite")." est non vide. Elle ne peut pas Ítre supprimÈe.";
+		$message_cont = "Etes-vous s√ªr de vouloir supprimer la ".getSettingValue("gepi_denom_boite")." ci-dessous ?";
+		$message_cont_non_vide = "La ".getSettingValue("gepi_denom_boite")." est non vide. Elle ne peut pas √™tre supprim√©e.";
 	}
-	$message_dev = "Etes-vous s˚r de vouloir supprimer l\\'Èvaluation ci-dessous et les notes qu\\'elle contient ?";
+	$message_dev = "Etes-vous s√ªr de vouloir supprimer l\\'√©valuation ci-dessous et les notes qu\\'elle contient ?";
 	$sql="SELECT * FROM cn_conteneurs WHERE (parent='0' and id_racine='$id_conteneur')";
 	$appel_conteneurs = mysql_query($sql);
 	$nb_cont = mysql_num_rows($appel_conteneurs);
@@ -163,11 +162,18 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 		$id_racine = mysql_result($appel_conteneurs, 0, 'id_racine');
 		$nom_conteneur = mysql_result($appel_conteneurs, 0, 'nom_court');
 		echo "<li>\n";
-		echo "$nom_conteneur ";
+		echo htmlspecialchars($nom_conteneur);
 		if ($ver_periode <= 1) {
 			echo " (<strong>".$gepiClosedPeriodLabel."</strong>) ";
 		}
 		echo "- <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
+
+		$ponderation_cont=mysql_result($appel_conteneurs, 0, 'ponderation');
+		if($ponderation_cont!='0.0') {
+			$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pond√©r√©e d'un coefficient +$ponderation_cont";
+			echo " - <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
+		}
+
 		$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
 		$nb_dev  = mysql_num_rows($appel_dev);
 		if ($nb_dev != 0) {$empty = 'no';}
@@ -181,11 +187,11 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 						echo '<input type="hidden" name="id" value="'.getSettingValue("sacoche_base").'"/>';
 						echo '<input type="hidden" name="page" value="professeur_eval"/>';
 						echo '<input type="hidden" name="section" value="groupe"/>';
-						echo '<input type="hidden" name="source" value="distant-gepi-saml"/>';//source simplesaml pour prÈselectionner la source dans le module multiauth et Èviter de choisir le webmestre
+						echo '<input type="hidden" name="source" value="distant-gepi-saml"/>';//source simplesaml pour pr√©selectionner la source dans le module multiauth et √©viter de choisir le webmestre
 						//encodage du devoir
 						mysql_data_seek($appel_dev, $j);
 						$devoir_array = mysql_fetch_array($appel_dev);
-						$devoir_array = array_map_deep('check_utf8_and_convert', $devoir_array);
+						$devoir_array = array_map_deep('ensure_utf8', $devoir_array);
 						echo '<input type="hidden" name="period_num" value=\''.$periode_num.'\'/>';
 						echo '<input type="hidden" name="gepi_cn_devoirs_array" value="'.htmlspecialchars(json_encode($devoir_array),ENT_COMPAT,'UTF-8').'"/>';
 						$group_array = get_group($id_groupe);
@@ -198,7 +204,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 								unset($group_array['eleves'][''.$i]);
 							}
 						}
-						$current_group = array_map_deep('check_utf8_and_convert', $group_array);
+						$current_group = array_map_deep('ensure_utf8', $group_array);
 						echo '<input type="hidden" name="gepi_current_group" value="'.htmlspecialchars(json_encode($current_group),ENT_COMPAT,'UTF-8').'"/>';
 						echo '</form>';
 					}
@@ -206,7 +212,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					$nom_dev = mysql_result($appel_dev, $j, 'nom_court');
 					$id_dev = mysql_result($appel_dev, $j, 'id');
 					echo "<li>\n";
-					echo "<font color='green'>$nom_dev</font>";
+					echo "<span style='color:green;'>$nom_dev</span>";
 					echo " - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
 
 					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
@@ -218,12 +224,12 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					if(isset($eff_groupe)) {echo "/$eff_groupe";}
 					echo ")</span>";
 
-					// Pour dÈtecter une anomalie:
+					// Pour d√©tecter une anomalie:
 					 $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
 					$test_anomalie=mysql_query($sql);
 					if(mysql_num_rows($test_anomalie)>0) {
-						$titre_infobulle="Note pour un fantÙme";
-						$texte_infobulle="Une ou des notes existent pour un ou des ÈlËves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
+						$titre_infobulle="Note pour un fant√¥me";
+						$texte_infobulle="Une ou des notes existent pour un ou des √©l√®ves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
 						$cpt_ele_anomalie=0;
 						while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
 							if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
@@ -235,23 +241,28 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							$cpt_ele_anomalie++;
 						}
 						$texte_infobulle.="<br />";
-						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associÈes?";
+						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associ√©es?";
 						$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 
 						echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
 					}
 
 					if (getSettingValue("utiliser_sacoche") == 'yes') {
-						echo " - <a href='#' onclick=\"document.getElementById('sacoche_form_".$j."').submit();\">…valuer par compÈtence</a>";
+						echo " - <a href='#' onclick=\"document.getElementById('sacoche_form_".$j."').submit();\">√âvaluer par comp√©tence</a>";
 					}
 
 					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
 
+					$note_sur=mysql_result($appel_dev, $j, 'note_sur');
+					if($note_sur!='20') {
+						echo " (<em><span title='Note sur $note_sur'>/$note_sur</span></em>)";
+					}
+
 					$display_parents=mysql_result($appel_dev, $j, 'display_parents');
 					$coef=mysql_result($appel_dev, $j, 'coef');
 					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevÈ de notes' alt='Evaluation visible sur le relevÈ de notes' />";}
-					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevÈ de notes' alt='Evaluation non visible sur le relevÈ de notes' />\n";}
+					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relev√© de notes' alt='Evaluation visible sur le relev√© de notes' />";}
+					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relev√© de notes' alt='Evaluation non visible sur le relev√© de notes' />\n";}
 					echo "</i>)";
 					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo "</li>\n";
@@ -260,6 +271,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 				echo "</ul>\n";
 			}
 		}
+		echo "</li>\n";
+		echo "</ul>\n";
 	}
 	if ($ver_periode >= 2) {
 		$appel_conteneurs = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent='$id_conteneur') order by nom_court");
@@ -283,6 +296,12 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 					if($display_bulletin==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='$gepi_denom_boite visible sur le bulletin' alt='$gepi_denom_boite visible sur le bulletin' />";}
 					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='$gepi_denom_boite non visible sur le bulletin' alt='$gepi_denom_boite non visible sur le bulletin' />\n";}
 					echo "</i>)";
+
+					$ponderation_cont=mysql_result($appel_conteneurs, $i, 'ponderation');
+					if($ponderation_cont!='0.0') {
+						$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pond√©r√©e d'un coefficient +$ponderation_cont";
+						echo " - <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
+					}
 
 					$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
 					$nb_dev  = mysql_num_rows($appel_dev);
@@ -318,12 +337,12 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							if(isset($eff_groupe)) {echo "/$eff_groupe";}
 							echo ")</span>";
 
-							// Pour dÈtecter une anomalie:
+							// Pour d√©tecter une anomalie:
 							$sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
 							$test_anomalie=mysql_query($sql);
 							if(mysql_num_rows($test_anomalie)>0) {
-								$titre_infobulle="Note pour un fantÙme";
-								$texte_infobulle="Une ou des notes existent pour un ou des ÈlËves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
+								$titre_infobulle="Note pour un fant√¥me";
+								$texte_infobulle="Une ou des notes existent pour un ou des √©l√®ves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
 								$cpt_ele_anomalie=0;
 								while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
 									if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
@@ -335,7 +354,7 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 									$cpt_ele_anomalie++;
 								}
 								$texte_infobulle.="<br />";
-								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associÈes?";
+								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associ√©es?";
 								$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 		
 								echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return FALSE;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
@@ -343,11 +362,16 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 
 							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
 
+							$note_sur=mysql_result($appel_dev, $j, 'note_sur');
+							if($note_sur!='20') {
+								echo " (<em><span title='Note sur $note_sur'>/$note_sur</span></em>)";
+							}
+
 							$display_parents=mysql_result($appel_dev, $j, 'display_parents');
 							$coef=mysql_result($appel_dev, $j, 'coef');
 							echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-							if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relevÈ de notes' alt='Evaluation visible sur le relevÈ de notes' />";}
-							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevÈ de notes' alt='Evaluation non visible sur le relevÈ de notes' />\n";}
+							if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation visible sur le relev√© de notes' alt='Evaluation visible sur le relev√© de notes' />";}
+							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relev√© de notes' alt='Evaluation non visible sur le relev√© de notes' />\n";}
 							echo "</i>)";
 
 							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
@@ -413,7 +437,7 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
         $n++;
     }
     //------
-    // On appelle l'apprÈciation de l'ÈlËve, et sa note
+    // On appelle l'appr√©ciation de l'√©l√®ve, et sa note
     //------
     $current_eleve_aid_appreciation_query = mysql_query("SELECT * FROM aid_appreciations WHERE (login='$current_eleve_login' AND periode='$periode_num' and id_aid='$aid_id' and indice_aid='$indice_aid')");
     $current_eleve_aid_appreciation = @mysql_result($current_eleve_aid_appreciation_query, 0, "appreciation");
@@ -467,7 +491,7 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
 
     }
     //------
-    // On affiche l'apprÈciation aid :
+    // On affiche l'appr√©ciation aid :
     //------
     echo "<tr>\n<td style=\"height: ".getSettingValue("col_hauteur")."px; width: ".getSettingValue("col_matiere_largeur")."px;\"><span class='$style_bulletin'><strong>$AID_NOM_COMPLET</strong><br />";
     $chaine_prof="";
@@ -555,15 +579,15 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
 }
 
 /**
- * Affiche un tableau pour rËgler la taille d'un tableau
+ * Affiche un tableau pour r√®gler la taille d'un tableau
  * 
- * UtilisÈ uniquement dans prepa_conseil/index1.php
+ * Utilis√© uniquement dans prepa_conseil/index1.php
  *
  * @param int $larg_tab largeur en pixel
  * @param int $bord bords en pixel
  */
 function parametres_tableau($larg_tab, $bord) {
-    echo "<table border='1' width='680' cellspacing='1' cellpadding='1' summary=\"Tableau de paramËtres\">\n";
+    echo "<table border='1' width='680' cellspacing='1' cellpadding='1' summary=\"Tableau de param√®tres\">\n";
     echo "<tr><td><span class=\"norme\">largeur en pixel : <input type=\"text\" name=\"larg_tab\" size=\"3\" value=\"".$larg_tab."\" />\n";
     echo "bords en pixel : <input type=\"text\" name=\"bord\" size=\"3\" value=\"".$bord."\" />\n";
     echo "<input type=\"submit\" value=\"Valider\" />\n";
@@ -573,7 +597,7 @@ function parametres_tableau($larg_tab, $bord) {
 /**
  * Affiche un tableau
  *
- * UtilisÈ uniquement dans prepa_conseil et visu_toutes_notes2.php
+ * Utilis√© uniquement dans prepa_conseil et visu_toutes_notes2.php
  * 
  * @global type 
  * @global type 
@@ -622,7 +646,7 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 				echo "<td class='small' ";
 				if(!preg_match("/Rang de l/",$ligne1[$j])) {
 					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
+						if(mb_strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
 							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
 								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
 									echo " style='";
@@ -641,7 +665,7 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 				echo "<td align=\"center\" class='small' ";
 				if(!preg_match("/Rang de l/",$ligne1[$j])) {
 					if(($vtn_coloriser_resultats=='y')&&($j>=$num_debut_colonnes_matieres)&&($i>=$num_debut_lignes_eleves)) {
-						if(strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
+						if(mb_strlen(preg_replace('/[0-9.,]/','',$col[$j][$i]))==0) {
 							for($loop=0;$loop<count($vtn_borne_couleur);$loop++) {
 								if(preg_replace('/,/','.',$col[$j][$i])<=preg_replace('/,/','.',$vtn_borne_couleur[$loop])) {
 									echo " style='";
@@ -668,19 +692,19 @@ function affiche_tableau($nombre_lignes, $nb_col, $ligne1, $col, $larg_tab, $bor
 
 
 /**
- * CrÈe un formulaire avec une zone de sÈlection contenant les classes
+ * Cr√©e un formulaire avec une zone de s√©lection contenant les classes
  *
- * @param type $link lien vers la page ‡ atteindre ensuite
- * @param type $current Id de la classe courante pour qu'elle soit par dÈfaut
- * @param type $year l'annÈe
+ * @param type $link lien vers la page √† atteindre ensuite
+ * @param type $current Id de la classe courante pour qu'elle soit par d√©faut
+ * @param type $year l'ann√©e
  * @param type $month le mois
  * @param type $day le jour
- * @return text la balise <form> complËte
+ * @return text la balise <form> compl√®te
  */
 function make_classes_select_html($link, $current, $year, $month, $day)
 
 {
-  // Pour le multisite, on doit rÈcupÈrer le RNE de l'Ètablissement
+  // Pour le multisite, on doit r√©cup√©rer le RNE de l'√©tablissement
   $rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
   $aff_input_rne = $aff_get_rne = NULL;
   if ($rne != 'aucun') {
@@ -757,15 +781,15 @@ function make_classes_select_html($link, $current, $year, $month, $day)
 }
 
 /**
- * CrÈe un formulaire avec une zone de sÈlection contenant les groupes 
+ * Cr√©e un formulaire avec une zone de s√©lection contenant les groupes 
  * 
- * $id_ref peut Ítre soit l'ID d'une classe, auquel cas on affiche tous les groupes pour la classe,
- * soit le login d'un ÈlËve, auquel cas on affiche tous les groupes pour l'ÈlËve en question
+ * $id_ref peut √™tre soit l'ID d'une classe, auquel cas on affiche tous les groupes pour la classe,
+ * soit le login d'un √©l√®ve, auquel cas on affiche tous les groupes pour l'√©l√®ve en question
  * 
- * @param text $link lien vers la page ‡ atteindre ensuite
- * @param int|text $id_ref Id d'une classe ou login d'un ÈlËve
+ * @param text $link lien vers la page √† atteindre ensuite
+ * @param int|text $id_ref Id d'une classe ou login d'un √©l√®ve
  * @param int|text $current Id de la classe courante
- * @param int $year AnnÈe
+ * @param int $year Ann√©e
  * @param type $month Mois
  * @param type $day Jour
  * @param text $special
@@ -773,7 +797,7 @@ function make_classes_select_html($link, $current, $year, $month, $day)
  */
 function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day, $special='')
 {
-	// Pour le multisite, on doit rÈcupÈrer le RNE de l'Ètablissement
+	// Pour le multisite, on doit r√©cup√©rer le RNE de l'√©tablissement
 	$prof="";
 	
 	$rne = isset($_GET['rne']) ? $_GET['rne'] : (isset($_POST['rne']) ? $_POST['rne'] : 'aucun');
@@ -783,7 +807,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 		$aff_get_rne = '&amp;rne=' . $rne;
 	}
 		$out_html = "<form id=\"matiere\"  method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n" . $aff_input_rne . "\n
-	<h2 class='h2_label'> \n<label for=\"enseignement\"><strong><em>MatiËre :<br /></em></strong></label>\n</h2>\n<p>\n<select id=\"enseignement\" name=\"matiere\" onchange=\"matiere_go()\">\n ";
+	<h2 class='h2_label'> \n<label for=\"enseignement\"><strong><em>Mati√®re :<br /></em></strong></label>\n</h2>\n<p>\n<select id=\"enseignement\" name=\"matiere\" onchange=\"matiere_go()\">\n ";
 	
 	if (is_numeric($id_ref)) {
 		$out_html .= "<option value=\"".$link."?&amp;year=".$year."&amp;month=".$month."&amp;day=".$day."&amp;id_classe=$id_ref\">(Choisissez un enseignement)</option>\n";
@@ -796,7 +820,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 			} else {
 				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
 			}
-			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matiËres</option>\n";
+			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les mati√®res</option>\n";
 		}
 	
 		$sql = "select DISTINCT g.id, g.name, g.description from j_groupes_classes jgc, groupes g, ct_entry ct where (" .
@@ -815,7 +839,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 			} else {
 				$link2 = "$link?&amp;year=$year&amp;month=$month&amp;day=$day&amp;login_eleve=$id_ref&amp;id_groupe=Toutes_matieres" . $aff_get_rne;
 			}
-			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les matiËres</option>\n";
+			$out_html .= "<option $selected value=\"$link2\"$selected>Toutes les mati√®res</option>\n";
 		}
 
 		$sql = "select DISTINCT g.id, g.name, g.description from j_eleves_groupes jec, groupes g, ct_entry ct where (" .
@@ -832,7 +856,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 		$chaine = "";
 		for ($k=0;$prof=sql_row($res_prof,$k);$k++) {
 			if ($k != 0) $chaine .= ", ";
-			$chaine .= htmlspecialchars($prof[0])." ".substr(htmlspecialchars($prof[1]),0,1).".";
+			$chaine .= htmlspecialchars($prof[0])." ".mb_substr(htmlspecialchars($prof[1]),0,1).".";
 		}
 
 		$selected = ($row[0] == $current) ? "selected=\"selected\"" : "";
@@ -875,13 +899,13 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 }
 
 /**
- * CrÈe un formulaire avec une zone de sÈlection contenant les ÈlËves 
+ * Cr√©e un formulaire avec une zone de s√©lection contenant les √©l√®ves 
  *
  * @global text 
- * @param text $link lien vers la page ‡ atteindre ensuite
+ * @param text $link lien vers la page √† atteindre ensuite
  * @param type $login_resp login du responsable
- * @param type $current login de l'ÈlËve actuellement sÈlectionnÈ
- * @param type $year AnnÈe
+ * @param type $current login de l'√©l√®ve actuellement s√©lectionn√©
+ * @param type $year Ann√©e
  * @param type $month Mois
  * @param type $day Jour
  * @return type la balise <form...>
@@ -889,7 +913,7 @@ function make_matiere_select_html($link, $id_ref, $current, $year, $month, $day,
 function make_eleve_select_html($link, $login_resp, $current, $year, $month, $day)
 {
 	global $selected_eleve;
-	// $current est le login de l'ÈlËve actuellement sÈlectionnÈ
+	// $current est le login de l'√©l√®ve actuellement s√©lectionn√©
 	$sql="SELECT e.login, e.nom, e.prenom " .
 			"FROM eleves e, resp_pers r, responsables2 re " .
 			"WHERE (" .
@@ -899,19 +923,19 @@ function make_eleve_select_html($link, $login_resp, $current, $year, $month, $da
 	$get_eleves = mysql_query($sql);
 
 	if (mysql_num_rows($get_eleves) == 0) {
-			// Aucun ÈlËve associÈ
-		$out_html = "<p>Vous semblez n'Ítre responsable d'aucun ÈlËve ! Contactez l'administrateur pour corriger cette erreur.</p>";
+			// Aucun √©l√®ve associ√©
+		$out_html = "<p>Vous semblez n'√™tre responsable d'aucun √©l√®ve ! Contactez l'administrateur pour corriger cette erreur.</p>";
 	} elseif (mysql_num_rows($get_eleves) == 1) {
-			// Un seul ÈlËve associÈ : pas de formulaire nÈcessaire
+			// Un seul √©l√®ve associ√© : pas de formulaire n√©cessaire
 		$selected_eleve = mysql_fetch_object($get_eleves);
-		$out_html = "<p class='bold'>ElËve : ".$selected_eleve->prenom." ".$selected_eleve->nom."</p>";
+		$out_html = "<p class='bold'>El√®ve : ".$selected_eleve->prenom." ".$selected_eleve->nom."</p>";
 	} else {
-		// Plusieurs ÈlËves : on affiche un formulaire pour choisir l'ÈlËve
-	  $out_html = "<form id=\"eleve\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n<h2 class='h2_label'>\n<label for=\"choix_eleve\"><strong><em>ElËve :</em></strong></label>\n</h2>\n<p>\n<select id=\"choix_eleve\" name=\"eleve\" onchange=\"eleve_go()\">\n";
-	  $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."\">(Choisissez un ÈlËve)</option>\n";
+		// Plusieurs √©l√®ves : on affiche un formulaire pour choisir l'√©l√®ve
+	  $out_html = "<form id=\"eleve\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n<h2 class='h2_label'>\n<label for=\"choix_eleve\"><strong><em>El√®ve :</em></strong></label>\n</h2>\n<p>\n<select id=\"choix_eleve\" name=\"eleve\" onchange=\"eleve_go()\">\n";
+	  $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."\">(Choisissez un √©l√®ve)</option>\n";
 		while ($current_eleve = mysql_fetch_object($get_eleves)) {
 		   if ($current) {
-		   	$selected = ($current_eleve->login == $current->login) ? "selected='selected'" : "";
+		   	$selected = ((is_object($current)&&($current_eleve->login == $current->login))||($current_eleve->login == $current)) ? "selected='selected'" : "";
 		   } else {
 		   	$selected = "";
 		   }
@@ -945,11 +969,11 @@ function make_eleve_select_html($link, $login_resp, $current, $year, $month, $da
 }
 
 /**
- * Construit une liste ‡ puces des documents joints
+ * Construit une liste √† puces des documents joints
  *
  * @param int $id_ct Id du cahier de texte
  * @param type $type_notice c pour ct_documents, t pour ct_devoirs_documents
- * @return string La liste ‡ puces
+ * @return string La liste √† puces
  * @see getSettingValue()
  */
 function affiche_docs_joints($id_ct,$type_notice) {
@@ -967,15 +991,17 @@ function affiche_docs_joints($id_ct,$type_notice) {
       $html .= "<span class='petit'>Document(s) joint(s):</span>";
       $html .= "<ul style=\"padding-left: 15px;\">";
       for ($i=0; ($row = sql_row($res,$i)); $i++) {
-          if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
-              ((getSettingValue('cdt_possibilite_masquer_pj')!='y')&&(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')))||
-              ((getSettingValue('cdt_possibilite_masquer_pj')=='y')&&($row[2]==TRUE)&&(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')))
+          if(((!isset($_SESSION['statut']))&&(getSettingValue('cdt_possibilite_masquer_pj')!='y'))||
+              ((!isset($_SESSION['statut']))&&(getSettingValue('cdt_possibilite_masquer_pj')=='y')&&($row[2]==TRUE))||
+              ((isset($_SESSION['statut']))&&($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
+              ((isset($_SESSION['statut']))&&(getSettingValue('cdt_possibilite_masquer_pj')!='y')&&(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')))||
+              ((isset($_SESSION['statut']))&&(getSettingValue('cdt_possibilite_masquer_pj')=='y')&&($row[2]==TRUE)&&(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')))
           ) {
                 $titre = $row[0];
                 $emplacement = $row[1];
-              // Ouverture dans une autre fenÍtre conservÈe parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
+              // Ouverture dans une autre fen√™tre conserv√©e parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
               // alternative, utiliser un javascript
-                $html .= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return FALSE;\" href=\"$emplacement\">$titre</a></li>";
+                $html .= "<li style=\"padding: 0px; margin: 0px;font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return FALSE;\" href=\"$emplacement\">$titre</a></li>";
           }
       }
       $html .= "</ul>";
@@ -984,17 +1010,17 @@ function affiche_docs_joints($id_ct,$type_notice) {
  }
 
 /**
- * Fonction destinÈe ‡ prÈsenter une liste de liens rÈpartis en $nbcol colonnes
+ * Fonction destin√©e √† pr√©senter une liste de liens r√©partis en $nbcol colonnes
  * 
  *
  * @param type $tab_txt tableau des textes
  * @param type $tab_lien tableau des liens
  * @param int $nbcol Nombre de colonnes
- * @param type $extra_options Options supplÈmentaires
+ * @param type $extra_options Options suppl√©mentaires
  */
 function tab_liste($tab_txt,$tab_lien,$nbcol,$extra_options = NULL){
 
-	// Nombre d'enregistrements ‡ afficher
+	// Nombre d'enregistrements √† afficher
 	$nombreligne=count($tab_txt);
 
 	if(!is_int($nbcol)){
@@ -1029,9 +1055,9 @@ function tab_liste($tab_txt,$tab_lien,$nbcol,$extra_options = NULL){
 }
 
 /**
- * CrÈe des liens html
+ * Cr√©e des liens html
  *
- * @param string $ele_login Login de l'ÈlËve
+ * @param string $ele_login Login de l'√©l√®ve
  * @return string 
  */
 function liens_class_from_ele_login($ele_login){
@@ -1040,7 +1066,7 @@ function liens_class_from_ele_login($ele_login){
 	if(isset($tab_classe)){
 		if(count($tab_classe)>0){
 			foreach ($tab_classe as $key => $value){
-				if(strlen(preg_replace("/[0-9]/","",$key))==0) {
+				if(mb_strlen(preg_replace("/[0-9]/","",$key))==0) {
 					if($_SESSION['statut']=='administrateur') {
 						$chaine.=", <a href='../classes/classes_const.php?id_classe=$key'>$value</a>";
 					}
@@ -1049,20 +1075,20 @@ function liens_class_from_ele_login($ele_login){
 					}
 				}
 			}
-			$chaine="(".substr($chaine,2).")";
+			$chaine="(".mb_substr($chaine,2).")";
 		}
 	}
 	return $chaine;
 }
 
 /**
- * Teste et construit un tableau html des dossiers qui doivent Ítre accessibles en Ècriture
+ * Teste et construit un tableau html des dossiers qui doivent √™tre accessibles en √©criture
  *
- * Par dÈfaut les dossiers nÈcessaires ‡ GEPI
+ * Par d√©faut les dossiers n√©cessaires √† GEPI
  * 
- * Le chemin complet doit Ítre passÈ
+ * Le chemin complet doit √™tre pass√©
  * @global string
- * @param type $tab_restriction Le tableau des rÈpertoires ‡ tester
+ * @param type $tab_restriction Le tableau des r√©pertoires √† tester
  */
 function test_ecriture_dossier($tab_restriction=array()) {
     global $gepiPath, $multisite;
@@ -1073,7 +1099,7 @@ function test_ecriture_dossier($tab_restriction=array()) {
 	else {
 		$tab_dossiers_rw=array("artichow/cache","backup","documents","documents/archives","images","images/background","lib/standalone/HTMLPurifier/DefinitionCache/Serializer","mod_ooo/mes_modeles","mod_ooo/tmp","photos","temp");
     /**
-     * Pour Debug : DÈcommenter les 2 lignes si pas en multisites
+     * Pour Debug : D√©commenter les 2 lignes si pas en multisites
      */
     /* *
         $multisite='y';
@@ -1089,7 +1115,7 @@ function test_ecriture_dossier($tab_restriction=array()) {
 	$nom_fichier_test='test_acces_rw';
 
 	echo "<table class='boireaus'>\n";
-    echo "<caption style='display:none;'>dossiers devant Ítre accessibles en Ècriture<caption>\n";
+    echo "<caption style='display:none;'>dossiers devant √™tre accessibles en √©criture<caption>\n";
 	echo "<tr>\n";
 	echo "<th>Dossier</th>\n";
 	echo "<th>Ecriture</th>\n";
@@ -1108,10 +1134,10 @@ function test_ecriture_dossier($tab_restriction=array()) {
 		echo "<td style='text-align:left;'>$gepiPath/$tab_dossiers_rw[$i]</td>\n";
 		echo "<td>";
 		if($ok_rw=='yes') {
-			echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en Ècriture.\" />";
+			echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en √©criture.\" />";
 		}
 		else {
-			echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en Ècriture.\" />";
+			echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en √©criture.\" />";
 		}
 		echo "</td>\n";
 		echo "</tr>\n";
@@ -1137,10 +1163,10 @@ function test_ecriture_dossier($tab_restriction=array()) {
 				echo "<td style='text-align:left;'>$gepiPath/$dossier_temp</td>\n";
 				echo "<td>";
 				if($ok_rw=='yes') {
-					echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en Ècriture.\" />";
+					echo "<img src='../images/enabled.png' height='20' width='20' alt=\"Le dossier est accessible en √©criture.\" />";
 				}
 				else {
-					echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en Ècriture.\" />";
+					echo "<img src='../images/disabled.png' height='20' width='20' alt=\"Le dossier n'est pas accessible en √©criture.\" />";
 				}
 				echo "</td>\n";
 				echo "</tr>\n";
@@ -1161,13 +1187,13 @@ function test_ecriture_dossier($tab_restriction=array()) {
  * -  60 -> "deux mois"
  * - 183 -> "six mois"
  * - 365 -> "un an"
- * - all -> "le dÈbut"
+ * - all -> "le d√©but"
  *
  * @param string $login Login de l'utilisateur
  * @param int|string $duree
  * @param string $page 'mon_compte' pour afficher ses propres connexions
  * @param string $pers_id Permet d'avoir une balise <input type='hidden' personnelle
- * @todo On pourrait utiliser $_SESSION['login'] plutÙt que $page
+ * @todo On pourrait utiliser $_SESSION['login'] plut√¥t que $page
  */
 function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 	switch( $duree ) {
@@ -1190,15 +1216,15 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 		$display_duree="un an";
 		break;
 	case 'all':
-		$display_duree="le dÈbut";
+		$display_duree="le d√©but";
 		break;
 	}
 
 	if($page=='mon_compte') {
-		echo "<h2>Journal de vos connexions depuis <b>".$display_duree."</b>**</h2>\n";
+		echo "<h2>Journal de vos connexions depuis <strong>".$display_duree."</strong>**</h2>\n";
 	}
 	else {
-		echo "<h2>Journal des connexions de ".civ_nom_prenom($login)." depuis <b>".$display_duree."</b>**</h2>\n";
+		echo "<h2>Journal des connexions de ".civ_nom_prenom($login)." depuis <strong>".$display_duree."</strong>**</h2>\n";
 	}
 	$requete = '';
 	if ($duree != 'all') {$requete = "and START > now() - interval " . $duree . " day";}
@@ -1214,14 +1240,14 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 	$now = mktime($hour_now, $minute_now, $seconde_now, $month_now, $day_now, $year_now);
 
 	echo "<ul>
-<li>Les lignes en <span style='color:red; font-weight:bold;'>rouge</span> signalent une tentative de connexion avec un <span style='color:red; font-weight:bold;'>mot de passe erronÈ</span>.</li>
-<li>Les lignes en <span style='color:orange; font-weight:bold;'>orange</span> signalent une session close pour laquelle vous ne vous Ítes <span style='color:orange; font-weight:bold;'>pas dÈconnectÈ correctement</span>.</li>
+<li>Les lignes en <span style='color:red; font-weight:bold;'>rouge</span> signalent une tentative de connexion avec un <span style='color:red; font-weight:bold;'>mot de passe erron√©</span>.</li>
+<li>Les lignes en <span style='color:orange; font-weight:bold;'>orange</span> signalent une session close pour laquelle vous ne vous √™tes <span style='color:orange; font-weight:bold;'>pas d√©connect√© correctement</span>.</li>
 <li>Les lignes en <span style='color:black; font-weight:bold;'>noir</span> signalent une <span style='color:black; font-weight:bold;'>session close normalement</span>.</li>
-<li>Les lignes en <span style='color:green; font-weight:bold;'>vert</span> indiquent les <span style='color:green; font-weight:bold;'>sessions en cours</span> (<em>cela peut correspondre ‡ une connexion actuellement close mais pour laquelle vous ne vous Ítes pas dÈconnectÈ correctement</em>).</li>
+<li>Les lignes en <span style='color:green; font-weight:bold;'>vert</span> indiquent les <span style='color:green; font-weight:bold;'>sessions en cours</span> (<em>cela peut correspondre √† une connexion actuellement close mais pour laquelle vous ne vous √™tes pas d√©connect√© correctement</em>).</li>
 </ul>
 <table class='col' style='width: 90%; margin-left: auto; margin-right: auto; margin-bottom: 32px;' cellpadding='5' cellspacing='0' summary='Connexions'>
 	<tr>
-		<th class='col'>DÈbut session</th>
+		<th class='col'>D√©but session</th>
 		<th class='col'>Fin session</th>
 		<th class='col'>Adresse IP et nom de la machine cliente</th>
 		<th class='col'>Navigateur</th>
@@ -1232,21 +1258,21 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 	if ($res) {
 		for ($i = 0; ($row = sql_row($res, $i)); $i++)
 		{
-			$annee_b = substr($row[0],0,4);
-			$mois_b =  substr($row[0],5,2);
-			$jour_b =  substr($row[0],8,2);
-			$heures_b = substr($row[0],11,2);
-			$minutes_b = substr($row[0],14,2);
-			$secondes_b = substr($row[0],17,2);
-			$date_debut = $jour_b."/".$mois_b."/".$annee_b." ‡ ".$heures_b." h ".$minutes_b;
+			$annee_b = mb_substr($row[0],0,4);
+			$mois_b =  mb_substr($row[0],5,2);
+			$jour_b =  mb_substr($row[0],8,2);
+			$heures_b = mb_substr($row[0],11,2);
+			$minutes_b = mb_substr($row[0],14,2);
+			$secondes_b = mb_substr($row[0],17,2);
+			$date_debut = $jour_b."/".$mois_b."/".$annee_b." √† ".$heures_b." h ".$minutes_b;
 
-			$annee_f = substr($row[5],0,4);
-			$mois_f =  substr($row[5],5,2);
-			$jour_f =  substr($row[5],8,2);
-			$heures_f = substr($row[5],11,2);
-			$minutes_f = substr($row[5],14,2);
-			$secondes_f = substr($row[5],17,2);
-			$date_fin = $jour_f."/".$mois_f."/".$annee_f." ‡ ".$heures_f." h ".$minutes_f;
+			$annee_f = mb_substr($row[5],0,4);
+			$mois_f =  mb_substr($row[5],5,2);
+			$jour_f =  mb_substr($row[5],8,2);
+			$heures_f = mb_substr($row[5],11,2);
+			$minutes_f = mb_substr($row[5],14,2);
+			$secondes_f = mb_substr($row[5],17,2);
+			$date_fin = $jour_f."/".$mois_f."/".$annee_f." √† ".$heures_f." h ".$minutes_f;
 			$end_time = mktime($heures_f, $minutes_f, $secondes_f, $mois_f, $jour_f, $annee_f);
 
 			$temp1 = '';
@@ -1254,20 +1280,20 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 			if ($end_time > $now) {
 				$temp1 = "<font color='green'>";
 				$temp2 = "</font>";
-			} else if (($row[4] == 1) or ($row[4] == 2) or ($row[4] == 3)) {
+			} else if (($row[4] == 1) or ($row[4] == 2) or ($row[4] == 3) or ($row[4] == 10)) {
 				//$temp1 = "<font color=orange>\n";
 				$temp1 = "<font color='#FFA500'>";
 				$temp2 = "</font>";
 			} else if ($row[4] == 4) {
-				$temp1 = "<b><font color='red'>";
-				$temp2 = "</font></b>";
+				$temp1 = "<strong><font color='red'>";
+				$temp2 = "</font></strong>";
 
 			}
 
 			echo "<tr>\n";
 			echo "<td class=\"col\">".$temp1.$date_debut.$temp2."</td>\n";
 			if ($row[4] == 2) {
-				echo "<td class=\"col\">".$temp1."Tentative de connexion<br />avec mot de passe erronÈ.".$temp2."</td>\n";
+				echo "<td class=\"col\">".$temp1."Tentative de connexion<br />avec mot de passe erron√©.".$temp2."</td>\n";
 			}
 			else {
 				echo "<td class=\"col\">".$temp1.$date_fin.$temp2."</td>\n";
@@ -1276,9 +1302,9 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 				$result_hostbyaddr = " - ".@gethostbyaddr($row[2]);
 			}
 			else if ($active_hostbyaddr == "no_local") {
-				if ((substr($row[2],0,3) == 127) or
-					(substr($row[2],0,3) == 10.) or
-					(substr($row[2],0,7) == 192.168)) {
+				if ((mb_substr($row[2],0,3) == 127) or
+					(mb_substr($row[2],0,3) == 10.) or
+					(mb_substr($row[2],0,7) == 192.168)) {
 					$result_hostbyaddr = "";
 				}
 				else {
@@ -1341,18 +1367,18 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
 	echo " value=365>Un an</option>\n";
 	echo "<option ";
 	if ($duree == 'all') echo "selected";
-	echo " value='all'>Le dÈbut</option>\n";
+	echo " value='all'>Le d√©but</option>\n";
 	echo "</select>\n";
 	echo "<input type=\"submit\" name=\"Valider\" value=\"Valider\" />\n";
 
 	echo "</form>\n";
 
-	echo "<p class='small'>** Les renseignements ci-dessus peuvent vous permettre de vÈrifier qu'une connexion pirate n'a pas ÈtÈ effectuÈe sur votre compte.
-	Dans le cas d'une connexion inexpliquÈe, vous devez immÈdiatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
+	echo "<p class='small'>** Les renseignements ci-dessus peuvent vous permettre de v√©rifier qu'une connexion pirate n'a pas √©t√© effectu√©e sur votre compte.
+	Dans le cas d'une connexion inexpliqu√©e, vous devez imm√©diatement en avertir l'<a href=\"mailto:" . getSettingValue("gepiAdminAdress") . "\">administrateur</a>.</p>\n";
 }
 
 /**
- * Affiche une action ‡ effectuer
+ * Affiche une action √† effectuer
  */
 function affiche_infos_actions() {
 	$sql="SELECT ia.* FROM infos_actions ia, infos_actions_destinataires iad WHERE
@@ -1385,7 +1411,7 @@ function affiche_infos_actions() {
 
 				echo "<div id='info_action_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
 					echo "<div style='float:right; width: 9em; text-align: right;'>\n";
-					echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->titre)."', 'Etes-vous s˚r de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\">Supprimer</span></a>";
+					echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->titre)."', 'Etes-vous s√ªr de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\">Supprimer</span></a>";
 					echo "</div>\n";
 
 					echo nl2br($lig->description);
@@ -1425,7 +1451,7 @@ function affiche_infos_actions() {
 
 
 /**
- * Affiche les accËs aux cahiers de texte
+ * Affiche les acc√®s aux cahiers de texte
  */
 function affiche_acces_cdt() {
 	$retour="";
@@ -1457,7 +1483,7 @@ function affiche_acces_cdt() {
 					$retour.="<div id='info_acces_cdt_pliage' style='float:right; width: 1em'>\n";
 					$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('conteneur')\"><span id='img_pliage_acces_cdt_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
 					$retour.="</div>\n";
-					$retour.="AccËs ouvert ‡ des CDT";
+					$retour.="Acc√®s ouvert √† des CDT";
 				$retour.="</div>\n";
 		
 				$retour.="<div id='info_acces_cdt_corps_conteneur'>\n";
@@ -1475,17 +1501,17 @@ function affiche_acces_cdt() {
 								$retour.="<div id='info_acces_cdt_pliage_$lig->id' style='float:right; width: 1em'>\n";
 								$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('$lig->id')\"><span id='img_pliage_acces_cdt_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
 								$retour.="</div>\n";
-								$retour.="AccËs CDT jusqu'au ".formate_date($lig->date2);
+								$retour.="Acc√®s CDT jusqu'au ".formate_date($lig->date2);
 							$retour.="</div>\n";
 			
 							$retour.="<div id='info_acces_cdt_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
 								if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
 									$retour.="<div style='float:right; width: 9em; text-align: right;'>\n";
-									$retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous s˚r de vouloir supprimer cet accËs')\">Supprimer l'accËs</span></a>";
+									$retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous s√ªr de vouloir supprimer cet acc√®s')\">Supprimer l'acc√®s</span></a>";
 									$retour.="</div>\n";
 								}
 	
-								$retour.="<p><b>L'accËs a ÈtÈ ouvert pour le motif suivant&nbsp;:</b><br />";
+								$retour.="<p><strong>L'acc√®s a √©t√© ouvert pour le motif suivant&nbsp;:</strong><br />";
 								$retour.=preg_replace("/\\\\r\\\\n/","<br />",$lig->description);
 								$retour.="</p>\n";
 	
@@ -1512,7 +1538,7 @@ function affiche_acces_cdt() {
 								}
 								$chaine_enseignements.="</ul>";
 								
-								$retour.="<p>Les CDT accessibles ‡ l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
+								$retour.="<p>Les CDT accessibles √† l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
 							$retour.="</div>\n";
 						$retour.="</div>\n";
 						if($cpt_id>0) {$chaine_id.=", ";}
@@ -1552,7 +1578,7 @@ function affiche_acces_cdt() {
 }
 
 /**
- * CrÈe une balise <p> avec les actions possibles sur un compte
+ * Cr√©e une balise <p> avec les actions possibles sur un compte
  *
  * @global string 
  * @param string $login Id de l'utilisateur
@@ -1569,10 +1595,10 @@ function affiche_actions_compte($login) {
 	$retour.="<p>\n";
 	if ($user['etat'] == "actif") {
 		$retour.="<a style='padding: 2px;' href='$gepiPath/gestion/security_panel.php?action=desactiver&amp;afficher_les_alertes_d_un_compte=y&amp;user_login=".$login;
-		$retour.=add_token_in_url()."'>DÈsactiver le compte</a>";
+		$retour.=add_token_in_url()."'>D√©sactiver le compte</a>";
 	} else {
 		$retour.="<a style='padding: 2px;' href='$gepiPath/gestion/security_panel.php?action=activer&amp;afficher_les_alertes_d_un_compte=y&amp;user_login=".$login;
-		$retour.=add_token_in_url()."'>RÈactiver le compte</a>";
+		$retour.=add_token_in_url()."'>R√©activer le compte</a>";
 	}
 	$retour.="<br />\n";
 	if ($user['observation_securite'] == 0) {
@@ -1584,10 +1610,10 @@ function affiche_actions_compte($login) {
 	}
 	if($user['niveau_alerte']>0) {
 		$retour.="<br />\n";
-		$retour.="Score cumulÈ&nbsp;: ".$user['niveau_alerte'];
+		$retour.="Score cumul√©&nbsp;: ".$user['niveau_alerte'];
 		$retour.="<br />\n";
 		$retour.="<a style='padding: 2px;' href='$gepiPath/gestion/security_panel.php?action=reinit_cumul&amp;afficher_les_alertes_d_un_compte=y&amp;user_login=".$login;
-		$retour.=add_token_in_url()."'>RÈinitialiser cumul</a>";
+		$retour.=add_token_in_url()."'>R√©initialiser cumul</a>";
 	}
 	$retour.="</p>\n";
 
@@ -1595,14 +1621,14 @@ function affiche_actions_compte($login) {
 }
 
 /**
- * InsËre une fonction javascript pour passer en gras/normal le label associÈ ‡ un champ checkbox
+ * Ins√®re une fonction javascript pour passer en gras/normal le label associ√© √† un champ checkbox
  *
- * @param string $nom_js_func le nom de la fonction javascript (par dÈfaut 'checkbox_change')
- * @param string $prefixe_texte le prÈfixe de l'id du label associÈ (par dÈfaut 'texte_')
+ * @param string $nom_js_func le nom de la fonction javascript (par d√©faut 'checkbox_change')
+ * @param string $prefixe_texte le pr√©fixe de l'id du label associ√© (par d√©faut 'texte_')
  *               Si l'id du checkbox est id_groupe_12, le label doit avoir l'id texte_id_groupe_12
  * @param string $avec_balise_script 'n': On ne renvoye que le texte de la fonction
  *                                   'y': On renvoye le texte entre balises <script>
- * Sur les checkbox, insÈrer onchange="checkbox_change(this.id)"
+ * Sur les checkbox, ins√©rer onchange="checkbox_change(this.id)"
  * @return string Le texte de la fonction javascript
  */
 function js_checkbox_change_style($nom_js_func='checkbox_change', $prefixe_texte='texte_', $avec_balise_script="n") {
@@ -1625,6 +1651,293 @@ function js_checkbox_change_style($nom_js_func='checkbox_change', $prefixe_texte
 	return $retour;
 }
 
+$tableau_type_login=array('name', 'name8', 'fname8', 'fname19', 'firstdotname', 'firstdotname19', 'namef8', 'lcs', 'name9_p', 'p_name9', 'name9-p', 'p-name9', 'name9.p', 'p.name9', 'name9_ppp', 'ppp_name9', 'name9-ppp', 'ppp-name9', 'name9.ppp', 'ppp.name9');
+$tableau_type_login_description=array('nom', 
+'nom (<em>tronqu√© √† 8 caract√®res</em>)', 
+'pnom (<em>tronqu√© √† 8 caract√®res</em>)', 
+'pnom (<em>tronqu√© √† 19 caract√®res</em>)', 
+'prenom.nom', 
+'prenom.nom (<em>tronqu√© √† 19 caract√®res</em>)', 
+'nomp (<em>tronqu√© √† 8 caract√®res</em>)', 
+'pnom (<em>fa√ßon LCS</em>)', 
+'nom tronqu√© √† 9 caract√®res + _ + initiale du pr√©nom', 
+'initiale du pr√©nom + _ + nom tronqu√© √† 9 caract√®res', 
+'nom tronqu√© √† 9 caract√®res + - + initiale du pr√©nom', 
+'initiale du pr√©nom + - + nom tronqu√© √† 9 caract√®res', 
+'nom tronqu√© √† 9 caract√®res +  + initiale du pr√©nom', 
+'initiale du pr√©nom + . + nom tronqu√© √† 9 caract√®res', 
+'nom tronqu√© √† 9 caract√®res + _ + 3 premiers caract√®res du pr√©nom', 
+'3 premiers caract√®res du pr√©nom + _ + nom tronqu√© √† 9 caract√®res', 
+'nom tronqu√© √† 9 caract√®res + - + 3 premiers caract√®res du pr√©nom', 
+'3 premiers caract√®res du pr√©nom + - + nom tronqu√© √† 9 caract√®res', 
+'nom tronqu√© √† 9 caract√®res + . + 3 premiers caract√®res du pr√©nom', 
+'3 premiers caract√®res du pr√©nom + . + nom tronqu√© √† 9 caract√®res');
+
+/**
+ * Ins√®re les champs radio de choix du format de login
+ * @param string $nom_champ : le nom du champ de formulaire
+ * @param string $default_login_gen_type : le format par d√©faut
+ * @return string Les champs radio
+ */
+function champs_radio_choix_format_login($nom_champ, $default_login_gen_type="name") {
+	global $tableau_type_login, $tableau_type_login_description;
+
+	$retour="";
+
+	for($i=0;$i<count($type_login);$i++) {
+		$retour.="<input type='radio' name='".$nom_champ."' id='".$nom_champ."_".$tableau_type_login[$i]."' value='".$tableau_type_login[$i]."' ";
+		if($default_login_gen_type==$tableau_type_login[$i]) {
+			$retour.="checked='checked' ";
+		}
+		$retour.=" onchange='changement()'";
+		$retour.="/> <label for='".$nom_champ."_".$tableau_type_login[$i]."'  style='cursor: pointer;'>".$tableau_type_login_description[$i]."</label>\n";
+		$retour.="<br />\n";
+	}
+
+	if (getSettingValue("use_ent") == "y") {
+		$retour.="<input type='radio' name='".$nom_champ."' id='".$nom_champ."_ent' value='ent' checked='checked' ";
+		$retour.="onchange='changement()' ";
+		$retour.="/>\n";
+		$retour.="<label for='".$nom_champ."_ent'  style='cursor: pointer;'>
+			Les logins sont produits par un ENT (<span title=\"Vous devez adapter le code du fichier ci-dessus vers la ligne 710.\">Attention !</span>)</label>\n";
+		$retour.="<br />\n";
+	}
+	$retour.="<br />\n";
+
+	return $retour;
+}
+
+/**
+ * Ins√®re le champ select de choix du format de login
+ * @param string $nom_champ : le nom du champ de formulaire
+ * @param string $default_login_gen_type : le format par d√©faut
+ * @return string Le champ select avec ses options
+ */
+function champs_select_choix_format_login($nom_champ, $default_login_gen_type="name") {
+	global $tableau_type_login, $tableau_type_login_description;
+
+	$retour="<select name='".$nom_champ."' onchange='changement()'>\n";
+
+	for($i=0;$i<count($tableau_type_login);$i++) {
+		$retour.="<option value='".$tableau_type_login[$i]."'";
+		if($default_login_gen_type==$tableau_type_login[$i]) {
+			$retour.=" selected='true'";
+		}
+		$retour.=" onchange='changement()'";
+		$retour.=">".$tableau_type_login_description[$i]."</option>\n";
+	}
+
+	$retour.="</select>\n";
+
+	return $retour;
+}
+
+
+/**
+ * Ins√®re un champ input de choix du format de login
+ * @param string $nom_champ : le nom du champ de formulaire
+ * @param string $default_login_gen_type : le format par d√©faut
+ * @return string Le champ input
+*/
+function champ_input_choix_format_login($nom_champ, $default_login_gen_type="nnnnnnnnnnnnnnnnnnnn", $longueur_champ=20, $longueur_max_champ=48, $avec_infobulle_explication='y') {
+	global $posDiv_infobulle;
+	global $tabid_infobulle;
+	global $unite_div_infobulle;
+	global $niveau_arbo;
+	global $pas_de_decalage_infobulle;
+	global $class_special_infobulle;
+	global $tabdiv_infobulle;
+
+	$retour="<input type='text' name='$nom_champ' id='$nom_champ' value='$default_login_gen_type' size='$longueur_champ' maxlength='$longueur_max_champ' />\n";
+
+	if($avec_infobulle_explication=='y') {
+		$titre_infobulle="Formats de login";
+
+		$texte_infobulle="<h4>Contraintes sur le format</h4>
+<ul>
+	<li>Au maximum 48 caract√®res.</li>
+	<li>Au moins une lettre du pr√©nom et une lettre du nom (<em>quel que soit l'ordre</em>).</li>
+	<li>Un caract√®re entre le pr√©nom et le nom parmi \"<strong>.-_</strong>\", ou aucun.</li>
+</ul>
+<hr />
+<h4>M√©thode employ√©e</h4>
+<p>
+	Le mod√®le est indiqu√© √† l'aide d'une suite de caract√®res.<br />
+	Exemples pour un utilisateur se nommant <strong>Jean Aimarre</strong>.
+</p>
+<ul>
+	<li>\"<strong>ppp.nnnnnnnn</strong>\" donnera \"<strong>jea.aimarre</strong>\"</li>
+
+	<li>\"<strong>ppp-nnn</strong>\" donnera \"<strong>jea-aim</strong>\"</li>
+	<li>\"<strong>p_nnnnnnnnnnn</strong>\" donnera \"<strong>j_aimarre</strong>\"</li>
+	<li>\"<strong>pnnnnn</strong>\" donnera \"<strong>jaimar</strong>\"</li>
+
+	<li>\"<strong>nnnnnnnnp</strong>\" donnera \"<strong>aimarrej</strong>\"</li>
+	<li>\"<strong>n.ppp</strong>\" donnera \"<strong>a.jea</strong>\"</li>
+</ul>\n";
+
+		$tabdiv_infobulle[]=creer_div_infobulle('div_explication_formats_login_'.$nom_champ,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+		//$retour.=creer_div_infobulle('div_explication_formats_login',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+
+		$retour.=" <a href='#' onclick=\"afficher_div('div_explication_formats_login_$nom_champ','y',20,20); return false\" onmouseover=\"delais_afficher_div('div_explication_formats_login_$nom_champ','y',20,20,1000,20,20)\" onmouseout=\"cacher_div('div_explication_formats_login_.$nom_champ')\"><img src='../images/icons/ico_question_petit.png' width='15' height='15' alt='' title='aide' /></a>";
+	}
+
+	$retour.="<br />\n";
+	$retour.="Casse du login&nbsp;: <label for='".$nom_champ."_casse_min'>minuscules</label><input type='radio' name='".$nom_champ."_casse' id='".$nom_champ."_casse_min' value='min' ";
+	if((getSettingValue($nom_champ.'_casse')=='min')||(getSettingValue($nom_champ.'_casse')=='')) {$retour.="checked='checked' ";}
+	$retour.="/> / \n";
+	$retour.="<input type='radio' name='".$nom_champ."_casse' id='".$nom_champ."_casse_maj' value='maj' ";
+	if(getSettingValue($nom_champ.'_casse')=='maj') {$retour.="checked='checked' ";}
+	$retour.="/><label for='".$nom_champ."_casse_maj'> majuscules</label>\n";
+
+	return $retour;
+}
+
+/**
+ * Test du format de login propos√©
+ * @param string $format_login : le format de login propos√©
+ * @return boolean : true/false selon que le format est valide ou non
+*/
+function check_format_login($format_login) {
+	if($format_login=="") {
+		$test_profil = false;
+	}
+	elseif(mb_strlen($format_login)>48) {
+		$test_profil = false;
+	}
+	else {
+		$test_profil = (preg_match("#^p*[._-]?n*$#", $format_login)) ? true : false;
+		$test_profil = (preg_match("#^n*[._-]?p*$#", $format_login)) ? true : $test_profil;
+	}
+	return $test_profil;
+}
+
+/**
+ * Test JavaScript du format de login propos√© pour v√©rification avant submit
+ * @param string $nom_js_func : le nom de la fonction JS √† ins√©rer
+ * @param string $avec_balise_script 'n': On ne renvoye que le texte de la fonction
+ *                                   'y': On renvoye le texte entre balises <script>
+ * @return boolean : true/false selon que le format est valide ou non
+*/
+function insere_js_check_format_login($nom_js_func, $avec_balise_script="n") {
+	$retour="";
+	if($avec_balise_script!="n") {$retour.="<script type='text/javascript'>\n";}
+	$retour.="
+	function $nom_js_func(format) {
+		if((format=='')||(format.length>48)) {
+			test = false;
+		}
+		else {
+			var reg1 = new RegExp(\"^p*[._-]?n*$\",\"g\");
+			var reg2 = new RegExp(\"^n*[._-]?p*$\",\"g\");
+			test = ( reg1.test(format) || reg2.test(format) ) ? true : false ;
+		}
+		return test;
+	}\n";
+	if($avec_balise_script!="n") {$retour.="</script>\n";}
+	return $retour;
+}
+
+function check_param_bloc_adresse_html($a4_ou_a3="a4") {
+	if($a4_ou_a3=="a4") {
+		$largeur_page=210;
+		$hauteur_page=297;
+	}
+	else {
+		$largeur_page=297;
+		$hauteur_page=420;
+	}
+	
+	$retour="";
+	
+	$temoin_erreur="n";
+	
+	$addressblock_padding_right=getSettingValue('addressblock_padding_right');
+	if(($addressblock_padding_right=='')||(!preg_match('/^[0-9]*$/',$addressblock_padding_right))) {
+		$retour.="La valeur de l'espace √† droite du bloc adresse n'est pas valide&nbsp;: '$addressblock_padding_right'<br />";
+		$temoin_erreur="y";
+	}
+	
+	$addressblock_length=getSettingValue('addressblock_length');
+	if(($addressblock_length=='')||(!preg_match('/^[0-9]*$/',$addressblock_length))) {
+		$retour.="La valeur de la longueur du bloc adresse n'est pas valide&nbsp;: '$addressblock_length'<br />";
+		$temoin_erreur="y";
+	}
+	
+	if($temoin_erreur!="y") {
+		if($addressblock_padding_right+$addressblock_length>=$largeur_page) {
+			$retour.="La somme des longueur du bloc adresse et de l'espace √† droite du bloc adresse d√©passe la largeur de la page&nbsp;: $addressblock_padding_right + $addressblock_length >= $largeur_page<br />";
+		}
+	}
+	
+	$temoin_erreur="n";
+	
+	$addressblock_padding_top=getSettingValue('addressblock_padding_top');
+	$addressblock_padding_text=getSettingValue('addressblock_padding_text');
+	if(($addressblock_padding_top=='')||(!preg_match('/^[0-9]*$/',$addressblock_padding_top))) {
+		$retour.="La valeur de l'espace au-dessus du bloc adresse n'est pas valide&nbsp;: '$addressblock_padding_top'<br />";
+		$temoin_erreur="y";
+	}
+	
+	if(($addressblock_padding_text=='')||(!preg_match('/^[0-9]*$/',$addressblock_padding_text))) {
+		$retour.="La valeur de l'espace au-dessous du bloc adresse n'est pas valide&nbsp;: '$addressblock_padding_text'<br />";
+		$temoin_erreur="y";
+	}
+	
+	if($temoin_erreur!="y") {
+		if($addressblock_padding_top+$addressblock_padding_text>=$hauteur_page) {
+			$retour.="La somme des espaces au-dessus et au-dessous du bloc adresse d√©passent la hauteur de la page&nbsp;: $addressblock_padding_top + $addressblock_padding_text >= $hauteur_page<br />";
+		}
+	}
+	
+	// Pourcentages:
+	$addressblock_logo_etab_prop=getSettingValue('addressblock_logo_etab_prop');
+	if(($addressblock_logo_etab_prop=='')||(!preg_match('/^[0-9]*$/',$addressblock_logo_etab_prop))) {
+		$retour.="La valeur de la proportion horizontale allou√©e au logo de l'√©tablissement n'est pas valide&nbsp;: '$addressblock_logo_etab_prop'<br />";
+	}
+	elseif($addressblock_logo_etab_prop>100) {
+		$retour.="La valeur de la proportion horizontale allou√©e au logo de l'√©tablissement d√©passe les 100%&nbsp;: '$addressblock_logo_etab_prop'<br />";
+	}
+	
+	$addressblock_classe_annee=getSettingValue('addressblock_classe_annee');
+	if(($addressblock_classe_annee=='')||(!preg_match('/^[0-9]*$/',$addressblock_classe_annee))) {
+		$retour.="La valeur de la proportion horizontale allou√©e au bloc 'Classe, ann√©e, p√©riode' n'est pas valide&nbsp;: '$addressblock_classe_annee'<br />";
+	}
+	elseif($addressblock_classe_annee>100) {
+		$retour.="La valeur de la proportion horizontale allou√©e au bloc 'Classe, ann√©e, p√©riode' n'est pas valide&nbsp;: '$addressblock_classe_annee'<br />";
+	}
+	
+	return $retour;
+}
+
+/**
+ * Insertion d'un lien destin√© √† provoquer l'insertion du code <img src...>
+ * vers l'url de l'image pass√©e en param√®tre.
+  *
+ * @param string $url_img : Url de l'image
+ *
+ * @return string : Chaine HTML <div float:right...><a href...><img...></a></div>
+*/
+function insere_lien_insertion_image_dans_ckeditor($url_img) {
+	$tmp_largeur='';
+	$tmp_hauteur='';
+	$tmp_size = getimagesize($url_img);
+	if($tmp_size) {
+		// Pour que l'image puisse √™tre redimensionn√©e facilement dans la page, on fixe la largeur max √† 400px
+		$tmp_largeur_max=400;
+
+		if(($tmp_size[0]>$tmp_largeur_max)&&($tmp_size[1]>20)) {
+			$tmp_largeur=$tmp_largeur_max;
+			$tmp_hauteur=round($tmp_size[1]*$tmp_largeur_max/$tmp_size[0]);
+		}
+		else {
+			$tmp_largeur=$tmp_size[0];
+			$tmp_hauteur=$tmp_size[1];
+		}
+	}
+	return "<div style='float:right; width:18px;'><a href=\"javascript:insere_image_dans_ckeditor('".$url_img."','$tmp_largeur','$tmp_hauteur')\" title='Ins√©rer cette image dans le texte'><img src='../images/up.png' width='18' height='18' alt='Ins√©rer cette image dans le texte' /></a></div>";
+}
+
 /** fonction alertant sur la configuration de suhosin
  *
  * @return string Chaine de texte HTML 
@@ -1634,8 +1947,8 @@ function alerte_config_suhosin() {
 
 	$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
 	if($suhosin_post_max_totalname_length!='') {
-		$retour.="<p>Le module suhosin est activÈ.<br />\nUn paramÈtrage trop restrictif de ce module peut perturber le fonctionnement de Gepi, particuliËrement dans les pages comportant de nombreux champs de formulaire (<i>comme par exemple dans la page de saisie des apprÈciations par les professeurs</i>)</p>\n";
-		$retour.="<p>La page d'extraction des moyennes permettant de modifier/corriger des valeurs propose un trËs grand nombre de champs.<br />Le module suhosin risque de poser des problËmes.</p>";
+		$retour.="<p>Le module suhosin est activ√©.<br />\nUn param√©trage trop restrictif de ce module peut perturber le fonctionnement de Gepi, particuli√®rement dans les pages comportant de nombreux champs de formulaire (<i>comme par exemple dans la page de saisie des appr√©ciations par les professeurs</i>)</p>\n";
+		$retour.="<p>La page d'extraction des moyennes permettant de modifier/corriger des valeurs propose un tr√®s grand nombre de champs.<br />Le module suhosin risque de poser des probl√®mes.</p>";
 
 		$tab_suhosin=array('suhosin.cookie.max_totalname_length', 
 		'suhosin.get.max_vars', 
@@ -1653,12 +1966,12 @@ function alerte_config_suhosin() {
 		}
 		$retour.="</ul>\n";
 
-		$retour.="En cas de problËme, vous pouvez, soit dÈsactiver le module, soit augmenter les valeurs.<br />\n";
-		$retour.="C'est gÈnÈralement la valeur de 'suhosin.post.max_vars' qui pose problËme.<br />\n";
-		$retour.="Le fichier de configuration de suhosin est habituellement en /etc/php5/conf.d/suhosin.ini<br />\nEn cas de modification de ce fichier, pensez ‡ relancer le service apache ensuite pour prendre en compte la modification.<br />\n";
+		$retour.="En cas de probl√®me, vous pouvez, soit d√©sactiver le module, soit augmenter les valeurs.<br />\n";
+		$retour.="C'est g√©n√©ralement la valeur de 'suhosin.post.max_vars' qui pose probl√®me.<br />\n";
+		$retour.="Le fichier de configuration de suhosin est habituellement en /etc/php5/conf.d/suhosin.ini<br />\nEn cas de modification de ce fichier, pensez √† relancer le service apache ensuite pour prendre en compte la modification.<br />\n";
 	}
 	else {
-		$retour.="<p>Le module suhosin n'est pas activÈ.<br />Il ne peut pas perturver Gepi.</p>\n";
+		$retour.="<p>Le module suhosin n'est pas activ√©.<br />Il ne peut pas perturber Gepi.</p>\n";
 	}
 	return $retour;
 }

@@ -24,7 +24,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 
 	/** the related TableMap class for this table */
 	const TM_CLASS = 'JNotificationResponsableEleveTableMap';
-	
+
 	/** The total number of columns. */
 	const NUM_COLUMNS = 2;
 
@@ -42,7 +42,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 
 	/** The default string format for model objects of the related table **/
 	const DEFAULT_STRING_FORMAT = 'YAML';
-	
+
 	/**
 	 * An identiy map to hold any loaded instances of JNotificationResponsableEleve objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -59,8 +59,8 @@ abstract class BaseJNotificationResponsableElevePeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('ANotificationId', 'PersId', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('aNotificationId', 'persId', ),
+		BasePeer::TYPE_PHPNAME => array ('ANotificationId', 'ResponsableEleveId', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('aNotificationId', 'responsableEleveId', ),
 		BasePeer::TYPE_COLNAME => array (self::A_NOTIFICATION_ID, self::PERS_ID, ),
 		BasePeer::TYPE_RAW_COLNAME => array ('A_NOTIFICATION_ID', 'PERS_ID', ),
 		BasePeer::TYPE_FIELDNAME => array ('a_notification_id', 'pers_id', ),
@@ -74,8 +74,8 @@ abstract class BaseJNotificationResponsableElevePeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('ANotificationId' => 0, 'PersId' => 1, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('aNotificationId' => 0, 'persId' => 1, ),
+		BasePeer::TYPE_PHPNAME => array ('ANotificationId' => 0, 'ResponsableEleveId' => 1, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('aNotificationId' => 0, 'responsableEleveId' => 1, ),
 		BasePeer::TYPE_COLNAME => array (self::A_NOTIFICATION_ID => 0, self::PERS_ID => 1, ),
 		BasePeer::TYPE_RAW_COLNAME => array ('A_NOTIFICATION_ID' => 0, 'PERS_ID' => 1, ),
 		BasePeer::TYPE_FIELDNAME => array ('a_notification_id' => 0, 'pers_id' => 1, ),
@@ -280,7 +280,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 	{
 		if (Propel::isInstancePoolingEnabled()) {
 			if ($key === null) {
-				$key = serialize(array((string) $obj->getANotificationId(), (string) $obj->getPersId()));
+				$key = serialize(array((string) $obj->getANotificationId(), (string) $obj->getResponsableEleveId()));
 			} // if key === null
 			self::$instances[$key] = $obj;
 		}
@@ -300,7 +300,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 	{
 		if (Propel::isInstancePoolingEnabled() && $value !== null) {
 			if (is_object($value) && $value instanceof JNotificationResponsableEleve) {
-				$key = serialize(array((string) $value->getANotificationId(), (string) $value->getPersId()));
+				$key = serialize(array((string) $value->getANotificationId(), (string) $value->getResponsableEleveId()));
 			} elseif (is_array($value) && count($value) === 2) {
 				// assume we've been passed a primary key
 				$key = serialize(array((string) $value[0], (string) $value[1]));
@@ -371,7 +371,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 	}
 
 	/**
-	 * Retrieves the primary key from the DB resultset row 
+	 * Retrieves the primary key from the DB resultset row
 	 * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
 	 * a multi-column primary key, an array of the primary key columns will be returned.
 	 *
@@ -468,9 +468,9 @@ abstract class BaseJNotificationResponsableElevePeer {
 		if (!$criteria->hasSelectClause()) {
 			JNotificationResponsableElevePeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -518,9 +518,9 @@ abstract class BaseJNotificationResponsableElevePeer {
 		if (!$criteria->hasSelectClause()) {
 			JNotificationResponsableElevePeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -700,9 +700,9 @@ abstract class BaseJNotificationResponsableElevePeer {
 		if (!$criteria->hasSelectClause()) {
 			JNotificationResponsableElevePeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -835,7 +835,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(JNotificationResponsableElevePeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -843,9 +843,9 @@ abstract class BaseJNotificationResponsableElevePeer {
 		if (!$criteria->hasSelectClause()) {
 			JNotificationResponsableElevePeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -885,7 +885,7 @@ abstract class BaseJNotificationResponsableElevePeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(JNotificationResponsableElevePeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -893,9 +893,9 @@ abstract class BaseJNotificationResponsableElevePeer {
 		if (!$criteria->hasSelectClause()) {
 			JNotificationResponsableElevePeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 

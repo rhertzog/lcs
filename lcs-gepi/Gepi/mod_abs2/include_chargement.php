@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: include_chargement.php 7822 2011-08-18 18:56:42Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,17 +24,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-header('Content-Type: text/html; charset=ISO-8859-1');
-$compteur = isset($_GET['compteur']) ? (int) htmlentities($_GET['compteur']) : Null;
+header('Content-Type: text/html; charset=utf-8');
+$compteur = isset($_GET['compteur']) ? (int) htmlspecialchars($_GET['compteur']) : Null;
 if (!is_int($compteur)) {
     die();
 }
 if ($compteur == "0") {
-    echo 'Chargement débuté';
+    echo 'Chargement dÃ©butÃ©';
 } elseif ($compteur == "100") {
-    echo 'Chargement terminé';
+    echo 'Chargement terminÃ©';
 } else {
-    echo 'Chargement effectué à ' . $compteur . ' %';
+    echo 'Chargement effectuÃ© Ã  ' . $compteur . ' %';
 }
 echo'<table style="border:1px solid black;width:215px;">
 <tr style="border:1px solid black">';

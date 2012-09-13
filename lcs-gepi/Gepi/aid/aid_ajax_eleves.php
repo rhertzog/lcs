@@ -3,8 +3,6 @@
 /**
  * Fichier de traitement des demandes en ajax pour les aid
  *
- * @version $Id: aid_ajax_eleves.php 1469 2008-02-07 11:47:33Z jjocal $
- *
  * Copyright 2001, 2008 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
  * This file is part of GEPI.
@@ -30,7 +28,7 @@ $id_eleve = isset($_POST["id_eleve"]) ? $_POST["id_eleve"] : NULL;
 $id_aid = isset($_POST["id_aid"]) ? $_POST["id_aid"] : NULL;
 
 if ($id_eleve = '') {
-	// On quitte s'il n'y a pas d'élève
+	// On quitte s'il n'y a pas d'Ã©lÃ¨ve
 	exit('coucou 1');
 //}
 //elseif($id_aid = '') {
@@ -39,7 +37,7 @@ if ($id_eleve = '') {
 }
 else {
 	// Traitement des demandes
-	// On insère le nouveau nom après avoir vérifier s'il est déjà membre de l'AID
+	// On insÃ¨re le nouveau nom aprÃ¨s avoir vÃ©rifier s'il est dÃ©jÃ  membre de l'AID
 	echo 'fraise';
 }
 ?>

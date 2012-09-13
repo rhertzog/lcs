@@ -2,7 +2,6 @@
 /**
  * Export du carnet de notes
  * 
- * $Id: export_cahier_notes.php 7758 2011-08-15 00:04:41Z regis $
  * 
  * @copyright Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * @license GNU/GPL, 
@@ -20,7 +19,7 @@
  * @see Session::security_check()
  * @see Verif_prof_cahier_notes()
  * @see ss_zip
- * @todo utiliser TBSOoo pour générer l'export odt
+ * @todo utiliser TBSOoo pour gÃ©nÃ©rer l'export odt
  */
 
 /* This file is part of GEPI.
@@ -62,9 +61,9 @@ if (!checkAccess()) {
 }
 
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_carnets_notes")!='y') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 
@@ -106,8 +105,8 @@ else {
 				$msg="Vous tentez de supprimer des fichiers qui ne vous appartiennent pas.";
 			}
 			else {
-				if(strlen(preg_replace("/[a-zA-Z0-9_\.]/","",strtr($nettoyage,"-","_")))!=0) {
-					$msg="Le fichier proposé n'est pas valide: '".preg_replace("/[a-zA-Z0-9_\.]/","",strtr($nettoyage,"-","_"))."'";
+				if(mb_strlen(preg_replace("/[a-zA-Z0-9_\.]/","",strtr($nettoyage,"-","_")))!=0) {
+					$msg="Le fichier proposÃ© n'est pas valide: '".preg_replace("/[a-zA-Z0-9_\.]/","",strtr($nettoyage,"-","_"))."'";
 				}
 				else{
 					if(!file_exists("$chemin_temp/$nettoyage")) {
@@ -115,7 +114,7 @@ else {
 					}
 					else{
 						unlink("$chemin_temp/$nettoyage");
-						$msg=rawurlencode("Suppression réussie!");
+						$msg=rawurlencode("Suppression rÃ©ussie!");
 					}
 				}
 			}
@@ -132,9 +131,9 @@ else {
 	}
 }
 
-// On teste si le carnet de notes appartient bien à la personne connectée
+// On teste si le carnet de notes appartient bien Ã  la personne connectÃ©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+    $mess=rawurlencode("Vous tentez de pÃ©nÃ©trer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -159,11 +158,11 @@ if (count($current_group["classes"]["list"]) > 1) {
 }
 
 /**
- * Gestion des périodes
+ * Gestion des pÃ©riodes
  */
 include "../lib/periodes.inc.php";
 
-// On teste si la periode est vérouillée !
+// On teste si la periode est vÃ©rouillÃ©e !
 if (($current_group["classe"]["ver_periode"]["all"][$periode_num] <= 1) and (isset($id_devoir)) and ($id_devoir!='') ) {
   /**
    * @todo
@@ -172,7 +171,7 @@ if (($current_group["classe"]["ver_periode"]["all"][$periode_num] <= 1) and (iss
    * POUR L'IMPORT CE TEST SERAIT UTILE, MAIS PAS POUR L'EXPORT
    * VERIFIER ET VIRER
    */
-    $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes dont la période est bloquée !");
+    $mess=rawurlencode("Vous tentez de pÃ©nÃ©trer dans un carnet de notes dont la pÃ©riode est bloquÃ©e !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -189,12 +188,12 @@ if(!isset($type_export)) {
 	//**************** EN-TETE *****************
 	$titre_page = "Export des notes";
     /**
-     * Entête de la page
+     * EntÃªte de la page
      */
-	require_once("../lib/header.inc");
+	require_once("../lib/header.inc.php");
 	//**************** FIN EN-TETE *****************
 
-	$titre=htmlentities($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")";
+	$titre=htmlspecialchars($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")";
 	$titre.=" - EXPORT";
 
 	// Mettre la ligne de liens de retour,...
@@ -202,7 +201,7 @@ if(!isset($type_export)) {
 	echo "<form enctype=\"multipart/form-data\" name= \"form1\" action=\"".$_SERVER['PHP_SELF']."\" method=\"get\">\n";
     echo "<p class='bold'>\n";
 
-    echo "<a href='index.php?id_groupe=".$current_group["id"]."&amp;periode_num=$periode_num'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour ".htmlentities($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")"." </a>|\n";
+    echo "<a href='index.php?id_groupe=".$current_group["id"]."&amp;periode_num=$periode_num'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour ".htmlspecialchars($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")"." </a>|\n";
 
 	if($_SESSION['statut']=='professeur') {
 		$login_prof_groupe_courant=$_SESSION["login"];
@@ -211,7 +210,7 @@ if(!isset($type_export)) {
 		$login_prof_groupe_courant=$current_group["profs"]["list"][0];
 	}
 
-	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
+	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matiÃ¨re");
 
 	if(!empty($tab_groups)) {
 
@@ -224,7 +223,7 @@ if(!isset($type_export)) {
 		$id_grp_suiv=0;
 		$temoin_tmp=0;
 		for($loop=0;$loop<count($tab_groups);$loop++) {
-			// On ne retient que les groupes qui ont un nombre de périodes au moins égal à la période sélectionnée
+			// On ne retient que les groupes qui ont un nombre de pÃ©riodes au moins Ã©gal Ã  la pÃ©riode sÃ©lectionnÃ©e
 			if($tab_groups[$loop]["nb_periode"]>=$periode_num) {
 				if($tab_groups[$loop]['id']==$id_groupe){
 					$num_groupe=$loop;
@@ -278,7 +277,7 @@ if(!isset($type_export)) {
 </script>\n";
 
 			echo "<input type='hidden' name='periode_num' id='periode_num' value='$periode_num' />\n";
-			echo "Export en période $periode_num: <select name='id_racine' id='id_racine' onchange=\"confirm_changement_enseignement(change, '$themessage');\">\n";
+			echo "Export en pÃ©riode $periode_num: <select name='id_racine' id='id_racine' onchange=\"confirm_changement_enseignement(change, '$themessage');\">\n";
 			echo $chaine_options_enseignements;
 			echo "</select> | \n";
 		}
@@ -290,17 +289,31 @@ if(!isset($type_export)) {
 	echo "<h2>$titre</h2>\n";
 	echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 	echo add_token_field();
+
 	echo "<p>Vous pouvez effectuer un export:<br />\n";
 	echo "<input type='hidden' name='id_racine' value='$id_racine' />\n";
-	echo "<input type='radio' name='type_export' id='type_export_csv' value='CSV' checked /><label for='type_export_csv' style='cursor: pointer;'> fichier CSV</label><br />\n";
+
+
+	$pref_export_cn=getPref($_SESSION['login'],'export_cn','csv');
+	echo "<input type='radio' name='type_export' id='type_export_csv' value='CSV' ";
+	if((getSettingValue("export_cn_ods")!='y')||
+		($pref_export_cn=='csv')) {
+		echo "checked ";
+	}
+	echo "/><label for='type_export_csv' style='cursor: pointer;'> fichier CSV</label><br />\n";
 
 	if(getSettingValue("export_cn_ods")=='y') {
-		echo "<input type='radio' name='type_export' id='type_export_ods' value='ODS' /><label for='type_export_ods' style='cursor: pointer;'> feuille de tableur ODS</label><br />\n";
+		echo "<input type='radio' name='type_export' id='type_export_ods' value='ODS' ";
+		if($pref_export_cn=='ods') {
+			echo "checked ";
+		}
+		echo "/><label for='type_export_ods' style='cursor: pointer;'> feuille de tableur ODS</label><br />\n";
 	}
+
 	echo "<input type='submit' name='envoyer' value='Valider' /></p>\n";
 	echo "</form>\n";
 /**
- * @todo On pourrait ajouter le ménage des fichiers de $chemin_ods ici en virant tout ce qui commence par $_SESSION['login'] et se termine par '.ods'...
+ * @todo On pourrait ajouter le mÃ©nage des fichiers de $chemin_ods ici en virant tout ce qui commence par $_SESSION['login'] et se termine par '.ods'...
  */
     
 /**
@@ -320,7 +333,9 @@ $nom_fic.="_".preg_replace("/[^a-zA-Z0-9_\. - ]/","",remplace_accents($nom_perio
 
 if($type_export=="CSV") {
 
-	// Génération du CSV
+	// GÃ©nÃ©ration du CSV
+
+	savePref($_SESSION['login'], 'export_cn', 'csv');
 
 	$nom_fic.=".csv";
 
@@ -333,7 +348,7 @@ if($type_export=="CSV") {
 
 	// On fait la liste des devoirs de ce carnet de notes
 	$appel_dev = mysql_query("select * from cn_devoirs where (id_racine='$id_racine') order by id_conteneur,date");
-	$nb_dev  = mysql_num_rows($appel_dev);
+	$nb_dev = mysql_num_rows($appel_dev);
 
 	$ligne_entete="GEPI_INFOS;GEPI_LOGIN_ELEVE;NOM;PRENOM;CLASSE;MOYENNE;GEPI_COL_1ER_DEVOIR";
 	$fd.="$ligne_entete\n";
@@ -348,20 +363,20 @@ if($type_export=="CSV") {
 	$ligne_info_dev[]="GEPI_DEV_COEF;;;;;Coefficient:";
 	$ligne_info_dev[]="GEPI_DEV_NOTE_SUR;;;;;Notation sur:";
 	$ligne_info_dev[]="GEPI_DEV_DATE;;;;;Date:";
-	$ligne_info_dev[]="INFOS;Login;Nom;Prénom;Classe;Moyennes:";
+	$ligne_info_dev[]="INFOS;Login;Nom;PrÃ©nom;Classe;Moyennes:";
 
-	// Pour mettre dans un tableur et améliorer... voir http://christianwtd.free.fr/index.php?rubrique=LecNotesClasse
-	// On peut faire plus simple: La fonction MOYENNE de OpenOffice Calc tient compte des valeurs non numériques.
+	// Pour mettre dans un tableur et amÃ©liorer... voir http://christianwtd.free.fr/index.php?rubrique=LecNotesClasse
+	// On peut faire plus simple: La fonction MOYENNE de OpenOffice Calc tient compte des valeurs non numÃ©riques.
 
 	$cpt=0;
 	while($lig_dev=mysql_fetch_object($appel_dev)) {
 
 		$id_dev[$cpt]=$lig_dev->id;
 		$nomc_dev[$cpt]=$lig_dev->nom_court;
-		// Problème avec les 17.5 qui sont convertis en dates
+		// ProblÃ¨me avec les 17.5 qui sont convertis en dates
 		$coef_dev[$cpt]=strtr($lig_dev->coef,".",",");
 		$note_sur_dev[$cpt]=$lig_dev->note_sur;
-		// Problème avec le format DATETIME
+		// ProblÃ¨me avec le format DATETIME
 		$tmptab=explode(" ",$lig_dev->date);
 		$tmptab2=explode("-",$tmptab[0]);
 		$date_dev[$cpt]=$tmptab2[2]."/".$tmptab2[1]."/".$tmptab2[0];
@@ -371,7 +386,7 @@ if($type_export=="CSV") {
 		$ligne_info_dev[2].=";".$note_sur_dev[$cpt];
 		$ligne_info_dev[3].=";".$date_dev[$cpt];
 		/**
-         * @todo A améliorer par la suite: calculer la moyenne de la classe:
+         * @todo A amÃ©liorer par la suite: calculer la moyenne de la classe:
          */
 		$sql="SELECT SUM(note) AS somme,COUNT(note) AS nb FROM cn_notes_devoirs WHERE (id_devoir='$id_dev[$cpt]' AND statut='')";
 		$res_moy=mysql_query($sql);
@@ -401,22 +416,22 @@ if($type_export=="CSV") {
 	$i = 0;
 	$order_by="";
 
-	// On commence par mettre la liste dans l'ordre souhaité
+	// On commence par mettre la liste dans l'ordre souhaitÃ©
 	if ($order_by != "classe") {
 		$liste_eleves = $current_group["eleves"][$periode_num]["users"];
 	} else {
 		// Ici, on tri par classe
-		// On va juste créer une liste des élèves pour chaque classe
+		// On va juste crÃ©er une liste des Ã©lÃ¨ves pour chaque classe
 		$tab_classes = array();
 		foreach($current_group["classes"]["list"] as $classe_id) {
 			$tab_classes[$classe_id] = array();
 		}
-		// On passe maintenant élève par élève et on les met dans la bonne liste selon leur classe
+		// On passe maintenant Ã©lÃ¨ve par Ã©lÃ¨ve et on les met dans la bonne liste selon leur classe
 		foreach($current_group["eleves"][$periode_num]["list"] as $e_login) {
 			$classe = $current_group["eleves"][$periode_num]["users"][$e_login]["classe"];
 			$tab_classes[$classe][$e_login] = $current_group["eleves"][$periode_num]["users"][$e_login];
 		}
-		// On met tout ça à la suite
+		// On met tout Ã§a Ã  la suite
 		$liste_eleves = array();
 		foreach($current_group["classes"]["list"] as $classe_id) {
 			$liste_eleves = array_merge($liste_eleves, $tab_classes[$classe_id]);
@@ -439,9 +454,9 @@ if($type_export=="CSV") {
 
 		$ligne_eleve="GEPI_LOGIN_ELEVE;".$eleve_login[$i].";".$eleve_nom[$i].";".$eleve_prenom[$i].";".$eleve_classe[$i];
 
-		// A améliorer par la suite: Récupérer/calculer la moyenne de l'élève
+		// A amÃ©liorer par la suite: RÃ©cupÃ©rer/calculer la moyenne de l'Ã©lÃ¨ve
 		$ligne_eleve.=";";
-		// Calculer la moyenne de l'élève est assez illusoire si on ne gère pas les boites et leurs coefficients...
+		// Calculer la moyenne de l'Ã©lÃ¨ve est assez illusoire si on ne gÃ¨re pas les boites et leurs coefficients...
 
 		while ($k < $nb_dev) {
 			$note_query = mysql_query("SELECT * FROM cn_notes_devoirs WHERE (login='$eleve_login[$i]' AND id_devoir='$id_dev[$k]')");
@@ -454,7 +469,7 @@ if($type_export=="CSV") {
 				$eleve_statut = @mysql_result($note_query, 0, "statut");
 				$eleve_note = @mysql_result($note_query, 0, "note");
 			}
-			// Problème avec les 17.5 qui sont convertis en dates -> 17/05/07
+			// ProblÃ¨me avec les 17.5 qui sont convertis en dates -> 17/05/07
 			$eleve_note=strtr($eleve_note,".",",");
 
 			if($eleve_statut=='v') {
@@ -476,16 +491,18 @@ if($type_export=="CSV") {
 	}
 
 	// On renvoye le fichier vers le navigateur:
-	echo $fd;
+	echo echo_csv_encoded($fd);
 	die();
 }
 elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 
 	/** 
-     * @todo Génération d'un fichier tableur...
-	 *  ... il faudra prévoir un nettoyage.
-	 * Il faudrait que l'option générer des ODS soit activable/désactivable par l'admin
+     * @todo GÃ©nÃ©ration d'un fichier tableur...
+	 *  ... il faudra prÃ©voir un nettoyage.
+	 * Il faudrait que l'option gÃ©nÃ©rer des ODS soit activable/dÃ©sactivable par l'admin
      */
+
+	savePref($_SESSION['login'], 'export_cn', 'ods');
 
 	// On fait la liste des devoirs de ce carnet de notes
 	$appel_dev = mysql_query("select * from cn_devoirs where (id_racine='$id_racine') order by id_conteneur,date");
@@ -498,19 +515,19 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 	while($lig_dev=mysql_fetch_object($appel_dev)) {
 
 		$id_dev[$cpt]=$lig_dev->id;
-		// Certains caractères comme le '°' que l'on met par exemple dans 'Devoir n°2' posent pb...
+		// Certains caractÃ¨res comme le 'Â°' que l'on met par exemple dans 'Devoir nÂ°2' posent pb...
 		$nomc_dev[$cpt]=preg_replace("/[^a-zA-Z0-9_\. - ]/","",remplace_accents($lig_dev->nom_court,'all'));
 
-		// Problème avec les 17.5 qui sont convertis en dates
+		// ProblÃ¨me avec les 17.5 qui sont convertis en dates
 		$coef_dev[$cpt]=strtr($lig_dev->coef,".",",");
 		$note_sur_dev[$cpt]=$lig_dev->note_sur;
 
-		// Problème avec le format DATETIME
+		// ProblÃ¨me avec le format DATETIME
 		$tmptab=explode(" ",$lig_dev->date);
 		$date_dev[$cpt]=$tmptab[0];
 		// Pour le fichier ODS, on veut des dates au format aaaa-mm-jj
 		$tmptab2=explode("-",$tmptab[0]);
-		if(strlen($tmptab2[0])==4) {$tmptab2[0]=substr($tmptab2[0],2,2);}
+		if(mb_strlen($tmptab2[0])==4) {$tmptab2[0]=mb_substr($tmptab2[0],2,2);}
 		$date_dev_fr[$cpt]=$tmptab2[2]."/".$tmptab2[1]."/".$tmptab2[0];
 
 
@@ -530,7 +547,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 	}
 
 
-	// Génération du fichier ODS
+	// GÃ©nÃ©ration du fichier ODS
 	
 	$instant=getdate();
 	$heure=$instant['hours'];
@@ -601,7 +618,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce6" office:value-type="string"><text:p>'.$nomc_dev[$i].'</text:p></table:table-cell>');
 	}
 
-	// PB: J'ai prévu un maximum de 46 colonnes de devoirs...
+	// PB: J'ai prÃ©vu un maximum de 46 colonnes de devoirs...
 	$nb_vide=46-$nb_dev;
 	$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce6" table:number-columns-repeated="'.$nb_vide.'"/>');
 	$ecriture=fwrite($fichier_tmp_xml,'</table:table-row>');
@@ -619,7 +636,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce6" office:value-type="float" office:value="'.strtr($coef_dev[$i],",",".").'"><text:p>'.$coef_dev[$i].'</text:p></table:table-cell>');
 	}
 
-	// PB: J'ai prévu un maximum de 46 colonnes de devoirs...
+	// PB: J'ai prÃ©vu un maximum de 46 colonnes de devoirs...
 	$nb_vide=46-$nb_dev;
 	$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:number-columns-repeated="'.$nb_vide.'" table:style-name="ce6"/>');
 	$ecriture=fwrite($fichier_tmp_xml,'</table:table-row>');
@@ -637,7 +654,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce6" office:value-type="float" office:value="'.strtr($note_sur_dev[$i],",",".").'"><text:p>'.$note_sur_dev[$i].'</text:p></table:table-cell>');
 	}
 
-	// PB: J'ai prévu un maximum de 46 colonnes de devoirs...
+	// PB: J'ai prÃ©vu un maximum de 46 colonnes de devoirs...
 	$nb_vide=46-$nb_dev;
 	$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:number-columns-repeated="'.$nb_vide.'" table:style-name="ce6"/>');
 	$ecriture=fwrite($fichier_tmp_xml,'</table:table-row>');
@@ -655,7 +672,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce7" office:value-type="date" office:date-value="'.$date_dev[$i].'"><text:p>'.$date_dev_fr[$i].'</text:p></table:table-cell>');
 	}
 
-	// PB: J'ai prévu un maximum de 46 colonnes de devoirs...
+	// PB: J'ai prÃ©vu un maximum de 46 colonnes de devoirs...
 	$nb_vide=46-$nb_dev;
 	$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell table:style-name="ce7" table:number-columns-repeated="'.$nb_vide.'"/>');
 	$ecriture=fwrite($fichier_tmp_xml,'</table:table-row>');
@@ -666,11 +683,11 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 
 	$alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	$tabcol=array();
-	for($i=0;$i<strlen($alphabet);$i++) {
-		$tabcol[$i]=substr($alphabet,$i,1);
+	for($i=0;$i<mb_strlen($alphabet);$i++) {
+		$tabcol[$i]=mb_substr($alphabet,$i,1);
 	}
-	for($i=strlen($alphabet);$i<2*strlen($alphabet);$i++) {
-		$tabcol[$i]="A".substr($alphabet,$i-strlen($alphabet),1);
+	for($i=mb_strlen($alphabet);$i<2*mb_strlen($alphabet);$i++) {
+		$tabcol[$i]="A".mb_substr($alphabet,$i-mb_strlen($alphabet),1);
 	}
 
 	// OpenOffice recalcule les valeurs lors de l'ouverture du document...
@@ -697,23 +714,23 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 
 	$order_by="";
 
-	// On commence par mettre la liste dans l'ordre souhaité
+	// On commence par mettre la liste dans l'ordre souhaitÃ©
 	if($order_by != "classe") {
 		$liste_eleves = $current_group["eleves"][$periode_num]["users"];
 	}
 	else{
 		// Ici, on tri par classe
-		// On va juste créer une liste des élèves pour chaque classe
+		// On va juste crÃ©er une liste des Ã©lÃ¨ves pour chaque classe
 		$tab_classes = array();
 		foreach($current_group["classes"]["list"] as $classe_id) {
 			$tab_classes[$classe_id] = array();
 		}
-		// On passe maintenant élève par élève et on les met dans la bonne liste selon leur classe
+		// On passe maintenant Ã©lÃ¨ve par Ã©lÃ¨ve et on les met dans la bonne liste selon leur classe
 		foreach($current_group["eleves"][$periode_num]["list"] as $e_login) {
 			$classe = $current_group["eleves"][$periode_num]["users"][$e_login]["classe"];
 			$tab_classes[$classe][$e_login] = $current_group["eleves"][$periode_num]["users"][$e_login];
 		}
-		// On met tout ça à la suite
+		// On met tout Ã§a Ã  la suite
 		$liste_eleves = array();
 		foreach($current_group["classes"]["list"] as $classe_id) {
 			$liste_eleves = array_merge($liste_eleves, $tab_classes[$classe_id]);
@@ -738,7 +755,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-row table:style-name="ro2">');
 		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell office:value-type="string"><text:p>GEPI_LOGIN_ELEVE</text:p></table:table-cell>');
 
-		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell office:value-type="string"><text:p>'.$eleve_login[$i].'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.caract_ooo($eleve_nom[$i]).'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.caract_ooo($eleve_prenom[$i]).'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.caract_ooo($eleve_classe[$i]).'</text:p></table:table-cell>');
+		$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell office:value-type="string"><text:p>'.$eleve_login[$i].'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.$eleve_nom[$i].'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.$eleve_prenom[$i].'</text:p></table:table-cell><table:table-cell office:value-type="string"><text:p>'.$eleve_classe[$i].'</text:p></table:table-cell>');
 
 		// OpenOffice recalcule les valeurs lors de l'ouverture du document...
 		$valeur_defaut=0;
@@ -769,7 +786,7 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
 				$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell office:value-type="string"><text:p>'.$eleve_note.'</text:p></table:table-cell>');
 			}
 			else{
-				// Problème avec les 17.5 qui sont convertis en dates -> 17/05/07
+				// ProblÃ¨me avec les 17.5 qui sont convertis en dates -> 17/05/07
 				$eleve_note_virg=strtr($eleve_note,".",",");
 
 				$ecriture=fwrite($fichier_tmp_xml,'<table:table-cell office:value-type="float" office:value="'.$eleve_note.'"><text:p>'.$eleve_note_virg.'</text:p></table:table-cell>');
@@ -809,64 +826,114 @@ elseif(($type_export=="ODS")&&(getSettingValue("export_cn_ods")=='y')) {
     
 	//set_time_limit(3000);
     /**
-     * Création d'un .odc 
+     * CrÃ©ation d'un .odc 
      */
-	require_once("../lib/ss_zip.class.php");
+	if(file_exists("../lib/ss_zip.class.php")) {
+		require_once("../lib/ss_zip.class.php");
 
-	$zip= new ss_zip('',6);
-	$zip->add_file("$tmp_fich",'content.xml');
+		$zip= new ss_zip('',6);
+		$zip->add_file("$tmp_fich",'content.xml');
 
-	// On n'ajoute pas les dossiers, ni les fichiers vides... ss_zip ne le supporte pas...
-	// ... et OpenOffice a l'air de supporter l'absence de ces dossiers/fichiers.
+		// On n'ajoute pas les dossiers, ni les fichiers vides... ss_zip ne le supporte pas...
+		// ... et OpenOffice a l'air de supporter l'absence de ces dossiers/fichiers.
 
-	$zip->add_file($chemin_modele_ods.'/Basic/script-lc.xml', 'Basic/script-lc.xml');
-	$zip->add_file($chemin_modele_ods.'/Basic/Standard/script-lb.xml', 'Basic/Standard/script-lb.xml');
-	$zip->add_file($chemin_modele_ods.'/Basic/Standard/Module1.xml', 'Basic/Standard/Module1.xml');
+		$zip->add_file($chemin_modele_ods.'/Basic/script-lc.xml', 'Basic/script-lc.xml');
+		$zip->add_file($chemin_modele_ods.'/Basic/Standard/script-lb.xml', 'Basic/Standard/script-lb.xml');
+		$zip->add_file($chemin_modele_ods.'/Basic/Standard/Module1.xml', 'Basic/Standard/Module1.xml');
 
-	// On ne met pas ce fichier parce que sa longueur vide fait une blague pour ss_zip.
+		// On ne met pas ce fichier parce que sa longueur vide fait une blague pour ss_zip.
 	
-	$zip->add_file($chemin_modele_ods.'/META-INF/manifest.xml', 'META-INF/manifest.xml');
-	$zip->add_file($chemin_modele_ods.'/settings.xml', 'settings.xml');
-	$zip->add_file($chemin_modele_ods.'/meta.xml', 'meta.xml');
-	$zip->add_file($chemin_modele_ods.'/Thumbnails/thumbnail.png', 'Thumbnails/thumbnail.png');
-	$zip->add_file($chemin_modele_ods.'/mimetype', 'mimetype');
-	$zip->add_file($chemin_modele_ods.'/styles.xml', 'styles.xml');
+		$zip->add_file($chemin_modele_ods.'/META-INF/manifest.xml', 'META-INF/manifest.xml');
+		$zip->add_file($chemin_modele_ods.'/settings.xml', 'settings.xml');
+		$zip->add_file($chemin_modele_ods.'/meta.xml', 'meta.xml');
+		$zip->add_file($chemin_modele_ods.'/Thumbnails/thumbnail.png', 'Thumbnails/thumbnail.png');
+		$zip->add_file($chemin_modele_ods.'/mimetype', 'mimetype');
+		$zip->add_file($chemin_modele_ods.'/styles.xml', 'styles.xml');
 
-	$zip->save("$tmp_fich.zip");
+		$zip->save("$tmp_fich.zip");
 
+		if(file_exists("$chemin_temp/$nom_fic")) {unlink("$chemin_temp/$nom_fic");}
+		rename("$tmp_fich.zip","$chemin_temp/$nom_fic");
 
-	if(file_exists("$chemin_temp/$nom_fic")) {unlink("$chemin_temp/$nom_fic");}
-	rename("$tmp_fich.zip","$chemin_temp/$nom_fic");
+		// Suppression du fichier content...xml
+		unlink($tmp_fich);
+	}
+	else {
+		$path = path_niveau();
+		$chemin_temp = $path."temp/".get_user_temp_directory()."/";
 
-	// Suppression du fichier content...xml
-	unlink($tmp_fich);
+		if (!defined('PCLZIP_TEMPORARY_DIR') || constant('PCLZIP_TEMPORARY_DIR')!=$chemin_temp) {
+			@define( 'PCLZIP_TEMPORARY_DIR', $chemin_temp);
+		}
+
+		$chemin_stockage = $chemin_temp."/".$nom_fic;
+
+		$dossier_a_traiter=$chemin_temp."export_cn_".strftime("%Y%m%d%H%M%S");
+		@mkdir($dossier_a_traiter);
+		copy($tmp_fich, $dossier_a_traiter."/content.xml");
+
+		@mkdir($dossier_a_traiter."/Basic");
+		@mkdir($dossier_a_traiter."/Basic/Standard");
+		@mkdir($dossier_a_traiter."/META-INF");
+		@mkdir($dossier_a_traiter."/Thumbnails");
+
+		$tab_fich_tmp=array('Basic/script-lc.xml', 'Basic/Standard/script-lb.xml', 'Basic/Standard/Module1.xml', 'META-INF/manifest.xml', 'settings.xml', 'meta.xml', 'Thumbnails/thumbnail.png', 'mimetype', 'styles.xml');
+		for($loop=0;$loop<count($tab_fich_tmp);$loop++) {
+			copy($chemin_modele_ods.'/'.$tab_fich_tmp[$loop], $dossier_a_traiter."/".$tab_fich_tmp[$loop]);
+		}
+
+		require_once($path.'lib/pclzip.lib.php');
+
+		if ($chemin_stockage !='') {
+			if(file_exists("$chemin_stockage")) {unlink("$chemin_stockage");}
+
+			//echo "\$chemin_stockage=$chemin_stockage<br />";
+			//echo "\$dossier_a_traiter=$dossier_a_traiter<br />";
+
+			$archive = new PclZip($chemin_stockage);
+			$v_list = $archive->create($dossier_a_traiter,
+				  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
+				  PCLZIP_OPT_ADD_PATH, '');
+
+			if ($v_list == 0) {
+				$msg="Erreur : ".$archive->errorInfo(TRUE);
+			}
+			/*
+			else {
+				$msg="Archive zip crÃ©Ã©e&nbsp;: <a href='$chemin_stockage'>$chemin_stockage</a>";
+			}
+			*/
+
+			deltree($dossier_a_traiter);
+		}
+	}
 
 	//**************** EN-TETE *****************
 	$titre_page = "Export des notes";
     /**
-     * Entête de la page
+     * EntÃªte de la page
      */
-	require_once("../lib/header.inc");
+	require_once("../lib/header.inc.php");
 	//**************** FIN EN-TETE *****************
 
-	$titre=htmlentities($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")";
+	$titre=htmlspecialchars($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")";
 	$titre.=" - EXPORT";
 
 	// Mettre la ligne de liens de retour,...
     echo "<div class='norme'><p class='bold'>\n";
     echo "<a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour accueil </a>|\n";
-    echo "<a href='index.php?id_groupe=".$current_group["id"]."&amp;periode_num=$periode_num'> ".htmlentities($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")"." </a>|\n";
+    echo "<a href='index.php?id_groupe=".$current_group["id"]."&amp;periode_num=$periode_num'> ".htmlspecialchars($current_group['name'])." ".$current_group["classlist_string"]." (".$nom_periode.")"." </a>|\n";
 	echo "</div>\n";
 
 
 	echo "<h2>$titre</h2>\n";
 
-	echo "<p>Télécharger: <a href='$chemin_temp/$nom_fic'>$nom_fic</a></p>\n";
+	echo "<p>TÃ©lÃ©charger: <a href='$chemin_temp/$nom_fic'>$nom_fic</a></p>\n";
 
 	
 
-	// AJOUTER UN LIEN POUR FAIRE LE MENAGE... et permettre à l'admin de faire le ménage.
-	echo "<p>Pour ne pas encombrer inutilement le serveur et par soucis de confidentialité, il est recommandé de supprimer le fichier du serveur après récupération du fichier ci-dessus.<br />\n";
+	// AJOUTER UN LIEN POUR FAIRE LE MENAGE... et permettre Ã  l'admin de faire le mÃ©nage.
+	echo "<p>Pour ne pas encombrer inutilement le serveur et par soucis de confidentialitÃ©, il est recommandÃ© de supprimer le fichier du serveur aprÃ¨s rÃ©cupÃ©ration du fichier ci-dessus.<br />\n";
 	echo "<a href='".$_SERVER['PHP_SELF']."?nettoyage=$nom_fic&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num".add_token_in_url()."'>Supprimer le fichier</a>.";
 	echo "</p>\n";
 

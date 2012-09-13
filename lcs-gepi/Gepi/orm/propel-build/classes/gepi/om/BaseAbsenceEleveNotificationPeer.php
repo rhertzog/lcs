@@ -24,7 +24,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 	/** the related TableMap class for this table */
 	const TM_CLASS = 'AbsenceEleveNotificationTableMap';
-	
+
 	/** The total number of columns. */
 	const NUM_COLUMNS = 13;
 
@@ -89,7 +89,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 	/** The default string format for model objects of the related table **/
 	const DEFAULT_STRING_FORMAT = 'YAML';
-	
+
 	/**
 	 * An identiy map to hold any loaded instances of AbsenceEleveNotification objects.
 	 * This must be public so that other peer classes can access this when hydrating from JOIN
@@ -106,8 +106,8 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	protected static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'UtilisateurId', 'ATraitementId', 'TypeNotification', 'Email', 'Telephone', 'AdrId', 'Commentaire', 'StatutEnvoi', 'DateEnvoi', 'ErreurMessageEnvoi', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'utilisateurId', 'aTraitementId', 'typeNotification', 'email', 'telephone', 'adrId', 'commentaire', 'statutEnvoi', 'dateEnvoi', 'erreurMessageEnvoi', 'createdAt', 'updatedAt', ),
+		BasePeer::TYPE_PHPNAME => array ('Id', 'UtilisateurId', 'ATraitementId', 'TypeNotification', 'Email', 'Telephone', 'AdresseId', 'Commentaire', 'StatutEnvoi', 'DateEnvoi', 'ErreurMessageEnvoi', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id', 'utilisateurId', 'aTraitementId', 'typeNotification', 'email', 'telephone', 'adresseId', 'commentaire', 'statutEnvoi', 'dateEnvoi', 'erreurMessageEnvoi', 'createdAt', 'updatedAt', ),
 		BasePeer::TYPE_COLNAME => array (self::ID, self::UTILISATEUR_ID, self::A_TRAITEMENT_ID, self::TYPE_NOTIFICATION, self::EMAIL, self::TELEPHONE, self::ADR_ID, self::COMMENTAIRE, self::STATUT_ENVOI, self::DATE_ENVOI, self::ERREUR_MESSAGE_ENVOI, self::CREATED_AT, self::UPDATED_AT, ),
 		BasePeer::TYPE_RAW_COLNAME => array ('ID', 'UTILISATEUR_ID', 'A_TRAITEMENT_ID', 'TYPE_NOTIFICATION', 'EMAIL', 'TELEPHONE', 'ADR_ID', 'COMMENTAIRE', 'STATUT_ENVOI', 'DATE_ENVOI', 'ERREUR_MESSAGE_ENVOI', 'CREATED_AT', 'UPDATED_AT', ),
 		BasePeer::TYPE_FIELDNAME => array ('id', 'utilisateur_id', 'a_traitement_id', 'type_notification', 'email', 'telephone', 'adr_id', 'commentaire', 'statut_envoi', 'date_envoi', 'erreur_message_envoi', 'created_at', 'updated_at', ),
@@ -121,8 +121,8 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	protected static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UtilisateurId' => 1, 'ATraitementId' => 2, 'TypeNotification' => 3, 'Email' => 4, 'Telephone' => 5, 'AdrId' => 6, 'Commentaire' => 7, 'StatutEnvoi' => 8, 'DateEnvoi' => 9, 'ErreurMessageEnvoi' => 10, 'CreatedAt' => 11, 'UpdatedAt' => 12, ),
-		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'utilisateurId' => 1, 'aTraitementId' => 2, 'typeNotification' => 3, 'email' => 4, 'telephone' => 5, 'adrId' => 6, 'commentaire' => 7, 'statutEnvoi' => 8, 'dateEnvoi' => 9, 'erreurMessageEnvoi' => 10, 'createdAt' => 11, 'updatedAt' => 12, ),
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'UtilisateurId' => 1, 'ATraitementId' => 2, 'TypeNotification' => 3, 'Email' => 4, 'Telephone' => 5, 'AdresseId' => 6, 'Commentaire' => 7, 'StatutEnvoi' => 8, 'DateEnvoi' => 9, 'ErreurMessageEnvoi' => 10, 'CreatedAt' => 11, 'UpdatedAt' => 12, ),
+		BasePeer::TYPE_STUDLYPHPNAME => array ('id' => 0, 'utilisateurId' => 1, 'aTraitementId' => 2, 'typeNotification' => 3, 'email' => 4, 'telephone' => 5, 'adresseId' => 6, 'commentaire' => 7, 'statutEnvoi' => 8, 'dateEnvoi' => 9, 'erreurMessageEnvoi' => 10, 'createdAt' => 11, 'updatedAt' => 12, ),
 		BasePeer::TYPE_COLNAME => array (self::ID => 0, self::UTILISATEUR_ID => 1, self::A_TRAITEMENT_ID => 2, self::TYPE_NOTIFICATION => 3, self::EMAIL => 4, self::TELEPHONE => 5, self::ADR_ID => 6, self::COMMENTAIRE => 7, self::STATUT_ENVOI => 8, self::DATE_ENVOI => 9, self::ERREUR_MESSAGE_ENVOI => 10, self::CREATED_AT => 11, self::UPDATED_AT => 12, ),
 		BasePeer::TYPE_RAW_COLNAME => array ('ID' => 0, 'UTILISATEUR_ID' => 1, 'A_TRAITEMENT_ID' => 2, 'TYPE_NOTIFICATION' => 3, 'EMAIL' => 4, 'TELEPHONE' => 5, 'ADR_ID' => 6, 'COMMENTAIRE' => 7, 'STATUT_ENVOI' => 8, 'DATE_ENVOI' => 9, 'ERREUR_MESSAGE_ENVOI' => 10, 'CREATED_AT' => 11, 'UPDATED_AT' => 12, ),
 		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'utilisateur_id' => 1, 'a_traitement_id' => 2, 'type_notification' => 3, 'email' => 4, 'telephone' => 5, 'adr_id' => 6, 'commentaire' => 7, 'statut_envoi' => 8, 'date_envoi' => 9, 'erreur_message_envoi' => 10, 'created_at' => 11, 'updated_at' => 12, ),
@@ -455,7 +455,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 */
 	public static function clearRelatedInstancePool()
 	{
-		// Invalidate objects in JNotificationResponsableElevePeer instance pool, 
+		// Invalidate objects in JNotificationResponsableElevePeer instance pool,
 		// since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
 		JNotificationResponsableElevePeer::clearInstancePool();
 	}
@@ -480,7 +480,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	}
 
 	/**
-	 * Retrieves the primary key from the DB resultset row 
+	 * Retrieves the primary key from the DB resultset row
 	 * For tables with a single-column primary key, that simple pkey value will be returned.  For tables with
 	 * a multi-column primary key, an array of the primary key columns will be returned.
 	 *
@@ -577,9 +577,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -627,9 +627,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -652,7 +652,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 
 	/**
-	 * Returns the number of rows matching criteria, joining the related ResponsableEleveAdresse table
+	 * Returns the number of rows matching criteria, joining the related Adresse table
 	 *
 	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
@@ -660,7 +660,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
 	 * @return     int Number of matching rows.
 	 */
-	public static function doCountJoinResponsableEleveAdresse(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doCountJoinAdresse(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		// we're going to modify criteria, so copy it first
 		$criteria = clone $criteria;
@@ -677,9 +677,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -687,7 +687,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 			$con = Propel::getConnection(AbsenceEleveNotificationPeer::DATABASE_NAME, Propel::CONNECTION_READ);
 		}
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
 
@@ -834,7 +834,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 
 	/**
-	 * Selects a collection of AbsenceEleveNotification objects pre-filled with their ResponsableEleveAdresse objects.
+	 * Selects a collection of AbsenceEleveNotification objects pre-filled with their Adresse objects.
 	 * @param      Criteria  $criteria
 	 * @param      PropelPDO $con
 	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
@@ -842,7 +842,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function doSelectJoinResponsableEleveAdresse(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doSelectJoinAdresse(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$criteria = clone $criteria;
 
@@ -853,9 +853,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 		AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		$startcol = AbsenceEleveNotificationPeer::NUM_HYDRATE_COLUMNS;
-		ResponsableEleveAdressePeer::addSelectColumns($criteria);
+		AdressePeer::addSelectColumns($criteria);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -875,19 +875,19 @@ abstract class BaseAbsenceEleveNotificationPeer {
 				AbsenceEleveNotificationPeer::addInstanceToPool($obj1, $key1);
 			} // if $obj1 already loaded
 
-			$key2 = ResponsableEleveAdressePeer::getPrimaryKeyHashFromRow($row, $startcol);
+			$key2 = AdressePeer::getPrimaryKeyHashFromRow($row, $startcol);
 			if ($key2 !== null) {
-				$obj2 = ResponsableEleveAdressePeer::getInstanceFromPool($key2);
+				$obj2 = AdressePeer::getInstanceFromPool($key2);
 				if (!$obj2) {
 
-					$cls = ResponsableEleveAdressePeer::getOMClass(false);
+					$cls = AdressePeer::getOMClass(false);
 
 					$obj2 = new $cls();
 					$obj2->hydrate($row, $startcol);
-					ResponsableEleveAdressePeer::addInstanceToPool($obj2, $key2);
+					AdressePeer::addInstanceToPool($obj2, $key2);
 				} // if obj2 already loaded
 
-				// Add the $obj1 (AbsenceEleveNotification) to $obj2 (ResponsableEleveAdresse)
+				// Add the $obj1 (AbsenceEleveNotification) to $obj2 (Adresse)
 				$obj2->addAbsenceEleveNotification($obj1);
 
 			} // if joined row was not null
@@ -925,9 +925,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY won't ever affect the count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -939,7 +939,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 		$criteria->addJoin(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, AbsenceEleveTraitementPeer::ID, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
 
@@ -980,14 +980,14 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
 		$startcol4 = $startcol3 + AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
-		ResponsableEleveAdressePeer::addSelectColumns($criteria);
-		$startcol5 = $startcol4 + ResponsableEleveAdressePeer::NUM_HYDRATE_COLUMNS;
+		AdressePeer::addSelectColumns($criteria);
+		$startcol5 = $startcol4 + AdressePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveNotificationPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
 		$criteria->addJoin(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, AbsenceEleveTraitementPeer::ID, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doSelect($criteria, $con);
 		$results = array();
@@ -1042,21 +1042,21 @@ abstract class BaseAbsenceEleveNotificationPeer {
 				$obj3->addAbsenceEleveNotification($obj1);
 			} // if joined row not null
 
-			// Add objects for joined ResponsableEleveAdresse rows
+			// Add objects for joined Adresse rows
 
-			$key4 = ResponsableEleveAdressePeer::getPrimaryKeyHashFromRow($row, $startcol4);
+			$key4 = AdressePeer::getPrimaryKeyHashFromRow($row, $startcol4);
 			if ($key4 !== null) {
-				$obj4 = ResponsableEleveAdressePeer::getInstanceFromPool($key4);
+				$obj4 = AdressePeer::getInstanceFromPool($key4);
 				if (!$obj4) {
 
-					$cls = ResponsableEleveAdressePeer::getOMClass(false);
+					$cls = AdressePeer::getOMClass(false);
 
 					$obj4 = new $cls();
 					$obj4->hydrate($row, $startcol4);
-					ResponsableEleveAdressePeer::addInstanceToPool($obj4, $key4);
+					AdressePeer::addInstanceToPool($obj4, $key4);
 				} // if obj4 loaded
 
-				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj4 (ResponsableEleveAdresse)
+				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj4 (Adresse)
 				$obj4->addAbsenceEleveNotification($obj1);
 			} // if joined row not null
 
@@ -1085,7 +1085,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(AbsenceEleveNotificationPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1093,9 +1093,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1105,7 +1105,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	
 		$criteria->addJoin(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, AbsenceEleveTraitementPeer::ID, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
 
@@ -1137,7 +1137,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(AbsenceEleveNotificationPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1145,9 +1145,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1157,7 +1157,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	
 		$criteria->addJoin(AbsenceEleveNotificationPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 		$stmt = BasePeer::doCount($criteria, $con);
 
@@ -1172,7 +1172,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 
 	/**
-	 * Returns the number of rows matching criteria, joining the related ResponsableEleveAdresse table
+	 * Returns the number of rows matching criteria, joining the related Adresse table
 	 *
 	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns; deprecated: use Criteria->setDistinct() instead.
@@ -1180,7 +1180,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * @param      String    $join_behavior the type of joins to use, defaults to Criteria::LEFT_JOIN
 	 * @return     int Number of matching rows.
 	 */
-	public static function doCountJoinAllExceptResponsableEleveAdresse(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doCountJoinAllExceptAdresse(Criteria $criteria, $distinct = false, PropelPDO $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		// we're going to modify criteria, so copy it first
 		$criteria = clone $criteria;
@@ -1189,7 +1189,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		// it will be impossible for the BasePeer::createSelectSql() method to determine which
 		// tables go into the FROM clause.
 		$criteria->setPrimaryTableName(AbsenceEleveNotificationPeer::TABLE_NAME);
-		
+
 		if ($distinct && !in_array(Criteria::DISTINCT, $criteria->getSelectModifiers())) {
 			$criteria->setDistinct();
 		}
@@ -1197,9 +1197,9 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		if (!$criteria->hasSelectClause()) {
 			AbsenceEleveNotificationPeer::addSelectColumns($criteria);
 		}
-		
+
 		$criteria->clearOrderByColumns(); // ORDER BY should not affect count
-		
+
 		// Set the correct dbName
 		$criteria->setDbName(self::DATABASE_NAME);
 
@@ -1250,12 +1250,12 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		AbsenceEleveTraitementPeer::addSelectColumns($criteria);
 		$startcol3 = $startcol2 + AbsenceEleveTraitementPeer::NUM_HYDRATE_COLUMNS;
 
-		ResponsableEleveAdressePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + ResponsableEleveAdressePeer::NUM_HYDRATE_COLUMNS;
+		AdressePeer::addSelectColumns($criteria);
+		$startcol4 = $startcol3 + AdressePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveNotificationPeer::A_TRAITEMENT_ID, AbsenceEleveTraitementPeer::ID, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 
 		$stmt = BasePeer::doSelect($criteria, $con);
@@ -1294,21 +1294,21 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 			} // if joined row is not null
 
-				// Add objects for joined ResponsableEleveAdresse rows
+				// Add objects for joined Adresse rows
 
-				$key3 = ResponsableEleveAdressePeer::getPrimaryKeyHashFromRow($row, $startcol3);
+				$key3 = AdressePeer::getPrimaryKeyHashFromRow($row, $startcol3);
 				if ($key3 !== null) {
-					$obj3 = ResponsableEleveAdressePeer::getInstanceFromPool($key3);
+					$obj3 = AdressePeer::getInstanceFromPool($key3);
 					if (!$obj3) {
 	
-						$cls = ResponsableEleveAdressePeer::getOMClass(false);
+						$cls = AdressePeer::getOMClass(false);
 
 					$obj3 = new $cls();
 					$obj3->hydrate($row, $startcol3);
-					ResponsableEleveAdressePeer::addInstanceToPool($obj3, $key3);
+					AdressePeer::addInstanceToPool($obj3, $key3);
 				} // if $obj3 already loaded
 
-				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj3 (ResponsableEleveAdresse)
+				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj3 (Adresse)
 				$obj3->addAbsenceEleveNotification($obj1);
 
 			} // if joined row is not null
@@ -1347,12 +1347,12 @@ abstract class BaseAbsenceEleveNotificationPeer {
 		UtilisateurProfessionnelPeer::addSelectColumns($criteria);
 		$startcol3 = $startcol2 + UtilisateurProfessionnelPeer::NUM_HYDRATE_COLUMNS;
 
-		ResponsableEleveAdressePeer::addSelectColumns($criteria);
-		$startcol4 = $startcol3 + ResponsableEleveAdressePeer::NUM_HYDRATE_COLUMNS;
+		AdressePeer::addSelectColumns($criteria);
+		$startcol4 = $startcol3 + AdressePeer::NUM_HYDRATE_COLUMNS;
 
 		$criteria->addJoin(AbsenceEleveNotificationPeer::UTILISATEUR_ID, UtilisateurProfessionnelPeer::LOGIN, $join_behavior);
 
-		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, ResponsableEleveAdressePeer::ADR_ID, $join_behavior);
+		$criteria->addJoin(AbsenceEleveNotificationPeer::ADR_ID, AdressePeer::ADR_ID, $join_behavior);
 
 
 		$stmt = BasePeer::doSelect($criteria, $con);
@@ -1391,21 +1391,21 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 			} // if joined row is not null
 
-				// Add objects for joined ResponsableEleveAdresse rows
+				// Add objects for joined Adresse rows
 
-				$key3 = ResponsableEleveAdressePeer::getPrimaryKeyHashFromRow($row, $startcol3);
+				$key3 = AdressePeer::getPrimaryKeyHashFromRow($row, $startcol3);
 				if ($key3 !== null) {
-					$obj3 = ResponsableEleveAdressePeer::getInstanceFromPool($key3);
+					$obj3 = AdressePeer::getInstanceFromPool($key3);
 					if (!$obj3) {
 	
-						$cls = ResponsableEleveAdressePeer::getOMClass(false);
+						$cls = AdressePeer::getOMClass(false);
 
 					$obj3 = new $cls();
 					$obj3->hydrate($row, $startcol3);
-					ResponsableEleveAdressePeer::addInstanceToPool($obj3, $key3);
+					AdressePeer::addInstanceToPool($obj3, $key3);
 				} // if $obj3 already loaded
 
-				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj3 (ResponsableEleveAdresse)
+				// Add the $obj1 (AbsenceEleveNotification) to the collection in $obj3 (Adresse)
 				$obj3->addAbsenceEleveNotification($obj1);
 
 			} // if joined row is not null
@@ -1418,7 +1418,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 
 
 	/**
-	 * Selects a collection of AbsenceEleveNotification objects pre-filled with all related objects except ResponsableEleveAdresse.
+	 * Selects a collection of AbsenceEleveNotification objects pre-filled with all related objects except Adresse.
 	 *
 	 * @param      Criteria  $criteria
 	 * @param      PropelPDO $con
@@ -1427,7 +1427,7 @@ abstract class BaseAbsenceEleveNotificationPeer {
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function doSelectJoinAllExceptResponsableEleveAdresse(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
+	public static function doSelectJoinAllExceptAdresse(Criteria $criteria, $con = null, $join_behavior = Criteria::LEFT_JOIN)
 	{
 		$criteria = clone $criteria;
 

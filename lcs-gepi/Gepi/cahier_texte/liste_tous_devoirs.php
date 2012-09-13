@@ -1,6 +1,5 @@
 <?php
 /*
- * @version: $Id: liste_tous_devoirs.php 7192 2011-06-10 19:30:33Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -54,14 +53,14 @@ require_once("../lib/transform_functions.php");
     </head>
     <body>
 <?php
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 
 if (getSettingValue("active_cahiers_texte")!='y') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if (!isset($_GET['debut']) || !isset($_GET['classe']) || !intval($_GET['debut']) || !intval($_GET['classe'])) {
-    die("<p><em>Paramètres invalides !</em></p>\n</body>\n</html>");
+    die("<p><em>ParamÃ¨tres invalides !</em></p>\n</body>\n</html>");
 }
 
 $groups = get_groups_for_class($_GET['classe'],"","n");

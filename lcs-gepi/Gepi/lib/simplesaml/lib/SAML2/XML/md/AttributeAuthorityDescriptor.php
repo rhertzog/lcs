@@ -4,7 +4,6 @@
  * Class representing SAML 2 metadata AttributeAuthorityDescriptor.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SAML2_XML_md_AttributeAuthorityDescriptor extends SAML2_XML_md_RoleDescriptor {
 
@@ -81,9 +80,9 @@ class SAML2_XML_md_AttributeAuthorityDescriptor extends SAML2_XML_md_RoleDescrip
 			$this->AssertionIDRequestService[] = new SAML2_XML_md_EndpointType($airs);
 		}
 
-		$this->NameIDFormat = SAML2_Utils::extractStrings($xml, './saml_metadata:NameIDFormat');
+		$this->NameIDFormat = SAML2_Utils::extractStrings($xml, SAML2_Const::NS_MD, 'NameIDFormat');
 
-		$this->AttributeProfile = SAML2_Utils::extractStrings($xml, './saml_metadata:AttributeProfile');
+		$this->AttributeProfile = SAML2_Utils::extractStrings($xml, SAML2_Const::NS_MD, 'AttributeProfile');
 
 		foreach (SAML2_Utils::xpQuery($xml, './saml_assertion:Attribute') as $a) {
 			$this->Attribute[] = new SAML2_XML_saml_Attribute($a);

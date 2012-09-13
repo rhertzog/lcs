@@ -4,7 +4,6 @@
  * Class representing SAML 2 metadata PDPDescriptor.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SAML2_XML_md_PDPDescriptor extends SAML2_XML_md_RoleDescriptor {
 
@@ -61,7 +60,7 @@ class SAML2_XML_md_PDPDescriptor extends SAML2_XML_md_RoleDescriptor {
 			$this->AssertionIDRequestService[] = new SAML2_XML_md_EndpointType($airs);
 		}
 
-		$this->NameIDFormat = SAML2_Utils::extractStrings($xml, './saml_metadata:NameIDFormat');
+		$this->NameIDFormat = SAML2_Utils::extractStrings($xml, SAML2_Const::NS_MD, 'NameIDFormat');
 	}
 
 

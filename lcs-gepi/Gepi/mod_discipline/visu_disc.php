@@ -1,7 +1,6 @@
 <?php
 
 /*
-* $Id: visu_disc.php 8741 2012-01-08 14:59:31Z crob $
 *
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -22,7 +21,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 // Begin standart header
 $niveau_arbo = 1;
@@ -39,48 +38,48 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-// SQL : INSERT INTO droits VALUES ( '/mod_discipline/visu_disc.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Discipline: Accès élève/parent', '');
+// SQL : INSERT INTO droits VALUES ( '/mod_discipline/visu_disc.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Discipline: AccÃ¨s Ã©lÃ¨ve/parent', '');
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
 //**************** EN-TETE *****************
-$titre_page = "Discipline : Accès ".$_SESSION['statut'];
-require_once("../lib/header.inc");
+$titre_page = "Discipline : AccÃ¨s ".$_SESSION['statut'];
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 if($_SESSION['statut']=='eleve') {
 	if(getSettingValue('visuEleDisc')!='yes') {
-		echo "<p style='color:red'>Vous n'êtes pas autorisé à accéder à cette page.</p>\n";
-		tentative_intrusion(1, "Tentative d'accès au module Discipline sans y être autorisé.");
+		echo "<p style='color:red'>Vous n'Ãªtes pas autorisÃ© Ã  accÃ©der Ã  cette page.</p>\n";
+		tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline sans y Ãªtre autorisÃ©.");
 		require("../lib/footer.inc.php");
 		die();
 	}
 }
 elseif($_SESSION['statut']=='responsable') {
 	if(getSettingValue('visuRespDisc')!='yes') {
-		echo "<p style='color:red'>Vous n'êtes pas autorisé à accéder à cette page.</p>\n";
-		tentative_intrusion(1, "Tentative d'accès au module Discipline sans y être autorisé.");
+		echo "<p style='color:red'>Vous n'Ãªtes pas autorisÃ© Ã  accÃ©der Ã  cette page.</p>\n";
+		tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline sans y Ãªtre autorisÃ©.");
 		require("../lib/footer.inc.php");
 		die();
 	}
 }
 
-echo "<p class='bold'><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour à l'accueil' class='back_link'/> Retour</a>";
+echo "<p class='bold'><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour Ã  l'accueil' class='back_link'/> Retour</a>";
 
 if($_SESSION['statut']=='eleve') {
 	$ele_login=$_SESSION['login'];
 }
 else {
-	// Lien de choix de l'élève
+	// Lien de choix de l'Ã©lÃ¨ve
 	$ele_login=isset($_GET['ele_login']) ? $_GET['ele_login'] : NULL;
 
 	$tab_ele_login=array();
@@ -91,8 +90,8 @@ else {
 	}
 
 	if((isset($ele_login))&&(!in_array($ele_login,$tab_ele_login))) {
-		echo "<p style='color:red'>Tentative d'accès au module Discipline pour un élève dont vous n'êtes pas responsable.</p>\n";
-		tentative_intrusion(1, "Tentative d'accès au module Discipline pour un élève dont il n'est pas responsable : $ele_login");
+		echo "<p style='color:red'>Tentative d'accÃ¨s au module Discipline pour un Ã©lÃ¨ve dont vous n'Ãªtes pas responsable.</p>\n";
+		tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline pour un Ã©lÃ¨ve dont il n'est pas responsable : $ele_login");
 		unset($ele_login);
 	}
 
@@ -110,7 +109,9 @@ else {
 			die();
 		}
 	}
-
+	else {
+		echo " | <a href='".$_SERVER['PHP_SELF']."'>Autre enfant</a>";
+	}
 }
 echo "</p>\n";
 

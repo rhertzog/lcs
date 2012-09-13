@@ -1,6 +1,5 @@
 <?php
 /*
- *  $Id: modele_fiche_information.php 1885 2008-05-29 20:05:08Z crob $
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -24,7 +23,7 @@
 require_once("../lib/initialisations.inc.php");
 
 //**************** EN-TETE *****************
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************
 $fiche=isset($_POST["fiche"]) ? $_POST["fiche"] : (isset($_GET["fiche"]) ? $_GET["fiche"] : "personnels");
 
@@ -61,7 +60,7 @@ for ($i=0;$i<$nb_fiches;$i++) {
 	echo "</p>";
 
 	echo "<p style='font-variant:small-caps;color:red;'>La ligne donnant le mot de passe de l'utilisateur
-ne figure sur la fiche <b>QUE SI</b> cette dernière est imprimée dès la création de l'utilisateur.</p>";
+ne figure sur la fiche <b>QUE SI</b> cette derniÃ¨re est imprimÃ©e dÃ¨s la crÃ©ation de l'utilisateur.</p>";
 
 	echo $impression;
 }

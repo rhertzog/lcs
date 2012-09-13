@@ -2,7 +2,6 @@
 /**
  * Initialisation de mysql
  * 
- * $Id: mysql.inc 7849 2011-08-20 18:19:12Z regis $
  * 
  * mysql.inc - Simple PHP database support for MySQL.
  * 
@@ -14,24 +13,24 @@
  * - Including this file connects you to the database, or exits on error
  * 
  */
-
-// Etablir la connexion à la base
+// Etablir la connexion Ã  la base
 if (isset($utiliser_pdo) AND $utiliser_pdo == 'on') {
   // On utilise le module pdo de php pour entrer en contact avec la base
   $cnx = new PDO('mysql:host='.$dbHost.';dbname='.$dbDb, $dbUser, $dbPass);
 
 }
-if (empty($db_nopersist))
-    $db_c = mysql_pconnect($dbHost, $dbUser, $dbPass);
-else
+if (!isset($db_nopersist) || $db_nopersist)
     $db_c = mysql_connect($dbHost, $dbUser, $dbPass);
+else
+    $db_c = mysql_pconnect($dbHost, $dbUser, $dbPass);
 
 if (!$db_c || !mysql_select_db ($dbDb))
 {
-    echo "\n<p>Erreur grave: Echec de la connexion à la base de données";
+    echo "\n<p>Erreur grave: Echec de la connexion Ã  la base de donnÃ©es";
     exit;
 }
 
+mysql_query("SET NAMES UTF8");
 
 /** Free a results handle. You need not call this if you call sql_row or
  * sql_row_keyed until the row returns 0, since sql_row frees the results

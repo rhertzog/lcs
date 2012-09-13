@@ -4,7 +4,6 @@
  * Helper class for simple authentication applications.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SimpleSAML_Auth_Simple {
 
@@ -25,6 +24,16 @@ class SimpleSAML_Auth_Simple {
 		assert('is_string($authSource)');
 
 		$this->authSource = $authSource;
+	}
+
+
+	/**
+	 * Retrieve the implementing authentication source.
+	 *
+	 * @return SimpleSAML_Auth_Source  The authentication source.
+	 */
+	public function getAuthSource() {
+		return SimpleSAML_Auth_Source::getById($this->authSource);
 	}
 
 

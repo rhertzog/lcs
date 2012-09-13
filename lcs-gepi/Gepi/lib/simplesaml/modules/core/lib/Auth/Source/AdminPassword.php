@@ -5,7 +5,6 @@
  * the 'auth.adminpassword' configuration option.
  *
  * @package simpleSAMLphp
- * @version $Id$
  */
 class sspmod_core_Auth_Source_AdminPassword extends sspmod_core_Auth_UserPassBase {
 
@@ -55,7 +54,7 @@ class sspmod_core_Auth_Source_AdminPassword extends sspmod_core_Auth_UserPassBas
 			throw new SimpleSAML_Error_Error('WRONGUSERPASS');
 		}
 
-		if ($password !== $adminPassword) {
+		if (!SimpleSAML_Utils_Crypto::pwValid($adminPassword, $password)) {
 			throw new SimpleSAML_Error_Error('WRONGUSERPASS');
 		}
 

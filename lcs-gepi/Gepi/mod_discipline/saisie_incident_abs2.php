@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id$
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -44,9 +43,9 @@ if (!checkAccess()) {
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
@@ -55,7 +54,7 @@ $id_absence_eleve_saisie=isset($_POST['id_absence_eleve_saisie']) ? $_POST['id_a
 
 $saisie = AbsenceEleveSaisieQuery::create()->findPk($id_absence_eleve_saisie);
 if ($saisie == null) {
-    require_once("../lib/header.inc");
+    require_once("../lib/header.inc.php");
     echo "Erreur, identifiant de saisie d'absence non transmis";
     require("../lib/footer.inc.php");
     die();
@@ -66,7 +65,7 @@ $msg = "";
 if ($saisie->getIdSIncidents() == null || $saisie->getIdSIncidents() == -1) {
 	check_token();
 
-    //l'incident n'est pas encore enregistré, on l'enregistre donc
+    //l'incident n'est pas encore enregistrÃ©, on l'enregistre donc
     $sql="INSERT INTO s_incidents SET declarant='".$_SESSION['login']."',
 									    date='".$saisie->getDebutAbs('Y-m-d')."',
 									    heure='".$saisie->getDebutAbs('H:i')."',
@@ -81,7 +80,7 @@ if ($saisie->getIdSIncidents() == null || $saisie->getIdSIncidents() == -1) {
     }
     else {
 	    $id_incident=mysql_insert_id();
-	    $msg.="Enregistrement de l'incident n°".$id_incident." effectué.<br />\n";
+	    $msg.="Enregistrement de l'incident nÂ°".$id_incident." effectuÃ©.<br />\n";
     }
     $saisie->setIdSIncidents($id_incident);
     $saisie->save();

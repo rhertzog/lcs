@@ -1,8 +1,6 @@
 <?php
 /*
-* Last modification  : 29/11/2006
-*
-* Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -33,7 +31,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 //INSERT INTO droits VALUES ('/impression/impression.php', 'V', 'V', 'V', 'V', 'V', 'V', 'Impression des listes (PDF)', '');
 if (!checkAccess()) {
@@ -41,15 +39,20 @@ if (!checkAccess()) {
     die();
 }
 
+if(isset($_POST['choix_modele'])) {
+	$_SESSION['id_modele']=$_POST['id_modele'];
+}
+
 //**************** EN-TETE **************************************
 $titre_page = "Impression de listes au format PDF";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE **********************************
+//debug_var();
 
 echo "<p class='bold'>";
 echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 echo " | <a href='./impression_serie.php'>Impressions multiples</a>";
-echo " | <a href='./parametres_impression_pdf.php'>Régler les paramètres du PDF</a>";
+echo " | <a href='./parametres_impression_pdf.php'>RÃ©gler les paramÃ¨tres du PDF</a>";
 echo "</p>\n";
 
 
@@ -58,12 +61,38 @@ $id_groupe=isset($_GET['id_groupe']) ? $_GET["id_groupe"] : NULL;
 $ok=isset($_GET['ok']) ? $_GET["ok"] : NULL;
 
 
+$sql="SELECT * FROM modeles_grilles_pdf WHERE login='".$_SESSION['login']."' ORDER BY nom_modele;";
+$res_modeles=mysql_query($sql);
+if(mysql_num_rows($res_modeles)>0) {
+	echo "<form action='".$_SERVER['PHP_SELF']."' method='post'>";
+	echo "<p>ModÃ¨le de grille&nbsp;: ";
+	echo "<select name='id_modele'>\n";
+	while($lig_modele=mysql_fetch_object($res_modeles)) {
+		echo "<option value='$lig_modele->id_modele'";
+		if(isset($_SESSION['id_modele'])) {
+			if($_SESSION['id_modele']==$lig_modele->id_modele) {
+				echo " selected='true'";
+			}
+		}
+		elseif($lig_modele->par_defaut=='y') {
+			echo " selected='true'";
+		}
+		echo ">$lig_modele->nom_modele";
+		//echo " ($lig_modele->id_modele)";
+		echo "</option>\n";
+	}
+	echo "</select>\n";
+	echo "<input type='submit' name='choix_modele' value='Choisir' />";
+	echo "</p>\n";
+	echo "</form>\n";
+}
+
 echo "<h3>Liste des classes : </h3>\n";
 
-// Pour tout le monde la possibilité d'imprimer la liste de toutes les classes par période.
-echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez imprimer une liste d'élèves au format PDF :</p>\n";
+// Pour tout le monde la possibilitÃ© d'imprimer la liste de toutes les classes par pÃ©riode.
+echo "<p>SÃ©lÃ©ctionnez la classe et la pÃ©riode pour lesquels vous souhaitez imprimer une liste d'Ã©lÃ¨ves au format PDF :</p>\n";
 
-    //si statut scolarite ==> on affiche que les classes de compte scolarité
+    //si statut scolarite ==> on affiche que les classes de compte scolaritÃ©
 	if($_SESSION['statut']=='scolarite'){
        $login_scolarite = $_SESSION['login'];
 	   $sql="SELECT c.id, c.classe, jsc.login, jsc.id_classe 
@@ -71,14 +100,14 @@ echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez impri
 			 WHERE (jsc.login='$login_scolarite'
 			 AND jsc.id_classe=c.id)
 			 ORDER BY c.classe";
-	} else { //pour tous les statuts sauf scolarité
+	} else { //pour tous les statuts sauf scolaritÃ©
 	   $sql="SELECT id,classe FROM classes ORDER BY classe";
 	}
 	$result_classes=mysql_query($sql);
 	$nb_classes = mysql_num_rows($result_classes);
 
 	if(mysql_num_rows($result_classes)==0){
-		echo "<p>Il semble qu'aucune classe n'ait encore été créée.</p>\n";
+		echo "<p>Il semble qu'aucune classe n'ait encore Ã©tÃ© crÃ©Ã©e.</p>\n";
 	}
 	else{
 		$nb_classes=mysql_num_rows($result_classes);
@@ -102,7 +131,7 @@ echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez impri
 			$res_per=mysql_query($sql);
 
 			if(mysql_num_rows($res_per)==0){
-				echo "<p>ERREUR: Aucune période n'est définie pour la classe $lig_class->classe</p>\n";
+				echo "<p>ERREUR: Aucune pÃ©riode n'est dÃ©finie pour la classe $lig_class->classe</p>\n";
 				echo "</body></html>\n";
 				die();
 			}
@@ -125,7 +154,7 @@ echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez impri
 // Module toutes les classes
 
 	if($_SESSION['statut']=='professeur'){
-		echo "<p>Séléctionnez l'enseignement et la période pour lesquels vous souhaitez imprimer une liste alphabétique d'élèves au format PDF :</p>\n";
+		echo "<p>SÃ©lÃ©ctionnez l'enseignement et la pÃ©riode pour lesquels vous souhaitez imprimer une liste alphabÃ©tique d'Ã©lÃ¨ves au format PDF :</p>\n";
 		$sql="SELECT DISTINCT g.id,g.description FROM groupes g, j_groupes_professeurs jgp WHERE
 			jgp.login = '".$_SESSION['login']."' AND
 			g.id=jgp.id_groupe
@@ -161,7 +190,7 @@ echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez impri
 							$sql="SELECT num_periode,nom_periode FROM periodes WHERE id_classe='$lig_class->id' ORDER BY num_periode";
 							$res_per=mysql_query($sql);
 							if(mysql_num_rows($res_per)==0){
-								echo "<p>ERREUR: Aucune période n'est définie pour la classe $lig_class->classe</p>\n";
+								echo "<p>ERREUR: Aucune pÃ©riode n'est dÃ©finie pour la classe $lig_class->classe</p>\n";
 								echo "</body></html>\n";
 								die();
 							}
@@ -174,17 +203,17 @@ echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez impri
 						}
 						$cpt++;
 					}
-					$chaine_class=substr($chaine_class,1);
+					$chaine_class=mb_substr($chaine_class,1);
 
 				}
 
 				echo "<td>\n";
-				echo "<b>".htmlentities($lig_grp->description)."</b> ($chaine_class) : ";
+				echo "<b>".htmlspecialchars($lig_grp->description)."</b> ($chaine_class) : ";
 				echo "</td>\n";
 				for($i=0;$i<count($tabnumper);$i++){
 					if($i>0){echo "<td> - </td>\n";}
 					echo "<td>\n";
-					echo htmlentities($tabnomper[$i])." : Tri <a href='liste_pdf.php?id_groupe=$lig_grp->id&amp;periode_num=$tabnumper[$i]' target='_blank'>Alpha</a> - <a href='liste_pdf.php?id_groupe=$lig_grp->id&amp;periode_num=$tabnumper[$i]&amp;tri=classes' target='_blank'>Classe</a>\n";
+					echo htmlspecialchars($tabnomper[$i])." : Tri <a href='liste_pdf.php?id_groupe=$lig_grp->id&amp;periode_num=$tabnumper[$i]' target='_blank'>Alpha</a> - <a href='liste_pdf.php?id_groupe=$lig_grp->id&amp;periode_num=$tabnumper[$i]&amp;tri=classes' target='_blank'>Classe</a>\n";
 					echo "</td>\n";
 				}
 				echo "</tr>\n";

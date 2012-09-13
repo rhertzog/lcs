@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: liste_saisies.php 7296 2011-06-22 15:06:15Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,13 +52,13 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()=="professeur" &&  getSettingValue("active_module_absence_professeur")!='y') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 include('include_requetes_filtre_de_recherche.php');
@@ -75,7 +74,7 @@ $javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 $titre_page = "Les absences";
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 include('menu_abs2.inc.php');
@@ -253,6 +252,9 @@ if ($order == "asc_id") {
 }
 
 $query->distinct();
+$query_count_eleve = clone $query;
+$total_eleve = $query_count_eleve->groupByEleveId()->count();
+
 $saisies_col = $query->paginate($page_number, $item_per_page);
 
 $nb_pages = (floor($saisies_col->getNbResults() / $item_per_page) + 1);
@@ -272,17 +274,17 @@ if ($saisies_col->haveToPaginate()) {
 }
 echo "Voir ";
 echo '<input type="text" name="item_per_page" size="1" value="'.$item_per_page.'"/>';
-echo "par page|  Nombre d'enregistrements : ";
+echo "par page |  Nbre de saisies : ";
 echo $saisies_col->count();
-
+echo " | Nbre d'Ã©lÃ¨ves : ".$total_eleve;
 echo "&nbsp;&nbsp;&nbsp;";
 echo '<button type="submit">Rechercher</button>';
-echo '<button type="submit" name="reinit_filtre" value="y">Réinitialiser les filtres</button> ';
+echo '<button type="submit" name="reinit_filtre" value="y">RÃ©initialiser les filtres</button> ';
 echo '<input type="checkbox" name="filter_saisies_supprimees"  onchange="submit()" value="y"';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo "checked='checked'";}
 echo '/>';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo '<font color="red">';}
-echo 'Voir les saisies supprimées';
+echo 'Voir les saisies supprimÃ©es';
 if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {echo '</font>';}
 echo '</p>';
 
@@ -302,7 +304,7 @@ echo '<input type="image" src="../images/down.png" title="monter" style="width:1
 if ($order == "des_id") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="des_id"/>';
 echo '<br/> ';
-echo 'N°';
+echo 'NÂ°';
 echo '</span>';
 echo '<input type="text" name="filter_saisie_id" value="'.getFiltreRechercheParam('filter_saisie_id').'" size="3"/>';
 echo '</th>';
@@ -368,7 +370,7 @@ if (getFiltreRechercheParam('filter_saisies_supprimees') == 'y') {
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Élève';
+echo 'Ã‰lÃ¨ve';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_eleve") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_eleve"/>';
@@ -466,7 +468,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Créneau';
+echo 'CrÃ©neau';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_creneau") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_creneau"/>';
@@ -492,7 +494,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Date début';
+echo 'Date dÃ©but';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_date_debut") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_date_debut"/>';
@@ -643,7 +645,7 @@ echo '</th>';
 echo '<th>';
 //echo '<nobr>';
 echo '<span style="white-space: nowrap;"> ';
-echo 'Date création';
+echo 'Date crÃ©ation';
 echo '<input type="image" src="../images/up.png" title="monter" style="width:15px; height:15px; vertical-align: middle;';
 if ($order == "asc_date_creation") {echo "border-style: solid; border-color: red;";} else {echo "border-style: solid; border-color: silver;";}
 echo 'border-width:1px;" alt="" name="order" value="asc_date_creation"/>';
@@ -708,7 +710,7 @@ echo 'border-width:1px;" alt="" name="order" value="des_date_modification"/>';
 //echo '</nobr> ';
 echo '</span>';
 echo '<br/>';
-echo 'Modifié';
+echo 'ModifiÃ©';
 echo '<br/>';
 echo '<span style="white-space: nowrap;"> ';
 echo '<input type="checkbox" value="y" name="filter_date_modification" onchange="submit()" ';
@@ -769,7 +771,7 @@ foreach ($results as $saisie) {
 	    echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getDeletedAt('U')));
     	$suppr_utilisateur = UtilisateurProfessionnelQuery::create()->findPK($saisie->getDeletedBy());
     	if ($suppr_utilisateur != null) {
-    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
+    		echo ' par '.  $suppr_utilisateur->getCivilite().' '.$suppr_utilisateur->getNom().' '.mb_substr($suppr_utilisateur->getPrenom(), 0, 1).'.';;
     	}
 	    echo "</a>";
 	    echo '</td>';
@@ -784,7 +786,7 @@ foreach ($results as $saisie) {
 	echo ($saisie->getEleve()->getCivilite().' '.$saisie->getEleve()->getNom().' '.$saisie->getEleve()->getPrenom());
 	echo "</a>";
 	if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
-	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' target='_blank'>";
+	    echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank'>";
 	    echo ' (voir fiche)';
 	    echo "</a>";
 	}
@@ -796,7 +798,6 @@ foreach ($results as $saisie) {
  	
 	    $nom_photo = $saisie->getEleve()->getNomPhoto(1);
 	    $photos = $nom_photo;
-	    //$photos = "../photos/eleves/".$nom_photo;
 	    //if (($nom_photo != "") && (file_exists($photos))) {
 	    if (($nom_photo != NULL) && (file_exists($photos))) {
 		$valeur = redimensionne_image_petit($photos);
@@ -807,7 +808,7 @@ foreach ($results as $saisie) {
 	//echo "</a>";
 	echo "</td></tr></table>";
     } else {
-	echo "Marqueur d'appel effectué";
+	echo "Marqueur d'appel effectuÃ©";
     }
     echo '</td>';
 
@@ -967,7 +968,7 @@ function redimensionne_image_petit($photo)
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
+    // largeur et/ou hauteur maximum Ã  afficher
              $taille_max_largeur = 35;
              $taille_max_hauteur = 35;
 
@@ -976,7 +977,7 @@ function redimensionne_image_petit($photo)
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // définit largeur et hauteur pour la nouvelle image
+    // dÃ©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

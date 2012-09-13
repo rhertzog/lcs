@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: page_garde.php 1360 2008-01-13 20:03:09Z jjocal $
+ * @version: $Id$
  *
  * Copyright 2001-2004 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -47,7 +47,7 @@ div.info_eleve{
 }
 </style>\n";
 
-// Affichage de l'info sur le nom, prénom et classe de l'élève
+// Affichage de l'info sur le nom, prÃ©nom et classe de l'Ã©lÃ¨ve
 echo "<div class='info_eleve'>$info_eleve_page_garde</div>\n";
 
 //Affichage du bloc adresse

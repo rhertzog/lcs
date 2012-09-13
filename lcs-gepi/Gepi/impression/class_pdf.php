@@ -19,11 +19,13 @@ global $avec_emplacement_trous;
 	$this->SetDash();
 	$this->SetLineWidth(0.2);
     // on trace un trait horizontal
-	$this->SetRightMargin(5);    $this->SetXY(5,287);
+	$this->SetRightMargin(5);
+    $this->SetXY(5,287);
     $this->cell(0,2,"","T",0);
-		$this->SetFont('arial','',7.5);	
+	
+	$this->SetFont('DejaVu','',7.5);	
 	$this->SetXY(5,287); 
-	$this->Cell(0,5,'GEPI - Solution libre de Gestion des élèves par Internet',0,1,''); 
+	$this->Cell(0,5,'GEPI - Solution libre de Gestion des Ã©lÃ¨ves par Internet',0,1,''); 
 	
 	$etab_text = "".getSettingValue("gepiSchoolName")."  ";
 	$lg_text = $this->GetStringWidth($etab_text);
@@ -35,7 +37,7 @@ global $avec_emplacement_trous;
     $this->Cell(0,5,'Page '.$this->PageNo(),"0",1,'C');
 }
 
-// Pour faire des pointiullés
+// Pour faire des pointiullÃ©s
 function SetDash($black=false,$white=false)
 {
 	if($black and $white)
@@ -47,7 +49,7 @@ function SetDash($black=false,$white=false)
 
 
 /*
-Cellule à texte ajusté
+Cellule Ã  texte ajustÃ©
 Informations
 Auteur : Patrick Benny
 Licence : Freeware
@@ -58,6 +60,7 @@ http://www.fpdf.org/fr/script/script62.php
     {
         //Get string width
         $str_width=$this->GetStringWidth($txt);
+        //$str_width=$this->MBGetStringLength($txt,1);
 
         //Calculate ratio to fit cell
         if($w==0)
@@ -83,7 +86,7 @@ http://www.fpdf.org/fr/script/script62.php
                     //Calculate horizontal scaling
                     $horiz_scale=$ratio*100.0;
                     //Set horizontal scaling
-                    $this->_out(sprintf('BT %.2f Tz ET',$horiz_scale));
+                    $this->_out(sprintf('BT %d Tz ET',$horiz_scale));
                     break;
 
             }
@@ -130,7 +133,7 @@ http://www.fpdf.org/fr/script/script62.php
         if($this->CurrentFont['type']=='Type0')
         {
             $len = 0;
-            $nbbytes = strlen($s);
+            $nbbytes = mb_strlen($s);
             for ($i = 0; $i < $nbbytes; $i++)
             {
                 if (ord($s[$i])<128)
@@ -144,7 +147,7 @@ http://www.fpdf.org/fr/script/script62.php
             return $len;
         }
         else
-            return strlen($s);
+            return mb_strlen($s);
     }
 
 /*
@@ -156,13 +159,13 @@ Ce script permet de tracer cercles et ellipses. Il requiert FPDF 1.51.
 
 function Circle(float x, float y, float r [, string style])
 x : abscisse du cente.
-y : ordonnée du centre.
+y : ordonnÃ©e du centre.
 r : rayon.
-style : style de dessin, comme pour Rect (D, F ou FD). Valeur par défaut : D.
+style : style de dessin, comme pour Rect (D, F ou FD). Valeur par dÃ©faut : D.
 
 function Ellipse(float x, float y, float rx, float ry [, string style])
 x : abscisse du cente.
-y : ordonnée du centre.
+y : ordonnÃ©e du centre.
 rx : rayon horizontal.
 ry : rayon vertical.
 style : style de dessin.
@@ -213,7 +216,7 @@ function Circle($x,$y,$r,$style='')
 * This function is provided by TUFaT.com
 */
 function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=1)
-{
+{   
     $xi=$this->GetX();
     $yi=$this->GetY();
     
@@ -228,9 +231,9 @@ function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=1)
         $this->Rect($xi,$yi,$w,$h,'DF');
 
     $dy=0;
-    if (strtoupper($valign)=='M')
+    if (mb_strtoupper($valign)=='M')
         $dy=($h-$rows*$this->FontSize)/2;
-    if (strtoupper($valign)=='B')
+    if (mb_strtoupper($valign)=='B')
         $dy=$h-$rows*$this->FontSize;
 
     $this->SetY($yi+$dy);
@@ -247,7 +250,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
         $w=$this->w-$this->rMargin-$this->x;
     $wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
     $s=str_replace("\r",'',$txt);
-    $nb=strlen($s);
+    $nb=mb_strlen($s);
     if($nb>0 and $s[$nb-1]=="\n")
         $nb--;
     $b=0;
@@ -288,7 +291,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
                 if ($prn==1) $this->_out('0 Tw');
             }
             if ($prn==1) {
-                $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+                $this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
             }
             $i++;
             $sep=-1;
@@ -299,7 +302,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
             if($border and $nl==2)
                 $b=$b2;
             if ( $maxline && $nl > $maxline )
-                return substr($s,$i);
+                return mb_substr($s,$i);
             continue;
         }
         if($c==' ')
@@ -322,7 +325,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
                     if ($prn==1) $this->_out('0 Tw');
                 }
                 if ($prn==1) {
-                    $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+                    $this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
                 }
             }
             else
@@ -333,7 +336,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
                     if ($prn==1) $this->_out(sprintf('%.3f Tw',$this->ws*$this->k));
                 }
                 if ($prn==1){
-                    $this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+                    $this->Cell($w,$h,mb_substr($s,$j,$sep-$j),$b,2,$align,$fill);
                 }
                 $i=$sep+1;
             }
@@ -345,7 +348,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
             if($border and $nl==2)
                 $b=$b2;
             if ( $maxline && $nl > $maxline )
-                return substr($s,$i);
+                return mb_substr($s,$i);
         }
         else
             $i++;
@@ -359,7 +362,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
     if($border and is_int(strpos($border,'B')))
         $b.='B';
     if ($prn==1) {
-        $this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+        $this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
     }
     $this->x=$this->lMargin;
     return $nl;

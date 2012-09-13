@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id$
  *
- * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -22,7 +21,7 @@
  */
 
 
-// Initialisation des feuilles de style après modification pour améliorer l'accessibilité
+// Initialisation des feuilles de style aprÃ¨s modification pour amÃ©liorer l'accessibilitÃ©
 $accessibilite="y";
 
 // Begin standart header
@@ -33,7 +32,7 @@ $niveau_arbo = 0;
 // Initialisations files
 require_once("./lib/initialisations.inc.php");
 
-// On teste s'il y a une mise à jour de la base de données à effectuer
+// On teste s'il y a une mise Ã  jour de la base de donnÃ©es Ã  effectuer
 if (test_maj()) {
 	header("Location: ./utilitaires/maj.php");
 }
@@ -49,14 +48,14 @@ if ($resultat_session == 'c') {
 	die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 if (!checkAccess()) {
 	header("Location: ./logout.php?auto=2");
 	die();
 }
 
 unset ($_SESSION['order_by']);
-$test_https = 'y'; // pour ne pas avoir à refaire le test si on a besoin de l'URL complète (rss)
+$test_https = 'y'; // pour ne pas avoir Ã  refaire le test si on a besoin de l'URL complÃ¨te (rss)
 if (!isset($_SERVER['HTTPS'])
 	OR (isset($_SERVER['HTTPS']) AND strtolower($_SERVER['HTTPS']) != "on")
 	OR (isset($_SERVER['X-Forwaded-Proto']) AND $_SERVER['X-Forwaded-Proto'] != "https"))
@@ -81,7 +80,7 @@ else{
 }
 
 // End standard header
-require_once("./lib/header.inc");
+require_once("./lib/header.inc.php");
 /*
 function acces($id,$statut) {
 	$tab_id = explode("?",$id);
@@ -95,9 +94,31 @@ function acces($id,$statut) {
 }
 */
 
+if((getSettingValue('active_cahiers_texte')=='y')&&(getSettingValue('GepiCahierTexteVersion')=='2')) {
+	if(!file_exists("./temp/info_jours.js")) {
+		creer_info_jours_js();
+		if(!file_exists("./temp/info_jours.js")) {
+			$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+			$test_info_jours=mysql_query($sql);
+			if(mysql_num_rows($test_info_jours)==0) {
+				enregistre_infos_actions("Fichier info_jours.js absent","Le fichier info_jours.js destinÃ© Ã  tenir compte des jours ouvrÃ©s dans les saisies du cahier de textes n'est pas renseignÃ©.\nVous pouvez le renseigner en <a href='$gepiPath/edt_organisation/admin_horaire_ouverture.php?action=visualiser'>saisissant ou re-validant les horaires d'ouverture</a> de l'Ã©tablissement.","administrateur",'statut');
+			}
+		}
+	}
+	else {
+		$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+		$test_info_jours=mysql_query($sql);
+		if(mysql_num_rows($test_info_jours)>0) {
+			while($lig_action=mysql_fetch_object($test_info_jours)) {
+				del_info_action($lig_action->id);
+			}
+		}
+	}
+}
+
 function affiche_ligne($chemin_, $titre_, $expli_, $statut_) {
 	if (acces($chemin_,$statut_)==1)  {
-		$temp = substr($chemin_,1);
+		$temp = mb_substr($chemin_,1);
 		echo "<tr>\n";
 		echo "<td class='acc_prof'><a href=\"$temp\" title=\"$expli_\" >";
 		echo "&nbsp; <img src=\"./images/info_p1.png\" alt=\"En savoir plus\" title=\"$expli_\" /> - $titre_</a></td>\n";
@@ -105,7 +126,7 @@ function affiche_ligne($chemin_, $titre_, $expli_, $statut_) {
 	}
 }
 
-//fonction compte_fin_module permet de mettre des balises tr ou td tous les deux modules affiché
+//fonction compte_fin_module permet de mettre des balises tr ou td tous les deux modules affichÃ©
 $compteur_module = 0;
 function compte_fin_module () {
 	global $compteur_module;
@@ -199,12 +220,12 @@ if ($condition_releve_note ||  (getSettingValue("GepiAccesBulletinSimplePP")=="y
 	echo '<tbody>';
 	echo '<th class="accueil">&nbsp;&nbsp;<img src="./images/icons/contact.png" alt="Trombi" class="link" /><img src="./images/icons/print.png" alt="Imprimer" class="link" />- Visualiser/Imprimer :</th>';
 
-/** relevés de notes**/
+/** relevÃ©s de notes**/
 	if ($condition_releve_note) {
 		affiche_ligne( "/cahier_notes/visu_releve_notes_bis.php", "Les relev&eacute;s de notes",   "Cet outil vous permet de visualiser &agrave; l'&eacute;cran et d'imprimer les relev&eacute;s de notes, ".$gepiSettings['denomination_eleve']." par ".$gepiSettings['denomination_eleve'].", classe par classe.", $_SESSION['statut']);
 	}
 
-	// Bulletins simplifiés
+	// Bulletins simplifiÃ©s
 	if (getSettingValue("GepiAccesBulletinSimplePP")=="yes") {
 		$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."';";
 		$test_pp=mysql_num_rows(mysql_query($sql));

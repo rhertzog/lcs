@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: liste_pdf.php 8701 2011-12-03 20:09:06Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -23,29 +22,25 @@
 
 // Global configuration file
 
-// Quand on est en SSL, IE n'arrive pas ‡ ouvrir le PDF.
-//Le problËme peut Ítre rÈsolu en ajoutant la ligne suivante :
+// Quand on est en SSL, IE n'arrive pas √† ouvrir le PDF.
+//Le probl√®me peut √™tre r√©solu en ajoutant la ligne suivante :
 //Header('Pragma: public');
 //header('Content-Type: application/pdf');
 
 //=============================
-// REMONTÈ:
+// REMONT√©:
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 //=============================
-
 if (!defined('FPDF_VERSION')) {
-	require_once('../fpdf/fpdf.php');
+	require_once(dirname(__FILE__).'/../fpdf/fpdf.php');
 }
-require('../fpdf/ex_fpdf.php');
 
-define('FPDF_FONTPATH','../fpdf/font/');
+
 define('LargeurPage','210');
 define('HauteurPage','297');
 
 //debug_var();
-
-$mode_utf8_pdf=getSettingValue('mode_utf8_listes_pdf');
 
 /*
 // Initialisations files
@@ -56,7 +51,7 @@ require_once("./class_pdf.php");
 require_once ("./liste.inc.php");
 
 // Lorsque qu'on utilise une session PHP, parfois, IE n'affiche pas le PDF
-// C'est un problËme qui affecte certaines versions d'IE.
+// C'est un probl√®me qui affecte certaines versions d'IE.
 // Pour le contourner, on ajoutez la ligne suivante avant session_start() :
 session_cache_limiter('private');
 
@@ -88,7 +83,7 @@ if (!isset($_SESSION['marge_reliure'])) { $marge_reliure = 1 ; } else {$marge_re
 if (!isset($_SESSION['avec_emplacement_trous'])) { $avec_emplacement_trous = 1 ; } else {$avec_emplacement_trous =  $_SESSION['avec_emplacement_trous'];}
 
 
-//Gestion de la marge ‡ gauche pour une reliure Èventuelle ou des feuilles perforÈes.
+//Gestion de la marge √† gauche pour une reliure √©ventuelle ou des feuilles perfor√©es.
 if ($marge_reliure==1) {
   if ($marge_gauche < 18) {$marge_gauche = 18;}
 }
@@ -101,7 +96,7 @@ $EspaceY = HauteurPage - $marge_haut - $marge_bas;
 $X_tableau = $marge_gauche;
 
 
-//entÍte classe et annÈe scolaire
+//ent√™te classe et ann√©e scolaire
 $L_entete_classe = 65;
 $H_entete_classe = 14;
 $X_entete_classe = $EspaceX - $L_entete_classe + $marge_gauche;
@@ -117,15 +112,15 @@ $H_entete_discipline = 14;
 
 if (!isset($_SESSION['h_ligne'])) { $h_ligne = 8 ; } else {$h_ligne =  $_SESSION['h_ligne'];} //hauteur d'une ligne du tableau
 if (!isset($_SESSION['l_colonne'])) { $l_colonne = 8 ; } else {$l_colonne =  $_SESSION['l_colonne'];} // largeur d'une colonne
-if (!isset($_SESSION['l_nomprenom'])) { $l_nomprenom = 40 ; } else {$l_nomprenom =  $_SESSION['l_nomprenom'];} // la largeur de la colonne nom - prÈnom
+if (!isset($_SESSION['l_nomprenom'])) { $l_nomprenom = 40 ; } else {$l_nomprenom =  $_SESSION['l_nomprenom'];} // la largeur de la colonne nom - pr√©nom
 
 if (!isset($_SESSION['nb_ligne_avant'])) { $nb_ligne_avant = 2 ; } else {$nb_ligne_avant =  $_SESSION['nb_ligne_avant'];}
-if (!isset($_SESSION['h_ligne1_avant'])) { $h_ligne1_avant = 25 ; } else {$h_ligne1_avant =  $_SESSION['h_ligne1_avant'];} //Hauteur de la 1Ëre ligne avant
+if (!isset($_SESSION['h_ligne1_avant'])) { $h_ligne1_avant = 25 ; } else {$h_ligne1_avant =  $_SESSION['h_ligne1_avant'];} //Hauteur de la 1√®re ligne avant
 if (!isset($_SESSION['nb_ligne_apres'])) { $nb_ligne_apres = 1 ; } else {$nb_ligne_apres =  $_SESSION['nb_ligne_apres'];}
 
 if (!isset($_SESSION['affiche_pp'])) { $affiche_pp = 1 ; } else {$affiche_pp =  $_SESSION['affiche_pp'];}// 0 On n'affiche pas le PP 1 on l'affiche
 
-if (!isset($_SESSION['avec_ligne_texte'])) { $avec_ligne_texte = 1 ; } else {$avec_ligne_texte =  $_SESSION['avec_ligne_texte'];} //Permet d'inscrire une ligne de texte sous les entÍte, avant la tableau
+if (!isset($_SESSION['avec_ligne_texte'])) { $avec_ligne_texte = 1 ; } else {$avec_ligne_texte =  $_SESSION['avec_ligne_texte'];} //Permet d'inscrire une ligne de texte sous les ent√™te, avant la tableau
 if (!isset($_SESSION['ligne_texte'])) { $ligne_texte = " " ; } else {$ligne_texte =  $_SESSION['ligne_texte'];} // La ligne de texte
 
 if (!isset($_SESSION['afficher_effectif'])) { $afficher_effectif = 1 ; } else {$afficher_effectif =  $_SESSION['afficher_effectif'];}// Indique l'effectif dans le tableau
@@ -133,7 +128,7 @@ if (!isset($_SESSION['afficher_effectif'])) { $afficher_effectif = 1 ; } else {$
 if (!isset($_SESSION['une_seule_page'])) { $une_seule_page = 1 ; } else {$une_seule_page =  $_SESSION['une_seule_page'];} // Faire tenir sur une seule page la classe 0 nom - 1 oui
 
 
-if (!isset($_SESSION['encadrement_total_cellules'])) { $encadrement_total_cellules = 1 ; } else {$encadrement_total_cellules =  $_SESSION['encadrement_total_cellules'];}// 1 quagrillage de toute la ligne. 0 quadrillage partiel dÈterminÈ par $nb_cellules_quadrillees
+if (!isset($_SESSION['encadrement_total_cellules'])) { $encadrement_total_cellules = 1 ; } else {$encadrement_total_cellules =  $_SESSION['encadrement_total_cellules'];}// 1 quagrillage de toute la ligne. 0 quadrillage partiel d√©termin√© par $nb_cellules_quadrillees
 if (!isset($_SESSION['nb_cellules_quadrillees'])) { $nb_cellules_quadrillees = 5 ; } else {$nb_cellules_quadrillees =  $_SESSION['nb_cellules_quadrillees'];}//nombre de ligne au debut du quadrillage avant un bloc vide
 if (!isset($_SESSION['zone_vide'])) { $zone_vide = 1 ; } else {$zone_vide =  $_SESSION['zone_vide'];}//0 non 1 OUI
 if (!isset($_SESSION['hauteur_zone_finale'])) { $hauteur_zone_finale = 20 ; } else {$hauteur_zone_finale =  $_SESSION['hauteur_zone_finale'];}//si 0 == > on prend ce qui reste
@@ -148,6 +143,7 @@ if(isset($_POST['id_modele'])) {
 				$nom_champ=$lig_modele->nom;
 				$$nom_champ=$lig_modele->valeur;
 				/*
+				echo "1<br />";
 				echo "\$nom_champ=$lig_modele->nom<br >\n";
 				echo "\$$nom_champ=$lig_modele->valeur<br >\n";
 				echo "\$$nom_champ=".$$nom_champ."<br >\n\n";
@@ -163,8 +159,30 @@ if(isset($_POST['id_modele'])) {
 		unset($_SESSION['id_modele']);
 	}
 }
+elseif(isset($_SESSION['id_modele'])) {
+	// On verifie que le modele existe et on recupere les valeurs
+	$sql="SELECT * FROM modeles_grilles_pdf_valeurs WHERE id_modele='".$_SESSION['id_modele']."';";
+	//echo "$sql<br >\n";
+	$res_modele=mysql_query($sql);
+	if(mysql_num_rows($res_modele)) {
+		while($lig_modele=mysql_fetch_object($res_modele)) {
+			$nom_champ=$lig_modele->nom;
+			$$nom_champ=$lig_modele->valeur;
+			/*
+			echo "2<br />";
+			echo "\$nom_champ=$lig_modele->nom<br >\n";
+			echo "\$$nom_champ=$lig_modele->valeur<br >\n";
+			echo "\$$nom_champ=".$$nom_champ."<br >\n\n";
+			*/
+		}
+	}
+	else {
+		unset($_SESSION['id_modele']);
+	}
+}
 
 //debug_var();
+//die();
 
 $nb_ligne_avant_initial = $nb_ligne_avant; //pour l'enchainemenet de PDF !
 
@@ -173,16 +191,16 @@ $texte = '';
 $nb_colonne = 0;
 //Calcul du nombre de colonnes en fonction des marges et de la largeur de la colonne.
 $nb_colonne = ($EspaceX - $l_nomprenom) / $l_colonne;
-$nb_colonne = intval(abs($nb_colonne)); //partie entiËre
+$nb_colonne = intval(abs($nb_colonne)); //partie enti√®re
 
 
 // Cas d'un quadrillage total
 if ($encadrement_total_cellules ==1) {
-  $nb_cellules_quadrillees = $nb_colonne; //nb ce cellule aprËs le nom
+  $nb_cellules_quadrillees = $nb_colonne; //nb ce cellule apr√®s le nom
 } // Sinon avec le calcul.
 
 
-// DÈfinition de la page
+// D√©finition de la page
 $pdf=new rel_PDF("P","mm","A4");
 $pdf->SetTopMargin($marge_haut);
 $pdf->SetRightMargin($marge_droite);
@@ -190,13 +208,13 @@ $pdf->SetLeftMargin($marge_gauche);
 $pdf->SetAutoPageBreak(true, $marge_bas);
 
 
-//On recupËre les variables pour l'affichage et on traite leur existance.
+//On recup√®re les variables pour l'affichage et on traite leur existance.
 // DE   IMPRIME.PHP
 $id_classe=isset($_GET['id_classe']) ? $_GET["id_classe"] : NULL;
 $id_groupe=isset($_GET['id_groupe']) ? $_GET["id_groupe"] : NULL;
 $id_periode=isset($_GET['periode_num']) ? $_GET["periode_num"] : NULL;
 
-//On recupËre les variables pour l'affichage
+//On recup√®re les variables pour l'affichage
 // DE  IMPRIME_SERIE.PHP
 // les tableaux contienent la liste des id.
 $id_liste_classes=isset($_POST['id_liste_classes']) ? $_POST["id_liste_classes"] : NULL;
@@ -239,7 +257,7 @@ if ($id_liste_groupes!=NULL) {
 
 //echo $nb_pages;
 
-	// Cette boucle crÈe les diffÈrentes pages du PDF
+	// Cette boucle cr√©e les diff√©rentes pages du PDF
 	for ($i_pdf=0; $i_pdf<$nb_pages ; $i_pdf++) {
 		// Impressions RAPIDES
 		if ($id_groupe!=NULL) { // C'est un groupe
@@ -269,14 +287,14 @@ if ($id_liste_groupes!=NULL) {
 		if(count($donnees_eleves)==0) {
 			$pdf->AddPage("P"); //ajout d'une page au document
 			$pdf->SetDrawColor(0,0,0);
-			$pdf->SetFont('Arial');
+			$pdf->SetFont('DejaVu');
 			$pdf->SetXY(20,20);
 			$pdf->SetFontSize(14);
 			$pdf->Cell(90,7, "ERREUR",0,2,'');
 
 			$pdf->SetXY(20,40);
 			$pdf->SetFontSize(10);
-			$pdf->Cell(150,7, "Aucun ÈlËve n'est affectÈ dans cette classe ou enseignement.",0,2,'');
+			$pdf->Cell(150,7, "Aucun √©l√®ve n'est affect√© dans cette classe ou enseignement.",0,2,'');
 
 			$nom_releve=date("Ymd_Hi");
 			$nom_releve = 'Liste_'.$nom_releve.'.pdf';
@@ -296,10 +314,10 @@ if ($id_liste_groupes!=NULL) {
 				$hauteur_disponible = $hauteur_disponible - 12.5;
 			  }
 
-			  // le nombre de lignes demandÈes.
+			  // le nombre de lignes demand√©es.
 			  $nb_ligne_demande = $nb_eleves + $nb_ligne_avant + $nb_ligne_apres;
 
-			  // cas 1Ëre ligne plus haute
+			  // cas 1√®re ligne plus haute
 			  if (($h_ligne1_avant !=0)){
 				$hauteur_disponible = $hauteur_disponible - $h_ligne1_avant;
 				$nb_ligne_demande--;
@@ -308,14 +326,14 @@ if ($id_liste_groupes!=NULL) {
 			  $h_ligne = $hauteur_disponible / $nb_ligne_demande ;
 			  //echo $h_ligne;
 
-			  //Cas particulier ou aprËs calcul, h_ligne > $h_ligne1_avant
+			  //Cas particulier ou apr√®s calcul, h_ligne > $h_ligne1_avant
 			  if ($h_ligne>$h_ligne1_avant) {
 				  $hauteur_disponible = HauteurPage - $marge_haut - $marge_bas - $H_entete_classe - 5 - 2.5 - $hauteur_zone_finale; //2.5 ==> avant le pied de page
 
 				  if ($avec_ligne_texte ==1) {
 					$hauteur_disponible = $hauteur_disponible - 12.5;
 				  }
-				  // le nombre de lignes demandÈes.
+				  // le nombre de lignes demand√©es.
 				  $nb_ligne_demande = $nb_eleves + $nb_ligne_avant + $nb_ligne_apres;
 
 				  $h_ligne = ($hauteur_disponible / $nb_ligne_demande );
@@ -326,15 +344,15 @@ if ($id_liste_groupes!=NULL) {
 		// Couleur des traits
 		$pdf->SetDrawColor(0,0,0);
 
-		// caractËre utilisÈ dans le document
-		$caractere_utilise = 'arial';
+		// caract√®re utilis√© dans le document
+		$caractere_utilise = 'DejaVu';
 
 		// on appelle une nouvelle page pdf
 		$nb_eleves_i = 0;
 
-		//EntÍte du PDF
+		//Ent√™te du PDF
 			$pdf->SetLineWidth(0.7);
-			$pdf->SetFont($caractere_utilise,'B',14);
+			$pdf->SetFont('DejaVu','',14);
 			$pdf->Setxy($X_entete_classe,$Y_entete_classe);
 
 			if ($id_classe != NULL) {
@@ -349,20 +367,20 @@ if ($id_liste_groupes!=NULL) {
 			if (($affiche_pp==1)) {
 			   if ($id_groupe == NULL) {
 				   $pdf->CellFitScale($L_entete_classe,$H_entete_classe / 2,'Classe de '.$current_classe,'LTR',2,'C');
-				   $pdf->SetFont($caractere_utilise,'I',8.5);
+				   $pdf->SetFont('DejaVu','I',8.5);
                }
 			  //PP de la classe
 			  if ($id_groupe != NULL) {
-			  // On n'affiche pas le PP (il peut y en avoir plusieurs) ==> on affiche la pÈriode
+			  // On n'affiche pas le PP (il peut y en avoir plusieurs) ==> on affiche la p√©riode
 			    $sql="SELECT num_periode,nom_periode FROM periodes WHERE id_classe='$id_classe' AND num_periode=$id_periode ORDER BY num_periode";
 				$res_per=mysql_query($sql);
 				if(mysql_num_rows($res_per)==0){
-					die("ProblËme avec les infos de la classe $id_classe</body></html>");
+					die("Probl√®me avec les infos de la classe $id_classe</body></html>");
 				}
 				else{
 					$lig_tmp=mysql_fetch_object($res_per);
 					$periode=$lig_tmp->nom_periode;
-					//Affichage  de la pÈriode
+					//Affichage  de la p√©riode
 					$pdf->CellFitScale($L_entete_discipline,$H_entete_classe ,$periode,'TLBR',2,'C');
 				}
 			   } else {
@@ -370,22 +388,22 @@ if ($id_liste_groupes!=NULL) {
 				   $call_profsuivi_eleve = mysql_query($sql);
 				   $current_eleve_profsuivi_login = @mysql_result($call_profsuivi_eleve, '0', 'professeur');
 
-				   $pdf->CellFitScale($L_entete_classe,$H_entete_classe / 2,ucfirst(getSettingValue("gepi_prof_suivi")).' : '.affiche_utilisateur($current_eleve_profsuivi_login,$id_classe),'LRB',0,'L');//'AnnÈe scolaire '.getSettingValue('gepiYear')
+				   $pdf->CellFitScale($L_entete_classe,$H_entete_classe / 2,ucfirst(getSettingValue("gepi_prof_suivi")).' : '.affiche_utilisateur($current_eleve_profsuivi_login,$id_classe),'LRB',0,'L');//'Ann√©e scolaire '.getSettingValue('gepiYear')
 			   }
 			}
 
 			else {
-              // On n'affiche pas le PP (il peut y en avoir plusieurs) ==> on affiche la pÈriode
+              // On n'affiche pas le PP (il peut y en avoir plusieurs) ==> on affiche la p√©riode
 			  if ($id_groupe != NULL) {
                 $sql="SELECT num_periode,nom_periode FROM periodes WHERE id_classe='$id_classe' AND num_periode=$id_periode ORDER BY num_periode";
 				$res_per=mysql_query($sql);
 				if(mysql_num_rows($res_per)==0){
-					die("ProblËme avec les infos de la classe $id_classe</body></html>");
+					die("Probl√®me avec les infos de la classe $id_classe</body></html>");
 				}
 				else{
 					$lig_tmp=mysql_fetch_object($res_per);
 					$periode=$lig_tmp->nom_periode;
-					//Affichage  de la pÈriode
+					//Affichage  de la p√©riode
 					$pdf->CellFitScale($L_entete_discipline,$H_entete_classe ,$periode,'TLBR',2,'C');
 				}
 			  }
@@ -394,30 +412,30 @@ if ($id_liste_groupes!=NULL) {
 
 
 			$pdf->Setxy($X_entete_matiere,$Y_entete_matiere);
-			$pdf->SetFont($caractere_utilise,'B',14);
+			$pdf->SetFont('DejaVu','',14);
 
 
-			//Si on peut connaÓtre le nom de la matiËre (id_groupe existe !)
+			//Si on peut conna√Ætre le nom de la mati√®re (id_groupe existe !)
 			if ($id_groupe != NULL) {
 				$current_group = get_group($id_groupe);
 				$matiere = $current_group["description"];
                  //echo $matiere."<br/>";
 				$pdf->CellFitScale($L_entete_discipline,$H_entete_discipline /2 ,$matiere,'LTR',2,'C');
-				$pdf->SetFont($caractere_utilise,'I',11);
-				$pdf->Cell($L_entete_classe,$H_entete_classe / 2,'AnnÈe scolaire '.getSettingValue('gepiYear'),'LRB',2,'C');
+				$pdf->SetFont('DejaVu','I',11);
+				$pdf->Cell($L_entete_classe,$H_entete_classe / 2,'Ann√©e scolaire '.getSettingValue('gepiYear'),'LRB',2,'C');
 			} else {
-			// On demande une classe ==> on ajoute la pÈriode.
-				$pdf->SetFont($caractere_utilise,'I',11);
+			// On demande une classe ==> on ajoute la p√©riode.
+			        $pdf->SetFont('DejaVu','I',11);
 
 				$sql="SELECT num_periode,nom_periode FROM periodes WHERE id_classe='$id_classe' AND num_periode=$id_periode ORDER BY num_periode";
 				$res_per=mysql_query($sql);
 				if(mysql_num_rows($res_per)==0){
-					die("ProblËme avec les infos de la classe $id_classe</body></html>");
+					die("Probl√®me avec les infos de la classe $id_classe</body></html>");
 				}
 				else{
 					$lig_tmp=mysql_fetch_object($res_per);
 					$periode=$lig_tmp->nom_periode;
-					$pdf->Cell($L_entete_classe,$H_entete_classe / 2,'AnnÈe scolaire '.getSettingValue('gepiYear'),'TLR',2,'C');
+					$pdf->Cell($L_entete_classe,$H_entete_classe / 2,'Ann√©e scolaire '.getSettingValue('gepiYear'),'TLR',2,'C');
 					$pdf->CellFitScale($L_entete_discipline,$H_entete_classe / 2 ,$periode,'LBR',2,'C');
 				}
 			}
@@ -425,7 +443,7 @@ if ($id_liste_groupes!=NULL) {
 			$Y_courant=$pdf->GetY()+2.5;
 			$pdf->Setxy($marge_gauche,$Y_courant);
 
-		//La ligne de texte aprËs les entÍtes
+		//La ligne de texte apr√®s les ent√™tes
 			if ($avec_ligne_texte==1) {
 			    if ($ligne_texte == '') {$ligne_texte=' ';}
 				$pdf->CellFitScale(0,10,$ligne_texte,'',2,'C');
@@ -434,19 +452,22 @@ if ($id_liste_groupes!=NULL) {
 
 		//debut tableau;
 			$pdf->SetLineWidth(0.3);
-			$pdf->SetFont($caractere_utilise,'',9);
+			$pdf->SetFont('DejaVu','',9);
 			$y_tmp = $Y_courant;
 			//Nb de ligne AVANT dans le tableau
+			//echo "\$nb_ligne_avant=$nb_ligne_avant<br />";die();
 			if ($nb_ligne_avant > 0) {
 
-				//la premiËre ligne peut Ítre plus haute
+				//echo "\$h_ligne1_avant=$h_ligne1_avant<br />\n";echo "\$h_ligne=$h_ligne<br />\n";die();
+
+				//la premi√®re ligne peut √™tre plus haute
 				if ($h_ligne1_avant > $h_ligne) {
-					//Une premiËre ligne qui peut Ítre plus haute (date ou nom du devoir par ex)
+					//Une premi√®re ligne qui peut √™tre plus haute (date ou nom du devoir par ex)
 					$pdf->Setxy($X_tableau,$y_tmp);
 
 					// Option effectif
 					if (($afficher_effectif == 1) and ($nb_ligne_avant == 1)) {
-					  //on indique ici le nombre d'ÈlËve dans la classe (option)
+					  //on indique ici le nombre d'√©l√®ve dans la classe (option)
 					  $texte = 'Effectif : '.$nb_eleves;
 					  //$pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',2,'C',2);
 					  $pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',2,'C',0);
@@ -454,6 +475,7 @@ if ($id_liste_groupes!=NULL) {
 						//$pdf->Cell($l_nomprenom,$h_ligne1_avant,' ','R',2,'C',2);
 						// Avec le 'R' pas de bordure
 						$pdf->Cell($l_nomprenom,$h_ligne1_avant,' ','R',2,'L',0);
+						//$pdf->Cell($l_nomprenom,$h_ligne1_avant,' Plop ','R',2,'C',2);
 					}
 
 					//la fin du quadrillage
@@ -486,33 +508,31 @@ if ($id_liste_groupes!=NULL) {
 					//echo $j."<br>";
 					//echo $nb_ligne_avant."<br>";;
 
-					if (($afficher_effectif == 1) and ($nb_ligne_avant == 1)) { // Attention possibilite de cas non traitÈ
-
-					  //on indique ici le nombre d'ÈlËve dans la classe (option)
-					//on indique ici le nombre d'ÈlËve dans la classe (option)
-					$texte = 'Effectif : '.$nb_eleves;
+					if (($afficher_effectif == 1) and ($nb_ligne_avant == 1)) { // Attention possibilite de cas non trait√©
+						//on indique ici le nombre d'√©l√®ve dans la classe (option)
+						//on indique ici le nombre d'√©l√®ve dans la classe (option)
+						$texte = 'Effectif : '.$nb_eleves;
 					}
 					if (($afficher_effectif == 1) and ($j == $nb_ligne_avant-2)) {
-
-					  $pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',0,'C',0);
+						$pdf->Cell($l_nomprenom,$h_ligne1_avant,$texte,'R',0,'C',0);
 					} else {
-						  if (($nb_ligne_avant-2 <=0) and ($nb_ligne_avant < 2)) {
+						if (($nb_ligne_avant-2 <=0) and ($nb_ligne_avant < 2)) {
 							$pdf->Cell($l_nomprenom,$h_ligne,$texte,'R',0,'C',0);
-						  } else {
+						} else {
 							$pdf->Cell($l_nomprenom,$h_ligne,'','R',0,'C',0);
-						  }
+						}
 					}
-
+	
 					for($i=0; $i < $nb_colonne ; $i++) {
 						$pdf->Setxy($X_tableau+$l_nomprenom + $i*$l_colonne,$y_tmp);
 						if ($i<$nb_cellules_quadrillees) {
-						   $pdf->Cell($l_colonne,$h_ligne,'',1,0,'C',0); //le quadrillage
+							$pdf->Cell($l_colonne,$h_ligne,'',1,0,'C',0); //le quadrillage
 						} else {
-						   if ($i < ($nb_colonne-1)) {
-							 $pdf->Cell($l_colonne,$h_ligne,'','TB',0,'C',0); //suivant le type : plus de quadrillage
-						   } else {
-							   $pdf->Cell($l_colonne,$h_ligne,'','TBR',0,'C',0); // pour le dernier, on clos le tableau
-						   }
+							if ($i < ($nb_colonne-1)) {
+								$pdf->Cell($l_colonne,$h_ligne,'','TB',0,'C',0); //suivant le type : plus de quadrillage
+							} else {
+								$pdf->Cell($l_colonne,$h_ligne,'','TBR',0,'C',0); // pour le dernier, on clos le tableau
+							}
 						}
 					}
 					$y_tmp = $y_tmp + $h_ligne;
@@ -524,19 +544,43 @@ if ($id_liste_groupes!=NULL) {
 				$nb_ligne_avant = $nb_ligne_avant_initial;
 			}
 
+
+			// Ordonnee premier eleve pour la premiere page de la classe/groupe
+			$y_top_tableau=$y_tmp;
+
 			// Le tableau
+			$compteur_eleves_page=0;
 			while($nb_eleves_i < $nb_eleves) {
-				$y_tmp = $pdf->GetY();
-				$pdf->Setxy($X_tableau,$y_tmp);
-				$pdf->SetFont($caractere_utilise,'B',9);
-				if ($flag_groupe==true) {
-					$texte = traite_accents_utf8(strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']." (".$donnees_eleves[$nb_eleves_i]['nom_court'].")"));
-				} else {
-					$texte = traite_accents_utf8(strtoupper($donnees_eleves[$nb_eleves_i]['nom'])." ".ucfirst($donnees_eleves[$nb_eleves_i]['prenom']));
+
+				if(strtr($y_tmp,",",".")+strtr($h_ligne,",",".")>297-$marge_haut-$marge_bas-$h_ligne-5) {
+					// Haut du tableau pour la deuxieme, troisieme,... page de la classe
+					// Pour la deuxieme, troisieme,... page d'une classe, on n'a pas d'entete:
+					$y_top_tableau=$marge_haut;
+
+					$pdf->AddPage("P");
+					$pdf->Setxy($X_tableau,$y_top_tableau);
+					$compteur_eleves_page=0;
 				}
-				$pdf->CellFitScale($l_nomprenom,$h_ligne,$texte,1,0,'L',0); //$l_nomprenom.' - '.$h_ligne.' / '.$X_tableau.' - '.$y_tmp
+
+				//$y_tmp = $pdf->GetY();
+				$y_tmp = $y_top_tableau+$compteur_eleves_page*$h_ligne;
+
+				$pdf->Setxy($X_tableau,$y_tmp);
+				$pdf->SetFont('DejaVu','',9);
+				if ($flag_groupe==true) {
+					$texte = (($donnees_eleves[$nb_eleves_i]['nom'])." ".($donnees_eleves[$nb_eleves_i]['prenom']." (".$donnees_eleves[$nb_eleves_i]['nom_court'].")"));
+				} else {
+					$texte = (($donnees_eleves[$nb_eleves_i]['nom'])." ".($donnees_eleves[$nb_eleves_i]['prenom']));
+				}
+
+				//$pdf->CellFitScale($l_nomprenom,$h_ligne,$texte,1,0,'L',0); //$l_nomprenom.' - '.$h_ligne.' / '.$X_tableau.' - '.$y_tmp
+
+				$taille_max_police=9;
+				$taille_min_police=ceil($taille_max_police/3);
+				cell_ajustee($texte,$pdf->GetX(),$y_tmp,$l_nomprenom,$h_ligne,$taille_max_police,$taille_min_police,'LRBT');
+
 				for($i=0; $i < $nb_colonne ; $i++) {
-					$y_tmp = $pdf->GetY();
+					//$y_tmp = $pdf->GetY();
 					$pdf->Setxy($X_tableau+$l_nomprenom + $i*$l_colonne,$y_tmp);
 					if ($i<$nb_cellules_quadrillees) {
 					   $pdf->Cell($l_colonne,$h_ligne,'',1,0,'C',0); //le quadrillage
@@ -548,9 +592,12 @@ if ($id_liste_groupes!=NULL) {
 					   }
 					}
 				}
+
 				$pdf->ln();
 				$nb_eleves_i = $nb_eleves_i + 1;
 				//$y_tmp = $y_tmp + $h_ligne;
+
+				$compteur_eleves_page++;
 			}
 			$y_tmp = $pdf->GetY();
 
@@ -579,14 +626,14 @@ if ($id_liste_groupes!=NULL) {
 				}
 			}
 
-			//le bloc du bas encadrÈ.
+			//le bloc du bas encadr√©.
 			if ($zone_vide==1) {
 			  $y_tmp = $pdf->GetY()+2.5;
 			  $pdf->Setxy($X_tableau,$y_tmp);
 			  if ($hauteur_zone_finale ==0) {
 				// on prend tout ce qui reste
 				$espace_restant = $EspaceY - $y_tmp + $marge_bas -2.5;
-				if ($espace_restant >= 10) { // on ne met le bloc que si lespace est > ‡ 10
+				if ($espace_restant >= 10) { // on ne met le bloc que si lespace est > √† 10
 				  $pdf->Cell(0,$espace_restant,' ',1,0,'C',0);
 				}
 			  } else {
@@ -595,7 +642,7 @@ if ($id_liste_groupes!=NULL) {
 			}
 		} // FOR
 
-	// sortie PDF sur Ècran
+	// sortie PDF sur √©cran
 	$nom_releve=date("Ymd_Hi");
 	$nom_releve = 'Liste_'.$nom_releve.'.pdf';
 	//header('Content-Type: application/pdf');

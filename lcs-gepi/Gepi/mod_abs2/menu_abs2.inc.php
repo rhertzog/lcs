@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: menu_abs2.inc.php 7840 2011-08-20 08:22:01Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -26,12 +25,12 @@
  */
 
 //fichier qui affiche un menu sous forme d'onglets
-//à chaque onglets <li> on teste si c'est l'onglet courant pour le mettre en surimpression
-//et on mets dans la session l'url pour revenir sur le même onglet à la prochaine visite d'absence 2 (par défault l'url courante
+//Ã  chaque onglets <li> on teste si c'est l'onglet courant pour le mettre en surimpression
+//et on mets dans la session l'url pour revenir sur le mÃªme onglet Ã  la prochaine visite d'absence 2 (par dÃ©fault l'url courante
 $basename_serveur=explode("?", basename($_SERVER["REQUEST_URI"]));
 $url_end = reset($basename_serveur);
 $_SESSION['abs2_onglet'] = $url_end;
-// Tests à remplacer par des tests sur les droits attribués aux statuts
+// Tests Ã  remplacer par des tests sur les droits attribuÃ©s aux statuts
 if(($_SESSION['statut']=='cpe')||
     ($_SESSION['statut']=='scolarite')) {
   
@@ -44,7 +43,9 @@ if(($_SESSION['statut']=='cpe')||
 	    || $url_end=='extraction_saisies.php'
         || $url_end=='bilan_individuel.php'
         || $url_end=='totaux_du_jour.php'
-        || $url_end=='statistiques.php') {echo "class='current' ";}
+        || $url_end=='statistiques.php'
+        || $url_end=='stat_justifications.php'
+        || $url_end=='liste_eleves.php') {echo "class='current' ";}
     echo "title='Bilans'>Bilans</a></li>\n";
 
     echo "<li><a href='saisir_groupe.php' ";
@@ -52,19 +53,19 @@ if(($_SESSION['statut']=='cpe')||
         echo "class='current' ";
         $_SESSION['abs2_onglet'] = 'saisir_groupe.php';
     }
-    echo "title='Saisir des absences et des retards pour un groupe'>Saisir un groupe</a></li>\n";
+    echo "title='Saisir des absences et des retards pour un groupe'>Saisir groupe</a></li>\n";
 
     echo "<li><a href='saisir_eleve.php' ";
     if($url_end=='saisir_eleve.php' || $url_end=='enregistrement_saisie_eleve.php') {
         echo "class='current' ";
         $_SESSION['abs2_onglet'] = 'saisir_eleve.php';
     }
-    echo "title='Saisir pour un eleve'>Saisir un élève</a></li>\n";
+    echo "title='Saisir pour un eleve'>Saisir Ã©lÃ¨ve</a></li>\n";
 
     echo "<li><a href='liste_saisies_selection_traitement.php' ";
     if($url_end=='liste_saisies_selection_traitement.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
     else {echo "style='background-color:#e6f8e7;' ";}
-    echo "title='Liste des saisies'>Liste des saisies</a></li>\n";
+    echo "title='Liste des saisies'>Liste saisies</a></li>\n";
 
     echo "<li><a href='visu_saisie.php' ";
     if($url_end=='visu_saisie.php' || $url_end=='enregistrement_modif_saisie.php') {echo "class='current' style='background-color:#cae7cb; border-bottom:2px solid #cae7cb;' ";}
@@ -77,7 +78,7 @@ if(($_SESSION['statut']=='cpe')||
     echo "<li><a href='liste_traitements.php' ";
     if($url_end=='liste_traitements.php') {echo "class='current' style='background-color:#ebedb5; border-bottom:2px solid #ebedb5;' ";}
     else {echo "style='background-color:#f9f9de;' ";}
-    echo "title='Traitement'>Liste des traitements</a></li>\n";
+    echo "title='Traitement'>Liste traitements</a></li>\n";
 
     echo "<li><a href='visu_traitement.php' ";
     if($url_end=='visu_traitement.php' || $url_end=='enregistrement_modif_traitement.php') {
@@ -89,7 +90,7 @@ if(($_SESSION['statut']=='cpe')||
     echo "<li><a href='liste_notifications.php' ";
     if($url_end=='liste_notifications.php') {echo "class='current' style='background-color:#c7e3ec; border-bottom:2px solid #c7e3ec;' ";}
     else {echo "style='background-color:#ecf6f8;' ";}
-    echo "title='Notifications'>Liste des notifications</a></li>\n";
+    echo "title='Notifications'>Liste notifications</a></li>\n";
 
     echo "<li><a href='visu_notification.php' ";
     if($url_end=='visu_notification.php' || $url_end=='enregistrement_modif_notification.php' || $url_end=='generer_notification.php') {
@@ -104,13 +105,13 @@ if(($_SESSION['statut']=='cpe')||
     echo "title='Envoi par lot'>Envoi par lot</a></li>\n";
 
     if($url_end=='saisir_eleve.php' || $url_end=='enregistrement_saisie_eleve.php' || $url_end=='saisir_groupe.php' || $url_end=='enregistrement_saisie_groupe.php') {
-	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></div>';
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></li>';
     } else if($url_end=='liste_notifications.php') {
-	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi">wiki</a></div>';
-    } else if($url_end=='tableau_des_appels.php'|| $url_end=='absences_du_jour.php'||$url_end=='bilan_du_jour.php'||$url_end=='totaux_du_jour.php'||$url_end=='extraction_saisies.php'||$url_end=='extraction_demi-journees.php'||$url_end=='bilan_individuel.php'||$url_end=='statistiques.php') {
-	echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans">wiki</a></div>';
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi">wiki</a></li>';
+    } else if($url_end=='tableau_des_appels.php'|| $url_end=='absences_du_jour.php'||$url_end=='bilan_du_jour.php'||$url_end=='totaux_du_jour.php'||$url_end=='extraction_saisies.php'||$url_end=='extraction_demi-journees.php'||$url_end=='bilan_individuel.php'||$url_end=='statistiques.php'||$url_end=='stat_justifications.php') {
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans">wiki</a></li>';
     } else {
-    echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></div>';
+    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></li>';
     }
 
     echo "</ul>\n";
@@ -144,7 +145,7 @@ if(($_SESSION['statut']=='cpe')||
         echo "title='Bilans'>Bilan individuel</a></li>\n";
     }
 
-    echo '<div style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Fond_de_salle">wiki</a></div>';
+    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Fond_de_salle">wiki</a></li>';
 
     echo "</ul>\n";
 
@@ -155,7 +156,7 @@ if(($_SESSION['statut']=='cpe')||
     if(acces('/mod_abs2/saisir_eleve.php','autre')) {
         echo "<li><a href='saisir_eleve.php' ";
         if($url_end=='saisir_eleve.php') {echo "class='current' ";}
-        echo "title='Saisir pour un eleve'>Saisir un élève</a></li>\n";        
+        echo "title='Saisir pour un eleve'>Saisir un Ã©lÃ¨ve</a></li>\n";        
     
         echo "<li><a href='visu_saisie.php' ";
         if($url_end=='visu_saisie.php' || $url_end=='enregistrement_modif_saisie.php') {

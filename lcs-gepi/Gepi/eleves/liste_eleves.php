@@ -2,7 +2,6 @@
 
 /*
  *
- * @version $Id: liste_eleves.php 6810 2011-04-20 19:26:12Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -38,18 +37,18 @@ if ($resultat_session == "c") {
     die();
 }
 
-// Sécurité
+// SÃ©curitÃ©
 // SQL : INSERT INTO droits VALUES ( '/eleves/liste_eleves.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Lister_des_eleves', '');
-// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/eleves/liste_eleves.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Lister des élèves', '');";
+// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/eleves/liste_eleves.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Lister des Ã©lÃ¨ves', '');";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=2");
     die();
 }
 
-// La page est destinée à être appelée via Ajax.
-// Il n'y a donc ni entête HTML, ni pied de page.
+// La page est destinÃ©e Ã  Ãªtre appelÃ©e via Ajax.
+// Il n'y a donc ni entÃªte HTML, ni pied de page.
 
-header('Content-type: text/html; charset=iso-8859-1');
+header('Content-type: text/html; charset=utf-8');
 
 //include("recherche_eleve.php");
 include("../eleves/recherche_eleve.php");

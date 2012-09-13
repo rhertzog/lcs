@@ -1,5 +1,5 @@
 <?php
-	/* $Id: lignes_disc_01.php 6936 2011-05-17 15:26:38Z crob $ */
+	/* $Id$ */
 
 	echo "<tr>\n";
 
@@ -8,36 +8,36 @@
 	echo "</td>\n";
 
 	echo "<td colspan='2' style='border: 1px solid black; text-align:center; font-size:".$fb_titretab."pt;'>\n";
-	echo "NOTE MOYENNE<br />affectée du coefficient";
+	echo "NOTE MOYENNE<br />affectÃ©e du coefficient";
 	echo "</td>\n";
 
 	echo "<td rowspan='3' valign='bottom' width='".$fb_largeur_col_note."%' style='line-height: ".$fb_txttab_lineheight."pt;'>\n";
 	echo "Note<br />moyenne<br />de la<br />classe";
-	//echo "Note<br />moyenne<br />de la<br />classe<br />0 à 20";
+	//echo "Note<br />moyenne<br />de la<br />classe<br />0 Ã  20";
 	echo "</td>\n";
 
 	echo "<td rowspan='3' style='line-height: ".$fb_txttab_lineheight."pt; font-size:".$fb_titretab."pt;' width='".$fb_largeur_col_app."%'>\n";
-	echo "Appréciations des professeurs";
+	echo "ApprÃ©ciations des professeurs";
 	echo "</td>\n";
 
 	echo "</tr>\n";
 	//=====================
 	echo "<tr>\n";
 
-	// La colonne discipline est dans le rowspan de la ligne précédente.
+	// La colonne discipline est dans le rowspan de la ligne prÃ©cÃ©dente.
 
 	//echo "<td style='border: 1px solid black; text-align:center;'>\n";
 	echo "<td colspan='2' style='font-weight:bold; font-size:".$fb_titretab."pt;'>\n";
-	echo "3ème à option";
+	echo "3Ã¨me Ã  option";
 	echo "</td>\n";
 
-	// Les colonnes note moyenne de la classe et appréciations des profs sont dans le rowspan de la ligne précédente.
+	// Les colonnes note moyenne de la classe et apprÃ©ciations des profs sont dans le rowspan de la ligne prÃ©cÃ©dente.
 
 	echo "</tr>\n";
 	//=====================
 	echo "<tr>\n";
 
-	// La colonne discipline est dans le rowspan de la ligne précédente.
+	// La colonne discipline est dans le rowspan de la ligne prÃ©cÃ©dente.
 
 	//echo "<td style='border: 1px solid black; text-align:center;'>\n";
 	echo "<td width='".$fb_largeur_col_opt."%' style='font-size:".$fb_titretab."pt;'>\n";
@@ -47,12 +47,12 @@
 	echo "</td>\n";
 
 	echo "<td width='".$fb_largeur_col_opt."%' style='line-height: ".$fb_txttab_lineheight."pt; font-size:".$fb_titretab."pt;'>\n";
-	//echo "A module découverte professionnelle<br />6 heures";
+	//echo "A module dÃ©couverte professionnelle<br />6 heures";
 	//echo $fb_intitule_col[2];
 	echo $tabmatieres["fb_intitule_col"][2];
 	echo "</td>\n";
 
-	// Les colonnes note moyenne de la classe et appréciations des profs sont dans le rowspan de la ligne précédente.
+	// Les colonnes note moyenne de la classe et apprÃ©ciations des profs sont dans le rowspan de la ligne prÃ©cÃ©dente.
 
 	echo "</tr>\n";
 
@@ -77,18 +77,15 @@
 				//if(ctype_digit($tabmatieres[$j]['fb_col'][1])){$SUR_TOTAL[1]+=$tabmatieres[$j]['fb_col'][1];}
 				//if(ctype_digit($tabmatieres[$j]['fb_col'][2])){$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];}
 
-				/*
-				if(strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][1]))==0){$SUR_TOTAL[1]+=$tabmatieres[$j]['fb_col'][1];}
-				if(strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0){$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];}
-				*/
+				
 
 				// ************************************
 				// A REVOIR
 				// PROBLEME AVEC CES TOTAUX: SI UN ELEVE EST AB, DI ou NN, IL NE FAUDRAIT PAS AUGMENTER???...
-				if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')){
+				if((mb_strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][1]))==0)&&($tabmatieres[$j][-1]!='PTSUP')){
 					$SUR_TOTAL[1]+=$tabmatieres[$j]['fb_col'][1];
 				}
-				if((strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')){
+				if((mb_strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0)&&($tabmatieres[$j][-1]!='PTSUP')){
 					$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];
 				}
 				// ************************************
@@ -106,7 +103,7 @@
 
 				// Discipline
 				//echo "<td style='border: 1px solid black; text-align:left;'>\n";
-				// Les trois colonnes du colspan='3' servent à couvrir les découpages de colonnes sur les lignes B2i,...
+				// Les trois colonnes du colspan='3' servent Ã  couvrir les dÃ©coupages de colonnes sur les lignes B2i,...
 				echo "<td colspan='4' style='font-size:".$fb_textetab."pt;'";
 				//if($tabmatieres[$j][-1]=='PTSUP'){
 				//	echo " rowspan='2'";
@@ -140,7 +137,7 @@
 							$lignes_opt_facultative_alternative.="<td>&nbsp;</td>\n";
 						}
 						elseif($type_brevet==1) {
-							$lignes_opt_facultative_alternative.="Latin ou grec<br />ou découverte professionnelle 3 h\n";
+							$lignes_opt_facultative_alternative.="Latin ou grec<br />ou dÃ©couverte professionnelle 3 h\n";
 							$lignes_opt_facultative_alternative.="</p></td>\n";
 							$lignes_opt_facultative_alternative.="<td>&nbsp;</td>\n";
 							$lignes_opt_facultative_alternative.="<td style='background-color:lightgrey;'>&nbsp;</td>\n";
@@ -150,7 +147,7 @@
 						$lignes_opt_facultative_alternative.="</tr>\n";
 
 						if($type_brevet==1) {
-							// Pour le brevet COLLEGE DP6, on insère la ligne alternative correspondant au brevet COLLEGE série LV2
+							// Pour le brevet COLLEGE DP6, on insÃ¨re la ligne alternative correspondant au brevet COLLEGE sÃ©rie LV2
 							echo $lignes_opt_facultative_alternative;
 						}
 
@@ -158,7 +155,6 @@
 						echo "<tr>\n";
 						echo "<td colspan='4' style='font-size:".$fb_textetab."pt;'>\n";
 						echo "<p class='discipline'>";
-						//echo ucfirst(strtolower($tabmatieres[$j][0]));
 
 						$nom_opt="";
 						if($type_brevet==0) {
@@ -172,48 +168,45 @@
 						echo "$nom_opt";
 
 						// ==============================
-						// recherche de la matière facultative pour l'élève
+						// recherche de la matiÃ¨re facultative pour l'Ã©lÃ¨ve
 						//$sql_mat_fac="SELECT mat FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
 						$sql_mat_fac="SELECT m.nom_complet AS matiere FROM notanet n, matieres m WHERE n.login='$lig1->login' AND n.id_classe='$id_classe[$i]' AND n.notanet_mat='".$tabmatieres[$j][0]."' AND m.matiere=n.matiere";
 						$res_mat_fac=mysql_query($sql_mat_fac);
 						if(mysql_num_rows($res_mat_fac)>0){
 							$lig_mat_fac=mysql_fetch_object($res_mat_fac);
 
-							//echo ": ".$lig_mat_fac->mat;
-							//echo ": ".ucfirst(strtolower($lig_mat_fac->matiere));
-
 							echo " : ";
 
-							echo ucfirst(accent_min(strtolower($lig_mat_fac->matiere)));
+							echo ucfirst(accent_min(mb_strtolower($lig_mat_fac->matiere)));
 						}
 						// ==============================
 
 						//echo ": ".$lig_mat_fac->mat;
 					}
-					elseif(substr(ucfirst(strtolower($tabmatieres[$j][0])),0,14)=='Langue vivante') {
+					elseif(mb_substr(ucfirst(mb_strtolower($tabmatieres[$j][0])),0,14)=='Langue vivante') {
 						echo "<p class='discipline'>";
-						echo ucfirst(accent_min(strtolower($tabmatieres[$j][0])))." : ";
+						echo ucfirst(accent_min(mb_strtolower($tabmatieres[$j][0])))." : ";
 
 						// ==============================
-						// recherche de la langue vivante pour l'élève
+						// recherche de la langue vivante pour l'Ã©lÃ¨ve
 						//$sql_mat_fac="SELECT mat FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
 						$sql_mat_lv="SELECT m.nom_complet AS matiere FROM notanet n, matieres m WHERE n.login='$lig1->login' AND n.id_classe='$id_classe[$i]' AND n.notanet_mat='".$tabmatieres[$j][0]."' AND m.matiere=n.matiere";
 						$res_mat_lv=mysql_query($sql_mat_lv);
 						if(mysql_num_rows($res_mat_lv)>0){
 							$lig_mat_lv=mysql_fetch_object($res_mat_lv);
 
-							echo ucfirst(accent_min(strtolower($lig_mat_lv->matiere)));
+							echo ucfirst(accent_min(mb_strtolower($lig_mat_lv->matiere)));
 						}
 					}
 					else {
 						echo "<p class='discipline'>";
-						echo ucfirst(accent_min(strtolower($tabmatieres[$j][0])));
+						echo ucfirst(accent_min(mb_strtolower($tabmatieres[$j][0])));
 					}
 				}
 				else{
-					// Lignes spéciales: LV2 ou DP6
+					// Lignes spÃ©ciales: LV2 ou DP6
 					echo "<p class='discipline'>";
-					echo ucfirst(accent_min(strtolower($tabmatieres[$j]["lig_speciale"])));
+					echo ucfirst(accent_min(mb_strtolower($tabmatieres[$j]["lig_speciale"])));
 				}
 				//echo "</span>\n";
 				echo "</p>\n";
@@ -221,7 +214,7 @@
 
 
 				/*
-				// Moyenne élève
+				// Moyenne Ã©lÃ¨ve
 				echo "<td ";
 				if($tabmatieres[$j][-1]=='PTSUP'){
 					echo "rowspan='2' ";
@@ -243,7 +236,7 @@
 				echo "</td>\n";
 				*/
 
-				// EXTRACTION POUR LA(ES) COLONNE(S) "NOTE MOYENNE affectée du coefficient"
+				// EXTRACTION POUR LA(ES) COLONNE(S) "NOTE MOYENNE affectÃ©e du coefficient"
 				$valeur_tmp="&nbsp;";
 				//$sql="SELECT note FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
 				$sql="SELECT note FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
@@ -261,7 +254,7 @@
 						}
 						else{
 						*/
-						// Le cas PTSUP est calculé plus loin
+						// Le cas PTSUP est calculÃ© plus loin
 						if($tabmatieres[$j][-1]!='PTSUP'){
 							//$TOTAL+=$lig_note->note;
 							$TOTAL+=$valeur_tmp;
@@ -317,32 +310,17 @@
 
 
 
-				// COLONNE série LV2
+				// COLONNE sÃ©rie LV2
 				echo "<td ";
 				//echo "style='border: 1px solid black; text-align:right;'>\n";
 				/*
 				if($tabmatieres[$j][-1]=='PTSUP'){
 					echo "style='border: 1px solid black; text-align:center;'>\n";
-					echo "<b>Points > à 10</b>";
+					echo "<b>Points > Ã  10</b>";
 				}
 				else{
 				*/
-					/*
-					$sql="SELECT note FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
-					$res_note=mysql_query($sql);
-					if(mysql_num_rows($res_note)){
-						$lig_note=mysql_fetch_object($res_note);
-						echo "$lig_note->note";
-						if(($lig_note->note!='AB')&&($lig_note->note!='DI')&&($lig_note->note!='NN')){
-							$TOTAL+=$lig_note->note;
-						}
-						//$note="$lig_note->note";
-					}
-					else{
-						echo "&nbsp;";
-						//$note="&nbsp;";
-					}
-					*/
+					
 					echo "style='border: 1px solid black; font-size:".$fb_textetab."pt;";
 
 					if(($tabmatieres[$j][0]=="OPTION FACULTATIVE")&&($nom_opt=='Latin, grec ou LV2')) {
@@ -356,7 +334,7 @@
 					}
 					else{
 						echo " text-align:right;";
-						if (strtolower($tabmatieres[$j][0])=='découverte professionnelle 6 heures') {echo " background-color:lightgrey;";}
+						if (mb_strtolower($tabmatieres[$j][0])=='dÃ©couverte professionnelle 6 heures') {echo " background-color:lightgrey;";}
 						if($tabmatieres[$j]['fb_col'][1]=="X") {
 							echo " background-color:gray;";
 						}
@@ -367,7 +345,7 @@
 					//$nb=$tabmatieres[$j][-2]*20;
 					//echo " / $nb";
 					//if($tabmatieres[$j][-1]!='PTSUP'){
-					if(($tabmatieres[$j][-1]!='PTSUP')&&(strtolower($tabmatieres[$j][0])!='découverte professionnelle 6 heures')) {
+					if(($tabmatieres[$j][-1]!='PTSUP')&&(mb_strtolower($tabmatieres[$j][0])!='dÃ©couverte professionnelle 6 heures')) {
 						if($tabmatieres[$j]['fb_col'][1]!="X"){
 							if(($temoin_note_non_numerique=="n")||($num_fb_col==2)) {
 								echo " / ".$tabmatieres[$j]['fb_col'][1];
@@ -383,31 +361,14 @@
 				echo "</td>\n";
 
 
-				// COLONNE série DP6
+				// COLONNE sÃ©rie DP6
 				//echo "style='border: 1px solid black; text-align:center;'>\n";
 				echo "<td ";
-				/*
-				if($tabmatieres[$j][-1]=='PTSUP'){
-					echo "style='border: 1px solid black; text-align:center;'>\n";
-					echo "<b>Points > à 10</b>";
-				}
-				else{
-				*/
-					/*
-					echo "style='border: 1px solid black; text-align:right;'>\n";
-					// TRICHE... Mon dispositif ne permet pas de gérer correctement ce double affichage
-					// Il faudrait /40 pour la 2è LV ou découverte professionnelle 6H.
-					if($tabmatieres[$j][0]=='DEUXIEME LANGUE VIVANTE'){
-						echo " / 40";
-					}
-					else{
-						echo " / 20";
-					}
-					*/
+									
 					//echo "style='border: 1px solid black; text-align:right;'>\n";
 					echo "style='border: 1px solid black; font-size:".$fb_textetab."pt;";
 
-					if(strtolower($tabmatieres[$j][0])=='langue vivante 2') {
+					if(mb_strtolower($tabmatieres[$j][0])=='langue vivante 2') {
 						echo "background-color:lightgrey;";
 					}
 
@@ -428,7 +389,7 @@
 					//$nb=$tabmatieres[$j][-2]*20;
 					//echo " / $nb";
 					//if($tabmatieres[$j][-1]!='PTSUP'){
-					if(($tabmatieres[$j][-1]!='PTSUP')&&(strtolower($tabmatieres[$j][0])!='langue vivante 2')) {
+					if(($tabmatieres[$j][-1]!='PTSUP')&&(mb_strtolower($tabmatieres[$j][0])!='langue vivante 2')) {
 						if(($temoin_note_non_numerique=="n")||($num_fb_col==1)) {
 							echo " / ".$tabmatieres[$j]['fb_col'][2];
 						}
@@ -439,11 +400,7 @@
 
 				// Moyenne classe
 				echo "<td ";
-				/*
-				if($tabmatieres[$j][-1]=='PTSUP'){
-					echo "rowspan='2' ";
-				}
-				*/
+				
 				echo "style='border: 1px solid black; text-align:center; font-size:".$fb_textetab."pt;'>\n";
 				if($fb_mode_moyenne==1){
 					echo $moy_classe[$j];
@@ -471,7 +428,7 @@
 
 
 
-				// Appréciation
+				// ApprÃ©ciation
 				echo "<td ";
 				/*
 				if($tabmatieres[$j][-1]=='PTSUP'){
@@ -506,17 +463,17 @@
 				echo "</tr>\n";
 
 
-				// On ajoute la ligne alternative correspondant à DP6
+				// On ajoute la ligne alternative correspondant Ã  DP6
 				if(($type_brevet==0)&&($tabmatieres[$j][0]=='OPTION FACULTATIVE')) {
 					// La ligne est vide si il ne s'agit pas d'une option facultative:
 					echo $lignes_opt_facultative_alternative;
 				}
 
 
-				if((strtolower($tabmatieres[$j][0])=='vie scolaire')&&($type_brevet==0)) {
+				if((mb_strtolower($tabmatieres[$j][0])=='vie scolaire')&&($type_brevet==0)) {
 					// On ajoute une ligne pour l'option alternative en DP6
 					echo "<tr>\n";
-					echo "<td colspan='4' style='border: 1px solid black; text-align:left; font-size:".$fb_textetab."pt;'><p class='discipline'>Découverte professionnelle 6 heures</p></td>\n";
+					echo "<td colspan='4' style='border: 1px solid black; text-align:left; font-size:".$fb_textetab."pt;'><p class='discipline'>DÃ©couverte professionnelle 6 heures</p></td>\n";
 
 					echo "<td style='border: 1px solid black; text-align:left; background-color:lightgrey;'>&nbsp;</td>\n";
 					echo "<td style='border: 1px solid black; text-align:right; font-size:".$fb_textetab."pt;'>/40</td>\n";
@@ -525,7 +482,7 @@
 					echo "</tr>\n";
 				}
 
-				if((strtolower($tabmatieres[$j][0])=='technologie')&&($type_brevet==1)) {
+				if((mb_strtolower($tabmatieres[$j][0])=='technologie')&&($type_brevet==1)) {
 					// On ajoute une ligne pour l'option alternative en LV2
 					echo "<tr>\n";
 					echo "<td colspan='4' style='border: 1px solid black; text-align:left; font-size:".$fb_textetab."pt;'><p class='discipline'>Langue vivante 2 : ....................</p></td>\n";
@@ -624,54 +581,11 @@
 
 		}
 		else{
-			// $tabmatieres[$j][0]==0, mais il faut quand même afficher la ligne:
+			// $tabmatieres[$j][0]==0, mais il faut quand mÃªme afficher la ligne:
 			// CAS PARTICULIER DE LA LIGNE DECOUVERTE PROFESSIONNELLE INUTILE MAIS PRESENTE POUR LES SERIES TECHNOLOGIQUE SANS DP6 ET PROFESSIONNELLE SANS DP6
 
 			// CETTE LIGNE SPECIALE N'EST PLUS UTILISEE
-			/*
-			if(isset($tabmatieres[$j]["lig_speciale"])) {
-				echo "<tr>\n";
-
-				if(strlen(my_ereg_replace("[0-9]","",$tabmatieres[$j]['fb_col'][2]))==0){
-					$SUR_TOTAL[2]+=$tabmatieres[$j]['fb_col'][2];
-				}
-
-				// Discipline
-				echo "<td style='border: 1px solid black; text-align:left;'>\n";
-				echo "<p class='discipline'>";
-				echo ucfirst(strtolower($tabmatieres[$j]["lig_speciale"]));
-				echo "</p>\n";
-				echo "</td>\n";
-
-				// Moyenne classe
-				echo "<td style='border: 1px solid black; text-align:center;'>\n";
-				echo "&nbsp;";
-				echo "</td>\n";
-
-				// Moyenne élève
-				echo "<td style='border: 1px solid black; text-align:center;'>\n";
-				echo "&nbsp;";
-				echo "</td>\n";
-
-				// Appréciation
-				echo "<td style='border: 1px solid black; text-align:center;'>\n";
-				echo "&nbsp;";
-				echo "</td>\n";
-
-
-				echo "<td style='border: 1px solid black; text-align:center; background-color: gray;'>\n";
-				echo "&nbsp;";
-				echo "</td>\n";
-
-				echo "<td style='border: 1px solid black; text-align:right;'>\n";
-				echo "&nbsp;";
-				echo " / ".$tabmatieres[$j]['fb_col'][2];
-				echo "</td>\n";
-
-				echo "</tr>\n";
-
-			}
-			*/
+			
 			// Fin du isset($tabmatieres[$j]["lig_speciale"])
 		}
 	}
@@ -757,7 +671,7 @@
 		echo "</td>\n";
 
 
-		// Colonne Appréciations
+		// Colonne ApprÃ©ciations
 		echo "<td style='border: 1px solid black; text-align:center;'>\n";
 		echo "&nbsp;";
 		echo "</td>\n";
@@ -765,7 +679,7 @@
 		echo "</tr>\n";
 
 		$num_lig=0;
-		// On repasse en revue toutes les matières en ne retenant que celles qui sont NOTNONCA
+		// On repasse en revue toutes les matiÃ¨res en ne retenant que celles qui sont NOTNONCA
 		for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 			//if($tabmatieres[$j][0]!=''){
 			if(($tabmatieres[$j][0]!='')&&($tabmatieres[$j][-1]=='NOTNONCA')){
@@ -774,41 +688,13 @@
 
 					echo "<td colspan='4' style='border: 1px solid black; text-align:left; font-size:".$fb_textetab."pt;'>\n";
 					echo "<p class='discipline'>";
-					echo ucfirst(accent_min(strtolower($tabmatieres[$j][0])));
+					echo ucfirst(accent_min(mb_strtolower($tabmatieres[$j][0])));
 					//echo "</p>";
 					//echo "</td>\n";
 					echo " : ";
 
-					/*
-					// Moyenne de la classe
-					echo "<td style='border: 1px solid black; text-align:center;'>\n";
-					//echo $moy_classe[$j];
-					if($fb_mode_moyenne==1){
-						echo $moy_classe[$j];
-					}
-					else{
-						//$sql="SELECT mat FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
-						$sql="SELECT matiere FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
-						$res_mat=mysql_query($sql);
-						if(mysql_num_rows($res_mat)>0){
-							$lig_mat=mysql_fetch_object($res_mat);
-							//echo "$lig_mat->mat: ";
-
-							//$sql="SELECT ROUND(AVG(note),1) moyenne_mat FROM notanet WHERE id_classe='$id_classe[$i]' AND mat='".$lig_mat->mat."'";
-							//$sql="SELECT ROUND(AVG(note),1) moyenne_mat FROM notanet WHERE id_classe='$id_classe[$i]' AND matiere='".$lig_mat->matiere."';";
-							$sql="SELECT ROUND(AVG(note),1) moyenne_mat FROM notanet WHERE id_classe='$id_classe[$i]' AND matiere='".$lig_mat->matiere."' AND note!='AB' AND note!='DI' AND note!='NN';";
-							//echo "$sql<br />";
-							$res_moy=mysql_query($sql);
-							if(mysql_num_rows($res_moy)>0){
-								$lig_moy=mysql_fetch_object($res_moy);
-								echo "$lig_moy->moyenne_mat";
-							}
-						}
-					}
-					echo "</td>\n";
-					*/
-
-					// Moyenne de l'élève
+					
+					// Moyenne de l'Ã©lÃ¨ve
 					//echo "<td style='border: 1px solid black; text-align:center;'>\n";
 					//$sql="SELECT note FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND matiere='".$tabmatieres[$j][0]."'";
 					$sql="SELECT note FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
@@ -822,12 +708,12 @@
 					}
 					//echo "</td>\n";
 
-					// Appréciation
+					// ApprÃ©ciation
 					//echo "<td style='border: 1px solid black; text-align:center;'>\n";
 					//echo "&nbsp;";
 					//echo "</td>\n";
 
-					// Colonne total des lignes calculées (non NOTNONCA)...
+					// Colonne total des lignes calculÃ©es (non NOTNONCA)...
 					if($num_lig==0){
 						$nb_info=$temoin_NOTNONCA;
 
@@ -872,7 +758,7 @@
 					}
 					*/
 
-					// Appréciation
+					// ApprÃ©ciation
 					echo "<td ";
 					//style='border: 1px solid black; text-align:center;'>\n";
 					//echo "&nbsp;";
@@ -911,54 +797,19 @@
 					echo "</tr>\n";
 				}
 				else{
-					// Matière 'non dispensee dans l etablissement'
-					// On affiche seulement les intitulés et le total des barèmes...
+					// MatiÃ¨re 'non dispensee dans l etablissement'
+					// On affiche seulement les intitulÃ©s et le total des barÃ¨mes...
 					echo "<tr>\n";
 
 					echo "<td colspan='4' style='border: 1px solid black; text-align:left; font-size:".$fb_textetab."pt;'>\n";
 					echo "<p class='discipline'>";
-					echo ucfirst(accent_min(strtolower($tabmatieres[$j][0])));
+					echo ucfirst(accent_min(mb_strtolower($tabmatieres[$j][0])));
 					echo "</p>";
 					echo "</td>\n";
-
-					/*
-					echo "<td style='border: 1px solid black; text-align:center;'>\n";
-					echo "&nbsp;";
-					echo "</td>\n";
-
-					echo "<td style='border: 1px solid black; text-align:center;'>\n";
-					echo "&nbsp;";
-					echo "</td>\n";
-
-					echo "<td style='border: 1px solid black; text-align:center;'>\n";
-					echo "&nbsp;";
-					echo "</td>\n";
-					*/
 
 					if($num_lig==0){
 						$nb_info=$temoin_NOTNONCA;
 
-						/*
-						//echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:right;'>\n";
-						if($num_fb_col==1){
-							echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:center;'>\n";
-							echo "$TOTAL / 220";
-							echo "</td>\n";
-
-							echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:right;'>\n";
-							echo "/ 240";
-							echo "</td>\n";
-						}
-						else{
-							echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:right;'>\n";
-							echo "/ 220";
-							echo "</td>\n";
-
-							echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:center;'>\n";
-							echo "$TOTAL / 240";
-							echo "</td>\n";
-						}
-						*/
 						//echo "</td>\n";
 						if($num_fb_col==1){
 							echo "<td rowspan='$nb_info' style='border: 1px solid black; text-align:center;' font-size:".$fb_textetab."pt;>\n";
@@ -988,7 +839,7 @@
 						//$num_lig++;
 					}
 
-					// Appréciation
+					// ApprÃ©ciation
 					echo "<td style='border: 1px solid black; text-align:center;'>\n";
 					echo "&nbsp;";
 					echo "</td>\n";

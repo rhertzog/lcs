@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: extraction_saisies.php 8192 2011-09-10 15:13:31Z dblanqui $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -50,9 +49,9 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vérifie si le module est activé
+//On vÃ©rifie si le module est activÃ©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activé.");
+    die("Le module n'est pas activÃ©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite" && $utilisateur->getStatut()!="administrateur" ) {
@@ -62,7 +61,7 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite" &
 include_once 'lib/function.php';
 
 // Initialisation des variables
-//récupération des paramètres de la requète
+//rÃ©cupÃ©ration des paramÃ¨tres de la requÃ¨te
 $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom_eleve"]) ? $_GET["nom_eleve"] :(isset($_SESSION["nom_eleve"]) ? $_SESSION["nom_eleve"] : NULL));
 $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_classe"]) ? $_GET["id_classe"] :(isset($_SESSION["id_classe_abs"]) ? $_SESSION["id_classe_abs"] : NULL));
 $date_absence_eleve_debut = isset($_POST["date_absence_eleve_debut"]) ? $_POST["date_absence_eleve_debut"] :(isset($_GET["date_absence_eleve_debut"]) ? $_GET["date_absence_eleve_debut"] :(isset($_SESSION["date_absence_eleve_debut"]) ? $_SESSION["date_absence_eleve_debut"] : NULL));
@@ -99,7 +98,7 @@ $dojo=true;
 //**************** EN-TETE *****************
 $titre_page = "Les absences";
 if ($affichage != 'ods') {// on affiche pas de html
-    require_once("../lib/header.inc");
+    require_once("../lib/header.inc.php");
     
     if ($traitement_csv_en_cours != 'true') {
 
@@ -136,14 +135,14 @@ if ($affichage != 'ods') {// on affiche pas de html
 			    }
 			    echo "</select> ";
 		    } else {
-			echo 'Aucune classe avec élève affecté n\'a été trouvée';
+			echo 'Aucune classe avec Ã©lÃ¨ve affectÃ© n\'a Ã©tÃ© trouvÃ©e';
 		    }
 	    ?>
 		</p>
 	    <p>
 	    Type :
 	    <select dojoType="dijit.form.Select" style="font-size:12px;" name="type_extrait">
-	    <option value='1' <?php if ($type_extrait == '1') {echo 'selected="selected"';}?>>Liste des saisies occasionnant un manquement aux obligations de présence</option>
+	    <option value='1' <?php if ($type_extrait == '1') {echo 'selected="selected"';}?>>Liste des saisies occasionnant un manquement aux obligations de prÃ©sence</option>
 	    <option value='2' <?php if ($type_extrait == '2') {echo 'selected="selected"';}?>>Liste de toutes les saisies</option>
 	    </select>
 	    <br />
@@ -177,7 +176,7 @@ if ($affichage != null && $affichage != '') {
 
     $saisie_query = AbsenceEleveSaisieQuery::create()
 	->filterByPlageTemps($dt_date_absence_eleve_debut, $dt_date_absence_eleve_fin)
-	->filterByEleveId($eleve_col->toKeyValue('IdEleve', 'IdEleve'));
+	->filterByEleveId($eleve_col->toKeyValue('Id', 'Id'));
 
     if ($type_extrait == '1') {
 		$saisie_query->filterByManquementObligationPresence(true);
@@ -239,7 +238,7 @@ if ($affichage == 'html') {
 
     // Load the template
 	$extraction_saisies=repertoire_modeles('absence_extraction_saisies.ods');
-    $TBS->LoadTemplate($extraction_saisies);
+    $TBS->LoadTemplate($extraction_saisies, OPENTBS_ALREADY_UTF8);
 
     $titre = 'Extrait des absences du '.$dt_date_absence_eleve_debut->format('d/m/Y').' au '.$dt_date_absence_eleve_fin->format('d/m/Y');
     $classe = null;
@@ -250,7 +249,7 @@ if ($affichage == 'html') {
 	}
     }
     if ($nom_eleve != null && $nom_eleve != '' ) {
-	$titre .= ' pour les élèves dont le nom ou le prénom contient '.$nom_eleve;
+	$titre .= ' pour les Ã©lÃ¨ves dont le nom ou le prÃ©nom contient '.$nom_eleve;
     }
     $TBS->MergeField('titre', $titre);
 	$saisie_col = $saisie_query->find();
@@ -265,10 +264,10 @@ if ($affichage == 'html') {
     $TBS->Show(OPENTBS_DOWNLOAD+TBS_EXIT, $nom_fichier);
 } else if ($affichage == 'csv' && $utilisateur->getStatut() == "administrateur") {
 	if ($traitement_csv_en_cours == 'false') {
-		//le traitement viens de se finir, on propose le fichier au téléchargement
-		echo '<br/><a href="'.'../backup/'.getSettingValue("backup_directory").'/absences/'.$_REQUEST['filename'].'">Télécharger le résultat</a>';
+		//le traitement viens de se finir, on propose le fichier au tÃ©lÃ©chargement
+		echo '<br/><a href="'.'../backup/'.getSettingValue("backup_directory").'/absences/'.$_REQUEST['filename'].'">TÃ©lÃ©charger le rÃ©sultat</a>';
 		if ($page == 1) {
-			//on s'est arreter à la page 0, il n'y a pas de résultat
+			//on s'est arreter Ã  la page 0, il n'y a pas de rÃ©sultat
 			echo ' (extraction vide)';
 		}
 		echo '<br/>';
@@ -295,7 +294,7 @@ if ($affichage == 'html') {
 	    	$filename = $_REQUEST['filename'];
 	
 		
-			echo '<br/>Veuillez patienter, étape '.$page.' sur '.$saisie_col->getLastPage();
+			echo '<br/>Veuillez patienter, Ã©tape '.$page.' sur '.$saisie_col->getLastPage();
 			if (ob_get_contents()) {
 				ob_flush();
 			}

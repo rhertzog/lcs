@@ -1,8 +1,8 @@
 <?php
 /*
-* $Id: saisie_socle_commun.php 8814 2012-06-01 16:55:56Z crob $
+* $Id$
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent ViÃ©not-Hauger
 *
 * This file is part of GEPI.
 *
@@ -21,7 +21,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -61,8 +61,8 @@ if (isset($_POST['is_posted'])) {
 	$socle_commun=isset($_POST["socle_commun"]) ? $_POST["socle_commun"] : NULL;
 
 	for($i=0;$i<count($ele_login);$i++) {
-		// Vérifier si l'élève est bien dans la classe?
-		// Inutile si seul l'admin accède et qu'on ne limite pas l'accès à telle ou telle classe
+		// VÃ©rifier si l'Ã©lÃ¨ve est bien dans la classe?
+		// Inutile si seul l'admin accÃ¨de et qu'on ne limite pas l'accÃ¨s Ã  telle ou telle classe
 
 		if(isset($socle_commun[$i])) {
 
@@ -85,14 +85,14 @@ if (isset($_POST['is_posted'])) {
 			//echo "$sql<br />";
 			$register=mysql_query($sql);
 			if (!$register) {
-				$msg .= "Erreur lors de l'enregistrement des données pour $ele_login[$i]<br />";
+				$msg .= "Erreur lors de l'enregistrement des donnÃ©es pour $ele_login[$i]<br />";
 				//echo "ERREUR<br />";
 				$pb_record = 'yes';
 			}
 
 			/*
 			if($maj_notanet=='y') {
-				// On met à jour la table notanet avec les corrections apportées sur notanet_socles
+				// On met Ã  jour la table notanet avec les corrections apportÃ©es sur notanet_socles
 				$register=mysql_query($sql2);
 			}
 			*/
@@ -101,7 +101,7 @@ if (isset($_POST['is_posted'])) {
 
 	if ($pb_record == 'no') {
 		//$affiche_message = 'yes';
-		$msg="Les modifications ont été enregistrées !";
+		$msg="Les modifications ont Ã©tÃ© enregistrÃ©es !";
 	}
 }
 elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
@@ -115,7 +115,7 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 		$source_file=$xml_file['tmp_name'];
 
 		if(!file_exists($source_file)) {
-			$msg="L'upload du fichier XML semble avoir échoué.<br />\n";
+			$msg="L'upload du fichier XML semble avoir Ã©chouÃ©.<br />\n";
 		}
 		else {
 			$dest_file="../temp/".$tempdir."/notanet_socle.xml";
@@ -131,7 +131,7 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 			else {
 				$nom_racine=$lpc_xml->getName();
 				if(my_strtoupper($nom_racine)!='SOCLE') {
-					$msg="ERREUR: Le fichier XML fourni n'a pas l'air d'être un fichier XML LPC.<br />Sa racine devrait être 'SOCLE' et en l'occurence, c'est '$nom_racine'.<br />\n";
+					$msg="ERREUR: Le fichier XML fourni n'a pas l'air d'Ãªtre un fichier XML LPC.<br />Sa racine devrait Ãªtre 'SOCLE' et en l'occurence, c'est '$nom_racine'.<br />\n";
 				}
 				else {
 					$nb_reg=0;
@@ -154,7 +154,7 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 									$sql="INSERT INTO notanet_socle_commun SET login='$lig->login', champ='$tab[1]', valeur='$tab[2]';";
 									//echo "$sql<br />";
 									$insert=mysql_query($sql);
-									if($insert) {$nb_reg++;} else {$msg.="Erreur sur la requête $sql<br />";}
+									if($insert) {$nb_reg++;} else {$msg.="Erreur sur la requÃªte $sql<br />";}
 								}
 								else {
 									$info_supplementaire="";
@@ -164,13 +164,13 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 										$lig_ele_clas=mysql_fetch_object($res_ele_clas);
 										$info_supplementaire=" (<em>$lig_ele_clas->nom $lig_ele_clas->prenom ($lig_ele_clas->classe)</em>)";
 									}
-									$msg.="Ligne non identifiée : ".$ligne.$info_supplementaire."<br />";
+									$msg.="Ligne non identifiÃ©e : ".$ligne.$info_supplementaire."<br />";
 									//$msg.="$sql<br />\n";
 								}
 							}
 						}
 					}
-					if($nb_reg>0) {$msg.="$nb_reg enregistrement(s) effectué(s).<br />";}
+					if($nb_reg>0) {$msg.="$nb_reg enregistrement(s) effectuÃ©(s).<br />";}
 				}
 			}
 		}
@@ -200,7 +200,7 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 							$sql="INSERT INTO notanet_socle_commun SET login='$lig->login', champ='$tab[1]', valeur='$tab[2]';";
 							//echo "$sql<br />";
 							$insert=mysql_query($sql);
-							if($insert) {$nb_reg++;} else {$msg.="Erreur sur la requête $sql<br />";}
+							if($insert) {$nb_reg++;} else {$msg.="Erreur sur la requÃªte $sql<br />";}
 						}
 						else {
 							$info_supplementaire="";
@@ -210,23 +210,23 @@ elseif((isset($_POST['action']))&&($_POST['action']=='upload_file')) {
 								$lig_ele_clas=mysql_fetch_object($res_ele_clas);
 								$info_supplementaire=" (<em>$lig_ele_clas->nom $lig_ele_clas->prenom ($lig_ele_clas->classe)</em>)";
 							}
-							$msg.="Ligne non identifiée : ".$ligne.$info_supplementaire."<br />";
+							$msg.="Ligne non identifiÃ©e : ".$ligne.$info_supplementaire."<br />";
 							//$msg.="$sql<br />\n";
 						}
 					}
 				}
 			}
-			if($nb_reg>0) {$msg.="$nb_reg enregistrement(s) effectué(s).<br />";}
+			if($nb_reg>0) {$msg.="$nb_reg enregistrement(s) effectuÃ©(s).<br />";}
 		}
 	}
 }
 
-$themessage = 'Des modifications ont été effectuées. Voulez-vous vraiment quitter sans enregistrer ?';
-$message_enregistrement = "Les modifications ont été enregistrées !";
+$themessage = 'Des modifications ont Ã©tÃ© effectuÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
+$message_enregistrement = "Les modifications ont Ã©tÃ© enregistrÃ©es !";
 
 //**************** EN-TETE *****************
 $titre_page = "Notanet | Saisie Socle commun";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 $tmp_timeout=(getSettingValue("sessionMaxLength"))*60;
@@ -247,10 +247,10 @@ echo " | <a href='".$_SERVER['PHP_SELF']."?mode=import_xml'>Importer un XML</a>\
 if((isset($mode))&&($mode=='import_csv')) {
 	echo "</p>\n";
 
-	echo "<p>L'application nationale LPC permet d'exporter les saisies effectuées.<br />\n";
-	echo "En 2011, le fichier était au format CSV.<br />\n";
-	echo "Il semble depuis être passé au <a href='".$_SERVER['PHP_SELF']."?mode=import_xml'>format XML</a>.<br />\n";
-	echo "Pour obtenir ce CSV, sur l'application LPC, il faut \"confirmer\" la maîtrise pour les élèves, puis effectuer la procédure d'export vers NOTANET.</p>\n";
+	echo "<p>L'application nationale LPC permet d'exporter les saisies effectuÃ©es.<br />\n";
+	echo "En 2011, le fichier Ã©tait au format CSV.<br />\n";
+	echo "Il semble depuis Ãªtre passÃ© au <a href='".$_SERVER['PHP_SELF']."?mode=import_xml'>format XML</a>.<br />\n";
+	echo "Pour obtenir ce CSV, sur l'application LPC, il faut \"confirmer\" la maÃ®trise pour les Ã©lÃ¨ves, puis effectuer la procÃ©dure d'export vers NOTANET.</p>\n";
 
 	echo "<p>Veuillez fournir le fichier&nbsp;:</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
@@ -263,13 +263,13 @@ if((isset($mode))&&($mode=='import_csv')) {
 	echo "<p><br /></p>\n";
 	echo "<p><i>NOTES</i>&nbsp;:</p>
 <ul>
-	<li><p>L'extraction des moyennes doit avoir été effectuée avant l'import.<br />Les élèves pour lesquels l'extraction n'a pas été faite, mais pour lesquels la saisie LPC a été effectuée risquent d'apparaître en erreur (<em>il n'y a pas lieu de s'alarmer, mais il faudra sans doute s'occuper de ces élèves à un moment</em>).</p></li>\n";
+	<li><p>L'extraction des moyennes doit avoir Ã©tÃ© effectuÃ©e avant l'import.<br />Les Ã©lÃ¨ves pour lesquels l'extraction n'a pas Ã©tÃ© faite, mais pour lesquels la saisie LPC a Ã©tÃ© effectuÃ©e risquent d'apparaÃ®tre en erreur (<em>il n'y a pas lieu de s'alarmer, mais il faudra sans doute s'occuper de ces Ã©lÃ¨ves Ã  un moment</em>).</p></li>\n";
 }
 elseif((isset($mode))&&($mode=='import_xml')) {
 	echo "</p>\n";
 
-	echo "<p>L'application nationale LPC permet d'exporter les saisies effectuées.<br />";
-	echo "Pour obtenir ce XML, sur l'application LPC, il faut \"confirmer\" la maîtrise pour les élèves, puis dans le menu Administration, effectuer la procédure d'export vers NOTANET.</p>\n";
+	echo "<p>L'application nationale LPC permet d'exporter les saisies effectuÃ©es.<br />";
+	echo "Pour obtenir ce XML, sur l'application LPC, il faut \"confirmer\" la maÃ®trise pour les Ã©lÃ¨ves, puis dans le menu Administration, effectuer la procÃ©dure d'export vers NOTANET.</p>\n";
 
 	echo "<p>Veuillez fournir le fichier&nbsp;:</p>\n";
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
@@ -282,7 +282,7 @@ elseif((isset($mode))&&($mode=='import_xml')) {
 	echo "<p><br /></p>\n";
 	echo "<p><i>NOTES</i>&nbsp;:</p>
 <ul>
-	<li><p>L'extraction des moyennes doit avoir été effectuée avant l'import.<br />Les élèves pour lesquels l'extraction n'a pas été faite, mais pour lesquels la saisie LPC a été effectuée risquent d'apparaître en erreur (<em>il n'y a pas lieu de s'alarmer, mais il faudra sans doute s'occuper de ces élèves à un moment</em>).</p></li>\n";
+	<li><p>L'extraction des moyennes doit avoir Ã©tÃ© effectuÃ©e avant l'import.<br />Les Ã©lÃ¨ves pour lesquels l'extraction n'a pas Ã©tÃ© faite, mais pour lesquels la saisie LPC a Ã©tÃ© effectuÃ©e risquent d'apparaÃ®tre en erreur (<em>il n'y a pas lieu de s'alarmer, mais il faudra sans doute s'occuper de ces Ã©lÃ¨ves Ã  un moment</em>).</p></li>\n";
 }
 elseif(!isset($id_classe)) {
 	echo "</p>\n";
@@ -292,7 +292,7 @@ elseif(!isset($id_classe)) {
 
 	$nb_classes=mysql_num_rows($call_classes);
 	if($nb_classes==0){
-		echo "<p>Aucune classe ne semble encore définie.</p>\n";
+		echo "<p>Aucune classe ne semble encore dÃ©finie.</p>\n";
 
 		require("../lib/footer.inc.php");
 		die();
@@ -349,17 +349,17 @@ else {
 
 	if(!isset($mode)) {
 		echo "<p class='bold'>Mode simple</p>\n";
-		echo "<p>Seule la validation ou non du socle commun est prise en compte.<br />Pour saisir compétence par compétence les validations, utiliser le <a href='".$_SERVER['PHP_SELF']."?mode=detail&amp;$chaine_classes'>mode détaillé</a>.</p>\n";
+		echo "<p>Seule la validation ou non du socle commun est prise en compte.<br />Pour saisir compÃ©tence par compÃ©tence les validations, utiliser le <a href='".$_SERVER['PHP_SELF']."?mode=detail&amp;$chaine_classes'>mode dÃ©taillÃ©</a>.</p>\n";
 	
 		echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
 		echo add_token_field();
 	
-		$tabdiv_infobulle[]=creer_div_infobulle('MS',"","","<center>Socle ou compétence validée</center>","",10,0,'y','y','n','n');
-		$tabdiv_infobulle[]=creer_div_infobulle('ME',"","","<center>Socle ou compétence non validée</center>","",12,0,'y','y','n','n');
-		$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Socle ou compétence non évaluée</center>","",10,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('MS',"","","<center>Socle ou compÃ©tence validÃ©e</center>","",10,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('ME',"","","<center>Socle ou compÃ©tence non validÃ©e</center>","",12,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Socle ou compÃ©tence non Ã©valuÃ©e</center>","",10,0,'y','y','n','n');
 		$tabdiv_infobulle[]=creer_div_infobulle('vider',"","","<center>Supprimer l'enregistrement existant pour effectuer la saisie plus tard</center>","",12,0,'y','y','n','n');
 	
-		//$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Maîtrise du socle non évaluée</center>","",10,0,'y','y','n','n');
+		//$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>MaÃ®trise du socle non Ã©valuÃ©e</center>","",10,0,'y','y','n','n');
 		//$tabdiv_infobulle[]=creer_div_infobulle('AB',"","","<center>Absent</center>","",8,0,'y','y','n','n');
 	
 		$cpt=0;
@@ -371,13 +371,13 @@ else {
 			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE (jec.id_classe='".$id_classe[$i]."' AND jec.login=e.login) ORDER BY e.nom,e.prenom,e.naissance;";
 			$res_ele=mysql_query($sql);
 			if(mysql_num_rows($res_ele)==0) {
-				echo "Aucun élève dans cette classe.</p>\n";
+				echo "Aucun Ã©lÃ¨ve dans cette classe.</p>\n";
 			}
 			else {
 				echo "<table class='boireaus' border='1' summary='Saisie socle commun'>\n";
 	
 				echo "<tr>\n";
-				echo "<th rowspan='3'>Elève</th>\n";
+				echo "<th rowspan='3'>ElÃ¨ve</th>\n";
 				echo "<th colspan='4'>Socle commun</th>\n";
 				echo "</tr>\n";
 	
@@ -421,19 +421,19 @@ else {
 				echo "<tr>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('MS_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MS_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('MS_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MS_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('ME_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('ME_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('ME_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('ME_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('MN_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MN_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('MN_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MN_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('vider_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('vider_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('vider_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('vider_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "</tr>\n";
@@ -494,10 +494,10 @@ else {
 
 	}
 	else {
-		echo "<p class='bold'>Mode détaillé</p>\n";
+		echo "<p class='bold'>Mode dÃ©taillÃ©</p>\n";
 		echo "<p>Pour seulement enregistrer la validation ou non du socle commun utiliser le <a href='".$_SERVER['PHP_SELF']."?$chaine_classes'>mode simple</a>.</p>\n";
 
-		echo "<p style='color:red'>Mode détaillé encore à implémenter...</p>\n";
+		echo "<p style='color:red'>Mode dÃ©taillÃ© encore Ã  implÃ©menter...</p>\n";
 
 		$cpt=0;
 
@@ -505,12 +505,12 @@ else {
 		echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
 		echo add_token_field();
 	
-		$tabdiv_infobulle[]=creer_div_infobulle('MS',"","","<center>Socle ou compétence validée</center>","",10,0,'y','y','n','n');
-		$tabdiv_infobulle[]=creer_div_infobulle('ME',"","","<center>Socle ou compétence non validée</center>","",12,0,'y','y','n','n');
-		$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Socle ou compétence non évaluée</center>","",10,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('MS',"","","<center>Socle ou compÃ©tence validÃ©e</center>","",10,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('ME',"","","<center>Socle ou compÃ©tence non validÃ©e</center>","",12,0,'y','y','n','n');
+		$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Socle ou compÃ©tence non Ã©valuÃ©e</center>","",10,0,'y','y','n','n');
 		$tabdiv_infobulle[]=creer_div_infobulle('vider',"","","<center>Supprimer l'enregistrement existant pour effectuer la saisie plus tard</center>","",12,0,'y','y','n','n');
 	
-		//$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>Maîtrise du socle non évaluée</center>","",10,0,'y','y','n','n');
+		//$tabdiv_infobulle[]=creer_div_infobulle('MN',"","","<center>MaÃ®trise du socle non Ã©valuÃ©e</center>","",10,0,'y','y','n','n');
 		//$tabdiv_infobulle[]=creer_div_infobulle('AB',"","","<center>Absent</center>","",8,0,'y','y','n','n');
 	
 		$cpt=0;
@@ -522,13 +522,13 @@ else {
 			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE (jec.id_classe='".$id_classe[$i]."' AND jec.login=e.login) ORDER BY e.nom,e.prenom,e.naissance;";
 			$res_ele=mysql_query($sql);
 			if(mysql_num_rows($res_ele)==0) {
-				echo "Aucun élève dans cette classe.</p>\n";
+				echo "Aucun Ã©lÃ¨ve dans cette classe.</p>\n";
 			}
 			else {
 				echo "<table class='boireaus' border='1' summary='Saisie socle commun'>\n";
 	
 				echo "<tr>\n";
-				echo "<th rowspan='3'>Elève</th>\n";
+				echo "<th rowspan='3'>ElÃ¨ve</th>\n";
 				echo "<th colspan='4'>Socle commun</th>\n";
 				echo "</tr>\n";
 	
@@ -572,19 +572,19 @@ else {
 				echo "<tr>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('MS_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MS_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('MS_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MS_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('ME_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('ME_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('ME_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('ME_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('MN_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MN_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('MN_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('MN_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "<th>";
-				echo "<a href=\"javascript:CocheColonne('vider_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('vider_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' /></a>";
+				echo "<a href=\"javascript:CocheColonne('vider_',$i)\"><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' /></a> / <a href=\"javascript:DecocheColonne('vider_',$i)\"><img src='../images/disabled.png' width='15' height='15' alt='Tout dÃ©cocher' /></a>";
 				echo "</th>\n";
 	
 				echo "</tr>\n";
@@ -673,7 +673,7 @@ function DecocheColonne(nom_col,num_classe) {
 }
 
 if((isset($mode))&&(($mode=='import_xml')||($mode=='import_csv'))) {
-	// Le début de la liste des notes de bas de page a déjà été affiché
+	// Le dÃ©but de la liste des notes de bas de page a dÃ©jÃ  Ã©tÃ© affichÃ©
 }
 else {
 	echo "<p><br /></p>\n";
@@ -681,9 +681,11 @@ else {
 <ul>\n";
 }
 echo "<li>Voir <a href='https://www.sylogix.org/projects/gepi/wiki/Gepi_socle_commun_notanet' target='_blank'>https://www.sylogix.org/projects/gepi/wiki/Gepi_socle_commun_notanet</a></li>
-<li>Les élèves qui ont eu leur brevet l'an dernier, mais ont néanmoins redoublé, peuvent apparaître en erreur.<br />
-De la même façon, les élèves de SEGPA peuvent avoir la saisie de Socle commun faite dans LPC, mais ils ne passent pas le brevet.<br />
-Ils peuvent apparaître en erreur également.</li>
+<li>Dans l'interface Notanet (<em>hors de Gepi</em>), il semble qu'il faille fournir l'export CSV des notes de Gepi et aussi l'export XML de LPC.<br />
+Cela se fait avec le mÃªme choix 'Mettre Ã  jour depuis un fichier externe' dans Notanet.</li>
+<li>Les Ã©lÃ¨ves qui ont eu leur brevet l'an dernier, mais ont nÃ©anmoins redoublÃ©, peuvent apparaÃ®tre en erreur.<br />
+De la mÃªme faÃ§on, les Ã©lÃ¨ves de SEGPA peuvent avoir la saisie de Socle commun faite dans LPC, mais ils ne passent pas le brevet.<br />
+Ils peuvent apparaÃ®tre en erreur Ã©galement.</li>
 </ul>\n";
 require("../lib/footer.inc.php");
 die();

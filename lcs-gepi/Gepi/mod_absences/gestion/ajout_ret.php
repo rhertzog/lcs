@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* $Id: ajout_ret.php 4878 2010-07-24 13:54:01Z regis $
+* $Id$
 *
  * Copyright 2001, 2002 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Christian Chapel
  *
@@ -60,10 +60,10 @@ if (empty($_GET['id']) and empty($_POST['id'])) {$id="";}
 if (empty($_GET['fiche']) and empty($_POST['fiche'])) {$fiche="";}
     else { if (isset($_GET['fiche'])) {$fiche=$_GET['fiche'];} if (isset($_POST['fiche'])) {$fiche=$_POST['fiche'];} }
 
-// si pas de sélection on retourne à la sélection
+// si pas de sÃ©lection on retourne Ã  la sÃ©lection
 if((empty($classe_choix) or $classe_choix === 'tous') and empty($eleve_absent[0]) and empty($id) and $action_sql === '') { header("Location:select.php?type=$type"); }
 
-// si sélection d'une classe complète
+// si sÃ©lection d'une classe complÃ¨te
 if(empty($eleve_absent[0])==true and $action_sql == '' and $mode !='eleve') { $mode='classe'; }
 if(empty($eleve_absent[0])==true and $mode != 'eleve')
  {
@@ -72,20 +72,20 @@ if(empty($eleve_absent[0])==true and $mode != 'eleve')
       $mode = 'classe';
  }
 
-//si c'est une classe qui est sélectionné on sélectionne tous les élèves de cette classe.
+//si c'est une classe qui est sÃ©lectionnÃ© on sÃ©lectionne tous les Ã©lÃ¨ves de cette classe.
   if($mode === 'classe')
    {
-          //je compte les élève si = 0 alors on redirige
+          //je compte les Ã©lÃ¨ve si = 0 alors on redirige
            $cpt_eleves = mysql_result(mysql_query("SELECT count(*) FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND id = '".$classe_choix_eleve."'"),0);
            	 // christian modif du 15/01/2007 if($cpt_eleves === '0') { header("Location:select.php?type=$type"); }
-         //je recherche tous les élèves de la classe sélectionné
+         //je recherche tous les Ã©lÃ¨ves de la classe sÃ©lectionnÃ©
            //$requete_eleve ="SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.classe, ".$prefix_base."classes.id, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND id = '".$classe_choix_eleve."' GROUP BY nom, prenom";
            $requete_eleve ="SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.classe, ".$prefix_base."classes.id, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id AND id = '".$classe_choix_eleve."' GROUP BY eleves.login, nom, prenom"; // 20100430
            $execution_eleve = mysql_query($requete_eleve) or die('Erreur SQL !'.$requete_eleve.'<br />'.mysql_error());
            $cpt_eleve = 0;
            while ($data_eleve = mysql_fetch_array($execution_eleve))
              {
-                //insertion de l'élève dans la varibale $eleve_absent
+                //insertion de l'Ã©lÃ¨ve dans la varibale $eleve_absent
                  $eleve_absent[$cpt_eleve] = $data_eleve['login'];
                  $cpt_eleve = $cpt_eleve + 1;
              }
@@ -98,7 +98,7 @@ if(empty($eleve_absent[0])==true and $mode != 'eleve')
 //$id_absence_eleve = $id;
 $total = '0'; $erreur_valu = '0'; $erreur = '0';
 
-//requête pour liste les motif d'absence
+//requÃªte pour liste les motif d'absence
 $requete_liste_motif = "SELECT init_motif_absence, def_motif_absence FROM absences_motifs ORDER BY init_motif_absence ASC";
 
 if($action_sql === 'ajouter' or $action_sql === 'modifier')
@@ -123,7 +123,7 @@ if($action_sql === 'ajouter' or $action_sql === 'modifier')
       //attribution de certaine variable
       $a_date_absence_eleve_form = $d_date_absence_eleve_form;
 
-	// réinitialise les variables de vérification
+	// rÃ©initialise les variables de vÃ©rification
 	$erreur_valu=''; $erreur='';
 
       if ($d_heure_absence_eleve_form != '00:00' and $d_heure_absence_eleve_form != '')
@@ -134,7 +134,7 @@ if($action_sql === 'ajouter' or $action_sql === 'modifier')
                  {
                   } else { $erreur='1'; $erreur_valu='2'; $texte_erreur="Le format de l'heure n'est pas correct."; }
              } else { $erreur='1'; $erreur_valu='3'; $texte_erreur="La date n'est pas correct."; }
-       } else { $erreur='1'; $erreur_valu='4'; $texte_erreur="Aucune heure n'a été saisie"; }
+       } else { $erreur='1'; $erreur_valu='4'; $texte_erreur="Aucune heure n'a Ã©tÃ© saisie"; }
 
           if ($erreur === '1')
              {
@@ -214,7 +214,7 @@ if ($action === "supprimer")
 								WHERE id_absence_eleve ='$id_absence_eleve'";
 	$resultat_sup = mysql_query($requete_sup) or die('Erreur SQL !'.$requete_sup.'<br />'.mysql_error());
 	$login_eleve = mysql_fetch_array($resultat_sup); 
-    // Vérification des champs
+    // VÃ©rification des champs
     if ( $id_absence_eleve != '' )
     {
 
@@ -255,7 +255,7 @@ if ($action === "modifier")
         }
 }
 
-// s'il y a eu un problème alors on réaffect le donnée au nom des variables du formulaire
+// s'il y a eu un problÃ¨me alors on rÃ©affect le donnÃ©e au nom des variables du formulaire
 $i = '0';
 if(isset($id_absence_eleve_erreur[0]) and !empty($id_absence_eleve_erreur[0]))
 {
@@ -277,7 +277,7 @@ if(isset($id_absence_eleve_erreur[0]) and !empty($id_absence_eleve_erreur[0]))
 
 //**************** EN-TETE *****************
 $titre_page = "Gestion des absences";
-require_once("../../lib/header.inc");
+require_once("../../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 ?>
 <p class="bold"><a href='gestion_absences.php?type=<?php echo $type; ?><?php if($fiche==='oui') { ?>&select_fiche_eleve=<?php echo $eleve_absent[0];?>&aff_fiche=abseleve#abseleve<?php }?>'><img src="../../images/icons/back.png" alt="Retour" title="Retour" class="back_link" /> Retour</a>
@@ -297,7 +297,7 @@ while(empty($eleve_absent[$i])== false or empty($id_absence_eleve_erreur[$i])== 
  <fieldset class="fieldset_efface">
    <table class="entete_tableau_absence" border="0" cellspacing="0" cellpadding="1">
     <tr>
-      <td colspan="3" class="titre_tableau_absence"><b><?php echo "Retards des élèves"; ?></b></td>
+      <td colspan="3" class="titre_tableau_absence"><b><?php echo "Retards des Ã©lÃ¨ves"; ?></b></td>
       <td class="titre_tableau_absence_valider"><input type="submit" name="submit" value="Valider" /></td>
     </tr>
     <tr class="tr_tableau_absence_titre">
@@ -345,7 +345,6 @@ while(empty($eleve_absent[$i])== false or empty($id_absence_eleve_erreur[$i])== 
                   if (getSettingValue("active_module_trombinoscopes")=='y') {
                   	  $nom_photo = '';
                       $nom_photo = nom_photo($id_eleve_photo,"eleves",2);
-                      //$photo = "../../photos/eleves/".$nom_photo;
                       //if ( $nom_photo === '' or !file_exists($photo) ) { $photo = "../../mod_trombinoscopes/images/trombivide.jpg"; }
                       if ( $nom_photo === NULL or !file_exists($photo) ) { $photo = "../../mod_trombinoscopes/images/trombivide.jpg"; }
                       $valeur=redimensionne_image_petit($photo);
@@ -354,11 +353,11 @@ while(empty($eleve_absent[$i])== false or empty($id_absence_eleve_erreur[$i])== 
                  ?>
                  <table class="tableau_info_compt" border="0" cellspacing="0" cellpadding="2">
                    <tr>
-                     <td>El&egrave;ve arrivé<br /><strong><?php if ($compte != 0) { ?><a href="javascript:centrerpopup('../lib/liste_absences.php?id_eleve=<?php echo $id_eleve; ?>&amp;type=<?php echo $type; ?>',260,320,'scrollbars=yes,statusbar=no,resizable=yes');" title=""><?php } ?><?php echo $compte; ?> fois<?php if ($compte != 0) { ?></a><?php } ?></strong><br />en retard</td>
+                     <td>El&egrave;ve arrivÃ©<br /><strong><?php if ($compte != 0) { ?><a href="javascript:centrerpopup('../lib/liste_absences.php?id_eleve=<?php echo $id_eleve; ?>&amp;type=<?php echo $type; ?>',260,320,'scrollbars=yes,statusbar=no,resizable=yes');" title=""><?php } ?><?php echo $compte; ?> fois<?php if ($compte != 0) { ?></a><?php } ?></strong><br />en retard</td>
                    </tr>
                  </table>
       </td>
-      <td>le <input name="d_date_absence_eleve[<?php echo $i; ?>]" onfocus="javascript:this.select()" type="text" size="12" maxlength="12" value="<?php if(isset($d_date_absence_eleve[$i]) and !empty($d_date_absence_eleve[$i])) { echo $d_date_absence_eleve[$i]; } else { echo $datejour; } ?>" /><a href="#calend" onClick="<?php echo $cal_[$i]->get_strPopup('../../lib/calendrier/pop.calendrier.php', 350, 170); ?>"><img src="../../lib/calendrier/petit_calendrier.gif" border="0" alt="" /></a><br /><br />à <input name="d_heure_absence_eleve[<?php echo $i; ?>]" onfocus="javascript:this.select()" type="text" size="5" maxlength="5" value="<?php if(isset($d_heure_absence_eleve[$i]) and !empty($d_heure_absence_eleve[$i])) { echo $d_heure_absence_eleve[$i]; } else { ?>00:00<?php } ?>" /></td>
+      <td>le <input name="d_date_absence_eleve[<?php echo $i; ?>]" onfocus="javascript:this.select()" type="text" size="12" maxlength="12" value="<?php if(isset($d_date_absence_eleve[$i]) and !empty($d_date_absence_eleve[$i])) { echo $d_date_absence_eleve[$i]; } else { echo $datejour; } ?>" /><a href="#calend" onClick="<?php echo $cal_[$i]->get_strPopup('../../lib/calendrier/pop.calendrier.php', 350, 170); ?>"><img src="../../lib/calendrier/petit_calendrier.gif" border="0" alt="" /></a><br /><br />Ã  <input name="d_heure_absence_eleve[<?php echo $i; ?>]" onfocus="javascript:this.select()" type="text" size="5" maxlength="5" value="<?php if(isset($d_heure_absence_eleve[$i]) and !empty($d_heure_absence_eleve[$i])) { echo $d_heure_absence_eleve[$i]; } else { ?>00:00<?php } ?>" /></td>
       <td><?php echo "Motif :"; ?><br />
           <select name="motif_absence_eleve[<?php echo $i; ?>]" >
           <?php

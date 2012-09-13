@@ -1,7 +1,6 @@
 <?php
 /*
  *
- * @version $Id: index.php 6786 2011-04-14 15:45:03Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Julien Jocal
  *
@@ -27,7 +26,7 @@ $niveau_arbo = 1;
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 
-// fonctions complémentaires et/ou librairies utiles
+// fonctions complÃ©mentaires et/ou librairies utiles
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
@@ -63,7 +62,7 @@ if (!checkAccess()) {
 
 // ===================== entete Gepi ======================================//
 $titre_page = "Statistiques: Index";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 // ===================== fin entete =======================================//
 
 //debug_var();
@@ -73,7 +72,8 @@ echo "</p>\n";
 
 echo "<ul>\n";
 echo "<li><a href='classes_effectifs.php'>Classes, effectifs,...</a></li>\n";
-echo "<li><a href='export_donnees_bulletins.php'>Export de données des bulletins</a></li>\n";
+echo "<li><a href='export_donnees_bulletins.php'>Export de donnÃ©es des bulletins</a></li>\n";
+echo "<li><a href='stat_connexions.php'>Statistiques de connexion</a></li>\n";
 echo "</ul>\n";
 
 

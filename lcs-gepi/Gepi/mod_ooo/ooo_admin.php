@@ -1,6 +1,6 @@
 <?php
 /*
- * @version: $Id: ooo_admin.php 8718 2011-12-06 20:49:15Z regis $
+ * @version: $Id$
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -22,7 +22,7 @@
  */
 
 $accessibilite="y";
-$titre_page = "Gestion du module modèle Open Office";
+$titre_page = "Gestion du module modÃ¨le Open Office";
 $niveau_arbo = 1;
 $gepiPathJava="./..";
 $post_reussi=FALSE;
@@ -47,13 +47,13 @@ if (!checkAccess()) {
   die();
 }
 
-//INSERT INTO droits VALUES ( '/mod_ooo/ooo_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Modèle Ooo : Admin', '');
-//$tab_req[] = "INSERT INTO droits VALUES ( '/mod_ooo/ooo_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Modèle Ooo : Admin', '');";
+//INSERT INTO droits VALUES ( '/mod_ooo/ooo_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'ModÃ¨le Ooo : Admin', '');
+//$tab_req[] = "INSERT INTO droits VALUES ( '/mod_ooo/ooo_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'ModÃ¨le Ooo : Admin', '');";
 
 $msg = '';
 if ((isset($_POST['is_posted']))&&(isset($_POST['activer']))) {
 	check_token();
-    if (!saveSetting("active_mod_ooo", $_POST['activer'])) $msg.= "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
+    if (!saveSetting("active_mod_ooo", $_POST['activer'])) $msg.= "Erreur lors de l'enregistrement du paramÃ¨tre activation/dÃ©sactivation !";
 
 	if (isset($_POST['fb_dezip_ooo'])) {
 		if (!saveSetting("fb_dezip_ooo", $_POST['fb_dezip_ooo'])) {
@@ -63,38 +63,37 @@ if ((isset($_POST['is_posted']))&&(isset($_POST['activer']))) {
 }
 
 if (isset($_POST['is_posted']) and ($msg=='')) {
-  $msg.= "Les modifications ont été enregistrées !";
+  $msg.= "Les modifications ont Ã©tÃ© enregistrÃ©es !";
   $post_reussi=TRUE;
 }
 // header
-//$titre_page = "Gestion du module modèle Open Office";
-//require_once("../lib/header.inc");
+//$titre_page = "Gestion du module modÃ¨le Open Office";
 
 
 
 
 
 // ====== Inclusion des balises head et du bandeau =====
-include_once("../lib/header_template.inc");
+include_once("../lib/header_template.inc.php");
 
-if (!suivi_ariane($_SERVER['PHP_SELF'],"Gestion modèle Open Office"))
-		echo "erreur lors de la création du fil d'ariane";
+if (!suivi_ariane($_SERVER['PHP_SELF'],"Gestion modÃ¨le Open Office"))
+		echo "erreur lors de la crÃ©ation du fil d'ariane";
 /****************************************************************
 			FIN HAUT DE PAGE
 ****************************************************************/
 
-// ====== Vérification des répertoires =====
-$nom_fichier_modele_ooo =''; //pour éviter un notice (la variable ne sert pas ici ..
+// ====== VÃ©rification des rÃ©pertoires =====
+$nom_fichier_modele_ooo =''; //pour Ã©viter un notice (la variable ne sert pas ici ..
 $nom_dossier_modeles_ooo_mes_modeles="";
 $droitRepertoire =array();
 include_once ("./lib/chemin.inc.php");
-// test d'écriture dans le dossier mes_modeles
+// test d'Ã©criture dans le dossier mes_modeles
 $dossier_test = "./".$nom_dossier_modeles_ooo_mes_modeles."dossier_test";
 @rmdir($dossier_test);
 $resultat_mkdir = @mkdir($dossier_test);
 if (!($resultat_mkdir)) {
-  $droitRepertoire[]="ATTENTION : Les droits d'écriture sur le dossier
-  /mod_ooo/$nom_dossier_modeles_ooo_mes_modeles sont incorrects. Gepi doit avoir les droits de création
+  $droitRepertoire[]="ATTENTION : Les droits d'Ã©criture sur le dossier
+  /mod_ooo/$nom_dossier_modeles_ooo_mes_modeles sont incorrects. Gepi doit avoir les droits de crÃ©ation
   de dossiers et de fichiers dans ce dossier pour assurer le bon fonctionnement du module";
 }
 else {
@@ -105,8 +104,8 @@ $dossier_test = "./tmp/dossier_test";
 @rmdir($dossier_test);
 $resultat_mkdir = @mkdir($dossier_test);
 if (!($resultat_mkdir)) {
-  $droitRepertoire[]="ATTENTION : Les droits d'écriture sur le dossier /mod_ooo/tmp/ sont incorrects.
-	Gepi doit avoir les droits de création de dossiers et de fichiers dans ce dossier pour assurer
+  $droitRepertoire[]="ATTENTION : Les droits d'Ã©criture sur le dossier /mod_ooo/tmp/ sont incorrects.
+	Gepi doit avoir les droits de crÃ©ation de dossiers et de fichiers dans ce dossier pour assurer
 	le bon fonctionnement du module";
 }
 else {
@@ -125,20 +124,20 @@ $tbs_pmv="";
 require_once ("../lib/footer_template.inc.php");
 
 /****************************************************************
-			On s'assure que le nom du gabarit est bien renseigné
+			On s'assure que le nom du gabarit est bien renseignÃ©
 ****************************************************************/
 if ((!isset($_SESSION['rep_gabarits'])) || (empty($_SESSION['rep_gabarits']))) {
 	$_SESSION['rep_gabarits']="origine";
 }
 
 //==================================
-// Décommenter la ligne ci-dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
+// DÃ©commenter la ligne ci-dessous pour afficher les variables $_GET, $_POST, $_SESSION et $_SERVER pour DEBUG:
 // $affiche_debug=debug_var();
 
 
 $nom_gabarit = '../templates/'.$_SESSION['rep_gabarits'].'/mod_ooo/ooo_admin_template.php';
 
-$tbs_last_connection=""; // On n'affiche pas les dernières connexions
+$tbs_last_connection=""; // On n'affiche pas les derniÃ¨res connexions
 include($nom_gabarit);
 
 

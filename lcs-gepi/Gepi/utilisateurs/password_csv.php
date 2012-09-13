@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: password_csv.php 5476 2010-09-29 12:10:48Z delineau $
  *
- * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -32,7 +31,7 @@ if ($resultat_session == 'c') {
 } else if ($resultat_session == '0') {
     header("Location: ../logout.php?auto=1");
     die();
-};
+}
 
 
 //INSERT INTO droits VALUES ('/utilisateurs/password_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Export des identifiants et mots de passe', '');
@@ -48,18 +47,7 @@ $date_heure = gmdate('d-m-y-H:i:s');
 $nom_fic = "export_csv_password_".$date_heure . ".csv";
 
 
-$now = gmdate('D, d M Y H:i:s') . ' GMT';
-header('Content-Type: text/x-csv');
-header('Expires: ' . $now);
-// lem9 & loic1: IE need specific headers
-if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
-    header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-    header('Pragma: public');
-} else {
-    header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-    header('Pragma: no-cache');
-}
+//send_file_download_headers('text/x-csv',$nom_fic);
 
 $fd = '';
 
@@ -67,7 +55,7 @@ $nb_enr_tableau = sizeof ($donnees_personne_csv['login']);
 //echo $nb_enr_tableau;
 
 if (($donnees_personne_csv)) {
-    // On rechercher par rapport au premier login si c'est un eleve ou un parent. ==> format de sortie CSV diffÈrent.
+    // On rechercher par rapport au premier login si c'est un eleve ou un parent. ==> format de sortie CSV diff√©rent.
 	//$login=$donnees_personne_csv['login'][1];
 	$login=$donnees_personne_csv['login'][0];
 	$sql_statut="SELECT statut FROM utilisateurs WHERE login='$login'";
@@ -76,7 +64,7 @@ if (($donnees_personne_csv)) {
 
 	switch ($statut) {
 	case 'eleve':
-			//pour un ÈlËve
+			//pour un √©l√®ve
 			$fd.="CLASSE;IDENTIFIANT;NOM;PRENOM;MOT_DE_PASSE;COURRIEL\n";
 			for ($i=0 ; $i<$nb_enr_tableau ; $i++) {
 				if(isset($donnees_personne_csv['login'][$i])){
@@ -130,7 +118,7 @@ if (($donnees_personne_csv)) {
 			}
 	break;
 	default:
-			// ni ÈlËve ni responsable
+			// ni √©l√®ve ni responsable
 			$fd.="IDENTIFIANT;NOM;PRENOM;MOT_DE_PASSE;COURRIEL\n";
 			for ($i=0 ; $i<$nb_enr_tableau ; $i++) {
 				if(isset($donnees_personne_csv['login'][$i])){
@@ -148,5 +136,8 @@ if (($donnees_personne_csv)) {
 } else {
   echo "Erreur de session";
 }
-echo $fd;
+
+send_file_download_headers('text/x-csv',$nom_fic);
+
+echo echo_csv_encoded($fd);
 ?>

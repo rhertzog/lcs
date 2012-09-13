@@ -1,8 +1,7 @@
 <?php
 /*
- * @version: $Id: visu_cc.php 6795 2011-04-18 12:23:35Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -22,8 +21,8 @@
 */
 //==============================
 // PREPARATIFS boireaus 20080422
-// Pour passer ‡ no_anti_inject comme pour les autres saisies d'apprÈciations
-// On indique qu'il faut creer des variables non protÈgÈes (voir fonction cree_variables_non_protegees())
+// Pour passer √† no_anti_inject comme pour les autres saisies d'appr√©ciations
+// On indique qu'il faut creer des variables non prot√©g√©es (voir fonction cree_variables_non_protegees())
 $mode_commentaire_20080422="";
 //$mode_commentaire_20080422="no_anti_inject";
 
@@ -51,18 +50,20 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_carnets_notes")!='y') {
-	die("Le module n'est pas activÈ.");
+	die("Le module n'est pas activ√©.");
 }
+
+@setlocale(LC_NUMERIC,'C');
 
 require('cc_lib.php');
 
 unset($id_racine);
 $id_racine = isset($_POST["id_racine"]) ? $_POST["id_racine"] : (isset($_GET["id_racine"]) ? $_GET["id_racine"] : NULL);
-// On teste si le carnet de notes appartient bien ‡ la personne connectÈe
+// On teste si le carnet de notes appartient bien √† la personne connect√©e
 if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pÈnÈtrer dans un carnet de notes qui ne vous appartient pas !");
+    $mess=rawurlencode("Vous tentez de p√©n√©trer dans un carnet de notes qui ne vous appartient pas !");
     header("Location: index.php?msg=$mess");
     die();
 }
@@ -76,7 +77,7 @@ include "../lib/periodes.inc.php";
 unset($id_dev);
 $id_dev = isset($_POST["id_dev"]) ? $_POST["id_dev"] : (isset($_GET["id_dev"]) ? $_GET["id_dev"] : NULL);
 if(!isset($id_dev)) {
-	$mess="$nom_cc non prÈcisÈ.<br />";
+	$mess="$nom_cc non pr√©cis√©.<br />";
 	header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 	die();
 }
@@ -91,13 +92,14 @@ if(mysql_num_rows($query)>0) {
 	$precision=mysql_result($query, 0, 'arrondir');
 }
 else {
-	header("Location: index.php?msg=".rawurlencode("Le numÈro de devoir n est pas associÈ ‡ ce groupe."));
+	header("Location: index.php?msg=".rawurlencode("Le num√©ro de devoir n est pas associ√© √† ce groupe."));
 	die();
 }
 
 $matiere_nom = $current_group["matiere"]["nom_complet"];
 $matiere_nom_court = $current_group["matiere"]["matiere"];
 $nom_classe = $current_group["classlist_string"];
+
 
 //debug_var();
 //-------------------------------------------------------------------------------------------------------------------
@@ -109,7 +111,7 @@ if(isset($_GET['export_csv'])) {
 	//echo "$sql<br />";
 	$res_eval=mysql_query($sql);
 	if(mysql_num_rows($res_eval)==0) {
-		$msg="Aucune Èvaluation n'est associÈe au $nom_cc n∞$id_dev<br />";
+		$msg="Aucune √©valuation n'est associ√©e au $nom_cc n¬∞$id_dev<br />";
 	}
 	else {
 		$cpt=0;
@@ -185,6 +187,9 @@ if(isset($_GET['export_csv'])) {
 			$total=0;
 			$total_sur=0;
 
+			// Nombre de vraies notes (pas absent, disp, ou -)
+			$nb_note=0;
+
 			$csv.="ELEVE;".$ele_login.";".$tmp_tab['nom'].";".$tmp_tab['prenom'].";".$tmp_tab['classe'].";";
 			for($i=0;$i<count($tab_eval);$i++) {
 				if(isset($tmp_tab['eval'][$tab_eval[$i]['id_eval']])) {
@@ -193,11 +198,23 @@ if(isset($_GET['export_csv'])) {
 					if(($tmp_tab['eval'][$tab_eval[$i]['id_eval']]!='')&&(preg_match('/^[0-9.]*$/',$tmp_tab['eval'][$tab_eval[$i]['id_eval']]))) {
 						$total+=$tmp_tab['eval'][$tab_eval[$i]['id_eval']];
 						$total_sur+=$tab_eval[$i]['note_sur'];
+
+						$nb_note++;
 					}
 				}
 				$csv.=";";
 			}
-			$csv.=strtr($total,'.',',').";".strtr($total_sur,'.',',').";";
+
+
+			if($nb_note>0) {
+				$total_aff=strtr($total,'.',',');
+			}
+			else {
+				$total_aff="-";
+			}
+
+			$csv.=$total_aff.";".strtr($total_sur,'.',',').";";
+
 			if($total_sur>0) {
 				$moy=strtr(precision_arrondi(20*$total/$total_sur,$precision),'.',',');
 			}
@@ -207,21 +224,10 @@ if(isset($_GET['export_csv'])) {
 			$csv.="$moy;\r\n";
 		}
 
-		header('Content-Type:  text/x-csv');
-		$now = gmdate('D, d M Y H:i:s') . ' GMT';
-		header('Expires: ' . $now);
-		// lem9 & loic1: IE need specific headers
-		//nom du fichier ‡ telecharger
-	
-		if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
-			header('Content-Disposition: inline; filename="cc_dev_'.$id_dev.'_'.date("dmY").'.csv"');
-			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-			header('Pragma: public');
-		} else {
-			header('Content-Disposition: attachment; filename="cc_dev_'.$id_dev.'_'.date("dmY").'.csv"');
-			header('Pragma: no-cache');
-		}
-		echo $csv;
+		$nom_fic="cc_dev_".$id_dev."_".date("dmY").".csv";
+		send_file_download_headers('text/x-csv',$nom_fic);
+		//echo $csv;
+		echo echo_csv_encoded($csv);
 		die();
 	}
 }
@@ -232,7 +238,7 @@ if(isset($_GET['export_pdf'])) {
 	//echo "$sql<br />";
 	$res_eval=mysql_query($sql);
 	if(mysql_num_rows($res_eval)==0) {
-		$msg="Aucune Èvaluation n'est associÈe au $nom_cc n∞$id_dev<br />";
+		$msg="Aucune √©valuation n'est associ√©e au $nom_cc n¬∞$id_dev<br />";
 	}
 	else {
 
@@ -293,10 +299,9 @@ if(isset($_GET['export_pdf'])) {
 
 		$professeur_courant=casse_mot($_SESSION['nom'])." ".casse_mot($_SESSION['prenom'],'majf2');
 
-		require('../fpdf/fpdf.php');
-		require('../fpdf/ex_fpdf.php');
+		require_once('../fpdf/fpdf.php');
 		
-		define('FPDF_FONTPATH','../fpdf/font/');
+		
 		define('LargeurPage','210');
 		define('HauteurPage','297');
 
@@ -319,10 +324,10 @@ if(isset($_GET['export_pdf'])) {
 				global $professeur_courant;
 
 				$this->SetXY(5,287);
-				$this->SetFont('arial','',7.5);
+				$this->SetFont('DejaVu','',7.5);
 
 				//$texte=getSettingValue("gepiSchoolName")."  ";
-				$texte=ucfirst($nom_cc)." n∞$id_dev - ".$professeur_courant;
+				$texte=ucfirst($nom_cc)." n¬∞$id_dev - ".$professeur_courant;
 				$lg_text=$this->GetStringWidth($texte);
 				$this->SetXY(10,287);
 				$this->Cell(0,5,$texte,0,0,'L');
@@ -335,36 +340,33 @@ if(isset($_GET['export_pdf'])) {
 				global $nom_cc;
 				global $id_dev;
 				global $professeur_courant;
-				global $fonte, $MargeDroite, $largeur_page, $MargeGauche, $sc_interligne, $salle, $i;
-				//global $num_page;
-				//global $decompte_page;
+				//global $fonte, $MargeDroite, $largeur_page, $MargeGauche, $sc_interligne, $salle, $i;
+				global $MargeDroite, $largeur_page, $MargeGauche, $sc_interligne, $salle, $i;
 
-				$this->SetFont($fonte,'B',14);
+				$this->SetFont('DejaVu','B',14);
 				$this->SetXY(10,10);
-				$this->Cell($largeur_page-$MargeDroite-$MargeGauche,10,getSettingValue('gepiSchoolName').' - AnnÈe scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
+				$this->Cell($largeur_page-$MargeDroite-$MargeGauche,10,getSettingValue('gepiSchoolName').' - Ann√©e scolaire '.getSettingValue('gepiYear'),'LRBT',1,'C');
 
 				$x1=$this->GetX();
 				$y1=$this->GetY();
 
-				$this->SetFont($fonte,'B',12);
-				$texte=ucfirst($nom_cc)." n∞".$id_dev;
+				$this->SetFont('DejaVu','B',12);
+				$texte=ucfirst($nom_cc)." n¬∞".$id_dev;
 				$largeur_tmp=$this->GetStringWidth($texte)+4;
 				$this->Cell($largeur_tmp,$this->FontSize*$sc_interligne,$texte,'LRBT',0,'C');
-
 				//$x2=$this->GetX();
 				$y2=$this->GetY();
 
-				$this->SetFont($fonte,'B',12);
+				$this->SetFont('DejaVu','B',12);
 				$texte=$professeur_courant;
 				$larg_tmp=$sc_interligne*($this->GetStringWidth($texte));
 				$this->SetXY($largeur_page-$larg_tmp-$MargeDroite,$y1+($y2-$y1)/4);
 				$this->Cell($larg_tmp,$this->FontSize*$sc_interligne,$texte,'LRBT',1,'C');
-
 				//$this->Cell($larg_tmp,$this->FontSize*$sc_interligne,$this->GetY(),'LRBT',1,'C');
 			}
 		}
 
-		// DÈfinition de la page
+		// D√©finition de la page
 		$pdf=new rel_PDF("P","mm","A4");
 		//$pdf=new FPDF("P","mm","A4");
 		$pdf->SetTopMargin($MargeHaut);
@@ -376,7 +378,6 @@ if(isset($_GET['export_pdf'])) {
 		$pdf->SetDrawColor(0,0,0);
 		$pdf->SetLineWidth(0.2);
 
-		$fonte='arial';
 		$sc_interligne=1.3;
 
 		$h_cell=10;
@@ -411,9 +412,14 @@ if(isset($_GET['export_pdf'])) {
 		$pdf->EnteteCC();
 		$pdf->SetXY($x1,$y2);
 
+//echo "plop";
+
 		foreach($tab_ele as $ele_login => $tmp_tab) {
 			$total=0;
 			$total_sur=0;
+
+			// Nombre de vraies notes (pas absent, disp, ou -)
+			$nb_note=0;
 
 			//if($pdf->GetY()+$h_cell+$hauteur_par_eleve>$hauteur_page-$MargeBas) {
 			if($pdf->GetY()+$h_cell+$hauteur_par_eleve+$Espace_dx>$hauteur_page-$MargeBas) {
@@ -432,7 +438,7 @@ if(isset($_GET['export_pdf'])) {
 				$x_courant=$x2;
 			}
 
-			$pdf->SetFont($fonte,'B',10);
+			$pdf->SetFont('DejaVu','B',10);
 			//$pdf->SetXY($x1,$y2);
 
 			$texte=ucfirst($nom_cc).' : '.$nom_court_dev;
@@ -449,7 +455,7 @@ if(isset($_GET['export_pdf'])) {
 			$y=$pdf->GetY();
 			$pdf->SetXY($x_courant,$y+$h_cell);
 
-			$texte='…lËve : '.$tmp_tab['nom']." ".$tmp_tab['prenom'];
+			$texte='√âl√®ve : '.$tmp_tab['nom']." ".$tmp_tab['prenom'];
 			$pdf->Cell($largeur_tab,$h_cell,$texte,'LRBT',0,'C');
 
 			//$x=$pdf->GetX();
@@ -470,7 +476,7 @@ if(isset($_GET['export_pdf'])) {
 			$y=$pdf->GetY();
 			$pdf->SetXY($x_courant,$y+$h_cell);
 
-			$pdf->SetFont($fonte,'',10);
+			$pdf->SetFont('DejaVu','',10);
 			for($i=0;$i<count($tab_eval);$i++) {
 				$nom_ev_courant=$tab_eval[$i]['nom_court'];
 				$date_ev_courant=$tab_eval[$i]['date'];
@@ -481,6 +487,8 @@ if(isset($_GET['export_pdf'])) {
 						$total_sur+=$tab_eval[$i]['note_sur'];
 
 						$note_ev_courant=strtr($tmp_tab['eval'][$tab_eval[$i]['id_eval']],".",",");
+
+						$nb_note++;
 					}
 					else {
 						$note_ev_courant=$tmp_tab['eval'][$tab_eval[$i]['id_eval']];
@@ -504,12 +512,20 @@ if(isset($_GET['export_pdf'])) {
 				$pdf->SetXY($x_courant,$y+$h_cell);
 			}
 
-			$pdf->SetFont($fonte,'B',10);
+
+			if($nb_note>0) {
+				$total_aff=strtr($total,'.',',');
+			}
+			else {
+				$total_aff="-";
+			}
+
+			$pdf->SetFont('DejaVu','B',10);
 			$texte='Total';
 			$pdf->Cell(floor($largeur_tab/4),$h_cell,$texte,'LRBT',0,'C');
 			$texte='-';
 			$pdf->Cell(floor($largeur_tab/4),$h_cell,$texte,'LRBT',0,'C');
-			$texte=$total;
+			$texte=$total_aff;
 			$pdf->Cell(floor($largeur_tab/4),$h_cell,$texte,'LRBT',0,'C');
 			$texte=$total_sur;
 			$pdf->Cell($largeur_tab-3*floor($largeur_tab/4),$h_cell,$texte,'LRBT',0,'C');
@@ -518,10 +534,19 @@ if(isset($_GET['export_pdf'])) {
 
 			if($total_sur>0) {
 				$moy=strtr(precision_arrondi(20*$total/$total_sur,$precision),'.',',');
+				//$moy=precision_arrondi(20*$total/$total_sur,$precision);
 			}
 			else {
 				$moy='-';
 			}
+
+			/*
+			if($total_sur>0) {
+				$info_tmp="20*$total/$total_sur";
+				$tmp_moy=20*$total/$total_sur;
+				echo "moy=$moy<br />\n$info_tmp=$tmp_moy<br />\n";
+			}
+			*/
 
 			$texte='Moyenne';
 			$pdf->Cell(floor($largeur_tab/4),$h_cell,$texte,'LRBT',0,'C');
@@ -555,11 +580,11 @@ if(isset($_GET['export_pdf'])) {
 	}
 }
 
-//$message_enregistrement = "Les modifications ont ÈtÈ enregistrÈes !";
-//$themessage  = 'Des notes ont ÈtÈ modifiÈes. Voulez-vous vraiment quitter sans enregistrer ?';
+//$message_enregistrement = "Les modifications ont √©t√© enregistr√©es !";
+//$themessage  = 'Des notes ont √©t√© modifi√©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
 $titre_page = "Visualisation des notes CC";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 //debug_var();
 
@@ -578,12 +603,12 @@ echo " | Export <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_de
 //echo "|";
 echo "</p>\n";
 
-echo "<h2 class='noprint'>$nom_cc n∞$id_dev&nbsp;: $nom_court_dev (<i>$nom_complet_dev</i>)</h2>\n";
+echo "<h2 class='noprint'>$nom_cc n¬∞$id_dev&nbsp;: $nom_court_dev (<i>$nom_complet_dev</i>)</h2>\n";
 
+$cc_eval=array();
 $sql="SELECT * FROM cc_eval WHERE id_dev='$id_dev' ORDER BY date, nom_court;";
 $res2=mysql_query($sql);
 if(mysql_num_rows($res2)>0) {
-	$cc_eval=array();
 	$i=0;
 	while($lig2=mysql_fetch_object($res2)) {
 		$cc_eval[$i]=array();
@@ -613,6 +638,11 @@ if(mysql_num_rows($res2)>0) {
 	}
 	echo "</ul>\n";
 }
+else {
+	echo "<p>Aucune √©valuation n'a encore √©t√© d√©finie.</p>";
+	require("../lib/footer.inc.php");
+	die();
+}
 
 $nb_eval=$i;
 
@@ -639,7 +669,7 @@ foreach ($liste_eleves as $eleve) {
 	echo "</tr>\n";
 
 	echo "<tr class='table_no_split'>\n";
-	echo "<th colspan='4'><b>ElËve</b>&nbsp;: $eleve_nom[$i] $eleve_prenom[$i]</th>\n";
+	echo "<th colspan='4'><b>El√®ve</b>&nbsp;: $eleve_nom[$i] $eleve_prenom[$i]</th>\n";
 	echo "</tr>\n";
 
 	echo "<tr class='table_no_split'>\n";
@@ -651,6 +681,9 @@ foreach ($liste_eleves as $eleve) {
 
 	$total=0;
 	$total_sur=0;
+
+	// Nombre de vraies notes (pas absent, disp, ou -)
+	$nb_note=0;
 	for($j=0;$j<count($cc_eval);$j++) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt white_hover table_no_split'>\n";
@@ -662,6 +695,8 @@ foreach ($liste_eleves as $eleve) {
 			if(($cc_eval[$j]['note'][$eleve_login[$i]]!='')&&(preg_match('/^[0-9.]*$/',$cc_eval[$j]['note'][$eleve_login[$i]]))) {
 				$total+=$cc_eval[$j]['note'][$eleve_login[$i]];
 				$total_sur+=$cc_eval[$j]['note_sur'];
+
+				$nb_note++;
 			}
 		}
 		echo "</td>\n";
@@ -674,7 +709,17 @@ foreach ($liste_eleves as $eleve) {
 	echo "<tr class='table_no_split'>\n";
 	echo "<th>Total</th>\n";
 	echo "<th>-</th>\n";
-	echo "<th>$total</th>\n";
+
+
+	if($nb_note>0) {
+		$total_aff=strtr($total,'.',',');
+	}
+	else {
+		$total_aff="-";
+	}
+
+
+	echo "<th>$total_aff</th>\n";
 	echo "<th>$total_sur</th>\n";
 	echo "</tr>\n";
 
@@ -682,13 +727,17 @@ foreach ($liste_eleves as $eleve) {
 	echo "<th>Moyenne</th>\n";
 	echo "<th>-</th>\n";
 	if($total_sur!=0) {
-		//$moy=round(10*20*$total/$total_sur)/10;
-		$moy=precision_arrondi(20*$total/$total_sur,$precision);
+		$moy=strtr(precision_arrondi(20*strtr($total,",",".")/strtr($total_sur,",","."),$precision),'.',',');
+
+		//$info_tmp="20*$total/$total_sur";
+		//$tmp_moy=20*$total/$total_sur;
 	}
 	else {
 		$moy='-';
 	}
-	echo "<th>$moy</th>\n";
+	echo "<th>$moy";
+	//echo "<br />$info_tmp<br />$tmp_moy";
+	echo "</th>\n";
 	echo "<th>20</th>\n";
 	echo "</tr>\n";
 

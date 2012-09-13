@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: ajax_edition_devoir.php 8733 2011-12-22 15:22:19Z crob $
  *
- * Copyright 2009-2011 Josselin Jacquard
+ * Copyright 2009-2012 Josselin Jacquard
  *
  * This file is part of GEPI.
  *
@@ -21,8 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-header('Content-Type: text/html; charset=ISO-8859-1');
-// On dÈsamorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
+header('Content-Type: text/html; charset=utf-8');
+// On d√©samorce une tentative de contournement du traitement anti-injection lorsque register_globals=on
 if (isset($_GET['traite_anti_inject']) OR isset($_POST['traite_anti_inject'])) {$traite_anti_inject = "yes";}
 include("../lib/initialisationsPropel.inc.php");
 require_once("../lib/initialisations.inc.php");
@@ -42,9 +41,9 @@ if (!checkAccess()) {
 	die();
 }
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_cahiers_texte")!='y') {
-	die("Le module n'est pas activÈ.");
+	die("Le module n'est pas activ√©.");
 }
 
 $utilisateur = UtilisateurProfessionnelPeer::getUtilisateursSessionEnCours();
@@ -53,7 +52,7 @@ if ($utilisateur == null) {
 	die();
 }
 
-//rÈcupÈration de la notice
+//r√©cup√©ration de la notice
 $id_devoir = isset($_POST["id_devoir"]) ? $_POST["id_devoir"] :(isset($_GET["id_devoir"]) ? $_GET["id_devoir"] :NULL);
 $succes = isset($_POST["succes"]) ? $_POST["succes"] :(isset($_GET["succes"]) ? $_GET["succes"] :NULL);
 $today = isset($_POST["today"]) ? $_POST["today"] :(isset($_GET["today"]) ? $_GET["today"] :NULL);
@@ -65,33 +64,33 @@ if ($ctTravailAFaire != null) {
 	$today = $ctTravailAFaire->getDateCt();
 
 	if ($groupe == null) {
-		echo("Erreur edition de devoir : Pas de groupe associÈ au devoir");
+		echo("Erreur edition de devoir : Pas de groupe associ√© au devoir");
 		die;
 	}
 
-	// VÈrification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
+	// V√©rification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
 	if (!$groupe->belongsTo($utilisateur)) {
 		echo "Erreur edition de devoir : le groupe n'appartient pas au professeur";
 		die();
 	}
 
 } else {
-	//si pas de notice prÈcisÈ, rÈcupÈration du groupe dans la requete et recherche d'une notice pour la date prÈcisÈe ou crÈation d'une nouvelle notice
-	//pas de notices, on lance une crÈation de notice
+	//si pas de notice pr√©cis√©, r√©cup√©ration du groupe dans la requete et recherche d'une notice pour la date pr√©cis√©e ou cr√©ation d'une nouvelle notice
+	//pas de notices, on lance une cr√©ation de notice
 	$id_groupe = isset($_POST["id_groupe"]) ? $_POST["id_groupe"] :(isset($_GET["id_groupe"]) ? $_GET["id_groupe"] :NULL);
 	$groupe = GroupePeer::retrieveByPK($id_groupe);
 	if ($groupe == null) {
-		echo("Erreur edition de devoir : pas de groupe spÈcifiÈ");
+		echo("Erreur edition de devoir : pas de groupe sp√©cifi√©");
 		die;
 	}
 
-	// VÈrification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
+	// V√©rification : est-ce que l'utilisateur a le droit de travailler sur ce groupe ?
 	if (!$groupe->belongsTo($utilisateur)) {
 		echo "Erreur edition de devoir : le groupe n'appartient pas au professeur";
 		die();
 	}
 
-	//on cherche si il y a une notice pour le groupe ‡ la date prÈcisÈe
+	//on cherche si il y a une notice pour le groupe √† la date pr√©cis√©e
 	$criteria = new Criteria(CahierTexteTravailAFairePeer::DATABASE_NAME);
 	$criteria->add(CahierTexteTravailAFairePeer::DATE_CT, $today, '=');
 	$criteria->add(CahierTexteTravailAFairePeer::ID_LOGIN, $utilisateur->getLogin());
@@ -107,17 +106,17 @@ if ($ctTravailAFaire != null) {
 	}
 }
 
-// VÈrification : est-ce que l'utilisateur a le droit de modifier cette entrÈ ?
-if ((strtolower($ctTravailAFaire->getIdLogin()) != strtolower($utilisateur->getLogin()))&&
+// V√©rification : est-ce que l'utilisateur a le droit de modifier cette entr√© ?
+if ((my_strtolower($ctTravailAFaire->getIdLogin()) != my_strtolower($utilisateur->getLogin()))&&
 (getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
-	echo("Erreur edition de devoir : vous n'avez pas le droit de modifier cette notice car elle appartient ‡ un autre professeur.");
+	echo("Erreur edition de devoir : vous n'avez pas le droit de modifier cette notice car elle appartient √† un autre professeur.");
 	die();
 }
 
 
 if ($ctTravailAFaire->getVise() == 'y') {
 	// interdire la modification d'un visa par le prof si c'est un visa
-	echo("Erreur edition de devoir : Notice signÈe, edition impossible");
+	echo("Erreur edition de devoir : Notice sign√©e, edition impossible");
 	die();
 }
 
@@ -138,10 +137,10 @@ if(isset($_GET['change_visibilite'])) {
 			$res=mysql_query($sql);
 			if($res) {
 				if($visible_eleve_parent=='1') {
-					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des ÈlËves et responsables' title='Document visible des ÈlËves et responsables' />";
+					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des √©l√®ves et responsables' title='Document visible des √©l√®ves et responsables' />";
 				}
 				else {
-					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des ÈlËves et responsables' title='Document invisible des ÈlËves et responsables' />";
+					echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des √©l√®ves et responsables' title='Document invisible des √©l√®ves et responsables' />";
 				}
 			}
 		}
@@ -156,7 +155,7 @@ $_SESSION['id_groupe_session'] = $ctTravailAFaire->getIdGroupe();
 $type_couleur = "t";
 
 // **********************************************
-// Affichage des diffÈrents groupes du professeur
+// Affichage des diff√©rents groupes du professeur
 //\$A($('id_groupe_colonne_gauche').options).find(function(option) { return option.selected; }).value is a javascript trick to get selected value.
 echo "<div id=\"div_chaine_edition_notice\" style=\"display:inline;\"><img id=\"chaine_edition_notice\" onLoad=\"updateChaineIcones()\" HEIGHT=\"16\" WIDTH=\"16\" style=\"border: 0px; vertical-align : middle\" src=\"../images/blank.gif\"  alt=\"Lier\" title=\"Lier la liste avec la liste des de notices\" /></div>&nbsp;";
 
@@ -213,7 +212,31 @@ echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"j
 						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate());
 					\">Voir NP</button>\n";
 
-echo "<br><br>\n";
+echo "<button style='background-color:lightblue' onclick=\"javascript:
+						getWinBanqueTexte().setAjaxContent('./ajax_affichage_banque_texte.php',{});
+					\">Banque</button>\n";
+
+if(file_exists("./archives.php")) {
+	// Mon fichier contient juste:
+	/* <?php echo "<iframe src='../documents/archives/index.php' width='100%' height='100%'/>"; ?> */
+	echo "<button style='background-color:bisque' onclick=\"javascript:
+						getWinArchives().setAjaxContent('./archives.php',{});
+					\">Archives</button>\n";
+}
+
+//echo "<br><br>\n";
+echo "<br />\n";
+// Retour aux notices d'aujourd'hui:
+$timestamp_du_jour=mktime(0,0,0,date('n'),date('j'),date('Y'));
+if($timestamp_du_jour!=$today) {
+	echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button style='background-color:".$color_fond_notices['c']."' onclick=\"javascript:
+							getWinEditionNotice().setAjaxContent('./ajax_edition_compte_rendu.php?id_groupe='+ ".$groupe->getId()." + '&today='+$timestamp_du_jour,{ onComplete:function(transport) {initWysiwyg();updateCalendarWithUnixDate($timestamp_du_jour)}});
+							object_en_cours_edition = 'compte_rendu';
+						\">CR : Retour au ".date('d')."/".date('m')."</button>\n";
+}
+//echo "\$timestamp_du_jour=$timestamp_du_jour<br />";
+//echo "\$today=$today<br />";
+echo "<br />\n";
 
 //==============================================
 
@@ -269,6 +292,42 @@ echo "
 			\">
 	Deplacer la notice</a>\n";
 
+//il faut √©chapper les single quote pour le contenu √† importer
+$contenu_a_copier =  isset($_SESSION['ct_a_importer']) ? $_SESSION['ct_a_importer']->getContenu() : '';
+echo (" <a href=\"#\" onclick=\"javascript: /*contenu_a_copier est globale*/
+    if (window.contenu_a_copier == undefined) {
+        contenu_a_copier = '".addslashes(htmlspecialchars($contenu_a_copier))."';
+    }
+    CKEDITOR.instances['contenu'].insertHtml(contenu_a_copier);");
+echo("\"><img style=\"border: 0px;\" src=\"../images/icons/copy-16-gold.png");
+echo("\" alt=\"Coller\" title=\"Coller le contenu\" /></a>\n");
+
+//il faut √©chapper les single quote pour le contenu √† importer
+$ct_a_importer_class = isset($_SESSION['ct_a_importer']) ? get_class($_SESSION['ct_a_importer']) : '';
+$id_ct_a_importer = isset($_SESSION['ct_a_importer']) ? $_SESSION['ct_a_importer']->getPrimaryKey() : '';
+//pour le contenu √† copier, on regarde d'abord si on a du contenu en javascript puis dans la session php
+echo (" <a href=\"#\" onclick=\"javascript: /*ct_a_importer_class est globale*/
+    if (window.ct_a_importer_class == undefined) {
+        ct_a_importer_class='".$ct_a_importer_class."';
+        id_ct_a_importer='".$id_ct_a_importer."';
+    }
+    var hiddenField1 = document.createElement('input');
+    hiddenField1.setAttribute('type', 'hidden');
+    hiddenField1.setAttribute('name', 'ct_a_importer_class');
+    hiddenField1.setAttribute('value', ct_a_importer_class);
+    $('modification_compte_rendu_form').appendChild(hiddenField1);
+    var hiddenField2 = document.createElement('input');
+    hiddenField2.setAttribute('type', 'hidden');
+    hiddenField2.setAttribute('name', 'id_ct_a_importer');
+    hiddenField2.setAttribute('value', id_ct_a_importer);
+    $('modification_compte_rendu_form').appendChild(hiddenField2);
+    $('contenu').value = CKEDITOR.instances['contenu'].getData();
+    $('modification_compte_rendu_form').request({
+        onComplete : function (transport) {updateWindows('');}
+    });");
+echo("\"><img style=\"border: 0px;\" src=\"../images/icons/copy-16-gold-trombone.png");
+echo("\" alt=\"Coller\" title=\"Coller les fichiers joints\" /></a>\n");
+
 echo "</legend>\n";
 
 echo "<div id=\"dupplication_notice\" style='display: none;'></div>\n";
@@ -285,10 +344,10 @@ echo("<input type='hidden' id='id_groupe' name='id_groupe' value='".$groupe->get
 //hidden input utilise pour indiquer a la fenetre ListeNotice a quel endroit mettre un petit texte rouge "modification"
 echo("<input type='hidden' id='div_id_ct' value='devoir_".$ctTravailAFaire->getIdCt()."' />\n");
 
-//si on vient d'efftuer un enregistrement, le label du bonton enregistrer devient SuccËs
+//si on vient d'efftuer un enregistrement, le label du bonton enregistrer devient Succ√®s
 $succes_modification = isset($_POST["succes_modification"]) ? $_POST["succes_modification"] :(isset($_GET["succes_modification"]) ? $_GET["succes_modification"] :NULL);
 $label_enregistrer = "Enregistrer";
-if ($succes_modification == 'oui') {$label_enregistrer='SuccËs';}
+if ($succes_modification == 'oui') {$label_enregistrer='Succ√®s';}
 
 //echo $ctTravailAFaire->getDateVisibiliteEleve();
 if($ctTravailAFaire->getDateVisibiliteEleve()=='') {
@@ -320,13 +379,13 @@ echo "<script type='text/javascript'>
 		mois_v=tab[1];
 		annee_v=tab[2];
 		if(!checkdate(mois_v, jour_v, annee_v)) {
-			alert(\"La date de visibilitÈ saisie n'est pas valide.\");
+			alert(\"La date de visibilit√© saisie n'est pas valide.\");
 		}
 	}
 </script>\n";
 */
 			echo "<br />\n";
-			echo "<span title='Vous pouvez modifier les dates et heure de visibilitÈ avec les flËches Haut/Bas, PageUp/PageDown du clavier.'>VisibilitÈ</span>&nbsp;:\n";
+			echo "<span title='Vous pouvez modifier les dates et heure de visibilit√© avec les fl√®ches Haut/Bas, PageUp/PageDown du clavier.'>Visibilit√©</span>&nbsp;:\n";
 			echo " <input type='text' name='jour_visibilite' id='jour_visibilite' value='$jour_courant' size='7' onkeydown='clavier_date(this.id,event)' 
 			onblur=\"date_v=document.getElementById('jour_visibilite').value;
 				tab=date_v.split('/');
@@ -334,11 +393,11 @@ echo "<script type='text/javascript'>
 				mois_v=tab[1];
 				annee_v=tab[2];
 				if(!checkdate(mois_v, jour_v, annee_v)) {
-					alert('La date de visibilitÈ saisie n est pas valide.');
+					alert('La date de visibilit√© saisie n est pas valide.');
 				}
 			\" />\n";
 		// onblur='verif_date_visibilite()' />\n";
-			echo " ‡ <input type='text' name='heure_visibilite' id='heure_visibilite' value='$heure_courante' size='3' onkeydown='clavier_heure(this.id,event)' 
+			echo " √† <input type='text' name='heure_visibilite' id='heure_visibilite' value='$heure_courante' size='3' onkeydown='clavier_heure(this.id,event)' 
 			onblur=\"instant_v=document.getElementById('heure_visibilite').value;
 				var exp=new RegExp('^[0-9]{1,2}:[0-9]{0,2}$','g');
 				erreur='n';
@@ -354,9 +413,15 @@ echo "<script type='text/javascript'>
 				}
 
 				if(erreur=='y') {
-					alert('L heure de visibilitÈ saisie n est pas valide.');
+					alert('L heure de visibilit√© saisie n est pas valide.');
 				}
 			\" />\n";
+			// Les devoirs ne sont pas visibles par les √©l√®ves/responsables dans le futur au del√† de getSettingValue('delai_devoirs')
+			if($today>time()+getSettingValue('delai_devoirs')*24*3600) {
+				$message_visibilite="Les devoirs √† faire ne sont visibles des √©l√®ves que pour les ".getSettingValue('delai_devoirs')." jours suivant la date courante.";
+				$message_visibilite.="\nCe message ne sera donc visible qu'√† compter du ".strftime("%d/%m/%Y",$today-getSettingValue('delai_devoirs')*24*3600);
+				echo " <img src='../images/icons/ico_attention.png' width='22' height='19' alt=\"$message_visibilite\" title=\"$message_visibilite\" />\n";
+			}
 		?>
 		<input type='hidden' id='passer_a' name='passer_a'
 			value='passer_devoir' /> <input type="hidden" name="date_devoir"
@@ -373,6 +438,12 @@ echo "<script type='text/javascript'>
 			$hier = $today - 3600*24;
 			$demain = $today + 3600*24;
 
+			$test_hier=get_timestamp_jour_precedent($today);
+			if($test_hier) {$hier=$test_hier;}
+
+			$test_demain=get_timestamp_jour_suivant($today);
+			if($test_demain) {$demain=$test_demain;}
+
 			$semaine_precedente= $today - 3600*24*7;
 			$semaine_suivante= $today + 3600*24*7;
 			echo "</td>\n";
@@ -384,10 +455,10 @@ echo "<script type='text/javascript'>
 			echo "</td>\n";
 
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo "<a title=\"Aller ‡ la semaine prÈcÈdente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller ‡ la semaine prÈcÈdente' alt='Aller ‡ la semaine prÈcÈdente' /></a> ";
+			echo "<a title=\"Aller √† la semaine pr√©c√©dente\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_precedente);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left-double.png' width='16' height='16' title='Aller √† la semaine pr√©c√©dente' alt='Aller √† la semaine pr√©c√©dente' /></a> ";
 			echo "</td>\n";
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo "<a title=\"Aller au jour prÈcÈdent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour prÈcÈdent' alt='Aller au jour prÈcÈdent' /></a>\n";
+			echo "<a title=\"Aller au jour pr√©c√©dent\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($hier);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-left.png' width='16' height='16' title='Aller au jour pr√©c√©dent' alt='Aller au jour pr√©c√©dent' /></a>\n";
 			echo "</td>\n";
 			echo "<td align='center'>";
 			if(date("d/m/Y")==date("d/m/Y",$today)) {
@@ -401,7 +472,7 @@ echo "<script type='text/javascript'>
 			echo "<a title=\"Aller au jour suivant\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($demain);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right.png' width='16' height='16' title='Aller au jour suivant' alt='Aller au jour suivant' /></a>\n";
 			echo "</td>\n";
 			echo "<td style='text-align:center; width: 16px;'>\n";
-			echo " <a title=\"Aller ‡ la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller ‡ la semaine suivante' alt='Aller ‡ la semaine suivante' /></a>\n";
+			echo " <a title=\"Aller √† la semaine suivante\" href=\"#\" onclick='javascript:updateCalendarWithUnixDate($semaine_suivante);dateChanged(calendarInstanciation);'><img src='../images/icons/arrow-right-double.png' width='16' height='16' title='Aller √† la semaine suivante' alt='Aller √† la semaine suivante' /></a>\n";
 			echo "</td>\n";
 			echo "</tr>\n";
 			echo "\n";
@@ -413,9 +484,9 @@ echo "<script type='text/javascript'>
 
 		echo "<textarea name=\"contenu\" style=\"background-color: white;\" id=\"contenu\">".$ctTravailAFaire->getContenu()."</textarea>\n";
 
-		//// gestion des fichiers attachÈ
+		//// gestion des fichiers attach√©
 		echo '<div style="border-style:solid; border-width:1px; border-color: '.$couleur_bord_tableau_notice.'; background-color: '.$couleur_cellule[$type_couleur].';  padding: 2px; margin: 2px;">';
-		echo "<b>Fichier(s) attachÈ(s) : </b><br />\n";
+		echo "<b>Fichier(s) attach√©(s) : </b><br />\n";
 		echo '<div id="div_fichier">';
 		// Affichage des documents joints
 		$document = new CahierTexteTravailAFaireFichierJoint(); //for ide completion
@@ -430,18 +501,26 @@ echo "<script type='text/javascript'>
 				//			$titre_[$i] = $document->getTitre();
 				//			$taille = round( $document->getTaille()/1024,1);
 				//			$emplacement =  $document->getEmplacement();
-				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\"><td>
-						<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a></td>
-						<td style=\"text-align: center;\">".round($document->getTaille()/1024,1)."</td>\n";
+				echo "<tr style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice."; background-color: #FFFFFF;\">
+						<td>\n";
+
+				if(preg_match("/(png|gif|jpg)$/i",$document->getEmplacement())) {
+					echo insere_lien_insertion_image_dans_ckeditor($document->getEmplacement());
+				}
+
+				echo "
+							<a href='".$document->getEmplacement()."' target=\"_blank\">".$document->getTitre()."</a>
+						</td>
+						<td style=\"text-align: center;\" title=\"Taille du fichier\">".round($document->getTaille()/1024,1)."</td>\n";
 						if(getSettingValue('cdt_possibilite_masquer_pj')=='y') {
 							echo "<td style=\"text-align: center;\">";
 							echo "<a href='javascript:modif_visibilite_doc_joint(\"devoir\", ".$ctTravailAFaire->getIdCt().", ".$document->getId().")'>";
 							echo "<span id='span_document_joint_".$document->getId()."'>";
 							if($document->getVisibleEleveParent()) {
-								echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des ÈlËves et responsables' title='Document visible des ÈlËves et responsables' />";
+								echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des √©l√®ves et responsables' title='Document visible des √©l√®ves et responsables' />";
 							}
 							else {
-								echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des ÈlËves et responsables' title='Document invisible des ÈlËves et responsables' />";
+								echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des √©l√®ves et responsables' title='Document invisible des √©l√®ves et responsables' />";
 							}
 							echo "</span>";
 							echo "</a>";
@@ -503,7 +582,7 @@ echo "<script type='text/javascript'>
 			</tr>
 			<?php $nb_doc_choisi_compte++;
 			}
-			//fin gestion des fichiers attachÈ
+			//fin gestion des fichiers attach√©
 			?>
 
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice;?>; background-color: <?php echo $couleur_cellule[$type_couleur]; ?>;">
@@ -515,7 +594,7 @@ echo "<script type='text/javascript'>
 				</td>
 			</tr>
 			<tr style="border-style:solid; border-width:1px; border-color: <?php echo $couleur_bord_tableau_notice; ?>; background-color: <?php echo $couleur_entete_fond[$type_couleur]; ?>;">
-				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas acceptÈs, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
+				<td colspan="<?php echo $nb_col_tableau_pj;?>" style="text-align: center;"><?php  echo "Tous les documents ne sont pas accept√©s, voir <a href='javascript:centrerpopup(\"limites_telechargement.php?id_groupe=" . $groupe->getId() . "\",600,480,\"scrollbars=yes,statusbar=no,resizable=yes\")'>les limites et restrictions</a>\n"; ?>
 				</td>
 			</tr>
 		</table>
@@ -529,6 +608,14 @@ $ouverture_auto_WinDevoirsDeLaClasse=getPref($_SESSION['login'], 'ouverture_auto
 if($ouverture_auto_WinDevoirsDeLaClasse=='y') {
 	echo "<script type='text/javascript'>
 	getWinDevoirsDeLaClasse().setAjaxContent('./ajax_devoirs_classe.php?id_classe=$id_classe&today='+getCalendarUnixDate());
+</script>\n";
+}
+
+if((isset($_GET['mettre_a_jour_cal']))&&($_GET['mettre_a_jour_cal']=='y')) {
+echo "<script type='text/javascript'>
+	object_en_cours_edition='devoir';
+	updateCalendarWithUnixDate($today);
+	dateChanged(calendarInstanciation);
 </script>\n";
 }
 ?>

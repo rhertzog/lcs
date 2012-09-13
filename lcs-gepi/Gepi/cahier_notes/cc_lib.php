@@ -1,10 +1,9 @@
 <?php
 /**
- * Fonctions de évaluation cumule
+ * Fonctions de Ã©valuation cumule
  * 
-* $Id: cc_lib.php 7730 2011-08-13 15:26:33Z regis $
 *
-* @copyright Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* @copyright Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  * 
  * @package Carnet_de_notes
  * @subpackage Evaluation_cumule
@@ -34,7 +33,7 @@ if($nom_cc=='') {
 }
 /**
  *
- * @param float $moyenne note à arrondir
+ * @param float $moyenne note Ã  arrondir
  * @param string $arrondir
  * @return float
  */
@@ -42,17 +41,19 @@ function precision_arrondi($moyenne,$arrondir) {
 	//
 	// Calcul des arrondis
 	//
+	$moyenne=strtr($moyenne,",",".");
 	if ($arrondir == 's1') {
-		// s1 : arrondir au dixième de point supérieur
+		// s1 : arrondir au dixiÃ¨me de point supÃ©rieur
 		$moyenne = number_format(ceil(strval(10*$moyenne))/10,1,'.','');
 	} else if ($arrondir == 's5') {
-		// s5 : arrondir au demi-point supérieur
+		// s5 : arrondir au demi-point supÃ©rieur
 		$moyenne = number_format(ceil(strval(2*$moyenne))/2,1,'.','');
+		//$moyenne = ceil(strval(2*$moyenne))/2;
 	} else if ($arrondir == 'se') {
-		// se : arrondir au point entier supérieur
+		// se : arrondir au point entier supÃ©rieur
 		$moyenne = number_format(ceil(strval($moyenne)),1,'.','');
 	} else if ($arrondir == 'p1') {
-		// s1 : arrondir au dixième le plus proche
+		// s1 : arrondir au dixiÃ¨me le plus proche
 		$moyenne = number_format(round(strval(10*$moyenne))/10,1,'.','');
 	} else if ($arrondir == 'p5') {
 		// s5 : arrondir au demi-point le plus proche
@@ -62,6 +63,19 @@ function precision_arrondi($moyenne,$arrondir) {
 		$moyenne = number_format(round(strval($moyenne)),1,'.','');
 	}
 	return $moyenne;
+}
+
+function get_infos_devoir($id_devoir) {
+	$retour="";
+	$sql="SELECT * FROM cn_devoirs cd WHERE cd.id='$id_devoir';";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+
+		$retour=$lig->nom_court." (".formate_date($lig->date).")";
+	}
+	return $retour;
 }
 
 ?>

@@ -1,5 +1,5 @@
 /* 
- * $Id: accueil.css 7115 2011-06-05 07:29:21Z crob $
+ * $Id$
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -33,6 +33,7 @@ h2 {
 }
 
 table.boireaus {
+	margin-top: 1em;
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
@@ -62,6 +63,13 @@ table.boireaus {
 .boireaus .lig1 {
 	background-color: #FFE6AA;
 }
+.boireaus .nouveau {
+	background-color: #96c8f0;
+}
+.boireaus .modif {
+	background-color: #eeaaff;
+}
+
 
 /*
 #messagerie {
@@ -180,7 +188,7 @@ background-color: #F00;
 	text-align: center;
 }
 
-/* se référencer */
+/* se rÃ©fÃ©rencer */
 .referencement {
 	border-style:solid; 
 	border-width:1px; 

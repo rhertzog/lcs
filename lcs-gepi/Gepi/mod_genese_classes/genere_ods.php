@@ -1,7 +1,6 @@
 <?php
-/* $Id: genere_ods.php 7341 2011-06-27 10:37:37Z crob $ */
 /*
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -49,13 +48,13 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Génèse des classes: Génération d un fichier ODS de listes',
+description='GenÃ¨se des classes: GÃ©nÃ©ration d un fichier ODS de listes',
 statut='';";
 $insert=mysql_query($sql);
 }
 
 //======================================================================================
-// Section checkAccess() à décommenter en prenant soin d'ajouter le droit correspondant:
+// Section checkAccess() Ã  dÃ©commenter en prenant soin d'ajouter le droit correspondant:
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -63,7 +62,7 @@ if (!checkAccess()) {
 //======================================================================================
 
 	function suppr_accents($chaine){
-		$caract_accentues=array("à","â","ä","ç","é","è","ê","ë","î","ï","ô","ö","ù","û","ü");
+		$caract_accentues=array("Ã ","Ã¢","Ã¤","Ã§","Ã©","Ã¨","Ãª","Ã«","Ã®","Ã¯","Ã´","Ã¶","Ã¹","Ã»","Ã¼");
 		$caract_sans_accent=array("a","a","a","c","e","e","e","e","i","i","o","o","u","u","u");
 
 		$retour=$chaine;
@@ -84,19 +83,19 @@ if (!checkAccess()) {
 	$user_temp_directory=get_user_temp_directory();
 
 	//**************** EN-TETE *****************
-	$titre_page = "Génèse classe: Fichier ODS";
+	$titre_page = "GenÃ¨se classe: Fichier ODS";
 	//echo "<div class='noprint'>\n";
-	require_once("../lib/header.inc");
+	require_once("../lib/header.inc.php");
 	//echo "</div>\n";
 	//**************** FIN EN-TETE *****************
 
 	echo "<h2>Projet $projet</h2>\n";
 
-	echo "<h3>Génération d'un classeur (<i>ODS</i>)</h3>\n";
+	echo "<h3>GÃ©nÃ©ration d'un classeur (<i>ODS</i>)</h3>\n";
 
 	//if(($fichier_csv=='')||(!file_exists("csv/$fichier_csv"))){
 	if(($fichier_csv=='')||(!file_exists("../temp/".$user_temp_directory."/$fichier_csv"))){
-		echo "<p><b>ERREUR:</b> Aucun fichier CSV n'a été fourni.</p>\n";
+		echo "<p><b>ERREUR:</b> Aucun fichier CSV n'a Ã©tÃ© fourni.</p>\n";
 		echo "</body>\n</html>\n";
 		exit();
 	}
@@ -125,12 +124,12 @@ if (!checkAccess()) {
 		$fich_source_csv=fopen("../temp/".$user_temp_directory."/$fichier_csv","r");
 		while(!feof($fich_source_csv)) {
 			$ligne=fgets($fich_source_csv,4096);
-			$n=strlen(preg_replace("/[^;]/","",$ligne));
+			$n=mb_strlen(preg_replace("/[^;]/","",$ligne));
 			if($n>$nb_ptvirg) {$nb_ptvirg=$n;}
 		}
 		$nb_ptvirg=$nb_ptvirg-1; // On supprime le point virgule en fin de ligne
 
-		if($nb_ptvirg<1) {$nb_ptvirg=3;} // Pour éviter des blagues avec des nombres de colonnes négatifs
+		if($nb_ptvirg<1) {$nb_ptvirg=3;} // Pour Ã©viter des blagues avec des nombres de colonnes nÃ©gatifs
 
 		$cpt=0;
 		//$fich_source_csv=fopen("csv/$fichier_csv","r");
@@ -139,11 +138,11 @@ if (!checkAccess()) {
 			while(!feof($fich_source_csv)) {
 				$ligne=fgets($fich_source_csv,4096);
 	
-				// Bricolage pas chouette pour changer le séparateur du CSV
-				$ligne_tmp=preg_replace("/°/"," ",preg_replace("/;/",",",preg_replace('/,/',' ',$ligne)));
+				// Bricolage pas chouette pour changer le sÃ©parateur du CSV
+				$ligne_tmp=preg_replace("/Â°/"," ",preg_replace("/;/",",",preg_replace('/,/',' ',$ligne)));
 	
 				//$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',$ligne_tmp))));
-				$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',preg_replace('/°/','Â°',$ligne_tmp)))));
+				$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',preg_replace('/Â°/','Ã‚Â°',$ligne_tmp)))));
 				//echo "<p>\$ligne=$ligne<br>\n";
 				//echo "\$ligne_corrigee=$ligne_corrigee</p>\n";
 	
@@ -155,11 +154,11 @@ if (!checkAccess()) {
 					$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro1">');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce5"/>');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce12" table:number-columns-repeated="'.$nb_ptvirg.'"/><table:table-cell/>');
-					// Le repeated 4 doit correspondre à la situation sans LV3
+					// Le repeated 4 doit correspondre Ã  la situation sans LV3
 					$ecriture=fwrite($fichier_content_xml,'</table:table-row>');
 				}
 				elseif(!isset($tabligne[1])) {
-					if(substr($tabligne[0],0,9)=="Requete n") {
+					if(mb_substr($tabligne[0],0,9)=="Requete n") {
 						$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro1">');
 						$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce1" office:value-type="string"><text:p>'.$tabligne[0].'</text:p></table:table-cell>');
 						$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce7" table:number-columns-repeated="'.($nb_ptvirg-1).'"/>');
@@ -205,7 +204,7 @@ if (!checkAccess()) {
 					//$ecriture=fwrite($fichier_content_xml,'<table:table-cell/>');
 					$ecriture=fwrite($fichier_content_xml,'</table:table-row>');
 				}
-				elseif(substr($tabligne[0],0,12)=="Eff.select :") {
+				elseif(mb_substr($tabligne[0],0,12)=="Eff.select :") {
 					$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro1">');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce3" office:value-type="string"><text:p>'.$tabligne[0].'</text:p></table:table-cell>');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce10" office:value-type="string"><text:p>'.$tabligne[1].'</text:p></table:table-cell>');
@@ -263,25 +262,77 @@ if (!checkAccess()) {
 			$fermeture=fclose($fichier_content_xml);
 			
 			set_time_limit(3000);
-			//require_once("ss_zip.class.php");
-			require_once("../lib/ss_zip.class.php");
+			if(file_exists("../lib/ss_zip.class.php")){
+				//require_once("ss_zip.class.php");
+				require_once("../lib/ss_zip.class.php");
 		
-			$zip= new ss_zip('',6);
-			//$zip->add_file('sxc/content.xml');
-			//$zip->add_file("ods/content.xml",'content.xml');
-			$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
-			$zip->add_file('ods/meta.xml','meta.xml');
-			$zip->add_file('ods/mimetype','mimetype');
-			$zip->add_file('ods/settings.xml','settings.xml');
-			$zip->add_file('ods/styles.xml','styles.xml');
-			$zip->add_file('ods/META-INF/manifest.xml','META-INF/manifest.xml');
-			//$zip->save("ods/$fichier_liste.zip");
-			$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
+				$zip= new ss_zip('',6);
+				//$zip->add_file('sxc/content.xml');
+				//$zip->add_file("ods/content.xml",'content.xml');
+				$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
+				$zip->add_file('ods/meta.xml','meta.xml');
+				$zip->add_file('ods/mimetype','mimetype');
+				$zip->add_file('ods/settings.xml','settings.xml');
+				$zip->add_file('ods/styles.xml','styles.xml');
+				$zip->add_file('ods/META-INF/manifest.xml','META-INF/manifest.xml');
+				//$zip->save("ods/$fichier_liste.zip");
+				$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
 	
-			//rename("ods/$fichier_liste.zip","ods/$fichier_liste.ods");
-			//rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
-			rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/".$fichier_liste."_detail.ods");
-	
+				//rename("ods/$fichier_liste.zip","ods/$fichier_liste.ods");
+				//rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
+				rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/".$fichier_liste."_detail.ods");
+			}
+			else {
+
+				$path = path_niveau();
+				$chemin_temp = $path."temp/".get_user_temp_directory()."/";
+
+				if (!defined('PCLZIP_TEMPORARY_DIR') || constant('PCLZIP_TEMPORARY_DIR')!=$chemin_temp) {
+					@define( 'PCLZIP_TEMPORARY_DIR', $chemin_temp);
+				}
+
+				$nom_fic=$fichier_liste."_detail.ods";
+				$chemin_stockage = $chemin_temp."/".$nom_fic;
+				$chemin_modele_ods='ods';
+
+				$dossier_a_traiter=$chemin_temp."liste_options_".strftime("%Y%m%d%H%M%S");
+
+				@mkdir($dossier_a_traiter);
+				copy("../temp/".$user_temp_directory."/content.xml", $dossier_a_traiter."/content.xml");
+
+				@mkdir($dossier_a_traiter."/META-INF");
+
+				$tab_fich_tmp=array('META-INF/manifest.xml', 'settings.xml', 'meta.xml', 'mimetype', 'styles.xml');
+				for($loop=0;$loop<count($tab_fich_tmp);$loop++) {
+					copy($chemin_modele_ods.'/'.$tab_fich_tmp[$loop], $dossier_a_traiter."/".$tab_fich_tmp[$loop]);
+				}
+
+				require_once($path.'lib/pclzip.lib.php');
+
+				if ($chemin_stockage !='') {
+					if(file_exists("$chemin_stockage")) {unlink("$chemin_stockage");}
+
+					//echo "\$chemin_stockage=$chemin_stockage<br />";
+					//echo "\$dossier_a_traiter=$dossier_a_traiter<br />";
+
+					$archive = new PclZip($chemin_stockage);
+					$v_list = $archive->create($dossier_a_traiter,
+						  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
+						  PCLZIP_OPT_ADD_PATH, '');
+
+					if ($v_list == 0) {
+						echo "<p style='color:red'>Erreur : ".$archive->errorInfo(TRUE)."</p>";
+					}
+					/*
+					else {
+						$msg="Archive zip crÃ©Ã©e&nbsp;: <a href='$chemin_stockage'>$chemin_stockage</a>";
+					}
+					*/
+
+					deltree($dossier_a_traiter);
+				}
+			}
+
 			//echo "<a href='ods/".$fichier_liste.".ods'>$fichier_liste.ods</a>\n";
 			//echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods' onclick=\"setTimeout('self.close()',3000);return true;\">$fichier_liste.ods</a></p>\n";
 			echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste."_detail.ods' onclick=\"setTimeout('self.close()',3000);return true;\">".$fichier_liste."_detail.ods</a></p>\n";
@@ -295,7 +346,7 @@ if (!checkAccess()) {
 	else{
 
 		// ATTENTION: LA SUITE N'EST PAS CORRIGEE DU TOUT... C'EST UN MODELE DIFFERENT
-		//echo "<p>Modèle sans détails non encore géré.</p>";
+		//echo "<p>ModÃ¨le sans dÃ©tails non encore gÃ©rÃ©.</p>";
 		//die();
 
 		//$fichier_content_xml=fopen("ods/content.xml","w+");
@@ -322,11 +373,11 @@ if (!checkAccess()) {
 			while(!feof($fich_source_csv)){
 				$ligne=fgets($fich_source_csv,4096);
 	
-				// Bricolage pas chouette pour changer le séparateur du CSV
-				$ligne_tmp=preg_replace("/°/"," ",preg_replace("/;/",",",preg_replace('/,/',' ',$ligne)));
+				// Bricolage pas chouette pour changer le sÃ©parateur du CSV
+				$ligne_tmp=preg_replace("/Â°/"," ",preg_replace("/;/",",",preg_replace('/,/',' ',$ligne)));
 	
 				//$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',$ligne_tmp))));
-				$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',preg_replace('/°/','Â°',$ligne_tmp)))));
+				$ligne_corrigee=trim(suppr_accents(preg_replace("/'/","&apos;",preg_replace('/"/','',preg_replace('/Â°/','Ã‚Â°',$ligne_tmp)))));
 				//echo "<p>\$ligne=$ligne<br>\n";
 				//echo "\$ligne_corrigee=$ligne_corrigee</p>\n";
 	
@@ -341,7 +392,7 @@ if (!checkAccess()) {
 					$ecriture=fwrite($fichier_content_xml,'</table:table-row>');
 				}
 				elseif(!isset($tabligne[1])) {
-					if(substr($tabligne[0],0,9)=="Requete n") {
+					if(mb_substr($tabligne[0],0,9)=="Requete n") {
 						$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro1">');
 						$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce1" office:value-type="string"><text:p>'.$tabligne[0].'</text:p></table:table-cell>');
 						$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce6" table:number-columns-repeated="4"/><table:table-cell/>');
@@ -363,7 +414,7 @@ if (!checkAccess()) {
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce7" table:number-columns-repeated="4"/><table:table-cell/>');
 					$ecriture=fwrite($fichier_content_xml,'</table:table-row>');
 				}
-				elseif(substr($tabligne[0],0,12)=="Eff.select :") {
+				elseif(mb_substr($tabligne[0],0,12)=="Eff.select :") {
 					$ecriture=fwrite($fichier_content_xml,'<table:table-row table:style-name="ro1">');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce3" office:value-type="string"><text:p>'.$tabligne[0].'</text:p></table:table-cell>');
 					$ecriture=fwrite($fichier_content_xml,'<table:table-cell table:style-name="ce8"/>');
@@ -407,24 +458,76 @@ if (!checkAccess()) {
 			
 	
 			set_time_limit(3000);
-			//require_once("ss_zip.class.php");
-			require_once("../lib/ss_zip.class.php");
+			if(file_exists("../lib/ss_zip.class.php")){
+				//require_once("ss_zip.class.php");
+				require_once("../lib/ss_zip.class.php");
 		
-			$zip= new ss_zip('',6);
-			//$zip->add_file('sxc/content.xml');
-			//$zip->add_file("ods/content.xml",'content.xml');
-			$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
-			$zip->add_file('ods/meta.xml','meta.xml');
-			$zip->add_file('ods/mimetype','mimetype');
-			$zip->add_file('ods/settings.xml','settings.xml');
-			$zip->add_file('ods/styles.xml','styles.xml');
-			$zip->add_file('ods/META-INF/manifest.xml','META-INF/manifest.xml');
-			//$zip->save("ods/$fichier_liste.zip");
-			$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
+				$zip= new ss_zip('',6);
+				//$zip->add_file('sxc/content.xml');
+				//$zip->add_file("ods/content.xml",'content.xml');
+				$zip->add_file("../temp/".$user_temp_directory."/content.xml",'content.xml');
+				$zip->add_file('ods/meta.xml','meta.xml');
+				$zip->add_file('ods/mimetype','mimetype');
+				$zip->add_file('ods/settings.xml','settings.xml');
+				$zip->add_file('ods/styles.xml','styles.xml');
+				$zip->add_file('ods/META-INF/manifest.xml','META-INF/manifest.xml');
+				//$zip->save("ods/$fichier_liste.zip");
+				$zip->save("../temp/".$user_temp_directory."/$fichier_liste.zip");
 	
-			//rename("ods/$fichier_liste.zip","ods/$fichier_liste.ods");
-			rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
-	
+				//rename("ods/$fichier_liste.zip","ods/$fichier_liste.ods");
+				rename("../temp/".$user_temp_directory."/$fichier_liste.zip","../temp/".$user_temp_directory."/$fichier_liste.ods");
+			}
+			else {
+
+				$path = path_niveau();
+				$chemin_temp = $path."temp/".get_user_temp_directory()."/";
+
+				if (!defined('PCLZIP_TEMPORARY_DIR') || constant('PCLZIP_TEMPORARY_DIR')!=$chemin_temp) {
+					@define( 'PCLZIP_TEMPORARY_DIR', $chemin_temp);
+				}
+
+				$nom_fic=$fichier_liste.".ods";
+				$chemin_stockage = $chemin_temp."/".$nom_fic;
+				$chemin_modele_ods='ods';
+
+				$dossier_a_traiter=$chemin_temp."liste_options_".strftime("%Y%m%d%H%M%S");
+
+				@mkdir($dossier_a_traiter);
+				copy("../temp/".$user_temp_directory."/content.xml", $dossier_a_traiter."/content.xml");
+
+				@mkdir($dossier_a_traiter."/META-INF");
+
+				$tab_fich_tmp=array('META-INF/manifest.xml', 'settings.xml', 'meta.xml', 'mimetype', 'styles.xml');
+				for($loop=0;$loop<count($tab_fich_tmp);$loop++) {
+					copy($chemin_modele_ods.'/'.$tab_fich_tmp[$loop], $dossier_a_traiter."/".$tab_fich_tmp[$loop]);
+				}
+
+				require_once($path.'lib/pclzip.lib.php');
+
+				if ($chemin_stockage !='') {
+					if(file_exists("$chemin_stockage")) {unlink("$chemin_stockage");}
+
+					//echo "\$chemin_stockage=$chemin_stockage<br />";
+					//echo "\$dossier_a_traiter=$dossier_a_traiter<br />";
+
+					$archive = new PclZip($chemin_stockage);
+					$v_list = $archive->create($dossier_a_traiter,
+						  PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
+						  PCLZIP_OPT_ADD_PATH, '');
+
+					if ($v_list == 0) {
+						echo "<p style='color:red'>Erreur : ".$archive->errorInfo(TRUE)."</p>";
+					}
+					/*
+					else {
+						$msg="Archive zip crÃ©Ã©e&nbsp;: <a href='$chemin_stockage'>$chemin_stockage</a>";
+					}
+					*/
+
+					deltree($dossier_a_traiter);
+				}
+			}
+
 			//echo "<a href='ods/".$fichier_liste.".ods'>$fichier_liste.ods</a>\n";
 			//echo "<a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods'>$fichier_liste.ods</a>\n";
 			echo "<p>Fichier&nbsp;: <a href='../temp/".$user_temp_directory."/".$fichier_liste.".ods' onclick=\"setTimeout('self.close()',3000);return true;\">$fichier_liste.ods</a></p>\n";

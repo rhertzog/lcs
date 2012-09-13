@@ -1,6 +1,5 @@
 <?php
 /*
- *  $Id: impression_avis.php 6653 2011-03-11 17:26:42Z eabgrall $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -42,7 +41,7 @@ if (!checkAccess()) {
 }
 //**************** EN-TETE *****************
 $titre_page = "Impression des avis du conseil de classe";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //debug_var();
@@ -51,19 +50,19 @@ $id_liste_periodes=isset($_POST['id_liste_periodes']) ? $_POST["id_liste_periode
 
 // On teste si un professeur peut saisir les avis
 if (($_SESSION['statut'] == 'professeur') and getSettingValue("GepiRubConseilProf")!='yes') {
-   die("Droits insuffisants pour effectuer cette opération");
+   die("Droits insuffisants pour effectuer cette opÃ©ration");
 }
 
-// On teste si le service scolarité peut saisir les avis
+// On teste si le service scolaritÃ© peut saisir les avis
 if (($_SESSION['statut'] == 'scolarite') and getSettingValue("GepiRubConseilScol")!='yes') {
-   die("Droits insuffisants pour effectuer cette opération");
+   die("Droits insuffisants pour effectuer cette opÃ©ration");
 }
 
 echo "<p class=bold><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
-echo " | <a href='../impression/parametres_impression_pdf_avis.php'>Régler les paramètres du PDF</a>";
+echo " | <a href='../impression/parametres_impression_pdf_avis.php'>RÃ©gler les paramÃ¨tres du PDF</a>";
 echo "</p>\n";
 
-if ($_SESSION['statut'] == 'scolarite') { // Scolarite
+if (($_SESSION['statut'] == 'scolarite')||($_SESSION['statut'] == 'cpe')) { // Scolarite ou Cpe
 
 	if (($id_liste_periodes)!=0) {	
 	   //IMPRESSION A LA CHAINE
@@ -73,13 +72,13 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 		  $chaine_periodes .= $id_liste_periodes[$i];
 		  if ($i<$nb_periodes-1) { $chaine_periodes .= ' et ';}
 	   }
-	   $periode = "Période(s) N° ".$chaine_periodes;
+	   $periode = "PÃ©riode(s) NÂ° ".$chaine_periodes;
 		
 		echo "<h3>".$periode;
 		echo "</h3>\n";
 	} else {
 		$periode="";
-		echo "<h3>Choix de la période : ";
+		echo "<h3>Choix de la pÃ©riode : ";
 		echo "</h3>\n";
 	}
 
@@ -88,29 +87,29 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 	echo "<fieldset>\n";
 
 	if ($id_liste_periodes == 0) {
-		echo "<legend>Dans un premier temps, sélectionnez la (ou les) périodes pour lesquelles vous souhaitez imprimer les avis</legend>\n";
+		echo "<legend>Dans un premier temps, sÃ©lectionnez la (ou les) pÃ©riodes pour lesquelles vous souhaitez imprimer les avis</legend>\n";
 		echo "<form method=\"post\" action=\"impression_avis.php\" name=\"imprime_serie\">\n";
 		$requete_periode = "SELECT DISTINCT `num_periode` FROM `periodes`";
 		$resultat_periode = mysql_query($requete_periode) or die('Erreur SQL !'.$requete_periode.'<br />'.mysql_error());
 		echo "<select id='id_liste_periodes' name='id_liste_periodes[]' multiple='yes' size='4'>\n";
-		echo "		<optgroup label=\"-- Les périodes --\">\n";
+		echo "		<optgroup label=\"-- Les pÃ©riodes --\">\n";
 		While ($data_periode = mysql_fetch_array ($resultat_periode)) {
 			echo "		<option value=\"";
 			echo $data_periode['num_periode'];
 			echo "\">";
-			echo "Période N°".$data_periode['num_periode'];
+			echo "PÃ©riode NÂ°".$data_periode['num_periode'];
 			echo "</option>\n";
 		}
 		echo "		</optgroup>\n";
 		echo "	</select>\n";	
-		echo "<br />Remarque : si vous sélectionnez plusieurs périodes, les données seront triées par élève et par période pour chaque classe";		
-		echo "<br /><br /> <input value=\"Valider la période\" name=\"Valider\" type=\"submit\" />\n<br />\n";			
+		echo "<br />Remarque : si vous sÃ©lectionnez plusieurs pÃ©riodes, les donnÃ©es seront triÃ©es par Ã©lÃ¨ve et par pÃ©riode pour chaque classe";		
+		echo "<br /><br /> <input value=\"Valider la pÃ©riode\" name=\"Valider\" type=\"submit\" />\n<br />\n";			
 		echo "</form>\n";
 	} else {
-		echo "<legend>Puis, pour les périodes choisies, séléctionnez la (ou les) classe(s) pour lesquelles vous souhaitez imprimer les avis.</legend>\n";
+		echo "<legend>Puis, pour les pÃ©riodes choisies, sÃ©lÃ©ctionnez la (ou les) classe(s) pour lesquelles vous souhaitez imprimer les avis.</legend>\n";
 		echo "<form method=\"post\" action=\"../impression/avis_pdf.php\" target='_blank' name=\"avis_pdf\">\n";
 		
-		//passage des paramètres de la période dans la session.
+		//passage des paramÃ¨tres de la pÃ©riode dans la session.
 		$_SESSION['id_liste_periodes']=NULL;
 		
 		if ($id_liste_periodes != 0) {
@@ -121,12 +120,22 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 		echo "<br />\n";
 
 		echo "<select id='liste_classes' name='id_liste_classes[]' multiple='yes' size='5'>\n";
-			if($_SESSION['statut']=='scolarite'){ //n'affiche que les classes du profil scolarité
+			if($_SESSION['statut']=='scolarite'){ //n'affiche que les classes du profil scolaritÃ©
 				$login_scolarite = $_SESSION['login'];
 				$requete_classe = "SELECT `periodes`.`id_classe`, `classes`.`classe`, `classes`.`nom_complet` , jsc.login, jsc.id_classe
 								FROM `periodes`, `classes` , `j_scol_classes` jsc
 								WHERE (jsc.login='$login_scolarite'
 								AND jsc.id_classe=classes.id
+								AND `periodes`.`num_periode` = ".$id_la_premiere_periode."
+								AND `classes`.`id` = `periodes`.`id_classe`)
+								ORDER BY `nom_complet` ASC";
+			}
+			elseif(($_SESSION['statut']=='cpe')&&(!getSettingAOui('GepiRubConseilCpeTous'))) { //n'affiche que les classes du profil scolaritÃ©
+				$requete_classe = "SELECT DISTINCT `periodes`.`id_classe`, `classes`.`classe`, `classes`.`nom_complet` , jecpe.cpe_login
+								FROM `periodes`, `classes` , `j_eleves_cpe` jecpe, j_eleves_classes jec
+								WHERE (jecpe.cpe_login='".$_SESSION['login']."'
+								AND jec.id_classe=classes.id
+								AND jec.login=jecpe.e_login
 								AND `periodes`.`num_periode` = ".$id_la_premiere_periode."
 								AND `classes`.`id` = `periodes`.`id_classe`)
 								ORDER BY `nom_complet` ASC";
@@ -156,15 +165,15 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 	
 	echo "<h3>Liste des classes : </h3>\n"; //modele imprime PDF
 	
-	// Pourle compte scolarite, possibilité d'imprimer les avis en synthèse (pour ses classes)
-	echo "<p>Séléctionnez la classe et la période pour lesquels vous souhaitez imprimer les avis :</p>\n";
+	// Pourle compte scolarite, possibilitÃ© d'imprimer les avis en synthÃ¨se (pour ses classes)
+	echo "<p>SÃ©lÃ©ctionnez la classe et la pÃ©riode pour lesquels vous souhaitez imprimer les avis :</p>\n";
 
 	$sql = "SELECT DISTINCT c.* FROM classes c, periodes p, j_scol_classes jsc WHERE p.id_classe = c.id  AND jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe";
 	$result_classes=mysql_query($sql);
 	$nb_classes = mysql_num_rows($result_classes);
 
 	if(mysql_num_rows($result_classes)==0){
-		echo "<p>Il semble qu'aucune classe n'ait encore été créée.</p>\n";
+		echo "<p>Il semble qu'aucune classe n'ait encore Ã©tÃ© crÃ©Ã©e.</p>\n";
 	}
 	else {
 		$nb_classes=mysql_num_rows($result_classes);
@@ -188,7 +197,7 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 			$res_per=mysql_query($sql);
 
 			if(mysql_num_rows($res_per)==0){
-				echo "<p>ERREUR: Aucune période n'est définie pour la classe $lig_class->classe</p>\n";
+				echo "<p>ERREUR: Aucune pÃ©riode n'est dÃ©finie pour la classe $lig_class->classe</p>\n";
 				echo "</body></html>\n";
 				die();
 			}
@@ -209,20 +218,15 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
 		echo "</tr>\n";
 		echo "</table>\n";
 	}
-
-
-
-// Module toutes les classes scolarité
-
-} else { // appel pour un prof
+} elseif($_SESSION['statut']=='professeur') { // appel pour un prof
     echo "<br />";
     $call_prof_classe = mysql_query("SELECT DISTINCT c.* FROM classes c, j_eleves_professeurs s, j_eleves_classes cc WHERE (s.professeur='" . $_SESSION['login'] . "' AND s.login = cc.login AND cc.id_classe = c.id)");
     $nombre_classe = mysql_num_rows($call_prof_classe);
     if ($nombre_classe == "0") {
-        echo "Vous n'êtes pas ".getSettingValue("gepi_prof_suivi")." ! Il ne vous revient donc pas d'imprimer les avis de conseil de classe.";
+        echo "Vous n'Ãªtes pas ".getSettingValue("gepi_prof_suivi")." ! Il ne vous revient donc pas d'imprimer les avis de conseil de classe.";
     } else {
         $j = "0";
-        echo "<p>Vous êtes ".getSettingValue("gepi_prof_suivi")." dans la classe de :</p>";
+        echo "<p>Vous Ãªtes ".getSettingValue("gepi_prof_suivi")." dans la classe de :</p>";
         while ($j < $nombre_classe) {
             $id_classe = mysql_result($call_prof_classe, $j, "id");
             $classe_suivi = mysql_result($call_prof_classe, $j, "classe");
@@ -240,6 +244,8 @@ if ($_SESSION['statut'] == 'scolarite') { // Scolarite
             $j++;
         }
     }
+} else {
+	echo "<p style='color:red'>Vous n'avez aucun droit ici.</p>\n";
 }
 require("../lib/footer.inc.php");
 ?>

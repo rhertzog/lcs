@@ -1,7 +1,6 @@
 <?php
 /**
  *
- * @version $Id: visu_notification.php 8392 2011-09-30 16:15:02Z jjacquard $
  *
  * Copyright 2010 Josselin Jacquard
  *
@@ -25,7 +24,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Initialisation des feuilles de style aprËs modification pour amÈliorer l'accessibilitÈ
+// Initialisation des feuilles de style apr√®s modification pour am√©liorer l'accessibilit√©
 $accessibilite="y";
 
 // Initialisations files
@@ -53,16 +52,16 @@ if ($utilisateur == null) {
 	die();
 }
 
-//On vÈrifie si le module est activÈ
+//On v√©rifie si le module est activ√©
 if (getSettingValue("active_module_absence")!='2') {
-    die("Le module n'est pas activÈ.");
+    die("Le module n'est pas activ√©.");
 }
 
 if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") {
     die("acces interdit");
 }
 
-//rÈcupÈration des paramËtres de la requËte
+//r√©cup√©ration des param√®tres de la requ√®te
 $id_notification = isset($_POST["id_notification"]) ? $_POST["id_notification"] :(isset($_GET["id_notification"]) ? $_GET["id_notification"] :(isset($_SESSION["id_notification"]) ? $_SESSION["id_notification"] : NULL));
 if (isset($id_notification) && $id_notification != null) $_SESSION['id_notification'] = $id_notification;
 $menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : NULL);
@@ -78,7 +77,7 @@ if(!$menu){
 }
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 if(!$menu){
@@ -99,7 +98,7 @@ if ($notification == null) {
     $criteria->setLimit(1);
     $notification = $utilisateur->getAbsenceEleveNotifications($criteria)->getFirst();
     if ($notification == null) {
-	echo "Notification non trouvÈe";
+	echo "Notification non trouv√©e";
 	die();
     }
 }
@@ -107,7 +106,7 @@ if ($notification == null) {
 echo '<table class="normal">';
 echo '<tbody>';
 echo '<tr><td>';
-echo 'N∞ de notification';
+echo 'N¬∞ de notification';
 echo '</td><td>';
 echo $notification->getPrimaryKey();
 if ($notification->getAbsenceEleveTraitement() == null) {
@@ -159,7 +158,6 @@ if ($notification->getAbsenceEleveTraitement() != null) {
 	    echo $saisie->getEleve()->getCivilite().' '.$saisie->getEleve()->getNom().' '.$saisie->getEleve()->getPrenom();
 	    if ((getSettingValue("active_module_trombinoscopes")=='y') && $saisie->getEleve() != null) {
 		$nom_photo = $saisie->getEleve()->getNomPhoto(1);
-		//$photos = "../photos/eleves/".$nom_photo;
 		$photos = $nom_photo;
 		//if (($nom_photo == "") or (!(file_exists($photos)))) {
 		if (($nom_photo == NULL) or (!(file_exists($photos)))) {
@@ -170,7 +168,7 @@ if ($notification->getAbsenceEleveTraitement() != null) {
 	    }
 	    if ($utilisateur->getAccesFicheEleve($saisie->getEleve())) {
 		//echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' target='_blank'>";
-		echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."' >";
+		echo "<a href='../eleves/visu_eleve.php?ele_login=".$saisie->getEleve()->getLogin()."&amp;onglet=responsables&amp;quitter_la_page=y' target='_blank' >";
 		echo ' (voir fiche)';
 		echo "</a>";
 	    }
@@ -243,6 +241,8 @@ foreach ($notification->getResponsableEleves() as $responsable) {
     echo '<div>';
     //$responsable = new ResponsableEleve();
     echo $responsable->getCivilite().' '.strtoupper($responsable->getNom()).' '.$responsable->getPrenom();
+echo ' - Courriel :';
+echo $notification->getEmail();
     if ($notification->getModifiable()) {
 	echo '<div style="float: right;">';
 	echo '<form method="post" action="enregistrement_modif_notification.php">';
@@ -261,21 +261,32 @@ foreach ($notification->getResponsableEleves() as $responsable) {
 	echo '<br/>';
     }
 }
+$autresResponsablesInfos=$notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies();
+$nombreResponsablesEligible=0;
+foreach ($autresResponsablesInfos as $responsableInfos) {
+    if ($responsableInfos->getNiveauResponsabilite() == '0') {
+        continue;
+    }
+    $nombreResponsablesEligible++;
+}
 if ($notification->getModifiable()) {
     if ($notification->getAbsenceEleveTraitement() != null) {
-	if ($notification->getResponsableEleves()->count() != $notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies()->count()) {
+	if ($notification->getResponsableEleves()->count() != $nombreResponsablesEligible) {
 	    echo '<div>';
 	    echo '<form method="post" action="enregistrement_modif_notification.php">';
-        echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
+            echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
 	    echo '<p>';
 	    echo '<input type="hidden" name="id_notification" value="'.$notification->getPrimaryKey().'"/>';
 	    echo '<input type="hidden" name="modif" value="ajout_responsable"/>';
 	    echo ("<select name=\"pers_id\">");
 	    foreach ($notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies() as $responsable_information) {
-		$responsable = $responsable_information->getResponsableEleve();
-		echo '<option value="'.$responsable->getPersId().'"';
+		if($responsable_information->getNiveauResponsabilite()=='0'){
+                    continue;
+                }
+                $responsable = $responsable_information->getResponsableEleve();
+		echo '<option value="'.$responsable->getResponsableEleveId().'"';
 		echo ">".$responsable->getCivilite().' '.strtoupper($responsable->getNom()).' '.$responsable->getPrenom()
-			.' (Resp '.$responsable_information->getRespLegal().")</option>\n";
+			.' (Resp '.$responsable_information->getNiveauResponsabilite().")</option>\n";
 	    }
 	    echo "</select>";
 	    echo '<button type="submit">Ajouter</button>';
@@ -286,6 +297,24 @@ if ($notification->getModifiable()) {
     }
 }
 echo '</td></tr>';
+
+    if ($notification->getAbsenceEleveTraitement() != null) {
+    if ($notification->getResponsableEleves()->count() != $nombreResponsablesEligible) {
+        echo '<tr><td>';
+        echo 'Notifications multiples : ';
+        echo '</td><td>';
+        echo '<div>';
+        echo '<form method="post" action="enregistrement_modif_notification.php">';
+        echo '<input type="hidden" name="menu" value="' . $menu . '"/>';
+        echo '<input type="hidden" name="id_notification" value="' . $notification->getPrimaryKey() . '"/>';
+        echo '<input type="hidden" name="modif" value="duplication_par_responsable"/>';
+        echo '<button type="submit">Cr√©er la m√™me notification pour les autres responsables 1 ou 2 </button>';
+        echo '</form>';
+        echo '</div>';
+        echo '</td></tr>';
+    }
+}
+
 
 if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL) {
     echo '<tr><td>';
@@ -312,7 +341,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_N
 			    echo " selected='selected' ";
 			    $selected = true;
 			}
-			echo ">".$responsable->getMel().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getRespLegal().")</option>\n";
+			echo ">".$responsable->getMel().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getNiveauResponsabilite().")</option>\n";
 		    }
 		}
 	}
@@ -368,7 +397,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_N
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelPort().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getRespLegal()." ; Tel portable)</option>\n";
+		echo ">".$responsable->getTelPort().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getNiveauResponsabilite()." ; Tel portable)</option>\n";
 	    }
 
 	    if ($responsable->getTelPers() != null || $responsable->getTelPers() != '') {
@@ -377,7 +406,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_N
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelPers().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getRespLegal()." ; Tel personnel)</option>\n";
+		echo ">".$responsable->getTelPers().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getNiveauResponsabilite()." ; Tel personnel)</option>\n";
 	    }
 
 	    if ($responsable->getTelProf() != null || $responsable->getTelProf() != '') {
@@ -386,7 +415,7 @@ if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_N
 		    echo " selected='selected' ";
 		    $selected = true;
 		}
-		echo ">".$responsable->getTelProf().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getRespLegal()." ; Tel professionnel)</option>\n";
+		echo ">".$responsable->getTelProf().' ('.$responsable->getCivilite().' '.$responsable->getNom().' ; Resp '.$responsable_information->getNiveauResponsabilite()." ; Tel professionnel)</option>\n";
 	    }
 	}
 	if (!$selected) {
@@ -416,37 +445,37 @@ if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_N
     echo '</td></tr>';
 }
 
-// 	Affichage des adresses pour l'envoi du SMS (permettre de savoir ‡ quel responsable l'envoyer selon l'adresse)
+// 	Affichage des adresses pour l'envoi du SMS (permettre de savoir √† quel responsable l'envoyer selon l'adresse)
 if (($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER) ||
     ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_SMS))  {
     echo '<tr><td>';
     echo 'Adresse : ';
     echo '</td><td>';
-    if ($notification->getResponsableEleveAdresse() != null) {
-	//pour information : Nom du ou des responsables sÈlectionnÈs
+    if ($notification->getAdresse() != null) {
+	//pour information : Nom du ou des responsables s√©lectionn√©s
 	echo 'De : <i> ';
-	echo $notification->getResponsableEleveAdresse()->getDescriptionHabitant();
+	echo $notification->getAdresse()->getDescriptionHabitant();
 	echo '</i><br/><br/>';
-	if ($notification->getResponsableEleveAdresse()->getAdr1() != null && $notification->getResponsableEleveAdresse()->getAdr1() != '') {
-	    echo $notification->getResponsableEleveAdresse()->getAdr1();
+	if ($notification->getAdresse()->getAdr1() != null && $notification->getAdresse()->getAdr1() != '') {
+	    echo $notification->getAdresse()->getAdr1();
 	    echo '<br/>';
 	}
-	if ($notification->getResponsableEleveAdresse()->getAdr2() != null && $notification->getResponsableEleveAdresse()->getAdr2() != '') {
-	    echo $notification->getResponsableEleveAdresse()->getAdr2();
+	if ($notification->getAdresse()->getAdr2() != null && $notification->getAdresse()->getAdr2() != '') {
+	    echo $notification->getAdresse()->getAdr2();
 	    echo '<br/>';
 	}
-	if ($notification->getResponsableEleveAdresse()->getAdr3() != null && $notification->getResponsableEleveAdresse()->getAdr3() != '') {
-	    echo $notification->getResponsableEleveAdresse()->getAdr3();
+	if ($notification->getAdresse()->getAdr3() != null && $notification->getAdresse()->getAdr3() != '') {
+	    echo $notification->getAdresse()->getAdr3();
 	    echo '<br/>';
 	}
-	if ($notification->getResponsableEleveAdresse()->getAdr4() != null && $notification->getResponsableEleveAdresse()->getAdr4() != '') {
-	    echo $notification->getResponsableEleveAdresse()->getAdr4();
+	if ($notification->getAdresse()->getAdr4() != null && $notification->getAdresse()->getAdr4() != '') {
+	    echo $notification->getAdresse()->getAdr4();
 	    echo '<br/>';
 	}
-	echo $notification->getResponsableEleveAdresse()->getCp().' '.$notification->getResponsableEleveAdresse()->getCommune();
-	if ($notification->getResponsableEleveAdresse()->getPays() != null && $notification->getResponsableEleveAdresse()->getPays() != '' && $notification->getResponsableEleveAdresse()->getPays() != getsettingvalue('gepiSchoolPays')) {
+	echo $notification->getAdresse()->getCp().' '.$notification->getAdresse()->getCommune();
+	if ($notification->getAdresse()->getPays() != null && $notification->getAdresse()->getPays() != '' && $notification->getAdresse()->getPays() != getsettingvalue('gepiSchoolPays')) {
 	    echo '<br/>';
-	    echo $notification->getResponsableEleveAdresse()->getPays();
+	    echo $notification->getAdresse()->getPays();
 	}	
     }
 
@@ -461,16 +490,16 @@ if (($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_
 	$adresse_col = new PropelCollection();
 	if ($notification->getAbsenceEleveTraitement() != null) {
 	    foreach ($notification->getAbsenceEleveTraitement()->getResponsablesInformationsSaisies() as $responsable_information) {
-		if ($responsable_information->getResponsableEleve() != null && $responsable_information->getResponsableEleve()->getResponsableEleveAdresse() != null) {
-		     $adresse_col->add($responsable_information->getResponsableEleve()->getResponsableEleveAdresse());
+		if ($responsable_information->getResponsableEleve() != null && $responsable_information->getResponsableEleve()->getAdresse() != null) {
+		     $adresse_col->add($responsable_information->getResponsableEleve()->getAdresse());
 		}
 	    }
 	}
 	foreach ($adresse_col as $responsable_addresse) {
-	    //$responsable_addresse = new ResponsableEleveAdresse();
+	    //$responsable_addresse = new Adresse();
 	    echo '<option value="'.$responsable_addresse->getPrimaryKey().'"';
-	    if ($notification->getResponsableEleveAdresse() != null &&
-		    $responsable_addresse->getPrimaryKey() == $notification->getResponsableEleveAdresse()->getPrimaryKey()) {
+	    if ($notification->getAdresse() != null &&
+		    $responsable_addresse->getPrimaryKey() == $notification->getAdresse()->getPrimaryKey()) {
 		echo " selected='selected' ";
 	    }
 	    echo ">";
@@ -511,7 +540,7 @@ if (($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_
 echo '<tr><td>';
 echo 'Statut : ';
 echo '</td><td>';
-//on ne modifie manuellement le statut si le type est courrier ou communication tÈlÈphonique
+//on ne modifie manuellement le statut si le type est courrier ou communication t√©l√©phonique
 if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER || $notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COMMUNICATION_TELEPHONIQUE) {
     echo '<form method="post" action="enregistrement_modif_notification.php">';
     echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
@@ -560,7 +589,7 @@ echo '</td></tr>';
 
 
 echo '<tr><td>';
-echo 'CrÈÈ par : ';
+echo 'Cr√©√© par : ';
 echo '</td><td>';
 if ($notification->getUtilisateurProfessionnel() != null) {
     echo $notification->getUtilisateurProfessionnel()->getCivilite();
@@ -577,14 +606,14 @@ if ($notification->getdateEnvoi() != null) {
     echo '</td></tr>';
 } else {
     echo '<tr><td>';
-    echo 'CrÈÈ le : ';
+    echo 'Cr√©√© le : ';
     echo '</td><td>';
     echo (strftime("%a %d/%m/%Y %H:%M", $notification->getCreatedAt('U')));
     echo '</td></tr>';
 
     if ($notification->getCreatedAt() != $notification->getUpdatedAt()) {
 	echo '<tr><td>';
-	echo 'ModifiÈe le : ';
+	echo 'Modifi√©e le : ';
 	echo '</td><td>';
 	echo (strftime("%a %d/%m/%Y %H:%M", $notification->getUpdatedAt('U')));
 	echo '</td></tr>';
@@ -601,17 +630,43 @@ if ($notification->getTypeNotification() != AbsenceEleveNotificationPeer::TYPE_N
     echo '<p>';
     echo '<input type="hidden" name="id_notification" value="'.$notification->getPrimaryKey().'"/>';
     if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER) {
-	echo '<button type="submit" onclick=\'window.open("generer_notification.php?id_notification='.$notification->getPrimaryKey().'"); setTimeout("window.location = \"visu_notification.php\"", 1000); return false;\'>GÈnerer la notification</button>';
+	echo '<button type="submit" onclick=\'window.open("generer_notification.php?id_notification='.$notification->getPrimaryKey().'"); setTimeout("window.location = \"visu_notification.php\"", 1000); return false;\'>G√©nerer la notification</button>';
     } else {
 	if ($notification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL && ($notification->getEmail() == null || $notification->getEmail() == '')) {
 	    //on affiche pas le bouton de generation car l'adresse n'est pas renseignee
 	} else {
-	    echo '<button type="submit">GÈnÈrer la notification</button>';
+	    echo '<button type="submit">G√©n√©rer la notification</button>';
 	}
     }
     echo '</p>';
-    echo '</form>';
+    echo '</form>';        
     echo '</td></tr>';
+}
+$idTraitement = $notification->getATraitementId();
+$autresNotifications = AbsenceEleveNotificationQuery::create()->filterByATraitementId($idTraitement)
+                ->filterById($notification->getId(), ModelCriteria::NOT_EQUAL)->find();
+if (!$autresNotifications->isEmpty()) {
+    $idNotifications = Null;
+    foreach ($autresNotifications as $autreNotification) {
+        if ($autreNotification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_COURRIER ||
+                ($autreNotification->getTypeNotification() == AbsenceEleveNotificationPeer::TYPE_NOTIFICATION_EMAIL && ($autreNotification->getEmail() != null || $autreNotification->getEmail() != ''))) {
+            $idNotifications[].=$autreNotification->getId();
+        }
+    }
+    if (!is_null($idNotifications)) {
+        $idNotifications[].=$notification->getId();
+        echo '<tr><td colspan="2" style="text-align : center;">';
+        echo '<form method="post" action="generer_notifications_par_lot.php">';
+        echo '<input type="hidden" name="menu" value="' . $menu . '"/>';
+        echo '<p>';
+        foreach ($idNotifications as $id) {
+            echo '<input type="hidden" name="select_notification[]" value="' . $id . '"/>';
+        }
+        echo '<button type="submit">G√©n√©rer par lot toutes les notifications communes √† ce traitement</button>';
+        echo '</p>';
+        echo '</form>';
+        echo '</td></tr>';
+    }
 }
 if ($notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVOI_ETAT_INITIAL) {
     echo '<tr><td colspan="2" style="text-align : center;">';
@@ -620,12 +675,25 @@ if ($notification->getStatutEnvoi() != AbsenceEleveNotificationPeer::STATUT_ENVO
 	echo '<p>';
     echo '<input type="hidden" name="id_notification" value="'.$notification->getPrimaryKey().'"/>';
     echo '<input type="hidden" name="modif" value="duplication"/>';
-    echo '<button type="submit">CrÈer une autre notification</button>';
+    echo '<button type="submit">Cr√©er une autre notification</button>';
 	echo '</p>';
     echo '</form>';
     echo '</td></tr>';
 }
-
+if ($notification->getModifiable()) {
+    if ($notification->getAbsenceEleveTraitement() != null) {
+        echo '<tr><td colspan="2" style="text-align : center;">';
+        echo '<form method="post" action="enregistrement_modif_notification.php">';
+        echo '<input type="hidden" name="menu" value="' . $menu . '"/>';
+        echo '<p>';
+        echo '<input type="hidden" name="id_notification" value="' . $notification->getPrimaryKey() . '"/>';
+        echo '<input type="hidden" name="modif" value="supprimer"/>';
+        echo '<button type="submit">Supprimer la notification</button>';
+        echo '</p>';
+        echo '</form>';
+        echo '</td></tr>';
+    }
+}
 echo '</tbody>';
 
 echo '</table>';
@@ -643,7 +711,7 @@ function redimensionne_image_petit($photo)
     // largeur et hauteur de l'image d'origine
     $largeur = $info_image[0];
     $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum ‡ afficher
+    // largeur et/ou hauteur maximum √† afficher
              $taille_max_largeur = 35;
              $taille_max_hauteur = 35;
 
@@ -652,7 +720,7 @@ function redimensionne_image_petit($photo)
      $ratio_h = $hauteur / $taille_max_hauteur;
      $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
 
-    // dÈfinit largeur et hauteur pour la nouvelle image
+    // d√©finit largeur et hauteur pour la nouvelle image
      $nouvelle_largeur = $largeur / $ratio;
      $nouvelle_hauteur = $hauteur / $ratio;
 

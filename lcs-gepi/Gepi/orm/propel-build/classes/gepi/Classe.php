@@ -16,26 +16,6 @@
 class Classe extends BaseClasse {
 
 	/**
-	 * Renvoi sous forme d'une collection la liste des groupes d'une classe.
-	 *
-	 * @return     PropelObjectCollection Groupe[]
-	 */
-	public function getGroupes() {
-		$groupes = new PropelObjectCollection();
-		if ($this->collJGroupesClassess !== null) {
-		    $collJGroupesClasses = $this->collJGroupesClassess;
-		} else {
-		    $collJGroupesClasses = $this->getJGroupesClassessJoinGroupe();
-		}
-		foreach($collJGroupesClasses as $ref) {
-		    if ($ref->getGroupe() != null) {
-			$groupes->append($ref->getGroupe());
-		    }
-		}
-		return $groupes;
-	}
-
-	/**
 	 *
 	 * Retourne les emplacements de cours de l'heure temps reel. retourne une collection vide si pas pas de cours actuel
 	 *
@@ -92,10 +72,10 @@ class Classe extends BaseClasse {
 
 	/**
 	 *
-	 * Retourne tous les emplacements de cours pour la periode pr�cis�e du calendrier.
+	 * Retourne tous les emplacements de cours pour la periode précisée du calendrier.
 	 * On recupere aussi les emplacements dont la periode n'est pas definie ou vaut 0.
 	 *
-	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonn�e chronologiquement
+	 * @return PropelObjectCollection EdtEmplacementCours une collection d'emplacement de cours ordonnée chronologiquement
 	 */
 	public function getEdtEmplacementCourssPeriodeCalendrierActuelle($v = 'now'){
 		if ( getSettingValue("autorise_edt_tous") != 'y') {
@@ -124,9 +104,9 @@ class Classe extends BaseClasse {
 
 	
   public function getEctsGroupesByCategories() {
-      // On commence par récupérer tous les groupes
+      // On commence par rÃ©cupÃ©rer tous les groupes
       $groupes = $this->getGroupes();
-      // Ensuite, il nous faut les catégories.
+      // Ensuite, il nous faut les catÃ©gories.
       $categories = array();
       $c = new Criteria();
       $c->add(JCategoriesMatieresClassesPeer::CLASSE_ID,$this->getId());
@@ -135,7 +115,7 @@ class Classe extends BaseClasse {
           $cat = $j->getCategorieMatiere();
           $categories[$cat->getId()] = array(0 => $cat, 1 => array());
       }
-      // Maintenant, on mets tout ça ensemble
+      // Maintenant, on mets tout Ã§a ensemble
       foreach($groupes as $groupe) {
           if ($groupe->allowsEctsCredits($this->getId())) {
               $cat = $groupe->getCategorieMatiere($this->getId());
@@ -150,8 +130,8 @@ class Classe extends BaseClasse {
           }
       }
 
-      // On renvoie un table multi-dimensionnel, qui contient les catégories
-      // dans le bon ordre, et les groupes sous chaque catégorie.
+      // On renvoie un table multi-dimensionnel, qui contient les catÃ©gories
+      // dans le bon ordre, et les groupes sous chaque catÃ©gorie.
       return $categories;
   }
 
@@ -195,12 +175,12 @@ class Classe extends BaseClasse {
 
 	/**
 	 *
-	 * Ajoute un eleve a une classe. Si la periode de note est nulle, cela ajoute l'eleve la periode actuelle
+	 * Ajoute un eleve a une classe et sauve la relation. Si la periode de note est nulle, cela ajoute l'eleve la periode actuelle
 	 *
 	 * @param      PropelPDO $con (optional) The PropelPDO connection to use.
 	 */
 	public function addEleve(Eleve $eleve, $num_periode_notes = null) {
-		if ($eleve->getIdEleve() == null) {
+		if ($eleve->getId() == null) {
 			throw new PropelException("Eleve id ne doit pas etre null");
 		}
 		if ($num_periode_notes == null) {
@@ -268,8 +248,72 @@ class Classe extends BaseClasse {
 		return null;
 	}
 
+
+	/**
+	 * Retourne la periode de note correspondante à la date donnée en paramètre.
+         * On regarde proritairement les dates de fin des périodes de notes,
+         * puis les renseignements de l'edt.
+         * Si aucune période n'est trouvée on retourne la dernière période ouverte pour l'ordre chronologique,
+         * null sinon
+	 *
+	 * @return     PeriodeNote $periode la periode de la date précisée, ou null si non trouvé
+	 */
+	public function getPeriodeNote($v = 'now') {
+            // we treat '' as NULL for temporal objects because DateTime('') == DateTime('now')
+	    // -- which is unexpected, to say the least.
+	    //$dt = new DateTime();
+	    if ($v === null || $v === '') {
+		    $dt = null;
+	    } elseif ($v instanceof DateTime) {
+		    $dt = clone $v;
+	    } else {
+		    // some string/numeric value passed; we normalize that so that we can
+		    // validate it.
+		    try {
+			    if (is_numeric($v)) { // if it's a unix timestamp
+				    $dt = new DateTime('@'.$v, new DateTimeZone('UTC'));
+				    // We have to explicitly specify and then change the time zone because of a
+				    // DateTime bug: http://bugs.php.net/bug.php?id=43003
+				    $dt->setTimeZone(new DateTimeZone(date_default_timezone_get()));
+			    } else {
+				    $dt = new DateTime($v);
+			    }
+		    } catch (Exception $x) {
+			    throw new PropelException('Error parsing date/time value: ' . var_export($v, true), $x);
+		    }
+	    }
+
+		foreach ($this->getPeriodeNotes() as $periode) {
+		    if ($periode->getDateDebut('U') <= $dt->format('U')
+				    && $periode->getDateFin(null) != null && $periode->getDateFin('U') > $dt->format('U')) {
+                        return $periode;
+                    }
+		}
+
+                //si on est là on a trouvé aucune période renseignée qui convienne. On va regarder l'edt
+		//on verifie si il y a une periode du calendrier avec une periode de note precisee
+		$calendrier_periode = EdtCalendrierPeriodePeer::retrieveEdtCalendrierPeriodeActuelle($dt);
+		if ($calendrier_periode != null && $calendrier_periode->getNumeroPeriode() != null && $calendrier_periode->getNumeroPeriode() != 0) {
+		    $criteria = new Criteria();
+		    $criteria->add(PeriodeNotePeer::NUM_PERIODE,$calendrier_periode->getNumeroPeriode());
+		    $periodes = $this->getPeriodeNotes($criteria);
+		    return $periodes->getFirst();
+		}
+
+                //si on est là on a toujours trouvé aucune période. On renvoi la première période qui peut convenir
+                //et qui n'est pas encore achevée
+		foreach ($this->getPeriodeNotes() as $periode) {
+                    if ($periode->getDateDebut('U') <= $dt->format('U')
+                        && ($periode->getDateFin(null) === null || $periode->getDateFin('U') > $dt->format('U'))) {
+                        return $periode;
+                    }
+		}
+
+                return null;
+	}
+
  	/**
-	 * Retourne la collection de periode de note priv�e a des fins d'optimisation
+	 * Retourne la collection de periode de note privée a des fins d'optimisation
 	 *
 	 * @return     PropelObjectCollection
 	 */
@@ -280,7 +324,7 @@ class Classe extends BaseClasse {
 
         	/**
 	 *
-	 * Renvoi une collection des mefs des eleves de ce groupe. Un seul mef de chaque type sera retourn�.
+	 * Renvoi une collection des mefs des eleves de ce groupe. Un seul mef de chaque type sera retourné.
 	 *
 	 * @periode integer numero de la periode
 	 * @return     PropelObjectCollection Eleves[]

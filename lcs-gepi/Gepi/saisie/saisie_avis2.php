@@ -1,8 +1,7 @@
 <?php
 /*
-* $Id: saisie_avis2.php 7467 2011-07-21 10:18:17Z crob $
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -21,7 +20,7 @@
 * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+// On indique qu'il faut creer des variables non protÃ©gÃ©es (voir fonction cree_variables_non_protegees())
 $variables_non_protegees = 'yes';
 
 // Initialisations files
@@ -47,12 +46,17 @@ if (!checkAccess()) {
 
 // On teste si un professeur peut saisir les avis
 if (($_SESSION['statut'] == 'professeur') and getSettingValue("GepiRubConseilProf")!='yes') {
-die("Droits insuffisants pour effectuer cette opération");
+die("Droits insuffisants pour effectuer cette opÃ©ration");
 }
 
-// On teste si le service scolarité peut saisir les avis
+// On teste si le service scolaritÃ© peut saisir les avis
 if (($_SESSION['statut'] == 'scolarite') and getSettingValue("GepiRubConseilScol")!='yes') {
-die("Droits insuffisants pour effectuer cette opération");
+die("Droits insuffisants pour effectuer cette opÃ©ration");
+}
+
+// On teste si le service cpe peut saisir les avis
+if (($_SESSION['statut'] == 'cpe') and getSettingValue("GepiRubConseilCpe")!='yes' and getSettingValue("GepiRubConseilCpeTous")!='yes') {
+die("Droits insuffisants pour effectuer cette opÃ©ration");
 }
 
 // initialisation
@@ -86,62 +90,79 @@ if (isset($_POST['is_posted'])) {
 
 	if (($periode_num < $nb_periode) and ($periode_num > 0) and ($ver_periode[$periode_num] != "O"))  {
 		$reg = 'yes';
-		// si l'utilisateur n'a pas le statut scolarité, on vérifie qu'il est prof principal de l'élève
-		if (($_SESSION['statut'] != 'scolarite') and ($_SESSION['statut'] != 'secours')) {
+		// si l'utilisateur n'a pas le statut scolaritÃ©, on vÃ©rifie qu'il est prof principal de l'Ã©lÃ¨ve
+		//if (($_SESSION['statut'] != 'scolarite') and ($_SESSION['statut'] != 'secours')) {
+		if ($_SESSION['statut'] == 'professeur') {
 			$test_prof_suivi = sql_query1("select professeur from j_eleves_professeurs
 			where login = '$current_eleve_login' and
 			professeur = '".$_SESSION['login']."' and
 			id_classe = '".$id_classe."'
 			");
 			if ($test_prof_suivi == '-1') {
-				$msg = "Vous n'êtes pas professeur de suivi de cet élève.";
+				$msg = "Vous n'Ãªtes pas professeur de suivi de cet Ã©lÃ¨ve.";
 				$reg = 'no';
 			}
 		}
+		elseif(($_SESSION['statut'] == 'cpe')&&(!getSettingAOui('GepiRubConseilCpeTous'))) {
+			$test_cpe_suivi = sql_query1("select 1=1 from j_eleves_cpe
+			where e_login = '$current_eleve_login' and
+			cpe_login = '".$_SESSION['login']."'
+			");
+			if ($test_cpe_suivi == '-1') {
+				$msg = "Vous n'Ãªtes pas cpe de cet Ã©lÃ¨ve.";
+				$reg = 'no';
+			}
+		}
+
 		//echo "PLOP";
 		if ($reg == 'yes') {
-			$test_eleve_avis_query = mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$periode_num')");
-			$test = mysql_num_rows($test_eleve_avis_query);
-			if ($test != "0") {
-				$sql="UPDATE avis_conseil_classe SET avis='$current_eleve_login_ap',";
-				if(isset($current_eleve_mention)) {$sql.="id_mention='$current_eleve_mention',";}
-				$sql.="statut='' WHERE (login='$current_eleve_login' AND periode='$periode_num')";
-				//echo "$sql<br />";
-				$register = mysql_query($sql);
-			} else {
+
+			$sql="DELETE FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$periode_num');";
+			$menage=mysql_query($sql);
+
+			if(($current_eleve_login_ap!='')||((isset($current_eleve_mention)&&($current_eleve_mention!=0)))) {
 				$sql="INSERT INTO avis_conseil_classe SET login='$current_eleve_login',periode='$periode_num',avis='$current_eleve_login_ap',";
 				if(isset($current_eleve_mention)) {$sql.="id_mention='$current_eleve_mention',";}
 				$sql.="statut=''";
-				//echo "$sql<br />";
 				$register = mysql_query($sql);
-			}
-			if (!$register) {
-				$msg = "Erreur lors de l'enregistrement des données.";
-			} else {
-				$affiche_message = 'yes';             }
+
+				if (!$register) {
+					$msg = "Erreur lors de l'enregistrement des donnÃ©es.";
+				} else {
+					$affiche_message = 'yes';             }
+				}
 			}
 	} else {
-		$msg = "La période sur laquelle vous voulez enregistrer est verrouillée";
+		$msg = "La pÃ©riode sur laquelle vous voulez enregistrer est verrouillÃ©e";
 	}
 
 	if (isset($_POST['ok1']))  {
-		if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours')) {
-			$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
+		if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') or (($_SESSION['statut'] == 'cpe')&&(getSettingAOui('GepiRubConseilCpeTous')))) {
+			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
 			WHERE (
 			c.id_classe='$id_classe' AND
 			c.login = e.login AND
 			c.periode = '".$periode_num."'
-
-			) ORDER BY nom,prenom");
+			) ORDER BY nom,prenom";
+		} elseif($_SESSION['statut'] == 'cpe') {
+			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec, j_eleves_cpe jecpe
+			WHERE (jec.id_classe='$id_classe' AND
+			jec.login = e.login AND
+			jecpe.e_login = jec.login AND
+			jecpe.cpe_login = '".$_SESSION['login']."' AND
+			jec.periode = '".$periode_num."'
+			) ORDER BY nom,prenom";
 		} else {
-			$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
+			$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
 			WHERE (c.id_classe='$id_classe' AND
 			c.login = e.login AND
 			p.login = c.login AND
 			p.professeur = '".$_SESSION['login']."' AND
 			c.periode = '".$periode_num."'
-			) ORDER BY nom,prenom");
+			) ORDER BY nom,prenom";
 		}
+		echo "$sql<br />";
+		$appel_donnees_eleves = mysql_query($sql);
 		$nb_eleve = mysql_num_rows($appel_donnees_eleves);
 		$current_eleve_login = @mysql_result($appel_donnees_eleves, $ind_eleve_login_suiv, "login");
 		$ind_eleve_login_suiv++;
@@ -151,11 +172,11 @@ if (isset($_POST['is_posted'])) {
 	}
 }
 //*******************************************************************************************************
-$message_enregistrement = "Les modifications ont été enregistrées !";
-$themessage = 'Des appréciations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
+$message_enregistrement = "Les modifications ont Ã©tÃ© enregistrÃ©es !";
+$themessage = 'Des apprÃ©ciations ont Ã©tÃ© modifiÃ©es. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
 $titre_page = "Saisie des avis | Saisie";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //debug_var();
@@ -167,11 +188,11 @@ change = 'no';
 </script>
 <?php
 
-// Première étape : la classe est définie, on definit la période
+// PremiÃ¨re Ã©tape : la classe est dÃ©finie, on definit la pÃ©riode
 if (isset($id_classe) and (!isset($periode_num))) {
 	$classe_suivi = sql_query1("SELECT nom_complet FROM classes WHERE id = '".$id_classe."'");
 	echo "<p class=bold><a href=\"saisie_avis.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Mes classes</a></p>\n";
-	echo "<p><b>".$classe_suivi.", choisissez la période : </b></p>\n";
+	echo "<p><b>".$classe_suivi.", choisissez la pÃ©riode : </b></p>\n";
 	include "../lib/periodes.inc.php";
 	$i="1";
 	echo "<ul>\n";
@@ -179,33 +200,33 @@ if (isset($id_classe) and (!isset($periode_num))) {
 		if ($ver_periode[$i] != "O") {
 			echo "<li><a href='saisie_avis2.php?id_classe=".$id_classe."&amp;periode_num=".$i."'>".ucfirst($nom_periode[$i])."</a></li>\n";
 		} else {
-			echo "<li>".ucfirst($nom_periode[$i])." (".$gepiClosedPeriodLabel.", édition impossible).</li>\n";
+			echo "<li>".ucfirst($nom_periode[$i])." (".$gepiClosedPeriodLabel.", Ã©dition impossible).</li>\n";
 		}
 	$i++;
 	}
 	echo "</ul>\n";
 }
 
-// Deuxième étape : la classe est définie, la période est définie, on affiche la liste des élèves
+// DeuxiÃ¨me Ã©tape : la classe est dÃ©finie, la pÃ©riode est dÃ©finie, on affiche la liste des Ã©lÃ¨ves
 if (isset($id_classe) and (isset($periode_num)) and (!isset($fiche))) {
 	$classe_suivi = sql_query1("SELECT nom_complet FROM classes WHERE id = '".$id_classe."'");
 	?>
 
 	<form enctype="multipart/form-data" action="saisie_avis2.php" name="form1" method='post'>
 
-	<p class=bold><a href="saisie_avis2.php?id_classe=<?php echo $id_classe; ?>"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Choisir une autre période</a>
+	<p class=bold><a href="saisie_avis2.php?id_classe=<?php echo $id_classe; ?>"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Choisir une autre pÃ©riode</a>
 
 	<?php
 
 	echo "<input type='hidden' name='periode_num' value='$periode_num' />\n";
 
-// Ajout lien classe précédente / classe suivante
+// Ajout lien classe prÃ©cÃ©dente / classe suivante
 if($_SESSION['statut']=='scolarite'){
 	$sql = "SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, j_scol_classes jsc WHERE p.id_classe = c.id  AND jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe";
 }
 elseif($_SESSION['statut']=='professeur'){
 
-	// On a filtré plus haut les profs qui n'ont pas getSettingValue("GepiRubConseilProf")=='yes'
+	// On a filtrÃ© plus haut les profs qui n'ont pas getSettingValue("GepiRubConseilProf")=='yes'
 	$sql="SELECT DISTINCT c.id,c.classe FROM classes c,
 										j_eleves_classes jec,
 										j_eleves_professeurs jep
@@ -226,7 +247,7 @@ elseif($_SESSION['statut']=='cpe'){
 		ORDER BY classe";
 }
 elseif($_SESSION['statut'] == 'autre'){
-	// On recherche toutes les classes pour ce statut qui n'est accessible que si l'admin a donné les bons droits
+	// On recherche toutes les classes pour ce statut qui n'est accessible que si l'admin a donnÃ© les bons droits
 	$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe";
 }
 elseif($_SESSION['statut'] == 'secours'){
@@ -273,7 +294,7 @@ if($nb_classes_suivies>0){
 
 // =================================
 if(isset($id_class_prec)){
-	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe précédente</a>";}
+	if($id_class_prec!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_prec&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe prÃ©cÃ©dente</a>";}
 }
 
 if(($chaine_options_classes!="")&&($nb_classes_suivies>1)) {
@@ -309,7 +330,7 @@ if(($chaine_options_classes!="")&&($nb_classes_suivies>1)) {
 if(isset($id_class_suiv)){
 	if($id_class_suiv!=0){echo " | <a href='".$_SERVER['PHP_SELF']."?id_classe=$id_class_suiv&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\">Classe suivante</a>";}
 }
-//fin ajout lien classe précédente / classe suivante
+//fin ajout lien classe prÃ©cÃ©dente / classe suivante
 echo "</p>\n";
 
 echo "</form>\n";
@@ -318,10 +339,10 @@ echo "</form>\n";
 
 	<p class='grand'>Classe : <?php echo $classe_suivi; ?></p>
 
-	<p>Cliquez sur le nom de l'élève pour lequel vous voulez entrer ou modifier l'appréciation.</p>
-	<table class='boireaus' border="1" cellspacing="2" cellpadding="5" width="100%" summary="Choix de l'élève">
+	<p>Cliquez sur le nom de l'Ã©lÃ¨ve pour lequel vous voulez entrer ou modifier l'apprÃ©ciation.</p>
+	<table class='boireaus' border="1" cellspacing="2" cellpadding="5" width="100%" summary="Choix de l'Ã©lÃ¨ve">
 	<tr>
-		<th width="20%"><b>Nom Prénom</b></th>
+		<th width="20%"><b>Nom PrÃ©nom</b></th>
 		<th<?php
 			if(test_existence_mentions_classe($id_classe)) {
 				$avec_mentions="y";
@@ -341,11 +362,21 @@ echo "</form>\n";
 		?>
 	</tr>
 	<?php
-	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours')) {
+	if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') or (($_SESSION['statut'] == 'cpe')&&(getSettingAOui('GepiRubConseilCpeTous')))) {
 		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c
 		WHERE (c.id_classe='$id_classe' AND
 		c.login = e.login AND
 		c.periode = '".$periode_num."'
+		) ORDER BY nom,prenom";
+	} elseif($_SESSION['statut']=='cpe'){
+		// On ne devrait pas arriver ici en CPE...
+		// Il n'y a pas de droit de saisie des avis du conseil.
+		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec, j_eleves_cpe jecpe
+		WHERE (jec.id_classe='$id_classe' AND
+		jec.login = e.login AND
+		jecpe.e_login = jec.login AND
+		jecpe.cpe_login = '".$_SESSION['login']."' AND
+		jec.periode = '".$periode_num."'
 		) ORDER BY nom,prenom";
 	} else {
 		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes c, j_eleves_professeurs p
@@ -391,11 +422,11 @@ echo "</form>\n";
 	$current_synthese= @mysql_result($res_current_synthese, 0, "synthese");
 	if ($current_synthese=='') {$current_synthese='-';}
 
-	echo "<p><b>Synthèse des avis sur le groupe classe&nbsp;:</b></p>\n";
+	echo "<p><b>SynthÃ¨se des avis sur le groupe classe&nbsp;:</b></p>\n";
 	echo "<table class='boireaus' border='1' cellspacing='2' cellpadding='5' width='100%' summary='Synthese'>";
 	$alt=$alt*(-1);
 	echo "<tr class='lig$alt'>\n";
-	echo "<td width='20%'>\n<a href='saisie_synthese_app_classe.php?num_periode=$periode_num&amp;id_classe=$id_classe#synthese'>Saisir la synthèse</a></td>\n";
+	echo "<td width='20%'>\n<a href='saisie_synthese_app_classe.php?num_periode=$periode_num&amp;id_classe=$id_classe#synthese'>Saisir la synthÃ¨se</a></td>\n";
 	echo "<td><p class=\"medium\">".nl2br($current_synthese)."</p></td>\n";
 	echo "</tr>\n";
 	echo "</table>\n";
@@ -407,17 +438,17 @@ if (isset($fiche)) {
 
 	echo "<p><a href='".$_SERVER['PHP_SELF']."?id_classe=$id_classe&amp;periode_num=$periode_num' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a></p>\n";
 
-	// On teste la présence d'au moins un coeff pour afficher la colonne des coef
+	// On teste la prÃ©sence d'au moins un coeff pour afficher la colonne des coef
 	$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 
 	// On remonte $affiche_categories au-dessus de include "../lib/calcul_rang.inc.php"; sans quoi il se produit des erreurs.
 	$affiche_categories = sql_query1("SELECT display_mat_cat FROM classes WHERE id='".$id_classe."'");
 	if ($affiche_categories == "y") { $affiche_categories = true; } else { $affiche_categories = false;}
 
-	// on teste si le rang doit être affiché
+	// on teste si le rang doit Ãªtre affichÃ©
 	$affiche_rang = sql_query1("SELECT display_rang FROM classes WHERE id='".$id_classe."'");
 
-	// Ajout: boireaus (sans cela le rang total n'est pas affiché.)
+	// Ajout: boireaus (sans cela le rang total n'est pas affichÃ©.)
 	if ($affiche_rang == 'y'){
 		//include "../lib/calcul_rang.inc.php";}
 
@@ -430,19 +461,19 @@ if (isset($fiche)) {
 		$periode_num=$periode_courante;
 	}
 
-	// Variable temporaire utilisée pour conserver le nombre de coef supérieurs à zéro parce que test_coef et réaffecté dans calcul_moy_gen.inc.php
+	// Variable temporaire utilisÃ©e pour conserver le nombre de coef supÃ©rieurs Ã  zÃ©ro parce que test_coef et rÃ©affectÃ© dans calcul_moy_gen.inc.php
 	$nb_coef_superieurs_a_zero=$test_coef;
 
 	//=====================================
-	// Ajout pour faire apparaitre la moyenne générale
+	// Ajout pour faire apparaitre la moyenne gÃ©nÃ©rale
 	//if($test_coef>0) {
-	// On ne restreint plus ici: il faut lancer calcul_moy_gen pour extraire les moyennes mêmes si on n'afficha pas les moyennes générales.
+	// On ne restreint plus ici: il faut lancer calcul_moy_gen pour extraire les moyennes mÃªmes si on n'afficha pas les moyennes gÃ©nÃ©rales.
 
-		// Mise en réserve de variables modifiées dans le calcul de moyennes générales
+		// Mise en rÃ©serve de variables modifiÃ©es dans le calcul de moyennes gÃ©nÃ©rales
 		$periode_num_reserve=$periode_num;
 		$current_eleve_login_reserve=$current_eleve_login;
 
-		// On réinitialise $current_eleve_login qui est modifié dans le calcul de moyennes générales
+		// On rÃ©initialise $current_eleve_login qui est modifiÃ© dans le calcul de moyennes gÃ©nÃ©rales
 		unset($current_eleve_login);
 
 		$display_moy_gen="y";
@@ -470,7 +501,7 @@ if (isset($fiche)) {
 			$tab_moy['periodes'][$periode_num]['moy_max_classe']=$moy_max_classe;
 			$tab_moy['periodes'][$periode_num]['moy_min_classe']=$moy_min_classe;
 		
-			// Il faudrait récupérer/stocker les catégories?
+			// Il faudrait rÃ©cupÃ©rer/stocker les catÃ©gories?
 			$tab_moy['periodes'][$periode_num]['moy_cat_eleve']=$moy_cat_eleve;               // [$i][$cat]
 			$tab_moy['periodes'][$periode_num]['moy_cat_classe']=$moy_cat_classe;             // [$i][$cat]
 			$tab_moy['periodes'][$periode_num]['moy_cat_min']=$moy_cat_min;                   // [$i][$cat]
@@ -500,7 +531,7 @@ if (isset($fiche)) {
 			$tab_moy['periodes'][$periode_num]['moy_min_classe_grp']=$moy_min_classe_grp;     // [$j]
 			$tab_moy['periodes'][$periode_num]['moy_max_classe_grp']=$moy_max_classe_grp;     // [$j]
 			if(isset($current_eleve_rang)) {
-				// $current_eleve_rang n'est pas renseigné si $affiche_rang='n'
+				// $current_eleve_rang n'est pas renseignÃ© si $affiche_rang='n'
 				$tab_moy['periodes'][$periode_num]['current_eleve_rang']=$current_eleve_rang; // [$j][$i]
 			}
 			$tab_moy['periodes'][$periode_num]['quartile1_grp']=$quartile1_grp;               // [$j]
@@ -525,7 +556,7 @@ if (isset($fiche)) {
 			//$tab_moy_cat_classe
 		}
 
-		// Rétablissement des variables après calcul des moyennes générales
+		// RÃ©tablissement des variables aprÃ¨s calcul des moyennes gÃ©nÃ©rales
 		$periode_num=$periode_num_reserve;
 		$current_eleve_login=$current_eleve_login_reserve;
 	//}
@@ -544,7 +575,7 @@ if (isset($fiche)) {
 	// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 	echo "<form enctype=\"multipart/form-data\" action=\"saisie_avis2.php\" method=\"post\">\n";
 	echo add_token_field();
-	echo "<table border='0' summary=\"Elève $current_eleve_login\">\n";
+	echo "<table border='0' summary=\"ElÃ¨ve $current_eleve_login\">\n";
 	echo "<tr>\n";
 	echo "<td>\n";
 	echo "<a name=\"app\"></a><textarea name='no_anti_inject_current_eleve_login_ap' id='no_anti_inject_current_eleve_login_ap' rows='5' cols='80' class='wrap' onchange=\"changement()\">";
@@ -569,7 +600,7 @@ if (isset($fiche)) {
 		echo "<option value='B'$selectedB> </option>\n";
 		echo "<option value='E'$selectedE>Encouragements</option>\n";
 		echo "<option value='M'$selectedM>Mention honorable</option>\n";
-		echo "<option value='F'$selectedF>Félicitations</option>\n";
+		echo "<option value='F'$selectedF>FÃ©licitations</option>\n";
 		echo "</select>\n";
 		*/
 		// **** FIN DE L'AJOUT POUR LES MENTIONS ****
@@ -594,7 +625,6 @@ if (isset($fiche)) {
 		$titre="$current_eleve_nom $current_eleve_prenom";
 
 		$texte="<div align='center'>\n";
-		//$texte.="<img src='../photos/eleves/".$photo."' width='150' alt=\"$current_eleve_nom $current_eleve_prenom\" title=\"$current_eleve_nom $current_eleve_prenom\" />";
 		$texte.="<img src='".$photo."' width='150' alt=\"$current_eleve_nom $current_eleve_prenom\" title=\"$current_eleve_nom $current_eleve_prenom\" />";
 		$texte.="<br />\n";
 		$texte.="</div>\n";
@@ -616,11 +646,12 @@ if (isset($fiche)) {
 
 	//============================
 	// Pour permettre la saisie de commentaires-type, renseigner la variable $commentaires_types dans /lib/global.inc
-	// Et récupérer le paquet commentaires_types sur... ADRESSE A DEFINIR:
+	// Et rÃ©cupÃ©rer le paquet commentaires_types sur... ADRESSE A DEFINIR:
 	//if((file_exists('saisie_commentaires_types.php'))&&($commentaires_types=='y')){
 	if((file_exists('saisie_commentaires_types.php'))
 		&&(($_SESSION['statut'] == 'professeur')&&(getSettingValue("GepiRubConseilProf")=='yes')&&(getSettingValue('CommentairesTypesPP')=='yes'))
-		||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))) {
+		||(($_SESSION['statut'] == 'scolarite')&&(getSettingValue("GepiRubConseilScol")=='yes')&&(getSettingValue('CommentairesTypesScol')=='yes'))
+		||(($_SESSION['statut'] == 'cpe')&&((getSettingValue("GepiRubConseilCpe")=='yes')||(getSettingValue("GepiRubConseilCpeTous")=='yes'))&&(getSettingValue('CommentairesTypesCpe')=='yes'))) {
 		//include('saisie_commentaires_types.php');
 		echo "<td align='center'>\n";
 		include('saisie_commentaires_types2.php');
@@ -637,8 +668,13 @@ if (isset($fiche)) {
 	<input type=hidden name=current_eleve_login value="<?php echo "$current_eleve_login";?>" />
 	<input type=hidden name=ind_eleve_login_suiv value="<?php echo "$ind_eleve_login_suiv";?>" />
 	<!--br /-->
-	<input type="submit" NAME="ok1" value="Enregistrer et passer à l'élève suivant" />
-	<input type="submit" NAME="ok2" value="Enregistrer et revenir à la liste" /><br /><br />&nbsp;
+	<?php
+		if($ind_eleve_login_suiv!=0) {
+			echo "<input type='submit' NAME='ok1' value=\"Enregistrer et passer Ã  l'Ã©lÃ¨ve suivant\" />\n";
+		}
+	?>
+	<input type="submit" NAME="ok2" value="Enregistrer et revenir Ã  la liste" />
+	<br /><br />&nbsp;
 
 	<div id="debug_fixe" style="position: fixed; bottom: 20%; right: 5%;"></div>
 
@@ -652,7 +688,7 @@ if (isset($fiche)) {
 
 	// onclick='verif_termes()'
 
-	function verif_termes() {
+	function verif_termes()Â {
 		alert('plop');
 		return false;
 	}

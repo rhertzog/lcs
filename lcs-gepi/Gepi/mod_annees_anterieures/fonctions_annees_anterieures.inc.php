@@ -1,20 +1,20 @@
 <?php
 
 /*
-$Id: fonctions_annees_anterieures.inc.php 7484 2011-07-22 11:45:59Z crob $
 */
 
 function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_periode,$ine=""){
 	/*
-		$logineleve:      login actuel de l'ÈlËve
-		$id_classe:       identifiant de la classe actuelle de l'ÈlËve
-		$annee_scolaire:  nom de l'annÈe ‡ afficher
-		$num_periode:     numÈro de la pÈriode ‡ afficher
+		$logineleve:      login actuel de l'√©l√®ve
+		$id_classe:       identifiant de la classe actuelle de l'√©l√®ve
+		$annee_scolaire:  nom de l'ann√©e √† afficher
+		$num_periode:     num√©ro de la p√©riode √† afficher
 	*/
 
 	//global $gepiPath;
 	global $gecko;
 
+	//echo "$annee_scolaire=$annee_scolaire<br />";
 
 	$poursuivre="y";
 
@@ -23,13 +23,13 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 		$res_ele=mysql_query($sql);
 	
 		if(mysql_num_rows($res_ele)==0) {
-			// On ne devrait pas arriver l‡.
-			echo "<p>L'ÈlËve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
+			// On ne devrait pas arriver l√†.
+			echo "<p>L'√©l√®ve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
 			$poursuivre="n";
 		}
 	}
 	elseif($ine=="") {
-		echo "<p>Aucun login ni INE n'a ÈtÈ proposÈ.</p>\n";
+		echo "<p>Aucun login ni INE n'a √©t√© propos√©.</p>\n";
 		$poursuivre="n";
 	}
 	else {
@@ -37,8 +37,8 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 		$res_ele=mysql_query($sql);
 	
 		if(mysql_num_rows($res_ele)==0) {
-			// On ne devrait pas arriver l‡.
-			echo "<p>L'ÈlËve dont l'INE serait $ine n'est pas dans la table 'archivage_eleves'.</p>\n";
+			// On ne devrait pas arriver l√†.
+			echo "<p>L'√©l√®ve dont l'INE serait $ine n'est pas dans la table 'archivage_eleves'.</p>\n";
 			$poursuivre="n";
 		}
 	}
@@ -46,58 +46,18 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 	if($poursuivre=="y") {
 		$lig_ele=mysql_fetch_object($res_ele);
 
-		// Infos ÈlËve
-		//$ine: INE de l'ÈlËve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
+		// Infos √©l√®ve
+		//$ine: INE de l'√©l√®ve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
 		if($ine=="") {
 			$ine=$lig_ele->no_gep;
 		}
-		//$nom=$lig_ele->nom;
-		//$prenom=$lig_ele->prenom;
 		$ele_nom=$lig_ele->nom;
 		$ele_prenom=$lig_ele->prenom;
 		$naissance=$lig_ele->naissance;
-		//$naissance2=formate_date($lig_ele->naissance);
-
 		// Classe actuelle:
 		$classe=get_nom_classe($id_classe);
 
-		/*
-						// A DEPLACER VERS styles.css
-						echo "<style type='text/css'>
-			.table_annee_anterieure{
-				border: 1px solid black;
-				border-collapse: collapse;
-			}
-
-			.table_annee_anterieure th{
-				border: 1px solid black;
-				font-weight: bold;
-				text-align: center;
-			}
-
-			.table_annee_anterieure td{
-				border: 1px solid black;
-				padding: 0.1em;
-			}
-
-			.table_annee_anterieure td.td_note{
-				text-align: center;
-			}
-
-			.table_annee_anterieure td.td_note_classe, th.td_note_classe{
-				text-align: center;
-				font-size: small;
-			}
-
-			.table_annee_anterieure .info_prof{
-				font-style: italic;
-				font-size: small;
-			}
-
-		</style>\n";
-		*/
-
-		// Liste des annÈes conservÈes pour l'ÈlËve choisi:
+		// Liste des ann√©es conserv√©es pour l'√©l√®ve choisi:
 		$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee";
 		$res_annees=mysql_query($sql);
 		$annee_precedente="";
@@ -123,7 +83,7 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			}
 		}
 
-		// Liste des pÈriodes pour l'annÈe choisie:
+		// Liste des p√©riodes pour l'ann√©e choisie:
 		$sql="SELECT DISTINCT num_periode FROM archivage_disciplines WHERE ine='$ine' AND annee='$annee_scolaire' ORDER BY num_periode";
 		$res_periodes=mysql_query($sql);
 
@@ -131,7 +91,6 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			// Ca ne doit pas arriver...
 		}
 		else{
-			//echo "<p><b>$annee_scolaire</b>: ";
 			echo "<ul style='list-style-type: none; margin-bottom:0;'>\n";
 			if($gecko){
 				echo "<li style='display:inline; border: 1px solid black; background-image: url(\"../images/background/opacite50.png\"); padding: 0.2em 0.2em 0 0.2em;'>";
@@ -150,7 +109,7 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 				else {
 					echo "ine=$ine";
 				}
-				echo "&amp;annee_scolaire=$annee_precedente&amp;num_periode=$derniere_periode_annee_precedente&amp;mode=bull_simp'><img src='../images/icons/back_.png' width='16' height='14' alt='AnnÈe prÈcÈdente' /></a> ";
+				echo "&amp;annee_scolaire=$annee_precedente&amp;num_periode=$derniere_periode_annee_precedente&amp;mode=bull_simp'><img src='../images/icons/back_.png' width='16' height='14' alt='Ann√©e pr√©c√©dente' /></a> ";
 			}
 			echo "<b>$annee_scolaire</b>";
 			if($annee_suivante!=""){
@@ -162,26 +121,11 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 				else {
 					echo "ine=$ine";
 				}
-				echo "&amp;annee_scolaire=$annee_suivante&amp;num_periode=1&amp;mode=bull_simp'><img src='../images/icons/forward_.png' width='16' height='14' alt='AnnÈe suivante' /></a>";
+				echo "&amp;annee_scolaire=$annee_suivante&amp;num_periode=1&amp;mode=bull_simp'><img src='../images/icons/forward_.png' width='16' height='14' alt='Ann√©e suivante' /></a>";
 			}
 
 			echo "</li>\n";
 
-
-
-			/*
-			if($gecko){
-				echo "<li style='display:inline; border: 1px solid black; background-image: url(\"../images/background/opacite50.png\"); padding: 0.2em 0.2em 0 0.2em;'>";
-			}
-			else{
-				echo "<li style='display:inline; border: 1px solid black; background-color: white; padding: 0.2em 0.2em 0 0.2em;'>";
-			}
-			echo "$classe";
-			echo "</li>\n";
-			*/
-
-
-			//echo "<div style='display:block; border: 1px solid black; background-color: white; width:20%;'><b>$annee_scolaire</b></div>\n";
 			$cpt=0;
 			while($lig_periode=mysql_fetch_object($res_periodes)){
 				//if($cpt>0){echo " - ";}
@@ -222,12 +166,11 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			echo "<div style='border: 1px solid black; background-color: white; padding: 3px;'>\n";
 		}
 
-		//$sql="SELECT DISTINCT nom_periode FROM archivage_disciplines WHERE ine='$ine' AND num_periode='$num_periode' AND annee='$annee_scolaire'";
 		$sql="SELECT DISTINCT nom_periode, classe FROM archivage_disciplines WHERE ine='$ine' AND num_periode='$num_periode' AND annee='$annee_scolaire'";
 		$res_per=mysql_query($sql);
 
 		if(mysql_num_rows($res_per)==0){
-			$nom_periode="pÈriode $num_periode";
+			$nom_periode="p√©riode $num_periode";
 			$classe_ant="???";
 		}
 		else{
@@ -236,20 +179,20 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			$classe_ant=$lig_per->classe;
 		}
 
-		echo "<h2>AntÈcÈdents de $ele_prenom $ele_nom: millÈsime $annee_scolaire</h2>\n";
+		echo "<h2>Ant√©c√©dents de $ele_prenom $ele_nom: mill√©sime $annee_scolaire</h2>\n";
 
-		//echo "<p>Bulletin simplifiÈ de $prenom $nom pour la pÈriode $num_periode de l'annÈe scolaire $annee_scolaire</p>";
-		echo "<p>Bulletin simplifiÈ de $ele_prenom $ele_nom: $nom_periode de l'annÈe scolaire $annee_scolaire en <strong>$classe_ant</strong> <em style='font-size: x-small;'>(actuellement en $classe)</em></p>\n";
+		//echo "<p>Bulletin simplifi√© de $prenom $nom pour la p√©riode $num_periode de l'ann√©e scolaire $annee_scolaire</p>";
+		echo "<p>Bulletin simplifi√© de $ele_prenom $ele_nom: $nom_periode de l'ann√©e scolaire $annee_scolaire en <strong>$classe_ant</strong> <em style='font-size: x-small;'>(actuellement en $classe)</em></p>\n";
 
-		// Affichage des infos ÈlËve
+		// Affichage des infos √©l√®ve
 
-		// Affichage des matiËres
-		echo "<table class='table_annee_anterieure' width='100%' summary='MatiËres/notes'>\n";
+		// Affichage des mati√®res
+		echo "<table class='table_annee_anterieure' width='100%' summary='Mati√®res/notes'>\n";
 		echo "<tr>\n";
-		echo "<th rowspan='2'>MatiËre</th>\n";
+		echo "<th rowspan='2'>Mati√®re</th>\n";
 		echo "<th colspan='3'>Classe</th>\n";
-		echo "<th rowspan='2'>ElËve</th>\n";
-		echo "<th rowspan='2'>ApprÈciations/Conseils</th>\n";
+		echo "<th rowspan='2'>El√®ve</th>\n";
+		echo "<th rowspan='2'>Appr√©ciations/Conseils</th>\n";
 		echo "</tr>\n";
 
 		echo "<tr>\n";
@@ -258,27 +201,26 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 		echo "<th class='td_note_classe'>max</th>\n";
 		echo "</tr>\n";
 
-		//$sql="SELECT * FROM archivage_disciplines WHERE annee='$annee_scolaire' AND num_periode='$num_periode' AND ine='$ine' AND special='' ORDER BY matiere";
 		$sql="SELECT * FROM archivage_disciplines WHERE annee='$annee_scolaire' AND num_periode='$num_periode' AND ine='$ine' AND special='' ORDER BY ordre_matiere, matiere;";
 		//echo "$sql<br />\n";
 		$res_mat=mysql_query($sql);
 
 		if(mysql_num_rows($res_mat)==0){
-			// On ne devrait pas arriver l‡.
-			echo "<tr><td colspan='6'>Aucun rÈsultat enregistrÈ???</td></tr>\n";
+			// On ne devrait pas arriver l√†.
+			echo "<tr><td colspan='6'>Aucun r√©sultat enregistr√©???</td></tr>\n";
 		}
 		else{
 			while($lig_mat=mysql_fetch_object($res_mat)){
 				echo "<tr>\n";
 				echo "<td>";
-				echo "<b>".htmlentities(stripslashes($lig_mat->matiere))."</b><br />\n";
-				echo "<span class='info_prof'>".htmlentities(stripslashes($lig_mat->prof))."</span>\n";
+				echo "<b>".htmlspecialchars(stripslashes($lig_mat->matiere))."</b><br />\n";
+				echo "<span class='info_prof'>".htmlspecialchars(stripslashes($lig_mat->prof))."</span>\n";
 				echo "</td>\n";
 				echo "<td class='td_note_classe'>$lig_mat->moymin</td>\n";
 				echo "<td class='td_note_classe'>$lig_mat->moyclasse</td>\n";
 				echo "<td class='td_note_classe'>$lig_mat->moymax</td>\n";
-				echo "<td class='td_note'>$lig_mat->note</td>\n";
-				echo "<td>".htmlentities(stripslashes($lig_mat->appreciation))."</td>\n";
+				echo "<td class='td_note bold'>$lig_mat->note</td>\n";
+				echo "<td>".htmlspecialchars(stripslashes($lig_mat->appreciation))."</td>\n";
 				echo "</tr>\n";
 			}
 		}
@@ -298,8 +240,8 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 		$res_aid=mysql_query($sql);
 		/*
 		if(mysql_num_rows($res_aid)==0){
-			// On ne devrait pas arriver l‡.
-			echo "<tr><td colspan='6'>Aucun rÈsultat enregistrÈ???";
+			// On ne devrait pas arriver l√†.
+			echo "<tr><td colspan='6'>Aucun r√©sultat enregistr√©???";
 			//echo "<br />$sql";
 			echo "</td></tr>\n";
 		}
@@ -309,20 +251,20 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			while($lig_aid=mysql_fetch_object($res_aid)){
 				echo "<tr>\n";
 				echo "<td>";
-				echo "<b>".htmlentities(stripslashes($lig_aid->type_nom))." : ".htmlentities(stripslashes($lig_aid->nom_aid))."</b><br />\n";
-				echo "<span class='info_prof'>".htmlentities(stripslashes($lig_aid->responsables))."</span>\n";
+				echo "<b>".htmlspecialchars(stripslashes($lig_aid->type_nom))." : ".htmlspecialchars(stripslashes($lig_aid->nom_aid))."</b><br />\n";
+				echo "<span class='info_prof'>".htmlspecialchars(stripslashes($lig_aid->responsables))."</span>\n";
 				echo "</td>\n";
 				echo "<td class='td_note_classe'>$lig_aid->moyenne_aid</td>\n";
 				echo "<td class='td_note_classe'>$lig_aid->min_aid</td>\n";
 				echo "<td class='td_note_classe'>$lig_aid->max_aid</td>\n";
-				echo "<td class='td_note'>$lig_aid->note_aid";
+				echo "<td class='td_note bold'>$lig_aid->note_aid";
 				echo "</td>\n";
 				echo "<td>";
 				if (($lig_aid->note_sur_aid != 20) and ($lig_aid->note_aid !='-')) {
 					echo "(note sur ".$lig_aid->note_sur_aid.") ";
 				}
 
-				echo htmlentities(stripslashes($lig_aid->appreciation))."</td>\n";
+				echo htmlspecialchars(stripslashes($lig_aid->appreciation))."</td>\n";
 				echo "</tr>\n";
 			}
 		}
@@ -339,7 +281,7 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			echo "<p>Aucune information sur les absences/retards.</p>\n";
 		}
 		elseif(mysql_num_rows($res_abs)>1){
-			echo "<p>Bizarre: Il y a plus d'un enregistrement pour cette ÈlËve, cette pÈriode et cette annÈe.</p>\n";
+			echo "<p>Bizarre: Il y a plus d'un enregistrement pour cette √©l√®ve, cette p√©riode et cette ann√©e.</p>\n";
 		}
 		else{
 			$lig_abs=mysql_fetch_object($res_abs);
@@ -350,14 +292,14 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 
 			echo "<p>";
 			if ($nb_absences=='0') {
-				echo "<i>Aucune demi-journÈe d'absence</i>.";
+				echo "<i>Aucune demi-journ√©e d'absence</i>.";
 			}
 			else {
-				echo "<i>Nombre de demi-journÈes d'absence ";
-				if ($non_justifie=='0') {echo "justifiÈes ";}
+				echo "<i>Nombre de demi-journ√©es d'absence ";
+				if ($non_justifie=='0') {echo "justifi√©es ";}
 				echo ": </i><b>$nb_absences</b>";
 				if ($non_justifie != '0') {
-					echo " (dont <b>$non_justifie</b> non justifiÈe"; if ($non_justifie != '1') {echo "s";}
+					echo " (dont <b>$non_justifie</b> non justifi√©e"; if ($non_justifie != '1') {echo "s";}
 					echo ")";
 				}
 				echo ".";
@@ -365,7 +307,7 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			if ($nb_retards!='0') {
 				echo "<i> Nombre de retards : </i><b>$nb_retards</b>";
 			}
-			echo "  (C.P.E. chargÈ(e)";
+			echo "  (C.P.E. charg√©(e)";
 			echo " du suivi : ".$lig_abs->prof.")";
 			if ($lig_abs->appreciation!= ""){echo "<br />$lig_abs->appreciation";}
 			echo "</p>\n";
@@ -387,7 +329,7 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 			echo "Aucune information sur l'avis du conseil de classe.</p>\n";
 		}
 		elseif(mysql_num_rows($res_avis)>1){
-			echo "Bizarre : Il y a plus d'un enregistrement pour cette ÈlËve, cette pÈriode et cette annÈe.</p>\n";
+			echo "Bizarre : Il y a plus d'un enregistrement pour cette √©l√®ve, cette p√©riode et cette ann√©e.</p>\n";
 			$prof_suivi="?";
 		}
 		else{
@@ -403,8 +345,8 @@ function bull_simp_annee_anterieure($logineleve,$id_classe,$annee_scolaire,$num_
 		echo "</table>\n";
 
 		echo "</div>\n";
-		// Afficher des liens permettant de passer rapidement ‡ la pÈriode suivante/prÈcÈdente
-		// + un tableau des annÈes/pÈriodes (annÈes sur une ligne en colspan=nb_per et num_periode en dessous)
+		// Afficher des liens permettant de passer rapidement √† la p√©riode suivante/pr√©c√©dente
+		// + un tableau des ann√©es/p√©riodes (ann√©es sur une ligne en colspan=nb_per et num_periode en dessous)
 	}
 }
 
@@ -419,14 +361,14 @@ function avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire){
 	$res_ele=mysql_query($sql);
 
 	if(mysql_num_rows($res_ele)==0){
-		// On ne devrait pas arriver l‡.
-		echo "<p>L'ÈlËve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
+		// On ne devrait pas arriver l√†.
+		echo "<p>L'√©l√®ve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
 	}
 	else{
 		$lig_ele=mysql_fetch_object($res_ele);
 
-		// Infos ÈlËve
-		//$ine: INE de l'ÈlËve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
+		// Infos √©l√®ve
+		//$ine: INE de l'√©l√®ve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
 		$ine=$lig_ele->no_gep;
 		//$nom=$lig_ele->nom;
 		//$prenom=$lig_ele->prenom;
@@ -435,7 +377,7 @@ function avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire){
 		$naissance=$lig_ele->naissance;
 		//$naissance2=formate_date($lig_ele->naissance);
 
-		// Liste des annÈes conservÈes pour l'ÈlËve choisi:
+		// Liste des ann√©es conserv√©es pour l'√©l√®ve choisi:
 		$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee";
 		$res_annees=mysql_query($sql);
 		$annee_precedente="";
@@ -474,13 +416,13 @@ function avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire){
 		if($annee_precedente!=""){
 			echo "<a href='".$_SERVER['PHP_SELF']."?logineleve=$logineleve&amp;annee_scolaire=$annee_precedente&amp;mode=avis_conseil";
 			if(isset($id_classe)){echo "&amp;id_classe=$id_classe";}
-			echo "'><img src='../images/icons/back_.png' width='16' height='14' alt='AnnÈe prÈcÈdente' /></a> \n";
+			echo "'><img src='../images/icons/back_.png' width='16' height='14' alt='Ann√©e pr√©c√©dente' /></a> \n";
 		}
 		echo "<b>$annee_scolaire</b>\n";
 		if($annee_suivante!=""){
 			echo " <a href='".$_SERVER['PHP_SELF']."?logineleve=$logineleve&amp;annee_scolaire=$annee_suivante&amp;mode=avis_conseil";
 			if(isset($id_classe)){echo "&amp;id_classe=$id_classe";}
-			echo "'><img src='../images/icons/forward_.png' width='16' height='14' alt='AnnÈe suivante' /></a>\n";
+			echo "'><img src='../images/icons/forward_.png' width='16' height='14' alt='Ann√©e suivante' /></a>\n";
 		}
 		echo "</li>\n";
 		echo "</ul>\n";
@@ -493,9 +435,9 @@ function avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire){
 			echo "<div style='border: 1px solid black; background-color: white; padding: 3px;'>\n";
 		}
 
-		echo "<h2>AntÈcÈdents de $ele_prenom $ele_nom: millÈsime $annee_scolaire</h2>\n";
+		echo "<h2>Ant√©c√©dents de $ele_prenom $ele_nom: mill√©sime $annee_scolaire</h2>\n";
 
-		echo "<p>Avis des conseils de classe pour $ele_prenom $ele_nom lors de l'annÈe scolaire $annee_scolaire</p>\n";
+		echo "<p>Avis des conseils de classe pour $ele_prenom $ele_nom lors de l'ann√©e scolaire $annee_scolaire</p>\n";
 
 		// Affichage de l'avis du conseil
 		$sql="SELECT * FROM archivage_disciplines WHERE annee='$annee_scolaire' AND ine='$ine' AND special='AVIS_CONSEIL' ORDER BY num_periode";
@@ -508,7 +450,7 @@ function avis_conseils_de_classes_annee_anterieure($logineleve,$annee_scolaire){
 		else{
 			echo "<table class='table_annee_anterieure' width='100%' summary='Avis du conseil'>\n";
 			echo "<tr>\n";
-			echo "<th>AnnÈe-scolaire</th>\n";
+			echo "<th>Ann√©e-scolaire</th>\n";
 			echo "<th>Avis du conseil de classe</th>\n";
 			echo "<th>Classe suivie par</th>\n";
 			echo "</tr>\n";
@@ -555,18 +497,18 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 	$res_ele=mysql_query($sql);
 
 	if(mysql_num_rows($res_ele)==0){
-		//echo "<p>Aucun ÈlËve dans la classe $classe pour la pÈriode '$nom_periode'.</p>\n";
+		//echo "<p>Aucun √©l√®ve dans la classe $classe pour la p√©riode '$nom_periode'.</p>\n";
 		if($logineleve!="") {
-			echo "<p>L'ÈlËve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
+			echo "<p>L'√©l√®ve dont le login serait $logineleve n'est pas dans la table 'eleves'.</p>\n";
 		}
 		elseif($ine!="") {
-			echo "<p>L'ÈlËve dont l'INE serait $ine n'est pas dans la table 'archivage_eleves'.</p>\n";
+			echo "<p>L'√©l√®ve dont l'INE serait $ine n'est pas dans la table 'archivage_eleves'.</p>\n";
 		}
 	}
 	else{
 		$lig_ele=mysql_fetch_object($res_ele);
 
-		// Infos ÈlËve
+		// Infos √©l√®ve
 		if($ine=='') {
 			$ine=$lig_ele->no_gep;
 		}
@@ -578,23 +520,23 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 		//$naissance2=formate_date($lig_ele->naissance);
 
 
-		echo "<p>Liste des annÈes scolaires et pÈriodes pour lesquelles des donnÈes concernant $ele_prenom $ele_nom ";
+		echo "<p>Liste des ann√©es scolaires et p√©riodes pour lesquelles des donn√©es concernant $ele_prenom $ele_nom ";
 		if((isset($id_classe))&&($id_classe!='')) {
 			$classe=get_nom_classe($id_classe);
 			echo "(<i>$classe</i>) ";
 		}
-		echo "ont ÈtÈ conservÈes:</p>\n";
+		echo "ont √©t√© conserv√©es:</p>\n";
 
-		//echo "<p>Liste des annÈes scolaires et pÈriodes pour lesquelles des donnÈes concernant $ele_prenom $ele_nom (<i>$classe</i>) ont ÈtÈ conservÈes:</p>\n";
+		//echo "<p>Liste des ann√©es scolaires et p√©riodes pour lesquelles des donn√©es concernant $ele_prenom $ele_nom (<i>$classe</i>) ont √©t√© conserv√©es:</p>\n";
 
-		// RÈcupÈrer les annÈes-scolaires et pÈriodes pour lesquelles on trouve l'INE dans archivage_disciplines
+		// R√©cup√©rer les ann√©es-scolaires et p√©riodes pour lesquelles on trouve l'INE dans archivage_disciplines
 		//$sql="SELECT DISTINCT annee,num_periode,nom_periode FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee DESC, num_periode ASC";
 		//$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee DESC;";
 		$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee ASC;";
 		$res_ant=mysql_query($sql);
 
 		if(mysql_num_rows($res_ant)==0){
-			echo "<p>Aucun rÈsultat antÈrieur n'a ÈtÈ conservÈ pour cet ÈlËve.</p>\n";
+			echo "<p>Aucun r√©sultat ant√©rieur n'a √©t√© conserv√© pour cet √©l√®ve.</p>\n";
 		}
 		else{
 
@@ -602,12 +544,12 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 
 			$nb_annees=mysql_num_rows($res_ant);
 
-			//echo "<p>Bulletins simplifiÈs:</p>\n";
+			//echo "<p>Bulletins simplifi√©s:</p>\n";
 			//echo "<table border='0'>\n";
 			$alt=1;
 			echo "<table class='boireaus table_annee_anterieure' summary='Bulletins'>\n";
 			echo "<tr class='lig$alt'>\n";
-			echo "<th rowspan='".$nb_annees."' valign='top'>Bulletins simplifiÈs:</th>";
+			echo "<th rowspan='".$nb_annees."' valign='top'>Bulletins simplifi√©s:</th>";
 			$cpt=0;
 			while($lig_ant=mysql_fetch_object($res_ant)){
 
@@ -623,7 +565,7 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 				$res_ant2=mysql_query($sql);
 
 				if(mysql_num_rows($res_ant2)==0){
-					echo "<td>Aucun rÈsultat antÈrieur n'a ÈtÈ conservÈ pour cet ÈlËve.</td>\n";
+					echo "<td>Aucun r√©sultat ant√©rieur n'a √©t√© conserv√© pour cet √©l√®ve.</td>\n";
 				}
 				else{
 					$cpt=0;
@@ -665,7 +607,7 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 				//echo "<td style='font-weight:bold;'>\n";
 				echo "<td>\n";
 
-				echo "AnnÈe-scolaire <a href='".$_SERVER['PHP_SELF']."?";
+				echo "Ann√©e-scolaire <a href='".$_SERVER['PHP_SELF']."?";
 				if($logineleve!="") {
 					echo "logineleve=$logineleve";
 				}
@@ -687,7 +629,7 @@ function tab_choix_anterieure($logineleve,$id_classe=NULL,$ine=''){
 	}
 }
 function insert_eleve($login,$ine,$annee,$param) {
-	// on insËre le regime et le statut doublant
+	// on ins√®re le regime et le statut doublant
 	$sql="SELECT DISTINCT regime, doublant FROM j_eleves_regime WHERE login='".$login."'";
 	//echo "$sql<br />";
 	$res_regime=mysql_query($sql);
@@ -710,11 +652,11 @@ function insert_eleve($login,$ine,$annee,$param) {
 		//echo "$sql<br />";
 		$res_ele=mysql_query($sql);
 		if(mysql_num_rows($res_ele)==0) {
-			return "<tr><td colspan='4'>Aucune donnÈe disponible pour l'ÈlËve dont l'identifiant est ".$login."</td></tr>";
+			return "<tr><td colspan='4'>Aucune donn√©e disponible pour l'√©l√®ve dont l'identifiant est ".$login."</td></tr>";
 			die();
 		} else {
 			while($lig_ele=mysql_fetch_object($res_ele)){
-				// Infos ÈlËve
+				// Infos √©l√®ve
 				$nom=$lig_ele->nom;
 				$prenom=$lig_ele->prenom;
 				$naissance=$lig_ele->naissance;
@@ -731,7 +673,7 @@ function insert_eleve($login,$ine,$annee,$param) {
 				//echo "$sql<br />";
 				$res_insert=mysql_query($sql);
 					if(!$res_insert){
-					return "<tr><td colspan='4'><font color='red'>Erreur d'enregistrement des donnÈes pour l'ÈlËve dont l'identifiant est ".$login."</font></td></tr>";
+					return "<tr><td colspan='4'><font color='red'>Erreur d'enregistrement des donn√©es pour l'√©l√®ve dont l'identifiant est ".$login."</font></td></tr>";
 					exit();
 				} else {
 					if ($param != 'y') {
@@ -747,12 +689,12 @@ function cree_substitut_INE_unique($login){
 	$m = '';
 	$test_unicite = '';
 	while ($test_unicite != 1) {
-	// On vÈrifie que le login ne figure pas dÈj‡ dans la table archivage_eleves
+	// On v√©rifie que le login ne figure pas d√©j√† dans la table archivage_eleves
 	$req_test = mysql_query("SELECT nom, prenom, sexe, naissance FROM archivage_eleves WHERE (ine='".$login.$m."')");
 	$test = mysql_num_rows($req_test);
 	if ($test!=0) {
-		// un mÍme identifiant existe dÈj‡ !
-		// s'agit-il de la mÍme personne. On considËre que oui si les noms, prÈnom, date de naissance et sexe correspondent
+		// un m√™me identifiant existe d√©j√† !
+		// s'agit-il de la m√™me personne. On consid√®re que oui si les noms, pr√©nom, date de naissance et sexe correspondent
 		$nom = mysql_result($req_test,0,"nom");
 		$prenom = mysql_result($req_test,0,"prenom");
 		$sexe = mysql_result($req_test,0,"sexe");
@@ -774,7 +716,7 @@ function cree_substitut_INE_unique($login){
 }
 
 function suppression_donnees_eleves_inutiles(){
-	// Supprimer des donnÈes ÈlËves qui ne servent plus ‡ rien
+	// Supprimer des donn√©es √©l√®ves qui ne servent plus √† rien
 
 	$res_eleve = mysql_query("select ine from archivage_eleves");
 	$nb_eleves = mysql_num_rows($res_eleve);
@@ -839,11 +781,11 @@ function check_acces_aa($logineleve) {
 			//echo "\$AAProfGroupes=$AAProfGroupes<br />";
 		
 			if($AAProfTout=="yes") {
-				// Le professeur a accËs aux donnÈes antÈrieures de tous les ÈlËves
+				// Le professeur a acc√®s aux donn√©es ant√©rieures de tous les √©l√®ves
 				$acces="y";
 			}
 			elseif($AAProfClasses=="yes") {
-				// Le professeur a accËs aux donnÈes antÈrieures des ÈlËves des classes pour lesquelles il fournit un enseignement (sans nÈcessairement avoir tous les ÈlËves de la classe)
+				// Le professeur a acc√®s aux donn√©es ant√©rieures des √©l√®ves des classes pour lesquelles il fournit un enseignement (sans n√©cessairement avoir tous les √©l√®ves de la classe)
 				/*
 				$sql="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_classes jgc, j_groupes_professeurs jgp
 								WHERE jeg.login='$logineleve' AND
@@ -863,7 +805,7 @@ function check_acces_aa($logineleve) {
 				}
 			}
 			elseif($AAProfGroupes=="yes") {
-				// Le professeur a accËs aux donnÈes antÈrieures des ÈlËves des groupes auxquels il enseigne
+				// Le professeur a acc√®s aux donn√©es ant√©rieures des √©l√®ves des groupes auxquels il enseigne
 				$sql="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_professeurs jgp
 								WHERE jeg.login='$logineleve' AND
 										jeg.id_groupe=jgp.id_groupe AND
@@ -875,7 +817,7 @@ function check_acces_aa($logineleve) {
 				}
 			}
 			elseif($AAProfPrinc=="yes") {
-				// Le professeur a accËs aux donnÈes antÈrieures des ÈlËves dont il est Professeur Principal
+				// Le professeur a acc√®s aux donn√©es ant√©rieures des √©l√®ves dont il est Professeur Principal
 				$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."' AND
 																login='$logineleve';";
 				//echo "$sql<br />";
@@ -893,7 +835,7 @@ function check_acces_aa($logineleve) {
 			$AACpeResp=getSettingValue('AACpeResp');
 		
 			if($AACpeTout=="yes") {
-				// Le CPE a accËs aux donnÈes antÈrieures de tous les ÈlËves
+				// Le CPE a acc√®s aux donn√©es ant√©rieures de tous les √©l√®ves
 				$acces="y";
 			}
 			elseif($AACpeResp=="yes") {
@@ -913,7 +855,7 @@ function check_acces_aa($logineleve) {
 			$AAScolResp=getSettingValue('AAScolResp');
 		
 			if($AAScolTout=="yes") {
-				// Les comptes ScolaritÈ ont accËs aux donnÈes antÈrieures de tous les ÈlËves
+				// Les comptes Scolarit√© ont acc√®s aux donn√©es ant√©rieures de tous les √©l√®ves
 				$acces="y";
 			}
 			elseif($AAScolResp=="yes") {
@@ -931,7 +873,7 @@ function check_acces_aa($logineleve) {
 			$AAResponsable=getSettingValue('AAResponsable');
 		
 			if($AAResponsable=="yes") {
-				// Est-ce que le $logineleve est bien celui d'un ÈlËve dont le responsable est responsable?
+				// Est-ce que le $logineleve est bien celui d'un √©l√®ve dont le responsable est responsable?
 				$sql="SELECT 1=1 FROM resp_pers rp, responsables2 r, eleves e WHERE rp.login='".$_SESSION['login']."' AND
 																					rp.pers_id=r.pers_id AND
 																					r.ele_id=e.ele_id AND
@@ -967,7 +909,7 @@ function check_acces_aa($logineleve) {
 }
 
 //$tab_periodes=array();
-// On va retourner par la fonction un $tab_periodes vide ou non selon que l'accËs est autorisÈ ou non et qu'il y a des donnÈes archivÈes
+// On va retourner par la fonction un $tab_periodes vide ou non selon que l'acc√®s est autoris√© ou non et qu'il y a des donn√©es archiv√©es
 function check_acces_et_liste_periodes($logineleve,$id_classe) {
 	$tab_periodes=array();
 
@@ -977,21 +919,21 @@ function check_acces_et_liste_periodes($logineleve,$id_classe) {
 
 		if($acces=="y") {
 
-			$tab_annee=array();
+			//$tab_annee=array();
 			$tab_periodes=array();
 		
 			$sql="SELECT * FROM eleves WHERE login='$logineleve';";
 			$res_ele=mysql_query($sql);
 		
 			if(mysql_num_rows($res_ele)==0) {
-				// On ne devrait pas arriver l‡.
-				echo "<p>L'ÈlËve dont le login serait '$logineleve' n'est pas dans la table 'eleves'.</p>\n";
+				// On ne devrait pas arriver l√†.
+				echo "<p>L'√©l√®ve dont le login serait '$logineleve' n'est pas dans la table 'eleves'.</p>\n";
 			}
 			else {
 				$lig_ele=mysql_fetch_object($res_ele);
 		
-				// Infos ÈlËve
-				//$ine: INE de l'ÈlËve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
+				// Infos √©l√®ve
+				//$ine: INE de l'√©l√®ve (identifiant commun aux tables 'eleves' et 'archivage_disciplines')
 				$ine=$lig_ele->no_gep;
 				//$ele_nom=$lig_ele->nom;
 				//$ele_prenom=$lig_ele->prenom;
@@ -1001,7 +943,7 @@ function check_acces_et_liste_periodes($logineleve,$id_classe) {
 				// Classe actuelle:
 				$classe=get_nom_classe($id_classe);
 		
-				// Liste des annÈes conservÈes pour l'ÈlËve choisi:
+				// Liste des ann√©es conserv√©es pour l'√©l√®ve choisi:
 				$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee";
 				//echo "$sql<br />";
 				$res_annees=mysql_query($sql);
@@ -1011,7 +953,8 @@ function check_acces_et_liste_periodes($logineleve,$id_classe) {
 				if(mysql_num_rows($res_annees)>0) {
 					$cpt=0;
 					while($lig_annee=mysql_fetch_object($res_annees)) {
-						$tab_annee[$cpt]['annee']=$lig_annee->annee;
+						//$tab_annee[$cpt]['annee']=$lig_annee->annee;
+						//$tab_annee[$cpt]['annee']['annee']=$lig_annee->annee;
 		
 						$sql="SELECT DISTINCT num_periode FROM archivage_disciplines WHERE ine='$ine' AND annee='$lig_annee->annee' ORDER BY num_periode";
 						//echo "$sql<br />";
@@ -1022,13 +965,13 @@ function check_acces_et_liste_periodes($logineleve,$id_classe) {
 						}
 						else {
 							while($lig_per=mysql_fetch_object($res_periodes)) {
-								$tab_annee[$cpt]['annee']['max_per']=$lig_per->num_periode;
+								//$tab_annee[$cpt]['annee']['max_per']=$lig_per->num_periode;
 								$tab_periodes[]=$lig_annee->annee."|".$lig_per->num_periode;
 							}
 						}
 		
 						if(!isset($annee_scolaire)) {
-							// A FAIRE: VOIR si $annee_scolaire est en SESSION... pour qu'en passant ‡ un autre ÈlËve, on rÈcupËre les mÍmes annÈes,...
+							// A FAIRE: VOIR si $annee_scolaire est en SESSION... pour qu'en passant √† un autre √©l√®ve, on r√©cup√®re les m√™mes ann√©es,...
 							$annee_scolaire=$lig_annee->annee;
 						}
 		
@@ -1195,7 +1138,7 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 	border-left: 1px solid black;
 	border-right: 1px solid black;
 
-	border-radius: 6px 20px;
+	border-radius: 6px 20px 0px 0px;
 	-moz-border-radius-topleft: 6px;
 	-moz-border-radius-topright: 20px;
 
@@ -1207,7 +1150,7 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 .t_onglet a {
 	text-decoration: none;
 	/*
-	On ne force pas le fond... il est modifiÈ par javascript pour faire ressortir l'onglet actif
+	On ne force pas le fond... il est modifi√© par javascript pour faire ressortir l'onglet actif
 	background-color: white;
 	*/
 	color: black;
@@ -1238,6 +1181,9 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 	margin-left: 4px;
 */
 	/*padding: 3px;*/
+	color:black;
+	font-style: normal;
+	font-weight: normal;
 }
 </style>\n";
 
@@ -1256,7 +1202,7 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 		echo "<div id='corps_annees_anterieures' class='infobulle_corps' style='color: #ffffff; cursor: auto; font-weight: bold; padding: 0px; height: 15em; width: 700px; overflow: auto;'>";
 
 			if(count($tab_periodes)==0) {
-				echo "<p>Aucune donnÈe archivÈe pour ".get_nom_prenom_eleve($logineleve).".</p>\n";
+				echo "<p>Aucune donn√©e archiv√©e pour ".get_nom_prenom_eleve($logineleve).".</p>\n";
 			}
 			else {
 				$t_annee_prec="";
@@ -1281,7 +1227,7 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 					//echo "\$annee_courante=$annee_courante<br />";
 			
 					if($annee_courante!=$t_annee_prec) {
-						// On crÈe un nouvel onglet d'annÈe
+						// On cr√©e un nouvel onglet d'ann√©e
 						if($t_annee_prec!="") {echo "</div>\n";}
 			
 						$t_annee_prec=$annee_courante;
@@ -1297,21 +1243,21 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 						echo "<div id='t_annee_$i' class='t_onglet_annee'>\n";
 						// AJOUTER Lien ANNEE PRECEDENTE
 						if($annee_precedente!="") {
-							//echo "<a id='lien_annee_precedente' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_precedente&num_periode=1&mode=bull_simp' onclick=\"document.getElementById('span_annee_courante').innerHTML='$annee_precedente'; affiche_onglet_aa('$logineleve','$id_classe','".$annee_precedente."','1','".$indice_annee_precedente."');return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='AnnÈe suivante' /> </a>\n";
-							echo "<a id='lien_annee_precedente' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_precedente&num_periode=1&mode=bull_simp' onclick=\"affiche_onglet_aa('$logineleve','$id_classe','".$annee_precedente."','1','".$indice_annee_precedente."');return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='AnnÈe suivante' /> </a>\n";
+							//echo "<a id='lien_annee_precedente' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_precedente&num_periode=1&mode=bull_simp' onclick=\"document.getElementById('span_annee_courante').innerHTML='$annee_precedente'; affiche_onglet_aa('$logineleve','$id_classe','".$annee_precedente."','1','".$indice_annee_precedente."');return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='Ann√©e suivante' /> </a>\n";
+							echo "<a id='lien_annee_precedente' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_precedente&num_periode=1&mode=bull_simp' onclick=\"affiche_onglet_aa('$logineleve','$id_classe','".$annee_precedente."','1','".$indice_annee_precedente."');return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='Ann√©e suivante' /> </a>\n";
 						}
 						//echo "<span id='span_annee_courante'>".$annee_courante."</span>";
 						echo $annee_courante;
 
 						// AJOUTER Lien ANNEE SUIVANTE
 						if($annee_suivante!="") {
-							//echo "<a id='lien_annee_suivante' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_suivante&num_periode=1&mode=bull_simp' onclick=\"document.getElementById('span_annee_courante').innerHTML='$annee_suivante'; affiche_onglet_aa('$logineleve','$id_classe','".$annee_suivante."','1','".$indice_annee_suivante."');return false;\"> <img src='../images/icons/forward.png' width='16' height='16' alt='AnnÈe suivante' /></a>\n";
-							echo "<a id='lien_annee_suivante' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_suivante&num_periode=1&mode=bull_simp' onclick=\"affiche_onglet_aa('$logineleve','$id_classe','".$annee_suivante."','1','".$indice_annee_suivante."');return false;\"> <img src='../images/icons/forward.png' width='16' height='16' alt='AnnÈe suivante' /></a>\n";
+							//echo "<a id='lien_annee_suivante' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_suivante&num_periode=1&mode=bull_simp' onclick=\"document.getElementById('span_annee_courante').innerHTML='$annee_suivante'; affiche_onglet_aa('$logineleve','$id_classe','".$annee_suivante."','1','".$indice_annee_suivante."');return false;\"> <img src='../images/icons/forward.png' width='16' height='16' alt='Ann√©e suivante' /></a>\n";
+							echo "<a id='lien_annee_suivante' href='../mod_annees_anterieures/popup_annee_anterieure.php?id_classe=$id_classe&logineleve=$logineleve&annee_scolaire=$annee_suivante&num_periode=1&mode=bull_simp' onclick=\"affiche_onglet_aa('$logineleve','$id_classe','".$annee_suivante."','1','".$indice_annee_suivante."');return false;\"> <img src='../images/icons/forward.png' width='16' height='16' alt='Ann√©e suivante' /></a>\n";
 						}
 						echo "</div>\n\n";
 					}
 			
-					// Ajout de l'onglet de pÈriode
+					// Ajout de l'onglet de p√©riode
 					echo "<div id='t_periode_$i' class='t_onglet'";
 					if($i!=$indice_onglet) {
 						echo " style='border-bottom-color: black;'";
@@ -1334,9 +1280,9 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 				echo "'>\n";
 				echo "<h2>$annee_choisie - $periode_choisie</h2>\n";
 
-				echo "<p>Onglet n∞$indice_onglet</p>\n";
+				echo "<p>Onglet n¬∞$indice_onglet</p>\n";
 
-				// RÈcupÈrer/afficher les donnÈes de l'annÈe/pÈriode pour cet ÈlËve
+				// R√©cup√©rer/afficher les donn√©es de l'ann√©e/p√©riode pour cet √©l√®ve
 				// Non... on le fait via ajax_bulletins.php
 
 				echo "</div>\n";
@@ -1349,8 +1295,9 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 
 	echo "<script type='text/javascript'>
 	// <![CDATA[
-	function affiche_annees_anterieures(login_eleve,id_classe) {
-		document.getElementById('titre_entete_annees_anterieures').innerHTML='AnnÈes antÈrieures de '+login_eleve;
+	//function affiche_annees_anterieures(login_eleve,id_classe) {
+	function affiche_annees_anterieures(login_eleve,id_classe,annee_scolaire) {
+		document.getElementById('titre_entete_annees_anterieures').innerHTML='Ann√©es ant√©rieures de '+login_eleve;
 
 		if(document.getElementById('conteneur_t_annee_0')) {
 			for(i=0;i<=".count($tab_periodes).";i++) {
@@ -1372,7 +1319,7 @@ function affiche_onglets_aa($logineleve, $id_classe, $tab_periodes, $indice_ongl
 			document.getElementById('t_periode_0').style.backgroundColor='white';
 		}
 
-		new Ajax.Updater($('contenu_onglet'),'../mod_annees_anterieures/ajax_bulletins.php?logineleve='+login_eleve+'&id_classe='+id_classe,{method: 'get'});
+		new Ajax.Updater($('contenu_onglet'),'../mod_annees_anterieures/ajax_bulletins.php?logineleve='+login_eleve+'&id_classe='+id_classe+'&annee_scolaire='+annee_scolaire,{method: 'get'});
 	}
 
 	function affiche_onglet_aa(logineleve,id_classe,annee_scolaire,num_periode,indice_onglet) {

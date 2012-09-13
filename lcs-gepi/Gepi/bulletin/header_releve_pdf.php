@@ -1,9 +1,9 @@
 <?php
 /*
-$Id: header_releve_pdf.php 8460 2011-10-10 20:03:02Z crob $
+$Id$
 */
 
-// fonction qui recoit une date heure est recompose la date en franÁais
+// fonction qui recoit une date heure est recompose la date en fran√ßais
 function date_fr_dh($var)
 {
 
@@ -15,13 +15,13 @@ function date_fr_dh($var)
 
 }
 
-// fonction pour mettre la date en franÁais
+// fonction pour mettre la date en fran√ßais
 function date_frc($var)
 {
 
 	$var = explode("/",$var);
 	$date = "$var[0],$var[1],$var[2]";
-	$tab_mois = array('01'=>"Jan.", '02'=>"Fev.", '03'=>"Mar.", '04'=>"Avr.", '05'=>"Mai", '06'=>"Juin", '07'=>"Juil.", '08'=>"Ao˚t", '09'=>"Sept.", '10'=>"Oct.", '11'=>"Nov.", '12'=>"Dec.");
+	$tab_mois = array('01'=>"Jan.", '02'=>"Fev.", '03'=>"Mar.", '04'=>"Avr.", '05'=>"Mai", '06'=>"Juin", '07'=>"Juil.", '08'=>"Ao√ªt", '09'=>"Sept.", '10'=>"Oct.", '11'=>"Nov.", '12'=>"Dec.");
 	//$tab_jour = array("Dim.", "Lun.", "Mar.", "Mer.", "Jeu.", "Ven.", "Sam.");
 	$tab_date = explode(',', $date);
 
@@ -43,53 +43,8 @@ function date_frc($var)
 	return($var);
 
 }
-/*
-function unhtmlentities($chaineHtml)
-{
 
-		$tmp = get_html_translation_table(HTML_ENTITIES);
-		$tmp = array_flip ($tmp);
-		$chaineTmp = strtr ($chaineHtml, $tmp);
 
-		return $chaineTmp;
-
-}
-
-// fonction de redimensionnement d'image
-function redimensionne_image($photo, $L_max, $H_max)
-{
-
-	// prendre les informations sur l'image
-	$info_image = getimagesize($photo);
-	// largeur et hauteur de l'image d'origine
-	$largeur = $info_image[0];
-	$hauteur = $info_image[1];
-	// largeur et/ou hauteur maximum ‡ afficher en pixel
-	$taille_max_largeur = $L_max;
-	$taille_max_hauteur = $H_max;
-
-	// calcule le ratio de redimensionnement
-	$ratio_l = $largeur / $taille_max_largeur;
-	$ratio_h = $hauteur / $taille_max_hauteur;
-	$ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-	// dÈfinit largeur et hauteur pour la nouvelle image
-	$nouvelle_largeur = $largeur / $ratio;
-	$nouvelle_hauteur = $hauteur / $ratio;
-
-	// des Pixels vers Millimetres
-	$nouvelle_largeur = $nouvelle_largeur / 2.8346;
-	$nouvelle_hauteur = $nouvelle_hauteur / 2.8346;
-
-	return array($nouvelle_largeur, $nouvelle_hauteur);
-
-}
-*/
-//============================================================
-
-// class rel_PDF
-class rel_PDF extends FPDF
-{
 
 /**
 * Draws text within a box defined by width = w, height = h, and aligns
@@ -115,9 +70,9 @@ function drawTextBox($strText, $w, $h, $align='L', $valign='T', $border=1)
 		$this->Rect($xi,$yi,$w,$h,'DF');
 
 	$dy=0;
-	if (strtoupper($valign)=='M')
+	if (mb_strtoupper($valign)=='M')
 		$dy=($h-$rows*$this->FontSize)/2;
-	if (strtoupper($valign)=='B')
+	if (mb_strtoupper($valign)=='B')
 		$dy=$h-$rows*$this->FontSize;
 
 	$this->SetY($yi+$dy);
@@ -134,7 +89,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 		$w=$this->w-$this->rMargin-$this->x;
 	$wmax=($w-2*$this->cMargin)*1000/$this->FontSize;
 	$s=str_replace("\r",'',$txt);
-	$nb=strlen($s);
+	$nb=mb_strlen($s);
 	if($nb>0 and $s[$nb-1]=="\n")
 		$nb--;
 	$b=0;
@@ -175,7 +130,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 				if ($prn==1) $this->_out('0 Tw');
 			}
 			if ($prn==1) {
-				$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+				$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 			}
 			$i++;
 			$sep=-1;
@@ -186,7 +141,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 			if($border and $nl==2)
 				$b=$b2;
 			if ( $maxline && $nl > $maxline )
-				return substr($s,$i);
+				return mb_substr($s,$i);
 			continue;
 		}
 		if($c==' ')
@@ -209,7 +164,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 					if ($prn==1) $this->_out('0 Tw');
 				}
 				if ($prn==1) {
-					$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+					$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 				}
 			}
 			else
@@ -220,7 +175,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 					if ($prn==1) $this->_out(sprintf('%.3f Tw',$this->ws*$this->k));
 				}
 				if ($prn==1){
-					$this->Cell($w,$h,substr($s,$j,$sep-$j),$b,2,$align,$fill);
+					$this->Cell($w,$h,mb_substr($s,$j,$sep-$j),$b,2,$align,$fill);
 				}
 				$i=$sep+1;
 			}
@@ -232,7 +187,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 			if($border and $nl==2)
 				$b=$b2;
 			if ( $maxline && $nl > $maxline )
-				return substr($s,$i);
+				return mb_substr($s,$i);
 		}
 		else
 			$i++;
@@ -246,7 +201,7 @@ function drawRows($w,$h,$txt,$border=0,$align='J',$fill=0,$maxline=0,$prn=0)
 	if($border and is_int(strpos($border,'B')))
 		$b.='B';
 	if ($prn==1) {
-		$this->Cell($w,$h,substr($s,$j,$i-$j),$b,2,$align,$fill);
+		$this->Cell($w,$h,mb_substr($s,$j,$i-$j),$b,2,$align,$fill);
 	}
 	$this->x=$this->lMargin;
 	return $nl;
@@ -291,20 +246,20 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 	$this->_out($s);
 }
 
-}
+
 // fin de la class
 
 //============================================================
 
-	// variable de la crÈation du document
+	// variable de la cr√©ation du document
 
-	// entÍte
+	// ent√™te
 	$X_entete_etab='5';
-	$caractere_utilse='arial'; // caractËre utilisÈ dans le document
-	$affiche_logo_etab='1'; // affichÈ le logo de l'Ètablissement
-	$entente_mel='0'; // afficher dans l'entÍte le mel de l'Ètablissement
-	$entente_tel='0'; // afficher dans l'entÍte le tÈlÈphone de l'Ètablissement
-	$entente_fax='0'; // afficher dans l'entÍte le fax de l'Ètablissement
+	$caractere_utilse='DejaVu'; // caract√®re utilis√© dans le document
+	$affiche_logo_etab='1'; // affich√© le logo de l'√©tablissement
+	$entente_mel='0'; // afficher dans l'ent√™te le mel de l'√©tablissement
+	$entente_tel='0'; // afficher dans l'ent√™te le t√©l√©phone de l'√©tablissement
+	$entente_fax='0'; // afficher dans l'ent√™te le fax de l'√©tablissement
 	$L_max_logo='75'; // Longeur maxi du logo
 	$H_max_logo='75'; // hauteur maxi du logo
 
@@ -314,23 +269,23 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 	$active_bloc_adresse_parent=$avec_adresse_responsable;
 	$X_parent=110; $Y_parent=40;
 
-	//information annÈe
+	//information ann√©e
 	$gepiYear = getSettingValue('gepiYear');
 	$annee_scolaire = $gepiYear;
 	$X_cadre_eleve = '130';
 
 	// cadre note
-	$titre_du_cadre='RelevÈ de notes du ';
+	$titre_du_cadre='Relev√© de notes du ';
 	$largeur_cadre_matiere='50';
 	$texte_observation='Observations:';
-	$cadre_titre='0'; // affiche le cadre autour du titre ici: "relevÈ de notes..."
+	$cadre_titre='0'; // affiche le cadre autour du titre ici: "relev√© de notes..."
 	$largeur_cadre_note_global = '200'; //largeur du cadre note global nom matiere | note | observation
 	$hauteur_dun_regroupement='4'; // hauteur de la cellule regroupement
 
 	$hauteur_du_titre = '4.5';
 	//$largeur_cadre_note = '95';
 	$largeur_cadre_note_si_obs = '95';
-	// Sinon, on prend $largeur_cadre_note_global moins l'espace dÈj‡ utilisÈ pour la colonne matiËre.
+	// Sinon, on prend $largeur_cadre_note_global moins l'espace d√©j√† utilis√© pour la colonne mati√®re.
 
 	$X_cadre_note = '5';
 
@@ -340,7 +295,8 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 
 
 
-	// DÈfinition de la page
+	// D√©finition de la page
+	require_once(dirname(__FILE__).'/../impression/class_pdf.php');
 	$pdf=new rel_PDF("P","mm","A4");
 	$pdf->SetTopMargin(TopMargin);
 	$pdf->SetRightMargin(RightMargin);
@@ -350,18 +306,8 @@ function TextWithRotation($x,$y,$txt,$txt_angle,$font_angle=0)
 	// Couleur des traits
 	$pdf->SetDrawColor(0,0,0);
 
-	// CaractÈres utilisÈe
-	$caractere_utilse = 'arial';
-
-
-
-/*
-		$nom_releve=date("Ymd_Hi");
-		$nom_releve = 'Releve_'.$nom_releve.'.pdf';
-		$pdf->Output($nom_releve,'I');
-*/
-
-
+	// Caract√©res utilis√©e
+	$caractere_utilse = 'DejaVu';
 
 
 	$releve_affiche_formule=getSettingValue("releve_affiche_formule") ? getSettingValue("releve_affiche_formule") : "y";

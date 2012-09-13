@@ -37,7 +37,7 @@
  *
  * @link http://www.open-publisher.net/
  * @author Armand Turpel <contact@open-publisher.net>
- * @version $Revision: 4651 $
+ * @version $Revision$
  * @since 2003-05-09
  */
 class htaccess
@@ -112,7 +112,9 @@ class htaccess
         {
             return false;
         }
-        $this->user[$name] = crypt($passwd, $this->crypt_method);
+        //$this->user[$name] = crypt($passwd, $this->crypt_method);      // PB
+        //$this->user[$name] = crypt($passwd,base64_encode($passwd));    // OK
+        $this->user[$name] = "{SHA}".base64_encode(sha1($passwd, TRUE)); // OK
         return TRUE;
     }
 
@@ -268,7 +270,7 @@ class htaccess
                 foreach($users as $key => $value)
                 {
                     $str = $key.':'.$value.$nl;
-                    fputs($f, $str, strlen($str));
+                    fputs($f, $str, mb_strlen($str));
                 }
             
                 flock($f,3);
@@ -292,7 +294,7 @@ class htaccess
                 foreach($this->user as $key => $value)
                 {
                     $str = $key.':'.$value.$nl;
-                    fputs($f, $str, strlen($str));
+                    fputs($f, $str, mb_strlen($str));
                 }
                 
                 flock($f,3);

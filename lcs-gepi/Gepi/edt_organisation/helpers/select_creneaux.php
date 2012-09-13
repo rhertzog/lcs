@@ -3,19 +3,18 @@
 /**
  *
  *
- * @version $Id: select_creneaux.php 4152 2010-03-21 23:32:16Z adminpaulbert $
- * @copyright 2008
+ * @copyright 2008-2012
  *
- * Fichier qui renvoie un select des créneaux horaires de l'établissement
- * pour l'intégrer dans un fomulaire
+ * Fichier qui renvoie un select des crÃ©neaux horaires de l'Ã©tablissement
+ * pour l'intÃ©grer dans un fomulaire
  *
  */
 
-// On récupère les infos utiles pour le fonctionnement des requêtes sql
+// On rÃ©cupÃ¨re les infos utiles pour le fonctionnement des requÃªtes sql
 $niveau_arbo = 1;
 require_once("../lib/initialisations.inc.php");
 
-// Sécurité : éviter que quelqu'un appelle ce fichier seul
+// SÃ©curitÃ© : Ã©viter que quelqu'un appelle ce fichier seul
 $serveur_script = $_SERVER["SCRIPT_NAME"];
 $analyse = explode("/", $serveur_script);
 $analyse[4] = isset($analyse[4]) ? $analyse[4] : NULL;
@@ -26,37 +25,59 @@ $analyse[4] = isset($analyse[4]) ? $analyse[4] : NULL;
 $increment = isset($nom_select) ? $nom_select : "liste_creneaux"; // name du select
 $id_select = isset($nom_id_select) ? (' id="'.$nom_id_select.'"') : NULL; // id du select
 if (!isset($nom_selected)) {
-	$nom_selected = isset($nom_creneau) ? $nom_creneau : NULL; // permet de définir le selected
+	$nom_selected = isset($nom_creneau) ? $nom_creneau : NULL; // permet de dÃ©finir le selected
+}
+
+$nb_min_ref="";
+$ecart_creneau=120;
+if(preg_match("/[0-9]{1,2}h[0-9]{1,2}/", mb_strtolower($val))) {
+	$tab_tmp=explode("h", mb_strtolower($val));
+	$nb_min_ref=$tab_tmp[0]*60+$tab_tmp[1];
 }
 
 echo '
-	<select name="'.$increment.'"'.$id_select.'>
-		<option value="aucun">Liste des créneaux</option>
+	<select name="'.$increment.'"'.$id_select.' onmouseover="if(document.getElementById(\'texte_nomGepi'.$l.'\')) {document.getElementById(\'texte_nomGepi'.$l.'\').style.backgroundColor=\'yellow\'}" onmouseout="if(document.getElementById(\'texte_nomGepi'.$l.'\')) {document.getElementById(\'texte_nomGepi'.$l.'\').style.backgroundColor=\'\'}">
+		<option value="aucun">Liste des crÃ©neaux</option>
 ';
-// On appele la liste des créneaux
+// On appele la liste des crÃ©neaux
 $query = mysql_query("SELECT * FROM edt_creneaux WHERE type_creneaux != 'pause' AND type_creneaux != 'repas' ORDER BY heuredebut_definie_periode")
-			OR trigger_error('Erreur dans la recherche des créneaux : '.mysql_error());
+			OR trigger_error('Erreur dans la recherche des crÃ©neaux : '.mysql_error());
 
-while($creneaux = mysql_fetch_array($query)){
+while($creneaux = mysql_fetch_array($query)) {
 	// On teste pour le selected
-	// Dans le cas de edt_init_csv2.php, on modifie la forme des heures de début de créneau
+	// Dans le cas de edt_init_csv2.php, on modifie la forme des heures de dÃ©but de crÃ©neau
 	$test_creneau = explode("/", $_SERVER["SCRIPT_NAME"]);
 
+	//echo "<!-- \$test_creneau[3]=$test_creneau[3] -->\n";
+	$selected_2="n";
+
 	if ($test_creneau[3] == "edt_init_csv2.php") {
-		// On tranforme le créneau
+		// On tranforme le crÃ©neau
 		$creneau_expl = explode(":", $creneaux["heuredebut_definie_periode"]);
 		$creneau_udt = $creneau_expl[0].'H'.$creneau_expl[1];
-	}else{
+		//echo "<!-- \$creneau_udt=$creneau_udt -->\n";
+	}else {
 		$creneau_udt = $creneaux["heuredebut_definie_periode"];
+
+		$tab_tmp=explode(":", $creneaux["heuredebut_definie_periode"]);
+		$nb_min_test=$tab_tmp[0]*60+$tab_tmp[1];
+		$ecart_test=abs($nb_min_test-$nb_min_ref);
+		if(($ecart_test<=35)&&($ecart_test<$ecart_creneau)) {
+			$ecart_creneau=$ecart_test;
+			$selected_2="y";
+		}
 	}
-	if ($nom_selected == $creneau_udt) {
+
+	//if ($nom_selected == $creneau_udt) {
+	if (($nom_selected == $creneau_udt)||($selected_2=='y')) {
 		$selected = ' selected="selected"';
-	}else{
+	}
+	else {
 		$selected = '';
 	}
 
-	// On enlève les secondes à la fin
-	$heure_deb = substr($creneaux["heuredebut_definie_periode"], 0, -3);
+	// On enlÃ¨ve les secondes Ã  la fin
+	$heure_deb = mb_substr($creneaux["heuredebut_definie_periode"], 0, -3);
 
 	echo '
 		<option value="'.$creneaux["id_definie_periode"].'"'.$selected.'>'.$creneaux["nom_definie_periode"].' : '.$heure_deb.'</option>';

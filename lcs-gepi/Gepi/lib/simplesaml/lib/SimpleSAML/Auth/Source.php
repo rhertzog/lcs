@@ -7,7 +7,6 @@
  *
  * @author Olav Morken, UNINETT AS.
  * @package simpleSAMLphp
- * @version $Id$
  */
 abstract class SimpleSAML_Auth_Source {
 
@@ -97,6 +96,26 @@ abstract class SimpleSAML_Auth_Source {
 	 * @param array &$state  Information about the current authentication.
 	 */
 	abstract public function authenticate(&$state);
+
+
+	/**
+	 * Reauthenticate an user.
+	 *
+	 * This function is called by the IdP to give the authentication source a chance to
+	 * interact with the user even in the case when the user is already authenticated.
+	 *
+	 * @param array &$state  Information about the current authentication.
+	 */
+	public function reauthenticate(array &$state) {
+		assert('isset($state["ReturnCallback"])');
+
+		/* The default implementation just copies over the previous authentication data. */
+		$session = SimpleSAML_Session::getInstance();
+		$data = $session->getAuthState($this->authId);
+		foreach ($data as $k => $v) {
+			$state[$k] = $v;
+		}
+	}
 
 
 	/**

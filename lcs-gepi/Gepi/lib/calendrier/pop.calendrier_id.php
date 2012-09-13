@@ -1,12 +1,11 @@
 <?php
 /*
- * @version $Id: pop.calendrier_id.php 2281 2008-08-17 09:22:44Z crob $
  */
 
              
 /**
- * Intérieur du fichier php contenant le seul calendrier. On récupère en GET les valeurs
- * représentant le nom du formulaire et le nom du champ de la date.
+ * IntÃ©rieur du fichier php contenant le seul calendrier. On rÃ©cupÃ¨re en GET les valeurs
+ * reprÃ©sentant le nom du formulaire et le nom du champ de la date.
  */
 $frm = $_GET['frm'];
 $chm = $_GET['ch'];
@@ -14,13 +13,13 @@ $chm = $_GET['ch'];
 include("calendrier_id.class.php");
 
 /**
- * On créé un nouveau calendrier, on récupère la date à afficher (par défaut, le calendrier
- * affiche le mois en cours de l'année en cours). Les valeurs de POST sont transmises au
- * moment où on change le SELECT des mois ou celui des années. Finalement, on affiche le
+ * On crÃ©Ã© un nouveau calendrier, on rÃ©cupÃ¨re la date Ã  afficher (par dÃ©faut, le calendrier
+ * affiche le mois en cours de l'annÃ©e en cours). Les valeurs de POST sont transmises au
+ * moment oÃ¹ on change le SELECT des mois ou celui des annÃ©es. Finalement, on affiche le
  * calendrier.
  */
 $cal = new Calendrier($frm, $chm);
-$cal->auto_set_date($_POST);
+$cal->auto_set_date();
 $cal->affiche();
 
 ?>

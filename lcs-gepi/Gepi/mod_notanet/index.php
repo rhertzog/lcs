@@ -1,5 +1,5 @@
 <?php
-/* $Id: index.php 7047 2011-05-29 12:25:26Z crob $ */
+/* $Id$ */
 /*
 * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
@@ -40,9 +40,9 @@ if ($resultat_session == 'c') {
 
 
 //======================================================================================
-// Section checkAccess() ‡ dÈcommenter en prenant soin d'ajouter le droit correspondant:
-// INSERT INTO droits VALUES('/mod_notanet/index.php','V','V','F','F','F','F','F','F','AccËs ‡ l accueil Notanet','');
-// Pour dÈcommenter le passage, il suffit de supprimer le 'slash-etoile' ci-dessus et l'Ètoile-slash' ci-dessous.
+// Section checkAccess() √† d√©commenter en prenant soin d'ajouter le droit correspondant:
+// INSERT INTO droits VALUES('/mod_notanet/index.php','V','V','F','F','F','F','F','F','Acc√®s √† l accueil Notanet','');
+// Pour d√©commenter le passage, il suffit de supprimer le 'slash-etoile' ci-dessus et l'√©toile-slash' ci-dessous.
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
@@ -58,7 +58,7 @@ $sql="INSERT INTO droits SET id='/mod_notanet/OOo/fiches_brevet.php',
 administrateur='V',
 professeur='F',
 cpe='F',
-scolarite='F',
+scolarite='V',
 eleve='F',
 responsable='F',
 secours='F',
@@ -76,7 +76,7 @@ $sql="INSERT INTO droits SET id='/mod_notanet/OOo/imprime_ooo.php',
 administrateur='V',
 professeur='F',
 cpe='F',
-scolarite='F',
+scolarite='V',
 eleve='F',
 responsable='F',
 secours='F',
@@ -169,7 +169,7 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Fiches brevet: Saisie des paramËtres',
+description='Fiches brevet: Saisie des param√®tres',
 statut='';";
 $insert=mysql_query($sql);
 }
@@ -196,20 +196,20 @@ $insert=mysql_query($sql);
 
 if(!isset($msg)) {$msg="";}
 //===========================================================
-// Modification du type des champs id_mat pour pouvoir dÈpasser 127
+// Modification du type des champs id_mat pour pouvoir d√©passer 127
 $query=mysql_query("ALTER TABLE notanet CHANGE id_mat id_mat INT( 4 ) NOT NULL;");
 if(!$query) {
-	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet'.<br />Cela risque de poser problËme si vous devez saisir des notes de Langue Vivante RÈgionale.<br />";
+	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet'.<br />Cela risque de poser probl√®me si vous devez saisir des notes de Langue Vivante R√©gionale.<br />";
 }
 
 $query = mysql_query("ALTER TABLE notanet_corresp CHANGE id_mat id_mat INT( 4 ) NOT NULL;");
 if(!$query) {
-	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet_corresp'.<br />Cela risque de poser problËme si vous devez saisir des notes de Langue Vivante RÈgionale.<br />";
+	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet_corresp'.<br />Cela risque de poser probl√®me si vous devez saisir des notes de Langue Vivante R√©gionale.<br />";
 }
 
 $query = mysql_query("ALTER TABLE notanet_app CHANGE id_mat id_mat INT( 4 ) NOT NULL;");
 if(!$query) {
-	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet_app'.<br />Cela risque de poser problËme si vous devez saisir des notes de Langue Vivante RÈgionale.<br />";
+	$msg.="Erreur lors de la modification du type du champ 'id_mat' de la table 'notanet_app'.<br />Cela risque de poser probl√®me si vous devez saisir des notes de Langue Vivante R√©gionale.<br />";
 }
 //===========================================================
 
@@ -218,11 +218,11 @@ if(!$query) {
 //**************** EN-TETE *****************
 $titre_page = "Notanet: Accueil";
 //echo "<div class='noprint'>\n";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //echo "</div>\n";
 //**************** FIN EN-TETE *****************
 
-// BibliothËque pour Notanet et Fiches brevet
+// Biblioth√®que pour Notanet et Fiches brevet
 //include("lib_brevets.php");
 
 echo "<div class='noprint'>\n";
@@ -240,7 +240,7 @@ $sql="CREATE TABLE IF NOT EXISTS notanet (
   note varchar(4) NOT NULL default '',
   note_notanet varchar(4) NOT NULL,
   id_classe smallint(6) NOT NULL default '0'
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_app (
@@ -250,7 +250,7 @@ $sql="CREATE TABLE IF NOT EXISTS notanet_app (
   appreciation text NOT NULL,
   id int(11) NOT NULL auto_increment,
   PRIMARY KEY  (id)
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_corresp (
@@ -261,21 +261,21 @@ $sql="CREATE TABLE IF NOT EXISTS notanet_corresp (
   matiere varchar(50) NOT NULL default '',
   statut enum('imposee','optionnelle','non dispensee dans l etablissement') NOT NULL default 'imposee',
   PRIMARY KEY  (id)
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_ele_type (
   login varchar(50) NOT NULL,
   type_brevet tinyint(4) NOT NULL,
   PRIMARY KEY  (login)
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_verrou (
 id_classe TINYINT NOT NULL ,
 type_brevet TINYINT NOT NULL ,
 verrouillage CHAR( 1 ) NOT NULL
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_socles (
@@ -284,7 +284,7 @@ b2i ENUM( 'MS', 'ME', 'MN', 'AB', '' ) NOT NULL ,
 a2 ENUM( 'MS', 'ME', 'MN', 'AB', '' ) NOT NULL ,
 lv VARCHAR( 50 ) NOT NULL ,
 PRIMARY KEY ( login )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_avis (
@@ -292,14 +292,14 @@ login VARCHAR( 50 ) NOT NULL ,
 favorable ENUM( 'O', 'N', '' ) NOT NULL ,
 avis TEXT NOT NULL ,
 PRIMARY KEY ( login )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_lvr (
 id int(11) NOT NULL auto_increment,
 intitule VARCHAR( 255 ) NOT NULL ,
 PRIMARY KEY ( id )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_lvr_ele (
@@ -308,7 +308,7 @@ login VARCHAR( 255 ) NOT NULL ,
 id_lvr INT( 11 ) NOT NULL ,
 note ENUM ('', 'VA','NV') NOT NULL DEFAULT '',
 PRIMARY KEY ( id )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 $sql="CREATE TABLE IF NOT EXISTS notanet_socle_commun (
@@ -317,7 +317,7 @@ login VARCHAR( 50 ) NOT NULL ,
 champ VARCHAR( 10 ) NOT NULL ,
 valeur ENUM( 'MS', 'ME', 'MN', 'AB', '' ) NOT NULL ,
 PRIMARY KEY ( id )
-);";
+) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 $create_table=mysql_query($sql);
 
 
@@ -325,19 +325,19 @@ if($_SESSION['statut']=="administrateur") {
 	$truncate_tables=isset($_GET['truncate_tables']) ? $_GET['truncate_tables'] : NULL;
 	if($truncate_tables=='y') {
 		check_token();
-		echo "<p>Nettoyage des tables Notanet</p>\n";
-		$sql="TRUNCATE TABLE notanet;";
-		$del=mysql_query($sql);
-		$sql="TRUNCATE TABLE notanet_avis;";
-		$del=mysql_query($sql);
-		$sql="TRUNCATE TABLE notanet_app;";
-		$del=mysql_query($sql);
-		$sql="TRUNCATE TABLE notanet_verrou;";
-		$del=mysql_query($sql);
-		$sql="TRUNCATE TABLE notanet_socles;";
-		$del=mysql_query($sql);
-		$sql="TRUNCATE TABLE notanet_ele_type;";
-		$del=mysql_query($sql);
+
+		echo "<p class='bold'>Nettoyage des tables Notanet&nbsp;:</p>\n";
+
+		$msg="";
+		$table_a_vider=array('notanet', 'notanet_avis', 'notanet_app', 'notanet_verrou', 'notanet_socles', 'notanet_ele_type');
+		for($i=0;$i<count($table_a_vider);$i++) {
+			$sql="TRUNCATE TABLE $table_a_vider[$i];";
+			$del=mysql_query($sql);
+			if(!$del) {
+				$msg.="Erreur lors du nettoyage de la table '$table_a_vider[$i]'<br />";
+			}
+		}
+		if($msg=='') {echo "<p style='margin-left: 3em;'>Nettoyage effectu√©.</p>\n";} else {echo $msg;}
 	}
 }
 
@@ -347,28 +347,30 @@ echo "</p>\n";
 //echo "<ul>\n";
 if($_SESSION['statut']=="administrateur") {
 	echo "<ol>\n";
-	echo "<li><a href='saisie_param.php'>Saisir les paramËtres AcadÈmie, Session,...</a>.</li>\n";
-	echo "<li><a href='select_eleves.php'>Effectuer les associations ElËves/Type de brevet</a></li>\n";
+	echo "<li><a href='saisie_param.php'>Saisir les param√®tres Acad√©mie, Session,...</a>.</li>\n";
+	echo "<li><a href='select_eleves.php'>Effectuer les associations El√®ves/Type de brevet</a></li>\n";
 
-	echo "<li><a href='select_matieres.php'>Effectuer les associations Type de brevet/MatiËres</a>  (<i>en prÈcisant le statut: imposÈes et options</i>)</li>\n";
+	echo "<li><a href='select_matieres.php'>Effectuer les associations Type de brevet/Mati√®res</a>  (<i>en pr√©cisant le statut: impos√©es et options</i>)</li>\n";
 
-	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nÈcessaire pour rÈaliser ensuite l'extraction des moyennes</i>)</li>\n";
+	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>n√©cessaire pour r√©aliser ensuite l'extraction des moyennes</i>)</li>\n";
 
-	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante RÈgionale</a> (<i>si un tel enseignement est ÈvaluÈ dans l'Ètablissement</i>)</li>\n";
+	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante R√©gionale</a> (<i>si un tel enseignement est √©valu√© dans l'√©tablissement</i>)</li>\n";
 
 	echo "<li><a href='extract_moy.php'>Effectuer une extraction des moyennes, affichage et traitement des cas particuliers</a></li>\n";
 
 	echo "<li><a href='corrige_extract_moy.php'>Corriger l'extraction des moyennes</a></li>\n";
 
-	echo "<li><a href='choix_generation_csv.php?extract_mode=tous'>GÈnÈrer un export Notanet</a> pour tous les ÈlËves de telle(s) ou telle(s) classe(s) ou juste une sÈlection (cf. select_eleves.php)</li>\n";
+	echo "<li><a href='choix_generation_csv.php?extract_mode=tous'>G√©n√©rer un export Notanet</a> pour tous les √©l√®ves de telle(s) ou telle(s) classe(s) ou juste une s√©lection (cf. select_eleves.php)</li>\n";
 
-	echo "<li><a href='saisie_socle_commun.php'>Saisir ou importer les rÈsultats du Socle commun.</li>\n";
+	echo "<li><a href='saisie_socle_commun.php'>Saisir ou importer les r√©sultats du Socle commun.</li>\n";
 
-	echo "<li><a href='verrouillage_saisie_app.php'>Verrouiller/dÈverrouiller la saisie des apprÈciations pour les fiches brevet</a><br />La saisie n'est possible pour les professeurs que si l'extraction des moyennes a ÈtÈ effectuÈe.</li>\n";
+	echo "<li><a href='verrouillage_saisie_app.php'>Verrouiller/d√©verrouiller la saisie des appr√©ciations pour les fiches brevet</a><br />La saisie n'est possible pour les professeurs que si l'extraction des moyennes a √©t√© effectu√©e.</li>\n";
 
-	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'Ètablissement</a>.</li>\n";
+	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'√©tablissement</a>.</li>\n";
 
-	echo "<li><p>GÈnÈrer les fiches brevet selon le modËle de:</p>
+	echo "<li><a href='verif_saisies.php'>V√©rifications avant impression</a>.</li>\n";
+
+	echo "<li><p>G√©n√©rer les fiches brevet selon le mod√®le de:</p>
 	<ul>\n";
 	/*
 	echo "		<li><a href='poitiers/fiches_brevet.php'>Poitiers</a></li>
@@ -380,7 +382,7 @@ if($_SESSION['statut']=="administrateur") {
 	$gepi_version=getSettingValue('version');
 	if(($gepi_version!='1.5.1')&&($gepi_version!='1.5.0')) {  
 	*/
-		echo "		<li><a href='OOo/imprime_ooo.php'>ModËle au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour Èditer les fiches brevets' title='Aide pour utiliser les gabarits .ods pour Èditer les fiches brevets' /></a></li>\n";
+		echo "		<li><a href='OOo/imprime_ooo.php'>Mod√®le au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour √©diter les fiches brevets' title='Aide pour utiliser les gabarits .ods pour √©diter les fiches brevets' /></a></li>\n";
 	//}
 	echo "	</ul>
 </li>\n";
@@ -388,25 +390,36 @@ if($_SESSION['statut']=="administrateur") {
 	//echo "<li><a href=''></a></li>\n";
 	echo "</ol>\n";
 
-	echo "<p>Au changement d'annÈe: <a href='".$_SERVER['PHP_SELF']."?truncate_tables=y".add_token_in_url()."'>Vider les saisies Notanet antÈrieures</a>.</p>\n";
+	echo "<p>Au changement d'ann√©e: <a href='".$_SERVER['PHP_SELF']."?truncate_tables=y".add_token_in_url()."' onclick=\"return confirm('Vous allez vider les tables notanet et perdre les associations √©l√®ves/brevets, extractions, appr√©ciations notanet et avis notanet. Etes-vous s√ªr?')\">Vider les saisies Notanet ant√©rieures</a>.</p>\n";
 
 	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, il faut parcourir les points ci-dessus dans l'ordre.<br />
 	Voir <a href='https://www.sylogix.org/projects/gepi/wiki/Module_notanet' target='_blank'>https://www.sylogix.org/projects/gepi/wiki/Module_notanet</a></p>\n";
 }
 elseif($_SESSION['statut']=="scolarite") {
 	echo "<ul>\n";
-	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>nÈcessaire pour rÈaliser ensuite l'extraction des moyennes</i>)</li>\n";
+	//echo "<li><a href='saisie_b2i_a2.php'>Saisir les 'notes' B2i et niveau A2 de langue</a> (<i>n√©cessaire pour r√©aliser ensuite l'extraction des moyennes</i>)</li>\n";
 
-	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante RÈgionale</a> (<i>si un tel enseignement est ÈvaluÈ dans l'Ètablissement</i>)</li>\n";
+	echo "<li><a href='saisie_lvr.php'>Saisir les 'notes' de Langue Vivante R√©gionale</a> (<i>si un tel enseignement est √©valu√© dans l'√©tablissement</i>)</li>\n";
 
-	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'Ètablissement</a>.</li>\n";
+	echo "<li><a href='saisie_avis.php'>Saisir l'avis du chef d'√©tablissement</a>.</li>\n";
+
+	echo "<li><a href='verif_saisies.php'>V√©rifications avant impression</a>.</li>\n";
+
+	if(acces('/mod_notanet/OOo/imprime_ooo.php', 'scolarite')) {
+		echo "<li><p>G√©n√©rer les fiches brevet selon le mod√®le de:</p>
+	<ul>\n";
+		echo "		<li><a href='OOo/imprime_ooo.php'>Mod√®le au format OpenOffice</a> <a href='https://www.sylogix.org/projects/gepi/wiki/GepiDoc_fbOooCalc'><img src='../images/icons/ico_question.png' alt='aide construction gabarit' title='Aide pour utiliser les gabarits .ods pour √©diter les fiches brevets' title='Aide pour utiliser les gabarits .ods pour √©diter les fiches brevets' /></a></li>\n";
+	//}
+	echo "	</ul>
+</li>\n";
+	}
 	echo "</ul>\n";
 
-	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, plusieurs opÈrations doivent auparavant Ítre rÈalisÈes en statut administrateur.</p>\n";
+	echo "<p><b>NOTES:</b> Pour un bon fonctionnement du dispositif, plusieurs op√©rations doivent auparavant √™tre r√©alis√©es en statut administrateur.</p>\n";
 }
 else {
 	echo "<ul>\n";
-	echo "<li><a href='saisie_app.php'>Saisir les apprÈciations pour les fiches brevet</a></li>\n";
+	echo "<li><a href='saisie_app.php'>Saisir les appr√©ciations pour les fiches brevet</a></li>\n";
 	echo "</ul>\n";
 }
 

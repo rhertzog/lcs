@@ -1,7 +1,7 @@
 <?php
 @set_time_limit(0);
 /*
- * $Id: step2.php 7858 2011-08-21 13:12:55Z crob $
+ * $Id$
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -46,11 +46,11 @@ if (!checkAccess()) {
 check_token();
 
 //**************** EN-TETE *****************
-$titre_page = "Outil d'initialisation de l'annÈe : Importation des ÈlËves - Etape 2";
-require_once("../lib/header.inc");
+$titre_page = "Outil d'initialisation de l'ann√©e : Importation des √©l√®ves - Etape 2";
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
-// On vÈrifie si l'extension d_base est active
+// On v√©rifie si l'extension d_base est active
 //verif_active_dbase();
 
 ?>
@@ -95,8 +95,8 @@ document.formulaire.elements[i+a].value = b ;
 </script>
 
 <?php
-echo "<center><h3 class='gepi'>PremiËre phase d'initialisation<br />Importation des ÈlËves, constitution des classes et affectation des ÈlËves dans les classes</h3></center>";
-echo "<center><h3 class='gepi'>DeuxiËme Ètape : Enregistrement des classes</h3></center>";
+echo "<center><h3 class='gepi'>Premi√®re phase d'initialisation<br />Importation des √©l√®ves, constitution des classes et affectation des √©l√®ves dans les classes</h3></center>";
+echo "<center><h3 class='gepi'>Deuxi√®me √©tape : Enregistrement des classes</h3></center>";
 
 include("../lib/initialisation_annee.inc.php");
 $liste_tables_del = $liste_tables_del_etape_eleves;
@@ -115,11 +115,11 @@ if (!isset($step2)) {
     }
     if ($flag != 0){
         echo "<p><b>ATTENTION ...</b><br />\n";
-        echo "Des donnÈes concernant la constitution des classes et l'affectation des ÈlËves dans les classes sont prÈsentes dans la base GEPI ! Si vous poursuivez la procÈdure, ces donnÈes seront dÈfinitivement effacÈes !</p>\n";
+        echo "Des donn√©es concernant la constitution des classes et l'affectation des √©l√®ves dans les classes sont pr√©sentes dans la base GEPI ! Si vous poursuivez la proc√©dure, ces donn√©es seront d√©finitivement effac√©es !</p>\n";
         echo "<form enctype='multipart/form-data' action='step2.php' method=post>\n";
 		echo add_token_field();
         echo "<input type=hidden name='step2' value='y' />\n";
-        echo "<input type='submit' value='Poursuivre la procÈdure' />\n";
+        echo "<input type='submit' value='Poursuivre la proc√©dure' />\n";
         echo "</form>\n";
 		require("../lib/footer.inc.php");
         die();
@@ -129,23 +129,47 @@ if (!isset($step2)) {
 
 
 if (isset($is_posted)) {
-    $j=0;
-    while ($j < count($liste_tables_del)) {
-		$test = mysql_num_rows(mysql_query("SHOW TABLES LIKE '$liste_tables_del[$j]'"));
-		if($test==1){
-			if (mysql_result(mysql_query("SELECT count(*) FROM $liste_tables_del[$j]"),0)!=0) {
-				$del = @mysql_query("DELETE FROM $liste_tables_del[$j]");
-			}
-		}
-        $j++;
-    }
 
-	// Suppression des comptes d'ÈlËves:
-	$sql="DELETE FROM utilisateurs WHERE statut='eleves';";
+	echo "<p><em>On vide d'abord les tables suivantes&nbsp;:</em> ";
+	$j=0;
+	$k=0;
+	while ($j < count($liste_tables_del)) {
+		$sql="SHOW TABLES LIKE '".$liste_tables_del[$j]."';";
+		//echo "$sql<br />";
+		$test = sql_query1($sql);
+		if ($test != -1) {
+			if($k>0) {echo ", ";}
+			$sql="SELECT 1=1 FROM $liste_tables_del[$j];";
+			$res_test_tab=mysql_query($sql);
+			if(mysql_num_rows($res_test_tab)>0) {
+				$sql="DELETE FROM $liste_tables_del[$j];";
+				$del = @mysql_query($sql);
+				echo "<b>".$liste_tables_del[$j]."</b>";
+				echo " (".mysql_num_rows($res_test_tab).")";
+			}
+			else {
+				echo $liste_tables_del[$j];
+			}
+			$k++;
+		}
+		$j++;
+	}
+
+	// Suppression des comptes d'√©l√®ves:
+	echo "<br />\n";
+	echo "<p><em>On supprime les anciens comptes √©l√®ves...</em> ";
+	$sql="DELETE FROM utilisateurs WHERE statut='eleve';";
 	$del=mysql_query($sql);
 
-    // On va enregistrer la liste des classes, ainsi que les pÈriodes qui leur seront attribuÈes
-    //$call_data = mysql_query("SELECT distinct(DIVCOD) classe FROM temp_gep_import WHERE DIVCOD!='' ORDER BY DIVCOD");
+	// Liste des comptes scolarit√© pour associer aux nouvelles classes
+	$sql="SELECT login FROM utilisateurs WHERE statut='scolarite';";
+	$res_scol=mysql_query($sql);
+	$tab_user_scol=array();
+	if(mysql_num_rows($res_scol)>0) {
+		while($lig_scol=mysql_fetch_object($res_scol)) {$tab_user_scol[]=$lig_scol->login;}
+	}
+
+    // On va enregistrer la liste des classes, ainsi que les p√©riodes qui leur seront attribu√©es
     $call_data = mysql_query("SELECT distinct(DIVCOD) classe FROM temp_gep_import2 WHERE DIVCOD!='' ORDER BY DIVCOD");
     $nb = mysql_num_rows($call_data);
     $i = "0";
@@ -156,17 +180,25 @@ if (isset($is_posted)) {
         // On teste d'abord :
         $test = mysql_result(mysql_query("SELECT count(*) FROM classes WHERE (classe='$classe')"),0);
         if ($test == "0") {
-            //$reg_classe = mysql_query("INSERT INTO classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".traitement_magic_quotes(corriger_caracteres($reg_formule[$classe]))."', format_nom='np'");
-            //$reg_classe = mysql_query("INSERT INTO classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".html_entity_decode(traitement_magic_quotes(corriger_caracteres($reg_formule[$classe])))."', format_nom='np'");
-            $reg_classe = mysql_query("INSERT INTO classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".html_entity_decode(traitement_magic_quotes(corriger_caracteres($reg_formule[$classe])))."', format_nom='cni'");
-        } else {
-            //$reg_classe = mysql_query("UPDATE classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".traitement_magic_quotes(corriger_caracteres($reg_formule[$classe]))."', format_nom='np' WHERE classe='$classe'");
-            //$reg_classe = mysql_query("UPDATE classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".html_entity_decode(traitement_magic_quotes(corriger_caracteres($reg_formule[$classe])))."', format_nom='np' WHERE classe='$classe'");
-            $reg_classe = mysql_query("UPDATE classes SET classe='".traitement_magic_quotes(corriger_caracteres($classe))."',nom_complet='".traitement_magic_quotes(corriger_caracteres($reg_nom_complet[$classe]))."',suivi_par='".traitement_magic_quotes(corriger_caracteres($reg_suivi[$classe]))."',formule='".html_entity_decode(traitement_magic_quotes(corriger_caracteres($reg_formule[$classe])))."', format_nom='cni' WHERE classe='$classe'");
-        }
-        if (!$reg_classe) echo "<p>Erreur lors de l'enregistrement de la classe $classe.";
+            $reg_classe = mysql_query("INSERT INTO classes SET classe='".mysql_real_escape_string(nettoyer_caracteres_nom($classe, "an", " _-",""))."',nom_complet='".mysql_real_escape_string(nettoyer_caracteres_nom($reg_nom_complet[$classe], "an", " _-",""))."',suivi_par='".mysql_real_escape_string(nettoyer_caracteres_nom($reg_suivi[$classe]), "an", " ',._-","")."',formule='".html_entity_decode(mysql_real_escape_string(nettoyer_caracteres_nom($reg_formule[$classe], "an", " ',._-","")))."', format_nom='cni'");
 
-        // On enregistre les pÈriodes pour cette classe
+			$id_classe=mysql_insert_id();
+			for($loop=0;$loop<count($tab_user_scol);$loop++) {
+				// TEST d√©j√† assoc... cela peut arriver si des scories subsistent...
+				$sql="SELECT 1=1 FROM j_scol_classes WHERE login='$tab_user_scol[$loop]' AND id_classe='$id_classe';";
+				$test_j_scol_class=mysql_query($sql);
+				if(mysql_num_rows($test_j_scol_class)==0) {
+					//$tab_user_scol
+					$sql="INSERT INTO j_scol_classes SET login='$tab_user_scol[$loop]', id_classe='$id_classe';";
+					$insert_j_scol_class=mysql_query($sql);
+				}
+			}
+        } else {
+            $reg_classe = mysql_query("UPDATE classes SET classe='".mysql_real_escape_string(nettoyer_caracteres_nom($classe, "an", " _-",""))."',nom_complet='".mysql_real_escape_string(nettoyer_caracteres_nom($reg_nom_complet[$classe], "an", " _-",""))."',suivi_par='".mysql_real_escape_string(nettoyer_caracteres_nom($reg_suivi[$classe], "an", " ',._-",""))."',formule='".html_entity_decode(mysql_real_escape_string(nettoyer_caracteres_nom($reg_formule[$classe], "an", " ',._-","")))."', format_nom='cni' WHERE classe='$classe'");
+        }
+        if (!$reg_classe) {echo "<p style='color:red'>Erreur lors de l'enregistrement de la classe $classe.";}
+
+        // On enregistre les p√©riodes pour cette classe
         // On teste d'abord :
         $id_classe = mysql_result(mysql_query("select id from classes where classe='$classe'"),0,'id');
         $test = mysql_result(mysql_query("SELECT count(*) FROM periodes WHERE (id_classe='$id_classe')"),0);
@@ -174,21 +206,21 @@ if (isset($is_posted)) {
             $j = '0';
             while ($j < $reg_periodes_num[$classe]) {
                 $num = $j+1;
-                $nom_per = "PÈriode ".$num;
+                $nom_per = "P√©riode ".$num;
                 if ($num == "1") { $ver = "N"; } else { $ver = 'O'; }
                 $register = mysql_query("INSERT INTO periodes SET num_periode='$num',nom_periode='$nom_per',verouiller='$ver',id_classe='$id_classe'");
-                if (!$register) echo "<p>Erreur lors de l'enregistrement d'une pÈriode pour la classe $classe";
+                if (!$register) echo "<p>Erreur lors de l'enregistrement d'une p√©riode pour la classe $classe";
                 $j++;
             }
         } else {
-            // on "dÈmarque" les pÈriodes des classes qui ne sont pas ‡ supprimer
+            // on "d√©marque" les p√©riodes des classes qui ne sont pas √† supprimer
             $sql = mysql_query("UPDATE periodes SET verouiller='N' where (id_classe='$id_classe' and num_periode='1')");
             $sql = mysql_query("UPDATE periodes SET verouiller='O' where (id_classe='$id_classe' and num_periode!='1')");
             //
             $nb_per = mysql_num_rows(mysql_query("select num_periode from periodes where id_classe='$id_classe'"));
             if ($nb_per > $reg_periodes_num[$classe]) {
-                // Le nombre de pÈriodes de la classe est infÈrieur au nombre enregistrÈ
-                // On efface les pÈriodes en trop
+                // Le nombre de p√©riodes de la classe est inf√©rieur au nombre enregistr√©
+                // On efface les p√©riodes en trop
                 $k = 0;
                 for ($k=$reg_periodes_num[$classe]+1; $k<$nb_per+1; $k++) {
                     $del = mysql_query("delete from periodes where (id_classe='$id_classe' and num_periode='$k')");
@@ -196,23 +228,23 @@ if (isset($is_posted)) {
             }
             if ($nb_per < $reg_periodes_num[$classe]) {
 
-                // Le nombre de pÈriodes de la classe est supÈrieur au nombre enregistrÈ
-                // On enregistre les pÈriodes
+                // Le nombre de p√©riodes de la classe est sup√©rieur au nombre enregistr√©
+                // On enregistre les p√©riodes
                 $k = 0;
                 $num = $nb_per;
                 for ($k=$nb_per+1 ; $k < $reg_periodes_num[$classe]+1; $k++) {
                     $num++;
-                    $nom_per = "PÈriode ".$num;
+                    $nom_per = "P√©riode ".$num;
                     if ($num == "1") { $ver = "N"; } else { $ver = 'O'; }
                     $register = mysql_query("INSERT INTO periodes SET num_periode='$num',nom_periode='$nom_per',verouiller='$ver',id_classe='$id_classe'");
-                    if (!$register) echo "<p>Erreur lors de l'enregistrement d'une pÈriode pour la classe $classe";
+                    if (!$register) echo "<p>Erreur lors de l'enregistrement d'une p√©riode pour la classe $classe";
                 }
             }
         }
 
         $i++;
     }
-    // On efface les classes qui ne sont pas rÈutilisÈes cette annÈe  ainsi que les entrÈes correspondantes dans  j_groupes_classes
+    // On efface les classes qui ne sont pas r√©utilis√©es cette ann√©e  ainsi que les entr√©es correspondantes dans  j_groupes_classes
     $sql = mysql_query("select distinct id_classe from periodes where verouiller='T'");
     $k = 0;
     while ($k < mysql_num_rows($sql)) {
@@ -226,8 +258,8 @@ if (isset($is_posted)) {
     		"g.id != jgc.id_groupe and jeg.id_groupe != jgc.id_groupe and jgp.id_groupe != jgc.id_groupe and jgm.id_groupe != jgc.id_groupe)");
 
     $res = mysql_query("delete from periodes where verouiller='T'");
-    echo "<p>Vous venez d'effectuer l'enregistrement des donnÈes concernant les classes. S'il n'y a pas eu d'erreurs, vous pouvez aller ‡ l'Ètape suivante pour enregistrer les donnÈes concernant les ÈlËves.";
-    echo "<center><p><a href='step3.php?a=a".add_token_in_url()."'>AccÈder ‡ l'Ètape 3</a></p></center>";
+    echo "<p>Vous venez d'effectuer l'enregistrement des donn√©es concernant les classes. S'il n'y a pas eu d'erreurs, vous pouvez aller √† l'√©tape suivante pour enregistrer les donn√©es concernant les √©l√®ves.";
+    echo "<center><p><a href='step3.php?a=a".add_token_in_url()."'>Acc√©der √† l'√©tape 3</a></p></center>";
 } else {
     // On commence par "marquer" les classes existantes dans la base
     $sql = mysql_query("UPDATE periodes SET verouiller='T'");
@@ -239,11 +271,11 @@ if (isset($is_posted)) {
     echo "<form enctype='multipart/form-data' action='step2.php' method=post name='formulaire'>";
 	echo add_token_field();
     echo "<input type=hidden name='is_posted' value='yes' />";
-    echo "<p>Les classes en vert indiquent des classes dÈj‡ existantes dans la base GEPI.<br />Les classes en rouge indiquent des classes nouvelles et qui vont Ítre ajoutÈes ‡ la base GEPI.<br /></p>";
-    echo "<p>Pour les nouvelles classes, des noms standards sont utilisÈs pour les pÈriodes (pÈriode 1, pÈriode 2...), et seule la premiËre pÈriode n'est pas verrouillÈe. Vous pourrez modifier ces paramËtres ultÈrieurement</p>";
-    echo "<p>Attention !!! Il n'y a pas de tests sur les champs entrÈs. Soyez vigilant ‡ ne pas mettre des caractËres spÈciaux dans les champs ...</p>";
-    echo "<p>Essayez de remplir tous les champs, cela Èvitera d'avoir ‡ le faire ultÈrieurement.</p>";
-    echo "<p>N'oubliez pas <b>d'enregistrer les donnÈes</b> en cliquant sur le bouton en bas de la page<br /><br />";
+    echo "<p>Les classes en vert indiquent des classes d√©j√† existantes dans la base GEPI.<br />Les classes en rouge indiquent des classes nouvelles et qui vont √™tre ajout√©es √† la base GEPI.<br /></p>";
+    echo "<p>Pour les nouvelles classes, des noms standards sont utilis√©s pour les p√©riodes (p√©riode 1, p√©riode 2...), et seule la premi√®re p√©riode n'est pas verrouill√©e. Vous pourrez modifier ces param√®tres ult√©rieurement</p>";
+    echo "<p>Attention !!! Il n'y a pas de tests sur les champs entr√©s. Soyez vigilant √† ne pas mettre des caract√®res sp√©ciaux dans les champs ...</p>";
+    echo "<p>Essayez de remplir tous les champs, cela √©vitera d'avoir √† le faire ult√©rieurement.</p>";
+    echo "<p>N'oubliez pas <b>d'enregistrer les donn√©es</b> en cliquant sur le bouton en bas de la page<br /><br />";
 ?>
 <fieldset style="padding-top: 8px; padding-bottom: 8px;  margin-left: 8px; margin-right: 100px;">
 <legend style="font-variant: small-caps;"> Aide au remplissage </legend>
@@ -259,12 +291,12 @@ if (isset($is_posted)) {
 <tr>
   <td>&nbsp;</td>
   <td colspan="5">Vous pouvez remplir les cases <font color="red">
-une ‡ une</font> et/ou <font color="red">globalement</font> gr‚ce aux
-fonctionnalitÈs offertes ci-dessous :</td>
+une √† une</font> et/ou <font color="red">globalement</font> gr√¢ce aux
+fonctionnalit√©s offertes ci-dessous :</td>
 </tr>
 <tr>
   <td colspan="2">&nbsp;</td>
-  <td colspan="4">1) D'abord, cochez les lignes une ‡ une</td>
+  <td colspan="4">1) D'abord, cochez les lignes une √† une</td>
 </tr>
   <tr>
   <td colspan="3">&nbsp;</td>
@@ -274,11 +306,11 @@ fonctionnalitÈs offertes ci-dessous :</td>
   <a href="javascript:CocheCase(false)">
   DECOCHER</a> toutes les lignes , ou
   <a href="javascript:InverseSel()">
-  INVERSER </a>la sÈlection</td>
+  INVERSER </a>la s√©lection</td>
 </tr>
 <tr>
   <td colspan="2">&nbsp;</td>
-  <td colspan="4">2) Puis, pour les lignes cochÈes :</td>
+  <td colspan="4">2) Puis, pour les lignes coch√©es :</td>
 </tr>
  <tr>
   <td colspan="4">&nbsp;</td>
@@ -300,7 +332,7 @@ onclick="javascript:MetVal('pour')" />
 </tr>
 <tr>
   <td colspan="2">&nbsp;</td>
-  <td colspan="4">3) Cliquez sur les boutons "Recopier" pour remplir les champs selectionnÈs.</td>
+  <td colspan="4">3) Cliquez sur les boutons "Recopier" pour remplir les champs selectionn√©s.</td>
 </tr>
 
 </table>
@@ -308,14 +340,15 @@ onclick="javascript:MetVal('pour')" />
 <br />
 <?php
 
-    echo "<table border=1 cellpadding=2 cellspacing=2>";
+    echo "<table class='boireaus' border=1 cellpadding=2 cellspacing=2>";
     echo "<tr>
-<td><p class=\"small\" align=\"center\">Aide<br />Remplissage</p></td>
-<td><p class=\"small\">Identifiant de la classe</p></td>
-<td><p class=\"small\">Nom complet</p></td>
-<td><p class=\"small\">Nom apparaissant au bas du bulletin</p></td>
-<td><p class=\"small\">formule au bas du bulletin</p></td>
-<td><p class=\"small\">Nombres de pÈriodes</p></td></tr>\n";
+<th><p class=\"small\" align=\"center\">Aide<br />Remplissage</p></th>
+<th><p class=\"small\">Identifiant de la classe</p></th>
+<th><p class=\"small\">Nom complet</p></th>
+<th><p class=\"small\">Nom apparaissant au bas du bulletin</p></th>
+<th><p class=\"small\">formule au bas du bulletin</p></th>
+<th><p class=\"small\">Nombres de p√©riodes</p></th></tr>\n";
+	$alt=1;
     while ($i < $nb) {
         $classe_id = mysql_result($call_data, $i, "classe");
         $test_classe_exist = mysql_query("SELECT * FROM classes WHERE classe='$classe_id'");
@@ -335,7 +368,8 @@ onclick="javascript:MetVal('pour')" />
             $suivi_par = mysql_result($test_classe_exist, 0, 'suivi_par');
             $formule = mysql_result($test_classe_exist, 0, 'formule');
         }
-        echo "<tr>\n";
+		$alt=$alt*(-1);
+        echo "<tr class='lig$alt white_hover'>\n";
         echo "<td><center><input type=\"checkbox\" /></center></td>\n";
         echo "<td>\n";
         echo "<p align='center'><b>$nom_court</b></p>\n";
@@ -363,11 +397,19 @@ onclick="javascript:MetVal('pour')" />
     }
     echo "</table>\n";
     echo "<input type=hidden name='step2' value='y' />\n";
-    echo "<center><input type='submit' value='Enregistrer les donnÈes' /></center>\n";
+    echo "<p align='center'><input type='submit' value='Enregistrer les donn√©es' /></p>\n";
     echo "</form>\n";
 }
 
 ?>
+<p><em>Remarque sur les p√©riodes&nbsp;:</em></p>
+<blockquote>
+	<p>Le nombre de p√©riodes doit correspondre au nombre de bulletins qui sera √©dit√© pour chaque √©l√®ve sur l'ann√©e.<br />
+	En coll√®ge par exemple, on saisira trois p√©riodes (<em>trimestres</em>).<br />
+	Cela n'emp√™chera pas d'√©diter six relev√©s de notes par √©l√®ve au cours de l'ann√©e si vous souhaitez des relev√©s de notes de demi-p√©riode.<br />
+	Il ne serait en revanche pas possible d'√©diter un bulletin fusion de deux p√©riodes.</p>
+</blockquote>
+<p><br /></p>
 </div>
 </body>
 </html>

@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: check_nature_incident.php 7503 2011-07-23 19:50:02Z crob $
  *
  * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -36,22 +35,20 @@ if ($resultat_session == 'c') {
 }
 
 
-// SQL : INSERT INTO droits VALUES ( '/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Recherche de natures d incident', '');
-// maj : $tab_req[] = "INSERT INTO droits VALUES ( '/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Recherche de natures d incident', '');";
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
 	die();
 }
 
-if(strtolower(substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
-	$mess=rawurlencode("Vous tentez d accéder au module Discipline qui est désactivé !");
-	tentative_intrusion(1, "Tentative d'accès au module Discipline qui est désactivé.");
+if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') {
+	$mess=rawurlencode("Vous tentez d accÃ©der au module Discipline qui est dÃ©sactivÃ© !");
+	tentative_intrusion(1, "Tentative d'accÃ¨s au module Discipline qui est dÃ©sactivÃ©.");
 	header("Location: ../accueil.php?msg=$mess");
 	die();
 }
 
 
-header('Content-Type: text/html; charset=ISO-8859-1');
+header('Content-Type: text/html; charset=utf-8');
 
 //$chaine_rech=isset($_GET['chaine_rech']) ? $_GET['chaine_rech'] : NULL;
 $nature=isset($_POST['nature']) ? $_POST['nature'] : NULL;
@@ -61,16 +58,16 @@ if(isset($chaine_rech)) {
 	//check_token();
 
 	// Pour debug:
-	// echo "Eléments transmis: $chaine_rech<br />";
+	// echo "ElÃ©ments transmis: $chaine_rech<br />";
 
-	// Filtrage des caractères
-	$chaine_rech=preg_replace("/[^A-Za-z0-9ÀàÂâÄäÉéÈèÊêËëÎîÏïÔôÖöÙùÛûÜü \._-]/","%",$chaine_rech);
+	// Filtrage des caractÃ¨res
+	$chaine_rech=preg_replace("/[^A-Za-z0-9Ã€Ã Ã‚Ã¢Ã„Ã¤Ã‰Ã©ÃˆÃ¨ÃŠÃªÃ‹Ã«ÃÃ®ÃÃ¯Ã”Ã´Ã–Ã¶Ã™Ã¹Ã›Ã»ÃœÃ¼ \._-]/","%",$chaine_rech);
 
 	//$chaine_mysql="(";
 	$chaine_mysql=" 1 AND (";
-	//$tab=explode("_",substr($chaine_rech,1)); // On vire le _ de début de chaine
-	//$tab=explode("_",preg_replace("/^_/","",$chaine_rech)); // On vire le _ de début de chaine
-	$tab=explode(" ",$chaine_rech); // On vire le _ de début de chaine
+	//$tab=explode("_",mb_substr($chaine_rech,1)); // On vire le _ de dÃ©but de chaine
+	//$tab=explode("_",preg_replace("/^_/","",$chaine_rech)); // On vire le _ de dÃ©but de chaine
+	$tab=explode(" ",$chaine_rech); // On vire le _ de dÃ©but de chaine
 	for($i=0;$i<count($tab);$i++) {
 		if($tab[$i]!='') {
 			if($i>0) {$chaine_mysql.=" OR ";}
@@ -102,10 +99,10 @@ if(isset($chaine_rech)) {
 		echo "</ul>";
 	}
 	else {
-		echo "Aucun incident de même nature n'a été trouvé.";
+		echo "Aucun incident de mÃªme nature n'a Ã©tÃ© trouvÃ©.";
 	}
 }
 else {
-	echo "Aucun élément pour la recherche d'incident.";
+	echo "Aucun Ã©lÃ©ment pour la recherche d'incident.";
 }
 ?>

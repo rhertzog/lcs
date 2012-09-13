@@ -1,7 +1,6 @@
 <?php
 
 /*
- * $Id: liste_classe_fut.php 7357 2011-07-01 16:35:26Z crob $
  *
  * Copyright 2001, 2005 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -50,7 +49,7 @@ eleve='F',
 responsable='F',
 secours='F',
 autre='F',
-description='Génèse des classes: Liste des classes futures (appel ajax)',
+description='GenÃ¨se des classes: Liste des classes futures (appel ajax)',
 statut='';";
 $insert=mysql_query($sql);
 }
@@ -60,7 +59,7 @@ if (!checkAccess()) {
 	die();
 }
 
-// Page appelée via ajax depuis saisie_sanction.php->liste_retenues_jour.php
+// Page appelÃ©e via ajax depuis saisie_sanction.php->liste_retenues_jour.php
 
 $classe_fut=isset($_GET['classe_fut']) ? $_GET['classe_fut'] : NULL;
 $projet=isset($_GET['projet']) ? $_GET['projet'] : NULL;
@@ -80,7 +79,7 @@ else {
 		if(mysql_num_rows($res_ele_courant)>0) {
 			$lig_ele_courant=mysql_fetch_object($res_ele_courant);
 
-			echo htmlentities(strtoupper($lig_ele_courant->nom))." ".htmlentities(ucfirst(strtolower($lig_ele_courant->prenom)));
+			echo htmlspecialchars(mb_strtoupper($lig_ele_courant->nom))." ".htmlspecialchars(ucfirst(mb_strtolower($lig_ele_courant->prenom)));
 			if($avec_classe_origine) {
 				$tmp_tab_clas=get_class_from_ele_login($ele_login);
 				if(isset($tmp_tab_clas['liste'])) {
@@ -90,7 +89,7 @@ else {
 			echo " -&gt; ";
 		}
 	}
-	echo htmlentities($classe_fut)."</p>\n";
+	echo htmlspecialchars($classe_fut)."</p>\n";
 
 	//$sql="SELECT e.nom,e.prenom FROM gc_eleve_fut_classe g, eleves e WHERE g.projet='$projet' AND g.classe='$classe_fut' AND g.login=e.login ORDER BY nom, prenom;";
 	$sql="SELECT e.login,e.nom,e.prenom FROM gc_eleves_options g, eleves e WHERE g.projet='$projet' AND g.classe_future='$classe_fut' AND g.login=e.login ORDER BY nom, prenom;";
@@ -113,8 +112,7 @@ else {
 	
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
-				//echo "<td style='font-size:x-small;'>".htmlentities(strtoupper($lig_ele_clas_fut->nom))." ".htmlentities(ucfirst(strtolower($lig_ele_clas_fut->prenom)))."</td>\n";
-				echo "<td>".htmlentities(strtoupper($lig_ele_clas_fut->nom))." ".htmlentities(ucfirst(strtolower($lig_ele_clas_fut->prenom)));
+				echo "<td>".htmlspecialchars(mb_strtoupper($lig_ele_clas_fut->nom))." ".htmlspecialchars(ucfirst(mb_strtolower($lig_ele_clas_fut->prenom)));
 				if($avec_classe_origine) {
 					$tmp_tab_clas=get_class_from_ele_login($lig_ele_clas_fut->login);
 					if(isset($tmp_tab_clas['liste'])) {
@@ -163,8 +161,7 @@ else {
 	
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
-				//echo "<td style='font-size:x-small;'>".htmlentities(strtoupper($lig_ele_clas_fut->nom))." ".htmlentities(ucfirst(strtolower($lig_ele_clas_fut->prenom)))."</td>\n";
-				echo "<td>".htmlentities(strtoupper($lig_ele_clas_fut->nom))." ".htmlentities(ucfirst(strtolower($lig_ele_clas_fut->prenom)));
+				echo "<td>".htmlspecialchars(mb_strtoupper($lig_ele_clas_fut->nom))." ".htmlspecialchars(ucfirst(mb_strtolower($lig_ele_clas_fut->prenom)));
 				if($avec_classe_origine) {
 					$tmp_tab_clas=get_class_from_ele_login($lig_ele_clas_fut->login);
 					if(isset($tmp_tab_clas['liste'])) {

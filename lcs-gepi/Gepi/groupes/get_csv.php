@@ -1,8 +1,7 @@
 <?php
 /*
- * $Id: get_csv.php 6750 2011-04-06 13:14:44Z crob $
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -35,8 +34,8 @@ if ($resultat_session == 'c') {
 }
 
 
-//INSERT INTO droits VALUES ('/groupes/get_csv.php', 'F', 'V', 'V', 'V', 'F', 'V', 'Génération de CSV élèves', '');
-//INSERT INTO droits VALUES ('/groupes/get_csv.php', 'V', 'V', 'V', 'V', 'F', 'V', 'Génération de CSV élèves', '');
+//INSERT INTO droits VALUES ('/groupes/get_csv.php', 'F', 'V', 'V', 'V', 'F', 'V', 'GÃ©nÃ©ration de CSV Ã©lÃ¨ves', '');
+//INSERT INTO droits VALUES ('/groupes/get_csv.php', 'V', 'V', 'V', 'V', 'F', 'V', 'GÃ©nÃ©ration de CSV Ã©lÃ¨ves', '');
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
@@ -93,20 +92,6 @@ if ($current_group) {
 //debug_var();
 
 send_file_download_headers('text/x-csv',$nom_fic);
-/*
-$now = gmdate('D, d M Y H:i:s') . ' GMT';
-header('Content-Type: text/x-csv');
-header('Expires: ' . $now);
-// lem9 & loic1: IE need specific headers
-if (preg_match('/MSIE/', $_SERVER['HTTP_USER_AGENT'])) {
-    header('Content-Disposition: inline; filename="' . $nom_fic . '"');
-    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-    header('Pragma: public');
-} else {
-    header('Content-Disposition: attachment; filename="' . $nom_fic . '"');
-    header('Pragma: no-cache');
-}
-*/
 
 include "../lib/periodes.inc.php";
 $fd = '';
@@ -206,13 +191,13 @@ if($current_group) {
 			$eleve_classe=$lig_tmp->classe;
 		}
 
-		// La fonction get_group() dans /lib/groupes.inc.php ne récupère pas le sexe et la date de naissance...
+		// La fonction get_group() dans /lib/groupes.inc.php ne rÃ©cupÃ¨re pas le sexe et la date de naissance...
 		// ... pourrait-on l'ajouter?
 		$sql="SELECT sexe,naissance,lieu_naissance,email,no_gep,elenoet,ele_id FROM eleves WHERE login='$eleve_login'";
 		$res_tmp=mysql_query($sql);
 
 		if(mysql_num_rows($res_tmp)==0){
-			die("Problème avec les infos de $eleve_login</body></html>");
+			die("ProblÃ¨me avec les infos de $eleve_login</body></html>");
 		}
 		else{
 			$lig_tmp=mysql_fetch_object($res_tmp);
@@ -315,5 +300,6 @@ if($current_group) {
 		$i++;
 	}
 }
-echo $fd;
+echo echo_csv_encoded($fd);
+
 ?>

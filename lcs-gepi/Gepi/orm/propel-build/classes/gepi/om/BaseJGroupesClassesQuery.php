@@ -34,10 +34,6 @@
  * @method     JGroupesClassesQuery rightJoinClasse($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Classe relation
  * @method     JGroupesClassesQuery innerJoinClasse($relationAlias = null) Adds a INNER JOIN clause to the query using the Classe relation
  *
- * @method     JGroupesClassesQuery leftJoinCategorieMatiere($relationAlias = null) Adds a LEFT JOIN clause to the query using the CategorieMatiere relation
- * @method     JGroupesClassesQuery rightJoinCategorieMatiere($relationAlias = null) Adds a RIGHT JOIN clause to the query using the CategorieMatiere relation
- * @method     JGroupesClassesQuery innerJoinCategorieMatiere($relationAlias = null) Adds a INNER JOIN clause to the query using the CategorieMatiere relation
- *
  * @method     JGroupesClasses findOne(PropelPDO $con = null) Return the first JGroupesClasses matching the query
  * @method     JGroupesClasses findOneOrCreate(PropelPDO $con = null) Return the first JGroupesClasses matching the query, or a new JGroupesClasses object populated from the query conditions when no match is found
  *
@@ -61,7 +57,7 @@
  */
 abstract class BaseJGroupesClassesQuery extends ModelCriteria
 {
-
+	
 	/**
 	 * Initializes internal state of BaseJGroupesClassesQuery object.
 	 *
@@ -98,10 +94,14 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	}
 
 	/**
-	 * Find object by primary key
+	 * Find object by primary key.
+	 * Propel uses the instance pool to skip the database if the object exists.
+	 * Go fast if the query is untouched.
+	 *
 	 * <code>
 	 * $obj = $c->findPk(array(12, 34), $con);
 	 * </code>
+	 *
 	 * @param     array[$id_groupe, $id_classe] $key Primary key to use for the query
 	 * @param     PropelPDO $con an optional connection object
 	 *
@@ -109,17 +109,74 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	 */
 	public function findPk($key, $con = null)
 	{
-		if ((null !== ($obj = JGroupesClassesPeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && $this->getFormatter()->isObjectFormatter()) {
+		if ($key === null) {
+			return null;
+		}
+		if ((null !== ($obj = JGroupesClassesPeer::getInstanceFromPool(serialize(array((string) $key[0], (string) $key[1]))))) && !$this->formatter) {
 			// the object is alredy in the instance pool
 			return $obj;
-		} else {
-			// the object has not been requested yet, or the formatter is not an object formatter
-			$criteria = $this->isKeepQuery() ? clone $this : $this;
-			$stmt = $criteria
-				->filterByPrimaryKey($key)
-				->getSelectStatement($con);
-			return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 		}
+		if ($con === null) {
+			$con = Propel::getConnection(JGroupesClassesPeer::DATABASE_NAME, Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
+		if ($this->formatter || $this->modelAlias || $this->with || $this->select
+		 || $this->selectColumns || $this->asColumns || $this->selectModifiers
+		 || $this->map || $this->having || $this->joins) {
+			return $this->findPkComplex($key, $con);
+		} else {
+			return $this->findPkSimple($key, $con);
+		}
+	}
+
+	/**
+	 * Find object by primary key using raw SQL to go fast.
+	 * Bypass doSelect() and the object formatter by using generated code.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    JGroupesClasses A model object, or null if the key is not found
+	 */
+	protected function findPkSimple($key, $con)
+	{
+		$sql = 'SELECT ID_GROUPE, ID_CLASSE, PRIORITE, COEF, CATEGORIE_ID, SAISIE_ECTS, VALEUR_ECTS FROM j_groupes_classes WHERE ID_GROUPE = :p0 AND ID_CLASSE = :p1';
+		try {
+			$stmt = $con->prepare($sql);
+			$stmt->bindValue(':p0', $key[0], PDO::PARAM_INT);
+			$stmt->bindValue(':p1', $key[1], PDO::PARAM_INT);
+			$stmt->execute();
+		} catch (Exception $e) {
+			Propel::log($e->getMessage(), Propel::LOG_ERR);
+			throw new PropelException(sprintf('Unable to execute SELECT statement [%s]', $sql), $e);
+		}
+		$obj = null;
+		if ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+			$obj = new JGroupesClasses();
+			$obj->hydrate($row);
+			JGroupesClassesPeer::addInstanceToPool($obj, serialize(array((string) $key[0], (string) $key[1])));
+		}
+		$stmt->closeCursor();
+
+		return $obj;
+	}
+
+	/**
+	 * Find object by primary key.
+	 *
+	 * @param     mixed $key Primary key to use for the query
+	 * @param     PropelPDO $con A connection object
+	 *
+	 * @return    JGroupesClasses|array|mixed the result, formatted by the current formatter
+	 */
+	protected function findPkComplex($key, $con)
+	{
+		// As the query uses a PK condition, no limit(1) is necessary.
+		$criteria = $this->isKeepQuery() ? clone $this : $this;
+		$stmt = $criteria
+			->filterByPrimaryKey($key)
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->formatOne($stmt);
 	}
 
 	/**
@@ -134,10 +191,15 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	 */
 	public function findPks($keys, $con = null)
 	{
+		if ($con === null) {
+			$con = Propel::getConnection($this->getDbName(), Propel::CONNECTION_READ);
+		}
+		$this->basePreSelect($con);
 		$criteria = $this->isKeepQuery() ? clone $this : $this;
-		return $this
+		$stmt = $criteria
 			->filterByPrimaryKeys($keys)
-			->find($con);
+			->doSelect($con);
+		return $criteria->getFormatter()->init($criteria)->format($stmt);
 	}
 
 	/**
@@ -151,7 +213,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	{
 		$this->addUsingAlias(JGroupesClassesPeer::ID_GROUPE, $key[0], Criteria::EQUAL);
 		$this->addUsingAlias(JGroupesClassesPeer::ID_CLASSE, $key[1], Criteria::EQUAL);
-		
+
 		return $this;
 	}
 
@@ -173,13 +235,13 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 			$cton0->addAnd($cton1);
 			$this->addOr($cton0);
 		}
-		
+
 		return $this;
 	}
 
 	/**
 	 * Filter the query on the id_groupe column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByIdGroupe(1234); // WHERE id_groupe = 1234
@@ -207,7 +269,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the id_classe column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByIdClasse(1234); // WHERE id_classe = 1234
@@ -235,7 +297,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the priorite column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByPriorite(1234); // WHERE priorite = 1234
@@ -275,7 +337,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the coef column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByCoef(1234); // WHERE coef = 1234
@@ -315,15 +377,13 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the categorie_id column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByCategorieId(1234); // WHERE categorie_id = 1234
 	 * $query->filterByCategorieId(array(12, 34)); // WHERE categorie_id IN (12, 34)
 	 * $query->filterByCategorieId(array('min' => 12)); // WHERE categorie_id > 12
 	 * </code>
-	 *
-	 * @see       filterByCategorieMatiere()
 	 *
 	 * @param     mixed $categorieId The value to use as filter.
 	 *              Use scalar values for equality.
@@ -357,7 +417,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the saisie_ects column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterBySaisieEcts(true); // WHERE saisie_ects = true
@@ -383,7 +443,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Filter the query on the valeur_ects column
-	 * 
+	 *
 	 * Example usage:
 	 * <code>
 	 * $query->filterByValeurEcts(1234); // WHERE valeur_ects = 1234
@@ -447,7 +507,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the Groupe relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -457,7 +517,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('Groupe');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -465,7 +525,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -473,7 +533,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'Groupe');
 		}
-		
+
 		return $this;
 	}
 
@@ -481,7 +541,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	 * Use the Groupe relation Groupe object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -521,7 +581,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 
 	/**
 	 * Adds a JOIN clause to the query using the Classe relation
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
 	 *
@@ -531,7 +591,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	{
 		$tableMap = $this->getTableMap();
 		$relationMap = $tableMap->getRelation('Classe');
-		
+
 		// create a ModelJoin object for this join
 		$join = new ModelJoin();
 		$join->setJoinType($joinType);
@@ -539,7 +599,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 		if ($previousJoin = $this->getPreviousJoin()) {
 			$join->setPreviousJoin($previousJoin);
 		}
-		
+
 		// add the ModelJoin to the current object
 		if($relationAlias) {
 			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
@@ -547,7 +607,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 		} else {
 			$this->addJoinObject($join, 'Classe');
 		}
-		
+
 		return $this;
 	}
 
@@ -555,7 +615,7 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 	 * Use the Classe relation Classe object
 	 *
 	 * @see       useQuery()
-	 * 
+	 *
 	 * @param     string $relationAlias optional alias for the relation,
 	 *                                   to be used as main alias in the secondary query
 	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
@@ -567,80 +627,6 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 		return $this
 			->joinClasse($relationAlias, $joinType)
 			->useQuery($relationAlias ? $relationAlias : 'Classe', 'ClasseQuery');
-	}
-
-	/**
-	 * Filter the query by a related CategorieMatiere object
-	 *
-	 * @param     CategorieMatiere|PropelCollection $categorieMatiere The related object(s) to use as filter
-	 * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-	 *
-	 * @return    JGroupesClassesQuery The current query, for fluid interface
-	 */
-	public function filterByCategorieMatiere($categorieMatiere, $comparison = null)
-	{
-		if ($categorieMatiere instanceof CategorieMatiere) {
-			return $this
-				->addUsingAlias(JGroupesClassesPeer::CATEGORIE_ID, $categorieMatiere->getId(), $comparison);
-		} elseif ($categorieMatiere instanceof PropelCollection) {
-			if (null === $comparison) {
-				$comparison = Criteria::IN;
-			}
-			return $this
-				->addUsingAlias(JGroupesClassesPeer::CATEGORIE_ID, $categorieMatiere->toKeyValue('PrimaryKey', 'Id'), $comparison);
-		} else {
-			throw new PropelException('filterByCategorieMatiere() only accepts arguments of type CategorieMatiere or PropelCollection');
-		}
-	}
-
-	/**
-	 * Adds a JOIN clause to the query using the CategorieMatiere relation
-	 * 
-	 * @param     string $relationAlias optional alias for the relation
-	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-	 *
-	 * @return    JGroupesClassesQuery The current query, for fluid interface
-	 */
-	public function joinCategorieMatiere($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-	{
-		$tableMap = $this->getTableMap();
-		$relationMap = $tableMap->getRelation('CategorieMatiere');
-		
-		// create a ModelJoin object for this join
-		$join = new ModelJoin();
-		$join->setJoinType($joinType);
-		$join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
-		if ($previousJoin = $this->getPreviousJoin()) {
-			$join->setPreviousJoin($previousJoin);
-		}
-		
-		// add the ModelJoin to the current object
-		if($relationAlias) {
-			$this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
-			$this->addJoinObject($join, $relationAlias);
-		} else {
-			$this->addJoinObject($join, 'CategorieMatiere');
-		}
-		
-		return $this;
-	}
-
-	/**
-	 * Use the CategorieMatiere relation CategorieMatiere object
-	 *
-	 * @see       useQuery()
-	 * 
-	 * @param     string $relationAlias optional alias for the relation,
-	 *                                   to be used as main alias in the secondary query
-	 * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
-	 *
-	 * @return    CategorieMatiereQuery A secondary query class using the current class as primary query
-	 */
-	public function useCategorieMatiereQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
-	{
-		return $this
-			->joinCategorieMatiere($relationAlias, $joinType)
-			->useQuery($relationAlias ? $relationAlias : 'CategorieMatiere', 'CategorieMatiereQuery');
 	}
 
 	/**
@@ -656,8 +642,8 @@ abstract class BaseJGroupesClassesQuery extends ModelCriteria
 			$this->addCond('pruneCond0', $this->getAliasedColName(JGroupesClassesPeer::ID_GROUPE), $jGroupesClasses->getIdGroupe(), Criteria::NOT_EQUAL);
 			$this->addCond('pruneCond1', $this->getAliasedColName(JGroupesClassesPeer::ID_CLASSE), $jGroupesClasses->getIdClasse(), Criteria::NOT_EQUAL);
 			$this->combine(array('pruneCond0', 'pruneCond1'), Criteria::LOGICAL_OR);
-	  }
-	  
+		}
+
 		return $this;
 	}
 

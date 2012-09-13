@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: edit_limite_bis.php 3994 2010-01-07 18:56:20Z crob $
  *
  * Copyright 2001, 2007 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
@@ -48,12 +47,12 @@ if (!checkAccess()) {
 
 //**************** EN-TETE *****************
 $titre_page = "Obsolete";
-require_once("../lib/header.inc");
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 echo "<p class='bold'><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Accueil</a>";
 
-echo "<p style='color:red'>Cette page est obsolète.</p>\n";
+echo "<p style='color:red'>Cette page est obsolÃ¨te.</p>\n";
 
 require("../lib/footer.inc.php");
 ?>

@@ -8,7 +8,6 @@
  *
  * @author Olav Morken, UNINETT AS.
  * @package simpleSAMLphp
- * @version $Id$
  */
 class SimpleSAML_Auth_Default {
 
@@ -72,7 +71,7 @@ class SimpleSAML_Auth_Default {
 	 * @param array $state  The state after the login.
 	 * @return array  The persistent authentication state.
 	 */
-	private static function extractPersistentAuthState(array &$state) {
+	public static function extractPersistentAuthState(array &$state) {
 
 		/* Save persistent authentication data. */
 		$persistentAuthState = array();

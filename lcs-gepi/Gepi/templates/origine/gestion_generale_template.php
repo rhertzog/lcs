@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <?php
 /*
- * $Id: gestion_generale_template.php 6697 2011-03-25 21:54:27Z regis $
+ * $Id$
 */
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
 
 <head>
 
-<!-- on inclut l'entête -->
+<!-- on inclut l'entÃªte -->
 	<?php include('./../templates/origine/header_template.php');?>
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo $gepiPath;?>/accessibilite.css" media="screen" />
@@ -61,7 +61,7 @@
 	<a href='#bas_de_page'><img src='../images/down.png' width='18' height='18' alt="bas de la page" title="Descendre en bas de la page" /></a>
 </div>
 
-<a name="contenu" class="invisible">Début de la page</a>	
+<a name="contenu" class="invisible">DÃ©but de la page</a>	
 	
 <?php	
 				if (count($tbs_menu)) {
@@ -85,7 +85,7 @@
 				unset($newentree);
 						}
 							echo "
-<!-- Fin menu	général -->
+<!-- Fin menu	gÃ©nÃ©ral -->
 				";
 					}
 					unset ($value);

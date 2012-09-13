@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: BilansCtrl.php 7799 2011-08-17 08:38:10Z dblanqui $
  *
  * Copyright 2001, 2010 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer, Didier Blanqui
  *
@@ -20,7 +19,7 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-// On empêche l'accès direct au fichier
+// On empÃªche l'accÃ¨s direct au fichier
 if (basename($_SERVER["SCRIPT_NAME"])==basename(__File__)){
     die();
 };
@@ -70,7 +69,7 @@ class BilansCtrl extends Controleur {
   function  __construct() {
     parent::__construct();
     $this->objet_periodes=new ClassPeriodes();
-    $_SESSION['choix_evolution']=isset($_SESSION['choix_evolution'])?$_SESSION['choix_evolution']:'Catégories';
+    $_SESSION['choix_evolution']=isset($_SESSION['choix_evolution'])?$_SESSION['choix_evolution']:'CatÃ©gories';
     $this->choix_evolution=isset($_POST['evolution'])?$_POST['evolution']:(isset($_GET['evolution'])?$_GET['evolution']:Null);
     if( $this->choix_evolution) $_SESSION['choix_evolution']=$this->choix_evolution;
     $this->current_onglet=isset($_SESSION['current_onglet']['id'])?$_SESSION['current_onglet']['id']:0;
@@ -92,7 +91,7 @@ class BilansCtrl extends Controleur {
       echo"<script type='text/javascript'>inittab('$this->current_onglet');</script>";
     }
     catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
+      echo 'Exception reÃ§ue : ',  $e->getMessage(), "\n";
     }
   }
 
@@ -243,7 +242,7 @@ class BilansCtrl extends Controleur {
       echo"<script type='text/javascript'>inittab('$this->current_onglet');</script>";
     }
     catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
+      echo 'Exception reÃ§ue : ',  $e->getMessage(), "\n";
     }
   }
 
@@ -267,7 +266,7 @@ class BilansCtrl extends Controleur {
       //echo"<script type='text/javascript'>inittab();</script>";
     }
     catch (Exception $e) {
-      echo 'Exception reçue : ',  $e->getMessage(), "\n";
+      echo 'Exception reÃ§ue : ',  $e->getMessage(), "\n";
     }
   }
 
@@ -291,7 +290,7 @@ class BilansCtrl extends Controleur {
   private function make_array_for_csv($name) {
     $this->traite_filtres();
     $this->traite_incidents_bilans();
-    $csv=Array('Nom,Prenom,Incidents,Mesures prises,% Mesures prises,Sanctions prises,% sanctions prises,Heures de retenues,% heures retenues,Jours d\'exclusion,% jours d\'exclusion');
+    $csv=Array('Nom;Prenom;Incidents;Mesures prises;% Mesures prises;Sanctions prises;% sanctions prises;Heures de retenues;% heures retenues;Jours d\'exclusion;% jours d\'exclusion');
     foreach ($this->liste_eleves[$name] as $eleve) {
       if(!isset($this->totaux_indiv[$eleve]['mesures']))$this->totaux_indiv[$eleve]['mesures']=0;
       if(!isset($this->totaux_indiv[$eleve]['sanctions']))$this->totaux_indiv[$eleve]['sanctions']=0;
@@ -307,10 +306,10 @@ class BilansCtrl extends Controleur {
       $this->totaux_indiv[$eleve]['%jours_exclusions']=round(100*($this->totaux_indiv[$eleve]['jours_exclusions']/$this->totaux['L\'Etablissement']['jours_exclusions']),2);
 
 
-      $csv[]=($this->totaux_indiv[$eleve]['nom'].','.$this->totaux_indiv[$eleve]['prenom'].','.$this->totaux_indiv[$eleve]['incidents'].','.$this->totaux_indiv[$eleve]['mesures'].','.$this->totaux_indiv[$eleve]['%mesures']
-                      .','.$this->totaux_indiv[$eleve]['sanctions'].','.$this->totaux_indiv[$eleve]['%sanctions']
-                      .','.$this->totaux_indiv[$eleve]['heures_retenues'].','.$this->totaux_indiv[$eleve]['%heures_retenues']
-                      .','.$this->totaux_indiv[$eleve]['jours_exclusions'].','.$this->totaux_indiv[$eleve]['%jours_exclusions']);
+      $csv[]=($this->totaux_indiv[$eleve]['nom'].';'.$this->totaux_indiv[$eleve]['prenom'].';'.$this->totaux_indiv[$eleve]['incidents'].';'.$this->totaux_indiv[$eleve]['mesures'].';'.$this->totaux_indiv[$eleve]['%mesures']
+                      .';'.$this->totaux_indiv[$eleve]['sanctions'].';'.$this->totaux_indiv[$eleve]['%sanctions']
+                      .';'.$this->totaux_indiv[$eleve]['heures_retenues'].';'.$this->totaux_indiv[$eleve]['%heures_retenues']
+                      .';'.$this->totaux_indiv[$eleve]['jours_exclusions'].';'.$this->totaux_indiv[$eleve]['%jours_exclusions']);
     }
     return $csv;
   }

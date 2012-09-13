@@ -1,6 +1,5 @@
 <?php
 /*
- * $Id: include_affiche_notices_vignettes.php 8401 2011-10-01 13:23:40Z crob $
  *
  * Copyright 2009-2011 Josselin Jacquard
  *
@@ -37,7 +36,7 @@ function affiche_devoir_vignette($devoir, $couleur_bord_tableau_notice, $color_f
 		//$html_balise .=("<span style='color:coral'>".$_SESSION['login']."</span>");
 
 		$liens_edition_suppression="y";
-		if((strtoupper($devoir->getIdLogin())!=strtoupper($_SESSION['login']))&&(getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
+		if((my_strtoupper($devoir->getIdLogin())!=my_strtoupper($_SESSION['login']))&&(getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
 			$liens_edition_suppression="n";
 		}
 
@@ -53,6 +52,21 @@ function affiche_devoir_vignette($devoir, $couleur_bord_tableau_notice, $color_f
 			$html_balise .=("\">");
 			$html_balise .=("<img style=\"border: 0px;\" src=\"../images/edit16.png\" alt=\"modifier\" title=\"modifier\" /></a>\n");
 			$html_balise .=(" ");
+
+			$html_balise .=("<a href=\"#\" onclick=\"javascript:
+                                            contenu_a_copier = '".addslashes(htmlspecialchars($devoir->getContenu()))."';
+                                            ct_a_importer_class='".get_class($devoir)."';
+                                            id_ct_a_importer='".$devoir->getIdCt()."';
+                                            new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=".$devoir->getIdGroupe()."&ct_a_importer_class=".get_class($devoir)."&id_ct_a_importer=".$devoir->getIdCt()."',{ onComplete:function() {updateDivModification();} });
+                                        \"><img style=\"border: 0px;\" src=\"");
+                        if (isset($_SESSION['ct_a_importer']) && $_SESSION['ct_a_importer'] == $devoir) {
+                            $html_balise .=("../images/icons/copy-16-gold.png");
+                        } else {
+                            $html_balise .=("../images/icons/copy-16.png");
+                        }
+                        $html_balise .=("\" alt=\"Copier\" title=\"Copier\" /></a>\n");
+			$html_balise .=(" ");
+
 			$html_balise .=("<a href=\"#\" onclick=\"javascript:
 									suppressionDevoir('".strftime("%A %d %B %Y", $devoir->getDateCt())."','".$devoir->getIdCt()."', '".$devoir->getIdGroupe()."','".add_token_in_js_func()."');
 									new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
@@ -60,11 +74,11 @@ function affiche_devoir_vignette($devoir, $couleur_bord_tableau_notice, $color_f
 								\"><img style=\"border: 0px;\" src=\"../images/delete16.png\" alt=\"supprimer\" title=\"supprimer\" /></a>\n");
 	
 			if(($devoir->getDateVisibiliteEleve()!="")&&(mysql_date_to_unix_timestamp($devoir->getDateVisibiliteEleve())>time())) {
-				$html_balise .=("<img src=\"../images/icons/visible.png\" width=\"19\" height=\"16\" alt=\"Date de visibilité de la notice pour les élèves\" title=\"Date de visibilité de la notice pour les élèves\" /><span style='font-size: xx-small; color:red;'>&nbsp;".get_date_heure_from_mysql_date($devoir->getDateVisibiliteEleve())."</span>\n");
+				$html_balise .=("<img src=\"../images/icons/visible.png\" width=\"19\" height=\"16\" alt=\"Date de visibilitÃ© de la notice pour les Ã©lÃ¨ves\" title=\"Date de visibilitÃ© de la notice pour les Ã©lÃ¨ves\" /><span style='font-size: xx-small; color:red;'>&nbsp;".get_date_heure_from_mysql_date($devoir->getDateVisibiliteEleve())."</span>\n");
 			}
 		}
 	} else {
-		$html_balise .= "<i><span  class=\"red\">Notice signée</span></i>";
+		$html_balise .= "<i><span  class=\"red\">Notice signÃ©e</span></i>";
 	}
 	$html_balise .= '</div>';
 	echo($html_balise);
@@ -89,7 +103,7 @@ function affiche_notice_privee_vignette($notice_privee, $couleur_bord_tableau_no
 	//vise
 	$html_balise =("<div style='display: none; color: red; margin: 0px; float: right;' id='compte_rendu_en_cours_notice_privee_".$notice_privee->getIdCt()."'></div>");
 
-		if(strtoupper($notice_privee->getIdLogin())==strtoupper($_SESSION['login'])) {
+		if(my_strtoupper($notice_privee->getIdLogin())==my_strtoupper($_SESSION['login'])) {
 			$html_balise .= '<div style="margin: 0px; float: left;">';
 				$html_balise .=("<a href=\"#\" onclick=\"javascript:
 										id_groupe = '".$notice_privee->getIdGroupe()."';
@@ -102,6 +116,21 @@ function affiche_notice_privee_vignette($notice_privee, $couleur_bord_tableau_no
 				$html_balise .=("\">");
 				$html_balise .=("<img style=\"border: 0px;\" src=\"../images/edit16.png\" alt=\"modifier\" title=\"modifier\" /></a>\n");
 				$html_balise .=(" ");
+
+                                $html_balise .=("<a href=\"#\" onclick=\"javascript:
+                                                    contenu_a_copier = '".addslashes(htmlspecialchars($notice_privee->getContenu()))."';
+                                                    ct_a_importer_class='".get_class($notice_privee)."';
+                                                    id_ct_a_importer='".$notice_privee->getIdCt()."';
+                                                    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=".$notice_privee->getIdGroupe()."&ct_a_importer_class=".get_class($notice_privee)."&id_ct_a_importer=".$notice_privee->getIdCt()."',{ onComplete:function() {updateDivModification();} });
+                                                \"><img style=\"border: 0px;\" src=\"");
+                                if (isset($_SESSION['ct_a_importer']) && $_SESSION['ct_a_importer'] == $notice_privee) {
+                                    $html_balise .=("../images/icons/copy-16-gold.png");
+                                } else {
+                                    $html_balise .=("../images/icons/copy-16.png");
+                                }
+                                $html_balise .=("\" alt=\"Copier\" title=\"Copier\" /></a>\n");
+				$html_balise .=(" ");
+
 				$html_balise .=("<a href=\"#\" onclick=\"javascript:
 										suppressionNoticePrivee('".strftime("%A %d %B %Y", $notice_privee->getDateCt())."','".$notice_privee->getIdCt()."', '".$notice_privee->getIdGroupe()."','".add_token_in_js_func()."');
 										new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
@@ -127,7 +156,7 @@ function affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_noti
 		if (($compte_rendu->getVise() != 'y') or (isset($visa_cdt_inter_modif_notices_visees) AND $visa_cdt_inter_modif_notices_visees == 'no')) {
 
 			$liens_edition_suppression="y";
-			if((strtoupper($compte_rendu->getIdLogin())!=strtoupper($_SESSION['login']))&&(getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
+			if((my_strtoupper($compte_rendu->getIdLogin())!=my_strtoupper($_SESSION['login']))&&(getSettingValue("cdt_autoriser_modif_multiprof")!="yes")) {
 				$liens_edition_suppression="n";
 			}
 	
@@ -143,8 +172,22 @@ function affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_noti
 								");
 				$html_balise .=("\">");
 				$html_balise .=("<img style=\"border: 0px;\" src=\"../images/edit16.png\" alt=\"modifier\" title=\"modifier\" /></a>\n");
-	
 				$html_balise .=(" ");
+
+                                $html_balise .=("<a href=\"#\" onclick=\"javascript:
+                                                    contenu_a_copier = '".addslashes(htmlspecialchars($compte_rendu->getContenu()))."';
+                                                    ct_a_importer_class='".get_class($compte_rendu)."';
+                                                    id_ct_a_importer='".$compte_rendu->getIdCt()."';
+                                                    new Ajax.Updater('affichage_liste_notice', './ajax_affichages_liste_notices.php?id_groupe=".$compte_rendu->getIdGroupe()."&ct_a_importer_class=".get_class($compte_rendu)."&id_ct_a_importer=".$compte_rendu->getIdCt()."',{ onComplete:function() {updateDivModification();} });
+                                                \"><img style=\"border: 0px;\" src=\"");
+                                if (isset($_SESSION['ct_a_importer']) && $_SESSION['ct_a_importer'] == $compte_rendu) {
+                                    $html_balise .=("../images/icons/copy-16-gold.png");
+                                } else {
+                                    $html_balise .=("../images/icons/copy-16.png");
+                                }
+                                $html_balise .=("\" alt=\"Copier\" title=\"Copier\" /></a>\n");
+				$html_balise .=(" ");
+
 				$html_balise .=("<a href=\"#\" onclick=\"javascript:
 								suppressionCompteRendu('".strftime("%A %d %B %Y", $compte_rendu->getDateCt())."',".$compte_rendu->getIdCt().",'".add_token_in_js_func()."');
 								new Ajax.Updater('affichage_derniere_notice', 'ajax_affichage_dernieres_notices.php', {onComplete : function () {updateDivModification();}});
@@ -157,7 +200,7 @@ function affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_noti
 			$html_balise = " ";
 		} else {
 			if ($compte_rendu->getVise() == 'y') {
-				$html_balise .= "<i><span  class=\"red\">Notice signée</span></i>";
+				$html_balise .= "<i><span  class=\"red\">Notice signÃ©e</span></i>";
 			}
 		}
 		$html_balise .= '</div>';
@@ -165,7 +208,7 @@ function affiche_compte_rendu_vignette($compte_rendu, $couleur_bord_tableau_noti
 
 		//affichage contenu
 		echo "<br/>";
-    // On ajoute le nom de la séquence si elle existe
+    // On ajoute le nom de la sÃ©quence si elle existe
     $aff_seq = NULL;
     if ($compte_rendu->getIdSequence() != "0"){
       $aff_seq = '<p class="bold" title="'.$compte_rendu->getCahierTexteSequence()->getDescription().'"> - <em>' . $compte_rendu->getCahierTexteSequence()->getTitre() . '</em> - </p>';
@@ -186,12 +229,12 @@ function afficheDocuments ($documents) {
 		//$html .= "<ul type=\"disc\" style=\"padding-left: 15px;\">";
 		$html .= "<ul style=\"padding-left: 15px;\">";
 		foreach ($documents as $document) {
-			// Ouverture dans une autre fenêtre conservée parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
+			// Ouverture dans une autre fenÃªtre conservÃ©e parce que si le fichier est un PDF, un TXT, un HTML ou tout autre document susceptible de s'ouvrir dans le navigateur, on risque de refermer sa session en croyant juste refermer le document.
 			// alternative, utiliser un javascript
-			$html .= "<li style=\"padding: 0px; margin: 0px; font-family: arial, sans-serif; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"".$document->getEmplacement()."\">".$document->getTitre()."</a>";
+			$html .= "<li style=\"padding: 0px; margin: 0px; font-size: 80%;\"><a onclick=\"window.open(this.href, '_blank'); return false;\" href=\"".$document->getEmplacement()."\">".$document->getTitre()."</a>";
 
 			if(!$document->getVisibleEleveParent()) {
-				$html.="<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+				$html.="<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des Ã©lÃ¨ves et responsables' title='Document invisible des Ã©lÃ¨ves et responsables' />";
 			}
 
 			/*
@@ -205,7 +248,7 @@ function afficheDocuments ($documents) {
 			//if($_SESSION['statut']=='professeur') {
 			if(($_SESSION['statut']=='professeur')&&((mysql_num_rows($test1)>0)||(mysql_num_rows($test2)>0))) {
 				if(!$document->getVisibleEleveParent()) {
-					$html.="<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des élèves et responsables' title='Document invisible des élèves et responsables' />";
+					$html.="<img src='../images/icons/invisible.png' width='19' height='16' alt='Document invisible des Ã©lÃ¨ves et responsables' title='Document invisible des Ã©lÃ¨ves et responsables' />";
 				}
 			}
 			*/
