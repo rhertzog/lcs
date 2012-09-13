@@ -1,0 +1,11 @@
+LCS module roundcube pour Debian
+--------------------------------
+-- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+
+USAGE
+
+Le module LCS RoundCube mais en place le webmail RounCube avec l'authentification LCS
+
+CONFIGURATION
+
+La configuration du paquet est prise en charge par le script postinst du paquet
