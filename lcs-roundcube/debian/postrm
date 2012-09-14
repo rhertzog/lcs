@@ -20,7 +20,12 @@ case "$1" in
         # 
         if [ -e /usr/share/lcs/$MODULE ]; then
 			rm -Rf /usr/share/lcs/$MODULE
+			rm -Rf /var/log/lcs/$MODULE
         fi
+		#
+		# Suppression de la base de donnees roundcube
+		#
+		mysql -e "DROP DATABASE IF EXISTS $MODULE;"
         ;;
 
     upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
