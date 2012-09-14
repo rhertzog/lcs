@@ -8,8 +8,8 @@ case "$1" in
 			. /usr/share/slis/slis-common.sh
 				handle_initial_config lcs-roundcube-config 95
 			# Update Roundcube
-			echo "test update"
-			if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9; then
+			echo "test update $2"
+			if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then
 				echo "Update Roundcube"
 				/usr/sbin/lcs-roundcube-update
 			fi
