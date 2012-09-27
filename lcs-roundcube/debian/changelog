@@ -1,8 +1,8 @@
-lcs-roundcube (2.4.9.1~1) Lcs; urgency=low
+lcs-roundcube (2.4.9.1) Lcs; urgency=low
 
   * Update Roundcube to 0.8.1
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 13 Sep 2012 15:14:18 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 27 Sep 2012 10:35:15 +0200
 
 lcs-roundcube (2.4.9) Lcs; urgency=low
 
