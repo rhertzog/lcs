@@ -38,9 +38,14 @@ elseif ($_SESSION['cequi']!="prof") exit;
 <body>
 <h1 class='title'>Ins&eacute;rer un lien hypertexte</h1>
 <?php
+
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-    {	
+    {
+    $cmd="hostname -f";
+	exec($cmd,$hn,$retour);
+	$hostn= $hn[0];
+	//echo $hostn;
     if (strlen($_POST['nom_lien']) > 0) $nom_lien= addSlashes(strip_tags(stripslashes($_POST['nom_lien'])));
     else $nom_lien= "site";
     if (strlen($_POST['lien']) > 0) $lien= addSlashes(strip_tags(stripslashes($_POST['lien'])));
@@ -50,6 +55,9 @@ if (isset($_POST['Valider']))
     $host = $url_parsee["host"];
     $path = isset($url_parsee["path"]) ? trim($url_parsee['path']) : '';
     $no_code = 0;
+    //exception claroline     
+    if ($url_parsee["path"]=$hostn.'/Plugins/Claro/claroline/backends/download.php' ||
+     $url_parsee["path"]=$hostn.'/Plugins/Claroline/claroline/backends/download.php') $exception=true;
     //connexion par socket
     if ($fp = @fsockopen($host,80))
         {
@@ -76,7 +84,7 @@ if (isset($_POST['Valider']))
         fclose($fp);
         //on switch sur le code HTTP renvoye
         $no_code = substr($en_tete,9,3);
-         if ($no_code >=200 && $no_code < 308 )
+        if (($no_code >=200 && $no_code < 308 ) || $exception)
             {
             $Url="<a href= '". $lien ."' > ". $nom_lien." </a> ";			
             //insertion du lien
@@ -91,7 +99,7 @@ if (isset($_POST['Valider']))
             }
         else $mess1= "<h3 class='ko'> l'URL fournie n'est pas valide"."</h3>";
         }
-       else $mess1= "<h3 class='nook'> l'URL fournie n'est pas valide"."</h3>"; 
+       else $mess1= "<h3 class='nook'> l'URL fournie n'est pas validee"."</h3>"; 
     }
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" enctype="multipart/form-data">

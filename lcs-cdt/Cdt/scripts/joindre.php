@@ -70,7 +70,6 @@ if (isset($_POST['Valider']))
 "audio/ogg",
 "audio/mp3",
 "application/pdf",
-"application/x-unknown-application-pdf",
 "application/xhtml+xml",
 "application/x-shockwave-flash",
 "application/zip",

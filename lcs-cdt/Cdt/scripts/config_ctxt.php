@@ -302,16 +302,16 @@ if (count($tab)>0)
         //on affiche que les cours non deja affectes
         if (!in_array($valeur,$edt)  )
             {
-            echo '<option value="'.htmlentities($valeur).'"';
+            echo '<option value="'.htmlentities($valeur,ENT_QUOTES,'UTF-8').'"';
             if (htmlentities($valeur)==htmlentities($val_edt) ){echo ' selected="selected"';}
-            echo '>'.htmlentities($valeur).'</option>';
+            echo '>'.htmlentities($valeur,ENT_QUOTES,'UTF-8').'</option>';
             }
         //si modif on affiche le cours edt correspondant
         if ($action=='erg45er5ze' && htmlentities($valeur)==htmlentities($val_edt))
             {
-            echo '<option value="'.htmlentities($valeur).'"';
+            echo '<option value="'.htmlentities($valeur,ENT_QUOTES,'UTF-8').'"';
             echo ' selected="selected"';
-            echo '>'.htmlentities($valeur).'</option>';
+            echo '>'.htmlentities($valeur,ENT_QUOTES,'UTF-8').'</option>';
             }
          }
     echo '</select></li>';

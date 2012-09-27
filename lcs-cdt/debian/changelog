@@ -1,3 +1,12 @@
+lcs-cdt (2.4.9.5) LCS; urgency=low
+
+  * improvement  in import edt
+  * authorized upload for application/x-download file
+  * add utf8_encode in taf.php and config_txt.php
+  * add exeception to insert link Claroline document
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 27 Sep 2012 21:25:35 +0200
+
 lcs-cdt (2.4.9.4) LCS; urgency=low
 
   * fix bug truncate tables

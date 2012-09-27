@@ -30,9 +30,6 @@ echo '<script type="text/javascript">
            //]]>
             </script>';
 
-include "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers,$log) = isauth();
-if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
 
 function SansAccent($texte){
     $accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
@@ -96,11 +93,15 @@ if (isset($_POST['Valider']))
                         $delta=0;//incremente l'id des evenements repetitifs
                         foreach($evts as $id => $ev) {
                                 $mat_tronc=mb_split(':',$ev->getDescription());
-                                $mat_tronc[1]=preg_replace ( "/[\r\n]+/", "", $mat_tronc[1]);
+                                $mat_tronc[1]=preg_replace ( "/[\r\n]+/", "@", $mat_tronc[1]);
+                                $mat_tronquee=mb_split("@",$mat_tronc[1]);
+                                $mat_finale=$mat_tronquee[0];
+                                $phase=mb_split("- ",$ev->getProperty('summary'));
+                                $classe=$phase[count($phase)-1];
                                 $jsEvt = array(
                                         "id" => ($id+$offset+$delta+1),
-                                        "title" => $ev->getProperty('summary'),
-                                        "matiere"=> $mat_tronc[1],
+                                        "title" => $classe,
+                                        "matiere"=> $mat_finale,
                                         "start" => $ev->getStart(),
                                         "end"   => $ev->getEnd()-1,
                                         "allDay" => $ev->isWholeDay(),
@@ -163,11 +164,13 @@ if (isset($_POST['Valider']))
 //affichage du formulaire
 if (!isset($_POST['Valider']))
     {
-    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps &#224; partir d\'un fichier ical (fichier .ics) .<br />
-        Vous devez donc pr&#233;alablement demander aupr&#232;s  de la direction de votre &#233;tablissement, un export de votre <b>E</b>mploi <b>D</b>u <b>T</b>emps au <u>format ical </u>.</p>';
-    echo '<p></p>';
+    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps &#224; partir d\'un fichier ical (fichier .ics). 
+        Vous devez donc pr&#233;alablement r&#233;cup&#233;rer un export de votre <b>E</b>mploi <b>D</b>u <b>T</b>emps au <u>format ical</u>
+        <ul><li> soit dans Pronote -> emploi du temps personnel -> ic&#244;ne en haut &#224; droite </li>
+        <li> soit aupr&#232;s de la direction de votre &#233;tablissement </li></ul></p>';
+    //echo '<p></p>';
     echo '<ol>';
-    echo '<li>S&#233;lectionner le fichier .ics qui vous a &#233;t&#233; fournit ( ';
+    echo '<li>S&#233;lectionner le fichier .ics  ( ';
     echo ini_get( 'upload_max_filesize');
     echo '  maxi) : <br /><input type="file" name="FileSelection1" size="40" /></li>';
     if (file_exists("../json_files/".$_SESSION['login'].".json")) echo '<li>Choisir une option<ul><li><input type="radio" name="choice" value="1" checked="checked" >  Remplacer l\'emploi du temps actuel par les cours du fichier joint</li>

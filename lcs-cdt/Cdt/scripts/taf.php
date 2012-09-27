@@ -245,7 +245,7 @@ if (count($numero)>0)
         echo('<table id="tb-cdt">');
         for ($loop=0; $loop < count($dattaf) ; $loop++)
             {	
-            $textafaire=$texttaf[$loop];//conversion du travail a faire
+            $textafaire=utf8_encode($texttaf[$loop]);//conversion du travail a faire
             if (!($loop>0 &&  ($dattaf[$loop] ==$dattaf[$loop-1])))
                 {		 
                 echo '<tbody>';
