@@ -1,3 +1,9 @@
+lcs-gepi (2.4.9.2) LCS; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 28 Sep 2012 14:32:03 +0200
+
 lcs-gepi (2.4.9.2~1) LCS; urgency=low
 
   * upgrade to version 1.6.1 
