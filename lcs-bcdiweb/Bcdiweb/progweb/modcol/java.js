@@ -1,5 +1,6 @@
 <script language="JavaScript">
 var memeFormulaire=(ancienFichierMaitre=="<#VAR FICHIER-MAITRE>")
+var etOu=(memeFormulaire) ? ("<#THEMEPOLE1CASE2>"!="") : false; // vrai si ou
 ua=navigator.userAgent.toLowerCase();
 var ie=((ua.indexOf('msie') != -1) && (ua.indexOf('opera') == -1) && (ua.indexOf('webtv') == -1) && (location.href.indexOf('seenIEPage') == -1));
 var Derouler=false // A priori, on ne déroule pas les restrictions.
@@ -144,7 +145,17 @@ function InitChecked()
   if (ChangerOptions('NIVEAUX',"<#NIVEAUX>")) Derouler=true
   if (ChangerOptions('DISCIPLINES',"<#DISCIPLINES>")) Derouler=true
   if (ChangerOptions('PUBLICS',"<#PUBLICS>")) Derouler=true
-  if (!memeFormulaire) {effacer(); Derouler=false;}
+  if (!memeFormulaire) { effacer(); Derouler=false; }
   if (Derouler) BasculerRestrictions();
+<#SI RECHERCHE=COLLECTION>
+  document.getElementById("CONJONCTION_OU").checked=(etOu)
+  document.getElementById("CONJONCTION_ET").checked=(!etOu)
+  changeEtOu();
+<#FINSI RECHERCHE=COLLECTION>
+<#SI CONFIGURATION=SIMPLE>
+  document.getElementById("CONJONCTION_OU").checked=(etOu)
+  document.getElementById("CONJONCTION_ET").checked=(!etOu)
+  changeEtOu();
+<#FINSI CONFIGURATION=SIMPLE>
 }
 </script>
