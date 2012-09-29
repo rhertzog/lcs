@@ -54,6 +54,10 @@ function offset_search( ) {
 <meta name="author" content="Philippe LECLERC -TICE CAEN" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 <link href="../style/style.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="../Includes/cdt.js"></script>
+        <style type='text/css'>
+            .nobord {margin: -2px 20px;}
+        </style>
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
@@ -143,6 +147,9 @@ if (isset($_POST['Valider']))
                             fclose($fichier);
                             $mess2= ($_POST['choice']==1 ||  !isset($_POST['choice'])) ? " cr&#233;&#233;s " : " ajout&#233;s " ;
                             $mess1="<h3 class='ok'> ".count($data)." cours ont &#233;t&#233; ".$mess2." <br /></h3>";
+                            if (count($data)>0) $mess1.="<p>Vous pouvez maintenant associer ces cours &#224; vos onglets en cliquant <a href='config_ctxt.php'> ICI </a> 
+                            <a href=\"#\" class=\"open_wi\" onclick=\"open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php#edt2')\"  ><img class=\"nobord\" src=\"../images/planifier-cdt-aide.png\" alt=\"Aide\" title=\"Aide\" /></a>
+</p>";
                             unlink($ICS);
                     }
                 else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <br /></h3>";
