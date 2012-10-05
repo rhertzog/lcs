@@ -1,3 +1,13 @@
+lcs-desktop (2.4.9.1~1) Lcs; urgency=low
+
+  * Fixed bug with the blue screen when:
+    - Webmail is absent or disabled
+    - All desktop icons are removed
+    - The user does not belong to any group
+  * 
+
+ -- Dominique Lepaisant <dlepaisant@ac-caen.fr>  Thu, 23 Sep 2010 13:16:55 +0200
+
 lcs-desktop (2.4.9) Lcs; urgency=low
 
   * Fix bug load_options function 

@@ -593,7 +593,7 @@ var JQD = (function($, window, undefined) {
 				$('body').css('background', bgc); 
 				
 				//wallpaper
-				x=o.opts.wallpaper;
+				var x=o.opts.wallpaper;
 				x.match('~') ? x=x.replace('core/','') : '';
 				if( $('#wallpaper').length > 0 ) {
 					$('#wallpaper').removeClass().addClass( o.opts.pos_wallpaper )
@@ -629,6 +629,7 @@ var JQD = (function($, window, undefined) {
 			*@type : function
 			*/
 			wmsess: function() {
+				if (typeof JQD.options.apps.webmail =="undefined") return;
 				$('#tmp_squirrelmail').attr('src',JQD.options.apps.webmail.url);
 				setTimeout(function(){
 					JQD.notify_wmail();
@@ -696,7 +697,7 @@ var JQD = (function($, window, undefined) {
 			btopr: function( opts ){
 				var btrUl = $('<ul/>').addClass('bar_top_right float_right');
 				if ( parseInt(opts.user.idpers) !=0 ) {
-					JQD.btr.wmail.url= JQD.options.apps.webmail.smn.compose.url;
+					JQD.btr.wmail.url= typeof JQD.options.apps.webmail !="undefined" ? JQD.options.apps.webmail.smn.compose.url : '';
 					JQD.btr.maint.url= JQD.options.prms.maintUrl;
 					$.each( JQD.btr, function( i, v ) {
 						btrUl.append( JQD.utils.btrLi( v ) );
@@ -731,6 +732,13 @@ var JQD = (function($, window, undefined) {
 						return false;
 					}) 
 				).prependTo( btrUl );
+				// si on a pas de webmail
+				if (  typeof JQD.options.apps.webmail =="undefined" ) {  
+					//on vire le bouton
+					$('#mess').remove();
+					// si pas d'appli maintenance
+					if ( typeof JQD.options.apps.maintenance =="undefined" ) $('#maintinfo').remove();
+				};
 				return btrUl;
 				
 			},
@@ -835,7 +843,9 @@ var JQD = (function($, window, undefined) {
 			*/
 			icons : function( o ) {
 				// on renvoie rien s'il n'y a pas d'icones enregistrees
-				if ( o.icns.length == 0 ) return;
+				if ( typeof o.icns =='undefined' || o.icns == null ) return;
+				//else if ( o.icns.length == 0 ) return;
+				
 				//les variables
 				var icons = o.icns,
 				nb_icons = $('#desktop a.abs.icon').not('.launch').length,
@@ -1564,11 +1574,11 @@ var JQD = (function($, window, undefined) {
 				 			href:'../Annu/group.php?filter=' + uiGp,
 				 			title: 'Voir le groupe '+ uiGp
 				 		}).html(uiGp).prepend( $('<img/>').attr({src:'core/images/annu/16/'+uiGp.toLowerCase()+'.png'}) )
-				 	).prepend(
-				 		$('<a/>').addClass('open_win mail float_right').append( $('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
+				 	).prepend(typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_right').append( 
+				 		$('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
 				 			href: JQD.options.apps.webmail.smn.compose.to + uiGp+'@'+oiu.srvr.domain,
 				 			title: 'Envoyer un message au groupe '+ uiGp
-				 		})
+				 		}) :''
 				 	) 
 				 );
 			}
@@ -1584,21 +1594,21 @@ var JQD = (function($, window, undefined) {
 				 			title: 'Voir le groupe '+ vg
 				 		}).html( vg.replace(i, '').replace(/_/g, ' ') ).prepend( $('<img/>').attr({src:'core/images/annu/16/'+ i.toLowerCase()+'.png'}) )
 				 	).prepend(
-				 		$('<a/>').addClass('open_win mail float_leftt').append( 
+				 		typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_leftt').append( 
 					 		$('<img/>').attr({
 					 			src:  i=="Equipe"?'core/images/annu/16/equipe_mail.png':'core/images/annu/mail.png'
 					 		}) 
 				 		).attr({
 				 			href: JQD.options.apps.webmail.smn.compose.to + vg+'@'+oiu.srvr.domain,
 				 			title: 'Envoyer un message au groupe '+ vg
-				 		})
+				 		}) : ''
 				 	)
 				 	.prepend( 
 				 		oiu.user.grps.gp =='Profs' && i=="Equipe" ? 
 				 		$('<a/>').addClass('open_win mail').css({float:'left'}).append( $('<img/>').attr({src: 'core/images/annu/16/classe.png'}) ).attr({
 				 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe'),
 				 			title: 'Voir le groupe '+ vg.replace(/Equipe_/,'Classe ')
-				 		}) : '' ) .prepend( oiu.user.grps.gp=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append( 
+				 		}) : '' ) .prepend( typeof JQD.options.apps.webmail !="undefined" && oiu.user.grps.gp=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append( 
 					 		$('<img/>').attr({
 					 			src:  i=="Equipe"?'core/images/annu/24/classe_mail.png':'core/images/annu/mail.png'
 					 		}) 
@@ -1926,6 +1936,7 @@ var JQD = (function($, window, undefined) {
 		*@type: Function
 		*/
 		notify_wmail: function() {
+			if (typeof JQD.options.apps.webmail =="undefined" ) return; 
 			// if squirrelmail is enable, notify new messages
 			$.get(JQD.options.apps.webmail.notifurl, function(data){
 				if (data != '')
@@ -2524,7 +2535,7 @@ var JQD = (function($, window, undefined) {
 					if ($(this).attr('target')=='_top') {// on inhibe les traget=_top
 						$(this).removeAttr('target');
 					}
-					if($(this)[0].href.match('mailto:')){// Listage et modif des mailto:
+					if($(this)[0].href.match('mailto:' && typeof JQD.options.apps.webmail !="undefined")){// Listage et modif des mailto:
 						$(this)[0].href.length > 0 ? cible=$(this)[0].href.replace('?','&') : '';
 						$(this).attr({
 							'href':cible.replace('mailto:',document.location.href.replace('desktop/','')+JQD.options.apps.webmail.smn.compose.to),

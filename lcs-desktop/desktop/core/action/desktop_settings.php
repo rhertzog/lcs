@@ -1,11 +1,11 @@
 <?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @load_setting.php
+* @desktop_setting.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
 * version 0.2~20 Lcs-2.4.8
-* Derniere mise a jour" => "28/02/2011
+* Derniere mise a jour => "04/10/2012"
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
@@ -399,6 +399,8 @@ function infosUser($login, $idpers, $pwchg) {
 				if ($groups[$loop]["cn"]=="Eleves") $ToggleAff=1;
 		    }
 		}
+		else 
+			$_usr['grps']['gp']= 'Attention! Vous n\'appartenez à aucun groupe';
 	} 
 	else 
 	{
@@ -686,9 +688,9 @@ else
 	// les applis ( du menu deroulant )
 	$_apps = menuApplis($login, $idpers, $_ssmn);
 	// on place le lien pour l'appel maintenance
-	if ( isset( $_apps["maintenance"]) &&  $_prms["maintUrl"] == "" ) $_prms["maintUrl"] = $_apps["maintenance"]["smn"]["call"]["url"];
+	if ( isset( $_apps["maintenance"]) ) $_prms["maintUrl"] = $_apps["maintenance"]["smn"]["call"]["url"];
 	// else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]. $_prms["maintUrl"]=="" ? "admin@".$_srvr["domain"] :  $_prms["maintUrl"];
-	else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]."admin@".$_srvr["domain"] ;
+	else $_prms["maintUrl"] =  isset( $_apps["webmail"]) ? $_apps["webmail"]["smn"]["compose"]["to"]."admin@".$_srvr["domain"] : '';
 	
 	// lien de connexion
 	$_apps['auth'] = array(
