@@ -1,3 +1,9 @@
+lcs-bcdiweb (2.4.10.1) Lcs; urgency=low
+
+  * fix conf apache
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Wed, 10 Oct 2012 14:57:02 +0200
+
 lcs-bcdiweb (2.4.10) Lcs; urgency=low
 
   *update to BcdiWebLinux-2.30 
