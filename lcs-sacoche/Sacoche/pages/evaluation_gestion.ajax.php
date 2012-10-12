@@ -108,9 +108,9 @@ $tab_profs  = array_filter($tab_profs,'positif');
 // Liste des notes transmises
 $tab_notes  = (isset($_POST['f_notes'])) ? explode(',',$_POST['f_notes']) : array() ;
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Afficher une liste d'évaluations
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Afficher une liste d'évaluations
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='lister_evaluations') && $type && ( ($type=='selection') || ($aff_classe_txt && $aff_classe_id) ) && ( $aff_periode || ($date_debut && $date_fin) ) )
 {
@@ -130,7 +130,7 @@ if( ($action=='lister_evaluations') && $type && ( ($type=='selection') || ($aff_
 	else
 	{
 		$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($aff_classe_id,$aff_periode);
-		if(!count($DB_ROW))
+		if(empty($DB_ROW))
 		{
 			exit('Erreur : cette classe et cette période ne sont pas reliées !');
 		}
@@ -196,9 +196,9 @@ if( ($action=='lister_evaluations') && $type && ( ($type=='selection') || ($aff_
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Ajouter une nouvelle évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ajouter une nouvelle évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $type && $date && $date_visible && $date_autoeval && ( ($groupe_type && $groupe_id) || $nb_eleves ) && $nb_items )
 {
@@ -286,9 +286,9 @@ if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $type && $
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Modifier une évaluation existante
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Modifier une évaluation existante
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='modifier') && $devoir_id && $groupe_id && $date && $date_visible && $date_autoeval && ( ($type=='groupe') || $nb_eleves ) && $nb_items )
 {
@@ -376,9 +376,9 @@ if( ($action=='modifier') && $devoir_id && $groupe_id && $date && $date_visible 
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Supprimer une évaluation existante
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Supprimer une évaluation existante
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='supprimer') && $devoir_id && ( ($type=='groupe') || $groupe_id ) )
 {
@@ -395,15 +395,15 @@ if( ($action=='supprimer') && $devoir_id && ( ($type=='groupe') || $groupe_id ) 
 	exit('<td>ok</td>');
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Afficher le formulaire pour réordonner les items d'une évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Afficher le formulaire pour réordonner les items d'une évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='ordonner') && $devoir_id )
 {
 	// liste des items
 	$DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_items_devoir( $devoir_id , FALSE /*with_lien*/ , TRUE /*with_coef*/ );
-	if(!count($DB_TAB_COMP))
+	if(empty($DB_TAB_COMP))
 	{
 		exit('Aucun item n\'est associé à cette évaluation !');
 	}
@@ -424,10 +424,10 @@ if( ($action=='ordonner') && $devoir_id )
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Indiquer la liste des élèves associés à une évaluation de même nom( uniquement pour une sélection d'élèves)
-//	Reprise d'un développement initié par Alain Pottier <alain.pottier613@orange.fr>
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Indiquer la liste des élèves associés à une évaluation de même nom( uniquement pour une sélection d'élèves)
+// Reprise d'un développement initié par Alain Pottier <alain.pottier613@orange.fr>
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='indiquer_eleves_deja') && $description && $date_debut )
 {
@@ -441,11 +441,11 @@ if( ($action=='indiquer_eleves_deja') && $description && $date_debut )
 	exit( 'ok,'.implode(',',$tab_retour) );
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Afficher le formulaire pour saisir les items acquis par les élèves à une évaluation
-//	Générer en même temps un csv à récupérer pour une saisie déportée
-//	Générer en même temps un pdf contenant un tableau de saisie vide
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Afficher le formulaire pour saisir les items acquis par les élèves à une évaluation
+// Générer en même temps un csv à récupérer pour une saisie déportée
+// Générer en même temps un pdf contenant un tableau de saisie vide
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='saisir') && $devoir_id && $groupe_id && $date_mysql && $date_visible && $date_fr ) // $description et $groupe_nom sont aussi transmis
 {
@@ -584,12 +584,12 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_mysql && $date_visi
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Voir les items acquis par les élèves à une évaluation
-//	Générer en même temps un csv à récupérer pour une saisie déportée
-//	Générer en même temps un pdf contenant un tableau de saisie vide
-//	Générer en même temps un pdf contenant un tableau de saisie plein
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Voir les items acquis par les élèves à une évaluation
+// Générer en même temps un csv à récupérer pour une saisie déportée
+// Générer en même temps un pdf contenant un tableau de saisie vide
+// Générer en même temps un pdf contenant un tableau de saisie plein, couleur ou noir & blanc
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='voir') && $devoir_id && $groupe_id && $date_fr ) // $description et $groupe_nom sont aussi transmis
 {
@@ -706,7 +706,7 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date_fr ) // $description 
 	}
 	$sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'tableau_sans_notes_'.$fnom_export.'.pdf','F');
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
-	// pdf contenant un tableau de saisie plein ; on a besoin de tourner du texte à 90°
+	// pdf contenant un tableau de saisie plein, en couleurs ; on a besoin de tourner du texte à 90°
 	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
 	$sacoche_pdf = new PDF( FALSE /*officiel*/ , 'landscape' /*orientation*/ , 10 /*marge_gauche*/ , 10 /*marge_droite*/ , 10 /*marge_haut*/ , 10 /*marge_bas*/ , 'oui' /*couleur*/ );
 	$sacoche_pdf->tableau_saisie_initialiser($eleve_nb,$item_nb);
@@ -729,7 +729,32 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date_fr ) // $description 
 		}
 		$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->GetY()+$sacoche_pdf->cases_hauteur);
 	}
-	$sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'tableau_avec_notes_'.$fnom_export.'.pdf','F');
+	$sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'tableau_avec_notes_couleur_'.$fnom_export.'.pdf','F');
+	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	// pdf contenant un tableau de saisie plein, en noir & blanc ; on a besoin de tourner du texte à 90°
+	// / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
+	$sacoche_pdf = new PDF( FALSE /*officiel*/ , 'landscape' /*orientation*/ , 10 /*marge_gauche*/ , 10 /*marge_droite*/ , 10 /*marge_haut*/ , 10 /*marge_bas*/ , 'non' /*couleur*/ );
+	$sacoche_pdf->tableau_saisie_initialiser($eleve_nb,$item_nb);
+	// 1ère ligne : référence devoir, noms élèves
+	$sacoche_pdf->tableau_saisie_reference_devoir($groupe_nom,$date_fr,$description);
+	foreach($DB_TAB_USER as $DB_ROW)
+	{
+		$sacoche_pdf->tableau_saisie_reference_eleve($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']);
+	}
+	// ligne suivantes : référence item, cases vides
+	$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->marge_haut+$sacoche_pdf->etiquette_hauteur);
+	foreach($DB_TAB_COMP as $DB_ROW_COMP)
+	{
+		$item_ref = $DB_ROW_COMP['item_ref'];
+		$texte_socle = ($DB_ROW_COMP['entree_id']) ? ' [S]' : ' [–]';
+		$sacoche_pdf->tableau_saisie_reference_item($item_ref.$texte_socle,$DB_ROW_COMP['item_nom']);
+		foreach($DB_TAB_USER as $DB_ROW_USER)
+		{
+			$sacoche_pdf->afficher_note_lomer( $csv_lignes_scores[$DB_ROW_COMP['item_id']][$DB_ROW_USER['user_id']] , $border=1 , $br=0 );
+		}
+		$sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->GetY()+$sacoche_pdf->cases_hauteur);
+	}
+	$sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'tableau_avec_notes_monochrome_'.$fnom_export.'.pdf','F');
 	//
 	// c'est fini ; affichage du retour
 	//
@@ -756,9 +781,9 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date_fr ) // $description 
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Voir en proportion la répartition, nominative ou quantitative, des élèves par item (html + pdf)
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Voir en proportion la répartition, nominative ou quantitative, des élèves par item (html + pdf)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $description et $groupe_nom sont aussi transmis
 {
@@ -935,9 +960,9 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
 	exit();
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Mettre à jour l'ordre des items d'une évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mettre à jour l'ordre des items d'une évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='enregistrer_ordre') && $devoir_id && count($tab_id) )
 {
@@ -945,9 +970,9 @@ if( ($action=='enregistrer_ordre') && $devoir_id && count($tab_id) )
 	exit('<ok>');
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Mettre à jour les items acquis par les élèves à une évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Mettre à jour les items acquis par les élèves à une évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='enregistrer_saisie') && $devoir_id && $date_mysql && $date_visible && count($tab_notes) )
 {
@@ -1028,9 +1053,9 @@ if( ($action=='enregistrer_saisie') && $devoir_id && $date_mysql && $date_visibl
 	exit('<ok>');
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Imprimer un cartouche d'une évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Imprimer un cartouche d'une évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $cart_contenu && $cart_detail && $orientation && $marge_min && $couleur )
 {
@@ -1042,11 +1067,11 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
 	// liste des élèves
 	$DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $groupe_type , $groupe_id );
 	// Let's go
-	if(!count($DB_TAB_COMP))
+	if(empty($DB_TAB_COMP))
 	{
 		exit('Aucun item n\'est associé à cette évaluation !');
 	}
-	if(!count($DB_TAB_USER))
+	if(empty($DB_TAB_USER))
 	{
 		exit('Aucun élève n\'est associé à cette évaluation !');
 	}
@@ -1171,28 +1196,19 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
 	exit($sacoche_htm);
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Traiter une demande d'importation d'une saisie déportée ; on n'enregistre rien, on ne fait que décrypter le contenu du fichier et renvoyer une chaine résultante au javascript
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traiter une demande d'importation d'une saisie déportée ; on n'enregistre rien, on ne fait que décrypter le contenu du fichier et renvoyer une chaine résultante au javascript
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( (isset($_GET['f_action'])) && ($_GET['f_action']=='importer_saisie_csv') )
 {
-	// Récupérer le contenu du fichier
-	$tab_file = $_FILES['userfile'];
-	$fnom_transmis = $tab_file['name'];
-	$fnom_serveur = $tab_file['tmp_name'];
-	$ftaille = $tab_file['size'];
-	$ferreur = $tab_file['error'];
-	if( (!file_exists($fnom_serveur)) || (!$ftaille) || ($ferreur) )
+	$fichier_nom = 'saisie_deportee_'.$_SESSION['BASE'].'_'.$_SESSION['USER_ID'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.<EXT>';
+	$result = FileSystem::recuperer_upload( CHEMIN_DOSSIER_IMPORT /*fichier_chemin*/ , $fichier_nom /*fichier_nom*/ , array('txt','csv') /*tab_extensions_autorisees*/ , NULL /*tab_extensions_interdites*/ , NULL /*taille_maxi*/ , NULL /*filename_in_zip*/ );
+	if($result!==TRUE)
 	{
-		exit('Erreur : problème de transfert ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload());
+		exit('Erreur : '.$result);
 	}
-	$extension = strtolower(pathinfo($fnom_transmis,PATHINFO_EXTENSION));
-	if(!in_array($extension,array('txt','csv')))
-	{
-		exit('Erreur : l\'extension du fichier transmis est incorrecte !');
-	}
-	$contenu_csv = file_get_contents($fnom_serveur);
+	$contenu_csv = file_get_contents(CHEMIN_DOSSIER_IMPORT.FileSystem::$file_saved_name);
 	$contenu_csv = To::utf8($contenu_csv); // Mettre en UTF-8 si besoin
 	$tab_lignes = extraire_lignes($contenu_csv); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
@@ -1235,9 +1251,9 @@ if( (isset($_GET['f_action'])) && ($_GET['f_action']=='importer_saisie_csv') )
 	exit($retour);
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Référencer un sujet ou un corrigé d'évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Référencer un sujet ou un corrigé d'évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='referencer_document') && $devoir_id && in_array($doc_objet,array('sujet','corrige')) && $doc_url )
 {
@@ -1247,50 +1263,27 @@ if( ($action=='referencer_document') && $devoir_id && in_array($doc_objet,array(
 	exit('ok');
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Uploader un sujet ou un corrigé d'évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Uploader un sujet ou un corrigé d'évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='uploader_document') && $devoir_id && in_array($doc_objet,array('sujet','corrige')) && isset($_FILES['userfile']) )
+if( ($action=='uploader_document') && $devoir_id && in_array($doc_objet,array('sujet','corrige')) )
 {
-	// Récupération du fichier
-	$tab_file = $_FILES['userfile'];
-	$fnom_transmis = $tab_file['name'];
-	$fnom_serveur  = $tab_file['tmp_name'];
-	$ftaille = $tab_file['size'];
-	$ferreur = $tab_file['error'];
-	if( (!file_exists($fnom_serveur)) || (!$ftaille) || ($ferreur) )
+	$fichier_nom = 'devoir_'.$devoir_id.'_'.$doc_objet.'_'.time().'.<EXT>'; // pas besoin de le rendre inaccessible -> fabriquer_fin_nom_fichier__date_et_alea() inutilement lourd
+	$result = FileSystem::recuperer_upload( $chemin_devoir /*fichier_chemin*/ , $fichier_nom /*fichier_nom*/ , NULL /*tab_extensions_autorisees*/ , array('bat','com','exe','php','zip') /*tab_extensions_interdites*/ , FICHIER_TAILLE_MAX /*taille_maxi*/ , NULL /*filename_in_zip*/ );
+	if($result!==TRUE)
 	{
-		exit('Problème de transfert ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload());
-	}
-	$extension = strtolower(pathinfo($fnom_transmis,PATHINFO_EXTENSION));
-	if(in_array( $extension , array('bat','com','exe','php','zip') ))
-	{
-		exit('L\'extension du fichier transmis est interdite !');
-	}
-	if($fnom_transmis{0}=='.')
-	{
-		exit('Le nom du fichier ne doit pas commencer par un point !');
-	}
-	if($ftaille>FICHIER_TAILLE_MAX*1000)
-	{
-		exit('Le fichier dépasse les '.FICHIER_TAILLE_MAX.' Ko autorisés !');
-	}
-	// Enregistrement du fichier
-	$fichier_nom = 'devoir_'.$devoir_id.'_'.$doc_objet.'_'.time().'.'.$extension; // pas besoin de le rendre inaccessible -> fabriquer_fin_nom_fichier__date_et_alea() inutilement lourd
-	if(!move_uploaded_file($fnom_serveur , $chemin_devoir.$fichier_nom))
-	{
-		exit('Le fichier n\'a pas pu être enregistré sur le serveur !');
+		exit($result);
 	}
 	// Mise à jour dans la base
-	DB_STRUCTURE_PROFESSEUR::DB_modifier_devoir_document($devoir_id,$_SESSION['USER_ID'],$doc_objet,$url_dossier_devoir.$fichier_nom);
+	DB_STRUCTURE_PROFESSEUR::DB_modifier_devoir_document($devoir_id,$_SESSION['USER_ID'],$doc_objet,$url_dossier_devoir.FileSystem::$file_saved_name);
 	// Retour
-	exit('ok'.']¤['.$ref.']¤['.$doc_objet.']¤['.$url_dossier_devoir.$fichier_nom);
+	exit('ok'.']¤['.$ref.']¤['.$doc_objet.']¤['.$url_dossier_devoir.FileSystem::$file_saved_name);
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	Retirer un sujet ou un corrigé d'évaluation
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Retirer un sujet ou un corrigé d'évaluation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='retirer_document') && $devoir_id && in_array($doc_objet,array('sujet','corrige')) && $doc_url )
 {
@@ -1310,9 +1303,9 @@ if( ($action=='retirer_document') && $devoir_id && in_array($doc_objet,array('su
 	exit('ok');
 }
 
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//	On ne devrait pas en arriver là !
-//	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// On ne devrait pas en arriver là !
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 exit('Erreur avec les données transmises !');
 

@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enlever le message ajax et le résultat précédent au changement d'un select
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enlever le message ajax et le résultat précédent au changement d'un select
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select').change
 		(
@@ -43,9 +43,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Traitement du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $('form');
@@ -71,7 +71,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -109,7 +109,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider").prop('disabled',false);
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

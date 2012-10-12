@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Afficher ou masquer des éléments de formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function view_bilans()
 		{
@@ -59,9 +59,9 @@ $(document).ready
 		}
 		view_socle();
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Alerter sur la nécessité de valider
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#form_autorisations input").change
 		(
@@ -80,9 +80,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialiser un formulaire avec les valeurs par défaut
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_autorisations button[name=initialiser]').click
 		(
@@ -105,9 +105,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Soumission du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Soumission du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_autorisations button[name=valider]').click
 		(
@@ -123,12 +123,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_objet='+objet+'&f_profils='+tab_check,
+						data : 'csrf='+CSRF+'&f_objet='+objet+'&f_profils='+tab_check,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							obj_bouton.prop('disabled',false);
-							$('#ajax_msg_'+objet).removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_'+objet).removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)

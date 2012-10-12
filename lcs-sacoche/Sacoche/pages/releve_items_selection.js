@@ -33,9 +33,9 @@ $(document).ready
 		// Initialisation
 		$("#f_eleve").hide();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enlever le message ajax et le résultat précédent au changement d'un select
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enlever le message ajax et le résultat précédent au changement d'un select
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select').change
 		(
@@ -46,9 +46,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des options de la grille
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des options de la grille
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function visibility_option_with_coef()
 		{
@@ -128,12 +128,12 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Changement de groupe
-		//	-> desactiver les périodes prédéfinies en cas de groupe de besoin
-		//	-> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
-		//	-> afficher le formulaire de périodes s'il est masqué
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Changement de groupe
+		// -> desactiver les périodes prédéfinies en cas de groupe de besoin
+		// -> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
+		// -> afficher le formulaire de périodes s'il est masqué
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function selectionner_periode_adaptee()
 		{
@@ -206,9 +206,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger le select f_eleve
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger le select f_eleve
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_eleve(groupe_val,type)
 		{
@@ -221,7 +221,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -259,9 +259,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Choisir les items associés à une évaluation : mise en place du formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Choisir les items associés à une évaluation : mise en place du formulaire
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var choisir_compet = function()
 		{
@@ -272,9 +272,9 @@ $(document).ready
 
 		$('q.choisir_compet').click( choisir_compet );
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#annuler_compet').click
 		(
@@ -285,9 +285,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Clic sur le bouton pour valider le choix des items associés à une évaluation
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Clic sur le bouton pour valider le choix des items associés à une évaluation
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#valider_compet').click
 		(
@@ -311,9 +311,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Demande pour sélectionner d'une liste d'items mémorisés
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Demande pour sélectionner d'une liste d'items mémorisés
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_selection_items').change
 		(
@@ -323,9 +323,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Clic sur le bouton pour mémoriser un choix d'items
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Clic sur le bouton pour mémoriser un choix d'items
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_enregistrer_items').click
 		(
@@ -335,9 +335,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Soumettre le formulaire principal
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Soumettre le formulaire principal
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $("#form_select");
@@ -419,7 +419,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -461,7 +461,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$('button').prop('disabled',false);
-			var message = (jqXHR.status!=500) ? 'Echec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
+			var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html(message);
 		}
 
@@ -492,9 +492,9 @@ $(document).ready
 			}
 		} 
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Forcer le report de notes vers un bulletin SACoche
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Forcer le report de notes vers un bulletin SACoche
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_report').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -506,13 +506,13 @@ $(document).ready
 				(
 					{
 						type : 'POST',
-						url : 'ajax.php?page=officiel_accueil',
-						data : 'f_action='+'reporter_notes'+'&f_periode_eleves='+$('#f_periode_eleves').val()+'&f_eleves_moyennes='+$('#f_eleves_moyennes').val()+'&f_rubrique='+$('#f_rubrique').val(),
+						url : 'ajax.php?page='+PAGE,
+						data : 'csrf='+CSRF+'&f_action=reporter_notes'+'&f_periode_eleves='+$('#f_periode_eleves').val()+'&f_eleves_moyennes='+$('#f_eleves_moyennes').val()+'&f_rubrique='+$('#f_rubrique').val(),
 						// data : $('#form_report_bulletin').serialize(), le select f_rubrique n'est curieusement pas envoyé...
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg_report').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_report').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							$('#form_report_bulletin button, #form_report_bulletin select').prop('disabled',false);
 							return false;
 						},

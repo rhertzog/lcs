@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur l'image pour Voir un référentiel de compétences
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur l'image pour Voir un référentiel de compétences
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('q.voir').click
 		(
 			function()
@@ -46,11 +46,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'ids='+ids,
+						data : 'csrf='+CSRF+'&ids='+ids,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$.fancybox( '<label class="alerte">'+'Echec de la connexion !'+'</label>' , {'centerOnScroll':true} );
+							$.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
 							$('label[for='+ids+']').remove();
 							afficher_masquer_images_action('show');
 						},

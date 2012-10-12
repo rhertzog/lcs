@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au changement dans le premier formulaire (choix principal)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_choix_principal").change
 		(
@@ -57,9 +57,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au changement dans le choix d'un profil ou d'un groupe
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_profil , #f_groupe").change
 		(
@@ -71,9 +71,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Mettre à jour la liste des utilisateurs concernés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_select_users()
 		{
@@ -100,7 +100,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -121,9 +121,9 @@ $(document).ready
 			);
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au clic dans un select multiple
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select[multiple]').click
 		(
@@ -133,9 +133,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au clic sur un bouton pour demander un export csv de la base (user_ent -> user_export)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#user_export').click
 		(
@@ -148,12 +148,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'action=' + 'user_export',
+						data : 'csrf='+CSRF+'&action='+'user_export',
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button').prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -177,9 +177,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Soumission du formulaire - choix 1 et 2
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#generer_login , #generer_mdp').click
 		(
@@ -203,12 +203,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'action=' + action + '&' + $("form").serialize(),
+						data : 'csrf='+CSRF+'&action='+action+'&'+$("form").serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button').prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -231,11 +231,11 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au clic sur un bouton pour envoyer un import csv afin de forcer les logins ou/et mdp élèves (user_ent -> user_import)
 // Réagir au clic sur le bouton pour envoyer un csv issu de l'ENT
 // Réagir au clic sur un bouton pour envoyer un csv issu de Gepi
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Envoi du fichier avec jquery.ajaxupload.js
 		new AjaxUpload
@@ -243,7 +243,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'action':'import_loginmdp'},
+				data: {'csrf':CSRF,'action':'import_loginmdp'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -256,7 +256,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'action':'import_ent'},
+				data: {'csrf':CSRF,'action':'import_ent'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -269,7 +269,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'action':'import_gepi_eleves'},
+				data: {'csrf':CSRF,'action':'import_gepi_eleves'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -282,7 +282,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'action':'import_gepi_profs'},
+				data: {'csrf':CSRF,'action':'import_gepi_profs'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -334,9 +334,9 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au clic sur un bouton afin de demander la duplication d'un champ
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('button[name=dupliquer]').click
 		(
@@ -352,12 +352,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'action=' + action,
+						data : 'csrf='+CSRF+'&action='+action,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button').prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)

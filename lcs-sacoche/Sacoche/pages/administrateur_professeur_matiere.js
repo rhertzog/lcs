@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Ajouter / Retirer une affectation à une matière
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Ajouter / Retirer une affectation à une matière
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#autocheckbox input[type=checkbox]').click
 		(
@@ -51,12 +51,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url  : 'ajax.php?page='+PAGE,
-						data : 'action='+action+'&user_id='+user_id+'&matiere_id='+matiere_id,
+						data : 'csrf='+CSRF+'&action='+action+'&user_id='+user_id+'&matiere_id='+matiere_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							obj_bouton.prop('checked',check_old).show(0).parent().removeAttr('class').addClass(class_old);
-							$.fancybox( '<label class="alerte">'+'Echec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
+							$.fancybox( '<label class="alerte">'+'Échec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
 							return false;
 						},
 						success : function(responseHTML)
@@ -96,9 +96,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Ajouter / Retirer une affectation en tant que professeur coordonnateur
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Ajouter / Retirer une affectation en tant que professeur coordonnateur
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('table.affectation input[type=checkbox]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -119,12 +119,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url  : 'ajax.php?page='+PAGE,
-						data : 'action='+action+'&user_id='+user_id+'&matiere_id='+matiere_id,
+						data : 'csrf='+CSRF+'&action='+action+'&user_id='+user_id+'&matiere_id='+matiere_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							obj_bouton.prop('disabled',false).prop('checked',check_old).parent().removeAttr('class').addClass(class_old);
-							$.fancybox( '<label class="alerte">'+'Echec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
+							$.fancybox( '<label class="alerte">'+'Échec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
 							return false;
 						},
 						success : function(responseHTML)

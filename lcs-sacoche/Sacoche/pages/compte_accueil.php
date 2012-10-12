@@ -39,28 +39,31 @@ if(!(isset($_SESSION['USER_PARAM_ACCUEIL'])))
 	$_SESSION['USER_PARAM_ACCUEIL'] = 'user,alert,info,help,ecolo';
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Alertes (pour l'administrateur) ; affiché après mais à définir avant
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Alertes (pour l'administrateur) ; affiché après mais à définir avant
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($_SESSION['USER_PROFIL']=='administrateur')
 {
 	$alerte_novice = FALSE ;
-	$DB_TAB = DB_STRUCTURE_COMMUN::DB_OPT_matieres_etabl();
-	if(!is_array($DB_TAB))
+	if(!DB_STRUCTURE_ADMINISTRATEUR::compter_matieres_etabl())
 	{
-		$tab_accueil['alert'] .= '<p class="danger">Aucune matière n\'est rattachée à l\'établissement ! <a href="./index.php?page=administrateur_etabl_matiere">Gestion des matières.</a></p>';
+		$tab_accueil['alert'] .= '<p class="danger">Aucune matière n\'est choisie pour l\'établissement ! <a href="./index.php?page=administrateur_etabl_matiere">Gestion des matières.</a></p>';
 		$alerte_novice = TRUE ;
 	}
-	$DB_TAB = DB_STRUCTURE_COMMUN::DB_OPT_niveaux_etabl();
-	if(!count($DB_TAB))
+	if(!DB_STRUCTURE_ADMINISTRATEUR::compter_niveaux_etabl( TRUE /*with_specifiques*/ ))
 	{
-		$tab_accueil['alert'] .= '<p class="danger">Aucun niveau n\'est rattaché à l\'établissement ! <a href="./index.php?page=administrateur_etabl_niveau">Gestion des niveaux.</a></p>';
+		$tab_accueil['alert'] .= '<p class="danger">Aucun niveau n\'est choisi pour l\'établissement ! <a href="./index.php?page=administrateur_etabl_niveau">Gestion des niveaux.</a></p>';
+		$alerte_novice = TRUE ;
+	}
+	elseif(!DB_STRUCTURE_ADMINISTRATEUR::compter_niveaux_etabl( FALSE /*with_specifiques*/ ))
+	{
+		$tab_accueil['alert'] .= '<p class="danger">Aucun niveau de classe n\'est choisi pour l\'établissement ! <a href="./index.php?page=administrateur_etabl_niveau">Gestion des niveaux.</a></p>';
 		$alerte_novice = TRUE ;
 	}
 	if(DB_STRUCTURE_ADMINISTRATEUR::DB_compter_devoirs_annee_scolaire_precedente())
 	{
-		$tab_accueil['alert'] .= '<p class="danger">Année scolaire précédente non nettoyée !<br />&nbsp;<br />Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>';
+		$tab_accueil['alert'] .= '<p class="danger">Année scolaire précédente non archivée !<br />&nbsp;<br />Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>';
 	}
 	if($alerte_novice)
 	{
@@ -68,9 +71,9 @@ if($_SESSION['USER_PROFIL']=='administrateur')
 	}
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Message de bienvenue (informations utilisateur : infos profil, infos selon profil, infos adresse de connexion)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Message de bienvenue (informations utilisateur : infos profil, infos selon profil, infos adresse de connexion)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $tab_accueil['user'] = '';
 // infos connexion (pas si webmestre)
@@ -141,14 +144,14 @@ else
 	}
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Panneau d'informations ou message écolo
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Panneau d'informations ou message écolo
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($_SESSION['USER_PROFIL']!='webmestre')
 {
 	$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_messages_user_destinataire($_SESSION['USER_ID']);
-	if(count($DB_TAB))
+	if(!empty($DB_TAB))
 	{
 		foreach($DB_TAB as $key => $DB_ROW)
 		{
@@ -161,9 +164,9 @@ if($_SESSION['USER_PROFIL']!='webmestre')
 	}
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Astuce du jour
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Astuce du jour
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*
 $nombre_indices = 10;
@@ -191,9 +194,9 @@ if($astuce_nombre)
 	$tab_accueil['help'] .= '<p class="b i"><TG> Le saviez-vous ?</p>'.$tab_astuces[$_SESSION['USER_PROFIL']][$indice];
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Affichage
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Affichage
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 $tab_msg_rubrique_masquee = array( 'user'=>'Message de bienvenue' , 'help'=>'L\'astuce du moment' , 'ecolo'=>'Protégeons l\'environnement !' );
 
 foreach($tab_accueil as $type => $contenu)

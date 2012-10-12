@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Reporter dans les input equiv_txt les valeurs préféfinies lors du clic sur un bouton radio (jeu de symboles colorés).
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Reporter dans les input equiv_txt les valeurs préféfinies lors du clic sur un bouton radio (jeu de symboles colorés).
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('table.simulation input[type=radio]').click
 		(
@@ -46,9 +46,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Activation du colorpicker pour les 3 champs input.
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Activation du colorpicker pour les 3 champs input.
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var f = $.farbtastic('#colorpicker');
 		$('div.colorpicker input.stretch').focus
@@ -60,9 +60,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Reporter dans un input colorpicker une valeur préféfinie lors du clic sur un bouton (couleur de fond).
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Reporter dans un input colorpicker une valeur préféfinie lors du clic sur un bouton (couleur de fond).
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('div.colorpicker button').click
 		(
@@ -72,10 +72,10 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Affecter aux div la même couleur de fond que celle du input.
-//	Utilisation d'un test en boucle car un simple test change() ne fonctionne pas.
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Affecter aux div la même couleur de fond que celle du input.
+// Utilisation d'un test en boucle car un simple test change() ne fonctionne pas.
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function reporter_couleur()
 		{
@@ -94,9 +94,9 @@ $(document).ready
 		}
 		reporter_couleur();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du premier formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire1 = $('#form_notes');
@@ -142,7 +142,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions1 =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -180,7 +180,7 @@ $(document).ready
 		function retour_form_erreur1(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider_notes").prop('disabled',false);
-			$('#ajax_msg_notes').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_notes').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
@@ -199,9 +199,9 @@ $(document).ready
 		} 
 
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du second formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire2 = $('#form_acquis');
@@ -246,7 +246,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions2 =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -284,7 +284,7 @@ $(document).ready
 		function retour_form_erreur2(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider_acquis").prop('disabled',false);
-			$('#ajax_msg_acquis').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_acquis').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

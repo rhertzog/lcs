@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Formulaire et traitement
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Formulaire et traitement
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_valider').click
 		(
@@ -71,12 +71,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=' + 'envoyer' + '&f_titre=' + titre + '&f_contenu=' + contenu + '&f_base=' + f_listing_id,
+						data : 'csrf='+CSRF+'&f_action=envoyer'+'&f_titre='+titre+'&f_contenu='+contenu+'&f_base='+f_listing_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider").prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -104,9 +104,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Etapes d'envoi de la newsletter
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function envoyer()
 		{
@@ -118,11 +118,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=' + 'envoyer' + '&num=' + num + '&max=' + max,
+					data : 'csrf='+CSRF+'&f_action=envoyer'+'&num='+num+'&max='+max,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg1').removeAttr("class").addClass("alerte").html('Echec lors de la connexion au serveur !');
+						$('#ajax_msg1').removeAttr("class").addClass("alerte").html('Échec lors de la connexion au serveur !');
 						$('#ajax_msg2').html('<a id="a_reprise" href="#">Reprendre la procédure à l\'étape ' + num + ' sur ' + max + '.</a>');
 					},
 					success : function(responseHTML)
@@ -178,9 +178,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour effectuer une action sur les structures sélectionnées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour effectuer une action sur les structures sélectionnées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var supprimer_structures_selectionnees = function(listing_id)
 		{
@@ -192,11 +192,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_base='+listing_id,
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_base='+listing_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_supprimer').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_supprimer').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						$("button").prop('disabled',false);
 						// afficher_masquer_images_action('show');
 					},

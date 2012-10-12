@@ -74,10 +74,10 @@ class Sesamail
    */
   function __construct() {
     // le charset
-    $this->charset = mb_internal_encoding();
+    $this->charset = strtolower( mb_internal_encoding() );
     // si on veut autre chose que de l'UTF-8 faudra coder une méthode $this->setEncoding
     // On lance une exception pour être sûr que qqun viendra mettre son nez ici
-    if ($this->charset != 'UTF-8') {
+    if ($this->charset != 'utf-8') {
       throw new \Exception("Cette classe Mail ne fonctionne qu'avec un mb_internal_encoding en UTF-8 (ici on a " .$this->charset .')');
     }
     
@@ -89,10 +89,10 @@ class Sesamail
     
     // Les headers communs à tous nos mails
     $this->headers = '';
+    
     // Return-Path
-    if (defined('MAIL_RETURN_PATH')) {
-      $this->headers .= 'Return-Path: ' .$this->default_sender ."\r\n"; 
-    }
+    $this->headers .= 'Return-Path: ' .$this->default_sender ."\r\n"; 
+    
     // Content
     $this->headers .= 'Content-type: text/plain; charset=' .$this->charset ."\r\n";
     $this->headers .= 'Content-Transfer-Encoding: 8bit'."\r\n";
@@ -334,6 +334,10 @@ class Sesamail
   
   /**
    * Encode un header et retourne la chaîne correspondante préfixée (sauf To et Subject)
+   *
+   * La fonction mb_encode_mimeheader() revoie une chaine contenant "UTF-8" qui pose problèmes à certains lecteurs de messageries qui attendent "utf-8".
+   * Et lui donner strtolower($this->charset) comme paramètre n'y change rien, d'où le traitement a posteriori avec str_replace().
+   *
    * @param string $header Le nom du header (To, Subject, From, Reply-To, etc.)
    * @param string $str La valeur du header (la chaîne à encoder comme le nom d'un destinataire ou le sujet)
    * @param string $adress L'éventuelle adresse mail
@@ -343,7 +347,7 @@ class Sesamail
     // On ajoute toujours le header en préfixe, et on le virera après si To ou Subject
     // pour que la césure soit à la bonne place
     if ($str != '') {
-      $enc_str = mb_encode_mimeheader($header .': ' .$str, $this->charset, "Q");
+      $enc_str = str_replace( mb_internal_encoding() , strtolower(mb_internal_encoding()) , mb_encode_mimeheader($header .': ' .$str, $this->charset, "Q") );
     }
     else { // si on laisse mb_encode_mimeheader il vire l'espace de fin
       $enc_str = $header .': ';
@@ -394,7 +398,7 @@ class Sesamail
  * le charset n'a d'effet que sur le corps et les clients de messagerie interprètent 
  * différemment le reste (UTF-8 ou ISO-8859-1 etc.).
  * 
- * Résultat des courses (plus de détails dans la rev 129)
+ * Résultat des courses (plus de détails dans la rev 129 : http://redmine.sesamath.net/projects/commun/repository/revisions/129/entry/Sesamath/Mail.class.php#L255)
  * - mb_send_mail est une cata car 
  *   - encode en base64 => spam d'office 
  *   - encode pas le To ni les headers sup (From)
@@ -409,4 +413,13 @@ class Sesamail
  * => on utilise mb_encode_mimeheader, mais pas sur la partie adresse mail, donc faudra gérer 
  * soi-même le wrapping (et virer le : au début quand on lui donne une chaine vide comme nom 
  * de header pour To et Subject).
+ * 
+ * \r\n dans les headers ?
+ * Les rfc disent que les headers se terminent par \r\n (et une ligne de header trop longue est coupée par "\n  ")
+ * mais les client mails microsoft le digèrent pas toujours très bien 
+ *   http://stackoverflow.com/questions/4415654/which-line-break-in-php-mail-header-r-n-or-n
+ *   http://stackoverflow.com/questions/3449431/php-mail-formatting-issue-why-do-crlf-header-line-endings-break-html-email-in/7960957#7960957
+ * et apparemment, mettre \n ne pose pas trop de pb aux autres (un comble, vu que c'est MS qui utilise \r\n comme fin
+ * de ligne dans les txt alors que unix utilise \n depuis que les fin de lignes existent)
+ * Pourtant, http://swiftmailer.org/ utilise \r\n (cf AbstractHeader.php)
  */

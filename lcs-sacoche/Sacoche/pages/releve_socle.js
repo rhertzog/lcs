@@ -33,9 +33,9 @@ $(document).ready
 		// Initialisation
 		$("#f_eleve").hide();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enlever le message ajax et le résultat précédent au changement d'un select
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enlever le message ajax et le résultat précédent au changement d'un select
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select').change
 		(
@@ -46,9 +46,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des options de la grille
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des options de la grille
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_groupe').change
 		(
@@ -82,9 +82,9 @@ $(document).ready
 			}
 		);
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	Charger le select f_pilier en ajax
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Charger le select f_pilier en ajax
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var maj_pilier = function()
 		{
@@ -102,7 +102,7 @@ $(document).ready
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_maj_pilier').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_maj_pilier').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						},
 						success : function(responseHTML)
 						{
@@ -130,9 +130,9 @@ $(document).ready
 
 		maj_pilier();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger le select f_eleve en ajax
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger le select f_eleve en ajax
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_eleve(groupe_val,type)
 		{
@@ -145,7 +145,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -239,7 +239,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -280,7 +280,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$('button').prop('disabled',false);
-			var message = (jqXHR.status!=500) ? 'Echec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
+			var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html(message);
 		}
 

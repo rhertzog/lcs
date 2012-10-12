@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Initialisation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialisation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var mode = false;
 		var please_wait = false;
@@ -50,9 +50,9 @@ $(document).ready
 		}
 		trier_tableau();
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('td.label').live
 		('click',
@@ -62,9 +62,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Fonctions utilisées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonctions utilisées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
 		 * Ajouter un établissement : mise en place du formulaire
@@ -167,11 +167,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=lister_admin&f_base_id='+base_id,
+					data : 'csrf='+CSRF+'&f_action=lister_admin'+'&f_base_id='+base_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#init_form').html('<label id="ajax_msg" class="alerte">Echec de la connexion !</label><q class="annuler" title="Annuler."></q>')
+						$('#init_form').html('<label id="ajax_msg" class="alerte">Échec de la connexion !</label><q class="annuler" title="Annuler."></q>')
 					},
 					success : function(responseHTML)
 					{
@@ -232,9 +232,9 @@ $(document).ready
 			return false;
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('q.ajouter').click( ajouter );
 		$('q.modifier').live(        'click' , modifier );
@@ -244,9 +244,9 @@ $(document).ready
 		$('q.valider').live(         'click' , function(){formulaire.submit();} );
 		$('table.bilan_synthese input , table.bilan_synthese select').live( 'keyup' , function(e){intercepter(e);} );
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Éléments dynamiques du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Éléments dynamiques du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Tout cocher ou tout décocher
 		$('#all_check').click
@@ -266,9 +266,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour bloquer ou débloquer une structure
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour bloquer ou débloquer une structure
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('img[class=bloquer] , img[class=debloquer]').live
 		('click',
@@ -284,7 +284,7 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action='+action+'&f_base_id='+base_id,
+						data : 'csrf='+CSRF+'&f_action='+action+'&f_base_id='+base_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
@@ -310,9 +310,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour effectuer une action sur les structures cochées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour effectuer une action sur les structures cochées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var supprimer_structures_cochees = function(listing_id)
 		{
@@ -324,11 +324,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_listing_id='+listing_id,
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_listing_id='+listing_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_supprimer').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_supprimer').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						$("button").prop('disabled',false);
 						afficher_masquer_images_action('show');
 					},
@@ -393,9 +393,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Traitement du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $("#structures");
@@ -437,7 +437,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -505,7 +505,7 @@ $(document).ready
 		{
 			please_wait = false;
 			$('#ajax_msg').parent().children('q').show();
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

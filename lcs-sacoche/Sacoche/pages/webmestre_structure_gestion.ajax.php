@@ -52,9 +52,9 @@ if( ($action!='supprimer') && ($action!='lister_admin') && ($action!='initialise
 	}
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Ajouter un nouvel établissement
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Ajouter un nouvel établissement
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel )
 {
@@ -135,9 +135,9 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
 	exit();
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Modifier un établissement existant
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Modifier un établissement existant
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel )
 {
@@ -175,9 +175,9 @@ if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisati
 	exit();
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Charger la liste des administrateurs d'un établissement pour remplir un select (liste d'options)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Charger la liste des administrateurs d'un établissement pour remplir un select (liste d'options)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='lister_admin') && $base_id )
 {
@@ -185,16 +185,16 @@ if( ($action=='lister_admin') && $base_id )
 	exit( Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_administrateurs_etabl() , $select_nom=false , $option_first='non' , $selection=false , $optgroup='non') );
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Modifier le mdp d'un administrateur et envoyer les identifiants par courriel au contact
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Modifier le mdp d'un administrateur et envoyer les identifiants par courriel au contact
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='initialiser_mdp') && $base_id && $admin_id )
 {
 	charger_parametres_mysql_supplementaires($base_id);
 	// Informations sur la structure, notamment coordonnées du contact.
 	$DB_ROW = DB_WEBMESTRE_WEBMESTRE::DB_recuperer_structure_by_Id($base_id);
-	if(!count($DB_ROW))
+	if(empty($DB_ROW))
 	{
 		exit('Erreur : structure introuvable !');
 	}
@@ -204,7 +204,7 @@ if( ($action=='initialiser_mdp') && $base_id && $admin_id )
 	$contact_courriel = $DB_ROW['structure_contact_courriel'];
 	// Informations sur l'admin : nom / prénom / login.
 	$DB_ROW = DB_STRUCTURE_WEBMESTRE::DB_recuperer_admin_identite($admin_id);
-	if(!count($DB_ROW))
+	if(empty($DB_ROW))
 	{
 		exit('Erreur : administrateur introuvable !');
 	}
@@ -228,9 +228,9 @@ if( ($action=='initialiser_mdp') && $base_id && $admin_id )
 	exit();
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Supprimer une structure existante
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Supprimer une structure existante
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='supprimer') && $base_id )
 {
@@ -238,9 +238,9 @@ if( ($action=='supprimer') && $base_id )
 	exit('<ok>');
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Supprimer plusieurs structures existantes
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Supprimer plusieurs structures existantes
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='supprimer') && $listing_base_id )
 {
@@ -252,9 +252,9 @@ if( ($action=='supprimer') && $listing_base_id )
 	exit('<ok>');
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Bloquer les accès à une structure
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Bloquer les accès à une structure
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='bloquer') && $base_id )
 {
@@ -262,9 +262,9 @@ if( ($action=='bloquer') && $base_id )
 	exit('<img class="debloquer" src="./_img/etat/acces_non.png" title="Débloquer cet établissement." />');
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Débloquer les accès à une structure
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Débloquer les accès à une structure
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if( ($action=='debloquer') && $base_id )
 {
@@ -272,9 +272,9 @@ if( ($action=='debloquer') && $base_id )
 	exit('<img class="bloquer" src="./_img/etat/acces_oui.png" title="Bloquer cet établissement." />');
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	On ne devrait pas en arriver là...
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// On ne devrait pas en arriver là...
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 exit('Erreur avec les données transmises !');
 

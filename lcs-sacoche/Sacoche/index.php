@@ -52,22 +52,22 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 }
 elseif($PAGE!='public_installation')
 {
-	exit_error( 'Informations hébergement manquantes' /*titre*/ , 'Les informations relatives à l\'hébergeur n\'ont pas été trouvées.' /*contenu*/ , TRUE /*setup*/ );
+	exit_error( 'Informations hébergement manquantes' /*titre*/ , 'Les informations relatives à l\'hébergeur n\'ont pas été trouvées.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_INSTALL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , TRUE /*setup*/ );
 }
 
 // Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php');
 if(!isset($tab_droits[$PAGE]))
 {
-	$tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants.';
+	$tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants ; soit le paramètre "page" transmis en GET est incorrect, soit les droits de cette page n\'ont pas été attribués dans le fichier'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php.');
 	$PAGE = (substr($PAGE,0,6)=='public') ? 'public_accueil' : 'compte_accueil' ;
 }
 
 // Ouverture de la session et gestion des droits d'accès
 Session::execute($tab_droits[$PAGE]);
 
-// Pour le devel
-if (DEBUG) afficher_infos_debug();
+// Infos DEBUG dans FirePHP
+if (DEBUG>3) afficher_infos_debug_FirePHP();
 
 // Blocage éventuel par le webmestre ou un administrateur ou l'automate (on ne peut pas le tester avant car il faut avoir récupéré les données de session)
 LockAcces::stopper_si_blocage( $_SESSION['BASE'] , FALSE /*demande_connexion_profil*/ );
@@ -125,7 +125,7 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 	}
 	else
 	{
-		exit_error( 'Configuration anormale' /*titre*/ , 'Une anomalie dans les données d\'hébergement et/ou de session empêche l\'application de se poursuivre.' /*contenu*/ );
+		exit_error( 'Configuration anormale' /*titre*/ , 'Une anomalie dans les données d\'hébergement et/ou de session empêche l\'application de se poursuivre.<br />HEBERGEUR_INSTALLATION vaut '.HEBERGEUR_INSTALLATION.'<br />$_SESSION["USER_PROFIL"] vaut '.$_SESSION['USER_PROFIL'] /*contenu*/ );
 	}
 	// Chargement du fichier de connexion à la BDD
 	define('CHEMIN_FICHIER_CONFIG_MYSQL',CHEMIN_DOSSIER_MYSQL.$fichier_mysql_config.'.php');
@@ -136,7 +136,7 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 	}
 	elseif($PAGE!='public_installation')
 	{
-		exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.' /*contenu*/ , TRUE /*setup*/ );
+		exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_MYSQL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , TRUE /*setup*/ );
 	}
 }
 
@@ -151,7 +151,7 @@ ob_start();
 $filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 if(!is_file($filename_php))
 {
-	$tab_messages_erreur[] = 'Erreur : page "'.$filename_php.'" manquante (supprimée, déplacée, non créée...).';
+	$tab_messages_erreur[] = 'Erreur : fichier '.FileSystem::fin_chemin($filename_php).' manquant.';
 	$PAGE = ($_SESSION['USER_PROFIL']=='public') ? 'public_accueil' :'compte_accueil' ;
 	$filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 }
@@ -162,7 +162,7 @@ ob_end_clean();
 
 // Titre du navigateur
 $TITRE_NAVIGATEUR = 'SACoche » Espace '.$_SESSION['USER_PROFIL'].' » ';
-$TITRE_NAVIGATEUR.= ($TITRE) ? $TITRE : 'Evaluer par comptétences et valider le socle commun' ;
+$TITRE_NAVIGATEUR.= ($TITRE) ? $TITRE : 'Evaluer par compétences et valider le socle commun' ;
 
 // Css personnalisé
 $CSS_PERSO = (isset($_SESSION['CSS'])) ? '<style type="text/css">'.$_SESSION['CSS'].'</style>' : NULL ;
@@ -176,6 +176,9 @@ $tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // 
 if($PAGE=='officiel_accueil')    $tab_fichiers_head[] = array( 'js'  , compacter('./_js/highcharts.js','mini') );
 if(is_file($filename_js_normal)) $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
 
+// Jeton CSRF
+$CSRF = isset($tab_verif_csrf[$PAGE]) ? generer_jeton_anti_CSRF($PAGE) : '' ;
+
 // Affichage de l'en-tête
 declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rss*/ , $tab_fichiers_head , $TITRE_NAVIGATEUR , $CSS_PERSO );
 ?>
@@ -188,16 +191,6 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
 		echo'	<img id="logo" alt="SACoche" src="./_img/logo_petit2.png" width="147" height="46" />'."\r\n";
 		echo'	<div id="top_info">'."\r\n";
 		echo'		<span class="button favicon"><a class="lien_ext" href="'.SERVEUR_PROJET.'">Site officiel</a></span>'."\r\n";
-		if(SERVEUR_TYPE!='PROD')
-		{
-			$protocole  = ( isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS']=='on') ) ? 'https://' : 'http://' ;
-			$url_page   = $protocole.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-			$separateur = (strpos($url_page,'?')) ? '&' : '?' ;
-			$span_class = DEBUG ? 'firephp' : 'firebug' ;
-			$get_debug  = DEBUG ? 'debug=0' : 'debug=1' ;
-			$txt_debug  = DEBUG ? 'on&rarr;off' : 'off&rarr;on' ;
-			echo'		<span class="button '.$span_class.'"><a href="'.html($url_page.$separateur.$get_debug).'">'.$txt_debug.'</a></span>'."\r\n";
-		}
 		echo'		<span class="button home">'.html($_SESSION['ETABLISSEMENT']['DENOMINATION']).'</span>'."\r\n";
 		echo'		<span class="button profil_'.$_SESSION['USER_PROFIL'].'">'.html($_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM']).' ('.$_SESSION['USER_PROFIL'].')</span>'."\r\n";
 		echo'		<span class="button clock_fixe"><span id="clock">'.$_SESSION['DUREE_INACTIVITE'].' min</span></span>'."\r\n";
@@ -259,6 +252,7 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
 	?>
 	<script type="text/javascript">
 		var PAGE='<?php echo $PAGE ?>';
+		var CSRF='<?php echo $CSRF ?>';
 		var DUREE_AUTORISEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
 		var DUREE_AFFICHEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
 		var CONNEXION_USED='<?php echo (isset($_COOKIE[COOKIE_AUTHMODE])) ? $_COOKIE[COOKIE_AUTHMODE] : 'normal' ; ?>';

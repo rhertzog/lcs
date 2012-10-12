@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher / masquer le choix du motif du blocage
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher / masquer le choix du motif du blocage
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_debloquer , #f_bloquer').click
 		(
@@ -50,9 +50,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Autocompléter le motif du blocage
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Autocompléter le motif du blocage
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		tab_proposition = new Array();
 		tab_proposition["rien"]         = "";
@@ -66,9 +66,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire principal
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $('#form');
@@ -94,7 +94,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -132,7 +132,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider").prop('disabled',false);
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

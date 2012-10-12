@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour lancer un nettoyage
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_numeroter , #bouton_nettoyer , #bouton_purger , #bouton_supprimer , #bouton_effacer').click
 		(
@@ -62,12 +62,12 @@ $(document).ready
 						{
 							type : 'POST',
 							url : 'ajax.php?page='+PAGE,
-							data : 'f_action='+action,
+							data : 'csrf='+CSRF+'&f_action='+action,
 							dataType : "html",
 							error : function(jqXHR, textStatus, errorThrown)
 							{
 								$("button").prop('disabled',false);
-								$('#ajax_msg_'+action).removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+								$('#ajax_msg_'+action).removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 								return false;
 							},
 							success : function(responseHTML)

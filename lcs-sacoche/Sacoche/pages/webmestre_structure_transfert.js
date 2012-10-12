@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Demande d'export des bases => soumission du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Demande d'export des bases => soumission du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_exporter').click
 		(
@@ -51,12 +51,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=exporter&f_listing_id='+bases,
+						data : 'csrf='+CSRF+'&f_action=exporter'+'&f_listing_id='+bases,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("button").prop('disabled',false);
-							$('#ajax_msg_export').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_export').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -85,9 +85,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Demande d'export des bases => étapes du traitement
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Demande d'export des bases => étapes du traitement
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function exporter()
 		{
@@ -99,11 +99,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=exporter' + '&num=' + num + '&max=' + max,
+					data : 'csrf='+CSRF+'&f_action=exporter'+'&num='+num+'&max='+max,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_export').removeAttr("class").addClass("alerte").html('Echec lors de la connexion au serveur !');
+						$('#ajax_msg_export').removeAttr("class").addClass("alerte").html('Échec lors de la connexion au serveur !');
 						$('#puce_info_export').html('<li><a id="a_reprise_export" href="#">Reprendre la procédure à l\'étape ' + num + ' sur ' + max + '.</a></li>');
 					},
 					success : function(responseHTML)
@@ -157,18 +157,18 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Initialisation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialisation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		if( $('#f_base option:selected').length )
 		{
 			$('#bouton_exporter').click();
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au clic sur un bouton pour uploader un fichier csv ou zip à importer
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Envoi du fichier avec jquery.ajaxupload.js
 		new AjaxUpload
@@ -176,7 +176,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_action':'importer_csv'},
+				data: {'csrf':CSRF,'f_action':'importer_csv'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier_csv,
@@ -189,7 +189,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_action':'importer_zip'},
+				data: {'csrf':CSRF,'f_action':'importer_zip'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier_zip,
@@ -289,9 +289,9 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Demande d'import des bases => soumission du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Demande d'import des bases => soumission du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_importer').click
 		(
@@ -308,9 +308,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Demande d'import des bases => étapes du traitement
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Demande d'import des bases => étapes du traitement
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function importer()
 		{
@@ -322,11 +322,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=importer' + '&num=' + num + '&max=' + max,
+					data : 'csrf='+CSRF+'&f_action=importer'+'&num='+num+'&max='+max,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_import').removeAttr("class").addClass("alerte").html('Echec lors de la connexion au serveur !');
+						$('#ajax_msg_import').removeAttr("class").addClass("alerte").html('Échec lors de la connexion au serveur !');
 						$('#puce_info_import').html('<li><a id="a_reprise_import" href="#">Reprendre la procédure à l\'étape ' + num + ' sur ' + max + '.</a></li>');
 					},
 					success : function(responseHTML)
@@ -378,9 +378,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Éléments dynamiques du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Éléments dynamiques du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Tout cocher ou tout décocher
 		$('#all_check').click
@@ -400,9 +400,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('td.label').live
 		('click',
@@ -412,9 +412,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour effectuer une action sur les structures sélectionnées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour effectuer une action sur les structures sélectionnées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var supprimer_structures_selectionnees = function(listing_id)
 		{
@@ -426,11 +426,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_listing_id='+listing_id,
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_listing_id='+listing_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_supprimer_export').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_supprimer_export').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						$("button").prop('disabled',false);
 						// afficher_masquer_images_action('show');
 					},
@@ -495,9 +495,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour effectuer une action sur les structures cochées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour effectuer une action sur les structures cochées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var supprimer_structures_cochees = function(listing_id)
 		{
@@ -509,11 +509,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_listing_id='+listing_id,
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_listing_id='+listing_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_supprimer_import').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_supprimer_import').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						$("button").prop('disabled',false);
 						// afficher_masquer_images_action('show');
 					},

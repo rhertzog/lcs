@@ -30,19 +30,19 @@ $(document).ready
 	function()
 	{
 
-		//	Initialisation
+		// Initialisation
 
 		$("#f_eleve").hide();
 
-		//	Rechercher automatiquement la meilleure période et le niveau du groupe au chargement de la page (uniquement pour un élève, seul cas où la classe est préselectionnée)
+		// Rechercher automatiquement la meilleure période et le niveau du groupe au chargement de la page (uniquement pour un élève, seul cas où la classe est préselectionnée)
 		var groupe_id   = $('#f_groupe option:selected').val();
 		var groupe_type = $("#f_groupe option:selected").parent().attr('label');
 		selectionner_periode_adaptee();
 		reporter_niveau_groupe();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enlever le message ajax et le résultat précédent au changement d'un select
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enlever le message ajax et le résultat précédent au changement d'un select
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select').change
 		(
@@ -53,9 +53,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des éléments du formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des éléments du formulaire
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var autoperiode = true; // Tant qu'on ne modifie pas manuellement le choix des périodes, modification automatique du formulaire
 
@@ -81,13 +81,13 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Changement de groupe
-		//	-> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
-		//	-> afficher le formulaire de périodes s'il est masqué
-		//	-> choisir automatiquement le niveau du groupe associé
-		//	-> afficher le formulaire des options s'il est masqué
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Changement de groupe
+		// -> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
+		// -> afficher le formulaire de périodes s'il est masqué
+		// -> choisir automatiquement le niveau du groupe associé
+		// -> afficher le formulaire des options s'il est masqué
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function selectionner_periode_adaptee()
 		{
@@ -192,9 +192,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger le select f_eleve en ajax
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger le select f_eleve en ajax
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_eleve(groupe_id,groupe_type)
 		{
@@ -207,7 +207,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -247,9 +247,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Soumettre le formulaire principal
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Soumettre le formulaire principal
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $("#form_select");
@@ -310,7 +310,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -351,7 +351,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$('button').prop('disabled',false);
-			var message = (jqXHR.status!=500) ? 'Echec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
+			var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html(message);
 		}
 

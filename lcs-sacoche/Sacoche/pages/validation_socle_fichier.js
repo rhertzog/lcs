@@ -34,9 +34,9 @@ $(document).ready
 
 		$("#select_eleves").hide();
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Charger le select f_eleve en ajax
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_eleve(groupe_id,groupe_type)
 		{
@@ -49,7 +49,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_groupe').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_groupe').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -92,9 +92,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Réagir au changement dans le premier formulaire (choix principal)
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_choix_principal").change
 		(
@@ -116,9 +116,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Exporter un fichier de validations
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#export_lpc , #export_sacoche').click
 		(
@@ -144,13 +144,13 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action='+action + '&' + 'select_eleves=' + select_eleves,
+						data : 'csrf='+CSRF+'&f_action='+action+'&select_eleves='+select_eleves,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button.enabled').prop('disabled',false);
 							$('#import_lpc_disabled').prop('disabled',true);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -175,9 +175,9 @@ $(document).ready
 			}
 		);
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Importer un fichier de validations avec jquery.ajaxupload.js
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		if($('#import_sacoche').length)
 		{
@@ -186,7 +186,7 @@ $(document).ready
 				{
 					action: 'ajax.php?page='+PAGE,
 					name: 'userfile',
-					data: {'f_action':'import_sacoche'},
+					data: {'csrf':CSRF,'f_action':'import_sacoche'},
 					autoSubmit: true,
 					responseType: "html",
 					onChange: changer_fichier,
@@ -203,7 +203,7 @@ $(document).ready
 				{
 					action: 'ajax.php?page='+PAGE,
 					name: 'userfile',
-					data: {'f_action':'import_compatible'},
+					data: {'csrf':CSRF,'f_action':'import_compatible'},
 					autoSubmit: true,
 					responseType: "html",
 					onChange: changer_fichier,

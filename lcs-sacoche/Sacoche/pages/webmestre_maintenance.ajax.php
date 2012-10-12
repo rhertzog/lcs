@@ -31,9 +31,9 @@ if($_SESSION['SESAMATH_ID']==ID_DEMO) {exit('Action désactivée pour la démo..
 $action = (isset($_POST['f_action'])) ? Clean::texte($_POST['f_action']) : '';
 $motif  = (isset($_POST['f_motif']))  ? Clean::texte($_POST['f_motif'])  : '';
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bloquer ou débloquer l'application
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($action=='debloquer')
 {
@@ -49,9 +49,9 @@ if($action=='bloquer')
 	exit('<label class="erreur">Application fermée : '.html($motif).'</label>');
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Vérification des droits en écriture
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($action=='verif_droits')
 {
@@ -65,7 +65,7 @@ if($action=='verif_droits')
 	ksort($_SESSION['tmp']['dossier']);
 	foreach($_SESSION['tmp']['dossier'] as $dossier => $tab)
 	{
-		$dossier = ($dossier) ? '.'.$dossier : './' ;
+		$dossier = ($dossier) ? '.'.$dossier : '.'.DS ;
 		$tbody .= (@is_writable($dossier)) ? '<tr><td class="v">Dossier accessible en écriture</td><td>'.$dossier.'</td></tr>' : '<tr><td class="r">Dossier aux droits insuffisants</td><td>'.$dossier.'</td></tr>' ;
 	}
 	// Fichiers
@@ -83,12 +83,12 @@ if($action=='verif_droits')
 
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Mise à jour automatique des fichiers
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $fichier_import  = CHEMIN_DOSSIER_IMPORT.'telechargement.zip';
-$dossier_dezip   = CHEMIN_DOSSIER_IMPORT.'SACoche/';
+$dossier_dezip   = CHEMIN_DOSSIER_IMPORT.'SACoche'.DS;
 $dossier_install = CHEMIN_DOSSIER_SACOCHE;
 
 //
@@ -96,10 +96,13 @@ $dossier_install = CHEMIN_DOSSIER_SACOCHE;
 //
 if($action=='maj_etape1')
 {
-	$fichier = './webservices/import_lcs.php';
-	if(is_file($fichier))
+	if(IS_HEBERGEMENT_SESAMATH)
 	{
-		exit(']¤['.'pb'.']¤['.'La mise à jour du module LCS-SACoche doit s\'effectuer via le LCS.');
+		exit(']¤['.'pb'.']¤['.'La mise à jour de SACoche sur le serveur Sésamath doit s\'effectuer en déployant le SVN !');
+	}
+	if(is_file(CHEMIN_FICHIER_WS_LCS))
+	{
+		exit(']¤['.'pb'.']¤['.'La mise à jour du module LCS-SACoche doit s\'effectuer via le LCS !');
 	}
 	$contenu_zip = url_get_contents( SERVEUR_TELECHARGEMENT ,FALSE /*tab_post*/ , 60 /*timeout*/ );
 	if(substr($contenu_zip,0,6)=='Erreur')
@@ -184,7 +187,7 @@ if($action=='maj_etape4')
 	{
 		if( (isset($tab['avant'])) && (isset($tab['apres'])) )
 		{
-			if( ($tab['avant']!=$tab['apres']) && ($fichier!='/.htaccess') )
+			if( ($tab['avant']!=$tab['apres']) && (substr($fichier,-9)!='.htaccess') )
 			{
 				// Fichier changé => maj (si le .htaccess a été changé, c'est sans doute volontaire, ne pas y toucher)
 				if( !copy( $dossier_dezip.$fichier , $dossier_install.$fichier ) )
@@ -196,7 +199,7 @@ if($action=='maj_etape4')
 				$tbody .= '<tr><td class="b">Fichier modifié</td><td>'.$fichier.'</td></tr>';
 			}
 		}
-		elseif( (!isset($tab['avant'])) && ($fichier!='/.htaccess') )
+		elseif( (!isset($tab['avant'])) && (substr($fichier,-9)!='.htaccess') )
 		{
 			// Fichier à ajouter (si le .htaccess n'y est pas, c'est sans doute volontaire, ne pas l'y remettre)
 			if( !copy( $dossier_dezip.$fichier , $dossier_install.$fichier ) )
@@ -237,13 +240,13 @@ if($action=='maj_etape5')
 	exit(']¤['.'ok'.']¤['.VERSION_PROG);
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Vérification des fichiers
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $fichier_import  = CHEMIN_DOSSIER_IMPORT.'verification.zip';
-$dossier_dezip   = CHEMIN_DOSSIER_IMPORT.'SACoche/';
-$dossier_install = '.';
+$dossier_dezip   = CHEMIN_DOSSIER_IMPORT.'SACoche'.DS;
+$dossier_install = '.'.DS;
 
 //
 // 1. Récupération de l'archive <em>ZIP</em>...
@@ -325,7 +328,7 @@ if($action=='verif_etape4')
 	{
 		if( (isset($tab['avant'])) && (isset($tab['apres'])) )
 		{
-			if( ($tab['avant']==$tab['apres']) || ($fichier=='/.htaccess') )
+			if( ($tab['avant']==$tab['apres']) || (substr($fichier,-9)=='.htaccess') )
 			{
 				// Fichier identique (si le .htaccess a été changé, c'est sans doute volontaire, ne pas y toucher)
 				$tbody_ok .= '<tr class="v"><td>Fichier identique</td><td>'.$fichier.'</td></tr>';
@@ -336,7 +339,7 @@ if($action=='verif_etape4')
 				$tbody_pb .= '<tr class="r"><td>Fichier différent</td><td>'.$fichier.'</td></tr>';
 			}
 		}
-		elseif( (!isset($tab['avant'])) && ($fichier!='/.htaccess') )
+		elseif( (!isset($tab['avant'])) && (substr($fichier,-9)!='.htaccess') )
 		{
 			// Fichier manquant
 			$tbody_pb .= '<tr class="r"><td>Fichier manquant</td><td>'.$fichier.'</td></tr>';
@@ -363,9 +366,9 @@ if($action=='verif_etape5')
 	exit(']¤['.'ok'.']¤['.VERSION_PROG);
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // On ne devrait pas en arriver là...
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 exit('Erreur avec les données transmises !');
 

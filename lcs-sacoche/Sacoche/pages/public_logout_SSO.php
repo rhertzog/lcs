@@ -27,24 +27,38 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-// En cas de multi-structures, il faut savoir dans quelle base récupérer les informations
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// En cas de multi-structures, il faut savoir dans quelle base récupérer les informations.
+// Cette page est appelée par SACoche et dans ce cas c'est "base" qui est transmis.
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$BASE = (isset($_GET['base'])) ? Clean::entier($_GET['base']) : 0;
-
+$BASE = 0;
 if(HEBERGEUR_INSTALLATION=='multi-structures')
 {
+	// Lecture d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
+	$BASE = (isset($_COOKIE[COOKIE_STRUCTURE])) ? Clean::entier($_COOKIE[COOKIE_STRUCTURE]) : 0 ;
+	// Test si id d'établissement transmis dans l'URL ; historiquement "id" si connexion normale et "base" si connexion SSO
+	$BASE = (isset($_GET['id']))   ? Clean::entier($_GET['id'])   : $BASE ;
+	$BASE = (isset($_GET['base'])) ? Clean::entier($_GET['base']) : $BASE ;
+	// Test si UAI d'établissement transmis dans l'URL
+	$BASE = (isset($_GET['uai'])) ? DB_WEBMESTRE_PUBLIC::DB_recuperer_structure_id_base_for_UAI(Clean::uai($_GET['uai'])) : $BASE ;
 	if(!$BASE)
 	{
-		exit_error( 'Donnée manquante' /*titre*/ , 'Paramètre indiquant la base concernée non transmis.' /*contenu*/ );
+		if(isset($_GET['uai']))
+		{
+			exit_error( 'Paramètre incorrect' /*titre*/ , 'Le numéro UAI transmis n\'est pas référencé sur cette installation de SACoche : vérifiez son exactitude et si cet établissement est bien inscrit sur ce serveur.' /*contenu*/ );
+		}
+		else
+		{
+			exit_error( 'Donnée manquante' /*titre*/ , 'Référence de base manquante (le paramètre "base" ou "id" n\'a pas été transmis en GET ou n\'est pas un entier et n\'a pas non plus été trouvé dans un Cookie).' /*contenu*/ );
+		}
 	}
 	charger_parametres_mysql_supplementaires($BASE);
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Connexion à la base pour charger les paramètres du SSO demandé
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Mettre à jour la base si nécessaire
 maj_base_si_besoin($BASE);
@@ -56,17 +70,20 @@ foreach($DB_TAB as $DB_ROW)
 }
 if($connexion_mode=='normal')
 {
-	exit_error( 'Configuration manquante' /*titre*/ , 'Etablissement non configuré par l\'administrateur pour utiliser un service d\'authentification externe.' /*contenu*/ );
+	exit_error( 'Configuration manquante' /*titre*/ , 'Etablissement non paramétré par l\'administrateur pour utiliser un service d\'authentification externe.<br />Un administrateur doit renseigner cette configuration dans le menu [Paramétrages][Mode&nbsp;d\'identification].' /*contenu*/ );
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Déconnexion avec le protocole CAS
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($connexion_mode=='cas')
 {
 	// Pour tester, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
-	// phpCAS::setDebug('debugcas.txt');
+	if (DEBUG_PHPCAS)
+	{
+		phpCAS::setDebug(CHEMIN_FICHIER_DEBUG_PHPCAS);
+	}
 	// Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
 	phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
 	phpCAS::setLang(PHPCAS_LANG_FRENCH);
@@ -74,14 +91,26 @@ if($connexion_mode=='cas')
 	phpCAS::setNoCasServerValidation();
 	// Gestion du single sign-out
 	phpCAS::handleLogoutRequests(FALSE);
+	// Appliquer un proxy si défini par le webmestre ; voir url_get_contents() pour les commentaires.
+	if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
+	{
+		phpCAS::setExtraCurlOption(CURLOPT_PROXY     , SERVEUR_PROXY_NAME);
+		phpCAS::setExtraCurlOption(CURLOPT_PROXYPORT , (int)SERVEUR_PROXY_PORT);
+		phpCAS::setExtraCurlOption(CURLOPT_PROXYTYPE , constant(SERVEUR_PROXY_TYPE));
+		if(SERVEUR_PROXY_AUTH_USED)
+		{
+			phpCAS::setExtraCurlOption(CURLOPT_PROXYAUTH    , constant(SERVEUR_PROXY_AUTH_METHOD));
+			phpCAS::setExtraCurlOption(CURLOPT_PROXYUSERPWD , SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS);
+		}
+	}
 	// Déconnexion de CAS
 	phpCAS::logout();
 	exit();
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Déconnexion de GEPI avec le protocole SAML
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($connexion_mode=='gepi')
 {

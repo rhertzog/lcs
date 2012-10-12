@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour lancer une sauvegarde
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_form1').click
 		(
@@ -47,12 +47,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=sauvegarder',
+						data : 'csrf='+CSRF+'&f_action=sauvegarder',
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("button").prop('disabled',false);
-							$('#ajax_msg1').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg1').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -75,16 +75,16 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Upload d'un fichier image avec jquery.ajaxupload.js
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		new AjaxUpload
 		('#bouton_form2',
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_action':'uploader'},
+				data: {'csrf':CSRF,'f_action':'uploader'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -140,9 +140,9 @@ $(document).ready
 			}
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour lancer une restauration
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function restaurer(etape)
 		{
@@ -151,12 +151,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=restaurer'+'&etape='+etape,
+					data : 'csrf='+CSRF+'&f_action=restaurer'+'&etape='+etape,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$("button").prop('disabled',false);
-						$('#ajax_msg2').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+						$('#ajax_msg2').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 						return false;
 					},
 					success : function(responseHTML)

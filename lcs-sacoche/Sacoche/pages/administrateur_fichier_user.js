@@ -32,9 +32,9 @@ $(document).ready
 
 		var f_action = '';
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Réagir au changement dans le premier formulaire (choix principal)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_choix_principal").change
 		(
@@ -52,9 +52,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le lien pour revenir au formulaire principal
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le lien pour revenir au formulaire principal
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('#bouton_annuler').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
@@ -65,9 +65,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Éléments dynamiques du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Éléments dynamiques du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Tout cocher ou tout décocher
 		$('input[name=all_check]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
@@ -87,9 +87,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // depart -> step10     Réagir au clic sur un bouton pour envoyer un import (quel qu'il soit)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Envoi du fichier avec jquery.ajaxupload.js
 		// Attention, la variable f_action n'est pas accessible dans les AjaxUpload
@@ -98,7 +98,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'sconet_eleves_oui'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'sconet_eleves_oui'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -111,7 +111,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'sconet_parents_oui'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'sconet_parents_oui'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -124,7 +124,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'sconet_professeurs_directeurs_oui'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'sconet_professeurs_directeurs_oui'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -137,7 +137,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'base-eleves_eleves'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'base-eleves_eleves'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -150,7 +150,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'tableur_eleves'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'tableur_eleves'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -163,7 +163,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_step':10,'f_action':'tableur_professeurs_directeurs'},
+				data: {'csrf':CSRF,'f_step':10,'f_action':'tableur_professeurs_directeurs'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -237,7 +237,7 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step10 -> step20                              Passer à l'extraction des données
 // step20 -> step31                              Passer à l'analyse des données des classes
 // step32 -> step41                              Passer à l'analyse des données des groupes
@@ -246,7 +246,7 @@ $(document).ready
 // step52 | step53 -> step71                     Passer aux adresses des parents
 // step72 -> step81                              Passer aux liens de responsabilité des parents
 // step52 | step53 | step62 | step82 -> step90   Nettoyage des fichiers temporaires
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#passer_etape_suivante').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -263,11 +263,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_step='+f_step+'&f_action='+f_action,
+						data : 'csrf='+CSRF+'&f_step='+f_step+'&f_action='+f_action,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -289,10 +289,10 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step31 -> step32     Envoyer les actions sur les classes
 // step41 -> step42     Envoyer les actions sur les groupes
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#envoyer_infos_regroupements').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -329,11 +329,11 @@ $(document).ready
 						{
 							type : 'POST',
 							url : 'ajax.php?page='+PAGE,
-							data : 'f_step='+f_step+'&f_action='+f_action+'&'+$("#form2").serialize(),
+							data : 'csrf='+CSRF+'&f_step='+f_step+'&f_action='+f_action+'&'+$("#form2").serialize(),
 							dataType : "html",
 							error : function(jqXHR, textStatus, errorThrown)
 							{
-								$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+								$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 								return false;
 							},
 							success : function(responseHTML)
@@ -355,12 +355,12 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step51 -> step52     Envoyer les actions sur les utilisateurs
 // step61 -> step62     Envoyer les actions sur les ajouts d'affectations éventuelles (Sconet uniquement)
 // step71 -> step72     Envoyer les actions sur les ajouts d'affectations éventuelles (Sconet uniquement)
 // step81 -> step82     Envoyer les modifications éventuelles sur les liens de responsabilité des parents (Sconet uniquement)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#envoyer_infos_utilisateurs').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -383,11 +383,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_step='+f_step+'&f_action='+f_action+'&f_check='+f_check,
+						data : 'csrf='+CSRF+'&f_step='+f_step+'&f_action='+f_action+'&f_check='+f_check,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -408,9 +408,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step52 -> step53     Récupérer les identifiants des nouveaux utilisateurs
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('a.step53').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -423,11 +423,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_step=53&f_action='+f_action+'&'+$("#form2").serialize(),
+						data : 'csrf='+CSRF+'&f_step=53'+'&f_action='+f_action+'&'+$("#form2").serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -449,10 +449,10 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step90 -> step0
 // Retour au départ
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#retourner_depart').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',

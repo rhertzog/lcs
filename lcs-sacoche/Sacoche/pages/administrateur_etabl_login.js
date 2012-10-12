@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Alerter sur la nécessité de valider
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("input").change
 		(
@@ -50,9 +50,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Format des noms d'utilisateurs
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Format des noms d'utilisateurs
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function test_format_login(format)
 		{
@@ -70,7 +70,7 @@ $(document).ready
 			{
 				var tab_profil = new Array('directeur','professeur','eleve','parent');
 				var tab_value  = new Array();
-				var datas = 'action=login';
+				var datas = '';
 				var imax = tab_profil.length;
 				for ( var i=0 ; i<imax ; i++ )
 				{
@@ -89,12 +89,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : datas,
+						data : 'csrf='+CSRF+'&action=login'+datas,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider_login").prop('disabled',false);
-							$('#ajax_msg_login').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_login').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -115,9 +115,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Longueur minimale d'un mot de passe
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Longueur minimale d'un mot de passe
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_valider_mdp_mini').click
 		(
@@ -130,12 +130,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'action=mdp_mini&f_mdp_mini='+$('#f_mdp_mini option:selected').val(),
+						data : 'csrf='+CSRF+'&action=mdp_mini'+'&f_mdp_mini='+$('#f_mdp_mini option:selected').val(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider_mdp_mini").prop('disabled',false);
-							$('#ajax_msg_mdp_mini').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_mdp_mini').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)

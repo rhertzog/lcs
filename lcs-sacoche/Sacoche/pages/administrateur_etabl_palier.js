@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur l'image pour Voir le détail d'un palier du socle
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur l'image pour Voir le détail d'un palier du socle
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('q.voir').click
 		(
 			function()
@@ -43,9 +43,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('td.label').click
 		(
 			function()
@@ -54,9 +54,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un checkbox
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un checkbox
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('input[type=checkbox]').click
 		(
 			function()
@@ -65,9 +65,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Validation du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Validation du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('#bouton_valider').click
 		(
 			function()
@@ -80,12 +80,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=Choix_paliers&tab_id='+check_ids,
+						data : 'csrf='+CSRF+'&f_action=Choix_paliers'+'&tab_id='+check_ids,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider").prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)

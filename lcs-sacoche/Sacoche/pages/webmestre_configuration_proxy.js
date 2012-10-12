@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des éléments du formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des éléments du formulaire
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_proxy_used').click
 		(
@@ -50,9 +50,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Masquer les message si formulaire modifié
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Masquer les message si formulaire modifié
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('input,select').change
 		(
@@ -64,9 +64,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Tester les réglages actuellement enregistrés
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Tester les réglages actuellement enregistrés
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_tester').click
 		(
@@ -79,11 +79,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=tester',
+						data : 'csrf='+CSRF+'&f_action=tester',
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg_tester').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg_tester').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -103,9 +103,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Soumettre le formulaire principal => Enregistrer des nouveaux réglages
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Soumettre le formulaire principal => Enregistrer des nouveaux réglages
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $("#form_proxy");
@@ -146,7 +146,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -185,7 +185,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$('button').prop('disabled',false);
-			$('#ajax_msg_enregistrer').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_enregistrer').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

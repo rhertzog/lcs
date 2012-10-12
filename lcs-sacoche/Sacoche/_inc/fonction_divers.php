@@ -26,19 +26,6 @@
  */
 
 /*
- * Convertir les caractères spéciaux (&"'<>) en entité HTML pour éviter des problèmes d'affichage (INPUT, SELECT, TEXTAREA, XML...).
- * Pour que les retours à la lignes soient convertis en <br /> il faut coupler dette fontion à la fonction nl2br()
- * 
- * @param string
- * @return string
- */
-function html($text)
-{
-	// Ne pas modifier ce code à la légère : les résultats sont différents suivant que ce soit un affichage direct ou ajax, suivant la version de PHP (5.1 ou 5.3)...
-	return (perso_mb_detect_encoding_utf8($text)) ? htmlspecialchars($text,ENT_COMPAT,'UTF-8') : utf8_encode(htmlspecialchars($text,ENT_COMPAT)) ;
-}
-
-/*
  * Réciproque de html()
  * 
  * @param string
@@ -205,7 +192,7 @@ function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id
 	if(!$liste_eleve_id) return FALSE;
 	// Dates période
 	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($classe_id,$periode_id);
-	if(!count($DB_ROW)) return FALSE;
+	if(empty($DB_ROW)) return FALSE;
 	// Récupération de la liste des items travaillés et affiner la liste des matières concernées
 	$date_mysql_debut = $DB_ROW['jointure_date_debut'];
 	$date_mysql_fin   = $DB_ROW['jointure_date_fin'];
@@ -355,7 +342,7 @@ function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id
 {
 	// Dates période
 	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($classe_id,$periode_id);
-	if(!count($DB_ROW)) return FALSE;
+	if(empty($DB_ROW)) return FALSE;
 	// Récupération de la liste des items travaillés
 	$date_mysql_debut = $DB_ROW['jointure_date_debut'];
 	$date_mysql_fin   = $DB_ROW['jointure_date_fin'];
@@ -367,7 +354,7 @@ function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id
 	// Récupération de la liste des résultats des évaluations associées à ces items donnés d'une ou plusieurs matieres, pour les élèves selectionnés, sur la période sélectionnée
 	$date_mysql_debut = false;
 	$DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_debut , $date_mysql_fin , $_SESSION['USER_PROFIL']);
-	if(!count($DB_TAB)) return FALSE;
+	if(empty($DB_TAB)) return FALSE;
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_eval[$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note']);
@@ -558,7 +545,7 @@ function charger_parametres_mysql_supplementaires($BASE)
 	}
 	else
 	{
-		exit_error( 'Paramètre incorrect' /*titre*/ , 'Le fichier avec les paramètres de la base n°'.$BASE.' est manquant !' /*contenu*/ );
+		exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />Le fichier "'.FileSystem::fin_chemin($file_config_base_structure_multi).'" (base n°'.$BASE.') est manquant !' /*contenu*/ );
 	}
 }
 
@@ -965,13 +952,13 @@ function tester_authentification_user($BASE,$login,$password,$mode_connection)
 	// Récupérer les données associées à l'utilisateur.
 	$DB_ROW = DB_STRUCTURE_PUBLIC::DB_recuperer_donnees_utilisateur($mode_connection,$login);
 	// Si login non trouvé...
-	if(!count($DB_ROW))
+	if(empty($DB_ROW))
 	{
 		switch($mode_connection)
 		{
 			case 'normal' : $message = 'Nom d\'utilisateur incorrect !'; break;
-			case 'cas'    : $message = 'Identification réussie mais identifiant SSO "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant ENT associé à votre compte SACoche est "'.$login.'"&hellip;'; break;
-			case 'gepi'   : $message = 'Identification réussie mais login GEPI "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant GEPI associé à votre compte SACoche est "'.$login.'"&hellip;'; break;
+			case 'cas'    : $message = 'Identification réussie mais identifiant SSO "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant ENT associé à votre compte SACoche est "'.$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer "'.$login.'" dans la case [Id.&nbsp;ENT] de la ligne correspondant à votre compte.'; break;
+			case 'gepi'   : $message = 'Identification réussie mais login GEPI "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant GEPI associé à votre compte SACoche est "'.$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer "'.$login.'" dans la case [Id.&nbsp;Gepi] de la ligne correspondant à votre compte.'; break;
 		}
 		return array($message,array());
 	}
@@ -1024,7 +1011,7 @@ function enregistrer_session_user($BASE,$DB_ROW)
 	// On en profite pour effacer les fichiers inutiles
 	FileSystem::nettoyer_fichiers_temporaires($BASE);
 	// Enregistrer en session le numéro de la base
-	$_SESSION['BASE']             = $BASE;
+	$_SESSION['BASE']               = $BASE;
 	// Enregistrer en session les données associées à l'utilisateur (indices du tableau de session en majuscules).
 	$_SESSION['USER_PROFIL']        = $DB_ROW['user_profil'];
 	$_SESSION['USER_ID']            = (int) $DB_ROW['user_id'];
@@ -1632,18 +1619,18 @@ function url_get_contents($url,$tab_post=false,$timeout=10)
 	}
 	if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
 	{                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
-		curl_setopt($ch, CURLOPT_PROXY, SERVEUR_PROXY_NAME);               // Le nom du proxy HTTP au tunnel qui le demande.
+		curl_setopt($ch, CURLOPT_PROXY,     SERVEUR_PROXY_NAME);           // Le nom du proxy HTTP au tunnel qui le demande.
 		curl_setopt($ch, CURLOPT_PROXYPORT, (int)SERVEUR_PROXY_PORT);      // Le numéro du port du proxy à utiliser pour la connexion. Ce numéro de port peut également être défini dans l'option CURLOPT_PROXY.
 		curl_setopt($ch, CURLOPT_PROXYTYPE, constant(SERVEUR_PROXY_TYPE)); // Soit CURLPROXY_HTTP (par défaut), soit CURLPROXY_SOCKS5.
 		if(SERVEUR_PROXY_AUTH_USED)
 		{                                                                                              // Serveur qui nécessite de s'authentifier pour utiliser le proxy.
-			curl_setopt($ch, CURLOPT_PROXYAUTH, constant(SERVEUR_PROXY_AUTH_METHOD));                    // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
+			curl_setopt($ch, CURLOPT_PROXYAUTH,    constant(SERVEUR_PROXY_AUTH_METHOD));                 // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
 			curl_setopt($ch, CURLOPT_PROXYUSERPWD, SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS); // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion avec le proxy.
 		}
 	}
 	if(is_array($tab_post))
 	{
-		curl_setopt($ch, CURLOPT_POST, TRUE);                   // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
+		curl_setopt($ch, CURLOPT_POST,       TRUE);             // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);        // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Eviter certaines erreurs cURL 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
 	}
@@ -1844,7 +1831,7 @@ function tester_UAI($uai)
 	$uai_nombre = substr($uai,0,7);
 	$uai_lettre = substr($uai,-1);
 	$reste = $uai_nombre - (23*floor($uai_nombre/23));
-	$alphabet = "ABCDEFGHJKLMNPRSTUVWXYZ";
+	$alphabet = 'ABCDEFGHJKLMNPRSTUVWXYZ';
 	$clef = substr($alphabet,$reste,1);
 	return ($clef==$uai_lettre) ? TRUE : FALSE;
 }
@@ -1910,4 +1897,50 @@ function convert_date_french_to_mysql($date)
 	return $annee.'-'.$mois.'-'.$jour;
 }
 
+/**
+ * Générer un jeton CSRF pour un passage donné sur une page donnée (le met en session et renvoie sa valeur).
+ * Peut provoquer de fausses alertes si utilisation de plusieurs onglets d'une même page...
+ * La session doit être ouverte.
+ *
+ * @param string $page
+ * @return string
+ */
+function generer_jeton_anti_CSRF($page)
+{
+	$_SESSION['CSRF'][$page] = uniqid();
+	return $_SESSION['CSRF'][$page];
+}
+
+/**
+ * Appelé par ajax.php pour vérifier un jeton CSRF lors d'un appel ajax (soumission de données) d'une page donnée (vérifie sa valeur en session, quitte si pb).
+ * Peut être aussi potentiellement appelé par de rares pages PHP s'envoyant un formulaire sans passer par AJAX (seule officiel_accueil.php est concerné au 10/2012).
+ * Peut provoquer de fausses alertes si utilisation de plusieurs onglets d'une même page...
+ * On utilise REQUEST car c'est tranmis en POST si Ajax maison mais en GET si utilisation de jquery.form.js.
+ * La session doit être ouverte.
+ *
+ * @param string $page
+ * @return void
+ */
+function verifier_jeton_anti_CSRF($page)
+{
+	if( empty($_REQUEST['csrf']) || empty($_SESSION['CSRF'][$page]) || ($_REQUEST['csrf']!=$_SESSION['CSRF'][$page]) )
+	{
+		exit_error( 'Alerte CSRF' /*titre*/ , 'Jeton invalide. Éviter une même page ouverte dans plusieurs onglets.' /*contenu*/ , FALSE /*setup*/ );
+	}
+}
+
+/**
+ * Renvoyer une taille de fichier lisible pour un humain :)
+ * @see http://fr2.php.net/manual/fr/function.filesize.php#106569
+ *
+ * @param int $bytes
+ * @param int $decimals (facultatif)
+ * @return string
+ */
+function afficher_fichier_taille($bytes, $decimals = 1)
+{
+	$size_unit = ' KMGTP';
+	$factor = floor((strlen($bytes) - 1) / 3);
+	return round( $bytes / pow(1024,$factor) , $decimals ) . $size_unit[$factor].'o';
+}
 ?>

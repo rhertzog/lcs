@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour initialiser/actualiser le select f_logo
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function chargement_select_logo()
 		{
@@ -42,11 +42,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=select_logo',
+					data : 'csrf='+CSRF+'&f_action=select_logo',
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_logo').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+						$('#ajax_logo').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 						return false;
 					},
 					success : function(responseHTML)
@@ -66,9 +66,9 @@ $(document).ready
 		}
 		chargement_select_logo();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour initialiser/actualiser le ul listing_logos
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function chargement_ul_logo()
 		{
@@ -78,11 +78,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=listing_logos',
+					data : 'csrf='+CSRF+'&f_action=listing_logos',
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_listing').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+						$('#ajax_listing').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 						return false;
 					},
 					success : function(responseHTML)
@@ -103,9 +103,9 @@ $(document).ready
 		}
 		chargement_ul_logo();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour supprimer un logo
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('q.supprimer').live
 		( 'click' , function()
@@ -118,11 +118,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=delete_logo&f_logo='+logo,
+						data : 'csrf='+CSRF+'&f_action=delete_logo'+'&f_logo='+logo,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_listing').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_listing').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)
@@ -143,16 +143,16 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Upload d'un fichier image avec jquery.ajaxupload.js
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		new AjaxUpload
 		('#f_upload',
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_action':'upload_logo'},
+				data: {'csrf':CSRF,'f_action':'upload_logo'},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -206,9 +206,9 @@ $(document).ready
 			}
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Gérer les focus et click pour les boutons radio
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Gérer les focus et click pour les boutons radio
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_cnil_numero').focus
 		(
@@ -243,9 +243,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire principal
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $('#form1');
@@ -297,7 +297,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -335,7 +335,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$("button").prop('disabled',false);
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

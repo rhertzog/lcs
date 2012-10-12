@@ -25,6 +25,8 @@
  * 
  */
 
+if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+
 /**
  * Code inclus commun aux pages
  * [./pages/releve_items_matiere.ajax.php]
@@ -44,7 +46,7 @@
 // D'où une combinaison avec une détection par javascript du statusCode.
 
 augmenter_memory_limit();
-register_shutdown_function('rapporter_erreur_fatale');
+register_shutdown_function('rapporter_erreur_fatale_memoire');
 
 /*
 $type_individuel   $type_synthese   $type_bulletin
@@ -77,9 +79,9 @@ if( ($make_html) || ($make_pdf) )
 	if(!$aff_lien)  { $texte_lien_apres = ''; }
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Période concernée
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($periode_id==0)
 {
@@ -89,7 +91,7 @@ if($periode_id==0)
 else
 {
 	$DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($groupe_id,$periode_id);
-	if(!count($DB_ROW))
+	if(empty($DB_ROW))
 	{
 		exit('La classe et la période ne sont pas reliées !');
 	}
@@ -106,10 +108,10 @@ if($date_mysql_debut>$date_mysql_fin)
 $date_complement = ($retroactif=='oui') ? ' (notes antérieures comptées).' : '.';
 $texte_periode   = 'Du '.$date_debut.' au '.$date_fin.$date_complement;
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération de la liste des items travaillés durant la période choisie, pour les élèves selectionnés, pour la ou les matières ou les items indiqués
 // Récupération de la liste des matières travaillées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($format=='matiere')
 {
@@ -149,9 +151,9 @@ $liste_item = implode(',',$tab_liste_item);
 
 // A ce stade : $matiere_id est un entier positif ou -1 si multimatières ou 0 si sélection d'items issus de plusieurs matières
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération de la liste des élèves
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($_SESSION['USER_PROFIL']=='eleve')
 {
@@ -167,10 +169,10 @@ else
 }
 $eleve_nb = count($tab_eleve);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération de la liste des résultats des évaluations associées à ces items donnés d'une ou plusieurs matieres, pour les élèves selectionnés, sur la période sélectionnée
 // Attention, il faut éliminer certains items qui peuvent potentiellement apparaitre dans des relevés d'élèves alors qu'ils n'ont pas été interrogés sur la période considérée (mais un camarade oui).
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $tab_score_a_garder = array();
 $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_date_last_eleves_items($liste_eleve,$liste_item);
@@ -191,20 +193,20 @@ foreach($DB_TAB as $DB_ROW)
 }
 $matiere_nb = count(array_unique($tab_matiere_for_item)); // 1 si $matiere_id >= 0 précédemment, davantage uniquement si $matiere_id = -1
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 /* 
  * Libérer de la place mémoire car les scripts de bilans sont assez gourmands.
  * Supprimer $DB_TAB ne fonctionne pas si on ne force pas auparavant la fermeture de la connexion.
  * SebR devrait peut-être envisager d'ajouter une méthode qui libère cette mémoire, si c'est possible...
  */
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 DB::close(SACOCHE_STRUCTURE_BD_NAME);
 unset($DB_TAB);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Tableaux et variables pour mémoriser les infos ; dans cette partie on ne fait que les calculs (aucun affichage)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $tab_score_eleve_item         = array();	// Retenir les scores / élève / matière / item
 $tab_score_item_eleve         = array();	// Retenir les scores / item / élève
@@ -376,9 +378,9 @@ if( $type_synthese || $type_bulletin )
 	$moyenne_pourcentage_acquis = ($nombre) ? round($somme/$nombre,0) : FALSE ;
 }
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Compter le nombre de lignes à afficher par élève par matière
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $tab_nb_lignes = array();
 $tab_nb_lignes_par_matiere = array();
@@ -419,9 +421,9 @@ if(!isset($tab_destinataires))
 	}
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elaboration du bilan individuel, disciplinaire ou transdisciplinaire, en HTML et PDF
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $affichage_direct   = ( ( ( in_array($_SESSION['USER_PROFIL'],array('eleve','parent')) ) && (SACoche!='webservices') ) || ($make_officiel) ) ? TRUE : FALSE ;
 $affichage_checkbox = ( $type_synthese && ($_SESSION['USER_PROFIL']=='professeur') && (SACoche!='webservices') )                             ? TRUE : FALSE ;
@@ -697,9 +699,9 @@ if($type_individuel)
 	if($make_pdf)  { $releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf','F'); }
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elaboration de la synthèse collective en HTML et PDF
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($type_synthese)
 {
@@ -726,7 +728,7 @@ if($type_synthese)
 	{
 		foreach($tab_liste_item as $item_id)	// Pour chaque item...
 		{
-			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, $tab_item[$item_id][0]['item_ref'], 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
+			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, To::pdf($tab_item[$item_id][0]['item_ref']), 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
 			$releve_HTML_table_head .= '<th title="'.html($tab_item[$item_id][0]['item_nom']).'"><img alt="'.html($tab_item[$item_id][0]['item_ref']).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($tab_item[$item_id][0]['item_ref']).'&amp;size=8" /></th>';
 		}
 	}
@@ -735,7 +737,7 @@ if($type_synthese)
 		foreach($tab_eleve as $tab)	// Pour chaque élève...
 		{
 			extract($tab);	// $eleve_id $eleve_nom $eleve_prenom $eleve_id_gepi
-			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, $eleve_nom.' '.$eleve_prenom, 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
+			$releve_PDF->VertCellFit($releve_PDF->cases_largeur, $releve_PDF->etiquette_hauteur, To::pdf($eleve_nom.' '.$eleve_prenom), 1 /*border*/, 0 /*br*/, TRUE /*fill*/);
 			$releve_HTML_table_head .= '<th><img alt="'.html($eleve_nom.' '.$eleve_prenom).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($eleve_nom).'&amp;prenom='.urlencode($eleve_prenom).'&amp;size=8" /></th>';
 		}
 	}
@@ -801,9 +803,9 @@ if($type_synthese)
 	$releve_PDF->SetY( $memo_y );
 	$releve_PDF->choisir_couleur_fond('gris_moyen');
 	$releve_PDF->Cell($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , To::pdf('moy. scores '.$info_ponderation_courte.' [*]') , 1 , 2 , 'C' , TRUE , '');
-	$releve_PDF->Cell($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , To::pdf('% validations [**]') , 1 , 0 , 'C' , TRUE , '');
+	$releve_PDF->Cell($releve_PDF->intitule_largeur , $releve_PDF->cases_hauteur , To::pdf('% items acquis [**]') , 1 , 0 , 'C' , TRUE , '');
 	$releve_HTML_table_foot1 = '<tr><th>moy. scores '.$info_ponderation_courte.' [*]</th>';
-	$releve_HTML_table_foot2 = '<tr><th>% validations [**]</th>';
+	$releve_HTML_table_foot2 = '<tr><th>% items acquis [**]</th>';
 	$checkbox = ($affichage_checkbox) ? '<tr><th class="nu">&nbsp;</th>' : '' ;
 	$memo_x = $releve_PDF->GetX();
 	$releve_PDF->SetXY($memo_x,$memo_y);
@@ -853,9 +855,9 @@ if($type_synthese)
 	$releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf','F');
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Elaboration du bulletin (moyenne et/ou appréciation) en HTML + CSV pour GEPI + Formulaire pour report prof
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($type_bulletin)
 {
@@ -867,7 +869,7 @@ if($type_bulletin)
 		{
 			// Attention : $groupe_id peut être un identifiant de groupe et non de classe, auquel cas les élèves peuvent être issus de différentes classes dont les états des bulletins sont différents...
 			$DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_periodes_bulletins_saisies_ouvertes($liste_eleve);
-			$nb_periodes_ouvertes = count($DB_TAB);
+			$nb_periodes_ouvertes = !empty($DB_TAB);
 			if($nb_periodes_ouvertes==1)
 			{
 				$bulletin_periode = '['.html($DB_TAB[0]['periode_nom']).']<input type="hidden" id="f_periode_eleves" name="f_periode_eleves" value="'.$DB_TAB[0]['periode_id'].'_'.$DB_TAB[0]['eleves_listing'].'" />' ;

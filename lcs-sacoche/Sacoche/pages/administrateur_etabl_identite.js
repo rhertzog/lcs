@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le lien pour Lancer une recherche de structure sur le serveur communautaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le lien pour Lancer une recherche de structure sur le serveur communautaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#ouvrir_recherche').click
 		(
@@ -57,9 +57,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour Annuler la recherche sur le serveur communautaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour Annuler la recherche sur le serveur communautaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#rechercher_annuler').click
 		(
@@ -71,9 +71,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire form_sesamath
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire_sesamath = $('#form_sesamath');
@@ -106,7 +106,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions_sesamath =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -144,7 +144,7 @@ $(document).ready
 		function retour_form_erreur_sesamath(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider_sesamath").prop('disabled',false);
-			$('#ajax_msg_sesamath').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_sesamath').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
@@ -163,9 +163,9 @@ $(document).ready
 		} 
 
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire form_etablissement
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Alerter sur la nécessité de valider
 		$("#form_etablissement input").change
@@ -213,7 +213,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions_etablissement =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -251,7 +251,7 @@ $(document).ready
 		function retour_form_erreur_etablissement(jqXHR, textStatus, errorThrown)
 		{
 			$("#bouton_valider_etablissement").prop('disabled',false);
-			$('#ajax_msg_etablissement').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_etablissement').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
@@ -269,9 +269,9 @@ $(document).ready
 			}
 		} 
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Traitement du formulaire form_annee_scolaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Alerter sur la nécessité de valider et simulation de l'affichage de l'année scolaire
 		function simuler_affichage_annee_scolaire()
@@ -316,12 +316,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_mois_bascule_annee_scolaire='+$('#f_mois_bascule_annee_scolaire option:selected').val(),
+						data : 'csrf='+CSRF+'&f_mois_bascule_annee_scolaire='+$('#f_mois_bascule_annee_scolaire option:selected').val(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider_annee_scolaire").prop('disabled',false);
-							$('#ajax_msg_annee_scolaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_annee_scolaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -343,9 +343,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Intercepter la touche entrée pour éviter une soumission d'un formulaire sans contrôle
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Intercepter la touche entrée pour éviter une soumission d'un formulaire sans contrôle
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_communautaire').submit
 		(
@@ -359,9 +359,9 @@ $(document).ready
 			}
 		);
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	Charger le select geo1 en ajax (appel au serveur communautaire)
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Charger le select geo1 en ajax (appel au serveur communautaire)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_geo1()
 		{
@@ -370,11 +370,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'action=Afficher_form_geo1',
+					data : 'csrf='+CSRF+'&action=Afficher_form_geo1',
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -393,9 +393,9 @@ $(document).ready
 			);
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger le select geo2 en ajax (appel au serveur communautaire)
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger le select geo2 en ajax (appel au serveur communautaire)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_geo2(geo1_val)
 		{
@@ -404,12 +404,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'action=Afficher_form_geo2&f_geo1='+geo1_val,
+					data : 'csrf='+CSRF+'&action=Afficher_form_geo2&f_geo1='+geo1_val,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#f_recherche_geo select').prop('disabled',false);
-						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -429,9 +429,9 @@ $(document).ready
 			);
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger le select geo3 en ajax (appel au serveur communautaire)
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger le select geo3 en ajax (appel au serveur communautaire)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_geo3(geo1_val,geo2_val)
 		{
@@ -440,12 +440,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'action=Afficher_form_geo3&f_geo1='+geo1_val+'&f_geo2='+geo2_val,
+					data : 'csrf='+CSRF+'&action=Afficher_form_geo3&f_geo1='+geo1_val+'&f_geo2='+geo2_val,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#f_recherche_geo select').prop('disabled',false);
-						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -465,9 +465,9 @@ $(document).ready
 			);
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Rechercher les structures à partir du select geo3 en ajax (appel au serveur communautaire)
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Rechercher les structures à partir du select geo3 en ajax (appel au serveur communautaire)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_resultat_geo(geo3_val)
 		{
@@ -476,12 +476,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'action=Afficher_structures&f_geo3='+geo3_val,
+					data : 'csrf='+CSRF+'&action=Afficher_structures&f_geo3='+geo3_val,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#f_recherche_geo select').prop('disabled',false);
-						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -503,9 +503,9 @@ $(document).ready
 			);
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Rechercher les structures à partir du select uai en ajax (appel au serveur communautaire)
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Rechercher les structures à partir du select uai en ajax (appel au serveur communautaire)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_resultat_uai(uai_val)
 		{
@@ -514,12 +514,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'action=Afficher_structures&f_uai='+uai_val,
+					data : 'csrf='+CSRF+'&action=Afficher_structures&f_uai='+uai_val,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#rechercher_uai').prop('disabled',false);
-						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_communautaire').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -541,9 +541,9 @@ $(document).ready
 			);
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Choix du mode de recherche de la structure => demande d'actualisation éventuelle du select geo1
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Choix du mode de recherche de la structure => demande d'actualisation éventuelle du select geo1
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_recherche_mode input').click
 		(
@@ -572,9 +572,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement du select geo1 => demande d'actualisation du select geo2
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement du select geo1 => demande d'actualisation du select geo2
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_geo1").change
 		(
@@ -597,9 +597,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement du select geo2 => demande d'actualisation du select geo3
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement du select geo2 => demande d'actualisation du select geo3
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_geo2").change
 		(
@@ -622,9 +622,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement du select geo3 => demande d'actualisation du résultat de la recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement du select geo3 => demande d'actualisation du résultat de la recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_geo3").change
 		(
@@ -645,9 +645,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Validation du numéro uai => demande d'actualisation du résultat de la recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Validation du numéro uai => demande d'actualisation du résultat de la recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#rechercher_uai").click
 		(
@@ -676,9 +676,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une image pour Valider le choix d'une structure
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une image pour Valider le choix d'une structure
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_recherche_resultat q.valider').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',

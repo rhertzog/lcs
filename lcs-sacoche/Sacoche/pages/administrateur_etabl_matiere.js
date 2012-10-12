@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Initialisation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialisation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var mode = false;
 
@@ -55,9 +55,9 @@ $(document).ready
 		}
 		trier_tableau();
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Fonctions utilisées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonctions utilisées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
 		 * Ajouter une matière partagée : affichage du formulaire
@@ -156,9 +156,9 @@ $(document).ready
 			mode = false;
 		};
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour confirmer le retrait d'une matière partagée
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour confirmer le retrait d'une matière partagée
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var retirer_partage = function()
 		{
@@ -169,12 +169,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_id='+$('#f_id').val(),
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_id='+$('#f_id').val(),
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#ajax_msg').parent().children('q').show();
-						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						return false;
 					},
 					success : function(responseHTML)
@@ -229,9 +229,9 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_partage q.ajouter').click( ajouter_partage );
 		$('#form_perso   q.ajouter').click( ajouter_perso );
@@ -243,9 +243,9 @@ $(document).ready
 		$('#form_perso input').live( 'keyup' , function(e){intercepter(e);} );
 		$('#f_motclef').live(        'keyup' , function(e){intercepter_motclef(e);} );
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour fermer le cadre de recherche d'une matière partagée à ajouter
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour fermer le cadre de recherche d'une matière partagée à ajouter
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#ajout_annuler').click
 		(
@@ -257,9 +257,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Choix du mode de recherche d'une matière partagée
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Choix du mode de recherche d'une matière partagée
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_recherche_mode input').click
 		(
@@ -283,9 +283,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Actualisation du résultat de la recherche des matières par famille ou mot clef
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Actualisation du résultat de la recherche des matières par famille ou mot clef
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_resultat_recherche(data_action,data_parametre)
 		{
@@ -295,11 +295,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : data_action+'&'+data_parametre,
+					data : 'csrf='+CSRF+'&'+data_action+'&'+data_parametre,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -319,9 +319,9 @@ $(document).ready
 			);
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement du select f_famille => actualisation du résultat de la recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement du select f_famille => actualisation du résultat de la recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_famille").change
 		(
@@ -340,9 +340,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur bouton rechercher_motclef => actualisation du résultat de la recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur bouton rechercher_motclef => actualisation du résultat de la recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#rechercher_motclef').click
 		(
@@ -361,9 +361,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour ajouter une matière partagée trouvée suite à une recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour ajouter une matière partagée trouvée suite à une recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_recherche_resultat q.ajouter').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -377,12 +377,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=ajouter_partage&f_matiere='+matiere_id,
+						data : 'csrf='+CSRF+'&f_action=ajouter_partage'+'&f_matiere='+matiere_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							afficher_masquer_images_action('show');
-							$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -415,9 +415,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour déplacer les référentiels d'une matière vers une autre
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour déplacer les référentiels d'une matière vers une autre
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#deplacer_referentiels').click
 		(
@@ -449,12 +449,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=deplacer_referentiels&f_id_avant='+matiere_id_avant+'&f_id_apres='+matiere_id_apres,
+						data : 'csrf='+CSRF+'&f_action=deplacer_referentiels'+'&f_id_avant='+matiere_id_avant+'&f_id_apres='+matiere_id_apres,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button').prop('disabled',false);
-							$('#ajax_msg_move').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_move').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -478,9 +478,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Traitement du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $('#form_perso');
@@ -508,7 +508,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -555,7 +555,7 @@ $(document).ready
 		{
 			please_wait = false;
 			$('#ajax_msg').parent().children('q').show();
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)

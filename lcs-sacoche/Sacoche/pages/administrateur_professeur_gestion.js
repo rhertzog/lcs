@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Initialisation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialisation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var mode = false;
 
@@ -49,9 +49,9 @@ $(document).ready
 		}
 		trier_tableau();
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Recharger la page en restreignant l'affichage en fonction des choix préalables
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function reload()
 		{
@@ -68,9 +68,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('td.label').live
 		('click',
@@ -80,9 +80,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic pour tout cocher ou tout décocher
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic pour tout cocher ou tout décocher
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#all_check').click
 		(
@@ -101,10 +101,10 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le checkbox pour affecter ou non un nouveau mot de passe
-//	Clic sur le checkbox pour choisir ou non une date de sortie
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le checkbox pour affecter ou non un nouveau mot de passe
+// Clic sur le checkbox pour choisir ou non une date de sortie
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$('#box_password , #box_date').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
@@ -120,9 +120,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Fonctions utilisées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonctions utilisées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
 		 * Ajouter un professeur : mise en place du formulaire
@@ -239,9 +239,9 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('q.ajouter').click( ajouter );
 		$('q.modifier').live(   'click' , modifier );
@@ -249,9 +249,9 @@ $(document).ready
 		$('q.valider').live(    'click' , function(){formulaire.submit();} );
 		$('table.form input , table.form select').live( 'keyup' , function(e){intercepter(e);} );
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Traitement du formulaire
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $('#form1');
@@ -293,7 +293,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -354,7 +354,7 @@ $(document).ready
 		{
 			please_wait = false;
 			$('#ajax_msg').parent().children('q').show();
-			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
@@ -388,9 +388,9 @@ $(document).ready
 			}
 		} 
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour effectuer une action sur les utilisateurs cochés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour effectuer une action sur les utilisateurs cochés
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#zone_actions button').click
 		(
@@ -420,12 +420,12 @@ $(document).ready
 					(
 						{
 							type : 'POST',
-							url : 'ajax.php?page='+'administrateur_comptes',
-							data : 'f_action='+f_action+'&f_listing_id='+listing_id,
+							url : 'ajax.php?page='+PAGE,
+							data : 'csrf='+CSRF+'&f_action='+f_action+'&f_listing_id='+listing_id,
 							dataType : "html",
 							error : function(jqXHR, textStatus, errorThrown)
 							{
-								$('#ajax_msg1').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+								$('#ajax_msg1').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 								$('#zone_actions button').prop('disabled',false);
 							},
 							success : function(responseHTML)

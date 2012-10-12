@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Tester l'affichage du bouton de validation au changement des formulaires
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Tester l'affichage du bouton de validation au changement des formulaires
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var maj_bouton_validation = function()
 		{
@@ -46,9 +46,9 @@ $(document).ready
 			}
 		};
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	Charger le select f_pilier en ajax
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Charger le select f_pilier en ajax
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var maj_pilier = function()
 		{
@@ -66,7 +66,7 @@ $(document).ready
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_maj_pilier').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_maj_pilier').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						},
 						success : function(responseHTML)
 						{
@@ -94,9 +94,9 @@ $(document).ready
 
 		maj_pilier();
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	Charger le select f_eleve en ajax
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Charger le select f_eleve en ajax
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var maj_eleve = function()
 		{
@@ -116,7 +116,7 @@ $(document).ready
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_maj_eleve').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_maj_eleve').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						},
 						success : function(responseHTML)
 						{
@@ -147,9 +147,9 @@ $(document).ready
 
 		maj_eleve(); // Dans le cas d'un P.P.
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Traitement du premier formulaire pour afficher le tableau avec les états de validations
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du premier formulaire pour afficher le tableau avec les états de validations
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire0 = $('#zone_choix');
@@ -179,7 +179,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions0 =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -217,7 +217,7 @@ $(document).ready
 		function retour_form_erreur0(jqXHR, textStatus, errorThrown)
 		{
 			$("button").prop('disabled',false);
-			$('#ajax_msg_choix').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+			$('#ajax_msg_choix').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 		}
 
 		// Fonction suivant l'envoi du formulaire (avec jquery.form.js)
@@ -242,9 +242,9 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur une cellule du tableau => Modifier visuellement des états de validation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur une cellule du tableau => Modifier visuellement des états de validation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var tab_class_next = new Array;
 		tab_class_next['1'] = ['0'];
@@ -303,9 +303,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Survol prolongé d'une cellule du tableau => Recharger la zone d'informations
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Survol prolongé d'une cellule du tableau => Recharger la zone d'informations
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var last_id_survole  = '';
 		var last_id_memorise = '';
@@ -363,11 +363,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=Afficher_information&f_user='+user_id+'&f_pilier='+pilier_id,
+					data : 'csrf='+CSRF+'&f_action=Afficher_information'+'&f_user='+user_id+'&f_pilier='+pilier_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_information').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+						$('#ajax_msg_information').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 						return false;
 					},
 					success : function(responseHTML)
@@ -389,9 +389,9 @@ $(document).ready
 			);
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour fermer la zone de validation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour fermer la zone de validation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#fermer_zone_validation').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -411,9 +411,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour envoyer les validations
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour envoyer les validations
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#Enregistrer_validation').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -436,12 +436,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=Enregistrer_validation&f_valid='+tab_valid,
+						data : 'csrf='+CSRF+'&f_action=Enregistrer_validation'+'&f_valid='+tab_valid,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("button").prop('disabled',false);
-							$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_msg_validation').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)

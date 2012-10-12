@@ -145,7 +145,7 @@ function analyse_mdp(mdp)
 /**
  * Fonction pour imprimer un contenu
  *
- * En javascript, print() s'applique à l'objet window, et l'usage d'une feuille se style adaptée n'a pas permis d'obtenir un résultat satisfaisant.
+ * En javascript, print() s'applique à l'objet window, et l'usage d'une feuille de style adaptée n'a pas permis d'obtenir un résultat satisfaisant.
  * D'où l'ouverture d'un pop-up (inspiration : http://www.asp-php.net/ressources/bouts_de_code.aspx?id=342).
  *
  * @param object contenu
@@ -234,7 +234,7 @@ function memoriser_selection_matieres_items(selection_items_nom)
 			dataType : "html",
 			error : function(jqXHR, textStatus, errorThrown)
 			{
-				$('#ajax_msg_memo').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+				$('#ajax_msg_memo').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 			},
 			success : function(responseHTML)
 			{
@@ -395,10 +395,10 @@ function afficher_textarea_reste(textarea_obj,textarea_maxi_length)
 	$('#'+textarea_obj.attr('id')+'_reste').html(reste_nb+reste_str).removeAttr("class").addClass(reste_class);
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-//	Gestion de la durée d'inactivité
-//	On utilise un cookie plutôt qu'une variable js car ceci permet de gérer plusieurs onglets.
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Gestion de la durée d'inactivité
+// On utilise un cookie plutôt qu'une variable js car ceci permet de gérer plusieurs onglets.
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Fonction pour écrire un cookie
@@ -641,41 +641,6 @@ function setVolume(volume)
 }
 
 /**
- * Fonction pour arrondir les coins des boites avec bordures
- *
- * En CSS3 il y a la propriété border-radius : http://www.w3.org/TR/css3-background/#the-border-radius
- * Actuellement elle est pré-déclinée par qqs navigateurs :
- * => Gecko, 	avec -moz-border-radius 		(valable pour Firefox, Camino et tout navigateur basé sur Gecko),
- * => Webkit, 	avec -webkit-border-radius 	(valable pour Safari, Chrome et tout navigateur basé sur Webkit).
- * => KHTML, 	avec -khtml-border-radius 	(valable pour Konqueror),
- * => Opera, 	avec -o-border-radius 	(valable pour Opéra depuis la version 10.50),
- * => MSIE à partir de sa version 9
- * Sinon (MSIE...) il y a des techniques tordues et pas universelles (div imbriqués, pixel par pixel...).
- * => http://plugins.jquery.com/project/backgroundCanvas
- * => http://plugins.jquery.com/project/roundCorners => fonctionne à peu près mais temps de calcul long + plante IE si masquage cadre_haut + fait disparaitre la ligne centrale et pb de bordures à cause de l'overflow...
- * => http://plugins.jquery.com/project/DivCorners => reste figé en largeur et en hauteur
- * => http://plugins.jquery.com/project/curvy-corners => erreur inexpliquée sous IE, marge sous FF (il faut ajouter un margin 10px), très joli sinon (http://www.curvycorners.net/instructions/)
- *
- * @param void
- * @return void
- */
-function arrondir_coins(element,taille)
-{
-	// On cherche si le navigateur sait gérer cet attribut css3, éventuellement avec une syntaxe propriétaire
-	     if(document.body.style['BorderRadius'] !== undefined)       {style = 'border-radius';}
-	else if(document.body.style['borderRadius'] !== undefined)       {style = 'border-radius';} // Opéra (commence par une minuscule...)
-	else if(document.body.style['MozBorderRadius'] !== undefined)    {style = '-moz-border-radius';}
-	else if(document.body.style['WebkitBorderRadius'] !== undefined) {style = '-webkit-border-radius';}
-	else if(document.body.style['KhtmlBorderRadius'] !== undefined)  {style = '-khtml-border-radius';}
-	else if(document.body.style['OBorderRadius'] !== undefined)      {style = '-o-border-radius';}
-	else {style = false;}
-	if(style !== false)
-	{
-		$(element).css(style,taille);
-	}
-}
-
-/**
  * Ajout de méthodes pour jquery.validate.js
  */
 
@@ -804,7 +769,7 @@ $(document).ready
 	function()
 	{
 
-		//	Initialisation
+		// Initialisation
 		format_liens('body');
 		infobulle();
 
@@ -847,7 +812,7 @@ $(document).ready
 		 * Feinte de balayeur trouvée : insérer en premier un input type image inoffensif.
 		 * Mais il faut aussi saisir son interception, sinon le formulaire est envoyée et la page rechargée.
 		 */
-		//	
+		// 
 		$('input[name=leurre]').live
 		(
 			'click' , function()
@@ -1019,14 +984,14 @@ $(document).ready
 		}
 
 		/**
-		 * Calque pour afficher un calendrier
+		 * Ajoute au document un calque qui est utilisé pour afficher un calendrier ou une photo d'un élève
 		 */
-
-		// Ajoute au document le calque d'aide au remplissage
 		$('<div id="calque"></div>').appendTo(document.body).hide();
 		var leave_erreur = false;
 
-		// Afficher le calque et le compléter : calendrier
+		/**
+		 * Afficher le calque et le compléter : calendrier
+		 */
 		$('q.date_calendrier').live
 		('click',
 			function(e)
@@ -1051,23 +1016,69 @@ $(document).ready
 				posY = e.pageY-5;
 				$("#calque").css('left',posX + 'px');
 				$("#calque").css('top',posY + 'px');
-				$("#calque").html('<label id="ajax_alerte_calque" for="nada" class="loader">Connexion au serveur&hellip;</label>').show();
+				$("#calque").html('<label id="ajax_alerte_calque" class="loader">Connexion au serveur&hellip;</label>').show();
 				// Charger en Ajax le contenu du calque
 				$.ajax
 				(
 					{
 						type : 'GET',
-						url : 'ajax.php?page=date_calendrier',
+						url : 'ajax.php?page=calque_date_calendrier',
 						data : get_data,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							leave_erreur = true;
 						},
 						success : function(responseHTML)
 						{
 							if(responseHTML.substring(0,4)=='<h5>')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+							{
+								$('#calque').html(responseHTML);
+								leave_erreur = false;
+							}
+							else
+							{
+								$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html(responseHTML);
+								leave_erreur = true;
+							}
+						}
+					}
+				);
+			}
+		);
+
+		/**
+		 * Afficher le calque et le compléter : photo élève
+		 */
+		$('q.voir_photo').live
+		('click',
+			function(e)
+			{
+				// Récupérer les infos associées
+				user_id = $(this).prev('select').children('option:selected').val();   // id de l'élève
+				// Afficher le calque
+				posX = e.pageX-40;
+				posY = e.pageY-178;
+				$("#calque").css('left',posX + 'px');
+				$("#calque").css('top',posY + 'px');
+				$("#calque").html('<label id="ajax_alerte_calque" class="loader">Connexion au serveur&hellip;</label>').show();
+				// Charger en Ajax le contenu du calque
+				$.ajax
+				(
+					{
+						type : 'GET',
+						url : 'ajax.php?page=calque_voir_photo',
+						data : 'user_id='+user_id,
+						dataType : "html",
+						error : function(jqXHR, textStatus, errorThrown)
+						{
+							$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
+							leave_erreur = true;
+						},
+						success : function(responseHTML)
+						{
+							if(responseHTML.substring(0,5)=='<div ')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
 							{
 								$('#calque').html(responseHTML);
 								leave_erreur = false;
@@ -1125,7 +1136,7 @@ $(document).ready
 			(
 				{
 					type : 'GET',
-					url : 'ajax.php?page=date_calendrier',
+					url : 'ajax.php?page=calque_date_calendrier',
 					data : 'm='+mois+'&a='+annee,
 					dataType : "html",
 					success : function(responseHTML)
@@ -1188,7 +1199,7 @@ $(document).ready
 				            + '</form>';
 				$.fancybox( contenu , { 'modal':true , 'centerOnScroll':true } );
 				$('#form_demande_evaluation textarea').focus();
-				//	Indiquer le nombre de caractères restant autorisés dans le textarea
+				// Indiquer le nombre de caractères restant autorisés dans le textarea
 				$('#zone_message').keyup
 				(
 					function()
@@ -1223,7 +1234,7 @@ $(document).ready
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg_confirmer_demande').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_confirmer_demande').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							$('#form_demande_evaluation button').prop('disabled',false);
 						},
 						success : function(responseHTML)

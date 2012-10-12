@@ -85,18 +85,18 @@ function afficher_formulaire_identification($profil,$mode='normal',$nom='')
 	}
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Rechercher la dernière version disponible
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 if($action=='tester_version')
 {
 	exit( recuperer_numero_derniere_version() );
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Charger un formulaire d'identification
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Charger le formulaire pour le webmestre d'un serveur
 
@@ -160,9 +160,9 @@ if( ( ($action=='initialiser') && ($BASE>0) && (HEBERGEUR_INSTALLATION=='multi-s
 	exit( afficher_formulaire_identification($profil,$connexion_mode,$connexion_nom) );
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Traiter une demande d'identification
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Pour le webmestre d'un serveur
 
@@ -180,7 +180,7 @@ if( ($action=='identifier') && ($profil=='webmestre') && ($login=='webmestre') &
 
 if( ($action=='identifier') && ($profil=='normal') && ($login!='') && ($password!='') )
 {
-	list($auth_resultat,$auth_DB_ROW) = tester_authentification_user($BASE,$login,$password,$mode_connection='normal');
+	list($auth_resultat,$auth_DB_ROW) = tester_authentification_user( $BASE , $login , $password , 'normal' /*mode_connection*/ );
 	if($auth_resultat=='ok')
 	{
 		enregistrer_session_user($BASE,$auth_DB_ROW);
@@ -188,9 +188,9 @@ if( ($action=='identifier') && ($profil=='normal') && ($login!='') && ($password
 	exit($auth_resultat);
 }
 
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // On ne devrait pas en arriver là...
-//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 exit('Erreur avec les données transmises !');
 ?>

@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des thèmes ou des domaines
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des thèmes ou des domaines
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_synthese input').click
 		(
@@ -60,9 +60,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enregistrer une modification
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enregistrer une modification
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#form_synthese button').click
 		(
@@ -86,13 +86,13 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_methode='+f_methode+'&f_matiere='+f_matiere+'&f_niveau='+f_niveau,
+						data : 'csrf='+CSRF+'&f_methode='+f_methode+'&f_matiere='+f_matiere+'&f_niveau='+f_niveau,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('#bouton_'+ids).prop('disabled',false);
 							// $("#form_synthese button").prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)

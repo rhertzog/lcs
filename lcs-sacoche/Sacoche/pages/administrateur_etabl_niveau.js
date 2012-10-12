@@ -30,15 +30,15 @@ $(document).ready
 	function()
 	{
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Initialisation
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Initialisation
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var mode = false;
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Fonctions utilisées
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Fonctions utilisées
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
 		 * Ajouter un niveau : affichage du formulaire
@@ -100,12 +100,12 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=supprimer&f_niveau='+$('#f_niveau').val(),
+					data : 'csrf='+CSRF+'&f_action=supprimer'+'&f_niveau='+$('#f_niveau').val(),
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
 						$('#ajax_msg').parent().children('q').show();
-						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 						return false;
 					},
 					success : function(responseHTML)
@@ -143,18 +143,18 @@ $(document).ready
 			}
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#niveaux q.ajouter').click( ajouter );
 		$('q.supprimer').live( 'click' , supprimer );
 		$('q.annuler').live(   'click' , annuler );
 		$('q.valider').live(   'click' , retirer );
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur le bouton pour fermer le cadre de recherche d'un niveau à ajouter
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur le bouton pour fermer le cadre de recherche d'un niveau à ajouter
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#ajout_annuler').click
 		(
@@ -166,9 +166,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Actualisation du résultat de la recherche des niveaux
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Actualisation du résultat de la recherche des niveaux
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function maj_resultat_recherche(famille_id)
 		{
@@ -178,11 +178,11 @@ $(document).ready
 				{
 					type : 'POST',
 					url : 'ajax.php?page='+PAGE,
-					data : 'f_action=recherche_niveau_famille&f_famille='+famille_id,
+					data : 'csrf='+CSRF+'&f_action=recherche_niveau_famille'+'&f_famille='+famille_id,
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -202,9 +202,9 @@ $(document).ready
 			);
 		}
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement du select f_famille => actualisation du résultat de la recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement du select f_famille => actualisation du résultat de la recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#f_famille").change
 		(
@@ -223,9 +223,9 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Clic sur un bouton pour ajouter un niveau trouvé suite à une recherche
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clic sur un bouton pour ajouter un niveau trouvé suite à une recherche
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_recherche_resultat q.ajouter').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -239,12 +239,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=ajouter&f_niveau='+niveau_id,
+						data : 'csrf='+CSRF+'&f_action=ajouter'+'&f_niveau='+niveau_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							afficher_masquer_images_action('show');
-							$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_recherche').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)

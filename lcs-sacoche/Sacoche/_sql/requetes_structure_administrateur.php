@@ -61,7 +61,7 @@ public static function DB_recuperer_amplitude_periodes()
 	$DB_SQL = 'SELECT MIN(jointure_date_debut) AS tout_debut , MAX(jointure_date_fin) AS toute_fin ';
 	$DB_SQL.= 'FROM sacoche_jointure_groupe_periode ';
 	$DB_ROW = DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
-	if(count($DB_ROW))
+	if(!empty($DB_ROW))
 	{
 		// On ajoute un jour pour dessiner les barres jusqu'au jour suivant (accessoirement, ça évite aussi une possible division par 0).
 		$DB_SQL = 'SELECT DATEDIFF(DATE_ADD(:toute_fin,INTERVAL 1 DAY),:tout_debut) AS nb_jours_total ';
@@ -426,7 +426,7 @@ public static function DB_lister_parents_actuels_avec_infos_for_eleve($eleve_id)
 	$DB_SQL.= 'ORDER BY resp_legal_num ASC ';
 	$DB_VAR = array(':eleve_id'=>$eleve_id);
 	$DB_TAB_parents = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR, TRUE, TRUE);
-	if(!count($DB_TAB_parents))
+	if(empty($DB_TAB_parents))
 	{
 		return array();
 	}
@@ -661,6 +661,36 @@ public static function DB_lister_referentiels()
 }
 
 /**
+ * compter_matieres_etabl
+ *
+ * @param void
+ * @return int
+ */
+public static function compter_matieres_etabl()
+{
+	$DB_SQL = 'SELECT COUNT(*) AS nombre ';
+	$DB_SQL.= 'FROM sacoche_matiere ';
+	$DB_SQL.= 'WHERE matiere_active=1 ';
+	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+}
+
+/**
+ * compter_niveaux_etabl
+ *
+ * @param bool $with_specifiques
+ * @return int
+ */
+public static function compter_niveaux_etabl($with_specifiques)
+{
+	$DB_SQL = 'SELECT COUNT(*) AS nombre ';
+	$DB_SQL.= 'FROM sacoche_niveau ';
+	$DB_SQL.= ($with_specifiques) ? '' : 'LEFT JOIN sacoche_niveau_famille USING (niveau_famille_id) ';
+	$DB_SQL.= 'WHERE niveau_actif=1 ';
+	$DB_SQL.= ($with_specifiques) ? '' : 'AND niveau_famille_categorie=1 ';
+	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+}
+
+/**
  * compter_devoirs
  *
  * @param void
@@ -705,8 +735,8 @@ public static function DB_compter_users_suivant_statut($profil)
 	$DB_SQL.= 'WHERE '.$where;
 	$DB_SQL.= 'GROUP BY statut';
 	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR , TRUE , TRUE);
-	$nb_actuels = ( (count($DB_TAB)) && (isset($DB_TAB[1])) ) ? $DB_TAB[1]['nombre'] : 0 ;
-	$nb_anciens = ( (count($DB_TAB)) && (isset($DB_TAB[0])) ) ? $DB_TAB[0]['nombre'] : 0 ;
+	$nb_actuels = ( (!empty($DB_TAB)) && (isset($DB_TAB[1])) ) ? $DB_TAB[1]['nombre'] : 0 ;
+	$nb_anciens = ( (!empty($DB_TAB)) && (isset($DB_TAB[0])) ) ? $DB_TAB[0]['nombre'] : 0 ;
 	return array($nb_actuels,$nb_anciens);
 }
 
@@ -725,7 +755,7 @@ public static function DB_tester_matiere_reference($matiere_ref,$matiere_id=FALS
 	$DB_SQL.= ($matiere_id) ? 'AND matiere_id!=:matiere_id ' : '' ;
 	$DB_VAR = array(':matiere_ref'=>$matiere_ref,':matiere_id'=>$matiere_id);
 	$DB_SQL.= 'LIMIT 1'; // utile
-	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -743,7 +773,7 @@ public static function DB_tester_classe_reference($groupe_ref,$groupe_id=FALSE)
 	$DB_SQL.= ($groupe_id) ? 'AND groupe_id!=:groupe_id ' : '' ;
 	$DB_SQL.= 'LIMIT 1'; // utile
 	$DB_VAR = array(':groupe_type'=>'classe',':groupe_ref'=>$groupe_ref,':groupe_id'=>$groupe_id);
-	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -761,7 +791,7 @@ public static function DB_tester_groupe_reference($groupe_ref,$groupe_id=FALSE)
 	$DB_SQL.= ($groupe_id) ? 'AND groupe_id!=:groupe_id ' : '' ;
 	$DB_SQL.= 'LIMIT 1'; // utile
 	$DB_VAR = array(':groupe_type'=>'groupe',':groupe_ref'=>$groupe_ref,':groupe_id'=>$groupe_id);
-	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -779,7 +809,7 @@ public static function DB_tester_periode_nom($periode_nom,$periode_id=FALSE)
 	$DB_SQL.= ($periode_id) ? 'AND periode_id!=:periode_id ' : '' ;
 	$DB_SQL.= 'LIMIT 1'; // utile
 	$DB_VAR = array(':periode_nom'=>$periode_nom,':periode_id'=>$periode_id);
-	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -800,7 +830,7 @@ public static function DB_tester_utilisateur_identifiant($champ_nom,$champ_valeu
 	$DB_SQL.= ($user_id)     ? 'AND user_id!=:user_id ' : '' ;
 	$DB_SQL.= 'LIMIT 1'; // utile
 	$DB_VAR = array(':champ_valeur'=>$champ_valeur,':user_profil'=>$user_profil,':user_id'=>$user_id);
-	return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+	return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -1223,7 +1253,7 @@ public static function DB_modifier_liaison_professeur_matiere($user_id,$matiere_
 		$DB_SQL.= 'WHERE user_id=:user_id AND matiere_id=:matiere_id ';
 		$DB_VAR = array(':user_id'=>$user_id,':matiere_id'=>$matiere_id);
 		$DB_ROW = DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-		if(!count($DB_ROW))
+		if(empty($DB_ROW))
 		{
 			$DB_SQL = 'INSERT INTO sacoche_jointure_user_matiere (user_id,matiere_id,jointure_coord) ';
 			$DB_SQL.= 'VALUES(:user_id,:matiere_id,:coord)';
@@ -1604,7 +1634,11 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil)
 		$DB_SQL = 'DELETE FROM sacoche_officiel_saisie ';
 		$DB_SQL.= 'WHERE prof_id=:user_id';
 		DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-		$DB_SQL = 'DELETE FROM sacoche_signature ';
+	}
+	if( ($user_profil=='eleve') || ($user_profil=='professeur') || ($user_profil=='directeur') )
+	{
+		// photo si élève ; signature si professeur ou directeur
+		$DB_SQL = 'DELETE FROM sacoche_image ';
 		$DB_SQL.= 'WHERE user_id=:user_id';
 		DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 	}
@@ -1619,7 +1653,7 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil)
 public static function DB_optimiser_tables_structure()
 {
 	$DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , 'SHOW TABLE STATUS LIKE "sacoche_%"');
-	if(count($DB_TAB))
+	if(!empty($DB_TAB))
 	{
 		foreach($DB_TAB as $DB_ROW)
 		{
@@ -1950,10 +1984,10 @@ public static function DB_corriger_anomalies()
 	$tab_bilan[] = '<label class="'.$classe.'">Jointures élève/classe : '.$message.'.</label>';
 	// Recherche d'anomalies : signature associée à un user supprimé...
 	// Attention, l'id de user à 0 est normal pour le tampon de l'établissement
-	$DB_SQL = 'DELETE sacoche_signature ';
-	$DB_SQL.= 'FROM sacoche_signature ';
+	$DB_SQL = 'DELETE sacoche_image ';
+	$DB_SQL.= 'FROM sacoche_image ';
 	$DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
-	$DB_SQL.= 'WHERE sacoche_signature.user_id!=0 AND sacoche_user.user_id IS NULL ';
+	$DB_SQL.= 'WHERE sacoche_image.user_id!=0 AND sacoche_user.user_id IS NULL ';
 	DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
 	$nb_modifs = DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
 	$message = (!$nb_modifs) ? 'rien à signaler' : ( ($nb_modifs>1) ? $nb_modifs.' anomalies supprimées' : '1 anomalie supprimée' ) ;

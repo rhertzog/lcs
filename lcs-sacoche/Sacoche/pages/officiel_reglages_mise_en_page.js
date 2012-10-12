@@ -47,9 +47,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire form_mise_en_page
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Alerter sur la nécessité de valider
 		$("#form_mise_en_page input , #form_mise_en_page select").change
@@ -103,12 +103,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=mise_en_page&'+$('#form_mise_en_page').serialize(),
+						data : 'csrf='+CSRF+'&f_action=mise_en_page'+'&'+$('#form_mise_en_page').serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$("#bouton_valider_mise_en_page").prop('disabled',false);
-							$('#ajax_msg_mise_en_page').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_mise_en_page').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -130,9 +130,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Upload d'un fichier image avec jquery.ajaxupload.js
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Envoi du fichier avec jquery.ajaxupload.js ; on lui donne un nom afin de pouvoir changer dynamiquement le paramètre.
 		var uploader_signature = new AjaxUpload
@@ -140,7 +140,7 @@ $(document).ready
 			{
 				action: 'ajax.php?page='+PAGE,
 				name: 'userfile',
-				data: {'f_action':'upload_signature','f_user_id':user_id,'f_user_texte':user_texte},
+				data: {'csrf':CSRF,'f_action':'upload_signature','f_user_id':user_id,'f_user_texte':user_texte},
 				autoSubmit: true,
 				responseType: "html",
 				onChange: changer_fichier,
@@ -201,9 +201,9 @@ $(document).ready
 			}
 		}
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Appel en ajax pour supprimer le tampon de l'établissement
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('q.supprimer').live
 		( 'click' , function()
@@ -215,11 +215,11 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'f_action=delete_signature&f_user_id='+sgn_id,
+						data : 'csrf='+CSRF+'&f_action=delete_signature'+'&f_user_id='+sgn_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_upload').removeAttr("class").addClass("alerte").html('Echec de la connexion !');
+							$('#ajax_upload').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
 							return false;
 						},
 						success : function(responseHTML)

@@ -28,6 +28,11 @@
 class FileSystem
 {
 
+  // Nom du fichier uploadé transmis
+  public static $file_upload_name = '';
+  // Nom du fichier uploadé enregistré
+  public static $file_saved_name = '';
+
   // //////////////////////////////////////////////////
   // Tableau avec les messages d'erreurs correspondants aux codes renvoyés par la librairie ZipArchive
   // http://fr.php.net/manual/fr/zip.constants.php#83827
@@ -140,7 +145,7 @@ class FileSystem
     // Le dossier a-t-il bien été créé ?
     if(!$test)
     {
-      $affichage .= '<label for="rien" class="erreur">Echec lors de la création du dossier &laquo;&nbsp;<b>'.FileSystem::fin_chemin($dossier).'</b>&nbsp;&raquo; : veuillez le créer manuellement.</label><br />'."\r\n";
+      $affichage .= '<label for="rien" class="erreur">Échec lors de la création du dossier &laquo;&nbsp;<b>'.FileSystem::fin_chemin($dossier).'</b>&nbsp;&raquo; : veuillez le créer manuellement.</label><br />'."\r\n";
       return FALSE;
     }
     $affichage .= '<label for="rien" class="valide">Dossier &laquo;&nbsp;<b>'.FileSystem::fin_chemin($dossier).'</b>&nbsp;&raquo; créé.</label><br />'."\r\n";
@@ -351,11 +356,15 @@ class FileSystem
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_EXPORT         ,     60); // Nettoyer ce dossier des fichiers antérieurs à  1 heure
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_DUMP           ,     60); // Nettoyer ce dossier des fichiers antérieurs à  1 heure
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_IMPORT         ,  10080); // Nettoyer ce dossier des fichiers antérieurs à  1 semaine
+      FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_TMP            , 219000); // Nettoyer ce dossier des fichiers antérieurs à  6 mois
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_RSS.$BASE      ,  43800); // Nettoyer ce dossier des fichiers antérieurs à  1 mois
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_OFFICIEL.$BASE , 438000); // Nettoyer ce dossier des fichiers antérieurs à 10 mois
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_BADGE.$BASE    , 481800); // Nettoyer ce dossier des fichiers antérieurs à 11 mois
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_COOKIE.$BASE   , 525600); // Nettoyer ce dossier des fichiers antérieurs à  1 an
-      FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_DEVOIR.$BASE   , 43800*FICHIER_DUREE_CONSERVATION); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
+      if(defined('FICHIER_DUREE_CONSERVATION')) // Une fois tout a été supprimé sans raison claire : nettoyage simultané avec une mise à jour ?
+      {
+        FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_DEVOIR.$BASE , 43800*FICHIER_DUREE_CONSERVATION); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
+      }
       unlink($fichier_lock);
     }
     // Si le fichier témoin du nettoyage existe, on vérifie que sa présence n'est pas anormale (cela s'est déjà produit...)
@@ -420,10 +429,10 @@ class FileSystem
    * 
    * @param string   $chemin_fichier_zip   chemin de l'archive zip
    * @param string   $fichier_nom_archive  nom du fichier à rechercher dans l'archive zip
-   * @param string   $fichier_nom_final    nom du fichier une fois extrait
+   * @param string   $chemin_nom_final     chemin du fichier une fois extrait
    * @return void
    */
-  public static function unzip_one($chemin_fichier_zip,$fichier_nom_archive,$fichier_nom_final)
+  public static function unzip_one($chemin_fichier_zip,$fichier_nom_archive,$chemin_nom_final)
   {
     $zip = new ZipArchive();
     $result_open = $zip->open($chemin_fichier_zip);
@@ -436,7 +445,7 @@ class FileSystem
       exit('Fichier '.$fichier_nom_archive.' non trouvé dans l\'archive ZIP !');
     }
     $zip->close();
-    if(!rename(CHEMIN_DOSSIER_IMPORT.$fichier_nom_archive , CHEMIN_DOSSIER_IMPORT.$fichier_nom_final))
+    if(!rename(CHEMIN_DOSSIER_IMPORT.$fichier_nom_archive , $chemin_nom_final))
     {
       exit('Le fichier extrait n\'a pas pu être enregistré sur le serveur.');
     }
@@ -451,7 +460,7 @@ class FileSystem
    * 
    * @param string   $chemin_fichier_zip
    * @param string   $dossier_dezip
-   * @param bool     $use_ZipArchive
+   * @param bool     $use_ZipArchive   FALSE permet de nettoyer les noms des fichiers extraits : à préférer donc
    * @return int     code d'erreur (0 si RAS)
    */
   public static function unzip($chemin_fichier_zip,$dossier_dezip,$use_ZipArchive)
@@ -488,7 +497,7 @@ class FileSystem
         else
         {
           // C'est un fichier
-          file_put_contents( $dossier_dezip.$ds.zip_entry_name($zip_element) , zip_entry_read($zip_element,zip_entry_filesize($zip_element)) );
+          file_put_contents( $dossier_dezip.$ds.Clean::zip_filename(zip_entry_name($zip_element)) , zip_entry_read($zip_element,zip_entry_filesize($zip_element)) );
         }
         zip_entry_close($zip_element);
       }
@@ -496,6 +505,84 @@ class FileSystem
     }
     // Tout s'est bien passé
     return 0;
+  }
+
+  /**
+   * Récupérer un fichier uploadé, effectuer les vérifications demandées, et l'enregistrer dans le dossier et sous le nom indiqué.
+   * 
+   * @param string   $fichier_final_chemin
+   * @param string   $fichier_final_nom           (facultatif) Si pas transmis, ce sera le nom du fichier envoyé (nettoyé) ; si transmis, peut comporter ".<EXT>" qui sera remplacé par l'extension du fichier réceptionné.
+   * @param array    $tab_extensions_autorisees   (facultatif) tableau des extensions autorisées
+   * @param array    $tab_extensions_interdites   (facultatif) tableau des extensions interdites
+   * @param int      $taille_maxi                 (facultatif) en Ko
+   * @param string   $filename_in_zip             (facultatif) nom d'un fichier contenu dans le fichier zippé reçu, à extraire au passage
+   * @return TRUE|string                          TRUE ou un message d'erreur
+   */
+  public static function recuperer_upload( $fichier_final_chemin , $fichier_final_nom=NULL , $tab_extensions_autorisees=NULL , $tab_extensions_interdites=NULL , $taille_maxi=NULL , $filename_in_zip=NULL )
+  {
+    // Si le fichier dépasse les capacités du serveur, il se peut que $_FILES ne soit même pas renseigné.
+    if(!isset($_FILES['userfile']))
+    {
+      return 'Erreur : problème de transfert ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
+    }
+    // Si $_FILES est renseigné, il se peut qu'il y ait quand même eu un dépassement des limites.
+    $tab_file = $_FILES['userfile'];
+    $fichier_tmp_nom    = $tab_file['name'];
+    $fichier_tmp_chemin = $tab_file['tmp_name'];
+    $fichier_tmp_taille = $tab_file['size']/1000; // Conversion octets => Ko
+    $fichier_tmp_erreur = $tab_file['error'];
+    if( (!file_exists($fichier_tmp_chemin)) || (!$fichier_tmp_taille) || ($fichier_tmp_erreur) )
+    {
+      return 'Problème de récupération ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
+    }
+    // Vérification d'une sécurité sur le nom
+    if($fichier_tmp_nom{0}=='.')
+    {
+      return 'Le nom du fichier ne doit pas commencer par un point !';
+    }
+    // Vérification de l'extension
+    $extension = strtolower(pathinfo($fichier_tmp_nom,PATHINFO_EXTENSION));
+    if( ($tab_extensions_autorisees!==NULL) && (!in_array($extension,$tab_extensions_autorisees)) )
+    {
+      return 'L\'extension du fichier transmis n\'est pas conforme !';
+    }
+    if( ($tab_extensions_interdites!==NULL) && (in_array($extension,$tab_extensions_interdites)) )
+    {
+      return 'L\'extension du fichier transmis est interdite !';
+    }
+    // Vérification de la taille
+    if( ($taille_maxi!==NULL) && ($fichier_tmp_taille>$taille_maxi) )
+    {
+      $conseil = '';
+      if( ($tab_extensions_autorisees!==NULL) && (in_array('jpg',$tab_extensions_autorisees)) )
+      {
+        $conseil = (($extension=='jpg')||($extension=='jpeg')) ? ' : réduisez les dimensions de l\'image' : ' : convertissez l\'image au format JPEG' ;
+      }
+      return 'Le fichier dépasse les '.$taille_maxi.' Ko autorisés'.$conseil.' !';
+    }
+    // On rapatrie le fichier dans l'arborescence SACoche, en en dézippant un fichier précis si demandé
+    $fichier_final_nom = ($fichier_final_nom) ? str_replace('.<EXT>','.'.$extension,$fichier_final_nom) : Clean::fichier($fichier_tmp_nom);
+    if( ($extension!='zip') || ($filename_in_zip===NULL) )
+    {
+      if(!move_uploaded_file($fichier_tmp_chemin,$fichier_final_chemin.$fichier_final_nom))
+      {
+        return 'Le fichier n\'a pas pu être enregistré sur le serveur.';
+      }
+    }
+    else
+    {
+      // Dézipper le fichier (on considère alors que c'est un zip venant de SACoche et contenant import_validations.xml)
+      if(extension_loaded('zip')!==TRUE)
+      {
+        return 'Le serveur ne gère pas les fichiers ZIP ! Renvoyez votre fichier sans compression.';
+      }
+      // Remarque : la ligne suivante peut balancer un exit sans se poser de questions
+      FileSystem::unzip_one( $fichier_tmp_chemin , $filename_in_zip , $fichier_final_chemin.$fichier_final_nom );
+    }
+    // C'est bon :)
+    FileSystem::$file_upload_name = $fichier_tmp_nom;
+    FileSystem::$file_saved_name  = $fichier_final_nom;
+    return TRUE;
   }
 
 }

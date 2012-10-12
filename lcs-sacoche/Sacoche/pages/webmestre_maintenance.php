@@ -40,17 +40,21 @@ else
 {
 	$label_acces = '<label class="valide">Application accessible.</label>';
 }
-// Pas de bouton maj automatique si LCS
-$fichier = './webservices/import_lcs.php';
-if(!is_file($fichier))
+// Pas de bouton maj automatique si LCS ou serveur Sésamath
+if(IS_HEBERGEMENT_SESAMATH)
 {
-	$disabled = '';
-	$label_maj = '<label id="ajax_maj">&nbsp;</label>';
+	$disabled = ' disabled';
+	$label_maj = '<label id="ajax_maj" class="erreur">La mise à jour de SACoche sur le serveur Sésamath doit s\'effectuer en déployant le SVN.</label>';
 }
-else
+else if(is_file(CHEMIN_FICHIER_WS_LCS))
 {
 	$disabled = ' disabled';
 	$label_maj = '<label id="ajax_maj" class="erreur">La mise à jour du module LCS-SACoche doit s\'effectuer via le LCS.</label>';
+}
+else
+{
+	$disabled = '';
+	$label_maj = '<label id="ajax_maj">&nbsp;</label>';
 }
 ?>
 
@@ -58,6 +62,12 @@ else
 	<span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_webmestre__maj">DOC : Mise à jour de l'application</a></span><br />
 	<span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__verrouillage">DOC : Verrouillage de l'application</a></span>
 </p>
+
+<script type="text/javascript">
+	var url_export_rapport_maj    = "<?php echo URL_DIR_EXPORT.'rapport_maj.html' ?>";
+	var url_export_rapport_verif  = "<?php echo URL_DIR_EXPORT.'rapport_verif.html' ?>";
+	var url_export_rapport_droits = "<?php echo URL_DIR_EXPORT.'rapport_droits.html' ?>";
+</script>
 
 <h2>Version de SACoche</h2>
 

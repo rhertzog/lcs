@@ -33,9 +33,9 @@ $(document).ready
 		// Initialisation
 		$("#f_eleve").hide();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Enlever le message ajax et le résultat précédent au changement d'un select
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Enlever le message ajax et le résultat précédent au changement d'un select
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('select').change
 		(
@@ -46,9 +46,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des éléments du formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des éléments du formulaire
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_type_individuel').click
 		(
@@ -105,12 +105,12 @@ $(document).ready
 			}
 		);
 
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-//	Changement de groupe
-//	-> desactiver les périodes prédéfinies en cas de groupe de besoin (prof uniquement)
-//	-> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
-//	-> afficher le formulaire de périodes s'il est masqué
-//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Changement de groupe
+// -> desactiver les périodes prédéfinies en cas de groupe de besoin (prof uniquement)
+// -> choisir automatiquement la meilleure période si un changement manuel de période n'a jamais été effectué
+// -> afficher le formulaire de périodes s'il est masqué
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		function selectionner_periode_adaptee()
 		{
@@ -183,12 +183,12 @@ $(document).ready
 			}
 		);
 
-		//	Rechercher automatiquement la meilleure période au chargement de la page (uniquement pour un élève, seul cas où la classe est préselectionnée)
+		// Rechercher automatiquement la meilleure période au chargement de la page (uniquement pour un élève, seul cas où la classe est préselectionnée)
 		selectionner_periode_adaptee();
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger les selects f_eleve (pour le professeur et le directeur et les parents de plusieurs enfants) et f_matiere (pour le directeur) en ajax
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger les selects f_eleve (pour le professeur et le directeur et les parents de plusieurs enfants) et f_matiere (pour le directeur) en ajax
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var matiere_id  = 0;
 		var groupe_id   = 0;
@@ -205,7 +205,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -235,7 +235,7 @@ $(document).ready
 					dataType : "html",
 					error : function(jqXHR, textStatus, errorThrown)
 					{
-						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+						$('#ajax_maj').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					},
 					success : function(responseHTML)
 					{
@@ -288,9 +288,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Charger toutes les matières ou seulement les matières affectées (pour un prof)
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Charger toutes les matières ou seulement les matières affectées (pour un prof)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		var modifier_action = 'ajouter';
 		$("#modifier_matiere").click
@@ -326,9 +326,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Soumettre le formulaire principal
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Soumettre le formulaire principal
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// Le formulaire qui va être analysé et traité en AJAX
 		var formulaire = $("#form_select");
@@ -412,7 +412,7 @@ $(document).ready
 		// Options d'envoi du formulaire (avec jquery.form.js)
 		var ajaxOptions =
 		{
-			url : 'ajax.php?page='+PAGE,
+			url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
 			type : 'POST',
 			dataType : "html",
 			clearForm : false,
@@ -454,7 +454,7 @@ $(document).ready
 		function retour_form_erreur(jqXHR, textStatus, errorThrown)
 		{
 			$('button').prop('disabled',false);
-			var message = (jqXHR.status!=500) ? 'Echec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
+			var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
 			$('#ajax_msg').removeAttr("class").addClass("alerte").html(message);
 		}
 
@@ -486,9 +486,9 @@ $(document).ready
 			}
 		} 
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Forcer le report de notes vers un bulletin SACoche
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Forcer le report de notes vers un bulletin SACoche
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_report').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
@@ -500,13 +500,13 @@ $(document).ready
 				(
 					{
 						type : 'POST',
-						url : 'ajax.php?page=officiel_accueil',
-						data : 'f_action='+'reporter_notes'+'&f_periode_eleves='+$('#f_periode_eleves').val()+'&f_eleves_moyennes='+$('#f_eleves_moyennes').val()+'&f_rubrique='+$('#f_rubrique').val(),
+						url : 'ajax.php?page='+PAGE,
+						data : 'csrf='+CSRF+'&f_action=reporter_notes'+'&f_periode_eleves='+$('#f_periode_eleves').val()+'&f_eleves_moyennes='+$('#f_eleves_moyennes').val()+'&f_rubrique='+$('#f_rubrique').val(),
 						// data : $('#form_report_bulletin').serialize(), le select f_rubrique n'est curieusement pas envoyé...
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
-							$('#ajax_msg_report').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_report').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							$('#form_report_bulletin button, #form_report_bulletin select').prop('disabled',false);
 							return false;
 						},

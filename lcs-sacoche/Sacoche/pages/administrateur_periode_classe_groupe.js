@@ -85,12 +85,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE+'&action='+id,
-						data : $("form").serialize(),
+						data : 'csrf='+CSRF+'&'+$("form").serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('button').prop('disabled',false);
-							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
@@ -121,11 +121,11 @@ $(document).ready
 			{
 				type : 'POST',
 				url : 'ajax.php?page='+PAGE+'&action=initialiser',
-				data : '',
+				data : 'csrf='+CSRF,
 				dataType : "html",
 				error : function(jqXHR, textStatus, errorThrown)
 				{
-					$('#ajax_msg').removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+					$('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 					return false;
 				},
 				success : function(responseHTML)

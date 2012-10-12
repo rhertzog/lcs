@@ -70,7 +70,7 @@ $select_niveau = '<option value=""></option>';
 $tab_niveau_ordre_js = 'var tab_niveau_ordre = new Array();';
 
 $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(FALSE /*with_specifiques*/);
-if(count($DB_TAB))
+if(!empty($DB_TAB))
 {
 	foreach($DB_TAB as $DB_ROW)
 	{
@@ -80,7 +80,7 @@ if(count($DB_TAB))
 }
 else
 {
-	$select_niveau .= '<option value="" disabled>Aucun niveau n\'est rattaché à l\'établissement !</option>';
+	$select_niveau .= '<option value="" disabled>Aucun niveau de classe n\'est choisi pour l\'établissement !</option>';
 }
 ?>
 

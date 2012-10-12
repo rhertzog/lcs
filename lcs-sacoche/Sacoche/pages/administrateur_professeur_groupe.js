@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
-		//	Ajouter / Retirer une affectation à un groupe
-		//	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Ajouter / Retirer une affectation à un groupe
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#autocheckbox input[type=checkbox]').click
 		(
@@ -51,12 +51,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url  : 'ajax.php?page='+PAGE,
-						data : 'action='+action+'&user_id='+user_id+'&groupe_id='+groupe_id,
+						data : 'csrf='+CSRF+'&action='+action+'&user_id='+user_id+'&groupe_id='+groupe_id,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							obj_bouton.prop('checked',check_old).show(0).parent().removeAttr('class').addClass(class_old);
-							$.fancybox( '<label class="alerte">'+'Echec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
+							$.fancybox( '<label class="alerte">'+'Échec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
 							return false;
 						},
 						success : function(responseHTML)

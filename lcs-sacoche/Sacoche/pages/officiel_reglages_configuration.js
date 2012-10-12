@@ -30,9 +30,9 @@ $(document).ready
 	function()
 	{
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Afficher masquer des éléments du formulaire
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher masquer des éléments du formulaire
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#f_bulletin_moyenne_scores').click
 		(
@@ -64,9 +64,9 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
-		//	Alerter sur la nécessité de valider
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Alerter sur la nécessité de valider
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$("#form_releve input , #form_releve select").change
 		(
@@ -92,11 +92,11 @@ $(document).ready
 			}
 		);
 
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// Traitement du formulaire "Relevé d'évaluations"
 		// Traitement du formulaire "Bulletin scolaire"
 		// Traitement du formulaire "État de maîtrise du socle"
-		//	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*	*
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$('#bouton_valider_releve , #bouton_valider_bulletin , #bouton_valider_socle').click
 		(
@@ -115,12 +115,12 @@ $(document).ready
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'objet='+objet+'&'+$('#form_'+objet).serialize(),
+						data : 'csrf='+CSRF+'&objet='+objet+'&'+$('#form_'+objet).serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
 							$('#bouton_valider_'+objet).prop('disabled',false);
-							$('#ajax_msg_'+objet).removeAttr("class").addClass("alerte").html("Echec de la connexion !");
+							$('#ajax_msg_'+objet).removeAttr("class").addClass("alerte").html("Échec de la connexion !");
 							return false;
 						},
 						success : function(responseHTML)
