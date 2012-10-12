@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # postinst script 
 #
 # see: dh_installdeb(1)
@@ -61,6 +61,19 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
 	echo "Pas de script d installation a executer"
 	fi
 	
+    #------------------------------
+    #Insertion dans l'annuaire ldap
+    #------------------------------
+    
+    if [ -e $PATHPLUG/Admin/install_ldap.ldif ]; then
+    echo "Insertion dans l'annuaire ldap"
+    #recuperation des parametres LDAP
+	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
+    ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/install_ldap.ldif
+    else
+	echo "Pas d entrees LDAP a inserer"
+	fi
+    
     #-------------------------------
     # Inscription dans applis.lcs_db
     #-------------------------------
@@ -103,6 +116,25 @@ else
 	done
     fi
 
+    #--------------
+    #Insertion LDAP
+    #--------------
+    
+    MAJNBR=$REF
+    let MAJNBR+=1
+    if [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; then
+    echo "Insertion des entrees LDAP"
+    #recuperation des parametres LDAP
+	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
+    
+   
+        while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
+            echo " - Application du script ldap.$MAJNBR"
+            ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
+            let MAJNBR+=1
+	done
+    fi
+
     #---------------------
     #Execution des scripts
     #---------------------
@@ -139,6 +171,9 @@ fi
 	sed -i "s/#version#/$VER/g" $DOC
 	#sed -i "s/#rev#/$REV/g" $DOC 
 	#
+	#Mise en place htaccess
+    	cd $PATHPLUG
+	cp htaccess.dist .htaccess
 	# 
 	echo "Changement des droits sur l'arborescence du module"
 	#
