@@ -148,6 +148,7 @@ then
 	echo "Serveur ldap en standalone ---> OK"
 else
 	ERREUR "Le serveur ldap doit etre en standalone (pas de replication ldap) !!!\nModifiez cette valeur et relancez le script" 
+    exit 1
 fi
 
 echo -e "$COLINFO"
@@ -174,10 +175,11 @@ if [ -n "$USE_SPACE" ]; then
 fi
 
 echo -e "$COLINFO"
-echo "1.4 Installation si besoin de debian-archive-keyring"
+echo "1.4 Installation si besoin de debian-archive-keyring et lcs-keyring"
 echo -e "$COLCMD\c"
-apt-get -qq update 
+apt-get -qq update
 apt-get install debian-archive-keyring --allow-unauthenticated
+apt-get install debian-lcs-keyring --allow-unauthenticated
 
 echo "1.5 Detection de la branche LCS : Lcs, LcsTesting, LcsXP"
 echo -e "$COLCMD\c"
@@ -424,7 +426,23 @@ echo -e "$COLINFO"
 echo "6.4. Redemarrage service ldap suite a la mise a jour"
 echo -e "$COLCMD\c"
 /etc/init.d/slapd stop
-/etc/init.d/slapd start
+/etc/init.d/slapd start || /usr/share/lcs/scripts/mkSlapdConf.sh 
+
+cd /
+if [ `dpkg -l lcs-cas | grep ii | wc -l` = "1" ]; then
+        echo "6.5. Reparation rubycas-server"
+        /etc/init.d/rubycas-lcs stop
+        apt-get install ruby --reinstall
+        apt-get install rubygems --reinstall
+        apt-get install libopenssl-ruby1.8
+        apt-get --force-yes -y install ruby1.8-dev build-essential libmysqlclient15-dev
+        gem install mysql --version 2.8.1 --no-ri --no-rdoc --source http://lcsgems.crdp.ac-caen.fr
+        gem uninstall -a -I -x  rubycas-server
+        gem install rubycas-server --version 0.7.999999.20100202 --no-ri --no-rdoc -f --source http://lcsgems.crdp.ac-caen.fr
+        /etc/init.d/rubycas-lcs start
+        apt-get -y remove --purge  ruby1.8-dev build-essential libmysqlclient15-dev
+fi
+cd -
 
 rm /etc/apt/apt.conf.d/lcs-upgrade-squeeze
 echo -e "$COLTITRE"

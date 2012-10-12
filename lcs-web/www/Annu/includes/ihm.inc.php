@@ -1,5 +1,5 @@
 <?php
-/* Annu/includes/ihm.inc.php derniere modification : 01/10/2010*/
+/* Annu/includes/ihm.inc.php derniere modification : 11/10/2012*/
 
 # Model caracteres speciaux pour les mots de passe
 $char_spec = "&_#@£%§:!?*$";
@@ -79,7 +79,7 @@ $motif = "^[0-9]{8}$";
 
 // Verification d'une entree de type Nom ou Prenom
 function verifEntree($entree) {
-  $motif = "^[-a-zA-Z0-9 \'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ ]{1,20}$";
+  $motif = "/^[-a-zA-Z0-9 \'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ ]{1,20}$/";
 
   if ( mb_ereg($motif, $entree) ) {
      $ret= true;
