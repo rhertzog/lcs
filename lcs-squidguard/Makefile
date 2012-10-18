@@ -14,8 +14,8 @@ install:
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/squidguard/
 
 # install lcs squidguard cron
-	install -d $(DESTDIR)/etc/cron.d
-	install -m 644 cron/* $(DESTDIR)/etc/cron.d/
+	install -d $(DESTDIR)/etc/cron.weekly
+	install -m 644 cron/* $(DESTDIR)/etc/cron.weekly/
 
 # install lcs squidguard scripts
 	install -d $(DESTDIR)/usr/share/lcs/scripts
