@@ -54,7 +54,13 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 		$class = "spip_mail";
 	elseif (preg_match('/^<html>/',$texte)) # cf traiter_lien_explicite
 		$class = "spip_url spip_out";
-	elseif (!$class) $class = "spip_out"; # si pas spip_in|spip_glossaire
+	elseif (!$class) {
+	        # spip_out sur les URLs externes
+	        if (preg_match(',^\w+://,iS', $lien)
+	        AND strncasecmp($lien, url_de_base(), strlen(url_de_base()))
+	        )
+                $class = "spip_out"; # si pas spip_in|spip_glossaire
+        }
 
 	// Si l'objet n'est pas de la langue courante, on ajoute hreflang
 	if (!$hlang AND $lang!==$GLOBALS['spip_lang'])
@@ -62,7 +68,10 @@ function inc_lien_dist($lien, $texte='', $class='', $title='', $hlang='', $rel='
 
 	$lang = ($hlang ? " hreflang='$hlang'" : '');
 
-	if ($title) $title = ' title="'.texte_backend($title).'"';
+	if ($title)
+		$title = ' title="'.texte_backend($title).'"';
+	else
+		$title = ''; // $title peut etre 'false'
 
 	// rel=external pour les liens externes
 	if (preg_match(',^https?://,S', $lien)
@@ -168,7 +177,7 @@ define('_RACCOURCI_ATTRIBUTS', '/^(.*?)([|]([^<>]*?))?([{]([a-z_]*)[}])?$/');
 // http://doc.spip.org/@traiter_raccourci_lien_atts
 function traiter_raccourci_lien_atts($texte) {
 
-	$bulle = $hlang = '';
+	$bulle = $hlang = false;
 	// title et hreflang donnes par le raccourci ?
 	if (preg_match(_RACCOURCI_ATTRIBUTS, $texte, $m)) {
 
@@ -545,6 +554,7 @@ function traiter_raccourci_glossaire($texte)
 			$gloss = $m[1] ? ('#' . $m[1]) : '';
 			$t = $r[1] . $r[2] . $r[5];
 			list($t, $bulle, $hlang) = traiter_raccourci_lien_atts($t);
+			if ($bulle===false) $bulle = $m[1];
 			$t = unicode2charset(charset2unicode($t), 'utf-8');
 			$ref = $lien("glose$_n$gloss", $t, 'spip_glossaire', $bulle, $hlang);
 			$texte = str_replace($regs[0], $ref, $texte);
