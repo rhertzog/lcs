@@ -6,7 +6,6 @@ if [ -z $USE_INODE_USRSHARELCS ];then
         exit 0
 fi
 
-
 if [ "$USE_INODE_USRSHARELCS" -gt "90" ]; then
 	cd /usr/share/lcs/spip
 	mkdir -p tmp_new/cache
