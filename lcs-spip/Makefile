@@ -5,6 +5,10 @@ all:
 
 install:
 
+# install lcs spip cron task clean spip tmp
+	install -d $(DESTDIR)/etc/cron.weekly
+	install -m 644 cron/* $(DESTDIR)/etc/cron.weekly/
+
 # install lcs spip conf
 	install -d $(DESTDIR)/var/lib/lcs/spip
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/spip/
