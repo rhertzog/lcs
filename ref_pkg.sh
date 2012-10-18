@@ -96,7 +96,19 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		fi
 		echo "Telechargement du fichier xml"	
 		urlxml="http://linux.crdp.ac-caen.fr/modules$depot/moduleslcs.xml"
-		wget -q --cache=off $urlxml
+		wget  -q --cache=off $urlxml
+		#
+		#verification presence xml
+		#
+		if [ ! -e moduleslcs.xml ]; then 
+                echo "Echec du telechargement du fichier xml"
+		exit
+                fi
+		taille=`stat -c '%s' moduleslcs.xml`
+		if [ "$taille" = 0  ]; then
+		echo "Fichier xml vide !!"
+		exit
+		fi
 		echo "Modification du fichier xml"
 		# 
 		# le paquet est-il deja reference dans le xml ?
