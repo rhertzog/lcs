@@ -218,7 +218,7 @@ function generate_unique_login($_nom, $_prenom, $_mode, $_casse='min') {
 	//==========================
 	// Nettoyage des caractères du nom et du prénom
 
-	$_prenom = remplace_accents($_prenom);
+	$_prenom = remplace_accents(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/Œ/","OE",preg_replace("/œ/","oe",$_prenom)))));
 
 	$prenoms = explode(" ",$_prenom);
 	$premier_prenom = $prenoms[0];
@@ -227,7 +227,7 @@ function generate_unique_login($_nom, $_prenom, $_mode, $_casse='min') {
 
 	$_prenom = preg_replace("/[^a-zA-Z.\-]/", "", $_prenom);
 
-	$_nom = remplace_accents($_nom);
+	$_nom = remplace_accents(preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/Œ/","OE",preg_replace("/œ/","oe",$_nom)))));
 	$_nom = preg_replace("/[^a-zA-Z.\-]/", "", $_nom);
 
 	//==========================
@@ -667,15 +667,21 @@ function affiche_utilisateur($login,$id_classe) {
     $prenom = @mysql_result($req, 0, 'prenom');
     $civilite = @mysql_result($req, 0, 'civilite');
     $req_format = mysql_query("select format_nom from classes where id = '".$id_classe."'");
-    $format = mysql_result($req_format, 0, 'format_nom');
-    $result = "";
-    $i='';
-    if ((($format == 'ni') OR ($format == 'in') OR ($format == 'cni') OR ($format == 'cin')) AND ($prenom != '')) {
-        $temp = explode("-", $prenom);
-        $i = mb_substr($temp[0], 0, 1);
-        if (isset($temp[1]) and ($temp[1] != '')) $i .= "-".mb_substr($temp[1], 0, 1);
-        $i .= ". ";
-    }
+	if(mysql_num_rows($req_format)>0) {
+		$format = mysql_result($req_format, 0, 'format_nom');
+		$result = "";
+		$i='';
+		if ((($format == 'ni') OR ($format == 'in') OR ($format == 'cni') OR ($format == 'cin')) AND ($prenom != '')) {
+		    $temp = explode("-", $prenom);
+		    $i = mb_substr($temp[0], 0, 1);
+		    if (isset($temp[1]) and ($temp[1] != '')) $i .= "-".mb_substr($temp[1], 0, 1);
+		    $i .= ". ";
+		}
+	}
+	else {
+		$format="";
+	}
+
     switch( $format ) {
     case 'np':
     $result = $nom." ".$prenom;
@@ -1647,7 +1653,7 @@ function vider_dir($dir){
 function ensure_utf8($str, $from_encoding = null) {
     if ($str === null || $str === '') {
         return $str;
-    } else if ($from_encoding == null && check_utf8($str)) {
+    } else if ($from_encoding == null && detect_utf8($str)) {
 	    return $str;
 	}
 	
@@ -1658,16 +1664,35 @@ function ensure_utf8($str, $from_encoding = null) {
     }
 	$result = null;
     if ($encoding !== false && $encoding != null) {
-        if ($result == null && function_exists('mb_convert_encoding')) {
+        if (function_exists('mb_convert_encoding')) {
             $result = mb_convert_encoding($str, 'UTF-8', $encoding);
         }
     }
-	if ($result === null || !check_utf8($result)) {
+	if ($result === null || !detect_utf8($result)) {
 	    throw new Exception('Impossible de convertir la chaine vers l\'utf8');
 	}
 	return $result;
 }
 
+
+/**
+ * Cette méthode prend une chaîne de caractères et teste si elle ne contient que 
+ * de l'ASCII 7 bits ou si elle contient au moins une suite d'octets codant un
+ * caractère en UTF8
+ * @param string $str La chaine à tester
+ * @return boolean
+ */
+function detect_utf8 ($str) {
+	// Inspiré de http://w3.org/International/questions/qa-forms-utf-8.html
+	return preg_match('%^(?:[\x09\x0A\x0D\x20-\x7E])*$%xs', $str) | // ASCII
+		preg_match('#[\xC2-\xDF][\x80-\xBF]#', $str) | // non-overlong 2-byte
+		preg_match('#\xE0[\xA0-\xBF][\x80-\xBF]#', $str) | // excluding overlongs
+		preg_match('#[\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}#', $str) | // straight 3-byte
+		preg_match('#\xED[\x80-\x9F][\x80-\xBF]#', $str) | // excluding surrogates
+		preg_match('#\xF0[\x90-\xBF][\x80-\xBF]{2}#', $str) | // planes 1-3
+		preg_match('#[\xF1-\xF3][\x80-\xBF]{3}#', $str) | // planes 4-15
+		preg_match('# \xF4[\x80-\x8F][\x80-\xBF]{2}#', $str) ; // plane 16
+ }
 
 /**
  * Cette méthode prend une chaîne de caractères et teste si elle est bien encodée en UTF-8
@@ -1676,7 +1701,11 @@ function ensure_utf8($str, $from_encoding = null) {
  * @return boolean
  */
 function check_utf8 ($str) {
-    if (mb_strlen($str) < 1000) {
+    // Longueur maximale de la chaîne pour éviter un stack overflow
+	// dans le test à base d'expression régulière
+	$long_max=1000;
+	if (substr(PHP_OS,0,3) == 'WIN') $long_max=300; // dans le cas de Window$
+    if (mb_strlen($str) < $long_max) {
     // From http://w3.org/International/questions/qa-forms-utf-8.html
     $preg_match_result = 1 == preg_match('%^(?:
           [\x09\x0A\x0D\x20-\x7E]            # ASCII
@@ -1727,7 +1756,7 @@ function check_utf8 ($str) {
  */
 function detect_encoding($str) {
     //on commence par vérifier si c'est de l'utf8
-    if (check_utf8($str)) {
+    if (detect_utf8($str)) {
         return 'UTF-8';
     }
     
@@ -1760,7 +1789,8 @@ function detect_encoding($str) {
  * @global string $GLOBALS['liste_caracteres_accentues']
  * @name $liste_caracteres_accentues
  */
-$GLOBALS['liste_caracteres_accentues']="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõø¨ûüùúýÿ¸";
+//$GLOBALS['liste_caracteres_accentues']="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØ¦ÛÜÙÚÝ¾´áàâäãåçéèêëîïìíñôöðòóõø¨ûüùúýÿ¸";
+$GLOBALS['liste_caracteres_accentues']="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓÕØÛÜÙÚÝ¾áàâäãåçéèêëîïìíñôöðòóõøûüùúýÿ";
 
 /**
  * Correspondances de caractères accentués/désaccentués
@@ -1768,7 +1798,8 @@ $GLOBALS['liste_caracteres_accentues']="ÂÄÀÁÃÅÇÊËÈÉÎÏÌÍÑÔÖÒÓ
  * @global string $GLOBALS['liste_caracteres_desaccentues']
  * @name $liste_caracteres_desaccentues
  */
-$GLOBALS['liste_caracteres_desaccentues']="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
+//$GLOBALS['liste_caracteres_desaccentues']="AAAAAACEEEEIIIINOOOOOOSUUUUYYZaaaaaaceeeeiiiinooooooosuuuuyyz";
+$GLOBALS['liste_caracteres_desaccentues']="AAAAAACEEEEIIIINOOOOOOUUUUYYaaaaaaceeeeiiiinooooooouuuuyy";
 
 /**
  * Cette méthode prend une chaîne de caractères et s'assure qu'elle est bien retournée en ASCII
@@ -1852,17 +1883,47 @@ function accents_enleve($chaine,$mode=''){
  * @param type $chaine La chaine à traiter
  * @return La chaine corrigée
  */
-function nettoyer_caracteres_nom($chaine, $mode="a", $chaine_autres_caracteres_acceptes="", $caractere_remplacement="") {
+function nettoyer_caracteres_nom($chaine, $mode="a", $chaine_autres_caracteres_acceptes="", $caractere_remplacement="", $remplacer_oe_ae="n") {
 	global $liste_caracteres_accentues;
+	/*
+	echo "<p>";
+	echo "<span style='color:green'>\$liste_caracteres_accentues=$liste_caracteres_accentues</span><br />";
+	echo "<span style='color:green'>\$chaine=$chaine</span><br />";
+	*/
+	// Pour que le tiret soit à la fin si on le met dans $chaine_autres_caracteres_acceptes
+	$chaine_autres_caracteres_acceptes="ÆæŒœ".$chaine_autres_caracteres_acceptes;
 
-	$retour=preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/Œ/","OE",preg_replace("/œ/","oe",trim(ensure_utf8($chaine))))));
+	$retour=trim(ensure_utf8($chaine));
+	if($remplacer_oe_ae=="y") {$retour=preg_replace("#Æ#u","AE",preg_replace("#æ#u","ae",preg_replace("#Œ#u","OE",preg_replace("#œ#u","oe",$retour))));}
+	//if($remplacer_oe_ae=="y") {$retour=preg_replace("/Æ/","AE",preg_replace("/æ/","ae",preg_replace("/Œ/","OE",preg_replace("/œ/","oe",$retour))));}
 
 	// Le /u sur les preg_replace permet de traiter correctement des chaines utf8
 	if($mode=='a') {
+		
+		//echo "<span style='color:green'>\$retour=preg_replace(\"#[^A-Za-z".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]#u\",\"$caractere_remplacement\", $retour)=</span>";
+		$retour=preg_replace("#[^A-Za-z".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]#u","$caractere_remplacement", $retour);
+		//echo "<span style='color:green'>$retour</span><br />";
+		//echo "<br />";
+
+		/*
+		echo "\$retour=preg_replace(\"/[^A-Za-z".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]/u\",\"$caractere_remplacement\", $retour)=";
 		$retour=preg_replace("/[^A-Za-z".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]/u","$caractere_remplacement", $retour);
+		echo "$retour<br />";
+		echo "<br />";
+		*/
 	}
 	elseif($mode=='an') {
+		//echo "<span style='color:green'>\$retour=preg_replace(\"#[^A-Za-z0-9".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]#u\",\"$caractere_remplacement\", $retour)=</span>";
+		$retour=preg_replace("#[^A-Za-z0-9".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]#u","$caractere_remplacement", $retour);
+		//echo "<span style='color:green'>$retour</span><br />";
+		//echo "<br />";
+
+		/*
+		echo "\$retour=preg_replace(\"/[^A-Za-z0-9".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]/u\",\"$caractere_remplacement\", $retour)=";
 		$retour=preg_replace("/[^A-Za-z0-9".$liste_caracteres_accentues.$chaine_autres_caracteres_acceptes."]/u","$caractere_remplacement", $retour);
+		echo "$retour<br />";
+		echo "<br />";
+		*/
 	}
 
 	return $retour;
@@ -4179,9 +4240,11 @@ function affiche_date_sortie($date_sortie,$heure=FALSE) {
 	$eleve_date_sortie_heure=date('H', $eleve_date_de_sortie_time); 
 	$eleve_date_sortie_minute=date('i', $eleve_date_de_sortie_time); 
 	if ($heure) {
-		return $eleve_date_sortie_jour."/".$eleve_date_sortie_mois."/".$eleve_date_sortie_annee." ".$eleve_date_sortie_heure.":".$eleve_date_sortie_minute;
+		return sprintf("%02d", $eleve_date_sortie_jour)."/".sprintf("%02d", $eleve_date_sortie_mois)."/".$eleve_date_sortie_annee." ".$eleve_date_sortie_heure.":".$eleve_date_sortie_minute;
 	}
-	return $eleve_date_sortie_jour."/".$eleve_date_sortie_mois."/".$eleve_date_sortie_annee;
+	else {
+		return sprintf("%02d", $eleve_date_sortie_jour)."/".sprintf("%02d", $eleve_date_sortie_mois)."/".$eleve_date_sortie_annee;
+	}
 }
 
 /**
@@ -5041,15 +5104,15 @@ function array_map_deep($callback, $array) {
  */
 function joueAlarme($niveau_arbo = "0") {
   $retour ="";
-  	$footer_sound= isset ($_SESSION['login']) ? getPref($_SESSION['login'],'footer_sound',"") : NULL;
+  	$footer_sound= isset ($_SESSION['login']) ? getPref($_SESSION['login'],'footer_sound',NULL) : NULL;
 	if($footer_sound===NULL) {
 		$footer_sound=getSettingValue('footer_sound');
-		if($footer_sound=='') {
+		if($footer_sound==NULL) {
 			$footer_sound="KDE_Beep_Pop.wav";
 		}
 	}
 	
-	  if($footer_sound!=='') {
+	//if($footer_sound!=='') {
 
 	  if ($niveau_arbo == "0") {
 		  $chemin_sound="./sounds/".$footer_sound;
@@ -5076,7 +5139,7 @@ function joueAlarme($niveau_arbo = "0") {
   }
   </script>";
 	  }
-	}
+	//}
 	return $retour;
 } 
 
@@ -5481,4 +5544,77 @@ function temoin_check_srv($id_div_retour="retour_ping", $nom_js_func="check_srv"
 </script>\n";
 }
 
+
+/** Fonction destinée à supprimer les accents HTML dans des enregistrements de la table setting
+ *
+ * @param string $name champ name dans la table setting
+ *
+ * @return integer 0 Correction inutile, 1 Correction réussie, 2 Echec de la correction.
+ */
+
+function virer_accents_html_setting($name) {
+	$tab = array_flip (get_html_translation_table(HTML_ENTITIES));
+	$valeur=getSettingValue($name);
+	$correction=ensure_utf8(strtr($valeur, $tab));
+	/*
+	$f=fopen("/tmp/correction_fb.txt", "a+");
+	fwrite($f, "=========================================================================\n");
+	fwrite($f, "name=$name\n");
+	fwrite($f, "value=$valeur\n");
+	fwrite($f, "correction=$correction\n");
+	fclose($f);
+	*/
+	if($valeur!=$correction) {
+		if(saveSetting($name, mysql_real_escape_string($correction))) {return 1;} else {return 2;}
+	}
+	else {return 0;}
+}
+
+/** Fonction destinée à faire un test in_array() insensible à la casse
+ *
+ * @param string $chaine chaine 
+ * @param array $tableau tableau dans lequel on cherche la chaine
+ *
+ * @return boolean true/false
+ */
+
+function in_array_i($chaine, $tableau) {
+	$retour=false;
+	$chaine=mb_strtolower($chaine);
+	foreach($tableau as $key => $value) {
+		if($chaine==mb_strtolower($value)) {
+			$retour=true;
+			break;
+		}
+	}
+	return $retour;
+}
+
+/** Fonction destinée à tester si un parent est responsable d'un élève
+ *
+ * @param string $login_eleve Login de l'élève
+ * @param string $login_resp Login du responsable
+ * @param string $pers_id Identifiant pers_id du responsable
+ *
+ * @return boolean true/false
+ */
+
+function is_responsable($login_eleve, $login_resp="", $pers_id="") {
+	$retour=false;
+	if($login_resp!="") {
+		$sql="SELECT 1=1 FROM resp_pers rp, responsables2 r, eleves e WHERE r.pers_id=rp.pers_id AND rp.login='$login_resp' AND e.ele_id=r.ele_id AND e.login='$login_eleve' AND (r.resp_legal='1' OR r.resp_legal='2');";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)>0) {
+			$retour=true;
+		}
+	}
+	elseif($pers_id!="") {
+		$sql="SELECT 1=1 FROM responsables2 r, eleves e WHERE r.pers_id='$pers_id' AND e.ele_id=r.ele_id AND e.login='$login_eleve' AND (r.resp_legal='1' OR r.resp_legal='2');";
+		$test=mysql_query($sql);
+		if(mysql_num_rows($test)>0) {
+			$retour=true;
+		}
+	}
+	return $retour;
+}
 ?>

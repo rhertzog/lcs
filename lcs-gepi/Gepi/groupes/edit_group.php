@@ -259,7 +259,7 @@ if (isset($_POST['is_posted'])) {
 			//======================================
 			// MODIF: boireaus
 			//$msg = "Le groupe a bien été mis à jour.";
-			$msg = "L'enseignement ". stripslashes($reg_nom_complet) . " a bien été mis à jour.";
+			$msg = "Enseignement ". stripslashes($reg_nom_complet) . " bien mis à jour.";
 			$msg = urlencode($msg);
 
 			if(isset($chemin_retour)) {
@@ -298,6 +298,9 @@ echo "<pre>\n";
 print_r($reg_professeurs);
 echo "</pre>\n";
 */
+
+// Ajout sécurité:
+if((!isset($id_classe))||($id_classe=='')) {$id_classe=$current_group['classes']['list'][0];}
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE **************************************

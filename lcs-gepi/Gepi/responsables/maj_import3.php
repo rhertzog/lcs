@@ -60,6 +60,7 @@ if (!checkAccess()) {
     die();
 }
 
+$eleve_id_debug="";
 
 $eff_tranche_recherche_diff=isset($_POST['eff_tranche_recherche_diff']) ? $_POST['eff_tranche_recherche_diff'] : getSettingValue('maj_sconet_eff_tranche');
 if(($eff_tranche_recherche_diff=='')||(!is_numeric($eff_tranche_recherche_diff))||($eff_tranche_recherche_diff<1)) {
@@ -176,7 +177,7 @@ if(mysql_num_rows($res_col_eleves)>0) {
 }
 */
 $chaine_mysql_collate="CHARSET utf8 COLLATE utf8_general_ci";
-$chaine_collate="COLLATE utf8_general_ci ";
+$chaine_collate="COLLATE utf8_bin ";
 //$chaine_collate="COLLATE latin1_bin ";
 //========================================================================
 
@@ -462,26 +463,7 @@ else{
 
 	//echo "\$step=$step<br />\n";
 
-	/*
-	if(($step==0)||
-		($step==1)||
-		($step==2)||
-		($step==3)||
-		($step==7)||
-		($step==8)||
-		($step==9)||
-		($step==10)||
-		($step==11)||
-		($step==14)
-		) {
-		echo "<div style='float: right; border: 1px solid black; width: 4em;'>
-<form name='formstop' action='".$_SERVER['PHP_SELF']."' method='post'>
-<input type='checkbox' name='stop' id='stop' value='y' /> Stop
-</form>
-</div>\n";
-	}
-	*/
-
+	
 	// On va uploader les fichiers XML dans le tempdir de l'utilisateur (administrateur, ou scolarité pour les màj Sconet)
 	$tempdir=get_user_temp_directory();
 	if(!$tempdir){
@@ -516,8 +498,8 @@ else{
 				echo "upload_max_filesize=$upload_max_filesize<br />\n";
 				echo "</p>\n";
 
-				// Il ne faut pas aller plus loin...
-				// SITUATION A GERER
+				echo "<p>Il semblerait que l'absence d'extension .XML ou .ZIP puisse aussi provoquer ce genre de symptômes.<br />Dans ce cas, ajoutez l'extension et ré-essayez.</p>\n";
+
 				require("../lib/footer.inc.php");
 				die();
 			}
@@ -531,8 +513,9 @@ else{
 					echo "et le volume de ".$xml_file['name']." serait<br />\n";
 					echo "\$xml_file['size']=".volume_human($xml_file['size'])."<br />\n";
 					echo "</p>\n";
-					// Il ne faut pas aller plus loin...
-					// SITUATION A GERER
+
+					echo "<p>Il semblerait que l'absence d'extension .XML ou .ZIP puisse aussi provoquer ce genre de symptômes.<br />Dans ce cas, ajoutez l'extension et ré-essayez.</p>\n";
+
 					require("../lib/footer.inc.php");
 					die();
 				}
@@ -986,7 +969,7 @@ else{
 
 				if(isset($eleves[$i]["prenom"])){
 					$tab_prenom = explode(" ",$eleves[$i]["prenom"]);
-					$tab_prenom[0] = nettoyer_caracteres_nom($tab_prenom[0], "a", " '-", "");
+					$tab_prenom[0] = nettoyer_caracteres_nom($tab_prenom[0], "a", " './-", "");
 					$eleves[$i]["prenom"] = preg_replace("/'/", "", $tab_prenom[0]);
 				}
 
@@ -1133,12 +1116,22 @@ else{
 						}
 					}
 				}
-				/*
 				else{
-					echo $eleves[$i]['prenom']." ".$eleves[$i]['nom']." n'est pas dans \$tab_ele_id donc pas dans une classe...<br />";
+					// echo $eleves[$i]['prenom']." ".$eleves[$i]['nom']." n'est pas dans \$tab_ele_id donc pas dans une classe..."."<br />";
 					// On devrait supprimer l'élève de la table là, non?
+					// Si l'élève est encore dans la table, on enregistre sa date de sortie
+					//création de la chaine au format timestamp
+					if(isset($eleves[$i]['date_sortie'])) {
+						list($day, $month, $year) = explode('/', $eleves[$i]['date_sortie']);
+						$date_de_sortie_eleve = $year."-".$month."-".$day." 00:00:00"; 
+						$sql_corrige="UPDATE eleves SET date_sortie = '$date_de_sortie_eleve'  WHERE ele_id='".$eleves[$i]['eleve_id']."';";
+						//echo "<br />".$eleves[$i]['prenom']." ".$eleves[$i]['nom'].' mise a jour <br />'.$sql_corrige.'<br /><br />';
+						$res_corrige=mysql_query($sql_corrige);
+					}
+					//else {
+					//	echo "<br />".$eleves[$i]['prenom']." ".$eleves[$i]['nom'].' sans date de sortie<br /><br />';
+					//}
 				}
-				*/
 			}
 
 			/*
@@ -1484,7 +1477,12 @@ else{
 						info_debug($sql);
 						$res_class=mysql_query($sql);
 						if(mysql_num_rows($res_class)==0){
-							echo "Il n'est inscrit dans aucune classe.";
+							if(mb_strtoupper($lig_ele->sexe)=='F') {
+								echo "Elle n'est inscrite dans aucune classe.";
+							}
+							else {
+								echo "Il n'est inscrit dans aucune classe.";
+							}
 						}
 						else {
 							$alt=1;
@@ -1811,6 +1809,7 @@ else{
 					// Est-ce un nouvel élève?
 					$sql="SELECT 1=1 FROM eleves e, temp_gep_import2 t WHERE e.ele_id=t.ELE_ID AND t.ELE_ID='$lig->ELE_ID'";
 					//echo "$sql<br />\n";
+					if($lig->ELE_ID==$eleve_id_debug) {echo "$sql<br />\n";}
 					info_debug($sql);
 					//$test=mysql_query($sql);
 					if(!$test=mysql_query($sql)) {
@@ -1844,6 +1843,7 @@ else{
 						// 20110911
 						//echo "<input type='hidden' name='tab_ele_id_diff[]' value='$lig->ELE_ID' />\n";
 						$sql="INSERT INTO tempo4 SET col1='maj_sconet_eleves', col2='$lig->ELE_ID', col3='new';";
+						if($lig->ELE_ID==$eleve_id_debug) {echo "$sql<br />\n";}
 						$insert_new=mysql_query($sql);
 						//====================================
 						$cpt++;
@@ -1854,6 +1854,7 @@ else{
 						//====================================
 						// 20110911
 						$sql="INSERT INTO tempo4 SET col1='maj_sconet_eleves', col2='$lig->ELE_ID', col3='a_controler';";
+						if($lig->ELE_ID==$eleve_id_debug) {echo "$sql<br />\n";}
 						$insert_a_controler=mysql_query($sql);
 						//====================================
 					}
@@ -1940,6 +1941,7 @@ else{
 
 					// On met à jour pour ne pas re-parcourir dans la tranche suivante:
 					$sql="UPDATE tempo4 SET col3='controle_en_cours_ou_effectue' WHERE col1='maj_sconet_eleves' AND col2='$lig_ele_id_tranche_courante->col2';";
+					if($lig_ele_id_tranche_courante->col2==$eleve_id_debug) {echo "$sql<br />\n";}
 					$update=mysql_query($sql);
 
 					$i++;
@@ -1963,7 +1965,7 @@ else{
 			$cpt=0;
 			//for($i=0;$i<min($eff_tranche_recherche_diff,count($tab_ele_id));$i++){
 			for($i=0;$i<count($tab_ele_id);$i++){
-
+// 20120919
 				if($ele_lieu_naissance=="y") {
 					$sql="SELECT e.ele_id FROM eleves e, temp_gep_import2 t, tempo2 t2
 							WHERE e.ele_id=t.ELE_ID AND
@@ -1980,6 +1982,7 @@ else{
 					}
 					$sql.="				)
 									AND e.ele_id='$tab_ele_id[$i]';";
+					if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 				}
 				else {
 					$sql="SELECT e.ele_id FROM eleves e, temp_gep_import2 t, tempo2 t2
@@ -1996,6 +1999,7 @@ else{
 					}
 					$sql.="									)
 									AND e.ele_id='$tab_ele_id[$i]';";
+					if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 				}
 				//if(($tab_ele_id[$i]==352022)||($tab_ele_id[$i]==374123)||($tab_ele_id[$i]==392276)) {echo "$sql<br />";}
 				//if($tab_ele_id[$i]=='305034') {echo "$sql<br />";}
@@ -2011,6 +2015,7 @@ else{
 					$sql="SELECT id_etablissement FROM j_eleves_etablissements jee, eleves e WHERE jee.id_eleve=e.elenoet AND e.elenoet!='' AND e.ele_id='".$tab_ele_id[$i]."';";
 					info_debug($sql);
 					//echo "$sql<br />";
+					if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 					$test_ee=mysql_query($sql);
 					if(mysql_num_rows($test_ee)>0) {
 						$lig_ee=mysql_fetch_object($test_ee);
@@ -2024,6 +2029,7 @@ else{
 					$sql="SELECT ETOCOD_EP FROM temp_gep_import2 t WHERE t.ELE_ID='".$tab_ele_id[$i]."' AND t.ETOCOD_EP!='';";
 					info_debug($sql);
 					//echo "$sql<br />";
+					if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 					$test_nouvel_ancien_etb=mysql_query($sql);
 					if(mysql_num_rows($test_nouvel_ancien_etb)>0) {
 						$lig_nee=mysql_fetch_object($test_nouvel_ancien_etb);
@@ -2056,6 +2062,7 @@ else{
 
 					//echo "<input type='hidden' name='tab_ele_id_diff[]' value='".$tab_ele_id[$i]."' />\n";
 					$sql="UPDATE tempo4 SET col3='modif' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id[$i]';";
+					if($tab_ele_id[$i]==$eleve_id_debug) {echo "Changement etab<br />";echo "$sql<br />\n";}
 					$update=mysql_query($sql);
 
 					echo $tab_ele_id[$i];
@@ -2091,6 +2098,7 @@ else{
 						//=============
 						//echo "$sql<br />";
 						info_debug($sql);
+						if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 						$test=mysql_query($sql);
 						if(mysql_num_rows($test)>0){
 							$lig=mysql_fetch_object($test);
@@ -2109,6 +2117,7 @@ else{
 								echo $tab_ele_id[$i];
 								//echo "<input type='hidden' name='tab_ele_id_diff[]' value='".$tab_ele_id[$i]."' />\n";
 								$sql="UPDATE tempo4 SET col3='modif' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id[$i]';";
+								if($tab_ele_id[$i]==$eleve_id_debug) {echo "Changement regime<br />";echo "$sql<br />\n";}
 								$update=mysql_query($sql);
 								//echo "<br />\n";
 								// Pour le cas où on est dans la dernière tranche:
@@ -2138,6 +2147,7 @@ else{
 											((jer.doublant='-' AND t.ELEDOUBL='O') OR (jer.doublant!='-' AND t.ELEDOUBL='N'));";
 							info_debug($sql);
 							//echo "$sql<br />";
+							if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 							$test=mysql_query($sql);
 							if(mysql_num_rows($test)>0){
 								if($cpt==0){
@@ -2152,6 +2162,7 @@ else{
 								echo $tab_ele_id[$i];
 								//echo "<input type='hidden' name='tab_ele_id_diff[]' value='".$tab_ele_id[$i]."' />\n";
 								$sql="UPDATE tempo4 SET col3='modif' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id[$i]';";
+								if($tab_ele_id[$i]==$eleve_id_debug) {echo "Changement doublant<br />";echo "$sql<br />\n";}
 								$update=mysql_query($sql);
 								//echo "<br />\n";
 								// Pour le cas où on est dans la dernière tranche:
@@ -2161,6 +2172,40 @@ else{
 							}
 						}
 
+					}
+
+					if((!isset($tab_ele_id_diff))||(!in_array($tab_ele_id[$i], $tab_ele_id_diff))) {
+						// Contrôler si une date de sortie est enregistrée dans Gepi et pas dans Sconet:
+						$sql="SELECT 1=1 FROM eleves
+								WHERE ele_id='$tab_ele_id[$i]' AND
+										date_sortie!='NULL' AND
+										date_sortie!='0000-00-00 00:00:00';";
+						info_debug($sql);
+						//echo "$sql<br />";
+						$test=mysql_query($sql);
+						if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
+						if(mysql_num_rows($test)>0){
+							//echo "$sql<br />";
+							if($cpt==0){
+								echo "<p>Une ou des différences ont été trouvées dans la tranche étudiée à cette phase.";
+								echo "<br />\n";
+								echo "En voici le(s) ELE_ID: ";
+							}
+							else{
+								echo ", ";
+							}
+
+							echo $tab_ele_id[$i];
+							//echo "<input type='hidden' name='tab_ele_id_diff[]' value='".$tab_ele_id[$i]."' />\n";
+							$sql="UPDATE tempo4 SET col3='modif' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id[$i]';";
+							if($tab_ele_id[$i]==$eleve_id_debug) {echo "Date de sortie dans Gepi, mais pas dans sconet.<br />";echo "$sql<br />\n";}
+							$update=mysql_query($sql);
+							//echo "<br />\n";
+							// Pour le cas où on est dans la dernière tranche:
+							$tab_ele_id_diff[]=$tab_ele_id[$i];
+							$cpt++;
+							$cpt_tab_ele_id_diff++;
+						}
 					}
 				}
 			}
@@ -2175,6 +2220,7 @@ else{
 					if(!isset($tab_ele_id_diff)) {$tab_ele_id_diff=array();}
 					if(!in_array($tab_ele_id[$i],$tab_ele_id_diff)) {
 						$sql="SELECT classe FROM classes c, eleves e, j_eleves_classes jec WHERE c.id=jec.id_classe AND jec.login=e.login AND e.ele_id='$tab_ele_id[$i]' ORDER BY jec.periode DESC LIMIT 1;";
+						if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 						//if($tab_ele_id[$i]=='596023') {affiche_debug($sql."<br />");}
 						$test_clas1=mysql_query($sql);
 		
@@ -2182,6 +2228,7 @@ else{
 							$lig_clas1=mysql_fetch_object($test_clas1);
 		
 							$sql="SELECT DIVCOD FROM temp_gep_import2 t WHERE t.ELE_ID='$tab_ele_id[$i]';";
+							if($tab_ele_id[$i]==$eleve_id_debug) {echo "$sql<br />\n";}
 							//if($tab_ele_id[$i]=='596023') {affiche_debug($sql."<br />");}
 							$test_clas2=mysql_query($sql);
 							if(mysql_num_rows($test_clas2)>0) {
@@ -2202,6 +2249,7 @@ else{
 									//echo "</span>";
 									//echo "<input type='hidden' name='tab_ele_id_diff[]' value='".$tab_ele_id[$i]."' />\n";
 									$sql="UPDATE tempo4 SET col3='modif' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id[$i]';";
+									if($tab_ele_id[$i]==$eleve_id_debug) {echo "Changement de classe<br />";echo "$sql<br />\n";}
 									$update=mysql_query($sql);
 									//echo "<br />\n";
 									// Pour le cas où on est dans la dernière tranche:
@@ -2264,6 +2312,7 @@ else{
 
 			// 20110913
 			$sql="SELECT * FROM tempo4 WHERE col1='maj_sconet_eleves' AND (col3='modif' OR col3='new');";
+			//echo "$sql<br />";
 			$res=mysql_query($sql);
 			if(mysql_num_rows($res)>0) {
 				$tab_ele_id_diff=array();
@@ -2272,7 +2321,12 @@ else{
 				}
 			}
 
+			//echo "<pre>Tableau \$tab_ele_id_diff<br />\n";
+			//echo print_r($tab_ele_id_diff);
+			//echo "</pre>";
+
 			$sql="SELECT * FROM tempo2 WHERE col1='modif' OR col1='new';";
+			//echo "$sql<br />";
 			$res=mysql_query($sql);
 
 			//if(!isset($tab_ele_id_diff)){
@@ -2314,6 +2368,7 @@ else{
 				if(isset($modif)){
 					for($i=0;$i<count($modif);$i++){
 						$sql="INSERT INTO tempo2 SET col1='modif', col2='$modif[$i]'";
+						//echo "$sql<br />";
 						info_debug($sql);
 						$insert=mysql_query($sql);
 					}
@@ -2322,6 +2377,7 @@ else{
 				if(isset($new)){
 					for($i=0;$i<count($new);$i++){
 						$sql="INSERT INTO tempo2 SET col1='new', col2='$new[$i]'";
+						//echo "$sql<br />";
 						info_debug($sql);
 						$insert=mysql_query($sql);
 
@@ -2418,6 +2474,8 @@ else{
 				for($k = 1; ($k < $nblignes+1); $k++){
 					$temoin_modif="";
 					$temoin_nouveau="";
+
+					$temoin_modif_sortie="n";
 					//if(!feof($fp)){
 						//$ligne = fgets($fp, 4096);
 
@@ -2425,9 +2483,11 @@ else{
 
 					// Pour ne pas représenter le même au tour suivant:
 					$sql="UPDATE tempo4 SET col3='modif_ou_new_presente' WHERE col1='maj_sconet_eleves' AND col2='$tab_ele_id_diff[$w]';";
+					if($tab_ele_id_diff[$w]==$eleve_id_debug) {echo "$sql<br />\n";}
 					$update_tempo4=mysql_query($sql);
 
 					$sql="SELECT DISTINCT * FROM temp_gep_import2 WHERE ELE_ID='$tab_ele_id_diff[$w]';";
+					if($tab_ele_id_diff[$w]==$eleve_id_debug) {echo "$sql<br />\n";}
 					info_debug($sql);
 					//echo "<tr><td colspan='13'>$sql</td></tr>\n";
 					$res1=mysql_query($sql);
@@ -2438,9 +2498,9 @@ else{
 						$lig=mysql_fetch_object($res1);
 						$affiche=array();
 
-						$affiche[0]=nettoyer_caracteres_nom($lig->ELENOM, "a", " '_-", "");
+						$affiche[0]=nettoyer_caracteres_nom($lig->ELENOM, "a", " '_./-", "");
 						// IL FAUDRAIT FAIRE ICI LE MEME TRAITEMENT QUE DANS /init_xml/step3.php POUR LES PRENOMS COMPOSéS ET SAISIE DE PLUSIEURS PRéNOMS...
-						$affiche[1]=nettoyer_caracteres_nom($lig->ELEPRE, "a", " '_-", "");
+						$affiche[1]=nettoyer_caracteres_nom($lig->ELEPRE, "a", " '_./-", "");
 						$affiche[2]=nettoyer_caracteres_nom($lig->ELESEXE, "an", "", "");
 						$affiche[3]=nettoyer_caracteres_nom($lig->ELEDATNAIS, "an", "-", "");
 						$affiche[4]=nettoyer_caracteres_nom($lig->ELENOET, "an", "", "");
@@ -2467,6 +2527,7 @@ else{
 							//echo "<tr><td colspan='13'>$sql</td></tr>\n";
 							$res1=mysql_query($sql);
 							if(mysql_num_rows($res1)>0){
+								//echo "<tr><td colspan='13'>elenoet trouvé dans la table 'eleves'</td></tr>\n";
 								//$sql="UPDATE eleves SET ele_id='$affiche[5]' WHERE elenoet='$affiche[4]'";
 
 								// FAUT-IL FAIRE LES UPDATE SANS CONTRÔLE OU SIGNALER LES MODIFS SEULEMENT...
@@ -2550,6 +2611,7 @@ else{
 
 								$sql="SELECT * FROM j_eleves_regime WHERE (login='$lig_ele->login')";
 								info_debug($sql);
+								//echo "<tr><td colspan='13'>$sql</td></tr>\n";
 								$res2=mysql_query($sql);
 								if(mysql_num_rows($res2)>0){
 									$tmp_regime="";
@@ -2610,8 +2672,10 @@ else{
 
 								// Rechercher s'il y a un changement de classe?
 								$temoin_chgt_classe="n";
+								unset($lig_clas1);
 								if($ne_pas_tester_les_changements_de_classes!='y') {
 									$sql="SELECT c.classe, c.id FROM classes c, eleves e, j_eleves_classes jec WHERE c.id=jec.id_classe AND jec.login=e.login AND e.ele_id='$tab_ele_id_diff[$w]' ORDER BY jec.periode DESC LIMIT 1;";
+									//echo "<tr><td colspan='13'>$sql</td></tr>\n";
 									$test_clas1=mysql_query($sql);
 					
 									if(mysql_num_rows($test_clas1)>0) {
@@ -2624,6 +2688,19 @@ else{
 											$cpt_chgt_classe++;
 										}
 									}
+								}
+
+								// 20120919
+								$sql="SELECT 1=1 FROM eleves
+										WHERE ele_id='$tab_ele_id_diff[$w]' AND
+												date_sortie!='NULL' AND
+												date_sortie!='0000-00-00 00:00:00';";
+								//echo "<tr><td colspan='13'>$sql</td></tr>\n";
+								$test_sortie=mysql_query($sql);
+								if(mysql_num_rows($test_sortie)>0) {
+									$temoin_modif_sortie="y";
+									$temoin_modif='y';
+									$cpt_modif++;
 								}
 
 								// Rechercher s'il y a un changement dans l'établissement d'origine
@@ -2935,6 +3012,38 @@ else{
 
 									$info_action_titre="Changement de classe à effectuer pour ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." ($lig_ele->login)";
 									$info_action_texte="Effectuer le <a href='classes/classes_const.php?id_classe=$lig_clas1->id&amp;msg=".rawurlencode("Le changement de classe de ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." a été signalé lors de la mise à jour Sconet de $lig_clas1->classe vers $affiche[9].")."'>changement de classe</a> de $lig_clas1->classe vers $affiche[9]";
+									$info_action_destinataire="administrateur";
+									$info_action_mode="statut";
+									enregistre_infos_actions($info_action_titre,$info_action_texte,$info_action_destinataire,$info_action_mode);
+
+								}
+								elseif($temoin_modif_sortie=="y") {
+									echo " background-color: red;";
+									echo "'>";
+									//echo "<a href='../classes/classes_const.php?id_classe=$lig_clas1->id&amp;msg=A_EFFECTUER_Changement_de_classe_vers_".remplace_accents(stripslashes($affiche[9]))."_pour_".remplace_accents(stripslashes($lig_ele->nom)."_".stripslashes($lig_ele->prenom),'all')."' target='_blank'>";
+									if(isset($lig_clas1)) {
+										echo preg_replace("/ /", "&nbsp;", $lig_clas1->classe)." -&gt; ";
+									}
+									echo preg_replace("/ /", "&nbsp;", $affiche[9]);
+									echo "<br />";
+									echo "Date de sortie de l'établissement supprimée dans Sconet.";
+									//echo "</a>";
+
+									$info_action_titre="Retour de  ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." ($lig_ele->login)";
+									if(isset($lig_clas1)) {
+										$info_action_texte="Il se peut qu'il faille <a href='classes/classes_const.php?id_classe=$lig_clas1->id&amp;msg=".rawurlencode("Le changement de classe de ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." a été signalé lors de la mise à jour Sconet de $lig_clas1->classe vers $affiche[9].")."'>réinscrire ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." dans la classe de $affiche[9]</a>.<br />Elle a un temps été déclarée sortie de l'établissement.<br />Ce n'est plus le cas dans Sconet.";
+									}
+									else {
+										$sql="SELECT * FROM classes where classe='".mysql_real_escape_string($affiche[9])."';";
+										$res_clas_fut=mysql_query($sql);
+										if(mysql_num_rows($res_clas_fut)==1) {
+											$lig_clas_fut=mysql_fetch_object($res_clas_fut);
+											$info_action_texte="Il se peut qu'il faille <a href='classes/classes_const.php?id_classe=$lig_clas_fut->id&amp;msg=".rawurlencode("Il faut peut-être réinscrire ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." en classe de $affiche[9].")."'>réinscrire ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." dans la classe de $affiche[9]</a>.<br />Elle a un temps été déclarée sortie de l'établissement.<br />Ce n'est plus le cas dans Sconet.";
+										}
+										else {
+											$info_action_texte="Il se peut qu'il faille réinscrire ".remplace_accents(stripslashes($lig_ele->nom)." ".stripslashes($lig_ele->prenom))." dans la classe de ".$affiche[9].".<br />Elle a un temps été déclarée sortie de l'établissement.<br />Ce n'est plus le cas dans Sconet.";
+										}
+									}
 									$info_action_destinataire="administrateur";
 									$info_action_mode="statut";
 									enregistre_infos_actions($info_action_titre,$info_action_texte,$info_action_destinataire,$info_action_mode);
@@ -3263,6 +3372,9 @@ else{
 					if(getSettingValue('mode_email_ele')!="mon_compte") {
 						$sql.=", email='".mysql_real_escape_string($lig->MEL)."'";
 					}
+
+					// Si on a validé des modifs, on a un élève qui est dans l'établissement... pas sorti
+					$sql.=", date_sortie=NULL";
 
 					// Je ne pense pas qu'on puisse corriger un ELENOET manquant...
 					// Si on fait des imports avec Sconet, l'ELENOET n'est pas vide.
@@ -4525,6 +4637,26 @@ else{
 			info_debug("==============================================");
 			info_debug("=============== Phase step $step =================");
 
+
+			// 20120927
+			$sql="select 1=1 from resp_adr where adr_id not in (select distinct adr_id from resp_pers);";
+			$test=mysql_query($sql);
+			$nb_scories=mysql_num_rows($test);
+			if($nb_scories>0) {
+				echo "<p style='color:red; text-indent:-8em;margin-left:8em;'><strong>ATTENTION&nbsp;:</strong> Des adresses ne sont pas associées à des responsables.";
+				//echo "<br />";
+				//echo "Si vous n'affichez pas les propositions de redoublonnage d'adresses, cela peut perturber la détection des autres modifications pour les responsables anciennement concernés par ces adresses.";
+				echo "</p>\n";
+				if($_SESSION['statut']=='administrateur') {
+					echo "<p style='margin-left:8em;'><a href='gerer_adr.php?suppr_adresses_non_associees=y".add_token_in_url()."' target='_blank'>Supprimer les adresses non associées</a></p>\n";
+				}
+				else {
+					echo "<p style='color:red'>Contactez l'administrateur pour effectuer la suppression des adresses non associées.</p>\n";
+				}
+				echo "<br />\n";
+			}
+
+
 			echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post'>\n";
 			//==============================
 			// AJOUT pour tenir compte de l'automatisation ou non:
@@ -4654,8 +4786,8 @@ else{
 				echo "upload_max_filesize=$upload_max_filesize<br />\n";
 				echo "</p>\n";
 
-				// Il ne faut pas aller plus loin...
-				// SITUATION A GERER
+				echo "<p>Il semblerait que l'absence d'extension .XML ou .ZIP puisse aussi provoquer ce genre de symptômes.<br />Dans ce cas, ajoutez l'extension et ré-essayez.</p>\n";
+
 				require("../lib/footer.inc.php");
 				die();
 			}
@@ -4669,8 +4801,9 @@ else{
 					echo "et le volume de ".$xml_file['name']." serait<br />\n";
 					echo "\$xml_file['size']=".volume_human($xml_file['size'])."<br />\n";
 					echo "</p>\n";
-					// Il ne faut pas aller plus loin...
-					// SITUATION A GERER
+
+					echo "<p>Il semblerait que l'absence d'extension .XML ou .ZIP puisse aussi provoquer ce genre de symptômes.<br />Dans ce cas, ajoutez l'extension et ré-essayez.</p>\n";
+
 					require("../lib/footer.inc.php");
 					die();
 				}
@@ -4847,14 +4980,19 @@ else{
 						$i++;
 						$personnes[$i]=array();
 
+						$debug_cet_objet="n";
 						foreach($personne->attributes() as $key => $value) {
 							// <PERSONNE PERSONNE_ID="294435">
-							$personnes[$i][my_strtolower($key)]=trim(nettoyer_caracteres_nom($value, "an", " .@'-", ""));
+							$personnes[$i][my_strtolower($key)]=trim(nettoyer_caracteres_nom($value, "an", " .@'./-", ""));
+							//if(($key=='PERSONNE_ID')&&(in_array($value, array('840470', '645875', '645690')))) {$debug_cet_objet="y";}
 						}
 
 						foreach($personne->children() as $key => $value) {
 							if(in_array(my_strtoupper($key),$tab_champs_personne)) {
-								$personnes[$i][my_strtolower($key)]=nettoyer_caracteres_nom(preg_replace('/"/',' ',preg_replace("/'$/","",preg_replace("/^'/"," ",$value))), "an", " .@'_-", "");
+								$personnes[$i][my_strtolower($key)]=nettoyer_caracteres_nom(preg_replace('/"/',' ',preg_replace("/'$/","",preg_replace("/^'/"," ",$value))), "an", " .@'_./-", "");
+								if($debug_cet_objet=="y") {
+									echo "<p>\$key=$key<br />\$value=$value<br />\$personnes[$i][".my_strtolower($key)."]=".$personnes[$i][my_strtolower($key)]."</p><br />\n";
+								}
 							}
 						}
 
@@ -5527,17 +5665,22 @@ else{
 						$temoin_doublon_adr="n";
 						if(getSettingValue('ne_pas_proposer_redoublonnage_adresse')!='y') {
 							$sql.="						OR rp.adr_id!=t.adr_id";
+							// Si on accepte de se voir proposer le redoublonnage d'adresse, on considère le changement d'adr_id comme suffisnat pour repérer une modif.
 						}
 						else {
 							// 20120331
 							// Il faut un deuxième test:
+							// Il faut voir si l'adresse a changé
 							$sql2="SELECT pers_id, ta.* FROM temp_resp_adr_import ta, temp_resp_pers_import tp WHERE tp.adr_id=ta.adr_id AND tp.adr_id='$lig->adr_id';";
+							//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "<br />$sql2<br />\n";}
 							//echo "$sql2<br />";
 							$res_temp_adr=mysql_query($sql2);
 							if(mysql_num_rows($res_temp_adr)>0) {
 								while($lig_temp_adr=mysql_fetch_object($res_temp_adr)) {
-									$sql3="SELECT ra.* FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.pers_id='$lig_temp_adr->pers_id'";
+									//$sql3="SELECT ra.* FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.pers_id='$lig_temp_adr->pers_id';";
+									$sql3="SELECT ra.* FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.pers_id='$lig_temp_adr->pers_id' AND rp.adr_id!='$lig->adr_id';";
 									//echo "$sql3<br />";
+									//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "<br />$sql3<br />\n";}
 									$res_adr=mysql_query($sql3);
 									if(mysql_num_rows($res_adr)>0) {
 										while($lig_adr=mysql_fetch_object($res_adr)) {
@@ -5557,6 +5700,7 @@ else{
 								}
 							}
 						}
+						//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "\$temoin_doublon_adr=$temoin_doublon_adr<br />\n";}
 
 						//if((getSettingValue('mode_email_resp')=='')||(getSettingValue('mode_email_resp')=='sconet')) {
 						if((getSettingValue('mode_email_resp')=='')||(getSettingValue('mode_email_resp')=='sconet')) {
@@ -5565,6 +5709,7 @@ else{
 						$sql.="					)
 												AND rp.pers_id='".$lig->pers_id."';";
 						//echo "$sql<br />\n";
+						//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "<br />$sql<br />\n";}
 						info_debug($sql);
 						//$test=mysql_query($sql);
 						if(!$test=mysql_query($sql)) {
@@ -5600,6 +5745,7 @@ else{
 							echo "<span style='color:green;'>".$lig->pers_id."</span>";
 							//echo "<input type='hidden' name='tab_pers_id_diff[]' value='$lig->pers_id' />\n";
 							$sql="UPDATE temp_resp_pers_import SET statut='modif' WHERE pers_id='$lig->pers_id';";
+							//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "<br />$sql<br />\n";}
 							info_debug($sql);
 							$update=mysql_query($sql);
 							$cpt++;
@@ -5608,6 +5754,7 @@ else{
 							info_debug("... sans diff dans resp_pers");
 							// Pour ne pas laisser le statut vide (signe qu'on n'a pas encore testé ce pers_id):
 							$sql="UPDATE temp_resp_pers_import SET statut='-' WHERE pers_id='$lig->pers_id';";
+							//if(in_array($lig->pers_id, array('840470', '645875', '645690'))) {echo "<br />$sql<br />\n";}
 							info_debug($sql);
 							$update=mysql_query($sql);
 						}

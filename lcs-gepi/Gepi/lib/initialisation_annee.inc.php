@@ -61,22 +61,21 @@ $liste_tables_del_etape_eleves = array(
 'notanet',
 'notanet_avis',
 'notanet_app',
-//'notanet_lvr_ele',
-//'notanet_socle_commun',
-'notanet_corresp',
+'notanet_lvr_ele',
+'notanet_socle_commun',
 'notanet_verrou',
 'notanet_socles',
 'notanet_ele_type',
 //==========================
-//"observatoire",
-//"observatoire_comment",
-//"observatoire_suivi",
+"observatoire",
+"observatoire_comment",
+"observatoire_suivi",
 
 "tempo2",
 "tempo",
 // Découpe de trombinoscopes
-//"trombino_decoupe",
-//"trombino_decoupe_param",
+"trombino_decoupe",
+"trombino_decoupe_param",
 // Cahier de notes
 "cc_dev",
 "cc_eval",
@@ -117,7 +116,7 @@ $liste_tables_del_etape_eleves = array(
 "s_travail",
 "s_travail_mesure",
 // Table optionnelle pour les fils RSS de CDT
-//"rss_users"
+"rss_users"
 );
 
 // Etape de l'import des matières
