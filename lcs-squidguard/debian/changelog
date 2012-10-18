@@ -1,10 +1,10 @@
-lcs-squidguard (2.4.9.1~2) Lcs; urgency=low
+lcs-squidguard (2.4.9.1~3) Lcs; urgency=low
 
   * Update squidGuard.conf
   * Modify index.php and squidGuard.sh
   * Modify install cron task getblacklists in cron.weekly in Makefile
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Oct 2012 10:49:28 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Oct 2012 16:28:10 +0200
 
 lcs-squidguard (2.4.9) Lcs; urgency=low
 
