@@ -1,5 +1,5 @@
 <?php
-/* Annu/includes/ihm.inc.php derniere modification : 11/10/2012*/
+/* Annu/includes/ihm.inc.php derniere modification : 19/10/2012*/
 
 # Model caracteres speciaux pour les mots de passe
 $char_spec = "&_#@£%§:!?*$";
