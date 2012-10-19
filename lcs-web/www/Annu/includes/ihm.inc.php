@@ -81,7 +81,7 @@ $motif = "^[0-9]{8}$";
 function verifEntree($entree) {
   $motif = "/^[-a-zA-Z0-9 \'ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ ]{1,20}$/";
 
-  if ( mb_ereg($motif, $entree) ) {
+  if ( preg_match($motif, $entree) ) {
      $ret= true;
   } else {
     $ret= false;

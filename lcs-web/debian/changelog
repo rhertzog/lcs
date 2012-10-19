@@ -1,4 +1,4 @@
-lcs-web (2.4.9.2) Lcs; urgency=low
+lcs-web (2.4.9.3) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * prevent mysql error on squeeze upgrade
@@ -8,7 +8,7 @@ lcs-web (2.4.9.2) Lcs; urgency=low
   * Modify rights on .pem and path for pid slapd
   * Add SambaPwdLastSet in LcSe.pm
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Oct 2012 15:20:51 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Oct 2012 15:31:04 +0200
 
 lcs-web (2.4.9) Lcs; urgency=low
 
