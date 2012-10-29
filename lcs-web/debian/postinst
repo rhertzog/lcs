@@ -55,11 +55,12 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
 					# Update config.inc.php
 					#
 					rm -f /var/www/lcs/includes/config.inc.php_before_2.4.6.5+slis.4.1.9
-					mv /var/www/lcs/includes/config.inc.php /var/www/lcs/includes/config.inc.php_before_2.4.9
+					mv /var/www/lcs/includes/config.inc.php /var/www/lcs/includes/config.inc_before_2.4.9.php
 					sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
 					chown www-data:www-data /var/www/lcs/includes/config.inc.php
 				fi
             fi
+			rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
             # 	   
             # Restore .htpasswd if exist
             #

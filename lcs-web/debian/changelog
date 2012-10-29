@@ -1,14 +1,14 @@
-lcs-web (2.4.9.3) Lcs; urgency=low
+lcs-web (2.4.9.4) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * prevent mysql error on squeeze upgrade
   * update lenny2squeeze
   * fix bug in ihm.inc.php on verifEntree function
-
+  * Remove old config file in lcs/includes
   * Modify rights on .pem and path for pid slapd
   * Add SambaPwdLastSet in LcSe.pm
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Oct 2012 15:31:04 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 29 Oct 2012 19:49:49 +0100
 
 lcs-web (2.4.9) Lcs; urgency=low
 
