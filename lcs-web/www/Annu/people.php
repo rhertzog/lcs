@@ -4,7 +4,7 @@
    Consultation de l'annuaire LDAP
    Annu/people.php
    Equipe Tice academie de Caen
-   Derniere mise a jour : 07/05/2010
+   Derniere mise a jour : 30/10/2012
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -16,8 +16,8 @@
 
   list ($idpers,$login)= isauth();
   if ($idpers == "0") header("Location:$urlauth");
-  //test si squirrelmail est installe pour redirection mails
-  $query="SELECT value from applis where name='squirrelmail'";
+  //test si webmail est installe pour redirection mails
+  $query="SELECT value from applis where name='squirrelmail' or name='roundcube'";
   $result=mysql_query($query);
   if ($result) 
 	{
@@ -28,7 +28,7 @@
           else $test_squir="0";
           }
           else $test_squir="0";
-   //fin test squirrelmail
+   //fin test webmail
    
    //test listes de diffusion
     exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);

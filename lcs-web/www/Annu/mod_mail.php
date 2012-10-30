@@ -5,13 +5,13 @@
    Annu/mod_mail.php
    [LCS CoreTeam]
    Equipe Tice academie de Caen
-   23/10/2009
+   30/10/2012
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
   include ("../lcs/includes/jlcipher.inc.php");
-  $query="SELECT value from applis where name='squirrelmail'";
+  $query="SELECT value from applis where name='squirrelmail' or name='roundcube' ";
   $result=mysql_query($query);
   if ($result) 
 	{

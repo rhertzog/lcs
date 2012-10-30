@@ -1,3 +1,10 @@
+lcs-web (2.4.9.5~1) Lcs; urgency=low
+
+  * add rouncube in test "webmail present" 
+  * fix accented characters
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 30 Oct 2012 22:35:23 +0100
+
 lcs-web (2.4.9.4) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
