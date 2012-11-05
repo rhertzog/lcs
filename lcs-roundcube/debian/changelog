@@ -1,3 +1,9 @@
+lcs-roundcube (2.4.9.2~1) Lcs; urgency=low
+
+  * Add desktop notify plugin 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 05 Nov 2012 09:11:38 +0100
+
 lcs-roundcube (2.4.9.1) Lcs; urgency=low
 
   * Update Roundcube to 0.8.1
