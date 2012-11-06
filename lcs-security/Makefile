@@ -18,6 +18,7 @@ install:
 	install -m 755 scripts/* $(DESTDIR)/usr/share/lcs/scripts 
 	chmod 644  $(DESTDIR)/etc/cron.d/lcs-save-ldap
 	chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-sql
+	install -d $(DESTDIR)/root
 	cp -a root/.bashrc $(DESTDIR)/root/
 	cp -a var/*  $(DESTDIR)/var/	
 	# install sbin
