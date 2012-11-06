@@ -34,7 +34,8 @@ case "$1" in
 		    	# Activation des logs sudo
 		    	/usr/sbin/lcs-make-sudoers
 		    	# Activation du mod security d'apache
-		    	/usr/sbin/lcs-enable-apache-security 
+		    	echo "le mod security d'apache est disponible."
+		    	# /usr/sbin/lcs-enable-apache-security 
 	fi
     ;;
 
