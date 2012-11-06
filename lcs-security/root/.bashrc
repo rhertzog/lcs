@@ -23,4 +23,4 @@
 
 
 nbroot=`who|grep "root"| wc -l`
-if [ $nbroot -ge 2 ]; then echo -e "\033[0;31m \n Attention : \033[0;02m  \n Il y a déjà une connexion root en cours\n"; fi
+if [ $nbroot -ge 2 ]; then echo -e "\033[0;31m \n Attention :  \033[0m \n Il y a déjà une connexion root en cours\n"; fi
