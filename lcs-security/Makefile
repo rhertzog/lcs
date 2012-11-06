@@ -20,6 +20,7 @@ install:
 	chmod 755  $(DESTDIR)/etc/cron.weekly/lcs-save-sql
 	install -d $(DESTDIR)/root
 	cp -a root/.bashrc $(DESTDIR)/root/
+	install -d $(DESTDIR)/var
 	cp -a var/*  $(DESTDIR)/var/	
 	# install sbin
 	install -d $(DESTDIR)/usr/sbin
