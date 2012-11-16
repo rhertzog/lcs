@@ -82,6 +82,7 @@ tinyMCE.init({
 		"Webdings=webdings;"+
 		"Wingdings=wingdings,zapf dingbats;"+
 		"Grec=sgreek",
+	theme_advanced_statusbar_location : "none",
 	template_external_list_url : "example_template_list.js",
 	language : "fr",
 	file_browser_callback : "myFileBrowser",
@@ -107,6 +108,7 @@ tinyMCE.init({
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "bottom",
 	theme_advanced_toolbar_align : "center",
+	theme_advanced_statusbar_location : "none",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
 
@@ -125,6 +127,7 @@ tinyMCE.init({
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "bottom",
 	theme_advanced_toolbar_align : "center",
+	theme_advanced_statusbar_location : "none",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
 
@@ -145,6 +148,7 @@ tinyMCE.init({
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "center",
+	theme_advanced_statusbar_location : "none",
 	extended_valid_elements : "hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
 		language : "fr"
 
