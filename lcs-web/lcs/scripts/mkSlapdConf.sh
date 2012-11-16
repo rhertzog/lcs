@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ##### Met en place la replication LDAP avec syncrepl #####
-##### LCS/SE3 derniere modification : 22/06/2012
+##### LCS/SE3 derniere modification : 16/11/2012
 if [ "$1" = "--help" -o "$1" = "-h" ]
 then
 	echo "Met en place la replication LDAP (syncrepl) a partir des donnees de la base sql"
@@ -429,8 +429,9 @@ rootbinddn $ldap_admin,$ldap_base_dn
 host $serveurs
 #scope sub
 
-ssl start_tls
-tls_checkpeer no" > /etc/libnss-ldap.conf
+#ssl start_tls
+#tls_checkpeer no
+" > /etc/libnss-ldap.conf
 
 # Creation de pam_ldap.conf
 echo "ldap_version 3
@@ -439,22 +440,24 @@ rootbinddn $ldap_admin,$ldap_base_dn
 #bindpw pasecure
 host $serveurs
 pam_crypt local
-ssl start_tls
-tls_checkpeer no" > /etc/pam_ldap.conf
+#ssl start_tls
+#tls_checkpeer no
+" > /etc/pam_ldap.conf
 
 # Creation de ldap.conf
 echo "HOST $serveurs
 BASE $ldap_base_dn
-TLS_REQCERT never
-TLS_CACERTDIR /etc/ldap/
-TLS_CACERT /etc/ldap/slapd.pem" > /etc/ldap/ldap.conf
+#TLS_REQCERT never
+#TLS_CACERTDIR /etc/ldap/
+#TLS_CACERT /etc/ldap/slapd.pem
+" > /etc/ldap/ldap.conf
 
 #################################################################################
 # 		Fin de la conf							#
 #################################################################################
 
 chmod 550 /etc/ldap/slapd.conf
-chmod 400 /etc/ldap/slapd.pem
+chmod 444 /etc/ldap/slapd.pem
 
 chown -R openldap:openldap /etc/ldap
 chown -R openldap:openldap /var/lib/ldap

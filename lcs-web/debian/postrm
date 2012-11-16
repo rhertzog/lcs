@@ -4,11 +4,16 @@
 set -e
 case "$1" in
 	purge|remove)
-          # Drop directives for lcs-web
-          rm -f /etc/apache2/lcs-main/55_lcs.conf
-          rm -f /etc/apache2/lcs-main/15_files.conf
-          invoke-rc.d apache2 force-reload
-	  /usr/sbin/lcs-make-sudoers        
+			# Drop directives for lcs-web
+         rm -f /etc/apache2/lcs-main/55_lcs.conf
+         rm -f /etc/apache2/lcs-main/15_files.conf
+         invoke-rc.d apache2 force-reload
+         /usr/sbin/lcs-make-sudoers
+         # rm divert
+        if [ "$1" = remove ]; then
+    		rm -f /etc/apache2/mods-enabled/php5.conf
+    		dpkg-divert --package lcs-web \
+        		--rename --remove /etc/apache2/mods-enabled/php5.conf              
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
