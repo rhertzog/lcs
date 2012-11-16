@@ -1,3 +1,9 @@
+lcs-libjs (2.4.9.3~1) Lcs; urgency=low
+
+  * update tinymce in 3.5.7
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 16 Nov 2012 13:47:45 +0100
+
 lcs-libjs (2.4.9.2) Lcs; urgency=low
 
   * add jqGrid plugin
