@@ -22,6 +22,7 @@ case "$1" in
                 #    UPDATE40STATS="      \"Log redirection mails\",\"/Admin/mail_rediriges.php\",\"lcs_is_admin\","
                 #   sed -i "7 a\\$UPDATE40STATS" /var/www/lcs/includes/menu.d/40stats.inc
                 #fi
+                # Update for 2.4.7 version
                 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.7; then
                     #
                     # Add right Mail_can_redir if ldap is up and if this right not exist in LDAP base
@@ -47,20 +48,28 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
                     # restart apache2
                     invoke-rc.d apache2 restart
                 fi
-				if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9; then
+                # Update for 2.4.9
+					 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9; then
                 	# Load LCS config
                 	[ ! -e /etc/lcs/lcs.conf ] && echo "Fatal in postinst: missing /etc/lcs/lcs.conf !" >&2 && exit 1
                 	. /etc/lcs/lcs.conf
-					#
-					# Update config.inc.php
-					#
-					rm -f /var/www/lcs/includes/config.inc.php_before_2.4.6.5+slis.4.1.9
-					mv /var/www/lcs/includes/config.inc.php /var/www/lcs/includes/config.inc_before_2.4.9.php
-					sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
-					chown www-data:www-data /var/www/lcs/includes/config.inc.php
-				fi
+						#
+						# Update config.inc.php
+						#
+						rm -f /var/www/lcs/includes/config.inc.php_before_2.4.6.5+slis.4.1.9
+						mv /var/www/lcs/includes/config.inc.php /var/www/lcs/includes/config.inc_before_2.4.9.php
+						sed -e "s|@@PASSWORD@@|"$LCSMGRPASS"|g" /var/www/lcs/includes/config.inc.in >/var/www/lcs/includes/config.inc.php
+						chown www-data:www-data /var/www/lcs/includes/config.inc.php
+					 fi
+					 # Update for 2.4.9.5
+					 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.5; then
+					 	echo "Make slapd config"
+					 	/usr/share/lcs/scripts/mkSlapdConf.sh
+					 	# clean folder se3 if exist
+					 	rm -Rf /var/se3
+					 fi					 
             fi
-			rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
+				rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
             # 	   
             # Restore .htpasswd if exist
             #

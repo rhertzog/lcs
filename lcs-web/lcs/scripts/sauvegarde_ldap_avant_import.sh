@@ -5,7 +5,7 @@
 # Auteur: Stephane Boireau (27)
 # Dernière modification: 08/03/2007
 
-dossier_svg="/var/se3/save/sauvegarde_ldap_avant_import"
+dossier_svg="/var/lib/lcs/import_comptes/sauvegarde_ldap_avant_import"
 #dossier_svg="/var/remote_adm/sauvegarde_ldap_avant_import"
 
 if [ "$1" = "--help" -o "$1" = "-h" ]; then
