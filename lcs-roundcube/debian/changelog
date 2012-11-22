@@ -1,8 +1,9 @@
-lcs-roundcube (2.4.9.2~1) Lcs; urgency=low
+lcs-roundcube (2.4.9.2~2) Lcs; urgency=low
 
   * Add desktop notify plugin 
+  * Add ldap adressbook in main.inc.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 05 Nov 2012 09:11:38 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Nov 2012 15:35:31 +0100
 
 lcs-roundcube (2.4.9.1) Lcs; urgency=low
 

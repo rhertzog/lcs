@@ -31,6 +31,12 @@ cp $CONFIG_PATH/main.inc.php.dist $CONFIGRC_PATH/main.inc.php
 sed -i "s|#CRYPT24#|"$CRYPT24"|g" $CONFIGRC_PATH/main.inc.php
 MAILDOMAIN=`hostname -d`
 sed -i "s|#MAILDOMAIN#|"$MAILDOMAIN"|g" $CONFIGRC_PATH/main.inc.php
+LDAP_SERVER=$(get_lcsdb_params ldap_server)
+LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
+LDAP_PEOPLE_RDN=$(get_lcsdb_params peopleRdn)	
+sed -i "s|#LDAP_SERVER#|"$LDAP_SERVER"|g" $CONFIGRC_PATH/main.inc.php	
+sed -i "s|#LDAP_BASE_DN#|"$LDAP_BASE_DN"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#LDAP_PEOPLE_RDN#|"$LDAP_PEOPLE_RDN"|g" $CONFIGRC_PATH/main.inc.php
 # Config Roundcube authentication mode
 AUTH_MOD=$(get_lcsdb_params auth_mod)
 if [ ! -z $AUTH_MOD ]; then
