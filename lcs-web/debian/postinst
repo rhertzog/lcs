@@ -63,11 +63,24 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
 					 fi
 					 # Update for 2.4.9.5
 					 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.5; then
-					 	echo "Make slapd config"
-					 	/usr/share/lcs/scripts/mkSlapdConf.sh
 					 	# clean folder se3 if exist
 					 	rm -Rf /var/se3
-					 fi					 
+					 	echo "Remake a slapd config"
+					 	/usr/share/lcs/scripts/mkSlapdConf.sh
+						# Fix php.ini cli after dist-upgrade lenny to squeeze
+						MD5SUM='9f9a60a7ee90d2a6e1a698cbeff89321'	
+						if [ -e /etc/php5/cli/php.ini.ucf-dist ]; then
+        					echo "Correction php.ini cli"
+        					MD5TEST=`md5sum /etc/php5/cli/php.ini.ucf-dist | cut -d " " -f 1`
+        					if [ "$MD5SUM" = "$MD5TEST" ]; then
+                			echo "Fix php.ini"
+                			#max_execution_time = 30 => 3600
+                			sed -i -e "s/max_execution_time = 30/max_execution_time = 3600/g" /etc/php5/cli/php.ini.ucf-dist
+                			mv /etc/php5/cli/php.ini.ucf-dist /etc/php5/cli/php.ini
+        					fi
+						fi 	
+					 fi
+					 # End update for 2.4.9.5 version					 
             fi
 				rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
             # 	   

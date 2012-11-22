@@ -1,12 +1,13 @@
-lcs-web (2.4.9.5~2) Lcs; urgency=low
+lcs-web (2.4.9.5~3) Lcs; urgency=low
 
   * Add rouncube in test "webmail present" 
   * Fix accented characters
   * Modify mkSlapdConf.sh to fix bug at task
   * Add divert for php5.conf
   * Execute mkSlapdConf.sh if version lt 2.4.9.5
+  * Fix php.ini cli after upgrade to Squeeze
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 06 Nov 2012 00:04:27 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 11 Nov 2012 19:26:27 +0100
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
