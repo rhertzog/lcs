@@ -1,1 +1,1 @@
-Serveur Web,../Admin/mod_security.php,lcs_is_admin
+Serveur Web,/Admin/mod_security.php,lcs_is_admin

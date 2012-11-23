@@ -1,3 +1,9 @@
+lcs-security (2.4.9.~7) Lcs; urgency=low
+
+  * lcs-security : fix menu url
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Fri, 23 Nov 2012 17:09:27 +0100
+
 lcs-security (2.4.9.1~6) Lcs; urgency=low
 
   * add documentation for lcs-security modules
