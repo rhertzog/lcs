@@ -1,4 +1,4 @@
 Defaults:www-data        logfile=/var/log/lcs/sudo.log,timestamp_timeout=3
 
-Cmnd_Alias ENDISSECU = /usr/share/lcs/sbin/lcs-enable-apache-security, /usr/share/lcs/sbin/lcs-disable-apache-security
+Cmnd_Alias ENDISSECU = /usr/sbin/lcs-enable-apache-security, /usr/sbin/lcs-disable-apache-security
 www-data ALL=NOPASSWD:ENDISSECU

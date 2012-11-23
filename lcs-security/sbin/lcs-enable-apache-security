@@ -4,16 +4,16 @@
 # apt-get install libapache2-modsecurity
 a2enmod mod-security
 
-mkdir /var/asl
-mkdir /var/asl/tmp
-mkdir /var/asl/data
-mkdir /var/asl/data/msa
-mkdir /var/asl/data/audit
-mkdir /var/asl/data/suspicious
-mkdir /etc/apache2/modsecurity.d
-mkdir /etc/asl/
-touch /etc/asl/whitelist
-touch /var/log/apache2/audit_log
+mkdir -p /var/asl
+mkdir -p /var/asl/tmp
+mkdir -p /var/asl/data
+mkdir -p /var/asl/data/msa
+mkdir -p /var/asl/data/audit
+mkdir -p /var/asl/data/suspicious
+mkdir -p /etc/apache2/modsecurity.d
+mkdir -p /etc/asl/
+touch -p /etc/asl/whitelist
+touch -p /var/log/apache2/audit_log
 
 #wget http://www.atomicorp.com/channels/rules/delayed/modsec-2.5-free-latest.tar.gz
 #tar zxvf modsec-2.5-free-latest.tar.gz
@@ -59,4 +59,9 @@ chown www-data.www-data /var/asl/data/suspicious
 chmod o-rx -R /var/asl/data/*
 chmod ug+rwx -R /var/asl/data/*
 
+echo "enable mode security apache" > /tmp/enablemodesecurity.lock
+
+at now+1minutes <<END
 /etc/init.d/apache2 restart
+rm -f /tmp/enablemodesecurity.lock
+END

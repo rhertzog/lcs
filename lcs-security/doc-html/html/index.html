@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LCS Sécurité</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+<h1 style="text-align:center">Documentation <span class="acronym">LCS Sécurité</span></h1>
+<h3>Version : Paquet lcs-security 2.4.9</h3>
+<p>Mise en place  de services de sécurité <span class="acronym">fail2ban</span> et <span class="acronym">Apache mode security</span> pour LCS.</p>
+
+<h2>Fail2Ban</h2>
+<a href="http://www.fail2ban.org/wiki/index.php/Main_Page"><img src="fail2ban-logo.png" alt="Logo Fail2Ban" /></a>
+
+<p><span class="acronym">Fail2ban</span> lit les fichiers de log du système et bannit les <span class="acronym">adresses IP</span> qui ont obtenu un trop grand nombre d'échecs lors de l'authentification. Il met à jour les règles du pare-feu pour rejeter cette adresse IP. <span class="acronym">Fail2ban</span> sur <span class="acronym">LCS</span> prend en compte les fichiers de log :  LCS, Apache, sshd... Sur <span class="acronym">LCS</span>, le module de sécurité <span class="acronym">Fail2Ban</span>, est activé (et n'est pas désactivable) lors de l'installation du paquet <span class="acronym">lcs-security</span>. </p>
+<p><a href="http://www.fail2ban.org/wiki/index.php/FAQ_french">FAQ fail2ban en français</a></p>
+<p><a href="http://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban (site officiel)</a></p>
+
+<h2>Serveur web LCS module de sécurité (libapache-mod-security)</h2>
+<p>Le module Security est une sorte de firewall pour Apache qui apporte une solution aux problèmes de sécurité et d’attaques applicatives web. Pour faire simple ce module bloque les requêtes pouvant être dangereuses.</p>
+<img src="modsecurity.png" alt="image modsecurity" />
+<p>A partir du menu d'administration <span class="acronym">LCS</span>, vous pouvez dans l'onglet sécurité, activer ou désactiver ce module. Une fois activé, le <span class="acronym">module apache sécurité</span> met en place une série de règles de sécurité pour le serveur <span class="acronym">web apache LCS</span>. Attention, ces règles peuvent entrainer une charge plus importante du serveur !</p>
+<p><a href="http://www.modsecurity.org/">Apache mode sécurité (site officiel)</a></p>
+</body>
+</html>
