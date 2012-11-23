@@ -3,8 +3,8 @@
 # Desactivation du mode security d'apache sur LCS
 # apt-get install libapache2-modsecurity
 a2dismod mod-security
-rm /etc/apache2/conf.d/00_modsecurity.conf 
-rm /etc/apache2/conf.d/modsecurity_crs_10_config.conf 
+rm -f /etc/apache2/conf.d/00_modsecurity.conf 
+rm -f /etc/apache2/conf.d/modsecurity_crs_10_config.conf 
 
 echo "disable mode security apache" > /tmp/disablemodesecurity.lock
 
