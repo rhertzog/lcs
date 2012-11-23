@@ -515,7 +515,7 @@ $rcmail_config['address_book_type'] = 'sql';
 // In order to enable public ldap search, configure an array like the Verisign
 // example further below. if you would like to test, simply uncomment the example.
 // Array key must contain only safe characters, ie. a-zA-Z0-9_
-$rcmail_config['ldap_public'] = array('ldap');
+$rcmail_config['ldap_public'] = array('lcs');
 
 
  $rcmail_config['ldap_public']['lcs'] = array(
@@ -669,7 +669,7 @@ $rcmail_config['ldap_public']['Verisign'] = array(
 
 // An ordered array of the ids of the addressbooks that should be searched
 // when populating address autocomplete fields server-side. ex: array('sql','Verisign');
-$rcmail_config['autocomplete_addressbooks'] = array('sql', 'ldap');
+$rcmail_config['autocomplete_addressbooks'] = array('sql', 'lcs');
 
 // The minimum number of characters required to be typed in an autocomplete field
 // before address books will be searched. Most useful for LDAP directories that
