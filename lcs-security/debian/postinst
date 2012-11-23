@@ -30,7 +30,8 @@ case "$1" in
 	else
 		/etc/init.d/fail2ban restart
 	fi
-	if dpkg --compare-versions $preversion lt 2.4.9 ; then
+	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then	
+				echo "update lcs-security and disable mod_apache_security"
 		    	# Activation des logs sudo
 		    	/usr/sbin/lcs-make-sudoers
 		    	# Activation du mod security d'apache
