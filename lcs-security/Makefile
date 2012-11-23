@@ -13,7 +13,7 @@ install:
 	install -d $(DESTDIR)/etc/lcs/sudo.d
 	install -d $(DESTDIR)/etc/apache2/modsecurity.d
 	install -d $(DESTDIR)/usr/share/lcs/scripts
-        # copy and chmod
+   # copy and chmod
 	cp -a conf/* $(DESTDIR)/etc/
 	install -m 755 scripts/* $(DESTDIR)/usr/share/lcs/scripts 
 	chmod 644  $(DESTDIR)/etc/cron.d/lcs-save-ldap
@@ -26,6 +26,10 @@ install:
 	install -d $(DESTDIR)/usr/sbin
 	install -m 755 sbin/* $(DESTDIR)/usr/sbin/
 
+# install doc
+	install -d $(DESTDIR)/usr/share/doc/lcs/security/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/security/html/
+	
 clean:
 
 
