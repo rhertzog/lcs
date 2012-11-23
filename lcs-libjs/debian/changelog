@@ -1,11 +1,11 @@
-lcs-libjs (2.4.9.3~1) Lcs; urgency=low
+lcs-libjs (2.4.9.3~) Lcs; urgency=low
 
   * update tinymce in 3.5.7
   * update jquery in 1.8.3
   * update jquery-ui in 1.9.1
   * update Mathjax in 2.1
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 22 Nov 2012 14:09:13 +0100
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 22 Nov 2012 23:52:20 +0100
 
 lcs-libjs (2.4.9.2) Lcs; urgency=low
 
