@@ -89,7 +89,7 @@ if( ($action=='Afficher_evaluations') && $eleve_id && $date_debut && $date_fin )
 		echo	'<td>'.$image_sujet.$image_corrige.'</td>';
 		echo	'<td class="nu" id="devoir_'.$DB_ROW['devoir_id'].'">';
 		echo		'<q class="voir" title="Voir les items et les notes (si saisies)."></q>';
-		if($DB_ROW['devoir_autoeval_date']=='0000-00-00')
+		if($DB_ROW['devoir_autoeval_date']===NULL)
 		{
 			echo'<q class="saisir_non" title="Devoir sans auto-évaluation."></q>';
 		}
@@ -151,7 +151,7 @@ if( ($action=='Voir_notes') && $eleve_id && $devoir_id )
 		// Test pour éviter les pbs des élèves changés de groupes ou des items modifiés en cours de route
 		if(isset($tab_affich[$DB_ROW['item_id']]))
 		{
-			$tab_affich[$DB_ROW['item_id']] = str_replace('>-<','>'.Html::note($DB_ROW['saisie_note'],'','',$tri=true).'<',$tab_affich[$DB_ROW['item_id']]);
+			$tab_affich[$DB_ROW['item_id']] = str_replace( '>-<' , '>'.Html::note($DB_ROW['saisie_note'],'','',TRUE /*tri*/).'<' , $tab_affich[$DB_ROW['item_id']] );
 		}
 	}
 	exit(implode('',$tab_affich));
@@ -214,7 +214,7 @@ if( ($action=='Enregistrer_saisies') && $devoir_id )
 	{
 		exit('Devoir introuvable !');
 	}
-	if($DB_ROW['devoir_autoeval_date']=='0000-00-00')
+	if($DB_ROW['devoir_autoeval_date']===NULL)
 	{
 		exit('Devoir sans auto-évaluation !');
 	}
@@ -306,7 +306,7 @@ if( ($action=='Enregistrer_saisies') && $devoir_id )
 	$guid  = 'autoeval_'.$devoir_id.'-'.$_SESSION['USER_ID'];
 	foreach($tab_profs_rss as $prof_id)
 	{
-		Modifier_RSS($prof_id,$titre,$texte,$guid);
+		RSS::modifier_fichier_prof($prof_id,$titre,$texte,$guid);
 	}
 	exit('ok');
 }

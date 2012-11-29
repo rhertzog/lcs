@@ -146,7 +146,7 @@ if($action=='user_export')
 {
 	$separateur = ';';
 	// Récupérer les données des utilisateurs
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 1 /*only_actuels*/ , TRUE /*with_classe*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 1 /*only_actuels*/ , 'user_login,user_nom,user_prenom,user_profil' /*liste_champs*/ , TRUE /*with_classe*/ );
 	// Générer le csv
 	$fcontenu_csv = 'LOGIN'.$separateur.'MOT DE PASSE'.$separateur.'NOM'.$separateur.'PRENOM'.$separateur.'PROFIL (INFO)'.$separateur.'CLASSE (INFO)'."\r\n\r\n";
 	foreach($DB_TAB as $DB_ROW)
@@ -178,7 +178,7 @@ if($action=='import_loginmdp')
 	$tab_users_fichier['nom']    = array();
 	$tab_users_fichier['prenom'] = array();
 	$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_nom);
-	$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+	$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	unset($tab_lignes[0]); // Supprimer la 1e ligne
@@ -208,7 +208,7 @@ if($action=='import_loginmdp')
 	$tab_users_base['nom']    = array();
 	$tab_users_base['prenom'] = array();
 	$tab_users_base['info']   = array();
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 2 /*actuels_et_anciens*/ , TRUE /*with_classe*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 2 /*actuels_et_anciens*/ , 'user_id,user_login,user_password,user_nom,user_prenom,user_profil' /*liste_champs*/ , TRUE /*with_classe*/ );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_users_base['login'][$DB_ROW['user_id']]  = $DB_ROW['user_login'];
@@ -359,7 +359,7 @@ if($action=='import_loginmdp')
 // Import CSV du contenu d'un fichier pour forcer les identifiants élèves ou professeurs de GEPI
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='import_gepi_eleves') || ($action=='import_gepi_profs') )
+if( ($action=='import_gepi_profs') || ($action=='import_gepi_parents') || ($action=='import_gepi_eleves') )
 {
 	$fichier_nom = $action.'_'.$_SESSION['BASE'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.txt';
 	$result = FileSystem::recuperer_upload( CHEMIN_DOSSIER_IMPORT /*fichier_chemin*/ , $fichier_nom /*fichier_nom*/ , array('csv') /*tab_extensions_autorisees*/ , NULL /*tab_extensions_interdites*/ , NULL /*taille_maxi*/ , NULL /*filename_in_zip*/ );
@@ -367,7 +367,7 @@ if( ($action=='import_gepi_eleves') || ($action=='import_gepi_profs') )
 	{
 		exit('Erreur : '.$result);
 	}
-	$tab_fnom_attendu = array( 'import_gepi_eleves'=>array('base_eleve_gepi.csv') , 'import_gepi_profs'=>array('base_professeur_gepi.csv','base_cpe_gepi.csv') );
+	$tab_fnom_attendu = array( 'import_gepi_profs'=>array('base_professeur_gepi.csv','base_cpe_gepi.csv') , 'import_gepi_parents'=>array('base_responsable_gepi.csv') , 'import_gepi_eleves'=>array('base_eleve_gepi.csv') );
 	if(!in_array(FileSystem::$file_upload_name,$tab_fnom_attendu[$action]))
 	{
 		exit('Erreur : le nom du fichier n\'est pas "'.$tab_fnom_attendu[$action][0].'" !');
@@ -379,7 +379,7 @@ if( ($action=='import_gepi_eleves') || ($action=='import_gepi_profs') )
 	$tab_users_fichier['prenom']     = array();
 	$tab_users_fichier['sconet_num'] = array(); // Ne servira que pour les élèves
 	$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_nom);
-	$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+	$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	// Pas de ligne d'en-tête à supprimer
@@ -411,8 +411,8 @@ if( ($action=='import_gepi_eleves') || ($action=='import_gepi_profs') )
 	$tab_users_base['nom']        = array();
 	$tab_users_base['prenom']     = array();
 	$tab_users_base['sconet_num'] = array(); // Ne servira que pour les élèves
-	$profil = ($action=='import_gepi_eleves') ? 'eleve' : 'professeur' ;
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 2 /*actuels_et_anciens*/ , FALSE /*with_classe*/ );
+	$profil      = ($action=='import_gepi_profs') ? array('professeur','directeur') : substr($action,12,-1) ;
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 1 /*only_actuels*/ , 'user_id,user_sconet_elenoet,user_id_gepi,user_nom,user_prenom' /*liste_champs*/ , FALSE /*with_classe*/ );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_users_base['id_gepi'][$DB_ROW['user_id']]    = $DB_ROW['user_id_gepi'];
@@ -525,7 +525,7 @@ if($action=='import_ent')
 	$tab_users_fichier['prenom']    = array();
 	$tab_users_fichier['id_sconet'] = array();
 	$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_nom);
-	$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+	$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	// Supprimer la ou les première(s) ligne(s) ou aucune
@@ -564,7 +564,7 @@ if($action=='import_ent')
 	$tab_users_base['id_sconet'] = array();
 	$tab_users_base['info']      = array();
 	$tab_profils = array('eleve','parent','professeur','directeur');
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $tab_profils , 2 /*actuels_et_anciens*/ , TRUE /*with_classe*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $tab_profils , 2 /*actuels_et_anciens*/ , 'user_id,user_sconet_id,user_id_ent,user_nom,user_prenom,user_profil' /*liste_champs*/ , TRUE /*with_classe*/ );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_users_base['id_ent'][$DB_ROW['user_id']]    = $DB_ROW['user_id_ent'];
@@ -710,7 +710,7 @@ if($action=='COPY_id_lcs_TO_id_ent')
 	}
 	require(CHEMIN_FICHIER_WS_LCS); // Charge la fonction "recuperer_infos_user_LCS()"
 	// On récupère le contenu de la base, on va passer les users en revue un par un
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 1 /*only_actuels*/ , TRUE /*with_classe*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('eleve','parent','professeur','directeur') , 1 /*only_actuels*/ , 'user_id,user_sconet_id,user_sconet_elenoet,user_id_ent,user_nom,user_prenom,user_profil' /*liste_champs*/ , TRUE /*with_classe*/ );
 	// Pour chaque user de la base, rechercher son uid dans le LCS
 	$lignes_ras     = '';
 	$lignes_modif   = '';
@@ -869,7 +869,7 @@ if( ($action=='COPY_id_argos_profs_TO_id_ent') || ($action=='COPY_id_argos_eleve
 	$tab_users_base['info']   = array();
 	$profil      = ($qui=='profs') ? array('professeur','directeur') : substr($qui,0,-1) ;
 	$with_classe = ($qui=='profs') ? FALSE : TRUE ;
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 1 /*only_actuels*/ , $with_classe );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 1 /*only_actuels*/ , 'user_id,user_id_ent,user_nom,user_prenom,user_profil' /*liste_champs*/ , $with_classe );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_users_base['id_ent'][$DB_ROW['user_id']] = $DB_ROW['user_id_ent'];

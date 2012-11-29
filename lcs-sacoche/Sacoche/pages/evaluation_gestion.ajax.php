@@ -39,8 +39,8 @@ $ref            = (isset($_POST['f_ref']))             ? Clean::texte($_POST['f_
 $date           = (isset($_POST['f_date']))            ? Clean::texte($_POST['f_date'])                  : '';
 $date_fr        = (isset($_POST['f_date_fr']))         ? Clean::texte($_POST['f_date_fr'])               : '';
 $date_mysql     = (isset($_POST['f_date_mysql']))      ? Clean::texte($_POST['f_date_mysql'])            : '';
-$date_visible   = (isset($_POST['f_date_visible']))    ? Clean::texte($_POST['f_date_visible'])          : ''; // Peut valoir une date (JJ/MM/AAAA) ou "identique"
-$date_autoeval  = (isset($_POST['f_date_autoeval']))   ? Clean::texte($_POST['f_date_autoeval'])         : ''; // Peut valoir une date (JJ/MM/AAAA) ou "sans objet"
+$date_visible   = (isset($_POST['f_date_visible']))    ? Clean::texte($_POST['f_date_visible'])          : ''; // JJ/MM/AAAA
+$date_autoeval  = (isset($_POST['f_date_autoeval']))   ? Clean::texte($_POST['f_date_autoeval'])         : ''; // JJ/MM/AAAA mais peut valoir 00/00/0000
 $description    = (isset($_POST['f_description']))     ? Clean::texte($_POST['f_description'])           : '';
 $doc_sujet      = (isset($_POST['f_doc_sujet']))       ? Clean::texte($_POST['f_doc_sujet'])             : ''; // Pas Clean::fichier() car transmis pour "modifier" et "dupliquer" avec le chemin complet http://...
 $doc_corrige    = (isset($_POST['f_doc_corrige']))     ? Clean::texte($_POST['f_doc_corrige'])           : ''; // Pas Clean::fichier() car transmis pour "modifier" et "dupliquer" avec le chemin complet http://...
@@ -145,8 +145,8 @@ if( ($action=='lister_evaluations') && $type && ( ($type=='selection') || ($aff_
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$date_affich   = convert_date_mysql_to_french($DB_ROW['devoir_date']);
-		$date_visible  = ($DB_ROW['devoir_date']==$DB_ROW['devoir_visible_date']) ? 'identique' : convert_date_mysql_to_french($DB_ROW['devoir_visible_date']);
-		$date_autoeval = ($DB_ROW['devoir_autoeval_date']=='0000-00-00') ? 'sans objet' : convert_date_mysql_to_french($DB_ROW['devoir_autoeval_date']);
+		$date_visible  = ($DB_ROW['devoir_date']==$DB_ROW['devoir_visible_date']) ? 'identique'  : convert_date_mysql_to_french($DB_ROW['devoir_visible_date']) ;
+		$date_autoeval = ($DB_ROW['devoir_autoeval_date']===NULL)                 ? 'sans objet' : convert_date_mysql_to_french($DB_ROW['devoir_autoeval_date']) ;
 		$ref = $DB_ROW['devoir_id'].'_'.strtoupper($DB_ROW['groupe_type']{0}).$DB_ROW['groupe_id'];
 		$cs = ($DB_ROW['items_nombre']>1) ? 's' : '';
 		$us = ($type=='groupe') ? '' : ( ($DB_ROW['users_nombre']>1) ? 's' : '' );
@@ -1209,7 +1209,7 @@ if( (isset($_GET['f_action'])) && ($_GET['f_action']=='importer_saisie_csv') )
 		exit('Erreur : '.$result);
 	}
 	$contenu_csv = file_get_contents(CHEMIN_DOSSIER_IMPORT.FileSystem::$file_saved_name);
-	$contenu_csv = To::utf8($contenu_csv); // Mettre en UTF-8 si besoin
+	$contenu_csv = To::deleteBOM(To::utf8($contenu_csv)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu_csv); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	// Pas de ligne d'en-tête à supprimer

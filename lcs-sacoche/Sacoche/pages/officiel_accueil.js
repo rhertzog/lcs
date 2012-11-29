@@ -109,7 +109,7 @@ $(document).ready
 		(
 			function()
 			{
-				if(!$('#form_gestion input[type=radio]:checked').length)
+				if(!$('#cadre_statut input[type=radio]:checked').length)
 				{
 					$('#ajax_msg_gestion').removeAttr("class").addClass("erreur").html("Aucun statut coché !");
 					return false;
@@ -120,10 +120,10 @@ $(document).ready
 					$('#ajax_msg_gestion').removeAttr("class").addClass("erreur").html("Aucune case du tableau cochée !");
 					return false;
 				}
-				$('#ajax_msg_gestion').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_gestion').removeAttr("class").addClass("loader").html("Envoi&hellip;"); // volontairement court
 				$('#listing_ids').val(listing_id);
 				$('#csrf').val(CSRF);
-				var form = document.getElementById('form_gestion');
+				var form = document.getElementById('cadre_statut');
 				form.action = './index.php?page=officiel&section=accueil_'+BILAN_TYPE;
 				form.method = 'post';
 				form.submit();
@@ -180,8 +180,8 @@ $(document).ready
 					if( (memo_section=='officiel_saisir') || (memo_section=='officiel_consulter') )
 					{
 						// Masquer le tableau ; Afficher la zone action et charger son contenu
-						$('#form_gestion , #table_bilans , #puces_secondaires').hide(0);
-						$('#zone_action_eleve').html('<label class="loader">Connexion au serveur&hellip;</label>').show(0);
+						$('#cadre_statut , #table_bilans , #puces_secondaires').hide(0);
+						$('#zone_action_eleve').html('<label class="loader">Envoi en cours&hellip;</label>').show(0);
 						$.ajax
 						(
 							{
@@ -210,6 +210,11 @@ $(document).ready
 										memo_eleve_first = $('#go_selection_eleve option:first').val();
 										memo_eleve_last  = $('#go_selection_eleve option:last').val();
 										masquer_element_navigation_choix_eleve();
+										if($('#voir_photo').length==0)
+										{
+											charger_photo_eleve();
+										}
+										$('#cadre_photo').show(0);
 									}
 								}
 							}
@@ -218,7 +223,7 @@ $(document).ready
 					else if(memo_section=='officiel_examiner')
 					{
 						// Masquer le tableau ; Afficher la zone de choix des rubriques
-						$('#form_gestion , #table_bilans , #puces_secondaires').hide(0);
+						$('#cadre_statut , #table_bilans , #puces_secondaires').hide(0);
 						$('#zone_action_classe h2').html('Recherche de saisies manquantes');
 						$('#zone_chx_rubriques').show(0);
 					}
@@ -227,7 +232,7 @@ $(document).ready
 						// Masquer le tableau ; Afficher la zone de choix des élèves, et si les bulletins sont déjà imprimés
 						var titre = (memo_objet=='imprimer') ? 'Imprimer le bilan (PDF)' : 'Consulter un bilan imprimé (PDF)' ;
 						configurer_form_choix_classe();
-						$('#form_gestion , #table_bilans , #puces_secondaires').hide(0);
+						$('#cadre_statut , #table_bilans , #puces_secondaires').hide(0);
 						$('#zone_action_classe h2').html(titre);
 						$('#report_periode').html( $('#periode_'+memo_periode).text()+' :' );
 						$('#zone_action_classe , #zone_'+memo_objet).show(0);
@@ -248,7 +253,8 @@ $(document).ready
 			function()
 			{
 				$('#zone_action_eleve').html("&nbsp;").hide(0);
-				$('#form_gestion , #table_bilans , #puces_secondaires').show(0);
+				$('#cadre_photo').hide(0);
+				$('#cadre_statut , #table_bilans , #puces_secondaires').show(0);
 				return(false);
 			}
 		);
@@ -258,7 +264,7 @@ $(document).ready
 			function()
 			{
 				$('#zone_chx_rubriques').hide(0);
-				$('#form_gestion , #table_bilans , #puces_secondaires').show(0);
+				$('#cadre_statut , #table_bilans , #puces_secondaires').show(0);
 				return(false);
 			}
 		);
@@ -273,7 +279,7 @@ $(document).ready
 				$('#zone_'+memo_objet+' table tbody').html('<tr><td class="nu" colspan="'+colspan+'"></td></tr>');
 				$('#zone_action_classe , #zone_imprimer , #zone_voir_archive').css('display','none'); // .hide(0) ne fonctionne pas bien ici...
 				$('#ajax_msg_imprimer , #ajax_msg_voir_archive').removeAttr("class").html("");
-				$('#form_gestion , #table_bilans , #puces_secondaires').show(0);
+				$('#cadre_statut , #table_bilans , #puces_secondaires').show(0);
 				return(false);
 			}
 		);
@@ -290,7 +296,7 @@ $(document).ready
 			}
 			memo_eleve = eleve_id;
 			$('#form_choix_eleve button , #form_choix_eleve select , #zone_resultat_eleve button').prop('disabled',true);
-			$('#zone_resultat_eleve').html('<label class="loader">Connexion au serveur&hellip;</label>');
+			$('#zone_resultat_eleve').html('<label class="loader">Envoi en cours&hellip;</label>');
 			$.ajax
 			(
 				{
@@ -316,6 +322,10 @@ $(document).ready
 						{
 							$('#go_selection_eleve option[value='+memo_eleve+']').prop('selected',true);
 							masquer_element_navigation_choix_eleve();
+							if($('#voir_photo').length==0)
+							{
+								charger_photo_eleve();
+							}
 							var position_script = responseHTML.lastIndexOf('<SCRIPT>');
 							if(position_script==-1)
 							{
@@ -426,17 +436,18 @@ $(document).ready
 		// [officiel_saisir|officiel_consulter] Clic sur le bouton pour imprimer ses appréciations
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		$('#imprimer_appreciations').live // live est utilisé pour prendre en compte les nouveaux éléments créés
+		$('#imprimer_appreciations_perso , #imprimer_appreciations_all').live // live est utilisé pour prendre en compte les nouveaux éléments créés
 		('click',
 			function()
 			{
+				var f_action = $(this).attr('id');
 				$('#form_choix_eleve button , #form_choix_eleve select , #zone_resultat_eleve button').prop('disabled',true);
 				$.ajax
 				(
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'csrf='+CSRF+'&f_action='+'imprimer_appreciations'+'&f_bilan_type='+BILAN_TYPE+'&f_classe='+memo_classe+'&f_groupe='+memo_groupe+'&f_periode='+memo_periode+'&'+$('#form_hidden').serialize(),
+						data : 'csrf='+CSRF+'&f_action='+f_action+'&f_bilan_type='+BILAN_TYPE+'&f_classe='+memo_classe+'&f_groupe='+memo_groupe+'&f_periode='+memo_periode+'&'+$('#form_hidden').serialize(),
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
@@ -487,8 +498,8 @@ $(document).ready
 			if(memo_rubrique_type=='note')
 			{
 				memo_html = obj_lieu.closest('tr').html();
-				var pourcent = (NOTE_SUR_20) ? '' : '%' ;
-				var texte    = (NOTE_SUR_20) ? 'en note sur 20' : 'en pourcentage' ;
+				var pourcent = (CONVERSION_SUR_20) ? '' : '%' ;
+				var texte    = (CONVERSION_SUR_20) ? 'en note sur 20' : 'en pourcentage' ;
 				var formulaire_saisie = '<div><b>Moyenne '+texte+' [ '+$('#go_selection_eleve option:selected').text()+' ] :</b> <input id="f_moyenne" name="f_moyenne" type="text" size="3" value="" />'+pourcent+'</div>'
 															+ '<div><button id="valider_note_precedent" type="button" class="valider_prev">Précédent</button> <button id="valider_note" type="button" class="valider">Valider</button> <button id="valider_note_suivant" type="button" class="valider_next">Suivant</button> <button id="annuler_note_precedent" type="button" class="annuler_prev">Précédent</button> <button id="annuler_note" type="button" class="annuler">Annuler</button> <button id="annuler_note_suivant" type="button" class="annuler_next">Suivant</button><label id="ajax_msg_note">&nbsp;</label></div>';
 			}
@@ -512,7 +523,7 @@ $(document).ready
 			}
 			if(memo_rubrique_type=='note')
 			{
-				var valeur = (NOTE_SUR_20) ? parseFloat(champ_contenu,10) : parseInt(champ_contenu.substr(0,champ_contenu.length-1),10) ;
+				var valeur = (CONVERSION_SUR_20) ? parseFloat(champ_contenu,10) : parseInt(champ_contenu.substr(0,champ_contenu.length-1),10) ;
 				valeur = (isNaN(valeur)) ? '' : valeur ;
 				$('#f_moyenne').focus().val(valeur);
 			}
@@ -600,7 +611,7 @@ $(document).ready
 						$('#f_moyenne').focus();
 						return false;
 					}
-					if( (note<0) || ((note>40)&&(NOTE_SUR_20)) || ((note>200)&&(!NOTE_SUR_20)) ) // Le code VV pouvant être configuré jusqu'à 200, des moyennes peuvent théoriquement atteindre des sommets...
+					if( (note<0) || ((note>40)&&(CONVERSION_SUR_20)) || ((note>200)&&(!CONVERSION_SUR_20)) ) // Le code VV pouvant être configuré jusqu'à 200, des moyennes peuvent théoriquement atteindre des sommets...
 					{
 						$('#ajax_msg_'+memo_rubrique_type).removeAttr("class").addClass("erreur").html("Valeur incorrecte !");
 						$('#f_moyenne').focus();
@@ -610,7 +621,7 @@ $(document).ready
 				memo_auto_next = ($(this).attr('id')=='valider_'+memo_rubrique_type+'_suivant')   ? true : false ;
 				memo_auto_prev = ($(this).attr('id')=='valider_'+memo_rubrique_type+'_precedent') ? true : false ;
 				$('#form_choix_eleve button , #form_choix_eleve select , #zone_resultat_eleve button').prop('disabled',true);
-				$('#ajax_msg_'+memo_rubrique_type).removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_'+memo_rubrique_type).removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -764,7 +775,7 @@ $(document).ready
 				}
 				$('#f_listing_rubriques').val(listing_id);
 				$('#zone_chx_rubriques button').prop('disabled',true);
-				$('#ajax_msg_recherche').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_recherche').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -809,7 +820,7 @@ $(document).ready
 
 		function imprimer(etape)
 		{
-			$('#ajax_msg_imprimer').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip; Étape "+etape+"/4.");
+			$('#ajax_msg_imprimer').removeAttr("class").addClass("loader").html("Envoi en cours&hellip; Étape "+etape+"/4.");
 			$.ajax
 			(
 				{
@@ -883,7 +894,7 @@ $(document).ready
 			$('#zone_'+memo_objet+' table tbody').html('<tr><td class="nu" colspan="'+colspan+'"></td></tr>');
 			$('#zone_voir_archive table tbody').html('<tr><td class="nu" colspan="2"></td></tr>');
 			$('#form_choix_classe button , #form_choix_classe select , #valider_imprimer').prop('disabled',true);
-			$('#ajax_msg_'+memo_objet).removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+			$('#ajax_msg_'+memo_objet).removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 			$.ajax
 			(
 				{
@@ -986,7 +997,7 @@ $(document).ready
 			else if(memo_section=='officiel_examiner')
 			{
 				$('#form_choix_classe button , #form_choix_classe select').prop('disabled',true);
-				$('#zone_resultat_classe').html('<label class="loader">Connexion au serveur&hellip;</label>');
+				$('#zone_resultat_classe').html('<label class="loader">Envoi en cours&hellip;</label>');
 				$.ajax
 				(
 					{
@@ -1109,7 +1120,7 @@ $(document).ready
 			function()
 			{
 				$('#zone_signaler button').prop('disabled',true);
-				$('#ajax_msg_signaler').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_signaler').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -1190,6 +1201,58 @@ $(document).ready
 				enabled: false
 			}
 		};
+
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Afficher / Masquer la photo d'un élève (module bulletin)
+		// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		function charger_photo_eleve()
+		{
+			$("#cadre_photo").html('<label id="ajax_photo" class="loader">Envoi en cours&hellip;</label>');
+			$.ajax
+			(
+				{
+					type : 'GET',
+					url : 'ajax.php?page=calque_voir_photo',
+					data : 'user_id='+memo_eleve,
+					dataType : "html",
+					error : function(jqXHR, textStatus, errorThrown)
+					{
+						$('#ajax_photo').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
+						leave_erreur = true;
+					},
+					success : function(responseHTML)
+					{
+						if(responseHTML.substring(0,5)=='<img ')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+						{
+							$('#cadre_photo').html('<div>'+responseHTML+'</div><button id="fermer_calque_photo" type="button" class="annuler">Fermer</button>');
+							leave_erreur = false;
+						}
+						else
+						{
+							$('#ajax_photo').removeAttr("class").addClass("alerte").html(responseHTML);
+							leave_erreur = true;
+						}
+					}
+				}
+			);
+		}
+
+		$('#voir_photo').live
+		('click',
+			function()
+			{
+				charger_photo_eleve();
+			}
+		);
+
+		$('#fermer_calque_photo').live
+		('click',
+			function()
+			{
+				$('#cadre_photo').html('<button id="voir_photo" type="button" class="voir_photo">Photo</button>');
+			}
+		);
 
 	}
 );

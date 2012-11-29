@@ -31,6 +31,13 @@ $(document).ready
 	function()
 	{
 
+		// Ajout alerte si usage frame / iframe
+		if(top.frames.length!=0)
+		{
+			$('h1').after('<hr /><div class="probleme">L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" class="lien_ext">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a></div>');
+			format_liens('#cadre_milieu');
+		}
+
 		function curseur()
 		{
 			if($("#f_profil").val()=='webmestre')
@@ -81,7 +88,7 @@ $(document).ready
 			function()
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -119,7 +126,7 @@ $(document).ready
 			function()
 			{
 				$('#f_changer').hide();
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -270,7 +277,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 			}
 			return readytogo;
 		}

@@ -224,7 +224,7 @@ function memoriser_selection_matieres_items(selection_items_nom)
 		return false;
 	}
 	var compet_liste  = compet_liste.substring(0,compet_liste.length-1);
-	$('#ajax_msg_memo').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+	$('#ajax_msg_memo').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 	$.ajax
 	(
 		{
@@ -984,7 +984,7 @@ $(document).ready
 		}
 
 		/**
-		 * Ajoute au document un calque qui est utilisé pour afficher un calendrier ou une photo d'un élève
+		 * Ajoute au document un calque qui est utilisé pour afficher un calendrier
 		 */
 		$('<div id="calque"></div>').appendTo(document.body).hide();
 		var leave_erreur = false;
@@ -1016,7 +1016,7 @@ $(document).ready
 				posY = e.pageY-5;
 				$("#calque").css('left',posX + 'px');
 				$("#calque").css('top',posY + 'px');
-				$("#calque").html('<label id="ajax_alerte_calque" class="loader">Connexion au serveur&hellip;</label>').show();
+				$("#calque").html('<label id="ajax_alerte_calque" class="loader">Envoi en cours&hellip;</label>').show();
 				// Charger en Ajax le contenu du calque
 				$.ajax
 				(
@@ -1033,52 +1033,6 @@ $(document).ready
 						success : function(responseHTML)
 						{
 							if(responseHTML.substring(0,4)=='<h5>')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
-							{
-								$('#calque').html(responseHTML);
-								leave_erreur = false;
-							}
-							else
-							{
-								$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html(responseHTML);
-								leave_erreur = true;
-							}
-						}
-					}
-				);
-			}
-		);
-
-		/**
-		 * Afficher le calque et le compléter : photo élève
-		 */
-		$('q.voir_photo').live
-		('click',
-			function(e)
-			{
-				// Récupérer les infos associées
-				user_id = $(this).prev('select').children('option:selected').val();   // id de l'élève
-				// Afficher le calque
-				posX = e.pageX-40;
-				posY = e.pageY-178;
-				$("#calque").css('left',posX + 'px');
-				$("#calque").css('top',posY + 'px');
-				$("#calque").html('<label id="ajax_alerte_calque" class="loader">Connexion au serveur&hellip;</label>').show();
-				// Charger en Ajax le contenu du calque
-				$.ajax
-				(
-					{
-						type : 'GET',
-						url : 'ajax.php?page=calque_voir_photo',
-						data : 'user_id='+user_id,
-						dataType : "html",
-						error : function(jqXHR, textStatus, errorThrown)
-						{
-							$('#ajax_alerte_calque').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
-							leave_erreur = true;
-						},
-						success : function(responseHTML)
-						{
-							if(responseHTML.substring(0,5)=='<div ')	// Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
 							{
 								$('#calque').html(responseHTML);
 								leave_erreur = false;
@@ -1121,7 +1075,7 @@ $(document).ready
 		('click',
 			function()
 			{
-				retour = $(this).attr("href");
+				retour = $(this).attr("href").substring(0,10); // substring() car si l'identifiant de session est passé dans l'URL (session.use-trans-sid à ON) on peut récolter un truc comme "14/08/2012?SACoche-session=507ac2c6e1007ce8d311ab221fb41aeabaf879f79317c" !
 				retour = retour.replace(/\-/g,"/"); // http://javascript.developpez.com/sources/?page=tips#replaceall
 				$("#"+champ).val( retour ).focus();
 				$("#calque").html('&nbsp;').hide();
@@ -1224,7 +1178,7 @@ $(document).ready
 			function()
 			{
 				$('#form_demande_evaluation button').prop('disabled',true);
-				$('#ajax_msg_confirmer_demande').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_confirmer_demande').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{

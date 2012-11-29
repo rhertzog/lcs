@@ -132,7 +132,7 @@ if($action=='importer_csv')
 	}
 	// Tester si le contenu est correct, et mémoriser les infos en session
 	$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_csv_nom);
-	$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+	$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	unset($tab_lignes[0]); // Supprimer la 1e ligne
@@ -187,6 +187,12 @@ if($action=='importer_csv')
 			}
 			// Vérifier que l'adresse de courriel est correcte
 			if(!tester_courriel($contact_courriel))
+			{
+				$tab_erreur['mail']['nb']++;
+			}
+			// Vérifier le domaine du serveur mail
+			$mail_domaine = tester_domaine_courriel_valide($contact_courriel);
+			if($mail_domaine!==TRUE)
 			{
 				$tab_erreur['mail']['nb']++;
 			}
@@ -323,7 +329,7 @@ if( ($action=='importer') && $num && $max && ($num<$max) )
 	// Créer le fichier de connexion de la base de données de la structure
 	// Créer la base de données de la structure
 	// Créer un utilisateur pour la base de données de la structure et lui attribuer ses droits
-	$base_id = ajouter_structure($import_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel,$date);
+	$base_id = Webmestre::ajouter_structure($import_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel,$date);
 	// Créer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
 	$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 	foreach($tab_sous_dossier as $sous_dossier)
@@ -361,7 +367,7 @@ if( ($action=='supprimer') && $nb_bases )
 {
 	foreach($tab_base_id as $base_id)
 	{
-		supprimer_multi_structure($base_id);
+		Webmestre::supprimer_multi_structure($base_id);
 	}
 	exit('<ok>');
 }

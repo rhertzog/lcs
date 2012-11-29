@@ -99,14 +99,25 @@ $tab_etapes['base-eleves_eleves']             .= '<li id="step9">Étape 5 - Nett
 
 if( $step==10 )
 {
-	// Nom du cichier à extraire si c'est un fichier zippé
+	// Nom du fichier à extraire si c'est un fichier zippé
+	$alerte = '';
 	if($action=='sconet_eleves')
 	{
 		$nom_fichier_extrait = 'ElevesSansAdresses.xml';
+		if( (isset($_FILES['userfile']['name'])) && (strpos($_FILES['userfile']['name'],'ElevesAvecAdresses')) )
+		{
+			$nom_fichier_extrait = 'ElevesAvecAdresses.xml';
+			$alerte = '<p class="danger">Vous avez fourni le fichier <span class="u b">avec</span> adresses ! Vous pouvez toutefois poursuivre&hellip;</p>';
+		}
 	}
 	elseif($action=='sconet_parents')
 	{
 		$nom_fichier_extrait = 'ResponsablesAvecAdresses.xml';
+		if( (isset($_FILES['userfile']['name'])) && (strpos($_FILES['userfile']['name'],'ElevesSansAdresses')) )
+		{
+			$nom_fichier_extrait = 'ResponsablesSansAdresses.xml';
+			$alerte = '<p class="danger">Vous avez fourni le fichier <span class="u b">sans</span> adresses ! Si vous poursuivez, sachez que les adresses ne seront pas trouvées&hellip;</p>';
+		}
 	}
 	else
 	{
@@ -123,6 +134,7 @@ if( $step==10 )
 	echo'<hr />';
 	echo'<fieldset>';
 	echo'<div><label class="valide">Votre fichier a été correctement réceptionné.</label></div>';
+	echo $alerte;
 	echo'<p class="li"><a href="#step20" id="passer_etape_suivante">Passer à l\'étape 2.</a><label id="ajax_msg">&nbsp;</label></p>';
 	echo'</fieldset>';
 	exit();
@@ -176,10 +188,19 @@ if( $step==20 )
 		{
 			exit('Erreur : le fichier transmis n\'est pas un XML valide !');
 		}
-		$uai = $xml->PARAMETRES->UAJ;
-		if($uai===FALSE)
+		$editeur_prive_edt = (string)$xml->PARAMETRES->APPLICATION_SOURCE;
+		if($editeur_prive_edt)
 		{
-			exit('Erreur : le fichier transmis n\'est pas correct (erreur de numéro UAI) !');
+			exit('Erreur : le fichier transmis est issu d\'un éditeur privé d\'emploi du temps, pas de STS !');
+		}
+		$uai = (string)$xml->PARAMETRES->UAJ->attributes()->CODE;
+		if(!$uai)
+		{
+			exit('Erreur : le fichier transmis ne comporte pas de numéro UAI !');
+		}
+		if($uai!=$_SESSION['WEBMESTRE_UAI'])
+		{
+			exit('Erreur : le fichier transmis est issu de l\'établissement '.$uai.' et non '.$_SESSION['WEBMESTRE_UAI'].' !');
 		}
 		/*
 		 * Les matières des profs peuvent être récupérées de 2 façons :
@@ -507,10 +528,14 @@ if( $step==20 )
 		{
 			exit('Erreur : le fichier transmis n\'est pas un XML valide !');
 		}
-		$uai = $xml->PARAMETRES->UAJ;
-		if($uai===FALSE)
+		$uai = (string)$xml->PARAMETRES->UAJ;
+		if(!$uai)
 		{
-			exit('Erreur : le fichier transmis n\'est pas correct (erreur de numéro UAI) !');
+			exit('Erreur : le fichier transmis ne comporte pas de numéro UAI !');
+		}
+		if($uai!=$_SESSION['WEBMESTRE_UAI'])
+		{
+			exit('Erreur : le fichier transmis est issu de l\'établissement '.$uai.' et non '.$_SESSION['WEBMESTRE_UAI'].' !');
 		}
 		//
 		// On recense les adresses dans un tableau temporaire.
@@ -544,7 +569,7 @@ if( $step==20 )
 		// L'import Sconet peut apporter beaucoup de parents rattachés à des élèves sortis de l'établissement et encore présents dans le fichier.
 		// Alors on récupère la liste des id_sconet des élèves actuels et on contrôle par la suite qu'il y en a au moins un dans la liste des enfants du parent.
 		$tab_eleves_actuels = array();
-		$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( 'eleve' /*profil*/ , 1 /*only_actuels*/ , FALSE /*with_classe*/ , FALSE /*tri_statut*/ );
+		$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( 'eleve' /*profil*/ , 1 /*only_actuels*/ , 'user_sconet_id' /*liste_champs*/ , FALSE /*with_classe*/ , FALSE /*tri_statut*/ );
 		foreach($DB_TAB as $DB_ROW)
 		{
 			$tab_eleves_actuels[$DB_ROW['user_sconet_id']] = TRUE;
@@ -587,7 +612,7 @@ if( $step==20 )
 		// Étape 2d - Extraction tableur_professeurs_directeurs
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_dest);
-		$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+		$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 		$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 		$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 		unset($tab_lignes[0]); // Supprimer la 1e ligne
@@ -665,7 +690,7 @@ if( $step==20 )
 		// Étape 2e - Extraction tableur_eleves
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_dest);
-		$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+		$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 		$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 		$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 		unset($tab_lignes[0]); // Supprimer la 1e ligne
@@ -730,7 +755,7 @@ if( $step==20 )
 		// Étape 2f - Extraction base-eleves_eleves
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_dest);
-		$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+		$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 		$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 		$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 		// Utiliser la 1e ligne pour repérer les colonnes intéressantes
@@ -870,6 +895,10 @@ if( $step==20 )
 			$s = ($nombre>1) ? 's' : '' ;
 			echo'<p><label class="valide">'.$nombre.' '.$tab_profil_libelle[$profil]['long'][min(2,$nombre)].' trouvé'.$s.'.</label></p>';
 		}
+	}
+	else if($action=='sconet_parents')
+	{
+		echo'<p><label class="alerte">Aucun parent trouvé ayant un enfant dans l\'établissement : importer d\'abord les élèves !</label></p>';
 	}
 	else
 	{
@@ -1363,7 +1392,7 @@ if( $step==51 )
 	$tab_users_base['adresse']    = array();
 	$profil = ($is_profil_eleve) ? 'eleve' : ( ($is_profil_parent) ? 'parent' : array('professeur','directeur') ) ;
 	$with_classe = ($is_profil_eleve) ? TRUE : FALSE ;
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 2 /*actuels_et_anciens*/ , $with_classe , FALSE /*tri_statut*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 2 /*actuels_et_anciens*/ , 'user_id,user_sconet_id,user_sconet_elenoet,user_reference,user_profil,user_nom,user_prenom,user_sortie_date' /*liste_champs*/ , $with_classe , FALSE /*tri_statut*/ );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$tab_users_base['sconet_id'][$DB_ROW['user_id']]  = $DB_ROW['user_sconet_id'];
@@ -1716,7 +1745,7 @@ if( $step==52 )
 	$nb_fin_ancien = 0;
 	$profil = ($is_profil_eleve) ? 'eleve' : ( ($is_profil_parent) ? 'parent' : array('professeur','directeur') ) ;
 	$with_classe = ($is_profil_eleve) ? TRUE : FALSE ;
-	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 2 /*actuels_et_anciens*/ , $with_classe , TRUE /*tri_statut*/ );
+	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( $profil , 2 /*actuels_et_anciens*/ , 'user_id,user_sconet_id,user_sconet_elenoet,user_reference,user_profil,user_nom,user_prenom,user_login,user_sortie_date' /*liste_champs*/ , $with_classe , TRUE /*tri_statut*/ );
 	foreach($DB_TAB as $DB_ROW)
 	{
 		$class       = (isset($tab_password[$DB_ROW['user_id']])) ? ' class="new"' : '' ;
@@ -1853,7 +1882,7 @@ if( $step==61 )
 		$tab_asso_prof_classe = array();
 		// Garder trace des identités des profs de la base
 		$tab_base_prof_identite = array();
-		// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=true $tab_base_classe[groupe_id]=groupe_nom
+		// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=TRUE $tab_base_classe[groupe_id]=groupe_nom
 		// En deux requêtes sinon on ne récupère pas les groupes sans utilisateurs affectés.
 		$tab_base_classe = array();
 		$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_classes();
@@ -1910,7 +1939,7 @@ if( $step==61 )
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
 		// associations profs/PP
 		// ////////////////////////////////////////////////////////////////////////////////////////////////////
-		// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=true ($tab_base_classe déjà renseigné)
+		// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=TRUE ($tab_base_classe déjà renseigné)
 		$tab_base_affectation = array();
 		$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_jointure_professeurs_principaux();
 		foreach($DB_TAB as $DB_ROW)
@@ -2005,7 +2034,7 @@ if( $step==61 )
 	// ////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Garder trace des identités des utilisateurs de la base
 	$tab_base_user_identite = array();
-	// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=true et $tab_base_groupe[groupe_id]=groupe_nom
+	// On récupère le contenu de la base pour comparer : $tab_base_affectation[user_id_groupe_id]=TRUE et $tab_base_groupe[groupe_id]=groupe_nom
 	// En deux requêtes sinon on ne récupère pas les groupes sans utilisateurs affectés.
 	$tab_base_groupe = array();
 	$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_groupes();

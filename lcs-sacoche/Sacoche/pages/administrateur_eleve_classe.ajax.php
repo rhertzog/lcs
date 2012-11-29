@@ -41,7 +41,7 @@ if($action=='ajouter')
 	$classe_id = current($tab_select_classes); // un élève ne peut être affecté qu'à 1 seule classe : inutile de toutes les passer en revue
 	foreach($tab_select_eleves as $user_id)
 	{
-		DB_STRUCTURE_ADMINISTRATEUR::DB_modifier_liaison_user_groupe_par_admin($user_id,'eleve',$classe_id,'classe',true);
+		DB_STRUCTURE_ADMINISTRATEUR::DB_modifier_liaison_user_groupe_par_admin( $user_id , 'eleve' , $classe_id , 'classe' , TRUE );
 	}
 }
 
@@ -53,7 +53,7 @@ elseif($action=='retirer')
 	{
 		foreach($tab_select_classes as $classe_id)
 		{
-			DB_STRUCTURE_ADMINISTRATEUR::DB_modifier_liaison_user_groupe_par_admin($user_id,'eleve',$classe_id,'classe',false);
+			DB_STRUCTURE_ADMINISTRATEUR::DB_modifier_liaison_user_groupe_par_admin( $user_id , 'eleve' , $classe_id , 'classe' , FALSE );
 		}
 	}
 }
@@ -72,7 +72,7 @@ foreach($DB_TAB as $DB_ROW)
 	$tab_user[$DB_ROW['groupe_id']] = '';
 }
 // Récupérer la liste des élèves / classes
-$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( 'eleve' , 1 /*only_actuels*/ , FALSE /*with_classe*/ );
+$DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( 'eleve' , 1 /*only_actuels*/ , 'eleve_classe_id,user_nom,user_prenom' /*liste_champs*/ , FALSE /*with_classe*/ );
 foreach($DB_TAB as $DB_ROW)
 {
 	$tab_user[$DB_ROW['eleve_classe_id']] .= html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'<br />';

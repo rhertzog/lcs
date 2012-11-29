@@ -75,11 +75,17 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
 			exit('Erreur : numéro UAI déjà utilisé !');
 		}
 	}
+	// Vérifier le domaine du serveur mail
+	$mail_domaine = tester_domaine_courriel_valide($contact_courriel);
+	if($mail_domaine!==TRUE)
+	{
+		exit('Erreur avec le domaine '.$mail_domaine.' !');
+	}
 	// Insérer l'enregistrement dans la base du webmestre
 	// Créer le fichier de connexion de la base de données de la structure
 	// Créer la base de données de la structure
 	// Créer un utilisateur pour la base de données de la structure et lui attribuer ses droits
-	$base_id = ajouter_structure($base_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel);
+	$base_id = Webmestre::ajouter_structure($base_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel);
 	// Créer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
 	$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 	foreach($tab_sous_dossier as $sous_dossier)
@@ -109,7 +115,7 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
 	// Et lui envoyer un courriel
 	if($courriel_envoi)
 	{
-		$texte = contenu_courriel_inscription( $base_id , $denomination , $contact_nom , $contact_prenom , 'admin' , $password , URL_DIR_SACOCHE );
+		$texte = Webmestre::contenu_courriel_inscription( $base_id , $denomination , $contact_nom , $contact_prenom , 'admin' , $password , URL_DIR_SACOCHE );
 		$courriel_bilan = Sesamail::mail( $contact_courriel , 'Création compte' , $texte );
 		if(!$courriel_bilan)
 		{
@@ -182,7 +188,7 @@ if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisati
 if( ($action=='lister_admin') && $base_id )
 {
 	charger_parametres_mysql_supplementaires($base_id);
-	exit( Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_administrateurs_etabl() , $select_nom=false , $option_first='non' , $selection=false , $optgroup='non') );
+	exit( Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_administrateurs_etabl() , $select_nom=FALSE , $option_first='non' , $selection=FALSE , $optgroup='non') );
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +221,7 @@ if( ($action=='initialiser_mdp') && $base_id && $admin_id )
 	$admin_password = fabriquer_mdp();
 	DB_STRUCTURE_WEBMESTRE::DB_modifier_admin_mdp($admin_id,crypter_mdp($admin_password));
 	// Envoyer un courriel au contact
-	$courriel_contenu = contenu_courriel_nouveau_mdp( $base_id , $denomination , $contact_nom , $contact_prenom , $admin_nom , $admin_prenom , $admin_login , $admin_password , URL_DIR_SACOCHE );
+	$courriel_contenu = Webmestre::contenu_courriel_nouveau_mdp( $base_id , $denomination , $contact_nom , $contact_prenom , $admin_nom , $admin_prenom , $admin_login , $admin_password , URL_DIR_SACOCHE );
 	$courriel_bilan = Sesamail::mail( $contact_courriel , 'Modification mdp administrateur' , $courriel_contenu );
 	if(!$courriel_bilan)
 	{
@@ -234,7 +240,7 @@ if( ($action=='initialiser_mdp') && $base_id && $admin_id )
 
 if( ($action=='supprimer') && $base_id )
 {
-	supprimer_multi_structure($base_id);
+	Webmestre::supprimer_multi_structure($base_id);
 	exit('<ok>');
 }
 
@@ -247,7 +253,7 @@ if( ($action=='supprimer') && $listing_base_id )
 	$tab_base_id = array_filter( Clean::map_entier( explode(',',$listing_base_id) ) , 'positif' );
 	foreach($tab_base_id as $base_id)
 	{
-		supprimer_multi_structure($base_id);
+		Webmestre::supprimer_multi_structure($base_id);
 	}
 	exit('<ok>');
 }

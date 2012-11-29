@@ -26,6 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+if(empty($page_maitre)) {exit('Ce fichier ne peut être appelé directement !');}
 
 // Indication des profils ayant accès à cette page
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_profils.php'); // Charge $tab_profil_libelle[$profil][court|long][1|2]
@@ -56,7 +57,7 @@ $tab_colonne = array();
 
 // On récupère la liste des matières utilisées par l'établissement
 $DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_matieres_etablissement( TRUE /*order_by_name*/ );
-$nb_matieres = !empty($DB_TAB);
+$nb_matieres = !empty($DB_TAB) ? count($DB_TAB) : 0 ;
 if(!$nb_matieres)
 {
 	echo'<p><span class="danger">Aucune matière associée à l\'établissement !</span></p>';
@@ -72,7 +73,7 @@ else
 	}
 	// On récupère la liste des niveaux utilisés par l'établissement
 	$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(TRUE /*with_specifiques*/);
-	$nb_niveaux = !empty($DB_TAB);
+	$nb_niveaux = !empty($DB_TAB) ? count($DB_TAB) : 0 ;
 	if(!$nb_niveaux)
 	{
 		echo'<p><span class="danger">Aucun niveau n\'est rattaché à l\'établissement !</span></p>';
@@ -101,28 +102,29 @@ else
 			foreach($DB_TAB as $DB_ROW)
 			{
 				// Définition de $methode_calcul_texte
+				$texte_retroactif = ($DB_ROW['referentiel_calcul_retroactif']=='non') ? '(sur la période)' : '(rétroactivement)' ;
 				if($DB_ROW['referentiel_calcul_limite']==1)	// si une seule saisie prise en compte
 				{
-					$methode_calcul_texte = 'Seule la dernière saisie compte.';
+					$methode_calcul_texte = 'Seule la dernière saisie compte '.$texte_retroactif.'.';
 				}
 				elseif($DB_ROW['referentiel_calcul_methode']=='classique')	// si moyenne classique
 				{
-					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Moyenne de toutes les saisies.' : 'Moyenne des '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies.';
+					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Moyenne de toutes les saisies '.$texte_retroactif.'.' : 'Moyenne des '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies '.$texte_retroactif.'.';
 				}
 				elseif(in_array($DB_ROW['referentiel_calcul_methode'],array('geometrique','arithmetique')))	// si moyenne geometrique | arithmetique
 				{
 					$seize = (($DB_ROW['referentiel_calcul_methode']=='geometrique')&&($DB_ROW['referentiel_calcul_limite']==5)) ? 1 : 0 ;
 					$coefs = ($DB_ROW['referentiel_calcul_methode']=='arithmetique') ? substr('1/2/3/4/5/6/7/8/9/',0,2*$DB_ROW['referentiel_calcul_limite']-19) : substr('1/2/4/8/16/',0,2*$DB_ROW['referentiel_calcul_limite']-12+$seize) ;
-					$methode_calcul_texte = 'Les '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies &times;'.$coefs.'.';
+					$methode_calcul_texte = 'Les '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies &times;'.$coefs.' '.$texte_retroactif.'.';
 				}
 				elseif($DB_ROW['referentiel_calcul_methode']=='bestof1')	// si meilleure note
 				{
-					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Seule la meilleure saisie compte.' : 'Meilleure des '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies.';
+					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Seule la meilleure saisie compte '.$texte_retroactif.'.' : 'Meilleure des '.$DB_ROW['referentiel_calcul_limite'].' dernières saisies '.$texte_retroactif.'.';
 				}
 				elseif(in_array($DB_ROW['referentiel_calcul_methode'],array('bestof2','bestof3')))	// si 2 | 3 meilleures notes
 				{
 					$nb_best = (int)substr($DB_ROW['referentiel_calcul_methode'],-1);
-					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Moyenne des '.$nb_best.' meilleures saisies.' : 'Moyenne des '.$nb_best.' meilleures saisies parmi les '.$DB_ROW['referentiel_calcul_limite'].' dernières.';
+					$methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Moyenne des '.$nb_best.' meilleures saisies '.$texte_retroactif.'.' : 'Moyenne des '.$nb_best.' meilleures saisies parmi les '.$DB_ROW['referentiel_calcul_limite'].' dernières '.$texte_retroactif.'.';
 				}
 				$tab_colonne[$DB_ROW['matiere_id']][$DB_ROW['niveau_id']] = '<td class="hc">'.str_replace('◄DATE►',Html::date($DB_ROW['referentiel_partage_date']),$tab_partage[$DB_ROW['referentiel_partage_etat']]).'</td>'.'<td>'.$methode_calcul_texte.'</td>';
 			}

@@ -51,19 +51,19 @@ $liens_autres_profils = ($profil=='normal') ? '<a class="anti_h2" href="index.ph
 echo Browser::afficher_navigateurs_alertes();
 
 // Alerte si pas de javascript activé
-echo'<noscript><hr /><div class="danger">Vous devez activer le javascript dans votre navigateur pour utiliser <em>SACoche</em>.</div></noscript>';
+echo'<noscript><hr /><div class="probleme">Vous devez activer le javascript dans votre navigateur pour utiliser <em>SACoche</em>.</div></noscript>';
 
 // Alerte non déconnexion de l'ENT si deconnexion de SACoche depuis un compte connecté via un ENT
 if( (isset($_COOKIE[COOKIE_STRUCTURE])) && (isset($_COOKIE[COOKIE_AUTHMODE])) && ($_COOKIE[COOKIE_AUTHMODE]!='normal') )
 {
 	echo'<hr />';
-	echo'<div class="danger">Attention : vous n\'êtes pas déconnecté du service d\'authentification externe, on peut revenir dans <em>SACoche</em> sans s\'identifier ! Fermez votre navigateur ou <a href="index.php?page=public_logout_SSO&amp;base='.$_COOKIE[COOKIE_STRUCTURE].'">déconnectez-vous de ce service</a>.</div>';
+	echo'<div class="danger">Attention : vous n\'êtes pas déconnecté du service d\'authentification externe, on peut revenir dans <em>SACoche</em> sans s\'identifier !<br />Fermez votre navigateur ou <a href="index.php?page=public_logout_SSO&amp;base='.$_COOKIE[COOKIE_STRUCTURE].'">déconnectez-vous de ce service</a>.</div>';
 }
 
 // Supprimer le cookie avec le mode d'identification, servant à une reconnexion SSO, devenu inutile puisque déconnecté à présent.
 if(isset($_COOKIE[COOKIE_AUTHMODE]))
 {
-	setcookie(COOKIE_AUTHMODE,'',time()-42000,'');
+	setcookie( COOKIE_AUTHMODE /*name*/ , '' /*value*/, time()-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
 }
 ?>
 
@@ -82,7 +82,7 @@ if(isset($_COOKIE[COOKIE_AUTHMODE]))
 <ul class="puce">
 	<li><em>SACoche</em> peut être téléchargé et installé sur différents serveurs.</li>
 	<li>Cette installation (<?php echo (HEBERGEUR_INSTALLATION=='mono-structure') ? HEBERGEUR_INSTALLATION : DB_WEBMESTRE_PUBLIC::DB_compter_structure() ; ?>) a été effectuée par : <?php echo (HEBERGEUR_ADRESSE_SITE) ? '<a class="lien_ext" href="'.html(HEBERGEUR_ADRESSE_SITE).'">'.html(HEBERGEUR_DENOMINATION).'</a>' : html(HEBERGEUR_DENOMINATION); ?> (<?php echo Html::mailto(WEBMESTRE_COURRIEL,'SACoche','contact','Attention ! Si vous êtes élève, parent, professeur ou directeur, alors il ne faut pas contacter le webmestre du serveur, mais l\'administrateur de votre établissement qui a créé les comptes utilisateurs.'); ?>).</li>
-	<li><a class="lien_ext" href="<?php echo SERVEUR_CNIL ?>">Information CNIL</a>. Déclaration <?php echo intval(CNIL_NUMERO) ? 'n°'.CNIL_NUMERO : 'non renseignée' ; ?>.</li>
+	<li><a class="lien_ext" href="<?php echo SERVEUR_CNIL ?>">Informations CNIL</a>. Déclaration <?php echo intval(CNIL_NUMERO) ? 'n°'.CNIL_NUMERO : 'non renseignée' ; ?>.</li>
 </ul>
 
 <hr />

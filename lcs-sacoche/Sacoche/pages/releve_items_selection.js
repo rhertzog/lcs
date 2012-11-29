@@ -52,7 +52,7 @@ $(document).ready
 
 		function visibility_option_with_coef()
 		{
-			if( ($('#f_type_synthese').is(':checked')) || ($('#f_type_bulletin').is(':checked')) || ( ($('#f_type_individuel').is(':checked')) && ($('#f_bilan_MS').is(':checked')) ) )
+			if( ($('#f_type_synthese').is(':checked')) || ($('#f_type_bulletin').is(':checked')) || ( ($('#f_type_individuel').is(':checked')) && ($('#f_moyenne_scores').is(':checked')) ) )
 			{
 				$("#option_with_coef").attr("class","show");
 			}
@@ -88,17 +88,25 @@ $(document).ready
 			}
 		);
 
-		$('#f_bilan_MS , #f_bilan_PA').click
+		$('#f_etat_acquisition').click
 		(
 			function()
 			{
-				if( ($('#f_bilan_MS').is(':checked')) || ($('#f_bilan_PA').is(':checked')) )
+				$("#span_etat_acquisition").toggle();
+			}
+		);
+
+		$('#f_moyenne_scores , #f_pourcentage_acquis').click
+		(
+			function()
+			{
+				if( ($('#f_moyenne_scores').is(':checked')) || ($('#f_pourcentage_acquis').is(':checked')) )
 				{
-					$('label[for=f_conv_sur20]').css('visibility','visible');
+					$('label[for=f_conversion_sur_20]').css('visibility','visible');
 				}
 				else
 				{
-					$('label[for=f_conv_sur20]').css('visibility','hidden');
+					$('label[for=f_conversion_sur_20]').css('visibility','hidden');
 				}
 				visibility_option_with_coef();
 			}
@@ -249,7 +257,7 @@ $(document).ready
 				if(groupe_val)
 				{
 					groupe_type = $("#f_groupe option:selected").parent().attr('label');
-					$('#ajax_maj').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+					$('#ajax_maj').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 					maj_eleve(groupe_val,groupe_type);
 				}
 				else
@@ -265,7 +273,7 @@ $(document).ready
 
 		var choisir_compet = function()
 		{
-			// Ne pas changer ici la valeur de "mode" (qui est à "ajouter" ou "modifier" ou "dupliquer").
+			$('#f_selection_items option:first').prop('selected',true);
 			cocher_matieres_items( $('#f_compet_liste').val() );
 			$.fancybox( { 'href':'#zone_matieres_items' , onStart:function(){$('#zone_matieres_items').css("display","block");} , onClosed:function(){$('#zone_matieres_items').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
 		};
@@ -348,59 +356,61 @@ $(document).ready
 			{
 				rules :
 				{
-					'f_type[]'      : { required:true },
-					f_bilan_MS      : { required:false },
-					f_bilan_PA      : { required:false },
-					f_conv_sur20    : { required:false },
-					f_tri_objet     : { required:true },
-					f_tri_mode      : { required:true },
-					f_compet_nombre : { accept:'item|items' },
-					f_groupe        : { required:true },
-					'f_eleve[]'     : { required:true },
-					f_periode       : { required:true },
-					f_date_debut    : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
-					f_date_fin      : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
-					f_retroactif    : { required:true },
-					f_coef          : { required:false },
-					f_socle         : { required:false },
-					f_lien          : { required:false },
-					f_domaine       : { required:false },
-					f_theme         : { required:false },
-					f_orientation   : { required:true },
-					f_couleur       : { required:true },
-					f_legende       : { required:true },
-					f_marge_min     : { required:true },
-					f_pages_nb      : { required:true },
- 					f_cases_nb      : { required:true },
-					f_cases_larg    : { required:true }
+					'f_type[]'           : { required:true },
+					f_etat_acquisition   : { required:false },
+					f_moyenne_scores     : { required:false },
+					f_pourcentage_acquis : { required:false },
+					f_conversion_sur_20  : { required:false },
+					f_tri_objet          : { required:true },
+					f_tri_mode           : { required:true },
+					f_compet_nombre      : { accept:'item|items' },
+					f_groupe             : { required:true },
+					'f_eleve[]'          : { required:true },
+					f_periode            : { required:true },
+					f_date_debut         : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
+					f_date_fin           : { required:function(){return $("#f_periode").val()==0;} , dateITA:true },
+					f_retroactif         : { required:true },
+					f_coef               : { required:false },
+					f_socle              : { required:false },
+					f_lien               : { required:false },
+					f_domaine            : { required:false },
+					f_theme              : { required:false },
+					f_orientation        : { required:true },
+					f_couleur            : { required:true },
+					f_legende            : { required:true },
+					f_marge_min          : { required:true },
+					f_pages_nb           : { required:true },
+ 					f_cases_nb           : { required:true },
+					f_cases_larg         : { required:true }
 				},
 				messages :
 				{
-					'f_type[]'      : { required:"type(s) manquant(s)" },
-					f_bilan_MS      : { },
-					f_bilan_PA      : { },
-					f_conv_sur20    : { },
-					f_tri_objet     : { required:"choix manquant" },
-					f_tri_mode      : { required:"choix manquant" },
-					f_compet_nombre : { accept:"item(s) manquant(s)" },
-					f_groupe        : { required:"groupe manquant" },
-					'f_eleve[]'     : { required:"élève(s) manquant(s)" },
-					f_periode       : { required:"période manquante" },
-					f_date_debut    : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
-					f_date_fin      : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
-					f_retroactif    : { required:"choix manquant" },
-					f_coef          : { },
-					f_socle         : { },
-					f_lien          : { },
-					f_domaine       : { },
-					f_theme         : { },
-					f_orientation   : { required:"orientation manquante" },
-					f_couleur       : { required:"couleur manquante" },
-					f_legende       : { required:"légende manquante" },
-					f_marge_min     : { required:"marge mini manquante" },
-					f_pages_nb      : { required:"choix manquant" },
-					f_cases_nb      : { required:"nombre manquant" },
-					f_cases_larg    : { required:"largeur manquante" }
+					'f_type[]'           : { required:"type(s) manquant(s)" },
+					f_etat_acquisition   : { },
+					f_moyenne_scores     : { },
+					f_pourcentage_acquis : { },
+					f_conversion_sur_20  : { },
+					f_tri_objet          : { required:"choix manquant" },
+					f_tri_mode           : { required:"choix manquant" },
+					f_compet_nombre      : { accept:"item(s) manquant(s)" },
+					f_groupe             : { required:"groupe manquant" },
+					'f_eleve[]'          : { required:"élève(s) manquant(s)" },
+					f_periode            : { required:"période manquante" },
+					f_date_debut         : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_date_fin           : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
+					f_retroactif         : { required:"choix manquant" },
+					f_coef               : { },
+					f_socle              : { },
+					f_lien               : { },
+					f_domaine            : { },
+					f_theme              : { },
+					f_orientation        : { required:"orientation manquante" },
+					f_couleur            : { required:"couleur manquante" },
+					f_legende            : { required:"légende manquante" },
+					f_marge_min          : { required:"marge mini manquante" },
+					f_pages_nb           : { required:"choix manquant" },
+					f_cases_nb           : { required:"nombre manquant" },
+					f_cases_larg         : { required:"largeur manquante" }
 				},
 				errorElement : "label",
 				errorClass : "erreur",
@@ -451,7 +461,7 @@ $(document).ready
 			if(readytogo)
 			{
 				$('button').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$('#bilan').html('');
 			}
 			return readytogo;
@@ -501,7 +511,7 @@ $(document).ready
 			function()
 			{
 				$('#form_report_bulletin button, #form_report_bulletin select').prop('disabled',true);
-				$('#ajax_msg_report').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_report').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{

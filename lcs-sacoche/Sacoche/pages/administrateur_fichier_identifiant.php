@@ -33,7 +33,7 @@ $TITRE = "Importer / Imposer des identifiants";
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_sso.php');
 
 // Fabrication des éléments select du formulaire
-$select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl(FALSE/*sans*/) , $select_nom='f_groupe' , $option_first='oui' , $selection=false , $optgroup='oui');
+$select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl(FALSE/*sans*/) , $select_nom='f_groupe' , $option_first='oui' , $selection=FALSE , $optgroup='oui');
 ?>
 
 <ul class="puce">
@@ -148,8 +148,9 @@ $select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements
 		<h4>En important un fichier</h4>
 		<ul class="puce">
 			<li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__import_identifiant_Gepi_SACoche">DOC : Import des identifiants de Gepi dans SACoche.</a></span></li>
-			<li>Importer le fichier <b>base_eleve_gepi.csv</b> issu de Gepi (aide ci-dessus) : <button id="import_gepi_eleves" type="button" class="fichier_import">Parcourir...</button></li>
-			<li>Importer le fichier <b>base_professeur_gepi.csv</b> issu de Gepi (aide ci-dessus) : <button id="import_gepi_profs" type="button" class="fichier_import">Parcourir...</button></li>
+			<li>Importer le fichier <b>base_professeur_gepi.csv</b> issu de Gepi : <button id="import_gepi_profs" type="button" class="fichier_import">Parcourir...</button></li>
+			<li>Importer le fichier <b>base_responsable_gepi.csv</b> issu de Gepi : <button id="import_gepi_parents" type="button" class="fichier_import">Parcourir...</button></li>
+			<li>Importer le fichier <b>base_eleve_gepi.csv</b> issu de Gepi : <button id="import_gepi_eleves" type="button" class="fichier_import">Parcourir...</button></li>
 		</ul>
 		<h4>En dupliquant un autre champ</h4>
 		<ul class="puce">

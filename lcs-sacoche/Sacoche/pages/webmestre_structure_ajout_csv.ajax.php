@@ -58,7 +58,7 @@ if($action=='importer_csv')
 	// Tester si le contenu est correct, et mémoriser les infos en session
 	$_SESSION['tab_info'] = array();
 	$contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_csv_nom);
-	$contenu = To::utf8($contenu); // Mettre en UTF-8 si besoin
+	$contenu = To::deleteBOM(To::utf8($contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$tab_lignes = extraire_lignes($contenu); // Extraire les lignes du fichier
 	$separateur = extraire_separateur_csv($tab_lignes[0]); // Déterminer la nature du séparateur
 	unset($tab_lignes[0]); // Supprimer la 1e ligne
@@ -114,6 +114,12 @@ if($action=='importer_csv')
 			{
 				$tab_erreur['mail']['nb']++;
 			}
+			// Vérifier le domaine du serveur mail
+			$mail_domaine = tester_domaine_courriel_valide($contact_courriel);
+			if($mail_domaine!==TRUE)
+			{
+				$tab_erreur['mail']['nb']++;
+			}
 			// Vérifier que l'identifiant est disponible
 			if($import_id)
 			{
@@ -159,7 +165,7 @@ if( ($action=='ajouter') && $num && $max )
 	// Créer le fichier de connexion de la base de données de la structure
 	// Créer la base de données de la structure
 	// Créer un utilisateur pour la base de données de la structure et lui attribuer ses droits
-	$base_id = ajouter_structure($import_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel);
+	$base_id = Webmestre::ajouter_structure($import_id,$geo_id,$uai,$localisation,$denomination,$contact_nom,$contact_prenom,$contact_courriel);
 	// Créer les dossiers de fichiers temporaires par établissement : vignettes verticales, flux RSS des demandes, cookies des choix de formulaires, sujets et corrigés de devoirs
 	$tab_sous_dossier = array('badge','cookie','devoir','officiel','rss');
 	foreach($tab_sous_dossier as $sous_dossier)
@@ -190,7 +196,7 @@ if( ($action=='ajouter') && $num && $max )
 	// Et lui envoyer un courriel
 	if($courriel_envoi)
 	{
-		$courriel_contenu = contenu_courriel_inscription( $base_id , $denomination , $contact_nom , $contact_prenom , 'admin' , $password , URL_DIR_SACOCHE );
+		$courriel_contenu = Webmestre::contenu_courriel_inscription( $base_id , $denomination , $contact_nom , $contact_prenom , 'admin' , $password , URL_DIR_SACOCHE );
 		$courriel_bilan = Sesamail::mail( $contact_courriel , 'Création compte' , $courriel_contenu );
 		if(!$courriel_bilan)
 		{
@@ -214,7 +220,7 @@ if( ($action=='supprimer') && $nb_bases )
 {
 	foreach($tab_base_id as $base_id)
 	{
-		supprimer_multi_structure($base_id);
+		Webmestre::supprimer_multi_structure($base_id);
 	}
 	exit('<ok>');
 }

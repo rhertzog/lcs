@@ -25,6 +25,9 @@
  * 
  */
 
+if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+if(!isset($BILAN_TYPE)) {exit('Ce fichier ne peut être appelé directement !');}
+
 $tab_types = array
 (
 	'releve'   => array( 'droit'=>'RELEVE'   , 'doc'=>'officiel_releve_evaluations' , 'titre'=>'Relevé d\'évaluations' , 'modif_rubrique'=>'les appréciations par matière' ) ,
@@ -34,8 +37,6 @@ $tab_types = array
 	'palier3'  => array( 'droit'=>'SOCLE'    , 'doc'=>'officiel_maitrise_palier'    , 'titre'=>'Maîtrise du palier 3'  , 'modif_rubrique'=>'les appréciations par compétence' )
 );
 
-if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-if(!isset($BILAN_TYPE)) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = $tab_types[$BILAN_TYPE]['titre'];
 
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_profils.php'); // Charge $tab_profil_libelle[$profil][court|long][1|2]
@@ -102,7 +103,7 @@ if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
 	$new_etat = (isset($_POST['etat']))        ? Clean::texte($_POST['etat'])        : '' ;
 	if( count($tab_ids) && isset($tab_etats[$new_etat]) )
 	{
-		verifier_jeton_anti_CSRF($PAGE);
+		Session::verifier_jeton_anti_CSRF($PAGE);
 		$champ = 'officiel_'.$BILAN_TYPE;
 		$new_etat = ($new_etat!='x') ? $new_etat : '' ;
 		foreach($tab_ids as $ids)
@@ -136,7 +137,7 @@ if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
 	$new_etat = (isset($_POST['etat']))        ? Clean::texte($_POST['etat'])        : '' ;
 	if( count($tab_ids) && isset($tab_etats[$new_etat]) )
 	{
-		verifier_jeton_anti_CSRF($PAGE);
+		Session::verifier_jeton_anti_CSRF($PAGE);
 		$champ = 'officiel_'.$BILAN_TYPE;
 		$new_etat = ($new_etat!='x') ? $new_etat : '' ;
 		foreach($tab_ids as $ids)
@@ -163,16 +164,17 @@ if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
 	<?php if($affichage_formulaire_statut) echo'<li><span class="astuce">Vous pouvez utiliser l\'outil d\'<a href="./index.php?page=compte_message">affichage de messages en page d\'accueil</a> pour informer les professeurs de l\'ouverture à la saisie.</span></li>'; ?>
 </ul>
 
+<div id="cadre_photo"><button id="voir_photo" type="button" class="voir_photo">Photo</button></div>
+
 <script type="text/javascript">
 	var TODAY_FR   = "<?php echo TODAY_FR ?>";
 	var BILAN_TYPE = "<?php echo $BILAN_TYPE ?>";
 	var APP_RUBRIQUE = <?php echo $_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_RUBRIQUE'] ?>;
 	var APP_GENERALE = <?php echo $_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_GENERALE'] ?>;
-	var NOTE_SUR_20  = <?php echo $_SESSION['OFFICIEL']['BULLETIN_NOTE_SUR_20'] ?>;
+	var CONVERSION_SUR_20 = <?php echo $_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20'] ?>;
 	var BACKGROUND_NA = "<?php echo $_SESSION['BACKGROUND_NA'] ?>";
 	var BACKGROUND_VA = "<?php echo $_SESSION['BACKGROUND_VA'] ?>";
 	var BACKGROUND_A  = "<?php echo $_SESSION['BACKGROUND_A'] ?>";
-	"'..'"
 </script>
 
 <hr />
@@ -184,12 +186,15 @@ if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
 // Utile pour les profils administrateurs / directeurs, et requis concernant les professeurs pour une recherche s'il est affecté à des groupes.
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_classes_etabl_for_bilan_officiel();
+$DB_TAB = DB_STRUCTURE_COMMUN::DB_OPT_classes_etabl(FALSE /*with_ref*/);
 
 $tab_classe_etabl = array(); // tableau temporaire avec les noms des classes de l'établissement
-foreach($DB_TAB as $DB_ROW)
+if(is_array($DB_TAB))
 {
-	$tab_classe_etabl[$DB_ROW['groupe_id']] = $DB_ROW['groupe_nom'];
+	foreach($DB_TAB as $DB_ROW)
+	{
+		$tab_classe_etabl[$DB_ROW['valeur']] = $DB_ROW['texte'];
+	}
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -470,11 +475,10 @@ if(count($tab_classe))
 				$tab_radio[] = '<label for="etat_'.$etat_id.'"><input id="etat_'.$etat_id.'" name="etat" type="radio" value="'.$etat_id.'" /> <span class="off_etat '.substr($etat_id,1).'">'.$etat_text.'</span></label>';
 			}
 			echo'
-				<form action="#" method="post" id="form_gestion">
-					<hr />
-					<p><span class="tab"></span><span class="u">Pour les cases cochées du tableau (classes uniquement) :</span><input id="listing_ids" name="listing_ids" type="hidden" value="" /><input id="csrf" name="csrf" type="hidden" value="" /></p>
-					<div><label class="tab">Accès / Statut :</label>'.implode('<br /><span class="tab"></span>',$tab_radio).'</div>
-					<p><span class="tab"></span><button id="bouton_valider" type="button" class="valider">Valider</button><label id="ajax_msg_gestion">&nbsp;</label></p>
+				<form action="#" method="post" id="cadre_statut">
+					<h4>Accès / Statut : <img alt="" src="./_img/bulle_aide.png" title="Pour les cases cochées du tableau (classes uniquement)." /></h4>
+					<div>'.implode('<br />',$tab_radio).'</div>
+					<p><input id="listing_ids" name="listing_ids" type="hidden" value="" /><input id="csrf" name="csrf" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider</button><label id="ajax_msg_gestion">&nbsp;</label></p>
 				</form>
 			';
 		}

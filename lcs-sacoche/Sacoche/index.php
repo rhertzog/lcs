@@ -56,15 +56,18 @@ elseif($PAGE!='public_installation')
 }
 
 // Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
-require(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php');
-if(!isset($tab_droits[$PAGE]))
+if(!Session::verif_droit_acces($PAGE))
 {
-	$tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants ; soit le paramètre "page" transmis en GET est incorrect, soit les droits de cette page n\'ont pas été attribués dans le fichier'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php.');
-	$PAGE = (substr($PAGE,0,6)=='public') ? 'public_accueil' : 'compte_accueil' ;
+	$tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants ; soit le paramètre "page" transmis en GET est incorrect, soit les droits de cette page n\'ont pas été attribués dans le fichier "'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php.').'".';
+	// La page vers laquelle rediriger sera définie après ouverture de la session
 }
 
 // Ouverture de la session et gestion des droits d'accès
-Session::execute($tab_droits[$PAGE]);
+Session::execute();
+if(count($tab_messages_erreur))
+{
+	$PAGE = ($_SESSION['USER_PROFIL'] == 'public') ? 'public_accueil' : 'compte_accueil' ;
+}
 
 // Infos DEBUG dans FirePHP
 if (DEBUG>3) afficher_infos_debug_FirePHP();
@@ -82,23 +85,32 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 	// A compter du 05/12/2010, ajout de paramètres dans le fichier de constantes pour paramétrer cURL. [TODO] peut être retiré dans un an environ
 	if(!defined('SERVEUR_PROXY_USED'))
 	{
-		fabriquer_fichier_hebergeur_info( array('SERVEUR_PROXY_USED'=>'','SERVEUR_PROXY_NAME'=>'','SERVEUR_PROXY_PORT'=>'','SERVEUR_PROXY_TYPE'=>'','SERVEUR_PROXY_AUTH_USED'=>'','SERVEUR_PROXY_AUTH_METHOD'=>'','SERVEUR_PROXY_AUTH_USER'=>'','SERVEUR_PROXY_AUTH_PASS'=>'') );
+		FileSystem::fabriquer_fichier_hebergeur_info( array('SERVEUR_PROXY_USED'=>'','SERVEUR_PROXY_NAME'=>'','SERVEUR_PROXY_PORT'=>'','SERVEUR_PROXY_TYPE'=>'','SERVEUR_PROXY_AUTH_USED'=>'','SERVEUR_PROXY_AUTH_METHOD'=>'','SERVEUR_PROXY_AUTH_USER'=>'','SERVEUR_PROXY_AUTH_PASS'=>'') );
 	}
 	// FIN PATCH CONFIG 1
 	// DEBUT PATCH CONFIG 2
 	// A compter du 26/05/2011, ajout de paramètres dans le fichier de constantes pour les dates CNIL. [TODO] peut être retiré dans un an environ
 	if(!defined('CNIL_NUMERO'))
 	{
-		fabriquer_fichier_hebergeur_info( array('CNIL_NUMERO'=>HEBERGEUR_CNIL,'CNIL_DATE_ENGAGEMENT'=>'','CNIL_DATE_RECEPISSE'=>'') );
+		FileSystem::fabriquer_fichier_hebergeur_info( array('CNIL_NUMERO'=>HEBERGEUR_CNIL,'CNIL_DATE_ENGAGEMENT'=>'','CNIL_DATE_RECEPISSE'=>'') );
 	}
 	// FIN PATCH CONFIG 2
 	// DEBUT PATCH CONFIG 3
 	// A compter du 14/03/2012, ajout de paramètres dans le fichier de constantes pour les fichiers associés aux devoirs. [TODO] peut être retiré dans un an environ
 	if(!defined('FICHIER_DUREE_CONSERVATION'))
 	{
-		fabriquer_fichier_hebergeur_info( array('FICHIER_TAILLE_MAX'=>500,'FICHIER_DUREE_CONSERVATION'=>12) );
+		FileSystem::fabriquer_fichier_hebergeur_info( array('FICHIER_TAILLE_MAX'=>500,'FICHIER_DUREE_CONSERVATION'=>12) );
 	}
 	// FIN PATCH CONFIG 3
+	// DEBUT PATCH CONFIG 4
+	// A compter du 18/10/2012, ajout de paramètre dans le fichier de constantes pour le chemin des logs phpCAS. [TODO] peut être retiré dans un an environ
+	if(!defined('CHEMIN_LOGS_PHPCAS'))
+	{
+		FileSystem::fabriquer_fichier_hebergeur_info( array('CHEMIN_LOGS_PHPCAS'=>CHEMIN_DOSSIER_TMP) );
+		$ancien_fichier = CHEMIN_DOSSIER_TMP.'debugcas_'.md5($_SERVER['DOCUMENT_ROOT']).'.txt';
+		if(is_file($ancien_fichier)) unlink($ancien_fichier);
+	}
+	// FIN PATCH CONFIG 4
 }
 
 // Interface de connexion à la base, chargement et config (test sur CHEMIN_FICHIER_CONFIG_INSTALL car à éviter si procédure d'installation non terminée).
@@ -146,13 +158,20 @@ if(Session::$_sso_redirect)
 	require(CHEMIN_DOSSIER_PAGES.'public_login_SSO.php');
 }
 
+// Page CNIL si message d'information CNIL non validé.
+if(isset($_SESSION['STOP_CNIL']))
+{
+	$tab_messages_erreur[] = 'Avant d\'utiliser <em>SACoche</em>, vous devez valider le formulaire ci-dessous.';
+	$PAGE = 'compte_cnil';
+}
+
 ob_start();
 // Chargement de la page concernée
 $filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 if(!is_file($filename_php))
 {
 	$tab_messages_erreur[] = 'Erreur : fichier '.FileSystem::fin_chemin($filename_php).' manquant.';
-	$PAGE = ($_SESSION['USER_PROFIL']=='public') ? 'public_accueil' :'compte_accueil' ;
+	$PAGE = ($_SESSION['USER_PROFIL']=='public') ? 'public_accueil' : ( (isset($_SESSION['STOP_CNIL'])) ? 'compte_cnil' : 'compte_accueil' ) ;
 	$filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 }
 require($filename_php);
@@ -177,7 +196,7 @@ if($PAGE=='officiel_accueil')    $tab_fichiers_head[] = array( 'js'  , compacter
 if(is_file($filename_js_normal)) $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
 
 // Jeton CSRF
-$CSRF = isset($tab_verif_csrf[$PAGE]) ? generer_jeton_anti_CSRF($PAGE) : '' ;
+Session::generer_jeton_anti_CSRF($PAGE);
 
 // Affichage de l'en-tête
 declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rss*/ , $tab_fichiers_head , $TITRE_NAVIGATEUR , $CSS_PERSO );
@@ -245,14 +264,14 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
 	}
 	if(count($tab_messages_erreur))
 	{
-		echo'<hr /><div class="danger o">'.implode('</div><div class="danger o">',$tab_messages_erreur).'</div>';
+		echo'<hr /><div class="probleme">'.implode('</div><div class="probleme">',$tab_messages_erreur).'</div>';
 	}
 	echo $CONTENU_PAGE;
 	echo'<span id="ancre_bas"></span></div>'."\r\n";
 	?>
 	<script type="text/javascript">
 		var PAGE='<?php echo $PAGE ?>';
-		var CSRF='<?php echo $CSRF ?>';
+		var CSRF='<?php echo Session::$_CSRF_value ?>';
 		var DUREE_AUTORISEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
 		var DUREE_AFFICHEE='<?php echo $_SESSION['DUREE_INACTIVITE'] ?>';
 		var CONNEXION_USED='<?php echo (isset($_COOKIE[COOKIE_AUTHMODE])) ? $_COOKIE[COOKIE_AUTHMODE] : 'normal' ; ?>';

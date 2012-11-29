@@ -31,15 +31,13 @@ $(document).ready
 	{
 
 		// Préparation de select utiles
-		var select_partage = '<select id="f_partage" name="f_partage"><option value="oui">Partagé sur le serveur communautaire.</option><option value="bof">Partage sans intérêt (pas novateur).</option><option value="non">Non partagé avec la communauté.</option></select>';
-		var select_methode = '<select id="f_methode" name="f_methode"><option value="geometrique">Coefficients &times;2</option><option value="arithmetique">Coefficients +1</option><option value="classique">Moyenne classique</option><option value="bestof1">La meilleure</option><option value="bestof2">Les 2 meilleures</option><option value="bestof3">Les 3 meilleures</option></select>';
-		var select_limite  = '<select id="f_limite" name="f_limite"><option value="0">de toutes les notes.</option><option value="1">de la dernière note.</option>';
+		var select_partage    = '<select id="f_partage" name="f_partage"><option value="oui">Partagé sur le serveur communautaire.</option><option value="bof">Partage sans intérêt (pas novateur).</option><option value="non">Non partagé avec la communauté.</option></select>';
+		var select_methode    = '<select id="f_methode" name="f_methode"><option value="geometrique">Coefficients &times;2</option><option value="arithmetique">Coefficients +1</option><option value="classique">Moyenne classique</option><option value="bestof1">La meilleure</option><option value="bestof2">Les 2 meilleures</option><option value="bestof3">Les 3 meilleures</option></select>';
+		var select_limite     = '<select id="f_limite" name="f_limite"><option value="0">de toutes les notes</option><option value="1">de la dernière note</option>';
 		var tab_options = new Array(2,3,4,5,6,7,8,9,10,15,20,30,40,50);
-		for(i=0 ; i<tab_options.length ; i++)
-		{
-			select_limite += '<option value="'+tab_options[i]+'">des '+tab_options[i]+' dernières notes.</option>';
-		}
+		for( i=0 ; i<tab_options.length ; i++ ) { select_limite += '<option value="'+tab_options[i]+'">des '+tab_options[i]+' dernières notes</option>'; }
 		select_limite += '</select>';
+		var select_retroactif = '<select id="f_retroactif" name="f_retroactif"><option value="non">(sur la période).</option><option value="oui">(rétroactivement).</option></select>';
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Changement de méthode -> desactiver les limites autorisées suivant les cas
@@ -101,7 +99,7 @@ $(document).ready
 				var element = $(this);
 				var nb_demandes = $(this).attr('value');
 				var matiere_id = $(this).closest('table').attr('id').substring(4);
-				element.parent().find('label').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				element.parent().find('label').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -141,7 +139,7 @@ $(document).ready
 			{
 				var ids = $(this).parent().attr('id');
 				afficher_masquer_images_action('hide');
-				var new_label = '<label for="'+ids+'" class="loader">Connexion au serveur&hellip;</label>';
+				var new_label = '<label for="'+ids+'" class="loader">Envoi en cours&hellip;</label>';
 				$(this).after(new_label);
 				$.ajax
 				(
@@ -204,7 +202,7 @@ $(document).ready
 			{
 				var ids = $(this).parent().attr('id');
 				afficher_masquer_images_action('hide');
-				var new_label = '<label for="'+ids+'" class="loader">Connexion au serveur&hellip;</label>';
+				var new_label = '<label for="'+ids+'" class="loader">Envoi en cours&hellip;</label>';
 				$(this).after(new_label);
 				$.ajax
 				(
@@ -251,9 +249,11 @@ $(document).ready
 				afficher_masquer_images_action('hide');
 				var ids   = $(this).parent().attr('id');
 				var tab_ids = ids.split('_');
-				var methode = tab_calcul_methode[tab_ids[1]+'_'+tab_ids[2]];
-				var limite  = tab_calcul_limite[tab_ids[1]+'_'+tab_ids[2]];
-				var new_span = '<span>'+select_methode.replace('"'+methode+'"','"'+methode+'" selected')+select_limite.replace('"'+limite+'"','"'+limite+'" selected')+'<q class="valider" lang="calculer" title="Valider les modifications du mode de calcul de ce référentiel."></q><q class="annuler" title="Annuler la modification du mode de calcul de ce référentiel."></q> <label id="ajax_msg">&nbsp;</label></span>';
+				var id_matiere_niveau = tab_ids[1]+'_'+tab_ids[2];
+				var methode    = tab_calcul_methode[id_matiere_niveau];
+				var limite     = tab_calcul_limite[id_matiere_niveau];
+				var retroactif = tab_calcul_retroactif[id_matiere_niveau];
+				var new_span = '<span>'+select_methode.replace('"'+methode+'"','"'+methode+'" selected')+select_limite.replace('"'+limite+'"','"'+limite+'" selected')+select_retroactif.replace('"'+retroactif+'"','"'+retroactif+'" selected')+'<q class="valider" lang="calculer" title="Valider les modifications du mode de calcul de ce référentiel."></q><q class="annuler" title="Annuler la modification du mode de calcul de ce référentiel."></q> <label id="ajax_msg">&nbsp;</label></span>';
 				$(this).after(new_span);
 				actualiser_select_limite();
 				infobulle();
@@ -285,7 +285,7 @@ $(document).ready
 			{
 				var ids = $(this).parent().parent().attr('id');
 				var partage = $('#f_partage').val();
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -337,15 +337,16 @@ $(document).ready
 			function()
 			{
 				var ids = $(this).parent().parent().attr('id');
-				var methode = $('#f_methode').val();
-				var limite  = $('#f_limite').val();
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				var methode    = $('#f_methode').val();
+				var limite     = $('#f_limite').val();
+				var retroactif = $('#f_retroactif').val();
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
 						type : 'POST',
 						url : 'ajax.php?page='+PAGE,
-						data : 'csrf='+CSRF+'&action=Calculer'+'&ids='+ids+'&methode='+methode+'&limite='+limite,
+						data : 'csrf='+CSRF+'&action=Calculer'+'&ids='+ids+'&methode='+methode+'&limite='+limite+'&retroactif='+retroactif,
 						dataType : "html",
 						error : function(jqXHR, textStatus, errorThrown)
 						{
@@ -362,8 +363,10 @@ $(document).ready
 							else
 							{
 								var tab_ids = ids.split('_');
-								tab_calcul_methode[tab_ids[1]+'_'+tab_ids[2]] = methode;
-								tab_calcul_limite[tab_ids[1]+'_'+tab_ids[2]]  = limite;
+								var id_matiere_niveau = tab_ids[1]+'_'+tab_ids[2];
+								tab_calcul_methode[id_matiere_niveau]    = methode;
+								tab_calcul_limite[id_matiere_niveau]     = limite;
+								tab_calcul_retroactif[id_matiere_niveau] = retroactif;
 								$('#'+ids).prev().html( responseHTML.substring(2,responseHTML.length) );
 								$('#ajax_msg').parent().remove();
 								afficher_masquer_images_action('show');
@@ -386,7 +389,7 @@ $(document).ready
 				var ids = $(this).parent().parent().attr('id');
 				var tab_ids = ids.split('_');
 				var partage = tab_partage_etat[tab_ids[1]+'_'+tab_ids[2]];
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -486,7 +489,7 @@ $(document).ready
 		var charger_formulaire_structures = function()
 		{
 			$('#rechercher').prop('disabled',true);
-			$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+			$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 			$.ajax
 			(
 				{
@@ -679,7 +682,7 @@ $(document).ready
 					return false;
 				}
 				$('#rechercher').prop('disabled',true);
-				$('#ajax_msg').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{
@@ -746,7 +749,7 @@ $(document).ready
 				var description    = $(this).parent().text(); // Pb : il prend le contenu du <sup> avec
 				var longueur_sup   = $(this).prev().text().length;
 				var description    = description.substring(0,description.length-longueur_sup);
-				var new_label = '<label id="temp" class="loader">Connexion au serveur&hellip;</label>';
+				var new_label = '<label id="temp" class="loader">Envoi en cours&hellip;</label>';
 				$(this).next().after(new_label);
 				$.ajax
 				(
@@ -813,7 +816,7 @@ $(document).ready
 				$('#ajax_msg_choisir').removeAttr("class").html('');
 				var referentiel_id = $(this).val().substring(3);
 				$('button').prop('disabled',true);
-				$('#ajax_msg_choisir').removeAttr("class").addClass("loader").html("Connexion au serveur&hellip;");
+				$('#ajax_msg_choisir').removeAttr("class").addClass("loader").html("Envoi en cours&hellip;");
 				$.ajax
 				(
 					{

@@ -39,7 +39,7 @@ $(document).ready
 			{
 				ids = $(this).parent().attr('id');
 				afficher_masquer_images_action('hide');
-				new_label = '<label for="'+ids+'" class="loader">Connexion au serveur&hellip;</label>';
+				new_label = '<label for="'+ids+'" class="loader">Envoi en cours&hellip;</label>';
 				$(this).after(new_label);
 				$.ajax
 				(
@@ -56,13 +56,13 @@ $(document).ready
 						},
 						success : function(responseHTML)
 						{
-							initialiser_compteur();
 							if(responseHTML.substring(0,18)!='<ul class="ul_m1">')
 							{
 								$.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
 							}
 							else
 							{
+								initialiser_compteur();
 								$.fancybox( '<p class="noprint">Afin de préserver l\'environnement, n\'imprimer qu\'en cas de nécessité !</p>'+responseHTML.replace('<ul class="ul_m2">','<q class="imprimer" title="Imprimer le référentiel." />'+'<ul class="ul_m2">') , {'centerOnScroll':true} );
 								infobulle();
 							}

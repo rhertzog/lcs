@@ -30,7 +30,8 @@
 // ============================================================================
 
 // Définir le décalage horaire par défaut de toutes les fonctions date/heure
-date_default_timezone_set('Europe/Paris'); 
+// La fonction date_default_timezone_set() est disponible depuis PHP 5.1 ; ne pas créer une erreur fatale si PHP 5.0.
+if(function_exists('date_default_timezone_set')) date_default_timezone_set('Europe/Paris'); 
 
 // CHARSET : "iso-8859-1" ou "utf-8" suivant l'encodage utilisé
 // Présence aussi d'un "AddDefaultCharset ..." dans le fichier .htaccess
@@ -39,9 +40,11 @@ define('CHARSET','utf-8');
 // Modifier l'encodage interne pour les fonctions mb_* (manipulation de chaînes de caractères multi-octets)
 mb_internal_encoding(CHARSET);
 
+// Version PHP & MySQL requises et conseillées
+// Attention : ne pas mettre de ".0" (par exemple "5.0") car version_compare() considère que 5 < 5.0 (@see http://fr.php.net/version_compare)
 define('PHP_VERSION_MINI_REQUISE'     ,'5.1');
 define('PHP_VERSION_MINI_CONSEILLEE'  ,'5.3.4'); // PHP 5.2 n'est plus supporté depuis le 16 décembre 2010.
-define('MYSQL_VERSION_MINI_REQUISE'   ,'5.0');
+define('MYSQL_VERSION_MINI_REQUISE'   ,'5');
 define('MYSQL_VERSION_MINI_CONSEILLEE','5.5'); // Version stable depuis octobre 2010
 
 // Vérifier la version de PHP
@@ -56,7 +59,7 @@ $extensions_requises = array('curl','dom','gd','mbstring','mysql','PDO','pdo_mys
 $extensions_manquantes = array_diff($extensions_requises,$extensions_chargees);
 if(count($extensions_manquantes))
 {
-	exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : '.implode($extensions_manquantes,' ').'<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
+	exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : '.implode($extensions_manquantes,' ; ').'<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
 }
 
 // Remédier à l'éventuelle configuration de magic_quotes_gpc à On (directive obsolète depuis PHP 5.3.0 et supprimée en PHP 6.0.0).
@@ -126,7 +129,6 @@ define('FPDF_FONTPATH'                , CHEMIN_DOSSIER_FPDF_FONT); // Pour FPDF 
 // Vers des fichiers.
 define('CHEMIN_FICHIER_CONFIG_INSTALL', CHEMIN_DOSSIER_CONFIG.'constantes.php');
 define('CHEMIN_FICHIER_DEBUG_CONFIG'  , CHEMIN_DOSSIER_TMP.'debug.txt');
-define('CHEMIN_FICHIER_DEBUG_PHPCAS'  , CHEMIN_DOSSIER_TMP.'debugcas_'.md5($_SERVER['DOCUMENT_ROOT']).'.txt');
 define('CHEMIN_FICHIER_WS_LCS'        , CHEMIN_DOSSIER_WEBSERVICES.'import_lcs.php');
 define('CHEMIN_FICHIER_WS_ARGOS'      , CHEMIN_DOSSIER_WEBSERVICES.'argos_import.php');
 
@@ -294,9 +296,6 @@ define('URL_DIR_LOGINPASS', str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LO
 define('URL_DIR_LOGO'     , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LOGO      ) );
 define('URL_DIR_RSS'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_RSS       ) );
 
-// Vers des fichiers.
-define('URL_FICHIER_DEBUG_PHPCAS' , str_replace( $tab_bad , $tab_bon , CHEMIN_FICHIER_DEBUG_PHPCAS ) );
-
 // ============================================================================
 // URL externes appelées par l'application
 // ============================================================================
@@ -414,10 +413,14 @@ function __autoload($class_name)
 		'JSMin'                       => '_inc'.DS.'class.JavaScriptMinified.php' ,
 		'JavaScriptPacker'            => '_inc'.DS.'class.JavaScriptPacker.php' ,
 		'PDF'                         => '_inc'.DS.'class.PDF.php' ,
+		'RSS'                         => '_inc'.DS.'class.RSS.php' ,
 		'SACocheLog'                  => '_inc'.DS.'class.SACocheLog.php' ,
+		'ServeurCommunautaire'        => '_inc'.DS.'class.ServeurCommunautaire.php' ,
 		'Sesamail'                    => '_inc'.DS.'class.Sesamail.php' ,
 		'Session'                     => '_inc'.DS.'class.Session.php' ,
+		'SessionUser'                 => '_inc'.DS.'class.SessionUser.php' ,
 		'To'                          => '_inc'.DS.'class.To.php' ,
+		'Webmestre'                   => '_inc'.DS.'class.Webmestre.php' ,
 
 		'DB_STRUCTURE_ADMINISTRATEUR' => '_sql'.DS.'requetes_structure_administrateur.php' ,
 		'DB_STRUCTURE_DIRECTEUR'      => '_sql'.DS.'requetes_structure_directeur.php' ,
@@ -496,7 +499,7 @@ function html($text)
  * Fonction pour remplacer mb_detect_encoding() à cause d'un bug : http://fr2.php.net/manual/en/function.mb-detect-encoding.php#81936
  *
  * @param string
- * @return string
+ * @return bool
  */
 function perso_mb_detect_encoding_utf8($text)
 {

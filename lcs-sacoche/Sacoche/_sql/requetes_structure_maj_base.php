@@ -2247,6 +2247,96 @@ public static function DB_maj_base($version_actuelle)
 		}
 	}
 
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-10-10 => 2012-10-26
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-10-10')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-10-26';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// Passage de champs DATE à NULL possible et par défaut.
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user   CHANGE user_connexion_date  user_connexion_date  DATETIME NULL DEFAULT NULL' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user   CHANGE user_tentative_date  user_tentative_date  DATETIME NULL DEFAULT NULL' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_devoir CHANGE devoir_autoeval_date devoir_autoeval_date DATE     NULL DEFAULT NULL' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_user   SET  user_connexion_date=NULL WHERE  user_connexion_date="0000-00-00 00:00:00"' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_user   SET  user_tentative_date=NULL WHERE  user_tentative_date="0000-00-00 00:00:00"' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_devoir SET devoir_autoeval_date=NULL WHERE devoir_autoeval_date="0000-00-00"' );
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-10-26 => 2012-11-05
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-10-26')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-11-05';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// ajout de paramètres
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_only_socle"           , "0"   )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_retroactif"           , "non" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_conv_sur20"           , "0"   )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_bulletin_only_socle"         , "0"   )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_bulletin_retroactif"         , "non" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_bulletin_barre_acquisitions" , "1"   )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "calcul_retroactif"                    , "non" )' );
+			// ajouter une entrée dans sacoche_referentiel pour paramétrer la prise en compte des évaluations antérieures par défaut
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_referentiel ADD referentiel_calcul_retroactif ENUM("non","oui") COLLATE utf8_unicode_ci NOT NULL DEFAULT "non" COMMENT "Avec ou sans prise en compte des évaluations antérieures. Valeur surclassant la configuration par défaut." AFTER referentiel_calcul_limite' );
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-11-05 => 2012-11-12
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-11-05')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-11-12';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// ajout de paramètres et renommage d'autres
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_releve_etat_acquisition"    , "parent,eleve" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_etat_acquisition" , "1" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_releve_moyenne_score"          WHERE parametre_nom="droit_bilan_moyenne_score"'      );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_releve_pourcentage_acquis"     WHERE parametre_nom="droit_bilan_pourcentage_acquis"' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="droit_releve_conversion_sur_20"      WHERE parametre_nom="droit_bilan_note_sur_vingt"'     );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="officiel_releve_conversion_sur_20"   WHERE parametre_nom="officiel_releve_conv_sur20"'     );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_nom="officiel_bulletin_conversion_sur_20" WHERE parametre_nom="officiel_bulletin_note_sur_20"'  );
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-11-12 => 2012-11-17
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-11-12')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-11-17';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// modif champ table sacoche_parametre
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre CHANGE parametre_valeur parametre_valeur VARCHAR( 255 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL' );
+			// nouvelle table sacoche_officiel_assiduite
+			$requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_officiel_assiduite.sql');
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+			DB::close(SACOCHE_STRUCTURE_BD_NAME);
+			// ajout de paramètres
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_assiduite"   , "0" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_bulletin_assiduite" , "0" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_socle_assiduite"    , "0" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_ligne_supplementaire"   , "" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_bulletin_ligne_supplementaire" , "" )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_socle_ligne_supplementaire"    , "" )' );
+		}
+	}
+
 }
 
 }

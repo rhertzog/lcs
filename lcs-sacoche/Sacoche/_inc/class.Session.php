@@ -27,7 +27,7 @@
 
 
 /**
- * Classe pour gérer les sessions.
+ * Classe pour gérer les sessions et les jetons anti-CSRF.
  * La session est transmise via le cookie "$_COOKIE[SESSION_NOM]".
  */
 class Session
@@ -37,10 +37,72 @@ class Session
   // Attributs
   // //////////////////////////////////////////////////
 
-  public  static $_sso_redirect = FALSE;
+  public static  $_sso_redirect   = FALSE;
+  private static $tab_droits_page = array();
+  public static  $_CSRF_value     = '';
 
   // //////////////////////////////////////////////////
-  // Méthodes privées (internes)
+  // Méthodes privées (internes) - Outils
+  // //////////////////////////////////////////////////
+
+  /*
+   * Renvoyer l'IP
+   * 
+   * @param void
+   * @return string
+   */
+  private static function get_IP()
+  {
+    /**
+     * Si PHP est derrière un reverse proxy ou un load balancer, REMOTE_ADDR peut contenir l'ip du proxy.
+     * Normalement, le proxy doit renseigner HTTP_X_REAL_IP, ou HTTP_X_FORWARDED_FOR.
+     * Au CITIC, REMOTE_ADDR est correct, et chez OVH aussi (avec apache derrière nginx ou pas).
+     */
+    $ip = $_SERVER['REMOTE_ADDR'];
+    if (isset($_SERVER['HTTP_X_REAL_IP']))
+    {
+      $ip = $_SERVER['HTTP_X_REAL_IP'];
+    }
+    elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+    {
+      $forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'];
+      // on s'arrête à la 1re virgule si on en trouve une
+      $tab_forwarded = preg_split("/,| /",$forwarded);
+      $ip_candidate = $tab_forwarded[0];
+      $ip_composantes = explode('.', $ip_candidate);
+      // On vérifie que ça ressemble à une ip (au cas où on aurait une chaîne bizarre ou vide on garde notre REMOTE_ADDR)
+      if (count($ip_composantes) == 4 && min($ip_composantes) >=0 && max($ip_composantes) < 256 && max($ip_composantes) > 0)
+      {
+        $ip = $ip_candidate;
+      }
+    }
+    // petit truc pour s'assurer d'avoir une IP valide
+    return ($ip == long2ip(ip2long($ip))) ? $ip : '' ;
+  }
+
+  /*
+   * Renvoyer une clef associée au navigateur et à la session en cours
+   * 
+   * @param void
+   * @return string
+   */
+  private static function get_UserAgent()
+  {
+    if(isset($_SERVER['HTTP_USER_AGENT']))
+    {
+      // Eviter que l'activation de FireBug + FirePHP n'oblige à se réidentifier.
+      $pos_FirePHP = strpos($_SERVER['HTTP_USER_AGENT'],' FirePHP');
+      $user_agent = ($pos_FirePHP===FALSE) ? $_SERVER['HTTP_USER_AGENT'] : substr($_SERVER['HTTP_USER_AGENT'],0,$pos_FirePHP) ;
+    }
+    else
+    {
+      $user_agent = '';
+    }
+    return $user_agent;
+  }
+
+  // //////////////////////////////////////////////////
+  // Méthodes privées (internes) - Gestion de la session
   // //////////////////////////////////////////////////
 
   /**
@@ -52,6 +114,15 @@ class Session
    */
   private static function param()
   {
+    // Header à envoyer avant toute génération de cookie pour mettre en place une stratégie de confidentialité compacte.
+    // La plateforme pour les préférences de confidentialité est un standart W3C nommé en anglais "Platform for Privacy Preferences" d'où "P3P".
+    // Permet d'éviter des soucis avec IE si son paramétrage de confidentialité des cookies est en position haute.
+    // @see http://www.webmaster-hub.com/topic/3754-cookies-et-strategie-de-confidentialite/
+    // @see http://www.yoyodesign.org/doc/w3c/p3p1/#compact_policies
+    // @see http://www.yoyodesign.org/doc/w3c/p3p1/#ref_file_policyref
+    // @see http://www.symantec.com/region/fr/resources/protocole.html
+    // @see http://fr.php.net/manual/fr/function.setcookie.php#102352
+    header('P3P:policyref="'.URL_DIR_SACOCHE.'p3p.xml",CP="NON DSP COR CURa OUR NOR UNI"');
     session_name(SESSION_NOM);
     session_cache_limiter('nocache');
   }
@@ -71,71 +142,15 @@ class Session
   }
 
   /*
-   * Renvoyer l'IP
+   * Renvoyer une clef associée au navigateur, à l'adresse IP et à la session en cours
    * 
    * @param void
    * @return string
    */
-	private static function get_IP()
-	{
-		/**
-		 * Si PHP est derrière un reverse proxy ou un load balancer, REMOTE_ADDR peut contenir l'ip du proxy.
-		 * Normalement, le proxy doit renseigner HTTP_X_REAL_IP, ou HTTP_X_FORWARDED_FOR.
-		 * Au CITIC, REMOTE_ADDR est correct, et chez OVH aussi (avec apache derrière nginx ou pas).
-		 */
-		$ip = $_SERVER['REMOTE_ADDR'];
-		if (isset($_SERVER['HTTP_X_REAL_IP']))
-		{
-			$ip = $_SERVER['HTTP_X_REAL_IP'];
-		}
-		elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-		{
-			$forwarded = $_SERVER['HTTP_X_FORWARDED_FOR'];
-			// on s'arrête à la 1re virgule si on en trouve une
-			$tab_forwarded = preg_split("/,| /",$forwarded);
-			$ip_candidate = $tab_forwarded[0];
-			$ip_composantes = explode('.', $ip_candidate);
-			// On vérifie que ça ressemble à une ip (au cas où on aurait une chaîne bizarre ou vide on garde notre REMOTE_ADDR)
-			if (count($ip_composantes) == 4 && min($ip_composantes) >=0 && max($ip_composantes) < 256 && max($ip_composantes) > 0)
-			{
-				$ip = $ip_candidate;
-			}
-		}
-		// petit truc pour s'assurer d'avoir une IP valide
-		return ($ip == long2ip(ip2long($ip))) ? $ip : '' ;
-	}
-
-  /*
-   * Renvoyer une clef associée au navigateur et à la session en cours
-   * 
-   * @param void
-   * @return void
-   */
-	private static function get_UserAgent()
-	{
-		if(isset($_SERVER['HTTP_USER_AGENT']))
-		{
-			// Eviter que l'activation de FireBug + FirePHP n'oblige à se réidentifier.
-			$pos_FirePHP = strpos($_SERVER['HTTP_USER_AGENT'],' FirePHP');
-			$user_agent = ($pos_FirePHP===FALSE) ? $_SERVER['HTTP_USER_AGENT'] : substr($_SERVER['HTTP_USER_AGENT'],0,$pos_FirePHP) ;
-		}
-		else
-		{
-			$user_agent = '';
-		}
-		return $user_agent;
-	}
-
-  /*
-   * Renvoyer une clef associée au navigateur, à l'adresse IP et à la session en cours
-   * 
-   * @param void
-   * @return void
-   */
-	private static function session_key()
-	{
-		return md5( Session::get_IP() . Session::get_UserAgent() . session_id() );
-	}
+  private static function session_key()
+  {
+    return md5( Session::get_IP() . Session::get_UserAgent() . session_id() );
+  }
 
   /*
    * Initialiser une session ouverte
@@ -181,20 +196,51 @@ class Session
       }
       else
       {
-        exit_error( 'Authentification manquante' /*titre*/ , 'Session perdue, expirée, incompatible ou non enregistrée (inactivité, disque plein, chemin invalide, &hellip;).<br />Veuillez vous (re)-connecter.' /*contenu*/ );
+        // onglets incompatibles ouverts, inactivité, disque plein, chemin invalide, ...
+        exit_error( 'Authentification manquante' /*titre*/ , 'Session perdue / expirée (onglets incompatibles ouverts ?).<br />Veuillez vous (re)-connecter.' /*contenu*/ );
       }
     }
     // si ajax
     else
     {
-      echo ( $test_get || $test_cookie ) ? 'Session perdue / expirée / incompatible. Veuillez actualiser la page.' : 'Session perdue / expirée / incompatible. Veuillez vous reconnecter.' ;
-      exit();
+      if( $test_get || $test_cookie )
+      {
+        exit_error( 'Authentification manquante' /*titre*/ , 'Session perdue / expirée (onglets incompatibles ouverts ?). Veuillez actualiser la page.' /*contenu*/ );
+      }
+       else
+      {
+        exit_error( 'Authentification manquante' /*titre*/ , 'Session perdue / expirée (onglets incompatibles ouverts ?). Veuillez vous (re)-connecter.' /*contenu*/ );
+      }
     }
   }
 
   // //////////////////////////////////////////////////
-  // Méthodes publiques
+  // Méthodes publiques - Gestion de la session
   // //////////////////////////////////////////////////
+
+  /**
+   * Vérifier le droit d'accès à une page donnée.
+   * Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
+   *
+   * @param string $page
+   * @return bool
+   */
+  public static function verif_droit_acces($page)
+  {
+    // Pour des raison de clarté / maintenance, il est préférable d'externaliser ce tableau dans un fichier.
+    require(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php');
+    if(isset($tab_droits_par_page[$page]))
+    {
+      Session::$tab_droits_page = $tab_droits_par_page[$page];
+      return TRUE;
+    }
+    else
+    {
+      // La page n'a pas de droit défini, elle ne sera donc pas chargée ; on renseigne toutefois Session::$tab_droits_page pour ne pas provoquer d'erreur.
+      Session::$tab_droits_page = $tab_droits_profil_tous;
+      return FALSE;
+    }
+  }
 
   /*
    * Ouvrir une nouvelle session
@@ -225,23 +271,25 @@ class Session
     // Pas besoin de session_start() car la session a déjà été ouverte avant appel à cette fonction.
     $_SESSION = array();
     session_unset();
-    setcookie(session_name(),'',time()-42000,'');
+    setcookie( session_name() /*name*/ , '' /*value*/ , time()-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
     session_destroy();
   }
 
   /*
    * Rechercher une session existante et gérer les différents cas possibles.
+   * Session::$tab_droits_page a déjà été renseigné lors de l'appel à Session::verif_droit_acces()
    * 
-   * @param array $TAB_PROFILS_AUTORISES
+   * @param void
    * @return void | exit ! (sur une string si ajax, une page html, ou modification $PAGE pour process SSO)
    */
-  public static function execute($TAB_PROFILS_AUTORISES)
+  public static function execute()
   {
+    
     if(!isset($_COOKIE[SESSION_NOM]))
     {
       // 1. Aucune session transmise
       Session::open_new(); Session::init();
-      if(!$TAB_PROFILS_AUTORISES['public'])
+      if(!Session::$tab_droits_page['public'])
       {
         // 1.1. Demande d'accès à une page réservée, donc besoin d'identification
         if(isset($_GET['verif_cookie']))
@@ -267,7 +315,7 @@ class Session
       if(!isset($_SESSION['USER_PROFIL']))
       {
         // 2.1. Pas de session retrouvée (sinon cette variable serait renseignée)
-        if(!$TAB_PROFILS_AUTORISES['public'])
+        if(!Session::$tab_droits_page['public'])
         {
           // 2.1.1. Session perdue ou expirée et demande d'accès à une page réservée : redirection pour une nouvelle identification
           Session::close(); Session::open_new(); Session::init();
@@ -283,12 +331,12 @@ class Session
       {
         // 2.2. Session retrouvée, mais louche car IP ou navigateur modifié (tentative de piratage ? c'est cependant difficile de récupérer le cookie d'un tiers, voire impossible avec les autres protections dont SACoche bénéficie).
         Session::close();
-        exit_error( 'Session incompatible avec votre connexion' /*titre*/ , 'Modification d\'adresse IP ou de navigateur a été détectée !<br />Par sécurité, vous devez vous reconnecter.' /*contenu*/ );
+        exit_error( 'Session incompatible avec votre connexion' /*titre*/ , 'Modification d\'adresse IP ou de navigateur détectée !<br />Par sécurité, vous devez vous reconnecter.' /*contenu*/ );
       }
       elseif($_SESSION['USER_PROFIL'] == 'public')
       {
         // 2.3. Session retrouvée, utilisateur non identifié
-        if(!$TAB_PROFILS_AUTORISES['public'])
+        if(!Session::$tab_droits_page['public'])
         {
           // 2.3.1. Espace non identifié => Espace identifié : redirection pour identification
           Session::exit_sauf_SSO(); // Pas d'initialisation de session sinon la redirection avec le SSO tourne en boucle.
@@ -301,11 +349,11 @@ class Session
       else
       {
         // 2.4. Session retrouvée, utilisateur identifié
-        if($TAB_PROFILS_AUTORISES[$_SESSION['USER_PROFIL']])
+        if(Session::$tab_droits_page[$_SESSION['USER_PROFIL']])
         {
           // 2.4.1. Espace identifié => Espace identifié identique : RAS
         }
-        elseif($TAB_PROFILS_AUTORISES['public'])
+        elseif(Session::$tab_droits_page['public'])
         {
           // 2.4.2. Espace identifié => Espace non identifié : création d'une nouvelle session vierge, pas de message d'alerte pour indiquer que la session perdue
           // A un moment il fallait tester que ce n'était pas un appel ajax,pour éviter une déconnexion si appel au calendrier qui était dans l'espace public, mais ce n'est plus le cas...
@@ -314,12 +362,106 @@ class Session
           Session::close();Session::open_new();Session::init();
           if($SimpleSAMLphp_SESSION) { $_SESSION['SimpleSAMLphp_SESSION'] = $SimpleSAMLphp_SESSION; }
         }
-        elseif(!$TAB_PROFILS_AUTORISES['public']) // (forcément)
+        elseif(!Session::$tab_droits_page['public']) // (forcément)
         {
           // 2.4.3. Espace identifié => Autre espace identifié incompatible : redirection pour une nouvelle identification
           // Pas de redirection SSO sinon on tourne en boucle (il faudrait faire une déconnexion SSO préalable).
           exit_error( 'Page interdite avec votre profil' /*titre*/ , 'Vous avez appelé une page inaccessible avec votre identification actuelle !<br />Déconnectez-vous ou retournez à la page précédente.' /*contenu*/ );
         }
+      }
+    }
+  }
+
+  // //////////////////////////////////////////////////
+  // Méthodes privées (internes) - Gestion CSRF
+  // //////////////////////////////////////////////////
+
+  /*
+   * Tester si une page est dispensée de contrôle CSRF
+   * 
+   * @param string
+   * @return bool
+   */
+  private static function page_avec_jeton_CSRF($page)
+  {
+    // //////////////////////////////////////////////////
+    // Tableau avec les pages pour lesquelles une vérification de jeton est effectuée lors d'un appel AJAX pour contrer les attaques de type CSRF
+    // En fait plutôt que de lister les pages qui en ont besoin, on liste les pages qui n'en ont pas besoin :)
+    // @see http://fr.wikipedia.org/wiki/Cross-site_request_forgery
+    // @see http://www.siteduzero.com/tutoriel-3-157576-securisation-des-failles-csrf.html
+    // //////////////////////////////////////////////////
+    $tab_sans_verif_csrf = array
+    (
+      // appel depuis plusieurs pages + pas de vérif utile
+      '_maj_select_directeurs',
+      '_maj_select_domaines',
+      '_maj_select_eleves',
+      '_maj_select_eval',
+      '_maj_select_matieres',
+      '_maj_select_matieres_famille',
+      '_maj_select_matieres_prof',
+      '_maj_select_niveaux',
+      '_maj_select_niveaux_famille',
+      '_maj_select_parents',
+      '_maj_select_piliers',
+      '_maj_select_professeurs',
+      '_maj_select_professeurs_directeurs',
+      'calque_date_calendrier',
+      'calque_voir_photo',
+      'compte_selection_items',
+      'conserver_session_active',
+      'evaluation_demande_eleve_ajout',
+      'fermer_session',
+      // sans objet (sans besoin d'identification) + sinon si la session a expiré alors elle est réinitialisée de façon transparente lors de l'appel ajax mais forcément le jeton de session n'est pas retrouvé
+      'public_accueil',
+      // sans objet car pas de formulaire
+      'public_login_SSO', 
+      'public_logout_SSO',
+      'releve',
+      'releve_pdf'
+    );
+    return (in_array($page,$tab_sans_verif_csrf)) ? FALSE : TRUE ;
+  }
+
+  // //////////////////////////////////////////////////
+  // Méthodes publiques - Gestion CSRF
+  // //////////////////////////////////////////////////
+
+  /*
+   * Générer un jeton CSRF pour une page donnée (le met en session).
+   * Inutile d'essayer de le fixer uniquement sur l'IP ou la Session car pour ce type d'attaque c'est le navigateur de l'utilisateur qui est utilisé.
+   * On est donc contraint d'utiliser un élément aléatoire ou indicateur de temps.
+   * Pour éviter de fausses alertes si utilisation de plusieurs onglets d'une même page, on ne retient pas qu'un seul jeton par page.
+   * La session doit être ouverte.
+   * 
+   * @param string $page
+   * @return void
+   */
+  public static function generer_jeton_anti_CSRF($page)
+  {
+    if(Session::page_avec_jeton_CSRF($page))
+    {
+      Session::$_CSRF_value = uniqid(); // sera écrit dans la page pour javascript l'envoie
+      $_SESSION['CSRF'][Session::$_CSRF_value.'.'.$page] = TRUE;
+    }
+  }
+
+  /**
+   * Appelé par ajax.php pour vérifier un jeton CSRF lors d'un appel ajax (soumission de données) d'une page donnée (vérifie sa valeur en session, quitte si pb).
+   * Peut être aussi potentiellement appelé par de rares pages PHP s'envoyant un formulaire sans passer par AJAX (seule officiel_accueil.php est concernée au 10/2012).
+   * On utilise REQUEST car c'est tranmis en POST si Ajax maison mais en GET si utilisation de jquery.form.js.
+   * La session doit être ouverte.
+   *
+   * @param string $page
+   * @return void
+   */
+  public static function verifier_jeton_anti_CSRF($page)
+  {
+    if(Session::page_avec_jeton_CSRF($page))
+    {
+      if( empty($_REQUEST['csrf']) || empty($_SESSION['CSRF'][$_REQUEST['csrf'].'.'.$page]) )
+      {
+        exit_error( 'Alerte CSRF' /*titre*/ , 'Jeton anti-CSRF invalide.<br />Plusieurs onglets ouverts avec des sessions incompatibles ?' /*contenu*/ , FALSE /*setup*/ );
       }
     }
   }

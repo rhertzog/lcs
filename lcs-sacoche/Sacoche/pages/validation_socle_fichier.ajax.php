@@ -156,7 +156,7 @@ if( in_array( $action , array('export_lpc','export_sacoche') ) && $nb )
 		$xml.= '</lpc>'."\r\n";
 		// Pour LPC, ajouter la signature via un appel au serveur sécurisé
 		$xml = utf8_decode($xml);
-		$xml = signer_exportLPC($_SESSION['SESAMATH_ID'],$_SESSION['SESAMATH_KEY'],$xml); // fonction sur le modèle de envoyer_arborescence_XML()
+		$xml = ServeurCommunautaire::signer_exportLPC($_SESSION['SESAMATH_ID'],$_SESSION['SESAMATH_KEY'],$xml); // fonction sur le modèle de envoyer_arborescence_XML()
 		if(substr($xml,0,5)!='<?xml')
 		{
 			exit(html($xml));
@@ -196,7 +196,7 @@ if( in_array( $action , array('import_sacoche','import_compatible') ) )
 		exit('Erreur : '.$result);
 	}
 	$fichier_contenu = file_get_contents(CHEMIN_DOSSIER_IMPORT.$fichier_nom);
-	$fichier_contenu = To::utf8($fichier_contenu); // Mettre en UTF-8 si besoin
+	$fichier_contenu = To::deleteBOM(To::utf8($fichier_contenu)); // Mettre en UTF-8 si besoin et retirer le BOM éventuel
 	$xml = @simplexml_load_string($fichier_contenu);
 	if($xml===FALSE)
 	{
