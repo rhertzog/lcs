@@ -5,7 +5,6 @@
  *
  * @package PhpMyAdmin
  */
-
 // modif lcs
  include "/var/www/lcs/includes/headerauth.inc.php";
  list ($idpers,$login) = isauth();
@@ -13,7 +12,6 @@
      $_LCS['pass']= urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
      $_LCS['login']=$login;
  }
- 
 /**
  * Detects which function to use for PMA_pow.
  *
@@ -3264,8 +3262,10 @@ function PMA_ajaxResponse($message, $success = true, $extra_data = array())
     // At this point, other headers might have been sent;
     // even if $GLOBALS['is_header_sent'] is true,
     // we have to send these additional headers.
-    header('Cache-Control: no-cache');
-    header("Content-Type: application/json");
+    if (!defined('TESTSUITE')) {
+        header('Cache-Control: no-cache');
+        header("Content-Type: application/json");
+    }
 
     echo json_encode($response);
 
