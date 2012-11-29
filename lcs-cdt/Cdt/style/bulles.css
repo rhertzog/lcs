@@ -1,0 +1,8 @@
+.ui-tooltip {
+        background: rgb(105,4,1);
+        border: 1px solid white;
+        padding: 2px;
+        color: white;
+        border-radius: 5px;
+        font:12px arial, verdana;
+    }

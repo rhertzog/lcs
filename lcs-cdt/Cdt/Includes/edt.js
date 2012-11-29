@@ -417,7 +417,7 @@ eventClick: function(event,jsEvent,view)
      },
      eventRender:function(event,element) {
          element.find('div.fc-event-content').attr("title",event.matiere);
-         $('div.fc-event-time').attr("title","Modifier/Supprimer");
+         $('div.fc-event-time').attr("title","Modifier Supprimer");
      },
     eventResize: function(event) {
         var date_deb=new Date(event.start),
@@ -462,10 +462,10 @@ eventClick: function(event,jsEvent,view)
            $("div.ui-resizable-handle").after("<span class='ui-icon ui-icon-close' title='Supprimer ce cours'>supprimer</span>");
            $("span.ui-icon-close").hide();
            $("span.ui-icon-pencil").hide();
-           $("div.fc-event-time[title],div.fc-event-content[title], span.ui-icon[title]").tooltip({
-            position: "center ",
-            offset: [20, -70],
-            opacity: 0.9
+           $("div.fc-event-time,div.fc-event-content, span.ui-icon").tooltip({
+           track: true,
+           show: {
+                effect: "slideDown"            }
              });
 
              if ($('a.fc-event').get().length==0)

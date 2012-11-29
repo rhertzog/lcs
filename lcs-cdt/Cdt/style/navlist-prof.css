@@ -143,13 +143,3 @@
 #arch-navlist a:hover{color:#fdb218;}
 #arch-navlist a#courant:active,a#courant2:active{color:#FDB218;}
 #arch-navlist a:active{color: #1b2c68;}
-.tooltip {
-    display:none;
-    background:url('../images/fond_tooltip.png');
-    font-size:12px;
-    height:15px;
-    /*width:160px;*/
-    padding:5px;
-    color:#eee;
-    -moz-box-shadow: 2px 2px 11px #000;
-    -webkit-box-shadow: 2px 2px 11px #000}

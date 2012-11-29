@@ -85,8 +85,17 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
 	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
-
-
+                 <link href="../style/bulles.css" rel="stylesheet" type="text/css" />
+<style type='text/css'>
+.ui-tooltip {
+        background: rgb(105,4,1);
+        border: 1px solid white;
+        padding: 2px;
+        color: white;
+        border-radius: 5px;
+        font:12px arial, verdana;
+    }
+    </style>
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
@@ -97,9 +106,9 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 	<script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 	<script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
-                  <script type="text/javascript" src="../Includes/sequence.js"></script>
-                  <script type="text/javascript" src="../Includes/cdt.js"></script>
-                  <script type="text/javascript" src="../Includes/jquery.tools.min.js"></script>
+   	<script type="text/javascript" src="../Includes/sequence.js"></script>
+    <script type="text/javascript" src="../Includes/cdt.js"></script>
+
 	<script type="text/javascript">
     // <![CDATA[
 	var duree=<?echo ini_get( 'session.gc_maxlifetime' );?>;

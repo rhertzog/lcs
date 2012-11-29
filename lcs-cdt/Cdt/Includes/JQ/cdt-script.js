@@ -140,9 +140,11 @@ $(document).ready(function() {
 
         $(function(){
             $('#deroul-menu img[title], #boutons input[title],#boutons a[title], #crsdu input[title]').tooltip({
-            position: "bottom right",
-            offset: [-30, -10],
-            effect: "fade"
+            track: true,
+           show: {
+                effect: "slideDown",
+                delay : 500
+                }
             });
        });
     });

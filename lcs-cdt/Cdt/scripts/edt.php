@@ -70,7 +70,7 @@ foreach($evts as $id => $ev) {
 <link rel='stylesheet' type='text/css' href='../../../libjs/jquery-ui/css/redmond/jquery-ui.css' />
 <link href="../style/style.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
-<script type="text/javascript" src="../Includes/jquery.tools.min.js"></script>
+
 <script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="../Includes/fullcalendar/fullcalendar.js"></script>
 <script type="text/javascript" src="../Includes/timepicker/jquery.ui.timepicker.js"></script>
@@ -78,25 +78,27 @@ foreach($evts as $id => $ev) {
 <style type='text/css'>
     #dialog , #dialog2{text-align: left; font-size:0.9em;}
     div#calendar { width: 800px;margin: 0 auto }
-    span.ui-icon-close {float:right;width:9px;height:10px;margin:-11px -9px;background-color:#ffffcc;background-position: -83px -131px;border: solid 1px  #3366CC;}
-    span.ui-icon-pencil {float: right;width:9px;height:10px;margin: -25px -9px;background-color:#ffffcc;background-position: -67px -115px;border: solid 1px  #3366CC;}
+    span.ui-icon-close {font-size: 0px;float:right;width:9px;height:10px;margin:-11px -9px;background-color:#ffffcc;background-position: -83px -131px;border: solid 1px  #3366CC;}
+    span.ui-icon-pencil {font-size: 0px;float: right;width:9px;height:10px;margin: -25px -9px;background-color:#ffffcc;background-position: -67px -115px;border: solid 1px  #3366CC;}
     .fc-event-vert .ui-resizable-s  {height:12px !important; }
     .ui-widget {font-size: 0.9em;}
-    .tooltip {display:none; background-color: #600e00;
-    font-size:12px;
-    height:15px;
-    /*width:160px;*/
-    padding:5px;
-    color:#eee;
-    -moz-box-shadow: 2px 2px 11px #666;
-    -webkit-box-shadow: 2px 2px 11px #666;
-    }
+    
     #mess {width:30%;background-color: #660000;color:#EEE;margin:5px auto;text-align:center;-moz-box-shadow: 2px 2px 11px #666;
     -webkit-box-shadow: 2px 2px 11px #666;
     -moz-border-radius: 12px;
     -webkit-border-radius: 12px;}
     a.message {color: #fff; font-family:   arial, verdana ; font-size : 14px;}
-</style>
+    
+    .ui-tooltip {
+        background: rgb(105,4,1);
+        border: 1px solid white;
+        width:90px;
+        padding: 2px;
+        color: white;
+        border-radius: 5px;
+        font:10px arial, verdana;
+    }
+    </style>
 </head>
 <body>
 <div id="cfg-container">

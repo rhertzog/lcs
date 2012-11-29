@@ -85,7 +85,7 @@ echo '</script> ';
 echo '<div id="tabs"><ul>';
 for ($loop=0; $loop < count ($clas); $loop++)
     {
-    echo '<li class="ong"><a  href="#tabs-'.$loop.'" tabindex="'.$numero[$loop].'">'.$mat[$loop].'<br />'. $clas[$loop].'</a></li>';
+    echo '<li class="ong"><a  href="#tabs-'.$loop.'" tab1dex="'.$numero[$loop].'">'.$mat[$loop].'<br />'. $clas[$loop].'</a></li>';
     }
 echo '</ul>';
  ?>
@@ -157,8 +157,8 @@ for ($loop=0; $loop < count ($clas); $loop++)
         <span class="ui-icon ui-icon-arrow-4 handdle"></span>
         <span class="order" >'.$OrdreSeq[$i].'</span>
         - '.$TitreCourSeq[$i].'
-        <span class="buttons"><button class="showform" tabindex="'.$IdSeq[$i].'">Editer</button>
-        <button class="delet" tabindex="'.$IdSeq[$i].'">Supprimer</button></span></li>';
+        <span class="buttons"><button class="showform" tab1dex="'.$IdSeq[$i].'">Editer</button>
+        <button class="delet" tab1dex="'.$IdSeq[$i].'">Supprimer</button></span></li>';
         }
     echo '</ul></div>';
     }

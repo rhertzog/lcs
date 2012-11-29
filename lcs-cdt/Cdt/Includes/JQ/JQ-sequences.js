@@ -17,7 +17,7 @@ $(function() {
 //insertion numero onglet dans le form
     $(function() {
         $("a").click(function() {
-        nums=$(this).attr("tabindex");
+        nums=$(this).attr("tab1dex");
         $("#numong").val(nums);
         });
     });
@@ -32,10 +32,10 @@ $(function() {
             var $item = $(this);
             var $list = $($item.find('a').attr('href')).find('.connectedSortable');
             //recherche du numero de l'onglet de destination
-            var num_dest = $item.find('a').attr('tabindex') ;
+            var num_dest = $item.find('a').attr('tab1dex') ;
             //recherche du numero de l'onglet source
             var ref_tab=(ui.draggable.parents()[1].id);
-            var num_source = $('a[href$="#'+ ref_tab +'"]').attr('tabindex');//la ligne de DOM0 :)
+            var num_source = $('a[href$="#'+ ref_tab +'"]').attr('tab1dex');//la ligne de DOM0 :)
             //objet expediteur
             var $clo =  $(ui.sender);
             // id de la sequence dans la bdd
@@ -141,7 +141,7 @@ $(function() {
                     $("#record").addClass("v_no");
                     $("#aide").addClass("v_no");
                     var num= $("button.showform").index(this)  ;
-                    var lop=$(this).attr('tabindex');
+                    var lop=$(this).attr('tab1dex');
                     $.post("get_seq.php", { num_seq: lop , action : "lire" },function(data){
                     var $resp = $(data);
                     var smalltitre =$(data).filter('#sht').text();
@@ -196,7 +196,7 @@ $(function() {
 //suppression d'une sequence
     $(function(){
             $("button.delet").click(function() {
-                    var lop=$(this).attr('tabindex');
+                    var lop=$(this).attr('tab1dex');
                     var num= $("button.delet").index(this)  ;
                     var num2=$('li.ong').get().length;
                     var id_sortable = $('li').eq(num+num2).parent()[0].id;
@@ -225,7 +225,7 @@ function reorganise(n){
         $("#" + n +".seq").find("li.sequ").each(function() {
                 pos++;
                 $(this).find(".order").text(pos);
-                var num=$(this).find("button.showform").attr('tabindex');
+                var num=$(this).find("button.showform").attr('tab1dex');
                 $.post("get_seq.php", { num_seq: num , posission: pos, action : "up_ordre" },function(data){
                 if (data != "OK") alert ("Erreur : " + data);	});
                 });
