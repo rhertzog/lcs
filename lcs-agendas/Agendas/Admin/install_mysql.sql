@@ -126,7 +126,7 @@ INSERT INTO `webcal_config` (`cal_setting`, `cal_value`) VALUES
 ('WEBCAL_TZ_CONVERSION', 'Y'),
 ('ADD_LINK_IN_VIEWS', 'Y'),
 ('ADMIN_OVERRIDE_UAC', 'Y'),
-('ALLOW_ATTACH', 'Y),
+('ALLOW_ATTACH', 'Y'),
 ('ALLOW_ATTACH_ANY', 'N'),
 ('ALLOW_ATTACH_PART', 'N'),
 ('ALLOW_COLOR_CUSTOMIZATION', 'Y'),
