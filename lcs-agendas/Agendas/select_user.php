@@ -54,6 +54,7 @@ if ( $ALLOW_VIEW_OTHER != 'Y' && ! $is_admin ) {
 	//fin modif2
   }
 
+
   echo '
       </select>
       <input type="submit" value="' . translate ( 'Go' ) . '" />

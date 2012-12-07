@@ -16,12 +16,13 @@
  * @author Ray Jones < rjones@umces.edu>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: date_formats.php,v 1.10.2.2 2007/08/06 02:28:32 cknudsen Exp $
+ * @version $Id: date_formats.php,v 1.10.2.3 2012/02/20 01:29:20 cknudsen Exp $
  * @package WebCalendar
  */
 // .
 // This will force $LANGUAGE to the current value
 // and eliminate having to double click the 'SAVE' button.
+function_exists('reset_language') or die('You cannot access this file directly!');
 reset_language ( get_pref_setting ( $login, 'LANGUAGE' ) );
 define_languages (); // Load the language list.
 reset ( $languages );

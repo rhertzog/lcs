@@ -1,5 +1,5 @@
 <?php
-/* $Id: controlpanel.php,v 1.12.2.3 2007/09/17 02:39:21 cknudsen Exp $
+/* $Id: controlpanel.php,v 1.12.2.4 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  * This page generates the JNLP contents
@@ -23,7 +23,7 @@ require_once 'includes/classes/WebCalendar.class';
 require_once 'includes/classes/Event.class';
 require_once 'includes/classes/RptEvent.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/translate.php';
 include 'includes/config.php';

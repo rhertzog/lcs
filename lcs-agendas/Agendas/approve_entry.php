@@ -1,6 +1,7 @@
 <?php
-/* $Id: approve_entry.php,v 1.50.2.4 2008/03/04 13:36:08 cknudsen Exp $ */
+/* $Id: approve_entry.php,v 1.50.2.5 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 require ( 'includes/classes/WebCalMailer.class' );
 
 $error = '';

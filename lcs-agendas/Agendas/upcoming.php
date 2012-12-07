@@ -1,5 +1,5 @@
 <?php
-/* $Id: upcoming.php,v 1.82.2.12 2008/04/06 14:20:00 umcesrjones Exp $
+/* $Id: upcoming.php,v 1.82.2.13 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  * Show a list of upcoming events (and possibly tasks).
@@ -87,7 +87,7 @@ require_once 'includes/classes/WebCalendar.class';
 require_once 'includes/classes/Event.class';
 require_once 'includes/classes/RptEvent.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/config.php';
 include 'includes/dbi4php.php';

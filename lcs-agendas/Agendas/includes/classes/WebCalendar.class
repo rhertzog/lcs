@@ -4,7 +4,7 @@
  * @author Adam Roben <adam.roben@gmail.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: WebCalendar.class,v 1.108.2.11 2008/09/28 00:40:06 cknudsen Exp $
+ * @version $Id: WebCalendar.class,v 1.108.2.15 2011/07/12 19:25:12 rjones6061 Exp $
  * @package WebCalendar
  */
 
@@ -124,6 +124,15 @@ class WebCalendar {
       'week_details.php', 'year.php', 'minical.php' );
     $DMW = in_array ( $SCRIPT, $special );
 
+    // Security precaution.  Don't allow <script> to be included in
+    // a URL in any way.
+    if ( preg_match ( '/\s*script/i', $_SERVER['QUERY_STRING'] ) ) {
+      // No need to have a graceful exit for this since it should only
+      // happen to malicioius crapweasels.
+      echo "<html><body><h2>User Error</h2><p>Bite me.</p></html>\n";
+      exit;
+    }
+
     // Unset some variables that shouldn't be set.
     unset ( $user_inc );
   }
@@ -148,7 +157,7 @@ class WebCalendar {
       load_user_preferences ();
 
     // Error-check some commonly used form variable names.
-    $cat_id = getValue ( 'cat_id', '[\-0-9]+' );
+    $cat_id = getValue ( 'cat_id', '[\-0-9,]+' );
     $date = getValue ( 'date', '[0-9]+' );
     $friendly = getValue ( 'friendly', '[01]' );
     $override = getValue ( 'override', '[01]' );
@@ -513,7 +522,7 @@ class WebCalendar {
             // Invalid session cookie.
             $session_not_found = true;
           else {
-            $login_pw = split( '\|', decode_string ( $encoded_login ) );
+            $login_pw = explode( '|', decode_string ( $encoded_login ) );
             $login = $login_pw[0];
             $cryptpw = $login_pw[1];
 
@@ -869,9 +878,9 @@ class WebCalendar {
 
     if (extension_loaded('mbstring')) {
       $mb_lang = strtok($lang, '-');
-     if (@mb_language($mb_lang) && mb_internal_encoding(translate('charset'))) {
+      if (@mb_language($mb_lang) && mb_internal_encoding(translate('charset'))) {
         $enable_mbstring = true;
-     } else {
+      } else {
         $enable_mbstring = false;
       }
     }

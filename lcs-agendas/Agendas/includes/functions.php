@@ -4,7 +4,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: functions.php,v 1.520.2.40 2008/09/27 14:51:48 cknudsen Exp $
+ * @version $Id: functions.php,v 1.520.2.51 2012/02/28 02:07:45 cknudsen Exp $
  * @package WebCalendar
  */
 
@@ -29,8 +29,6 @@
  * @param string $msg Text to be logged
  */
 function do_debug ( $msg ) {
-//global $messdebug;
-//	$messdebug.= $msg ."<br>";
   // log to /tmp/webcal-debug.log
   // error_log ( date ( 'Y-m-d H:i:s' ) . "> $msg\n<br />",
   // 3, 'c:/wamp/logs/debug.txt' );
@@ -47,8 +45,8 @@ function do_debug ( $msg ) {
  *
  * @return string  The text altered to have HTML links for any web links.
  */
-function activate_urls ( $text ) {
-  return ereg_replace ( '[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]',
+function activate_urls( $text ) {
+  return preg_replace( '/[a-z]+:\/\/[^<> \t\r\n]+[a-z0-9\/]/i',
     '<a href="\\0">\\0</a>', $text );
 }
 
@@ -389,7 +387,7 @@ function check_for_conflicts ( $dates, $duration, $eventstart,
               user_load_variables ( $row->getLogin (), 'conflict_' );
               $conflicts .= $GLOBALS['conflict_fullname'] . ': ';
             }
-            $conflicts .= ( $row->getAccess () == 'C' 
+            $conflicts .= ( $row->getAccess () == 'C'
               && $row->getLogin () != $login && !
               $is_assistant && ! $is_nonuser_admin
               // Assistants can see confidential stuff.
@@ -793,7 +791,7 @@ function date_to_epoch ( $d , $gmt=true) {
     $di = substr ( $d, 10, 2 );
     $ds = substr ( $d, 12, 2 );
   }
-  
+
   if ( $gmt )
     return gmmktime ( $dH, $di, $ds,
       substr ( $d, 4, 2 ),
@@ -1120,7 +1118,7 @@ function display_navigation ( $name, $show_arrows = true, $show_cats = true ) {
     $ret .= date_to_str ( date ( 'Ymd', $wkstart ), '', false )
      . '&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;'
      . date_to_str ( date ( 'Ymd', $wkend - 86400 ), '', false )
-     . ( $DISPLAY_WEEKNUMBER == 'Y' ? " &nbsp;&nbsp;&nbsp;\n(" . translate ( 'Week' ) . ' '
+     . ( $DISPLAY_WEEKNUMBER == 'Y' ? " &nbsp;&nbsp;&nbsp;\n(" . translate ( 'Week' ) . '  '
        . date ( 'W', $wkstart + 86400 ) . ')' : '' );
   elseif ( $name == 'month' || $name == 'view_l' ) {
     $ret .= $spacer
@@ -1138,7 +1136,7 @@ function display_navigation ( $name, $show_arrows = true, $show_cats = true ) {
    . ( $is_assistant
     ? '<br />-- ' . translate ( 'Assistant mode' ) . ' --' : '' ) . '</span>'
    . ( $CATEGORIES_ENABLED == 'Y' && $show_cats &&
-   //modif LCS
+    //modif LCS
     ( ! $user || ( $user == $login || $is_assistant ) ) ? ''
      . print_category_menu ( $name,
       sprintf ( "%04d%02d%02d", $thisyear, $thismonth, $thisday ),
@@ -1375,7 +1373,7 @@ function display_small_tasks ( $cat_id ) {
         <th colspan="6">' . translate ( 'TASKS' ) . '</th>
         <th align="right" colspan="2"><a href="edit_entry.php?' . $u_url
    . 'eType=task' . $caturl
-   . '"><img src="images/new.gif" alt="+" class="new" /></a></th>
+   . '"><img src="images/new.png" alt="+" class="new" /></a></th>
       </tr>
       <tr class="header">
         <td rowspan="2" class="sorterbottom">!&nbsp;</td>' . $ajax[0] . '
@@ -1498,7 +1496,7 @@ function display_time ( $time = '', $control = 0, $timestamp = '',
 
     $ret = sprintf ( "%d:%02d%s", $hour, $min, $ampm );
   } else
-    $ret = sprintf ( "%02d:%02d", $hour, $min );
+    $ret = sprintf ( "%02d&#58;%02d", $hour, $min );
 
   if ( $control & 2 )
     $ret .= $tzid;
@@ -1608,13 +1606,38 @@ function display_unapproved_events ( $user ) {
  * @global resource  Database connection
  */
 function do_redirect ( $url ) {
-  global $_SERVER, $c, $SERVER_SOFTWARE;
+  global $_SERVER, $c, $SERVER_SOFTWARE, $SERVER_URL;
 
   // Replace any '&amp;' with '&' since we don't want that in the HTTP header.
   $url = str_replace ( '&amp;', '&', $url );
 
   if ( empty ( $SERVER_SOFTWARE ) )
     $SERVER_SOFTWARE = $_SERVER['SERVER_SOFTWARE'];
+
+  // $SERVER_URL should end in '/', but we may not have it yet if we are
+  // redirecting to the login.  If not, then pull it from the database.
+  if ( empty ( $SERVER_URL ) && ! empty ( $c ) ) {
+    $res = dbi_query ( "SELECT cal_value FROM webcal_config " .
+      "WHERE cal_setting = 'SERVER_URL'" );
+    if ( $res ) {
+      if ( $row = dbi_fetch_row ( $res ) ) {
+        $SERVER_URL = $row[0];
+      }
+    }
+    dbi_free_result ( $res );
+  }
+
+  // If we have the server URL, then use a full URL, which is technically
+  // required (but all browsers accept relative URLs here).
+  // BUT, only do this if our URL does not start with '/' because then
+  // we could end up with a URL like:
+  //   http://www.k5n.us/webcalendar/webcalendar/month.php
+  if ( ! empty ( $SERVER_URL ) && substr ( $url, 0, 1 ) != '/' ) {
+    $url = $SERVER_URL . $url;
+  }
+
+//echo "<pre>"; print_r ( debug_backtrace() ); echo "\n</pre>\n";
+//echo "URL: $url <br>"; exit;
 
   $meta = '';
   if ( ( substr ( $SERVER_SOFTWARE, 0, 5 ) == 'Micro' ) ||
@@ -1864,7 +1887,7 @@ function generate_printer_friendly ( $hrefin = '' ) {
 
   // Set this to enable printer icon in top menu.
   $href = ( empty ( $href ) ? $SCRIPT : $hrefin ) . '?'
-   . ( empty ( $_SERVER['QUERY_STRING'] ) ? '' : $_SERVER['QUERY_STRING'] );
+   . ( empty ( $_SERVER['QUERY_STRING'] ) ? '' : addslashes(htmlentities($_SERVER['QUERY_STRING'])) );
   $href .= ( substr ( $href, -1 ) == '?' ? '' : '&' ) . 'friendly=1';
   $show_printer = true;
   if ( empty ( $hrefin ) ) // Menu will call this function without parameter.
@@ -1895,7 +1918,7 @@ function generate_refresh_meta () {
     ? '
     <meta http-equiv="refresh" content="'
      . $AUTO_REFRESH_TIME * 60 // Convert to seconds.
-     . '; url=' . $REQUEST_URI . '" />' : '' );
+     . '; url=' . addslashes(htmlentities($REQUEST_URI)) . '" />' : '' );
 }
 
 /* Returns all the dates a specific event will fall on
@@ -1991,7 +2014,7 @@ function get_all_dates ( $date, $rpt_type, $interval = 1, $Byxxx = '',
         } else {
           $td = $cdate + ( $dow * 86400 );
           $cdow = date ( 'w', $td );
-          if ( get_RRULE ( $date, $td, $Byxxx ) 
+          if ( get_RRULE ( $date, $td, $Byxxx )
             && $cdow == $dow )
             $ret[$n++] = $td;
         }
@@ -2115,7 +2138,7 @@ function get_all_dates ( $date, $rpt_type, $interval = 1, $Byxxx = '',
           } //end foreach bymonth
         } elseif ( count ( $byyearday ) ) { // end if isset bymonth
           foreach ( $byyearday as $yearday ) {
-            ereg ( '([-\+]{0,1})?([0-9]{1,3})', $yearday, $match );
+            preg_match( '/([-+]?)(\d{1,3})/', $yearday, $match );
             if ( $match[1] == '-' && ( $cdate >= $date ) )
               $yret[] =
               mktime ( $hour, $minute, 0, 12, 31 - $match[2] - 1, $thisyear );
@@ -2210,14 +2233,14 @@ function get_RRULE ( $date, $cdate, $Byxxx ) {
 function getBymonth ( $cdate, $bymonth ) {
 
  if ( empty ( $bymonth ) )
-   return true;   
+   return true;
  return ( in_array ( date ( 'n', $cdate ), explode ( ',', $bymonth ) ) );
 }
 
 function getByweekno ( $cdate, $byweekno ) {
 
  if ( empty ( $byweekno ) )
-   return true;   
+   return true;
  return ( in_array ( date ( 'W', $cdate ), explode ( ',', $byweekno ) ) );
 }
 
@@ -2232,7 +2255,7 @@ function getByyearday ( $cdate, $byyearday  ) {
   return ( in_array ( $doy, $byyearday ) ||
     in_array ( $diyReverse, $byyearday ) );
 }
-  
+
 function getBymonthday( $cdate, $bymonthday  ) {
 
  if ( empty ( $bymonthday ) )
@@ -2242,17 +2265,17 @@ function getBymonthday( $cdate, $bymonthday  ) {
    $dimReverse = $dom - $dim -1;
    return ( in_array ( $dom, $bymonthday ) ||
      in_array ( $dimReverse, $bymonthday ) );
-}        
+}
 
 function getByday ( $cdate, $byday, $type, $date ) {
 
  if ( empty ( $byday ) )
-   return true; 
+   return true;
   $bydayvalues = get_byday ( explode ( ',',$byday ), $cdate, $type, $date );
   return( in_array ( $cdate, $bydayvalues ) );
 
 }
-          
+
 /* Get the dates the correspond to the byday values.
  *
  * @param array $byday   ByDay values to process (MO,TU,-1MO,20MO...)
@@ -2579,10 +2602,9 @@ function get_my_nonusers ( $user = '', $add_public = false, $reason = 'invite' )
 function get_my_users ( $user = '', $reason = 'invite' ) {
   global $GROUPS_ENABLED, $is_admin, $is_nonuser, $is_nonuser_admin, $login,
   $my_user_array, $USER_SEES_ONLY_HIS_GROUPS, $USER_SORT_ORDER;
-// Modification LCS 1/1
+  // Modification LCS 1/1
   global $user_inc;
   $this_user = ( empty ( $user ) ? $login : $user );
-
   // Return the global variable (cached).
   if ( ! empty ( $my_user_array[$this_user][$reason] ) &&
       is_array ( $my_user_array ) )
@@ -2590,7 +2612,7 @@ function get_my_users ( $user = '', $reason = 'invite' ) {
 
   if ( $GROUPS_ENABLED == 'Y' && $USER_SEES_ONLY_HIS_GROUPS == 'Y' && ! $is_admin ) {
     // Get groups with current user as member.
-    if ( $user_inc == "user-ldap.php" ) {
+      if ( $user_inc == "user-ldap.php" ) {
     	return get_users_in_my_groups();
     } else {
     $rows = dbi_get_cached_rows ( 'SELECT cal_group_id FROM webcal_group_user
@@ -2666,7 +2688,6 @@ function get_my_users ( $user = '', $reason = 'invite' ) {
   }
   $my_user_array[$this_user][$reason] = $ret;
   return $ret;
-  
 }
 
 /* Gets a list of nonuser calendars and return info in an array.
@@ -2972,11 +2993,11 @@ function get_users_event_ids ( $user ) {
  */
 function get_web_browser () {
   $agent = getenv ( 'HTTP_USER_AGENT' );
-  if ( ereg ( 'MSIE [0-9]', $agent ) )
+  if ( preg_match ( '/MSIE \d/', $agent ) )
     return 'MSIE';
-  if ( ereg ( 'Mozilla/[234]', $agent ) )
+  if ( preg_match ( '/Mozilla\/[234]/', $agent ) )
     return 'Netscape';
-  if ( ereg ( 'Mozilla/[5678]', $agent ) )
+  if ( preg_match ( '/Mozilla\/[5678]/', $agent ) )
     return 'Mozilla';
   return 'Unknown';
 }
@@ -3060,7 +3081,7 @@ function getOverLap ( $item, $i, $parent = true ) {
   $recurse = 0;
 
   $midnight = gmmktime ( - ( date ( 'Z', $item->getDateTimeTS () ) / 3600 ),
-    0, 0, $lt[4] + 1, $lt[3] + 1, $lt[5] );
+    0, 0, $lt[4] + 1, $lt[3] + 1, 1900 + $lt[5] );
   if ( $parent ) {
     $realEndTS = $item->getEndDateTimeTS ();
     $originalDate = $item->getDate ();
@@ -3324,7 +3345,7 @@ function html_for_add_icon ( $date = 0, $hour = '', $minute = '', $user = '' ) {
    . ( $minute > 0 ? '&amp;minute=' . $minute : '' )
    . ( empty ( $user ) ? '' : '&amp;defusers=' . $user )
    . ( empty ( $cat_id ) ? '' : '&amp;cat_id=' . $cat_id )
-   . '"><img src="images/new.gif" class="new" alt="' . $newEntryStr . '" /></a>';
+   . '"><img src="images/new.png" class="new" alt="' . $newEntryStr . '" /></a>';
 }
 
 /* Generates the HTML for an event to be viewed in the day-at-glance (day.php).
@@ -3371,7 +3392,7 @@ function html_for_event_day_at_a_glance ( $event, $date ) {
     $not_my_entry = ( ( $login != $user && strlen ( $user ) ) ||
     ( $login != $event->getLogin () && strlen ( $event->getLogin () ) ) );
     $can_access = ( $not_my_entry && $event->getAccess () != 'P' ? 0 : $can_access );
-  } 
+  }
 
   // If TZ_OFFSET make this event before the start of the day or
   // after the end of the day, adjust the time slot accordingly.
@@ -3797,6 +3818,8 @@ function load_global_settings () {
     $GLOBALS['TIMEZONE'] = $GLOBALS['SERVER_TIMEZONE'];
 
   set_env ( 'TZ', $GLOBALS['TIMEZONE'] );
+  if ( function_exists ( "date_default_timezone_set" ) )
+    date_default_timezone_set ( $GLOBALS['TIMEZONE'] );
 
   // If app name not set.... default to "Title". This gets translated later
   // since this function is typically called before translate.php is included.
@@ -4090,9 +4113,9 @@ function load_user_preferences ( $guest = '' ) {
       if ( $row[2] == 'E' )
         $url .= 'r.php?';
       elseif ( $row[2] == 'S' )
-        $url .= 't.php?timeb=1&amp;';
+        $url .= 't.php?';
       elseif ( $row[2] == 'T' )
-        $url .= 't.php?timeb=0&amp;';
+        $url .= 't.php?';
       else
         $url .= strtolower ( $row[2] ) . '.php?';
 
@@ -4416,7 +4439,7 @@ function print_date_entries ( $date, $user, $ssi = false ) {
      . ( strpos ( 'fullnew', $tmp ) !== false ? '' : ' Quarter' ) . ' Moon' ) );
     $ret = ( $can_add ? '
         <a title="' . $newEntryStr . '" href="edit_entry.php?' . $userCatStr
-       . 'date=' . $date . '"><img src="images/new.gif" alt="' . $newEntryStr
+       . 'date=' . $date . '"><img src="images/new.png" alt="' . $newEntryStr
        . '" class="new" /></a>' : '' ) . '
         <a class="dayofmonth" href="day.php?' . $userCatStr . 'date=' . $date
      . '">' . substr ( $date, 6, 2 ) . '</a>' . ( empty ( $tmp )
@@ -4748,8 +4771,8 @@ function print_error_header () {
 function print_not_auth ( $errno='', $full = false ) {
   global $settings;
   return ( $full ? print_error_header () : '' )
-   . '!!!' . translate ( 'You are not authorized.' ) 
-     . ( ! empty ( $settings['mode'] ) && $settings['mode'] == 'dev' ? ' ' 
+   . '!!!' . translate ( 'You are not authorized.' )
+     . ( ! empty ( $settings['mode'] ) && $settings['mode'] == 'dev' ? ' '
      . $errno : '' )  . "\n";
 }
 
@@ -5020,14 +5043,14 @@ function query_events ( $user, $want_repeated, $date_filter, $cat_id = '',
       }
 
       if ( $want_repeated && ! empty ( $row[20] ) ) // row[20] = cal_type
-        $item =& new RepeatingEvent ( $evt_name, $evt_descr, $row[2], $row[3],
+        $item = new RepeatingEvent ( $evt_name, $evt_descr, $row[2], $row[3],
           $row[4], $row[5], $row[6], $row[7], $row[8], $row[9], $row[10],
           $primary_cat, $row[11], $row[12], $row[13], $row[14], $row[15],
           $row[16], $row[17], $row[18], $row[19], $row[20], $row[21], $row[22],
           $row[23], $row[24], $row[25], $row[26], $row[27], $row[28], $row[29],
           $row[30], $row[31], $row[32], array (), array (), array () );
       else
-        $item =& new Event ( $evt_name, $evt_descr, $row[2], $row[3], $row[4],
+        $item = new Event ( $evt_name, $evt_descr, $row[2], $row[3], $row[4],
           $row[5], $row[6], $row[7], $row[8], $row[9], $row[10], $primary_cat,
           $row[11], $row[12], $row[13], $row[14], $row[15], $row[16], $row[17],
           $row[18], $row[19] );
@@ -5133,7 +5156,7 @@ function query_events ( $user, $want_repeated, $date_filter, $cat_id = '',
           // } else {
           $dates = get_all_dates ( $date,
             $result[$i]->getRepeatType (), $result[$i]->getRepeatFrequency (),
-            array ($result[$i]->getRepeatByMonth (), 
+            array ($result[$i]->getRepeatByMonth (),
             $result[$i]->getRepeatByWeekNo (),
             $result[$i]->getRepeatByYearDay (),
             $result[$i]->getRepeatByMonthDay (),
@@ -5305,7 +5328,7 @@ function send_doctype ( $doc_title = '' ) {
 
   return '<?xml version="1.0" encoding="' . $charset . '"?' . '>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "DTD/xhtml1-transitional.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' . $lang . '" lang="'
    . $lang . '">
   <head>
@@ -5423,7 +5446,7 @@ function set_env ( $val, $setting ) {
 function set_today ( $date = '' ) {
   global $day, $month, $thisdate, $thisday, $thismonth, $thisyear, $today, $year;
 
-  $today = mktime ();
+  $today = time ();
 
   if ( empty ( $date ) ) {
     $thisyear = ( empty ( $year ) ? date ( 'Y', $today ) : $year );
@@ -6087,6 +6110,32 @@ function site_extras_for_popup ( $id ) {
   }
 
   return $ret;
+}
+
+/**
+  * Require a valid HTT_REFERER value in the HTTP header.  This will
+  * prevent XSRF (cross-site request forgery).
+  *
+  * For example, suppose a * a "bad guy" sends an email with a link that
+  * would delete an event in webcalendar to the admin.  If the admin user
+  * clicks on that link we don't want to actually delete the event.
+  */
+function require_valide_referring_url ()
+{
+  global $SERVER_URL;
+
+  if ( empty( $_SERVER['HTTP_REFERER'] ) ) {
+    // Missing the REFERER value
+    die_miserable_death ( translate ( 'Invalid referring URL' ) );
+  }
+  if ( ! preg_match ( "@$SERVER_URL@i", $_SERVER['HTTP_REFERER'] ) ) {
+    // Gotcha.  URL of referring page is not the same as our server.
+    // This can be an instance of XSRF.
+    // (This may also happen when more than address is used for your server.
+    // However, you're not supposed to do that with this version of
+    // WebCalendar anyhow...)
+    die_miserable_death ( translate ( 'Invalid referring URL' ) );
+  }
 }
 
 ?>

@@ -1,4 +1,4 @@
-/* $Id: upgrade-ibase.sql,v 1.28.2.7 2008/09/28 00:07:33 cknudsen Exp $ */
+/* $Id: upgrade-ibase.sql,v 1.28.2.12 2012/02/29 01:00:28 cknudsen Exp $ */
 /*UPGRADE_V0.9.14*/
 UPDATE WEBCAL_ENTRY SET CAL_TIME = -1 WHERE CAL_TIME IS NULL;
 CREATE TABLE WEBCAL_ENTRY_REPEATS
@@ -313,3 +313,12 @@ CREATE INDEX IWEBCAL_TIMEZONESNEWINDEX ON WEBCAL_TIMEZONES(TZID);
 
 /*upgrade_v1.2.0*/
 
+/*upgrade_v1.2.1*/
+
+/*upgrade_v1.2.2*/
+
+/*upgrade_v1.2.3*/
+
+/*upgrade_v1.2.4*/
+
+/*upgrade_v1.2.5*/

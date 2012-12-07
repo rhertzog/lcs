@@ -1,5 +1,5 @@
 <?php
-/* $Id: access.php,v 1.53.2.6 2008/04/03 15:01:50 umcesrjones Exp $
+/* $Id: access.php,v 1.53.2.7 2012/02/28 02:07:45 cknudsen Exp $
  *
  * This page is used to manage user access rights.
  *
@@ -18,6 +18,7 @@
  *             includes/access.php. Each should be either 'Y' or 'N'.
  */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $allow_view_other =
 ( ! empty ( $ALLOW_VIEW_OTHER ) && $ALLOW_VIEW_OTHER == 'Y' );
@@ -292,7 +293,7 @@ if ( ! empty ( $guser ) || ! $is_admin ) {
      . '>' . $defConfigStr . '</option>';
 
     for ( $i = 0, $cnt = count ( $userlist ); $i < $cnt; $i++ ) {
-    // Modification LCS
+        // Modification LCS
     if ($userlist[$i]['cal_cat']."_".$userlist[$i]['cal_group'] != $userlist[$i-1]['cal_cat']."_".$userlist[$i]['cal_group'])
     	echo "<optgroup label='".$userlist[$i]['cal_cat']."_".$userlist[$i]['cal_group']."'>\n";
     //fin modif1
@@ -302,7 +303,7 @@ if ( ! empty ( $guser ) || ! $is_admin ) {
          . ( ! empty ( $otheruser ) && $otheruser == $userlist[$i]['cal_login']
           ? $selected : '' )
          . '>' . $userlist[$i]['cal_fullname'] . '</option>';
-          // Modification LCS
+      // Modification LCS
     if ($userlist[$i]['cal_cat']."_".$userlist[$i]['cal_group'] != $userlist[$i+1]['cal_cat']."_".$userlist[$i+1]['cal_group'])
 	    $users .= "<\optgroup>\n";
 	//fin modif2

@@ -1,8 +1,10 @@
 <?php
-/* $Id: del_entry.php,v 1.75.2.4 2008/02/12 01:59:48 cknudsen Exp $ */
+/* $Id: del_entry.php,v 1.75.2.5 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
 require ( 'includes/classes/WebCalMailer.class' );
 $mail = new WebCalMailer;
+
+require_valide_referring_url ();
 
 $can_edit = $my_event = false;
 $other_user = '';

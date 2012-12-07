@@ -1,4 +1,4 @@
-/* $Id: upgrade-oracle.sql,v 1.27.2.7 2008/09/28 00:07:33 cknudsen Exp $ */
+/* $Id: upgrade-oracle.sql,v 1.27.2.12 2012/02/29 01:00:28 cknudsen Exp $ */
 /*upgrade_v0.9.14*/
 UPDATE webcal_entry SET cal_time = -1 WHERE cal_time is null;
 CREATE TABLE webcal_entry_repeats (
@@ -299,3 +299,12 @@ CREATE TABLE webcal_timezones (
 
 /*upgrade_v1.2.0*/
 
+/*upgrade_v1.2.1*/
+
+/*upgrade_v1.2.2*/
+
+/*upgrade_v1.2.3*/
+
+/*upgrade_v1.2.4*/
+
+/*upgrade_v1.2.5*/

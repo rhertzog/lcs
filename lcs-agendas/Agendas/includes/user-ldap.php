@@ -1,11 +1,11 @@
 <?php
-// Modification LCS 1/9
+// modif lcs
 include_once ($basedir."Annu/includes/ldap.inc.php");
 include_once ($basedir."Annu/includes/ihm.inc.php");
-// Fin modification LCS  1/9
+// eom
 defined ( '_ISVALID' ) or die ( 'You cannot access this file directly!' );
 /*
- * $Id: user-ldap.php,v 1.42.2.1 2007/08/17 14:39:00 umcesrjones Exp $
+ * $Id: user-ldap.php,v 1.42.2.2 2011/07/12 19:28:23 rjones6061 Exp $
  * LDAP user functions.
  * This file is intended to be used instead of the standard user.php file.
  * I have not tested this yet (I do not have an LDAP server running yet),
@@ -35,8 +35,9 @@ $admin_can_disable_user = false;
 //
 // Name or address of the LDAP server
 //  For SSL/TLS use 'ldaps://localhost'
+//modif lcs
 //$ldap_server = 'localhost';
-
+//eom
 // Port LDAP listens on (default 389)
 $ldap_port = '389';
 
@@ -48,8 +49,10 @@ $set_ldap_version = false;
 $ldap_version = '3'; // (usually 3)
 
 // base DN to search for users
+// modif lcs
 //$ldap_base_dn = 'ou=people,dc=company,dc=com';
-
+//eom
+//
 // The ldap attribute used to find a user (login).
 // E.g., if you use cn,  your login might be "Jane Smith"
 //       if you use uid, your login might be "jsmith"
@@ -60,18 +63,15 @@ $ldap_login_attr = 'uid';
 // If left empty the search will be made in anonymous.
 //
 // *** We do NOT recommend storing the root LDAP account info here ***
-//$ldap_admin_dn = '';  // user DN
-//$ldap_admin_pwd = ''; // user password
-// LCS Modification 2/9
+// modif lcs
 $ldap_admin_dn = $adminDn;
 $ldap_admin_pwd = $adminPw;
-// LCS Fin modification 2/9
+// eom
 
 //------ Admin Group Settings ------//
 //
 // A group name (complete DN) to find users with admin rights
-//// LCS Modification 3/9
-//$ldap_admin_group_name = 'cn=webcal_admin,ou=group,dc=company,dc=com';
+//modif lcs
 $ldap_admin_group_name = "cn=lcs_is_admin,ou=rights,".$ldap_base_dn;
 // What type of group do we want (posixgroup, groupofnames, groupofuniquenames)
 //$ldap_admin_group_type = 'posixgroup';
@@ -79,8 +79,8 @@ $ldap_admin_group_type = 'groupofnames';
 // The LDAP attribute used to store member of a group
 //$ldap_admin_group_attr = 'memberuid';
 $ldap_admin_group_attr = 'member';
-// LCS Fin modification 3/9
-//
+// eom
+
 //------ LDAP Filter Settings ------//
 //
 // LDAP filter used to limit search results and login authentication
@@ -103,16 +103,12 @@ $ldap_user_attr = array (
 $ldap_admin_group_attr = strtolower($ldap_admin_group_attr);
 $ldap_admin_group_type = strtolower($ldap_admin_group_type);
 
-// LCS Modification  4/9
-// Fonction de comparaison utilisée dans la fonction usort
-// de user_get_users()
-// Tri du tableau $list_login par ordre alphabétique sur
-// le champ sn (Nom)
-
+// modif lcs
 function cmp ($a, $b) {
     return strcmp($a["cal_lastname"], $b["cal_lastname"]);
 }
-// LCS Fin modification 4/9
+// eom
+//
 // Function to search the dn of a given user the error message will
 // be placed in $error.
 // params:
@@ -241,7 +237,7 @@ function user_load_variables ( $login, $prefix ) {
       if ( $info['count'] != 1 ) {
         $error = 'Invalid login';
       } else {
-        // LCS Modification 5/9 Determination du prenom "firstname" et conversion UTF8
+        // modif lcs
         $tmp_cn =  utf8_decode($info[0]["cn"][0]);
         $tmp_sn =  " ".utf8_decode($info[0]["sn"][0]);
         $tmp_cal_firstname =  ereg_replace($tmp_sn,"",$tmp_cn);
@@ -253,7 +249,7 @@ function user_load_variables ( $login, $prefix ) {
         $GLOBALS[$prefix . 'fullname'] = utf8_decode($info[0]["cn"][0]);
         $GLOBALS[$prefix . 'is_admin'] = user_is_admin($login,get_admins());
         $ret = true;
-		// fin de modif 5/9
+        // eom
       }
       @ldap_free_result ( $sr );
     }
@@ -272,7 +268,7 @@ function user_load_variables ( $login, $prefix ) {
 //   $lastname - last name
 //   $email - email address
 //   $admin - is admin? ("Y" or "N")
-function user_add_user ( $user, $password, $firstname, $lastname, $email, 
+function user_add_user ( $user, $password, $firstname, $lastname, $email,
   $admin, $enabled ) {
   global $error;
 
@@ -287,7 +283,7 @@ function user_add_user ( $user, $password, $firstname, $lastname, $email,
 //   $lastname - last name
 //   $email - email address
 //   $admin - is admin?
-function user_update_user ( $user, $firstname, $lastname, $email, 
+function user_update_user ( $user, $firstname, $lastname, $email,
   $admin, $enabled ) {
   global $error;
 
@@ -463,6 +459,7 @@ function user_get_users ( $publicOnly=false ) {
       for ( $i = 0; $i < $info['count']; $i++ ) {
         $ret[$count++] = array (
           'cal_login' => $info[$i][$ldap_user_attr[0]][0],
+           //modif lcs
           'cal_lastname' => utf8_decode($info[$i][$ldap_user_attr[1]][0]),
           'cal_firstname' =>utf8_decode( $info[$i][$ldap_user_attr[2]][0]),
           'cal_email' => $info[$i][$ldap_user_attr[4]][0],
@@ -474,9 +471,8 @@ function user_get_users ( $publicOnly=false ) {
     }
     @ldap_close ( $ds );
   }
-  // LCS Modification 7/9 Tri du tableau
   usort($ret,cmp);
-  //fin modif 7
+  //eom
   return $ret;
 }
 
@@ -533,8 +529,8 @@ function get_admins () {
 //
 //  ex: stripdn(uid=jeffh,ou=people,dc=example,dc=com) returns jeffh
 function stripdn($dn){
-  list ($uid,$trash) = split (',', $dn, 2);
-  list ($trash,$user) = split ('=', $uid);
+  list ($uid,$trash) = explode (',', $dn, 2);
+  list ($trash,$user) = explode ('=', $uid);
   return($user);
 }
 
@@ -579,7 +575,8 @@ function connect_and_bind () {
   }
   return $ret;
 }
-// LCS Modification 9/9 Recjerche des doublons dans un tableau
+
+// modif lcs (ajout)
 function doublon($tab) {
   $tab1 = array();
 
@@ -656,7 +653,7 @@ function get_users_in_my_groups () {
 
 		// Recherche des uids des membres de ses groupes secondaires
 		//echo $group_principal;exit;
-		//modif 
+		//modif
 		$index=0;
 		if ($group_principal == "Administratifs" || $group_principal == "Profs") {
 			$uids[$loop] = search_uids ("(cn=Administratifs)", "half");
@@ -666,7 +663,7 @@ function get_users_in_my_groups () {
   			$users_in_my_groups[$index] = search_people_groups ($uids[$loop],"(sn=*)","group");
   			$index++;
   		//ajout de Equipes pour les administratisfs
-  			
+
   			if ($group_principal == "Administratifs") {
 	  			$groups_equipes=search_groups("cn=Equipe*");
 		  			if (count ($groups_equipes) !=0){
@@ -677,9 +674,9 @@ function get_users_in_my_groups () {
 						}
 					}
 	  			}
-	  			
+
 		}
-		
+
 		if (count ($groups_secondaires) !=0){
 		for ($loop=0; $loop < count($groups_secondaires); $loop++) {
   			$uids[$loop] = search_uids ("(cn=".$groups_secondaires[$loop].")", "half");
@@ -690,7 +687,7 @@ function get_users_in_my_groups () {
 	} elseif (($group_principal == "Eleves" && count ($groups_secondaires) ==0) || $group_principal == "NUL_group") {
 		// Aaaaaaaaargh ! L'utilisateur est dans aucun groupe secondaire ou principal...
 		// On retourne uniquement son fullname et celui d'admin
-		if ($DEBUG ) echo "$MsgD Cas d'1 user ne possédant pas de groupes secondaires<br>";
+		if ($DEBUG ) echo "$MsgD Cas d'1 user ne poss�dant pas de groupes secondaires<br>";
 		$uids[0]["uid"] = "admin";
 		$uids[1]["uid"] = $login;
 		$users_in_my_groups[0] = search_people_groups ($uids,"(sn=*)","group");
@@ -718,5 +715,5 @@ function get_users_in_my_groups () {
 
 	return $ret;
 }
-// LCS Fin modification 9/9
+// eom
 ?>

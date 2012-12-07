@@ -1,5 +1,5 @@
 <?php
-/* $Id: month.php,v 1.95.2.6 2008/04/22 20:41:16 umcesrjones Exp $ */
+/* $Id: month.php,v 1.95.2.9 2010/08/15 18:54:34 cknudsen Exp $ */
 include_once 'includes/init.php';
 
 //check UAC
@@ -14,7 +14,7 @@ else
 if ( empty ( $user ) )
   load_user_layers ();
 
-$cat_id = getGetValue ( 'cat_id' );
+$cat_id = getValue ( 'cat_id', '-?[0-9,\-]*', true );
 load_user_categories ();
 
 $next = mktime ( 0, 0, 0, $thismonth + 1, 1, $thisyear );

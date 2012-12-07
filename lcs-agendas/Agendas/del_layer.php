@@ -1,6 +1,8 @@
 <?php
-/* $Id: del_layer.php,v 1.20.2.1 2007/11/12 15:40:30 umcesrjones Exp $ */
+/* $Id: del_layer.php,v 1.20.2.2 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+
+require_valide_referring_url ();
 
 $id = getGetValue ( 'id' );
 

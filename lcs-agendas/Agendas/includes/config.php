@@ -12,7 +12,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: config.php,v 1.75.2.11 2008/09/28 00:07:33 cknudsen Exp $
+ * @version $Id: config.php,v 1.75.2.18 2012/02/29 01:00:28 cknudsen Exp $
  * @package WebCalendar
  */
 
@@ -22,6 +22,8 @@
  * Execution is aborted.
  *
  * @param string  $error  The error message to display
+ * @param string  $anchor The section in WebCalendar-SysAdmin.html to
+ *		display (should be marked with <a name="XXX">
  * @internal We don't normally put functions in this file. But, since this
  *           file is included before some of the others, this function either
  *           goes here or we repeat this code in multiple files.
@@ -31,23 +33,40 @@
  * NOTES: Don't call translate from here.  This function if often called
  * before translation stuff is initialized!
  */
-function die_miserable_death ( $error ) {
-  global $APPLICATION_NAME, $LANGUAGE, $login, $TROUBLE_URL;
+function die_miserable_death ( $error, $anchor='' ) {
+  global $APPLICATION_NAME, $LANGUAGE, $login, $TROUBLE_URL, $settings;
   // Make sure app name is set.
   $appStr = ( empty ( $APPLICATION_NAME ) ? 'WebCalendar' : $APPLICATION_NAME );
+  $url = $TROUBLE_URL;
+  if ( ! empty ( $anchor ) ) {
+    $args = explode ( '#', $TROUBLE_URL );
+    $url = $args[0] . '#' . $anchor;
+  }
 
   $h2_label = $appStr . ' ' . 'Error';
   $title = $appStr . ': ' . 'Fatal Error';
   $trouble_label = 'Troubleshooting Help';
   $user_BGCOLOR = '#FFFFFF';
 
+  // Include a stack trace if mode is set to dev
+  $trace = '';
+  if ( $settings['mode'] == 'dev' ) {
+    if ( function_exists ( "assert_backtrace" ) ) {
+      $trace = "<div style=\"border: 1px solid black\; margin: 20px;\">" .
+        "<b>Stack Trace:</b><br/><blockquote>" .
+        "<pre>" . assert_backtrace () . "</pre></blockquote></div>\n";
+    }
+  }
+
   echo <<<EOT
 <html>
   <head><title>{$title}</title></head>
   <body bgcolor ="{$user_BGCOLOR}">
     <h2>{$h2_label}</h2>
-    <p>{$error}</p><hr />
-    <p><a href="{$TROUBLE_URL}" target="_blank">{$trouble_label}</a></p>
+    <p>{$error}</p>
+    {$trace}
+    <hr />
+    <p><a href="{$url}" target="_blank">{$trouble_label}</a></p>
   </body>
 </html>
 EOT;
@@ -89,8 +108,8 @@ function do_config ( $fileLoc ) {
   $PROGRAM_URL, $PROGRAM_VERSION, $readonly, $run_mode, $settings, $single_user,
   $single_user_login, $TROUBLE_URL, $use_http_auth, $user_inc;
 
-  $PROGRAM_VERSION = 'v1.2.0';
-  $PROGRAM_DATE = '27 Sep 2008';
+  $PROGRAM_VERSION = 'v1.2.5';
+  $PROGRAM_DATE = '29 Feb 2012';
   $PROGRAM_NAME = 'WebCalendar ' . "$PROGRAM_VERSION ($PROGRAM_DATE)";
   $PROGRAM_URL = 'http://www.k5n.us/webcalendar.php';
   $TROUBLE_URL = 'docs/WebCalendar-SysAdmin.html#trouble';

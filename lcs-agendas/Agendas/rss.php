@@ -1,5 +1,5 @@
 <?php
-/* $Id: rss.php,v 1.46.2.8 2008/04/04 17:56:14 umcesrjones Exp $
+/* $Id: rss.php,v 1.46.2.10 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  * This script is intended to be used outside of normal WebCalendar use,
@@ -58,7 +58,7 @@ require_once 'includes/classes/WebCalendar.class';
 require_once 'includes/classes/Event.class';
 require_once 'includes/classes/RptEvent.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/formvars.php';
 include 'includes/functions.php';
@@ -67,12 +67,12 @@ include 'includes/dbi4php.php';
 
 $WebCalendar->initializeFirstPhase ();
 
+include 'includes/' . $user_inc;
+
 //modif
 include 'includes/validate.php';
 include 'includes/' . $user_inc;
-//include 'includes/validate.php';
 //eom
-include 'includes/site_extras.php';
 
 include_once 'includes/xcal.php';
 
@@ -286,7 +286,7 @@ countentries==' . $entrycnt . ' ' . $rentrycnt . '
         $unixtime = $entries[$j]->getDateTimeTS ();
         $dateinfo = ( $date_in_title
           ? date ( $date_format, $unixtime )
-           . ( $entries[$j]->isTimed () ? $time_separator 
+           . ( $entries[$j]->isTimed () ? $time_separator
 		   . date ( $time_format, $unixtime ) : '' ) . ' ' : '' );
 
         echo '
@@ -330,9 +330,11 @@ countentries==' . $entrycnt . ' ' . $rentrycnt . '
         echo '
     <item>';
         $unixtime = $rentries[$j]->getDateTimeTS ();
-        $dateinfo = ( $date_in_title == true
-          ? date ( $date_format, $i )
-           . ( $rentries[$j]->isAllDay () || $rentries[$j]->isUntimed ()
+        // Constructing the TS for the current repeating event
+        $unixtime = strtotime( date ( 'D, d M Y ', $i ) . date ( 'H:i:s', $unixtime ) );
+        $dateinfo = ( $date_in_title
+          ? date ( $date_format, $unixtime )
+           . ( $rentries[$j]->isTimed ()
             ? $time_separator . date ( $time_format, $unixtime ) : '' ) . ' '
           : '' );
 
@@ -345,7 +347,7 @@ countentries==' . $entrycnt . ' ' . $rentrycnt . '
       <category><![CDATA[' . $category . ']]></category>' )
         // . '<creator><![CDATA[' . $creator . ']]></creator>'
         . '
-      <pubDate>' . $pubDate . ' ' . gmdate ( 'H:i:s', $unixtime ) . ' GMT</pubDate>
+      <pubDate>' . gmdate ( 'D, d M Y H:i:s', $unixtime ) . ' GMT</pubDate>
       <guid>' . $SERVER_URL . 'view_entry.php?id=' . $rentries[$j]->getID ()
          . '&amp;friendly=1&amp;rssuser=' . $login . '&amp;date=' . $d . '</guid>
     </item>';

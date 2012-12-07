@@ -8,7 +8,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: assert.php,v 1.12.2.2 2007/08/06 02:28:32 cknudsen Exp $
+ * @version $Id: assert.php,v 1.12.2.3 2010/08/15 18:54:34 cknudsen Exp $
  * @package WebCalendar
  */
 
@@ -66,10 +66,10 @@ function assert_backtrace () {
     return '[stacktrack requires PHP 4.3/5.0. Not available in PHP '
      . phpversion () . ']';
   $bt = debug_backtrace ();
-  // print_r ( $bt );
+  // echo "<pre>"; print_r ( $bt ); echo "</pre>\n";
   $file = array ();
-  for ( $i = 2, $cnt = count ( $bt ); $i < $cnt; $i++ ) {
-    // skip the first two, since it's always this func and assert_handler
+  for ( $i = 1, $cnt = count ( $bt ); $i < $cnt; $i++ ) {
+    // skip the first, since it's always this function
     $afile = $bt[$i];
 
     $line = basename ( $afile['file'] ) . ':' . $afile['line']

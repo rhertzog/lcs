@@ -1,6 +1,7 @@
 <?php
-/* $Id: admin.php,v 1.183.2.8 2008/03/08 01:11:06 cknudsen Exp $ */
+/* $Id: admin.php,v 1.183.2.9 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 include_once 'includes/date_formats.php';
 if ( file_exists ( 'install/default_config.php' ) )
   include_once 'install/default_config.php';

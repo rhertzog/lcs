@@ -1,5 +1,5 @@
 <?php
-/* $Id: default_config.php,v 1.68.2.8 2008/09/28 00:07:33 cknudsen Exp $
+/* $Id: default_config.php,v 1.68.2.13 2012/02/29 01:09:26 cknudsen Exp $
  *
  * The file contains a listing of all the current WebCalendar config settings
  * and their default values.
@@ -151,7 +151,7 @@ $webcalConfig = array (
   'USER_RSS_ENABLED' => 'N',
   'USER_SEES_ONLY_HIS_GROUPS' => 'Y',
   'USER_SORT_ORDER' => 'cal_lastname, cal_firstname',
-  'WEBCAL_PROGRAM_VERSION' => 'v1.2.0',
+  'WEBCAL_PROGRAM_VERSION' => 'v1.2.5',
   'WEEK_START' => '0',
   'WEEKEND_START' => '6',
   'WEEKENDBG' => '#D0D0D0',

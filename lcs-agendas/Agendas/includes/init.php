@@ -38,7 +38,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: init.php,v 1.130.2.13 2008/03/31 20:51:19 umcesrjones Exp $
+ * @version $Id: init.php,v 1.130.2.15 2011/08/09 03:27:56 cknudsen Exp $
  * @package WebCalendar
  */
 if ( empty ( $_SERVER['PHP_SELF'] ) ||
@@ -51,7 +51,7 @@ require_once 'includes/classes/WebCalendar.class';
 require_once 'includes/classes/Event.class';
 require_once 'includes/classes/RptEvent.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include_once 'includes/assert.php';
 include_once 'includes/config.php';
@@ -63,9 +63,7 @@ $WebCalendar->initializeFirstPhase ();
 //modif
 include 'includes/validate.php';
 include 'includes/' . $user_inc;
-//include 'includes/validate.php';
 //eom
-
 include_once 'includes/site_extras.php';
 include_once 'includes/access.php';
 include_once 'includes/gradient.php';
@@ -117,7 +115,7 @@ function print_header ( $includes = '', $HeadX = '', $BodyX = '',
   $appStr = generate_application_name ( true );
 
   $ret .= send_doctype ( $appStr );
-  
+
   $ret .= ( ! $disableAJAX ? '
     <script type="text/javascript" src="includes/js/prototype.js"></script>'
     : '' );
@@ -125,7 +123,7 @@ function print_header ( $includes = '', $HeadX = '', $BodyX = '',
   if ( $MENU_ENABLED == 'Y' ) {
     $MENU_THEME = ( ! empty ( $MENU_THEME ) && $MENU_THEME != 'none'
       ? $MENU_THEME : 'default' );
-    $menu_theme =  ( $SCRIPT == 'admin.php' && ! empty ( $GLOBALS['sys_MENU_THEME'] ) 
+    $menu_theme =  ( $SCRIPT == 'admin.php' && ! empty ( $GLOBALS['sys_MENU_THEME'] )
       ? $GLOBALS['sys_MENU_THEME'] :
       $MENU_THEME );
     $ret .= '
@@ -164,11 +162,11 @@ function print_header ( $includes = '', $HeadX = '', $BodyX = '',
 
   // Prh .. fix theme change for auth_http which does not set webcal*login
   //        variables.
-  // 
+  //
   //        Pass the logged in user id as login=<whatever> on the URL
   //        Add css_cache=<cookie setting> to change the URL signature
-  //        to force a fetch from the server rather than from the 
-  //        browser cache when the style changes. 
+  //        to force a fetch from the server rather than from the
+  //        browser cache when the style changes.
     // Note: we could do all the queries to add the RSS feed for every user
     // the current user has permissions to approve for, but I'm thinking
     // that's too many db requests to repeat on every page.
@@ -277,9 +275,12 @@ function print_trailer ( $include_nav_links = true, $closeDb = true,
     unset ( $c );
   }
 
-  return $ret
-    . "<!-- " . $GLOBALS['PROGRAM_NAME'] . "     "
-    . $GLOBALS['PROGRAM_URL'] . " -->\n"
+  // Only include version info if user is admin.  No need to publicize
+  // version to would-be hackers.
+  return $ret .
+    ( $is_admin ?
+    "<!-- " . $GLOBALS['PROGRAM_NAME'] . "     "
+    . $GLOBALS['PROGRAM_URL'] . " -->\n" : '' )
   // Adds an easy link to validate the pages.
   . ( $DEMO_MODE == 'Y' ? '
     <p><a href="http://validator.w3.org/check?uri=referer">'
@@ -334,7 +335,7 @@ function print_menu_dates ( $menu = false ) {
      . translate ( 'Month' ) . '</a>:&nbsp;</label>
               <select name="date" id="monthselect" '
      . 'onchange="document.SelectMonth.submit()">';
-  
+
     if ( ! empty ( $thisyear ) && ! empty ( $thismonth ) ) {
       $m = $thismonth;
       $y = $thisyear;
@@ -369,7 +370,7 @@ function print_menu_dates ( $menu = false ) {
             </form>' . ( $menu ? '
           </td>
           <td class="ThemeMenubackgr ThemeMenu">' : '' );
-  
+
     if ( $STAY_IN_VIEW == 'Y' && ! empty ( $custom_view ) )
       $weekUrl = $SCRIPT;
     else
@@ -402,7 +403,7 @@ function print_menu_dates ( $menu = false ) {
      . translate ( 'Week' ) . '</a>:&nbsp;</label>
               <select name="date" id="weekselect" '
      . 'onchange="document.SelectWeek.submit()">';
-  
+
     if ( ! empty ( $thisyear ) && ! empty ( $thismonth ) ) {
       $m = $thismonth;
       $y = $thisyear;
@@ -440,7 +441,7 @@ function print_menu_dates ( $menu = false ) {
             </form>' . ( $menu ? '
           </td>
           <td class="ThemeMenubackgr ThemeMenu" align="right">' : '' );
-  
+
     if ( $STAY_IN_VIEW == 'Y' && ! empty ( $custom_view ) )
       $yearUrl = $SCRIPT;
     else
@@ -472,16 +473,16 @@ function print_menu_dates ( $menu = false ) {
      . translate ( 'Year' ) . '</a>:&nbsp;</label>
               <select name="year" id="yearselect" '
      . 'onchange="document.SelectYear.submit()">';
-  
+
     $y = ( empty ( $thisyear ) ? date ( 'Y' ) : $thisyear );
-  
+
     for ( $i = $y - 2; $i < $y + 6; $i++ ) {
       if ( $i >= 1970 && $i < 2038 )
         $ret .= '
                 <option value="' . $i . '"'
          . ( $i == $y ? $selected : '' ) . ">$i" . '</option>';
     }
-  
+
     $ret .= '
               </select>' . ( $menu ? '' : '
               <input type="submit" value="' . $goStr . '" />' ) . '

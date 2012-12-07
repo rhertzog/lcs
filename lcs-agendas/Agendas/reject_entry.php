@@ -1,6 +1,7 @@
 <?php
-/* $Id: reject_entry.php,v 1.62.2.4 2008/03/04 13:38:41 cknudsen Exp $ */
+/* $Id: reject_entry.php,v 1.62.2.5 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 require ( 'includes/classes/WebCalMailer.class' );
 $mail = new WebCalMailer;
 

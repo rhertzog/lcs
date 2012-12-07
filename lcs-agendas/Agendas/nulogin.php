@@ -1,11 +1,11 @@
 <?php
-/* $Id: nulogin.php,v 1.15.2.4 2007/11/12 15:40:31 umcesrjones Exp $
+/* $Id: nulogin.php,v 1.15.2.5 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * This page handles logins for nonuser calendars.
  */
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/translate.php';
 include 'includes/config.php';

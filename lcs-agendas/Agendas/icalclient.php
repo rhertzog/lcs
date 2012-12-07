@@ -1,5 +1,5 @@
 <?php
-/* $Id: icalclient.php,v 1.30.2.9 2008/01/28 15:32:18 cknudsen Exp $
+/* $Id: icalclient.php,v 1.30.2.11 2011/04/27 00:27:35 rjones6061 Exp $
  *
  *               WARNING * WARNING * WARNING * WARNING * WARNING
  *                 This script is still considered alpha level.
@@ -85,7 +85,7 @@
 include_once 'includes/translate.php';
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/config.php';
 include 'includes/dbi4php.php';
@@ -100,7 +100,6 @@ include 'includes/' . $user_inc;
 //include 'includes/validate.php';
 //eom
 include 'includes/site_extras.php';
-
 include_once 'includes/xcal.php';
 
 $WebCalendar->initializeSecondPhase ();
@@ -111,7 +110,7 @@ $appStr = generate_application_name ();
 
 If running as CGI, the following instructions should set the PHP_AUTH_xxxx
 variables. This has only been tested with apache2, so far. If using php as CGI,
-you'll need to include this in your php.ini file or possibly in an .htaccess file.
+you'll need to include this in your httpd.conf file or possibly in an .htaccess file.
 
   <IfModule mod_rewrite.c>
     RewriteEngine on

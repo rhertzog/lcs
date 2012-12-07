@@ -1,4 +1,4 @@
-<?php /* $Id: visible.php,v 1.22.2.3 2008/01/28 20:17:08 cknudsen Exp $  */
+<?php /* $Id: visible.php,v 1.22.2.4 2012/02/20 01:29:21 cknudsen Exp $  */
 //install/index.php needs to call this file directly, so we
 //need to insert the proper script tags as needed
 if ( ! empty ( $_SERVER['PHP_SELF'] ) &&
@@ -183,7 +183,12 @@ function updateColor ( input, target ) {
   colorCell.style.backgroundColor = "#000000";
   input.select ();
   input.focus ();
-  alert ( '<?php etranslate ( 'Invalid Color', true ) ?>');
+  alert ( '<?php
+	$m = 'Invalid Color';
+	if (function_exists('etranslate'))	// Prevent CVE-2011-3814.
+		etranslate($m, true);
+	else 
+		echo $m; ?>');
  } else {
   colorCell.style.backgroundColor = color;
  }

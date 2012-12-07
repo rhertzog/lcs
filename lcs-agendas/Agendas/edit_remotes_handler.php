@@ -1,7 +1,8 @@
 <?php
-/* $Id: edit_remotes_handler.php,v 1.16.2.5 2008/04/03 20:08:00 umcesrjones Exp $ */
+/* $Id: edit_remotes_handler.php,v 1.16.2.6 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
 include_once 'includes/xcal.php';
+require_valide_referring_url ();
 
 // Only available in php 5.x Used for hCalendar parsing.
 if ( function_exists ( 'simplexml_load_string' ) )

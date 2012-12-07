@@ -1,5 +1,5 @@
 <?php
-/* $Id: rss_activity_log.php,v 1.1.2.2 2008/03/07 17:49:23 cknudsen Exp $
+/* $Id: rss_activity_log.php,v 1.1.2.5 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  *	Generates RSS 2.0 output of the activity log.
@@ -26,7 +26,7 @@
  *	If running as CGI, the following instructions should set the
  *	PHP_AUTH_xxxx variables. This has only been tested with apache2,
  *	so far. If using php as CGI, you'll need to include this in your
- *	php.ini file or possibly in an .htaccess file.
+ *	httpd.conf file or possibly in an .htaccess file.
  *
  *	<IfModule mod_rewrite.c>
  *	  RewriteEngine on
@@ -37,7 +37,7 @@
 include_once 'includes/translate.php';
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/config.php';
 include 'includes/dbi4php.php';
@@ -46,10 +46,10 @@ include 'includes/functions.php';
 include 'includes/access.php';
 
 $WebCalendar->initializeFirstPhase ();
+
 //modif
 include 'includes/validate.php';
 include 'includes/' . $user_inc;
-//include 'includes/validate.php';
 //eom
 include 'includes/site_extras.php';
 
@@ -139,14 +139,26 @@ function rss_activity_log ( $sys, $entries ) {
 
   $sql_params = array ();
 
+  $limit = $where = '';
+  switch ( $GLOBALS['db_type'] ) {
+    case 'mysqli':
+    case 'mysql':
+    case 'postgresql':
+      $limit .= ' LIMIT ' . $entries;
+      break;
+    case 'oracle':
+      $where .= ' AND ROWNUM <= ' . $entries;
+      break;
+  }
+
   $sql = 'SELECT wel.cal_login, wel.cal_user_cal, wel.cal_type, wel.cal_date,
     wel.cal_time, wel.cal_text, '
    . ( $sys
     ? 'wel.cal_log_id FROM webcal_entry_log wel WHERE wel.cal_entry_id = 0'
     : 'we.cal_id, we.cal_name, wel.cal_log_id, we.cal_type, we.cal_description
       FROM webcal_entry_log wel, webcal_entry we
-      WHERE wel.cal_entry_id = we.cal_id' )
-   . ' ORDER BY wel.cal_log_id DESC LIMIT ' . $entries;
+      WHERE wel.cal_entry_id = we.cal_id' . $where )
+   . ' ORDER BY wel.cal_log_id DESC' . $limit;
 
   $rows = dbi_get_cached_rows ( $sql, $sql_params );
 

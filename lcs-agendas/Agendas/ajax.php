@@ -1,12 +1,13 @@
 <?php
-/* $Id: ajax.php,v 1.16.2.3 2007/09/17 02:39:21 cknudsen Exp $
+/* $Id: ajax.php,v 1.16.2.8 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Description
  * This is the handler for Ajax httpXmlRequests.
  */
 require_once 'includes/classes/WebCalendar.class';
+require_valide_referring_url ();
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/translate.php';
 include 'includes/config.php';
@@ -15,19 +16,21 @@ include 'includes/formvars.php';
 include 'includes/functions.php';
 
 $WebCalendar->initializeFirstPhase ();
+
 //modif
 include 'includes/validate.php';
 include 'includes/' . $user_inc;
 include 'includes/access.php';
 //include 'includes/validate.php';
 //eom
+
 $WebCalendar->initializeSecondPhase ();
 
 load_global_settings ();
 load_user_preferences ();
 $WebCalendar->setLanguage ();
 
-$cat_id = getPostValue ( 'cat_id' );
+$cat_id = getValue ( 'cat_id', '-?[0-9,\-]*', true );
 $name = getPostValue ( 'name' );
 $page = getPostValue ( 'page' );
 

@@ -1,5 +1,5 @@
 <?php
-/* $Id: export_handler.php,v 1.55.2.2 2008/02/17 01:29:37 cknudsen Exp $
+/* $Id: export_handler.php,v 1.55.2.3 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Description:
  * Handler for exporting webcalendar events to various formats.
@@ -15,6 +15,7 @@
  *********************************************************************/
 include_once 'includes/init.php';
 include_once 'includes/xcal.php';
+require_valide_referring_url ();
 
 $user = getPostValue ( 'user' );
 if ( empty ( $user ) || $user == $login )

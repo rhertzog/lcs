@@ -4,7 +4,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: styles.php,v 1.225.2.5 2008/03/03 13:28:00 cknudsen Exp $
+ * @version $Id: styles.php,v 1.225.2.6 2010/04/06 16:43:45 cknudsen Exp $
  * @package WebCalendar
  *
  *                         HOW TO READ THIS DOCUMENT
@@ -136,7 +136,6 @@ if ( ! empty ( $_SERVER['PHP_SELF'] ) && !
 }
 
 echo '  body {
-
     margin:2px;
     background:' . $GLOBALS['BGCOLOR'] . ( empty ( $GLOBALS['BGIMAGE'] )
   ? '' : ' url( ' . $GLOBALS['BGIMAGE'] . ' ) ' . $GLOBALS['BGREPEAT'] ) . ';
@@ -1070,7 +1069,7 @@ echo '  body {
   #month .main td {
     height:75px;
     font-size:12px;
-    overflow:auto;
+    /*overflow:auto;*/
     table-layout:fixed;
     vertical-align:top;
   }
@@ -1265,7 +1264,7 @@ echo '  body {
   }
   .alt {
   background:' . $CELLBG . ';
-  }  
+  }
   .layers {
     float:left;
     margin:2px 1px;
@@ -1320,9 +1319,9 @@ echo '  body {
    border:1px solid ' . $GLOBALS['TABLEBG'] . ';
    background:' . $CELLBG . ';
   }';
-//modif 
+//modif
  if ($GLOBALS['THEME']=="lcs_pref" || $GLOBALS['THEME']=="lcs" || $GLOBALS['THEME']=="none")
  include ('lcs.css.php');
  echo $end_style;
-//eom 
+//eom
 ?>

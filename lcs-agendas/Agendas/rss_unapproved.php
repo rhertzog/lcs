@@ -1,5 +1,5 @@
 <?php
-/* $Id: rss_unapproved.php,v 1.1.2.2 2008/03/07 17:49:23 cknudsen Exp $
+/* $Id: rss_unapproved.php,v 1.1.2.4 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  *	Generates RSS 2.0 output of unapproved events for a user.
@@ -25,7 +25,7 @@
  *	If running as CGI, the following instructions should set the
  *	PHP_AUTH_xxxx variables. This has only been tested with apache2,
  *	so far. If using php as CGI, you'll need to include this in your
- *	php.ini file or possibly in an .htaccess file.
+ *	httpd.conf file or possibly in an .htaccess file.
  *
  *	<IfModule mod_rewrite.c>
  *	  RewriteEngine on
@@ -36,7 +36,7 @@
 include_once 'includes/translate.php';
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/config.php';
 include 'includes/dbi4php.php';
@@ -45,10 +45,10 @@ include 'includes/functions.php';
 include 'includes/access.php';
 
 $WebCalendar->initializeFirstPhase ();
+
 //modif
 include 'includes/validate.php';
 include 'includes/' . $user_inc;
-//include_once 'includes/validate.php';
 //eom
 include 'includes/site_extras.php';
 
@@ -218,7 +218,7 @@ function list_unapproved ( $user ) {
         $view_link . '.php?id=' . $id .
         '&amp;user=' . $cal_user . "</link>\n" .
         '  <description><![CDATA[' . $description  . ']]></description>' . "\n";
-      $ret .= 
+      $ret .=
         '  <category><![CDATA[' . $category . ']]></category>' . "\n";
         /* RSS 2.0 date format Wed, 02 Oct 2002 13:00:00 GMT */
       $ret .= '<pubDate>' .

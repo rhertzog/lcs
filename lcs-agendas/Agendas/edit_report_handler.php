@@ -1,5 +1,5 @@
 <?php
-/* $Id: edit_report_handler.php,v 1.32.2.4 2008/03/03 20:19:38 cknudsen Exp $
+/* $Id: edit_report_handler.php,v 1.32.2.8 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Page Description:
  * This page will handle the form submission from edit_report.php
@@ -33,6 +33,7 @@
  * or you are an admin user.
  */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 load_user_categories ();
 
 $error = ( empty ( $REPORTS_ENABLED ) || $REPORTS_ENABLED != 'Y'
@@ -42,7 +43,7 @@ $public = getPostValue ( 'public' );
 $report_name = getPostValue ( 'report_name' );
 $report_user = getPostValue ( 'report_user' );
 $time_range = getPostValue ( 'time_range' );
-$cat_id = getPostValue ( 'cat_id' );
+$cat_id = getValue ( 'cat_id', '-?[0-9,\-]*', true );
 $page_template = getPostValue ( 'page_template' );
 $day_template = getPostValue ( 'day_template' );
 $event_template = getPostValue ( 'event_template' );

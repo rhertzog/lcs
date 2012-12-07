@@ -1,6 +1,7 @@
 <?php
-/* $Id: group_edit_handler.php,v 1.27.2.2 2008/03/04 01:10:58 cknudsen Exp $ */
+/* $Id: group_edit_handler.php,v 1.27.2.3 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $id = getPostValue ( 'id' );
 $groupname = getPostValue ( 'groupname' );

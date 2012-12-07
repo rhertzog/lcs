@@ -12,10 +12,11 @@
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
  * @package WebCalendar
- * @version $Id: list_unapproved.php,v 1.74.2.5 2008/03/07 14:59:26 cknudsen Exp $
+ * @version $Id: list_unapproved.php,v 1.74.2.6 2012/02/28 02:07:45 cknudsen Exp $
  */
 
 include_once 'includes/init.php';
+require_valide_referring_url ();
 send_no_cache_header ();
 
 if ( empty ( $user ) )

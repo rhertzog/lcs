@@ -1,5 +1,5 @@
 <?php
-/* $Id: view_entry.php,v 1.174.2.11 2008/07/04 14:01:57 cknudsen Exp $
+/* $Id: view_entry.php,v 1.174.2.15 2012/02/20 01:19:19 cknudsen Exp $
  *
  * Description:
  * Presents page to view an event with links to edit, delete
@@ -418,11 +418,11 @@ echo '</td>
       <tr>
         <td class="aligntop bold">' . translate ( 'Location' ) . ':</td>
         <td>' . $location . '</td>
-      <tr>' : '' ) . ( $DISABLE_URL_FIELD != 'Y' && ! empty ( $url ) ? '
+      </tr>' : '' ) . ( $DISABLE_URL_FIELD != 'Y' && ! empty ( $url ) ? '
       <tr>
         <td class="aligntop bold">' . translate ( 'URL' ) . ':</td>
-        <td>' . activate_urls ( $url ) . '</td>
-      <tr>' : '' );
+        <td>' . activate_urls(htmlspecialchars($url)) . '</td>
+      </tr>' : '' );
 
 if ( $event_status != 'A' && ! empty ( $event_status ) ) {
   echo '
@@ -685,10 +685,10 @@ if ( $single_user == 'N' && $show_participants ) {
               <td width="30%">';
       if ( strlen ( $tempemail ) && $can_email != 'N' ) {
         echo '<a href="mailto:' . $tempemail . '?subject=' . $subject
-         . '">&nbsp;' . $tempfullname . '</a>';
+         . '">&nbsp;' . htmlspecialchars($tempfullname) . '</a>';
         $allmails[] = $tempemail;
       } else
-        echo '&nbsp;' . $tempfullname;
+        echo '&nbsp;' . htmlspecialchars($tempfullname);
 
       echo '</td>
               <td width="5%" align="center">' . $percentage . '%</td>
@@ -711,7 +711,7 @@ if ( $single_user == 'N' && $show_participants ) {
           ';
       if ( strlen ( $tempemail ) > 0 && $can_email != 'N' ) {
         echo '<a href="mailto:' . $tempemail . '?subject=' . $subject . '">'
-         . $tempfullname . '</a>';
+         . htmlspecialchars($tempfullname) . '</a>';
         $allmails[] = $tempemail;
       } else
         echo $tempfullname;
@@ -727,7 +727,7 @@ if ( $single_user == 'N' && $show_participants ) {
         for ( $i = 0, $cnt = count ( $ext_users ); $i < $cnt; $i++ ) {
           if ( ! empty ( $ext_users[$i] ) ) {
             echo '
-          ' . $ext_users[$i] . ' (' . $externUserStr . ')<br />';
+          ' . htmlspecialchars($ext_users[$i]) . ' (' . $externUserStr . ')<br />';
             if ( preg_match ( '/mailto: (\S+)"/', $ext_users[$i], $match ) )
               $allmails[] = $match[1];
           }
@@ -814,7 +814,7 @@ if ( Doc::attachmentsEnabled () && $rss_view == false ) {
         <td class="aligntop bold">' . translate ( 'Attachments' ) . ':</td>
         <td>';
 
-  $attList =& new AttachmentList ( $id );
+  $attList = new AttachmentList ( $id );
   for ( $i = 0; $i < $attList->getSize (); $i++ ) {
     $a = $attList->getDoc ( $i );
     echo '
@@ -842,7 +842,7 @@ if ( Doc::commentsEnabled () ) {
         <td class="aligntop bold">' . translate ( 'Comments' ) . ':</td>
         <td>';
 
-  $comList =& new CommentList ( $id );
+  $comList = new CommentList ( $id );
   $num_comment = $comList->getSize ();
   $comment_text = '';
   for ( $i = 0; $i < $num_comment; $i++ ) {
@@ -850,7 +850,7 @@ if ( Doc::commentsEnabled () ) {
     user_load_variables ( $cmt->getLogin (), 'cmt_' );
     $comment_text .= '
           <strong>' . htmlspecialchars ( $cmt->getDescription () )
-     . '</strong> - ' . $cmt_fullname . ' ' . translate ( 'at' ) . ' ' 
+     . '</strong> - ' . $cmt_fullname . ' ' . translate ( 'at' ) . ' '
      . date_to_str ( $cmt->getModDate (), '', false, true ) . ' '
      . display_time ( $cmt->getModTime (), 2 )
     // show delete link if user can delete
@@ -953,7 +953,7 @@ $can_add_attach = ( Doc::attachmentsEnabled () && $login != '__public__'
   && ( ( $login == $create_by ) || ( $is_my_event && $ALLOW_ATTACH_PART == 'Y' ) ||
   ( $ALLOW_ATTACH_ANY == 'Y' ) || $is_admin  ) );
 
-$can_add_comment = ( Doc::commentsEnabled () && $login != '__public__' 
+$can_add_comment = ( Doc::commentsEnabled () && $login != '__public__'
   && ( ( $login == $create_by ) ||  ( $is_my_event && $ALLOW_COMMENTS_PART == 'Y' ) ||
   ( $ALLOW_COMMENTS_ANY == 'Y' ) || $is_admin  ) );
 
@@ -1026,19 +1026,22 @@ if ( $can_edit && $event_status != 'D' && ! $is_nonuser && $readonly != 'Y' ) {
        . '</a></li>';
     }
   } else {
+    if ( ! empty( $user ) && $user != $login && ! $is_assistant ) {
+      user_load_variables( $user, 'temp_' );
+      $delete_str = str_replace( 'XXX', $temp_fullname,
+                                translate( 'Delete entry from calendar of XXX' ) );
+    } else {
+      $delete_str = $deleteEntryStr;
+    }
     echo '
       <li><a title="' . $editEntryStr . '" class="nav" href="edit_entry.php?id='
      . $id . $u_url . '">' . $editEntryStr . '</a></li>
-      <li><a title="' . $deleteEntryStr . '" class="nav" href="del_entry.php?id='
+      <li><a title="' . $delete_str . '" class="nav" href="del_entry.php?id='
      . $id . $u_url . $rdate . '" onclick="return confirm( \'' . $areYouSureStr
      . "\\n\\n"
      . ( empty ( $user ) || $user == $login || $is_assistant
       ? $deleteAllStr : '' )
-     . '\' );">' . $deleteEntryStr;
-    if ( ! empty ( $user ) && $user != $login && ! $is_assistant ) {
-      user_load_variables ( $user, 'temp_' );
-      echo ' ' . translate ( 'from calendar of' ) . ' ' . $temp_fullname;
-    }
+     . '\' );">' . $delete_str;
     echo '</a></li>';
   }
   echo '

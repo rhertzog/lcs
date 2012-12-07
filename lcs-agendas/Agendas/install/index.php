@@ -6,7 +6,8 @@ list ($idpers, $login)= isauth();
 if (ldap_get_right("lcs_is_admin",$login)!="Y") {
   die (gettext("<BR>Cette application n&eacute;cessite une op&eacute;ration de maintenance. Pour l'effectuer, un administrateur LCS doit acc&eacute;der &agrave; l'application Agendas "));
   exit;}
-/* $Id: index.php,v 1.109.2.13 2008/09/28 00:47:57 cknudsen Exp $
+
+/* $Id: index.php,v 1.109.2.19 2012/02/29 01:11:26 cknudsen Exp $
  *
  * Page Description:
  *  Main page for install/config of db settings.
@@ -178,7 +179,7 @@ if ( @file_exists ( $file ) && ! empty ( $password ) &&
   // Make user login
   $doLogin = true;
 }
-
+//modif lcs
 $pwd = "toto";
 if ( @file_exists ( $file ) && ! empty ( $pwd ) ) {
   if ( md5 ($pwd) == $password ) {
@@ -187,12 +188,14 @@ if ( @file_exists ( $file ) && ! empty ( $pwd ) ) {
   } else {
     // Invalid password
     $_SESSION['validuser'] = '';
+    //eom
 ?>
       <html><head><title>Password Incorrect</title>
       <meta http-equiv="refresh" content="0; index.php" />
       </head>
       <body onLoad="alert('<?php etranslate ( 'Invalid Login' ) ?>'); document.go(-1)">
       </body></html>
+
 <?php
     exit;
   }
@@ -647,6 +650,7 @@ if ( empty ( $x ) ) {
     $settings['single_user_login'] = '';
     $settings['use_http_auth'] = 'false';
     $settings['single_user'] = 'false';
+    $settings['mode'] = 'prod';
   }
 } else {
   $settings['db_type'] = getPostValue ( 'form_db_type' );
@@ -656,6 +660,7 @@ if ( empty ( $x ) ) {
   $settings['db_password'] = getPostValue ( 'form_db_password' );
   $settings['db_persistent'] = getPostValue ( 'form_db_persistent' );
   $settings['db_cachedir'] = getPostValue ( 'form_db_cachedir' );
+  $settings['mode'] = getPostValue ( 'form_mode' );
   $settings['readonly'] =( ! isset ( $settings['readonly'] )?
     'false':$settings['readonly']);
   $settings['user_inc'] =( ! isset ( $settings['user_inc'] )?
@@ -673,7 +678,6 @@ $y = getPostValue ( 'app_settings' );
 if ( ! empty ( $y ) ) {
   $settings['single_user_login'] = getPostValue ( 'form_single_user_login' );
   $settings['readonly'] = getPostValue ( 'form_readonly' );
-  $settings['mode'] = getPostValue ( 'form_mode' );
   if ( getPostValue ( 'form_user_inc' ) == 'http' ) {
     $settings['use_http_auth'] = 'true';
     $settings['single_user'] = 'false';
@@ -722,6 +726,10 @@ if ( ! empty ( $y ) ) {
 }
   // Save settings to file now.
 if ( ! empty ( $x ) || ! empty ( $y ) ){
+  if ( $doLogin ) {
+    // Hack attempt :-)
+    echo "Bugger off.<br>"; exit;
+  }
   $fd = @fopen ( $file, 'w+b', false );
   if ( empty ( $fd ) ) {
     if ( @file_exists ( $file ) ) {
@@ -734,6 +742,8 @@ if ( ! empty ( $x ) || ! empty ( $y ) ){
     $onload = "alert('" . $errorFileWriteStr . $file. "\\n" .
       $onloadDetailStr . ".');";
   } else {
+    if ( function_exists ( "date_default_timezone_set" ) )
+      date_default_timezone_set ( "America/New_York");
     fwrite ( $fd, "<?php\r\n" );
     fwrite ( $fd, '/* updated via install/index.php on ' . date ( 'r' ) . "\r\n" );
     foreach ( $settings as $k => $v ) {
@@ -752,12 +762,17 @@ if ( ! empty ( $x ) || ! empty ( $y ) ){
     // the send_reminders.php script is usually run under a different
     // user than the web server.
     @chmod ( $file, 0644 );
+
+    // Clear the db cache.  Otherwise, users may get bounced back to this
+    // install page even after the upgrade.
+    dbi_clear_cache ();
   }
 }
 //print_r ( $_SESSION);
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head><title>WebCalendar Setup Wizard</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -1136,11 +1151,28 @@ if ( ! $exists || ! $canWrite ) { ?>
    <select name="form_db_type" id="db_type" onChange="db_type_handler();">
 <?php
   $supported = array ();
-  
+  //modif lcs
+  /*if ( function_exists ( 'db2_pconnect' ) )
+    $supported['ibm_db2'] = 'IBM DB2 Universal Database';
+  if ( function_exists ( 'ibase_connect' ) )
+    $supported['ibase'] = 'Interbase';
+  if ( function_exists ( 'mssql_connect' ) )
+    $supported['mssql'] = 'MS SQL Server';*/
   if ( function_exists ( 'mysql_connect' ) )
     $supported['mysql'] = 'MySQL';
- 
-
+  /*
+  if ( function_exists ( 'mysqli_connect' ) )
+    $supported['mysqli'] = 'MySQL (Improved)';
+  if ( function_exists ( 'OCIPLogon' ) )
+    $supported['oracle'] = 'Oracle (OCI)';
+  if ( function_exists ( 'odbc_pconnect' ) )
+    $supported['odbc'] = 'ODBC';
+  if ( function_exists ( 'pg_pconnect' ) )
+    $supported['postgresql'] = 'PostgreSQL';
+  if ( function_exists ( 'sqlite_open' ) )
+    $supported['sqlite'] = 'SQLite';
+ */
+  //eom
   asort ( $supported );
   foreach ( $supported as $key => $value ) {
     echo '
@@ -1153,30 +1185,28 @@ if ( ! $exists || ! $canWrite ) { ?>
 ?>
    </select>
   </td></tr>
-  
-   <input type="hidden" name="form_db_host" id="server" size="20" value="<?php echo $settings['db_host'];?>" />
-   <input type="hidden" name="form_db_login" id="login" size="20" value="<?php echo $settings['db_login'];?>" />
+     <?php
+    //modif lcs ?>
+  <input type="hidden" name="form_db_host" id="server" size="20" value="<?php echo $settings['db_host'];?>" />
+  <input type="hidden" name="form_db_login" id="login" size="20" value="<?php echo $settings['db_login'];?>" />
   <input type="hidden" name="form_db_password" id="pass"  size="20" value="<?php echo $settings['db_password'];?>" />
   <input type="hidden" name="form_db_database" id="database" size="20" value="<?php echo $settings['db_database'];?>" />
-  
 
 <?php
+//eom
   // This a workaround for postgresql. The db_type should be 'pgsql' but 'postgresql' is used
  // in a lot of places...so this is easier for now :(
   $real_db_type = ( $settings['db_type'] == 'postgresql' ? 'pgsql' : $settings['db_type'] );
   if ( substr ( php_sapi_name (), 0, 3) <> 'cgi' &&
-        ini_get( $real_db_type . '.allow_persistent' ) ){ ?>
-  
-  <input name="form_db_persistent" value="<?php echo $settings['db_persistent'];?>" type="hidden" />
-<?php } ?>
-  
-  <?php if ( function_exists ( 'file_get_contents' ) ) { ?>
-  <?php if ( empty ( $settings['db_cachedir'] ) ) $settings['db_cachedir'] = '';  ?>
-   <input type="hidden" size="70" name="form_db_cachedir" id="form_db_cachedir" value="<?php
-     echo $settings['db_cachedir']; ?>"/>
-<?php } //end test for file_get_contents
+        ini_get( $real_db_type . '.allow_persistent' ) ){
+      echo '<input name="form_db_persistent" value="'. $settings['db_persistent'].'" type="hidden" />';
+}
+    if ( function_exists ( 'file_get_contents' ) ) {
+   if ( empty ( $settings['db_cachedir'] ) ) $settings['db_cachedir'] = '
+       <input type="hidden" size="70" name="form_db_cachedir" id="form_db_cachedir" value="'. $settings['db_cachedir'].'"/>';
+} //end test for file_get_contents
    if ( ! empty ( $_SESSION['validuser'] ) ) { ?>
- <tr><td align="center" colspan="3" >
+ <tr><td align="center" colspan="3">
   <?php
     $class = ( empty ( $_SESSION['db_success'] ) ? 'not' : '' ) . 'recommended';
     echo "<input name=\"action\" type=\"submit\" value=\"" .
@@ -1195,7 +1225,7 @@ if ( ! $exists || ! $canWrite ) { ?>
 <?php } ?>
 
 <table border="0" width="50%" align="center">
-<tr><td align="left" width="20%">
+<tr><td align="right" width="20%">
   <form action="index.php?action=switch&amp;page=1" method="post">
     <input type="submit" value="<- <?php echo $backStr ?>" />
   </form>
@@ -1301,7 +1331,7 @@ if ( ! $exists || ! $canWrite ) { ?>
 } ?>
 </table>
 <table border="0" width="50%" align="center">
-<tr><td align="left" width="20%">
+<tr><td align="right" width="20%">
   <form action="index.php?action=switch&amp;page=2" method="post">
     <input type="submit" value="<- <?php echo $backStr ?>" />
   </form>
@@ -1342,16 +1372,14 @@ echo translate ( 'It appears that you have NOT converted your existing WebCalend
  </td></tr>
   <?php } //end Timezone Conversion ?>
  <th class="header" colspan="2"><?php etranslate ( 'Application Settings' ) ?></th>
-
-   <tr><td>
+    <tr><td>
  <?php $will_load_admin = ( ( $_SESSION['old_program_version'] == 'new_install' )?
   $checked:''); ?>
-  
+
  </td></tr>
  <table width="80%"  align="center">
  <tr><td align="center">
-    <input type="button" name="action2" value="<?php echo ( 'Lancer WebCalendar' ) ?>" onClick="window.open( '../index.php', 'webcalendar');" />
-  
+ <input type="button" name="action2" value="<?php echo ( 'Lancer WebCalendar' ) ?>" onClick="window.open( '../index.php', 'webcalendar');" />
  </form>
  </td></tr></table>
 <?php } ?>

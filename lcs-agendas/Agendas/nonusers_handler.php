@@ -1,6 +1,7 @@
 <?php
-/* $Id: nonusers_handler.php,v 1.23.2.4 2008/03/04 01:19:05 cknudsen Exp $ */
+/* $Id: nonusers_handler.php,v 1.23.2.5 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 load_user_layers ();
 
 $nid = getValue ( 'nid' );

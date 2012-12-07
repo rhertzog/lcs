@@ -1,5 +1,5 @@
 <?php
-/* $Id: edit_template.php,v 1.36.2.2 2007/08/06 02:28:29 cknudsen Exp $
+/* $Id: edit_template.php,v 1.36.2.3 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Page Description:
  * This page will present the HTML form to edit an entry in the cal_report table,
@@ -14,6 +14,7 @@
  * Admin permissions are checked by the WebCalendar class.
  */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $cur = $error = '';
 $found = $foundOld = false;

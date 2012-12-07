@@ -1,6 +1,7 @@
 <?php
-/* $Id: category_handler.php,v 1.33.2.4 2008/03/03 20:51:33 cknudsen Exp $ */
+/* $Id: category_handler.php,v 1.33.2.6 2012/02/28 02:54:55 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $icon_max_size = '3000';
 $icon_path = 'icons/';
@@ -66,6 +67,8 @@ if ( empty ( $error ) && ! empty ( $delete ) ) {
   }
   // Rename any icons associated with this cat_id.
   renameIcon ( $id );
+} else if ( empty ( $error ) && empty ( $catname ) ) {
+  $error = translate ( 'Category name is required' );
 } else if ( empty ( $error ) ) {
   if ( ! empty ( $id ) ) {
     # Update (don't let them change global status).

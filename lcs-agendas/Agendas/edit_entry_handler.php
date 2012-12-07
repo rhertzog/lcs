@@ -1,8 +1,9 @@
 <?php
-/* $Id: edit_entry_handler.php,v 1.172.2.17 2008/04/22 19:07:30 umcesrjones Exp $ */
+/* $Id: edit_entry_handler.php,v 1.172.2.23 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
 require ( 'includes/classes/WebCalMailer.class' );
 $mail = new WebCalMailer;
+require_valide_referring_url ();
 
 load_user_categories ();
 
@@ -61,7 +62,7 @@ $old_id = ( empty ( $parent ) ? $old_id : $parent  );
 $old_status = array ();
 
 // Pass all string values through getPostValue.
-$cat_id = getPostValue ( 'cat_id' );
+$cat_id = getValue ( 'cat_id', '-?[0-9,\-]*', true );
 $description = getPostValue ( 'description' );
 $participants = getPostValue ( 'participants' );
 $entry_url = getPostValue ( 'entry_url' );
@@ -140,16 +141,31 @@ $due_year = getPostValue ( 'due_year' );
 $description =
 ( strlen ( $description ) == 0 || $description == '<br />' ? $name : $description );
 
-// Don't allow certain HTML tags in description.
+// For public events, we don't EVER allow HTML tags.  There is just too
+// many bad things a malicious user can do.
+// See this for an example of how someone could create an admin account in
+// webcalendar:
+//   https://www.upsploit.com/index.php/advisories/download/UPS-2010-0011
+// This same technique could be used to delete all events and other bad stuff.
+if ( $login == '__public__' ) {
+  $name = strip_tags ( $name );
+  $description = strip_tags ( $description );
+  $location = strip_tags ( $location );
+}
+
+// Don't allow certain HTML tags in name, description and location.
 // Malicious users can use meta refresh to redirect users to another
 // site (possibly a malware site).  This could be form a public submission
 // on an event calendar, and the admin gets sent to the malware site when
 // viewing the event to approve/reject it.
 $bannedTags = array ( 'HTML', 'HEAD', 'TITLE', 'BODY',
   'SCRIPT', 'META', 'LINK', 'OBJECT', 'APPLET' );
-for ( $i = 0; $i < count ( $bannedTags ); $i++ ) {
-  if ( preg_match ( "/<\s*$bannedTags[$i]/i", $description ) ) {
-    $error = translate('Security violation!');
+foreach (array($name, $description, $location) as $chkfld) {
+  for ( $i = 0; $i < count ( $bannedTags ); $i++ ) {
+    if ( preg_match ( "/<\s*$bannedTags[$i]/i", $chkfld ) ) {
+      $error = translate('Security violation!');
+      break 2;
+    }
   }
 }
 

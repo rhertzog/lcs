@@ -82,6 +82,7 @@ if ( $single_user == 'N' ) {
     }
   }
 
+
   for ( $i = 0, $cnt = count ( $otherlist ); $i < $cnt; $i++ ) {
     if ( $otherlist[$i]['cal_login'] != $layer_user ) {
       $osize++;

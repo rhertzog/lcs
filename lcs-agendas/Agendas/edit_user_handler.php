@@ -1,10 +1,11 @@
 <?php
-/* $Id: edit_user_handler.php,v 1.47.2.11 2008/04/25 15:14:19 umcesrjones Exp $ */
+/* $Id: edit_user_handler.php,v 1.47.2.12 2012/02/28 02:07:45 cknudsen Exp $ */
 
 // There is the potential for a lot of mischief from users trying to access this
 // file in ways they shouldn't. Users may try to type in a URL to get around
 // functions that are not being displayed on the web page to them.
 include_once 'includes/init.php';
+require_valide_referring_url ();
 load_user_layers ();
 
 $delete = getPostValue ( 'delete' );

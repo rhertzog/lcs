@@ -150,31 +150,29 @@ echo '<tr><td><label>'
   }
   for ( $i = 0, $cnt = count ( $users ); $i < $cnt; $i++ ) {
     $u = $users[$i]['cal_login'];
-//modif1
-if ($users[$i]['cal_cat']."_".$users[$i]['cal_group'] != $users[$i-1]['cal_cat']."_".$users[$i-1]['cal_group'])
+    //modif lcs
+    if ($users[$i]['cal_cat']."_".$users[$i]['cal_group'] != $users[$i-1]['cal_cat']."_".$users[$i-1]['cal_group'])
     echo "<optgroup label='".$users[$i]['cal_cat']."_".$users[$i]['cal_group']."'>\n";
-
-//eom1  
-  
+    //eom1
     echo "<option value=\"$u\"";
     if ( ! empty ( $viewuser[$u] ) ) {
       echo $selected;
     }
     echo '>' . $users[$i]['cal_fullname'] . "</option>\n";
-//modif2
-if ($users[$i]['cal_cat']."_".$users[$i]['cal_group'] != $users[$i+1]['cal_cat']."_".$users[$i+1]['cal_group'])
-	    echo "<\optgroup>\n";
-//eom2    
+    //modif lcs
+    if ($users[$i]['cal_cat']."_".$users[$i]['cal_group'] != $users[$i+1]['cal_cat']."_".$users[$i+1]['cal_group'])
+    echo "<\optgroup>\n";
+    //eom2
   }
 ?>
 </select>
-<?php 
-//modif3 suppression bouton
+<?php
+//modif lcs
 if ( $GROUPS_ENABLED == 'Y' ) { ?>
 <!-- <input type="button" onclick="selectUsers()" value="<?php etranslate ( 'Select' );?>..." /> -->
-<?php 
+<?php
 //eom
-} ?>
+ } ?>
 </div>
 </td></tr>
 <tr><td colspan="4" class="aligncenter">

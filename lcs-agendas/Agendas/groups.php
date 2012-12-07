@@ -12,7 +12,7 @@ ob_start ();
 	<div id="tabscontent_groups">
 	<!-- Modification LCS 1/2 -->
 	<h4>Gestion des groupes</h4>
-	<p>La gestion des groupes dans l'application Â«Agendas LCSÂ», se fait via l'application <a style="text-decoration:underline;"href="../../Annu/">Annuaire</a>.</p>
+	<p>La gestion des groupes dans l'application ÇAgendas LCSÈ, se fait via l'application <a style="text-decoration:underline;"href="../../Annu/">Annuaire</a>.</p>
 	<!-- Modification LCS 2/2
 		<?php
 			echo "<a title=\"" .

@@ -1,5 +1,5 @@
 <?php
-/* $Id: doc.php,v 1.20.2.3 2007/11/12 15:40:30 umcesrjones Exp $
+/* $Id: doc.php,v 1.20.2.4 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  *  Obtain a binary object from the database and send it back to
@@ -29,7 +29,7 @@ if ( empty ( $error ) ) {
   if ( ! $row )
     $error = str_replace ( 'XXX', $blid, $invalidIDStr );
   else {
-    $doc =& new Doc ( $row );
+    $doc = new Doc ( $row );
     $description = $doc->getDescription ();
     $filedata = $doc->getData ();
     $filename = $doc->getName ();

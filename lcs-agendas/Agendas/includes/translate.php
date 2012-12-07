@@ -14,7 +14,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: translate.php,v 1.68.2.10 2008/09/24 12:42:14 bbannon Exp $
+ * @version $Id: translate.php,v 1.68.2.13 2012/02/20 16:23:09 cknudsen Exp $
  * @package WebCalendar
  */
 
@@ -266,7 +266,7 @@ function get_browser_language ( $pref = false ) {
   else {
     $langs = explode ( ',', $HTTP_ACCEPT_LANGUAGE );
     for ( $i = 0, $cnt = count ( $langs ); $i < $cnt; $i++ ) {
-      $l = strtolower ( trim ( ereg_replace ( ';.*', '', $langs[$i] ) ) );
+      $l = strtolower ( trim ( preg_replace ( '/;.*/', '', $langs[$i] ) ) );
       $ret .= "\"$l\" ";
       if ( ! empty ( $browser_languages[$l] ) )
         return $browser_languages[$l];
@@ -301,7 +301,7 @@ function translate ( $str, $decode = '' ) {
   global $translation_loaded, $translations;
 
   //Set $blink to true to aid in finding missing translations
-  $blink = true;
+  $blink = false;
 
   if ( ! $translation_loaded )
     load_translation_text ();
@@ -337,10 +337,10 @@ function etranslate ( $str, $decode = '' ) {
  * @param string $str Text to translate
  * @return string The translated text with all HTML removed
  */
-function tooltip ( $str, $decode = '' ) {
-  $ret = translate ( $str, $decode );
-  $ret = eregi_replace ( '<[^>]+>', '', $ret );
-  return eregi_replace ( '"', "'", $ret );
+function tooltip( $str, $decode = '' ) {
+  $ret = translate( $str, $decode );
+  $ret = preg_replace( '/<[^>]+>/', '', $ret );
+  return preg_replace( '/"/', "'", $ret );
 }
 
 /* Translates and removes HTML from text, and prints it.
@@ -383,6 +383,7 @@ function define_languages () {
     translate ( 'Czech' ) . ' (UTF8)'  => 'Czech',
     translate ( 'Danish' ) => 'Danish',
     translate ( 'Dutch' ) => 'Dutch',
+    translate ( 'Dutch' ) . ' (UTF-8)' => 'Dutch_utf8',
     translate ( 'Elven' ) => 'Elven',
     translate ( 'Estonian' ) => 'Estonian',
     translate ( 'Finnish' ) => 'Finnish',

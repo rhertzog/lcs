@@ -1,6 +1,7 @@
 <?php
-/* $Id: views_edit_handler.php,v 1.25.2.1 2008/03/03 20:26:05 cknudsen Exp $ */
+/* $Id: views_edit_handler.php,v 1.25.2.2 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $error = '';
 

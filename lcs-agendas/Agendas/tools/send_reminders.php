@@ -1,6 +1,6 @@
 #!/usr/local/bin/php -q
 <?php
-/* $Id: send_reminders.php,v 1.81.2.10 2008/04/23 17:38:50 umcesrjones Exp $
+/* $Id: send_reminders.php,v 1.81.2.11 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  * This is a command-line script that will send out any email
@@ -61,7 +61,7 @@ require_once __WC_INCLUDEDIR . '/classes/Event.class';
 require_once __WC_INCLUDEDIR . '/classes/RptEvent.class';
 require_once __WC_INCLUDEDIR . '/classes/WebCalMailer.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include __WC_INCLUDEDIR . '/translate.php';
 include __WC_INCLUDEDIR . '/config.php';

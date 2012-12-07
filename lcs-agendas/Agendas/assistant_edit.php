@@ -60,11 +60,13 @@ for ( $i = 0, $cnt = count ( $users ); $i < $cnt; $i++ ) {
               <option value="' . $u . '"'
    . ( ! empty ( $assistantuser[$u] ) ? ' selected="selected"' : '' ) . '>'
    . $users[$i]['cal_fullname'] . '</option>';
-}echo '
+}
+
+echo '
             </select>' . ( $GROUPS_ENABLED == 'Y' ? '
             <input type="button" onclick="selectUsers()" value="'
    . translate ( 'Select' ) . '..." />' : '' ) . '
-*/
+ */
 for ( $i = 0, $cnt = count ( $users ); $i < $cnt; $i++ ) {
   $u = $users[$i]['cal_login'];
   if ( $u == $login || $u == '__public__' )

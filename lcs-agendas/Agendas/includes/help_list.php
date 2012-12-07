@@ -1,11 +1,11 @@
 <?php
-/* $Id: help_list.php,v 1.7.2.3 2008/02/12 19:08:52 cknudsen Exp $
+/* $Id: help_list.php,v 1.7.2.4 2012/02/20 01:29:21 cknudsen Exp $
  *
  * The file contains a listing of all the current help files in an array.
  * This should make it easier to add new help screens without having to
  * touch each file every time.
 */
-defined ( '_ISVALID' ) or ( 'You cannot access this file directly!' );
+defined ( '_ISVALID' ) or die( 'You cannot access this file directly!' );
 // DO NOT DELETE translate ( 'Index' ) translate ( 'Documentation' )
 $help_list = array ();
 $help_list['Index'] = 'help_index.php';
@@ -32,6 +32,7 @@ if ( ! access_is_enabled () && $login != '__public__' ||
 if ( ( ! access_is_enabled () && $login != '__public__' ) ||
   access_can_access_function ( ACCESS_IMPORT ) )
   $help_list['Import'] = 'help_import.php';
+
 //modif LCS
 if ( ( ! access_is_enabled () && $login != '__public__' ) ||
   access_can_access_function ( ACCESS_IMPORT ) )
@@ -40,6 +41,7 @@ if ( ( ! access_is_enabled () && $login != '__public__' ) ||
   access_can_access_function ( ACCESS_IMPORT ) )
   $help_list['Import masse'] = 'lcs_help_import2.php';
 //eom
+
 if ( ( ! access_is_enabled () && $login != '__public__' ) ||
   access_can_access_function ( ACCESS_PREFERENCES ) )
   $help_list['Preferences'] = 'help_pref.php';

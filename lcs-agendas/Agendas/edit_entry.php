@@ -1,9 +1,9 @@
 <?php
-/* $Id: edit_entry.php,v 1.203.2.9 2008/04/04 18:42:59 umcesrjones Exp $
+/* $Id: edit_entry.php,v 1.203.2.13 2012/02/28 02:49:39 cknudsen Exp $
  *
  * Description:
  * Presents page to edit/add an event/task/journal
- * 
+ *
  * Notes:
  * A SysAdmin can enable HTML for event full descriptions. If one of the
  * supported HTML edit widgets is also installed, users can use WYSIWYG editing.
@@ -360,7 +360,7 @@ if ( ! empty ( $id ) && $id > 0 ) {
   // Get reminders.
   $reminder = getReminders ( $id );
   $reminder_offset = ( empty ( $reminder ) ? 0 : $reminder['offset'] );
-    
+
     $rem_status = ( count ( $reminder ));
   $rem_use_date = ( ! empty ( $reminder['date'] ) );
 
@@ -392,7 +392,7 @@ if ( ! empty ( $id ) && $id > 0 ) {
   $overall_percent = array ();
 
   // Get category if passed in URL as cat_id.
-  $cat_id = getGetValue ( 'cat_id' );
+  $cat_id = getValue ( 'cat_id', '-?[0-9,\-]*', true );
   if ( ! empty ( $cat_id ) ) {
     $res = dbi_execute ( 'SELECT cat_name FROM webcal_categories
       WHERE cat_id = ? AND ( cat_owner = ? OR cat_owner IS NULL )',
@@ -409,7 +409,7 @@ if ( ! empty ( $id ) && $id > 0 ) {
 
     $rem_status = ( $REMINDER_DEFAULT == 'Y' );
   $rem_use_date = ( $reminder_offset == 0 && $REMINDER_WITH_DATE == 'Y' );
-            
+
   if ( $eType == 'task' )
     $hour = $WORK_DAY_START_HOUR;
 
@@ -1058,11 +1058,13 @@ if ( $can_edit ) {
     }
 
     if ( $size > 50 )
-      $size = 15;
+      $size = 50;
+    elseif ( $size > 20 )
+      $size = 20;
     elseif ( $size > 5 )
       $size = 5;
 
-    echo '
+   echo '
         <tr title="' . tooltip ( 'participants-help' ) . '">
           <td class="tooltipselect"><label for="entry_part">'
      . translate ( 'Participants' ) . ':</label></td>
@@ -1074,7 +1076,7 @@ if ( $can_edit ) {
      /*echo ' </select>' . ( $GROUPS_ENABLED == 'Y' ? '
             <input type="button" onclick="selectUsers()" value="'
        . translate ( 'Select' ) . '..." />' : '' ) . '*/
-      echo ' </select>' .' 
+      echo ' </select>' .'
             <input type="button" onclick="showSchedule()" value="'
      . translate ( 'Availability' ) . '..." />
           </td>
@@ -1211,7 +1213,7 @@ if ( $can_edit ) {
     // We use BUTTONS in a triple state configuration, and store the values in
     // a javascript array until form submission. We then set the hidden field
     // bydayList to the string value of the array.
-    for ( $rpt_byday_label = $WEEK_START; 
+    for ( $rpt_byday_label = $WEEK_START;
           $rpt_byday_label <= ( $WEEK_START + 6); $rpt_byday_label++ ) {
             $rpt_byday_mod = $rpt_byday_label %7;
             $class = ( is_weekend ( $rpt_byday_mod ) ? ' class="weekend" ' : '' );
@@ -1223,7 +1225,7 @@ if ( $can_edit ) {
               </tr>
               <tr>
                 <th>' . translate ( 'All' ) . '</th>';
-    for ( $rpt_byday_single = $WEEK_START; 
+    for ( $rpt_byday_single = $WEEK_START;
           $rpt_byday_single <= ( $WEEK_START + 6); $rpt_byday_single++ ) {
             $rpt_byday_mod = $rpt_byday_single %7;
       echo '
@@ -1240,13 +1242,13 @@ if ( $can_edit ) {
       echo '
                 <th><label>' . $loop_ctr . '/' . ( $loop_ctr - 6 )
        . '</label></th>';
-      for ( $rpt_byday = $WEEK_START; 
+      for ( $rpt_byday = $WEEK_START;
               $rpt_byday <= ( $WEEK_START + 6); $rpt_byday++ ) {
                 $rpt_byday_mod = $rpt_byday %7;
         $buttonvalue = ( in_array ( $loop_ctr
              . $byday_names[$rpt_byday_mod], $byday )
           ? $loop_ctr . translate ( $byday_names[$rpt_byday_mod] )
-          : ( in_array ( ( $loop_ctr - 6 ) 
+          : ( in_array ( ( $loop_ctr - 6 )
                     . $byday_names[$rpt_byday_mod], $byday )
           ? ( $loop_ctr - 6 )
           . translate ( $byday_names[$rpt_byday_mod] ) : '        ' ) );

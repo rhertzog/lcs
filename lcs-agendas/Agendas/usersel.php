@@ -1,14 +1,15 @@
 <?php
-/* $Id: usersel.php,v 1.34.2.2 2007/08/06 02:28:31 cknudsen Exp $ */
+/* $Id: usersel.php,v 1.34.2.3 2008/10/15 03:05:11 cknudsen Exp $ */
 include_once 'includes/init.php';
-$users = getGetValue ( 'users' );
-$form = getGetValue ( 'form' );
-$listid = getGetValue ( 'listid' );
+
 // input args in URL
 // users:  list of comma-separated users
 // form:   name of form on parent page
 // listid: element id of user selection object in form
 //         ... to be used like form.elements[$listid]
+$users = getGetValue ( 'users' );
+$form = getGetValue ( 'form' );
+$listid = getGetValue ( 'listid' );
 $progErrStr = translate ( 'Program Error No XXX specified!' );
 if ( empty ( $form ) ) {
   echo str_replace ( 'XXX', translate ( 'form' ), $progErrStr );
@@ -74,17 +75,7 @@ if ( $NONUSER_ENABLED == 'Y' ) {
   $users = ( $NONUSER_AT_TOP == 'Y'
     ? array_merge ( $nonusers, $users ) : array_merge ( $users, $nonusers ) );
 }
-/* Modification LCS 1/2
-for ( $i = 0; $i < count ( $users ); $i++ ) {
-  $u = $users[$i]['cal_login'];
-  echo "<option value=\"$u\"";
-  if ( ! empty ( $selected[$u] ) )
-    echo " selected=\"selected\"";
-  echo ">" . $users[$i]['cal_fullname'] . "</option>\n";
-}
-*/
-
-/* Ajout LCS pour affichage des groupes dans le form */
+//modif lcs
 for ( $i = 0; $i < count ( $users ); $i++ ) {
   $u = $users[$i]['cal_login'];
   if ($users[$i]['cal_cat']."_".$users[$i]['cal_group'] != $users[$i-1]['cal_cat']."_".$users[$i-1]['cal_group'])
@@ -97,7 +88,7 @@ for ( $i = 0; $i < count ( $users ); $i++ ) {
 	    echo "<\optgroup>\n";
 }
 
-// Fin Modification 1/2
+// eom
 
 echo '
               </select><br />

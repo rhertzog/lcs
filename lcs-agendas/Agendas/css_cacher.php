@@ -12,7 +12,6 @@ do_config ( 'includes/settings.php' );
 include_once 'includes/validate.php';
 include 'includes/' . $user_inc;
 include_once 'includes/access.php';
-
 include_once 'includes/gradient.php';
 
 load_global_settings ();
@@ -32,7 +31,7 @@ if ( ! empty ( $_REQUEST['login'] ) )
 
 if ( substr ( $login, 0, 10 ) == '__public__' )
   $login = '__public__';
-	
+
 load_user_preferences ( $login );
 // .
 // We will cache CSS as default, but override from admin and pref

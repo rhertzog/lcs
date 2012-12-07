@@ -3,10 +3,10 @@
 include_once 'includes/init.php';
 
 //check UAC
-if ( ! access_can_access_function ( ACCESS_WEEK ) || 
+if ( ! access_can_access_function ( ACCESS_WEEK ) ||
   ( ! empty ( $user ) && ! access_user_calendar ( 'view', $user ) )  )
   send_to_preferred_view ();
-  
+
 load_user_layers ( ( $user != $login ) && $is_nonuser_admin ? $user : '' );
 load_user_categories ();
 
@@ -84,7 +84,6 @@ for ( $i = $start_ind; $i <= $end_ind; $i++ ) {
    . ( $can_add ? html_for_add_icon ( $dateYmd, '', '', $user ) : '' )
    . '<p style="margin:.75em 0 0 0"><a href="day.php?' . $u_url . 'date=' . $dateYmd . $caturl . '">'
    . $header[$i] . '</a></p></th>';
-
 
   $date = date ( 'Ymd', $days[$i] );
   $hour_arr = $rowspan_arr = $tk = array ();
@@ -250,7 +249,7 @@ echo <<<EOT
         <td>
           <table class="main">
             <tr>
-              <th class="empty"id="hdyna" >&nbsp;</th>{$headerStr}
+              <th class="empty" id="hdyna" >&nbsp;</th>{$headerStr}
             </tr>{$untimedStr}{$eventsStr}
           </table>
         </td>{$minical_tasks}
@@ -261,5 +260,5 @@ echo <<<EOT
     {$printerStr}
     {$trailerStr}
 EOT;
-//modif LCS id="hdyna"
+
 ?>

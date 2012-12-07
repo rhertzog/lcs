@@ -1,5 +1,5 @@
 WebCalendar NEWS File
-Version: $Id: NEWS,v 1.468.2.21 2008/09/28 00:07:32 cknudsen Exp $
+Version: $Id: NEWS,v 1.468.2.26 2012/02/29 01:00:27 cknudsen Exp $
 
 This file lists significant changes to WebCalendar.  For a more detailed
 list (that includes specific bugs fixed, please look at ChangeLog):
@@ -7,6 +7,37 @@ list (that includes specific bugs fixed, please look at ChangeLog):
 http://webcalendar.cvs.sourceforge.net/*checkout*/webcalendar/webcalendar/ChangeLog?&pathrev=REL_1_2
 
 ---------------------------------------------------------------------------
+
+Version 1.2.5 (29 Feb 2012)
+ - Fixes for various security vulnerabilities include LFI (local file
+   inclusion), XSS (cross site scripting) and others.
+ - Updated translations: German, German-utf8, Dutch, Dutch-utf8
+ - Misc. minor bug fixes
+
+Version 1.2.4 (08 Aug 2011)
+ - Fixed XSS vulnerability: malicious javascript in event descriptions submitted
+   by public can do bad things (create admin account, delete events, etc.)
+   when the pending event is viewed by the admin.
+ - Fixed bug: PHP warnings on search
+ - Removed PHP warnings
+ - Bug fix: undefined function date_default_timezone_set in older versions
+   of PHP.
+
+Version 1.2.3 (14 Aug 2010)
+ - Fixed bug: could not save events with more than one category
+ - Include backtrace in fatal errors when in development mode
+
+Version 1.2.2 (14 Aug 2010)
+ - Fixes for PHP warnings about default timezone not being set.
+
+Version 1.2.1 (09 Apr 2010)
+ - Addressed some published security vulnerabilities related to
+   cross site scripting (XSS).
+ - Fixed "500 Server Error" seen with PHP 5.2.8 and later.  Some users saw
+   either blank web page or seg fault errors with this.
+ - Fixed mb_language error message some non-English users were seeing in 1.2.0.
+ - A handful of minor bugfixes and patches.
+ - Updated translations: Italian
 
 Version 1.2.0 (27 Sep 2008)
  - Added new 'Security Audit' page.

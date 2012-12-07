@@ -1,4 +1,4 @@
-/* $Id: upgrade-mysql.sql,v 1.26.2.7 2008/09/28 00:07:33 cknudsen Exp $ */
+/* $Id: upgrade-mysql.sql,v 1.26.2.12 2012/02/29 01:00:28 cknudsen Exp $ */
 /*upgrade_v0.9.14*/
 UPDATE webcal_entry SET cal_time = -1 WHERE cal_time IS NULL;
 ALTER TABLE webcal_entry MODIFY cal_time INT NOT NULL DEFAULT -1;
@@ -266,3 +266,12 @@ CREATE TABLE webcal_timezones (
 
 /*upgrade_v1.2.0*/
 
+/*upgrade_v1.2.1*/
+
+/*upgrade_v1.2.2*/
+
+/*upgrade_v1.2.3*/
+
+/*upgrade_v1.2.4*/
+
+/*upgrade_v1.2.5*/

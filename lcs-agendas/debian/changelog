@@ -1,3 +1,9 @@
+lcs-agendas (2.4.9.1) Lcs; urgency=low
+
+  * update to version webcalendar 1.2.5
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 07 Dec 2012 15:16:24 +0100
+
 lcs-agendas (2.4.9) Lcs; urgency=low
 
   * remove tilde

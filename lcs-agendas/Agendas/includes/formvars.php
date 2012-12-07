@@ -7,7 +7,7 @@
  * @author Craig Knudsen <cknudsen@cknudsen.com>
  * @copyright Craig Knudsen, <cknudsen@cknudsen.com>, http://www.k5n.us/cknudsen
  * @license http://www.gnu.org/licenses/gpl.html GNU GPL
- * @version $Id: formvars.php,v 1.1.2.3 2008/03/07 13:31:09 cknudsen Exp $
+ * @version $Id: formvars.php,v 1.1.2.4 2010/08/15 18:54:34 cknudsen Exp $
  * @package WebCalendar
  */
 
@@ -82,6 +82,7 @@ function getGetValue ( $name ) {
  * @uses getPostValue
  */
 function getValue ( $name, $format = '', $fatal = false ) {
+  global $settings;
 
   $val = getPostValue ( $name );
   if ( ! isset ( $val ) )
@@ -95,8 +96,12 @@ function getValue ( $name, $format = '', $fatal = false ) {
   if ( ! empty ( $format ) && ! preg_match ( '/^' . $format . '$/', $val ) ) {
     // does not match
     if ( $fatal ) {
+      if ( $settings['mode'] == 'dev' )
+        $error_str = ' "' . $val . '"';
+      else
+        $error_str = '';
       die_miserable_death ( translate ( 'Fatal Error' ) . ': '
-         . translate ( 'Invalid data format for' ) . $name );
+         . translate ( 'Invalid data format for' ) . ' ' . $name . $error_str );
     }
     // ignore value
     return '';

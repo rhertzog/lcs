@@ -36,8 +36,8 @@
 #        Translate "May_" to the full month name and "May" to the,
 #        usually three-letter, month abbreviation (like "Oct" for "October").
 #
-# $Id: English-US.txt,v 1.238.2.17 2008/09/05 17:59:20 bbannon Exp $
-# Translation last updated on 09-05-2008
+# $Id: English-US.txt,v 1.238.2.20 2012/02/28 02:54:55 cknudsen Exp $
+# Translation last updated on 02-27-2012
 
 
 ################################################################################
@@ -514,6 +514,8 @@ Make New Category: Make New Category
 ########################################
 # Page: category_handler.php
 #
+#
+Category name is required: Category name is required
 File size exceeds maximum.: File size exceeds maximum.
 File is not a gif image.: File is not a gif image.
 
@@ -854,11 +856,6 @@ export format not defined or incorrect: export format not defined or incorrect
 No user specified.: No user specified.
 
 ########################################
-# Page: groups.php
-#
-Add New Group: Add New Group
-
-########################################
 # Page: group_edit.php
 #
 Unnamed Group: Unnamed Group
@@ -872,6 +869,11 @@ Created by: Created by
 # Page: group_edit_handler.php
 #
 You must specify a group name: You must specify a group name
+
+########################################
+# Page: groups.php
+#
+Add New Group: Add New Group
 
 ########################################
 # Page: help_admin.php
@@ -1088,6 +1090,7 @@ Illegal characters in login: Illegal characters in login
 ########################################
 # Page: pref.php
 #
+Invalid theme: Invalid theme
 Save Preferences: Save Preferences
 Public Access calendar: Public Access calendar
 Modify Non User Calendar Preferences: Modify Non User Calendar Preferences
@@ -1264,33 +1267,6 @@ listid: listid
 Reset: Reset
 
 ########################################
-# Page: views.php
-#
-Add New View: Add New View
-
-########################################
-# Page: views_edit.php
-#
-Unnamed View: Unnamed View
-Add View: Add View
-Edit View: Edit View
-View Name: View Name
-View Type: View Type
-Day by Time: Day by Time
-Week (Users horizontal): Week (Users horizontal)
-Week by Time: Week by Time
-Week (Users vertical): Week (Users vertical)
-Week (Timebar): Week (Timebar)
-Month (Timebar): Month (Timebar)
-Month (side by side): Month (side by side)
-Month (on same calendar): Month (on same calendar)
-
-########################################
-# Page: views_edit_handler.php
-#
-You must specify a view name: You must specify a view name
-
-########################################
 # Page: view_d.php
 #
 No users for this view: No users for this view
@@ -1322,7 +1298,7 @@ Edit repeating entry for all dates: Edit repeating entry for all dates
 Delete repeating event for all dates: Delete repeating event for all dates
 Edit entry for this date: Edit entry for this date
 Delete entry only for this date: Delete entry only for this date
-from calendar of: from calendar of
+Delete entry from calendar of XXX: Delete entry from calendar of XXX
 This will delete the entry from your XXX calendar.: This will delete the entry from your XXX calendar.
 boss: boss'
 This will delete the entry from your boss calendar.: This will delete the entry from your boss' calendar.
@@ -1340,6 +1316,33 @@ Palm Pilot: Palm Pilot
 # Page: view_r.php
 #
 Double-click on empty cell to add new entry: Double-click on empty cell to add new entry
+
+########################################
+# Page: views.php
+#
+Add New View: Add New View
+
+########################################
+# Page: views_edit.php
+#
+Unnamed View: Unnamed View
+Add View: Add View
+Edit View: Edit View
+View Name: View Name
+View Type: View Type
+Day by Time: Day by Time
+Week (Users horizontal): Week (Users horizontal)
+Week by Time: Week by Time
+Week (Users vertical): Week (Users vertical)
+Week (Timebar): Week (Timebar)
+Month (Timebar): Month (Timebar)
+Month (side by side): Month (side by side)
+Month (on same calendar): Month (on same calendar)
+
+########################################
+# Page: views_edit_handler.php
+#
+You must specify a view name: You must specify a view name
 
 ########################################
 # Page: week_details.php
@@ -1387,11 +1390,9 @@ Error executing query.: Error executing query.
 Unfortunately, XXX is not implemented for: Unfortunately, XXX is not implemented for
 Unknown ODBC error.: Unknown ODBC error.
 Unknown error.: Unknown error.
-Cache error: Cache error
-write: write
-Could not XXX file: Could not XXX file
 Error opening cache dir: Error opening cache dir
 delete: delete
+Could not XXX file: Could not XXX file
 
 ########################################
 # Page: includes/formvars.php
@@ -1511,6 +1512,7 @@ Thu: Thu
 Fri: Fri
 Sat: Sat
 unknown-weekday: unknown-weekday
+Invalid referring URL: Invalid referring URL
 
 ########################################
 # Page: includes/help_list.php
@@ -1711,11 +1713,6 @@ URL cannot be blank.: URL cannot be blank.
 # Page: includes/js/export_import.php
 #
 File type does not match Import Format: File type does not match Import Format
-
-########################################
-# Page: includes/js/visible.php
-#
-Invalid Color: Invalid Color
 
 ########################################
 # Page: includes/menu/index.php

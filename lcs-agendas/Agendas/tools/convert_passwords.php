@@ -1,6 +1,7 @@
+#!/usr/local/bin/php -q
 <?php
 /*
- * $Id: convert_passwords.php,v 1.8.2.4 2007/11/13 21:38:35 umcesrjones Exp $
+ * $Id: convert_passwords.php,v 1.8.2.6 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * This script will alter the webcal_user table to allow 32 character passwords
  * and convert user passwords to PHP md5 passwords.
@@ -20,7 +21,7 @@ define ( '__WC_INCLUDEDIR', '../includes' );
 
 require_once  __WC_INCLUDEDIR . '/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include __WC_INCLUDEDIR . '/config.php';
 include __WC_INCLUDEDIR . '/dbi4php.php';

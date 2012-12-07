@@ -99,7 +99,7 @@ if ( access_can_access_function ( ACCESS_TRAILER ) ) {
            . ( $is_nonuser_admin ? '?user=' . getValue ( 'user' ) : '' )
            . "\">$unapprovedStr" . '</a>';
       }
-    } 
+    }
     if (  $login == '__public__' && $PUBLIC_ACCESS_OTHERS != 'Y' ||
       ( $is_nonuser && ! access_is_enabled () ) ) {
       // Don't allow them to see other people's calendar.
@@ -227,7 +227,7 @@ if ( access_can_access_function ( ACCESS_TRAILER ) ) {
   $tret .= '<!-- CURRENT USER -->' . "\n";
 
   if ( ! $use_http_auth ) {
-    /* Modification LCS 1/2
+     /* Modification LCS 1/2
  if ( empty ( $login_return_path ) )
   $login_url = "login.php";
  else

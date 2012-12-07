@@ -1,5 +1,5 @@
 <?php
-/* $Id: docdel.php,v 1.14.2.3 2007/11/12 15:40:30 umcesrjones Exp $
+/* $Id: docdel.php,v 1.14.2.4 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Page Description:
  *  This page will handle deletion of an entry in webcal_blob.
@@ -32,7 +32,7 @@ if ( ! $res )
   $error = db_error ();
 else {
   if ( $row = dbi_fetch_row ( $res ) ) {
-    $doc =& new Doc ( $row );
+    $doc = new Doc ( $row );
     $event_id = $doc->getEventId ();
     $name = $doc->getName ();
     $owner = $doc->getLogin ();

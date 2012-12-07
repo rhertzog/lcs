@@ -1,5 +1,5 @@
 <?php
-/* $Id: import_outlookcsv.php,v 1.15.2.2 2007/08/06 02:28:30 cknudsen Exp $
+/* $Id: import_outlookcsv.php,v 1.15.2.3 2011/07/12 19:17:42 rjones6061 Exp $
  *
  * File Description:
  * This file incudes functions for parsing CSV files generated from MS Outlook.
@@ -24,9 +24,9 @@ function parse_outlookcsv ( $cal_file ) {
   } else {
 
     # Burn First Row of Headers
-    $data = fgetcsv ( $fd, filesize ( $cal_file ), ',' );
+    $data = fgetcsv ( $fd, @filesize ( $cal_file ), ',' );
 
-    while ( $data = fgetcsv ( $fd, filesize ( $cal_file ) ) ) {
+    while ( $data = fgetcsv ( $fd, @filesize ( $cal_file ) ) ) {
       $subject = addslashes ( $data[0] );
       $start = icaldate_to_timestamp ( date ( 'Ymd\THis', strtotime ( $data[1]
              . ' ' . $data[2] ) ) );

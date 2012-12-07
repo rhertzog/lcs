@@ -1,5 +1,5 @@
 <?php
-/* $Id: users.php,v 1.48.2.8 2008/03/11 14:20:56 cknudsen Exp $
+/* $Id: users.php,v 1.48.2.9 2012/02/28 02:07:45 cknudsen Exp $
 
  NOTE:
  There are THREE components that make up the functionality of users.php.
@@ -39,7 +39,7 @@ if ( $is_admin ) {
   $doNUCS = ( ! empty ( $NONUSER_ENABLED ) && $NONUSER_ENABLED == 'Y' );
 }
 
-$currenttab = getValue ( 'tab' );
+$currenttab = getValue ( 'tab', '^(users|groups|nonusers|remotes||)$', true );
 $currenttab = ( ! empty ( $currenttab) ? $currenttab : 'users' );
 
 $BodyX = 'onload="showTab(\'' . $currenttab . '\');"';

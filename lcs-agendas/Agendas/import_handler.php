@@ -1,5 +1,5 @@
 <?php
-/* $Id: import_handler.php,v 1.40.2.1 2008/03/03 20:29:00 cknudsen Exp $
+/* $Id: import_handler.php,v 1.40.2.2 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Description:
  * Loads appropriate import file parser and processes the data returned.
@@ -25,6 +25,7 @@
  */
 include_once 'includes/init.php';
 include_once 'includes/xcal.php';
+require_valide_referring_url ();
 $error = $sqlLog = '';
 print_header ();
 

@@ -1,6 +1,6 @@
 #!/usr/local/bin/php -q
 <?php
-/* $Id: reload_remotes.php,v 1.9.2.6 2007/11/13 21:38:35 umcesrjones Exp $
+/* $Id: reload_remotes.php,v 1.9.2.7 2011/04/27 00:27:35 rjones6061 Exp $
  *
  * Description:
  * This is a command-line script that will reload all user's remote calendars.
@@ -50,7 +50,7 @@ ini_set ( 'include_path', $old_path . $delim . __WC_INCLUDEDIR . $delim );
 
 require_once __WC_INCLUDEDIR . '/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include __WC_INCLUDEDIR . '/translate.php';
 include __WC_INCLUDEDIR . '/config.php';

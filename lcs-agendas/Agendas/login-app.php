@@ -1,8 +1,8 @@
 <?php
-/* $Id: login-app.php,v 1.24.2.1 2007/09/17 02:39:21 cknudsen Exp $ */
+/* $Id: login-app.php,v 1.24.2.2 2011/04/27 00:27:35 rjones6061 Exp $ */
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/translate.php';
 include 'includes/config.php';

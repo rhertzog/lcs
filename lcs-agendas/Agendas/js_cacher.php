@@ -1,5 +1,5 @@
 <?php
-/* $Id: js_cacher.php,v 1.15.2.1 2007/09/17 02:39:21 cknudsen Exp $ */
+/* $Id: js_cacher.php,v 1.15.2.3 2010/08/16 18:33:11 cknudsen Exp $ */
 // If the javascript doesn't need any input from php,
 // then we can cache it and not run init.php.
 define ( '_ISVALID', true );
@@ -27,6 +27,10 @@ if ( ( ! empty ( $arinc[2] ) && stristr ( $arinc[2], 'true' ) ) ) {
   $cookie = ( isset ( $_COOKIE['webcalendar_csscache'] )
     ? $_COOKIE['webcalendar_csscache'] : 0 );
 
+  // Kludge - we don't have access to the db from this script (for performance
+  // reasons... so just use EST for the timezone.
+  if ( function_exists ( "date_default_timezone_set" ) )
+    date_default_timezone_set ( "America/New_York");
   header ( 'Last-Modified: ' . date ( 'r', mktime ( 0, 0, 0 ) + $cookie ) );
   header ( 'Expires: ' . date ( 'D, j M Y H:i:s', time () + 86400 ) . ' UTC' );
   header ( 'Cache-Control: Public' );
@@ -39,13 +43,12 @@ if ( ( ! empty ( $arinc[2] ) && stristr ( $arinc[2], 'true' ) ) ) {
   include 'includes/functions.php';
 
   do_config ( 'includes/settings.php' );
-  //modif
-include 'includes/validate.php';
-include 'includes/' . $user_inc;
-//include 'includes/validate.php';
-//eom
+  //modif lcs
+  include 'includes/validate.php';
+  include 'includes/' . $user_inc;
+  //eom
   include_once 'includes/access.php';
-  
+  include_once 'includes/validate.php';
   include_once 'includes/gradient.php';
 
   load_global_settings ();

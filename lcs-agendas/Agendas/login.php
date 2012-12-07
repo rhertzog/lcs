@@ -1,5 +1,5 @@
 <?php
-/* $Id: login.php,v 1.111.2.7 2008/04/22 17:53:27 umcesrjones Exp $ */
+/* $Id: login.php,v 1.111.2.9 2011/04/27 00:27:35 rjones6061 Exp $ */
 @session_start ();
 foreach ( $_SESSION as $key=>$value ) {
   $dummy[$key]=$value;  // copy to a dummy array
@@ -15,7 +15,7 @@ unset ( $_SESSION['webcalendar_session'] );
 
 require_once 'includes/classes/WebCalendar.class';
 
-$WebCalendar =& new WebCalendar ( __FILE__ );
+$WebCalendar = new WebCalendar ( __FILE__ );
 
 include 'includes/translate.php';
 include 'includes/config.php';
@@ -84,6 +84,7 @@ $appStr =  generate_application_name ();
 
 $login = getPostValue ( 'login' );
 $password = getPostValue ( 'password' );
+$remember = getPostValue ( 'remember' );
 
 // calculate path for cookie
 if ( empty ( $PHP_SELF ) ) {

@@ -1,5 +1,5 @@
 <?php
-/* $Id: week_details.php,v 1.74.2.2 2007/08/06 02:28:31 cknudsen Exp $ */
+/* $Id: week_details.php,v 1.74.2.3 2012/02/20 22:22:12 cknudsen Exp $ */
 include_once 'includes/init.php';
 send_no_cache_header ();
 
@@ -94,7 +94,7 @@ for ( $d = 0; $d < 7; $d++ ) {
           <th' . $class . ( $can_add ? '
             <a title="' . $newEntryStr . '" href="edit_entry.php?' . $u_url
      . 'date=' . date ( 'Ymd', $days[$d] )
-     . '"><img src="images/new.gif" class="new" alt="' . $newEntryStr
+     . '"><img src="images/new.png" class="new" alt="' . $newEntryStr
      . '" /></a>' : '' ) . '
             <a title="' . $header[$d] . '" href="day.php?' . $u_url . 'date='
    . date ( 'Ymd', $days[$d] ) . $caturl . '">' . $header[$d] . '</a>

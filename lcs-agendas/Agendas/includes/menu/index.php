@@ -95,7 +95,7 @@ if ( $single_user != 'Y' ) {
 
       $ulist = array_merge (
         get_my_users ( $login, 'view' ), get_my_nonusers ( $login, true, 'view' ) );
-      
+
 	  //remove duplicates if any
 	  if ( function_exists ( 'array_intersect_key' ) )
         $ulist = array_intersect_key($ulist, array_unique(array_map('serialize', $ulist)));
@@ -106,7 +106,7 @@ if ( $single_user != 'Y' ) {
   }
 }
 // Only display some links if we're viewing our own calendar.
-if ( ( empty ( $user ) || $user == $login ) || ( ! empty ( $user ) && access_is_enabled () && 
+if ( ( empty ( $user ) || $user == $login ) || ( ! empty ( $user ) && access_is_enabled () &&
   access_user_calendar ( 'view', $user) ) ) {
   // Search
   if ( access_can_access_function ( ACCESS_SEARCH, $user ) )
@@ -365,6 +365,10 @@ if ( $menuConfig['My Calendar'] ) {
 if ( ! empty ( $menuExtras[1] ) && $is_admin )
   $menuScript .= parse_menu_extras ( $menuExtras[1] );
 //eom
+
+// Add Menu Extra if defined.
+if ( ! empty ( $menuExtras[1] ) )
+  $menuScript .= parse_menu_extras ( $menuExtras[1] );
 // Events Menu
 // translate ( 'Add New Event' ) translate ( 'Delete Entries' )
 if ( $menuConfig['Events'] ) {
@@ -391,7 +395,7 @@ if ( $menuConfig['Events'] ) {
     jscMenu_item ( 'down.png', 'Import', $import_url );
 
   //if nothing was added, remove the menu
-  if ( $menuScript == $tmp2_menuScript ) 
+  if ( $menuScript == $tmp2_menuScript )
     $menuScript = $tmp1_menuScript;
   else
   jscMenu_close ();
@@ -442,7 +446,7 @@ if ( $menuConfig['Views'] &&
     }
   }
   //if nothing was added, remove the menu
-  if ( $menuScript == $tmp2_menuScript ) 
+  if ( $menuScript == $tmp2_menuScript )
     $menuScript = $tmp1_menuScript;
   else
   jscMenu_close ();
@@ -486,7 +490,7 @@ if ( ( $is_admin || $reports_linkcnt  > 0 ) && $menuConfig['Reports'] ) {
     jscMenu_item ( 'manage_reports.png', 'Manage Reports', 'report.php' );
   }
   //if nothing was added, remove the menu
-  if ( $menuScript == $tmp2_menuScript ) 
+  if ( $menuScript == $tmp2_menuScript )
     $menuScript = $tmp1_menuScript;
   else
   jscMenu_close ();
@@ -499,10 +503,10 @@ if ( ! empty ( $menuExtras[4] ) )
 // Settings Menu
 // translate ( 'My Profile' ) translate ( 'Public Calendar' )
 // translate ( 'Unapproved Events' ) translate ( 'User Manager' )
-if ( $login != '__public__' && ! $is_nonuser && $readonly 
+if ( $login != '__public__' && ! $is_nonuser && $readonly
   != 'Y' && $menuConfig['Settings'] ) {
   //allow us to back out menu if empty
-  $tmp1_menuScript = $menuScript;  
+  $tmp1_menuScript = $menuScript;
   jscMenu_menu ( 'Settings' );
   $tmp2_menuScript = $menuScript;
   // Nonuser Admin Settings.
@@ -575,7 +579,7 @@ if ( $login != '__public__' && ! $is_nonuser && $readonly
       jscMenu_item ( 'user.png', 'User Manager', 'users.php' );
   }
   //if nothing was added, remove the menu
-  if ( $menuScript == $tmp2_menuScript ) 
+  if ( $menuScript == $tmp2_menuScript )
     $menuScript = $tmp1_menuScript;
   else
   jscMenu_close ();
@@ -593,7 +597,7 @@ if ( ( $search_url != '' && $menuConfig['Search'] ) &&
   $doAdv = false;
   if ( ! empty ( $menuConfig['Advanced Search'] ) ) {
     // Use UAC if enabled...
-    if ( access_is_enabled () && 
+    if ( access_is_enabled () &&
       access_can_access_function ( ACCESS_ADVANCED_SEARCH ) )
       $doAdv = true;
     else if ( ! access_is_enabled () &&
@@ -700,8 +704,8 @@ function parse_menu_extras ( $menuA ) {
     $ret .= jscMenu_close ();
   } elseif ( $menuA[0] == 'item' )
     $ret .= jscMenu_item ( $menuA[1], $menuA[2], $menuA[3], false, $menuA[4] );
-	
-   return $ret;
+
+  return $ret;
 }
 
 ?>

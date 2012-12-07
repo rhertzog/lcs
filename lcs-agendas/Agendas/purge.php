@@ -1,5 +1,5 @@
 <?php
-/* $Id: purge.php,v 1.65.2.5 2008/04/04 19:57:15 umcesrjones Exp $
+/* $Id: purge.php,v 1.65.2.6 2012/02/28 02:07:45 cknudsen Exp $
  *
  * Description:
  * Purge events page and handler.
@@ -15,6 +15,7 @@
  *
  */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 // Set this to true do show the SQL at the bottom of the page
 $purgeDebug = false;

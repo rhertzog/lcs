@@ -1,6 +1,7 @@
 <?php
-/* $Id: assistant_edit_handler.php,v 1.19.2.1 2008/03/04 01:24:06 cknudsen Exp $ */
+/* $Id: assistant_edit_handler.php,v 1.19.2.2 2012/02/28 02:07:45 cknudsen Exp $ */
 include_once 'includes/init.php';
+require_valide_referring_url ();
 
 $user = getPostValue ( 'user' );
 $users = getPostValue ( 'users' );
