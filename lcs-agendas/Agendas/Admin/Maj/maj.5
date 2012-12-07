@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Modification du chemin des icones desktop  ";
+if [  -e /usr/share/lcs/desktop ]; then
+sed -i "s/use=Agendas/use=agendas/g" /home/*/Profile/*.json
+fi
