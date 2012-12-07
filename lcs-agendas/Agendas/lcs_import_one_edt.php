@@ -1,5 +1,6 @@
 <?
 include 'includes/init.php';
+if (!$is_admin) {echo 'Vous n\'avez pas les droits suffisants';exit;}
 
 /* Generate the selection list for calendar user selection.
  * Only ask for calendar user if user is an administrator.

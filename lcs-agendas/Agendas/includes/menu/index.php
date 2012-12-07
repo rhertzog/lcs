@@ -366,9 +366,6 @@ if ( ! empty ( $menuExtras[1] ) && $is_admin )
   $menuScript .= parse_menu_extras ( $menuExtras[1] );
 //eom
 
-// Add Menu Extra if defined.
-if ( ! empty ( $menuExtras[1] ) )
-  $menuScript .= parse_menu_extras ( $menuExtras[1] );
 // Events Menu
 // translate ( 'Add New Event' ) translate ( 'Delete Entries' )
 if ( $menuConfig['Events'] ) {

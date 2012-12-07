@@ -1,5 +1,6 @@
 <?
 include_once 'includes/init.php';
+if (!$is_admin) {echo 'Vous n\'avez pas les droits suffisants';exit;}
 
 echo '<script language="javascript" type="text/javascript" src="lcs_import.js"></script>';
 /* Generate the selection list for calendar user selection.
