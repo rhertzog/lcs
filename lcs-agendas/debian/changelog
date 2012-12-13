@@ -1,3 +1,9 @@
+lcs-agendas (2.4.9.3) Lcs; urgency=low
+
+  * delete -moz in lcs.css
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 13 Dec 2012 10:19:24 +0100
+
 lcs-agendas (2.4.9.2) Lcs; urgency=low
 
   * change path in desktop icons
