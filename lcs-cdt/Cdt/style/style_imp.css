@@ -1,14 +1,82 @@
 /*********************************************************** Impression du cdt ************************************************************/
 
-table#impr {text-align:left;padding:1px 0;width:980px;}
-table#impr caption {background:white; caption-side:top;margin:20px 20px 0;padding:5px;font-size: 20pt;}
-table#impr caption h2 {float:left;margin:20px 0;color:#1b2c68;text-align:center;width:100%}
-table#impr caption h6 {float:right;margin:0 50px;color:red;}
-table#impr caption img {float:right;}
-table#impr tbody {padding:5px;margin:5px}
-table#impr tbody tr th {background:#E6E6FA;border-top:20px solid #FFF;border-bottom:solid 1px #000;font-size:16px;font-weight:normal;padding:2px 10px;}
-table#impr tbody tr td {background:#fff;padding:5px 40px;font-size:16px;}
-table#impr tbody td.afR {background:#fff;text-decoration:underline;font-size:1em;color:#0d6a1e;font-weight:bold;}
-table#impr tbody  .cours {background:#fff;text-decoration:underline;font-size:1em;font-weight:bold;color:#1b2c68 }
-table#impr tbody td.description {background:#fff;font-size:0.9em;font-style:italic;border:solid 1px #003300}
-table#impr tbody tr th.seance {color: #660000;font-style:italic;background:#eee ; }
+table#impr {
+    text-align:left;
+    padding:1px 0;
+    width:980px;
+}
+
+table#impr caption {
+    background:white;
+     caption-side:top;
+    margin:20px 20px 0;
+    padding:5px;
+    font-size: 20pt;
+}
+
+table#impr caption h2 {
+    float:left;
+    margin:20px 0;
+    color:#1b2c68;
+    text-align:center;
+    width:100%;
+}
+
+table#impr caption h6 {
+    float:right;
+    margin:0 50px;
+    color:red;
+}
+
+table#impr caption img {
+    float:right;
+}
+
+table#impr tbody {
+    padding:5px;
+    margin:5px;
+}
+
+table#impr tbody tr th {
+    background:#E6E6FA;
+    border-top:20px solid #FFF;
+    border-bottom:solid 1px #000;
+    font-size:16px;
+    font-weight:normal;
+    padding:2px 10px;
+}
+
+table#impr tbody tr td {
+    background:#fff;
+    padding:5px 40px;
+    font-size:16px;
+}
+
+table#impr tbody td.afR {
+    background:#fff;
+    text-decoration:underline;
+    font-size:1em;
+    color:#0d6a1e;
+    font-weight:bold;
+}
+
+table#impr tbody  .cours {
+    background:#fff;
+    text-decoration:underline;
+    font-size:1em;
+    font-weight:bold;
+    color:#1b2c68;
+}
+
+table#impr tbody td.description {
+    background:#fff;
+    font-size:0.9em;
+    font-style:italic;
+    border:solid 1px #003300;
+}
+
+table#impr tbody tr th.seance {
+    color: #660000;
+    font-style:italic;
+    background:#eee ;
+ }

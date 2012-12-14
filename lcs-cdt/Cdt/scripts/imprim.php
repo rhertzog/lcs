@@ -12,7 +12,7 @@
 session_name("Cdt_Lcs");
 @session_start();
 include "../Includes/check.php";
-if (!check()) exit; 
+if (!check()) exit;
 
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -28,7 +28,7 @@ function Imprime_seance($param) {
     WHERE (id_rubrique=$param) ";
     // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
         while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
           {
@@ -36,12 +36,12 @@ function Imprime_seance($param) {
           $textafaire=stripslashes($ligne[2]);
           $jour=LeJour (strToTime($ligne[5]));
           //debut
-          if ($ligne[1]!="") 
+          if ($ligne[1]!="")
             {
             echo '<tbody><tr><th class="seance">S&eacute;ance du '.$ligne[0].'</th></tr>';
             echo '<tr><td>'.$textcours.'</td></tr>';
             //affichage, s'il existe, du travail a effectuer
-            if ($ligne[2]!="") 
+            if ($ligne[2]!="")
               {
               echo '<tr><td  class="afR">A faire pour le :'.$ligne[3].'</td></tr >';
               echo '<tr><td>'.$textafaire.'</td></tr>';
@@ -50,13 +50,13 @@ function Imprime_seance($param) {
             echo '</tbody>';
             echo ' <tbody><tr><td ><hr /></td></tr></tbody>';
             }
-          else 
+          else
             {
             echo '<tbody><tr><th class="seance">Donn&eacute; le :&nbsp;'.$ligne[0].'</th></tr>';
             echo '<tr>';
             //affichage de la seance
             //affichage, s'il existe, du travail a effectuer
-            if ($ligne[2]!="") 
+            if ($ligne[2]!="")
               {
               echo '<td><br/>Pour le :&nbsp;'.$ligne[3].'</td></tr>';
               echo '<tr><td >';
@@ -67,7 +67,7 @@ function Imprime_seance($param) {
             echo '<tbody><tr><th><hr /></th></tr></tbody>';
             }
         }
-    }   
+    }
 }
 
 function Imprime_seq($param) {
@@ -100,7 +100,7 @@ function Imprime_seance_seq ($param) {
     WHERE (id_rubrique=$param) ";
 
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
         while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
             {
@@ -108,7 +108,7 @@ function Imprime_seance_seq ($param) {
             $textafaire=utf8_encode(stripslashes($ligne[2]));
             $jour=LeJour (strToTime($ligne[5]));
             //debut
-            if ($ligne[1]!="") 
+            if ($ligne[1]!="")
                 {
                 echo '<tbody><tr>';
                 //affichage de la seance
@@ -116,7 +116,7 @@ function Imprime_seance_seq ($param) {
                 echo '<tr ><td>';
                 echo $textcours.'</td></tr>';
                 //affichage, s'il existe, du travail a effectuer
-                if ($ligne[2]!="") 
+                if ($ligne[2]!="")
                     {
                     echo '<tr><td class="afR">A faire pour le : '.$ligne[3].'</td><tr>';
                     echo '<tr><td>'.$textafaire.'</td></tr></tbody>';
@@ -128,7 +128,7 @@ function Imprime_seance_seq ($param) {
                 //affichage de la seance
                 echo '<td><span  class="cours">Donn&eacute; le :&nbsp;'.$ligne[0].' </span></td></tr>';
                 //affichage, s'il existe, du travail a effectuer
-                if ($ligne[2]!="") 
+                if ($ligne[2]!="")
                     {
                     echo '<tr><td >Pour le :&nbsp;'.$ligne[3].'</td></tr>';
                     echo '<tr><td >';
@@ -151,6 +151,13 @@ function Imprime_seance_seq ($param) {
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
+<script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                    tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+                    MMLorHTML: { prefer: { Firefox: "HTML" } }
+                    });
+                   </script>
+                    <script type="text/javascript" src="../../../libjs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"> </script>
 </head>
 <body style="background:#fff">
 
@@ -161,10 +168,10 @@ $cours="";//variable temporaire de $Cours (avec une majuscule) pour un UPDATE
 $afaire="";//variable temporaire de $Afaire (avec une majuscule) pour un UPDATE
 $article="";
 
-// Cette fonction cree un menu calendier : mois, jours et annees, initialise a la date du timestamp precise  + offset 
+// Cette fonction cree un menu calendier : mois, jours et annees, initialise a la date du timestamp precise  + offset
 function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
 //offset=nbre de jours / au timestmp ,var_j,var_m,var_a=nom des variables associees pour la bd ,$tsmp=timestamp
-    { 
+    {
     // Tableau indexe des jours
     $jours = array (1 => '01', '02', '03', '04', '05','06', '07', '08', '09', '10', '11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31');
 
@@ -173,13 +180,13 @@ function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
     $dateinfo=getdate($tsmp);
     $jo=date('d',$dateinfo['0']+($offset*86400));
     $mo=date('m',$dateinfo['0']+($offset*86400));
-    $ann=date('Y',$dateinfo['0']+($offset*86400)); 
+    $ann=date('Y',$dateinfo['0']+($offset*86400));
 
     // Creation des menus deroulants
     //les jours
     echo "<select name=\"$var_j\">\n";
     foreach ($jours as $cle => $valeur)
-      { 
+      {
       echo "<option value=\"$cle\"";
       if ($cle==$jo) {echo ' selected="selected"';}
       echo ">$valeur</option>\n";
@@ -188,7 +195,7 @@ function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
     //les mois
     echo "<select name=\"$var_m\">";
     foreach ($mois as $cle => $valeur)
-        { 
+        {
         echo "<option value=\"$cle\"";
         if ($cle==$mo) {echo ' selected="selected"';}
         echo ">$valeur</option>\n";
@@ -198,7 +205,7 @@ function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
     echo "<select name=\"$var_a\">";
     $annee = 2005;
     while ($annee <= 2015)
-        { 
+        {
         echo "<option value=\"$annee\"";
         if ($annee==$ann) {echo ' selected="selected"';}
         echo ">$annee</option>\n";
@@ -211,16 +218,16 @@ function calendrier_auto($offset,$var_j,$var_m,$var_a,$tsmp)
 $sens="";
 //on recupere le nom de l'archive
 if (isset($_GET['arch'])) {
-$arch=$_GET['arch'];} 
-elseif 
+$arch=$_GET['arch'];}
+elseif
 (isset($_POST['archi'])) {
 $arch=$_POST['archi'];}
 else
 {$arch="";}
 //on recupere le parametre de la rubrique
 if (isset($_GET['rubrique'])) {
-$cible=$_GET['rubrique'];} 
-elseif 
+$cible=$_GET['rubrique'];}
+elseif
 (isset($_POST['rubriq'])) {
 $cible=$_POST['rubriq'];}
 else
@@ -228,30 +235,30 @@ else
 
 //recherche de la matiere et la classe de la rubrique active du cahier de textes
 if (isset($cible))
-    { 
+    {
     $rq = "SELECT classe,matiere,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets$arch
     WHERE id_prof='$cible'  ";
     // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result); 
+    $nb = mysql_num_rows($result);
     //on recupere les donnees
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {$classe_active=$enrg[0];//classe
         $mati_active=utf8_encode($enrg[1]);//matiere
         $tampon=$enrg[2];
         $datetampon=$enrg[3];
         }
     }
-    
+
 //recuperation du parametre timestamp pour memorisation
 if (isset($_GET['tsmp']))  $tsmp=$_GET['tsmp'];
 // si OK a ete cliquer
 if (isset($_POST['valider']))
-    { 
+    {
     // Traiter le formulaire
     if (isset($_POST['Option1'])) $sens=$_POST['Option1'];
-    //la date, le timestamp 
+    //la date, le timestamp
     $date_c = $_POST['an_c'].$_POST['mois_c'].$_POST['jour_c'];
     $tsmp=mkTime(0,0,1,$_POST['mois_c'],$_POST['jour_c'],$_POST['an_c']) + 2592000;
 
@@ -259,7 +266,7 @@ if (isset($_POST['valider']))
     require_once ('../Includes/config.inc.php');
 
     //creer la requete
-    if ($cible!="") 
+    if ($cible!="")
         {
         //elaboration de la date limite a partir de la date selectionnee
         $dat=date('Ymd',$tsmp-2592000);//2592000=nbre de secondes dans 30 jours
@@ -276,7 +283,7 @@ if (isset($_POST['valider']))
     // recuperer les sequences dans l'ordre d affichage
     $rq = "SELECT id_seq  FROM sequences WHERE id_ong='$cib' order by ordre ".$senseq;
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
         while ($idr = mysql_fetch_object($result))
             {
@@ -289,10 +296,10 @@ if (isset($_POST['valider']))
     for ($index = 0; $index < count($Sek); $index++) {
     $rq = "SELECT MAX(date),MIN(date) from cahiertxt  WHERE seq_id='$Sek[$index]'".$dlm1;
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
         $r = mysql_fetch_array($result);
-        if ($r[0]!=null) 
+        if ($r[0]!=null)
             {
             $der_seq[$k] = $r[0] ;
             $prem_seq[$k] =$r[1] ;
@@ -321,11 +328,11 @@ if (isset($_POST['valider']))
     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere1;
     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere2;
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
-        while ($row = mysql_fetch_array($result)) 
+        while ($row = mysql_fetch_array($result))
             {
-            if ( ! in_array($row[0], $list_art)) 
+            if ( ! in_array($row[0], $list_art))
                 {
                 $list_art[$j]=$row[0];
                 $list_seq[$j]='0';
@@ -359,11 +366,11 @@ if (isset($_POST['valider']))
             }
         }
     $result = @mysql_query ($rq) or die (mysql_error());
-    if (mysql_num_rows($result) >0) 
+    if (mysql_num_rows($result) >0)
         {
-        while ($row = mysql_fetch_array($result)) 
+        while ($row = mysql_fetch_array($result))
             {
-            if ( ! in_array($row[0], $list_art)) 
+            if ( ! in_array($row[0], $list_art))
                 {
                 $list_art[$j]=$row[0];
                 $list_seq[$j]='0';
@@ -377,7 +384,7 @@ if (isset($_POST['valider']))
     echo "Classe : <b>".$classe_active ."</b>&nbsp;&nbsp;&nbsp;Mati&egrave;re : &nbsp;<b> ".$mati_active."</b>";
     //if ($tampon == 1) echo '<div id="visa-cdt">'.$datetampon.'</div>';
     echo '</caption>';
-    for ($index1 = 0; $index1 < count($list_seq); $index1++) 
+    for ($index1 = 0; $index1 < count($list_seq); $index1++)
         {
         if ($list_art[$index1]!='0')Imprime_seance ($list_art[$index1]); else Imprime_seq( $list_seq[$index1]);
         }
@@ -413,7 +420,7 @@ if (isset($_POST['valider']))
 </div>
 </form>
 <?php
-include ('../Includes/pied.inc'); 
+include ('../Includes/pied.inc');
 ?>
 </body>
 </html>

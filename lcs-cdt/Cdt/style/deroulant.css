@@ -1,25 +1,27 @@
+.t3 {
+    margin:0 1px;
+    padding:2px;
+    text-align:center;
+    color: #1b2c68;
+    font-size:16px;
+    display: block;
+    background:url("../images/fd-tit-menu-der-cdt.png") no-repeat;
+}
 
-.t3 { 
-	margin:0 1px;
-	padding:2px;
-	text-align:center;
-	color: #1b2c68;
-	font-size:16px;
-	display: block;
-	background:url(../images/fd-tit-menu-der-cdt.png) no-repeat;
-}
 #deroul-bloc{
-	float:right;
-	background:url(../images/fond-cdt-drt.png) no-repeat;
-	margin-top:16px;
-	width: 300px;
-	height:450px;
+    float:right;
+    background:url("../images/fond-cdt-drt.png") no-repeat;
+    margin-top:16px;
+    width: 300px;
+    height:450px;
 }
+
 #deroul-menu{
 	float:left;
 	margin:80px 0 0 5px;
 	width:60px;
 }
+
 #deroul-contenu{
 	float:left;
 	margin:40px 5px 0 0;
@@ -27,28 +29,32 @@
 	height:360px;
 	overflow:hidden;
 }
+
 #deroul-contenu a{
 	text-decoration:none;
 	font-size:12px;
 }
+
 #deroul-contenu p{
 	margin:5px 0;
 	height:auto;
 	width:auto;
 	font-size: 0.9em;
 }
-#deroulants .deroulant 
-{ 
+
+#deroulants .deroulant
+{
    clear:left;
-   height:360px; 
-   padding:5px; 
-   zoom:1 /* ie */ 
-} 
-#deroulants ul 
-{  
+   height:360px;
+   padding:5px;
+   zoom:1 /* ie */
+}
+
+#deroulants ul
+{
    float:left;
-   margin:0; 
-   padding:0 
+   margin:0;
+   padding:0
 }
 
 #deroulants img{
@@ -57,103 +63,108 @@
 	text-align:center;
 }
 
-#deroulants li 
-{ 
+#deroulants li
+{
    float:left;
-   margin-bottom:-1px; 
-   list-style-type:none; 
-   padding:2px; 
-   border:none; 
+   margin-bottom:-1px;
+   list-style-type:none;
+   padding:2px;
+   border:none;
 }
 
-#deroulants li a:hover, #deroulants li a:visited 
-{ 
+#deroulants li a:hover, #deroulants li a:visited {
    background: none;
    border:none;
    color: #000;
 }
 
-#deroulants li.actif 
-{ 
-   border:0px solid #000;  
-} 
-#deroulants li.actif a 
-{ 
+#deroulants li.actif {
+   border:0px solid #000;
+}
+
+#deroulants li.actif a {
    text-decoration:none;
    background:none;
-} 
-#deroulants h3 
-{ 
-   margin-top:0 
 }
+
+#deroulants h3 {
+   margin-top:0
+}
+
 #aide-memoire{
-	background:#e5e5e5;
-	float:left;
-	text-align:left;
-	width:195px;
-	margin:10px 0px;
+    background:#e5e5e5;
+    float:left;
+    text-align:left;
+    width:195px;
+    margin:10px 0px;
 }
+
 #aide-memoire-contenu{
-	float:left;
-	margin:5px 0 2px 2px;
-	width:195px;
-	height:320px;
-	text-align:center;
-	padding:1px 0 ;
-	overflow: auto;
+    float:left;
+    margin:5px 0 2px 2px;
+    width:195px;
+    height:320px;
+    text-align:center;
+    padding:1px 0 ;
+    overflow: auto;
 }
+
 #aide-memoire-contenu img{
-	float:right;
-	margin:0;
-	width:15%;
-	padding:0;
+    float:right;
+    margin:0;
+    width:15%;
+    padding:0;
 }
+
 #bt-erg{
-	background:url('../images/bt-cdt-enregistrer.png') no-repeat;
-	color:white;
-	font-size:12px;
-	border:none;
-	height:20px;
-	width:120px;
-	margin: 7px;
+    background:url('../images/bt-cdt-enregistrer.png') no-repeat;
+    color:white;
+    font-size:12px;
+    border:none;
+    height:20px;
+    width:120px;
+    margin: 7px;
 }
-.t3_ele { 
-	margin:0 0 0 3px;
-	padding:3px;
-	text-align:center;
-	color: #1b2c68;
-	font-size:14px;
-	display: block;
-	background:url(../images/fd-tit-ele.png) no-repeat;
+
+.t3_ele {
+    margin:0 0 0 3px;
+    padding:3px;
+    text-align:center;
+    color: #1b2c68;
+    font-size:14px;
+    display: block;
+    background:url(../images/fd-tit-ele.png) no-repeat;
 }
+
 #deroul-contenu_ele{
-	float:left;
-	margin:25px 2px 0 24px;
-	width:170px;
-	height:260px;
-	overflow:hidden;
+    float:left;
+    margin:25px 2px 0 24px;
+    width:170px;
+    height:260px;
+    overflow:hidden;
 }
 
 #aide-memoire_ele{
-	background:#e5e5e5;
-	float:left;
-	text-align:left;
-	width:260px;
-	margin:5px 0px;
-}
-#aide-memoire-contenu_ele{
-	float:left;
-	margin:0;
-	width:170px;
-	height:260px;
-	text-align:center;
-	padding:4px 0 0 1px;
-	overflow: auto;
-}
-#aide-memoire-contenu_ele img{
-	float:right;
-	margin:0;
-	width:15%;
-	padding:0;
+    background:#e5e5e5;
+    float:left;
+    text-align:left;
+    width:260px;
+    margin:5px 0px;
 }
 
+#aide-memoire-contenu_ele{
+    float:left;
+    margin:0;
+    width:170px;
+    height:260px;
+    text-align:center;
+    padding:4px 0 0 1px;
+    overflow: auto;
+}
+
+#aide-memoire-contenu_ele img{
+    float:right;
+    margin:0;
+    width:15%;
+    padding:0;
+}

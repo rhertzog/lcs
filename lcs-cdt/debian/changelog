@@ -1,3 +1,10 @@
+lcs-cdt (2.4.9.9) LCS; urgency=low
+
+  * add css3 property
+  * fix print LATeX equations  
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 14 Dec 2012 16:34:48 +0100
+
 lcs-cdt (2.4.9.8) LCS; urgency=low
 
   * modif scripts for new js library

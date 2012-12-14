@@ -1,37 +1,37 @@
 #myAccordion{
-	float:right;
-	margin:5px;
-	width: 300px;
-	border: 1px solid #1b2c68;
+    float:right;
+    margin:5px;
+    width: 300px;
+    border: 1px solid #1b2c68;
 }
 
 #myAccordion dt{
-	line-height: 18px;
-	background-color: #1b2c68;
-	border-top: 2px solid #d4d4d4;
-	border-bottom: 2px solid #4d4d4d;
-	padding: 0 10px;
-	font-weight: bold;
-	color: #fff;	
+    line-height: 18px;
+    background-color: #1b2c68;
+    border-top: 2px solid #d4d4d4;
+    border-bottom: 2px solid #4d4d4d;
+    padding: 0 10px;
+    font-weight: bold;
+    color: #fff;
 }
 
 #myAccordion dd{
-	overflow: auto;
-	border: solid 1px orange;
-	margin-left :5px;
-	margin-top :1px;
+    overflow: auto;
+    border: solid 1px orange;
+    margin-left :5px;
+    margin-top :1px;
 }
 
 #myAccordion p{
-	margin: 3px 3px;
+    margin: 3px 3px;
 }
 
 #myAccordion dt.myAccordionHover{
-	background-color: #1b2c68;
+    background-color: #1b2c68;
 }
 
 #myAccordion dt.myAccordionActive{
-	background-color: #1b2c68;
-	border-top: 2px solid #d4d4d4;
-	border-bottom: 2px solid #4d4d4d;
+    background-color: #1b2c68;
+    border-top: 2px solid #d4d4d4;
+    border-bottom: 2px solid #4d4d4d;
 }
