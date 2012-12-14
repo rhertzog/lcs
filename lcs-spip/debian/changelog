@@ -1,9 +1,9 @@
-lcs-spip (2.4.9.4~4) Lcs; urgency=low
+lcs-spip (2.4.9.4) Lcs; urgency=low
 
   * Update to spip 2.1.19
   * Add cron.weekly task for cleaning tmp folder
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Oct 2012 15:52:38 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Dec 2012 17:24:08 +0100
 
 lcs-spip (2.4.9.3) Lcs; urgency=low
 
