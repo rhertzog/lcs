@@ -68,11 +68,13 @@ if ($login)  {
             $Final_Out=ob_get_clean();
             if (mb_eregi('Set-Cookie:',$Rec_Data)) {
                 $infos = explode('Set-Cookie:',$Rec_Data);
-		$t = explode(';',$infos[1]);
-		$ticket=explode('=',$t[0]);
-		setcookie('tgt',"",0,"/","",0);
-		setcookie('tgt',"$ticket[1]",0,"/","",0);
-		//echo("Votre serveur CAS vous a attribu&eacute; le ticket: $ticket[1] \n Vous avez d&egrave;s lors acc&egrave;s aux applications SSO.");
+				$t = explode(';',$infos[1]);
+				$ticket=explode('=',$t[0]);
+				$ticket_propre=mb_substr($ticket[1], 0, 33);
+				#system ("echo 'ticket $ticket_propre' > /var/log/lcs/debugcas.log");
+				setcookie('tgt',"",0,"/","",0);
+				setcookie('tgt',"$ticket_propre",0,"/","",0);
+				#echo("Votre serveur CAS vous a attribu&eacute; le ticket: $ticket[1] \n Vous avez d&egrave;s lors acc&egrave;s aux applications SSO.");
             } else
                 echo "Attention vous n'&ecirc;tes pas identifi&eacute; sur le serveur CAS! Contactez votre administrateur.";
 
