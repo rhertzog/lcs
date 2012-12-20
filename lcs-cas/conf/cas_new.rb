@@ -1,11 +1,13 @@
 require 'uri'
 require 'net/https'
 
+require 'casserver/model'
+
 # Encapsulates CAS functionality. This module is meant to be included in
 # the CASServer::Controllers module.
 module CASServer::CAS
 
-  include CASServer::Models
+  include CASServer::Model
 
   def generate_login_ticket
     # 3.5 (login ticket)
@@ -117,20 +119,20 @@ module CASServer::CAS
 
     success = false
     if ticket.nil?
-      error = _("Your login request did not include a login ticket. There may be a problem with the authentication system.")
+      error = t.error.no_login_ticket
       $LOG.warn "Missing login ticket."
     elsif lt = LoginTicket.find_by_ticket(ticket)
       if lt.consumed?
-        error = _("The login ticket you provided has already been used up. Please try logging in again.")
+        error = t.error.login_ticket_already_used
         $LOG.warn "Login ticket '#{ticket}' previously used up"
-      elsif Time.now - lt.created_on < $CONF.maximum_unused_login_ticket_lifetime
+      elsif Time.now - lt.created_on < settings.config[:maximum_unused_login_ticket_lifetime]
         $LOG.info "Login ticket '#{ticket}' successfully validated"
       else
-        error = _("You took too long to enter your credentials. Please try again.")
+        error = t.error.login_timeout
         $LOG.warn "Expired login ticket '#{ticket}'"
       end
     else
-      error = _("The login ticket you provided is invalid. There may be a problem with the authentication system.")
+      error = t.error.invalid_login_ticket
       $LOG.warn "Invalid login ticket '#{ticket}'"
     end
 
@@ -146,7 +148,8 @@ module CASServer::CAS
       error = "No ticket granting ticket given."
       $LOG.debug error
     elsif tgt = TicketGrantingTicket.find_by_ticket(ticket)
-      if $CONF.expire_sessions && Time.now - tgt.created_on > $CONF.ticket_granting_ticket_expiry
+      if settings.config[:maximum_session_lifetime] && Time.now - tgt.created_on > settings.config[:maximum_session_lifetime]
+	tgt.destroy
         error = "Your session has expired. Please log in again."
         $LOG.info "Ticket granting ticket '#{ticket}' for user '#{tgt.username}' expired."
       else
@@ -170,11 +173,11 @@ module CASServer::CAS
 #      if st.consumed?
 #        error = Error.new(:INVALID_TICKET, "Ticket '#{ticket}' has already been used up.")
 #        $LOG.warn "#{error.code} - #{error.message}"
-#      elsif st.kind_of?(CASServer::Models::ProxyTicket) && !allow_proxy_tickets
-	  if st.kind_of?(CASServer::Models::ProxyTicket) && !allow_proxy_tickets
+#      elsif st.kind_of?(CASServer::Model::ProxyTicket) && !allow_proxy_tickets
+	   if st.kind_of?(CASServer::Model::ProxyTicket) && !allow_proxy_tickets
         error = Error.new(:INVALID_TICKET, "Ticket '#{ticket}' is a proxy ticket, but only service tickets are allowed here.")
         $LOG.warn "#{error.code} - #{error.message}"
-      elsif Time.now - st.created_on > $CONF.maximum_unused_service_ticket_lifetime
+      elsif Time.now - st.created_on > settings.config[:maximum_unused_service_ticket_lifetime]
         error = Error.new(:INVALID_TICKET, "Ticket '#{ticket}' has expired.")
         $LOG.warn "Ticket '#{ticket}' has expired."
       elsif !st.matches_service? service
@@ -200,7 +203,7 @@ module CASServer::CAS
   def validate_proxy_ticket(service, ticket)
     pt, error = validate_service_ticket(service, ticket, true)
 
-    if pt.kind_of?(CASServer::Models::ProxyTicket) && !error
+    if pt.kind_of?(CASServer::Model::ProxyTicket) && !error
       if not pt.granted_by_pgt
         error = Error.new(:INTERNAL_ERROR, "Proxy ticket '#{pt}' belonging to user '#{pt.username}' is not associated with a proxy granting ticket.")
       elsif not pt.granted_by_pgt.service_ticket
@@ -239,27 +242,22 @@ module CASServer::CAS
   # See http://www.ja-sig.org/wiki/display/CASUM/Single+Sign+Out
   def send_logout_notification_for_service_ticket(st)
     uri = URI.parse(st.service)
-    http = Net::HTTP.new(uri.host, uri.port)
-    #http.use_ssl = true if uri.scheme = 'https'
-
+    uri.path = '/' if uri.path.empty?
     time = Time.now
     rand = CASServer::Utils.random_string
-
     path = uri.path
-    path = '/' if path.empty?
-
     req = Net::HTTP::Post.new(path)
-    req.set_form_data(
-      'logoutRequest' => %{<samlp:LogoutRequest ID="#{rand}" Version="2.0" IssueInstant="#{time.rfc2822}">
-<saml:NameID></saml:NameID>
-<samlp:SessionIndex>#{st.ticket}</samlp:SessionIndex>
-</samlp:LogoutRequest>}
-    )
-
+    req.set_form_data('logoutRequest' => %{<samlp:LogoutRequest ID="#{rand}" Version="2.0" IssueInstant="#{time.rfc2822}">
+ <saml:NameID></saml:NameID>
+ <samlp:SessionIndex>#{st.ticket}</samlp:SessionIndex>
+ </samlp:LogoutRequest>})
+ 
     begin
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true if uri.scheme =='https'
+      
       http.start do |conn|
         response = conn.request(req)
-
         if response.kind_of? Net::HTTPSuccess
           $LOG.info "Logout notification successfully posted to #{st.service.inspect}."
           return true
@@ -270,12 +268,12 @@ module CASServer::CAS
       end
     rescue Exception => e
       $LOG.error "Failed to send logout notification to service #{st.service.inspect} due to #{e}"
-          return false
+      return false
     end
   end
 
   def service_uri_with_ticket(service, st)
-    raise ArgumentError, "Second argument must be a ServiceTicket!" unless st.kind_of? CASServer::Models::ServiceTicket
+    raise ArgumentError, "Second argument must be a ServiceTicket!" unless st.kind_of? CASServer::Model::ServiceTicket
 
     # This will choke with a URI::InvalidURIError if service URI is not properly URI-escaped...
     # This exception is handled further upstream (i.e. in the controller).

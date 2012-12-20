@@ -21,32 +21,18 @@ PATH_RUBYCAS_CERT=$CONF
 IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
 # Fix gem version to install
-#activemodel (3.0.0)
-#activerecord (2.3.4)
-#activesupport (2.3.4)
-#arel (1.0.1)
-#builder (2.1.2)
-#gettext (2.1.0)
-#i18n (0.4.1)
-#locale (2.0.5)
-#markaby (0.7.1)
-#mysql (2.8.1)
-#picnic (0.8.1.20100201, 0.8.0)
-#rack (1.2.1)
-#ruby-net-ldap (0.0.4)
-#rubycas-server (0.7.999999.20100202)
-#rubygems-update (1.3.7, 1.3.1)
-#tzinfo (0.3.23)
-
 RUBYGEMSUPDATEVERSION=1.3.7
 ACTIVERECORDVERSION=2.3.4
 MARKABYVERSION=0.7.1
 PICNICVERSION=0.8.1.20100201
-RUBYNETLDAPVERSION=0.0.4
-MYSQLVERSION=2.8.1
-RUBYCASVERSION=0.7.999999.20100202
 
-GEMSSOURCE="http://lcsgems.crdp.ac-caen.fr"
+MYSQLVERSION=2.8.1
+MYSQL2VERSION=0.3.11
+NETLDAPVERSION=0.3.1
+RUBYCASVERSION=1.1.2
+DAEMONSVERSION=1.1.9
+
+#GEMSSOURCE="http://lcsgems.crdp.ac-caen.fr"
 #
 # get LCSMGR PASS
 #
@@ -81,17 +67,25 @@ apt-get --force-yes -y install ruby1.8-dev build-essential libmysqlclient15-dev
 #
 # Install : activeesupport-2.3.4  activerecord-2.3.4
 ### --source $GEMSSOURCE
-gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+#gem install activerecord --version $ACTIVERECORDVERSION --no-ri --no-rdoc --source $GEMSSOURCE
 # Install builder-2.1.2 markaby-0.7.1
-gem install markaby --version $MARKABYVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+#gem install markaby --version $MARKABYVERSION --no-ri --no-rdoc --source $GEMSSOURCE
 # Installed rack-1.2.1 picnic-0.8.1.20100201
-gem install picnic --version $PICNICVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+#gem install picnic --version $PICNICVERSION --no-ri --no-rdoc --source $GEMSSOURCE
 #  Install ruby-net-ldap-0.0.4
-gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+#gem install ruby-net-ldap --version $RUBYNETLDAPVERSION --no-ri --no-rdoc --source $GEMSSOURCE
 # Install mysql-2.8.1
-gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc --source $GEMSSOURCE
-# Install : locale-2.0.5 gettext-2.1.0 rubycas-server-0.7.999999.20100202 i18n-0.4.1 activemodel-3.0.0 arel-1.0.1 tzinfo-0.3.23
-gem install rubycas-server --version $RUBYCASVERSION --no-ri --no-rdoc -f --source $GEMSSOURCE
+#gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc --source $GEMSSOURCE
+
+# Install : mysql and mysql2
+gem install mysql --version $MYSQLVERSION --no-ri --no-rdoc -f
+gem install mysql2 --version $MYSQL2VERSION --no-ri --no-rdoc -f
+# Install : net-ldap
+gem install net-ldap --version $NETLDAPVERSION --no-ri --no-rdoc -f
+# Install : rubycas-server and dependencies
+gem install rubycas-server --version $RUBYCASVERSION --no-ri --no-rdoc -f
+# Install : daemons
+gem install daemons --version $DAEMONSVERSION --no-ri --no-rdoc -f
 #
 #
 #
@@ -166,8 +160,6 @@ cat $IN_CONFIG_PATH/$RUBYCAS_CERT_TT \
 openssl req  -config $IN_CONFIG_PATH/openssl.cas -x509 -nodes -days 365 \
                 -newkey rsa:1024 -out $PATH_RUBYCAS_CERT/server.crt -keyout $PATH_RUBYCAS_CERT/server.key
 # Make pem certificat
-#openssl x509 -in $PATH_RUBYCAS_CERT/server.crt -out $PATH_RUBYCAS_CERT/server.der -outform DER
-#openssl x509 -in $PATH_RUBYCAS_CERT/server.der -inform DER -out $PATH_RUBYCAS_CERT/server.pem -outform PEM
 cat $PATH_RUBYCAS_CERT/server.crt $PATH_RUBYCAS_CERT/server.key > $PATH_RUBYCAS_CERT/server.pem
 #
 # Fix owner on folders and files rubycas
@@ -180,10 +172,13 @@ fi
 chmod 750 $LOGFOLDER
 chmod 640 $LOGFOLDER/$USERRUN.log
 chown $USERRUN:$GROUPRUN $LOGFOLDER -R
-if [ ! -d $RUN ]; then
-	mkdir $RUN
-	chown -R $USERRUN:$GROUPRUN $RUN
-fi
+
+#if [ ! -d $RUN ]; then
+#	mkdir $RUN
+#	chown -R $USERRUN:$GROUPRUN $RUN
+#fi
+
+chown $USERRUN /var/lib/gems/1.8/gems/rubycas-server-$RUBYCASVERSION/bin
 #
 # Run Levels
 #
@@ -201,7 +196,11 @@ apt-get -y remove --purge binutils build-essential cpp cpp-4.3 dpkg-dev g++ g++-
 #
 # Modify cas.rb for consumed st ticket
 #
-cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/1.8/gems/rubycas-server-0.7.999999.20100202/lib/casserver/cas.rb
+cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/1.8/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/cas.rb
+#
+# Add rubycas-server-control to start/stop service cas in daemon mode
+#
+cp /var/lib/lcs/cas/rubycas-server-control /var/lib/gems/1.8/gems/rubycas-server-$RUBYCASVERSION/bin/
 #
 # Start rubycas-lcs service
 #

@@ -374,7 +374,7 @@ organization: CAS
 
 # A short bit of text that shows up on the login page. You can make this blank 
 # if you prefer to have no extra text shown at the bottom of the login box.
-infoline: Powered by CRDP-TICE
+infoline: Service CAS LCS
 
 # Custom views file.  Overrides methodes in lib/casserver/views.rb
 #custom_views_file: mrt_views.rb

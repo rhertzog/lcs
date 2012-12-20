@@ -1,3 +1,9 @@
+lcs-cas (2.4.9.2~4) Lcs; urgency=low
+
+  * Update rubycas-server to 1.1.2 version
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 20 Dec 2012 17:26:38 +0100
+
 lcs-cas (2.4.9.1) Lcs; urgency=low
 
   * Add restart in lcs-cas-update.sh 
