@@ -1606,6 +1606,26 @@ function volume_dir($dir){
 }
 
 /**
+ * Cette fonction supprime le BOM éventuel d'un fichier encodé en UTF-8
+ * A appeler immédiatement après ouverture du fichier
+ * Exemple :
+ * $handle=fopen("....");
+ * skip_bom_uf8($handle)
+ *
+ * @param handle $h_file : Le pointeur de fichier à tester
+ * @return boolean : true si pas de BOM ou si BOM sauté, false dans les autres cas 
+ */
+function skip_bom_uf8($h_file)
+	{
+	if (ftell($h_file)!=0) return false;
+	$bytes=fread($h_file,3);
+	if ($bytes===false) return false;
+	if ($bytes!="\xEF\xBB\xBF") return rewind($h_file);
+	return true;
+	}
+
+
+/**
  * Supprime les fichiers d'un dossier
  *
  * @param string $dir le répertoire à vider
@@ -2878,50 +2898,52 @@ function mail_connexion() {
 		if (mysql_num_rows($res_user)>0) {
 			$lig_user=mysql_fetch_object($res_user);
 
-			$adresse_ip = $_SERVER['REMOTE_ADDR'];
-			$date = ucfirst(strftime("%A %d-%m-%Y à %H:%M:%S"));
+			if(check_mail($lig_user->email)) {
+				$adresse_ip = $_SERVER['REMOTE_ADDR'];
+				$date = ucfirst(strftime("%A %d-%m-%Y à %H:%M:%S"));
 
-			if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
-				$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
-			}
-			else if($active_hostbyaddr == "no_local") {
-				if ((mb_substr($adresse_ip,0,3) == 127) or (mb_substr($adresse_ip,0,3) == 10.) or (mb_substr($adresse_ip,0,7) == 192.168)) {
-					$result_hostbyaddr = "";
+				if (!(isset($active_hostbyaddr)) or ($active_hostbyaddr == "all")) {
+					$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
 				}
-				else{
-					$tabip=explode(".",$adresse_ip);
-					if(($tabip[0]==172)&&($tabip[1]>=16)&&($tabip[1]<=31)) {
+				else if($active_hostbyaddr == "no_local") {
+					if ((mb_substr($adresse_ip,0,3) == 127) or (mb_substr($adresse_ip,0,3) == 10.) or (mb_substr($adresse_ip,0,7) == 192.168)) {
 						$result_hostbyaddr = "";
 					}
 					else{
-						$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
+						$tabip=explode(".",$adresse_ip);
+						if(($tabip[0]==172)&&($tabip[1]>=16)&&($tabip[1]<=31)) {
+							$result_hostbyaddr = "";
+						}
+						else{
+							$result_hostbyaddr = " - ".@gethostbyaddr($adresse_ip);
+						}
 					}
 				}
-			}
-			else{
-				$result_hostbyaddr = "";
-			}
+				else{
+					$result_hostbyaddr = "";
+				}
 
-			$message = "** Mail connexion Gepi **\n\n";
-			$message .= "\n";
-			$message .= "Vous (*) vous êtes connecté à GEPI :\n\n";
-			$message .= "Identité                : ".mb_strtoupper($lig_user->nom)." ".ucfirst(mb_strtolower($lig_user->prenom))."\n";
-			$message .= "Login                   : ".$user_login."\n";
-			$message .= "Date                    : ".$date."\n";
-			$message .= "Origine de la connexion : ".$adresse_ip."\n";
-			if($result_hostbyaddr!="") {
-				$message .= "Adresse IP résolue en   : ".$result_hostbyaddr."\n";
-			}
-			$message .= "\n";
-			$message .= "Ce message, s'il vous parvient alors que vous ne vous êtes pas connecté à la date/heure indiquée, est susceptible d'indiquer que votre identité a pu être usurpée.\nVous devriez contrôler vos données, changer votre mot de passe et avertir l'administrateur (et/ou l'administration de l'établissement) pour qu'il puisse prendre les mesures appropriées.\n";
-			$message .= "\n";
-			$message .= "(*) Vous ou une personne tentant d'usurper votre identité.\n";
+				$message = "** Mail connexion Gepi **\n\n";
+				$message .= "\n";
+				$message .= "Vous (*) vous êtes connecté à GEPI :\n\n";
+				$message .= "Identité                : ".mb_strtoupper($lig_user->nom)." ".ucfirst(mb_strtolower($lig_user->prenom))."\n";
+				$message .= "Login                   : ".$user_login."\n";
+				$message .= "Date                    : ".$date."\n";
+				$message .= "Origine de la connexion : ".$adresse_ip."\n";
+				if($result_hostbyaddr!="") {
+					$message .= "Adresse IP résolue en   : ".$result_hostbyaddr."\n";
+				}
+				$message .= "\n";
+				$message .= "Ce message, s'il vous parvient alors que vous ne vous êtes pas connecté à la date/heure indiquée, est susceptible d'indiquer que votre identité a pu être usurpée.\nVous devriez contrôler vos données, changer votre mot de passe et avertir l'administrateur (et/ou l'administration de l'établissement) pour qu'il puisse prendre les mesures appropriées.\n";
+				$message .= "\n";
+				$message .= "(*) Vous ou une personne tentant d'usurper votre identité.\n";
 
-			// On envoie le mail
-			//fdebug_mail_connexion("\$message=$message\n====================\n");
-			$destinataire=$lig_user->email;
-			$sujet="GEPI : Connexion $date";
-			envoi_mail($sujet, $message, $destinataire);
+				// On envoie le mail
+				//fdebug_mail_connexion("\$message=$message\n====================\n");
+				$destinataire=$lig_user->email;
+				$sujet="GEPI : Connexion $date";
+				envoi_mail($sujet, $message, $destinataire);
+			}
 		}
 	}
 }
@@ -3681,6 +3703,100 @@ function efface_photos($photos) {
 	return ("Erreur lors de la création de l'archive.") ;
   }
 
+}
+
+/**
+ * Redimensionne un fichier photo JPG en conservant son ratio d'origine
+ * Si les dimensions du fichier source sont plus petites que celles du
+ * fichier destination alors le fichier source est inclus dans le fichier
+ * destination afin de ne pas perdre en qualité suite à un agrandissement
+ * de la photo
+ *
+ * @param string $file_source fichier à redimensionner
+ * @param integer $largeur_destination largeur à obtenir
+ * @param integer $$hauteur_destination hauteur à obtenir
+ * @param integer $angle_rotation rotation à appliquer à l'image (facultatif)
+ * @return true si redimensionnement OK, false sinon ou si inutile de redimenssionner
+ */
+function redim_photo($file_source,$largeur_destination,$hauteur_destination,$angle_rotation=0)
+	{
+	if (!is_file($file_source)) return false;
+	$source=imagecreatefromjpeg($file_source);
+	if ($source===false) return false;
+
+	if ($angle_rotation!=0) $source=imagerotate($source,-$angle_rotation,0xFFFFFF);
+	if ($source===false) return false;
+
+	$destination=imagecreatetruecolor($largeur_destination,$hauteur_destination);
+	if ($destination===false) return false;
+	$blanc=imagecolorallocate($destination,0xFF,0xFF,0xFF);
+	if ($blanc===false) return false;
+
+	if (!imagefill($destination,0,0,$blanc)) return false;
+
+	$largeur_source=imagesx($source);
+	if ($largeur_source===false) return false;
+	$hauteur_source=imagesy($source);
+	if ($hauteur_source===false) return false;
+	if ($largeur_source==0 || $hauteur_source==0 || ($largeur_source==$largeur_destination && $hauteur_source==$hauteur_destination)) return false;
+
+	$ratio_lh_source=$largeur_source/$hauteur_source;
+	$ratio_lh_destination=$largeur_destination/$hauteur_destination;
+	
+	if ($ratio_lh_source<$ratio_lh_destination)
+		{
+		$dest_l=(int)($hauteur_destination*$ratio_lh_source);
+		if ($dest_l>$largeur_source) $dest_l=$largeur_source;
+		$dest_x=(int)(($largeur_destination-$dest_l)/2);
+		$dest_h=$hauteur_destination;
+		if ($dest_h>$hauteur_source) $dest_h=$hauteur_source;
+		$dest_y=(int)(($hauteur_destination-$dest_h)/2);
+		}
+	else
+		{
+		$dest_h=(int)($largeur_destination/$ratio_lh_source);
+		if ($dest_h>$hauteur_source) $dest_h=$hauteur_source;
+		$dest_y=(int)(($hauteur_destination-$dest_h)/2);
+		$dest_l=$largeur_destination;
+		if ($dest_l>$largeur_source) $dest_l=$largeur_source;
+		$dest_x=(int)(($largeur_destination-$dest_l)/2);
+		}
+
+	if (!imagecopyresampled($destination,$source,$dest_x,$dest_y,0,0,$dest_l,$dest_h,$largeur_source,$hauteur_source)) return false;
+
+	if (!imagejpeg($destination, $file_source,100)) return false;
+	imagedestroy($destination);
+	return true;
+	}
+
+/**
+ * Calcule les dimensions pour afficher une photo
+ * dans un cadre de dimensions largeur_max X hauteur_max
+ * en conservant le ratio initial
+ *
+ * @param string $photo L'adresse de la photo
+ * @param integer $largeur_max Largeur du cadre
+ * @param integer $hauteur_max Hauteur du cadre
+ * @return array Les nouvelles dimensions de l'image (largeur, hauteur)
+ */
+function dimensions_affichage_photo($photo,$photo_largeur_max, $photo_hauteur_max) {
+
+	// prendre les informations sur l'image
+	$info_image=getimagesize($photo);
+	// largeur et hauteur de l'image d'origine
+	$largeur=$info_image[0];
+	$hauteur=$info_image[1];
+
+	// calcule le ratio de redimensionnement
+	$ratio_l=$largeur/$photo_largeur_max;
+	$ratio_h=$hauteur/$photo_hauteur_max;
+	$ratio=($ratio_l>$ratio_h)?$ratio_l:$ratio_h;
+
+	// définit largeur et hauteur pour la nouvelle image
+	$nouvelle_largeur=round($largeur/$ratio);
+	$nouvelle_hauteur=round($hauteur/$ratio);
+
+	return array($nouvelle_largeur, $nouvelle_hauteur);
 }
 
 /**********************************************************************************************
@@ -4537,7 +4653,7 @@ function message_accueil_utilisateur($login_destinataire,$texte,$date_debut=0,$d
 			// valeurs par défaut
 			$date_debut=$t_appel;
 			$date_fin=$t_appel + 3600*24*7;
-			$date_decompte=$date_fin;		
+			$date_decompte=$date_fin;
 		}
 	$r_sql="INSERT INTO `messages` values('','".addslashes($texte)."','".$date_debut."','".$date_fin."','".$_SESSION['login']."','_','".$login_destinataire."','".$date_decompte."')";
 	$retour=mysql_query($r_sql)?true:false;
@@ -4545,7 +4661,7 @@ function message_accueil_utilisateur($login_destinataire,$texte,$date_debut=0,$d
 		{
 		$id_message=mysql_insert_id();
 		$contenu='
-		<form method="POST" action="accueil.php" name="f_suppression_message">
+		<form method="POST" action="#" name="f_suppression_message">
 		<input type="hidden" name="supprimer_message" value="'.$id_message.'">
 		<button type="submit" title=" Supprimer ce message " style="border: none; background: none; float: right;"><img style="vertical-align: bottom;" src="images/icons/delete.png"></button>
 		</form>'.addslashes($texte);
@@ -5616,5 +5732,30 @@ function is_responsable($login_eleve, $login_resp="", $pers_id="") {
 		}
 	}
 	return $retour;
+}
+
+/** Fonction destinée à retourner pour un élève, un tableau des classes et dates de périodes en fonction du numéro de période
+ *
+ * @param string $login_eleve Login de l'élève
+ *
+ * @return array Tableau d'indice num_periode
+ */
+
+function get_class_dates_from_ele_login($login_eleve) {
+	$tab=array();
+
+	$sql="SELECT p.*, c.classe, c.nom_complet FROM periodes p, j_eleves_classes jec, classes c WHERE jec.id_classe=p.id_classe AND jec.periode=p.num_periode AND c.id=jec.id_classe AND jec.login='".$login_eleve."' ORDER BY p.num_periode;";
+	//echo "$sql<br />";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		while($lig=mysql_fetch_object($res)) {
+			$tab[$lig->num_periode]['id_classe']=$lig->id_classe;
+			$tab[$lig->num_periode]['classe']=$lig->classe;
+			$tab[$lig->num_periode]['nom_complet']=$lig->nom_complet;
+			$tab[$lig->num_periode]['date_fin']=$lig->date_fin;
+		}
+	}
+
+	return $tab;
 }
 ?>

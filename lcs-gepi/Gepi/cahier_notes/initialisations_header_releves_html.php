@@ -37,6 +37,23 @@
 
 .boireaus td {
 	text-align:left;
+}
+
+table.uneligne {
+	border-style:solid;
+	border-width:1px;
+	border-color:black;
+	border-collapse:collapse;
+	font-size: 8pt;
+}
+
+.uneligne td, th {
+	border-style:solid;
+	border-width:1px;
+	border-color:black;
+	font-size: 8pt;
+
+	text-align:left;
 }\n";
 
 	// Récupération des variables du bloc adresses:
