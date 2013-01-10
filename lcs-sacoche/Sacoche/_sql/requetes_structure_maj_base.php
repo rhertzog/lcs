@@ -2356,6 +2356,88 @@ public static function DB_maj_base($version_actuelle)
 		}
 	}
 
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-12-01 => 2012-12-12
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-12-01')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-12-12';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// modif index et champ table sacoche_image
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_image DROP INDEX image_objet' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_image DROP PRIMARY KEY , ADD UNIQUE (user_id , image_objet )' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_image CHANGE image_objet image_objet ENUM( "signature", "photo", "logo" ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "photo"' );
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-12-12 => 2012-12-14
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-12-12')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-12-14';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// modif champ table sacoche_message
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_message CHANGE message_contenu message_contenu TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL ' );
+			// modif champ table sacoche_user
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user CHANGE user_param_accueil user_param_accueil VARCHAR( 40 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "user,alert,messages,demandes,help,ecolo" ' );
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_user SET user_param_accueil=REPLACE(user_param_accueil,"info","messages,demandes")' );
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-12-14 => 2012-12-27
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-12-14')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2012-12-27';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// modifier un paramètre CAS pour l'ENT Agora06
+			$connexion_nom = DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="connexion_nom"' );
+			if($connexion_nom=='ent_06')
+			{
+				DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="www.agora06.fr" WHERE parametre_nom="cas_serveur_host"' );
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+	// MAJ 2012-12-27 => 2013-01-05
+	// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	if($version_actuelle=='2012-12-27')
+	{
+		if($version_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+		{
+			$version_actuelle = '2013-01-05';
+			DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_actuelle.'" WHERE parametre_nom="version_base"' );
+			// distinction des ENT agora06 et ent_nice
+			$connexion_nom = DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="connexion_nom"' );
+			if($connexion_nom=='ent_06')
+			{
+				$sesamath_uai = DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="sesamath_uai"' );
+				if(substr($sesamath_uai,0,3)=='006')
+				{
+					DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="agora06" WHERE parametre_nom="connexion_nom"' );
+				}
+				else
+				{
+					DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="ent_nice" WHERE parametre_nom="connexion_nom"' );
+					DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="cas.enteduc.fr" WHERE parametre_nom="cas_serveur_host"' );
+				}
+			}
+		}
+	}
+
 }
 
 }
