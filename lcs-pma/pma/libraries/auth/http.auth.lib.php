@@ -20,7 +20,7 @@
  * @access  public
  */
 
-//  modif lcs
+ //  modif lcs
    if ( isset($_LCS['login']) ) {
        $PHP_AUTH_USER =  $_LCS['login'];
        $PHP_AUTH_PW = $_LCS['pass'];
