@@ -1,8 +1,8 @@
-lcs-web (2.4.9.6~1) Lcs; urgency=low
+lcs-web (2.4.9.6~2) Lcs; urgency=low
 
-  * Add .htaccess Options -Indexes in swekey folder
+  * Add .htaccess Options -Indexes in swekey and Plugins folders
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jan 2013 10:04:52 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 18 Jan 2013 10:51:17 +0100
 
 lcs-web (2.4.9.5) Lcs; urgency=low
 
