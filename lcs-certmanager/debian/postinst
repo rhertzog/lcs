@@ -1,5 +1,5 @@
 #! /bin/sh
-# postinst script for LCS CER MANAGER
+# postinst script for LCS CERT MANAGER
 set -e
 
 
