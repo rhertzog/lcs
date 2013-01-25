@@ -36,8 +36,8 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/lcs-manager.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-manager
+	# Add here commands to install the package into debian/lcs-certmanager.
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-certmanager
 
 
 # Build architecture-dependent files here.
