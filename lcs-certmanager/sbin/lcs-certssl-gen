@@ -1,7 +1,7 @@
 #!/bin/bash
 # lcs-certssl-gen <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>
 
-IN_CONFIG_PATH="/var/lib/certmanager"
+IN_CONFIG_PATH="/var/lib/lcs/certmanager"
 OUT_CERT_PATH="/etc/ssl/lcs"
 
 if [ "$7" = "" ];

@@ -1,5 +1,5 @@
-lcs-certmanager (2.4.9~3) Lcs; urgency=low
+lcs-certmanager (2.4.9~4) Lcs; urgency=low
 
   * Initial release.
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 18:32:57 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 19:36:21 +0100
