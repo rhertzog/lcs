@@ -16,7 +16,7 @@ build-stamp: configure-stamp
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	#docbook-to-man debian/lcs-web.sgml > lcs-web.1
+	#docbook-to-man debian/lcs-certmanager.sgml > lcs-certmanager.1
 
 	touch build-stamp
 
@@ -36,8 +36,8 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/lcs-web.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-web
+	# Add here commands to install the package into debian/lcs-manager.
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/lcs-manager
 
 
 # Build architecture-dependent files here.
