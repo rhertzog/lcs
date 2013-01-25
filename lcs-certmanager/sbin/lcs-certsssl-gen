@@ -1,0 +1,36 @@
+#!/bin/bash
+# lcs-certssl-gen <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>
+
+IN_CONFIG_PATH="/var/lib/certmanager"
+OUT_CERT_PATH="/etc/ssl/lcs"
+
+if [ "$7" = "" ];
+then
+        echo "Usage : lcs-certssl-gen <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>"
+        exit 0
+fi
+
+FQN="$1"
+DOMAIN="$2"
+COUNTRYNAME="$3"
+PROVINCENAME="$4"
+LOCALITYNAME="$5"
+ORGANIZATIONNAME="$6"
+ORGANIZATIONALUNITNAME="$7"
+
+NAMECERT=$FQN"_as"
+cat $IN_CONFIG_PATH/openssl.lcs.in \
+        |sed -e "s!#FQN#!$FQN!g" \
+        |sed -e "s!#DOMAIN#!$DOMAIN!g" \
+        |sed -e "s!#COUNTRYNAME#!$COUNTRYNAME!g" \
+        |sed -e "s!#PROVINCENAME#!$PROVINCENAME!g" \
+        |sed -e "s!#LOCALITYNAME#!$LOCALITYNAME!g" \
+        |sed -e "s!#ORGANIZATIONNAME#!$ORGANIZATIONNAME!g" \
+        |sed -e "s!#ORGANIZATIONALUNITNAME#!$ORGANIZATIONALUNITNAME!g" \
+        > $IN_CONFIG_PATH/openssl.lcs
+
+openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey rsa:1024 -out $OUT_CERT_PATH/$NAMECERT.crt -keyout $OUT_CER_PATH/$NAMECERT.key
+
+chmod 440 $OUT_CER_PATH/$NAMECERT.key
+
+exit 0

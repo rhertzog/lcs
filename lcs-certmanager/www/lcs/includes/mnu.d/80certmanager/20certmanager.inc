@@ -1,0 +1,1 @@
+Gen. cert. SSL,/Admin/gencertssl.php,lcs_is_admin

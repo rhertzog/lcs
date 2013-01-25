@@ -1,0 +1,9 @@
+EADME,
+
+Jean-Luc Chretien     <jean-luc.chretien@tice.ac-caen.fr>
+Simon Cavey           <simon.cavey@crdp.ac-caen.fr>
+
+LCS CERT MANAGER
+================
+
+    Mise en place sur LCS d'un dispositif de gestion (import, generation) de certificats SSL

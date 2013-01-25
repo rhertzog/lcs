@@ -1,0 +1,12 @@
+Source: lcs-certmanager
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.6.2
+
+Package: lcs-certmanager
+Architecture: all
+Depends: lcs-web, openssl
+Description: Install certificats SSL manager on LCS server
+ This package install certificats SSL manager on LCS server project.
