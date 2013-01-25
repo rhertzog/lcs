@@ -29,7 +29,7 @@ cat $IN_CONFIG_PATH/openssl.lcs.in \
         |sed -e "s!#ORGANIZATIONALUNITNAME#!$ORGANIZATIONALUNITNAME!g" \
         > $IN_CONFIG_PATH/openssl.lcs
 
-openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey rsa:1024 -out $OUT_CERT_PATH/$NAMECERT.crt -keyout $OUT_CER_PATH/$NAMECERT.key
+openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey rsa:1024 -out $OUT_CERT_PATH/$NAMECERT.crt -keyout $OUT_CERT_PATH/$NAMECERT.key
 
 chmod 440 $OUT_CER_PATH/$NAMECERT.key
 

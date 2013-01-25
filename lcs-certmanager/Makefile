@@ -22,8 +22,8 @@ install:
 	cp -a www/* $(DESTDIR)/var/www/	
 
 # install lcs certmanager doc-html
-	install -d $(DESTDIR)/usr/share/doc/lcs/cas/html
-	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/cas/html/
+	install -d $(DESTDIR)/usr/share/doc/lcs/certmanager/html
+	cp -a doc-html/* $(DESTDIR)/usr/share/doc/lcs/certmanager/html/
 
 clean:
 
