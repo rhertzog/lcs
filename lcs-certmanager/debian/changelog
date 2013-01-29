@@ -1,5 +1,6 @@
-lcs-certmanager (2.4.9~7) Lcs; urgency=low
+lcs-certmanager (2.4.9~8) Lcs; urgency=low
 
   * Initial release.
+  * Make .pem and make symbolic links in lcs-certssl-gen
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 20:43:30 +0100
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 20:57:23 +0100

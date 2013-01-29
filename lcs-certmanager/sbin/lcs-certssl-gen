@@ -33,4 +33,12 @@ openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey 
 
 chmod 440 $OUT_CER_PATH/$NAMECERT.key
 
+# Make a .pem
+cat  $OUT_CERT_PATH/$NAMECERT.crt $OUT_CERT_PATH/$NAMECERT.key > $OUT_CERT_PATH/$NAMECERT.pem
+
+# Make symbolic link
+ln -s $OUT_CERT_PATH/$NAMECERT.crt $OUT_CERT_PATH/server.crt
+ln -s $OUT_CERT_PATH/$NAMECERT.key $OUT_CERT_PATH/server.key
+ln -s $OUT_CERT_PATH/$NAMECERT.pem $OUT_CERT_PATH/server.pem
+
 exit 0
