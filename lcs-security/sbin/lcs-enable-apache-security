@@ -12,8 +12,8 @@ mkdir -p /var/asl/data/audit
 mkdir -p /var/asl/data/suspicious
 mkdir -p /etc/apache2/modsecurity.d
 mkdir -p /etc/asl/
-touch -p /etc/asl/whitelist
-touch -p /var/log/apache2/audit_log
+touch  /etc/asl/whitelist
+touch  /var/log/apache2/audit_log
 
 #wget http://www.atomicorp.com/channels/rules/delayed/modsec-2.5-free-latest.tar.gz
 #tar zxvf modsec-2.5-free-latest.tar.gz

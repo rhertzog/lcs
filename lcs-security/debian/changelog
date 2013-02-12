@@ -1,3 +1,9 @@
+lcs-security (2.4.9.2) UNRELEASED; urgency=low
+
+  * lcs-security : activation bugfix
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 12 Feb 2013 22:47:15 +0100
+
 lcs-security (2.4.9.1) Lcs; urgency=low
 
   * lcs-security : fix menu url
