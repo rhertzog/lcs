@@ -95,7 +95,7 @@ $tab_connexion_info['cas'][ '69|laclasse']         = array( 'txt'=>'ENT laclasse
 $tab_connexion_info['cas'][ '71|liberscol']        = array( 'txt'=>'ENT Liberscol (académie de Dijon).'                           , 'etat'=>1 , 'societe'=>'Tetra Informatique' , 'serveur_host'=>'cas.ent-liberscol.fr'                   , 'serveur_port'=>443  , 'serveur_root'=>''                  , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>0 , 'csv_prenom'=>1 , 'csv_id_ent'=>2 , 'csv_id_sconet'=>NULL );
 $tab_connexion_info['cas'][ '72|e-lyco']           = array( 'txt'=>'ENT e-lyco (académie de Nantes).'                             , 'etat'=>1 , 'societe'=>'Kosmos'             , 'serveur_host'=>'cas.e-lyco.fr'                          , 'serveur_port'=>443  , 'serveur_root'=>''                  , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>5 , 'csv_prenom'=>4 , 'csv_id_ent'=>1 , 'csv_id_sconet'=>NULL );
 $tab_connexion_info['cas'][ '73|cartabledesavoie'] = array( 'txt'=>'ENT Cartable de Savoie.'                                      , 'etat'=>1 , 'societe'=>'Pentila'            , 'serveur_host'=>'cartabledesavoie.com'                   , 'serveur_port'=>443  , 'serveur_root'=>'cas'               , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>0 , 'csv_prenom'=>1 , 'csv_id_ent'=>5 , 'csv_id_sconet'=>NULL );
-$tab_connexion_info['cas'][ '77|ent_77']           = array( 'txt'=>'ENT département de Seine et Marne.'                           , 'etat'=>0 , 'societe'=>NULL                 , 'serveur_host'=>'ent77.seine-et-marne.fr'                , 'serveur_port'=>443  , 'serveur_root'=>'connexion'         , 'csv_infos'=>FALSE , 'csv_entete'=>0 , 'csv_nom'=>0 , 'csv_prenom'=>0 , 'csv_id_ent'=>0 , 'csv_id_sconet'=>NULL );
+$tab_connexion_info['cas'][ '77|ent_77']           = array( 'txt'=>'ENT département de Seine et Marne.'                           , 'etat'=>1 , 'societe'=>'Logica'             , 'serveur_host'=>'ent77.seine-et-marne.fr'                , 'serveur_port'=>443  , 'serveur_root'=>'connexion'         , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>3 , 'csv_prenom'=>4 , 'csv_id_ent'=>0 , 'csv_id_sconet'=>2    );
 $tab_connexion_info['cas'][ '80|ent_80']           = array( 'txt'=>'ENT département de la Somme.'                                 , 'etat'=>1 , 'societe'=>'iTOP'               , 'serveur_host'=>'cas.enteduc.fr'                         , 'serveur_port'=>443  , 'serveur_root'=>'cas'               , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>1 , 'csv_prenom'=>2 , 'csv_id_ent'=>0 , 'csv_id_sconet'=>NULL );
 $tab_connexion_info['cas'][ '81|entmip']           = array( 'txt'=>'ENT Midi-Pyrénées (académie de Toulouse).'                    , 'etat'=>1 , 'societe'=>'Kosmos'             , 'serveur_host'=>'cas.entmip.fr'                          , 'serveur_port'=>443  , 'serveur_root'=>''                  , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>4 , 'csv_prenom'=>3 , 'csv_id_ent'=>1 , 'csv_id_sconet'=>NULL );
 $tab_connexion_info['cas'][ '82|entmip']           = array( 'txt'=>'ENT Midi-Pyrénées (académie de Toulouse).'                    , 'etat'=>1 , 'societe'=>'Kosmos'             , 'serveur_host'=>'cas.entmip.fr'                          , 'serveur_port'=>443  , 'serveur_root'=>''                  , 'csv_infos'=>TRUE  , 'csv_entete'=>1 , 'csv_nom'=>4 , 'csv_prenom'=>3 , 'csv_id_ent'=>1 , 'csv_id_sconet'=>NULL );
@@ -117,12 +117,12 @@ $tab_connexion_info['cas'][ '|place-test']       = array( 'txt'=>'' , 'etat'=>1 
 $tab_connexion_info['cas'][ '|scolastance-test'] = array( 'txt'=>'' , 'etat'=>1 , 'societe'=>'ItsLearning'        , 'serveur_host'=>'preprod-cas.scolastance.com'                , 'serveur_port'=>443  , 'serveur_root'=>'cas-recette1_616' , 'csv_entete'=>1 , 'csv_nom'=>1 , 'csv_prenom'=>2 , 'csv_id_ent'=>3 , 'csv_id_sconet'=>NULL , 'txt'=>"ENT Test Scolastance." );
 $tab_connexion_info['cas'][ '|logica-test']      = array( 'txt'=>'' , 'etat'=>1 , 'societe'=>'Logica'             , 'serveur_host'=>'projets2-eta.fr.logica.com'                 , 'serveur_port'=>443  , 'serveur_root'=>'connexion'        , 'csv_entete'=>1 , 'csv_nom'=>3 , 'csv_prenom'=>4 , 'csv_id_ent'=>0 , 'csv_id_sconet'=>2    , 'txt'=>"ENT Test Logica (Celia, Lilie)." );
 https://cas.scolastance.com/cas-asp
-https://cas.scolastance.com/cas-ent74			http://ent74.scolastance.com/etablissements.aspx
-https://cas.scolastance.com/cas-entrouen	http://entrouen.scolastance.com/etablissements.aspx
-https://cas.scolastance.com/cas-ifsp			http://ifsp.scolastance.com/etablissements.aspx
-https://cas.scolastance.com/cas-client		http://client.scolastance.com/etablissements.aspx
-https://cas.scolastance.com/cas-sierra		http://sierra.scolastance.com/etablissements.aspx
-https://cas.scolastance.com/cas-demo			http://demo.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-ent74      http://ent74.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-entrouen  http://entrouen.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-ifsp      http://ifsp.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-client    http://client.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-sierra    http://sierra.scolastance.com/etablissements.aspx
+https://cas.scolastance.com/cas-demo      http://demo.scolastance.com/etablissements.aspx
 */
 
 // Vérifier la définition de ces variables car appel de ce fichier depuis la doc
