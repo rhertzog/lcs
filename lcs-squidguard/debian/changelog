@@ -1,3 +1,9 @@
+lcs-squidguard (2.4.9.2) stable; urgency=low
+
+  * update Blacklists URL
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 26 Feb 2013 13:53:34 +0100
+
 lcs-squidguard (2.4.9.1) Lcs; urgency=low
 
   * Update squidGuard.conf

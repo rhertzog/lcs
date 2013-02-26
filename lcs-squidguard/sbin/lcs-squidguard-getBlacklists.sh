@@ -1,6 +1,6 @@
 #!/bin/sh
 cd /tmp
-wget --passive-ftp ftp://ftp.univ-tlse1.fr/pub/reseau/cache/squidguard_contrib/blacklists.tar.gz
+wget --passive-ftp  ftp://ftp.ut-capitole.fr/pub/reseau/cache/squidguard_contrib/blacklists.tar.gz
 tar -xzf blacklists.tar.gz -C /var/lib/squidguard/db/
 rm blacklists.tar.gz
 if [ ! -e /var/lib/squidguard/db/blacklists/lcs/lcs.db ]; then
