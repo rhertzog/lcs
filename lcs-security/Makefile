@@ -25,6 +25,11 @@ install:
 	# install sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 755 sbin/* $(DESTDIR)/usr/sbin/
+	
+	 # install home RSSH
+	 install -d $(DESTDIR)/home/
+	 install -d $(DESTDIR)/home/rssh
+	 cp -a home/* $(DESTDIR)/home/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/security/html

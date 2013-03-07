@@ -25,6 +25,17 @@ INDICEMAJNBR="0"
 
 case "$1" in
     configure)
+    	if [ `grep -c rssh /etc/passwd` = 0 ]; then
+    	### installation du compte rssh
+    	useradd -K UID_MIN=100 -K UID_MAX=999 -K GID_MIN=100 -K GID_MAX=999 rssh
+    	chown -R rssh\:rssh /home/rssh
+    	chmod -R 700 /home/rssh/.ssh
+    	cat >> /etc/inittab <<EOP
+# Action on special keypress SSH inverse de secours XenEdu (ALT-UpArrow).
+kb::kbrequest:/sbin/lcs-secours-ssh
+EOP
+	fi
+
 	if [ -x /usr/sbin/invoke-rc.d ]; then
 		invoke-rc.d fail2ban restart
 	else
@@ -38,6 +49,21 @@ case "$1" in
 		    	echo "le mod security d'apache est disponible."
 		    	/usr/sbin/lcs-disable-apache-security 
 	fi
+
+	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.3; then
+		if [ `grep -c rssh /etc/passwd` = 0 ]; then
+			### installation du compte rssh
+	         	useradd -K UID_MIN=100 -K UID_MAX=999 -K GID_MIN=100 -K GID_MAX=999 rssh
+	         	chown -R rssh\:rssh /home/rssh
+	         	chmod -R 700 /home/rssh/.ssh
+	         	cat >> /etc/inittab <<EOP
+# Action on special keypress SSH inverse de secours XenEdu (ALT-UpArrow).
+kb::kbrequest:/usr/sbin/lcs-secours-ssh
+EOP
+                	init q
+		fi
+	fi
+
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

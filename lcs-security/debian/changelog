@@ -1,8 +1,9 @@
-lcs-security (2.4.9.2) UNRELEASED; urgency=low
+lcs-security (2.4.9.3~1) unstable; urgency=low
 
   * lcs-security : activation bugfix
+  * add remote ssh feature form XenEdu
 
- -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 12 Feb 2013 22:47:15 +0100
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Thu, 07 Mar 2013 15:41:30 +0100
 
 lcs-security (2.4.9.1) Lcs; urgency=low
 
