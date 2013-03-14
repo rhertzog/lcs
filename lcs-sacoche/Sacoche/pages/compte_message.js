@@ -33,16 +33,10 @@ $(document).ready
     var mode = false;
 
     // tri du tableau (avec jquery.tablesorter.js).
-    var sorting = [[1,1],[0,0]];
-    $('table.form').tablesorter({ headers:{2:{sorter:false},3:{sorter:false},4:{sorter:false}} });
-    function trier_tableau()
-    {
-      if($('table.form tbody tr td').length>1)
-      {
-        $('table.form').trigger('update');
-        $('table.form').trigger('sorton',[sorting]);
-      }
-    }
+    $('#table_action').tablesorter({ headers:{0:{sorter:'date_fr'},1:{sorter:'date_fr'},2:{sorter:false},3:{sorter:false},4:{sorter:false}} });
+    var tableau_tri = function(){ $('#table_action').trigger( 'sorton' , [ [[1,1],[0,0]] ] ); };
+    var tableau_maj = function(){ $('#table_action').trigger( 'update' , [ true ] ); };
+    tableau_tri();
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fonctions utilisées
@@ -98,13 +92,10 @@ $(document).ready
       var objet_tds            = objet_tr.find('td');
       // Récupérer les informations de la ligne concernée
       var id                   = objet_tr.attr('id').substring(3);
-      var debut_date           = objet_tds.eq(0).html();
-      var fin_date             = objet_tds.eq(1).html();
+      var debut_date_fr        = objet_tds.eq(0).html();
+      var fin_date_fr          = objet_tds.eq(1).html();
       var destinataires_nombre = objet_tds.eq(2).html();
       var message_info         = objet_tds.eq(3).text();
-      // enlever les date mysql cachées
-      var debut_date_fr        = debut_date.substring(17,debut_date.length);
-      var fin_date_fr          = fin_date.substring(17,fin_date.length);
       // liste des destinataires et contenu du message
       var destinataires_liste  = tab_destinataires[id];
       var message_contenu      = tab_msg_contenus[id];
@@ -148,7 +139,7 @@ $(document).ready
       var destinataires_liste = $("#f_destinataires_liste").val();
       if(destinataires_liste=='')
       {
-        $('#select_destinataires').html();
+        $('#f_destinataires').html();
         $('#retirer_destinataires').prop('disabled',true);
         $('#valider_destinataires').prop('disabled',true);
       }
@@ -170,17 +161,17 @@ $(document).ready
             success : function(responseHTML)
             {
               initialiser_compteur();
-              if( (responseHTML.substring(0,7)!='<option') && (responseHTML!='') )
+              if( (responseHTML.substring(0,6)=='<label') || (responseHTML=='') )
               {
-                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
-                return false;
-              }
-              else
-              {
-                $('#select_destinataires').html(responseHTML);
+                $('#f_destinataires').html(responseHTML);
                 var etat_disabled = (responseHTML!='') ? false : true ;
                 $('#retirer_destinataires').prop('disabled',etat_disabled);
                 $('#valider_destinataires').prop('disabled',etat_disabled);
+              }
+              else
+              {
+                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
+                return false;
               }
             }
           }
@@ -188,6 +179,7 @@ $(document).ready
       }
       // Afficher la zone
       $.fancybox( { 'href':'#form_destinataires' , onStart:function(){$('#form_destinataires').css("display","block");} , onClosed:function(){$('#form_destinataires').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+      $(document).tooltip("destroy");infobulle(); // Sinon, bug avec l'infobulle contenu dans le fancybox qui ne disparait pas au clic...
     };
 
     /**
@@ -200,6 +192,7 @@ $(document).ready
       var message_contenu = $("#f_message_contenu").val();
       // Afficher la zone
       $.fancybox( { 'href':'#form_message' , onStart:function(){$('#form_message').css("display","block");} , onClosed:function(){$('#form_message').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+      $(document).tooltip("destroy");infobulle(); // Sinon, bug avec l'infobulle contenu dans le fancybox qui ne disparait pas au clic...
       $('#f_message').focus().val(unescapeHtml(message_contenu));
       afficher_textarea_reste( $('#f_message') , 999 );
     };
@@ -208,14 +201,14 @@ $(document).ready
 // Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('q.ajouter').click( ajouter );
-    $('q.modifier').live(  'click' , modifier );
-    $('q.supprimer').live( 'click' , supprimer );
-    $('#bouton_annuler').click( annuler );
-    $('#bouton_valider').click( function(){formulaire.submit();} );
+    $('#table_action').on( 'click' , 'q.ajouter'       , ajouter );
+    $('#table_action').on( 'click' , 'q.modifier'      , modifier );
+    $('#table_action').on( 'click' , 'q.supprimer'     , supprimer );
 
-    $('q.choisir_eleve').live( 'click' , choisir_destinataires );
-    $('q.texte_editer').live(  'click' , editer_contenu_message );
+    $('#form_gestion').on( 'click' , '#bouton_annuler' , annuler );
+    $('#form_gestion').on( 'click' , '#bouton_valider' , function(){formulaire.submit();} );
+    $('#form_gestion').on( 'click' , 'q.choisir_eleve' , choisir_destinataires );
+    $('#form_gestion').on( 'click' , 'q.texte_editer'  , editer_contenu_message );
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Indiquer le nombre de caractères restant autorisés dans le textarea
@@ -240,7 +233,7 @@ $(document).ready
       if(profil=='')
       {
         $('#ajax_msg_destinataires').removeAttr("class").html("&nbsp;");
-        $('#f_user').hide();
+        $('#div_users').hide();
         $('#ajouter_destinataires').prop('disabled',true);
         return false
       }
@@ -249,7 +242,7 @@ $(document).ready
       if(!groupe_val)
       {
         $('#ajax_msg_destinataires').removeAttr("class").html("&nbsp;");
-        $('#f_user').hide();
+        $('#div_users').hide();
         $('#ajouter_destinataires').prop('disabled',true);
         return false
       }
@@ -281,17 +274,18 @@ $(document).ready
           success : function(responseHTML)
           {
             initialiser_compteur();
-            if( (responseHTML.substring(0,7)!='<option') && (responseHTML!='') )
+            if(responseHTML.substring(0,6)=='<label')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
             {
-              $('#ajax_msg_destinataires').removeAttr("class").addClass("alerte").html(responseHTML);
-              $('#f_user').hide();
-              $('#ajouter_destinataires').prop('disabled',true);
+              $('#ajax_msg_destinataires').removeAttr("class").html("&nbsp;");
+              $('#f_user').html(responseHTML);
+              $('#div_users').show();
+              $('#ajouter_destinataires').prop('disabled',false);
             }
             else
             {
-              $('#ajax_msg_destinataires').removeAttr("class").html("&nbsp;");
-              $('#f_user').html(responseHTML).show();
-              $('#ajouter_destinataires').prop('disabled',false);
+              $('#ajax_msg_destinataires').removeAttr("class").addClass("alerte").html(responseHTML);
+              $('#div_users').hide();
+              $('#ajouter_destinataires').prop('disabled',true);
             }
           }
         }
@@ -314,19 +308,19 @@ $(document).ready
     (
       function()
       {
-        $('#f_user option:selected').each
+        $('#f_user input:checked').each
         (
           function()
           {
             var destinataire_id = $(this).val();
-            var destinataire_nom = $(this).text();
-            if( ! $('#select_destinataires option[value='+destinataire_id+']').length )
+            var destinataire_nom = $(this).parent().text();
+            if( ! $('#f_destinataires_'+destinataire_id).length )
             {
-              $('#select_destinataires').append('<option value="'+destinataire_id+'" selected>'+destinataire_nom+'</option>');
+              $('#f_destinataires').append('<label for="f_destinataires_'+destinataire_id+'"><input type="checkbox" value="'+destinataire_id+'" id="f_destinataires_'+destinataire_id+'" name="f_destinataires[]">'+destinataire_nom+'</label>');
             }
           }
         );
-        var etat_disabled = ($('#select_destinataires option').length) ? false : true ;
+        var etat_disabled = ($('#f_destinataires').children().length) ? false : true ;
         $('#retirer_destinataires').prop('disabled',etat_disabled);
         $('#valider_destinataires').prop('disabled',etat_disabled);
       }
@@ -340,14 +334,14 @@ $(document).ready
     (
       function()
       {
-        $('#select_destinataires option:selected').each
+        $('#f_destinataires input:checked').each
         (
           function()
           {
-            $(this).remove();
+            $(this).parent().remove();
           }
         );
-        var etat_disabled = ($('#select_destinataires option').length) ? false : true ;
+        var etat_disabled = ($('#f_destinataires').children().length) ? false : true ;
         $('#retirer_destinataires').prop('disabled',etat_disabled);
         $('#valider_destinataires').prop('disabled',etat_disabled);
       }
@@ -363,7 +357,7 @@ $(document).ready
       {
         var liste = '';
         var nombre = 0;
-        $('#select_destinataires option').each
+        $('#f_destinataires input').each
         (
           function()
           {
@@ -427,14 +421,14 @@ $(document).ready
         {
           f_debut_date           : { required:true , dateITA:true },
           f_fin_date             : { required:true , dateITA:true },
-          f_destinataires_nombre : { accept:'destinataire|destinataires' },
+          f_destinataires_nombre : { isWord:'destinataire' },
           f_message_info         : { minlength:10 } // On ne peut pas contrôler la longueur de f_message_contenu car il n'y a pas de vérifications sur un champ caché.
         },
         messages :
         {
           f_debut_date           : { required:"date manquante" , dateITA:"date JJ/MM/AAAA incorrecte" },
           f_fin_date             : { required:"date manquante" , dateITA:"date JJ/MM/AAAA incorrecte" },
-          f_destinataires_nombre : { accept:"destinataire(s) manquant(s)" },
+          f_destinataires_nombre : { isWord:"destinataire(s) manquant(s)" },
           f_message_info         : { minlength:"contenu manquant / insuffisant" }
         },
         errorElement : "label",
@@ -512,10 +506,10 @@ $(document).ready
         switch (mode)
         {
           case 'ajouter':
-            $('table.form tbody tr td[colspan=5]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
+            $('#table_action tbody tr td[colspan=5]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
             var position_script = responseHTML.lastIndexOf('<SCRIPT>');
             var new_tr = responseHTML.substring(0,position_script);
-            $('table.form tbody').prepend(new_tr);
+            $('#table_action tbody').prepend(new_tr);
             eval( responseHTML.substring(position_script+8) );
             break;
           case 'modifier':
@@ -528,14 +522,14 @@ $(document).ready
             $('#id_'+$('#f_id').val()).remove();
             break;
         }
+        tableau_maj();
         $.fancybox.close();
         mode = false;
-        infobulle();
       }
     }
 
     // Retirer l'option vide (laissée pour la conformité...)
-    $('#select_destinataires').html('');
+    $('#f_destinataires').html('');
 
   }
 );

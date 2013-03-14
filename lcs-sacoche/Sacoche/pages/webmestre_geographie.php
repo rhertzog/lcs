@@ -40,7 +40,7 @@ if(HEBERGEUR_INSTALLATION=='mono-structure')
 
 <hr />
 
-<table class="form hsort">
+<table id="table_action" class="form hsort">
   <thead>
     <tr>
       <th>Identifiant</th>
@@ -83,8 +83,8 @@ if(HEBERGEUR_INSTALLATION=='mono-structure')
   <h2>Ajouter | Modifier | Dupliquer | Supprimer une zone</h2>
   <div id="gestion_edit">
     <p>
-      <label class="tab" for="f_ordre">Ordre :</label><input id="f_ordre" name="f_ordre" size="3" maxlength="2" type="text" value="" /><br />
-      <label class="tab" for="f_nom">Nom :</label><input id="f_nom" name="f_nom" type="text" value="" size="25" maxlength="25" />
+      <label class="tab" for="f_ordre">Ordre :</label><input id="f_ordre" name="f_ordre" size="4" maxlength="4" type="text" value="" /><br />
+      <label class="tab" for="f_nom">Nom :</label><input id="f_nom" name="f_nom" type="text" value="" size="60" maxlength="65" />
     </p>
   </div>
   <div id="gestion_delete">

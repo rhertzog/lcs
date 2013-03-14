@@ -69,6 +69,8 @@ if( ($make_html) || ($make_pdf) || ($make_graph) )
   if(!$aff_lien)  { $texte_lien_apres = ''; }
   $toggle_img   = ($aff_start) ? 'toggle_moins' : 'toggle_plus' ;
   $toggle_class = ($aff_start) ? '' : ' class="hide"' ;
+  $avec_texte_nombre = ( !$make_officiel || $_SESSION['OFFICIEL']['BULLETIN_ACQUIS_TEXTE_NOMBRE'] ) ? TRUE : FALSE ;
+  $avec_texte_code   = ( !$make_officiel || $_SESSION['OFFICIEL']['BULLETIN_ACQUIS_TEXTE_CODE']   ) ? TRUE : FALSE ;
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,13 +442,13 @@ foreach($tab_eleve as $tab)
                 $moyenne_classe = $tab_saisie[0][$matiere_id][0]['note'];
               }
             }
-            $releve_PDF->bilan_synthese_ligne_matiere($format,$tab_matiere[$matiere_id],$tab_nb_lignes[$eleve_id][$matiere_id],$tab_infos_matiere['total'],$total,$moyenne_eleve,$moyenne_classe);
+            $releve_PDF->bilan_synthese_ligne_matiere($format,$tab_matiere[$matiere_id],$tab_nb_lignes[$eleve_id][$matiere_id],$tab_infos_matiere['total'],$total,$moyenne_eleve,$moyenne_classe,$avec_texte_nombre,$avec_texte_code);
           }
           if($make_html)
           {
             $releve_HTML .= '<table class="bilan" style="width:900px;margin-bottom:0"><tbody><tr>';
             $releve_HTML .= '<th style="width:540px">'.html($tab_matiere[$matiere_id]).'</th>';
-            $releve_HTML .= ($_SESSION['OFFICIEL']['BULLETIN_BARRE_ACQUISITIONS']) ? Html::td_barre_synthese($width=360,$tab_infos_matiere['total'],$total) : '<td style="width:360px"></td>' ;
+            $releve_HTML .= ($_SESSION['OFFICIEL']['BULLETIN_BARRE_ACQUISITIONS']) ? Html::td_barre_synthese($width=360,$tab_infos_matiere['total'],$total,$avec_texte_nombre,$avec_texte_code) : '<td style="width:360px"></td>' ;
             $releve_HTML .= '</tr></tbody></table>'; // Utilisation de 2 tableaux sinon bugs constatés lors de l'affichage des détails...
             $releve_HTML .= '<table class="bilan" style="width:900px;margin-top:0"><tbody>';
           }
@@ -462,12 +464,12 @@ foreach($tab_eleve as $tab)
               $total = array_sum($tab_infos_synthese) ; // La somme ne peut être nulle (sinon la matière ne se serait pas affichée)
               if($make_pdf)
               {
-                $releve_PDF->bilan_synthese_ligne_synthese($tab_synthese[$synthese_ref],$tab_infos_synthese,$total,$hauteur_ligne_synthese);
+                $releve_PDF->bilan_synthese_ligne_synthese($tab_synthese[$synthese_ref],$tab_infos_synthese,$total,$hauteur_ligne_synthese,$avec_texte_nombre,$avec_texte_code);
               }
               if($make_html)
               {
                 $releve_HTML .= '<tr>';
-                $releve_HTML .= Html::td_barre_synthese($width_barre,$tab_infos_synthese,$total);
+                $releve_HTML .= Html::td_barre_synthese($width_barre,$tab_infos_synthese,$total,$avec_texte_nombre,$avec_texte_code);
                 $releve_HTML .= '<td style="width:'.$width_texte.'px">' ;
                 $releve_HTML .= '<a href="#" id="to_'.$synthese_ref.'_'.$eleve_id.'"><img src="./_img/'.$toggle_img.'.gif" alt="" title="Voir / masquer le détail des items associés." class="toggle" /></a> ';
                 $releve_HTML .= html($tab_synthese[$synthese_ref]);
@@ -480,7 +482,7 @@ foreach($tab_eleve as $tab)
           {
             // Il est possible qu'aucun item n'ait été évalué pour un élève (absent...) : il faut quand même dessiner un cadre pour ne pas provoquer un décalage, d'autant plus qu'il peut y avoir une appréciation à côté.
             $hauteur_ligne_synthese = $tab_nb_lignes[$eleve_id][$matiere_id] - $nb_lignes_matiere_intitule_et_marge ;
-            $releve_PDF->bilan_synthese_ligne_synthese('',array(),0,$hauteur_ligne_synthese);
+            $releve_PDF->bilan_synthese_ligne_synthese('',array(),0,$hauteur_ligne_synthese,$avec_texte_nombre,$avec_texte_code);
           }
           if($make_html)
           {
@@ -707,12 +709,18 @@ foreach($tab_eleve as $tab)
       {
         $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE']);
       }
+      // Indiquer a postériori le nombre de pages par élève
+      if($make_pdf)
+      {
+        $releve_PDF->reporter_page_nb();
+      }
       // Mémorisation des pages de début et de fin pour chaque élève pour découpe et archivage ultérieur
       if($make_action=='imprimer')
       {
-        $page_debut = (isset($page_fin)) ? $page_fin+1 : 1 ;
-        $page_fin   = $releve_PDF->page;
-        $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin );
+        $page_debut  = (isset($page_fin)) ? $page_fin+1 : 1 ;
+        $page_fin    = $releve_PDF->page;
+        $page_nombre = $page_fin - $page_debut + 1;
+        $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin , $page_nombre );
       }
       if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )
       {

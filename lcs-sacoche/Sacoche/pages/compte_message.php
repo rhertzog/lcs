@@ -45,7 +45,7 @@ $select_profil.= '<option value="professeur">Professeurs</option><option value="
 
 <hr />
 
-<table class="form hsort">
+<table id="table_action" class="form hsort">
   <thead>
     <tr>
       <th>Date début</th>
@@ -72,8 +72,8 @@ $select_profil.= '<option value="professeur">Professeurs</option><option value="
         $destinataires_nombre = ($destinataires_nombre>1) ? $destinataires_nombre.' destinataires' : $destinataires_nombre.' destinataire' ;
         // Afficher une ligne du tableau
         echo'<tr id="id_'.$DB_ROW['message_id'].'">';
-        echo  '<td><i>'.$DB_ROW['message_debut_date'].'</i>'.$date_debut_affich.'</td>';
-        echo  '<td><i>'.$DB_ROW['message_fin_date'].'</i>'.$date_fin_affich.'</td>';
+        echo  '<td>'.$date_debut_affich.'</td>';
+        echo  '<td>'.$date_fin_affich.'</td>';
         echo  '<td>'.$destinataires_nombre.'</td>';
         echo  '<td>'.html(mb_substr($DB_ROW['message_contenu'],0,50)).'</td>';
         echo  '<td class="nu">';
@@ -96,7 +96,6 @@ $select_profil.= '<option value="professeur">Professeurs</option><option value="
 
 <script type="text/javascript">
   var input_date = "<?php echo TODAY_FR ?>";
-  var date_mysql = "<?php echo TODAY_MYSQL ?>";
   var tab_destinataires = new Array();
   var tab_msg_contenus  = new Array();
   // <![CDATA[
@@ -133,18 +132,23 @@ $select_profil.= '<option value="professeur">Professeurs</option><option value="
       <select id="f_profil" name="f_profil"><?php echo $select_profil ?></select><br />
       <b>Regroupement :</b><br />
       <?php echo $select_groupe ?><br />
-      <b>Utilisateur(s) :</b> <img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo;&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo;&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /><br />
-      <select id="f_user" name="f_user[]" multiple size="7" class="t8 hide"><option></option></select><br />
+      <div id="div_users" class="hide">
+        <b>Utilisateur(s) :</b> <span class="check_multiple"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /><input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></span><br />
+        <span id="f_user" class="select_multiple"></span>
+      </div>
       <button id="ajouter_destinataires" type="button" class="groupe_ajouter" disabled>Ajouter.</button><br />
       <label id="ajax_msg_destinataires">&nbsp;</label>
     </td>
     <td class="nu" style="width:30em">
-      <b>Liste des destinataires :</b> <img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo;&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo;&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /><br />
-      <select id="select_destinataires" name="select_destinataires[]" multiple size="12" class="t8"><option></option></select><br />
+      <b>Destinataires :</b> <span class="check_multiple"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /><input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></span><br />
+      <span id="f_destinataires" class="select_multiple"></span><br />
       <button id="retirer_destinataires" type="button" class="groupe_retirer" disabled>Retirer.</button>
+      <p>
+        <button id="valider_destinataires" type="button" class="valider" disabled>Valider ces destinataires</button><br />
+        <button id="annuler_destinataires" type="button" class="annuler">Annuler / Retour</button>
+      </p>
     </td>
   </tr></table>
-  <div><span class="tab"></span><button id="valider_destinataires" type="button" class="valider" disabled>Valider la liste de destinataires</button>&nbsp;&nbsp;&nbsp;<button id="annuler_destinataires" type="button" class="annuler">Annuler / Retour</button></div>
 </form>
 
 <form action="#" method="post" id="form_message" class="hide">

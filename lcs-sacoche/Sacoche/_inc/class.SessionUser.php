@@ -60,6 +60,15 @@ class SessionUser
       return'Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.';
     }
     // Si on arrive ici c'est que l'identification s'est bien effectuée !
+    if(HEBERGEUR_INSTALLATION=='multi-structures')
+    {
+      // Mettre à jour la base du webmestre
+      $version_base_webmestre = DB_WEBMESTRE_MAJ_BASE::DB_version_base();
+      if($version_base_webmestre != VERSION_BASE_WEBMESTRE)
+      {
+        DB_WEBMESTRE_MAJ_BASE::DB_maj_base($version_base_webmestre);
+      }
+    }
     return'ok';
   }
 
@@ -86,14 +95,15 @@ class SessionUser
     }
     // Récupérer les données associées à l'utilisateur.
     $DB_ROW = DB_STRUCTURE_PUBLIC::DB_recuperer_donnees_utilisateur($mode_connection,$login);
-    // Si login non trouvé...
+    // Si login (ou identifiant SSO) non trouvé...
     if(empty($DB_ROW))
     {
       switch($mode_connection)
       {
-        case 'normal' : $message = 'Nom d\'utilisateur incorrect !'; break;
-        case 'cas'    : $message = 'Identification réussie mais identifiant SSO "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant ENT associé à votre compte SACoche est "'.$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer pour votre compte dans le champ [Id.&nbsp;ENT] la valeur "'.$login.'".'; break;
-        case 'gepi'   : $message = 'Identification réussie mais login GEPI "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant GEPI associé à votre compte SACoche est "'.$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer pour votre compte dans le champ [Id.&nbsp;Gepi] la valeur "'.$login.'".'; break;
+        case 'normal'     : $message = 'Nom d\'utilisateur incorrect !'; break;
+        case 'cas'        : $message = 'Identification réussie mais identifiant CAS "'       .$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant ENT associé à votre compte SACoche est "' .$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer pour votre compte dans le champ [Id.&nbsp;ENT] la valeur "' .$login.'".'; break;
+        case 'shibboleth' : $message = 'Identification réussie mais identifiant Shibboleth "'.$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant ENT associé à votre compte SACoche est "' .$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer pour votre compte dans le champ [Id.&nbsp;ENT] la valeur "' .$login.'".'; break;
+        case 'gepi'       : $message = 'Identification réussie mais login GEPI "'            .$login.'" inconnu dans SACoche !<br />Un administrateur doit renseigner que l\'identifiant GEPI associé à votre compte SACoche est "'.$login.'"&hellip;<br />Il doit pour cela se connecter à SACoche, menu [Gestion&nbsp;courante], et indiquer pour votre compte dans le champ [Id.&nbsp;Gepi] la valeur "'.$login.'".'; break;
       }
       return array($message,array());
     }
@@ -105,7 +115,7 @@ class SessionUser
       if($DB_ROW['delai_tentative_secondes']<3)
       {
         DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'tentative' , $DB_ROW['user_id'] );
-        return array('Calmez-vous et patientez 10s avant toute nouvelle tentative !',array());
+        return array('Calmez-vous et patientez 10s avant la prochaine tentative !',array());
       }
       elseif($DB_ROW['delai_tentative_secondes']<10)
       {
@@ -254,7 +264,7 @@ class SessionUser
       'ENVELOPPE_VERTICAL_HAUT','ENVELOPPE_VERTICAL_MILIEU','ENVELOPPE_VERTICAL_BAS',
       'OFFICIEL_MARGE_GAUCHE','OFFICIEL_MARGE_DROITE','OFFICIEL_MARGE_HAUT','OFFICIEL_MARGE_BAS',
       'OFFICIEL_RELEVE_ONLY_SOCLE','OFFICIEL_RELEVE_APPRECIATION_RUBRIQUE','OFFICIEL_RELEVE_APPRECIATION_GENERALE','OFFICIEL_RELEVE_ASSIDUITE','OFFICIEL_RELEVE_ETAT_ACQUISITION','OFFICIEL_RELEVE_MOYENNE_SCORES','OFFICIEL_RELEVE_POURCENTAGE_ACQUIS','OFFICIEL_RELEVE_CONVERSION_SUR_20','OFFICIEL_RELEVE_CASES_NB','OFFICIEL_RELEVE_AFF_COEF','OFFICIEL_RELEVE_AFF_SOCLE','OFFICIEL_RELEVE_AFF_DOMAINE','OFFICIEL_RELEVE_AFF_THEME',
-      'OFFICIEL_BULLETIN_ONLY_SOCLE','OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE','OFFICIEL_BULLETIN_APPRECIATION_GENERALE','OFFICIEL_BULLETIN_ASSIDUITE','BULLETIN_BARRE_ACQUISITIONS','OFFICIEL_BULLETIN_MOYENNE_SCORES','OFFICIEL_BULLETIN_CONVERSION_SUR_20','OFFICIEL_BULLETIN_MOYENNE_CLASSE','OFFICIEL_BULLETIN_MOYENNE_GENERALE','OFFICIEL_BULLETIN_FUSION_NIVEAUX',
+      'OFFICIEL_BULLETIN_ONLY_SOCLE','OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE','OFFICIEL_BULLETIN_APPRECIATION_GENERALE','OFFICIEL_BULLETIN_ASSIDUITE','BULLETIN_BARRE_ACQUISITIONS','OFFICIEL_BULLETIN_ACQUIS_TEXTE_NOMBRE','OFFICIEL_BULLETIN_ACQUIS_TEXTE_CODE','OFFICIEL_BULLETIN_MOYENNE_SCORES','OFFICIEL_BULLETIN_CONVERSION_SUR_20','OFFICIEL_BULLETIN_MOYENNE_CLASSE','OFFICIEL_BULLETIN_MOYENNE_GENERALE','OFFICIEL_BULLETIN_FUSION_NIVEAUX',
       'OFFICIEL_SOCLE_APPRECIATION_RUBRIQUE','OFFICIEL_SOCLE_APPRECIATION_GENERALE','OFFICIEL_SOCLE_ONLY_PRESENCE','OFFICIEL_SOCLE_POURCENTAGE_ACQUIS','OFFICIEL_SOCLE_ETAT_VALIDATION'
     );
     $tab_type_tableau = array(
@@ -350,6 +360,9 @@ class SessionUser
     $_SESSION['CSS'] .= 'th.v0 , td.v0 , span.v0 {background:'.$_SESSION['BACKGROUND_V0'].'}';
     $_SESSION['CSS'] .= 'th.v1 , td.v1 , span.v1 {background:'.$_SESSION['BACKGROUND_V1'].'}';
     $_SESSION['CSS'] .= 'th.v2 , td.v2 , span.v2 {background:'.$_SESSION['BACKGROUND_V2'].'}';
+    $_SESSION['CSS'] .= '#tableau_validation td.v0 {color:'.$_SESSION['BACKGROUND_V0'].'}';
+    $_SESSION['CSS'] .= '#tableau_validation td.v1 {color:'.$_SESSION['BACKGROUND_V1'].'}';
+    $_SESSION['CSS'] .= '#tableau_validation td.v2 {color:'.$_SESSION['BACKGROUND_V2'].'}';
     $_SESSION['CSS'] .= '#zone_information .v0 {background:'.$_SESSION['BACKGROUND_V0'].';padding:0 1em;margin-right:1ex}';
     $_SESSION['CSS'] .= '#zone_information .v1 {background:'.$_SESSION['BACKGROUND_V1'].';padding:0 1em;margin-right:1ex}';
     $_SESSION['CSS'] .= '#zone_information .v2 {background:'.$_SESSION['BACKGROUND_V2'].';padding:0 1em;margin-right:1ex}';

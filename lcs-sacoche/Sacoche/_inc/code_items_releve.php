@@ -306,7 +306,7 @@ if($calcul_acquisitions)
           // ... un pour la moyenne des pourcentages d'acquisition
           if($with_coef) { $tab_moyenne_scores_eleve[$matiere_id][$eleve_id] = ($somme_coefs) ? round($somme_scores_ponderes/$somme_coefs,0) : FALSE ; }
           else           { $tab_moyenne_scores_eleve[$matiere_id][$eleve_id] = ($nb_scores)   ? round($somme_scores_simples/$nb_scores,0)    : FALSE ; }
-          // ... un pour le nombre d\'items considérés acquis ou pas
+          // ... un pour le nombre d'items considérés acquis ou pas
           if($nb_scores)
           {
             $nb_acquis      = count( array_filter($tableau_score_filtre,'test_A') );
@@ -812,12 +812,18 @@ if($type_individuel)
         {
           $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE']);
         }
+        // Indiquer a postériori le nombre de pages par élève
+        if($make_pdf)
+        {
+          $releve_PDF->reporter_page_nb();
+        }
         // Mémorisation des pages de début et de fin pour chaque élève pour découpe et archivage ultérieur
         if($make_action=='imprimer')
         {
           $page_debut = (isset($page_fin)) ? $page_fin+1 : 1 ;
           $page_fin   = $releve_PDF->page;
-          $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin );
+          $page_nombre = $page_fin - $page_debut + 1;
+          $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin , $page_nombre );
         }
         if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )
         {

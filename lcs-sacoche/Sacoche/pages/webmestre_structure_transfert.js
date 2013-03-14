@@ -38,12 +38,12 @@ $(document).ready
     (
       function()
       {
-        if( $('#f_base option:selected').length==0 )
+        if( $("#f_base input:checked").length==0 )
         {
           $('#ajax_msg_export').removeAttr("class").addClass("erreur").html("structure(s) manquante(s)");
           return false;
         }
-        var bases = new Array(); $("#f_base option:selected").each(function(){bases.push($(this).val());});
+        var bases = new Array(); $("#f_base input:checked").each(function(){bases.push($(this).val());});
         $("button").prop('disabled',true);
         $('#ajax_msg_export').removeAttr("class").addClass("loader").html("En cours&hellip;");
         $.ajax
@@ -145,8 +145,10 @@ $(document).ready
 
     // live est utilisé pour prendre en compte les nouveaux éléments html créés
 
-    $('#a_reprise_export').live
-    ('click',
+    $('#puce_info_export').on
+    (
+      'click',
+      '#a_reprise_export',
       function()
       {
         num = $('#ajax_export_num').html();
@@ -161,7 +163,7 @@ $(document).ready
 // Initialisation
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    if( $('#f_base option:selected').length )
+    if( $('#f_base input:checked').length )
     {
       $('#bouton_exporter').click();
     }
@@ -303,7 +305,7 @@ $(document).ready
         $('#ajax_msg_import').removeAttr("class").addClass("loader").html('Import en cours : étape ' + num + ' sur ' + max + '...');
         $('#puce_info_import').html('<li>Ne pas interrompre la procédure avant la fin du traitement !</li>');
         $('#div_info_import').show('fast');
-        $('#structures').hide('fast').children('#transfert').children('tbody').html('');
+        $('#structures').hide('fast').children('#table_action').children('tbody').html('');
         importer();
       }
     );
@@ -347,7 +349,7 @@ $(document).ready
               }
               else
               {
-                $('#structures tbody').append(tab_infos[1]);
+                $('#table_action tbody').append(tab_infos[1]);
                 $('#ajax_import_num').html(num);
                 $('#ajax_msg_import').removeAttr("class").addClass("loader").html('Import en cours : étape ' + num + ' sur ' + max + '...');
                 $('#puce_info_import').html('<li>Ne pas interrompre la procédure avant la fin du traitement !</li>');
@@ -364,10 +366,10 @@ $(document).ready
       );
     }
 
-    // live est utilisé pour prendre en compte les nouveaux éléments html créés
-
-    $('#a_reprise_import').live
-    ('click',
+    $('#puce_info_import').on
+    (
+      'click',
+      '#a_reprise_import',
       function()
       {
         var num = $('#ajax_import_num').html();
@@ -387,7 +389,7 @@ $(document).ready
     (
       function()
       {
-        $('#structures input[type=checkbox]').prop('checked',true);
+        $('#table_action input[type=checkbox]').prop('checked',true);
         return false;
       }
     );
@@ -395,20 +397,8 @@ $(document).ready
     (
       function()
       {
-        $('#structures input[type=checkbox]').prop('checked',false);
+        $('#table_action input[type=checkbox]').prop('checked',false);
         return false;
-      }
-    );
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Clic sur une cellule (remplace un champ label, impossible à définir sur plusieurs colonnes)
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    $('td.label').live
-    ('click',
-      function()
-      {
-        $(this).parent().find("input[type=checkbox]").click();
       }
     );
 
@@ -443,11 +433,11 @@ $(document).ready
             }
             else
             {
-              $("#f_base option:selected").each
+              $("#f_base input:checked").each
               (
                 function()
                 {
-                  $(this).remove();
+                  $(this).parent().remove();
                 }
               );
               $('#ajax_supprimer_export').removeAttr("class").html('&nbsp;');
@@ -463,7 +453,7 @@ $(document).ready
     (
       function()
       {
-        var listing_id = new Array(); $("#f_base option:selected").each(function(){listing_id.push($(this).val());});
+        var listing_id = new Array(); $("#f_base input:checked").each(function(){listing_id.push($(this).val());});
         if(!listing_id.length)
         {
           $('#ajax_supprimer_export').removeAttr("class").addClass("erreur").html("Aucune structure sélectionnée !");
@@ -526,7 +516,7 @@ $(document).ready
             }
             else
             {
-              $("input[type=checkbox]:checked").each
+              $("#table_action input[type=checkbox]:checked").each
               (
                 function()
                 {
@@ -546,7 +536,7 @@ $(document).ready
     (
       function()
       {
-        var listing_id = new Array(); $("input[type=checkbox]:checked").each(function(){listing_id.push($(this).val());});
+        var listing_id = new Array(); $("#table_action input[type=checkbox]:checked").each(function(){listing_id.push($(this).val());});
         if(!listing_id.length)
         {
           $('#ajax_supprimer_import').removeAttr("class").addClass("erreur").html("Aucune structure cochée !");

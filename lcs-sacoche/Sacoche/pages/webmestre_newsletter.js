@@ -54,14 +54,14 @@ $(document).ready
           return(false);
         }
         // grouper le select multiple
-        if( $("#f_base option:selected").length==0 )
+        if( $("#f_base input:checked").length==0 )
         {
           $('#ajax_msg').removeAttr("class").addClass("erreur").html("Sélectionnez au moins un établissement !");
           return(false);
         }
         else
         {
-          var f_listing_id = new Array(); $("#f_base option:selected").each(function(){f_listing_id.push($(this).val());});
+          var f_listing_id = new Array(); $("#f_base input:checked").each(function(){f_listing_id.push($(this).val());});
         }
         // on envoie
         $("#bouton_valider").prop('disabled',true);
@@ -153,10 +153,10 @@ $(document).ready
       );
     }
 
-    // live est utilisé pour prendre en compte les nouveaux éléments html créés
-
-    $('#a_reprise').live
-    ('click',
+    $('#ajax_msg2').on
+    (
+      'click',
+      '#a_reprise',
       function()
       {
         num = $('#ajax_num').html();
@@ -167,8 +167,10 @@ $(document).ready
       }
     );
 
-    $('#a_retour').live
-    ('click',
+    $('#ajax_msg2').on
+    (
+      'click',
+      '#a_retour',
       function()
       {
         $('#ajax_msg').removeAttr("class").html("&nbsp;");
@@ -210,11 +212,11 @@ $(document).ready
             }
             else
             {
-              $("#f_base option:selected").each
+              $("#f_base input:checked").each
               (
                 function()
                 {
-                  $(this).remove();
+                  $(this).parent().remove();
                 }
               );
               $('#ajax_supprimer').removeAttr("class").html('&nbsp;');
@@ -229,7 +231,7 @@ $(document).ready
     (
       function()
       {
-        var listing_id = new Array(); $("#f_base option:selected").each(function(){listing_id.push($(this).val());});
+        var listing_id = new Array(); $("#f_base input:checked").each(function(){listing_id.push($(this).val());});
         if(!listing_id.length)
         {
           $('#ajax_supprimer').removeAttr("class").addClass("erreur").html("Aucune structure sélectionnée !");

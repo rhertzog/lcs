@@ -746,12 +746,18 @@ foreach($tab_eleve as $tab)
       {
         $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['SOCLE_LIGNE_SUPPLEMENTAIRE']);
       }
+      // Indiquer a postériori le nombre de pages par élève
+      if($make_pdf)
+      {
+        $releve_PDF->reporter_page_nb();
+      }
       // Mémorisation des pages de début et de fin pour chaque élève pour découpe et archivage ultérieur
       if($make_action=='imprimer')
       {
         $page_debut = (isset($page_fin)) ? $page_fin+1 : 1 ;
         $page_fin   = $releve_PDF->page;
-        $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin );
+        $page_nombre = $page_fin - $page_debut + 1;
+        $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin , $page_nombre );
       }
     }
     if($make_html)

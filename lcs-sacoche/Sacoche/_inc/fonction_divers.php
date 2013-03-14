@@ -449,10 +449,10 @@ function fabriquer_nom_fichier_bilan_officiel( $eleve_id , $bilan_type , $period
  * @param int   $BASE
  * @return void
  */
-function maj_base_si_besoin($BASE)
+function maj_base_structure_si_besoin($BASE)
 {
-  $version_base = DB_STRUCTURE_PUBLIC::DB_version_base();
-  if($version_base != VERSION_BASE)
+  $version_base_structure = DB_STRUCTURE_PUBLIC::DB_version_base();
+  if($version_base_structure != VERSION_BASE_STRUCTURE)
   {
     // On ne met pas à jour la base tant que le webmestre bloque l'accès à l'application, car sinon cela pourrait se produire avant le transfert de tous les fichiers.
     if(LockAcces::tester_blocage('webmestre',0)===NULL)
@@ -460,7 +460,7 @@ function maj_base_si_besoin($BASE)
       // Bloquer l'application
       LockAcces::bloquer_application('automate',$BASE,'Mise à jour de la base en cours.');
       // Lancer une mise à jour de la base
-      DB_STRUCTURE_MAJ_BASE::DB_maj_base($version_base);
+      DB_STRUCTURE_MAJ_BASE::DB_maj_base($version_base_structure);
       // Log de l'action
       SACocheLog::ajouter('Mise à jour automatique de la base '.SACOCHE_STRUCTURE_BD_NAME.'.');
       // Débloquer l'application
@@ -798,11 +798,12 @@ function test_droit_specifique_restreint($listing_droits_sigles,$restriction)
  * Tester si on a un droit d'accès spécifique
  *
  * @param string $listing_droits_sigles
- * @param int    $matiere_coord   0|1, uniquement si le droit comporte une restriction aux coordonnateurs matières (facultatif et propre à une matière donnée)
- * @param bool   $forcer_parent   TRUE pour forcer à tester un profil parent au lieu du profil de l'utilisateur
+ * @param int    $matiere_coord_or_groupe_pp_connu   si le droit comporte une restriction aux coordonnateurs matières | professeurs principaux, on peut déja connaitre et transmettre l'info (soit pour au moins une matière | classe, soit pour une matière | classe donnée)
+ * @param int    $matiere_id_or_groupe_id_a_tester   si le droit comporte une restriction aux coordonnateurs matières | professeurs principaux, et si $matiere_coord_or_groupe_pp_connu n'est pas transmis, on peut chercher si le droit est bon soit pour une matière | classe donnée, soit pour au moins une matière | classe
+ * @param bool   $forcer_parent                TRUE pour forcer à tester un profil parent au lieu du profil de l'utilisateur
  * @return bool
  */
-function test_user_droit_specifique($listing_droits_sigles,$matiere_coord=0,$forcer_parent=FALSE)
+function test_user_droit_specifique($listing_droits_sigles,$matiere_coord_or_groupe_pp_connu=NULL,$matiere_id_or_groupe_id_a_tester=0,$forcer_parent=FALSE)
 {
   $user_profil_sigle = (!$forcer_parent) ? $_SESSION['USER_PROFIL_SIGLE'] : 'TUT'    ;
   $user_profil_type  = (!$forcer_parent) ? $_SESSION['USER_PROFIL_TYPE']  : 'parent' ;
@@ -810,11 +811,11 @@ function test_user_droit_specifique($listing_droits_sigles,$matiere_coord=0,$for
   $test_droit = in_array($user_profil_sigle,$tableau_droits_sigles);
   if( $test_droit && ($user_profil_type=='professeur') && ($_SESSION['USER_JOIN_GROUPES']=='config') && test_droit_specifique_restreint($listing_droits_sigles,'ONLY_PP') )
   {
-    return DB_STRUCTURE_PROFESSEUR::DB_tester_prof_principal($_SESSION['USER_ID']);
+    return ($matiere_coord_or_groupe_pp_connu!==NULL) ? (bool)$matiere_coord_or_groupe_pp_connu : DB_STRUCTURE_PROFESSEUR::DB_tester_prof_principal($_SESSION['USER_ID'],$matiere_id_or_groupe_id_a_tester) ;
   }
   if( $test_droit && ($user_profil_type=='professeur') && ($_SESSION['USER_JOIN_MATIERES']=='config') && test_droit_specifique_restreint($listing_droits_sigles,'ONLY_COORD') )
   {
-    return (bool)$matiere_coord;
+    return ($matiere_coord_or_groupe_pp_connu!==NULL) ? (bool)$matiere_coord_or_groupe_pp_connu : DB_STRUCTURE_PROFESSEUR::tester_prof_coordonnateur($_SESSION['USER_ID'],$matiere_id_or_groupe_id_a_tester) ;
   }
   return $test_droit;
 }

@@ -46,36 +46,36 @@ if($_SESSION['USER_PROFIL_TYPE']=='directeur')
 {
   $tab_groupes = DB_STRUCTURE_COMMUN::DB_OPT_classes_groupes_etabl();
   $of_g = 'oui'; $sel_g = FALSE; $class_form_eleve = 'show'; $class_form_periode = 'hide'; $class_form_option = 'hide';
-  $multiple_eleve = ' multiple size="9"';
-  $select_eleves = '<option></option>'; // maj en ajax suivant le choix du groupe
+  $select_eleves = '<span id="f_eleve" class="select_multiple"></span><span class="check_multiple"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /><input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /><br /><input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></span>'; // maj en ajax suivant le choix du groupe
+  $is_select_multiple = 1;
 }
 if($_SESSION['USER_PROFIL_TYPE']=='professeur')
 {
   $tab_groupes = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_groupes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_groupes_etabl() ;
   $of_g = 'oui'; $sel_g = FALSE; $class_form_eleve = 'show'; $class_form_periode = 'hide'; $class_form_option = 'hide';
-  $multiple_eleve = ' multiple size="9"';
-  $select_eleves = '<option></option>'; // maj en ajax suivant le choix du groupe
+  $select_eleves = '<span id="f_eleve" class="select_multiple"></span><span class="check_multiple"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /><input name="all_check" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /><br /><input name="all_uncheck" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></span>'; // maj en ajax suivant le choix du groupe
+  $is_select_multiple = 1;
 }
 if( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']!=1) )
 {
   $tab_groupes  = $_SESSION['OPT_PARENT_CLASSES']; Form::$tab_select_optgroup = array('classe'=>'Classes');
   $of_g = 'oui'; $sel_g = FALSE; $class_form_eleve = 'show'; $class_form_periode = 'hide'; $class_form_option = 'hide';
-  $multiple_eleve = ''; // volontaire
-  $select_eleves = '<option></option>'; // maj en ajax suivant le choix du groupe
+  $select_eleves = '<select id="f_eleve" name="f_eleve[]"><option></option></select>'; // maj en ajax suivant le choix du groupe
+  $is_select_multiple = 0; // volontaire
 }
 if( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']==1) )
 {
   $tab_groupes  = array(0=>array('valeur'=>$_SESSION['ELEVE_CLASSE_ID'],'texte'=>$_SESSION['ELEVE_CLASSE_NOM'],'optgroup'=>'classe')); Form::$tab_select_optgroup = array('classe'=>'Classes');
   $of_g = 'non'; $sel_g = TRUE; $class_form_eleve = 'hide'; $class_form_periode = 'show'; $class_form_option = 'hide';
-  $multiple_eleve = '';
-  $select_eleves = '<option value="'.$_SESSION['OPT_PARENT_ENFANTS'][0]['valeur'].'" selected>'.html($_SESSION['OPT_PARENT_ENFANTS'][0]['texte']).'</option>';
+  $select_eleves = '<select id="f_eleve" name="f_eleve[]"><option value="'.$_SESSION['OPT_PARENT_ENFANTS'][0]['valeur'].'" selected>'.html($_SESSION['OPT_PARENT_ENFANTS'][0]['texte']).'</option></select>';
+  $is_select_multiple = 0;
 }
 if($_SESSION['USER_PROFIL_TYPE']=='eleve')
 {
   $tab_groupes = array(0=>array('valeur'=>$_SESSION['ELEVE_CLASSE_ID'],'texte'=>$_SESSION['ELEVE_CLASSE_NOM'],'optgroup'=>'classe')); Form::$tab_select_optgroup = array('classe'=>'Classes');
   $of_g = 'non'; $sel_g = TRUE;  $class_form_eleve = 'hide'; $class_form_periode = 'show'; $class_form_option = 'show';
-  $multiple_eleve = '';
-  $select_eleves = '<option value="'.$_SESSION['USER_ID'].'" selected>'.html($_SESSION['USER_NOM'].' '.$_SESSION['USER_PRENOM']).'</option>';
+  $select_eleves = '<select id="f_eleve" name="f_eleve[]"><option value="'.$_SESSION['USER_ID'].'" selected>'.html($_SESSION['USER_NOM'].' '.$_SESSION['USER_PRENOM']).'</option></select>';
+  $is_select_multiple = 0;
 }
 $tab_periodes = DB_STRUCTURE_COMMUN::DB_OPT_periodes_etabl();
 
@@ -91,7 +91,8 @@ list( $tab_groupe_periode_js , $tab_groupe_niveau_js ) = Form::fabriquer_tab_js_
 ?>
 
 <script type="text/javascript">
-  var date_mysql="<?php echo TODAY_MYSQL ?>";
+  var date_mysql  = "<?php echo TODAY_MYSQL ?>";
+  var is_multiple = <?php echo $is_select_multiple ?>;
   <?php echo $tab_groupe_periode_js ?> 
   <?php echo $tab_groupe_niveau_js ?> 
 </script>
@@ -109,7 +110,7 @@ echo ($nb_inconnu) ? '<label class="alerte">Il y a '.$nb_inconnu.' référentiel
 <form action="#" method="post" id="form_select"><fieldset>
   <p class="<?php echo $class_form_eleve ?>">
     <label class="tab" for="f_groupe">Classe / groupe :</label><?php echo $select_groupe ?><input type="hidden" id="f_groupe_nom" name="f_groupe_nom" value="" /><label id="ajax_maj">&nbsp;</label><br />
-    <label class="tab" for="f_eleve"><img alt="" src="./_img/bulle_aide.png" title="Utiliser la touche &laquo;&nbsp;Shift&nbsp;&raquo; pour une sélection multiple contiguë.<br />Utiliser la touche &laquo;&nbsp;Ctrl&nbsp;&raquo; pour une sélection multiple non contiguë." /> Élève(s) :</label><select id="f_eleve" name="f_eleve[]"<?php echo $multiple_eleve ?>><?php echo $select_eleves ?></select>
+    <span id="bloc_eleve" class="hide"><label class="tab" for="f_eleve">Élève(s) :</label><?php echo $select_eleves ?></span>
   </p>
   <p id="zone_periodes" class="<?php echo $class_form_periode ?>">
     <label class="tab" for="f_periode"><img alt="" src="./_img/bulle_aide.png" title="Les items pris en compte sont ceux qui sont évalués<br />au moins une fois sur cette période." /> Période :</label><?php echo $select_periode ?>
@@ -130,7 +131,7 @@ echo ($nb_inconnu) ? '<label class="alerte">Il y a '.$nb_inconnu.' référentiel
       <span class="tab"></span><a href="#" class="puce_moins toggle">Afficher moins d'options</a><br />
       <label class="tab">Mode de synthèse :</label><label for="f_fusion_niveaux"><input type="checkbox" id="f_fusion_niveaux" name="f_fusion_niveaux" value="1"<?php echo $check_fusion_niveaux ?> /> Ne pas indiquer le niveau et fusionner les synthèses de même intitulé</label><br />
       <label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Pour le format html, le détail des items peut être affiché." /> Indications :</label><label for="f_coef"><input type="checkbox" id="f_coef" name="f_coef" value="1"<?php echo $check_aff_coef ?> /> Coefficients</label>&nbsp;&nbsp;&nbsp;<label for="f_socle"><input type="checkbox" id="f_socle" name="f_socle" value="1"<?php echo $check_aff_socle ?> /> Appartenance au socle</label>&nbsp;&nbsp;&nbsp;<label for="f_lien"><input type="checkbox" id="f_lien" name="f_lien" value="1"<?php echo $check_aff_lien ?> /> Liens (ressources pour travailler)</label>&nbsp;&nbsp;&nbsp;<label for="f_start"><input type="checkbox" id="f_start" name="f_start" value="1"<?php echo $check_aff_start ?> /> Détails affichés par défaut</label><br />
-      <label class="tab">Restrictions :</label><label for="f_restriction_socle"><input type="checkbox" id="f_restriction_socle" name="f_restriction_socle" value="1"<?php echo $check_only_socle ?> /> Uniquement les items liés du socle</label><br />
+      <label class="tab">Restrictions :</label><label for="f_restriction_socle"><input type="checkbox" id="f_restriction_socle" name="f_restriction_socle" value="1"<?php echo $check_only_socle ?> /> Uniquement les items liés au socle</label><br />
       <label class="tab"></label><label for="f_restriction_niveau"><input type="checkbox" id="f_restriction_niveau" name="f_restriction_niveau" value="1"<?php echo $check_only_niveau ?> /> Utiliser uniquement les items du niveau <em id="niveau_nom"></em></label><input type="hidden" id="f_niveau" name="f_niveau" value="" /><br />
       <label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Pour le format pdf." /> Impression :</label><?php echo $select_couleur ?> <?php echo $select_legende ?> <?php echo $select_marge_min ?>
     </div>

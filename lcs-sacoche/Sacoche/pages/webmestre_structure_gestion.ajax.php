@@ -33,7 +33,7 @@ $check            = (isset($_POST['f_check']))            ? Clean::entier($_POST
 $base_id          = (isset($_POST['f_base_id']))          ? Clean::entier($_POST['f_base_id'])            : 0;
 $listing_base_id  = (isset($_POST['f_listing_id']))       ? $_POST['f_listing_id']                        : '';
 $geo_id           = (isset($_POST['f_geo']))              ? Clean::entier($_POST['f_geo'])                : 0;
-$localisation     = (isset($_POST['f_localisation']))     ? $_POST['f_localisation']                      : ''; // Ne pas appliquer trim()
+$localisation     = (isset($_POST['f_localisation']))     ? Clean::texte($_POST['f_localisation'])        : '';
 $denomination     = (isset($_POST['f_denomination']))     ? Clean::texte($_POST['f_denomination'])        : '';
 $uai              = (isset($_POST['f_uai']))              ? Clean::uai($_POST['f_uai'])                   : '';
 $contact_nom      = (isset($_POST['f_contact_nom']))      ? Clean::nom($_POST['f_contact_nom'])           : '';
@@ -41,7 +41,6 @@ $contact_prenom   = (isset($_POST['f_contact_prenom']))   ? Clean::prenom($_POST
 $contact_courriel = (isset($_POST['f_contact_courriel'])) ? Clean::courriel($_POST['f_contact_courriel']) : '';
 $courriel_envoi   = (isset($_POST['f_courriel_envoi']))   ? Clean::entier($_POST['f_courriel_envoi'])     : 0;
 $date_fr          = (isset($_POST['f_date_fr']))          ? Clean::texte($_POST['f_date_fr'])             : '' ;
-$date_mysql       = (isset($_POST['f_date_mysql']))       ? Clean::texte($_POST['f_date_mysql'])          : '' ;
 $admin_id         = (isset($_POST['f_admin_id']))         ? Clean::entier($_POST['f_admin_id'])           : 0;
 
 // On récupère les zones géographiques pour 2 raisons :
@@ -60,7 +59,7 @@ if( ($action!='supprimer') && ($action!='lister_admin') && ($action!='initialise
 // Ajouter un nouvel établissement
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel && $date_fr && $date_mysql )
+if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel && $date_fr )
 {
   // Vérifier que le n° de base est disponible (si imposé)
   if($base_id)
@@ -108,7 +107,7 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
   @sleep(1);
   // Personnaliser certains paramètres de la structure
   $tab_parametres = array();
-  $tab_parametres['version_base']               = VERSION_BASE;
+  $tab_parametres['version_base']               = VERSION_BASE_STRUCTURE;
   $tab_parametres['webmestre_uai']              = $uai;
   $tab_parametres['webmestre_denomination']     = $denomination;
   $tab_parametres['etablissement_denomination'] = $denomination;
@@ -131,10 +130,10 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
   echo  '<td class="nu"><a href="#id_0"><img class="bloquer" src="./_img/etat/acces_oui.png" title="Bloquer cet établissement." /></a></td>';
   echo  '<td class="nu"><input type="checkbox" name="f_ids" value="'.$base_id.'" /></td>';
   echo  '<td class="label">'.$base_id.'</td>';
-  echo  '<td class="label"><i>'.sprintf("%02u",$tab_geo[$geo_id]['ordre']).'</i>'.html($tab_geo[$geo_id]['nom']).'<br />'.html($localisation).'</td>';
+  echo  '<td class="label"><i>'.sprintf("%04u",$tab_geo[$geo_id]['ordre']).'</i>'.html($tab_geo[$geo_id]['nom']).'<br />'.html($localisation).'</td>';
   echo  '<td class="label">'.html($denomination).'<br />'.html($uai).'</td>';
   echo  '<td class="label"><span>'.html($contact_nom).'</span> <span>'.html($contact_prenom).'</span><div>'.html($contact_courriel).'</div></td>';
-  echo  '<td class="label"><i>'.$date_mysql.'</i>'.$date_fr.'</td>';
+  echo  '<td class="label">'.$date_fr.'</td>';
   echo  '<td class="nu">';
   echo    '<q class="modifier" title="Modifier cet établissement."></q>';
   echo    '<q class="initialiser_mdp" title="Générer un nouveau mdp d\'un admin."></q>';
@@ -148,7 +147,7 @@ if( ($action=='ajouter') && isset($tab_geo[$geo_id]) && $localisation && $denomi
 // Modifier un établissement existant
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel && $date_fr && $date_mysql )
+if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisation && $denomination && $contact_nom && $contact_prenom && $contact_courriel && $date_fr )
 {
     // Vérifier que le n°UAI est disponible
   if($uai)
@@ -172,10 +171,10 @@ if( ($action=='modifier') && $base_id && isset($tab_geo[$geo_id]) && $localisati
   echo'<td class="nu"><a href="#id_0">'.$img_acces.'</a></td>';
   echo'<td class="nu"><input type="checkbox" name="f_ids" value="'.$base_id.'"'.$checked.' /></td>';
   echo'<td class="label">'.$base_id.'</td>';
-  echo  '<td class="label"><i>'.sprintf("%02u",$tab_geo[$geo_id]['ordre']).'</i>'.html($tab_geo[$geo_id]['nom']).'<br />'.html($localisation).'</td>';
+  echo  '<td class="label"><i>'.sprintf("%04u",$tab_geo[$geo_id]['ordre']).'</i>'.html($tab_geo[$geo_id]['nom']).'<br />'.html($localisation).'</td>';
   echo  '<td class="label">'.html($denomination).'<br />'.html($uai).'</td>';
   echo  '<td class="label"><span>'.html($contact_nom).'</span> <span>'.html($contact_prenom).'</span><div>'.html($contact_courriel).'</div></td>';
-  echo  '<td class="label"><i>'.$date_mysql.'</i>'.$date_fr.'</td>';
+  echo  '<td class="label">'.$date_fr.'</td>';
   echo'<td class="nu">';
   echo  '<q class="modifier" title="Modifier cet établissement."></q>';
   echo  '<q class="initialiser_mdp" title="Générer un nouveau mdp d\'un admin."></q>';

@@ -48,22 +48,16 @@ $(document).ready
     if(TYPE=='groupe')
     {
       var sorting = [[0,1],[3,0]];
-      $('table.form').tablesorter({ headers:{1:{sorter:false},2:{sorter:false},4:{sorter:false},6:{sorter:false},7:{sorter:false},8:{sorter:false}} });
+      $('#table_action').tablesorter({ headers:{0:{sorter:'date_fr'},1:{sorter:false},2:{sorter:false},4:{sorter:false},6:{sorter:false},7:{sorter:false},8:{sorter:false},9:{sorter:false}} });
     }
     else
     {
       var sorting = [[0,1],[5,0]];
-      $('table.form').tablesorter({ headers:{1:{sorter:false},2:{sorter:false},3:{sorter:false},4:{sorter:false},6:{sorter:false},7:{sorter:false},8:{sorter:false}} });
+      $('#table_action').tablesorter({ headers:{0:{sorter:'date_fr'},1:{sorter:false},2:{sorter:false},3:{sorter:false},4:{sorter:false},6:{sorter:false},7:{sorter:false},8:{sorter:false},9:{sorter:false}} });
     }
-    function trier_tableau()
-    {
-      if($('table.form tbody tr td').length>1)
-      {
-        $('table.form').trigger('update');
-        $('table.form').trigger('sorton',[sorting]);
-      }
-    }
-    trier_tableau();
+    var tableau_tri = function(){ $('#table_action').trigger( 'sorton' , [ sorting ] ); };
+    var tableau_maj = function(){ $('#table_action').trigger( 'update' , [ true ] ); };
+    tableau_tri();
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Fonctions utilisées
@@ -76,10 +70,11 @@ $(document).ready
       if(!tab_corriges[ref]) {$('#bouton_supprimer_corrige').prop('disabled',true);}
     }
 
-    function afficher_form_gestion( mode , ref , date , date_visible , date_autoeval , groupe_val , groupe_nom , eleve_nombre , eleve_liste , prof_nombre , prof_liste , description , compet_nombre , compet_liste , doc_sujet , doc_corrige )
+    function afficher_form_gestion( mode , ref , date_fr , date_visible , date_autoeval , groupe_val , groupe_nom , eleve_nombre , eleve_liste , prof_nombre , prof_liste , description , compet_nombre , compet_liste , doc_sujet , doc_corrige , fini )
     {
       $('#f_action').val(mode);
       $('#f_ref').val(ref);
+      $('#f_date').val(date_fr);
       if(TYPE=='groupe')
       {
         var selected_groupe = (mode=='ajouter') ? select_groupe.replace('value="'+groupe_val+'"','value="'+groupe_val+'" selected') : select_groupe.replace('>'+groupe_nom,' selected>'+groupe_nom) ;
@@ -97,10 +92,7 @@ $(document).ready
       $('#f_compet_liste').val(compet_liste);
       $('#f_doc_sujet').val(doc_sujet);
       $('#f_doc_corrige').val(doc_corrige);
-      // date de l'évaluation
-      var date_mysql = date.substring(3,13); // garder la date mysql
-      var date_fr    = date.substring(17,date.length); // garder la date française
-      $('#f_date').val(date_fr);
+      $('#f_fini').val(fini);
       // date de visibilité
       if(date_visible=='identique')
       {
@@ -136,6 +128,7 @@ $(document).ready
         $('#gestion_edit').hide(0);
         $('#gestion_delete').show(0);
       }
+      $('#alerte_groupe').hide(0);
       $('#ajax_msg_gestion').removeAttr('class').html("");
       $('#form_gestion label[generated=true]').removeAttr('class').html("");
       $.fancybox( { 'href':'#form_gestion' , onStart:function(){$('#form_gestion').css("display","block");} , onClosed:function(){$('#form_gestion').css("display","none");} , 'modal':true , 'minWidth':600 , 'centerOnScroll':true } );
@@ -163,7 +156,7 @@ $(document).ready
       }
       var groupe_val = (TYPE=='groupe') ? $('#f_aff_classe option:selected').val() : '' ;
       // Afficher le formulaire
-      afficher_form_gestion( mode , '' /*ref*/ , '<i>'+date_mysql+'</i>'+input_date /*date*/ , 'identique' /*date_visible*/ , 'sans objet' /*date_autoeval*/ , groupe_val , '' /*groupe_nom*/ , reception_users_texte /*eleve_nombre*/ , reception_users_liste /*eleve_liste*/ , 'moi seul' /*prof_nombre*/ , '' /*prof_liste*/ , '' /*description*/ , reception_items_texte /*compet_nombre*/ , reception_items_liste /*compet_liste*/ , '' /*doc_sujet*/ , '' /*doc_corrige*/ );
+      afficher_form_gestion( mode , '' /*ref*/ , input_date /*date_fr*/ , 'identique' /*date_visible*/ , 'sans objet' /*date_autoeval*/ , groupe_val , '' /*groupe_nom*/ , reception_users_texte /*eleve_nombre*/ , reception_users_liste /*eleve_liste*/ , 'moi seul' /*prof_nombre*/ , '' /*prof_liste*/ , '' /*description*/ , reception_items_texte /*compet_nombre*/ , reception_items_liste /*compet_liste*/ , '' /*doc_sujet*/ , '' /*doc_corrige*/ , '' /*fini*/ );
     };
 
     /**
@@ -175,8 +168,8 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var date_visible  = objet_tds.eq(1).html();
       var date_autoeval = objet_tds.eq(2).html();
       if(TYPE=='groupe')
@@ -194,11 +187,12 @@ $(document).ready
       var prof_nombre   = objet_tds.eq(4).html();
       var description   = objet_tds.eq(5).html();
       var compet_nombre = objet_tds.eq(6).html();
+      var fini          =(objet_tds.eq(8).find('span').text()=='terminé') ? 'oui' : 'non' ;
       // liste des profs et des items
       var prof_liste    = tab_profs[ref];
       var compet_liste  = tab_items[ref];
       // Afficher le formulaire
-      afficher_form_gestion( mode , ref , date , date_visible , date_autoeval , '' /*groupe_val*/ , unescapeHtml(groupe_nom) , eleve_nombre , eleve_liste , prof_nombre , prof_liste , unescapeHtml(description) , compet_nombre , compet_liste , tab_sujets[ref] , tab_corriges[ref] );
+      afficher_form_gestion( mode , ref , date_fr , date_visible , date_autoeval , '' /*groupe_val*/ , unescapeHtml(groupe_nom) , eleve_nombre , eleve_liste , prof_nombre , prof_liste , unescapeHtml(description) , compet_nombre , compet_liste , tab_sujets[ref] , tab_corriges[ref] , fini );
     };
 
     /**
@@ -210,11 +204,11 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
       var groupe_nom    = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
       // Afficher le formulaire
-      afficher_form_gestion( mode , ref , '' /*date*/ , '' /*date_visible*/ , '' /*date_autoeval*/ , '' /*groupe_val*/ , '' /*groupe_nom*/ , '' /*eleve_nombre*/ , '' /*eleve_liste*/ , '' /*prof_nombre*/ , '' /*prof_liste*/ , unescapeHtml(description+' ('+groupe_nom+')') , '' /*compet_nombre*/ , '' /*compet_liste*/ , '' /*doc_sujet*/ , '' /*doc_corrige*/ );
+      afficher_form_gestion( mode , ref , '' /*date_fr*/ , '' /*date_visible*/ , '' /*date_autoeval*/ , '' /*groupe_val*/ , '' /*groupe_nom*/ , '' /*eleve_nombre*/ , '' /*eleve_liste*/ , '' /*prof_nombre*/ , '' /*prof_liste*/ , unescapeHtml(description+' ('+groupe_nom+')') , '' /*compet_nombre*/ , '' /*compet_liste*/ , '' /*doc_sujet*/ , '' /*doc_corrige*/ , '' /*fini*/ );
     };
 
     /**
@@ -226,12 +220,10 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // garder la date française
-      var date_fr       = date.substring(17,date.length);
       // Mettre les infos de côté
       $('#imprimer_ref').val(ref);
       $('#imprimer_date_fr').val(date_fr);
@@ -282,25 +274,19 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var date_visible  = objet_tds.eq(1).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // Date
-      var date_mysql    = date.substring(3,13); // garder la date mysql
-      var date_fr       = date.substring(17,date.length); // garder la date française
+      var fini          =(objet_tds.eq(8).find('span').text()=='terminé') ? 'oui' : 'non' ;
       // Mettre les infos de côté
       $('#saisir_ref').val(ref);
-      $('#saisir_date_mysql').val(date_mysql);
+      $('#saisir_date_fr').val(date_fr);
       $('#saisir_date_visible').val(date_visible);
       $('#saisir_description').val(unescapeHtml(description));
-      // Masquer le tableau ; Afficher la zone associée et charger son contenu
-      $('#form_prechoix , #table_gestion').hide('fast');
-      $('#msg_import').removeAttr("class").html('&nbsp;');
-      $('#zone_saisir').css("display","block");
-      $('#titre_saisir').html(groupe+' | '+date_fr+' | '+description);
-      $('#ajax_msg_saisir').removeAttr("class").addClass("loader").html("En cours&hellip;");
+      $('#saisir_fini').val(fini);
+      $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
       $.ajax
       (
         {
@@ -310,7 +296,7 @@ $(document).ready
           dataType : "html",
           error : function(jqXHR, textStatus, errorThrown)
           {
-            $('#ajax_msg_saisir').removeAttr("class").addClass("alerte").html('Échec de la connexion ! <button id="fermer_zone_saisir" type="button" class="retourner">Retour</button>');
+            $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
             return false;
           },
           success : function(responseHTML)
@@ -319,20 +305,23 @@ $(document).ready
             var tab_response = responseHTML.split('<SEP>');
             if( (tab_response.length!=2) || (tab_response[0].substring(0,1)!='<') )
             {
-              $('#ajax_msg_saisir').removeAttr("class").addClass("alerte").html(responseHTML+' <button id="fermer_zone_saisir" type="button" class="retourner">Retour</button>');
+              $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
             }
             else
             {
               modification = false;
+              $.fancybox.close();
+              // Masquer le tableau ; Afficher la zone associée et remplir son contenu
+              $('#form_prechoix , #table_action').hide('fast');
+              $('#msg_import').removeAttr("class").html('&nbsp;');
+              $('#titre_saisir').html(groupe+' | '+date_fr+' | '+description);
               $('#ajax_msg_saisir').removeAttr("class").html('&nbsp;');
               $('#table_saisir').html(tab_response[0]);
               $('#table_saisir tbody tr th img').css('display','none'); // .hide(0) s'avère bcp plus lent dans FF et pose pb si bcp élèves / items ...
-              $('img[title]').tooltip({showURL:false});
-              $('#export_file1').attr("href", url_export+'saisie_deportee_'+tab_response[1]+'.zip' );
-              $('#export_file4').attr("href", url_export+'tableau_sans_notes_'+tab_response[1]+'.pdf' );
+              $('#export_file_saisir_tableau_scores_csv'   ).attr("href", url_export+'saisie_deportee_'   +tab_response[1]+'.zip' );
+              $('#export_file_saisir_tableau_scores_vierge').attr("href", url_export+'tableau_sans_notes_'+tab_response[1]+'.pdf' );
               colorer_cellules();
               format_liens('#table_saisir');
-              infobulle();
               $('#radio_'+memo_pilotage).click();
               $('#arrow_continue_'+memo_direction).click();
               if(memo_pilotage=='clavier')
@@ -345,6 +334,7 @@ $(document).ready
               }
               nb_colonnes = $('#table_saisir thead th').length;
               nb_lignes   = $('#table_saisir tbody tr').length;
+              $('#zone_saisir').css("display","block");
             }
           }
         }
@@ -360,17 +350,11 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // Date
-      var date_fr       = date.substring(17,date.length); // garder la date française
-      // Masquer le tableau ; Afficher la zone associée et charger son contenu
-      $('#form_prechoix , #table_gestion').hide('fast');
-      $('#zone_voir').css("display","block");
-      $('#titre_voir').html(groupe+' | '+date_fr+' | '+description);
-      $('#ajax_msg_voir').removeAttr("class").addClass("loader").html("En cours&hellip;");
+      $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
       $.ajax
       (
         {
@@ -380,7 +364,7 @@ $(document).ready
           dataType : "html",
           error : function(jqXHR, textStatus, errorThrown)
           {
-            $('#ajax_msg_voir').removeAttr("class").addClass("alerte").html('Échec de la connexion ! <button id="fermer_zone_voir" type="button" class="retourner">Retour</button>');
+            $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
             return false;
           },
           success : function(responseHTML)
@@ -389,20 +373,24 @@ $(document).ready
             var tab_response = responseHTML.split('<SEP>');
             if( (tab_response.length!=2) || (tab_response[0].substring(0,1)!='<') )
             {
-              $('#ajax_msg_voir').removeAttr("class").addClass("alerte").html(responseHTML+' <button id="fermer_zone_voir" type="button" class="retourner">Retour</button>');
+              $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
             }
             else
             {
+              $.fancybox.close();
+              // Masquer le tableau ; Afficher la zone associée et remplir son contenu
+              $('#form_prechoix , #table_action').hide('fast');
+              $('#titre_voir').html(groupe+' | '+date_fr+' | '+description);
               $('#ajax_msg_voir').removeAttr("class").html('&nbsp;');
               $('#table_voir').html(tab_response[0]);
               $('#table_voir tbody tr th img').css('display','none'); // .hide(0) s'avère bcp plus lent dans FF et pose pb si bcp élèves / items ...
               format_liens('#table_voir');
-              $('#export_file2').attr("href", url_export+'saisie_deportee_'+tab_response[1]+'.zip' );
-              $('#export_file3').attr("href", url_export+'tableau_sans_notes_'+tab_response[1]+'.pdf' );
-              $('#export_file5').attr("href", url_export+'tableau_avec_notes_couleur_'+tab_response[1]+'.pdf' );
-              $('#export_file8').attr("href", url_export+'tableau_avec_notes_monochrome_'+tab_response[1]+'.pdf' );
+              $('#export_file_voir_tableau_scores_csv'    ).attr("href", url_export+'saisie_deportee_'+tab_response[1]+'.zip' );
+              $('#export_file_voir_tableau_scores_vierge' ).attr("href", url_export+'tableau_sans_notes_'           +tab_response[1]+'.pdf' );
+              $('#export_file_voir_tableau_scores_couleur').attr("href", url_export+'tableau_avec_notes_couleur_'   +tab_response[1]+'.pdf' );
+              $('#export_file_voir_tableau_scores_gris'   ).attr("href", url_export+'tableau_avec_notes_monochrome_'+tab_response[1]+'.pdf' );
               $('#table_voir tbody td').css({"background-color":"#DDF","text-align":"center","vertical-align":"middle","font-size":"110%"});
-              infobulle();
+              $('#zone_voir').css("display","block");
             }
           }
         }
@@ -418,8 +406,11 @@ $(document).ready
       // Ne pas changer ici la valeur de "mode" (qui est à "ajouter" ou "modifier" ou "dupliquer").
       $('#f_selection_items option:first').prop('selected',true);
       cocher_matieres_items( $('#f_compet_liste').val() );
+      if(mode=='modifier') {$('#alerte_items').show();}
+      else                 {$('#alerte_items').hide();}
       // Afficher la zone
       $.fancybox( { 'href':'#zone_matieres_items' , onStart:function(){$('#zone_matieres_items').css("display","block");} , onClosed:function(){$('#zone_matieres_items').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+      $(document).tooltip("destroy");infobulle(); // Sinon, bug avec l'infobulle contenu dans le fancybox qui ne disparait pas au clic...
     };
 
     /**
@@ -433,8 +424,11 @@ $(document).ready
       $('#zone_eleve li.li_m1 span.gradient_pourcent').html('');
       $('#msg_indiquer_eleves_deja').removeAttr("class").html('');
       cocher_eleves( $('#f_eleve_liste').val() );
+      if(mode=='modifier') {$('#alerte_eleves').show();}
+      else                 {$('#alerte_eleves').hide();}
       // Afficher la zone
       $.fancybox( { 'href':'#zone_eleve' , onStart:function(){$('#zone_eleve').css("display","block");} , onClosed:function(){$('#zone_eleve').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+      $(document).tooltip("destroy");infobulle(); // Sinon, bug avec l'infobulle contenu dans le fancybox qui ne disparait pas au clic...
     };
 
     /**
@@ -446,12 +440,10 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // Date
-      var date_fr       = date.substring(17,date.length); // garder la date française
       // Mettre les infos de côté
       $('#ordre_ref').val(ref);
       // Afficher la zone associée après avoir chargé son contenu
@@ -507,12 +499,10 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // Date
-      var date_fr       = date.substring(17,date.length); // garder la date française
       // Afficher la zone associée après avoir chargé son contenu
       $('#titre_voir_repart').html(groupe+' | '+date_fr+' | '+description);
       $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
@@ -542,8 +532,10 @@ $(document).ready
               $('#table_voir_repart1').html(tab_response[0]);
               $('#table_voir_repart2').html(tab_response[1]);
               format_liens('#zone_voir_repart');
-              $('#export_file6').attr("href", url_export+'repartition_quantitative_'+tab_response[2]+'.pdf' );
-              $('#export_file7').attr("href", url_export+'repartition_nominative_'+tab_response[2]+'.pdf' );
+              $('#export_voir_repart_quantitative_couleur').attr("href", url_export+'repartition_quantitative_couleur_'+tab_response[2]+'.pdf' );
+              $('#export_voir_repart_quantitative_gris'   ).attr("href", url_export+'repartition_quantitative_monochrome_'+tab_response[2]+'.pdf' );
+              $('#export_voir_repart_nominative_couleur'  ).attr("href", url_export+'repartition_nominative_couleur_'+tab_response[2]+'.pdf' );
+              $('#export_voir_repart_nominative_gris'     ).attr("href", url_export+'repartition_nominative_monochrome_'+tab_response[2]+'.pdf' );
               $('#table_voir_repart1 tbody td').css({"background-color":"#DDF","font-weight":"normal","text-align":"center"});
               $('#table_voir_repart2 tbody td').css({"background-color":"#DDF","font-weight":"normal","font-size":"85%"});
               $.fancybox( { 'href':'#zone_voir_repart' , onStart:function(){$('#zone_voir_repart').css("display","block");} , onClosed:function(){$('#zone_voir_repart').css("display","none");} , 'centerOnScroll':true } );
@@ -562,6 +554,7 @@ $(document).ready
       cocher_profs( $('#f_prof_liste').val() );
       // Afficher la zone
       $.fancybox( { 'href':'#zone_profs' , onStart:function(){$('#zone_profs').css("display","block");} , onClosed:function(){$('#zone_profs').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+      $(document).tooltip("destroy");infobulle(); // Sinon, bug avec l'infobulle contenu dans le fancybox qui ne disparait pas au clic...
     };
 
     /**
@@ -573,12 +566,10 @@ $(document).ready
       mode = $(this).attr('class');
       var objet_tds     = $(this).parent().parent().find('td');
       // Récupérer les informations de la ligne concernée
-      var ref           = objet_tds.eq(8).attr('id').substring(7); // "devoir_" + ref
-      var date          = objet_tds.eq(0).html();
+      var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
+      var date_fr       = objet_tds.eq(0).html();
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
-      // Date
-      var date_fr       = date.substring(17,date.length); // garder la date française
       // Sujet & Corrigé
       var img_sujet     = (tab_sujets[ref])   ? '<a href="'+tab_sujets[ref]+'" target="_blank"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
       var img_corrige   = (tab_corriges[ref]) ? '<a href="'+tab_corriges[ref]+'" target="_blank"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
@@ -588,7 +579,6 @@ $(document).ready
       $('#span_sujet').html(img_sujet);
       $('#span_corrige').html(img_corrige);
       activer_boutons_upload(ref);
-      infobulle();
       // maj du paramètre AjaxUpload (les paramètres n'étant pas directement modifiables...)
       uploader_sujet['_settings']['data']['f_ref']   = ref;
       uploader_corrige['_settings']['data']['f_ref'] = ref;
@@ -600,23 +590,27 @@ $(document).ready
     // Appel des fonctions en fonction des événements ; live est utilisé pour prendre en compte les nouveaux éléments créés
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('q.ajouter').click( ajouter );
-    $('q.modifier').live(  'click' , modifier_dupliquer );
-    $('q.dupliquer').live( 'click' , modifier_dupliquer );
-    $('q.supprimer').live( 'click' , supprimer );
-    $('#bouton_annuler , #fermer_zone_upload , #fermer_zone_ordonner , #fermer_zone_imprimer').click( annuler );
-    $('#bouton_valider').click( function(){formulaire.submit();} );
-    $('#form_gestion input , #form_gestion input select').live( 'keyup' , function(e){intercepter(e);} );
+    $('#table_action').on( 'click' , 'q.ajouter'        , ajouter );
+    $('#table_action').on( 'click' , 'q.modifier'       , modifier_dupliquer );
+    $('#table_action').on( 'click' , 'q.dupliquer'      , modifier_dupliquer );
+    $('#table_action').on( 'click' , 'q.supprimer'      , supprimer );
+    $('#table_action').on( 'click' , 'q.ordonner'       , ordonner );
+    $('#table_action').on( 'click' , 'q.imprimer'       , imprimer );
+    $('#table_action').on( 'click' , 'q.saisir'         , saisir );
+    $('#table_action').on( 'click' , 'q.voir'           , voir );
+    $('#table_action').on( 'click' , 'q.voir_repart'    , voir_repart );
+    $('#table_action').on( 'click' , 'q.uploader_doc'   , uploader_doc );
 
-    $('q.ordonner').live(       'click' , ordonner );
-    $('q.imprimer').live(       'click' , imprimer );
-    $('q.saisir').live(         'click' , saisir );
-    $('q.voir').live(           'click' , voir );
-    $('q.voir_repart').live(    'click' , voir_repart );
-    $('q.choisir_compet').live( 'click' , choisir_compet );
-    $('q.choisir_eleve').live(  'click' , choisir_eleve );
-    $('q.choisir_prof').live(   'click' , choisir_prof );
-    $('q.uploader_doc').live(   'click' , uploader_doc );
+    $('#form_gestion').on( 'click' , 'q.choisir_compet' , choisir_compet );
+    $('#form_gestion').on( 'click' , 'q.choisir_eleve'  , choisir_eleve );
+    $('#form_gestion').on( 'click' , 'q.choisir_prof'   , choisir_prof );
+    $('#form_gestion').on( 'click' , '#bouton_annuler'  , annuler );
+    $('#form_gestion').on( 'click' , '#bouton_valider'  , function(){formulaire.submit();} );
+    $('#form_gestion').on( 'keyup' , 'input,select'     , function(e){intercepter(e);} );
+
+    $('#zone_upload'  ).on( 'click' , '#fermer_zone_upload'   , annuler );
+    $('#zone_ordonner').on( 'click' , '#fermer_zone_ordonner' , annuler );
+    $('#zone_imprimer').on( 'click' , '#fermer_zone_imprimer' , annuler );
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Cocher / décocher par lot des individus
@@ -696,6 +690,21 @@ $(document).ready
     );
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Alerte si modification de groupe d'une évaluation
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $('#f_groupe').change
+    (
+      function()
+      {
+        if(mode=='modifier')
+        {
+          $('#alerte_groupe').show();
+        }
+      }
+    );
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Clic sur le bouton pour fermer le cadre des items associés à une évaluation (annuler / retour)
     // Clic sur le bouton pour fermer le cadre des élèves associés à une évaluation (annuler / retour) (uniquement pour des élèves sélectionnés)
     // Clic sur le bouton pour fermer le cadre des professeurs associés à une évaluation (annuler / retour)
@@ -714,15 +723,45 @@ $(document).ready
     // Clic sur le bouton pour fermer le formulaire servant à saisir les acquisitions des élèves à une évaluation
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#fermer_zone_saisir').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    function fermer_zone_saisir()
+    {
+      $('#titre_saisir').html("");
+      $('#table_saisir').html("<tbody><tr><td></td></tr></tbody>");
+      $('#zone_saisir').css("display","none");
+      $('#form_prechoix , #table_action').show('fast');
+      return(false);
+    }
+
+    $('#fermer_zone_saisir').click
+    (
       function()
       {
-        $('#titre_saisir').html("");
-        $('#table_saisir').html("<tbody><tr><td></td></tr></tbody>");
-        $('#zone_saisir').css("display","none");
-        $('#form_prechoix , #table_gestion').show('fast');
-        return(false);
+        if(!modification)
+        {
+          fermer_zone_saisir();
+        }
+        else
+        {
+          $.fancybox( { 'href':'#zone_confirmer_fermer_saisir' , onStart:function(){$('#zone_confirmer_fermer_saisir').css("display","block");} , onClosed:function(){$('#zone_confirmer_fermer_saisir').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
+          return(false);
+        }
+      }
+    );
+
+    $('#confirmer_fermer_zone_saisir').click
+    (
+      function()
+      {
+        $.fancybox.close();
+        fermer_zone_saisir();
+      }
+    );
+
+    $('#annuler_fermer_zone_saisir').click
+    (
+      function()
+      {
+        $.fancybox.close();
       }
     );
 
@@ -730,14 +769,14 @@ $(document).ready
     // Clic sur le bouton pour fermer le bloc pour voir les acquisitions des élèves à une évaluation
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#fermer_zone_voir').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#fermer_zone_voir').click
+    (
       function()
       {
         $('#titre_voir').html("");
         $('#table_voir').html("<tbody><tr><td></td></tr></tbody>");
         $('#zone_voir').css("display","none");
-        $('#form_prechoix , #table_gestion').show('fast');
+        $('#form_prechoix , #table_action').show('fast');
         return(false);
       }
     );
@@ -909,7 +948,6 @@ $(document).ready
                 $('#ajax_msg_imprimer').removeAttr("class").addClass("valide").html("Cartouches générés !");
                 $('#zone_imprimer_retour').html(responseHTML);
                 format_liens('#zone_imprimer_retour');
-                infobulle();
               }
             }
           }
@@ -1028,8 +1066,10 @@ $(document).ready
     // Choix du mode de pilotage pour la saisie des résultats
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('input[name=mode_saisie]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#table_saisir').on
+    (
+      'click',
+      'input[name=mode_saisie]',
       function()
       {
         memo_pilotage = $(this).val();
@@ -1049,12 +1089,14 @@ $(document).ready
     // Choix du sens de parcours pour la saisie des résultats (si pilotage au clavier)
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('input[name=arrow_continue]').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#table_saisir').on
+    (
+      'click',
+      'input[name=arrow_continue]',
       function()
       {
         memo_direction = $(this).val();
-          $('#C'+colonne+'L'+ligne).focus();
+        $('#C'+colonne+'L'+ligne).focus();
       }
     );
 
@@ -1062,8 +1104,10 @@ $(document).ready
     // Choix de rétrécir ou pas les colonnes sur #table_saisir
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#table_saisir #check_largeur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#table_saisir').on
+    (
+      'click',
+      '#check_largeur',
       function()
       {
         var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // 'h' ou 'v' pour horizontal (non condensé) ou vertical (condensé)
@@ -1084,8 +1128,10 @@ $(document).ready
     // Choix de rétrécir ou pas les colonnes sur #table_voir
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#table_voir #check_largeur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#table_voir').on
+    (
+      'click',
+      '#check_largeur',
       function()
       {
         var condense = ($(this).is(':checked')) ? 'v' : 'h' ; // 'h' ou 'v' pour horizontal (non condensé) ou vertical (condensé)
@@ -1114,8 +1160,10 @@ $(document).ready
     // Choix de rétrécir ou pas les lignes sur #table_saisir ou #table_voir
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#check_hauteur').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $(document).on
+    (
+      'click',
+      '#check_hauteur',
       function()
       {
         var table_id = $(this).closest('table').attr('id');
@@ -1162,8 +1210,10 @@ $(document).ready
       $('#'+new_id).focus();
     }
 
-    $('#table_saisir tbody td input').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('keydown',  // keydown au lieu de keyup permet de laisser appuyer sur la touche pour répéter une action
+    $('#table_saisir').on
+    (
+      'keydown',  // keydown au lieu de keyup permet de laisser appuyer sur la touche pour répéter une action
+      'tbody td input',
       function(e)
       {
         if(memo_pilotage=='clavier')
@@ -1314,8 +1364,10 @@ $(document).ready
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Remplacer la cellule par les images de choix
-    $("#table_saisir tbody td.td_clavier").live
-    ('mouseover',
+    $('#table_saisir').on
+    (
+      'mouseover',
+      'tbody td.td_clavier',
       function()
       {
         if(memo_pilotage=='souris')
@@ -1342,8 +1394,10 @@ $(document).ready
     );
 
     // Revenir à la cellule initiale ; mouseout ne fonctionne pas à cause des éléments contenus dans le div ; mouseleave est mieux, mais pb qd même avec les select du calendrier
-    $("#table_saisir tbody td").live
-    ('mouseleave',
+    $('#table_saisir').on
+    (
+      'mouseleave',
+      'tbody td',
       function()
       {
         if(memo_pilotage=='souris')
@@ -1359,8 +1413,10 @@ $(document).ready
     );
 
     // Renvoyer l'information dans la ou les cellule(s)
-    $("div.td_souris img").live
-    ('click',
+    $('#table_saisir').on
+    (
+      'click',
+      'div.td_souris img',
       function()
       {
         var note = $(this).attr("alt");
@@ -1496,8 +1552,8 @@ $(document).ready
     // Clic sur le lien pour mettre à jour les acquisitions des élèves à une évaluation
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#valider_saisir').live // live est utilisé pour prendre en compte les nouveaux éléments créés
-    ('click',
+    $('#valider_saisir').click
+    (
       function()
       {
         if(modification==false)
@@ -1527,7 +1583,7 @@ $(document).ready
             {
               type : 'POST',
               url : 'ajax.php?page='+PAGE,
-              data : 'csrf='+CSRF+'&f_action=enregistrer_saisie'+'&f_ref='+$("#saisir_ref").val()+'&f_date_mysql='+$("#saisir_date_mysql").val()+'&f_date_visible='+$("#saisir_date_visible").val()+'&f_notes='+f_notes+'&f_description='+$("#saisir_description").val(),
+              data : 'csrf='+CSRF+'&f_action=enregistrer_saisie'+'&f_ref='+$("#saisir_ref").val()+'&f_date_fr='+$("#saisir_date_fr").val()+'&f_date_visible='+$("#saisir_date_visible").val()+'&f_fini='+$("#saisir_fini").val()+'&f_notes='+f_notes+'&f_description='+$("#saisir_description").val(),
               dataType : "html",
               error : function(jqXHR, textStatus, errorThrown)
               {
@@ -1539,7 +1595,7 @@ $(document).ready
               {
                 initialiser_compteur();
                 $('button').prop('disabled',false);
-                if(responseHTML.substring(0,1)!='<')
+                if(responseHTML.substring(0,4)!='<td ')
                 {
                   $('#ajax_msg_saisir').removeAttr("class").addClass("alerte").html(responseHTML);
                 }
@@ -1549,6 +1605,7 @@ $(document).ready
                   $('#ajax_msg_saisir').removeAttr("class").addClass("valide").html("Saisies enregistrées !");
                   $('#fermer_zone_saisir').removeAttr("class").addClass("retourner").html('Retour');
                   colorer_cellules();
+                  $("#devoir_"+$("#saisir_ref").val()).prev().replaceWith(responseHTML);
                 }
               }
             }
@@ -1575,10 +1632,10 @@ $(document).ready
           f_date_visible  : { required:function(){return !$('#box_visible').is(':checked');} , dateITA:true },
           f_date_autoeval : { required:function(){return !$('#box_autoeval').is(':checked');} , dateITA:true },
           f_groupe        : { required:true },
-          f_eleve_nombre  : { accept:'élève|élèves' },
+          f_eleve_nombre  : { isWord:'élève' },
           f_description   : { required:false , maxlength:60 },
           f_prof_nombre   : { required:false },
-          f_compet_nombre : { accept:'item|items' },
+          f_compet_nombre : { isWord:'item' },
           f_doc_sujet     : { required:false , testURL:true },
           f_doc_corrige   : { required:false , testURL:true }
         },
@@ -1588,10 +1645,10 @@ $(document).ready
           f_date_visible  : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
           f_date_autoeval : { required:"date manquante" , dateITA:"format JJ/MM/AAAA non respecté" },
           f_groupe        : { required:"groupe manquant" },
-          f_eleve_nombre  : { accept:"élève(s) manquant(s)" },
+          f_eleve_nombre  : { isWord:"élève(s) manquant(s)" },
           f_description   : { maxlength:"60 caractères maximum" },
           f_prof_nombre   : { },
-          f_compet_nombre : { accept:"item(s) manquant(s)" },
+          f_compet_nombre : { isWord:"item(s) manquant(s)" },
           f_doc_sujet     : { testURL:" URL sujet invalide" },
           f_doc_corrige   : { testURL:" URL corrigé invalide" }
         },
@@ -1689,7 +1746,7 @@ $(document).ready
         switch (mode)
         {
           case 'ajouter':
-            $('table.form tbody tr td[colspan=9]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
+            $('#table_action tbody tr td[colspan=10]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
           case 'dupliquer':
             var position_script = responseHTML.lastIndexOf('<SCRIPT>');
             var new_tds = responseHTML.substring(0,position_script);
@@ -1699,7 +1756,7 @@ $(document).ready
               var new_tds = new_tds.replace('<td>{{GROUPE_NOM}}</td>','<td>'+tab_groupe[groupe_id]+'</td>');
             }
             var new_tr = '<tr class="new">'+new_tds+'</tr>';
-            $('table.form tbody').prepend(new_tr);
+            $('#table_action tbody').prepend(new_tr);
             eval( responseHTML.substring(position_script+8) );
             break;
           case 'modifier':
@@ -1717,10 +1774,9 @@ $(document).ready
             $('#devoir_'+$('#f_ref').val()).parent().remove();
             break;
         }
-        trier_tableau();
+        tableau_maj();
         $.fancybox.close();
         mode = false;
-        infobulle();
       }
     }
 
@@ -1902,8 +1958,7 @@ $(document).ready
         else               { var alt='corrigé'; var title='Corrigé'; var numero=1; tab_corriges[ref] = url; }
         var lien        = '<a href="'+url+'" target="_blank"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
         $('#span_'+objet).html(lien);
-        $('#devoir_'+ref).prev().children().eq(numero).replaceWith(lien);
-        infobulle();
+        $('#devoir_'+ref).prev().prev().children().eq(numero).replaceWith(lien);
       }
       activer_boutons_upload(ref);
     }
@@ -1948,7 +2003,7 @@ $(document).ready
                 else               { var alt='corrigé'; var numero=1; tab_corriges[ref] = ''; }
                 var lien        = '<img alt="'+alt+'" src="./_img/document/'+objet+'_non.png" />';
                 $('#span_'+objet).html(lien);
-                $('#devoir_'+ref).prev().children().eq(numero).replaceWith(lien);
+                $('#devoir_'+ref).prev().prev().children().eq(numero).replaceWith(lien);
               }
               activer_boutons_upload(ref);
             }
@@ -2011,14 +2066,62 @@ $(document).ready
                   else               { var alt='corrigé'; var title='Corrigé'; var numero=1; tab_corriges[ref] = url; }
                   var lien        = '<a href="'+url+'" target="_blank"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
                   $('#span_'+objet).html(lien);
-                  $('#devoir_'+ref).prev().children().eq(numero).replaceWith(lien);
-                  infobulle();
+                  $('#devoir_'+ref).prev().prev().children().eq(numero).replaceWith(lien);
                 }
                 activer_boutons_upload(ref);
               }
             }
           );
         }
+      }
+    );
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Traitement du clic sur un checkbox pour déclarer (ou pas) une évaluation complète en saisie
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $('#table_action').on
+    (
+      'click',
+      'a.fini',
+      function()
+      {
+        var obj_lien = $(this);
+        var txt_span = obj_lien.children('span').text();
+        var txt_i    = obj_lien.children('i').text();
+        var fini     = (txt_i=='terminé') ? 'oui' : 'non' ;
+        var ref      = obj_lien.parent().next().attr('id').substring(7); // "devoir_" + ref
+        // obj_bouton.prop('disabled',true);
+        $.ajax
+        (
+          {
+            type : 'POST',
+            url  : 'ajax.php?page='+PAGE,
+            data : 'csrf='+CSRF+'&f_action=maj_fini'+'&f_fini='+fini+'&f_ref='+ref,
+            dataType : "html",
+            error : function(jqXHR, textStatus, errorThrown)
+            {
+              $.fancybox( '<label class="alerte">'+'Échec de la connexion !\nVeuillez recommencer.'+'</label>' , {'centerOnScroll':true} );
+              // obj_bouton.prop('disabled',false).prop('checked',check_old);
+              return false;
+            },
+            success : function(responseHTML)
+            {
+              initialiser_compteur();
+              if(responseHTML!='ok')
+              {
+                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
+                // obj_bouton.prop('disabled',false).prop('checked',check_old);
+              }
+              else
+              {
+                if(fini=='oui') { obj_lien.html('<span>'+txt_i+'</span><i>'+txt_span+'</i>').parent().addClass("bf"); }
+                else            { obj_lien.html('<span>'+txt_i+'</span><i>'+txt_span+'</i>').parent().removeClass("bf"); }
+              }
+              return false;
+            }
+          }
+        );
       }
     );
 
@@ -2209,11 +2312,10 @@ $(document).ready
       {
         $('#ajax_msg_prechoix').removeAttr("class").addClass("valide").html("Demande réalisée !").fadeOut(3000,function(){$(this).removeAttr("class").html("").show();});
         var position_script = responseHTML.lastIndexOf('<SCRIPT>');
-        $('table.form tbody').html( responseHTML.substring(0,position_script) );
+        $('#table_action tbody').html( responseHTML.substring(0,position_script) );
         eval( responseHTML.substring(position_script+8) );
-        trier_tableau();
+        tableau_maj();
         afficher_masquer_images_action('show');
-        infobulle();
         if( reception_todo )
         {
           $('q.ajouter').click();
@@ -2222,7 +2324,7 @@ $(document).ready
     }
 
     // N'afficher les éléments qu'une fois le js bien chargé...
-    $('#form_prechoix , #table_gestion').show('fast');
+    $('#form_prechoix , #table_action').show('fast');
 
     // Et charger par défaut les dernières évaluations du prof.
     $('#form_prechoix').submit();

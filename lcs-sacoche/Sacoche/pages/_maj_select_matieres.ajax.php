@@ -30,14 +30,21 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
 
-$groupe  = (isset($_POST['f_groupe']))  ? Clean::entier($_POST['f_groupe'])  : 0;
-$matiere = (isset($_POST['f_matiere'])) ? Clean::entier($_POST['f_matiere']) : 0;
+$groupe   = (isset($_POST['f_groupe']))   ? Clean::entier($_POST['f_groupe'])  : 0;
+$matiere  = (isset($_POST['f_matiere']))  ? Clean::entier($_POST['f_matiere']) : 0;
+$multiple = (empty($_POST['f_multiple'])) ? FALSE                              : TRUE ;
 
 if(!$groupe)
 {
   exit('Erreur avec les données transmises !');
 }
 
-echo Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_matieres_groupe($groupe) , $select_nom=FALSE , $option_first='oui' , $selection=$matiere , $optgroup='non');
+$select_nom   = ($multiple) ? 'f_matiere' : FALSE ;
+$option_first = ($multiple) ? 'non'       : 'oui' ;
+$selection    = ($multiple) ? TRUE        : $matiere ;
+
+// Affichage du retour.
+
+exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_matieres_groupe($groupe) , $select_nom , $option_first , $selection , 'non' /*optgroup*/ , $multiple ) );
 
 ?>

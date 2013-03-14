@@ -39,7 +39,7 @@ $password = (isset($_POST['f_password'])) ? Clean::password($_POST['f_password']
 function afficher_formulaire_etablissement($BASE,$profil)
 {
   $options_structures = Form::afficher_select(DB_WEBMESTRE_SELECT::DB_OPT_structures_sacoche() , FALSE /*select_nom*/ , 'non' /*option_first*/ , $BASE /*selection*/ , 'oui' /*optgroup*/ );
-  echo'<label class="tab" for="f_base">Établissement :</label><select id="f_base" name="f_base" tabindex="1" >'.$options_structures.'</select><br />'."\r\n";
+  echo'<label class="tab" for="f_base">Établissement :</label><select id="f_base" name="f_base" tabindex="1" class="t9">'.$options_structures.'</select><br />'."\r\n";
   echo'<span class="tab"></span><button id="f_choisir" type="button" tabindex="2" class="valider">Choisir cet établissement.</button><label id="ajax_msg">&nbsp;</label><br />'."\r\n";
   echo'<input id="f_profil" name="f_profil" type="hidden" value="'.$profil.'" />'."\r\n";
 }
@@ -110,7 +110,7 @@ if( ($action=='initialiser') && ($profil=='webmestre') )
 if( ($action=='initialiser') && (HEBERGEUR_INSTALLATION=='mono-structure') && $profil )
 {
   // Mettre à jour la base si nécessaire
-  maj_base_si_besoin($BASE);
+  maj_base_structure_si_besoin($BASE);
   // Requête pour récupérer la dénomination et le mode de connexion
   $DB_TAB = DB_STRUCTURE_PUBLIC::DB_lister_parametres('"webmestre_denomination","connexion_mode","connexion_nom"');
   foreach($DB_TAB as $DB_ROW)
@@ -147,7 +147,7 @@ if( ( ($action=='initialiser') && ($BASE>0) && (HEBERGEUR_INSTALLATION=='multi-s
   afficher_nom_etablissement($BASE,$structure_denomination);
   // Mettre à jour la base si nécessaire
   charger_parametres_mysql_supplementaires($BASE);
-  maj_base_si_besoin($BASE);
+  maj_base_structure_si_besoin($BASE);
   // Une deuxième requête sur SACOCHE_STRUCTURE_BD_NAME pour savoir si le mode de connexion est SSO ou pas
   $DB_TAB = DB_STRUCTURE_PUBLIC::DB_lister_parametres('"connexion_mode","connexion_nom"');
   foreach($DB_TAB as $DB_ROW)

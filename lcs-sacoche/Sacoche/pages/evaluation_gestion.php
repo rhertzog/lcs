@@ -135,7 +135,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
 </fieldset><hr />
 </form>
 
-<table id="table_gestion" class="form hsort t9 hide">
+<table id="table_action" class="form hsort t9 hide">
   <thead>
     <tr>
       <th>Date devoir</th>
@@ -146,11 +146,12 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
       <th>Description</th>
       <th>Items</th>
       <th>Fichiers</th>
+      <th>Saisies</th>
       <th class="nu"><q class="ajouter" title="Ajouter une évaluation."></q></th>
     </tr>
   </thead>
   <tbody>
-    <tr><td class="nu" colspan="9"></td></tr>
+    <tr><td class="nu" colspan="10"></td></tr>
   </tbody>
 </table>
 
@@ -167,9 +168,10 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
     <p>
       <?php if($TYPE=='groupe'): ?>
         <label class="tab" for="f_groupe">Classe / groupe :</label><select id="f_groupe" name="f_groupe"><option></option></select><br />
+        <span id="alerte_groupe" class="hide danger b">Attention : si vous modifiez le groupe, alors les notes de l'évaluation seront effacées !<br />En cas de même évaluation sur plusieurs groupes, il faut la <span class="u">dupliquer</span> et non la <span class="u">modifier</span>.</span><br />
       <?php endif; ?>
       <?php if($TYPE=='selection'): ?>
-        <label class="tab" for="f_groupe">Élèves :</label><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q><br />
+        <label class="tab" for="f_eleve_nombre">Élèves :</label><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q><br />
       <?php endif; ?>
       <label class="tab" for="f_prof_nombre">Collègues :</label><input id="f_prof_nombre" name="f_prof_nombre" size="10" type="text" value="" readonly /><q class="choisir_prof" title="Voir ou choisir les collègues."></q><input id="f_prof_liste" name="f_prof_liste" type="hidden" value="" />
     <p>
@@ -187,7 +189,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
     <p>Confirmez-vous la suppression de l'évaluation &laquo;&nbsp;<b id="gestion_delete_identite"></b>&nbsp;&raquo; ?</p>
   </div>
   <p>
-    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_ref" name="f_ref" type="hidden" value="" /><input id="f_type" name="f_type" type="hidden" value="<?php echo $TYPE; ?>" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
+    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_ref" name="f_ref" type="hidden" value="" /><input id="f_type" name="f_type" type="hidden" value="<?php echo $TYPE; ?>" /><input id="f_fini" name="f_fini" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
   </p>
 </form>
 
@@ -199,7 +201,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
   $DB_TAB = DB_STRUCTURE_COMMUN::DB_recuperer_arborescence( $_SESSION['USER_ID'] , 0 /*matiere_id*/ , 0 /*niveau_id*/ , FALSE /*only_socle*/ , FALSE /*only_item*/ , FALSE /*socle_nom*/ );
   echo Html::afficher_arborescence_matiere_from_SQL( $DB_TAB , TRUE /*dynamique*/ , TRUE /*reference*/ , FALSE /*aff_coef*/ , FALSE /*aff_cart*/ , 'texte' /*aff_socle*/ , FALSE /*aff_lien*/ , TRUE /*aff_input*/ );
   ?>
-  <p class="danger">Une évaluation dont la saisie a commencé ne devrait pas voir ses items modifiés.<br />En particulier, retirer des items d'une évaluation efface les scores correspondants déjà saisis !</p>
+  <p id="alerte_items" class="fluo"><span class="danger b">Une évaluation dont la saisie a commencé ne devrait pas voir ses items modifiés.<br />En particulier, retirer des items d'une évaluation efface les scores correspondants déjà saisis !</span></p>
   <div><span class="tab"></span><button id="valider_compet" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_compet" type="button" class="annuler">Annuler / Retour</button></div>
   <hr />
   <p>
@@ -219,7 +221,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
   <div><button id="indiquer_eleves_deja" type="button" class="eclair">Indiquer les élèves associés à une évaluation de même nom</button> depuis le <input id="f_date_deja" name="f_date_deja" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french'); ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q><label id="msg_indiquer_eleves_deja"></label></div>
   <p>Cocher ci-dessous (<span class="astuce">cliquer sur un intitulé pour déployer son contenu</span>) :</p>
   <?php echo afficher_form_element_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
-  <p class="danger">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves modifiés.<br />En particulier, retirer des élèves d'une évaluation efface les scores correspondants déjà saisis !</p>
+  <p id="alerte_eleves" class="fluo"><span class="danger b">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves modifiés.<br />En particulier, retirer des élèves d'une évaluation efface les scores correspondants déjà saisis !</span></p>
   <div><span class="tab"></span><button id="valider_eleve" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_eleve" type="button" class="annuler">Annuler / Retour</button></div>
 </form>
 <?php endif; ?>
@@ -291,7 +293,8 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
   </table>
   <p>
   <ul class="puce">
-    <li><a id="export_file6" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em>).</span></a></li>
+    <li><a id="export_voir_repart_quantitative_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> en couleurs).</span></a></li>
+    <li><a id="export_voir_repart_quantitative_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> monochrome).</span></a></li>
   </ul>
   </p>
   <p>
@@ -301,7 +304,8 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
   </p>
   <p>
   <ul class="puce">
-    <li><a id="export_file7" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em>).</span></a></li>
+    <li><a id="export_voir_repart_nominative_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> en couleurs).</span></a></li>
+    <li><a id="export_voir_repart_nominative_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> monochrome).</span></a></li>
   </ul>
   </p>
 </div>
@@ -310,11 +314,12 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
 <form action="#" method="post" id="zone_saisir" class="hide" onsubmit="return false">
   <h2>Saisir les acquisitions à une évaluation</h2>
   <p>
-    <b id="titre_saisir"></b><label id="ajax_msg_saisir"></label>
+    <b id="titre_saisir"></b> <button id="valider_saisir" type="button" class="valider">Enregistrer les saisies</button> <button id="fermer_zone_saisir" type="button" class="retourner">Retour</button> <label id="ajax_msg_saisir"></label>
     <input id="saisir_ref" name="f_ref" type="hidden" value="" />
-    <input id="saisir_date_mysql" name="f_date_mysql" type="hidden" value="" />
+    <input id="saisir_date_fr" name="f_date_fr" type="hidden" value="" />
     <input id="saisir_date_visible" name="f_date_visible" type="hidden" value="" />
     <input id="saisir_description" name="f_description" type="hidden" value="" />
+    <input id="saisir_fini" name="f_fini" type="hidden" value="" />
   </p>
   <table id="table_saisir" class="scor_eval">
     <tbody><tr><td></td></tr></tbody>
@@ -338,8 +343,8 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
     <div id="zone_saisir_deport" class="hide">
       <ul class="puce">
         <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span></li>
-        <li><a id="export_file1" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier vierge pour une saisie déportée (format <em>csv</em>).</span></a></li>
-        <li><a id="export_file4" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
+        <li><a id="export_file_saisir_tableau_scores_csv" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier vierge pour une saisie déportée (format <em>csv</em>).</span></a></li>
+        <li><a id="export_file_saisir_tableau_scores_vierge" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
         <li><button id="import_file" type="button" class="fichier_import">Envoyer un fichier de notes complété (format <em>csv</em>).</button><label id="msg_import">&nbsp;</label></li>
       </ul>
     </div>
@@ -349,7 +354,7 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
 <div id="zone_voir" class="hide">
   <h2>Voir les acquisitions à une évaluation</h2>
   <p>
-    <b id="titre_voir"></b><label id="ajax_msg_voir"></label>
+    <b id="titre_voir"></b> <button id="fermer_zone_voir" type="button" class="retourner">Retour</button> <label id="ajax_msg_voir"></label>
   </p>
   <table id="table_voir" class="scor_eval">
     <tbody><tr><td></td></tr></tbody>
@@ -359,11 +364,20 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , $s
     <div id="zone_voir_deport" class="hide">
       <ul class="puce">
         <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span></li>
-        <li><a id="export_file2" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier des scores pour une saisie déportée (format <em>csv</em>).</span></a></li>
-        <li><a id="export_file3" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
-        <li><a id="export_file5" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> en couleurs).</span></a></li>
-        <li><a id="export_file8" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> monochrome).</span></a></li>
+        <li><a id="export_file_voir_tableau_scores_csv" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier des scores pour une saisie déportée (format <em>csv</em>).</span></a></li>
+        <li><a id="export_file_voir_tableau_scores_vierge" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
+        <li><a id="export_file_voir_tableau_scores_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> en couleurs).</span></a></li>
+        <li><a id="export_file_voir_tableau_scores_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> monochrome).</span></a></li>
       </ul>
     </div>
+  </p>
+</div>
+
+<div id="zone_confirmer_fermer_saisir" class="hide">
+  <p class="danger">Des saisies ont été effectuées, mais n'ont pas été enregistrées.</p>
+  <p>Confirmez-vous vouloir quitter l'interface de saisie ?</p>
+  <p>
+    <button id="confirmer_fermer_zone_saisir" type="button" class="valider">Oui, je ne veux pas enregistrer</button>
+    <button id="annuler_fermer_zone_saisir" type="button" class="annuler">Non, je retourne sur l'interface</button>
   </p>
 </div>
