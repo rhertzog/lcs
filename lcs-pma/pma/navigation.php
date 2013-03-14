@@ -193,7 +193,6 @@ if (! $GLOBALS['server']) {
         $list = false;
     }
     if (!$list) {
-
         // more than one database available and LeftFrameLight is true
         // display db selectbox
         //
