@@ -16,7 +16,7 @@
 // | Authors: Stephan Schmidt <schst@php-tools.net>                       |
 // +----------------------------------------------------------------------+
 //
-//    $Id: Util.php 11091 2008-09-01 14:25:20Z zefredz $
+//    $Id: Util.php 14315 2012-11-08 14:51:17Z zefredz $
 
 /**
  * error code for invalid chars in XML name
@@ -67,7 +67,7 @@ define("XML_UTIL_ENTITIES_XML_REQUIRED", 2);
 
 /**
  * replace HTML entitites
- * @link    http://www.php.net/htmlentities
+ * @link    http://www.php.net/claro_htmlentities
  */
 define("XML_UTIL_ENTITIES_HTML", 3);
 
@@ -141,7 +141,7 @@ class XML_Util {
                                           '"'  => '&quot;' ));
                 break;
             case XML_UTIL_ENTITIES_HTML:
-                return htmlentities($string);
+                return claro_htmlentities($string);
                 break;
         }
         return $string;

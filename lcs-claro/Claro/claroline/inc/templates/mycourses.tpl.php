@@ -1,24 +1,20 @@
-<!-- $Id: mycourses.tpl.php 12916 2011-03-03 10:43:35Z abourguignon $ -->
+<!-- $Id: mycourses.tpl.php 13271 2011-06-28 01:08:31Z abourguignon $ -->
 
-<?php if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) ); ?>
+<?php if (!empty( $this->userCourseList)) : ?>
+<h1><?php echo get_lang('My course list'); ?></h1>
+<?php echo $this->userCourseList; // Comes from render_user_course_list(); ?>
 
-<?php
-//Display activated courses list
+<?php elseif (empty($this->userCourseListDesactivated)) : ?>
+<?php echo get_lang('You are not enrolled to any course on this platform or all your courses are deactivated'); ?>
 
-if( !empty( $this->userCourseList ) ) :
-    echo $this->userCourseList; // Comes from render_user_course_list();
+<?php else : ?>
+<?php echo get_lang( 'All your courses are deactivated (see list below)' ); ?>
 
-elseif( empty( $this->userCourseListDesactivated ) ) :
-    echo get_lang('You are not enrolled to any course on this platform or all your courses are deactivated');
+<?php endif; ?>
 
-else :
-    echo get_lang( 'All your courses are deactivated (see list below)' );
 
-endif;
+<?php if (!empty($this->userCourseListDesactivated)) : ?>
+<h1><?php echo get_lang('Deactivated course list'); ?></h1>
+<?php echo $this->userCourseListDesactivated; // Comes from render_user_course_list_desactivated(); ?>
 
-//Display deactivated courses list
-if ( !empty( $this->userCourseListDesactivated ) ) :
-    echo claro_html_tool_title(get_lang('Deactivated course list'));
-    echo $this->userCourseListDesactivated; // Comes from render_user_course_list_desactivated();
-endif;
-?>
+<?php endif; ?>

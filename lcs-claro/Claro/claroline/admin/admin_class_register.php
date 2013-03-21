@@ -1,11 +1,11 @@
-<?php //$Id: admin_class_register.php 12969 2011-03-14 14:40:42Z abourguignon $
+<?php //$Id: admin_class_register.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users registration to classes.
  *
- * @version     $Revision: 12969 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -190,7 +190,7 @@ else
     $out .= '<div style="text-align: right">'."\n"
     .    '<form action="' . $_SERVER['PHP_SELF'] . '" method="GET">' . "\n"
     .    '<input type="hidden" name="class_id" value="'.$class_id. '" />' . "\n"
-    .    '<input type="text" value="' . htmlspecialchars($search).'" name="search" id="search" size="20" />' . "\n"
+    .    '<input type="text" value="' . claro_htmlspecialchars($search).'" name="search" id="search" size="20" />' . "\n"
     .    '<input type="submit" value=" ' . get_lang('Search') . ' " />' . "\n"
     .    '</form>'."\n"
     .    '</div>' . "\n"
@@ -207,7 +207,7 @@ else
 	{
 	    $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">' . "\n"
 	    .    '<thead>' . "\n"
-	    .    '<tr class="headerX" align="center" valign="top">'
+	    .    '<tr align="center" valign="top">'
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=user_id&amp;chdir=yes">' . get_lang('User id') . '</a></th>' . "\n"
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=nom&amp;chdir=yes"    >' . get_lang('Last name') . '</a></th>' . "\n"
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=prenom&amp;chdir=yes" >' . get_lang('First name') . '</a></th>' . "\n"
@@ -222,7 +222,7 @@ else
 	{
 		 $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">' . "\n"
 	    .    '<thead>' . "\n"
-	    .    '<tr class="headerX" align="center" valign="top">'
+	    .    '<tr align="center" valign="top">'
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;search='.$search.'&amp;order_crit=user_id&amp;chdir=yes">' . get_lang('User id') . '</a></th>' . "\n"
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;search='.$search.'&amp;order_crit=nom&amp;chdir=yes"    >' . get_lang('Last name') . '</a></th>' . "\n"
 	    .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;search='.$search.'&amp;order_crit=prenom&amp;chdir=yes" >' . get_lang('First name') . '</a></th>' . "\n"

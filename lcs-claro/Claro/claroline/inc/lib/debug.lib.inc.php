@@ -1,4 +1,4 @@
-<?php // $Id: debug.lib.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: debug.lib.inc.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -11,7 +11,7 @@ if ( count( get_included_files() ) == 1 )
  * debug functions
  * All this  function output only  if  debugClaro is on
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     KERNEL
@@ -504,5 +504,5 @@ function profilePoint()
 
 function claro_debug_assertion_handler($file, $line, $code)
 {
-    pushClaroMessage( htmlspecialchars("Assertion failed in {$file} at lin {$line} : $code"), 'assert' );
+    pushClaroMessage( claro_htmlspecialchars("Assertion failed in {$file} at lin {$line} : $code"), 'assert' );
 }

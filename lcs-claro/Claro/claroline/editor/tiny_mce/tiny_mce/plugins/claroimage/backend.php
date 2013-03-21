@@ -1,8 +1,8 @@
-<?php // $Id: backend.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: backend.php 14314 2012-11-07 09:09:19Z zefredz $
 /**
  * CLAROLINE
  *
- * $Revision: 12923 $
+ * $Revision: 14314 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -129,7 +129,7 @@
                 $out .= '<li>'  . "\n"
                 .    '<a href="#" class="selectFolder" onclick="setFileList(\''.str_replace( '\\', '/', $relativePath ).'\')">'
                 .    '<img src="'.get_icon_url('folder').'" />'
-                .    htmlspecialchars($file->getFileName()) 
+                .    claro_htmlspecialchars($file->getFileName()) 
                 .    '</a>'
                 .    '</li>' . "\n";
             }
@@ -147,7 +147,7 @@
                 $out .= '<li>'  . "\n"
                 .    '<a href="#" onclick="selectImage(\''.$url.'\')">'
                 .    '<img src="'.get_icon_url( choose_image($file->getFileName()) ).'" />' 
-                .    htmlspecialchars($file->getFileName())
+                .    claro_htmlspecialchars($file->getFileName())
                 .    '</a>'
                 .    '</li>' . "\n";
             }

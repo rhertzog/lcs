@@ -1,11 +1,11 @@
-<?php // $Id: messagebox.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: messagebox.lib.php 13687 2011-10-14 12:50:06Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * message box  class (abstract)
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 13687 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -14,7 +14,7 @@
  * @package     internal_messaging
  */
 
-abstract class MessageBox implements Iterator, Countable
+abstract class MessageBox implements CountableIterator
 {
     protected $messageFilter = NULL;
     protected $messageList = FALSE;

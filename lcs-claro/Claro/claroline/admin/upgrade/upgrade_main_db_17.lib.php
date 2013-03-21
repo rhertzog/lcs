@@ -1,24 +1,20 @@
-<?php // $Id: upgrade_main_db_17.lib.php 13005 2011-03-28 13:10:20Z dkp1060 $
+<?php // $Id: upgrade_main_db_17.lib.php 13348 2011-07-18 13:58:28Z abourguignon $
+
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * Sql query to update main database
+ * Sql query to update main database.
  *
- * @version 1.8 $Revision: 13005 $
- *
+ * @version     $Revision: 13348 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @see http://www.claroline.net/wiki/index.php/Upgrade_claroline_1.6
- *
- * @package UPGRADE
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Mathieu Laurent   <mla@claroline.net>
- * @author Christophe Gesché <moosh@claroline.net>
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @see         http://www.claroline.net/wiki/index.php/Upgrade_claroline_1.6
+ * @package     UPGRADE
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Mathieu Laurent <mla@claroline.net>
+ * @author      Christophe Gesche <moosh@claroline.net>
  */
 
 /*===========================================================================

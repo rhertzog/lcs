@@ -1,11 +1,11 @@
-<?php // $Id: profile.php 13030 2011-04-01 11:26:41Z abourguignon $
+<?php // $Id: profile.php 14315 2012-11-08 14:51:17Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This script prupose to user to edit his own profile.
  *
- * @version     $Revision: 13030 $
+ * @version     $Revision: 14315 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/Auth/
@@ -57,7 +57,7 @@ CONTROLER Section
 $extraInfoDefList = get_userInfoExtraDefinitionList();
 
 $userId = claro_get_current_user_id();
-$userData = user_initialise();
+
 $userData = user_get_properties($userId);
 
 $acceptedCmdList = array( 'exCCstatus'
@@ -82,22 +82,25 @@ if ( isset($_REQUEST['applyChange']) )
     // Get params form the form
     $userData = user_initialise();
     
-    // Handle user picture
-    $pictureUpdated = user_handle_profile_picture($userData);
-    
-    if ($pictureUpdated['success'])
+    if ( get_conf('allow_profile_picture', true) )
     {
-        $userData['picture'] = $pictureUpdated['pictureName'];
-        foreach ($pictureUpdated['messages'] as $success)
+        // Handle user picture
+        $pictureUpdated = user_handle_profile_picture($userData);
+
+        if ($pictureUpdated['success'])
         {
-            $dialogBox->success($success);
+            $userData['picture'] = $pictureUpdated['pictureName'];
+            foreach ($pictureUpdated['messages'] as $success)
+            {
+                $dialogBox->success($success);
+            }
         }
-    }
-    else
-    {
-        foreach ($pictureUpdated['messages'] as $error)
+        else
         {
-            $dialogBox->error($error);
+            foreach ($pictureUpdated['messages'] as $error)
+            {
+                $dialogBox->error($error);
+            }
         }
     }
     
@@ -106,6 +109,21 @@ if ( isset($_REQUEST['applyChange']) )
     {
         unset ($userData['password']);
         unset ($userData['password_conf']);
+    }
+    
+    if (empty($userData['authSource']))
+    {
+        unset ($userData['authSource']);
+    }
+    
+    if ( ! get_conf( 'allowSelfRegProf' ) && ! claro_is_platform_admin() )
+    {
+        unset( $userData['isCourseCreator'] );
+    }
+    
+    if( ! claro_is_platform_admin() )
+    {
+        unset( $userData['isPlatformAdmin'] );
     }
     
     // Validate form params
@@ -135,6 +153,7 @@ if ( isset($_REQUEST['applyChange']) )
         {
             $dialogBox->error($errorMsg);
         }
+        
         $error = true;
     }
 }
@@ -214,91 +233,91 @@ elseif ( 'exMoreInfo' == $cmd
 // Initialise
 $userData['userExtraInfoList'] =  get_user_property_list(claro_get_current_user_id());
 
-$profileMenu =  array();
+// Command list
+$cmdList = array();
 
 switch ( $display )
 {
     case DISP_PROFILE_FORM :
-        // display user tracking link
+        // Display user tracking link
         $profileText = claro_text_zone::get_content('textzone_edit_profile_form');
         
         if( get_conf('is_trackingEnabled') )
         {
-            // display user tracking link
-            $profileMenu[] = '<a class="claroCmd" href="' . get_conf('urlAppend') . '/claroline/tracking/userReport.php?userId='.claro_get_current_user_id() . claro_url_relay_context('&amp;') . '">'
-            .                 '<img src="' . get_icon_url('statistics') . '" alt="" />&nbsp;' . get_lang('View my statistics')
-            .                 '</a>'
-            ;
+            // Display user tracking link
+            $cmdList[] = array(
+                'img' => 'statistics',
+                'name' => get_lang('View my statistics'),
+                'url' => claro_htmlspecialchars(Url::Contextualize(get_conf('urlAppend') . '/claroline/tracking/userReport.php?userId='.claro_get_current_user_id()))
+            );
         }
         
-        // display request course creator status
+        // Display request course creator status
         if ( ! claro_is_allowed_to_create_course() && get_conf('can_request_course_creator_status') )
         {
-            $profileMenu[] = claro_html_cmd_link($_SERVER['PHP_SELF'] . '?cmd=reqCCstatus' . claro_url_relay_context('&amp;')
-                                                , get_lang('Request course creation status') );
+            $cmdList[] = array(
+                'name' => get_lang('Request course creation status'),
+                'url' => claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=reqCCstatus'))
+            );
         }
         
-        // display user revoquation
+        // Display user revoquation
         if ( get_conf('can_request_revoquation') )
         {
-            $profileMenu[] =  claro_html_cmd_link( $_SERVER['PHP_SELF']
-                                                 . '?cmd=reqRevoquation' . claro_url_relay_context('&amp;')
-                                                 , get_lang('Delete my account')
-                                                 ) ;
+            $cmdList[] = array(
+                'img' => 'delete',
+                'name' => get_lang('Delete my account'),
+                'url' => claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=reqRevoquation'))
+            );
         }
+        
+        if (claro_is_platform_admin())
+        {
+            $dialogBox->info(get_lang('As a platform administrator, you can edit any field you want, even if this field isn\'t editable for other users.<br />You can check the list of editable fields in your platform\'s configuration.'));
+        }
+        
         break;
 }
 
-/**********************************************************************
-    View Section
-**********************************************************************/
-$jsloader = JavascriptLoader::getInstance();
-$jsloader->load('jquery');
-
+// Display
 $out = '';
 
-$out .= claro_html_tool_title($nameTools);
-
-$out .= $dialogBox->render();
+$out .= claro_html_tool_title($nameTools, null, $cmdList)
+      . $dialogBox->render();
 
 switch ( $display )
 {
     case DISP_PROFILE_FORM :
-
-        // display form profile
+        
+        // Display form profile
         if ( trim ($profileText) != '')
         {
             $out .= '<div class="info profileEdit">'
                   . $profileText
                   . '</div>';
         }
-
-        $out .= '<p>'
-              . claro_html_menu_horizontal($profileMenu)
-              . '</p>'
-              . user_html_form($userId);
-
+        
+        $out .= user_html_form($userId);
         break;
 
     case DISP_MOREINFO_FORM :
-
-        // display request course creator form
+        
+        // Display request course creator form
         $out .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="post">' . "\n"
               . '<input type="hidden" name="cmd" value="exMoreInfo" />' . "\n"
               . '<table>' . "\n";
-
+        
         foreach ($extraInfoDefList as $extraInfoDef)
         {
             $currentValue = array_key_exists($extraInfoDef['propertyId'],$userInfo)
             ? $userInfo[$extraInfoDef['propertyId']]
             : $extraInfoDef['defaultValue'];
             $requirement = (bool) (true == $extraInfoDef['required']);
-
+            
             $labelExtraInfoDef = $extraInfoDef['label'];
-            $out .= form_input_text('extraInfoList['.htmlentities($extraInfoDef['propertyId']).']',$currentValue,get_lang($labelExtraInfoDef),$requirement);
-
+            $out .= form_input_text('extraInfoList['.claro_htmlentities($extraInfoDef['propertyId']).']',$currentValue,get_lang($labelExtraInfoDef),$requirement);
         }
-
+        
         $out .= '<tr valign="top">' . "\n"
               . '<td>' . get_lang('Submit') . ': </td>' . "\n"
               . '<td>'
@@ -312,10 +331,10 @@ switch ( $display )
         break;
 
     case DISP_REQUEST_COURSE_CREATOR_STATUS :
-
+        
         $out .= '<p>' . get_lang('Fill in the text area to motivate your request and then submit the form to send it to platform administrators') . '</p>';
-
-        // display request course creator form
+        
+        // Display request course creator form
         $out .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="post">' . "\n"
               . '<input type="hidden" name="cmd" value="exCCstatus" />' . "\n"
               . '<table>' . "\n"
@@ -327,13 +346,12 @@ switch ( $display )
               . '</td></tr>' . "\n"
               . '</table>' . "\n"
               . '</form>' . "\n";
-
         break;
 
     case DISP_REQUEST_REVOQUATION :
+        
         if ( get_conf('can_request_revoquation') )
         {
-
             $out .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="post">' . "\n"
                   . '<input type="hidden" name="cmd" value="exRevoquation" />' . "\n"
                   . '<table>' . "\n"

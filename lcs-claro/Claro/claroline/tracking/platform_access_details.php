@@ -1,8 +1,8 @@
-<?php // $Id: platform_access_details.php 13021 2011-03-31 09:37:59Z abourguignon $
+<?php // $Id: platform_access_details.php 13708 2011-10-19 10:46:34Z abourguignon $
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 13021 $
+ * @version 1.9 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -232,4 +232,3 @@ switch($period)
 $claroline->display->body->setContent($html);
 
 echo $claroline->display->render();
-?>

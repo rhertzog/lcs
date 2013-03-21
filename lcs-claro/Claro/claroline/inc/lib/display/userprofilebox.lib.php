@@ -1,21 +1,20 @@
-<?php // $Id: userprofilebox.lib.php 12924 2011-03-03 14:45:00Z abourguignon $
+<?php // $Id: userprofilebox.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 FromKernel::uses('user.lib');
 
-/**
-* CLAROLINE
-*
-* User account summary
-*
-* @version      1.9 $Revision: 12924 $
+ /**
+ * CLAROLINE
+ *
+ * User account summary.
+ *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
-* @license      http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
-* @package      DESKTOP
-* @author       Claroline team <info@claroline.net>
-*
-*/
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline team <info@claroline.net>
+ * @package     DESKTOP
+ */
 
 class UserProfileBox implements Display
 {
@@ -61,7 +60,7 @@ class UserProfileBox implements Display
             }
         }
         
-        $userFullName = htmlspecialchars(
+        $userFullName = claro_htmlspecialchars(
             get_lang('%firstName %lastName',
                 array('%firstName' => $userData['firstname'],
                       '%lastName' => $userData['lastname'])

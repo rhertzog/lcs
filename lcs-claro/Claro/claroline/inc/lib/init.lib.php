@@ -1,4 +1,4 @@
-<?php // $Id: init.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: init.lib.php 14315 2012-11-08 14:51:17Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * Get and set value of current session.
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14315 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      see 'credits' file
@@ -195,7 +195,7 @@ function claro_get_current_course_data($dataName=null)
     elseif (is_array($c) && array_key_exists($dataName,$c)) return $c[$dataName];
     else
     {
-        pushClaroMessage( __FUNCTION__ . ' : ' . htmlspecialchars($dataName) . ' does not exist for course data','warning');
+        pushClaroMessage( __FUNCTION__ . ' : ' . claro_htmlspecialchars($dataName) . ' does not exist for course data','warning');
         return null;
     }
 }
@@ -481,6 +481,15 @@ function claro_is_module_allowed()
 
     if ( $moduleData['type'] == 'tool' )
     {
+        $contextList = get_module_context_list( $moduleLabel );
+        
+        // pushClaroMessage(var_export(iterator_to_array($contextList), true),'kernel');
+        
+        if ( !claro_is_in_a_course() && in_array( 'platform', iterator_to_array($contextList) ) )
+        {
+            return get_module_data( $moduleLabel,'activation' ) == 'activated';
+        }
+        
         // if a course tool, use claro_is_tool_allowed
         return claro_is_tool_allowed();
     }
@@ -520,9 +529,9 @@ function get_init($param)
     , '_courseUser'            // claro_get_current_course_user_data(field=all)
     , '_courseTool'            // claro_get_current_course_tool_data(field=all)
     , '_courseToolList'        // claro_get_current_course_tool_list_data(field=all)
-    , 'is_courseMember'        // claro_is_courseMember()
-    , 'is_courseTutor'         // claro_is_courseTutor()
-    , 'is_courseAdmin'         // claro_is_courseAdmin()
+    , 'is_courseMember'        // claro_is_course_member()
+    , 'is_courseTutor'         // claro_is_course_tutor()
+    , 'is_courseAdmin'         // claro_is_course_admin()
     , 'is_courseAllowed'       // claro_is_course_allowed()
     , 'is_allowedCreateCourse' // claro_is_allowed_to_create_course() or claro_is_course_creator()
     , 'is_groupMember'         // claro_is_groupMember()
@@ -532,7 +541,7 @@ function get_init($param)
     , 'calledFrom'             // claro_called_from()
     );
 
-    if(!in_array($param, $initValueList )) trigger_error( htmlentities($param) . ' is not a know init value name ', E_USER_NOTICE);
+    if(!in_array($param, $initValueList )) trigger_error( claro_htmlentities($param) . ' is not a know init value name ', E_USER_NOTICE);
     //TODO create a real auth function to eval this state
     if ( $param == 'is_authenticated') return !(bool) is_null($GLOBALS['_uid']);
     //TODO create a real course function to eval this state
@@ -624,13 +633,15 @@ function claro_get_course_user_properties($cid,$uid,$ignoreCache=false)
             $course_user_data['role'] = $cuData['role']; // not used
             
             $course_user_privilege['_profileId']        = $cuData['profileId'];
+            $course_user_privilege['is_coursePending']  = (bool) ($cuData['isPending' ]);
             $course_user_privilege['is_courseMember']   = (bool) ($cuData['isPending' ] == 0 );
-            $course_user_privilege['is_courseTutor']    = (bool) ($cuData['tutor' ] == 1 );
+            $course_user_privilege['is_courseTutor']    = (bool) ($cuData['tutor'] == 1 );
             $course_user_privilege['is_courseAdmin']    = (bool) ($cuData['isCourseManager'] == 1 );
         }
         else // this user has no status related to this course
         {
             $course_user_privilege['_profileId']        = claro_get_profile_id('guest');
+            $course_user_privilege['is_coursePending']  = false;
             $course_user_privilege['is_courseMember']   = false;
             $course_user_privilege['is_courseAdmin']    = false;
             $course_user_privilege['is_courseTutor']    = false;

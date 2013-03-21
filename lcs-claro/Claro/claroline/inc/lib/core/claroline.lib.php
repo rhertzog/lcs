@@ -1,13 +1,15 @@
-<?php // $Id: claroline.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: claroline.lib.php 14182 2012-06-13 11:20:54Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Singleton class to represent the Claroline platform. This is a utility
  * class providing classes and methods to deal with the kernel and the page
- * display
+ * display.
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 14182 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -25,23 +27,6 @@ require_once dirname(__FILE__) . '/../core/notify.lib.php';
 require_once dirname(__FILE__) . '/../display/display.lib.php';
 require_once dirname(__FILE__) . '/../database/database.lib.php';
 require_once dirname(__FILE__) . '/../utils/ajax.lib.php';
-
-/**
- * @deprecated since 1.9 use Claroline::PAGE instead
- */
-define ( 'CL_PAGE',     'CL_PAGE' );
-/**
- * @deprecated since 1.9 use Claroline::FRAMESET instead
- */
-define ( 'CL_FRAMESET', 'CL_FRAMESET' );
-/**
- * @deprecated since 1.9 use Claroline::POPUP instead
- */
-define ( 'CL_POPUP',    'CL_POPUP' );
-/**
- * @deprecated since 1.9 use Claroline::FRAME instead
- */
-define ( 'CL_FRAME',    'CL_FRAME' );
 
 /**
  * Main Claroline class containing references to Claroline kernel objects
@@ -168,9 +153,6 @@ class Claroline
             default:
                 throw new Exception( 'Invalid display type' );
         }
-        
-        JavascriptLoader::getInstance()->load('jquery');
-        JavascriptLoader::getInstance()->load('claroline');
     }
     
     // Singleton instance
@@ -234,6 +216,18 @@ class Claroline
             // self::initMainDatabase();
             self::$database = new Claroline_Database_Connection();//self::$db);
             self::$database->connect();
+            
+            // the following options are for campus where only one language is used
+            // or multiple languages but with compatible charsets (for example 
+            // english (latin1) and portuguese (latin2). @see mysql documentation 
+            // for allowed charsets
+            
+            $charset = get_conf( 'mysqlSetNames' );
+            
+            if ( !empty( $charset ) )
+            {
+                self::$database->setCharset($charset);
+            }
         }
         
         return self::$database;

@@ -1,8 +1,8 @@
-<?php // $Id: cllp.progress.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: cllp.progress.cnr.php 14182 2012-06-13 11:20:54Z zefredz $
 /**
  * CLAROLINE
  *
- * @version 0.1 $Revision: 12923 $
+ * @version 0.1 $Revision: 14182 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -35,7 +35,7 @@ $inLP = (claro_called_from() == 'CLLP')? true : false;
 
 if( !$inLP )
 {
-   claro_redirect('../document.php'); 
+   claro_redirect('../document.php');
 }
 
 
@@ -48,7 +48,7 @@ $jsloader->loadFromModule('CLLP', 'scormtime');
 $jsloader->load('cllp.cnr');
 
 
-$claroline->setDisplayType( CL_FRAME );
+$claroline->setDisplayType( Claroline::FRAME );
 
 $out = '';
 
@@ -77,4 +77,3 @@ $out .= '<div>' . "\n"
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-?>

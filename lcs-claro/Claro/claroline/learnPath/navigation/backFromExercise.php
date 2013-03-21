@@ -1,14 +1,14 @@
-<?php // $Id: backFromExercise.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: backFromExercise.php 14087 2012-03-21 14:03:31Z zefredz $
 /**
  * CLAROLINE 
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.11 $Revision: 14087 $
  *
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  *
- * @author Piraux Sébastien <pir@cerdecam.be>
+ * @author Piraux Sebastien <pir@cerdecam.be>
  * @author Lederer Guillaume <led@cerdecam.be>
  *
  * @package CLLNP

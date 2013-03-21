@@ -1,12 +1,14 @@
-<?php // $Id: course.lib.php 13565 2011-09-09 09:57:12Z zefredz $
+<?php // $Id: course.lib.php 14331 2012-11-23 09:34:23Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Claroline Course objects
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 13565 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * Claroline Course objects.
+ *
+ * @version     Claroline 1.11 $Revision: 14331 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -24,7 +26,8 @@ require_once dirname(__FILE__) . '/../database/database.lib.php';
 class Claro_Course extends KernelObject
 {
     protected $_courseId;
-
+    protected $sourceCourse = null;
+    
     /**
      * Constructor
      * @todo use course id (int) instead of course code to identify a course.
@@ -33,13 +36,27 @@ class Claro_Course extends KernelObject
     public function __construct( $courseId )
     {
         $this->_courseId = $courseId;
+        $this->sessionVarName = '_course';
     }
-
-    public function load()
+    
+    /**
+     * Load course data properties from an array
+     */
+    public function loadFromArray($array)
     {
-        $this->loadFromDatabase();
+        $this->_rawData = $array;
+        
+        // set bool values
+        $this->_rawData['visibility'] = ('visible' == $array['visibility'] );
+        $this->_rawData['registrationAllowed'] = ('open' == $array['registration'] );
+        
+        // set dbNameGlu
+        $this->_rawData['dbNameGlu'] =
+            get_conf('courseTablePrefix')
+            . $array['dbName']
+            . get_conf('dbGlu');
     }
-
+    
     /**
      * Load course properties and group properties from database
      */
@@ -47,11 +64,11 @@ class Claro_Course extends KernelObject
     {
         $this->_rawData = array();
         $this->loadCourseKernelData();
-        $this->loadCourseCategories();
-        $this->loadCourseProperties();
-        $this->loadGroupProperties();
+        //$this->loadCourseCategories();
+        //$this->loadCourseProperties();
+        //$this->loadGroupProperties();
     }
-
+    
     /**
      * Load course main properties from database
      */
@@ -104,7 +121,6 @@ class Claro_Course extends KernelObject
         }
         
         // set bool values
-        $courseDataList['access'] = $courseDataList['access'];
         $courseDataList['visibility'] = ('visible' == $courseDataList['visibility'] );
         $courseDataList['registrationAllowed'] = ('open' == $courseDataList['registration'] );
         
@@ -114,7 +130,7 @@ class Claro_Course extends KernelObject
             . $courseDataList['dbName']
             . get_conf('dbGlu')
             ;
-            
+        
         $this->_rawData = $courseDataList;
     }
 
@@ -124,7 +140,7 @@ class Claro_Course extends KernelObject
     protected function loadCourseCategories()
     {
         $tbl = claro_sql_get_main_tbl();
-
+        
         $categoriesDataList = Claroline::getDatabase()->query("
             SELECT
                 cat.id      AS categoryId,
@@ -141,9 +157,9 @@ class Claro_Course extends KernelObject
             WHERE
                 rcc.courseId = {$this->_rawData['id']};
         ");
-                
+        
         $this->_rawData['categories'] = array();
-
+        
         foreach ( $categoriesDataList as $category )
         {
             $category['visibility'] = ($category['visibility'] == 1);
@@ -215,13 +231,13 @@ class Claro_Course extends KernelObject
             $groupProperties[$currentProperty['name']] = (int) $currentProperty['value'];
         }
         
-        $groupProperties ['registrationAllowed'] =  ($groupProperties['self_registration'] == 1);
+        $groupProperties ['registrationAllowed'] =  (isset($groupProperties['self_registration']) && $groupProperties['self_registration'] == 1);
         unset($groupProperties['self_registration']);
-
+        
         $groupProperties ['unregistrationAllowed'] =  (isset($groupProperties['self_unregistration']) && $groupProperties['self_unregistration'] == 1);
         unset($groupProperties['self_unregistration']);
 
-        $groupProperties ['private'] =  ($groupProperties['private'] == 1);
+        $groupProperties ['private'] =  ( isset( $groupProperties['private'] ) && $groupProperties['private'] == 1 );
 
         $groupProperties['tools'] = array();
         
@@ -245,6 +261,29 @@ class Claro_Course extends KernelObject
         
         $this->_rawData['groupProperties'] = $groupProperties;
     }
+    
+    protected function loadSourceCourseCode()
+    {
+        if ( $this->_rawData['sourceCourseId'] )
+        {
+            $tbl =  claro_sql_get_main_tbl();
+        
+            $sqlCourseId = Claroline::getDatabase()->escape($this->_rawData['sourceCourseId']);
+            
+            $this->_rawData['sourceCourseCode'] = Claroline::getDatabase()->query("
+                SELECT
+                    c.code
+                FROM
+                    `{$tbl['course']}`   AS c
+                WHERE
+                    c.cours_id = {$sqlCourseId}
+            ")->setFetchMode ( Database_ResultSet::FETCH_VALUE )->fetch();
+        }
+        else
+        {
+            $this->_rawData['sourceCourseCode'] = null;
+        }
+    }
 
     /**
      * Get group properties in the course
@@ -252,6 +291,11 @@ class Claro_Course extends KernelObject
      */
     public function getGroupProperties()
     {
+        if ( !isset($this->_rawData['groupProperties']) )
+        {
+            $this->loadGroupProperties();
+        }
+        
         return $this->_rawData['groupProperties'];
     }
 
@@ -261,9 +305,122 @@ class Claro_Course extends KernelObject
      */
     public function getCourseProperties()
     {
+        if ( !isset($this->_rawData['courseProperties']) )
+        {
+            $this->loadCourseProperties();
+        }
+        
         return $this->_rawData['courseProperties'];
     }
+    
+    /**
+     * Get course additional properties
+     * @return array
+     */
+    public function getCourseCategories()
+    {
+        if ( !isset($this->_rawData['categories']) )
+        {
+            $this->loadCourseCategories();
+        }
+        
+        return $this->_rawData['categories'];
+    }
+    
+    /**
+     * Get the course code of the parent course
+     * @return string or null
+     * @since API version 1.11.5
+     */
+    public function getSourceCourseCode()
+    {
+        if ( !isset($this->_rawData['sourceCourseCode']) )
+        {
+            $this->loadSourceCourseCode();
+        }
+        
+        return $this->_rawData['sourceCourseCode'];
+    }
+    
+    public function hasSourceCourse()
+    {
+        $sourceCourseCode  = $this->getSourceCourseCode();
+        
+        if ( !empty( $sourceCourseCode ) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    /**
+     * Get the course code of the parent course
+     * @return string or null
+     * @since API version 1.11.5
+     */
+    public function getSourceCourse()
+    {
+        if ( $this->hasSourceCourse() )
+        {
+            $sourceCourse = new Claro_Course( $this->_rawData['sourceCourseCode'] );
+            $sourceCourse->load();
 
+            return $sourceCourse;
+        }
+        else 
+        {
+            throw new Exception("The course {$this->courseId} has no source course");
+        }
+    }
+    
+    /**
+     * Return true if the course is activated, false otherwise.
+     *
+     * A course is deactivated if:
+     * - its status is 'disable' OR 'pending' OR 'trash'
+     * - its status is 'date' AND
+     *   - the current date is < to its publication date OR
+     *     the current date is > to its expiration date
+     *
+     * @return boolean
+     */
+    public function isActivated()
+    {
+        $currentDate = claro_mktime();
+        
+        if ($this->status == 'disable' ||
+            $this->status == 'pending' ||
+            $this->status == 'trash')
+        {
+            return false;
+        }
+        elseif ($this->status == 'date')
+        {
+            if ($currentDate < $this->publicationDate ||
+                $currentDate > $this->expirationDate)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+    
+    /**
+     * Return true if the course is visible, false otherwise.
+     *
+     * @return boolean
+     */
+    public function isVisible()
+    {
+        return (bool) $this->visibility;
+    }
+    
     /**
      * Overwrite KernelObjet::__get to get properties from both main properties
      * and additionnal properties.
@@ -272,17 +429,32 @@ class Claro_Course extends KernelObject
      */
     public function __get( $nm )
     {
-        if ( isset ( $this->_rawData[$nm] ) )
+        if ( $nm == 'categories' )
         {
-            return $this->_rawData[$nm];
+            return $this->getCourseCategories();
         }
-        elseif ( isset ( $this->_rawData['courseProperties'][$nm] ) )
+        elseif ( $nm == 'courseProperties' )
         {
-            return $this->_rawData['courseProperties'][$nm];
+            return $this->getCourseProperties();
+        }
+        elseif ( $nm == 'groupProperties' )
+        {
+            return $this->getGroupProperties();
+        }
+        elseif ( $nm == 'sourceCourseCode' )
+        {
+            return $this->getSourceCourseCode();
         }
         else
         {
-            return null;
+            if ( isset ( $this->_rawData[$nm] ) )
+            {
+                return $this->_rawData[$nm];
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }
@@ -300,30 +472,6 @@ class Claro_CurrentCourse extends Claro_Course
             ;
             
         parent::__construct( $courseId );
-    }
-
-    /**
-     * Load the course from the session
-     */
-    public function loadFromSession()
-    {
-        if ( !empty($_SESSION['_course']) )
-        {
-            $this->_rawData = $_SESSION['_course'];
-            pushClaroMessage( "Course {$this->_courseId} loaded from session", 'debug' );
-        }
-        else
-        {
-            throw new Exception("Cannot load course data from session for {$this->_courseId}");
-        }
-    }
-
-    /**
-     * Save the course to the session
-     */
-    public function saveToSession()
-    {
-        $_SESSION['_course'] = $this->_rawData;
     }
     
     protected static $instance = false;
@@ -346,7 +494,7 @@ class Claro_CurrentCourse extends Claro_Course
             }
             else
             {
-                self::$instance->loadFromDatabase();
+                self::$instance->load( $forceReload );
             }
         }
         

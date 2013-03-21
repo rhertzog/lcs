@@ -1,4 +1,4 @@
-<?php // $Id: claro_main.lib.php 12979 2011-03-15 14:31:50Z zefredz $
+<?php // $Id: claro_main.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
 
@@ -8,18 +8,18 @@ if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
  * This lib contain many parts of frequently used function.
  * This is not a thematic lib
  *
- * @version 1.10 $Revision: 12979 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
- *          version 2 or later
- * @author Claro Team <cvs@claroline.net> for additionnal authors see the
- *         'credits.txt' file
- * @package kernel
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
+ *              version 2 or later
+ * @author      Claro Team <cvs@claroline.net>
+ * @package     kernel
  *
  * @todo why do we need that much identifiers for a module ?!?
  * @todo use Exceptions instead of claro_failure
  */
 
+require_once dirname(__FILE__) . '/compat_php54.lib.php';
 require_once dirname(__FILE__) . '/language.lib.php';
 require_once dirname(__FILE__) . '/core/core.lib.php';
 require_once dirname(__FILE__) . '/core/context.lib.php';
@@ -1253,7 +1253,7 @@ function claro_html_tool_view_option($viewModeRequested = false)
      */
 
     $url = str_replace( '&amp;', '&', $url );
-    $url = htmlspecialchars( strip_tags( $url ) );
+    $url = claro_htmlspecialchars( strip_tags( $url ) );
 
     /*
     * remove previous view mode request from the url
@@ -1287,13 +1287,13 @@ function claro_html_tool_view_option($viewModeRequested = false)
             .                get_lang('Student')
             .                '</a>'
             ;
-            $courseAdminButton = '<b>' . get_lang('Course manager') . '</b>';
+            $courseAdminButton = '<b class="userName">' . get_lang('Course manager') . '</b>';
 
             break;
 
         case 'STUDENT' :
 
-            $studentButton     = '<b>'.get_lang('Student').'</b>';
+            $studentButton     = '<b class="userName">'.get_lang('Student').'</b>';
             $courseAdminButton = '<a href="' . $url . $sep . 'viewMode=COURSE_ADMIN">'
             . get_lang('Course manager')
             . '</a>';
@@ -1590,7 +1590,7 @@ function get_conf($param, $default = null)
             if (!in_array($param,$paramList))
             {
                 $paramList[]=$param;
-                pushClaroMessage( __FUNCTION__ .  ' : ' . htmlspecialchars($param) . ' use but not set. use default :' . var_export($default,1),'warning');
+                pushClaroMessage( __FUNCTION__ .  ' : ' . claro_htmlspecialchars($param) . ' use but not set. use default :' . var_export($default,1),'warning');
             }
         }
     }
@@ -1818,7 +1818,7 @@ function claro_form_relay_context($context=null)
     
     foreach ( $context as $key => $value )
     {
-        $html .= '<input type="hidden" name="'.htmlspecialchars(strip_tags($key)).'" value="'.htmlspecialchars(strip_tags($value)).'" />';
+        $html .= '<input type="hidden" name="'.claro_htmlspecialchars(strip_tags($key)).'" value="'.claro_htmlspecialchars(strip_tags($value)).'" />';
     }
 
     return $html;
@@ -1908,7 +1908,7 @@ function php_self()
     // protect against XSS
     $url = preg_replace( '~(\r\n|\r|\n|%0a|%0d|%0D|%0A)~', '', $url );
     // entify remaining special chars
-    $url = htmlspecialchars( strip_tags( $url ) );
+    $url = claro_htmlspecialchars( strip_tags( $url ) );
 
     return $url;
 }
@@ -1917,14 +1917,14 @@ function php_self()
  * Get the URI of the current page : PHP_SELF + QUERY_STRING, protected against
  * HTTP Response Splitting and XSS
  * @param   boolean $html if set to true (default) the returned URI is passed
- *              through htmlspecialchars before being returned
+ *              through claro_htmlspecialchars before being returned
  * @return  string
  */
 function page_uri( $html = true )
 {
     $uri = Url::Contextualize( php_self() . "?" . strip_tags($_SERVER['QUERY_STRING']) );
     
-    return $html ? htmlspecialchars( $uri ) : $uri;
+    return $html ? claro_htmlspecialchars( $uri ) : $uri;
 }
 
 /**
@@ -2050,4 +2050,38 @@ function load_kernel_config( $name )
     {
         include claro_get_conf_repository() . $name . '.conf.php';
     }
+}
+
+/**
+ * Check if a course is required. Set property using $courseRequired = true 
+ *  (or false) before calling claro_init_global.inc.php By default, this property 
+ *  is considered to be set to false for backward compatibility.
+ * @since Claroline 1.11.0-rev14026
+ * @return boolean 
+ */
+function claro_is_course_required()
+{
+    if ( isset($GLOBALS['courseRequired']) && $GLOBALS['courseRequired'] == true )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Check if a group is required. Set property using $groupRequired = true 
+ *  (or false) before calling claro_init_global.inc.php By default, this property 
+ *  is considered to be set to false for backward compatibility
+ * @since Claroline 1.11.0-rev14026
+ * @return boolean 
+ */
+function claro_is_group_required()
+{
+    if ( isset($GLOBALS['groupRequired']) && $GLOBALS['groupRequired'] == true )
+    {
+        return true;
+    }
+
+    return false;
 }

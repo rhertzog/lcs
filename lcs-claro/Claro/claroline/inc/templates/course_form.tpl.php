@@ -1,8 +1,8 @@
-<!-- $Id: course_form.tpl.php 13586 2011-09-13 14:32:31Z abourguignon $ -->
+<!-- $Id: course_form.tpl.php 14349 2012-12-14 09:54:02Z zefredz $ -->
 
-<form method="post" class="msform" id="courseSettings" action="<?php echo $this->formAction; ?>">
+<form class="msform" id="courseSettings" method="post" action="<?php echo $this->formAction; ?>">
     <?php echo $this->relayContext ?>
-    <input type="hidden" name="cmd" value="<?php echo (empty($this->course->courseId)?'rqProgress':'exEdit'); ?>" />
+    <input type="hidden" name="cmd" value="exEdit" />
     <input type="hidden" name="course_id" value="<?php echo (empty($this->course->id)?'':$this->course->id); ?>" />
     <input type="hidden" name="course_isSourceCourse" value="<?php echo (empty($this->course->isSourceCourse)?'':$this->course->isSourceCourse); ?>" />
     <input type="hidden" name="course_sourceCourseId" value="<?php echo (empty($this->course->sourceCourseId)?'':$this->course->sourceCourseId); ?>" />
@@ -33,7 +33,7 @@
                     <?php endif; ?>
                 </dt>
                 <dd>
-                    <input type="text" name="course_title" id="course_title" value="<?php echo htmlspecialchars($this->course->title); ?>" size="60" />
+                    <input type="text" name="course_title" id="course_title" value="<?php echo claro_htmlspecialchars($this->course->title); ?>" size="40" />
                     <?php if (empty($this->course->courseId)) : ?>
                     <br />
                     <span class="notice"><?php echo get_lang('e.g. <em>History of Literature</em>'); ?></span>
@@ -47,7 +47,7 @@
                     </label><span class="required">*</span>
                 </dt>
                 <dd>
-                    <input type="text" id="course_officialCode" name="course_officialCode" value="<?php echo htmlspecialchars($this->course->officialCode); ?>" size="20" maxlength="12" />
+                    <input type="text" id="course_officialCode" name="course_officialCode" value="<?php echo claro_htmlspecialchars($this->course->officialCode); ?>" maxlength="12" />
                     <?php if (empty($this->course->courseId)) : ?>
                     <br />
                     <span class="notice"><?php echo get_lang('max. 12 characters, e.g. <em>ROM2121</em>'); ?></span>
@@ -55,7 +55,6 @@
                 </dd>
                 
                 <!-- Course categories -->
-                <?php if (empty($this->course->sourceCourseId)) : ?>
                 <dt>
                     <label>
                         <?php echo get_lang('Categories'); ?>
@@ -69,7 +68,7 @@
                                 <?php echo get_lang('Linked categories'); ?>
                             </label>
                             <br />
-                            <select multiple="multiple" name="linked_categories[]" id="mslist1" size="10">
+                            <select multiple="multiple" name="linked_categories[]" id="mslist1">
                                 <?php echo $this->linkedCategoriesListHtml; ?>
                             </select>
                         </td>
@@ -83,20 +82,22 @@
                                 <?php echo get_lang('Unlinked categories'); ?>
                             </label>
                             <br />
-                            <select multiple="multiple" name="unlinked_categories[]" id="mslist2" size="10">
+                            <select multiple="multiple" name="unlinked_categories[]" id="mslist2">
                                 <?php echo $this->unlinkedCategoriesListHtml; ?>
                             </select>
                         </td>
                       </tr>
                     </table>
-                    <?php if (empty($this->course->courseId)) : ?>
                     <span class="notice">
-                        <?php echo get_lang('Feel free not to associate courses to any categories.'); ?><br />
+                        <?php if ( $this->nonRootCategoryRequired ): ?>         
+                            <?php echo get_lang('You need to choose at least one category for this course'); ?><br />
+                        <?php else: ?>
+                            <?php echo get_lang('Feel free not to associate courses to any categories.'); ?><br />
+                        <?php endif; ?>
+                            
                         <?php echo get_lang('The categories appearing in grey are invisible categories.'); ?>
                     </span>
-                    <?php endif; ?>
                 </dd>
-                <?php endif; ?>
                 
                 <!-- Course language select box -->
                 <dt>
@@ -115,7 +116,7 @@
                     </label>
                 </dt>
                 <dd>
-                    <input type="text"  id="course_titular" name="course_titular" value="<?php echo htmlspecialchars($this->course->titular); ?>" size="60" />
+                    <input type="text" id="course_titular" name="course_titular" value="<?php echo claro_htmlspecialchars($this->course->titular); ?>" />
                 </dd>
                 
                 <!-- Course titular's email -->
@@ -128,18 +129,18 @@
                     </label>
                 </dt>
                 <dd>
-                    <input type="text" id="course_email" name="course_email" value="<?php echo htmlspecialchars($this->course->email); ?>" size="60" maxlength="255" />
+                    <input type="text" id="course_email" name="course_email" value="<?php echo claro_htmlspecialchars($this->course->email); ?>" maxlength="255" />
                 </dd>
                 
                 <!-- Course access -->
                 <dt>
-                    <?php echo get_lang('Course access'); ?><span class="required">*</span>
+                    <?php echo get_lang('Course access'); ?> <span class="required">*</span>
                 </dt>
                 <dd>
                     <img src="<?php echo get_icon_url('access_open'); ?>" alt="<?php echo get_lang('open'); ?>" />
                     <input type="radio"<?php echo $this->publicDisabled; ?> id="access_public" name="course_access" value="public" <?php echo ($this->course->access == 'public' ? 'checked="checked"':''); ?> />
                     &nbsp;
-                    <label for="access_public"<?php echo $this->publicCssClass; ?>">
+                    <label for="access_public"<?php echo $this->publicCssClass; ?>>
                         <?php echo get_lang('Access allowed to anybody (even without login)'); ?>
                     </label>
                     <?php echo $this->publicMessage; ?>
@@ -165,7 +166,7 @@
                 
                 <!-- Course registration + registration key -->
                 <dt>
-                    <?php echo get_lang('Registration settings'); ?><span class="required">*</span>
+                    <?php echo get_lang('Registration settings'); ?> <span class="required">*</span>
                 </dt>
                 <dd>
                     <img src="<?php echo get_icon_url('enroll_allowed'); ?>"  alt="" />
@@ -191,7 +192,7 @@
                         <?php echo get_lang('Allowed with enrolment key'); ?>
                     </label>
                     &nbsp;
-                    <input type="text" id="registrationKey" name="course_registrationKey" value="<?php echo htmlspecialchars($this->course->registrationKey); ?>" />
+                    <input type="text" id="course_registrationKey" name="course_registrationKey" value="<?php echo claro_htmlspecialchars($this->course->registrationKey); ?>" />
                     </blockquote>
                     
                     <img src="<?php echo get_icon_url('enroll_forbidden'); ?>"  alt="" />
@@ -233,7 +234,7 @@
                     </label>
                 </dt>
                 <dd>
-                    <input type="text" name="course_departmentName" id="course_departmentName" value="<?php echo htmlspecialchars($this->course->departmentName); ?>" size="20" maxlength="30" />
+                    <input type="text" name="course_departmentName" id="course_departmentName" value="<?php echo claro_htmlspecialchars($this->course->departmentName); ?>" maxlength="30" />
                 </dd>
                 
                 <!-- Course department url -->
@@ -246,7 +247,7 @@
                     </label>
                 </dt>
                 <dd>
-                    <input type="text" name="course_extLinkUrl" id="course_extLinkUrl" value="<?php echo htmlspecialchars($this->course->extLinkUrl); ?>" size="60" maxlength="180" />
+                    <input type="text" name="course_extLinkUrl" id="course_extLinkUrl" value="<?php echo claro_htmlspecialchars($this->course->extLinkUrl); ?>" maxlength="180" />
                 </dd>
                 
             </dl>
@@ -266,6 +267,9 @@
                     <?php echo get_lang('Course visibility'); ?>
                 </dt>
                 <dd>
+                <?php if ( claro_is_platform_admin() || get_conf( 'clcrs_settings_display_visibility', true ) ): ?>
+                
+                
                     <img src="<?php echo get_icon_url('visible'); ?>" alt="" />
                     <input type="radio" id="visibility_show" name="course_visibility" value="1" <?php echo ($this->course->visibility ? 'checked="checked"':''); ?> />&nbsp;
                     <label for="visibility_show">
@@ -277,77 +281,191 @@
                     <label for="visibility_hidden">
                         <?php echo get_lang('Visible only to people on the user list'); ?>
                     </label>
+                    
+                <?php else: ?>
+                    
+                    <?php if ( $this->course->visibility ): ?>
+                    <img src="<?php echo get_icon_url('visible'); ?>" alt="" />
+                    <input type="hidden" id="visibility_show" name="course_visibility" value="1" />&nbsp;
+                    <label for="visibility_show" class="invisible">
+                        <?php echo get_lang('The course is shown in the courses listing'); ?>
+                    </label>
+                    <?php else: ?>
+                    <img src="<?php echo get_icon_url('invisible'); ?>" alt="" />
+                    <input type="hidden" id="visibility_show" name="course_visibility" value="0" />&nbsp;
+                    <label for="visibility_show" class="invisible">
+                        <?php echo get_lang('Visible only to people on the user list'); ?>
+                    </label>
+                    
+                    <?php endif; ?>
+                    
+                    <br />
+                    <span class="notice">
+                        <?php echo get_lang('Only a platform administrator can change this option'); ?>
+                    </span>
+                    
+                <?php endif; ?>
+                    
                 </dd>
                 
                 <dt>
-                    <?php echo get_lang('Maximum number of users'); ?>
+                    <?php echo get_lang('Maximum number of students'); ?>
                 </dt>
                 <dd>
+                    
+                    <?php if ( claro_is_platform_admin() || get_conf( 'clcrs_settings_display_nbrofstudents', true ) ): ?>
+                    
                     <input type="text" name="course_userLimit" id="course_userLimit" value="<?php echo $this->course->userLimit; ?>" />
                     <br />
                     <span class="notice">
-                        <?php echo get_lang('Leave this field empty or use 0 if you don\'t want to limit the number of users in this course'); ?>
+                        <?php echo get_lang('Leave this field empty or use 0 if you don\'t want to limit the number of users in this course'); ?><br />
+                        <?php echo get_lang('This limit doesn\'t include course\'s tutors and managers'); ?>
                     </span>
+                    
+                    <?php else: ?>
+                    
+                    <input type="hidden" name="course_userLimit" id="course_userLimit" value="<?php echo $this->course->userLimit; ?>" />
+                    <span class="invisible"><?php echo $this->course->userLimit; ?></span>
+                    <br />
+                    <span class="notice">
+                        <?php echo get_lang('Only a platform administrator can change this option'); ?><br />
+                        <?php echo get_lang('Leave this field empty or use 0 if you don\'t want to limit the number of users in this course'); ?><br />
+                        <?php echo get_lang('This limit doesn\'t include course\'s tutors and managers'); ?>
+                    </span>
+                    
+                    <?php endif; ?>
+                    
                 </dd>
                 
             </dl>
             
-            <?php if (claro_is_platform_admin()) : ?>
+            <?php if (claro_is_platform_admin() || get_conf( 'clcrs_settings_display_status', false ) ) : ?>
+            
+            <?php
+            if ( get_conf( 'clcrs_settings_display_status', false ) ):
+                $classHtml = '';
+            else:
+                $classHtml = ' class="adminControl"';
+            endif;
+            ?>
             <!-- Course status -->
             <dl>
                 
                 <dt>
                     <?php echo get_lang('Status'); ?>
                 </dt>
-                <dd class="adminControl">
-                    <input type="radio" id="course_status_enable" name="course_status_selection" value="enable"<?php echo ($this->course->status == 'enable' ? ' checked="checked"':''); ?> />&nbsp;
-                    <label for="course_status_enable">
-                        <?php echo get_lang('Available'); ?>
-                    </label>
-                    <br /><br />
+                <dd<?php echo $classHtml; ?>>
                     
-                    <input type="radio" id="course_status_date" name="course_status_selection" value="date" <?php echo ($this->course->status == 'date' ? ' checked="checked"':''); ?> />&nbsp;
-                    <label for="course_status_date">
-                        <?php echo get_lang('Available'); ?>&nbsp;'<?php echo get_lang('from'); ?> (<?php echo get_lang('included'); ?>)
-                    </label>
-                    <?php echo claro_html_date_form('course_publicationDay', 'course_publicationMonth', 'course_publicationYear', $this->course->publicationDate, 'numeric'); ?>&nbsp;
-                    <span class="notice"><?php echo get_lang('(d/m/y)'); ?></span>
+                    <?php if ( ( $this->course->status == 'disable' || $this->course->status == 'trash' ) && !claro_is_platform_admin () ): ?>
                     
+                        <?php if ( $this->course->status == 'trash' ): ?>
+
+                            <span class="invisible">
+                                <?php echo get_lang('Move to trash'); ?>
+                            </span>
+
+                        <?php elseif ($this->course->status == 'disable'): ?>
+
+                            <span class="invisible">
+                                <?php echo get_lang('Reactivable by administrator'); ?>
+                            </span>
+
+                        <?php endif; ?>
                     
-                    <blockquote>
-                        <input type="checkbox" id="useExpirationDate" name="useExpirationDate" value="true"<?php echo ($this->course->useExpirationDate ? ' checked="checked"':''); ?> />
-                        <label for="useExpirationDate">
-                            <?php echo get_lang('to'); ?> (<?php echo get_lang('included'); ?>)
+                        <br />
+                        <span class="notice">
+                            <?php echo get_lang('Only a platform administrator can change this option'); ?>
+                        </span><br/>
+
+                    
+                    <?php else: ?>
+                    
+                        <input type="radio" id="course_status_enable" name="course_status_selection" value="enable"<?php echo ($this->course->status == 'enable' ? ' checked="checked"':''); ?> />&nbsp;
+                        <label for="course_status_enable">
+                            <?php echo get_lang('Available'); ?>
                         </label>
-                        <?php echo claro_html_date_form('course_expirationDay', 'course_expirationMonth', 'course_expirationYear', $this->course->expirationDate, 'numeric'); ?>&nbsp;
+                        <br /><br />
+
+                        <input type="radio" id="course_status_date" name="course_status_selection" value="date" <?php echo ($this->course->status == 'date' ? ' checked="checked"':''); ?> />&nbsp;
+                        <label for="course_status_date">
+                            <?php echo get_lang('Available'); ?>&nbsp;<?php echo get_lang('from'); ?> (<?php echo get_lang('included'); ?>)
+                        </label>
+                        <?php echo claro_html_date_form('course_publicationDay', 'course_publicationMonth', 'course_publicationYear', $this->course->publicationDate, 'numeric'); ?>&nbsp;
                         <span class="notice"><?php echo get_lang('(d/m/y)'); ?></span>
-                    </blockquote>
-                    
-                    
-                    <input type="radio" id="course_status_disabled" name="course_status_selection" value="disable" <?php echo ($this->course->status == 'pending' || $this->course->status == 'disable' || $this->course->status == 'trash' ? ' checked="checked"':''); ?> />&nbsp;
-                    <label for="course_status_disabled">
-                        <?php echo get_lang('Not available'); ?>
-                    </label>
-                    
-                    
-                    <blockquote>
-                        <input type="radio" id="status_pending" name="course_status" value="pending"<?php echo ($this->course->status == 'pending' || $this->course->status == 'enable' || $this->course->status == 'date' ? ' checked="checked"':'' ); ?> />&nbsp;
-                        <label for="status_pending">
-                            <?php echo get_lang('Reactivable by course manager'); ?>
+
+
+                        <blockquote>
+                            <input type="checkbox" id="useExpirationDate" name="useExpirationDate" value="true"<?php echo ($this->course->useExpirationDate ? ' checked="checked"':''); ?> />
+                            <label for="useExpirationDate">
+                                <?php echo get_lang('to'); ?> (<?php echo get_lang('included'); ?>)
+                            </label>
+                            <?php echo claro_html_date_form('course_expirationDay', 'course_expirationMonth', 'course_expirationYear', $this->course->expirationDate, 'numeric'); ?>&nbsp;
+                            <span class="notice"><?php echo get_lang('(d/m/y)'); ?></span>
+                        </blockquote>
+
+
+                        <input type="radio" id="course_status_disabled" name="course_status_selection" value="disable" <?php echo ($this->course->status == 'pending' || $this->course->status == 'disable' || $this->course->status == 'trash' ? ' checked="checked"':''); ?> />&nbsp;
+                        <label for="course_status_disabled">
+                            <?php echo get_lang('Not available'); ?>
                         </label>
-                        <br />
-                        
-                        <input type="radio" id="status_disable" name="course_status" value="disable"<?php echo ($this->course->status == 'disable' ? ' checked="checked"':''); ?> />&nbsp;
-                        <label for="status_disable">
-                            <?php echo get_lang('Reactivable by administrator'); ?>
-                        </label>
-                        <br />
-                        
-                        <input type="radio" id="status_trash" name="course_status" value="trash"<?php echo ($this->course->status == 'trash' ? 'checked="checked"':''); ?> />&nbsp;
-                        <label for="status_trash">
-                            <?php echo get_lang('Move to trash'); ?>
-                        </label>
-                    </blockquote>
+
+
+                        <blockquote>
+
+                            <?php if ( claro_is_platform_admin() || ( $this->course->status != 'disable' && $this->course->status != 'trash' ) ): ?>
+
+
+                            <input type="radio" id="status_pending" name="course_status" value="pending"<?php echo ($this->course->status == 'pending' || $this->course->status == 'enable' || $this->course->status == 'date' ? ' checked="checked"':'' ); ?> />&nbsp;
+                            <label for="status_pending">
+                                <?php echo get_lang('Reactivable by course manager'); ?>
+                            </label>
+
+
+                            <?php if ( claro_is_platform_admin() || $this->course->status == 'disable' || $this->course->status == 'trash' ): ?>
+
+                            <br />
+
+                                <?php if ( claro_is_platform_admin() ): ?>
+
+                                    <input type="radio" id="status_disable" name="course_status" value="disable"<?php echo ($this->course->status == 'disable' ? ' checked="checked"':''); ?> />&nbsp;
+                                    <label for="status_disable">
+                                        <?php echo get_lang('Reactivable by administrator'); ?>
+                                    </label>
+                                    <br />
+
+                                    <input type="radio" id="status_trash" name="course_status" value="trash"<?php echo ($this->course->status == 'trash' ? 'checked="checked"':''); ?> />&nbsp;
+                                    <label for="status_trash">
+                                        <?php echo get_lang('Move to trash'); ?>
+                                    </label>
+
+                                    <?php else: ?> 
+
+                                    <input type="radio" id="status_trash" name="course_status" value="<?php echo $this->course->status; ?>" >/>&nbsp;
+                                    <?php if ( $this->course->status == 'trash' ): ?>
+
+                                        <span class="invisible">
+                                            <?php echo get_lang('Move to trash'); ?>
+                                        </span>
+
+                                    <?php elseif ($this->course->status == 'disable'): ?>
+
+                                        <span class="invisible">
+                                            <?php echo get_lang('Reactivable by administrator'); ?>
+                                        </span>
+
+                                    <?php endif; ?>
+
+
+                                <?php endif; ?>
+
+                            <?php endif; ?>
+
+                        </blockquote>
+
+                        <?php endif; ?>
+                    
+                    <?php endif; ?>
+                
                 </dd>
                 
             </dl>

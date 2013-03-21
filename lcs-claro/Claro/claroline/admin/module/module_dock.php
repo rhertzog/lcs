@@ -1,15 +1,13 @@
-<?php
+<?php // $Id: module_dock.php 14370 2013-01-30 14:52:26Z zefredz $
+
 /**
  * CLAROLINE
- * @version 1.8
  *
+ * @version     $Revision: 14370 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package ADMIN
- *
- * @author claro team <cvs@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     ADMIN
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 require '../../inc/claro_init_global.inc.php';
@@ -28,7 +26,6 @@ require_once get_path('incRepositorySys') . '/lib/module/manage.lib.php';
 
 $tbl_name        = claro_sql_get_main_tbl();
 $tbl_module      = $tbl_name['module'];
-$tbl_module_info = $tbl_name['module_info'];
 $tbl_dock        = $tbl_name['dock'];
 
 $dialogBox = new DialogBox();
@@ -105,7 +102,7 @@ if ( !empty($dock))
 
     $offset       = isset($_REQUEST['offset']) ? $_REQUEST['offset'] : 0 ;
     $myPager      = new claro_sql_pager($sql, $offset, $modulePerPage);
-    $pagerSortDir = isset($_REQUEST['dir' ]) ? $_REQUEST['dir' ] : SORT_ASC;
+    //$pagerSortDir = isset($_REQUEST['dir' ]) ? $_REQUEST['dir' ] : SORT_ASC;
     $moduleList   = $myPager->get_result_list();
 
 }
@@ -135,12 +132,14 @@ if ( !empty($dock) )
 
     $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">'
     .    '<thead>'
-    .    '<tr class="headerX" align="center" valign="top">'
+    .    '<tr align="center" valign="top">'
     .    '<th>' . get_lang('Icon')               . '</th>'
     .    '<th>' . get_lang('Module name')        . '</th>'
     .    '<th colspan="2">' . get_lang('Order')           .'</th>'
     .    '<th>' . get_lang('Remove from the dock')          . '</th>'
-    .    '</tr><tbody>'
+    .    '</tr>'
+    .    '</thead>'
+    .    '<tbody>'
     ;
 
     $iteration = 1;
@@ -207,7 +206,7 @@ if ( !empty($dock) )
             .    '<img src="' . get_icon_url('move_down') . '" alt="' . get_lang('Move down') . '" />'
             .    '</a>'
             ;
-        }        
+        }
         else
         {
             $out .= '&nbsp;';
@@ -240,5 +239,3 @@ if ( !empty($dock) )
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

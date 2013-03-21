@@ -1,9 +1,9 @@
-<?php // $Id: qti2_export.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: qti2_export.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -214,5 +214,3 @@ function sendZip($archiveName, $archiveContent, $removedPath)
         return false;
     }
 }
-
-?>

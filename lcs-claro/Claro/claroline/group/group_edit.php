@@ -1,11 +1,11 @@
-<?php // $Id: group_edit.php 12979 2011-03-15 14:31:50Z zefredz $
+<?php // $Id: group_edit.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This script edit userlist of a group and group propreties
  *
- * @version     $Revision: 12979 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLGRP
@@ -51,8 +51,12 @@ else                            $name = '';
 
 if ( isset($_REQUEST['description']) ) $description = trim($_REQUEST['description']);
 else                                   $description = '';
-if ( isset($_REQUEST['maxMember']) && ctype_digit($_REQUEST['maxMember']) && (trim($_REQUEST['maxMember']) != '') ) $maxMember = (int) $_REQUEST['maxMember'];
-else                                                                        $maxMember = NULL;
+
+if ( isset($_REQUEST['maxMember'])
+    && ctype_digit($_REQUEST['maxMember'])
+    && (trim($_REQUEST['maxMember']) != ''
+    && (int)$_REQUEST['maxMember'] > 0 ) ) $maxMember = (int)$_REQUEST['maxMember'];
+else $maxMember = NULL;
 
 if ( isset($_REQUEST['tutor']) ) $tutor = (int) $_REQUEST['tutor'];
 else                             $tutor = 0;
@@ -113,7 +117,16 @@ if ( isset($_REQUEST['modify']) && $is_allowedToManage )
             $registerUserGroup = claro_sql_query( $sql );
         }
 
-        $dialogBox->success( get_lang("Group settings modified") );
+        $dialogBox->success( get_lang("Group settings modified")  
+            . '<br />'
+            . '<a href="'.claro_htmlspecialchars(Url::Contextualize('./group_space.php' ) ).'">'
+            . get_lang("Group area")
+            . '</a>' 
+            . '&nbsp;-&nbsp;'
+            . '<a href="'.claro_htmlspecialchars(Url::Contextualize('./group.php' ) ).'">'
+            . get_lang("Groups")
+            . '</a>'
+        );
 
     }    // else
 
@@ -137,7 +150,7 @@ $tutor_list[get_lang("(none)")] = 0;
 
 foreach ($tutorList as $myTutor)
 {
-    $tutor_list[htmlspecialchars( $myTutor['name'] . ' ' . $myTutor['firstname'] )] = $myTutor['userId'];
+    $tutor_list[claro_htmlspecialchars( $myTutor['name'] . ' ' . $myTutor['firstname'] )] = $myTutor['userId'];
 }
 
 // Student registered to the course but inserted in no group
@@ -183,7 +196,7 @@ $result->setFetchMode(Database_ResultSet::FETCH_ASSOC);
 $userNotInGroupListHtml = '';
 foreach ( $result as $member )
 {
-    $label = htmlspecialchars( ucwords( strtolower( $member['lastName']))
+    $label = claro_htmlspecialchars( ucwords( strtolower( $member['lastName']))
            . ' ' . ucwords(strtolower($member['firstName'] ))
            . ($member['role']!=''?' (' . $member['role'] . ')':'') )
            . ( $nbMaxGroupPerUser > 1 ?' (' . $member['nbg'] . ')' : '' );
@@ -206,13 +219,13 @@ foreach ( $usersInGroupList as $key => $val )
 $thisGroupMaxMember = ( is_null($myStudentGroup['maxMember']) ? '-' : $myStudentGroup['maxMember']);
 
 $template = new CoreTemplate('group_form.tpl.php');
-$template->assign('formAction', htmlspecialchars($_SERVER['PHP_SELF'] . '?edit=yes&amp;gidReq=' . claro_get_current_group_id()));
+$template->assign('formAction', claro_htmlspecialchars( $_SERVER['PHP_SELF'] . '?edit=yes&gidReq=' . claro_get_current_group_id() ) );
 $template->assign('relayContext', claro_form_relay_context());
-$template->assign('groupName', htmlspecialchars($myStudentGroup['name']));
+$template->assign('groupName', claro_htmlspecialchars($myStudentGroup['name']));
 $template->assign('groupId', claro_get_current_group_id());
-$template->assign('groupDescription', htmlspecialchars($myStudentGroup['description']));
+$template->assign('groupDescription', claro_htmlspecialchars($myStudentGroup['description']));
 $template->assign('groupTutorId', $myStudentGroup['tutorId']);
-$template->assign('groupUserLimit', htmlspecialchars($thisGroupMaxMember));
+$template->assign('groupUserLimit', claro_htmlspecialchars($thisGroupMaxMember));
 $template->assign('tutorList', $tutor_list);
 $template->assign('usersInGroupListHtml', $usersInGroupListHtml);
 $template->assign('userNotInGroupListHtml', $userNotInGroupListHtml);
@@ -228,56 +241,3 @@ $out .= $template->render();
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-
-/**
- * Return a list of user and  groups of these users
- *
- * @param array     context
- * @return array    list of users
- */
-function get_group_member_list( $context = array() )
-{
-    $currentCourseId = array_key_exists( CLARO_CONTEXT_COURSE, $context )
-        ? $context['CLARO_CONTEXT_COURSE']
-        : claro_get_current_course_id()
-        ;
-    
-    $currentGroupId  = array_key_exists( CLARO_CONTEXT_GROUP, $context )
-        ? $context['CLARO_CONTEXT_GROUP']
-        : claro_get_current_group_id()
-        ;
-
-    $tblc = claro_sql_get_course_tbl();
-    $tblm = claro_sql_get_main_tbl();
-    
-    $sql = "SELECT `ug`.`id`       AS id,
-               `u`.`user_id`       AS user_id,
-               `u`.`nom`           AS name,
-               `u`.`prenom`        AS firstname,
-               `u`.`email`         AS email,
-               `u`.`officialEmail` AS officialEmail,
-               `cu`.`role`         AS `role`
-        FROM (`" . $tblm['user'] . "`           AS u
-           , `" . $tblm['rel_course_user'] . "` AS cu
-           , `" . $tblc['group_rel_team_user'] . "` AS ug)
-        WHERE  `cu`.`code_cours` = '" . $currentCourseId . "'
-          AND   `cu`.`user_id`   = `u`.`user_id`
-          AND   `ug`.`team`      = " . (int) $currentGroupId . "
-          AND   `ug`.`user`      = `u`.`user_id`
-        ORDER BY UPPER(`u`.`nom`), UPPER(`u`.`prenom`), `u`.`user_id`";
-    
-    $result = Claroline::getDatabase()->query($sql);
-    $result->setFetchMode(Database_ResultSet::FETCH_ASSOC);
-    
-    $usersInGroupList = array();
-    foreach ( $result as $member )
-    {
-        $label = htmlspecialchars(ucwords(strtolower($member['name']))
-        . ' ' . ucwords(strtolower($member['firstname']))
-        . ($member['role']!=''?' (' . $member['role'] . ')':''));
-        $usersInGroupList[$member['user_id']] = $label;
-    }
-
-    return $usersInGroupList;
-}

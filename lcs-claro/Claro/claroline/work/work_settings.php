@@ -1,21 +1,23 @@
-<?php // $Id: work_settings.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: work_settings.php 14068 2012-03-20 14:35:47Z zefredz $
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Course-level properties for CLWRK tool
+ * CLAROLINE
+ *
+ * Course-level properties for CLWRK tool.
  *
  * Currently available properties
  *  1. Send notification to course manager when a new submission is posted
  *  2. Send notification to students when a feedback is added
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     $Revision: 14068 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
  * @author      Jean-Roch Meurisse <jmeuriss@fundp.ac.be>
  * @license     http://www.gnu.org/copyleft/gpl.html
  *              GNU GENERAL PUBLIC LICENSE version 2 or later
  * @package     CLWORK
- * @since       Claroline 1.9.5
+ * @since       1.9.5
  */
 
 $tlabelReq = 'CLWRK';
@@ -37,7 +39,7 @@ try
     //init user input handler
     $userInput = Claro_UserInput::getInstance();
     $userInput->setValidatorForAll( new Claro_Validator_ValueType( 'string' ) );
-    $cmd = $userInput->get( 'cmd' );                    
+    $cmd = $userInput->get( 'cmd' );
     
     if( 'savePrefs' == $cmd )
     {
@@ -49,7 +51,7 @@ try
         if( $errorCount > 0 )
         {
             $dialogBox->error( get_lang( 'Error while saving notification preferences' ) );
-        }        
+        }
         else
         {
             $dialogBox->success( get_lang( 'Notification preferences saved' ) );
@@ -84,6 +86,7 @@ $out .= claro_html_tool_title( $nameTools );
 $out .= $dialogBox->render();
 
 $out .= '<form method="post" action="' . $_SERVER['PHP_SELF'] . '">' . "\n"
+     . claro_form_relay_context() . "\n"
      . '<table border="0" width="50%" cellspacing="0" cellpadding="4"><tbody>' . "\n"
      . '<input type="hidden" name="claroFormId" value="' . uniqid ( '' ) . '" />' . "\n"
      . '<input name="cmd" type="hidden" value="savePrefs" />' . "\n"
@@ -117,15 +120,14 @@ $out .= '<form method="post" action="' . $_SERVER['PHP_SELF'] . '">' . "\n"
      . '<tr><td colspan="3">&nbsp;</td></tr>' . "\n"
      . '<tr><td colspan="3" style="text-align:center;">' . "\n"
      . '<input value="' . get_lang ( 'Ok' ) . '" type="submit" name="submit"/>&nbsp;' . "\n"
-     . claro_html_button ( 'index.php' , get_lang ( 'Cancel' ) )
+     . claro_html_button ( Url::Contextualize('work.php') , get_lang ( 'Cancel' ) )
      . '</td>' . "\n"
      . '</tr>' . "\n"
      . '</tbody></table>' . "\n"
      ;
 
-ClaroBreadCrumbs::getInstance()->prepend( get_lang( 'Assignments' ), 'index.php' );
+ClaroBreadCrumbs::getInstance()->prepend( get_lang( 'Assignments' ), Url::Contextualize('work.php') );
 
 $claroline->display->body->appendContent( $out );
 
 echo $claroline->display->render();
-

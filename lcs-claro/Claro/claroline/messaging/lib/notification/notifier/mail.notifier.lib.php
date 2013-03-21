@@ -1,11 +1,11 @@
-<?php // $Id: mail.notifier.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: mail.notifier.lib.php 14363 2013-01-28 10:55:17Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * mailnofifier class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14363 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -29,7 +29,7 @@ class MailNotifier implements MessagingNotifier
      * notify by email the user of the reception of a message
      *
      * @param array of int: $userDataList user identificatin list
-     * @param MessageToSend $message message envoyé
+     * @param MessageToSend $message message envoyï¿½
      * @param int $messageId identification of the message
      * 
      */
@@ -97,11 +97,26 @@ class MailNotifier implements MessagingNotifier
         //-------------------------BODY
         $msgContent = claro_parse_user_text($message->getMessage());
         
+        $urlAppend = get_path('url');
+        
+        if ( !empty($urlAppend) )
+        {
+            $msgContent = preg_replace( '!href="'.get_path('url').'!', 'href="'.rtrim(get_path('rootWeb'),'/').'/', $msgContent );
+            $msgContent = preg_replace( '!\>'.get_path('url').'!', '>'.get_path('rootWeb'), $msgContent );
+        }
+        else
+        {
+            $msgContent = preg_replace( '!href="/!', 'href="'.rtrim(get_path('rootWeb'),'/').'/', $msgContent );
+        }
+        
         $emailBody = "<html><head></head><body>" . $msgContent
                     . '<br /><br />'
                // footer
                     . '-- <br />'
-                    . $userData[ 'firstName' ] . ' ' . $userData[ 'lastName' ] . "<br />"
+                    . get_lang( '%firstName %lastName', array(
+                        '%firstName' => $userData['firstName'],
+                        '%lastName' => $userData['lastName'] ) 
+                    ) . "<br />"
                     .$stringManager
                     . '<br /><br /><a href="' . get_conf('rootWeb') . '">' . get_conf('siteName') . '</a><br />'
                     . '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . get_lang('Administrator')  . ': <a href="mailto:' . get_conf('administrator_email') . '">' . get_conf('administrator_name') . '</a><br />'
@@ -117,7 +132,16 @@ class MailNotifier implements MessagingNotifier
             return claro_failure::set_failure( get_lang("Mail Notification Failed : You don't have any email address defined in your user profile or the defined email address is not valid." ) );
         }
         
-        self::emailNotification($userDataList, $emailBody,$emailSubject, $userData['mail'], $userData['lastName']." ".$userData['firstName']);
+        self::emailNotification(
+            $userDataList,
+            $emailBody,
+            $emailSubject,
+            $userData['mail'],
+            get_lang( '%firstName %lastName', array(
+                '%firstName' => $userData['firstName'],
+                '%lastName' => $userData['lastName'] ) 
+            )
+        );
     }
     
     /**
@@ -145,7 +169,6 @@ class MailNotifier implements MessagingNotifier
     
         $emailList = claro_sql_query_fetch_all_cols($sql);
         $emailList = $emailList['email'];
-    
         $emailList = array_filter($emailList, 'is_well_formed_email_address');
     
         $mail = new ClaroPHPMailer();
@@ -175,22 +198,28 @@ class MailNotifier implements MessagingNotifier
         
         if ( claro_debug_mode() )
         {
-            $message = '<p>' . get_lang('Subject') . ' : ' . htmlspecialchars($subject) . '</p>' . "\n"
-                     . '<p>' . get_lang('Message') . ' : <pre>' . htmlspecialchars($message) . '</pre></p>' . "\n"
-                     . '<p>' . get_lang('Sender') . ' : ' . htmlspecialchars($mail->FromName) . ' - ' . htmlspecialchars($mail->From) . '</p>' . "\n"
+            $message = '<p>' . get_lang('Subject') . ' : ' . claro_htmlspecialchars($subject) . '</p>' . "\n"
+                     . '<p>' . get_lang('Message') . ' : <pre>' . claro_htmlspecialchars($message) . '</pre></p>' . "\n"
+                     . '<p>' . get_lang('Sender') . ' : ' . claro_htmlspecialchars($mail->FromName) . ' - ' . claro_htmlspecialchars($mail->From) . '</p>' . "\n"
                      . '<p>' . get_lang('Recipient') . ' : ' . implode(', ', $emailList) . '</p>' . "\n";
             pushClaroMessage($message,'mail');
         }
     
-        foreach ($emailList as $thisEmail)
+        $error_list=  array();
+        
+        foreach ( $emailList as $thisEmail )
         {
-            $mail->AddAddress($thisEmail);
-            
-            if (! $mail->Send() )
+            try
+            {
+                 $mail->AddAddress($thisEmail);
+                 $mail->Send();
+            }
+            catch ( phpmailerException $exception ) 
             {
                 if ( claro_debug_mode() )
                 {
-                    pushClaroMessage($mail->getError(),'error');
+                    pushClaroMessage('Mail Notification Failed ' .$exception->__toString() );
+                    $error_list[] = $thisEmail ;
                 }
             }
             

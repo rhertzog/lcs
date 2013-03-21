@@ -1,15 +1,12 @@
-<?php // $Id: edit_question.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: edit_question.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 12923 $
- *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Claro Team <cvs@claroline.net>
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 $tlabelReq = 'CLQWZ';
@@ -23,7 +20,7 @@ $is_allowedToEdit = claro_is_allowed_to_edit();
 // courseadmin reserved page
 if( !$is_allowedToEdit )
 {
-    header("Location: ../exercise.php");
+    header("Location: " . Url::Contextualize("../exercise.php"));
     exit();
 }
 
@@ -115,7 +112,7 @@ if( $cmd == 'exEdit' )
 
     $question->setTitle($_REQUEST['title']);
     $question->setDescription($_REQUEST['description']);
-    $question->setCategoryId($_REQUEST['categoryId']); 
+    $question->setCategoryId( isset( $_REQUEST['categoryId'] ) && is_numeric( $_REQUEST['categoryId'] ) ? (int)$_REQUEST['categoryId'] : null );
     
     if( is_null($quId) ) $question->setType($_REQUEST['type']);
 
@@ -150,7 +147,7 @@ if( $cmd == 'exEdit' )
             if( is_null($quId) )
             {
                 // Go to answer edition
-                header('Location: edit_answers.php?exId='.$exId.'&quId='.$insertedId);
+                header('Location: '. Url::Contextualize('edit_answers.php?exId='.$exId.'&quId='.$insertedId));
                 exit();
             }
         }
@@ -188,18 +185,18 @@ if( $cmd == 'rqEdit' )
 if( is_null($quId) )
 {
     $nameTools = get_lang('New question');
-    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, './edit_question.php?exId='.$exId . '&amp;cmd=rqEdit' );
+    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, Url::Contextualize('./edit_question.php?exId='.$exId . '&amp;cmd=rqEdit' ) );
 }
 elseif( $cmd == 'rqEdit' )
 {
     $nameTools = get_lang('Edit question');
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Question'), './edit_question.php?exId='.$exId.'&amp;quId='.$quId );
-    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, './edit_question.php?exId='.$exId.'&amp;quId='.$quId.'&amp;cmd=rqEdit' );
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Question'), Url::Contextualize('./edit_question.php?exId='.$exId.'&amp;quId='.$quId ) );
+    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, Url::Contextualize('./edit_question.php?exId='.$exId.'&amp;quId='.$quId.'&amp;cmd=rqEdit') );
 }
 else
 {
     $nameTools = get_lang('Question');
-    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, './edit_question.php?exId='.$exId.'&amp;quId='.$quId );
+    ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, Url::Contextualize('./edit_question.php?exId='.$exId.'&amp;quId='.$quId) );
 }
 
 if( !is_null($exId) )
@@ -209,14 +206,34 @@ if( !is_null($exId) )
 }
 else
 {
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Question pool'), './question_pool.php' );
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Question pool'), Url::Contextualize('./question_pool.php') );
 }
-ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), get_module_url('CLQWZ').'/exercise.php' );
+ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), Url::Contextualize(get_module_url('CLQWZ').'/exercise.php') );
 
+// Command list
+$cmdList = array();
+
+$cmdList[] = array(
+    'img' => 'edit',
+    'name' => get_lang('Edit question'),
+    'url' => claro_htmlspecialchars(Url::Contextualize('./edit_question.php?exId='.$exId.'&cmd=rqEdit&quId='.$quId))
+);
+
+$cmdList[] = array(
+    'img' => 'edit',
+    'name' => get_lang('Edit answers'),
+    'url' => claro_htmlspecialchars(Url::Contextualize('./edit_answers.php?exId='.$exId.'&cmd=rqEdit&quId='.$quId))
+);
+
+$cmdList[] = array(
+    'img' => 'default_new',
+    'name' => get_lang('New question'),
+    'url' => claro_htmlspecialchars(Url::Contextualize('./edit_question.php?exId='.$exId.'&cmd=rqEdit'))
+);
 
 $out = '';
 
-$out .= claro_html_tool_title($nameTools);
+$out .= claro_html_tool_title($nameTools, null, $cmdList);
 
 // dialog box if required
 $out .= $dialogBox->render();
@@ -226,152 +243,22 @@ $localizedQuestionType = get_localized_question_type();
 
 if( $displayForm )
 {
-    $out .= '<form method="post" action="./edit_question.php?quId='.$quId.'&amp;exId='.$exId.'" enctype="multipart/form-data">' . "\n\n"
-    .     '<input type="hidden" name="cmd" value="exEdit" />' . "\n"
-    .     '<input type="hidden" name="claroFormId" value="'.uniqid('').'" />' . "\n";
-
-    $out .= '<table border="0" cellpadding="5">' . "\n";
-
-    if( $askDuplicate )
-    {
-        $out .= '<tr>' . "\n"
-        .     '<td>&nbsp;</td>' . "\n"
-        .    '<td valign="top">'
-        .    html_ask_duplicate()
-        .    '</td>' . "\n"
-        .    '</tr>' . "\n\n";
-    }
-    //--
-    // title
-    $out .= '<tr>' . "\n"
-    .     '<td valign="top"><label for="title">'.get_lang('Title').'&nbsp;<span class="required">*</span>&nbsp;:</label></td>' . "\n"
-    .     '<td><input type="text" name="title" id="title" size="60" maxlength="200" value="'.htmlspecialchars($form['title']).'" /></td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-    // description
-    $out .= '<tr>' . "\n"
-    .     '<td valign="top"><label for="description">'.get_lang('Description').'&nbsp;:</label></td>' . "\n"
-    .     '<td>'.claro_html_textarea_editor('description', $form['description']).'</td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-	$questionCategoryList = getQuestionCategoryList();
-    // category
-    $out .=  '<tr>' . "\n"
-    .     '<td valign="top"><label for="category">'.get_lang('Category').'&nbsp;:</label></td>' . "\n"
-    .     '<td><select name="categoryId"><option value="0">';
-    foreach ($questionCategoryList as $category)
-    {
-        $out .= '<option value="'.$category['id'].'"' 
-            .( $category['id'] == $form['categoryId']?'selected="selected"':' ' )
-            .'>'.$category['title'].'</option>';
-    }
-    $out .= '</option>'
-    .'</td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-    // attached file
-    if( !empty($form['attachment']) )
-    {
-        $out .= '<tr>' . "\n"
-        .     '<td valign="top">'.get_lang('Current file').'&nbsp;:</td>' . "\n"
-        .     '<td>'
-        .     '<a href="'.$question->getQuestionDirWeb().$form['attachment'].'" target="_blank">'.$form['attachment'].'</a><br />'
-        .     '<input type="checkbox" name="delAttachment" id="delAttachment" /><label for="delAttachment"> '.get_lang('Delete attached file').'</label>'
-        .     '</td>' . "\n"
-        .     '</tr>' . "\n\n";
-    }
-
-    $out .= '<tr>' . "\n"
-    .     '<td valign="top"><label for="description">'.get_lang('Attached file').'&nbsp;:</label></td>' . "\n"
-    .     '<td><input type="file" name="attachment" id="attachment" size="30" /></td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-    // answer type, only if new question
-    if( is_null($quId) )
-    {
-        $out .= '<tr>' . "\n"
-        .     '<td valign="top">'.get_lang('Answer type').'&nbsp;:</td>' . "\n"
-        .     '<td>' . "\n"
-        .     '<input type="radio" name="type" id="MCUA" value="MCUA"'
-        .     ( $form['type'] == 'MCUA'?' checked="checked"':' ') . ' />'
-        .     ' <label for="MCUA">'.get_lang('Multiple choice (Unique answer)').'</label>'
-        .     '<br />' . "\n"
-        .     '<input type="radio" name="type" id="MCMA" value="MCMA"'
-        .     ( $form['type'] == 'MCMA'?' checked="checked"':' ') . ' />'
-        .     ' <label for="MCMA">'.get_lang('Multiple choice (Multiple answers)').'</label>'
-        .     '<br />' . "\n"
-        .     '<input type="radio" name="type" id="TF" value="TF"'
-        .     ( $form['type'] == 'TF'?' checked="checked"':' ') . ' />'
-        .     ' <label for="TF">'.get_lang('True/False').'</label>'
-        .     '<br />' . "\n"
-        .     '<input type="radio" name="type" id="FIB" value="FIB"'
-        .     ( $form['type'] == 'FIB'?' checked="checked"':' ') . ' />'
-        .     ' <label for="FIB">'.get_lang('Fill in blanks').'</label>'
-        .     '<br />' . "\n"
-        .     '<input type="radio" name="type" id="MATCHING" value="MATCHING"'
-        .     ( $form['type'] == 'MATCHING'?' checked="checked"':' ') . ' />'
-        .     ' <label for="MATCHING">'.get_lang('Matching').'</label>'
-        .     "\n"
-        .     '</td>' . "\n"
-        .     '</tr>' . "\n\n"
-        ;
-    }
-    else
-    {
-        $out .= '<tr>' . "\n"
-        .     '<td valign="top">'.get_lang('Answer type').'&nbsp;:</td>' . "\n"
-        .     '<td>';
-
-        if( isset($localizedQuestionType[$form['type']]) ) $out .= $localizedQuestionType[$form['type']];
-
-        $out .= '</td>' . "\n"
-        .     '</tr>' . "\n\n";
-    }
-
-    //--
-    $out .= '<tr>' . "\n"
-    .     '<td>&nbsp;</td>' . "\n"
-    .     '<td><small>' . get_lang('<span class="required">*</span> denotes required field') . '</small></td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-    //-- buttons
-    $out .= '<tr>' . "\n"
-    .     '<td>&nbsp;</td>' . "\n"
-    .     '<td>'
-    .     '<input type="submit" name="" id="" value="'.get_lang('Ok').'" />&nbsp;&nbsp;';
-    if( !is_null($exId) )    $out .= claro_html_button('./edit_exercise.php?exId='.$exId, get_lang("Cancel") );
-    else                    $out .= claro_html_button('./question_pool.php', get_lang("Cancel") );
-    $out .= '</td>' . "\n"
-    .     '</tr>' . "\n\n";
-
-    $out .= '</table>' . "\n\n"
-    .     '</form>' . "\n\n";
+    //-- edit form
+    $display = new ModuleTemplate( 'CLQWZ' , 'question_form.tpl.php' );
+    $display->assign( 'question', $question );
+    $display->assign( 'exId', $exId );
+    $display->assign( 'data', $form );
+    $display->assign( 'relayContext', claro_form_relay_context() );
+    $display->assign( 'askDuplicate', $askDuplicate );
+    $display->assign( 'categoryList', getQuestionCategoryList() );
+    $display->assign( 'questionType', get_localized_question_type() );
+    $out .= $display->render();
 }
 else
 {
-    $cmd_menu = array();
-    $cmd_menu[] = '<a class="claroCmd" href="./edit_question.php?exId='.$exId.'&amp;cmd=rqEdit&amp;quId='.$quId.'">'
-                . '<img src="' . get_icon_url('edit') . '" alt="" />'
-                . get_lang('Edit question')
-                . '</a>';
-    $cmd_menu[] = '<a class="claroCmd" href="./edit_answers.php?exId='.$exId.'&amp;cmd=rqEdit&amp;quId='.$quId.'">'
-                . '<img src="' . get_icon_url('edit') . '" alt="" />'
-                . get_lang('Edit answers')
-                . '</a>';
-                
-    $cmd_menu[] = '<a class="claroCmd" href="./edit_question.php?exId='.$exId.'&amp;cmd=rqEdit">'
-                . get_lang('New question')
-                . '</a>';
-
-    $out .= claro_html_menu_horizontal($cmd_menu);
-
     $out .= $question->getQuestionAnswerHtml();
-
-
 }
 
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

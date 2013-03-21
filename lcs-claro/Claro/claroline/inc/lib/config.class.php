@@ -1,4 +1,4 @@
-<?php // $Id: config.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: config.class.php 13965 2012-01-30 15:14:56Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,13 +10,13 @@ if ( count( get_included_files() ) == 1 )
  *
  * Config lib contain function to manage conf file
  *
- * @version 1.9 $Revision: 12923 $
+ * @version 1.9 $Revision: 13965 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see http://www.claroline.net/wiki/config_def/
  * @package CONFIG
  * @author Claro Team <cvs@claroline.net>
- * @author Christophe Gesché <moosh@claroline.net>
+ * @author Christophe Geschï¿½ <moosh@claroline.net>
  * @author Mathieu Laurent <laurent@cerdecam.be>
  */
 
@@ -402,7 +402,7 @@ class Config
                 break;
 
             case 'integer' :
-                if ( preg_match('/[^0-9]/i',$value) )
+                if ( !preg_match('/\d+/i',$value) )
                 {
                     $this->backlog->failure( get_lang('%name should be integer',array('%name'=>$label)));
                     $valid = false;

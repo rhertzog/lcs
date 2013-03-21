@@ -1,11 +1,13 @@
-<?php  // $Id: file.lib.php 13031 2011-04-01 13:39:56Z abourguignon $
+<?php  // $Id: file.lib.php 14350 2012-12-19 10:32:41Z ffervaille $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * File handling functions
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 13031 $
+ * File handling functions.
+ *
+ * @version     $Revision: 14350 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -13,62 +15,7 @@
  * @package     KERNEL
  */
 
-FromKernel::uses( 'core/url.lib' );
-
-/**
- * Garbage collector : remove old files from a given folder
- */
-class ClaroGarbageCollector
-{
-    private $path, $expire, $maxLifeTime;
-
-    /**
-     * Constructor
-     * @param string $path folder path
-     * @param int $expire expiration time
-     */
-    public function  __construct( $path, $maxLifeTime = 3600 )
-    {
-        $this->path = $path;
-        $this->maxLifeTime = $maxLifeTime;
-        $this->expire = time() - $maxLifeTime;
-    }
-
-    /**
-     * Run the garbage collector
-     */
-    public function run()
-    {
-        if ( is_dir( $this->path ) )
-        {
-            Console::debug('GC Called in '.$this->path);
-
-            // Delete archive files older than one hour
-            $tempDirectoryFiles = new DirectoryIterator( $this->path );
-
-            foreach ( $tempDirectoryFiles as $tempDirectoryFile )
-            {
-                if ( $tempDirectoryFile->isReadable() )
-                {
-                    if ( $tempDirectoryFile->getMTime() < $this->expire )
-                    {
-                        if ( !$tempDirectoryFile->isDot() )
-                        {
-                            Console::debug(
-                                'Unlink '
-                                    . $tempDirectoryFile->getPathName()
-                                    . " mtime: ".$tempDirectoryFile->getMTime()
-                                    . "; expire: ".$this->expire
-                            );
-
-                            unlink( $tempDirectoryFile->getPathName() );
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+require_once dirname(__FILE__) . '/core/url.lib.php';
 
 function file_upload_failed( $file )
 {
@@ -543,9 +490,11 @@ function download_url_decode( $str )
  * Get the url to download the file at the given file path
  * @param string $file path to the file
  * @param array $context
+ * @param string $moduleLabel
+ * @since Claroline 1.10.5
  * @return string url to the file
  */
-function claro_get_file_download_url( $file, $context = null )
+function claro_get_file_download_url( $file, $context = null, $moduleLabel = null )
 {
     $file = download_url_encode( $file );
     
@@ -570,6 +519,11 @@ function claro_get_file_download_url( $file, $context = null )
     {
         $urlObj->relayCurrentContext();
     }
+    
+    if ( $moduleLabel )
+    {
+        $urlObj->addParam( 'moduleLabel', $moduleLabel );
+    }
 
     return $urlObj->toUrl();
 }
@@ -580,16 +534,20 @@ function claro_get_file_download_url( $file, $context = null )
  *
  * @param   string $string
  * @param   string $strict (optional) removes also scores and simple quotes
+ * @since   Claroline 1.11.0-beta1 $strict is ignored !
  * @return  string : the string cleaned of dangerous character
  * @todo    function broken !
  */
 function replace_dangerous_char($string, $strict = 'loose')
 {
+    // workaround for mac os x
+    $string = preg_replace('/&#\d+;/', '_', $string );
+    
     $search[] = ' ';  $replace[] = '_';
     $search[] = '/';  $replace[] = '-';
     $search[] = '\\'; $replace[] = '-';
     $search[] = '"';  $replace[] = '-';
-    $search[] = '\'';  $replace[] = '_';
+    $search[] = '\''; $replace[] = '_';
     $search[] = '?';  $replace[] = '-';
     $search[] = '*';  $replace[] = '-';
     $search[] = '>';  $replace[] = '';
@@ -602,28 +560,27 @@ function replace_dangerous_char($string, $strict = 'loose')
     $search[] = '^';  $replace[] = '-';
     $search[] = '[';  $replace[] = '-';
     $search[] = ']';  $replace[] = '-';
-    //FIXME FIXME FIXME
-    /*
-    $search[] = '�';  $replace[] = 'o';
-    */
-
+    $search[] = '°';  $replace[] = '';
 
     foreach($search as $key=>$char )
     {
         $string = str_replace($char, $replace[$key], $string);
     }
     
-    if ($strict == 'strict')
+    /* if ( function_exists('iconv') )
     {
-        $string = str_replace('-', '_', $string);
-        $string = str_replace("'", '', $string);
-        //FIXME FIXME FIXME
-        /*
-        $string = strtr($string,
-                        '�����������������������������������������������������',
-                        'AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn');
-        */
+        $string = iconv(get_conf('charset'), "US-ASCII//TRANSLIT", $string);
+    }
+    else */
+    {
+        $string = preg_replace( 
+            '~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', 
+            '$1', 
+            claro_htmlentities( claro_utf8_encode( $string ) , ENT_QUOTES , 'UTF-8' ) 
+        );
     }
 
+    $string = str_replace("'", '', $string);
+    
     return $string;
 }

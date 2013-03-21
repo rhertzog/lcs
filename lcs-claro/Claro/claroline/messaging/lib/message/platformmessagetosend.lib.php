@@ -1,11 +1,11 @@
-<?php // $Id: platformmessagetosend.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: platformmessagetosend.lib.php 14367 2013-01-30 11:02:44Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * message from platform to send class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14367 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
@@ -39,7 +39,7 @@ class PlatformMessageToSend extends MessageToSend
      * @see MessageToSend::setSender
      * @throws Exception when called
      */
-    public function setSender( $userId )
+    public function setSender( $userId = null )
     {
         throw new Exception( 'Sender cannot be changed!' );
     }

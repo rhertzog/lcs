@@ -1,13 +1,13 @@
-<?php // $Id: index.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: index.php 13708 2011-10-19 10:46:34Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE.
  *
- * index of internal messaging system.
+ * Index of internal messaging system.
  *
- * @version     $Revision: 12989 $
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -19,4 +19,3 @@
 
 header('Location:./messagebox.php?box=inbox');
 exit();
-?>

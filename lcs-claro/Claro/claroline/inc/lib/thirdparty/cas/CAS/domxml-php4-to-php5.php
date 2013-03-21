@@ -90,7 +90,7 @@ function xmldocfile($filename) {return domxml_open_file($filename);}
 function xpath_eval($xpath_context,$eval_str,$contextnode=null) {return $xpath_context->xpath_eval($eval_str,$contextnode);}
 function xpath_new_context($dom_document) {return new php4DOMXPath($dom_document);}
 function xpath_register_ns($xpath_context,$prefix,$namespaceURI) {return $xpath_context->myDOMXPath->registerNamespace($prefix,$namespaceURI);}
-function _entityDecode($text) {return html_entity_decode(strtr($text,array('&apos;'=>'\'')),ENT_QUOTES,'UTF-8');}
+function _entityDecode($text) {return claro_html_entity_decode(strtr($text,array('&apos;'=>'\'')),ENT_QUOTES,'UTF-8');}
 function _error_report($error) {return array('errormessage'=>$error->message,'nodename'=>'','line'=>$error->line,'col'=>$error->column)+($error->file==''?array():array('directory'=>dirname($error->file),'file'=>basename($error->file)));}
 
 class php4DOMAttr extends php4DOMNode
@@ -102,7 +102,7 @@ class php4DOMAttr extends php4DOMNode
 	}
 	function name() {return $this->myDOMNode->name;}
 	function set_content($text) {}
-	//function set_value($content) {return $this->myDOMNode->value=htmlspecialchars($content,ENT_QUOTES);}
+	//function set_value($content) {return $this->myDOMNode->value=claro_htmlspecialchars($content,ENT_QUOTES);}
 	function specified() {return $this->myDOMNode->specified;}
 	function value() {return $this->myDOMNode->value;}
 }
@@ -126,7 +126,7 @@ class php4DOMDocument extends php4DOMNode
 	function create_attribute($name,$value)
 	{
 		$myAttr=$this->myDOMNode->createAttribute($name);
-		$myAttr->value=htmlspecialchars($value,ENT_QUOTES);
+		$myAttr->value=claro_htmlspecialchars($value,ENT_QUOTES);
 		return new php4DOMAttr($myAttr,$this);
 	}
 	function create_cdata_section($content) {return new php4DOMNode($this->myDOMNode->createCDATASection($content),$this);}
@@ -211,7 +211,7 @@ class php4DOMElement extends php4DOMNode
 	{
 		//return $this->myDOMNode->setAttribute($name,$value); //Does not return a DomAttr
 		$myAttr=$this->myDOMNode->ownerDocument->createAttribute($name);
-		$myAttr->value=htmlspecialchars($value,ENT_QUOTES); //Entity problem reported by AL-DesignWorks 2007-09-07
+		$myAttr->value=claro_htmlspecialchars($value,ENT_QUOTES); //Entity problem reported by AL-DesignWorks 2007-09-07
 		$this->myDOMNode->setAttributeNode($myAttr);
 		return new php4DOMAttr($myAttr,$this->myOwnerDocument);
 	}

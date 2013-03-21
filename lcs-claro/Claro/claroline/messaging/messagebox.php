@@ -1,4 +1,4 @@
-<?php // $Id: messagebox.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: messagebox.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Front controler for message box.
  *
- * @version     $Revision: 12989 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -59,7 +59,7 @@ if ($currentUserId != claro_get_current_user_id())
     else
     {
         $title = get_lang('Messages of %firstName %lastName',
-            array ('%firstName' =>htmlspecialchars($userData['firstname']), '%lastName' => htmlspecialchars($userData['lastname'])));
+            array ('%firstName' =>claro_htmlspecialchars($userData['firstname']), '%lastName' => claro_htmlspecialchars($userData['lastname'])));
     }
 }
 else
@@ -67,7 +67,6 @@ else
     $title = get_lang('My messages');
 }
 
-$cssLoader = CssLoader::getInstance();
 $linkPage = $_SERVER['PHP_SELF'];
 
 $acceptedValues = array('inbox','outbox','trashbox');

@@ -1,4 +1,4 @@
-<?php // $Id: readmessage.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: readmessage.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Read a message.
  *
- * @version     $Revision: 12989 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -25,7 +25,7 @@ require_once dirname(__FILE__).'/lib/permission.lib.php';
 require_once dirname(__FILE__).'/lib/tools.lib.php';
 
 $messageId = isset($_REQUEST['messageId']) ? (int)$_REQUEST['messageId']: NULL;
-$type = isset($_REQUEST['type']) ? htmlspecialchars($_REQUEST['type']) : NULL;
+$type = isset($_REQUEST['type']) ? claro_htmlspecialchars($_REQUEST['type']) : NULL;
 
 $dialogBox = new DialogBox();
 

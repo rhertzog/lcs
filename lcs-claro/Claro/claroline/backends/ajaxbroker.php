@@ -1,4 +1,4 @@
-<?php // $Id: ajaxbroker.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: ajaxbroker.php 14132 2012-05-03 09:59:59Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -10,7 +10,7 @@
  *      Claroline::ajaxServiceBroker()->register( .... );
  *  2. Execute AJAX requests on get_path('url').'/claroline/backends/ajaxbroker.php'
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 14132 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -37,7 +37,7 @@ try
 
         if ( $moduleLabel )
         {
-            $ajaxHandler = Ajax_Remote_Module_Service::getModuleServiceInstance( $moduleLabel );
+            Ajax_Remote_Module_Service::registerModuleServiceInstance( $moduleLabel );
         }
 
         $ajaxRequest = Ajax_Request::getRequest(Claro_UserInput::getInstance());
@@ -45,7 +45,7 @@ try
         $response = Claroline::ajaxServiceBroker()->handle($ajaxRequest);
     }
 }
-catch (Exception $e )
+catch ( Exception $e )
 {
     $response = new Json_Exception( $e );
 }

@@ -1,11 +1,13 @@
-<?php // $Id: debug.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: debug.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Debugging functions and classes
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * Debugging functions and classes.
+ *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -16,7 +18,7 @@
 
 function dbg_html_var( $var )
 {
-    return htmlspecialchars(var_export( $var, true ));
+    return claro_htmlspecialchars(var_export( $var, true ));
 }
 
 class Profiler

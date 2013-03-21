@@ -1,4 +1,4 @@
-<?php // $Id: sendmail.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: sendmail.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Libs-mail
@@ -176,9 +176,9 @@ function claro_mail_user($userIdList, $message, $subject , $specificFrom='', $sp
 
     if ( claro_debug_mode() )
     {
-        $message = '<p>Subject : ' . htmlspecialchars($subject) . '</p>' . "\n"
-                 . '<p>Message : <pre>' . htmlspecialchars($message) . '</pre></p>' . "\n"
-                 . '<p>From : ' . htmlspecialchars($mail->FromName) . ' - ' . htmlspecialchars($mail->From) . '</p>' . "\n"
+        $message = '<p>Subject : ' . claro_htmlspecialchars($subject) . '</p>' . "\n"
+                 . '<p>Message : <pre>' . claro_htmlspecialchars($message) . '</pre></p>' . "\n"
+                 . '<p>From : ' . claro_htmlspecialchars($mail->FromName) . ' - ' . claro_htmlspecialchars($mail->From) . '</p>' . "\n"
                  . '<p>Dest : ' . implode(', ', $emailList) . '</p>' . "\n";
         pushClaroMessage($message,'mail');
     }

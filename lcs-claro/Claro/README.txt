@@ -1,5 +1,5 @@
 ******************************************
-        CLAROLINE 1.10 - README
+        CLAROLINE 1.11 - README
 ******************************************
 
 TABLE OF CONTENT :
@@ -70,12 +70,18 @@ at :
 
         email : info@claroline.net
         web   : http://www.claroline.net
-        phone : 32 (0) 10 47 85 48
+        phone : 32 (0) 10 47 88 87
         Fax   : 32 (0) 47 89 39
 
 
 7. NEW FEATURES
    ============
+
+NEW FEATURES IN CLAROLINE 1.11 SINCE CLAROLINE 1.10
+---------------------------------------------------
+
+* See http://sourceforge.net/apps/mediawiki/claroline/index.php?title=Changelog_1.11
+
 NEW FEATURES IN CLAROLINE 1.10 SINCE CLAROLINE 1.9
 -------------------------------------------------
 
@@ -385,7 +391,7 @@ feature is an option to choose at install step.
 * LANGUAGE. New languages added. Claroline is now in 20 languages :   Arab,
 Catalan, Crotian, Chinese, Dutch, English, Finnish, French,   German, Galician,
 Greek, Hungarian, Italian, Japanese, Polish,   Portugese, Spanish , Swedish,
-Thaï, Turkish.
+Thaï¿½, Turkish.
 
 * LAYOUT. New 'liquid layout' spreading on all the window.   Introduction of CSS
 system.
@@ -432,8 +438,8 @@ NEW FEATURES IN CLAROLINE 1.3 SINCE CLAROLINE 1.2
 -------------------------------------------------
 
 * LANGUAGE. New languages added. Claroline is now in 12 languages : Chinese,
-English, Finnish, French, German, Italian, Japanese, Polish,   Portugese,
-Spanish, Swedish and Thaï.
+English, Finnish, French, German, Italian, Japanese, Polish, Portugese,
+Spanish, Swedish and Thai.
 
 * GROUPS. A new comprehensive group tool has been added. It allows to easily
 organise student groups, attribute them a tutor and create private forum and

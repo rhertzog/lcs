@@ -1,4 +1,4 @@
-<!-- $Id: select_course_form.tpl.php 13002 2011-03-28 10:21:57Z abourguignon $ -->
+<!-- $Id: select_course_form.tpl.php 13476 2011-08-26 10:03:22Z abourguignon $ -->
 
 <table align="center">
   <tr>
@@ -28,7 +28,7 @@
         <?php else : ?>
             <p align="center">
                 <?php echo get_lang('If you wish to enrol on this course'); ?>:
-                <a href="<?php get_path('clarolineRepositoryWeb'); ?>auth/courses.php?cmd=rqReg">
+                <a href="<?php echo get_path('clarolineRepositoryWeb'); ?>auth/courses.php?cmd=rqReg">
                     <?php echo get_lang('Enrolment'); ?>
                 </a>
             </p>

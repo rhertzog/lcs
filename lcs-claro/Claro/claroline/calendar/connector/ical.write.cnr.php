@@ -1,18 +1,15 @@
-<?php // $Id: ical.write.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: ical.write.cnr.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
- *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLCAL
- * @subpackage CLRSS
- *
- * @author Claro Team <cvs@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLCAL
+ * @subpackage  CLRSS
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 function CLCAL_write_ical( $iCal, $context)
@@ -32,9 +29,9 @@ function CLCAL_write_ical( $iCal, $context)
         
         $organizer = (array) array($courseData['titular'], $courseData['email']);
         $attendees = array();
-        $categories = array( 
-            get_conf('siteName'), 
-            $courseData['officialCode'], 
+        $categories = array(
+            get_conf('siteName'),
+            $courseData['officialCode'],
             trim($toolNameList['CLCAL'])
         );
 
@@ -65,7 +62,7 @@ function CLCAL_write_ical( $iCal, $context)
                 '', // exeption dates: Array with timestamps of dates that should not be includes in the recurring event
                 0,  // Sets the time in minutes an alarm appears before the event in the programm. no alarm if empty string or 0
                 1, // Status of the event (0 = TENTATIVE, 1 = CONFIRMED, 2 = CANCELLED)
-                get_path('rootWeb') . get_module_url('CLCAL') . '/agenda.php?cidReq=' . $courseId . '&amp;l#event' . $thisEvent['id'], // optional URL for that event
+                get_path('rootWeb') . get_module_url('CLCAL') . '/agenda.php?cidReq=' . $courseId . '&amp;l#item' . $thisEvent['id'], // optional URL for that event
                 get_locale('iso639_1_code'), // Language of the Strings
                 '' // Optional UID for this event
                 );
@@ -74,4 +71,3 @@ function CLCAL_write_ical( $iCal, $context)
     }
     return $iCal;
 }
-?>

@@ -1,12 +1,12 @@
-<?php // $Id: class_add.php 13013 2011-03-29 11:13:47Z abourguignon $
+<?php // $Id: class_add.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This tool list classes and prupose to subscribe it to the current course.
  *
- * @version     $Revision: 13013 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     1.11 $Revision: 14314 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
  * @author      Claro Team <cvs@claroline.net>
@@ -15,8 +15,10 @@
 
 $tlabelReq = 'CLUSR';
 $gidReset = true;
-$dialogBoxMsg = array();
+
 require '../inc/claro_init_global.inc.php';
+
+$dialogBox = new DialogBox();
 
 if ( ! claro_is_in_a_course() || !claro_is_course_allowed() ) claro_disp_auth_form(true);
 
@@ -64,12 +66,12 @@ switch ( $cmd )
         {
             Console::log(
                 "Class {$form_data['class_id']} enroled to course "
-                .  claro_get_current_course_id()
+                . claro_get_current_course_id()
                 . " by " . claro_get_current_user_id(),
                     'CLASS_SUBSCRIBE'
             );
 
-            $dialogBoxMsg[]  = get_lang('Class has been enroled') ;
+            $dialogBox->success( get_lang('Class has been enroled') ) ;
         }
         break;
 
@@ -81,12 +83,12 @@ switch ( $cmd )
         {
             Console::log(
                 "Class {$form_data['class_id']} removed from course "
-                .  claro_get_current_course_id()
+                . claro_get_current_course_id()
                 . " by " . claro_get_current_user_id(),
                     'CLASS_UNSUBSCRIBE'
             );
 
-            $dialogBoxMsg[]  = get_lang('Class has been unenroled') ;
+            $dialogBox->success( get_lang('Class has been unenroled') );
         }
         break;
 }
@@ -126,41 +128,39 @@ $htmlHeadXtra[] =
     }
 </script>';
 
+// Command list
+$cmdList[] = array(
+    'img' => 'back',
+    'name' => get_lang('Back to list'),
+    'url' => claro_htmlspecialchars(Url::Contextualize('user.php')),
+    'params' => array('onclick' => 'return confirmationEmpty();')
+);
+
 
 $out = '';
-
-// Display tool title
-
-$out .= claro_html_tool_title(get_lang('Enrol class'))
+$out .= claro_html_tool_title(get_lang('Enrol class'), null, $cmdList);
 
 // Display Forms or dialog box (if needed)
+$out .= $dialogBox->render();
 
-.    claro_html_msg_list($dialogBoxMsg)
-
-// display tool links
-.    '<p>'
-.    claro_html_cmd_link('user.php'  . claro_url_relay_context('?') , get_lang('Back to list'))
-.    '</p>'
-// display cols headers
-.    '<table class="claroTable" width="100%" border="0" cellspacing="2">' . "\n"
-.    '<thead>' . "\n"
-.    '<tr class="headerX">' . "\n"
-.    '<th>' . get_lang('Classes') . '</th>' . "\n"
-.    '<th>' . get_lang('Users') . '</th>' . "\n"
-.    '<th>' . get_lang('Enrol to course') . '</th>' . "\n"
-.    '</tr>' . "\n"
-.    '</thead>' . "\n"
-.    '<tbody>' . "\n"
-// display Class list (or tree)
-.    ( empty($classList)
-        ? '<tr><td colspan="3">'.get_lang('Nothing to display').'</td></tr>'
-        : display_tree_class_in_user($classList, claro_get_current_course_id()) )
-.    '</tbody>' . "\n"
-.    '</table>' . "\n"
-;
+// Display cols headers
+$out .= '<table class="claroTable" width="100%" border="0" cellspacing="2">' . "\n"
+    . '<thead>' . "\n"
+    . '<tr class="headerX">' . "\n"
+    . '<th>' . get_lang('Classes') . '</th>' . "\n"
+    . '<th>' . get_lang('Users') . '</th>' . "\n"
+    . '<th>' . get_lang('Enrol to course') . '</th>' . "\n"
+    . '</tr>' . "\n"
+    . '</thead>' . "\n"
+    . '<tbody>' . "\n"
+    // Display Class list (or tree)
+    . ( empty($classList)
+            ? '<tr><td colspan="3">'.get_lang('Nothing to display').'</td></tr>'
+            : display_tree_class_in_user($classList, claro_get_current_course_id()) )
+    . '</tbody>' . "\n"
+    . '</table>' . "\n"
+    ;
 
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

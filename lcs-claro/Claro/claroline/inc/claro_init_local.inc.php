@@ -1,4 +1,4 @@
-<?php // $Id: claro_init_local.inc.php 12833 2011-02-02 09:51:47Z stephane-klein $
+<?php // $Id: claro_init_local.inc.php 14327 2012-11-16 09:43:24Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 //----------------------------------------------------------------------
 // CLAROLINE
 //----------------------------------------------------------------------
-// Copyright (c) 2001-2010 Universite catholique de Louvain (UCL)
+// Copyright (c) 2001-2012 Universite catholique de Louvain (UCL)
 //----------------------------------------------------------------------
 // This program is under the terms of the GENERAL PUBLIC LICENSE (GPL)
 // as published by the FREE SOFTWARE FOUNDATION. The GPL is available
@@ -30,8 +30,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * All the course informations are store in the $_course array.
  *
- * You can request a group id. It will check if the group Id requested is theexit('WARNING !! Undefined user id: the requested user doesn\'t exist '
-            . 'at line '.__LINE__);
+ * You can request a group id. It will check if the group Id requested is the
  * same as the current one. If it isn't it will update session information from
  * the database. You can also force the course reset if you want ($gidReset).
  *
@@ -129,8 +128,7 @@ if ( count( get_included_files() ) == 1 )
  * int     $_group ['tutorId'    ]
  * int     $_group ['forumId'    ]
  * string  $_group ['directory'  ]
- * int     $_group ['maxMember'  ]exit('WARNING !! Undefined user id: the requested user doesn\'t exist '
-            . 'at line '.__LINE__);
+ * int     $_group ['maxMember'  ]
  *
  * boolean $is_groupMember
  * boolean $is_groupTutor
@@ -205,6 +203,8 @@ if ( count( get_included_files() ) == 1 )
 
 require_once dirname(__FILE__) . '/lib/auth/authmanager.lib.php';
 require_once dirname(__FILE__) . '/lib/kernel/user.lib.php';
+require_once dirname(__FILE__) . '/lib/kernel/course.lib.php';
+require_once dirname(__FILE__) . '/lib/kernel/groupteam.lib.php';
 require_once dirname(__FILE__) . '/lib/user.lib.php';
 require_once dirname(__FILE__) . '/lib/core/claroline.lib.php';
 
@@ -455,10 +455,10 @@ if ( !empty($_uid) ) // session data refresh requested && uid is given (log in s
 {
     try
     {
-        if (!$currentUser)
+        /*if (!$currentUser)
         {
             $currentUser = Claro_CurrentUser::getInstance($_uid);
-        }
+        }*/
         
         // User login
         if ( $uidReset )
@@ -470,7 +470,8 @@ if ( !empty($_uid) ) // session data refresh requested && uid is given (log in s
             $cidReset = true;
             $gidReset = true;
             
-            $currentUser->loadFromDatabase();
+            $currentUser = Claro_CurrentUser::getInstance( $_uid, true );
+            
             $_user = $currentUser->getRawData();
     
             // Extracting the user data
@@ -502,6 +503,8 @@ if ( !empty($_uid) ) // session data refresh requested && uid is given (log in s
         // User in session
         else
         {
+            $currentUser = Claro_CurrentUser::getInstance($_uid);
+            
             try
             {
                 $currentUser->loadFromSession();

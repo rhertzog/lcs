@@ -1,15 +1,14 @@
-<?php // $Id: shibbolethProcess.inc.php 11944 2009-10-01 15:25:28Z jrm_ $
+<?php // $Id: shibbolethProcess.inc.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
- * Claroline Shibboleth / Switch AAI
+ * CLAROLINE
  *
- * Process Shibboleth authentication
+ * Shibboleth / Switch AAI.
+ * Process Shibboleth authentication.
  *
- * @version 0.4
- *
- * @author Daniel Streiff <daniel.streiff@fh-htwchur.ch>
- *
+ * @version     0.4
+ * @author      Daniel Streiff <daniel.streiff@fh-htwchur.ch>
  */
 
 require_once dirname(__FILE__) . '/shibboleth.lib.php' ;
@@ -26,7 +25,7 @@ if ( $_REQUEST['shibbolethLogin'] && isset($_SERVER[$shibbolethUniqueIdAttr]) &&
     // Use first email only
     $shibbolethEmail = explode($shibbolethEmailSep, $_SERVER[$shibbolethData['email']]);
     if ($shibbolethEmail[0] == '') {
-        $shibbolethEmail[0] = $shibbolethDefaultEmail;    
+        $shibbolethEmail[0] = $shibbolethDefaultEmail;
     }
     $sqlPrepareList[] = 'email = "'        . addslashes($shibbolethEmail[0]) . '"';
 //    $sqlPrepareList[] = 'phoneNumber = "'  . addslashes(($_SERVER[$shibbolethData['phoneNumber']]  ? $_SERVER[$shibbolethData['phoneNumber']]  : $shibbolethData['phoneNumber']  )) . '"';    //optional field

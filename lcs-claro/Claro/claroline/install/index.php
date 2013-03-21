@@ -1,11 +1,11 @@
-<?php // $Id: index.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: index.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Claroline installer.
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/install/
@@ -414,8 +414,8 @@ if ($_REQUEST['fromPanel'] == DISP_DB_NAMES_SETTING || $_REQUEST['cmdDoInstall']
     $stepStatus[DISP_DB_NAMES_SETTING] = 'V';
     $regexpPatternForDbName = '/^[a-z0-9][a-z0-9_-]*$/i';
     // Now mysql connect param are ok, try  to use given DBNames
-    // 1° check given string
-    // 2° check if db exists
+    // 1. check given string
+    // 2. check if db exists
 
     $databaseParam_ok = TRUE;
     if ($singleDbForm) $dbStatsForm = $dbNameForm;
@@ -726,17 +726,17 @@ echo '<input type="hidden" name="alreadyVisited" value="1" />'                  
 .    '<input type="hidden" name="dbMyAdmin"                    value="'.$dbMyAdmin.'" />'                      ."\n"
 .    '<input type="hidden" name="dbPassForm"                   value="'.$dbPassForm.'" />'                     ."\n\n"
 .    '<input type="hidden" name="urlForm"                      value="'.$urlForm.'" />'                        ."\n"
-.    '<input type="hidden" name="adminEmailForm"               value="'.htmlspecialchars($adminEmailForm).'" />'   ."\n"
-.    '<input type="hidden" name="adminNameForm"                value="'.htmlspecialchars($adminNameForm).'" />'    ."\n"
-.    '<input type="hidden" name="adminSurnameForm"             value="'.htmlspecialchars($adminSurnameForm).'" />' ."\n\n"
-.    '<input type="hidden" name="loginForm"                    value="'.htmlspecialchars($loginForm).'" />'        ."\n"
-.    '<input type="hidden" name="passForm"                     value="'.htmlspecialchars($passForm).'" />'         ."\n\n"
+.    '<input type="hidden" name="adminEmailForm"               value="'.claro_htmlspecialchars($adminEmailForm).'" />'   ."\n"
+.    '<input type="hidden" name="adminNameForm"                value="'.claro_htmlspecialchars($adminNameForm).'" />'    ."\n"
+.    '<input type="hidden" name="adminSurnameForm"             value="'.claro_htmlspecialchars($adminSurnameForm).'" />' ."\n\n"
+.    '<input type="hidden" name="loginForm"                    value="'.claro_htmlspecialchars($loginForm).'" />'        ."\n"
+.    '<input type="hidden" name="passForm"                     value="'.claro_htmlspecialchars($passForm).'" />'         ."\n\n"
 .    '<input type="hidden" name="languageForm"                 value="'.$languageForm.'" />'                   ."\n\n"
-.    '<input type="hidden" name="campusForm"                   value="'.htmlspecialchars($campusForm).'" />'       ."\n"
-.    '<input type="hidden" name="contactNameForm"              value="'.htmlspecialchars($contactNameForm).'" />'  ."\n"
-.    '<input type="hidden" name="contactEmailForm"             value="'.htmlspecialchars($contactEmailForm).'" />' ."\n"
-.    '<input type="hidden" name="contactPhoneForm"             value="'.htmlspecialchars($contactPhoneForm).'" />' ."\n"
-.    '<input type="hidden" name="institutionForm"              value="'.htmlspecialchars($institutionForm).'" />'  ."\n"
+.    '<input type="hidden" name="campusForm"                   value="'.claro_htmlspecialchars($campusForm).'" />'       ."\n"
+.    '<input type="hidden" name="contactNameForm"              value="'.claro_htmlspecialchars($contactNameForm).'" />'  ."\n"
+.    '<input type="hidden" name="contactEmailForm"             value="'.claro_htmlspecialchars($contactEmailForm).'" />' ."\n"
+.    '<input type="hidden" name="contactPhoneForm"             value="'.claro_htmlspecialchars($contactPhoneForm).'" />' ."\n"
+.    '<input type="hidden" name="institutionForm"              value="'.claro_htmlspecialchars($institutionForm).'" />'  ."\n"
 .    '<input type="hidden" name="institutionUrlForm"           value="'.$institutionUrlForm.'" />'             ."\n\n"
 .    '<!-- BOOLEAN -->'                                                                                      ."\n"
 .    '<input type="hidden" name="enableTrackingForm"           value="'.$enableTrackingForm.'" />'             ."\n"
@@ -874,22 +874,24 @@ elseif ($display == DISP_WELCOME)
         .    '</div>'."\n\n"
         ;
     }
-
+    
+    // remove mysqlnd from client info string, if found
+    $mysql_ver = preg_replace('/^mysqlnd /', '', mysql_get_client_info());
     echo '<p>'
     .    get_lang('Please, read thoroughly the <a href="%installFileUrl">%installFileName</a> document before proceeding to installation.', array('%installFileUrl' => '../../INSTALL.txt','%installFileName'=>'INSTALL.txt'))
     .    '</p>'
     .    '<fieldset>' . "\n"
-    .     '<legend>'.get_lang('Server requirements').'</legend>' . "\n"
+    .    '<legend>'.get_lang('Server requirements').'</legend>' . "\n"
     
-    .     '<table class="requirements">'
+    .    '<table class="requirements">'
     .    '<tbody>' . "\n"
     .    '<tr>'
     .    '<td>Php version >= 5.2</td>'
-    .    '<td>' . ( version_compare(phpversion(), $requiredPhpVersion, ">=" ) ? '<span class="ok">'.get_lang('Ok').'</span>':'<span class="ko">Ko</span>') . ' (' . phpversion() . ')</td>'
+    .    '<td>' . ( version_compare(phpversion(), $requiredPhpVersion, ">=" ) ? '<span class="ok">'.get_lang('Ok').'</span>':'<span class="ko">'.get_lang('Ko').'</span>') . ' (' . phpversion() . ')</td>'
     .    '</tr>'
     .    '<tr>'
     .    '<td>MySQL version >= 4.3</td>'
-    .    '<td>' . ( version_compare(mysql_get_client_info(), $requiredMySqlVersion, ">=" ) ? '<span class="ok">'.get_lang('Ok').'</span>':'<span class="ko">Ko</span>') . ' (' . mysql_get_client_info(). ')</td>'
+    .    '<td>' . ( version_compare($mysql_ver, $requiredMySqlVersion, ">=" ) ? '<span class="ok">'.get_lang('Ok').'</span>':'<span class="ko">'.get_lang('Ko').'</span>') . ' (' . mysql_get_client_info(). ')</td>'
     .    '</tr>'
  
     .    '<tr>'
@@ -966,32 +968,32 @@ elseif ($display == DISP_WELCOME)
     .    '<tr>' . "\n"
     .    '<td>Display errors</td>' . "\n"
     .    '<td>Off</td>' . "\n"
-    .     '<td>' . check_php_setting('display_errors', 'OFF') . '</td>' . "\n"
+    .    '<td>' . check_php_setting('display_errors', 'OFF') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '<tr>' . "\n"
     .    '<td>Register globals</td>' . "\n"
     .    '<td>Off</td>' . "\n"
-    .     '<td>' . check_php_setting('register_globals', 'OFF') . '</td>' . "\n"
+    .    '<td>' . check_php_setting('register_globals', 'OFF') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '<tr>' . "\n"
     .    '<td>Magic quotes GPC</td>' . "\n"
     .    '<td>Off</td>' . "\n"
-    .     '<td>' . check_php_setting('magic_quotes_gpc', 'OFF') . '</td>' . "\n"
+    .    '<td>' . check_php_setting('magic_quotes_gpc', 'OFF') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '<tr>' . "\n"
     .    '<td>File uploads</td>' . "\n"
     .    '<td>On</td>' . "\n"
-    .     '<td>' . check_php_setting('file_uploads', 'ON') . '</td>' . "\n"
+    .    '<td>' . check_php_setting('file_uploads', 'ON') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '<tr>' . "\n"
     .    '<td>Upload max filesize</td>' . "\n"
     .    '<td>8-100M</td>' . "\n"
-    .     '<td>' . ini_get('upload_max_filesize') . '</td>' . "\n"
+    .    '<td>' . ini_get('upload_max_filesize') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '<tr>' . "\n"
     .    '<td>Post max size</td>' . "\n"
     .    '<td>8-100M</td>' . "\n"
-    .     '<td>' . ini_get('post_max_size') . '</td>' . "\n"
+    .    '<td>' . ini_get('post_max_size') . '</td>' . "\n"
     .    '</tr>' . "\n"
     .    '</tbody>' . "\n"
     .    '</table>' . "\n\n"
@@ -1224,8 +1226,8 @@ elseif ($display == DISP_WELCOME)
     }
     
     echo '</tbody>' . "\n"
-    .   '</table>' . "\n"
-    .   '</fieldset>' . "\n\n"
+    .    '</table>' . "\n"
+    .    '</fieldset>' . "\n\n"
     ;
 
 }
@@ -1259,7 +1261,7 @@ elseif(DISP_DB_CONNECT_SETTING == $display)
     .    '<label for="dbHostForm"><span class="required">*</span> '.get_lang('Database host').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="dbHostForm" name="dbHostForm" value="'.htmlspecialchars($dbHostForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="dbHostForm" name="dbHostForm" value="'.claro_htmlspecialchars($dbHostForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' localhost' . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1269,7 +1271,7 @@ elseif(DISP_DB_CONNECT_SETTING == $display)
     .    '<label for="dbUsernameForm"><span class="required">*</span> '.get_lang('Database username').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text"  size="30" id="dbUsernameForm" name="dbUsernameForm" value="'.htmlspecialchars($dbUsernameForm).'" />' . "\n"
+    .    '<input type="text"  size="30" id="dbUsernameForm" name="dbUsernameForm" value="'.claro_htmlspecialchars($dbUsernameForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' root' . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1279,7 +1281,7 @@ elseif(DISP_DB_CONNECT_SETTING == $display)
     .    '<label for="dbPassForm"><span class="required">*</span> '.get_lang('Database password').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text"  size="30" id="dbPassForm" name="dbPassForm" value="'.htmlspecialchars($dbPassForm).'" />' . "\n"
+    .    '<input type="text"  size="30" id="dbPassForm" name="dbPassForm" value="'.claro_htmlspecialchars($dbPassForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' ' . generate_passwd(8) . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1391,12 +1393,12 @@ elseif(DISP_DB_NAMES_SETTING == $display )
     
     echo '<fieldset>' . "\n"
     .    '<legend>'.get_lang('Database names').'</legend>' . "\n"
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="dbNameForm"><span class="required">*</span> '.($singleDbForm ? get_lang('Database name'):get_lang('Main database')).'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text"  size="30" id="dbNameForm" name="dbNameForm" value="'.htmlspecialchars($dbNameForm).'" />' . "\n"
+    .    '<input type="text"  size="30" id="dbNameForm" name="dbNameForm" value="'.claro_htmlspecialchars($dbNameForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' ' . $dbNameForm . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1407,12 +1409,12 @@ elseif(DISP_DB_NAMES_SETTING == $display )
                                                             : '<br/>INFO : ' . count($existingDbs) . ' databases found<br/><select size="8" ><option>' . implode('</option><option>', $existingDbs) . '</option></select>')
                                  : '')
      */
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="mainTblPrefixForm">'.get_lang('Prefix for main tables').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text"  size="5" id="mainTblPrefixForm" name="mainTblPrefixForm" value="'.htmlspecialchars($mainTblPrefixForm).'" />' . "\n"
+    .    '<input type="text"  size="5" id="mainTblPrefixForm" name="mainTblPrefixForm" value="'.claro_htmlspecialchars($mainTblPrefixForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' ' . $mainTblPrefixForm . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1425,7 +1427,7 @@ elseif(DISP_DB_NAMES_SETTING == $display )
         .    '<label for="dbStatsForm"><span class="required">*</span> '.get_lang('Tracking database').'</label>' . "\n"
         .    '</div>' . "\n"
         .    '<div class="rowField">' . "\n"
-        .    '<input type="text"  size="30" id="dbStatsForm" name="dbStatsForm" value="'.htmlspecialchars($dbStatsForm).'" />' . "\n"
+        .    '<input type="text"  size="30" id="dbStatsForm" name="dbStatsForm" value="'.claro_htmlspecialchars($dbStatsForm).'" />' . "\n"
         .    '<span class="example">' . get_lang('e.g.') . ' ' . $dbStatsForm . '</span>' . "\n"
         .    '</div>' . "\n"
         .    '</div>' . "\n\n"
@@ -1435,7 +1437,7 @@ elseif(DISP_DB_NAMES_SETTING == $display )
         .    '<label for="statsTblPrefixForm">'.get_lang('Prefix for tracking tables').'</label>' . "\n"
         .    '</div>' . "\n"
         .    '<div class="rowField">' . "\n"
-        .    '<input type="text"  size="5" id="statsTblPrefixForm" name="statsTblPrefixForm" value="'.htmlspecialchars($statsTblPrefixForm).'" />' . "\n"
+        .    '<input type="text"  size="5" id="statsTblPrefixForm" name="statsTblPrefixForm" value="'.claro_htmlspecialchars($statsTblPrefixForm).'" />' . "\n"
         .    '<span class="example">' . get_lang('e.g.') . ' ' . $statsTblPrefixForm . '</span>' . "\n"
         .    '</div>' . "\n"
         .    '</div>' . "\n\n"
@@ -1452,7 +1454,7 @@ elseif(DISP_DB_NAMES_SETTING == $display )
     .    '<label for="dbPrefixForm">'.($singleDbForm?get_lang('Prefix for course tables'):get_lang('Prefix for course databases')).'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text"  size="30" id="dbPrefixForm" name="dbPrefixForm" value="'.htmlspecialchars($dbPrefixForm).'" />' . "\n"
+    .    '<input type="text"  size="30" id="dbPrefixForm" name="dbPrefixForm" value="'.claro_htmlspecialchars($dbPrefixForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' ' . $dbPrefixForm . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1496,8 +1498,8 @@ elseif(DISP_ADMINISTRATOR_SETTING == $display )
     {
         echo '<div class="claroDialogBox boxError">'  . "\n"
         .    '<p>' . "\n"
-        .     '<strong>'.get_lang('Error').'</strong> : '
-        .     get_lang('Please enter missing information')
+        .    '<strong>'.get_lang('Error').'</strong> : '
+        .    get_lang('Please enter missing information')
         .    '</p>' . "\n"
         .    '<p>'  . "\n"
         .    ( is_array($missing_admin_data) ? 'Fill in '.implode(', ',$missing_admin_data) .'<br />' : '' )
@@ -1510,52 +1512,52 @@ elseif(DISP_ADMINISTRATOR_SETTING == $display )
     echo '<fieldset>' . "\n"
     .    '<legend>'.get_lang('Administrator details').'</legend>' . "\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="loginForm"><span class="required">*</span> '.get_lang('Login').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="loginForm" name="loginForm" value="'.htmlspecialchars($loginForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="loginForm" name="loginForm" value="'.claro_htmlspecialchars($loginForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' jdoe</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="passForm"><span class="required">*</span> '.get_lang('Password').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="passForm" name="passForm" value="'.htmlspecialchars($passForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="passForm" name="passForm" value="'.claro_htmlspecialchars($passForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . generate_passwd(8) . '</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="adminEmailForm"><span class="required">*</span> '.get_lang('Email').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="adminEmailForm" name="adminEmailForm" value="'.htmlspecialchars($adminEmailForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="adminEmailForm" name="adminEmailForm" value="'.claro_htmlspecialchars($adminEmailForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' jdoe@mydomain.net</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
         
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="adminNameForm"><span class="required">*</span> '.get_lang('Last name').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="adminNameForm" name="adminNameForm" value="'.htmlspecialchars($adminNameForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="adminNameForm" name="adminNameForm" value="'.claro_htmlspecialchars($adminNameForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' Doe</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="adminSurnameForm"><span class="required">*</span> '.get_lang('First name').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="adminSurnameForm" name="adminSurnameForm" value="'.htmlspecialchars($adminSurnameForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="adminSurnameForm" name="adminSurnameForm" value="'.claro_htmlspecialchars($adminSurnameForm).'" />' . "\n"
     .    '<span class="example">' . get_lang('e.g.') . ' John</span>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
@@ -1581,34 +1583,34 @@ elseif(DISP_PLATFORM_SETTING == $display)
     .    '<fieldset>' . "\n"
     .    '<legend>'.get_lang('Campus').'</legend>' . "\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="campusForm"><span class="required">*</span> '.get_lang('Name').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="campusForm" name="campusForm" value="'.htmlspecialchars($campusForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="campusForm" name="campusForm" value="'.claro_htmlspecialchars($campusForm).'" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="urlForm"><span class="required">*</span> '.get_lang('Absolute URL').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="urlForm" name="urlForm" value="'.htmlspecialchars($urlForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="urlForm" name="urlForm" value="'.claro_htmlspecialchars($urlForm).'" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="courseRepositoryForm">'.get_lang('Path to courses repository (relative to the URL above)').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="courseRepositoryForm" name="courseRepositoryForm" value="'.htmlspecialchars($courseRepositoryForm).'" />' . "\n"
+    .    '<input type="text" size="30" id="courseRepositoryForm" name="courseRepositoryForm" value="'.claro_htmlspecialchars($courseRepositoryForm).'" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="languageForm"><span class="required">*</span> '.get_lang('Main language').'</label>' . "\n"
     .    '</div>' . "\n"
@@ -1625,7 +1627,7 @@ elseif(DISP_PLATFORM_SETTING == $display)
     .    '<fieldset>' . "\n"
     .    '<legend>'.get_lang('User').'</legend>' . "\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<span class="required">*</span> ' . "\n"
     .    get_lang('Self-registration') . "\n"
@@ -1639,7 +1641,7 @@ elseif(DISP_PLATFORM_SETTING == $display)
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<span class="required">*</span> ' . "\n"
     .    get_lang('Password storage') . "\n"
@@ -1669,24 +1671,24 @@ elseif(DISP_ADMINISTRATIVE_SETTING == $display)
     .    '</h2>'  . "\n"
     .    $msg_missing_administrative_data
     
-    .     '<fieldset>' . "\n"
+    .    '<fieldset>' . "\n"
     .    '<legend>'.get_lang('Related organization').'</legend>' . "\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="institutionForm">'.get_lang('Institution name').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="institutionForm" name="institutionForm" value="'.htmlspecialchars($institutionForm) . '" />' . "\n"
+    .    '<input type="text" size="30" id="institutionForm" name="institutionForm" value="'.claro_htmlspecialchars($institutionForm) . '" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="institutionUrlForm">'.get_lang('Institution URL').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="institutionUrlForm" name="institutionUrlForm" value="'.htmlspecialchars($institutionUrlForm) . '" />' . "\n"
+    .    '<input type="text" size="30" id="institutionUrlForm" name="institutionUrlForm" value="'.claro_htmlspecialchars($institutionUrlForm) . '" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
 
@@ -1695,30 +1697,30 @@ elseif(DISP_ADMINISTRATIVE_SETTING == $display)
     .    '<fieldset>' . "\n"
     .    '<legend>'.get_lang('Campus contact').'</legend>' . "\n"
 
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="contactNameForm"><span class="required">*</span> '.get_lang('Contact name').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="contactNameForm" name="contactNameForm" value="'.htmlspecialchars($contactNameForm) . '"/>' . "\n"
+    .    '<input type="text" size="30" id="contactNameForm" name="contactNameForm" value="'.claro_htmlspecialchars($contactNameForm) . '"/>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="contactEmailForm"><span class="required">*</span> '.get_lang('Contact email').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="contactEmailForm" name="contactEmailForm" value="'.htmlspecialchars($contactEmailForm) . '"/>' . "\n"
+    .    '<input type="text" size="30" id="contactEmailForm" name="contactEmailForm" value="'.claro_htmlspecialchars($contactEmailForm) . '"/>' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
-    .     '<div class="row">' . "\n"
+    .    '<div class="row">' . "\n"
     .    '<div class="rowTitle">' . "\n"
     .    '<label for="contactPhoneForm">'.get_lang('Contact phone').'</label>' . "\n"
     .    '</div>' . "\n"
     .    '<div class="rowField">' . "\n"
-    .    '<input type="text" size="30" id="contactPhoneForm" name="contactPhoneForm" value="'.htmlspecialchars($contactPhoneForm) . '" />' . "\n"
+    .    '<input type="text" size="30" id="contactPhoneForm" name="contactPhoneForm" value="'.claro_htmlspecialchars($contactPhoneForm) . '" />' . "\n"
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
@@ -1757,7 +1759,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Database host') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($dbHostForm)
+    .    claro_htmlspecialchars($dbHostForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
         
@@ -1766,7 +1768,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Database username') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($dbUsernameForm)
+    .    claro_htmlspecialchars($dbUsernameForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
         
@@ -1775,17 +1777,17 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Database password') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars((empty($dbPassForm) ? '--empty--' : $dbPassForm))
+    .    claro_htmlspecialchars((empty($dbPassForm) ? '--empty--' : $dbPassForm))
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
-
+    
     .    '</table>' . "\n\n"
     
     .    '<table class="checkList">' . "\n\n"
     .    '<tr class="checkSubTitle">'
     .    '<th colspan="2">' . get_lang('Database usage') . '</th>'
     .    '<tr>' . "\n"
-            
+    
     .    '<tr class="check">' . "\n"
     .    '<td class="checkTitle">' . "\n"
     .    get_lang('Database mode') . ' : ' . "\n"
@@ -1808,7 +1810,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Main database') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($dbNameForm)
+    .    claro_htmlspecialchars($dbNameForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
     
@@ -1817,7 +1819,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Tracking database') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($dbStatsForm)
+    .    claro_htmlspecialchars($dbStatsForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
     
@@ -1836,7 +1838,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
         .    get_lang('Main tables') . ' : ' . "\n"
         .    '</td>' . "\n"
         .    '<td class="checkValue">' . "\n"
-        .    htmlspecialchars($mainTblPrefixForm)
+        .    claro_htmlspecialchars($mainTblPrefixForm)
         .    '</td>' . "\n"
         .    '</tr>' . "\n\n"
         ;
@@ -1849,7 +1851,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
         .    get_lang('Tracking tables') . ' : ' . "\n"
         .    '</td>' . "\n"
         .    '<td class="checkValue">' . "\n"
-        .    htmlspecialchars($statsTblPrefixForm)
+        .    claro_htmlspecialchars($statsTblPrefixForm)
         .    '</td>' . "\n"
         .    '</tr>' . "\n\n"
         ;
@@ -1862,14 +1864,14 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
         .    get_lang('Course databases') . ' : ' . "\n"
         .    '</td>' . "\n"
         .    '<td class="checkValue">' . "\n"
-        .    htmlspecialchars($dbPrefixForm)
+        .    claro_htmlspecialchars($dbPrefixForm)
         .    '</td>' . "\n"
         .    '</tr>' . "\n\n"
         ;
     }
         
     echo '</table>' . "\n\n"
-    .     '</fieldset>' . "\n"
+    .    '</fieldset>' . "\n"
 
     .    '<fieldset>' . "\n"
     .    '<legend>'.$panelTitle[DISP_ADMINISTRATOR_SETTING].'</legend>' . "\n"
@@ -1881,7 +1883,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Login') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($loginForm)
+    .    claro_htmlspecialchars($loginForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -1890,7 +1892,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Password') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars((empty($passForm)?'--'.get_lang('empty').'-- <strong>&lt;-- '.get_lang('Error').'</strong>':$passForm))
+    .    claro_htmlspecialchars((empty($passForm)?'--'.get_lang('empty').'-- <strong>&lt;-- '.get_lang('Error').'</strong>':$passForm))
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -1899,7 +1901,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Email') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($adminEmailForm)
+    .    claro_htmlspecialchars($adminEmailForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -1908,7 +1910,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Last name') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($adminNameForm)
+    .    claro_htmlspecialchars($adminNameForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -1917,7 +1919,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('First name') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($adminSurnameForm)
+    .    claro_htmlspecialchars($adminSurnameForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
    
@@ -1938,7 +1940,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Campus name') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($campusForm)
+    .    claro_htmlspecialchars($campusForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -2003,7 +2005,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Institution name') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars((empty($institutionForm)?'--'.get_lang('empty').'--':$institutionForm))
+    .    claro_htmlspecialchars((empty($institutionForm)?'--'.get_lang('empty').'--':$institutionForm))
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -2028,7 +2030,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Contact name') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars((empty($contactNameForm)?'--'.get_lang('empty').'--':$contactNameForm))
+    .    claro_htmlspecialchars((empty($contactNameForm)?'--'.get_lang('empty').'--':$contactNameForm))
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -2037,7 +2039,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Contact email') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars((empty($contactEmailForm)?$adminEmailForm:$contactEmailForm))
+    .    claro_htmlspecialchars((empty($contactEmailForm)?$adminEmailForm:$contactEmailForm))
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
 
@@ -2046,7 +2048,7 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    get_lang('Contact phone') . ' : ' . "\n"
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
-    .    htmlspecialchars($contactPhoneForm)
+    .    claro_htmlspecialchars($contactPhoneForm)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
     

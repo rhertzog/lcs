@@ -1,11 +1,13 @@
-<?php // $Id: event.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: event.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Event Manager library
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * Event Manager library.
+ *
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -320,7 +322,7 @@ class EventListener
      * @param Event event the event to handle
      */
     public function handle( $event )
-    {      
+    {
         try
         {
             if ( is_callable( $this->_callback ) )

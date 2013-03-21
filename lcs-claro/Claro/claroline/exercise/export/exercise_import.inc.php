@@ -1,4 +1,4 @@
-<?php // $Id: exercise_import.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: exercise_import.inc.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
@@ -709,5 +709,3 @@ function elementData($parser,$data)
         break;
     }
 }
-
-?>

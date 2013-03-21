@@ -1,12 +1,12 @@
-<?php // $Id: sql.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: sql.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 /**
  * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC
- *  LICENSE version 2 or later
+ *              LICENSE version 2 or later
  * @author      see 'credits' file
  * @package     KERNEL
  */

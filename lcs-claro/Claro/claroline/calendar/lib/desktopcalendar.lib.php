@@ -1,4 +1,4 @@
-<?php // $Id: desktopcalendar.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: desktopcalendar.lib.php 14162 2012-05-24 13:25:20Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * User desktop : MyCalendar portlet calendar class
  *
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14162 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     DESKTOP
@@ -15,9 +15,9 @@
  * @since       1.9
  */
 
-FromKernel::uses('user.lib');
+FromKernel::uses('user.lib','courselist.lib');
 From::Module('CLCAL')->uses('agenda.lib');
-uses('courselist.lib');
+
 include claro_get_conf_repository() . 'CLHOME.conf.php'; // conf file
 
 class UserDesktopCalendar
@@ -152,7 +152,7 @@ var UserDesktopCalendar = {
     
         $htmlStream .= '</th>' . "\n"
         .    '</tr>' . "\n"
-        .    '<tr class="headerX">' ."\n"
+        .    '<tr>' ."\n"
         ;
     
         for ( $iterator = 1; $iterator < 8; $iterator++)
@@ -235,7 +235,7 @@ var UserDesktopCalendar = {
 
         $output = '';
 
-        $output .= '<div class="calendar">'.$this->ajaxMiniCalendar($agendaItemList).'</div>';
+        
         
         $output .= '<div class="details">' . "\n"
                  . '<dl class="calendarDetails">' . "\n";
@@ -272,6 +272,8 @@ var UserDesktopCalendar = {
         $output .= ''
                  . '</dl>' . "\n"
                  . '</div>' . "\n";
+        
+        // $output .= '<div class="calendar">'.$this->ajaxMiniCalendar($agendaItemList).'</div>';
         
         return $output;
     }

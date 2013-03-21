@@ -1,21 +1,15 @@
-<?php // $Id: index.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: index.php 14087 2012-03-21 14:03:31Z zefredz $
+
 /**
- * CLAROLINE
+ * CLAROLINE 1.11
  *
- * @version 1.8 $Revision: 12923 $
- * 
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * 
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE 
- *
- * @see http://www.claroline.net/wiki/CLWRK/
- *
- * @package CLWRK
- *
- * @author Claro Team <cvs@claroline.net>
- *
+ * @version     $Revision: 14087 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
+ * @see         http://www.claroline.net/wiki/CLWRK/
+ * @package     CLWRK
  */
 
 header('Location:./learningPathList.php');
 exit();
-?>

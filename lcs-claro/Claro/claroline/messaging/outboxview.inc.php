@@ -1,4 +1,4 @@
-<?php // $Id: outboxview.inc.php 13028 2011-03-31 17:05:16Z abourguignon $
+<?php // $Id: outboxview.inc.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -12,7 +12,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * View of the outbox.
  *
- * @version     $Revision: 13028 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -94,14 +94,14 @@ else
     $linkSort = $linkPage."?".$arg_sort."&amp;";
 }
     
-$content .= '<table class="claroTable emphaseLine" width="100%">'."\n";
-$content .= '<tr class ="headerX"> '."\n"
-                .'<th>'.get_lang("Subject").'</th>'."\n"
-                .'<th>'.get_lang("Recipient").'</th> '."\n"
-                .'<th><a href="'.$linkSort.'fieldOrder=date&amp;order='.$nextOrder.'">'.get_lang("Date").'</a></th>'."\n"
-                ;
-
-$content .= '</tr>'."\n\n";
+$content .= '<table class="claroTable emphaseLine" width="100%">'."\n"
+          . '<thead>'
+          . '<tr> '."\n"
+          . '<th>'.get_lang("Subject").'</th>'."\n"
+          . '<th>'.get_lang("Recipient").'</th> '."\n"
+          . '<th><a href="'.$linkSort.'fieldOrder=date&amp;order='.$nextOrder.'">'.get_lang("Date").'</a></th>'."\n"
+          . '</tr>'."\n"
+          . '</thead>'."\n";
 
 if ($box->getNumberOfMessage() == 0)
 {
@@ -144,16 +144,16 @@ else
         }
         
         $content .= ' <a href="readmessage.php?messageId='.$message->getId().'&amp;type=sent&amp;userId='.$currentUserId.'">';
-        $content .=  htmlspecialchars($message->getSubject()).'</a></td>'."\n"
+        $content .=  claro_htmlspecialchars($message->getSubject()).'</a></td>'."\n"
                     .'<td>';
                     
         if ( $recipientList['sentTo'] == 'toUser' )
         {
-            $content .= htmlspecialchars($recipientList['userList'][0]['firstName'])." ".htmlspecialchars($recipientList['userList'][0]['lastName']);
+            $content .= claro_htmlspecialchars($recipientList['userList'][0]['firstName'])." ".claro_htmlspecialchars($recipientList['userList'][0]['lastName']);
             
             if ( count( $recipientList['userList'] ) > 1 )
             {
-                $content .=  ", ".htmlspecialchars($recipientList['userList'][1]['firstName'])." ".htmlspecialchars($recipientList['userList'][1]['lastName']);
+                $content .=  ", ".claro_htmlspecialchars($recipientList['userList'][1]['firstName'])." ".claro_htmlspecialchars($recipientList['userList'][1]['lastName']);
             }
             
             if ( count( $recipientList['userList'] ) > 2 )

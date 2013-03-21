@@ -1,16 +1,14 @@
-<?php // $Id: exercise.lib.php 13320 2011-07-14 16:58:59Z abourguignon $
+<?php // $Id: exercise.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
+
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 13320 $
- *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Claro Team <cvs@claroline.net>
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
  */
  
 /**
@@ -358,5 +356,3 @@ function getCategoryTitle( $categoryId )
     	return '';
     }
 }
-
-?>

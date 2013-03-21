@@ -1,18 +1,18 @@
-<?php // $Id: viewforum.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: viewforum.php 14368 2013-01-30 12:02:42Z zefredz $
+
 /**
- * Claroline forum tool
+ * CLAROLINE
  *
  * Displays the list of topics gathered within a forum.
- * As from 1.9.6 adds administrative commands : edit-delete-block
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 14368 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @copyright   (c) 2001 The phpBB Group
  * @author      Claroline Team <info@claroline.net>
  * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
  * @license     http://www.gnu.org/copyleft/gpl.html
  *              GNU GENERAL PUBLIC LICENSE version 2 or later
  * @package     CLFRM
- *
  */
 
 $tlabelReq = 'CLFRM';
@@ -52,12 +52,12 @@ try
         $userInput->setValidator( 'cmd', new Claro_Validator_AllowedList( array( 'show', 'exLock', 'exUnlock', 'exDelTopic', 'exEditTopic', 'rqEditTopic', 'exNotify', 'exdoNotNotify' ) ) );
         $userInput->setValidator( 'topic', new Claro_Validator_ValueType( 'numeric' ) );
         $userInput->setValidator( 'topic', new Claro_Validator_NotEmpty() );
-        $userInput->setValidator( 'title', new Claro_Validator_ValueType( 'string' ) );       
+        $userInput->setValidator( 'title', new Claro_Validator_ValueType( 'string' ) );
         $userInput->setValidator( 'title', new Claro_Validator_NotEmpty() );
     }
     else
     {
-        $userInput->setValidator( 'cmd', new Claro_Validator_AllowedList( array( 'show', 'exNotify', 'exdoNotNotify' ) ) );    
+        $userInput->setValidator( 'cmd', new Claro_Validator_AllowedList( array( 'show', 'exNotify', 'exdoNotNotify' ) ) );
     }
     $userInput->setValidator( 'forum', new Claro_Validator_ValueType( 'numeric' ) );
     $userInput->setValidator( 'forum', new Claro_Validator_NotEmpty() );
@@ -65,16 +65,37 @@ try
 
     //collect user input
     $cmd = $userInput->get( 'cmd', 'show' );
-    $forumId = $userInput->getMandatory( 'forum' );
+    
+    try
+    {
+        $forumId = $userInput->getMandatory( 'forum' );
+    }
+    catch( Exception $e )
+    {
+        if ( ! isset( $forumId ) &&  claro_is_in_a_group() && claro_is_group_allowed() )
+        {
+            $forumId = claro_get_current_group_data( 'forumId' );
+            
+            if ( ! $forumId )
+            {
+                throw $e;
+            }
+        }
+        else
+        {
+            throw $e;
+        }
+    }
+    
     $start = $userInput->get( 'start', 0 );
     //TODO notification commands should be handled by ajax calls
     if( !in_array( $cmd, array( 'exNotify', 'exdoNotNotify', 'show' ) ) )
     {
-        $topicId = $userInput->getMandatory( 'topic' );         
-    } 
+        $topicId = $userInput->getMandatory( 'topic' );
+    }
     if( 'exEditTopic' == $cmd )
     {
-        $topicTitle = $userInput->getMandatory( 'title' ); 
+        $topicTitle = $userInput->getMandatory( 'title' );
     }
 }
 catch( Exception $ex )
@@ -88,21 +109,21 @@ catch( Exception $ex )
         switch( $cmd )
         {
             //notification commands should be handled by ajax calls
-            case 'exNotify' : 
+            case 'exNotify' :
                 $dialogBox->error( get_lang( 'Forum unknown' ) );
-                $cmd = 'show'; 
+                $cmd = 'show';
                 break;
             case 'exDoNotNotify' :
                 $dialogBox->error( get_lang( 'Forum unknown' ) );
-                $cmd = 'show'; 
+                $cmd = 'show';
                 break;
             case 'show' :
                 $dialogBox->error( get_lang( 'Forum unknown' ) );
-                $cmd = 'show'; 
+                $cmd = 'show';
                 break;
             case 'exEdTopic' :
                 $dialogBox->error( get_lang( 'Topic title cannot be empty' ) );
-                $cmd = 'rqEdTopic'; 
+                $cmd = 'rqEdTopic';
                 break;
             default :
                 $dialogBox->error( get_lang( 'Topic unknown' ) );
@@ -136,7 +157,7 @@ if( $is_allowedToEdit )
             {
                 $dialogBox->error( get_lang( 'Error while modifying topic title' ) );
             }
-            break;            
+            break;
         case 'rqEditTopic' :
             $topicSettingList = get_topic_settings( $topicId );
             if( $topicSettingList )
@@ -160,13 +181,13 @@ if( $is_allowedToEdit )
                     {
                         $dialogBox->error( $ex->getMessage() );
                     }
-                }  
+                }
             }
             else
             {
                 $dialogBox->error( get_lang( 'Unknown topic' ) );
-            }  
-            break;   
+            }
+            break;
         case 'exDelTopic' :
             if( delete_topic( $topicId ) )
             {
@@ -198,23 +219,29 @@ if( $is_allowedToEdit )
                 $dialogBox->error( get_lang( 'Error while updating topic lock status' ) );
             }
             break;
-        case 'exNotify' :
-            request_forum_notification( $forumId, claro_get_current_user_id() );
-            break;
-        case 'exdoNotNotify' :
-            cancel_forum_notification( $forumId, claro_get_current_user_id() );
-            break;
+    }
+}
+
+if ( claro_is_course_member () )
+{
+    if ( $cmd == 'exNotify' )
+    {
+        request_forum_notification( $forumId, claro_get_current_user_id() );
+    }
+    elseif ( $cmd == 'exdoNotNotify' )
+    {
+        cancel_forum_notification( $forumId, claro_get_current_user_id() );
     }
 }
 
 //load forum settings and check access rights
 if( false === $forumSettingList = get_forum_settings( $forumId ) )
 {
-    $dialogBox->error( 'Unknown forum' );
+    $dialogBox->error( get_lang('Unknown forum') );
     $viewAllowed = false;
 }
 elseif( !is_null( $forumSettingList['idGroup'] )
-         && ( ( $forumSettingList['idGroup'] != claro_get_current_group_id() ) 
+         && ( ( $forumSettingList['idGroup'] != claro_get_current_group_id() )
                  || !claro_is_in_a_group()
                  || !claro_is_group_allowed() ) )
 {
@@ -227,7 +254,7 @@ else
     $forum_name = $forumSettingList['forum_name'];
     $forum_cat_id = $forumSettingList['cat_id'];
     $forum_post_allowed = ( $forumSettingList['forum_access'] != 0 ) ? true : false;
-
+    
     $display_name = $forum_name;
     if( get_conf( 'clfrm_anonymity_enabled', true ) )
     {
@@ -237,26 +264,31 @@ else
     $viewAllowed = true;
 }
 
-//add javascript control for "dangerous" commands (delete)   
-$htmlHeadXtra[] =
-    "<script type=\"text/javascript\">
-    function confirm_delete()
-    {
-       if (confirm('". clean_str_for_javascript( get_lang( 'Are you sure to delete' ) ) . "'))
-       {return true;}
-       else
-       {return false;}
-    }
-    </script>";
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure to delete %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
 
-//prepare display
+JavascriptLoader::getInstance()->load('forum');
+
+// Prepare display
 $out = '';
 
 $nameTools = get_lang( 'Forums' );
 
 $pagetype = 'viewforum';
 
-$out .= claro_html_tool_title( get_lang( 'Forums' ), $is_allowedToEdit ? 'help_forum.php' : false );
+// Command list
+if( $forum_post_allowed )
+{
+    $cmdList = get_forum_toolbar_array( $pagetype, $forumId, $forum_cat_id, 0 );
+}
+else
+{
+    $cmdList = array();
+}
+
+$out .= claro_html_tool_title( get_lang( 'Forums' ), $is_allowedToEdit ? get_help_page_url('blockForumsHelp','CLFRM') : false, $cmdList );
 
 if( !$viewAllowed )
 {
@@ -265,19 +297,19 @@ if( !$viewAllowed )
 else
 {
     $colspan = $is_allowedToEdit ? 9 : 6;
-
+    
     $is_allowedToEdit = claro_is_allowed_to_edit()
                         || (  claro_is_group_tutor() && !claro_is_course_manager());
                         // (  claro_is_group_tutor()
                         //  is added to give admin status to tutor
                         // && !claro_is_course_manager())
                         // is added  to let course admin, tutor of current group, use student mode
-
+    
     if( claro_is_allowed_to_edit() )
     {
         $out .= '<div style="float: right;">' . "\n"
-        .   '<img src="' . get_icon_url('html') . '" alt="" /> <a href="' . htmlspecialchars( Url::Contextualize( 'export.php?type=HTML&forum=' . $forumId )) . '" target="_blank">' . get_lang( 'Export to HTML' ) . '</a>' . "\n"
-        .   '<img src="'. get_icon_url('mime/pdf') . '" alt="" /> <a href="' . htmlspecialchars( Url::Contextualize( 'export.php?type=PDF&forum=' . $forumId ) ) . '" target="_blank">' . get_lang( 'Export to PDF' ) .'</a>' . "\n"
+        .   '<img src="' . get_icon_url('html') . '" alt="" /> <a href="' . claro_htmlspecialchars( Url::Contextualize( 'export.php?type=HTML&forum=' . $forumId )) . '" target="_blank">' . get_lang( 'Export to HTML' ) . '</a>' . "\n"
+        .   '<img src="'. get_icon_url('mime/pdf') . '" alt="" /> <a href="' . claro_htmlspecialchars( Url::Contextualize( 'export.php?type=PDF&forum=' . $forumId ) ) . '" target="_blank">' . get_lang( 'Export to PDF' ) .'</a>' . "\n"
         .   '</div>' . "\n"
         ;
     }
@@ -285,28 +317,16 @@ else
     $out .= disp_forum_breadcrumb( $pagetype, $forumId, $forum_name );
     
     $out .= $dialogBox->render();
-
-    //display group tools if in group context
-    if( $currentContext == CLARO_CONTEXT_GROUP )
-    {
-        $groupToolList = forum_group_tool_list( claro_get_current_group_id() );
-        $out .= '<p>' . claro_html_menu_horizontal( $groupToolList ) .'</p>';
-    }
-
-    if( $forum_post_allowed )
-    {
-        $out .= '<p>' . claro_html_menu_horizontal(disp_forum_toolbar( $pagetype, $forumId, $forum_cat_id, 0 ) ) . '</p>';
-    }
     
     $topicLister = new topicLister($forumId, $start, get_conf( 'topics_per_page' ) );
     $topicList   = $topicLister->get_topic_list();
-    $pagerUrl = htmlspecialchars( Url::Contextualize( get_module_url( 'CLFRM' ) . '/viewforum.php?forum=' . $forumId ) );
-
+    $pagerUrl = claro_htmlspecialchars( Url::Contextualize( get_module_url( 'CLFRM' ) . '/viewforum.php?forum=' . $forumId ) );
+    
     $out .= $topicLister->disp_pager_tool_bar( $pagerUrl );
-
+    
     try
     {
-        $display = new ModuleTemplate( 'CLFRM' , 'forum_viewforum.tpl.php' ); 
+        $display = new ModuleTemplate( 'CLFRM' , 'forum_viewforum.tpl.php' );
         $display->assign( 'forumId', $forumId );
         $display->assign( 'forumName', $display_name );
         $display->assign( 'forumSettings', $forumSettingList );
@@ -320,7 +340,7 @@ else
     {
         $dialogBox->error( $ex );
     }
-
+    
     $out .= $topicLister->disp_pager_tool_bar($pagerUrl);
 }
 

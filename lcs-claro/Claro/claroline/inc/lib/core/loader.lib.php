@@ -1,4 +1,4 @@
-<?php // $Id: loader.lib.php 13547 2011-09-07 10:12:08Z abourguignon $
+<?php // $Id: loader.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Loader classes for CSS and Javascript.
  *
- * @version     $Revision: 13547 $
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>

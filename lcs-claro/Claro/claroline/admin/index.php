@@ -1,11 +1,11 @@
-<?php // $Id: index.php 13028 2011-03-31 17:05:16Z abourguignon $
+<?php // $Id: index.php 14195 2012-07-04 13:17:51Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Admin panel.
  *
- * @version     $Revision: 13028 $
+ * @version     $Revision: 14195 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     ADMIN
@@ -56,7 +56,7 @@ $dialogBox = new DialogBox();
 // Users' administration menu
 $menu['AdminUser'][] = get_lang('Search for a user').'<br />'
                      . '<form name="searchUser" action="admin_users.php" method="get">' . "\n"
-                     . '<input type="text" name="search" id="search_user" />&nbsp;'
+                     . '<input type="text" name="search" id="search_user" class="inputSearch" />&nbsp;'
                      . '<input type="submit" value="' . get_lang('Go') . '" />'
                      . '&nbsp;'
                      . '<small>'
@@ -69,19 +69,20 @@ $menu['AdminUser'][] = get_lang('Search for a user').'<br />'
 $menu['AdminUser'][] = '<a href="admin_users.php">'.get_lang('User list').'</a>';
 $menu['AdminUser'][] = '<a href="../messaging/sendmessage.php?cmd=rqMessageToAllUsers">'.get_lang('Send a message to all users').'</a>';
 $menu['AdminUser'][] = '<a href="adminaddnewuser.php">'.get_lang('Create user').'</a>';
-$menu['AdminUser'][] = '<a href="../user/AddCSVusers.php?AddType=adminTool">'.get_lang('Add a user list').'</a>';
+$menu['AdminUser'][] = '<a href="../user/addcsvusers.php?AddType=adminTool">'.get_lang('Add a user list').'</a>';
 $menu['AdminUser'][] = '<a href="admin_class.php">'.get_lang('Manage classes').'</a>';
 $menu['AdminUser'][] = '<a href="right/profile_list.php">'.get_lang('Right profile list').'</a>';
 $menu['AdminUser'][] = '<a href="../desktop/config.php">'.get_lang('Manage user desktop').'</a>';
 $menu['AdminUser'][] = '<a href="adminmergeuser.php">'.get_lang('Merge user accounts').'</a>';
- //modif1 : add LCS
+//modif1 : add LCS
 $menu['AdminUser'][] = '<a href="init_lcs.php"> Initialisation compl&#232;te &#224; partir du LDAP LCS </a>';
 $menu['AdminUser'][] =  '<a href="init_users_lcs.php"> Synchronisation des comptes utilisateurs avec le  LDAP LCS </a>';
 //eom
+
 // Courses' administration menu
 $menu['AdminCourse'][] = get_lang('Search for a course').'<br />'
                        . '<form name="searchCourse" action="admin_courses.php" method="get">' . "\n"
-                       . '<input type="text" name="search" id="search_course" />&nbsp;'
+                       . '<input type="text" name="search" id="search_course" class="inputSearch" />&nbsp;'
                        . '<input type="submit" value="' . get_lang('Go'). '" />'
                        . '&nbsp;<small><a href="advanced_course_search.php">' . get_lang('Advanced') . '</a></small>' . "\n"
                        . '</form>';
@@ -106,20 +107,13 @@ if (file_exists(dirname(__FILE__) . '/maintenance/checkmails.php'))
 }
 
 // Claroline's administration menu
-$menu['AdminClaroline'][] = '<a href="registerCampus.php">'.get_lang('Register my campus').'</a>';
+$menu['AdminClaroline'][] = '<a href="http://www.claroline.net/index.php?plugin=formidable&controller=forms&frm_action=preview&form=o4x38v">'.get_lang('Register my campus').'</a>';
 $menu['AdminClaroline'][] = '<a href="http://forum.claroline.net/">'.get_lang('Support forum').'</a>';
 $menu['AdminClaroline'][] = '<a href="clarolinenews.php">'.get_lang('Claroline.net news').'</a>';
 
 // Technical's administration menu
 $menu['AdminTechnical'][] = '<a href="technical/phpInfo.php">'.get_lang('System Info').'</a>';
-$menu['AdminTechnical'][] = '<a href="technical/files_stats.php">'.get_lang('Files statistics').'</a> '
-                          . '(<a href="technical/files_stats.php?view_as=csv">CSV</a>)';
-
-if ( get_conf('DEVEL_MODE', false) == true )
-{
-    $menu['AdminTechnical'][] = '<a href="xtra/sdk/translation_index.php">'.get_lang('Translation Tools').'</a>';
-    $menu['AdminTechnical'][] = '<a href="devTools">'.get_lang('Devel Tools').'</a>';
-}
+$menu['AdminTechnical'][] = '<a href="technical/files_stats.php">'.get_lang('Files statistics').'</a>';
 
 $menu['AdminTechnical'][] = '<a href="../tracking/platform_report.php">'.get_lang('Platform statistics').'</a>';
 $menu['AdminTechnical'][] = '<a href="campusProblem.php">'.get_lang('Scan technical fault').'</a>';
@@ -128,21 +122,14 @@ $menu['AdminTechnical'][] = '<a href="upgrade/index.php">'.get_lang('Upgrade').'
 // Communication's administration menu
 $menu['Communication'][] = '<a href="../messaging/admin.php">'.get_lang('Internal messaging').'</a>';
 
-// Extra tools' administration menu
-$tbl = claro_sql_get_main_tbl();
+$adminModuleList = get_admin_module_list(true);
 
-$sql = "SELECT `label`, `name`\n"
-     . "FROM `{$tbl['module']}`\n"
-     . "WHERE `type` = 'admin'\n"
-     . "AND `activation` = 'activated'";
-
-$adminModuleList = Claroline::getDatabase()->query($sql);
-
-if ($adminModuleList->count() > 0)
+if ( count( $adminModuleList ) > 0 )
 {
     foreach ( $adminModuleList as $module )
     {
         language::load_module_translation($module['label']);
+
         $menu['ExtraTools'][] = '<a href="'.get_module_entry_url($module['label']).'">'.get_lang($module['name']).'</a>';
     }
 }

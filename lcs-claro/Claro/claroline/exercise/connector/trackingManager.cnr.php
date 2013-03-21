@@ -1,18 +1,14 @@
-<?php
-if ( count( get_included_files() ) == 1 ) die( '---' );
+<?php // $Id: trackingManager.cnr.php 14305 2012-10-30 13:02:23Z zefredz $
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
- *
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLQWZ
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Sebastien Piraux <pir@cerdecam.be>
+ * @version     1.12 $Revision: 14305 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLQWZ
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Sebastien Piraux <pir@cerdecam.be>
  */
 
 /**
@@ -85,8 +81,8 @@ class CLQWZ_TrackingManager extends TrackingManager
         }
 
         // get data to delete from exercise tracking table
-        $sql = "SELECT `id` 
-                FROM `" . $this->tbl_qwz_tracking . "` 
+        $sql = "SELECT `id`
+                FROM `" . $this->tbl_qwz_tracking . "`
                 WHERE  `user_id` = ".(int) $userId
                 . $dateCondition;
                 
@@ -119,4 +115,3 @@ class CLQWZ_TrackingManager extends TrackingManager
 }
 
 TrackingManagerRegistry::register('CLQWZ_TrackingManager');
-?>

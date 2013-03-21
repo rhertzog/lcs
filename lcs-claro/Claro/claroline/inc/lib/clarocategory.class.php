@@ -1,11 +1,11 @@
-<?php // $Id: clarocategory.class.php 13582 2011-09-13 11:58:30Z abourguignon $
+<?php // $Id: clarocategory.class.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * ClaroCategory Class
  *
- * @version $Revision: 13582 $
+ * @version $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author Claro Team <cvs@claroline.net>
@@ -90,7 +90,7 @@ class ClaroCategory
             $this->idParent             = $data['idParent'];
             $this->rank                 = $data['rank'];
             $this->visible              = $data['visible'];
-            $this->canHaveCoursesChild  = $data['canHaveCoursesChild'];
+            $this->canHaveCoursesChild  = $data['canHaveCoursesChild'] == '0' ? false : true;
             $this->rootCourse           = $data['rootCourse'];
             
             return true;
@@ -105,10 +105,12 @@ class ClaroCategory
      */
     public function save ()
     {
+        $canHaveCourseChild = $this->canHaveCoursesChild ? 1 : 0;
+        
         if ( empty($this->id) )
         {
             // No id: it's a new category -> insert
-            if( claro_insert_cat_datas($this->name, $this->code, $this->idParent, $this->rank, $this->visible, $this->canHaveCoursesChild, $this->rootCourse) )
+            if( claro_insert_cat_datas($this->name, $this->code, $this->idParent, $this->rank, $this->visible, $canHaveCourseChild, $this->rootCourse) )
                 return true;
             else
             {
@@ -119,7 +121,7 @@ class ClaroCategory
         else
         {
             // No id: it's a new category -> update
-            if( claro_update_cat_datas($this->id, $this->name, $this->code, $this->idParent, $this->rank, $this->visible, $this->canHaveCoursesChild, $this->rootCourse) )
+            if( claro_update_cat_datas($this->id, $this->name, $this->code, $this->idParent, $this->rank, $this->visible, $canHaveCourseChild, $this->rootCourse) )
                 return true;
             else
             {
@@ -150,29 +152,62 @@ class ClaroCategory
      * @return string   path.
      * @example echo getPath($categoryId, $categoriesList) will show "Category A > Category B > Category C"
      */
-    public static function getPath ($categoryId, $categoriesList = null, $separator = ' > ')
+    public static function getPath ( $categoryId, $categoriesList = null, $separator = ' > ' )
     {
         if ( is_null($categoriesList) )
         {
             $categoriesList = self::getAllCategories();
         }
         
-        $path   = null;
-        $findId = $categoryId;
-        while ( !is_null($findId) && $findId != 0 )
+        if ( !get_conf( 'clcrs_displayShortCategoryPath', false ) )
         {
-            foreach ( $categoriesList as $category )
+            $path   = null;
+            $findId = $categoryId;
+
+            while ( !is_null($findId) && $findId != 0 )
             {
-                if ( $category['id'] == $findId )
+                foreach ( $categoriesList as $category )
                 {
-                    $path = $category['name'] . ((!is_null($path))?(' ' . $separator . ' ' . $path):(null));
-                    $findId = $category['idParent'];
-                    break;
+                    if ( $category['id'] == $findId )
+                    {
+                        $path = $category['name'] . ((!is_null($path))?(' ' . $separator . ' ' . $path):(null));
+                        $findId = $category['idParent'];
+                        break;
+                    }
                 }
             }
+
+            return $path;
         }
-        
-        return $path;
+        else
+        {
+            $path   = null;
+            $findId = $categoryId;
+            
+            $thisCategoryName = '';
+
+            while ( !is_null($findId) && $findId != 0 )
+            {
+                foreach ( $categoriesList as $category )
+                {
+                    if ( $category['id'] == $categoryId )
+                    {
+                        $thisCategoryName = $category['name'];
+                    }
+                    
+                    if ( $category['id'] == $findId )
+                    {
+                        $path = $category['code'] . ((!is_null($path))?(' ' . $separator . ' ' . $path):(null));
+                        $findId = $category['idParent'];
+                        break;
+                    }
+                }
+            }
+            
+            $path = "({$path}) {$thisCategoryName}";
+
+            return $path;
+        }
     }
     
     
@@ -205,33 +240,21 @@ class ClaroCategory
     
     
     /**
-     * Select all categories in database and give an explicit path for each of
-     * them.
+     * Select all categories in database and give an explicit path for each of them.
      *
      * @param string    $separator (default: ' > ')
      * @return array    collection of categories (id and path), ordered by rank
      */
     public static function getAllCategoriesFlat ( $separator = ' > ' )
     {
-        $categoriesList = self::getAllCategories();
+        $categoryList = self::getAllCategories();
         
-        $flatList = array();
-        foreach ($categoriesList as $category)
-        {
-            $flatList[] = array(
-                'id' =>     $category['id'],
-                'canHaveCoursesChild' => $category['canHaveCoursesChild'],
-                'visible' => $category['visible'],
-                'path' =>   self::getPath($category['id'], $categoriesList, $separator)
-            );
-        }
-        
-        return $flatList;
+        return ClaroCategory::flatCategoryList($categoryList, $separator);
     }
     
     
     /**
-     * Return a list of categories associated to a list of courses.
+     * Return a list of categories associated to a list of courses
      *
      * @param array     list of courses
      * @return array    list of categories associated to courses
@@ -295,6 +318,115 @@ class ClaroCategory
             return array();
         }
         
+    }
+
+
+    /**
+     * Return a list of categories associated to a list of courses
+     *
+     * @param int user id
+     * @return array list of categories associated to the user
+     */
+    public static function getUserCategoriesFlat ( $userId, $separator = '>' )
+    {
+        // Get table name
+        $tbl_mdb_names              = claro_sql_get_main_tbl();
+        $tbl_course                 = $tbl_mdb_names['course'];
+        $tbl_rel_course_user        = $tbl_mdb_names['rel_course_user'];
+        $tbl_category               = $tbl_mdb_names['category'];
+        $tbl_rel_course_category    = $tbl_mdb_names['rel_course_category'];
+
+        $sql = "SELECT ca.id, 
+                       ca.name, 
+                       ca.visible, 
+                       ca.canHaveCoursesChild,
+                       ca.idParent
+
+                FROM `{$tbl_category}` AS ca
+
+                JOIN `{$tbl_rel_course_category}` AS rcc
+                ON ca.id = rcc.categoryId
+
+                JOIN `{$tbl_course}` AS co
+                ON rcc.courseId = co.cours_id
+
+                JOIN `{$tbl_rel_course_user}` AS rcu
+                ON rcu.code_cours = co.code
+
+                WHERE rcu.user_id = {$userId}
+
+                GROUP BY ca.id";
+
+        $result = Claroline::getDatabase()->query($sql);
+        $result->setFetchMode(Mysql_ResultSet::FETCH_ASSOC);
+
+        return ClaroCategory::flatCategoryList($result, $separator);
+    }
+
+
+    /**
+     * Return a list of categories associated to a list of courses
+     *
+     * @param int user id
+     * @return Database_ResultSet list of categories associated to the user
+     */
+    public static function getUserCategories ( $userId, $separator = '>' )
+    {
+        // Get table name
+        $tbl_mdb_names              = claro_sql_get_main_tbl();
+        $tbl_course                 = $tbl_mdb_names['course'];
+        $tbl_rel_course_user        = $tbl_mdb_names['rel_course_user'];
+        $tbl_category               = $tbl_mdb_names['category'];
+        $tbl_rel_course_category    = $tbl_mdb_names['rel_course_category'];
+
+        $sql = "SELECT ca.id, 
+                       ca.name, 
+                       ca.visible, 
+                       ca.canHaveCoursesChild,
+                       ca.idParent
+
+                FROM `{$tbl_category}` AS ca
+
+                JOIN `{$tbl_rel_course_category}` AS rcc
+                ON ca.id = rcc.categoryId
+
+                JOIN `{$tbl_course}` AS co
+                ON rcc.courseId = co.cours_id
+
+                JOIN `{$tbl_rel_course_user}` AS rcu
+                ON rcu.code_cours = co.code
+
+                WHERE rcu.user_id = {$userId}
+
+                GROUP BY ca.id";
+
+        $result = Claroline::getDatabase()->query($sql);
+        $result->setFetchMode(Mysql_ResultSet::FETCH_ASSOC);
+
+        return $result;
+    }
+    
+    
+    /**
+     * Turn an array of categories into an array of "flat" categories 
+     * (each array entry contains the whole path to a category).
+     *
+     * @return array
+     */
+    public static function flatCategoryList($categoryList, $separator)
+    {
+        $flatList = array();
+        foreach ($categoryList as $category)
+        {
+            $flatList[] = array(
+                'id' =>     $category['id'],
+                'canHaveCoursesChild' => $category['canHaveCoursesChild'],
+                'visible' => $category['visible'],
+                'path' =>   self::getPath($category['id'], $categoryList, $separator)
+            );
+        }
+        
+        return $flatList;
     }
     
     
@@ -682,7 +814,7 @@ class ClaroCategory
         // TODO use a template
         
         if ( is_null($cancelUrl) )
-            $cancelUrl = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . htmlspecialchars($this->id);
+            $cancelUrl = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . claro_htmlspecialchars($this->id);
         
         $html = '';
         
@@ -702,10 +834,10 @@ class ClaroCategory
             . '<label for="category_name">'
             . get_lang('Category name')
             . (get_conf('human_label_needed') ? '<span class="required">*</span> ':'')
-            .'</label>&nbsp;:</dt>'
+            .'</label></dt>'
             . '<dd>'
-            . '<input type="text" name="category_name" id="category_name" value="' . htmlspecialchars($this->name) . '" size="30" maxlength="100" />'
-            . (empty($this->id) ? '<br /><small>'.get_lang('e.g. <em>Sciences of Economics</em>').'</small>':'')
+            . '<input type="text" name="category_name" id="category_name" value="' . claro_htmlspecialchars($this->name) . '" size="30" maxlength="100" />'
+            . (empty($this->id) ? '<br /><span class="notice">'.get_lang('e.g. <em>Sciences of Economics</em>').'</span>':'')
             . '</dd>' . "\n" ;
         
         // Category code
@@ -713,16 +845,16 @@ class ClaroCategory
             . '<label for="category_code">'
             . get_lang('Category code')
             . '<span class="required">*</span> '
-            . '</label>&nbsp;:</dt>'
-            . '<dd><input type="text" id="category_code" name="category_code" value="' . htmlspecialchars($this->code) . '" size="30" maxlength="12" />'
-            . (empty($this->id) ? '<br /><small>'.get_lang('max. 12 characters, e.g. <em>ROM2121</em>').'</small>':'')
+            . '</label></dt>'
+            . '<dd><input type="text" id="category_code" name="category_code" value="' . claro_htmlspecialchars($this->code) . '" size="30" maxlength="12" />'
+            . (empty($this->id) ? '<br /><span class="notice">'.get_lang('max. 12 characters, e.g. <em>ROM2121</em>').'</span>':'')
             . '</dd>' . "\n" ;
         
         // Category's parent
         $html .= '<dt>'
             . '<label for="category_parent">'
             . get_lang('Parent category')
-            . '</label>&nbsp;:</dt>'
+            . '</label></dt>'
             . '<dd>'
             . '<select  id="category_parent" name="category_parent" />'
             . $categoriesHtmlList
@@ -735,13 +867,12 @@ class ClaroCategory
         // Category's visibility
         $html .= '<dt>'
             . get_lang('Category visibility')
-            . '<span class="required">*</span> '
-            . ' :'
+            . '<span class="required">*</span>'
             . '</dt>'
             . '<dd>'
             . '<input type="radio" id="visible" name="category_visible" value="1" ' . (( $this->visible == 1 || !isset($this->visible) ) ? 'checked="checked"' : null ) . ' />'
             . '&nbsp;'
-            . '<label for="visible">' . get_lang('Visible') . '</label><br/>'
+            . '<label for="visible">' . get_lang('Visible') . '</label><br />'
             . '<input type="radio" id="hidden" name="category_visible" value="0" ' . (( $this->visible == 0 && isset($this->visible) ) ? 'checked="checked"' : null ) . ' />'
             . '&nbsp;'
             . '<label for="hidden">' . get_lang('Hidden') . '</label>'
@@ -750,34 +881,33 @@ class ClaroCategory
         // Category's right to possess courses
         $html .= '<dt>'
             . get_lang('Can have courses')
-            . '<span class="required">*</span> '
-            . ' :'
+            . '<span class="required">*</span>'
             . '</dt>'
             . '<dd>'
             . '<input type="radio" id="can_have_courses" name="category_can_have_courses" value="1" ' . (( $this->canHaveCoursesChild == 1 || !isset($this->canHaveCoursesChild) ) ? 'checked="checked"':'' ) . ' />'
             . '&nbsp;'
-            . '<label for="can_have_courses">' . get_lang('Yes') . '</label><br/>'
+            . '<label for="can_have_courses">' . get_lang('Yes') . '</label><br />'
             . '<input type="radio" id="cant_have_courses" name="category_can_have_courses" value="0" ' . (( $this->canHaveCoursesChild == 0 && isset($this->canHaveCoursesChild) ) ? 'checked="checked"':'' ) . ' />'
             . '&nbsp;'
-            . '<label for="cant_have_courses">' . get_lang('No') . '</label><br/>'
-            . '<small>'.get_lang('Authorize the category to possess courses or not (opened or closed category)').'</small>'
+            . '<label for="cant_have_courses">' . get_lang('No') . '</label><br />'
+            . '<span class="notice">'.get_lang('Authorize the category to possess courses or not (opened or closed category)').'</span>'
             . '</dd>' . "\n" ;
             
         // Category's dedicated course/board
         $html .= '<dt>'
             . '<label for="category_root_course">'
             . get_lang('Category\'s board')
-            . '</label>&nbsp;:</dt>'
+            . '</label></dt>'
             . '<dd>'
             . '<select  id="category_root_course" name="category_root_course" />'
             . $coursesHtmlList
-            . '</select><br/>'
-            . '<small>'.get_lang('Dedicate a course to this category.  The course has to be linked to the category first.').'</small>'
+            . '</select><br />'
+            . '<span class="notice">'.get_lang('Dedicate a course to this category.  The course has to be linked to the category first.').'</span>'
             . '</dd>' . "\n" ;
             
         // Form's footer
-        $html .= '</fieldset>' . "\n"
-            . '<span class="required">*</span>&nbsp;'.get_lang('Denotes required fields') . '<br/>' . "\n"
+        $html .= '</dl></fieldset>' . "\n"
+            . '<span class="required">*</span>&nbsp;'.get_lang('Denotes required fields') . '<br />' . "\n"
             . '<input type="submit" value="' . get_lang('Ok') . '" />' . "\n"
             . claro_html_button($_SERVER['PHP_SELF'], get_lang('Cancel'))
             . '</form>' . "\n";

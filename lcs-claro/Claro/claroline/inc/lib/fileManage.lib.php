@@ -1,4 +1,4 @@
-<?php // $Id: fileManage.lib.php 13313 2011-07-14 16:19:59Z abourguignon $
+<?php // $Id: fileManage.lib.php 14343 2012-12-12 10:57:36Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 13313 $
+ * @version     1.9 $Revision: 14343 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -141,7 +141,7 @@ function claro_rename_file($oldFilePath, $newFilePath)
             else
             {
                 return false;
-            }
+            }   
         }
         else
         {
@@ -214,6 +214,13 @@ function claro_copy_file($sourcePath, $targetPath)
     }
     elseif ( is_dir($sourcePath) )
     {
+        if ( strtoupper( substr( PHP_OS, 0, 3 ) ) === 'WIN' )
+        {
+            // fix windows path for regexp
+            $sourcePath = str_replace( '\\', '\\\\', $sourcePath );
+            $targetPath = str_replace( '\\', '\\\\', $targetPath );
+        }
+        
         // check to not copy the directory inside itself
         if ( preg_match('/^'.str_replace( '/', '\/', $sourcePath ) . '\//', str_replace( '/', '\/', $targetPath ) . '/') ) return false;
 
@@ -282,10 +289,10 @@ function claro_dirname($filePath)
 function index_dir($dirPath, $mode = 'ALL' )
 {
     $files = array();
-    if( is_dir($dirPath) )
+    if( is_dir($dirPath) ) 
     {
         $fh = opendir($dirPath);
-        while( ( $fileName = readdir($fh) ) !== false )
+        while( ( $fileName = readdir($fh) ) !== false ) 
         {
             // loop through the files, skipping . and .., and recursing if necessary
             if( $fileName == '.' || $fileName == '..' || $fileName == 'CVS' ) continue;
@@ -304,7 +311,7 @@ function index_dir($dirPath, $mode = 'ALL' )
             }
         }
         closedir($fh);
-    }
+    } 
     else
     {
         // false if the function was called with an invalid non-directory argument
@@ -352,7 +359,7 @@ function form_dir_list($file, $baseWorkDir)
 
     $dirList = index_and_sort_dir($baseWorkDir);
 
-    $dialogBox = '<strong>' . get_lang('Move') . '</strong>' . "\n"
+    $dialogBox = '<strong>' . get_lang('Move') . '</strong>' . "\n" 
     ."<form action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n"
                  .    claro_form_relay_context()
                  ."<input type=\"hidden\" name=\"cmd\" value=\"exMv\" />\n"
@@ -408,7 +415,7 @@ function form_dir_list($file, $baseWorkDir)
     $dialogBox .= '</select>' . "\n"
                .  '<br /><br />'
                .  '<input type="submit" value="'.get_lang('Ok').'" />&nbsp;'
-               .  claro_html_button($_SERVER['PHP_SELF'].'?cmd=exChDir&file='.htmlspecialchars(claro_dirname($file)), get_lang('Cancel'))
+               .  claro_html_button($_SERVER['PHP_SELF'].'?cmd=exChDir&file='.claro_htmlspecialchars(claro_dirname($file)), get_lang('Cancel'))
                .  '</form>' . "\n";
 
     return $dialogBox;
@@ -483,8 +490,8 @@ function claro_mkdir($pathName, $mode = 0777, $recursive = false)
  * create a tmp directory
  *
  * @param string  $dir
- * @param string  $prefix
- * @param int     $mode
+ * @param string  $prefix 
+ * @param int     $mode  
  * @return string full pathname
  */
 function claro_mkdir_tmp($dir, $prefix = 'tmp', $mode = 0777)
@@ -791,20 +798,21 @@ function update_Doc_Path_in_Assets($type, $oldPath, $newPath)
     switch ($type)
     {
         case 'update' :
-            
-            // If the path did not change, don't change it !
+
+            // if the path did not change, don't change it !
             if ( empty($newPath) )
             {
                 return false;
             }
-            
+
             // Find and update assets that are concerned by this move
             $sql = "SELECT `path` FROM `" . $TABLEASSET . "` WHERE {$modifier} `path` = '" . claro_sql_escape($oldPath) . "%'";
+
             $result = claro_sql_query($sql);
-            
+
             $num = mysql_num_rows($result);
 
-            // The document with the exact path exists
+            // the document with the exact path exists
             if ( $num )
             {
 
@@ -812,17 +820,17 @@ function update_Doc_Path_in_Assets($type, $oldPath, $newPath)
                         SET `path` = '" . claro_sql_escape($newPath) . "'
                         WHERE {$modifier} `path` = '" . claro_sql_escape($oldPath) . "'";
             }
-            // A document in the renamed directory exists
+            // a document in the renamed directory exists
             else
             {
                 $sql = "UPDATE `" . $TABLEASSET . "`
                         SET path = CONCAT('" . claro_sql_escape($newPath) . "',
-                                   SUBSTRING(path, LENGTH('" . claro_sql_escape($oldPath) . "')1) )
+                                   SUBSTRING(path, LENGTH('" . claro_sql_escape($oldPath) . "')+1) )
                         WHERE {$modifier} path = '" . claro_sql_escape($oldPath) . "'
                         OR {$modifier} path LIKE '" . claro_sql_escape($oldPath) . "/%'";
             }
 
-             claro_sql_query($sql);
+            claro_sql_query($sql);
 
             break;
 

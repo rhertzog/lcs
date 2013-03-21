@@ -1,4 +1,4 @@
-<?php // $Id: linker.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: linker.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 /*
@@ -35,9 +35,11 @@
  */
 
 /**
- * Claroline Resource Linker library
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * Claroline Resource Linker library.
+ *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -47,6 +49,7 @@
  */
 
 require_once dirname(__FILE__) . '/url.lib.php';
+require_once dirname(__FILE__) . '/../utils/iterators.lib.php';
 require_once dirname(__FILE__) . '/../group.lib.inc.php';
 
 interface ResourceLocator
@@ -389,7 +392,7 @@ class LinkerResource
  *
  */
 class LinkerResourceIterator
-    implements SeekableIterator, Countable
+    implements CountableSeekableIterator
 {
     protected $elementList;
     
@@ -972,10 +975,13 @@ class CourseNavigator implements ResourceNavigator
                     $rootNodeLocator->getCourseId(),
                     $courseTool['label']
                 );
+                
+                $name = get_lang( $courseTool['name'] );
             }
             else
             {
                 $locator = new ExternalResourceLocator( $courseTool['url'] );
+                $name = $courseTool['name'];
             }
             
             if ( ! is_null( $courseTool['label'] )
@@ -989,7 +995,7 @@ class CourseNavigator implements ResourceNavigator
             }
             
             $resource = new LinkerResource(
-                $courseTool['name'],
+                $name,
                 $locator,
                 true,
                 $courseTool['visibility'] ? true : false,
@@ -1226,7 +1232,7 @@ class ResourceLinker
         return '<div id="lnk_panel">' . "\n"
             . '<div id="lnk_selected_resources"></div>' . "\n"
             . '<p id="lnk_toggle">' . "\n"
-            . '<a href="#" id="lnk_show_browser">'.get_lang('Attach an existing resource').'</a>' . "\n"
+            . '<a href="#" id="lnk_show_browser" class="attach">'.get_lang('Attach an existing resource').'</a>' . "\n"
             . '<a href="#" id="lnk_hide_browser">'.get_lang('Close').'</a>' . "\n"
             . '</p>' . "\n"
             . '<div id="lnk_browser">' . "\n"
@@ -1253,8 +1259,8 @@ class ResourceLinker
         
         if ( count( $linkList ) )
         {
-            $htmlLinkList .= '<h4 class="lnk_link_list">'
-                . get_lang('Attached resources') . '</h4>'
+            $htmlLinkList .= '<h2 class="lnk_link_list">'
+                . get_lang('Attached resources') . '</h2>'
                 . "\n"
                 ;
                 
@@ -1274,9 +1280,9 @@ class ResourceLinker
                 }
                 
                 $htmlLinkList .= '<li><a href="'
-                    . htmlspecialchars( $url )
+                    . claro_htmlspecialchars( $url )
                     . '" class="lnk_link" rel="' . ClarolineResourceLocator::crlToId( $link->crl ) . '">'
-                    . htmlspecialchars( self::$Resolver->getResourceName( $locator ) )
+                    . claro_htmlspecialchars( self::$Resolver->getResourceName( $locator ) )
                     . '</a></li>' . "\n"
                     ;
             }

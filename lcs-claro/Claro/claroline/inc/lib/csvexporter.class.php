@@ -1,11 +1,11 @@
-<?php // $Id: csvexporter.class.php 13377 2011-07-29 10:27:11Z abourguignon $
+<?php // $Id: csvexporter.class.php 13071 2011-04-12 15:34:46Z abourguignon $
 
 /**
  * CLAROLINE
  *
  * CSV exporter class.
  *
- * @version     $Revision: 13377 $
+ * @version     $Revision: 13071 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     KERNEL

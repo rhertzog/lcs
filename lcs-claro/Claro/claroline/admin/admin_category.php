@@ -41,16 +41,11 @@ $cmd   = isset($_REQUEST['cmd'])?$_REQUEST['cmd']:null;
 $id    = isset($_REQUEST['categoryId'])?$_REQUEST['categoryId']:null;
 
 // Javascript confirm pop up declaration for header
-$htmlHeadXtra[] =
-'<script>
-function confirmation (name)
-{
-    if (confirm("' . clean_str_for_javascript(get_lang('Are you sure to delete')) . '"+\' \'+ name + "? "))
-        {return true;}
-    else
-        {return false;}
-}
-</script>'; // TODO error in the display of questions marks in this string
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure to delete %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+
+JavascriptLoader::getInstance()->load('admin');
 
 switch ( $cmd )
 {
@@ -212,9 +207,19 @@ switch ( $cmd )
 // Get categories
 $categories = claroCategory::getAllCategories();
 
+// Command list
+$cmdList = array();
+
+$cmdList[] = array(
+    'img' => 'category_new',
+    'name' => get_lang('Create a category'),
+    'url' => $_SERVER['PHP_SELF'] . '?cmd=rqAdd'
+);
+
 // Display
 $template = new CoreTemplate('admin_category.tpl.php');
-$template->assign('nameTools', $nameTools);
+
+$template->assign('title', claro_html_tool_title($nameTools, null, $cmdList));
 $template->assign('dialogBox', $dialogBox);
 $template->assign('categories', $categories);
 

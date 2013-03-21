@@ -1,12 +1,11 @@
-<?php // $Id: language.lib.php 13027 2011-03-31 16:40:32Z abourguignon $
+<?php // $Id: language.lib.php 14317 2012-11-09 07:47:35Z zefredz $
 
 /**
  * CLAROLINE
  *
- * language library
- * contains function to manage l10n
+ * Language library.  Contains function to manage l10n.
  *
- * @version     1.10 $Revision: 13027 $
+ * @version     $Revision: 14317 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLUSR
@@ -147,7 +146,7 @@ function get_locale($localeInfoName)
                                   'dateTimeFormatShort',
                                   'timeNoSecFormat');
 
-    if(!in_array($localeInfoName, $initValueList )) trigger_error( htmlentities($localeInfoName) . ' is not a know locale value name ', E_USER_NOTICE);
+    if(!in_array($localeInfoName, $initValueList )) trigger_error( claro_htmlentities($localeInfoName) . ' is not a know locale value name ', E_USER_NOTICE);
     
     //TODO create a real auth function to eval this state
 
@@ -431,18 +430,18 @@ function get_language_list()
     }
 }
 
-function get_language_to_display_list()
+function get_language_to_display_list( $param = 'language_to_display' )
 {
     global $platformLanguage;
 
     $language_list = array();
 
-    $language_to_display_list = get_conf('language_to_display');
+    $language_to_display_list = get_conf( $param );
     $language_to_display_list[] = $platformLanguage;
 
     foreach ( $language_to_display_list as $language )
     {
-        $key = get_translation_of_language($language);
+        $key = ucfirst( get_translation_of_language($language) );
         $value = $language;
         $language_list[$key] = $value;
     }
@@ -619,8 +618,8 @@ function claro_utf8_encode($str, $fromCharset = '' )
     }
     else
     {
-        $converted = htmlentities( $string, ENT_NOQUOTES, $charset );
-        return html_entity_decode( $converted, ENT_NOQUOTES, 'UTF-8' );
+        $converted = claro_htmlentities( $str, ENT_NOQUOTES, $charset );
+        return claro_html_entity_decode( $converted, ENT_NOQUOTES, 'UTF-8' );
     }
 }
 
@@ -651,8 +650,8 @@ function claro_utf8_decode($str, $toCharset = '')
     }
     else
     {
-        $converted = htmlentities( $string, ENT_NOQUOTES, 'UTF-8' );
-        return html_entity_decode( $converted, ENT_NOQUOTES, $charset );
+        $converted = claro_htmlentities( $str, ENT_NOQUOTES, 'UTF-8' );
+        return claro_html_entity_decode( $converted, ENT_NOQUOTES, $charset );
     }
 }
 
@@ -665,5 +664,57 @@ function claro_utf8_encode_array( &$var )
     else
     {
         array_walk( $var, 'claro_utf8_encode_array' );
+    }
+}
+
+/*
+ * Usage :
+ *
+ * $jslang = new JavascriptLanguage;
+ * $jslang->addLangVar('User list');
+ * // ...
+ * ClaroHeader::getInstance()->addInlineJavascript( $jslang->render() );
+ * Claroline.getLang('User list');
+*/
+class JavascriptLanguage
+{
+    protected $lang = array();
+
+    public function addLangVar( $langVar, $langValue = null )
+    {
+        if ( empty ($langValue ) )
+        {
+            $this->lang[$langVar] = get_lang($langVar);
+        }
+        else
+        {
+            $this->lang[$langVar] = $langValue;
+        }
+
+        return $this;
+    }
+
+    public function render()
+    {
+        $out = '<script type="text/javascript">' . "\n";
+
+        $out .= "Claroline.setLangArray( {"."\n";
+        
+        $tmp = array();
+
+        foreach ( $this->lang as $langVar => $langValue )
+        {
+            $langVar = str_replace ("'", "\\'",$langVar);
+            $langValue = str_replace ("'", "\\'",$langValue);
+            $tmp[] = "'$langVar':'$langValue'";
+        }
+        
+        $out .= implode(",\n", $tmp );
+
+        $out .= "});\n"
+            . "</script>\n"
+            ;
+
+        return $out;
     }
 }

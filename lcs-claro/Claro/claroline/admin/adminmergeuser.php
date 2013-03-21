@@ -1,11 +1,11 @@
-<?php // $Id: adminmergeuser.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php // $Id: adminmergeuser.php 13945 2012-01-18 14:05:54Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Merge two user accounts.
  *
- * @version     $Revision: 12941 $
+ * @version     $Revision: 13945 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      see 'credits' file
@@ -27,7 +27,7 @@ if ( ! claro_is_platform_admin() )
     claro_die(get_lang('Not allowed'));
 }
 
-uses( 'utils/input.lib', 'utils/validator.lib', 'display/dialogBox.lib', 'admin/mergeuser.lib', 'user.lib' );
+FromKernel::uses( 'utils/input.lib', 'utils/validator.lib', 'display/dialogBox.lib', 'admin/mergeuser.lib', 'user.lib' );
 
 try
 {
@@ -115,7 +115,14 @@ try
         $mergeUser = new MergeUser;
         $mergeUser->merge( $uidToRemove, $uidToKeep );
         
-        $dialogBox->success( get_lang('User accounts merged') );
+        if ( $mergeUser->hasError() )
+        {
+            $dialogBox->error( get_lang('Some errors have occured while merging those user account, check the log table in the platform main database for more details') );
+        }
+        else
+        {
+            $dialogBox->success( get_lang('User accounts merged') );
+        }
     }
 }
 catch( Exception $e )

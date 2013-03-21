@@ -1,13 +1,6 @@
 /**
- $Id: coursehomepage.css 12911 2011-02-28 12:29:32Z abourguignon $
+ $Id: coursehomepage.css 13400 2011-08-09 14:49:32Z abourguignon $
  **/
-
-.claroBlock
-{
-    padding: 0;
-    margin: 0 0 15px 0;
-    width: 100%;
-}
 
 td.coursePortletList .claroDialogBox { margin-top:0; }
 
@@ -25,16 +18,8 @@ dl#portletAbout dd
     padding-bottom: 10px;
     border-bottom: 1px solid #EDF1E3;
 }
-dl#portletAnnouncements dd.last, 
-dl#portletAbout dd.last
+dl#portletAnnouncements dd:last-child, 
+dl#portletAbout dd:last-child
 {
     border-bottom: 0;
-}
-div#portletMycalendar dl dd
-{
-    margin-left: 20px;
-}
-div.claroBlockHeader.hidden
-{
-    color: #666;
 }

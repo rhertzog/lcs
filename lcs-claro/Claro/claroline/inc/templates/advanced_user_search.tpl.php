@@ -1,4 +1,4 @@
-<!-- $Id: advanced_user_search.tpl.php 12969 2011-03-14 14:40:42Z abourguignon $ -->
+<!-- $Id: advanced_user_search.tpl.php 14314 2012-11-07 09:09:19Z zefredz $ -->
 
 <form action="admin_users.php" method="get">
 <table border="0">
@@ -8,7 +8,7 @@
       : <br />
     </td>
     <td>
-      <input type="text" name="lastName" id="lastName" value="<?php echo htmlspecialchars($this->lastName); ?>" />
+      <input type="text" name="lastName" id="lastName" value="<?php echo claro_htmlspecialchars($this->lastName); ?>" />
     </td>
   </tr>
   <tr>
@@ -17,7 +17,7 @@
       : <br />
     </td>
     <td>
-      <input type="text" name="firstName" id="firstName" value="<?php echo htmlspecialchars($this->firstName) ?>"/>
+      <input type="text" name="firstName" id="firstName" value="<?php echo claro_htmlspecialchars($this->firstName) ?>"/>
     </td>
   </tr>
   <tr>
@@ -26,7 +26,7 @@
       :  <br />
     </td>
     <td>
-      <input type="text" name="userName" id="userName" value="<?php echo htmlspecialchars($this->userName); ?>"/>
+      <input type="text" name="userName" id="userName" value="<?php echo claro_htmlspecialchars($this->userName); ?>"/>
     </td>
   </tr>
   <tr>
@@ -35,7 +35,7 @@
       :  <br />
     </td>
     <td>
-      <input type="text" name="officialCode" id="officialCode" value="<?php echo htmlspecialchars($this->officialCode); ?>"/>
+      <input type="text" name="officialCode" id="officialCode" value="<?php echo claro_htmlspecialchars($this->officialCode); ?>"/>
     </td>
   </tr>
   <tr>
@@ -44,7 +44,7 @@
       : <br />
     </td>
     <td>
-      <input type="text" name="mail" id="mail" value="<?php echo htmlspecialchars($this->mail); ?>"/>
+      <input type="text" name="mail" id="mail" value="<?php echo claro_htmlspecialchars($this->mail); ?>"/>
     </td>
   </tr>
   <tr>

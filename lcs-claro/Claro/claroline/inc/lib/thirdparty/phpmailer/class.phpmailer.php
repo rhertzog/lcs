@@ -34,7 +34,7 @@
  * @author Andy Prevost
  * @author Marcus Bointon
  * @copyright 2004 - 2009 Andy Prevost
- * @version $Id: class.phpmailer.php 12294 2010-04-28 16:52:32Z Systho $
+ * @version $Id: class.phpmailer.php 14315 2012-11-08 14:51:17Z zefredz $
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 
@@ -2024,7 +2024,7 @@ class PHPMailer {
     $this->Body = $message;
     $textMsg = trim(strip_tags(preg_replace('/<(head|title|style|script)[^>]*>.*?<\/\\1>/s','',$message)));
     if (!empty($textMsg) && empty($this->AltBody)) {
-      $this->AltBody = html_entity_decode($textMsg);
+      $this->AltBody = claro_html_entity_decode($textMsg);
     }
     if (empty($this->AltBody)) {
       $this->AltBody = 'To view this email message, open it in a program that understands HTML!' . "\n\n";

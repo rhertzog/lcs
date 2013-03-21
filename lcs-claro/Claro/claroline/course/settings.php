@@ -1,14 +1,14 @@
-<?php // $Id: settings.php 12986 2011-03-18 11:15:50Z abourguignon $
+<?php // $Id: settings.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * This tool manage properties of an exiting course
+ * This tool manage properties of an exiting course.
  *
- * @version     1.9 $Revision: 12986 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      claroline Team <cvs@claroline.net>
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *              old version : http://cvs.claroline.net/cgi-bin/viewcvs.cgi/claroline/claroline/course_info/infocours.php
  * @package     CLCRS
  */
@@ -81,7 +81,7 @@ elseif ( claro_is_in_a_course() )
 {
     // from my course
     $current_cid = claro_get_current_course_id();
-    $backUrl = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . htmlspecialchars($current_cid);
+    $backUrl = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . claro_htmlspecialchars($current_cid);
 }
 else
 {
@@ -196,32 +196,32 @@ else
     claro_die(get_lang('Wrong parameters'));
 }
 
-//----------------------------
-// initialise links array
-//----------------------------
 
-$links = array();
 
-// add course tool list edit
+// Command list
+$cmdList = array();
 
-$links[] = '<a class="claroCmd" href="' . htmlspecialchars(Url::Contextualize( get_path('clarolineRepositoryWeb') . 'course/tools.php' )) . '">'
-.          '<img src="' . get_icon_url('edit') . '" alt="" />'
-.          get_lang('Edit Tool list')
-.          '</a>' ;
+$cmdList[] = array(
+    'img' => 'edit',
+    'name' => get_lang('Edit Tool list'),
+    'url' => claro_htmlspecialchars(Url::Contextualize(get_path('clarolineRepositoryWeb') . 'course/tools.php'))
+);
 
 // Main group settings
-$links[] = '<a class="claroCmd" href="'. htmlspecialchars(Url::Contextualize( get_module_url('CLGRP') . '/group_properties.php' )) . '">'
-.          '<img src="' . get_icon_url('settings') . '" alt="" />'
-.          get_lang("Main Group Settings")
-.          '</a>' ;
+$cmdList[] = array(
+    'img' => 'settings',
+    'name' => get_lang('Main Group Settings'),
+    'url' => claro_htmlspecialchars(Url::Contextualize(get_module_url('CLGRP') . '/group_properties.php'))
+);
 
 // Add tracking link
 if ( get_conf('is_trackingEnabled') )
 {
-    $links[] = '<a class="claroCmd" href="' . htmlspecialchars(Url::Contextualize( get_path('clarolineRepositoryWeb') . 'tracking/courseReport.php' )) . '">'
-    .          '<img src="' . get_icon_url('statistics') . '" alt="" />'
-    .          get_lang('Statistics')
-    .          '</a>' ;
+    $cmdList[] = array(
+        'img' => 'statistics',
+        'name' => get_lang('Statistics'),
+        'url' => claro_htmlspecialchars(Url::Contextualize(get_path('clarolineRepositoryWeb') . 'tracking/courseReport.php'))
+    );
 }
 
 // Add delete course link
@@ -229,23 +229,29 @@ if ( get_conf('showLinkToDeleteThisCourse') )
 {
     $paramString = $course->getHtmlParamList('GET');
 
-    $links[] = '<a class="claroCmd" href="' . htmlspecialchars(Url::Contextualize( get_path('clarolineRepositoryWeb') . 'course/settings.php?cmd=rqDelete' . ( !empty($paramString) ? '&amp;'.$paramString : '') )) . '">'
-    .          '<img src="' . get_icon_url('delete') . '" alt="" />'
-    .          get_lang('Delete the whole course website')
-    .          '</a>' ;
+    $cmdList[] = array(
+        'img' => 'delete',
+        'name' => get_lang('Delete the whole course website'),
+        'url' => claro_htmlspecialchars(Url::Contextualize(get_path('clarolineRepositoryWeb')
+               . 'course/settings.php?cmd=rqDelete'
+               . ( !empty($paramString) ? '&'.$paramString : '')))
+    );
 }
 
 if ( $adminContext && claro_is_platform_admin() )
 {
-    // switch to admin breadcrumb
-
+    // Switch to admin breadcrumb
     ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );
     unset($_cid);
 
-    $links[] = '<a class="claroCmd" href="' . htmlspecialchars( $backUrl ) . '">'
-    .          get_lang('Back to course list')
-    .          '</a>' ;
+    $cmdList[] = array(
+        'img' => 'back',
+        'name' => get_lang('Back to course list'),
+        'url' => claro_htmlspecialchars(Url::Contextualize($backUrl))
+    );
 }
+
+
 
 //=================================
 // Display section
@@ -253,11 +259,9 @@ if ( $adminContext && claro_is_platform_admin() )
 
 $out = '';
 
-$out .= claro_html_tool_title($nameTools);
+$out .= claro_html_tool_title($nameTools, null, $cmdList);
 
 $out .= $dialogBox->render();
-
-$out .= '<p>' . claro_html_menu_horizontal($links) . '</p>' . "\n\n" ;
 
 if( $display == DISP_COURSE_EDIT_FORM )
 {
@@ -273,5 +277,3 @@ elseif( $display == DISP_COURSE_RQ_DELETE )
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

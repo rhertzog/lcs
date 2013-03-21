@@ -1,4 +1,4 @@
-<?php // $Id: coursehomepage.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: coursehomepage.cnr.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Course home page: Announcements portlet
  *
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLCHP
@@ -16,109 +16,118 @@
  * @since       1.10
  */
 
+require_once get_module_path( 'CLANN' ) . '/lib/announcement.lib.php';
+
 class CLANN_Portlet extends CourseHomePagePortlet
 {
     public function renderContent()
     {
-        // Select announcements for this course
-        $tbl = claro_sql_get_course_tbl(claro_get_course_db_name_glued($this->courseCode));
-        $tbl_announcement   = $tbl['announcement'];
+        $output = '';
+        $course = claro_get_current_course_data();
+        $course['db'] = $course['dbName'];
         
-        $currentCourseData  = claro_get_course_data($this->courseCode);
-        $curdate            = claro_mktime();
-        $output             = '';
+        $toolId = get_tool_id_from_module_label('CLANN');
         
-        $sql = "SELECT " . Claroline::getDatabase()->quote($currentCourseData['sysCode']) . " AS `courseSysCode`, " . "\n"
-                . Claroline::getDatabase()->quote($currentCourseData['officialCode']) . " AS `courseOfficialCode`, " . "\n"
-                . "'CLANN'                                              AS `toolLabel`, " . "\n"
-                . "CONCAT(`temps`, ' ', '00:00:00')                     AS `date`, " . "\n"
-                . "CONCAT(`title`,' - ',`contenu`)                      AS `content`, " . "\n"
-                . "`title`, " . "\n"
-                . "`visibility`, " . "\n"
-                . "`visibleFrom`, " . "\n"
-                . "`visibleUntil` " . "\n"
-                . "FROM `" . $tbl_announcement . "` " . "\n"
-                . "WHERE CONCAT(`title`, `contenu`) != '' " . "\n"
-                . "AND visibility = 'SHOW' " . "\n"
-                . "            AND (UNIX_TIMESTAMP(`visibleFrom`) < '" . $curdate . "'
-                                     OR `visibleFrom` IS NULL OR UNIX_TIMESTAMP(`visibleFrom`) = 0
-                                   )
-                               AND ('" . $curdate . "' < UNIX_TIMESTAMP(`visibleUntil`) OR `visibleUntil` IS NULL)"
-                . "ORDER BY `date` DESC" . "\n"
-                ;
-        
-        $announcementList = Claroline::getDatabase()->query($sql);
-        
-        // Manage announcement's datas
-        if($announcementList)
-        {
-            $output .= '<dl id="portletAnnouncements">' . "\n";
-            
-            $i = 0;
-            foreach($announcementList as $announcementItem)
+        if ( is_module_installed_in_course ( 'CLANN', claro_get_current_course_id () ) 
+            && is_tool_activated_in_course( $toolId, claro_get_current_course_id () ) )
+        {   
+            $announcementList = announcement_get_course_item_list_portlet($course);
+
+            // Manage announcement's datas
+            if($announcementList)
             {
-                // Generate announcement URL
-                $announcementItem['url'] = get_path('url')
-                    . '/claroline/announcements/announcements.php?cidReq='
-                    . $currentCourseData['sysCode'];
-                
-                // Generate announcement title and content
-                $announcementItem['title'] = trim(strip_tags($announcementItem['title']));
-                if ( $announcementItem['title'] == '' )
+                $output .= '<dl id="portletAnnouncements">' . "\n";
+
+                $i = 0;
+                foreach($announcementList as $announcementItem)
                 {
-                    $announcementItem['title'] = substr($announcementItem['title'], 0, 60) . (strlen($announcementItem['title']) > 60 ? ' (...)' : '');
+                    // Generate announcement URL
+                    $announcementItem['url'] = get_path('url')
+                        . '/claroline/announcements/announcements.php?cidReq='
+                        . $course['sysCode'];
+
+                    // Generate announcement title and content
+                    $announcementItem['title'] = trim(strip_tags($announcementItem['title']));
+                    if ( $announcementItem['title'] == '' )
+                    {
+                        $announcementItem['title'] = substr($announcementItem['title'], 0, 60) . (strlen($announcementItem['title']) > 60 ? ' (...)' : '');
+                    }
+
+                    $announcementItem['content'] = trim(strip_tags($announcementItem['content']));
+                    if ( $announcementItem['content'] == '' )
+                    {
+                        $announcementItem['content'] = substr($announcementItem['content'], 0, 60) . (strlen($announcementItem['content']) > 60 ? ' (...)' : '');
+                    }
+
+                    // Don't display hidden and expired elements
+                    $isVisible = (bool) ($announcementItem['visibility'] == 'SHOW') ? (1) : (0);
+                    $isOffDeadline = (bool)
+                        (
+                            (isset($announcementItem['visibleFrom'])
+                                && strtotime($announcementItem['visibleFrom']) > time()
+                            )
+                            ||
+                            (isset($announcementItem['visibleUntil'])
+                                && time() >= strtotime($announcementItem['visibleUntil'])
+                            )
+                        ) ? (1) : (0);
+
+                    // Prepare the render
+                    $displayChar = 250;
+
+                    if (strlen($announcementItem['content']) > $displayChar)
+                    {
+                        $content = substr($announcementItem['content'], 0, $displayChar)
+                                . '... <a href="'
+                                . claro_htmlspecialchars(Url::Contextualize($announcementItem['url'])) . '">'
+                                . '<b>' . get_lang('Read more &raquo;') . '</b></a>';
+                    }
+                    else
+                    {
+                        $content = $announcementItem['content'];
+                    }
+
+                    if ( $isVisible && !$isOffDeadline )
+                    {
+                        $output .= '<dt>' . "\n"
+                                . '<h2> '
+                                . '<a href="' . $announcementItem['url'] . '#item'.$announcementItem['id'].'">'
+                                . (!empty($announcementItem['title']) ? $announcementItem['title'] : get_lang('No title'))
+                                . '</a></h2>' . "\n"
+                                . '</dt>' . "\n"
+                                . '<dd'.($i == count($announcementList)-1?' class="last"':'').'>' . "\n"
+                                . $content . "\n"
+                                . (claro_is_allowed_to_edit() ?
+                                '<div class="manageTools"><a
+                                        href="'.claro_htmlspecialchars(Url::Contextualize(get_module_url('CLANN').'/announcements.php?cmd=rqEdit&id='.$announcementItem['id'])).'"
+                                        title="'.get_lang('Edit this item').'">
+                                        <img src="'.get_icon_url('edit').'" alt="'.get_lang('Edit').'" />
+                                    </a>
+
+                                    <a
+                                        href="'.claro_htmlspecialchars(Url::Contextualize(get_module_url('CLANN').'/announcements.php?cmd=exDelete&id='.$announcementItem['id'])).'"
+                                        title="'.get_lang('Delete this item').'">
+                                        <img src="'.get_icon_url('delete').'" alt="'.get_lang('Delete').'" />
+                                    </a></div>' :
+                                '')
+                                . '</dd>' . "\n";
+                    }
+
+                    $i++;
                 }
-                
-                $announcementItem['content'] = trim(strip_tags($announcementItem['content']));
-                if ( $announcementItem['content'] == '' )
-                {
-                    $announcementItem['content'] = substr($announcementItem['content'], 0, 60) . (strlen($announcementItem['content']) > 60 ? ' (...)' : '');
-                }
-                
-                // Don't display hidden and expired elements
-                $isVisible = (bool) ($announcementItem['visibility'] == 'SHOW') ? (1) : (0);
-                $isOffDeadline = (bool)
-                    (
-                        (isset($announcementItem['visibleFrom'])
-                            && strtotime($announcementItem['visibleFrom']) > time()
-                        )
-                        ||
-                        (isset($announcementItem['visibleUntil'])
-                            && time() >= strtotime($announcementItem['visibleUntil'])
-                        )
-                    ) ? (1) : (0);
-                
-                // Prepare the render
-                if ( $isVisible && !$isOffDeadline )
-                {
-                    $output .= '<dt>' . "\n"
-                             . '<img class="iconDefinitionList" src="' . get_icon_url('announcement', 'CLANN') . '" alt="" /> '
-                             . '<a href="' . $announcementItem['url'] . '">'
-                             . $announcementItem['title']
-                             . '</a>' . "\n"
-                             . '</dt>' . "\n"
-                             . '<dd'.($i == count($announcementList)-1?' class="last"':'').'>' . "\n"
-                             . $announcementItem['content'] . "\n"
-                             . '</dd>' . "\n"
-                             ;
-                }
-                
-                $i++;
+
+                $output .= '</dl>';
             }
-            
-            $output .= '</dl>';
-        }
-        else
-        {
-            $output .= "\n"
-                     . '<dl>' . "\n"
-                     . '<dt></dt>' . "\n"
-                     . '<dd class="last">'
-                     . '<img class="iconDefinitionList" src="' . get_icon_url('announcement', 'CLANN') . '" alt="Announcement icon" />'
-                     . ' ' . get_lang('No announcement') . "\n"
-                     . '</dd>' . "\n"
-                     . '</dl>' . "\n" . "\n"
-                     ;
+            else
+            {
+                $output .= "\n"
+                        . '<dl>' . "\n"
+                        . '<dt></dt>' . "\n"
+                        . '<dd class="last">'
+                        . ' ' . get_lang('No announcement') . "\n"
+                        . '</dd>' . "\n"
+                        . '</dl>' . "\n\n";
+            }
         }
         
         return $output;
@@ -126,12 +135,15 @@ class CLANN_Portlet extends CourseHomePagePortlet
     
     public function renderTitle()
     {
-        $output = get_lang('Latest announcements');
+        $output = '<img '
+                . 'src="' . get_icon_url('announcement', 'CLANN') . '" '
+                . 'alt="Announcement icon" /> '
+                . get_lang('Latest announcements');
         
         if (claro_is_allowed_to_edit())
         {
             $output .= ' <span class="separator">|</span> <a href="'
-                     . htmlspecialchars(Url::Contextualize(get_module_url( 'CLANN' ) . '/announcements.php'))
+                     . claro_htmlspecialchars(Url::Contextualize(get_module_url( 'CLANN' ) . '/announcements.php'))
                      . '">'
                      . '<img src="' . get_icon_url('settings') . '" alt="'.get_lang('Settings').'" /> '
                      . get_lang('Manage').'</a>';

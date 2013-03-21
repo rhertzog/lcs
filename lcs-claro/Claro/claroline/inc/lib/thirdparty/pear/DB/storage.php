@@ -17,7 +17,7 @@
 // | Maintainer: Daniel Convissor <danielc@php.net>                       |
 // +----------------------------------------------------------------------+
 //
-// $Id: storage.php 11091 2008-09-01 14:25:20Z zefredz $
+// $Id: storage.php 14315 2012-11-08 14:51:17Z zefredz $
 
 require_once 'DB.php';
 
@@ -28,7 +28,7 @@ require_once 'DB.php';
  * statements.
  *
  * @package  DB
- * @version $Id: storage.php 11091 2008-09-01 14:25:20Z zefredz $
+ * @version $Id: storage.php 14315 2012-11-08 14:51:17Z zefredz $
  * @category Database
  * @author   Stig Bakken <stig@php.net>
  */
@@ -267,7 +267,7 @@ class DB_storage extends PEAR
     {
         foreach ($this->_properties as $prop => $foo) {
             print "$prop = ";
-            print htmlentities($this->$prop);
+            print claro_htmlentities($this->$prop);
             print "<br />\n";
         }
     }

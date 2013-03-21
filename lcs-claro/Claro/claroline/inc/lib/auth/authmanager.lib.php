@@ -1,11 +1,11 @@
-<?php // $Id: authmanager.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: authmanager.lib.php 14213 2012-07-24 06:12:20Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Authentication Manager
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     Claroline 1.11 $Revision: 14213 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -18,8 +18,16 @@
 require_once dirname(__FILE__) . '/../core/claroline.lib.php';
 require_once dirname(__FILE__) . '/../database/database.lib.php';
 require_once dirname(__FILE__) . '/../kernel/user.lib.php';
+
 require_once dirname(__FILE__) . '/authdrivers.lib.php';
 require_once dirname(__FILE__) . '/ldapauthdriver.lib.php';
+
+if ( get_conf( 'claro_loadDeprecatedPearAuthDriver', true ) )
+{
+    require_once dirname(__FILE__) . '/pearauthdriver.lib.php';
+}
+
+require_once dirname(__FILE__) . '/authprofile.lib.php';
 
 class AuthManager
 {
@@ -46,8 +54,8 @@ class AuthManager
         {
             // avoid issues with session collision when many users connect from
             // the same computer at the same time with the same browser session !
-            if ( AuthUserTable::userExists( $username ) ) 
-            {   
+            if ( AuthUserTable::userExists( $username ) )
+            {
                 self::setFailureMessage( get_lang( "There is already an account with this username." ) );
                 return false;
             }
@@ -62,22 +70,39 @@ class AuthManager
             
             if ( $driver->authenticate() )
             {
-                if ( $uid = AuthUserTable::registered( $username, $driver->getAuthSource() ) )
+
+                $uid = AuthUserTable::registered( $username, $driver->getAuthSource() );
+                
+                if ( $uid )
                 {
                     if ( $driver->userUpdateAllowed() )
                     {
                         $userAttrList =  $driver->getFilteredUserData();
                         
-                        // avoid session collisions !
-                        if ( isset( $userAttrList['loginName'] )
-                            && $username != $userAttrList['loginName'] )
+                        if ( isset( $userAttrList['loginName'] ) )
                         {
-                            Console::error( "EXTAUTH ERROR : try to overwrite an existing user {$username} with another one" . var_export($userAttrList, true) );
+                            $newUserName = $userAttrList['loginName'];
+                            
+                            if ( ! get_conf('claro_authUsernameCaseSensitive', true) )
+                            {
+                                $newUsername = strtolower($newUserName);
+                                $username = strtolower($username);
+                            }
+                            
+                            // avoid session collisions !
+                            if ( $username != $newUserName )
+                            {
+                                Console::error( "EXTAUTH ERROR : try to overwrite an existing user {$username} with another one" . var_export($userAttrList, true) );
+                            }
+                            else
+                            {
+                                AuthUserTable::updateUser( $uid, $userAttrList );
+                                Console::info( "EXTAUTH INFO : update user {$uid} {$username} with " . var_export($userAttrList, true) );
+                            }
                         }
                         else
                         {
-                            AuthUserTable::updateUser( $uid, $userAttrList );
-                            Console::info( "EXTAUTH INFO : update user {$uid} {$username} with " . var_export($userAttrList, true) );
+                            Console::error( "EXTAUTH ERROR : no loginName given for user {$username} by authSource " . $driver->getAuthSource() );
                         }
                     }
                     
@@ -86,8 +111,8 @@ class AuthManager
                 elseif ( $driver->userRegistrationAllowed() )
                 {
                     // duplicate code here to avoid issue with multiple requests on a busy server !
-                    if ( AuthUserTable::userExists( $username ) ) 
-                    {   
+                    if ( AuthUserTable::userExists( $username ) )
+                    {
                         self::setFailureMessage( get_lang( "There is already an account with this username." ) );
                         return false;
                     }
@@ -151,7 +176,9 @@ class AuthUserTable
         
         if ( $res->numRows() )
         {
-            return $res->fetch(Database_ResultSet::FETCH_VALUE);
+            $uidArr = $res->fetch();
+            
+            return (int) $uidArr['user_id'];
         }
         else
         {
@@ -226,7 +253,7 @@ class AuthUserTable
         
         $tbl = claro_sql_get_main_tbl();
         
-        $sql = ( $uid ? 'UPDATE' : 'INSERT INTO' ) 
+        $sql = ( $uid ? 'UPDATE' : 'INSERT INTO' )
             . " `{$tbl['user']}`\n"
             . "SET " . implode(",\n", $preparedList ) . "\n"
             . ( $uid ? "WHERE  user_id = " . (int) $uid : '' )
@@ -274,15 +301,91 @@ class AuthDriverManager
         }
     }
     
+    protected static function loadDriver ( $driverConfigPath )
+    {
+        if ( !file_exists( $driverConfigPath ) )
+        {
+            if ( claro_debug_mode() )
+            {
+                throw new Exception("Driver configuration {$driverConfigPath} not found");
+            }
+
+            Console::error( "Driver configuration {$driverConfigPath} not found" );
+            
+            return;
+        }
+        
+        $driverConfig  = array();
+        
+        include $driverConfigPath;
+        
+        if ( $driverConfig['driver']['enabled'] == true )
+        {
+            $driverClass = $driverConfig['driver']['class'];
+            
+            // search for kernel drivers
+            if ( class_exists( $driverClass ) )
+            {
+                $driver = new $driverClass;
+                $driver->setDriverOptions( $driverConfig );
+                self::$drivers[$driverConfig['driver']['authSourceName']] = $driver;
+            }
+            // search for user defined drivers
+            else
+            {
+                // load dynamic drivers
+                if ( ! file_exists ( get_path('rootSys') . 'platform/conf/extauth/drivers' ) )
+                {
+                    FromKernel::uses('fileManage.lib');
+                    claro_mkdir(get_path('rootSys') . 'platform/conf/extauth/drivers', CLARO_FILE_PERMISSIONS, true );
+                }
+                
+                $driverPath = get_path('rootSys') 
+                    . 'platform/conf/extauth/drivers/' 
+                    . strtolower($driverClass).'.drv.php';
+
+                if ( file_exists($driverPath) )
+                {
+                    require_once $driverPath;
+
+                    if ( class_exists( $driverClass ) )
+                    {
+                        $driver = new $driverClass;
+                        $driver->setDriverOptions( $driverConfig );
+                        self::$drivers[$driverConfig['driver']['authSourceName']] = $driver;
+
+                    }
+                    else
+                    {
+                        if ( claro_debug_mode() )
+                        {
+                            throw new Exception("Driver class {$driverClass} not found");
+                        }
+
+                        Console::error( "Driver class {$driverClass} not found" );
+                    }
+                }
+                else
+                {
+                    if ( claro_debug_mode() )
+                    {
+                        throw new Exception("Driver class {$driverClass} not found");
+                    }
+
+                    Console::error( "Driver class {$driverClass} not found" );
+                }
+            }
+        }
+    }
+    
     protected static function initDriverList()
     {
-        // todo : get from config
-        
         // load static drivers
         self::$drivers = array(
             'claroline' => new ClarolineLocalAuthDriver(),
             'disabled' => new UserDisabledAuthDriver(),
-            'temp' => new TemporaryAccountAuthDriver()
+            'temp' => new TemporaryAccountAuthDriver(),
+            'CAS' => new ClarolineLocalAuthDriver()
         );
         
         // load dynamic drivers
@@ -292,60 +395,43 @@ class AuthDriverManager
             claro_mkdir(get_path('rootSys') . 'platform/conf/extauth', CLARO_FILE_PERMISSIONS, true );
         }
         
-        $it = new DirectoryIterator( get_path('rootSys') . 'platform/conf/extauth' );
-        
-        $driverConfig = array();
-        
-        foreach ( $it as $file )
+        if ( get_conf( 'claro_authDriversAutoDiscovery', true ) )
         {
-            if ( $file->isFile() )
+            $driversToLoad = array();
+            
+            $it = new DirectoryIterator( get_path('rootSys') . 'platform/conf/extauth' );
+            
+            foreach ( $it as $file )
             {
-                include $file->getPathname();
-                
-                if ( $driverConfig['driver']['enabled'] == true )
+                if ( $file->isFile() && substr( $file->getFilename(), -9 ) == '.conf.php' )
                 {
-                    $driverClass = $driverConfig['driver']['class'];
-                        
-                    if ( class_exists( $driverClass ) )
+                    $driversToLoad[] = $file->getPathname();
+                }          
+            }
+
+            sort( $driversToLoad );
+
+            foreach ( $driversToLoad as $driverFile )
+            {
+                self::loadDriver($driverFile);
+            }        
+        }
+        else
+        {
+            if ( file_exists( get_path('rootSys') . 'platform/conf/extauth/drivers.list' ) )
+            {
+                $authDriverList = file( get_path('rootSys') . 'platform/conf/extauth/drivers.list' );
+                
+                foreach ( $authDriverList as $authDriver )
+                {
+                    $authDriver = trim($authDriver);
+                    
+                    if ( ! empty( $authDriver ) )
                     {
-                        self::$drivers[$driverConfig['driver']['authSourceName']] = new $driverClass( $driverConfig );
-                    }
-                    else
-                    {
-                        $driverPath = dirname(__FILE__). '/drivers/' . strtolower($driverClass).'.lib.php';
-                        
-                        if ( file_exists($driverPath) )
-                        {
-                            require_once $driverPath;
-                            
-                            if ( class_exists( $driverClass ) )
-                            {
-                                self::$drivers[$driverConfig['driver']['authSourceName']] = new $driverClass( $driverConfig );
-                            }
-                            else
-                            {
-                                if ( claro_debug_mode() )
-                                {
-                                    throw new Exception("Driver class {$driverClass} not found");
-                                }
-                                
-                                Console::error( "Driver class {$driverClass} not found" );
-                            }
-                        }
-                        else
-                        {
-                            if ( claro_debug_mode() )
-                            {
-                                throw new Exception("Driver class {$driverClass} not found");
-                            }
-                            
-                            Console::error( "Driver class {$driverClass} not found" );
-                        }
+                        self::loadDriver(ltrim(rtrim(get_path('rootSys') . 'platform/conf/extauth/'.$authDriver)));
                     }
                 }
             }
-            
-            $driverConfig = array();
         }
     }
 }

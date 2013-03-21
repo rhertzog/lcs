@@ -1,4 +1,17 @@
-<?php // $Id: viewsearch.php 11784 2009-05-25 14:30:20Z dimitrirambout $
+<?php // $Id: viewsearch.php 14314 2012-11-07 09:09:19Z zefredz $
+
+/**
+ * CLAROLINE
+ *
+ * @version     $Revision: 14314 $
+ * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @copyright   (c) 2001 The phpBB Group
+ * @author      Claroline Team <info@claroline.net>
+ * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
+ * @license     http://www.gnu.org/copyleft/gpl.html
+ *              GNU GENERAL PUBLIC LICENSE version 2 or later
+ * @package     CLFRM
+ */
 
 $tlabelReq = 'CLFRM';
 
@@ -101,12 +114,12 @@ $noPHP_SELF       = true;
 $out = '';
 
 $out .= claro_html_tool_title(get_lang('Forums'),
-                           $is_allowedToEdit ? 'help_forum.php' : false);
+                           $is_allowedToEdit ? get_help_page_url('blockForumsHelp','CLFRM') : false);
 
 $out .= claro_html_menu_horizontal(disp_forum_toolbar($pagetype, null))
 .    disp_forum_breadcrumb($pagetype, null, null, null)
 
-.    '<h4>' . get_lang('Search result') . ' : ' . (isset($_REQUEST['searchPattern']) ?  htmlspecialchars($_REQUEST['searchPattern']) : '') . '</h4>' . "\n";
+.    '<h4>' . get_lang('Search result') . ' : ' . (isset($_REQUEST['searchPattern']) ?  claro_htmlspecialchars($_REQUEST['searchPattern']) : '') . '</h4>' . "\n";
 
 if (count($searchResultList) < 1 )
 {
@@ -160,8 +173,8 @@ else foreach ( $searchResultList as $thisPost )
 
         .    '<div class="threadPostContent">' . "\n"
         .    '<img src="' . get_icon_url('topic') . '" alt="" />'
-        .    '<a href="' . htmlspecialchars( Url::Contextualize(get_module_url('CLFRM') . '/viewtopic.php?topic='.$thisPost['topic_id'] )) . '">'
-        .    htmlspecialchars( $thisPost['topic_title'] )
+        .    '<a href="' . claro_htmlspecialchars( Url::Contextualize(get_module_url('CLFRM') . '/viewtopic.php?topic='.$thisPost['topic_id'] )) . '">'
+        .    claro_htmlspecialchars( $thisPost['topic_title'] )
         .    '</a>' . "\n"
         .    '<span class="threadPostIcon '.$class.'"><img src="' . get_icon_url( 'post' ) . '" alt="" /></span><br />' . "\n"
         .    claro_parse_user_text($thisPost['post_text']) . "\n";
@@ -177,5 +190,3 @@ else foreach ( $searchResultList as $thisPost )
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

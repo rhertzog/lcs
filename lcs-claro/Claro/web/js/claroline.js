@@ -1,19 +1,36 @@
 /*
-    $Id: claroline.js 12976 2011-03-15 14:13:23Z zefredz $
-    
-    Main Claroline javascript library
+ $Id: claroline.js 14237 2012-08-08 07:33:44Z zefredz $
+ 
+ Main Claroline javascript library
  */
 
 // Claroline namespace
 var Claroline = {};
 
-Claroline.version = '1.10 rev. $Revision: 12976 $';
+Claroline.version = '1.11 rev. $Revision: 14237 $';
 
 Claroline.lang = {};
 
-Claroline.getLang = function(langVar) {
+/*
+ * Usage : Claroline.setLangArray({
+ *  'Not allowed': 'Non autorise'
+ * });
+ */
+Claroline.setLangArray = function ( langArray ) {
+    for ( var langVar in langArray ) {
+        Claroline.lang[langVar] = langArray[langVar];
+    }
+}
+
+Claroline.getLang = function(langVar, arr) {
     if ( Claroline.lang[langVar] ){
-        return Claroline.lang[langVar];
+        str = Claroline.lang[langVar];
+        
+        for (var i in arr)
+        {
+            str = str.replace(i, arr[i]);
+        }
+        return str;
     }
     else {
         return langVar;
@@ -58,45 +75,6 @@ Claroline.json = {
     }
 };
 
-Claroline.spoil = function(item) {
-    $(item).parents("div").children("div.spoilerContent").toggle();
-    // change link display
-    $(item).parents("div").children("a.reveal").toggleClass("showSpoiler");
-    $(item).parents("div").children("a.reveal").toggleClass("hideSpoiler");
-
-    return false;
-};
-
-$(document).ready( function (){
-    // this is the core function of Claroline's jQuery implementation
-
-    // ajax activity shower
-    $("#loading").hide();
-
-    $("#loading").ajaxStart(function(){
-        $(this).show();
-    });
-
-    $("#loading").ajaxStop(function(){
-        $(this).hide();
-    });
-    
-    // multiple select
-    $('.msadd').click(function() {
-        return !$('#mslist1 option:selected').remove().appendTo('#mslist2');
-    });
-    
-    $('.msremove').click(function() {
-        return !$('#mslist2 option:selected').remove().appendTo('#mslist1');
-    });
-    
-    $('.msform').submit(function() {
-        $('#mslist1 option').each(function(i) {
-            $(this).attr("selected", "selected");
-        });
-    });
-});
-
 // here should also come :
 
 // - a standard confirmation box function
@@ -128,15 +106,15 @@ function isNull(a)
 function dump(arr,level) {
     var dumped_text = "";
     if(!level) level = 0;
-
+    
     //The padding given at the beginning of the line.
     var level_padding = "";
     for(var j=0;j<level+1;j++) level_padding += "    ";
-
+    
     if(typeof(arr) == 'object') { //Array/Hashes/Objects
         for(var item in arr) {
             var value = arr[item];
-
+            
             if(typeof(value) == 'object') { //If it is an array,
                 dumped_text += level_padding + "'" + item + "' ...\n";
                 dumped_text += dump(value,level+1);

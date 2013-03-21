@@ -1,12 +1,14 @@
-<?php // $Id: log.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: log.lib.php 14183 2012-06-13 11:31:59Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Logging class
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * Logging class.
+ *
+ * @version     Claroline 1.11 $Revision: 14183 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -24,6 +26,13 @@ class Logger
         $this->tbl_log  = $tbl_mdb_names['log'];
     }
     
+    /**
+     * Add a message to the log. The message will be associated with the current
+     * course_code, user_id, tool_id, date and IP address of the client
+     * @param string $type
+     * @param string $data
+     * @return boolean 
+     */
     public function log( $type, $data )
     {
         $cid        = claro_get_current_course_id();

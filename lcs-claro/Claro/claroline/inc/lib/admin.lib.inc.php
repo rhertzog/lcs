@@ -1,5 +1,5 @@
-<?php // $Id: admin.lib.inc.php 13522 2011-09-02 10:03:20Z zefredz $
-if ( count( get_included_files() ) == 1 ) die( '---' );
+<?php // $Id: admin.lib.inc.php 14191 2012-06-29 11:29:11Z jrm_ $
+
 /**
  * CLAROLINE
  *
@@ -15,7 +15,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *     Add users with CSV files
  *     ...see details of pre/post for each function's proper use.
  *
- * @version 1.9 $Revision: 13522 $
+ * @version 1.9 $Revision: 14191 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -53,9 +53,17 @@ function delete_course($code, $sourceCourseId)
     $tbl_rel_course_user        = $tbl_mdb_names['rel_course_user'];
     $tbl_course_class           = $tbl_mdb_names['rel_course_class'];
     $tbl_rel_course_category    = $tbl_mdb_names['rel_course_category'];
+    $tbl_rel_course_portlet     = $tbl_mdb_names['rel_course_portlet'];
 
     $this_course = claro_get_course_data($code);
-    $currentCourseId = $this_course['sysCode'];
+    
+    if ( ! $this_course )
+    {
+        // This is bad !
+        throw new Exception("Course not found");
+    }
+    
+    $currentCourseId = trim( $this_course['sysCode'] );
     
     if ( empty( $currentCourseId ) )
     {
@@ -77,6 +85,12 @@ function delete_course($code, $sourceCourseId)
     
     // Remove links between this course and categories
     $sql = "DELETE FROM `" . $tbl_rel_course_category . "`
+            WHERE courseId ='" . $this_course['id'] . "'";
+
+    claro_sql_query($sql);
+    
+    // Remove links between this course and portlets
+    $sql = "DELETE FROM `" . $tbl_rel_course_portlet . "`
             WHERE courseId ='" . $this_course['id'] . "'";
 
     claro_sql_query($sql);
@@ -123,7 +137,7 @@ function delete_course($code, $sourceCourseId)
 
     $eventNotifier->notifyEvent("course_deleted",$args);
 
-    if ($currentCourseId == $code)
+    if ( $currentCourseId == $code )
     {
         $currentCourseDbName    = trim($this_course['dbName']);
         $currentCourseDbNameGlu = trim($this_course['dbNameGlu']);
@@ -141,7 +155,7 @@ function delete_course($code, $sourceCourseId)
             throw new Exception("Missing db name glu");
         }
 
-        if(get_conf('singleDbEnabled'))
+        if( get_conf( 'singleDbEnabled' ) )
         // IF THE PLATFORM IS IN MONO DATABASE MODE
         {
             // SEARCH ALL TABLES RELATED TO THE CURRENT COURSE
@@ -161,18 +175,25 @@ function delete_course($code, $sourceCourseId)
             
             // DELETE ALL TABLES OF THE CURRENT COURSE
             $tblSurvivor = array();
+            
             while( false !== ($courseTable = mysql_fetch_array($result,MYSQL_NUM ) ))
             {
                 $tblSurvivor[]=$courseTable[0];
                 //$tblSurvivor[$courseTable]='not deleted';
             }
-            if (sizeof($tblSurvivor) > 0)
+            
+            if ( sizeof( $tblSurvivor ) > 0 )
             {
-                Claroline::getInstance()->log( 'DELETE_COURSE'
-                , array_merge(array ('DELETED_COURSE_CODE'=>$code
-                ,'UNDELETED_TABLE_COUNTER'=>sizeof($tblSurvivor)
-                )
-                , $tblSurvivor )
+                Claroline::getInstance()->log( 
+                    'DELETE_COURSE', 
+                    array_merge(
+                        array (
+                            'DELETED_COURSE_CODE' => $code,
+                            'UNDELETED_TABLE_COUNTER' => sizeof( $tblSurvivor )
+                        ), 
+                        
+                        $tblSurvivor 
+                    )
                 );
             }
         }
@@ -185,28 +206,37 @@ function delete_course($code, $sourceCourseId)
 
         // MOVE THE COURSE DIRECTORY INTO THE COURSE GARBAGE COLLECTOR
 
-        if ( empty( $currentCoursePath ) )
+        if( !empty( $currentCoursePath ) )
+        {
+            if ( file_exists(get_conf('coursesRepositorySys') . $currentCoursePath . '/') )
+            {
+                claro_mkdir( get_conf('garbageRepositorySys'), CLARO_FILE_PERMISSIONS, true );
+
+                rename (
+                    get_conf('coursesRepositorySys') . $currentCoursePath . '/',
+                    get_conf('garbageRepositorySys','garbage') . '/' . $currentCoursePath . '_' . date('YmdHis')
+                );
+            }
+            else
+            {
+                Console::warning( "DELETE_COURSE : Course directory not found {$currentCoursePath} for course {$currentCourseId}");
+            }
+            
+            Claroline::log( 'COURSE_DELETED', array(
+                'courseCode' => $currentCourseId,
+                'courseDbName' => $currentCourseDbName,
+                'courseDbNameGlu' => $currentCourseDbNameGlu,
+                'coursePath' => $currentCoursePath
+            ) );
+            
+            return true;
+        }
+        else
         {
             Console::error("DELETE_COURSE : Try to delete a course repository with no folder name {$currentCourseId} !");
             
             return true;
         }
-
-        if( file_exists(get_conf('coursesRepositorySys') . $currentCoursePath . '/') )
-        {
-            claro_mkdir(get_conf('garbageRepositorySys'), CLARO_FILE_PERMISSIONS, true);
-
-            rename(get_conf('coursesRepositorySys') . $currentCoursePath . '/',
-            get_conf('garbageRepositorySys','garbage') . '/' . $currentCoursePath . '_' . date('YmdHis')
-            );
-        }
-        else
-        {
-            Console::warning( "DELETE_COURSE : Course directory not found {$currentCoursePath} for course {$currentCourseId}");
-        }
-        // else pushClaroMessage('dir was already deleted');
-
-        return true ;
     }
     else
     {
@@ -232,17 +262,20 @@ function link_course_categories ( $courseId, $categories )
     // Insert categories
     $sql = "INSERT INTO `" . $tbl_rel_course_category . "` (courseId, categoryId, rootCourse)
             VALUES ";
-    for ($i=0; $i < count($categories); $i++)
+    
+    $catArr = array();
+    
+    foreach( $categories as $category )
     {
-        $sql .= "(" . $courseId . ", " . $categories[$i]->id . ", 0)";
-        // More elements to come ?  Add a comma
-        if ( $i < (count($categories)-1) )
-        {
-            $sql .= ", ";
-        }
+        $catArr[] =  "(" . $courseId . ", " . $category->id . ", 0)";
     }
     
-    return claro_sql_query($sql);
+    $sql .= implode( ',' , $catArr );
+    
+    if ( ! empty( $catArr ) )
+    {
+        return claro_sql_query($sql);
+    }
 }
 
 
@@ -345,3 +378,4 @@ function pr_star_replace($string)
     $string = str_replace("*",'%', $string);
     return $string;
 }
+

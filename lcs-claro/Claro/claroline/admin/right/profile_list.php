@@ -1,19 +1,15 @@
-<?php // $Id: profile_list.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: profile_list.php 14147 2012-05-10 06:35:07Z zefredz $
+
 /**
  * CLAROLINE
  *
- * List profiles available on the platform
+ * List profiles available on the platform.
  *
- * @version 1.8 $Revision: 12923 $
- *
+ * @version     $Revision: 14147 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Claro Team <cvs@claroline.net>
- *
- * @package RIGHT
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
+ * @package     RIGHT
  */
 
 require '../../inc/claro_init_global.inc.php';
@@ -22,7 +18,6 @@ include_once get_path('incRepositorySys') . '/lib/right/profile.class.php';
 include_once get_path('incRepositorySys') . '/lib/pager.lib.php';
 
 // Security check
-
 if ( ! claro_is_user_authenticated() ) claro_disp_auth_form();
 if ( ! claro_is_platform_admin() ) claro_die(get_lang('Not allowed'));
 
@@ -116,9 +111,18 @@ $offset = (isset($_REQUEST['offset']) && !empty($_REQUEST['offset']) ) ? $_REQUE
 $profilePager = new claro_sql_pager($sql,$offset, $itemPerPage);
 $profileList = $profilePager->get_result_list();
 
+// Command list
+$cmdList = array();
+
+$cmdList[] = array(
+    'img' => 'default_new',
+    'name' => get_lang('Add new profile'),
+    'url' => $_SERVER['PHP_SELF'] . '?cmd=rqAdd'
+);
+
 // Display
 
-// define breadcrumb
+// Define breadcrumb
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );
 $nameTools          = get_lang('Course profile list');
 $noQUERY_STRING     = TRUE;
@@ -131,13 +135,13 @@ switch ( $display )
 
         // Display form
 
-        if ( !empty($profile->id) )
+        if ( empty($profile->id) )
         {
-            $out .= claro_html_tool_title(get_lang('Add new profile'));
+            $out .= claro_html_tool_title(get_lang('Add new profile', null, $cmdList));
         }
         else
         {
-            $out .= claro_html_tool_title(get_lang('Edit profile'));
+            $out .= claro_html_tool_title(get_lang('Edit profile', null, $cmdList));
         }
 
         if ( ! empty($form) )
@@ -149,21 +153,15 @@ switch ( $display )
     case DISPLAY_LIST :
 
         // List of course profile
-
-        $out .= claro_html_tool_title(get_lang('Course profile list'));
-
-        $out .= '<p><a class="claroCmd" href="' . $_SERVER['PHP_SELF'] . '?cmd=rqAdd">'
-             . get_lang('Add new profile')
-             . '</a></p>' . "\n" ;
+        $out .= claro_html_tool_title(get_lang('Course profile list'), null, $cmdList);
 
         // Pager display
         $out .= $profilePager->disp_pager_tool_bar($_SERVER['PHP_SELF']);
 
         // Display table header
-
         $out .= '<table class="claroTable emphaseLine" width="100%" >' . "\n"
             . '<thead>' . "\n"
-            . '<tr class="headerX">' . "\n"
+            . '<tr>' . "\n"
             . '<th>' . get_lang('Name') . '</th>' . "\n"
             . '<th>' . get_lang('Description') . '</th>' . "\n"
             . '<th>' . get_lang('Edit') .'</th>' . "\n"
@@ -211,5 +209,3 @@ switch ( $display )
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

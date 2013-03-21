@@ -1,4 +1,4 @@
-<?php // $Id: config.lib.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: config.lib.inc.php 13553 2011-09-07 13:18:33Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,17 +10,18 @@ if ( count( get_included_files() ) == 1 )
  *
  * Config lib contain function to manage conf file
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13553 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see     http://www.claroline.net/wiki/config_def/
  * @package CONFIG
  * @author  Claro Team <cvs@claroline.net>
- * @author  Christophe Gesché <moosh@claroline.net>
+ * @author  Christophe Geschï¿½ <moosh@claroline.net>
  * @author  Mathieu Laurent <laurent@cerdecam.be>
  */
 
 require_once dirname(__FILE__) . '/config.class.php';
+require_once dirname(__FILE__) . '/module/manage.lib.php';
 
 /**
  * Proceed to rename conf.php.dist file in unexisting .conf.php files
@@ -178,8 +179,6 @@ function generate_conf(&$config,$properties = null)
 function get_def_folder_list ( $type = 'all' )
 {
     $folderList = array();
-
-    require_once get_path('incRepositorySys') . '/lib/module/manage.lib.php';
 
     // Kernel folder configuration folder
     if ( $type == 'kernel' || $type == 'all') $folderList[] = get_path('incRepositorySys') . '/conf/def';

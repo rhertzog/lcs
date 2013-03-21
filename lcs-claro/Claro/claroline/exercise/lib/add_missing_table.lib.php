@@ -1,5 +1,5 @@
-<?php
-/* 
+<?php // $Id: add_missing_table.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
+/*
  * $id$ To change this template, choose Tools | Templates
  * $id$ and open the template in the editor.
  */
@@ -18,4 +18,3 @@ function init_qwz_questions_categories ()
 
     claro_sql_query($sql);
 }
-?>

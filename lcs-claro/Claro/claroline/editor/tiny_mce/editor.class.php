@@ -1,11 +1,11 @@
-<?php // $Id: editor.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: editor.class.php 14252 2012-08-23 05:48:22Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
  * Driver for tinyMCE wysiwyg editor ( http://tinymce.moxiecode.com/ )
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14252 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -16,7 +16,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  * @package EDITOR
  *
  * @author Claro Team <cvs@claroline.net>
- * @author Sébastien Piraux <pir@cerdecam.be>
+ * @author Sebastien Piraux <pir@cerdecam.be>
  *
  */
 
@@ -42,7 +42,7 @@ class editor extends GenericEditor
     /**
      * constructor
      *
-     * @author Sébastien Piraux <pir@cerdecam.be>
+     * @author Sebastien Piraux <pir@cerdecam.be>
      * @param string $name content for attribute name and id of textarea
      * @param string $content content of the textarea
      * @param string $rows number of lines of textarea
@@ -113,10 +113,10 @@ class editor extends GenericEditor
         
         if( !isset($_isAdvancedJsLoaded) )
         {
-            if( get_conf('useTinyMCECompressor') )
+            /*if( get_conf('useTinyMCECompressor') )
             {
                 $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/'.$configFile.'_gzip.conf.js"></script>'."\n";
-            }
+            }*/
             
             $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/'.$configFile.'.conf.js"></script>'."\n";
 
@@ -136,10 +136,10 @@ class editor extends GenericEditor
         
         if( ! isset($_isSimpleJsLoaded) )
         {
-            if( get_conf('useTinyMCECompressor') )
+            /*if( get_conf('useTinyMCECompressor') )
             {
                 $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/simple_gzip.conf.js"></script>'."\n";
-            }
+            }*/
             
             $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/simple.conf.js"></script>'."\n";
                 
@@ -152,7 +152,7 @@ class editor extends GenericEditor
     public function getDefaultJs()
     {
         // ok, it's not cool to use global for that but it has to be shared between instances
-        // TODO find a cool way to do that        
+        // TODO find a cool way to do that
         global $_isDefaultJsLoaded;
         
         $html = '';
@@ -161,11 +161,11 @@ class editor extends GenericEditor
         {
             $html .= "\n";
             
-            if( get_conf('useTinyMCECompressor') )
+            /*if( get_conf('useTinyMCECompressor') )
             {
                 $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/tiny_mce/tiny_mce_gzip.js"></script>'."\n";
             }
-            else
+            else*/
             {
                 $html .= '<script language="javascript" type="text/javascript" src="'.$this->webPath.'/tiny_mce/tiny_mce.js"></script>'."\n";
             }
@@ -194,4 +194,3 @@ class editor extends GenericEditor
         return true;
     }
 }
-?>

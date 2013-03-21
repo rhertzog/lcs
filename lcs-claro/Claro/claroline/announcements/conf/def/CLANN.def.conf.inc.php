@@ -1,4 +1,4 @@
-<?php //$Id: CLANN.def.conf.inc.php 9816 2008-02-19 13:49:35Z gregk84 $
+<?php //$Id: CLANN.def.conf.inc.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 // CONFIG HEADER
@@ -23,5 +23,3 @@ $conf_def_property_list['announcementPortletMaxItems']
         ,'container' => 'VAR'
         ,'acceptedValue' => array('min' => '0')
         );
-
-?>

@@ -1,9 +1,9 @@
-<?php // $Id: qti2_classes.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: qti2_classes.php 14314 2012-11-07 09:09:19Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14314 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -442,7 +442,7 @@ class Qti2AnswerFillInBlanks extends answerFillInBlanks
             if (isset($this->gradeList[$answerKey]))
             {
                 $out .= '    <mapping>'. "\n";
-                $out .= '      <mapEntry mapKey="'.htmlspecialchars($answer).'" mappedValue="'.$this->gradeList[$answerKey].'"/>'. "\n";
+                $out .= '      <mapEntry mapKey="'.claro_htmlspecialchars($answer).'" mappedValue="'.$this->gradeList[$answerKey].'"/>'. "\n";
                 $out .= '    </mapping>'. "\n";
             }
 
@@ -614,4 +614,3 @@ class Qti2AnswerMatching extends answerMatching
         $this->save();
     }
 }
-?>

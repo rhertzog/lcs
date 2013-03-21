@@ -1,4 +1,4 @@
-<?php // $Id: import_csv.lib.php 13030 2011-04-01 11:26:41Z abourguignon $
+<?php // $Id: import_csv.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * Library for import of csv user list
  *
- * @version     1.9 $Revision: 13030 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -710,7 +710,7 @@ class CSV
             if ( count($temp)==0 )
             {
                 // line didn't split properly so record error
-                $this->errors[] = "Couldn't split data line ". htmlspecialchars($line) ." via given \$delim.";
+                $this->errors[] = "Couldn't split data line ". claro_htmlspecialchars($line) ." via given \$delim.";
             }
             elseif (!(($index1==0) && ($skipFirstLine)))
             {

@@ -1,8 +1,8 @@
-<?php // $Id: locale_settings.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: locale_settings.php 13805 2011-11-09 09:39:21Z jrm_ $
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13805 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -23,7 +23,8 @@ $langNameOfLang['bulgarian']     = "bulgare";
 $langNameOfLang['catalan']       = "catalan";
 $langNameOfLang['croatian']      = "croate";
 $langNameOfLang['danish']        = "danois";
-$langNameOfLang['dutch']         = "néerlandais";
+$langNameOfLang['dutch_be']      = "néerlandais (Belgique)";
+$langNameOfLang['dutch_nl']      = "néerlandais (Pays-Bas)";
 $langNameOfLang['english']       = "anglais";
 $langNameOfLang['finnish']       = "finlandais";
 $langNameOfLang['french']        = "français";

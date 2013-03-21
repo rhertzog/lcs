@@ -1,10 +1,10 @@
-<?php // $Id: profile_list.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: profile_list.php 13708 2011-10-19 10:46:34Z abourguignon $
 /**
  * CLAROLINE
  *
  * This tool manage profile of the course
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
@@ -80,10 +80,10 @@ foreach ( $profileList as $thisProfile )
     $out .= '<br />' . "\n"
     .    '<em>' . get_lang($thisProfile['description']) . '</em>' . "\n"
     .    '<td>' . "\n"
-    .    '<a href="profile.php?cmd=rqEdit&display_profile='. $thisProfile['id'].'">' 
+    .    '<a href="profile.php?cmd=rqEdit&display_profile='. $thisProfile['id'].'">'
     .    '<img src="' .  get_icon_url('settings') . '" alt="' . get_lang('Rights') . '" />' . "\n"
-    .    '</a>' . "\n" 
-    .    '</td>' . "\n" 
+    .    '</a>' . "\n"
+    .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
     ;
 }
@@ -93,5 +93,3 @@ $out .= '</tbody></table>';
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

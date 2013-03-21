@@ -1,9 +1,9 @@
-<?php // $Id: inscription.php 13030 2011-04-01 11:26:41Z abourguignon $
+<?php // $Id: inscription.php 13949 2012-01-20 13:22:34Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 13030 $
+ * @version     $Revision: 13949 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLAUTH
@@ -26,6 +26,12 @@ if ( claro_is_user_authenticated() )
 
 // include profile library
 include claro_get_conf_repository() . 'user_profile.conf.php';
+
+if ( !get_conf('allowSelfReg', false) )
+{
+    claro_die( get_lang('Not allowed') );
+}
+
 include_once get_path('incRepositorySys') . '/lib/user.lib.php';
 include_once get_path('incRepositorySys') . '/lib/sendmail.lib.php';
 
@@ -161,7 +167,7 @@ if ( DISP_REGISTRATION_SUCCEED == $display )
     if ( $mailSent )
     {
         $out .= '<br />' . "\n"
-              . get_lang('An email has been sent to help you remember your user name and password.');
+              . get_lang('An email has been sent to help you remember your username and password.');
     }
     
     $out .= '</p>' . "\n";

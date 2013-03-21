@@ -1,38 +1,40 @@
-<?php // $Id: context.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: context.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Context handling library
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * Context handling library.
+ *
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
  *              GNU GENERAL PUBLIC LICENSE version 2 or later
  * @package     kernel.core
- * @since       Claroline 1.9
+ * @since       1.9
  */
 
-defined('CLARO_CONTEXT_PLATFORM')       
+defined('CLARO_CONTEXT_PLATFORM')
     || define('CLARO_CONTEXT_PLATFORM',     'platform');
 
-defined('CLARO_CONTEXT_COURSE')         
+defined('CLARO_CONTEXT_COURSE')
     || define('CLARO_CONTEXT_COURSE',       'course');
 
-defined('CLARO_CONTEXT_GROUP')          
+defined('CLARO_CONTEXT_GROUP')
     || define('CLARO_CONTEXT_GROUP',        'group');
 
-defined('CLARO_CONTEXT_USER')           
+defined('CLARO_CONTEXT_USER')
     || define('CLARO_CONTEXT_USER',         'user');
 
-defined('CLARO_CONTEXT_TOOLINSTANCE')   
+defined('CLARO_CONTEXT_TOOLINSTANCE')
     || define('CLARO_CONTEXT_TOOLINSTANCE', 'toolInstance');
 
-defined('CLARO_CONTEXT_TOOLLABEL')      
+defined('CLARO_CONTEXT_TOOLLABEL')
     || define('CLARO_CONTEXT_TOOLLABEL',    'toolLabel');
 
-defined('CLARO_CONTEXT_MODULE')         
+defined('CLARO_CONTEXT_MODULE')
     || define('CLARO_CONTEXT_MODULE',       'moduleLabel');
 
 /**

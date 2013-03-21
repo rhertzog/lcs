@@ -1,12 +1,14 @@
-<?php // $Id: groupteam.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: groupteam.lib.php 14328 2012-11-16 09:47:37Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Objects used to represent groups in the platform.
  *
- * @version     1.10 $Revision: 12923 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     Claroline 1.11 $Revision: 14328 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -32,90 +34,44 @@ implements
     Countable
 {
     //put your code here
-    protected $courseObj, $groupId, $userList, $_rawData;
+    protected $_courseObj, $_groupId, $_userList;
 
     /**
      * @param Claro_Course $courseObj
      * @param int $groupId
      */
-    public function __construct( Claro_Course $courseObj, int $groupId )
+    public function __construct( Claro_Course $courseObj, $groupId )
     {
-        $this->groupId = $groupId;
-        $this->courseObj = $courseObj;
-        $this->userList = null;
+        $this->_groupId = $groupId;
+        $this->_courseObj = $courseObj;
+        $this->_userList = null;
+        $this->sessionVarName = '_group';
     }
 
     /**
      * Load course properties and group properties from database
      * @param bool $forceReload
      */
-    protected function loadFromDatabase( $forceReload = false )
+    protected function loadFromDatabase()
     {
-        if ( $forceReload )
-        {
-            $this->_rawData = array();
-            $this->userList = null;
-        }
-
-        if ( empty($this->_rawData) )
-        {
-            $this->loadGroupCourseProperties();
-            $this->loadGroupTeamProperties();
-            $this->userList = null;
-        }
+        $this->loadGroupCourseProperties();
+        $this->loadGroupTeamProperties();
+        $this->_userList = null;
     }
 
     /**
      * Load group properties defined for the course
      */
     protected function loadGroupCourseProperties()
-    {
-        // get course data from main
-        $tbl = claro_sql_get_course_tbl( $this->courseObj->dbNameGlu );
-
-        $sql_getGroupProperties = "
-            SELECT
-                name, value
-            FROM
-                `{$tbl['course_properties']}`
-            WHERE
-                category = 'GROUP';
-        ";
-
-        $db_groupProperties = Claroline::getDatabase()
-            ->query( $sql_getGroupProperties )
-            ->fetch();
-
-        if ( ! $db_groupProperties )
-        {
-            throw new Exception("Cannot load group properties for {$this->courseObj->sysCode}");
-        }
-
-        foreach($db_groupProperties as $currentProperty)
-        {
-            $this->_rawData[$currentProperty['name']] = (int) $currentProperty['value'];
-        }
-
-        $this->_rawData ['registrationAllowed'] =  ($groupProperties['self_registration'] == 1);
-
-        unset ( $groupProperties['self_registration'] );
+    {   
+        $grouProperties = $this->_courseObj->getGroupProperties();
         
-        $this->_rawData ['private'] =  ($groupProperties['private'] == 1);
-
-        $this->_rawData['tools'] = array();
-
-        $groupToolList = get_group_tool_label_list();
-
-        foreach ( $groupToolList as $thisGroupTool )
+        if ( ! $grouProperties )
         {
-            $groupTLabel = $thisGroupTool['label'];
-
-            $this->_rawData ['tools'] [$groupTLabel] =
-                array_key_exists( $groupTLabel, $this->_rawData )
-                && ($this->_rawData[$groupTLabel] == 1);
-
-            unset ( $this->_rawData[$groupTLabel] );
-        };
+            throw new Exception("Cannot load group properties for {$this->_courseObj->courseId}");
+        }
+        
+        $this->_rawData = array_merge( $this->_rawData, $grouProperties );
     }
 
     /**
@@ -123,26 +79,34 @@ implements
      */
     protected function loadGroupTeamProperties()
     {
-        $tbl = claro_sql_get_course_tbl( $this->courseObj->dbNameGlu );
+        $tbl = claro_sql_get_course_tbl( $this->_courseObj->dbNameGlu );
 
         $sql = "
             SELECT
                 g.id               AS id          ,
+                g.id               AS groupId          ,
                 g.name             AS name        ,
                 g.description      AS description ,
                 g.tutor            AS tutorId     ,
                 g.secretDirectory  AS directory   ,
                 g.maxStudent       AS maxMember
             FROM
-                `{$tbl_c_names['group_team']}`  AS g
+                `{$tbl['group_team']}`  AS g
             WHERE
-                g.id = {$this->groupId};
+                g.id = {$this->_groupId};
         ";
+                
+        $groupData = Claroline::getDatabase()
+            ->query( $sql )
+            ->fetch();
+        
+        if ( ! $groupData  )
+        {
+            throw new Exception("Cannot load group data for {$this->_groupId}");
+        }
 
         $this->_rawData = array_merge( $this->_rawData,
-            Claroline::getDatabase()
-            ->query( $sql )
-            ->fetch() );
+            iterator_to_array( $groupData ) );
     }
 
     /**
@@ -161,17 +125,17 @@ implements
             throw new Exception("Group data not loaded !");
         }
 
-        $tbl = claro_sql_get_course_tbl( $this->courseObj->dbNameGlu );
+        $tbl = claro_sql_get_course_tbl( $this->_courseObj->dbNameGlu );
 
         $sql = "SELECT
                     status,
                     role
-                FROM 
-                    `{$tbl_c_names['group_rel_team_user']}`
+                FROM
+                    `{$tbl['group_rel_team_user']}`
                 WHERE
                     `user` = {$userObj->userId}
                 AND
-                    `team`   = {$this->groupId};";
+                    `team`   = {$this->_groupId};";
 
         $result = Claroline::getDatabase()
             ->query( $sql )
@@ -203,11 +167,11 @@ implements
      */
     public function getGroupMembers()
     {
-        if ( ! $this->userList )
+        if ( ! $this->_userList )
 
         {
             $mainTableName = get_module_main_tbl(array('user','rel_course_user'));
-            $courseTableName = get_module_course_tbl(array('group_rel_team_user'), $this->courseObj->sysCode);
+            $courseTableName = get_module_course_tbl(array('group_rel_team_user'), $this->_courseObj->courseId);
 
             $sql = "
                 SELECT
@@ -226,14 +190,14 @@ implements
                 ON
                     `user`.`user_id` = `course_user`.`user_id`
                 WHERE
-                    `user_group`.`team`= {$this->groupId}
+                    `user_group`.`team`= {$this->_groupId}
                 AND
-                    `course_user`.`code_cours` = '{$this->courseObj->sysCode}'";
+                    `course_user`.`code_cours` = '{$this->_courseObj->sysCode}'";
 
-            $this->userList = Claroline::getDatabase()->query($sql);
+            $this->_userList = Claroline::getDatabase()->query($sql);
         }
 
-        return $this->userList;
+        return $this->_userList;
     }
 
     /**
@@ -242,7 +206,7 @@ implements
      */
     public function getCourse()
     {
-        return $this->courseObj;
+        return $this->_courseObj;
     }
 
     /**
@@ -256,25 +220,10 @@ implements
         if ( $this->tutorId )
         {
             $tutor = new Claro_User($this->tutorId);
-            $tutor->loadFromDatabase();
+            $tutor->load();
         }
 
         return $tutor;
-    }
-
-    /**
-     * Get the group space object for the current group/team
-     * @return Claro_GroupSpace
-     */
-    public function getGroupSpace()
-    {
-        $groupSpace = new Claro_GroupSpace($this);
-        return $groupSpace;
-    }
-
-    public function reload()
-    {
-
     }
 
     /**
@@ -296,68 +245,41 @@ implements
  */
 class Claro_CurrentGroupTeam extends Claro_GroupTeam
 {
-    public function __construct( $userId = null )
+    public function __construct( $groupId = null )
     {
-        $userId = empty( $groupId )
+        $groupId = empty( $groupId )
             ? claro_get_current_group_id()
             : $groupId
             ;
 
         parent::__construct( $groupId );
     }
+    
+    protected static $instance = false;
 
     /**
-     * Load user properties from session
+     * Singleton constructor
+     * @todo avoid using the singleton pattern and use a factory instead ?
+     * @param int $uid user id
+     * @param boolean $forceReload force reloading the data
+     * @return Claro_CurrentUser current user
      */
-    public function loadFromSession()
+    public static function getInstance( $groupId = null, $forceReload = false )
     {
-        if ( !empty($_SESSION['_group']) )
+        if ( $forceReload || ! self::$instance )
         {
-            $this->_rawData = $_SESSION['_group'];
-            pushClaroMessage( "User {$this->groupId} loaded from session", 'debug' );
+            self::$instance = new self( $groupId );
+            
+            if ( !$forceReload && claro_is_in_a_group() )
+            {
+                self::$instance->loadFromSession();
+            }
+            else
+            {
+                self::$instance->load( $forceReload );
+            }
         }
-        else
-        {
-            throw new Exception("Cannot load user data from session for {$this->groupId}");
-        }
-    }
-
-    /**
-     * Save user properties to session
-     */
-    public function saveToSession()
-    {
-        $_SESSION['_group'] = $this->_rawData;
-    }
-}
-
-/**
- * Claro_GroupSpace represents a Group Space
- * @author zefredz <zefredz@claroline.net>
- * @since 1.10
- * @todo implements me !
- */
-class Claro_GroupSpace
-{
-    protected $groupObj;
-
-    public function  __construct( Claro_GroupTeam $groupObj )
-    {
-        $this->groupObj = $groupObj;
-    }
-
-    public function getToolList()
-    {
-
-    }
-
-    public function getToolListAvailableForUser( $userId )
-    {
-
-    }
-
-    public function getGroup()
-    {
-
+        
+        return self::$instance;
     }
 }

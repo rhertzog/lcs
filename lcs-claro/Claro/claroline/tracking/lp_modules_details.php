@@ -1,29 +1,12 @@
-<?php  // $Id: lp_modules_details.php 11785 2009-05-25 14:35:27Z dimitrirambout $
-/*
-      +----------------------------------------------------------------------+
-      | CLAROLINE version 1.6
-      +----------------------------------------------------------------------+
-      | Copyright (c) 2001-2006 Universite catholique de Louvain (UCL)      |
-      +----------------------------------------------------------------------+
-      |   This program is free software; you can redistribute it and/or      |
-      |   modify it under the terms of the GNU General Public License        |
-      |   as published by the Free Software Foundation; either version 2     |
-      |   of the License, or (at your option) any later version.             |
-      |                                                                      |
-      |   This program is distributed in the hope that it will be useful,    |
-      |   but WITHOUT ANY WARRANTY; without even the implied warranty of     |
-      |   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the      |
-      |   GNU General Public License for more details.                       |
-      |                                                                      |
-      |   You should have received a copy of the GNU General Public License  |
-      |   along with this program; if not, write to the Free Software        |
-      |   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA          |
-      |   02111-1307, USA. The GNU GPL license is also available through     |
-      |   the world-wide-web at http://www.gnu.org/copyleft/gpl.html         |
-      +----------------------------------------------------------------------+
-      | Authors:  see credits.txt                                            |
-      +----------------------------------------------------------------------+
+<?php  // $Id: lp_modules_details.php 14214 2012-07-24 12:16:59Z ffervaille $
 
+/**
+ * CLAROLINE
+ *
+ * @version     $Revision: 14214 $
+ * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 require '../inc/claro_init_global.inc.php';
@@ -82,7 +65,7 @@ $sql = "SELECT `nom` AS `lastname`, `prenom` as `firstname`, `email`
 $uDetails = claro_sql_query_get_single_row($sql);
 
 // get infos about the learningPath
-$sql = "SELECT `name` 
+$sql = "SELECT `name`
         FROM `".$TABLELEARNPATH."`
        WHERE `learnPath_id` = ". (int)$_REQUEST['path_id'];
 $lpDetails = claro_sql_query_get_single_row($sql);
@@ -106,7 +89,7 @@ $titleTab['subTitle'] = $lpDetails['name'];
 $out .= claro_html_tool_title($titleTab);
 
 
-if($is_allowedToTrack && get_conf('is_trackingEnabled')) 
+if($is_allowedToTrack && get_conf('is_trackingEnabled'))
 {
     //### PREPARE LIST OF ELEMENTS TO DISPLAY #################################
 
@@ -177,6 +160,7 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
         .'<th>'.get_lang('Total time').'</th>'."\n"
         .'<th>'.get_lang('Module status').'</th>'."\n"
         .'<th colspan="2">'.get_lang('Progress').'</th>'."\n"
+        .'<th>'.get_lang('View student anwsers').'</th>'."\n"
         .'</tr>'."\n"
         .'<tbody>'."\n\n";
 
@@ -216,7 +200,7 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
         //-- if chapter head
         if ( $module['contentType'] == CTLABEL_ )
         {
-            $out .= '<b>'.$module['name'].'</b>';
+            $out .= '<b>' . claro_utf8_decode ( $module[ 'name' ] , get_conf ( 'charset' ) ) . '</b>';
         }
         //-- if user can access module
         else
@@ -227,14 +211,15 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
             $moduleImgUrl = get_icon_url( choose_image(basename($module['path'])) );
 
             $contentType_alt = selectAlt($module['contentType']);
-            $out .= '<img src="' .  $moduleImgUrl . '" alt="'.$contentType_alt.'" />'.$module['name'];
+            $out .= '<img src="' . $moduleImgUrl . '" alt="' . $contentType_alt . '" />'
+                . claro_utf8_decode ( $module[ 'name' ] , get_conf ( 'charset' ) );
 
         }
           
           $out .= '</td>'."\n";
           
           if ($module['contentType'] == CTSCORM_)
-          {          
+          {
               $session_time = preg_replace("/\.[0-9]{0,2}/", "", $module['session_time']);
               $total_time = preg_replace("/\.[0-9]{0,2}/", "", $module['total_time']);
               $global_time = addScormTime($global_time,$total_time);
@@ -247,8 +232,8 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
           else
           {
               // if no progression has been recorded for this module
-              // leave 
-              if($module['lesson_status'] == "") 
+              // leave
+              if($module['lesson_status'] == "")
               {
                 $session_time = "&nbsp;";
                 $total_time = "&nbsp;";
@@ -265,7 +250,7 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
           $out .= '<td>'.$total_time.'</td>'."\n";
           //-- status
           $out .= '<td>';
-          if($module['contentType'] == CTEXERCISE_ && $module['lesson_status'] != "" ) 
+          if($module['contentType'] == CTEXERCISE_ && $module['lesson_status'] != "" )
             $out .= ' <a href="userReport.php?uInfo='.$_REQUEST['uInfo'].'&amp;view=0100000&amp;exoDet='.$module['path'].'">'.strtolower($module['lesson_status']).'</a>';
           else
             $out .= strtolower($module['lesson_status']);
@@ -283,12 +268,41 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
             $out .= '<td colspan="2">&nbsp;</td>'."\n";
           }
           
+          if(isAnwsersViewingSupported($module['contentType']) )
+          {
+                if(claro_get_current_user_id() != (int)$_REQUEST['uInfo'])
+                {
+                    if(getModuleProgression((int)$_REQUEST['uInfo'], (int)$_REQUEST['path_id'], (int)$module['module_id']))
+                    {
+                        $out .= '<td>' . "\n"
+                        .    '<a href="' . get_path('clarolineRepositoryWeb') . 'learnPath/module.php?cidReset=true&cidReq=' . claro_get_current_course_id() . '&module_id=' . (int)$module['module_id'] . '&path_id=' . (int)$_REQUEST['path_id'] . '&copyFrom=' . (int)$_REQUEST['uInfo'] . '" '
+                        .    'onclick="return confirm(\'' . clean_str_for_javascript(get_lang('This will copy the learning path user progression over your own. Do you want to proceed anyway?')) . '\');">' . "\n"
+                        .    '<img src="' . get_icon_url('login_as') . '" alt="' . get_lang('Consult') . '" />' . "\n"
+                        .    '</a>' . "\n"
+                        .    '</td>' . "\n"
+                        ;
+                    }
+                    else
+                    {
+                        $out .= '<td>' . get_lang('No results available') . '</td>'."\n";
+                    }
+                }
+                else
+                {
+                    $out .= '<td>' . get_lang('Consulting your own results is not allowed') . '</td>'."\n";
+                }
+          }
+          else
+          {
+              $out .= '<td>' . get_lang('Unsupported module type') . '</td>'."\n";
+          }
+          
           if ($progress > 0)
           {
             $globalProg += $progress;
           }
           
-          if($module['contentType'] != CTLABEL_) 
+          if($module['contentType'] != CTLABEL_)
               $moduleNb++; // increment number of modules used to compute global progression except if the module is a title
            
           $out .= '</tr>'."\n\n";
@@ -333,4 +347,22 @@ else
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-?>
+
+
+//**********************************
+function isAnwsersViewingSupported($moduleType = '')
+{
+    $supportedTypes = array(CTSCORM_);
+    
+    if(empty($moduleType))
+    {
+        return false;
+    }
+    
+    if(in_array($moduleType, $supportedTypes))
+    {
+        return true;
+    }
+    
+    return false;
+}

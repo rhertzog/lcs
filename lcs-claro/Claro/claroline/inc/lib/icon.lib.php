@@ -1,4 +1,4 @@
-<?php  // $Id: icon.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php  // $Id: icon.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * Icon library
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -135,11 +135,11 @@ function claro_html_icon( $fileName, $toolTip = null, $alternate = null )
 {
     $alt = $alternate
         ? ' alt="' . $alternate . '"'
-        : ' alt="' . htmlspecialchars( $fileName ) . '"'
+        : ' alt="' . claro_htmlspecialchars( $fileName ) . '"'
         ;
         
     $title = $toolTip
-        ? ' title="' . htmlspecialchars( $toolTip ) .'"'
+        ? ' title="' . claro_htmlspecialchars( $toolTip ) .'"'
         : ''
         ;
         
@@ -170,10 +170,10 @@ function claro_html_icon_button( $targetUrl, $iconName = '', $buttonText = '', $
 {
     return '<a class="claroCmd"' . "\n"
         . ' href="'.$targetUrl.'"'
-        . ( $toolTip ? "\n" . ' title="'.htmlspecialchars($toolTip).'"' : '' )
+        . ( $toolTip ? "\n" . ' title="'.claro_htmlspecialchars($toolTip).'"' : '' )
         . '>' . "\n"
         . ( $iconName ? claro_html_icon( $iconName ) . "\n" : '' )
-        . ( $buttonText ? htmlspecialchars($buttonText) . "\n" : '' )
+        . ( $buttonText ? claro_htmlspecialchars($buttonText) . "\n" : '' )
         . '</a>'
         ;
 }

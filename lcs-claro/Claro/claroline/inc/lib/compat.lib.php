@@ -1,9 +1,11 @@
-<?php // $Id: compat.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: compat.lib.php 14318 2012-11-09 08:36:34Z zefredz $
 
 /**
- * PHP COMPAT For PHP backward compatibility
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * PHP COMPAT For PHP backward compatibility.
+ *
+ * @version     $Revision: 14318 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -67,7 +69,7 @@ if (!function_exists('ctype_digit'))
  * @package     PHP_Compat
  * @link        http://php.net/function.str_ireplace
  * @author      Aidan Lister <aidan@php.net>
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14318 $
  * @since       PHP 5
  * @require     PHP 4.0.0 (user_error)
  * @note        count not by returned by reference, to enable
@@ -241,7 +243,7 @@ if(!function_exists('array_intersect_key'))
  * @package     PHP_Compat
  * @link        http://php.net/function.scandir
  * @author      Aidan Lister <aidan@php.net>
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14318 $
  * @since       PHP 5
  * @require     PHP 4.0.0 (user_error)
  */

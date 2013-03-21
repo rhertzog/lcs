@@ -1,11 +1,11 @@
-<?php //$Id: user_pictures.php 13013 2011-03-29 11:13:47Z abourguignon $
+<?php //$Id: user_pictures.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Display all the pictures for a specific course list of users.
  *
- * @version     $Revision: 13013 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     USER
@@ -18,6 +18,7 @@
   =====================================================================*/
 $tlabelReq = 'CLUSR';
 $gidReset = true;
+
 require '../inc/claro_init_global.inc.php';
 
 if ( ! claro_is_in_a_course() || ! claro_is_course_allowed() ) claro_disp_auth_form(true);
@@ -62,18 +63,29 @@ $sql = "SELECT `user`.`user_id`      AS `user_id`,
 
 $result = Claroline::getDatabase()->query($sql);
 
+// Command list
+$cmdList = array();
+
+$cmdList[] = array(
+    'img' => 'back',
+    'name' => get_lang('User list'),
+    'url' => claro_htmlspecialchars(Url::Contextualize(get_path('clarolineRepositoryWeb') . 'user/user.php'))
+);
+
+
+// Display
 $out = '';
-$out .= claro_html_tool_title($nameTools)
-      . claro_html_cmd_link( htmlspecialchars(Url::Contextualize(
-        get_path('clarolineRepositoryWeb') . 'user/user.php'
-        ))
-        , '<img src="' . get_icon_url('user') . '" alt="" />'
-        . get_lang('User list'))
-      . '<ul class="user_list">';
+
+$out .= claro_html_tool_title($nameTools, null, $cmdList)
+    . '<ul class="userList">'
+    ;
+
 foreach ($result as $userKey => $user)
 {
     $user['picture'] = $user['pictureUri'];
+    
     $picture_url = user_get_picture_url($user);
+    
     if(empty($picture_url))
     {
         $picture_url = get_icon_url('nopicture');
@@ -86,8 +98,8 @@ foreach ($result as $userKey => $user)
           . $user['name']
           . '</li>';
 }
-$out .= '</ul>';
 
+$out .= '</ul>';
 
 $claroline->display->body->appendContent($out);
 

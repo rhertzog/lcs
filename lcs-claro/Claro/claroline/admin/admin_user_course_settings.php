@@ -1,11 +1,11 @@
-<?php // $Id: admin_user_course_settings.php 12969 2011-03-14 14:40:42Z abourguignon $
+<?php // $Id: admin_user_course_settings.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This tool edit status of user in a course.
  *
- * @version     $Revision: 12969 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
@@ -121,17 +121,12 @@ if ( isset($uidToEdit) )
 // PREPARE DISPLAY
 //------------------------------------
 
-// javascript confirm pop up declaration
-$htmlHeadXtra[] =
-            "<script>
-            function confirmationUnReg (name)
-            {
-                if (confirm(\"".clean_str_for_javascript(get_lang('Are you sure you want to unregister'))." \"+ name + \"? \"))
-                    {return true;}
-                else
-                    {return false;}
-            }
-            </script>";
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure you want to unregister %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+
+JavascriptLoader::getInstance()->load('admin');
 
 $displayBackToCU = false;
 $displayBackToUC = false;
@@ -148,7 +143,7 @@ $cmd_menu[] = '<a class="claroCmd" href="adminuserunregistered.php'
 .             '?cidToEdit=' . $cidToEdit
 .             '&amp;cmd=UnReg'
 .             '&amp;uidToEdit=' . $uidToEdit . '" '
-.             ' onclick="return confirmationUnReg(\'' . clean_str_for_javascript(htmlspecialchars($courseUserProperties['firstName']) . ' ' . htmlspecialchars($courseUserProperties['lastName'])) . '\');">'
+.             ' onclick="return ADMINconfirmationUnReg(\'' . clean_str_for_javascript(claro_htmlspecialchars($courseUserProperties['firstName']) . ' ' . claro_htmlspecialchars($courseUserProperties['lastName'])) . '\');">'
 .             get_lang('Unsubscribe')
 .             '</a>'
 ;
@@ -186,12 +181,12 @@ $out = '';
 
 $out .= claro_html_tool_title( array( 'mainTitle' =>$nameTools
                                  , 'subTitle' => get_lang('Course') . ' : '
-                                              .  htmlspecialchars($courseUserProperties['courseName'])
+                                              .  claro_htmlspecialchars($courseUserProperties['courseName'])
                                               .  '<br />'
                                               .  get_lang('User') . ' : '
-                                              .  htmlspecialchars($courseUserProperties['firstName'])
+                                              .  claro_htmlspecialchars($courseUserProperties['firstName'])
                                               .  ' '
-                                              .  htmlspecialchars($courseUserProperties['lastName'])
+                                              .  claro_htmlspecialchars($courseUserProperties['lastName'])
                                  )
                           );
 

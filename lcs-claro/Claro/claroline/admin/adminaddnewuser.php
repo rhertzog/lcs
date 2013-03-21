@@ -1,11 +1,11 @@
-<?php // $Id: adminaddnewuser.php 13026 2011-03-31 16:37:58Z abourguignon $
+<?php // $Id: adminaddnewuser.php 13658 2011-10-05 12:46:57Z ffervaille $
 
 /**
  * CLAROLINE
  *
  * Management tools for new users.
  *
- * @version     $Revision: 13026 $
+ * @version     $Revision: 13658 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -40,9 +40,6 @@ $dialogBox = new DialogBox;
   Main Section
  =====================================================================*/
 
-// Initialise field variable from subscription form
-$userData = user_initialise();
-
 if ( isset($_REQUEST['cmd']) ) $cmd = $_REQUEST['cmd'];
 else                           $cmd = '';
 
@@ -60,7 +57,6 @@ if ( $cmd == 'registration' )
     {
         // register the new user in the claroline platform
         $userId = user_create($userData);
-        set_user_property($userId, 'skype', $userData['skype']);
         
         if (false===$userId)
         {
@@ -116,7 +112,7 @@ $noQUERY_STRING   = true;
 
 if ( $display == DISP_REGISTRATION_FORM )
 {
-    $dialogBox->info( get_lang('New users will receive an e-mail with their user name and password') );
+    $dialogBox->info( get_lang('New users will receive an e-mail with their username and password') );
 }
 
 $out = '';

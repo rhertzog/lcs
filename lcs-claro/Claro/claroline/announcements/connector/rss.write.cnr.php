@@ -1,14 +1,15 @@
-<?php // $Id: rss.write.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: rss.write.cnr.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @package CLANN
- * @subpackage CLRSS
- * @author Claro Team <cvs@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLANN
+ * @subpackage  CLRSS
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 function CLANN_write_rss($context)
@@ -34,13 +35,10 @@ function CLANN_write_rss($context)
             ,                   'link'        => get_path('rootWeb') .'claroline/' . 'announcements/announcements.php?cidReq=' . $courseId . '&l#ann'.$announcementItem['id']
             ,                   'description' => trim(str_replace('<!-- content: html -->','',$announcementItem['content']))
             ,                   'pubDate'     => date('r', stripslashes(strtotime($announcementItem['time'])))
+            ,                   'dc:date'     => date('c', stripslashes(strtotime($announcementItem['time'])))
           //,                   'author'      => $_course['email']
             );
         }
     }
     return $rssList;
 }
-
-
-
-?>

@@ -1,7 +1,7 @@
 <?php
 
 /*
-$Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+$Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 
 NuSOAP - Web Services Toolkit for PHP
 
@@ -80,7 +80,7 @@ $GLOBALS['_transient']['static']['nusoap_base']->globalDebugLevel = 9;
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_base {
@@ -104,7 +104,7 @@ class nusoap_base {
 	 * @var string
 	 * @access private
 	 */
-	var $revision = '$Revision: 11081 $';
+	var $revision = '$Revision: 14314 $';
     /**
      * Current error string (manipulated by getError/setError)
 	 *
@@ -727,7 +727,7 @@ class nusoap_base {
 	 * @deprecated
 	 */
     function formatDump($str){
-		$str = htmlspecialchars($str);
+		$str = claro_htmlspecialchars($str);
 		return nl2br($str);
     }
 
@@ -989,7 +989,7 @@ function usleepWindows($usec)
 * Mainly used for returning faults from deployed functions
 * in a server instance.
 * @author   Dietrich Ayala <dietrich@ganx4.com>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access public
 */
 class nusoap_fault extends nusoap_base {
@@ -1077,7 +1077,7 @@ class soap_fault extends nusoap_fault {
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_xmlschema extends nusoap_base  {
@@ -2014,7 +2014,7 @@ class XMLSchema extends nusoap_xmlschema {
 * xsd:anyType and user-defined types.
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class soapval extends nusoap_base {
@@ -2116,7 +2116,7 @@ class soapval extends nusoap_base {
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access public
 */
 class soap_transport_http extends nusoap_base {
@@ -3419,7 +3419,7 @@ class soap_transport_http extends nusoap_base {
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_server extends nusoap_base {
@@ -4488,7 +4488,7 @@ class soap_server extends nusoap_server {
 * 
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access public 
 */
 class wsdl extends nusoap_base {
@@ -5457,7 +5457,7 @@ class wsdl extends nusoap_base {
 					} 
 					$portType_xml .= '>';
 					if(isset($opParts['documentation']) && $opParts['documentation'] != '') {
-						$portType_xml .= "\n" . '    <documentation>' . htmlspecialchars($opParts['documentation']) . '</documentation>';
+						$portType_xml .= "\n" . '    <documentation>' . claro_htmlspecialchars($opParts['documentation']) . '</documentation>';
 					}
 					$portType_xml .= "\n" . '    <input message="tns:' . $opParts['input']['message'] . '"/>';
 					$portType_xml .= "\n" . '    <output message="tns:' . $opParts['output']['message'] . '"/>';
@@ -6389,7 +6389,7 @@ class wsdl extends nusoap_base {
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_parser extends nusoap_base {
@@ -6576,7 +6576,7 @@ class nusoap_parser extends nusoap_base {
 		// set my status
 		$this->message[$pos]['status'] = $this->status;
 		// set name
-		$this->message[$pos]['name'] = htmlspecialchars($name);
+		$this->message[$pos]['name'] = claro_htmlspecialchars($name);
 		// set attrs
 		$this->message[$pos]['attrs'] = $attrs;
 
@@ -7036,7 +7036,7 @@ class soap_parser extends nusoap_parser {
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: nusoap.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: nusoap.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_client extends nusoap_base  {

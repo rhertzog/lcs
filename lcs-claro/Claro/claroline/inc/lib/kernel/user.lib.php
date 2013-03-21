@@ -1,12 +1,14 @@
-<?php // $Id: user.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: user.lib.php 14328 2012-11-16 09:47:37Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Objects used to represent a user in the platform.
  *
- * @version     1.10 $Revision: 12923 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     Claroline 1.11 $Revision: 14328 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -33,6 +35,7 @@ class Claro_User extends KernelObject
     public function __construct( $userId )
     {
         $this->_userId = $userId;
+        $this->sessionVarName = '_user';
     }
 
     /**
@@ -46,7 +49,7 @@ class Claro_User extends KernelObject
         
         $sql = "SELECT "
             . "`user`.`user_id` AS userId,\n"
-            // . "`user`.`username`,\n"
+            . "`user`.`username`,\n"
             . "`user`.`prenom` AS firstName,\n"
             . "`user`.`nom` AS lastName,\n"
             . "`user`.`email`AS `mail`,\n"
@@ -107,14 +110,14 @@ class Claro_User extends KernelObject
         $tbl = claro_sql_get_main_tbl();
             
         $userProperties = Claroline::getDatabase()->query("
-            SELECT 
-                propertyId AS name, 
-                propertyValue AS value, 
+            SELECT
+                propertyId AS name,
+                propertyValue AS value,
                 scope
-            FROM 
+            FROM
                 `{$tbl['user_property']}`
-            WHERE 
-                userId = " . (int) $this->_userId . ";    
+            WHERE
+                userId = " . (int) $this->_userId . ";
         ");
 
         $userProperties->setFetchMode(Database_ResultSet::FETCH_OBJECT);
@@ -170,30 +173,6 @@ class Claro_CurrentUser extends Claro_User
     }
 
     /**
-     * Load user properties from session
-     */
-    public function loadFromSession()
-    {
-        if ( !empty($_SESSION['_user']) )
-        {
-            $this->_rawData = $_SESSION['_user'];
-            pushClaroMessage( "User {$this->_userId} loaded from session", 'debug' );
-        }
-        else
-        {
-            throw new Exception("Cannot load user data from session for {$this->_userId}");
-        }
-    }
-
-    /**
-     * Save user properties to session
-     */
-    public function saveToSession()
-    {
-        $_SESSION['_user'] = $this->_rawData;
-    }
-
-    /**
      * Is it the first time the user log in to the platform ?
      * @todo the creator id should not be used for this purpose
      * @return boolean
@@ -244,7 +223,7 @@ class Claro_CurrentUser extends Claro_User
             }
             else
             {
-                self::$instance->loadFromDatabase();
+                self::$instance->load( $forceReload );
             }
         }
         

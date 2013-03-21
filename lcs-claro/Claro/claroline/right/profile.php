@@ -1,18 +1,15 @@
-<?php // $Id: profile.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: profile.php 13348 2011-07-18 13:58:28Z abourguignon $
+
 /**
  * CLAROLINE
  *
- * This tool manage profile of the course
+ * This tool manage profile of the course.
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 13348 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author claroline Team <cvs@claroline.net>
- *
- * @package RIGHT
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline Team <cvs@claroline.net>
+ * @package     RIGHT
  */
 
 require '../inc/claro_init_global.inc.php';
@@ -148,5 +145,3 @@ else
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

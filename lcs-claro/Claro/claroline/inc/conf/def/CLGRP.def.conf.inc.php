@@ -1,4 +1,4 @@
-<?php // $Id: CLGRP.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: CLGRP.def.conf.inc.php 14355 2013-01-24 10:02:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * This file describe the parameter for edit setting  of groups in a course.
  *
- * @version     1.8 $Revision: 12923 $
+ * @version     1.8 $Revision: 14355 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Config
@@ -35,6 +35,12 @@ $conf_def['section']['tutors']['description']='Settings for tutors of group';
 $conf_def['section']['tutors']['properties'] =
 array ( 'tutorCanBeSimpleMemberOfOthersGroupsAsStudent'
       , 'showTutorsInGroupList'
+      );
+
+$conf_def['section']['display']['label']='Display';
+$conf_def['section']['display']['description']='Display options';
+$conf_def['section']['display']['properties'] =
+array ( 'clgrp_displayMyGroups'
       );
 
 //PROPERTIES
@@ -71,4 +77,16 @@ array ( 'description' => 'Not implemented, name reserved  for future version of 
                                )
       , 'display'     => false
       , 'readonly'    => true
+      );
+
+$conf_def_property_list['clgrp_displayMyGroups'] =
+array ( 'description' => 'Display "my groups" above group list'
+      , 'label'       => 'Display the list of groups in whitch a user is registered or supervized by him above the group list'
+      , 'default'     => true
+      , 'type'        => 'boolean'
+      , 'acceptedValue' => array ('TRUE'=>'Yes'
+                               ,'FALSE'=>'No'
+                               )
+      , 'display'     => true
+      , 'readonly'    => false
       );

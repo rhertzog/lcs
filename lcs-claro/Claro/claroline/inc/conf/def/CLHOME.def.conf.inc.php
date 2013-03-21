@@ -1,4 +1,4 @@
-<?php //$Id: CLHOME.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php //$Id: CLHOME.def.conf.inc.php 14225 2012-07-30 06:38:39Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * This file describe the parameter for the home page of the campus.
  *
- * @version     1.8 $Revision: 12923 $
+ * @version     1.8 $Revision: 14225 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Config
@@ -32,7 +32,8 @@ array ( 'course_order_by',
 $conf_def['section']['display']['label']='Display';
 $conf_def['section']['display']['description']='Manage the home page\'s display';
 $conf_def['section']['display']['properties'] =
-array ( 'display_former_homepage' );
+array ( 'display_former_homepage',
+        'userDesktopMessageCollapsedByDefault');
 
 //PROPERTIES
 $conf_def_property_list['course_order_by']
@@ -84,6 +85,17 @@ $conf_def_property_list['display_former_homepage']
 = array ('label'     => 'Display former Claroline\'s home page instead of user\'s desktop'
         ,'description' => ''
         ,'default'   => false
+        ,'type'      => 'boolean'
+        ,'display'       => true
+        ,'readonly'      => false
+        ,'acceptedValue' => array ( 'TRUE'=> 'Yes',
+                                    'FALSE' => 'No' )
+        );
+        
+$conf_def_property_list['userDesktopMessageCollapsedByDefault']
+= array ('label'     => 'Hide textzone on user desktop by default'
+        ,'description' => ''
+        ,'default'   => true
         ,'type'      => 'boolean'
         ,'display'       => true
         ,'readonly'      => false

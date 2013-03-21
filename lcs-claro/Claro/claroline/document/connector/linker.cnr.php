@@ -1,16 +1,15 @@
-<?php // $Id: linker.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: linker.cnr.php 13348 2011-07-18 13:58:28Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Resource Resolver for the Document tool
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 13348 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @author claroline Team <cvs@claroline.net>
- * @package CLDOC
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline Team <cvs@claroline.net>
+ * @package     CLDOC
  */
 
 FromKernel::uses('fileManage.lib', 'file.lib', 'fileDisplay.lib');
@@ -257,7 +256,7 @@ class CLDOC_Navigator implements ModuleResourceNavigator
                 
                 if ( $locator->hasResourceId() )
                 {
-                    $relativePath = '/' . ltrim( 
+                    $relativePath = '/' . ltrim(
                          ltrim( $locator->getResourceId(), '/' )
                         . '/' . ltrim( $relativePath, '/' ), '/' )
                         ;

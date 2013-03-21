@@ -1,4 +1,4 @@
-<?php // $Id: admin_delete.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: admin_delete.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Allow the administrator to delete messages.
  *
- * @version     $Revision: 12989 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -66,7 +66,7 @@ $acceptedCommand = array('rqDeleteAll','exDeleteAll'
                         ,'rqPlatformMessage','exPlatformMessage');
 
 // ------------- display
-if (isset($_REQUEST['cmd']) && in_array($_REQUEST['cmd'],$acceptedCommand))
+if (isset($_REQUEST['cmd']) && in_array($_REQUEST['cmd'], $acceptedCommand))
 {
     // -------- delete all
     if ($_REQUEST['cmd'] == "rqDeleteAll")
@@ -210,7 +210,7 @@ if (isset($_REQUEST['cmd']) && in_array($_REQUEST['cmd'],$acceptedCommand))
 }
 else
 {
-    claro_die('missing command');
+    claro_die(get_lang('Missing command'));
 }
 
 // ----------- delete all --------------
@@ -316,12 +316,14 @@ if ($displayResultUserSearch)
     
     $content .= '<br />'
        .'<table class="claroTable emphaseLine">' . "\n\n"
-       .'<tr class="headerX">' . "\n"
+       .'<thead>'
+       .'<tr>' . "\n"
        .'<th>' . get_lang('Id') . '</th>' . "\n"
        .'<th><a href="' . $linkSorting . 'name&amp;order='.$nextOrder.'">' . get_lang('Name') . '</a></th>'."\n"
        .'<th><a href="' . $linkSorting . 'username&amp;order='.$nextOrder.'">' . get_lang('Username') . '</a></th>'."\n"
        .'<th>' . get_lang('Delete messages') . '</th>'."\n"
-       .'</tr>' . "\n\n"
+       .'</tr>' . "\n"
+       .'</thead>'."\n"
        ;
 
      if ( $userList->getNumberOfUser() > 0)
@@ -348,7 +350,7 @@ if ($displayResultUserSearch)
             $content .=
                   '<tr>' . "\n"
                 . '<td>' . $user['id'] . '</td>' . "\n"
-                . '<td>' . get_lang('%firstName %lastName', array ('%firstName' =>htmlspecialchars($user['firstname']), '%lastName' => htmlspecialchars($user['lastname']))).'</td>'."\n"
+                . '<td>' . get_lang('%firstName %lastName', array ('%firstName' =>claro_htmlspecialchars($user['firstname']), '%lastName' => claro_htmlspecialchars($user['lastname']))).'</td>'."\n"
                 . '<td>' . $user['username'] . '</td>' . "\n"
                 . '<td align="center">'
                 . '<a href="' . $linkDelete . 'cmd=rqFromUser&amp;userId=' . $user['id'] . '" '
@@ -449,7 +451,7 @@ if ($displayRemoveOlderThanConfirmation)
 
 if ($displayRemoveOlderThanValidated)
 {
-    $date = htmlspecialchars($_REQUEST['date']);
+    $date = claro_htmlspecialchars($_REQUEST['date']);
     $dialogBox = new DialogBox();
     $dialogBoxMsg = get_lang('All messages older than %date% have been deleted',array('%date%' => $date))
          . '<br /><br />'

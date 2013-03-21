@@ -1,11 +1,13 @@
-<?php // $Id: linker.php 13321 2011-07-14 17:00:07Z abourguignon $
+<?php // $Id: linker.php 13348 2011-07-18 13:58:28Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Claroline Resource Linker ajax backend
  *
- * @version     1.9 $Revision: 13321 $
+ * @version     $Revision: 13348 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -31,7 +33,7 @@ try
     $cmd = $userInput->get('cmd', 'getResourceList');
     
     $locator = isset( $_REQUEST['crl'] ) && ! empty( $_REQUEST['crl'] )
-            ? ClarolineResourceLocator::parse($_REQUEST['crl'])
+            ? ClarolineResourceLocator::parse(rawurldecode($_REQUEST['crl']))
             : ResourceLinker::$Navigator->getCurrentLocator( array() );
             ;
     

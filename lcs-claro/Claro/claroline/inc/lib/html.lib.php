@@ -1,4 +1,4 @@
-<?php // $Id: html.lib.php 12997 2011-03-21 16:55:57Z abourguignon $
+<?php // $Id: html.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -11,7 +11,7 @@ if ( count( get_included_files() ) == 1 )
  * This lib provide html stream for various
  * uniformised output.
  *
- * @version     1.9 $Revision: 12997 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      see 'credits' file
@@ -117,8 +117,8 @@ function claro_html_menu_horizontal($itemList)
             $section_name = $section_def['label'];
             
             $tabList[]= '<a ' . ( $section == $section_selected ? ('class="' . $currentClassName . '"') : '' )
-            . ' href="' . $_SERVER['PHP_SELF'] . '?section=' . htmlspecialchars($section)
-                                               . htmlspecialchars($url_params). '">'
+            . ' href="' . $_SERVER['PHP_SELF'] . '?section=' . claro_htmlspecialchars($section)
+                                               . claro_htmlspecialchars($url_params). '">'
             . get_lang($section_name) . '</a>';
 
         }
@@ -234,7 +234,8 @@ function claro_html_title($title, $level)
 
 /**
 * Displays the title of a tool. Optionally, there can be a subtitle below
-* the normal title, and / or a supra title above the normal title.
+* the normal title, a supra title above the normal title and a list of
+* tools links following the title.
 *
 * e.g. supra title:
 * group
@@ -244,56 +245,35 @@ function claro_html_title($title, $level)
 * AGENDA
 * calender & events tool
 *
+* e.g. tools:
+* AGENDA | (tool link 1) (tool link 2) (tool link 3)
+*
 * @author Hugues Peeters <hugues.peeters@claroline.net>
+* @author Antonin Bourguignon <antonin.bourguignon@claroline.net>
 * @param  mixed $titleElement - it could either be a string or an array
 *                               containing 'supraTitle', 'mainTitle',
 *                               'subTitle'
+* @param string $helpUrl
+* @param array $toolList
 * @return void
 */
-function claro_html_tool_title($titlePart, $helpUrl = false)
+function claro_html_tool_title($titleParts, $helpUrl = null, $commandList = array(), $advancedCommandList = array())
 {
-    // if titleElement is simply a string transform it into an array
-
-    if ( is_array($titlePart) ) $titleElement = $titlePart;
-    else                        $titleElement['mainTitle'] = $titlePart;
-
-    $stringPart= array();
-    if ( isset($titleElement['supraTitle']) )
+    if ( ! is_array($advancedCommandList) )
     {
-        $stringPart[] = '<small>' . $titleElement['supraTitle'] . '</small>';
+        pushClaroMessage('advanced command list is not an array ' . var_export( $advancedCommandList, true ), 'error' );
+        $advancedCommandList = array();
     }
-
-    if ( isset($titleElement['mainTitle']) )
+    
+    if ( get_conf('displayAllCommandsLinkByDefault', false ) )
     {
-        $stringPart[] = $titleElement['mainTitle'];
+        $commandList = array_merge( $commandList, $advancedCommandList );
+        $advancedCommandList = array();
     }
-
-    if ( isset($titleElement['subTitle']) )
-    {
-        $stringPart[] = '<small>' . $titleElement['subTitle'] . '</small>';
-    }
-
-    $string = "\n" . '<h3 class="claroToolTitle">';
-
-    if ($helpUrl)
-    {
-
-        $string .= "<a href='#' onclick=\"MyWindow=window.open('". get_path('clarolineRepositoryWeb') . "help/" .$helpUrl
-        ."','MyWindow','toolbar=no,location=no,directories=no,status=yes,menubar=no,scrollbars=yes,resizable=yes,width=350,height=450,left=300,top=10'); return false;\">"
-
-        .'<img src="' . get_icon_url('help') . '" '
-        .' alt ="'.get_lang('Help').'"'
-        .' align="right"'
-        .' hspace="30" />'
-        .'</a>' . "\n"
-        ;
-    }
-
-    $string .= implode('<br />' . "\n",$stringPart)
-    .       '</h3>' . "\n\n"
-    ;
-
-    return $string;
+    
+    $toolTitle = new ToolTitle($titleParts, $helpUrl, $commandList, $advancedCommandList);
+    
+    return $toolTitle->render();
 }
 
 
@@ -309,6 +289,7 @@ function claro_html_tool_title($titlePart, $helpUrl = false)
 * @since 1.8
 *
 * @return string html string for a message box
+* @deprecated since Claroline 1.11 use DialogBox class instead
 */
 function claro_html_message_box($message)
 {
@@ -361,7 +342,7 @@ function claro_html_breadcrumbtrail($nameList, $urlList, $separator = ' &gt; ', 
 
         $htmlizedName = is_htmlspecialcharized($thisName)
         ? $thisName
-        : htmlspecialchars($thisName);
+        : claro_htmlspecialchars($thisName);
 
         $breadCrumbList [] = $startAnchorTag
         . $htmlizedName
@@ -576,7 +557,7 @@ function claro_html_textarea_editor($name, $content = '', $rows=20, $cols=80, $o
         .'rows="'.$rows.'" '
         .'cols="'.$cols.'" '
         .$optAttrib.' >'
-        ."\n".htmlspecialchars($content)."\n"
+        ."\n".claro_htmlspecialchars($content)."\n"
         .'</textarea>'."\n";
     }
 
@@ -1047,7 +1028,7 @@ function claro_disp_auth_form($cidRequired = false)
     }
     else // HTTP header has already been sent - impossible to relocate
     {
-        echo '<p align="center">'
+        Claroline::getDisplay()->body->appendContent( '<p align="center">'
         .    'WARNING ! Login Required <br />'
         .    'Click '
         .    '<a href="' . get_path('url') . '/claroline/auth/login.php'
@@ -1055,9 +1036,9 @@ function claro_disp_auth_form($cidRequired = false)
         .    'here'
         .    '</a>'
         .    '</p>'
-        ;
+        );
 
-        require get_path('incRepositorySys') . '/claro_init_footer.inc.php';
+        Claroline::getDisplay()->render();
     }
 
     die(); // necessary to prevent any continuation of the application
@@ -1168,7 +1149,7 @@ function clean_str_for_javascript( $str )
     // 3. replace "\n" by uninterpreted '\n'
     $output = str_replace("\n",'\n', $output);
     // 4. convert special chars into html entities
-    $output = htmlspecialchars($output);
+    $output = claro_htmlspecialchars($output);
 
     return $output;
 }
@@ -1210,12 +1191,13 @@ function cleanup_mso2007_text ( $string )
 function claro_parse_user_text($userText)
 {
     $userText = cleanup_mso2007_text( $userText );
+    $userText = cleanUpLaTeX( $userText );
     
     $userText = renderTex($userText);
     $userText = make_clickable($userText);
     $userText = make_spoiler($userText);
     
-    if( !preg_match('/<!-- content:[^(\-\->)]*-->/', $userText) && !preg_match('/<br ?\/?>/i', $userText))
+    if( !claro_is_html($userText) )
     {
         // only if the content isn't HTML change new line to <br>
         // Note the '<!-- content: html -->' is introduced by HTML Area
@@ -1223,6 +1205,18 @@ function claro_parse_user_text($userText)
     }
 
     return $userText;
+}
+
+
+/**
+ * Return true if the given text is HTML
+ * @param string $userText
+ * @return bool 
+ */
+function claro_is_html($userText)
+{
+    return ( preg_match('/<!-- content:[^(\-\->)]*-->/', $userText)
+        || preg_match( '#(?<=<)\w+(?=[^<]*?>)#', $userText ) );
 }
 
 
@@ -1296,6 +1290,55 @@ function add_spoiler($match)
     return $out;
 }
 
+function cleanUpLaTeX( $text )
+{
+    $claro_texRendererUrl = get_conf('claro_texRendererUrl');
+
+    if ( !empty($claro_texRendererUrl) )
+    {
+        // new LaTeX images with class
+        $text = preg_replace(
+            '~<img src="(.*?)" border="0" align="absmiddle" class="latexFormula" alt="(.*?)" />~i', 
+            '[tex]\2[/tex]', 
+            $text );
+        
+        // old mimetex images without class
+        $text = preg_replace_callback(
+             '~<img(.*?)src="(.*?)mimetex(.*?)\?(.*?)"(.*?)/>~i',
+             'deUrlizeLaTeX',
+             $text );
+
+    }
+    else
+    {
+        $text = str_replace(
+            '<embed TYPE="application/x-techexplorer" texdata="', 
+            '[tex]',
+            $text
+        );
+
+        $text = str_replace(
+            '" width="100%" pluginspace="http://www.integretechpub.com/">','
+            [/tex]',
+            $text 
+        );
+    }
+    
+    return $text;
+}
+
+function deUrlizeLaTeX( $matches )
+{
+    if ( count($matches) < 5 )
+    {
+        return false;
+    }
+
+    return '[tex]'.rawurldecode($matches[4]).'[/tex]';
+}
+
+
+
 
 /**
  * Parse the user text to transform bb code style tex tags to
@@ -1337,7 +1380,7 @@ function renderTexCallback( $matches )
     {
         $claro_texRendererUrl = get_conf('claro_texRendererUrl');
 
-        $text = '<img src="'.$claro_texRendererUrl.'?'.rawurlencode($matches[1]).'" border="0" align="absmiddle" class="latexFormula" alt="'.htmlspecialchars($matches[1]).'" />';
+        $text = '<img src="'.$claro_texRendererUrl.'?'.rawurlencode($matches[1]).'" border="0" align="absmiddle" class="latexFormula" alt="'.claro_htmlspecialchars($matches[1]).'" />';
         return $text;
     }
     else
@@ -1463,7 +1506,7 @@ function claro_disp_html_area($name, $content = '', $rows=20, $cols=80, $optAttr
 function htmlize($phrase)
 {
     // TODO use textile project here
-    return claro_parse_user_text(htmlspecialchars($phrase));
+    return claro_parse_user_text(claro_htmlspecialchars($phrase));
 }
 
 /**
@@ -1541,15 +1584,15 @@ function claro_html_breadcrumb()
 
         if ( claro_is_in_a_course() )
         {
-            $breadcrumbUrlList[]  = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . htmlspecialchars(claro_get_current_course_id());
+            $breadcrumbUrlList[]  = get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . claro_htmlspecialchars(claro_get_current_course_id());
             $breadcrumbNameList[] = claro_get_current_course_data('officialCode');
         }
 
         if ( claro_is_in_a_group() )
         {
-            $breadcrumbUrlList[]  = get_module_url('CLGRP') . '/index.php?cidReq=' . htmlspecialchars(claro_get_current_course_id());
+            $breadcrumbUrlList[]  = get_module_url('CLGRP') . '/index.php?cidReq=' . claro_htmlspecialchars(claro_get_current_course_id());
             $breadcrumbNameList[] = get_lang('Groups');
-            $breadcrumbUrlList[]  = get_module_url('CLGRP') . '/group_space.php?cidReq=' . htmlspecialchars(claro_get_current_course_id()).'&gidReq=' . (int) claro_get_current_group_id();
+            $breadcrumbUrlList[]  = get_module_url('CLGRP') . '/group_space.php?cidReq=' . claro_htmlspecialchars(claro_get_current_course_id()).'&gidReq=' . (int) claro_get_current_group_id();
             $breadcrumbNameList[] = claro_get_current_group_data('name');
         }
 
@@ -1685,8 +1728,8 @@ function claro_html_tab_bar( $section_list,
             foreach ( $url_params as $name => $value )
             {
                 $extra_url_params .= '&amp;'
-                    . htmlspecialchars($name)
-                    . '=' . htmlspecialchars($value)
+                    . claro_htmlspecialchars($name)
+                    . '=' . claro_htmlspecialchars($value)
                     ;
             }
         }
@@ -1703,10 +1746,10 @@ function claro_html_tab_bar( $section_list,
             
             $menu .=  '<li>'
                 . '<a ' . ( $section_id == $section_selected_id ? 'class="current"' : '' )
-                . ' href="' . htmlspecialchars(Url::Contextualize( $baseUrl
-                . htmlspecialchars($section_request_var_name).'='
-                . htmlspecialchars($section_id) .$extra_url_params )) . '" '
-                . 'id="'. htmlspecialchars($section_id) .'">'
+                . ' href="' . claro_htmlspecialchars(Url::Contextualize( $baseUrl
+                . claro_htmlspecialchars($section_request_var_name).'='
+                . claro_htmlspecialchars($section_id) .$extra_url_params )) . '" '
+                . 'id="'. claro_htmlspecialchars($section_id) .'">'
                 . get_lang($section_label) . '</a>'
                 . '</li>' . "\n"
                 ;

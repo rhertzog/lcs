@@ -1,11 +1,11 @@
-<?php // $Id: clarolinenews.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php // $Id: clarolinenews.php 13049 2011-04-07 16:04:22Z abourguignon $
 
 /**
  * CLAROLINE
  *
  * Show news read from claroline.net.
  *
- * @version     $Revision: 12941 $
+ * @version     $Revision: 13049 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLNEWS/
@@ -64,10 +64,10 @@ if (false !== $rs = $rss->get($urlNewsClaroline))
         $date = strtotime($item['pubDate']);
 
         $out .= '<div class="claroBlock">'."\n"
-            .'<h4 class="claroBlockHeader">'."\n"
+            .'<h3 class="blockHeader">'."\n"
             .'<a href="'.$href.'">'.$title.'</a>'."\n"
             .'<small> - '.claro_html_localised_date(get_locale('dateFormatLong'),$date).'</small>'."\n"
-            .'</h4>'."\n"
+            .'</h3>'."\n"
             .'<div class="claroBlockContent">' . "\n"
             .$summary."\n"
             .'</div>'."\n"

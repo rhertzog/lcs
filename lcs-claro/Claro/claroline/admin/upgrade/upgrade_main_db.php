@@ -1,23 +1,18 @@
-<?php // $Id: upgrade_main_db.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: upgrade_main_db.php 14188 2012-06-15 11:53:03Z zefredz $
+
 /**
  * CLAROLINE
  *
- * Try to create main database of claroline without remove existing content
+ * Try to create main database of claroline without remove existing content.
  *
- * @version 1.10 $Revision: 12923 $
- *
+ * @version $Revision: 14188 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
  * @see http://www.claroline.net/wiki/index.php/Upgrade_claroline_1.6
- *
  * @package UPGRADE
- *
  * @author Claro Team <cvs@claroline.net>
  * @author Christophe Gesche <moosh@claroline.net>
  * @author Mathieu Laurent <laurent@cerdecam.be>
- *
  */
 
 /*=====================================================================
@@ -229,7 +224,7 @@ switch ( $display )
                 clean_upgrade_status();
 
                 // Database version is 1.8
-                $currentDbVersion = $new_version;
+                $currentDbVersion = '1.8';
 
                 // Update current version file
                 save_current_version_file($currentClarolineVersion, $currentDbVersion);
@@ -273,7 +268,7 @@ switch ( $display )
                 clean_upgrade_status();
 
                 // Database version is 1.9
-                $currentDbVersion = $new_version;
+                $currentDbVersion = '1.9';
 
                 // Update current version file
                 save_current_version_file($currentClarolineVersion, $currentDbVersion);
@@ -312,12 +307,21 @@ switch ( $display )
                 clean_upgrade_status();
 
                 // Database version is 1.10
-                $currentDbVersion = $new_version;
+                $currentDbVersion = '1.10';
 
                 // Update current version file
                 save_current_version_file($currentClarolineVersion, $currentDbVersion);
             }
         } // End of upgrade 1.9 to 1.10
+        
+        /*if ( preg_match('/^1.10/',$currentDbVersion) )
+        {
+            // Database version is 1.11
+            $currentDbVersion = $new_version;
+
+            // Update current version file
+            save_current_version_file( $currentClarolineVersion, $currentDbVersion );
+        }*/
         
         
 
@@ -327,7 +331,10 @@ switch ( $display )
             {
                 echo '<div align="right"><p><button onclick="document.location=\'upgrade_courses.php\';">Next ></button></p></div>';
             }
-            else echo '<p class="error">Db version unknown : ' . $currentDbVersion . '</p>';
+            else
+            {
+                echo '<p class="error">Db version unknown : ' . $currentDbVersion . '</p>';
+            }
 
         }
         else

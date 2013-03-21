@@ -1,4 +1,4 @@
-<?php // $Id: receivedmessageboxview.inc.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: receivedmessageboxview.inc.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -12,7 +12,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * View of the inbox and trashbox.
  *
- * @version     $Revision: 12989 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -168,23 +168,17 @@ else
     $linkSort = $linkPage."?".$arg_sort."&amp;";
 }
 
-$content .= '<table class="claroTable emphaseLine" width="100%">'."\n\n";
-$content .= '<tr class ="headerX"> '."\n"
-            .'<th>'.get_lang("Subject").'</th>'."\n"
-            .'<th><a href="'.$linkSort.'fieldOrder=sender&amp;order='.$nextOrder.'">'.get_lang("Sender").'</a></th>'."\n"
-            .'<th><a href="'.$linkSort.'fieldOrder=date&amp;order='.$nextOrder.'">'.get_lang("Date").'</a></th>'."\n"
-            .'<th class="im_list_action">';
-if ($link_arg['box'] == "inbox")
-{
-   $content .= get_lang("Delete");
-}
-else
-{
-    $content .= get_lang("Restore");
-}
-$content .=      '</th>'."\n"
-        .'</tr>'."\n\n"
-        ;
+$content .= '<table class="claroTable emphaseLine" width="100%">'."\n\n"
+          . '<thead>'."\n"
+          . '<tr> '."\n"
+          . '<th>'.get_lang("Subject").'</th>'."\n"
+          . '<th><a href="'.$linkSort.'fieldOrder=sender&amp;order='.$nextOrder.'">'.get_lang("Sender").'</a></th>'."\n"
+          . '<th><a href="'.$linkSort.'fieldOrder=date&amp;order='.$nextOrder.'">'.get_lang("Date").'</a></th>'."\n"
+          . '<th class="im_list_action">'."\n"
+          . '</thead>'."\n"
+          . '<tbody>'."\n"
+          . '</th>'."\n"
+          . '</tr>'."\n\n";
 
 if ($box->getNumberOfMessage() == 0)
 {
@@ -210,7 +204,7 @@ else
     $claroline->display->header->addHtmlHeader($javascriptDelete);
     
     $arg_deleting = makeArgLink($link_arg);
-
+    
     if ($arg_deleting == "")
     {
         $link = $linkPage."?";
@@ -219,7 +213,7 @@ else
     {
         $link = $linkPage."?".$arg_deleting."&amp;";
     }
-
+    
     foreach ($box as $key => $message)
     {
         $content .= '<tr';
@@ -286,7 +280,7 @@ else
         }
         
         $content.= '<a href="readmessage.php?messageId='.$message->getId().'&amp;userId='.$currentUserId.'&amp;type=received">'
-        .   htmlspecialchars($message->getSubject())
+        .   claro_htmlspecialchars($message->getSubject())
         .   '</a>'
         .   '</td>'."\n";
         
@@ -305,7 +299,7 @@ else
         }
         else
         {
-            $content .= get_lang('%firstName %lastName', array ('%firstName' =>htmlspecialchars($message->getSenderFirstName()), '%lastName' => htmlspecialchars($message->getSenderLastName())));
+            $content .= get_lang('%firstName %lastName', array ('%firstName' =>claro_htmlspecialchars($message->getSenderFirstName()), '%lastName' => claro_htmlspecialchars($message->getSenderLastName())));
         }
         
         if ($isAllowed)
@@ -357,7 +351,9 @@ else
                     .'</tr>'."\n\n";
     }
 }
-$content .= '</table>'."\n";
+
+$content .= '</tbody>'."\n"
+          . '</table>'."\n";
 
 // prepare the link to change of page
 if ($box->getNumberOfPage()>1)

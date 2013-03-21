@@ -1,16 +1,17 @@
-<?php // $Id: linker.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: linker.cnr.php 14356 2013-01-24 12:26:38Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Resource Resolver for the Calendar tool
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 14356 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @author claroline Team <cvs@claroline.net>
- * @package CLCAL
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline Team <cvs@claroline.net>
+ * @package     CLCAL
  */
 
 FromKernel::uses('fileManage.lib', 'file.lib');
@@ -21,7 +22,7 @@ class CLCAL_Resolver implements ModuleResourceResolver
     {
         if ( $locator->hasResourceId() )
         {
-            return get_module_entry_url('CLCAL') . "#event{$locator->getResourceId()}";
+            return get_module_entry_url('CLCAL') . "#item{$locator->getResourceId()}";
         }
         else
         {
@@ -47,14 +48,26 @@ class CLCAL_Resolver implements ModuleResourceResolver
         $res->setFetchMode(Database_ResultSet::FETCH_OBJECT);
         $event = $res->fetch();
         
-        $titre = trim( $event->titre );
-        
-        if ( empty( $titre ) )
+        if ( $event )
         {
-            $titre = $event->day;
+            $titre = trim( $event->titre );
+
+            if ( empty( $titre ) )
+            {
+                $titre = $event->day;
+            }
+
+            return $titre;
         }
-        
-        return $titre;
+        else
+        {
+            Console::debug ("Cannot load ressource " 
+                . var_export( $locator, true )
+                . " in " . __CLASS__
+                . " : query returned " 
+                . var_export( $event, true ) );
+            return null;
+        }
     }
 }
 

@@ -1,11 +1,11 @@
-<?php // $Id: ajax.lib.php 13337 2011-07-15 12:22:14Z abourguignon $
+<?php // $Id: ajax.lib.php 14187 2012-06-14 11:58:40Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Ajax utility functions and classes
  *
- * @version     1.10 $Revision: 13337 $
+ * @version     $Revision: 14187 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -143,13 +143,14 @@ class Ajax_Request
 
     /**
      * Get the parameters for the invoked method
-     * @return array method parameters
+     * @param  bool $getInputValidator return a Claro_Input_validator instead of an array
+     * @return array method parameters or Claro_Input_validator
      */
     public function getParameters( $getInputValidator = false )
     {
         if ( $getInputValidator )
         {
-            return new Claro_Input_Validator(
+            return new Claro_Input_Validator( 
                 new Claro_Input_Array( $this->params ) );
         }
         else
@@ -243,16 +244,41 @@ abstract class Ajax_Remote_Module_Service implements Ajax_Remote_Service
     }
 
     /**
-     * Get the not contextualized Url object
+     * Get the Invokation url to use to call the given method from inside the 
+     * platform. The url object return is not contextualized !
      * @param string $method optional name of the method to invoke
      * @param array $parameters optional parameters for method invokation
      * @return Url
      */
     public function getInvokationUrl( $method = null, $parameters = null )
     {
+        $url = new Url( rtrim( get_platform_base_url (), '/' )
+            . '/claroline/backends/ajaxbroker.php' );
+
+        $url = $this->addParametersToInvokationUrl($url, $method, $parameters);
+        
+        return  $url;
+    }
+    
+    /**
+     * Get the Invokation url to use to call the given method from outside the 
+     * platform. The url object return is not contextualized !
+     * @param string $method optional name of the method to invoke
+     * @param array $parameters optional parameters for method invokation
+     * @return Url
+     */
+    public function getExternalInvokationUrl( $method = null, $parameters = null )
+    {
         $url = new Url( rtrim( get_path('rootWeb'), '/' )
             . '/claroline/backends/ajaxbroker.php' );
 
+        $url = $this->addParametersToInvokationUrl($url, $method, $parameters);
+        
+        return  $url;
+    }
+    
+    private function addParametersToInvokationUrl( $url, $method = null, $parameters = null )
+    {
         $url->addParam( 'moduleLabel', $this->getModuleLabel() );
         $url->addParam( 'class', $this->getInvokableClassName() );
 
@@ -280,12 +306,29 @@ abstract class Ajax_Remote_Module_Service implements Ajax_Remote_Service
     }
 
     /**
+     * Instanciate and register the AJAX remote service for a given module.
+     * The remote service must be defined in the connector/ajaxservice.cnr.php
+     * file of the module, extends the Ajax_Remote_Module_Service abstract class
+     * and, in addition, it's name must follow the pattern "{$moduleLabel}_AjaxRemoteService"
+     * @param string $moduleLabel
+     * @return Ajax_Remote_Module_Service
+     * @throws Exception if the module does not provide an AJAX remote service
+     */
+    public static function registerModuleServiceInstance( $moduleLabel )
+    {
+        $ajaxHandler = self::getModuleServiceInstance ( $moduleLabel );
+        $ajaxHandler->register( Claroline::ajaxServiceBroker() );
+        
+        return $ajaxHandler;
+    }
+    
+    /**
      * Factory method to instanciate the AJAX remote service for a given module.
      * The remote service must be defined in the connector/ajaxservice.cnr.php
      * file of the module, extends the Ajax_Remote_Module_Service abstract class
      * and, in addition, it's name must follow the pattern "{$moduleLabel}_AjaxRemoteService"
      * @param string $moduleLabel
-     * @return <type>
+     * @return Ajax_Remote_Module_Service
      * @throws Exception if the module does not provide an AJAX remote service
      */
     public static function getModuleServiceInstance( $moduleLabel )
@@ -300,7 +343,6 @@ abstract class Ajax_Remote_Module_Service implements Ajax_Remote_Service
             if ( class_exists( $ajaxHandlerClass ) )
             {
                 $ajaxHandler = new $ajaxHandlerClass();
-                $ajaxHandler->register( Claroline::ajaxServiceBroker() );
 
                 return $ajaxHandler;
             }
@@ -390,7 +432,6 @@ class Ajax_Remote_Service_Broker
                             'method' => $request->getMethod(),
                             'parameters' => $request->getParameters(),
                             'response' => $response
-                        
                         ));
                     }
                     else

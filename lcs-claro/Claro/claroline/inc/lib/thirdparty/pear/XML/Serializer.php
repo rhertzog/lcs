@@ -16,7 +16,7 @@
 // | Authors: Stephan Schmidt <schst@php-tools.net>                       |
 // +----------------------------------------------------------------------+
 //
-//    $Id: Serializer.php 11091 2008-09-01 14:25:20Z zefredz $
+//    $Id: Serializer.php 14315 2012-11-08 14:51:17Z zefredz $
 
 /**
  * uses PEAR error management
@@ -52,7 +52,7 @@ define('XML_SERIALIZER_ENTITIES_XML_REQUIRED', XML_UTIL_ENTITIES_XML_REQUIRED);
 
 /**
  * replace HTML entitites
- * @link    http://www.php.net/htmlentities
+ * @link    http://www.php.net/claro_htmlentities
  */
 define('XML_SERIALIZER_ENTITIES_HTML', XML_UTIL_ENTITIES_HTML);
 

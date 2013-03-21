@@ -1,11 +1,11 @@
-<?php // $Id: rss.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: rss.php 13348 2011-07-18 13:58:28Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
  *
- *
- * @version     1.9 $Revision: 12923 $
+ * @version     $Revision: 13348 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Gesche <moosh@claroline.net>

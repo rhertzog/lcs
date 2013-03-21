@@ -1,19 +1,22 @@
-<?php // $Id: export.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: export.php 14283 2012-10-10 12:28:32Z zefredz $
+
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Script handling the download of assignments
  * As from 1.9.6 replaces $cmd = 'exDownload' in both work.php and work_list.php
  * As from 1.9.6 uses pclzip instead of zip.lib
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 14283 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
  * @author      Jean-Roch Meurisse <jmeuriss@fundp.ac.be>
  * @license     http://www.gnu.org/copyleft/gpl.html
  *              GNU GENERAL PUBLIC LICENSE version 2 or later
  * @package     CLWORK
- * @since       Claroline 1.9.6
+ * @since       1.9.6
  */
 
 $tlabelReq = 'CLWRK';
@@ -32,11 +35,12 @@ if( !claro_is_allowed_to_edit() )
 require_once get_module_path( $tlabelReq ) . '/lib/assignment.class.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/course_utils.lib.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/fileManage.lib.php';
+require_once get_path( 'incRepositorySys' ) . '/lib/file/garbagecollector.lib.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/thirdparty/pclzip/pclzip.lib.php';
 
 //init general purpose vars
 $out ='';
-$is_allowedToEdit = claro_is_allowed_to_edit();
+
 $dialogBox = new DialogBox();
 
 $downloadMode = isset( $_REQUEST['downloadMode'] ) && is_string( $_REQUEST['downloadMode'] ) ? $_REQUEST['downloadMode'] : 'all';
@@ -48,7 +52,7 @@ if( $assignmentId )
     $assignment->load( $assignmentId );
 }
 
-if( get_conf( 'allow_download_all_submissions' ) ) 
+if( get_conf( 'allow_download_all_submissions' ) )
 {
     $courseTbl = claro_sql_get_course_tbl();
     $submissionTbl = $courseTbl['wrk_submission'];
@@ -90,20 +94,50 @@ if( get_conf( 'allow_download_all_submissions' ) )
         $sqlDateCondition = '';
     }
     
+    //load_module_config('CLDOC');
+    
+    $tmpFolderPath = get_conf('clwrk_customTmpPath','');
+    
     if( $assignmentId == 0 )
     {
         $assignmentRestriction = '';
-        $zipPath = get_path( 'coursesRepositorySys' ) . claro_get_course_path(claro_get_current_course_id()) . '/work/tmp';
-        $zipName = claro_get_current_course_id() . '_' . replace_dangerous_char( get_lang( 'Assignments' ) ) . $wanted . '.zip';      
+        
+        if ( !empty($tmpFolderPath) )
+        {
+            $zipPath = $tmpFolderPath . '/' . claro_get_current_course_id() . '/work/tmp';
+        }
+        else
+        {
+            $zipPath = get_path( 'coursesRepositorySys' ) . claro_get_course_path(claro_get_current_course_id()) . '/work/tmp';
+        }
+        
+        $zipName = claro_get_current_course_id() . '_' . replace_dangerous_char( get_lang( 'Assignments' ) ) . $wanted . '.zip';
     }
     else
     {
         $assignmentRestriction = " AND `assignment_id` = " . (int)$assignmentId;
-        $zipPath = get_path( 'coursesRepositorySys' ) . claro_get_course_path(claro_get_current_course_id()) . '/work/assig_' . (int)$assignmentId . '/' . 'tmp';
+        
+        if ( !empty($tmpFolderPath) )
+        {
+            $zipPath = $tmpFolderPath . '/' . claro_get_current_course_id() . '/work/assig_' . (int)$assignmentId . '/' . 'tmp';
+        }
+        else
+        {
+            $zipPath = get_path( 'coursesRepositorySys' ) . claro_get_course_path(claro_get_current_course_id()) . '/work/tmp';
+        }
+        
         $zipName = replace_dangerous_char(claro_get_course_name(claro_get_current_course_id())) . '_' . replace_dangerous_char( $assignment->getTitle(), 'strict' ) . $wanted . '.zip';
     }
-
-    $downloadArchiveFolderPath = get_path('coursesRepositorySys') . claro_get_course_path(claro_get_current_course_id()) . '/tmp/zip';
+    
+    
+    if ( !empty($tmpFolderPath) )
+    {   
+        $downloadArchiveFolderPath = $tmpFolderPath . '/' . claro_get_current_course_id() . '/work';
+    }
+    else
+    {
+        $downloadArchiveFolderPath = get_path('coursesRepositorySys') . claro_get_course_path(claro_get_current_course_id()) . '/tmp/zip';
+    }
 
     if ( !is_dir( $downloadArchiveFolderPath ) )
     {
@@ -112,7 +146,7 @@ if( get_conf( 'allow_download_all_submissions' ) )
 
     $downloadArchiveFilePath = $downloadArchiveFolderPath . '/' . $zipName;
 
-    $sql = "SELECT `id`, 
+    $sql = "SELECT `id`,
                    `assignment_id`,
                    `authors`,
                    `submitted_text`,
@@ -122,9 +156,9 @@ if( get_conf( 'allow_download_all_submissions' ) )
                    `last_edit_date`
               FROM `" . $submissionTbl . "`
              WHERE `parent_id` IS NULL "
-                   . $assignmentRestriction 
+                   . $assignmentRestriction
                    . $sqlDateCondition . "
-          ORDER BY `authors`, 
+          ORDER BY `authors`,
                    `creation_date`";
 
     if( !is_dir( $zipPath ) )
@@ -213,10 +247,10 @@ if( get_conf( 'allow_download_all_submissions' ) )
         $zipFile = new PclZip( $downloadArchiveFilePath );
         $created = $zipFile->create( $zipPath, PCLZIP_OPT_REMOVE_PATH, $zipPath );
         
-        if ( !$created ) 
+        if ( !$created )
         {
             $dialogBox->error( get_lang( 'Unable to create the archive' ) );
-        } 
+        }
         else
         {
             claro_delete_file( $zipPath );
@@ -224,11 +258,17 @@ if( get_conf( 'allow_download_all_submissions' ) )
             header( 'Content-Description: File Transfer' );
             header( 'Content-Type: application/force-download' );
             header( 'Content-Length: ' . filesize( $downloadArchiveFilePath ) );
-            header( 'Content-Disposition: attachment; filename=' . $zipName );
+            header( 'Content-Disposition: attachment; filename=' . str_replace( ',', '', replace_dangerous_char( $zipName ) ) );
             
             readfile( $downloadArchiveFilePath );
             
             claro_delete_file( $downloadArchiveFilePath );
+            
+            if ( !empty($tmpFolderPath) )
+            {
+                $gc = new ClaroGarbageCollector( $tmpFolderPath, 3600 );
+                $gc->run();
+            }
             
             exit();
         }

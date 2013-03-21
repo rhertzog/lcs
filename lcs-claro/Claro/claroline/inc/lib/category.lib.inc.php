@@ -1,17 +1,16 @@
-<?php
+<?php // $Id: backlog.class.php 12923 2011-03-03 14:23:57Z abourguignon $
 
 /**
  * CLAROLINE
  *
- * SQL requests for claroCategory class
+ * SQL requests for claroCategory class.
  *
- * @version 1.10 $Revision: 11894 $
- *
+ * @version     $Revision: 11894 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @author Claro Team <cvs@claroline.net>
- * @author Antonin Bourguignon <antonin.bourguignon@claroline.net>
- * @since 1.10
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Antonin Bourguignon <antonin.bourguignon@claroline.net>
+ * @since       1.10
  */
 
 
@@ -77,7 +76,7 @@ function claro_get_previous_cat_datas($rank, $idParent)
     $result = Claroline::getDatabase()->query($sql);
     
     // Are there any predecessors ?
-    $nbPredecessors = $result->count();
+    $nbPredecessors = count( $result );
     
     if ( $nbPredecessors > 0 )
     {
@@ -117,7 +116,7 @@ function claro_get_following_cat_datas($rank, $idParent)
     $result = Claroline::getDatabase()->query($sql);
     
     // Are there any successors ?
-    $nbSuccessors = $result->count();
+    $nbSuccessors = count( $result );
     
     if ( $nbSuccessors > 0 )
     {

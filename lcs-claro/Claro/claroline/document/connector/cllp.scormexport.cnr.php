@@ -3,7 +3,7 @@
 /**
  * CLAROLINE
  *
- * @version 0.1 $Revision: 12923 $
+ * @version 0.1 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -119,5 +119,3 @@ class CLDOC_ScormExport extends PathScormExport
     return $this->error;
   }
 }
-
-?>

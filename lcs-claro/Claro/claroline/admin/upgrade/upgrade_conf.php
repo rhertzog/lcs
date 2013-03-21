@@ -1,26 +1,24 @@
-<?php // $Id: upgrade_conf.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: upgrade_conf.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * Initialize conf settings
- * Try to read  current values in current conf files
- * Build new conf file content with these settings
+ * Initialize conf settings.
+ * Try to read  current values in current conf files.
+ * Build new conf file content with these settings.
  * write it.
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 14314 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @see         http://www.claroline.net/wiki/index.php/Upgrade_claroline_1.7
  *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     UPGRADE
  *
- * @see http://www.claroline.net/wiki/index.php/Upgrade_claroline_1.7
- *
- * @package UPGRADE
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Christophe Gesché <moosh@claroline.net>
- * @author Mathieu Laurent <laurent@cerdecam.be>
- *
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Christophe Gesche <moosh@claroline.net>
+ * @author      Mathieu Laurent <laurent@cerdecam.be>
  */
 
 /*=====================================================================
@@ -146,7 +144,7 @@ if ( $cmd == 'run' )
             {
                 $config_filename = $config->get_config_filename();
 
-                $output .= '<li>'. htmlspecialchars(basename($config_filename))
+                $output .= '<li>'. claro_htmlspecialchars(basename($config_filename))
                         .  '<ul >' . "\n";
 
                 // Backup current file
@@ -288,5 +286,3 @@ switch ($display)
 
 // Display footer
 echo upgrade_disp_footer();
-
-?>

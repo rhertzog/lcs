@@ -1,15 +1,14 @@
-<?php // $Id: sqlxtra.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: sqlxtra.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 /**
  * CLAROLINE
  *
- * @version    1.10 $Revision: 12923 $
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license    http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *  version 2 or later
- * @author     see 'credits' file
- * @package    KERNEL
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ *              version 2 or later
+ * @author      see 'credits' file
+ * @package     KERNEL
  */
 
 /**
@@ -116,7 +115,7 @@ function PMA_splitSqlFile( $sql )
         } // end if (in string)
         
         // lets skip comments (/*, -- and #)
-        else if (($char == '-' && $sql_len > $i + 2 && $sql[$i + 1] == '-' && $sql[$i + 2] <= ' ') 
+        else if (($char == '-' && $sql_len > $i + 2 && $sql[$i + 1] == '-' && $sql[$i + 2] <= ' ')
             || $char == '#' || ($char == '/' && $sql_len > $i + 1 && $sql[$i + 1] == '*'))
         {
             $i = strpos($sql, $char == '/' ? '*/' : "\n", $i);

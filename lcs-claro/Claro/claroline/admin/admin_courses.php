@@ -1,11 +1,11 @@
-<?php // $Id: admin_courses.php 12986 2011-03-18 11:15:50Z abourguignon $
+<?php // $Id: admin_courses.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for the platform's courses.
  *
- * @version     $Revision: 12986 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/COURSE/
@@ -41,16 +41,11 @@ $addToURL           = '';
 $do                 = null;
 
 // Javascript confirm pop up declaration
-$htmlHeadXtra[] =
-'<script type="text/javascript">
-function confirmation (name)
-{
-    if (confirm("' . clean_str_for_javascript(get_lang('Are you sure to delete')) . ' \"" + name + "\" ? "))
-        {return true;}
-    else
-        {return false;}
-}
-</script>';
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure to delete %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+
+JavascriptLoader::getInstance()->load('admin');
 
 // Deal with interbreadcrumb
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );
@@ -324,7 +319,7 @@ foreach($courseList as $numLine => $courseLine)
     }
     
     // Label
-    $courseDataList[$numLine]['intitule'] =  '<a href="' . get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . htmlspecialchars($courseLine['sysCode']) . '">'
+    $courseDataList[$numLine]['intitule'] =  '<a href="' . get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . claro_htmlspecialchars($courseLine['sysCode']) . '">'
     .                                        $courseLine['intitule']
     .                                        '</a>'
                                              . ((!is_null($courseLine['sourceCourseId']))?(' ['.get_lang('Session').']'):(''))
@@ -364,11 +359,10 @@ foreach($courseList as $numLine => $courseLine)
     .                                         '</a>';
     
     // Course Action Delete
-    $courseDataList[$numLine]['cmdDelete'] = '<a href="' . $_SERVER['PHP_SELF']
-    .                                        '?cmd=rqDelete&amp;delCode=' . $courseLine['sysCode'] . $addToURL . '" '
-    //.                                        ' onclick="return confirmation(\'' . clean_str_for_javascript($courseLine['intitule']) . '\');"'
-    .                                        ' class="delete" id="'.$courseLine['intituleOrigine'].'__'.$courseLine['sysCode'].'">' . "\n"
-    .                                        '<img src="' . get_icon_url('delete') . '" border="0" alt="" />' . "\n"
+    $courseDataList[$numLine]['cmdDelete'] = '<a href="' . claro_htmlspecialchars($_SERVER['PHP_SELF']
+    .                                        '?cmd=exDelete&delCode=' . $courseLine['sysCode'] . $addToURL) . '" '
+    .                                        'onclick="return ADMIN.confirmationDel(\'' . clean_str_for_javascript($courseLine['intitule']) . '\');">'
+    .                                        '<img src="' . get_icon_url('delete') . '" alt="' . get_lang('Delete') . '" />' . "\n"
     .                                        '</a>' . "\n";
 }
 
@@ -396,13 +390,20 @@ $courseDataGrid->set_colHead('officialCode') ;
 $courseDataGrid->set_noRowMessage( get_lang('There is no course matching such criteria') . '<br />'
 .    '<a href="advanced_course_search.php' . $addtoAdvanced . '">' . get_lang('Search again (advanced)') . '</a>');
 
+// Command list
+$cmdList = array();
 
-/**
- * DISPLAY
- */
+$cmdList[] = array(
+    'img' => 'courseadd',
+    'name' => get_lang('Create course'),
+    'url' => '../course/create.php?adminContext=1'
+);
+
+
+// Display
 $out = '';
 
-$out .= claro_html_tool_title($nameTools);
+$out .= claro_html_tool_title($nameTools, null, $cmdList);
 
 if ( !empty($isSearched) )
 {
@@ -415,16 +416,10 @@ $out .= $dialogBox->render();
 // DISPLAY : Search/filter panel
 $out .= '<table width="100%">' . "\n\n"
 .    '<tr>' . "\n"
-.    '<td align="left" valign="top">' . "\n"
-.    '<a class="claroCmd" href="../course/create.php?adminContext=1">'
-.    '<img src="' . get_icon_url('course') . '" alt="' . get_lang('Create course') . '" />'
-.    get_lang('Create course')
-.    '</a>'
-.    '</td>' . "\n"
 .    '<td align="right"  valign="top">' . "\n\n"
 .    '<form action="' . $_SERVER['PHP_SELF'] . '">' . "\n"
 .    '<label for="search">' . get_lang('Make new search') . ' : </label>'."\n"
-.    '<input type="text" value="' . htmlspecialchars($search) . '" name="search" id="search" />' . "\n"
+.    '<input type="text" value="' . claro_htmlspecialchars($search) . '" name="search" id="search" />' . "\n"
 .    '<input type="submit" value=" ' . get_lang('Ok') . ' " />' . "\n"
 .    '<input type="hidden" name="newsearch" value="yes" />' . "\n"
 .    '[<a class="claroCmd" href="advanced_course_search.php' . $addtoAdvanced . '">'
@@ -440,22 +435,6 @@ $out .= $myPager->disp_pager_tool_bar($_SERVER['PHP_SELF'])
 .    $courseDataGrid->render()
 .    $myPager->disp_pager_tool_bar($_SERVER['PHP_SELF']);
 ;
-
-$out .=
-'<script type="text/javascript">
-    $(document).ready(function(){
-        $(".delete").each(function( i ){
-            var _id = $(this).attr("id");
-            var id = _id.substr(_id.lastIndexOf("__") + 2 );
-            var course = _id.substr(0,_id.indexOf("__"));
-            
-            $(this).click(function(){
-               return confirmation(" " + course );
-            });
-            $(this).attr("href","' . $_SERVER['PHP_SELF'] . '?cmd=exDelete&delCode=" + id + "'.$addToURL.'");
-        });
-    });
-</script>';
 
 $claroline->display->body->appendContent($out);
 

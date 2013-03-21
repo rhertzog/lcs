@@ -105,7 +105,6 @@ var ImageDialog = {
 			el = ed.selection.setNode(ed.dom.create('img', args));
 		}
 
-
 		if (!el) {
 			ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
 			ed.dom.setAttribs('__mce_tmp', args);

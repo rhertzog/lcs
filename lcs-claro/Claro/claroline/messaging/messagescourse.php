@@ -1,4 +1,4 @@
-<?php // $Id: messagescourse.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: messagescourse.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Send message for a user in context of course.
  *
- * @version     1.9 $Revision: 12989 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -45,6 +45,7 @@ if (!claro_is_in_a_course() || (!claro_is_course_manager() && !claro_is_platform
 $displayForm = FALSE;
 $content = "";
 $from = (isset($_REQUEST['from'])) ? get_module_entry_url(strtoupper($_REQUEST['from'])) : $_SERVER['PHP_SELF'];
+
 //commande
 $acceptedCmdList = array('exSendMessage');
 
@@ -153,12 +154,25 @@ else
     * Get group list of this course
     */
     $courseTableName = get_module_course_tbl(array('group_team','group_rel_team_user'));
-    $sql = "SELECT `g`.`id`,
-                   `g`.`name`,
-                    COUNT(`gu`.`id`) AS `userNb`
-            FROM `" . $courseTableName['group_team'] . "` AS `g` "
-            . "LEFT JOIN `" . $courseTableName['group_rel_team_user'] . "` AS `gu`
-            ON `g`.`id` = `gu`.`team`
+    $courseTableName = get_module_course_tbl(array('group_team','group_rel_team_user'));
+    $mainTableName = claro_sql_get_main_tbl();
+
+    $sql = "SELECT 
+                `g`.`id`,
+                `g`.`name`,
+                COUNT(`cu`.`user_id`) AS `userNb`
+            FROM 
+                `" . $courseTableName['group_team'] . "` AS `g` 
+            LEFT JOIN 
+                `" . $courseTableName['group_rel_team_user'] . "` AS `gu`
+            ON 
+                `g`.`id` = `gu`.`team`
+            LEFT JOIN 
+                `".$mainTableName['rel_course_user']."` AS cu
+            ON 
+                `gu`.`user` = cu.user_id
+            AND 
+                cu.code_cours = '".claro_sql_escape(claro_get_current_course_id())."'
             GROUP BY `g`.`id`";
 
     $groupSelect = claro_sql_query_fetch_all($sql);
@@ -169,10 +183,10 @@ else
     {
         foreach ( $groupSelect as $groupData  )
         {
-            $groupList[] = $groupData;
+            $groupList[$groupData['id']] = $groupData;
         }
     }
-    
+
     /*
      * Get class user list of this course
      */
@@ -284,9 +298,11 @@ if ($displayForm)
     .    '<div class="userList">'."\n"
     .    '<input type="hidden" name="claroFormId" value="' . uniqid('') . '" />'."\n"
     .    '<input type="hidden" name="cmd" value="exSendMessage" />'."\n"
-    .    '<table><tr><td>'."\n"
+    .    '<table class="multiselect">'."\n"
+    .    '<tr>'."\n"
+    .    '<td>'."\n"
     .    get_lang('User list') . '<br/>'."\n"
-    .    '<select name="nocorreo[]" size="15" multiple="multiple">' . "\n"
+    .    '<select name="nocorreo[]" size="15" multiple="multiple" id="mslist1">' . "\n"
     ;
 
     if ( $groupList )
@@ -329,22 +345,25 @@ if ($displayForm)
     // element name problem List of selected users
 
     $content .= '</select></td>' . "\n"
-    .    '<td>'
-    .    '<input type="button" onclick="move(this.form.elements[\'nocorreo[]\'],this.form.elements[\'incorreo[]\'])" value="   >>   " /><br/><br/>' . "\n"
-    .    '<input type="button" onclick="move(this.form.elements[\'incorreo[]\'],this.form.elements[\'nocorreo[]\'])" value="   <<   " />' . "\n"
+    .    '<td class="arrows">'
+    .    '<a href="#" class="msadd"><img src="' . get_icon_url('go_right') . '" /></a>'
+    .    '<br /><br />'
+    .    '<a href="#" class="msremove"><img src="' . get_icon_url('go_left') . '" /></a>'
     .    '</td>'
     .    '<td>'
     .    get_lang('Selected Users')."<br/>" . "\n"
-    .    '<select name="incorreo[]" size="15" multiple="multiple" style="width:200" >'
+    .    '<select name="incorreo[]" size="15" multiple="multiple" id="mslist2">'
     .    '</select>'."\n"
-    .    '</td></tr></table>'."\n"
+    .    '</td>'
+    .    '</tr>'
+    .    '</table>'."\n"
     .    '<div class="composeMessage">'."\n"
     .    '<br/>'.get_lang('Subject') . '<br />' . "\n"
     .    '<input type="text" name="subject" maxlength="255" size="40" />'
     .    '<br/>'.get_lang('Message') .'<br/>'. "\n"
     .    claro_html_textarea_editor('content', "")
     .    '<br/><input type="submit" name="submitMessage" value="' . get_lang('Submit') . '" />'
-    .     claro_html_button(htmlspecialchars(Url::Contextualize(get_module_entry($from))), get_lang('Cancel'))
+    .     claro_html_button(claro_htmlspecialchars(Url::Contextualize($from)), get_lang('Cancel'))
     .    '</div>'."\n"
     .    '</div>'."\n\n"
     .    '</form>'."\n\n"

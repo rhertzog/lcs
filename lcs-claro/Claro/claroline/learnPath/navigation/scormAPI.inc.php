@@ -1,22 +1,22 @@
-<?php // $Id: scormAPI.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: scormAPI.inc.php 14344 2012-12-12 13:52:38Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14344 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  *
- * @author Piraux Sébastien <pir@cerdecam.be>
+ * @author Piraux Sebastien <pir@cerdecam.be>
  * @author Lederer Guillaume <led@cerdecam.be>
  *
  * @package CLLNP
  * @subpackage navigation
  *
  * This file must be included when the module browsed is SCORM conformant
- * This script supplies the SCORM API implémentation in javascript for browsers like NS and Mozilla
+ * This script supplies the SCORM API implementation in javascript for browsers like NS and Mozilla
  * This script is the client side API javascript generated for user with browser like NS and Mozilla
  */
 /**
@@ -38,9 +38,10 @@ $TABLEASSET              = $tbl_lp_asset;
 $TABLEUSERMODULEPROGRESS = $tbl_lp_user_module_progress;
 $TABLEUSERS              = $tbl_user;
 
-$SCORMServerURL = get_module_url('CLLNP') . '/navigation/SCORMserver.php';
-$redirectionURL = get_module_url('CLLNP') . '/learningPath.php';
-$TOCurl = get_module_url('CLLNP') . '/navigation/tableOfContent.php';
+$SCORMServerURL = Url::Contextualize(get_module_url('CLLNP') . '/navigation/SCORMserver.php');
+$redirectionURL = Url::Contextualize(get_module_url('CLLNP') . '/learningPath.php');
+$TOCurl = Url::Contextualize(get_module_url('CLLNP') . '/navigation/tableOfContent.php');
+
 /*======================================
        CLAROLINE MAIN
   ======================================*/
@@ -108,7 +109,17 @@ $sco['session_time'] = "0000:00:00.00";
         var init_total_time = "<?php echo $sco['total_time']; ?>";
         // ====================================================
         // API Class Constructor
-        var debug_ = false;
+        var debug_ = <?php echo claro_debug_mode() ? 'true' : 'false'; ?>;
+        
+        function debugMessage( message ) {
+            if (typeof console != "undefined") { 
+                console.log( message ); 
+            }
+            else {
+                alert( message );
+            }
+        }
+        
         function APIClass() {
 
                 //SCORM 1.2
@@ -158,7 +169,7 @@ $sco['session_time'] = "0000:00:00.00";
         //    - arg must be "" (empty string)
         //    - return value : "true" or "false"
         function LMSInitialize(arg) {
-                if(debug_) alert("initialize");
+                if(debug_) debugMessage("initialize");
                 if ( arg!="" ) {
                         this.APIError("201");
                         return "false";
@@ -177,7 +188,7 @@ $sco['session_time'] = "0000:00:00.00";
         //    - arg must be "" (empty string)
         //    - return value : "true" or "false"
         function LMSFinish(arg) {
-                if(debug_) alert("LMSfinish");
+                if(debug_) debugMessage("LMSfinish");
                 if ( APIInitialized ) {
                         if ( arg!="" ) {
                                 this.APIError("201");
@@ -200,7 +211,7 @@ $sco['session_time'] = "0000:00:00.00";
         // Data Transfer
         //
         function LMSGetValue(ele) {
-                if(debug_) alert("LMSGetValue : \n" + ele);
+                if(debug_) debugMessage("LMSGetValue : \n" + ele);
                 if ( APIInitialized )
                 {
                        var i = array_indexOf(elements,ele);
@@ -310,7 +321,7 @@ $sco['session_time'] = "0000:00:00.00";
         }
 
         function LMSSetValue(ele,val) {
-                if(debug_) alert ("LMSSetValue : \n" + ele +" "+ val);
+                if(debug_) debugMessage ("LMSSetValue : \n" + ele +" "+ val);
                 if ( APIInitialized )
                 {
                        var i = array_indexOf(elements,ele);
@@ -511,7 +522,7 @@ $sco['session_time'] = "0000:00:00.00";
 
         function LMSCommit(arg)
         {
-               if(debug_) alert("LMScommit");
+               if(debug_) debugMessage("LMScommit");
                if ( APIInitialized ) {
                         if ( arg!="" ) {
                                 this.APIError("201");
@@ -534,20 +545,20 @@ $sco['session_time'] = "0000:00:00.00";
         // State Management
         //
         function LMSGetLastError() {
-                if(debug_) alert ("LMSGetLastError : " + APILastError);
+                if(debug_) debugMessage ("LMSGetLastError : " + APILastError);
 
                 return APILastError;
         }
 
         function LMSGetErrorString(num) {
-                if(debug_) alert ("LMSGetErrorString(" + num +") = " + errCodes[num] );
+                if(debug_) debugMessage ("LMSGetErrorString(" + num +") = " + errCodes[num] );
 
                 return errCodes[num];
 
         }
 
         function LMSGetDiagnostic(num) {
-                if(debug_) alert ("LMSGetDiagnostic("+num+") = " + errDiagn[num] );
+                if(debug_) debugMessage ("LMSGetDiagnostic("+num+") = " + errDiagn[num] );
 
                 if ( num=="" ) num = APILastError;
                 return errDiagn[num];

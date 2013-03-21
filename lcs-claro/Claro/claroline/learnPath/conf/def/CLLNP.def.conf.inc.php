@@ -1,11 +1,13 @@
 <?php
-if ( count( get_included_files() ) == 1 ) die( '---' );
+
+if ( count ( get_included_files () ) == 1 )
+    die ( '---' );
 /**
  * CLAROLINE
  *
  * This file describe the parameter for CLDOC config file
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14128 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -16,29 +18,40 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  * @package CLLNP
  *
  */
-
 // CONFIG HEADER
 
-$conf_def['config_code'] = 'CLLNP';
-$conf_def['config_file'] = 'CLLNP.conf.php';
-$conf_def['config_name'] = 'Learning path';
-$conf_def['config_class']= 'tool';
+$conf_def[ 'config_code' ] = 'CLLNP';
+$conf_def[ 'config_file' ] = 'CLLNP.conf.php';
+$conf_def[ 'config_name' ] = 'Learning path';
+$conf_def[ 'config_class' ] = 'tool';
 
 // CONFIG SECTIONS
-$conf_def['section']['quota']['label']='Quota';
-$conf_def['section']['quota']['description']='Disk space allowed for import learning path';
-$conf_def['section']['quota']['properties'] =
-array ( 'maxFilledSpace_for_import'
-      );
-      
+$conf_def[ 'section' ][ 'quota' ][ 'label' ] = 'Quota';
+$conf_def[ 'section' ][ 'quota' ][ 'description' ] = 'Disk space allowed for import learning path';
+$conf_def[ 'section' ][ 'quota' ][ 'properties' ] =
+    array ( 'maxFilledSpace_for_import',
+        'cllnp_resetByUserAllowed'
+);
+
 // CONFIG PROPERTIES
-$conf_def_property_list['maxFilledSpace_for_import']
-= array ('label'     => 'Quota for courses'
-        ,'description' => 'Disk space allowed to import scorm package'
-        ,'default'   => '100000000'
-        ,'unit'      => 'bytes'
-        ,'type'      => 'integer'
-        ,'container' => 'VAR'
-        ,'acceptedValue' => array('min' => '1024')
-        );
-?>
+$conf_def_property_list[ 'maxFilledSpace_for_import' ]
+    = array ( 'label' => 'Quota for courses'
+    , 'description' => 'Disk space allowed to import scorm package'
+    , 'default' => '100000000'
+    , 'unit' => 'bytes'
+    , 'type' => 'integer'
+    , 'container' => 'VAR'
+    , 'acceptedValue' => array ( 'min' => '1024' )
+);
+
+$conf_def_property_list[ 'cllnp_resetByUserAllowed' ] =
+    array ( 'description' => 'Set to Yes to allow students to reset their progression in learning pathes'
+        , 'label' => 'Allow students to reset path'
+        , 'default' => FALSE
+        , 'type' => 'boolean'
+        , 'acceptedValue' => array ( 'TRUE' => 'Yes'
+            , 'FALSE' => 'No'
+        )
+        , 'display' => TRUE
+        , 'readonly' => FALSE
+);

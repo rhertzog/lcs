@@ -1,4 +1,4 @@
-<?php // $Id: campusProblem.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php // $Id: campusProblem.php 13910 2012-01-04 15:57:30Z abourguignon $
 
 /**
  * CLAROLINE
@@ -8,11 +8,11 @@
  * Theses tests check if data are logical.
  * This script use Cache_lite.
  *
- * @version     1.9 $Revision: 12941 $
+ * @version     $Revision: 13910 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/ADMIN
- * @author      Sébastien Piraux <pir@claroline.net>
+ * @author      Sï¿½bastien Piraux <pir@claroline.net>
  * @author      Christophe Gesche <moosh@claroline.net>
  *
  * @todo separate checking and output
@@ -144,7 +144,7 @@ switch ($display)
                 $out .= '-'
                 .    ' &nbsp;&nbsp;'
                 .    '<b>'
-                .    get_lang('Accounts with same <i>User name</i>')
+                .    get_lang('Accounts with same <i>Username</i>')
                 .    '</b>'
                 .    '&nbsp;&nbsp;&nbsp;'
                 .    '<small>'
@@ -170,7 +170,7 @@ switch ($display)
                 $out .= '+'
                 .    '&nbsp;&nbsp;&nbsp;'
                 .    '<a href="' . $_SERVER['PHP_SELF'] . '?view=' . $tempView . '">'
-                .    get_lang('Accounts with same <i>User name</i>')
+                .    get_lang('Accounts with same <i>Username</i>')
                 .    '</a>' . "\n"
                 ;
             }
@@ -458,7 +458,7 @@ switch ($display)
                 //--  multiple account with same username AND same password (for compatibility with previous versions)
                 $out .= '- &nbsp;&nbsp;'
                 .    '<b>'
-                .    get_lang('Accounts with same <i>User name</i> AND same <i>Password</i>')
+                .    get_lang('Accounts with same <i>Username</i> AND same <i>Password</i>')
                 .    '</b>'
                 .    '&nbsp;&nbsp;&nbsp;<small>'
                 .    '[<a href="' . $_SERVER['PHP_SELF'] . '?view=' . $tempView . '">'
@@ -505,7 +505,7 @@ switch ($display)
                 $out .= '+'
                 .    '&nbsp;&nbsp;&nbsp;'
                 .    '<a href="' . $_SERVER['PHP_SELF'] . '?view=' . $tempView . '">'
-                .    get_lang('Accounts with same <i>User name</i> AND same <i>Password</i>')
+                .    get_lang('Accounts with same <i>Username</i> AND same <i>Password</i>')
                 .    '</a>'
                 ;
             }
@@ -595,7 +595,7 @@ switch ($display)
                 ;
             }
             $out .= '</p>' . "\n\n"
-            .    claro_html_tool_title('Integrity problems') ;
+            .    claro_html_tool_title(get_lang('Integrity problems'));
 
 
 

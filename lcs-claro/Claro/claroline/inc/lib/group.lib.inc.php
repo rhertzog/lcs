@@ -1,4 +1,4 @@
-<?php // $Id: group.lib.inc.php 12955 2011-03-11 14:04:00Z ffervaille $
+<?php // $Id: group.lib.inc.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 12955 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLGRP
@@ -93,7 +93,7 @@ function delete_groups($groupIdList = 'ALL')
     $tbl_courseCalendar = $tbl_c_names['calendar_event'     ];
 
     require_once get_module_path('CLWIKI') . '/lib/lib.createwiki.php';
-    require_once get_path('incRepositorySys') . '/lib/forum.lib.php';
+    require_once dirname(__FILE__) . '/forum.lib.php';
 
     if ( is_tool_activated_in_course( get_tool_id_from_module_label('CLWIKI'), claro_get_current_course_id() )
         && is_tool_activated_in_groups( claro_get_current_course_id(), 'CLWIKI' ) )
@@ -422,10 +422,17 @@ function group_count_students_in_groups($course_id=null)
     $tbl_cdb_names = claro_sql_get_course_tbl(claro_get_course_db_name_glued($course_id));
     $mainTableName = get_module_main_tbl(array('rel_course_user'));
 
+    if ( !$course_id )
+    {   
+        $course_id = claro_get_current_course_id();
+    }
+
     $sql = "SELECT COUNT(DISTINCT(`gu`.`user`))
             FROM `" . $tbl_cdb_names['group_rel_team_user'] . "` as `gu`
             INNER JOIN `" . $mainTableName['rel_course_user'] . "` AS `cu`
-                ON `cu`.user_id = `gu`.`user`";
+                ON `cu`.user_id = `gu`.`user`
+                AND `cu`.`code_cours` = '".claro_sql_escape($course_id)."'";
+    
     return (int) claro_sql_query_get_single_value($sql);
 }
 
@@ -442,11 +449,18 @@ function group_count_students_in_group($group_id,$course_id=null)
     $tbl_cdb_names = claro_sql_get_course_tbl(claro_get_course_db_name_glued($course_id));
     $mainTableName = get_module_main_tbl(array('rel_course_user'));
 
+    if ( !$course_id )
+    {   
+        $course_id = claro_get_current_course_id();
+    }   
+
     $sql = "SELECT COUNT(DISTINCT(`gu`.`user`))
             FROM `" . $tbl_cdb_names['group_rel_team_user'] . "` AS `gu`
             INNER JOIN `" . $mainTableName['rel_course_user'] . "` AS `cu`
                 ON `cu`.user_id = `gu`.`user`
+                AND `cu`.`code_cours` = '".claro_sql_escape($course_id)."'
             WHERE `gu`.`team` = ". (int) $group_id;
+    
     return (int) claro_sql_query_get_single_value($sql);
 }
 
@@ -636,7 +650,7 @@ ORDER BY tl.rank
         switch ($tool['label'])
         {
             case 'CLFRM' :
-                if($_groupProperties['tools']['CLFRM'] || $isAllowedToEdit)
+                if( ! empty( $_groupProperties['tools']['CLFRM'] ) || $isAllowedToEdit)
                 {
                     $tool['url'] = 'viewforum.php?forum=' . $forumId . claro_url_relay_context('&amp;') ; ;
                     $group_tool_list[] = $tool;
@@ -753,14 +767,25 @@ function get_group_list_user_id_list($gidList,$courseId = NULL)
 {
     $groupIdList = implode(', ',$gidList);
 
-    $courseTableName = get_module_course_tbl(array('group_team','group_rel_team_user'),$courseId);
-    $mainTableName = get_module_main_tbl(array('user','rel_course_user'));
+    $courseId = is_null($courseId) ? claro_get_current_course_id() : $courseId;
 
-    $sql = "SELECT `user_group`.`user`
-            FROM `".$courseTableName['group_rel_team_user']."` AS `user_group`
-            INNER JOIN `" . $mainTableName['rel_course_user'] . "` AS `cu`
-            ON `cu`.user_id = `user_group`.`user`
-            WHERE `user_group`.`team` IN (".$groupIdList.")";
+    $courseTableName = get_module_course_tbl(array('group_team','group_rel_team_user'),$courseId);
+
+    $mainTableName = claro_sql_get_main_tbl();
+
+    $sql = "SELECT 
+                `user_group`.`user`
+            FROM 
+                `".$courseTableName['group_rel_team_user']."` AS `user_group`
+            JOIN 
+                `".$mainTableName['rel_course_user']."` AS cu
+            ON 
+                `user_group`.`user` = cu.user_id
+            AND 
+                cu.code_cours = '".claro_sql_escape($courseId)."'
+                    
+            WHERE 
+                `user_group`.`team` IN (".$groupIdList.")";
 
     $groupMemberList = claro_sql_query_fetch_all($sql);
 
@@ -843,4 +868,57 @@ function is_tool_available_in_current_course_groups( $moduleLabel )
     $gp = get_current_course_group_properties();
 
     return isset( $gp['tools'][$moduleLabel] ) && $gp['tools'][$moduleLabel];
+}
+
+
+/**
+ * Return a list of user and  groups of these users
+ *
+ * @param array     context
+ * @return array    list of users
+ */
+function get_group_member_list( $context = array() )
+{
+    $currentCourseId = array_key_exists( CLARO_CONTEXT_COURSE, $context )
+        ? $context['CLARO_CONTEXT_COURSE']
+        : claro_get_current_course_id()
+        ;
+    
+    $currentGroupId  = array_key_exists( CLARO_CONTEXT_GROUP, $context )
+        ? $context['CLARO_CONTEXT_GROUP']
+        : claro_get_current_group_id()
+        ;
+
+    $tblc = claro_sql_get_course_tbl();
+    $tblm = claro_sql_get_main_tbl();
+    
+    $sql = "SELECT `ug`.`id`       AS id,
+               `u`.`user_id`       AS user_id,
+               `u`.`nom`           AS name,
+               `u`.`prenom`        AS firstname,
+               `u`.`email`         AS email,
+               `u`.`officialEmail` AS officialEmail,
+               `cu`.`role`         AS `role`
+        FROM (`" . $tblm['user'] . "`           AS u
+           , `" . $tblm['rel_course_user'] . "` AS cu
+           , `" . $tblc['group_rel_team_user'] . "` AS ug)
+        WHERE  `cu`.`code_cours` = '" . $currentCourseId . "'
+          AND   `cu`.`user_id`   = `u`.`user_id`
+          AND   `ug`.`team`      = " . (int) $currentGroupId . "
+          AND   `ug`.`user`      = `u`.`user_id`
+        ORDER BY UPPER(`u`.`nom`), UPPER(`u`.`prenom`), `u`.`user_id`";
+    
+    $result = Claroline::getDatabase()->query($sql);
+    $result->setFetchMode(Database_ResultSet::FETCH_ASSOC);
+    
+    $usersInGroupList = array();
+    foreach ( $result as $member )
+    {
+        $label = claro_htmlspecialchars(ucwords(strtolower($member['name']))
+        . ' ' . ucwords(strtolower($member['firstname']))
+        . ($member['role']!=''?' (' . $member['role'] . ')':''));
+        $usersInGroupList[$member['user_id']] = $label;
+    }
+
+    return $usersInGroupList;
 }

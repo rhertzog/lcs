@@ -1,18 +1,18 @@
-<?php // $Id: export.lib.php 13028 2011-03-31 17:05:16Z abourguignon $
+<?php // $Id: export.lib.php 13982 2012-02-01 10:58:29Z zefredz $
+
 /**
+ * CLAROLINE
  *
- * @version 0.1 $Revision: 13028 $
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Claroline team <info@claroline.net>
- *
- * @package CLUSR
- *
+ * @version     $Revision: 13982 $
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline team <info@claroline.net>
+ * @package     CLUSR
  */
 
-require_once get_path('incRepositorySys') . '/lib/csv.class.php';
-FromKernel::uses( 'user_info.lib' );
+FromKernel::uses( 
+    'csv.class',
+    'class.lib',
+    'user_info.lib' );
 
 class UserInfoList
 {
@@ -194,11 +194,16 @@ class csvUserList extends csv
         }
         else
         {
-        return false;
+            return false;
+        }
     }
 }
-}
 
+/**
+ * Exports the members of a course as a csv file 
+ * @param string $course_id
+ * @return string 
+ */
 function export_user_list( $course_id )
 {
     $csvUserList = new csvUserList( $course_id );
@@ -209,3 +214,52 @@ function export_user_list( $course_id )
     return $csvContent;
 }
 
+/**
+ * Exports the users in a class to a CSV file
+ * @param int $id id of the class
+ * @param array $fields optionnal names for the headers of the generated csv
+ * @return string
+ * @author schampagne <http://forum.claroline.net/memberlist.php?mode=viewprofile&u=45044>
+ */
+function export_user_list_for_class( $class_id, $fields = array('user_id', 'username', 'lastname', 'firstname', 'email', 'officialCode') )
+{
+    return csv_export_user_list(get_class_list_user_id_list(array($class_id)), $fields);
+}
+
+/**
+ * Exports a CSV file from a list of user id's
+ * @param array $userIdList id of the class
+ * @param array $fields optionnal names for the headers of the generated csv
+ * @return string
+ * @author schampagne <http://forum.claroline.net/memberlist.php?mode=viewprofile&u=45044>
+ */
+function csv_export_user_list( $userIdList, $fields = array('user_id', 'username', 'lastname', 'firstname', 'email', 'officialCode') )
+{
+    $csv = new CsvExporter(',', '"');
+    
+    $csvData = array();
+    $csvData[0] = $fields;
+    
+    foreach($userIdList as $userId)
+    {
+        $userInfo = user_get_properties($userId);
+        
+        $row = array();
+        
+        foreach($fields as $field)
+        {
+            if(isset($userInfo[$field]))
+            {
+                $row[$field] = $userInfo[$field];
+            }
+            else
+            {
+                $row[$field] = '';
+            }
+        }
+        
+        $csvData[] = $row;
+    }
+    
+    return $csv->export($csvData);
+}

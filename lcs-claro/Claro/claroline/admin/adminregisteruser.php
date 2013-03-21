@@ -1,11 +1,11 @@
-<?php // $Id: adminregisteruser.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php // $Id: adminregisteruser.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools to register users to platform courses.
  *
- * @version     $Revision: 12941 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLADMIN/
@@ -247,7 +247,7 @@ $out .= '<table width="100%" class="claroTableForm" >'
 .    '<td align="right">' . "\n"
 .    '<form action="' . $_SERVER['PHP_SELF'] . '" >' . "\n"
 .    '<label for="search">' . get_lang('Make search') . '</label> :' . "\n"
-.    '<input type="text" value="' . htmlspecialchars($search) . '" name="search" id="search" />' . "\n"
+.    '<input type="text" value="' . claro_htmlspecialchars($search) . '" name="search" id="search" />' . "\n"
 .    '<input type="submit" value=" ' . get_lang('Ok') . ' "/>' . "\n"
 .    '<input type="hidden" name="newsearch" value="yes" />' . "\n"
 .    '<input type="hidden" name="cidToEdit" value="' . $cidToEdit . '" />' . "\n"
@@ -267,7 +267,7 @@ $out .= '<table width="100%" class="claroTableForm" >'
 
 .    '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">' . "\n"
 .    '<thead>' . "\n"
-.    '<tr class="headerX" align="center" valign="top">' . "\n"
+.    '<tr align="center" valign="top">' . "\n"
 .    '<th>'
 
 .    '<a href="' . $_SERVER['PHP_SELF']

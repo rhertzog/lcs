@@ -1,4 +1,4 @@
-<?php // $Id: create.php 12986 2011-03-18 11:15:50Z abourguignon $
+<?php // $Id: create.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
@@ -9,7 +9,7 @@
  * - Wait
  * - Done
  *
- * @version     $Revision: 12986 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLCRS/
@@ -66,14 +66,26 @@ if (!is_null($sourceCourseId))
     $course->sourceCourseId = $sourceCourseId;
 }
 
+if ( !is_null($course->sourceCourseId) && !empty($course->sourceCourseId) )
+{
+    $sourceCourse = new claroCourse();
+    $sourceCourse->load(claroCourse::getCodeFromId($course->sourceCourseId));
+    
+    if( $sourceCourse->sourceCourseId )
+    {
+        claro_die( get_lang( 'You cannot create a course session from another course session' ) );
+    }
+    
+    $course->categories = $sourceCourse->categories;
+}
+
 if ( $adminContext && claro_is_platform_admin() )
 {
     // From admin, add param to form
     $course->addHtmlParam('adminContext','1');
 }
 
-if ( claro_is_platform_admin()
-    || get_conf('courseCreationAllowed', true) )
+if ( claro_is_platform_admin() || get_conf('courseCreationAllowed', true) )
 {
     if ( $cmd == 'exEdit' )
     {
@@ -146,7 +158,14 @@ if ( $adminContext && claro_is_platform_admin() )
 }
 else
 {
-    $backUrl = get_path('url') . '/index.php' . claro_url_relay_context('?');
+    if ( $course->courseId )
+    {
+        $backUrl = get_path('url') . '/claroline/course/index.php?cid='.$course->courseId;
+    }
+    else
+    {
+        $backUrl = get_path('url');
+    }
 }
 
 if ( ! get_conf('courseCreationAllowed', true) )
@@ -181,7 +200,7 @@ if ( claro_is_platform_admin()
     {
         // display back link
         $out .= '<p>'
-        .    claro_html_cmd_link( htmlspecialchars( $backUrl ), get_lang('Continue') )
+        .    claro_html_cmd_link( claro_htmlspecialchars( $backUrl ), get_lang('Continue') )
         .     '</p>' . "\n"
         ;
     }
@@ -190,5 +209,3 @@ if ( claro_is_platform_admin()
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

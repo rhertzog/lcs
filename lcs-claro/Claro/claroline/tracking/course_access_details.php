@@ -1,14 +1,14 @@
-<?php // $Id: course_access_details.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: course_access_details.php 13708 2011-10-19 10:46:34Z abourguignon $
+
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 12923 $
- *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @author Sebastien Piraux <seb@claroline.net>
- *
- * @package CLTRACK
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLTRACK
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Sebastien Piraux <pir@cerdecam.be>
  */
 
 /*
@@ -74,7 +74,7 @@ ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics'), 'courseReport.
 
 $nameTools = get_lang('Traffic Details');
 
-$html = '';    
+$html = '';
 
 $html .= claro_html_tool_title( $nameTools );
 
@@ -101,7 +101,7 @@ switch($period)
 $html .= '</strong></p>'."\n\n";
 
 $html .= '<p><small>'."\n";
-$html .= get_lang('Period').' : ' 
+$html .= get_lang('Period').' : '
 .   '[<a href="'.$_SERVER['PHP_SELF'].'?period=year&reqdate='.$reqdate.'&displayType=month">'
 .   ( $period == 'year' ? '<strong>' . get_lang('Year') . '</strong>' : get_lang('Year') )
 .    '</a>]'."\n"
@@ -233,4 +233,3 @@ switch($period)
 $claroline->display->body->setContent($html);
 
 echo $claroline->display->render();
-?>

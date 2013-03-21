@@ -1,11 +1,11 @@
-<?php // $Id: claroCourse.class.php 13586 2011-09-13 14:32:31Z abourguignon $
+<?php // $Id: claroCourse.class.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Course Class.
  *
- * @version     $Revision: 13586 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     Kernel
@@ -98,6 +98,7 @@ class ClaroCourse
      */
     public function __construct ($creatorFirstName = '', $creatorLastName = '', $creatorEmail = '')
     {
+        load_kernel_config('CLHOME');
         $this->id                   = null;
         $this->courseId             = '';
         $this->isSourceCourse       = null;
@@ -141,15 +142,15 @@ class ClaroCourse
         {
             // Generate the array of categories (excepted for session courses)
             $categoriesList = array();
-            if (is_null($course_data['sourceCourseId']))
-            {
+            //if (is_null($course_data['sourceCourseId']))
+            //{
                 foreach ($course_data['categories'] as $cat)
                 {
                     $tempCat = new claroCategory();
                     $tempCat->load($cat['categoryId']);
                     $categoriesList[] = $tempCat;
                 }
-            }
+            //}
             
             // Assign
             $this->courseId           = $courseId;
@@ -172,8 +173,6 @@ class ClaroCourse
             $this->expirationDate     = $course_data['expirationDate'];
             $this->status             = $course_data['status'];
             $this->userLimit          = $course_data['userLimit'];
-            
-            pushClaroMessage($course_data['publicationDate']);
             
             $this->useExpirationDate = isset($this->expirationDate);
             
@@ -198,20 +197,37 @@ class ClaroCourse
             // Insert
             $keys = define_course_keys ($this->officialCode,'',get_conf('dbNamePrefix'));
             
-            $courseSysCode      = $keys['currentCourseId'];
-            $courseDbName       = $keys['currentCourseDbName'];
-            $courseDirectory    = $keys['currentCourseRepository'];
+            $courseSysCode      = trim($keys['currentCourseId']);
+            $courseDbName       = trim($keys['currentCourseDbName']);
+            $courseDirectory    = trim($keys['currentCourseRepository']);
+            
+            if ( empty($courseSysCode) || empty($courseDbName) || empty($courseDirectory) )
+            {
+                throw new Exception("Error missing data for course {$this->officialCode}");
+            }
+            
             if ( ! $this->useExpirationDate) $this->expirationDate = 'NULL';
             
             // Session courses are created without categories links:
             // so we duplicate the source course's categories links
+            
+            /*if ( !is_null($this->sourceCourseId) && !empty($this->sourceCourseId) )
+            {
+                $sourceCourse = new claroCourse();
+                $sourceCourse->load(claroCourse::getCodeFromId($this->sourceCourseId));
+                
+                $this->categories = $sourceCourse->categories;
+            }*/
             
             if ( !is_null($this->sourceCourseId) && !empty($this->sourceCourseId) )
             {
                 $sourceCourse = new claroCourse();
                 $sourceCourse->load(claroCourse::getCodeFromId($this->sourceCourseId));
                 
-                $this->categories = $sourceCourse->categories;
+                if( $sourceCourse->sourceCourseId )
+                {
+                    throw new Exception( 'You cannot create a course session from another course session' );
+                }
             }
             
             if (   prepare_course_repository($courseDirectory, $courseSysCode)
@@ -240,18 +256,44 @@ class ClaroCourse
                 && install_course_tools( $courseDbName, $this->language, $courseDirectory )
                 )
             {
-                // Set course id
-                $this->courseId = $courseSysCode;
+                $courseObj = new Claro_Course($courseSysCode);
+                $courseObj->load();
 
-                // Notify event manager
-                $args['courseSysCode'  ] = $courseSysCode;
-                $args['courseDbName'   ] = $courseDbName;
-                $args['courseDirectory'] = $courseDirectory;
-                $args['courseCategory' ] = $this->categories;
+                $courseRegistration = new CourseUserRegistration(
+                    AuthProfileManager::getUserAuthProfile($GLOBALS['_uid']),
+                    $courseObj,
+                    null,
+                    null
+                );
+                
+                $courseRegistration->ignoreRegistrationKeyCheck();
+                $courseRegistration->ignoreCategoryRegistrationCheck();
+                
+                $courseRegistration->setCourseAdmin();
+                $courseRegistration->setCourseTutor();
+                $courseRegistration->forceSuperUser();
+                
+                if ( $courseRegistration->addUser() )
+                {
+                
+                    // Set course id
+                    $this->courseId = $courseSysCode;
 
-                $GLOBALS['eventNotifier']->notifyEvent("course_created",$args);
+                    // Notify event manager
+                    $args['courseSysCode'  ] = $courseSysCode;
+                    $args['courseDbName'   ] = $courseDbName;
+                    $args['courseDirectory'] = $courseDirectory;
+                    $args['courseCategory' ] = $this->categories;
 
-                return true;
+                    $GLOBALS['eventNotifier']->notifyEvent("course_created",$args);
+
+                    return true;
+                }
+                else
+                {
+                    $this->backlog->failure( $courseRegistration->getErrorMessage() );
+                    return false;
+                }
             }
             else
             {
@@ -453,6 +495,100 @@ class ClaroCourse
     
     
     /**
+     * Get any related course to the current course (parent or child).
+     *
+     * @return array    courses
+     * @since 1.10
+     */
+    public function getRelatedCourses()
+    {
+        // Declare needed tables
+        $tbl_mdb_names              = claro_sql_get_main_tbl();
+        $tbl_course                 = $tbl_mdb_names['course'];
+        
+        $sql = "SELECT c.cours_id               AS id,
+                       c.titulaires             AS titular,
+                       c.code                   AS sysCode,
+                       c.isSourceCourse         AS isSourceCourse,
+                       c.sourceCourseId         AS sourceCourseId,
+                       c.intitule               AS title,
+                       c.administrativeNumber   AS officialCode,
+                       c.language,
+                       c.directory,
+                       c.visibility,
+                       c.access,
+                       c.registration,
+                       c.email,
+                       c.status,
+                       c.userLimit
+                FROM `" . $tbl_course . "` AS c
+                WHERE c.sourceCourseId = " . $this->id . "
+                OR c.cours_id = " . $this->id;
+        
+        if (!empty($this->sourceCourseId))
+        {
+            $sql .= "
+                OR cours_id = " . $this->sourceCourseId . "
+                OR c.sourceCourseId = " . $this->sourceCourseId;
+        }
+        
+        return claro_sql_query_fetch_all($sql);
+    }
+    
+    
+    /**
+     * Get related course to the current course (parent or child) for a
+     * given user.
+     *
+     * @return array    courses
+     * @since 1.11
+     */
+    public function getRelatedUserCourses($userId)
+    {
+        // Declare needed tables
+        $tbl_mdb_names              = claro_sql_get_main_tbl();
+        $tbl_course                 = $tbl_mdb_names['course'];
+        $tbl_rel_user_courses       = $tbl_mdb_names['rel_course_user'];
+        
+        $sql = "SELECT c.cours_id               AS id,
+                       c.titulaires             AS titular,
+                       c.code                   AS sysCode,
+                       c.isSourceCourse         AS isSourceCourse,
+                       c.sourceCourseId         AS sourceCourseId,
+                       c.intitule               AS title,
+                       c.administrativeNumber   AS officialCode,
+                       c.language,
+                       c.directory,
+                       c.visibility,
+                       c.access,
+                       c.registration,
+                       c.email,
+                       c.status,
+                       c.userLimit
+                FROM `" . $tbl_course . "` AS c
+                
+                RIGHT JOIN `" . $tbl_rel_user_courses . "` AS rcu
+                ON rcu.user_id = " . (int) $userId . "
+                AND rcu.code_cours = c.code
+                
+                WHERE c.sourceCourseId = " . $this->id . "
+                OR c.cours_id = " . $this->id;
+        
+        if (!empty($this->sourceCourseId))
+        {
+            $sql .= "
+                OR cours_id = " . $this->sourceCourseId . "
+                OR c.sourceCourseId = " . $this->sourceCourseId;
+        }
+        
+        $sql .= "
+                ORDER BY c.isSourceCourse DESC, c.intitule ASC";
+        
+        return claro_sql_query_fetch_all($sql);
+    }
+    
+    
+    /**
      * Get all courses in database ordered by label.  If a category identifier
      * is specified, only get courses linked to this category.  You can also
      * specify visibility.
@@ -544,7 +680,9 @@ class ClaroCourse
         }
         else
         {
-            $this->categories = array(0);
+            $rootCat = new claroCategory();
+            $rootCat->load(0);
+            $this->categories = array($rootCat);
         }
         
         if ( isset($_REQUEST['course_departmentName']) )    $this->departmentName = trim(strip_tags($_REQUEST['course_departmentName']));
@@ -565,9 +703,14 @@ class ClaroCourse
             }
         }
         
-        if ( isset($_REQUEST['course_registrationKey']) )   $this->registrationKey = trim(strip_tags($_REQUEST['course_registrationKey']));
-        
-        # if ( isset($_REQUEST['course_status'      ]) ) $this->status = $_REQUEST['course_status'];
+        if ( isset($_REQUEST['registration_key']) || isset($_REQUEST['course_registrationKey']) )
+        {
+            $this->registrationKey = trim(strip_tags($_REQUEST['course_registrationKey']));
+        }
+        else
+        {
+            $this->registrationKey = null;
+        }
         
         if ( isset($_REQUEST['course_status_selection']))
         {
@@ -769,16 +912,19 @@ class ClaroCourse
         }
         
         // Validate categories
-        /*
         foreach ($this->categories as $category)
         {
-            if (!$category->canHaveCoursesChild && !claro_is_platform_admin())
+            if ( !get_conf ( 'clcrs_rootCategoryAllowed', true ) && $category->id == 0 && !claro_is_platform_admin() )
+            {
+                $this->backlog->failure(get_lang('You need to choose at least one category for this course'));
+                $success = false ;
+            }
+            elseif ( !$category->canHaveCoursesChild && !claro_is_platform_admin() )
             {
                 $this->backlog->failure(get_lang('The category <i>%category</i> can\'t contain courses', array('%category' => $category->name)));
                 $success = false ;
             }
         }
-        */
         
         return $success;
     }
@@ -858,10 +1004,9 @@ class ClaroCourse
      */
     public function displayForm ($cancelUrl=null)
     {
-        JavascriptLoader::getInstance()->load('claroline.ui');
-        JavascriptLoader::getInstance()->load('courseForm');
+        JavascriptLoader::getInstance()->load('course_form');
         
-        $languageList   = claro_get_lang_flat_list();
+        $languageList = get_language_to_display_list('availableLanguagesForCourses');
         $categoriesList = claroCategory::getAllCategoriesFlat();
         
         $linkedCategoriesListHtml   = ''; // Categories linked to the course
@@ -920,7 +1065,7 @@ class ClaroCourse
             : '';
         
         $cancelUrl = is_null($cancelUrl) ?
-            get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . htmlspecialchars($this->courseId) :
+            get_path('clarolineRepositoryWeb') . 'course/index.php?cid=' . claro_htmlspecialchars($this->courseId) :
             $cancelUrl;
         
         $template = new CoreTemplate('course_form.tpl.php');
@@ -934,6 +1079,7 @@ class ClaroCourse
         $template->assign('publicCssClass', $publicCssClass);
         $template->assign('publicMessage', $publicMessage);
         $template->assign('cancelUrl', $cancelUrl);
+        $template->assign('nonRootCategoryRequired', !get_conf ( 'clcrs_rootCategoryAllowed', true ) );
         
         return $template->render();
     }
@@ -1004,7 +1150,7 @@ class ClaroCourse
         {
             foreach ( $this->htmlParamList as $name => $value )
             {
-                $html .= '<input type="hidden" name="' . htmlspecialchars($name) . '" value="' . htmlspecialchars($value) . '" />' . "\n" ;
+                $html .= '<input type="hidden" name="' . claro_htmlspecialchars($name) . '" value="' . claro_htmlspecialchars($value) . '" />' . "\n" ;
             }
         }
         else // GET
@@ -1144,7 +1290,14 @@ class ClaroCourse
     {
         $subject = get_lang('Course created : %course_name',array('%course_name'=> $this->title));
         
-        $body = get_block('blockCourseCreationEmailMessage', array( '%date' => claro_html_localised_date(get_locale('dateTimeFormatLong')),
+        $categoryCodeList = array();
+        
+        foreach ($this->categories as $category)
+        {
+            $categoryCodeList[] = $category->name;
+        }
+        
+        $body = nl2br(get_block('blockCourseCreationEmailMessage', array( '%date' => claro_html_localised_date(get_locale('dateTimeFormatLong')),
                                 '%sitename' => get_conf('siteName'),
                                 '%user_firstname' => $creatorFirstName,
                                 '%user_lastname' => $creatorLastName,
@@ -1153,9 +1306,9 @@ class ClaroCourse
                                 '%course_title' => $this->title,
                                 '%course_lecturers' => $this->titular,
                                 '%course_email' => $this->email,
-                                '%course_categories' => ((is_array($this->categories) && !empty($this->categories)) ? implode(', ',$this->categories) : get_lang('No category')),
+                                '%course_categories' => (!empty($this->categories) ? implode(', ', $categoryCodeList) : get_lang('No category')),
                                 '%course_language' => $this->language,
-                                '%course_url' => get_path('rootWeb') . 'claroline/course/index.php?cid=' . htmlspecialchars($this->courseId)) );
+                                '%course_url' => get_path('rootWeb') . 'claroline/course/index.php?cid=' . claro_htmlspecialchars($this->courseId)) ) );
         
         // Get the concerned senders of the email
         $mailToUidList = claro_get_uid_of_system_notification_recipient();

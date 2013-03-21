@@ -1,4 +1,5 @@
-<?php // $Id: lostPassword.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: lostPassword.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
@@ -9,16 +10,11 @@
  * Special case : If the password are encrypted in the database, we have
  * to generate a new one.
  *
- * @version 1.9 $Revision: 12923 $
- *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLAUTH
- *
- * @author Claro Team <cvs@claroline.net>
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLAUTH
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 require '../inc/claro_init_global.inc.php';
@@ -95,11 +91,7 @@ if ( isset($_REQUEST['searchPassword']) && !empty($emailTo) )
                 }
                 
                 // Build user account list for email
-                $userAccountList[] =
-                    $user['firstName'] .' ' . $user['lastName']  . "\r\n\r\n"
-                    . "\t" . get_lang('Username') . ' : ' . $user['loginName'] . "\r\n"
-                    . "\t" . get_lang('Password') . ' : ' . $user['password']  . " \r\n" ;
-
+                $userAccountList[] = array('firstname' => $user['firstName'], 'lastname' => $user['lastName'], 'username' => $user['loginName'], 'password' => $user['password']);
             }
             else
             {
@@ -107,7 +99,7 @@ if ( isset($_REQUEST['searchPassword']) && !empty($emailTo) )
             }
         }
 
-        if ( $passwordFound ) 
+        if ( $passwordFound )
         {
 
             /*
@@ -116,19 +108,28 @@ if ( isset($_REQUEST['searchPassword']) && !empty($emailTo) )
 
             // mail subject
             $emailSubject = get_lang('Login request') . ' ' . get_conf('siteName');
-
-            $emailBody = $emailSubject."\r\n"
-                        .get_path('rootWeb')."\r\n"
-                        .get_lang('This is your account Login-Pass')."\r\n\r\n" ;
             
-            // mail body
-            if ( count($userAccountList) > 0 )
+            $blockLoginInfo = '';
+            
+            foreach($userAccountList as $userAccount)
             {
-                $emailBody .= implode ("\r\n\r\n", $userAccountList);
+                $blockLoginInfo .= get_block('blockLoginInfo',
+                    array(
+                    '%firstname'=> $userAccount['firstname'],
+                    '%lastname' => $userAccount['lastname'],
+                    '%username' => $userAccount['username'],
+                    '%password' => $userAccount['password']
+                    )
+                );
             }
             
-            $emailBody .= "\r\n\r\n"
-                        . get_lang( 'This new password has been automatically generated. Once logged in, feel free to change it.' );
+            $emailBody = get_block('blockLoginRequest',
+                array(
+                '%siteName'=> get_conf('siteName'),
+                '%rootWeb' => get_path('rootWeb'),
+                '%loginInfo' => $blockLoginInfo
+                )
+            );
 
             // send message
             if( claro_mail_user($userList[0]['uid'], $emailBody, $emailSubject) )
@@ -186,7 +187,7 @@ if ( ! $passwordFound )
     .       '<input type="hidden" name="searchPassword" value="1" />'
     .       '<label for="Femail">' . get_lang('Email') . ' : </label>'
     .       '<br />'
-    .       '<input type="text" name="Femail" id="Femail" size="50" maxlength="100" value="' . htmlspecialchars($emailTo) . '" />'
+    .       '<input type="text" name="Femail" id="Femail" size="50" maxlength="100" value="' . claro_htmlspecialchars($emailTo) . '" />'
     .       '<br /><br />'
     .       '<input type="submit" name="retrieve" value="' . get_lang('Ok') . '" />&nbsp; '
     .       claro_html_button(get_conf('urlAppend') . '/index.php', get_lang('Cancel'))
@@ -201,5 +202,3 @@ $out .= $dialogBox->render();
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

@@ -1,4 +1,4 @@
-<?php // $Id: right_profile.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: right_profile.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,9 +8,9 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * Library profile
+ * Library profile.
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     RIGHT

@@ -1,14 +1,16 @@
-<?php // $Id: service.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: service.lib.php 14184 2012-06-13 11:56:52Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
+ * CLAROLINE
+ *
  * Service architecture, provides
  *  - Service classes
  *  - Dispatcher class
  *
- * @version     1.10 $Revision: 12923 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     Claroline 1.11 $Revision: 14184 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -126,7 +128,7 @@ class ObScriptService extends ScriptService
 
 /**
  * Service dispatcher
- * Receive a requested service identifier and executes the corresponding 
+ * Receive a requested service identifier and executes the corresponding
  * service. Dispatcher is like a routing table.
  */
 class Dispatcher
@@ -171,10 +173,10 @@ class Dispatcher
      * Bind a service to a service identifier
      * @param   request string service identifier
      * @param   service Service service object
-     * @param   overwrite boolean overwrites an existing entry 
+     * @param   overwrite boolean overwrites an existing entry
      *  with the same identifier
      * @return  boolean true if binding succeeds, else returns false
-     */ 
+     */
     public function bind( $request, $service, $overwrite = false )
     {
         if ( $overwrite || ! array_key_exists( $request, $this->registry ) )
@@ -223,7 +225,7 @@ class Dispatcher
      * @param   request string service identifier
      * @param   service Service service object
      * @return  boolean true if binding succeeds, else returns false
-     */ 
+     */
     public function rebind( $request, $service )
     {
         return $this->bind( $request, $service, true );

@@ -1,19 +1,16 @@
-<?php // $Id: track_questions.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: track_questions.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLTRACK
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Sébastien Piraux <piraux@claroline.net>
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLTRACK
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Sebastien Piraux <piraux@claroline.net>
  */
+
 $tlabelReq = 'CLQWZ';
 
 require '../inc/claro_init_global.inc.php';
@@ -34,7 +31,7 @@ if( isset($_REQUEST['exId']) && is_numeric($_REQUEST['exId']) )
 }
 else
 {
-    header("Location: ../exercise/exercise.php");
+    header("Location: ".Url::Contextualize( "../exercise/exercise.php" ) );
     exit();
 }
 
@@ -57,10 +54,10 @@ $tbl_cdb_names = get_module_course_tbl( array( 'qwz_exercise',
                                                'qwz_answer_truefalse',
                                                'qwz_answer_fib',
                                                'qwz_answer_matching',
-                                               'qwz_tracking', 
+                                               'qwz_tracking',
                                                'qwz_tracking_questions',
                                                'qwz_tracking_answers'
-                                        ), 
+                                        ),
                                         claro_get_current_course_id() );
 
 $tbl_qwz_question                 = $tbl_cdb_names['qwz_question'];
@@ -79,18 +76,18 @@ $is_allowedToTrack = claro_is_course_manager();
 if( isset($_REQUEST['src']) && $_REQUEST['src'] == 'ex' )
 {
     $src = '&src=ex';
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics of exercise'), './track_exercises.php?exId='.$exId . $src );
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), './exercise.php' );
-    
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics of exercise'), Url::Contextualize('./track_exercises.php?exId='.$exId . $src ) );
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), Url::Contextualize('./exercise.php') );
+
 }
 else
 {
     $src = '';
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics of exercise'), './track_exercises.php?exId='.$exId);
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics'), '../tracking/courseReport.php' );
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics of exercise'), Url::Contextualize('./track_exercises.php?exId='.$exId));
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Statistics'), Url::Contextualize('../tracking/courseReport.php') );
 }
 $nameTools = get_lang('Statistics of question');
-ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, './track_questions.php?exId='.$exId . $src );
+ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, Url::Contextualize('./track_questions.php?exId='.$exId . $src) );
 
 
 // if the question_id is not set display the stats of all questions of this exercise
@@ -119,11 +116,19 @@ else
 $out = '';
 // display title
 $titleTab['mainTitle'] = $nameTools;
-$out .= claro_html_tool_title($titleTab);
+
+// Command list
+$cmdList = array();
+	$cmdList[] = array(
+   		'img' => 'back',
+    	'name' => get_lang('Back'),
+    	'url' => claro_htmlspecialchars(Url::Contextualize( './track_exercises.php?exId='.$exId.$src ) ));
+
+$out .= claro_html_tool_title($titleTab, null, $cmdList);
 
 // build back link
-$backLink = "\n\n".'<small><a href="./track_exercises.php?exId='.$exId.$src.'">&lt;&lt;&nbsp;'.get_lang('Back').'</a></small>'."\n\n";
-$out .= $backLink;
+$backLink = "\n\n".'<a class="backLink" href="'.claro_htmlspecialchars( Url::Contextualize( './track_exercises.php?exId='.$exId.$src ) ).'">'
+          . get_lang('Back').'</a>'."\n\n";
 
 if($is_allowedToTrack && get_conf('is_trackingEnabled'))
 {
@@ -410,12 +415,12 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
                 // expected choice image
                 $out .= '<img src="';
                 // choose image to display
-                if ($question->getType() != 'MCMA') 
+                if ($question->getType() != 'MCMA')
                 {
                     if( $result['correct'] )    $out .= get_icon_url('radio_on') . '" alt="(X)"';
                     else                        $out .= get_icon_url('radio_off') . '" alt="( )"';
                 }
-                else   
+                else
                 {
                     if( $result['correct'] )    $out .= get_icon_url('checkbox_on') . '" alt="(X)"';
                     else                        $out .= get_icon_url('checkbox_off') . '" alt="( )"';
@@ -644,5 +649,3 @@ else
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

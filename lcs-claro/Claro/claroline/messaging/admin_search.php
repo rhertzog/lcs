@@ -1,4 +1,4 @@
-<?php // $Id: admin_search.php 12989 2011-03-18 15:42:50Z abourguignon $
+<?php // $Id: admin_search.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Allow the administrator to search through the messages.
  *
- * @version     1.9 $Revision: 12989 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -46,7 +46,7 @@ if ( ! claro_is_platform_admin() )
 $content = "";
 $arguments = array();
 
-$displayTable = TRUE;
+$displayTable = true;
 
 $acceptedSearch = array('fromUser','olderThan','timeInterval','platformMessage');
 $acceptedCommand = array('rqDeleteSelection','exDeleteSelection','rqDeleteMessage','exDeleteMessage');
@@ -437,15 +437,17 @@ if ($displayTable)
             ;
     $content .= '<br />'
        .'<table class="claroTable emphaseLine" width="100%">'."\n\n"
-       .'<tr class ="headerX">'."\n"
+       .'<thead>'
+       .'<tr>'."\n"
        .'<th>&nbsp;</th>'."\n"
        .'<th>'.get_lang('Subject').'</th>'."\n"
        .'<th><a href="'.$orderLink.'fieldOrder=name">'.get_lang('Sender').'</a></th>'."\n"
        .'<th><a href="'.$orderLink.'fieldOrder=username">'.get_lang('Username').'</a></th>'."\n"
        .'<th><a href="'.$orderLink.'fieldOrder=date">'.get_lang('Date').'</a></th>'."\n"
        .'<th class="im_list_action">'.get_lang('Delete').'</th>'."\n"
-       .'</tr>'."\n\n"
-       ;
+       .'</tr>'."\n"
+       .'</thead>'."\n";
+    
     if ($box->getNumberOfMessage() == 0)
     {
         $content .= '<tfoot>' . "\n"
@@ -492,12 +494,12 @@ if ($displayTable)
             $content .=
                 '<tr>'."\n"
                 .'<td class="im_list_selection"><input type="checkbox" name="msg[]" value="'.$message->getId().'" /></td>'."\n"
-                .'<td><a href="readmessage.php?messageId='.$message->getId().'&amp;type=received">'.htmlspecialchars($message->getSubject()).'</a></td>'."\n"
+                .'<td><a href="readmessage.php?messageId='.$message->getId().'&amp;type=received">'.claro_htmlspecialchars($message->getSubject()).'</a></td>'."\n"
                 .'<td><a href="sendmessage.php?cmd=rqMessageToUser&amp;userId='.$message->getSender().'">'
-                        .get_lang('%firstName %lastName', array ('%firstName' =>htmlspecialchars($message->getSenderFirstName()), '%lastName' => htmlspecialchars($message->getSenderLastName())))
+                        .get_lang('%firstName %lastName', array ('%firstName' =>claro_htmlspecialchars($message->getSenderFirstName()), '%lastName' => claro_htmlspecialchars($message->getSenderLastName())))
                 .     '</a>'
                 .'</td>'
-                .'<td>'.htmlspecialchars($userData['username']).'</td>'."\n"
+                .'<td>'.claro_htmlspecialchars($userData['username']).'</td>'."\n"
                 .'<td>'.claro_html_localised_date(get_locale('dateTimeFormatLong'),strtotime($message->getSendTime())).'</td>'."\n"
                 .'<td class="im_list_action"><a href="'.$linkDelete.'cmd=rqDeleteMessage&amp;message_id='.$message->getId().'" '
                 .        'onclick="return deleteMessage(\''.$linkDelete.'cmd=exDeleteMessage&amp;message_id='.$message->getId().'\')"'

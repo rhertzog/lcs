@@ -1,11 +1,11 @@
-<?php
+<?php // $Id: ajax_requests.php 14008 2012-02-07 14:23:40Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Ajax requests for administration panel
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 14008 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -16,6 +16,8 @@
 // Load Claroline kernel
 require_once dirname(__FILE__) . '/../../inc/claro_init_global.inc.php';
 require_once dirname(__FILE__) . '/../../inc/lib/courselist.lib.php';
+require_once dirname(__FILE__) . '/../../inc/lib/course/courselist.lib.php';
+require_once dirname(__FILE__) . '/../../inc/lib/class.lib.php';
 
 if ( ! claro_is_platform_admin() ) claro_die(get_lang('Not allowed'));
 
@@ -28,15 +30,16 @@ if ($action == 'getUserCourseList')
     
     if (!is_null($userId))
     {
-        $courseList = get_user_course_list($userId);
+        $courseList = new UserCourseList($userId);
+        $courseListIterator = $courseList->getIterator();
         
         //We only need courses codes
-        if (!empty($courseList))
+        if (!empty($courseListIterator))
         {
             $coursesCodeList = array();
-            foreach($courseList as $course)
+            foreach($courseListIterator as $course)
             {
-                $coursesCodeList[] = $course['officialCode'];
+                $coursesCodeList[] = $course->officialCode;
             }
         }
         else
@@ -94,4 +97,29 @@ elseif ($action == 'getUserCategoryList')
         $categoryList[] = get_lang("No user id");
     
     echo implode(', ', $categoryList);
+}
+elseif ($action == 'getUserClassList')
+{
+    $userId = isset($_REQUEST['userId'])?((int) $_REQUEST['userId']):(null);
+    $classList = array();
+    
+    if (!is_null($userId))
+    {
+        $classList = get_class_list_for_user_id($userId);
+        
+        if (!empty($classList))
+        {
+            $classNameList = array();
+            foreach($classList as $class)
+            {
+                $classNameList[] = $class['name'];
+            }
+        }
+        else
+            $classNameList[] = get_lang("No class");
+    }
+    else
+        $classNameList[] = get_lang("No user id");
+    
+    echo implode(', ', $classNameList);
 }

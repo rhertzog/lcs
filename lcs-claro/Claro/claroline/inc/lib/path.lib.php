@@ -1,4 +1,4 @@
-<?php // $Id: path.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: path.lib.php 14181 2012-06-13 08:15:00Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,15 +8,14 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * built url and system paths
+ * Built url and system paths.
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     $Revision: 14181 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      see 'credits' file
- * @since       claroline 1.8.3
+ * @since       Claroline 1.8.3
  * @package     KERNEL
- *
  */
 
 
@@ -33,7 +32,7 @@ $clarolineRepositorySys = Http://www.domain.tld/whereisMyCampus/claroline
  * Return a common path of claroline
  *
  * @param string $pathKey key name of the path ( varname in previous version of claroline)
- * @author Christophe Gesché <moosh@claroline.net>
+ * @author Christophe Gesche <moosh@claroline.net>
  * @return path
  */
 function get_path($pathKey)
@@ -118,4 +117,25 @@ function get_url_domain()
     }
     $url .= $urlPart[host] . '/';
 
+}
+
+/**
+ * Get platform path url : return get_path('url') if not empty, 
+ *  '/' if get_path('url') is empty.
+ * Use this instead of in get_path('url') in claro_redirect
+ * @return string platform base url without domain, port...
+ * @since Claroline 1.11.0
+ */
+function get_platform_base_url()
+{
+    $url = get_path('url');
+    
+    if ( empty( $url ) )
+    {
+        return '/';
+    }
+    else
+    {
+        return $url;
+    }
 }

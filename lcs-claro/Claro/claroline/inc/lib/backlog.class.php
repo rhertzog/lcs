@@ -1,11 +1,13 @@
-<?php // $Id: backlog.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: backlog.class.php 14201 2012-07-09 14:20:10Z jrm_ $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * Backlog
+ * CLAROLINE
  *
- * @version     1.10 $Revision: 12923 $
+ * Backlog.
+ *
+ * @version     $Revision: 14201 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -20,7 +22,8 @@ define ( 'BACKLOG_INFO',   'BACKLOG_INFO' );
 
 /**
  * Backlog class
- * @deprecated since Claroline 1.10, use exceptions instead
+ * @deprecated since Claroline 1.10, use exceptions, Console.lib or DialogBox 
+ *  instead
  */
 class Backlog
 {
@@ -162,7 +165,7 @@ class Backlog
 
 class Backlog_Reporter
 {
-    function report( $summary, $details, $label = '', $focus = false )
+    public static function report( $summary, $details, $label = '', $focus = false )
     {
         $id = uniqid('details');
 

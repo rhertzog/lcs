@@ -1,14 +1,14 @@
-<?php // $Id: shibboleth.lib.php 11944 2009-10-01 15:25:28Z jrm_ $
+<?php // $Id: shibboleth.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
- * Claroline Shibboleth / Switch AAI
+ * CLAROLINE
  *
- * Library and Configuration
+ * Shibboleth / Switch AAI.
+ * Library and configuration.
  *
- * @version 0.4
- *
- * @author Daniel Streiff <daniel.streiff@fh-htwchur.ch>
+ * @version     0.4
+ * @author      Daniel Streiff <daniel.streiff@fh-htwchur.ch>
  */
 
 /**
@@ -85,5 +85,3 @@ function shibbolethUniqueUsername($lastname, $firstname, $lnLen = 10, $fnLen = 1
     }
     return $shibbolethUsername;
 }
-
-?>

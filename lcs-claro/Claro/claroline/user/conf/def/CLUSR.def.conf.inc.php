@@ -1,11 +1,11 @@
-<?php // $Id: CLUSR.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: CLUSR.def.conf.inc.php 13965 2012-01-30 15:14:56Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
  * This file describe the parameter for user tool
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13965 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -63,7 +63,7 @@ array ( 'label'   => 'Number of user per page'
       , 'default' => '25'
       , 'unit'    => 'users'
       ,  'type'    => 'integer'
-      ,'acceptedValue' => array ('Min'=>'5')
+      ,'acceptedValue' => array ('min'=>'5')
       );
 
 
@@ -187,7 +187,7 @@ array('label'         => 'Teacher can export password'
      ,'acceptedValue' => array ('TRUE'=>'Yes'
                               ,'FALSE'=>'No'
                               )
-);     
+);
 
 $conf_def_property_list['export_user_password_encrypted'] =
 array('label'         => 'Encrypt exported password using md5 algorithm for teacher'
@@ -198,7 +198,7 @@ array('label'         => 'Encrypt exported password using md5 algorithm for teac
      ,'acceptedValue' => array ('TRUE'=>'Yes'
                               ,'FALSE'=>'No'
                               )
-); 
+);
 
 $conf_def['section']['import']['label'] = 'Import CVS';
 $conf_def['section']['import']['description'] = '';
@@ -207,7 +207,7 @@ array ( 'update_user_properties'
 );
 
 $conf_def_property_list['update_user_properties'] =
-array('label'         => 'Update properties of users  on CVS import'
+array('label'         => 'Update properties of users on CVS import'
      ,'default'       => FALSE
      ,'type'          => 'boolean'
      ,'display'       => TRUE
@@ -216,4 +216,3 @@ array('label'         => 'Update properties of users  on CVS import'
                               ,'FALSE'=>'No'
                               )
      );
-?>

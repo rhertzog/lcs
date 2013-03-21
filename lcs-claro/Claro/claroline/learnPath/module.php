@@ -1,17 +1,15 @@
-<?php // $Id: module.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: module.php 14128 2012-04-25 13:37:43Z zefredz $
+
 /**
- * CLAROLINE
+ * CLAROLINE 1.11
  *
- * @version 1.8 $Revision: 12923 $
- *
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Piraux Sébastien <pir@cerdecam.be>
- * @author Lederer Guillaume <led@cerdecam.be>
- *
- * @package CLLNP
+ * @version     $Revision: 14128 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Piraux Sebastien <pir@cerdecam.be>
+ * @author      Lederer Guillaume <led@cerdecam.be>
+ * @package     CLLNP
+ * @since       1.8
  */
 
 /*======================================
@@ -44,14 +42,23 @@ $is_allowedToEdit = claro_is_allowed_to_edit();    // as teacher
 
 if ( $is_allowedToEdit )
 {
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Learning path'), Url::Contextualize(get_module_url('CLLNP') . '/learningPathAdmin.php') );
+    ClaroBreadCrumbs::getInstance()->prepend( 
+        get_lang('Learning path'), 
+        Url::Contextualize(get_module_url('CLLNP') . '/learningPathAdmin.php') 
+    );
 }
 else
 {
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Learning path'), Url::Contextualize(get_module_url('CLLNP') . '/learningPath.php') );
+    ClaroBreadCrumbs::getInstance()->prepend( 
+        get_lang('Learning path'), 
+        Url::Contextualize(get_module_url('CLLNP') . '/learningPath.php') 
+    );
 }
 
-ClaroBreadCrumbs::getInstance()->prepend( get_lang('Learning path list'), Url::Contextualize(get_module_url('CLLNP') . '/learningPathList.php') );
+ClaroBreadCrumbs::getInstance()->prepend( 
+    get_lang('Learning path list'), 
+    Url::Contextualize(get_module_url('CLLNP') . '/learningPathList.php') 
+);
 
 $nameTools = get_lang('Module');
 
@@ -80,6 +87,41 @@ require_once(get_path('incRepositorySys')."/lib/fileUpload.lib.php");
 unset($_SESSION['serializedExercise']);
 unset($_SESSION['serializedQuestionList']);
 unset($_SESSION['exeStartTime']);
+
+if(!empty($_REQUEST['copyFrom']) && $is_allowedToEdit)
+{
+    $_SESSION['returnToTrackingUserId'] = (int)$_GET['copyFrom'];
+    
+    $copyError = false;
+    //we could simply copy the requested module progression...
+    //but since we can navigate between modules while completing a module,
+    //we have to copy the whole learning path progression.
+    if(!copyLearnPathProgression((int)$_SESSION['returnToTrackingUserId'], (int)claro_get_current_user_id(),  (int)$_SESSION['path_id']))
+    {
+    	$copyError = true;
+    }
+    
+    $dialogBox = new DialogBox();
+    if($copyError)
+    {
+        $dialogBox->error(get_lang('An error occured while accessing student module'));
+        $claroline->display->body->appendContent($dialogBox->render());
+        echo $claroline->display->render();
+        exit();
+    }
+    else
+    {
+        $user_data = user_get_properties((int)$_SESSION['returnToTrackingUserId']);
+        $dialogBox->success(get_lang('Currently viewing module of ') . $user_data['firstname'] . ' ' . $user_data['lastname']);
+        unset($user_data);
+    }
+
+	unset($copyError);
+}
+else
+{
+    unset($_SESSION['returnToTrackingUserId']);
+}
 
 // main page
 // FIRST WE SEE IF USER MUST SKIP THE PRESENTATION PAGE OR NOT
@@ -161,17 +203,49 @@ if( !$is_allowedToEdit
     && !$noStartAsset
     )
 {
-    header("Location:./navigation/viewer.php");
+    header("Location: ".Url::Contextualize("./navigation/viewer.php"));
     exit();
 }
 
+// Back button
+if(!empty($_SESSION['returnToTrackingUserId']))
+{
+    $pathBack = Url::Contextualize(
+        get_path('clarolineRepositoryWeb') 
+        . 'tracking/lp_modules_details.php?' 
+        . 'uInfo='. (int)$_SESSION['returnToTrackingUserId'] 
+        . '&path_id=' . (int)$_SESSION['path_id'] );
+}
+elseif ($is_allowedToEdit)
+{
+    $pathBack = Url::Contextualize("./learningPathAdmin.php");
+}
+else
+{
+    $pathBack = Url::Contextualize("./learningPath.php");
+}
+
+// Command list
+$cmdList = array();
+
+$cmdList[] = array(
+    'img' => 'back',
+    'name' => get_lang('Back to module list'),
+    'url' => $pathBack);
+
+// Display
 $out = '';
+
+if(!empty($dialogBox))
+{
+    $out .= $dialogBox->render();
+}
+
+$out .= claro_html_tool_title(get_lang('Module edition'), null, $cmdList);
 
 //####################################################################################\\
 //################################## MODULE NAME BOX #################################\\
 //####################################################################################\\
-
-$out .= '<br />'."\n";
 
 $cmd = ( isset($_REQUEST['cmd']) )? $_REQUEST['cmd'] : '';
 
@@ -186,7 +260,6 @@ else
 
 if($module['contentType'] != CTLABEL_ )
 {
-
     //####################################################################################\\
     //############################### MODULE COMMENT BOX #################################\\
     //####################################################################################\\
@@ -204,7 +277,7 @@ if($module['contentType'] != CTLABEL_ )
     {
         $out .= commentBox(MODULE_, DISPLAY_);
     }
-
+    
     //#### ADDED COMMENT #### courseAdmin can always modify this ####\\
     // this is a comment for THIS module in THIS learning path
     if ( $cmd == "updatespecificComment" )
@@ -220,18 +293,6 @@ if($module['contentType'] != CTLABEL_ )
         $out .= commentBox(LEARNINGPATHMODULE_, DISPLAY_);
     }
 } //  if($module['contentType'] != CTLABEL_ )
-
-//back button
-if ($is_allowedToEdit)
-{
-    $pathBack = "./learningPathAdmin.php";
-}
-else
-{
-    $pathBack = "./learningPath.php";
-}
-
-$out .= '<small><a href="'.$pathBack.'"><< '.get_lang('Back to list').'</a></small><br /><br />'."\n\n";
 
 //####################################################################################\\
 //############################ PROGRESS  AND  START LINK #############################\\
@@ -347,12 +408,12 @@ if($module['contentType'] != CTLABEL_) //
     {
 
         $out .= '<center>'."\n"
-        .    '<form action="./navigation/viewer.php" method="post">' . "\n"
-            . claro_form_relay_context()
-        .    '<input type="submit" value="' . get_lang('Start Module') . '" />'."\n"
-        .    '</form>' . "\n"
-        .    '</center>' . "\n\n"
-        ;
+              . '<form action="./navigation/viewer.php" method="post">' . "\n"
+              . claro_form_relay_context()
+              . '<input type="submit" value="' . get_lang('Start Module') . '" />'."\n"
+              . '</form>' . "\n"
+              . '</center>' . "\n\n"
+              ;
     }
     else
     {
@@ -391,5 +452,3 @@ if( $is_allowedToEdit ) // for teacher only
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

@@ -1,11 +1,11 @@
-<?php // $Id: login.php 13006 2011-03-28 13:20:47Z abourguignon $
+<?php // $Id: login.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This script allows users to log on platform and back to requested ressource.
  *
- * @version     1.9 $Revision: 13006 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLAUTH
@@ -13,6 +13,7 @@
  */
 
 require '../inc/claro_init_global.inc.php';
+require_once get_path('incRepositorySys').'/lib/course_user.lib.php';
 
 // Keep the username in session
 if (isset($_REQUEST['login']))
@@ -62,7 +63,7 @@ if (get_conf('claro_CasEnabled',false) && ! get_conf('claro_displayLocalAuthForm
 
 if ( $sourceUrl )
 {
-    $sourceUrl = htmlspecialchars($sourceUrl);
+    $sourceUrl = claro_htmlspecialchars($sourceUrl);
 }
 else
 {
@@ -71,7 +72,7 @@ else
 
 if (claro_is_in_a_course())
 {
-    $sourceCid = htmlspecialchars(claro_get_current_course_id());
+    $sourceCid = claro_htmlspecialchars(claro_get_current_course_id());
 }
 else
 {
@@ -80,7 +81,7 @@ else
 
 if (claro_is_in_a_group())
 {
-    $sourceGid = htmlspecialchars(claro_get_current_group_id());
+    $sourceGid = claro_htmlspecialchars(claro_get_current_group_id());
 }
 else
 {
@@ -197,13 +198,20 @@ else
         {
             if ( claro_is_user_authenticated() )
             {
-                // Display link to student to enrol to this course
-                $out .= '<p align="center">'           ."\n"
-                      . get_lang('Your user profile doesn\'t seem to be enrolled on this course').'<br />'
-                      . get_lang('If you wish to enrol on this course') . ' : '
-                      . ' <a href="' . get_path('clarolineRepositoryWeb') . 'auth/courses.php?cmd=rqReg&amp;keyword=' . urlencode($_course['officialCode']) . '">'
-                      . get_lang('Enrolment').'</a>' ."\n"
-                      . '</p>'          ."\n";
+                if (claro_is_current_user_enrolment_pending())
+                {
+                    // enrolment pending message displayed by body.tpl
+                }
+                else
+                {
+                    // Display link to student to enrol to this course
+                    $out .= '<p align="center">' . "\n"
+                          . get_lang('Your user profile doesn\'t seem to be enrolled on this course').'<br />'
+                          . get_lang('If you wish to enrol on this course') . ' : '
+                          . ' <a href="' . get_path('clarolineRepositoryWeb') . 'auth/courses.php?cmd=rqReg&amp;keyword=' . urlencode($_course['officialCode']) . '">'
+                          . get_lang('Enrolment').'</a>' . "\n"
+                          . '</p>' . "\n";
+                }
             }
             elseif ( get_conf('allowSelfReg') )
             {

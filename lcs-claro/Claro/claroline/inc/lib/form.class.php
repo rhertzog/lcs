@@ -1,9 +1,9 @@
-<?php // $Id: form.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: form.class.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * Form class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -215,7 +215,7 @@ class Input extends FormElement
         $html = '<input type="'.$this->type.'"'
         .     ' id="form_'.$this->id.'"'
         .     ' name="'.$this->name.'"'
-        .     ' value="'.htmlspecialchars($this->value).'"'
+        .     ' value="'.claro_htmlspecialchars($this->value).'"'
         .     ' ' . renderParams($this->optionList)
         .     ' />';
 
@@ -421,7 +421,7 @@ class Button extends Input
         $html = '<input type="'.$this->type.'"'
         .     ' id="form_'.$this->id.'"'
         .     ' name="'.$this->name.'"'
-        .     ' value="'.htmlspecialchars($this->label).'"' // use label in value as there is no real value in a button
+        .     ' value="'.claro_htmlspecialchars($this->label).'"' // use label in value as there is no real value in a button
         .     ' ' . renderParams($this->optionList)
         .     ' />';
 
@@ -548,7 +548,7 @@ class TextArea extends FormElement
             .     ' name="'.$this->name.'"'
             .     ' ' . renderParams($this->optionList)
             .     ' >'
-            .     htmlspecialchars($this->value)
+            .     claro_htmlspecialchars($this->value)
             .     "\n" . '</textarea>' . "\n";
         }
         return $html;
@@ -659,7 +659,7 @@ class SelectBox extends FormElement
             }
 
             $html .= '<option value="'.$optionValue.'" '.$displaySelected.'>'
-            .     htmlspecialchars($optionLabel)
+            .     claro_htmlspecialchars($optionLabel)
             .     '</option>' . "\n";
         }
 
@@ -730,7 +730,7 @@ function renderParams($paramList)
 
     foreach( $paramList as $param => $value )
     {
-        $out[] = $param . '="' . htmlspecialchars($value) . '"';
+        $out[] = $param . '="' . claro_htmlspecialchars($value) . '"';
     }
 
     return implode(' ', $out);

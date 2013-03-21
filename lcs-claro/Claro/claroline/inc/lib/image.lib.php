@@ -1,4 +1,4 @@
-<?php // $Id: image.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: image.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * Image manipulation library
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -191,7 +191,7 @@ function create_thumbnail($file, $thumbWidth, $title = '')
 
     $img_url = get_image_thumbnail_url( $file );
 
-    return '<img src="' . htmlspecialchars( $img_url ) . '"
+    return '<img src="' . claro_htmlspecialchars( $img_url ) . '"
                  width="' . $thumbWidth . '"
                  height="' . $newHeight . '"
                  ' . $title . '
@@ -335,7 +335,7 @@ function display_link_to_previous_image($imageList, $fileList, $current)
             . "\" width=\"30%\">\n"
             ;
 
-        $html .= "<a href=\"" . htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . "?docView=image&file="
+        $html .= "<a href=\"" . claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . "?docView=image&file="
             . download_url_encode($prevName) . "&cwd=" . $curDirPath
             . $searchCmdUrl ) ) . "\">" . "&lt;&lt;&nbsp;" . basename($prevName) . "</a>\n"
             ;
@@ -343,7 +343,7 @@ function display_link_to_previous_image($imageList, $fileList, $current)
         $html .= "<br /><br />\n";
 
         // display thumbnail
-        $html .= "<a href=\"" . htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
+        $html .= "<a href=\"" . claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
             . "?docView=image&file=" . download_url_encode($prevName)
             . "&cwd=" . $curDirPath . $searchCmdUrl )) . "\">"
             . create_thumbnail($prevName, get_conf('thumbnailWidth'))
@@ -395,7 +395,7 @@ function display_link_to_next_image($imageList, $fileList, $current)
 
         $html = "<th class=\"". $nextStyle . "\" width=\"30%\">\n";
 
-        $html .= "<a href=\"" . htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
+        $html .= "<a href=\"" . claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
             . "?docView=image&file=" . download_url_encode($nextName)
             . "&cwd=" . $curDirPath . $searchCmdUrl )) ."\">". basename($nextName)
             . "&nbsp;&gt;&gt;</a>\n"
@@ -404,7 +404,7 @@ function display_link_to_next_image($imageList, $fileList, $current)
         $html .= "<br /><br />\n";
 
         // display thumbnail
-        $html .= "<a href=\"" . htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
+        $html .= "<a href=\"" . claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF']
             . "?docView=image&file=" . download_url_encode($nextName)
             . "&cwd=" . $curDirPath . $searchCmdUrl )). "\">"
             . create_thumbnail($nextName, get_conf('thumbnailWidth') )
@@ -566,7 +566,7 @@ function display_thumbnails($imageList, $fileList, $page
                 ;
 
             $html .= "<a href=\""
-                . htmlspecialchars(
+                . claro_htmlspecialchars(
                     Url::Contextualize( $_SERVER['PHP_SELF'] . "?docView=image&file="
                     . download_url_encode($fileName)
                     . "&cwd=". $curDirPath . $searchCmdUrl ))

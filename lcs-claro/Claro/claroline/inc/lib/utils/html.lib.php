@@ -1,11 +1,11 @@
-<?php // $Id: html.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: html.lib.php 14043 2012-03-02 12:30:24Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Html library
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14043 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -16,13 +16,14 @@
 
 /**
  * Generic renderer interface
+ * This is now an alias of display
  */
-interface Claro_Renderer
+interface Claro_Renderer extends Display
 {
     /**
      * @return  string
      */
-    public function render();
+    // public function render();
 }
 
 /**

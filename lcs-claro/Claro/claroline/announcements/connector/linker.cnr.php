@@ -1,15 +1,15 @@
-<?php // $Id: linker.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: linker.cnr.php 14358 2013-01-24 12:35:36Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Resource Resolver for the Annoucements tool
  *
- * @version 1.9 $Revision: 12923 $
+ * @version     $Revision: 14358 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @author claroline Team <cvs@claroline.net>
- * @package CLANN
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claroline Team <cvs@claroline.net>
+ * @package     CLANN
  */
 
 FromKernel::uses('fileManage.lib', 'file.lib');
@@ -44,14 +44,29 @@ class CLANN_Resolver implements ModuleResourceResolver
         
         $res = Claroline::getDatabase()->query($sql);
         $res->setFetchMode(Database_ResultSet::FETCH_VALUE);
-        $title = trim( $res->fetch() );
         
-        if ( empty( $title ) )
+        $title = $res->fetch();
+        
+        if ( $title )
         {
-            $title = get_lang('Untitled');
-        }
+            $title = trim ( $title );
         
-        return $title;
+            if ( empty( $title ) )
+            {
+                $title = get_lang('Untitled');
+            }
+
+            return $title;
+        }
+        else
+        {
+            Console::debug ("Cannot load ressource " 
+                . var_export( $locator, true )
+                . " in " . __CLASS__
+                . " : query returned " 
+                . var_export( $title, true ) );
+            return null;
+        }
     }
 }
 

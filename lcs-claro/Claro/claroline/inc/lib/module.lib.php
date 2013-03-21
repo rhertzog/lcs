@@ -1,4 +1,4 @@
-<?php // $Id: module.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: module.lib.php 14396 2013-02-13 20:36:29Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -11,7 +11,7 @@ if ( count( get_included_files() ) == 1 )
  * This lib make the interface with kernel task and module extention for theses
  * task. It also provide some backward compatibility functions.
  *
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14396 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
  *              version 2 or later
@@ -39,35 +39,58 @@ function get_package_path()
 }
 
 /**
- * This function return the core repository of a module.
+ * This function return the name of the folder of a module given its label.
  *
  * @param string $toolLabel
- * @return string
+ * @return string folder name
+ * @since 1.11
+ */
+function get_module_folder_name( $toolLabel )
+{
+    switch ($toolLabel)
+    {
+        // legacy modules
+        case 'CLANN' : return 'announcements';
+        case 'CLCAL' : return 'calendar';
+        case 'CLFRM' : return 'phpbb';
+        case 'CLCHT' : return 'chat';
+        case 'CLDOC' : return 'document';
+        case 'CLDSC' : return 'course_description';
+        case 'CLUSR' : return 'user';
+        case 'CLLNP' : return 'learnPath';
+        case 'CLQWZ' : return 'exercise';
+        case 'CLWRK' : return 'work';
+        case 'CLWIKI' : return 'wiki';
+        case 'CLLNK' : return 'linker';
+        case 'CLGRP' : return 'group';
+        case 'CLSTAT' : return 'tracking';
+        case 'CLTI' : return 'tool_intro';
+        // modern modules
+        default: return $toolLabel;
+    }
+}
+
+/**
+ * This function return the path to a module folder given its label.
+ *
+ * @param string $toolLabel
+ * @return string pâth to the module folder
  */
 function get_module_path($toolLabel)
 {
 
-    $toolLabel = rtrim($toolLabel,'_'); // keep this line until  all claro_label
-    switch ($toolLabel)
+    $folderName = get_module_folder_name( rtrim($toolLabel,'_') ); // keep this line until  all claro_label
+    
+    // core modules
+    if ( file_exists(get_path('clarolineRepositorySys') . $folderName) )
     {
-        case 'CLANN' : return get_path('clarolineRepositorySys') . 'announcements';
-        case 'CLCAL' : return get_path('clarolineRepositorySys') . 'calendar';
-        case 'CLFRM' : return get_path('clarolineRepositorySys') . 'phpbb';
-        case 'CLCHT' : return get_path('clarolineRepositorySys') . 'chat';
-        case 'CLDOC' : return get_path('clarolineRepositorySys') . 'document';
-        case 'CLDSC' : return get_path('clarolineRepositorySys') . 'course_description';
-        case 'CLUSR' : return get_path('clarolineRepositorySys') . 'user';
-        case 'CLLNP' : return get_path('clarolineRepositorySys') . 'learnPath';
-        case 'CLQWZ' : return get_path('clarolineRepositorySys') . 'exercise';
-        case 'CLWRK' : return get_path('clarolineRepositorySys') . 'work';
-        case 'CLWIKI' : return get_path('clarolineRepositorySys') . 'wiki';
-        case 'CLLNK' : return get_path('clarolineRepositorySys') . 'linker';
-        case 'CLGRP' : return get_path('clarolineRepositorySys') . 'group';
-        case 'CLSTAT' : return get_path('clarolineRepositorySys') . 'tracking';
-        case 'CLTI' : return get_path('clarolineRepositorySys') . 'tool_intro';
-        default: return get_path('rootSys') . 'module/' . rtrim($toolLabel,'_');
+        return get_path('clarolineRepositorySys') . $folderName;
     }
-    return '';
+    // add-on modules
+    else
+    {
+        return get_path('rootSys') . 'module/' . $folderName;
+    }
 }
 
 /**
@@ -79,129 +102,61 @@ function get_module_path($toolLabel)
 function get_module_url($toolLabel)
 {
     $toolLabel = rtrim($toolLabel,'_');
-    switch ($toolLabel)
+    
+    $folderName = get_module_folder_name( rtrim($toolLabel,'_') );
+    
+    // core modules
+    if ( file_exists( get_path('clarolineRepositorySys') . $folderName ) )
     {
-        case 'CLANN' : return get_path('clarolineRepositoryWeb') . 'announcements';
-        case 'CLCAL' : return get_path('clarolineRepositoryWeb') . 'calendar';
-        case 'CLFRM' : return get_path('clarolineRepositoryWeb') . 'phpbb';
-        case 'CLCHT' : return get_path('clarolineRepositoryWeb') . 'chat';
-        case 'CLDOC' : return get_path('clarolineRepositoryWeb') . 'document';
-        case 'CLDSC' : return get_path('clarolineRepositoryWeb') . 'course_description';
-        case 'CLUSR' : return get_path('clarolineRepositoryWeb') . 'user';
-        case 'CLLNP' : return get_path('clarolineRepositoryWeb') . 'learnPath';
-        case 'CLQWZ' : return get_path('clarolineRepositoryWeb') . 'exercise';
-        case 'CLWRK' : return get_path('clarolineRepositoryWeb') . 'work';
-        case 'CLLNK' : return get_path('clarolineRepositoryWeb') . 'linker';
-        case 'CLWIKI' : return get_path('clarolineRepositoryWeb') . 'wiki';
-        case 'CLGRP' : return get_path('clarolineRepositoryWeb') . 'group';
-        case 'CLTI' : return get_path('clarolineRepositoryWeb') . 'tool_intro';
-        default: return get_conf('urlAppend') . '/module/' . $toolLabel;
+        return get_path('clarolineRepositoryWeb') . $folderName;
     }
-    return '';
-
+    // add-on modules
+    else
+    {
+        return get_conf('urlAppend') . '/module/' . $folderName;
+    }
 }
 
 /**
  * Return the list of context that the tool can use but not manage.
  *
- * @param string $toolId
+ * @param string $moduleLabel
  * @return array
  */
-function get_module_db_dependance($toolId)
+function get_module_db_dependance ( $moduleLabel )
 {
-    // actual place of this info prom module
-
-    $dbconfFile = get_module_path($toolId) . '/connector/db.conf.php';
-    if (file_exists($dbconfFile))
+    $tbl = claro_sql_get_main_tbl();
+    
+    $sqlModuleLabel = claro_sql_escape($moduleLabel);
+    
+    $contextList = claro_sql_query_fetch_all_rows("
+        SELECT 
+            `mc`.`context` AS `context`
+        FROM 
+            `{$tbl['module_contexts']}` AS `mc`
+        LEFT JOIN 
+            `{$tbl['module']}` AS `m`
+        ON 
+            `m`.`id` = `mc`.`module_id`
+        WHERE 
+            `m`.`label` = '{$sqlModuleLabel}'
+    ");
+    
+    $contextListToReturn = array();
+    
+    foreach ( $contextList as $context )
     {
-        $contextDbSupport =false;
-        include($dbconfFile);
-        return $contextDbSupport;
-    }
-    else
-    switch ($toolId)
-    {
-        // read in manifest
-
-        //case 'CLUNFO' : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-        case 'CLANN'  : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-        case 'CLWIKI' : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-        case 'CLQWZ'  : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-        case 'CLDOC'  : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-        case 'CLCAL'  : return array(CLARO_CONTEXT_COURSE,CLARO_CONTEXT_GROUP);
-
-        //case 'CLBLOG' : return array (CLARO_CONTEXT_USER,CLARO_CONTEXT_COURSE);
-        case 'CLLNK' :  return array(CLARO_CONTEXT_COURSE);
-        case 'CLDSC'  : return array(CLARO_CONTEXT_COURSE);
-        case 'CLFRM'  : return array(CLARO_CONTEXT_COURSE);
-        case 'CLLNP'  : return array(CLARO_CONTEXT_COURSE);
-        case 'CLUSR'  : return array(CLARO_CONTEXT_COURSE);
-        case 'CLWRK'  : return array(CLARO_CONTEXT_COURSE);
-
-        default :       return array();
-    }
-}
-
-/**
- * Return the syspath where a tool can store these file for a given context
- *
- * @param mixed $contextData
- * @return string
- */
-function claro_get_data_path( $contextData=array() )
-{
-    if(is_null($contextData)
-        || !array_key_exists(CLARO_CONTEXT_TOOLLABEL,$contextData))
-    {
-        $contextData[CLARO_CONTEXT_TOOLLABEL] = rtrim($GLOBALS['_courseTool']['label'],'_');
-    }
-    if(is_null($contextData)
-        || !array_key_exists(CLARO_CONTEXT_COURSE,$contextData))
-    {
-        $contextData[CLARO_CONTEXT_COURSE] = claro_get_current_course_id();
-    }
-    if(is_null($contextData)
-        || !array_key_exists(CLARO_CONTEXT_GROUP,$contextData))
-    {
-        $contextData[CLARO_CONTEXT_GROUP] = claro_get_current_group_id();
-    }
-    if(is_null($contextData)
-        || !array_key_exists(CLARO_CONTEXT_USER,$contextData))
-    {
-        $contextData[CLARO_CONTEXT_USER] = claro_get_current_user_id();
-    }
-
-    if (isset($contextData[CLARO_CONTEXT_COURSE]))
-    {
-        if (isset($contextData[CLARO_CONTEXT_GROUP]))
+        if ( $context['context'] == 'course' )
         {
-            $path = claro_get_group_data($contextData[CLARO_CONTEXT_GROUP]
-                ,$contextData[CLARO_CONTEXT_COURSE]);
+            $contextListToReturn[] = CLARO_CONTEXT_COURSE;
         }
-        else
+        elseif ( $context['context'] == 'group' )
         {
-            $path = get_conf('coursesRepositorySys')
-                . claro_get_course_path($contextData[CLARO_CONTEXT_COURSE])
-                ;
+            $contextListToReturn[] = CLARO_CONTEXT_GROUP;
         }
     }
-
-    if (isset($contextData[CLARO_CONTEXT_TOOLLABEL]))
-    {
-        switch ($contextData[CLARO_CONTEXT_TOOLLABEL])
-        {
-            case 'CLDOC' : $path = $path . '/document/';        break;
-            case 'CLCHT' : $path = $path . '/chat/';            break;
-            case 'CLWRK' : $path = $path . '/work/';            break;
-            case 'CLQWZ' : $path = $path . '/exercise/';        break;
-            case 'CLLNP' : $path = $path . '/scormPackages/';    break;
-            default : $path = $path . $contextData[CLARO_CONTEXT_TOOLLABEL] . '/';
-
-        }
-    }
-
-    return $path;
-
+    
+    return $contextListToReturn;
 }
 
 /**
@@ -438,6 +393,7 @@ function install_module_script_in_course( $moduleLabel, $courseId )
         language::load_translation( );
         language::load_locale_settings( );
         language::load_module_translation( $moduleLabel );
+        load_module_config( $moduleLabel );
 
         require_once $phpPath;
     }
@@ -550,6 +506,32 @@ function execute_sql_file_in_course( $file, $courseId )
 // ---- Database table list helpers
 
 /**
+ * Get main database table aliases
+ * @return array 
+ */
+function get_main_tbl_aliases()
+{
+    return array (    
+        'course'                    => 'cours',
+        'user_category'             => 'class',
+        'user_rel_profile_category' => 'rel_class_user',
+        'course_user'               => 'rel_course_user',
+    );
+}
+
+/**
+ * Get course database table aliases
+ * @return array 
+ */
+function get_course_tbl_aliases()
+{
+    return array(
+        'links'                  => 'lnk_links',
+        'resources'              => 'lnk_resources',
+    );
+}
+
+/**
  * Get list of module table names 'localized' for the given course
  * @param array $arrTblName of tableName
  * @param string $courseCode course code
@@ -578,11 +560,21 @@ function get_module_course_tbl( $arrTblName, $courseCode = null )
         throw new Exception('Invalid course !');
     }
 
+    $aliases = get_main_tbl_aliases();
+
     $arrToReturn = array();
 
     foreach ( $arrTblName as $name )
     {
-        $arrToReturn[$name] = $currentCourseDbNameGlu . $name;
+        if ( array_key_exists( $name, $aliases ) )
+        {
+            $arrToReturn[$name] = $currentCourseDbNameGlu . $aliases[$name];
+        }
+        else
+        {
+            $arrToReturn[$name] = $currentCourseDbNameGlu . $name;
+        }
+
     }
 
     return $arrToReturn;
@@ -595,12 +587,22 @@ function get_module_course_tbl( $arrTblName, $courseCode = null )
  */
 function get_module_main_tbl( $arrTblName )
 {
+    $aliases = get_main_tbl_aliases();
+    
     $mainDbNameGlu = get_conf('mainDbName') . '`.`' . get_conf('mainTblPrefix');
+    
     $arrToReturn = array();
 
     foreach ( $arrTblName as $name )
     {
-        $arrToReturn[$name] = $mainDbNameGlu . $name;
+        if ( array_key_exists( $name, $aliases) )
+        {
+            $arrToReturn[$name] = $mainDbNameGlu . $aliases[$name];
+        }
+        else
+        {
+            $arrToReturn[$name] = $mainDbNameGlu . $name;
+        }
     }
 
     return $arrToReturn;
@@ -776,41 +778,213 @@ function get_activated_group_tool_label_list( $courseId )
  * @param string $courseIdReq course code
  * @return boolean
  */
-function is_tool_activated_in_course( $toolId, $courseIdReq )
+function is_tool_activated_in_course( $toolId, $courseIdReq, $forceCacheRefresh = false )
 {
-    $tbl_cdb_names        = claro_sql_get_course_tbl(
-        claro_get_course_db_name_glued( $courseIdReq ) );
-    $tbl_course_tool_list = $tbl_cdb_names['tool'];
+    static $courseActivatedToolList = false;
     
-    $sql = "SELECT count(*) \n"
-        . "FROM `{$tbl_course_tool_list}`\n"
-        . "WHERE tool_id = " . (int) $toolId ."\n"
-        . "AND `activated` = 'true'"
-        ;
+    if ( ! $courseActivatedToolList )
+    {
+        $courseActivatedToolList = array();
+    }
+    
+    if ( ! isset($courseActivatedToolList[$courseIdReq]) || $forceCacheRefresh )
+    {
         
-    return ( false != claro_sql_query_fetch_single_value($sql) );
+        $courseActivatedToolList[$courseIdReq] = array();
+    
+        $tbl_cdb_names = claro_sql_get_course_tbl(
+            claro_get_course_db_name_glued( $courseIdReq ) 
+        );
+        
+        $tbl_course_tool_list = $tbl_cdb_names['tool'];
+
+        $sql = "SELECT tool_id \n"
+            . "FROM `{$tbl_course_tool_list}`\n"
+            . "WHERE `activated` = 'true'"
+            ;
+        
+        $result = claro_sql_query_fetch_all_rows($sql);
+    
+        foreach ( $result as $tool )
+        {
+            $courseActivatedToolList[$courseIdReq][$tool['tool_id']] = true;
+        }
+    
+    }
+    
+    if ( isset( $courseActivatedToolList[$courseIdReq][$toolId] ) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /**
  * Is the given module installed in the given course ?
  * @param string $toolLabel module label
- * @param string $courseId course code
+ * @param string $courseIdReq course code
  * @return boolean
  */
-function is_module_installed_in_course( $toolLabel, $courseId )
+function is_module_installed_in_course( $toolLabel, $courseIdReq, $forceCacheRefresh = false )
 {
+    static $courseInstalledToolList = false;
+    
     $toolId = get_tool_id_from_module_label( $toolLabel );
     
-    $tbl_cdb_names        = claro_sql_get_course_tbl( claro_get_course_db_name_glued($courseId) );
-    $tbl_course_tool_list = $tbl_cdb_names['tool'];
+    if ( ! $courseInstalledToolList )
+    {
+        $courseInstalledToolList = array();
+    }
     
-    $sql = "SELECT count(*) \n"
-        . "FROM `{$tbl_course_tool_list}`\n"
-        . "WHERE tool_id = " . (int) $toolId ."\n"
-        . "AND `installed` = 'true'"
-        ;
+    if ( ! isset($courseInstalledToolList[$courseIdReq]) || $forceCacheRefresh )
+    {
         
-    return ( false != claro_sql_query_fetch_single_value($sql) );
+        $courseInstalledToolList[$courseIdReq] = array();
+    
+        $tbl_cdb_names = claro_sql_get_course_tbl(
+            claro_get_course_db_name_glued( $courseIdReq ) 
+        );
+        
+        $tbl_course_tool_list = $tbl_cdb_names['tool'];
+
+        $sql = "SELECT tool_id \n"
+            . "FROM `{$tbl_course_tool_list}`\n"
+            . "WHERE `installed` = 'true'"
+            ;
+        
+        $result = claro_sql_query_fetch_all_rows($sql);
+    
+        foreach ( $result as $tool )
+        {
+            $courseInstalledToolList[$courseIdReq][$tool['tool_id']] = true;
+        }
+    
+    }
+    
+    if ( isset( $courseInstalledToolList[$courseIdReq][$toolId] ) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function get_dbNameGlued_from_dbName( $dbName )
+{
+    
+}
+
+/**
+ * Is the given tool activated in the given course ? This version does not call
+ * claro_get_course_data and should be used in conjunction with get_user_course_list
+ * @param int $toolId tool id
+ * @param array $course course( 'sysCode' => sysCode, 'db' => dbName
+ * @return boolean
+ */
+function is_tool_activated_in_course_lightversion( $toolId, $course, $forceCacheRefresh = false )
+{
+    static $courseActivatedToolList = false;
+    
+    if ( ! $courseActivatedToolList )
+    {
+        $courseActivatedToolList = array();
+    }
+    
+    $courseIdReq = $course['sysCode'];
+    
+    if ( ! isset($courseActivatedToolList[$courseIdReq]) || $forceCacheRefresh )
+    {
+        
+        $courseActivatedToolList[$courseIdReq] = array();
+    
+        $tbl_cdb_names = claro_sql_get_course_tbl(
+            get_conf('courseTablePrefix') . $course['db'] . get_conf('dbGlu')
+        );
+        
+        $tbl_course_tool_list = $tbl_cdb_names['tool'];
+
+        $sql = "SELECT tool_id \n"
+            . "FROM `{$tbl_course_tool_list}`\n"
+            . "WHERE `activated` = 'true'"
+            ;
+        
+        $result = claro_sql_query_fetch_all_rows($sql);
+    
+        foreach ( $result as $tool )
+        {
+            $courseActivatedToolList[$courseIdReq][$tool['tool_id']] = true;
+        }
+    
+    }
+    
+    if ( isset( $courseActivatedToolList[$courseIdReq][$toolId] ) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/**
+ * Is the given module installed in the given course ? This version does not call
+ * claro_get_course_data and should be used in conjunction with get_user_course_list
+ * @param string $toolLabel module label
+ * @param array $course course( 'sysCode' => sysCode, 'db' => dbName
+ * @return boolean
+ */
+function is_module_installed_in_course_lightversion( $toolLabel, $course, $forceCacheRefresh = false )
+{
+    static $courseInstalledToolList = false;
+    
+    $toolId = get_tool_id_from_module_label( $toolLabel );
+    
+    if ( ! $courseInstalledToolList )
+    {
+        $courseInstalledToolList = array();
+    }
+    
+    $courseIdReq = $course['sysCode'];
+    
+    if ( ! isset($courseInstalledToolList[$courseIdReq]) || $forceCacheRefresh )
+    {
+        
+        $courseInstalledToolList[$courseIdReq] = array();
+    
+        $tbl_cdb_names = claro_sql_get_course_tbl(
+            get_conf('courseTablePrefix') . $course['db'] . get_conf('dbGlu')
+        );
+        
+        $tbl_course_tool_list = $tbl_cdb_names['tool'];
+
+        $sql = "SELECT tool_id \n"
+            . "FROM `{$tbl_course_tool_list}`\n"
+            . "WHERE `installed` = 'true'"
+            ;
+        
+        $result = claro_sql_query_fetch_all_rows($sql);
+    
+        foreach ( $result as $tool )
+        {
+            $courseInstalledToolList[$courseIdReq][$tool['tool_id']] = true;
+        }
+    
+    }
+    
+    if ( isset( $courseInstalledToolList[$courseIdReq][$toolId] ) )
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /**
@@ -837,17 +1011,38 @@ function is_tool_activated_in_groups( $courseId, $toolLabel )
 /**
  * Get the tool id corresponding to the given module label
  * @param string $moduleLabel
+ * @param boolean $forceCacheRefresh
  * @return int
  */
-function get_tool_id_from_module_label( $moduleLabel )
+function get_tool_id_from_module_label( $moduleLabel, $forceCacheRefresh = false )
 {
-    $tbl = claro_sql_get_main_tbl();
+    static $toolIdList = false;
     
-    $sql = "SELECT id
-              FROM `" . $tbl['tool']."`
-             WHERE claro_label = '".claro_sql_escape($moduleLabel)."'";
-             
-    return claro_sql_query_fetch_single_value($sql);
+    if ( !$toolIdList || $forceCacheRefresh )
+    {
+        $toolIdList = array();
+        
+        $tbl = claro_sql_get_main_tbl();
+
+        $sql = "SELECT claro_label, id
+                FROM `" . $tbl['tool']."`";
+
+        $result = claro_sql_query_fetch_all_rows($sql);
+        
+        foreach ( $result as $tool )
+        {
+            $toolIdList[$tool['claro_label']] = $tool['id'];
+        }
+    }
+    
+    if ( isset( $toolIdList[$moduleLabel] ) )
+    {
+        return $toolIdList[$moduleLabel];
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /**
@@ -855,15 +1050,35 @@ function get_tool_id_from_module_label( $moduleLabel )
  * @param int $toolId
  * @return string
  */
-function get_module_label_from_tool_id( $toolId )
+function get_module_label_from_tool_id( $toolId, $forceCacheRefresh = false )
 {
-    $tbl = claro_sql_get_main_tbl();
+    static $toolIdList = false;
     
-    $sql = "SELECT claro_label
-              FROM `" . $tbl['tool']."`
-             WHERE id = ".(int)$toolId;
-             
-    return claro_sql_query_fetch_single_value($sql);
+    if ( ! $toolIdList || $forceCacheRefresh )
+    {
+        $toolIdList = array();
+        
+        $tbl = claro_sql_get_main_tbl();
+
+        $sql = "SELECT claro_label, id
+                FROM `" . $tbl['tool']."`";
+
+        $result = claro_sql_query_fetch_all_rows($sql);
+        
+        foreach ( $result as $tool )
+        {
+            $toolIdList[$tool['id']] = $tool['claro_label'];
+        }
+    }
+    
+    if ( isset($toolIdList[$toolId]) )
+    {
+        return $toolIdList[$toolId];
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /**
@@ -938,4 +1153,122 @@ function change_module_activation_in_groups ( $database, $moduleLabel, $courseId
                 `category` = 'GROUP'
          " );
     }
+}
+
+/**
+ * Get the context list of a module
+ * @param string $moduleLabel
+ * @return Iterator 
+ */
+function get_module_context_list( $moduleLabel )
+{
+    $tbl = claro_sql_get_main_tbl();
+    
+    $sqlModuleLabel = Claroline::getDatabase()->quote($moduleLabel);
+    
+    $contextList = Claroline::getDatabase()->query("
+        SELECT 
+            `mc`.`context` AS `context`
+        FROM 
+            `{$tbl['module_contexts']}` AS `mc`
+        LEFT JOIN 
+            `{$tbl['module']}` AS `m`
+        ON 
+            `m`.`id` = `mc`.`module_id`
+        WHERE 
+            `m`.`label` = {$sqlModuleLabel}
+    ");
+    
+    $contextList->setFetchMode(Mysql_ResultSet::FETCH_COLUMN);
+    
+    return $contextList;
+}
+
+/**
+ * Get url of a module icon
+ * @param string $moduleLabel label of the module
+ * @param string $default default icon
+ * @return string
+ * @since Claroline 1.9.10, 1.10.7, 1.11
+ */
+function get_module_icon_url( $moduleLabel, $moduleIcon = null, $default = 'exe' )
+{
+    if ( !empty($moduleIcon) && file_exists(get_module_path($moduleLabel) . '/' . $moduleIcon))
+    {
+        $icon = get_module_url($moduleLabel) . '/' . $moduleIcon;
+    }
+    elseif (file_exists(get_module_path($moduleLabel) . '/icon.png'))
+    {
+        $icon = get_module_url($moduleLabel) . '/icon.png';
+    }
+    elseif (file_exists(get_module_path($moduleLabel) . '/icon.gif'))
+    {
+        $icon = get_module_url($moduleLabel) . '/icon.gif';
+    }
+    else
+    {
+        $icon = get_icon_url($default);
+    }
+    
+    return $icon;
+}
+
+/**
+ * Get the list of course management modules
+ * @param bool $onlyActivated
+ * @return Database_Resultset [id,label,name,icon,activation]
+ * @since Claroline 1.9.10, 1.10.7, 1.11
+ */
+function get_course_manage_module_list( $onlyActivated = true )
+{
+    return get_module_list_by_type( 'crsmanage', $onlyActivated );
+}
+
+/**
+ * Get the list of platform administration modules
+ * @param bool $onlyActivated
+ * @return Database_Resultset [id,label,name,icon,activation]
+ * @since Claroline 1.9.10, 1.10.7, 1.11
+ */
+function get_admin_module_list( $onlyActivated = true )
+{
+    return get_module_list_by_type( 'admin', $onlyActivated );
+}
+
+
+/**
+ * Get the list of modules by type
+ * @param bool $onlyActivated
+ * @return Database_Resultset [id,label,name,icon,activation]
+ * @since Claroline 1.9.10, 1.10.7, 1.11
+ */
+function get_module_list_by_type( $type, $onlyActivated = true )
+{
+    $tbl = claro_sql_get_main_tbl();
+    
+    if ( $onlyActivated )
+    {
+        $activation = "AND `activation` = 'activated'";
+    }
+    else
+    {
+        $activation = '';
+    }
+    
+    return Claroline::getDatabase()->query("
+        SELECT 
+            M.`id`, 
+            M.`label`, 
+            M.`name`, 
+            CT.`icon`,
+            M.`activation`
+        FROM 
+            `{$tbl['module']}` AS M
+        LEFT JOIN 
+            `{$tbl['tool']}` AS CT
+        ON 
+            CT.`claro_label`= M.label
+        WHERE 
+            M.`type` = ".Claroline::getDatabase()->quote($type)."
+        {$activation}" );
 }

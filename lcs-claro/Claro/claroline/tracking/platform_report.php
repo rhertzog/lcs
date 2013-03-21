@@ -1,9 +1,9 @@
-<?php // $Id: platform_report.php 13021 2011-03-31 09:37:59Z abourguignon $
+<?php // $Id: platform_report.php 13498 2011-09-01 11:19:18Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 13021 $
+ * @version     $Revision: 13498 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Sebastien Piraux <seb@claroline.net>
  * @package     CLTRACK
@@ -27,7 +27,7 @@ if( ! claro_is_platform_admin() ) claro_die( get_lang('Not allowed') );
 /*
  * Libraries
  */
-uses( 'user.lib', 'courselist.lib' );
+FromKernel::uses( 'user.lib', 'courselist.lib' );
 
 // todo move this lib in tracking/lib
 require_once get_path('incRepositorySys') . '/lib/statsUtils.lib.inc.php';
@@ -47,8 +47,7 @@ $tbl_tracking_event  = $tbl_mdb_names['tracking_event'];
 /*
  * Output
  */
-$cssLoader = CssLoader::getInstance();
-$cssLoader->load( 'tracking', 'screen');
+CssLoader::getInstance()->load( 'tracking', 'screen');
 
 
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );

@@ -1,9 +1,9 @@
-<?php // $Id: toolintroductioniterator.class.php 13339 2011-07-15 12:27:54Z abourguignon $
+<?php // $Id: toolintroductioniterator.class.php 13760 2011-10-28 09:26:29Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 13339 $
+ * @version     $Revision: 13760 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLTI
@@ -15,10 +15,15 @@
 
 require get_module_path('CLTI').'/lib/toolintroduction.class.php';
 
-class ToolIntroductionIterator implements Iterator, Countable
+class ToolIntroductionIterator implements CountableIterator
 {
     private     $courseCode;
-    private     $toolIntroductions = array();
+    
+    /**
+     * @var Database_ResultSet
+     */
+    private     $toolIntroductions;
+    
     protected   $n = 0;
     
     public function __construct($courseCode)
@@ -33,11 +38,31 @@ class ToolIntroductionIterator implements Iterator, Countable
                 FROM `{$tblToolIntro}`
                 ORDER BY rank ASC";
         
-        $result = Claroline::getDatabase()->query($sql);
+        $this->toolIntroductions = Claroline::getDatabase()->query($sql);
+    }
+    
+    public function rewind()
+    {
+        $this->n = 0;
+        $this->toolIntroductions->rewind();
+    }
+    
+    public function next()
+    {
+        $this->n++;
+        $this->toolIntroductions->next();
+    }
+    
+    public function key()
+    {
+        return $this->toolIntroductions->key();
+    }
+    
+    public function current()
+    {
+        $toolIntro = $this->toolIntroductions->current();
         
-        foreach($result as $toolIntro)
-        {
-            $toolIntro = new ToolIntro(
+        $toolIntroObj = new ToolIntro(
                 $toolIntro['id'],
                 $this->courseCode,
                 $toolIntro['tool_id'],
@@ -47,42 +72,22 @@ class ToolIntroductionIterator implements Iterator, Countable
                 $toolIntro['display_date'],
                 $toolIntro['visibility']
             );
-            $this->toolIntroductions[] = $toolIntro;
-        }
-    }
-    
-    public function rewind()
-    {
-        $this->n = 0;
-    }
-    
-    public function next()
-    {
-        $this->n++;
-    }
-    
-    public function key()
-    {
-        return 'increment '.$this->n+1;
-    }
-    
-    public function current()
-    {
-        return $this->toolIntroductions[$this->n];
+        
+        return $toolIntroObj;
     }
     
     public function valid()
     {
-        return ($this->n < count($this->toolIntroductions));
+        return $this->toolIntroductions->valid();
     }
     
     public function count()
     {
-        return count($this->toolIntroductions);
+        return count( $this->toolIntroductions );
     }
     
     public function hasNext()
     {
-        return ($this->n < count($this->toolIntroductions)-1);
+        return ( $this->n < $this->count() -1 );
     }
 }

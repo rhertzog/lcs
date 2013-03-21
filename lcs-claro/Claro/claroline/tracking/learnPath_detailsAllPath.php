@@ -1,8 +1,8 @@
-<?php // $Id: learnPath_detailsAllPath.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: learnPath_detailsAllPath.php 13708 2011-10-19 10:46:34Z abourguignon $
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -58,7 +58,7 @@ $titleTab['subTitle'] = get_lang('Progression of users on all learning paths');
 
 $out .= claro_html_tool_title($titleTab);
 
-if ( get_conf('is_trackingEnabled') ) 
+if ( get_conf('is_trackingEnabled') )
 {
     // display a list of user and their respective progress
     
@@ -132,5 +132,3 @@ else
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

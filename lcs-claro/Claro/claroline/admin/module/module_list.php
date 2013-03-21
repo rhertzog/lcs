@@ -1,14 +1,16 @@
-<?php // $Id: module_list.php 13028 2011-03-31 17:05:16Z abourguignon $
+<?php // $Id: module_list.php 14370 2013-01-30 14:52:26Z zefredz $
 
 /**
+ * CLAROLINE
+ *
  * Claroline extension modules management script.
  *
- * @version 1.10
+ * @version     $Revision: 14370 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
- *  version 2 or later
- * @package ADMIN
- * @author claro team <cvs@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
+ *              version 2 or later
+ * @package     ADMIN
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 $cidReset = true ;
@@ -61,28 +63,21 @@ $nonuninstalable_tool_array = get_not_uninstallable_tool_list();
 
 $tbl_name        = claro_sql_get_main_tbl();
 $tbl_module      = $tbl_name['module'];
-$tbl_module_info = $tbl_name['module_info'];
 $tbl_dock        = $tbl_name['dock'];
 $tbl_course_tool = $tbl_name['tool'];
-$tbl = claro_sql_get_tbl(array('module_tool'));
 
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );
 
-// $msgList= array();
 $dialogBox = new DialogBox;
 
 $nameTools = get_lang('Modules');
 
-$htmlHeadXtra[] =
-"<script type=\"text/javascript\">
-function confirmation (name)
-{
-    if (confirm(\" ".clean_str_for_javascript(get_lang("Are you sure you want to uninstall the module "))." \"+ name + \" ?\"))
-        {return true;}
-    else
-        {return false;}
-}
-</script>" ;
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure you want to uninstall the module %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+
+JavascriptLoader::getInstance()->load('admin');
 
 //CONFIG and DEVMOD vars :
 
@@ -92,22 +87,21 @@ $modulePerPage = 1000;
 $typeLabel['']        = get_lang('No name');
 $typeLabel['tool']    = get_lang('Tools');
 $typeLabel['applet']  = get_lang('Applets');
+$typeLabel['crsmanage'] = get_lang('Course management tools');
 $typeLabel['admin']  = get_lang('Administration tools');
-$typeLabel['lang']    = get_lang('Language packs');
-$typeLabel['theme']   = get_lang('Themes');
-$typeLabel['extauth'] = get_lang('External authentication drivers');
+//$typeLabel['lang']    = get_lang('Language packs');
+//$typeLabel['theme']   = get_lang('Themes');
+//$typeLabel['extauth'] = get_lang('External authentication drivers');
 
-$moduleTypeList = array( 'tool', 'applet', 'admin' );
+$moduleTypeList = get_available_module_types();
 
 
 $cmd          = (isset($_REQUEST['cmd'])          ? $_REQUEST['cmd']          : null);
 $module_id    = (isset($_REQUEST['module_id'])    ? $_REQUEST['module_id']    : null );
 $courseToolId = (isset($_REQUEST['courseToolId']) ? $_REQUEST['courseToolId'] : null );
-$dockname     = (isset($_REQUEST['dockname'])     ? $_REQUEST['dockname']     : null );
 $typeReq      = (isset($_REQUEST['typeReq'])      ? $_REQUEST['typeReq']      : 'tool');
 $offset       = (isset($_REQUEST['offset'])       ? $_REQUEST['offset']       : 0 );
-$pagerSortDir = (isset($_REQUEST['dir' ])         ? $_REQUEST['dir' ]         : SORT_ASC);
-$_cleanInput['selectInput'] = (isset($_REQUEST['selectInput'])     ? $_REQUEST['selectInput']     : null );
+$_cleanInput['selectInput'] = (isset($_REQUEST['selectInput'])     ? $_REQUEST['selectInput'] : null );
 
 $notAutoActivateInCourses = ( array_key_exists( 'notAutoActivateInCourses', $_REQUEST )
     && $_REQUEST['notAutoActivateInCourses'] == 'on' )
@@ -138,13 +132,6 @@ $deleteModuleDatabase = ( array_key_exists( 'deleteModuleDatabase', $_REQUEST )
     ? true
     : false
     ;
-
-$autoActivateInCourses = ( array_key_exists( 'autoActivateInCourses', $_REQUEST )
-    && $_REQUEST['autoActivateInCourses'] == 'on' )
-    ? true
-    : false
-    ;
-
 
 //----------------------------------
 // EXECUTE COMMAND
@@ -195,6 +182,25 @@ switch ( $cmd )
                 move_module_tool($courseToolId, 'down');
             }
             break;
+            
+    case 'byDefaultVisible':
+    case 'byDefaultInvisible':
+    {
+        $visibility = ( 'byDefaultVisible' == $cmd ) ? true : false;
+
+        $success = set_tool_visibility_at_course_creation( $module_id, $visibility );
+
+        if ( $success )
+        {
+            $dialogBox->success( get_lang('Default module visibility updated') );
+        }
+        else
+        {
+            $dialogBox->error( get_lang('Failed to update default module visibility') );
+        }
+
+        break;
+    }
         
     case 'exUninstall' :
         $moduleInfo = get_module_info ( $module_id ) ;
@@ -718,6 +724,7 @@ switch($typeReq)
         .                "       CT.`icon`  AS icon," . "\n"
         .                "       CT.`script_url` AS script_url," . "\n"
         .                "       CT.`def_rank` AS rank," . "\n"
+        .                "       CT.`def_access` AS visibility," . "\n"
         ;
         $sqlJoinType = " LEFT JOIN `" . $tbl_course_tool . "` AS CT " . "\n"
         .              "        ON CT.`claro_label`= M.label " . "\n"
@@ -797,8 +804,15 @@ foreach ($modules_found['folder'] as $module_folder)
 $course_tool_min_rank = get_course_tool_min_rank();
 $course_tool_max_rank = get_course_tool_max_rank();
 
+// Command list
+$cmdList = array();
 
-$moduleMenu[] = claro_html_cmd_link('module_list.php?cmd=rqInstall', get_lang('Install module'));
+$cmdList[] = array(
+    'name' => get_lang('Install module'),
+    'url' => 'module_list.php?cmd=rqInstall'
+);
+
+
 //----------------------------------
 // DISPLAY
 //----------------------------------
@@ -808,22 +822,18 @@ $noQUERY_STRING = true ;
 
 $out = '';
 
-//display title
+// Title
+$out .= claro_html_tool_title ( $nameTools, null, $cmdList )
 
-$out .= claro_html_tool_title ( $nameTools )
-
-//Display Forms or dialog box(if needed)
+// Display Forms or dialog box(if needed)
 .    $dialogBox->render()
-.    claro_html_menu_horizontal ( $moduleMenu )
 
-//display tabbed navbar
-
+// Display tabbed navbar
 .    '<div>' . "\n"
 .    '<ul id="navlist">' . "\n"
 ;
 
-//display the module type tabbed naviguation bar
-
+// Display the module type tabbed naviguation bar
 foreach ($moduleTypeList as $type)
 {
     if ($typeReq == $type)
@@ -840,18 +850,16 @@ $out .= '</ul>' . "\n"
 .    '</div>' . "\n"
 ;
 
-//Display list
-
-//Display Pager list
+// Display Pager list
 if ( $myPager->get_next_offset() ) $out .= $myPager->disp_pager_tool_bar('module_list.php?typeReq=' . $typeReq);
 
-// start table...
-
+// Start table...
 $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">' . "\n\n"
 .    '<thead>' . "\n"
-.    '<tr class="headerX">' . "\n"
+.    '<tr>' . "\n"
 .    '<th>' . get_lang('Icon')                . '</th>' . "\n"
-.    '<th>' . get_lang('Module name')         . '</th>' . "\n";
+.    '<th>' . get_lang('Module name')         . '</th>' . "\n"
+.    '<th>' . get_lang('Module administration')         . '</th>' . "\n";
 
 if ($typeReq == 'applet')
 {
@@ -864,59 +872,66 @@ else
 
 $out .= '<th>' . get_lang('Properties')          . '</th>' . "\n"
 .    '<th>' . get_lang('Uninstall')           . '</th>' . "\n"
-.    '<th>' . get_lang('Activated')          . '</th>' . "\n"
-.    '</tr>' . "\n"
-.    '</thead>' . "\n\n"
-.    '<tbody>'
-;
+.    '<th>' . get_lang('Activated')          . '</th>' . "\n";
+
+if ($typeReq == 'tool')
+{
+    $out .=  '<th>' . get_lang('Default visibility')          . '</th>' . "\n";
+}
+
+$out .=   '</tr>' . "\n"
+     .    '</thead>' . "\n\n"
+     .    '<tbody>'
+     ;
+
 
 // Start the list of modules...
 foreach($moduleList as $module)
 {
-    //display settings...
+    // Display settings...
     $class_css = ($module['activation'] == 'activated') ? '' : ' class="invisible" ';
 
-    //find icon
+    // Find icon
     $modulePath = get_module_path($module['label']);
 
-    if (array_key_exists('icon',$module) && file_exists(get_module_path($module['label']) . '/' . $module['icon']))
+    switch ( $typeReq )
     {
-        $icon = '<img src="' . get_module_url($module['label']) . '/' . $module['icon'] . '" alt="" />';
+        case 'crsmanage':
+        case 'admin':
+            $moduleDefaultIcon = 'settings';
+            break;
+        default:
+            $moduleDefaultIcon = 'exe';
+            break;
     }
-    elseif (file_exists(get_module_path($module['label']) . '/icon.png'))
-    {
-        $icon = '<img src="' . get_module_url($module['label']) . '/icon.png" alt="" />';
-    }
-    elseif (file_exists(get_module_path($module['label']) . '/icon.gif'))
-    {
-        $icon = '<img src="' . get_module_url($module['label']) . '/icon.gif" alt="" />';
-    }
-    else
-    {
-        $icon = '<small>' . get_lang('No icon') . '</small>';
-    }
+    
+    $iconUrl = get_module_icon_url( 
+        $module['label'] , 
+        array_key_exists('icon',$module) ? $module['icon'] : null, 
+        $moduleDefaultIcon );
+    
+    $icon = '<img src="'.$iconUrl.'" alt="" />';
 
-
-    //module_id and icon column
-
+    // Module_id and icon column
     $out .=  "\n"  . '<tr ' . $class_css . '>' . "\n"
     .    '<td align="center">' . $icon . '</td>' . "\n";
 
-    //name column
+    // Name column
 
     $moduleName = $module['name'];
+    
+    $out .= '<td align="left">' . get_lang($moduleName) . '</td>' . "\n";
 
     if (file_exists(get_module_path($module['label']) . '/admin.php') && ($module['type']!='tool'))
     {
-        $out .= '<td align="left"><a href="' . get_module_url($module['label']) . '/admin.php" >' . get_lang($moduleName) . '</a></td>' . "\n";
+        $out .= '<td align="left"><a href="' . get_module_url($module['label']) . '/admin.php" >' . get_lang('Go to administration') . '</a></td>' . "\n";
     }
     else
     {
-        $out .= '<td align="left">' . get_lang($moduleName) . '</td>' . "\n";
+        $out .= '<td align="left">-</td>' . "\n";
     }
 
-    //displaying location column
-
+    // Displaying location column
     if ( $module['type'] == 'applet' )
     {
         $out .= '<td align="left"><small>';
@@ -936,7 +951,7 @@ foreach($moduleList as $module)
     }
     else
     {
-        //up command
+        // Up command
         if (isset( $module[ 'rank' ] ) && $course_tool_min_rank != $module [ 'rank' ])
         {
             $out .= '<td align="center">'
@@ -950,7 +965,7 @@ foreach($moduleList as $module)
             $out .= '<td>&nbsp;</td>' . "\n" ;
         }
 
-        //down command
+        // Down command
         if (isset( $module[ 'rank' ] ) && $course_tool_max_rank != $module [ 'rank' ])
         {
             $out .= '<td align="center">'
@@ -965,22 +980,19 @@ foreach($moduleList as $module)
         }
     }
 
-    //Properties link
-
+    // Properties link
     $out .= '<td align="center">'
     .    '<a href="module.php?module_id='.$module['id'].'">'
     .    '<img src="' . get_icon_url('settings') . '" alt="' . get_lang('Properties') . '" />'
     .    '</a>'
     .    '</td>' . "\n";
 
-    //uninstall link
-
+    // Uninstall link
     if (!in_array($module['label'],$nonuninstalable_tool_array))
     {
         $out .= '<td align="center">'
-        // .    '<a href="module_list.php?module_id=' . $module['id'] . '&amp;typeReq='.$typeReq.'&amp;cmd=exUninstall"'
-        // .    ' onclick="return confirmation(\'' . $module['name'].'\');">'
-        .    '<a href="module_list.php?module_id=' . $module['id'] . '&amp;typeReq='.$typeReq.'&amp;cmd=rqUninstall" >'
+        .    '<a onclick="return ADMIN.confirmationUninstall(\''.clean_str_for_javascript($module['name']).'\');" '
+        .    'href="'.claro_htmlspecialchars('module_list.php?module_id=' . $module['id'] . '&typeReq='.$typeReq.'&cmd=exUninstall').'" >'
         .    '<img src="' . get_icon_url('delete') . '" alt="' . get_lang('Delete') . '" />'
         .    '</a>'
         .    '</td>' . "\n";
@@ -991,9 +1003,7 @@ foreach($moduleList as $module)
         $out .= '<td align="center">-</td>' . "\n" ;
     }
 
-    //activation link
-
-
+    // Activation link
     $out .= '<td align="center" >' ;
 
     if (in_array ( $module [ 'label' ], $undeactivable_tool_array ))
@@ -1020,21 +1030,45 @@ foreach($moduleList as $module)
             . '" alt="'. get_lang('Deactivated') . '"/></a>';
         }
     }
-    $out .= '</td>' . "\n"
+    $out .= '</td>' . "\n";
+            
+    // Visibility by default at course creation
+    if  ($typeReq == 'tool')
+    {
+        $out .= '<td align="center" >' ;
 
+            if ( 'ALL' == $module['visibility'] )
+            {
+                $out .= '<a href="module_list.php?cmd=byDefaultInvisible&amp;module_id='
+                . $module['id'] . '&amp;typeReq=' . $typeReq .'" '
+                . 'title="'.get_lang('Visible - Click to make invisible').'">'
+                . '<img src="' . get_icon_url('visible')
+                . '" alt="'. get_lang('Visible') . '" /></a>'
+                ;
+            }
+            else
+            {
+                $out .= '<a href="module_list.php?cmd=byDefaultVisible&amp;module_id='
+                . $module['id'] . '&amp;typeReq='.$typeReq.'" '
+                . 'title="'.get_lang('Invisible - Click to make visible').'">'
+                . '<img src="' . get_icon_url('invisible')
+                . '" alt="'. get_lang('Invisible') . '"/></a>';
+            }
+
+        $out .= '</td>' . "\n";
+    }
+    
     //end table line
 
-    .    '</tr>' . "\n\n"
-    ;
+    $out .=  '</tr>' . "\n\n";
 }
 
-//end table...
+// End table
 $out .= '</tbody>' . "\n"
 .    '</table>' . "\n\n"
 ;
 
 //Display BOTTOM Pager list
-
 if ( $myPager->get_previous_offset() ) $out .= $myPager->disp_pager_tool_bar ( 'module_list.php?typeReq=' . $typeReq ) ;
 
 $claroline->display->body->appendContent($out);

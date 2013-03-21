@@ -1,4 +1,4 @@
-<?php // $Id: form.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: form.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLCRS/
@@ -26,7 +26,7 @@ $formSize = 40;
  * @param boolean $unixDate unix timestamp of date to display
  * @param string  $formatMonth display type of month select box : numeric, long, short
  *
- * @author Sébastien Piraux <pir@cerdecam.be>
+ * @author SÃ©bastien Piraux <pir@cerdecam.be>
  *
  * @return string html stream to output input tag for a date
  *
@@ -106,7 +106,7 @@ function claro_html_date_form($dayFieldName, $monthFieldName, $yearFieldName, $u
  *
  * @return string html stream to output input tag for an hour
  *
- * @author Sébastien Piraux <pir@cerdecam.be>
+ * @author Sï¿½bastien Piraux <pir@cerdecam.be>
  *
  */
 
@@ -170,7 +170,7 @@ function claro_html_time_form($hourFieldName, $minuteFieldName, $unixDate = 0)
  *  instead of label => value arrays (default false)
  * @return html output from a 2D table where key are name and value are label
  *
- * @author Christophe Gesché <moosh@claroline.net>
+ * @author Christophe GeschÃ© <moosh@claroline.net>
  *
  */
 function claro_html_form_select($select_name,$list_option,$preselect=null,$attr=null, $reverted = false)
@@ -197,7 +197,7 @@ function claro_html_form_select($select_name,$list_option,$preselect=null,$attr=
  *  instead of label => value arrays (default false)
  * @return html output of the select options
  *
- * @author Christophe Gesché <moosh@claroline.net>
+ * @author Christophe GeschÃ© <moosh@claroline.net>
  *
  */
 function claro_html_option_list($list_option, $preselect, $reverted = false)
@@ -211,7 +211,7 @@ function claro_html_option_list($list_option, $preselect, $reverted = false)
             {
                 $html_option_list .= '<option value="' . $option_value . '"'
                 .                    ($option_value ==  $preselect ?' selected="selected" ':'') . '>'
-                .                    htmlspecialchars($option_label)
+                .                    claro_htmlspecialchars($option_label)
                 .                    '</option >' . "\n"
                 ;
             }
@@ -222,7 +222,7 @@ function claro_html_option_list($list_option, $preselect, $reverted = false)
             {
                 $html_option_list .= '<option value="' . $option_value . '"'
                 .                    ($option_value ==  $preselect ?' selected="selected" ':'') . '>'
-                .                    htmlspecialchars($option_label)
+                .                    claro_htmlspecialchars($option_label)
                 .                    '</option >' . "\n"
                 ;
             }
@@ -289,7 +289,7 @@ function form_input_text($name, $value, $displayedName = '', $required = false)
     return form_row( '<label for="' . $name . '">' . $displayedName . '</label>&nbsp;: '
     ,                '<input type="text" size="' . get_conf('formSize',40) . '"'
     .                ' id="'.$name.'" name="'.$name.'"'
-    .                ' value="'.htmlspecialchars($value).'" />')
+    .                ' value="'.claro_htmlspecialchars($value).'" />')
     ;
 }
 
@@ -310,7 +310,7 @@ function form_readonly_text($name, $value, $displayedName = '')
     if ( empty($value) ) $value = '-';
 
     return form_row( $displayedName . '&nbsp;: '
-    ,                htmlspecialchars($value) ) ;
+    ,                claro_htmlspecialchars($value) ) ;
 }
 
 /**
@@ -331,7 +331,7 @@ function form_input_password($name, $value, $displayedName = '', $required = fal
     return form_row( '<label for="'.$name.'">'.$displayedName . '</label>&nbsp;: '
     ,                '<input type="password" size="' . get_conf('formSize',40) . '"'
     .                ' id="' . $name . '" name="' . $name . '"'
-    .                ' value="' . htmlspecialchars($value) . '" />')
+    .                ' value="' . claro_htmlspecialchars($value) . '" />')
     ;
 }
 
@@ -344,7 +344,7 @@ function form_input_password($name, $value, $displayedName = '', $required = fal
  */
 function form_input_hidden($name, $value)
 {
-    return '<input type="hidden"' . ' id="'.$name.'" name="'.$name.'"' . ' value="'.htmlspecialchars($value).'" />';
+    return '<input type="hidden"' . ' id="'.$name.'" name="'.$name.'"' . ' value="'.claro_htmlspecialchars($value).'" />';
 }
 
 /**
@@ -365,7 +365,7 @@ function form_input_textarea($name, $value, $displayedName = '', $required = fal
     $rows = (int) $rows;
     return form_row( '<label for="' . $name . '">' . $displayedName . '</label>&nbsp;: '
     ,                '<textarea cols="' . get_conf('formSize',40) . '" rows="' . $rows . '"  '
-                   . ' id="' . $name . '" name="' . $name . '" >' . htmlspecialchars($value) . '</textarea>' )
+                   . ' id="' . $name . '" name="' . $name . '" >' . claro_htmlspecialchars($value) . '</textarea>' )
     ;
 }
 

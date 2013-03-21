@@ -1,4 +1,4 @@
-<?php // $Id: coursehomepage.cnr.php 13525 2011-09-05 08:05:39Z abourguignon $
+<?php // $Id: coursehomepage.cnr.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Course home page: Announcements portlet
  *
- * @version     $Revision: 13525 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLCHP
@@ -27,11 +27,11 @@ class CLTI_Portlet extends CourseHomePagePortlet
         ResourceLinker::init();
         
         $output = '';
-        $output .= '<dl id="portletHeadlines">' . "\n";
+        $output .= '<dl id="portletAbout">' . "\n";
         
         $toolIntroIterator = new ToolIntroductionIterator($this->courseCode);
         
-        if ($toolIntroIterator->count() > 0)
+        if ( count( $toolIntroIterator ) > 0)
         {
             $introList = '';
             
@@ -52,17 +52,30 @@ class CLTI_Portlet extends CourseHomePagePortlet
                              . '<dd'.(!$toolIntroIterator->hasNext()?' class="last"':'').'>' . "\n"
                              . claro_parse_user_text($introItem->getContent()) . "\n"
                              . $resources
+                             . (claro_is_allowed_to_edit() ?
+                               '<div class="manageTools"><a
+                                    href="'.claro_htmlspecialchars(Url::Contextualize(get_module_url('CLTI').'/index.php?cmd=rqEd&amp;id='.$introItem->getId())).'"
+                                    title="'.get_lang('Edit this item').'">
+                                    <img src="'.get_icon_url('edit').'" alt="'.get_lang('Edit').'" />
+                                </a>
+                                
+                                <a
+                                    href="'.claro_htmlspecialchars(Url::Contextualize(get_module_url('CLTI').'/index.php?cmd=exDel&amp;id='.$introItem->getId())).'"
+                                    title="'.get_lang('Delete this item').'">
+                                    <img src="'.get_icon_url('delete').'" alt="'.get_lang('Delete').'" />
+                                </a></div>' :
+                               '')
                              . '</dd>' . "\n";
                 }
             }
         }
         
-        if ($toolIntroIterator->count() == 0 || empty($introList))
+        if ( count( $toolIntroIterator ) == 0 || empty($introList))
         {
             $output .= '<dt></dt>'
                      . '<dd>' . "\n"
                      . ' ' . get_lang('No headline') . '. '
-                     . (claro_is_allowed_to_edit() ? '<a href="' . htmlspecialchars(Url::Contextualize(get_module_url('CLTI').'/index.php?cmd=rqAdd')) . '">'
+                     . (claro_is_allowed_to_edit() ? '<a href="' . claro_htmlspecialchars(Url::Contextualize(get_module_url('CLTI').'/index.php?cmd=rqAdd')) . '">'
                      . get_lang('Would you like to add one ?') . '</a>' . "\n" : '')
                      . '</dd>' . "\n";
         }
@@ -78,12 +91,15 @@ class CLTI_Portlet extends CourseHomePagePortlet
     
     public function renderTitle()
     {
-        $output = get_lang('Headlines');
+        $output = '<img '
+                . 'src="' . get_icon_url('headline', 'CLTI')  . '"'
+                . 'alt="' . get_lang('Headline') . '" /> '
+                . get_lang('Headlines');
         
         if (claro_is_allowed_to_edit())
         {
             $output .= ' <span class="separator">|</span> <a href="'
-                     . htmlspecialchars(Url::Contextualize(get_module_url( 'CLTI' ) . '/index.php'))
+                     . claro_htmlspecialchars(Url::Contextualize(get_module_url( 'CLTI' ) . '/index.php'))
                      . '">'
                      . '<img src="' . get_icon_url('settings') . '" alt="'.get_lang('Settings').'" /> '
                      . get_lang('Manage').'</a>';

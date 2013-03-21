@@ -1,4 +1,4 @@
-<?php // $Id: lastRSS.lib.php 11080 2008-09-01 13:08:36Z zefredz $
+<?php // $Id: lastRSS.lib.php 13239 2011-05-30 11:37:36Z dkp1060 $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /*
  ======================================================================
@@ -58,7 +58,15 @@ class lastRSS {
         // If CACHE ENABLED
         if ($this->cache_dir != '') {
             $cache_file = $this->cache_dir . '/rsscache_' . md5($rss_url);
-            $timedif = @(time() - filemtime($cache_file));
+            
+            // create an empty file because filemtime() failed if cache file not exist
+            if (! file_exists($cache_file)) {	
+		$handle = fopen($cache_file, "x");
+		fclose($handle);
+		$timedif = $this->cache_time;
+	    } else{
+		$timedif = @(time() - filemtime($cache_file));
+            }
             if ($timedif < $this->cache_time) {
                 // cached file is fresh enough, return cached array
                 $result = unserialize(join('', file($cache_file)));

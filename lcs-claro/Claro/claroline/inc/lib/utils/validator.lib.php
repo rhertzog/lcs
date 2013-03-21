@@ -1,12 +1,12 @@
-<?php // $Id: validator.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: validator.lib.php 14130 2012-04-27 12:38:56Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Data validator library
  *
- * @version     1.9 $Revision: 12923 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     1.11 $Revision: 14130 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -247,6 +247,20 @@ class Claro_Validator_NotEmpty implements Claro_Validator
 }
 
 /**
+ * Validator that checks if a value is not null based on PHP's is_null()
+ */
+class Claro_Validator_NotNull implements Claro_Validator
+{
+    /**
+     * @see     Claro_Validator
+     */
+    public function isValid( $value )
+    {
+        return ( !is_null( $value ) );
+    }
+}
+
+/**
  * Validator that checks if a value is not empty but considers
  * '0', 0 and false as not empty !
  */
@@ -262,6 +276,7 @@ class Claro_Validator_CustomNotEmpty implements Claro_Validator
 }
 
 // for debugging :
+
 class Claro_Validator_AlwaysFail implements Claro_Validator
 {
     /**

@@ -1,16 +1,12 @@
-<?php // $Id: question_pool.php 13023 2011-03-31 13:39:17Z dkp1060 $
+<?php // $Id: question_pool.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 13023 $
- *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Claro Team <cvs@claroline.net>
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 $tlabelReq = 'CLQWZ';
@@ -24,7 +20,7 @@ $is_allowedToEdit = claro_is_allowed_to_edit();
 // courseadmin reserved page
 if( !$is_allowedToEdit )
 {
-    header("Location: ../exercise.php");
+    header("Location: ". Url::Contextualize("../exercise.php"));
     exit();
 }
 
@@ -86,7 +82,7 @@ if( $cmd == 'rqUse' && !is_null($quId) && !is_null($exId) )
     if( $exercise->addQuestion($quId) )
     {
         // TODO show confirmation and back link
-        header('Location: edit_exercise.php?exId='.$exId);
+        header('Location: ' . Url::Contextualize( 'edit_exercise.php?exId='.$exId ));
     }
 }
 
@@ -189,7 +185,7 @@ else // $filter == 'all'
 //-- prepare query
 if ( !is_null($categoryId))
 {
-     // Filter on categories 
+     // Filter on categories
          $sql = "SELECT Q.`id`, Q.`title`, Q.`type`, Q.`id_category`
               FROM `".$tbl_quiz_question."` AS Q
               WHERE 1 = 1
@@ -249,29 +245,46 @@ $questionList = $myPager->get_result_list();
 
 if( !is_null($exId) )
 {
-    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercise'), './edit_exercise.php?exId='.$exId );
-    ClaroBreadCrumbs::getInstance()->setCurrent( get_lang('Question pool'), $_SERVER['PHP_SELF'].'?exId='.$exId );
-    $pagerUrl = $_SERVER['PHP_SELF'].'?exId='.$exId;
+    ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercise'), Url::Contextualize('./edit_exercise.php?exId='.$exId) );
+    ClaroBreadCrumbs::getInstance()->setCurrent( get_lang('Question pool'), Url::Contextualize($_SERVER['PHP_SELF'].'?exId='.$exId) );
+    $pagerUrl = Url::Contextualize($_SERVER['PHP_SELF'].'?exId='.$exId);
 }
 else if ( !is_null($categoryId) )
 {
-	$pagerUrl = $_SERVER['PHP_SELF'].'?filter='.$filter;
+	$pagerUrl = Url::Contextualize($_SERVER['PHP_SELF'].'?filter='.$filter);
 }
 else
 {
-    ClaroBreadCrumbs::getInstance()->setCurrent( get_lang('Question pool'), $_SERVER['PHP_SELF'] );
-    $pagerUrl = $_SERVER['PHP_SELF'];
+    ClaroBreadCrumbs::getInstance()->setCurrent( get_lang('Question pool'), Url::Contextualize($_SERVER['PHP_SELF']) );
+    $pagerUrl = Url::Contextualize($_SERVER['PHP_SELF']);
 }
 
-ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), get_module_url('CLQWZ').'/exercise.php' );
+ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), Url::Contextualize(get_module_url('CLQWZ').'/exercise.php') );
 
 $nameTools = get_lang('Question pool');
 
+// Tool list
+$toolList = array();
+
+if( !is_null($exId) )
+{
+    $toolList[] = array(
+        'img' => 'back',
+        'name' => get_lang('Go back to the exercise'),
+        'url' => claro_htmlspecialchars(Url::Contextualize('edit_exercise.php?exId='.$exId))
+    );
+}
+
+$toolList[] = array(
+    'img' => 'default_new',
+    'name' => get_lang('New question'),
+    'url' => claro_htmlspecialchars(Url::Contextualize('edit_question.php?cmd=rqEdit'))
+);
+
 $out = '';
-
-$out .= claro_html_tool_title($nameTools);
-
+$out .= claro_html_tool_title($nameTools, null, $toolList);
 $out .= $dialogBox->render();
+
 
 //-- filter listbox
 $attr['onchange'] = 'filterForm.submit()';
@@ -279,6 +292,7 @@ $attr['onchange'] = 'filterForm.submit()';
 $out .= "\n"
 .     '<form method="get" name="filterForm" action="question_pool.php">' . "\n"
 .     '<input type="hidden" name="exId" value="'.$exId.'" />' . "\n"
+.     claro_form_relay_context() . "\n"
 .     '<p align="right">' . "\n"
 .     '<label for="filter">'.get_lang('Filter').'&nbsp;:&nbsp;</label>' . "\n"
 .     claro_html_form_select('filter',$filterList, $filter, $attr) . "\n"
@@ -288,119 +302,16 @@ $out .= "\n"
 .     '</p>' . "\n"
 .     '</form>' . "\n\n";
 
-if( !is_null($exId) )
-{
-    $cmd_menu[] = '<a class="claroCmd" href="./edit_exercise.php?exId='.$exId.'">&lt;&lt; '.get_lang('Go back to the exercise').'</a>';
-}
-$cmd_menu[] = '<a class="claroCmd" href="./edit_question.php?cmd=rqEdit">'.get_lang('New question').'</a>';
-
-$out .= claro_html_menu_horizontal($cmd_menu);
-
 //-- pager
 $out .= $myPager->disp_pager_tool_bar($pagerUrl);
 
 //-- list
-$out .= '<table class="claroTable emphaseLine" border="0" align="center" cellpadding="2" cellspacing="2" width="100%">' . "\n\n"
-.     '<thead>' . "\n"
-.     '<tr class="headerX">' . "\n"
-.     '<th>' . get_lang('Id') . '</th>' . "\n"
-.     '<th>' . get_lang('Question') . '</th>' . "\n"
-.     '<th>' . get_lang('Category') . '</th>' . "\n"
-.     '<th>' . get_lang('Answer type') . '</th>' . "\n";
-$colspan = 2;
-if( !is_null($exId) )
-{
-    $out .= '<th>' . get_lang('Reuse') . '</th>' . "\n";
-    $colspan++;
-}
-else
-{
-    $out .= '<th>' . get_lang('Modify') . '</th>' . "\n"
-    .     '<th>' . get_lang('Delete') . '</th>' . "\n";
-    $colspan += 2;
-
-    if( get_conf('enableExerciseExportQTI') )
-    {
-        $out .= '<th colspan="2">' . get_lang('Export') . '</th>' . "\n";
-        $colspan++;
-    }
-}
-
-$out .= '</tr>' . "\n"
-.     '</thead>' . "\n\n"
-.     '<tbody>' . "\n";
-
-if( !empty($questionList) )
-{
-    $questionTypeLang['MCUA'] = get_lang('Multiple choice (Unique answer)');
-    $questionTypeLang['MCMA'] = get_lang('Multiple choice (Multiple answers)');
-    $questionTypeLang['TF'] = get_lang('True/False');
-    $questionTypeLang['FIB'] = get_lang('Fill in blanks');
-    $questionTypeLang['MATCHING'] = get_lang('Matching');
-
-    foreach( $questionList as $question )
-    {
-        $out .= '<tr>'
-        .   '<td align="center">' . $question['id'] . '</td>' . "\n"
-        .     '<td>'.$question['title'].'</td>' . "\n"
-        ;
-        
-        $out .=  '<td>'.getCategoryTitle( $question['id_category']) . '</td>' . "\n";
-        
-
-        // answer type
-        $out .= '<td><small>'.$questionTypeLang[$question['type']].'</small></td>' . "\n";
-
-        if( !is_null($exId) )
-        {
-            // re-use
-            $out .= '<td align="center">'
-            .     '<a href="question_pool.php?exId='.$exId.'&amp;cmd=rqUse&amp;quId='.$question['id'].'">'
-            .     '<img src="' . get_icon_url('select') . '" alt="'.get_lang('Modify').'" />'
-            .     '</a>'
-            .     '</td>' . "\n";
-        }
-        else
-        {
-            // edit
-            $out .= '<td align="center">'
-            .     '<a href="edit_question.php?quId='.$question['id'].'">'
-            .     '<img src="' . get_icon_url('edit') . '" alt="'.get_lang('Modify').'" />'
-            .     '</a>'
-            .     '</td>' . "\n";
-
-            // delete question from database
-            $confirmString = get_lang('Are you sure you want to completely delete this question ?');
-
-            $out .= '<td align="center">'
-            .     '<a href="question_pool.php?exId='.$exId.'&amp;cmd=delQu&amp;quId='.$question['id'].'" onclick="javascript:if(!confirm(\''.clean_str_for_javascript($confirmString).'\')) return false;">'
-            .     '<img src="' . get_icon_url('delete') . '" alt="'.get_lang('Delete').'" />'
-            .     '</a>'
-            .     '</td>' . "\n";
-
-            if( get_conf('enableExerciseExportQTI') )
-            {
-                // export
-                $out .= '<td align="center">'
-                .     '<a href="question_pool.php?exId='.$exId.'&amp;cmd=exExport&amp;quId='.$question['id'].'">'
-                .     '<img src="' . get_icon_url('export') . '" alt="'.get_lang('Export').'" />'
-                .     '</a>'
-                .     '</td>' . "\n";
-            }
-        }
-        $out .= '</tr>';
-
-    }
-
-}
-else
-{
-    $out .= '<tr>' . "\n"
-    .     '<td colspan="'.$colspan.'">' . get_lang('Empty') . '</td>' . "\n"
-    .     '</tr>' . "\n\n";
-}
-$out .= '</tbody>' . "\n\n"
-.     '</table>' . "\n\n";
+$display = new ModuleTemplate( 'CLQWZ' , 'question_list.tpl.php' );
+$display->assign( 'exId', $exId );
+$display->assign( 'questionList', $questionList );
+$display->assign( 'context', is_null( $exId ) ? 'pool' : 'reuse' );
+$display->assign( 'localizedQuestionType', get_localized_question_type() );
+$out .= $display->render();
 
 //-- pager
 $out .= $myPager->disp_pager_tool_bar($pagerUrl);
@@ -408,5 +319,3 @@ $out .= $myPager->disp_pager_tool_bar($pagerUrl);
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

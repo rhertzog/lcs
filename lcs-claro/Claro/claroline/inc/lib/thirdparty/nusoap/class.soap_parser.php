@@ -9,7 +9,7 @@
 *
 * @author   Dietrich Ayala <dietrich@ganx4.com>
 * @author   Scott Nichol <snichol@users.sourceforge.net>
-* @version  $Id: class.soap_parser.php 11081 2008-09-01 13:12:08Z zefredz $
+* @version  $Id: class.soap_parser.php 14314 2012-11-07 09:09:19Z zefredz $
 * @access   public
 */
 class nusoap_parser extends nusoap_base {
@@ -196,7 +196,7 @@ class nusoap_parser extends nusoap_base {
 		// set my status
 		$this->message[$pos]['status'] = $this->status;
 		// set name
-		$this->message[$pos]['name'] = htmlspecialchars($name);
+		$this->message[$pos]['name'] = claro_htmlspecialchars($name);
 		// set attrs
 		$this->message[$pos]['attrs'] = $attrs;
 

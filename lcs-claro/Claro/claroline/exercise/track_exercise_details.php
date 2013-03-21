@@ -1,17 +1,16 @@
-<?php // $Id: track_exercise_details.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: track_exercise_details.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * This page display global information about
+ * This page display global information about.
  *
- * @version 1.9 $Revision: 12923 $
- *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- * @author claro team <info@claroline.net>
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      claro team <info@claroline.net>
  */
+
 require '../inc/claro_init_global.inc.php';
 
 include_once get_path('incRepositorySys') . '/lib/statsUtils.lib.inc.php';
@@ -277,17 +276,20 @@ if( claro_is_user_authenticated() )
 
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Exercises'), './exercise.php' );
 
-$backLink = '<p><small><a href="../tracking/userReport.php?userId='.$thisAttemptDetails['user_id'].'&amp;exId='.$thisAttemptDetails['id'].'">&lt;&lt;&nbsp;' . get_lang('Back') . '</a></small></p>' . "\n\n";
-
 $nameTools = get_lang('Statistics of exercise attempt');
 
 $out = '';
 // display title
 $titleTab['mainTitle'] = $nameTools;
 
-$out .= claro_html_tool_title($titleTab);
+// Command list
+$cmdList = array();
+$cmdList[] = array(
+	'img' => 'back',
+	'name' => get_lang('Back'),
+	'url' => claro_htmlspecialchars( Url::Contextualize('../tracking/userReport.php?userId='.$thisAttemptDetails['user_id'].'&amp;exId='.$thisAttemptDetails['id'] ) ));
 
-$out .= $backLink;
+$out .= claro_html_tool_title($titleTab, null, $cmdList);
 
 if( $is_allowedToTrack && get_conf('is_trackingEnabled') )
 {
@@ -350,11 +352,13 @@ if( $is_allowedToTrack && get_conf('is_trackingEnabled') )
 
         foreach( $questionList as $question )
         {
-            $out .= '<tr class="headerX">' . "\n"
-            .     '<th>'
-            .     get_lang('Question') . ' ' . $questionIterator
-            .     '</th>' . "\n"
-            .     '</tr>' . "\n\n";
+            $out .= '<thead>'
+            .   '<tr>' . "\n"
+            .   '<th>'
+            .   get_lang('Question') . ' ' . $questionIterator
+            .   '</th>' . "\n"
+            .   '</tr>' . "\n"
+            .   '</thead>'."\n";
 
             $out .= '<tr>'
             .     '<td>' . "\n";
@@ -391,5 +395,3 @@ else
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

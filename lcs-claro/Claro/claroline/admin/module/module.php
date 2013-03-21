@@ -1,14 +1,14 @@
-<?php // $Id: module.php 13318 2011-07-14 16:47:56Z abourguignon $
+<?php // $Id: module.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
- * Claroline extension modules settings script
+ * Claroline extension modules settings script.
  *
- * @version     $Revision: 13318 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
- *              version 2 or later
+ *  version 2 or later
  * @package     ADMIN
- * @author      Claro Team <cvs@claroline.net>
+ * @author      Claro team <cvs@claroline.net>
  * @since       1.8
  */
 
@@ -366,7 +366,7 @@ switch ($item)
         {
             $activ_form  = 'deactiv';
             $action_link = '<a href="'
-                . htmlspecialchars( $_SERVER['PHP_SELF']
+                . claro_htmlspecialchars( $_SERVER['PHP_SELF']
                 . '?cmd='.$activ_form.'&module_id='.$module['module_id']
                 . '&item=GLOBAL' )
                 . '" title="'.get_lang('Activated - Click to deactivate').'">'
@@ -379,7 +379,7 @@ switch ($item)
         {
             $activ_form  = 'activ';
             $action_link = '<a href="'
-                . htmlspecialchars( $_SERVER['PHP_SELF']
+                . claro_htmlspecialchars( $_SERVER['PHP_SELF']
                 . '?cmd='.$activ_form.'&module_id='
                 . $module['module_id'].'&item=GLOBAL')
                 . '" title="'.get_lang('Deactivated - Click to activate').'">'
@@ -423,7 +423,7 @@ switch ($item)
             {
                 $activ_form  = 'coursedeactiv';
                 $action_link = '<a href="'
-                    . htmlspecialchars( $_SERVER['PHP_SELF']
+                    . claro_htmlspecialchars( $_SERVER['PHP_SELF']
                     . '?cmd='.$activ_form.'&module_id='.$module['module_id']
                     . '&item=GLOBAL')
                     . '" title="' . get_lang('Automatic').'">'
@@ -436,7 +436,7 @@ switch ($item)
             {
                 $activ_form  = 'courseactiv';
                 $action_link = '<a href="'
-                    . htmlspecialchars($_SERVER['PHP_SELF']
+                    . claro_htmlspecialchars($_SERVER['PHP_SELF']
                     . '?cmd='.$activ_form.'&module_id='
                     . $module['module_id'].'&item=GLOBAL')
                     .'" title="'.get_lang('Manual').'">'
@@ -479,7 +479,7 @@ switch ($item)
             {
                 $activ_form  = 'activcoursemanager';
                 $action_link = '<a href="'
-                    . htmlspecialchars( $_SERVER['PHP_SELF']
+                    . claro_htmlspecialchars( $_SERVER['PHP_SELF']
                     . '?cmd='.$activ_form.'&module_id='.$module['module_id']
                     . '&item=GLOBAL')
                     .'" title="'. get_lang('Platform administrator').'">'
@@ -492,7 +492,7 @@ switch ($item)
             {
                 $activ_form  = 'activplatformadmin';
                 $action_link = '<a href="'
-                    . htmlspecialchars( $_SERVER['PHP_SELF']
+                    . claro_htmlspecialchars( $_SERVER['PHP_SELF']
                     . '?cmd='.$activ_form.'&module_id='
                     . $module['module_id'].'&item=GLOBAL')
                     .'" title="'.get_lang('Course manager').'">'
@@ -519,8 +519,8 @@ switch ($item)
                 .    '</dt>' . "\n"
                 .    '<dd>' . "\n"
                 . '<small><a href="'
-                . htmlspecialchars($_SERVER['PHP_SELF'] . '?module_id='
-                . $module['module_id'].'&amp;cmd=makeVisible&amp;item=GLOBAL')
+                . claro_htmlspecialchars($_SERVER['PHP_SELF'] . '?module_id='
+                . $module['module_id'].'&cmd=makeVisible&item=GLOBAL')
                 .'" title="'.get_lang( 'Make module visible in all courses' ).'"'
                 . ' onclick="return confirmMakeVisible();">'
                 . '<img src="' . get_icon_url('visible')
@@ -529,8 +529,8 @@ switch ($item)
                 . '</a></small>'
                 . " | "
                 . '<small><a href="'
-                . htmlspecialchars($_SERVER['PHP_SELF'] . '?module_id='
-                . $module['module_id'].'&amp;cmd=makeInvisible&amp;item=GLOBAL')
+                . claro_htmlspecialchars($_SERVER['PHP_SELF'] . '?module_id='
+                . $module['module_id'].'&cmd=makeInvisible&item=GLOBAL')
                 . '" title="'.get_lang( 'Make module invisible in all courses' ).'"'
                 . ' onclick="return confirmMakeInVisible();">'
                 . '<img src="' . get_icon_url('invisible')
@@ -576,7 +576,7 @@ switch ($item)
                 .    '<td>' . get_lang('Save') . '&nbsp;:' . "\n"
                 .    '<input type="hidden" name="cmd" value="movedock" />'. "\n"
                 .    '<input type="submit" value="' . get_lang('Ok') . '" />&nbsp;'. "\n"
-                .    claro_html_button(htmlspecialchars($_SERVER['HTTP_REFERER']), get_lang('Cancel')) . '</td>' . "\n"
+                .    claro_html_button(claro_htmlspecialchars($_SERVER['HTTP_REFERER']), get_lang('Cancel')) . '</td>' . "\n"
                 .    '</tr>' . "\n"
                 .    '</tbody>' . "\n"
                 .    '</table>' . "\n"
@@ -599,7 +599,7 @@ switch ($item)
     {
         $form = '';
 
-        $url_params = '&module_id='. $moduleId .'&item='. htmlspecialchars($item);
+        $url_params = '&module_id='. $moduleId .'&item='. claro_htmlspecialchars($item);
 
         $form = $config->display_section_menu($section_selected,$url_params);
 
@@ -648,7 +648,7 @@ switch ($item)
 
         $out .= claro_html_tool_title(array('subTitle' => get_lang('Description')))
         .    '<p>'
-        .    htmlspecialchars( $moduleDescription )
+        .    claro_htmlspecialchars( $moduleDescription )
         .    '</p>' . "\n"
         ;
 

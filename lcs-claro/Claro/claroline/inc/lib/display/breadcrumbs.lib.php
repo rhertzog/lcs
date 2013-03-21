@@ -1,11 +1,11 @@
-<?php // $Id: breadcrumbs.lib.php 13030 2011-04-01 11:26:41Z abourguignon $
+<?php // $Id: breadcrumbs.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * BreadCrumbs
+ * BreadCrumbs.
  *
- * @version     1.9 $Revision: 13030 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -13,14 +13,7 @@
  * @package     KERNEL
  */
 
-if ( count( get_included_files() ) == 1 )
-{
-    die( 'The file ' . basename(__FILE__) . ' cannot be accessed directly, use include instead' );
-}
-
-/**
- * Breadcrumps
- *
+/*
  *  Usage :
  *
  *      ClaroBreadCrumbs::getInstance()->prepend( $name, $url );
@@ -41,7 +34,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * FIXME : reverse order for prepend !!!!
  *
- * @version     1.9 $Revision: 13030 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -53,9 +46,9 @@ if ( count( get_included_files() ) == 1 )
 class BreadCrumbs implements Display
 {
     // protected $breadCrumbs = array();
-    protected $prependBc = array();
-    protected $currentNode = array();
-    protected $appendBc = array();
+    protected $prependBc    = array();
+    protected $currentNode  = array();
+    protected $appendBc     = array();
     
     public function render()
     {
@@ -185,7 +178,7 @@ class BreadCrumbsNode
             $nodeHtml .= claro_html_icon( 'home', null, null ).'&nbsp;';
         }
 
-        $nodeHtml .= htmlspecialchars( $this->name );
+        $nodeHtml .= claro_htmlspecialchars( $this->name );
 
         if ( ! empty( $this->url ) )
         {
@@ -243,11 +236,11 @@ class ClaroBreadCrumbs extends BreadCrumbs
                 }
                 else
                 {
-                    $url  = $_SERVER['PHP_SELF'] .'?'. htmlspecialchars(strip_tags($_SERVER['QUERY_STRING']));
+                    $url  = $_SERVER['PHP_SELF'] .'?'. claro_htmlspecialchars(strip_tags($_SERVER['QUERY_STRING']));
                 }
             }
             
-            $url = htmlspecialchars( Url::Contextualize( $url ) );
+            $url = claro_htmlspecialchars( Url::Contextualize( $url ) );
             
             $this->setCurrentNode( new BreadCrumbsNode( $name, $url ) );
         }
@@ -255,23 +248,23 @@ class ClaroBreadCrumbs extends BreadCrumbs
         if ( claro_is_in_a_group() )
         {
             $this->prependNode( new BreadCrumbsNode( claro_get_current_group_data('name')
-                , htmlspecialchars( get_module_url('CLGRP') . '/group_space.php?cidReq='
-                    . htmlspecialchars(claro_get_current_course_id())
+                , claro_htmlspecialchars( get_module_url('CLGRP') . '/group_space.php?cidReq='
+                    . claro_htmlspecialchars(claro_get_current_course_id())
                     .'&gidReq=' . (int) claro_get_current_group_id() ) ) );
             $this->prependNode( new BreadCrumbsNode( get_lang('Groups')
-                , htmlspecialchars( get_module_url('CLGRP') . '/index.php?cidReq='
-                    . htmlspecialchars(claro_get_current_course_id()) ) ) );
+                , claro_htmlspecialchars( get_module_url('CLGRP') . '/index.php?cidReq='
+                    . claro_htmlspecialchars(claro_get_current_course_id()) ) ) );
         }
         
         if ( claro_is_in_a_course() )
         {
             $this->prependNode( new BreadCrumbsNode( claro_get_current_course_data('officialCode')
-                , htmlspecialchars( get_path('clarolineRepositoryWeb') . 'course/index.php?cid='
+                , claro_htmlspecialchars( get_path('clarolineRepositoryWeb') . 'course/index.php?cid='
                     . claro_get_current_course_id() ) ) );
         }
             
         $this->prependNode( new BreadCrumbsNode( get_conf('siteName')
-            , htmlspecialchars( get_path('url') . '/index.php' )
+            , claro_htmlspecialchars( get_path('url') . '/index.php' )
             , get_icon_url('home') ) );
     }
     

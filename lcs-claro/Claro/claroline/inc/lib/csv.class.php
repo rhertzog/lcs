@@ -1,4 +1,4 @@
-<?php // $Id: csv.class.php 13377 2011-07-29 10:27:11Z abourguignon $
+<?php // $Id: csv.class.php 13378 2011-07-29 10:27:24Z abourguignon $
 
 FromKernel::uses('csvexporter.class');
 
@@ -11,7 +11,7 @@ FromKernel::uses('csvexporter.class');
  * CsvImporter classes.
  * Meanwhile, it will just act as a patch solution.
  *
- * @version     $Revision: 13377 $
+ * @version     $Revision: 13378 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     KERNEL

@@ -1,11 +1,11 @@
-<?php // $Id: notifier.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: notifier.lib.php 13498 2011-09-01 11:19:18Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Notifier class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 13498 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -14,7 +14,7 @@
  * @package     internal_messaging
  */
 
-uses('utils/finder.lib.php');
+FromKernel::uses('utils/finder.lib.php');
 
 class MessagingUserNotifier
 {
@@ -66,7 +66,7 @@ class MessagingUserNotifier
 /**
  * messagingnotifier interface
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 13498 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>

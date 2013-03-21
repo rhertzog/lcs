@@ -1,4 +1,4 @@
-<?php // $Id: add_course.lib.inc.php 13028 2011-03-31 17:05:16Z abourguignon $
+<?php // $Id: add_course.lib.inc.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -13,7 +13,7 @@ if ( count( get_included_files() ) == 1 )
  * fill the course database, build the content directorys, build the index page
  * build the directory tree, register the course.
  *
- * @version 1.9 $Revision: 13028 $
+ * @version 1.9 $Revision: 14314 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -29,7 +29,7 @@ if ( count( get_included_files() ) == 1 )
  *
  */
 
-require_once get_path('includePath') . '/lib/course_user.lib.php';
+require_once dirname(__FILE__) . '/course_user.lib.php';
 
 
 /**
@@ -135,14 +135,14 @@ function define_course_keys ($wantedCode,
         $keysAreUnique = true;
         // Now we go to check if there are unique
 
-        $sqlCheckCourseId    = "SELECT COUNT(code) existAllready
+        $sqlCheckCourseId    = "SELECT COUNT(code) AS existAllready
                                 FROM `" . $tbl_course . "`
                                 WHERE code = '" . $keysCourseId  ."'";
 
         $resCheckCourseId    = claro_sql_query ($sqlCheckCourseId);
         $isCheckCourseIdUsed = mysql_fetch_array($resCheckCourseId);
 
-        if ($isCheckCourseIdUsed[0]['existAllready'] > 0)
+        if (isset($isCheckCourseIdUsed[0]['existAllready']) && $isCheckCourseIdUsed[0]['existAllready'] > 0)
         {
             $keysAreUnique = false;
             $tryNewFSCId++;
@@ -262,7 +262,7 @@ function prepare_course_repository($courseRepository, $courseId)
     
     $courseIndexContent = '<?php ' . "\n"
         . 'header (\'Location: '. get_path('clarolineRepositoryWeb')
-        . 'course/index.php?cid=' . htmlspecialchars($courseId) . '\') ;' . "\n"
+        . 'course/index.php?cid=' . claro_htmlspecialchars($courseId) . '\') ;' . "\n"
         . '?' . '>' . "\n"
         ;
     
@@ -467,12 +467,6 @@ function register_course( $courseSysCode, $courseScreenCode, $sourceCourseId,
     
     // Insert categories
     if ( link_course_categories ( $courseId, $categories ) === false )
-    {
-        return false;
-    }
-    
-    // Add user to course
-    if ( user_add_to_course($uidCreator, $courseSysCode, true, true) === false )
     {
         return false;
     }

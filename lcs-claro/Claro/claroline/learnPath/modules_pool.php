@@ -1,17 +1,14 @@
-<?php // $Id: modules_pool.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: modules_pool.php 14314 2012-11-07 09:09:19Z zefredz $
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
- *
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @author Piraux Sébastien <pir@cerdecam.be>
- * @author Lederer Guillaume <led@cerdecam.be>
- *
- * @package CLLNP
+ * @version     1.11 $Revision: 14314 $
+ * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @author      Piraux Sebastien <pir@cerdecam.be>
+ * @author      Lederer Guillaume <led@cerdecam.be>
+ * @package     CLLNP
  *
  * This is the page where the list of modules of the course present
  * on the platform can be browsed
@@ -126,6 +123,7 @@ switch( $cmd )
         {
             $sql.=" OR `learnPath_module_id`=". (int)$list['learnPath_module_id'];
         }
+        
         claro_sql_query($sql);
 
         // This query does the same as the 3 previous queries but does not work with MySQL versions before 4.0.0
@@ -148,16 +146,20 @@ switch( $cmd )
                  FROM `".$TABLEMODULE."`
                  WHERE `module_id` = '". (int)$_REQUEST['module_id']."'";
         $result = claro_sql_query($query);
+        
         $list = mysql_fetch_array($result);
+        
         $out .= "\n"
-        .     '<form method="post" name="rename" action="'.$_SERVER['PHP_SELF'].'">' . "\n"
-        .    claro_form_relay_context()
-        .     '<label for="newName">'.get_lang('Insert new name').'</label> :' . "\n"
-        .     '<input type="text" name="newName" id="newName" value="'.htmlspecialchars($list['name']).'" />' . "\n"
-        .     '<input type="submit" value="'.get_lang('Ok').'" name="submit" />' . "\n"
-        .     '<input type="hidden" name="cmd" value="exRename" />' . "\n"
-        .     '<input type="hidden" name="module_id" value="'.$_REQUEST['module_id'].'" />' . "\n"
-        .     '</form>' . "\n\n";
+            . '<form method="post" name="rename" action="'.$_SERVER['PHP_SELF'].'">' . "\n"
+            . claro_form_relay_context()
+            . '<label for="newName">'.get_lang('Insert new name').'</label> :' . "\n"
+            . '<input type="text" name="newName" id="newName" value="'.claro_htmlspecialchars($list['name']).'" />' . "\n"
+            . '<input type="submit" value="'.get_lang('Ok').'" name="submit" />' . "\n"
+            . '<input type="hidden" name="cmd" value="exRename" />' . "\n"
+            . '<input type="hidden" name="module_id" value="'.$_REQUEST['module_id'].'" />' . "\n"
+            . '</form>' . "\n\n"
+            ;
+        
         break;
 
      //try to change name for selected module
@@ -185,14 +187,14 @@ switch( $cmd )
             else
             {
                 $dialogBox = new DialogBox();
-                $dialogBox->error( get_lang('Error : Name already exists in the learning path or in the module pool') );                
+                $dialogBox->error( get_lang('Error : Name already exists in the learning path or in the module pool') );
                 $out .= $dialogBox->render();
             }
         }
         else
         {
             $dialogBox = new DialogBox();
-            $dialogBox->error(get_lang('Name cannot be empty'));            
+            $dialogBox->error(get_lang('Name cannot be empty'));
             $out .= $dialogBox->render();
         }
         break;
@@ -211,15 +213,15 @@ switch( $cmd )
             if( isset($comment['comment']) )
             {
                 $out .= '<form method="get" action="' . $_SERVER['PHP_SELF'] . '">' . "\n"
-                .    claro_form_relay_context()
-                .    claro_html_textarea_editor('comment', $comment['comment'], 15, 55) . "\n"
-                .    '<br />' . "\n"
-                .    '<input type="hidden" name="cmd" value="exComment" />' . "\n"
-                .    '<input type="hidden" name="module_id" value="' . $_REQUEST['module_id'] . '" />' . "\n"
-                .    '<input type="submit" value="' . get_lang('Ok') . '" />' . "\n"
-                .    '<br /><br />' . "\n"
-                .    '</form>' . "\n"
-                ;
+                    . claro_form_relay_context()
+                    . claro_html_textarea_editor('comment', $comment['comment'], 15, 55) . "\n"
+                    . '<br />' . "\n"
+                    . '<input type="hidden" name="cmd" value="exComment" />' . "\n"
+                    . '<input type="hidden" name="module_id" value="' . $_REQUEST['module_id'] . '" />' . "\n"
+                    . '<input type="submit" value="' . get_lang('Ok') . '" />' . "\n"
+                    . '<br /><br />' . "\n"
+                    . '</form>' . "\n"
+                    ;
             }
         } // else no module_id
         break;
@@ -250,24 +252,24 @@ $atleastOne = false;
 
 
 $out .= '<table class="claroTable" width="100%" border="0" cellspacing="2">'
-.    '<thead>' . "\n"
-.    '<tr class="headerX" align="center" valign="top">' . "\n"
-.    '<th>' . "\n"
-.    get_lang('Module') . "\n"
-.    '</th>' . "\n"
-.    '<th>' . "\n"
-.    get_lang('Delete') . "\n"
-.    '</th>' . "\n"
-.    '<th>' . "\n"
-.    get_lang('Rename') . "\n"
-.    '</th>' . "\n"
-.    '<th>' . "\n"
-.    get_lang('Comment') . "\n"
-.    '</th>' . "\n"
-.    '</tr>' . "\n"
-.    '</thead>' . "\n"
-.    '<tbody>' . "\n"
-;
+    . '<thead>' . "\n"
+    . '<tr class="headerX" align="center" valign="top">' . "\n"
+    . '<th>' . "\n"
+    . get_lang('Module') . "\n"
+    . '</th>' . "\n"
+    . '<th>' . "\n"
+    . get_lang('Delete') . "\n"
+    . '</th>' . "\n"
+    . '<th>' . "\n"
+    . get_lang('Rename') . "\n"
+    . '</th>' . "\n"
+    . '<th>' . "\n"
+    . get_lang('Comment') . "\n"
+    . '</th>' . "\n"
+    . '</tr>' . "\n"
+    . '</thead>' . "\n"
+    . '<tbody>' . "\n"
+    ;
 
 // Display modules of the pool of this course
 
@@ -278,35 +280,36 @@ while ($list = mysql_fetch_array($result))
     $contentType_img = selectImage($list['contentType']);
     $contentType_alt = selectAlt($list['contentType']);
     $out .= '<tr>' . "\n"
-    .     '<td align="left">' . "\n"
-    .     '<img src="' . $contentType_img . '" alt="'.$contentType_alt.'" /> '.$list['name'] . "\n"
-    .     '</td>' . "\n"
-    .     '<td align="center">' . "\n"
-    .     '<a href="'.$_SERVER['PHP_SELF'].'?cmd=eraseModule&amp;cmdid='.$list['module_id'].'"'
-    .     ' onclick="return confirmation(\''.clean_str_for_javascript($list['name']).'\', \''.$list['timesUsed'] .'\');">'
-    .     '<img src="' . get_icon_url('delete') . '" alt="'.get_lang('Delete').'" />'
-    .     '</a>' . "\n"
-    .     '</td>' . "\n"
-    .     '<td align="center">' . "\n"
-    .     '<a href="'.$_SERVER['PHP_SELF'].'?cmd=rqRename&amp;module_id='.$list['module_id'].'">'
-    .    '<img src="' . get_icon_url('edit') . '" alt="'.get_lang('Rename').'" />'
-    .    '</a>' . "\n"
-    .     '</td>' . "\n"
-    .     '<td align="center">' . "\n"
-    .     '<a href="'.$_SERVER['PHP_SELF'].'?cmd=rqComment&amp;module_id='.$list['module_id'].'">'
-    .    '<img src="' . get_icon_url('comment') . '" alt="'.get_lang('Comment').'" />'
-    .    '</a>' . "\n"
-    .     '</td>' . "\n"
-    .     '</tr>' . "\n\n";
+        . '<td align="left">' . "\n"
+        . '<img src="' . $contentType_img . '" alt="'.$contentType_alt.'" /> '.$list['name'] . "\n"
+        . '</td>' . "\n"
+        . '<td align="center">' . "\n"
+        . '<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'].'?cmd=eraseModule&cmdid='.$list['module_id'])).'"'
+        . ' onclick="return confirmation(\''.clean_str_for_javascript($list['name']).'\', \''.$list['timesUsed'] .'\');">'
+        . '<img src="' . get_icon_url('delete') . '" alt="'.get_lang('Delete').'" />'
+        . '</a>' . "\n"
+        . '</td>' . "\n"
+        . '<td align="center">' . "\n"
+        . '<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'].'?cmd=rqRename&module_id='.$list['module_id'])).'">'
+        . '<img src="' . get_icon_url('edit') . '" alt="'.get_lang('Rename').'" />'
+        . '</a>' . "\n"
+        . '</td>' . "\n"
+        . '<td align="center">' . "\n"
+        . '<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'].'?cmd=rqComment&module_id='.$list['module_id'])).'">'
+        . '<img src="' . get_icon_url('comment') . '" alt="'.get_lang('Comment').'" />'
+        . '</a>' . "\n"
+        . '</td>' . "\n"
+        . '</tr>' . "\n\n"
+        ;
 
     if ( isset($list['comment']) )
     {
         $out .= '<tr>'
-        .    '<td colspan="5">'
-        .    '<small>' . $list['comment'] . '</small>'
-        .    '</td>'
-        .    '</tr>'
-        ;
+            . '<td colspan="5">'
+            . '<small>' . $list['comment'] . '</small>'
+            . '</td>'
+            . '</tr>'
+            ;
     }
 
     $atleastOne = true;
@@ -321,11 +324,9 @@ if ($atleastOne == false)
 // Display button to add selected modules
 
 $out .= '</tbody>' . "\n"
-.    '</table>'
-;
+    . '</table>'
+    ;
 
 $claroline->display->body->appendContent($out);
 
 echo $claroline->display->render();
-
-?>

@@ -1,20 +1,16 @@
-<?php // $Id: assignment.class.php 12923 2011-03-03 14:23:57Z abourguignon $
-if ( count( get_included_files() ) == 1 ) die( '---' );
+<?php // $Id: assignment.class.php 13633 2011-10-03 10:00:07Z zefredz $
+
 /**
  * CLAROLINE
  *
- * The script works with the 'assignment' tables in the main claroline table
+ * The script works with the 'assignment' tables in the main claroline table.
  *
- * @version 1.8 $Revision: 12923 $
- *
+ * @version     $Revision: 13633 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLWRK
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Sebastien Piraux <pir@cerdecam.be>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLWRK
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Sebastien Piraux <pir@cerdecam.be>
  */
 
 class Assignment
@@ -125,7 +121,11 @@ class Assignment
         $this->submissionType = 'FILE';
         $this->allowLateUpload = 'YES';
         $this->startDate = time(); // now as unix timestamp
-        $this->endDate = strtotime("+1 year"); // one year later
+        
+        $days = (int) get_conf('clwrk_endDateDelay',365);
+        
+        $this->endDate = strtotime("+{$days} days");
+        
         $this->autoFeedbackText = '';
         $this->autoFeedbackFilename = '';
         $this->autoFeedbackSubmitMethod = 'ENDDATE';

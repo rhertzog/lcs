@@ -1,9 +1,10 @@
-<?php // $Id: index.php 10264 2008-05-20 12:43:36Z zefredz $
+<?php // $Id: index.php 13709 2011-10-19 10:50:43Z abourguignon $
+
 /**
- * Claroline
- * 
- * Copyright (c) 2001-2008 Universite catholique de Louvain (UCL)
+ * CLAROLINE
+ *
+ * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  */
+
 header('Location:../../');
 exit();
-?>

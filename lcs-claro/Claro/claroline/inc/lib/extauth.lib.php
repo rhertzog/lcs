@@ -1,9 +1,11 @@
-<?php // $Id: extauth.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: extauth.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
 
 /**
+ * CLAROLINE
+ *
  * External Authentication library
  *
- * @version     1.10 $Revision: 12923 $
+ * @version     $Revision: 13302 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html

@@ -1,11 +1,13 @@
-<?php // $Id: userlist.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: userlist.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
- * user list
+ * CLAROLINE
  *
- * @version     1.9 $Revision: 12923 $
+ * User list.
+ *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -17,13 +19,13 @@
 
 require_once dirname(__FILE__) . '/userstrategy.lib.php';
 
-class UserList implements Iterator, Countable 
+class UserList implements CountableIterator
 {
 
     protected $userList = FALSE;
     protected $numberOfUser = FALSE;
     protected $index = 0;
-    protected $userStrategy; 
+    protected $userStrategy;
     
     
     public function __construct($userStrategy = NULL)
@@ -67,7 +69,7 @@ class UserList implements Iterator, Countable
             }
             
             
-            $sql = 
+            $sql =
              "SELECT user_id AS id, nom AS lastname, prenom AS firstname, username"
                 ." FROM `".$tableName['user']."`"
                 . " " . $where
@@ -100,7 +102,7 @@ class UserList implements Iterator, Countable
             $where = "";
         }
         
-        $sql = 
+        $sql =
             "SELECT count(*)"
                ." FROM `".$tableName['user']."`"
                . " " . $where
@@ -146,11 +148,10 @@ class UserList implements Iterator, Countable
         $this->loadUserList();
         
         return ($this->index < count($this->userList));
-    } 
+    }
 
     public function count()
     {
         return count($this->userList);
     }
 }
-?>

@@ -1,12 +1,14 @@
-<?php // $Id: viewtopic.php 13593 2011-09-19 12:20:19Z abourguignon $
+<?php // $Id: viewtopic.php 14368 2013-01-30 12:02:42Z zefredz $
+
 /**
- * Claroline forum tool
+ * CLAROLINE
  *
  * Script handling topics and posts in forum tool (new topics, replies, topic review, etc.)
  * As from Claroline 1.9.6, gathers functionality of deprecated scripts newtopic.php, reply.php and editpost.php
  *
- * @version     1.9 $Revision: 13593 $
+ * @version     $Revision: 14368 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @copyright   (c) 2001 The phpBB Group
  * @author      Claroline Team <info@claroline.net>
  * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -168,7 +170,7 @@ catch( Exception $ex )
                 break;
             case 'exSavePost' :
                 $dialogBox->error( get_lang( 'Missing information' ) );
-                $cmd = 'dialog_only';
+                $inputMode = 'missing_input';
                 break;
             case 'exDelete' :
                 $dialogBox->error( get_lang( 'Unknown post' ) );
@@ -189,10 +191,13 @@ catch( Exception $ex )
     elseif( $ex instanceof Claro_Input_Exception )
     {
         $dialogBox->error( get_lang( 'Unset input variable' ) );
+        
+        $cmd = 'rqPost';
     }
     else
     {
         $dialogBox->error( get_lang( 'Unexpected error' ) );
+        $cmd = 'dialog_only';
     }
 }
 
@@ -235,13 +240,17 @@ else
 }
 
 //check access rights
-$is_postAllowed = ( $forumSettingList['forum_access'] != 0
+$is_postAllowed = ( !claro_is_current_user_enrolment_pending() && claro_is_course_member() 
+                    && $forumSettingList['forum_access'] != 0
                     && ( !$topicId || !$topicSettingList['topic_status'] ) )
+                    || claro_is_allowed_to_edit()
                     ? true
                     : false;
-$is_viewAllowed = !is_null( $forumSettingList['idGroup'] )
+
+$is_viewAllowed = ( !is_null( $forumSettingList['idGroup'] )
                   && !( ( $forumSettingList['idGroup'] == claro_get_current_group_id() )
-                        || claro_is_in_a_group() || claro_is_group_allowed() )
+                        || claro_is_in_a_group() || claro_is_group_allowed() ) )
+                    && ! claro_is_allowed_to_edit()
                   ? false
                   : true;
 
@@ -274,7 +283,7 @@ else
     {
         $error = false;
         //this test should be handled by a "html not empty" validator
-        if ( trim( strip_tags( $message ) ) == '' )
+        if ( trim( strip_tags( $message , '<img><audio><video><embed><object><canvas><iframe>' ) ) == '' )
         {
             $dialogBox->error( get_lang( 'You cannot post an empty message' ) );
             $error = true;
@@ -296,22 +305,32 @@ else
                     $dialogBox->error( get_lang( 'Subject cannot be empty' ) );
                     $error = true;
                 }
-                if( false !== $topicId = create_new_topic( $subject, $time, $forumId, claro_get_current_user_id(), $userFirstname, $userLastname ) )
+                
+                if( !$error )
                 {
-                    $eventNotifier->notifyCourseEvent( 'forum_new_topic', claro_get_current_course_id(), claro_get_current_tool_id(), $forumId . '-' . $topicId, claro_get_current_group_id(), 0 );
-                    $dialogBox->success( 'Your topic has been recorded' );
-                    // send message to user registered for notifications of new topics in this forum
-                    trig_forum_notification( $forumId );
-                    if( false !== $postId = create_new_post( $topicId, $forumId, claro_get_current_user_id(), $time, $poster_ip, $userLastname, $userFirstname, $message ) )
+                    $topicId = create_new_topic( $subject, $time, $forumId, claro_get_current_user_id(), $userFirstname, $userLastname );
+                    
+                    if ( false !== $topicId )
                     {
-                        $eventNotifier->notifyCourseEvent( 'forum_new_post', claro_get_current_course_id(), claro_get_current_tool_id(), $forumId . '-' . $topicId . '-' . $postId, claro_get_current_group_id(), 0 );
-                    }
-                    else
-                    {
-                        $dialogBox->error( 'error' );
-                        $error = true;
+                        $eventNotifier->notifyCourseEvent( 'forum_new_topic', claro_get_current_course_id(), claro_get_current_tool_id(), $forumId . '-' . $topicId, claro_get_current_group_id(), 0 );
+                        $dialogBox->success( 'Your topic has been recorded' );
+                        // send message to user registered for notifications of new topics in this forum
+                        trig_forum_notification( $forumId );
+                        
+                        $postId = create_new_post( $topicId, $forumId, claro_get_current_user_id(), $time, $poster_ip, $userLastname, $userFirstname, $message );
+                        
+                        if( false !== $postId )
+                        {
+                            $eventNotifier->notifyCourseEvent( 'forum_new_post', claro_get_current_course_id(), claro_get_current_tool_id(), $forumId . '-' . $topicId . '-' . $postId, claro_get_current_group_id(), 0 );
+                        }
+                        else
+                        {
+                            $dialogBox->error( 'error' );
+                            $error = true;
+                        }
                     }
                 }
+                
                 $topicSettingList = get_topic_settings( $topicId );
             }
             elseif( 'edit' == $editMode )
@@ -358,21 +377,25 @@ else
         if( 'edit' != $editMode || $is_allowedToEdit )
         {
             if( 'quote' == $editMode && $postSettingList )
-            {
-                
-                
+            {  
                 $identity = 'anonymous' == $postSettingList['poster_lastname'] ? get_lang( 'Anonymous contributor wrote :' ) : $postSettingList['poster_firstname'] . '&nbsp;' . $postSettingList['poster_lastname'] . '&nbsp;' . get_lang( 'wrote :' );
                 $quotedPost = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $postSettingList['post_text'] );
-                $message = '<span style="margin-left:20px;font-weight:bold;">' . $identity . '</span><br/>';
-                $message .= '<div style="background-color:#F0F0EE;margin-left:20px;margin-right:20px;padding:5px;border:1px solid;">' . $quotedPost . '</div><br/>';
+                
+                if ( !isset($message) || empty($message) )
+                {
+                    $message = '<span style="margin-left:20px;font-weight:bold;">' . $identity . '</span><br/>';
+                    $message .= '<div style="background-color:#F0F0EE;margin-left:20px;margin-right:20px;padding:5px;border:1px solid;">' . $quotedPost . '</div><br/>';
+                }
+                
                 $subject = '';
             }
             elseif( 'edit' == $editMode )
             {
-                $message = preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $postSettingList['post_text'] );
+                $message = isset( $message ) ? $message : preg_replace('#</textarea>#si', '&lt;/TEXTAREA&gt;', $postSettingList['post_text'] );
+                
                 if( is_first_post( $topicId, $postId ) )
                 {
-                    $subject = $topicSettingList['topic_title'];
+                    $subject = isset( $subject ) ? $subject : $topicSettingList['topic_title'];
                 }
                 else
                 {
@@ -381,8 +404,8 @@ else
             }
             elseif( 'add' == $editMode || 'reply' == $editMode )
             {
-                $subject = '';
-                $message = '';
+                $subject = isset( $subject ) ? $subject : '';
+                $message = isset( $message ) ? $message : '';
             }
             $form = new ModuleTemplate( 'CLFRM', 'forum_editpost.tpl.php' );
             
@@ -403,6 +426,10 @@ else
             $cmd = 'show';
         }
     }
+}
+
+if ( $is_viewAllowed || $is_postAllowed )
+{
     //notification commands should be handled by ajax calls
     if( 'exNotify' == $cmd )
     {
@@ -420,58 +447,31 @@ else
 JavaScriptLoader::getInstance()->load( 'forum' );
 CssLoader::getInstance()->load( 'clfrm', 'screen' );
 
-//javascript control to confirm signed posts in anonymous forums
-if( 'default' == $anonymityStatus && !$is_allowedToEdit && get_conf( 'confirm_not_anonymous', 'TRUE' ) == 'TRUE' )
-{
-    $htmlHeadXtra[] =
-    '<script type="text/javascript">
-    $(document).ready(function(){
-        $(".confirm").click(function(){
-            if( $("#anonymous_cb").length <= 0 || $("#anonymous_cb").is(":checked") )
-            {
-                return true;
-            }
-            else
-            {
-                if( confirm("' . clean_str_for_javascript( get_lang( 'Do you really want to sign your contribution ?' ) ) . '"))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        });
-    });
-    </script>';
-}
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure to delete %name ?');
+$jslang->addLangVar('Do you really want to sign your contribution ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
 
-//javascript control to confirm deletion of post
-$htmlHeadXtra[] =
-"<script type=\"text/javascript\">
-   function confirm_delete()
-   {
-       if (confirm('". clean_str_for_javascript( get_lang( 'Are you sure to delete' ) ) . "'))
-       {return true;}
-       else
-       {return false;}
-   }
-</script>";
+JavascriptLoader::getInstance()->load('forum');
 
-//prepare display
+// Prepare display
 $out = '';
+
+// Command list
+$cmdList = array();
 
 $nameTools = get_lang( 'Forums' );
 
 $pagetype = !empty( $editMode ) ? $editMode : 'viewtopic';
 
-$out .= claro_html_tool_title( $nameTools, $is_allowedToEdit ? 'help_forum.php' : false );
+// The title is put in the $out var at the end of this script
+
 if( claro_is_allowed_to_edit() && $topicId )
 {
     $out .= '<div style="float: right;">' . "\n"
-    .   '<img src=' . get_icon_url( 'html' ) . '" alt="" /> <a href="' . htmlspecialchars( Url::Contextualize( 'export.php?type=HTML&topic=' . $topicId )) . '" target="_blank">' . get_lang( 'Export to HTML' ) . '</a>' . "\n"
-    .   '<img src="'. get_icon_url( 'mime/pdf' ) . '" alt="" /> <a href="' . htmlspecialchars( Url::Contextualize( 'export.php?type=PDF&topic=' . $topicId ) ) . '" target="_blank">' . get_lang( 'Export to PDF' ) .'</a>' . "\n"
+    .   '<img src=' . get_icon_url( 'html' ) . '" alt="" /> <a href="' . claro_htmlspecialchars( Url::Contextualize( 'export.php?type=HTML&topic=' . $topicId )) . '" target="_blank">' . get_lang( 'Export to HTML' ) . '</a>' . "\n"
+    .   '<img src="'. get_icon_url( 'mime/pdf' ) . '" alt="" /> <a href="' . claro_htmlspecialchars( Url::Contextualize( 'export.php?type=PDF&topic=' . $topicId ) ) . '" target="_blank">' . get_lang( 'Export to PDF' ) .'</a>' . "\n"
     .   '</div>'
     ;
 }
@@ -504,7 +504,7 @@ if( 'show' != $cmd )
         . '<td>&nbsp;</td>'
         . '<td><strong>'
         . get_lang( 'This forum allows anonymous contributions!<br/>' )
-        . get_lang( 'If do not want to sign your post, check the checkbox above the "OK" button' )
+        . get_lang( 'If you do not want to sign your post, check the checkbox above the "OK" button' )
         . '</strong></td>'
         . '</tr>'
         . '<tr style="height:1px;"><td colspan="2">&nbsp;</td></tr>';
@@ -522,8 +522,9 @@ if( isset( $form ) )
 {
     $formBox = new DialogBox();
     $formBox->form( $form->render() );
-    $out .= $formBox->render();
-    $out .= '<p>&nbsp;</p>';
+    
+    $out .= $formBox->render()
+          . '<hr />';
 }
 
 //display topic review if any
@@ -542,7 +543,7 @@ if( $topicSettingList )
     // get post and use pager
     $postList   = $postLister->get_post_list();
     $totalPosts = $postLister->sqlPager->get_total_item_count();
-    $pagerUrl   = htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . '?topic=' . $topicId ) );
+    $pagerUrl   = claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . '?topic=' . $topicId ) );
     
     //increment topic view count if required
     if ( $incrementViewCount )
@@ -554,34 +555,36 @@ if( $topicSettingList )
     
     if( $is_postAllowed )
     {
-        $toolList = disp_forum_toolbar( 'viewtopic', $forumSettingList['forum_id'], $forumSettingList['cat_id'], $topicId );
+        $cmdList = get_forum_toolbar_array( 'viewtopic', $forumSettingList['forum_id'], $forumSettingList['cat_id'], $topicId );
         
         if ( count( $postList ) > 2 ) // if less than 2 las message is visible
         {
             $start_last_message = ( ceil( $totalPosts / get_conf( 'posts_per_page' ) ) -1 ) * get_conf( 'posts_per_page' );
             
             $lastMsgUrl = Url::Contextualize( $_SERVER['PHP_SELF']
-            .             '?forum=' . $forumSettingList['forum_id']
-            .             '&amp;topic=' . $topicId
-            .             '&amp;start=' . $start_last_message
-            .             '#post' . $topicSettingList['topic_last_post_id'] )
-            ;
+                        . '?forum=' . $forumSettingList['forum_id']
+                        . '&amp;topic=' . $topicId
+                        . '&amp;start=' . $start_last_message
+                        . '#post' . $topicSettingList['topic_last_post_id'] );
             
-            $toolList[] = claro_html_cmd_link( htmlspecialchars( Url::Contextualize( $lastMsgUrl ) ), get_lang( 'Last message' ) );
+            $cmdList[] = array(
+                'name' => get_lang( 'Last message' ),
+                'url' => claro_htmlspecialchars( Url::Contextualize( $lastMsgUrl ) )
+            );
             
             if( !$viewall )
             {
                 $viewallUrl = Url::Contextualize( $_SERVER['PHP_SELF']
-                .             '?forum=' . $forumSettingList['forum_id']
-                .             '&amp;topic=' . $topicId
-                .             '&amp;viewall=1' )
-                ;
+                            . '?forum=' . $forumSettingList['forum_id']
+                            . '&amp;topic=' . $topicId
+                            . '&amp;viewall=1' );
                
-                $toolList[] = claro_html_cmd_link( htmlspecialchars( Url::Contextualize( $viewallUrl ) ), get_lang( 'Full review' ) );
+                $cmdList[] = array(
+                    'name' => get_lang( 'Full review' ),
+                    'url' => claro_htmlspecialchars( Url::Contextualize( $viewallUrl ) )
+                );
             }
         }
-        
-        $out .= '<p>' . claro_html_menu_horizontal( $toolList ) . '</p>';
     }
     
     $out .= $postLister->disp_pager_tool_bar( $pagerUrl );
@@ -612,7 +615,7 @@ if( $topicSettingList )
             . '&amp;mode=reply'
         );
             
-        $toolBar[] = claro_html_cmd_link( htmlspecialchars( $replyUrl )
+        $toolBar[] = claro_html_cmd_link( claro_htmlspecialchars( $replyUrl )
                                         , '<img src="' . get_icon_url( 'reply' ) . '" alt="" />'
                                         . ' '
                                         . get_lang( 'Reply' )
@@ -622,6 +625,10 @@ if( $topicSettingList )
     
     $out .= $postLister->disp_pager_tool_bar( $pagerUrl );
 }
+
+// Page title
+$out = claro_html_tool_title( $nameTools, $is_allowedToEdit ? get_help_page_url('blockForumsHelp','CLFRM') : false, $cmdList )
+     . $out;
 
 ClaroBreadCrumbs::getInstance()->setCurrent( get_lang( 'Forums' ), 'index.php' );
 

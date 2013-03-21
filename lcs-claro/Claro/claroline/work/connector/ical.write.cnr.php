@@ -1,9 +1,10 @@
-<?php // $Id: ical.write.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: ical.write.cnr.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -26,8 +27,8 @@ function CLWRK_write_ical( $iCal, $context)
         
         $organizer = (array) array($courseData['titular'], $courseData['email']);
         $attendees = array();
-        $categories = array( 
-            get_conf('siteName'), 
+        $categories = array(
+            get_conf('siteName'),
             $courseData['officialCode'],
             trim($toolNameList['CLWRK'])
         );
@@ -100,5 +101,3 @@ function assignmentList($courseCode = null)
 
     return claro_sql_query_fetch_all_rows($sql);
 }
-
-?>

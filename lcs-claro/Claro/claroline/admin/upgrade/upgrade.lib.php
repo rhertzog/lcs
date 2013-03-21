@@ -1,20 +1,16 @@
-<?php // $Id: upgrade.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: upgrade.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
+
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * The script works with the
- *
- * @version 1.9 $Revision: 12923 $
- *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package UPGRADE
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Mathieu Laurent <mathieu@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     UPGRADE
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Mathieu Laurent <mathieu@claroline.net>
  */
 
 /**
@@ -671,7 +667,7 @@ function upgrade_disp_auth_form()
 
         .'<legend>Login</legend>'."\n"
 
-        .'<label for="username">User name : </label><br />'."\n"
+        .'<label for="username">Username : </label><br />'."\n"
         .'<input type="text" name="login" id="username" /><br />'."\n"
 
         .'<label for="password">Password : </label><br />'."\n"
@@ -744,5 +740,4 @@ class UpgradeTrackingOffset
             unlink(dirname(__FILE__) . self::$path);
         }
     }
-    
 }

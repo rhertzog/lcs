@@ -1,4 +1,4 @@
-/* $Id: claroline.linker.js 12500 2010-07-14 13:08:29Z dimitrirambout $ */
+/* $Id: claroline.linker.js 14165 2012-05-25 12:55:29Z zefredz $ */
 
 /*
 This code will work with html like this
@@ -79,6 +79,7 @@ $(document).ready(function(){
         // toggle commands
         $("#lnk_show_browser").hide();
         $("#lnk_hide_browser").show();
+        return false;
     });
     
     $("#lnk_hide_browser").click(function(){
@@ -86,15 +87,18 @@ $(document).ready(function(){
         // toggle commands
         $("#lnk_hide_browser").hide();
         $("#lnk_show_browser").show();
+        return false;
     });
     
     // ajax activity led
     $("#lnk_ajax_loading").ajaxStart(function(){
         $(this).show();
+        return false;
     });
         
     $("#lnk_ajax_loading").ajaxStop(function(){
         $(this).hide();
+        return false;
     });
     
 
@@ -205,11 +209,13 @@ var linkerFrontend = {
                 {
                     // alert( linkerFrontend.history.toSource() );
                     
-                    $("<a />")
-                        .text('['+Claroline.getLang('Up')+']')
-                        .attr("onclick", "linkerFrontend.loadList('"+data.parent+"');return false;")
-                        .appendTo("#lnk_back_link")
-                        ;
+                    
+                    var upLink = $('<a class="navigable visible" rel="'+data.parent+'" title="Up">'+'['+Claroline.getLang('Up')+']'+'</a>');
+                    
+                    upLink.click( function(){ linkerFrontend.loadList(data.parent); return false; } );
+                        
+                    $("#lnk_back_link")
+                            .append(upLink);
                 }
                 else
                 {

@@ -1,4 +1,4 @@
-<?php // $Id: upgrade_init_global.inc.php 13316 2011-07-14 16:41:21Z abourguignon $
+<?php // $Id: upgrade_init_global.inc.php 13561 2011-09-08 12:54:00Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 // Most PHP package has increase the error reporting.
@@ -82,8 +82,8 @@ session_start();
   ----------------------------------------------------------------------*/
 
 require_once $includePath . '/lib/core/core.lib.php';
-require_once $includePath . '/lib/core/claroline.lib.php';
 require_once $includePath . '/lib/claro_main.lib.php';
+require_once $includePath . '/lib/core/claroline.lib.php';
 require_once $includePath . '/lib/fileManage.lib.php';
 
 // conf variables
@@ -114,7 +114,6 @@ require_once dirname(__FILE__) . '/upgrade.lib.php';
  */
 
 $accepted_error_list = array(1060,1061);
-
 
 /*
  * Initialize version variables

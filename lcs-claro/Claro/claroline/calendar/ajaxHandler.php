@@ -1,4 +1,4 @@
-<?php // $Id: ajaxHandler.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: ajaxHandler.php 14315 2012-11-08 14:51:17Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,13 +7,12 @@
  *
  * MyCalendar portlet ajax backend
  *
- * @version     $Revision: 12923 $
+ * @version     $Revision: 14315 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     DESKTOP
  * @author      Claroline team <info@claroline.net>
  * @since       1.9
- *
  */
 
 if ( isset($_REQUEST['location']) )
@@ -25,7 +24,7 @@ if ( isset($_REQUEST['location']) )
         
         require_once dirname(__FILE__) . '/lib/coursehomepagecalendar.lib.php';
         
-        $cal = new CourseHomePageCalendar(htmlentities($_REQUEST['courseCode']));
+        $cal = new CourseHomePageCalendar(claro_htmlentities($_REQUEST['courseCode']));
     }
     elseif ( $_REQUEST['location'] == 'userdesktop' )
     {
@@ -48,5 +47,3 @@ if ( isset($_REQUEST['location']) )
     
     echo claro_utf8_encode( $cal->render(), get_conf('charset') );
 }
-
-?>

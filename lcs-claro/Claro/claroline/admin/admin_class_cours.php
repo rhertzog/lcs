@@ -1,17 +1,17 @@
-<?php //$Id: admin_class_cours.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php //$Id: admin_class_cours.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for courses' classes.
  *
- * @version     $Revision: 12941 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Damien Garros <dgarros@univ-catholyon.fr>
  */
 
-$userPerPage = 20; // numbers of cours to display on the same page
+$userPerPage = 50; // numbers of cours to display on the same page
 
 // initialisation of global variables and used libraries
 require '../inc/claro_init_global.inc.php';
@@ -35,18 +35,12 @@ $tbl_cours               = $tbl_mdb_names['course'];
 $tbl_course_class          = $tbl_mdb_names['rel_course_class'];
 $tbl_class              = $tbl_mdb_names['class'];
 
-// javascript confirm pop up declaration
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure you want to unregister %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
 
-$htmlHeadXtra[] =
-         "<script>
-         function confirmationUnReg (name)
-         {
-             if (confirm(\"".clean_str_for_javascript(get_lang('Are you sure you want to unregister'))."\"+ name + \"? \"))
-                 {return true;}
-             else
-                 {return false;}
-         }
-         </script>";
+JavascriptLoader::getInstance()->load('admin');
 
 //------------------------------------
 // Execute COMMAND section
@@ -145,25 +139,32 @@ if ( empty($class_id) )
 }
 else
 {
+    $cmdList = array();
+    
+    $cmdList[] = array(
+        'img' => 'enroll', 
+        'name' => get_lang('Register class for course'), 
+        'url' => claro_htmlspecialchars(get_path('clarolineRepositoryWeb')
+               . 'auth/courses.php?'
+               . 'cmd=rqReg&fromAdmin=class&class_id='.$class_id)
+    );
+    
     // Display tool title
-
-    $out .= claro_html_tool_title(get_lang('Course list') . ' : ' . $classinfo['name']);
-
-    // TOOL LINKS
-    $cmd_menu[] = '<a class="claroCmd" href="' . get_path('clarolineRepositoryWeb').'auth/courses.php?cmd=rqReg&amp;fromAdmin=class&amp;class_id='.$class_id.'"><img src="' . get_icon_url('enroll') . '" /> ' . get_lang('Register class for course') . '</a>';
-    $out .= '<p>' . claro_html_menu_horizontal( $cmd_menu ) . '</p>';
-
+    $out .= claro_html_tool_title(
+        get_lang('Course list') . ' : ' . $classinfo['name'], 
+        null,
+        $cmdList);
+    
     // Pager
-
     $myPager->disp_pager_tool_bar($_SERVER['PHP_SELF'].'&amp;class_id='.$class_id);
-
+    
     // Display list of cours
-
+    
     // start table...
     // TODO datagrid
     $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">'
     .    '<thead>'
-    .    '<tr class="headerX" align="center" valign="top">'
+    .    '<tr align="center" valign="top">'
     .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=code&amp;chdir=yes">' . get_lang('Course code') . '</a></th>'
     .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=intitule&amp;chdir=yes">' . get_lang('Course title') . '</a></th>'
     .     '<th>' . get_lang('Course settings') . '</th>'
@@ -172,13 +173,12 @@ else
     .    '</thead>'
     .    '<tbody>'
     ;
-
-    // Start the list of users...
-
+    
+    // Start the list of users
     foreach($resultList as $list)
     {
         $list['officialCode'] = (isset($list['officialCode']) ? $list['officialCode'] :' - ');
-
+        
         $out .= '<tr>'
         .    '<td align="center" >' . $list['code']      . '</td>'
         .    '<td align="left" >'   . $list['intitule']          . '</td>'
@@ -192,13 +192,13 @@ else
         .    '<td align="center">'
         .    '<a href="'.$_SERVER['PHP_SELF']
         .    '?cmd=unsubscribe&amp;class_id='.$class_id.'&amp;offset='.$offset.'&amp;course_id='.$list['code'].'" '
-        .    ' onclick="return confirmationUnReg(\''.clean_str_for_javascript($list['code']).'\');">'
+        .    ' onclick="return ADMIN.confirmationUnReg(\''.clean_str_for_javascript($list['code']).'\');">'
         .    '<img src="' . get_icon_url('unenroll') . '" alt="" />'
         .    '</a>'
         .    '</td>'
         .    '</tr>';
     }
-
+    
     // end display users table
     if ( empty($resultList) )
     {
@@ -213,14 +213,13 @@ else
         .    '</tr>'
         ;
     }
+    
     $out .= '</tbody>' . "\n"
     .    '</table>' . "\n"
     ;
-
+    
     //Pager
-
     $myPager->disp_pager_tool_bar($_SERVER['PHP_SELF'].'&amp;class_id='.$class_id);
-
 }
 
 $claroline->display->body->appendContent($out);

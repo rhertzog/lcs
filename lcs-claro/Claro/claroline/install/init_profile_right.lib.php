@@ -1,4 +1,4 @@
-<?php // $Id: init_profile_right.lib.php 9706 2007-12-12 13:30:11Z mlaurent $
+<?php // $Id: init_profile_right.lib.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
@@ -126,5 +126,3 @@ function init_default_right_profile ()
     return true ;
 
 }
-
-?>

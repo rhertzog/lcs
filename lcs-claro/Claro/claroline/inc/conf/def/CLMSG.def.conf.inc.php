@@ -1,4 +1,4 @@
-<?php // $Id: CLMSG.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: CLMSG.def.conf.inc.php 14265 2012-09-04 15:21:47Z ffervaille $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * This file describe the parameter for user tool.
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14265 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see http://www.claroline.net/wiki/index.php/Config
@@ -28,7 +28,8 @@ $conf_def['section']['main']['label']='Main settings';
 $conf_def['section']['main']['properties'] =
 array (
     'messagePerPage',
-    'mailNotification'
+    'mailNotification',
+    'userCanSendMessage'
 );
 
 //PROPERTIES
@@ -46,6 +47,15 @@ array ( 'label'   => 'Number of message per page'
 $conf_def_property_list['mailNotification'] =
 array ( 'label'   => 'Enable Email notification'
       , 'default' => true
+      , 'type'    => 'boolean'
+      , 'acceptedValue' => array('TRUE'=>'Yes', 'FALSE' => 'No')
+      , 'display'     => true
+      , 'readonly'    => false
+      );
+
+$conf_def_property_list['userCanSendMessage'] =
+array ( 'label'   => 'Users can send messages from outside a course context'
+      , 'default' => false
       , 'type'    => 'boolean'
       , 'acceptedValue' => array('TRUE'=>'Yes', 'FALSE' => 'No')
       , 'display'     => true

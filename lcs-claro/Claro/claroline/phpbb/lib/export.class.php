@@ -1,10 +1,10 @@
-<?php // $Id: export.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: export.class.php 13708 2011-10-19 10:46:34Z abourguignon $
 /**
  * CLAROLINE
  *
  * Script export topic/forum in PDF
  *
- * @version 1.9 $Revision: 12923 $
+ * @version 1.9 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @copyright (C) 2001 The phpBB Group
@@ -76,8 +76,4 @@ class export
     
     return $postsList;
   }
-  
-  
 }
-
-?>

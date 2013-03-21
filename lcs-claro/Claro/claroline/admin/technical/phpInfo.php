@@ -1,4 +1,4 @@
-<?php // $Id: phpInfo.php 12974 2011-03-15 10:53:34Z abourguignon $
+<?php // $Id: phpInfo.php 14175 2012-06-08 07:00:42Z zefredz $
 
 /**
  * CLAROLINE
@@ -7,7 +7,7 @@
  * - configuration of Claroline, PHP, Mysql, Webserver
  * - credits
  *
- * @version     $Revision: 12974 $
+ * @version     $Revision: 14175 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author :    Christophe Gesche <moosh@claroline.net>
@@ -47,12 +47,15 @@ $is_allowedToAdmin = claro_is_platform_admin();
 if ($is_allowedToAdmin)
 {
     $htmlHeadXtra[] = phpinfo_getStyle();
-    include get_path('incRepositorySys') . '/claro_init_header.inc.php';
 
-    echo claro_html_tool_title( array( 'mainTitle'=>$nameTools, 'subTitle'=> get_conf('siteName') ) );
+    $claroline->display->body->appendContent( 
+        claro_html_tool_title( 
+            array( 'mainTitle'=>$nameTools, 'subTitle'=> get_conf('siteName') ) ) );
 
     $cmd = array_key_exists( 'cmd', $_REQUEST ) ? $_REQUEST['cmd'] : 'versions';
     $ext = array_key_exists( 'ext', $_REQUEST ) ? $_REQUEST['ext'] : '';
+    
+    ob_start();
 
 ?>
 
@@ -124,7 +127,7 @@ if ($is_allowedToAdmin)
     }
     elseif( $cmd == 'secinfo' )
     {
-        require_once('./lib/PhpSecInfo.lib.php');
+        require_once dirname(__FILE__) .'/../../inc/lib/thirdparty/PhpSecInfo/PhpSecInfo.lib.php';
         phpsecinfo();
 
     }
@@ -139,7 +142,7 @@ if ($is_allowedToAdmin)
         ?>
         <table class="claroTable">
             <thead>
-                <tr class="headerX">
+                <tr>
                     <th scope="col">Software</th>
                     <th scope="col">Version</th>
                 </tr>
@@ -154,12 +157,20 @@ if ($is_allowedToAdmin)
                     <td><?php echo $new_version ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">PHP</th>
-                    <td><?php echo phpversion(); ?></td>
+                    <th scope="row">Claroline API Version</th>
+                    <td><?php echo $clarolineAPIVersion ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">MySQL</th>
-                    <td><?php echo mysql_get_server_info();?></td>
+                    <th scope="row">Claroline Database Version</th>
+                    <td><?php echo $clarolineDBVersion ;?></td>
+                </tr>
+                <tr>
+                    <th scope="row">PHP version (installed/minimum)</th>
+                    <td><?php echo phpversion() . ' / ' . $requiredPhpVersion; ?></td>
+                </tr>
+                <tr>
+                    <th scope="row">MySQL (installed/minimum)</th>
+                    <td><?php echo mysql_get_server_info() . ' / ' . $requiredMySqlVersion;?></td>
                 </tr>
                 <tr>
                     <th scope="row">WebServer</th>
@@ -179,5 +190,10 @@ else // is not allowed
 </div>
 
 <?php
-include get_path('incRepositorySys') . '/claro_init_footer.inc.php';
-?>
+
+$contents = ob_get_contents();
+ob_end_clean();
+
+$claroline->display->body->appendContent( $contents );
+
+echo $claroline->display->render();

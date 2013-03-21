@@ -1,11 +1,11 @@
-<?php // $Id: CLWRK.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: CLWRK.def.conf.inc.php 14035 2012-02-24 09:21:46Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
  * This file describe the parameter for assignment tool
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14035 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -26,13 +26,27 @@ $conf_def['config_class']= 'tool';
 
 $conf_def['section']['main']['label']      = 'Main';
 $conf_def['section']['main']['properties'] =
-array ( 'confval_def_sub_vis_change_only_new', 'open_submitted_file_in_new_window', 'show_only_author', 'mail_notification', 'automatic_mail_notification', 'allow_download_all_submissions', 'allow_work_event_generation', 'assignmentsPerPage', 'usersPerPage' );
+array ( 
+    'confval_def_sub_vis_change_only_new', 
+    'open_submitted_file_in_new_window', 
+    'show_only_author', 
+    'mail_notification', 
+    'automatic_mail_notification', 
+    'allow_download_all_submissions', 
+    'clwrk_customTmpPath',
+    'allow_work_event_generation', 
+    'assignmentsPerPage', 
+    'usersPerPage' );
 
 $conf_def['section']['quota']['label']      = 'Quota';
 $conf_def['section']['quota']['description']= 'Disk space allowed for submitted files';
 $conf_def['section']['quota']['properties'] =
 array ( 'max_file_size_per_works' );
 
+$conf_def['section']['submissions']['label']      = 'Submissions';
+$conf_def['section']['submissions']['description']= 'Other submission options';
+$conf_def['section']['submissions']['properties'] =
+array ( 'clwrk_endDateDelay' );
 
 //PROPERTIES
 
@@ -137,4 +151,25 @@ array ('label'         => 'Generate an event in the calendar'
       ,'acceptedValue' => array ( 'TRUE'=> 'Yes', 'FALSE'=>'No' )
       );
 
-?>
+$conf_def_property_list['clwrk_endDateDelay'] =
+array (
+        'label'         => 'Assignment end date delay'
+      , 'description'   => 'Number of days by default between the start date and the end date of an assignment.'
+      , 'default'       => '365'
+      , 'type'           => 'integer'
+      , 'unit'           => 'days'
+      , 'display'      => true
+      , 'readonly'      => FALSE
+      , 'acceptedValue' => array('min'=> '1', 'max' => '3650')
+      );
+
+$conf_def_property_list['clwrk_customTmpPath'] =
+array ('label'       => 'Path to the temporary folder used to generate the zip archive'
+      ,'description' => 'Used when downloading the assignements. Leave empty to use the default one (which is located in courses/<COURSEID>/work/)'
+      ,'default'     => ''
+      ,'type'        => 'string'
+      ,'display'     => TRUE
+      ,'readonly'    => FALSE
+      ,'technicalInfo' => 'Path to the temporary zip folder'
+      );
+

@@ -1,21 +1,16 @@
-<?php // $Id: GenericEditor.class.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: GenericEditor.class.php 14314 2012-11-07 09:09:19Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
- *
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @see http://www.claroline.net/wiki/config_def/
- *
- * @package EDITOR
- *
- * @author Claro Team <cvs@claroline.net>
- * @author Sébastien Piraux <pir@cerdecam.be>
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @see         http://www.claroline.net/wiki/config_def/
+ * @package     EDITOR
+ * @author      Claro Team <cvs@claroline.net>
+ * @author      Sebastien Piraux <pir@cerdecam.be>
  */
  
 /**
@@ -52,7 +47,7 @@ class GenericEditor
     /**
      * @var $webPath path to access via the web to the directory of the editor
      */
-    var $webPath;      
+    var $webPath;
 
     function GenericEditor( $name,$content,$rows,$cols,$optAttrib,$webPath )
     {
@@ -61,7 +56,7 @@ class GenericEditor
         $this->rows = $rows;
         $this->cols = $cols;
         $this->optAttrib = $optAttrib;
-        $this->webPath = $webPath;    
+        $this->webPath = $webPath;
     }
 
 
@@ -105,11 +100,9 @@ class GenericEditor
         $textArea .= 'rows="'.$this->rows.'" '
         .    'cols="'.$this->cols.'" '
         .   $this->optAttrib.' >'
-        .    "\n".htmlspecialchars($this->content)."\n"
+        .    "\n".claro_htmlspecialchars($this->content)."\n"
         .    '</textarea>'."\n";
 
         return $textArea;
     }
 }
-
-?>

@@ -1,4 +1,4 @@
-<?php // $Id: manifest.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: manifest.lib.php 14315 2012-11-08 14:51:17Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -6,7 +6,7 @@
  * CLAROLINE
  * manifest parser class and utility functions
  * 
- * @version 1.9 $Revision: 12923 $
+ * @version 1.9 $Revision: 14315 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see     http://www.claroline.net/wiki/index.php/Install
@@ -75,7 +75,7 @@ class ModuleManifestParser
         else
         {
             $this->backlog->debug('Manifest open : '.$manifestPath);
-            $data = html_entity_decode(urldecode($data));
+            $data = claro_html_entity_decode(urldecode($data));
         }
 
         if ( !xml_parse( $xmlParser, $data ) )

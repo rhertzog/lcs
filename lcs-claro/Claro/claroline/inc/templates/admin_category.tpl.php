@@ -1,15 +1,8 @@
-<!-- $Id: admin_category.tpl.php 13544 2011-09-07 08:37:45Z abourguignon $ -->
+<!-- $Id: admin_category.tpl.php 14314 2012-11-07 09:09:19Z zefredz $ -->
 
-<?php echo claro_html_tool_title($this->nameTools); ?>
+<?php echo $this->title; ?>
 
 <?php echo $this->dialogBox->render(); ?>
-
-<p>
-    <a class="claroCmd" href="<?php echo $_SERVER['PHP_SELF']; ?>?cmd=rqAdd">
-        <img src="<?php echo get_icon_url('default_new'); ?>" alt="<?php echo get_lang('Category'); ?>" />
-        <?php echo get_lang('Create a category'); ?>
-    </a>
-</p>
 
 <?php if (get_conf('categories_order_by', 'rank') != 'rank') : ?>
 <p>
@@ -26,9 +19,7 @@
     <th><?php echo get_lang('Visibility'); ?></th>
     <th><?php echo get_lang('Edit'); ?></th>
     <th><?php echo get_lang('Delete'); ?></th>
-    <?php if (get_conf('categories_order_by', 'rank') == 'rank') : ?>
     <th colspan="2"><?php echo get_lang('Order'); ?></th>
-    <?php endif; ?>
   </tr>
 </thead>
 <tbody>
@@ -45,29 +36,29 @@
     <td><?php echo (!is_null($elmt['dedicatedCourse']) ? ($elmt['dedicatedCourse'] . ' (' . $elmt['dedicatedCourseCode'] . ')') : ('')); ?></td>
     <td align="center"><?php echo $elmt['nbCourses']; ?></td>
     <td align="center">
-       <a href="<?php echo htmlspecialchars(URL::Contextualize('?cmd=exVisibility&amp;categoryId=' . $elmt['id'])); ?>">
+       <a href="<?php echo claro_htmlspecialchars(URL::Contextualize('?cmd=exVisibility&amp;categoryId=' . $elmt['id'])); ?>">
        <img src="<?php echo get_icon_url($elmt['visible']?'visible':'invisible'); ?>" alt="<?php echo get_lang('Change visibility'); ?>" />
        </a>
     </td>
     <td align="center">
-       <a href="<?php echo htmlspecialchars(URL::Contextualize('?cmd=rqEdit&amp;categoryId=' . $elmt['id'])); ?>">
+       <a href="<?php echo claro_htmlspecialchars(URL::Contextualize('?cmd=rqEdit&amp;categoryId=' . $elmt['id'])); ?>">
        <img src="<?php echo get_icon_url('edit'); ?>" alt="<?php echo get_lang('Edit category'); ?>" />
        </a>
     </td>
     <td align="center">
-       <a href="<?php echo htmlspecialchars(URL::Contextualize('?cmd=exDelete&amp;categoryId=' . $elmt['id'])); ?>"
-        onclick="return confirmation('<?php echo clean_str_for_javascript($elmt['name']); ?>');">
+       <a href="<?php echo claro_htmlspecialchars(URL::Contextualize('?cmd=exDelete&amp;categoryId=' . $elmt['id'])); ?>"
+        onclick="return ADMIN.confirmationDel('<?php echo clean_str_for_javascript($elmt['name']); ?>');">
        <img src="<?php echo get_icon_url('delete'); ?>" alt="<?php echo get_lang('Delete category'); ?>" />
        </a>
     </td>
     <?php if (get_conf('categories_order_by') == 'rank') : ?>
     <td align="center">
-        <a href="<?php echo htmlspecialchars(URL::Contextualize('?cmd=exMoveUp&amp;categoryId=' . $elmt['id'])); ?>">
+        <a href="<?php echo claro_htmlspecialchars(URL::Contextualize('?cmd=exMoveUp&amp;categoryId=' . $elmt['id'])); ?>">
             <img src="<?php echo get_icon_url('move_up'); ?>" alt="<?php echo get_lang('Move up category'); ?>" />
         </a>
     </td>
     <td align="center">
-        <a href="<?php echo htmlspecialchars(URL::Contextualize('?cmd=exMoveDown&amp;categoryId=' . $elmt['id'])); ?>">
+        <a href="<?php echo claro_htmlspecialchars(URL::Contextualize('?cmd=exMoveDown&amp;categoryId=' . $elmt['id'])); ?>">
             <img src="<?php echo get_icon_url('move_down'); ?>" alt="<?php echo get_lang('Move down category'); ?>" />
         </a>
     </td>

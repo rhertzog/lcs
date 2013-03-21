@@ -1,5 +1,5 @@
 *******************************************************************************
-                            CLAROLINE 1.10 - CREDITS
+                            CLAROLINE 1.11 - CREDITS
 *******************************************************************************
 
 ------------------------------------------------------------------------------
@@ -21,41 +21,40 @@ Claroline Consortium involving several institutions over the world
                                 CLAROLINE TEAM
 ------------------------------------------------------------------------------
 
-Claroline Core Team :
-
-    From Claroline Consortium :
+Claroline Consortium :
     
     Philippe Dekimpe        (dkp@ecam.be)
-    Antonin Bourguignon     (antonin.bourguignon@claroline.net)
-    Stephane Klein          (stephane.klein@claroline.net)
-    
-    From UniversitÈ catholique de Louvain :
+    St√©phane Klein          (stephane.klein@claroline.net)
+    Nicolas Godfraind       (nicolas.godfraind@gmail.com)
+    Emmanuel Gevry          (emmanuel.gervy@claroline.net)
 
-    FrÈdÈric Minne          (zefredz@claroline.net) aka ZeFredz
-    FrÈdÈric Fervaille      (ffervaille@claroline.net)
-    
-    From Haute Ecole LÈonard de Vinci :
-    
-    Philippe Van Eerdenbrugghe (systho@gmail.com)
+Main contributors :
 
-Active contributors :
+    Universit√© catholique de Louvain (UCL) :
 
-    Laurence Dumortier  (laurence.dumortier@fundp.ac.be)
-    Jean-Roch Meurisse  (jean-roch.meurisse@fundp.ac.be)
+    Fr√©d√©ric Fervaille      (frederic.fervaille@uclouvain.be)
+    Fr√©d√©ric Minne          (zefredz@claroline.net)
+
+    Facult√©s Universitaires Notre-Dame de la Paix (FUNDP) :
+
+    Laurence Dumortier      (laurence.dumortier@fundp.ac.be)
+    Jean-Roch Meurisse      (jean-roch.meurisse@fundp.ac.be)
 
 Former members of the Claroline Team :
 
-    Sebastien Piraux    (seb@claroline.net) aka Fragile
-    Christophe GeschÈ   (moosh@claroline.net) aka Moosh
-    Anais Hulet         (Communication - CERDECAM)
-    Florence Hortmans   (Communication - CERDECAM)
-    GrÈgory Koch        (Developer - UCL)
-    Mathieu Laurent     (Developer - CERDECAM)
-    Guillaume Lederer   (Developer - CERDECAM)
-    Nicolas Leblanc     (Developer - CERDECAM)
-    Hugues Peeters      (Developer and Project Manager - UCL)
-    Aurelien Van Hamme  (Developer - CERDECAM)
-    Dimitri Rambout     (Developer - UCL)
+    Antonin Bourguignon         (Developer - Claroline Consortium)
+    Christophe Gesch√©           (moosh@claroline.net) aka Moosh
+    Anais Hulet                 (Communication - CERDECAM)
+    Florence Hortmans           (Communication - CERDECAM)
+    Gr√©gory Koch                (Developer - UCL)
+    Mathieu Laurent             (Developer - CERDECAM)
+    Guillaume Lederer           (Developer - CERDECAM)
+    Nicolas Leblanc             (Developer - CERDECAM)
+    Hugues Peeters              (Developer and Project Manager - UCL)
+    S√©bastien Piraux            (seb@claroline.net) aka Fragile
+    Dimitri Rambout             (Developer - UCL)
+    Philippe Van Eerdenbrugghe  (Developer - HELV)
+    Aurelien Van Hamme          (Developer - CERDECAM)
 
 Former contributors :
 
@@ -84,8 +83,9 @@ Personnal Agenda :              Eric Remy (eremy@rmwc.edu),
                                 Toon Van Hoecke (Toon.VanHoecke@UGent.be)
 
 LDAP :                          Roan Embrechts (roan.embrechts@ugent.be)
+                                Fr√©d√©ric Minne (frederic.minne@uclouvain.be)
 
-Events since last visit :       RenÈ Haentjens (rene.haentjens@intec.ugent.be)
+Events since last visit :       Ren√© Haentjens (rene.haentjens@intec.ugent.be)
                                 Guillaume Lederer
 
 Quizz Tool :                    Olivier Brouckaert (oli.brouckaert@skynet.be)
@@ -102,7 +102,14 @@ User Image :                    Miguel (miguel@cesga.es)
                                 Patrick Cool (patrick.cool@ugent.be)
 
 Upgrade tool :                  Mathieu Laurent (laurent@cerdecam.be)
-                                Christophe GeschÈ (gesche@ipm.ucl.ac.be)
+                                Christophe Gesch√© (gesche@ipm.ucl.ac.be)
+
+Export class to csv, display 
+user classes, reset all 
+passwords, Lost password 
+email,Learning Path tool 
+enhancements :                  Samuel Champagne ( schampagne@libergia.com )
+                                development made at Solutions Libergia inc.
 
 ------------------------------------------------------------------------------
                                 EXTERNAL CODE
@@ -164,7 +171,7 @@ Croatian translation :          Dragan Misovic
                                 Karolj Skala (skala@irb.hr)
                                 Bozo Jonic (bjonic@irb.hr)
 
-Dutch translation :             InËs Du Four (inesdufour@hotmail.com)
+Dutch translation :             In√®s Du Four (inesdufour@hotmail.com)
                                 Denis Smidts (Smidts@ipm.ucl.ac.be)
                                 Isabel Deprez (isabel.deprez@rug.ac.be)
                                 Roan Embrechts (roan.embrechts@ugent.be)
@@ -186,7 +193,7 @@ Galician translation :          Maria Jose Rodriges Malmierca
 
 German translation :            Stiehl Nikolai  (nikolai.stiehl@web.de)
                                 Markus Petz
-                                Angela B¸chler (buechler@gp.tu-berlin.de)
+                                Angela B√ºchler (buechler@gp.tu-berlin.de)
                                 Christine Knieriemen (tine@knieriemen.de)
 
 Greek translation:              Costas Tsibanis (costas@noc.uoa.gr)
@@ -199,12 +206,12 @@ Greek translation:              Costas Tsibanis (costas@noc.uoa.gr)
                                                     National Technical University of Athens
                                                     http://www.image.ece.ntua.gr/
 
-Hungarian translation :         Bal·zs Gyˆrˆk (gyorok.balazs@vgszi.szie.hu)
+Hungarian translation :         Bal√°zs Gy√∂r√∂k (gyorok.balazs@vgszi.szie.hu)
                                 Maxigas <maxigas@anargeek.net>
 
 Italian translation :           Maurizio Guercio  (mguercio@libero.it),
                                 Furio Petrossi  (Furio.Petrossi@scuolefvg.org)
-                                Giuseppe Filice (Universit‡ della Calabria)
+                                Giuseppe Filice (Universit√† della Calabria)
                                 Fausto Barbarito (http://www.nosmet.com)
                                 Stefano Crosatti (krosa@libero.it)
 
@@ -216,6 +223,7 @@ Persian translation :           Elnaz Sarbar (elnaz.s@gmail.com)
 
 Polish translation :            Slawomir Gurdala (guslaw@uni.lodz.pl)
                                 Jacek Grudzien (bel2@bel.biz.pl)
+                                Kamil Kiereta (kamil.kiereta@gmail.com)
 
 Portugese translation :         Marcello R. Minholi (minholi@unipar.br)
 
@@ -228,7 +236,7 @@ Slovenian translation :         Sergej Rinc - http://sergej.rinc.ws
 
 Spanish translation :           Xavier Casassas (xcc@mail.ics.co.at)
                                 Jorge Gonzales (jgonzalez@athenasoft.com.mx)
-                                Javier Picado LadrÛn de Guevara (jpicado@eurosur.com)
+                                Javier Picado Ladr√≥n de Guevara (jpicado@eurosur.com)
                                 Oda Begares (begaeres@arch.ucl.ac.be)
                                 Rodrigo Alejandro Parra Soto
                                 Gerardo Albela Gonzalez (galbela@uvigo.es)
@@ -237,7 +245,7 @@ Spanish translation :           Xavier Casassas (xcc@mail.ics.co.at)
 Spanish_Latin :                 Carlos Brys (brys@fce.unam.edu.ar)
                                 Mario Augusto Mendez Secaira <mendezsecaira@galileo.edu>
 
-ThaÔ translation :              Sutas Jitchuen (dtsjc@mucc.mahidol.ac.th)
+Tha√Ø translation :              Sutas Jitchuen (dtsjc@mucc.mahidol.ac.th)
                                 Prachid Tinnabutr (prachid@prachid.com, prachid007@gmail.com)
 
 Turkish translation :           Cuneyt Birkok (cbirkok@insanbilimleri.com)
@@ -266,5 +274,5 @@ Gerendi Sandor Attila <http://gsasec.blogspot.com/>
 
 =========================================================================
     Europe, Belgium, Louvain-la-Neuve
-    $Date: 2011-02-15 15:49:00 +0100 (mar 15 f√©v 2011) $
+    $Date: 2012-07-24 08:04:40 +0200 (mar 24 jui 2012) $
 ================================== END ===================================

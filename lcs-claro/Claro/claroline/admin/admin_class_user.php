@@ -1,11 +1,11 @@
-<?php //$Id: admin_class_user.php 12941 2011-03-10 15:25:18Z abourguignon $
+<?php //$Id: admin_class_user.php 14314 2012-11-07 09:09:19Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users registration to classes.
  *
- * @version     $Revision: 12941 $
+ * @version     $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -30,18 +30,12 @@ $tbl_user       = $tbl_mdb_names['user'];
 $tbl_class      = $tbl_mdb_names['user_category'];
 $tbl_class_user = $tbl_mdb_names['user_rel_profile_category'];
 
-// javascript confirm pop up declaration
+// Javascript confirm pop up declaration for header
+$jslang = new JavascriptLanguage;
+$jslang->addLangVar('Are you sure you want to unregister %name ?');
+ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
 
-$htmlHeadXtra[] =
-         "<script>
-         function confirmationUnReg (name)
-         {
-             if (confirm(\"".clean_str_for_javascript(get_lang('Are you sure you want to unregister'))."\"+ name + \"? \"))
-                 {return true;}
-             else
-                 {return false;}
-         }
-         </script>";
+JavascriptLoader::getInstance()->load('admin');
 
 //------------------------------------
 // Main section
@@ -81,7 +75,21 @@ if ( !empty($class_id) )
                 $dialogBox->success( get_lang('All users have been sucessfully unregistered from the class') );
             }
             break;
-
+            
+        case 'export' :
+            if( $cmd == 'export' && claro_is_platform_admin() )
+            {
+                require_once( dirname(__FILE__) . '/../user/lib/export.lib.php');
+                
+                $csv = export_user_list_for_class( $class_id );
+                if( !empty($csv) )
+                {
+                    claro_send_stream( $csv, $classinfo['name'].'.csv');
+                    exit;
+                }
+            }
+            break;
+            
         default :
             // No command
     }
@@ -188,7 +196,16 @@ $cmdList[] = '<a class="claroCmd" href="' . get_path('clarolineRepositoryWeb').'
 .             '</a>'
 ;
 
-$cmdList[] = '<a class="claroCmd" href="' . get_path('clarolineRepositoryWeb').'user/AddCSVusers.php'
+if(claro_is_platform_admin())
+{
+    $cmdList[] = claro_html_cmd_link( claro_htmlspecialchars(Url::Contextualize(
+                                        $_SERVER['PHP_SELF'] . '?cmd=export&amp;class_id=' .$class_id ))
+                                     , '<img src="' . get_icon_url('export') . '" alt="" />'
+                                     . get_lang('Export user list')
+                                     );
+}
+
+$cmdList[] = '<a class="claroCmd" href="' . get_path('clarolineRepositoryWeb').'user/addcsvusers.php'
 .             '?AddType=adminClassTool&amp;class_id='.$class_id.'">'
 .             '<img src="' . get_icon_url('import_list') . '" /> '
 .             get_lang('Add a user list in class')
@@ -235,7 +252,7 @@ if ( !empty($class_id) )
     $out .= '<div style="text-align: right">'."\n"
     .    '<form action="' . $_SERVER['PHP_SELF'] . '" method="GET">' . "\n"
     .    '<input type="hidden" name="class_id" value="'.$class_id. '" />' . "\n"
-    .    '<input type="text" value="' . htmlspecialchars($search).'" name="search" id="search" size="20" />' . "\n"
+    .    '<input type="text" value="' . claro_htmlspecialchars($search).'" name="search" id="search" size="20" />' . "\n"
     .    '<input type="submit" value=" ' . get_lang('Search') . ' " />' . "\n"
     .    '</form>'."\n"
     .    '</div>' . "\n"
@@ -247,7 +264,7 @@ if ( !empty($class_id) )
     // start table...
     $out .= '<table class="claroTable emphaseLine" width="100%" border="0" cellspacing="2">'
     .    '<thead>'
-    .    '<tr class="headerX" align="center" valign="top">'
+    .    '<tr align="center" valign="top">'
     .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=user_id&amp;chdir=yes">' . get_lang('User id') . '</a></th>'
     .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=nom&amp;chdir=yes">' . get_lang('Last name') . '</a></th>'
     .    '<th><a href="' . $_SERVER['PHP_SELF'] . '?class_id='.$class_id.'&amp;order_crit=prenom&amp;chdir=yes">' . get_lang('First name') . '</a></th>'
@@ -274,7 +291,7 @@ if ( !empty($class_id) )
          .    '<td align="center">'  ."\n"
          .    '<a href="'.$_SERVER['PHP_SELF']
          .    '?cmd=unsubscribe&amp;offset='.$offset.'&amp;user_id='.$list['user_id'].'&amp;class_id='.$class_id.'" '
-         .    ' onclick="return confirmationUnReg(\''.clean_str_for_javascript($list['prenom'] . ' ' . $list['nom']).'\');">' . "\n"
+         .    ' onclick="return ADMIN.confirmationUnReg(\''.clean_str_for_javascript($list['prenom'] . ' ' . $list['nom']).'\');">' . "\n"
          .    '<img src="' . get_icon_url('unenroll') . '" alt="" />' . "\n"
          .    '</a>' . "\n"
          .    '</td></tr>' . "\n"

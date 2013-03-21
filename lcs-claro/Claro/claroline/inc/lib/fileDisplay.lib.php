@@ -1,4 +1,4 @@
-<?php // $Id: fileDisplay.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: fileDisplay.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -369,13 +369,13 @@ function claro_html_document_breadcrumb($curDirPath)
         if ( empty($thisDir) )
         {
             $bc->appendNode( new BreadCrumbsNode( get_lang('Root'),
-                htmlspecialchars( Url::Contextualize(get_module_entry_url('CLDOC')) ) ) );
+                claro_htmlspecialchars( Url::Contextualize(get_module_entry_url('CLDOC')) ) ) );
         }
         else
         {
             $urlTrail .= '/'.$thisDir;
             $bc->appendNode( new BreadCrumbsNode( get_lang($thisDir),
-                htmlspecialchars( Url::Contextualize( get_module_entry_url('CLDOC') . '?cmd=exChDir&amp;file='.base64_encode($urlTrail) ) ) ));
+                claro_htmlspecialchars( Url::Contextualize( get_module_entry_url('CLDOC') . '?cmd=exChDir&amp;file='.base64_encode($urlTrail) ) ) ));
         }
     }
     

@@ -1,9 +1,9 @@
-<?php // $Id: scorm_classes.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: scorm_classes.php 14320 2012-11-09 10:36:57Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 14320 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -233,7 +233,7 @@ class ScormAnswerFillInBlanks extends answerFillInBlanks
 
             foreach( $allAnswerList as $answer )
             {
-                $optionList[htmlspecialchars($answer)] = htmlspecialchars($answer);
+                $optionList[claro_htmlspecialchars($answer)] = claro_htmlspecialchars($answer);
             }
 
             for( $i = 0; $i < $answerCount; $i++ )
@@ -366,4 +366,3 @@ class ScormAnswerMatching extends answerMatching
        return $out;
     }
 }
-?>

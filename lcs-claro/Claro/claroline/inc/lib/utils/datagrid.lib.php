@@ -1,11 +1,11 @@
-<?php // $Id: datagrid.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: datagrid.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Datagrid library
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -222,7 +222,7 @@ class Claro_Utils_Datagrid extends Claro_Html_Element
     protected function replace( $key, $value, $output )
     {
         $output = str_replace( "%$key%", $value, $output );
-        $output = str_replace( "%html($key)%", htmlspecialchars( $value ), $output );
+        $output = str_replace( "%html($key)%", claro_htmlspecialchars( $value ), $output );
         $output = str_replace( "%uu($key)%", rawurlencode( $value ), $output );
         $output = str_replace( "%int($key)%", (int) $value, $output );
         
@@ -248,7 +248,7 @@ class Claro_Utils_Autogrid extends Claro_Utils_Datagrid
             
             foreach ( array_keys( $rows[0] ) as $column )
             {
-                $this->columnsLabels[$column] = htmlspecialchars( $column );
+                $this->columnsLabels[$column] = claro_htmlspecialchars( $column );
                 $this->columnsValues[$column] = "%html({$column})%";
             }
         }

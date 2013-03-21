@@ -1,8 +1,8 @@
-<?php // $Id: user_course_access.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: user_course_access.php 14314 2012-11-07 09:09:19Z zefredz $
 /**
  * CLAROLINE
  *
- * @version 1.9 $Revision: 12923 $
+ * @version 1.9 $Revision: 14314 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -47,11 +47,11 @@ if( isset($_REQUEST['courseId']) && !empty($_REQUEST['courseId']) )
 }
 else
 {
-    if( claro_is_in_a_course() ) 
+    if( claro_is_in_a_course() )
     {
         $courseId = claro_get_current_course_id();
     }
-    else                         
+    else
     {
        claro_disp_auth_form(true);
     }
@@ -119,7 +119,7 @@ if( $period == 'week' )
     $weekStartDate = ($reqdate-(86400*date("w" , $reqdate)));
     $weekEndDate = ($reqdate+(86400*(6-date("w" , $reqdate)) ));
     
-    $displayedDate = 
+    $displayedDate =
     get_lang('From')
     .' '.claro_html_localised_date(get_locale('dateFormatLong'), $weekStartDate )
     ." ".get_lang('to')
@@ -150,16 +150,15 @@ $accessList = claro_sql_query_fetch_all($sqlAccessDates);
 /*
  * Output
  */
-$cssLoader = CssLoader::getInstance();
-$cssLoader->load( 'tracking', 'screen');
+CssLoader::getInstance()->load( 'tracking', 'screen');
 
 // initialize output
-$claroline->setDisplayType( CL_PAGE );
+$claroline->setDisplayType( Claroline::PAGE );
 
 // FIXME (link + parameters)
 $nameTools = get_lang('User access to course');
 ClaroBreadCrumbs::getInstance()->setCurrent( $nameTools, $_SERVER['PHP_SELF'].'?userId=' . $userId );
-ClaroBreadCrumbs::getInstance()->prepend( get_lang('Users statistics'), htmlspecialchars( Url::Contextualize('userReport.php?userId=' . $userId) ) );
+ClaroBreadCrumbs::getInstance()->prepend( get_lang('Users statistics'), claro_htmlspecialchars( Url::Contextualize('userReport.php?userId=' . $userId) ) );
 ClaroBreadCrumbs::getInstance()->prepend( get_lang('Users'), get_module_url('CLUSR').'/user.php' );
 
 
@@ -276,4 +275,3 @@ $output .= "\n" . '</div>' . "\n";
 $claroline->display->body->setContent($output);
 
 echo $claroline->display->render();
-?>

@@ -8,9 +8,9 @@
    =================================================== */
 define('DISP_REGISTRATION_SUCCEED','DISP_REGISTRATION_SUCCEED');
 define('DISP_REGISTRATION_FORM','DISP_REGISTRATION_FORM');
-$cidReset = TRUE;
-$gidReset = TRUE;
-$tidReset = TRUE;
+$cidReset = true;
+$gidReset = true;
+$tidReset = true;
 require '../inc/claro_init_global.inc.php';
 
 // Security Check
@@ -29,13 +29,15 @@ $error = false;
 $messageList = array();
 $display = DISP_REGISTRATION_FORM;
 
+$dialogBox = new DialogBox;
+
 //fichiers nécessaires à l'exploitation de l'API
 	$BASEDIR="/var/www";
 	//include "../Includes/basedir.inc.php";
 	include "$BASEDIR/lcs/includes/headerauth.inc.php";
 	include "$BASEDIR/Annu/includes/ldap.inc.php";
-	include "$BASEDIR/Annu/includes/ihm.inc.php";  
-	
+	include "$BASEDIR/Annu/includes/ihm.inc.php";
+
 /*=====================================================================
   my fonctions
  =====================================================================*/
@@ -74,19 +76,19 @@ $display = DISP_REGISTRATION_FORM;
         @ldap_close ($ds);
         return $is_prof;
  }
- 
+
 function is_present($login) {
 	$Sql= "SELECT user_id FROM cl_user WHERE  username='$login' ";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	$tst=mysql_fetch_array($res, MYSQL_NUM);
-	if (mysql_num_rows($res)>0) return $tst[0]; else return false;	
+	if (mysql_num_rows($res)>0) return $tst[0]; else return false;
 
 }
 
 function add_eleve($name,$firstname,$log){
 	global $domain;
 	$mail=$log."@".$domain;
-	$Sql ="INSERT INTO cl_user (nom,prenom,username,authSource,email,creatorId ) 
+	$Sql ="INSERT INTO cl_user (nom,prenom,username,authSource,email,creatorId )
 					VALUES ( '$name','$firstname', '$log', 'CAS', '$mail','1')";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	if ($res) return true; else return false;
@@ -95,14 +97,14 @@ function add_eleve($name,$firstname,$log){
 function add_prof($name,$firstname,$log){
  	global $domain;
 	$mail=$log."@".$domain;
-	$Sql ="INSERT INTO cl_user (nom,prenom,username,authSource,email,isCourseCreator,creatorId ) 
+	$Sql ="INSERT INTO cl_user (nom,prenom,username,authSource,email,isCourseCreator,creatorId )
 					VALUES ( '$name','$firstname', '$log', 'CAS', '$mail', '1', '1')";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	if ($res) return true; else return false;
 }
 
 function user_in_classe($id_cl,$id_el){
-	$Sql ="INSERT INTO cl_rel_class_user (class_id,user_id) 
+	$Sql ="INSERT INTO cl_rel_class_user (class_id,user_id)
 	VALUES ( '$id_cl','$id_el')";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	if ($res) return true; else return false;
@@ -123,46 +125,53 @@ else                           $cmd = '';
   Display Section
  =====================================================================*/
 
-$interbredcrump[] = array ('url' => get_path('rootAdminWeb'), 'name' => get_lang('Administration'));
-$noQUERY_STRING   = TRUE;
+ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('rootAdminWeb') );
+$noQUERY_STRING   = true;
 
-// Display Header
+if ( $display == DISP_REGISTRATION_FORM )
+{
+    $dialogBox->info('Cette op&eacute;ration synchronise les comptes utilistateurs Claroline avec le LDAP du LCS');
+}
 
-include get_path('incRepositorySys') . '/claro_init_header.inc.php';
+$out = '';
 
 // Display title
-
-
-echo claro_html_tool_title( array('mainTitle'=>$nameTools ) )
-.    claro_html_msg_list($messageList)
-;
+$out .= claro_html_tool_title( array('mainTitle'=>$nameTools ) )
+      . $dialogBox->render();
 
 if ( $display == DISP_REGISTRATION_SUCCEED )
 {
-    echo claro_html_menu_vertical($newUserMenu);
+    //$out .= claro_html_list($newUserMenu);
 }
 else // $display == DISP_REGISTRATION_FORM;
 
 {
     //  if registration failed display error message
-
-    echo 'La synchronisation : <br />
+   $out .=  '<style>
+  .message {background-color: #E6E6E6;
+    color: #339933;font-size: 0.9 em;}
+  </style>';
+    $out .= 'La synchronisation : <br />
     <ul>
     <li> ajoute les &#233;l&#232;ves pr&#233;sents dans le ldap mais absents de la plateforme et les affecte &#224; leur classe : <span id="cr0" class="message"></span></li>
     <li> ajoute les profs pr&#233;sents dans le ldap mais absents de la plateforme et les affecte &#224; la classe Profs : <span id="cr1"class="message"></span></li>
     <li> supprime les &#233;l&#232;ves qui ne sont plus dans l\'annuaire : <span id="cr2"class="message"></span></li>
     <li> supprime les profs qui ne sont plus dans l\'annuaire : <span id="cr3"class="message"></span></li>
-    <li> d&#233;clare "orphelins" les cours des profs supprim&#233;s : <span id="cr4"class="message"></span></li>';
-    
+    <li> d&#233;clare "orphelins" les cours des profs supprim&#233;s : <span id="cr4"class="message"></span></li>
+    </ul>
+    <div id="mess" class="message"></div>';
+
     if ( $cmd == '' )
 	{
-    $html = '<form action="' . $_SERVER['PHP_SELF'] . '" method="post"  >' . "\n"
+    $out .= '<form action="' . $_SERVER['PHP_SELF'] . '" method="post"  >' . "\n"
     .       claro_form_relay_context().       form_input_hidden('cmd', 'synchronisation');
-    $html .= ' <br /><input type="submit"   value="' . get_lang('Ok') . '" />&nbsp;'
+    $out .= ' <br /><input type="submit"   value="' . get_lang('Ok') . '" />&nbsp;'
         . claro_html_button($_SERVER['HTTP_REFERER'], get_lang('Cancel')) ;
-    echo $html.'</form>' . "\n";
-    }    
+     $out .='</form>' . "\n";
+    }
 }
+$claroline->display->body->appendContent($out);
+echo $claroline->display->render();
 /*=====================================================================
   Main Section
  =====================================================================*/
@@ -170,19 +179,19 @@ else // $display == DISP_REGISTRATION_FORM;
 
 if ( $cmd == 'synchronisation' )
 {
-$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS) 
-		  			or die ('<center>' .'WARNING ! SYSTEM UNABLE TO CONNECT TO THE DATABASE SERVER.' .'</center>');	
+$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS)
+        or die ('<center>' .'WARNING ! SYSTEM UNABLE TO CONNECT TO THE DATABASE SERVER.' .'</center>');
 
 /*=====================================================================
   Suppression des eleves absents du ldap
- =====================================================================*/ 
+ =====================================================================*/
 //recherche de la liste des eleves
 $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPlatformAdmin ='0'";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	//$tst=mysql_fetch_array($res, MYSQL_NUM);
-	if (mysql_num_rows($res)>0) 
+	if (mysql_num_rows($res)>0)
 	$nb='0';$cpt4='0';
-	while ($enrg = mysql_fetch_array($res, MYSQL_NUM)) 
+	while ($enrg = mysql_fetch_array($res, MYSQL_NUM))
 		{
 		if (!(is_eleve($enrg[0]))) {
 			$eleves_partis[$nb]=$enrg[0];
@@ -190,7 +199,7 @@ $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPl
 			$nb++;
 			}
 		}
-		
+
 		if (count($eleves_partis))
 			{
 			for ($loop=0; $loop < count($eleves_partis); $loop++)
@@ -212,14 +221,14 @@ $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPl
 
 /*=====================================================================
   Suppression des profs absents du ldap
- =====================================================================*/ 
+ =====================================================================*/
 //recherche de la liste des profs
 	$Sql= "SELECT username, prenom, nom , user_id FROM cl_user WHERE  isCourseCreator='1' and isPlatformAdmin ='0'";
 	$res = @mysql_query ($Sql) or die (mysql_error());
 	//$tst=mysql_fetch_array($res, MYSQL_NUM);
-	if (mysql_num_rows($res)>0) 
+	if (mysql_num_rows($res)>0)
 	$nb='0';$cpt4='0';$cpt5='0';
-	while ($enrg = mysql_fetch_array($res, MYSQL_NUM)) 
+	while ($enrg = mysql_fetch_array($res, MYSQL_NUM))
 		{
 		if (!(is_prof($enrg[0]))) {
 			$profs_partis[$nb]=$enrg[0];
@@ -228,7 +237,7 @@ $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPl
 			$nb++;
 			}
 		}
-		
+
 		if (count($profs_partis))
 			{
 			for ($loop=0; $loop < count($profs_partis); $loop++)
@@ -240,17 +249,17 @@ $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPl
 				 echo '<script type="text/javascript" language="JavaScript">
 				 document.getElementById("cr3").innerHTML = "   '.$cpt4.'  prof(s) supprim&#233;(s)" ;
 				 </script>';
-				 
+
 				 // Declaration  des cours orphelins
 				 $Sql= "UPDATE `cl_cours` SET `titulaires` = 'personne' WHERE `titulaires` = '{$nom_prof_parti[$loop]}'";
 				 $res1 = @mysql_query ($Sql) or die (mysql_error());
 				  if ($res1) {
 				 	$cpt5 += mysql_affected_rows();
 				 	echo '<script type="text/javascript" language="JavaScript">
-				 document.getElementById("cr4").innerHTML = "'.$cpt5.' cours d&#233;clar&#233;(s) orphelin(s)" 
+				 document.getElementById("cr4").innerHTML = "'.$cpt5.' cours d&#233;clar&#233;(s) orphelin(s)"
 				 </script>';
 				 }
-				 
+
 				 }
                                                         del_user_in_classe($idp_partis[$loop]);
 			}
@@ -258,52 +267,52 @@ $Sql= "SELECT username, user_id FROM cl_user WHERE  isCourseCreator='0' and isPl
 		else echo '<script type="text/javascript" language="JavaScript">
 				 document.getElementById("cr3").innerHTML = "  aucun prof supprim&#233;" ;
 				 </script>';
-	
-			
+
+
 /*=====================================================================
 affectations aux classes
- =====================================================================*/ 
- 
+ =====================================================================*/
+
 
 	$mess="";
-		
+
 		$filtre="Classe*";
-		//recherche des groupes 
+		//recherche des groupes
 		$groups=search_groups('cn='.$filtre);
 		$groups[count($groups)]["cn"]="Profs";
 		$cpt=0; $cpt2=0;$cpt3=0;
 		if (count($groups))
 			{
-			   
+
 			for ($loup=0; $loup < count($groups); $loup++)
 			        {
 				$grp=$groups[$loup]["cn"];
-				$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS) 
+				$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS)
 		  		or die ('<center>' .'WARNING ! SYSTEM UNABLE TO CONNECT TO THE DATABASE SERVER.' .'</center>');
-					
-					//recuperation de l'id du groupe 
+
+					//recuperation de l'id du groupe
 					$Sql ="SELECT id FROM cl_class WHERE name='$grp'";
 					$res = @mysql_query ($Sql) or die (mysql_error());
 					$tst=mysql_fetch_array($res, MYSQL_NUM);
 					if (mysql_num_rows($res)>0) $id_grp=$tst[0];
-					
+
 					//recherche des membres
 					$uids = search_uids ("(cn=".$groups[$loup]["cn"].")", "half");
 		  			$people = search_people_groups ($uids,"(sn=*)","cat");
 		  			//on se reconnecte a la base claroline
-		  			$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS) 
+		  			$db = @mysql_connect($dbHost, $dbLogin, $dbPass, false, CLIENT_FOUND_ROWS)
 		  			or die ('<center>' .'WARNING ! SYSTEM UNABLE TO CONNECT TO THE DATABASE SERVER.' .'</center>');
-		  			 for ($loop=0; $loop <count($people); $loop++) 
+		  			 for ($loop=0; $loop <count($people); $loop++)
 		  			 	{
-		  			 	
+
 		      				$uname = $people[$loop]['uid'];
 		      				$nom = addslashes($people[$loop]["name"]);
 		      				$prenom= getprenom($people[$loop]["fullname"],$nom);
-		      				
-		      				//insertion des membres dans la table users	
-		      				
+
+		      				//insertion des membres dans la table users
+
 		      				if  ($grp != "Profs"){
-		      				if (!(is_present($uname))) 
+		      				if (!(is_present($uname)))
                                                                                                             {
                                                                                                             add_eleve($nom,$prenom,$uname);
 		      				user_in_classe($id_grp,is_present($uname));
@@ -313,8 +322,8 @@ affectations aux classes
 		      				document.getElementById("cr0").innerHTML = " r&#233;sultat =  '.$cpt2.'  &#233;l&#232;ve(s) affect&#233;(s)" ;
 		      				</script>';
 		      				}
-		      				else {		      				
-		      				if (!(is_present($uname))) 
+		      				else {
+		      				if (!(is_present($uname)))
                                                                                                             {
                                                                                                             $cpt3++;
                                                                                                             add_prof($nom,$prenom,$uname);
@@ -325,21 +334,18 @@ affectations aux classes
 		      				</script>';
 		      				}
 					       //membre suivant
-					       
+
 					       }//fin d'insertion des membres
-				       $mess.="<BR>";
-				        
-				       
+
+
+
 					}//fin de traitement d'une classe
-				}//fin du traitement 
+				}//fin du traitement
 			else  $mess.= "<h3 class='ko'> Erreur dans l'importation de $filtre<BR></h3>";
-			
- 
+                                                      if  ($mess!="")echo  '<script type="text/javascript" language="JavaScript">
+                                                         document.getElementById("mess").innerHTML = "   '.$mess.'  " ;
+                                                          </script>';
 
 }
-
-// Display footer
-
-include get_path('incRepositorySys') . '/claro_init_footer.inc.php';
 
 ?>

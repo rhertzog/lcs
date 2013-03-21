@@ -1,18 +1,13 @@
-<?php
+<?php // $Id: cllp.scormexport.cnr.php 14315 2012-11-08 14:51:17Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version 0.1 $Revision: 12923 $
- *
+ * @version     0.1 $Revision: 14315 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLQWZ
- *
- * @author Dimitri Rambout
- *
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLQWZ
+ * @author      Dimitri Rambout
  */
 
 function getIdCounter()
@@ -147,15 +142,18 @@ class CLQWZ_ScormExport extends PathScormExport
         }
         $questionPonderationList[] = $scormQuestion->getGrade();
 
-        $pageBody .=
-            '<tr class="headerX">' . "\n"
+        $pageBody .= '<thead>' . "\n"
+        .    '<tr>' . "\n"
         .    '<th>'.get_lang('Question').' '.$questionCount.'</th>' . "\n"
-        .    '</tr>' . "\n";
+        .    '</tr>' . "\n"
+        .    '</thead>' . "\n";
 
         $pageBody .=
-            '<tr>' . "\n" . '<td>' . "\n"
-        .    $scormQuestion->export() . "\n"
-        .    '</td>' . "\n" . '</tr>' . "\n";
+          '<tr>' . "\n"
+        . '<td>' . "\n"
+        . $scormQuestion->export() . "\n"
+        . '</td>' . "\n"
+        . '</tr>' . "\n";
     }
     
     $pageEnd = '
@@ -183,7 +181,7 @@ class CLQWZ_ScormExport extends PathScormExport
         var fillAnswerList = new Array();' . "\n";
 
     // This is the actual code present in every exported exercise.
-    // use html_entity_decode in output to prevent double encoding errors with some languages...
+    // use claro_html_entity_decode in output to prevent double encoding errors with some languages...
         $pageHeader .= '
 
         function calcScore()
@@ -217,7 +215,7 @@ class CLQWZ_ScormExport extends PathScormExport
                 doLMSCommit();
                 doLMSFinish();
                 scoreCommited = true;
-                if(showScore) alert(\''.clean_str_for_javascript(html_entity_decode(get_lang('Score'))).' :\n\' + rawScore + \'/\' + weighting );
+                if(showScore) alert(\''.clean_str_for_javascript(claro_html_entity_decode(get_lang('Score'))).' :\n\' + rawScore + \'/\' + weighting );
             }
         }
     
@@ -271,5 +269,3 @@ class CLQWZ_ScormExport extends PathScormExport
     return $this->error;
   }
 }
-
-?>

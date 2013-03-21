@@ -1,4 +1,4 @@
-<?php // $Id: dialogBox.lib.php 12964 2011-03-14 11:56:32Z abourguignon $
+<?php // $Id: dialogBox.lib.php 13034 2011-04-01 15:07:53Z abourguignon $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Dialog box.
  *
- * @version     1.10 $Revision: 12964 $
+ * @version     $Revision: 13034 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -313,5 +313,4 @@ class DialogBox implements Display
             return '';
         }
     }
-
 }

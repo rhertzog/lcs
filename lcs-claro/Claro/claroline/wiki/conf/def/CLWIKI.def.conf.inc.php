@@ -1,11 +1,11 @@
-<?php // $Id: CLWIKI.def.conf.inc.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: CLWIKI.def.conf.inc.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 /**
  * CLAROLINE
  *
  * This file describe the parameter for user tool
  *
- * @version 1.8 $Revision: 12923 $
+ * @version 1.8 $Revision: 13708 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -54,5 +54,3 @@ array ('label'         => 'Force text preview before saving it'
                                 ,'FALSE' => 'No'
                                 )
       );
-
-?>

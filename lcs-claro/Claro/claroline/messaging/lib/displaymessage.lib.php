@@ -1,11 +1,11 @@
-<?php // $Id: displaymessage.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: displaymessage.lib.php 14314 2012-11-07 09:09:19Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * class to display messages
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14314 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -67,7 +67,7 @@ class DisplayMessage
                     $recipientString .= ", ";
                 }
                 
-                $recipientString .= get_lang('%firstName %lastName', array ('%firstName' =>htmlspecialchars($recipientList['userList'][$count]['firstName']), '%lastName' => htmlspecialchars($recipientList['userList'][$count]['lastName'])));
+                $recipientString .= get_lang('%firstName %lastName', array ('%firstName' =>claro_htmlspecialchars($recipientList['userList'][$count]['firstName']), '%lastName' => claro_htmlspecialchars($recipientList['userList'][$count]['lastName'])));
                 
                 if ( $count > 10 && $count < count($recipientList) )
                 {
@@ -126,12 +126,12 @@ class DisplayMessage
         }
         else
         {
-            throw new Exception("Unsupported sentTo in recipient list : " . htmlspecialchars($recipientList['sentTo']));
+            throw new Exception("Unsupported sentTo in recipient list : " . claro_htmlspecialchars($recipientList['sentTo']));
         }
         
 
         $content = '<div id="im_message">'."\n"
-                .  '<h4 class="header">'.htmlspecialchars($message->getSubject()).'</h4>'."\n"
+                .  '<h4 class="header">'.claro_htmlspecialchars($message->getSubject()).'</h4>'."\n"
                 .  '<div class="imInfoBlock">' . "\n"
                 .  '<div class="imCmdList">'.$action.'</div>'
                 .  '<div class="imInfo">'
@@ -233,7 +233,7 @@ class DisplayMessage
     {
         
         $content = '<div id="im_message">'."\n"
-        .    '<h4 class="header">'.htmlspecialchars($message->getSubject()).'</h4>'."\n"
+        .    '<h4 class="header">'.claro_htmlspecialchars($message->getSubject()).'</h4>'."\n"
         .    '<div class="imInfoBlock">' . "\n"
         .    '<div class="imCmdList">'.$action.'</div>'."\n\n"
         .    '<div class="imInfo">'."\n"
@@ -248,7 +248,7 @@ class DisplayMessage
             $content .= '<a href="sendmessage.php?cmd=rqMessageToUser&amp;userId='.$message->getSender().'">';
         }
         
-        $content .= get_lang('%firstName %lastName', array ('%firstName' =>htmlspecialchars($message->getSenderFirstName()), '%lastName' => htmlspecialchars($message->getSenderLastName())));
+        $content .= get_lang('%firstName %lastName', array ('%firstName' =>claro_htmlspecialchars($message->getSenderFirstName()), '%lastName' => claro_htmlspecialchars($message->getSenderLastName())));
         
         if ($isAllowed)
         {
@@ -294,7 +294,7 @@ class DisplayMessage
             
             if ($courseData)
             {
-                $content .= htmlspecialchars($courseData['officialCode']).' - '.htmlspecialchars($courseData['name']);
+                $content .= claro_htmlspecialchars($courseData['officialCode']).' - '.claro_htmlspecialchars($courseData['name']);
             }
             else
             {

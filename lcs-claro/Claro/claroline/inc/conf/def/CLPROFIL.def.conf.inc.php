@@ -1,4 +1,4 @@
-<?php // $Id: CLPROFIL.def.conf.inc.php 12967 2011-03-14 14:18:44Z ffervaille $
+<?php // $Id: CLPROFIL.def.conf.inc.php 13412 2011-08-10 13:08:25Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * This file describe the parameter for profil editor.
  *
- * @version     1.8 $Revision: 12967 $
+ * @version     1.8 $Revision: 13412 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Config
@@ -89,7 +89,7 @@ array ( 'label'         => 'Profile form'
       , 'type'          => 'multi'
       , 'acceptedValue' => array ('name' => 'Name'
                                  ,'official_code' => 'Official code'
-                                 ,'login' => 'Login'
+                                 ,'login' => 'Username'
                                  ,'password' => 'Password'
                                  ,'email' => 'Email'
                                  ,'phone' => 'Phone'

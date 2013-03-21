@@ -1,11 +1,11 @@
-<?php // $Id: claro_init_global.inc.php 13001 2011-03-28 08:56:07Z abourguignon $
+<?php // $Id: claro_init_global.inc.php 14353 2013-01-21 09:30:26Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 13001 $
+ * @version     $Revision: 14353 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLKERNEL
@@ -44,6 +44,11 @@ else
        .'read thoroughly INSTALL.txt file provided in the Claroline package.'
        .'</p>'
        .'</center>');
+}
+
+if ( get_conf('clmain_serverTimezone','') )
+{
+    date_default_timezone_set(get_conf('clmain_serverTimezone'));
 }
 
 // Most PHP package has increase the error reporting.
@@ -185,9 +190,29 @@ catch ( Exception $e )
 
 require get_path('incRepositorySys') . '/claro_init_local.inc.php';
 
+/*----------------------------------------------------------------------
+  Load language translation and locale settings
+  ----------------------------------------------------------------------*/
+
+language::load_translation();
+language::load_locale_settings();
+language::load_module_translation();
+
+// set the mysql connexion for the course !!! does not work ignored by mysql :(
+// I'm afraid this will not be possible if we don't reset the connection
+// We could solve this when the charset is in the session (since this will allow
+// us to change the charset while initialising the database), but as a 
+// consequence this will not work onn the first access to the course.
+/*
+Claroline::getDatabase()->setCharset( strtolower(get_locale('charset')) );
+pushClaroMessage( get_locale('charset') . ':' . Claroline::getDatabase ()->getCharset (),'debug' );
+pushClaroMessage( Claroline::getDatabase ()->getCharset (),'debug' );
+ */
+
 // Initialize the claroline display
 Claroline::initDisplay();
 // Assign the Claroline singleton to a variable for more convenience
+// for legacy code, it's far better to use Claroline class static methods.
 $claroline = Claroline::getInstance();
 
 /*===========================================================================
@@ -240,12 +265,25 @@ if ( isset( $tlabelReq ) && !empty( $tlabelReq ) )
         Check tool access right an block unautorised users
     ----------------------------------------------------------------------*/
     
+    if ( claro_is_course_required() && !claro_is_in_a_course() )
+    {
+        claro_disp_auth_form(true);
+    }
+    
     if ( get_module_data( $tlabelReq, 'type' ) == 'admin' && ! claro_is_platform_admin() )
     {
         claro_die(get_lang('Not allowed'));
     }
     
-    if ( $tlabelReq !== 'CLGRP' && ! claro_is_module_allowed() )
+    if ( get_module_data( $tlabelReq, 'type' ) == 'crsmanage' 
+        && ! ( claro_is_course_manager() || claro_is_platform_admin() ) )
+    {
+        claro_die(get_lang('Not allowed'));
+    }
+    
+    if ( $tlabelReq !== 'CLWRK' && $tlabelReq !== 'CLGRP' && ! claro_is_module_allowed()
+        && ! ( isset($_SESSION['inPathMode']) && $_SESSION['inPathMode'] 
+        && ( $tlabelReq == 'CLQWZ' || $tlabelReq == 'CLDOC') ) ) // WORKAROUND FOR OLD LP
     {
         if ( ! claro_is_user_authenticated() )
         {
@@ -258,6 +296,7 @@ if ( isset( $tlabelReq ) && !empty( $tlabelReq ) )
     }
     
     if ( $tlabelReq !== 'CLGRP'
+        && $tlabelReq !== 'CLWRK'
         && claro_is_in_a_group()
         && ( !claro_is_group_allowed()
         || ( !claro_is_allowed_to_edit()
@@ -361,14 +400,6 @@ if ( claro_is_in_a_tool() )
 }
 
 /*----------------------------------------------------------------------
-  Load language translation and locale settings
-  ----------------------------------------------------------------------*/
-
-language::load_translation();
-language::load_locale_settings();
-language::load_module_translation();
-
-/*----------------------------------------------------------------------
   Prevent duplicate form submission
   ----------------------------------------------------------------------*/
 
@@ -441,6 +472,27 @@ if ( isset($_POST['claroFormId']) )
 }
 
 /*----------------------------------------------------------------------
+  Load default javascript libraries
+ ----------------------------------------------------------------------*/
+
+JavascriptLoader::getInstance()->load('jquery');
+JavascriptLoader::getInstance()->load('jquery.qtip');
+JavascriptLoader::getInstance()->load('claroline');
+JavascriptLoader::getInstance()->load('claroline.ui');
+// add other default platform javascript here
+
+// Load course home page javascript
+if ( claro_is_in_a_course() )
+{
+    // add other default course javascript here
+    
+    if ( claro_is_in_a_group() )
+    {
+        // add other default group javascript here
+    }
+}
+
+/*----------------------------------------------------------------------
   Find MODULES's includes to add and include them using a cache system
  ----------------------------------------------------------------------*/
 
@@ -456,6 +508,8 @@ if (!file_exists($cacheRepositorySys . $module_cache_filename))
     generate_module_cache();
 }
 
+require_once get_path('incRepositorySys') . '/lib/lock.lib.php';
+
 if (file_exists($cacheRepositorySys . $module_cache_filename))
 {
     include $cacheRepositorySys . $module_cache_filename;
@@ -465,11 +519,43 @@ else
     pushClaroMessage('module_cache not generated : check access right in '.$cacheRepositorySys,'warning');
 }
 
+// reset current module label after calling the cache
+if ( isset($tlabelReq) && get_current_module_label() != $tlabelReq )
+{
+    // reset all previous occurence of module label in stack
+    while (clear_current_module_label());
+    // set the current module label
+    set_current_module_label($tlabelReq);
+}
+
 // Add feed RSS in header
 if ( claro_is_in_a_course() && get_conf('enableRssInCourse', true) )
 {
     require claro_get_conf_repository() . 'rss.conf.php';
 
-    $claroline->display->header->addHtmlHeader('<link rel="alternate" type="application/rss+xml" title="' . htmlspecialchars($_course['name'] . ' - ' . get_conf('siteName')) . '"'
+    $claroline->display->header->addHtmlHeader('<link rel="alternate" type="application/rss+xml" title="' . claro_htmlspecialchars($_course['name'] . ' - ' . get_conf('siteName')) . '"'
     .' href="' . get_path('url') . '/claroline/backends/rss.php?cidReq=' . claro_get_current_course_id() . '" />' );
+}
+
+// timezone debug code
+if ( claro_debug_mode() && get_conf('clmain_serverTimezone','') )
+{
+    pushClaroMessage('timezone set to '.date_default_timezone_get(),'debug');
+}
+
+if ( claro_is_in_a_course() && isset( $tlabelReq ) && $tlabelReq == 'CLQWZ' )
+{
+    require_once get_path('incRepositorySys').'/../exercise/lib/add_missing_table.lib.php';
+    init_qwz_questions_categories ();
+}
+
+if ( !claro_is_platform_admin () )
+{
+    $courseStatus = claro_get_current_course_data ( 'status' );
+
+    if ( $courseStatus == 'trash' || $courseStatus == 'disable' )
+    {
+        Claroline::getDisplay()->body->hideCourseTitleAndTools();
+        claro_die( get_lang('This course is not available anymore, please contact the platform administrator.') );
+    }
 }

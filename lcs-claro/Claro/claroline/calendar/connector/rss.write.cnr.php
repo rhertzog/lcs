@@ -1,18 +1,15 @@
-<?php // $Id: rss.write.cnr.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: rss.write.cnr.php 13708 2011-10-19 10:46:34Z abourguignon $
 if ( count( get_included_files() ) == 1 ) die( '---' );
+
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 12923 $
- *
+ * @version     $Revision: 13708 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
- *
- * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
- *
- * @package CLCAL
- * @package CLRSS
- *
- * @author Claro Team <cvs@claroline.net>
+ * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
+ * @package     CLCAL
+ * @package     CLRSS
+ * @author      Claro Team <cvs@claroline.net>
  */
 
 function CLCAL_write_rss($context)
@@ -39,14 +36,14 @@ function CLCAL_write_rss($context)
             //prepare values
             //c ISO 8601 date (added in PHP 5) 2004-02-12T15:19:21+00:00
             $item['dc:date'] = ('c' == $item['dc:date'])?date('Y-m-d\TH:i:sO', $item['timestamp']):$item['dc:date'];
-            $item['content'] = ((isset($item['speakers'])) ? (get_lang('Speakers').': '.$item['speakers'].'<br/>') : ('')) 
+            $item['content'] = ((isset($item['speakers'])) ? (get_lang('Speakers').': '.$item['speakers'].'<br/>') : (''))
                              . trim(str_replace('<!-- content: html -->','',$item['content']));
 
-            $itemRssList[] = array( 
+            $itemRssList[] = array(
                 'title'       => $item['title'],
                 'category'    => trim($toolNameList['CLCAL']),
-                'guid'        => get_path('rootWeb') .'claroline/' . 'calendar/agenda.php?cidReq=' . $courseId . '&amp;l#event' . $item['id'],
-                'link'        => get_path('rootWeb') .'claroline/' . 'calendar/agenda.php?cidReq=' . $courseId . '&amp;l#event' . $item['id'],
+                'guid'        => get_path('rootWeb') .'claroline/' . 'calendar/agenda.php?cidReq=' . $courseId . '&amp;l#item' . $item['id'],
+                'link'        => get_path('rootWeb') .'claroline/' . 'calendar/agenda.php?cidReq=' . $courseId . '&amp;l#item' . $item['id'],
                 'description' => $item['content'],
                 'pubDate'     => $item['pubDate'],
                 'dc:date'     => $item['dc:date'],
@@ -57,5 +54,3 @@ function CLCAL_write_rss($context)
 
     return $itemRssList;
 }
-
-?>

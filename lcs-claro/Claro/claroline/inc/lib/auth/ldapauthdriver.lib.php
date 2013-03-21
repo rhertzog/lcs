@@ -1,9 +1,9 @@
-<?php
+<?php // $Id: ldapauthdriver.lib.php 14365 2013-01-29 07:33:37Z zefredz $
 
 /**
  * LDAP Authentication Driver
  *
- * @version     2.5
+ * @version     2.5 $Revision: 14365 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.fsf.org/licensing/licenses/agpl-3.0.html
@@ -26,11 +26,15 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
     protected
         $extAuthOptionList,
         $extAuthAttribNameList,
-        $extAuthAttribTreatmentList;
+        $extAuthAttribTreatmentList,
+        $userAttr,
+        $userFilter,
+        $userSelfBindAuth,
+        $useBindDn;
         
     protected $user;
     
-    public function __construct( $driverConfig )
+    public function setDriverOptions( $driverConfig )
     {
         $this->driverConfig = $driverConfig;
         $this->authSourceName = $driverConfig['driver']['authSourceName'];
@@ -48,6 +52,40 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
         $this->extAuthAttribNameList = $driverConfig['extAuthAttribNameList'];
         $this->extAuthAttribTreatmentList = $driverConfig['extAuthAttribTreatmentList'];
         $this->extAuthIgnoreUpdateList = $driverConfig['extAuthAttribToIgnore'];
+
+        // @since 1.9.9 
+        $defaultProfileOptions = array( 
+                'courseRegistrationAllowed' => null,
+                'courseEnrolmentMode' => null, 
+                'defaultCourseProfile' => null, 
+                'editableProfileFields' => null,
+                'readonlyProfileFields' => array( 'login', 'password', 'phone', 'email', 'officalCode' ) );
+        
+        // @since 1.11 
+        $this->authProfileOptions = isset($driverConfig['authProfileOptions'])
+            ? array_merge( $defaultProfileOptions, $driverConfig['authProfileOptions'] )
+            : $defaultProfileOptions
+            ;
+        
+        $this->userSelfBindAuth = isset( $driverConfig['extAuthOptionList']['userSelfBindAuth'] )
+            ? $driverConfig['extAuthOptionList']['userSelfBindAuth'] 
+            : false
+            ;
+        
+        $this->useBindDn = isset( $driverConfig['extAuthOptionList']['useBindDn'] )
+            ? $driverConfig['extAuthOptionList']['useBindDn'] 
+            : false
+            ;
+        
+        $this->userAttr = isset($this->extAuthOptionList['userattr']) 
+            ? $this->extAuthOptionList['userattr'] 
+            : 'uid'
+            ;
+            
+        $this->userFilter = isset($this->extAuthOptionList['userfilter']) 
+            ? $this->extAuthOptionList['userfilter'] 
+            : null
+            ;
     }
     
     public function authenticate()
@@ -62,14 +100,41 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
         {
             $auth->connect();
             
-            $userAttr = isset($this->extAuthOptionList['userattr']) ? $this->extAuthOptionList['userattr'] : null;
-            $userFilter = isset($this->extAuthOptionList['userfilter']) ? $this->extAuthOptionList['userfilter'] : null;
+            // no anonymous bind
+            // user can search
+            if( $this->userSelfBindAuth == 'true')
+            {
+                $searchdn = "{$this->userAttr}={$this->username},".$this->extAuthOptionList['basedn'];
+                $searchpw = $this->password;
+                
+                $auth->bind( $searchdn, $searchpw );
+            }
+            // user cannot search
+            elseif ( $this->useBindDn )
+            {
+                $searchdn = $this->extAuthOptionList['binddn'];
+                $searchpw = $this->extAuthOptionList['bindpw']; 
             
-            $user = $auth->getUser($this->username, $userFilter, $userAttr);
+                $auth->bind( $searchdn, $searchpw );
+            }
+            
+            // search user
+            
+            $user = $auth->getUser($this->username, $this->userFilter, $this->userAttr);
             
             if ( $user )
             {
-                if( $auth->authenticate( $user->getDn(), $this->password ) )
+                if( $this->userSelfBindAuth == 'true')
+                {
+                    $binddn = "{$this->userAttr}={$this->username},".$this->extAuthOptionList['basedn'];
+                }
+                else
+                {
+                    $binddn = $user->getDn();
+                }
+                
+                
+                if( $auth->authenticate( $binddn, $this->password ) )
                 {
                     $this->user = $user;
                     return true;
@@ -105,6 +170,8 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
     
     public function getUserData()
     {
+        //$userData = $this->user->getData();
+        
         $userAttrList = array('lastname'     => NULL,
                           'firstname'    => NULL,
                           'loginName'    => NULL,
@@ -120,10 +187,12 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
             {
                 if ( ! is_null($this->user->$extAuthAttribName) )
                 {
-                    $userAttrList[$claroAttribName] = $this->user->$extAuthAttribName;
+                    $userAttrList[$claroAttribName] = $this->user->extAuthAttribName;
                 }
             }
         }
+        
+        // $userAttrList = array_merge( $userData, $userAttrList );
         
         foreach($userAttrList as $claroAttribName => $claroAttribValue)
         {

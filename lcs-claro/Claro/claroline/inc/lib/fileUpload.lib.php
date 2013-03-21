@@ -1,4 +1,4 @@
-<?php // $Id: fileUpload.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: fileUpload.lib.php 14362 2013-01-28 10:51:22Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * FILE UPLOAD LIBRARY
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14362 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLDOC
@@ -108,44 +108,28 @@ function enough_size($fileSize, $dir, $maxDirSpace)
 
 /**
  * Compute the size already occupied by a directory and is subdirectories
- *
  * @param string $dirPath Size of the file in byte
- *
  * @return integer : the directory size in bytes
  */
 
 function dir_total_space($dirPath)
 {
-    chdir ($dirPath) ;
-    $handle  = opendir($dirPath);
     $sumSize = 0;
-
-    while (false !== ($element = readdir($handle) ) )
+    
+    if( !empty( $dirPath ) 
+        && !is_null($dirPath) 
+        && file_exists ( $dirPath ) 
+        && is_dir ( $dirPath ) )
     {
-        if ( $element == '.' || $element == '..')
+        $it = new RecursiveIteratorIterator( 
+            new RecursiveDirectoryIterator( $dirPath ) );
+        
+        foreach ( $it as $element ) 
         {
-            continue; // skip the current and parent directories
-        }
-
-        if ( is_file($element) )
-        {
-            $sumSize += filesize($element);
-        }
-
-        if ( is_dir($element) )
-        {
-            $dirList[] = $dirPath.'/'.$element;
-        }
-    }
-
-    closedir($handle) ;
-
-    if ( isset($dirList) && sizeof($dirList) > 0)
-    {
-        foreach($dirList as $j)
-        {
-            $sizeDir = dir_total_space($j);    // recursivity
-            $sumSize += $sizeDir;
+            if ( $element->isFile() )
+            {
+                $sumSize += $element->getSize();
+            }
         }
     }
 
@@ -307,7 +291,7 @@ function get_mime_type_extension_map()
  *                               working directory
  * @param  string $uncompress  - whether 'unzip' and file is a zip;
  *                               extract the content.
- * @param string $allowPHP     - if set to true, then there is no security check for .php files
+ * @param string $allowPHP     - if set to true, then there is no security check for .php files (works for zip archives only)
  * @return boolean : true if it succeds, false otherwise
  */
 
@@ -360,7 +344,7 @@ function treat_uploaded_file($uploadedFile, $baseWorkDir, $uploadPath, $maxFille
 /**
  * Securely manage all the unzipping process of an uploaded document
  *
- * @author Christophe Gesché <moosh@claroline.net>
+ * @author Christophe Geschï¿½ <moosh@claroline.net>
  *
  * @param  array  $uploadedFile - follows the $_FILES Structure
  * @param  string $uploadPath   - destination of the upload.
