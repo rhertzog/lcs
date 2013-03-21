@@ -131,27 +131,7 @@ else
 	# Mise a jour du Numero de version
 	#---------------------------------
 
-
-        #
-        # Inscription du module dans applis.lcs_db
-        #
-     	if [ "$TESTMOD" = "N" ]; then
         /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER', name='$module', type='N' WHERE name='$module' ;" 
-        else
-	#cas de migration plugin to module
-	/usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$module', '1','$DESCRIPT','$INDICEMAJNBR', '$VER', '$MODULE', 'N');"	 #
-        #desactivation du plugin
-	/usr/bin/mysql -e "UPDATE lcs_db.applis SET value='0' WHERE name='Claroline';"
-	#maj de mediacenter
-		if [ -e $PATHPLUG/module/INWICAST ]; then
-		cp $CONF/mediacenter.tgz $PATHPLUG/module/INWICAST
-		cd $PATHPLUG/module/INWICAST
-		tar xzf mediacenter.tgz
-		rm mediacenter.tgz
-		fi
-	fi
-	# Fin de la mise a jour
-        #
 
 fi
 	#creation du repertoire pour mediacenter
@@ -180,8 +160,8 @@ EOF
 	cd $CHEMIN
 	echo "Fin de l'installation"
         cd $PATHPLUG
-	rm -rf claroline/install claroline/admin/upgrade/my_upgrade_to_1_9.php claroline/admin/upgrade/my_upgrade_to_1_10.php
-;;
+        rm -rf claroline/install
+    ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
     ;;
