@@ -4,7 +4,7 @@
    Consultation de l'annuaire LDAP
    Annu/people.php
    Equipe Tice academie de Caen
-   Derniere mise a jour : 30/10/2012
+   Derniere mise a jour : 04/04/2013
    ============================================= */
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
@@ -19,22 +19,31 @@
   //test si webmail est installe pour redirection mails
   $query="SELECT value from applis where name='squirrelmail' or name='roundcube'";
   $result=mysql_query($query);
-  if ($result) 
-	{
-          if ( mysql_num_rows($result) !=0 ) {
+  if ($result)  {
+  	if ( mysql_num_rows($result) !=0 ) {
           $r=mysql_fetch_object($result);
           $test_squir=$r->value;
-          }
-          else $test_squir="0";
-          }
-          else $test_squir="0";
+     } else $test_squir="0";
+   } else $test_squir="0";
    //fin test webmail
    
    //test listes de diffusion
-    exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
-    $listediff = 0;
-    if ( count($AllOutPut) >= 1) $listediff = 1;
-  //
+   exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
+   $listediff = 0;
+   if ( count($AllOutPut) >= 1) $listediff = 1;
+   //
+  
+   // test si desktop et install et actif
+   $query="SELECT value from applis where name='desktop';";
+   $result=mysql_query($query);
+   if ($result)  {
+   	if ( mysql_num_rows($result) !=0 ) {
+          $r=mysql_fetch_object($result);
+          $test_desktop=$r->value;
+     } else $test_destktop="0";
+	} else $test_desktop="0";
+   //
+  
   header_html();
   aff_trailer ("3");
   #$TimeStamp_0=microtime();
@@ -88,6 +97,11 @@
     <li><a href="mod_user_entry.php?uid=<? echo $user["uid"] ?>">Modifier le compte</a><br>
     <li><a href="del_user.php?uid=<? echo $user["uid"] ?>" onclick= "return getconfirm();">Supprimer le compte</a><br>
     <li><a href="pass_user_init.php?uid=<? echo $user["uid"] ?>" onclick= "return getconfirminitpass();">R&#233initialiser le mot de passe</a><br>
+    <?php
+    	if ( $test_desktop == "1" ) {
+    		echo "<li><a href=\"del_profil_desktop.php?uid=".$user["uid"]."\">R&#233initialiser le profil bureau</a><br>\n";
+    	}
+    ?>
     <li><a href="add_user_group.php?uid=<? echo $user["uid"] ?>">Ajouter &agrave; des groupes</a><br>
 	<li><a href="del_group_user.php?uid=<? echo $user["uid"] ?>">Supprimer des groupes d'appartenance</a><br>
   <?
