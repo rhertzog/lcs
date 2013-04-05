@@ -175,7 +175,7 @@ $tab_options_classes = array(); // Pour un futur formulaire select
 
 // Préparation du tableau avec les cellules à afficher
 $tab_affich = array(); // [classe_id_groupe_id][periode_id] (ligne colonne) ; les indices [check] sont ceux des checkbox multiples ; les indices [title] sont ceux des intitulés
-$tab_affich['check']['check'] = ($affichage_formulaire_statut) ? '<td class="nu"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /></td>' : '' ;
+$tab_affich['check']['check'] = ($affichage_formulaire_statut) ? '<td class="nu"></td>' : '' ;
 $tab_affich['check']['title'] = ($affichage_formulaire_statut) ? '<td class="nu"></td>' : '' ;
 $tab_affich['title']['check'] = ($affichage_formulaire_statut) ? '<td class="nu"></td>' : '' ;
 $tab_affich['title']['title'] = '<td class="nu"></td>' ;
@@ -189,7 +189,7 @@ if($_SESSION['USER_PROFIL_TYPE']!='professeur') // administrateur | directeur
   foreach($tab_classe_etabl as $classe_id => $classe_nom)
   {
     $tab_classe[$classe_id][0] = compact( 'droit_modifier_statut' , 'droit_appreciation_generale' , 'droit_impression_pdf' , 'droit_voir_archives_pdf' );
-    $tab_affich[$classe_id.'_0']['check'] = '<th class="nu"><input name="all_check" type="image" id="id_deb1_g'.$classe_id.'p" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /><br /><input name="all_uncheck" type="image" id="id_deb2_g'.$classe_id.'p" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></th>' ;
+    $tab_affich[$classe_id.'_0']['check'] = '<th class="nu"><q id="id_deb1_g'.$classe_id.'p" class="cocher_tout" title="Tout cocher."></q><q id="id_deb2_g'.$classe_id.'p" class="cocher_rien" title="Tout décocher."></q></th>' ;
     $tab_affich[$classe_id.'_0']['title'] = '<th id="groupe_'.$classe_id.'_0">'.html($classe_nom).'</th>' ;
     $tab_options_classes[$classe_id.'_0'] = '<option value="'.$classe_id.'_0">'.html($classe_nom).'</option>';
   }
@@ -207,7 +207,7 @@ else // professeur
       $droit_impression_pdf        = test_user_droit_specifique( $_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_IMPRESSION_PDF']        , $DB_ROW['jointure_pp'] /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ );
       $droit_voir_archives_pdf     = test_user_droit_specifique( $_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_VOIR_ARCHIVE']);
       $tab_classe[$DB_ROW['groupe_id']][0] = compact( 'droit_modifier_statut' , 'droit_appreciation_generale' , 'droit_impression_pdf' );
-      $tab_affich[$DB_ROW['groupe_id'].'_0']['check'] = ($affichage_formulaire_statut) ? ( ($droit_modifier_statut) ? '<th class="nu"><input name="all_check" type="image" id="id_deb1_g'.$DB_ROW['groupe_id'].'p" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /><br /><input name="all_uncheck" type="image" id="id_deb2_g'.$DB_ROW['groupe_id'].'p" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></th>' : '<th class="nu"></th>' ) : '' ;
+      $tab_affich[$DB_ROW['groupe_id'].'_0']['check'] = ($affichage_formulaire_statut) ? ( ($droit_modifier_statut) ? '<th class="nu"><q id="id_deb1_g'.$DB_ROW['groupe_id'].'p" class="cocher_tout" title="Tout cocher."></q><q id="id_deb2_g'.$DB_ROW['groupe_id'].'p" class="cocher_rien" title="Tout décocher."></q></th>' : '<th class="nu"></th>' ) : '' ;
       $tab_affich[$DB_ROW['groupe_id'].'_0']['title'] = '<th id="groupe_'.$DB_ROW['groupe_id'].'_0">'.html($DB_ROW['groupe_nom']).'</th>' ;
       $tab_options_classes[$DB_ROW['groupe_id'].'_0'] = '<option value="'.$DB_ROW['groupe_id'].'_0">'.html($DB_ROW['groupe_nom']).'</option>';
     }
@@ -264,7 +264,7 @@ $tab_ligne_id = array_keys($tab_affich);
 unset($tab_ligne_id[0],$tab_ligne_id[1]);
 foreach($DB_TAB as $DB_ROW)
 {
-  $tab_affich['check'][$DB_ROW['periode_id']] = ($affichage_formulaire_statut) ? '<th class="nu"><input name="all_check" type="image" id="id_fin1_p'.$DB_ROW['periode_id'].'" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /> <input name="all_uncheck" type="image" id="id_fin2_p'.$DB_ROW['periode_id'].'" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></th>' : '' ;
+  $tab_affich['check'][$DB_ROW['periode_id']] = ($affichage_formulaire_statut) ? '<th class="nu"><q id="id_fin1_p'.$DB_ROW['periode_id'].'" class="cocher_tout" title="Tout cocher."></q><q id="id_fin2_p'.$DB_ROW['periode_id'].'" class="cocher_rien" title="Tout décocher."></q></th>' : '' ;
   $tab_affich['title'][$DB_ROW['periode_id']] = '<th class="hc" id="periode_'.$DB_ROW['periode_id'].'">'.html($DB_ROW['periode_nom']).'</th>' ;
   foreach($tab_ligne_id as $ligne_id)
   {
@@ -509,7 +509,7 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
 <form action="#" method="post" id="zone_chx_rubriques" class="hide">
   <h2>Rechercher des saisies manquantes</h2>
   <?php echo $commentaire_selection ?>
-  <p><a href="#zone_chx_rubriques" id="rubrique_check_all"><img src="./_img/all_check.gif" alt="Tout cocher." /> Toutes</a>&nbsp;&nbsp;&nbsp;<a href="#zone_chx_rubriques" id="rubrique_uncheck_all"><img src="./_img/all_uncheck.gif" alt="Tout décocher." /> Aucune</a></p>
+  <p><a href="#zone_chx_rubriques" id="rubrique_check_all" class="cocher_tout">Toutes</a>&nbsp;&nbsp;&nbsp;<a href="#zone_chx_rubriques" id="rubrique_uncheck_all" class="cocher_rien">Aucune</a></p>
   <div class="prof_liste"><?php echo implode('</div><div class="prof_liste">',$tab_div) ?></div>
   <p style="clear:both"><span class="tab"></span><button id="lancer_recherche" type="button" class="rechercher">Lancer la recherche</button> <button id="fermer_zone_chx_rubriques" type="button" class="annuler">Annuler</button><label id="ajax_msg_recherche">&nbsp;</label></p>
 </form>
@@ -521,6 +521,7 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
     <input type="hidden" id="f_listing_rubriques" name="f_listing_rubriques" value="" />
     <input type="hidden" id="f_listing_eleves" name="f_listing_eleves" value="" />
     <input type="hidden" id="f_mode" name="f_mode" value="texte" />
+    <input type="hidden" id="f_parite" name="f_parite" type="" />
   </div>
 </form>
 
@@ -539,13 +540,10 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
   <div id="zone_resultat_classe"></div>
   <div id="zone_imprimer" class="hide">
     <form action="#" method="post" id="form_choix_eleves">
-      <p class="ti">
-        <button id="valider_imprimer" type="button" class="valider">Lancer l'impression</button><label id="ajax_msg_imprimer">&nbsp;</label>
-      </p>
       <table id="table_action" class="form t9">
         <thead>
           <tr>
-            <th class="nu"><input name="leurre" type="image" alt="leurre" src="./_img/auto.gif" /><input id="eleve_check_all" type="image" alt="Tout cocher." src="./_img/all_check.gif" title="Tout cocher." /><input id="eleve_uncheck_all" type="image" alt="Tout décocher." src="./_img/all_uncheck.gif" title="Tout décocher." /></th>
+            <th class="nu"><q class="cocher_tout" title="Tout cocher."></q><q class="cocher_rien" title="Tout décocher."></q></th>
             <th>Élèves</th>
             <th>Généré</th>
           </tr>
@@ -555,6 +553,12 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
         </tbody>
       </table>
     </form>
+    <p class="ti">
+      <label for="check_parite"><input id="check_parite" type="checkbox" checked /> Insérer des pages blanches si nécessaire pour forcer un nombre de pages pair par bilan (utile pour une impression recto-verso en série).</label>
+    </p>
+    <p class="ti">
+      <button id="valider_imprimer" type="button" class="valider">Lancer l'impression</button><label id="ajax_msg_imprimer">&nbsp;</label>
+    </p>
   </div>
   <div id="zone_voir_archive" class="hide">
     <p class="astuce">Ces bilans ne sont que des copies partielles, laissées à disposition pour information jusqu'à la fin de l'année scolaire.<br /><span class="u">Seul le document original fait foi.</span></p>

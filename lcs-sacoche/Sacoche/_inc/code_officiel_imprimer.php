@@ -38,6 +38,7 @@ $periode_id  = (isset($_POST['f_periode']))     ? Clean::entier($_POST['f_period
 $classe_id   = (isset($_POST['f_classe']))      ? Clean::entier($_POST['f_classe'])     : 0;
 $groupe_id   = (isset($_POST['f_groupe']))      ? Clean::entier($_POST['f_groupe'])     : 0;
 $etape       = (isset($_POST['f_etape']))       ? Clean::entier($_POST['f_etape'])      : 0;
+$page_parite = (isset($_POST['f_parite']))      ? Clean::entier($_POST['f_parite'])     : 0;
 // Autres chaines spécifiques...
 $listing_piliers  = (isset($_POST['f_listing_piliers']))  ? $_POST['f_listing_piliers']  : '' ;
 $tab_pilier_id  = array_filter( Clean::map_entier( explode(',',$listing_piliers) ) , 'positif' );
@@ -153,7 +154,7 @@ if($ACTION=='initialiser')
       }
       elseif(is_file(CHEMIN_DOSSIER_OFFICIEL.$_SESSION['BASE'].DS.fabriquer_nom_fichier_bilan_officiel( $eleve_id , $BILAN_TYPE , $periode_id )))
       {
-        $_SESSION['tmp_droit_voir_archive'][$eleve_id.$BILAN_TYPE] = TRUE; // marqueur mis en session pour vérifier que c'est bien cet utilisateur qui veut voir (et à donc le droit de voir) le fichier, car il n'y a pas d'autre vérification de droit ensuite
+        $_SESSION['tmp_droit_voir_archive'][$eleve_id.$BILAN_TYPE] = TRUE; // marqueur mis en session pour vérifier que c'est bien cet utilisateur qui veut voir (et a donc le droit de voir) le fichier, car il n'y a pas d'autre vérification de droit ensuite
         $archive_td = '<a href="releve_pdf.php?fichier='.$eleve_id.'_'.$BILAN_TYPE.'_'.$periode_id.'" class="lien_ext">Oui, le '.convert_date_mysql_to_french($DB_TAB[$eleve_id][0]['fichier_date']).'</a>' ;
       }
       else
@@ -175,6 +176,7 @@ if($ACTION=='initialiser')
 
 if( ($ACTION=='imprimer') && ($etape==2) )
 {
+  prevention_et_gestion_erreurs_fatales( FALSE /*memory*/ , TRUE /*time*/ );
   foreach($_SESSION['tmp']['tab_pages_decoupe_pdf'] as $eleve_id => $tab_tirages)
   {
     list( $eleve_identite , $page_plage ) = $tab_tirages[0];
@@ -193,6 +195,7 @@ if( ($ACTION=='imprimer') && ($etape==2) )
 
 if( ($ACTION=='imprimer') && ($etape==3) )
 {
+  prevention_et_gestion_erreurs_fatales( FALSE /*memory*/ , TRUE /*time*/ );
   $date = date('Y-m-d');
   $tab_pages_non_anonymes     = array();
   $tab_pages_nombre_par_bilan = array();

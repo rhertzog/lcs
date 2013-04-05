@@ -30,48 +30,21 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 if($_SESSION['SESAMATH_ID']==ID_DEMO) {}
 
-// Le code n'est pas exactement le même pour un parent...
+$groupe_type = (isset($_POST['f_groupe_type'])) ? Clean::texte($_POST['f_groupe_type']) : '';
+$groupe_id   = (isset($_POST['f_groupe_id']))   ? Clean::entier($_POST['f_groupe_id'])  : 0;
 
-if($_SESSION['USER_PROFIL_TYPE']=='parent')
+// Le code n'est pas exactement le même pour un administrateur que pour un professeur / directeur / parent.
+
+$tab_types = array('d'=>'Divers' , 'n'=>'niveau' , 'c'=>'classe' , 'g'=>'groupe' , 'b'=>'besoin') + array('Classes'=>'classe' , 'Groupes'=>'groupe' , 'Besoins'=>'groupe') ;
+
+if( (!$groupe_id) || (!isset($tab_types[$groupe_type])) )
 {
-  $groupe_id = (isset($_POST['f_groupe'])) ? Clean::entier($_POST['f_groupe']) : 0 ;
-  if(!$groupe_id)
-  {
-    exit('Erreur avec les données transmises !');
-  }
-  $groupe_type = 'classe';
+  exit('Erreur avec les données transmises !');
 }
-
-// ... que pour un administrateur...
-
-elseif( ($_SESSION['USER_PROFIL_TYPE']=='administrateur') || (isset($_POST['f_groupe_id'])) ) // test supplémentaire sinon pb avec la page administrateur_eleve_langue partagée avec les directeurs
+$groupe_type = $tab_types[$groupe_type];
+if($groupe_type=='Divers')
 {
-  $groupe_type = (isset($_POST['f_groupe_type'])) ? Clean::texte($_POST['f_groupe_type']) : ''; // d n c g b
-  $groupe_id   = (isset($_POST['f_groupe_id']))   ? Clean::entier($_POST['f_groupe_id'])  : 0;
-  $tab_types = array('d'=>'Divers' , 'n'=>'niveau' , 'c'=>'classe' , 'g'=>'groupe' , 'b'=>'besoin');
-  if( (!$groupe_id) || (!isset($tab_types[$groupe_type])) )
-  {
-    exit('Erreur avec les données transmises !');
-  }
-  $groupe_type = $tab_types[$groupe_type];
-  if($groupe_type=='Divers')
-  {
-    $groupe_type = ($groupe_id==1) ? 'sdf' : 'all' ;
-  }
-}
-
-// ... ou que pour un professeur / directeur.
-
-else
-{
-  $groupe_type = (isset($_POST['f_type']))   ? Clean::texte($_POST['f_type'])    : ''; // Classes Groupes Besoins
-  $groupe_id   = (isset($_POST['f_groupe'])) ? Clean::entier($_POST['f_groupe']) : 0;
-  $tab_types = array('Classes'=>'classe' , 'Groupes'=>'groupe' , 'Besoins'=>'groupe');
-  if( (!$groupe_id) || (!isset($tab_types[$groupe_type])) )
-  {
-    exit('Erreur avec les données transmises !');
-  }
-  $groupe_type = $tab_types[$groupe_type];
+  $groupe_type = ($groupe_id==1) ? 'sdf' : 'all' ;
 }
 
 // Autres valeurs à récupérer ou à définir.
@@ -82,11 +55,11 @@ $multiple     = (empty($_POST['f_multiple']))  ? FALSE                          
 $selection    = (empty($_POST['f_selection'])) ? FALSE                             : ( ($_POST['f_selection']==1) ? TRUE : explode(',',$_POST['f_selection']) ) ;
 
 $select_nom   = ($multiple) ? $select_nom : FALSE ;
-$option_first = ($multiple) ? 'non'       : 'oui' ;
+$option_first = ($multiple) ? FALSE       : ''    ;
 $selection    = ($multiple) ? $selection  : FALSE ;
 
 // Affichage du retour.
 
-exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_eleves_regroupement($groupe_type,$groupe_id,$statut) , $select_nom , $option_first , $selection , 'non' /*optgroup*/ , $multiple ) );
+exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_eleves_regroupement($groupe_type,$groupe_id,$statut) , $select_nom , $option_first , $selection , '' /*optgroup*/ , $multiple ) );
 
 ?>

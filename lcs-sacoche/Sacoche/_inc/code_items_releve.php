@@ -36,16 +36,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
  * 
  */
 
-// La récupération de beaucoup d'informations peut provoquer un dépassement de mémoire.
-// Et la classe FPDF a besoin de mémoire, malgré toutes les optimisations possibles, pour générer un PDF comportant parfois entre 100 et 200 pages.
-// De plus la consommation d'une classe PHP n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF en l'occurrence...
-// Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
-// D'où le ini_set(), même si cette directive peut être interdite dans la conf PHP ou via Suhosin (http://www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit)
-// En complément, register_shutdown_function() permet de capter une erreur fatale de dépassement de mémoire, sauf si CGI.
-// D'où une combinaison de toutes ces pistes, plus une détection par javascript du statusCode.
-
-augmenter_memory_limit();
-register_shutdown_function('rapporter_erreur_fatale_memoire');
+prevention_et_gestion_erreurs_fatales( TRUE /*memory*/ , FALSE /*time*/ );
 
 /*
 $type_individuel   $type_synthese   $type_bulletin
@@ -203,6 +194,10 @@ if($item_nb) // Peut valoir 0 dans le cas d'un bilan officiel où l'on regarde l
       }
     }
   }
+}
+if( !count($tab_eval) && !$make_officiel ) // Dans le cas d'un bilan officiel, où l'on regarde les élèves d'un groupe un à un, ce ne doit pas être bloquant.
+{
+  exit('Aucune évaluation trouvée sur cette période selon les paramètres choisis !');
 }
 $matiere_nb = count(array_unique($tab_matiere_for_item)); // 1 si $matiere_id >= 0 précédemment, davantage uniquement si $matiere_id = -1
 
@@ -785,7 +780,7 @@ if($type_individuel)
             }
             else
             {
-              $tab_image_tampon_signature = ( ($_SESSION['OFFICIEL']['TAMPON_SIGNATURE']=='signature') || (!$tab_signature[0]) ) ? $tab_signature[$prof_id_appreciation_generale] : $tab_signature[0] ;
+              $tab_image_tampon_signature = ( ($_SESSION['OFFICIEL']['TAMPON_SIGNATURE']=='signature') || ( ($_SESSION['OFFICIEL']['TAMPON_SIGNATURE']=='signature_ou_tampon') && $tab_signature[$prof_id_appreciation_generale]) ) ? $tab_signature[$prof_id_appreciation_generale] : $tab_signature[0] ;
             }
           }
           else
@@ -812,10 +807,20 @@ if($type_individuel)
         {
           $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE']);
         }
-        // Indiquer a postériori le nombre de pages par élève
+        // Relevé de notes - Légende
+        if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )
+        {
+          if($make_html) { $releve_HTML_individuel .= $legende_html; }
+          if($make_pdf)  { $releve_PDF->bilan_item_individuel_legende(); }
+        }
+        // Indiquer a posteriori le nombre de pages par élève
         if($make_pdf)
         {
-          $releve_PDF->reporter_page_nb();
+          $page_nb = $releve_PDF->reporter_page_nb();
+          if( !empty($page_parite) && ($page_nb%2) )
+          {
+            $releve_PDF->ajouter_page_blanche();
+          }
         }
         // Mémorisation des pages de début et de fin pour chaque élève pour découpe et archivage ultérieur
         if($make_action=='imprimer')
@@ -824,11 +829,6 @@ if($type_individuel)
           $page_fin   = $releve_PDF->page;
           $page_nombre = $page_fin - $page_debut + 1;
           $tab_pages_decoupe_pdf[$eleve_id][$numero_tirage] = array( $eleve_nom.' '.$eleve_prenom , $page_debut.'-'.$page_fin , $page_nombre );
-        }
-        if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )
-        {
-          if($make_html) { $releve_HTML_individuel .= $legende_html; }
-          if($make_pdf)  { $releve_PDF->bilan_item_individuel_legende(); }
         }
       }
     }
@@ -1066,7 +1066,7 @@ if($type_bulletin)
       }
       else
       {
-        $bulletin_matiere = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_matieres_professeur($_SESSION['USER_ID']) , $select_nom='f_rubrique' , $option_first='non' , $selection=FALSE , $optgroup='non');
+        $bulletin_matiere = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_matieres_professeur($_SESSION['USER_ID']) , 'f_rubrique' /*select_nom*/ , FALSE /*option_first*/ , FALSE /*selection*/ , '' /*optgroup*/);
       }
       $bulletin_form = '<li><form id="form_report_bulletin"><fieldset><button id="bouton_report" type="button" class="eclair">Report forcé</button> vers le bulletin <em>SACoche</em> '.$bulletin_periode.'<input type="hidden" id="f_eleves_moyennes" name="f_eleves_moyennes" value="'.implode('x',$tab_bulletin_input).'" /> '.$bulletin_matiere.'</fieldset></form><label id="ajax_msg_report"></label></li>';
       $bulletin_alerte = '<div class="danger">Un report forcé interrompt le report automatique des moyennes pour le bulletin et la matière concernée.</div>' ;

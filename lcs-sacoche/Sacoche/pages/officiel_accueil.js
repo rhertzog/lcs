@@ -124,20 +124,15 @@ $(document).ready
     // Clic pour tout cocher ou tout décocher
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    $('#table_accueil input[name=all_check]').click
+    $('#table_accueil').on
     (
+      'click',
+      'q.cocher_tout , q.cocher_rien',
       function()
       {
         var id_mask = $(this).attr('id').replace('_deb1_','^=').replace('_deb2_','^=').replace('_fin1_','$=').replace('_fin2_','$=');
-        $('input['+id_mask+']').prop('checked',true);
-      }
-    );
-    $('#table_accueil input[name=all_uncheck]').click
-    (
-      function()
-      {
-        var id_mask = $(this).attr('id').replace('_deb1_','^=').replace('_deb2_','^=').replace('_fin1_','$=').replace('_fin2_','$=');
-        $('input['+id_mask+']').prop('checked',false);
+        var etat = ( $(this).attr('class').substring(7) == 'tout' ) ? true : false ;
+        $('input['+id_mask+']').prop('checked',etat);
       }
     );
 
@@ -158,20 +153,14 @@ $(document).ready
       }
     );
 
-    $('#eleve_check_all').click
+    $('#table_action').on
     (
+      'click',
+      'q.cocher_tout , q.cocher_rien',
       function()
       {
-        $('#form_choix_eleves input[type=checkbox]').prop('checked',true);
-        return false;
-      }
-    );
-    $('#eleve_uncheck_all').click
-    (
-      function()
-      {
-        $('#form_choix_eleves input[type=checkbox]').prop('checked',false);
-        return false;
+        var etat = ( $(this).attr('class').substring(7) == 'tout' ) ? true : false ;
+        $('#table_action td.nu input[type=checkbox]').prop('checked',etat);
       }
     );
 
@@ -585,6 +574,7 @@ $(document).ready
       '#simuler_impression',
       function()
       {
+        $('#f_parite').val(0);
         $('#f_listing_eleves').val(memo_eleve);
         $.fancybox( '<label class="loader">'+"En cours&hellip;"+'</label>' , {'centerOnScroll':true} );
         $.ajax
@@ -983,7 +973,7 @@ $(document).ready
           dataType : "html",
           error : function(jqXHR, textStatus, errorThrown)
           {
-            var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' ;
+            var message = (jqXHR.status!=500) ? 'Échec de la connexion !' : ( (etape==1) ? 'Erreur 500&hellip; Mémoire insuffisante ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' : 'Erreur 500&hellip; Temps alloué insuffisant ? Sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "max_execution_time".' ) ;
             $('#ajax_msg_imprimer').removeAttr("class").addClass("alerte").html(message);
             $('#form_choix_classe button , #form_choix_classe select , #valider_imprimer').prop('disabled',false);
             return false;
@@ -1030,6 +1020,8 @@ $(document).ready
           return false;
         }
         $('#f_listing_eleves').val(listing_id);
+        var parite = $('#check_parite').is(':checked') ? 1 : 0 ;
+        $('#f_parite').val(parite);
         $('#form_choix_classe button , #form_choix_classe select , #valider_imprimer').prop('disabled',true);
         imprimer(1);
       }

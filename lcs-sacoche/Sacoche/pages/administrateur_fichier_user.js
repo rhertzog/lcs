@@ -42,7 +42,7 @@ $(document).ready
       {
         $('#ajax_msg').removeAttr("class").html('&nbsp;');
         // Masquer tout
-        $('#fieldset_sconet_eleves_non , #fieldset_sconet_eleves_oui , #fieldset_sconet_parents_non , #fieldset_sconet_parents_oui , #fieldset_sconet_professeurs_directeurs_non , #fieldset_sconet_professeurs_directeurs_oui , #fieldset_base-eleves_eleves , #fieldset_base-eleves_parents , #fieldset_tableur_eleves , #fieldset_tableur_professeurs_directeurs').hide(0);
+        $('#fieldset_sconet_eleves_non , #fieldset_sconet_eleves_oui , #fieldset_sconet_parents_non , #fieldset_sconet_parents_oui , #fieldset_sconet_professeurs_directeurs_non , #fieldset_sconet_professeurs_directeurs_oui , #fieldset_base-eleves_eleves , #fieldset_base-eleves_parents , #fieldset_tableur_professeurs_directeurs , #fieldset_tableur_eleves , #fieldset_tableur_parents').hide(0);
         // Puis afficher ce qu'il faut
         f_action = $(this).val();
         if(f_action!='')
@@ -68,28 +68,17 @@ $(document).ready
     );
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Éléments dynamiques du formulaire
+// Tout cocher ou tout décocher
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // Tout cocher ou tout décocher
     $('#form_bilan').on
     (
       'click',
-      'input[name=all_check]',
+      'q.cocher_tout , q.cocher_rien',
       function()
       {
-        $(this).parent().parent().parent().find('input[type=checkbox]').prop('checked',true);
-        return false;
-      }
-    );
-    $('#form_bilan').on
-    (
-      'click',
-      'input[name=all_uncheck]',
-      function()
-      {
-        $(this).parent().parent().parent().find('input[type=checkbox]').prop('checked',false);
-        return false;
+        var etat = ( $(this).attr('class').substring(7) == 'tout' ) ? true : false ;
+        $(this).parent().parent().parent().find('input[type=checkbox]').prop('checked',etat);
       }
     );
 
@@ -165,6 +154,19 @@ $(document).ready
       }
     );
     new AjaxUpload
+    ('#tableur_professeurs_directeurs',
+      {
+        action: 'ajax.php?page='+PAGE,
+        name: 'userfile',
+        data: {'csrf':CSRF,'f_step':10,'f_action':'tableur_professeurs_directeurs'},
+        autoSubmit: true,
+        responseType: "html",
+        onChange: changer_fichier,
+        onSubmit: verifier_fichier_tableur,
+        onComplete: retourner_fichier
+      }
+    );
+    new AjaxUpload
     ('#tableur_eleves',
       {
         action: 'ajax.php?page='+PAGE,
@@ -178,11 +180,11 @@ $(document).ready
       }
     );
     new AjaxUpload
-    ('#tableur_professeurs_directeurs',
+    ('#tableur_parents',
       {
         action: 'ajax.php?page='+PAGE,
         name: 'userfile',
-        data: {'csrf':CSRF,'f_step':10,'f_action':'tableur_professeurs_directeurs'},
+        data: {'csrf':CSRF,'f_step':10,'f_action':'tableur_parents'},
         autoSubmit: true,
         responseType: "html",
         onChange: changer_fichier,
@@ -294,7 +296,7 @@ $(document).ready
             success : function(responseHTML)
             {
               initialiser_compteur();
-              if(responseHTML.substring(0,25)!='<p><label class="valide">')
+              if(responseHTML.substring(0,15)!='<p><label class')
               {
                 $('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
               }
@@ -379,9 +381,9 @@ $(document).ready
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // step51 -> step52     Envoyer les actions sur les utilisateurs
-// step61 -> step62     Envoyer les actions sur les ajouts d'affectations éventuelles (Sconet uniquement)
-// step71 -> step72     Envoyer les actions sur les ajouts d'affectations éventuelles (Sconet uniquement)
-// step81 -> step82     Envoyer les modifications éventuelles sur les liens de responsabilité des parents (Sconet uniquement)
+// step61 -> step62     Envoyer les actions sur les ajouts d'affectations éventuelles
+// step71 -> step72     Envoyer les actions sur les ajouts d'affectations éventuelles
+// step81 -> step82     Envoyer les modifications éventuelles sur les liens de responsabilité des parents
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $('#form_bilan').on
