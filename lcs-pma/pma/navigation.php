@@ -88,8 +88,7 @@ require_once './libraries/header_http.inc.php';
 // xml declaration moves IE into quirks mode, making much trouble with CSS
 /* echo '<?xml version="1.0" encoding="utf-8"?>'; */
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
     xml:lang="<?php echo $available_languages[$lang][1]; ?>"
     lang="<?php echo $available_languages[$lang][1]; ?>"
@@ -183,7 +182,7 @@ if (! $GLOBALS['server']) {
     PMA_exitNavigationFrame();
 } elseif ($GLOBALS['cfg']['LeftFrameLight'] && count($GLOBALS['pma']->databases) > 1) {
     $list = $cfg['DisplayDatabasesList'];
-    if ($list === 'auto') {//modif phil suppression de la partie suivante
+     if ($list === 'auto') {//modif phil suppression de la partie suivante
         /*if (empty($GLOBALS['db'])) {
             $list = true;
         } else {
