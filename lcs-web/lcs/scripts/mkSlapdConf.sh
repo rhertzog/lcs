@@ -335,7 +335,7 @@ SLAPD_OPTIONS=\"\"
 
 SSL="start_tls"
 
-# desactivation TLS pour contournement bug en attendant utilsation autre lib
+# desactivation TLS pour contournement bug en attendant utilisation autre lib
 SSL="off"
 
 if [ "$replica_status" = "2" ]
@@ -343,9 +343,9 @@ then
 	SSL="off"
 fi
 # Pas de ssl si le ldap est local
-if [ "$replica_status" == "" -o "$replica_status" = "0" ]
+if [ "$replica_status" = "" -o "$replica_status" = "0" ]
 then	
-	if [ "$ldap_server" == "$se3ip" ]
+	if [ "$ldap_server" = "$se3ip" ]
 	then
 		echo "Pas de replication, LDAP local, SSL off"
 		SSL="off"
