@@ -1,29 +1,23 @@
 #!/bin/sh
 
 ##### Met en place la replication LDAP avec syncrepl #####
-##### LCS/SE3 derniere modification : 16/11/2012
-if [ "$1" = "--help" -o "$1" = "-h" ]
+##### LCS/SE3 derniere modification : 18/04/2013
+	if [ "$1" = "--help" -o "$1" = "-h" ]
 then
-	echo "Met en place la replication LDAP (syncrepl) a partir des donnees de la base sql"
-	echo "Usage : aucune option"
+	echo "Met en place la replication LDAP (syncrepl)a partir des donnees de la base sql"
+	echo "Usage : -r replace l'annuaire en annuaire local sans replication"
+	echo "-h Cette aide"
 	exit
-fi	
-
-# serveur se3 ou lcs
-if [ -d /var/se3 ]
-then
-    bdd="se3db"
-    svr="se3"
-    svr_name="SE3"
-    dossier_svg="/var/se3/save/ldap"
-    pathsbin="/usr/share/se3/sbin"
-else
-    bdd="lcs_db"
-    svr="lcs"
-    svr_name="LCS"
-    dossier_svg="/root/save/sauvegarde_ldap_avant_replica"
-    pathsbin="/usr/share/lcs/sbin"
 fi
+
+#LCS
+bdd="lcs_db"
+svr="lcs"
+svr_name="LCS"
+dossier_svg="/root/save/sauvegarde_ldap_avant_replica"
+pathsbin="/usr/share/lcs/sbin"
+
+mkdir -p /var/backups/ldap/
 
 if [ -e /var/lock/syncrepl.lock ]
 then
@@ -32,7 +26,6 @@ then
 	exit 1
 fi	
 
-#
 ## recuperation des variables necessaires pour interoger mysql ###
 if [ -e /root/.my.cnf ]; then
 	. /root/.my.cnf 2>/dev/null
@@ -40,6 +33,15 @@ else
         echo "Fichier de conf inaccessible desole !!"
         echo "le script ne peut se poursuivre"
         exit 1
+fi
+
+# Permettre un retour sur l'annuaire local
+if [ "$1" = "-r" ]
+then
+  /usr/bin/mysql -u $user -p$password -D $bdd -e "UPDATE params set value='' WHERE name='replica_ip'"
+  /usr/bin/mysql -u $user -p$password -D $bdd -e "UPDATE params set value='0' WHERE name='replica_status'"
+  /usr/bin/mysql -u $user -p$password -D $bdd -e "UPDATE params set value='127.0.0.1' WHERE name='ldap_server'"
+  echo "Annuaire replace en mode annuaire local"
 fi
 
 #########################################################################################
@@ -83,15 +85,22 @@ fi
 # lock
 touch /var/lock/syncrepl.lock
 
-# On stoppe ldap et samba
-if [ -d /var/se3 ]
-then
-    /etc/init.d/samba stop
-fi
-
+# On stoppe ldap
 /etc/init.d/slapd stop
-
 sleep 2
+
+# On sauvegarde LDAP
+DATE="$(date +%d%m%Y)"
+SAUV_LDAP=ldap_$DATE.ldif
+/usr/sbin/slapcat > /var/backups/ldap/$SAUV_LDAP
+
+# On sauvegarde DB_CONFIG
+if [ -e "/var/lib/ldap/DB_CONFIG" ]
+then
+  cp /var/lib/ldap/DB_CONFIG /var/backups/ldap/
+else
+  cp /var/backups/ldap/DB_CONFIG /var/lib/ldap/
+fi
 
 #################################################################################
 # 	On supprime l'existant							#
@@ -122,10 +131,6 @@ then
 	# Implique un changement de mot de passe, on change donc celui de ldap.secret
 	echo "$ldap_adminPw" > /etc/ldap.secret
 	chmod 400 /etc/ldap.secret
-        if [ -d /var/se3 ]
-        then
-	   smbpasswd -w $ldap_adminPw
-        fi
 fi	
 crypted_ldap_passwd=`/usr/sbin/slappasswd -h {MD5} -s $ldap_adminPw`
 
@@ -223,7 +228,7 @@ index      memberUid,mail,givenname                             eq,subinitial
 index      sambaSID,sambaPrimaryGroupSID,sambaDomainName        eq
 index      sambaSIDList,sambaGroupType                          eq
 index      entryCSN,entryUUID                                   eq
-index      default                                              sub
+index      default                                              sub,eq
 
 # Save the time that the entry gets modified
 lastmod on
@@ -237,36 +242,36 @@ lastmod on
 # by the entry owning it if they are authenticated.
 # Others should not be able to see it, except the
 # admin entry below
-access to attrs=userPassword" >> /etc/ldap/slapd.conf
-
-echo "	by anonymous auth
+access to attrs=userPassword
+	by anonymous auth
 	by self write
 	by * none
 
 # ACLs proposees par Bruno Bzeznic
+access to attrs=userpassword
+	by self write
+	by users none
+	by anonymous auth
 
-access to attrs=userpassword" >> /etc/ldap/slapd.conf
+access to attrs=sambaLmPassword
+	by self write
+	by users none
+	by anonymous auth
+
+access to attrs=sambaNtPassword
+	by self write
+	by users none
+	by anonymous auth
 	
-echo "        by self write
+access to attrs=printer-uri
+        by self write
         by users none
         by anonymous auth
 
-access to attrs=sambaLmPassword" >> /etc/ldap/slapd.conf
-	
-echo "       by self write
-       by users none
-       by anonymous auth
-
-access to attrs=sambaNtPassword" >> /etc/ldap/slapd.conf
-	
-echo "       by self write
-       by users none
-       by anonymous auth
 
 # The admin dn has full write access
-access to * " >> /etc/ldap/slapd.conf
-	
-echo "	by * read
+access to *
+	by * read
 
 # out put of this database using slapcat(8C), and then importing that into
 #
@@ -280,55 +285,89 @@ sizelimit	3500
 # Cree le fichier /etc/default/slapd						#
 #################################################################################
 
-echo "# Default location of the slapd.conf file
-SLAPD_CONF=
+echo "# Default location of the slapd.conf file or slapd.d cn=config directory. If
+# empty, use the compiled-in default (/etc/ldap/slapd.d with a fallback to
+# /etc/ldap/slapd.conf).
+
+SLAPD_CONF=\"/etc/ldap/slapd.conf\"
 
 # System account to run the slapd server under. If empty the server
 # will run as root.
-SLAPD_USER=
+SLAPD_USER=\"openldap\"
 
 # System group to run the slapd server under. If empty the server will
 # run in the primary group of its user.
-SLAPD_GROUP=
+SLAPD_GROUP=\"openldap\"
 
 # Path to the pid file of the slapd server. If not set the init.d script
 # will try to figure it out from \$SLAPD_CONF (/etc/ldap/slapd.conf)
 SLAPD_PIDFILE=
-
-# Configure if db_recover should be called before starting slapd
-TRY_BDB_RECOVERY=yes
-
-# Configure if the slurpd daemon should be started. Possible values:
-# - yes:   Always start slurpd
-# - no:    Never start slurpd
-# - auto:  Start slurpd if a replica option is found in slapd.conf (default)
-SLURPD_START=auto
-
-# Additional options to pass to slapd and slurpd
-SLAPD_OPTIONS=\"\"
-SLURPD_OPTIONS=\"\"
 
 # slapd normally serves ldap only on all TCP-ports 389. slapd can also
 # service requests on TCP-port 636 (ldaps) and requests via unix
 # sockets.
 # Example usage:
 # SLAPD_SERVICES=\"ldap://127.0.0.1:389/ ldaps:/// ldapi:///\"
-SLAPD_SERVICES=\"ldap://0.0.0.0:389/ ldaps:///\" " > /etc/default/slapd
+SLAPD_SERVICES=\"ldap:/// ldapi:///\"
 
+# If SLAPD_NO_START is set, the init script will not start or restart
+# slapd (but stop will still work).  Uncomment this if you are
+# starting slapd via some other means or if you don't want slapd normally
+# started at boot.
+#SLAPD_NO_START=1
+
+# If SLAPD_SENTINEL_FILE is set to path to a file and that file exists,
+# the init script will not start or restart slapd (but stop will still
+# work).  Use this for temporarily disabling startup of slapd (when doing
+# maintenance, for example, or through a configuration management system)
+# when you don't want to edit a configuration file.
+SLAPD_SENTINEL_FILE=/etc/ldap/noslapd
+
+# For Kerberos authentication (via SASL), slapd by default uses the system
+# keytab file (/etc/krb5.keytab).  To use a different keytab file,
+# uncomment this line and change the path.
+#export KRB5_KTNAME=/etc/krb5.keytab
+
+# Additional options to pass to slapd
+SLAPD_OPTIONS=\"\"
+
+" > /etc/default/slapd
+
+SSL="start_tls"
+
+# desactivation TLS pour contournement bug en attendant utilsation autre lib
+SSL="off"
+
+if [ "$replica_status" = "2" ]
+then
+	SSL="off"
+fi
+# Pas de ssl si le ldap est local
+if [ "$replica_status" == "" -o "$replica_status" = "0" ]
+then	
+	if [ "$ldap_server" == "$se3ip" ]
+	then
+		echo "Pas de replication, LDAP local, SSL off"
+		SSL="off"
+	fi
+fi
 
 #################################################################################
 #	Slave Syncrepl						  		#
 #################################################################################
 if [ "$replica_status" = "4" ]
 then
-	# On sauvegarde la base
-        mkdir -p $dossier_svg
-	cp -r /var/lib/ldap $dossier_svg
-	rm -f /var/lib/ldap/*
-	cp $dossier_svg/DB_CONFIG /var/lib/ldap/
+	# On supprime la base 
+	if [ -e "/var/backups/ldap/DB_CONFIG" ]
+        then
+	    cp /var/backups/ldap/DB_CONFIG /var/lib/ldap/
+	else
+	    mkdir -p /var/backups/ldap/
+	    cp /var/lib/ldap/DB_CONFIG /var/backups/ldap/
+	fi
 
+rm -f /var/lib/ldap/*
 
-# Make syncrepl.conf
 echo "syncrepl rid=0
  provider=ldap://$ldap_server:389
  type=refreshOnly
@@ -336,23 +375,16 @@ echo "syncrepl rid=0
  searchbase=\"$ldap_base_dn\"
  scope=sub
  schemachecking=off
- bindmethod=simple" > /etc/ldap/syncrepl.conf
-
-# if Debian Etch 
-if ( grep -q '4.0' /etc/debian_version )
-then
-	echo " updatedn=\"cn=admin,$ldap_base_dn\"" >> /etc/ldap/syncrepl.conf
-fi
-
-echo " binddn=\"cn=admin,$ldap_base_dn\"
- credentials=$ldap_passwd" >> /etc/ldap/syncrepl.conf
+ bindmethod=simple
+ binddn=\"cn=admin,$ldap_base_dn\"
+ credentials=$ldap_passwd" > /etc/ldap/syncrepl.conf
 
 # Ajout de l'include dans slapd.conf
 echo "# Replication Slave Syncrepl
 include /etc/ldap/syncrepl.conf" >> /etc/ldap/slapd.conf 
 
-serveurs="$ldap_server $replica_ip"
-
+# Modife les differents fichiers de conf
+serveurs="$ldap_server $LDAP_LOCAL"
 fi
 
 #################################################################################
@@ -360,24 +392,20 @@ fi
 #################################################################################
 if [ "$replica_status" = "3" ]
 then
-    serveurs="$ldap_server $replica_ip"
-    # touch syncrepl vide pour indiquer la methode
-    touch /etc/ldap/syncrepl.conf
-    # Creation du fichier syncprov.conf
-    if [ ! -e /etc/ldap/syncprov.conf ]
-    then
-	echo "moduleload syncprov" > /etc/ldap/syncprov.conf
-	# if Debian Etch 
-	if ( grep -q '4.0' /etc/debian_version ) 
-	then
-		echo "sessionlog   123 500" >> /etc/ldap/syncprov.conf
-	fi
-	echo "overlay syncprov
+	serveurs="$ldap_server $replica_ip"
+	
+	# touch syncrepl vide pour indiquer la methode
+	
+echo "moduleload syncprov
+overlay syncprov
 syncprov-checkpoint 50 5
-syncprov-sessionlog 50" >> /etc/ldap/syncprov.conf
-    fi
-    echo "include  /etc/ldap/syncprov.conf" >> /etc/ldap/slapd.conf
+syncprov-sessionlog 50" > /etc/ldap/syncrepl.conf
+	
+# Ajout de l'include dans slapd.conf
+echo "# Replication Slave Syncrepl
+include /etc/ldap/syncrepl.conf" >> /etc/ldap/slapd.conf
 fi
+
 
 ################################################################################# 
 #		Pas de replication 						#
@@ -386,38 +414,6 @@ if [ "$replica_status" = "0" ]
 then
     serveurs="$ldap_server"
 fi
-
-#################################################################################
-#	Slave slurpd								#
-#################################################################################
-if [ "$replica_status" = "2" ]
-then
-    serveurs="$ldap_server $replica_ip"
-    # Modife les differents fichiers de conf
-    echo "updatedn \"$ldap_admin,$ldap_base_dn\" " >> /etc/ldap/slapd.conf
-    echo "updateref \"ldap://$ldap_server:389\"" >> /etc/ldap/slapd.conf
-		
-fi
-
-#################################################################################
-#	Master slurpd								#
-#################################################################################
-if [ "$replica_status" = "1" ]
-then
-    serveurs="$ldap_server $replica_ip"
-    # Modife les differents fichiers de conf
-    echo "replica host=$replica_ip:389" >> /etc/ldap/slapd.conf
-    echo "  binddn=\"$ldap_admin,$ldap_base_dn\"" >> /etc/ldap/slapd.conf
-    echo "  bindmethod=simple       credentials=$ldap_passwd" >> /etc/ldap/slapd.conf
-    echo "replogfile /var/spool/slurpd/replica/replogfile" >> /etc/ldap/slapd.conf
-	
-    if [ \( ! -d "/var/spool/slurpd/replica" \) ]
-    then
-        mkdir -p /var/spool/slurpd/replica
-    fi
-fi
-
-#################################################################################
 
 #################################################################################
 # 		Creation de : libnss-ldap.conf pam_ldap.conf ldap.conf		#
@@ -462,14 +458,7 @@ chmod 444 /etc/ldap/slapd.pem
 chown -R openldap:openldap /etc/ldap
 chown -R openldap:openldap /var/lib/ldap
 
-/etc/init.d/slapd start
+service slapd start
 
-# Changement du champ userPassword de cn=admin
-#$pathsbin/admChangePwd.pl $ldap_passwd $ldap_adminPw
-
-if [ -d /var/se3 ]
-then
-    /etc/init.d/samba start
-fi
 # Supprime le lock
 rm -f /var/lock/syncrepl.lock

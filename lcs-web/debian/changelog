@@ -1,10 +1,11 @@
-lcs-web (2.4.9.6~3) Lcs; urgency=low
+lcs-web (2.4.9.6~4) Lcs; urgency=low
 
   * Add .htaccess Options -Indexes in swekey and Plugins folders
   * Modify groupAddEntry.pl for wheezy
   * Add del_profil_desktop.php
+  * Modifiy mKSlapdConf.sh (acl and default config...)
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Apr 2013 15:30:21 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 May 2013 10:56:41 +0200
 
 lcs-web (2.4.9.5) Lcs; urgency=low
 
