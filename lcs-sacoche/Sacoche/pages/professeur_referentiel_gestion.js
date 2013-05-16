@@ -86,7 +86,7 @@ $(document).ready
       );
     };
     // Appel de la fonction à chaque changement de méthode
-    $(document).on( 'change', 'q.voir', actualiser_select_limite );
+    $(document).on( 'change', '#f_methode', actualiser_select_limite );
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Changement de nb de demandes autorisées pour une matière -> soumission
@@ -97,7 +97,7 @@ $(document).ready
       function()
       {
         var element = $(this);
-        var nb_demandes = $(this).attr('value');
+        var nb_demandes = $(this).val();
         var matiere_id = $(this).closest('table').attr('id').substring(4);
         element.parent().find('label').removeAttr("class").addClass("loader").html("En cours&hellip;");
         $.ajax

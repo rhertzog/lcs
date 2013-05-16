@@ -2608,7 +2608,7 @@ public static function DB_maj_base($version_base_structure_actuelle)
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_devoir ADD devoir_fini TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 ' );
       // ajout champs table sacoche_user (en prévision, car pas encore utilisé à ce jour)
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD user_naissance_date DATE NULL DEFAULT NULL AFTER user_prenom ' );
-      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD user_email VARCHAR( 63 ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "" AFTER user_naissance_date ' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD user_email VARCHAR(63) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "" AFTER user_naissance_date ' );
     }
   }
 
@@ -2635,6 +2635,131 @@ public static function DB_maj_base($version_base_structure_actuelle)
         DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 213, 0, 10,  80, "N3", "", "Niveau 3") ' );
         DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 214, 0, 10,  90, "N4", "", "Niveau 4") ' );
         DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 215, 0, 10, 180, "N5", "", "Niveau 5") ' );
+      }
+    }
+  }
+
+  if($version_base_structure_actuelle=='2013-03-20')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-04-22';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // nouvelle table sacoche_brevet_serie
+      $reload_sacoche_brevet_serie = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_brevet_serie.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // nouvelle table sacoche_brevet_epreuve
+      $reload_sacoche_brevet_epreuve = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_brevet_epreuve.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // nouvelle table sacoche_brevet_saisie
+      $reload_sacoche_brevet_saisie = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_brevet_saisie.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // nouvelle table sacoche_geo_academie
+      $reload_sacoche_geo_academie = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_geo_academie.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // nouvelle table sacoche_geo_departement
+      $reload_sacoche_geo_departement = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_geo_departement.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // ajout champ table sacoche_user
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user ADD eleve_brevet_serie VARCHAR(6) COLLATE utf8_unicode_ci NOT NULL DEFAULT "X" COMMENT "Série du brevet pour Notanet." AFTER eleve_langue ' );
+      // modification sacoche_groupe
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_groupe ADD fiche_brevet ENUM( "","1vide","2rubrique","3synthese","4complet" ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "" ' );
+      // modification sacoche_parametre (paramètres CAS pour ENT Toutatice)
+      $connexion_nom = DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="connexion_nom"' );
+      if($connexion_nom=='toutatice')
+      {
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="casshib/shib/toutatice" WHERE parametre_nom="cas_serveur_root" ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="https://www.toutatice.fr/casshib/shib/666666/serviceValidate" WHERE parametre_nom="cas_serveur_url_validate" ' );
+      }
+      // réordonner un peu la table sacoche_parametre et retirer une ligne qui ne correspond à rien
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'DELETE FROM sacoche_parametre WHERE parametre_nom="annee_utilisation_numero" ' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom ' );
+    }
+  }
+
+  if($version_base_structure_actuelle=='2013-04-22')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-04-29';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // Ajout de niveaux
+      if(empty($reload_sacoche_niveau_famille))
+      {
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau_famille VALUES ( 11, 1, 8, "Métiers d\'arts") ' );
+      }
+      if(empty($reload_sacoche_niveau))
+      {
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES (  10, 0,  2,   0,    "TPS", "0041000111.", "Maternelle, très petite section") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES (  55, 0,  4,  65,   "DIMA", "115..99911.", "Dispositif d\'initiation des métiers en alternance") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 117, 0,  7, 157,     "MC", "253.....11.", "Mention complémentaire") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 118, 0,  7, 158,   "1BP2", "254.....21.", "Brevet Professionnel 2 ans, 1e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 119, 0,  7, 159,   "2BP2", "254.....22.", "Brevet Professionnel 2 ans, 2e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 141, 0, 11, 181,  "1BMA1", "250.....11.", "BMA 1 an") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 142, 0, 11, 182,  "1BMA2", "251.....21.", "BMA 2 ans, 1e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 143, 0, 11, 183,  "2BMA2", "251.....22.", "BMA 2 ans, 2e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 151, 0, 11, 191,  "1DMA1", "315.....11.", "DMA 1 an") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 152, 0, 11, 192,  "1DMA2", "316.....21.", "DMA 2 ans, 1e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 153, 0, 11, 193,  "2DMA2", "316.....22.", "DMA 2 ans, 2e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 154, 0, 11, 194,  "2DUT1", "350.....21.", "DUT 2 ans, 1e année") ' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_niveau VALUES ( 155, 0, 11, 195,  "2DUT2", "350.....22.", "DUT 2 ans, 2e année") ' );
+      }
+    }
+  }
+
+  if($version_base_structure_actuelle=='2013-04-29')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-05-05';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // ajout de paramètres
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_appreciation_generale" , "DIR" )' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_corriger_appreciation" , "DIR" )' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_impression_pdf"        , "DIR" )' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_modifier_statut"       , "DIR" )' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_voir_archive"          , "DIR,ENS,DOC,EDU" )' );
+      // réordonner la table sacoche_parametre
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom' );
+    }
+  }
+
+  if($version_base_structure_actuelle=='2013-05-05')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-05-12';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // nouvelle table sacoche_brevet_fichier
+      $reload_sacoche_brevet_fichier = TRUE;
+      $requetes = file_get_contents(CHEMIN_DOSSIER_SQL_STRUCTURE.'sacoche_brevet_fichier.sql');
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $requetes );
+      DB::close(SACOCHE_STRUCTURE_BD_NAME);
+      // vider table sacoche_brevet_saisie maintenant que les choix de fonctionnement sont arrêtés
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'TRUNCATE sacoche_brevet_saisie' );
+    }
+  }
+
+  if($version_base_structure_actuelle=='2013-05-12')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-05-14';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // ajout d'une colonne à la table sacoche_user_profil
+      if(empty($reload_sacoche_user_profil))
+      {
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_user_profil ADD user_profil_mdp_date_naissance TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT 0 AFTER user_profil_mdp_longueur_mini ');
       }
     }
   }

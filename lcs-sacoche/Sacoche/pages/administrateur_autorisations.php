@@ -68,6 +68,7 @@ $tab_profils_possibles['parent_eleve'] = array('ELV','TUT','AVS');
 $tab_profils_possibles['personne']     = array();
 
 // Tableau avec les infos (titres, profils, options par défaut)
+$bulle_fiche_brevet = ' <img alt="" src="./_img/bulle_aide.png" title="Avis du conseil de classe (“doit faire ses preuves” ou “favorable”).<br />Avis circonstancié du chef d’établissement." />';
 $tab_droits  = array
 (
   "Mot de passe" => array
@@ -149,12 +150,21 @@ $tab_droits  = array
     array( 'droit_officiel_socle_appreciation_generale' , "éditer l'appréciation générale"             , 'dir_prof_pp' ),
     array( 'droit_officiel_socle_impression_pdf'        , "générer la version PDF imprimable"          , 'dir' )
   ),
-  "Consultation des bilans officiels finalisés" => array
+  "Fiches brevet (fiches scolaires pour le jury du DNB)" => array
+  (
+    'dir_pers_pp',
+    array( 'droit_fiche_brevet_modifier_statut'       , "modifier le statut (accès saisies&hellip;)"    , 'dir' ),
+    array( 'droit_fiche_brevet_corriger_appreciation' , "corriger l'appréciation d'un collègue"         , 'dir' ),
+    array( 'droit_fiche_brevet_appreciation_generale' , "éditer l'avis de synthèse".$bulle_fiche_brevet , 'dir' ),
+    array( 'droit_fiche_brevet_impression_pdf'        , "générer la version PDF imprimable"             , 'dir' )
+  ),
+  "Consultation des documents officiels finalisés" => array
   (
     'tous',
     array( 'droit_officiel_releve_voir_archive'   , "accéder aux copies des relevés d'évaluations"      , 'dir_pers' ),
     array( 'droit_officiel_bulletin_voir_archive' , "accéder aux copies des bulletins scolaires"        , 'dir_pers' ),
     array( 'droit_officiel_socle_voir_archive'    , "accéder aux copies des états de maîtrise du socle" , 'dir_pers' ),
+    array( 'droit_fiche_brevet_voir_archive'      , "accéder aux copies des fiches brevet pour le jury" , 'dir_pers' ),
   )
 );
 

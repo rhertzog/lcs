@@ -93,7 +93,7 @@ $select_matiere = Form::afficher_select($tab_matieres , 'f_matiere' /*select_nom
   </p>
   <label class="tab">Items récoltés :</label><label for="f_mode_auto"><input type="radio" id="f_mode_auto" name="f_mode" value="auto"<?php echo $check_mode_auto ?> /> Automatique (recommandé) <img alt="" src="./_img/bulle_aide.png" title="Items de tous les référentiels de langue, sauf pour la compétence 2 où on ne prend que les items des référentiels de la langue associée à l'élève." /></label>&nbsp;&nbsp;&nbsp;<label for="f_mode_manuel"><input type="radio" id="f_mode_manuel" name="f_mode" value="manuel"<?php echo $check_mode_manuel ?> /> Sélection manuelle <img alt="" src="./_img/bulle_aide.png" title="Pour choisir les matières des référentiels dont les items collectés sont issus." /></label>
   <div id="div_matiere" class="<?php echo $class_div_matiere ?>"><span class="tab"></span><span id="f_matiere" class="select_multiple"><?php echo $select_matiere ?></span><span class="check_multiple"><q class="cocher_tout" title="Tout cocher."></q><br /><q class="cocher_rien" title="Tout décocher."></q></span></div>
-  <p><span class="tab"></span><input type="hidden" name="f_action" value="Afficher_bilan" /><button id="Afficher_validation" type="submit" class="valider">Afficher le tableau des validations.</button><label id="ajax_msg_choix">&nbsp;</label></p>
+  <p><span class="tab"></span><input type="hidden" id="f_memo_matieres" value="" /><input type="hidden" name="f_action" value="Afficher_bilan" /><button id="Afficher_validation" type="submit" class="valider">Afficher le tableau des validations.</button><label id="ajax_msg_choix">&nbsp;</label></p>
 </fieldset></form>
 
 <form action="#" method="post" id="zone_validation" class="hide">
@@ -111,4 +111,13 @@ $select_matiere = Form::afficher_select($tab_matieres , 'f_matiere' /*select_nom
   </ul>
   <div id="items">
   </div>
+</div>
+
+<div id="zone_confirmer_fermer_validation" class="hide">
+  <p class="danger">Des modifications ont été effectuées, mais n'ont pas été enregistrées.</p>
+  <p>Confirmez-vous vouloir quitter l'interface de saisie ?</p>
+  <p>
+    <button id="confirmer_fermer_zone_validation" type="button" class="valider">Oui, je ne veux pas enregistrer</button>
+    <button id="annuler_fermer_zone_validation" type="button" class="annuler">Non, je reste sur l'interface</button>
+  </p>
 </div>

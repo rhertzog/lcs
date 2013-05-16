@@ -79,18 +79,6 @@ if(HEBERGEUR_INSTALLATION=='multi-structures')
     }
   }
   charger_parametres_mysql_supplementaires($BASE);
-  // Remplacer l'info par le numéro de base correspondant dans toutes les variables accessibles à PHP avant que la classe SSO ne s'en mèle.
-  // Pourquoi ??? Economiser une requête ? Retiré car trifouillage pas indispensable et pouvant dérouter des partenaires ENT autorisant un format d'URL donné.
-  /*
-  $bad = 'uai='.$_GET['uai'];
-  $bon = 'base='.$BASE;
-  $_GET['base']     = $BASE;
-  $_REQUEST['base'] = $BASE;
-  if(isset($_SERVER['HTTP_REFERER'])) { $_SERVER['HTTP_REFERER'] = str_replace($bad,$bon,$_SERVER['HTTP_REFERER']); }
-  if(isset($_SERVER['QUERY_STRING'])) { $_SERVER['QUERY_STRING'] = str_replace($bad,$bon,$_SERVER['QUERY_STRING']); }
-  if(isset($_SERVER['REQUEST_URI'] )) { $_SERVER['REQUEST_URI']  = str_replace($bad,$bon,$_SERVER['REQUEST_URI'] ); }
-  unset($_GET['uai']);
-  */
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -118,14 +106,29 @@ if($connexion_mode=='cas')
 {
   /**
    * Si la bufferisation est active et contient la sortie de phpCAS sur une CAS_Exception,
-   *   récupère le contenu et l'affiche dans notre template (sinon lance un exit sans rien faire)
+   * récupère le contenu et l'affiche dans notre template (sinon lance un exit sans rien faire).
    *
+   * Une cause rencontrée (peut-être pas la seule)
+   * est que le XML renvoyé par le serveur CAS est syntaxiquement invalide.
+   * En général car il contient un caractère parmi & < >
+   * 
+   * Quand c'est un &, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): xmlParseEntityRef: no name in Entity...
+   * Quand c'est un <, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): StartTag: invalid element name...
+   * Quand c'est un >, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): Start tag expected, '<' not found in Entity...
+   * L'ENT doit s'arranger pour envoyer un XML valide, donc :
+   * - soit convertir ces caractères en entités HTML (&amp; &lt; &gt;)
+   * - soit retirer ces caractères ou les remplacer par d'autres
+   * - soit utiliser des sections CDATA : <![CDATA[some text & some more text]]>
+   * 
+   * Par ailleurs, il est tout de même dommage que phpCas ne renvoie pas un message plus causant 
+   * (genre xml parse error, ou à défaut invalid Response).
+   * 
    * @author Daniel Caillibaud <daniel.caillibaud@sesamath.net>
    * @param string $msg_sup (facultatif) Du contenu supplémentaire ajouté juste avant le </body> (mettre les <p>)
    */
   function exit_CAS_Exception($msg_sup='')
   {
-    // on veut pas afficher ça mais notre jolie page
+    // on ne veut pas afficher ça mais notre jolie page
     $content = ob_get_clean();
     if ($content)
     {
@@ -135,10 +138,10 @@ if($connexion_mode=='cas')
       preg_match($pattern, $content, $matches);
       if (!empty($matches[1]))
       {
-        exit_error( $matches[1] /*titre*/ , $matches[2].$msg_sup /*contenu*/ , FALSE /*setup*/ );
+        exit_error( $matches[1] /*titre*/ , $matches[2].$msg_sup /*contenu*/ );
       }
     }
-    // si on arrive là, on a pas trouvé le contenu, on laisse l'existant (à priori la page moche de phpCAS)
+    // si on arrive là, c'est qu'on n'a pas trouvé le contenu, on laisse l'existant (a priori la page moche de phpCAS)
     exit();
   }
   /**
@@ -309,7 +312,7 @@ if($connexion_mode=='cas')
     {
       // peut-on passer là ?
       trigger_error('phpCAS::forceAuthentication() sur '.$cas_serveur_host.' a planté mais ce n\'est pas une CAS_AuthenticationException');
-      exit_error( 'Erreur d\'authentification CAS' /*titre*/ , '<p>L\'authentification CAS sur '.$cas_serveur_host.' a échouée.<br />'.$e->getMessage().'</p>'.$msg_sup /*contenu*/ , $setup=FALSE );
+      exit_error( 'Erreur d\'authentification CAS' /*titre*/ , '<p>L\'authentification CAS sur '.$cas_serveur_host.' a échouée.<br />'.$e->getMessage().'</p>'.$msg_sup /*contenu*/ );
     }
   }
   // A partir de là, l'utilisateur est forcément authentifié sur son CAS.
@@ -338,21 +341,73 @@ if($connexion_mode=='cas')
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Authentification assurée par Shibboleth
 // La redirection est effectuée en amont (configuration du serveur web qui est "shibbolisé"), l'utilisateur doit donc être authentifié à ce stade.
+// Attention : SACoche comportant une partie publique ne requérant pas d'authentification, et un accès possible avec une authentification locale, toute l'application n'est pas à shibboliser.
 // @see https://services.renater.fr/federation/docs/fiches/shibbolisation
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/*
+
+>>> extrait conf shibboleth2.xml
+
+<RequestMapper type="Native">
+ <RequestMap applicationId="default">
+  <Host name="vm-iozone3.in.ac-bordeaux.fr">
+   <Path name="sacoche">
+    <Query name="sso" authType="shibboleth" requireSession="true" />
+   </Path>
+  </Host>
+ </RequestMap>
+</RequestMapper>
+
+>>> extrait httpd.conf
+
+Redirect permanent /sacoche /sacoche/
+ProxyPass /sacoche/ https://ent2d.ac-bordeaux.fr/sacoche/
+ProxyPassReverse /sacoche/ https://ent2d.ac-bordeaux.fr/sacoche/
+
+>>> extrait $_SERVER[]
+
+[HTTP_AFFILIATION]
+[HTTP_CTEMAIL]
+[HTTP_ENTELEVESTRUCTRATTACHID]
+[HTTP_ENTITLEMENT]
+[HTTP_ENTPERSONFONCTIONS]
+[HTTP_ENTPERSONLOGIN]
+[HTTP_EPPN]
+[HTTP_FREDUCODEMEF]
+[HTTP_FREDUVECTEUR]
+[HTTP_GIVENNAME]
+[HTTP_ID_SOURCE]
+[HTTP_MAIL]
+[HTTP_PERSISTENT_ID]
+[HTTP_SHIB_APPLICATION_ID]
+[HTTP_SHIB_ASSERTION_COUNT]
+[HTTP_SHIB_AUTHENTICATION_INSTANT]
+[HTTP_SHIB_AUTHENTICATION_METHOD]
+[HTTP_SHIB_AUTHNCONTEXT_CLASS]
+[HTTP_SHIB_AUTHNCONTEXT_DECL]
+[HTTP_SHIB_COOKIE_NAME]
+[HTTP_SHIB_IDENTITY_PROVIDER]
+[HTTP_SHIB_SESSION_ID]
+[HTTP_SHIB_SESSION_INDEX]
+[HTTP_SN]
+[HTTP_TARGETED_ID]
+[HTTP_TSSCONETID]
+[HTTP_UID]
+[HTTP_UNSCOPED_AFFILIATION]
+
+*/
+
 if($connexion_mode=='shibboleth')
 {
-  /*
-  * Récupération de l'identifiant de l'utilisateur authentifié dans les variables serveur.
-  * A cause du chainage réalisé depuis Shibboleth entre différents IDP pour compléter les attributs exportés, l'UID arrive en double séparé par un « ; ».
-  */
+  // Récupération dans les variables serveur de l'identifiant de l'utilisateur authentifié.
   if( (empty($_SERVER['HTTP_UID'])) || empty($_SERVER['HTTP_SHIB_SESSION_ID']) )
   {
     $http_uid             = isset($_SERVER['HTTP_UID'])             ? 'vaut "'.html($_SERVER['HTTP_UID']).'"'             : 'n\'est pas définie' ;
     $http_shib_session_id = isset($_SERVER['HTTP_SHIB_SESSION_ID']) ? 'vaut "'.html($_SERVER['HTTP_SHIB_SESSION_ID']).'"' : 'n\'est pas définie' ;
     exit_error( 'Incident authentification Shibboleth' /*titre*/ , 'Ce serveur ne semble pas disposer d\'une authentification Shibboleth, ou bien celle ci n\'a pas été mise en &oelig;uvre :<br />- la variable $_SERVER["HTTP_UID"] '.$http_uid.'<br />- la variable $_SERVER["HTTP_SHIB_SESSION_ID"] '.$http_shib_session_id /*contenu*/ );
   }
+  // A cause du chainage réalisé depuis Shibboleth entre différents IDP pour compléter les attributs exportés, l'UID arrive en double séparé par un « ; ».
   $http_uid = explode( ';' , $_SERVER['HTTP_UID'] );
   $id_ENT = $http_uid[0];
   // Comparer avec les données de la base
@@ -360,13 +415,6 @@ if($connexion_mode=='shibboleth')
   if($auth_resultat!='ok')
   {
     exit_error( 'Incident authentification Shibboleth' /*titre*/ , $auth_resultat /*contenu*/ );
-  }
-  // En cas d'authentification avec le protocole Shibboleth, on prend l'ID Shibboleth comme identifiant de session afin de pouvoir propager une éventuelle déconnexion.
-  // SACoche comportant une partie publique ne requérant pas d'authentification, et un accès possible avec une authentification locale, toute l'application n'est pas shibbolisée.
-  // La session a donc déjà pu être ouverte par SACoche avec un autre identifiant perso.
-  if( $_COOKIE[SESSION_NOM] != $_SERVER['HTTP_SHIB_SESSION_ID'] )
-  {
-    Session::close();Session::open_new();Session::init(); // Pour init(), seul session_key() a ici de l'intérêt.
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);

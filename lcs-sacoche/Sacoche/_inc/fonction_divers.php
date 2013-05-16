@@ -107,7 +107,6 @@ function test_NA($score,$seuil=NULL)
   return $score<$seuil ;
 }
 
-
 /**
  * roundTo
  * Arrondir à une précision donnée, par exemple à 0,5 près
@@ -119,7 +118,32 @@ function test_NA($score,$seuil=NULL)
 function roundTo($nombre,$precision)
 {
   return ($precision) ? round( $nombre/$precision , 0 ) * $precision : $nombre ;
-} 
+}
+
+/**
+ * ceilTo
+ * Arrondir à une précision donnée, par exemple à 0,5 près, par excès
+ * @param float $nombre
+ * @param float $precision
+ * @return float
+ */
+function ceilTo($nombre,$precision)
+{
+  return ($precision) ? ceil( $nombre/$precision ) * $precision : $nombre ;
+}
+
+/**
+ * floorTo
+ * Arrondir à une précision donnée, par exemple à 0,5 près, par défaut
+ * @param float $nombre
+ * @param float $precision
+ * @return float
+ */
+function floorTo($nombre,$precision)
+{
+  return ($precision) ? floor( $nombre/$precision ) * $precision : $nombre ;
+}
+
 /**
  * Calculer le score d'un item, à partir des notes transmises et des paramètres de calcul.
  * 
@@ -221,44 +245,44 @@ function ajouter_log_PHP($log_objet,$log_contenu,$log_fichier,$log_ligne,$only_s
 function declaration_entete( $is_meta_robots ,$is_favicon , $is_rss , $tab_fichiers , $titre_page , $css_additionnel=FALSE )
 {
   header('Content-Type: text/html; charset='.CHARSET);
-  echo'<!DOCTYPE html>';
-  echo'<html>';
-  echo'<head>';
-  echo'<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />';
+  echo'<!DOCTYPE html>'."\r\n";
+  echo'<html>'."\r\n";
+  echo'<head>'."\r\n";
+  echo'<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'."\r\n";
   if($is_meta_robots)
   {
-    echo'<meta name="description" content="SACoche - Suivi d\'Acquisition de Compétences - Evaluation par compétences - Valider le socle commun" />';
-    echo'<meta name="keywords" content="SACoche Sésamath évaluer évaluation compétences compétence validation valider socle commun collège points note notes Lomer" />';
-    echo'<meta name="author" content="Thomas Crespin pour Sésamath" />';
-    echo'<meta name="robots" content="index,follow" />';
+    echo'<meta name="description" content="SACoche - Suivi d\'Acquisition de Compétences - Evaluation par compétences - Valider le socle commun" />'."\r\n";
+    echo'<meta name="keywords" content="SACoche Sésamath évaluer évaluation compétences compétence validation valider socle commun collège points note notes Lomer" />'."\r\n";
+    echo'<meta name="author" content="Thomas Crespin pour Sésamath" />'."\r\n";
+    echo'<meta name="robots" content="index,follow" />'."\r\n";
   }
   if($is_favicon)
   {
-    echo'<link rel="shortcut icon" type="images/x-icon" href="./favicon.ico" />';
-    echo'<link rel="icon" type="image/png" href="./favicon.png" />';
-    echo'<link rel="apple-touch-icon" href="./_img/apple-touch-icon-114x114.png" />';
-    echo'<link rel="apple-touch-icon-precomposed" href="./_img/apple-touch-icon-114x114.png" />';
+    echo'<link rel="shortcut icon" type="images/x-icon" href="./favicon.ico" />'."\r\n";
+    echo'<link rel="icon" type="image/png" href="./favicon.png" />'."\r\n";
+    echo'<link rel="apple-touch-icon" href="./_img/apple-touch-icon-114x114.png" />'."\r\n";
+    echo'<link rel="apple-touch-icon-precomposed" href="./_img/apple-touch-icon-114x114.png" />'."\r\n";
   }
   if($is_rss)
   {
-    echo'<link rel="alternate" type="application/rss+xml" href="'.SERVEUR_RSS.'" title="SACoche" />';
+    echo'<link rel="alternate" type="application/rss+xml" href="'.SERVEUR_RSS.'" title="SACoche" />'."\r\n";
   }
   foreach($tab_fichiers as $tab_infos)
   {
     list( $type , $url ) = $tab_infos;
     switch($type)
     {
-      case 'css'    : echo'<link rel="stylesheet" type="text/css" href="'.$url.'" />'; break;
-  //  case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'; break;
-      case 'js'     : echo'<script type="text/javascript" charset="'.CHARSET.'" src="'.$url.'"></script>'; break;
+      case 'css'    : echo'<link rel="stylesheet" type="text/css" href="'.$url.'" />'."\r\n"; break;
+  //  case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'."\r\n"; break;
+      case 'js'     : echo'<script type="text/javascript" charset="'.CHARSET.'" src="'.$url.'"></script>'."\r\n"; break;
     }
   }
   if($css_additionnel)
   {
-    echo $css_additionnel; // style complémentaire déjà dans <style type="text/css">...</style>
+    echo $css_additionnel."\r\n"; // style complémentaire déjà dans <style type="text/css">...</style>
   }
-  echo'<title>'.$titre_page.'</title>';
-  echo'</head>';
+  echo'<title>'.$titre_page.'</title>'."\r\n";
+  echo'</head>'."\r\n";
 }
 
 /**
@@ -442,7 +466,7 @@ function fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut)
  * Fabrique une fin de fichier pseudo-aléatoire pour terminer un nom de fichier.
  * 
  * Le suffixe est suffisamment tordu pour le rendre un privé et non retrouvable par un utilisateur, mais sans être totalement aléatoire car il doit fixe (retrouvé).
- * Utilisé pour les flux RSS et les bilans officiels PDF.
+ * Utilisé pour les flux RSS, les bilans officiels PDF, les fiches brevet PDF.
  * 
  * @param int      $eleve_id
  * @param string   $bilan_type
@@ -729,26 +753,82 @@ function dimensions_affichage_image($largeur_reelle,$hauteur_reelle,$largeur_max
 /**
  * Passer d'une date MySQL AAAA-MM-JJ à une date française JJ/MM/AAAA.
  *
- * @param string $date   AAAA-MM-JJ
- * @return string        JJ/MM/AAAA
+ * @param string $date_mysql AAAA-MM-JJ
+ * @return string|NULL       JJ/MM/AAAA
  */
-function convert_date_mysql_to_french($date)
+function convert_date_mysql_to_french($date_mysql)
 {
-  list($annee,$mois,$jour) = explode('-',$date);
+  if($date_mysql===NULL) return '00/00/0000';
+  list($annee,$mois,$jour) = explode('-',$date_mysql);
   return $jour.'/'.$mois.'/'.$annee;
 }
 
 /**
  * Passer d'une date française JJ/MM/AAAA à une date MySQL AAAA-MM-JJ.
  *
- * @param string $date   JJ/MM/AAAA
- * @return string|NULL   AAAA-MM-JJ
+ * @param string $date_fr JJ/MM/AAAA
+ * @return string|NULL    AAAA-MM-JJ
  */
-function convert_date_french_to_mysql($date)
+function convert_date_french_to_mysql($date_fr)
 {
-  if($date=='00/00/0000') return NULL;
-  list($jour,$mois,$annee) = explode('/',$date);
+  if($date_fr=='00/00/0000') return NULL;
+  list($jour,$mois,$annee) = explode('/',$date_fr);
   return $annee.'-'.$mois.'-'.$jour;
+}
+
+/**
+ * Passer d'une date française JJ/MM/AAAA à une date J mois AAAA.
+ *
+ * @param string $date_fr JJ/MM/AAAA
+ * @return string         J mois AAAA
+ */
+function convert_date_french_to_texte($date_fr)
+{
+  $tab_mois = array('01'=>'janvier','02'=>'février','03'=>'mars','04'=>'avril','05'=>'mai','06'=>'juin','07'=>'juillet','08'=>'août','09'=>'septembre','10'=>'octobre','11'=>'novembre','12'=>'décembre');
+  if($date_fr=='00/00/0000') return '';
+  list($jour,$mois,$annee) = explode('/',$date_fr);
+  return intval($jour).' '.$tab_mois[$mois].' '.$annee;
+}
+
+/**
+ * Passer d'une date française JJ/MM/AAAA à l'âge X ans et Y mois.
+ *
+ * Il existe des fonctions utilisables qu'à partir de PHP 5.2 ou 5.3.
+ * @see http://fr.php.net/manual/fr/class.datetime.php
+ * Ceci dit, le code élaboré est assez simple.
+ *
+ * @param string $date_fr JJ/MM/AAAA
+ * @return string         X ans et Y mois
+ */
+function texte_age($date_fr)
+{
+  list($jour_birth,$mois_birth,$annee_birth) = explode('/',$date_fr);
+  list($jour_today,$mois_today,$annee_today) = explode('/',TODAY_FR);
+  $nb_annees = $annee_today - $annee_birth;
+  $nb_mois   = $mois_today - $mois_birth;
+  if( ($mois_birth>$mois_today) || (($mois_birth==$mois_today)&&($jour_birth>$jour_today)) )
+  {
+    $nb_annees-=1;
+    $nb_mois+=12;
+  }
+  if($jour_birth>$jour_today)
+  {
+    $nb_mois-=1;
+  }
+  $s_annee = ($nb_annees>1) ? 's' : '' ;
+  $aff_mois = ($nb_mois) ? ' et '.$nb_mois.' mois' : '' ;
+  return $nb_annees.' an'.$s_annee.$aff_mois;
+}
+
+/**
+ * Passer d'une date française JJ/MM/AAAA à l'affichage de la date de naissance et de l'âge.
+ *
+ * @param string $date_fr JJ/MM/AAAA
+ * @return string
+ */
+function texte_ligne_naissance($date_fr)
+{
+  return 'Âge : '.texte_age($date_fr).' ('.convert_date_french_to_texte($date_fr).').';
 }
 
 /**
@@ -778,6 +858,31 @@ function jour_fin_annee_scolaire($format)
   $mois  = sprintf("%02u",$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']);
   $annee = (date("n")<$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']) ? date("Y") : date("Y")+1 ;
   return ($format=='mysql') ? $annee.'-'.$mois.'-'.$jour : $jour.'/'.$mois.'/'.$annee ;
+}
+
+/**
+ * Renvoyer l'année de session du DNB.
+ *
+ * @param void
+ * @return string
+ */
+function annee_session_brevet()
+{
+  $mois_actuel    = date('n');
+  $annee_actuelle = date('Y');
+  $mois_bascule   = $_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'];
+  if($mois_bascule==1)
+  {
+    return $annee_actuelle;
+  }
+  else if($mois_actuel < $mois_bascule)
+  {
+    return $annee_actuelle;
+  }
+  else
+  {
+    return $annee_actuelle+1;
+  }
 }
 
 /**

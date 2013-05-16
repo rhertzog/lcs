@@ -142,17 +142,6 @@ class Session
   }
 
   /*
-   * Renvoyer une clef associée au navigateur, à l'adresse IP et à la session en cours
-   * 
-   * @param void
-   * @return string
-   */
-  private static function session_key()
-  {
-    return md5( Session::get_IP() . Session::get_UserAgent() . session_id() );
-  }
-
-  /*
    * Initialiser une session ouverte
    * 
    * @param void
@@ -178,6 +167,17 @@ class Session
     // Données associées à l'établissement.
     $_SESSION['SESAMATH_ID']           = 0;
     $_SESSION['CONNEXION_MODE']        = 'normal';
+  }
+
+  /*
+   * Renvoyer une clef associée au navigateur, à l'adresse IP et à la session en cours
+   * 
+   * @param void
+   * @return string
+   */
+  private static function session_key()
+  {
+    return md5( Session::get_IP() . Session::get_UserAgent() . session_id() );
   }
 
   /*
@@ -257,8 +257,7 @@ class Session
   {
     Session::param();
     // Utiliser l'option préfixe ou entropie de uniqid() insère un '.' qui peut provoquer une erreur disant que les seuls caractères autorisés sont a-z, A-Z, 0-9 et -
-    // En cas d'authentification avec le protocole Shibboleth, on prend l'ID Shibboleth comme identifiant de session afin de pouvoir propager une éventuelle déconnexion.
-    $ID = empty($_SERVER['HTTP_SHIB_SESSION_ID']) ? uniqid().md5('grain_de_sable'.mt_rand()) : $_SERVER['HTTP_SHIB_SESSION_ID'] ;
+    $ID = uniqid().md5('grain_de_sable'.mt_rand());
     session_id($ID);
     return session_start();
   }
@@ -358,13 +357,6 @@ class Session
         if(Session::$tab_droits_page[$_SESSION['USER_PROFIL_TYPE']])
         {
           // 2.4.1. Espace identifié => Espace identifié identique : RAS
-          // Si utilisation du protocole Shibboleth, on vérifie quand même que la session retrouvée a un identifiant qui est l'ID Shibboleth.
-          // Le test sur $_SERVER['HTTP_SHIB_SESSION_ID'] est seulement à placer ici car toute l'application n'est pas protégée par Shibboleth.
-          if( !empty($_SERVER['HTTP_SHIB_SESSION_ID']) && ( $_COOKIE[SESSION_NOM] != $_SERVER['HTTP_SHIB_SESSION_ID'] ) )
-          {
-            Session::close();
-            exit_error( 'Session incompatible avec votre authentification' /*titre*/ , 'Identifiant de session différent de l\'identifiant Shibboleth !<br />Veuillez vous reconnecter.' /*contenu*/ );
-          }
         }
         elseif(Session::$tab_droits_page['public'])
         {
@@ -474,7 +466,7 @@ class Session
     {
       if( empty($_REQUEST['csrf']) || empty($_SESSION['CSRF'][$_REQUEST['csrf'].'.'.$page]) )
       {
-        exit_error( 'Alerte CSRF' /*titre*/ , 'Jeton anti-CSRF invalide.<br />Plusieurs onglets ouverts avec des sessions incompatibles ?' /*contenu*/ , FALSE /*setup*/ );
+        exit_error( 'Alerte CSRF' /*titre*/ , 'Jeton anti-CSRF invalide.<br />Plusieurs onglets ouverts avec des sessions incompatibles ?' /*contenu*/ );
       }
     }
   }

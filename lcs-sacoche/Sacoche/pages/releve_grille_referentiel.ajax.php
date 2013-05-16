@@ -112,7 +112,7 @@ if($type_generique)
   $type_synthese   = 0 ;
 }
 
-prevention_et_gestion_erreurs_fatales( TRUE /*memory*/ , FALSE /*time*/ );
+Erreur500::prevention_et_gestion_erreurs_fatales( TRUE /*memory*/ , FALSE /*time*/ );
 
 // Initialisation de tableaux
 
@@ -222,7 +222,7 @@ if($_SESSION['USER_PROFIL_TYPE']=='eleve')
 }
 elseif(count($tab_eleve_id))
 {
-  $tab_eleve = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles($liste_eleve,$with_gepi=FALSE,$with_langue=FALSE);
+  $tab_eleve = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $liste_eleve , FALSE /*with_gepi*/ , FALSE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
   if(!is_array($tab_eleve))
   {
     exit('Aucun élève trouvé correspondant aux identifiants transmis !');
@@ -743,7 +743,7 @@ else
     echo'<h2>Synthèse collective</h2>';
     echo'<ul class="puce">';
     echo'<li><a class="lien_ext" href="'.URL_DIR_EXPORT.$fichier_nom_type2.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_nom_type2.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
+    echo'<li><a class="lien_ext" href="./releve_html.php?fichier='.$fichier_nom_type2.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
     echo'</ul>';
   }
   if( $type_generique || $type_individuel )
@@ -752,7 +752,7 @@ else
     echo'<h2>'.$h2.'</h2>';
     echo'<ul class="puce">';
     echo'<li><a class="lien_ext" href="'.URL_DIR_EXPORT.$fichier_nom_type1.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./releve-html.php?fichier='.$fichier_nom_type1.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
+    echo'<li><a class="lien_ext" href="./releve_html.php?fichier='.$fichier_nom_type1.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
     echo'</ul>';
   }
 }

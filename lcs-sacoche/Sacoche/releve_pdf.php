@@ -25,22 +25,16 @@
  * 
  */
 
-// Fichier appelé pour l'affichage d'un relevé HTML enregistré temporairement.
+// Fichier appelé pour l'affichage d'une archive PDF d'un bulletin.
 // Passage en GET d'un paramètre pour savoir quelle page charger.
-
-// Atteste l'appel de cette page avant l'inclusion d'une autre
-define('SACoche','releve_pdf');
 
 // Constantes / Configuration serveur / Autoload classes / Fonction de sortie
 require('./_inc/_loader.php');
 
-header('Content-Type: text/html; charset=utf-8');
-
 // Ouverture de la session et gestion des droits d'accès
-$PAGE = 'releve_pdf';
-if(!Session::verif_droit_acces($PAGE))
+if(!Session::verif_droit_acces(SACoche))
 {
-  exit_error( 'Droits manquants' /*titre*/ , 'Droits de la page "'.$PAGE.'" manquants.<br />Les droits de cette page n\'ont pas été attribués dans le fichier "'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php').'".' /*contenu*/ );
+  exit_error( 'Droits manquants' /*titre*/ , 'Droits de la page "'.SACoche.'" manquants.<br />Les droits de cette page n\'ont pas été attribués dans le fichier "'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php').'".' /*contenu*/ , '' /*lien*/ );
 }
 Session::execute();
 
@@ -51,37 +45,42 @@ require(CHEMIN_DOSSIER_INCLUDE.'fonction_divers.php');
 $FICHIER = (isset($_GET['fichier'])) ? $_GET['fichier'] : '';
 
 // Extraction des infos
-list( $eleve_id , $BILAN_TYPE , $periode_id ) = explode( '_' , $FICHIER) + Array( NULL , NULL , NULL );
+list( $eleve_id , $bilan_type , $periode_id ) = explode( '_' , $FICHIER) + Array( NULL , NULL , NULL );
 
-$BILAN_TYPE = Clean::texte($BILAN_TYPE);
+$bilan_type = Clean::texte($bilan_type);
 $periode_id = Clean::entier($periode_id);
 $eleve_id   = Clean::entier($eleve_id);
 
-$tab_types = array( 'releve' , 'bulletin' , 'palier1' , 'palier2' , 'palier3' );
+$tab_types = array( 'releve' , 'bulletin' , 'palier1' , 'palier2' , 'palier3' , 'brevet' );
 
 // Vérification des paramètres principaux
 
-if( (!in_array($BILAN_TYPE,$tab_types)) || !$periode_id || !$eleve_id )
+if(!$FICHIER)
 {
-  exit('Erreur avec les données transmises !');
+  exit_error( 'Paramètre manquant' /*titre*/ , 'Page appelée sans indiquer la référence de l\'archive PDF à récupérer.' /*contenu*/ , '' /*lien*/ );
+}
+
+if( (!in_array($bilan_type,$tab_types)) || !$periode_id || !$eleve_id )
+{
+  exit_error( 'Paramètre incorrect' /*titre*/ , 'La valeur "'.html($FICHIER).'" transmise n\'est pas conforme.' /*contenu*/ , '' /*lien*/ );
 }
 
 // Vérifications complémentaires
 
-if(!isset($_SESSION['tmp_droit_voir_archive'][$eleve_id.$BILAN_TYPE]))
+if(!isset($_SESSION['tmp_droit_voir_archive'][$eleve_id.$bilan_type]))
 {
-  exit('Erreur de droit d\'accès ! Veuillez n\'utiliser qu\'un onglet.');
+  exit_error( 'Accès non autorisé' /*titre*/ , 'Erreur de droit d\'accès ! Veuillez n\'utiliser qu\'un onglet.' /*contenu*/ , '' /*lien*/ );
 }
 
-$fichier_archive = CHEMIN_DOSSIER_OFFICIEL.$_SESSION['BASE'].DS.fabriquer_nom_fichier_bilan_officiel( $eleve_id , $BILAN_TYPE , $periode_id );
+$fichier_archive = CHEMIN_DOSSIER_OFFICIEL.$_SESSION['BASE'].DS.fabriquer_nom_fichier_bilan_officiel( $eleve_id , $bilan_type , $periode_id );
 if(!is_file($fichier_archive))
 {
-  exit('Erreur : archive non trouvée sur ce serveur.');
+  exit_error( 'Document manquant' /*titre*/ , 'Archive non trouvée sur ce serveur.' /*contenu*/ , '' /*lien*/ );
 }
 
 // Copie du fichier pour préserver son anonymat
 
-$fichier_copie_nom = 'officiel_'.$BILAN_TYPE.'_archive_'.$eleve_id.'_'.$periode_id.'_'.fabriquer_fin_nom_fichier__date_et_alea().'.pdf' ;
+$fichier_copie_nom = 'officiel_'.$bilan_type.'_archive_'.$eleve_id.'_'.$periode_id.'_'.fabriquer_fin_nom_fichier__date_et_alea().'.pdf' ;
 copy($fichier_archive,CHEMIN_DOSSIER_EXPORT.$fichier_copie_nom);
 
 // Redirection du navigateur

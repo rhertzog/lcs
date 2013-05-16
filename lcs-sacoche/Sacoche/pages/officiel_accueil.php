@@ -50,6 +50,7 @@ $profils_archives_pdf = 'administrateurs (de l\'établissement)<br />'.afficher_
 
 // Droit de modifier le statut d'un bilan (dans le cas PP, restera à affiner classe par classe...).
 $affichage_formulaire_statut = ($_SESSION['USER_PROFIL_TYPE']=='administrateur') || test_user_droit_specifique($_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_MODIFIER_STATUT']) ;
+
 $tab_etats = array
 (
   '0absence'  => 'indéfini',
@@ -67,7 +68,7 @@ $tab_etats = array
 if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
 {
   $tab_ids  = (isset($_POST['listing_ids'])) ? explode(',',$_POST['listing_ids']) : array() ;
-  $new_etat = (isset($_POST['etat']))        ? Clean::texte($_POST['etat'])        : '' ;
+  $new_etat = (isset($_POST['etat']))        ? Clean::texte($_POST['etat'])       : '' ;
   if( count($tab_ids) && isset($tab_etats[$new_etat]) )
   {
     Session::verifier_jeton_anti_CSRF($PAGE);
@@ -83,15 +84,6 @@ if( ($affichage_formulaire_statut) && ($_SESSION['SESAMATH_ID']!=ID_DEMO) )
     }
   }
 }
-
-$tab_etats = array
-(
-  '0absence'  => 'indéfini',
-  '1vide'     => 'Vide (fermé)',
-  '2rubrique' => '<span class="now">Saisies Profs</span>',
-  '3synthese' => '<span class="now">Saisie Synthèse</span>',
-  '4complet'  => 'Complet (fermé)'
-);
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération et traitement des données postées, si formulaire soumis
@@ -249,7 +241,7 @@ if(!count($tab_classe))
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupérer la liste des périodes, dans l'ordre choisi par l'admin.
-// Initialiser au passages les cellules du tableau à afficher
+// Initialiser au passage les cellules du tableau à afficher
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_periodes();
@@ -429,7 +421,7 @@ echo'<script type="text/javascript">var tab_disabled = new Array();tab_disabled[
 echo'<table id="table_accueil"><thead>';
 foreach($tab_affich as $ligne_id => $tab_colonne)
 {
-  echo ( ($ligne_id!='check') ||($affichage_formulaire_statut) ) ? '<tr>'.implode('',$tab_colonne).'</tr>'."\r\n" : '' ;
+  echo ( ($ligne_id!='check') || ($affichage_formulaire_statut) ) ? '<tr>'.implode('',$tab_colonne).'</tr>'."\r\n" : '' ;
   echo ($ligne_id=='title') ? '</thead><tbody>'."\r\n" : '' ;
 }
 echo'</tbody></table>';
@@ -486,13 +478,13 @@ elseif(($BILAN_TYPE=='releve')||($BILAN_TYPE=='bulletin'))
   foreach($DB_TAB as $DB_ROW)
   {
     $checked = ( ($_SESSION['USER_PROFIL_TYPE']!='professeur') || in_array($DB_ROW['matiere_id'],$tab_matieres_id) ) ? ' checked' : '' ;
-    $tab_checkbox_rubriques[$DB_ROW['matiere_id']] = '<input type="checkbox" name="f_rubrique[]" id="rubrique_'.$DB_ROW['matiere_id'].'" value="'.$DB_ROW['matiere_id'].'"'.$checked.$disabled.' /><label for="rubrique_'.$DB_ROW['matiere_id'].'"> '.html($DB_ROW['matiere_nom']).'</label><br />';
+    $tab_checkbox_rubriques[$DB_ROW['matiere_id']] = '<label for="rubrique_'.$DB_ROW['matiere_id'].'"><input type="checkbox" name="f_rubrique[]" id="rubrique_'.$DB_ROW['matiere_id'].'" value="'.$DB_ROW['matiere_id'].'"'.$checked.$disabled.' /> '.html($DB_ROW['matiere_nom']).'</label><br />';
   }
   $commentaire_selection = '<div class="astuce">La recherche sera dans tous les cas aussi restreinte aux matières evaluées au cours de la période.</div>';
 }
 // Choix de vérifier ou pas l'appréciation générale ; le test ($etat=='3synthese') dépend de chaque classe...
 $disabled = ($_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_GENERALE']) ? '' : ' disabled' ;
-$tab_checkbox_rubriques[0] = '<input type="checkbox" name="f_rubrique[]" id="rubrique_0"'.$disabled.' value="0" /><label for="rubrique_0"> <i>Appréciation de synthèse générale</i></label><br />';
+$tab_checkbox_rubriques[0] = '<label for="rubrique_0"><input type="checkbox" name="f_rubrique[]" id="rubrique_0"'.$disabled.' value="0" /> <i>Appréciation de synthèse générale</i></label><br />';
 // Présenter les rubriques en colonnes de hauteur raisonnables
 $tab_checkbox_rubriques    = array_values($tab_checkbox_rubriques);
 $nb_rubriques              = count($tab_checkbox_rubriques);

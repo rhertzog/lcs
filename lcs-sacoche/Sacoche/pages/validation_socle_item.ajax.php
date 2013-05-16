@@ -60,7 +60,7 @@ if( ($action=='Afficher_bilan') && $pilier_id && count($tab_domaine) && count($t
   require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
   $test_pilier_langue = (in_array($pilier_id,$tab_langue_piliers)) ? TRUE : FALSE ;
   // Récupérer les données des élèves
-  $tab_eleve = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles($listing_eleve_id,$with_gepi=FALSE,$with_langue=TRUE);
+  $tab_eleve = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $listing_eleve_id , FALSE /*with_gepi*/ , TRUE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
   if(!is_array($tab_eleve))
   {
     exit('Aucun élève trouvé correspondant aux identifiants transmis !');
@@ -267,7 +267,7 @@ elseif( ($action=='Afficher_information') && $eleve_id && $pilier_id && $entree_
   // Récupération de la liste des résultats
   $tab_eval = array();  // [item_id][]['note'] => note
   $tab_item = array();  // [item_id] => array(item_ref,item_nom,calcul_methode,calcul_limite);
-  $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_result_eleve_palier($eleve_id,$entree_id);
+  $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_result_eleve_item($eleve_id,$entree_id);
   foreach($DB_TAB as $DB_ROW)
   {
     $test_comptabilise = ($mode=='auto') ? ( !$test_pilier_langue || in_array($DB_ROW['matiere_id'],$tab_langues[$langue]['tab_matiere_id']) ) : in_array($DB_ROW['matiere_id'],$tab_matiere) ;

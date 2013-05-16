@@ -108,6 +108,10 @@ $tab_profs  = array_filter($tab_profs,'positif');
 // Liste des notes transmises
 $tab_notes  = (isset($_POST['f_notes'])) ? explode(',',$_POST['f_notes']) : array() ;
 
+// Détecter si usage d'un appareil mobile (tablette, téléphone...) auquel cas on propose un tableau de saisi condensé.
+$MobileDetect = new MobileDetect();
+$isMobile = $MobileDetect->isMobile();
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Afficher une liste d'évaluations
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -514,6 +518,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
     exit('Aucun élève n\'est associé à cette évaluation !');
   }
   $separateur = ';';
+  $check_largeur = $isMobile ? ' checked' : '' ;
   $tab_affich  = array(); // tableau bi-dimensionnel [n°ligne=id_item][n°colonne=id_user]
   $tab_user_id = array(); // pas indispensable, mais plus lisible
   $tab_comp_id = array(); // pas indispensable, mais plus lisible
@@ -524,7 +529,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
   $tab_affich[0][0].= '<span id="arrow_continue"><label for="arrow_continue_down"><input type="radio" id="arrow_continue_down" name="arrow_continue" value="down" /> <span class="arrow_continue_down">par élève</span></label>&nbsp;&nbsp;&nbsp;<label for="arrow_continue_rigth"><input type="radio" id="arrow_continue_rigth" name="arrow_continue" value="rigth" /> <span class="arrow_continue_rigth">par item</span></label></span><br />';
   $tab_affich[0][0].= '<label for="radio_souris"><input type="radio" id="radio_souris" name="mode_saisie" value="souris" /> <span class="pilot_mouse">Piloter à la souris</span></label> <img alt="" src="./_img/bulle_aide.png" title="Survoler une case du tableau avec la souris<br />puis cliquer sur une des images proposées." />';
   $tab_affich[0][0].= '</p><p>';
-  $tab_affich[0][0].= '<label for="check_largeur"><input type="checkbox" id="check_largeur" name="check_largeur" value="retrecir_largeur" /> <span class="retrecir_largeur">Largeur optimale</span></label> <img alt="" src="./_img/bulle_aide.png" title="Diminuer la largeur des colonnes<br />si les élèves sont nombreux." /><br />';
+  $tab_affich[0][0].= '<label for="check_largeur"><input type="checkbox" id="check_largeur" name="check_largeur" value="retrecir_largeur"'.$check_largeur.' /> <span class="retrecir_largeur">Largeur optimale</span></label> <img alt="" src="./_img/bulle_aide.png" title="Diminuer la largeur des colonnes<br />si les élèves sont nombreux." /><br />';
   $tab_affich[0][0].= '<label for="check_hauteur"><input type="checkbox" id="check_hauteur" name="check_hauteur" value="retrecir_hauteur" /> <span class="retrecir_hauteur">Hauteur optimale</span></label> <img alt="" src="./_img/bulle_aide.png" title="Diminuer la hauteur des lignes<br />si les items sont nombreux." />';
   $tab_affich[0][0].= '</p>';
   $tab_affich[0][0].= '</td>';
@@ -532,9 +537,10 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
   $csv_ligne_eleve_nom = $separateur;
   $csv_ligne_eleve_id  = $separateur;
   $csv_nb_colonnes = 1;
+  $br = $isMobile ? '' : '&amp;br' ;
   foreach($DB_TAB_USER as $DB_ROW)
   {
-    $tab_affich[0][$DB_ROW['user_id']] = '<th><img alt="'.html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($DB_ROW['user_nom']).'&amp;prenom='.urlencode($DB_ROW['user_prenom']).'&amp;br" /></th>';
+    $tab_affich[0][$DB_ROW['user_id']] = '<th><img alt="'.html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($DB_ROW['user_nom']).'&amp;prenom='.urlencode($DB_ROW['user_prenom']).$br.'" /></th>';
     $tab_user_id[$DB_ROW['user_id']] = html($DB_ROW['user_prenom'].' '.$DB_ROW['user_nom']);
     $csv_ligne_eleve_nom .= '"'.$DB_ROW['user_prenom'].' '.$DB_ROW['user_nom'].'"'.$separateur;
     $csv_ligne_eleve_id  .= $DB_ROW['user_id'].$separateur;
@@ -579,7 +585,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
   // Enregistrer le csv
   $export_csv .= $groupe_nom."\r\n".$date_fr."\r\n".$description."\r\n\r\n";
   $export_csv .= 'CODAGES AUTORISÉS : 1 2 3 4 A D N P'."\r\n";
-  FileSystem::zip( CHEMIN_DOSSIER_EXPORT.'saisie_deportee_'.$fnom_export.'.zip' , 'saisie_deportee_'.$fnom_export.'.csv' , To::csv($export_csv) );
+  FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.'saisie_deportee_'.$fnom_export.'.csv' , To::csv($export_csv) );
   //
   // pdf contenant un tableau de saisie vide ; on a besoin de tourner du texte à 90°
   //
@@ -608,6 +614,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
   //
   // c'est fini ; affichage du retour
   //
+  $tbody_class = $isMobile ? 'v' : 'h' ;
   foreach($tab_affich as $comp_id => $tab_user)
   {
     if(!$comp_id)
@@ -622,7 +629,7 @@ if( ($action=='saisir') && $devoir_id && $groupe_id && $date_fr ) // $descriptio
     echo'</tr>';
     if(!$comp_id)
     {
-      echo'</thead><tbody class="h">';
+      echo'</thead><tbody class="'.$tbody_class.'">';
     }
   }
   echo'</tbody>';
@@ -727,7 +734,7 @@ if( ($action=='voir') && $devoir_id && $groupe_id && $date_fr ) // $description 
   // Enregistrer le csv
   $export_csv .= $groupe_nom."\r\n".$date_fr."\r\n".$description."\r\n\r\n";
   $export_csv .= 'CODAGES AUTORISÉS : 1 2 3 4 A D N P'."\r\n";
-  FileSystem::zip( CHEMIN_DOSSIER_EXPORT.'saisie_deportee_'.$fnom_export.'.zip' , 'saisie_deportee_'.$fnom_export.'.csv' , To::csv($export_csv) );
+  FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.'saisie_deportee_'.$fnom_export.'.csv' , To::csv($export_csv) );
   // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
   // pdf contenant un tableau de saisie vide ; on a besoin de tourner du texte à 90°
   // / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / / /
@@ -1167,7 +1174,7 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
   }
   // On attaque l'élaboration des sorties HTML, CSV et PDF
   $sacoche_htm = '<hr /><a class="lien_ext" href="'.URL_DIR_EXPORT.'cartouche_'.$fnom_export.'.pdf"><span class="file file_pdf">Cartouches &rarr; Archiver / Imprimer (format <em>pdf</em>).</span></a><br />';
-  $sacoche_htm.= '<a class="lien_ext" href="'.URL_DIR_EXPORT.'cartouche_'.$fnom_export.'.zip"><span class="file file_zip">Cartouches &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a>';
+  $sacoche_htm.= '<a class="lien_ext" href="./force_download.php?fichier=cartouche_'.$fnom_export.'.csv"><span class="file file_txt">Cartouches &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a>';
   $sacoche_csv = '';
   $separateur  = ';';
   // Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
@@ -1236,8 +1243,8 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
       }
     }
   }
-  // On archive le cartouche dans un fichier tableur zippé (csv tabulé)
-  FileSystem::zip( CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.zip' , 'cartouche_'.$fnom_export.'.csv' , To::csv($sacoche_csv) );
+  // On archive le cartouche dans un fichier csv
+  FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.csv' , To::csv($sacoche_csv) );
   // On archive le cartouche dans un fichier pdf
   $sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.pdf','F');
   // Affichage

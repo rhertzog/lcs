@@ -26,6 +26,72 @@
  */
 
 // ============================================================================
+// Fonctions non disponibles en PHP 5.1
+// ============================================================================
+
+/*
+ * La fonction error_get_last() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
+ * http://fr.php.net/manual/fr/function.error-get-last.php#103539
+ */
+if(!function_exists('error_get_last'))
+{
+  set_error_handler(
+      create_function(
+        '$errno,$errstr,$errfile,$errline,$errcontext',
+        '
+          global $__error_get_last_retval__;
+          $__error_get_last_retval__ = array(
+            \'type\'    => $errno,
+            \'message\' => $errstr,
+            \'file\'    => $errfile,
+            \'line\'    => $errline
+          );
+          return NULL;
+        '
+      )
+  );
+  function error_get_last()
+  {
+    global $__error_get_last_retval__;
+    if( !isset($__error_get_last_retval__) )
+    {
+      return NULL;
+    }
+    return $__error_get_last_retval__;
+  }
+}
+
+/*
+ * La fonction array_fill_keys() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
+ */
+if(!function_exists('array_fill_keys'))
+{
+  function array_fill_keys($tab_clefs,$valeur)
+  {
+    return array_combine( $tab_clefs , array_fill(0,count($tab_clefs),$valeur) );
+  }
+}
+
+/*
+ * Le paramètre PATHINFO_FILENAME de la fonction pathinfo() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, traiter ce cas si besoin.
+ */
+function pathinfo_filename($file)
+{
+  if(defined('PATHINFO_FILENAME'))
+  {
+    return pathinfo($file,PATHINFO_FILENAME);
+  }
+  else
+  {
+    $position_filename  = strrpos($file,'/');
+    $position_filename  = ($position_filename!==FALSE) ? $position_filename+1 : 0 ;
+    $position_extension = strrpos($file,'.');
+    $filename_length    = ($position_extension!==FALSE) ? $position_extension - $position_filename : strlen($file) ;
+    return substr($file,$position_filename,$filename_length);
+  }
+}
+
+// ============================================================================
 // Config PHP - Versions PHP & MySQL - Modules PHP
 // ============================================================================
 
@@ -76,6 +142,13 @@ if(get_magic_quotes_gpc())
   array_walk_recursive($_POST   ,'tab_stripslashes');
   array_walk_recursive($_REQUEST,'tab_stripslashes');
 }
+
+// ============================================================================
+// Constante SACoche - Atteste l'appel de ce fichier avant inclusion d'une autre page & permet de connaître le nom du script initial.
+// ============================================================================
+
+define( 'SACoche', pathinfo_filename($_SERVER['SCRIPT_NAME']) );
+if(SACoche=='_loader') {exit('Ce fichier ne peut être appelé directement !');}
 
 // ============================================================================
 // Type de serveur (LOCAL|DEV|PROD)
@@ -326,7 +399,7 @@ define('ID_DEMO'                   , 9999); // id de l'établissement de démons
 define('ID_MATIERE_PARTAGEE_MAX'   , 9999); // id de la matière transversale dans la table "sacoche_matiere" ; c'est l'id maximal des matières partagées (les id des matières spécifiques sont supérieurs)
 define('ID_NIVEAU_MAX'             , 1000); // Un id de niveau supérieur correspond à un id de famille qui a été incrémenté de cette constante
 define('ID_FAMILLE_MATIERE_USUELLE',   99);
-
+define('CODE_BREVET_EPREUVE_TOTAL' ,  255);
 
 // cookies
 define('COOKIE_STRUCTURE','SACoche-etablissement');  // nom du cookie servant à retenir l'établissement sélectionné, afin de ne pas à avoir à le sélectionner de nouveau, et à pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
@@ -408,14 +481,16 @@ function __autoload($class_name)
     'Browser'                     => '_inc'.DS.'class.Browser.php' ,
     'Clean'                       => '_inc'.DS.'class.Clean.php' ,
     'cssmin'                      => '_inc'.DS.'class.CssMinified.php' ,
+    'Erreur500'                   => '_inc'.DS.'class.Erreur500.php' ,
     'FileSystem'                  => '_inc'.DS.'class.FileSystem.php' ,
     'Form'                        => '_inc'.DS.'class.Form.php' ,
     'Html'                        => '_inc'.DS.'class.Html.php' ,
     'InfoServeur'                 => '_inc'.DS.'class.InfoServeur.php' ,
-    'LockAcces'                   => '_inc'.DS.'class.LockAcces.php' ,
-    'MyDOMDocument'               => '_inc'.DS.'class.domdocument.php' ,
     'JSMin'                       => '_inc'.DS.'class.JavaScriptMinified.php' ,
     'JavaScriptPacker'            => '_inc'.DS.'class.JavaScriptPacker.php' ,
+    'LockAcces'                   => '_inc'.DS.'class.LockAcces.php' ,
+    'MobileDetect'                => '_inc'.DS.'class.MobileDetect.php' ,
+    'MyDOMDocument'               => '_inc'.DS.'class.domdocument.php' ,
     'PDF'                         => '_inc'.DS.'class.PDF.php' ,
     'RSS'                         => '_inc'.DS.'class.RSS.php' ,
     'SACocheLog'                  => '_inc'.DS.'class.SACocheLog.php' ,
@@ -434,6 +509,7 @@ function __autoload($class_name)
     'DB_STRUCTURE_WEBMESTRE'      => '_sql'.DS.'requetes_structure_webmestre.php' ,
 
     'DB_STRUCTURE_BILAN'          => '_sql'.DS.'requetes_structure_bilan.php' ,
+    'DB_STRUCTURE_BREVET'         => '_sql'.DS.'requetes_structure_brevet.php' ,
     'DB_STRUCTURE_COMMUN'         => '_sql'.DS.'requetes_structure_commun.php' ,
     'DB_STRUCTURE_IMAGE'          => '_sql'.DS.'requetes_structure_image.php' ,
     'DB_STRUCTURE_MAJ_BASE'       => '_sql'.DS.'requetes_structure_maj_base.php' ,
@@ -484,21 +560,8 @@ function __autoload($class_name)
 }
 
 // ============================================================================
-// Quelques fonctions utiles : html() - perso_mb_detect_encoding_utf8() - augmenter_memory_limit() - augmenter_max_execution_time() - rapporter_erreur_fatale_memoire_ou_duree() - rapporter_erreur_fatale_phpcas() - exit_error()
+// Fonctions d'affichage et de sortie
 // ============================================================================
-
-/*
- * Convertir les caractères spéciaux (&"'<>) en entité HTML pour éviter des problèmes d'affichage (INPUT, SELECT, TEXTAREA, XML, ou simple texte HTML valide...).
- * Pour que les retours à la lignes soient convertis en <br /> il faut coupler dette fontion à la fonction nl2br()
- * 
- * @param string
- * @return string
- */
-function html($text)
-{
-  // Ne pas modifier ce code à la légère : les résultats sont différents suivant que ce soit un affichage direct ou ajax, suivant la version de PHP (5.1 ou 5.3)...
-  return (perso_mb_detect_encoding_utf8($text)) ? htmlspecialchars($text,ENT_COMPAT,'UTF-8') : utf8_encode(htmlspecialchars($text,ENT_COMPAT)) ;
-}
 
 /**
  * Fonction pour remplacer mb_detect_encoding() à cause d'un bug : http://fr2.php.net/manual/en/function.mb-detect-encoding.php#81936
@@ -512,139 +575,30 @@ function perso_mb_detect_encoding_utf8($text)
 }
 
 /*
- * Augmenter le memory_limit (si autorisé) pour les pages les plus gourmandes
+ * Convertir les caractères spéciaux (&"'<>) en entité HTML afin d'éviter des problèmes d'affichage (INPUT, SELECT, TEXTAREA, XML, ou simple texte HTML valide...).
+ * Pour que les retours à la ligne soient convertis en <br /> il faut coupler cette fontion à la fonction nl2br()
  * 
- * @param void
- * @return void
+ * @param string
+ * @return string
  */
-function augmenter_memory_limit()
+function html($text)
 {
-  if( (int)ini_get('memory_limit') < 256 )
-  {
-    @ini_set(  'memory_limit','256M');
-    @ini_alter('memory_limit','256M');
-  }
+  // Ne pas modifier ce code à la légère : les résultats sont différents suivant que ce soit un affichage direct ou ajax, suivant la version de PHP (5.1 ou 5.3)...
+  return (perso_mb_detect_encoding_utf8($text)) ? htmlspecialchars($text,ENT_COMPAT,'UTF-8') : utf8_encode(htmlspecialchars($text,ENT_COMPAT)) ;
 }
 
 /*
- * Augmenter le memory_limit (si autorisé) pour les pages les plus gourmandes
- * 
- * @param void
- * @return void
- */
-function augmenter_max_execution_time()
-{
-  if( (int)ini_get('max_execution_time') < 30 )
-  {
-    @ini_set(  'max_execution_time',30);
-    @ini_alter('max_execution_time',30);
-  }
-}
-
-/*
- * Pour intercepter les erreurs de dépassement de mémoire ou de durée d'exécution (une erreur fatale échappe à un try{...}catch(){...}).
- *
- * Source : http://pmol.fr/programmation/web/la-gestion-des-erreurs-en-php/
- * Mais ça ne fonctionne pas en CGI : PHP a déjà envoyé l'erreur 500 et cette fonction est appelée trop tard, PHP n'a plus la main.
- * Pour avoir des informations accessibles en cas d'erreur type « PHP Fatal error : Allowed memory size of ... bytes exhausted » on peut aussi mettre dans les pages sensibles :
- * ajouter_log_PHP( 'Demande de bilan' , serialize($_POST) , __FILE__ , __LINE__ , TRUE );
- * 
- * @param void
- * @return void
- */
-function rapporter_erreur_fatale_memoire_ou_duree()
-{
-  $tab_last_error = error_get_last(); // tableau à 4 indices : type ; message ; file ; line
-  if( ($tab_last_error!==NULL) && ($tab_last_error['type']===E_ERROR) )
-  {
-    if(mb_substr($tab_last_error['message'],0,19)=='Allowed memory size')
-    {
-      exit_error( 'Mémoire insuffisante' /*titre*/ , 'Mémoire de '.ini_get('memory_limit').' insuffisante ; sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "memory_limit".' /*contenu*/ );
-    }
-    if(mb_substr($tab_last_error['message'],0,22)=='Maximum execution time')
-    {
-      exit_error( 'Temps alloué insuffisant' /*titre*/ , 'Temps de '.ini_get('max_execution_time').'s alloué au script insuffisant ; sélectionner moins d\'élèves à la fois ou demander à votre hébergeur d\'augmenter la valeur "max_execution_time".' /*contenu*/ );
-    }
-  }
-}
-
-/*
- * Pour enclencher les fonctions de prévention et d'interception des erreurs fatales dépassement de mémoire ou de durée d'exécution.
- * 
- * 1/ dépassement de mémoire (memory_limit)
- * La récupération de beaucoup d'informations peut provoquer un dépassement de mémoire.
- * Et la classe FPDF a besoin de mémoire, malgré toutes les optimisations possibles, pour générer un PDF comportant parfois entre 100 et 200 pages.
-// Un graphique sur une longue période peut aussi nécessiter de nombreux calculs.
- * De plus la consommation d'une classe PHP n'est pas mesurable - non comptabilisée par memory_get_usage() - et non corrélée à la taille de l'objet PDF en l'occurrence...
- * Un memory_limit() de 64Mo est ainsi dépassé avec un pdf d'environ 150 pages, ce qui est atteint avec 4 pages par élèves ou un groupe d'élèves > effectif moyen d'une classe.
- * 
- * 2/ durée d'exécution (max_execution_time)
- * La découpe d'un PDF peut provoquer un dépassement de la durée d'exécution allouée au script.
- * Un max_execution_time() de 10s peut ainsi être dépassé avec un pdf de bulletins d'une classe de 25 élèves (archives + tirages responsables : ça fait plus de 100 pages).
- * 
- * 3/ Solution
- * On commence par un ini_set(), même si cette directive peut être interdite dans la conf PHP.
- * Pour memory_limit, elle peut aussi être bloquée via Suhosin (http:*www.hardened-php.net/suhosin/configuration.html#suhosin.memory_limit).
- * En complément, register_shutdown_function() permet de capter une erreur fatale de dépassement de mémoire, sauf si CGI.
- * D'où une combinaison de toutes ces pistes, plus une détection par javascript du statusCode.
- * 
- * @param bool $memory
- * @param bool $time
- * @return void
- */
-function prevention_et_gestion_erreurs_fatales($memory,$time)
-{
-  if($memory) augmenter_memory_limit();
-  if($time)   augmenter_max_execution_time();
-  register_shutdown_function('rapporter_erreur_fatale_memoire_ou_duree');
-}
-
-/*
- * Pour intercepter les erreurs de phpCAS (une erreur fatale échappe à un try{...}catch(){...}).
- *
- * phpCAS renvoie parfois des erreurs fatales
- * pas beaucoup, pas systématiquement, mais régulièrement
- * 
- * Une cause (je ne sais pas encore si c'est la seule cause)
- * est que le XML renvoyé par le serveur CAS est syntaxiquement invalide.
- * En général car il contient un caractère parmi & < >
- * 
- * Quand c'est un &, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): xmlParseEntityRef: no name in Entity...
- * Quand c'est un <, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): StartTag: invalid element name...
- * Quand c'est un >, avant l'erreur fatale on a un warning : DOMDocument::loadXML(): Start tag expected, '<' not found in Entity...
- * L'ENT doit s'arranger pour envoyer un XML valide, donc :
- * - soit convertir ces caractères en entités HTML (&amp; &lt; &gt;)
- * - soit retirer ces caractères ou les remplacer par d'autres
- * - soit utiliser des sections CDATA : <![CDATA[some text & some more text]]>
- * 
- * Par ailleurs, il est tout de même dommage que phpCas ne renvoie pas un message plus causant 
- * (genre xml parse error, ou à défaut invalid Response).
- * 
- * @param void
- * @return void
- */
-function rapporter_erreur_fatale_phpcas()
-{
-  $tab_last_error = error_get_last(); // tableau à 4 indices : type ; message ; file ; line
-  if( ($tab_last_error!==NULL) && ( ($tab_last_error['type']==E_ERROR) || ($tab_last_error['type']>=E_CORE_ERROR) ) )
-  {
-    exit_error( 'Erreur CAS' /*titre*/ , $tab_last_error['message'] /*contenu*/ );
-  }
-}
-
-/*
- * Afficher une page HTML minimale (mais aux couleurs de SACoche) avec un message explicatif et un lien pour retourner en page d'accueil (si AJAX, renvoyer juste un message).
+ * Afficher une page HTML minimale (mais aux couleurs de SACoche) avec un message explicatif et un lien adapté éventuel.
  * 
  * @param string $titre     titre de la page
  * @param string $contenu   contenu HTML affiché (ou AJAX retourné) ; il doit déjà avoir été filtré si besoin avec html()
- * @param bool   $setup     facultatif ; TRUE pour un lien vers la procédure d'installation au lieu d'un lien vers l'accueil.
+ * @param string $lien      "accueil" pour un lien vers l'accueil (par défaut) OU "install" vers la procédure d'installation OU "" pour aucun
  * @return void
  */
-function exit_error( $titre , $contenu , $setup=FALSE )
+function exit_error( $titre , $contenu , $lien='accueil' )
 {
   if(SACoche!='ajax')
   {
-    $tab_lien = ($setup) ? array('href'=>'index.php?page=public_installation','txt'=>'Procédure d\'installation') : array('href'=>'index.php','txt'=>'Retour en page d\'accueil') ;
     // start html
     header('Content-Type: text/html; charset='.CHARSET);
     echo'<!DOCTYPE html><html>';
@@ -660,7 +614,8 @@ function exit_error( $titre , $contenu , $setup=FALSE )
     echo'<div class="hc"><img src="./_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>';
     echo'<h1>» '.$titre.'</h1>';
     echo'<p>'.str_replace('<br />','</p><p>',$contenu).'</p>';
-    echo'<p><a href="./'.$tab_lien['href'].'">'.$tab_lien['txt'].' de SACoche.</a></p>';
+        if($lien=='accueil') { echo'<p><a href="./index.php">Retour en page d\'accueil de SACoche.</a></p>'; } 
+    elseif($lien=='install') { echo'<p><a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'; } 
     echo'</div></body>';
     // end html
     echo'</html>';
@@ -671,52 +626,4 @@ function exit_error( $titre , $contenu , $setup=FALSE )
   }
   exit();
 }
-
-// ============================================================================
-// Fonctions non disponibles en PHP 5.1
-// ============================================================================
-
-/*
- * La fonction error_get_last() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
- * http://fr.php.net/manual/fr/function.error-get-last.php#103539
- */
-if(!function_exists('error_get_last'))
-{
-  set_error_handler(
-      create_function(
-        '$errno,$errstr,$errfile,$errline,$errcontext',
-        '
-          global $__error_get_last_retval__;
-          $__error_get_last_retval__ = array(
-            \'type\'    => $errno,
-            \'message\' => $errstr,
-            \'file\'    => $errfile,
-            \'line\'    => $errline
-          );
-          return NULL;
-        '
-      )
-  );
-  function error_get_last()
-  {
-    global $__error_get_last_retval__;
-    if( !isset($__error_get_last_retval__) )
-    {
-      return NULL;
-    }
-    return $__error_get_last_retval__;
-  }
-}
-
-/*
- * La fonction array_fill_keys() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
- */
-if(!function_exists('array_fill_keys'))
-{
-  function array_fill_keys($tab_clefs,$valeur)
-  {
-    return array_combine( $tab_clefs , array_fill(0,count($tab_clefs),$valeur) );
-  }
-}
-
 ?>

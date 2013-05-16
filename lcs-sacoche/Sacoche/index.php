@@ -30,9 +30,6 @@ $tab_messages_erreur = array();
 // Fichier appelé pour l'affichage de chaque page.
 // Passage en GET des paramètres pour savoir quelle page charger.
 
-// Atteste l'appel de cette page avant l'inclusion d'une autre
-define('SACoche','index');
-
 // Constantes / Configuration serveur / Autoload classes / Fonction de sortie
 require('./_inc/_loader.php');
 
@@ -52,7 +49,7 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
 }
 elseif($PAGE!='public_installation')
 {
-  exit_error( 'Informations hébergement manquantes' /*titre*/ , 'Les informations relatives à l\'hébergeur n\'ont pas été trouvées.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_INSTALL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , TRUE /*setup*/ );
+  exit_error( 'Informations hébergement manquantes' /*titre*/ , 'Les informations relatives à l\'hébergeur n\'ont pas été trouvées.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_INSTALL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , 'install' /*lien*/ );
 }
 
 // Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
@@ -119,7 +116,7 @@ if(is_file(CHEMIN_FICHIER_CONFIG_INSTALL))
   }
   elseif($PAGE!='public_installation')
   {
-    exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_MYSQL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , TRUE /*setup*/ );
+    exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />C\'est probablement votre première installation de SACoche, ou bien le fichier "'.FileSystem::fin_chemin(CHEMIN_FICHIER_CONFIG_MYSQL).'" a été supprimé.<br />Cliquer sur le lien ci-dessous.' /*contenu*/ , 'install' /*lien*/ );
   }
 }
 
@@ -158,13 +155,14 @@ $TITRE_NAVIGATEUR.= ($TITRE) ? $TITRE : 'Evaluer par compétences et valider le 
 $CSS_PERSO = (isset($_SESSION['CSS'])) ? '<style type="text/css">'.$_SESSION['CSS'].'</style>' : NULL ;
 
 // Fichiers à inclure
+$tab_pages_graphiques = array('brevet_fiches','officiel_accueil','releve_bilan_chronologique');
 $filename_js_normal = './pages/'.$PAGE.'.js';
 $tab_fichiers_head = array();
 $tab_fichiers_head[] = array( 'css' , compacter('./_css/style.css','mini') );
 $tab_fichiers_head[] = array( 'js'  , compacter('./_js/jquery-librairies.js','mini') );
 $tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // la minification plante à sur le contenu de testURL() avec le message Fatal error: Uncaught exception 'JSMinException' with message 'Unterminated string literal.'
-if(in_array($PAGE,array('officiel_accueil','releve_bilan_chronologique'))) $tab_fichiers_head[] = array( 'js'  , compacter('./_js/highcharts.js','mini') );
-if(is_file($filename_js_normal))                                           $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
+if(in_array($PAGE,$tab_pages_graphiques)) $tab_fichiers_head[] = array( 'js'  , compacter('./_js/highcharts.js','mini') );
+if(is_file($filename_js_normal))          $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
 
 // Jeton CSRF
 Session::generer_jeton_anti_CSRF($PAGE);
@@ -186,6 +184,10 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
     echo'    <span class="button clock_fixe"><span id="clock">'.$_SESSION['USER_DUREE_INACTIVITE'].' min</span></span>'."\r\n";
     echo'    <button id="deconnecter" class="deconnecter">Déconnexion</button>'."\r\n";
     echo'  </div>'."\r\n";
+    echo'  <audio id="audio_bip" preload="none" class="hide">'."\r\n";
+    echo'    <source src="./_audio/bip.mp3" type="audio/mpeg" />'."\r\n";
+    echo'    <source src="./_audio/bip.ogg" type="audio/ogg" />'."\r\n";
+    echo'  </audio>'."\r\n";
     // Le menu '<ul id="menu">...</ul>
     if($_SESSION['USER_PROFIL_TYPE']=='webmestre')
     {
@@ -210,7 +212,6 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
       }
       echo $contenu_menu;
     }
-    
     echo'</div>'."\r\n";
     echo'<div id="cadre_navig"><a id="go_haut" href="#cadre_haut" title="Haut de page"></a><a id="go_bas" href="#ancre_bas" title="Bas de page"></a></div>'."\r\n";
     echo'<div id="cadre_bas">'."\r\n";
@@ -226,19 +227,20 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
       $hebergeur_img   = count($tab_image_infos) ? '<img alt="Hébergeur" src="'.URL_DIR_LOGO.HEBERGEUR_LOGO.'" '.$tab_image_infos[3].' />' : '' ;
       $hebergeur_lien  = ( (defined('HEBERGEUR_ADRESSE_SITE')) && HEBERGEUR_ADRESSE_SITE && ($hebergeur_img) ) ? '<a href="'.html(HEBERGEUR_ADRESSE_SITE).'">'.$hebergeur_img.'</a>' : $hebergeur_img ;
       $SACoche_lien    = '<a href="'.SERVEUR_PROJET.'"><img alt="Suivi d\'Acquisition de Compétences" src="./_img/logo_grand.gif" width="208" height="71" /></a>' ;
-      echo'<h1 class="logo">'.$SACoche_lien.$hebergeur_lien.'</h1>';
+      echo'<h1 class="logo">'.$SACoche_lien.$hebergeur_lien.'</h1>'."\r\n";
     }
     else
     {
-      echo'<h1>» '.$TITRE.'</h1>';
+      echo'<h1>» '.$TITRE.'</h1>'."\r\n";
     }
   }
   if(count($tab_messages_erreur))
   {
-    echo'<hr /><div class="probleme">'.implode('</div><div class="probleme">',$tab_messages_erreur).'</div>';
+    echo'<hr /><div class="probleme">'.implode('</div><div class="probleme">',$tab_messages_erreur).'</div>'."\r\n";
   }
   echo $CONTENU_PAGE;
-  echo'<span id="ancre_bas"></span></div>'."\r\n";
+  echo'<div id="ancre_bas"></div>'."\r\n"; // Il faut un div et pas seulement un span pour le navigateur Safari (sinon href="#ancre_bas" ne fonctionne pas).
+  echo'</div>'."\r\n";
   ?>
   <script type="text/javascript">
     var PAGE='<?php echo $PAGE ?>';
@@ -248,11 +250,5 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
     var DUREE_AFFICHEE ='<?php echo $_SESSION['USER_DUREE_INACTIVITE'] ?>';
     var CONNEXION_USED ='<?php echo (isset($_COOKIE[COOKIE_AUTHMODE])) ? $_COOKIE[COOKIE_AUTHMODE] : 'normal' ; ?>';
   </script>
-  <!-- Objet flash pour lire un fichier audio grace au génial lecteur de neolao http://flash-mp3-player.net/ -->
-  <h6><object class="playerpreview" id="myFlash" type="application/x-shockwave-flash" data="./_mp3/player_mp3_js.swf" height="1" width="1">
-    <param name="movie" value="./_mp3/player_mp3_js.swf" />
-    <param name="AllowScriptAccess" value="always" />
-    <param name="FlashVars" value="listener=myListener&amp;interval=500" />
-  </object></h6>
 </body>
 </html>

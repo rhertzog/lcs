@@ -27,6 +27,10 @@
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 
+// Détecter si usage d'un appareil mobile (tablette, téléphone...) auquel cas on propose un mode de saisie des acquisitions adapté.
+$MobileDetect = new MobileDetect();
+$isMobile = $MobileDetect->isMobile();
+
 // Réception d'un formulaire depuis un tableau de synthèse bilan
 // Dans ce cas il s'agit d'une évaluation sur une sélection d'élèves.
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
@@ -103,6 +107,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
   var input_date = "<?php echo TODAY_FR ?>";
   var date_mysql = "<?php echo TODAY_MYSQL ?>";
   var input_autoeval = "<?php echo date("d/m/Y",mktime(0,0,0,date("m"),date("d")+7,date("Y"))) ?>"; // J + 1 semaine
+  var isMobile = <?php echo (int)$isMobile; ?>;
   var tab_items    = new Array();
   var tab_profs    = new Array();
   var tab_eleves   = new Array();
@@ -127,8 +132,8 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
   <div id="zone_periodes">
     <label class="tab" for="f_aff_periode">Période :</label><?php echo $select_periode ?>
     <span id="dates_perso" class="show">
-      du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french') ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
-      au <input id="f_date_fin" name="f_date_fin" size="9" type="text" value="<?php echo jour_fin_annee_scolaire('french') ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
+      du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french') ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
+      au <input id="f_date_fin" name="f_date_fin" size="9" type="text" value="<?php echo jour_fin_annee_scolaire('french') ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
     </span><br />
     <span class="tab"></span><input type="hidden" name="f_action" value="lister_evaluations" /><input type="hidden" name="f_type" value="<?php echo $TYPE ?>" /><button id="actualiser" type="submit" class="actualiser">Actualiser l'affichage.</button><label id="ajax_msg_prechoix">&nbsp;</label>
   </div>
@@ -159,11 +164,11 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
   <h2>Ajouter | Modifier | Dupliquer | Supprimer une évaluation</h2>
   <div id="gestion_edit">
     <p>
-      <label class="tab" for="f_date">Date du devoir :</label><input id="f_date" name="f_date" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q>
+      <label class="tab" for="f_date">Date du devoir :</label><input id="f_date" name="f_date" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
     </p>
     <p>
-      <label class="tab" for="f_date_visible">Date de visibilité :</label><input id="box_visible" type="checkbox" checked /> <label for="box_visible">identique</label><span><input id="f_date_visible" name="f_date_visible" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span><br />
-      <label class="tab" for="f_date_autoeval">Fin auto-évaluation :</label><input id="box_autoeval" type="checkbox" checked /> <label for="box_autoeval">sans objet</label><span><input id="f_date_autoeval" name="f_date_autoeval" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q></span>
+      <label class="tab" for="f_date_visible">Date de visibilité :</label><input id="box_visible" type="checkbox" checked /> <label for="box_visible">identique</label><span><input id="f_date_visible" name="f_date_visible" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q></span><br />
+      <label class="tab" for="f_date_autoeval">Fin auto-évaluation :</label><input id="box_autoeval" type="checkbox" checked /> <label for="box_autoeval">sans objet</label><span><input id="f_date_autoeval" name="f_date_autoeval" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q></span>
     </p>
     <p>
       <?php if($TYPE=='groupe'): ?>
@@ -218,7 +223,7 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
 
 <?php if($TYPE=='selection'): ?>
 <form action="#" method="post" id="zone_eleve" class="arbre_dynamique hide">
-  <div><button id="indiquer_eleves_deja" type="button" class="eclair">Indiquer les élèves associés à une évaluation de même nom</button> depuis le <input id="f_date_deja" name="f_date_deja" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french'); ?>" /><q class="date_calendrier" title="Cliquez sur cette image pour importer une date depuis un calendrier !"></q><label id="msg_indiquer_eleves_deja"></label></div>
+  <div><button id="indiquer_eleves_deja" type="button" class="eclair">Indiquer les élèves associés à une évaluation de même nom</button> depuis le <input id="f_date_deja" name="f_date_deja" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french'); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q><label id="msg_indiquer_eleves_deja"></label></div>
   <p>Cocher ci-dessous (<span class="astuce">cliquer sur un intitulé pour déployer son contenu</span>) :</p>
   <?php echo afficher_form_element_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
   <p id="alerte_eleves" class="fluo"><span class="danger b">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves modifiés.<br />En particulier, retirer des élèves d'une évaluation efface les scores correspondants déjà saisis !</span></p>
@@ -380,6 +385,14 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   <p>Confirmez-vous vouloir quitter l'interface de saisie ?</p>
   <p>
     <button id="confirmer_fermer_zone_saisir" type="button" class="valider">Oui, je ne veux pas enregistrer</button>
-    <button id="annuler_fermer_zone_saisir" type="button" class="annuler">Non, je retourne sur l'interface</button>
+    <button id="annuler_fermer_zone_saisir" type="button" class="annuler">Non, je reste sur l'interface</button>
   </p>
+</div>
+
+<!--  Clavier virtuel pour les dispositifs tactiles -->
+<div id="cadre_tactile">
+  <div><kbd id="kbd_37"><img alt="Gauche" src="./_img/fleche/fleche_g1.gif" /></kbd><kbd id="kbd_39"><img alt="Droite" src="./_img/fleche/fleche_d1.gif" /></kbd><kbd id="kbd_38"><img alt="Haut" src="./_img/fleche/fleche_h1.gif" /></kbd><kbd id="kbd_40"><img alt="Bas" src="./_img/fleche/fleche_b1.gif" /></kbd></div>
+  <div><kbd id="kbd_97"><img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/RR.gif" /></kbd><kbd id="kbd_98"><img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/R.gif" /></kbd><kbd id="kbd_99"><img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/V.gif" /></kbd><kbd id="kbd_100"><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /></kbd></div>
+  <div><kbd id="kbd_65"><img alt="ABS" src="./_img/note/commun/h/ABS.gif" /></kbd><kbd id="kbd_68"><img alt="DISP" src="./_img/note/commun/h/DISP.gif" /></kbd><kbd id="kbd_78"><img alt="NN" src="./_img/note/commun/h/NN.gif" /></kbd><kbd id="kbd_46"><img alt="X" src="./_img/note/commun/h/X.gif" /></kbd></div>
+  <div><kbd id="kbd_80"><img alt="ABS" src="./_img/note/commun/h/REQ.gif" /></kbd><kbd style="visibility:hidden"></kbd><kbd id="kbd_13" class="img valider"></kbd><kbd id="kbd_27" class="img retourner"></kbd></div>
 </div>
