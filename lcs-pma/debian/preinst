@@ -4,18 +4,12 @@
 set -e
 case "$1" in
 install)
-
+	#Suppression des fichiers de la version précédente
+	rm -rf /usr/share/lcs/pma
 ;;
 abort-upgrade)
 ;;
 upgrade)
-	#
-        # correction bug de postrm des versions precedentes
-        #
-	if [  "$2" = "2.1~5" ] || [  "$2" = "2.1~6" ] || [ "$2" = "2.1-1" ] ; then
-	sed -i "s/purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)/purge|remove)/g" /var/lib/dpkg/info/lcs-pma.postrm
-        sed -i "/*)/i\ upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)\n ;;" /var/lib/dpkg/info/lcs-pma.postrm
-	fi
 ;;
 *)
 echo "preinst called with unknown argument \`$1'" >&2
