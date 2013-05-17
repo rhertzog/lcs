@@ -89,7 +89,8 @@ Alias /pma/ /usr/share/lcs/pma/
 EOF
     /etc/init.d/apache2 reload > /dev/null 2>&1
   fi
-
+   # suppression du rep setup
+   rm -rf /usr/share/lcs/pma/setup
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
