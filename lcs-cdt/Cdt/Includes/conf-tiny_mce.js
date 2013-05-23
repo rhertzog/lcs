@@ -45,13 +45,12 @@ tinymce.create('tinymce.plugins.ExamplePlugin', {
 tinymce.PluginManager.add('example', tinymce.plugins.ExamplePlugin);
 
 // Initialize TinyMCE with the new plugin and listbox
-
+if (screen.width<1280) {
 tinyMCE.init({
-    //  plugins : '-example',- tells TinyMCE to skip the loading of the plugin
-    mode : "textareas",
+        mode : "textareas",
 	theme : "advanced",
-	width: "560",
-	height: "120",
+	width: "540",
+	height: "240",
 	editor_selector : 'mceAdvanced',
 	skin : "cdt",
 	skin_variant : "silver",
@@ -94,7 +93,105 @@ tinyMCE.init({
         });
     }
 });
-
+}
+else if (screen.width<1440) {
+tinyMCE.init({
+        mode : "textareas",
+	theme : "advanced",
+	width: "670",
+	height: "360",
+	editor_selector : 'mceAdvanced',
+	skin : "cdt",
+	skin_variant : "silver",
+	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
+	plugins : "example,safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,iespell,media,emotions,searchreplace,print,contextmenu,paste,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+	theme_advanced_buttons1 : "mylistbox,bold,italic,underline,|,sub,sup,|,charmap,emotions,hr,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,|,fontsizeselect",
+	theme_advanced_buttons2 : "bullist,numlist,|,undo,redo,|,copy,paste,|,search,|,forecolor,backcolor,|,tablecontrols,|,fullscreen",
+	theme_advanced_buttons3 : "",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "center",
+	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+	theme_advanced_default_font_size : "4",
+	theme_advanced_fonts : "Andale Mono=andale mono,times;"+
+		"Arial=arial,helvetica,sans-serif;"+
+		"Arial Black=arial black,avant garde;"+
+		"Book Antiqua=book antiqua,palatino;"+
+		"Comic Sans MS=comic sans ms,sans-serif;"+
+		"Courier New=courier new,courier;"+
+		"Georgia=georgia,palatino;"+
+		"Helvetica=helvetica;"+
+		"Impact=impact,chicago;"+
+		"Symbol=symbol;"+
+		"Tahoma=tahoma,arial,helvetica,sans-serif;"+
+		"Terminal=terminal,monaco;"+
+		"Times New Roman=times new roman,times;"+
+		"Trebuchet MS=trebuchet ms,geneva;"+
+		"Verdana=verdana,geneva;"+
+		"Webdings=webdings;"+
+		"Wingdings=wingdings,zapf dingbats;"+
+		"Grec=sgreek",
+	theme_advanced_statusbar_location : "none",
+	template_external_list_url : "example_template_list.js",
+	language : "fr",
+	file_browser_callback : "myFileBrowser",
+	setup : function(ed) {
+        // Add a custom button
+        ed.addButton('mybutton', {
+            title : 'Ins&#233;rer',
+            onclick : function() {image_popup();}
+        });
+    }
+});
+}
+else if (screen.width>=1440) {
+tinyMCE.init({
+        mode : "textareas",
+	theme : "advanced",
+	width: "800",
+	height: "360",
+	editor_selector : 'mceAdvanced',
+	skin : "cdt",
+	skin_variant : "silver",
+	theme_advanced_disable : "hr,visualaid,removeformat,separator, cleanup,help ",
+	plugins : "example,safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,iespell,media,emotions,searchreplace,print,contextmenu,paste,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+	theme_advanced_buttons1 : "mylistbox,bold,italic,underline,|,sub,sup,|,charmap,emotions,hr,|,justifyleft,justifycenter,justifyright,justifyfull,fontselect,|,fontsizeselect",
+	theme_advanced_buttons2 : "bullist,numlist,|,undo,redo,|,copy,paste,|,search,|,forecolor,backcolor,|,tablecontrols,|,fullscreen",
+	theme_advanced_buttons3 : "",
+	theme_advanced_toolbar_location : "top",
+	theme_advanced_toolbar_align : "center",
+	extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name|style],hr[class|width|size|noshade],font[face|size|color|style],span[class|align|style]",
+	theme_advanced_default_font_size : "4",
+	theme_advanced_fonts : "Andale Mono=andale mono,times;"+
+		"Arial=arial,helvetica,sans-serif;"+
+		"Arial Black=arial black,avant garde;"+
+		"Book Antiqua=book antiqua,palatino;"+
+		"Comic Sans MS=comic sans ms,sans-serif;"+
+		"Courier New=courier new,courier;"+
+		"Georgia=georgia,palatino;"+
+		"Helvetica=helvetica;"+
+		"Impact=impact,chicago;"+
+		"Symbol=symbol;"+
+		"Tahoma=tahoma,arial,helvetica,sans-serif;"+
+		"Terminal=terminal,monaco;"+
+		"Times New Roman=times new roman,times;"+
+		"Trebuchet MS=trebuchet ms,geneva;"+
+		"Verdana=verdana,geneva;"+
+		"Webdings=webdings;"+
+		"Wingdings=wingdings,zapf dingbats;"+
+		"Grec=sgreek",
+	theme_advanced_statusbar_location : "none",
+	template_external_list_url : "example_template_list.js",
+	language : "fr",
+	file_browser_callback : "myFileBrowser",
+	setup : function(ed) {
+        // Add a custom button
+        ed.addButton('mybutton', {
+            title : 'Ins&#233;rer',
+            onclick : function() {image_popup();}
+        });
+    }
+});
+}
 tinyMCE.init({
 
     mode : "textareas",
@@ -153,3 +250,4 @@ tinyMCE.init({
 		language : "fr"
 
 });
+

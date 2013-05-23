@@ -26,7 +26,7 @@
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-bottom:none;
-    background:#4D4D4D url('./images/onglet-of-cdt.png') no-repeat scroll 0 0;
+    background:#4D4D4D url('../images/onglet-of-cdt.png') no-repeat scroll 0 0;
     color:#000000;
     float:left;
     font-size:12px;

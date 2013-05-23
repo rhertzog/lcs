@@ -1,3 +1,9 @@
+lcs-cdt (2.4.9.10) LCS; urgency=low
+
+  * expand  input area relative to the size of the screen
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 23 May 2013 21:33:19 +0200
+
 lcs-cdt (2.4.9.9) LCS; urgency=low
 
   * add css3 property

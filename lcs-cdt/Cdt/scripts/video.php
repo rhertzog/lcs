@@ -82,20 +82,24 @@ if (isset($_POST['Valider']) ||  isset($_POST['Preview']))
 if (! get_magic_quotes_gpc()) {
 if (!isset($_POST['Valider']))
     {
-    echo '<ol><li>Vid&#233;os externes<ul>';
-    echo '<li>Seules des vid&#233;os YouTube, Dailymotion peuvent  &ecirc;tre ins&eacute;r&eacute;es </li>
-            <li> Copiez le code d\'importation qui doit commencer par &lt;iframe ...  et se terminer par &lt;/iframe></li>
-                <ul>
-                <li>Sur YouTube.com faites "Partager -> Int&eacute;grer " </li>
-                <li> Sur Dailymotion.com faites "Partager -> Exporter "</li>
-                </ul></ul></li>
+    echo '<ol>
+        <li>Vid&#233;os externes
+            <ul>
+                <li>Seules des vid&#233;os YouTube, Dailymotion peuvent  &ecirc;tre ins&eacute;r&eacute;es </li>
+                <li> Copiez le code d\'importation qui doit commencer par &lt;iframe ...  et se terminer par &lt;/iframe></li>
+                    <ul>
+                    <li>Sur YouTube.com faites "Partager -> Int&eacute;grer " </li>
+                    <li> Sur Dailymotion.com faites "Partager -> Exporter "</li>
+                    </ul>
+                </ul>
+        </li>
                 <li> Vid&#233;os Mediacenter (Claroline)
                 <ul><li> Copiez le code d\'importation qui doit commencer par &lt;OBJECT ...  et se terminer par &lt;/OBJECT></li></ul>
             </li>
         <li> Coller ci-dessous le code d\'importation </li></ol>';
 
     echo'<textarea name="code" cols="50" rows="3" >'.$_POST['code'].'</textarea>';
-    echo '</ul>';
+   echo '</br>';
     echo '<input type="submit" name="Preview" value="Pr&eacute;visualiser" class="bt" />';
     if (isset($_POST['Preview']))
        {

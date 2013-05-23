@@ -1,0 +1,17 @@
+#container{
+    width: 1440px;
+    }
+
+#saisie{
+    width: 1048px;
+    height: 687px;
+    background: url(../images/fond-cdt-gch-big.png);
+}
+
+#boite3 {
+width: 830px;
+}
+
+#boite4 {
+margin: 50px auto auto 30px;
+}

@@ -147,4 +147,12 @@ $(document).ready(function() {
                 }
             });
        });
+       $(function() {
+        $( "#boite3" ).tabs();
+        });
+        if (screen.width>=1280) {
+       $("#datejavac").attr("size",15);
+       $("#datejavav").attr("size",15);
+       $("#datejaf").attr("size",15);
+       }
     });

@@ -85,9 +85,9 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
 	<link  href="../../../libjs/jquery-ui/css/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
-                 <link href="../style/bulles.css" rel="stylesheet" type="text/css" />
-<style type='text/css'>
-.ui-tooltip {
+    <link href="../style/bulles.css" rel="stylesheet" type="text/css" />
+	<style type='text/css'>
+	.ui-tooltip {
         background: rgb(105,4,1);
         border: 1px solid white;
         padding: 2px;
@@ -99,6 +99,8 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 <!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
+<link rel="stylesheet"  media="screen and (min-device-width: 1280px) "  href="../style/mediumscreen.css" type="text/css" />
+<link rel="stylesheet" media="screen and (min-device-width: 1440px)" href="../style/bigscreen.css" type="text/css" />
 	<script type="text/javascript" src="../Includes/barre_java.js"></script>
 	<script type="text/javascript" src="../Includes/alertsession.js"></script>
 	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
@@ -612,16 +614,20 @@ else $dtajav="idem Cours";
 <!--bloc de gauche pour la saisie-->
 <div id="saisie">
     <div>
-        <form id="for" action="edt.php"><input type="submit" id="button_edt" value=""/></form></div>
+        <form id="for" action="edt.php"><div><input type="submit" id="button_edt" value=""/></div></form></div>
 	<form id="form-saisie" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>?rubrique=<?echo $cible;?>" method="post">
     <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" /></div>
 	<div id="boite3">
-		<div id="boite1">
-			<div id="crsdu">Cours  du :
- 				<input id="datejavac" size="10" name="datejavac" value="<?echo $dtajac?>" readonly="readonly" style="cursor: text" />
- 				Visible le :
- 				<input id="datejavav" size="10" name="datejav" value="<?echo $dtajav?>" readonly="readonly" style="cursor: text" title="Par d&#233;faut, le commentaire sera visible a partir de la date du cours" />
- 				S&#233;quence
+            <ul>
+            <li><a href="#boite1">Compte rendu de séance</a></li>
+            <li><a href="#boite2">Travail à faire</a></li>
+            </ul>
+    <div id="boite1">
+        <div id="crsdu">Cours  du :
+        <input id="datejavac" size="10" name="datejavac" value="<?echo $dtajac?>" readonly="readonly" style="cursor: text" />
+        Visible le :
+        <input id="datejavav" size="10" name="datejav" value="<?echo $dtajav?>" readonly="readonly" style="cursor: text" title="Par d&#233;faut, le commentaire sera visible a partir de la date du cours" />
+        S&#233;quence
  <?php
 $rq = "SELECT id_seq,titrecourt FROM sequences	WHERE id_ong='$cible' order by ordre ASC";
 // lancer la requete

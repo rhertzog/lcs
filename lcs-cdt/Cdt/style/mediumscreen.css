@@ -1,0 +1,34 @@
+#container{
+    width: 1280px;
+    margin: 35px auto 0 20px;
+}
+
+ #saisie{
+    width: 898px;
+    height: 687px;
+    background: url(../images/fond-cdt-gch-medium.png);
+}
+
+#deroul-bloc {
+margin-right: 40px;
+margin-top : 56px;
+}
+#boite3 {
+width: 700px;
+margin: 65px 5px 0 55px;
+padding: 0px;
+}
+
+#boite4{
+margin: 50px auto auto 20px;
+}
+
+#crsdu {
+width: 664px;
+}
+
+#button_edt {
+left: 70px;
+top: 40px;
+}
+

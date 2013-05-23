@@ -169,7 +169,7 @@ function Affiche_seq($param) {
                 echo'<input type="hidden" id="b_ord'.$param.'" value="true" />
                 <input name="TA" type="hidden" id="t_ord'.$param.'" value="'. md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'" /> ';
                 }
-            echo ' </td></tr>';
+            echo ' </td></tr></tbody>';
             echo '<tbody id="c_ord'.$param.'" class="field11">';
             $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1.$dlm2." order by date desc ";
             $result2 = @mysql_query ($rq2) or die (mysql_error());
@@ -177,7 +177,7 @@ function Affiche_seq($param) {
               {
                 Affiche_seance_seq ($ligne[0],$buton);
               }
-            echo '</tbody></tbody>';
+            echo '</tbody>';
             echo '<tbody><tr><th colspan="2"><hr /></th></tr></tbody>';
             }
 }

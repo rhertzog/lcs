@@ -193,9 +193,10 @@ float:left;
 
 #boite3{
     float: left;
-    margin: 30px 5px 0 15px;
-    width:562px;
+    margin: 40px 5px 0 10px;
+    width:560px;
     z-index:1;
+    padding:0px;
 }
 
 #boite4{
@@ -1118,7 +1119,7 @@ table#diff-dev{
 }
 
 #field7 ol, #field7 ul, #fields8 ol, #fields8 ul, #field9 ol, #field9 ul{
-    float:left;
+    
     margin:0;
     color:#1b2c68;
     padding:5px;
