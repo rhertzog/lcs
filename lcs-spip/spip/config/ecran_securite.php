@@ -5,7 +5,7 @@
  * ------------------
  */
 
-define('_ECRAN_SECURITE', '1.1.3'); // 3 juillet 2012
+define('_ECRAN_SECURITE', '1.1.7'); // 24 mai 2013
 
 /*
  * Documentation : http://www.spip.net/fr_article4200.html
@@ -23,8 +23,12 @@ if (isset($_GET['test_ecran_securite']))
 if (!defined('_IS_BOT'))
 	define('_IS_BOT',
 		isset($_SERVER['HTTP_USER_AGENT'])
-		AND preg_match(',bot|slurp|crawler|spider|webvac|yandex|INA dlweb|EC2LinkFinder,i',
-			(string) $_SERVER['HTTP_USER_AGENT'])
+		AND preg_match(
+	    // mots generiques
+	    ',bot|slurp|crawler|spider|webvac|yandex|'
+	    // UA plus cibles
+	    . '80legs|accoona|AltaVista|ASPSeek|Baidu|Charlotte|EC2LinkFinder|eStyle|Google|INA dlweb|Java VM|LiteFinder|Lycos|Rambler|Scooter|ScrubbyBloglines|Yahoo|Yeti'
+	    . ',i',(string) $_SERVER['HTTP_USER_AGENT'])
 	);
 
 /*
@@ -65,6 +69,14 @@ foreach(array('lang', 'var_recherche', 'aide', 'var_lang_r', 'lang_r', 'var_ajax
 if (preg_match(',^(.*/)?spip_acces_doc\.,', (string)$_SERVER['REQUEST_URI'])) {
 	$file = addslashes((string)$_GET['file']);
 }
+
+/*
+ * Pas d'inscription abusive
+ */
+if (isset($_REQUEST['mode']) AND isset($_REQUEST['page'])
+AND !in_array($_REQUEST['mode'],array("6forum","1comite"))
+AND $_REQUEST['page'] == "identifiants")
+	$ecran_securite_raison = "identifiants";
 
 /*
  * Agenda joue à l'injection php
@@ -280,8 +292,16 @@ if (
 	AND _IS_BOT
 	AND $_SERVER['REQUEST_METHOD'] === 'GET'
 	AND (
-		(function_exists('sys_getloadavg') AND $load = array_shift(sys_getloadavg()))
-		OR (@is_readable('/proc/loadavg') AND $load = floatval(file_get_contents('/proc/loadavg')))
+		(function_exists('sys_getloadavg')
+		  AND $load = sys_getloadavg()
+		  AND is_array($load)
+		  AND $load = array_shift($load)
+		)
+		OR
+		(@is_readable('/proc/loadavg')
+		  AND $load = file_get_contents('/proc/loadavg')
+		  AND $load = floatval($load)
+		)
 	)
 	AND $load > _ECRAN_SECURITE_LOAD // eviter l'evaluation suivante si de toute facon le load est inferieur a la limite
 	AND rand(0, $load*$load) > _ECRAN_SECURITE_LOAD*_ECRAN_SECURITE_LOAD
