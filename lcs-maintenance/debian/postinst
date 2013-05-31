@@ -129,10 +129,6 @@ else
     MAJNBR=$((MAJNBR+1))
     if [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; then
     echo "Insertion des entrees LDAP"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    
-   
         while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
             echo " - Application du script ldap.$MAJNBR"
             ldapadd -x -c -h $(get_lcsdb_params ldap_server) -D $(get_lcsdb_params adminRdn),$(get_lcsdb_params ldap_base_dn) -w $(get_lcsdb_params adminPw) -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
