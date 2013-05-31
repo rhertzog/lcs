@@ -13,6 +13,15 @@ INDICEMAJNBR="2"
 DESCRIPT="Maintenance informatique"
 CONF="/var/lib/lcs/$MODULE"
 
+###
+#recup parametre
+get_lcsdb_params ()
+{
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
+echo "$PARAMS"
+}
+###
+
 case "$1" in
    install| configure)
  
@@ -65,9 +74,7 @@ if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
     
     if [ -e $PATHPLUG/Admin/install_ldap.ldif ]; then
     echo "Insertion dans l'annuaire ldap"
-    #recuperation des parametres LDAP
-	PARAMLDAP=(`mysql -se "select value from lcs_db.params  where name='ldap_server' or name='ldap_base_dn' or name='adminRdn' or name='adminPw'"`)
-    ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/install_ldap.ldif
+    ldapadd -x -c -h $(get_lcsdb_params ldap_server) -D $(get_lcsdb_params adminRdn),$(get_lcsdb_params ldap_base_dn) -w $(get_lcsdb_params adminPw)  -f $PATHPLUG/Admin/install_ldap.ldif
     else
 	echo "Pas d entrees LDAP a inserer"
 	fi
@@ -128,8 +135,8 @@ else
    
         while [ -e $PATHPLUG/Admin/Maj/ldap.$MAJNBR ]; do
             echo " - Application du script ldap.$MAJNBR"
-            ldapadd -x -c -h ${PARAMLDAP[0]} -D ${PARAMLDAP[2]},${PARAMLDAP[1]} -w ${PARAMLDAP[3]}  -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
-            MAJNBR=$((MAJNBR+1))
+            ldapadd -x -c -h $(get_lcsdb_params ldap_server) -D $(get_lcsdb_params adminRdn),$(get_lcsdb_params ldap_base_dn) -w $(get_lcsdb_params adminPw) -f $PATHPLUG/Admin/Maj/ldap.$MAJNBR
+             MAJNBR=$((MAJNBR+1))
 	done
     fi
 
