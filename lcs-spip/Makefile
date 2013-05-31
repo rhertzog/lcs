@@ -5,9 +5,13 @@ all:
 
 install:
 
-# install lcs spip cron task clean spip tmp
+# install lcs spip cron.daily task update security screen
+	install -d $(DESTDIR)/etc/cron.daily
+	install -m 755 cron.daily/* $(DESTDIR)/etc/cron.daily/
+	
+# install lcs spip cron.weekly task clean spip tmp
 	install -d $(DESTDIR)/etc/cron.weekly
-	install -m 755 cron/* $(DESTDIR)/etc/cron.weekly/
+	install -m 755 cron.weekly/* $(DESTDIR)/etc/cron.weekly/
 
 # install lcs spip conf
 	install -d $(DESTDIR)/var/lib/lcs/spip
