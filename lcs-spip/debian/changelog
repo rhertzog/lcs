@@ -1,10 +1,10 @@
-lcs-spip (2.4.9.5~2) Lcs; urgency=low
+lcs-spip (2.4.9.5) Lcs; urgency=low
 
   * Update to spip 2.1.23
   * Update ecran_securite.php 1.1.7
   * Add cron.daily task for security update (ecran_securite.php)
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 31 May 2013 11:49:56 +0200
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 31 May 2013 17:18:07 +0200
 
 lcs-spip (2.4.9.4) Lcs; urgency=low
 

@@ -19,7 +19,7 @@ upgrade)
 	mysqldump spip_lcs > $PATHMAJ/Sql/spip_lcs_backup.sql
 	rm -Rf $PATHMAJ/spipold
 	mkdir $PATHMAJ/spipold
-	tar zcf $PATHMAJ/spipold/spip_lcs_backup.tgz /usr/share/lcs/spip > /dev/null 2>&1
+	tar zcf $PATHMAJ/spipold/spip_lcs_backup.tgz --exclude 'IMG' --exclude 'tmp' /usr/share/lcs/spip > /dev/null 2>&1
 ;;
 *)
 echo "preinst called with unknown argument \`$1'" >&2
