@@ -1,2 +1,2 @@
-Cmnd_Alias CERTMGR = /usr/sbin/lcs-certssl-gen
+Cmnd_Alias CERTMGR = /usr/sbin/lcs-certmanager
 www-data ALL=NOPASSWD:CERTMGR

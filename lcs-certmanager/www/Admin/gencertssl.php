@@ -1,5 +1,5 @@
 <?
-# /var/www/Admin/gencertssl.php derniere version du : 18/01/2013
+# /var/www/Admin/gencertssl.php derniere version du : 15/03/2013
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
@@ -18,6 +18,7 @@ if ($idpers == "0") header("Location:$urlauth");
 $html = "
 	  <head>\n
 	  <title>...::: Génération certificat apache ssl  :::...</title>\n
+	  <meta http-equiv='content-type' content='text/html;charset=utf-8' />\n
 	  <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n
 	  </head>\n
 	  <body>\n";
@@ -31,16 +32,9 @@ if (is_admin("system_is_admin",$login)=="Y") {
         $html .= "</ul>\n</li>\n";
         echo $html;
     } else {
-            #$hostname
-            #$domain
-            $fqn="$hostname.$domain";
-            #$country
-            #$province
-            #$locality
-            #$organization
-            #$organizationalunit
-
-        exec("/usr/bin/sudo /usr/sbin/lcs-certssl-gen '$fqn' '$domain' '$country' '$province' '$locality' '$organization' '$organizationalunit'");
+		#$fqn="$hostname.$domain";
+        #exec("/usr/bin/sudo /usr/sbin/lcs-certssl-gen '$fqn' '$domain' '$country' '$province' '$locality' '$organization' '$organizationalunit'");
+        exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -c");
         $html .= "<ul>\n<li>\n";  
         $html .= "\tLe certificat SSL du serveur LCS a été regénéré pour une période de 365 jours. \n";
         $html .= "</ul>\n</li>\n";

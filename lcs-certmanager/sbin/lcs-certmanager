@@ -1,0 +1,187 @@
+ #!/bin/bash
+# lcs-certssl-gen 14/03/2013
+
+IN_CONFIG_PATH="/var/lib/lcs/certmanager"
+OUT_CERT_PATH="/etc/ssl/lcs"
+IN_CERT_PATH="/var/www/keystore"
+
+
+case $1 in
+	-h)
+		echo "Usage lcs-certmanager : " 
+		echo "-h : lcs-certmanager help"
+		echo "-c : create a SSL self signed certificate"
+		echo "-i name_of.crt name_of.pem private key password certificate name : import a SSL certificate"
+		echo "-s : select a SSL certificate"
+		echo "-r : remove a SSL certificate"
+		echo "-l : list of SSL certificates"
+		echo "-e : examine a SSL certificate"				
+	;;
+	-c)
+		echo "LCS Cert manager : create a SSL self signed certificate"
+
+		FQN=`hostname -f`
+		DOMAIN=`hostname -d`
+		COUNTRYNAME=`mysql -se "select value from lcs_db.params where name='country'"`
+		PROVINCENAME=`mysql -se "select value from lcs_db.params where name='province'"`
+		LOCALITYNAME=`mysql -se "select value from lcs_db.params where name='locality'"`
+		ORGANIZATIONNAME=`mysql -se "select value from lcs_db.params where name='organization'"`
+		ORGANIZATIONALUNITNAME=`mysql -se "select value from lcs_db.params where name='organizationalunit'"`
+
+		NAMECERT=$FQN"_as"
+		cat $IN_CONFIG_PATH/openssl.lcs.in \
+        	|sed -e "s!#FQN#!$FQN!g" \
+        	|sed -e "s!#DOMAIN#!$DOMAIN!g" \
+        	|sed -e "s!#COUNTRYNAME#!$COUNTRYNAME!g" \
+        	|sed -e "s!#PROVINCENAME#!$PROVINCENAME!g" \
+        	|sed -e "s!#LOCALITYNAME#!$LOCALITYNAME!g" \
+        	|sed -e "s!#ORGANIZATIONNAME#!$ORGANIZATIONNAME!g" \
+        	|sed -e "s!#ORGANIZATIONALUNITNAME#!$ORGANIZATIONALUNITNAME!g" \
+        	> $IN_CONFIG_PATH/openssl.lcs
+
+		openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey rsa:1024 -out $OUT_CERT_PATH/$NAMECERT.crt -keyout $OUT_CERT_PATH/$NAMECERT.key
+
+		chmod 440 $OUT_CERT_PATH/$NAMECERT.key
+
+		# Make a .pem
+		cat  $OUT_CERT_PATH/$NAMECERT.crt $OUT_CERT_PATH/$NAMECERT.key > $OUT_CERT_PATH/$NAMECERT.pem
+		chmod 440 $OUT_CERT_PATH/$NAMECERT.pem
+		
+		# Register in lcs_db.sslcert
+		id=$(mysql -sne "select id from lcs_db.sslcert where name='$NAMECERT'" -N)
+
+		# dates and subject cert
+		DESCRIPTION=$(openssl x509 -in /etc/ssl/lcs/$NAMECERT.crt -subject -noout)
+		NOTBEFORE=$(openssl x509 -in /etc/ssl/lcs/$NAMECERT.crt -dates -noout | grep notBefore | cut -d '=' -f 2)
+		NOTAFTER=$(openssl x509 -in /etc/ssl/lcs/$NAMECERT.crt -dates -noout | grep notAfter | cut -d '=' -f 2)
+
+		if [ -z "$id" ]; then
+        	echo "register $NAMECERT cert in bdd"
+        	mysql -sne "INSERT INTO lcs_db.sslcert (id, sel, name, notbefore, notafter, description) VALUES (NULL, '0', '$NAMECERT', '$NOTBEFORE', '$NOTAFTER', '$DESCRIPTION');"
+		else
+        	echo "update register $NAMECERT cert in bdd"
+        	mysql -sne "UPDATE lcs_db.sslcert SET notbefore='$NOTBEFORE',notafter='$NOTAFTER' WHERE sslcert.name ='$NAMECERT';"
+
+		fi
+	;;
+	-i)
+		echo "LCS Cert manager : import a SSL certificate"
+		
+#/usr/bin/sudo /usr/sbin/lcs-certssl-import 'lcs.ac-caen.fr.crt' 'lcs.ac-caen.fr.privkey.pem' 'lyc.clg.ac-caen.fr.lcs145061' 'lcs.ac-caen.fr'
+# $1 nom_du.crt
+# $2 nom_du.pem (la cle prive)
+# $3 le passwd de la cle prive
+# $4 le nom du certificat
+
+		# $2 name_of.crt		
+		# $3 name_of.pem (private key)
+		# $4 private key password
+		# $5 certificate name
+		openssl rsa -in $IN_CERT_PATH/$3 -out $OUT_CERT_PATH/$5.key -passin pass:$4
+
+		mv $IN_CERT_PATH/$2 $OUT_CERT_PATH/$5.crt 
+		chown root:root $OUT_CERT_PATH/$5.crt
+
+		# Make a .pem
+		cat  $OUT_CERT_PATH/$5.crt $OUT_CERT_PATH/$5.key > $OUT_CERT_PATH/$5.pem
+		chmod 440 $OUT_CERT_PATH/$5.pem
+		chmod 440 $OUT_CERT_PATH/$5.key
+		
+		# Put ca root in /etc/ssl/lcs
+		mv $IN_CERT_PATH/$5_trusted_ca.pem $OUT_CERT_PATH/$5_trusted_ca.pem
+		chown root:root $OUT_CERT_PATH/$5_trusted_ca.pem
+		
+		# Register in lcs_db.cert
+		id=$(mysql -sne "select id from lcs_db.sslcert where name='$5'" -N)
+
+		# dates and subject cert
+		DESCRIPTION=$(openssl x509 -in /etc/ssl/lcs/$5.crt -subject -noout)
+		NOTBEFORE=$(openssl x509 -in /etc/ssl/lcs/$5.crt -dates -noout | grep notBefore | cut -d '=' -f 2)
+		NOTAFTER=$(openssl x509 -in /etc/ssl/lcs/$5.crt -dates -noout | grep notAfter | cut -d '=' -f 2)
+
+		if [ -z "$id" ]; then
+        	echo "register $5 cert in bdd"
+        	mysql -sne "INSERT INTO lcs_db.sslcert (id, sel, name, notbefore, notafter, description) VALUES (NULL, '0', '$5', '$NOTBEFORE', '$NOTAFTER', '$DESCRIPTION');"
+		else
+        	echo "update register $5 cert in bdd"
+        	mysql -sne "UPDATE lcs_db.sslcert SET notbefore='$NOTBEFORE',notafter='$NOTAFTER' WHERE sslcert.name ='$5';"
+
+		fi
+		# Remove certificates in tmp keystore		
+		rm -f IN_CERT_PATH/*			
+	;;
+	-s)
+		echo "LCS Cert manager : select a SSL certificate"
+		if [ -z "$2" ]; then
+			echo "You must specify a certificat name"
+			exit 1
+		else 
+			id=$(mysql -sne "select id from lcs_db.sslcert where name='$2'" -N)
+			if [ -z "$id" ]; then
+				echo "ERR : The certificat name don't exist."
+				exit 1
+			else
+				# Search the current certificat
+				name=$(mysql -sne "select name from lcs_db.sslcert where sel='1'" -N)
+				# Deselect the current certificat in data base
+				mysql -sne "UPDATE lcs_db.sslcert SET sel='0' WHERE sslcert.name ='$name';"
+				# Remove symb link
+				rm -f $OUT_CERT_PATH/server*.*
+				# Register the new certificat in data base
+				mysql -sne "UPDATE lcs_db.sslcert SET sel='1' WHERE sslcert.name ='$2';"
+				# Put the symb link
+				cd $OUT_CERT_PATH
+				ln -s $2.crt server.crt
+				ln -s $2.key server.key
+				# If a trusted ca pem exist
+				if [ -e $2_trusted_ca.pem ]; then
+					ln -s $2_trusted_ca.pem server_trusted_ca.pem
+				else
+					ln -s $2.pem server_trusted_ca.pem
+				fi
+				ln -s $2.pem server.pem
+				# reload apache2
+				service apache2 restart
+				exit 0
+			fi			
+		fi
+	;;
+	-r)
+		echo "LCS Cert manager : remove a SSL certificate"
+		if [ -z "$2" ]; then
+			echo "You must specify a certificate name"
+			exit 1
+		else
+			# Search the current certificat
+			name=$(mysql -sne "select name from lcs_db.sslcert where sel='1'" -N)
+			# If this certificat is already select
+			if [ "$name" = "$2" ]; then	
+				# ERR message
+				echo "ERR : This certificate is already selected !"
+				exit 1
+			else
+				rm -f $OUT_CERT_PATH/$2.*
+				rm -f $OUT_CERT_PATH/$2_trusted_ca.pem
+				# Unregister this certificate from data base
+				mysql -sne "DELETE FROM lcs_db.sslcert WHERE name='$2'"
+				echo "The certificate $2 has been removed"
+			fi	
+		fi		
+	;;
+	-l) 
+		echo "LCS Cert manager : list of SSL certificates"
+		mysql -se "select name from lcs_db.sslcert" -N
+	;;
+	-e) 
+		echo "LCS Cert manager : examine a SSL certificate"	
+		if [ -z "$2" ]; then
+			echo "You must specify a certificate name"
+			exit 1
+		else				
+			openssl x509 -in $OUT_CERT_PATH/$2.crt -subject -dates -noout
+		fi		
+	;;
+	*)
+		echo "usage: $0 -h help | -c create | -i import | -s select | -r remove | -l list | -e examine"
+esac
+exit 0
