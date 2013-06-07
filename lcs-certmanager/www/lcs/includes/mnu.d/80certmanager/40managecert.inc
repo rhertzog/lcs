@@ -1,0 +1,1 @@
+Gestion cert. SSL,/Admin/managecertssl.php,lcs_is_admin
