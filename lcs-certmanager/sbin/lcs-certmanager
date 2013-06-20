@@ -1,5 +1,5 @@
  #!/bin/bash
-# lcs-certssl-gen 14/03/2013
+# lcs-certmanager 14/06/2013
 
 IN_CONFIG_PATH="/var/lib/lcs/certmanager"
 OUT_CERT_PATH="/etc/ssl/lcs"
@@ -140,8 +140,12 @@ case $1 in
 					ln -s $2.pem server_trusted_ca.pem
 				fi
 				ln -s $2.pem server.pem
-				# reload apache2
-				service apache2 restart
+				# reload apache2 imap-ssl cas with differed at task
+          		echo "Rechargement configuration Apache2 dans 1mn"
+          		at now+1minutes <<END
+/etc/init.d/apache2 restart
+sleep 2
+END
 				exit 0
 			fi			
 		fi

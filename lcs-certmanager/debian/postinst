@@ -2,9 +2,7 @@
 # postinst script for LCS CERT MANAGER
 set -e
 
-
 MODULE="certmanager"
-
 
 # lecture d'un parametre lcs dans lcs_db.params
 
@@ -18,9 +16,10 @@ case "$1" in
             #
             # registration module type S in applis.lcs_db
             #
-            CERTMGR=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='certmanager';"`
+            CERTMGR=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='$MODULE';"`
             VER=$(dpkg-query -f '${Version}' -W lcs-certmanager)
-            if [ -z "$APACHE2SSL" ]; then
+            CERTMGR=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='$MODULE';"`
+            if [ -z "$CERTMGR" ]; then
                 /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Gestion des certificats SSL', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
             else
                /usr/bin/mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
@@ -28,36 +27,16 @@ case "$1" in
             #
             # Generate certificat
             #
-            FQN=`hostname -f`            
-            if [ ! -e /etc/ssl/lcs/$FQN.crt -o ! -e /etc/ssl/lcs/$FQN.key ]; then
-              echo "Generation certificat SSL"
-              FQN=`hostname -f`
-              DOMAIN=$(get_lcsdb_params domain)
-              COUNTRYNAME=$(get_lcsdb_params country)
-              PROVINCENAME=$(get_lcsdb_params province)
-              LOCALITYNAME=$(get_lcsdb_params locality)
-              ORGANIZATIONNAME=$(get_lcsdb_params organization)
-              ORGANIZATIONALUNITNAME=$(get_lcsdb_params organizationalunit)
-              # apache2-ssl-cert.sh <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>
-              /usr/sbin/lcs-certssl-gen $FQN $DOMAIN $COUNTRYNAME $PROVINCENAME $LOCALITYNAME $ORGANIZATIONNAME $ORGANIZATIONALUNITNAME
-            else
-            	echo "move existing certificat"
-            	mv /etc/apache2/ssl/* /etc/ssl/lcs
-            	rename /etc/ssl/lcs/server.crt /etc/ssl/lcs/$FQN.crt
-            	rename /etc/ssl/lcs/server.key /etc/ssl/lcs/$FQN.key
-            fi
+				/usr/sbin/lcs-certmanager -c
+				#
+				# Select autosigned certificat
+				#
+				SSLCERTNAME=`hostname -f`_as
+				/usr/sbin/lcs-certmanager -s $SSLCERTNAME
             #
             # Add sudoers section
             #
 				/usr/sbin/lcs-make-sudoers
-            #
-            #  Apache2 differed restarting for web interface install module
-            #
-          echo "Rechargement configuration Apache2 dans 1mn"
-          at now+1minutes <<END
-/etc/init.d/apache2 restart
-sleep 2
-END
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
