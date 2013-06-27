@@ -231,6 +231,11 @@ if( ($action=='lister_evaluations') && $type && ( ($type=='selection') || ($aff_
       $script .= 'tab_corriges["'.$ref.'"]="'.$DB_ROW['devoir_doc_corrige'].'";';
     }
   }
+  else
+  {
+    echo'<tr><td class="nu probleme" colspan="10">Cliquer sur l\'icone ci-dessus (symbole "+" dans un rond vert) pour ajouter une évaluation.</td></tr>';
+  }
+  
   echo'<SCRIPT>'.$script;
   exit();
 }
@@ -851,9 +856,9 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
     $tab_item_id[$DB_ROW['item_id']] = array( $DB_ROW['item_ref'].$texte_socle.$texte_coef , $DB_ROW['item_nom'] , $DB_ROW['item_lien'] );
   }
   // tableaux utiles ou pour conserver les infos
-  $tab_dossier = array( 'RR'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'R'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'V'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'VV'=>$_SESSION['NOTE_DOSSIER'].'/h/' );
-  $tab_init_nominatif   = array('RR'=>array(),'R'=>array(),'V'=>array(),'VV'=>array());
-  $tab_init_quantitatif = array('RR'=>0 ,'R'=>0 ,'V'=>0 ,'VV'=>0 );
+  $tab_dossier = array( 'X'=>'commun/h/' , 'RR'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'R'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'V'=>$_SESSION['NOTE_DOSSIER'].'/h/' , 'VV'=>$_SESSION['NOTE_DOSSIER'].'/h/' );
+  $tab_init_nominatif   = array( 'RR'=>array() , 'R'=>array() , 'V'=>array() , 'VV'=>array() , 'X'=>array() );
+  $tab_init_quantitatif = array( 'RR'=>0 , 'R'=>0 , 'V'=>0 , 'VV'=>0 , 'X'=>0 );
   $tab_repartition_nominatif   = array();
   $tab_repartition_quantitatif = array();
   // initialisation
@@ -866,7 +871,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
   $affichage_repartition_head = '<th class="nu"></th>';
   foreach($tab_init_quantitatif as $note=>$vide)
   {
-    $affichage_repartition_head .= '<th><img alt="'.$note.'" src="./_img/note/'.$tab_dossier[$note].$note.'.gif" /></th>';
+    $affichage_repartition_head .= ($note!='X') ? '<th><img alt="'.$note.'" src="./_img/note/'.$tab_dossier[$note].$note.'.gif" /></th>' : '<th>Autre</th>' ;
   }
   // ligne suivantes
   $DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_saisies_devoir( $devoir_id , FALSE /*with_REQ*/ );
@@ -875,11 +880,10 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
     // Test pour éviter les pbs des élèves changés de groupes ou des items modifiés en cours de route
     if( isset($tab_user_id[$DB_ROW['eleve_id']]) && isset($tab_item_id[$DB_ROW['item_id']]) )
     {
-      if(isset($tab_init_quantitatif[$DB_ROW['saisie_note']])) // On ne garde que RR R V VV
-      {
-        $tab_repartition_nominatif[$DB_ROW['item_id']][$DB_ROW['saisie_note']][] = $tab_user_id[$DB_ROW['eleve_id']];
-        $tab_repartition_quantitatif[$DB_ROW['item_id']][$DB_ROW['saisie_note']]++;
-      }
+      $note  = isset($tab_init_quantitatif[$DB_ROW['saisie_note']]) ? $DB_ROW['saisie_note'] : 'X' ; // Regrouper ce qui n'est pas RR R V VV
+      $eleve = isset($tab_init_quantitatif[$DB_ROW['saisie_note']]) ? $tab_user_id[$DB_ROW['eleve_id']] : $tab_user_id[$DB_ROW['eleve_id']].' ('.$DB_ROW['saisie_note'].')' ; // Ajouter la note si hors RR R V VV
+      $tab_repartition_nominatif[$DB_ROW['item_id']][$note][] = $eleve;
+      $tab_repartition_quantitatif[$DB_ROW['item_id']][$note]++;
     }
   }
   // assemblage / affichage du tableau avec la répartition quantitative
@@ -927,7 +931,14 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
     $sacoche_pdf->SetXY($sacoche_pdf->marge_gauche+$sacoche_pdf->reference_largeur , $sacoche_pdf->marge_haut);
     foreach($tab_init_quantitatif as $note=>$vide)
     {
-      $sacoche_pdf->afficher_note_lomer($note,$border=1,$br=0);
+      if($note!='X')
+      {
+        $sacoche_pdf->afficher_note_lomer( $note , 1 /*border*/ , 0 /*br*/ );
+      }
+      else
+      {
+        $sacoche_pdf->CellFit( $sacoche_pdf->cases_largeur , $sacoche_pdf->etiquette_hauteur , To::pdf('Autre') , 1 /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , FALSE /*remplissage*/ );
+      }
     }
     // ligne suivantes : référence item, cases répartition quantitative
     $sacoche_pdf->SetXY($sacoche_pdf->marge_gauche , $sacoche_pdf->marge_haut+$sacoche_pdf->etiquette_hauteur);
@@ -963,7 +974,7 @@ if( ($action=='voir_repart') && $devoir_id && $groupe_id && $date_fr ) // $descr
   $tab_couleurs = array( 'oui'=>'couleur' , 'non'=>'monochrome' );
   foreach($tab_couleurs as $couleur => $fichier_couleur)
   {
-    $sacoche_pdf = new PDF( FALSE /*officiel*/ , 'portrait' /*orientation*/ , 10 /*marge_gauche*/ , 10 /*marge_droite*/ , 10 /*marge_haut*/ , 10 /*marge_bas*/ , $couleur );
+    $sacoche_pdf = new PDF( FALSE /*officiel*/ , 'landscape' /*orientation*/ , 10 /*marge_gauche*/ , 10 /*marge_droite*/ , 10 /*marge_haut*/ , 10 /*marge_bas*/ , $couleur );
     // il faut additionner le nombre maxi d'élèves par case de chaque item (sans descendre en dessous de 4 pour avoir la place d'afficher l'intitulé de l'item) afin de prévoir le nb de lignes nécessaires
     $somme = 0;
     foreach($tab_repartition_quantitatif as $item_id => $tab_effectifs)
@@ -1172,10 +1183,13 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
       }
     }
   }
-  // On attaque l'élaboration des sorties HTML, CSV et PDF
-  $sacoche_htm = '<hr /><a class="lien_ext" href="'.URL_DIR_EXPORT.'cartouche_'.$fnom_export.'.pdf"><span class="file file_pdf">Cartouches &rarr; Archiver / Imprimer (format <em>pdf</em>).</span></a><br />';
-  $sacoche_htm.= '<a class="lien_ext" href="./force_download.php?fichier=cartouche_'.$fnom_export.'.csv"><span class="file file_txt">Cartouches &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a>';
+  // On attaque l'élaboration des sorties HTML, CSV, TEX et PDF
+  $sacoche_htm = '<hr />';
+  $sacoche_htm.= '<a class="lien_ext" href="'.URL_DIR_EXPORT.'cartouche_'.$fnom_export.'.pdf"><span class="file file_pdf">Cartouches &rarr; Archiver / Imprimer (format <em>pdf</em>).</span></a><br />';
+  $sacoche_htm.= '<a class="lien_ext" href="./force_download.php?fichier=cartouche_'.$fnom_export.'.csv"><span class="file file_txt">Cartouches &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a><br />';
+  $sacoche_htm.= '<a class="lien_ext" href="'.URL_DIR_EXPORT.'cartouche_'.$fnom_export.'.tex"><span class="file file_tex">Cartouches &rarr; Récupérer / Manipuler (fichier <em>LaTeX</em> pour connaisseurs).</span></a>';
   $sacoche_csv = '';
+  $sacoche_tex = '';
   $separateur  = ';';
   // Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
   $item_nb = count($tab_comp_id);
@@ -1195,23 +1209,30 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
         $texte_entete = $date_fr.' - '.$description.' - '.$val_user;
         $sacoche_htm .= '<table class="bilan"><thead><tr><th colspan="'.$tab_user_nb_req[$user_id].'">'.html($texte_entete).'</th></tr></thead><tbody>';
         $sacoche_csv .= $texte_entete."\r\n";
+        $sacoche_tex .= $texte_entete."\r\n";
         $sacoche_pdf->cartouche_entete( $texte_entete , $lignes_nb=4 );
-        $ligne1_csv = ''; $ligne1_html = '';
-        $ligne2_csv = ''; $ligne2_html = '';
+        $ligne0_tex = ''; 
+        $ligne1_csv = ''; $ligne1_html = ''; $ligne1_tex = ''; 
+        $ligne2_csv = ''; $ligne2_html = ''; $ligne2_tex = ''; 
         foreach($tab_comp_id as $comp_id=>$tab_val_comp)
         {
           if( ($only_req==FALSE) || ($tab_result[$comp_id][$user_id]) )
           {
             $note = ($tab_result[$comp_id][$user_id]!='REQ') ? $tab_result[$comp_id][$user_id] : '' ; // Si on voulait récupérer les items ayant fait l'objet d'une demande d'évaluation, il n'y a pour autant pas lieu d'afficher les paniers sur les cartouches.
+            list($ref_matiere,$ref_suite) = explode('.',$tab_val_comp[0],2);
             $ligne1_html .= '<td>'.html($tab_val_comp[0]).'</td>';
             $ligne2_html .= '<td class="hc">'.Html::note($note,$date_fr,$description,FALSE).'</td>';
             $ligne1_csv .= '"'.$tab_val_comp[0].'"'.$separateur;
             $ligne2_csv .= '"'.$note.'"'.$separateur;
+            $ligne0_tex .= 'c|';
+            $ligne1_tex .= '\begin{tabular}{c}'.To::latex($ref_matiere).'\\\\'.To::latex($ref_suite).'\end{tabular}'.' & ';
+            $ligne2_tex .= ' &';
             $sacoche_pdf->cartouche_minimal_competence($tab_val_comp[0] , $note);
           }
         }
         $sacoche_htm .= '<tr>'.$ligne1_html.'</tr><tr>'.$ligne2_html.'</tr></tbody></table>';
         $sacoche_csv .= $ligne1_csv."\r\n".$ligne2_csv."\r\n\r\n";
+        $sacoche_tex .= '\begin{center}'."\r\n".'\begin{tabular}{|'.$ligne0_tex.'}'."\r\n".'\hline'."\r\n".mb_substr($ligne1_tex,0,-2).' \\\\'."\r\n".'\hline'."\r\n".mb_substr($ligne2_tex,0,-1).' \\\\'."\r\n".'\hline'."\r\n".'\end{tabular}'."\r\n".'\end{center}'."\r\n\r\n";
         $sacoche_pdf->cartouche_interligne(4);
       }
     }
@@ -1226,6 +1247,7 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
         $texte_entete = $date_fr.' - '.$description.' - '.$val_user;
         $sacoche_htm .= '<table class="bilan"><thead><tr><th colspan="3">'.html($texte_entete).'</th></tr></thead><tbody>';
         $sacoche_csv .= $texte_entete."\r\n";
+        $sacoche_tex .= $texte_entete."\r\n".'\begin{center}'."\r\n".'\begin{tabular}{|c|l|p{2em}|}'."\r\n".'\hline'."\r\n";
         $sacoche_pdf->cartouche_entete( $texte_entete , $lignes_nb=$tab_user_nb_req[$user_id]+1 );
         foreach($tab_comp_id as $comp_id=>$tab_val_comp)
         {
@@ -1234,17 +1256,21 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
             $note = ($tab_result[$comp_id][$user_id]!='REQ') ? $tab_result[$comp_id][$user_id] : '' ; // Si on voulait récupérer les items ayant fait l'objet d'une demande d'évaluation, il n'y a pour autant pas lieu d'afficher les paniers sur les cartouches.
             $sacoche_htm .= '<tr><td>'.html($tab_val_comp[0]).'</td><td>'.html($tab_val_comp[1]).'</td><td>'.Html::note($note,$date_fr,$description,FALSE).'</td></tr>';
             $sacoche_csv .= '"'.$tab_val_comp[0].'"'.$separateur.'"'.$tab_val_comp[1].'"'.$separateur.'"'.$note.'"'."\r\n";
+            $sacoche_tex .= To::latex($tab_val_comp[0]).' & '.To::latex($tab_val_comp[1]).' & '.$note.' \\\\'."\r\n".'\hline'."\r\n";
             $sacoche_pdf->cartouche_complet_competence($tab_val_comp[0] , $tab_val_comp[1] , $note);
           }
         }
         $sacoche_htm .= '</tbody></table>';
         $sacoche_csv .= "\r\n";
+        $sacoche_tex .= '\end{tabular}'."\r\n".'\end{center}'."\r\n\r\n";
         $sacoche_pdf->cartouche_interligne(2);
       }
     }
   }
   // On archive le cartouche dans un fichier csv
   FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.csv' , To::csv($sacoche_csv) );
+  // On archive le cartouche dans un fichier tex
+  FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.tex' , $sacoche_tex );
   // On archive le cartouche dans un fichier pdf
   $sacoche_pdf->Output(CHEMIN_DOSSIER_EXPORT.'cartouche_'.$fnom_export.'.pdf','F');
   // Affichage
@@ -1347,7 +1373,7 @@ if( ($action=='retirer_document') && $devoir_id && in_array($doc_objet,array('su
   {
     $chemin_doc = str_replace($url_dossier_devoir,$chemin_devoir,$doc_url);
     // Il peut être référencé dans une autre évaluation et donc avoir déjà été effacé, ou ne pas être présent sur le serveur en cas de restauration de base ailleurs, etc.
-    if(file_exists($chemin_doc))
+    if(is_file($chemin_doc))
     {
       unlink($chemin_doc);
     }

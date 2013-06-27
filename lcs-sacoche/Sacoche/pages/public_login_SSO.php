@@ -88,7 +88,7 @@ if(HEBERGEUR_INSTALLATION=='multi-structures')
 // Mettre à jour la base si nécessaire
 maj_base_structure_si_besoin($BASE);
 
-$DB_TAB = DB_STRUCTURE_PUBLIC::DB_lister_parametres('"connexion_mode","cas_serveur_host","cas_serveur_port","cas_serveur_root","cas_serveur_url_login","cas_serveur_url_logout","cas_serveur_url_validate","gepi_url","gepi_rne","gepi_certificat_empreinte"'); // A compléter
+$DB_TAB = DB_STRUCTURE_PUBLIC::DB_lister_parametres('"connexion_departement","connexion_mode","connexion_nom","cas_serveur_host","cas_serveur_port","cas_serveur_root","cas_serveur_url_login","cas_serveur_url_logout","cas_serveur_url_validate","gepi_url","gepi_rne","gepi_certificat_empreinte"'); // A compléter
 foreach($DB_TAB as $DB_ROW)
 {
   ${$DB_ROW['parametre_nom']} = $DB_ROW['parametre_valeur'];
@@ -318,7 +318,7 @@ if($connexion_mode=='cas')
   // A partir de là, l'utilisateur est forcément authentifié sur son CAS.
   // Récupérer l'identifiant (login ou numéro interne...) de l'utilisateur authentifié pour le traiter dans l'application
   $id_ENT = phpCAS::getUser();
-  // Récupérer les attributs CAS : SACoche ne récupère aucun attribut, il n'y a pas de récupération de données via le ticket et donc pas de nécessité de convention.
+  // Récupérer les attributs CAS => SACoche ne récupère aucun attribut, il n'y a pas de récupération de données via le ticket et donc pas de nécessité de convention.
   // $tab_attributs = phpCAS::getAttributes();
   // Forcer à réinterroger le serveur CAS en cas de nouvel appel à cette page pour être certain que c'est toujours le même utilisateur qui est connecté au CAS.
   unset($_SESSION['phpCAS']);
@@ -327,6 +327,69 @@ if($connexion_mode=='cas')
   if($auth_resultat!='ok')
   {
     exit_error( 'Incident authentification CAS' /*titre*/ , $auth_resultat /*contenu*/ );
+  }
+  // Vérifier la présence d'une convention valide si besoin, sauf pour les administrateurs qui doivent pouvoir accéder à leur espace pour régulariser la situation (même s'il leur est toujours possible d'utiliser une authentification locale).
+  if( IS_HEBERGEMENT_SESAMATH && CONVENTION_ENT_REQUISE && (CONVENTION_ENT_START_DATE_MYSQL<=TODAY_MYSQL) && ($auth_DB_ROW['user_profil_type']!='administrateur') )
+  {
+    // Vérifier que les paramètres de la base n'ont pas été trafiqués (via une sauvegarde / restauration de la base avec modification intermédiaire) pour passer outre : nom de connexion mis à perso ou modifié etc.
+    $connexion_ref = $connexion_departement.'|'.$connexion_nom;
+    require(CHEMIN_DOSSIER_INCLUDE.'tableau_sso.php');
+    if(!isset($tab_connexion_info[$connexion_mode][$connexion_ref]))
+    {
+      exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS sont anormaux (connexion_mode vaut "'.$connexion_mode.'" ; connexion_departement vaut "'.$connexion_departement.'" ; connexion_nom vaut "'.$connexion_nom.'") !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
+    }
+    if($connexion_nom=='perso')
+    {
+      foreach($tab_serveur_cas as $tab_cas_param)
+      {
+        $is_param_defaut_identiques = (phpCAS::getServerLoginURL()==$tab_cas_param['serveur_url_login']) ? TRUE : FALSE ;
+        $is_param_force_identiques  = (phpCAS::getServerLoginURL()=='https://'.$tab_cas_param['serveur_host'].':'.$tab_cas_param['serveur_port'].'/'.$tab_cas_param['serveur_root'].'/login') ? TRUE : FALSE ;
+        if( $is_param_defaut_identiques || $is_param_force_identiques )
+        {
+          exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS personnalisés sont ceux d\'un ENT référencé !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
+        }
+      }
+    }
+    else
+    {
+      $tab_info = $tab_connexion_info[$connexion_mode][$connexion_ref];
+      if( ($tab_info['serveur_host']!=$cas_serveur_host) || ($tab_info['serveur_port']!=$cas_serveur_port) || ($tab_info['serveur_root']!=$cas_serveur_root) || ($tab_info['serveur_url_login']!=$cas_serveur_url_login) || ($tab_info['serveur_url_logout']!=$cas_serveur_url_logout) || ($tab_info['serveur_url_validate']!=$cas_serveur_url_validate) )
+      {
+        exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS enregistrés ne correspondent pas à ceux attendus pour la référence "'.$connexion_ref.'" !<br />Un administrateur doit revalider la sélection depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
+      }
+    }
+    if(!is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT))
+    {
+      exit_error( 'Fichier manquant' /*titre*/ , 'Le fichier &laquo;&nbsp;<b>'.FileSystem::fin_chemin(CHEMIN_FICHIER_WS_SESAMATH_ENT).'</b>&nbsp;&raquo; (uniquement présent sur le serveur Sésamath) n\'a pas été détecté !' /*contenu*/ );
+    }
+    // Normalement les hébergements académiques ne sont pas concernés
+    require(CHEMIN_FICHIER_WS_SESAMATH_ENT); // Charge les tableaux   $tab_connecteurs_hebergement & $tab_connecteurs_convention
+    if( isset($tab_connecteurs_hebergement[$connexion_ref]) )
+    {
+      exit_error( 'Mode d\'authentification anormal' /*titre*/ , 'Le mode d\'authentification sélectionné ('.$connexion_nom.') doit être utilisé sur l\'hébergement académique dédié (département '.$connexion_departement.') !' /*contenu*/ );
+    }
+    // Pas besoin de vérification si convention signée à un plus haut niveau
+    if( !isset($tab_connecteurs_convention[$connexion_ref]) )
+    {
+      if(!DB_WEBMESTRE_PUBLIC::DB_tester_convention_active( $BASE , $connexion_nom ))
+      {
+        exit_error( 'Absence de convention valide' /*titre*/ , 'L\'usage de ce service sur ce serveur est soumis à la signature et au règlement d\'une convention (depuis le '.CONVENTION_ENT_START_DATE_FR.').<br />Un administrateur doit effectuer les démarches depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].<br />Veuillez consulter <a href="'.SERVEUR_BLOG_CONVENTION.'" target="_blank">cet article du blog de l\'association Sésamath</a> pour comprendre les raisons de cette procédure.' /*contenu*/ );
+      }
+    }
+    else
+    {
+      // Cas d'une convention signée par un partenaire ENT => Mettre en session l'affichage de sa communication en page d'accueil.
+      $partenaire_id = DB_WEBMESTRE_PUBLIC::DB_recuperer_id_partenaire_for_connecteur($connexion_ref);
+      $fichier_chemin = 'info_'.$partenaire_id.'.php';
+      if( $partenaire_id && is_file(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin) )
+      {
+        require(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin);
+        $partenaire_logo_url = ($partenaire_logo_actuel_filename) ? URL_DIR_PARTENARIAT.$partenaire_logo_actuel_filename : URL_DIR_IMG.'auto.gif' ;
+        $partenaire_lien_ouvrant = ($partenaire_adresse_web) ? '<a href="'.html($partenaire_adresse_web).'" class="lien_ext">' : '' ;
+        $partenaire_lien_fermant = ($partenaire_adresse_web) ? '</a>' : '' ;
+        $_SESSION['CONVENTION_PARTENAIRE_ENT_COMMUNICATION'] = $partenaire_lien_ouvrant.'<span id="partenaire_logo"><img src="'.html($partenaire_logo_url).'" /></span><span id="partenaire_message">'.nl2br(html($partenaire_message)).'</span>'.$partenaire_lien_fermant.'<hr id="partenaire_hr" />';
+      }
+    }
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);
@@ -369,10 +432,15 @@ ProxyPassReverse /sacoche/ https://ent2d.ac-bordeaux.fr/sacoche/
 
 [HTTP_AFFILIATION]
 [HTTP_CTEMAIL]
+[HTTP_DISPLAYNAME]
+[HTTP_ENTAUXENSCATEGODISCIPLINE]
+[HTTP_ENTELEVECLASSES]
 [HTTP_ENTELEVESTRUCTRATTACHID]
 [HTTP_ENTITLEMENT]
 [HTTP_ENTPERSONFONCTIONS]
+[HTTP_ENTPERSONJOINTURE]
 [HTTP_ENTPERSONLOGIN]
+[HTTP_ENTPERSONNOMPATRO]
 [HTTP_EPPN]
 [HTTP_FREDUCODEMEF]
 [HTTP_FREDUVECTEUR]
@@ -396,25 +464,69 @@ ProxyPassReverse /sacoche/ https://ent2d.ac-bordeaux.fr/sacoche/
 [HTTP_UID]
 [HTTP_UNSCOPED_AFFILIATION]
 
+
 */
 
 if($connexion_mode=='shibboleth')
 {
   // Récupération dans les variables serveur de l'identifiant de l'utilisateur authentifié.
-  if( (empty($_SERVER['HTTP_UID'])) || empty($_SERVER['HTTP_SHIB_SESSION_ID']) )
+  if( ( (empty($_SERVER['HTTP_UID'])) || empty($_SERVER['HTTP_SHIB_SESSION_ID']) ) && empty($_SERVER['HTTP_FREDUVECTEUR']) )
   {
     $http_uid             = isset($_SERVER['HTTP_UID'])             ? 'vaut "'.html($_SERVER['HTTP_UID']).'"'             : 'n\'est pas définie' ;
     $http_shib_session_id = isset($_SERVER['HTTP_SHIB_SESSION_ID']) ? 'vaut "'.html($_SERVER['HTTP_SHIB_SESSION_ID']).'"' : 'n\'est pas définie' ;
-    exit_error( 'Incident authentification Shibboleth' /*titre*/ , 'Ce serveur ne semble pas disposer d\'une authentification Shibboleth, ou bien celle ci n\'a pas été mise en &oelig;uvre :<br />- la variable $_SERVER["HTTP_UID"] '.$http_uid.'<br />- la variable $_SERVER["HTTP_SHIB_SESSION_ID"] '.$http_shib_session_id /*contenu*/ );
+    $http_freduvecteur    = isset($_SERVER['HTTP_FREDUVECTEUR'])    ? 'vaut "'.html($_SERVER['HTTP_FREDUVECTEUR']).'"'    : 'n\'est pas définie' ;
+    $contenu = 'Ce serveur ne semble pas disposer d\'une authentification Shibboleth, ou bien celle ci n\'a pas été mise en &oelig;uvre, ou bien la session a été perdue :<br />'
+             . '- la variable $_SERVER["HTTP_UID"] '.$http_uid.'<br />'
+             . '- la variable $_SERVER["HTTP_SHIB_SESSION_ID"] '.$http_shib_session_id.'<br />'
+             . '- la variable $_SERVER["HTTP_FREDUVECTEUR"] '.$http_freduvecteur ;
+    exit_error( 'Incident authentification Shibboleth' /*titre*/ , $contenu );
   }
-  // A cause du chainage réalisé depuis Shibboleth entre différents IDP pour compléter les attributs exportés, l'UID arrive en double séparé par un « ; ».
-  $http_uid = explode( ';' , $_SERVER['HTTP_UID'] );
-  $id_ENT = $http_uid[0];
   // Comparer avec les données de la base
-  list($auth_resultat,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $id_ENT /*login*/ , FALSE /*password*/ , 'shibboleth' /*mode_connection*/ );
-  if($auth_resultat!='ok')
+  $auth_resultat_shibboleth = $auth_resultat_siecle = $auth_resultat_vecteur = '';
+  // [1] On commence par regarder HTTP_UID, disponible pour tous les profils sauf les parents
+  // A cause du chainage réalisé depuis Shibboleth entre différents IDP pour compléter les attributs exportés, l'UID peut arriver en double séparé par un « ; ».
+  $tab_http_uid = explode( ';' , $_SERVER['HTTP_UID'] );
+  $id_ENT = $tab_http_uid[0];
+  if($id_ENT)
   {
-    exit_error( 'Incident authentification Shibboleth' /*titre*/ , $auth_resultat /*contenu*/ );
+    list($auth_resultat_shibboleth,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $id_ENT /*login*/ , FALSE /*password*/ , 'shibboleth' /*mode_connection*/ );
+  }
+  if($auth_resultat1!='ok')
+  {
+    // [2] Ensuite, on peut regarder HTTP_TSSCONETID ou HTTP_ENTELEVESTRUCTRATTACHID, disponible pour les élèves
+    $eleve_sconet_id = (!empty($_SERVER['HTTP_TSSCONETID'])) ? (int)$_SERVER['HTTP_TSSCONETID'] : ( (!empty($_SERVER['HTTP_ENTELEVESTRUCTRATTACHID'])) ? (int)$_SERVER['HTTP_ENTELEVESTRUCTRATTACHID'] : 0 ) ;
+    if($eleve_sconet_id)
+    {
+      list($auth_resultat_siecle,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $eleve_sconet_id /*login*/ , FALSE /*password*/ , 'siecle' /*mode_connection*/ );
+    }
+    if($auth_resultat_siecle!='ok')
+    {
+      // [3] Enfin, on peut regarder HTTP_FREDUVECTEUR, disponible pour les élèves et les parents (pour les parents, on n'a même que ça...
+      // Pour les parents, il peut être multivalué, les différentes valeurs étant alors séparées par un « ; » (je ne m'embête pas, je prends la première valeur, inutile de tester tous les enfants, les associations doivent avoir été faites dans SAcoche).
+      $fr_edu_vecteur = (!empty($_SERVER['HTTP_FREDUVECTEUR'])) ? $_SERVER['HTTP_FREDUVECTEUR'] : '' ;
+      $tab_vecteur = explode( ';' , $fr_edu_vecteur );
+      $fr_edu_vecteur = $tab_vecteur[0];
+      list( $vecteur_profil , $vecteur_nom , $vecteur_prenom , $vecteur_eleve_id , $vecteur_uai ) = explode('|',$fr_edu_vecteur ) + array(0=>NULL,NULL,NULL,NULL,NULL) ; // http://fr.php.net/manual/fr/function.list.php#103311
+      if( in_array($vecteur_profil,array(3,4)) && ($vecteur_eleve_id) && ($vecteur_eleve_id!=$eleve_sconet_id) ) // cas d'un élève
+      {
+        list($auth_resultat_siecle,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $vecteur_eleve_id /*login*/ , FALSE /*password*/ , 'siecle' /*mode_connection*/ );
+      }
+      elseif( in_array($vecteur_profil,array(1,2)) && ($vecteur_eleve_id) ) // cas d'un parent
+      {
+        if( $vecteur_nom && $vecteur_prenom )
+        {
+          list($auth_resultat_vecteur,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $vecteur_eleve_id /*login*/ , FALSE /*password*/ , 'vecteur_parent' /*mode_connection*/ , $vecteur_nom , $vecteur_prenom );
+        }
+        else
+        {
+          $auth_resultat_vecteur = 'Identification réussie mais vecteur d\'identité parent "' .$fr_edu_vecteur.'" incomplet, ce qui empêche de rechercher le compte SACoche correspondant.';
+        }
+      }
+    }
+  }
+  if( ($auth_resultat_shibboleth!='ok') && ($auth_resultat_siecle!='ok') && ($auth_resultat_vecteur!='ok') )
+  {
+    exit_error( 'Incident authentification Shibboleth' /*titre*/ , $auth_resultat_shibboleth.$auth_resultat2.$auth_resultat_vecteur );
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);

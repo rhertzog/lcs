@@ -98,13 +98,14 @@ if($date_mysql_debut>$date_mysql_fin)
   exit('La date de début est postérieure à la date de fin !');
 }
 
-$tab_precision = array
+$tab_precision_retroactif = array
 (
   'auto' => 'notes antérieures selon référentiels',
   'oui'  => 'avec notes antérieures',
   'non'  => 'sans notes antérieures'
 );
-$texte_periode = 'Du '.$date_debut.' au '.$date_fin.' ('.$tab_precision[$retroactif].').';
+$precision_socle = $only_socle ? ', restriction au socle' : '' ;
+$texte_periode = 'Du '.$date_debut.' au '.$date_fin.' ('.$tab_precision_retroactif[$retroactif].$precision_socle.').';
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération de la liste des items travaillés durant la période choisie, pour les élèves selectionnés, pour la ou les matières ou les items indiqués
@@ -456,7 +457,7 @@ if($type_individuel)
   $jour_debut_annee_scolaire = jour_debut_annee_scolaire('mysql'); // Date de fin de l'année scolaire précédente
   if($make_html)
   {
-    $bouton_print_appr = (!$make_officiel)                    ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'       : '' ;
+    $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'       : '' ;
     $bouton_print_test = (!empty($is_bouton_test_impression)) ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
     $releve_HTML_individuel  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>';
     $releve_HTML_individuel .= $affichage_direct ? '' : '<h1>Bilan '.$tab_titre[$format].'</h1>';
@@ -1049,7 +1050,7 @@ if( $type_bulletin && $make_html )
   }
   $bulletin_body = '';
   $bulletin_csv_entete = 'GEPI_IDENTIFIANT;NOTE;APPRECIATION'."\r\n";  // Ajout du préfixe 'GEPI_' pour éviter un bug avec M$ Excel « SYLK : Format de fichier non valide » (http://support.microsoft.com/kb/323626/fr)
-  $tab_bulletin_csv_gepi = array_fill_keys( array('note_appreciation','note','appreciation') , $bulletin_csv_entete );
+  $tab_bulletin_csv_gepi = array_fill_keys( array('note_appreciation','note','appreciation_PA','appreciation_MS') , $bulletin_csv_entete );
   // Pour chaque élève...
   foreach($tab_eleve as $tab)
   {
@@ -1057,13 +1058,15 @@ if( $type_bulletin && $make_html )
     // Si cet élève a été évalué...
     if(isset($tab_eval[$eleve_id]))
     {
-      $note         = ($tab_moyenne_scores_eleve[$matiere_id][$eleve_id]     !== FALSE) ? sprintf("%04.1f",$tab_moyenne_scores_eleve[$matiere_id][$eleve_id]/5)                                                           : '-' ;
-      $appreciation = ($tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id] !== FALSE) ? $tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id].'% d\'items acquis ('.$tab_infos_acquis_eleve[$matiere_id][$eleve_id].')' : '-' ;
-      $bulletin_body     .= '<tr><th>'.html($eleve_nom.' '.$eleve_prenom).'</th><td>'.$note.'</td><td>'.$appreciation.'</td></tr>'."\r\n";
-      $note         = str_replace('.',',',$note); // Pour GEPI je remplace le point décimal par une virgule sinon le tableur convertit en date...
-      $tab_bulletin_csv_gepi['note_appreciation'] .= $eleve_id_gepi.';'.$note.';'.$appreciation."\r\n";
+      $note            = ($tab_moyenne_scores_eleve[$matiere_id][$eleve_id]     !== FALSE) ? sprintf("%04.1f",$tab_moyenne_scores_eleve[$matiere_id][$eleve_id]/5)                                                           : '-' ;
+      $appreciation_PA = ($tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id] !== FALSE) ? $tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id].'% d\'items acquis ('.$tab_infos_acquis_eleve[$matiere_id][$eleve_id].')' : '-' ;
+      $appreciation_MS = ($tab_moyenne_scores_eleve[$matiere_id][$eleve_id]     !== FALSE) ? ( ($conversion_sur_20) ? 'Moyenne des scores : '.$tab_moyenne_scores_eleve[$matiere_id][$eleve_id].'%'.' soit '.str_replace('.',',',sprintf("%04.1f",$tab_moyenne_scores_eleve[$matiere_id][$eleve_id]/5)).'/20.' : 'Moyenne des scores de '.$tab_moyenne_scores_eleve[$matiere_id][$eleve_id].'%.' ) : '-' ;
+      $bulletin_body  .= '<tr><th>'.html($eleve_nom.' '.$eleve_prenom).'</th><td>'.$note.'</td><td>'.$appreciation_PA.'</td></tr>'."\r\n";
+      $note            = str_replace('.',',',$note); // Pour GEPI je remplace le point décimal par une virgule sinon le tableur convertit en date...
+      $tab_bulletin_csv_gepi['note_appreciation'] .= $eleve_id_gepi.';'.$note.';'.$appreciation_PA."\r\n";
       $tab_bulletin_csv_gepi['note']              .= $eleve_id_gepi.';'.$note."\r\n";
-      $tab_bulletin_csv_gepi['appreciation']      .= $eleve_id_gepi.';'.''   .';'.$appreciation."\r\n";
+      $tab_bulletin_csv_gepi['appreciation_PA']   .= $eleve_id_gepi.';'.''   .';'.$appreciation_PA."\r\n";
+      $tab_bulletin_csv_gepi['appreciation_MS']   .= $eleve_id_gepi.';'.''   .';'.$appreciation_MS."\r\n";
       if( ($bulletin_periode) && ($tab_moyenne_scores_eleve[$matiere_id][$eleve_id] !== FALSE) )
       {
         $tab_bulletin_input[] = $eleve_id.'_'.($tab_moyenne_scores_eleve[$matiere_id][$eleve_id]/5);

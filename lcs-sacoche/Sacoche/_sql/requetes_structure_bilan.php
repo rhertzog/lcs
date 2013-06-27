@@ -336,6 +336,26 @@ public static function DB_recuperer_arborescence_synthese($liste_eleve_id,$matie
 }
 
 /**
+ * recuperer_modes_synthese_inconnu
+ *
+ * @param void
+ * @return string
+ */
+public static function DB_recuperer_modes_synthese_inconnu()
+{
+  // Lever si besoin une limitation de GROUP_CONCAT (group_concat_max_len est par défaut limité à une chaine de 1024 caractères) ; éviter plus de 8096 (http://www.glpi-project.org/forum/viewtopic.php?id=23767).
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , 'SET group_concat_max_len = 8096');
+  $DB_SQL = 'SELECT GROUP_CONCAT( CONCAT(matiere_nom," / ",niveau_nom) SEPARATOR "§BR§") AS listing ';
+  $DB_SQL.= 'FROM sacoche_referentiel ';
+  $DB_SQL.= 'LEFT JOIN sacoche_matiere USING (matiere_id) ';
+  $DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
+  $DB_SQL.= 'WHERE referentiel_mode_synthese=:mode_inconnu AND matiere_active=1 ';
+  $DB_SQL.= 'ORDER BY matiere_ordre ASC, niveau_ordre ASC ';
+  $DB_VAR = array(':mode_inconnu'=>'inconnu');
+  return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
  * lister_date_last_eleves_items
  * Retourner, pour des élèves et les items donnés, la date de la dernière évaluation (pour vérifier qu'il faut bien prendre l'item en compte)
  *
@@ -368,9 +388,9 @@ public static function DB_lister_date_last_eleves_items($liste_eleve_id,$liste_i
  */
 public static function DB_lister_result_eleves_items($liste_eleve_id,$liste_item_id,$matiere_id,$date_mysql_debut,$date_mysql_fin,$user_profil_type,$onlynote=FALSE,$first_order_by_date=FALSE)
 {
-  $sql_debut = ($date_mysql_debut)          ? 'AND saisie_date>=:date_debut '   : '';
-  $sql_fin   = ($date_mysql_fin)            ? 'AND saisie_date<=:date_fin '     : '';
-  $sql_view  = ($user_profil_type=='eleve') ? 'AND saisie_visible_date<=NOW() ' : '';
+  $sql_debut = ($date_mysql_debut) ? 'AND saisie_date>=:date_debut ' : '';
+  $sql_fin   = ($date_mysql_fin)   ? 'AND saisie_date<=:date_fin '   : '';
+  $sql_view  = ( ($user_profil_type=='eleve') || ($user_profil_type=='parent') ) ? 'AND saisie_visible_date<=NOW() ' : '' ;
   $select_matiere = ($matiere_id>=0) ? $matiere_id.' AS matiere_id ' : 'matiere_id' ;
   $join_matiere   = ($matiere_id<=0) ? 'LEFT JOIN sacoche_matiere USING (matiere_id) ' : '' ;
   $order_matiere  = ($matiere_id<=0) ? 'matiere_ordre ASC, ' : '' ;
@@ -401,7 +421,7 @@ public static function DB_lister_result_eleves_items($liste_eleve_id,$liste_item
  */
 public static function DB_lister_result_eleves_palier_sans_infos_items($liste_eleve_id,$liste_entree_id,$user_profil_type)
 {
-  $sql_view  = ($user_profil_type=='eleve') ? 'AND saisie_visible_date<=NOW() ' : '';
+  $sql_view = ( ($user_profil_type=='eleve') || ($user_profil_type=='parent') ) ? 'AND saisie_visible_date<=NOW() ' : '' ;
   $DB_SQL = 'SELECT eleve_id , entree_id AS socle_id , item_id , saisie_note AS note , ';
   $DB_SQL.= 'matiere_id '; // Besoin s'il faut filtrer à une langue précise pour la compétence 2
   $DB_SQL.= 'FROM sacoche_saisie ';

@@ -31,7 +31,7 @@
 
 /*
  * La fonction error_get_last() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
- * http://fr.php.net/manual/fr/function.error-get-last.php#103539
+ * @see http://fr.php.net/manual/fr/function.error-get-last.php#103539
  */
 if(!function_exists('error_get_last'))
 {
@@ -73,6 +73,55 @@ if(!function_exists('array_fill_keys'))
 }
 
 /*
+ * La fonction json_encode() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, la définir si besoin.
+ * @see http://www.php.net/manual/fr/function.json-encode.php#107968
+ */
+if (!function_exists('json_encode'))
+{
+  function json_encode($data)
+  {
+    switch ($type = gettype($data))
+    {
+      case 'NULL':
+        return 'null';
+      case 'boolean':
+        return ($data ? 'true' : 'false');
+      case 'integer':
+      case 'double':
+      case 'float':
+        return $data;
+      case 'string':
+        return '"' . addslashes($data) . '"';
+      case 'object':
+        $data = get_object_vars($data);
+      case 'array':
+        $output_index_count = 0;
+        $output_indexed = array();
+        $output_associative = array();
+        foreach ($data as $key => $value)
+        {
+          $output_indexed[] = json_encode($value);
+          $output_associative[] = json_encode($key) . ':' . json_encode($value);
+          if ($output_index_count !== NULL && $output_index_count++ !== $key)
+          {
+            $output_index_count = NULL;
+          }
+        }
+        if ($output_index_count !== NULL)
+        {
+          return '[' . implode(',', $output_indexed) . ']';
+        }
+        else
+        {
+          return '{' . implode(',', $output_associative) . '}';
+        }
+      default:
+        return ''; // Not supported
+    }
+  }
+}
+
+/*
  * Le paramètre PATHINFO_FILENAME de la fonction pathinfo() n'est disponible que depuis PHP 5.2 ; SACoche exigeant PHP 5.1, traiter ce cas si besoin.
  */
 function pathinfo_filename($file)
@@ -92,19 +141,20 @@ function pathinfo_filename($file)
 }
 
 // ============================================================================
+// Constante SACoche - Atteste l'appel de ce fichier avant inclusion d'une autre page & permet de connaître le nom du script initial.
+// ============================================================================
+
+define( 'SACoche', pathinfo_filename($_SERVER['SCRIPT_NAME']) );
+if(SACoche=='_loader') {exit('Ce fichier ne peut être appelé directement !');}
+
+// ============================================================================
 // Config PHP - Versions PHP & MySQL - Modules PHP
 // ============================================================================
 
-// Définir le décalage horaire par défaut de toutes les fonctions date/heure
-// La fonction date_default_timezone_set() est disponible depuis PHP 5.1 ; ne pas créer une erreur fatale si PHP 5.0.
-if(function_exists('date_default_timezone_set')) date_default_timezone_set('Europe/Paris'); 
-
 // CHARSET : "iso-8859-1" ou "utf-8" suivant l'encodage utilisé
-// Présence aussi d'un "AddDefaultCharset ..." dans le fichier .htaccess
-// Cependant, tous les fichiers étant en UTF-8 et le code prévu pour manipuler des données en UTF-8, changer le CHARSET semble assez hasardeux pour ne pas dire risqué...
+// Dès maintenant car utilisé par exit_error().
+// Tous les fichiers étant en UTF-8, et le code prévu pour manipuler des données en UTF-8, changer le CHARSET serait assez hasardeux pour ne pas dire risqué...
 define('CHARSET','utf-8');
-// Modifier l'encodage interne pour les fonctions mb_* (manipulation de chaînes de caractères multi-octets)
-mb_internal_encoding(CHARSET);
 
 // Version PHP & MySQL requises et conseillées
 // Attention : ne pas mettre de ".0" (par exemple "5.0") car version_compare() considère que 5 < 5.0 (@see http://fr.php.net/version_compare)
@@ -125,8 +175,16 @@ $extensions_requises = array('curl','dom','gd','mbstring','mysql','PDO','pdo_mys
 $extensions_manquantes = array_diff($extensions_requises,$extensions_chargees);
 if(count($extensions_manquantes))
 {
-  exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : '.implode($extensions_manquantes,' ; ').'<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
+  exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : '.implode($extensions_manquantes,' ; ').'.<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
 }
+
+// Définir le décalage horaire par défaut de toutes les fonctions date/heure
+// La fonction date_default_timezone_set() est disponible depuis PHP 5.1 ; on a été stoppé avant si ce n'est pas le cas.
+date_default_timezone_set('Europe/Paris'); 
+
+// Modifier l'encodage interne pour les fonctions mb_* (manipulation de chaînes de caractères multi-octets)
+// Requiert le module "mbstring" ; on a été stoppé avant si ce dernier est manquant.
+mb_internal_encoding(CHARSET);
 
 // Remédier à l'éventuelle configuration de magic_quotes_gpc à On (directive obsolète depuis PHP 5.3.0 et supprimée en PHP 6.0.0).
 // array_map() génère une erreur si le tableau contient lui-même un tableau ; à la place on peut utiliser array_walk_recursive() ou la fonction ci-dessous présente dans le code de MySQL_Dumper et PunBB) :
@@ -142,26 +200,6 @@ if(get_magic_quotes_gpc())
   array_walk_recursive($_POST   ,'tab_stripslashes');
   array_walk_recursive($_REQUEST,'tab_stripslashes');
 }
-
-// ============================================================================
-// Constante SACoche - Atteste l'appel de ce fichier avant inclusion d'une autre page & permet de connaître le nom du script initial.
-// ============================================================================
-
-define( 'SACoche', pathinfo_filename($_SERVER['SCRIPT_NAME']) );
-if(SACoche=='_loader') {exit('Ce fichier ne peut être appelé directement !');}
-
-// ============================================================================
-// Type de serveur (LOCAL|DEV|PROD)
-// ============================================================================
-
-// On ne peut pas savoir avec certitude si un serveur est "local" car aucune méthode ne fonctionne à tous les coups :
-// - $_SERVER['HTTP_HOST'] peut ne pas renvoyer localhost sur un serveur local (si configuration de domaines locaux via fichiers hosts / httpd.conf par exemple).
-// - gethostbyname($_SERVER['HTTP_HOST']) peut renvoyer "127.0.0.1" sur un serveur non local car un serveur a en général 2 ip (une publique - ou privée s'il est sur un lan - et une locale).
-// - $_SERVER['SERVER_ADDR'] peut renvoyer "127.0.0.1" avec nginx + apache sur 127.0.0.1 ...
-$HOST = (isset($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : '' ; // Peut ne pas être renseigné (rare : appel cli, requête http bizarre...)
-$test_local = ( ($HOST=='localhost') || ($HOST=='127.0.0.1') || (mb_substr($HOST,-6)=='.local') ) ? TRUE : FALSE ;
-$serveur = ($test_local) ? 'LOCAL' : ( (substr($HOST,-18)=='.sesamath.net:8080') ? 'DEV' : 'PROD' ) ;
-define('SERVEUR_TYPE',$serveur); // PROD | DEV | LOCAL
 
 // ============================================================================
 // Chemins dans le système de fichiers du serveur (pour des manipulations de fichiers locaux)
@@ -195,15 +233,17 @@ define('CHEMIN_DOSSIER_IMPORT'        , CHEMIN_DOSSIER_TMP.'import'.DS);
 define('CHEMIN_DOSSIER_LOGINPASS'     , CHEMIN_DOSSIER_TMP.'login-mdp'.DS);
 define('CHEMIN_DOSSIER_LOGO'          , CHEMIN_DOSSIER_TMP.'logo'.DS);
 define('CHEMIN_DOSSIER_OFFICIEL'      , CHEMIN_DOSSIER_TMP.'officiel'.DS);
+define('CHEMIN_DOSSIER_PARTENARIAT'   , CHEMIN_DOSSIER_TMP.'partenariat'.DS);
 define('CHEMIN_DOSSIER_RSS'           , CHEMIN_DOSSIER_TMP.'rss'.DS);
 //      CHEMIN_FICHIER_CONFIG_MYSQL     est défini dans index.php ou ajax.php, en fonction du type d'installation et d'utilisateur connecté
 define('FPDF_FONTPATH'                , CHEMIN_DOSSIER_FPDF_FONT); // Pour FPDF (répertoire où se situent les polices)
 
 // Vers des fichiers.
-define('CHEMIN_FICHIER_CONFIG_INSTALL', CHEMIN_DOSSIER_CONFIG.'constantes.php');
-define('CHEMIN_FICHIER_DEBUG_CONFIG'  , CHEMIN_DOSSIER_TMP.'debug.txt');
-define('CHEMIN_FICHIER_WS_LCS'        , CHEMIN_DOSSIER_WEBSERVICES.'import_lcs.php');
-define('CHEMIN_FICHIER_WS_ARGOS'      , CHEMIN_DOSSIER_WEBSERVICES.'argos_import.php');
+define('CHEMIN_FICHIER_CONFIG_INSTALL' , CHEMIN_DOSSIER_CONFIG.'constantes.php');
+define('CHEMIN_FICHIER_DEBUG_CONFIG'   , CHEMIN_DOSSIER_TMP.'debug.txt');
+define('CHEMIN_FICHIER_WS_LCS'         , CHEMIN_DOSSIER_WEBSERVICES.'import_lcs.php');
+define('CHEMIN_FICHIER_WS_ARGOS'       , CHEMIN_DOSSIER_WEBSERVICES.'argos_import.php');
+define('CHEMIN_FICHIER_WS_SESAMATH_ENT', CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_conventions.php');
 
 // ============================================================================
 // Constantes de DEBUG
@@ -218,7 +258,8 @@ define('CHEMIN_FICHIER_WS_ARGOS'      , CHEMIN_DOSSIER_WEBSERVICES.'argos_import
  *  32 => valeurs de $_GET           (dans la console Firefox avec FirePHP)
  *  64 => valeurs de $_FILES         (dans la console Firefox avec FirePHP)
  * 128 => valeurs de $_COOKIE        (dans la console Firefox avec FirePHP)
- * 256 => valeurs des constantes PHP (dans la console Firefox avec FirePHP)
+ * 256 => valeurs de $_SERVER        (dans la console Firefox avec FirePHP)
+ * 512 => valeurs des constantes PHP (dans la console Firefox avec FirePHP)
  *
  * On fonctionne comme pour les droits unix wrx, en testant chaque bit en partant de la droite.
  * Pour choisir les infos voulues, il faut mettre en DEBUG la somme des valeurs correspondantes.
@@ -238,7 +279,8 @@ define('DEBUG_POST',    DEBUG &  16 ? TRUE : FALSE );
 define('DEBUG_GET',     DEBUG &  32 ? TRUE : FALSE );
 define('DEBUG_FILES',   DEBUG &  64 ? TRUE : FALSE );
 define('DEBUG_COOKIE',  DEBUG & 128 ? TRUE : FALSE );
-define('DEBUG_CONST',   DEBUG & 256 ? TRUE : FALSE );
+define('DEBUG_SERVER',  DEBUG & 256 ? TRUE : FALSE );
+define('DEBUG_CONST',   DEBUG & 512 ? TRUE : FALSE );
 
 // ============================================================================
 // DEBUG - Fixer le niveau de rapport d'erreurs PHP
@@ -272,28 +314,13 @@ if(DEBUG>3)
   function afficher_infos_debug_FirePHP()
   {
     global $firephp;
-    if(DEBUG_SESSION)
-    {
-      $firephp->dump('SESSION', $_SESSION);
-    }
-    if(DEBUG_POST)
-    {
-      $firephp->dump('POST', $_POST);
-    }
-    if(DEBUG_GET)
-    {
-      $firephp->dump('GET', $_GET);
-    }
-    if(DEBUG_FILES)
-    {
-      $firephp->dump('FILES', $_FILES);
-    }
-    if(DEBUG_COOKIE)
-    {
-      $firephp->dump('COOKIE', $_COOKIE);
-    }
-    if(DEBUG_CONST)
-    {
+    if(DEBUG_SESSION) { $firephp->dump('SESSION', $_SESSION); }
+    if(DEBUG_POST)    { $firephp->dump('POST'   , $_POST); }
+    if(DEBUG_GET)     { $firephp->dump('GET'    , $_GET); }
+    if(DEBUG_FILES)   { $firephp->dump('FILES'  , $_FILES); }
+    if(DEBUG_COOKIE)  { $firephp->dump('COOKIE' , $_COOKIE); }
+    if(DEBUG_SERVER)  { $firephp->dump('SERVER' , $_SERVER); }
+    if(DEBUG_CONST)   {
       $tab_constantes = get_defined_constants(TRUE);
       $firephp->dump('CONSTANTES', $tab_constantes['user']);
     }
@@ -304,33 +331,22 @@ if(DEBUG>3)
 // URL de base du serveur
 // ============================================================================
 
-// Code issu de la fonction _getServerUrl() issue de phpCAS/CAS/Client.php
+// Code issu de la fonction _getServerUrl() provenant de phpCAS/CAS/Client.php
 // Les variables HTTP_X_FORWARDED_* sont définies quand un serveur web (ou un proxy) qui récupère la main la passe à un serveur php (qui peut ou pas être un autre serveur web, mais en général pas accessible directement).
+// Concernant HTTP_X_FORWARDED_HOST, il peut contenir plusieurs HOST successifs séparés par des virgules : on explose le tableau et on utilise la première valeur.
 // Daniel privilégie HTTP_HOST (qui provient de la requete HTTP) à SERVER_NAME (qui vient de la conf du serveur) quand les 2 existent, mais phpCAS fait le contraire ; en général c'est pareil, sauf s'il y a des alias sans redirection (ex d'un site qui donne les mêmes pages avec et sans les www), dans ce cas le 1er est l'alias demandé et le 2nd le nom principal configuré du serveur (qui peut être avec ou sans les www, suivant la conf).
-// Il arrive (très rarement) que HTTP_HOST ne soit pas défini (HTTP 1.1 impose au client web de préciser un nom de site, ce qui n'était pas le cas en HTTP 1.0 ; HTTP 1.1 date de 1999, avec un brouillon en 1996).
+// Il arrive (très rarement) que HTTP_HOST ne soit pas défini (HTTP 1.1 impose au client web de préciser un nom de site, ce qui n'était pas le cas en HTTP 1.0 ; HTTP 1.1 date de 1999, avec un brouillon en 1996 ; et puis il y a aussi les appels en mode CLI).
 
 function getServerUrl()
 {
-  if (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))
-  {
-    // explode the host list separated by comma and use the first host
-    $tab_hosts = explode(',', $_SERVER['HTTP_X_FORWARDED_HOST']);
-    return $tab_hosts[0];
-  }
-  else if (!empty($_SERVER['HTTP_X_FORWARDED_SERVER']))
-  {
-    return $_SERVER['HTTP_X_FORWARDED_SERVER'];
-  }
-  else if (!empty($_SERVER['HTTP_HOST']))
-  {
-    return $_SERVER['HTTP_HOST'];
-  }
-  else if (!empty($_SERVER['SERVER_NAME']))
-  {
-    return $_SERVER['SERVER_NAME'];
-  }
-  exit_error( 'HOST indéfini' /*titre*/ , 'SACoche n\'arrive pas à déterminer le nom du serveur hôte !<br />HTTP_X_FORWARDED_HOST, HTTP_HOST, HTTP_X_FORWARDED_SERVER et SERVER_NAME sont tous indéfinis.' /*contenu*/ );
+  if (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))   { return current(explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'])); }
+  if (!empty($_SERVER['HTTP_X_FORWARDED_SERVER'])) { return $_SERVER['HTTP_X_FORWARDED_SERVER']; }
+  if (!empty($_SERVER['HTTP_HOST']))               { return $_SERVER['HTTP_HOST']; }
+  if (!empty($_SERVER['SERVER_NAME']))             { return $_SERVER['SERVER_NAME']; }
+  exit_error( 'HOST indéfini' /*titre*/ , 'SACoche n\'arrive pas à déterminer le nom du serveur hôte !<br />HTTP_HOST, SERVER_NAME, HTTP_X_FORWARDED_HOST et HTTP_X_FORWARDED_SERVER sont tous indéfinis.' /*contenu*/ );
 }
+
+$HOST = getServerUrl();
 
 function getServerProtocole()
 {
@@ -338,7 +354,19 @@ function getServerProtocole()
   return ( isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS']=='on') ) ? 'https://' : 'http://' ;
 }
 
-define('URL_BASE',getServerProtocole().getServerUrl());
+define('URL_BASE',getServerProtocole().$HOST);
+
+// ============================================================================
+// Type de serveur (LOCAL|DEV|PROD)
+// ============================================================================
+
+// On ne peut pas savoir avec certitude si un serveur est "local" car aucune méthode ne fonctionne à tous les coups :
+// - $_SERVER['HTTP_HOST'] peut ne pas renvoyer localhost sur un serveur local (si configuration de domaines locaux via fichiers hosts / httpd.conf par exemple).
+// - gethostbyname($_SERVER['HTTP_HOST']) peut renvoyer "127.0.0.1" sur un serveur non local car un serveur a en général 2 ip (une publique - ou privée s'il est sur un lan - et une locale).
+// - $_SERVER['SERVER_ADDR'] peut renvoyer "127.0.0.1" avec nginx + apache sur 127.0.0.1 ...
+$test_local = ( ($HOST=='localhost') || ($HOST=='127.0.0.1') || (mb_substr($HOST,-6)=='.local') ) ? TRUE : FALSE ;
+$serveur_type = ($test_local) ? 'LOCAL' : ( (substr($HOST,-18)=='.sesamath.net:8080') ? 'DEV' : 'PROD' ) ;
+define('SERVEUR_TYPE',$serveur_type); // PROD | DEV | LOCAL
 
 // ============================================================================
 // URLs de l'application (les chemins restent relatifs pour les images ou les css/js...)
@@ -359,40 +387,49 @@ define('URL_INSTALL_SACOCHE',$url); // la seule constante sans slash final
 define('URL_DIR_SACOCHE',$url.'/'); // avec slash final
 $tab_bad = array( CHEMIN_DOSSIER_SACOCHE , DS );
 $tab_bon = array( URL_DIR_SACOCHE        , '/');
-define('URL_DIR_TMP'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_TMP       ) );
-define('URL_DIR_IMG'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_IMG       ) );
-define('URL_DIR_DEVOIR'   , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_DEVOIR    ) );
-define('URL_DIR_DUMP'     , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_DUMP      ) );
-define('URL_DIR_EXPORT'   , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_EXPORT    ) );
-define('URL_DIR_IMPORT'   , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_IMPORT    ) );
-define('URL_DIR_LOGINPASS', str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LOGINPASS ) );
-define('URL_DIR_LOGO'     , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LOGO      ) );
-define('URL_DIR_RSS'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_RSS       ) );
+define('URL_DIR_TMP'         , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_TMP         ) );
+define('URL_DIR_IMG'         , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_IMG         ) );
+define('URL_DIR_DEVOIR'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_DEVOIR      ) );
+define('URL_DIR_DUMP'        , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_DUMP        ) );
+define('URL_DIR_EXPORT'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_EXPORT      ) );
+define('URL_DIR_IMPORT'      , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_IMPORT      ) );
+define('URL_DIR_LOGINPASS'   , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LOGINPASS   ) );
+define('URL_DIR_LOGO'        , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_LOGO        ) );
+define('URL_DIR_PARTENARIAT' , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_PARTENARIAT ) );
+define('URL_DIR_RSS'         , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_RSS         ) );
+define('URL_DIR_WEBSERVICES' , str_replace( $tab_bad , $tab_bon , CHEMIN_DOSSIER_WEBSERVICES ) );
 
 // ============================================================================
 // URL externes appelées par l'application
 // ============================================================================
 
-define('SERVEUR_PROJET'        ,'https://sacoche.sesamath.net');         // URL du projet SACoche (en https depuis le 08/02/2012)
-define('SERVEUR_SSL'           ,'https://sacoche.sesamath.net');         // URL du serveur Sésamath sécurisé (idem serveur projet SACoche depuis le 08/02/2012)
-define('SERVEUR_COMMUNAUTAIRE' ,SERVEUR_PROJET.'/appel_externe.php');    // URL du fichier chargé d'effectuer la liaison entre les installations de SACoche et le serveur communautaire concernant les référentiels.
-define('SERVEUR_DOCUMENTAIRE'  ,SERVEUR_PROJET.'/appel_doc.php');        // URL du fichier chargé d'afficher les documentations
-define('SERVEUR_LPC_SIGNATURE' ,SERVEUR_SSL   .'/appel_externe.php');    // URL du fichier chargé de signer un XML à importer dans LPC
-define('SERVEUR_TELECHARGEMENT',SERVEUR_PROJET.'/telechargement.php');   // URL du fichier renvoyant le ZIP de la dernière archive de SACoche disponible
-define('SERVEUR_VERSION'       ,SERVEUR_PROJET.'/sacoche/VERSION.txt');  // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
-define('SERVEUR_CNIL'          ,SERVEUR_PROJET.'/?fichier=cnil');        // URL de la page "CNIL (données personnelles)"
-define('SERVEUR_CONTACT'       ,SERVEUR_PROJET.'/?fichier=contact');     // URL de la page "Où échanger autour de SACoche ?"
-define('SERVEUR_GUIDE_ADMIN'   ,SERVEUR_PROJET.'/?fichier=guide_admin'); // URL de la page "Guide d'un administrateur de SACoche"
-define('SERVEUR_NEWS'          ,SERVEUR_PROJET.'/?fichier=news');        // URL de la page "Historique des nouveautés"
-define('SERVEUR_RSS'           ,SERVEUR_PROJET.'/_rss/rss.xml');         // URL du fichier comportant le flux RSS
+define('SERVEUR_PROJET'         ,'https://sacoche.sesamath.net');            // URL du projet SACoche (en https depuis le 08/02/2012)
+define('SERVEUR_SSL'            ,'https://sacoche.sesamath.net');            // URL du serveur Sésamath sécurisé (idem serveur projet SACoche depuis le 08/02/2012)
+define('SERVEUR_ASSO'           ,'http://www.sesamath.net');                 // URL du serveur de l'association Sésamath
+define('SERVEUR_COMMUNAUTAIRE'  ,SERVEUR_PROJET.'/appel_externe.php');       // URL du fichier chargé d'effectuer la liaison entre les installations de SACoche et le serveur communautaire concernant les référentiels.
+define('SERVEUR_DOCUMENTAIRE'   ,SERVEUR_PROJET.'/appel_doc.php');           // URL du fichier chargé d'afficher les documentations
+define('SERVEUR_LPC_SIGNATURE'  ,SERVEUR_SSL   .'/appel_externe.php');       // URL du fichier chargé de signer un XML à importer dans LPC
+define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');      // URL du fichier renvoyant le ZIP de la dernière archive de SACoche disponible
+define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt');     // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
+define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?fichier=cnil');           // URL de la page "CNIL (données personnelles)"
+define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?fichier=contact');        // URL de la page "Où échanger autour de SACoche ?"
+define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?fichier=guide_admin');    // URL de la page "Guide d'un administrateur de SACoche"
+define('SERVEUR_NEWS'           ,SERVEUR_PROJET.'/?fichier=news');           // URL de la page "Historique des nouveautés"
+define('SERVEUR_RSS'            ,SERVEUR_PROJET.'/_rss/rss.xml');            // URL du fichier comportant le flux RSS
+define('SERVEUR_BLOG_CONVENTION',SERVEUR_ASSO.'/blog/index.php/aM4');        // URL de la page expliquant les Conventions ENT
 
 // ============================================================================
 // Autres constantes diverses... et parfois importantes !
 // ============================================================================
 
 // test si c'est l'hébergement Sésamath qui est utilisé
-$is_hebergement_sesamath = (mb_strpos(URL_BASE,'https://sacoche.sesamath.net')!==FALSE) ? TRUE : FALSE ;
+$is_hebergement_sesamath = (mb_strpos(URL_BASE,SERVEUR_PROJET)!==FALSE) ? TRUE : FALSE ;
 define('IS_HEBERGEMENT_SESAMATH',$is_hebergement_sesamath);
+
+// indiquer si une convention Établissement-ENT est requise et à compter de quand
+define('CONVENTION_ENT_REQUISE'         ,TRUE);
+define('CONVENTION_ENT_START_DATE_FR'   ,'01/09/2013');
+define('CONVENTION_ENT_START_DATE_MYSQL','2013-09-01');
 
 // Identifiants particuliers (à ne pas modifier)
 define('ID_DEMO'                   , 9999); // id de l'établissement de démonstration (pour $_SESSION['SESAMATH_ID']) ; 0 pose des pbs, et il fallait prendre un id disponible dans la base d'établissements de Sésamath
@@ -402,15 +439,16 @@ define('ID_FAMILLE_MATIERE_USUELLE',   99);
 define('CODE_BREVET_EPREUVE_TOTAL' ,  255);
 
 // cookies
-define('COOKIE_STRUCTURE','SACoche-etablissement');  // nom du cookie servant à retenir l'établissement sélectionné, afin de ne pas à avoir à le sélectionner de nouveau, et à pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
-define('COOKIE_AUTHMODE' ,'SACoche-mode-connexion'); // nom du cookie servant à retenir le dernier mode de connexion utilisé par un user connecté, afin de pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
+define('COOKIE_STRUCTURE' ,'SACoche-etablissement' ); // nom du cookie servant à retenir l'établissement sélectionné, afin de ne pas à avoir à le sélectionner de nouveau, et à pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
+define('COOKIE_AUTHMODE'  ,'SACoche-mode-connexion'); // nom du cookie servant à retenir le dernier mode de connexion utilisé par un user connecté, afin de pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
+define('COOKIE_PARTENAIRE','SACoche-partenaire'    ); // nom du cookie servant à retenir le partenaire sélectionné, afin de ne pas à avoir à le sélectionner de nouveau (convention ENT sur serveur Sésamath uniquement).
 
 // session
 define('SESSION_NOM','SACoche-session'); // Est aussi défini dans /_lib/SimpleSAMLphp/config/config.php
 
 // Version des fichiers installés.
 // À comparer avec la dernière version disponible sur le serveur communautaire.
-// Pour une conversion en entier : list($annee,$mois,$jour) = explode('-',substr(VERSION_PROG,0,10); $indice_version = (date('Y')-2011)*365 + date('z',mktime(0,0,0,$mois,$jour,$annee));
+// Pour une conversion en entier : list($annee,$mois,$jour) = explode('-',substr(VERSION_PROG,0,10)); $indice_version = (date('Y')-2011)*365 + date('z',mktime(0,0,0,$mois,$jour,$annee));
 // Dans un fichier texte pour permettre un appel au serveur communautaire sans lui faire utiliser PHP.
 define('VERSION_PROG', file_get_contents(CHEMIN_DOSSIER_SACOCHE.'VERSION.txt') );
 
@@ -517,7 +555,9 @@ function __autoload($class_name)
     'DB_STRUCTURE_REFERENTIEL'    => '_sql'.DS.'requetes_structure_referentiel.php' ,
     'DB_STRUCTURE_SOCLE'          => '_sql'.DS.'requetes_structure_socle.php' ,
 
+    'DB_WEBMESTRE_ADMINISTRATEUR' => '_sql'.DS.'requetes_webmestre_administrateur.php' ,
     'DB_WEBMESTRE_MAJ_BASE'       => '_sql'.DS.'requetes_webmestre_maj_base.php' ,
+    'DB_WEBMESTRE_PARTENAIRE'     => '_sql'.DS.'requetes_webmestre_partenaire.php' ,
     'DB_WEBMESTRE_PUBLIC'         => '_sql'.DS.'requetes_webmestre_public.php' ,
     'DB_WEBMESTRE_SELECT'         => '_sql'.DS.'requetes_webmestre_select.php' ,
     'DB_WEBMESTRE_WEBMESTRE'      => '_sql'.DS.'requetes_webmestre_webmestre.php'

@@ -25,8 +25,6 @@
  * 
  */
 
-$tab_messages_erreur = array();
-
 // Fichier appelé pour l'affichage de chaque page.
 // Passage en GET des paramètres pour savoir quelle page charger.
 
@@ -55,13 +53,13 @@ elseif($PAGE!='public_installation')
 // Le fait de lister les droits d'accès de chaque page empêche de surcroit l'exploitation d'une vulnérabilité "include PHP" (http://www.certa.ssi.gouv.fr/site/CERTA-2003-ALE-003/).
 if(!Session::verif_droit_acces($PAGE))
 {
-  $tab_messages_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants ; soit le paramètre "page" transmis en GET est incorrect, soit les droits de cette page n\'ont pas été attribués dans le fichier "'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php.').'".';
+  Session::$tab_message_erreur[] = 'Erreur : droits de la page "'.$PAGE.'" manquants ; soit le paramètre "page" transmis en GET est incorrect, soit les droits de cette page n\'ont pas été attribués dans le fichier "'.FileSystem::fin_chemin(CHEMIN_DOSSIER_INCLUDE.'tableau_droits.php.').'".';
   // La page vers laquelle rediriger sera définie après ouverture de la session
 }
 
 // Ouverture de la session et gestion des droits d'accès
 Session::execute();
-if(count($tab_messages_erreur))
+if(count(Session::$tab_message_erreur))
 {
   $PAGE = ($_SESSION['USER_PROFIL_TYPE'] == 'public') ? 'public_accueil' : 'compte_accueil' ;
 }
@@ -129,7 +127,7 @@ if(Session::$_sso_redirect)
 // Page CNIL si message d'information CNIL non validé.
 if(isset($_SESSION['STOP_CNIL']))
 {
-  $tab_messages_erreur[] = 'Avant d\'utiliser <em>SACoche</em>, vous devez valider le formulaire ci-dessous.';
+  Session::$tab_message_erreur[] = 'Avant d\'utiliser <em>SACoche</em>, vous devez valider le formulaire ci-dessous.';
   $PAGE = 'compte_cnil';
 }
 
@@ -138,7 +136,7 @@ ob_start();
 $filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 if(!is_file($filename_php))
 {
-  $tab_messages_erreur[] = 'Erreur : fichier '.FileSystem::fin_chemin($filename_php).' manquant.';
+  Session::$tab_message_erreur[] = 'Erreur : fichier '.FileSystem::fin_chemin($filename_php).' manquant.';
   $PAGE = ($_SESSION['USER_PROFIL_TYPE']=='public') ? 'public_accueil' : ( (isset($_SESSION['STOP_CNIL'])) ? 'compte_cnil' : 'compte_accueil' ) ;
   $filename_php = CHEMIN_DOSSIER_PAGES.$PAGE.'.php';
 }
@@ -159,8 +157,8 @@ $tab_pages_graphiques = array('brevet_fiches','officiel_accueil','releve_bilan_c
 $filename_js_normal = './pages/'.$PAGE.'.js';
 $tab_fichiers_head = array();
 $tab_fichiers_head[] = array( 'css' , compacter('./_css/style.css','mini') );
-$tab_fichiers_head[] = array( 'js'  , compacter('./_js/jquery-librairies.js','mini') );
-$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // la minification plante à sur le contenu de testURL() avec le message Fatal error: Uncaught exception 'JSMinException' with message 'Unterminated string literal.'
+$tab_fichiers_head[] = array( 'js'  , compacter('./_js/jquery-librairies.js','comm') ); // Ne pas minifier ce fichier qui est déjà un assemblage de js compactés : le gain est quasi nul et cela est souce d'erreurs
+$tab_fichiers_head[] = array( 'js'  , compacter('./_js/script.js','pack') ); // La minification plante à sur le contenu de testURL() avec le message Fatal error: Uncaught exception 'JSMinException' with message 'Unterminated string literal.'
 if(in_array($PAGE,$tab_pages_graphiques)) $tab_fichiers_head[] = array( 'js'  , compacter('./_js/highcharts.js','mini') );
 if(is_file($filename_js_normal))          $tab_fichiers_head[] = array( 'js' , compacter($filename_js_normal,'pack') );
 
@@ -188,34 +186,11 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
     echo'    <source src="./_audio/bip.mp3" type="audio/mpeg" />'."\r\n";
     echo'    <source src="./_audio/bip.ogg" type="audio/ogg" />'."\r\n";
     echo'  </audio>'."\r\n";
-    // Le menu '<ul id="menu">...</ul>
-    if($_SESSION['USER_PROFIL_TYPE']=='webmestre')
-    {
-      require(CHEMIN_DOSSIER_PAGES.'__menu_'.$_SESSION['USER_PROFIL_TYPE'].'_'.HEBERGEUR_INSTALLATION.'.html');
-    }
-    else
-    {
-      $contenu_menu = file_get_contents(CHEMIN_DOSSIER_PAGES.'__menu_'.$_SESSION['USER_PROFIL_TYPE'].'.html');
-      // La présence de certains éléments du menu dépend des choix de l'établissement
-      if(in_array($_SESSION['USER_PROFIL_TYPE'],array('directeur','professeur')))
-      {
-        $tab_paliers_actifs = explode(',',$_SESSION['LISTE_PALIERS_ACTIFS']);
-        for( $palier_id=1 ; $palier_id<4 ; $palier_id++ )
-        {
-          if(!in_array($palier_id,$tab_paliers_actifs))
-          {
-            $tab_bad = array(      '<li><a class="officiel_palier'.$palier_id.'"' , 'palier '.$palier_id.'</a></li>'     );
-            $tab_bon = array( '<!-- <li><a class="officiel_palier'.$palier_id.'"' , 'palier '.$palier_id.'</a></li> -->' );
-            $contenu_menu = str_replace( $tab_bad , $tab_bon , $contenu_menu );
-          }
-        }
-      }
-      echo $contenu_menu;
-    }
+    echo $_SESSION['MENU']."\r\n"; // Le menu '<ul id="menu">...</ul>
     echo'</div>'."\r\n";
     echo'<div id="cadre_navig"><a id="go_haut" href="#cadre_haut" title="Haut de page"></a><a id="go_bas" href="#ancre_bas" title="Bas de page"></a></div>'."\r\n";
     echo'<div id="cadre_bas">'."\r\n";
-    echo'  <h1>» '.$TITRE.'</h1>';
+    echo'  <h1>» '.$TITRE.'</h1>'."\r\n";
   }
   else
   {
@@ -234,9 +209,10 @@ declaration_entete( TRUE /*is_meta_robots*/ , TRUE /*is_favicon*/ , TRUE /*is_rs
       echo'<h1>» '.$TITRE.'</h1>'."\r\n";
     }
   }
-  if(count($tab_messages_erreur))
+  if(count(Session::$tab_message_erreur))
   {
-    echo'<hr /><div class="probleme">'.implode('</div><div class="probleme">',$tab_messages_erreur).'</div>'."\r\n";
+    echo'<hr /><div class="probleme">'.implode('</div><div class="probleme">',Session::$tab_message_erreur).'</div>'."\r\n";
+    Session::$tab_message_erreur = array();
   }
   echo $CONTENU_PAGE;
   echo'<div id="ancre_bas"></div>'."\r\n"; // Il faut un div et pas seulement un span pour le navigateur Safari (sinon href="#ancre_bas" ne fonctionne pas).

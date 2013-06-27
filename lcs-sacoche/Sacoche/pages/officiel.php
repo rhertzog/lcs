@@ -60,7 +60,7 @@ if($SECTION=='reglages')
   echo'<p class="astuce">Choisir une rubrique ci-dessus&hellip;</p>';
   $nb_inconnu = DB_STRUCTURE_BILAN::DB_compter_modes_synthese_inconnu();
   $s = ($nb_inconnu>1) ? 's' : '' ;
-  echo ($nb_inconnu) ? '<label class="alerte">Il y a '.$nb_inconnu.' référentiel'.$s.' dont le format de synthèse est inconnu (donc non pris en compte).</label> <a href="./index.php?page='.$PAGE.'&amp;section=reglages_format_synthese">&rarr; Configurer les formats de synthèse.</a>' : '<label class="valide">Tous les référentiels ont un format de synthèse prédéfini.</label>' ;
+  echo ($nb_inconnu) ? '<label class="alerte">Il y a '.$nb_inconnu.' référentiel'.$s.' <img alt="" src="./_img/bulle_aide.png" title="'.str_replace('§BR§','<br />',html(html(DB_STRUCTURE_BILAN::DB_recuperer_modes_synthese_inconnu()))).'" /> dont le format de synthèse est inconnu (donc non pris en compte).</label> <a href="./index.php?page='.$PAGE.'&amp;section=reglages_format_synthese">&rarr; Configurer les formats de synthèse.</a>' : '<label class="valide">Tous les référentiels ont un format de synthèse prédéfini.</label>' ;
 }
 elseif($SECTION=='assiduite')
 {
@@ -79,6 +79,17 @@ else
   $fichier_section = CHEMIN_DOSSIER_PAGES.$PAGE.'_'.$SECTION.'.php';
   if(is_file($fichier_section))
   {
+    if(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
+    {
+      $tab_paliers_actifs = explode(',',$_SESSION['LISTE_PALIERS_ACTIFS']);
+      $palier = mb_substr($BILAN_TYPE,-1);
+      if(!in_array($palier,$tab_paliers_actifs))
+      {
+        $liste_paliers_actifs = ($_SESSION['LISTE_PALIERS_ACTIFS']) ? ( (count($tab_paliers_actifs)==1) ? 'palier '.$_SESSION['LISTE_PALIERS_ACTIFS'].' activé' : 'paliers '.str_replace(',',' et ',$_SESSION['LISTE_PALIERS_ACTIFS']).' activés' ) : 'aucun' ;
+        echo'<p class="danger">Le palier '.$palier.' n\'a pas été activé par les administrateurs ('.$liste_paliers_actifs.').<div>';
+        return; // Ne pas exécuter la suite de ce fichier inclus.
+      }
+    }
     if( !isset($BILAN_TYPE) || in_array($BILAN_TYPE,array('releve','bulletin','palier1','palier2','palier3')) )
     {
       $PAGE = $PAGE.'_'.$SECTION ;

@@ -49,6 +49,23 @@ public static function DB_recuperer_structure_by_Id($base_id)
 }
 
 /**
+ * Retourner les informations d'une convention
+ *
+ * @param int convention_id
+ * @return array
+ */
+public static function DB_recuperer_convention_structure_info($convention_id)
+{
+  $DB_SQL = 'SELECT sacoche_base, connexion_nom, convention_date_debut, convention_date_fin, convention_signature, convention_paiement, convention_activation, ';
+  $DB_SQL.= 'structure_contact_nom, structure_contact_prenom, structure_contact_courriel ';
+  $DB_SQL.= 'FROM sacoche_convention ';
+  $DB_SQL.= 'LEFT JOIN sacoche_structure USING (sacoche_base) ';
+  $DB_SQL.= 'WHERE convention_id=:convention_id ';
+  $DB_VAR = array(':convention_id'=>$convention_id);
+  return DB::queryRow(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
  * Lister les zones géographiques
  *
  * @param void
@@ -92,6 +109,38 @@ public static function DB_lister_contacts_cibles($listing_base_id)
   $DB_SQL = 'SELECT sacoche_base AS contact_id , structure_contact_nom AS contact_nom , structure_contact_prenom AS contact_prenom , structure_contact_courriel AS contact_courriel ';
   $DB_SQL.= 'FROM sacoche_structure ';
   $DB_SQL.= 'WHERE sacoche_base IN('.$listing_base_id.') ';
+  return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL);
+}
+
+/**
+ * Lister les partenaires ENT conventionnés
+ *
+ * @param void
+ * @return array
+ */
+public static function DB_lister_partenaires_conventionnes()
+{
+  $DB_SQL = 'SELECT * ';
+  $DB_SQL.= 'FROM sacoche_partenaire ';
+  $DB_SQL.= 'ORDER BY partenaire_denomination ASC';
+  return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL);
+}
+
+/**
+ * Lister les conventions des établissements
+ *
+ * @param void
+ * @return array
+ */
+public static function DB_lister_conventions_structures()
+{
+  $DB_SQL = 'SELECT sacoche_base, convention_id, connexion_nom, convention_date_debut, convention_date_fin, convention_signature, convention_paiement, convention_activation, ';
+  $DB_SQL.= 'structure_uai, structure_localisation, structure_denomination, structure_contact_nom, structure_contact_prenom, structure_contact_courriel, ';
+  $DB_SQL.= 'geo_ordre, geo_nom ';
+  $DB_SQL.= 'FROM sacoche_convention ';
+  $DB_SQL.= 'LEFT JOIN sacoche_structure USING (sacoche_base) ';
+  $DB_SQL.= 'LEFT JOIN sacoche_geo USING (geo_id) ';
+  $DB_SQL.= 'ORDER BY convention_date_debut DESC, geo_ordre ASC, structure_localisation ASC, structure_denomination ASC ';
   return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL);
 }
 
@@ -196,6 +245,26 @@ public static function DB_ajouter_structure($base_id,$geo_id,$structure_uai,$loc
 }
 
 /**
+ * Insérer l'enregistrement d'un partenaires ENT conventionné
+ *
+ * @param string $denomination
+ * @param string $nom
+ * @param string $prenom
+ * @param string $courriel
+ * @param string $password_crypte
+ * @param string $connecteurs
+ * @return int
+ */
+public static function DB_ajouter_partenaire_conventionne($denomination,$nom,$prenom,$courriel,$password_crypte,$connecteurs)
+{
+  $DB_SQL = 'INSERT INTO sacoche_partenaire(partenaire_denomination,partenaire_nom,partenaire_prenom,partenaire_courriel,partenaire_password,partenaire_connecteurs) ';
+  $DB_SQL.= 'VALUES(:denomination,:nom,:prenom,:courriel,:password_crypte,:connecteurs)';
+  $DB_VAR = array(':denomination'=>$denomination,':nom'=>$nom,':prenom'=>$prenom,':courriel'=>$courriel,':password_crypte'=>$password_crypte,':connecteurs'=>$connecteurs);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+  return DB::getLastOid(SACOCHE_WEBMESTRE_BD_NAME);
+}
+
+/**
  * Ajouter la base de données d'une structure, un utilisateur MySQL, et lui attribuer ses droits (mode multi-structures)
  *
  * @param int    $base_id   Pour forcer l'id de la base de la structure ; normalement transmis à 0 (=> auto-increment), sauf dans un cadre de gestion interne à Sésamath
@@ -255,6 +324,42 @@ public static function DB_modifier_structure($base_id,$geo_id,$structure_uai,$lo
 }
 
 /**
+ * Modifier un partenaires ENT conventionné
+ *
+ * @param int    $partenaire_id
+ * @param string $denomination
+ * @param string $nom
+ * @param string $prenom
+ * @param string $courriel
+ * @param string $connecteurs
+ * @return int
+ */
+public static function DB_modifier_partenaire_conventionne($partenaire_id,$denomination,$nom,$prenom,$courriel,$connecteurs)
+{
+  $DB_SQL = 'UPDATE sacoche_partenaire ';
+  $DB_SQL.= 'SET partenaire_denomination=:denomination,partenaire_nom=:nom,partenaire_prenom=:prenom,partenaire_courriel=:courriel,partenaire_connecteurs=:connecteurs ';
+  $DB_SQL.= 'WHERE partenaire_id=:partenaire_id ';
+  $DB_VAR = array(':partenaire_id'=>$partenaire_id,':denomination'=>$denomination,':nom'=>$nom,':prenom'=>$prenom,':courriel'=>$courriel,':connecteurs'=>$connecteurs);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * Modifier le mdp d'un partenaires ENT conventionné
+ *
+ * @param int     $partenaire_id
+ * @param string  $password_crypte
+ * @return void
+ */
+public static function DB_modifier_partenaire_conventionne_mdp($partenaire_id,$password_crypte)
+{
+  $DB_SQL = 'UPDATE sacoche_partenaire ';
+  $DB_SQL.= 'SET partenaire_courriel=:password_crypte ';
+  $DB_SQL.= 'WHERE partenaire_id=:partenaire_id ';
+  $DB_VAR = array(':partenaire_id'=>$partenaire_id,':password_crypte'=>$password_crypte);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
  * Modifier une zone géographique
  *
  * @param int    $geo_id
@@ -265,9 +370,42 @@ public static function DB_modifier_structure($base_id,$geo_id,$structure_uai,$lo
 public static function DB_modifier_zone($geo_id,$geo_ordre,$geo_nom)
 {
   $DB_SQL = 'UPDATE sacoche_geo ';
-  $DB_SQL.= 'SET geo_ordre=:geo_ordre,geo_nom=:geo_nom ';
+  $DB_SQL.= 'SET geo_ordre=:geo_ordre, geo_nom=:geo_nom ';
   $DB_SQL.= 'WHERE geo_id=:geo_id ';
   $DB_VAR = array(':geo_id'=>$geo_id,':geo_ordre'=>$geo_ordre,':geo_nom'=>$geo_nom);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * Modifier une date d'une convention
+ *
+ * @param int    convention_id
+ * @param string objet         signature | paiement
+ * @param string date_mysql
+ * @return void
+ */
+public static function DB_modifier_convention_date($convention_id,$objet,$date_mysql)
+{
+  $DB_SQL = 'UPDATE sacoche_convention ';
+  $DB_SQL.= 'SET convention_'.$objet.'=:date_mysql ';
+  $DB_SQL.= 'WHERE convention_id=:convention_id ';
+  $DB_VAR = array(':convention_id'=>$convention_id,':date_mysql'=>$date_mysql);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * Modifier l'état d'activation d'une convention
+ *
+ * @param int convention_id
+ * @param int activation_etat
+ * @return void
+ */
+public static function DB_modifier_convention_activation($convention_id,$activation_etat)
+{
+  $DB_SQL = 'UPDATE sacoche_convention ';
+  $DB_SQL.= 'SET convention_activation=:activation_etat ';
+  $DB_SQL.= 'WHERE convention_id=:convention_id ';
+  $DB_VAR = array(':convention_id'=>$convention_id,':activation_etat'=>$activation_etat);
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -322,6 +460,20 @@ public static function DB_supprimer_base_structure_et_user_mysql($BD_name,$BD_us
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'REVOKE ALL PRIVILEGES, GRANT OPTION FROM '.$BD_user.'@"%"' );
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'DROP USER '.$BD_user.'@"localhost"' );
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'DROP USER '.$BD_user.'@"%"' );
+}
+
+/**
+ * Retirer un partenaires ENT conventionné
+ *
+ * @param int    $partenaire_id 
+ * @return void
+ */
+public static function DB_supprimer_partenaire_conventionne($partenaire_id)
+{
+  $DB_SQL = 'DELETE FROM sacoche_partenaire ';
+  $DB_SQL.= 'WHERE partenaire_id=:partenaire_id ';
+  $DB_VAR = array(':partenaire_id'=>$partenaire_id);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 }

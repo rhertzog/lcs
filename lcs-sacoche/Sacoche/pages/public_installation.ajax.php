@@ -63,6 +63,7 @@ if( $step==1 )
       CHEMIN_DOSSIER_LOGINPASS,
       CHEMIN_DOSSIER_LOGO,
       CHEMIN_DOSSIER_OFFICIEL,
+      CHEMIN_DOSSIER_PARTENARIAT,
       CHEMIN_DOSSIER_RSS
     );
     foreach($tab_dossier as $dossier)
@@ -84,7 +85,7 @@ if( $step==2 )
 {
   // Création des fichiers index.htm
   $poursuivre1 = TRUE;
-  $tab_dossier = array('badge','cookie','devoir','dump-base','export','import','login-mdp','logo','officiel','rss');
+  $tab_dossier = array('badge','cookie','devoir','dump-base','export','import','login-mdp','logo','officiel','partenariat','rss');
   foreach($tab_dossier as $dossier)
   {
     $poursuivre1 = $poursuivre1 && FileSystem::ecrire_fichier_index( CHEMIN_DOSSIER_TMP.$dossier , FALSE /*obligatoire*/ ) ;

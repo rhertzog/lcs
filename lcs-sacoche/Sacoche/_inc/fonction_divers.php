@@ -273,7 +273,7 @@ function declaration_entete( $is_meta_robots ,$is_favicon , $is_rss , $tab_fichi
     switch($type)
     {
       case 'css'    : echo'<link rel="stylesheet" type="text/css" href="'.$url.'" />'."\r\n"; break;
-  //  case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'."\r\n"; break;
+      case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'."\r\n"; break;
       case 'js'     : echo'<script type="text/javascript" charset="'.CHARSET.'" src="'.$url.'"></script>'."\r\n"; break;
     }
   }
@@ -291,7 +291,7 @@ function declaration_entete( $is_meta_robots ,$is_favicon , $is_rss , $tab_fichi
  * Attention cependant concernant cette dernière technique : avec les réglages standards d'Apache, ajouter un GET dans l'URL fait que beaucoup de navigateurs ne mettent pas le fichier en cache (donc il est rechargé tout le temps, même si le GET est le même) ; pas de souci si le serveur envoie un header avec une date d'expiration explicite...
  * 
  * @param string $chemin    chemin complet vers le fichier
- * @param string $methode   soit "pack" soit "mini"
+ * @param string $methode   soit "pack" soit "mini" soit "comm"
  * @return string           chemin vers le fichier à prendre en compte (à indiquer dans la page web) ; il sera relatif si non compressé, absolu si compressé
  */
 function compacter($chemin,$methode)
@@ -325,6 +325,11 @@ function compacter($chemin,$methode)
       {
         $fichier_compact_contenu = JSMin::minify($fichier_original_contenu);
       }
+      elseif( ($fichier_original_extension=='js') && ($methode=='comm') )
+      {
+        // Retrait des /*! ... */ et /** ... */ ; option de recherche "s" (PCRE_DOTALL) pour inclure les retours à la lignes (@see http://fr.php.net/manual/fr/reference.pcre.pattern.modifiers.php).
+        $fichier_compact_contenu = preg_replace( '#'.'/\*!'.'(.*?)'.'\*/'.'#s' , '' , preg_replace( '#'.'/\*\*'.'(.*?)'.'\*/'.'#s' , '' , $fichier_original_contenu ) );
+      }
       elseif( ($fichier_original_extension=='css') && ($methode=='mini') )
       {
         $fichier_compact_contenu = cssmin::minify($fichier_original_contenu);
@@ -355,22 +360,25 @@ function compacter($chemin,$methode)
  * => pour savoir si le mode de connexion est SSO ou pas (./pages/public_*.php)
  * => pour l'identification (méthode SessionUser::tester_authentification_utilisateur())
  * => pour le webmestre (création d'un admin, info sur les admins, initialisation du mdp...)
+ * Dans le cas d'une installation de type multi-structures, on peut avoir besoin d'effectuer une requête sur la base du webmestre :
+ * => pour avoir des infos sur le contact référent, ou l'état d'une convention ENT
  * 
- * @param int   $BASE
+ * @param int   $BASE   0 pour celle du webmestre
  * @return void | exit
  */
 function charger_parametres_mysql_supplementaires($BASE)
 {
-  $file_config_base_structure_multi = CHEMIN_DOSSIER_MYSQL.'serveur_sacoche_structure_'.$BASE.'.php';
-  if(is_file($file_config_base_structure_multi))
+  $fichier_mysql_config_supplementaire = ($BASE) ? CHEMIN_DOSSIER_MYSQL.'serveur_sacoche_structure_'.$BASE.'.php' : CHEMIN_DOSSIER_MYSQL.'serveur_sacoche_webmestre.php' ;
+  $fichier_class_config_supplementaire = ($BASE) ? CHEMIN_DOSSIER_INCLUDE.'class.DB.config.sacoche_structure.php' : CHEMIN_DOSSIER_INCLUDE.'class.DB.config.sacoche_webmestre.php' ;
+  if(is_file($fichier_mysql_config_supplementaire))
   {
     global $_CONST; // Car si on charge les paramètres dans une fonction, ensuite ils ne sont pas trouvés par la classe de connexion.
-    require($file_config_base_structure_multi);
-    require(CHEMIN_DOSSIER_INCLUDE.'class.DB.config.sacoche_structure.php');
+    require($fichier_mysql_config_supplementaire);
+    require($fichier_class_config_supplementaire);
   }
   else
   {
-    exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />Le fichier "'.FileSystem::fin_chemin($file_config_base_structure_multi).'" (base n°'.$BASE.') est manquant !' /*contenu*/ );
+    exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />Le fichier "'.FileSystem::fin_chemin($fichier_mysql_config_supplementaire).'" (base n°'.$BASE.') est manquant !' /*contenu*/ );
   }
 }
 
@@ -686,7 +694,7 @@ function tester_courriel($courriel)
 function tester_domaine_courriel_valide($mail_adresse)
 {
   $mail_domaine = mb_substr( $mail_adresse , mb_strpos($mail_adresse,'@')+1 );
-  return (getmxrr($mail_domaine,$tab_mxhosts)==TRUE) ? TRUE : $mail_domaine ;
+  return ( ( function_exists('getmxrr') && getmxrr($mail_domaine, $tab_mxhosts) ) || (@fsockopen($mail_domaine,25,$errno,$errstr,5)) ) ? TRUE : $mail_domaine ;
 }
 
 /**
@@ -835,13 +843,14 @@ function texte_ligne_naissance($date_fr)
  * Renvoyer le 1er jour de l'année scolaire en cours, au format français JJ/MM/AAAA ou MySQL AAAA-MM-JJ.
  *
  * @param string $format   'mysql'|'french'
+ * @param int    $annee_sup   facultatif, pour les années scolaires suivantes
  * @return string
  */
-function jour_debut_annee_scolaire($format)
+function jour_debut_annee_scolaire($format,$annee_sup=0)
 {
   $jour  = '01';
   $mois  = sprintf("%02u",$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']);
-  $annee = (date("n")<$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']) ? date("Y")-1 : date("Y") ;
+  $annee = (date("n")<$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']) ? date("Y")+$annee_sup-1 : date("Y")+$annee_sup ;
   return ($format=='mysql') ? $annee.'-'.$mois.'-'.$jour : $jour.'/'.$mois.'/'.$annee ;
 }
 
@@ -850,13 +859,14 @@ function jour_debut_annee_scolaire($format)
  * En fait, c'est plus exactement le 1er jour de l'année scolaire suivante...
  *
  * @param string $format   'mysql'|'french'
+ * @param int    $annee_sup   facultatif, pour les années scolaires suivantes
  * @return string
  */
-function jour_fin_annee_scolaire($format)
+function jour_fin_annee_scolaire($format,$annee_sup=0)
 {
   $jour  = '01';
   $mois  = sprintf("%02u",$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']);
-  $annee = (date("n")<$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']) ? date("Y") : date("Y")+1 ;
+  $annee = (date("n")<$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE']) ? date("Y")+$annee_sup : date("Y")+$annee_sup+1 ;
   return ($format=='mysql') ? $annee.'-'.$mois.'-'.$jour : $jour.'/'.$mois.'/'.$annee ;
 }
 
