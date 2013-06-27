@@ -54,6 +54,7 @@ $post_params = array(
         'codegen_structure_or_data',
         'codegen_format',
         'excel_null',
+        'excel_removeCRLF',
         'excel_columns',
         'excel_edition',
         'excel_structure_or_data',
@@ -101,8 +102,10 @@ $post_params = array(
         'csv_escaped',
         'csv_terminated',
         'csv_null',
+        'csv_removeCRLF',
         'csv_columns',
         'csv_structure_or_data',
+        // csv_replace should have been here but we use it directly from $_POST
         'latex_caption',
         'latex_structure_or_data',
         'latex_structure_caption',
@@ -632,9 +635,8 @@ do {
         }
         // Walk over databases
         foreach ($GLOBALS['pma']->databases as $current_db) {
-            if ((isset($tmp_select)
-                && strpos(' ' . $tmp_select, '|' . $current_db . '|'))
-                || ! isset($tmp_select)
+            if (isset($tmp_select)
+                && strpos(' ' . $tmp_select, '|' . $current_db . '|')
             ) {
                 if (! $export_plugin->exportDBHeader($current_db)) {
                     break 2;
@@ -717,6 +719,9 @@ do {
         }
     } elseif ($export_type == 'database') {
         if (! $export_plugin->exportDBHeader($db)) {
+            break;
+        }
+        if (! $export_plugin->exportDBCreate($db)) {
             break;
         }
 

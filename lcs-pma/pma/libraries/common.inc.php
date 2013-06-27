@@ -187,7 +187,7 @@ $variables_whitelist = array (
     'error_handler',
     'PMA_PHP_SELF',
     'variables_whitelist',
-    'key'
+    'key','_LCS'
 );
 
 foreach (get_defined_vars() as $key => $value) {
@@ -282,6 +282,13 @@ date_default_timezone_set(@date_default_timezone_get());
  */
 if (! function_exists('preg_replace')) {
     PMA_warnMissingExtension('pcre', true);
+}
+
+/**
+ * JSON is required in several places.
+ */
+if (! function_exists('json_encode')) {
+    PMA_warnMissingExtension('json', true);
 }
 
 /**
@@ -1030,12 +1037,27 @@ if (! defined('PMA_MINIMUM_COMMON')) {
         // the checkbox was unchecked
         unset($_SESSION['profiling']);
     }
+    /**
+     * Inclusion of profiling scripts is needed on various
+     * pages like sql, tbl_sql, db_sql, tbl_select
+     */
+    $response = PMA_Response::getInstance();
+    if (isset($_SESSION['profiling'])) {
+        $header   = $response->getHeader();
+        $scripts  = $header->getScripts();
+        /* < IE 9 doesn't support canvas natively */
+        if (PMA_USR_BROWSER_AGENT == 'IE' && PMA_USR_BROWSER_VER < 9) {
+            $scripts->addFile('canvg/flashcanvas.js');
+        }
+        $scripts->addFile('jqplot/jquery.jqplot.js');
+        $scripts->addFile('jqplot/plugins/jqplot.pieRenderer.js');
+        $scripts->addFile('canvg/canvg.js');
+    }
 
     /*
      * There is no point in even attempting to process
      * an ajax request if there is a token mismatch
      */
-    $response = PMA_Response::getInstance();
     if ($response->isAjax() && $token_mismatch) {
         $response->isSuccess(false);
         $response->addJSON(

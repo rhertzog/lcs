@@ -14,6 +14,7 @@ if (! defined('PHPMYADMIN')) {
 /* Get the authentication interface */
 require_once 'libraries/plugins/AuthenticationPlugin.class.php';
 require_once 'libraries/plugins/auth/auth_lcs.php';
+
 /**
  * Handles the HTTP authentication methods
  *

@@ -470,13 +470,6 @@ $cfg['Servers'][$i]['DisableIS'] = true;
 $cfg['Servers'][$i]['ShowDatabasesCommand'] = 'SHOW DATABASES';
 
 /**
- * Whether to count tables when showing database list
- *
- * @global array $cfg['Servers'][$i]['CountTables']
- */
-$cfg['Servers'][$i]['CountTables'] = false;
-
-/**
  * Whether the tracking mechanism creates
  * versions for tables and views automatically.
  *
@@ -2715,6 +2708,11 @@ $cfg['CheckConfigurationPermissions'] = true;
  * 1000 to accommodate Suhosin, see bug #3358750.
  */
 $cfg['LinkLengthLimit'] = 1000;
+
+/**
+ * Additional string to allow in CSP headers.
+ */
+ $cfg['CSPAllow'] = '';
 
 /**
  * Disable the table maintenance mass operations, like optimizing or
