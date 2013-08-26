@@ -62,7 +62,7 @@ $cfg['PmaAbsoluteUri_DisableWarning'] = FALSE;
 $cfg['PmaNoRelation_DisableWarning']  = TRUE;
 
 $cfg['SuhosinDisableWarning'] = TRUE;
-
+$cfg['AllowThirdPartyFraming']=true;
 
 /**
  * Server(s) configuration
