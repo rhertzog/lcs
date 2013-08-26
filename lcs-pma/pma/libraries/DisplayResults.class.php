@@ -535,14 +535,18 @@ class PMA_DisplayResults
     ) {
 
         $caption_output = '';
-        // for true or 'both'
-        if ($GLOBALS['cfg']['NavigationBarIconic']) {
+        if (in_array(
+            $GLOBALS['cfg']['TableNavigationLinksMode'],
+            array('icons', 'both')
+            )
+        ) {
             $caption_output .= $caption;
         }
 
-        // for false or 'both'
-        if (($GLOBALS['cfg']['NavigationBarIconic'] === false)
-            || ($GLOBALS['cfg']['NavigationBarIconic'] === self::POSITION_BOTH)
+        if (in_array(
+            $GLOBALS['cfg']['TableNavigationLinksMode'],
+            array('text', 'both')
+            )
         ) {
             $caption_output .= '&nbsp;' . $title;
         }
@@ -2553,7 +2557,7 @@ class PMA_DisplayResults
                 // We need to copy the value
                 // or else the == 'both' check will always return true
 
-                if ($GLOBALS['cfg']['PropertiesIconic'] === self::POSITION_BOTH) {
+                if ($GLOBALS['cfg']['ActionLinksMode'] === self::POSITION_BOTH) {
                     $iconic_spacer = '<div class="nowrap">';
                 } else {
                     $iconic_spacer = '';
@@ -4920,31 +4924,28 @@ class PMA_DisplayResults
             $message_view_warning = false;
         }
 
-        $message = PMA_Message::success(__('Showing rows'));
-        $message->addMessage($first_shown_rec);
+        $message = PMA_Message::success(__('Showing rows %1s - %2s'));
+        $message->addParam($first_shown_rec);
 
         if ($message_view_warning) {
-
-            $message->addMessage('...', ' - ');
-            $message->addMessage($message_view_warning);
-            $message->addMessage('(');
-
+            $message->addParam('... ' . $message_view_warning, false);
         } else {
+            $message->addParam($last_shown_rec);
+        }
 
-            $message->addMessage($last_shown_rec, ' - ');
-            $message->addMessage(' (');
-            $message->addMessage(
-                $pre_count . PMA_Util::formatNumber($total, 0)
-            );
-            $message->addString(__('total'));
+        $message->addMessage('(');
+
+        if (!$message_view_warning) {
+            $message_total = PMA_Message::notice($precount . __('%d total'));
+            $message_total->addParam($total);
 
             if (!empty($after_count)) {
-                $message->addMessage($after_count);
+                $message_total->addMessage($after_count);
             }
+            $message->addMessage($message_total, '');
 
             $message->addMessage($selectstring, '');
             $message->addMessage(', ', '');
-
         }
 
         $messagge_qt = PMA_Message::notice(__('Query took %01.4f sec') . ')');
@@ -5394,7 +5395,9 @@ class PMA_DisplayResults
         $result .= ']';
 
         if (gettype($transformation_plugin) == "object"
-            && strpos($transformation_plugin->getMIMESubtype(), 'Octetstream')
+            && (strpos($transformation_plugin->getMIMESubtype(), 'Octetstream')
+            // if we want to use a text transformation on a BLOB column
+            || strpos($transformation_plugin->getMIMEtype(), 'Text') !== false)
         ) {
             $result = $content;
         }

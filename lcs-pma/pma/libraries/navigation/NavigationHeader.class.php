@@ -79,9 +79,14 @@ class PMA_NavigationHeader
             }
             $retval .= '<div id="pmalogo">';
             if ($GLOBALS['cfg']['NavigationLogoLink']) {
-                $retval .= '    <a href="' . htmlspecialchars(
-                    $GLOBALS['cfg']['NavigationLogoLink']
-                );
+                $logo_link = trim(htmlspecialchars($GLOBALS['cfg']['NavigationLogoLink']));
+                // prevent XSS, see PMASA-2013-9
+                // if link has protocol, allow only http and https
+                if (preg_match('/^[a-z]+:/i', $logo_link)
+                    && ! preg_match('/^https?:/i', $logo_link)) {
+                    $logo_link = 'index.php';
+                }
+                $retval .= '    <a href="' . $logo_link;
                 switch ($GLOBALS['cfg']['NavigationLogoLinkWindow']) {
                 case 'new':
                     $retval .= '" target="_blank"';
@@ -166,9 +171,9 @@ class PMA_NavigationHeader
      */
     private function _links()
     {
-        $iconicNav = $GLOBALS['cfg']['NavigationBarIconic'];
-        $showIcon = $iconicNav === true || $iconicNav === 'both';
-        $showText = $iconicNav === false || $iconicNav === 'both';
+        // always iconic
+        $showIcon = true; 
+        $showText = false; 
 
         $retval  = '<!-- LINKS START -->';
         $retval .= '<div id="leftframelinks">';
@@ -182,7 +187,7 @@ class PMA_NavigationHeader
         // if we have chosen server
         if ($GLOBALS['server'] != 0) {
             // Logout for advanced authentication
-            if ($GLOBALS['cfg']['Server']['auth_type'] != 'config' &&  !defined('AUTHLCS')) {
+	    if ($GLOBALS['cfg']['Server']['auth_type'] != 'config' &&  ! defined('AUTHLCS')) {
                 $link  = 'index.php?' . $GLOBALS['url_query'];
                 $link .= '&amp;old_usr=' . urlencode($GLOBALS['PHP_AUTH_USER']);
                 $retval .= $this->_getLink(

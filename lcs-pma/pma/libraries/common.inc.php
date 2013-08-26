@@ -32,6 +32,13 @@
  */
 
 /**
+ * block attempts to directly run this script 
+ */
+if (getcwd() == dirname(__FILE__)) {
+    die('Attack stopped');
+}
+
+/**
  * Minimum PHP version; can't call PMA_fatalError() which uses a
  * PHP 5 function, so cannot easily localize this message.
  */
@@ -45,6 +52,11 @@ if (version_compare(PHP_VERSION, '5.2.0', 'lt')) {
 if (!defined('E_DEPRECATED')) {
     define('E_DEPRECATED', 8192);
 }
+
+/**
+ * for verification in all procedural scripts under libraries
+ */
+define('PHPMYADMIN', true);
 
 /**
  * the error handler
@@ -80,11 +92,6 @@ if (version_compare(phpversion(), '5.4', 'lt')) {
 }
 
 /**
- * for verification in all procedural scripts under libraries
- */
-define('PHPMYADMIN', true);
-
-/**
  * core functions
  */
 require './libraries/core.lib.php';
@@ -93,6 +100,13 @@ require './libraries/core.lib.php';
  * Input sanitizing
  */
 require './libraries/sanitizing.lib.php';
+
+/**
+ * Warning about mbstring.
+ */
+if (! function_exists('mb_detect_encoding')) {
+    PMA_warnMissingExtension('mbstring', $fatal = true);
+}
 
 /**
  * the PMA_Theme class
@@ -187,7 +201,8 @@ $variables_whitelist = array (
     'error_handler',
     'PMA_PHP_SELF',
     'variables_whitelist',
-    'key','_LCS'
+    'key',
+    '_LCS'
 );
 
 foreach (get_defined_vars() as $key => $value) {
