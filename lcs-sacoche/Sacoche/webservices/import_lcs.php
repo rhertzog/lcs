@@ -16,18 +16,26 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 
 /**
- * recuperer_infos_user_LCS
- * Appel au LCS permettant de récupérer l'uid d'un user.
- * Dans le LDAP employeeNumber correspond :
+ * Ce fichier n'est présent que sur les installations de SACoche comme module du LCS.
+ * 
+ * Il est chargé par ./pages/administrateur_fichier_identifiant.ajax.php
+ * Sa présence est aussi détectée à d'autres endroits (chercher "CHEMIN_FICHIER_WS_LCS").
+ * 
+ * Il interroge en ligne de commande le serveur du LCS afin de récupérer l'uid d'un user.
+ * 
+ * Dans le LDAP, employeeNumber correspond :
  * -> pour un élève à son Elenoet (ELEVE.ELENOET dans Sconet) éventuellement complété par des 0 à gauche
  * -> pour un prof à son id Sconet (INDIVIDU.ID dans Sconet) préfixé par la lettre P
+ */
+
+/**
+ * recuperer_infos_user_LCS
  * 
  * @param string   $user_profil_type   'eleve' ou 'professeur' (pas 'directeur' car ils n'ont pas d'employeeNumber dans le LCS)
  * @param int      $user_sconet_elenoet
  * @param int      $user_sconet_id
  * @return array   ($code_erreur,$tab_valeurs_retournees)
  */
-
 function recuperer_infos_user_LCS($user_profil_type,$user_sconet_elenoet,$user_sconet_id)
 {
   // Fabrication de l'employeeNumber à partir du numéro Sconet "Elenoet" (il faut compléter devant avec des 0 pour les élèves, et ajouter un P pour les profs).

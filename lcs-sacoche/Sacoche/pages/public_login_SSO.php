@@ -168,7 +168,7 @@ if($connexion_mode=='cas')
       // class
       if (isset($trace['class']))
       {
-        $str_traces .= $trace['class'].' :->: ';
+        $str_traces .= $trace['class'].' -> ';
         unset($trace['class']);
       }
 
@@ -229,24 +229,24 @@ if($connexion_mode=='cas')
       {
         if ( ($trace['type']!='') && ($trace['type']!='->') )
         {
-          $str_traces .= "\n\t\t".'type : '.$trace['type']."\n";
+          $str_traces .=  ' type : '.$trace['type'];
         }
         unset($trace['file']);
       }
       // si jamais il reste des trucs...
       if (count($trace))
       {
-        $str_traces .= ' et il reste les infos :'."\n\t\t";
+        $str_traces .= ' et il reste les infos :';
         foreach ($trace as $key => $value)
         {
-          $str_traces .= "\t\t".$key.' : ';
+          $str_traces .= " ".$key.' : ';
           if (is_scalar($value))
           {
-            $str_traces .= $value."\n";
+            $str_traces .= $value.' ; ';
           }
           else
           {
-            $str_traces .= print_r($value, TRUE)."\n";
+            $str_traces .= print_r($value, TRUE).' ; ';
           }
         }
       }
@@ -272,7 +272,7 @@ if($connexion_mode=='cas')
   if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
   // Gestion du single sign-out
   phpCAS::handleLogoutRequests(FALSE);
-  // Appliquer un proxy si défini par le webmestre ; voir url_get_contents() pour les commentaires.
+  // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
   if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
   {
     phpCAS::setExtraCurlOption(CURLOPT_PROXY     , SERVEUR_PROXY_NAME);
@@ -393,12 +393,8 @@ if($connexion_mode=='cas')
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);
-  // Redirection vers la page demandée en cas de succès.
-  // En théorie il faudrait laisser la suite du code se poursuivre, ce qui n'est pas impossible, mais ça pose le souci de la transmission de &verif_cookie
-  // Rediriger le navigateur.
-  header('Status: 307 Temporary Redirect', TRUE, 307);
-  header('Location: '.URL_BASE.$_SERVER['REQUEST_URI'].'&verif_cookie');
-  exit();
+  // Pas de redirection (passage possible d'infos en POST à conserver), on peut laisser le code se poursuivre.
+  return; // Ne pas exécuter la suite de ce fichier inclus.
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -506,7 +502,7 @@ if($connexion_mode=='shibboleth')
       $fr_edu_vecteur = (!empty($_SERVER['HTTP_FREDUVECTEUR'])) ? $_SERVER['HTTP_FREDUVECTEUR'] : '' ;
       $tab_vecteur = explode( ';' , $fr_edu_vecteur );
       $fr_edu_vecteur = $tab_vecteur[0];
-      list( $vecteur_profil , $vecteur_nom , $vecteur_prenom , $vecteur_eleve_id , $vecteur_uai ) = explode('|',$fr_edu_vecteur ) + array(0=>NULL,NULL,NULL,NULL,NULL) ; // http://fr.php.net/manual/fr/function.list.php#103311
+      list( $vecteur_profil , $vecteur_nom , $vecteur_prenom , $vecteur_eleve_id , $vecteur_uai ) = explode('|',$fr_edu_vecteur ) + array_fill(0,5,NULL) ; // http://fr.php.net/manual/fr/function.list.php#103311
       if( in_array($vecteur_profil,array(3,4)) && ($vecteur_eleve_id) && ($vecteur_eleve_id!=$eleve_sconet_id) ) // cas d'un élève
       {
         list($auth_resultat_siecle,$auth_DB_ROW) = SessionUser::tester_authentification_utilisateur( $BASE , $vecteur_eleve_id /*login*/ , FALSE /*password*/ , 'siecle' /*mode_connection*/ );
@@ -530,10 +526,8 @@ if($connexion_mode=='shibboleth')
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);
-  // Redirection vers la page demandée en cas de succès, avec transmission de &verif_cookie
-  header('Status: 307 Temporary Redirect', TRUE, 307);
-  header('Location: '.URL_BASE.$_SERVER['REQUEST_URI'].'&verif_cookie');
-  exit();
+  // Pas de redirection (passage possible d'infos en POST à conserver), on peut laisser le code se poursuivre.
+  return; // Ne pas exécuter la suite de ce fichier inclus.
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,7 +544,7 @@ if($connexion_mode=='gepi')
     'SIMPLESAMLPHP_BASEURLPATH' => substr($_SERVER['SCRIPT_NAME'],1,-9).'_lib/SimpleSAMLphp/www/',
     'WEBMESTRE_NOM'             => WEBMESTRE_NOM,
     'WEBMESTRE_PRENOM'          => WEBMESTRE_PRENOM,
-    'WEBMESTRE_COURRIEL'        => WEBMESTRE_COURRIEL
+    'WEBMESTRE_COURRIEL'        => WEBMESTRE_COURRIEL,
   );
   // Initialiser la classe
   $auth = new SimpleSAML_Auth_Simple('distant-gepi-saml');
@@ -577,7 +571,8 @@ if($connexion_mode=='gepi')
   }
   // Connecter l'utilisateur
   SessionUser::initialiser_utilisateur($BASE,$auth_DB_ROW);
-  // Pas de redirection car passage possible d'infos en POST à conserver ; tant pis pour la vérification du cookie...
+  // Pas de redirection (passage possible d'infos en POST à conserver), on peut laisser le code se poursuivre.
+  return; // Ne pas exécuter la suite de ce fichier inclus.
 }
 
 ?>

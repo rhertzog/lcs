@@ -429,7 +429,7 @@ function afficher_textarea_reste(textarea_obj,textarea_maxi_length)
 {
   var textarea_contenu = textarea_obj.val();
   var textarea_longueur = textarea_contenu.length;
-  if(textarea_contenu.length > textarea_maxi_length)
+  if(textarea_longueur > textarea_maxi_length)
   {
     textarea_obj.val( textarea_contenu.substring(0,textarea_maxi_length) );
     textarea_longueur = textarea_maxi_length;
@@ -775,6 +775,35 @@ $(document).ready
     // Initialisation
     format_liens('body');
     infobulle();
+
+
+    /**
+     * Alerte si usage frame / iframe
+     */
+    if(top.frames.length!=0)
+    {
+      var endroit = ($('#titre_logo').length) ? '#titre_logo' : 'h1' ;
+      $(endroit).after('<div class="probleme">L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" class="lien_ext">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a></div>');
+      format_liens('div.probleme');
+    }
+    /**
+     * Alerte si non acceptation des cookies
+     * Peut se tester directement en javascript (éxécuté par le client) alors qu'en PHP il faut recharger une page (info envoyée au serveur dans les en-têtes)
+     */
+    if(typeof(navigator.cookieEnabled)!="undefined")
+    {
+      var accepteCookies = (navigator.cookieEnabled) ? true : false ;
+    }
+    else
+    {
+      document.cookie = "test";
+      var accepteCookies = (document.cookie.indexOf("test") != -1) ? true : false ;
+    }
+    if(!accepteCookies)
+    {
+      var endroit = ($('#titre_logo').length) ? '#titre_logo' : 'h1' ;
+      $(endroit).after('<div class="probleme">Pour utiliser <em>SACoche</em> vous devez configurer l\'acceptation des cookies par votre navigateur.</div>');
+    }
 
     /**
      * Ajouter une méthode de tri au plugin TableSorter

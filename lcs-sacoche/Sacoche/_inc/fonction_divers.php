@@ -234,55 +234,87 @@ function ajouter_log_PHP($log_objet,$log_contenu,$log_fichier,$log_ligne,$only_s
 /**
  * Affichage déclaration + section head du document
  * 
+ * Utilise aussi le tableau $GLOBALS['HEAD'] avec les clefs suivantes :
+ * ['title'] - ['css']['file'][] - ['css_ie']['file'][] - ['css']['inline'][] - ['js']['file'][] - ['js']['inline'][]
+ * 
  * @param bool   $is_meta_robots  affichage ou non des balises meta pour les robots
  * @param bool   $is_favicon      affichage ou non du favicon
  * @param bool   $is_rss          affichage ou non du flux RSS associé
- * @param array  $tab_fichiers    tableau [i] => array( css | css_ie | js , chemin_fichier )
- * @param string $titre_page      titre de la page
- * @param string $css_additionnel css complémentaire (facultatif)
  * @return void
  */
-function declaration_entete( $is_meta_robots ,$is_favicon , $is_rss , $tab_fichiers , $titre_page , $css_additionnel=FALSE )
+function afficher_page_entete( $is_meta_robots ,$is_favicon , $is_rss )
 {
   header('Content-Type: text/html; charset='.CHARSET);
-  echo'<!DOCTYPE html>'."\r\n";
-  echo'<html>'."\r\n";
-  echo'<head>'."\r\n";
-  echo'<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'."\r\n";
+  echo'<!DOCTYPE html>'.NL;
+  echo'<html>'.NL;
+  echo  '<head>'.NL;
+  echo    '<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'.NL;
   if($is_meta_robots)
   {
-    echo'<meta name="description" content="SACoche - Suivi d\'Acquisition de Compétences - Evaluation par compétences - Valider le socle commun" />'."\r\n";
-    echo'<meta name="keywords" content="SACoche Sésamath évaluer évaluation compétences compétence validation valider socle commun collège points note notes Lomer" />'."\r\n";
-    echo'<meta name="author" content="Thomas Crespin pour Sésamath" />'."\r\n";
-    echo'<meta name="robots" content="index,follow" />'."\r\n";
+    echo    '<meta name="description" content="SACoche - Suivi d\'Acquisition de Compétences - Evaluation par compétences - Valider le socle commun" />'.NL;
+    echo    '<meta name="keywords" content="SACoche Sésamath évaluer évaluation compétences compétence validation valider socle commun collège points note notes Lomer" />'.NL;
+    echo    '<meta name="author" content="Thomas Crespin pour Sésamath" />'.NL;
+    echo    '<meta name="robots" content="index,follow" />'.NL;
   }
   if($is_favicon)
   {
-    echo'<link rel="shortcut icon" type="images/x-icon" href="./favicon.ico" />'."\r\n";
-    echo'<link rel="icon" type="image/png" href="./favicon.png" />'."\r\n";
-    echo'<link rel="apple-touch-icon" href="./_img/apple-touch-icon-114x114.png" />'."\r\n";
-    echo'<link rel="apple-touch-icon-precomposed" href="./_img/apple-touch-icon-114x114.png" />'."\r\n";
+    echo    '<link rel="shortcut icon" type="images/x-icon" href="./favicon.ico" />'.NL;
+    echo    '<link rel="icon" type="image/png" href="./favicon.png" />'.NL;
+    echo    '<link rel="apple-touch-icon" href="./_img/apple-touch-icon-114x114.png" />'.NL;
+    echo    '<link rel="apple-touch-icon-precomposed" href="./_img/apple-touch-icon-114x114.png" />'.NL;
   }
   if($is_rss)
   {
-    echo'<link rel="alternate" type="application/rss+xml" href="'.SERVEUR_RSS.'" title="SACoche" />'."\r\n";
+    echo    '<link rel="alternate" type="application/rss+xml" href="'.SERVEUR_RSS.'" title="SACoche" />'.NL;
   }
-  foreach($tab_fichiers as $tab_infos)
+  // Titre
+  $title = !empty($GLOBALS['HEAD']['title']) ? $GLOBALS['HEAD']['title'] : 'SACoche' ;
+  echo    '<title>'.$title.'</title>'.NL;
+  // CSS fichiers
+  if(!empty($GLOBALS['HEAD']['css']['file']))
   {
-    list( $type , $url ) = $tab_infos;
-    switch($type)
+    foreach($GLOBALS['HEAD']['css']['file'] as $css_file)
     {
-      case 'css'    : echo'<link rel="stylesheet" type="text/css" href="'.$url.'" />'."\r\n"; break;
-      case 'css_ie' : echo'<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$url.'" /><![endif]-->'."\r\n"; break;
-      case 'js'     : echo'<script type="text/javascript" charset="'.CHARSET.'" src="'.$url.'"></script>'."\r\n"; break;
+      echo    '<link rel="stylesheet" type="text/css" href="'.$css_file.'" />'.NL;
     }
   }
-  if($css_additionnel)
+  // CSS fichiers IE (non utilisé)
+  if(!empty($GLOBALS['HEAD']['css_ie']['file']))
   {
-    echo $css_additionnel."\r\n"; // style complémentaire déjà dans <style type="text/css">...</style>
+    foreach($GLOBALS['HEAD']['css_ie']['file'] as $css_ie_file)
+    {
+      echo    '<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$css_ie_file.'" /><![endif]-->'.NL;
+    }
   }
-  echo'<title>'.$titre_page.'</title>'."\r\n";
-  echo'</head>'."\r\n";
+  // CSS inline (personnalisations)
+  if(!empty($GLOBALS['HEAD']['css']['inline']))
+  {
+    echo    '<style type="text/css">'.NL;
+    foreach($GLOBALS['HEAD']['css']['inline'] as $css_inline)
+    {
+      echo      $css_inline.NL;
+    }
+    echo    '</style>'.NL;
+  }
+  // JS fichiers
+  if(!empty($GLOBALS['HEAD']['js']['file']))
+  {
+    foreach($GLOBALS['HEAD']['js']['file'] as $js_file)
+    {
+      echo    '<script type="text/javascript" charset="'.CHARSET.'" src="'.$js_file.'"></script>'.NL;
+    }
+  }
+  // JS inline (données dynamiques, telles des constantes supplémentaires)
+  if(!empty($GLOBALS['HEAD']['js']['inline']))
+  {
+    echo    '<script type="text/javascript">'.NL;
+    foreach($GLOBALS['HEAD']['js']['inline'] as $js_inline)
+    {
+      echo      $js_inline.NL;
+    }
+    echo    '</script>'.NL;
+  }
+  echo  '</head>'.NL;
 }
 
 /**
@@ -515,117 +547,6 @@ function maj_base_structure_si_besoin($BASE)
 }
 
 /**
- * Équivalent de file_get_contents pour récupérer un fichier sur un serveur distant.
- * 
- * On peut aussi l'utiliser pour récupérer le résultat d'un script PHP exécuté sur un serveur distant.
- * On peut alors envoyer au script des paramètres en POST.
- * 
- * Concernant le timeout.
- * La fonction set_time_limit(), tout comme la directive de configuration de php.ini max_execution_time, n'affectent que le temps d'exécution du script lui-même. Tout temps passé en dehors du script, comme un appel système utilisant system(), des opérations sur les flux, les requêtes sur base de données, etc. n'est pas pris en compte lors du calcul de la durée maximale d'exécution du script.
- * Un appel cURL est un exemple d'opération de flux et n'est donc pas limité parun max_execution_time.
- * Du point du vue de l'administrateur système, un timeout cURL élevé n'est pas un souci : une connexion ouverte sans trafic dessus, tant qu'il n'y en a pas des milliers, c'est pas important.
- * Le timeout cURL sert juste à fixer "à partir de X secondes je n'attends plus et j'annonce que ça a planté", donc avec un timeout cURL élevé l'utilisateur risque juste de poireauter davantage avant de se prendre une erreur.
- * Le timeout cURL sert aussi à ne pas laisser de connexion ouverte indéfiniment.
- * 
- * @param string $url
- * @param array  $tab_post   tableau[nom]=>valeur de données à envoyer en POST (facultatif)
- * @param int    $timeout    valeur du timeout en s ; facultatif, par défaut 10
- * @return string
- */
-function url_get_contents($url,$tab_post=FALSE,$timeout=10)
-{
-  // Ne pas utiliser file_get_contents() car certains serveurs n'accepent pas d'utiliser une URL comme nom de fichier (gestionnaire fopen non activé).
-  // On utilise donc la bibliothèque cURL en remplacement
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_DNS_CACHE_TIMEOUT, 3600); // Le temps en seconde que cURL doit conserver les entrées DNS en mémoire. Cette option est définie à 120 secondes (2 minutes) par défaut.
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);    // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);   // FALSE pour que cURL ne vérifie pas le certificat (sinon, en l'absence de certificat, on récolte l'erreur "SSL certificate problem, verify that the CA cert is OK. Details: error:14090086:SSL routines:SSL3_GET_SERVER_CERTIFICATE:certificate verify failed").
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);   // CURLOPT_SSL_VERIFYHOST doit aussi être positionnée à 1 ou 0 si CURLOPT_SSL_VERIFYPEER est désactivée (par défaut à 2) ; sinon, on peut récolter l'erreur "SSL: certificate subject name 'secure.sesamath.fr' does not match target host name 'sacoche.sesamath.net'", mê si ça a été résolu depuis. (http://fr.php.net/manual/fr/function.curl-setopt.php#75711)
-  curl_setopt($ch, CURLOPT_FAILONERROR, TRUE);       // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
-  curl_setopt($ch, CURLOPT_HEADER, FALSE);           // FALSE pour ne pas inclure l'en-tête dans la valeur de retour.
-  curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);       // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
-  curl_setopt($ch, CURLOPT_URL, $url);               // L'URL à récupérer. Vous pouvez aussi choisir cette valeur lors de l'appel à curl_init().
-  if( (!ini_get('safe_mode')) && (!ini_get('open_basedir')) )
-  {                                                 // Option CURLOPT_FOLLOWLOCATION sous conditions car certaines installations renvoient "CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir is set" (http://www.php.net/manual/fr/features.safe-mode.functions.php#92192)
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE); // TRUE pour suivre toutes les en-têtes "Location: " que le serveur envoie dans les en-têtes HTTP (notez que cette fonction est récursive et que PHP suivra toutes les en-têtes "Location: " qu'il trouvera à moins que CURLOPT_MAXREDIRS ne soit définie).
-    curl_setopt($ch, CURLOPT_MAXREDIRS, 3);         // Le nombre maximal de redirections HTTP à suivre. Utilisez cette option avec l'option CURLOPT_FOLLOWLOCATION.
-  }
-  else
-  {                                                 // Solution de remplacement inspirée de http://fr.php.net/manual/fr/function.curl-setopt.php#102121
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-    $maxredirs = 3 ;
-    $url = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-    $rch = curl_copy_handle($ch);
-    curl_setopt($rch, CURLOPT_HEADER, TRUE);
-    curl_setopt($rch, CURLOPT_NOBODY, TRUE);
-    curl_setopt($rch, CURLOPT_FORBID_REUSE, FALSE);
-    curl_setopt($rch, CURLOPT_RETURNTRANSFER, TRUE);
-    do
-    {
-      curl_setopt($rch, CURLOPT_URL, $url);
-      $header = curl_exec($rch);
-      if (curl_errno($rch))
-      {
-        $code = 0;
-      }
-      else
-      {
-        $code = curl_getinfo($rch, CURLINFO_HTTP_CODE);
-        if ($code == 301 || $code == 302)
-        {
-          preg_match('/Location:(.*?)\n/', $header, $matches);
-          $newurl = trim(array_pop($matches));
-          // Pb : l'URL peut être relative, et si on perd le domaine alors après ça plante
-          if( (substr($newurl,0,4)!='http') && (substr($newurl,0,3)!='ftp') )
-          {
-            $pos_last_slash = strrpos($url,'/');
-            $newurl_debut = ($pos_last_slash>7) ? substr($url,0,$pos_last_slash+1) : $url.'/' ;
-            $newurl_fin   = ($newurl{0}=='/')   ? substr($newurl,1)                : $newurl ;
-            $newurl = $newurl_debut.$newurl_fin;
-          }
-          $url = $newurl;
-        }
-        else
-        {
-          $code = 0;
-        }
-      }
-    }
-    while ($code && --$maxredirs);
-    curl_close($rch);
-    curl_setopt($ch, CURLOPT_URL, $url);
-  }
-  if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
-  {                                                                    // Serveur qui nécessite d'utiliser un tunnel à travers un proxy HTTP.
-    curl_setopt($ch, CURLOPT_PROXY,     SERVEUR_PROXY_NAME);           // Le nom du proxy HTTP au tunnel qui le demande.
-    curl_setopt($ch, CURLOPT_PROXYPORT, (int)SERVEUR_PROXY_PORT);      // Le numéro du port du proxy à utiliser pour la connexion. Ce numéro de port peut également être défini dans l'option CURLOPT_PROXY.
-    curl_setopt($ch, CURLOPT_PROXYTYPE, constant(SERVEUR_PROXY_TYPE)); // Soit CURLPROXY_HTTP (par défaut), soit CURLPROXY_SOCKS5.
-    if(SERVEUR_PROXY_AUTH_USED)
-    {                                                                                              // Serveur qui nécessite de s'authentifier pour utiliser le proxy.
-      curl_setopt($ch, CURLOPT_PROXYAUTH,    constant(SERVEUR_PROXY_AUTH_METHOD));                 // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
-      curl_setopt($ch, CURLOPT_PROXYUSERPWD, SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS); // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion avec le proxy.
-    }
-  }
-  if(is_array($tab_post))
-  {
-    curl_setopt($ch, CURLOPT_POST,       TRUE);             // TRUE pour que PHP fasse un HTTP POST. Un POST est un encodage normal application/x-www-from-urlencoded, utilisé couramment par les formulaires HTML. 
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $tab_post);        // Toutes les données à passer lors d'une opération de HTTP POST. Peut être passé sous la forme d'une chaîne encodée URL, comme 'para1=val1&para2=val2&...' ou sous la forme d'un tableau dont le nom du champ est la clé, et les données du champ la valeur. Si le paramètre value est un tableau, l'en-tête Content-Type sera définie à multipart/form-data. 
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:')); // Eviter certaines erreurs cURL 417 ; voir explication http://fr.php.net/manual/fr/function.curl-setopt.php#82418 ou http://www.gnegg.ch/2007/02/the-return-of-except-100-continue/
-  }
-  else
-  {
-    curl_setopt($ch, CURLOPT_POST, FALSE);                   // Si pas de données à poster, mieux vaut forcer un appel en GET, sinon ça peut poser pb. http://fr.php.net/manual/fr/function.curl-setopt.php#104387
-  }
-  $requete_reponse = curl_exec($ch);
-  if($requete_reponse === FALSE)
-  {
-    $requete_reponse = 'Erreur : '.curl_error($ch);
-  }
-  curl_close($ch);
-  return $requete_reponse;
-}
-
-/**
  * Récupérer le numéro de la dernière version de SACoche disponible auprès du serveur communautaire.
  * 
  * @param void
@@ -633,7 +554,7 @@ function url_get_contents($url,$tab_post=FALSE,$timeout=10)
  */
 function recuperer_numero_derniere_version()
 {
-  $requete_reponse = url_get_contents(SERVEUR_VERSION);
+  $requete_reponse = cURL::get_contents(SERVEUR_VERSION);
   return (preg_match('#^[0-9]{4}\-[0-9]{2}\-[0-9]{2}[a-z]?$#',$requete_reponse)) ? $requete_reponse : 'Dernière version non détectée&hellip;' ;
 }
 
@@ -981,7 +902,7 @@ function afficher_profils_droit_specifique($listing_droits_sigles,$format)
   {
     $tab_profils[] = 'aucun !';
   }
-  return ($format=='li') ? '<ul class="puce"><li>'.implode('</li><li>',$tab_profils).'</li></ul>' : implode('<br />',$tab_profils) ;
+  return ($format=='li') ? '<ul class="puce">'.NL.'<li>'.implode('</li>'.NL.'<li>',$tab_profils).'</li>'.NL.'</ul>'.NL : implode('<br />',$tab_profils) ;
 }
 
 ?>

@@ -44,7 +44,7 @@ if(!function_exists('error_get_last'))
             \'type\'    => $errno,
             \'message\' => $errstr,
             \'file\'    => $errfile,
-            \'line\'    => $errline
+            \'line\'    => $errline,
           );
           return NULL;
         '
@@ -140,6 +140,38 @@ function pathinfo_filename($file)
   }
 }
 
+/*
+ * La fonction str_getcsv() n'est disponible que depuis PHP 5.3 ; SACoche exigeant PHP 5.1, la définir si besoin.
+ * @see http://us2.php.net/manual/fr/function.str-getcsv.php#111577
+ */
+if (!function_exists('str_getcsv'))
+{
+  function str_getcsv($input, $delimiter = ',', $enclosure = '"')
+  {
+
+    if( ! preg_match("/[$enclosure]/", $input) )
+    {
+      return (array)preg_replace(array("/^\\s*/", "/\\s*$/"), '', explode($delimiter, $input));
+    }
+    $token = "##"; $token2 = "::"; //alternate tokens "\034\034", "\035\035", "%%";
+    $t1 = preg_replace(
+      array("/\\\[$enclosure]/", "/$enclosure{2}/", "/[$enclosure]\\s*[$delimiter]\\s*[$enclosure]\\s*/", "/\\s*[$enclosure]\\s*/"),
+      array($token2, $token2, $token, $token),
+      trim(trim(trim($input),$enclosure))
+    );
+    $a = explode($token, $t1);
+    foreach($a as $k=>$v)
+    {
+      if ( preg_match("/^{$delimiter}/", $v) || preg_match("/{$delimiter}$/", $v) )
+      {
+        $a[$k] = trim($v, $delimiter); $a[$k] = preg_replace("/$delimiter/", "$token", $a[$k]);
+      }
+    }
+    $a = explode($token, implode($token, $a));
+    return (array)preg_replace(array("/^\\s/", "/\\s$/", "/$token2/"), array('', '', $enclosure), $a);
+  }
+}
+
 // ============================================================================
 // Constante SACoche - Atteste l'appel de ce fichier avant inclusion d'une autre page & permet de connaître le nom du script initial.
 // ============================================================================
@@ -155,6 +187,7 @@ if(SACoche=='_loader') {exit('Ce fichier ne peut être appelé directement !');}
 // Dès maintenant car utilisé par exit_error().
 // Tous les fichiers étant en UTF-8, et le code prévu pour manipuler des données en UTF-8, changer le CHARSET serait assez hasardeux pour ne pas dire risqué...
 define('CHARSET','utf-8');
+define('NL',PHP_EOL);
 
 // Version PHP & MySQL requises et conseillées
 // Attention : ne pas mettre de ".0" (par exemple "5.0") car version_compare() considère que 5 < 5.0 (@see http://fr.php.net/version_compare)
@@ -264,7 +297,7 @@ define('CHEMIN_FICHIER_WS_SESAMATH_ENT', CHEMIN_DOSSIER_WEBSERVICES.'sesamath_en
  * On fonctionne comme pour les droits unix wrx, en testant chaque bit en partant de la droite.
  * Pour choisir les infos voulues, il faut mettre en DEBUG la somme des valeurs correspondantes.
  * Par exemple 7 = 4 + 2 + 1 = requêtes SQL + logs CAS + erreurs PHP
- * La valeur minimale est 0 (pas de debug) et la valeur maximale est 511.
+ * La valeur minimale est 0 (pas de debug) et la valeur maximale est 1023.
  */
 
 // Dans un fichier texte du dossier TMP pour ne pas être dans la distribution ni écrasé par les maj et être accessible en écriture, en particulier par l'espace webmestre.
@@ -354,7 +387,13 @@ function getServerProtocole()
   return ( isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS']=='on') ) ? 'https://' : 'http://' ;
 }
 
-define('URL_BASE',getServerProtocole().$HOST);
+function getServerPort()
+{
+  // Rien à indiquer si port 80 (protocole HTTP) ou 443 (protocole HTTPS)
+  return ( !isset($_SERVER['SERVER_PORT']) || in_array($_SERVER['SERVER_PORT'],array(80,443)) ) ? '' : ':'.$_SERVER['SERVER_PORT'] ;
+}
+
+define('URL_BASE',getServerProtocole().$HOST.getServerPort());
 
 // ============================================================================
 // Type de serveur (LOCAL|DEV|PROD)
@@ -365,7 +404,7 @@ define('URL_BASE',getServerProtocole().$HOST);
 // - gethostbyname($_SERVER['HTTP_HOST']) peut renvoyer "127.0.0.1" sur un serveur non local car un serveur a en général 2 ip (une publique - ou privée s'il est sur un lan - et une locale).
 // - $_SERVER['SERVER_ADDR'] peut renvoyer "127.0.0.1" avec nginx + apache sur 127.0.0.1 ...
 $test_local = ( ($HOST=='localhost') || ($HOST=='127.0.0.1') || (mb_substr($HOST,-6)=='.local') ) ? TRUE : FALSE ;
-$serveur_type = ($test_local) ? 'LOCAL' : ( (substr($HOST,-18)=='.sesamath.net:8080') ? 'DEV' : 'PROD' ) ;
+$serveur_type = ($test_local) ? 'LOCAL' : ( ( (substr($HOST,-18)=='.sesamath.net:8080') || (substr($HOST,-18)=='.sesamath.net:8443') ) ? 'DEV' : 'PROD' ) ;
 define('SERVEUR_TYPE',$serveur_type); // PROD | DEV | LOCAL
 
 // ============================================================================
@@ -425,6 +464,7 @@ define('SERVEUR_BLOG_CONVENTION',SERVEUR_ASSO.'/blog/index.php/aM4');        // 
 // test si c'est l'hébergement Sésamath qui est utilisé
 $is_hebergement_sesamath = (mb_strpos(URL_BASE,SERVEUR_PROJET)!==FALSE) ? TRUE : FALSE ;
 define('IS_HEBERGEMENT_SESAMATH',$is_hebergement_sesamath);
+// define('IS_HEBERGEMENT_SESAMATH',TRUE);
 
 // indiquer si une convention Établissement-ENT est requise et à compter de quand
 define('CONVENTION_ENT_REQUISE'         ,TRUE);
@@ -519,6 +559,7 @@ function __autoload($class_name)
     'Browser'                     => '_inc'.DS.'class.Browser.php' ,
     'Clean'                       => '_inc'.DS.'class.Clean.php' ,
     'cssmin'                      => '_inc'.DS.'class.CssMinified.php' ,
+    'cURL'                        => '_inc'.DS.'class.cURL.php' ,
     'Erreur500'                   => '_inc'.DS.'class.Erreur500.php' ,
     'FileSystem'                  => '_inc'.DS.'class.FileSystem.php' ,
     'Form'                        => '_inc'.DS.'class.Form.php' ,
@@ -527,7 +568,7 @@ function __autoload($class_name)
     'JSMin'                       => '_inc'.DS.'class.JavaScriptMinified.php' ,
     'JavaScriptPacker'            => '_inc'.DS.'class.JavaScriptPacker.php' ,
     'LockAcces'                   => '_inc'.DS.'class.LockAcces.php' ,
-    'MobileDetect'                => '_inc'.DS.'class.MobileDetect.php' ,
+    'Mobile_Detect'               => '_inc'.DS.'class.MobileDetect.php' ,
     'MyDOMDocument'               => '_inc'.DS.'class.domdocument.php' ,
     'PDF'                         => '_inc'.DS.'class.PDF.php' ,
     'RSS'                         => '_inc'.DS.'class.RSS.php' ,
@@ -560,7 +601,7 @@ function __autoload($class_name)
     'DB_WEBMESTRE_PARTENAIRE'     => '_sql'.DS.'requetes_webmestre_partenaire.php' ,
     'DB_WEBMESTRE_PUBLIC'         => '_sql'.DS.'requetes_webmestre_public.php' ,
     'DB_WEBMESTRE_SELECT'         => '_sql'.DS.'requetes_webmestre_select.php' ,
-    'DB_WEBMESTRE_WEBMESTRE'      => '_sql'.DS.'requetes_webmestre_webmestre.php'
+    'DB_WEBMESTRE_WEBMESTRE'      => '_sql'.DS.'requetes_webmestre_webmestre.php' ,
   );
   if(isset($tab_classes[$class_name]))
   {
@@ -639,26 +680,25 @@ function exit_error( $titre , $contenu , $lien='accueil' )
 {
   if(SACoche!='ajax')
   {
-    // start html
     header('Content-Type: text/html; charset='.CHARSET);
-    echo'<!DOCTYPE html><html>';
-    // head
-    echo'<head>';
-    echo'<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />';
-    echo'<link rel="stylesheet" type="text/css" href="./_css/style.css" />';
-    echo'<style type="text/css">#cadre_milieu{color:#D00}</style>';
-    echo'<title>SACoche » '.$titre.'</title>';
-    echo'</head>';
-    // body
-    echo'<body><div id="cadre_milieu">';
-    echo'<div class="hc"><img src="./_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>';
-    echo'<h1>» '.$titre.'</h1>';
-    echo'<p>'.str_replace('<br />','</p><p>',$contenu).'</p>';
-        if($lien=='accueil') { echo'<p><a href="./index.php">Retour en page d\'accueil de SACoche.</a></p>'; } 
-    elseif($lien=='install') { echo'<p><a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'; } 
-    echo'</div></body>';
-    // end html
-    echo'</html>';
+    echo'<!DOCTYPE html>'.NL;
+    echo'<html>'.NL;
+    echo  '<head>'.NL;
+    echo    '<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'.NL;
+    echo    '<link rel="stylesheet" type="text/css" href="./_css/style.css" />'.NL;
+    echo    '<style type="text/css">#cadre_milieu{color:#D00}</style>'.NL;
+    echo    '<title>SACoche » '.$titre.'</title>'.NL;
+    echo  '</head>'.NL;
+    echo  '<body>'.NL;
+    echo    '<div id="cadre_milieu">'.NL;
+    echo      '<div class="hc"><img src="./_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>'.NL;
+    echo      '<h1>'.$titre.'</h1>'.NL;
+    echo      '<p>'.str_replace('<br />','</p><p>',$contenu).'</p>'.NL;
+        if($lien=='accueil') { echo'<p><a href="./index.php">Retour en page d\'accueil de SACoche.</a></p>'.NL; } 
+    elseif($lien=='install') { echo'<p><a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'.NL; } 
+    echo    '</div>'.NL;
+    echo  '</body>'.NL;
+    echo'</html>'.NL;
   }
   else
   {
@@ -666,4 +706,9 @@ function exit_error( $titre , $contenu , $lien='accueil' )
   }
   exit();
 }
+
+/*
+ * Pour retenir les données qui seront à afficher dans la section <head></head> de la page.
+ */
+$GLOBALS['HEAD'] = array();
 ?>

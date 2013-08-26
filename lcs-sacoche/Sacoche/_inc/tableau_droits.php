@@ -49,6 +49,7 @@ $tab_droits_par_page = array
 (
   // Tous profils
   'fermer_session'                          => $tab_droits_profil_tous, // Au cas où plusieurs onglets sont ouverts dont l'un a déjà déconnecté
+  'webservices'                             => $tab_droits_profil_tous,
   // Profils identifiés
   'calque_date_calendrier'                  => $tab_droits_profil_identifie,
   'conserver_session_active'                => $tab_droits_profil_identifie,
@@ -64,6 +65,7 @@ $tab_droits_par_page = array
   // Profil professeur
   '_maj_select_eval'                        => $tab_droits_profil_professeur,
   '_maj_select_matieres_prof'               => $tab_droits_profil_professeur,
+  '_maj_select_profs_groupe'                => $tab_droits_profil_professeur,
   'evaluation_demande_professeur'           => $tab_droits_profil_professeur,
   'evaluation_gestion'                      => $tab_droits_profil_professeur,
   'professeur_groupe_besoin'                => $tab_droits_profil_professeur,
@@ -71,6 +73,7 @@ $tab_droits_par_page = array
   'professeur_referentiel_gestion'          => $tab_droits_profil_professeur,
   'professeur_referentiel_edition'          => $tab_droits_profil_professeur,
   'professeur_referentiel_ressources'       => $tab_droits_profil_professeur,
+  'releve_items_professeur'                 => $tab_droits_profil_professeur,
   'releve_items_selection'                  => $tab_droits_profil_professeur,
   // Profil directeur
   '_maj_select_matieres'                    => $tab_droits_profil_directeur,
@@ -199,7 +202,7 @@ $tab_droits_par_page = array
   'consultation_referentiel_interne'        => array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 , 'partenaire'=>0 ),
   'releve_pdf'                              => array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 , 'partenaire'=>0 ),
   // Attention à ce dernier cas ! Il faut inclure "public" car un échange est encore effectué avec ce fichier après enregistrement des données de session...
-  'public_login_SSO'                        => array( 'public'=>1 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 , 'partenaire'=>0 )
+  'public_login_SSO'                        => array( 'public'=>1 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 , 'partenaire'=>0 ),
 );
 
 ?>

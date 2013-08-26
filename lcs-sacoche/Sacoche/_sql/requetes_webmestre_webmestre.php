@@ -57,7 +57,7 @@ public static function DB_recuperer_structure_by_Id($base_id)
 public static function DB_recuperer_convention_structure_info($convention_id)
 {
   $DB_SQL = 'SELECT sacoche_base, connexion_nom, convention_date_debut, convention_date_fin, convention_signature, convention_paiement, convention_activation, ';
-  $DB_SQL.= 'structure_contact_nom, structure_contact_prenom, structure_contact_courriel ';
+  $DB_SQL.= 'structure_denomination, structure_contact_nom, structure_contact_prenom, structure_contact_courriel ';
   $DB_SQL.= 'FROM sacoche_convention ';
   $DB_SQL.= 'LEFT JOIN sacoche_structure USING (sacoche_base) ';
   $DB_SQL.= 'WHERE convention_id=:convention_id ';
@@ -75,12 +75,26 @@ public static function DB_lister_zones()
 {
   $DB_SQL = 'SELECT * ';
   $DB_SQL.= 'FROM sacoche_geo ';
-  $DB_SQL.= 'ORDER BY geo_ordre ASC';
+  $DB_SQL.= 'ORDER BY geo_ordre ASC ';
   return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL);
 }
 
 /**
- * Lister les structures (complémentaire à DB_recuperer_structure() car utilisation de queryTab à la place de queryRow)
+ * Lister les ids des structures
+ *
+ * @param void
+ * @return array
+ */
+public static function DB_lister_structures_id()
+{
+  $DB_SQL = 'SELECT sacoche_base ';
+  $DB_SQL.= 'FROM sacoche_structure ';
+  $DB_SQL.= 'ORDER BY sacoche_base ASC ';
+  return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL, TRUE);
+}
+
+/**
+ * Lister les structures avec leurs infos
  *
  * @param void|string $listing_base_id   id des bases séparés par des virgules (tout si rien de transmis)
  * @param int         $geo_id            id d'une zone géographique si restriction à une zone (tout si rien ou 0 transmis)

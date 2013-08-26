@@ -76,7 +76,9 @@ $tab_type  = (isset($_POST['f_type']))  ? ( (is_array($_POST['f_type']))  ? $_PO
 $tab_eleve = array_filter( Clean::map_entier($tab_eleve) , 'positif' );
 $tab_type  = Clean::map_texte($tab_type);
 
+// Ci-après sans objet car cette page n'est proposée qu'aux professeurs.
 // En cas de manipulation du formulaire (avec Firebug par exemple) ; on pourrait aussi vérifier pour un parent que c'est bien un de ses enfants...
+/*
 if(in_array($_SESSION['USER_PROFIL_TYPE'],array('parent','eleve')))
 {
   $aff_moyenne_scores     = test_user_droit_specifique($_SESSION['DROIT_RELEVE_MOYENNE_SCORE'])      ? $aff_moyenne_scores     : 0 ;
@@ -90,6 +92,7 @@ if($_SESSION['USER_PROFIL_TYPE']=='eleve')
   $groupe_nom = $_SESSION['ELEVE_CLASSE_NOM'];
   $tab_eleve  = array($_SESSION['USER_ID']);
 }
+*/
 
 $type_individuel = (in_array('individuel',$tab_type)) ? 1 : 0 ;
 $type_synthese   = (in_array('synthese',$tab_type))   ? 1 : 0 ;
@@ -125,44 +128,44 @@ require(CHEMIN_DOSSIER_INCLUDE.'noyau_items_releve.php');
 
 if($affichage_direct)
 {
-  echo'<hr />';
-  echo'<ul class="puce">';
-  echo'<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>';
-  echo'</ul>';
+  echo'<hr />'.NL;
+  echo'<ul class="puce">'.NL;
+  echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+  echo'</ul>'.NL;
   echo $releve_HTML_individuel;
 }
 else
 {
   if($type_individuel)
   {
-    echo'<h2>Relevé individuel</h2>';
-    echo'<ul class="puce">';
-    echo'<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','individuel',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
-    echo'</ul>';
+    echo'<h2>Relevé individuel</h2>'.NL;
+    echo'<ul class="puce">'.NL;
+    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','individuel',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo'</ul>'.NL;
   }
   if($type_synthese)
   {
-    echo'<h2>Synthèse collective</h2>';
-    echo'<ul class="puce">';
-    echo'<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','synthese',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
-    echo'</ul>';
+    echo'<h2>Synthèse collective</h2>'.NL;
+    echo'<ul class="puce">'.NL;
+    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','synthese',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo'</ul>'.NL;
   }
   if($type_bulletin)
   {
-    echo'<h2>Bulletin SACoche</h2>';
-    echo'<ul class="puce">';
-    echo'<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>';
+    echo'<h2>Bulletin SACoche</h2>'.NL;
+    echo'<ul class="puce">'.NL;
+    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo $bulletin_form;
-    echo'</ul>';
+    echo'</ul>'.NL;
     echo $bulletin_alerte;
-    echo'<h2>Bulletin Gepi</h2>';
-    echo'<ul class="puce">';
-    echo'<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer notes et appréciations à importer dans GEPI (format <em>csv</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les notes à importer dans GEPI (format <em>csv</em>).</span></a></li>';
-    echo'<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations à importer dans GEPI (format <em>csv</em>).</span></a></li>';
-    echo'</ul>';
+    echo'<h2>Bulletin Gepi</h2>'.NL;
+    echo'<ul class="puce">'.NL;
+    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer notes et appréciations à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les notes à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo'</ul>'.NL;
   }
 }
 

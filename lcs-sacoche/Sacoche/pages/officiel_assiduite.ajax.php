@@ -87,7 +87,7 @@ if( ($action=='import_siecle') && $periode_id )
         Clean::prenom($eleve->attributes()->prenomEleve),
         Clean::entier($eleve->attributes()->nbAbs),
         Clean::entier($eleve->attributes()->nbNonJustif),
-        Clean::entier($eleve->attributes()->nbRet)
+        Clean::entier($eleve->attributes()->nbRet),
       );
     }
   }
@@ -124,19 +124,18 @@ if( ($action=='import_gepi') && $periode_id )
   $tab_users_fichier = array();
   foreach ($tab_lignes as $ligne_contenu)
   {
-    $tab_elements = explode($separateur,$ligne_contenu);
+    $tab_elements = str_getcsv($ligne_contenu,$separateur);
     $tab_elements = array_slice($tab_elements,0,7);
     if(count($tab_elements)==7)
     {
-      $tab_elements = Clean::map_quotes($tab_elements);
       list($elenoet,$nom,$prenom,$classe,$nb_absence,$nb_non_justifie,$nb_retard) = $tab_elements;
       $tab_users_fichier[] = array(
         Clean::entier($elenoet),
-        Clean::nom(   $nom),
+        Clean::nom($nom),
         Clean::prenom($prenom),
         Clean::entier($nb_absence),
         Clean::entier($nb_non_justifie),
-        Clean::entier($nb_retard)
+        Clean::entier($nb_retard),
       );
     }
   }
@@ -221,7 +220,7 @@ if( ($action=='afficher_formulaire_manuel') && $periode_id && $groupe_id )
     $tab_assiduite[$DB_ROW['user_id']] = array(
       'absence'      => $DB_ROW['assiduite_absence'],
       'non_justifie' => $DB_ROW['assiduite_non_justifie'],
-      'retard'       => $DB_ROW['assiduite_retard']
+      'retard'       => $DB_ROW['assiduite_retard'],
     );
   }
   // affichage du tableau

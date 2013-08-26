@@ -97,7 +97,7 @@ if($connexion_mode=='cas')
   if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
   // Gestion du single sign-out
   phpCAS::handleLogoutRequests(FALSE);
-  // Appliquer un proxy si défini par le webmestre ; voir url_get_contents() pour les commentaires.
+  // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
   if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
   {
     phpCAS::setExtraCurlOption(CURLOPT_PROXY     , SERVEUR_PROXY_NAME);
@@ -151,7 +151,7 @@ if($connexion_mode=='gepi')
     'SIMPLESAMLPHP_BASEURLPATH' => substr($_SERVER['SCRIPT_NAME'],1,-9).'_lib/SimpleSAMLphp/www/',
     'WEBMESTRE_NOM'             => WEBMESTRE_NOM,
     'WEBMESTRE_PRENOM'          => WEBMESTRE_PRENOM,
-    'WEBMESTRE_COURRIEL'        => WEBMESTRE_COURRIEL
+    'WEBMESTRE_COURRIEL'        => WEBMESTRE_COURRIEL,
   );
   // Initialiser la classe
   $auth = new SimpleSAML_Auth_Simple('distant-gepi-saml');
