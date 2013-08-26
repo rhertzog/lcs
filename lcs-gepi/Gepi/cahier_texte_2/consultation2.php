@@ -162,7 +162,9 @@ echo "<a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour
 echo "</a>\n";
 echo " | ";
 if(($_SESSION['statut']=='eleve')||($_SESSION['statut']=='responsable')) {
-	echo "<a href=\"consultation.php\">\n";
+	echo "<a href=\"consultation.php";
+	if(($_SESSION['statut']=='responsable')&&(isset($login_eleve))) {echo "?login_eleve=$login_eleve";}
+	echo "\">\n";
 }
 else {
 	echo "<a href=\"see_all.php\">\n";
@@ -183,7 +185,17 @@ elseif($_SESSION['statut']=='responsable') {
 	$mode='eleve';
 
 	// On récupère la liste des élèves associés au responsable:
-	$tab_eleve=get_enfants_from_resp_login($_SESSION['login']);
+	if(getSettingAOui('GepiMemesDroitsRespNonLegaux')) {
+		$tab_eleve=get_enfants_from_resp_login($_SESSION['login'], "simple", "yy");
+	}
+	else {
+		$tab_eleve=get_enfants_from_resp_login($_SESSION['login']);
+	}
+	if(count($tab_eleve)==0) {
+		echo "<p>Vous n'avez aucun élève en responsabilité&nbsp;???</p>\n";
+		require("../lib/footer.inc.php");
+		die();
+	}
 	/*
 	echo "<pre>";
 	echo print_r($tab_eleve);
@@ -194,7 +206,7 @@ elseif($_SESSION['statut']=='responsable') {
 	}
 
 	// On contrôle que l'élève choisi est bien associé au responsable:
-	if((isset($login_eleve))&&(!in_array($login_eleve,$tab_eleve_login))) {
+	if((isset($login_eleve))&&(isset($tab_eleve_login))&&(!in_array($login_eleve,$tab_eleve_login))) {
 		$login_eleve="";
 		// AJOUTER UN APPEL A tentative_intrusion()
 	}
@@ -295,28 +307,31 @@ else {
 	}
 
 	// Afficher les formulaires de choix pour les non-élève/non-responsable
-	// Choix d'une classe
-	echo "<form name='form_choix_classe' enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
-	echo "<fieldset id='choixClasse' style='border: 1px solid grey; width:15%; float:left; margin-right:1em;'>\n";
-	echo "<legend style='border: 1px solid grey;'>Choix d'une classe</legend>\n";
-	echo "<input type='hidden' name='mode' value='classe' />\n";
+	if(($_SESSION['statut']!='professeur')||
+	(getSettingAOui('GepiAccesCDTToutesClasses'))) {
+		// Choix d'une classe
+		echo "<form name='form_choix_classe' enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
+		echo "<fieldset id='choixClasse' style='border: 1px solid grey; width:15%; float:left; margin-right:1em;'>\n";
+		echo "<legend style='border: 1px solid grey;'>Choix d'une classe</legend>\n";
+		echo "<input type='hidden' name='mode' value='classe' />\n";
 
-	if(isset($today)) {
-		echo "<input type='hidden' name='today' value='$today' />\n";
+		if(isset($today)) {
+			echo "<input type='hidden' name='today' value='$today' />\n";
+		}
+
+		echo "<select name='id_classe' onchange='document.form_choix_classe.submit();'>\n";
+		echo "<option value=''>---</option>\n";
+		for($i=0;$i<count($tab_classe);$i++) {
+			echo "<option value='".$tab_classe[$i]['id_classe']."'";
+			if((isset($id_classe))&&($id_classe==$tab_classe[$i]['id_classe'])) {echo " selected='selected'";}
+			echo ">".$tab_classe[$i]['classe']."</option>\n";
+		}
+		echo "</select>\n";
+
+		echo "<input type=\"submit\" id='bouton_submit_classe' value=\"Valider\" />\n";
+		echo "</fieldset>\n";
+		echo "</form>\n";
 	}
-
-	echo "<select name='id_classe' onchange='document.form_choix_classe.submit();'>\n";
-	echo "<option value=''>---</option>\n";
-	for($i=0;$i<count($tab_classe);$i++) {
-		echo "<option value='".$tab_classe[$i]['id_classe']."'";
-		if((isset($id_classe))&&($id_classe==$tab_classe[$i]['id_classe'])) {echo " selected='selected'";}
-		echo ">".$tab_classe[$i]['classe']."</option>\n";
-	}
-	echo "</select>\n";
-
-	echo "<input type=\"submit\" id='bouton_submit_classe' value=\"Valider\" />\n";
-	echo "</fieldset>\n";
-	echo "</form>\n";
 
 	// Choix d'une classe du prof connecté
 	if(isset($tab_classe_du_prof)) {
@@ -478,7 +493,7 @@ elseif($mode=='eleve') {
 	// Passage à la semaine précédente/courante/suivante
 	echo "<div style='float: right; width:25em;'><a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>Aujourd'hui</a> - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>suivante</a></div>\n";
 
-	echo "<p>Affichage pour un élève&nbsp;: <strong>".get_nom_prenom_eleve($login_eleve)." (<em>$classe</em>)</strong></p>\n";
+	echo "<p>Affichage pour un élève&nbsp;: <strong>".civ_nom_prenom($login_eleve)." (<em>$classe</em>)</strong></p>\n";
 
 }
 elseif($mode=='professeur') {
@@ -509,11 +524,7 @@ elseif($mode=='professeur') {
 	echo "<p>Affichage pour un professeur&nbsp;: <strong>".$tab_profs2[$login_prof]."</strong></p>\n";
 }
 //=============================================================
-/*
-echo "<pre>";
-echo print_r($groups);
-echo "</pre>";
-*/
+
 //=============================================================
 // Récupération des groupes du professeur connecté:
 if($_SESSION['statut']=='professeur') {
@@ -630,14 +641,17 @@ for($i=0;$i<14;$i++) {
 				// Dans le futur, ils ne sont vus que par les profs du groupe
 				if((($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes)))||
 					($ligne_ct->date_ct<=$ts_aujourdhui)) {
-					$sql="SELECT * FROM ct_documents where id='$ligne_ct->id_ct';";
+					$sql="SELECT * FROM ct_documents where id_ct='$ligne_ct->id_ct';";
 					$res_doc=mysql_query($sql);
-					while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
-						// Tester si le document est visible ou non dans le cas ele/resp
-						if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
-						($ligne_ct_doc->visible_eleve_parent==1))
-						{
-							$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement'>".$ligne_ct_doc->titre."</a>";
+					if(mysql_num_rows($res_doc)>0) {
+						$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<br /><strong>Documents joints&nbsp;:</strong>";
+						while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
+							// Tester si le document est visible ou non dans le cas ele/resp
+							if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
+							($ligne_ct_doc->visible_eleve_parent==1))
+							{
+								$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
+							}
 						}
 					}
 					$cpt++;
@@ -668,13 +682,16 @@ for($i=0;$i<14;$i++) {
 				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].=$ligne_ct->contenu;
 
 				// Documents joints:
-				$sql="SELECT * FROM ct_devoirs_documents where id='$ligne_ct->id_ct';";
+				$sql="SELECT * FROM ct_devoirs_documents where id_ct_devoir='$ligne_ct->id_ct';";
 				$res_doc=mysql_query($sql);
-				while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
-					if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
-					($ligne_ct_doc->visible_eleve_parent==1))
-					{
-						$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement'>".$ligne_ct_doc->titre."</a>";
+				if(mysql_num_rows($res_doc)>0) {
+					$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<br /><strong>Documents joints&nbsp;:</strong>";
+					while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
+						if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
+						($ligne_ct_doc->visible_eleve_parent==1))
+						{
+							$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
+						}
 					}
 				}
 				$cpt++;
@@ -886,21 +903,21 @@ for($i=0;$i<14;$i++) {
 				// La restriction des notices visibles est fait plus haut
 				echo "      <!-- Témoin de présence de notices privées pour le groupe $id_groupe sur le jour $i -->\n";
 				echo "      <div style='width: 1em; background-color: ".$color_fond_notices['p']."; float: right; margin-left:3px; text-align:center;'>\n";
-				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\">P</a>\n";
+				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\" title=\"Notice privée\">P</a>\n";
 				echo "      </div>\n";
 			}
 			if($texte_dev_courant!='') {
 				// La restriction des notices visibles est fait plus haut
 				echo "      <!-- Témoin de présence de notices de devoirs pour le groupe $id_groupe sur le jour $i -->\n";
 				echo "      <div style='width: 1em; background-color: ".$color_fond_notices['t']."; float: right; margin-left:3px; text-align:center;'>\n";
-				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\">T</a>\n";
+				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\" title=\"Travail à faire\">T</a>\n";
 				echo "      </div>\n";
 			}
 			if($texte_cr_courant!='') {
 				// La restriction des notices visibles est fait plus haut
 				echo "      <!-- Témoin de présence de comptes-rendus pour le groupe $id_groupe sur le jour $i -->\n";
 				echo "      <div style='width: 1em; background-color: ".$color_fond_notices['c']."; float: right; margin-left:3px; text-align:center;'>\n";
-				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\">C</a>\n";
+				echo "         <a href='#ancre_travail_jour_".$i."_groupe_".$id_groupe."' onclick=\"affichage_notices_tel_groupe($i, $id_groupe);return false;\" title=\"Compte-rendu de séance\">C</a>\n";
 				echo "      </div>\n";
 			}
 
@@ -1012,6 +1029,80 @@ if(document.getElementById('bouton_submit_classe')) {document.getElementById('bo
 if(document.getElementById('bouton_submit_une_de_mes_classes')) {document.getElementById('bouton_submit_une_de_mes_classes').style.display='none';}
 if(document.getElementById('bouton_submit_prof')) {document.getElementById('bouton_submit_prof').style.display='none';}
 </script>\n";
+
+/*
+echo "<pre>";
+echo print_r($tab_mes_groupes);
+echo "</pre>";
+
+echo "id_classe=$id_classe<br />";
+*/
+
+$tab_grp=array();
+/*
+if($_SESSION['statut']=='professeur') {
+
+	if($mode=='professeur') {
+		//$tab_champs=array();
+		$tab_grp=get_groups_for_prof($_SESSION['login']);
+	}
+}
+elseif(($_SESSION['statut']=='responsable')||($_SESSION['statut']=='eleve')) {
+	// A VOIR: Cas des élèves qui changent de classe...
+	$tab_grp=get_groups_for_eleve($login_eleve, $id_classe);
+}
+*/
+
+if($mode=='professeur') {
+	//$tab_champs=array();
+	$tab_grp=get_groups_for_prof($_SESSION['login']);
+}
+elseif($mode=='classe') {
+	$tab_grp=get_groups_for_class($id_classe);
+}
+elseif($mode=='eleve') {
+	// A VOIR: Cas des élèves qui changent de classe...
+	$tab_grp=get_groups_for_eleve($login_eleve, $id_classe);
+}
+
+if(count($tab_grp)>0) {
+	$infos_generales="";
+
+	foreach($tab_grp as $current_group) {
+		$id_groupe=$current_group['id'];
+
+		// Affichage des informations générales
+		//$sql="SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and (date_ct='' OR date_ct='0'));";
+		$sql="SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and date_ct='');";
+		//echo "$sql<br />";
+		$appel_info_cahier_texte = mysql_query($sql);
+		$nb_cahier_texte = mysql_num_rows($appel_info_cahier_texte);
+		$content = @mysql_result($appel_info_cahier_texte, 0, 'contenu');
+		$id_ct = @mysql_result($appel_info_cahier_texte, 0, 'id_ct');
+		$content.=affiche_docs_joints($id_ct,"c");
+
+		if($content!="") {
+			$infos_generales.="<div class='see_all_general couleur_bord_tableau_notice color_fond_notices_i' style='width:98%;'>";
+			$infos_generales.="<h3>".$current_group['name']." (<em>".$current_group['description']." en ".$current_group['classlist_string']."</em>)"."</h3>";
+			$infos_generales.=$content;
+			$infos_generales.="</div>";
+		}
+	}
+
+	if ($infos_generales != '') {
+		echo "<div style='padding:1em;'>\n";
+		echo "<h2 class='grande_ligne couleur_bord_tableau_notice'>\n<strong>INFORMATIONS GENERALES</strong>\n</h2>\n";
+		echo $infos_generales;
+		echo "</div>\n";
+	}
+}
+
+echo "<hr />\n";
+echo "<p style='text-align:center; font-style:italic;'>Cahiers de textes du ";
+echo strftime("%d/%m/%Y", getSettingValue("begin_bookings"));
+echo " au ";
+echo strftime("%d/%m/%Y", getSettingValue("end_bookings"));
+echo "</p>\n";
 
 require("../lib/footer.inc.php");
 ?>

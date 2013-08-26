@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -55,6 +55,17 @@ $reg_matiere = $current_group["matiere"]["matiere"];
 $reg_id_classe = $current_group["classes"]["list"][0];
 $reg_clazz = $current_group["classes"]["list"];
 $reg_professeurs = (array)$current_group["profs"]["list"];
+
+//================================
+$invisibilite_groupe=array();
+$sql="SELECT jgv.* FROM j_groupes_visibilite jgv WHERE jgv.visible='n';";
+$res_jgv=mysql_query($sql);
+if(mysql_num_rows($res_jgv)>0) {
+	while($lig_jgv=mysql_fetch_object($res_jgv)) {
+		$invisibilite_groupe=$lig_jgv->domaine;
+	}
+}
+//================================
 
 /*
 foreach($reg_clazz as $key => $value) {
@@ -218,6 +229,29 @@ if (isset($_POST['is_posted'])) {
 		$clazz[0] = $id_classe;
 	}
 
+
+	for($loo=0;$loo<count($tab_domaines);$loo++) {
+		$visibilite_groupe_domaine_courant=isset($_POST['visibilite_groupe_'.$tab_domaines[$loo]]) ? $_POST['visibilite_groupe_'.$tab_domaines[$loo]] : "n";
+
+		if(in_array($tab_domaines[$loo], $invisibilite_groupe)) {
+			if($visibilite_groupe_domaine_courant!='n') {
+				$sql="DELETE FROM j_groupes_visibilite WHERE id_groupe='".$id_groupe."' AND domaine='".$tab_domaines[$loo]."';";
+				//echo "$sql<br />";
+				$suppr=mysql_query($sql);
+				if(!$suppr) {$msg.="Erreur lors de la suppression de l'invisibilité du groupe n°".$id_groupe." sur les ".$tab_domaines_texte[$loo].".<br />";}
+			}
+		}
+		else {
+			if($visibilite_groupe_domaine_courant=='n') {
+				$sql="INSERT j_groupes_visibilite SET id_groupe='".$id_groupe."', domaine='".$tab_domaines[$loo]."', visible='n';";
+				//echo "$sql<br />";
+				$insert=mysql_query($sql);
+				if(!$insert) {$msg.="Erreur lors de l'enregistrement de l'invisibilité du groupe n°".$id_groupe." sur les ".$tab_domaines_texte[$loo].".<br />";}
+			}
+		}
+	}
+
+
 	// Professeurs
 	$reg_professeurs = array();
 	foreach ($_POST as $key => $value) {
@@ -356,13 +390,39 @@ if ($mode == "groupe") {
 } elseif ($mode == "regroupement") {
 	echo "<h3>Modifier le regroupement</h3>\n";
 }
+
+$message_nom_sur_bulletin1="";
+$message_nom_sur_bulletin2="";
+$message_nom_sur_bulletin3="";
+$choix_nom_sur_bulletin1="";
+$choix_nom_sur_bulletin2="";
+$choix_nom_sur_bulletin3="";
+if(getSettingValue('bul_rel_nom_matieres')=='nom_complet_matiere') {
+	$choix_nom_sur_bulletin3="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est votre choix.\" />";
+	$message_nom_sur_bulletin3="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est le nom complet de la matière qui apparait sur les bulletins.
+C'est le paramétrage que vous avez effectué dans Gestion générale/Configuration générale.
+Ce paramétrage est global, commun à toutes les classes.\" />";
+}
+elseif(getSettingValue('bul_rel_nom_matieres')=='nom_groupe') {
+	$choix_nom_sur_bulletin1="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est votre choix.\" />";
+	$message_nom_sur_bulletin1="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est le nom court de l'enseignement (groupe dans le vocabulaire Gepi) qui apparait sur les bulletins.
+C'est le paramétrage que vous avez effectué dans Gestion générale/Configuration générale.
+Ce paramétrage est global, commun à toutes les classes.\" />";
+}
+elseif(getSettingValue('bul_rel_nom_matieres')=='description_groupe') {
+	$choix_nom_sur_bulletin2="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est votre choix.\" />";
+	$message_nom_sur_bulletin2="&nbsp;<img src='../images/info.png' width='20' height='20' title=\"C'est la description de l'enseignement (groupe dans le vocabulaire Gepi) qui apparait sur les bulletins.
+C'est le paramétrage que vous avez effectué dans Gestion générale/Configuration générale.
+Ce paramétrage est global, commun à toutes les classes.\" />";
+}
+
 ?>
 <form enctype="multipart/form-data" action="edit_group.php" method="post">
 <div style="width: 95%;">
 <div style="width: 45%; float: left;">
-<p>Nom court : <input type='text' size='30' name='groupe_nom_court' value = "<?php echo $reg_nom_groupe; ?>" onchange="changement()" /></p>
+<p>Nom court : <input type='text' size='30' name='groupe_nom_court' value = "<?php echo $reg_nom_groupe; ?>" onchange="changement()" /><?php echo $message_nom_sur_bulletin1;?></p>
 
-<p>Nom complet : <input type='text' size='50' name='groupe_nom_complet' value = "<?php echo $reg_nom_complet; ?>" onchange="changement()" /></p>
+<p>Nom complet : <input type='text' size='50' name='groupe_nom_complet' value = "<?php echo $reg_nom_complet; ?>" onchange="changement()" /><?php echo $message_nom_sur_bulletin2;?></p>
 
 <?php
 
@@ -554,6 +614,35 @@ for ($i=0;$i<$nb_mat;$i++) {
 echo "</select>\n";
 //echo "</p>\n";
 */
+
+/*
+// Le coefficient peut différer d'une classe à l'autre.
+// On ne va pas l'éditer ici
+echo "<p>Coefficient de l'enseignement&nbsp;: ";
+echo "<select name='coef' id='coef'>\n";
+for($i=0;$i<max(10,      );$i++){
+	echo "<option value='$i'";
+	echo ">$i</option>\n";
+}
+echo "</select>\n";
+*/
+
+echo "<p>Visibilité de l'enseignement sur&nbsp;: <br />\n";
+for($loop=0;$loop<count($tab_domaines);$loop++) {
+	echo "&nbsp;&nbsp;&nbsp;<input type='checkbox' name='visibilite_groupe_".$tab_domaines[$loop]."' id='visibilite_groupe_".$tab_domaines[$loop]."' value='y' ";
+	$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='$id_groupe' AND domaine='".$tab_domaines[$loop]."' AND visible='n';";
+	$test=mysql_query($sql);
+	if(mysql_num_rows($test)==0) {
+		echo "checked ";
+	}
+	echo " onchange=\"checkbox_change_visibilite('visibilite_groupe_".$tab_domaines[$loop]."'); changement();\"";
+	echo "title='Visibilité ".$tab_domaines[$loop]."' /><label for='visibilite_groupe_".$tab_domaines[$loop]."' id='texte_visibilite_groupe_".$tab_domaines[$loop]."'";
+	if(mysql_num_rows($test)==0) {
+		echo "style='font-weight:bold;' ";
+	}
+	echo ">".$tab_domaines_texte[$loop]."</label><br />\n";
+}
+
 echo "</div>\n";
 // Edition des professeurs
 echo "<div style='width: 45%; float: right;'>\n";
@@ -577,8 +666,10 @@ for ($i=0;$i<$nb_mat;$i++) {
 	//echo ">" . html_entity_decode($nom_matiere) . "</option>\n";
 	//echo ">" . htmlspecialchars($nom_matiere) . "</option>\n";
 }
-echo "</select>\n";
+echo "</select>";
+echo $message_nom_sur_bulletin3;
 echo "</p>\n";
+
 //=================================================
 
 // Mettre un témoin pour repérer le prof principal
@@ -619,7 +710,7 @@ for ($i=0;$i<$nb;$i++) {
 }
 
 if (count($prof_list["list"]) == "0") {
-	echo "<p><font color='red'>ERREUR !</font> Aucun professeur n'a été défini comme compétent dans la matière considérée.</p>\n";
+	echo "<p><span style='color:red'>ERREUR !</span> Aucun professeur n'a été défini comme compétent dans la matière considérée.<br /><a href='../matieres/modify_matiere.php?current_matiere=$reg_matiere'>Associer des professeurs à $reg_matiere</a></p>\n";
 } else {
 	$total_profs = array_merge($prof_list["list"], $reg_professeurs);
 	$total_profs = array_unique($total_profs);
@@ -711,6 +802,7 @@ function checkbox_change(cpt) {
 ";
 
 echo js_checkbox_change_style('checkbox_change_classe');
+echo js_checkbox_change_style('checkbox_change_visibilite');
 
 echo "
 for(i=0;i<$p;i++) {
@@ -721,6 +813,16 @@ for(i=0;i<$p;i++) {
 }
 
 echo "</div>\n";
+
+$avec_lien_edit_group="y";
+$tab_autres_groupes=tableau_html_groupe_matiere_telle_classe($id_classe, $reg_matiere, array($id_groupe));
+if($tab_autres_groupes!="") {
+	echo "<div style='width: 45%; float: right; font-size:small; margin-top:1em;'>\n";
+	echo "<p>Il existe d'autres enseignements dans la même matière pour cette classe&nbsp;:</p>\n";
+	echo $tab_autres_groupes;
+	echo "</div>\n";
+}
+
 echo "<div style='float: left; width: 100%'>\n";
 echo "<input type='hidden' name='is_posted' value='1' />\n";
 echo "<input type='hidden' name='mode' value='" . $mode . "' />\n";
@@ -738,6 +840,21 @@ echo "</div>\n";
 echo "</div>\n";
 
 echo "</form>\n";
+
+echo "<div style='clear:both;'></div>
+<hr />
+<p><br /></p>
+<div>
+	<p><em>NOTE&nbsp;:</em> Le nom qui apparait dans la colonne matières des bulletins peut être&nbsp;:</p>
+	<div style='margin-left:4em;'>
+		<ul>
+			<li>le nom complet de la matière$choix_nom_sur_bulletin3</li>
+			<li>le nom court de l'enseignement (<em>groupe dans le vocabulaire Gepi</em>)$choix_nom_sur_bulletin1</li>
+			<li>la description de l'enseignement (<em>groupe dans le vocabulaire Gepi</em>)$choix_nom_sur_bulletin2</li>
+		</ul>
+		<p>Ce paramétrage peut être effectué dans la page <a href='../gestion/param_gen.php#bul_rel_nom_matieres'>Gestion générale/Configuration générale</a>.</p>
+	</div>
+</div>\n";
 
 require("../lib/footer.inc.php");
 ?>

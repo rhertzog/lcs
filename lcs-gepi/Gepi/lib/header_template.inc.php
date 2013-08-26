@@ -168,6 +168,11 @@ if ($tablekit == "ok") {
 	$tbs_librairies[]=$gepiPath."/lib/tablekit.js";
 }
 
+if(isset($avec_js_et_css_edt)) {
+	include("../edt_organisation/fonctions_edt.php");
+	prendre_en_compte_js_et_css_edt();
+}
+
 if(isset($javascript_specifique)) {
 	// Il faudrait filtrer le contenu de la variable...
 	// On ajoute le ".js" automatiquement et on exclus les "." qui pourrait permettre des ".." pour remonter dans l'arborescence
@@ -287,7 +292,10 @@ if (isset($style_screen_ajout))  {
 	} elseif ($niveau_arbo == "3") {
 	   $gepiPath2="../../..";
 	}
-	
+	elseif($niveau_arbo == "public") {
+	   $gepiPath2="..";
+	}
+
 		$Style_CSS=array(); // initialisation du tableau de Style supplémentaire	
 		
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
@@ -321,6 +329,14 @@ $tbs_charger_observeur=$charger_observeur;
 if (getSettingValue("impose_petit_entete_prof") == 'y' AND isset($_SESSION['statut']) AND $_SESSION['statut'] == 'professeur') {
 	$_SESSION['cacher_header']="y";
 }
+
+$petit_entete="";
+if(isset($_SESSION['login'])) {$petit_entete=getPref($_SESSION['login'], "petit_entete", "");}
+//echo "\$petit_entete=$petit_entete<br />";
+if(($petit_entete=='y')||($petit_entete=='n')) {
+	$_SESSION['cacher_header']=$petit_entete;
+}
+
 // Taille à récupérer dans la base pour initialiser $_SESSION['cacher_header']
 	// petit bandeau toute valeur sauf "n" ;
 	// grand bandeau "n";
@@ -373,7 +389,7 @@ if (isset($titre_page)) {
 
 
 	$tbs_aff_temoin_check_serveur="n";
-	if(getSettingAOui('aff_temoin_check_serveur')) {
+	if((getSettingAOui('aff_temoin_check_serveur'))&&($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable')) {
 		// insert into setting set name='aff_temoin_check_serveur', value='y';
 		$tbs_aff_temoin_check_serveur="y";
 	}
@@ -401,7 +417,9 @@ if (isset($titre_page)) {
 			$tbs_nom_prenom="Visiteur";
 		}
 	}
-	
+
+	$tbs_nom_prenom_statut=$tbs_nom_prenom;
+
 	//=== Dernière connexion ===
 	if (isset($affiche_connexion)) {
 		$tbs_last_connection=last_connection();
@@ -409,6 +427,7 @@ if (isset($titre_page)) {
 				
 //=== statut utilisateur ===
 	if (isset($_SESSION['statut'])) {
+		$tbs_nom_prenom_statut.=" (".$_SESSION['statut'].")";
 		if ($_SESSION['statut'] == "administrateur") {
 			$tbs_statut[]=array("classe"=>"rouge" , "texte"=>"Administrateur");
 		}elseif ($_SESSION['statut'] == "professeur") {
@@ -428,7 +447,12 @@ if (isset($titre_page)) {
 			$tab_tmp_info_classes=get_noms_classes_from_ele_login($_SESSION['login']);
 			$tbs_statut[]=array("classe"=>"" , "texte"=>"Élève de ".$tab_tmp_info_classes[count($tab_tmp_info_classes)-1]);
 		}elseif ($_SESSION['statut'] == "responsable") {
-			$tab_tmp_ele=get_enfants_from_resp_login($_SESSION['login']);
+			if(getSettingAOui('GepiMemesDroitsRespNonLegaux')) {
+				$tab_tmp_ele=get_enfants_from_resp_login($_SESSION['login'], "simple", "yy");
+			}
+			else {
+				$tab_tmp_ele=get_enfants_from_resp_login($_SESSION['login']);
+			}
 			$chaine_enfants="";
 			if(count($tab_tmp_ele)>0) {
 				$nom_enfant=$tab_tmp_ele[1];
@@ -477,6 +501,13 @@ if (isset($titre_page)) {
 	// menu accueil
 	$tbs_premier_menu[]=array("lien"=>$gepiPath."/accueil.php" , "confirme"=>"insert_confirm_abandon()" , "image"=>$gepiPath."/images/icons/home.png" , "alt"=>"Accueil" , "title"=>"Accueil" , "texte"=>"Accueil");
 	$tbs_premier_menu[]=array("lien"=>$gepiPath."/utilisateurs/mon_compte.php" , "confirme"=>"insert_confirm_abandon()" , "image"=>$gepiPath."/images/icons/buddy.png" , "alt"=>"Mon compte" , "title"=>"Mon compte" ,  "texte"=>"Gérer mon compte");
+
+	/*
+	if(in_array($_SESSION['statut'], array('professeur', 'scolarite', 'cpe', 'administrateur'))) {
+		$tbs_premier_menu[]=array("lien"=>"#", "alt"=>"Messagerie interne" , "title"=>"Messagerie interne" ,  "texte"=>affichage_temoin_messages_recus());
+	}
+	*/
+
 	if ($session_gepi->current_auth_mode == "sso" && $gepiSettings['sso_display_portail'] == 'yes') {
 	$tbs_premier_menu[]=array("lien"=>$gepiSettings["sso_url_portail"] , "confirme"=>"" , "image"=>$gepiPath."/images/icons/retour_sso.png" , "alt"=>"Portail" , "title"=>"Retour portail" , "texte"=>"Retour portail");
 	}

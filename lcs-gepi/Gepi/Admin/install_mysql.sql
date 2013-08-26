@@ -1,13 +1,12 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.2.2
+-- version 4.0.4
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Jeu 06 Septembre 2012 à 21:04
--- Version du serveur: 5.0.51a-24+lenny5
--- Version de PHP: 5.2.17-0.dotdeb.0
+-- Version du serveur: 5.1.66-0+squeeze1
+-- Version de PHP: 5.3.3-7+squeeze14
 
-SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
@@ -17,10 +16,12 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Base de données: `gepi161`
+-- Base de données: `gepi163`
 --
 CREATE DATABASE `gepi_plug`;
 USE gepi_plug;
+-- --------------------------------------------------------
+
 -- --------------------------------------------------------
 
 --
@@ -28,13 +29,13 @@ USE gepi_plug;
 --
 
 CREATE TABLE IF NOT EXISTS `absences` (
-  `login` varchar(50) NOT NULL default '',
-  `periode` int(11) NOT NULL default '0',
-  `nb_absences` char(2) NOT NULL default '',
-  `non_justifie` char(2) NOT NULL default '',
-  `nb_retards` char(2) NOT NULL default '',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `periode` int(11) NOT NULL DEFAULT '0',
+  `nb_absences` char(2) NOT NULL DEFAULT '',
+  `non_justifie` char(2) NOT NULL DEFAULT '',
+  `nb_retards` char(2) NOT NULL DEFAULT '',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`login`,`periode`)
+  PRIMARY KEY (`login`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -44,10 +45,10 @@ CREATE TABLE IF NOT EXISTS `absences` (
 --
 
 CREATE TABLE IF NOT EXISTS `absences_actions` (
-  `id_absence_action` int(11) NOT NULL auto_increment,
-  `init_absence_action` char(2) NOT NULL default '',
-  `def_absence_action` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id_absence_action`)
+  `id_absence_action` int(11) NOT NULL AUTO_INCREMENT,
+  `init_absence_action` char(2) NOT NULL DEFAULT '',
+  `def_absence_action` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_absence_action`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
@@ -68,19 +69,19 @@ INSERT INTO `absences_actions` (`id_absence_action`, `init_absence_action`, `def
 --
 
 CREATE TABLE IF NOT EXISTS `absences_eleves` (
-  `id_absence_eleve` int(11) NOT NULL auto_increment,
-  `type_absence_eleve` char(1) NOT NULL default '',
-  `eleve_absence_eleve` varchar(25) NOT NULL default '0',
-  `justify_absence_eleve` char(3) NOT NULL default '',
+  `id_absence_eleve` int(11) NOT NULL AUTO_INCREMENT,
+  `type_absence_eleve` char(1) NOT NULL DEFAULT '',
+  `eleve_absence_eleve` varchar(25) NOT NULL DEFAULT '0',
+  `justify_absence_eleve` char(3) NOT NULL DEFAULT '',
   `info_justify_absence_eleve` text NOT NULL,
-  `motif_absence_eleve` varchar(4) NOT NULL default '',
+  `motif_absence_eleve` varchar(4) NOT NULL DEFAULT '',
   `info_absence_eleve` text NOT NULL,
-  `d_date_absence_eleve` date NOT NULL default '0000-00-00',
-  `a_date_absence_eleve` date default NULL,
-  `d_heure_absence_eleve` time default NULL,
-  `a_heure_absence_eleve` time default NULL,
-  `saisie_absence_eleve` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`id_absence_eleve`)
+  `d_date_absence_eleve` date NOT NULL DEFAULT '0000-00-00',
+  `a_date_absence_eleve` date DEFAULT NULL,
+  `d_heure_absence_eleve` time DEFAULT NULL,
+  `a_heure_absence_eleve` time DEFAULT NULL,
+  `saisie_absence_eleve` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_absence_eleve`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -90,9 +91,9 @@ CREATE TABLE IF NOT EXISTS `absences_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `absences_gep` (
-  `id_seq` char(2) NOT NULL default '',
-  `type` char(1) NOT NULL default '',
-  PRIMARY KEY  (`id_seq`)
+  `id_seq` char(2) NOT NULL DEFAULT '',
+  `type` char(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_seq`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -102,10 +103,10 @@ CREATE TABLE IF NOT EXISTS `absences_gep` (
 --
 
 CREATE TABLE IF NOT EXISTS `absences_motifs` (
-  `id_motif_absence` int(11) NOT NULL auto_increment,
-  `init_motif_absence` char(2) NOT NULL default '',
-  `def_motif_absence` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id_motif_absence`)
+  `id_motif_absence` int(11) NOT NULL AUTO_INCREMENT,
+  `init_motif_absence` char(2) NOT NULL DEFAULT '',
+  `def_motif_absence` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_motif_absence`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=27 ;
 
 --
@@ -147,18 +148,18 @@ INSERT INTO `absences_motifs` (`id_motif_absence`, `init_motif_absence`, `def_mo
 --
 
 CREATE TABLE IF NOT EXISTS `absences_rb` (
-  `id` int(5) NOT NULL auto_increment,
+  `id` int(5) NOT NULL AUTO_INCREMENT,
   `eleve_id` varchar(30) NOT NULL,
-  `retard_absence` varchar(1) NOT NULL default 'A',
+  `retard_absence` varchar(1) NOT NULL DEFAULT 'A',
   `groupe_id` varchar(8) NOT NULL,
-  `edt_id` int(5) NOT NULL default '0',
+  `edt_id` int(5) NOT NULL DEFAULT '0',
   `jour_semaine` varchar(10) NOT NULL,
   `creneau_id` int(5) NOT NULL,
   `debut_ts` int(11) NOT NULL,
   `fin_ts` int(11) NOT NULL,
   `date_saisie` int(20) NOT NULL,
   `login_saisie` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `eleve_debut_fin_retard` (`eleve_id`,`debut_ts`,`fin_ts`,`retard_absence`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -169,12 +170,12 @@ CREATE TABLE IF NOT EXISTS `absences_rb` (
 --
 
 CREATE TABLE IF NOT EXISTS `absences_repas` (
-  `id` int(5) NOT NULL auto_increment,
-  `date_repas` date NOT NULL default '0000-00-00',
+  `id` int(5) NOT NULL AUTO_INCREMENT,
+  `date_repas` date NOT NULL DEFAULT '0000-00-00',
   `id_groupe` varchar(8) NOT NULL,
   `eleve_id` varchar(30) NOT NULL,
   `pers_id` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -184,12 +185,12 @@ CREATE TABLE IF NOT EXISTS `absences_repas` (
 --
 
 CREATE TABLE IF NOT EXISTS `acces_cdt` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` text NOT NULL,
-  `chemin` varchar(255) NOT NULL default '',
-  `date1` datetime NOT NULL default '0000-00-00 00:00:00',
-  `date2` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`)
+  `chemin` varchar(255) NOT NULL DEFAULT '',
+  `date1` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `date2` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -199,11 +200,41 @@ CREATE TABLE IF NOT EXISTS `acces_cdt` (
 --
 
 CREATE TABLE IF NOT EXISTS `acces_cdt_groupes` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_acces` int(11) NOT NULL,
   `id_groupe` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `acces_cn`
+--
+
+CREATE TABLE IF NOT EXISTS `acces_cn` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_groupe` int(11) NOT NULL,
+  `periode` int(11) NOT NULL,
+  `date_limite` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `commentaires` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Acces exceptionnel au CN en periode close' AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `acces_exceptionnel_matieres_notes`
+--
+
+CREATE TABLE IF NOT EXISTS `acces_exceptionnel_matieres_notes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_groupe` int(11) NOT NULL,
+  `periode` int(11) NOT NULL,
+  `date_limite` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `commentaires` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Acces exceptionnel à la modif de notes du bulletin en period' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -212,31 +243,31 @@ CREATE TABLE IF NOT EXISTS `acces_cdt_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid` (
-  `id` varchar(100) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
-  `numero` varchar(8) NOT NULL default '0',
-  `indice_aid` int(11) NOT NULL default '0',
-  `perso1` varchar(255) NOT NULL default '',
-  `perso2` varchar(255) NOT NULL default '',
-  `perso3` varchar(255) NOT NULL default '',
-  `productions` varchar(100) NOT NULL default '',
+  `id` varchar(100) NOT NULL DEFAULT '',
+  `nom` varchar(100) NOT NULL DEFAULT '',
+  `numero` varchar(8) NOT NULL DEFAULT '0',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  `perso1` varchar(255) NOT NULL DEFAULT '',
+  `perso2` varchar(255) NOT NULL DEFAULT '',
+  `perso3` varchar(255) NOT NULL DEFAULT '',
+  `productions` varchar(100) NOT NULL DEFAULT '',
   `resume` text NOT NULL,
-  `famille` smallint(6) NOT NULL default '0',
-  `mots_cles` varchar(255) NOT NULL default '',
-  `adresse1` varchar(255) NOT NULL default '',
-  `adresse2` varchar(255) NOT NULL default '',
-  `public_destinataire` varchar(50) NOT NULL default '',
+  `famille` smallint(6) NOT NULL DEFAULT '0',
+  `mots_cles` varchar(255) NOT NULL DEFAULT '',
+  `adresse1` varchar(255) NOT NULL DEFAULT '',
+  `adresse2` varchar(255) NOT NULL DEFAULT '',
+  `public_destinataire` varchar(50) NOT NULL DEFAULT '',
   `contacts` text NOT NULL,
   `divers` text NOT NULL,
-  `matiere1` varchar(100) NOT NULL default '',
-  `matiere2` varchar(100) NOT NULL default '',
-  `eleve_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `prof_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `cpe_peut_modifier` enum('y','n') NOT NULL default 'n',
-  `fiche_publique` enum('y','n') NOT NULL default 'n',
-  `affiche_adresse1` enum('y','n') NOT NULL default 'n',
-  `en_construction` enum('y','n') NOT NULL default 'n',
-  PRIMARY KEY  (`id`)
+  `matiere1` varchar(100) NOT NULL DEFAULT '',
+  `matiere2` varchar(100) NOT NULL DEFAULT '',
+  `eleve_peut_modifier` enum('y','n') NOT NULL DEFAULT 'n',
+  `prof_peut_modifier` enum('y','n') NOT NULL DEFAULT 'n',
+  `cpe_peut_modifier` enum('y','n') NOT NULL DEFAULT 'n',
+  `fiche_publique` enum('y','n') NOT NULL DEFAULT 'n',
+  `affiche_adresse1` enum('y','n') NOT NULL DEFAULT 'n',
+  `en_construction` enum('y','n') NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -246,14 +277,14 @@ CREATE TABLE IF NOT EXISTS `aid` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid_appreciations` (
-  `login` varchar(50) NOT NULL default '',
-  `id_aid` varchar(100) NOT NULL default '',
-  `periode` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_aid` varchar(100) NOT NULL DEFAULT '',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
-  `statut` char(10) NOT NULL default '',
-  `note` float default NULL,
-  `indice_aid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`id_aid`,`periode`)
+  `statut` char(10) NOT NULL DEFAULT '',
+  `note` float DEFAULT NULL,
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`login`,`id_aid`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -263,23 +294,23 @@ CREATE TABLE IF NOT EXISTS `aid_appreciations` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid_config` (
-  `nom` char(100) NOT NULL default '',
-  `nom_complet` char(100) NOT NULL default '',
-  `note_max` int(11) NOT NULL default '0',
-  `order_display1` char(1) NOT NULL default '0',
-  `order_display2` int(11) NOT NULL default '0',
-  `type_note` char(5) NOT NULL default '',
-  `display_begin` int(11) NOT NULL default '0',
-  `display_end` int(11) NOT NULL default '0',
-  `message` varchar(40) NOT NULL default '',
-  `display_nom` char(1) NOT NULL default '',
-  `indice_aid` int(11) NOT NULL default '0',
-  `display_bulletin` char(1) NOT NULL default 'y',
-  `bull_simplifie` char(1) NOT NULL default 'y',
-  `outils_complementaires` enum('y','n') NOT NULL default 'n',
-  `feuille_presence` enum('y','n') NOT NULL default 'n',
-  `autoriser_inscript_multiples` char(1) NOT NULL default 'n',
-  PRIMARY KEY  (`indice_aid`)
+  `nom` char(100) NOT NULL DEFAULT '',
+  `nom_complet` char(100) NOT NULL DEFAULT '',
+  `note_max` int(11) NOT NULL DEFAULT '0',
+  `order_display1` char(1) NOT NULL DEFAULT '0',
+  `order_display2` int(11) NOT NULL DEFAULT '0',
+  `type_note` char(5) NOT NULL DEFAULT '',
+  `display_begin` int(11) NOT NULL DEFAULT '0',
+  `display_end` int(11) NOT NULL DEFAULT '0',
+  `message` varchar(40) NOT NULL DEFAULT '',
+  `display_nom` char(1) NOT NULL DEFAULT '',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  `display_bulletin` char(1) NOT NULL DEFAULT 'y',
+  `bull_simplifie` char(1) NOT NULL DEFAULT 'y',
+  `outils_complementaires` enum('y','n') NOT NULL DEFAULT 'n',
+  `feuille_presence` enum('y','n') NOT NULL DEFAULT 'n',
+  `autoriser_inscript_multiples` char(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`indice_aid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -289,9 +320,9 @@ CREATE TABLE IF NOT EXISTS `aid_config` (
 --
 
 CREATE TABLE IF NOT EXISTS `aid_familles` (
-  `ordre_affichage` smallint(6) NOT NULL default '0',
-  `id` smallint(6) NOT NULL default '0',
-  `type` varchar(250) NOT NULL default ''
+  `ordre_affichage` smallint(6) NOT NULL DEFAULT '0',
+  `id` smallint(6) NOT NULL DEFAULT '0',
+  `type` varchar(250) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -317,9 +348,9 @@ INSERT INTO `aid_familles` (`ordre_affichage`, `id`, `type`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `aid_productions` (
-  `id` smallint(6) NOT NULL auto_increment,
-  `nom` varchar(100) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `nom` varchar(100) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=18 ;
 
 --
@@ -352,9 +383,9 @@ INSERT INTO `aid_productions` (`id`, `nom`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `aid_public` (
-  `ordre_affichage` smallint(6) NOT NULL default '0',
-  `id` smallint(6) NOT NULL default '0',
-  `public` varchar(100) NOT NULL default ''
+  `ordre_affichage` smallint(6) NOT NULL DEFAULT '0',
+  `id` smallint(6) NOT NULL DEFAULT '0',
+  `public` varchar(100) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -376,31 +407,31 @@ INSERT INTO `aid_public` (`ordre_affichage`, `id`, `public`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_aids` (
-  `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(200) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
-  `id_type_aid` int(11) NOT NULL default '0',
-  `productions` varchar(100) NOT NULL default '',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `annee` varchar(200) NOT NULL DEFAULT '',
+  `nom` varchar(100) NOT NULL DEFAULT '',
+  `id_type_aid` int(11) NOT NULL DEFAULT '0',
+  `productions` varchar(100) NOT NULL DEFAULT '',
   `resume` text NOT NULL,
-  `famille` smallint(6) NOT NULL default '0',
+  `famille` smallint(6) NOT NULL DEFAULT '0',
   `mots_cles` text NOT NULL,
-  `adresse1` varchar(255) NOT NULL default '',
-  `adresse2` varchar(255) NOT NULL default '',
-  `public_destinataire` varchar(50) NOT NULL default '',
+  `adresse1` varchar(255) NOT NULL DEFAULT '',
+  `adresse2` varchar(255) NOT NULL DEFAULT '',
+  `public_destinataire` varchar(50) NOT NULL DEFAULT '',
   `contacts` text NOT NULL,
   `divers` text NOT NULL,
-  `matiere1` varchar(100) NOT NULL default '',
-  `matiere2` varchar(100) NOT NULL default '',
-  `fiche_publique` enum('y','n') NOT NULL default 'n',
-  `affiche_adresse1` enum('y','n') NOT NULL default 'n',
-  `en_construction` enum('y','n') NOT NULL default 'n',
+  `matiere1` varchar(100) NOT NULL DEFAULT '',
+  `matiere2` varchar(100) NOT NULL DEFAULT '',
+  `fiche_publique` enum('y','n') NOT NULL DEFAULT 'n',
+  `affiche_adresse1` enum('y','n') NOT NULL DEFAULT 'n',
+  `en_construction` enum('y','n') NOT NULL DEFAULT 'n',
   `notes_moyenne` varchar(255) NOT NULL,
   `notes_min` varchar(255) NOT NULL,
   `notes_max` varchar(255) NOT NULL,
   `responsables` text NOT NULL,
   `eleves` text NOT NULL,
   `eleves_resp` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -410,10 +441,10 @@ CREATE TABLE IF NOT EXISTS `archivage_aids` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_aid_eleve` (
-  `id_aid` int(11) NOT NULL default '0',
+  `id_aid` int(11) NOT NULL DEFAULT '0',
   `id_eleve` varchar(255) NOT NULL,
-  `eleve_resp` char(1) NOT NULL default 'n',
-  PRIMARY KEY  (`id_aid`,`id_eleve`)
+  `eleve_resp` char(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id_aid`,`id_eleve`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -427,13 +458,13 @@ CREATE TABLE IF NOT EXISTS `archivage_appreciations_aid` (
   `annee` varchar(200) NOT NULL,
   `classe` varchar(255) NOT NULL,
   `id_aid` int(11) NOT NULL,
-  `periode` int(11) NOT NULL default '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
   `note_eleve` varchar(50) NOT NULL,
   `note_moyenne_classe` varchar(255) NOT NULL,
   `note_min_classe` varchar(255) NOT NULL,
   `note_max_classe` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id_eleve`,`id_aid`,`periode`)
+  PRIMARY KEY (`id_eleve`,`id_aid`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -443,7 +474,7 @@ CREATE TABLE IF NOT EXISTS `archivage_appreciations_aid` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_disciplines` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `annee` varchar(200) NOT NULL,
   `INE` varchar(255) NOT NULL,
   `classe` varchar(255) NOT NULL,
@@ -461,7 +492,7 @@ CREATE TABLE IF NOT EXISTS `archivage_disciplines` (
   `nb_absences` int(11) NOT NULL,
   `non_justifie` int(11) NOT NULL,
   `nb_retards` int(11) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `INE` (`INE`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -472,18 +503,18 @@ CREATE TABLE IF NOT EXISTS `archivage_disciplines` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_ects` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `annee` varchar(255) NOT NULL COMMENT 'Annee scolaire',
   `ine` varchar(55) NOT NULL COMMENT 'Identifiant de l''eleve',
   `classe` varchar(255) NOT NULL COMMENT 'Classe de l''eleve',
   `num_periode` int(11) NOT NULL COMMENT 'Identifiant de la periode',
   `nom_periode` varchar(255) NOT NULL COMMENT 'Nom complet de la periode',
   `special` varchar(255) NOT NULL COMMENT 'Cle utilisee pour isoler certaines lignes (par exemple un credit ECTS pour une periode et non une matiere)',
-  `matiere` varchar(255) default NULL COMMENT 'Nom de l''enseignement',
-  `profs` varchar(255) default NULL COMMENT 'Liste des profs de l''enseignement',
-  `valeur` decimal(10,0) NOT NULL COMMENT 'Nombre de crÃ©dits obtenus par l''eleve',
+  `matiere` varchar(255) DEFAULT NULL COMMENT 'Nom de l''enseignement',
+  `profs` varchar(255) DEFAULT NULL COMMENT 'Liste des profs de l''enseignement',
+  `valeur` decimal(10,0) NOT NULL COMMENT 'Nombre de crédits obtenus par l''eleve',
   `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
-  PRIMARY KEY  (`id`,`ine`,`num_periode`,`special`),
+  PRIMARY KEY (`id`,`ine`,`num_periode`,`special`),
   KEY `archivage_ects_FI_1` (`ine`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -495,11 +526,11 @@ CREATE TABLE IF NOT EXISTS `archivage_ects` (
 
 CREATE TABLE IF NOT EXISTS `archivage_eleves` (
   `ine` varchar(255) NOT NULL,
-  `nom` varchar(255) NOT NULL default '',
-  `prenom` varchar(255) NOT NULL default '',
+  `nom` varchar(255) NOT NULL DEFAULT '',
+  `prenom` varchar(255) NOT NULL DEFAULT '',
   `sexe` char(1) NOT NULL,
-  `naissance` date NOT NULL default '0000-00-00',
-  PRIMARY KEY  (`ine`),
+  `naissance` date NOT NULL DEFAULT '0000-00-00',
+  PRIMARY KEY (`ine`),
   KEY `nom` (`nom`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -510,11 +541,11 @@ CREATE TABLE IF NOT EXISTS `archivage_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_eleves2` (
-  `annee` varchar(50) NOT NULL default '',
+  `annee` varchar(50) NOT NULL DEFAULT '',
   `ine` varchar(50) NOT NULL,
-  `doublant` enum('-','R') NOT NULL default '-',
+  `doublant` enum('-','R') NOT NULL DEFAULT '-',
   `regime` varchar(255) NOT NULL,
-  PRIMARY KEY  (`ine`,`annee`)
+  PRIMARY KEY (`ine`,`annee`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -524,15 +555,15 @@ CREATE TABLE IF NOT EXISTS `archivage_eleves2` (
 --
 
 CREATE TABLE IF NOT EXISTS `archivage_types_aid` (
-  `id` int(11) NOT NULL auto_increment,
-  `annee` varchar(200) NOT NULL default '',
-  `nom` varchar(100) NOT NULL default '',
-  `nom_complet` varchar(100) NOT NULL default '',
-  `note_sur` int(11) NOT NULL default '0',
-  `type_note` varchar(5) NOT NULL default '',
-  `display_bulletin` char(1) NOT NULL default 'y',
-  `outils_complementaires` enum('y','n') NOT NULL default 'n',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `annee` varchar(200) NOT NULL DEFAULT '',
+  `nom` varchar(100) NOT NULL DEFAULT '',
+  `nom_complet` varchar(100) NOT NULL DEFAULT '',
+  `note_sur` int(11) NOT NULL DEFAULT '0',
+  `type_note` varchar(5) NOT NULL DEFAULT '',
+  `display_bulletin` char(1) NOT NULL DEFAULT 'y',
+  `outils_complementaires` enum('y','n') NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -542,9 +573,9 @@ CREATE TABLE IF NOT EXISTS `archivage_types_aid` (
 --
 
 CREATE TABLE IF NOT EXISTS `ateliers_config` (
-  `nom_champ` char(100) NOT NULL default '',
-  `content` char(255) NOT NULL default '',
-  `param` char(100) NOT NULL default ''
+  `nom_champ` char(100) NOT NULL DEFAULT '',
+  `content` char(255) NOT NULL DEFAULT '',
+  `param` char(100) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -554,12 +585,12 @@ CREATE TABLE IF NOT EXISTS `ateliers_config` (
 --
 
 CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
-  `login` varchar(50) NOT NULL default '',
-  `periode` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `avis` text NOT NULL,
-  `id_mention` int(11) NOT NULL default '0',
-  `statut` varchar(10) NOT NULL default '',
-  PRIMARY KEY  (`login`,`periode`),
+  `id_mention` int(11) NOT NULL DEFAULT '0',
+  `statut` varchar(10) NOT NULL DEFAULT '',
+  PRIMARY KEY (`login`,`periode`),
   KEY `login` (`login`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -571,17 +602,17 @@ CREATE TABLE IF NOT EXISTS `avis_conseil_classe` (
 
 CREATE TABLE IF NOT EXISTS `a_agregation_decompte` (
   `eleve_id` int(11) NOT NULL COMMENT 'id de l''eleve',
-  `date_demi_jounee` datetime NOT NULL default '0000-00-00 00:00:00' COMMENT 'Date de la demi journÃ©e agrÃ©gÃ©e : 00:00 pour une matinÃ©e, 12:00 pour une aprÃ¨s midi',
-  `manquement_obligation_presence` tinyint(4) default '0' COMMENT 'Cette demi journÃ©e est comptÃ©e comme absence',
-  `non_justifiee` tinyint(4) default '0' COMMENT 'Si cette demi journÃ©e est comptÃ© comme absence, y a-t-il une justification',
-  `notifiee` tinyint(4) default '0' COMMENT 'Si cette demi journÃ©e est comptÃ© comme absence, y a-t-il une notification Ã  la famille',
-  `retards` int(11) default '0' COMMENT 'Nombre de retards total dÃ©comptÃ©s dans la demi journÃ©e',
-  `retards_non_justifies` int(11) default '0' COMMENT 'Nombre de retards non justifiÃ©s dÃ©comptÃ©s dans la demi journÃ©e',
-  `motifs_absences` text COMMENT 'Liste des motifs (table a_motifs) associÃ©s Ã  cette demi-journÃ©e d''absence',
-  `motifs_retards` text COMMENT 'Liste des motifs (table a_motifs) associÃ©s aux retard de cette demi-journÃ©e',
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  PRIMARY KEY  (`eleve_id`,`date_demi_jounee`)
+  `date_demi_jounee` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Date de la demi journée agrégée : 00:00 pour une matinée, 12:00 pour une après midi',
+  `manquement_obligation_presence` tinyint(4) DEFAULT '0' COMMENT 'Cette demi journée est comptée comme absence',
+  `non_justifiee` tinyint(4) DEFAULT '0' COMMENT 'Si cette demi journée est compté comme absence, y a-t-il une justification',
+  `notifiee` tinyint(4) DEFAULT '0' COMMENT 'Si cette demi journée est compté comme absence, y a-t-il une notification à la famille',
+  `retards` int(11) DEFAULT '0' COMMENT 'Nombre de retards total décomptés dans la demi journée',
+  `retards_non_justifies` int(11) DEFAULT '0' COMMENT 'Nombre de retards non justifiés décomptés dans la demi journée',
+  `motifs_absences` text COMMENT 'Liste des motifs (table a_motifs) associés à cette demi-journée d''absence',
+  `motifs_retards` text COMMENT 'Liste des motifs (table a_motifs) associés aux retard de cette demi-journée',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`eleve_id`,`date_demi_jounee`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table d''agregation des decomptes de demi journees d''absence ';
 
 -- --------------------------------------------------------
@@ -591,13 +622,13 @@ CREATE TABLE IF NOT EXISTS `a_agregation_decompte` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_justifications` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incrementee',
   `nom` varchar(250) NOT NULL COMMENT 'Nom de la justification',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `sortable_rank` int(11) default NULL,
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  PRIMARY KEY  (`id`)
+  `sortable_rank` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Liste des justifications possibles pour une absence' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -607,11 +638,11 @@ CREATE TABLE IF NOT EXISTS `a_justifications` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_lieux` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire auto-incrementee',
   `nom` varchar(250) NOT NULL COMMENT 'Nom du lieu',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `sortable_rank` int(11) default NULL,
-  PRIMARY KEY  (`id`)
+  `sortable_rank` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Lieu pour les types d''absence ou les saisies' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -621,13 +652,13 @@ CREATE TABLE IF NOT EXISTS `a_lieux` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_motifs` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incrementee',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incrementee',
   `nom` varchar(250) NOT NULL COMMENT 'Nom du motif',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `sortable_rank` int(11) default NULL,
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  PRIMARY KEY  (`id`)
+  `sortable_rank` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Liste des motifs possibles pour une absence' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -637,20 +668,20 @@ CREATE TABLE IF NOT EXISTS `a_motifs` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_notifications` (
-  `id` int(11) NOT NULL auto_increment,
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui envoi la notification',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `utilisateur_id` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui envoi la notification',
   `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement qu''on notifie',
-  `type_notification` int(5) default NULL COMMENT 'type de notification (0 : email, 1 : courrier, 2 : sms)',
-  `email` varchar(100) default NULL COMMENT 'email de destination (pour le type email)',
-  `telephone` varchar(100) default NULL COMMENT 'numero du telephone de destination (pour le type sms)',
-  `adr_id` varchar(10) default NULL COMMENT 'cle etrangere vers l''adresse de destination (pour le type courrier)',
+  `type_notification` int(5) DEFAULT NULL COMMENT 'type de notification (0 : email, 1 : courrier, 2 : sms)',
+  `email` varchar(100) DEFAULT NULL COMMENT 'email de destination (pour le type email)',
+  `telephone` varchar(100) DEFAULT NULL COMMENT 'numero du telephone de destination (pour le type sms)',
+  `adr_id` varchar(10) DEFAULT NULL COMMENT 'cle etrangere vers l''adresse de destination (pour le type courrier)',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `statut_envoi` int(5) default '0' COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
-  `date_envoi` datetime default NULL COMMENT 'Date envoi',
-  `erreur_message_envoi` text COMMENT 'Message d''erreur retournÃ© par le service d''envoi',
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  PRIMARY KEY  (`id`),
+  `statut_envoi` int(5) DEFAULT '0' COMMENT 'Statut de cet envoi (0 : etat initial, 1 : en cours, 2 : echec, 3 : succes, 4 : succes avec accuse de reception)',
+  `date_envoi` datetime DEFAULT NULL COMMENT 'Date envoi',
+  `erreur_message_envoi` text COMMENT 'Message d''erreur retourné par le service d''envoi',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `a_notifications_FI_1` (`utilisateur_id`),
   KEY `a_notifications_FI_2` (`a_traitement_id`),
   KEY `a_notifications_FI_3` (`adr_id`)
@@ -663,27 +694,27 @@ CREATE TABLE IF NOT EXISTS `a_notifications` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_saisies` (
-  `id` int(11) NOT NULL auto_increment,
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
-  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal Ã  null si aucun eleve n''est saisi',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `utilisateur_id` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
+  `eleve_id` int(11) DEFAULT NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
   `commentaire` text COMMENT 'commentaire de l''utilisateur',
-  `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
-  `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
-  `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
-  `id_edt_emplacement_cours` int(12) default NULL COMMENT 'identifiant du cours de l''emploi du temps',
-  `id_groupe` int(11) default NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
-  `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
-  `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
-  `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
-  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
-  `deleted_by` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimÃ© la saisie',
-  `created_at` datetime default NULL COMMENT 'Date de creation de la saisie',
-  `updated_at` datetime default NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
-  `deleted_at` datetime default NULL,
-  `version` int(11) default '0',
-  `version_created_at` datetime default NULL,
-  `version_created_by` varchar(100) default NULL,
-  PRIMARY KEY  (`id`),
+  `debut_abs` datetime DEFAULT NULL COMMENT 'Debut de l''absence en timestamp UNIX',
+  `fin_abs` datetime DEFAULT NULL COMMENT 'Fin de l''absence en timestamp UNIX',
+  `id_edt_creneau` int(12) DEFAULT NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
+  `id_edt_emplacement_cours` int(12) DEFAULT NULL COMMENT 'identifiant du cours de l''emploi du temps',
+  `id_groupe` int(11) DEFAULT NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+  `id_classe` int(11) DEFAULT NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+  `id_aid` int(11) DEFAULT NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
+  `id_s_incidents` int(11) DEFAULT NULL COMMENT 'identifiant de la saisie d''incident discipline',
+  `id_lieu` int(11) DEFAULT NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
+  `deleted_by` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimé la saisie',
+  `created_at` datetime DEFAULT NULL COMMENT 'Date de creation de la saisie',
+  `updated_at` datetime DEFAULT NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
+  `deleted_at` datetime DEFAULT NULL,
+  `version` int(11) DEFAULT '0',
+  `version_created_at` datetime DEFAULT NULL,
+  `version_created_by` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `a_saisies_I_1` (`deleted_at`),
   KEY `a_saisies_I_2` (`debut_abs`),
   KEY `a_saisies_I_3` (`fin_abs`),
@@ -705,26 +736,26 @@ CREATE TABLE IF NOT EXISTS `a_saisies` (
 
 CREATE TABLE IF NOT EXISTS `a_saisies_version` (
   `id` int(11) NOT NULL,
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
-  `eleve_id` int(11) default NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal Ã  null si aucun eleve n''est saisi',
+  `utilisateur_id` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a saisi l''absence',
+  `eleve_id` int(11) DEFAULT NULL COMMENT 'id_eleve de l''eleve objet de la saisie, egal à null si aucun eleve n''est saisi',
   `commentaire` text COMMENT 'commentaire de l''utilisateur',
-  `debut_abs` datetime default NULL COMMENT 'Debut de l''absence en timestamp UNIX',
-  `fin_abs` datetime default NULL COMMENT 'Fin de l''absence en timestamp UNIX',
-  `id_edt_creneau` int(12) default NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
-  `id_edt_emplacement_cours` int(12) default NULL COMMENT 'identifiant du cours de l''emploi du temps',
-  `id_groupe` int(11) default NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
-  `id_classe` int(11) default NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
-  `id_aid` int(11) default NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
-  `id_s_incidents` int(11) default NULL COMMENT 'identifiant de la saisie d''incident discipline',
-  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
-  `deleted_by` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimÃ© la saisie',
-  `created_at` datetime default NULL COMMENT 'Date de creation de la saisie',
-  `updated_at` datetime default NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
-  `deleted_at` datetime default NULL,
-  `version` int(11) NOT NULL default '0',
-  `version_created_at` datetime default NULL,
-  `version_created_by` varchar(100) default NULL,
-  PRIMARY KEY  (`id`,`version`)
+  `debut_abs` datetime DEFAULT NULL COMMENT 'Debut de l''absence en timestamp UNIX',
+  `fin_abs` datetime DEFAULT NULL COMMENT 'Fin de l''absence en timestamp UNIX',
+  `id_edt_creneau` int(12) DEFAULT NULL COMMENT 'identifiant du creneaux de l''emploi du temps',
+  `id_edt_emplacement_cours` int(12) DEFAULT NULL COMMENT 'identifiant du cours de l''emploi du temps',
+  `id_groupe` int(11) DEFAULT NULL COMMENT 'identifiant du groupe pour lequel la saisie a ete effectuee',
+  `id_classe` int(11) DEFAULT NULL COMMENT 'identifiant de la classe pour lequel la saisie a ete effectuee',
+  `id_aid` int(11) DEFAULT NULL COMMENT 'identifiant de l''aid pour lequel la saisie a ete effectuee',
+  `id_s_incidents` int(11) DEFAULT NULL COMMENT 'identifiant de la saisie d''incident discipline',
+  `id_lieu` int(11) DEFAULT NULL COMMENT 'cle etrangere du lieu ou se trouve l''eleve',
+  `deleted_by` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a supprimé la saisie',
+  `created_at` datetime DEFAULT NULL COMMENT 'Date de creation de la saisie',
+  `updated_at` datetime DEFAULT NULL COMMENT 'Date de modification de la saisie, y compris suppression, restauration et changement de version',
+  `deleted_at` datetime DEFAULT NULL,
+  `version` int(11) NOT NULL DEFAULT '0',
+  `version_created_at` datetime DEFAULT NULL,
+  `version_created_by` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`,`version`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -734,24 +765,24 @@ CREATE TABLE IF NOT EXISTS `a_saisies_version` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_traitements` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'cle primaire auto-incremente',
-  `utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a fait le traitement',
-  `a_type_id` int(4) default NULL COMMENT 'cle etrangere du type d''absence',
-  `a_motif_id` int(4) default NULL COMMENT 'cle etrangere du motif d''absence',
-  `a_justification_id` int(4) default NULL COMMENT 'cle etrangere de la justification de l''absence',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'cle primaire auto-incremente',
+  `utilisateur_id` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a fait le traitement',
+  `a_type_id` int(4) DEFAULT NULL COMMENT 'cle etrangere du type d''absence',
+  `a_motif_id` int(4) DEFAULT NULL COMMENT 'cle etrangere du motif d''absence',
+  `a_justification_id` int(4) DEFAULT NULL COMMENT 'cle etrangere de la justification de l''absence',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `modifie_par_utilisateur_id` varchar(100) default NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  `deleted_at` datetime default NULL,
-  PRIMARY KEY  (`id`),
+  `modifie_par_utilisateur_id` varchar(100) DEFAULT NULL COMMENT 'Login de l''utilisateur professionnel qui a modifie en dernier le traitement',
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `a_traitements_I_1` (`deleted_at`),
   KEY `a_traitements_FI_1` (`utilisateur_id`),
   KEY `a_traitements_FI_2` (`a_type_id`),
   KEY `a_traitements_FI_3` (`a_motif_id`),
   KEY `a_traitements_FI_4` (`a_justification_id`),
   KEY `a_traitements_FI_5` (`modifie_par_utilisateur_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Un traitement peut gerer plusieurs saisies et consiste Ã  de' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Un traitement peut gerer plusieurs saisies et consiste à def' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -760,19 +791,19 @@ CREATE TABLE IF NOT EXISTS `a_traitements` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_types` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire auto-incrementee',
   `nom` varchar(250) NOT NULL COMMENT 'Nom du type d''absence',
-  `justification_exigible` tinyint(4) default NULL COMMENT 'Ce type d''absence doit entrainer une justification de la part de la famille',
-  `sous_responsabilite_etablissement` varchar(255) default 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriÃ©tÃ© Ã  vrai car l''eleve est encore sous la responsabilitÃ© de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
-  `manquement_obligation_presence` varchar(50) default 'NON_PRECISE' COMMENT 'L''eleve manque Ã  ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
-  `retard_bulletin` varchar(50) default 'NON_PRECISE' COMMENT 'La saisie est comptabilisÃ©e dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
-  `mode_interface` varchar(50) default 'NON_PRECISE' COMMENT 'Enumeration des possibilitÃ©s de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE, CHECKBOX, CHECKBOX_HIDDEN',
+  `justification_exigible` tinyint(4) DEFAULT NULL COMMENT 'Ce type d''absence doit entrainer une justification de la part de la famille',
+  `sous_responsabilite_etablissement` varchar(255) DEFAULT 'NON_PRECISE' COMMENT 'L''eleve est sous la responsabilite de l''etablissement. Typiquement : absence infirmerie, mettre la propriété à vrai car l''eleve est encore sous la responsabilité de l''etablissement. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `manquement_obligation_presence` varchar(50) DEFAULT 'NON_PRECISE' COMMENT 'L''eleve manque à ses obligations de presence (L''absence apparait sur le bulletin). Possibilite : ''vrai''/''faux''/''non_precise''',
+  `retard_bulletin` varchar(50) DEFAULT 'NON_PRECISE' COMMENT 'La saisie est comptabilisée dans le bulletin en tant que retard. Possibilite : ''vrai''/''faux''/''non_precise''',
+  `mode_interface` varchar(50) DEFAULT 'NON_PRECISE' COMMENT 'Enumeration des possibilités de l''interface de saisie de l''absence pour ce type : DEBUT_ABS, FIN_ABS, DEBUT_ET_FIN_ABS, NON_PRECISE, COMMENTAIRE_EXIGE, DISCIPLINE, CHECKBOX, CHECKBOX_HIDDEN',
   `commentaire` text COMMENT 'commentaire saisi par l''utilisateur',
-  `id_lieu` int(11) default NULL COMMENT 'cle etrangere du lieu ou se trouve l''Ã©lÃ¨ve',
-  `sortable_rank` int(11) default NULL,
-  `created_at` datetime default NULL,
-  `updated_at` datetime default NULL,
-  PRIMARY KEY  (`id`),
+  `id_lieu` int(11) DEFAULT NULL COMMENT 'cle etrangere du lieu ou se trouve l''élève',
+  `sortable_rank` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `a_types_FI_1` (`id_lieu`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Liste des types d''absences possibles dans l''etablissement' AUTO_INCREMENT=1 ;
 
@@ -783,12 +814,12 @@ CREATE TABLE IF NOT EXISTS `a_types` (
 --
 
 CREATE TABLE IF NOT EXISTS `a_types_statut` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire auto-incrementee',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire auto-incrementee',
   `id_a_type` int(11) NOT NULL COMMENT 'Cle etrangere de la table a_type',
   `statut` varchar(20) NOT NULL COMMENT 'Statut de l''utilisateur',
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `a_types_statut_FI_1` (`id_a_type`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Liste des statuts autorises Ã  saisir des types d''absences' AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Liste des statuts autorises à saisir des types d''absences' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -797,14 +828,14 @@ CREATE TABLE IF NOT EXISTS `a_types_statut` (
 --
 
 CREATE TABLE IF NOT EXISTS `cc_dev` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_cn_dev` int(11) NOT NULL default '0',
-  `id_groupe` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `arrondir` char(2) NOT NULL default 's1',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_cn_dev` int(11) NOT NULL DEFAULT '0',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `nom_court` varchar(32) NOT NULL DEFAULT '',
+  `nom_complet` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(128) NOT NULL DEFAULT '',
+  `arrondir` char(2) NOT NULL DEFAULT 's1',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -814,14 +845,14 @@ CREATE TABLE IF NOT EXISTS `cc_dev` (
 --
 
 CREATE TABLE IF NOT EXISTS `cc_eval` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_dev` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `date` datetime NOT NULL default '0000-00-00 00:00:00',
-  `note_sur` int(11) default '5',
-  PRIMARY KEY  (`id`),
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_dev` int(11) NOT NULL DEFAULT '0',
+  `nom_court` varchar(32) NOT NULL DEFAULT '',
+  `nom_complet` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(128) NOT NULL DEFAULT '',
+  `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `note_sur` int(11) DEFAULT '5',
+  PRIMARY KEY (`id`),
   KEY `dev_date` (`id_dev`,`date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -832,12 +863,12 @@ CREATE TABLE IF NOT EXISTS `cc_eval` (
 --
 
 CREATE TABLE IF NOT EXISTS `cc_notes_eval` (
-  `login` varchar(50) NOT NULL default '',
-  `id_eval` int(11) NOT NULL default '0',
-  `note` float(10,1) NOT NULL default '0.0',
-  `statut` char(1) NOT NULL default '',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_eval` int(11) NOT NULL DEFAULT '0',
+  `note` float(10,1) NOT NULL DEFAULT '0.0',
+  `statut` char(1) NOT NULL DEFAULT '',
   `comment` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_eval`)
+  PRIMARY KEY (`login`,`id_eval`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -847,37 +878,52 @@ CREATE TABLE IF NOT EXISTS `cc_notes_eval` (
 --
 
 CREATE TABLE IF NOT EXISTS `classes` (
-  `id` smallint(6) unsigned NOT NULL auto_increment,
-  `classe` varchar(100) NOT NULL default '',
-  `nom_complet` varchar(100) NOT NULL default '',
-  `suivi_par` varchar(50) NOT NULL default '',
-  `formule` varchar(100) NOT NULL default '',
-  `format_nom` varchar(5) NOT NULL default '',
-  `display_rang` char(1) NOT NULL default 'n',
-  `display_address` char(1) NOT NULL default 'n',
-  `display_coef` char(1) NOT NULL default 'y',
-  `display_mat_cat` char(1) NOT NULL default 'n',
-  `display_nbdev` char(1) NOT NULL default 'n',
-  `display_moy_gen` char(1) NOT NULL default 'y',
-  `modele_bulletin_pdf` varchar(255) default NULL,
-  `rn_nomdev` char(1) NOT NULL default 'n',
-  `rn_toutcoefdev` char(1) NOT NULL default 'n',
-  `rn_coefdev_si_diff` char(1) NOT NULL default 'n',
-  `rn_datedev` char(1) NOT NULL default 'n',
-  `rn_sign_chefetab` char(1) NOT NULL default 'n',
-  `rn_sign_pp` char(1) NOT NULL default 'n',
-  `rn_sign_resp` char(1) NOT NULL default 'n',
-  `rn_sign_nblig` int(11) NOT NULL default '3',
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
+  `classe` varchar(100) NOT NULL DEFAULT '',
+  `nom_complet` varchar(100) NOT NULL DEFAULT '',
+  `suivi_par` varchar(50) NOT NULL DEFAULT '',
+  `formule` varchar(100) NOT NULL DEFAULT '',
+  `format_nom` varchar(5) NOT NULL DEFAULT '',
+  `display_rang` char(1) NOT NULL DEFAULT 'n',
+  `display_address` char(1) NOT NULL DEFAULT 'n',
+  `display_coef` char(1) NOT NULL DEFAULT 'y',
+  `display_mat_cat` char(1) NOT NULL DEFAULT 'n',
+  `display_nbdev` char(1) NOT NULL DEFAULT 'n',
+  `display_moy_gen` char(1) NOT NULL DEFAULT 'y',
+  `modele_bulletin_pdf` varchar(255) DEFAULT NULL,
+  `rn_nomdev` char(1) NOT NULL DEFAULT 'n',
+  `rn_toutcoefdev` char(1) NOT NULL DEFAULT 'n',
+  `rn_coefdev_si_diff` char(1) NOT NULL DEFAULT 'n',
+  `rn_datedev` char(1) NOT NULL DEFAULT 'n',
+  `rn_sign_chefetab` char(1) NOT NULL DEFAULT 'n',
+  `rn_sign_pp` char(1) NOT NULL DEFAULT 'n',
+  `rn_sign_resp` char(1) NOT NULL DEFAULT 'n',
+  `rn_sign_nblig` int(11) NOT NULL DEFAULT '3',
   `rn_formule` text NOT NULL,
-  `ects_type_formation` varchar(255) NOT NULL default '',
-  `ects_parcours` varchar(255) NOT NULL default '',
-  `ects_code_parcours` varchar(255) NOT NULL default '',
-  `ects_domaines_etude` varchar(255) NOT NULL default '',
-  `ects_fonction_signataire_attestation` varchar(255) NOT NULL default '',
-  `apb_niveau` varchar(15) NOT NULL default '',
-  `rn_abs_2` varchar(1) NOT NULL default 'n',
-  PRIMARY KEY  (`id`),
+  `ects_type_formation` varchar(255) NOT NULL DEFAULT '',
+  `ects_parcours` varchar(255) NOT NULL DEFAULT '',
+  `ects_code_parcours` varchar(255) NOT NULL DEFAULT '',
+  `ects_domaines_etude` varchar(255) NOT NULL DEFAULT '',
+  `ects_fonction_signataire_attestation` varchar(255) NOT NULL DEFAULT '',
+  `apb_niveau` varchar(15) NOT NULL DEFAULT '',
+  `rn_abs_2` varchar(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id`),
   KEY `classe` (`classe`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `classes_param`
+--
+
+CREATE TABLE IF NOT EXISTS `classes_param` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_classe` smallint(6) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_classe_name` (`id_classe`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -887,10 +933,10 @@ CREATE TABLE IF NOT EXISTS `classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_cahier_notes` (
-  `id_cahier_notes` int(11) NOT NULL auto_increment,
+  `id_cahier_notes` int(11) NOT NULL AUTO_INCREMENT,
   `id_groupe` int(11) NOT NULL,
-  `periode` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_cahier_notes`,`id_groupe`,`periode`),
+  `periode` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_cahier_notes`,`id_groupe`,`periode`),
   KEY `groupe_periode` (`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -901,19 +947,19 @@ CREATE TABLE IF NOT EXISTS `cn_cahier_notes` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_conteneurs` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_racine` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `mode` char(1) NOT NULL default '2',
-  `coef` decimal(3,1) NOT NULL default '1.0',
-  `arrondir` char(2) NOT NULL default 's1',
-  `ponderation` decimal(3,1) NOT NULL default '0.0',
-  `display_parents` char(1) NOT NULL default '0',
-  `display_bulletin` char(1) NOT NULL default '1',
-  `parent` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_racine` int(11) NOT NULL DEFAULT '0',
+  `nom_court` varchar(32) NOT NULL DEFAULT '',
+  `nom_complet` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(128) NOT NULL DEFAULT '',
+  `mode` char(1) NOT NULL DEFAULT '2',
+  `coef` decimal(3,1) NOT NULL DEFAULT '1.0',
+  `arrondir` char(2) NOT NULL DEFAULT 's1',
+  `ponderation` decimal(3,1) NOT NULL DEFAULT '0.0',
+  `display_parents` char(1) NOT NULL DEFAULT '0',
+  `display_bulletin` char(1) NOT NULL DEFAULT '1',
+  `parent` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
   KEY `parent_racine` (`parent`,`id_racine`),
   KEY `racine_bulletin` (`id_racine`,`display_bulletin`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -925,21 +971,21 @@ CREATE TABLE IF NOT EXISTS `cn_conteneurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_devoirs` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_conteneur` int(11) NOT NULL default '0',
-  `id_racine` int(11) NOT NULL default '0',
-  `nom_court` varchar(32) NOT NULL default '',
-  `nom_complet` varchar(64) NOT NULL default '',
-  `description` varchar(128) NOT NULL default '',
-  `facultatif` char(1) NOT NULL default '',
-  `date` datetime NOT NULL default '0000-00-00 00:00:00',
-  `coef` decimal(3,1) NOT NULL default '0.0',
-  `note_sur` int(11) default '20',
-  `ramener_sur_referentiel` char(1) NOT NULL default 'F',
-  `display_parents` char(1) NOT NULL default '',
-  `display_parents_app` char(1) NOT NULL default '0',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_conteneur` int(11) NOT NULL DEFAULT '0',
+  `id_racine` int(11) NOT NULL DEFAULT '0',
+  `nom_court` varchar(32) NOT NULL DEFAULT '',
+  `nom_complet` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(128) NOT NULL DEFAULT '',
+  `facultatif` char(1) NOT NULL DEFAULT '',
+  `date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `coef` decimal(3,1) NOT NULL DEFAULT '0.0',
+  `note_sur` int(11) DEFAULT '20',
+  `ramener_sur_referentiel` char(1) NOT NULL DEFAULT 'F',
+  `display_parents` char(1) NOT NULL DEFAULT '',
+  `display_parents_app` char(1) NOT NULL DEFAULT '0',
   `date_ele_resp` datetime NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `conteneur_date` (`id_conteneur`,`date`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -950,12 +996,12 @@ CREATE TABLE IF NOT EXISTS `cn_devoirs` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_notes_conteneurs` (
-  `login` varchar(50) NOT NULL default '',
-  `id_conteneur` int(11) NOT NULL default '0',
-  `note` float(10,1) NOT NULL default '0.0',
-  `statut` char(1) NOT NULL default '',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_conteneur` int(11) NOT NULL DEFAULT '0',
+  `note` float(10,1) NOT NULL DEFAULT '0.0',
+  `statut` char(1) NOT NULL DEFAULT '',
   `comment` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_conteneur`)
+  PRIMARY KEY (`login`,`id_conteneur`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -965,12 +1011,12 @@ CREATE TABLE IF NOT EXISTS `cn_notes_conteneurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `cn_notes_devoirs` (
-  `login` varchar(50) NOT NULL default '',
-  `id_devoir` int(11) NOT NULL default '0',
-  `note` float(10,1) NOT NULL default '0.0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_devoir` int(11) NOT NULL DEFAULT '0',
+  `note` float(10,1) NOT NULL DEFAULT '0.0',
   `comment` text NOT NULL,
-  `statut` varchar(4) NOT NULL default '',
-  PRIMARY KEY  (`login`,`id_devoir`),
+  `statut` varchar(4) NOT NULL DEFAULT '',
+  PRIMARY KEY (`login`,`id_devoir`),
   KEY `devoir_statut` (`id_devoir`,`statut`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -981,11 +1027,11 @@ CREATE TABLE IF NOT EXISTS `cn_notes_devoirs` (
 --
 
 CREATE TABLE IF NOT EXISTS `commentaires_types` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `commentaire` text NOT NULL,
   `num_periode` int(11) NOT NULL,
   `id_classe` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -995,10 +1041,10 @@ CREATE TABLE IF NOT EXISTS `commentaires_types` (
 --
 
 CREATE TABLE IF NOT EXISTS `commentaires_types_profs` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
   `app` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1011,7 +1057,7 @@ CREATE TABLE IF NOT EXISTS `communes` (
   `code_commune_insee` varchar(50) NOT NULL,
   `departement` varchar(50) NOT NULL,
   `commune` varchar(255) NOT NULL,
-  PRIMARY KEY  (`code_commune_insee`)
+  PRIMARY KEY (`code_commune_insee`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1021,13 +1067,13 @@ CREATE TABLE IF NOT EXISTS `communes` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_devoirs_documents` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_ct_devoir` int(11) NOT NULL default '0',
-  `titre` varchar(255) NOT NULL default '',
-  `taille` int(11) NOT NULL default '0',
-  `emplacement` varchar(255) NOT NULL default '',
-  `visible_eleve_parent` tinyint(1) default '1',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ct_devoir` int(11) NOT NULL DEFAULT '0',
+  `titre` varchar(255) NOT NULL DEFAULT '',
+  `taille` int(11) NOT NULL DEFAULT '0',
+  `emplacement` varchar(255) NOT NULL DEFAULT '',
+  `visible_eleve_parent` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1037,15 +1083,15 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_documents` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
-  `id_ct` int(11) NOT NULL auto_increment,
+  `id_ct` int(11) NOT NULL AUTO_INCREMENT,
   `id_groupe` int(11) NOT NULL,
-  `date_ct` int(11) NOT NULL default '0',
-  `id_login` varchar(32) NOT NULL default '',
-  `id_sequence` int(11) NOT NULL default '0',
+  `date_ct` int(11) NOT NULL DEFAULT '0',
+  `id_login` varchar(32) NOT NULL DEFAULT '',
+  `id_sequence` int(11) NOT NULL DEFAULT '0',
   `contenu` text NOT NULL,
-  `vise` char(1) NOT NULL default 'n',
-  `date_visibilite_eleve` timestamp NOT NULL default CURRENT_TIMESTAMP COMMENT 'Timestamp prÃ©cisant quand les devoirs sont portÃ©s Ã  la connaissance des Ã©lÃ¨ves',
-  PRIMARY KEY  (`id_ct`),
+  `vise` char(1) NOT NULL DEFAULT 'n',
+  `date_visibilite_eleve` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp précisant quand les devoirs sont portés à la connaissance des élèves',
+  PRIMARY KEY (`id_ct`),
   KEY `id_groupe` (`id_groupe`),
   KEY `groupe_date` (`id_groupe`,`date_ct`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1057,13 +1103,13 @@ CREATE TABLE IF NOT EXISTS `ct_devoirs_entry` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_documents` (
-  `id` int(11) NOT NULL auto_increment,
-  `id_ct` int(11) NOT NULL default '0',
-  `titre` varchar(255) NOT NULL default '',
-  `taille` int(11) NOT NULL default '0',
-  `emplacement` varchar(255) NOT NULL default '',
-  `visible_eleve_parent` tinyint(1) default '1',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ct` int(11) NOT NULL DEFAULT '0',
+  `titre` varchar(255) NOT NULL DEFAULT '',
+  `taille` int(11) NOT NULL DEFAULT '0',
+  `emplacement` varchar(255) NOT NULL DEFAULT '',
+  `visible_eleve_parent` tinyint(1) DEFAULT '1',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1073,16 +1119,16 @@ CREATE TABLE IF NOT EXISTS `ct_documents` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_entry` (
-  `id_ct` int(11) NOT NULL auto_increment,
-  `heure_entry` time NOT NULL default '00:00:00',
+  `id_ct` int(11) NOT NULL AUTO_INCREMENT,
+  `heure_entry` time NOT NULL DEFAULT '00:00:00',
   `id_groupe` int(11) NOT NULL,
-  `date_ct` int(11) NOT NULL default '0',
-  `id_login` varchar(32) NOT NULL default '',
-  `id_sequence` int(11) NOT NULL default '0',
+  `date_ct` int(11) NOT NULL DEFAULT '0',
+  `id_login` varchar(32) NOT NULL DEFAULT '',
+  `id_sequence` int(11) NOT NULL DEFAULT '0',
   `contenu` text NOT NULL,
-  `vise` char(1) NOT NULL default 'n',
-  `visa` char(1) NOT NULL default 'n',
-  PRIMARY KEY  (`id_ct`),
+  `vise` char(1) NOT NULL DEFAULT 'n',
+  `visa` char(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id_ct`),
   KEY `id_groupe` (`id_groupe`),
   KEY `id_date_heure` (`id_groupe`,`date_ct`,`heure_entry`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1094,14 +1140,14 @@ CREATE TABLE IF NOT EXISTS `ct_entry` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_private_entry` (
-  `id_ct` int(11) NOT NULL auto_increment COMMENT 'Cle primaire de la cotice privee',
-  `heure_entry` time NOT NULL default '00:00:00' COMMENT 'heure de l''entree',
-  `date_ct` int(11) NOT NULL default '0' COMMENT 'date du compte rendu',
+  `id_ct` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire de la cotice privee',
+  `heure_entry` time NOT NULL DEFAULT '00:00:00' COMMENT 'heure de l''entree',
+  `date_ct` int(11) NOT NULL DEFAULT '0' COMMENT 'date du compte rendu',
   `contenu` text NOT NULL COMMENT 'contenu redactionnel du compte rendu',
   `id_groupe` int(11) NOT NULL COMMENT 'Cle etrangere du groupe auquel appartient le compte rendu',
-  `id_login` varchar(32) default NULL COMMENT 'Cle etrangere de l''utilisateur auquel appartient le compte rendu',
-  `id_sequence` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_ct`),
+  `id_login` varchar(32) DEFAULT NULL COMMENT 'Cle etrangere de l''utilisateur auquel appartient le compte rendu',
+  `id_sequence` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_ct`),
   KEY `ct_private_entry_FI_1` (`id_groupe`),
   KEY `ct_private_entry_FI_2` (`id_login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Notice privee du cahier de texte' AUTO_INCREMENT=1 ;
@@ -1113,10 +1159,10 @@ CREATE TABLE IF NOT EXISTS `ct_private_entry` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_sequences` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `titre` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1126,11 +1172,11 @@ CREATE TABLE IF NOT EXISTS `ct_sequences` (
 --
 
 CREATE TABLE IF NOT EXISTS `ct_types_documents` (
-  `id_type` bigint(21) NOT NULL auto_increment,
+  `id_type` bigint(21) NOT NULL AUTO_INCREMENT,
   `titre` text NOT NULL,
-  `extension` varchar(10) NOT NULL default '',
-  `upload` enum('oui','non') NOT NULL default 'oui',
-  PRIMARY KEY  (`id_type`),
+  `extension` varchar(10) NOT NULL DEFAULT '',
+  `upload` enum('oui','non') NOT NULL DEFAULT 'oui',
+  PRIMARY KEY (`id_type`),
   UNIQUE KEY `extension` (`extension`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=59 ;
 
@@ -1203,18 +1249,18 @@ INSERT INTO `ct_types_documents` (`id_type`, `titre`, `extension`, `upload`) VAL
 --
 
 CREATE TABLE IF NOT EXISTS `droits` (
-  `id` varchar(200) NOT NULL default '',
-  `administrateur` char(1) NOT NULL default '',
-  `professeur` char(1) NOT NULL default '',
-  `cpe` char(1) NOT NULL default '',
-  `scolarite` char(1) NOT NULL default '',
-  `eleve` char(1) NOT NULL default '',
-  `responsable` char(1) NOT NULL default '',
-  `secours` char(1) NOT NULL default '',
-  `autre` char(1) NOT NULL default 'F',
-  `description` varchar(255) NOT NULL default '',
-  `statut` char(1) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` varchar(200) NOT NULL DEFAULT '',
+  `administrateur` char(1) NOT NULL DEFAULT '',
+  `professeur` char(1) NOT NULL DEFAULT '',
+  `cpe` char(1) NOT NULL DEFAULT '',
+  `scolarite` char(1) NOT NULL DEFAULT '',
+  `eleve` char(1) NOT NULL DEFAULT '',
+  `responsable` char(1) NOT NULL DEFAULT '',
+  `secours` char(1) NOT NULL DEFAULT '',
+  `autre` char(1) NOT NULL DEFAULT 'F',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `statut` char(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -1337,7 +1383,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/utilisateurs/import_prof_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des utilisateurs', ''),
 ('/utilisateurs/impression_bienvenue.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des utilisateurs', ''),
 ('/utilisateurs/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des utilisateurs', ''),
-('/utilisateurs/reset_passwords.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Réinitialisation des mots de passe', ''),
+('/utilisateurs/reset_passwords.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Réinitialisation des mots de passe', ''),
 ('/utilisateurs/modify_user.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Configuration et gestion des utilisateurs', ''),
 ('/utilisateurs/mon_compte.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Gestion du compte (informations personnelles, mot de passe, ...)', ''),
 ('/visualisation/classe_classe.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
@@ -1389,7 +1435,9 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/groupes/visu_profs_class.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des équipes pédagogiques', ''),
 ('/groupes/popup.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des équipes pédagogiques', ''),
 ('/visualisation/affiche_eleve.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
-('/visualisation/draw_graphe.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
+('/visualisation/draw_graphe.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
+('/visualisation/draw_graphe_star.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
+('/visualisation/draw_graphe_svg.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Visualisation graphique des résultats scolaires', ''),
 ('/groupes/mes_listes.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Accès aux CSV des listes d élèves', ''),
 ('/groupes/get_csv.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Génération de CSV élèves', ''),
 ('/visualisation/choix_couleurs.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Choix des couleurs des graphiques des résultats scolaires', ''),
@@ -1417,7 +1465,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/init_xml/save_csv.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation année scolaire', ''),
 ('/init_xml/responsables.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation année scolaire', ''),
 ('/init_xml/step3.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation année scolaire', ''),
-('/responsables/maj_import.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Mise à jour depuis Sconet', ''),
+('/responsables/maj_import.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Mise à jour depuis Sconet', ''),
 ('/responsables/conversion.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Conversion des données responsables', ''),
 ('/utilisateurs/create_responsable.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Création des utilisateurs au statut responsable', ''),
 ('/utilisateurs/create_eleve.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Création des utilisateurs au statut responsable', ''),
@@ -1480,7 +1528,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_annees_anterieures/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Activation/désactivation du module données antérieures', ''),
 ('/mod_annees_anterieures/nettoyer_annee_anterieure.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Suppression de données antérieures', ''),
 ('/responsables/maj_import1.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Mise à jour depuis Sconet', ''),
-('/responsables/maj_import2.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Mise à jour depuis Sconet', ''),
+('/responsables/maj_import2.php', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Mise à jour depuis Sconet', ''),
 ('/mod_annees_anterieures/corriger_ine.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Correction d INE dans la table annees_anterieures', ''),
 ('/mod_annees_anterieures/liste_eleves_ajax.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Recherche d élèves', ''),
 ('/mod_absences/lib/graph_double_ligne_fiche.php', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'F', 'Graphique de la fiche élève', '1'),
@@ -1548,7 +1596,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_notanet/verrouillage_saisie_app.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Notanet: (Dé)Verrouillage des saisies', ''),
 ('/bulletin/bull_index.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Edition des bulletins', '1'),
 ('/cahier_notes/visu_releve_notes_bis.php', 'F', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'Relevé de notes', '1'),
-('/cahier_notes/param_releve_html.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Paramètres du relevé de notes', '1'),
+('/cahier_notes/param_releve_html.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Paramètres du relevé de notes', '1'),
 ('/utilisateurs/creer_statut.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Créer des statuts personnalisés', ''),
 ('/utilisateurs/creer_statut_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Autoriser la création des statuts personnalisés', ''),
 ('/classes/changement_eleve_classe.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Changement de classe pour un élève', '1'),
@@ -1585,10 +1633,10 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_discipline/edt_eleve.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: EDT élève', ''),
 ('/mod_discipline/ajout_sanction.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Ajout sanction', ''),
 ('/mod_discipline/saisie_sanction.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Saisie sanction', ''),
-('/mod_discipline/definir_roles.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définition des rôles', ''),
-('/mod_discipline/definir_mesures.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définition des mesures', ''),
+('/mod_discipline/definir_roles.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définition des rôles', ''),
+('/mod_discipline/definir_mesures.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définition des mesures', ''),
 ('/mod_discipline/sauve_role.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Svg rôle incident', ''),
-('/mod_discipline/definir_autres_sanctions.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir types sanctions', ''),
+('/mod_discipline/definir_autres_sanctions.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définir types sanctions', ''),
 ('/mod_discipline/liste_retenues_jour.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Liste des retenues du jour', ''),
 ('/mod_discipline/avertir_famille.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Avertir famille incident', ''),
 ('/mod_discipline/avertir_famille_html.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Avertir famille incident', ''),
@@ -1604,7 +1652,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_ooo/formulaire_retenue.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Modèle Ooo : formulaire retenue', ''),
 ('/mod_ooo/index.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Modèle Ooo: Index : Index', ''),
 ('/mod_discipline/update_colonne_retenue.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Affichage d une imprimante pour le responsable d un incident', ''),
-('/mod_discipline/definir_lieux.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir les lieux', ''),
+('/mod_discipline/definir_lieux.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définir les lieux', ''),
 ('/mod_notanet/fb_rouen_pdf.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Fiches brevet PDF pour Rouen', ''),
 ('/mod_notanet/fb_montpellier_pdf.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Fiches brevet PDF pour Montpellier', ''),
 ('/mod_genese_classes/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Génèse des classes: Accueil', ''),
@@ -1646,18 +1694,18 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/prepa_conseil/edit_limite_bis.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
 ('/prepa_conseil/index2bis.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des notes par classes', ''),
 ('/prepa_conseil/index3bis.php', 'F', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
-('/prepa_conseil/visu_toutes_notes_bis.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des notes par classes', ''),
+('/prepa_conseil/visu_toutes_notes_bis.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Visualisation des notes par classes', '');
+INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, `eleve`, `responsable`, `secours`, `autre`, `description`, `statut`) VALUES
 ('/utilitaires/import_pays.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Import des pays', ''),
 ('/mod_apb/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestion du module Admissions PostBac', ''),
-('/mod_apb/index.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', '');
-INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, `eleve`, `responsable`, `secours`, `autre`, `description`, `statut`) VALUES
+('/mod_apb/index.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', ''),
 ('/mod_apb/export_xml.php', 'F', 'F', 'F', 'V', 'F', 'F', 'F', 'V', 'Export XML pour le système Admissions Post-Bac', ''),
 ('/mod_gest_aid/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestionnaires AID', ''),
 ('/saisie/ajax_edit_limite.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'F', 'Edition des bulletins simplifiés (documents de travail)', ''),
 ('/mod_discipline/check_nature_incident.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Discipline: Recherche de natures d incident', ''),
-('/groupes/signalement_eleves.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: signalement des erreurs d affectation élève', ''),
+('/groupes/signalement_eleves.php', 'F', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Groupes: signalement des erreurs d affectation élève', ''),
 ('/bulletin/envoi_mail.php', 'V', 'F', 'V', 'V', 'F', 'F', 'V', 'F', 'Envoi de mail via ajax', ''),
-('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', ''),
+('/mod_discipline/destinataires_alertes.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Parametrage des destinataires de mail d alerte', ''),
 ('/init_scribe_ng/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - index', ''),
 ('/init_scribe_ng/etape1.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 1', ''),
 ('/init_scribe_ng/etape2.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation Scribe NG - etape 2', ''),
@@ -1673,13 +1721,13 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_ooo/documents_ects.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Génération des documents', ''),
 ('/mod_ects/recapitulatif.php', 'F', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Module ECTS : Recapitulatif globaux', ''),
 ('/mod_discipline/stats2/index.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Module discipline: Statistiques', ''),
-('/mod_discipline/definir_categories.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir les catégories', ''),
+('/mod_discipline/definir_categories.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définir les catégories', ''),
 ('/mod_abs2/admin/index.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/admin/admin_motifs_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/admin/admin_types_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/admin/admin_lieux_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/admin/admin_justifications_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
-('/mod_abs2/admin/admin_table_agregation.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
+('/mod_abs2/admin/admin_table_agregation.php', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/admin/admin_actions_absences.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Administration du module absences', ''),
 ('/mod_abs2/index.php', 'F', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Administration du module absences', ''),
 ('/mod_abs2/saisir_groupe.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'V', 'Affichage du formulaire de saisie de absences', ''),
@@ -1736,8 +1784,8 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_trombinoscopes/trombino_decoupe.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Génération d une grille PDF pour les trombinoscopes,...', ''),
 ('/groupes/menage_eleves_groupes.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Groupes: Desinscription des eleves sans notes ni appreciations', ''),
 ('/statistiques/export_donnees_bulletins.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Export de données des bulletins', ''),
-('/statistiques/index.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Statistiques: Index', ''),
-('/statistiques/classes_effectifs.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Statistiques: classe, effectifs', ''),
+('/statistiques/index.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Statistiques: Index', ''),
+('/statistiques/classes_effectifs.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Statistiques: classe, effectifs', ''),
 ('/mod_annees_anterieures/ajax_bulletins.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'V', 'Accès aux bulletins d années antérieures', ''),
 ('/mod_annees_anterieures/ajax_signaler_faute.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Possibilité de signaler une faute de frappe dans une appréciation', ''),
 ('/eleves/ajax_modif_eleve.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Enregistrement des modifications élève', ''),
@@ -1760,7 +1808,7 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_ooo/publipostage_ooo.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'V', 'Modèle Ooo : Publipostage', ''),
 ('/saisie/saisie_mentions.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Saisie de mentions', ''),
 ('/mod_discipline/visu_disc.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Discipline: Accès élève/parent', ''),
-('/mod_discipline/definir_natures.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir les natures', ''),
+('/mod_discipline/definir_natures.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline: Définir les natures', ''),
 ('/init_xml2/traite_csv_udt.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Import des enseignements via un Export CSV UDT', ''),
 ('/init_xml2/init_alternatif.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Initialisation année scolaire', ''),
 ('/mod_examen_blanc/copie_exam.php', 'V', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'Examen blanc: Copie', ''),
@@ -1775,7 +1823,46 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 ('/mod_abs2/liste_eleves.php', 'F', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Liste des élèves avec les filtes absence', ''),
 ('/mod_notanet/OOo/imprime_ooo.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Imprime fiches brevet OpenOffice', ''),
 ('/mod_notanet/OOo/fiches_brevet.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Fiches brevet OpenOffice', ''),
-('/mod_notanet/verif_saisies.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Notanet: Verification avant impression des fiches brevet', '');
+('/mod_notanet/verif_saisies.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Notanet: Verification avant impression des fiches brevet', ''),
+('/eleves/modif_sexe.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Eleves: Modification ajax du sexe d un eleve', ''),
+('/cahier_texte_2/correction_notices_cdt_formules_maths.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Correction des notices CDT', ''),
+('/gestion/gestion_signature.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gestion signature', ''),
+('/mod_abs2/saisir_groupe_plan.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Affichage du formulaire de saisie de absences sur plan de classe', ''),
+('/matieres/matiere_ajax_lib.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Ajax', ''),
+('/gestion/gestion_infos_actions.php', 'V', 'V', 'V', 'V', 'F', 'F', 'F', 'F', 'Gestion des actions en attente signalées en page d accueil.', '1'),
+('/responsables/maj_import3.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Mise à jour Sconet', ''),
+('/mod_discipline/mod_discipline_extraction_ooo.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Discipline : Extrait OOo des incidents', ''),
+('/responsables/consult_maj_sconet.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Consultation des compte-renduds de mise à jour Sconet', ''),
+('/cahier_notes/visu_releve_notes_ter.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F', 'F', 'Relevé de notes : accès parents et élèves', '1'),
+('/utilisateurs/modif_par_lots.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Personnels : Traitements par lots', '1'),
+('/bulletin/index_admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Bulletins : Activation du module bulletins', '1'),
+('/a_lire.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'V', 'A lire...', ''),
+('/mod_alerte/admin.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Dispositif d alerte : Administration du module', ''),
+('/mod_alerte/form_message.php', 'V', 'V', 'V', 'V', 'F', 'F', 'V', 'F', 'Dispositif d alerte', ''),
+('/cahier_notes/autorisation_exceptionnelle_saisie.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Autorisation exceptionnelle de saisie dans le carnet de notes.', ''),
+('/bulletin/autorisation_exceptionnelle_saisie_note.php', 'V', 'F', 'F', 'V', 'F', 'F', 'F', 'F', 'Autorisation exceptionnelle de saisie de notes du bulletin.', ''),
+('/cahier_notes/copie_dev.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Carnet de notes', '1'),
+('/cahier_texte_2/consultation2.php', 'V', 'V', 'V', 'V', 'V', 'V', 'F', 'V', 'Cahiers de textes: Consultation', ''),
+('/mod_trombinoscopes/plan_de_classe.php', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'Plan de classe', ''),
+('/mod_annees_anterieures/gerer_annees_anterieures.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Gérer les années antérieures', ''),
+('/classes/ajout_eleve_classe.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Enregistrement des inscriptions élève/classe', ''),
+('/mod_abs2/export_stat.php', 'V', 'F', 'V', 'V', 'F', 'F', 'F', 'F', 'Exports statistiques', ''),
+('/mod_abs2/calcul_score.php', 'V', 'F', 'V', 'F', 'F', 'F', 'F', 'F', 'Exports statistiques', ''),
+('/saisie/validation_corrections.php', 'V', 'F', 'F', 'V', 'F', 'F', 'V', 'F', 'Validation des corrections proposées par des professeurs après la cloture d une période', '');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `droits_acces_fichiers`
+--
+
+CREATE TABLE IF NOT EXISTS `droits_acces_fichiers` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `fichier` varchar(255) NOT NULL,
+  `identite` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -1784,17 +1871,17 @@ INSERT INTO `droits` (`id`, `administrateur`, `professeur`, `cpe`, `scolarite`, 
 --
 
 CREATE TABLE IF NOT EXISTS `droits_aid` (
-  `id` varchar(200) NOT NULL default '',
-  `public` char(1) NOT NULL default '',
-  `professeur` char(1) NOT NULL default '',
-  `cpe` char(1) NOT NULL default '',
-  `scolarite` char(1) NOT NULL default '',
-  `eleve` char(1) NOT NULL default '',
-  `responsable` char(1) NOT NULL default 'F',
-  `secours` char(1) NOT NULL default '',
-  `description` varchar(255) NOT NULL default '',
-  `statut` char(1) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` varchar(200) NOT NULL DEFAULT '',
+  `public` char(1) NOT NULL DEFAULT '',
+  `professeur` char(1) NOT NULL DEFAULT '',
+  `cpe` char(1) NOT NULL DEFAULT '',
+  `scolarite` char(1) NOT NULL DEFAULT '',
+  `eleve` char(1) NOT NULL DEFAULT '',
+  `responsable` char(1) NOT NULL DEFAULT 'F',
+  `secours` char(1) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `statut` char(1) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -1832,11 +1919,11 @@ INSERT INTO `droits_aid` (`id`, `public`, `professeur`, `cpe`, `scolarite`, `ele
 --
 
 CREATE TABLE IF NOT EXISTS `droits_speciaux` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_statut` int(11) NOT NULL,
   `nom_fichier` varchar(200) NOT NULL,
   `autorisation` char(1) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1846,9 +1933,9 @@ CREATE TABLE IF NOT EXISTS `droits_speciaux` (
 --
 
 CREATE TABLE IF NOT EXISTS `droits_statut` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom_statut` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1858,10 +1945,10 @@ CREATE TABLE IF NOT EXISTS `droits_statut` (
 --
 
 CREATE TABLE IF NOT EXISTS `droits_utilisateurs` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_statut` int(11) NOT NULL,
   `login_user` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1871,15 +1958,15 @@ CREATE TABLE IF NOT EXISTS `droits_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `eb_copies` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `login_ele` varchar(255) NOT NULL,
   `n_anonymat` varchar(255) NOT NULL,
-  `id_salle` int(11) NOT NULL default '-1',
+  `id_salle` int(11) NOT NULL DEFAULT '-1',
   `login_prof` varchar(255) NOT NULL,
-  `note` float(10,1) NOT NULL default '0.0',
-  `statut` varchar(255) NOT NULL default '',
+  `note` float(10,1) NOT NULL DEFAULT '0.0',
+  `statut` varchar(255) NOT NULL DEFAULT '',
   `id_epreuve` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1889,13 +1976,13 @@ CREATE TABLE IF NOT EXISTS `eb_copies` (
 --
 
 CREATE TABLE IF NOT EXISTS `eb_epreuves` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `intitule` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `type_anonymat` varchar(255) NOT NULL,
-  `date` date NOT NULL default '0000-00-00',
+  `date` date NOT NULL DEFAULT '0000-00-00',
   `etat` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1905,11 +1992,11 @@ CREATE TABLE IF NOT EXISTS `eb_epreuves` (
 --
 
 CREATE TABLE IF NOT EXISTS `eb_groupes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_epreuve` int(11) unsigned NOT NULL,
   `id_groupe` int(11) unsigned NOT NULL,
-  `transfert` varchar(1) NOT NULL default 'n',
-  PRIMARY KEY  (`id`)
+  `transfert` varchar(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1919,10 +2006,10 @@ CREATE TABLE IF NOT EXISTS `eb_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `eb_profs` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_epreuve` int(11) unsigned NOT NULL,
-  `login_prof` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `login_prof` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1932,10 +2019,10 @@ CREATE TABLE IF NOT EXISTS `eb_profs` (
 --
 
 CREATE TABLE IF NOT EXISTS `eb_salles` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `salle` varchar(255) NOT NULL,
   `id_epreuve` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -1945,14 +2032,14 @@ CREATE TABLE IF NOT EXISTS `eb_salles` (
 --
 
 CREATE TABLE IF NOT EXISTS `ects_credits` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_eleve` int(11) NOT NULL COMMENT 'Identifiant de l''eleve',
   `num_periode` int(11) NOT NULL COMMENT 'Identifiant de la periode',
   `id_groupe` int(11) NOT NULL COMMENT 'Identifiant du groupe',
-  `valeur` decimal(3,1) default NULL COMMENT 'Nombre de credits obtenus par l''eleve',
-  `mention` varchar(255) default NULL COMMENT 'Mention obtenue',
-  `mention_prof` varchar(255) default NULL COMMENT 'Mention presaisie par le prof',
-  PRIMARY KEY  (`id`,`id_eleve`,`num_periode`,`id_groupe`),
+  `valeur` decimal(3,1) DEFAULT NULL COMMENT 'Nombre de credits obtenus par l''eleve',
+  `mention` varchar(255) DEFAULT NULL COMMENT 'Mention obtenue',
+  `mention_prof` varchar(255) DEFAULT NULL COMMENT 'Mention presaisie par le prof',
+  PRIMARY KEY (`id`,`id_eleve`,`num_periode`,`id_groupe`),
   KEY `ects_credits_FI_1` (`id_eleve`),
   KEY `ects_credits_FI_2` (`id_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -1964,10 +2051,10 @@ CREATE TABLE IF NOT EXISTS `ects_credits` (
 --
 
 CREATE TABLE IF NOT EXISTS `ects_global_credits` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_eleve` int(11) NOT NULL COMMENT 'Identifiant de l''eleve',
   `mention` varchar(255) NOT NULL COMMENT 'Mention obtenue',
-  PRIMARY KEY  (`id`,`id_eleve`),
+  PRIMARY KEY (`id`,`id_eleve`),
   KEY `ects_global_credits_FI_1` (`id_eleve`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -1978,19 +2065,19 @@ CREATE TABLE IF NOT EXISTS `ects_global_credits` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_calendrier` (
-  `id_calendrier` int(11) NOT NULL auto_increment,
+  `id_calendrier` int(11) NOT NULL AUTO_INCREMENT,
   `classe_concerne_calendrier` text NOT NULL,
-  `nom_calendrier` varchar(100) NOT NULL default '',
+  `nom_calendrier` varchar(100) NOT NULL DEFAULT '',
   `debut_calendrier_ts` varchar(11) NOT NULL,
   `fin_calendrier_ts` varchar(11) NOT NULL,
-  `jourdebut_calendrier` date NOT NULL default '0000-00-00',
-  `heuredebut_calendrier` time NOT NULL default '00:00:00',
-  `jourfin_calendrier` date NOT NULL default '0000-00-00',
-  `heurefin_calendrier` time NOT NULL default '00:00:00',
-  `numero_periode` tinyint(4) NOT NULL default '0',
+  `jourdebut_calendrier` date NOT NULL DEFAULT '0000-00-00',
+  `heuredebut_calendrier` time NOT NULL DEFAULT '00:00:00',
+  `jourfin_calendrier` date NOT NULL DEFAULT '0000-00-00',
+  `heurefin_calendrier` time NOT NULL DEFAULT '00:00:00',
+  `numero_periode` tinyint(4) NOT NULL DEFAULT '0',
   `etabferme_calendrier` tinyint(4) NOT NULL,
   `etabvacances_calendrier` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`id_calendrier`)
+  PRIMARY KEY (`id_calendrier`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2000,7 +2087,7 @@ CREATE TABLE IF NOT EXISTS `edt_calendrier` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_classes` (
-  `id_edt_classe` int(11) NOT NULL auto_increment,
+  `id_edt_classe` int(11) NOT NULL AUTO_INCREMENT,
   `groupe_edt_classe` int(11) NOT NULL,
   `prof_edt_classe` varchar(25) NOT NULL,
   `matiere_edt_classe` varchar(10) NOT NULL,
@@ -2011,7 +2098,7 @@ CREATE TABLE IF NOT EXISTS `edt_classes` (
   `heuredebut_edt_classe` time NOT NULL,
   `heurefin_edt_classe` time NOT NULL,
   `salle_edt_classe` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_edt_classe`)
+  PRIMARY KEY (`id_edt_classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2021,19 +2108,19 @@ CREATE TABLE IF NOT EXISTS `edt_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_cours` (
-  `id_cours` int(3) NOT NULL auto_increment,
+  `id_cours` int(3) NOT NULL AUTO_INCREMENT,
   `id_groupe` varchar(10) NOT NULL,
   `id_aid` varchar(10) NOT NULL,
   `id_salle` varchar(3) NOT NULL,
   `jour_semaine` varchar(10) NOT NULL,
   `id_definie_periode` varchar(3) NOT NULL,
-  `duree` varchar(10) NOT NULL default '2',
-  `heuredeb_dec` varchar(3) NOT NULL default '0',
-  `id_semaine` varchar(3) NOT NULL default '0',
-  `id_calendrier` varchar(3) NOT NULL default '0',
-  `modif_edt` varchar(3) NOT NULL default '0',
+  `duree` varchar(10) NOT NULL DEFAULT '2',
+  `heuredeb_dec` varchar(3) NOT NULL DEFAULT '0',
+  `id_semaine` varchar(3) NOT NULL DEFAULT '0',
+  `id_calendrier` varchar(3) NOT NULL DEFAULT '0',
+  `modif_edt` varchar(3) NOT NULL DEFAULT '0',
   `login_prof` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_cours`)
+  PRIMARY KEY (`id_cours`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2043,14 +2130,14 @@ CREATE TABLE IF NOT EXISTS `edt_cours` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_creneaux` (
-  `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
-  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
-  `heurefin_definie_periode` time NOT NULL default '00:00:00',
+  `id_definie_periode` int(11) NOT NULL AUTO_INCREMENT,
+  `nom_definie_periode` varchar(10) NOT NULL DEFAULT '',
+  `heuredebut_definie_periode` time NOT NULL DEFAULT '00:00:00',
+  `heurefin_definie_periode` time NOT NULL DEFAULT '00:00:00',
   `suivi_definie_periode` tinyint(4) NOT NULL,
   `type_creneaux` varchar(15) NOT NULL,
-  `jour_creneau` varchar(20) default NULL,
-  PRIMARY KEY  (`id_definie_periode`),
+  `jour_creneau` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id_definie_periode`),
   KEY `heures_debut_fin` (`heuredebut_definie_periode`,`heurefin_definie_periode`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
@@ -2081,13 +2168,13 @@ INSERT INTO `edt_creneaux` (`id_definie_periode`, `nom_definie_periode`, `heured
 --
 
 CREATE TABLE IF NOT EXISTS `edt_creneaux_bis` (
-  `id_definie_periode` int(11) NOT NULL auto_increment,
-  `nom_definie_periode` varchar(10) NOT NULL default '',
-  `heuredebut_definie_periode` time NOT NULL default '00:00:00',
-  `heurefin_definie_periode` time NOT NULL default '00:00:00',
+  `id_definie_periode` int(11) NOT NULL AUTO_INCREMENT,
+  `nom_definie_periode` varchar(10) NOT NULL DEFAULT '',
+  `heuredebut_definie_periode` time NOT NULL DEFAULT '00:00:00',
+  `heurefin_definie_periode` time NOT NULL DEFAULT '00:00:00',
   `suivi_definie_periode` tinyint(4) NOT NULL,
   `type_creneaux` varchar(15) NOT NULL,
-  PRIMARY KEY  (`id_definie_periode`)
+  PRIMARY KEY (`id_definie_periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2097,11 +2184,11 @@ CREATE TABLE IF NOT EXISTS `edt_creneaux_bis` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_dates_special` (
-  `id_edt_date_special` int(11) NOT NULL auto_increment,
+  `id_edt_date_special` int(11) NOT NULL AUTO_INCREMENT,
   `nom_edt_date_special` varchar(200) NOT NULL,
   `debut_edt_date_special` date NOT NULL,
   `fin_edt_date_special` date NOT NULL,
-  PRIMARY KEY  (`id_edt_date_special`)
+  PRIMARY KEY (`id_edt_date_special`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2111,11 +2198,11 @@ CREATE TABLE IF NOT EXISTS `edt_dates_special` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_init` (
-  `id_init` int(11) NOT NULL auto_increment,
+  `id_init` int(11) NOT NULL AUTO_INCREMENT,
   `ident_export` varchar(100) NOT NULL,
   `nom_export` varchar(200) NOT NULL,
   `nom_gepi` varchar(200) NOT NULL,
-  PRIMARY KEY  (`id_init`)
+  PRIMARY KEY (`id_init`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2125,11 +2212,11 @@ CREATE TABLE IF NOT EXISTS `edt_init` (
 --
 
 CREATE TABLE IF NOT EXISTS `edt_semaines` (
-  `id_edt_semaine` int(11) NOT NULL auto_increment,
-  `num_edt_semaine` int(11) NOT NULL default '0',
-  `type_edt_semaine` varchar(10) NOT NULL default '',
-  `num_semaines_etab` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_edt_semaine`)
+  `id_edt_semaine` int(11) NOT NULL AUTO_INCREMENT,
+  `num_edt_semaine` int(11) NOT NULL DEFAULT '0',
+  `type_edt_semaine` varchar(10) NOT NULL DEFAULT '',
+  `num_semaines_etab` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_edt_semaine`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=54 ;
 
 --
@@ -2198,10 +2285,10 @@ INSERT INTO `edt_semaines` (`id_edt_semaine`, `num_edt_semaine`, `type_edt_semai
 --
 
 CREATE TABLE IF NOT EXISTS `edt_setting` (
-  `id` int(3) NOT NULL auto_increment,
+  `id` int(3) NOT NULL AUTO_INCREMENT,
   `reglage` varchar(30) NOT NULL,
   `valeur` varchar(30) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
 
 --
@@ -2233,15 +2320,18 @@ CREATE TABLE IF NOT EXISTS `eleves` (
   `prenom` varchar(50) NOT NULL COMMENT 'Prenom eleve',
   `sexe` varchar(1) NOT NULL COMMENT 'M ou F',
   `naissance` date NOT NULL COMMENT 'Date de naissance AAAA-MM-JJ',
-  `lieu_naissance` varchar(50) NOT NULL default '' COMMENT 'Code de Sconet',
+  `lieu_naissance` varchar(50) NOT NULL DEFAULT '' COMMENT 'Code de Sconet',
   `elenoet` varchar(50) NOT NULL COMMENT 'Numero interne de l''eleve dans l''etablissement',
   `ereno` varchar(50) NOT NULL COMMENT 'Plus utilise',
-  `ele_id` varchar(10) NOT NULL default '' COMMENT 'cle utilise par Sconet dans ses fichiers xml',
-  `email` varchar(255) NOT NULL default '' COMMENT 'Courriel de l''eleve',
-  `id_eleve` int(11) NOT NULL auto_increment COMMENT 'cle primaire autoincremente',
-  `date_sortie` datetime default NULL COMMENT 'Timestamp de sortie de l''Ã©lÃ¨ve de l''Ã©tablissement (fin d''inscription)',
-  `mef_code` bigint(20) default NULL COMMENT 'code mef de la formation de l''eleve',
-  PRIMARY KEY  (`id_eleve`),
+  `ele_id` varchar(10) NOT NULL DEFAULT '' COMMENT 'cle utilise par Sconet dans ses fichiers xml',
+  `email` varchar(255) NOT NULL DEFAULT '' COMMENT 'Courriel de l''eleve',
+  `tel_pers` varchar(255) NOT NULL DEFAULT '' COMMENT 'Telephone personnel de l''eleve',
+  `tel_port` varchar(255) NOT NULL DEFAULT '' COMMENT 'Telephone portable de l''eleve',
+  `tel_prof` varchar(255) NOT NULL DEFAULT '' COMMENT 'Telephone professionnel (?) de l''eleve',
+  `id_eleve` int(11) NOT NULL AUTO_INCREMENT COMMENT 'cle primaire autoincremente',
+  `date_sortie` datetime DEFAULT NULL COMMENT 'Timestamp de sortie de l''élève de l''établissement (fin d''inscription)',
+  `mef_code` varchar(50) NOT NULL DEFAULT '' COMMENT 'code mef de la formation de l''eleve',
+  PRIMARY KEY (`id_eleve`),
   KEY `eleves_FI_1` (`mef_code`),
   KEY `I_referenced_j_eleves_classes_FK_1_1` (`login`),
   KEY `I_referenced_responsables2_FK_1_2` (`ele_id`),
@@ -2259,7 +2349,7 @@ CREATE TABLE IF NOT EXISTS `eleves_groupes_settings` (
   `id_groupe` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `value` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_groupe`,`login`,`name`)
+  PRIMARY KEY (`id_groupe`,`login`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2269,13 +2359,13 @@ CREATE TABLE IF NOT EXISTS `eleves_groupes_settings` (
 --
 
 CREATE TABLE IF NOT EXISTS `etablissements` (
-  `id` char(8) NOT NULL default '',
-  `nom` char(50) NOT NULL default '',
-  `niveau` char(50) NOT NULL default '',
-  `type` char(50) NOT NULL default '',
-  `cp` int(10) NOT NULL default '0',
-  `ville` char(50) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` char(8) NOT NULL DEFAULT '',
+  `nom` char(50) NOT NULL DEFAULT '',
+  `niveau` char(50) NOT NULL DEFAULT '',
+  `type` char(50) NOT NULL DEFAULT '',
+  `cp` varchar(10) NOT NULL DEFAULT '0',
+  `ville` char(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -2283,7 +2373,7 @@ CREATE TABLE IF NOT EXISTS `etablissements` (
 --
 
 INSERT INTO `etablissements` (`id`, `nom`, `niveau`, `type`, `cp`, `ville`) VALUES
-('999', 'étranger', 'aucun', 'aucun', 999, '');
+('999', 'étranger', 'aucun', 'aucun', '999', '');
 
 -- --------------------------------------------------------
 
@@ -2292,7 +2382,7 @@ INSERT INTO `etablissements` (`id`, `nom`, `niveau`, `type`, `cp`, `ville`) VALU
 --
 
 CREATE TABLE IF NOT EXISTS `etiquettes_formats` (
-  `id_etiquette_format` int(11) NOT NULL auto_increment,
+  `id_etiquette_format` int(11) NOT NULL AUTO_INCREMENT,
   `nom_etiquette_format` varchar(150) NOT NULL,
   `xcote_etiquette_format` float NOT NULL,
   `ycote_etiquette_format` float NOT NULL,
@@ -2302,7 +2392,7 @@ CREATE TABLE IF NOT EXISTS `etiquettes_formats` (
   `hauteur_etiquette_format` float NOT NULL,
   `nbl_etiquette_format` tinyint(4) NOT NULL,
   `nbh_etiquette_format` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`id_etiquette_format`)
+  PRIMARY KEY (`id_etiquette_format`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
@@ -2319,10 +2409,10 @@ INSERT INTO `etiquettes_formats` (`id_etiquette_format`, `nom_etiquette_format`,
 --
 
 CREATE TABLE IF NOT EXISTS `ex_classes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_exam` int(11) unsigned NOT NULL,
   `id_classe` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2332,12 +2422,12 @@ CREATE TABLE IF NOT EXISTS `ex_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `ex_examens` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `intitule` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  `date` date NOT NULL default '0000-00-00',
+  `date` date NOT NULL DEFAULT '0000-00-00',
   `etat` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2347,14 +2437,14 @@ CREATE TABLE IF NOT EXISTS `ex_examens` (
 --
 
 CREATE TABLE IF NOT EXISTS `ex_groupes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_exam` int(11) unsigned NOT NULL,
   `matiere` varchar(50) NOT NULL,
   `id_groupe` int(11) unsigned NOT NULL,
   `type` varchar(255) NOT NULL,
-  `id_dev` int(11) NOT NULL default '0',
+  `id_dev` int(11) NOT NULL DEFAULT '0',
   `valeur` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2364,13 +2454,13 @@ CREATE TABLE IF NOT EXISTS `ex_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `ex_matieres` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_exam` int(11) unsigned NOT NULL,
   `matiere` varchar(255) NOT NULL,
-  `coef` decimal(3,1) NOT NULL default '1.0',
-  `bonus` char(1) NOT NULL default 'n',
+  `coef` decimal(3,1) NOT NULL DEFAULT '1.0',
+  `bonus` char(1) NOT NULL DEFAULT 'n',
   `ordre` int(11) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2380,12 +2470,12 @@ CREATE TABLE IF NOT EXISTS `ex_matieres` (
 --
 
 CREATE TABLE IF NOT EXISTS `ex_notes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_ex_grp` int(11) unsigned NOT NULL,
-  `login` varchar(50) NOT NULL default '',
-  `note` float(10,1) NOT NULL default '0.0',
-  `statut` varchar(4) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `note` float(10,1) NOT NULL DEFAULT '0.0',
+  `statut` varchar(4) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2395,14 +2485,14 @@ CREATE TABLE IF NOT EXISTS `ex_notes` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_affichages` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_aff` int(11) unsigned NOT NULL,
   `id_req` int(11) unsigned NOT NULL,
   `projet` varchar(255) NOT NULL,
   `nom_requete` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
   `valeur` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2412,12 +2502,12 @@ CREATE TABLE IF NOT EXISTS `gc_affichages` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_divisions` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `projet` varchar(255) NOT NULL,
   `id_classe` smallint(6) unsigned NOT NULL,
-  `classe` varchar(100) NOT NULL default '',
-  `statut` enum('actuelle','future','red','arriv') NOT NULL default 'future',
-  PRIMARY KEY  (`id`)
+  `classe` varchar(100) NOT NULL DEFAULT '',
+  `statut` enum('actuelle','future','red','arriv') NOT NULL DEFAULT 'future',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2427,9 +2517,9 @@ CREATE TABLE IF NOT EXISTS `gc_divisions` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_eleves_options` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
-  `profil` enum('GC','C','RAS','B','TB') NOT NULL default 'RAS',
+  `profil` enum('GC','C','RAS','B','TB') NOT NULL DEFAULT 'RAS',
   `moy` varchar(255) NOT NULL,
   `nb_absences` varchar(255) NOT NULL,
   `non_justifie` varchar(255) NOT NULL,
@@ -2438,7 +2528,7 @@ CREATE TABLE IF NOT EXISTS `gc_eleves_options` (
   `id_classe_actuelle` varchar(255) NOT NULL,
   `classe_future` varchar(255) NOT NULL,
   `liste_opt` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2451,7 +2541,7 @@ CREATE TABLE IF NOT EXISTS `gc_ele_arriv_red` (
   `login` varchar(50) NOT NULL,
   `statut` enum('Arriv','Red') NOT NULL,
   `projet` varchar(255) NOT NULL,
-  PRIMARY KEY  (`login`,`projet`)
+  PRIMARY KEY (`login`,`projet`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2461,13 +2551,13 @@ CREATE TABLE IF NOT EXISTS `gc_ele_arriv_red` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_options` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `projet` varchar(255) NOT NULL,
   `opt` varchar(255) NOT NULL,
   `type` enum('lv1','lv2','lv3','autre') NOT NULL,
   `obligatoire` enum('o','n') NOT NULL,
   `exclusive` smallint(6) unsigned NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2477,12 +2567,12 @@ CREATE TABLE IF NOT EXISTS `gc_options` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_options_classes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `projet` varchar(255) NOT NULL,
   `opt_exclue` varchar(255) NOT NULL,
   `classe_future` varchar(255) NOT NULL,
   `commentaire` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2492,10 +2582,10 @@ CREATE TABLE IF NOT EXISTS `gc_options_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `gc_projets` (
-  `id` smallint(6) unsigned NOT NULL auto_increment,
+  `id` smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   `projet` varchar(255) NOT NULL,
   `commentaire` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2505,11 +2595,11 @@ CREATE TABLE IF NOT EXISTS `gc_projets` (
 --
 
 CREATE TABLE IF NOT EXISTS `groupes` (
-  `id` int(11) NOT NULL auto_increment,
-  `name` varchar(60) NOT NULL default '',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `recalcul_rang` varchar(10) NOT NULL default '',
-  PRIMARY KEY  (`id`),
+  `recalcul_rang` varchar(10) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
   KEY `id_name` (`id`,`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -2520,14 +2610,14 @@ CREATE TABLE IF NOT EXISTS `groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `horaires_etablissement` (
-  `id_horaire_etablissement` int(11) NOT NULL auto_increment,
+  `id_horaire_etablissement` int(11) NOT NULL AUTO_INCREMENT,
   `date_horaire_etablissement` date NOT NULL,
   `jour_horaire_etablissement` varchar(15) NOT NULL,
   `ouverture_horaire_etablissement` time NOT NULL,
   `fermeture_horaire_etablissement` time NOT NULL,
   `pause_horaire_etablissement` time NOT NULL,
   `ouvert_horaire_etablissement` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`id_horaire_etablissement`)
+  PRIMARY KEY (`id_horaire_etablissement`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
@@ -2548,11 +2638,11 @@ INSERT INTO `horaires_etablissement` (`id_horaire_etablissement`, `date_horaire_
 --
 
 CREATE TABLE IF NOT EXISTS `infos_actions` (
-  `id` int(11) NOT NULL auto_increment,
-  `titre` varchar(255) NOT NULL default '',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `titre` varchar(255) NOT NULL DEFAULT '',
   `description` text NOT NULL,
-  `date` datetime default NULL,
-  PRIMARY KEY  (`id`),
+  `date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `id_titre` (`id`,`titre`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -2563,11 +2653,11 @@ CREATE TABLE IF NOT EXISTS `infos_actions` (
 --
 
 CREATE TABLE IF NOT EXISTS `infos_actions_destinataires` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_info` int(11) NOT NULL,
-  `nature` enum('statut','individu') default 'individu',
-  `valeur` varchar(255) default '',
-  PRIMARY KEY  (`id`),
+  `nature` enum('statut','individu') DEFAULT 'individu',
+  `valeur` varchar(255) DEFAULT '',
+  PRIMARY KEY (`id`),
   KEY `id_info` (`id_info`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -2578,11 +2668,11 @@ CREATE TABLE IF NOT EXISTS `infos_actions_destinataires` (
 --
 
 CREATE TABLE IF NOT EXISTS `inscription_items` (
-  `id` int(11) NOT NULL auto_increment,
-  `date` varchar(10) NOT NULL default '',
-  `heure` varchar(20) NOT NULL default '',
-  `description` varchar(200) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `date` varchar(10) NOT NULL DEFAULT '',
+  `heure` varchar(20) NOT NULL DEFAULT '',
+  `description` varchar(200) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2592,8 +2682,8 @@ CREATE TABLE IF NOT EXISTS `inscription_items` (
 --
 
 CREATE TABLE IF NOT EXISTS `inscription_j_login_items` (
-  `login` varchar(50) NOT NULL default '',
-  `id` int(11) NOT NULL default '0'
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2625,10 +2715,10 @@ CREATE TABLE IF NOT EXISTS `j_aidcateg_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_eleves` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `login` varchar(60) NOT NULL default '',
-  `indice_aid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_aid`,`login`)
+  `id_aid` varchar(100) NOT NULL DEFAULT '',
+  `login` varchar(60) NOT NULL DEFAULT '',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_aid`,`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2638,10 +2728,10 @@ CREATE TABLE IF NOT EXISTS `j_aid_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_eleves_resp` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `login` varchar(60) NOT NULL default '',
-  `indice_aid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_aid`,`login`)
+  `id_aid` varchar(100) NOT NULL DEFAULT '',
+  `login` varchar(60) NOT NULL DEFAULT '',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_aid`,`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2651,10 +2741,10 @@ CREATE TABLE IF NOT EXISTS `j_aid_eleves_resp` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `id_utilisateur` varchar(50) NOT NULL default '',
-  `indice_aid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_aid`,`id_utilisateur`)
+  `id_aid` varchar(100) NOT NULL DEFAULT '',
+  `id_utilisateur` varchar(50) NOT NULL DEFAULT '',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_aid`,`id_utilisateur`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2664,10 +2754,10 @@ CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs_gest` (
-  `id_aid` varchar(100) NOT NULL default '',
-  `id_utilisateur` varchar(50) NOT NULL default '',
-  `indice_aid` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_aid`,`id_utilisateur`)
+  `id_aid` varchar(100) NOT NULL DEFAULT '',
+  `id_utilisateur` varchar(50) NOT NULL DEFAULT '',
+  `indice_aid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_aid`,`id_utilisateur`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2677,11 +2767,11 @@ CREATE TABLE IF NOT EXISTS `j_aid_utilisateurs_gest` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_classes` (
-  `login` varchar(50) NOT NULL default '',
-  `id_classe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
-  `rang` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`id_classe`,`periode`),
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
+  `rang` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`login`,`id_classe`,`periode`),
   KEY `id_classe` (`id_classe`),
   KEY `login_periode` (`login`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -2693,9 +2783,9 @@ CREATE TABLE IF NOT EXISTS `j_eleves_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_cpe` (
-  `e_login` varchar(50) NOT NULL default '',
-  `cpe_login` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`e_login`,`cpe_login`)
+  `e_login` varchar(50) NOT NULL DEFAULT '',
+  `cpe_login` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`e_login`,`cpe_login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2705,9 +2795,9 @@ CREATE TABLE IF NOT EXISTS `j_eleves_cpe` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_etablissements` (
-  `id_eleve` varchar(50) NOT NULL default '',
-  `id_etablissement` varchar(8) NOT NULL default '',
-  PRIMARY KEY  (`id_eleve`,`id_etablissement`)
+  `id_eleve` varchar(50) NOT NULL DEFAULT '',
+  `id_etablissement` varchar(8) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_eleve`,`id_etablissement`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2717,10 +2807,10 @@ CREATE TABLE IF NOT EXISTS `j_eleves_etablissements` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_groupes` (
-  `login` varchar(50) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_groupe`,`login`,`periode`),
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_groupe`,`login`,`periode`),
   KEY `login` (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -2731,10 +2821,10 @@ CREATE TABLE IF NOT EXISTS `j_eleves_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_professeurs` (
-  `login` varchar(50) NOT NULL default '',
-  `professeur` varchar(50) NOT NULL default '',
-  `id_classe` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`professeur`,`id_classe`),
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `professeur` varchar(50) NOT NULL DEFAULT '',
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`login`,`professeur`,`id_classe`),
   KEY `classe_professeur` (`id_classe`,`professeur`),
   KEY `professeur_classe` (`professeur`,`id_classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -2746,10 +2836,10 @@ CREATE TABLE IF NOT EXISTS `j_eleves_professeurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_eleves_regime` (
-  `login` varchar(50) NOT NULL default '',
-  `doublant` char(1) NOT NULL default '',
-  `regime` varchar(5) NOT NULL default '',
-  PRIMARY KEY  (`login`)
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `doublant` char(1) NOT NULL DEFAULT '',
+  `regime` varchar(5) NOT NULL DEFAULT '',
+  PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2759,16 +2849,16 @@ CREATE TABLE IF NOT EXISTS `j_eleves_regime` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_groupes_classes` (
-  `id_groupe` int(11) NOT NULL default '0',
-  `id_classe` int(11) NOT NULL default '0',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `id_classe` int(11) NOT NULL DEFAULT '0',
   `priorite` smallint(6) NOT NULL,
   `coef` decimal(3,1) NOT NULL,
-  `categorie_id` int(11) NOT NULL default '1',
-  `saisie_ects` tinyint(1) NOT NULL default '0',
-  `valeur_ects` int(11) default NULL,
-  `mode_moy` enum('-','sup10','bonus') NOT NULL default '-',
-  `apb_langue_vivante` varchar(3) NOT NULL default '',
-  PRIMARY KEY  (`id_groupe`,`id_classe`),
+  `categorie_id` int(11) NOT NULL DEFAULT '1',
+  `saisie_ects` tinyint(1) NOT NULL DEFAULT '0',
+  `valeur_ects` int(11) DEFAULT NULL,
+  `mode_moy` enum('-','sup10','bonus') NOT NULL DEFAULT '-',
+  `apb_langue_vivante` varchar(3) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_groupe`,`id_classe`),
   KEY `id_classe_coef` (`id_classe`,`coef`),
   KEY `saisie_ects_id_groupe` (`saisie_ects`,`id_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -2780,9 +2870,9 @@ CREATE TABLE IF NOT EXISTS `j_groupes_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_groupes_matieres` (
-  `id_groupe` int(11) NOT NULL default '0',
-  `id_matiere` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`id_groupe`,`id_matiere`)
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `id_matiere` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_groupe`,`id_matiere`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2792,10 +2882,10 @@ CREATE TABLE IF NOT EXISTS `j_groupes_matieres` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_groupes_professeurs` (
-  `id_groupe` int(11) NOT NULL default '0',
-  `login` varchar(50) NOT NULL default '',
-  `ordre_prof` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`id_groupe`,`login`),
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `ordre_prof` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_groupe`,`login`),
   KEY `login` (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -2806,11 +2896,11 @@ CREATE TABLE IF NOT EXISTS `j_groupes_professeurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_groupes_visibilite` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_groupe` int(11) NOT NULL,
-  `domaine` varchar(255) NOT NULL default '',
-  `visible` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`),
+  `domaine` varchar(255) NOT NULL DEFAULT '',
+  `visible` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
   KEY `id_groupe_domaine` (`id_groupe`,`domaine`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -2821,11 +2911,11 @@ CREATE TABLE IF NOT EXISTS `j_groupes_visibilite` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_matieres_categories_classes` (
-  `categorie_id` int(11) NOT NULL default '0',
-  `classe_id` int(11) NOT NULL default '0',
-  `priority` smallint(6) NOT NULL default '0',
-  `affiche_moyenne` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`categorie_id`,`classe_id`)
+  `categorie_id` int(11) NOT NULL DEFAULT '0',
+  `classe_id` int(11) NOT NULL DEFAULT '0',
+  `priority` smallint(6) NOT NULL DEFAULT '0',
+  `affiche_moyenne` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`categorie_id`,`classe_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2835,11 +2925,11 @@ CREATE TABLE IF NOT EXISTS `j_matieres_categories_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_mentions_classes` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_mention` int(11) NOT NULL,
   `id_classe` int(11) NOT NULL,
   `ordre` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2851,7 +2941,7 @@ CREATE TABLE IF NOT EXISTS `j_mentions_classes` (
 CREATE TABLE IF NOT EXISTS `j_notifications_resp_pers` (
   `a_notification_id` int(12) NOT NULL COMMENT 'cle etrangere de la notification',
   `pers_id` varchar(10) NOT NULL COMMENT 'cle etrangere des personnes',
-  PRIMARY KEY  (`a_notification_id`,`pers_id`),
+  PRIMARY KEY (`a_notification_id`,`pers_id`),
   KEY `j_notifications_resp_pers_FI_2` (`pers_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table de jointure entre la notification et les personnes don';
 
@@ -2862,10 +2952,10 @@ CREATE TABLE IF NOT EXISTS `j_notifications_resp_pers` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_professeurs_matieres` (
-  `id_professeur` varchar(50) NOT NULL default '',
-  `id_matiere` varchar(50) NOT NULL default '',
-  `ordre_matieres` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id_professeur`,`id_matiere`)
+  `id_professeur` varchar(50) NOT NULL DEFAULT '',
+  `id_matiere` varchar(50) NOT NULL DEFAULT '',
+  `ordre_matieres` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_professeur`,`id_matiere`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -2886,13 +2976,13 @@ CREATE TABLE IF NOT EXISTS `j_scol_classes` (
 --
 
 CREATE TABLE IF NOT EXISTS `j_signalement` (
-  `id_groupe` int(11) NOT NULL default '0',
-  `login` varchar(50) NOT NULL default '',
-  `periode` int(11) NOT NULL default '0',
-  `nature` varchar(50) NOT NULL default '',
-  `valeur` varchar(50) NOT NULL default '',
-  `declarant` varchar(50) NOT NULL default '',
-  PRIMARY KEY  (`id_groupe`,`login`,`periode`,`nature`),
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `periode` int(11) NOT NULL DEFAULT '0',
+  `nature` varchar(50) NOT NULL DEFAULT '',
+  `valeur` varchar(50) NOT NULL DEFAULT '',
+  `declarant` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_groupe`,`login`,`periode`,`nature`),
   KEY `login` (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -2905,9 +2995,25 @@ CREATE TABLE IF NOT EXISTS `j_signalement` (
 CREATE TABLE IF NOT EXISTS `j_traitements_saisies` (
   `a_saisie_id` int(12) NOT NULL COMMENT 'cle etrangere de l''absence saisie',
   `a_traitement_id` int(12) NOT NULL COMMENT 'cle etrangere du traitement de ces absences',
-  PRIMARY KEY  (`a_saisie_id`,`a_traitement_id`),
+  PRIMARY KEY (`a_saisie_id`,`a_traitement_id`),
   KEY `j_traitements_saisies_FI_2` (`a_traitement_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Table de jointure entre la saisie et le traitement des absen';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `ldap_bx`
+--
+
+CREATE TABLE IF NOT EXISTS `ldap_bx` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login_u` varchar(200) NOT NULL,
+  `nom_u` varchar(200) NOT NULL,
+  `prenom_u` varchar(200) NOT NULL,
+  `statut_u` varchar(50) NOT NULL,
+  `identite_u` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -2916,7 +3022,7 @@ CREATE TABLE IF NOT EXISTS `j_traitements_saisies` (
 --
 
 CREATE TABLE IF NOT EXISTS `lettres_cadres` (
-  `id_lettre_cadre` int(11) NOT NULL auto_increment,
+  `id_lettre_cadre` int(11) NOT NULL AUTO_INCREMENT,
   `nom_lettre_cadre` varchar(150) NOT NULL,
   `x_lettre_cadre` float NOT NULL,
   `y_lettre_cadre` float NOT NULL,
@@ -2925,7 +3031,7 @@ CREATE TABLE IF NOT EXISTS `lettres_cadres` (
   `texte_lettre_cadre` text NOT NULL,
   `encadre_lettre_cadre` tinyint(4) NOT NULL,
   `couleurdefond_lettre_cadre` varchar(11) NOT NULL,
-  PRIMARY KEY  (`id_lettre_cadre`)
+  PRIMARY KEY (`id_lettre_cadre`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
@@ -2950,7 +3056,7 @@ INSERT INTO `lettres_cadres` (`id_lettre_cadre`, `nom_lettre_cadre`, `x_lettre_c
 --
 
 CREATE TABLE IF NOT EXISTS `lettres_suivis` (
-  `id_lettre_suivi` int(11) NOT NULL auto_increment,
+  `id_lettre_suivi` int(11) NOT NULL AUTO_INCREMENT,
   `lettresuitealettren_lettre_suivi` int(11) NOT NULL,
   `quirecois_lettre_suivi` varchar(50) NOT NULL,
   `partde_lettre_suivi` varchar(200) NOT NULL,
@@ -2966,7 +3072,7 @@ CREATE TABLE IF NOT EXISTS `lettres_suivis` (
   `reponse_date_lettre_suivi` date NOT NULL,
   `reponse_remarque_lettre_suivi` varchar(250) NOT NULL,
   `statu_lettre_suivi` varchar(20) NOT NULL,
-  PRIMARY KEY  (`id_lettre_suivi`)
+  PRIMARY KEY (`id_lettre_suivi`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -2976,7 +3082,7 @@ CREATE TABLE IF NOT EXISTS `lettres_suivis` (
 --
 
 CREATE TABLE IF NOT EXISTS `lettres_tcs` (
-  `id_lettre_tc` int(11) NOT NULL auto_increment,
+  `id_lettre_tc` int(11) NOT NULL AUTO_INCREMENT,
   `type_lettre_tc` int(11) NOT NULL,
   `cadre_lettre_tc` int(11) NOT NULL,
   `x_lettre_tc` float NOT NULL,
@@ -2984,7 +3090,7 @@ CREATE TABLE IF NOT EXISTS `lettres_tcs` (
   `l_lettre_tc` float NOT NULL,
   `h_lettre_tc` float NOT NULL,
   `encadre_lettre_tc` int(1) NOT NULL,
-  PRIMARY KEY  (`id_lettre_tc`)
+  PRIMARY KEY (`id_lettre_tc`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=201 ;
 
 --
@@ -3197,11 +3303,11 @@ INSERT INTO `lettres_tcs` (`id_lettre_tc`, `type_lettre_tc`, `cadre_lettre_tc`, 
 --
 
 CREATE TABLE IF NOT EXISTS `lettres_types` (
-  `id_lettre_type` int(11) NOT NULL auto_increment,
+  `id_lettre_type` int(11) NOT NULL AUTO_INCREMENT,
   `titre_lettre_type` varchar(250) NOT NULL,
   `categorie_lettre_type` varchar(250) NOT NULL,
   `reponse_lettre_type` varchar(3) NOT NULL,
-  PRIMARY KEY  (`id_lettre_type`)
+  PRIMARY KEY (`id_lettre_type`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
 
 --
@@ -3227,15 +3333,15 @@ INSERT INTO `lettres_types` (`id_lettre_type`, `titre_lettre_type`, `categorie_l
 --
 
 CREATE TABLE IF NOT EXISTS `log` (
-  `LOGIN` varchar(50) NOT NULL default '',
-  `START` datetime NOT NULL default '0000-00-00 00:00:00',
-  `SESSION_ID` varchar(255) NOT NULL default '',
-  `REMOTE_ADDR` varchar(16) NOT NULL default '',
-  `USER_AGENT` varchar(255) NOT NULL default '',
-  `REFERER` varchar(64) NOT NULL default '',
-  `AUTOCLOSE` enum('0','1','2','3','4') NOT NULL default '0',
-  `END` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`SESSION_ID`,`START`),
+  `LOGIN` varchar(50) NOT NULL DEFAULT '',
+  `START` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `SESSION_ID` varchar(255) NOT NULL DEFAULT '',
+  `REMOTE_ADDR` varchar(16) NOT NULL DEFAULT '',
+  `USER_AGENT` varchar(255) NOT NULL DEFAULT '',
+  `REFERER` varchar(64) NOT NULL DEFAULT '',
+  `AUTOCLOSE` enum('0','1','2','3','4') NOT NULL DEFAULT '0',
+  `END` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`SESSION_ID`,`START`),
   KEY `start_time` (`START`),
   KEY `end_time` (`END`),
   KEY `login_session_start` (`LOGIN`,`SESSION_ID`,`START`)
@@ -3244,17 +3350,32 @@ CREATE TABLE IF NOT EXISTS `log` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `log_maj_sconet`
+--
+
+CREATE TABLE IF NOT EXISTS `log_maj_sconet` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(50) NOT NULL,
+  `texte` text NOT NULL,
+  `date_debut` datetime NOT NULL,
+  `date_fin` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `matieres`
 --
 
 CREATE TABLE IF NOT EXISTS `matieres` (
-  `matiere` varchar(255) NOT NULL default '',
-  `nom_complet` varchar(200) NOT NULL default '',
-  `priority` smallint(6) NOT NULL default '0',
-  `categorie_id` int(11) NOT NULL default '1',
-  `matiere_aid` char(1) NOT NULL default 'n',
-  `matiere_atelier` char(1) NOT NULL default 'n',
-  PRIMARY KEY  (`matiere`)
+  `matiere` varchar(255) NOT NULL DEFAULT '',
+  `nom_complet` varchar(200) NOT NULL DEFAULT '',
+  `priority` smallint(6) NOT NULL DEFAULT '0',
+  `categorie_id` int(11) NOT NULL DEFAULT '1',
+  `matiere_aid` char(1) NOT NULL DEFAULT 'n',
+  `matiere_atelier` char(1) NOT NULL DEFAULT 'n',
+  PRIMARY KEY (`matiere`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3264,11 +3385,11 @@ CREATE TABLE IF NOT EXISTS `matieres` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations` (
-  `login` varchar(50) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`)
+  PRIMARY KEY (`login`,`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3292,10 +3413,10 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_acces` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations_grp` (
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`id_groupe`,`periode`)
+  PRIMARY KEY (`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3305,11 +3426,11 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_grp` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_appreciations_tempo` (
-  `login` varchar(50) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`),
+  PRIMARY KEY (`login`,`id_groupe`,`periode`),
   KEY `groupe_periode` (`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -3320,11 +3441,11 @@ CREATE TABLE IF NOT EXISTS `matieres_appreciations_tempo` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_app_corrections` (
-  `login` varchar(50) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `appreciation` text NOT NULL,
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`)
+  PRIMARY KEY (`login`,`id_groupe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3334,10 +3455,10 @@ CREATE TABLE IF NOT EXISTS `matieres_app_corrections` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_app_delais` (
-  `periode` int(11) NOT NULL default '0',
-  `id_groupe` int(11) NOT NULL default '0',
-  `date_limite` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  PRIMARY KEY  (`periode`,`id_groupe`),
+  `periode` int(11) NOT NULL DEFAULT '0',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `date_limite` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`periode`,`id_groupe`),
   KEY `id_groupe` (`id_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -3348,11 +3469,11 @@ CREATE TABLE IF NOT EXISTS `matieres_app_delais` (
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_categories` (
-  `id` int(11) NOT NULL auto_increment,
-  `nom_court` varchar(255) NOT NULL default '',
-  `nom_complet` varchar(255) NOT NULL default '',
-  `priority` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nom_court` varchar(255) NOT NULL DEFAULT '',
+  `nom_complet` varchar(255) NOT NULL DEFAULT '',
+  `priority` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
@@ -3369,13 +3490,13 @@ INSERT INTO `matieres_categories` (`id`, `nom_court`, `nom_complet`, `priority`)
 --
 
 CREATE TABLE IF NOT EXISTS `matieres_notes` (
-  `login` varchar(50) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
-  `note` float(10,1) default NULL,
-  `statut` varchar(10) NOT NULL default '',
-  `rang` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`login`,`id_groupe`,`periode`),
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
+  `note` float(10,1) DEFAULT NULL,
+  `statut` varchar(10) NOT NULL DEFAULT '',
+  `rang` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`login`,`id_groupe`,`periode`),
   KEY `groupe_periode_statut` (`id_groupe`,`periode`,`statut`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -3386,13 +3507,15 @@ CREATE TABLE IF NOT EXISTS `matieres_notes` (
 --
 
 CREATE TABLE IF NOT EXISTS `mef` (
-  `id` int(11) NOT NULL auto_increment COMMENT 'Cle primaire de la classe',
-  `mef_code` bigint(20) default NULL COMMENT 'Numero de la nomenclature officielle (numero MEF)',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Cle primaire de la classe',
+  `mef_code` varchar(50) NOT NULL DEFAULT '' COMMENT 'Numero de la nomenclature officielle (numero MEF)',
   `libelle_court` varchar(50) NOT NULL COMMENT 'libelle de la formation',
   `libelle_long` varchar(300) NOT NULL COMMENT 'libelle de la formation',
   `libelle_edition` varchar(300) NOT NULL COMMENT 'libelle de la formation pour presentation',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Module Ã©lÃ©mentaire de formation' AUTO_INCREMENT=1 ;
+  `code_mefstat` varchar(50) NOT NULL DEFAULT '',
+  `mef_rattachement` varchar(50) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Module élémentaire de formation' AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3401,9 +3524,29 @@ CREATE TABLE IF NOT EXISTS `mef` (
 --
 
 CREATE TABLE IF NOT EXISTS `mentions` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `mention` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `messagerie`
+--
+
+CREATE TABLE IF NOT EXISTS `messagerie` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `in_reply_to` int(11) NOT NULL,
+  `login_src` varchar(50) NOT NULL,
+  `login_dest` varchar(50) NOT NULL,
+  `sujet` varchar(100) NOT NULL,
+  `message` text NOT NULL,
+  `date_msg` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_visibilite` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `vu` tinyint(4) NOT NULL,
+  `date_vu` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3413,15 +3556,15 @@ CREATE TABLE IF NOT EXISTS `mentions` (
 --
 
 CREATE TABLE IF NOT EXISTS `messages` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `texte` text NOT NULL,
-  `date_debut` int(11) NOT NULL default '0',
-  `date_fin` int(11) NOT NULL default '0',
-  `auteur` varchar(50) NOT NULL default '',
-  `statuts_destinataires` varchar(10) NOT NULL default '',
-  `login_destinataire` varchar(50) NOT NULL default '',
-  `date_decompte` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
+  `date_debut` int(11) NOT NULL DEFAULT '0',
+  `date_fin` int(11) NOT NULL DEFAULT '0',
+  `auteur` varchar(50) NOT NULL DEFAULT '',
+  `statuts_destinataires` varchar(10) NOT NULL DEFAULT '',
+  `login_destinataire` varchar(50) NOT NULL DEFAULT '',
+  `date_decompte` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
   KEY `date_debut_fin` (`date_debut`,`date_fin`),
   KEY `login_destinataire` (`login_destinataire`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
@@ -3433,9 +3576,9 @@ CREATE TABLE IF NOT EXISTS `messages` (
 --
 
 CREATE TABLE IF NOT EXISTS `message_login` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `texte` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3445,12 +3588,12 @@ CREATE TABLE IF NOT EXISTS `message_login` (
 --
 
 CREATE TABLE IF NOT EXISTS `miseajour` (
-  `id_miseajour` int(11) NOT NULL auto_increment,
+  `id_miseajour` int(11) NOT NULL AUTO_INCREMENT,
   `fichier_miseajour` varchar(250) NOT NULL,
   `emplacement_miseajour` varchar(250) NOT NULL,
   `date_miseajour` date NOT NULL,
   `heure_miseajour` time NOT NULL,
-  PRIMARY KEY  (`id_miseajour`)
+  PRIMARY KEY (`id_miseajour`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3460,11 +3603,11 @@ CREATE TABLE IF NOT EXISTS `miseajour` (
 --
 
 CREATE TABLE IF NOT EXISTS `modeles_grilles_pdf` (
-  `id_modele` int(11) NOT NULL auto_increment,
-  `login` varchar(50) NOT NULL default '',
+  `id_modele` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(50) NOT NULL DEFAULT '',
   `nom_modele` varchar(255) NOT NULL,
-  `par_defaut` enum('y','n') default 'n',
-  PRIMARY KEY  (`id_modele`)
+  `par_defaut` enum('y','n') DEFAULT 'n',
+  PRIMARY KEY (`id_modele`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3475,7 +3618,7 @@ CREATE TABLE IF NOT EXISTS `modeles_grilles_pdf` (
 
 CREATE TABLE IF NOT EXISTS `modeles_grilles_pdf_valeurs` (
   `id_modele` int(11) NOT NULL,
-  `nom` varchar(255) NOT NULL default '',
+  `nom` varchar(255) NOT NULL DEFAULT '',
   `valeur` varchar(255) NOT NULL,
   KEY `id_modele_champ` (`id_modele`,`nom`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -3487,110 +3630,110 @@ CREATE TABLE IF NOT EXISTS `modeles_grilles_pdf_valeurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `model_bulletin` (
-  `id_model_bulletin` int(11) NOT NULL auto_increment,
-  `nom_model_bulletin` varchar(100) NOT NULL default '',
-  `active_bloc_datation` decimal(4,0) NOT NULL default '0',
-  `active_bloc_eleve` tinyint(4) NOT NULL default '0',
-  `active_bloc_adresse_parent` tinyint(4) NOT NULL default '0',
-  `active_bloc_absence` tinyint(4) NOT NULL default '0',
-  `active_bloc_note_appreciation` tinyint(4) NOT NULL default '0',
-  `active_bloc_avis_conseil` tinyint(4) NOT NULL default '0',
-  `active_bloc_chef` tinyint(4) NOT NULL default '0',
-  `active_photo` tinyint(4) NOT NULL default '0',
-  `active_coef_moyenne` tinyint(4) NOT NULL default '0',
-  `active_nombre_note` tinyint(4) NOT NULL default '0',
-  `active_nombre_note_case` tinyint(4) NOT NULL default '0',
-  `active_moyenne` tinyint(4) NOT NULL default '0',
-  `active_moyenne_eleve` tinyint(4) NOT NULL default '0',
-  `active_moyenne_classe` tinyint(4) NOT NULL default '0',
-  `active_moyenne_min` tinyint(4) NOT NULL default '0',
-  `active_moyenne_max` tinyint(4) NOT NULL default '0',
-  `active_regroupement_cote` tinyint(4) NOT NULL default '0',
-  `active_entete_regroupement` tinyint(4) NOT NULL default '0',
-  `active_moyenne_regroupement` tinyint(4) NOT NULL default '0',
-  `active_rang` tinyint(4) NOT NULL default '0',
-  `active_graphique_niveau` tinyint(4) NOT NULL default '0',
-  `active_appreciation` tinyint(4) NOT NULL default '0',
-  `affiche_doublement` tinyint(4) NOT NULL default '0',
-  `affiche_date_naissance` tinyint(4) NOT NULL default '0',
-  `affiche_dp` tinyint(4) NOT NULL default '0',
-  `affiche_nom_court` tinyint(4) NOT NULL default '0',
-  `affiche_effectif_classe` tinyint(4) NOT NULL default '0',
-  `affiche_numero_impression` tinyint(4) NOT NULL default '0',
-  `caractere_utilse` varchar(20) NOT NULL default '',
-  `X_parent` float NOT NULL default '0',
-  `Y_parent` float NOT NULL default '0',
-  `X_eleve` float NOT NULL default '0',
-  `Y_eleve` float NOT NULL default '0',
-  `cadre_eleve` tinyint(4) NOT NULL default '0',
-  `X_datation_bul` float NOT NULL default '0',
-  `Y_datation_bul` float NOT NULL default '0',
-  `cadre_datation_bul` tinyint(4) NOT NULL default '0',
-  `hauteur_info_categorie` float NOT NULL default '0',
-  `X_note_app` float NOT NULL default '0',
-  `Y_note_app` float NOT NULL default '0',
-  `longeur_note_app` float NOT NULL default '0',
-  `hauteur_note_app` float NOT NULL default '0',
-  `largeur_coef_moyenne` float NOT NULL default '0',
-  `largeur_nombre_note` float NOT NULL default '0',
-  `largeur_d_une_moyenne` float NOT NULL default '0',
-  `largeur_niveau` float NOT NULL default '0',
-  `largeur_rang` float NOT NULL default '0',
-  `X_absence` float NOT NULL default '0',
-  `Y_absence` float NOT NULL default '0',
-  `hauteur_entete_moyenne_general` float NOT NULL default '0',
-  `X_avis_cons` float NOT NULL default '0',
-  `Y_avis_cons` float NOT NULL default '0',
-  `longeur_avis_cons` float NOT NULL default '0',
-  `hauteur_avis_cons` float NOT NULL default '0',
-  `cadre_avis_cons` tinyint(4) NOT NULL default '0',
-  `X_sign_chef` float NOT NULL default '0',
-  `Y_sign_chef` float NOT NULL default '0',
-  `longeur_sign_chef` float NOT NULL default '0',
-  `hauteur_sign_chef` float NOT NULL default '0',
-  `cadre_sign_chef` tinyint(4) NOT NULL default '0',
-  `affiche_filigrame` tinyint(4) NOT NULL default '0',
-  `texte_filigrame` varchar(100) NOT NULL default '',
-  `affiche_logo_etab` tinyint(4) NOT NULL default '0',
-  `entente_mel` tinyint(4) NOT NULL default '0',
-  `entente_tel` tinyint(4) NOT NULL default '0',
-  `entente_fax` tinyint(4) NOT NULL default '0',
-  `L_max_logo` tinyint(4) NOT NULL default '0',
-  `H_max_logo` tinyint(4) NOT NULL default '0',
-  `toute_moyenne_meme_col` tinyint(4) NOT NULL default '0',
-  `active_reperage_eleve` tinyint(4) NOT NULL default '0',
-  `couleur_reperage_eleve1` smallint(6) NOT NULL default '0',
-  `couleur_reperage_eleve2` smallint(6) NOT NULL default '0',
-  `couleur_reperage_eleve3` smallint(6) NOT NULL default '0',
-  `couleur_categorie_entete` tinyint(4) NOT NULL default '0',
-  `couleur_categorie_entete1` smallint(6) NOT NULL default '0',
-  `couleur_categorie_entete2` smallint(6) NOT NULL default '0',
-  `couleur_categorie_entete3` smallint(6) NOT NULL default '0',
-  `couleur_categorie_cote` tinyint(4) NOT NULL default '0',
-  `couleur_categorie_cote1` smallint(6) NOT NULL default '0',
-  `couleur_categorie_cote2` smallint(6) NOT NULL default '0',
-  `couleur_categorie_cote3` smallint(6) NOT NULL default '0',
-  `couleur_moy_general` tinyint(4) NOT NULL default '0',
-  `couleur_moy_general1` smallint(6) NOT NULL default '0',
-  `couleur_moy_general2` smallint(6) NOT NULL default '0',
-  `couleur_moy_general3` smallint(6) NOT NULL default '0',
-  `titre_entete_matiere` varchar(50) NOT NULL default '',
-  `titre_entete_coef` varchar(20) NOT NULL default '',
-  `titre_entete_nbnote` varchar(20) NOT NULL default '',
-  `titre_entete_rang` varchar(20) NOT NULL default '',
-  `titre_entete_appreciation` varchar(50) NOT NULL default '',
-  `active_coef_sousmoyene` tinyint(4) NOT NULL default '0',
-  `arrondie_choix` float NOT NULL default '0',
-  `nb_chiffre_virgule` tinyint(4) NOT NULL default '0',
-  `chiffre_avec_zero` tinyint(4) NOT NULL default '0',
-  `autorise_sous_matiere` tinyint(4) NOT NULL default '0',
-  `affichage_haut_responsable` tinyint(4) NOT NULL default '0',
-  `entete_model_bulletin` tinyint(4) NOT NULL default '0',
-  `ordre_entete_model_bulletin` tinyint(4) NOT NULL default '0',
-  `affiche_etab_origine` tinyint(4) NOT NULL default '0',
-  `imprime_pour` tinyint(4) NOT NULL default '0',
-  `largeur_matiere` float NOT NULL default '0',
-  `nom_etab_gras` tinyint(4) NOT NULL default '0',
+  `id_model_bulletin` int(11) NOT NULL AUTO_INCREMENT,
+  `nom_model_bulletin` varchar(100) NOT NULL DEFAULT '',
+  `active_bloc_datation` decimal(4,0) NOT NULL DEFAULT '0',
+  `active_bloc_eleve` tinyint(4) NOT NULL DEFAULT '0',
+  `active_bloc_adresse_parent` tinyint(4) NOT NULL DEFAULT '0',
+  `active_bloc_absence` tinyint(4) NOT NULL DEFAULT '0',
+  `active_bloc_note_appreciation` tinyint(4) NOT NULL DEFAULT '0',
+  `active_bloc_avis_conseil` tinyint(4) NOT NULL DEFAULT '0',
+  `active_bloc_chef` tinyint(4) NOT NULL DEFAULT '0',
+  `active_photo` tinyint(4) NOT NULL DEFAULT '0',
+  `active_coef_moyenne` tinyint(4) NOT NULL DEFAULT '0',
+  `active_nombre_note` tinyint(4) NOT NULL DEFAULT '0',
+  `active_nombre_note_case` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne_eleve` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne_classe` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne_min` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne_max` tinyint(4) NOT NULL DEFAULT '0',
+  `active_regroupement_cote` tinyint(4) NOT NULL DEFAULT '0',
+  `active_entete_regroupement` tinyint(4) NOT NULL DEFAULT '0',
+  `active_moyenne_regroupement` tinyint(4) NOT NULL DEFAULT '0',
+  `active_rang` tinyint(4) NOT NULL DEFAULT '0',
+  `active_graphique_niveau` tinyint(4) NOT NULL DEFAULT '0',
+  `active_appreciation` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_doublement` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_date_naissance` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_dp` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_nom_court` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_effectif_classe` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_numero_impression` tinyint(4) NOT NULL DEFAULT '0',
+  `caractere_utilse` varchar(20) NOT NULL DEFAULT '',
+  `X_parent` float NOT NULL DEFAULT '0',
+  `Y_parent` float NOT NULL DEFAULT '0',
+  `X_eleve` float NOT NULL DEFAULT '0',
+  `Y_eleve` float NOT NULL DEFAULT '0',
+  `cadre_eleve` tinyint(4) NOT NULL DEFAULT '0',
+  `X_datation_bul` float NOT NULL DEFAULT '0',
+  `Y_datation_bul` float NOT NULL DEFAULT '0',
+  `cadre_datation_bul` tinyint(4) NOT NULL DEFAULT '0',
+  `hauteur_info_categorie` float NOT NULL DEFAULT '0',
+  `X_note_app` float NOT NULL DEFAULT '0',
+  `Y_note_app` float NOT NULL DEFAULT '0',
+  `longeur_note_app` float NOT NULL DEFAULT '0',
+  `hauteur_note_app` float NOT NULL DEFAULT '0',
+  `largeur_coef_moyenne` float NOT NULL DEFAULT '0',
+  `largeur_nombre_note` float NOT NULL DEFAULT '0',
+  `largeur_d_une_moyenne` float NOT NULL DEFAULT '0',
+  `largeur_niveau` float NOT NULL DEFAULT '0',
+  `largeur_rang` float NOT NULL DEFAULT '0',
+  `X_absence` float NOT NULL DEFAULT '0',
+  `Y_absence` float NOT NULL DEFAULT '0',
+  `hauteur_entete_moyenne_general` float NOT NULL DEFAULT '0',
+  `X_avis_cons` float NOT NULL DEFAULT '0',
+  `Y_avis_cons` float NOT NULL DEFAULT '0',
+  `longeur_avis_cons` float NOT NULL DEFAULT '0',
+  `hauteur_avis_cons` float NOT NULL DEFAULT '0',
+  `cadre_avis_cons` tinyint(4) NOT NULL DEFAULT '0',
+  `X_sign_chef` float NOT NULL DEFAULT '0',
+  `Y_sign_chef` float NOT NULL DEFAULT '0',
+  `longeur_sign_chef` float NOT NULL DEFAULT '0',
+  `hauteur_sign_chef` float NOT NULL DEFAULT '0',
+  `cadre_sign_chef` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_filigrame` tinyint(4) NOT NULL DEFAULT '0',
+  `texte_filigrame` varchar(100) NOT NULL DEFAULT '',
+  `affiche_logo_etab` tinyint(4) NOT NULL DEFAULT '0',
+  `entente_mel` tinyint(4) NOT NULL DEFAULT '0',
+  `entente_tel` tinyint(4) NOT NULL DEFAULT '0',
+  `entente_fax` tinyint(4) NOT NULL DEFAULT '0',
+  `L_max_logo` tinyint(4) NOT NULL DEFAULT '0',
+  `H_max_logo` tinyint(4) NOT NULL DEFAULT '0',
+  `toute_moyenne_meme_col` tinyint(4) NOT NULL DEFAULT '0',
+  `active_reperage_eleve` tinyint(4) NOT NULL DEFAULT '0',
+  `couleur_reperage_eleve1` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_reperage_eleve2` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_reperage_eleve3` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_entete` tinyint(4) NOT NULL DEFAULT '0',
+  `couleur_categorie_entete1` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_entete2` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_entete3` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_cote` tinyint(4) NOT NULL DEFAULT '0',
+  `couleur_categorie_cote1` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_cote2` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_categorie_cote3` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_moy_general` tinyint(4) NOT NULL DEFAULT '0',
+  `couleur_moy_general1` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_moy_general2` smallint(6) NOT NULL DEFAULT '0',
+  `couleur_moy_general3` smallint(6) NOT NULL DEFAULT '0',
+  `titre_entete_matiere` varchar(50) NOT NULL DEFAULT '',
+  `titre_entete_coef` varchar(20) NOT NULL DEFAULT '',
+  `titre_entete_nbnote` varchar(20) NOT NULL DEFAULT '',
+  `titre_entete_rang` varchar(20) NOT NULL DEFAULT '',
+  `titre_entete_appreciation` varchar(50) NOT NULL DEFAULT '',
+  `active_coef_sousmoyene` tinyint(4) NOT NULL DEFAULT '0',
+  `arrondie_choix` float NOT NULL DEFAULT '0',
+  `nb_chiffre_virgule` tinyint(4) NOT NULL DEFAULT '0',
+  `chiffre_avec_zero` tinyint(4) NOT NULL DEFAULT '0',
+  `autorise_sous_matiere` tinyint(4) NOT NULL DEFAULT '0',
+  `affichage_haut_responsable` tinyint(4) NOT NULL DEFAULT '0',
+  `entete_model_bulletin` tinyint(4) NOT NULL DEFAULT '0',
+  `ordre_entete_model_bulletin` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_etab_origine` tinyint(4) NOT NULL DEFAULT '0',
+  `imprime_pour` tinyint(4) NOT NULL DEFAULT '0',
+  `largeur_matiere` float NOT NULL DEFAULT '0',
+  `nom_etab_gras` tinyint(4) NOT NULL DEFAULT '0',
   `taille_texte_date_edition` float NOT NULL,
   `taille_texte_matiere` float NOT NULL,
   `active_moyenne_general` tinyint(4) NOT NULL,
@@ -3622,13 +3765,13 @@ CREATE TABLE IF NOT EXISTS `model_bulletin` (
   `taille_texte_categorie` float NOT NULL,
   `type_texte_date_datation` varchar(1) NOT NULL,
   `cadre_adresse` tinyint(4) NOT NULL,
-  `centrage_logo` tinyint(4) NOT NULL default '0',
-  `Y_centre_logo` float NOT NULL default '18',
-  `ajout_cadre_blanc_photo` tinyint(4) NOT NULL default '0',
-  `affiche_moyenne_mini_general` tinyint(4) NOT NULL default '1',
-  `affiche_moyenne_maxi_general` tinyint(4) NOT NULL default '1',
-  `affiche_date_edition` tinyint(4) NOT NULL default '1',
-  PRIMARY KEY  (`id_model_bulletin`)
+  `centrage_logo` tinyint(4) NOT NULL DEFAULT '0',
+  `Y_centre_logo` float NOT NULL DEFAULT '18',
+  `ajout_cadre_blanc_photo` tinyint(4) NOT NULL DEFAULT '0',
+  `affiche_moyenne_mini_general` tinyint(4) NOT NULL DEFAULT '1',
+  `affiche_moyenne_maxi_general` tinyint(4) NOT NULL DEFAULT '1',
+  `affiche_date_edition` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id_model_bulletin`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
 
 --
@@ -3647,14 +3790,14 @@ INSERT INTO `model_bulletin` (`id_model_bulletin`, `nom_model_bulletin`, `active
 --
 
 CREATE TABLE IF NOT EXISTS `notanet` (
-  `login` varchar(50) NOT NULL default '',
+  `login` varchar(50) NOT NULL DEFAULT '',
   `ine` text NOT NULL,
   `id_mat` int(4) NOT NULL,
   `notanet_mat` varchar(255) NOT NULL,
   `matiere` varchar(50) NOT NULL,
-  `note` varchar(4) NOT NULL default '',
+  `note` varchar(4) NOT NULL DEFAULT '',
   `note_notanet` varchar(4) NOT NULL,
-  `id_classe` smallint(6) NOT NULL default '0'
+  `id_classe` smallint(6) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3668,8 +3811,8 @@ CREATE TABLE IF NOT EXISTS `notanet_app` (
   `id_mat` int(4) NOT NULL,
   `matiere` varchar(50) NOT NULL,
   `appreciation` text NOT NULL,
-  `id` int(11) NOT NULL auto_increment,
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3682,7 +3825,7 @@ CREATE TABLE IF NOT EXISTS `notanet_avis` (
   `login` varchar(50) NOT NULL,
   `favorable` enum('O','N') NOT NULL,
   `avis` text NOT NULL,
-  PRIMARY KEY  (`login`)
+  PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3692,13 +3835,13 @@ CREATE TABLE IF NOT EXISTS `notanet_avis` (
 --
 
 CREATE TABLE IF NOT EXISTS `notanet_corresp` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `type_brevet` tinyint(4) NOT NULL,
   `id_mat` int(4) NOT NULL,
-  `notanet_mat` varchar(255) NOT NULL default '',
-  `matiere` varchar(50) NOT NULL default '',
-  `statut` enum('imposee','optionnelle','non dispensee dans l etablissement') NOT NULL default 'imposee',
-  PRIMARY KEY  (`id`)
+  `notanet_mat` varchar(255) NOT NULL DEFAULT '',
+  `matiere` varchar(50) NOT NULL DEFAULT '',
+  `statut` enum('imposee','optionnelle','non dispensee dans l etablissement') NOT NULL DEFAULT 'imposee',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3710,7 +3853,7 @@ CREATE TABLE IF NOT EXISTS `notanet_corresp` (
 CREATE TABLE IF NOT EXISTS `notanet_ele_type` (
   `login` varchar(50) NOT NULL,
   `type_brevet` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`login`)
+  PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3724,7 +3867,7 @@ CREATE TABLE IF NOT EXISTS `notanet_socles` (
   `b2i` enum('MS','ME','MN','AB') NOT NULL,
   `a2` enum('MS','ME','AB') NOT NULL,
   `lv` varchar(50) NOT NULL,
-  PRIMARY KEY  (`login`)
+  PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3748,7 +3891,7 @@ CREATE TABLE IF NOT EXISTS `notanet_verrou` (
 CREATE TABLE IF NOT EXISTS `pays` (
   `code_pays` varchar(50) NOT NULL,
   `nom_pays` varchar(255) NOT NULL,
-  PRIMARY KEY  (`code_pays`)
+  PRIMARY KEY (`code_pays`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3758,13 +3901,13 @@ CREATE TABLE IF NOT EXISTS `pays` (
 --
 
 CREATE TABLE IF NOT EXISTS `periodes` (
-  `nom_periode` varchar(50) NOT NULL default '',
-  `num_periode` int(11) NOT NULL default '0',
-  `verouiller` char(1) NOT NULL default '',
-  `id_classe` int(11) NOT NULL default '0',
-  `date_verrouillage` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `date_fin` timestamp NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`num_periode`,`id_classe`),
+  `nom_periode` varchar(50) NOT NULL DEFAULT '',
+  `num_periode` int(11) NOT NULL DEFAULT '0',
+  `verouiller` char(1) NOT NULL DEFAULT '',
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  `date_verrouillage` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `date_fin` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`num_periode`,`id_classe`),
   KEY `id_classe` (`id_classe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -3775,12 +3918,12 @@ CREATE TABLE IF NOT EXISTS `periodes` (
 --
 
 CREATE TABLE IF NOT EXISTS `plugins` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(100) NOT NULL,
   `repertoire` varchar(255) NOT NULL,
   `description` longtext NOT NULL,
-  `ouvert` char(1) default 'n',
-  PRIMARY KEY  (`id`),
+  `ouvert` char(1) DEFAULT 'n',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `nom` (`nom`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -3791,12 +3934,12 @@ CREATE TABLE IF NOT EXISTS `plugins` (
 --
 
 CREATE TABLE IF NOT EXISTS `plugins_autorisations` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `plugin_id` int(11) NOT NULL,
   `fichier` varchar(100) NOT NULL,
   `user_statut` varchar(50) NOT NULL,
-  `auth` char(1) default 'n',
-  PRIMARY KEY  (`id`)
+  `auth` char(1) DEFAULT 'n',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3806,13 +3949,13 @@ CREATE TABLE IF NOT EXISTS `plugins_autorisations` (
 --
 
 CREATE TABLE IF NOT EXISTS `plugins_menus` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `plugin_id` int(11) NOT NULL,
   `user_statut` varchar(50) NOT NULL,
   `titre_item` varchar(255) NOT NULL,
   `lien_item` varchar(255) NOT NULL,
   `description_item` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3835,10 +3978,10 @@ CREATE TABLE IF NOT EXISTS `preferences` (
 --
 
 CREATE TABLE IF NOT EXISTS `ref_wiki` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `ref` varchar(255) NOT NULL,
   `url` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `ref` (`ref`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -3847,7 +3990,7 @@ CREATE TABLE IF NOT EXISTS `ref_wiki` (
 --
 
 INSERT INTO `ref_wiki` (`id`, `ref`, `url`) VALUES
-(0, 'enseignement_invisible', 'http://www.sylogix.org/wiki/gepi/Enseignement_invisible');
+(0, 'enseignement_invisible', 'http://www.sylogix.org/projects/gepi/wiki/Enseignement_invisible');
 
 -- --------------------------------------------------------
 
@@ -3856,20 +3999,20 @@ INSERT INTO `ref_wiki` (`id`, `ref`, `url`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `responsables` (
-  `ereno` varchar(10) NOT NULL default '',
-  `nom1` varchar(50) NOT NULL default '',
-  `prenom1` varchar(50) NOT NULL default '',
-  `adr1` varchar(100) NOT NULL default '',
-  `adr1_comp` varchar(100) NOT NULL default '',
-  `commune1` varchar(50) NOT NULL default '',
-  `cp1` varchar(6) NOT NULL default '',
-  `nom2` varchar(50) NOT NULL default '',
-  `prenom2` varchar(50) NOT NULL default '',
-  `adr2` varchar(100) NOT NULL default '',
-  `adr2_comp` varchar(100) NOT NULL default '',
-  `commune2` varchar(50) NOT NULL default '',
-  `cp2` varchar(6) NOT NULL default '',
-  PRIMARY KEY  (`ereno`)
+  `ereno` varchar(10) NOT NULL DEFAULT '',
+  `nom1` varchar(50) NOT NULL DEFAULT '',
+  `prenom1` varchar(50) NOT NULL DEFAULT '',
+  `adr1` varchar(100) NOT NULL DEFAULT '',
+  `adr1_comp` varchar(100) NOT NULL DEFAULT '',
+  `commune1` varchar(50) NOT NULL DEFAULT '',
+  `cp1` varchar(6) NOT NULL DEFAULT '',
+  `nom2` varchar(50) NOT NULL DEFAULT '',
+  `prenom2` varchar(50) NOT NULL DEFAULT '',
+  `adr2` varchar(100) NOT NULL DEFAULT '',
+  `adr2_comp` varchar(100) NOT NULL DEFAULT '',
+  `commune2` varchar(50) NOT NULL DEFAULT '',
+  `cp2` varchar(6) NOT NULL DEFAULT '',
+  PRIMARY KEY (`ereno`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3883,6 +4026,7 @@ CREATE TABLE IF NOT EXISTS `responsables2` (
   `pers_id` varchar(10) NOT NULL,
   `resp_legal` varchar(1) NOT NULL,
   `pers_contact` varchar(1) NOT NULL,
+  `acces_sp` varchar(1) NOT NULL,
   KEY `pers_id` (`pers_id`),
   KEY `ele_id` (`ele_id`),
   KEY `resp_legal` (`resp_legal`)
@@ -3903,7 +4047,7 @@ CREATE TABLE IF NOT EXISTS `resp_adr` (
   `cp` varchar(6) NOT NULL,
   `pays` varchar(50) NOT NULL,
   `commune` varchar(50) NOT NULL,
-  PRIMARY KEY  (`adr_id`)
+  PRIMARY KEY (`adr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -3923,10 +4067,23 @@ CREATE TABLE IF NOT EXISTS `resp_pers` (
   `tel_prof` varchar(255) NOT NULL,
   `mel` varchar(100) NOT NULL,
   `adr_id` varchar(10) NOT NULL,
-  PRIMARY KEY  (`pers_id`),
+  PRIMARY KEY (`pers_id`),
   KEY `login` (`login`),
   KEY `adr_id` (`adr_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `rss_users`
+--
+
+CREATE TABLE IF NOT EXISTS `rss_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_login` varchar(30) NOT NULL,
+  `user_uri` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -3935,10 +4092,10 @@ CREATE TABLE IF NOT EXISTS `resp_pers` (
 --
 
 CREATE TABLE IF NOT EXISTS `salle_cours` (
-  `id_salle` int(3) NOT NULL auto_increment,
+  `id_salle` int(3) NOT NULL AUTO_INCREMENT,
   `numero_salle` varchar(10) NOT NULL,
   `nom_salle` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_salle`)
+  PRIMARY KEY (`id_salle`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -3948,9 +4105,9 @@ CREATE TABLE IF NOT EXISTS `salle_cours` (
 --
 
 CREATE TABLE IF NOT EXISTS `setting` (
-  `NAME` varchar(255) NOT NULL default '',
+  `NAME` varchar(255) NOT NULL DEFAULT '',
   `VALUE` text NOT NULL,
-  PRIMARY KEY  (`NAME`)
+  PRIMARY KEY (`NAME`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
@@ -3958,12 +4115,12 @@ CREATE TABLE IF NOT EXISTS `setting` (
 --
 
 INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
-('version', 'trunk'),
+('version', '1.6.3'),
 ('versionRc', ''),
 ('versionBeta', ''),
 ('sessionMaxLength', '30'),
 ('Impression', '<center><p class = "grand">Gestion des Elèves Par Internet</p></center>\r\n<br />\r\n<p class = "grand">Qu''est-ce que GEPI ?</p>\r\n\r\n<p>Afin d''étudier les modalités d''informatisation des bulletins scolaires : notes et appréciations via Internet, une expérimentation (baptisée Gestion des Elèves Par Internet)a été mise en place. Cette expérimentation concerne les classes suivantes : \r\n<br />* ....\r\n<br />* ....\r\n<br />\r\n<br />\r\nCeci vous concerne car vous êtes professeur enseignant dans l''une ou l''autre de ces classes.\r\n<br />\r\n<br />\r\nA partir de la réception de ce document, vous pourrez remplir les bulletins informatisés :\r\n<span class = "norme">\r\n<UL><li>soit au lycée à partir de n''importe quel poste connecté à Internet,\r\n<li>soit chez vous si vous disposez d''une connexion Internet.\r\n</ul>\r\n</span>\r\n<p class = "grand">Comment accéder au module de saisie (notes etappréciations) :</p>\r\n<span class = "norme">\r\n<UL>\r\n    <LI>Se connecter à Internet\r\n    <LI>Lancer un navigateur (FireFox de préférence, Opera, Internet Explorer, ...)\r\n    <LI>Se connecter au site : https://adresse_du_site/gepi\r\n    <LI>Après quelques instants une page apparaît vous invitant à entrer un nom d''identifiant et un mot de passe (cesinformations figurent en haut de cette page).\r\n    <br />ATTENTION : votre mot de passe est strictement confidentiel.\r\n    <br />\r\n    <br />Une fois ces informations fournies, cliquez sur le bouton "Ok".\r\n    <LI> Après quelques instants une page d''accueil apparaît.<br />\r\nLa première fois, Gepi vous demande de changer votre mot de passe.\r\nChoisissez-en un facile à retenir, mais non trivial (évitez toute date\r\nde naissance, nom d''animal familier, prénom, etc.), et contenant\r\nlettre(s), chiffre(s), et caractère(s) non alphanumérique(s).<br />\r\nLes fois suivantes, vous arriverez directement au menu général de\r\nl''application. Pour bien prendre connaissance des possibilités de\r\nl''application, n''hésitez pas à essayer tous les liens disponibles !\r\n</ul></span>\r\n<p class = "grand">Remarque :</p>\r\n<p>GEPI est prévu pour que chaque professeur ne puisse modifier les notes ou les appréciations que dans les rubriques qui le concernent et uniquement pour ses élèves.\r\n<br />\r\nJe reste à votre disposition pour tout renseignement complémentaire.\r\n    <br />\r\n    Le proviseur adjoint\r\n</p>'),
-('gepiYear', '2011/2012'),
+('gepiYear', '2013/2014'),
 ('gepiSchoolName', 'Nom de l''établissement'),
 ('gepiSchoolAdress1', 'Adresse'),
 ('gepiSchoolAdress2', 'Boîte postale'),
@@ -4163,7 +4320,12 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 ('autorise_commentaires_mod_disc', 'no'),
 ('sso_cas_table', 'no'),
 ('encodage_nom_photo', 'yes'),
-('alea_nom_photo', '7bdbbff1c4a172bfcbda6a512a9f39a0');
+('alea_nom_photo', '4707bf0a6faefb99ddae77f8555b3886'),
+('gepi_en_production', 'y'),
+('GepiAccesBulletinSimpleColonneMoyClasseResp', 'y'),
+('GepiAccesBulletinSimpleColonneMoyClasseEleve', 'y'),
+('MessagerieDelaisTest', '1'),
+('MessagerieLargeurImg', '16');
 
 -- --------------------------------------------------------
 
@@ -4172,17 +4334,17 @@ INSERT INTO `setting` (`NAME`, `VALUE`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `suivi_eleve_cpe` (
-  `id_suivi_eleve_cpe` int(11) NOT NULL auto_increment,
-  `eleve_suivi_eleve_cpe` varchar(30) NOT NULL default '',
+  `id_suivi_eleve_cpe` int(11) NOT NULL AUTO_INCREMENT,
+  `eleve_suivi_eleve_cpe` varchar(30) NOT NULL DEFAULT '',
   `parqui_suivi_eleve_cpe` varchar(150) NOT NULL,
-  `date_suivi_eleve_cpe` date NOT NULL default '0000-00-00',
+  `date_suivi_eleve_cpe` date NOT NULL DEFAULT '0000-00-00',
   `heure_suivi_eleve_cpe` time NOT NULL,
   `komenti_suivi_eleve_cpe` text NOT NULL,
   `niveau_message_suivi_eleve_cpe` varchar(1) NOT NULL,
   `action_suivi_eleve_cpe` varchar(2) NOT NULL,
   `support_suivi_eleve_cpe` tinyint(4) NOT NULL,
   `courrier_suivi_eleve_cpe` int(11) NOT NULL,
-  PRIMARY KEY  (`id_suivi_eleve_cpe`)
+  PRIMARY KEY (`id_suivi_eleve_cpe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4192,10 +4354,10 @@ CREATE TABLE IF NOT EXISTS `suivi_eleve_cpe` (
 --
 
 CREATE TABLE IF NOT EXISTS `synthese_app_classe` (
-  `id_classe` int(11) NOT NULL default '0',
-  `periode` int(11) NOT NULL default '0',
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  `periode` int(11) NOT NULL DEFAULT '0',
   `synthese` text NOT NULL,
-  PRIMARY KEY  (`id_classe`,`periode`)
+  PRIMARY KEY (`id_classe`,`periode`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4205,11 +4367,11 @@ CREATE TABLE IF NOT EXISTS `synthese_app_classe` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_alerte_mail` (
-  `id` int(11) unsigned NOT NULL auto_increment,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_classe` smallint(6) unsigned NOT NULL,
-  `destinataire` varchar(50) NOT NULL default '',
-  `adresse` varchar(250) default NULL,
-  PRIMARY KEY  (`id`),
+  `destinataire` varchar(50) NOT NULL DEFAULT '',
+  `adresse` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `id_classe` (`id_classe`,`destinataire`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -4220,11 +4382,11 @@ CREATE TABLE IF NOT EXISTS `s_alerte_mail` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_autres_sanctions` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_sanction` int(11) NOT NULL,
   `id_nature` int(11) NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4234,10 +4396,10 @@ CREATE TABLE IF NOT EXISTS `s_autres_sanctions` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_categories` (
-  `id` int(11) NOT NULL auto_increment,
-  `categorie` varchar(50) NOT NULL default '',
-  `sigle` varchar(20) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `categorie` varchar(50) NOT NULL DEFAULT '',
+  `sigle` varchar(20) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4247,12 +4409,12 @@ CREATE TABLE IF NOT EXISTS `s_categories` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_communication` (
-  `id_communication` int(11) NOT NULL auto_increment,
+  `id_communication` int(11) NOT NULL AUTO_INCREMENT,
   `id_incident` int(11) NOT NULL,
   `login` varchar(50) NOT NULL,
   `nature` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  PRIMARY KEY  (`id_communication`)
+  PRIMARY KEY (`id_communication`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4262,11 +4424,11 @@ CREATE TABLE IF NOT EXISTS `s_communication` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_delegation` (
-  `id_delegation` int(11) NOT NULL auto_increment,
+  `id_delegation` int(11) NOT NULL AUTO_INCREMENT,
   `fct_delegation` varchar(100) NOT NULL,
   `fct_autorite` varchar(50) NOT NULL,
   `nom_autorite` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_delegation`)
+  PRIMARY KEY (`id_delegation`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4276,20 +4438,20 @@ CREATE TABLE IF NOT EXISTS `s_delegation` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_exclusions` (
-  `id_exclusion` int(11) NOT NULL auto_increment,
-  `id_sanction` int(11) NOT NULL default '0',
-  `date_debut` date NOT NULL default '0000-00-00',
-  `heure_debut` varchar(20) NOT NULL default '',
-  `date_fin` date NOT NULL default '0000-00-00',
-  `heure_fin` varchar(20) NOT NULL default '',
+  `id_exclusion` int(11) NOT NULL AUTO_INCREMENT,
+  `id_sanction` int(11) NOT NULL DEFAULT '0',
+  `date_debut` date NOT NULL DEFAULT '0000-00-00',
+  `heure_debut` varchar(20) NOT NULL DEFAULT '',
+  `date_fin` date NOT NULL DEFAULT '0000-00-00',
+  `heure_fin` varchar(20) NOT NULL DEFAULT '',
   `travail` text NOT NULL,
-  `lieu` varchar(255) NOT NULL default '',
+  `lieu` varchar(255) NOT NULL DEFAULT '',
   `nombre_jours` varchar(50) NOT NULL,
   `qualification_faits` text NOT NULL,
   `num_courrier` varchar(50) NOT NULL,
   `type_exclusion` varchar(50) NOT NULL,
   `id_signataire` int(11) NOT NULL,
-  PRIMARY KEY  (`id_exclusion`)
+  PRIMARY KEY (`id_exclusion`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4299,17 +4461,18 @@ CREATE TABLE IF NOT EXISTS `s_exclusions` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_incidents` (
-  `id_incident` int(11) NOT NULL auto_increment,
+  `id_incident` int(11) NOT NULL AUTO_INCREMENT,
   `declarant` varchar(50) NOT NULL,
   `date` date NOT NULL,
   `heure` varchar(20) NOT NULL,
   `id_lieu` int(11) NOT NULL,
   `nature` varchar(255) NOT NULL,
-  `id_categorie` int(11) default NULL,
+  `id_categorie` int(11) DEFAULT NULL,
   `description` text NOT NULL,
   `etat` varchar(20) NOT NULL,
   `message_id` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id_incident`)
+  `primo_declarant` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id_incident`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4319,9 +4482,9 @@ CREATE TABLE IF NOT EXISTS `s_incidents` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_lieux_incidents` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `lieu` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
@@ -4342,11 +4505,11 @@ INSERT INTO `s_lieux_incidents` (`id`, `lieu`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `s_mesures` (
-  `id` int(11) NOT NULL auto_increment,
-  `type` enum('prise','demandee') default NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` enum('prise','demandee') DEFAULT NULL,
   `mesure` varchar(50) NOT NULL,
   `commentaire` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
@@ -4366,10 +4529,10 @@ INSERT INTO `s_mesures` (`id`, `type`, `mesure`, `commentaire`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `s_natures` (
-  `id` int(11) NOT NULL auto_increment,
-  `nature` varchar(50) NOT NULL default '',
-  `id_categorie` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nature` varchar(50) NOT NULL DEFAULT '',
+  `id_categorie` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4379,13 +4542,13 @@ CREATE TABLE IF NOT EXISTS `s_natures` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_protagonistes` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_incident` int(11) NOT NULL,
   `login` varchar(50) NOT NULL,
   `statut` varchar(50) NOT NULL,
   `qualite` varchar(50) NOT NULL,
-  `avertie` enum('N','O') NOT NULL default 'N',
-  PRIMARY KEY  (`id`)
+  `avertie` enum('N','O') NOT NULL DEFAULT 'N',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4395,9 +4558,9 @@ CREATE TABLE IF NOT EXISTS `s_protagonistes` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_qualites` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `qualite` varchar(50) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
 
 --
@@ -4417,14 +4580,14 @@ INSERT INTO `s_qualites` (`id`, `qualite`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `s_reports` (
-  `id_report` int(11) NOT NULL auto_increment,
+  `id_report` int(11) NOT NULL AUTO_INCREMENT,
   `id_sanction` int(11) NOT NULL,
   `id_type_sanction` int(11) NOT NULL,
   `nature_sanction` varchar(255) NOT NULL,
   `date` date NOT NULL,
   `informations` text NOT NULL,
   `motif_report` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id_report`)
+  PRIMARY KEY (`id_report`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4434,14 +4597,15 @@ CREATE TABLE IF NOT EXISTS `s_reports` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_retenues` (
-  `id_retenue` int(11) NOT NULL auto_increment,
+  `id_retenue` int(11) NOT NULL AUTO_INCREMENT,
   `id_sanction` int(11) NOT NULL,
   `date` date NOT NULL,
   `heure_debut` varchar(20) NOT NULL,
   `duree` float NOT NULL,
   `travail` text NOT NULL,
   `lieu` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id_retenue`)
+  `materiel` varchar(150) NOT NULL,
+  PRIMARY KEY (`id_retenue`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4451,13 +4615,14 @@ CREATE TABLE IF NOT EXISTS `s_retenues` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_sanctions` (
-  `id_sanction` int(11) NOT NULL auto_increment,
+  `id_sanction` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(50) NOT NULL,
   `description` text NOT NULL,
   `nature` varchar(255) NOT NULL,
+  `id_nature_sanction` int(11) DEFAULT NULL,
   `effectuee` enum('N','O') NOT NULL,
   `id_incident` int(11) NOT NULL,
-  PRIMARY KEY  (`id_sanction`)
+  PRIMARY KEY (`id_sanction`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4467,12 +4632,12 @@ CREATE TABLE IF NOT EXISTS `s_sanctions` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_traitement_incident` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_incident` int(11) NOT NULL,
   `login_ele` varchar(50) NOT NULL,
   `login_u` varchar(50) NOT NULL,
   `id_mesure` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4482,12 +4647,12 @@ CREATE TABLE IF NOT EXISTS `s_traitement_incident` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_travail` (
-  `id_travail` int(11) NOT NULL auto_increment,
+  `id_travail` int(11) NOT NULL AUTO_INCREMENT,
   `id_sanction` int(11) NOT NULL,
   `date_retour` date NOT NULL,
   `heure_retour` varchar(20) NOT NULL,
   `travail` text NOT NULL,
-  PRIMARY KEY  (`id_travail`)
+  PRIMARY KEY (`id_travail`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4497,32 +4662,37 @@ CREATE TABLE IF NOT EXISTS `s_travail` (
 --
 
 CREATE TABLE IF NOT EXISTS `s_travail_mesure` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_incident` int(11) NOT NULL,
   `login_ele` varchar(50) NOT NULL,
   `travail` text NOT NULL,
-  PRIMARY KEY  (`id`)
+  `materiel` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `s_types_sanctions`
+-- Structure de la table `s_types_sanctions2`
 --
 
-CREATE TABLE IF NOT EXISTS `s_types_sanctions` (
-  `id_nature` int(11) NOT NULL auto_increment,
+CREATE TABLE IF NOT EXISTS `s_types_sanctions2` (
+  `id_nature` int(11) NOT NULL AUTO_INCREMENT,
   `nature` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id_nature`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+  `type` varchar(255) NOT NULL DEFAULT 'autre',
+  PRIMARY KEY (`id_nature`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
--- Contenu de la table `s_types_sanctions`
+-- Contenu de la table `s_types_sanctions2`
 --
 
-INSERT INTO `s_types_sanctions` (`id_nature`, `nature`) VALUES
-(1, 'Avertissement travail'),
-(2, 'Avertissement comportement');
+INSERT INTO `s_types_sanctions2` (`id_nature`, `nature`, `type`) VALUES
+(1, 'Exclusion', 'autre'),
+(2, 'Retenue', 'autre'),
+(3, 'Travail', 'autre'),
+(4, 'Avertissement travail', 'autre'),
+(5, 'Avertissement comportement', 'autre');
 
 -- --------------------------------------------------------
 
@@ -4531,9 +4701,9 @@ INSERT INTO `s_types_sanctions` (`id_nature`, `nature`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `tempo` (
-  `id_classe` int(11) NOT NULL default '0',
-  `max_periode` int(11) NOT NULL default '0',
-  `num` char(32) NOT NULL default '0'
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  `max_periode` int(11) NOT NULL DEFAULT '0',
+  `num` char(32) NOT NULL DEFAULT '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4543,8 +4713,8 @@ CREATE TABLE IF NOT EXISTS `tempo` (
 --
 
 CREATE TABLE IF NOT EXISTS `tempo2` (
-  `col1` varchar(100) NOT NULL default '',
-  `col2` varchar(100) NOT NULL default ''
+  `col1` varchar(100) NOT NULL DEFAULT '',
+  `col2` varchar(100) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4554,10 +4724,10 @@ CREATE TABLE IF NOT EXISTS `tempo2` (
 --
 
 CREATE TABLE IF NOT EXISTS `tempo3` (
-  `id` int(11) NOT NULL auto_increment,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `col1` varchar(255) NOT NULL,
   `col2` text,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4567,12 +4737,12 @@ CREATE TABLE IF NOT EXISTS `tempo3` (
 --
 
 CREATE TABLE IF NOT EXISTS `tempo3_cdt` (
-  `id_classe` int(11) NOT NULL default '0',
-  `classe` varchar(255) NOT NULL default '',
-  `matiere` varchar(255) NOT NULL default '',
-  `enseignement` varchar(255) NOT NULL default '',
-  `id_groupe` int(11) NOT NULL default '0',
-  `fichier` varchar(255) NOT NULL default ''
+  `id_classe` int(11) NOT NULL DEFAULT '0',
+  `classe` varchar(255) NOT NULL DEFAULT '',
+  `matiere` varchar(255) NOT NULL DEFAULT '',
+  `enseignement` varchar(255) NOT NULL DEFAULT '',
+  `id_groupe` int(11) NOT NULL DEFAULT '0',
+  `fichier` varchar(255) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4589,10 +4759,10 @@ CREATE TABLE IF NOT EXISTS `tempo_utilisateurs` (
   `identifiant1` varchar(10) NOT NULL COMMENT 'eleves.ele_id ou resp_pers.pers_id',
   `identifiant2` varchar(50) NOT NULL COMMENT 'eleves.elenoet',
   `statut` varchar(20) NOT NULL,
-  `auth_mode` enum('gepi','ldap','sso') NOT NULL default 'gepi',
-  `date_reserve` date default '0000-00-00',
+  `auth_mode` enum('gepi','ldap','sso') NOT NULL DEFAULT 'gepi',
+  `date_reserve` date DEFAULT '0000-00-00',
   `temoin` varchar(50) NOT NULL,
-  PRIMARY KEY  (`login`)
+  PRIMARY KEY (`login`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4602,15 +4772,15 @@ CREATE TABLE IF NOT EXISTS `tempo_utilisateurs` (
 --
 
 CREATE TABLE IF NOT EXISTS `temp_abs_import` (
-  `id` int(11) NOT NULL auto_increment,
-  `login` varchar(50) NOT NULL default '',
-  `cpe_login` varchar(50) NOT NULL default '',
-  `elenoet` varchar(50) NOT NULL default '',
-  `libelle` varchar(50) NOT NULL default '',
-  `nbAbs` int(11) NOT NULL default '0',
-  `nbNonJustif` int(11) NOT NULL default '0',
-  `nbRet` int(11) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `cpe_login` varchar(50) NOT NULL DEFAULT '',
+  `elenoet` varchar(50) NOT NULL DEFAULT '',
+  `libelle` varchar(50) NOT NULL DEFAULT '',
+  `nbAbs` int(11) NOT NULL DEFAULT '0',
+  `nbNonJustif` int(11) NOT NULL DEFAULT '0',
+  `nbRet` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
   UNIQUE KEY `elenoet` (`elenoet`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -4621,31 +4791,31 @@ CREATE TABLE IF NOT EXISTS `temp_abs_import` (
 --
 
 CREATE TABLE IF NOT EXISTS `temp_gep_import` (
-  `ID_TEMPO` varchar(40) NOT NULL default '',
-  `LOGIN` varchar(40) NOT NULL default '',
-  `ELENOM` varchar(40) NOT NULL default '',
-  `ELEPRE` varchar(40) NOT NULL default '',
-  `ELESEXE` varchar(40) NOT NULL default '',
-  `ELEDATNAIS` varchar(40) NOT NULL default '',
-  `ELENOET` varchar(40) NOT NULL default '',
-  `ERENO` varchar(40) NOT NULL default '',
-  `ELEDOUBL` varchar(40) NOT NULL default '',
-  `ELENONAT` varchar(40) NOT NULL default '',
-  `ELEREG` varchar(40) NOT NULL default '',
-  `DIVCOD` varchar(40) NOT NULL default '',
-  `ETOCOD_EP` varchar(40) NOT NULL default '',
-  `ELEOPT1` varchar(40) NOT NULL default '',
-  `ELEOPT2` varchar(40) NOT NULL default '',
-  `ELEOPT3` varchar(40) NOT NULL default '',
-  `ELEOPT4` varchar(40) NOT NULL default '',
-  `ELEOPT5` varchar(40) NOT NULL default '',
-  `ELEOPT6` varchar(40) NOT NULL default '',
-  `ELEOPT7` varchar(40) NOT NULL default '',
-  `ELEOPT8` varchar(40) NOT NULL default '',
-  `ELEOPT9` varchar(40) NOT NULL default '',
-  `ELEOPT10` varchar(40) NOT NULL default '',
-  `ELEOPT11` varchar(40) NOT NULL default '',
-  `ELEOPT12` varchar(40) NOT NULL default ''
+  `ID_TEMPO` varchar(40) NOT NULL DEFAULT '',
+  `LOGIN` varchar(40) NOT NULL DEFAULT '',
+  `ELENOM` varchar(40) NOT NULL DEFAULT '',
+  `ELEPRE` varchar(40) NOT NULL DEFAULT '',
+  `ELESEXE` varchar(40) NOT NULL DEFAULT '',
+  `ELEDATNAIS` varchar(40) NOT NULL DEFAULT '',
+  `ELENOET` varchar(40) NOT NULL DEFAULT '',
+  `ERENO` varchar(40) NOT NULL DEFAULT '',
+  `ELEDOUBL` varchar(40) NOT NULL DEFAULT '',
+  `ELENONAT` varchar(40) NOT NULL DEFAULT '',
+  `ELEREG` varchar(40) NOT NULL DEFAULT '',
+  `DIVCOD` varchar(40) NOT NULL DEFAULT '',
+  `ETOCOD_EP` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT1` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT2` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT3` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT4` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT5` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT6` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT7` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT8` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT9` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT10` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT11` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT12` varchar(40) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4655,33 +4825,36 @@ CREATE TABLE IF NOT EXISTS `temp_gep_import` (
 --
 
 CREATE TABLE IF NOT EXISTS `temp_gep_import2` (
-  `ID_TEMPO` varchar(40) NOT NULL default '',
-  `LOGIN` varchar(40) NOT NULL default '',
-  `ELENOM` varchar(40) NOT NULL default '',
-  `ELEPRE` varchar(40) NOT NULL default '',
-  `ELESEXE` varchar(40) NOT NULL default '',
-  `ELEDATNAIS` varchar(40) NOT NULL default '',
-  `ELENOET` varchar(40) NOT NULL default '',
-  `ELE_ID` varchar(40) NOT NULL default '',
-  `ELEDOUBL` varchar(40) NOT NULL default '',
-  `ELENONAT` varchar(40) NOT NULL default '',
-  `ELEREG` varchar(40) NOT NULL default '',
-  `DIVCOD` varchar(40) NOT NULL default '',
-  `ETOCOD_EP` varchar(40) NOT NULL default '',
-  `ELEOPT1` varchar(40) NOT NULL default '',
-  `ELEOPT2` varchar(40) NOT NULL default '',
-  `ELEOPT3` varchar(40) NOT NULL default '',
-  `ELEOPT4` varchar(40) NOT NULL default '',
-  `ELEOPT5` varchar(40) NOT NULL default '',
-  `ELEOPT6` varchar(40) NOT NULL default '',
-  `ELEOPT7` varchar(40) NOT NULL default '',
-  `ELEOPT8` varchar(40) NOT NULL default '',
-  `ELEOPT9` varchar(40) NOT NULL default '',
-  `ELEOPT10` varchar(40) NOT NULL default '',
-  `ELEOPT11` varchar(40) NOT NULL default '',
-  `ELEOPT12` varchar(40) NOT NULL default '',
-  `LIEU_NAISSANCE` varchar(50) NOT NULL default '',
-  `MEL` varchar(255) NOT NULL default ''
+  `ID_TEMPO` varchar(40) NOT NULL DEFAULT '',
+  `LOGIN` varchar(40) NOT NULL DEFAULT '',
+  `ELENOM` varchar(40) NOT NULL DEFAULT '',
+  `ELEPRE` varchar(40) NOT NULL DEFAULT '',
+  `ELESEXE` varchar(40) NOT NULL DEFAULT '',
+  `ELEDATNAIS` varchar(40) NOT NULL DEFAULT '',
+  `ELENOET` varchar(40) NOT NULL DEFAULT '',
+  `ELE_ID` varchar(40) NOT NULL DEFAULT '',
+  `ELEDOUBL` varchar(40) NOT NULL DEFAULT '',
+  `ELENONAT` varchar(40) NOT NULL DEFAULT '',
+  `ELEREG` varchar(40) NOT NULL DEFAULT '',
+  `DIVCOD` varchar(40) NOT NULL DEFAULT '',
+  `ETOCOD_EP` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT1` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT2` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT3` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT4` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT5` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT6` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT7` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT8` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT9` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT10` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT11` varchar(40) NOT NULL DEFAULT '',
+  `ELEOPT12` varchar(40) NOT NULL DEFAULT '',
+  `LIEU_NAISSANCE` varchar(50) NOT NULL DEFAULT '',
+  `MEL` varchar(255) NOT NULL DEFAULT '',
+  `TEL_PERS` varchar(255) NOT NULL DEFAULT '',
+  `TEL_PORT` varchar(255) NOT NULL DEFAULT '',
+  `TEL_PROF` varchar(255) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4691,15 +4864,44 @@ CREATE TABLE IF NOT EXISTS `temp_gep_import2` (
 --
 
 CREATE TABLE IF NOT EXISTS `tentatives_intrusion` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `login` varchar(255) NOT NULL default '',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `login` varchar(255) NOT NULL DEFAULT '',
   `adresse_ip` varchar(255) NOT NULL,
   `date` datetime NOT NULL,
   `niveau` smallint(6) NOT NULL,
   `fichier` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `statut` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`,`login`)
+  PRIMARY KEY (`id`,`login`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `t_plan_de_classe`
+--
+
+CREATE TABLE IF NOT EXISTS `t_plan_de_classe` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_groupe` int(11) NOT NULL,
+  `login_prof` varchar(50) NOT NULL,
+  `dim_photo` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `t_plan_de_classe_ele`
+--
+
+CREATE TABLE IF NOT EXISTS `t_plan_de_classe_ele` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_plan` int(11) NOT NULL,
+  `login_ele` varchar(50) NOT NULL,
+  `x` int(11) NOT NULL,
+  `y` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4709,9 +4911,9 @@ CREATE TABLE IF NOT EXISTS `tentatives_intrusion` (
 --
 
 CREATE TABLE IF NOT EXISTS `udt_corresp` (
-  `champ` varchar(255) NOT NULL default '',
-  `nom_udt` varchar(255) NOT NULL default '',
-  `nom_gepi` varchar(255) NOT NULL default ''
+  `champ` varchar(255) NOT NULL DEFAULT '',
+  `nom_udt` varchar(255) NOT NULL DEFAULT '',
+  `nom_gepi` varchar(255) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -4721,14 +4923,14 @@ CREATE TABLE IF NOT EXISTS `udt_corresp` (
 --
 
 CREATE TABLE IF NOT EXISTS `udt_lignes` (
-  `id` int(11) unsigned NOT NULL auto_increment,
-  `division` varchar(255) NOT NULL default '',
-  `matiere` varchar(255) NOT NULL default '',
-  `prof` varchar(255) NOT NULL default '',
-  `groupe` varchar(255) NOT NULL default '',
-  `regroup` varchar(255) NOT NULL default '',
-  `mo` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `division` varchar(255) NOT NULL DEFAULT '',
+  `matiere` varchar(255) NOT NULL DEFAULT '',
+  `prof` varchar(255) NOT NULL DEFAULT '',
+  `groupe` varchar(255) NOT NULL DEFAULT '',
+  `regroup` varchar(255) NOT NULL DEFAULT '',
+  `mo` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4738,26 +4940,26 @@ CREATE TABLE IF NOT EXISTS `udt_lignes` (
 --
 
 CREATE TABLE IF NOT EXISTS `utilisateurs` (
-  `login` varchar(50) NOT NULL default '',
-  `nom` varchar(50) NOT NULL default '',
-  `prenom` varchar(50) NOT NULL default '',
-  `civilite` varchar(5) NOT NULL default '',
-  `password` varchar(128) NOT NULL default '',
-  `salt` varchar(128) default NULL,
-  `email` varchar(50) NOT NULL default '',
-  `show_email` varchar(3) NOT NULL default 'no',
-  `statut` varchar(20) NOT NULL default '',
-  `etat` varchar(20) NOT NULL default '',
-  `change_mdp` char(1) NOT NULL default 'n',
-  `date_verrouillage` datetime NOT NULL default '2006-01-01 00:00:00',
-  `password_ticket` varchar(255) NOT NULL default '',
+  `login` varchar(50) NOT NULL DEFAULT '',
+  `nom` varchar(50) NOT NULL DEFAULT '',
+  `prenom` varchar(50) NOT NULL DEFAULT '',
+  `civilite` varchar(5) NOT NULL DEFAULT '',
+  `password` varchar(128) NOT NULL DEFAULT '',
+  `salt` varchar(128) DEFAULT NULL,
+  `email` varchar(50) NOT NULL DEFAULT '',
+  `show_email` varchar(3) NOT NULL DEFAULT 'no',
+  `statut` varchar(20) NOT NULL DEFAULT '',
+  `etat` varchar(20) NOT NULL DEFAULT '',
+  `change_mdp` char(1) NOT NULL DEFAULT 'n',
+  `date_verrouillage` datetime NOT NULL DEFAULT '2006-01-01 00:00:00',
+  `password_ticket` varchar(255) NOT NULL DEFAULT '',
   `ticket_expiration` datetime NOT NULL,
-  `niveau_alerte` smallint(6) NOT NULL default '0',
-  `observation_securite` tinyint(4) NOT NULL default '0',
+  `niveau_alerte` smallint(6) NOT NULL DEFAULT '0',
+  `observation_securite` tinyint(4) NOT NULL DEFAULT '0',
   `temp_dir` varchar(255) NOT NULL,
   `numind` varchar(255) NOT NULL,
-  `auth_mode` enum('gepi','ldap','sso') NOT NULL default 'gepi',
-  PRIMARY KEY  (`login`),
+  `auth_mode` enum('gepi','ldap','sso') NOT NULL DEFAULT 'gepi',
+  PRIMARY KEY (`login`),
   KEY `statut` (`statut`),
   KEY `etat` (`etat`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -4776,10 +4978,10 @@ INSERT INTO `utilisateurs` (`login`, `nom`, `prenom`, `civilite`, `password`, `s
 --
 
 CREATE TABLE IF NOT EXISTS `vocabulaire` (
-  `id` int(11) NOT NULL auto_increment,
-  `terme` varchar(255) NOT NULL default '',
-  `terme_corrige` varchar(255) NOT NULL default '',
-  PRIMARY KEY  (`id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `terme` varchar(255) NOT NULL DEFAULT '',
+  `terme_corrige` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=19 ;
 
 --
@@ -4813,7 +5015,7 @@ INSERT INTO `vocabulaire` (`id`, `terme`, `terme_corrige`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `vs_alerts_eleves` (
-  `id_alert_eleve` int(11) NOT NULL auto_increment,
+  `id_alert_eleve` int(11) NOT NULL AUTO_INCREMENT,
   `eleve_alert_eleve` varchar(100) NOT NULL,
   `date_alert_eleve` date NOT NULL,
   `groupe_alert_eleve` int(11) NOT NULL,
@@ -4822,7 +5024,7 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_eleves` (
   `temp_insert` varchar(100) NOT NULL,
   `etat_alert_eleve` tinyint(4) NOT NULL,
   `etatpar_alert_eleve` varchar(100) NOT NULL,
-  PRIMARY KEY  (`id_alert_eleve`)
+  PRIMARY KEY (`id_alert_eleve`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4832,10 +5034,10 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_eleves` (
 --
 
 CREATE TABLE IF NOT EXISTS `vs_alerts_groupes` (
-  `id_alert_groupe` int(11) NOT NULL auto_increment,
+  `id_alert_groupe` int(11) NOT NULL AUTO_INCREMENT,
   `nom_alert_groupe` varchar(150) NOT NULL,
   `creerpar_alert_groupe` varchar(100) NOT NULL,
-  PRIMARY KEY  (`id_alert_groupe`)
+  PRIMARY KEY (`id_alert_groupe`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -4845,14 +5047,14 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_groupes` (
 --
 
 CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
-  `id_alert_type` int(11) NOT NULL auto_increment,
+  `id_alert_type` int(11) NOT NULL AUTO_INCREMENT,
   `groupe_alert_type` int(11) NOT NULL,
   `type_alert_type` varchar(10) NOT NULL,
   `specifisite_alert_type` varchar(25) NOT NULL,
   `eleve_concerne` text NOT NULL,
   `date_debut_comptage` date NOT NULL,
   `nb_comptage_limit` varchar(200) NOT NULL,
-  PRIMARY KEY  (`id_alert_type`)
+  PRIMARY KEY (`id_alert_type`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
@@ -4860,3 +5062,4 @@ CREATE TABLE IF NOT EXISTS `vs_alerts_types` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 GRANT SELECT , INSERT , UPDATE , DELETE , CREATE , DROP , INDEX , ALTER , CREATE TEMPORARY TABLES ON gepi_plug.* TO gepi_user@localhost IDENTIFIED BY '#PASS#';
+

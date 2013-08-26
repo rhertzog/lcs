@@ -69,7 +69,16 @@ table.boireaus {
 .boireaus .modif {
 	background-color: #eeaaff;
 }
+tr.white_hover:hover {
+	background-color:white;
+}
 
+.boireaus_alt tr:nth-child(even) {
+	background-color: #C8FFC8;
+}
+.boireaus_alt tr:nth-child(odd) {
+	background-color: #FFE6AA;
+}
 
 /*
 #messagerie {
@@ -146,7 +155,12 @@ background-color: #F00;
 }
 
 .colonne + .colonne {
-	border-left:thin solid #d3d3d3;
+	/*border-left:thin solid #d3d3d3;*/
+	border-left: none;
+}
+
+.div_tableau + .div_tableau > .colonne {
+	border-top: none;
 }
 
 .colonne3 {

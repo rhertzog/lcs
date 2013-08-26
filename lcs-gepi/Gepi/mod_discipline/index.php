@@ -2,7 +2,7 @@
 
 /*
 *
-* Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -119,27 +119,31 @@ if(mysql_num_rows($test_table)==0) {
 	}
 }
 
-
-$sql="SHOW TABLES LIKE 's_types_sanctions';";
+$sql="SHOW TABLES LIKE 's_types_sanctions2';";
 $test_table=mysql_query($sql);
 if(mysql_num_rows($test_table)==0) {
-	$sql="CREATE TABLE IF NOT EXISTS s_types_sanctions (
+	echo "<p style='color:red'>Une mise à jour de la base est requise !</p>\n";
+	/*
+	$sql="CREATE TABLE IF NOT EXISTS s_types_sanctions2 (
 	id_nature INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-	nature VARCHAR( 255 ) NOT NULL
+	nature VARCHAR( 255 ) NOT NULL,
+	type VARCHAR( 255 ) NOT NULL
 	) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
 	$creation=mysql_query($sql);
 	if($creation) {
-		$tab_type=array("Avertissement travail","Avertissement comportement");
+		$tab_type=array("Exclusion", "Retenue", "Travail", "Avertissement travail","Avertissement comportement");
 		for($loop=0;$loop<count($tab_type);$loop++) {
-			$sql="SELECT 1=1 FROM s_types_sanctions WHERE nature='".$tab_type[$loop]."';";
+			$sql="SELECT 1=1 FROM s_types_sanctions2 WHERE nature='".$tab_type[$loop]."';";
 			//echo "$sql<br />";
 			$test=mysql_query($sql);
 			if(mysql_num_rows($test)==0) {
-				$sql="INSERT INTO s_types_sanctions SET nature='".$tab_type[$loop]."';";
+				if($loop<3) {$type=mb_strtolower($tab_type[$loop]);} else {$type="autre";}
+				$sql="INSERT INTO s_types_sanctions2 SET nature='".$tab_type[$loop]."', type='".$type."';";
 				$insert=mysql_query($sql);
 			}
 		}
 	}
+	*/
 }
 
 $sql="CREATE TABLE IF NOT EXISTS s_autres_sanctions (
@@ -243,6 +247,7 @@ id_sanction INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 login VARCHAR( 50 ) NOT NULL ,
 description TEXT NOT NULL ,
 nature VARCHAR( 255 ) NOT NULL ,
+id_nature_sanction INT(11),
 effectuee ENUM( 'N', 'O' ) NOT NULL ,
 id_incident INT( 11 ) NOT NULL
 ) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
@@ -311,7 +316,29 @@ $menuTitre=array();
 $nouveauItem = new itemGeneral();
 
 //Début de la table configuration
-if($_SESSION['statut']=='administrateur') { 
+//if($_SESSION['statut']=='administrateur') { 
+if(($_SESSION['statut']=='administrateur')||
+	(($_SESSION['statut']=='cpe')&&(
+			(getSettingAOui('GepiDiscDefinirLieuxCpe'))||
+			(getSettingAOui('GepiDiscDefinirRolesCpe'))||
+			(getSettingAOui('GepiDiscDefinirMesuresCpe'))||
+			(getSettingAOui('GepiDiscDefinirSanctionsCpe'))||
+			(getSettingAOui('GepiDiscDefinirNaturesCpe'))||
+			(getSettingAOui('GepiDiscDefinirCategoriesCpe'))||
+			(getSettingAOui('GepiDiscDefinirDestAlertesCpe'))
+		)
+	)||
+	(($_SESSION['statut']=='scolarite')&&(
+			(getSettingAOui('GepiDiscDefinirLieuxScol'))||
+			(getSettingAOui('GepiDiscDefinirRolesScol'))||
+			(getSettingAOui('GepiDiscDefinirMesuresScol'))||
+			(getSettingAOui('GepiDiscDefinirSanctionsScol'))||
+			(getSettingAOui('GepiDiscDefinirNaturesScol'))||
+			(getSettingAOui('GepiDiscDefinirCategoriesScol'))||
+			(getSettingAOui('GepiDiscDefinirDestAlertesScol'))
+		)
+	)
+) { 
 /* ===== Titre du menu ===== */
 	$menuTitre[]=new menuGeneral;
 	end($menuTitre);
@@ -340,10 +367,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_lieux.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des lieux" ;
-		$nouveauItem->expli="Définir la liste des lieux des incidents." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirLieuxCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirLieuxScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des lieux" ;
+			$nouveauItem->expli="Définir la liste des lieux des incidents." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 /*
@@ -357,10 +391,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_roles.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des rôles" ;
-		$nouveauItem->expli="Définir la liste des rôles des protagonistes." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirRolesCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirRolesScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des rôles" ;
+			$nouveauItem->expli="Définir la liste des rôles des protagonistes." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 /*
@@ -375,10 +416,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_mesures.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des mesures" ;
-		$nouveauItem->expli="Définir la liste des mesures prises comme suite à un incident." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirMesuresCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirMesuresScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des mesures" ;
+			$nouveauItem->expli="Définir la liste des mesures prises comme suite à un incident." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 /*
@@ -393,10 +441,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_autres_sanctions.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des types de sanctions" ;
-		$nouveauItem->expli="Définir la liste des sanctions pouvant être prises comme suite à un incident." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirSanctionsCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirSanctionsScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des types de sanctions" ;
+			$nouveauItem->expli="Définir la liste des sanctions pouvant être prises comme suite à un incident." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 
@@ -405,10 +460,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_natures.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des natures d'incidents" ;
-		$nouveauItem->expli="Définir les natures d'incidents (<em>liste indicative ou liste imposée</em>)." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirNaturesCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirNaturesScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des natures d'incidents" ;
+			$nouveauItem->expli="Définir les natures d'incidents (<em>liste indicative ou liste imposée</em>)." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 
@@ -417,10 +479,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/definir_categories.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des catégories d'incidents" ;
-		$nouveauItem->expli="Définir les catégories d'incidents (<em>à des fins de statistiques</em>)." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirCategoriesCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirCategoriesScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des catégories d'incidents" ;
+			$nouveauItem->expli="Définir les catégories d'incidents (<em>à des fins de statistiques</em>)." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 
@@ -438,10 +507,17 @@ if($_SESSION['statut']=='administrateur') {
 	$nouveauItem->chemin='/mod_discipline/destinataires_alertes.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
 	{
-		$nouveauItem->titre="Définition des destinataires d'alertes" ;
-		$nouveauItem->expli="Permet de définir la liste des utilisateurs recevant un mail lors de la saisie/modification d'un incident." ;
-		$nouveauItem->indexMenu=$a;
-		$menuPage[]=$nouveauItem;
+		$acces_ok="n";
+		if(($_SESSION['statut']=='administrateur')||
+		(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirDestAlertesCpe')))||
+		(($_SESSION['statut']=='scolarite')&&(getSettingAOui('GepiDiscDefinirDestAlertesScol')))) {
+			$acces_ok="y";
+
+			$nouveauItem->titre="Définition des destinataires d'alertes" ;
+			$nouveauItem->expli="Permet de définir la liste des utilisateurs recevant un mail lors de la saisie/modification d'un incident." ;
+			$nouveauItem->indexMenu=$a;
+			$menuPage[]=$nouveauItem;
+		}
 	}
 	unset($nouveauItem);
 	
@@ -460,7 +536,7 @@ if($_SESSION['statut']=='administrateur') {
 }
 //fin de la table configuration
 
-
+//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 
 /*
 // Table Signaler / saisir un incident
@@ -509,10 +585,15 @@ if(($_SESSION['statut']=='administrateur')||
 ($_SESSION['statut']=='autre')) {
 
 	$temoin = false;
+
+	// 20130610: Vérifier cette requête... pb de longueur?
+
 	$sql="SELECT 1=1 FROM s_incidents si
 	LEFT JOIN s_protagonistes sp ON sp.id_incident=si.id_incident
 	WHERE sp.id_incident IS NULL;";
+	//echo "$sql<br />";
 	$test=mysql_query($sql);
+	//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 	if(mysql_num_rows($test)>0) {
 		$temoin = true;
 		/*
@@ -535,9 +616,11 @@ if(($_SESSION['statut']=='administrateur')||
 	}
 }
 
-
+// 20130610: Vérifier cette requête: Mettre LIMIT 1
 $sql="SELECT 1=1 FROM s_incidents si WHERE si.declarant='".$_SESSION['login']."' AND si.nature='' AND etat!='clos';";
+//echo "$sql<br />";
 $test=mysql_query($sql);
+//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 $nb_incidents_incomplets=mysql_num_rows($test);
 if($nb_incidents_incomplets>0) {
 
@@ -674,13 +757,22 @@ if(($_SESSION['statut']=='administrateur') || ($_SESSION['statut']=='cpe') || ($
 		$menuPage[]=$nouveauItem;
 	}
 	unset($nouveauItem);
-/*
-	echo "<tr>\n";
-	    echo "<td width='30%'><a href='../mod_discipline/stats2/index.php'>Accèder aux statistiques</a>";
-	echo "</td>\n";
-	echo "<td>Sélectionner la période de traitement, les données à traiter (établissement, classes, elèves, ...) en appliquant (ou non) des filtres afin d'obtenir des bilans plus ou moins détaillés. </br>Visualiser les évolutions sous la forme de graphiques. Editer le Top 10, ...</td>\n";
-	echo "</tr>\n";
-	*/
+
+
+
+	$nouveauItem = new itemGeneral();
+	$nouveauItem->chemin='/mod_discipline/mod_discipline_extraction_ooo.php?mode=choix';
+	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
+	{
+		$nouveauItem->titre="Extraction ODS" ;
+		$nouveauItem->expli="Extraction ODS des incidents et de leurs suites." ;
+		$nouveauItem->indexMenu=$a;
+		$menuPage[]=$nouveauItem;
+	}
+	unset($nouveauItem);
+
+
+
 	$nouveauItem = new itemGeneral();
 	$nouveauItem->chemin='/mod_discipline/stats2/index.php';
 	if ($nouveauItem->acces($nouveauItem->chemin,$_SESSION['statut']))
@@ -717,8 +809,12 @@ elseif (($_SESSION['statut']=='professeur') || ($_SESSION['statut']=='autre')) {
 	// declarant ou protagoniste
   
 
-	$sql="SELECT 1=1 FROM s_protagonistes, s_incidents WHERE ((login='".$_SESSION['login']."')||(declarant='".$_SESSION['login']."'));";
+	// 20130610: Vérifier cette requête
+	//$sql="SELECT 1=1 FROM s_protagonistes, s_incidents WHERE ((login='".$_SESSION['login']."')||(declarant='".$_SESSION['login']."'));";
+	$sql="(SELECT 1=1 FROM s_protagonistes WHERE login='".$_SESSION['login']."' LIMIT 1) UNION (SELECT 1=1 FROM s_incidents WHERE declarant='".$_SESSION['login']."' LIMIT 1);";
+	//echo "$sql<br />";
 	$test=mysql_query($sql);
+	//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 	if((mysql_num_rows($test)>0)) { //on a bien un prof ou statut autre comme déclarant ou un protagoniste
 	  /*
 		echo "<tr>\n";
@@ -738,24 +834,36 @@ elseif (($_SESSION['statut']=='professeur') || ($_SESSION['statut']=='autre')) {
 	  }
 	unset($nouveauItem);
 	} else { //le prof n'est ni déclarant ni protagoniste. Pour un elv dont il est PP y a t--il des incidents de déclaré ?
+
+		// 20130610: Vérifier ces requêtes: Peut-être ajouter des LIMIT 1
+
 		$sql="SELECT 1=1 FROM j_eleves_professeurs jep, s_protagonistes sp 
 						  WHERE sp.login=jep.login
-						  AND jep.professeur='".$_SESSION['login']."';";
+						  AND jep.professeur='".$_SESSION['login']."'
+						  LIMIT 1;";
+		//echo "$sql<br />";
 		$test=mysql_query($sql); // prof principal
+		//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 		if (getSettingValue("visuDiscProfClasses")=='yes') {
 		  $sql1="SELECT 1=1	FROM j_groupes_professeurs jgp, j_groupes_classes jgc, j_eleves_classes jec, s_protagonistes sp
-	WHERE   sp.login=jec.login
+	WHERE sp.login=jec.login
 		AND jec.id_classe=jgc.id_classe
 		AND jgp.id_groupe =  jgc.id_groupe
-		AND jgp.login = '".$_SESSION['login']."';";
+		AND jgp.login = '".$_SESSION['login']."'
+		LIMIT 1;";
+		//echo "$sql<br />";
 		  $test1=mysql_query($sql1); // prof de la classe autorisé à voir
+		//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 		}
 		if (getSettingValue("visuDiscProfGroupes")=='yes') {
 		  $sql2="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_professeurs jgp, s_protagonistes sp
 							WHERE jeg.id_groupe=jgp.id_groupe
 							AND sp.login=jeg.login
-							AND jgp.login='".$_SESSION['login']."';";
+							AND jgp.login='".$_SESSION['login']."'
+							LIMIT 1;";
+			//echo "$sql<br />";
 		  $test2=mysql_query($sql2); // prof du groupe autorisé à voir
+		//echo strftime("%Y-%m-%d %H:%M:%S")."<br />\n";
 		}
 		  $nouveauItem = new itemGeneral();
 		if ((mysql_num_rows($test)>0) ||

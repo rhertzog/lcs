@@ -675,7 +675,6 @@ if(!isset($_POST['recopie_select'])) {
 			}
 		}
 	}
-
 </script>\n";
 
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
@@ -713,18 +712,14 @@ if(!isset($_POST['recopie_select'])) {
 		echo "<br /><span style='font-size:small; color:red;'>".$id_groupe[$i]."</span>";
 		echo "<br />".preg_replace("/,/","<br />",$group[$i]['profs']['proflist_string']);
 
+		/*
 		//$tmp_tab_eleve=array_merge($tmp_tab_eleve,$group[$i]["eleves"][$num_periode]["list"]);
 		for($j=0;$j<count($group[$i]["eleves"][$num_periode]["list"]);$j++) {
-			//echo $group[$i]["eleves"][$num_periode]["list"][$j]." ";
-			/*
-			if(!in_array($group[$i]["eleves"][$num_periode]["list"][$j],$tmp_tab_eleve)) {
-				$tmp_tab_eleve[]=$group[$i]["eleves"][$num_periode]["list"][$j];
-			}
-			*/
 			if(!in_array($group[$i]["eleves"][$num_periode]["list"][$j],$tab_eleve)) {
 				$tab_eleve[]=$group[$i]["eleves"][$num_periode]["list"][$j];
 			}
 		}
+		*/
 		echo "</th>\n";
 	}
 	echo "<th>\n";
@@ -736,7 +731,8 @@ if(!isset($_POST['recopie_select'])) {
 	}
 	echo "</td><td>";
 	*/
-	//$order_by='classe';
+
+	/*
 	if($order_by=='classe') {
 		$tmp_tab_eleve=$tab_eleve;
 		unset($tab_eleve);
@@ -748,15 +744,46 @@ if(!isset($_POST['recopie_select'])) {
 				$test=mysql_query($sql);
 				if(mysql_num_rows($test)>0) {
 					$tab_eleve[]=$tmp_tab_eleve[$j];
-					//echo "$tmp_tab_eleve[$j]<br />";
+					echo "$tmp_tab_eleve[$j]<br />";
 				}
 			}
 		}
-
 	}
 	else {
-		sort($tab_eleve);
+		// On trie suivant le login... ce n'est pas forcément correct
+		//sort($tab_eleve);
 	}
+	*/
+
+	$tab_eleve=array();
+
+	$chaine_groupes="jeg.id_groupe='".$id_groupe[0]."'";
+	for($loop=1;$loop<count($id_groupe);$loop++) {
+		$chaine_groupes.=" OR jeg.id_groupe='".$id_groupe[$loop]."'";
+	}
+
+	if($order_by=='classe') {
+
+		for($loop=0;$loop<count($id_classe);$loop++) {
+			$sql="SELECT DISTINCT jeg.login FROM j_eleves_classes jec, j_eleves_groupes jeg, eleves e WHERE (jec.id_classe='".$id_classe[$loop]."' AND jec.periode='$num_periode' AND jec.login=jeg.login AND jeg.login=e.login AND ($chaine_groupes) AND jeg.periode='$num_periode') ORDER BY e.nom, e.prenom;";
+			$res_clas_grp=mysql_query($sql);
+			if(mysql_num_rows($res_clas_grp)>0) {
+				while($lig_clas_grp=mysql_fetch_object($res_clas_grp)) {
+					$tab_eleve[]=$lig_clas_grp->login;
+				}
+			}
+		}
+	}
+	else {
+		$sql="SELECT jeg.login FROM j_eleves_groupes jeg, eleves e WHERE jeg.login=e.login AND ($chaine_groupes) AND jeg.periode='$num_periode' ORDER BY e.nom, e.prenom;";
+		$res_ele_grp=mysql_query($sql);
+		if(mysql_num_rows($res_ele_grp)>0) {
+			while($lig_ele_grp=mysql_fetch_object($res_ele_grp)) {
+				$tab_eleve[]=$lig_ele_grp->login;
+			}
+		}
+	}
+
 	//echo "</td></tr></table>";
 	echo "</th>\n";
 	echo "</tr>\n";
@@ -781,7 +808,16 @@ if(!isset($_POST['recopie_select'])) {
 	echo "</td>\n";
 	echo "</tr>\n";
 	*/
-	
+
+	echo "<tr id='tr_effectifs' style='display:none;'>\n";
+	echo "<th>Effectifs</th>\n";
+	echo "<th id='effectif_total'></th>\n";
+	for($i=0;$i<count($id_groupe);$i++) {
+		echo "<th id='effectif_colonne_$i'></th>\n";
+	}
+	echo "<th></th>\n";
+	echo "</tr>\n";
+
 	// LISTE FOIREUSE UNE FOIS QU'ON A VALIDE UNE FOIS
 	//for($j=0;$j<count($group["eleves"]["all"]["list"]);$j++) {
 	$cpt=0;
@@ -833,8 +869,8 @@ if(!isset($_POST['recopie_select'])) {
 			echo "</td>\n";
 			*/
 
-			$ligne_si_desinscription_possible.="<td>\n";
-			$ligne_si_desinscription_possible.="<input type='radio' name='grp_eleve[$cpt]' id='grp_eleve_".$i."_".$cpt."' value='".$id_groupe[$i]."' onchange='changement()' title=\"$tab_eleve[$j] -&gt; ".$group[$i]['name']." de ".$group[$i]['classlist_string']."\" ";
+			$ligne_si_desinscription_possible.="<td onclick=\"document.getElementById('grp_eleve_".$i."_".$cpt."').checked=true;calcule_effectifs();changement();\">\n";
+			$ligne_si_desinscription_possible.="<input type='radio' name='grp_eleve[$cpt]' id='grp_eleve_".$i."_".$cpt."' value='".$id_groupe[$i]."' onchange='calcule_effectifs();changement()' title=\"$tab_eleve[$j] -&gt; ".$group[$i]['name']." de ".$group[$i]['classlist_string']."\" ";
 			if(in_array($login_ele,$group[$i]["eleves"][$num_periode]["list"])) {
 				$ligne_si_desinscription_possible.="checked ";
 				if($nb_grp_ele>0) {$info_plusieurs_grp_ele.=", ";}
@@ -964,6 +1000,20 @@ if(!isset($_POST['recopie_select'])) {
 		}
 	}
 
+	function calcule_effectifs() {
+		for (var i=0;i<".count($id_groupe).";i++) {
+			total=0;
+			for (var ki=0;ki<$cpt;ki++) {
+				if(document.getElementById('grp_eleve_'+i+'_'+ki)) {
+					if(document.getElementById('grp_eleve_'+i+'_'+ki).checked==true) {total++;}
+				}
+			}
+			document.getElementById('effectif_colonne_'+i).innerHTML=total;
+		}
+		document.getElementById('effectif_total').innerHTML=$cpt;
+	}
+	calcule_effectifs();
+	document.getElementById('tr_effectifs').style.display='';
 </script>\n";
 
 	//====================================

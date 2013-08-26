@@ -339,6 +339,39 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 
+		if (isset($_POST['ele_tel_pers'])) {
+			if (!saveSetting("ele_tel_pers", $_POST['ele_tel_pers'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_pers !";
+			}
+		}
+		else{
+			if (!saveSetting("ele_tel_pers", 'no')) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_pers !";
+			}
+		}
+
+		if (isset($_POST['ele_tel_port'])) {
+			if (!saveSetting("ele_tel_port", $_POST['ele_tel_port'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_port !";
+			}
+		}
+		else{
+			if (!saveSetting("ele_tel_port", 'no')) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_port !";
+			}
+		}
+
+		if (isset($_POST['ele_tel_prof'])) {
+			if (!saveSetting("ele_tel_prof", $_POST['ele_tel_prof'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_prof !";
+			}
+		}
+		else{
+			if (!saveSetting("ele_tel_prof", 'no')) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre ele_tel_prof !";
+			}
+		}
+
 		if (isset($_POST['type_bulletin_par_defaut'])) {
 			if(($_POST['type_bulletin_par_defaut']=='html')||($_POST['type_bulletin_par_defaut']=='pdf')) {
 				if (!saveSetting("type_bulletin_par_defaut", $_POST['type_bulletin_par_defaut'])) {
@@ -361,6 +394,16 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 
+		if (isset($_POST['output_mode_pdf'])) {
+			$output_mode_pdf=$_POST['output_mode_pdf'];
+			if(!in_array($output_mode_pdf, array("D", "I"))) {
+				$msg .= "Erreur : Le mode choisi pour la lecture des PDF générés est invalide !";
+			}
+			elseif (!saveSetting("output_mode_pdf", $_POST['output_mode_pdf'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre output_mode_pdf !";
+			}
+		}
+
 		if (isset($_POST['aff_temoin_check_serveur'])) {
 			if (!saveSetting("aff_temoin_check_serveur", $_POST['aff_temoin_check_serveur'])) {
 				$msg .= "Erreur lors de l'enregistrement du paramètre aff_temoin_check_serveur !";
@@ -369,6 +412,12 @@ if (isset($_POST['is_posted'])) {
 		else{
 			if (!saveSetting("aff_temoin_check_serveur", 'n')) {
 				$msg .= "Erreur lors de l'enregistrement du paramètre aff_temoin_check_serveur !";
+			}
+		}
+
+		if (isset($_POST['url_racine_gepi'])) {
+			if (!saveSetting("url_racine_gepi", $_POST['url_racine_gepi'])) {
+				$msg .= "Erreur lors de l'enregistrement du paramètre url_racine_gepi !";
 			}
 		}
 
@@ -572,6 +621,16 @@ if (isset($_POST['is_posted'])) {
 			}
 		}
 
+		if (isset($_POST['FiltrageStrictAlphaNomPrenomPourLogin'])) {
+			if(($_POST['FiltrageStrictAlphaNomPrenomPourLogin']!='y')&&($_POST['FiltrageStrictAlphaNomPrenomPourLogin']!='n')) {
+				$msg .= "Choix invalide pour le filtrage des caractères lors de la génération de login !";
+			}
+			else {
+				if (!saveSetting("FiltrageStrictAlphaNomPrenomPourLogin", $_POST['FiltrageStrictAlphaNomPrenomPourLogin'])) {
+					$msg .= "Erreur lors de l'enregistrement du choix de filtrage des caractères lors de la génération de login !";
+				}
+			}
+		}
 
 		if (isset($_POST['unzipped_max_filesize'])) {
 			$unzipped_max_filesize=$_POST['unzipped_max_filesize'];
@@ -638,6 +697,13 @@ if (isset($_POST['ne_pas_tester_version_via_git_log'])) {
 	}
 }
 
+if (isset($_POST['gepi_en_production'])) {
+	check_token();
+
+	if (!saveSetting("gepi_en_production", $_POST['gepi_en_production'])) {
+		$msg .= "Erreur lors de l'enregistrement de gepi_en_production !";
+	}
+}
 
 // Load settings
 if (!loadSettings()) {
@@ -1088,6 +1154,21 @@ echo add_token_field();
 	</p>
 
 	<p class="ligneCaps">
+		<a name='filtrage_strict_nom_prenom_pour_login'></a>
+		Filtrer strictement des noms et prénoms pour la génération de logins&nbsp;:<br />
+		(<em>on ne garde que les caractères alphabétiques (on supprime les espaces, tirets,...)</em>)
+		<span class="cellTab plusPetit">
+			<span class="cellTab">
+				<input type="radio" name="FiltrageStrictAlphaNomPrenomPourLogin" id="FiltrageStrictAlphaNomPrenomPourLogin_y" value="y" <?php if(getSettingAOui("FiltrageStrictAlphaNomPrenomPourLogin")){echo "checked='checked'";} ?> onchange='changement()' />
+				<label for='FiltrageStrictAlphaNomPrenomPourLogin_y' style='cursor: pointer;'>Oui</label>
+				<br />
+				<input type="radio" name="FiltrageStrictAlphaNomPrenomPourLogin" id="FiltrageStrictAlphaNomPrenomPourLogin_n" value="n" <?php if(!getSettingAOui("FiltrageStrictAlphaNomPrenomPourLogin")){echo "checked='checked'";} ?> onchange='changement()' />
+				<label for='FiltrageStrictAlphaNomPrenomPourLogin_n' style='cursor: pointer;'>Non</label>
+			</span>
+		</span>
+	</p>
+
+	<p class="ligneCaps">
 		<span class="cellTab70">
 			Mode de génération des mots de passe :
 			<br />
@@ -1408,7 +1489,7 @@ if($avis_conseil_classe_a_la_mano=="") {$avis_conseil_classe_a_la_mano="n";}
 			<label for='avis_conseil_classe_a_la_mano' style='cursor: pointer'> à la main sur les bulletins imprimés</label>
 		</span>
 	</p>
-	
+
 	<p class="ligneCaps">
 		<span class="cellTab70">			
 			<a name='ancre_ele_lieu_naissance'></a>
@@ -1439,7 +1520,71 @@ if($ele_lieu_naissance=="") {$ele_lieu_naissance="no";}
 				   onchange='changement()' />
 		</span>
 	</p>
-	
+
+
+	<p class="ligneCaps">
+		<span class="cellTab70">			
+			<a name='ancre_ele_tel_pers'></a>
+			<label for='ele_tel_pers' style='cursor: pointer'>
+				Faire apparaitre le numéro de téléphone personnel des élèves&nbsp;:
+			</label>
+		</span>
+		<span class="cellTab plusPetit">
+<?php
+$ele_tel_pers=getSettingValue("ele_tel_pers");
+if($ele_tel_pers=="") {$ele_tel_pers="no";}
+?>
+			<input type='checkbox' 
+				   name='ele_tel_pers' 
+				   id='ele_tel_pers' 
+				   value='yes'
+				   <?php if($ele_tel_pers=='yes') {echo " checked='checked'";} ?>
+				   onchange='changement()' />
+		</span>
+	</p>
+
+	<p class="ligneCaps">
+		<span class="cellTab70">			
+			<a name='ancre_ele_tel_port'></a>
+			<label for='ele_tel_port' style='cursor: pointer'>
+				Faire apparaitre le numéro de téléphone portable des élèves&nbsp;:
+			</label>
+		</span>
+		<span class="cellTab plusPetit">
+<?php
+$ele_tel_port=getSettingValue("ele_tel_port");
+if($ele_tel_port=="") {$ele_tel_port="yes";}
+?>
+			<input type='checkbox' 
+				   name='ele_tel_port' 
+				   id='ele_tel_port' 
+				   value='yes'
+				   <?php if($ele_tel_port=='yes') {echo " checked='checked'";} ?>
+				   onchange='changement()' />
+		</span>
+	</p>
+
+	<p class="ligneCaps">
+		<span class="cellTab70">			
+			<a name='ancre_ele_tel_prof'></a>
+			<label for='ele_tel_prof' style='cursor: pointer'>
+				Faire apparaitre le numéro de téléphone professionnel des élèves&nbsp;:
+			</label>
+		</span>
+		<span class="cellTab plusPetit">
+<?php
+$ele_tel_prof=getSettingValue("ele_tel_prof");
+if($ele_tel_prof=="") {$ele_tel_prof="no";}
+?>
+			<input type='checkbox' 
+				   name='ele_tel_prof' 
+				   id='ele_tel_prof' 
+				   value='yes'
+				   <?php if($ele_tel_prof=='yes') {echo " checked='checked'";} ?>
+				   onchange='changement()' />
+		</span>
+	</p>
+
 	<p class="ligneCaps">
 		<span class="cellTab70">			
 			<a name='ancre_exp_imp_chgt_etab'></a>
@@ -1466,6 +1611,43 @@ if($exp_imp_chgt_etab=="") {$exp_imp_chgt_etab="no";}
 		</span>
 	</p>
 
+	<div style="display: table-row;">
+		<div class="cellTab70">
+			<p style="font-variant: small-caps;">
+				<a name='output_mode_pdf'></a>
+				Mode d'ouverture des fichiers PDF produits par Gepi&nbsp;:
+			</p>
+		</div>
+		<p class="cellTab plusPetit">
+<?php
+$output_mode_pdf=getSettingValue("output_mode_pdf");
+if(!in_array($output_mode_pdf, array("D", "I"))) {$output_mode_pdf='D';}
+ ?>
+			<input type='radio' 
+				   name='output_mode_pdf' 
+				   id='output_mode_pdf_D' 
+				   value='D' 
+				   onchange='changement()'
+				   <?php if($output_mode_pdf=='D') {echo "checked='checked'";} ?>
+				   />
+			<label for='output_mode_pdf_D'>
+				Proposer le téléchargement du PDF pour lecture hors du navigateur
+			</label>
+			<br />
+			<input type='radio' 
+				   name='output_mode_pdf' 
+				   id='output_mode_pdf_I' 
+				   value='I' 
+				   onchange='changement()'
+				   <?php if($output_mode_pdf=='I') {echo "checked='checked'";} ?>
+				   />
+			<label for='output_mode_pdf_I'>
+				Ouvrir le PDF dans le navigateur<br />
+				(<em>ce choix peut nécessiter qu'un plugin soit installé sur le navigateur</em>)
+			</label>
+		</p>
+	</div>
+
 	<p class="ligneCaps">
 		<span class="cellTab70">
 			<label for='aff_temoin_check_serveur' style='cursor: pointer'>Effectuer des "contacts" réguliers du serveur et afficher un témoin pour s'assurer que le serveur est bien à l'écoute.</label>
@@ -1487,11 +1669,28 @@ if($exp_imp_chgt_etab=="") {$exp_imp_chgt_etab="no";}
 
 	<p class="ligneCaps">
 		<span class="cellTab70">
+			<label for='url_racine_gepi' style='cursor: pointer'>Adresse de la racine Gepi</label>
+			<br />
+			<span class='small'>
+				(<em>utilisé dans des envois de mails pour donner l'adresse d'une page en particulier<br />
+				Exemple&nbsp;: https://NOM_SERVEUR/DOSSIER_GEPI</em>)&nbsp;:</label>
+			</span>
+		</span>
+		<span class="cellTab plusPetit">
+			<?php
+				echo "<input type='text' name='url_racine_gepi' id='url_racine_gepi' value=\"".getSettingValue('url_racine_gepi')."\" onchange='changement()' size='30' />\n";
+			?>
+		</span>
+	</p>
+
+	<p class="ligneCaps">
+		<span class="cellTab70">
 			N° d'enregistrement à la CNIL : <br />
 			<span class='small'>
 				Conformément à l'article 16 de la loi 78-17 du 6 janvier 1978, dite loi informatique et liberté, cette 
 				installation de GEPI doit faire l'objet d'une déclaration de traitement automatisé d'informations nominatives 
-				de la CNIL. Si ce n'est pas encore le cas, laissez libre le champ ci-contre
+				de la CNIL. Si ce n'est pas encore le cas, laissez libre le champ ci-contre<br />
+				<a href='http://www.sylogix.org/projects/gepi/wiki/Declaration_cnil' target='_blank'>Voir wiki</a>
 			</span>
 		</span>
 		<span class="cellTab plusPetit">
@@ -1661,7 +1860,7 @@ echo add_token_field();
 	<br />
 	Le logo est visible sur les bulletins officiels, ainsi que sur la page d'accueil publique des cahiers de texte
 	<br />
-	Modifier le Logo (png, jpg et gif uniquement) :
+	Modifier le Logo (<em>png, jpg et gif uniquement</em>) :
 	<br />
 	<input type="file" name="doc_file" onchange='changement()' />
 	<input type="submit" name="valid_logo" value="Enregistrer" /></p>
@@ -1691,6 +1890,12 @@ if (($nom_fic_logo != '') and (file_exists($nom_fic_logo_c))) {
 	<br />
 	Il a aussi été signalé que les JPEG progressifs/entrelacés peuvent perturber la génération de PDF.
 </p>
+
+<hr />
+
+	<p  class="cellTab" style="font-variant: small-caps;">
+		Fichier de signature/cachet : <a href='gestion_signature.php'>Choisir le fichier et en gérer l'accès</a>
+	</p>
 
 <hr />
 
@@ -1796,6 +2001,62 @@ echo add_token_field();
 	</p>
 </form>
 
+
+<hr />
+
+<a name='gepi_en_production'></a>
+<form enctype="multipart/form-data" action="param_gen.php" method="post" id="form4" style="width: 100%;">
+	<p>
+<?php
+echo add_token_field();
+?>
+	</p>
+
+	<p  class="cellTab" style="font-variant: small-caps;">
+		Gepi en production<br />(<em>par opposition à un Gepi de test</em>)&nbsp;:
+	</p>
+	<p class="cellTab">
+		<input type="radio" 
+			   name="gepi_en_production" 
+			   id="gepi_en_production_y" 
+			   value="y" 
+			   <?php
+				if(getSettingValue('gepi_en_production')=="") {saveSetting('gepi_en_production', 'y');}
+				if(getSettingAOui('gepi_en_production')) {echo "checked='checked'";}
+			   ?>
+			   onchange='changement()' />
+		<label for='gepi_en_production_y' style='cursor: pointer;'>
+			Oui
+		</label>
+		<br />
+		<input type="radio" 
+			   name="gepi_en_production" 
+			   id="gepi_en_production_n" 
+			   value="n" 
+			   <?php
+				if(!getSettingAOui('gepi_en_production')) {echo "checked='checked'";}
+			   ?>
+			   onchange='changement()' />
+		<label for='gepi_en_production_n' style='cursor: pointer;'>
+			Non
+		</label>
+	</p>
+
+	<p>
+	<input type="hidden" name="is_posted" value="1" />
+	</p>
+	<p class="center">
+		<input type="submit" name = "OK" value="Enregistrer" style="font-variant: small-caps;" />
+	</p>
+
+	<p>
+		<em>Remarque:</em>
+	</p>
+	<p>
+		Sur un serveur Gepi en production, avec des données que l'on ne veut pas perdre accidentellement, on désactive l'accès à quelques liens sensibles de Gepi comme <strong>Effacer la base</strong> et <strong>Données de test</strong>.<br />
+		Sur un Gepi de test en revanche, on peut souhaiter effectuer ces actions sensibles.
+	</p>
+</form>
 
 <?php
 require("../lib/footer.inc.php");

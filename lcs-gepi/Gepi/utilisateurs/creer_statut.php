@@ -186,6 +186,7 @@ if ($action == 'modifier') {
         $test[$a][21] = isset($_POST["abs_bilan|".$b]) ? $_POST["abs_bilan|".$b] : NULL;
         $test[$a][22] = isset($_POST["abs_totaux|".$b]) ? $_POST["abs_totaux|".$b] : NULL;
         $test[$a][23] = isset($_POST["bul_print|".$b]) ? $_POST["bul_print|".$b] : NULL;
+        $test[$a][24] = isset($_POST["visu_equipes_peda|".$b]) ? $_POST["visu_equipes_peda|".$b] : NULL;
 
 		// On assure les différents traitements
 		if ($test[$a][0] == 'on') {
@@ -223,7 +224,7 @@ if ($action == 'modifier') {
                       if (!empty ($result)){
                         $query_maj = mysql_query("UPDATE droits_speciaux SET autorisation = '".$vf."' WHERE id_statut = '".$b."' AND nom_fichier = '".$autorise[$m][$i]."'");
                       }else{
-                        $query2_maj = mysql_query("INSERT INTO `droits_speciaux` VALUES ('','".$b."','".$autorise[$m][$i]."','".$vf."')");
+                        $query_maj = mysql_query("INSERT INTO `droits_speciaux` VALUES ('','".$b."','".$autorise[$m][$i]."','".$vf."')");
                       }
 
                       if (!$query_maj) {

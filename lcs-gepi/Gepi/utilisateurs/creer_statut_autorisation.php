@@ -24,7 +24,8 @@ $autorise[0] = array('/accueil.php',
 				'/gestion/contacter_admin.php',
 				'/gestion/info_gepi.php');
 // droits spécifiques sur les pages relatives aux droits possibles
-$autorise[1] = array('/cahier_notes/visu_releve_notes.php');
+//$autorise[1] = array('/cahier_notes/visu_releve_notes.php');
+$autorise[1] = array('/cahier_notes/visu_releve_notes_bis.php');
 $autorise[2] = array('/prepa_conseil/index3.php', '/prepa_conseil/edit_limite.php');
 $autorise[3] = array('/mod_absences/gestion/voir_absences_viescolaire.php',
 						'/mod_absences/gestion/bilan_absences_quotidien.php',
@@ -68,6 +69,7 @@ $autorise[20]= array('/mod_abs2/saisir_eleve.php',
 $autorise[21]= array('/mod_abs2/bilan_individuel.php' );
 $autorise[22]= array('/mod_abs2/totaux_du_jour.php' );
 $autorise[23]= array('/bulletin/bull_index.php' );
+$autorise[24]= array('/groupes/visu_profs_class.php', '/groupes/popup.php');
 
 
 $iter = count($autorise);
@@ -96,7 +98,8 @@ $menu_accueil[19] = array('Absence2', 'Absence2 : accéder au module.', 'abs');
 $menu_accueil[20] = array('Absence2', 'Absence2 : saisir les absences.', 'abs_saisie');
 $menu_accueil[21] = array('Absence2', 'Absence2 : accéder à la page bilan individuel.', 'abs_bilan');
 $menu_accueil[22] = array('Absence2', 'Absence2 : accéder à la page totaux du jour.', 'abs_totaux');
-$menu_accueil[23] = array('Bulletin', 'Visualisation et impression des bulletins ','bul_print')
+$menu_accueil[23] = array('Bulletin', 'Visualisation et impression des bulletins ','bul_print');
+$menu_accueil[24] = array('Visualisation équipes', 'Visualisation des équipes pédagogiques', 'visu_equipes_peda');
 
 
 ?>

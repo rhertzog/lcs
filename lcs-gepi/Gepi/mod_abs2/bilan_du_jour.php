@@ -132,7 +132,7 @@ foreach($classe_col as $classe) {
 	$eleve_query = EleveQuery::create()
 		->orderByNom()
 		->useAbsenceEleveSaisieQuery()->filterByPlageTemps($dt_debut, $dt_fin)->where('AbsenceEleveSaisie.DeletedAt is Null')->endUse()
-		->useJEleveClasseQuery()->filterByIdClasse($classe->getId())->endUse()
+		->filterByClasse($classe,$dt_date_absence_eleve)
         ->where('Eleve.DateSortie<?','0')
         ->orWhere('Eleve.DateSortie is NULL')
         ->orWhere('Eleve.DateSortie>?', $dt_date_absence_eleve->format('U'))
@@ -179,9 +179,34 @@ foreach($classe_col as $classe) {
                         echo '<td></td>';
                         break;
                     }else{
-                        echo '<td style="background-color:'.$abs->getColor().';"></td>';
+                        echo '<td style="background-color:'.$abs->getColor().';text-align:center;"';
+                        if($abs->getColor()=='red') {
+                        	//echo " title=\"Manquement aux obligations de présence\"><span style=\"color:".$abs->getColor()."\">M</span>";
+                        	echo " title=\"Manquement aux obligations de présence\">";
+                        	echo "<a href='visu_saisie.php?id_saisie=".$abs->getId()."'>";
+                        	echo "M";
+                        	echo "</a>";
+                        }
+                        elseif($abs->getColor()=='orange') {
+                        	//echo " title=\"Retard\"><span style=\"color:".$abs->getColor()."\">R</span>";
+                        	echo " title=\"Retard\">";
+                        	echo "<a href='visu_saisie.php?id_saisie=".$abs->getId()."'>";
+                        	echo "R";
+                        	echo "</a>";
+                        }
+                        elseif($abs->getColor()=='blue') {
+                        	//echo " title=\"Non manquement aux obligations de présence\"><span style=\"color:".$abs->getColor()."\">NM</span>";
+                        	echo " title=\"Non manquement aux obligations de présence\">";
+                        	echo "<a href='visu_saisie.php?id_saisie=".$abs->getId()."'>";
+                        	echo "NM";
+                        	echo "</a>";
+                        }
+                        else {
+                        	echo ">";
+                        }
+                        echo '</td>';
                         break; 
-                    }				    
+                    }
 				}
 				/*
 				if (!$red) {

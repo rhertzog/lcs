@@ -53,9 +53,11 @@
 	$titre_page = "Outil d'initialisation de l'année : Importation CSV UDT";
 	require_once("../lib/header.inc.php");
 	//**************** FIN EN-TETE *****************
+	include("init_xml_lib.php");
 
 	//debug_var();
 
+	/*
 	function affiche_debug($texte) {
 		// Passer à 1 la variable pour générer l'affichage des infos de debug...
 		$debug=0;
@@ -64,6 +66,7 @@
 			flush();
 		}
 	}
+	*/
 
 	// Etape...
 	$step=isset($_POST['step']) ? $_POST['step'] : (isset($_GET['step']) ? $_GET['step'] : NULL);
@@ -609,6 +612,11 @@
 				$del = @mysql_query("DELETE FROM j_eleves_groupes;");
 				$del = @mysql_query("DELETE FROM j_groupes_classes;");
 				$del = @mysql_query("DELETE FROM j_groupes_professeurs;");
+				$del = @mysql_query("DELETE FROM j_groupes_matieres;");
+				$del = @mysql_query("DELETE FROM j_signalement;");
+				$del = @mysql_query("DELETE FROM j_groupes_visibilite;");
+				$del = @mysql_query("DELETE FROM acces_cdt_groupes;");
+				// On conserve les associations profs/matières
 				//$del = @mysql_query("DELETE FROM j_professeurs_matieres;");
 
 /*
@@ -1002,7 +1010,9 @@ $
 	
 												if($temoin_enseignement_suivi=="y") {
 													for($n_per=1;$n_per<=$tab_per[$tab_clas[$loop]];$n_per++) {$reg_eleves[$n_per][]=$value;}
+													if($debug_import=="y") {echo "<span style='color:green'>$value suit l'enseignement n°$id_groupe de $mat</span><br />";}
 												}
+												elseif($debug_import=="y") {echo "<span style='color:red'>$value ne suit pas l'enseignement n°$id_groupe de $mat</span><br />";}
 											}
 										}
 	

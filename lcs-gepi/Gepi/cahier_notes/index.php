@@ -264,7 +264,7 @@ if (isset($_GET['id_groupe']) and isset($_GET['periode_num'])) {
     if ($nb_cahier_note == 0) {
         $nom_complet_matiere = $current_group["matiere"]["nom_complet"];
         $nom_court_matiere = $current_group["matiere"]["matiere"];
-        $reg = mysql_query("INSERT INTO cn_conteneurs SET id_racine='', nom_court='".traitement_magic_quotes($current_group["description"])."', nom_complet='". traitement_magic_quotes($nom_complet_matiere)."', description = '', mode = '2', coef = '1.0', arrondir = 's1', ponderation = '0.0', display_parents = '0', display_bulletin = '1', parent = '0'");
+        $reg = mysql_query("INSERT INTO cn_conteneurs SET id_racine='', nom_court='".traitement_magic_quotes($current_group["description"])."', nom_complet='". traitement_magic_quotes($nom_complet_matiere)."', description = '', mode = '".getPref($_SESSION['login'], 'cnBoitesModeMoy', (getSettingValue('cnBoitesModeMoy')!="" ? getSettingValue('cnBoitesModeMoy') : 2))."', coef = '1.0', arrondir = 's1', ponderation = '0.0', display_parents = '0', display_bulletin = '1', parent = '0'");
         if ($reg) {
             $id_racine = mysql_insert_id();
             $reg = mysql_query("UPDATE cn_conteneurs SET id_racine='$id_racine', parent = '0' WHERE id='$id_racine'");
@@ -275,8 +275,13 @@ if (isset($_GET['id_groupe']) and isset($_GET['periode_num'])) {
     }
 }
 
+$acces_exceptionnel_saisie=false;
+if((isset($periode_num))&&($_SESSION['statut']=='professeur')) {
+	$acces_exceptionnel_saisie=acces_exceptionnel_saisie_cn_groupe_periode($id_groupe, $periode_num);
+}
+
 // Recopie de la structure de la periode précédente
-if ((isset($_GET['creer_structure'])) and ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)) {
+if ((isset($_GET['creer_structure'])) and (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)||($acces_exceptionnel_saisie))) {
   check_token();
 
   function recopie_arbo($id_racine, $id_prec,$id_new) {
@@ -353,6 +358,11 @@ if  (isset($id_racine) and ($id_racine!='')) {
     $periode_num = mysql_result($appel_cahier_notes, 0, 'periode');
     include "../lib/periodes.inc.php";
 
+	$acces_exceptionnel_saisie=false;
+	if((isset($periode_num))&&($_SESSION['statut']=='professeur')) {
+		$acces_exceptionnel_saisie=acces_exceptionnel_saisie_cn_groupe_periode($id_groupe, $periode_num);
+	}
+
 	/*
 	$fich=fopen("/tmp/test_img.txt","a+");
 	fwrite($fich,"Juste avant test suppr\n");
@@ -375,6 +385,7 @@ if  (isset($id_racine) and ($id_racine!='')) {
 		*/
 	    check_token();
 
+		if (($current_group["classe"]["ver_periode"]["all"][$periode_num]==3)||($acces_exceptionnel_saisie)) {
 			$sql0="SELECT id_conteneur FROM cn_devoirs WHERE id='$temp'";
 			//echo "$sql0<br />";
 			$sql= mysql_query($sql0);
@@ -383,6 +394,18 @@ if  (isset($id_racine) and ($id_racine!='')) {
 			}
 			else {
 				$id_cont = mysql_result($sql, 0, 'id_conteneur');
+
+				if($current_group["classe"]["ver_periode"]["all"][$periode_num]!=3) {
+					$sql="SELECT * FROM cn_devoirs WHERE id='$temp';";
+					//echo "$sql<br />";
+					$res_cd=mysql_query($sql);
+					if(mysql_num_rows($res_cd)>0) {
+						$lig_cd=mysql_fetch_object($res_cd);
+						$texte="Suppression du devoir n°$temp : ".$lig_cd->nom_court." (".$lig_cd->nom_complet.") du ".formate_date($lig_cd->date).".\n";
+						$retour=log_modifs_acces_exceptionnel_saisie_cn_groupe_periode($id_groupe, $periode_num, $texte);
+					}
+				}
+
 				$sql = mysql_query("DELETE FROM cn_notes_devoirs WHERE id_devoir='$temp'");
 				$sql = mysql_query("DELETE FROM cn_devoirs WHERE id='$temp'");
 		
@@ -407,7 +430,7 @@ if  (isset($id_racine) and ($id_racine!='')) {
 					mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
 				}
 			}
-		
+		}
     }
     //
     // Supression d'un conteneur
@@ -415,7 +438,7 @@ if  (isset($id_racine) and ($id_racine!='')) {
     if ((isset($_GET['del_cont'])) and ($_GET['js_confirmed'] ==1)) {
 		check_token();
 
-	    //if((isset($_GET['alea']))&&($_GET['alea']==$_SESSION['gepi_alea'])) {
+		if (($current_group["classe"]["ver_periode"]["all"][$periode_num]==3)||($acces_exceptionnel_saisie)) {
 			$temp = $_GET['del_cont'];
 			$sql= mysql_query("SELECT id FROM cn_devoirs WHERE id_conteneur='$temp'");
 			$nb_dev = mysql_num_rows($sql);
@@ -439,9 +462,8 @@ if  (isset($id_racine) and ($id_racine!='')) {
 					$arret = 'no';
 					mise_a_jour_moyennes_conteneurs($current_group, $periode_num,$id_racine,$id_racine,$arret);
 				}
-	
 			}
-		
+		}
     }
 
     echo "<div class='norme'>\n";
@@ -451,6 +473,7 @@ if  (isset($id_racine) and ($id_racine!='')) {
     echo "<a href='index.php?id_groupe=no_group'> Mes enseignements </a> | \n";
 
 
+//if(isset($current_group)) { echo "DEBUG 1 : ".$current_group['classlist_string']."<br />";}
 
 if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	if($_SESSION['statut']=='professeur') {
@@ -463,6 +486,8 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	}
 
 	$tab_groups = get_groups_for_prof($login_prof_groupe_courant,"classe puis matière");
+
+	//if(isset($current_group)) { echo "DEBUG 2 : ".$current_group['classlist_string']."<br />";}
 
 	if(!empty($tab_groups)) {
 
@@ -551,6 +576,8 @@ if(($_SESSION['statut']=='professeur')||($_SESSION['statut']=='secours')) {
 	// =================================
 }
 
+//if(isset($current_group)) { echo "DEBUG 3 : ".$current_group['classlist_string']."<br />";}
+
     echo "<a href='index.php?id_groupe=" . $current_group["id"] . "'> Choisir une autre période</a> | \n";
 
 	// Recuperer la liste des cahiers de notes
@@ -618,19 +645,28 @@ var tab_per_cn=new Array();\n";
 		echo " | \n";
 	}
 
+	/*
+	// Ca ne fonctionne pas: On ne récupère que le dernier devoir consulté,... parce qu'imprime_pdf.php récupère ce qui est mis en $_SESSION['data_pdf']
+	$sql="SELECT 1=1 FROM cn_devoirs cd, cn_conteneurs cc WHERE cd.id_conteneur=cc.id AND cc.id_racine='$id_racine';";
+	$test_existence_devoir=mysql_query($sql);
+	if(mysql_num_rows($test_existence_devoir)>0) {
+		$titre_pdf = urlencode($current_group['description']." (".$nom_periode[$periode_num].")");
+		echo "<a href=\"../fpdf/imprime_pdf.php?titre=$titre_pdf&amp;id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;nom_pdf_en_detail=oui\" title=\"Export PDF du Carnet de Notes\"> Imprimer au format PDF </a>|";
+	}
+	*/
+
+	//if(isset($current_group)) { echo "DEBUG 4 : ".$current_group['classlist_string']."<br />";}
 
 	//==================================
 	// AJOUT: boireaus EXPORT...
-    echo "<a href='export_cahier_notes.php?id_racine=".$id_racine."'>Exporter les notes</a> | \n";
+    echo "<a href='export_cahier_notes.php?id_racine=".$id_racine."' title=\"Exporter les notes au format tableur\">Exporter les notes</a> | \n";
 	//==================================
 
-    if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
+	if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
+		echo "<a href='import_cahier_notes.php?id_racine=".$id_racine."' title=\"Importer les notes depuis un format tableur\">Importer les notes</a> | \n";
+	}
 
-		//==================================
-		// AJOUT: boireaus EXPORT...
-		echo "<a href='import_cahier_notes.php?id_racine=".$id_racine."'>Importer les notes</a> | \n";
-		//==================================
-
+    if (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)||($acces_exceptionnel_saisie)) {
         echo "<a href='add_modif_conteneur.php?id_racine=$id_racine&amp;mode_navig=retour_index'> Créer un";
         if(getSettingValue("gepi_denom_boite_genre")=='f'){echo "e";}
         echo " ".htmlspecialchars(my_strtolower(getSettingValue("gepi_denom_boite")))." </a> | \n";
@@ -652,6 +688,8 @@ var tab_per_cn=new Array();\n";
     echo "</p>\n";
 	echo "</form>\n";
 	echo "</div>\n";
+
+	//if(isset($current_group)) { echo "DEBUG 5 : ".$current_group['classlist_string']."<br />";}
 
     echo "<h2 class='gepi'>Carnet de notes : ". htmlspecialchars($current_group["description"]) . " ($nom_periode[$periode_num])</h2>\n";
     echo "<p class='bold'> Classe(s) : " . $current_group["classlist_string"] . " | Matière : " . htmlspecialchars($current_group["matiere"]["nom_complet"]) . "(" . htmlspecialchars($current_group["matiere"]["matiere"]) . ")";
@@ -718,11 +756,18 @@ var tab_per_cn=new Array();\n";
     echo "<h3 class='gepi'>Liste des évaluations du carnet de notes</h3>\n";
     $empty = affiche_devoirs_conteneurs($id_racine,$periode_num, $empty, $current_group["classe"]["ver_periode"]["all"][$periode_num]);
     //echo "</ul>\n";
+
     if ($empty == 'yes') echo "<p><b>Actuellement, aucune évaluation.</b> Vous devez créer au moins une évaluation.</p>\n";
-    if ($empty != 'yes') {
+
+	if($periode_num>=2) {
+		echo "<p><a href='toutes_notes.php?id_groupe=$id_groupe'>Voir toutes les évaluations de l'année</a></p>\n";
+	}
+
+    if (($empty != 'yes')&&(getSettingAOui('active_bulletins'))) {
 		$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='$id_groupe' AND domaine='bulletins' AND visible='n';";
 		$test_jgv=mysql_query($sql);
 		if(mysql_num_rows($test_jgv)==0) {
+			//if (($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2)||($acces_exceptionnel_saisie)) {
 			if ($current_group["classe"]["ver_periode"]["all"][$periode_num] >= 2) {
 				echo "<h3 class='gepi'>Saisie du bulletin ($nom_periode[$periode_num])</h3>\n";
 	
@@ -764,12 +809,34 @@ var tab_per_cn=new Array();\n";
 				echo "<li><a href='../saisie/saisie_appreciations.php?id_groupe=$id_groupe&amp;periode_cn=$periode_num'>Saisie des appréciations</a> $info_ma</li></ul>\n";
 			} else {
 				echo "<h3 class='gepi'>Visualisation du bulletin ($nom_periode[$periode_num])</h3>\n";
-				echo "<ul><li><a href='../saisie/saisie_notes.php?id_groupe=$id_groupe&amp;periode_cn=$periode_num&amp;retour_cn=yes'>Visualisation des moyennes</a> (<b>".$gepiClosedPeriodLabel."</b>).</li>\n";
+				echo "<ul>\n";
+				if(acces_exceptionnel_saisie_bull_note_groupe_periode($id_groupe, $periode_num)) {
+					echo "<li><a href='../saisie/saisie_notes.php?id_groupe=$id_groupe&amp;periode_cn=$periode_num&amp;retour_cn=yes'>Accès exceptionnel à la correction des moyennes</a> (<b>".$gepiClosedPeriodLabel."</b>).</li>\n";
+				}
+				else {
+					echo "<li><a href='../saisie/saisie_notes.php?id_groupe=$id_groupe&amp;periode_cn=$periode_num&amp;retour_cn=yes'>Visualisation des moyennes</a> (<b>".$gepiClosedPeriodLabel."</b>).</li>\n";
+				}
 				echo "<li><a href='../saisie/saisie_appreciations.php?id_groupe=$id_groupe&amp;periode_cn=$periode_num'>Visualisation des appréciations</a> (<b>".$gepiClosedPeriodLabel."</b>).</li></ul>\n";
 			}
 		}
     }
 
+	if((isset($id_racine))&&(getPref($_SESSION['login'], 'cnBoitesModeMoy', '')=="")) {
+		$sql="SELECT 1=1 FROM cn_conteneurs WHERE id_racine='$id_racine';";
+		$res_nb_conteneurs=mysql_query($sql);
+		if(mysql_num_rows($res_nb_conteneurs)>1) {
+			echo "<p><br /></p><p><strong style='color:red'>ATTENTION&nbsp;:</strong> Vous n'avez pas encore choisi le mode de calcul de moyenne que vous souhaitez adopter <strong>par défaut</strong> quand vous créez des ".getSettingValue('gepi_denom_boite')."s.</p>\n";
+			echo "<div style='margin-left:7em;'>";
+			include("explication_moyenne_boites.php");
+			echo "<p><br /></p>\n";
+			echo "<p><a href='../utilisateurs/mon_compte.php#cnBoitesModeMoy' target='_blank'>Choisir le mode par défaut pour mes ".getSettingValue('gepi_denom_boite')."s</a>.<br />Cela ne vous empêchera pas de choisir un autre mode pour des ".getSettingValue('gepi_denom_boite')."s particulier(e)s.<br />Cela ne modifie pas non plus le mode de calcul dans les carnets de notes existants.</p>\n";
+			echo "<p><br /></p>\n";
+			if(isset($id_racine)) {
+				echo "<p><a href='add_modif_conteneur.php?id_conteneur=$id_racine&mode_navig=retour_index' target='_blank'>Paramétrer le mode de calcul pour les ".getSettingValue('gepi_denom_boite')."s</a> de ce carnet de notes (<em>". htmlspecialchars($current_group["description"])." (".$nom_periode[$periode_num].")</em>) en particulier.</p>\n";
+			}
+			echo "</div>";
+		}
+	}
 }
 
 if (isset($_GET['id_groupe']) and !(isset($_GET['periode_num'])) and !(isset($id_racine))) {
@@ -793,6 +860,11 @@ if (isset($_GET['id_groupe']) and !(isset($_GET['periode_num'])) and !(isset($id
 	$res_test=mysql_query($sql);
 	if(mysql_num_rows($res_test)==0){
 		echo " (<i>période close</i>)";
+
+		if(acces_exceptionnel_saisie_cn_groupe_periode($id_groupe, $i)) {
+			echo " (<em>Accès exceptionnellement ouvert en saisie</em>)";
+		}
+
 	}
 
 	echo "</p>\n";

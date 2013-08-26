@@ -132,7 +132,7 @@ $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
-
+//debug_var();
 include('menu_abs2.inc.php');
 //===========================
 echo "<div class='css-panes' id='containDiv'>\n";
@@ -140,7 +140,7 @@ echo "<div class='css-panes' id='containDiv'>\n";
 echo "<table cellspacing='15px' cellpadding='5px'><tr>";
 
 //on affiche une boite de selection pour l'eleve
-echo "<td style='border : 1px solid; padding : 10 px;'>";
+echo "<td style='border : 1px solid; padding : 10px;'>";
 echo "<form action=\"./saisir_eleve.php\" method=\"post\" style=\"width: 100%;\">\n";
 echo '<p>';
 echo 'Nom : <input type="hidden" name="type_selection" value="nom_eleve"/> ';
@@ -162,7 +162,7 @@ if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getSta
     $groupe_col = $utilisateur->getGroupes();
 }
 if (!$groupe_col->isEmpty()) {
-	echo "<td style='border : 1px solid; padding : 10 px;'>";
+	echo "<td style='border : 1px solid; padding : 10px;'>";
 	echo "<form action=\"./saisir_eleve.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo '<p>';
 	echo '<input type="hidden" name="type_selection" value="id_groupe"/>';
@@ -190,7 +190,7 @@ if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getSta
     $classe_col = $utilisateur->getClasses();
 }
 if (!$classe_col->isEmpty()) {
-	echo "<td style='border : 1px solid; padding : 10 px;'>";
+	echo "<td style='border : 1px solid; padding : 10px;'>";
 	echo "<form action=\"./saisir_eleve.php\" method=\"post\" style=\"width: 100%;\">\n";
 	echo '<p>';
 	echo '<input type="hidden" name="type_selection" value="id_classe"/>';
@@ -243,7 +243,7 @@ echo '</p>';
 echo "</tr></table>";
 
 if (isset($message_enregistrement)) {
-    echo($message_enregistrement);
+    echo "<span style='color:green'>".$message_enregistrement."</span>";
 }
 
 //afichage des eleves
@@ -323,7 +323,9 @@ if (!$eleve_col->isEmpty()) {
 
 <!-- Afichage du tableau de la liste des élèves -->
 <!-- Legende du tableau-->
-	<?php echo ('<p>');
+	<?php
+	    //echo ('<p>');
+	    echo ("<table align='center'><tr><td align='left'>\n");
 	    $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->useAbsenceEleveTypeQuery()->orderBySortableRank()->endUse()->filterByStatut($utilisateur->getStatut())->find();
 	    if ($type_autorises->count() != 0) {
 		    echo ("Type : <select name=\"type_absence\" class=\"small\">");
@@ -336,8 +338,70 @@ if (!$eleve_col->isEmpty()) {
 		    }
 		    echo "</select>";
 	    }
-	    echo '&nbsp;&nbsp;&nbsp;Commentaire : <input name="commentaire" type="text" maxlength="150" size="20"/>';
-	    echo '</p> ';
+	    echo ("</td>\n");
+	    echo ("<td>&nbsp;&nbsp;&nbsp;</td>\n");
+	    echo ("<td align='left'>\n");
+	    //echo '&nbsp;&nbsp;&nbsp;';
+	    echo 'Commentaire : <input name="commentaire" type="text" maxlength="150" size="20"/>';
+
+	    echo ("</tr>\n");
+		//=============================================================
+		echo ("<tr><td align='left'>\n");
+
+		//echo '<span title="Non fonctionnel pour le moment" style="color:red; text-decoration: blink;">Motif : </span>';
+		echo 'Motif : ';
+		$motifs = AbsenceEleveMotifQuery::create()->orderByRank()->find();
+		/*
+		echo '<form method="post" action="enregistrement_modif_traitement.php">';
+		echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
+		echo '<input type="hidden" name="id_traitement" value="'.$traitement->getPrimaryKey().'"/>';
+		echo '<input type="hidden" name="modif" value="motif"/>';
+		*/
+		echo ("<select name=\"id_motif\">");
+		echo "<option value='-1'></option>\n";
+		foreach ($motifs as $motif) {
+			echo "<option value='".$motif->getId()."'";
+			echo ">";
+			echo $motif->getNom();
+			echo "</option>\n";
+		}
+		echo "</select>";
+		/*
+		echo '<button type="submit">Modifier</button>';
+		echo '</form>';
+		*/
+
+		echo ("</td>\n");
+		echo ("<td>&nbsp;&nbsp;&nbsp;</td>\n");
+		echo ("<td align='left'>\n");
+
+		//echo '<span title="Non fonctionnel pour le moment" style="color:red; text-decoration: blink;">Justification : </span>';
+		echo 'Justification : ';
+		$justifications = AbsenceEleveJustificationQuery::create()->orderByRank()->find();
+		/*
+		echo '<form method="post" action="enregistrement_modif_traitement.php">';
+		echo '<input type="hidden" name="menu" value="'.$menu.'"/>';
+		echo '<input type="hidden" name="id_traitement" value="'.$traitement->getPrimaryKey().'"/>';
+		echo '<input type="hidden" name="modif" value="justification"/>';
+		*/
+		echo ("<select name=\"id_justification\">");
+		echo "<option value='-1'></option>\n";
+		foreach ($justifications as $justification) {
+			echo "<option value='".$justification->getId()."'";
+			echo ">";
+			echo $justification->getNom();
+			echo "</option>\n";
+		}
+		echo "</select>";
+		/*
+		echo '<button type="submit">Modifier</button>';
+		echo '</form>';
+		*/
+
+		echo ("</td>\n</tr>\n");
+	    echo ("</table>\n");
+		//=============================================================
+	//echo '</p> ';
 	?>
 <!-- Fin de la legende -->
 
@@ -481,10 +545,16 @@ echo '<div style="border-width: 1px; border-style: solid; text-align: left; padd
 echo '<p>';
 echo 'De <input name="heure_debut_absence_eleve" value="';
 echo $edt_creneau_col->getFirst()->getHeuredebutDefiniePeriode("H:i");
-echo '" type="text" maxlength="5" size="4"/> à ';
+echo '" type="text" maxlength="5" size="4" ';
+echo ' id="heure_debut_absence_eleve" onKeyDown="clavier_heure2(this.id,event,30,300);" AutoComplete="off" ';
+echo '/> à ';
+
 echo '<input name="heure_fin_absence_eleve" value="';
 echo $edt_creneau_col->getLast()->getHeurefinDefiniePeriode("H:i");
-echo '" type="text" maxlength="5" size="4"/><br/>';
+echo '" type="text" maxlength="5" size="4"';
+echo ' id="heure_fin_absence_eleve" onKeyDown="clavier_heure2(this.id,event,30,300);" AutoComplete="off" ';
+echo '/><br/>';
+
 echo '<input type="radio" name="multisaisie" value="n" checked="checked" />';
 echo '	Créer une seule saisie <br/>';
 echo '	<input type="radio" name="multisaisie" value="y"/>';

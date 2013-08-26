@@ -43,6 +43,14 @@ a:active {
 	color:red;
 }
 
+.red {
+	color: red;
+}
+
+.grey {
+	color: gray;
+}
+
 #container {
 	margin-bottom:1em;
 	padding-left: 1em;
@@ -129,6 +137,19 @@ label {
 	font-size: 12pt;
 	font-style: normal;
 	font-weight: normal;
+}
+
+.couleur_devoirs {
+	background-color: #AAE6AA;
+}
+.couleur_moy_cont {
+	background-color: #96C8F0;
+}
+.couleur_moy_sous_cont {
+	background-color: #FAFABE;
+}
+.couleur_calcul_moy {
+	background-color: #AAAAE6;
 }
 
 /* Div à la position fixe pour certains affichages */

@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -21,10 +21,6 @@
  */
 
 // Begin standart header
-
-$titre_page = "Options de connexion";
-
-
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
@@ -46,6 +42,14 @@ if (!checkAccess()) {
     die();
 }
 
+$msg="";
+
+//debug_var();
+
+// Mettre administrateur, c'est risquer de bloquer l'admin.
+//$tab_statuts_MailValideRequis=array("Administrateur", "Scolarite", "Cpe", "Professeur", "Secours", "Eleve", "Responsable");
+$tab_statuts_MailValideRequis=array("Scolarite", "Cpe", "Professeur", "Secours", "Eleve", "Responsable");
+
 
 // Enregistrement de la durée de conservation des données
 
@@ -53,9 +57,9 @@ if (isset($_POST['duree'])) {
 	check_token();
 
     if (!saveSetting(("duree_conservation_logs"), $_POST['duree'])) {
-        $msg = "Erreur lors de l'enregistrement de la durée de conservation des connexions !";
+        $msg.= "Erreur lors de l'enregistrement de la durée de conservation des connexions !<br />";
     } else {
-        $msg = "La durée de conservation des connexions a été enregistrée.<br />Le changement sera pris en compte après la prochaine connexion à GEPI.";
+        $msg.= "La durée de conservation des connexions a été enregistrée.<br />Le changement sera pris en compte après la prochaine connexion à GEPI.<br />";
     }
 }
 
@@ -203,15 +207,25 @@ if (isset($_POST['auth_options_posted']) && $_POST['auth_options_posted'] == "1"
 	}
 }
 
+if (isset($_POST['valid_choix_saisie_mail'])) {
+	check_token();
 
+	for($i=0;$i<count($tab_statuts_MailValideRequis);$i++) {
+		if (isset($_POST['MailValideRequis'.$tab_statuts_MailValideRequis[$i]])) {
+			saveSetting('MailValideRequis'.$tab_statuts_MailValideRequis[$i], "y");
+		}
+		else {
+			saveSetting('MailValideRequis'.$tab_statuts_MailValideRequis[$i], "n");
+		}
+	}
+	$msg.="Le paramétrage mail requis ou non pour les différents statuts est enregistré.<br />";
+}
 
 // Load settings
 
 if (!loadSettings()) {
     die("Erreur chargement settings");
 }
-
-
 
 // Suppression du journal de connexion
 
@@ -221,10 +235,33 @@ if (isset($_POST['valid_sup_logs']) ) {
     $sql = "delete from log where END < now()";
     $res = sql_query($sql);
     if ($res) {
-       $msg = "La suppression des entrées dans le journal de connexion a été effectuée.";
+       $msg.= "La suppression des entrées dans le journal de connexion a été effectuée.<br />";
     } else {
-       $msg = "Il y a eu un problème lors de la suppression des entrées dans le journal de connexion.";
+       $msg.= "Il y a eu un problème lors de la suppression des entrées dans le journal de connexion.<br />";
     }
+}
+
+if ((isset($_POST['clean_log_old']))&&(isset($_POST['date_limite']))) {
+	check_token();
+	$tmp_tab=explode("/",$_POST['date_limite']);
+	if(isset($tmp_tab[2])) {
+		if(checkdate($tmp_tab[1],$tmp_tab[0],$tmp_tab[2])) {
+			$sql = "delete from log where END < '".$tmp_tab[2]."-".$tmp_tab[1]."-".$tmp_tab[0]." 00:00:00';";
+			//echo "$sql<br />";
+			$res = sql_query($sql);
+			if ($res) {
+			   $msg.= "La suppression des entrées antérieures au ".$_POST['date_limite']." dans le journal de connexion a été effectuée.<br />";
+			} else {
+			   $msg.= "Il y a eu un problème lors de la suppression des entrées antérieures au ".$_POST['date_limite']." dans le journal de connexion.<br />";
+			}
+		}
+		else {
+			$msg.="Date ".$_POST['date_limite']." invalide.<br />";
+		}
+	}
+	else {
+		$msg.="Date ".$_POST['date_limite']." mal formatée.<br />";
+	}
 }
 
 // Changement de mot de passe obligatoire
@@ -239,9 +276,9 @@ if (isset($_POST['valid_chgt_mdp'])) {
 
     $res = sql_query($sql);
     if ($res) {
-       $msg = "La demande de changement obligatoire de mot de passe a été enregistrée.";
+       $msg.= "La demande de changement obligatoire de mot de passe a été enregistrée.<br />";
     } else {
-       $msg = "Il y a eu un problème lors de l'enregistrement de la demande de changement obligatoire de mot de passe.";
+       $msg.= "Il y a eu un problème lors de l'enregistrement de la demande de changement obligatoire de mot de passe.<br />";
     }
 }
 
@@ -251,14 +288,80 @@ if (isset($_POST['enable_password_recovery'])) {
 	check_token();
 
     if (!saveSetting("enable_password_recovery", $_POST['enable_password_recovery'])) {
-        $msg = "Il y a eu un problème lors de l'enregistrement du paramètre d'activation/désactivation de la procédure de récupération automatisée des mots de passe.";
+        $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre d'activation/désactivation de la procédure de récupération automatisée des mots de passe.<br />";
     } else {
-        $msg = "L'enregistrement du paramètre d'activation/désactivation de la procédure de récupération automatisée des mots de passe a été effectué avec succès.";
+        $msg.= "L'enregistrement du paramètre d'activation/désactivation de la procédure de récupération automatisée des mots de passe a été effectué avec succès.<br />";
     }
 }
 
+
+if (isset($_POST['GepiResp_obtenir_compte_et_motdepasse'])) {
+	check_token();
+
+    if (!saveSetting("GepiResp_obtenir_compte_et_motdepasse", $_POST['GepiResp_obtenir_compte_et_motdepasse'])) {
+        $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre d'activation/désactivation de la procédure de demande de compte/mot de passe.<br />";
+    } else {
+        $msg.= "L'enregistrement du paramètre d'activation/désactivation de la procédure de demande de compte/mot de passe a été effectué avec succès.<br />";
+    }
+
+	if (isset($_POST['SendMail_obtenir_compte_et_motdepasse'])) {
+		if (!saveSetting("SendMail_obtenir_compte_et_motdepasse", $_POST['SendMail_obtenir_compte_et_motdepasse'])) {
+		    $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre d'envoi de mail dans la procédure de demande de compte/mot de passe.<br />";
+		} else {
+		    $msg.= "L'enregistrement du paramètre d'envoi de mail dans la procédure de demande de compte/mot de passe a été effectué avec succès.<br />";
+		}
+	}
+
+	if (isset($_POST['DestMail_obtenir_compte_et_motdepasse'])) {
+		if (!saveSetting("DestMail_obtenir_compte_et_motdepasse", $_POST['DestMail_obtenir_compte_et_motdepasse'])) {
+		    $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre destinataire du mail dans la procédure de demande de compte/mot de passe.<br />";
+		} else {
+		    $msg.= "L'enregistrement du paramètre destinataire du dans la procédure de demande de compte/mot de passe a été effectué avec succès.<br />";
+		}
+	}
+
+	if (isset($_POST['RegBaseAdm_obtenir_compte_et_motdepasse'])) {
+		$RegBaseAdm_obtenir_compte_et_motdepasse="yes";
+	}
+	else {
+		$RegBaseAdm_obtenir_compte_et_motdepasse="no";
+	}
+	if (!saveSetting("RegBaseAdm_obtenir_compte_et_motdepasse", $RegBaseAdm_obtenir_compte_et_motdepasse)) {
+	    $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre RegBaseAdm_obtenir_compte_et_motdepasse.<br />";
+	} else {
+	    $msg.= "L'enregistrement du paramètre RegBaseAdm_obtenir_compte_et_motdepasse a été effectué avec succès.<br />";
+	}
+
+	if (isset($_POST['RegBaseScol_obtenir_compte_et_motdepasse'])) {
+		$RegBaseScol_obtenir_compte_et_motdepasse="yes";
+	}
+	else {
+		$RegBaseScol_obtenir_compte_et_motdepasse="no";
+	}
+	if (!saveSetting("RegBaseScol_obtenir_compte_et_motdepasse", $RegBaseScol_obtenir_compte_et_motdepasse)) {
+	    $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre RegBaseScol_obtenir_compte_et_motdepasse.<br />";
+	} else {
+	    $msg.= "L'enregistrement du paramètre RegBaseScol_obtenir_compte_et_motdepasse a été effectué avec succès.<br />";
+	}
+
+	if (isset($_POST['RegBaseCpe_obtenir_compte_et_motdepasse'])) {
+		$RegBaseCpe_obtenir_compte_et_motdepasse="yes";
+	}
+	else {
+		$RegBaseCpe_obtenir_compte_et_motdepasse="no";
+	}
+	if (!saveSetting("RegBaseCpe_obtenir_compte_et_motdepasse", $RegBaseCpe_obtenir_compte_et_motdepasse)) {
+	    $msg.= "Il y a eu un problème lors de l'enregistrement du paramètre RegBaseCpe_obtenir_compte_et_motdepasse.<br />";
+	} else {
+	    $msg.= "L'enregistrement du paramètre RegBaseCpe_obtenir_compte_et_motdepasse a été effectué avec succès.<br />";
+	}
+}
+
 // End standart header
+//=====================================
+$titre_page = "Options de connexion";
 require_once("../lib/header.inc.php");
+//=====================================
 isset($mode_navig);
 $mode_navig = isset($_POST["mode_navig"]) ? $_POST["mode_navig"] : (isset($_GET["mode_navig"]) ? $_GET["mode_navig"] : NULL);
 if ($mode_navig == 'accueil') {
@@ -290,6 +393,57 @@ echo "</form>\n";
 echo"<hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;\"/>\n";
 
 //
+// Activation/désactivation de la procédure de demande de compte/mot de passe
+//
+echo "<h3 class='gepi'>Demande de compte et mot de passe</h3>\n";
+echo "<form action=\"options_connect.php\" method=\"post\">\n";
+echo add_token_field();
+echo "<p>Permettre aux responsables de demander ou récupérer un compte/mot de passe.<br />\n";
+echo "<input type='radio' name='GepiResp_obtenir_compte_et_motdepasse' value='no' id='GepiResp_obtenir_compte_et_motdepasse_no'";
+if (!getSettingAOui("GepiResp_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='GepiResp_obtenir_compte_et_motdepasse_no' style='cursor: pointer;'>Désactiver l'accès au formulaire de demande de compte/mot de passe pour les responsables</label>\n";
+
+echo "<br /><input type='radio' name='GepiResp_obtenir_compte_et_motdepasse' value='yes' id='GepiResp_obtenir_compte_et_motdepasse_yes'";
+if (getSettingAOui("GepiResp_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='GepiResp_obtenir_compte_et_motdepasse_yes' style='cursor: pointer;'>Activer l'accès au formulaire de demande de compte/mot de passe pour les responsables</label></p>\n";
+
+echo "<br />
+<p>Envoyer un courriel à l'adresse suivante quand un responsable formule une demande&nbsp;:<br />
+<input type='radio' name='SendMail_obtenir_compte_et_motdepasse' value='no' id='SendMail_obtenir_compte_et_motdepasse_no'";
+if (!getSettingAOui("SendMail_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='SendMail_obtenir_compte_et_motdepasse_no' style='cursor: pointer;'>Non</label>
+<br /><input type='radio' name='SendMail_obtenir_compte_et_motdepasse' value='yes' id='SendMail_obtenir_compte_et_motdepasse_yes'";
+if (getSettingAOui("SendMail_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='SendMail_obtenir_compte_et_motdepasse_yes' style='cursor: pointer;'>Oui</label><br />
+à destination de <input type='text' name='DestMail_obtenir_compte_et_motdepasse' value='";
+if(getSettingValue('DestMail_obtenir_compte_et_motdepasse')!='') {echo getSettingValue('DestMail_obtenir_compte_et_motdepasse');} else {echo getSettingValue('gepiSchoolEmail');}
+echo "' /></p>\n";
+
+echo "<br />
+<p>Enregistrer la demande dans la base et la faire apparaitre en page d'accueil pour le/les statuts suivants&nbsp;:<br />
+<input type='checkbox' name='RegBaseAdm_obtenir_compte_et_motdepasse' value='yes' id='RegBaseAdm_obtenir_compte_et_motdepasse'";
+if (getSettingAOui("RegBaseAdm_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='RegBaseAdm_obtenir_compte_et_motdepasse' style='cursor: pointer;'>administrateur</label>
+<br />
+<input type='checkbox' name='RegBaseScol_obtenir_compte_et_motdepasse' value='yes' id='RegBaseScol_obtenir_compte_et_motdepasse'";
+if (getSettingAOui("RegBaseScol_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='RegBaseScol_obtenir_compte_et_motdepasse' style='cursor: pointer;'>scolarité</label>
+<br />
+<input type='checkbox' name='RegBaseCpe_obtenir_compte_et_motdepasse' value='yes' id='RegBaseCpe_obtenir_compte_et_motdepasse'";
+if (getSettingAOui("RegBaseCpe_obtenir_compte_et_motdepasse")) echo " checked ";
+echo " /> <label for='RegBaseCpe_obtenir_compte_et_motdepasse' style='cursor: pointer;'>cpe</label>
+</p>\n";
+
+echo "<center><input type=\"submit\" value=\"Valider\" /></center>\n";
+echo "</form>\n";
+
+echo "<p style='text-indent:-5em; margin-left:5em;'><em>NOTES&nbsp;:</em> Le responsable dispose en page de login d'un lien pour remplir un formulaire avec nom, prénom, email et indication sur le nom, prénom et classe d'un des enfants.<br />
+Le document doit être imprimé et déposé à l'Administration pour finaliser la demande.<br />
+Cette précaution est destinée à éviter des usurpations d'identité.</p>\n";
+
+echo"<hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;\"/>\n";
+
+//
 // Changement du mot de passe obligatoire
 //
 // Cette option n'est proposée que si les mots de passe sont éditables dans Gepi
@@ -307,17 +461,39 @@ echo "</form><hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;
 }
 
 //
+// Saisie d'un mail requise
+//
+
+echo "<h3 class='gepi'>Saisie d'une adresse mail requise</h3>\n";
+echo "<form action=\"options_connect.php\" name=\"form_saisie_mail\" method=\"post\">
+	".add_token_field()."
+	<p>La saisie d'une adresse mail pour les comptes d'utilisateurs peut vous paraitre nécessaire.<br />
+	Si vous tenez à imposer une telle saisie, veuillez choisir les statuts contraints à saisir une adresse mail au format valide (*)&nbsp;:<br />";
+	for($i=0;$i<count($tab_statuts_MailValideRequis);$i++) {
+		echo "
+	<input type='checkbox' name='MailValideRequis".$tab_statuts_MailValideRequis[$i]."' id='MailValideRequis".$tab_statuts_MailValideRequis[$i]."' value='y' ".(getSettingAOui('MailValideRequis'.$tab_statuts_MailValideRequis[$i]) ? "checked " : "" )."/><label for='MailValideRequis".$tab_statuts_MailValideRequis[$i]."'>".$tab_statuts_MailValideRequis[$i]."</label><br />";
+	}
+	echo "
+	<input type=\"submit\" name=\"valid_choix_saisie_mail\" value=\"Valider\" /></p>
+	<input type=hidden name=mode_navig value='$mode_navig' />
+	<p><br /></p>
+	<p>(*) Cela n'empêchera pas un utilisateur de saisir une adresse \"bidon\".</p>
+</form>\n";
+
+echo "<hr class=\"header\" style=\"margin-top: 32px; margin-bottom: 24px;\"/>\n";
+
+//
 // Paramétrage du Single Sign-On
 //
 
 echo "<h3 class='gepi'>Mode d'authentification</h3>\n";
-echo "<p><span style='color: red'><strong>Attention !</strong></span> Ne modifiez ces paramètres que si vous savez vraiment ce que vous faites ! Si vous activez l'authentification SSO et que vous ne pouvez plus vous connecter à Gepi en administrateur, vous pouvez utiliser la variable \$block_sso dans le fichier /lib/global.inc pour désactiver le SSO et rebasculer en authentification locale. Il est donc vivement recommandé de créer un compte administrateur local (dont le login n'interfèrera pas avec un login SSO) avant d'activer le SSO.</p>\n";
-echo "<p>Gepi permet d'utiliser plusieurs modes d'authentification en parallèle. Les combinaisons les plus courantes seront une authentification locale avec une authentifcation LDAP, ou bien une authentification locale et une authentification unique (utilisant un serveur d'authentification distinct).</p>\n";
+echo "<p><span style='color: red'><strong>Attention !</strong></span> Ne modifiez ces paramètres que si vous savez vraiment ce que vous faites ! Si vous activez l'authentification SSO et que vous ne pouvez plus vous connecter à Gepi en administrateur, vous pouvez utiliser la variable \$block_sso dans le fichier /lib/global.inc pour désactiver le SSO et rebasculer en authentification locale. Il est donc vivement recommandé de créer un compte administrateur local (<em>dont le login n'interfèrera pas avec un login SSO</em>) avant d'activer le SSO.</p>\n";
+echo "<p>Gepi permet d'utiliser plusieurs modes d'authentification en parallèle. Les combinaisons les plus courantes seront une authentification locale avec une authentification LDAP, ou bien une authentification locale et une authentification unique (<em>utilisant un serveur d'authentification distinct</em>).</p>\n";
 echo "<p>Le mode d'authentification est explicitement spécifié pour chaque utilisateur dans la base de données de Gepi. Assurez-vous que le mode défini correspond effectivement au mode utilisé par l'utilisateur.</p>\n";
-echo "<p>Dans le cas d'une authentification externe (LDAP ou SSO), aucun mot de passe n'est stocké dans la base de données de Gepi.</p>\n";
-echo "<p>Si vous paramétrez un accès LDAP en écriture, les mots de passe des utilisateurs pourront être modifiés directement à travers Gepi, même pour les modes LDAP et SSO. L'administrateur pourra également éditer les données de base de l'utilisateur (nom, prénom, email). Lorsque vous activez l'accès LDAP en écriture, assurez-vous que le paramétrage sur le serveur LDAP permet à l'utilisateur de connexion LDAP de modifier les champs login, mot de passe, nom, prénom et email.</p>\n";
-echo "<p>Si vous utilisez CAS, vous devez entrer les informations de configuration du serveur CAS dans le fichier /secure/config_cas.inc.php (un modèle de configuration se trouve dans le fichier /secure/config_cas.cfg).</p>\n";
-echo "<p>Si vous utilisez l'authentification sur serveur LDAP, ou bien que vous activez l'accès LDAP en écriture, vous devez renseigner le fichier /secure/config_ldap.inc.php avec les informations nécessaires pour se connecter au serveur (un modèle se trouve dans /secure/config_ldap.cfg).</p>\n";
+echo "<p>Dans le cas d'une authentification externe (<em>LDAP ou SSO</em>), aucun mot de passe n'est stocké dans la base de données de Gepi.</p>\n";
+echo "<p>Si vous paramétrez un accès LDAP en écriture, les mots de passe des utilisateurs pourront être modifiés directement à travers Gepi, même pour les modes LDAP et SSO. L'administrateur pourra également éditer les données de base de l'utilisateur (<em>nom, prénom, email</em>). Lorsque vous activez l'accès LDAP en écriture, assurez-vous que le paramétrage sur le serveur LDAP permet à l'utilisateur de connexion LDAP de modifier les champs login, mot de passe, nom, prénom et email.</p>\n";
+echo "<p>Si vous utilisez CAS, vous devez entrer les informations de configuration du serveur CAS dans le fichier /secure/config_cas.inc.php (<em>un modèle de configuration se trouve dans le fichier /secure/modeles/config_cas-modele.inc.php</em>).</p>\n";
+echo "<p>Si vous utilisez l'authentification sur serveur LDAP, ou bien que vous activez l'accès LDAP en écriture, vous devez renseigner le fichier /secure/config_ldap.inc.php avec les informations nécessaires pour se connecter au serveur (<em>un modèle se trouve dans /secure/modeles/config_ldap-modele.inc.php</em>).</p>\n";
 echo "<form action=\"options_connect.php\" name=\"form_auth\" method=\"post\">\n";
 echo add_token_field();
 
@@ -389,7 +565,7 @@ echo "<br /><input type='radio' name='auth_sso' value='lemon' id='label_3'";
 if (getSettingValue("auth_sso")=='lemon') echo " checked ";
 echo " /> <label for='label_3' style='cursor: pointer;'>LemonLDAP</label>\n";
 echo "</p>\n";
-echo "<p>Remarque : les changements n'affectent pas les sessions en cours.";
+echo "<p><em>Remarque&nbsp;:</em> les changements n'affectent pas les sessions en cours.";
 
 //on va voir si il y a simplesaml de configuré
 if (file_exists(dirname(__FILE__).'/../lib/simplesaml/metadata/saml20-idp-hosted.php')) {
@@ -398,9 +574,9 @@ if (file_exists(dirname(__FILE__).'/../lib/simplesaml/metadata/saml20-idp-hosted
 	if (getSettingValue("gepiEnableIdpSaml20")=='yes') echo " checked ";
 	echo " /> <label for='gepiEnableIdpSaml20' style='cursor: pointer;'>Fournir une identification SAML 2.0</label>\n";
 	echo "<p>\n";
-	echo "<label for='sacocheUrl' style='cursor: pointer;'>Adresse du service qui va se connecter si possible en https (exemple : https://localhost/mon-appli) </label>\n";
+	echo "<label for='sacocheUrl' style='cursor: pointer;'>Adresse du service qui va se connecter si possible en https (<em>exemple : https://localhost/mon-appli</em>) </label>\n";
 	echo "<input type='text' size='60' name='sacocheUrl' value='".getSettingValue("sacocheUrl")."' id='sacocheUrl' />\n<br/>";
-	echo "<label for='sacoche_base' style='cursor: pointer;'>Numéro de base sacoche (laisser vide si votre instalation de sacoche est mono établissement)</label>\n";
+	echo "<label for='sacoche_base' style='cursor: pointer;'>Numéro de base sacoche (<em>laisser vide si votre instalation de sacoche est mono établissement</em>)</label>\n";
 	echo "<input type='text' size='5' name='sacoche_base' value='".getSettingValue("sacoche_base")."' id='sacoche_base' />\n<br/>";
 	echo 'pour une configuration manuelle, modifier le fichier /lib/simplesaml/metadate/saml20-sp-remote.php';
         try {
@@ -461,7 +637,7 @@ echo "</p>\n";
 echo "<p><input type='checkbox' name='sso_scribe' value='yes' id='label_sso_scribe'";
 if (getSettingValue("sso_scribe")=='yes' && $ldap_setup_valid) echo " checked ";
 if (!$ldap_setup_valid) echo " disabled";
-echo " /> <label for='label_sso_scribe' style='cursor: pointer;'>Utilisation avec l'annuaire LDAP de Scribe NG, versions 2.2 et supérieures (permet l'import à la volée de données plus complètes lorsque cet ENT est utilisé et que l'option 'Import à la volée', ci-dessus, est cochée).";
+echo " /> <label for='label_sso_scribe' style='cursor: pointer;'>Utilisation avec l'annuaire LDAP de Scribe NG, versions 2.2 et supérieures (<em>permet l'import à la volée de données plus complètes lorsque cet ENT est utilisé et que l'option 'Import à la volée', ci-dessus, est cochée</em>).";
 if (!$ldap_setup_valid) echo " <em>(sélection impossible : le fichier /secure/config_ldap.inc.php n'est pas présent)</em>\n";
 echo "</label>\n";
 echo "</p>\n";
@@ -491,7 +667,7 @@ echo "</p>\n";
 
 echo "<p><input type='checkbox' name='sso_display_portail' value='yes' id='label_sso_display_portail'";
 if ($gepiSettings['sso_display_portail'] == 'yes') echo " checked ";
-echo " /> <label for='label_sso_display_portail' style='cursor: pointer;'>Sessions SSO uniquement : afficher un lien vers un portail (vous devez renseigner le champ ci-dessous).";
+echo " /> <label for='label_sso_display_portail' style='cursor: pointer;'>Sessions SSO uniquement : afficher un lien vers un portail (<em>vous devez renseigner le champ ci-dessous</em>).";
 echo "</label>\n";
 echo "</p>\n";
 
@@ -502,7 +678,7 @@ echo "</p>\n";
 
 echo "<p><input type='checkbox' name='sso_hide_logout' value='yes' id='label_sso_hide_logout'";
 if ($gepiSettings['sso_hide_logout'] == 'yes') echo " checked='checked' ";
-echo " /> <label for='label_sso_hide_logout' style='cursor: pointer;'>Sessions SSO uniquement : masquer le lien de déconnexion (soyez sûr que l'utilisateur dispose alors d'un moyen alternatif de se déconnecter).";
+echo " /> <label for='label_sso_hide_logout' style='cursor: pointer;'>Sessions SSO uniquement : masquer le lien de déconnexion (<em>soyez sûr que l'utilisateur dispose alors d'un moyen alternatif de se déconnecter</em>).";
 echo "</label>\n";
 echo "</p>\n";
 
@@ -523,7 +699,7 @@ echo "</p>\n";
 
 echo "<br/>\n";
 echo "<p>\n";
-echo "<label for='login_sso_url' style='cursor: pointer;'>Fichier d'identification SSO alternatif (à utiliser à la place de login_sso.php) : </label>\n";
+echo "<label for='login_sso_url' style='cursor: pointer;'>Fichier d'identification SSO alternatif (<em>à utiliser à la place de login_sso.php</em>) : </label>\n";
 echo "<input type='text' size='60' name='login_sso_url' value='".getSettingValue('login_sso_url')."' id='login_sso_url' />\n";
 
 echo "</p>\n";
@@ -598,6 +774,23 @@ echo add_token_field();
 echo "<center><input type=\"submit\" name=\"valid_sup_logs\" value=\"Valider\" onclick=\"return confirmlink(this, 'Êtes-vous sûr de vouloir supprimer tout l\'historique du journal de connexion ?', 'Confirmation')\" /></center>\n";
 echo "<input type=hidden name=mode_navig value='$mode_navig' />\n";
 echo "</form><br/>\n";
+
+?>
+<hr class="header" style="margin-top: 32px; margin-bottom: 24px;"/>
+<h3 class='gepi'>Suppression d'une partie des entrées du journal de connexion</h3>
+<?php
+
+echo "<form action=\"options_connect.php\" method=\"post\" id='form_suppr_connexions'>\n";
+echo add_token_field();
+echo "<center>\n";
+echo "<input type=submit value=\"Supprimer les journaux de connexions\" />\n";
+include("../lib/calendrier/calendrier.class.php");
+$cal = new Calendrier("form_suppr_abs", "date_limite");
+echo " antérieurs au <input type='text' name='date_limite' id='date_limite' size='10' value='$jour/$mois/$annee' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" title=\"Vous pouvez modifier la date à l'aide des flèches Up et Down du pavé de direction.\" />\n";
+echo "<a href=\"#calend\" onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>";
+echo "</center>\n";
+echo "<input type='hidden' name='clean_log_old' value='y' />\n";
+echo "</form><br />\n";
 
 require("../lib/footer.inc.php");
 ?>

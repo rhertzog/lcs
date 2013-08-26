@@ -27,6 +27,10 @@
 			<img src="<?php echo $tbs_bouton_taille;?>/images/down.png" alt='Afficher le bandeau' title='Afficher le bandeau' />
 		</a>
 
+	<?php
+		maintien_de_la_session();
+	?>
+
 	<!-- Témoin de contact du serveur -->
 	<?php
 		if($tbs_aff_temoin_check_serveur=='y') {
@@ -56,24 +60,24 @@
 
 <div class="bandeau_colonne" id="bd_colonne_droite">
 	<!-- Nom prénom -->
-		<p id='bd_nom'>
+		<p id='bd_nom' title="<?php echo $tbs_nom_prenom_statut;?>">
 			<?php echo $tbs_nom_prenom; ?>
 		</p>
 	
 	<!-- statut utilisateur -->
 		<?php
 			if (count($tbs_statut)) {
-				foreach ($tbs_statut as $value) {	
+				foreach ($tbs_statut as $value) {
 					echo "
 	<p>
-		<span class='$value[classe]'>
-			$value[texte]
+		<span class='".$value['classe']."'>
+			".$value['texte']."
 					";
 					if (count($donnees_enfant)) {
-						foreach ($donnees_enfant as $value2) {	
+						foreach ($donnees_enfant as $value2) {
 							echo "
 				
-						$value2[nom] (<em>$value2[classe]</em>)
+						".$value2['nom']." (<em>".$value2['classe']."</em>)
 							";
 						}
 						unset($value2);
@@ -105,6 +109,33 @@
 	<!-- 	menu accueil -->
 	<ol>
 		<?php
+
+			if((getSettingAOui('active_mod_alerte'))&&(in_array($_SESSION['statut'], array('professeur', 'administrateur', 'scolarite', 'cpe')))) {
+				if(isset($_SERVER['SCRIPT_NAME'])) {
+					// Pour éviter de faire apparaitre le témoin de message sur des pages présentées lors des conseils de classe:
+					$tab_pages_temoin_fixe_messagerie_exclu=array("/mod_alerte/form_message.php", "/visualisation/", "/bulletin/bull_index.php", "/saisie/saisie_avis", "/prepa_conseil/index3.php", "/prepa_conseil/edit_limite.php");
+					$cpt_tab_pages_temoin_fixe_messagerie_exclu=0;
+					for($loop=0;$loop<count($tab_pages_temoin_fixe_messagerie_exclu);$loop++) {
+						if(preg_match("@$tab_pages_temoin_fixe_messagerie_exclu[$loop]@", $_SERVER['SCRIPT_NAME'])) {
+							$cpt_tab_pages_temoin_fixe_messagerie_exclu++;
+							break;
+						}
+					}
+					if($cpt_tab_pages_temoin_fixe_messagerie_exclu==0) {
+						echo "
+	<li class='ligne_premier_menu'>".affichage_temoin_messages_recus()."
+	</li>
+						";
+					}
+					else {
+						echo "
+	<li class='ligne_premier_menu'>".affichage_temoin_messages_recus("header_seul")."
+	</li>
+						";
+					}
+				}
+			}
+
 			if (count($tbs_premier_menu)) {
 				foreach ($tbs_premier_menu as $value) {
 					if ("$value[texte]"!="") {
@@ -325,4 +356,5 @@
 	</p>
 <?php
 			}
+	echo "<div id='temoin_messagerie_non_vide' style='position:fixed; right:1em; top:300px;'></div>\n";
 ?>

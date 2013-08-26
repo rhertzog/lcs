@@ -124,7 +124,6 @@ if (!checkAccess()) {
     die();
 }
 
-
 unset ($_SESSION['order_by']);
 $test_https = 'y'; // pour ne pas avoir à refaire le test si on a besoin de l'URL complète (rss)
 if (!isset($_SERVER['HTTPS'])
@@ -151,11 +150,26 @@ if($_SESSION['statut']=='professeur'){
 	//$_SERVER['HTTP_REFERER']=	https://127.0.0.1/steph/gepi-trunk/accueil_simpl_prof.php
 	//$_SERVER['REQUEST_URI']=	/steph/gepi-trunk/accueil.php
 	if((isset($_SERVER['HTTP_REFERER']))&&(preg_match("#$gepiPath/accueil_simpl_prof.php$#",$_SERVER['HTTP_REFERER']))&&(isset($_SERVER['REQUEST_URI']))&&($_SERVER['REQUEST_URI']=="$gepiPath/accueil.php")) {
-		// On ne va accéder à l'accueil.php classique
+		// On va accéder à l'accueil.php classique
 	}
 	else {
-		if($accueil_simpl=="y"){
-			header("Location: ./accueil_simpl_prof.php");
+		if($accueil_simpl=="y") {
+			if (!check_user_temp_directory()) {
+				$_SESSION['user_temp_directory']='n';
+			}
+			else {
+				$_SESSION['user_temp_directory']='y';
+			}
+
+			$msg=isset($_POST['msg']) ? $_POST['msg'] : (isset($_GET['msg']) ? $_GET['msg'] : NULL);
+
+			if(isset($msg)) {
+				header("Location: ./accueil_simpl_prof.php?msg=$msg");
+			}
+			else {
+				header("Location: ./accueil_simpl_prof.php");
+			}
+			die();
 		}
 	}
 }
@@ -251,7 +265,7 @@ Veuillez vérifier que le répertoire /temp de Gepi est accessible en écriture 
 
     // * affichage du nombre de connecté *
     // compte le nombre d'enregistrement dans la table
-	$sql = "SELECT login FROM log WHERE END > now()";
+	$sql = "SELECT u.login, l.END FROM log l, utilisateurs u WHERE u.login=l.login AND l.END > now() ORDER BY u.statut, u.nom, u.prenom;";
 	$res = sql_query($sql);
 	$afficheAccueil->nb_connect = sql_count($res);
 	if(mysql_num_rows($res)>1) {
@@ -259,9 +273,10 @@ Veuillez vérifier que le répertoire /temp de Gepi est accessible en écriture 
 		$alt=1;
 		while($lig_log=mysql_fetch_object($res)) {
 			$sql="SELECT nom,prenom,statut,email,login FROM utilisateurs WHERE login='$lig_log->login';";
+			//echo "$sql<br />";
 			$res_pers=mysql_query($sql);
 			if(mysql_num_rows($res)==0) {
-			  $afficheAccueil->nom_connecte[]=array("style"=>'rouge',"courriel"=>"","texte"=>$lig_log->LOGIN,"statut"=>"???");
+			  $afficheAccueil->nom_connecte[]=array("style"=>'rouge',"courriel"=>"","texte"=>$lig_log->LOGIN,"statut"=>"???","end"=>$lig_log->END);
 			}else{
 				$lig_pers=mysql_fetch_object($res_pers);
 				$alt=$alt*(-1);
@@ -270,14 +285,14 @@ Veuillez vérifier que le répertoire /temp de Gepi est accessible en écriture 
 					$res_resp=mysql_query($sql);
 					if(mysql_num_rows($res_resp)!=0) {
 						$lig_resp=mysql_fetch_object($res_resp);
-						$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login,"pers_id"=>$lig_resp->pers_id);
+						$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login,"pers_id"=>$lig_resp->pers_id,"end"=>$lig_log->END);
 					}
 					else {
-						$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login);
+						$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login,"end"=>$lig_log->END);
 					}
 				}
 				else {
-					$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login);
+					$afficheAccueil->nom_connecte[]=array("style"=>'lig'.$alt,"courriel"=>$lig_pers->email,"texte"=>my_strtoupper($lig_pers->nom)." ".casse_mot($lig_pers->prenom,'majf2'),"statut"=>$lig_pers->statut,"login"=>$lig_pers->login,"end"=>$lig_log->END);
 				}
 			}
 		}

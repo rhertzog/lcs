@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
+ * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Gabriel Fischer
  *
  * This file is part of GEPI.
  *
@@ -519,33 +519,38 @@ if (empty($groups)) {
 }
 	$a = 1;
 foreach($groups as $group) {
-        //echo "<b>";
-        if ($group["id"] == $current_group["id"]) {
-           echo "<p style=\"background-color: silver; padding: 2px; border: 1px solid black; font-weight: bold;\">" . $group["description"] . "&nbsp;-&nbsp;(";
-            $str = null;
-            foreach ($group["classes"]["classes"] as $classe) {
-                $str .= $classe["classe"] . ", ";
-            }
-            $str = mb_substr($str, 0, -2);
-            echo $str . ")&nbsp;</p>\n";
-        } else {
-        	echo "<span style=\"font-weight: bold;\">";
-           echo "<a href=\"index.php?id_groupe=". $group["id"] ."&amp;year=$year&amp;month=$month&amp;day=$day&amp;edit_devoir=$edit_devoir\">";
-           echo $group["name"] . "&nbsp;-&nbsp;(";
-            $str = null;
-            foreach ($group["classes"]["classes"] as $classe) {
-                $str .= $classe["classe"] . ", ";
-            }
-            $str = mb_substr($str, 0, -2);
-            echo $str . ")</a>&nbsp;</span>\n";
-        }
-        //echo "</b>\n";
-        if ($a == 2) {
-        	echo "<br />\n";
-        	$a = 1;
-        } else {
+	$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='".$group['id']."' AND domaine='cahier_texte' AND visible='n';";
+	//echo "$sql<br />\n";
+	$test_grp_visib=mysql_query($sql);
+	if(mysql_num_rows($test_grp_visib)==0) {
+		//echo "<b>";
+		if ($group["id"] == $current_group["id"]) {
+		   echo "<p style=\"background-color: silver; padding: 2px; border: 1px solid black; font-weight: bold;\">" . $group["description"] . "&nbsp;-&nbsp;(";
+			$str = null;
+			foreach ($group["classes"]["classes"] as $classe) {
+				$str .= $classe["classe"] . ", ";
+			}
+			$str = mb_substr($str, 0, -2);
+			echo $str . ")&nbsp;</p>\n";
+		} else {
+			echo "<span style=\"font-weight: bold;\">";
+		   echo "<a href=\"index.php?id_groupe=". $group["id"] ."&amp;year=$year&amp;month=$month&amp;day=$day&amp;edit_devoir=$edit_devoir\">";
+		   echo $group["name"] . "&nbsp;-&nbsp;(";
+			$str = null;
+			foreach ($group["classes"]["classes"] as $classe) {
+				$str .= $classe["classe"] . ", ";
+			}
+			$str = mb_substr($str, 0, -2);
+			echo $str . ")</a>&nbsp;</span>\n";
+		}
+		//echo "</b>\n";
+		if ($a == 2) {
+			echo "<br />\n";
+			$a = 1;
+		} else {
 			$a = 2;
 		}
+	}
 }
 // Fin Affichage des différents groupes du professeur
 // **********************************************
@@ -578,10 +583,10 @@ if ($id_groupe != null) {
 	if ($delai > 0) {
 		$cr_cours = "<p style=\"border: 1px solid grey; background-color: ".$color_fond_notices["c"]."; font-weight: bold;\">
 			<a href=\"index.php?year=$year&amp;month=$month&amp;day=$day&amp;id_groupe=" . $current_group["id"] ."\" title=\"Cr&eacute;er/modifier les comptes rendus de s&eacute;ance de cours\">
-			Comptes rendus de séance</a></p>\n";
+			Passer à la saisie des<br />Comptes rendus de séance</a></p>\n";
 		$travaux_perso = "<p style=\"border: 1px solid grey; background-color: ".$color_fond_notices["t"]."; font-weight: bold;\">
 			<a href=\"index.php?edit_devoir=yes&amp;year=$year&amp;month=$month&amp;day=$day&amp;id_groupe=". $current_group["id"] ."\" title=\"Cr&eacute;er/modifier les notifications de travaux personnels &agrave; faire\">
-			Travaux personnels à effectuer</a></p>\n";
+			Passer à la saisie des<br />Travaux personnels à effectuer</a></p>\n";
 		// Si la notice d'info est en modification, on affiche les deux liens
 		if (isset($info)) {
 			echo $cr_cours.$travaux_perso;
@@ -1036,6 +1041,10 @@ if (mysql_num_rows($appel_cahier_texte_liste) > 1) {
 	  $contenu ='';
   }
 }
+
+echo "<div style=\"position:absolute;top:310px;left:30%;border:2px solid black;background-color:".$color_fond_notices[$type_couleur].";width:610px;height:20px;text-align:center;\">
+	<span style='font-weight:bold'>Saisie ".(($type_couleur == "t") ? "des Travaux personnels à effectuer" : "du compte-rendu de séance")."</span>
+</div>\n";
 
 // ======================= Correctif Pascal Fautrero : permet d'afficher la fenêtre de saisie dans une fenêtre flottante
 
