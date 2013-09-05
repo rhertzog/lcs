@@ -1,3 +1,9 @@
+lcs-pla (2.4.9.1) Lcs; urgency=low
+
+  * update to PhpLdapAdmin 1.2.3
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 05 Sep 2013 15:54:17 +0200
+
 lcs-pla (2.4.9) Lcs; urgency=low
 
   * remove tilde
