@@ -189,7 +189,7 @@ class PMA_NavigationHeader
         // if we have chosen server
         if ($GLOBALS['server'] != 0) {
             // Logout for advanced authentication
-            if ($GLOBALS['cfg']['Server']['auth_type'] != 'config' &&  !defined('AUTHLCS')) {
+            if ($GLOBALS['cfg']['Server']['auth_type'] != 'config' &&  ! defined('AUTHLCS')) {
                 $link  = 'index.php?' . $GLOBALS['url_query'];
                 $link .= '&amp;old_usr=' . urlencode($GLOBALS['PHP_AUTH_USER']);
                 $retval .= $this->_getLink(

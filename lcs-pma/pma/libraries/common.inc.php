@@ -32,7 +32,7 @@
  */
 
 /**
- * block attempts to directly run this script 
+ * block attempts to directly run this script
  */
 if (getcwd() == dirname(__FILE__)) {
     die('Attack stopped');
@@ -201,7 +201,8 @@ $variables_whitelist = array (
     'error_handler',
     'PMA_PHP_SELF',
     'variables_whitelist',
-    'key','_LCS'
+    'key',
+    '_LCS'
 );
 
 foreach (get_defined_vars() as $key => $value) {
@@ -749,11 +750,6 @@ if (@file_exists($_SESSION['PMA_Theme']->getLayoutFile())) {
 }
 
 if (! defined('PMA_MINIMUM_COMMON')) {
-    if (! defined('PMA_BYPASS_GET_INSTANCE')) {
-        // get a dummy object to ensure that the class is instanciated
-        PMA_Response::getInstance();
-    }
-
     /**
      * Character set conversion.
      */
