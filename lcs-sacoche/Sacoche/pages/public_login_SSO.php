@@ -168,7 +168,7 @@ if($connexion_mode=='cas')
       // class
       if (isset($trace['class']))
       {
-        $str_traces .= $trace['class'].' -> ';
+        $str_traces .= $trace['class'].' :->: ';
         unset($trace['class']);
       }
 
@@ -338,56 +338,61 @@ if($connexion_mode=='cas')
     {
       exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS sont anormaux (connexion_mode vaut "'.$connexion_mode.'" ; connexion_departement vaut "'.$connexion_departement.'" ; connexion_nom vaut "'.$connexion_nom.'") !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
     }
+    // TEST À SUPPRIMER RENTRÉE 2013 QUAND LES CAS PERSO SERONT AUSSI CONCERNÉS - PRENDRA AUSSI EN COMPTE LES CAS À SOUS-DOMAINE VARIABLE, CE QUI N'EST PAS TESTÉ ACTUELLEMENT
     if($connexion_nom=='perso')
     {
-      foreach($tab_serveur_cas as $tab_cas_param)
-      {
-        $is_param_defaut_identiques = (phpCAS::getServerLoginURL()==$tab_cas_param['serveur_url_login']) ? TRUE : FALSE ;
-        $is_param_force_identiques  = (phpCAS::getServerLoginURL()=='https://'.$tab_cas_param['serveur_host'].':'.$tab_cas_param['serveur_port'].'/'.$tab_cas_param['serveur_root'].'/login') ? TRUE : FALSE ;
-        if( $is_param_defaut_identiques || $is_param_force_identiques )
-        {
-          exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS personnalisés sont ceux d\'un ENT référencé !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
-        }
-      }
+      // RETIRÉ DURANT LA SESSION 2013-2014 POUR NE PAS POSER PB AUX ÉTABLISSEMENTS AUXQUEL CELA N'A PAS ÉTÉ ANNONCÉ
+      // foreach($tab_serveur_cas as $cas_nom => $tab_cas_param)
+      // {
+        // if($cas_nom)
+        // {
+          // $is_param_defaut_identiques = ( (strpos($cas_serveur_host,$tab_cas_param['serveur_host_domain'])!==FALSE) && ($cas_serveur_port==$tab_cas_param['serveur_port']) && ($cas_serveur_root==$tab_cas_param['serveur_root']) ) ? TRUE : FALSE ;
+          // $is_param_force_identiques  = ( ($cas_serveur_url_login!='') && ( ($cas_serveur_url_login==$tab_cas_param['serveur_url_login']) || (strpos($cas_serveur_url_login,$tab_cas_param['serveur_host_domain'].':'.$tab_cas_param['serveur_port'].'/'.$tab_cas_param['serveur_root'])!==FALSE) ) ) ? TRUE : FALSE ;
+          // if( $is_param_defaut_identiques || $is_param_force_identiques )
+          // {
+            // exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS personnalisés sont ceux d\'un ENT référencé !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
+          // }
+        // }
+      // }
     }
     else
     {
       $tab_info = $tab_connexion_info[$connexion_mode][$connexion_ref];
-      if( ($tab_info['serveur_host']!=$cas_serveur_host) || ($tab_info['serveur_port']!=$cas_serveur_port) || ($tab_info['serveur_root']!=$cas_serveur_root) || ($tab_info['serveur_url_login']!=$cas_serveur_url_login) || ($tab_info['serveur_url_logout']!=$cas_serveur_url_logout) || ($tab_info['serveur_url_validate']!=$cas_serveur_url_validate) )
+      if( (strpos($cas_serveur_host,$tab_info['serveur_host_domain'])===FALSE) || ($tab_info['serveur_port']!=$cas_serveur_port) || ($tab_info['serveur_root']!=$cas_serveur_root) || ($tab_info['serveur_url_login']!=$cas_serveur_url_login) || ($tab_info['serveur_url_logout']!=$cas_serveur_url_logout) || ($tab_info['serveur_url_validate']!=$cas_serveur_url_validate) )
       {
         exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS enregistrés ne correspondent pas à ceux attendus pour la référence "'.$connexion_ref.'" !<br />Un administrateur doit revalider la sélection depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
       }
-    }
-    if(!is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT))
-    {
-      exit_error( 'Fichier manquant' /*titre*/ , 'Le fichier &laquo;&nbsp;<b>'.FileSystem::fin_chemin(CHEMIN_FICHIER_WS_SESAMATH_ENT).'</b>&nbsp;&raquo; (uniquement présent sur le serveur Sésamath) n\'a pas été détecté !' /*contenu*/ );
-    }
-    // Normalement les hébergements académiques ne sont pas concernés
-    require(CHEMIN_FICHIER_WS_SESAMATH_ENT); // Charge les tableaux   $tab_connecteurs_hebergement & $tab_connecteurs_convention
-    if( isset($tab_connecteurs_hebergement[$connexion_ref]) )
-    {
-      exit_error( 'Mode d\'authentification anormal' /*titre*/ , 'Le mode d\'authentification sélectionné ('.$connexion_nom.') doit être utilisé sur l\'hébergement académique dédié (département '.$connexion_departement.') !' /*contenu*/ );
-    }
-    // Pas besoin de vérification si convention signée à un plus haut niveau
-    if( !isset($tab_connecteurs_convention[$connexion_ref]) )
-    {
-      if(!DB_WEBMESTRE_PUBLIC::DB_tester_convention_active( $BASE , $connexion_nom ))
+      if(!is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT))
       {
-        exit_error( 'Absence de convention valide' /*titre*/ , 'L\'usage de ce service sur ce serveur est soumis à la signature et au règlement d\'une convention (depuis le '.CONVENTION_ENT_START_DATE_FR.').<br />Un administrateur doit effectuer les démarches depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].<br />Veuillez consulter <a href="'.SERVEUR_BLOG_CONVENTION.'" target="_blank">cet article du blog de l\'association Sésamath</a> pour comprendre les raisons de cette procédure.' /*contenu*/ );
+        exit_error( 'Fichier manquant' /*titre*/ , 'Le fichier &laquo;&nbsp;<b>'.FileSystem::fin_chemin(CHEMIN_FICHIER_WS_SESAMATH_ENT).'</b>&nbsp;&raquo; (uniquement présent sur le serveur Sésamath) n\'a pas été détecté !' /*contenu*/ );
       }
-    }
-    else
-    {
-      // Cas d'une convention signée par un partenaire ENT => Mettre en session l'affichage de sa communication en page d'accueil.
-      $partenaire_id = DB_WEBMESTRE_PUBLIC::DB_recuperer_id_partenaire_for_connecteur($connexion_ref);
-      $fichier_chemin = 'info_'.$partenaire_id.'.php';
-      if( $partenaire_id && is_file(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin) )
+      // Normalement les hébergements académiques ne sont pas concernés
+      require(CHEMIN_FICHIER_WS_SESAMATH_ENT); // Charge les tableaux   $tab_connecteurs_hebergement & $tab_connecteurs_convention
+      if( isset($tab_connecteurs_hebergement[$connexion_ref]) )
       {
-        require(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin);
-        $partenaire_logo_url = ($partenaire_logo_actuel_filename) ? URL_DIR_PARTENARIAT.$partenaire_logo_actuel_filename : URL_DIR_IMG.'auto.gif' ;
-        $partenaire_lien_ouvrant = ($partenaire_adresse_web) ? '<a href="'.html($partenaire_adresse_web).'" class="lien_ext">' : '' ;
-        $partenaire_lien_fermant = ($partenaire_adresse_web) ? '</a>' : '' ;
-        $_SESSION['CONVENTION_PARTENAIRE_ENT_COMMUNICATION'] = $partenaire_lien_ouvrant.'<span id="partenaire_logo"><img src="'.html($partenaire_logo_url).'" /></span><span id="partenaire_message">'.nl2br(html($partenaire_message)).'</span>'.$partenaire_lien_fermant.'<hr id="partenaire_hr" />';
+        exit_error( 'Mode d\'authentification anormal' /*titre*/ , 'Le mode d\'authentification sélectionné ('.$connexion_nom.') doit être utilisé sur l\'hébergement académique dédié (département '.$connexion_departement.') !' /*contenu*/ );
+      }
+      // Pas besoin de vérification si convention signée à un plus haut niveau
+      if( isset($tab_connecteurs_convention[$connexion_ref]) )
+      {
+        // Cas d'une convention signée par un partenaire ENT => Mettre en session l'affichage de sa communication en page d'accueil.
+        $partenaire_id = DB_WEBMESTRE_PUBLIC::DB_recuperer_id_partenaire_for_connecteur($connexion_ref);
+        $fichier_chemin = 'info_'.$partenaire_id.'.php';
+        if( $partenaire_id && is_file(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin) )
+        {
+          require(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin);
+          $partenaire_logo_url = ($partenaire_logo_actuel_filename) ? URL_DIR_PARTENARIAT.$partenaire_logo_actuel_filename : URL_DIR_IMG.'auto.gif' ;
+          $partenaire_lien_ouvrant = ($partenaire_adresse_web) ? '<a href="'.html($partenaire_adresse_web).'" class="lien_ext">' : '' ;
+          $partenaire_lien_fermant = ($partenaire_adresse_web) ? '</a>' : '' ;
+          $_SESSION['CONVENTION_PARTENAIRE_ENT_COMMUNICATION'] = $partenaire_lien_ouvrant.'<span id="partenaire_logo"><img src="'.html($partenaire_logo_url).'" /></span><span id="partenaire_message">'.nl2br(html($partenaire_message)).'</span>'.$partenaire_lien_fermant.'<hr id="partenaire_hr" />';
+        }
+      }
+      else
+      {
+        if(!DB_WEBMESTRE_PUBLIC::DB_tester_convention_active( $BASE , $connexion_nom ))
+        {
+          exit_error( 'Absence de convention valide' /*titre*/ , 'L\'usage de ce service sur ce serveur est soumis à la signature et au règlement d\'une convention (depuis le '.CONVENTION_ENT_START_DATE_FR.').<br />Un courriel informatif a été envoyé à tous les contacts SACoche des établissements en juin 2013.<br />Un administrateur doit effectuer les démarches depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].<br />Veuillez consulter <a href="'.SERVEUR_BLOG_CONVENTION.'" target="_blank">cet article du blog de l\'association Sésamath</a> ainsi que <a href="'.SERVEUR_CARTE_ENT.'" target="_blank">cette documentation</a> pour davantage d\'explications.' /*contenu*/ );
+        }
       }
     }
   }

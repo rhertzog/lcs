@@ -106,6 +106,18 @@ class FileSystem
   // //////////////////////////////////////////////////
 
   /**
+   * Retourne le umask, qui peut ne pas être défini si procédure d'installation en cours ou fichier de constantes non encore MAJ.
+   * 
+   * @param string   $dossier
+   * @return array
+   */
+  private static function systeme_umask()
+  {
+    $masque = defined('SYSTEME_UMASK') ? SYSTEME_UMASK : '000' ;
+    return octdec($masque); // On ne peut pas passer une variable en octal et umask() accepte le format décimal (c'est juste que c'est moins lisible).
+  }
+
+  /**
    * Liste les noms des fichiers contenus dans un dossier, sans le contenu temporaire ou personnel.
    * 
    * @param string   $dossier
@@ -130,7 +142,7 @@ class FileSystem
       $ds = (substr($dossier,-1)==DS) ? '' : DS ;
       foreach($tab_fichier as $fichier_nom)
       {
-        unlink($dossier.$ds.$fichier_nom);
+        FileSystem::supprimer_fichier($dossier.$ds.$fichier_nom);
       }
     }
   }
@@ -190,7 +202,7 @@ class FileSystem
       $affichage .= '<label for="rien" class="valide">Dossier &laquo;&nbsp;<b>'.FileSystem::fin_chemin($dossier).'</b>&nbsp;&raquo; déjà en place.</label><br />'.NL;
       return TRUE;
     }
-    @umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
+    @umask(FileSystem::systeme_umask());
     $test = @mkdir($dossier);
     // Le dossier a-t-il bien été créé ?
     if(!$test)
@@ -230,6 +242,21 @@ class FileSystem
   }
 
   /**
+   * Supprimer un fichier, éventuellement après avoir testé son existence.
+   * 
+   * @param string   $fichier
+   * @param bool     $verif_exist
+   * @return void
+   */
+  public static function supprimer_fichier( $fichier , $verif_exist=FALSE )
+  {
+    if( (!$verif_exist) || is_file($fichier) )
+    {
+      unlink($fichier);
+    }
+  }
+
+  /**
    * Supprimer un dossier, après avoir effacé récursivement son contenu.
    * 
    * @param string   $dossier
@@ -250,7 +277,7 @@ class FileSystem
         }
         else
         {
-          unlink($chemin_contenu);
+          FileSystem::supprimer_fichier($chemin_contenu);
         }
       }
       rmdir($dossier);
@@ -300,7 +327,7 @@ class FileSystem
    */
   public static function ecrire_fichier($fichier_chemin,$fichier_contenu,$file_append=0)
   {
-    @umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
+    @umask(FileSystem::systeme_umask());
     $test_ecriture = @file_put_contents($fichier_chemin,$fichier_contenu,$file_append);
     if($test_ecriture===FALSE)
     {
@@ -318,7 +345,7 @@ class FileSystem
    */
   public static function ecrire_fichier_si_possible($fichier_chemin,$fichier_contenu)
   {
-    @umask(0000); // Met le chmod à 666 - 000 = 666 pour les fichiers prochains fichiers créés (et à 777 - 000 = 777 pour les dossiers).
+    @umask(FileSystem::systeme_umask());
     $test_ecriture = @file_put_contents($fichier_chemin,$fichier_contenu);
     return ($test_ecriture===FALSE) ? FALSE : TRUE ;
   }
@@ -333,7 +360,7 @@ class FileSystem
   public static function ecrire_fichier_index($dossier_chemin,$obligatoire=TRUE)
   {
     $ds = (substr($dossier_chemin,-1)==DS) ? '' : DS ;
-    $fichier_chemin  = $dossier_chemin.ds.'index.htm';
+    $fichier_chemin  = $dossier_chemin.$ds.'index.htm';
     $fichier_contenu = 'Circulez, il n\'y a rien à voir par ici !';
     if($obligatoire) return FileSystem::ecrire_fichier( $fichier_chemin , $fichier_contenu );
     else return FileSystem::ecrire_fichier_si_possible( $fichier_chemin , $fichier_contenu );
@@ -372,6 +399,7 @@ class FileSystem
       'FICHIER_TAILLE_MAX',
       'FICHIER_DUREE_CONSERVATION',
       'CHEMIN_LOGS_PHPCAS',
+      'SYSTEME_UMASK',
     );
     $fichier_contenu = '<?php'.NL;
     $fichier_contenu.= '// Informations concernant l\'hébergement et son webmestre (n°UAI uniquement pour une installation de type mono-structure)'.NL;
@@ -545,7 +573,7 @@ class FileSystem
         {
           if(is_file($chemin_contenu))
           {
-            unlink($chemin_contenu);
+            FileSystem::supprimer_fichier($chemin_contenu);
           }
           else if( is_dir($chemin_contenu) && $with_sous_dossiers )
           {
@@ -572,21 +600,18 @@ class FileSystem
       FileSystem::ecrire_fichier($fichier_lock,'');
       // On verifie que certains sous-dossiers existent :
       $tab_sous_dossier = array(
-        CHEMIN_DOSSIER_DEVOIR ,          // n'a été ajouté qu'en mars 2012,
-        CHEMIN_DOSSIER_DEVOIR.DS.$BASE ,
-        CHEMIN_DOSSIER_OFFICIEL ,        // n'a été ajouté qu'en mai 2012,
-        CHEMIN_DOSSIER_OFFICIEL.DS.$BASE ,
-        CHEMIN_DOSSIER_PARTENARIAT ,     // n'a été ajouté qu'en juin 2013,
-        CHEMIN_DOSSIER_COOKIE.DS.$BASE , // a à un moment été oublié depuis le formulaire Sésamath
-        CHEMIN_DOSSIER_RSS.DS.$BASE ,    // a à un moment été oublié depuis le formulaire Sésamath
-        CHEMIN_DOSSIER_BADGE.DS.$BASE ,  // a été effacé pour certaines structures en août 2013
+        CHEMIN_DOSSIER_DEVOIR ,       // n'a été ajouté qu'en mars 2012,
+        CHEMIN_DOSSIER_DEVOIR.$BASE.DS ,
+        CHEMIN_DOSSIER_OFFICIEL ,     // n'a été ajouté qu'en mai 2012,
+        CHEMIN_DOSSIER_OFFICIEL.$BASE.DS ,
+        CHEMIN_DOSSIER_PARTENARIAT ,  // n'a été ajouté qu'en juin 2013,
       );
       foreach($tab_sous_dossier as $sous_dossier)
       {
         if(!is_dir($sous_dossier))
         {
           FileSystem::creer_dossier($sous_dossier);
-          FileSystem::ecrire_fichier($sous_dossier.DS.'index.htm','Circulez, il n\'y a rien à voir par ici !');
+          FileSystem::ecrire_fichier($sous_dossier.'index.htm','Circulez, il n\'y a rien à voir par ici !');
         }
       }
       $nb_mois = (defined('FICHIER_DUREE_CONSERVATION')) ? FICHIER_DUREE_CONSERVATION : 36 ; // Une fois tous les devoirs ont été supprimés sans raison claire : nettoyage simultané avec une mise à jour ?
@@ -600,14 +625,14 @@ class FileSystem
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_BADGE.$BASE    , 481800     ); // Nettoyer ce dossier des fichiers antérieurs à 11 mois
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_COOKIE.$BASE   , 525600     ); // Nettoyer ce dossier des fichiers antérieurs à  1 an
       FileSystem::effacer_fichiers_temporaires(CHEMIN_DOSSIER_DEVOIR.$BASE   ,  43800*$nb_mois); // Nettoyer ce dossier des fichiers antérieurs à la date fixée par le webmestre (1 an par défaut)
-      unlink($fichier_lock);
+      FileSystem::supprimer_fichier($fichier_lock);
     }
     // Si le fichier témoin du nettoyage existe, on vérifie que sa présence n'est pas anormale (cela s'est déjà produit...)
     else
     {
       if( $_SERVER['REQUEST_TIME'] - filemtime($fichier_lock) > 30 )
       {
-        unlink($fichier_lock);
+        FileSystem::supprimer_fichier($fichier_lock);
       }
     }
   }

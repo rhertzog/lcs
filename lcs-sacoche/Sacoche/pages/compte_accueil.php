@@ -45,6 +45,7 @@ if(!(isset($_SESSION['USER_PARAM_ACCUEIL'])))
 if($_SESSION['USER_PROFIL_TYPE']=='administrateur')
 {
   $alerte_novice = FALSE ;
+  $info_rentree  = FALSE ;
   if(!DB_STRUCTURE_ADMINISTRATEUR::compter_matieres_etabl())
   {
     $tab_accueil['alert'] .= '<p class="danger">Aucune matière n\'est choisie pour l\'établissement ! <a href="./index.php?page=administrateur_etabl_matiere">Gestion des matières.</a></p>';
@@ -62,11 +63,13 @@ if($_SESSION['USER_PROFIL_TYPE']=='administrateur')
   }
   if(DB_STRUCTURE_ADMINISTRATEUR::DB_compter_devoirs_annee_scolaire_precedente())
   {
-    $tab_accueil['alert'] .= '<p class="danger">Année scolaire précédente non archivée !<br />&nbsp;<br />Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>';
+    $tab_accueil['alert'] .= '<p class="danger">Année scolaire précédente non archivée ! Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>';
+    $info_rentree  = TRUE ;
   }
   if($alerte_novice)
   {
-    $tab_accueil['alert'] .= '<p><span class="manuel"><a class="pop_up" href="'.SERVEUR_DOCUMENTAIRE.'?fichier=support_administrateur__guide">DOC : Guide d\'un administrateur de <em>SACoche</em>.</a></span></p>';
+    // volontairement pas en pop-up mais dans un nouvel onglet
+    $tab_accueil['alert'] .= '<p><span class="manuel"><a class="lien_ext" href="'.SERVEUR_GUIDE_ADMIN.'">Guide de démarrage d\'un administrateur de <em>SACoche</em>.</a></span></p>';
   }
 }
 
@@ -119,9 +122,52 @@ if($_SESSION['USER_PROFIL_TYPE']=='parent')
 }
 elseif($_SESSION['USER_PROFIL_TYPE']=='administrateur')
 {
+  // Indication connexions SSO existantes si non choisies
+  $uai_departement = (int)substr($_SESSION['WEBMESTRE_UAI'],0,3);
+  if( $uai_departement && ($_SESSION['CONNEXION_MODE']=='normal') )
+  {
+    require(CHEMIN_DOSSIER_INCLUDE.'tableau_sso.php');
+    $tab_memo_ent_possible = array();
+    foreach($tab_connexion_mode as $connexion_mode => $mode_texte)
+    {
+      foreach($tab_connexion_info[$connexion_mode] as $connexion_ref => $tab_infos)
+      {
+        list($departement,$connexion_nom) = explode('|',$connexion_ref);
+        if( ($uai_departement==$departement) && $tab_infos['etat'] )
+        {
+          $tab_memo_ent_possible[$connexion_ref] = $connexion_nom;
+        }
+      }
+    }
+    $nb_ent_possibles = count($tab_memo_ent_possible);
+    if($nb_ent_possibles)
+    {
+      $mot_ent = ($nb_ent_possibles>1) ? 'des ENT' : 'de l\'ENT' ;
+      $texte_ent_possibles = 'Sur votre département <em>SACoche</em> peut utiliser l\'authentification '.$mot_ent.' <b>'.implode(' - ',$tab_memo_ent_possible).'</b> &rarr; <a href="./index.php?page=administrateur_etabl_connexion">Gestion du mode d\'identification.</a>';
+      if( IS_HEBERGEMENT_SESAMATH && CONVENTION_ENT_REQUISE && is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT) )
+      {
+        require(CHEMIN_FICHIER_WS_SESAMATH_ENT);
+        foreach($tab_memo_ent_possible as $connexion_ref => $connexion_nom)
+        {
+          list($departement,$connexion_nom) = explode('|',$connexion_ref);
+          if(isset($tab_connecteurs_convention[$connexion_ref]))
+          {
+            $texte_ent_possibles .= '<br /><a class="lien_ext" href="'.SERVEUR_CARTE_ENT.'">'.$tab_ent_convention_infos[$tab_connecteurs_convention[$connexion_ref]]['texte'].'</a>';
+          }
+        }
+      }
+      $tab_accueil['user'] .= '<p class="astuce">'.$texte_ent_possibles.'</p>';
+    }
+  }
   if(!$tab_accueil['alert'])
   {
-    $tab_accueil['user'] .= '<p><span class="manuel"><a class="pop_up" href="'.SERVEUR_DOCUMENTAIRE.'?fichier=support_administrateur__guide">DOC : Guide d\'un administrateur de SACoche.</a></span></p>';
+    // volontairement pas en pop-up mais dans un nouvel onglet
+    $tab_accueil['user'] .= '<p><span class="manuel"><a class="lien_ext" href="'.SERVEUR_GUIDE_ADMIN.'">Guide de démarrage d\'un administrateur de <em>SACoche</em>.</a></span></p>';
+  }
+  if( $info_rentree || test_periode_rentree() )
+  {
+    // volontairement pas en pop-up mais dans un nouvel onglet
+    $tab_accueil['user'] .= '<p><span class="manuel"><a class="lien_ext" href="'.SERVEUR_GUIDE_RENTREE.'">Guide de changement d\'année d\'un administrateur de <em>SACoche</em>.</a></span></p>';
   }
 }
 // infos adresse de connexion
@@ -151,17 +197,25 @@ if(!in_array($_SESSION['USER_PROFIL_TYPE'],array('webmestre','partenaire')))
   $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_messages_user_destinataire($_SESSION['USER_ID']);
   if(!empty($DB_TAB))
   {
+    // En attendant un éventuel textarea enrichi pour la saisie des messages (mais est-ce que ça ne risquerait pas de faire une page d'accueil folklorique ?), une petite fonction pour fabriquer des liens...
+    // Format attendu : [desciptif|adresse|target]
+    function make_lien($texte)
+    {
+      $masque_recherche = '#\[([^\|]+)\|([^\|]+)\|([^\|]*)\]#' ;
+      $masque_remplacement = '<a href="$2" target="$3">$1</a>';
+      return str_replace( array('target="_blank"','target=""') , array('class="lien_ext"','') , preg_replace( $masque_recherche , $masque_remplacement , $texte ) );
+    }
     foreach($DB_TAB as $key => $DB_ROW)
     {
       $findme = ','.$_SESSION['USER_ID'].',';
       $tab_accueil['messages'][$DB_ROW['message_id']] = array(
         'titre'   => 'Communication ('.html($DB_ROW['user_prenom']{0}.'. '.$DB_ROW['user_nom']).')',
-        'message' => nl2br(html($DB_ROW['message_contenu'])),
+        'message' => make_lien(nl2br(html($DB_ROW['message_contenu']))),
         'visible' => (strpos($DB_ROW['message_dests_cache'],$findme)===FALSE),
       );
     }
   }
-  elseif($_SESSION['USER_PROFIL_TYPE']!='administrateur')
+  if( (!count($tab_accueil['messages'])) && ($_SESSION['USER_PROFIL_TYPE']!='administrateur') )
   {
     $tab_accueil['ecolo'] = '<p class="b"><TG> Afin de préserver l\'environnement, n\'imprimer qu\'en cas de nécessité !</p><div>Enregistrer la version numérique d\'un document (grille, relevé, bilan) suffit pour le consulter, l\'archiver, le partager, &hellip;</div>';
   }
@@ -224,7 +278,7 @@ if($astuce_nombre)
 // Affichage
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$tab_msg_rubrique_masquee = array( 'user'=>'Message de bienvenue' , 'demandes'=>'Demandes d\'évaluations' , 'help'=>'Astuce du jour' , 'ecolo'=>'Protégeons l\'environnement' );
+$tab_msg_rubrique_masquee = array( 'user'=>'Informations d\'accueil' , 'demandes'=>'Demandes d\'évaluations' , 'help'=>'Astuce du jour' , 'ecolo'=>'Protégeons l\'environnement' );
 
 foreach($tab_accueil as $type => $contenu)
 {

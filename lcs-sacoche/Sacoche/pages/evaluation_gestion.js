@@ -1013,7 +1013,7 @@ $(document).ready
           {
             type : 'POST',
             url : 'ajax.php?page='+PAGE,
-            data : 'csrf='+CSRF+'&f_action=indiquer_eleves_deja'+'&f_description='+$('#f_description').val()+'&f_date_debut='+f_date_debut,
+            data : 'csrf='+CSRF+'&f_action=indiquer_eleves_deja'+'&f_description='+encodeURIComponent($('#f_description').val())+'&f_date_debut='+encodeURIComponent(f_date_debut),
             dataType : "html",
             error : function(jqXHR, textStatus, errorThrown)
             {
@@ -1637,7 +1637,7 @@ $(document).ready
         {
           $('button').prop('disabled',true);
           $('#ajax_msg_saisir').removeAttr("class").addClass("loader").html("En cours&hellip;");
-          // Grouper les saisies dans une variable unique afin d'éviter tout problème dû à une limitation du module "suhosin" (voir par exemple http://xuxu.fr/2008/12/04/nombre-de-variables-post-limite-ou-tronque).
+          // Grouper les saisies dans une variable unique afin d'éviter tout problème avec une limitation du module "suhosin" (voir par exemple http://xuxu.fr/2008/12/04/nombre-de-variables-post-limite-ou-tronque) ou "max input vars" généralement fixé à 1000.
           var f_notes = new Array();
           $("#table_saisir tbody input").each
           (
@@ -1656,7 +1656,7 @@ $(document).ready
             {
               type : 'POST',
               url : 'ajax.php?page='+PAGE,
-              data : 'csrf='+CSRF+'&f_action=enregistrer_saisie'+'&f_ref='+$("#saisir_ref").val()+'&f_date_fr='+$("#saisir_date_fr").val()+'&f_date_visible='+$("#saisir_date_visible").val()+'&f_fini='+$("#saisir_fini").val()+'&f_notes='+f_notes+'&f_description='+$("#saisir_description").val(),
+              data : 'csrf='+CSRF+'&f_action=enregistrer_saisie'+'&f_ref='+$("#saisir_ref").val()+'&f_date_fr='+$("#saisir_date_fr").val()+'&f_date_visible='+$("#saisir_date_visible").val()+'&f_fini='+$("#saisir_fini").val()+'&f_notes='+f_notes+'&f_description='+encodeURIComponent($("#saisir_description").val()),
               dataType : "html",
               error : function(jqXHR, textStatus, errorThrown)
               {
@@ -2055,7 +2055,7 @@ $(document).ready
           {
             type : 'POST',
             url : 'ajax.php?page='+PAGE,
-            data : 'csrf='+CSRF+'&f_action=retirer_document'+'&f_doc_objet='+objet+'&f_ref='+ref+'&f_doc_url='+url,
+            data : 'csrf='+CSRF+'&f_action=retirer_document'+'&f_doc_objet='+objet+'&f_ref='+ref+'&f_doc_url='+encodeURIComponent(url),
             dataType : "html",
             error : function(jqXHR, textStatus, errorThrown)
             {
@@ -2118,7 +2118,7 @@ $(document).ready
             {
               type : 'POST',
               url : 'ajax.php?page='+PAGE,
-              data : 'csrf='+CSRF+'&f_action=referencer_document'+'&f_doc_objet='+objet+'&f_ref='+ref+'&f_doc_url='+url,
+              data : 'csrf='+CSRF+'&f_action=referencer_document'+'&f_doc_objet='+objet+'&f_ref='+ref+'&f_doc_url='+encodeURIComponent(url),
               dataType : "html",
               error : function(jqXHR, textStatus, errorThrown)
               {

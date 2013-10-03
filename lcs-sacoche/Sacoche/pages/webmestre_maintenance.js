@@ -81,7 +81,7 @@ $(document).ready
     maj_label_versions();
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Traitement du formulaire principal
+    // Verrouillage de l'application
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Le formulaire qui va être analysé et traité en AJAX
@@ -177,11 +177,12 @@ $(document).ready
       etape_numero++;
       if(etape_numero==6)
       {
+        var tab_infos = etape_info.split('_#_');
         $('#ajax_maj').removeAttr("class").addClass("valide").html('Mise à jour terminée !');
-        $('#ajax_version_installee').html(etape_info);
+        $('#ajax_version_installee').html(tab_infos[0]);
         maj_label_versions();
         $('button').prop('disabled',false);
-        $.fancybox( { 'href':url_export_rapport_maj , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
+        $.fancybox( { 'href':tab_infos[1] , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
         initialiser_compteur();
         return false;
       }
@@ -246,7 +247,7 @@ $(document).ready
       {
         $('#ajax_verif_file_appli').removeAttr("class").addClass("valide").html('Vérification terminée !');
         $('button').prop('disabled',false);
-        $.fancybox( { 'href':url_export_rapport_verif_file_appli , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
+        $.fancybox( { 'href':etape_info , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
         initialiser_compteur();
         return false;
       }
@@ -296,49 +297,6 @@ $(document).ready
     );
 
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Vérification des droits en écriture
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    $('#bouton_droit').click
-    (
-      function()
-      {
-        $('button').prop('disabled',true);
-        $('#ajax_droit').removeAttr("class").addClass("loader").html("En cours&hellip;");
-        $.ajax
-        (
-          {
-            type : 'POST',
-            url : 'ajax.php?page='+PAGE,
-            data : 'csrf='+CSRF+'&f_action=verif_droits',
-            dataType : "html",
-            error : function(jqXHR, textStatus, errorThrown)
-            {
-              $('button').prop('disabled',false);
-              $('#ajax_droit').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
-              return false;
-            },
-            success : function(responseHTML)
-            {
-              $('button').prop('disabled',false);
-              if(responseHTML=='ok')
-              {
-                $('#ajax_droit').removeAttr("class").addClass("valide").html('Vérification terminée !');
-                $.fancybox( { 'href':url_export_rapport_droits , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
-                initialiser_compteur();
-              }
-              else
-              {
-                $('#ajax_droit').removeAttr("class").addClass("alerte").html(responseHTML);
-              }
-              return false;
-            }
-          }
-        );
-      }
-    );
-
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////
     // Vérification des dossiers additionnels par établissement
     // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -364,17 +322,18 @@ $(document).ready
             success : function(responseHTML)
             {
               $('button').prop('disabled',false);
-              if(responseHTML=='ok')
+              var tab_infos = responseHTML.split(']¤[');
+              if( (tab_infos.length!=2) || (tab_infos[0]!='') )
               {
-                $('#ajax_verif_dir_etabl').removeAttr("class").addClass("valide").html('Vérification terminée !');
-                $.fancybox( { 'href':url_export_rapport_verif_dir_etabl , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
-                initialiser_compteur();
+                $('#ajax_verif_dir_etabl').removeAttr("class").addClass("alerte").html(tab_infos[0]);
+                return false;
               }
               else
               {
-                $('#ajax_verif_dir_etabl').removeAttr("class").addClass("alerte").html(responseHTML);
+                $('#ajax_verif_dir_etabl').removeAttr("class").addClass("valide").html('Vérification terminée !');
+                $.fancybox( { 'href':tab_infos[1] , 'type':'iframe' , 'width':'80%' , 'height':'80%' , 'centerOnScroll':true } );
+                initialiser_compteur();
               }
-              return false;
             }
           }
         );

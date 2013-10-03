@@ -162,6 +162,7 @@ if (!function_exists('str_getcsv'))
     $a = explode($token, $t1);
     foreach($a as $k=>$v)
     {
+      $v = str_replace( $delimiter.$delimiter , $delimiter.' '.$delimiter , $v ); // Patch perso sinon les colonnes vides disparaissent
       if ( preg_match("/^{$delimiter}/", $v) || preg_match("/{$delimiter}$/", $v) )
       {
         $a[$k] = trim($v, $delimiter); $a[$k] = preg_replace("/$delimiter/", "$token", $a[$k]);
@@ -276,7 +277,7 @@ define('CHEMIN_FICHIER_CONFIG_INSTALL' , CHEMIN_DOSSIER_CONFIG.'constantes.php')
 define('CHEMIN_FICHIER_DEBUG_CONFIG'   , CHEMIN_DOSSIER_TMP.'debug.txt');
 define('CHEMIN_FICHIER_WS_LCS'         , CHEMIN_DOSSIER_WEBSERVICES.'import_lcs.php');
 define('CHEMIN_FICHIER_WS_ARGOS'       , CHEMIN_DOSSIER_WEBSERVICES.'argos_import.php');
-define('CHEMIN_FICHIER_WS_SESAMATH_ENT', CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_conventions.php');
+define('CHEMIN_FICHIER_WS_SESAMATH_ENT', CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_hebergements_conventions.php');
 
 // ============================================================================
 // Constantes de DEBUG
@@ -389,8 +390,9 @@ function getServerProtocole()
 
 function getServerPort()
 {
-  // Rien à indiquer si port 80 (protocole HTTP) ou 443 (protocole HTTPS)
-  return ( !isset($_SERVER['SERVER_PORT']) || in_array($_SERVER['SERVER_PORT'],array(80,443)) ) ? '' : ':'.$_SERVER['SERVER_PORT'] ;
+  global $HOST;
+  // Rien à indiquer si port 80 (protocole standard HTTP) ou 443 (protocole standard HTTPS) ou port déjà indiqué dans le HOST (les navigateurs indiquent le port dans le header Host de la requete http quand il est non standard comme la norme http1/1 le préconise http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23 mais le serveur web ne le file généralement pas à PHP dans HTTP_HOST)
+  return ( !isset($_SERVER['SERVER_PORT']) || in_array($_SERVER['SERVER_PORT'],array(80,443)) || strpos($HOST,':') ) ? '' : ':'.$_SERVER['SERVER_PORT'] ;
 }
 
 define('URL_BASE',getServerProtocole().$HOST.getServerPort());
@@ -452,7 +454,9 @@ define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');      // 
 define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt');     // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
 define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?fichier=cnil');           // URL de la page "CNIL (données personnelles)"
 define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?fichier=contact');        // URL de la page "Où échanger autour de SACoche ?"
-define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?fichier=guide_admin');    // URL de la page "Guide d'un administrateur de SACoche"
+define('SERVEUR_CARTE_ENT'      ,SERVEUR_PROJET.'/?fichier=ent');            // URL de la page "Avec quels ENT SACoche est-il interconnecté ?"
+define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?fichier=guide_admin');    // URL de la page "Guide de démarrage (administrateur de SACoche)"
+define('SERVEUR_GUIDE_RENTREE'  ,SERVEUR_PROJET.'/?fichier=guide_rentree');  // URL de la page "Guide de changement d'année (administrateur de SACoche)"
 define('SERVEUR_NEWS'           ,SERVEUR_PROJET.'/?fichier=news');           // URL de la page "Historique des nouveautés"
 define('SERVEUR_RSS'            ,SERVEUR_PROJET.'/_rss/rss.xml');            // URL du fichier comportant le flux RSS
 define('SERVEUR_BLOG_CONVENTION',SERVEUR_ASSO.'/blog/index.php/aM4');        // URL de la page expliquant les Conventions ENT
@@ -482,6 +486,7 @@ define('CODE_BREVET_EPREUVE_TOTAL' ,  255);
 define('COOKIE_STRUCTURE' ,'SACoche-etablissement' ); // nom du cookie servant à retenir l'établissement sélectionné, afin de ne pas à avoir à le sélectionner de nouveau, et à pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
 define('COOKIE_AUTHMODE'  ,'SACoche-mode-connexion'); // nom du cookie servant à retenir le dernier mode de connexion utilisé par un user connecté, afin de pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
 define('COOKIE_PARTENAIRE','SACoche-partenaire'    ); // nom du cookie servant à retenir le partenaire sélectionné, afin de ne pas à avoir à le sélectionner de nouveau (convention ENT sur serveur Sésamath uniquement).
+define('COOKIE_MEMOGET'   ,'SACoche-memoget'       ); // nom du cookie servant à retenir des paramètres multiples transmis en GET dans le cas où le service d'authentification externe en perd...
 
 // session
 define('SESSION_NOM','SACoche-session'); // Est aussi défini dans /_lib/SimpleSAMLphp/config/config.php
@@ -704,6 +709,24 @@ function exit_error( $titre , $contenu , $lien='accueil' )
   {
     echo str_replace('<br />',' ',$contenu);
   }
+  exit();
+}
+
+/*
+ * Rediriger le navigateur.
+ * 
+ * @param string $adresse   URL de la page vers laquelle rediriger
+ * @return void
+ */
+function exit_redirection($adresse)
+{
+  // Qqs header ajoutés par précaution car même si la redirection est indiquée comme étant temporaire, il semblent que certains navigateurs buguent en la mettant en cache.
+  header('Pragma: no-cache');
+  header('Cache-Control: must-revalidate, post-check=0, pre-check=0'); // IE n'aime pas "no-store" ni "no-cache".
+  header('Expires: 0');
+  // Cette fois-ci on y va
+  header('Status: 307 Temporary Redirect', TRUE, 307);
+  header('Location: '.$adresse);
   exit();
 }
 

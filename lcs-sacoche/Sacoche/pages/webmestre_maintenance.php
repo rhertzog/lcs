@@ -56,11 +56,6 @@ else
   $label_maj = '<label id="ajax_maj">&nbsp;</label>';
 }
 
-// Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var url_export_rapport_droits = "'.URL_DIR_EXPORT.'rapport_droits.php";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var url_export_rapport_maj    = "'.URL_DIR_EXPORT.'rapport_maj.php";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var url_export_rapport_verif_file_appli = "'.URL_DIR_EXPORT.'rapport_verif_file_appli.php";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var url_export_rapport_verif_dir_etabl  = "'.URL_DIR_EXPORT.'rapport_verif_dir_etabl.php";';
 ?>
 
 <p>
@@ -82,7 +77,6 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var url_export_rapport_verif_dir_etabl  = 
 <h2>Mise à jour automatique des fichiers</h2>
 
 <form action="#" method="post" id="form_maj"><fieldset>
-  <span class="tab"></span><button id="bouton_droit" type="button" class="parametre">Vérification des droits en écriture.</button><label id="ajax_droit">&nbsp;</label><br />
   <span class="tab"></span><button id="bouton_maj" type="button" class="parametre"<?php echo $disabled ?>>Lancer la mise à jour automatique.</button><?php echo $label_maj ?>
 </fieldset></form>
 

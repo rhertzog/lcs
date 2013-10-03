@@ -61,6 +61,7 @@ $(document).ready
         }
         else
         {
+          // Grouper les checkbox dans un champ unique afin d'éviter tout problème avec une limitation du module "suhosin" (voir par exemple http://xuxu.fr/2008/12/04/nombre-de-variables-post-limite-ou-tronque) ou "max input vars" généralement fixé à 1000.
           var f_listing_id = new Array(); $("#f_base input:checked").each(function(){f_listing_id.push($(this).val());});
         }
         // on envoie
@@ -71,7 +72,7 @@ $(document).ready
           {
             type : 'POST',
             url : 'ajax.php?page='+PAGE,
-            data : 'csrf='+CSRF+'&f_action=envoyer'+'&f_titre='+titre+'&f_contenu='+contenu+'&f_base='+f_listing_id,
+            data : 'csrf='+CSRF+'&f_action=envoyer'+'&f_titre='+encodeURIComponent(titre)+'&f_contenu='+encodeURIComponent(contenu)+'&f_base='+f_listing_id,
             dataType : "html",
             error : function(jqXHR, textStatus, errorThrown)
             {
@@ -228,6 +229,7 @@ $(document).ready
     (
       function()
       {
+        // Grouper les checkbox dans un champ unique afin d'éviter tout problème avec une limitation du module "suhosin" (voir par exemple http://xuxu.fr/2008/12/04/nombre-de-variables-post-limite-ou-tronque) ou "max input vars" généralement fixé à 1000.
         var listing_id = new Array(); $("#f_base input:checked").each(function(){listing_id.push($(this).val());});
         if(!listing_id.length)
         {

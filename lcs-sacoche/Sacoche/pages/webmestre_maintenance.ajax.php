@@ -28,8 +28,8 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 if($_SESSION['SESAMATH_ID']==ID_DEMO) {exit('Action désactivée pour la démo...');}
 
-$action = (isset($_POST['f_action'])) ? Clean::texte($_POST['f_action']) : '';
-$motif  = (isset($_POST['f_motif']))  ? Clean::texte($_POST['f_motif'])  : '';
+$action = (isset($_POST['f_action'])) ? Clean::texte($_POST['f_action']) : '' ;
+$motif  = (isset($_POST['f_motif']))  ? Clean::texte($_POST['f_motif'])  : '' ;
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Bloquer ou débloquer l'application
@@ -47,38 +47,6 @@ if($action=='bloquer')
   ajouter_log_PHP( 'Maintenance' /*log_objet*/ , 'Application fermée.' /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , FALSE /*only_sesamath*/ );
   LockAcces::bloquer_application($_SESSION['USER_PROFIL_TYPE'],'0',$motif);
   exit('<label class="erreur">Application fermée : '.html($motif).'</label>');
-}
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Vérification des droits en écriture
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-if($action=='verif_droits')
-{
-  $_SESSION['tmp'] = array();
-  // Récupérer l'arborescence
-  $dossier_install = '.';
-  FileSystem::analyser_dossier( $dossier_install , strlen($dossier_install) , 'avant' , TRUE /*with_first_dir*/ );
-  // Pour l'affichage du retour
-  $thead = '<tr><td colspan="2">Vérification des droits en écriture - '.date('d/m/Y H:i:s').'</td></tr>';
-  $tbody = '';
-  // Dossiers
-  ksort($_SESSION['tmp']['dossier']);
-  foreach($_SESSION['tmp']['dossier'] as $dossier => $tab)
-  {
-    $dossier = ($dossier) ? '.'.$dossier : '.'.DS ;
-    $tbody .= (@is_writable($dossier)) ? '<tr><td class="v">Dossier accessible en écriture</td><td>'.$dossier.'</td></tr>' : '<tr><td class="r">Dossier aux droits insuffisants</td><td>'.$dossier.'</td></tr>' ;
-  }
-  // Fichiers
-  ksort($_SESSION['tmp']['fichier']);
-  foreach($_SESSION['tmp']['fichier'] as $fichier => $tab)
-  {
-    $fichier = '.'.$fichier;
-    $tbody .= (@is_writable($fichier)) ? '<tr><td class="v">Fichier accessible en écriture</td><td>'.$fichier.'</td></tr>' : '<tr><td class="r">Fichier aux droits insuffisants</td><td>'.$fichier.'</td></tr>' ;
-  }
-  // Enregistrement du rapport ; extension PHP et non HTML pour éviter des pb de mise en cache.
-  FileSystem::fabriquer_fichier_rapport( 'rapport_droits.php' , $thead , $tbody );
-  exit('ok');
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,15 +96,25 @@ if($action=='verif_dir_etabl')
       {
         if(isset($tab_dossiers[$dossier_dir][$base_id]))
         {
-          FileSystem::supprimer_dossier($dossier_dir.$base_id);
-          $tbody_pb .= '<tr class="r"><td>Dossier en trop (&rarr; supprimé)</td><td>'.$dossier_key.$base_id.'</td></tr>';
+          if(is_dir($dossier_dir.$base_id))
+          {
+            FileSystem::supprimer_dossier($dossier_dir.$base_id);
+            $tbody_pb .= '<tr class="r"><td>Dossier en trop (&rarr; supprimé)</td><td>'.$dossier_key.$base_id.'</td></tr>';
+          }
+          // Normalement, ne devrait pas, mais suite à un bug, des fichiers se sont retrouvés créés...
+          if(is_file($dossier_dir.$base_id))
+          {
+            FileSystem::supprimer_fichier($dossier_dir.$base_id);
+            $tbody_pb .= '<tr class="r"><td>Fichier en trop (&rarr; supprimé)</td><td>'.$dossier_key.$base_id.'</td></tr>';
+          }
         }
       }
     }
   }
-  // Enregistrement du rapport ; extension PHP et non HTML pour éviter des pb de mise en cache.
-  FileSystem::fabriquer_fichier_rapport( 'rapport_verif_dir_etabl.php' , $thead , $tbody_pb.$tbody_ok );
-  exit('ok');
+  // Enregistrement du rapport
+  $fichier_nom = 'rapport_verif_dir_etabl_'.$_SESSION['BASE'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.html';
+  FileSystem::fabriquer_fichier_rapport( $fichier_nom , $thead , $tbody_pb.$tbody_ok );
+  exit(']¤['.URL_DIR_EXPORT.$fichier_nom);
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -269,18 +247,16 @@ if($action=='maj_etape4')
     elseif(!isset($tab['apres'])) // (forcément)
     {
       // Fichier à supprimer
-      if(is_file($dossier_install.$fichier))
-      {
-        unlink($dossier_install.$fichier);
-      }
+      FileSystem::supprimer_fichier($dossier_install.$fichier , TRUE /*verif_exist*/ );
       $tbody .= '<tr><td class="r">Fichier supprimé</td><td>'.$fichier.'</td></tr>';
     }
   }
   // Débloquer l'application
   ajouter_log_PHP( 'Mise à jour des fichiers' /*log_objet*/ , 'Application accessible.' /*log_contenu*/ , __FILE__ /*log_fichier*/ , __LINE__ /*log_ligne*/ , FALSE /*only_sesamath*/ );
   LockAcces::debloquer_application($_SESSION['USER_PROFIL_TYPE'],'0');
-  // Enregistrement du rapport ; extension PHP et non HTML pour éviter des pb de mise en cache.
-  FileSystem::fabriquer_fichier_rapport( 'rapport_maj.php' , $thead , $tbody );
+  // Enregistrement du rapport
+  $_SESSION['tmp']['rapport_filename'] = 'rapport_maj_'.$_SESSION['BASE'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.html';
+  FileSystem::fabriquer_fichier_rapport( $_SESSION['tmp']['rapport_filename'] , $thead , $tbody );
   exit(']¤['.'ok'.']¤['.'Rapport des modifications apportées et nettoyage&hellip;');
 }
 
@@ -289,9 +265,10 @@ if($action=='maj_etape4')
 //
 if($action=='maj_etape5')
 {
-  unset($_SESSION['tmp']);
   FileSystem::supprimer_dossier($dossier_dezip);
-  exit(']¤['.'ok'.']¤['.VERSION_PROG);
+  $fichier_chemin = URL_DIR_EXPORT.$_SESSION['tmp']['rapport_filename'];
+  unset($_SESSION['tmp']);
+  exit(']¤['.'ok'.']¤['.VERSION_PROG.'_#_'.$fichier_chemin);
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -403,8 +380,9 @@ if($action=='verif_file_appli_etape4')
       $tbody_pb .= '<tr class="r"><td>Fichier en trop</td><td>'.$fichier.'</td></tr>';
     }
   }
-  // Enregistrement du rapport ; extension PHP et non HTML pour éviter des pb de mise en cache.
-  FileSystem::fabriquer_fichier_rapport( 'rapport_verif_file_appli.php' , $thead , $tbody_pb.$tbody_ok );
+  // Enregistrement du rapport
+  $_SESSION['tmp']['rapport_filename'] = 'rapport_verif_file_appli_'.$_SESSION['BASE'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.html';
+  FileSystem::fabriquer_fichier_rapport( $_SESSION['tmp']['rapport_filename'] , $thead , $tbody_pb.$tbody_ok );
   exit(']¤['.'ok'.']¤['.'Rapport des différences trouvées et nettoyage&hellip;');
 }
 
@@ -413,9 +391,10 @@ if($action=='verif_file_appli_etape4')
 //
 if($action=='verif_file_appli_etape5')
 {
-  unset($_SESSION['tmp']);
   FileSystem::supprimer_dossier($dossier_dezip);
-  exit(']¤['.'ok'.']¤['.VERSION_PROG);
+  $fichier_chemin = URL_DIR_EXPORT.$_SESSION['tmp']['rapport_filename'];
+  unset($_SESSION['tmp']);
+  exit(']¤['.'ok'.']¤['.$fichier_chemin);
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
