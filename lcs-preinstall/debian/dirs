@@ -1,0 +1,5 @@
+usr/sbin
+usr/share/doc/lcs/preinstall
+usr/share/doc/lcs/preinstall/html
+usr/share/lcs/scripts
+var/lib/lcs/preinstall

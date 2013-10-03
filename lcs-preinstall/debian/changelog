@@ -1,0 +1,233 @@
+lcs-preinstall (2.4.10~1) Lcs; urgency=low
+
+  * Initial release for Debian Wheezy 7.0 :
+	* Modify in sql TYPE by ENGINE
+	* Modify mysql request for create lcsmgr 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 14:01:50 +0100
+
+lcs-preinstall (2.4.9.1) Lcs; urgency=low
+
+  * add init.d script for lcs-sftp in squeeze first boot
+  * reverse change in lcs-preinstall-config
+  * Add quotes in .my.cnf
+  * Update version in postinst
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Jun 2012 10:03:00 +0200
+
+lcs-preinstall (2.4.8) Lcs; urgency=low
+
+  [ Raphaël Hertzog ]
+  * Add new parameters for Active Directory synchronization.
+  [ Jean-Luc Chretien ]
+  * Modify VERSIONLCS to 2.4.8 in postinst
+  * Modify sed in lcs-preinstall-config for AD_BASE_DN param
+  * Change charset in documentation index.html 
+  * Fix Create lcsmgr account in lcs-preinstall-config for Squeeze
+  * Make a 2.4.8 stable release
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 May 2011 12:00:56 +0200
+
+lcs-preinstall (2.4.7) Lcs; urgency=low
+
+  * Update table statusages whith login field
+  * Add table swekey for swekey strong authentification 
+  * Add params pwdPolicy in lcs_db.params
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 01 Jul 2010 13:55:42 +0200
+
+lcs-preinstall (2.4.6) Lcs; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modify sql dump for redirectmail table log
+  * Update version number in postinst
+  * Cleaning changelog
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jan 2010 12:00:39 +0100
+
+lcs-preinstall (2.4.5) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * add remove sudo when remove package
+  * introduce lcs-make-sudoers
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 27 Oct 2009 13:50:04 +0100
+
+lcs-preinstall (2.4.4) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * change sshd chroot order for admins TCP tunnel
+  * fix PidFile bug on second ssh instance on port 2222
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Wed,  9 Sep 2009 20:45:48 +0200
+
+lcs-preinstall (2.4.3) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * Remove Listening in 2222 port for curent ssh config
+  * Adding new instancie of SSH on port 2222 chroot restricted and
+    whithout root login
+  * moving lcs-sftp init.d and default config in a dedecaded directory
+    fix bug with $ in postinst
+  * correct add lcs-sftp to init.d in lcs-sshd-config
+  * remove lcs-sftp when removing lcs-preinstall
+  * change ssh instancies reload order
+  * correct small init.d misstake
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Mon,  8 Jun 2009 12:26:14 +0200
+
+lcs-preinstall (2.4.2) Lcs; urgency=low
+
+  [ Simon Cavey ]
+  * add assist user allowed to make TCP Tunnel
+ 
+  [ Jean Luc Chretien ]
+  * Add update version number LCS in postinst 
+  * Make a stable release 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2009 15:52:31 +0200
+
+lcs-preinstall (2.4.1) Lcs; urgency=low
+
+  * Make a stable release 2.4 
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 29 May 2009 14:17:53 +0200
+
+lcs-preinstall (2.1-1) LcsXP; urgency=low
+
+  * change sshd chroot order for root login
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 17 Feb 2009 10:24:23 +0100
+
+lcs-preinstall (2.1-1~2) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien]
+  * Add rne and lcs_cas fields for LCS CAS Service
+  * Add rsync dependency
+  * Upload package in LcsXP Tree 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri,  9 Jan 2009 10:31:33 +0100
+
+lcs-preinstall (2.1) LcsXP; urgency=low
+  [ Simon Cavey ]
+    * Add SSH LCS Banner
+    * Fixe ssh config when removed
+   
+  [ Jean-Luc Chretien]
+    * Comment cdrom source in sources list
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 10 Nov 2008 10:35:37 +0100
+
+lcs-preinstall (2.0-4~2) UNRELEASED; urgency=low
+
+  * Changed the priority used by handle_initial_config for
+    lcs-preinstall-config to 55
+
+ -- Philippe Le Brouster <plb@ac-grenoble.fr>  Thu, 25 Sep 2008 17:01:40 +0200
+
+lcs-preinstall (2.0-3) LcsXP; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Fix ldap root password retrieving (already done by ldapedu-server) if mode AUTO
+  * Remove barre1 and Barre2 entry in dump sql
+
+  [ Raphael Hertzog ]
+  * Fix lcs-preinstall-config to fail correctly if there's no lcs.conf.
+  * Disable lcs-locale-reconfigure. debian-installer is able to configure
+    locales correctly and can be preseeded everything if needed.
+  * Small improvements to lcs-sshd-config to keep the original
+    sshd_config if called multiple times.
+
+  [ Philippe Le Brouster ]
+  * Fix ldap root password retrieving (already done by ldapedu-server) 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2008 14:25:45 +0200
+
+lcs-preinstall (2.0-3~7) lcs20Dev; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modify the order of Match section group lcs-users
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Jun 2008 13:45:15 +0200
+
+lcs-preinstall (2.0-3~6) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Add a Match user spip.mnager in sshd_config 
+  * Add a section upgrade in postrm
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Wed, 25 Jun 2008 16:58:37 +0200
+
+lcs-preinstall (2.0-3~5) lcs20; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Remove PermitTunnel in match sections
+
+  [ Raphael Hertzog ]
+  * Use 389 as default value for LDAP_PORT if none is given.
+  * Use 127.0.0.1 as default value for LDAP_SERVER/LDAP_MASTER_SERVER if none is given.
+  * Use 123 as default value for LDAP_RID is none is given.
+  * Other shell cleanups in sbin/lcs-preinstall-config at the same time.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 19 Jun 2008 14:52:22 +0200
+
+lcs-preinstall (2.0-3~4) UNRELEASED; urgency=low
+
+  [ Simon Cavey ]
+  *  New configuration for ssh services in lcs-sshd-config
+
+  [ Jean-Luc Chretien ]
+  * Remove pam configuration, this task is now in ldapedu 
+  * Correct configuration HOSTNAME
+
+  [ Raphael Hertzog ]
+  * Properly quote variable in test about /etc/hosts reconfiguration in
+    lcs-preinstall-config.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 16 Jun 2008 16:12:52 +0200
+
+lcs-preinstall (2.0-3~3) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Remove dependency lcs-dns
+  * Temporary modification ssh configuration in lcs-sshd-config
+  * Add temporaly pam configuration
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 11 Jun 2008 09:47:39 +0200
+
+lcs-preinstall (2.0-3~2) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Modify parcRdn ti parcsRdn
+  * Add a param HOSTNAME_MUST_BE_RECONFIFURE in lcs.conf 
+  [ Simon Cavey ]
+  * Replace lcs-openssh by openssh-server 
+  * Add script lcs-sshd-config in postinst
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 11 Jun 2008 09:47:39 +0200
+
+lcs-preinstall (2.0-3~1) UNRELEASED; urgency=low
+
+  [ Jean-Luc Chretien ]
+  * Ajout de dependances avec : ldapedu-server, lcs-dns, interfacedu-lcs , lcs-openssh
+  [ Raphael Hertzog ]
+  * Ignore ntpdate failures. Fix bashism (function).
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 27 May 2008 17:17:39 +0200
+
+lcs-preinstall (2.0-2) unstable; urgency=low
+
+  * Mise en place du mode AUTO pour les passwords dans lcs.conf 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 27 May 2008 17:17:39 +0200
+
+lcs-preinstall (2.0-1) unstable; urgency=low
+
+  * Suppression du lien symbolique slis.conf -> /etc/lcs/lcs.conf desormais pris en charge par les paquets SLIS (ldapedu...). 
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Tue, 27 May 2008 17:17:39 +0200
+
+lcs-preinstall (2.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 May 2008 14:07:14 +0200

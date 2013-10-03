@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>LCS smtp Postfix</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css" media="all">@import "../../c/c.css";</style>
+</head>
+<body>
+<h2 style="text-align:center">Documentation <span class="acronym">smtp Postfix</span></h2>
+<h3>Version : Paquet lcs-smtp 2.4</h3>
+<p>Configuration du service de courrier <span class="acronym">smtp</span> bas&eacute; sur <span class="acronym">Postfix</span> pour LCS.</p>
+
+<h3>Reconfiguration de Postfix</h3>
+<p>Suite à l'installation du paquet <span class="acronym">lcs-smtp</span>, il est possible de reconfigurer Postfix grace au script <tt class="filename">/usr/share/lcs/scripts/postfix-reconfigure</tt>.</p>
+<h4>Usage :</h4>
+<pre class="programlisting">
+postfix_reconfigure.sh 
+    &lt;FQDN> &lt;DOMAIN> &lt;LOCAL_DOMAIN> &lt;NETWORK> &lt;LDAP_SERVER> &lt;BASEDN> &lt;RELAYHOST> &lt;XEN_NETWORK>
+</pre>
+<h4>D&eacute;finitions des param&egrave;tres :</h4>
+<ul>
+<li>&lt;FQDN> : Nom de domaine pleinement qualifi&eacute;</li>
+<li>&lt;DOMAIN> : Domaine LCS</li>
+<li>&lt;LOCAL_DOMAIN> : Domaine local de courrier</li>
+<li>&lt;NETWORK> : Complete la variable mynetworks de Postfix (Postfix relaie le courrier des clients des r&eacute;seaux autoris&eacute;s et des domaines autoris&eacute;s. Les r&eacute;seaux autoris&eacute;s sont d&eacute;finis par le param&egrave;tre mynetworks.)</li>
+<li>&lt;LDAP_SERVER> : Adresse IP du serveur LDAP</li>
+<li>&lt;BASEDN> : Base DN du serveur ldap pour renseignement de <tt class="filename">ldap-aliases.cf</tt></li>
+<li>&lt;RELAYHOST> : Passerelle de messagerie</li>
+<li>&lt;XEN_NETWORK>: R&eacute;seau XEN</li>
+
+</ul>
+</body>
+</html>
