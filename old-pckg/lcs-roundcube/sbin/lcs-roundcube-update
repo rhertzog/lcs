@@ -1,0 +1,60 @@
+#! /bin/sh
+
+# lcs-roundcube-update
+
+set -e
+
+MYSQLDUMP="/var/lib/lcs/roundcube/Sql"
+CONFIG_PATH="/var/lib/lcs/roundcube/Config_rc"
+CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
+CONFIGRCPLUG_PATH="/usr/share/lcs/roundcube/plugins"
+MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+# Read lcs parametre in lcs_db.params
+get_lcsdb_params() {
+    MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+    PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u lcsmgr -p$MYSQLPASS lcs_db -N`
+    echo "$PARAMS"
+}
+#
+# Update database
+#
+mysql roundcube < $MYSQLDUMP/mysql.update.sql
+#
+# Update config files
+#
+# Make roundcube config
+#
+cp $CONFIG_PATH/db.inc.php.dist $CONFIGRC_PATH/db.inc.php
+sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRC_PATH/db.inc.php
+CRYPT24=`pwgen 24 1`
+cp $CONFIG_PATH/main.inc.php.dist $CONFIGRC_PATH/main.inc.php
+sed -i "s|#CRYPT24#|"$CRYPT24"|g" $CONFIGRC_PATH/main.inc.php
+MAILDOMAIN=`hostname -d`
+sed -i "s|#MAILDOMAIN#|"$MAILDOMAIN"|g" $CONFIGRC_PATH/main.inc.php
+LDAP_SERVER=$(get_lcsdb_params ldap_server)
+LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
+LDAP_PEOPLE_RDN=$(get_lcsdb_params peopleRdn)	
+sed -i "s|#LDAP_SERVER#|"$LDAP_SERVER"|g" $CONFIGRC_PATH/main.inc.php	
+sed -i "s|#LDAP_BASE_DN#|"$LDAP_BASE_DN"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#LDAP_PEOPLE_RDN#|"$LDAP_PEOPLE_RDN"|g" $CONFIGRC_PATH/main.inc.php
+# Config Roundcube authentication mode
+AUTH_MOD=$(get_lcsdb_params auth_mod)
+if [ ! -z $AUTH_MOD ]; then
+	if [ "$AUTH_MOD" = "ENT" ]; then
+ 		MODAUTHENTICATION="cas_authentication"
+	else
+		MODAUTHENTICATION="lcs_authentication"
+	fi
+else
+	MODAUTHENTICATION="lcs_authentication"
+fi
+sed -i "s|#MODAUTHENTICATION#|"$MODAUTHENTICATION"|g" $CONFIGRC_PATH/main.inc.php
+# Make lcs_authentication config
+cp $CONFIG_PATH/config_auth_lcs.inc.php.dist $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
+sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
+# Make cas_authentication config
+HOSTNAME=`hostname -f`
+cp $CONFIG_PATH/config_auth_cas.inc.php.dist $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
+sed -i "s|#HOSTNAME#|"$HOSTNAME"|g" $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
+# Fix rights on module
+/var/lib/lcs/roundcube/Scripts/fixrights.sh
