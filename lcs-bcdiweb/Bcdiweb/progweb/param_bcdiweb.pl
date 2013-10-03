@@ -8,16 +8,17 @@ use Encode;
 
 #############################################################
 # Script de mise à jour de BCDIWEB  sur un serveur Linux    #
-# Alexis Abramé - CRDP de Poitou-Charentes - novembre 2007  #
+# Alexis Abramé - CRDP de Poitou-Charentes - novembre 2007 
+#
 #############################################################
 
 #A lancer en tant que SuperUtilisateur (su ou root)
 my $sourcearchori=`pwd`;
 chomp $sourcearchori;
-my $version_cgi="Bcdi Web v. 2.12";
+my $version_cgi="Bcdi Web v. 2.40";
 my $archivebcdiweb="BcdiWebLinux.tar.gz";
 my $emplacement_installation_cgi="/usr/bcdiserv/progweb";
-my $chemin_apacheconf="/etc/httpd/conf/httpd.conf";
+my $chemin_apacheconf="/etc/apache2/httpd.conf";
 my $user_web;
 my $group_web;
 my $group_bcdi;
@@ -97,7 +98,7 @@ sub menu{
     my $menu=<<"FIN_MENU";
                    *************************************************
                    *      Paramétrage d\'une base de données       *
-                   *        pour BCDIWEB v. 2.12 sous Linux        *
+                   *        pour BCDIWEB v. 2.40 sous Linux        *
                    *************************************************
 
   

@@ -149,13 +149,13 @@ function InitChecked()
   if (Derouler) BasculerRestrictions();
 <#SI RECHERCHE=COLLECTION>
   document.getElementById("CONJONCTION_OU").checked=(etOu)
-  document.getElementById("CONJONCTION_ET").checked=(!etOu)
-  changeEtOu();
+  document.getElementById("CONJONCTION_ET").checked=(!etOu)
+  changeEtOu();
 <#FINSI RECHERCHE=COLLECTION>
 <#SI CONFIGURATION=SIMPLE>
   document.getElementById("CONJONCTION_OU").checked=(etOu)
-  document.getElementById("CONJONCTION_ET").checked=(!etOu)
-  changeEtOu();
+  document.getElementById("CONJONCTION_ET").checked=(!etOu)
+  changeEtOu();
 <#FINSI CONFIGURATION=SIMPLE>
 }
 </script>
