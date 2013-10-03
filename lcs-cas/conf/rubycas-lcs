@@ -1,0 +1,50 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides: rubycas-server
+# Required-Start: $syslog
+# Should-Start:
+# Required-Stop:  $syslog
+# Should-Stop:
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6
+# Description:    Start the RubyCAS-Server
+### END INIT INFO
+
+#
+# System startup script for the rubycas-server
+#
+
+
+# get ruby version
+if grep -q ^7 /etc/debian_version && [ -d /var/lib/gems/1.9.1 ]; then
+	RUBYVER="1.9.1"
+else
+	RUBYVER="1.8"
+fi
+# get rubycas-server version
+RUBYCASVER=`gem list rubycas-server | grep rubycas-server | cut -d '(' -f 2 | cut -d ')' -f 1`
+
+CASSERVER='/var/lib/gems/'$RUBYVER'/gems/rubycas-server-'$RUBYCASVER'/bin'
+USERRUN="casserver"
+
+cd $CASSERVER
+
+case "$1" in
+    start)
+		su -c "ruby rubycas-server-control start" $USERRUN
+        ;;
+    stop)
+		su -c "ruby rubycas-server-control stop" $USERRUN
+        ;;
+    restart)
+		su -c "ruby rubycas-server-control restart" $USERRUN
+        ;;
+    status)
+		su -c "ruby rubycas-server-control status" $USERRUN      
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+        ;;
+esac
+

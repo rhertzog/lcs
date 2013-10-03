@@ -1,0 +1,67 @@
+#! /bin/sh
+# postinst script for LCS cas
+set -e
+
+MODULE="cas"
+DESCRIPTION="SSO CAS (Central Authentification Service)"
+PATHMOD="/var/lib/lcs/$MODULE"
+INDICEMAJNBR="2"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+
+case "$1" in
+	install|configure)
+            if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+	        # 
+	        # only if first configuration
+	        #
+                CAS=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='cas';"`
+                if [ -z "$CAS" ]; then
+                    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', '$DESCRIPTION', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
+                fi
+                #
+                # Create rne and lcs_cas field in lcs_db.params if not exist
+                #
+                RNE=`/usr/bin/mysql -e "SELECT id from lcs_db.params WHERE name='rne';"`
+                LCSCAS=`/usr/bin/mysql -e "SELECT id from lcs_db.params WHERE name='lcs_cas';"`
+                if [ -z "$RNE" ]; then
+                    /usr/bin/mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'rne', '', 0, 'Numéro répertoire national de l''établissement', 5);"
+                fi
+                if [ -z "$LCSCAS" ]; then
+                    /usr/bin/mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'lcs_cas', '0', 0, 'Activation / Désactivation service CAS', 1);"
+                fi
+                #
+                # rubycas-lcs install
+                #
+                echo "rubycas-lcs installation in one minute"
+                at now+1minutes <<END
+/usr/sbin/lcs-cas-install.sh
+END
+            else
+                echo "Mise a jour du paquet module LCS $MODULE de $2 vers $VER"
+                #
+                # Update maj indice
+                #
+                /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+                #
+                # Update package and gem
+                #
+                #/usr/sbin/lcs-cas-update.sh
+                echo "rubycas-server  update in one minute"
+                at now+1minutes <<END
+/usr/sbin/lcs-cas-update.sh
+END
+            fi
+    	;;
+
+    	abort-upgrade|abort-remove|abort-deconfigure)
+    	;;
+
+    	*)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    	;;
+esac
+
+#DEBHELPER#
+
+exit 0

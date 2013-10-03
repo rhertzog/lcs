@@ -1,0 +1,20 @@
+# openssl.cas.in
+
+[ req ]
+distinguished_name =  req_distinguished_name
+prompt = no
+
+[ req_distinguished_name ]
+countryName			= #COUNTRYNAME#
+
+stateOrProvinceName		= #PROVINCENAME#
+
+localityName			= #LOCALITYNAME#
+
+0.organizationName		= #ORGANIZATIONNAME#
+
+organizationalUnitName		= #ORGANIZATIONALUNITNAME#
+
+commonName			= #FQN#
+
+emailAddress			= admin@#DOMAIN#

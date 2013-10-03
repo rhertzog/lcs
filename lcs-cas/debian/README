@@ -1,0 +1,9 @@
+README,
+
+Jean-Luc Chretien     <jean-luc.chretien@tice.ac-caen.fr>
+Simon Cavey           <simon.cavey@crdp.ac-caen.fr>
+
+LCS CAS
+=======
+
+    Mise en place sur LCS d'un service CAS (Central Authentification Service) et d'un acces SSO (Single Sign On) au site TV (lesite.tv)
