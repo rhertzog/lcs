@@ -1,0 +1,21 @@
+NameVirtualHost *:443
+<VirtualHost *:443>
+	ServerName lcs
+	DocumentRoot /var/www
+
+	SSLEngine on
+	SSLCertificateFile /etc/apache2/ssl/server.crt
+	SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+	ErrorLog /var/log/apache2/lcs-main.error.log
+	CustomLog /var/log/apache2/lcs-main.access.log combined
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	ServerName lcs
+
+	Include /etc/apache2/lcs-main/*.conf
+
+</VirtualHost>
+

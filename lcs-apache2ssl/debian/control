@@ -1,0 +1,12 @@
+Source: lcs-apache2ssl
+Section: misc
+Priority: optional
+Maintainer: Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>
+Build-Depends: debhelper (>= 5)
+Standards-Version: 3.6.2
+
+Package: lcs-apache2ssl
+Architecture: all
+Depends: lcs-web, openssl, lcs-certmanager, at, interfacedu-common
+Description: LCS apache2 SSL
+ This package install https service on LCS server.
