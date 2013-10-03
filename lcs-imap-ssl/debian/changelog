@@ -1,0 +1,53 @@
+lcs-imap-ssl (2.4.10~2) Lcs; urgency=low
+
+  * Add lcs-certmanager dependence
+  * Modify lcs-imap-ssl-config and postinst
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 01 Feb 2013 22:04:18 +0100
+
+lcs-imap-ssl (2.4.9) Lcs; urgency=low
+
+  * Make a release for squeeze
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 16:27:53 +0200
+
+lcs-imap-ssl (2.4.7) Unreleased; urgency=low
+
+  * now build for all Arch
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 07 Sep 2010 17:28:59 +0200
+
+lcs-imap-ssl (2.4.6) Unreleased; urgency=low
+
+  * automatic number version in postinst
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri,  2 Oct 2009 12:04:24 +0200
+
+lcs-imap-ssl (2.4) Lcs; urgency=low
+
+  * Build a stable release 2.4
+
+ -- Jean Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 May 2009 15:19:14 +0200
+
+lcs-imap-ssl (2.1-2) Lcs; urgency=low
+
+  [ Philippe Leclerc ]
+  * Add records module in lcs_db.applis
+
+  [ Simon Cavey ]
+  * remove tilde to release
+
+ -- simc <simon.cavey@crdp.ac-caen.fr>  Mon, 27 Apr 2009 17:13:10 +0200
+
+lcs-imap-ssl (2.1-1) LcsXP; urgency=low
+
+  * reduce sed in config
+
+ -- Simon Cavey <simon.cavey@crdp.ac-caen.fr>  Tue, 17 Mar 2009 16:47:38 +0100
+
+lcs-imap-ssl (2.0-1) LcsXP; urgency=low
+
+  * Initial release 
+
+ -- simc <simc@etchdev32>  Wed,  4 Feb 2009 16:03:13 +0100
+
