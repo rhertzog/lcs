@@ -1,0 +1,41 @@
+lcs-roundcube (2.4.10~6) Lcs; urgency=low
+
+  * Update Roundcube to 0.9.4
+  * Add .htaccess in some folders
+ 
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Sep 2013 12:53:42 +0200
+
+lcs-roundcube (2.4.9.2) Lcs; urgency=low
+
+  * Add desktop notify plugin 
+  * Add ldap adressbook in main.inc.php
+
+ -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Dec 2012 17:22:47 +0100
+
+lcs-roundcube (2.4.9.1) Lcs; urgency=low
+
+  * Update Roundcube to 0.8.1
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 27 Sep 2012 10:35:15 +0200
+
+lcs-roundcube (2.4.9) Lcs; urgency=low
+
+  * Initial release.
+  * Add plugin lcs-notify-desktop
+  * Move 65_roundcube.conf 60_roundcube.conf
+  * Modify Makefile
+  * Add CAS authentication plugin
+  * Fix $rcmail_config['mail_domain'] to hostname -d  in main.inc.php.dist
+  * Fix path to cas config in lcs-roundcube-config
+  * Move logs in /var/log/lcs/roundcube
+  * Hide button logout
+  * Fix path in lcs-notify-desktop plugin
+  * Add phpCAS 1.1.0 in cas_authentication plugin
+  * Modify lcs-roundcube-config for select auth_mod CAS or LCS
+  * Modify imap_open and imap_status in lcs-notify-desktop
+  * Hide the form identity modify in skins/default/templates/editidentity.html
+  * Fix test authentication and subscribe module in lcs-roundcube-config
+  * Fix and tentatively invalid lcs-notify-desktop when ENT authentication is used
+  * Modify options in main config for best performances
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Jun 2012 17:22:18 +0200
