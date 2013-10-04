@@ -3,7 +3,7 @@
 # Version du : 04/11/2011 
 # $1 : repertoire source du paquet ( doit commencer obligatoirement par lcs- )  
 # $2 : N° de version
-# $3 : Distribution : etch, lenny ou squeeze
+# $3 : Distribution : squeeze
 # $4 : Branche : stable, testing ou xp
 # $5 : (optionnel) Necessaire uniquement si le module est nouveau dans la branche (c.a.d s'il n'existe pas de version anterieure). 
 # Ce parametre doit correspondre a la description du module qui sera inseree dans lcs_db.applis (voir le postinst)
@@ -36,15 +36,15 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
 		#
 		#mise en forme de l'url du xml
 		#		
-		if [ "$3" == "etch" ];then
+		if [ "$3" == "wheezy" ];then
 			if [ "$4" == "stable" ];then
-  	  			depot="Lcs"
+  	  			depot="Lcswheezy"
   	  			br="Lcs"
 			elif [ "$4" == "testing" ];then
-  	 		 	depot="LcsTesting"
+  	 		 	depot="LcswheezyTesting"
   	 		 	br="LcsTesting"
 			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
-	   		 	depot="LcsXP"
+	   		 	depot="LcswheezyXP"
 	   		 	br="LcsXP"
 			else 
 			echo "branche erronee"
