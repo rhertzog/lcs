@@ -1,4 +1,4 @@
-lcs-roundcube (2.4.10~6) Lcs; urgency=low
+lcs-roundcube (2.4.10~7) Lcs; urgency=low
 
   * Update Roundcube to 0.9.4
   * Add .htaccess in some folders

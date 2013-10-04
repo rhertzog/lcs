@@ -10,7 +10,7 @@ case "$1" in
 			# Update Roundcube
 			if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.10; then
 				echo "Update Roundcube."
-				#/usr/sbin/lcs-roundcube-update
+				/usr/sbin/lcs-roundcube-update
 			fi
     	;;
 
