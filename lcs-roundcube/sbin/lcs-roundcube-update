@@ -24,12 +24,10 @@ echo "UPDATE lcs_db.applis SET version='$VER' WHERE name='roundcube';" | mysql -
 # Update database
 #
 
-if [ $VER = "2.4.9.2" ]; then
+if [ $VER = 2.4.9.2 ]; then
 	echo "update roundcube database 0.4.2 -> 0.8.1"
 	mysql roundcube < $MYSQLDUMP/mysql.update.sql
-fi
-
-if [ $VER gt 2.4.9.2 ]; then
+elif [ $VER > 2.4.9.2 ]; then
 	echo "update roundcube database 0.8.1 -> 0.9.4"
 	if ! mysql -se "use roundcube;show tables;" | grep system; then
      	mysql roundcube < $MYSQLDUMP/system.sql   
