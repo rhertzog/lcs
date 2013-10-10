@@ -7,7 +7,7 @@ install:
 
 # install lcs certmanager conf
 	install -d $(DESTDIR)/var/lib/lcs/certmanager
-	cp -a -m 0660 conf/* $(DESTDIR)/var/lib/lcs/certmanager
+	cp -a conf/* $(DESTDIR)/var/lib/lcs/certmanager
 		
 # install lcs certmanager etc
 	install -d $(DESTDIR)/etc
