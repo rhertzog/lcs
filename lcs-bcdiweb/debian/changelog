@@ -1,3 +1,9 @@
+lcs-bcdiweb (2.4.10.3) Lcs; urgency=low
+
+  * add electre directory
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 11 Oct 2013 12:40:03 +0200
+
 lcs-bcdiweb (2.4.10.2) Lcs; urgency=low
 
   * update to BcdiWebLinux-2.40
