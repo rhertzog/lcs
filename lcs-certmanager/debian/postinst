@@ -25,6 +25,10 @@ case "$1" in
                /usr/bin/mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
             fi
             #
+            # Add table sslcert in lcs_db
+            #
+            mysql lcs_db < /var/lib/lcs/certmanager/Sql/sslcert.sql
+            #
             # Generate certificat
             #
 				/usr/sbin/lcs-certmanager -c

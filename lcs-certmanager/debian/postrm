@@ -1,9 +1,15 @@
 #! /bin/sh
 # postrm script for LCS CERT MANAGER
 
+MODULE="certmanager"
+
 set -e
 case "$1" in
-	purge|remove)	             
+	purge|remove)
+        #
+        # unsubscribe module certmanager
+        #
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1		             
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
