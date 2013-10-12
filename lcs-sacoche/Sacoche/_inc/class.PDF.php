@@ -662,8 +662,11 @@ class PDF extends FPDF
         break;
       case 'ABS' :
       case 'DISP' :
+      case 'NE' :
+      case 'NF' :
       case 'NN' :
-        $tab_texte = array('ABS'=>'Abs.','DISP'=>'Disp.','NN'=>'N.N.');
+      case 'NR' :
+        $tab_texte = array('ABS'=>'Abs.','DISP'=>'Disp.','NE'=>'N.E.','NF'=>'N.F.','NN'=>'N.N.','NR'=>'N.R.');
         $this->cMargin /= 2;
         $this->CellFit( $this->lomer_espace_largeur , $this->lomer_espace_hauteur , $tab_texte[$note] , $border /*bordure*/ , $br /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
         $this->cMargin *= 2;
@@ -1767,11 +1770,12 @@ class PDF extends FPDF
     $this->SetFont('Arial' , '' , $this->taille_police);
   }
 
-  public function grille_referentiel_item( $item_ref , $item_texte )
+  public function grille_referentiel_item( $item_ref , $item_texte , $colspan_nb )
   {
+    $br = ($colspan_nb) ? 0 : 1 ;
     $this->choisir_couleur_fond('gris_clair');
-    $this->CellFit( $this->reference_largeur , $this->cases_hauteur , To::pdf($item_ref)   , 1 /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , TRUE  /*remplissage*/ );
-    $this->CellFit( $this->intitule_largeur  , $this->cases_hauteur , To::pdf($item_texte) , 1 /*bordure*/ , 0 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
+    $this->CellFit( $this->reference_largeur , $this->cases_hauteur , To::pdf($item_ref)   , 1 /*bordure*/ ,   0 /*br*/ , 'C' /*alignement*/ , TRUE  /*remplissage*/ );
+    $this->CellFit( $this->intitule_largeur  , $this->cases_hauteur , To::pdf($item_texte) , 1 /*bordure*/ , $br /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
     $this->choisir_couleur_fond('blanc');
   }
 
