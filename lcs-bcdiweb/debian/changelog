@@ -1,8 +1,8 @@
-lcs-bcdiweb (2.4.10.4) UNRELEASED; urgency=low
+lcs-bcdiweb (2.4.10.4) LCS; urgency=low
 
   * fix conf apache
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 13 Oct 2013 03:21:37 +0200
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 13 Oct 2013 00:50:28 +0200
 
 lcs-bcdiweb (2.4.10.3) Lcs; urgency=low
 
