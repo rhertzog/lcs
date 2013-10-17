@@ -1,3 +1,9 @@
+lcs-caenstats (2.4.9) UNRELEASED; urgency=low
+
+  * change maintener and add package in branch squeeze
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 14 Oct 2013 02:03:12 +0200
+
 lcs-caenstats (2.4.7) Lcs; urgency=low
 
   * now build for all Arch

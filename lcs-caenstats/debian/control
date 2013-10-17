@@ -1,7 +1,7 @@
 Source: lcs-caenstats
 Section: misc
 Priority: extra
-Maintainer: Simon Cavey <simon.cavey@crdp.ac-caen.fr>
+Maintainer: Philippe Leclerc <philippe.leclerc1@ac-caen.fr>
 Build-Depends: debhelper (>= 5)
 Standards-Version: 3.7.2
 
