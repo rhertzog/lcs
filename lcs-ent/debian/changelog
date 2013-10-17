@@ -1,3 +1,9 @@
+lcs-ent (2.4.10~1) Lcs; urgency=low
+
+  * Make a 2.4.10 release for Debian Wheezy
+
+ -- Jean-Luc Chrétien  <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Oct 2013 16:21:11 +0200
+
 lcs-ent (2.4.9) Lcs; urgency=low
 
   * Initial release.
