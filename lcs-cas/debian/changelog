@@ -1,6 +1,6 @@
-lcs-cas (2.4.10~6) Lcs; urgency=low
+lcs-cas (2.4.10~7) Lcs; urgency=low
   [ Jean-Luc Chretien ]
-  2.4.10~6
+  2.4.10~7
   * Modify select ruby version in lcs-cas-install.sh
   * Fix server.rb to bind on 0.0.0.0
   2.4.10~4
@@ -9,7 +9,7 @@ lcs-cas (2.4.10~6) Lcs; urgency=low
   2.4.9.2~4
   * Update rubycas-server to 1.1.2 version
 
- -- jlcf <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Oct 2013 15:40:58 +0200
+ -- jlcf <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Oct 2013 15:49:11 +0200
 
 lcs-cas (2.4.9.1) Lcs; urgency=low
 

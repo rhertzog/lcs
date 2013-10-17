@@ -215,7 +215,7 @@ apt-get -y remove --purge binutils build-essential
 cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/cas.rb
 # Modify server.rb to bind 0.0.0.0
 if [ $RUBYVER = 1.9.1 ]; then
-	cp /var/lib/lcs/cas/server_orig_1.9.1.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
+	cp /var/lib/lcs/cas/server_1.9.1.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
 fi
 #
 # Add rubycas-server-control to start/stop service cas in daemon mode
