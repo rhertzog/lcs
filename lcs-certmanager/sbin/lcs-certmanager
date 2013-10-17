@@ -41,7 +41,7 @@ case $1 in
 
 		openssl req  -config $IN_CONFIG_PATH/openssl.lcs -x509 -nodes -days 365 -newkey rsa:1024 -out $OUT_CERT_PATH/$NAMECERT.crt -keyout $OUT_CERT_PATH/$NAMECERT.key
 
-		chmod 440 $OUT_CERT_PATH/$NAMECERT.key
+		chmod 444 $OUT_CERT_PATH/$NAMECERT.key
 
 		# Make a .pem
 		cat  $OUT_CERT_PATH/$NAMECERT.crt $OUT_CERT_PATH/$NAMECERT.key > $OUT_CERT_PATH/$NAMECERT.pem
@@ -85,7 +85,7 @@ case $1 in
 		# Make a .pem
 		cat  $OUT_CERT_PATH/$5.crt $OUT_CERT_PATH/$5.key > $OUT_CERT_PATH/$5.pem
 		chmod 440 $OUT_CERT_PATH/$5.pem
-		chmod 440 $OUT_CERT_PATH/$5.key
+		chmod 444 $OUT_CERT_PATH/$5.key
 		
 		# Put ca root in /etc/ssl/lcs
 		mv $IN_CERT_PATH/$5_trusted_ca.pem $OUT_CERT_PATH/$5_trusted_ca.pem
