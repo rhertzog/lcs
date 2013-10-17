@@ -9,7 +9,7 @@ get_lcsdb_params() {
     echo "$PARAMS"
 }
 # get ruby version
-if grep -q ^7 /etc/debian_version && [ -d /var/lib/gems/1.9.1 ]; then
+if grep -q ^7 /etc/debian_version; then
 	RUBYVER="1.9.1"
 else
 	RUBYVER="1.8"

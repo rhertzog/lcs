@@ -1,4 +1,6 @@
 lcs-cas (2.4.10~4) Lcs; urgency=low
+  2.4.10~5
+  * Modify slect ruby version in lcs-cas-install.sh
   2.4.10~4
   * Modify for wheesy and ruby 1.9.1
   * SSL certificat is now manage by lcs-certmanager
