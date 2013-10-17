@@ -1,3 +1,9 @@
+lcs-caenstats (2.4.9.1) Lcs; urgency=low
+
+  * recursive chown on home/superviseur
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 14 Oct 2013 08:52:45 +0200
+
 lcs-caenstats (2.4.9) LCS; urgency=low
 
   * change maintener and add package in branch squeeze
