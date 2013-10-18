@@ -48,6 +48,7 @@ case "$1" in
             rm -f /etc/apache2/ssl/server*
             ln -s /etc/ssl/lcs/server.crt /etc/apache2/ssl/server.crt
             ln -s /etc/ssl/lcs/server.key /etc/apache2/ssl/server.key
+            ln -s /etc/ssl/lcs/server.pem /etc/apache2/ssl/server.pem
             #
             # Add directive Listen
             #
