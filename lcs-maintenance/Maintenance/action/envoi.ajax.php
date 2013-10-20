@@ -18,7 +18,7 @@ extract($_REQUEST);
       $se=$_POST['se'];
       $typpb=$_POST['typpb'];
       $mail=$_POST['mail'];
-      $texte=$_POST['texte'];
+      $texte=addslashes($_POST['texte']);
 
 //	html();
         // Traitement des variables transmises par le form 
@@ -89,7 +89,7 @@ extract($_REQUEST);
 					Ordinateur: Marque $marque Poste $poste SE $se\n
 					Probl&#232;me: $typpb\n
 					\nDescription :\n
- 						$texte
+ 						stripslashes($texte)\n
 					IP poste source : $REMOTE_ADDR",
 				"From:$mail"
 			) or die("Votre message n'a pu parvenir au technicien charg&#233; de la machine concern&#233;e.");
