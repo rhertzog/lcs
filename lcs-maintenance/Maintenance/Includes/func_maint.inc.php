@@ -320,12 +320,12 @@ function Aff_feed_take ($mode, $filter,$tri) {
 			if ( $mnuchoice == "myspool" ) {
 				echo "<div style=\"float:right;\"><a class='menu_feed' href='bring_back.php?Rid=$Rid'><img src='Style/img/16/comment_edit.png' alt=''/>&nbsp;Rapport d'intervention</a>&nbsp;";
 				echo "<a class='menu_feed' href='index.php?Rid=$Rid&action=del_task&mnuchoice=$mnuchoice'><img src='Style/img/16/delete.png' alt=''/>&nbsp;Supprimer&nbsp;</a>&nbsp;</div>";
-				echo "<div><em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#233; %H h %M mn",$TakeTimeStamp)."</em>&nbsp;</div>";
+				echo "<div><em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#224; %H h %M mn",$TakeTimeStamp)."</em>&nbsp;</div>";
 			} else {
-				echo "<em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#233; %H h %M mn",$TakeTimeStamp)."</em><em class='msg_take'>&nbsp;par :&nbsp;</em><em class='author_take'>$Author</em>\n";
+				echo "<em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#224; %H h %M mn",$TakeTimeStamp)."</em><em class='msg_take'>&nbsp;par :&nbsp;</em><em class='author_take'>$Author</em>\n";
 			}
 		} elseif ( $mode =="team_CR" ) {
-			echo "<em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#233; %H h %M mn",$TakeTimeStamp)."</em>";
+			echo "<em class='msg_take'>Prise en charge le </em><em class='author_take'>".strftime("%d - %m - %Y &#224; %H h %M mn",$TakeTimeStamp)."</em>";
 		} elseif ( $mode =="user" ) {
 			if ( VerifTime ($OpenTimeStamp, $BoosTimeStamp) )
 				echo "<a class='menu_feed' href='index.php?Rid=$Rid&action=relance&mnuchoice=$mnuchoice'>Relancer</a>&nbsp;";
@@ -338,7 +338,7 @@ function Aff_feed_take ($mode, $filter,$tri) {
 		while($row1 = mysql_fetch_array($requete1)) {
 			$Rid			=	$row1["Rid"];
 			$Content1		=	valid_utf8($row1["Content"]);
-			$TimeStamp1		=	strftime("%d - %m - %Y &#233; %H h %M mn",$row1["TimeStamp"]);
+			$TimeStamp1		=	strftime("%d - %m - %Y &#224; %H h %M mn",$row1["TimeStamp"]);
 			$TimeLife		=	$row1["TimeLife"];
 			$Cost			=	$row1["Cost"];
 			// En tÃªte de la rÃ©ponse
@@ -397,8 +397,8 @@ function Aff_feed_close ($mode, $filter,$tri) {
 		$Cat			=	$row["Cat"];
   		$Content		    =	 valid_utf8($row["Content"]) ;
     	$OpenTimeStamp          =	$row["OpenTimeStamp"];
-		$TakeTimeStamp          =	strftime("%d - %m - %Y &#233; %H h %M mn",$row["TakeTimeStamp"]);
-		$CloseTimeStamp         =	strftime("%d - %m - %Y &#233; %H h %M mn",$row["CloseTimeStamp"]);
+		$TakeTimeStamp          =	strftime("%d - %m - %Y &#224; %H h %M mn",$row["TakeTimeStamp"]);
+		$CloseTimeStamp         =	strftime("%d - %m - %Y &#224; %H h %M mn",$row["CloseTimeStamp"]);
 		$BoosTimeStamp          =	$row["BoosTimeStamp"];
 		$NumBoost		=	$row["NumBoost"];
 		
@@ -424,7 +424,7 @@ function Aff_feed_close ($mode, $filter,$tri) {
 		// Affichage du feed du rapport d'intervention
 		while($row1 = mysql_fetch_array($requete1)) {
 			$Content1               =	$row1["Content"];
-			$TimeStamp1		=	strftime("%d - %m - %Y &#233; %H h %M mn",$row1["TimeStamp"]);
+			$TimeStamp1		=	strftime("%d - %m - %Y &#224; %H h %M mn",$row1["TimeStamp"]);
 			$TimeLife		=	$row1["TimeLife"];
 			$Cost			=	$row1["Cost"];
 			// En tÃªte de la rÃ©ponse
@@ -824,7 +824,7 @@ function read_task ($Rid) {
 	$Os			=	$row[11];
 	$Cat			=	$row[12];
  	$Content		=	$row[13];
-  	$OpenTimeStamp          =	strftime("%d - %m - %Y &#233; %H h %M mn",$row[14]);
+  	$OpenTimeStamp          =	strftime("%d - %m - %Y &#224; %H h %M mn",$row[14]);
 	$NumBoost		=	$row[18];
 	return array ($Sector, $Owner, $OwnerMail, $Author, $Building, $Room, $NumComp, $Mark, $Cat, $Os, $Content, $OpenTimeStamp,$NumBoost);
 }
@@ -859,7 +859,7 @@ function read_task_tmp ($Rid) {
   	$OwnerMail		=	$row[4];
 	$Author			=	$row[5];
  	$Content		=	$row[13];
-  	$OpenTimeStamp          =	strftime("%d - %m - %Y &#233; %H h %M mn",$row[14]);
+  	$OpenTimeStamp          =	strftime("%d - %m - %Y &#224; %H h %M mn",$row[14]);
 	return array ($Owner, $OwnerMail, $Author, $Content, $OpenTimeStamp);
 }
 

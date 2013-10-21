@@ -1,3 +1,9 @@
+lcs-maintenance (2.4.9~4) LCS; urgency=low
+
+  * change "é" to "à" in date display
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Tue, 15 Oct 2013 07:23:14 +0200
+
 lcs-maintenance (2.4.9~3) LCS; urgency=low
 
   * compatibility with magic_quotes= off
