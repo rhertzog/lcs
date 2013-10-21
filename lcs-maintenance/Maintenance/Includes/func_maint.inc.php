@@ -202,7 +202,7 @@ function Aff_Intro ($OpenTimeStamp, $Sector, $Building, $Room, $NumComp, $Mark, 
   	$html .= "<tr class='msg_intro'>\n<td>\n";
 	//$html .= "<em>";
 	// les champs vides ne sont pas affichÃ©s
- 	if (isset ($OpenTimeStamp) ) $html .= "Le ".strftime("%d - %m - %Y &#233; %H h %M mn",$OpenTimeStamp);
+ 	if (isset ($OpenTimeStamp) ) $html .= "Le ".strftime("%d - %m - %Y &#224; %H h %M mn",$OpenTimeStamp);
 		/**
 		 * maj-2.4.8
 		 * on passe les contenus dans des td
