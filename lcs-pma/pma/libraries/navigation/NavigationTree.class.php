@@ -587,6 +587,14 @@ class PMA_NavigationTree
                     }
                     $groups[$key]->pos2 = $node->pos2;
                     $groups[$key]->pos3 = $node->pos3;
+                    if ($node instanceof Node_Table_Container) {
+                        $tblGroup = '&amp;tbl_group='
+                            . urlencode($key . $node->separator);
+                        $groups[$key]->links = array(
+                            'text' => $node->links['text'] . $tblGroup,
+                            'icon' => $node->links['icon'] . $tblGroup
+                        );
+                    }
                     $node->addChild($groups[$key]);
                     foreach ($separators as $separator) {
                         // FIXME: this could be more efficient
@@ -594,7 +602,8 @@ class PMA_NavigationTree
                             $name_substring = substr(
                                 $child->name, 0, strlen($key) + strlen($separator)
                             );
-                            if ($name_substring == $key . $separator
+                            if (($name_substring == $key . $separator
+                                || $child->name == $key)
                                 && $child->type == Node::OBJECT
                             ) {
                                 $class = get_class($child);
@@ -818,7 +827,7 @@ class PMA_NavigationTree
                 if (strpos($class, 'last') === false) {
                     $retval .= "<b></b>";
                 }
-                $icon  = PMA_Util::getImage('b_plus.png');
+                $icon  = PMA_Util::getImage('b_plus.png', __('Expand/Collapse'));
                 $match = 1;
                 foreach ($this->_aPath as $path) {
                     $match = 1;
