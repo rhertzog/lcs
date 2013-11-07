@@ -1,3 +1,9 @@
+lcs-web (2.4.10~1) Lcs; urgency=low
+
+  * Replace mkTicket.rb by a php section code in log2cas*.php
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Nov 2013 18:31:09 +0100
+
 lcs-web (2.4.9.6~4) Lcs; urgency=low
 
   * Add .htaccess Options -Indexes in swekey and Plugins folders
