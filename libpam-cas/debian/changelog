@@ -1,7 +1,7 @@
-libpam-cas (2.0.11-2~4) lcs; urgency=low
+libpam-cas (2.0.11-2~5) lcs; urgency=low
 
   [ jlcf ]
-  * Modify arch to all and build for wheezy
+  * Modify arch to any and build for wheezy
   * Modify CPFLAGS = -O2 -fPIC  
 
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sun, 27 Oct 2013 19:43:33 +0100
