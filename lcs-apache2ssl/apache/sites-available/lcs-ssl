@@ -6,6 +6,7 @@ NameVirtualHost *:443
 	SSLEngine on
 	SSLCertificateFile /etc/apache2/ssl/server.crt
 	SSLCertificateKeyFile /etc/apache2/ssl/server.key
+	SSLCertificateChainFile /etc/apache2/ssl/server.pem
 
 	ErrorLog /var/log/apache2/lcs-main.error.log
 	CustomLog /var/log/apache2/lcs-main.access.log combined
