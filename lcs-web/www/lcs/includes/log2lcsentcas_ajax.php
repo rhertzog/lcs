@@ -12,7 +12,7 @@ if ($login) {
 		die ("S&#233;lection de base de donn&#233;es impossible.");	
 	$query="SELECT token FROM ent_lcs WHERE login_lcs='$login'";
 	$result=@mysql_query($query, $authlink);
-	if ($result && mysql_num_rows($result)), {
+	if ($result && mysql_num_rows($result)) {
 		$password=mysql_result($result,0,0);
 		mysql_free_result($result);
 	}
@@ -80,8 +80,10 @@ if ($login) {
 				$infos = explode('Set-Cookie:',$Rec_Data);
 				$t = explode(';',$infos[1]);
 				$ticket=explode('=',$t[0]);
+				$ticket_propre=mb_substr($ticket[1], 0, 33);
+				#system ("echo 'ticket $ticket_propre' > /var/log/lcs/debugcas.log");
 				setcookie('tgt',"",0,"/","",0);
-				setcookie('tgt',"$ticket[1]",0,"/","",0);
+				setcookie('tgt',"$ticket_propre",0,"/","",0);				
 				//echo("Votre serveur CAS vous a attribu&eacute; le ticket: $ticket[1] \n Vous avez d&egrave;s lors acc&egrave;s aux applications SSO.");
 			} else
 				echo "Attention vous n'&ecirc;tes pas identifi&eacute; sur le serveur CAS! Contactez votre administrateur.";
