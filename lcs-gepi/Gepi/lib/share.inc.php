@@ -54,7 +54,7 @@ include_once dirname(__FILE__).'/share-pdf.inc.php';
  * @param string $destinataire Le destinataire
  * @param string $ajout_headers Text à ajouter dans le header
  */
-function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
+function envoi_mail($sujet, $message, $destinataire, $ajout_headers='', $plain_ou_html="plain") {
 
 	$gepiPrefixeSujetMail=getSettingValue("gepiPrefixeSujetMail") ? getSettingValue("gepiPrefixeSujetMail") : "";
 
@@ -65,7 +65,7 @@ function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
   
   $headers = "X-Mailer: PHP/" . phpversion()."\r\n";
   $headers .= "MIME-Version: 1.0\r\n";
-  $headers .= "Content-type: text/plain; charset=UTF-8\r\n";
+  $headers .= "Content-type: text/$plain_ou_html; charset=UTF-8\r\n";
   $headers .= "From: Mail automatique Gepi <ne-pas-repondre@".$_SERVER['SERVER_NAME'].">\r\n";
   $headers .= $ajout_headers;
 
@@ -74,6 +74,7 @@ function envoi_mail($sujet, $message, $destinataire, $ajout_headers='') {
 		$subject,
 		$message,
 	  $headers);
+	return $envoi;
 }
 
 /**
@@ -815,8 +816,42 @@ function checkAccess() {
 				fclose($f);
 			}
 
-            if((!isset($_SESSION['email']))||(!check_mail($_SESSION['email']))) {
+			$redir_saisie_mail_requise="n";
+			//if((!isset($_SESSION['email']))||(!check_mail($_SESSION['email']))) {
+			if(!isset($_SESSION['email'])) {
+				$redir_saisie_mail_requise="y";
+				if($debug_test_mail=="y") {
+					$f=fopen("/tmp/debug_check_mail.txt", "a+");
+					fwrite($f, strftime("%Y-%m-%d %H:%M:%S")." \$_SESSION['email'] est vide.\n");
+					fclose($f);
+				}
+			}
+			elseif(getSettingAOui('MailValideRequisCheckDNS')) {
+				if($debug_test_mail=="y") {
+					$f=fopen("/tmp/debug_check_mail.txt", "a+");
+					fwrite($f, strftime("%Y-%m-%d %H:%M:%S")." Avant le test checkdnsrr...\n");
+					fclose($f);
+				}
+				if(!check_mail($_SESSION['email'], 'checkdnsrr', 'y')) {
+					$redir_saisie_mail_requise="y";
+					if($debug_test_mail=="y") {
+						$f=fopen("/tmp/debug_check_mail.txt", "a+");
+						fwrite($f, strftime("%Y-%m-%d %H:%M:%S")." Le test checkdnsrr a échoué.\n");
+						fclose($f);
+					}
+				}
+			}
+			elseif(!check_mail($_SESSION['email'])) {
+				if($debug_test_mail=="y") {
+					$f=fopen("/tmp/debug_check_mail.txt", "a+");
+					fwrite($f, strftime("%Y-%m-%d %H:%M:%S")." Le check_mail() a échoué.\n");
+					fclose($f);
+				}
 
+				$redir_saisie_mail_requise="y";
+			}
+
+			if($redir_saisie_mail_requise=="y") {
 				if($debug_test_mail=="y") {
 					$f=fopen("/tmp/debug_check_mail.txt", "a+");
 					if(!isset($_SESSION['email'])) {
@@ -828,42 +863,42 @@ function checkAccess() {
 					fclose($f);
 				}
 
-                header("Location: $gepiPath/utilisateurs/mon_compte.php?saisie_mail_requise=yes");
-                //getSettingValue('sso_url_portail')
-                die();
-            }
-        }
-    }
-
-    $url = parse_url($_SERVER['SCRIPT_NAME']);
-    if ($_SESSION["statut"] == 'autre') {
-
-    	$sql = "SELECT autorisation
-	    from droits_speciaux
-    	where nom_fichier = '" . mb_substr($url['path'], mb_strlen($gepiPath)) . "'
-		AND id_statut = '" . $_SESSION['statut_special_id'] . "'";
-
-    }else{
-
-		$sql = "select " . $_SESSION['statut'] . "
-	    from droits
-    	where id = '" . mb_substr($url['path'], mb_strlen($gepiPath)) . "'
-    	;";
-
+				header("Location: $gepiPath/utilisateurs/mon_compte.php?saisie_mail_requise=yes");
+				//getSettingValue('sso_url_portail')
+				die();
+			}
+		}
 	}
 
-    $dbCheckAccess = sql_query1($sql);
-    if (mb_substr($url['path'], 0, mb_strlen($gepiPath)) != $gepiPath) {
-        tentative_intrusion(2, "Tentative d'accès avec modification sauvage de gepiPath");
-        return (FALSE);
-    } else {
-        if ($dbCheckAccess == 'V') {
-            return (TRUE);
-        } else {
-            tentative_intrusion(1, "Tentative d'accès à un fichier sans avoir les droits nécessaires");
-            return (FALSE);
-        }
-    }
+	$url = parse_url($_SERVER['SCRIPT_NAME']);
+
+	if (mb_substr($url['path'], 0, mb_strlen($gepiPath)) != $gepiPath) {
+		tentative_intrusion(2, "Tentative d'accès avec modification sauvage de gepiPath");
+		return (FALSE);
+	}
+	else {
+		if ($_SESSION["statut"] == 'autre') {
+			$sql = "SELECT autorisation
+					FROM droits_speciaux
+					WHERE nom_fichier = '" . mb_substr($url['path'], mb_strlen($gepiPath)) . "'
+					AND id_statut = '" . $_SESSION['statut_special_id'] . "'
+					AND autorisation='V'";
+		}
+		else {
+			$sql = "SELECT " . $_SESSION['statut'] . " AS autorisation
+					FROM droits
+					WHERE id = '" . mb_substr($url['path'], mb_strlen($gepiPath)) . "'
+					AND ".$_SESSION['statut']."='V';";
+		}
+		$dbCheckAccess = mysql_query($sql);
+		if (mysql_num_rows($dbCheckAccess)>0) {
+			return (TRUE);
+		}
+		else {
+			tentative_intrusion(1, "Tentative d'accès à un fichier sans avoir les droits nécessaires");
+			return (FALSE);
+		}
+	}
 }
 
 /**
@@ -922,6 +957,13 @@ function detect_browser($HTTP_USER_AGENT) {
 	fwrite($f,date("d/m/Y His").": $HTTP_USER_AGENT\n");
 	fclose($f);
 	*/
+  include_once(dirname(__FILE__).'/HTMLPurifier.standalone.php');
+  $config = HTMLPurifier_Config::createDefault();
+  $config->set('Core.Encoding', 'utf-8'); // replace with your encoding
+  $config->set('HTML.Doctype', 'XHTML 1.0 Strict'); // replace with your doctype
+  $purifier = new HTMLPurifier($config);
+    
+  
 	if(function_exists('preg_match')) {
 		if (preg_match('/Opera(\/| )([0-9].[0-9]{1,2})/', $HTTP_USER_AGENT, $log_version)) {
 			$BROWSER_VER = $log_version[2];
@@ -951,7 +993,7 @@ function detect_browser($HTTP_USER_AGENT) {
 			}
 		} else {
 			$BROWSER_VER = '';
-			$BROWSER_AGENT = $HTTP_USER_AGENT;
+			$BROWSER_AGENT = $purifier->purify($HTTP_USER_AGENT);
 		}
 	}
 	elseif(function_exists('mb_ereg')) {
@@ -981,7 +1023,7 @@ function detect_browser($HTTP_USER_AGENT) {
 			$BROWSER_AGENT = 'MOZILLA';
 		} else {
 			$BROWSER_VER = '';
-			$BROWSER_AGENT = $HTTP_USER_AGENT;
+			$BROWSER_AGENT = $purifier->purify($HTTP_USER_AGENT);
 		}
 	}
 	elseif(function_exists('ereg')) {
@@ -1011,12 +1053,12 @@ function detect_browser($HTTP_USER_AGENT) {
 			$BROWSER_AGENT = 'Firefox';
 		} else {
 			$BROWSER_VER = '';
-			$BROWSER_AGENT = $HTTP_USER_AGENT;
+			$BROWSER_AGENT = $purifier->purify($HTTP_USER_AGENT);
 		}
 	}
 	else {
 		$BROWSER_VER = '';
-		$BROWSER_AGENT = $HTTP_USER_AGENT;
+		$BROWSER_AGENT = $purifier->purify($HTTP_USER_AGENT);
 	}
 	return  $BROWSER_AGENT." - ".$BROWSER_VER;
 }
@@ -2635,7 +2677,7 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 
 	// Conteneur:
 	if($bg_texte==''){
-		$div="<div id='$id' class='infobulle_corps";
+		$div="<div id='$id' class='infobulle_corps div_conteneur_infobulle";
 		if((isset($class_special_infobulle))&&($class_special_infobulle!='')) {$div.=" ".$class_special_infobulle;}
 		$div.="' style='$style_box width: ".$largeur;
 		if(is_numeric($largeur)) {
@@ -2645,7 +2687,7 @@ function creer_div_infobulle($id,$titre,$bg_titre,$texte,$bg_texte,$largeur,$hau
 	}
 	else{
 		$div="<div id='$id' ";
-		if((isset($class_special_infobulle))&&($class_special_infobulle!='')) {$div.="class='".$class_special_infobulle."' ";}
+		if((isset($class_special_infobulle))&&($class_special_infobulle!='')) {$div.="class='".$class_special_infobulle." div_conteneur_infobulle' ";} else {$div.="class='div_conteneur_infobulle' ";}
 		$div.="style='$style_box background-color: $bg_texte; width: ".$largeur;
 		if(is_numeric($largeur)) {
 			$div.=$unite_div_infobulle;
@@ -4725,7 +4767,7 @@ function deltree($rep,$repaussi=TRUE) {
  * @param type $mode
  * @return boolean  
  */
-function check_mail($email,$mode='simple') {
+function check_mail($email,$mode='simple',$test_mail="n") {
 	$debug_test_mail="n";
 
 	if(!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/" , $email)) {
@@ -4754,7 +4796,10 @@ function check_mail($email,$mode='simple') {
 
 			$tab=explode('@', $email);
 			if(checkdnsrr($tab[1], 'MX')) {return TRUE;}
-			elseif(checkdnsrr($tab[1], 'A')) {return TRUE;}
+			elseif($test_mail=="n") {
+				if(checkdnsrr($tab[1], 'A')) {return TRUE;}
+				else {return FALSE;}
+			}
 			else {return FALSE;}
 		}
 	}
@@ -5822,7 +5867,8 @@ function get_img_formules_math($texte, $id_groupe, $type_notice="c") {
 
 	$contenu_cor=$texte;
 
-	if(preg_match('|src="http://latex.codecogs.com/|', $contenu_cor)) {
+	if((preg_match('|src="http://latex.codecogs.com/|', $contenu_cor))||
+	(preg_match('|src="https://latex.codecogs.com/|', $contenu_cor))) {
 
 		$niv_arbo_tmp=2;
 		$dest_documents = '../documents/';
@@ -5853,25 +5899,32 @@ function get_img_formules_math($texte, $id_groupe, $type_notice="c") {
 		$chaine="";
 		$tab_tmp=preg_split('/"/',$contenu_cor);
 		for($loop=0;$loop<count($tab_tmp);$loop++) {
-			if(preg_match("|^http://latex.codecogs.com/|",$tab_tmp[$loop])) {
+			if((preg_match("|^http://latex.codecogs.com/|",$tab_tmp[$loop]))||
+			(preg_match("|^https://latex.codecogs.com/|",$tab_tmp[$loop]))) {
 				$erreur="n";
 				$extension_fichier_formule="gif";
-				if(preg_match("|^http://latex.codecogs.com/gif.latex|",$tab_tmp[$loop])) {
+				if((preg_match("|^http://latex.codecogs.com/gif.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/gif.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="gif";
 				}
-				elseif(preg_match("|^http://latex.codecogs.com/png.latex|",$tab_tmp[$loop])) {
+				elseif((preg_match("|^http://latex.codecogs.com/png.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/png.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="png";
 				}
-				elseif(preg_match("|^http://latex.codecogs.com/swf.latex|",$tab_tmp[$loop])) {
+				elseif((preg_match("|^http://latex.codecogs.com/swf.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/swf.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="swf";
 				}
-				elseif(preg_match("|^http://latex.codecogs.com/emf.latex|",$tab_tmp[$loop])) {
+				elseif((preg_match("|^http://latex.codecogs.com/emf.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/emf.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="emf";
 				}
-				elseif(preg_match("|^http://latex.codecogs.com/pdf.latex|",$tab_tmp[$loop])) {
+				elseif((preg_match("|^http://latex.codecogs.com/pdf.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/pdf.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="pdf";
 				}
-				elseif(preg_match("|^http://latex.codecogs.com/svg.latex|",$tab_tmp[$loop])) {
+				elseif((preg_match("|^http://latex.codecogs.com/svg.latex|",$tab_tmp[$loop]))||
+				(preg_match("|^https://latex.codecogs.com/svg.latex|",$tab_tmp[$loop]))) {
 					$extension_fichier_formule="svg";
 				}
 
@@ -5888,6 +5941,14 @@ function get_img_formules_math($texte, $id_groupe, $type_notice="c") {
 				// Telechargement du fichier:
 				if($erreur=="n") {
 					$morceau_courant=$dest_documents."/".$nom_tmp.".".$extension_fichier_formule;
+					// On a tendance à récupérer des chemins du type ../documents//cl2675/20131101_142603.gif
+					// Le // n'est pas très propre...
+					$morceau_courant=preg_replace("|/{2,}|","/",$morceau_courant);
+					/*
+					$f=fopen("/tmp/formule.txt", "a+");
+					fwrite($f, strftime('%Y%m%d %H%M%S')." : ".$morceau_courant."\n");
+					fclose($f);
+					*/
 					if(!copy($tab_tmp[$loop],$morceau_courant)) {$morceau_courant=$tab_tmp[$loop];}
 				}
 				else {
@@ -5970,7 +6031,7 @@ function correction_notices_cdt_formules_maths($eff_parcours) {
 	$tab_grp=array();
 
 	$nb_corr=0;
-	$sql="SELECT * FROM ct_entry WHERE contenu LIKE '%http://latex.codecogs.com/%' LIMIT $eff_parcours;";
+	$sql="SELECT * FROM ct_entry WHERE contenu LIKE '%src=\"http://latex.codecogs.com/%' OR contenu LIKE '%src=\"https://latex.codecogs.com/%' LIMIT $eff_parcours;";
 	$res=mysql_query($sql);
 	while($lig=mysql_fetch_object($res)) {
 		$id_ct=$lig->id_ct;
@@ -5999,7 +6060,7 @@ function correction_notices_cdt_formules_maths($eff_parcours) {
 	echo "<p>$nb_corr corrections effectuées sur 'ct_entry'.</p>";
 
 	$nb_corr=0;
-	$sql="SELECT * FROM ct_devoirs_entry WHERE contenu LIKE '%http://latex.codecogs.com/%' LIMIT $eff_parcours;";
+	$sql="SELECT * FROM ct_devoirs_entry WHERE contenu LIKE '%src=\"http://latex.codecogs.com/%' OR contenu LIKE '%src=\"https://latex.codecogs.com/%' LIMIT $eff_parcours;";
 	$res=mysql_query($sql);
 	while($lig=mysql_fetch_object($res)) {
 		$id_ct=$lig->id_ct;
@@ -6107,7 +6168,7 @@ function tableau_tel_resp_ele($ele_login) {
 	$tab_style[1]="impair";
 	$tab_style[-1]="pair";
 
-	if((count($tab_tel['responsable'])>0)||(count($tab_tel['eleve'])>0)) {
+	if(((isset($tab_tel['responsable']))&&(count($tab_tel['responsable'])>0))||((isset($tab_tel['eleve']))&&(count($tab_tel['eleve'])>0))) {
 		$retour.="<table class='boireaus' summary='Tableau des numéros de téléphone'>\n";
 		//$retour.="<table class='tb_absences' summary='Tableau des numéros de telephone'>\n";
 		$retour.="<tr>\n";
@@ -6158,6 +6219,9 @@ function tableau_tel_resp_ele($ele_login) {
 			$retour.="</tr>\n";
 		}
 		$retour.="</table>\n";
+	}
+	else {
+		$retour.="<p style='color:red'>Aucun numéro de téléphone n'a été trouvé.</p>\n";
 	}
 	return $retour;
 }
@@ -6587,7 +6651,6 @@ function get_class_dates_from_ele_login($login_eleve) {
 
 	return $tab;
 }
-
 
 /** Fonction destinée à passer outre le paramètre PHP session.gc_maxlifetime
  *  s'il est inférieur au paramétrage sessionMaxLength de la table setting
@@ -7216,10 +7279,10 @@ function affichage_temoin_messages_recus($portee="header_et_fixe") {
 	var nb_millisec_check_message=$nb_sec*1000;
 
 	function function_check_message() {
-		new Ajax.Updater($('span_messages_recus'),'$gepiPath/mod_alerte/form_message.php?mode=check',{method: 'get'});";
+		new Ajax.Updater($('span_messages_recus'),'$gepiPath/mod_alerte/form_message.php?mode_js=y&mode=check',{method: 'get'});";
 	if($portee!="header_seul") {
 		$retour.="
-		new Ajax.Updater($('temoin_messagerie_non_vide'),'$gepiPath/mod_alerte/form_message.php?mode=check2',{method: 'get'});";
+		new Ajax.Updater($('temoin_messagerie_non_vide'),'$gepiPath/mod_alerte/form_message.php?mode_js=y&mode=check2',{method: 'get'});";
 	}
 	$retour.="
 		setTimeout('function_check_message()', nb_millisec_check_message);
@@ -7521,5 +7584,165 @@ function get_tab_mef($mode="indice_mef_code") {
 		}
 	}
 	return $tab_mef;
+}
+
+function clean_temp_tables() {
+	$retour="";
+	$tab_table=array("temp_abs_import",
+					"temp_ele_classe",
+					"temp_etab_import",
+					"temp_gep_import",
+					"temp_gep_import2",
+					"temp_grp",
+					"temp_matieres_import",
+					"temp_resp_adr_import",
+					"temp_resp_pers_import",
+					"temp_responsables2_import",
+					"tempo",
+					"tempo2",
+					"tempo3",
+					"tempo3_cdt",
+					"tempo4",
+					"tempo_utilisateurs");
+	$nb_tables_videes=0;
+	for($i=0;$i<count($tab_table);$i++) {
+		$sql="SHOW TABLES LIKE '$tab_table[$i]';";
+		//echo "$sql<br />\n";
+		$res_test=mysql_query($sql);
+		if(mysql_num_rows($res_test)>0) {
+			if($i>0) {$retour.=", ";}
+			$retour.=$tab_table[$i];
+
+			$sql="SELECT 1=1 FROM $tab_table[$i];";
+			//echo "$sql<br />\n";
+			$res_nb=mysql_query($sql);
+			$nb_reg=mysql_num_rows($res_nb);
+			$retour.=" (<em title=\"Nombre d'enregistrement avant vidage\">".$nb_reg."</em>)";
+
+			if($nb_reg>0) {
+				$sql="TRUNCATE TABLE $tab_table[$i];";
+				//echo "$sql<br />\n";
+				$suppr=mysql_query($sql);
+				if(!$suppr) {$retour.=" <span style='color:red'>ERREUR</span>";}
+				else {$nb_tables_videes++;}
+			}
+		}
+	}
+	$retour.="<br />$nb_tables_videes table(s) vidée(s).";
+	return $retour;
+}
+
+
+function get_adresse_responsable($pers_id) {
+	$tab_adresse=array();
+
+	$tab_adresse['adr_id']="";
+	$tab_adresse['adr1']="";
+	$tab_adresse['adr2']="";
+	$tab_adresse['adr3']="";
+	$tab_adresse['cp']="";
+	$tab_adresse['commune']="";
+	$tab_adresse['pays']="";
+	$tab_adresse['en_ligne']="";
+
+	$sql="SELECT * FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.pers_id='$pers_id';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$lig=mysql_fetch_object($res);
+		$tab_adresse['adr_id']=$lig->adr_id;
+		$tab_adresse['adr1']=$lig->adr1;
+		$tab_adresse['adr2']=$lig->adr2;
+		$tab_adresse['adr3']=$lig->adr3;
+		$tab_adresse['cp']=$lig->cp;
+		$tab_adresse['commune']=$lig->commune;
+		$tab_adresse['pays']=$lig->pays;
+
+		$tab_adresse['en_ligne']=$lig->adr1;
+
+		if($lig->adr2!="") {
+			if($tab_adresse['en_ligne']!="") {$tab_adresse['en_ligne'].=", ";}
+			$tab_adresse['en_ligne'].=$lig->adr2;
+		}
+
+		if($lig->adr3!="") {
+			if($tab_adresse['en_ligne']!="") {$tab_adresse['en_ligne'].=", ";}
+			$tab_adresse['en_ligne'].=$lig->adr3;
+		}
+
+		if($lig->cp!="") {
+			if($tab_adresse['en_ligne']!="") {$tab_adresse['en_ligne'].=", ";}
+			$tab_adresse['en_ligne'].=$lig->cp;
+		}
+
+		if($lig->commune!="") {
+			if($tab_adresse['en_ligne']!="") {$tab_adresse['en_ligne'].=", ";}
+			$tab_adresse['en_ligne'].=$lig->commune;
+		}
+
+		if(($tab_adresse['pays']!='')&&($tab_adresse['pays']!=getSettingValue('gepiSchoolPays'))) {
+			if($tab_adresse['en_ligne']!="") {$tab_adresse['en_ligne'].=", ";}
+			$tab_adresse['en_ligne'].=$tab_adresse['pays'];
+		}
+
+	}
+
+	return $tab_adresse;
+}
+
+/** Fonction destinée à tester si un utilisateur a le droit d'accéder au CDT de tel élève
+ *
+ * @param string $login_user Login de l'utilisateur
+ * @param string $login_eleve Login de l'élève
+ *
+ * @return boolean true/false
+ */
+function acces_cdt_eleve($login_user, $login_eleve) {
+	$retour=false;
+
+	$sql="SELECT statut FROM utilisateurs WHERE login='$login_user';";
+	$res=mysql_query($sql);
+	if(mysql_num_rows($res)>0) {
+		$statut=mysql_result($res, 0, "statut");
+
+		if(($statut=="eleve")&&($login_user==$login_eleve)&&(getSettingAOui('GepiAccesCahierTexteEleve'))) {
+			$retour=true;
+		}
+		elseif(($statut=="responsable")&&(getSettingAOui('GepiAccesCahierTexteParent'))&&(is_responsable($login_eleve, $login_user))) {
+			$retour=true;
+		}
+		elseif(($statut=="professeur")&&(getSettingAOui('GepiAccesCDTToutesClasses'))) {
+			$retour=true;
+		}
+		elseif($statut=="professeur") {
+			$sql="SELECT 1=1 FROM j_groupes_professeurs jgp, j_eleves_groupes jeg WHERE jgp.id_groupe=jeg.id_groupe AND jeg.login='$login_eleve' AND jgp.login='$login_user';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$retour=true;
+			}
+			// Donner le droit au PP?
+		}
+		elseif(($statut=="cpe")&&(getSettingAOui('GepiAccesCdtCpe'))) {
+			$retour=true;
+		}
+		elseif(($statut=="cpe")&&(getSettingAOui('GepiAccesCdtCpeRestreint'))) {
+			$sql="SELECT 1=1 FROM j_eleves_cpe WHERE e_login='$login_eleve' AND cpe_login='$login_user';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$retour=true;
+			}
+		}
+		elseif(($statut=="scolarite")&&(getSettingAOui('GepiAccesCdtScol'))) {
+			$retour=true;
+		}
+		elseif(($statut=="scolarite")&&(getSettingAOui('GepiAccesCdtScolRestreint'))) {
+			$sql="SELECT 1=1 FROM j_scol_classes jsc, j_eleves_classes jec WHERE jsc.id_classe=jec.id_classe AND jsc.login='$login_user' AND jec.login='$login_eleve';";
+			$res=mysql_query($sql);
+			if(mysql_num_rows($res)>0) {
+				$retour=true;
+			}
+		}
+	}
+
+	return $retour;
 }
 ?>

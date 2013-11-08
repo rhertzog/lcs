@@ -158,6 +158,7 @@ if (!$error) {
 			if ($test == "0") {
 				$msg .= "Erreur lors de la suppression de l'utilisateur : celui-ci n'existe pas.";
 			} else {
+				// Suppression du compte proprement dite:
 				$res = mysql_query("DELETE FROM utilisateurs WHERE (login = '".$_GET['eleve_login']."')");
 				if ($res) {
 					$msg .= "L'utilisateur ".$_GET['eleve_login'] . " a été supprimé.";
@@ -169,6 +170,8 @@ if (!$error) {
 							}
 						}
 					}
+					// Suppression de scorie éventuelle:
+					$res3 = mysql_query("DELETE FROM sso_table_correspondance WHERE login_gepi = '".$_GET['eleve_login']."'");
 				} else {
 					$msg .= "Erreur lors de la suppression de l'utilisateur.";
 				}
@@ -192,6 +195,8 @@ if (!$error) {
 								$write_ldap_success = $ldap_server->delete_user($current_eleve->login);
 							}
 						}
+						// Suppression de scorie éventuelle:
+						$res3 = mysql_query("DELETE FROM sso_table_correspondance WHERE login_gepi = '".$current_eleve->login."'");
 					}
 				}
 			}
@@ -415,7 +420,7 @@ echo "</tr>\n";
 
 echo "<tr>\n";
 echo "<td>\n";
-echo "<input type='submit' name='filtrage' value='Afficher' /> les élève de la <b>classe</b> de: ";
+echo "<input type='submit' name='filtrage' value='Afficher' /> les élèves de la <b>classe</b> de: ";
 echo "<select name='critere_id_classe'>\n";
 echo "<option value=''>---</option>\n";
 $sql="SELECT DISTINCT id, classe FROM classes c, j_eleves_classes jec, utilisateurs u WHERE c.id=jec.id_classe AND jec.login=u.login ORDER BY classe;";

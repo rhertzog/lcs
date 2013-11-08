@@ -478,7 +478,14 @@ if(!isset($step)) {
 	$alert_diff_etab_origine=getSettingValue('alert_diff_etab_origine');
 	echo "<br />\n";
 	echo "<p>\n";
-	echo "<strong>Établissement d'origine&nbsp;:</strong>\n";
+
+	$titre_infobulle="Établissement d'origine";
+	$texte_infobulle="Sconet fournit l'établissement \"<em>de l'année précédente</em>\".<br />
+S'il s'agit de l'établissement courant, l'information est ignorée&nbsp;;<br />
+sinon, Gepi le considère comme \"<em>établissement d'origine</em>\".";
+	$tabdiv_infobulle[]=creer_div_infobulle('explication_etab_origine',$titre_infobulle,"",$texte_infobulle,"",30,0,'y','y','n','n');
+
+	echo "<strong>Établissement d'origine&nbsp;:</strong> <a href='#' onmouseover=\"delais_afficher_div('explication_etab_origine','y',-20,20,1000,20,20);\" onclick=\"afficher_div('explication_etab_origine','y',-20,20);return false;\"><img src='../images/icons/ico_ampoule.png' alt=\"Explication établissement d\'origine.\" height='25' width='15'></a>\n";
 	echo "<br />\n";
 	echo "<input type='radio' name='alert_diff_etab_origine' id='alert_diff_etab_origine_y' value='y' ";
 	if($alert_diff_etab_origine=='y') {
@@ -809,7 +816,7 @@ else{
 					`TEL_PORT` varchar(255) $chaine_mysql_collate NOT NULL default '',
 					`TEL_PROF` varchar(255) $chaine_mysql_collate NOT NULL default '',
 					MEF_CODE VARCHAR(50) DEFAULT '' NOT NULL
-					);";
+					) ENGINE=MyISAM;";
 					info_debug($sql);
 					$create_table = mysql_query($sql);
 
@@ -1943,7 +1950,7 @@ else{
 
 				//=========================================
 				// 20110911
-				$sql="CREATE TABLE IF NOT EXISTS tempo4 ( col1 varchar(100) NOT NULL default '', col2 varchar(100) NOT NULL default '', col3 varchar(100) NOT NULL default '', col4 varchar(100) NOT NULL default '');";
+				$sql="CREATE TABLE IF NOT EXISTS tempo4 ( col1 varchar(100) NOT NULL default '', col2 varchar(100) NOT NULL default '', col3 varchar(100) NOT NULL default '', col4 varchar(100) NOT NULL default '') ENGINE=MyISAM;";
 				info_debug($sql);
 				$res_tempo4=mysql_query($sql);
 
@@ -4093,7 +4100,7 @@ else{
 				$sql="CREATE TABLE IF NOT EXISTS temp_ele_classe (
 				`ele_id` varchar(40) $chaine_mysql_collate NOT NULL default '',
 				`divcod` varchar(40) $chaine_mysql_collate NOT NULL default ''
-				);";
+				) ENGINE=MyISAM;";
 				info_debug($sql);
 				$create_table = mysql_query($sql);
 
@@ -5494,7 +5501,7 @@ else{
 							`mel` varchar(100) $chaine_mysql_collate NOT NULL,
 							`adr_id` varchar(10) $chaine_mysql_collate NOT NULL,
 							`statut` varchar(100) $chaine_mysql_collate NOT NULL,
-						PRIMARY KEY  (`pers_id`));";
+						PRIMARY KEY  (`pers_id`)) ENGINE=MyISAM;";
 					info_debug($sql);
 					$create_table = mysql_query($sql);
 
@@ -5750,7 +5757,7 @@ else{
 						`pers_id` varchar(10) $chaine_mysql_collate NOT NULL,
 						`resp_legal` varchar(1) $chaine_mysql_collate NOT NULL,
 						`pers_contact` varchar(1) $chaine_mysql_collate NOT NULL
-						);";
+						) ENGINE=MyISAM;";
 				info_debug($sql);
 				$create_table = mysql_query($sql);
 
@@ -5912,7 +5919,7 @@ else{
 						`pays` varchar(50) $chaine_mysql_collate NOT NULL,
 						`commune` varchar(50) $chaine_mysql_collate NOT NULL,
 						`statut` varchar(100) $chaine_mysql_collate NOT NULL,
-					PRIMARY KEY  (`adr_id`));";
+					PRIMARY KEY  (`adr_id`)) ENGINE=MyISAM;";
 				info_debug($sql);
 				//echo "$sql<br />";
 				$create_table = mysql_query($sql);
@@ -9497,7 +9504,7 @@ delete FROM temp_resp_pers_import where pers_id not in (select pers_id from temp
 
 				//=========================================
 				// 20110911
-				$sql="CREATE TABLE IF NOT EXISTS tempo4 ( col1 varchar(100) $chaine_mysql_collate NOT NULL default '', col2 varchar(100) $chaine_mysql_collate NOT NULL default '', col3 varchar(100) $chaine_mysql_collate NOT NULL default '', col4 varchar(100) $chaine_mysql_collate NOT NULL default '');";
+				$sql="CREATE TABLE IF NOT EXISTS tempo4 ( col1 varchar(100) $chaine_mysql_collate NOT NULL default '', col2 varchar(100) $chaine_mysql_collate NOT NULL default '', col3 varchar(100) $chaine_mysql_collate NOT NULL default '', col4 varchar(100) $chaine_mysql_collate NOT NULL default '') ENGINE=MyISAM;";
 				info_debug($sql);
 				$res_tempo4=mysql_query($sql);
 
@@ -10939,6 +10946,16 @@ delete FROM temp_resp_pers_import where pers_id not in (select pers_id from temp
 			enregistre_log_maj_sconet("<p>Fin</p>", "y");
 			$sql="DELETE FROM setting WHERE name='ts_maj_sconet';";
 			$menage=mysql_query($sql);
+
+			$tab_tables_temp=array("temp_gep_import2", "tempo2", "temp_ele_classe", "temp_resp_pers_import", "temp_responsables2_import", "temp_resp_adr_import");
+			for($loop⁼0;$loop<count($tab_tables_temp);$loop++) {
+				$sql="SHOW TABLE ".$tab_tables_temp[$loop].";";
+				$test_table=mysql_query($sql);
+				if(mysql_num_rows($test_table)>0) {
+					$sql="TRUNCATE TABLE ".$tab_tables_temp[$loop].";";
+					$menage=mysql_query($sql);
+				}
+			}
 
 			break;
 	}

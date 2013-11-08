@@ -1,3 +1,9 @@
+lcs-gepi (2.4.9.6) LCS; urgency=low
+
+  * fix bug dojo
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 08 Nov 2013 10:42:55 +0100
+
 lcs-gepi (2.4.9.5) LCS; urgency=low
 
   * upgrade to version 1.6.3
