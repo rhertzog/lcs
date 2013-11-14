@@ -1,8 +1,9 @@
-lcs-smtp (2.4.10~1) Lcs; urgency=low
+lcs-smtp (2.4.10~2) Lcs; urgency=low
 
+  [ Jean-Luc Chretien ]
   * Modify main_lcslis.cf for wheezy
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 24 Jan 2013 16:25:50 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Nov 2013 14:49:18 +0100
 
 lcs-smtp (2.4.9) lcs; urgency=low
 
