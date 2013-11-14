@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-cas
 Architecture: all
-Depends: lcs-preinstall, lcs-web, lcs-certmanager, ruby, rubygems, libruby
+Depends: lcs-preinstall, lcs-web, lcs-certmanager, ruby, rubygems, libruby, ruby-switch
 Description: Setup CAS service on LCS server
   This package will configure the CAS service for use within the LCS server project.

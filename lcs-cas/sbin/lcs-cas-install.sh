@@ -8,12 +8,17 @@ get_lcsdb_params() {
     PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
     echo "$PARAMS"
 }
+
 # get ruby version
-if grep -q ^7 /etc/debian_version; then
-	RUBYVER="1.9.1"
-else
-	RUBYVER="1.8"
-fi
+#if grep -q ^7 /etc/debian_version; then
+#	RUBYVER="1.9.1"
+#else
+#	RUBYVER="1.8"
+#fi
+
+# Switch to ruby 1.8
+
+ruby-switch --set ruby1.8
 
 #
 # rubycas-server configuration and path
@@ -27,6 +32,7 @@ USERHOME="/var/lib/lcs/cas"
 PATH_RUBYCAS_CERT=$CONF
 IN_CONFIG_PATH=$USERHOME
 RUBYCAS_CERT_TT="openssl.cas.in" # template opensll cert for cas
+
 #
 # Fix gem version to install
 #
@@ -213,11 +219,13 @@ apt-get -y remove --purge binutils build-essential
 # Modify cas.rb for consumed st ticket
 #
 cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/cas.rb
+
 # Modify server.rb to bind 0.0.0.0
-if [ $RUBYVER = 1.9.1 ]; then
-	cp /var/lib/lcs/cas/server_1.9.1.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
-fi
+#if [ $RUBYVER = 1.9.1 ]; then
+#	cp /var/lib/lcs/cas/server_1.9.1.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
+#fi
 #
+
 # Add rubycas-server-control to start/stop service cas in daemon mode
 #
 cp /var/lib/lcs/cas/rubycas-server-control_$RUBYVER /var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/bin/rubycas-server-control
