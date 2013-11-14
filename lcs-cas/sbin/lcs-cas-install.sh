@@ -19,7 +19,7 @@ get_lcsdb_params() {
 # Switch to ruby 1.8
 
 ruby-switch --set ruby1.8
-
+RUBYVER="1.8"
 #
 # rubycas-server configuration and path
 #
@@ -183,6 +183,7 @@ fi
 rm -rf /etc/rubycas-server/server.*
 ln -s /etc/ssl/lcs/server.key /etc/rubycas-server/server.key
 ln -s /etc/ssl/lcs/server.crt /etc/rubycas-server/server.crt
+ln -s /etc/ssl/lcs/server.pem /etc/rubycas-server/server.pem
 #
 # Fix owner on folders and files rubycas
 #
@@ -221,10 +222,8 @@ apt-get -y remove --purge binutils build-essential
 cp /var/lib/lcs/cas/cas_new.rb /var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/cas.rb
 
 # Modify server.rb to bind 0.0.0.0
-#if [ $RUBYVER = 1.9.1 ]; then
-#	cp /var/lib/lcs/cas/server_1.9.1.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
-#fi
-#
+cp /var/lib/lcs/cas/server_1.1.2.rb 	/var/lib/gems/$RUBYVER/gems/rubycas-server-$RUBYCASVERSION/lib/casserver/server.rb
+
 
 # Add rubycas-server-control to start/stop service cas in daemon mode
 #

@@ -1,7 +1,8 @@
-lcs-cas (2.4.10~8) Lcs; urgency=low
+lcs-cas (2.4.10~9) Lcs; urgency=low
   [ Jean-Luc Chretien ]
-  2.4.10~8
+  2.4.10~9
   * Switch to ruby 1.8
+  * Add symb link to server.pem
   2.4.10~7
   * Modify select ruby version in lcs-cas-install.sh
   * Fix server.rb to bind on 0.0.0.0
