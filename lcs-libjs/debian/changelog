@@ -1,3 +1,12 @@
+lcs-libjs (2.4.9.4) LCS; urgency=low
+
+  * update tinymce in 3.5.10
+  * update jquery in 1.10.2
+  * update jquery-ui with all themes  in 1.10.3
+  * update Mathjax in 2.3
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 21 Nov 2013 14:41:35 +0100
+
 lcs-libjs (2.4.9.3) Lcs; urgency=low
 
   * remove tilde 
