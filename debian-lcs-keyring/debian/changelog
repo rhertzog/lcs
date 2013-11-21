@@ -1,3 +1,9 @@
+debian-lcs-keyring (1.3) Lcs; urgency=low
+
+  * Make release for wheezy 
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Nov 2013 16:37:14 +0100
+
 debian-lcs-keyring (1.2) stable; urgency=low
 
   * now build for all Arch
@@ -17,3 +23,4 @@ debian-lcs-keyring (1.0-1~3) stable; urgency=low
   * Initial release CRDP lcs-keyrings
 
  -- Simon CAVEY <simon.cavey@crdp.ac-caen.fr>  Fri, 12 Sep 2008 00:46:38 +0200
+
