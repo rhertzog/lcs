@@ -20,7 +20,7 @@ case "$1" in
         cat >/etc/apache2/lcs-main/65_sysinfo.conf <<EOF
 Alias /phpsysinfo/ /usr/share/phpsysinfo/
 <Directory /usr/share/phpsysinfo>
-    php_admin_value open_basedir ../:/var/www/lcs/includes:/var/www/Annu/includes:/usr/bin/who:/usr/bin/lsb_release:/usr/sbin/lsusb:/usr/bin/lspci:/usr/bin/lsscsi:/etc:/bin:/proc:/usr/share/phpsysinfo
+    php_admin_value open_basedir ../:/var/www/lcs/includes:/var/www/Annu/includes:/usr/bin/who:/usr/bin/lsb_release:/usr/sbin/lsusb:/usr/bin/lspci:/usr/bin/lsscsi:/etc:/bin:/proc:/usr/share/phpsysinfo:/sys/devices/system/cpu
 </Directory>
 EOF
             #
