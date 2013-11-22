@@ -73,7 +73,7 @@ echo '<fieldset id="field10">
 echo '<script  type="text/javascript"> ';
 echo 'function active(){';
 echo 'var $tabs = $("#tabs").tabs(); ';
-echo '$tabs.tabs("select",'.$ind.'); ';
+echo '$tabs.tabs("option","active",'.$ind.'); ';
 echo 'return false;';
 echo '};';
 echo 'setTimeout("active()",1);';
