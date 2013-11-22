@@ -52,13 +52,14 @@ $(function() {
                         //mise a jour de la bdd : ajout dans onglet dest et supp dans onglet source
                         $.post("get_seq.php", { num_seq: seq_id , ong_dest : num_dest, action : "deplace" },function(data){
                             if (data!= "OK") alert ("Erreur : " + data);
-                            else 
+                            else
                                 {
                                 //maj du html
                                 //list3=id du 'ul' parent de la sequence deplacee(sortable x)
-                                var $list3 =ui.draggable.parent()[0].id ;
+
+                                var $list3 =ui.draggable.parent()[0].id
                                 ui.draggable.hide('slow', function() {
-                                    $tabs.tabs('select', $tab_items.index($item));
+                                    $tabs.tabs("option","active", $tab_items.index($item));//alert($tab_items.index($item));
                                     $(this).prependTo($list).show('slow');
                                     reorganise('sortable'+$tab_items.index($item));
                                     reorganise($list3);
@@ -66,18 +67,18 @@ $(function() {
                                 }
                             });
                         }
-                    });     
+                    });
                 }
                 //si  shift -> copie de la sequence
-                else 
+                else
                     {
                     //maj de la bdd (ajout dans onglet dest)
                     $.post("get_seq.php", { num_seq: seq_id , ong_dest : num_dest, action : "ajoute" },function(data){
                         if (data != "OK") alert ("Erreur : " + data);
-                        else 
+                        else
                             {
                             ui.draggable.hide(1, function() {
-                            $tabs.tabs('select', $tab_items.index($item));
+                            $tabs.tabs("option","active", $tab_items.index($item));
                             ui.draggable.prependTo($list).show('300');
                             });
                             $("#numong").val(num_dest);
@@ -89,7 +90,7 @@ $(function() {
             });
     });
 
-//Déplacement d'un item 
+//Dï¿½placement d'un item
     $(function() {
         $( ".seq" ).sortable({
             items: 'li',
