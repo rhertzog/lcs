@@ -1,3 +1,9 @@
+lcs-squid (2.4.10~1) Lcs; urgency=low
+
+  * Make a 2.4.10 release for Wheezy
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 Nov 2013 14:16:52 +0100
+
 lcs-squid (2.4.9) Lcs; urgency=low
 
   * Fix function get_lcsdb_params in postinst for squeeze 
