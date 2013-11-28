@@ -60,6 +60,7 @@ cp /usr/share/lcs/openvpn/keys/$1.crt /home/$1/Documents/vpn/lcs
 cp /usr/share/lcs/openvpn/keys/$1.key /home/$1/Documents/vpn/lcs
 cp /var/lib/lcs/openvpn/openvpn-client.conf.in  /home/$1/Documents/vpn/lcs.ovpn
 sed -i'' "s/@@FULLDOMAINE@@/$FULLNAME/g" /home/$1/Documents/vpn/lcs.ovpn
+sed -i'' "s/@@FULLDOMAINE@@/$FULLNAME/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
 sed -i'' "s/@@VPNPORT@@/$VPNPORT/g" /home/$1/Documents/vpn/lcs.ovpn
 sed -i'' "s/@@USER@@/$1/g" /home/$1/Documents/vpn/lcs.ovpn
 chown $1 /home/$1/Documents/vpn
