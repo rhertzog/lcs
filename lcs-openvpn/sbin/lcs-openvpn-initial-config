@@ -4,14 +4,14 @@
 # Configuration inital de OpenVPN
 # Projet LCS 2
 # auteur : Simon CAVEY 
-# creation : 04/01/2009 modification 23/09/2009
+# creation : 04/01/2009 modification 29/11/2013 jLCF
 ##
 
 . /etc/lcs/lcs.conf
-# création d'un subnet pour le vpn
+# creation d'un subnet pour le vpn
 # vpn en 192.168.X.0
 # on prend X le 3ieme octet de l'ip lcs
-# et si non libre on test les subnet les uns après les autres
+# et si non libre on test les subnet les uns apres les autres
 
 THIPOCTET=`echo $IPADDR0 | cut -f 3 -d .`
 VPNNET="192.168."$THIPOCTET".0"
@@ -20,6 +20,7 @@ DH=1024
 VPNPORT=1193
 HOSTNAME=`hostname`
 FULLDOMAINE=`hostname -f`
+DOMAINE=`hostname -d`
 VLAN=0
 VPNCONNEXIONS=10
 VPNCLIENTTOCLIENT=0
@@ -41,7 +42,7 @@ function veriffreesub () {
 veriffreesub
 echo plage ip pour vpn $VPNNET
 
-## ajout des entrées mysql
+## ajout des entrees mysql
 
 sed -e "s|@@VPNPORT@@|$VPNPORT|g" \
 -e "s|@@VPNNET@@|"$VPNNET"|g" \
@@ -82,13 +83,32 @@ sslpassword=`pwgen 8 1`
 sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
 
 ## Patch des fichier de config interface web
+
+####
+Using configuration from /etc/lcs/openvpn/openssl.cnf
+countryName           :PRINTABLE:'FR'
+stateOrProvinceName   :PRINTABLE:'Basse Normandie'
+localityName          :PRINTABLE:'Rosario'
+organizationName      :PRINTABLE:'Ernesto Che Guevara'
+commonName            :PRINTABLE:'admin'
+emailAddress          :IA5STRING:'admin@demo.ac-caen.fr'
+####
+
 sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
+
+sed -i'' "s/@CONTRY@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@PROVINCE@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@CITY@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@ORG@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@ORGUNIT@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@COMMONNAME@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@EMAIL@/admin@$DOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
 ## On adapt le mail pour les utilisateurs
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
 
-## On lance le scipt de génération du certif
+## On lance le scipt de generation du certif
 /usr/share/lcs/sbin/lcs-openvpn-generserveur.sh
 ## On genere les certifs pour admin : 
 /usr/share/lcs/sbin/lcs-openvpn-generclient.sh admin
