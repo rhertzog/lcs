@@ -83,7 +83,7 @@ sslpassword=`pwgen 8 1`
 sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
 
 ## Patch des fichier de config interface web
-cp /var/lib/lcs/openvpn/config.tpl /usr/share/lcs/openvpn/config.inc
+cp /var/lib/lcs/openvpn/config.inc /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@CONTRY@/$COUNTRYNAME/g" /usr/share/lcs/openvpn/config.inc
