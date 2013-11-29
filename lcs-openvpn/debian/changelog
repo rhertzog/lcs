@@ -1,4 +1,4 @@
-lcs-openvpn (2.4.10~3) Lcs; urgency=low
+lcs-openvpn (2.4.10~4) Lcs; urgency=low
 
   * Fix FUlldomain in mail
   * Fix path for smarty3

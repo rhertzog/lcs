@@ -83,29 +83,18 @@ sslpassword=`pwgen 8 1`
 sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
 
 ## Patch des fichier de config interface web
-
-####
-Using configuration from /etc/lcs/openvpn/openssl.cnf
-countryName           :PRINTABLE:'FR'
-stateOrProvinceName   :PRINTABLE:'Basse Normandie'
-localityName          :PRINTABLE:'Rosario'
-organizationName      :PRINTABLE:'Ernesto Che Guevara'
-commonName            :PRINTABLE:'admin'
-emailAddress          :IA5STRING:'admin@demo.ac-caen.fr'
-####
-
+cp /var/lib/lcs/openvpn/config.tpl /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
-
-sed -i'' "s/@CONTRY@//g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@PROVINCE@//g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@CITY@//g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@ORG@//g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@ORGUNIT@//g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@COMMONNAME@//g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@CONTRY@/$COUNTRYNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@PROVINCE@/$PROVINCENAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@CITY@/$LOCALITYNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@ORG@/$ORGANIZATIONNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@ORGUNIT@/$ORGANIZATIONALUNITNAME/g" /usr/share/lcs/openvpn/config.inc
+sed -i'' "s/@COMMONNAME@/admin/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@EMAIL@/admin@$DOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
-## On adapt le mail pour les utilisateurs
+## On adapte le mail pour les utilisateurs
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
 
 ## On lance le scipt de generation du certif
