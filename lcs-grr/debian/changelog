@@ -1,3 +1,9 @@
+lcs-grr (2.4.10~1) LCS; urgency=low
+
+  * Make a 2.4.10 reelease for Wheezy repository
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 24 Nov 2013 02:00:18 +0100
+
 lcs-grr (2.4.9) LCS; urgency=low
 
   * remove tilde
