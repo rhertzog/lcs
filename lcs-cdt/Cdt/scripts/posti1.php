@@ -8,7 +8,7 @@
    - script de mise a jour du post-it-
 			_-=-_
    =================================================== */
-   
+
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 session_name("Cdt_Lcs");
@@ -21,7 +21,7 @@ if (!isset($_SESSION['login']) )exit;
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 //indique que le type de la reponse renvoyee au client sera du Texte
-header("Content-Type: text/plain" ); 
+header("Content-Type: text/plain" );
 //anti Cache pour HTTP/1.1
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
@@ -32,7 +32,7 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
     else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
     // Connexion a la base de donnees
     require_once ('../Includes/config.inc.php');
-    //Creer la requete pour la mise a  jour des donnees	
+    //Creer la requete pour la mise aï¿½ jour des donnees
     if (get_magic_quotes_gpc())
         {
         $Contenu  =htmlentities($_POST['blabla']);
@@ -47,24 +47,25 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
         $Contenu = $_POST['blabla'];
         $Cib = addSlashes($_POST['cibl']);
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('Core.Encoding', 'ISO-8859-15'); 
+       // $config->set('Core.Encoding', 'ISO-8859-15');
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
         $cont = mysql_real_escape_string($cont);
+       // $cont=  utf8_decode($cont);
         }
 
     $cible= $_POST['cibl'];
     $rq = "UPDATE  onglets SET postit='$cont' WHERE id_prof='$cible'";
     // lancer la requete
-    $result = mysql_query($rq); 
+    $result = mysql_query($rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {  // refermer la connexion avec la base de donnees
-        mysql_close();                         
+        mysql_close();
         echo "<p>Votre postit n'a pas pu etre enregistre !".
         "<p></p>" . mysql_error() . "<p></p>";
-        //sortir	
+        //sortir
         exit();
         }
     else echo 'OK';

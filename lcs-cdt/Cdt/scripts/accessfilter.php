@@ -9,40 +9,51 @@
 			_-=-_
     "Valid XHTML 1.0 Strict"
    =================================================== */
-   
+
 //fichiers necessaires a l'exploitation de l'API
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
 include "$BASEDIR/Annu/includes/ihm.inc.php";
-include "../Includes/config.inc.php";  
+include "../Includes/config.inc.php";
 include "../Includes/functions2.inc.php";
 include '../Includes/data.inc.php';
 include "../Includes/phpqrcode/qrlib.php";
 require_once "../Includes/class.inputfilter_clean.php";
 
-function SansAccent($texte){
 
-$accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
-$noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
-$texte = strtr($texte,$accent,$noaccent);
-return $texte;
-} 
+function suppr_accents($str, $encoding='utf-8')
+{
+// transformer les caractÃ¨res accentuÃ©s en entitÃ©s HTML
+$str = htmlentities($str, ENT_NOQUOTES, $encoding);
+
+// remplacer les entitÃ©s HTML pour avoir juste le premier caractÃ¨res non accentuÃ©s
+// Exemple : "&ecute;" => "e", "&Ecute;" => "E", "Ãƒ " => "a" ...
+$str = preg_replace('#&([A-za-z])(?:acute|grave|cedil|circ|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+
+// Remplacer les ligatures tel que : Å’, Ã† ...
+// Exemple "Ã…â€œ" => "oe"
+$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
+// Supprimer tout le reste
+$str = preg_replace('#&[^;]+;#', '', $str);
+
+return $str;
+}
 
 function calendar_auto_1($offset,$var_j,$var_m,$var_a,$tsmp)
 //offset=nbre de jours / au timestmp ,var_j,var_m,var_a=nom des variables associees pour la bd ,$tsmp=timestamp
-{ 
+{
 // Tableau indexe des jours
 $jours = array (1 => '01', '02', '03', '04', '05','06', '07', '08', '09', '10', '11','12','13','14','15',
 						'16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31');
 
 // Tableau indexe des mois
-  $mois = array (1 => '01', '02', '03', '04', '05', 
+  $mois = array (1 => '01', '02', '03', '04', '05',
           '06', '07', '08', '09', '10', '11','12');
 $dateinfo=getdate($tsmp);
 $jo=date('d',$dateinfo['0']+($offset*86400));
 $mo=date('m',$dateinfo['0']+($offset*86400));
-$ann=date('Y',$dateinfo['0']+($offset*86400)); 
+$ann=date('Y',$dateinfo['0']+($offset*86400));
 // Creation des menus deroulants
  //les jours
   echo '<select name="'.$var_j.'">';
@@ -87,7 +98,7 @@ $tsmp=time();
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<title></title>
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
-	
+
 	<!--[if IE]>
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
@@ -136,12 +147,12 @@ if (isset($_POST['Valider']))
     if (isset($_POST['howmany']))
         {
         // afficher x selection d'eleves
-        for ($loop = 1; $loop <= $_POST['howmany']; $loop++) 
+        for ($loop = 1; $loop <= $_POST['howmany']; $loop++)
             {
             echo '
             <input type="hidden" name="nbenrg" value= "'.$_POST['howmany'].'" />
             Nom : <input type = "text" style="background:#E6E6FA;" name ="nom'.$loop.'" value = ""/>
-             &nbsp; Pr&eacute;nom&nbsp;:&nbsp;<input type = "text" style="background:#E6E6FA;" name ="prenom'.$loop.'" value = ""/> ';  				 
+             &nbsp; Pr&eacute;nom&nbsp;:&nbsp;<input type = "text" style="background:#E6E6FA;" name ="prenom'.$loop.'" value = ""/> ';
             echo "&nbsp;Date de naissance : ";calendar_auto_1(-9132,'jour_dn'.$loop,'mois_dn'.$loop,'an_dn'.$loop,$tsmp);
             //liste de selection de la classe
             echo "Classe&nbsp;:&nbsp;<select name='division".$loop."'>\n";
@@ -154,7 +165,7 @@ if (isset($_POST['Valider']))
             echo '<br />';
             }
         }
-    //traitement du second formulaire 
+    //traitement du second formulaire
     if (!isset($_POST['howmany']))
         {
         $clcrypt=array();
@@ -164,24 +175,29 @@ if (isset($_POST['Valider']))
             {
             $erreur[$indecs]="false";
             //nettoyer les entrees
-            $nom_propre[$indecs]  =utf8_decode($_POST['nom'.$indecs]);
-            $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-            $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
+
+            //$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+            //$nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
             if (get_magic_quotes_gpc())
                 {
+                $nom_propre[$indecs]  =utf8_decode($_POST['nom'.$indecs]);
                 $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
                 $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
                 }
             else
                 {
                 // htlmpurifier
+                $nom_propre[$indecs]  =$_POST['nom'.$indecs];
                 $config = HTMLPurifier_Config::createDefault();
-                $config->set('Core.Encoding', 'ISO-8859-15');
+                //$config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $nom_propre[$indecs] = $purifier->purify($nom_propre[$indecs]);
+               // $nom_propre[$indecs] = utf8_decode($nom_propre[$indecs]);
                 }
-            $nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
+                $nom_propre[$indecs] = suppr_accents($nom_propre[$indecs]);
+            //$nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
+            //echo $nom_propre[$indecs];exit;
             $nom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$nom_propre[$indecs]);
             $nom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$nom_propre[$indecs]);
             $nom_propre1[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$nom_propre[$indecs]);
@@ -190,33 +206,35 @@ if (isset($_POST['Valider']))
             $nom_propre2[$indecs] = StrToLower($nom_propre2[$indecs]);
             $nom_propre1[$indecs] = strip_tags(stripslashes($nom_propre1[$indecs]));
             $nom_propre2[$indecs] = strip_tags(stripslashes($nom_propre2[$indecs]));
-            $prenom_propre[$indecs]  =utf8_decode($_POST['prenom'.$indecs]);
+
             if (get_magic_quotes_gpc())
                 {
+                $prenom_propre[$indecs]  =utf8_decode($_POST['prenom'.$indecs]);
                 $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
                 $prenom_propre[$indecs] = $oMyFilter->process($prenom_propre[$indecs]);
                 }
             else
                 {
+                $prenom_propre[$indecs]  =$_POST['prenom'.$indecs];
                 // htlmpurifier
                 $config = HTMLPurifier_Config::createDefault();
-                $config->set('Core.Encoding', 'ISO-8859-15');
+                //$config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $prenom_propre[$indecs] = $purifier->purify($prenom_propre[$indecs]);
                 }
-            $prenom_propre[$indecs] = SansAccent($prenom_propre[$indecs]);
+            $prenom_propre[$indecs] = suppr_accents($prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre[$indecs]);
             $prenom_propre[$indecs] = StrToLower($prenom_propre[$indecs]);
-            $prenom_propre[$indecs] = strip_tags(stripslashes($prenom_propre[$indecs]));	  
-            //verifier la presence des eleves dans les classes 
+            $prenom_propre[$indecs] = strip_tags(stripslashes($prenom_propre[$indecs]));
+            //verifier la presence des eleves dans les classes
             //1.recherche de la classe dans le ldap
             $groups=search_groups('cn=classe*');
 
             if (count($groups))
-                {    
+                {
                 for ($loup=0; $loup < count($groups); $loup++)
                         {
                         $cla = $_POST['division'.$indecs];
@@ -228,11 +246,11 @@ if (isset($_POST['Valider']))
                         }
                 }
 
-            //2.recherche d'une occurence du cn parmi le eleves de la classe --> uid 
-            //recherches des uids des eleves  
+            //2.recherche d'une occurence du cn parmi le eleves de la classe --> uid
+            //recherches des uids des eleves
             $membres = search_uids ("(cn=".$full_classe.")", "half");
 
-            //recherche de(s) uids correspondants au nom saisi 
+            //recherche de(s) uids correspondants au nom saisi
             $le_cn[$indecs] = $prenom_propre[$indecs]." ".$nom_propre1[$indecs];
             $filtre ="(cn=$le_cn[$indecs])";
             $gus= search_people ($filtre);
@@ -244,8 +262,8 @@ if (isset($_POST['Valider']))
                 $le_cn[$indecs] = $prenom_propre[$indecs]." ".$nom_propre2[$indecs];
                 $filtre ="(cn=$le_cn[$indecs])";
                 $gus= search_people ($filtre);
-                }		
-            if (count($gus)) 
+                }
+            if (count($gus))
                 {
                 for ($loop=0; $loop < count($gus); $loop++)
                     {
@@ -311,7 +329,7 @@ if (isset($_POST['Valider']))
 
             }
     }//fin du traitement du formulaire
-if (($Pb!="true") && (isset($_POST['howmany']))) 
+if (($Pb!="true") && (isset($_POST['howmany'])))
 echo '</div><p><input type="submit" name="Valider" value="Valider " /></p></div>';
 }
  ?>

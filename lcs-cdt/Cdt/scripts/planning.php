@@ -31,7 +31,7 @@ include_once "$BASEDIR/Annu/includes/ihm.inc.php";
 mysql_close();
 $cren_off=array();
 include "../Includes/data.inc.php";
-include "../Includes/functions2.inc.php";	
+include "../Includes/functions2.inc.php";
 include_once("../Includes/config.inc.php");
 include_once("../Includes/fonctions.inc.php");
 include_once("../Includes/creneau.inc.php");
@@ -46,23 +46,23 @@ else $duremaxaprem=10;
 //test si les listes de diffusion sont activees
 if (!isset($_SESSION['liste']))
     {
-    exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/main.cf", $AllOutPut1, $ReturnValueShareName); 
+    exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/main.cf", $AllOutPut1, $ReturnValueShareName);
     exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut2, $ReturnValueShareName);
     if (( count($AllOutPut1) >= 1) || ( count($AllOutPut2) >= 1)) $_SESSION['liste']=1; else $_SESSION['liste']=0;
     }
 if (get_magic_quotes_gpc()) require_once("../Includes/class.inputfilter_clean.php");
 else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
-/************************	
+/************************
 Traitement du formulaire
-*************************/	
+*************************/
 
 //Enregistrement des donnees
 if (isset($_POST['enregistrer']) )
-    { 
+    {
     // Traiter les donnees
     // Verifier $Sujet  et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['sujet']) > 0)
-        { 
+        {
         if (get_magic_quotes_gpc())
             {
             $Sujet  =htmlentities(utf8_decode($_POST['sujet']));
@@ -72,13 +72,14 @@ if (isset($_POST['enregistrer']) )
         else
             {
             // htlmpurifier
-            $Sujet = utf8_decode($_POST['sujet']);
+            $Sujet = $_POST['sujet'];
             $config = HTMLPurifier_Config::createDefault();
-            $config->set('Core.Encoding', 'ISO-8859-15'); 
+            //$config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $purifier = new HTMLPurifier($config);
             $Sujet = $purifier->purify($Sujet);
             $Sujet=mysql_real_escape_string($Sujet);
+            $Sujet=  utf8_decode($Sujet);
             }
         }
     else
@@ -88,38 +89,38 @@ if (isset($_POST['enregistrer']) )
 
     // Verifier $duree et la debarrasser de tout antislash et tags possibles
     if ((strlen($_POST['duree'])> 0) && is_numeric($_POST['duree']))
-        { 
+        {
         $message="";
         $duree= addSlashes(strip_tags(stripslashes($_POST['duree'])));
         //limitation de duree
         if ((($_POST['creneau']<=4) && ( ($_POST['creneau'] + $duree) <= $duremaxmatin))
-        //si la fin d'un devoir de l'apres-midi 
+        //si la fin d'un devoir de l'apres-midi
         || (($_POST['creneau']> 4) && ( ($_POST['creneau'] + $duree) <= $duremaxaprem) ))
-            {//pour chaque creneau du devoir 
+            {//pour chaque creneau du devoir
             $lezard="false";
             for ($loop = $_POST['creneau']; $loop <= $_POST['creneau'] + $duree -1; $loop++)
-            {//test s'i les 2 creneaux sont occupes pour la classe active 
-            $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '{$_POST['classe']}' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'"; 
+            {//test s'i les 2 creneaux sont occupes pour la classe active
+            $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '{$_POST['classe']}' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'";
             $res = mysql_query($rq);
-            while ($row = mysql_fetch_array($res, MYSQL_NUM)) 
+            while ($row = mysql_fetch_array($res, MYSQL_NUM))
                 {
                 if ($row[0] == 2)
-                    { 
+                    {
                     $lezard="true";
                     $message=$_POST['classe'].",";
                     }
                 }
-            //test s'i les 2 creneaux sont occupes pour les autres classes 
+            //test s'i les 2 creneaux sont occupes pour les autres classes
             if ((isset($_SESSION['sel_cl']) ))
                 {
                 for ($a=0; $a < count ($_SESSION['sel_cl'])  ; $a++)
                     {
                     $groupe=$_SESSION['sel_cl'][$a];
-                    $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '$groupe' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'"; 
+                    $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '$groupe' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'";
                     $res = mysql_query($rq);
-                    while ($row = mysql_fetch_array($res, MYSQL_NUM)) 
+                    while ($row = mysql_fetch_array($res, MYSQL_NUM))
                         {
-                        if ($row[0] == 2) 
+                        if ($row[0] == 2)
                             {
                             $lezard="true";
                             $message.=$groupe.",";
@@ -127,62 +128,62 @@ if (isset($_POST['enregistrer']) )
                         }
                     }
                 }
-            } 				
+            }
 
             if ($lezard=="true") $duree="";
 
-            } 
+            }
         else $duree= "";
         }
     else
     // Si aucune duree n'a ete saisie
-    { 
+    {
     $duree= "";
     }
     //echo "duree=".$duree ;exit;
     // Creer la requete d'ecriture pour l'enregistrement des donnees
     if ((isset($_POST['enregistrer'])) && ($duree!="") && ($Sujet!=""))
         {
-        $rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, dur\351e ) 
+        $rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, dur\351e )
         VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '".utf8_decode($_POST['matiere'])."', '$Sujet',
         '{$_POST['classe']}', '$duree')";
 
         // lancer la requete
         $result = mysql_query($rq);
-        // Si l'enregistrement est incorrect 
-        if (!$result)  
-            {                           
+        // Si l'enregistrement est incorrect
+        if (!$result)
+            {
             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
             "<p></p>" . mysql_error() . "<p></p>";
             // refermer la connexion avec la base de donnees
-            mysql_close();    
+            mysql_close();
             exit();
             }
-        else 
-            {	
+        else
+            {
             //envoi d'un mail si les liste de difusion sont activees
             if ($_SESSION['liste']==1)
-                {	
+                {
                 // destinataire
                 //recherche du groupe classe dans l'annuaire
                 $classe_dest=$_POST['classe'];
                 $grp_cl=search_groups("cn=".$_POST['classe']);
-                if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest); 
+                if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest);
 
                 //on ferme la connexion lcs_db et on se reconnecte sur la bdd Cdt
                 mysql_close();
                 include("../Includes/config.inc.php");
 
                 //mise en forme de la date du devoir
-                if ($_SESSION['version']==">=432") 
+                if ($_SESSION['version']==">=432")
                 setlocale(LC_TIME,"french");
                 else
                 setlocale("LC_TIME","french");
-                //on evalue le timestamp de la date du devoir	
-                $dat_new=strToTime($_POST['data']);	
-                //Le destinataire 
+                //on evalue le timestamp de la date du devoir
+                $dat_new=strToTime($_POST['data']);
+                //Le destinataire
 
-                if  (!mb_ereg("^Cours",$_POST['classe'])) 
+                if  (!mb_ereg("^Cours",$_POST['classe']))
                 $mailTo = $grp_cl[0]["cn"];
                 else $mailTo = $_POST['classe'];
                 //Le sujet
@@ -198,16 +199,16 @@ if (isset($_POST['enregistrer']) )
             //enregistrement dans le travail a faire
             $Dev= "Pr&#233;parer le Devoir surveill&#233; : ".htmlentities($Sujet);
             $date_c=date("Ymd");
-            $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire ) 
+            $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire )
             VALUES ( '{$_POST['numrubri']}','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
             // lancer la requete
             $result = mysql_query($rq);
-            if (!$result)  
-                {                           
+            if (!$result)
+                {
                 echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
                 "<p></p>" . mysql_error() . "<p></p>";
                 // refermer la connexion avec la base de donnees
-                mysql_close();    
+                mysql_close();
                 exit();
                 }
             }
@@ -220,64 +221,64 @@ if (isset($_POST['enregistrer']) )
                 $gr=explode('#',$_SESSION['sel_cl'][$a]);
                 $groupe=$gr[0];
                 $idr=$gr[1];
-                $rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, dur\351e ) 
+                $rq = "INSERT INTO devoir (date, creneau,login, matiere, sujet, classe, dur\351e )
                 VALUES ( '{$_POST['data']}','{$_POST['creneau']}', '$login', '".utf8_decode($_POST['matiere'])."',
                 '$Sujet', '$groupe', '$duree')";
 
                 // lancer la requete
                 $result = mysql_query($rq);
-                // Si l'enregistrement est incorrect 
-                if (!$result)  
-                    {                           
+                // Si l'enregistrement est incorrect
+                if (!$result)
+                    {
                     echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
                     "<p></p>" . mysql_error() . "<p></p>";
                     // refermer la connexion avec la base de donnees
-                    mysql_close();    
+                    mysql_close();
                     exit();
                     }
-                else 
+                else
                     {
-                    if (!mb_ereg("^Cours",$_POST['classe'])) 
+                    if (!mb_ereg("^Cours",$_POST['classe']))
                         {
                         //enregistrement dans le travail a faire pour les autres classes
                         $Dev= "Pr&#233;parer le Devoir surveill&#233; : ".$Sujet ;
                         $date_c=date("Ymd");
-                        $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire ) 
+                        $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire )
                         VALUES ( '$idr','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
                         // lancer la requete
                         $result = mysql_query($rq);
-                        if (!$result)  
-                            {                           
+                        if (!$result)
+                            {
                             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
                             "<p></p>" . mysql_error() . "<p></p>";
                             // refermer la connexion avec la base de donnees
-                            mysql_close();    
+                            mysql_close();
                             exit();
                             }
                         }
-                    //modif			
+                    //modif
                     //envoi d'un mail si les liste de difusion sont activees
-                    if (($_SESSION['liste']==1) && (!mb_ereg("^Cours",$_POST['classe']))) 
-                        {	
+                    if (($_SESSION['liste']==1) && (!mb_ereg("^Cours",$_POST['classe'])))
+                        {
                         // destinataire
                         //recherche du groupe classe dans l'annuaire
                         $classe_dest="";
                         $classe_courte=explode('_',$groupe);
                         $classe_dest=$classe_courte[count($classe_courte)-1];
                         $grp_cl=search_groups("cn=".$groupe);
-                        if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest); 
+                        if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest);
                         //on ferme la connexion lcs_db et on se reconnecte sur la bdd Cdt
                         mysql_close();
                         include("../Includes/config.inc.php");
 
                         //mise en forme de la date du devoir
-                        if ($_SESSION['version']==">=432") 
+                        if ($_SESSION['version']==">=432")
                         setlocale(LC_TIME,"french");
                         else
                         setlocale("LC_TIME","french");
-                        //on evalue le timestamp de la date du devoir	
-                        $dat_new=strToTime($_POST['data']);	
-                        //Le destinataire 
+                        //on evalue le timestamp de la date du devoir
+                        $dat_new=strToTime($_POST['data']);
+                        //Le destinataire
                         $mailTo = $grp_cl[0]["cn"];
                         //Le sujet
                         $mailSubject = "Nouveau devoir";
@@ -292,13 +293,13 @@ if (isset($_POST['enregistrer']) )
                     }
                 }
             }
-        //fin devoirs multiples  
+        //fin devoirs multiples
         unset ($_SESSION['sel_cl']);
         }
     }
 
 //Suppression d'un devoir apres confirmation
-if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF']))) 
+if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
     {
     $action=$_GET['delrub'];
     $cible=$_GET['numd'];
@@ -308,7 +309,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
     // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
     $nb = mysql_num_rows($result);
-    while ($row = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($row = mysql_fetch_array($result, MYSQL_NUM))
         {
         $dat_supp=$row[2];
         $mat_supp=$row[3];
@@ -320,16 +321,16 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
     //effacement de l'enregistrement
     if (($nb==1) &&($action==1245))
             {
-            if (!mb_ereg("^Cours",$cla_supp))	
+            if (!mb_ereg("^Cours",$cla_supp))
             $rq = "DELETE  FROM devoir WHERE id_ds='$cible' and login='$login' LIMIT 1";
             else
-            $rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and 
+            $rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and
             sujet='$suj_supp' and dur\351e= '$dur_supp'";
 
             $result2 = @mysql_query ($rq) or die (mysql_error());
             //envoi d'un mail
             if ($_SESSION['liste']==1)
-                {	
+                {
                 //recherche du groupe classe dans l'annuaire
                 $classe_dest="";
                 $classe_courte=explode('_',$_GET['klasse']);
@@ -339,11 +340,11 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
                 $grp_cl=search_groups("cn=Classe_*".$classe_dest);
                 $dest=$grp_cl[0]["cn"];
                 mysql_close();
-                include("../Includes/config.inc.php");	
+                include("../Includes/config.inc.php");
                 //mise en forme de la date du devoir
                 if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
-                else setlocale("LC_TIME","french");	
-                $dat_new=strToTime($dat_supp);	
+                else setlocale("LC_TIME","french");
+                $dat_new=strToTime($dat_supp);
                 //destinataire
                 $mailTo = $grp_cl[0]["cn"];
                 //Le sujet
@@ -357,10 +358,10 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
                 if ($classe_dest!="") mail($mailTo, $mailSubject, $mailBody, $mailHeaders);
                 }
             //suppression de l'enregistrement dans le cdt
-            $suj_dev= "Pr&#233;parer le Devoir surveill&#233; : ".$suj_supp;			
-            $rq = "DELETE  FROM cahiertxt WHERE id_auteur='{$_GET['numrubr']};' and  login='{$_SESSION['login']}' and afaire='$suj_dev' 
+            $suj_dev= "Pr&#233;parer le Devoir surveill&#233; : ".$suj_supp;
+            $rq = "DELETE  FROM cahiertxt WHERE id_auteur='{$_GET['numrubr']};' and  login='{$_SESSION['login']}' and afaire='$suj_dev'
             and datafaire ='$dat_supp' LIMIT 1";
-            $result2 = @mysql_query ($rq) or die (mysql_error());	
+            $result2 = @mysql_query ($rq) or die (mysql_error());
             }
     }
 //fin de suppression d'un devoir
@@ -372,22 +373,22 @@ if (isset($_POST['numrubri'])) $numrub= $_POST['numrubri'];
 
 //recherche de la matiere et la classe de la rubrique active du cahier de textes
 if (isset($_GET['rubrique']))
-    { 
+    {
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='{$_GET['rubrique']}'  ";
     // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result);  
+    $nb = mysql_num_rows($result);
     //on recupere les donnees
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {$clas=$enrg[0];//classe
         $mati=utf8_encode($enrg[1]);//matiere
         }
     $numrub=$_GET['rubrique'];
     }
 
-//memorisation des parametres GET classe matiere et numero de rubrique renvoyes par le formulaire	
+//memorisation des parametres GET classe matiere et numero de rubrique renvoyes par le formulaire
 if (isset($_GET['ladate']))
     {
     $clas=$_GET['klasse'];
@@ -411,7 +412,7 @@ if (isset($_GET['ladate']))
 <?
 //Modif groupes
 //si la classe est un groupe
-if (mb_ereg("^Cours",$clas)) 
+if (mb_ereg("^Cours",$clas))
     {
     $ct1cours=true;
     $groupe=$clas;
@@ -421,17 +422,17 @@ if (mb_ereg("^Cours",$clas))
     for ($loup=0; $loup < count($uids); $loup++)
         {
         $logun= $uids[$loup]["uid"];
-        if (is_eleve($logun)) 
+        if (is_eleve($logun))
             {
             $groups=people_get_classe ($logun);
             if (count($groups))
                 {
                 for($n=0; $n<count($classe); $n++)
-                    { 
+                    {
                     if ((mb_ereg("(_$classe[$n])$",$groups)) || ($classe[$n]==$groups))
                         {
-                        if (!in_array($classe[$n], $liste_classe)) 
-                            {	
+                        if (!in_array($classe[$n], $liste_classe))
+                            {
                             $liste_classe[$i]=$classe[$n];
                             $i++;
                             }
@@ -444,11 +445,11 @@ if (mb_ereg("^Cours",$clas))
     //initialisation des variables de session
     unset ($_SESSION['sel_cl']);
 
-    //memorisation des donnees dans des variables de session		
+    //memorisation des donnees dans des variables de session
     $_SESSION['sel_cl']=$liste_classe;
    }
-	
-//eom	
+
+//eom
 //Affichage conditionnel d'un message d'erreur
 if ((isset($_POST['enregistrer'])) && ($duree==""))
  echo '<h6 class="erreur">'.$message. ' : Dur&#233;e erron&#233;e</h6>';
@@ -469,12 +470,12 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
     <p>Intitul&#233; du devoir :
     <input class="text" type="text" name="sujet" size="28" maxlength="28" />Dur&#233;e :
     <input class="text" type="text" name="duree" size="1" maxlength="1"/>heure(s)&nbsp;';
-    if ($ct1cours) 
+    if ($ct1cours)
         {
         echo '</p><p> Ce devoir sera diffus&#233; en  ';
         for ($j=0;$j<count($liste_classe);$j++)
             {
-            echo $liste_classe[$j]." ";	
+            echo $liste_classe[$j]." ";
             }
         }
     else
@@ -483,36 +484,36 @@ if (isset($_GET['ladate']) &&(isset($_GET['inser'])))
     </div></form>';
     }
 //Determination du jour courant
-if (isset($_POST['JourCourant'])) 
+if (isset($_POST['JourCourant']))
     {
     $JourCourant = $_POST['JourCourant'];
 
     //mois suivant
-    if (isset($_POST['msuiv'])) 
+    if (isset($_POST['msuiv']))
             {
             $Lundi=DebutSemaine($JourCourant + 28 * 86400);
-            } 
+            }
     //semaine suivante
-    elseif (isset($_POST['suiv'])) 
+    elseif (isset($_POST['suiv']))
             {
             $Lundi=DebutSemaine($JourCourant + 7 * 86400);
-            } 
+            }
             //semaine precedente
     elseif (isset($_POST['mprec']))
-            {			
+            {
             $Lundi=DebutSemaine($JourCourant - 28 * 86400);
-            }		
+            }
             elseif (isset($_POST['prec']))
             {
-                    //tableau hebdomadaire commençant au Lundi
+                    //tableau hebdomadaire commenï¿½ant au Lundi
             $Lundi=DebutSemaine($JourCourant - 7 * 86400);
-            } 
-            else 
+            }
+            else
             {
             $Lundi=DebutSemaine($JourCourant);
             }
     }
-else 
+else
 {
         $Lundi=DebutSemaine();
         }
@@ -520,22 +521,22 @@ else
 if (isset($_GET['ladate'])) {$Lundi=$_GET['jc'];}
 
 //fin de la semaine
-$Samedi = $Lundi + 432000; //5 * 86400 
+$Samedi = $Lundi + 432000; //5 * 86400
 //Date du debut de la semaine courante
 $datdebut=date('Ymd',$Lundi);
 //Date de la fin de la semaine courante
 $datfin=date('Ymd',$Samedi);
 //Recherche des devoirs programmes pour la semaine courante
-$rq = "SELECT id_ds, DATE_FORMAT(date,'%d'),DATE_FORMAT(date,'%m'),DATE_FORMAT(date,'%Y'), creneau, matiere, sujet,  login, dur\351e FROM devoir 
+$rq = "SELECT id_ds, DATE_FORMAT(date,'%d'),DATE_FORMAT(date,'%m'),DATE_FORMAT(date,'%Y'), creneau, matiere, sujet,  login, dur\351e FROM devoir
 WHERE date>='$datdebut' AND date<='$datfin'  AND classe= '$clas' ORDER BY date asc, creneau asc";
 $res = mysql_query($rq);
 $nb = mysql_num_rows($res);
 $num=$plan=$mat=$suj=$log=$dur=array();
 //si des devoirs ont ete programmes
-if ($nb>0) 
+if ($nb>0)
     {
     //pour chaque devoir programme
-    while ($row = mysql_fetch_array($res, MYSQL_NUM)) 
+    while ($row = mysql_fetch_array($res, MYSQL_NUM))
         {
         //determination du timestamp du jour du devoir
         $tsmp=mkTime(8,0,0,$row[2],$row[1],$row[3]);
@@ -568,14 +569,14 @@ if ($nb>0)
             }
         }
     }
-	
+
 ?>
 <div id="cfg-container">
 <div id="cfg-contenu">
 <!-- affichage du calendrier hebdomadaire -->
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post"  id="planning">
 <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
-<!-- Affichage des boutons -->	
+<!-- Affichage des boutons -->
 <input name="JourCourant" type="hidden" id="JourCourant" value="<?php echo $Lundi;?>" />
 <input name="classe" type="hidden" id="classe" value="<?php echo $clas;?>" />
 <input name="matiere" type="hidden" id="matiere" value="<?php echo $mati;?>" />
@@ -590,11 +591,11 @@ if ($nb>0)
 </tr>
 </table>
 <table id="plan-cdt" cellpadding="1" cellspacing="2">
-<thead> 
-<tr><th><img src="../images/livre.gif" alt="+" /> </th>
+<thead>
+<tr><th><img src="../images/livre.gif" alt="+" />ï¿½</th>
 <?php
 // Affichage des jours et dates de la semaine en haut du tableau"j-M-Y",
-for ($i=0; $i<=5; $i++) 
+for ($i=0; $i<=5; $i++)
     {
     $TS = $Lundi+$i*86400;
     echo '<td colspan="2">'.LeJour($TS)."<br />".datefr($TS)."</td>\n";
@@ -604,20 +605,20 @@ for ($i=0; $i<=5; $i++)
 <tbody>
 <?php
 $horaire = array("M1<br />","M2<br />","M3<br />","M4<br />","M5<br />","S1<br />","S2<br />","S3<br />","S4<br />","S5<br />");
-for ($h=0; $h<=9; $h++) 
+for ($h=0; $h<=9; $h++)
     {
-    if (in_array(substr($horaire[$h],0,2), $cren_off)) 
+    if (in_array(substr($horaire[$h],0,2), $cren_off))
         {
         echo '<tr><td class="mi-jour" colspan="13"></td></tr>';
         continue;
         }
     //Affichage de la designation des creneaux horaires
     echo "<tr><th>".$horaire[$h].date('G:i',$deb[$h])."-".date('G:i',$fin[$h])."</th>\n";
-    //Affichage du contenu des creneaux horaires 
-    for ($j=0; $j<=5; $j++) 
+    //Affichage du contenu des creneaux horaires
+    for ($j=0; $j<=5; $j++)
         {//b
         $date[$j]=date('Ymd',$Lundi + $j * 86400);
-        if (($Lundi + $j * 86400 + $dif[$h] < mktime()) )//Debut du creneau"h"  passe 
+        if (($Lundi + $j * 86400 + $dif[$h] < mktime()) )//Debut du creneau"h"  passe
             {//c
             //si c'est du passe, on l'ecrit !!
 
@@ -633,29 +634,29 @@ for ($h=0; $h<=9; $h++)
                     //on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
                     for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "EC"; }
 
-                    // s'il y a un devoir simultane 
-                    if ((isset($plan[$j][$h][1])) && (isset($dur[$j][$h][1]))) 
+                    // s'il y a un devoir simultane
+                    if ((isset($plan[$j][$h][1])) && (isset($dur[$j][$h][1])))
                         {//f
                         //et si on est pendant un devoir (cas "R" "R")
                         if (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
                             {//g
                             // on ecrit devoir en cours
                             echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
-                            //on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir 
+                            //on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
                             for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC"; }
                             }//g
                         }//f
 
-                    //cas "R" "-" ou "R" "O"	
-                    if (!isset($plan[$j][$h][1]))  
+                    //cas "R" "-" ou "R" "O"
+                    if (!isset($plan[$j][$h][1]))
                         {//h
                         echo '<td class="passe">Pass&#233;</td>' ."\n";
                         }//h
                     }	//e //fin du cas "R" pendant un devoir
-                //cas d'une cellule "EC"	
+                //cas d'une cellule "EC"
 
                 //si on est pas dans le premier creneau du devoir
-                if ($plan[$j][$h][0]=="EC")	
+                if ($plan[$j][$h][0]=="EC")
                     {//i
                     //cas "EC"-"O" "EC"-"-" "EC"-"Rp"
                     if  (($plan[$j][$h][1]=="O" || (!isset($plan[$j][$h][1]))) ||(($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) < mktime()) && ($plan[$j][$h][1]=="R")))
@@ -669,25 +670,25 @@ for ($h=0; $h<=9; $h++)
                         for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}
                         }//gg
                     }//i
-                //creneau "R" passe 
+                //creneau "R" passe
                 if ((($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][0]]) < mktime()) && ($plan[$j][$h][0]=="R")) )
                     {//k
                     //"Rp"-"-""
-                    if (!isset($plan[$j][$h][1]) ) 
+                    if (!isset($plan[$j][$h][1]) )
                         {
                         echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
-                        for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}	
-                        echo '<td   class="passe">Pass&#233;</td>' ."\n";															
+                        for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}
+                        echo '<td   class="passe">Pass&#233;</td>' ."\n";
                         }
                     //"Rp"- "R"
                     if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
                         {//
-                        // on ecrit devoir1 passe,devoir 2 encours 
+                        // on ecrit devoir1 passe,devoir 2 encours
                         echo '<td   rowspan="'.$dur[$j][$h][0].'" class="devoir">'.$mat[$j][$h][0].'</td>'."\n";
                         for ($x=1; $x<$dur[$j][$h][0]; $x++) {$plan[$j][$h+$x][0] = "O";}
                         echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
                         //on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
-                        for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}								
+                        for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}
                         }//
                     //"Rp"-"O"
                     if  (( isset($plan[$j][$h][1]) && $plan[$j][$h][1]=="O"))
@@ -706,22 +707,22 @@ for ($h=0; $h<=9; $h++)
                         }//gg
                     }//k
 
-                //creneau O passe 
+                //creneau O passe
                 if ((($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][0]]) < mktime()) && ($plan[$j][$h][0]=="O")) )
                     {
                     //O -
-                    if (!isset($plan[$j][$h][1]) ) 
+                    if (!isset($plan[$j][$h][1]) )
                         {
-                        echo '<td   class="passe">Pass&#233;</td>' ."\n";		
+                        echo '<td   class="passe">Pass&#233;</td>' ."\n";
                         }
-                    //O-R 
+                    //O-R
                     if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) >= mktime()) && ($plan[$j][$h][1]=="R"))
                         {//
                         echo '<td  rowspan="'.$dur[$j][$h][1].'" class="encours">Devoir en cours </td>'."\n";
                         //on marque les creneaux suivants pour ne pas les marques "passe" avant la fin du devoir
-                        for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}	
+                        for ($x=1; $x<$dur[$j][$h][1]; $x++) {$plan[$j][$h+$x][1] = "EC";}
                         }
-                    //O-Rp 
+                    //O-Rp
                     if  (($Lundi + $j * 86400 + ($dif[$h+$dur[$j][$h][1]]) < mktime()) && ($plan[$j][$h][1]=="R"))
                         {
                         echo '<td   rowspan="'.$dur[$j][$h][1].'" class="devoir">'.$mat[$j][$h][1].'</td>'."\n";
@@ -730,7 +731,7 @@ for ($h=0; $h<=9; $h++)
                     }
                 }//d
             else
-            //sinon  c'est un creneau vide  
+            //sinon  c'est un creneau vide
                 {
                 //"-"-"O" + "-"-"-"+
                 if  ( !isset($plan[$j][$h][1]) )
@@ -758,11 +759,11 @@ for ($h=0; $h<=9; $h++)
             }//c
         //ici ce nest plus du passe
 
-        //si ce n'est pas du passe et si rien n'est programme on affiche un lien permettant de programmer un devoir		
+        //si ce n'est pas du passe et si rien n'est programme on affiche un lien permettant de programmer un devoir
 
         //si un devoir est programme, on remplit les cellules correspondant a la duree, on affiche la matiere et le sujet
         //plus un lien pour supprimer le devoir
-        elseif ($plan[$j][$h][0]=="R") 
+        elseif ($plan[$j][$h][0]=="R")
             {//m
             if (($Lundi + $j * 86400 + $dif[$h]) > mktime())  //MODIF
                 {//n
@@ -772,16 +773,16 @@ for ($h=0; $h<=9; $h++)
                 '&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
                 .$num[$j][$h][0].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
                 '<img alt="aide"    src="../images/planifier-cdt-supp.png"   /> </a>'."</td>\n";
-                if (!isset($plan[$j][$h][1])) 
+                if (!isset($plan[$j][$h][1]))
                     {//o
                     echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
                     .'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
-                    .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
+                    .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-ï¿½-" /></a></td>'."\n";
                     }//o
-                elseif ($plan[$j][$h][1]=="R")  
+                elseif ($plan[$j][$h][1]=="R")
                     {//p
                     echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
-                    '<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" /> 
+                    '<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" />
                     <a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
                     '&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
                     .$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
@@ -794,16 +795,16 @@ for ($h=0; $h<=9; $h++)
             {//q
             if (($Lundi + $j * 86400 + $dif[$h]) > mktime())  //MODIF
                 {//r
-                if (!isset($plan[$j][$h][1])) 
+                if (!isset($plan[$j][$h][1]))
                     {//s
                     echo '<td   class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
                     .'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
-                    .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
+                    .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-ï¿½-" /></a></td>'."\n";
                     }//s
-                elseif ($plan[$j][$h][1]=="R")   
+                elseif ($plan[$j][$h][1]=="R")
                     {//t
                     echo '<td  rowspan="'.$dur[$j][$h][1].'" class="reserve">'.substr($mat[$j][$h][1],0,10).
-                    '<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" /> 
+                    '<br /><img alt="aide"   src="../images/planifier-cdt-aide.png"  title ="'.$suj[$j][$h][1].'" />
                     <a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j].
                     '&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati.'&amp;suppr=yes&amp;numdev='
                     .$num[$j][$h][1].'&amp;numrubr='.$numrub.'" title="Supprimer ce devoir">'.
@@ -811,19 +812,19 @@ for ($h=0; $h<=9; $h++)
                     }//t
                 }//r
             } //q
-        elseif (!isset($plan[$j][$h][0])) 
+        elseif (!isset($plan[$j][$h][0]))
             {//l
             if (!isset($plan[$j][$h][1]))
             echo '<td colspan="2"  class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
             .'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
-            .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
+            .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-ï¿½-" /></a></td>'."\n";
             else
             echo '<td class="libre"><a href="'.$_SERVER['PHP_SELF'].'?ladate='.$date[$j]
             .'&amp;inser=yes'.'&amp;jc='.$Lundi.'&amp;klasse='.$clas.'&amp;creneau='.$h.'&amp;matiere='.$mati
-            .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-¤-" /></a></td>'."\n";
+            .'&amp;numrubr='.$numrub.'" title="Planifier un devoir"><img src="../images/planifier-cdt-plus.png" alt="-ï¿½-" /></a></td>'."\n";
             }//l
 
-        //cellules de separation a la mi-journee			
+        //cellules de separation a la mi-journee
         if (($h==4)&&($j==5)) echo '</tr><tr><td class="mi-jour" colspan="13"></td>';
         }	//b
     echo "</tr>\n";
@@ -847,7 +848,7 @@ if (isset($_GET["suppr"]))
 </div> <!-- fin du contenu -->
 </div> <!-- fin du container-->
 <?php
-include ('../Includes/pied.inc'); 
+include ('../Includes/pied.inc');
 ?>
 </body>
-</html> 
+</html>

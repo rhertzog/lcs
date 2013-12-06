@@ -302,7 +302,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             // htlmpurifier
             $Cours = $_POST['Cours'];
             $config = HTMLPurifier_Config::createDefault();
-            $config->set('Core.Encoding', 'ISO-8859-15');
+            //$config->set('Core.Encoding', 'UTF-8');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $config->set('Filter.MyTube', true);
             $config->set('Filter.MyDaily', true);
@@ -310,6 +310,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $purifier = new HTMLPurifier($config);
             $Cours = $purifier->purify($Cours);
             $Cours=mysql_real_escape_string($Cours);
+            $Cours =  utf8_decode($Cours);
             }
         }
     else
@@ -331,7 +332,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             {
             $Afaire = $_POST['Afaire'];
             $config = HTMLPurifier_Config::createDefault();
-            $config->set('Core.Encoding', 'ISO-8859-15');
+           //$config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $config->set('Filter.MyTube', true);
             $config->set('Filter.MyDaily', true);
@@ -339,6 +340,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $purifier = new HTMLPurifier($config);
             $Afaire = $purifier->purify($Afaire);
             $Afaire = mysql_real_escape_string($Afaire);
+            $Afaire=  utf8_decode($Afaire);
             }
         }
     else
@@ -683,7 +685,7 @@ else
             <li><a href="#" title="Gestion des s&#233;quences" onclick="sequence_popup('.$cible.'); return false" class="submit-seq"></a></li>
             <li><input type="submit" name="planning" value="" title="Planifier un devoir en '.$classe_active.'" class="submit-plan" /></li>
             <li><a class="a-imprime open_wi" title="Imprimer" href="#" onclick="open_new_win(\'imprim.php?rubrique='.$cible.'\')"></a></li>
-            <li><input type="button" value="" onclick="modeleLoad('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'\')" class="load-model" title="Appliquer le mod&#232;le" /></li>
+            <li><input type="button" dest="'.$cible.'" key="'.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'" class="load-model" title="Appliquer le mod&#232;le" /></li>
             <li><input type="button" value="" onclick="modeleSave('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/save_modele.php'))).'\')" class="save-model" title="Enregistrer comme mod&#232;le" /></li>
             <li><a href="#" title="Enregistrements multiples" onclick="diffuse_popup('.$cible.'); return false" class="a-saveplus"></a></li>
             <li><br/><br/></li>
@@ -691,6 +693,8 @@ else
             </ul>
             </div>';
      }
+     //<li><input type="button" value="" onclick="modeleLoad('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'\')" class="load-model" title="Appliquer le mod&#232;le" /></li>
+
 ?>
 
 </div><!--fin du div boite 4-->
