@@ -43,9 +43,9 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
             $row = mysql_fetch_array($result, MYSQL_NUM);//)
             /*echo "<?xml version=\"1.0\"?>\n";
             echo "<sequence>\n";*/
-            echo "<span id='sht'>" .  htmlentities($row[0]) . "</span>\n";
-            echo "<span id='lgt'>" . htmlentities($row[1]) . "</span>\n";
-            echo "<span id='dn'>" . htmlentities($row[2]) . "</span>\n";
+            echo "<span id='sht'>" .  utf8_encode($row[0]) . "</span>\n";
+            echo "<span id='lgt'>" . utf8_encode($row[1]) . "</span>\n";
+            echo "<span id='dn'>" . utf8_encode($row[2]) . "</span>\n";
             //echo "</sequences>\n";
             }
         else echo "Erreur de lecture";
