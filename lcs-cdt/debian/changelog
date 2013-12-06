@@ -1,4 +1,4 @@
-lcs-cdt (2.4.10.~3) UNRELEASED; urgency=low
+lcs-cdt (2.4.10.~3) LCS; urgency=low
 
   * fix accented character bug in sequences
 
