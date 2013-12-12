@@ -123,7 +123,7 @@ if($ACTION=='initialiser')
       echo'<tr id="id_'.$eleve_id.'">';
       echo'<td class="nu"><input type="checkbox" name="f_ids" value="'.$eleve_id.'"'.$checked.' /></td>';
       echo'<td class="label">'.$tab_eleve_td[$eleve_id].'</td>';
-      echo'<td class="label">'.$archive_td.'</td>';
+      echo'<td class="label hc">'.$archive_td.'</td>';
       echo'</tr>';
     }
     elseif($objet=='voir_archive')
@@ -143,7 +143,7 @@ if($ACTION=='initialiser')
       }
       echo'<tr>';
       echo'<td>'.$tab_eleve_td[$eleve_id].'</td>';
-      echo'<td>'.$archive_td.'</td>';
+      echo'<td class="hc">'.$archive_td.'</td>';
       echo'</tr>';
     }
   }
@@ -249,7 +249,7 @@ $annee_session_brevet = annee_session_brevet();
 
 // Tag date heure initiales
 
-$tag_date_heure_initiales = date('d/m/Y H:i').' '.$_SESSION['USER_PRENOM']{0}.'.'.$_SESSION['USER_NOM']{0}.'.';
+$tag_date_heure_initiales = date('d/m/Y H:i').' '.afficher_identite_initiale($_SESSION['USER_PRENOM'],TRUE,$_SESSION['USER_NOM'],TRUE);
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Initialisation de variables supplémentaires

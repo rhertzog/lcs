@@ -45,8 +45,9 @@ $tab_menu = array
   ),
   "Paramétrages" => array
   (
-    "Mot de passe" => array( 'class' => 'compte_password'   , 'href' => 'page=compte_password'   ),
-    "Daltonisme"   => array( 'class' => 'compte_daltonisme' , 'href' => 'page=compte_daltonisme' ),
+    "Mot de passe"   => array( 'class' => 'compte_password'   , 'href' => 'page=compte_password'   ),
+    "Adresse e-mail" => array( 'class' => 'mail'              , 'href' => 'page=compte_email'      ),
+    "Daltonisme"     => array( 'class' => 'compte_daltonisme' , 'href' => 'page=compte_daltonisme' ),
   ),
   "Évaluations" => array
   (
@@ -58,8 +59,8 @@ $tab_menu = array
     "Grille d'items d'un référentiel"   => array( 'class' => 'releve_grille'   , 'href' => 'page=releve&amp;section=grille_referentiel'    ),
     "Relevé d'items d'une matière"      => array( 'class' => 'releve_items'    , 'href' => 'page=releve&amp;section=items_matiere'         ),
     "Relevé d'items pluridisciplinaire" => array( 'class' => 'releve_items'    , 'href' => 'page=releve&amp;section=items_multimatiere'    ),
- // "Bilan chronologique"               => array( 'class' => 'releve_chrono'   , 'href' => 'page=releve&amp;section=bilan_chronologique'   ),
- // Penser aussi aux restrictions d'accès
+   // "Bilan chronologique"               => array( 'class' => 'releve_chrono'   , 'href' => 'page=releve&amp;section=bilan_chronologique'   ),
+   // Penser aussi aux restrictions d'accès
     "Synthèse d'une matière"            => array( 'class' => 'releve_synthese' , 'href' => 'page=releve&amp;section=synthese_matiere'      ),
     "Synthèse pluridisciplinaire"       => array( 'class' => 'releve_synthese' , 'href' => 'page=releve&amp;section=synthese_multimatiere' ),
     "Relevé de maîtrise du socle"       => array( 'class' => 'releve_socle'    , 'href' => 'page=releve&amp;section=socle'                 ),
@@ -90,6 +91,12 @@ if(!test_user_droit_specifique($_SESSION['DROIT_VOIR_REFERENTIELS']))
 if(!test_user_droit_specifique($_SESSION['DROIT_MODIFIER_MDP']))
 {
   $tab_menu["Paramétrages"]["Mot de passe"]['class'] .= ' disabled';
+}
+
+// Changer son adresse e-mail (pas de restriction pour le profil [administrateur].
+if(!test_user_droit_specifique($_SESSION['DROIT_MODIFIER_EMAIL']))
+{
+  $tab_menu["Paramétrages"]["Adresse e-mail"]['class'] .= ' disabled';
 }
 
 // Grille d'items d'un référentiel.

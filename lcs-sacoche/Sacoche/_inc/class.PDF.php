@@ -1047,7 +1047,7 @@ class PDF extends FPDF
       $this->SetFont( 'Arial' , '' , 7 );
       $this->choisir_couleur_fond('gris_clair');
       $this->choisir_couleur_trait('gris_moyen');
-      $this->Cell( $this->page_largeur , 3 , To::pdf('Généré le '.date("d/m/Y \à H\hi\m\i\\n").' par '.$_SESSION['USER_PRENOM']{0}.'. '.$_SESSION['USER_NOM'].' ('.$_SESSION['USER_PROFIL_NOM_COURT'].') avec SACoche [ '.SERVEUR_PROJET.' ] version '.VERSION_PROG.'.') , 'TB' /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ , SERVEUR_PROJET);
+      $this->Cell( $this->page_largeur , 3 , To::pdf('Généré le '.date("d/m/Y \à H\hi\m\i\\n").' par '.afficher_identite_initiale($_SESSION['USER_PRENOM'],TRUE,$_SESSION['USER_NOM'],FALSE).' ('.$_SESSION['USER_PROFIL_NOM_COURT'].') avec SACoche [ '.SERVEUR_PROJET.' ] version '.VERSION_PROG.'.') , 'TB' /*bordure*/ , 0 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ , SERVEUR_PROJET);
     }
     elseif($this->officiel===TRUE)
     {
@@ -1168,7 +1168,7 @@ class PDF extends FPDF
         $bloc_etabl_largeur = (isset($bloc_gauche_largeur_restante)) ? $bloc_gauche_largeur_restante : 80 ;
         $bloc_etabl_hauteur = $this->officiel_bloc_etablissement($tab_etabl_coords,$tab_etabl_logo,$bloc_etabl_largeur);
         // Bloc titres
-        $alerte_archive = ($tab_adresse==='archive') ? TRUE : FALSE ;
+        $alerte_archive = (($tab_adresse==='archive')&&($_SESSION['OFFICIEL']['ARCHIVE_AJOUT_MESSAGE_COPIE'])) ? TRUE : FALSE ;
         if( (is_array($tab_adresse)) && ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']=='oui_force') )
         {
           // En dessous du bloc établissement
@@ -1479,6 +1479,7 @@ class PDF extends FPDF
     $this->AddPage($this->orientation , 'A4');
     $page_numero = $this->page - $this->page_numero_first + 1 ;
     $this->choisir_couleur_texte('gris_fonce');
+    $this->SetFont('Arial' , '' , 7);
     $this->Cell( $this->page_largeur_moins_marges , $this->lignes_hauteur , To::pdf($this->doc_titre.' - '.$this->eleve_nom.' '.$this->eleve_prenom.' - Page '.$page_numero.'/'.$this->page_nombre_alias) , 0 /*bordure*/ , 1 /*br*/ , $this->page_nombre_alignement , FALSE /*remplissage*/ );
     $this->choisir_couleur_texte('noir');
   }
@@ -1523,7 +1524,7 @@ class PDF extends FPDF
         $bloc_etabl_largeur = (isset($bloc_gauche_largeur_restante)) ? $bloc_gauche_largeur_restante : 80 ;
         $bloc_etabl_hauteur = $this->officiel_bloc_etablissement($tab_etabl_coords,$tab_etabl_logo,$bloc_etabl_largeur);
         // Bloc titres
-        $alerte_archive = ($tab_adresse==='archive') ? TRUE : FALSE ;
+        $alerte_archive = (($tab_adresse==='archive')&&($_SESSION['OFFICIEL']['ARCHIVE_AJOUT_MESSAGE_COPIE'])) ? TRUE : FALSE ;
         if( (is_array($tab_adresse)) && ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']=='oui_force') )
         {
           // En dessous du bloc établissement
@@ -1613,7 +1614,10 @@ class PDF extends FPDF
     // La hauteur de ligne a déjà été calculée ; mais il reste à déterminer si on saute une page ou non en fonction de la place restante (et sinon => interligne)
     $hauteur_dispo_restante = $this->page_hauteur - $this->GetY() - $this->marge_bas ;
     $lignes_nb = 1.5 + $lignes_nb ; // matière(marge+intitulé) + lignes dont résumés (on ne compte pas la légende)
-    $test_nouvelle_page = ($this->lignes_hauteur*$lignes_nb > $hauteur_dispo_restante) && ($this->GetY() > $this->lignes_hauteur*5) ; // 2e condition pour éviter un saut de page si déjà en haut (à cause d'une liste à rallonge dans une matière)
+    $test_place_suffisante_page_courante = ($this->lignes_hauteur*$lignes_nb > $hauteur_dispo_restante);
+    $test_pas_deja_en_haut_de_page = ($this->GetY() > $this->marge_haut+$this->lignes_hauteur*8); // pour éviter un saut de page si déjà en haut (à cause d'une liste à rallonge dans une matière)
+    $test_place_suffisante_page_entiere = ($this->lignes_hauteur*$lignes_nb < $this->page_hauteur_moins_marges); // pas la peine de sauter une page si de toute façon ça ne rentre pas sur une page
+    $test_nouvelle_page = $test_place_suffisante_page_courante && $test_pas_deja_en_haut_de_page && $test_place_suffisante_page_entiere ;
     if( $test_nouvelle_page )
     {
       if( ($this->legende) && (!$this->legende_deja_affichee) )
@@ -1672,10 +1676,7 @@ class PDF extends FPDF
     if($hauteur_requise > $hauteur_restante)
     {
       // Prendre une nouvelle page si ça ne rentre pas, avec recopie de l'identité de l'élève (y a des bilans avec tellement d'items qu'il faut aussi mettre le test ici...
-      $this->AddPage($this->orientation , 'A4');
-      $this->choisir_couleur_texte('gris_fonce');
-      $this->Cell( $this->page_largeur_moins_marges , $this->lignes_hauteur , To::pdf($this->eleve_nom.' '.$this->eleve_prenom.' (suite)') , 0 /*bordure*/ , 1 /*br*/ , 'R' /*alignement*/ , FALSE /*remplissage*/ );
-      $this->choisir_couleur_texte('noir');
+      $this->bilan_item_individuel_rappel_eleve_page();
       $this->SetXY( $this->marge_gauche , $this->GetY() + 2 );
     }
     list($ref_matiere,$ref_suite) = explode('.',$item_ref,2);
@@ -1718,11 +1719,12 @@ class PDF extends FPDF
   // grille_referentiel_legende()
   // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public function grille_referentiel_initialiser( $cases_nb , $cases_largeur , $lignes_nb , $legende_nb_lignes , $colonne_bilan , $colonne_vide )
+  public function grille_referentiel_initialiser( $cases_nb , $cases_largeur , $lignes_nb , $colonne_bilan , $colonne_vide , $aff_anciennete_notation , $aff_etat_acquisition )
   {
     // On calcule la hauteur de la ligne et la taille de la police pour tout faire rentrer sur une page si possible, un minimum de pages sinon
-    $hauteur_dispo_par_page = $this->page_hauteur_moins_marges ;
-    $lignes_nb = 1 + 1 + 1 + $lignes_nb + ($this->legende*$legende_nb_lignes+0.25) ; // intitulé-structure + matière-niveau-élève + marge (1 & un peu plus car aussi avant domaines) + lignes (domaines+thèmes+items) + légende
+    $hauteur_dispo_par_page  = $this->page_hauteur_moins_marges ;
+    $this->legende_nb_lignes = 1 + (int)$aff_anciennete_notation + (int)$aff_etat_acquisition ;
+    $lignes_nb = 1 + 1 + 1 + $lignes_nb + ($this->legende*$this->legende_nb_lignes+0.25) ; // intitulé-structure + matière-niveau-élève + marge (1 & un peu plus car aussi avant domaines) + lignes (domaines+thèmes+items) + légende
     $hauteur_ligne_minimale = 3.5;
     $hauteur_ligne_maximale = 5;
     $nb_pages = 0;
@@ -1748,6 +1750,10 @@ class PDF extends FPDF
     $this->colonne_vide_largeur  = $colonne_vide;
     $this->reference_largeur = 10; // valeur fixe
     $this->intitule_largeur  = $this->page_largeur_moins_marges - $this->reference_largeur - ($this->cases_nb * $this->cases_largeur) - $this->colonne_bilan_largeur - $this->colonne_vide_largeur ;
+    $this->legende_deja_affichee = FALSE; // On n'est pas certain qu'il y ait la place pour la légende en dernière page, alors on la met dès que possible
+    $this->aff_codes_notation      = TRUE;
+    $this->aff_anciennete_notation = $aff_anciennete_notation;
+    $this->aff_etat_acquisition    = $aff_etat_acquisition;
     $this->SetMargins($this->marge_gauche , $this->marge_haut , $this->marge_droite);
     $this->SetAutoPageBreak(FALSE);
     $this->calculer_dimensions_images($this->cases_largeur,$this->cases_hauteur);
@@ -1779,14 +1785,29 @@ class PDF extends FPDF
     $this->SetXY($this->marge_gauche,$this->marge_haut+2.5*$this->lignes_hauteur);
   }
 
+  public function grille_referentiel_new_page( $hauteur_dispo_restante )
+  {
+    if( ($this->legende) && (!$this->legende_deja_affichee) )
+    {
+      // On n'est pas certain qu'il y ait la place pour la légende en dernière page, alors on la met dès que possible
+      $test_place_legende = ($this->lignes_hauteur*$this->legende_nb_lignes*0.9 < $hauteur_dispo_restante) ;
+      if( $test_place_legende )
+      {
+        $this->grille_referentiel_legende();
+        $this->legende_deja_affichee = TRUE;
+      }
+    }
+    $this->AddPage($this->orientation , 'A4');
+  }
+
   public function grille_referentiel_domaine( $domaine_nom , $domaine_nb_lignes )
   {
     $hauteur_requise = $this->cases_hauteur * $domaine_nb_lignes;
     $hauteur_restante = $this->page_hauteur - $this->GetY() - $this->marge_bas;
     if($hauteur_requise > $hauteur_restante)
     {
-      // Prendre une nouvelle page si ça ne rentre pas
-      $this->AddPage($this->orientation , 'A4');
+      // Prendre une nouvelle page après avoir éventuellement affiché la légende
+      $this->grille_referentiel_new_page( $hauteur_restante );
     }
     $this->SetFont('Arial' , 'B' , $this->taille_police*1.25);
     $this->SetXY(15 , $this->GetY()+1);
@@ -1799,8 +1820,8 @@ class PDF extends FPDF
     $hauteur_restante = $this->page_hauteur - $this->GetY() - $this->marge_bas;
     if($hauteur_requise > $hauteur_restante)
     {
-      // Prendre une nouvelle page si ça ne rentre pas
-      $this->AddPage($this->orientation , 'A4');
+      // Prendre une nouvelle page après avoir éventuellement affiché la légende
+      $this->grille_referentiel_new_page( $hauteur_restante );
     }
     $this->SetFont('Arial' , 'B' , $this->taille_police);
     $this->choisir_couleur_fond('gris_moyen');
@@ -1827,13 +1848,15 @@ class PDF extends FPDF
     $this->choisir_couleur_fond('blanc');
   }
 
-  public function grille_referentiel_legende( $codes_notation , $anciennete_notation , $score_bilan )
+  public function grille_referentiel_legende()
   {
-    $nb_lignes = (int)$codes_notation + (int)$anciennete_notation + (int)$score_bilan ;
-    $ordonnee = $this->page_hauteur - $this->marge_bas - $this->lignes_hauteur*$nb_lignes*0.9 ;
-    if($codes_notation)      { $this->afficher_legende( 'codes_notation'      /*type_legende*/ , $ordonnee     /*ordonnée*/ ); }
-    if($anciennete_notation) { $this->afficher_legende( 'anciennete_notation' /*type_legende*/ , $this->GetY() /*ordonnée*/ ); }
-    if($score_bilan)         { $this->afficher_legende( 'score_bilan'         /*type_legende*/ , $this->GetY() /*ordonnée*/ ); }
+    if(!$this->legende_deja_affichee)
+    {
+      $ordonnee = $this->page_hauteur - $this->marge_bas - $this->lignes_hauteur*$this->legende_nb_lignes*0.9 ;
+      if($this->aff_codes_notation)      { $this->afficher_legende( 'codes_notation'      /*type_legende*/ , $ordonnee     /*ordonnée*/ ); }
+      if($this->aff_anciennete_notation) { $this->afficher_legende( 'anciennete_notation' /*type_legende*/ , $this->GetY() /*ordonnée*/ ); }
+      if($this->aff_etat_acquisition)         { $this->afficher_legende( 'score_bilan'         /*type_legende*/ , $this->GetY() /*ordonnée*/ ); }
+    }
   }
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2014,7 +2037,8 @@ class PDF extends FPDF
     {
       extract($tab);  // $prof_info $appreciation $note
       $nom_auteur = ($nb_saisies==1) ? '' : '[ '.$prof_info.' ] ' ; // associer le nom de l'auteur avec l'appréciation si plusieurs appréciations pour une même rubrique
-      $texte .= str_replace( array("\r\n","\r","\n") , ' ' , $nom_auteur.$appreciation )."\r\n";
+      $appreciation_sans_br = str_replace( array("\r\n","\r","\n") , ' ' , $appreciation , $nombre_br );
+      $texte .= ($nombre_br<4-$nb_saisies) ? $nom_auteur.$appreciation."\r\n" : $nom_auteur.$appreciation_sans_br."\r\n" ;
       $nb_lignes_prevues += $nb_lignes_appreciation_potentielle_par_prof_hors_intitule;
     }
     // Intitulé "Appréciations / Conseils :" + auteurs
@@ -2150,7 +2174,7 @@ class PDF extends FPDF
           $bloc_etabl_largeur = (isset($bloc_gauche_largeur_restante)) ? $bloc_gauche_largeur_restante : 80 ;
           $bloc_etabl_hauteur = $this->officiel_bloc_etablissement($tab_etabl_coords,$tab_etabl_logo,$bloc_etabl_largeur);
           // Bloc titres
-          $alerte_archive = ($tab_adresse==='archive') ? TRUE : FALSE ;
+          $alerte_archive = (($tab_adresse==='archive')&&($_SESSION['OFFICIEL']['ARCHIVE_AJOUT_MESSAGE_COPIE'])) ? TRUE : FALSE ;
           if( (is_array($tab_adresse)) && ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']=='oui_force') )
           {
             // En dessous du bloc établissement

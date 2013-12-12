@@ -518,10 +518,10 @@ public static function DB_maj_base($version_base_structure_actuelle)
       // récupérer qq infos pour maj la suite
       $DB_ROW = DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="css_note_style"' );
       require_once(CHEMIN_DOSSIER_INCLUDE.'tableau_notes_txt.php');
-      $rr = $tab_notes_txt[$DB_ROW['parametre_valeur']]['RR'];
-      $r  = $tab_notes_txt[$DB_ROW['parametre_valeur']]['R'];
-      $v  = $tab_notes_txt[$DB_ROW['parametre_valeur']]['V'];
-      $vv = $tab_notes_txt[$DB_ROW['parametre_valeur']]['VV'];
+      $rr = $tab_notes_info[$DB_ROW['parametre_valeur']]['RR'];
+      $r  = $tab_notes_info[$DB_ROW['parametre_valeur']]['R'];
+      $v  = $tab_notes_info[$DB_ROW['parametre_valeur']]['V'];
+      $vv = $tab_notes_info[$DB_ROW['parametre_valeur']]['VV'];
       $DB_ROW = DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , 'SELECT parametre_valeur FROM sacoche_parametre WHERE parametre_nom="eleve_options"' );
       $eleve_bilans = str_replace( array(',SoclePourcentageAcquis',',SocleEtatValidation','SoclePourcentageAcquis,','SocleEtatValidation,','SoclePourcentageAcquis','SocleEtatValidation') , '' , $DB_ROW['parametre_valeur'] );
       $eleve_socle  = 'SocleAcces,'.str_replace( array(',BilanMoyenneScore',',BilanPourcentageAcquis','BilanMoyenneScore,','BilanPourcentageAcquis,','BilanMoyenneScore','BilanPourcentageAcquis') , '' , $DB_ROW['parametre_valeur'] );
@@ -1258,7 +1258,7 @@ public static function DB_maj_base($version_base_structure_actuelle)
       $DB_SQL = 'UPDATE sacoche_saisie SET saisie_info=:saisie_info WHERE prof_id=:prof_id AND eleve_id=:eleve_id AND devoir_id=:devoir_id AND item_id=:item_id';
       foreach($DB_TAB as $DB_ROW)
       {
-        $saisie_info = $DB_ROW['devoir_info'].' ('.$DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']{0}.'.)';
+        $saisie_info = $DB_ROW['devoir_info'].' ('.afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE).')';
         $DB_VAR = array(':prof_id'=>$DB_ROW['prof_id'],':eleve_id'=>$DB_ROW['eleve_id'],':devoir_id'=>$DB_ROW['devoir_id'],':item_id'=>$DB_ROW['item_id'],':saisie_info'=>$saisie_info);
         DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
       }
@@ -2706,9 +2706,8 @@ public static function DB_maj_base($version_base_structure_actuelle)
         DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="casshib/shib/toutatice" WHERE parametre_nom="cas_serveur_root" ' );
         DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="https://www.toutatice.fr/casshib/shib/666666/serviceValidate" WHERE parametre_nom="cas_serveur_url_validate" ' );
       }
-      // réordonner un peu la table sacoche_parametre et retirer une ligne qui ne correspond à rien
+      // retirer une ligne qui ne correspond à rien
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'DELETE FROM sacoche_parametre WHERE parametre_nom="annee_utilisation_numero" ' );
-      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom ' );
     }
   }
 
@@ -2768,8 +2767,6 @@ public static function DB_maj_base($version_base_structure_actuelle)
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_impression_pdf"        , "DIR" )' );
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_modifier_statut"       , "DIR" )' );
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_fiche_brevet_voir_archive"          , "DIR,ENS,DOC,EDU" )' );
-      // réordonner la table sacoche_parametre
-      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom' );
     }
   }
 
@@ -2954,6 +2951,46 @@ public static function DB_maj_base($version_base_structure_actuelle)
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_saisie CHANGE saisie_note saisie_note ENUM( "VV", "V", "R", "RR", "ABS", "DISP", "NE", "NF", "NN", "NR", "REQ" ) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT "NN" ' );
       // ajout de paramètre
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_voir_etat_acquisition_avec_evaluation" , "" )' );
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // MAJ 2013-10-05 => 2013-11-28
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  if($version_base_structure_actuelle=='2013-10-05')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-11-28';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // ajout de paramètre
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "droit_modifier_email" , "DIR,ENS,DOC,EDU,TUT,ELV" )' );
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // MAJ 2013-11-28 => 2013-12-08
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  if($version_base_structure_actuelle=='2013-11-28')
+  {
+    if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
+    {
+      $version_base_structure_actuelle = '2013-12-08';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+      // valeurs renommées dans sacoche_niveau
+      if(empty($reload_sacoche_niveau))
+      {
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_niveau SET niveau_ref="ULIS", niveau_nom="Unité localisée pour l\'inclusion scolaire" WHERE niveau_id=38' );
+        DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_niveau SET niveau_nom="Maternelle, toute petite section" WHERE niveau_id=10' );
+      }
+      // modification sacoche_officiel_fichier
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_officiel_fichier CHANGE fichier_date fichier_date_generation DATE NOT NULL DEFAULT "0000-00-00"' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_officiel_fichier ADD fichier_date_consultation_eleve  DATE DEFAULT NULL' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_officiel_fichier ADD fichier_date_consultation_parent DATE DEFAULT NULL' );
+      // ajout de paramètres
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_archive_ajout_message_copie"      , "1" )' );
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_archive_retrait_tampon_signature" , "1" )' );
+      // réordonner la table sacoche_parametre
       DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom' );
     }
   }
