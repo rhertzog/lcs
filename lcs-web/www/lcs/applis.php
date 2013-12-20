@@ -1,5 +1,5 @@
-<?php 
-/* lcs/applis.php derniere mise a jour : 07/04/2011 */
+<?php
+/* lcs/applis.php Derniere version :20/12/2013 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -9,7 +9,7 @@ include ("./includes/jlcipher.inc.php");
 define('NB_COLONNES',3);
 
 // Lecture de la table applis
-if (!@mysql_select_db($DBAUTH, $authlink)) 
+if (!@mysql_select_db($DBAUTH, $authlink))
     die ("S&#233;lection de base de donn&#233;es impossible.");
 $query="SELECT * from applis";
 $result=@mysql_query($query, $authlink);
@@ -22,8 +22,10 @@ else
 
 // Verification de l'authentification
 list ($idpers, $login)= isauth();
-if ($idpers == "0")    
+if ($idpers == "0")    {
     header("Location:$urlauth");
+    exit;
+}
 elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
 
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
@@ -50,8 +52,8 @@ $liste['Liens'][] = "statandgo.php?use=Annu";
 $liste['Titres'][] = "Annuaire des utilisateurs";
 
 // Affichage des Menus users non privilegies
-
-  // lecture lcs_applis 
+$clientftp = $elfinder = $pma = $smbwebclient = false;
+  // lecture lcs_applis
   $query="SELECT  name, value from applis where type='M' order by name";
   $result=mysql_query($query);
   if ($result) {
@@ -59,7 +61,7 @@ $liste['Titres'][] = "Annuaire des utilisateurs";
             if ( $r->name == "clientftp" ) $clientftp = true;
             if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
-            if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
+            if ( $r->name == "smbwebclient" ) $smbwebclient = true;
         }
     }
     mysql_free_result($result);
@@ -85,7 +87,7 @@ if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
   $liste['Titres'][] = "Client SE3";
 }
 
-// Liens dynamiques vers les plugins installes 
+// Liens dynamiques vers les plugins installes
 $query="SELECT * from applis where type='P' OR type='N' order by name";
 $result=mysql_query($query);
 if ($result) {

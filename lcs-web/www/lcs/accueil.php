@@ -1,28 +1,28 @@
 <?php
-/* lcs/accueil derniere mise a jour : 07/04/2011 */
+/* lcs/accueil Derniere version : 20/12/2013 */
 
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 include ("./includes/jlcipher.inc.php");
 
-
 list ($idpers, $login)= isauth();
-if ($idpers == "0")    
+if ($idpers == "0")
+    {
     header("Location:$urlauth");
+    exit;}
 elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
 // Recherche du nom a partir du login
 list($user, $groups)=people_get_variables ($login, false);
 // Recherche si l'utilisateur connecte possede le droit lcs_is_admin
 $is_admin = is_admin("Lcs_is_admin",$login);
-
 // Recherche si monlcs est present
-if (!@mysql_select_db($DBAUTH, $authlink)) 
+if (!@mysql_select_db($DBAUTH, $authlink))
     die ("S&#233;lection de base de donn&#233;es impossible.");
 $query="SELECT value from applis where name='monlcs'";
 $result = @mysql_query($query, $authlink);
 if ($result)
-    while ($r=@mysql_fetch_array($result)) 
+    while ($r=@mysql_fetch_array($result))
                $monlcs=$r["value"];
 else
     die ("Param&#232;tres absents de la base de donn&#233;es.");
@@ -51,7 +51,7 @@ echo $html;
           vous encourageons, a changer votre mot de passe <a href=\"../Annu/mod_pwd.php\">en suivant ce lien... </a>
           </tt></li>\n";
   } else {
-    $accord == "";
+    $accord = "";
     if ($user["sexe"] == "F") $accord="e";
     echo "<li><tt>Derni&#232;re connexion le : " . displogin($idpers) . "</tt></li>\n";
     /* Affichage des stats user */
@@ -70,8 +70,9 @@ echo $html;
   }
 
   // Affichage des Menus users non privilegies
-
-  // lecture lcs_applis 
+//Initialisation
+$clientftp = $elfinder = $pma = $smbwebclient = false;
+  // lecture lcs_applis
   $query="SELECT  name, value from applis where type='M' order by name";
   $result=@mysql_query($query);
   if ($result) {
@@ -79,7 +80,7 @@ echo $html;
             if ( $r->name == "clientftp" ) $clientftp = true;
             if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
-            if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
+            if ( $r->name == "smbwebclient" ) $smbwebclient = true;
         }
     }
     @mysql_free_result($result);
@@ -87,7 +88,7 @@ echo $html;
   echo "<blockquote>\n";
   // Affichage du menu espace web si l'espace perso existe
   if ( is_dir("/home/".$login) && is_dir("/home/".$login."/public_html") && is_dir("/home/".$login."/Documents")) {
-    if ( !isset($monlcs) ){ 
+    if ( !isset($monlcs) ){
       $html = "<table width='100%' border='0' cellspacing='10'>\n";
       if ( $clientftp ) {
         $html .= "<tr>\n";

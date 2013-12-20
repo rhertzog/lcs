@@ -1,6 +1,8 @@
 <?php
-/* lcs/logout.php version du : 14/12/2011*/
+/* lcs/logout.php Derniere version : 20/12/2013*/
 require ("./includes/headerauth.inc.php");
+//init variables
+$spip=$squirrelmail=$roundcube=0;
 // Liste des applis installees
 $result=@mysql_db_query("$DBAUTH","SELECT * from applis", $authlink);
 if ($result)
@@ -9,7 +11,7 @@ if ($result)
 else
 	die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);
-// Logout LCS session 
+// Logout LCS session
 list ($idpers,$login)= isauth();
 close_session($idpers);
 // HTML Header

@@ -1,5 +1,5 @@
 <?php
-/* Annu/includes/ldap.inc.php Derniere version : 14/04/2011 */
+/* Annu/includes/ldap.inc.php Derniere version : 20/12/2013 */
 
 // Fonctions de comparaison utilisees dans la fonction usort
 
@@ -64,7 +64,7 @@ function people_get_variables ($uid, $mode)
   global $ldap_server, $ldap_port, $dn;
   global $error;
   $error="";
-
+ $ret_people= $ret_group=array();
   // LDAP attribute
   $ldap_people_attr = array(
     "uid",				// login
@@ -99,18 +99,18 @@ function people_get_variables ($uid, $mode)
           $gecos = $info[0]["gecos"][0];
           $tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
           $ret_people = array (
-              "uid"				=> $info[0]["uid"][0],
-              "nom"				=> stripslashes( $info[0]["sn"][0] ),
+              "uid"		=> $info[0]["uid"][0],
+              "nom"		=> stripslashes( $info[0]["sn"][0] ),
               "fullname"		=> stripslashes( $info[0]["cn"][0] ),
-              "prenom"			=> $info[0]["givenname"][0],
-              "pseudo"			=> $info[0]["initials"][0],
-              "gecos"			=> $info[0]["gecos"][0],
-              "email"			=> $info[0]["mail"][0],
-              "tel"				=> $info[0]["telephonenumber"][0],
+              "prenom"		=> $info[0]["givenname"][0],
+              "pseudo"		=> $info[0]["initials"][0],
+              "gecos"		=> $info[0]["gecos"][0],
+              "email"		=> $info[0]["mail"][0],
+            //  "tel"		=> $info[0]["telephonenumber"][0],
               "homedirectory"	=> $info[0]["homedirectory"][0],
-              "description"		=> $info[0]["description"][0],
-              "shell"			=> $info[0]["loginshell"][0],
-              "sexe"			=> $tmp[2]
+              //"description"		=> $info[0]["description"][0],
+              "shell"		=> $info[0]["loginshell"][0],
+              "sexe"		=> $tmp[2]
             );
         }
         @ldap_free_result ( $result );
@@ -147,7 +147,7 @@ function people_get_variables ($uid, $mode)
 
   return array($ret_people, $ret_group);
 }
-// Recherche du groupe principal (posixGroup) d'appartenance 
+// Recherche du groupe principal (posixGroup) d'appartenance
 function people_get_group ($uid)
 {
   global $ldap_server, $ldap_port, $dn;
@@ -480,8 +480,8 @@ function search_people_groups ($uids,$filter,$order) {
     }
     @ldap_close ( $ds );
   } else $error = "Erreur de connection au serveur LDAP";
-  
-  if (count($ret)) { 
+
+  if (count($ret)) {
     # Correction tri du tableau
     # Tri par critere categorie ou intitule de groupe
     if ( $order == "cat" ) usort ($ret, "cmp_cat");
@@ -495,16 +495,16 @@ function search_people_groups ($uids,$filter,$order) {
 	 	}
     }
     if (count($tab_order) > 0 ) {
-    	# On decoupe le tableau $ret en autant de sous tableaux $tmp que de criteres $order 
+    	# On decoupe le tableau $ret en autant de sous tableaux $tmp que de criteres $order
     	for ($i=0; $i < count($tab_order); $i++) {
 			$j=0;
-			for ( $loop=0; $loop < count($ret); $loop++) { 
-	   		if ( $ret[$loop][$order] == $tab_order[$i] ) { 
+			for ( $loop=0; $loop < count($ret); $loop++) {
+	   		if ( $ret[$loop][$order] == $tab_order[$i] ) {
 					$ret_tmp[$i][$j] = $ret[$loop];
-					$j++; 
-	    		} 
+					$j++;
+	    		}
 			}
-    	}      
+    	}
     	# Tri alpabetique des sous tableaux
     	for ( $loop=0; $loop < count($ret_tmp); $loop++) usort ($ret_tmp[$loop], "cmp_name");
     	# Reassemblage des tableaux temporaires
@@ -514,7 +514,7 @@ function search_people_groups ($uids,$filter,$order) {
     } else {
     	  usort ($ret, "cmp_name");
 		  return $ret;
-    }	
+    }
   }
 
 }
@@ -711,7 +711,7 @@ function userChangedPwd($uid, $userpwd, $old) {
     	$action = "synchro_mdp";
     	exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action $userpwd");
     }
-    return true;	
+    return true;
   } else return false;
 }
 
@@ -777,7 +777,7 @@ function pwdMustChange ($login) {
                             $tmp = explode (",",$info[0]["gecos"][0]);
                             $date_naiss=$tmp[1];
                         }
-                    }		
+                    }
                     @ldap_free_result ( $result );
                 } else $error = "Erreur de lecture dans l'annuaire LDAP";
             } else $error = "Echec du bind anonyme";

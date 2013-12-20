@@ -1,3 +1,10 @@
+lcs-web (2.4.10~3) LCS; urgency=low
+
+  * Non-maintainer upload.
+  * fix Apache errors (Undefined variable, index or string)
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 09 Dec 2013 13:40:04 +0100
+
 lcs-web (2.4.10~2) Lcs; urgency=low
 
   * Replace mkTicket.rb by a php section code in log2cas*.php

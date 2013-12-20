@@ -1,17 +1,17 @@
 <?php
-/* lcs/auth.php version du :02/02/2011 */
+/* lcs/auth.php Derniere version : 20/12/2013 */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
 
-// On autorise pas la réauthentification si deja authentifie
+// On autorise pas la reauthentification si deja authentifie
 list ($idpers, $login)= isauth();
-if ($idpers != "0")
+if ($idpers != "0") {
     header("Location:accueil.php");
-
-if ( is_dir ("/usr/share/lcs/swekey")) 
+exit;
+}
+if ( is_dir ("/usr/share/lcs/swekey"))
     include_once '/usr/share/lcs/swekey/my_login_verify.php';
-
 
 // register globals
 if (isset($_POST['login'])) $login=trim($_POST['login']); else $login="" ;
@@ -20,7 +20,7 @@ if (isset($_POST['string_auth'])) $string_auth=$_POST['string_auth']; else $stri
 if (isset($_POST['time'])) $time=$_POST['time']; else $time="" ;
 if (isset($_POST['client_ip'])) $client_ip=$_POST['client_ip']; else $client_ip="" ;
 if (isset($_POST['timestamp'])) $timestamp=$_POST['timestamp']; else $timestamp="" ;
-$error=$_GET['error'];
+$error = (isset($_GET['error'])) ? $_GET['error'] : "";
 
         if ($login) {
                 // Decodage de la chaine d'authentification cote serveur avec une cle privee extraction des parametres
@@ -68,12 +68,12 @@ $error=$_GET['error'];
                         #
                         # Detection de l'origine de la requete
                         #
-                        list ($ip_client_prefix) = explode (".", remote_ip()); 
+                        list ($ip_client_prefix) = explode (".", remote_ip());
                         list ($ip_serv_prefix) = explode (".",getenv("SERVER_ADDR"));
                         if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
                         #
                         $date=date("YmdHis");
-			if (!@mysql_select_db($DBAUTH, $authlink)) 
+			if (!@mysql_select_db($DBAUTH, $authlink))
     				die ("S&#233;lection de base de donn&#233;es impossible.");
 			$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
         		$result=@mysql_query($query,$authlink);
@@ -93,7 +93,7 @@ $error=$_GET['error'];
                             echo "</script>\n";
                         }
                 }
-        } 
+        }
         header_crypto_html("...::: Authentification LCS :::...");
 ?>
                 <h3>Authentification</h3>

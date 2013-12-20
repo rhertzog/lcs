@@ -1,5 +1,6 @@
 <?
-$url_redirect=$_GET['url_redirect'];
+/* lcs/index.php Derniere version : 20/12/2013 */
+$url_redirect=(empty($_GET['url_redirect'])) ? '' : $_GET['url_redirect'];
 require  "../lcs/includes/headerauth.inc.php";
 $query = "SELECT * from applis";
 $result=@mysql_query($query, $authlink);
@@ -15,6 +16,8 @@ $ua = $_SERVER['HTTP_USER_AGENT'];
 $ie5 = mb_strpos($ua, 'MSIE 5') !== false;
 $ie6 = mb_strpos($ua, 'MSIE 6') !== false;
 // Redirects to desktop if not IE.
+if (!isset($desktop)) $desktop=0;
+if (!isset($monlcs)) $monlcs=0;
 if ( $desktop ==1 && ! $ie5 && ! $ie6 ) header("Location:../desktop/");
 if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
 if ( $url_accueil == "accueil.php" && $monlcs== 1 ) $url_accueil = "/monlcs/index.php";

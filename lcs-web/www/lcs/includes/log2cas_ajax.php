@@ -1,12 +1,14 @@
 <?php
+// Derniere version :20/12/2013
 
 include "headerauth.inc.php";
 include ("../../Annu/includes/ldap.inc.php");
 include ("../../Annu/includes/ihm.inc.php");
+//init variables
+$lt=$clientIP=$str="";
 
 // Ce script cree les tickets LT et TGT pour le CAS et recupere les donnees LDAP pour la suite
 list ($idpers, $login)= isauth();
-
 
 if ($idpers)
 	$password = urldecode(xoft_decode($_COOKIE['LCSuser'], $key_priv));
@@ -17,10 +19,10 @@ if ($login)  {
 		$ch='';
 		$Rec_Data='';
 		$service = "http://".$hostname.".".$domain."/lcs/index.php?url_redirect=accueil.php";
-		//on casse le cookie 
+		//on casse le cookie
 		setcookie('lt',"$lt",0,"/","",0);
 
-		if (!@mysql_select_db("casserver", $authlink)) 
+		if (!@mysql_select_db("casserver", $authlink))
 			die ("S&#233;lection de base de donn&#233;es impossible.");
 		$query="SELECT * FROM `casserver`.`casserver_lt` where consumed = NULL and client_hostname='$clientIP' ORDER By id DESC;";
 		$result=@mysql_query($query, $authlink);
@@ -34,9 +36,9 @@ if ($login)  {
 
   			$letters = "1234567890ABCDEF";
   			while(strlen($str)<19){
-    			$pos = rand(1,16);
-    			$str .= $letters{$pos};
-  			}	
+    			$pos = rand(0,15);
+    			$str .= $letters[$pos];
+  			}
 		   $lt='LT-'.time()."r".$str;
 
 			$date = date("Y-m-d H:i:s");
@@ -56,7 +58,9 @@ if ($login)  {
 			$r = @mysql_query($query) or die("Erreur LT sql");
 
 			define('POSTURL', 'https://'.$hostname.'.'.$domain.':8443/login');
-			define('POSTVARS', "username=$login&password=$password&lt=$lt&service=".$_POST['service']);
+                                                       //init variable si $_POST n'existe pas
+                                                      $postservice= (empty( $_POST['service'])) ? "" : $_POST['service'];
+			define('POSTVARS', "username=$login&password=$password&lt=$lt&service=".$postservice);
 
 			$ch = curl_init(POSTURL);
 			ob_start();

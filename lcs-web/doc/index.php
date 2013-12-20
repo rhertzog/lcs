@@ -30,28 +30,28 @@ if ( is_dir( "/usr/share/doc/lcs/monlcs" ) ) {
 ?>
 <hr />
 <?
-$lcsdoc[0][module]="base";
-$lcsdoc[0][comment]="Lcs base";
-$lcsdoc[1][module]="web";
-$lcsdoc[1][comment]="Lcs web";
-$lcsdoc[2][module]="phpsysinfo";
-$lcsdoc[2][comment]="Lcs phpsysinfo";
-$lcsdoc[3][module]="dns";
-$lcsdoc[3][comment]="Lcs service de nom DNS Bind";
-$lcsdoc[4][module]="smtp";
-$lcsdoc[4][comment]="Service de courrier smtp Postfix";
-$lcsdoc[5][module]="imap";
-$lcsdoc[5][comment]="Service de courrier imap";
-$lcsdoc[6][module]="squirrelmail";
-$lcsdoc[6][comment]="Webmail squirrelmail";
-$lcsdoc[7][module]="squid";
-$lcsdoc[7][comment]="Cache mandataire squid";
-$lcsdoc[8][module]="squidguard";
-$lcsdoc[8][comment]="Filtrage d'URL squidguard";
+$lcsdoc[0]['module']="base";
+$lcsdoc[0]['comment']="Lcs base";
+$lcsdoc[1]['module']="web";
+$lcsdoc[1]['comment']="Lcs web";
+$lcsdoc[2]['module']="phpsysinfo";
+$lcsdoc[2]['comment']="Lcs phpsysinfo";
+$lcsdoc[3]['module']="dns";
+$lcsdoc[3]['comment']="Lcs service de nom DNS Bind";
+$lcsdoc[4]['module']="smtp";
+$lcsdoc[4]['comment']="Service de courrier smtp Postfix";
+$lcsdoc[5]['module']="imap";
+$lcsdoc[5]['comment']="Service de courrier imap";
+$lcsdoc[6]['module']="squirrelmail";
+$lcsdoc[6]['comment']="Webmail squirrelmail";
+$lcsdoc[7]['module']="squid";
+$lcsdoc[7]['comment']="Cache mandataire squid";
+$lcsdoc[8]['module']="squidguard";
+$lcsdoc[8]['comment']="Filtrage d'URL squidguard";
 
 for ( $i=0;$i <= count($lcsdoc);$i++  ) {
-    if ( is_dir( "/usr/share/doc/lcs/".$lcsdoc[$i][module] ) ) {
-        echo "<h3><a href=\"".$lcsdoc[$i][module]."/html/\">".$lcsdoc[$i][comment]."</a></h3>";
+    if ( is_dir( "/usr/share/doc/lcs/".$lcsdoc[$i]['module'] ) ) {
+        echo "<h3><a href=\"".$lcsdoc[$i]['module']."/html/\">".$lcsdoc[$i]['comment']."</a></h3>";
     } 
 }
 ?>
