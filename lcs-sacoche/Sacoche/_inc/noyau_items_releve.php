@@ -106,9 +106,10 @@ if($date_mysql_debut>$date_mysql_fin)
 
 $tab_precision_retroactif = array
 (
-  'auto' => 'notes antérieures selon référentiels',
-  'oui'  => 'avec notes antérieures',
-  'non'  => 'sans notes antérieures',
+  'auto'   => 'notes antérieures selon référentiels',
+  'oui'    => 'avec notes antérieures',
+  'non'    => 'sans notes antérieures',
+  'annuel' => 'notes antérieures de l\'année scolaire',
 );
 $precision_socle = $only_socle ? ', restriction au socle' : '' ;
 $texte_periode = 'Du '.$date_debut.' au '.$date_fin.' ('.$tab_precision_retroactif[$retroactif].$precision_socle.').';
@@ -163,7 +164,7 @@ elseif($format=='professeur')
 $item_nb = count($tab_item);
 if( !$item_nb && !$make_officiel && !$make_brevet ) // Dans le cas d'un bilan officiel, ou d'une récupération pour une fiche brevet, où l'on regarde les élèves d'un groupe un à un, ce ne doit pas être bloquant.
 {
-  exit('Aucun item évalué sur cette période selon les paramètres choisis !');
+  exit('Aucun item évalué sur la période '.$date_debut.' ~ '.$date_fin.' selon les paramètres choisis !');
 }
 $tab_liste_item = array_keys($tab_item);
 $liste_item = implode(',',$tab_liste_item);
@@ -201,15 +202,18 @@ if($item_nb) // Peut valoir 0 dans le cas d'un bilan officiel où l'on regarde l
   {
     $tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']] = ($DB_ROW['date_last']<$date_mysql_debut) ? FALSE : TRUE ;
   }
-
-  $date_mysql_start = ($retroactif=='non') ? $date_mysql_debut : FALSE ; // En 'auto' il faut faire le tri après.
+  $date_mysql_debut_annee_scolaire = jour_debut_annee_scolaire('mysql');
+      if($retroactif=='non')    { $date_mysql_start = $date_mysql_debut; }
+  elseif($retroactif=='annuel') { $date_mysql_start = $date_mysql_debut_annee_scolaire; }
+  else                          { $date_mysql_start = FALSE; } // 'oui' | 'auto' ; en 'auto' il faut faire le tri après
   $onlyprof = ($format=='professeur') ? $prof_id : FALSE ;
   $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve , $liste_item , $matiere_id , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , $onlyprof );
   foreach($DB_TAB as $DB_ROW)
   {
     if($tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']])
     {
-      if( ($retroactif!='auto') || ($tab_item[$DB_ROW['item_id']][0]['calcul_retroactif']=='oui') || ($DB_ROW['date']>=$date_mysql_debut) )
+      $retro_item = $tab_item[$DB_ROW['item_id']][0]['calcul_retroactif'];
+      if( ($retroactif!='auto') || ($retro_item=='oui') || (($retro_item=='non')&&($DB_ROW['date']>=$date_mysql_debut)) || (($retro_item=='annuel')&&($DB_ROW['date']>=$date_mysql_debut_annee_scolaire)) )
       {
         $tab_eval[$DB_ROW['eleve_id']][$DB_ROW['matiere_id']][$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note'],'date'=>$DB_ROW['date'],'info'=>$DB_ROW['info']);
         $tab_matiere_for_item[$DB_ROW['item_id']] = $DB_ROW['matiere_id'];  // sert pour la synthèse sur une sélection d'items issus de différentes matières
@@ -219,7 +223,7 @@ if($item_nb) // Peut valoir 0 dans le cas d'un bilan officiel où l'on regarde l
 }
 if( !count($tab_eval) && !$make_officiel && !$make_brevet ) // Dans le cas d'un bilan officiel, ou d'une récupération pour une fiche brevet, où l'on regarde les élèves d'un groupe un à un, ce ne doit pas être bloquant.
 {
-  exit('Aucune évaluation trouvée sur cette période selon les paramètres choisis !');
+  exit('Aucune évaluation trouvée sur la période '.$date_debut.' ~ '.$date_fin.' selon les paramètres choisis !');
 }
 $matiere_nb = count(array_unique($tab_matiere_for_item)); // 1 si $matiere_id >= 0 précédemment, davantage uniquement si $matiere_id = -1
 
@@ -426,9 +430,10 @@ if( $type_synthese || $type_bulletin )
 $tab_nb_lignes = array();
 $tab_nb_lignes_par_matiere = array();
 $nb_lignes_appreciation_intermediaire_par_prof_hors_intitule = ($_SESSION['OFFICIEL']['RELEVE_APPRECIATION_RUBRIQUE']<250) ? 1 : 2 ;
-$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['RELEVE_APPRECIATION_GENERALE'] ) ? 1+6     : 0 ;
-$nb_lignes_assiduite                           = ( $make_officiel && ($affichage_assiduite) )                                ? 0.5+1.5 : 0 ;
-$nb_lignes_supplementaires                     = ( $make_officiel && $_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE'] )  ? 0.5+1.5 : 0 ;
+$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['RELEVE_APPRECIATION_GENERALE'] ) ? 1+6 : 0 ;
+$nb_lignes_assiduite                           = ( $make_officiel && ($affichage_assiduite) )                                ? 1.3 : 0 ;
+$nb_lignes_prof_principal                      = ( $make_officiel && ($affichage_prof_principal) )                           ? 1.3 : 0 ;
+$nb_lignes_supplementaires                     = ( $make_officiel && $_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE'] )  ? 1.3 : 0 ;
 $nb_lignes_legendes                            = ($legende=='oui') ? 0.5 + 1 + ($retroactif!='non') + ($aff_etat_acquisition) : 0 ;
 
 $nb_lignes_matiere_intitule_et_marge = 1.5 ;
@@ -515,7 +520,14 @@ if($type_individuel)
         if($make_html) { $releve_HTML_individuel .= (!$make_officiel) ? $separation.'<h2>'.html($groupe_nom).' - '.html($eleve_nom).' '.html($eleve_prenom).'</h2>'.NL : '' ; }
         if($make_pdf)
         {
-          $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_supplementaires;
+          if( ($make_officiel) && ($couleur=='non') )
+          {
+            // Le réglage ne semble pertinent que pour les exemplaires que l'établissement destine à l'impression.
+            // L'exemplaire archivé est une copie destinée à être consultée et sa lecture c'est bien plus agréable en couleur.
+            $couleur_tirage = ($numero_tirage==0) ? 'oui' : 'non' ;
+            $releve_PDF->__set('couleur',$couleur_tirage);
+          }
+          $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_prof_principal + $nb_lignes_supplementaires;
           $tab_infos_entete = (!$make_officiel) ? array( $tab_titre[$format] , $texte_periode , $groupe_nom ) : array($tab_etabl_coords,$tab_etabl_logo,$etabl_coords__bloc_hauteur,$tab_bloc_titres,$tab_adresse,$tag_date_heure_initiales,$date_naissance) ;
           $releve_PDF->bilan_item_individuel_entete( $pages_nb , $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_nb_lignes );
         }
@@ -823,8 +835,9 @@ if($type_individuel)
           {
             $tab_image_tampon_signature = ( (($numero_tirage>0)||(!$_SESSION['OFFICIEL']['ARCHIVE_RETRAIT_TAMPON_SIGNATURE'])) && (in_array($_SESSION['OFFICIEL']['TAMPON_SIGNATURE'],array('tampon','signature_ou_tampon'))) ) ? $tab_signature[0] : NULL;
           }
-          $releve_PDF->bilan_item_individuel_appreciation_generale( $prof_id_appreciation_generale , $tab_appreciation_generale , $tab_image_tampon_signature , $nb_lignes_appreciation_generale_avec_intitule , $nb_lignes_assiduite+$nb_lignes_supplementaires+$nb_lignes_legendes );
+          $releve_PDF->bilan_item_individuel_appreciation_generale( $prof_id_appreciation_generale , $tab_appreciation_generale , $tab_image_tampon_signature , $nb_lignes_appreciation_generale_avec_intitule , $nb_lignes_assiduite+$nb_lignes_prof_principal+$nb_lignes_supplementaires+$nb_lignes_legendes );
         }
+        $tab_pdf_lignes_additionnelles = array();
         // Relevé de notes - Absences et retard
         if( ($make_officiel) && ($affichage_assiduite) )
         {
@@ -835,18 +848,34 @@ if($type_individuel)
           }
           elseif($make_action=='imprimer')
           {
-            $releve_PDF->afficher_assiduite($texte_assiduite);
+            $tab_pdf_lignes_additionnelles[] = $texte_assiduite;
           }
+        }
+        // Relevé de notes - Professeurs principaux
+        if( ($make_officiel) && ($affichage_prof_principal) )
+        {
+          if($make_html)
+          {
+            $releve_HTML_individuel .= '<div class="i">'.$texte_prof_principal.'</div>'.NL;
+          }
+          elseif($make_action=='imprimer')
+          {
+            $tab_pdf_lignes_additionnelles[] = $texte_prof_principal;
+          }
+        }
+        // Relevé de notes - Ligne additionnelle
+        if( ($make_action=='imprimer') && ($nb_lignes_supplementaires) )
+        {
+          $tab_pdf_lignes_additionnelles[] = $_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE'];
+        }
+        if(count($tab_pdf_lignes_additionnelles))
+        {
+          $releve_PDF->afficher_lignes_additionnelles($tab_pdf_lignes_additionnelles);
         }
         // Relevé de notes - Date de naissance
         if( ($make_officiel) && ($date_naissance) && ( ($make_html) || ($make_graph) ) )
         {
           $releve_HTML_individuel .= '<div class="i">'.texte_ligne_naissance($date_naissance).'</div>'.NL;
-        }
-        // Relevé de notes - Ligne additionnelle
-        if( ($make_action=='imprimer') && ($nb_lignes_supplementaires) )
-        {
-          $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['RELEVE_LIGNE_SUPPLEMENTAIRE']);
         }
         // Relevé de notes - Légende
         if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )

@@ -92,9 +92,10 @@ if($date_mysql_debut>$date_mysql_fin)
 
 $tab_precision_retroactif = array
 (
-  'auto' => 'Notes antérieures selon référentiels',
-  'oui'  => 'Avec notes antérieures',
-  'non'  => 'Sans notes antérieures',
+  'auto'   => 'notes antérieures selon référentiels',
+  'oui'    => 'avec notes antérieures',
+  'non'    => 'sans notes antérieures',
+  'annuel' => 'notes antérieures de l\'année scolaire',
 );
 $precision_socle  = $only_socle  ? ', restriction au socle' : '' ;
 $precision_niveau = $only_niveau ? ', restriction au niveau de l\'élève' : '' ;
@@ -133,7 +134,7 @@ else
 $item_nb = count($tab_item);
 if( !$item_nb && !$make_officiel ) // Dans le cas d'un bilan officiel, où l'on regarde les élèves d'un groupe un à un, ce ne doit pas être bloquant.
 {
-  exit('Aucun item évalué sur cette période selon les paramètres choisis !');
+  exit('Aucun item évalué sur la période '.$date_debut.' ~ '.$date_fin.' selon les paramètres choisis !');
 }
 $tab_liste_item = array_keys($tab_item);
 $liste_item = implode(',',$tab_liste_item);
@@ -169,14 +170,17 @@ if($item_nb) // Peut valoir 0 dans le cas d'un bilan officiel où l'on regarde l
   {
     $tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']] = ($DB_ROW['date_last']<$date_mysql_debut) ? FALSE : TRUE ;
   }
-
-  $date_mysql_start = ($retroactif=='non') ? $date_mysql_debut : FALSE ; // En 'auto' il faut faire le tri après.
+  $date_mysql_debut_annee_scolaire = jour_debut_annee_scolaire('mysql');
+      if($retroactif=='non')    { $date_mysql_start = $date_mysql_debut; }
+  elseif($retroactif=='annuel') { $date_mysql_start = $date_mysql_debut_annee_scolaire; }
+  else                          { $date_mysql_start = FALSE; } // 'oui' | 'auto' ; en 'auto' il faut faire le tri après
   $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve , $liste_item , $matiere_id , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ );
   foreach($DB_TAB as $DB_ROW)
   {
     if($tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']])
     {
-      if( ($retroactif!='auto') || ($tab_item[$DB_ROW['item_id']][0]['calcul_retroactif']=='oui') || ($DB_ROW['date']>=$date_mysql_debut) )
+      $retro_item = $tab_item[$DB_ROW['item_id']][0]['calcul_retroactif'];
+      if( ($retroactif!='auto') || ($retro_item=='oui') || (($retro_item=='non')&&($DB_ROW['date']>=$date_mysql_debut)) || (($retro_item=='annuel')&&($DB_ROW['date']>=$date_mysql_debut_annee_scolaire)) )
       {
         $tab_eval[$DB_ROW['eleve_id']][$DB_ROW['item_id']][] = array('note'=>$DB_ROW['note'],'date'=>$DB_ROW['date'],'info'=>$DB_ROW['info']);
       }
@@ -185,7 +189,7 @@ if($item_nb) // Peut valoir 0 dans le cas d'un bilan officiel où l'on regarde l
 }
 if( !count($tab_eval) && !$make_officiel ) // Dans le cas d'un bilan officiel, où l'on regarde les élèves d'un groupe un à un, ce ne doit pas être bloquant.
 {
-  exit('Aucune évaluation trouvée sur cette période selon les paramètres choisis !');
+  exit('Aucune évaluation trouvée sur la période '.$date_debut.' ~ '.$date_fin.' selon les paramètres choisis !');
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -300,9 +304,10 @@ else
 $tab_nb_lignes = array();
 $tab_nb_lignes_par_matiere = array();
 $nb_lignes_appreciation_intermediaire_par_prof_hors_intitule = $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE'] / 100 / 2 ;
-$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE'] ) ? 1+6     : 0 ;
-$nb_lignes_assiduite                           = ( $make_officiel && ($affichage_assiduite) )                                  ? 0.5+1.5 : 0 ;
-$nb_lignes_supplementaires                     = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE'] )  ? 0.5+1.5 : 0 ;
+$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE'] ) ? 1+6 : 0 ;
+$nb_lignes_assiduite                           = ( $make_officiel && ($affichage_assiduite) )                                  ? 1.3 : 0 ;
+$nb_lignes_prof_principal                      = ( $make_officiel && ($affichage_prof_principal) )                             ? 1.3 : 0 ;
+$nb_lignes_supplementaires                     = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE'] )  ? 1.3 : 0 ;
 $nb_lignes_legendes                            = ($legende=='oui') ? 0.5 + 1 : 0 ;
 $nb_lignes_matiere_marge    = 1 ;
 $nb_lignes_matiere_intitule = 2 ;
@@ -398,7 +403,14 @@ foreach($tab_eleve as $tab)
       if($make_html) { $releve_HTML .= (!$make_officiel) ? $separation.'<h2>'.html($groupe_nom.' - '.$eleve_nom.' '.$eleve_prenom).'</h2>'.NL : '' ; }
       if($make_pdf)
       {
-        $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_supplementaires;
+        if( ($make_officiel) && ($couleur=='non') )
+        {
+          // Le réglage ne semble pertinent que pour les exemplaires que l'établissement destine à l'impression.
+          // L'exemplaire archivé est une copie destinée à être consultée et sa lecture c'est bien plus agréable en couleur.
+          $couleur_tirage = ($numero_tirage==0) ? 'oui' : 'non' ;
+          $releve_PDF->__set('couleur',$couleur_tirage);
+        }
+        $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_prof_principal + $nb_lignes_supplementaires;
         $tab_infos_entete = (!$make_officiel) ? array( $tab_titre[$format] , $texte_periode , $texte_precision , $groupe_nom ) : array($tab_etabl_coords,$tab_etabl_logo,$etabl_coords__bloc_hauteur,$tab_bloc_titres,$tab_adresse,$tag_date_heure_initiales,$date_naissance) ;
         $releve_PDF->bilan_synthese_entete( $format , $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_nb_lignes );
       }
@@ -689,8 +701,9 @@ foreach($tab_eleve as $tab)
             $moyenne_generale_classe_affichee = $tab_saisie[0][0][0]['note'];
           }
         }
-        $releve_PDF->bilan_synthese_appreciation_generale( $prof_id_appreciation_generale , $tab_appreciation_generale , $tab_image_tampon_signature , $nb_lignes_appreciation_generale_avec_intitule , $nb_lignes_assiduite+$nb_lignes_supplementaires+$nb_lignes_legendes , $moyenne_generale_eleve_affichee , $moyenne_generale_classe_affichee );
+        $releve_PDF->bilan_synthese_appreciation_generale( $prof_id_appreciation_generale , $tab_appreciation_generale , $tab_image_tampon_signature , $nb_lignes_appreciation_generale_avec_intitule , $nb_lignes_assiduite+$nb_lignes_prof_principal+$nb_lignes_supplementaires+$nb_lignes_legendes , $moyenne_generale_eleve_affichee , $moyenne_generale_classe_affichee );
       }
+      $tab_pdf_lignes_additionnelles = array();
       // Bulletin - Absences et retard
       if( ($make_officiel) && ($affichage_assiduite) && empty($is_appreciation_groupe) )
       {
@@ -701,18 +714,34 @@ foreach($tab_eleve as $tab)
         }
         elseif($make_action=='imprimer')
         {
-          $releve_PDF->afficher_assiduite($texte_assiduite);
+          $tab_pdf_lignes_additionnelles[] = $texte_assiduite;
         }
+      }
+      // Bulletin - Professeurs principaux
+      if( ($make_officiel) && ($affichage_prof_principal) )
+      {
+        if($make_html)
+        {
+          $releve_HTML .= '<div class="i">'.$texte_prof_principal.'</div>'.NL;
+        }
+        elseif($make_action=='imprimer')
+        {
+          $tab_pdf_lignes_additionnelles[] = $texte_prof_principal;
+        }
+      }
+      // Bulletin - Ligne additionnelle
+      if( ($make_action=='imprimer') && ($nb_lignes_supplementaires) )
+      {
+        $tab_pdf_lignes_additionnelles[] = $_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE'];
+      }
+      if(count($tab_pdf_lignes_additionnelles))
+      {
+        $releve_PDF->afficher_lignes_additionnelles($tab_pdf_lignes_additionnelles);
       }
       // Bulletin - Date de naissance
       if( ($make_officiel) && ($date_naissance) && ( ($make_html) || ($make_graph) ) )
       {
         $releve_HTML .= '<div class="i">'.texte_ligne_naissance($date_naissance).'</div>'.NL;
-      }
-      // Bulletin - Ligne additionnelle
-      if( ($make_action=='imprimer') && ($nb_lignes_supplementaires) )
-      {
-        $releve_PDF->afficher_ligne_additionnelle($_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE']);
       }
       // Bulletin - Légende
       if( ( ($make_html) || ($make_pdf) ) && ($legende=='oui') )

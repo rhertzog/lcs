@@ -66,6 +66,10 @@ if($_SESSION['USER_PROFIL_TYPE']=='administrateur')
     $tab_accueil['alert'] .= '<p class="danger">Année scolaire précédente non archivée ! Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>';
     $info_rentree  = TRUE ;
   }
+  if(!$_SESSION['USER_EMAIL'])
+  {
+    $tab_accueil['alert'] .= '<p class="danger">Votre adresse de courriel n\'est pas renseignée ! <a href="./index.php?page=compte_email">Saisir une adresse e-mail</a> pour ne pas être bloqué en cas de perte de mot de passe.</p>';
+  }
   if($alerte_novice)
   {
     // volontairement pas en pop-up mais dans un nouvel onglet
@@ -175,6 +179,11 @@ elseif($_SESSION['USER_PROFIL_TYPE']=='administrateur')
   {
     // volontairement pas en pop-up mais dans un nouvel onglet
     $tab_accueil['user'] .= '<p><span class="manuel"><a class="lien_ext" href="'.SERVEUR_GUIDE_RENTREE.'">Guide de changement d\'année d\'un administrateur de <em>SACoche</em>.</a></span></p>';
+  }
+  if( test_periode_sortie() )
+  {
+    $lien_contact_referent = (HEBERGEUR_INSTALLATION=='multi-structures') ? '<a href="./index.php?page=administrateur_etabl_identite"><span class="b">indiquer le nouveau contact référent éventuel</span></a> et à ' : '' ;
+    $tab_accueil['user'] .= '<p><span class="danger">Si vous passez la main à la prochaine rentrée</span>, alors pensez à '.$lien_contact_referent.'<a href="./index.php?page=administrateur_administrateur"><span class="b">transmettre des identifiants d\'administrateur</span></a>.</p>';
   }
 }
 // infos adresse de connexion

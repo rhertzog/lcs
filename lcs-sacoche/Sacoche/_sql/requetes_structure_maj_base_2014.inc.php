@@ -26,43 +26,21 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-if($_SESSION['SESAMATH_ID']==ID_DEMO) {exit('Action désactivée pour la démo...');}
-
-$courriel = (isset($_POST['f_courriel'])) ? Clean::courriel($_POST['f_courriel']) : NULL;
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Mettre à jour son adresse e-mail (éventuellement vide pour la retirer)
+// MAJ 2013-12-15 => 2014-01-07
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-if($courriel!==NULL)
+if($version_base_structure_actuelle=='2013-12-15')
 {
-  // Vérifier que l'adresse e-mail est disponible (parmi tous les utilisateurs de l'établissement)
-  if($courriel)
+  if($version_base_structure_actuelle==DB_STRUCTURE_MAJ_BASE::DB_version_base())
   {
-    if( DB_STRUCTURE_ADMINISTRATEUR::DB_tester_utilisateur_identifiant('email',$courriel,$_SESSION['USER_ID']) )
-    {
-      exit('Erreur : adresse e-mail déjà utilisée !');
-    }
-    // On ne vérifie le domaine du serveur mail qu'en mode multi-structures car ce peut être sinon une installation sur un serveur local non ouvert sur l'extérieur.
-    if(HEBERGEUR_INSTALLATION=='multi-structures')
-    {
-      $mail_domaine = tester_domaine_courriel_valide($courriel);
-      if($mail_domaine!==TRUE)
-      {
-        exit('Erreur avec le domaine "'.$mail_domaine.'" !');
-      }
-    }
+    $version_base_structure_actuelle = '2014-01-07';
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
+    // ajout de paramètre
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , 'INSERT INTO sacoche_parametre VALUES ( "officiel_releve_pages_nb" , "optimise" )' );
+    // réordonner la table sacoche_parametre (ligne à déplacer vers la dernière MAJ lors d'ajout dans sacoche_parametre)
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_parametre ORDER BY parametre_nom' );
   }
-  // C'est ok...
-  DB_STRUCTURE_COMMUN::DB_modifier_user_parametre( $_SESSION['USER_ID'] , 'user_email' , $courriel );
-  $_SESSION['USER_EMAIL'] = $courriel ;
-  exit('ok');
 }
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-// On ne devrait pas en arriver là !
-// ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-exit('Erreur avec les données transmises !');
 
 ?>

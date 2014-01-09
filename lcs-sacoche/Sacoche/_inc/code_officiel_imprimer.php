@@ -323,6 +323,32 @@ if($affichage_assiduite)
   }
 }
 
+// Récupérer les professeurs principaux
+
+$affichage_prof_principal = ($_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_PROF_PRINCIPAL']) ? TRUE : FALSE ;
+
+if( $affichage_prof_principal )
+{
+  $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_lister_profs_principaux($classe_id);
+  if(empty($DB_TAB))
+  {
+    $texte_prof_principal = 'Professeur principal : sans objet.';
+  }
+  else if(count($DB_TAB)==1)
+  {
+    $texte_prof_principal = 'Professeur principal : '.afficher_identite_initiale($DB_TAB[0]['user_nom'],FALSE,$DB_TAB[0]['user_prenom'],TRUE);
+  }
+  else
+  {
+    $tab_pp = array();
+    foreach($DB_TAB as $DB_ROW)
+    {
+      $tab_pp[] = afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE);
+    }
+    $texte_prof_principal = 'Professeurs principaux : '.implode(' ; ',$tab_pp);
+  }
+}
+
 // Récupérer les noms et coordonnées des responsables, ou simplement l'info de savoir si leurs adresses sont différentes
 
 $tab_destinataires = array();  // [eleve_id][i] => array(...) | 'archive' | NULL ;
@@ -451,7 +477,7 @@ if($BILAN_TYPE=='releve')
   $marge_droite           = $_SESSION['OFFICIEL']['MARGE_DROITE'];
   $marge_haut             = $_SESSION['OFFICIEL']['MARGE_HAUT'];
   $marge_bas              = $_SESSION['OFFICIEL']['MARGE_BAS'];
-  $pages_nb               = 'optimise'; // pas jugé utile de le mettre en option... à revoir ?
+  $pages_nb               = $_SESSION['OFFICIEL']['RELEVE_PAGES_NB'];
   $cases_nb               = $_SESSION['OFFICIEL']['RELEVE_CASES_NB'];
   $cases_largeur          = 5; // pas jugé utile de le mettre en option...
   $tab_eleve              = $tab_eleve_id;
@@ -525,6 +551,11 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
 
 if(empty($is_test_impression))
 {
+  if(!count($tab_pages_decoupe_pdf))
+  {
+    $indication_pariode = in_array($BILAN_TYPE,array('releve','bulletin')) ? ' sur la période '.$date_debut.' ~ '.$date_fin : '' ; // Pour le socle, on ne passe normalement pas par ici, mais bon, ceinture + bretelles ;)
+    exit('Erreur : aucune donnée trouvée pour le ou les élèves concernés'.$indication_pariode.' !');
+  }
   $_SESSION['tmp']['fichier_nom'] = $fichier_nom;
   $_SESSION['tmp']['tab_pages_decoupe_pdf'] = $tab_pages_decoupe_pdf;
   exit('ok');

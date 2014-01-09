@@ -396,9 +396,10 @@ function compacter($chemin,$methode)
  * => pour avoir des infos sur le contact référent, ou l'état d'une convention ENT
  * 
  * @param int   $BASE   0 pour celle du webmestre
- * @return void | exit
+ * @param bool  $exit   TRUE par défaut (arrêt si erreur)
+ * @return bool | exit
  */
-function charger_parametres_mysql_supplementaires($BASE)
+function charger_parametres_mysql_supplementaires( $BASE , $exit=TRUE )
 {
   $fichier_mysql_config_supplementaire = ($BASE) ? CHEMIN_DOSSIER_MYSQL.'serveur_sacoche_structure_'.$BASE.'.php' : CHEMIN_DOSSIER_MYSQL.'serveur_sacoche_webmestre.php' ;
   $fichier_class_config_supplementaire = ($BASE) ? CHEMIN_DOSSIER_INCLUDE.'class.DB.config.sacoche_structure.php' : CHEMIN_DOSSIER_INCLUDE.'class.DB.config.sacoche_webmestre.php' ;
@@ -407,10 +408,18 @@ function charger_parametres_mysql_supplementaires($BASE)
     global $_CONST; // Car si on charge les paramètres dans une fonction, ensuite ils ne sont pas trouvés par la classe de connexion.
     require($fichier_mysql_config_supplementaire);
     require($fichier_class_config_supplementaire);
+    return TRUE;
   }
   else
   {
-    exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />Le fichier "'.FileSystem::fin_chemin($fichier_mysql_config_supplementaire).'" (base n°'.$BASE.') est manquant !' /*contenu*/ );
+    if($exit)
+    {
+      exit_error( 'Paramètres BDD manquants' /*titre*/ , 'Les paramètres de connexion à la base de données n\'ont pas été trouvés.<br />Le fichier "'.FileSystem::fin_chemin($fichier_mysql_config_supplementaire).'" (base n°'.$BASE.') est manquant !' /*contenu*/ );
+    }
+    else
+    {
+      return FALSE;
+    }
   }
 }
 
@@ -818,6 +827,7 @@ function annee_session_brevet()
 
 /**
  * Tester si on est dans la période de rentrée
+ * Par défaut : 01/08 -> 30/09
  *
  * @param void
  * @return bool
@@ -828,6 +838,22 @@ function test_periode_rentree()
   $mois_bascule   = $_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'] ; // par défaut août
   $mois_rentree   = ($mois_bascule<12) ? $mois_bascule+1 : 1 ; // par défaut septembre
   return ($mois_actuel==$mois_bascule) || ($mois_actuel==$mois_rentree) ;
+}
+
+/**
+ * Tester si on est dans la période de sortie
+ * Par défaut : 01/06 -> 31/07
+ *
+ * @param void
+ * @return bool
+ */
+function test_periode_sortie()
+{
+  $mois_actuel    = date('n');
+  $mois_bascule   = $_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'] ; // par défaut août
+  $mois_sortie    = ($mois_bascule>1) ? $mois_bascule-1 : 12 ; // par défaut juillet
+  $mois_fin_annee = ($mois_sortie>1)  ? $mois_sortie-1  : 12 ; // par défaut juin
+  return ($mois_actuel==$mois_sortie) || ($mois_actuel==$mois_fin_annee) ;
 }
 
 /**
