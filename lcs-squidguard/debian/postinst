@@ -20,119 +20,119 @@ case "$1" in
 	 rm -rf /var/lib/squidguard/db
 	 mv /tmp/db /var/lib/squidguard/
 	fi
-        #
-        # fixation des droits
-        #
-        echo "Fix rights on LCS squidGuard"
-        chown root:root /var/lib/lcs/squidguard
-        chmod 755 /var/lib/lcs/squidguard
-		chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_wl
-		chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_bl
-        mkdir -p /var/lib/squidguard/db/blacklists
-		cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
-        chown -R proxy:www-data /var/lib/squidguard/db
-        chown -R www-data:www-data /var/www/Squidguard
-        #
-        # Actions liees a une installation initiale
-        #
-        if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
-          #
-          # Acquisition nom de domaine
-          #
-          DOMAIN=`hostname -f`
-          #
-          # Configuration Squid
-          #
-          echo "redirect_program /usr/bin/squidGuard" >> /etc/squid/squid.conf
-          echo "redirect_children 32" >> /etc/squid/squid.conf
-          #
-          # Configuration squidGuard
-          #
-          cp /var/lib/lcs/squidguard/squidGuard.conf.lcs /etc/squid/squidGuard.conf
-          sed -i s/#REDIRECT#/$DOMAIN/g /etc/squid/squidGuard.conf
-          #
-          # Installation des listes noires
-          #
-          echo "SquidGuard blacklists installation in one minute"
-	  at now+1minutes <<END
-	  /usr/sbin/lcs-squidguard-getBlacklists.sh
-	  invoke-rc.d squid reload
+	#
+	# fixation des droits
+   #
+	echo "Fix rights on LCS squidGuard"
+   chown root:root /var/lib/lcs/squidguard
+   chmod 755 /var/lib/lcs/squidguard
+	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_wl
+	chown -R proxy:www-data /var/lib/lcs/squidguard/lcs_bl
+	mkdir -p /var/lib/squidguard/db/blacklists
+	cp -a /var/lib/lcs/squidguard/lcs_bl /var/lib/squidguard/db/blacklists/lcs
+	chown -R proxy:www-data /var/lib/squidguard/db
+	chown -R www-data:www-data /var/www/Squidguard
+	#
+	# Actions liees a une installation initiale
+	#
+	if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+		#
+		# Acquisition nom de domaine
+		#
+		DOMAIN=`hostname -f`
+		#
+		# Configuration Squid
+		#
+		echo "redirect_program /usr/bin/squidGuard" >> /etc/squid/squid.conf
+      echo "redirect_children 32" >> /etc/squid/squid.conf
+      #
+		# Configuration squidGuard
+		#
+		cp /var/lib/lcs/squidguard/squidGuard.conf.lcs /etc/squid/squidGuard.conf
+		sed -i s/#REDIRECT#/$DOMAIN/g /etc/squid/squidGuard.conf
+		#
+		# Installation des listes noires
+		#
+		echo "SquidGuard blacklists installation in one minute"
+		at now+1minutes <<END
+		/usr/sbin/lcs-squidguard-getBlacklists.sh
+		invoke-rc.d squid reload
 END
 		#
 		# add open_basedir directives configuration 25_squidguard.conf
 		#
 		cat >/etc/apache2/lcs-main/25_squidguard.conf <<EOF
-	<Directory /var/www/Squidguard>
-	   php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/squidguard/db
-	</Directory>
+		<Directory /var/www/Squidguard>
+	   	php_admin_value open_basedir /var/www:/usr/share/lcs:/var/lib/squidguard/db
+		</Directory>
 EOF
-			invoke-rc.d apache2 reload
-		fi
-		## Upgrade blog
-		if grep -q blog /etc/squid/squidGuard.conf ; then
-			echo "blog deja present dans le fichier de configuration"
-		else
-			echo "ajout des blog au fichier de configuration squidguard"
-			patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-blog
-			squidGuard -C blog
-			squid -k reconfigure
-		fi
-    	## Upgrade redirector
-    	if grep -q redirector /etc/squid/squidGuard.conf ; then
-			echo "redirector deja present dans le fichier de configuration"
-    	else
-			echo "ajout des redirector au fichier de configuration squidguard"
-        	patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-redirector
-        	squidGuard -C redirector
-        	squid -k reconfigure
-		fi
-    	## Upgrade malware
-    	if grep -q malware /etc/squid/squidGuard.conf ; then
-			echo "malware deja present dans le fichier de configuration"
-		else
-			echo "ajout des malware au fichier de configuration squidguard"
-			patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-malware
-			squidGuard -C malware
-			squid -k reconfigure
-		fi
-		## Upgrade marketingware
-		if grep -q marketingware /etc/squid/squidGuard.conf ; then
-			echo "marketingware deja present dans le fichier de configuration"
-		else
-			echo "ajout des marketingware au fichier de configuration squidguard"
-			patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-marketingware
-			squidGuard -C marketingware
-			squid -k reconfigure
-		fi
-		## Upgrade phishing
-		if grep -q phishing /etc/squid/squidGuard.conf ; then
-			echo "phishing deja present dans le fichier de configuration"
-		else
-			echo "ajout des phishing au fichier de configuration squidguard"
-			patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-phishing
-			squidGuard -C phishing
-			squid -k reconfigure
-		fi
-		#
-		# Update squidGuard.conf
-		#
-		if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then
-			cp /var/lib/lcs/squidguard/squidGuard.conf.lcs /etc/squid/squidGuard.conf
-			sed -i s/#REDIRECT#/$DOMAIN/g /etc/squid/squidGuard.conf
-			squid -k reconfigure
-		fi
-		#
-		# Update sudoers
-		# 
-		/usr/sbin/lcs-make-sudoers
-    ;;
-    abort-upgrade|abort-remove|abort-deconfigure)
-    ;;
+		invoke-rc.d apache2 reload
+	fi
+	## Upgrade blog
+	if grep -q blog /etc/squid/squidGuard.conf ; then
+		echo "blog deja present dans le fichier de configuration"
+	else
+		echo "ajout des blog au fichier de configuration squidguard"
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-blog &> /dev/null
+		squidGuard -C blog
+		squid -k reconfigure
+	fi
+	## Upgrade redirector
+	if grep -q redirector /etc/squid/squidGuard.conf ; then
+		echo "redirector deja present dans le fichier de configuration"
+	else
+		echo "ajout des redirector au fichier de configuration squidguard"
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-redirector &> /dev/null
+		squidGuard -C redirector
+		squid -k reconfigure
+	fi
+	## Upgrade malware
+	if grep -q malware /etc/squid/squidGuard.conf ; then
+		echo "malware deja present dans le fichier de configuration"
+	else
+		echo "ajout des malware au fichier de configuration squidguard"
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-malware &> /dev/null
+		squidGuard -C malware
+		squid -k reconfigure
+	fi
+	## Upgrade marketingware
+	if grep -q marketingware /etc/squid/squidGuard.conf ; then
+		echo "marketingware deja present dans le fichier de configuration"
+	else
+		echo "ajout des marketingware au fichier de configuration squidguard"
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-marketingware &> /dev/null
+		squidGuard -C marketingware
+		squid -k reconfigure
+	fi
+	## Upgrade phishing
+	if grep -q phishing /etc/squid/squidGuard.conf ; then
+		echo "phishing deja present dans le fichier de configuration"
+	else
+		echo "ajout des phishing au fichier de configuration squidguard"
+		patch -b -f /etc/squid/squidGuard.conf /var/lib/lcs/lcs-squidguard/patch-phishing &> /dev/null
+		squidGuard -C phishing
+		squid -k reconfigure
+	fi
+	#
+	# Update squidGuard.conf
+	#
+	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then
+		cp /var/lib/lcs/squidguard/squidGuard.conf.lcs /etc/squid/squidGuard.conf
+		sed -i s/#REDIRECT#/$DOMAIN/g /etc/squid/squidGuard.conf
+		squid -k reconfigure
+	fi
+	#
+	# Update sudoers
+	# 
+	/usr/sbin/lcs-make-sudoers
+	;;
+	abort-upgrade|abort-remove|abort-deconfigure)
+	;;
 
-    *)
-    	echo "postinst called with unknown argument \`$1'" >&2
-        exit 1
-    ;;
+	*)
+		echo "postinst called with unknown argument \`$1'" >&2
+      exit 1
+	;;
 esac
 
 

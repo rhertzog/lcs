@@ -1,5 +1,5 @@
 <?php
-/* squidGuard/index.php Derniere modification : 26/06/2012 */
+/* squidGuard/index.php */
 
 include "../lcs/includes/headerauth.inc.php";
 include "../Annu/includes/ldap.inc.php";
@@ -82,7 +82,10 @@ function read_black_list ($name) {
 }
 
 list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
+if ($idpers == "0") {
+	header("Location:$urlauth");
+	exit;
+}
 
 $html  ="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 $html .= "<html>\n";
@@ -396,7 +399,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		}
 		// Modification de la blacklist LCS pour SUPPRESSIONs
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
-                exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
+      exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
 										
 	}
 

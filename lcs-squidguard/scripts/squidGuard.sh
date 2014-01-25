@@ -1,13 +1,13 @@
 #!/bin/bash
-# squidGuard.sh version du 28/06/2012
+# squidGuard.sh
 ARG="$@"
 
-echo "ARG $ARG" >> /var/log/lcs/squidebug.log
+
 case $ARG in
    se3_internet)
 		echo "Mise en place du fichier squidguard.conf pour se3-internet"
 		# Acquisition de ipse3 dans lcs_db.params
-        	IPSE3=`mysql -se "SELECT value FROM lcs_db.params WHERE name='se3Ip';"`
+      IPSE3=`mysql -se "SELECT value FROM lcs_db.params WHERE name='se3Ip';"`
 		# Acquisition du basedn
 		BASEDN=`mysql -se "SELECT value FROM lcs_db.params WHERE name='ldap_base_dn';"`
 		# Acquisition du server_ldap
@@ -25,14 +25,14 @@ case $ARG in
 		#mise en place des listes blanches
 		cp -a /etc/lcs/squidguard/lcs_wl /var/lib/squidguard/db/whitelists/lcs
 		/usr/bin/squidGuard -C whitelists/lcs/domains
-       		/usr/bin/squidGuard -C whitelists/lcs/urls
+      /usr/bin/squidGuard -C whitelists/lcs/urls
 		chown proxy.www-data /var/lib/squidguard/db/whitelists -R
-        chmod g+x /var/lib/squidguard/db/whitelists
-       	chmod g+x /var/lib/squidguard/db/whitelists/*
-       	chmod g+w /var/lib/squidguard/db/whitelists -R
-       	squid -k reconfigure
-	   	# Inscription dans la base lcs_db.params
-	  	 /usr/bin/mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'se3-internet', '1', '0', 'Type de conf squidGuard', '0');"			
+      chmod g+x /var/lib/squidguard/db/whitelists
+      chmod g+x /var/lib/squidguard/db/whitelists/*
+      chmod g+w /var/lib/squidguard/db/whitelists -R
+      squid -k reconfigure
+	   # Inscription dans la base lcs_db.params
+	  	/usr/bin/mysql -e "INSERT INTO lcs_db.params (id, name, value, srv_id, descr, cat) VALUES ('', 'se3-internet', '1', '0', 'Type de conf squidGuard', '0');"			
    ;;
    lcs)
        echo "Modification base lcs a partir des fichiers diff"
@@ -192,99 +192,100 @@ case $ARG in
    ;;
    status)
    	RES=`grep '!webmail' /etc/squid/squidGuard.conf`
-	if [ "x$RES" = "x" ]; then
-	  RET="webmailOff"
-	else
-	  RET="webmailOn"
-	fi    
+		if [ "x$RES" = "x" ]; then
+	  		RET="webmailOff"
+		else
+	  		RET="webmailOn"
+		fi    
     	RES=`grep '!forums' /etc/squid/squidGuard.conf`
-	if [ "x$RES" = "x" ]; then
-	  RET="$RET forumsOff"
-	else
-	  RET="$RET forumsOn"
-	fi       
-	RES=`grep '!audio-video' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+		if [ "x$RES" = "x" ]; then
+	  		RET="$RET forumsOff"
+		else
+	  		RET="$RET forumsOn"
+		fi       
+		RES=`grep '!audio-video' /etc/squid/squidGuard.conf`
+		if [ "x$RES" = "x" ]; then
           RET="$RET audiovideoOff"
-        else
+		else
           RET="$RET audiovideoOn"
-        fi  
-	RES=`grep '!ads' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+		fi  
+		RES=`grep '!ads' /etc/squid/squidGuard.conf`
+		if [ "x$RES" = "x" ]; then
           RET="$RET adsOff"
-        else
+		else
           RET="$RET adsOn"
-        fi
-        RES=`grep '!malware' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+		fi
+		RES=`grep '!malware' /etc/squid/squidGuard.conf`
+		if [ "x$RES" = "x" ]; then
           RET="$RET malwareOff"
-        else
+		else
           RET="$RET malwareOn"
-        fi
-        RES=`grep '!marketingware' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+		fi
+		RES=`grep '!marketingware' /etc/squid/squidGuard.conf`
+		if [ "x$RES" = "x" ]; then
           RET="$RET marketingwareOff"
-        else
+      else
           RET="$RET marketingwareOn"
-        fi
-        RES=`grep '!phishing' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+      fi
+      RES=`grep '!phishing' /etc/squid/squidGuard.conf`
+      if [ "x$RES" = "x" ]; then
           RET="$RET phishingOff"
-        else
+      else
           RET="$RET phishingOn"
-        fi
-	RES=`grep '!blog' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+      fi
+		RES=`grep '!blog' /etc/squid/squidGuard.conf`
+      if [ "x$RES" = "x" ]; then
           RET="$RET blogOff"
-        else
+      else
           RET="$RET blogOn"
-        fi
-	RES=`grep '!redirector' /etc/squid/squidGuard.conf`
-        if [ "x$RES" = "x" ]; then
+      fi
+		RES=`grep '!redirector' /etc/squid/squidGuard.conf`
+      if [ "x$RES" = "x" ]; then
           RET="$RET redirecteursOff"
-        else
+      else
           RET="$RET redirecteursOn"
-        fi
-	RES=`grep '!lcs any' /etc/squid/squidGuard.conf`	
-        if [ "x$RES" != "x" ]; then
+      fi
+		RES=`grep '!lcs any' /etc/squid/squidGuard.conf`	
+      if [ "x$RES" != "x" ]; then
           RET="$RET bl_lcs"
-        fi	 
-	RES=`grep '!lcs !aggressive !drugs !gambling !hacking !porn !violence !warez' /etc/squid/squidGuard.conf`	
-        if [ "x$RES" != "x" ]; then
+      fi	 
+		RES=`grep '!lcs !aggressive !drugs !gambling !hacking !porn !violence !warez' /etc/squid/squidGuard.conf`	
+      if [ "x$RES" != "x" ]; then
           RET="$RET bl_full"
-        fi	
-	echo $RET
+      fi	
+		echo $RET
    ;;
    help)
    	# Aide en ligne
-	echo "$0 option";
-	echo "lcs : Reconstruction des bases de donnees squidGuard a partir des nouveaux fichiers diff"
-	echo "lcs_db : Reconstruction des bases de donnees squidGuard LCS a partir des fichiers lcs/domains et lcs/urls"
-	echo "raz_db : Efface les bases de donnees squidGurad LCS"
-	echo "bl_lcs : Liste noire sur Proxy academique + liste noire LCS sur le LCS"
-	echo "bl_full : Listes noires totalement gerees sur le LCS"
-	echo "webmailOn : Filtrage des webmail via la liste noire webmail"
-	echo "webmailOff : Pas de filtage des webmail"
-	echo "forumsOn : Filtrage des forums via la liste noire forums"
-	echo "forumsOff : Pas de filtage des forums"
-	echo "audiovideoOn : Filtrage audio et video (youtube, dailymotion,....) via la liste noire audiovideo"
-        echo "audiovideoOff : Pas de filtage audio et video"
-        echo "adsOn : Filtage publicite"
-        echo "adsOff : Pas de filtage publicite"
-	echo "malwareOn : Filtage malware"
-        echo "malwareOff : Pas de filtage malware"
-        echo "marketingwareOn : Filtrage marketingware"
-        echo "marketingwareOff : Pas de filtrage marketingware"
-        echo "phishingOn : Filtage phishing"
-        echo "phishingOff : Pas de filtage phishing"
-        echo "redirecteursOn : Filtage proxy redirecteurs"
-        echo "redirecteursOff : Pas de filtage proxy redirecteurs"
-	echo "reload : Recharge la configuration squidGuard"
-	echo "status: Retourne le status des configurations squidGuard"
-	echo "se3_internet : Met en place le fichier squidGuard.conf adapte au dispositif se3-internet"
+		echo "$0 option";
+		echo "lcs : Reconstruction des bases de donnees squidGuard a partir des nouveaux fichiers diff"
+		echo "lcs_db : Reconstruction des bases de donnees squidGuard LCS a partir des fichiers lcs/domains et lcs/urls"
+		echo "raz_db : Efface les bases de donnees squidGurad LCS"
+		echo "bl_lcs : Liste noire sur Proxy academique + liste noire LCS sur le LCS"
+		echo "bl_full : Listes noires totalement gerees sur le LCS"
+		echo "webmailOn : Filtrage des webmail via la liste noire webmail"
+		echo "webmailOff : Pas de filtage des webmail"
+		echo "forumsOn : Filtrage des forums via la liste noire forums"
+		echo "forumsOff : Pas de filtage des forums"
+		echo "audiovideoOn : Filtrage audio et video (youtube, dailymotion,....) via la liste noire audiovideo"
+      echo "audiovideoOff : Pas de filtage audio et video"
+      echo "adsOn : Filtage publicite"
+      echo "adsOff : Pas de filtage publicite"
+		echo "malwareOn : Filtage malware"
+      echo "malwareOff : Pas de filtage malware"
+      echo "marketingwareOn : Filtrage marketingware"
+      echo "marketingwareOff : Pas de filtrage marketingware"
+      echo "phishingOn : Filtage phishing"
+      echo "phishingOff : Pas de filtage phishing"
+      echo "redirecteursOn : Filtage proxy redirecteurs"
+      echo "redirecteursOff : Pas de filtage proxy redirecteurs"
+		echo "reload : Recharge la configuration squidGuard"
+		echo "status: Retourne le status des configurations squidGuard"
+		echo "se3_internet : Met en place le fichier squidGuard.conf adapte au dispositif se3-internet"
    ;;
    *)
        echo "usage: $0 
-(lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|audiovideoOn|audiovideoOff|malwareOn|malwareOff|adsOn|adsOff|redirecteursOn|redirecteursOff|redirecteursOn|redirecteursOff|phishingOn|phishingOff|reload|status|help)"
+				(lcs|lcs_db|raz_db|bl_lcs|bl_full|webmailOn|webmailOff|forumsOn|forumsOff|audiovideoOn|audiovideoOff|malwareOn|malwareOff|adsOn|adsOff|redirecteursOn|redirecteursOff|redirecteursOn|redirecteursOff|phishingOn|phishingOff|reload|status|help)"
+		 exit 1		
    ;;
 esac
