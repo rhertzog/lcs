@@ -708,7 +708,10 @@ var JQD = (function($, window, undefined) {
 					usrGp = opts.user.grps ? opts.user.grps.gp ? opts.user.grps.gp : 'admin' : 'default',
 					usrIcon = 'core/images/annu/24/'+usrGp+'_'+opts.user.sexe+'_trsp.png',
 					usriDiv = JQD.infusr( opts ).insertAfter(usri);
-					
+					// cas ou le user n'appartient à aucun groupe
+					if(usrGp.match('Attention'))
+						usrIcon = 'core/images/annu/24/no_group.png';
+						
 					usri.html(opts.user.fullname).prepend( 
 						$('<img/>').attr({
 							src: usrIcon.toLowerCase()
