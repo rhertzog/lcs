@@ -188,7 +188,7 @@ $(document).ready
         }
         else
         {
-          var socle_nom = $("#zone_socle_item input[type=radio]:checked").next('label').text();
+          var socle_nom = $("#zone_socle_item input[type=radio]:checked").parent().text();
         }
         $('#f_socle_item_nom').val(socle_nom);
         $('#f_socle_item_id').val(socle_id);

@@ -163,7 +163,7 @@ elseif($_SESSION['USER_PROFIL_TYPE']=='administrateur')
           list($departement,$connexion_nom) = explode('|',$connexion_ref);
           if(isset($tab_connecteurs_convention[$connexion_ref]))
           {
-            $texte_ent_possibles .= '<br /><a class="lien_ext" href="'.SERVEUR_CARTE_ENT.'">'.$tab_ent_convention_infos[$tab_connecteurs_convention[$connexion_ref]]['texte'].'</a>';
+            $texte_ent_possibles .= '<br /><a class="lien_ext" href="'.SERVEUR_GUIDE_ENT.'#toggle_partenariats">'.$tab_ent_convention_infos[$tab_connecteurs_convention[$connexion_ref]]['texte'].'</a>';
           }
         }
       }
@@ -225,7 +225,7 @@ if(!in_array($_SESSION['USER_PROFIL_TYPE'],array('webmestre','developpeur','part
     {
       $findme = ','.$_SESSION['USER_ID'].',';
       $tab_accueil['messages'][$DB_ROW['message_id']] = array(
-        'titre'   => 'Communication ('.html(afficher_identite_initiale($DB_ROW['user_prenom'],TRUE,$DB_ROW['user_nom'],FALSE)).')',
+        'titre'   => 'Message ('.html(afficher_identite_initiale($DB_ROW['user_prenom'],TRUE,$DB_ROW['user_nom'],FALSE)).')',
         'message' => make_lien(nl2br(html($DB_ROW['message_contenu']))),
         'visible' => (strpos($DB_ROW['message_dests_cache'],$findme)===FALSE),
       );

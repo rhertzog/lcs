@@ -215,7 +215,7 @@ else
       }
       $matiere_nombre = str_replace('value="'.$tab['nb_demandes'].'"','value="'.$tab['nb_demandes'].'" selected',$select_demandes) ;
       $matiere_nombre = ( ($matiere_droit) && (isset($tab_colonne[$matiere_id])) ) ? $matiere_nombre : str_replace('<select','<select disabled',$matiere_nombre) ;
-      echo'<tr><td colspan="4" class="nu">'.$matiere_nombre.$infobulle.$label.'</td>'.'</tr>'.NL;
+      echo'<tr><td colspan="3" class="nu">'.$matiere_nombre.$infobulle.$label.'</td><td class="nu">&nbsp;</td>'.'</tr>'.NL; // En 2 cellules pour résoudre un pb de bordures sous Chrome
       echo'</tbody></table><hr />'.NL;
     }
   }
@@ -321,7 +321,12 @@ foreach($tab_options as $val)
   </p>
   <div id="gestion_partager">
     <div id="ligne_partage">
-      <label class="tab" for="f_partage">Partage :</label><select id="f_partage" name="f_partage"><option value="oui">Partagé sur le serveur communautaire.</option><option value="bof">Partage sans intérêt (pas novateur).</option><option value="non">Non partagé avec la communauté.</option><option value="hs">Sans objet (matière spécifique).</option></select>
+      <label class="tab" for="f_partage">Partage :</label><select id="f_partage" name="f_partage">
+        <option value="oui">Partagé sur le serveur communautaire.</option>
+        <option value="bof">Partage sans intérêt (pas novateur).</option>
+        <option value="non">Non partagé avec la communauté.</option>
+        <option value="hs">Sans objet (matière spécifique).</option>
+      </select>
     </div>
     <div id="ligne_information">
       <label class="tab" for="f_information"><img alt="" src="./_img/bulle_aide.png" title="Ce commentaire sera visible dans le resultat d'une recherche de référentiels partagés.<br />Champ facultatif, à utiliser avec parcimonie : complétez-le seulement pour apporter un éclairage particulier." /> Commentaire :</label><input id="f_information" name="f_information" type="text" size="80" maxlength="120" />

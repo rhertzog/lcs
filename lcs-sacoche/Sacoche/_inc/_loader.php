@@ -246,6 +246,13 @@ define('DS',DIRECTORY_SEPARATOR);
 define('CHEMIN_DOSSIER_SACOCHE'  , realpath(dirname(dirname(__FILE__))).DS);
 define('LONGUEUR_CHEMIN_SACOCHE' , strlen(CHEMIN_DOSSIER_SACOCHE)-1);
 
+if(defined('APPEL_SITE_PROJET'))
+{
+  define('CHEMIN_DOSSIER_PROJET'         , realpath(dirname(dirname(dirname(__FILE__)))).DS);
+  define('LONGUEUR_CHEMIN_PROJET'        , strlen(CHEMIN_DOSSIER_PROJET)-1);
+  define('CHEMIN_DOSSIER_PROJET_INCLUDE' , CHEMIN_DOSSIER_PROJET.'_inc'.DS);
+}
+
 // Vers des sous-dossiers, avec séparateur final.
 define('CHEMIN_DOSSIER_PRIVATE'       , CHEMIN_DOSSIER_SACOCHE.'__private'.DS);
 define('CHEMIN_DOSSIER_TMP'           , CHEMIN_DOSSIER_SACOCHE.'__tmp'.DS);
@@ -277,6 +284,7 @@ define('FPDF_FONTPATH'                , CHEMIN_DOSSIER_FPDF_FONT); // Pour FPDF 
 // Vers des fichiers.
 define('CHEMIN_FICHIER_CONFIG_INSTALL' , CHEMIN_DOSSIER_CONFIG.'constantes.php');
 define('CHEMIN_FICHIER_DEBUG_CONFIG'   , CHEMIN_DOSSIER_TMP.'debug.txt');
+define('CHEMIN_FICHIER_CA_CERTS_FILE'  , CHEMIN_DOSSIER_SACOCHE.'_lib'.DS.'phpCAS'.DS.'certificats'.DS.'certificats.txt');
 define('CHEMIN_FICHIER_WS_LCS'         , CHEMIN_DOSSIER_WEBSERVICES.'import_lcs.php');
 define('CHEMIN_FICHIER_WS_ARGOS'       , CHEMIN_DOSSIER_WEBSERVICES.'argos_import.php');
 define('CHEMIN_FICHIER_WS_SESAMATH_ENT', CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_hebergements_conventions.php');
@@ -325,12 +333,12 @@ define('DEBUG_CONST',   DEBUG & 512 ? TRUE : FALSE );
 if(DEBUG_PHP)
 {
   // Rapporter toutes les erreurs PHP (http://fr.php.net/manual/fr/errorfunc.constants.php)
-  ini_set('error_reporting',E_ALL | E_STRICT);
+  ini_set('error_reporting', E_ALL | E_STRICT);
 }
 else
 {
-  // Rapporter les erreurs à part les E_NOTICE (c'est la configuration par défaut de php.ini) et E_STRICT qui est englobé dans E_ALL à compter de PHP 5.4.
-  ini_set('error_reporting',E_ALL & ~E_STRICT & ~E_NOTICE);
+  // Rapporter seulement les erreurs les plus importantes (configuration par défaut de php.ini : tout sauf E_NOTICE + E_STRICT qui est englobé dans E_ALL à compter de PHP 5.4).
+  ini_set('error_reporting', E_ERROR | E_WARNING | E_PARSE); // ex E_ALL & ~E_STRICT & ~E_NOTICE
 }
 
 // ============================================================================
@@ -424,6 +432,7 @@ if($fin)
 // Il manque "/sacoche" à l'URL si appelé depuis le projet
 if(defined('APPEL_SITE_PROJET'))
 {
+  define('URL_DIR_PROJET',$url.'/'); // avec slash final
   $url .= '/sacoche';
 }
 define('URL_INSTALL_SACOCHE',$url); // la seule constante sans slash final
@@ -456,7 +465,7 @@ define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');      // 
 define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt');     // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
 define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?fichier=cnil');           // URL de la page "CNIL (données personnelles)"
 define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?fichier=contact');        // URL de la page "Où échanger autour de SACoche ?"
-define('SERVEUR_CARTE_ENT'      ,SERVEUR_PROJET.'/?fichier=ent');            // URL de la page "Avec quels ENT SACoche est-il interconnecté ?"
+define('SERVEUR_GUIDE_ENT'      ,SERVEUR_PROJET.'/?fichier=ent');            // URL de la page "Mode d'identification & Guide d'intégration aux ENT"
 define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?fichier=guide_admin');    // URL de la page "Guide de démarrage (administrateur de SACoche)"
 define('SERVEUR_GUIDE_RENTREE'  ,SERVEUR_PROJET.'/?fichier=guide_rentree');  // URL de la page "Guide de changement d'année (administrateur de SACoche)"
 define('SERVEUR_NEWS'           ,SERVEUR_PROJET.'/?fichier=news');           // URL de la page "Historique des nouveautés"
@@ -610,9 +619,22 @@ function __autoload($class_name)
     'DB_WEBMESTRE_SELECT'         => '_sql'.DS.'requetes_webmestre_select.php' ,
     'DB_WEBMESTRE_WEBMESTRE'      => '_sql'.DS.'requetes_webmestre_webmestre.php' ,
   );
+  if(defined('APPEL_SITE_PROJET'))
+  {
+    $tab_classes_projet = array(
+      'DB_PROJET'       => 'class.requetes_DB_projet.php' ,
+      'ProjetAdmin'     => 'class.ProjetAdmin.php' ,
+      'ServeurSesamath' => 'class.ServeurSesamath.php' ,
+    );
+  }
   if(isset($tab_classes[$class_name]))
   {
     load_class($class_name,CHEMIN_DOSSIER_SACOCHE.$tab_classes[$class_name]);
+  }
+  // Pour le portail sacoche.sesamath.net
+  elseif(isset($tab_classes_projet[$class_name]))
+  {
+    load_class($class_name,CHEMIN_DOSSIER_PROJET_INCLUDE.$tab_classes_projet[$class_name]);
   }
   // Remplacement de l'autoload de phpCAS qui n'est pas chargé à cause de celui de SACoche
   // Voir le fichier ./_lib/phpCAS/CAS/autoload.php
@@ -730,6 +752,20 @@ function exit_redirection($adresse)
   header('Status: 307 Temporary Redirect', TRUE, 307);
   header('Location: '.$adresse);
   exit();
+}
+
+/**
+ * Retour d'un tableau au format JSON avec comme clefs "statut" (boolean) et "value" (chaine) ou un tableau de clefs transmis
+ *
+ * @param bool         $statut
+ * @param string|array $value   (facultatif)
+ * @return void
+ */
+function exit_json( $statut , $value=NULL )
+{
+  $tab_statut = array( 'statut' => $statut ) ;
+  $tab_valeur = is_array($value) ? $value : array( 'value' => $value ) ;
+  exit( json_encode( array_merge($tab_statut,$tab_valeur) ) );
 }
 
 /*

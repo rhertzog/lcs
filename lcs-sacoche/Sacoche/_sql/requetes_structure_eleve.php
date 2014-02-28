@@ -43,7 +43,7 @@ public static function DB_compter_reponses_professeur_en_attente($eleve_id)
 {
   $DB_SQL = 'SELECT COUNT(*) AS nombre ';
   $DB_SQL.= 'FROM sacoche_demande ';
-  $DB_SQL.= 'WHERE demande_statut=:statut AND user_id=:eleve_id ';
+  $DB_SQL.= 'WHERE demande_statut=:statut AND eleve_id=:eleve_id ';
   $DB_VAR = array(':statut'=>'prof',':eleve_id'=>$eleve_id);
   return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
@@ -136,13 +136,14 @@ public static function DB_recuperer_professeurs_eleve_matiere($eleve_id,$matiere
   }
   // Maintenant qu'on a la matière et la classe / les groupes, on cherche les profs à la fois dans sacoche_jointure_user_matiere et sacoche_jointure_user_groupe .
   // On part de sacoche_jointure_user_matiere qui ne contient que des profs.
-  $DB_SQL = 'SELECT DISTINCT(user_id) ';
+  $DB_SQL = 'SELECT DISTINCT(user_id), user_nom, user_prenom ';
   $DB_SQL.= 'FROM sacoche_jointure_user_matiere ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_jointure_user_groupe USING (user_id) ';
   $DB_SQL.= 'WHERE matiere_id=:matiere_id AND groupe_id IN('.$liste_groupes.') ';
+  $DB_SQL.= 'ORDER BY user_nom ASC, user_prenom ASC';
   $DB_VAR = array(':matiere_id'=>$matiere_id);
-  return DB::queryCol(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -189,23 +190,25 @@ public static function DB_lister_result_eleve_items($eleve_id,$liste_item_id,$us
 /**
  * Lister les demandes d'évaluation d'un élève donné
  *
- * @param int    $user_id   id de l'élève
+ * @param int    $eleve_id   id de l'élève
  * @return array
  */
-public static function DB_lister_demandes_eleve($user_id)
+public static function DB_lister_demandes_eleve($eleve_id)
 {
   $DB_SQL = 'SELECT sacoche_demande.*, ';
   $DB_SQL.= 'CONCAT(niveau_ref,".",domaine_ref,theme_ordre,item_ordre) AS item_ref , ';
-  $DB_SQL.= 'item_id , item_nom , item_lien , sacoche_matiere.matiere_id AS matiere_id  , matiere_nom ';
+  $DB_SQL.= 'item_id , item_nom , item_lien , sacoche_matiere.matiere_id AS matiere_id  , matiere_nom , ';
+  $DB_SQL.= 'prof_id , user_nom , user_prenom ';
   $DB_SQL.= 'FROM sacoche_demande ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_item USING (item_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_theme USING (theme_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_domaine USING (domaine_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_matiere ON sacoche_referentiel_domaine.matiere_id=sacoche_matiere.matiere_id ';
-  $DB_SQL.= 'WHERE user_id=:user_id ';
+  $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_demande.prof_id=sacoche_user.user_id ';
+  $DB_SQL.= 'WHERE eleve_id=:eleve_id ';
   $DB_SQL.= 'ORDER BY sacoche_demande.matiere_id ASC, niveau_ref ASC, domaine_ref ASC, theme_ordre ASC, item_ordre ASC';
-  $DB_VAR = array(':user_id'=>$user_id);
+  $DB_VAR = array(':eleve_id'=>$eleve_id);
   return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -305,7 +308,7 @@ public static function DB_compter_demandes_formulees_eleve_matiere($eleve_id,$ma
 {
   $DB_SQL = 'SELECT COUNT(*) AS nombre ';
   $DB_SQL.= 'FROM sacoche_demande ';
-  $DB_SQL.= 'WHERE user_id=:eleve_id AND matiere_id=:matiere_id ';
+  $DB_SQL.= 'WHERE eleve_id=:eleve_id AND matiere_id=:matiere_id ';
   $DB_SQL.= 'GROUP BY matiere_id';
   $DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id);
   return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
@@ -323,7 +326,7 @@ public static function DB_tester_demande_existante($eleve_id,$matiere_id,$item_i
 {
   $DB_SQL = 'SELECT demande_id ';
   $DB_SQL.= 'FROM sacoche_demande ';
-  $DB_SQL.= 'WHERE user_id=:eleve_id AND matiere_id=:matiere_id AND item_id=:item_id ';
+  $DB_SQL.= 'WHERE eleve_id=:eleve_id AND matiere_id=:matiere_id AND item_id=:item_id ';
   $DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id,':item_id'=>$item_id);
   return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
@@ -334,17 +337,18 @@ public static function DB_tester_demande_existante($eleve_id,$matiere_id,$item_i
  * @param int      $eleve_id
  * @param int      $matiere_id
  * @param int      $item_id
+ * @param int      $prof_id
  * @param int|null $demande_score
  * @param string   $demande_statut
  * @param string   $message
  * @return int
  */
-public static function DB_ajouter_demande($eleve_id,$matiere_id,$item_id,$demande_score,$demande_statut,$message)
+public static function DB_ajouter_demande($eleve_id,$matiere_id,$item_id,$prof_id,$demande_score,$demande_statut,$message)
 {
   $demande_messages = ($message) ? afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE)."\r\n".$message : '' ;
-  $DB_SQL = 'INSERT INTO sacoche_demande(user_id,matiere_id,item_id,demande_date,demande_score,demande_statut,demande_messages) ';
-  $DB_SQL.= 'VALUES(:eleve_id,:matiere_id,:item_id,NOW(),:demande_score,:demande_statut,:demande_messages)';
-  $DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id,':item_id'=>$item_id,':demande_score'=>$demande_score,':demande_statut'=>$demande_statut,':demande_messages'=>$demande_messages);
+  $DB_SQL = 'INSERT INTO sacoche_demande(eleve_id,matiere_id,item_id,prof_id,demande_date,demande_score,demande_statut,demande_messages) ';
+  $DB_SQL.= 'VALUES(:eleve_id,:matiere_id,:item_id,:prof_id,NOW(),:demande_score,:demande_statut,:demande_messages)';
+  $DB_VAR = array(':eleve_id'=>$eleve_id,':matiere_id'=>$matiere_id,':item_id'=>$item_id,':prof_id'=>$prof_id,':demande_score'=>$demande_score,':demande_statut'=>$demande_statut,':demande_messages'=>$demande_messages);
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
   return DB::getLastOid(SACOCHE_STRUCTURE_BD_NAME);
 }

@@ -25,6 +25,7 @@ INSERT INTO sacoche_niveau VALUES
 (   5, 0,  1,   5,     "P0",            "", "Cycle 1 (PS-GS)"),
 (   1, 0,  1,   9,     "P1",            "", "Cycle 2 (GS-CE1)"),
 (   2, 0,  1,  29,     "P2",            "", "Cycle 3 (CE2-CM2)"),
+(   6, 0,  1,  68,    "P3S",            "", "Cycle SEGPA"),
 (   3, 0,  1,  69,     "P3",            "", "Cycle Collège"),
 (   4, 0,  1, 199,     "P4",            "", "Cycle Lycée"),
 
@@ -41,7 +42,7 @@ INSERT INTO sacoche_niveau VALUES
 (  18, 0,  2,  13,    "CM2", "0031000222.", "Cours moyen 2e année"),
 (  19, 0,  2,  21,   "INIT", "0601000311.", "Initiation"),
 (  20, 0,  2,  22,   "ADAP", "0611000411.", "Adaptation"),
-(  21, 0,  2,  23,   "CLIS", "0621000511.", "Classe d'intégration scolaire"),
+(  21, 0,  2,  23,   "CLIS", "0621000511.", "Classe pour l'inclusion scolaire"),
 
 -- Collège (4e et 4AES ont le même code_mef ...)
 

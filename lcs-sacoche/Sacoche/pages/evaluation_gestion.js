@@ -98,22 +98,22 @@ $(document).ready
       if(date_visible=='identique')
       {
         $('#box_visible').prop('checked',true).next().show(0);
-        $('#f_date_visible').val(date_fr).parent().hide(0);
+        $('#f_date_visible').val(date_fr).parent().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       }
       else
       {
-        $('#box_visible').prop('checked',false).next().hide(0);
+        $('#box_visible').prop('checked',false).next().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
         $('#f_date_visible').val(date_visible).parent().show(0);
       }
       // date fin auto-évaluation
       if(date_autoeval=='sans objet')
       {
         $('#box_autoeval').prop('checked',true).next().show(0);
-        $('#f_date_autoeval').val('00/00/0000').parent().hide(0);
+        $('#f_date_autoeval').val('00/00/0000').parent().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       }
       else
       {
-        $('#box_autoeval').prop('checked',false).next().hide(0);
+        $('#box_autoeval').prop('checked',false).next().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
         $('#f_date_autoeval').val(date_autoeval).parent().show(0);
       }
       // pour finir
@@ -129,7 +129,7 @@ $(document).ready
         $('#gestion_edit').hide(0);
         $('#gestion_delete').show(0);
       }
-      $('#alerte_groupe').hide(0);
+      $('#alerte_groupe').css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       $('#ajax_msg_gestion').removeAttr('class').html("");
       $('#form_gestion label[generated=true]').removeAttr('class').html("");
       $.fancybox( { 'href':'#form_gestion' , onStart:function(){$('#form_gestion').css("display","block");} , onClosed:function(){$('#form_gestion').css("display","none");} , 'modal':true , 'minWidth':600 , 'centerOnScroll':true } );
@@ -193,7 +193,7 @@ $(document).ready
       var prof_liste    = tab_profs[ref];
       var compet_liste  = tab_items[ref];
       // Afficher le formulaire
-      afficher_form_gestion( mode , ref , date_fr , date_visible , date_autoeval , '' /*groupe_val*/ , unescapeHtml(groupe_nom) , eleve_nombre , eleve_liste , prof_nombre , prof_liste , unescapeHtml(description) , compet_nombre , compet_liste , tab_sujets[ref] , tab_corriges[ref] , fini );
+      afficher_form_gestion( mode , ref , date_fr , date_visible , date_autoeval , '' /*groupe_val*/ , groupe_nom /* volontairement sans unescapeHtml() */ , eleve_nombre , eleve_liste , prof_nombre , prof_liste , unescapeHtml(description) , compet_nombre , compet_liste , tab_sujets[ref] , tab_corriges[ref] , fini );
     };
 
     /**

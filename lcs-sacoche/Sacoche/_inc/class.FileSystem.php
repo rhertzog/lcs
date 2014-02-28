@@ -173,7 +173,8 @@ class FileSystem
    */
   public static function fin_chemin($chemin)
   {
-    return substr($chemin,LONGUEUR_CHEMIN_SACOCHE);
+    $longueur = defined('APPEL_SITE_PROJET') ? LONGUEUR_CHEMIN_PROJET : LONGUEUR_CHEMIN_SACOCHE ;
+    return substr($chemin,$longueur);
   }
 
   /**
@@ -398,7 +399,9 @@ class FileSystem
       'SERVEUR_PROXY_AUTH_PASS',
       'FICHIER_TAILLE_MAX',
       'FICHIER_DUREE_CONSERVATION',
-      'CHEMIN_LOGS_PHPCAS',
+      'PHPCAS_CHEMIN_LOGS',
+      'PHPCAS_ETABL_ID_LISTING',
+      'PHPCAS_NO_CERTIF_LISTING',
       'SYSTEME_UMASK',
       'CONTACT_MODIFICATION_USER',
       'CONTACT_MODIFICATION_MAIL',

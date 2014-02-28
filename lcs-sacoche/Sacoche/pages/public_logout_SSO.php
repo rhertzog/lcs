@@ -82,21 +82,20 @@ if($connexion_mode=='cas')
   // Pour tester, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
   if (DEBUG_PHPCAS)
   {
-    $fichier_nom_debut = 'debugcas_'.$BASE;
-    $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
-    phpCAS::setDebug(CHEMIN_LOGS_PHPCAS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
+    if( (HEBERGEUR_INSTALLATION=='mono-structure') || !PHPCAS_ETABL_ID_LISTING || (strpos(PHPCAS_ETABL_ID_LISTING,','.$BASE.',')!==FALSE) )
+    {
+      $fichier_nom_debut = 'debugcas_'.$BASE;
+      $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
+      phpCAS::setDebug(PHPCAS_CHEMIN_LOGS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
+    }
   }
   // Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
   phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
   phpCAS::setLang(PHPCAS_LANG_FRENCH);
-  // On indique qu'il n'y a pas de validation du certificat SSL à faire
-  phpCAS::setNoCasServerValidation();
   // Surcharge éventuelle des URL
   if ($cas_serveur_url_login)    { phpCAS::setServerLoginURL($cas_serveur_url_login); }
   if ($cas_serveur_url_logout)   { phpCAS::setServerLogoutURL($cas_serveur_url_logout); }
   if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
-  // Gestion du single sign-out
-  phpCAS::handleLogoutRequests(FALSE);
   // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
   if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
   {
@@ -109,6 +108,17 @@ if($connexion_mode=='cas')
       phpCAS::setExtraCurlOption(CURLOPT_PROXYUSERPWD , SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS);
     }
   }
+  // On indique qu'il faut vérifier la validité du certificat SSL, sauf exception paramétrée, mais alors dans ce cas ça ne sert à rien d'utiliser une connexion sécurisée.
+  if(strpos(PHPCAS_NO_CERTIF_LISTING,','.$connexion_nom.',')===FALSE)
+  {
+    phpCAS::setCasServerCACert(CHEMIN_FICHIER_CA_CERTS_FILE);
+  }
+  else
+  {
+    phpCAS::setNoCasServerValidation();
+  }
+  // Gestion du single sign-out
+  phpCAS::handleLogoutRequests(FALSE);
   // Déconnexion de CAS
   phpCAS::logout();
   exit();

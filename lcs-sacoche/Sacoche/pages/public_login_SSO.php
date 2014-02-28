@@ -255,23 +255,22 @@ if($connexion_mode=='cas')
     return $str_traces;
   }
   // Pour tester, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
-  if (DEBUG_PHPCAS)
+  if(DEBUG_PHPCAS)
   {
-    $fichier_nom_debut = 'debugcas_'.$BASE;
-    $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
-    phpCAS::setDebug(CHEMIN_LOGS_PHPCAS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
+    if( (HEBERGEUR_INSTALLATION=='mono-structure') || !PHPCAS_ETABL_ID_LISTING || (strpos(PHPCAS_ETABL_ID_LISTING,','.$BASE.',')!==FALSE) )
+    {
+      $fichier_nom_debut = 'debugcas_'.$BASE;
+      $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
+      phpCAS::setDebug(PHPCAS_CHEMIN_LOGS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
+    }
   }
   // Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
   phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
   phpCAS::setLang(PHPCAS_LANG_FRENCH);
-  // On indique qu'il n'y a pas de validation du certificat SSL à faire
-  phpCAS::setNoCasServerValidation();
   // Surcharge éventuelle des URL
   if ($cas_serveur_url_login)    { phpCAS::setServerLoginURL($cas_serveur_url_login); }
   if ($cas_serveur_url_logout)   { phpCAS::setServerLogoutURL($cas_serveur_url_logout); }
   if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
-  // Gestion du single sign-out
-  phpCAS::handleLogoutRequests(FALSE);
   // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
   if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
   {
@@ -284,6 +283,17 @@ if($connexion_mode=='cas')
       phpCAS::setExtraCurlOption(CURLOPT_PROXYUSERPWD , SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS);
     }
   }
+  // On indique qu'il faut vérifier la validité du certificat SSL, sauf exception paramétrée, mais alors dans ce cas ça ne sert à rien d'utiliser une connexion sécurisée.
+  if(strpos(PHPCAS_NO_CERTIF_LISTING,','.$connexion_nom.',')===FALSE)
+  {
+    phpCAS::setCasServerCACert(CHEMIN_FICHIER_CA_CERTS_FILE);
+  }
+  else
+  {
+    phpCAS::setNoCasServerValidation();
+  }
+  // Gestion du single sign-out
+  phpCAS::handleLogoutRequests(FALSE);
   // Demander à CAS d'aller interroger le serveur
   // Cette méthode permet de forcer CAS à demander au client de s'authentifier s'il ne trouve aucun client d'authentifié.
   // (redirige vers le serveur d'authentification si aucun utilisateur authentifié n'a été trouvé par le client CAS)
@@ -294,7 +304,7 @@ if($connexion_mode=='cas')
   catch(Exception $e)
   {
     // @author Daniel Caillibaud <daniel.caillibaud@sesamath.net>
-    $msg  = 'phpCAS::forceAuthentication() sur '.$cas_serveur_host.' a planté ';
+    $msg  = 'phpCAS::forceAuthentication() sur '.$cas_serveur_host.' pour l\'établissement n°'.$BASE.' qui utilise l\'ENT '.$connexion_nom.' a planté ';
     $msg .= $e->getMessage();
     // on ajoute les traces dans le log
     $traces = get_string_traces($e);
@@ -336,8 +346,10 @@ if($connexion_mode=='cas')
   {
     exit_error( 'Incident authentification CAS' /*titre*/ , $auth_resultat /*contenu*/ );
   }
-  // Vérifier la présence d'une convention valide si besoin, sauf pour les administrateurs qui doivent pouvoir accéder à leur espace pour régulariser la situation (même s'il leur est toujours possible d'utiliser une authentification locale).
-  if( IS_HEBERGEMENT_SESAMATH && (SERVEUR_TYPE=='PROD') && CONVENTION_ENT_REQUISE && (CONVENTION_ENT_START_DATE_MYSQL<=TODAY_MYSQL) && ($auth_DB_ROW['user_profil_type']!='administrateur') )
+  // Vérifier la présence d'une convention valide si besoin,
+  // sauf pour les administrateurs qui doivent pouvoir accéder à leur espace pour régulariser la situation (même s'il leur est toujours possible d'utiliser une authentification locale),
+  // et sauf pour les établissements pour tester les connecteurs ENT en PROD, d'identifiants >= 100 000.
+  if( IS_HEBERGEMENT_SESAMATH && (SERVEUR_TYPE=='PROD') && CONVENTION_ENT_REQUISE && (CONVENTION_ENT_START_DATE_MYSQL<=TODAY_MYSQL) && ($auth_DB_ROW['user_profil_type']!='administrateur') && ($BASE<100000) )
   {
     // Vérifier que les paramètres de la base n'ont pas été trafiqués (via une sauvegarde / restauration de la base avec modification intermédiaire) pour passer outre : nom de connexion mis à perso ou modifié etc.
     $connexion_ref = $connexion_departement.'|'.$connexion_nom;
@@ -346,7 +358,7 @@ if($connexion_mode=='cas')
     {
       exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS sont anormaux (connexion_mode vaut "'.$connexion_mode.'" ; connexion_departement vaut "'.$connexion_departement.'" ; connexion_nom vaut "'.$connexion_nom.'") !<br />Un administrateur doit sélectionner l\'ENT concerné depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
     }
-    // TEST À SUPPRIMER RENTRÉE 2013 QUAND LES CAS PERSO SERONT AUSSI CONCERNÉS - PRENDRA AUSSI EN COMPTE LES CAS À SOUS-DOMAINE VARIABLE, CE QUI N'EST PAS TESTÉ ACTUELLEMENT
+    // TEST À SUPPRIMER RENTRÉE 2014 QUAND LES CAS PERSO SERONT AUSSI CONCERNÉS - PRENDRA AUSSI EN COMPTE LES CAS À SOUS-DOMAINE VARIABLE, CE QUI N'EST PAS TESTÉ ACTUELLEMENT
     if($connexion_nom=='perso')
     {
       // RETIRÉ DURANT LA SESSION 2013-2014 POUR NE PAS POSER PB AUX ÉTABLISSEMENTS AUXQUEL CELA N'A PAS ÉTÉ ANNONCÉ
@@ -399,7 +411,7 @@ if($connexion_mode=='cas')
       {
         if(!DB_WEBMESTRE_PUBLIC::DB_tester_convention_active( $BASE , $connexion_nom ))
         {
-          exit_error( 'Absence de convention valide' /*titre*/ , 'L\'usage de ce service sur ce serveur est soumis à la signature et au règlement d\'une convention (depuis le '.CONVENTION_ENT_START_DATE_FR.').<br />Un courriel informatif a été envoyé à tous les contacts SACoche des établissements en juin 2013.<br />Un administrateur doit effectuer les démarches depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].<br />Veuillez consulter <a href="'.SERVEUR_BLOG_CONVENTION.'" target="_blank">cet article du blog de l\'association Sésamath</a> ainsi que <a href="'.SERVEUR_CARTE_ENT.'" target="_blank">cette documentation</a> pour davantage d\'explications.' /*contenu*/ );
+          exit_error( 'Absence de convention valide' /*titre*/ , 'L\'usage de ce service sur ce serveur est soumis à la signature et au règlement d\'une convention (depuis le '.CONVENTION_ENT_START_DATE_FR.').<br />Un courriel informatif a été envoyé à tous les contacts SACoche des établissements en juin 2013.<br />Un administrateur doit effectuer les démarches depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].<br />Veuillez consulter <a href="'.SERVEUR_GUIDE_ENT.'#toggle_partenariats" target="_blank">cette documentation</a> pour davantage d\'explications.' /*contenu*/ );
         }
       }
     }

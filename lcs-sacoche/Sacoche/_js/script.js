@@ -88,6 +88,34 @@ function replaceAll(find, replace, str)
 }
 
 /**
+ * Fonction pour interpréter une erreur d'extraction json
+ *
+ * @param jqXHR      l'objet retourné par ajax, contenant la réponse du serveur
+ * @param textStatus le statut de l'analyse json
+ * @return string
+ */
+function afficher_json_message_erreur(jqXHR, textStatus)
+{
+  // Une erreur de syntaxe lors de l'analyse du json : probablement une erreur ou un avertissement PHP, éventuellement suivi de la chaine json retournée
+  if(textStatus=='parsererror')
+  {
+    var pos_debut_json = jqXHR['responseText'].indexOf('{"');
+    var chaine_anormale = (pos_debut_json>0) ? jqXHR['responseText'].substr(0,pos_debut_json) : jqXHR['responseText'] ;
+    return 'Anomalie rencontrée ! ' + chaine_anormale;
+  }
+  // Rien de retourné : probablement un souci de connexion au serveur
+  else if( (textStatus=='error') && (typeof(jqXHR['responseText'])=='undefined') )
+  {
+    return 'Échec de la connexion au serveur !';
+  }
+  // 404 ou autre...
+  else
+  {
+    return 'Erreur inattendue ! ' + jqXHR['responseText'];
+  }
+}
+
+/**
  * Fonction pour afficher / masquer les images cliquables (en général dans la dernière colonne du tableau)
  *
  * Remarque : un toogle ne peut être simplement mis en oeuvre à cause des nouvelle images créées...
@@ -1059,7 +1087,7 @@ $(document).ready
     (
       function()
       {
-        var adresse = ( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') ) ? './index.php' : './index.php?'+PROFIL_TYPE ;
+        var adresse = ( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') && (PROFIL_TYPE!='developpeur') ) ? './index.php' : './index.php?'+PROFIL_TYPE ;
         window.document.location.href = adresse;
       }
     );
@@ -1345,21 +1373,50 @@ $(document).ready
         item_id    = tab_infos[2];
         score      = (tab_infos[3]!='') ? tab_infos[3] : -1 ; // si absence de score...
         item_nom   = $(this).parent().text();
-        var contenu = '<h2>Formuler une demande d\'évaluation</h2>'
-                    + '<form action="#" method="post" id="form_demande_evaluation">'
-                    + '<p class="b">'+item_nom+'</p>'
-                    + '<p>Message (facultatif) : <textarea id="zone_message" name="message" rows="5" cols="75"></textarea><br /><span class="tab"></span><label id="zone_message_reste"></label></p>'
-                    + '<p><span class="tab"></span><input name="matiere_id" type="hidden" value="'+matiere_id+'" /><input name="item_id" type="hidden" value="'+item_id+'" /><input name="score" type="hidden" value="'+score+'" />'
-                    + '<button id="confirmer_demande_evaluation" type="button" class="valider">Confirmer.</button> <button id="fermer_demande_evaluation" type="button" class="annuler">Annuler.</button><label id="ajax_msg_confirmer_demande"></label></p>'
-                    + '</form>';
-        $.fancybox( contenu , { 'modal':true , 'centerOnScroll':true } );
-        $('#form_demande_evaluation textarea').focus();
-        // Indiquer le nombre de caractères restant autorisés dans le textarea
-        $('#zone_message').keyup
+        // Récupérer le nombre de profs potentiellements concernés
+        $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
+        $.ajax
         (
-          function()
           {
-            afficher_textarea_reste( $(this) , 500 );
+            type : 'POST',
+            url : 'ajax.php?page=evaluation_demande_eleve_ajout',
+            data : 'f_action=lister_profs'+'&'+'f_matiere_id='+matiere_id,
+            dataType : "html",
+            error : function(jqXHR, textStatus, errorThrown)
+            {
+              $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
+            },
+            success : function(responseHTML)
+            {
+              if(responseHTML.substring(0,7)!='<option')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+              {
+                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
+              }
+              else
+              {
+
+                var contenu = '<h2>Formuler une demande d\'évaluation</h2>'
+                            + '<form action="#" method="post" id="form_demande_evaluation">'
+                            + '<p class="b">'+item_nom+'</p>'
+                            + '<p><label class="tab">Destinaire(s) :</label><select name="f_prof_id">'+responseHTML+'</select></p>'
+                            + '<p><label class="tab">Message (facultatif) :</label><textarea id="zone_message" name="f_message" rows="5" cols="75"></textarea><br /><span class="tab"></span><label id="zone_message_reste"></label></p>'
+                            + '<p><span class="tab"></span><input name="f_matiere_id" type="hidden" value="'+matiere_id+'" /><input name="f_item_id" type="hidden" value="'+item_id+'" /><input name="f_score" type="hidden" value="'+score+'" />'
+                            + '<button id="confirmer_demande_evaluation" type="button" class="valider">Confirmer.</button> <button id="fermer_demande_evaluation" type="button" class="annuler">Annuler.</button><label id="ajax_msg_confirmer_demande"></label></p>'
+                            + '</form>';
+                $.fancybox( contenu , { 'modal':true , 'centerOnScroll':true } );
+                $('#form_demande_evaluation textarea').focus();
+                // Indiquer le nombre de caractères restant autorisés dans le textarea
+                $('#zone_message').keyup
+                (
+                  function()
+                  {
+                    afficher_textarea_reste( $(this) , 500 );
+                  }
+                );
+
+              }
+              $('#form_demande_evaluation button').prop('disabled',false);
+            }
           }
         );
       }
@@ -1396,7 +1453,7 @@ $(document).ready
           {
             type : 'POST',
             url : 'ajax.php?page=evaluation_demande_eleve_ajout',
-            data : $("#form_demande_evaluation").serialize(),
+            data : 'f_action=confirmer_ajout'+'&'+$("#form_demande_evaluation").serialize(),
             dataType : "html",
             error : function(jqXHR, textStatus, errorThrown)
             {

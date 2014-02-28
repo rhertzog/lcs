@@ -28,7 +28,18 @@
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Identité de l'établissement";
 
-$options_mois = '<option value="1">calquée sur l\'année civile</option><option value="2">bascule au 1er février</option><option value="3">bascule au 1er mars</option><option value="4">bascule au 1er avril</option><option value="5">bascule au 1er mai</option><option value="6">bascule au 1er juin</option><option value="7">bascule au 1er juillet</option><option value="8">bascule au 1er août (par défaut)</option><option value="9">bascule au 1er septembre</option><option value="10">bascule au 1er octobre</option><option value="11">bascule au 1er novembre</option><option value="12">bascule au 1er décembre</option>';
+$options_mois = '<option value="1">calquée sur l\'année civile</option>'
+              . '<option value="2">bascule au 1er février</option>'
+              . '<option value="3">bascule au 1er mars</option>'
+              . '<option value="4">bascule au 1er avril</option>'
+              . '<option value="5">bascule au 1er mai</option>'
+              . '<option value="6">bascule au 1er juin</option>'
+              . '<option value="7">bascule au 1er juillet</option>'
+              . '<option value="8">bascule au 1er août (par défaut)</option>'
+              . '<option value="9">bascule au 1er septembre</option>'
+              . '<option value="10">bascule au 1er octobre</option>'
+              . '<option value="11">bascule au 1er novembre</option>'
+              . '<option value="12">bascule au 1er décembre</option>';
 $options_mois = str_replace( '"'.$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'].'"' , '"'.$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'].'" selected' , $options_mois );
 
 // Récupérer le logo, si présent.
@@ -159,9 +170,9 @@ else
     <label class="tab">Technique :</label><label for="f_mode_geo"><input type="radio" id="f_mode_geo" name="f_mode" value="geo" /> recherche sur critères géographiques</label>&nbsp;&nbsp;&nbsp;<label for="f_mode_uai"><input type="radio" id="f_mode_uai" name="f_mode" value="uai" /> recherche à partir du numéro UAI (ex-RNE)</label>
   </p>
   <fieldset id="f_recherche_geo" class="hide">
-    <label class="tab" for="f_geo1">Etape 1/3 :</label><select id="f_geo1" name="f_geo1"><option value=""></option></select><br />
-    <label class="tab" for="f_geo2">Etape 2/3 :</label><select id="f_geo2" name="f_geo2"><option value=""></option></select><br />
-    <label class="tab" for="f_geo3">Etape 3/3 :</label><select id="f_geo3" name="f_geo3"><option value=""></option></select><br />
+    <label class="tab" for="f_geo1">Etape 1/3 :</label><select id="f_geo1" name="f_geo1"></select><br />
+    <label class="tab" for="f_geo2">Etape 2/3 :</label><select id="f_geo2" name="f_geo2"></select><br />
+    <label class="tab" for="f_geo3">Etape 3/3 :</label><select id="f_geo3" name="f_geo3"></select><br />
   </fieldset>
   <fieldset id="f_recherche_uai" class="hide">
     <label class="tab" for="f_uai2">Code UAI (ex-RNE) :</label><input id="f_uai2" name="f_uai2" size="8" type="text" value="" /><br />
