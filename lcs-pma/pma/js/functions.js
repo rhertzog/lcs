@@ -129,7 +129,10 @@ function PMA_current_version(data)
     if (data && data.version && data.date) {
         var current = parseVersionString(pmaversion);
         var latest = parseVersionString(data.version);
-        var version_information_message = PMA_messages.strLatestAvailable + ' ' + escapeHtml(data.version);
+        var version_information_message = '<span>'
+            + PMA_messages.strLatestAvailable
+            + ' ' + escapeHtml(data.version)
+            + '</span>';
         if (latest > current) {
             var message = $.sprintf(
                 PMA_messages.strNewerVersion,
@@ -146,6 +149,7 @@ function PMA_current_version(data)
         if (latest === current) {
             version_information_message = ' (' + PMA_messages.strUpToDate + ')';
         }
+        $('#li_pma_version span').remove();
         $('#li_pma_version').append(version_information_message);
     }
 }
@@ -156,6 +160,7 @@ function PMA_current_version(data)
 function PMA_display_git_revision()
 {
     $('#is_git_revision').remove();
+    $('#li_pma_version_git').remove();
     $.get(
         "index.php",
         {
@@ -378,7 +383,12 @@ function confirmQuery(theForm1, sqlQuery1)
  */
 function checkSqlQuery(theForm)
 {
-    var sqlQuery = theForm.elements['sql_query'];
+    // get the textarea element containing the query
+    if (codemirror_editor) {
+        var sqlQuery = codemirror_editor.display.input;
+    } else {
+        var sqlQuery = theForm.elements['sql_query'];
+    }
     var isEmpty  = 1;
     var space_re = new RegExp('\\s+');
     if (typeof(theForm.elements['sql_file']) != 'undefined' &&
@@ -853,8 +863,25 @@ function insertValueQuery()
 function addDateTimePicker() {
     if ($.timepicker !== undefined) {
         $('input.datefield, input.datetimefield').each(function () {
-            PMA_addDatepicker($(this));
-        });
+
+            no_decimals = $(this).parent().data('decimals');
+            var showMillisec = false;
+            var showMicrosec = false;
+            var timeFormat = 'HH:mm:ss';
+            // check for decimal places of seconds
+            if (($(this).parent().data('decimals') > 0) && ($(this).parent().data('type').indexOf('time') != -1)){
+                showMillisec = true;                       
+                timeFormat = 'HH:mm:ss.lc';
+                if ($(this).parent().data('decimals') > 3) {
+                    showMicrosec = true;
+                }
+            }
+            PMA_addDatepicker($(this), {
+                showMillisec: showMillisec,
+                showMicrosec: showMicrosec,
+                timeFormat: timeFormat,                        
+            });               
+         })
     }
 }
 
@@ -1367,6 +1394,8 @@ AJAX.registerOnload('functions.js', function () {
     });
 
     $("input#sql_query_edit_save").live('click', function () {
+        $(".success").hide();
+        //hide already existing success message
         var sql_query;
         if (codemirror_inline_editor) {
             sql_query = codemirror_inline_editor.getValue();
@@ -1666,7 +1695,7 @@ function PMA_ajaxShowMessage(message, timeout)
         $retval
         .delay(timeout)
         .fadeOut('medium', function () {
-            if ($(this).is('.dismissable')) {
+            if ($(this).is(':data(tooltip)')) {
                 $(this).tooltip('destroy');
             }
             // Remove the notification
@@ -1705,10 +1734,8 @@ function PMA_ajaxRemoveMessage($this_msgbox)
         $this_msgbox
         .stop(true, true)
         .fadeOut('medium');
-        if ($this_msgbox.is('.dismissable')) {
-            if ($.isFunction($this_msgbox.tooltip)) {
-                $this_msgbox.tooltip('destroy');
-            }
+        if ($this_msgbox.is(':data(tooltip)')) {
+            $this_msgbox.tooltip('destroy');
         } else {
             $this_msgbox.remove();
         }
@@ -1730,10 +1757,14 @@ $(function () {
      */
     $('span.ajax_notification a, span.ajax_notification button, span.ajax_notification input')
     .live('mouseover', function () {
-        $(this).parents('span.ajax_notification').tooltip('disable');
+        if ($(this).parents('span.ajax_notification').is(':data(tooltip)')) {
+            $(this).parents('span.ajax_notification').tooltip('disable');
+        }
     })
     .live('mouseout', function () {
-        $(this).parents('span.ajax_notification').tooltip('enable');
+        if ($(this).parents('span.ajax_notification').is(':data(tooltip)')) {
+            $(this).parents('span.ajax_notification').tooltip('enable');
+        }
     });
 });
 
@@ -3812,6 +3843,11 @@ AJAX.registerOnload('functions.js', function () {
     $('#createViewDialog').find('input, select').live('keydown', function (e) {
         if (e.which === 13) { // 13 is the ENTER key
             e.preventDefault();
+
+            // with preventing default, selection by <select> tag
+            // was also prevented in IE
+            $(this).blur();
+
             $(this).closest('.ui-dialog').find('.ui-button:first').click();
         }
     }); // end $.live()

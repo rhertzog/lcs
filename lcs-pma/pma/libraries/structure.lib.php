@@ -1798,9 +1798,7 @@ function getHtmlForRowStatsTable($showtable, $tbl_collation,
         );
     }
     $html_output .= '</tbody>'
-    . '</table>'
-    . '</fieldset>'
-    . '</div>';
+    . '</table>';
 
     return $html_output;
 }
@@ -2240,6 +2238,9 @@ function PMA_getHtmlForDisplayTableStats($showtable, $table_info_num_rows,
         (isset ($avg_size) ? $avg_size : ''),
         (isset ($avg_unit) ? $avg_unit : '')
     );
+    
+    $html_output .= '</fieldset>'
+        . '</div>';
 
     return $html_output;
 }
@@ -2508,8 +2509,8 @@ function PMA_moveColumns($db, $table)
             $default_type,
             $current_timestamp ? '' : $data['Default'],
             isset($data['Extra']) && $data['Extra'] !== '' ? $data['Extra'] : false,
-            isset($data['Comments']) && $data['Comments'] !== ''
-            ? $data['Comments'] : false,
+            isset($data['COLUMN_COMMENT']) && $data['COLUMN_COMMENT'] !== ''
+            ? $data['COLUMN_COMMENT'] : false,
             $we_dont_change_keys,
             $i,
             $i === 0 ? '-first' : $column_names[$i - 1]
