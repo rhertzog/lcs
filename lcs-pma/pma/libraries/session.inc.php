@@ -1,4 +1,9 @@
 <?php
+ session_name(Lcs);
+ @session_start();
+ $login_lcs=$_SESSION[login];
+ session_write_close();
+
 /* vim: set expandtab sw=4 ts=4 sts=4: */
 /**
  * session handling
@@ -122,4 +127,5 @@ function PMA_secureSession()
     session_regenerate_id(true);
     $_SESSION[' PMA_token '] = md5(uniqid(rand(), true));
 }
-?>
+$_SESSION['LOGIN_LCS']=$login_lcs;
+ ?>

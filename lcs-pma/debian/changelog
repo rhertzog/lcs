@@ -1,3 +1,10 @@
+lcs-pma (2.4.10~5) Lcs; urgency=low
+
+  * update to version 4.1.12
+  * using session to replace $idpers
+
+ -- Philippe Leclerc  <philippe.leclerc1@ac-caen.fr>  Fri, 11 Apr 2014 16:14:48 +0200
+
 lcs-pma (2.4.10~4) Lcs; urgency=low
 
   * update to version 4.1.11
