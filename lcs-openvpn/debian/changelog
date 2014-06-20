@@ -1,11 +1,11 @@
-lcs-openvpn (2.4.10~5) Lcs; urgency=low
+lcs-openvpn (2.4.9.2) Lcs; urgency=low
 
   * Fix Fulldomain in mail
   * Fix path for smarty3
   * Fix config.inc parameters
   * Make a 2.4.10 release for Wheezy
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 Nov 2013 15:36:19 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Jun 2014 09:38:07 +0200
 
 lcs-openvpn (2.4.9.1) Lcs; urgency=low
 
