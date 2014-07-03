@@ -80,10 +80,10 @@ if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
     die();
 }
 
-$appel_cahier_notes=mysql_query("SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
-$id_groupe=mysql_result($appel_cahier_notes, 0, 'id_groupe');
+$appel_cahier_notes=mysqli_query($GLOBALS["mysqli"], "SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
+$id_groupe=old_mysql_result($appel_cahier_notes, 0, 'id_groupe');
 $current_group=get_group($id_groupe);
-$periode_num=mysql_result($appel_cahier_notes, 0, 'periode');
+$periode_num=old_mysql_result($appel_cahier_notes, 0, 'periode');
 
 /**
  * Gestion des périodes
@@ -98,12 +98,12 @@ if(!isset($id_dev)) {
 }
 
 $sql="SELECT * FROM cc_dev WHERE id='$id_dev' AND id_groupe='$id_groupe';";
-$query=mysql_query($sql);
+$query=mysqli_query($GLOBALS["mysqli"], $sql);
 if($query) {
-	$id_cn_dev=mysql_result($query, 0, 'id_cn_dev');
-	$nom_court_dev=mysql_result($query, 0, 'nom_court');
-	$nom_complet_dev=mysql_result($query, 0, 'nom_complet');
-	$description_dev=mysql_result($query, 0, 'description');
+	$id_cn_dev=old_mysql_result($query, 0, 'id_cn_dev');
+	$nom_court_dev=stripslashes(old_mysql_result($query, 0, 'nom_court'));
+	$nom_complet_dev=stripslashes(old_mysql_result($query, 0, 'nom_complet'));
+	$description_dev=stripslashes(old_mysql_result($query, 0, 'description'));
 }
 else {
 	header("Location: index.php?msg=".rawurlencode("Le numéro de devoir n est pas associé à ce groupe."));
@@ -114,25 +114,29 @@ $id_eval=isset($_POST["id_eval"]) ? $_POST["id_eval"] : (isset($_GET["id_eval"])
 if(isset($id_eval))  {
 	$sql="SELECT * FROM cc_eval WHERE id='$id_eval';";
 	//echo "$sql<br />";
-	$query=mysql_query($sql);
+	$query=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($query) {
 		// Vérifier que l'évaluation est bien associée au CC.
 		$sql="SELECT * FROM cc_eval WHERE id='$id_eval' AND id_dev='$id_dev';";
 		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==0) {
 			$mess="L'évaluation n°$id_eval n'est pas associée au $nom_cc n°$id_dev.<br />";
 			header("Location: index_cc.php?id_racine=$id_racine&msg=$mess");
 			die();
 		}
 
-		//$id_cn_dev=mysql_result($query, 0, 'id_cn_dev');
-		$nom_court=mysql_result($query, 0, 'nom_court');
-		$nom_complet=mysql_result($query, 0, 'nom_complet');
-		$description=nettoyage_retours_ligne_surnumeraires(mysql_result($query, 0, 'description'));
+		//$id_cn_dev=old_mysql_result($query, 0, 'id_cn_dev');
+		$nom_court=stripslashes(old_mysql_result($query, 0, 'nom_court'));
+		$nom_complet=stripslashes(old_mysql_result($query, 0, 'nom_complet'));
+		$description=nettoyage_retours_ligne_surnumeraires(stripslashes(old_mysql_result($query, 0, 'description')));
 
-		$display_date=mysql_result($query, 0, 'date');
-		$note_sur=mysql_result($query, 0, 'note_sur');
+		$display_date=old_mysql_result($query, 0, 'date');
+		$vision_famille =old_mysql_result($query, 0, 'vision_famille');
+		$note_sur=old_mysql_result($query, 0, 'note_sur');
+
+		$display_date=formate_date($display_date);
+		$vision_famille=formate_date($vision_famille);
 	}
 	else {
 		header("Location: index.php?msg=".rawurlencode("L évaluation n°$id_eval n'existe pas."));
@@ -145,6 +149,7 @@ else {
 	$nom_complet="Evaluation n°";
 	$description="";
 	$display_date=strftime('%d/%m/%Y');
+	$vision_famille =strftime('%d/%m/%Y');
 	$note_sur=5;
 }
 
@@ -175,14 +180,14 @@ if (isset($_POST['ok'])) {
 	else {
 		if(!isset($id_eval)) {
 			$sql="INSERT INTO cc_eval SET id_dev='$id_dev';";
-			$insert=mysql_query($sql);
+			$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 			if(!$insert) {
 				$msg="Erreur lors de la création de l'évaluation associée au $nom_cc n°$id_dev.";
 				header("Location: index_cc.php?id_racine=$id_racine&msg=$msg");
 				die();
 			}
 			else {
-				$id_eval=mysql_insert_id();
+				$id_eval=((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["mysqli"]))) ? false : $___mysqli_res);
 			}
 		}
 
@@ -202,11 +207,29 @@ if (isset($_POST['ok'])) {
 			$jour=strftime("%d");
 		}
 		$date=$annee."-".$mois."-".$jour." 00:00:00";
+        
+        
+        if ($_POST['vision_famille ']) {
+			if (my_ereg("([0-9]{2})/([0-9]{2})/([0-9]{4})", $_POST['vision_famille '])) {
+				$annee=mb_substr($_POST['vision_famille '],6,4);
+				$mois=mb_substr($_POST['vision_famille '],3,2);
+				$jour=mb_substr($_POST['vision_famille '],0,2);
+			} else {
+				$annee=strftime("%Y");
+				$mois=strftime("%m");
+				$jour=strftime("%d");
+			}
+		} else {
+			$annee=strftime("%Y");
+			$mois=strftime("%m");
+			$jour=strftime("%d");
+		}
+		$vision_famille  = $annee."-".$mois."-".$jour." 00:00:00";
 
-		$sql="UPDATE cc_eval SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', note_sur='$note_sur', date='".$date."' WHERE id='$id_eval';";
-		$update=mysql_query($sql);
-		if(!$insert) {
-			$msg="Erreur lors de la création ou mise à jour de l'évaluation associée au $nom_cc n°$id_dev. $sql";
+		$sql="UPDATE cc_eval SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', note_sur='$note_sur', date='".$date."', vision_famille ='".$vision_famille ."' WHERE id='$id_eval';";
+		$update=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(!$update) {
+			$msg="Erreur lors de la création ou mise à jour de l'évaluation associée au ".stripslashes($nom_cc)." n°$id_dev. ".stripslashes($sql);
 		}
 		else {
 			$msg="Création ou mise à jour de l'évaluation associée au $nom_cc n°$id_dev effectuée.";
@@ -220,8 +243,14 @@ if (isset($_POST['ok'])) {
 /**
  * Configuration du calendrier
  */
+ /*
 include("../lib/calendrier/calendrier.class.php");
 $cal = new Calendrier("formulaire", "display_date");
+*/
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 
 //**************** EN-TETE *****************
 $titre_page="Carnet de notes - Ajout/modification d'un $nom_cc";
@@ -325,8 +354,11 @@ if($aff_date=='y'){
 	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Date:</td>\n";
 	echo "<td>\n";
 	echo "<input type='text' name='display_date' id='display_date' size='10' value=\"".$display_date."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
+	/*
 	echo "<a href=\"#calend\" onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"";
 	echo "><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>\n";
+	*/
+	echo img_calendrier_js("display_date", "img_bouton_display_date");
 	echo "</td>\n";
 	echo "</tr>\n";
 }
@@ -338,6 +370,16 @@ else{
 	echo "</td>\n";
 	echo "</tr>\n";
 }
+
+
+	echo "<tr>\n";
+	echo "<td style='background-color: #aae6aa; font-weight: bold;'>Date de visibilité (si le droit est ouvert) :</td>\n";
+	echo "<td>\n";
+	echo "<input type='text' name='vision_famille ' id='vision_famille ' size='10' value=\"".$vision_famille ."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
+	echo img_calendrier_js("vision_famille ", "img_bouton_vision_famille ");
+	echo "</td>\n";
+	echo "</tr>\n";
+
 
 echo "</table>\n";
 echo "</div>\n";

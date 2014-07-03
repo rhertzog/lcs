@@ -46,6 +46,11 @@ $_POST['reg_auth_mode'] = (!isset($_POST['reg_auth_mode']) OR !in_array($_POST['
 
 $mdp_INE=isset($_POST["mdp_INE"]) ? $_POST["mdp_INE"] : (isset($_GET["mdp_INE"]) ? $_GET["mdp_INE"] : NULL);
 
+$order_by=isset($_GET['order_by']) ? $_GET['order_by'] : "nom_prenom";
+if(!in_array($order_by, array('nom_prenom', 'classe'))) {
+	$order_by='nom_prenom';
+}
+
 if ($create_mode == "classe" OR $create_mode == "individual") {
 	// On a une demande de création, on continue
 	check_token();
@@ -55,28 +60,28 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 	$error = false;
 	$msg = "";
 	if ($create_mode == "individual") {
-		$test = mysql_query("SELECT count(e.login) FROM eleves e WHERE (e.login = '" . $_POST['eleve_login'] ."')");
-		if (mysql_result($test, 0) == "0") {
+		$test = mysqli_query($GLOBALS["mysqli"], "SELECT count(e.login) FROM eleves e WHERE (e.login = '" . $_POST['eleve_login'] ."')");
+		if (old_mysql_result($test, 0) == "0") {
 			$error = true;
 			$msg .= "Erreur lors de la création de l'utilisateur : aucun élève avec ce login n'a été trouvé !<br />";
 		} else {
-			$quels_eleves = mysql_query("SELECT e.* FROM eleves e WHERE (" .
+			$quels_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT e.* FROM eleves e WHERE (" .
 				"e.login = '" . $_POST['eleve_login'] ."')");
 		}
 	} else {
 		// On est en mode 'classe'
 		if ($_POST['classe'] == "all") {
-			$quels_eleves = mysql_query("SELECT distinct(e.login), e.nom, e.prenom, e.sexe, e.email " .
+			$quels_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT distinct(e.login), e.nom, e.prenom, e.sexe, e.email " .
 					"FROM classes c, j_eleves_classes jec, eleves e WHERE (" .
 					"e.login = jec.login AND " .
 					"jec.id_classe = c.id)");
-			if (!$quels_eleves) $msg .= mysql_error();
+			if (!$quels_eleves) $msg .= mysqli_error($GLOBALS["mysqli"]);
 		} elseif (is_numeric($_POST['classe'])) {
-			$quels_eleves = mysql_query("SELECT distinct(e.login), e.nom, e.prenom, e.sexe, e.email " .
+			$quels_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT distinct(e.login), e.nom, e.prenom, e.sexe, e.email " .
 					"FROM classes c, j_eleves_classes jec, eleves e WHERE (" .
 					"e.login = jec.login AND " .
 					"jec.id_classe = '" . $_POST['classe']."')");
-			if (!$quels_eleves) $msg .= mysql_error();
+			if (!$quels_eleves) $msg .= mysqli_error($GLOBALS["mysqli"]);
 		} else {
 			$error = true;
 			$msg .= "Vous devez sélectionner au moins une classe !<br />";
@@ -89,7 +94,7 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 		$nb_comptes_preexistants=0;
 
 		$nb_comptes = 0;
-		while ($current_eleve = mysql_fetch_object($quels_eleves)) {
+		while ($current_eleve = mysqli_fetch_object($quels_eleves)) {
 			// Création du compte utilisateur pour l'élève considéré
 			$reg = true;
 			$civilite = '';
@@ -130,9 +135,9 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 
 				$sql="SELECT 1=1 FROM utilisateurs WHERE login='".$current_eleve->login."';";
 				//echo "$sql<br />";
-				$test_existence_compte=mysql_query($sql);
-				if(mysql_num_rows($test_existence_compte)==0) {
-					$reg = mysql_query("INSERT INTO utilisateurs SET " .
+				$test_existence_compte=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($test_existence_compte)==0) {
+					$reg = mysqli_query($GLOBALS["mysqli"], "INSERT INTO utilisateurs SET " .
 							"login = '" . $current_eleve->login . "', " .
 							"nom = '" . addslashes($current_eleve->nom) . "', " .
 							"prenom = '". addslashes($current_eleve->prenom) ."', " .
@@ -149,11 +154,25 @@ if ($create_mode == "classe" OR $create_mode == "individual") {
 					} else {
 						// Ménage:
 						$sql="SELECT id FROM infos_actions WHERE titre LIKE 'Nouvel %l%ve%($current_eleve->login)';";
-						$res_actions=mysql_query($sql);
-						if(mysql_num_rows($res_actions)>0) {
-							while($lig_action=mysql_fetch_object($res_actions)) {
+						$res_actions=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_actions)>0) {
+							while($lig_action=mysqli_fetch_object($res_actions)) {
 								$menage=del_info_action($lig_action->id);
 								if(!$menage) {$msg.="Erreur lors de la suppression de l'action en attente en page d'accueil à propos de $current_eleve->login<br />";}
+							}
+						}
+
+						// Génération de l'URI RSS si l'accès y est donné directement dans la page d'accueil pour le compte élève/resp connecté:
+						if((getSettingValue('rss_acces_ele')=='direct')&&((getSettingAOui('rss_cdt_ele'))||(getSettingAOui('rss_cdt_responsable')))) {
+							$sql="SELECT 1=1 FROM rss_users WHERE user_login='".$current_eleve->login."';";
+							$test_rss = mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_rss)==0) {
+								$uri_el = md5($current_eleve->login.getSettingValue("gepiSchoolRne").mt_rand());
+								$sql = "INSERT INTO rss_users (id, user_login, user_uri) VALUES ('', '".$current_eleve->login."', '".$uri_el."');";
+								$insert_rss = mysqli_query($GLOBALS["mysqli"], $sql);
+								if (!$insert_rss) {
+									$msg.="Erreur lors de l'initialisation de l'URI RSS pour ".$current_eleve->login."<br />";
+								}
 							}
 						}
 
@@ -229,10 +248,10 @@ require_once("../lib/header.inc.php");
 <a href="edit_eleve.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>
 </p>
 <?php
-$quels_eleves = mysql_query("SELECT e.* FROM eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (" .
+$quels_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT e.* FROM eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (" .
 		"u.login IS NULL) " .
 		"ORDER BY e.nom,e.prenom");
-$nb = mysql_num_rows($quels_eleves);
+$nb = mysqli_num_rows($quels_eleves);
 if($nb==0){
 	echo "<p>Tous les élèves ont un compte utilisateur, ou bien aucun élève n'a encore été créé.</p>\n";
 }
@@ -274,8 +293,8 @@ else{
 	echo "<option value='none'>Sélectionnez une classe</option>\n";
 	echo "<option value='all'>Toutes les classes</option>\n";
 
-	$quelles_classes = mysql_query("SELECT id,classe FROM classes ORDER BY classe");
-	while ($current_classe = mysql_fetch_object($quelles_classes)) {
+	$quelles_classes = mysqli_query($GLOBALS["mysqli"], "SELECT id,classe FROM classes ORDER BY classe");
+	while ($current_classe = mysqli_fetch_object($quelles_classes)) {
 		echo "<option value='".$current_classe->id."'>".$current_classe->classe."</option>\n";
 	}
 	echo "</select>\n";
@@ -338,21 +357,39 @@ else{
 	$critere_recherche=preg_replace("/[^a-zA-ZÀÄÂÉÈÊËÎÏÔÖÙÛÜ½¼Ççàäâéèêëîïôöùûü_ -]/", "", $critere_recherche);
 
 
-	$sql="SELECT e.* FROM eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (u.login IS NULL";
-	if($afficher_tous_les_eleves!='y'){
-		if($critere_recherche!=""){
-			$sql.=" AND e.nom like '%".$critere_recherche."%'";
+	if($order_by=='classe') {
+		$sql="SELECT DISTINCT e.* FROM j_eleves_classes jec, classes c, eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (u.login IS NULL AND jec.login=e.login AND jec.id_classe=c.id";
+		if($afficher_tous_les_eleves!='y'){
+			if($critere_recherche!=""){
+				$sql.=" AND e.nom like '%".$critere_recherche."%'";
+			}
+		}
+
+		$sql.=") ORDER BY c.classe, e.nom,e.prenom";
+		if($afficher_tous_les_eleves!='y'){
+			if($critere_recherche==""){
+				$sql.=" LIMIT 20";
+			}
 		}
 	}
-	$sql.=") ORDER BY e.nom,e.prenom";
-	if($afficher_tous_les_eleves!='y'){
-		if($critere_recherche==""){
-			$sql.=" LIMIT 20";
+	else {
+		$sql="SELECT e.* FROM eleves e LEFT JOIN utilisateurs u ON e.login=u.login WHERE (u.login IS NULL";
+		if($afficher_tous_les_eleves!='y'){
+			if($critere_recherche!=""){
+				$sql.=" AND e.nom like '%".$critere_recherche."%'";
+			}
+		}
+
+		$sql.=") ORDER BY e.nom,e.prenom";
+		if($afficher_tous_les_eleves!='y'){
+			if($critere_recherche==""){
+				$sql.=" LIMIT 20";
+			}
 		}
 	}
 	//echo "$sql<br />";
-	$quels_eleves = mysql_query($sql);
-	$nb2=mysql_num_rows($quels_eleves);
+	$quels_eleves = mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb2=mysqli_num_rows($quels_eleves);
 
 
 	echo "<p>";
@@ -370,7 +407,7 @@ else{
 	echo "Filtrage:";
 	echo "</td>\n";
 	echo "<td>\n";
-	echo "<input type='submit' name='filtrage' value='Afficher' /> les élèves sans login dont le <b>nom</b> contient: ";
+	echo "<input type='submit' name='filtrage' value='Afficher' /> les élèves sans compte d'utilisateur dont le <b>nom</b> contient: ";
 	echo "<input type='text' name='critere_recherche' value='$critere_recherche' />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
@@ -381,7 +418,7 @@ else{
 	echo "</tr>\n";
 	echo "<tr>\n";
 	echo "<td>\n";
-	echo "<input type='button' name='afficher_tous' value='Afficher tous les élèves sans login' onClick=\"document.getElementById('afficher_tous_les_eleves').value='y'; document.form_rech.submit();\" />\n";
+	echo "<input type='button' name='afficher_tous' value=\"Afficher tous les élèves sans compte d'utilisateur\" onClick=\"document.getElementById('afficher_tous_les_eleves').value='y'; document.form_rech.submit();\" />\n";
 	echo "</td>\n";
 	echo "</tr>\n";
 	echo "</table>\n";
@@ -401,17 +438,39 @@ else{
 	echo "<input type='hidden' name='critere_recherche' value='$critere_recherche' />\n";
 	echo "<input type='hidden' name='afficher_tous_les_eleves' value='$afficher_tous_les_eleves' />\n";
 
+	// A REVOIR: Le $reg_auth_mode n'a pas l'air initialisé
+
+	$sql="SELECT DISTINCT auth_mode FROM utilisateurs WHERE statut='eleve';";
+	$test_auth_mode=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_auth_mode)==1) {
+		$lig_auth_mode=mysqli_fetch_object($test_auth_mode);
+		if($lig_auth_mode->auth_mode=="gepi") {
+			$reg_auth_mode="auth_locale";
+		}
+		elseif($lig_auth_mode->auth_mode=="sso") {
+			$reg_auth_mode="auth_sso";
+		}
+	}
+
 	// Sélection du mode d'authentification
-	echo "<p>Mode d'authentification : <select name='reg_auth_mode' size='1'>";
+	echo "<p>Mode d'authentification : <select name='reg_auth_mode' size='1' title=\"Mode d'authentification pour les comptes à créer avec les boutons ci-dessous.\">";
 	if ($session_gepi->auth_locale) {
-		echo "<option value='auth_locale'>Authentification locale (base Gepi)</option>";
+		echo "<option value='auth_locale'";
+		if((isset($reg_auth_mode))&&($reg_auth_mode=='auth_locale')) {
+			echo " selected";
+		}
+		echo ">Authentification locale (base Gepi)</option>";
 	}
 	if ($session_gepi->auth_ldap) {
-		echo "<option value='auth_ldap'>Authentification LDAP</option>";
+		echo "<option value='auth_ldap'";
+		if((isset($reg_auth_mode))&&($reg_auth_mode=='auth_ldap')) {
+			echo " selected";
+		}
+		echo ">Authentification LDAP</option>";
 	}
 	if ($session_gepi->auth_sso) {
 		echo "<option value='auth_sso'";
-		if((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe")) {
+		if(((getSettingValue('use_sso')=="lcs")||(getSettingValue('auth_sso')=="lcs")||(getSettingValue('use_sso')=="ldap_scribe")||(getSettingValue('auth_sso')=="ldap_scribe"))||((isset($reg_auth_mode))&&($reg_auth_mode=='auth_sso'))) {
 			echo " selected='selected'";
 		}
 		echo ">Authentification unique (SSO)</option>\n";
@@ -419,9 +478,28 @@ else{
 	echo "</select>";
 	echo "</p>";
 
-	echo "<table class='boireaus' border='1' summary='Créer'>\n";
+	echo "<table class='boireaus' border='1' summary='Créer'>
+	<tr>
+		<th colspan='2'>Création du compte</th>
+		<th><a href='".$_SERVER['PHP_SELF']."?order_by=nom_prenom";
+	if($critere_recherche!="") {
+		echo "&amp;critere_recherche=$critere_recherche";
+	}
+	if($afficher_tous_les_eleves=="y") {
+		echo "&amp;afficher_tous_les_eleves=y";
+	}
+	echo "'>Nom prénom</a></th>
+		<th><a href='".$_SERVER['PHP_SELF']."?order_by=classe";
+	if($critere_recherche!="") {
+		echo "&amp;critere_recherche=$critere_recherche";
+	}
+	if($afficher_tous_les_eleves=="y") {
+		echo "&amp;afficher_tous_les_eleves=y";
+	}
+	echo "'>Classe</a></th>
+	</tr>\n";
 	$alt=1;
-	while ($current_eleve = mysql_fetch_object($quels_eleves)) {
+	while ($current_eleve = mysqli_fetch_object($quels_eleves)) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
 			echo "<td>\n";
@@ -429,11 +507,15 @@ else{
 			echo "</td>\n";
 
 			echo "<td>\n";
-			echo "<input type='submit' value=\"Créer d'après INE\" onclick=\"$('eleve_login').value='".$current_eleve->login."';$('indiv_mdp_INE').value='y'; $('form_create_one_eleve').submit();\" />\n";
-			//echo "<input type='submit' value=\"Créer d'après INE\" onclick=\"$('eleve_login').value='".$current_eleve->login."';$('indiv_mdp_INE').value='y';\" />\n";
+			if($current_eleve->no_gep!="") {
+				echo "<input type='submit' value=\"Créer d'après INE\" onclick=\"$('eleve_login').value='".$current_eleve->login."';$('indiv_mdp_INE').value='y'; $('form_create_one_eleve').submit();\" />\n";
+			}
+			else {
+				echo "<span style='color:red'>INE non renseigné</span>";
+			}
 			echo "</td>\n";
 
-			echo "<td>".$current_eleve->nom." ".$current_eleve->prenom."</td>\n";
+			echo "<td><a href='../eleves/modify_eleve.php?eleve_login=$current_eleve->login' style='color:black; text-decoration:none;' title=\"Editer la fiche de l'élève\" target='_blank'>".$current_eleve->nom." ".$current_eleve->prenom."</a></td>\n";
 
 
 			echo "<td>\n";
@@ -449,6 +531,7 @@ else{
 		echo "</tr>\n";
 	}
 	echo "</table>\n";
+	echo "<p>$nb2 élèves affichés.</p>";
 	echo "</form>";
 	echo "</blockquote>\n";
 }

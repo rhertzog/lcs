@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
 * This file is part of GEPI.
 *
@@ -43,11 +43,6 @@ if (!checkAccess()) {
 // initialisation
 $id_classe = isset($_POST["id_classe"]) ? $_POST["id_classe"] :(isset($_GET["id_classe"]) ? $_GET["id_classe"] :NULL);
 
-if(($_SESSION['statut']=='professeur')&&(!is_pp($_SESSION['login'], $id_classe))) {
-	header("Location: ../accueil.php?msg=Accès non autorisé.");
-	die();
-}
-
 include "../lib/periodes.inc.php";
 
 $msg="";
@@ -70,10 +65,61 @@ if (($_SESSION['statut'] == 'cpe') and getSettingValue("GepiRubConseilCpe")!='ye
    die("Droits insuffisants pour effectuer cette opération");
 }
 
+if(($_SESSION['statut']=='professeur')&&(!is_pp($_SESSION['login'], $id_classe))) {
+	header("Location: ../accueil.php?msg=Accès non autorisé.");
+	die();
+}
 
 $gepi_denom_mention=getSettingValue("gepi_denom_mention");
 if($gepi_denom_mention=="") {
 	$gepi_denom_mention="mention";
+}
+
+$mod_disc_terme_avertissement_fin_periode=getSettingValue('mod_disc_terme_avertissement_fin_periode');
+if($mod_disc_terme_avertissement_fin_periode=="") {$mod_disc_terme_avertissement_fin_periode="avertissement de fin de période";}
+
+$date_du_jour=strftime("%d/%m/%Y");
+$acces_app_ele_resp=getSettingValue('acces_app_ele_resp');
+//$acces_classes_acces_appreciations=acces("/classes/acces_appreciations.php", $_SESSION['statut']);
+$acces_classes_acces_appreciations=false;
+if(($_SESSION['statut']=='administrateur')||
+($_SESSION['statut']=='scolarite')||
+(($_SESSION['statut']=='professeur')&&(getSettingAOui('GepiAccesRestrAccesAppProfP'))&&(is_pp($_SESSION['login'], $id_classe)))) {
+	$acces_classes_acces_appreciations=true;
+}
+//echo "\$acces_classes_acces_appreciations=$acces_classes_acces_appreciations<br />";
+if((isset($id_classe))&&(isset($_GET['periode_num']))&&(isset($_GET['mode']))&&($_GET['mode']=='modifier_visibilite_parents')&&($acces_classes_acces_appreciations)) {
+	check_token();
+	$periode_num=$_GET['periode_num'];
+
+	if($acces_app_ele_resp=='manuel') {
+		$acces_app_classe=acces_appreciations($periode_num, $periode_num, $id_classe, 'responsable');
+		//echo "\$acces_app_classe[$periode_num]=$acces_app_classe[$periode_num]<br />";
+		if($acces_app_classe[$periode_num]=="y") {
+			$sql="UPDATE matieres_appreciations_acces SET acces='n' WHERE id_classe='$id_classe' AND periode='$periode_num';";
+			$msg="L'accès parent/élève n'est pas/plus ouvert pour la période n°$periode_num.<br />";
+			$msg_no_js="<img src='../images/icons/invisible.png' width='19' height='16' alt='Appréciations non visibles des parents/élèves.' title=\"A la date du jour (".$date_du_jour."), les appréciations de la période ".$periode_num." ne sont pas visibles des parents/élèves.\" />";
+		}
+		else {
+			$sql="UPDATE matieres_appreciations_acces SET acces='y' WHERE id_classe='$id_classe' AND periode='$periode_num';";
+			$msg="L'accès parent/élève est maintenant ouvert pour la période n°$periode_num.<br />";
+			$msg_no_js="<img src='../images/icons/visible.png' width='19' height='16' alt='Appréciations visibles des parents/élèves.' title='A la date du jour (".$date_du_jour."), les appréciations de la période ".$periode_num." sont visibles des parents/élèves.' />";
+		}
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(!$res) {
+			$msg="Erreur lors de la modification de la visibilité parent/élève.<br />";
+			$msg_no_js="<img src='../images/icons/ico_attention.png' width='22' height='19' title='Erreur lors de la modification de la visibilité parent/élève.' alt='Erreur'>";
+		}
+	}
+	else {
+		$msg="L'accès ou non n'est pas modifié manuellement.<br />";
+		$msg_no_js="<img src='../images/icons/ico_attention.png' width='22' height='19' title=\"L'accès ou non n'est pas modifié manuellement.\" alt='Erreur'>";
+	}
+
+	if(isset($_GET['mode_js'])) {
+		echo $msg_no_js;
+		die();
+	}
 }
 
 if (isset($_POST['is_posted'])) {
@@ -129,8 +175,8 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 	//echo "$sql<br />";
-	$quels_eleves = mysql_query($sql);
-	$lignes = mysql_num_rows($quels_eleves);
+	$quels_eleves = mysqli_query($GLOBALS["mysqli"], $sql);
+	$lignes = mysqli_num_rows($quels_eleves);
 
 	if($lignes>0) {
 		// Synthèse
@@ -145,16 +191,16 @@ if (isset($_POST['is_posted'])) {
 					$synthese=suppression_sauts_de_lignes_surnumeraires($synthese);
 
 					$sql="SELECT 1=1 FROM synthese_app_classe WHERE id_classe='$id_classe' AND periode='$i';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0) {
 						$sql="INSERT INTO synthese_app_classe SET id_classe='$id_classe', periode='$i', synthese='$synthese';";
-						$insert=mysql_query($sql);
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$insert) {$msg.="Erreur lors de l'enregistrement de la synthèse.";}
 						//else {$msg.="La synthèse a été enregistrée.";}
 					}
 					else {
 						$sql="UPDATE synthese_app_classe SET synthese='$synthese' WHERE id_classe='$id_classe' AND periode='$i';";
-						$update=mysql_query($sql);
+						$update=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$update) {$msg.="Erreur lors de la mise à jour de la synthèse.";}
 						//else {$msg.="La synthèse a été mise à jour.";}
 					}
@@ -167,12 +213,12 @@ if (isset($_POST['is_posted'])) {
 	$j = '0';
 	$pb_record = 'no';
 	while($j < $lignes) {
-		$reg_eleve_login = mysql_result($quels_eleves, $j, "login");
+		$reg_eleve_login = old_mysql_result($quels_eleves, $j, "login");
 		$i = '1';
 		while ($i < $nb_periode) {
 			if ($ver_periode[$i] != "O"){
-				$call_eleve = mysql_query("SELECT login FROM j_eleves_classes WHERE (login = '$reg_eleve_login' and id_classe='$id_classe' and periode='$i')");
-				$result_test = mysql_num_rows($call_eleve);
+				$call_eleve = mysqli_query($GLOBALS["mysqli"], "SELECT login FROM j_eleves_classes WHERE (login = '$reg_eleve_login' and id_classe='$id_classe' and periode='$i')");
+				$result_test = mysqli_num_rows($call_eleve);
 				if ($result_test != 0) {
 
 					//=========================
@@ -219,13 +265,13 @@ if (isset($_POST['is_posted'])) {
 						}
 						*/
 						$sql="DELETE FROM avis_conseil_classe WHERE (login='$reg_eleve_login' AND periode='$i');";
-						$menage=mysql_query($sql);
+						$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 						if(($avis!='')||((isset($id_mention)&&($id_mention!=0)))) {
 							$sql="INSERT INTO avis_conseil_classe SET login='$reg_eleve_login',periode='$i',avis='$avis',";
 							if(isset($id_mention)) {$sql.="id_mention='$id_mention',";}
 							$sql.="statut=''";
-							$register = mysql_query($sql);
+							$register = mysqli_query($GLOBALS["mysqli"], $sql);
 
 							if (!$register) {
 								$msg.="Erreur lors de l'enregistrement des données de la période $i pour $reg_eleve_login<br />\n";
@@ -249,6 +295,22 @@ $javascript_specifique = "saisie/scripts/js_saisie";
 $titre_page = "Saisie des avis | Saisie";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
+
+//=================================
+$acces_bull_simp='n';
+if(($_SESSION['statut']=="professeur") AND 
+((getSettingValue("GepiAccesBulletinSimpleProf")=="yes")||
+(getSettingValue("GepiAccesBulletinSimpleProfToutesClasses")=="yes")||
+(getSettingValue("GepiAccesBulletinSimpleProfTousEleves")=="yes")
+)) {
+	$acces_bull_simp='y';
+}
+elseif($_SESSION['statut']=="scolarite") {
+	$acces_bull_simp='y';
+}
+elseif($_SESSION['statut']=="cpe") {
+	$acces_bull_simp='y';
+}
 
 $tmp_timeout=(getSettingValue("sessionMaxLength"))*60;
 
@@ -301,20 +363,20 @@ $chaine_options_classes="";
 $cpt_classe=0;
 $num_classe=-1;
 
-$res_class_tmp=mysql_query($sql);
-$nb_classes_suivies=mysql_num_rows($res_class_tmp);
+$res_class_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+$nb_classes_suivies=mysqli_num_rows($res_class_tmp);
 if($nb_classes_suivies>0){
 	$id_class_prec=0;
 	$id_class_suiv=0;
 	$temoin_tmp=0;
-	while($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+	while($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 		if($lig_class_tmp->id==$id_classe){
 			// Index de la classe dans les <option>
 			$num_classe=$cpt_classe;
 
 			$chaine_options_classes.="<option value='$lig_class_tmp->id' selected='true'>$lig_class_tmp->classe</option>\n";
 			$temoin_tmp=1;
-			if($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+			if($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 				$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
 				$id_class_suiv=$lig_class_tmp->id;
 			}
@@ -377,10 +439,30 @@ if(isset($id_class_suiv)){
 if((acces('/impression/avis_pdf.php', $_SESSION['statut']))&&(acces('/saisie/impression_avis.php', $_SESSION['statut']))) {
 	echo "| <a href='../saisie/impression_avis.php' onclick=\"return confirm_abandon(this, change, '$themessage')\">Impression PDF des avis</a>";
 }
+
+if((($_SESSION['statut']=='professeur')&&(getSettingAOui('CommentairesTypesPP')))||
+(($_SESSION['statut']=='scolarite')&&(getSettingAOui('CommentairesTypesScol')))||
+(($_SESSION['statut']=='professeur')&&(getSettingAOui('CommentairesTypesCpe')))) {
+	echo " | <a href='commentaires_types.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Saisie de commentaires-types</a>";
+}
+
+if(isset($id_classe)) {
+	$sql="SELECT num_periode FROM periodes WHERE id_classe='$id_classe' AND (verouiller='N' OR verouiller='P');";
+	//echo "$sql<br />";
+	$test_periode_ouverte=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_periode_ouverte)==1) {
+		$lig_tmp_per=mysqli_fetch_object($test_periode_ouverte);
+		echo " | <a href='saisie_avis2.php?id_classe=$id_classe&amp;periode_num=".$lig_tmp_per->num_periode."' onclick=\"return confirm_abandon (this, change, '$themessage')\">Saisie avis avec affichage bulletin simplifié</a>";
+	}
+}
 echo "</p>\n";
 
 echo "</form>\n";
 
+// 20140226
+if(getSettingAOui('active_mod_discipline')) {
+	echo necessaire_saisie_avertissement_fin_periode();
+}
 
 echo "<form enctype='multipart/form-data' action='saisie_avis1.php' method='post'>\n";
 echo add_token_field(true);
@@ -388,7 +470,10 @@ echo add_token_field(true);
 if ($id_classe) {
 	$classe = sql_query1("SELECT classe FROM classes WHERE id = '$id_classe'");
 	?>
-	<p class= 'grand'>Avis du conseil de classe. Classe : <?php echo $classe; ?></p>
+	<p class= 'grand'>Avis du conseil de classe. Classe : <?php echo $classe; 
+	echo " - <em style='font-size:small'>(".getSettingValue("gepi_prof_suivi")."&nbsp;: ".liste_prof_suivi($id_classe, "profs", "y").")</em>";
+	?>
+	</p>
 	<?php
 	$test_periode_ouverte = 'no';
 	$i = "1";
@@ -434,8 +519,8 @@ if ($id_classe) {
 			) ORDER BY nom, prenom";
 		}
 	}
-	$appel_donnees_eleves=mysql_query($sql);
-	$nombre_lignes = mysql_num_rows($appel_donnees_eleves);
+	$appel_donnees_eleves=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nombre_lignes = mysqli_num_rows($appel_donnees_eleves);
 
 
 
@@ -447,7 +532,6 @@ if ($id_classe) {
 
 //=================================
 // 20121118
-$date_du_jour=strftime("%d/%m/%Y");
 // Si les parents ont accès aux bulletins ou graphes,... on va afficher un témoin
 $tab_acces_app_classe=array();
 // L'accès est donné à la même date pour parents et responsables.
@@ -480,9 +564,32 @@ else{
 }
 //=================================
 
+//===========================================================
+echo "<div id='div_bull_simp' style='position: absolute; top: 220px; right: 20px; width: 700px; text-align:center; color: black; padding: 0px; border:1px solid black; display:none;'>\n";
+
+	echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; width: 700px; font-weight: bold; padding: 0px;' onmousedown=\"dragStart(event, 'div_bull_simp')\">\n";
+		echo "<div style='color: #ffffff; cursor: move; font-weight: bold; float:right; width: 16px; margin-right: 1px;'>\n";
+		echo "<a href='#' onClick=\"cacher_div('div_bull_simp');return false;\">\n";
+		echo "<img src='../images/icons/close16.png' width='16' height='16' alt='Fermer' />\n";
+		echo "</a>\n";
+		echo "</div>\n";
+
+		echo "<div id='titre_entete_bull_simp'></div>\n";
+	echo "</div>\n";
+	
+	echo "<div id='corps_bull_simp' class='infobulle_corps' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; height: 15em; width: 700px; overflow: auto;'>";
+	echo "</div>\n";
+
+echo "</div>\n";
+//===========================================================
 
 	// Fonction de renseignement du champ qui doit obtenir le focus après validation
 	echo "<script type='text/javascript'>
+
+function affiche_bull_simp(login_eleve,id_classe,num_per1,num_per2) {
+	document.getElementById('titre_entete_bull_simp').innerHTML='Bulletin simplifié de '+login_eleve+' période '+num_per1+' à '+num_per2;
+	new Ajax.Updater($('corps_bull_simp'),'ajax_edit_limite.php?choix_edit=2&login_eleve='+login_eleve+'&id_classe='+id_classe+'&periode1='+num_per1+'&periode2='+num_per2,{method: 'get'});
+}
 
 function focus_suivant(num){
 	temoin='';
@@ -512,14 +619,14 @@ if ($insert_mass_appreciation_type=="y") {
 	// INSERT INTO setting SET name='insert_mass_appreciation_type', value='y';
 
 	$sql="CREATE TABLE IF NOT EXISTS b_droits_divers (login varchar(50) NOT NULL default '', nom_droit varchar(50) NOT NULL default '', valeur_droit varchar(50) NOT NULL default '');";
-	$create_table=mysql_query($sql);
+	$create_table=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	// Pour tester:
 	// INSERT INTO b_droits_divers SET login='toto', nom_droit='insert_mass_appreciation_type', valeur_droit='y';
 
 	$sql="SELECT 1=1 FROM b_droits_divers WHERE login='".$_SESSION['login']."' AND nom_droit='insert_mass_appreciation_type' AND valeur_droit='y';";
-	$res_droit=mysql_query($sql);
-	if(mysql_num_rows($res_droit)>0) {
+	$res_droit=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_droit)>0) {
 		$droit_insert_mass_appreciation_type="y";
 	}
 	else {
@@ -578,8 +685,8 @@ if ($insert_mass_appreciation_type=="y") {
 	while ($k < $nb_periode) {
 		// Existe-t-il des commentaires-types pour cette classe et cette période?
 		$sql="select 1=1 from commentaires_types WHERE num_periode='$k' AND id_classe='$id_classe'";
-		$res_test=mysql_query($sql);
-		if(mysql_num_rows($res_test)!=0){
+		$res_test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_test)!=0){
 			$commentaires_type_classe_periode[$k]="y";
 		}
 		else{
@@ -605,7 +712,7 @@ if ($insert_mass_appreciation_type=="y") {
 
 	//===============================================
 	$tabdiv_infobulle[]=creer_div_infobulle('div_explication_cnil',"Saisies et CNIL","",$message_cnil_bons_usages,"",30,0,'y','y','n','n');
-	// Paramètres concernant le délais avant affichage d'une infobulle via delais_afficher_div()
+	// Paramètres concernant le délai avant affichage d'une infobulle via delais_afficher_div()
 	// Hauteur de la bande testée pour la position de la souris:
 	$hauteur_survol_infobulle=20;
 	// Largeur de la bande testée pour la position de la souris:
@@ -626,8 +733,8 @@ if ($insert_mass_appreciation_type=="y") {
 	while ($k < $nb_periode) {
 		$sql="SELECT * FROM synthese_app_classe WHERE (id_classe='$id_classe' AND periode='$k');";
 		//echo "$sql<br />";
-		$res_current_synthese=mysql_query($sql);
-		$current_synthese[$k] = @mysql_result($res_current_synthese, 0, "synthese");
+		$res_current_synthese=mysqli_query($GLOBALS["mysqli"], $sql);
+		$current_synthese[$k] = @old_mysql_result($res_current_synthese, 0, "synthese");
 		if ($current_synthese[$k] == '') {$current_synthese[$k] = ' -';}
 
 		$k++;
@@ -686,21 +793,21 @@ if ($insert_mass_appreciation_type=="y") {
 	//$i++;
 	echo "</table>\n<br />\n<br />\n";
 
-
 	$chaine_test_vocabulaire="";
 
 	$i = "0";
 	//$num_id=10;
 	while($i < $nombre_lignes) {
-		$current_eleve_login = mysql_result($appel_donnees_eleves, $i, "login");
-		$current_eleve_nom = mysql_result($appel_donnees_eleves, $i, "nom");
-		$current_eleve_prenom = mysql_result($appel_donnees_eleves, $i, "prenom");
+		$current_eleve_login = old_mysql_result($appel_donnees_eleves, $i, "login");
+		$current_eleve_nom = old_mysql_result($appel_donnees_eleves, $i, "nom");
+		$current_eleve_prenom = old_mysql_result($appel_donnees_eleves, $i, "prenom");
+		$current_eleve_sexe = old_mysql_result($appel_donnees_eleves, $i, "sexe");
 
 		//========================
 		// AJOUT boireaus 20071115
 		$sql="SELECT elenoet FROM eleves WHERE login='$current_eleve_login';";
-		$res_ele=mysql_query($sql);
-		$lig_ele=mysql_fetch_object($res_ele);
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+		$lig_ele=mysqli_fetch_object($res_ele);
 		$current_eleve_elenoet=$lig_ele->elenoet;
 
 		// Photo...
@@ -732,7 +839,34 @@ if ($insert_mass_appreciation_type=="y") {
 		echo "<table width=\"750\" class='boireaus' border='1' cellspacing='2' cellpadding='5' summary=\"Elève $current_eleve_nom $current_eleve_prenom\">\n";
 		echo "<tr>\n";
 		echo "<th width=\"200\"><div align=\"center\"><b>&nbsp;</b></div></th>\n";
-		echo "<th><div align=\"center\"><b><a href='../eleves/visu_eleve.php?ele_login=$current_eleve_login' target='_blank' title=\"Voir (dans un nouvel onglet) la fiche élève avec les onglets Élève, Enseignements, Bulletins, CDT, Absences,...\">$current_eleve_nom $current_eleve_prenom</a></b>\n";
+		echo "<th>";
+
+		$num_per1=0;
+		$id_premiere_classe="";
+		$current_id_classe=array();
+		$sql="SELECT id_classe,periode FROM j_eleves_classes WHERE login='$current_eleve_login' ORDER BY periode;";
+		$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_classe)>0) {
+			$lig_classe=mysqli_fetch_object($res_classe);
+			$id_premiere_classe=$lig_classe->id_classe;
+			$current_id_classe[$lig_classe->periode]=$lig_classe->id_classe;
+			$num_per1=$lig_classe->periode;
+			$num_per2=$num_per1;
+			while($lig_classe=mysqli_fetch_object($res_classe)) {
+				$current_id_classe[$lig_classe->periode]=$lig_classe->id_classe;
+				$num_per2=$lig_classe->periode;
+			}
+		}
+
+		if(($id_premiere_classe!='')&&($acces_bull_simp=='y')) {
+			echo "<div style='float:right; width: 17px; margin-right: 1px;'>\n";
+			echo "<a href=\"#\" onclick=\"afficher_div('div_bull_simp','y',-100,40); affiche_bull_simp('$current_eleve_login','$id_premiere_classe','$num_per1','$num_per2');return false;\">";
+			echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple toutes périodes en infobulle' title='Bulletin simple toutes périodes en infobulle' />";
+			echo "</a>";
+			echo "</div>\n";
+		}
+
+		echo "<div align=\"center\"><b><a href='../eleves/visu_eleve.php?ele_login=$current_eleve_login' target='_blank' title=\"Voir (dans un nouvel onglet) la fiche élève avec les onglets Élève, Enseignements, Bulletins, CDT, Absences,...\">$current_eleve_nom $current_eleve_prenom</a></b>\n";
 
 		//==========================
 		// AJOUT: boireaus 20071115
@@ -741,7 +875,14 @@ if ($insert_mass_appreciation_type=="y") {
 			//echo " <a href='#' onmouseover=\"afficher_div('photo_$current_eleve_login','y',-100,20);\"";
 			echo " <a href=\"$photo\" onmouseover=\"delais_afficher_div('photo_$current_eleve_login','y',-100,20,1000,10,10);\" onclick=\"afficher_div('photo_$current_eleve_login','y',-100,20); return false;\" target='_blank' title=\"Afficher la photo de l'élève.\"";
 			echo ">";
-			echo "<img src='../images/icons/buddy.png' alt='$current_eleve_nom $current_eleve_prenom' />";
+			echo "<img src='../mod_trombinoscopes/images/";
+			if($current_eleve_sexe=="F") {
+				echo "photo_f.png";
+			}
+			else{
+				echo "photo_g.png";
+			}
+			echo "' class='icone20' alt='$current_eleve_nom $current_eleve_prenom' />";
 			echo "</a>";
 		}
 		//==========================
@@ -752,14 +893,22 @@ if ($insert_mass_appreciation_type=="y") {
 
 		$k='1';
 		while ($k < $nb_periode) {
-			$current_eleve_avis_query[$k]= mysql_query("SELECT * FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$k')");
-			$current_eleve_avis_t[$k] = @mysql_result($current_eleve_avis_query[$k], 0, "avis");
+			$current_eleve_avis_query[$k]= mysqli_query($GLOBALS["mysqli"], "SELECT * FROM avis_conseil_classe WHERE (login='$current_eleve_login' AND periode='$k')");
+			$current_eleve_avis_t[$k] = @old_mysql_result($current_eleve_avis_query[$k], 0, "avis");
 			// ***** AJOUT POUR LES MENTIONS *****
-			$current_eleve_mention_t[$k] = @mysql_result($current_eleve_avis_query[$k], 0, "id_mention");
+			$current_eleve_mention_t[$k] = @old_mysql_result($current_eleve_avis_query[$k], 0, "id_mention");
 			// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
 			$current_eleve_login_t[$k] = $current_eleve_login."_t".$k;
 			$k++;
 		}
+
+		// 20140226
+		// Liste des avertissements
+		/*
+		if(getSettingAOui('active_mod_discipline')) {
+			$tab_avertissement_fin_periode=get_tab_avertissement($current_eleve_login);
+		}
+		*/
 
 		$k='1';
 		$alt=1;
@@ -768,8 +917,8 @@ if ($insert_mass_appreciation_type=="y") {
 
 			$result_test=0;
 			if ($ver_periode[$k] != "O") {
-				$call_eleve = mysql_query("SELECT login FROM j_eleves_classes WHERE (login = '$current_eleve_login' and id_classe='$id_classe' and periode='$k')");
-				$result_test = mysql_num_rows($call_eleve);
+				$call_eleve = mysqli_query($GLOBALS["mysqli"], "SELECT login FROM j_eleves_classes WHERE (login = '$current_eleve_login' and id_classe='$id_classe' and periode='$k')");
+				$result_test = mysqli_num_rows($call_eleve);
 			}
 
 			if ($ver_periode[$k] != "N") {
@@ -781,16 +930,26 @@ if ($insert_mass_appreciation_type=="y") {
 				(getSettingAOui('GepiAccesGraphParent'))||
 				(getSettingAOui('GepiAccesBulletinSimpleEleve'))||
 				(getSettingAOui('GepiAccesGraphEleve'))) {
+					$affiche_slash_a="n";
+					if(($acces_app_ele_resp=='manuel')&&($acces_classes_acces_appreciations)) {
+						//echo "<a href='./saisie_avis1.php?id_classe=$id_classe&periode_num=$k&mode=modifier_visibilite_parents".add_token_in_url()."' onclick=\"alterner_visibilite_parent('span_acces_resp_".$i."_".$k."', $k);return false;\" target='_blank'>";
+						//echo "<a href=\"javascript:alterner_visibilite_parent('span_acces_resp_".$i."_".$k."', $k)\">";
+						echo "<a href=\"javascript:alterner_visibilite_parent($i, $k)\">";
+						$affiche_slash_a="y";
+					}
+					echo " <span id='span_acces_resp_".$i."_".$k."'>";
 					if($tab_acces_app_classe[$id_classe][$k]=="y") {
-						echo " <img src='../images/icons/visible.png' width='19' height='16' alt='Appréciations visibles des parents/élèves.' title='A la date du jour (".$date_du_jour."), les appréciations de la période ".$k." sont visibles des parents/élèves.' />";
+						echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Appréciations visibles des parents/élèves.' title='A la date du jour (".$date_du_jour."), les appréciations de la période ".$k." sont visibles des parents/élèves.' />";
 					}
 					else {
-						echo " <img src='../images/icons/invisible.png' width='19' height='16' alt='Appréciations non encore visibles des parents/élèves.' title=\"A la date du jour (".$date_du_jour."), les appréciations de la période ".$k." ne sont pas encore visibles des parents/élèves.
+						echo "<img src='../images/icons/invisible.png' width='19' height='16' alt='Appréciations non encore visibles des parents/élèves.' title=\"A la date du jour (".$date_du_jour."), les appréciations de la période ".$k." ne sont pas encore visibles des parents/élèves.
 $msg_acces_app_ele_resp\" />";
 					}
+					echo " </span>";
+					if($affiche_slash_a=="y") {
+						echo " </a>";
+					}
 				}
-
-				echo "</td>\n";
 			} elseif(($ver_periode[$k] != "O")&&($result_test>0)) {
 				echo "<tr class='lig$alt'>\n<td>";
 				echo "<a href='saisie_avis2.php?periode_num=".$k."&id_classe=".$id_classe."&fiche=y&current_eleve_login=".$current_eleve_login."&ind_eleve_login_suiv=$i#app' title=\"$nom_periode[$k] : Saisir l'avis du conseil de classe avec affichage du bulletin simplifié de $current_eleve_nom $current_eleve_prenom.\" onclick=\"return confirm_abandon(this, change, '$themessage')\">";
@@ -811,7 +970,6 @@ $msg_acces_app_ele_resp\" />";
 $msg_acces_app_ele_resp\" />";
 					}
 				}
-				echo "</td>\n";
 			} else {
 				echo "<tr class='lig$alt'>\n<td>";
 				echo $nom_periode[$k];
@@ -830,8 +988,15 @@ $msg_acces_app_ele_resp\" />";
 $msg_acces_app_ele_resp\" />";
 					}
 				}
-				echo "</td>\n";
 			}
+
+			if((isset($current_id_classe[$k]))&&($acces_bull_simp=='y')) {
+				echo " <a href=\"#\" onclick=\"afficher_div('div_bull_simp','y',-100,20); affiche_bull_simp('$current_eleve_login','$current_id_classe[$k]','$k','$k');return false;\" alt='Bulletin simple en infobulle' title='Bulletin simple en infobulle'>";
+				echo "<img src='../images/icons/bulletin_simp.png' width='17' height='17' alt='Bulletin simple de la période en infobulle' title='Bulletin simple de la période en infobulle' />";
+				echo "</a>";
+			}
+			echo "</td>\n";
+
 
 			if ($ver_periode[$k] != "O") {
 				//$call_eleve = mysql_query("SELECT login FROM j_eleves_classes WHERE (login = '$current_eleve_login' and id_classe='$id_classe' and periode='$k')");
@@ -841,9 +1006,10 @@ $msg_acces_app_ele_resp\" />";
 					echo "<input type='hidden' name='log_eleve_".$k."[$i]' value=\"".$current_eleve_login_t[$k]."\" />\n";
 					echo "<textarea id=\"n".$k.$num_id."\" onKeyDown=\"clavier(this.id,event);\"  name=\"no_anti_inject_avis_eleve_".$k."_".$i."\" rows='2' cols='120' class='wrap' onchange=\"changement()\"";
 
-					echo " onBlur=\"ajaxVerifAvis('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\"";
-		
-					$chaine_test_vocabulaire.="ajaxVerifAvis('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\n";
+					if(getSettingValue('active_recherche_lapsus')!='n') {
+						echo " onBlur=\"ajaxVerifAvis('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\"";
+						$chaine_test_vocabulaire.="ajaxVerifAvis('".$current_eleve_login_t[$k]."', '".$id_classe."', 'n".$k.$num_id."');\n";
+					}
 
 					echo ">";
 					//=========================
@@ -872,6 +1038,25 @@ $msg_acces_app_ele_resp\" />";
 						*/
 					}
 					// **** FIN DE L'AJOUT POUR LES MENTIONS ****
+
+					// 20140226
+					if(getSettingAOui('active_mod_discipline')) {
+						if(acces_saisie_avertissement_fin_periode($current_eleve_login)) {
+							echo "<div title=\"Saisir un ou des ".ucfirst($mod_disc_terme_avertissement_fin_periode)."\">
+	<a href='../mod_discipline/saisie_avertissement_fin_periode.php?login_ele=$current_eleve_login&amp;periode=$k&amp;lien_refermer=y'";
+						echo " onclick=\"afficher_saisie_avertissement_fin_periode('$current_eleve_login', $k, 'liste_avertissements_fin_periode_".$i."_$k');return false;\"";
+						echo " style='color:black;' target='_blank'>
+		<img src='../images/icons/balance_justice.png' class='icone20' alt=\"Avertissements de fin de période\" />
+		<span class='bold' id='liste_avertissements_fin_periode_".$i."_$k'>".liste_avertissements_fin_periode($current_eleve_login, $k)."</span>
+	</a>
+</div>";
+						}
+						else {
+							echo "<div title=\"".ucfirst($mod_disc_terme_avertissement_fin_periode)."\">
+		<span class='bold'>".liste_avertissements_fin_periode($current_eleve_login, $k)."</span>
+</div>";
+						}
+					}
 
 					//echo "<a href='#' onClick=\"document.getElementById('textarea_courant').value='no_anti_inject_".$current_eleve_login_t[$k]."';afficher_div('commentaire_type','y',30,-150);return false;\">Ajout CC</a>";
 
@@ -907,6 +1092,13 @@ $msg_acces_app_ele_resp\" />";
 					echo "</b></p>\n";
 				}
 				// ***** FIN DE L'AJOUT POUR LES MENTIONS *****
+
+				// 20140226
+				if(getSettingAOui('active_mod_discipline')) {
+					echo "<div title=\"".ucfirst($mod_disc_terme_avertissement_fin_periode)."\">
+		<span class='bold'>".liste_avertissements_fin_periode($current_eleve_login, $k)."</span>
+</div>";
+				}
 				echo "</td>\n";
 			}
 			echo "</tr>\n";
@@ -947,6 +1139,28 @@ $msg_acces_app_ele_resp\" />";
 		<br /><br /><br /><br />
 
 		<?php
+			if(($acces_app_ele_resp=='manuel')&&($acces_classes_acces_appreciations)) {
+				echo "<script type='text/javascript'>
+	function alterner_visibilite_parent(num_ele, periode_num) {
+		identifiant='span_acces_resp_'+num_ele+'_'+periode_num;
+
+		new Ajax.Updater($(identifiant),'./saisie_avis1.php?id_classe=$id_classe&periode_num='+periode_num+'&mode=modifier_visibilite_parents&mode_js=y".add_token_in_url(false)."',{method: 'get'});
+
+		setTimeout('maj_acces_resp('+num_ele+', '+periode_num+')', 3000);
+	}
+
+	function maj_acces_resp(num_ele, periode_num) {
+		for(j=0;j<$i;j++) {
+			if(j!=num_ele) {
+				if(document.getElementById('span_acces_resp_'+j+'_'+periode_num)) {
+					document.getElementById('span_acces_resp_'+j+'_'+periode_num).innerHTML=document.getElementById(identifiant).innerHTML;
+				}
+			}
+		}
+	}
+</script>\n";
+			}
+
 			// Il faudra permettre de n'afficher ce décompte que si l'administrateur le souhaite.
 
 			echo "<script type='text/javascript'>

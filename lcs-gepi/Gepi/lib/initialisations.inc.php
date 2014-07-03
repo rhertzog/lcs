@@ -6,6 +6,12 @@
  * @package Initialisation
  * @subpackage initialisation
  */
+
+// Pour enlever les E_DEPRECATED de la liste des erreurs affichées:
+if (version_compare(PHP_VERSION, '5.3.0', '>=')) error_reporting(error_reporting() & (-1 ^ E_DEPRECATED)); 
+
+global $mysqli;
+
 /* Utilise l'encodage interne UTF-8 */
 header('Content-type: text/html; charset=UTF-8');
 ini_set('mbstring.language','UTF-8');
@@ -14,13 +20,14 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding("UTF-8");
 }
 
-if (date_default_timezone_get() == 'UTC') {
+//if (date_default_timezone_get() == 'UTC') {
+if ((ini_get('date.timezone') == 'UTC') || (ini_get('date.timezone') == '')) {
     date_default_timezone_set('Europe/Paris');
 } else {
     //dans le cas où on détecte mal une zone UTC (donc non configurée à priori),
     //on fait comme si il y avait bien une conf de précisée pour éviter l'erreur
     //PHP Fatal error:  Uncaught exception 'Exception' with message 'DateTime::__construct(): It is not safe to rely on the system's timezone settings.
-    date_default_timezone_set(date_default_timezone_get());
+    date_default_timezone_set(ini_get('date.timezone'));
 }
 
 //header('Content-Type: text/html; charset=UTF-8');
@@ -68,22 +75,6 @@ $GLOBALS['multisite'] = $multisite;
  * @name $gepiVersion
  */
 $GLOBALS['gepiVersion'] = NULL;
-
-/**
- * Version de GEPI release candidate
- * 
- * @global mixed $GLOBALS['gepiRcVersion']
- * @name $gepiRcVersion
- */
-$GLOBALS['gepiRcVersion'] = NULL;
-
-/**
- * Version de GEPI Beta
- * 
- * @global mixed $GLOBALS['gepiBetaVersion']
- * @name $gepiBetaVersion
- */
-$GLOBALS['gepiBetaVersion'] = NULL;
 
 /**
  * Les informations du groupes obtenues à partir de get_group()
@@ -210,33 +201,6 @@ if (isset($_REQUEST['rne'])) {
 
 	setcookie('RNE', $_REQUEST['RNE'], null, '/');
 }
-/*
-if ((isset($_REQUEST['rne']))||(isset($_REQUEST['RNE']))) {
-	include_once(dirname(__FILE__).'/HTMLPurifier.standalone.php');
-	$config = HTMLPurifier_Config::createDefault();
-	$config->set('Core.Encoding', 'utf-8'); // replace with your encoding
-	$config->set('HTML.Doctype', 'XHTML 1.0 Strict'); // replace with your doctype
-	$purifier = new HTMLPurifier($config);
-
-	if (isset($_REQUEST['rne'])) {
-		if($purifier->purify($_REQUEST['rne'])!=$_REQUEST['rne']) {
-			die('RNE invalide.');
-		}
-
-		if(preg_match("/^[0-9A-Za-z]*$/", $_REQUEST["rne"])) {
-			setcookie('RNE', $_REQUEST['rne'], null, '/');
-		}
-	} elseif (isset($_REQUEST['RNE'])) {
-		if($purifier->purify($_REQUEST['RNE'])!=$_REQUEST['RNE']) {
-			die('RNE invalide.');
-		}
-
-		if(preg_match("/^[0-9A-Za-z]*$/", $_REQUEST["RNE"])) {
-			setcookie('RNE', $_REQUEST['RNE'], null, '/');
-		}
-	}
-}
-*/
 
 // Pour le choix de la préférence de source d'authentification pour l'authentification multiauth
 if (isset($_REQUEST["source"])) {
@@ -250,17 +214,31 @@ if (isset($_REQUEST["source"])) {
 /**
  * Connection à la base
  */
-   require_once($chemin_relatif_gepi."/lib/mysql.inc");
+require_once($chemin_relatif_gepi."/lib/mysqli.inc.php");
+
+require_once($chemin_relatif_gepi."/lib/mysql.inc");
+
+/**
+ * old_mysql_result() se substitue à mysql_result() 
+ */ 
+require($chemin_relatif_gepi."/lib/old_mysql_result.php");
 
 /**
  * Pour permettre de caser Gepi dans un iframe avec M$IE sur certains ENT
  */
-   $sql="SELECT 1=1 FROM setting WHERE name='header_p3p' AND value='yes';";
-   $test=mysql_query($sql);
-   if(mysql_num_rows($test)>0) {
-      //header('P3P:CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"');
-      header('P3P:CP="NON DSP COR CURa OUR NOR UNI"');
-   }
+    $sql="SELECT 1=1 FROM setting WHERE name='header_p3p' AND value='yes';";
+    
+	$test = mysqli_query($mysqli, $sql);
+	if ($test->num_rows > 0) {
+	   header('P3P:CP="NON DSP COR CURa OUR NOR UNI"');
+	}
+   
+   
+   
+   
+   
+   
+   
 
  /**
   * Ajout pour utiliser ou pas les fonctions mb_
@@ -299,11 +277,13 @@ if (isset($_REQUEST["source"])) {
   * @see settings.inc
   * @see loadSettings()
   */
-   require_once($chemin_relatif_gepi."/lib/settings.inc");
-   // Load settings
-   if (!loadSettings()) {
-     die("Erreur chargement settings");
-   }
+	require_once($chemin_relatif_gepi."/lib/settings.inc.php");
+	// Load settings
+	if (!loadSettings()) {
+	  die("Erreur chargement settings");
+	}
+   
+   
    /**
     * Fonctions relatives à l'identification via LDAP
     */

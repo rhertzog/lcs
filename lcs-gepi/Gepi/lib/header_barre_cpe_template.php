@@ -68,19 +68,20 @@ if ($barre_plugin!="") {
 	if ($_SESSION['statut'] == "cpe") {
 
 		$tmp_liste_classes_cpe=array();
-		$sql="SELECT DISTINCT id, classe, nom_complet FROM classes ORDER BY classe;";
-		$res_tmp_liste_classes_cpe=mysql_query($sql);
-		if(mysql_num_rows($res_tmp_liste_classes_cpe)>0) {
+		$sql="SELECT DISTINCT id, classe, nom_complet FROM classes ORDER BY classe;"; 
+        
+		$res_tmp_liste_classes_cpe = mysqli_query($mysqli, $sql);
+		if($res_tmp_liste_classes_cpe->num_rows > 0) {
 			$tmp_cpt_classes_cpe=0;
-			while($lig_tmp_liste_classes_cpe=mysql_fetch_object($res_tmp_liste_classes_cpe)) {
+			while($lig_tmp_liste_classes_cpe = $res_tmp_liste_classes_cpe->fetch_object() ){
 				$tmp_liste_classes_cpe[$tmp_cpt_classes_cpe]=array();
 				$tmp_liste_classes_cpe[$tmp_cpt_classes_cpe]['id']=$lig_tmp_liste_classes_cpe->id;
 				$tmp_liste_classes_cpe[$tmp_cpt_classes_cpe]['classe']=$lig_tmp_liste_classes_cpe->classe;
 				$tmp_liste_classes_cpe[$tmp_cpt_classes_cpe]['nom_complet']=$lig_tmp_liste_classes_cpe->nom_complet;
 				$tmp_cpt_classes_cpe++;
 			}
-		}
-
+		}    
+        
 		$menus = null;
 
 		if (getSettingValue("active_module_absence") == 'y') {
@@ -194,7 +195,7 @@ if ($barre_plugin!="") {
 			$menus .= '       <li class="plus"><a href="'.$gepiPath.'/mod_trombinoscopes/trombinoscopes.php"'.insert_confirm_abandon().'>Trombinoscopes</a>'."\n";
 			$menus .= '            <ul class="niveau3">'."\n";
 			for($loop=0;$loop<count($tmp_liste_classes_cpe);$loop++) {
-				$menus .= '                <li><a href="'.$gepiPath.'/mod_trombinoscopes/trombino_pdf.php?classe='.$tmp_liste_classes_cpe[$loop]['id'].'&amp;groupe=&amp;equipepeda=&amp;discipline=&amp;statusgepi=&amp;affdiscipline="'.insert_confirm_abandon().'>'.$tmp_liste_classes_cpe[$loop]['classe'].' ('.$tmp_liste_classes_cpe[$loop]['nom_complet'].')</a></li>'."\n";
+				$menus .= '                <li><a href="'.$gepiPath.'/mod_trombinoscopes/trombino_pdf.php?classe='.$tmp_liste_classes_cpe[$loop]['id'].'&amp;groupe=&amp;equipepeda=&amp;discipline=&amp;statusgepi=&amp;affdiscipline="'.insert_confirm_abandon().' target="_blank">'.$tmp_liste_classes_cpe[$loop]['classe'].' ('.$tmp_liste_classes_cpe[$loop]['nom_complet'].')</a></li>'."\n";
 			}
 			$menus .= '            </ul>'."\n";
 			$menus .= '       </li>'."\n";
@@ -202,6 +203,8 @@ if ($barre_plugin!="") {
 		$menus .= '   </ul>'."\n";
 		$menus .= '</li>'."\n";
 		//=======================================================
+
+		$menus .= '<li class="li_inline"><a href="'.$gepiPath.'/eleves/recherche.php"'.insert_confirm_abandon().' title="Effectuer une recherche sur une personne (élève, responsable ou personnel)">&nbsp;Rechercher</a>'."</li>\n";
 
 		//=======================================================
 		$menus .= '<li class="li_inline"><a href="#"'.insert_confirm_abandon().'>&nbsp;Listes</a>'."\n";
@@ -211,6 +214,7 @@ if ($barre_plugin!="") {
 		$menus .= '       <li><a href="'.$gepiPath.'/mod_ooo/publipostage_ooo.php"'.insert_confirm_abandon().'>Publipostage OOo</a></li>'."\n";
 		$menus .= '       <li><a href="'.$gepiPath.'/impression/impression_serie.php"'.insert_confirm_abandon().'>Impression PDF listes</a></li>'."\n";
 		$menus .= '       <li><a href="'.$gepiPath.'/groupes/mes_listes.php"'.insert_confirm_abandon().'>Export CSV listes</a></li>'."\n";
+		$menus .= '       <li><a href="'.$gepiPath.'/statistiques/index.php"'.insert_confirm_abandon().'>Statistiques</a></li>'."\n";
 		$menus .= '   </ul>'."\n";
 		$menus .= '</li>'."\n";
 		//=======================================================

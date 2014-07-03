@@ -65,7 +65,7 @@ if (isset ($_POST['submit'])) {
 			$_SESSION['login'] = $_POST['login'];
 			$_SESSION['statut'] = 'administrateur';
 			$_SESSION['etat'] = 'actif';
-			$_SESSION['start'] = mysql_result(mysql_query("SELECT now();"),0);
+			$_SESSION['start'] = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT now();"),0);
 			$sql = "INSERT INTO log (LOGIN, START, SESSION_ID, REMOTE_ADDR, USER_AGENT, REFERER, AUTOCLOSE, END) values (
 					'" . $_SESSION['login'] . "',
 					'".$_SESSION['start']."',
@@ -92,29 +92,6 @@ $force_maj = isset ($_POST["force_maj"]) ? $_POST["force_maj"] : '';
 
 // Numéro de version effective
 $version_old = getSettingValue("version");
-// Numéro de version RC effective
-$versionRc_old = getSettingValue("versionRc");
-// Numéro de version Beta effective
-$versionBeta_old = getSettingValue("versionBeta");
-
-$rc_old = '';
-if ($versionRc_old != '') {
-	$rc_old = "-RC" . $versionRc_old;
-}
-$rc = '';
-if ($gepiRcVersion != '') {
-	$rc = "-RC" . $gepiRcVersion;
-}
-
-$beta_old = '';
-if ($versionBeta_old != '') {
-	$beta_old = "-beta" . $versionBeta_old;
-}
-$beta = '';
-if ($gepiBetaVersion != '') {
-	$beta = "-beta" . $gepiBetaVersion;
-}
-
 
 echo ('
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -248,15 +225,20 @@ if (isset ($_POST['maj'])) {
             require 'updates/161_to_162.inc.php';
 	}
 
-	if (($force_maj == 'yes') or (quelle_maj("1.6.2"))) {
-            //require 'updates/162_to_dev.inc.php';
+	if (($force_maj == 'yes') or (quelle_maj("1.6.3"))) {
             require 'updates/162_to_163.inc.php';
+	}
+
+	if (($force_maj == 'yes') or (quelle_maj("1.6.4"))) {
+            require 'updates/163_to_164.inc.php';
+	}
+
+	if (($force_maj == 'yes') or (quelle_maj("1.6.5"))) {
+            require 'updates/164_to_165.inc.php';
 	}
 
 	// Mise à jour du numéro de version
 	saveSetting("version", $gepiVersion);
-	saveSetting("versionRc", $gepiRcVersion);
-	saveSetting("versionBeta", $gepiBetaVersion);
 	saveSetting("pb_maj", $pb_maj);
 }
 
@@ -268,28 +250,6 @@ if (!loadSettings()) {
 
 // Numéro de version effective
 $version_old = getSettingValue("version");
-// Numéro de version RC effective
-$versionRc_old = getSettingValue("versionRc");
-// Numéro de version beta effective
-$versionBeta_old = getSettingValue("versionBeta");
-
-$rc_old = '';
-if ($versionRc_old != '') {
-	$rc_old = "-RC" . $versionRc_old;
-}
-$rc = '';
-if ($gepiRcVersion != '') {
-	$rc = "-RC" . $gepiRcVersion;
-}
-
-$beta_old = '';
-if ($versionBeta_old != '') {
-	$beta_old = "-beta" . $versionBeta_old;
-}
-$beta = '';
-if ($gepiBetaVersion != '') {
-	$beta = "-beta" . $gepiBetaVersion;
-}
 
 // Pb de mise à jour lors de la dernière mise à jour
 $pb_maj_bd = getSettingValue("pb_maj");
@@ -299,13 +259,26 @@ if (isset ($mess)) {
 }
 echo "<h1 class='grand center'>Mise à jour de la base de données MySql de GEPI</h1>";
 
-echo "<hr /><p class='grand center ecarte'>Numéro de version actuel de la base MySql : GEPI " . $version_old . $rc_old . $beta_old . "</p>";
+echo "<hr /><p class='grand center ecarte'>Numéro de version actuel de la base MySql : GEPI " . $version_old . "</p>";
 echo "<hr />";
+
+// Test sur la version des plugins (installés ou pas)
+require_once("../mod_plugins/verif_version_plugins.php");
+$verif_version_plugins=verif_version_plugins(1,"<br/>");
+if ($verif_version_plugins!="") {
+	echo "<p class='grand center ecarte' style='color: red;'>";
+	echo "Attention ! le ou les plugins suivants :<br/>";
+	echo $verif_version_plugins;
+	echo "<br/>ne semblent pas adaptés à la version courante de Gepi (".$gepiVersion.").";
+	echo "<br/><span style='color: black; font-size: 66%;'>(Page de téléchargement des plugins : <a href='https://www.sylogix.org/projects/gepi/files'target='_blank'>https://www.sylogix.org/projects/gepi/files</a>)</span>";
+	echo "</p>";
+}
+
 // Mise à jour de la base de donnée
 
 if ($pb_maj_bd != 'yes') {
 	if (test_maj()) {
-		echo "<h2 class='grand center'>Mise à jour de la base de données vers la version GEPI " . $gepiVersion . $rc . $beta . "</h3>";
+		echo "<h2 class='grand center'>Mise à jour de la base de données vers la version GEPI " . $gepiVersion . "</h3>";
 		if (isset ($_SESSION['statut'])) {
 			echo "<p class='center'>Il est vivement conseillé de faire une sauvegarde de la base MySql avant de procéder à la mise à jour</p>";
 			echo "<form enctype=\"multipart/form-data\" action=\"../gestion/accueil_sauve.php\" method='post' name='formulaire'><p class='center'>";
@@ -317,14 +290,14 @@ if ($pb_maj_bd != 'yes') {
 			}
 			echo "<input type=\"submit\" value=\"Lancer une sauvegarde de la base de données\" /></p></form>";
 		}
-		echo "<p class='center'>Remarque : la procédure de mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong> est utilisable à partir d'une version GEPI 1.2 ou plus récente.</p>";
+		echo "<p class='center'>Remarque : la procédure de mise à jour vers la version <strong>GEPI " . $gepiVersion . "</strong> est utilisable à partir d'une version GEPI 1.2 ou plus récente.</p>";
 		echo "<form action=\"maj.php\" method=\"post\">";
 		//echo add_token_field();
 		echo "<p class='rouge center'><strong>ATTENTION : Votre base de données ne semble pas être à jour.";
 		if ($version_old != '')
-		echo " Numéro de version de la base de données : GEPI " . $version_old . $rc_old . $beta_old;
+		echo " Numéro de version de la base de données : GEPI " . $version_old ;
 		echo "</strong><br />";
-		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong>";
+		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . "</strong>";
 		echo "<p class='center'><span class='center'><input type='submit' value='Mettre à jour' /></span>";
 		echo "<input type='hidden' name='maj' value='yes' />";
 		echo "<input type='hidden' name='valid' value='$valid' /></p>";
@@ -341,7 +314,7 @@ if ($pb_maj_bd != 'yes') {
 		echo "<form action=\"maj.php\" method=\"post\">";
 		//echo add_token_field();
 		echo "<p class='center'><strong>Néanmoins, vous pouvez forcer la mise à jour. Cette procédure, bien que sans risque, n'est utile que dans certains cas précis.</strong><br />";
-		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour forcée vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong></p>";
+		echo "Cliquez sur le bouton suivant pour effectuer la mise à jour forcée vers la version <strong>GEPI " . $gepiVersion . "</strong></p>";
 		echo "<p class='center'><input type='submit' value='Forcer la mise à jour' />";
 		echo "<input type='hidden' name='maj' value='yes' />";
 		echo "<input type='hidden' name='force_maj' value='yes' />";
@@ -354,7 +327,7 @@ if ($pb_maj_bd != 'yes') {
 	echo "<form action=\"maj.php\" method=\"post\">";
 	//echo add_token_field();
 	echo "<p><strong>Si vous pensez avoir réglé les problèmes entraînant ces erreurs, vous pouvez tenter une nouvelle mise à jour</strong>";
-	echo " en cliquant sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . $rc . $beta . "</strong>.</p>";
+	echo " en cliquant sur le bouton suivant pour effectuer la mise à jour vers la version <strong>GEPI " . $gepiVersion . "</strong>.</p>";
 	echo "<p class='center'><input type='submit' value='Tenter une nouvelle mise à jour' />";
 	echo "<input type='hidden' name='maj' value='yes' />";
 	echo "<input type='hidden' name='force_maj' value='yes' />";
@@ -368,8 +341,8 @@ if (isset ($result)) {
 	echo "<h2 class='center'>Résultat de la mise à jour</h2>";
 	if(!getSettingValue('conv_new_resp_table')){
 		$sql="SELECT 1=1 FROM responsables";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)>0){
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)>0){
 			echo "<p class='rouge'><strong>ATTENTION:</strong></p>\n";
 			echo "<blockquote>\n";
 			echo "<p class='center'>Une conversion des données responsables est requise.</p>\n";

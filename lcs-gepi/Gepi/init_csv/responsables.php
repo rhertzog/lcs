@@ -90,12 +90,12 @@ if (!isset($_POST["action"])) {
 
 	$sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
 	if($debug_resp=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0) {
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0) {
 		$sql="SELECT 1=1 FROM tempo_utilisateurs WHERE statut='responsable';";
 		if($debug_resp=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==0) {
 			echo "<p style='color:red'>Il existe un ou des comptes responsables de l'année passée, et vous n'avez pas mis ces comptes en réserve pour imposer le même login/mot de passe cette année.<br />Est-ce bien un choix délibéré ou un oubli de votre part?<br />Pour conserver ces login/mot de de passe de façon à ne pas devoir re-distribuer ces informations (<em>et éviter de perturber ces utilisateurs</em>), vous pouvez procéder à la mise en réserve avant d'initialiser l'année dans la page <a href='../gestion/changement_d_annee.php'>Changement d'année</a> (<em>vous y trouverez aussi la possibilité de conserver les comptes élèves (s'ils n'ont pas déjà été supprimés) et bien d'autres actions à ne pas oublier avant l'initialisation</em>).</p>\n";
 		}
 	}
@@ -124,12 +124,12 @@ if (!isset($_POST["action"])) {
 			if ($test != -1) {
 				if($k>0) {echo ", ";}
 				$sql="SELECT 1=1 FROM $liste_tables_del[$j];";
-				$res_test_tab=mysql_query($sql);
-				if(mysql_num_rows($res_test_tab)>0) {
+				$res_test_tab=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_test_tab)>0) {
 					$sql="DELETE FROM $liste_tables_del[$j];";
-					$del = @mysql_query($sql);
+					$del = @mysqli_query($GLOBALS["mysqli"], $sql);
 					echo "<b>".$liste_tables_del[$j]."</b>";
-					echo " (".mysql_num_rows($res_test_tab).")";
+					echo " (".mysqli_num_rows($res_test_tab).")";
 				}
 				else {
 					echo $liste_tables_del[$j];
@@ -143,11 +143,11 @@ if (!isset($_POST["action"])) {
 		echo "<br />\n";
 		echo "<p><em>On supprime les anciens comptes responsables...</em> ";
 		$sql="DELETE FROM utilisateurs WHERE statut='responsable';";
-		$del=mysql_query($sql);
+		$del=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		$sql="SELECT * FROM temp_responsables;";
-		$res_temp=mysql_query($sql);
-		if(mysql_num_rows($res_temp)==0) {
+		$res_temp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_temp)==0) {
 			echo "<p style='color:red'>ERREUR&nbsp;: Aucun responsable n'a été trouvé&nbsp;???</p>\n";
 			echo "<p><br /></p>\n";
 			require("../lib/footer.inc.php");
@@ -162,7 +162,7 @@ if (!isset($_POST["action"])) {
 		$error = 0;
 		// Compteur d'enregistrement
 		$total = 0;
-		while ($lig=mysql_fetch_object($res_temp)) {
+		while ($lig=mysqli_fetch_object($res_temp)) {
 			$reg_id_eleve = $lig->elenoet;
 			$reg_nom = $lig->nom;
 			$reg_prenom = $lig->prenom;
@@ -200,7 +200,7 @@ if (!isset($_POST["action"])) {
 
 
 			// On vérifie que l'élève existe
-			$test = mysql_result(mysql_query("SELECT count(login) FROM eleves WHERE elenoet = '" . $reg_id_eleve . "'"), 0);
+			$test = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT count(login) FROM eleves WHERE elenoet = '" . $reg_id_eleve . "'"), 0);
 
 			if($reg_id_eleve==""){
 				echo "<p style='color:red'>Erreur : L'identifiant élève est vide pour $reg_prenom $reg_nom</p>\n";
@@ -217,48 +217,48 @@ if (!isset($_POST["action"])) {
 						// Test positif : on peut donc enregistrer les données de responsable.
 
 						// On regarde si une entrée existe déjà pour l'élève en question
-						$test = mysql_query("SELECT ereno, nom1, nom2 FROM responsables WHERE ereno = '" . $reg_id_eleve . "'");
+						$test = mysqli_query($GLOBALS["mysqli"], "SELECT ereno, nom1, nom2 FROM responsables WHERE ereno = '" . $reg_id_eleve . "'");
 						$insert = null;
 
-						if (mysql_num_rows($test) == 0) {
+						if (mysqli_num_rows($test) == 0) {
 							// Aucune entrée n'existe. On enregistre le responsable comme premier responsable
 
 							$sql="INSERT INTO responsables SET " .
 								"ereno = '" . $reg_id_eleve . "', " .
-								"nom1 = '" . mysql_real_escape_string($reg_nom) . "', " .
-								"prenom1 = '" . mysql_real_escape_string($reg_prenom) . "', " .
-								"adr1 = '" . mysql_real_escape_string($reg_adresse1) . "', " .
-								"adr1_comp = '" . mysql_real_escape_string($reg_adresse2) . "', " .
-								"commune1 = '" . mysql_real_escape_string($reg_commune) . "', " .
+								"nom1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_nom) . "', " .
+								"prenom1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_prenom) . "', " .
+								"adr1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse1) . "', " .
+								"adr1_comp = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse2) . "', " .
+								"commune1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_commune) . "', " .
 								"cp1 = '" . $reg_code_postal . "'";
-							$insert = mysql_query($sql);
+							$insert = mysqli_query($GLOBALS["mysqli"], $sql);
 
 						} else {
 							// Une entrée existe
 							// On regarde si le responsable 1 a déjà été saisi
-							if (mysql_result($test, 0, "nom1") == "") {
+							if (old_mysql_result($test, 0, "nom1") == "") {
 								$sql="UPDATE responsables SET " .
-									"nom1 = '" . mysql_real_escape_string($reg_nom) . "', " .
-									"prenom1 = '" . mysql_real_escape_string($reg_prenom) . "', " .
-									"adr1 = '" . mysql_real_escape_string($reg_adresse1) . "', " .
-									"adr1_comp = '" . mysql_real_escape_string($reg_adresse2) . "', " .
-									"commune1 = '" . mysql_real_escape_string($reg_commune) . "', " .
+									"nom1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_nom) . "', " .
+									"prenom1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_prenom) . "', " .
+									"adr1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse1) . "', " .
+									"adr1_comp = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse2) . "', " .
+									"commune1 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_commune) . "', " .
 									"cp1 = '" . $reg_code_postal . "' " .
 									"WHERE " .
 									"ereno = '" . $reg_id_eleve . "'";
-								$insert = mysql_query($sql);
+								$insert = mysqli_query($GLOBALS["mysqli"], $sql);
 
-							} else if (mysql_result($test, 0, "nom2") == "") {
+							} else if (old_mysql_result($test, 0, "nom2") == "") {
 								$sql="UPDATE responsables SET " .
-									"nom2 = '" . mysql_real_escape_string($reg_nom) . "', " .
-									"prenom2 = '" . mysql_real_escape_string($reg_prenom) . "', " .
-									"adr2 = '" . mysql_real_escape_string($reg_adresse1) . "', " .
-									"adr2_comp = '" . mysql_real_escape_string($reg_adresse2) . "', " .
-									"commune2 = '" . mysql_real_escape_string($reg_commune) . "', " .
+									"nom2 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_nom) . "', " .
+									"prenom2 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_prenom) . "', " .
+									"adr2 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse1) . "', " .
+									"adr2_comp = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_adresse2) . "', " .
+									"commune2 = '" . mysqli_real_escape_string($GLOBALS["mysqli"], $reg_commune) . "', " .
 									"cp2 = '" . $reg_code_postal . "' " .
 									"WHERE " .
 									"ereno = '" . $reg_id_eleve . "'";
-								$insert = mysql_query($sql);
+								$insert = mysqli_query($GLOBALS["mysqli"], $sql);
 
 							} else {
 								// Erreur ! Les deux responsables ont déjà été saisis...
@@ -268,7 +268,7 @@ if (!isset($_POST["action"])) {
 
 						if ($insert == false) {
 							$error++;
-							$erreur_mysql=mysql_error();
+							$erreur_mysql=mysqli_error($GLOBALS["mysqli"]);
 							if($erreur_mysql!=""){echo "<p style='color:red'>".$erreur_mysql."</p>\n";}
 							//echo "<p>$sql</p>\n";
 						} else {
@@ -330,6 +330,8 @@ if (!isset($_POST["action"])) {
 					$ligne = fgets($fp, 4096);
 					if(trim($ligne)!="") {
 
+						//echo $ligne."<br />";
+
 						$tabligne=explode(";",$ligne);
 
 						// 0 : Identifiant interne élève
@@ -341,7 +343,7 @@ if (!isset($_POST["action"])) {
 						// 6 : Code postal
 						// 7 : Commune
 
-							// On nettoie et on vérifie :
+						// On nettoie et on vérifie :
 						$tabligne[0] = preg_replace("/[^0-9]/","",trim($tabligne[0]));
 
 						$tabligne[1]=my_strtoupper(nettoyer_caracteres_nom($tabligne[1], "a", " _-",""));
@@ -352,7 +354,7 @@ if (!isset($_POST["action"])) {
 						$tabligne[2]=preg_replace("/'/"," ",$tabligne[2]);
 						if (mb_strlen($tabligne[2]) > 50) $tabligne[2] = mb_substr($tabligne[2], 0, 50);
 
-						if ($tabligne[3] != "M." AND $tabligne[3] != "MME" AND $tabligne[3] != "MLLE") { $tabligne[3] = "";}
+						if (casse_mot($tabligne[3],"maj") != "M." AND casse_mot($tabligne[3],"maj") != "MME" AND casse_mot($tabligne[3],"maj") != "MLLE") { $tabligne[3] = "";}
 
 						$tabligne[4]=nettoyer_caracteres_nom($tabligne[4], "an", " ,'_-","");
 						$tabligne[4]=preg_replace("/'/",' ',$tabligne[4]);
@@ -379,6 +381,12 @@ if (!isset($_POST["action"])) {
 						$data_tab[$k]["code_postal"] = $tabligne[6];
 						$data_tab[$k]["commune"] = $tabligne[7];
 
+						/*
+						echo "<pre>";
+						print_r($data_tab[$k]);
+						echo "</pre>";
+						*/
+
 						$k++;
 					}
 				}
@@ -400,11 +408,16 @@ if (!isset($_POST["action"])) {
 				commune varchar(50) NOT NULL default '',
 				PRIMARY KEY  (id)
 				);";
-				$create_table = mysql_query($sql);
+				$create_table = mysqli_query($GLOBALS["mysqli"], $sql);
 
 				$sql="TRUNCATE TABLE temp_responsables;";
-				$vide_table = mysql_query($sql);
+				$vide_table = mysqli_query($GLOBALS["mysqli"], $sql);
 
+				/*
+				echo "\$data_tab<pre>";
+				print_r($data_tab);
+				echo "</pre>";
+				*/
 
 				$nb_error=0;
 
@@ -415,60 +428,64 @@ if (!isset($_POST["action"])) {
 				echo "<tr><th>ID élève</th><th>Nom</th><th>Prénom</th><th>Civilité</th><th>Ligne 1 adresse</th><th>Ligne 2 adresse</th><th>Code postal</th><th>Commune</th></tr>\n";
 
 				$alt=1;
-				for ($i=0;$i<$k-1;$i++) {
-					$alt=$alt*(-1);
-                    echo "<tr class='lig$alt'>\n";
-					echo "<td";
-					if($data_tab[$i]["id_eleve"]==""){
-						echo " style='color:red;'";
-					}
-					echo ">\n";
+				//for ($i=0;$i<$k-1;$i++) {
+				for ($i=0;$i<$k;$i++) {
+					if(isset($data_tab[$i])) {
+						$alt=$alt*(-1);
+						echo "<tr class='lig$alt'>\n";
+						echo "<td";
+						if($data_tab[$i]["id_eleve"]==""){
+							echo " style='color:red;'";
+						}
+						echo ">\n";
 
-					$sql="INSERT INTO temp_responsables SET elenoet='".mysql_real_escape_string($data_tab[$i]["id_eleve"])."',
-					nom='".mysql_real_escape_string($data_tab[$i]["nom"])."',
-					prenom='".mysql_real_escape_string($data_tab[$i]["prenom"])."',
-					civilite='".mysql_real_escape_string($data_tab[$i]["civilite"])."',
-					adresse1='".mysql_real_escape_string($data_tab[$i]["adresse1"])."',
-					adresse2='".mysql_real_escape_string($data_tab[$i]["adresse2"])."',
-					commune='".mysql_real_escape_string($data_tab[$i]["commune"])."',
-					code_postal='".mysql_real_escape_string($data_tab[$i]["code_postal"])."';";
-					$insert=mysql_query($sql);
-					if(!$insert) {
-						echo "<span style='color:red'>";
-						echo $data_tab[$i]["id_eleve"];
- 						echo "</span>";
-						$nb_error++;
+						$sql="INSERT INTO temp_responsables SET elenoet='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["id_eleve"])."',
+						nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["nom"])."',
+						prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["prenom"])."',
+						civilite='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["civilite"])."',
+						adresse1='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["adresse1"])."',
+						adresse2='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["adresse2"])."',
+						commune='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["commune"])."',
+						code_postal='".mysqli_real_escape_string($GLOBALS["mysqli"], $data_tab[$i]["code_postal"])."';";
+						//echo "$sql<br />";
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(!$insert) {
+							echo "<span style='color:red'>";
+							echo $data_tab[$i]["id_eleve"];
+	 						echo "</span>";
+							$nb_error++;
+						}
+						else {
+							echo $data_tab[$i]["id_eleve"];
+						}
+						echo "</td>\n";
+						echo "<td";
+						if($data_tab[$i]["id_eleve"]==""){
+							echo " style='color:red;'";
+						}
+						echo ">\n";
+						echo $data_tab[$i]["nom"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["prenom"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["civilite"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["adresse1"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["adresse2"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["code_postal"];
+						echo "</td>\n";
+						echo "<td>\n";
+						echo $data_tab[$i]["commune"];
+						echo "</td>\n";
+						echo "</tr>\n";
 					}
-					else {
-						echo $data_tab[$i]["id_eleve"];
-					}
-					echo "</td>\n";
-					echo "<td";
-					if($data_tab[$i]["id_eleve"]==""){
-						echo " style='color:red;'";
-					}
-					echo ">\n";
-					echo $data_tab[$i]["nom"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["prenom"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["civilite"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["adresse1"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["adresse2"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["code_postal"];
-					echo "</td>\n";
-					echo "<td>\n";
-					echo $data_tab[$i]["commune"];
-					echo "</td>\n";
-					echo "</tr>\n";
 				}
 
 				echo "</table>\n";

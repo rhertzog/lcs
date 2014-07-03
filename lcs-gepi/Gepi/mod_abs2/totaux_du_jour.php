@@ -92,6 +92,9 @@ $titre_page = "Absences du jour";
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
 $dojo = true;
+
+$javascript_specifique[] = "lib/tablekit";
+$utilisation_tablekit="ok";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
@@ -130,8 +133,8 @@ $eleve_col = $query
         Cette page affiche par créneau le nombre d'élèves ayant une saisie correspondant au filtre défini.<br />
         Les saisies renseignées en retard ne sont pas comptabilisées.<br /><br />
     </p>
-    <table border="1" >
-        <tr align="center">
+    <table border="1" style="border: 1px solid black; background-color:lightgrey">
+        <tr style="background-color :silver; text-align:center;">
             <td style="border: 1px solid black; background-color: grey;">
                 Filtre actif
             </td>
@@ -148,7 +151,7 @@ $eleve_col = $query
                 ?>
             </td>
         </tr>
-        <tr align="center">
+        <tr style="background-color :lightblue; text-align:center;">
             <td style="border: 1px solid black; background-color: grey;">
                 Types de saisies concernées :
             </td>
@@ -175,7 +178,7 @@ $eleve_col = $query
                 ?>
             </td>
         </tr>
-        <tr align="center">
+        <tr style="background-color :silver; text-align:center;">
             <td style="border: 1px solid black; background-color: grey;">
                 Commentaire
             </td>
@@ -232,16 +235,17 @@ $eleve_col = $query
     </form>
     <?php
     $col_creneaux = EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime();
-    echo'<table border="1" >';
+    echo'<table class="sortable resizable" border="1" style="border: 1px solid black; background-color:lightgrey">';
     echo'<tr align="center">
-        <th style="border: 1px solid black; background-color: grey;">Créneau</th>
-        <th style="border: 1px solid black; background-color: grey;">Heure</th>
-        <th style="border: 1px solid black; background-color: grey;">Nombre d\'élèves absents</th>
-        <th style="border: 1px solid black; background-color: grey;">Nombre de demi_pensionnaires </th>
-        <th style="border: 1px solid black; background-color: grey;">Nombre d\'internes</th>
-        <th style="border: 1px solid black; background-color: grey;">Nombre d\'externes</th>
+        <th style="border: 1px solid black; background-color: grey;" class="nosort">Créneau</th>
+        <th style="border: 1px solid black; background-color: grey;" title ="Cliquez pour trier sur la colonne" class="text">Heure</th>
+        <th style="border: 1px solid black; background-color: grey;" title ="Cliquez pour trier sur la colonne" class="number">Nombre d\'élèves absents</th>
+        <th style="border: 1px solid black; background-color: grey;" title ="Cliquez pour trier sur la colonne" class="number">Nombre de demi_pensionnaires </th>
+        <th style="border: 1px solid black; background-color: grey;" title ="Cliquez pour trier sur la colonne" class="number">Nombre d\'internes</th>
+        <th style="border: 1px solid black; background-color: grey;" title ="Cliquez pour trier sur la colonne" class="number">Nombre d\'externes</th>
         </tr>';
     
+	$cpt_eleve=0;
     $nbre_total_retards=0;
     $eleves_absents=array ();
     foreach($col_creneaux as $creneau){        
@@ -275,7 +279,15 @@ $eleve_col = $query
                 $eleves_absents[$eleve->getId()]=$eleve->getId();
             }           
         }        
-        echo'<tr align="center">
+
+			if ($cpt_eleve%2==0) {
+				$background_couleur="silver;";
+			} else {
+				$background_couleur="lightblue;";
+			}
+			$cpt_eleve++;
+
+            echo '<tr style="background-color :'.$background_couleur.'; text-align:center;">
             <td  style="border: 1px solid black; background-color: grey;">'.$creneau->getNomDefiniePeriode().'</td>
             <td>De '.$creneau->getHeureDebutDefiniePeriode().' à '.$creneau->getHeureFinDefiniePeriode().'</td>
             <td>'.$decompte_du_creneau.'</td>
@@ -286,9 +298,9 @@ $eleve_col = $query
     }
     echo'</table>';    
     echo'<br />';
-    echo'<table border="1" >';
-    echo'<tr><td style="border: 1px solid black; background-color: grey;">Nombre d\'élèves différents comptabilisés dans le tableau ci-dessus </td><td>'.count($eleves_absents).'</td></tr>';
-    echo'<tr><td style="border: 1px solid black; background-color: grey;">Nombre de retards sur la journée correspondant au filtre sélectionné</td><td>'.$nbre_total_retards.'</td></tr>';
+    echo'<table border="1" style="border: 1px solid black; background-color:lightgrey">';
+    echo'<tr style="background-color :silver; text-align:center;"><td style="border: 1px solid black; background-color: grey;">Nombre d\'élèves différents comptabilisés dans le tableau ci-dessus </td><td>'.count($eleves_absents).'</td></tr>';
+    echo'<tr style="background-color :lightblue; text-align:center;"><td style="border: 1px solid black; background-color: grey;">Nombre de retards sur la journée correspondant au filtre sélectionné</td><td>'.$nbre_total_retards.'</td></tr>';
     echo'</table>';
     ?>
    

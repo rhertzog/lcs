@@ -72,31 +72,42 @@ $GLOBALS['selected_eleve'] = '';
  * @return string echo résultat
  */
 function make_area_list_html($link, $current_classe, $current_matiere, $year, $month, $day) {
+	global $mysqli;
   echo "<strong><em>Cahier&nbsp;de&nbsp;texte&nbsp;de&nbsp;:</em></strong><br />";
-  $appel_donnees = mysql_query("SELECT * FROM classes ORDER BY classe");
-  $lignes = mysql_num_rows($appel_donnees);
+  $sql_donnees = "SELECT * FROM classes ORDER BY classe";
+  $appel_donnees = mysqli_query($mysqli, $sql_donnees);
+  $lignes = $appel_donnees->num_rows;
   $i = 0;
-  while($i < $lignes){
-    $id_classe = mysql_result($appel_donnees, $i, "id");
-    $appel_mat = mysql_query("SELECT DISTINCT m.* FROM matieres m, j_classes_matieres_professeurs j WHERE (j.id_classe='$id_classe' AND j.id_matiere=m.matiere) ORDER BY m.nom_complet");
-    $nb_mat = mysql_num_rows($appel_mat);
+ // while($i < $lignes){
+  while($classe = $appel_donnees->fetch_object()){
+    $id_classe = $classe->id;
+	$sql_mat = "SELECT DISTINCT m.* FROM matieres m, j_classes_matieres_professeurs j 
+		WHERE (j.id_classe='$id_classe' AND j.id_matiere=m.matiere) 
+			ORDER BY m.nom_complet";
+    $appel_mat = mysqli_query($mysqli, $sql_mat);
+    $nb_mat = $appel_mat->num_rows;
     $j = 0;
-    while($j < $nb_mat){
+    // while($j < $nb_mat){
+    while($matiere = $appel_mat->fetch_object()){
       $flag2 = "no";
-      $matiere_nom = mysql_result($appel_mat, $j, "nom_complet");
-      $matiere_nom_court = mysql_result($appel_mat, $j, "matiere");
-      $id_matiere = mysql_result($appel_mat, $j, "matiere");
-      $call_profs = mysql_query("SELECT * FROM j_classes_matieres_professeurs WHERE ( id_classe='$id_classe' and id_matiere = '$id_matiere') ORDER BY ordre_prof");
-      $nombre_profs = mysql_num_rows($call_profs);
+      $matiere_nom = $matiere->nom_complet;
+      $matiere_nom_court = $matiere->matiere;
+      $id_matiere = $matiere->matiere;
+	  $sql_profs = "SELECT * FROM j_classes_matieres_professeurs 
+		  WHERE ( id_classe='$id_classe' and id_matiere = '$id_matiere') 
+			  ORDER BY ordre_prof";
+      $call_profs = mysqli_query($mysqli, $sql_profs);
+      $nombre_profs = $call_profs->num_rows;
       $k = 0;
-      while ($k < $nombre_profs) {
-        $temp = my_strtoupper(@mysql_result($call_profs, $k, "id_professeur"));
+      // while ($k < $nombre_profs) {
+      while ($prof = $call_profs->fetch_object()){
+        $temp = my_strtoupper($prof->id_professeur);
         if ($temp == $_SESSION['login']) {$flag2 = "yes";}
         $k++;
       }
       if ($flag2 == "yes") {
         echo "<strong>";
-        $display_class = mysql_result($appel_donnees, $i, "classe");
+        $display_class = $classe->classe;
         if (($id_classe == $current_classe) and ($id_matiere == $current_matiere)) {
            echo ">$display_class&nbsp;-&nbsp;$matiere_nom&nbsp;($matiere_nom_court)&nbsp;";
         } else {
@@ -137,8 +148,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 	if((isset($id_groupe))&&(!isset($eff_groupe))) {
 		$sql="SELECT 1=1 FROM j_eleves_groupes WHERE id_groupe='$id_groupe' AND periode='$periode_num';";
 		//echo "$sql<br />";
-		$res_ele_grp=mysql_query($sql);
-		$eff_groupe=mysql_num_rows($res_ele_grp);
+		$res_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+		$eff_groupe=mysqli_num_rows($res_ele_grp);
 	}
 	//
 	// Cas particulier de la racine
@@ -153,15 +164,15 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 	}
 	$message_dev = "Etes-vous sûr de vouloir supprimer l\\'évaluation ci-dessous et les notes qu\\'elle contient ?";
 	$sql="SELECT * FROM cn_conteneurs WHERE (parent='0' and id_racine='$id_conteneur')";
-	$appel_conteneurs = mysql_query($sql);
-	$nb_cont = mysql_num_rows($appel_conteneurs);
+	$appel_conteneurs = mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_cont = mysqli_num_rows($appel_conteneurs);
 	if ($nb_cont != 0) {
 		echo "<ul>\n";
-		$id_cont = mysql_result($appel_conteneurs, 0, 'id');
-		$id_parent = mysql_result($appel_conteneurs, 0, 'parent');
-		$id_racine = mysql_result($appel_conteneurs, 0, 'id_racine');
-		$nom_conteneur = mysql_result($appel_conteneurs, 0, 'nom_court');
-		$modeBoiteMoy = mysql_result($appel_conteneurs, 0, 'mode');
+		$id_cont = old_mysql_result($appel_conteneurs, 0, 'id');
+		$id_parent = old_mysql_result($appel_conteneurs, 0, 'parent');
+		$id_racine = old_mysql_result($appel_conteneurs, 0, 'id_racine');
+		$nom_conteneur = old_mysql_result($appel_conteneurs, 0, 'nom_court');
+		$modeBoiteMoy = old_mysql_result($appel_conteneurs, 0, 'mode');
 		echo "<li>\n";
 		echo htmlspecialchars($nom_conteneur);
 		if ($ver_periode <= 1) {
@@ -169,15 +180,15 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 		}
 		echo "- <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a> - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
 
-		$ponderation_cont=mysql_result($appel_conteneurs, 0, 'ponderation');
+		$ponderation_cont=old_mysql_result($appel_conteneurs, 0, 'ponderation');
 		if($ponderation_cont!='0.0') {
 			$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pondérée d'un coefficient +$ponderation_cont";
 			echo " - <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
 		}
 
 		$sql="SELECT mode FROM cn_conteneurs WHERE id_racine='$id_conteneur';";
-		$res_nb_conteneurs=mysql_query($sql);
-		if(mysql_num_rows($res_nb_conteneurs)>1) {
+		$res_nb_conteneurs=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_nb_conteneurs)>1) {
 			echo " - <a href='add_modif_conteneur.php?id_conteneur=$id_conteneur&mode_navig=retour_index' title=\"";
 			if($modeBoiteMoy==1) {
 				echo "la moyenne s'effectue sur toutes les notes contenues à la racine et dans les ".my_strtolower(getSettingValue("gepi_denom_boite"))."s sans tenir compte des options définies dans ces ".my_strtolower(getSettingValue("gepi_denom_boite"))."s.";
@@ -188,8 +199,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 			echo "\">Mode Moy.: $modeBoiteMoy</a>";
 		}
 
-		$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
-		$nb_dev  = mysql_num_rows($appel_dev);
+		$appel_dev = mysqli_query($GLOBALS["mysqli"], "select * from cn_devoirs where id_conteneur='$id_cont' order by date");
+		$nb_dev  = mysqli_num_rows($appel_dev);
 		if ($nb_dev != 0) {$empty = 'no';}
 		if (($ver_periode >= 2)||($acces_exceptionnel_saisie)) {
 			$j = 0;
@@ -203,8 +214,8 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 						echo '<input type="hidden" name="section" value="groupe"/>';
 						echo '<input type="hidden" name="source" value="distant-gepi-saml"/>';//source simplesaml pour préselectionner la source dans le module multiauth et éviter de choisir le webmestre
 						//encodage du devoir
-						mysql_data_seek($appel_dev, $j);
-						$devoir_array = mysql_fetch_array($appel_dev);
+						mysqli_data_seek($appel_dev,  $j);
+						$devoir_array = mysqli_fetch_array($appel_dev);
 						$devoir_array = array_map_deep('ensure_utf8', $devoir_array);
 						echo '<input type="hidden" name="period_num" value=\''.$periode_num.'\'/>';
 						echo '<input type="hidden" name="gepi_cn_devoirs_array" value="'.htmlspecialchars(json_encode($devoir_array),ENT_COMPAT,'UTF-8').'"/>';
@@ -223,17 +234,17 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 						echo '</form>';
 					}
 					
-					$nom_dev = mysql_result($appel_dev, $j, 'nom_court');
-					$id_dev = mysql_result($appel_dev, $j, 'id');
-					$date_dev = mysql_result($appel_dev, $j, 'date');
-					$date_ele_resp_dev = mysql_result($appel_dev, $j, 'date_ele_resp');
+					$nom_dev = old_mysql_result($appel_dev, $j, 'nom_court');
+					$id_dev = old_mysql_result($appel_dev, $j, 'id');
+					$date_dev = old_mysql_result($appel_dev, $j, 'date');
+					$date_ele_resp_dev = old_mysql_result($appel_dev, $j, 'date_ele_resp');
 					echo "<li>\n";
 					echo "<span style='color:green;'>$nom_dev</span>";
 					echo " - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
 
 					$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
-					$res_eff_dev=mysql_query($sql);
-					$eff_dev=mysql_num_rows($res_eff_dev);
+					$res_eff_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+					$eff_dev=mysqli_num_rows($res_eff_dev);
 					echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
 					if(isset($eff_groupe)) {if($eff_dev==$eff_groupe) {echo "color:green;";} else {echo "color:red;";}}
 					echo "'>($eff_dev";
@@ -242,14 +253,14 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 
 					// Pour détecter une anomalie:
 					 $sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
-					$test_anomalie=mysql_query($sql);
-					if(mysql_num_rows($test_anomalie)>0) {
+					$test_anomalie=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_anomalie)>0) {
 						$titre_infobulle="Note pour un fantôme";
 						$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
 						$cpt_ele_anomalie=0;
-						while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
+						while($lig_anomalie=mysqli_fetch_object($test_anomalie)) {
 							if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
-							$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
+							$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i title=\"Note enregistrée\">";
 							if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
 							elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
 							else {$texte_infobulle.=$lig_anomalie->statut;}
@@ -257,10 +268,11 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 							$cpt_ele_anomalie++;
 						}
 						$texte_infobulle.="<br />";
-						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
+						$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."' class='bold'>ici</a> pour supprimer les notes associées?";
 						$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 
-						echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
+						echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return false;\" title=\"Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement.
+Cliquez pour contrôler la liste.\"><img src='../images/icons/flag.png' width='17' height='18' alt='' /></a>";
 					}
 
 					if (getSettingValue("utiliser_sacoche") == 'yes') {
@@ -269,27 +281,49 @@ function affiche_devoirs_conteneurs($id_conteneur,$periode_num, &$empty, $ver_pe
 
 					echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
 
-					$note_sur=mysql_result($appel_dev, $j, 'note_sur');
+					// Autre anomalie
+					 $sql="SELECT * FROM cn_devoirs WHERE id='$id_dev' AND facultatif!='O' AND facultatif!='N' AND facultatif!='B';";
+					$test_anomalie=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_anomalie)>0) {
+						$titre_infobulle="Devoir facultatif ou pas ?";
+						$texte_infobulle="Le devoir n'est pas 'catégorisé' comme facultatif ou non.<br />Son mode de prise en compte ou non dans la moyenne n'est pas défini.<br />";
+						$texte_infobulle.="Cliquer <a href='add_modif_dev.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev&amp;mode_navig=retour_index&amp;interface_simplifiee=n".add_token_in_url()."#statut_evaluation' class='bold'>ici</a> pour choisir un mode.";
+						$tabdiv_infobulle[]=creer_div_infobulle('anomalie2_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+
+						echo " <a href=\"#\" onclick=\"afficher_div('anomalie2_$id_dev','y',100,100);return false;\" title=\"Mode de prise en compte ou non dans la moyenne non défini.\"><img src='../images/icons/flag.png' width='17' height='18' alt='' /></a>";
+					}
+
+					$note_sur=old_mysql_result($appel_dev, $j, 'note_sur');
 					if($note_sur!='20') {
 						echo " (<em><span title='Note sur $note_sur'>/$note_sur</span></em>)";
 					}
 
-					$display_parents=mysql_result($appel_dev, $j, 'display_parents');
-					$coef=mysql_result($appel_dev, $j, 'coef');
+					$display_parents=old_mysql_result($appel_dev, $j, 'display_parents');
+					$coef=old_mysql_result($appel_dev, $j, 'coef');
 					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
-					if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation du ".formate_date($date_dev)." visible sur le relevé de notes.
-Visible à compter du ".formate_date($date_ele_resp_dev)." pour les parents et élèves.' alt='Evaluation visible sur le relevé de notes' />";}
-					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
+					echo "<span id='span_visibilite_$id_dev'>";
+					if($display_parents==1) {
+						echo "<a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;id_racine=$id_racine&amp;id_dev=$id_dev&amp;mode=change_visibilite_dev&amp;visible=n".add_token_in_url()."' onclick=\"change_visibilite_dev($id_dev,'n');return false;\"><img src='../images/icons/visible.png' width='19' height='16' title='Evaluation du ".formate_date($date_dev)." visible sur le relevé de notes.
+Visible à compter du ".formate_date($date_ele_resp_dev)." pour les parents et élèves.
+
+Cliquez pour ne pas faire apparaître cette note sur le relevé de notes.' alt='Evaluation visible sur le relevé de notes' /></a>";
+					}
+					else {
+						echo " <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;id_racine=$id_racine&amp;id_dev=$id_dev&amp;mode=change_visibilite_dev&amp;visible=y".add_token_in_url()."' onclick=\"change_visibilite_dev($id_dev,'y');return false;\"><img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes.
+					
+Cliquez pour faire apparaître cette note sur le relevé de notes.' alt='Evaluation non visible sur le relevé de notes' /></a>\n";
+					}
+					echo "</span>";
 					echo "</i>)";
 
 					$sql="SELECT * FROM cc_dev WHERE id_cn_dev='$id_dev';";
-					$res_cc_dev=mysql_query($sql);
-					if(mysql_num_rows($res_cc_dev)>0) {
-						$lig_cc_dev=mysql_fetch_object($res_cc_dev);
+					$res_cc_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_cc_dev)>0) {
+						$lig_cc_dev=mysqli_fetch_object($res_cc_dev);
 						echo " - <a href='index_cc.php?id_racine=".$id_racine."' title=\"Voir l'évaluation cumul associée $lig_cc_dev->nom_court ($lig_cc_dev->nom_complet)\">".$lig_cc_dev->nom_court."</a>";
 					}
 
-					echo " - <a href='copie_dev.php?id_devoir=".$id_dev."' title=\"Copier le devoir et les notes vers une autre période ou un autre enseignement (Les notes ne sont copiées que si les élèves sont les mêmes).\"><img src='../images/icons/copy-16.png' width='16' height='16' /></a>\n";
+					echo " - <a href='copie_dev.php?id_devoir=".$id_dev."' title=\"Copier le devoir et les notes vers une autre période ou un autre enseignement (Les notes ne sont copiées que si les élèves sont les mêmes).\"><img src='../images/icons/copy-16.png' width='16' height='16' alt='' /></a>\n";
 
 					echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 					echo "</li>\n";
@@ -302,23 +336,23 @@ Visible à compter du ".formate_date($date_ele_resp_dev)." pour les parents et �
 		echo "</ul>\n";
 	}
 	if (($ver_periode >= 2)||($acces_exceptionnel_saisie)) {
-		$appel_conteneurs = mysql_query("SELECT * FROM cn_conteneurs WHERE (parent='$id_conteneur') order by nom_court");
-		$nb_cont = mysql_num_rows($appel_conteneurs);
+		$appel_conteneurs = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM cn_conteneurs WHERE (parent='$id_conteneur') order by nom_court");
+		$nb_cont = mysqli_num_rows($appel_conteneurs);
 		if($nb_cont>0) {
 			echo "<ul>\n";
 			$i = 0;
 			while ($i < $nb_cont) {
-				$id_cont = mysql_result($appel_conteneurs, $i, 'id');
-				$id_parent = mysql_result($appel_conteneurs, $i, 'parent');
-				$id_racine = mysql_result($appel_conteneurs, $i, 'id_racine');
-				$nom_conteneur = mysql_result($appel_conteneurs, $i, 'nom_court');
+				$id_cont = old_mysql_result($appel_conteneurs, $i, 'id');
+				$id_parent = old_mysql_result($appel_conteneurs, $i, 'parent');
+				$id_racine = old_mysql_result($appel_conteneurs, $i, 'id_racine');
+				$nom_conteneur = old_mysql_result($appel_conteneurs, $i, 'nom_court');
 				if ($id_cont != $id_parent) {
 					echo "<li>\n";
 					echo "$nom_conteneur - <a href='saisie_notes.php?id_conteneur=$id_cont'>Visualisation</a>";
 					echo " - <a href = 'add_modif_conteneur.php?id_conteneur=$id_cont&amp;mode_navig=retour_index'>Configuration</a>\n";
 
-					$display_bulletin=mysql_result($appel_conteneurs, $i, 'display_bulletin');
-					$coef=mysql_result($appel_conteneurs, $i, 'coef');
+					$display_bulletin=old_mysql_result($appel_conteneurs, $i, 'display_bulletin');
+					$coef=old_mysql_result($appel_conteneurs, $i, 'coef');
 					echo " (<i><span title='Coefficient $coef'>$coef</span> ";
 					if($display_bulletin==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='$gepi_denom_boite visible sur le bulletin' alt='$gepi_denom_boite visible sur le bulletin' />";}
 					else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title=\"".ucfirst($gepi_denom_boite)." non visible sur le bulletin.
@@ -326,20 +360,20 @@ Cela ne signifie pas que les notes ne sont pas prises en compte dans le calcul d
 En revanche, on n'affiche pas une case spécifique pour ce".((getSettingValue('gepi_denom_boite_genre')=='f') ? "tte" : "")." ".$gepi_denom_boite." dans le bulletin.\" alt='".ucfirst($gepi_denom_boite)." non visible sur le bulletin.' />\n";}
 					echo "</i>)";
 
-					$ponderation_cont=mysql_result($appel_conteneurs, $i, 'ponderation');
+					$ponderation_cont=old_mysql_result($appel_conteneurs, $i, 'ponderation');
 					if($ponderation_cont!='0.0') {
 						$message_ponderation="La meilleure note de la ".getSettingValue("gepi_denom_boite")." est pondérée d'un coefficient +$ponderation_cont";
 						echo " - <img src='../images/icons/flag.png' width='17' height='18' alt=\"$message_ponderation\" title=\"$message_ponderation\" />";
 					}
 
-					$appel_dev = mysql_query("select * from cn_devoirs where id_conteneur='$id_cont' order by date");
-					$nb_dev  = mysql_num_rows($appel_dev);
+					$appel_dev = mysqli_query($GLOBALS["mysqli"], "select * from cn_devoirs where id_conteneur='$id_cont' order by date");
+					$nb_dev  = mysqli_num_rows($appel_dev);
 					if ($nb_dev != 0) {$empty = 'no';}
 
 					// Existe-t-il des sous-conteneurs?
 					$sql="SELECT 1=1 FROM cn_conteneurs WHERE (parent='$id_cont')";
-					$test_sous_cont=mysql_query($sql);
-					$nb_sous_cont=mysql_num_rows($test_sous_cont);
+					$test_sous_cont=mysqli_query($GLOBALS["mysqli"], $sql);
+					$nb_sous_cont=mysqli_num_rows($test_sous_cont);
 
 					if(($nb_dev==0)&&($nb_sous_cont==0)) {
 						echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_cont=$id_cont".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_conteneur)."', '".$message_cont."')\">Suppression</a>\n";
@@ -352,17 +386,17 @@ En revanche, on n'affiche pas une case spécifique pour ce".((getSettingValue('g
 					if($nb_dev>0) {
 						echo "<ul>\n";
 						while ($j < $nb_dev) {
-							$nom_dev = mysql_result($appel_dev, $j, 'nom_court');
-							$id_dev = mysql_result($appel_dev, $j, 'id');
-							$date_dev = mysql_result($appel_dev, $j, 'date');
-							$date_ele_resp_dev = mysql_result($appel_dev, $j, 'date_ele_resp');
+							$nom_dev = old_mysql_result($appel_dev, $j, 'nom_court');
+							$id_dev = old_mysql_result($appel_dev, $j, 'id');
+							$date_dev = old_mysql_result($appel_dev, $j, 'date');
+							$date_ele_resp_dev = old_mysql_result($appel_dev, $j, 'date_ele_resp');
 							echo "<li>\n";
 							echo "<font color='green'>$nom_dev</font> - <a href='saisie_notes.php?id_conteneur=$id_cont&amp;id_devoir=$id_dev'>Saisie</a>";
 
 							//$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='-' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
 							$sql="SELECT 1=1 FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num';";
-							$res_eff_dev=mysql_query($sql);
-							$eff_dev=mysql_num_rows($res_eff_dev);
+							$res_eff_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+							$eff_dev=mysqli_num_rows($res_eff_dev);
 							echo " <span title=\"Effectif des notes saisies/effectif total de l'enseignement\" style='font-size:small;";
 							if(isset($eff_groupe)) {if($eff_dev==$eff_groupe) {echo "color:green;";} else {echo "color:red;";}}
 							echo "'>($eff_dev";
@@ -371,14 +405,14 @@ En revanche, on n'affiche pas une case spécifique pour ce".((getSettingValue('g
 
 							// Pour détecter une anomalie:
 							$sql="SELECT * FROM cn_notes_devoirs cnd, j_eleves_classes jec WHERE cnd.id_devoir='$id_dev' AND cnd.statut!='v' AND jec.login=cnd.login AND jec.periode='$periode_num' AND jec.login not in (select login from j_eleves_groupes where id_groupe='$id_groupe' and periode='$periode_num');";
-							$test_anomalie=mysql_query($sql);
-							if(mysql_num_rows($test_anomalie)>0) {
+							$test_anomalie=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_anomalie)>0) {
 								$titre_infobulle="Note pour un fantôme";
 								$texte_infobulle="Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement&nbsp;:<br />";
 								$cpt_ele_anomalie=0;
-								while($lig_anomalie=mysql_fetch_object($test_anomalie)) {
+								while($lig_anomalie=mysqli_fetch_object($test_anomalie)) {
 									if($cpt_ele_anomalie>0) {$texte_infobulle.=", ";}
-									$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i>";
+									$texte_infobulle.=get_nom_prenom_eleve($lig_anomalie->login,'avec_classe')."&nbsp;(<i title=\"Note enregistrée\">";
 									if($lig_anomalie->statut=='') {$texte_infobulle.=$lig_anomalie->note;}
 									elseif($lig_anomalie->statut=='v') {$texte_infobulle.="_";}
 									else {$texte_infobulle.=$lig_anomalie->statut;}
@@ -386,35 +420,63 @@ En revanche, on n'affiche pas une case spécifique pour ce".((getSettingValue('g
 									$cpt_ele_anomalie++;
 								}
 								$texte_infobulle.="<br />";
-								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."'>ici</a> pour supprimer les notes associées?";
+								$texte_infobulle.="Cliquer <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;periode_num=$periode_num&amp;clean_anomalie_dev=$id_dev".add_token_in_url()."' class='bold'>ici</a> pour supprimer les notes associées?";
 								$tabdiv_infobulle[]=creer_div_infobulle('anomalie_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 		
-								echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return FALSE;\"><img src='../images/icons/flag.png' width='17' height='18' /></a>";
+								echo " <a href=\"#\" onclick=\"afficher_div('anomalie_$id_dev','y',100,100);return FALSE;\" title=\"Une ou des notes existent pour un ou des élèves qui ne sont plus inscrits dans cet enseignement.
+Cliquez pour contrôler la liste.\"><img src='../images/icons/flag.png' width='17' height='18' alt='' /></a>";
 							}
 
 							echo " - <a href = 'add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index'>Configuration</a>";
 
-							$note_sur=mysql_result($appel_dev, $j, 'note_sur');
+							// Autre anomalie
+							 $sql="SELECT * FROM cn_devoirs WHERE id='$id_dev' AND facultatif!='O' AND facultatif!='N' AND facultatif!='B';";
+							$test_anomalie=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_anomalie)>0) {
+								$titre_infobulle="Devoir facultatif ou pas ?";
+								$texte_infobulle="Le devoir n'est pas 'catégorisé' comme facultatif ou non.<br />Son mode de prise en compte ou non dans la moyenne n'est pas défini.<br />";
+								$texte_infobulle.="Cliquer <a href='add_modif_dev.php?id_conteneur=$id_conteneur&amp;id_devoir=$id_dev&amp;mode_navig=retour_index&amp;interface_simplifiee=n".add_token_in_url()."#statut_evaluation' class='bold'>ici</a> pour choisir un mode.";
+								$tabdiv_infobulle[]=creer_div_infobulle('anomalie2_'.$id_dev,$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
+
+								echo " <a href=\"#\" onclick=\"afficher_div('anomalie2_$id_dev','y',100,100);return false;\" title=\"Mode de prise en compte ou non dans la moyenne non défini.\"><img src='../images/icons/flag.png' width='17' height='18' alt='' /></a>";
+							}
+
+							$note_sur=old_mysql_result($appel_dev, $j, 'note_sur');
 							if($note_sur!='20') {
 								echo " (<em><span title='Note sur $note_sur'>/$note_sur</span></em>)";
 							}
 
-							$display_parents=mysql_result($appel_dev, $j, 'display_parents');
-							$coef=mysql_result($appel_dev, $j, 'coef');
+							$display_parents=old_mysql_result($appel_dev, $j, 'display_parents');
+							$coef=old_mysql_result($appel_dev, $j, 'coef');
 							echo " (<i><span title='Coefficient $coef'>$coef</span> ";
+							/*
 							if($display_parents==1) {echo "<img src='../images/icons/visible.png' width='19' height='16' title='Evaluation du ".formate_date($date_dev)." visible sur le relevé de notes.
 Visible à compter du ".formate_date($date_ele_resp_dev)." pour les parents et élèves.' alt='Evaluation visible sur le relevé de notes' />";}
 							else {echo " <img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes' alt='Evaluation non visible sur le relevé de notes' />\n";}
+							*/
+							echo "<span id='span_visibilite_$id_dev'>";
+							if($display_parents==1) {
+								echo "<a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;id_racine=$id_racine&amp;id_dev=$id_dev&amp;mode=change_visibilite_dev&amp;visible=n".add_token_in_url()."' onclick=\"change_visibilite_dev($id_dev,'n');return false;\"><img src='../images/icons/visible.png' width='19' height='16' title='Evaluation du ".formate_date($date_dev)." visible sur le relevé de notes.
+Visible à compter du ".formate_date($date_ele_resp_dev)." pour les parents et élèves.
+
+Cliquez pour ne pas faire apparaître cette note sur le relevé de notes.' alt='Evaluation visible sur le relevé de notes' /></a>";
+							}
+							else {
+								echo " <a href='".$_SERVER['PHP_SELF']."?id_groupe=$id_groupe&amp;id_racine=$id_racine&amp;id_dev=$id_dev&amp;mode=change_visibilite_dev&amp;visible=y".add_token_in_url()."' onclick=\"change_visibilite_dev($id_dev,'y');return false;\"><img src='../images/icons/invisible.png' width='19' height='16' title='Evaluation non visible sur le relevé de notes.
+					
+Cliquez pour faire apparaître cette note sur le relevé de notes.' alt='Evaluation non visible sur le relevé de notes' /></a>\n";
+							}
+							echo "</span>";
 							echo "</i>)";
 
 							$sql="SELECT * FROM cc_dev WHERE id_cn_dev='$id_dev';";
-							$res_cc_dev=mysql_query($sql);
-							if(mysql_num_rows($res_cc_dev)>0) {
-								$lig_cc_dev=mysql_fetch_object($res_cc_dev);
+							$res_cc_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_cc_dev)>0) {
+								$lig_cc_dev=mysqli_fetch_object($res_cc_dev);
 								echo " - <a href='index_cc.php?id_racine=".$id_racine."' title=\"Voir l'évaluation cumul associée $lig_cc_dev->nom_court ($lig_cc_dev->nom_complet)\">".$lig_cc_dev->nom_court."</a>";
 							}
 
-							echo " - <a href='copie_dev.php?id_devoir=".$id_dev."' title=\"Copier le devoir et les notes vers une autre période ou un autre enseignement (Les notes ne sont copiées que si les élèves sont les mêmes).\"><img src='../images/icons/copy-16.png' width='16' height='16' /></a>\n";
+							echo " - <a href='copie_dev.php?id_devoir=".$id_dev."' title=\"Copier le devoir et les notes vers une autre période ou un autre enseignement (Les notes ne sont copiées que si les élèves sont les mêmes).\"><img src='../images/icons/copy-16.png' width='16' height='16' alt='' /></a>\n";
 
 							echo " - <a href = 'index.php?id_racine=$id_racine&amp;del_dev=$id_dev".add_token_in_url()."' onclick=\"return confirmlink(this, 'suppression de ".traitement_magic_quotes($nom_dev)."', '".$message_dev."')\">Suppression</a>\n";
 							echo "</li>\n";
@@ -458,38 +520,38 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
     global $min_max_moyclas;
     //============================
 
-    $call_data = mysql_query("SELECT * FROM aid_config WHERE indice_aid = $indice_aid");
-    $AID_NOM_COMPLET = @mysql_result($call_data, 0, "nom_complet");
-    $note_max = @mysql_result($call_data, 0, "note_max");
-    $type_note = @mysql_result($call_data, 0, "type_note");
-    $message = @mysql_result($call_data, 0, "message");
-    $display_nom = @mysql_result($call_data, 0, "display_nom");
-    $display_end = @mysql_result($call_data, 0, "display_end");
+    $call_data = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM aid_config WHERE indice_aid = $indice_aid");
+    $AID_NOM_COMPLET = @old_mysql_result($call_data, 0, "nom_complet");
+    $note_max = @old_mysql_result($call_data, 0, "note_max");
+    $type_note = @old_mysql_result($call_data, 0, "type_note");
+    $message = @old_mysql_result($call_data, 0, "message");
+    $display_nom = @old_mysql_result($call_data, 0, "display_nom");
+    $display_end = @old_mysql_result($call_data, 0, "display_end");
 
 
-    $aid_nom_query = mysql_query("SELECT nom FROM aid WHERE (id='$aid_id' and indice_aid='$indice_aid')");
-    $aid_nom = @mysql_result($aid_nom_query, 0, "nom");
+    $aid_nom_query = mysqli_query($GLOBALS["mysqli"], "SELECT nom FROM aid WHERE (id='$aid_id' and indice_aid='$indice_aid')");
+    $aid_nom = @old_mysql_result($aid_nom_query, 0, "nom");
     //------
     // On regarde maintenant quelle sont les profs responsables de cette AID
-    $aid_prof_resp_query = mysql_query("SELECT id_utilisateur FROM j_aid_utilisateurs WHERE (id_aid='$aid_id'  and indice_aid='$indice_aid')");
-    $nb_lig = mysql_num_rows($aid_prof_resp_query);
+    $aid_prof_resp_query = mysqli_query($GLOBALS["mysqli"], "SELECT id_utilisateur FROM j_aid_utilisateurs WHERE (id_aid='$aid_id'  and indice_aid='$indice_aid')");
+    $nb_lig = mysqli_num_rows($aid_prof_resp_query);
     $n = '0';
     while ($n < $nb_lig) {
-        $aid_prof_resp_login[$n] = mysql_result($aid_prof_resp_query, $n, "id_utilisateur");
+        $aid_prof_resp_login[$n] = old_mysql_result($aid_prof_resp_query, $n, "id_utilisateur");
         $n++;
     }
     //------
     // On appelle l'appréciation de l'élève, et sa note
     //------
-    $current_eleve_aid_appreciation_query = mysql_query("SELECT * FROM aid_appreciations WHERE (login='$current_eleve_login' AND periode='$periode_num' and id_aid='$aid_id' and indice_aid='$indice_aid')");
-    $current_eleve_aid_appreciation = @mysql_result($current_eleve_aid_appreciation_query, 0, "appreciation");
-    $periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe'");
-    $periode_max = mysql_num_rows($periode_query);
+    $current_eleve_aid_appreciation_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM aid_appreciations WHERE (login='$current_eleve_login' AND periode='$periode_num' and id_aid='$aid_id' and indice_aid='$indice_aid')");
+    $current_eleve_aid_appreciation = @old_mysql_result($current_eleve_aid_appreciation_query, 0, "appreciation");
+    $periode_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM periodes WHERE id_classe = '$id_classe'");
+    $periode_max = mysqli_num_rows($periode_query);
     if ($type_note == 'last') {$last_periode_aid = min($periode_max,$display_end);}
     if (($type_note == 'every') or (($type_note == 'last') and ($periode_num == $last_periode_aid))) {
         $place_eleve = "";
-        $current_eleve_aid_note = @mysql_result($current_eleve_aid_appreciation_query, 0, "note");
-        $current_eleve_aid_statut = @mysql_result($current_eleve_aid_appreciation_query, 0, "statut");
+        $current_eleve_aid_note = @old_mysql_result($current_eleve_aid_appreciation_query, 0, "note");
+        $current_eleve_aid_statut = @old_mysql_result($current_eleve_aid_appreciation_query, 0, "statut");
         if (($current_eleve_aid_statut == '') and ($note_max != 20) ) {
             $current_eleve_aid_appreciation = "(note sur ".$note_max.") ".$current_eleve_aid_appreciation;
         }
@@ -506,16 +568,16 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
             }
             $current_eleve_aid_note=number_format($current_eleve_aid_note,1, ',', ' ');
         }
-        $aid_note_min_query = mysql_query("SELECT MIN(note) note_min FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
+        $aid_note_min_query = mysqli_query($GLOBALS["mysqli"], "SELECT MIN(note) note_min FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
 
-        $aid_note_min = @mysql_result($aid_note_min_query, 0, "note_min");
+        $aid_note_min = @old_mysql_result($aid_note_min_query, 0, "note_min");
         if ($aid_note_min == '') {
             $aid_note_min = '-';
         } else {
             $aid_note_min=number_format($aid_note_min,1, ',', ' ');
         }
-        $aid_note_max_query = mysql_query("SELECT MAX(note) note_max FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
-        $aid_note_max = @mysql_result($aid_note_max_query, 0, "note_max");
+        $aid_note_max_query = mysqli_query($GLOBALS["mysqli"], "SELECT MAX(note) note_max FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
+        $aid_note_max = @old_mysql_result($aid_note_max_query, 0, "note_max");
 
         if ($aid_note_max == '') {
             $aid_note_max = '-';
@@ -523,8 +585,8 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
             $aid_note_max=number_format($aid_note_max,1, ',', ' ');
         }
 
-        $aid_note_moyenne_query = mysql_query("SELECT round(avg(note),1) moyenne FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
-        $aid_note_moyenne = @mysql_result($aid_note_moyenne_query, 0, "moyenne");
+        $aid_note_moyenne_query = mysqli_query($GLOBALS["mysqli"], "SELECT round(avg(note),1) moyenne FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid')");
+        $aid_note_moyenne = @old_mysql_result($aid_note_moyenne_query, 0, "moyenne");
         if ($aid_note_moyenne == '') {
             $aid_note_moyenne = '-';
         } else {
@@ -604,7 +666,7 @@ function affich_aid($affiche_graph, $affiche_rang, $affiche_coef, $test_coef,$af
         $quartile4_classe = sql_query1("SELECT COUNT( a.note ) as quartile4 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=8 AND a.note<10)");
         $quartile5_classe = sql_query1("SELECT COUNT( a.note ) as quartile5 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note>=5 AND a.note<8)");
         $quartile6_classe = sql_query1("SELECT COUNT( a.note ) as quartile6 FROM aid_appreciations a, j_eleves_classes j WHERE (a.login = j.login and j.id_classe = '$id_classe' and a.statut='' and a.periode = '$periode_num' and j.periode='$periode_num' and a.indice_aid='$indice_aid' AND a.note<5)");
-        echo "<td style=\"text-align: center; \"><img height=40 witdh=40 src='../visualisation/draw_artichow4.php?place_eleve=$place_eleve&temp1=$quartile1_classe&temp2=$quartile2_classe&temp3=$quartile3_classe&temp4=$quartile4_classe&temp5=$quartile5_classe&temp6=$quartile6_classe&nb_data=7' /></td>\n";
+        echo "<td style=\"text-align: center; \"><img height=40 witdh=40 src='../visualisation/draw_artichow4.php?place_eleve=$place_eleve&temp1=$quartile1_classe&temp2=$quartile2_classe&temp3=$quartile3_classe&temp4=$quartile4_classe&temp5=$quartile5_classe&temp6=$quartile6_classe&nb_data=7' alt='' /></td>\n";
      } else
       echo "<td style=\"text-align: center; \"><span class='".$style_bulletin."'>-</span></td>\n";
     }
@@ -781,7 +843,7 @@ function make_classes_select_html($link, $current, $year, $month, $day, $domaine
 	  AND jecl.id_classe = jgc.id_classe)
 	  ORDER BY classe ;";
   } else {
-	if(($_SESSION['statut']=='professeur')&&(!getSettingAOui('GepiAccesCDTToutesClasses'))) {
+	if(isset($_SESSION['statut']) && ($_SESSION['statut']=='professeur')&&(!getSettingAOui('GepiAccesCDTToutesClasses'))) {
 		$sql = "SELECT DISTINCT c.id, c.classe
 		  FROM classes c, j_groupes_classes jgc, ct_entry ct, j_groupes_professeurs jgp
 		  WHERE (c.id = jgc.id_classe
@@ -983,20 +1045,20 @@ function make_eleve_select_html($link, $login_resp, $current, $year, $month, $da
 	}
 	$sql.=";";
 	//echo "$sql<br />";
-	$get_eleves = mysql_query($sql);
+	$get_eleves = mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if (mysql_num_rows($get_eleves) == 0) {
+	if (mysqli_num_rows($get_eleves) == 0) {
 			// Aucun élève associé
 		$out_html = "<p>Vous semblez n'être responsable d'aucun élève ! Contactez l'administrateur pour corriger cette erreur.</p>";
-	} elseif (mysql_num_rows($get_eleves) == 1) {
+	} elseif (mysqli_num_rows($get_eleves) == 1) {
 			// Un seul élève associé : pas de formulaire nécessaire
-		$selected_eleve = mysql_fetch_object($get_eleves);
+		$selected_eleve = mysqli_fetch_object($get_eleves);
 		$out_html = "<p class='bold'>Elève : ".$selected_eleve->prenom." ".$selected_eleve->nom."</p>";
 	} else {
 		// Plusieurs élèves : on affiche un formulaire pour choisir l'élève
 	  $out_html = "<form id=\"eleve\" method=\"post\" action=\"".$_SERVER['PHP_SELF']."\">\n<h2 class='h2_label'>\n<label for=\"choix_eleve\"><strong><em>Elève :</em></strong></label>\n</h2>\n<p>\n<select id=\"choix_eleve\" name=\"eleve\" onchange=\"eleve_go()\">\n";
 	  $out_html .= "<option value=\"".$link."?year=".$year."&amp;month=".$month."&amp;day=".$day."\">(Choisissez un élève)</option>\n";
-		while ($current_eleve = mysql_fetch_object($get_eleves)) {
+		while ($current_eleve = mysqli_fetch_object($get_eleves)) {
 		   if ($current) {
 		   	$selected = ((is_object($current)&&($current_eleve->login == $current->login))||($current_eleve->login == $current)) ? "selected='selected'" : "";
 		   } else {
@@ -1182,7 +1244,7 @@ function test_ecriture_dossier($tab_restriction=array()) {
 	$nom_fichier_test='test_acces_rw';
 
 	echo "<table class='boireaus'>\n";
-    echo "<caption style='display:none;'>dossiers devant être accessibles en écriture<caption>\n";
+    echo "<caption style='display:none;'>dossiers devant être accessibles en écriture</caption>\n";
 	echo "<tr>\n";
 	echo "<th>Dossier</th>\n";
 	echo "<th>Ecriture</th>\n";
@@ -1466,80 +1528,84 @@ function journal_connexions($login,$duree,$page='mon_compte',$pers_id=NULL) {
  * Affiche une action à effectuer
  */
 function affiche_infos_actions() {
+    global $mysqli;
 	$sql="SELECT ia.* FROM infos_actions ia, infos_actions_destinataires iad WHERE
 	ia.id=iad.id_info AND
 	((iad.nature='individu' AND iad.valeur='".$_SESSION['login']."') OR
 	(iad.nature='statut' AND iad.valeur='".$_SESSION['statut']."')) ORDER BY date;";
     
-	$res=mysql_query($sql);
-	$chaine_id="";
-	if(mysql_num_rows($res)>0) {
-		echo "<div id='div_infos_actions' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%;'>\n";
-		echo "<div id='info_action_titre' style='font-weight: bold; min-height:16px; padding-right:8px;' class='infobulle_entete'>\n";
-			echo "<div id='info_action_pliage' style='float:right; width: 1em;'>\n";
-			echo "<a href=\"javascript:div_alterne_affichage('conteneur')\" title=\"Plier/déplier le cadre des actions en attente\"><span id='img_pliage_conteneur'><img src='images/icons/remove.png' width='16' height='16' alt='Réduire' /></span></a>";
-			echo "</div>\n";
+        $res = mysqli_query($mysqli, $sql);
+        $chaine_id="";
+        if($res->num_rows > 0) {
+?>
+<div id='div_infos_actions' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%;'>
+    <div id='info_action_titre' style='font-weight: bold; min-height:16px; padding-right:8px;' class='infobulle_entete'>
+        <div id='info_action_pliage' style='float:right; width: 1em;'>
+            <a href="javascript:div_alterne_affichage('conteneur')" title="Plier/déplier le cadre des actions en attente"><span id='img_pliage_conteneur'><img src='images/icons/remove.png' width='16' height='16' alt='Réduire' /></span></a>
+        </div>
+<?php      
+                if(acces("/gestion/gestion_infos_actions.php", $_SESSION['statut'])) {  
+?> 
+        <div style='float:right; width: 1em; margin-right:0.5em;'>
+            <a href="gestion/gestion_infos_actions.php" title="Consulter, supprimer par lots les actions en attente"><span id='img_supprimer_conteneur'><img src='images/disabled.png' width='16' height='16' alt='Supprimer par lots' /></span></a>
+        </div> 
+<?php    
+                }
+?> 
+        Actions en attente
+    </div>
+    <div id='info_action_corps_conteneur'>
+<?php
+            $cpt_id=0;
+            while($lig=$res->fetch_object()) {
+?>
+        <div id='info_action_<?php echo $lig->id; ?>' style='border: 1px solid black; margin:2px; min-height:16px;'>
+            <div id='info_action_titre_<?php echo $lig->id; ?>' style='font-weight: bold; min-height:16px; padding-right:8px;' class='infobulle_entete'>
+                <div id='info_action_pliage_<?php echo $lig->id; ?>' style='float:right; width: 1em;'>
+                    <a href="javascript:div_alterne_affichage('<?php echo $lig->id; ?>')" title="Plier/déplier l'action en attente"><span id='img_pliage_<?php echo $lig->id; ?>'><img src='images/icons/remove.png' style="width:16px; height:16px;" alt='Réduire' /></span></a>
+                </div>
+                <?php echo $lig->titre; ?>
+            </div>
+            <div id='info_action_corps_<?php echo $lig->id; ?>' style='padding:3px;' class='infobulle_corps'>
+                <div style='float:right; width: 9em; text-align: right;'>
+                    <?php echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->titre)."', 'Etes-vous sûr de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\" title=\"Supprimer cette notification d'action en attente\">Supprimer</a>"; ?>
+                </div>
+                <?php echo preg_replace("/\\\\n/","<br />",nl2br($lig->description)); ?>
+            </div>
+        </div>
+<?php
+                if($cpt_id>0) {$chaine_id.=", ";}
+                $chaine_id.="'$lig->id'";
+                $cpt_id++;
+            }
+?>
+    </div>
+</div>
+<script type='text/javascript'>
+    function div_alterne_affichage(id) {
+        if(document.getElementById('info_action_corps_'+id)) {
+            if(document.getElementById('info_action_corps_'+id).style.display=='none') {
+                document.getElementById('info_action_corps_'+id).style.display='';
+                document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' alt=\'Réduire\' />'
+            }
+            else {
+                document.getElementById('info_action_corps_'+id).style.display='none';
+                document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' alt=\'Déplier\' />'
+            }
+        }
+    }
 
-			//if($_SESSION['statut']=='administrateur') {
-			if(acces("/gestion/gestion_infos_actions.php", $_SESSION['statut'])) {
-				echo "<div style='float:right; width: 1em; margin-right:0.5em;'>\n";
-				echo "<a href=\"gestion/gestion_infos_actions.php\" title=\"Consulter, supprimer par lots les actions en attente\"><span id='img_pliage_conteneur'><img src='images/disabled.png' width='16' height='16' alt='Supprimer par lots' /></span></a>";
-				echo "</div>\n";
-			}
-
-			echo "Actions en attente";
-		echo "</div>\n";
-
-		echo "<div id='info_action_corps_conteneur'>\n";
-
-		$cpt_id=0;
-		while($lig=mysql_fetch_object($res)) {
-			echo "<div id='info_action_$lig->id' style='border: 1px solid black; margin:2px; min-height:16px;'>\n";
-				echo "<div id='info_action_titre_$lig->id' style='font-weight: bold; min-height:16px; padding-right:8px;' class='infobulle_entete'>\n";
-					echo "<div id='info_action_pliage_$lig->id' style='float:right; width: 1em;'>\n";
-					echo "<a href=\"javascript:div_alterne_affichage('$lig->id')\" title=\"Plier/déplier l'action en attente\"><span id='img_pliage_$lig->id'><img src='images/icons/remove.png' width='16' height='16' alt='Réduire' /></span></a>";
-					echo "</div>\n";
-					echo $lig->titre;
-				echo "</div>\n";
-
-				echo "<div id='info_action_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
-					echo "<div style='float:right; width: 9em; text-align: right;'>\n";
-					echo "<a href=\"".$_SERVER['PHP_SELF']."?del_id_info=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->titre)."', 'Etes-vous sûr de vouloir supprimer ".traitement_magic_quotes($lig->titre)."')\" title=\"Supprimer cette notification d'action en attente\">Supprimer</span></a>";
-					echo "</div>\n";
-
-					echo preg_replace("/\\\\n/","<br />",nl2br($lig->description));
-				echo "</div>\n";
-			echo "</div>\n";
-			if($cpt_id>0) {$chaine_id.=", ";}
-			$chaine_id.="'$lig->id'";
-			$cpt_id++;
-		}
-		echo "</div>\n";
-		echo "</div>\n";
-
-		echo "<script type='text/javascript'>
-	function div_alterne_affichage(id) {
-		if(document.getElementById('info_action_corps_'+id)) {
-			if(document.getElementById('info_action_corps_'+id).style.display=='none') {
-				document.getElementById('info_action_corps_'+id).style.display='';
-				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' alt=\'Réduire\' />'
-			}
-			else {
-				document.getElementById('info_action_corps_'+id).style.display='none';
-				document.getElementById('img_pliage_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' alt=\'Déplier\' />'
-			}
-		}
-	}
-
-	chaine_id_action=new Array($chaine_id);
-	for(i=0;i<chaine_id_action.length;i++) {
-		id_a=chaine_id_action[i];
-		if(document.getElementById('info_action_corps_'+id_a)) {
-			div_alterne_affichage(id_a);
-		}
-	}
-</script>\n";
-	}
+    chaine_id_action=new Array(<?php echo $chaine_id; ?>);
+    for(i=0;i<chaine_id_action.length;i++) {
+        id_a=chaine_id_action[i];
+        if(document.getElementById('info_action_corps_'+id_a)) {
+            div_alterne_affichage(id_a);
+        }
+    }
+</script>
+<?php
+        }
+		$res->close();
 }
 
 
@@ -1547,128 +1613,127 @@ function affiche_infos_actions() {
  * Affiche les accès aux cahiers de texte
  */
 function affiche_acces_cdt() {
+    global $mysqli;
 	$retour="";
 
 	$tab_statuts=array('professeur', 'administrateur', 'scolarite');
 	if(in_array($_SESSION['statut'], $tab_statuts)) {
 		$sql="SELECT a.* FROM acces_cdt a ORDER BY date2;";
-		//echo "$sql<br />";
-		$res=mysql_query($sql);
-		$chaine_id="";
-		if(mysql_num_rows($res)>0) {
-			$visible="y";
-			if($_SESSION['statut']=='professeur') {
-				$visible="n";
-				$sql="SELECT ag.id_acces FROM acces_cdt_groupes ag, j_groupes_professeurs jgp WHERE jgp.id_groupe=ag.id_groupe AND jgp.login='".$_SESSION['login']."';";
-				$res2=mysql_query($sql);
-				if(mysql_num_rows($res2)>0) {
-					$visible="y";
-					$tab_id_acces=array();
-					while($lig2=mysql_fetch_object($res2)) {
-						$tab_id_acces[]=$lig2->id_acces;
-					}
-				}
-			}
-	
-			if($visible=="y") {
-				$retour.="<div id='div_infos_acces_cdt' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%; margin-top:3px;'>\n";
-				$retour.="<div id='info_acces_cdt_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
-					$retour.="<div id='info_acces_cdt_pliage' style='float:right; width: 1em'>\n";
-					$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('conteneur')\"><span id='img_pliage_acces_cdt_conteneur'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-					$retour.="</div>\n";
-					$retour.="Accès ouvert à des CDT";
-				$retour.="</div>\n";
-		
-				$retour.="<div id='info_acces_cdt_corps_conteneur'>\n";
-		
-				$cpt_id=0;
-				while($lig=mysql_fetch_object($res)) {
-					$visible="y";
-					if(($_SESSION['statut']=='professeur')&&(!in_array($lig->id,$tab_id_acces))) {
-						$visible="n";
-					}
-	
-					if($visible=="y") {
-						$retour.="<div id='info_acces_cdt_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
-							$retour.="<div id='info_acces_cdt_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
-								$retour.="<div id='info_acces_cdt_pliage_$lig->id' style='float:right; width: 1em'>\n";
-								$retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('$lig->id')\"><span id='img_pliage_acces_cdt_$lig->id'><img src='images/icons/remove.png' width='16' height='16' /></span></a>";
-								$retour.="</div>\n";
-								$retour.="Accès CDT jusqu'au ".formate_date($lig->date2);
-							$retour.="</div>\n";
-			
-							$retour.="<div id='info_acces_cdt_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
-								if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
-									$retour.="<div style='float:right; width: 9em; text-align: right;'>\n";
-									$retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer cet accès')\">Supprimer l'accès</span></a>";
-									$retour.="</div>\n";
-								}
-	
-								$retour.="<p><strong>L'accès a été ouvert pour le motif suivant&nbsp;:</strong><br />";
-								$retour.=preg_replace("/\\\\r\\\\n/","<br />",$lig->description);
-								$retour.="</p>\n";
-	
-								$chaine_enseignements="<ul>";
-								$sql="SELECT id_groupe FROM acces_cdt_groupes WHERE id_acces='$lig->id';";
-								$res3=mysql_query($sql);
-								if(mysql_num_rows($res3)>0) {
-									$tab_champs=array('classes', 'professeurs');
-									while($lig3=mysql_fetch_object($res3)) {
-										$current_group=get_group($lig3->id_groupe);
-										if((is_array($current_group))&&(count($current_group)>0)) {
-											$chaine_profs="";
-											if(isset($current_group['profs']['users'])) {
-												$cpt=0;
-												foreach($current_group['profs']['users'] as $login_prof => $current_prof) {
-													if($cpt>0) {$chaine_profs.=", ";}
-													$chaine_profs.=$current_prof['civilite']." ".$current_prof['nom']." ".$current_prof['prenom'];
-													$cpt++;
-												}
-											}
+        //echo "$sql<br />"; 
+            $res = mysqli_query($mysqli, $sql);
+            $chaine_id="";
+            if($res->num_rows > 0) {
+                $visible="y";
+                if($_SESSION['statut']=='professeur') {
+                    $visible = "n";
+                    $sql = "SELECT ag.id_acces FROM acces_cdt_groupes ag, j_groupes_professeurs jgp WHERE jgp.id_groupe=ag.id_groupe AND jgp.login='".$_SESSION['login']."';";
+                    $res2 = mysqli_query($mysqli, $sql);
+                    if($res2->num_rows > 0) {
+                        $visible="y";
+                        $tab_id_acces=array();
+                        while($lig2 = $res2->fetch_object()) {
+                            $tab_id_acces[]=$lig2->id_acces;
+                        }
+                    }
+                }
+                if($visible=="y") {
+                    $retour.="<div id='div_infos_acces_cdt' style='width: 60%; border: 2px solid red; padding:3px; margin-left: 20%; margin-top:3px;'>\n";
+                    $retour.="<div id='info_acces_cdt_titre' style='font-weight: bold;' class='infobulle_entete'>\n";
+                        $retour.="<div id='info_acces_cdt_pliage' style='float:right; width: 1em'>\n";
+                        $retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('conteneur')\"><span id='img_pliage_acces_cdt_conteneur'><img src='images/icons/remove.png' width='16' height='16' alt='enlever' /></span></a>";
+                        $retour.="</div>\n";
+                        $retour.="Accès ouvert à des CDT";
+                    $retour.="</div>\n";
+                    $retour.="<div id='info_acces_cdt_corps_conteneur'>\n";
+                    $cpt_id=0;
+                    while($lig = $res->fetch_object()) {
+                        $visible="y";
+                        if(($_SESSION['statut']=='professeur')&&(!in_array($lig->id,$tab_id_acces))) {
+                            $visible="n";
+                        }
+                        if($visible=="y") {
+                            $retour.="<div id='info_acces_cdt_$lig->id' style='border: 1px solid black; margin:2px;'>\n";
+                                $retour.="<div id='info_acces_cdt_titre_$lig->id' style='font-weight: bold;' class='infobulle_entete'>\n";
+                                    $retour.="<div id='info_acces_cdt_pliage_$lig->id' style='float:right; width: 1em'>\n";
+                                    $retour.="<a href=\"javascript:div_alterne_affichage_acces_cdt('$lig->id')\"><span id='img_pliage_acces_cdt_$lig->id'><img src='images/icons/remove.png' width='16' height='16' alt='enlever' /></span></a>";
+                                    $retour.="</div>\n";
+                                    $retour.="Accès CDT jusqu'au ".formate_date($lig->date2);
+                                $retour.="</div>\n";
 
-											$chaine_enseignements.="<li>";
-											$chaine_enseignements.=$current_group['name']." (<i>".$current_group['description']."</i>) en ".$current_group['classlist_string']." (<i>".$chaine_profs."</i>)";
-											$chaine_enseignements.="</li>\n";
-										}
-									}
-								}
-								$chaine_enseignements.="</ul>";
-								
-								$retour.="<p>Les CDT accessibles à l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
-							$retour.="</div>\n";
-						$retour.="</div>\n";
-						if($cpt_id>0) {$chaine_id.=", ";}
-						$chaine_id.="'$lig->id'";
-						$cpt_id++;
-					}
-				}
-				$retour.="</div>\n";
-				$retour.="</div>\n";
-		
-				$retour.="<script type='text/javascript'>
-			function div_alterne_affichage_acces_cdt(id) {
-				if(document.getElementById('info_acces_cdt_corps_'+id)) {
-					if(document.getElementById('info_acces_cdt_corps_'+id).style.display=='none') {
-						document.getElementById('info_acces_cdt_corps_'+id).style.display='';
-						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' />'
-					}
-					else {
-						document.getElementById('info_acces_cdt_corps_'+id).style.display='none';
-						document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' />'
-					}
-				}
-			}
-		
-			chaine_id_acces_cdt=new Array($chaine_id);
-			for(i=0;i<chaine_id_acces_cdt.length;i++) {
-				id_a=chaine_id_acces_cdt[i];
-				if(document.getElementById('info_acces_cdt_corps_'+id_a)) {
-					div_alterne_affichage_acces_cdt(id_a);
-				}
-			}
-		</script>\n";
-			}
-		}
+                                $retour.="<div id='info_acces_cdt_corps_$lig->id' style='padding:3px;' class='infobulle_corps'>\n";
+                                    if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
+                                        $retour.="<div style='float:right; width: 9em; text-align: right;'>\n";
+                                        $retour.="<a href=\"".$_SERVER['PHP_SELF']."?del_id_acces_cdt=$lig->id".add_token_in_url()."\" onclick=\"return confirmlink(this, '".traitement_magic_quotes($lig->description)."', 'Etes-vous sûr de vouloir supprimer cet accès')\">Supprimer l'accès</span></a>";
+                                        $retour.="</div>\n";
+                                    }
+
+                                    $retour.="<p><strong>L'accès a été ouvert pour le motif suivant&nbsp;:</strong><br />";
+                                    $retour.=preg_replace("/\\\\r\\\\n/","<br />",$lig->description);
+                                    $retour.="</p>\n";
+
+                                    $chaine_enseignements="<ul>";
+                                    $sql="SELECT id_groupe FROM acces_cdt_groupes WHERE id_acces='$lig->id';";
+                                    $res3=mysqli_query($GLOBALS["mysqli"], $sql);
+                                    if(mysqli_num_rows($res3)>0) {
+                                        $tab_champs=array('classes', 'professeurs');
+                                        while($lig3=mysqli_fetch_object($res3)) {
+                                            $current_group=get_group($lig3->id_groupe);
+                                            if((is_array($current_group))&&(count($current_group)>0)) {
+                                                $chaine_profs="";
+                                                if(isset($current_group['profs']['users'])) {
+                                                    $cpt=0;
+                                                    foreach($current_group['profs']['users'] as $login_prof => $current_prof) {
+                                                        if($cpt>0) {$chaine_profs.=", ";}
+                                                        $chaine_profs.=$current_prof['civilite']." ".$current_prof['nom']." ".$current_prof['prenom'];
+                                                        $cpt++;
+                                                    }
+                                                }
+
+                                                $chaine_enseignements.="<li>";
+                                                $chaine_enseignements.=$current_group['name']." (<i>".$current_group['description']."</i>) en ".$current_group['classlist_string']." (<i>".$chaine_profs."</i>)";
+                                                $chaine_enseignements.="</li>\n";
+                                            }
+                                        }
+                                    }
+                                    $chaine_enseignements.="</ul>";
+
+                                    $retour.="<p>Les CDT accessibles à l'adresse <a href='$lig->chemin' target='_blank'>$lig->chemin</a> sont&nbsp;:<br />".$chaine_enseignements."</p>";
+                                $retour.="</div>\n";
+                            $retour.="</div>\n";
+                            if($cpt_id>0) {$chaine_id.=", ";}
+                            $chaine_id.="'$lig->id'";
+                            $cpt_id++;
+                        }                        
+                    }                    
+                    $retour.="</div>\n";
+                    $retour.="</div>\n";
+
+                    $retour.="<script type='text/javascript'>
+                function div_alterne_affichage_acces_cdt(id) {
+                    if(document.getElementById('info_acces_cdt_corps_'+id)) {
+                        if(document.getElementById('info_acces_cdt_corps_'+id).style.display=='none') {
+                            document.getElementById('info_acces_cdt_corps_'+id).style.display='';
+                            document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/remove.png\' width=\'16\' height=\'16\' alt=\'enlever\' />'
+                        }
+                        else {
+                            document.getElementById('info_acces_cdt_corps_'+id).style.display='none';
+                            document.getElementById('img_pliage_acces_cdt_'+id).innerHTML='<img src=\'images/icons/add.png\' width=\'16\' height=\'16\' alt=\'ajouter\' />'
+                        }
+                    }
+                }
+
+                chaine_id_acces_cdt=new Array($chaine_id);
+                for(i=0;i<chaine_id_acces_cdt.length;i++) {
+                    id_a=chaine_id_acces_cdt[i];
+                    if(document.getElementById('info_acces_cdt_corps_'+id_a)) {
+                        div_alterne_affichage_acces_cdt(id_a);
+                    }
+                }
+            </script>\n";
+                    
+                }
+            }
+            $res->close();
 	}
 	echo $retour;
 }
@@ -1777,7 +1842,7 @@ function affiche_reinit_password($login) {
  * Sur les checkbox, insérer onchange="checkbox_change(this.id)"
  * @return string Le texte de la fonction javascript
  */
-function js_checkbox_change_style($nom_js_func='checkbox_change', $prefixe_texte='texte_', $avec_balise_script="n") {
+function js_checkbox_change_style($nom_js_func='checkbox_change', $prefixe_texte='texte_', $avec_balise_script="n", $perc_opacity=1) {
 	$retour="";
 	if($avec_balise_script!="n") {$retour.="<script type='text/javascript'>\n";}
 	$retour.="
@@ -1786,9 +1851,11 @@ function js_checkbox_change_style($nom_js_func='checkbox_change', $prefixe_texte
 			if(document.getElementById('$prefixe_texte'+id)) {
 				if(document.getElementById(id).checked) {
 					document.getElementById('$prefixe_texte'+id).style.fontWeight='bold';
+					document.getElementById('$prefixe_texte'+id).style.opacity=1;
 				}
 				else {
 					document.getElementById('$prefixe_texte'+id).style.fontWeight='normal';
+					document.getElementById('$prefixe_texte'+id).style.opacity=$perc_opacity;
 				}
 			}
 		}
@@ -2101,13 +2168,14 @@ function insere_lien_insertion_lien_geogebra_dans_ckeditor($titre_ggb, $url_ggb)
  * @return string Chaine de texte HTML 
  */
 function alerte_config_suhosin() {
-	$retour="<p class='bold' style='color:red'>Configuration suhosin</p>\n";
+	$retour="<p class='bold' style='color:red'>Limitations à la transmission de variables</p>\n";
 
 	$suhosin_post_max_totalname_length=ini_get('suhosin.post.max_totalname_length');
 	if($suhosin_post_max_totalname_length!='') {
 		$retour.="<p>Le module suhosin est activé.<br />\nUn paramétrage trop restrictif de ce module peut perturber le fonctionnement de Gepi, particulièrement dans les pages comportant de nombreux champs de formulaire (<i>comme par exemple dans la page de saisie des appréciations par les professeurs</i>)</p>\n";
 		$retour.="<p>La page d'extraction des moyennes permettant de modifier/corriger des valeurs propose un très grand nombre de champs.<br />Le module suhosin risque de poser des problèmes.</p>";
 
+		$retour="<p class='bold'>Configuration suhosin&nbsp;:</p>\n";
 		$tab_suhosin=array('suhosin.cookie.max_totalname_length', 
 		'suhosin.get.max_vars', 
 		'suhosin.get.max_totalname_length', 
@@ -2131,6 +2199,12 @@ function alerte_config_suhosin() {
 	else {
 		$retour.="<p>Le module suhosin n'est pas activé.<br />Il ne peut pas perturber Gepi.</p>\n";
 	}
+
+	$max_input_vars=ini_get('max_input_vars');
+	if(($max_input_vars!="")&&($max_input_vars>0)) {
+		$retour.="<p class='bold'>Limitation propre à PHP&nbsp;:</p><p>La variable PHP 'max_input_vars' est limitée à $max_input_vars.<br />Si le nombre de variables transmises dépasse cette valeur, Gepi peut être perturbé.<br />Tentez de soumettre moins de valeurs ou augmentez la valeur de 'max_input_vars' dans le fichier php.ini.</p>\n";
+	}
+
 	return $retour;
 }
 
@@ -2152,10 +2226,10 @@ function tableau_html_eleves_du_groupe($id_groupe, $nb_col) {
 	$retour.="</thead>\n";
 	$retour.="<tbody>\n";
 	$sql="SELECT DISTINCT nom, prenom FROM eleves e, j_eleves_groupes jeg WHERE jeg.login=e.login AND jeg.id_groupe='$id_groupe';";
-	$res_ele_grp=mysql_query($sql);
-	if(mysql_num_rows($res_ele_grp)>0) {
+	$res_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_ele_grp)>0) {
 		$cpt=0;
-		while($lig_ele=mysql_fetch_object($res_ele_grp)) {
+		while($lig_ele=mysqli_fetch_object($res_ele_grp)) {
 			$retour.="<tr style='background-color:";
 			if($cpt%2==0) {$retour.="silver";} else {$retour.="white";}
 			$retour.=";'>\n";
@@ -2216,10 +2290,10 @@ function tableau_html_groupe_matiere_telle_classe($id_classe, $matiere, $tab_grp
 			AND jgc.id_groupe=g.id
 			)
 		ORDER BY jgc.priorite,jgm.id_matiere, g.name;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		$alt=1;
-		while($lig=mysql_fetch_object($res)) {
+		while($lig=mysqli_fetch_object($res)) {
 			if(!in_array($lig->id, $tab_grp_exclus)) {
 				$alt=$alt*(-1);
 				$retour.="<tr class='lig$alt white_hover'>\n";
@@ -2234,9 +2308,9 @@ function tableau_html_groupe_matiere_telle_classe($id_classe, $matiere, $tab_grp
 
 				$retour.="<td>";
 				$sql="SELECT id, classe FROM classes c, j_groupes_classes jgc WHERE jgc.id_classe=c.id AND jgc.id_groupe='$lig->id' ORDER BY c.classe;";
-				$res_clas=mysql_query($sql);
+				$res_clas=mysqli_query($GLOBALS["mysqli"], $sql);
 				$cpt=0;
-				while($lig_clas=mysql_fetch_object($res_clas)) {
+				while($lig_clas=mysqli_fetch_object($res_clas)) {
 					if($cpt>0) {$retour.=", ";}
 					if($lig_clas->id==$id_classe) {
 						$retour.="<strong>".$lig_clas->classe."</strong>";
@@ -2250,9 +2324,9 @@ function tableau_html_groupe_matiere_telle_classe($id_classe, $matiere, $tab_grp
 
 				$retour.="<td>";
 				$sql="SELECT u.nom, u.prenom, u.civilite FROM j_groupes_professeurs jgp, utilisateurs u WHERE jgp.id_groupe='$lig->id' AND jgp.login=u.login ORDER BY u.nom, u.prenom;";
-				$res_prof=mysql_query($sql);
+				$res_prof=mysqli_query($GLOBALS["mysqli"], $sql);
 				$cpt=0;
-				while($lig_prof=mysql_fetch_object($res_prof)) {
+				while($lig_prof=mysqli_fetch_object($res_prof)) {
 					if($cpt>0) {$retour.=", ";}
 					$retour.=$lig_prof->civilite." ".casse_mot($lig_prof->nom, "maj")." ".casse_mot(mb_substr($lig_prof->prenom,0,1), "maj");
 					$cpt++;
@@ -2263,20 +2337,20 @@ function tableau_html_groupe_matiere_telle_classe($id_classe, $matiere, $tab_grp
 
 				$retour.="<td>";
 				$sql="SELECT * FROM matieres_categories WHERE id='$lig->categorie_id';";
-				$res_cat=mysql_query($sql);
-				if(mysql_num_rows($res_cat)==0) {
+				$res_cat=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_cat)==0) {
 					$retour.="<span style='color:red' title='Cet enseignement ne sera pas visible sur les bulletins si vous optez pour un affichage avec catégories de matières.'>Aucune</span>";
 				}
 				else {
-					$lig_cat=mysql_fetch_object($res_cat);
+					$lig_cat=mysqli_fetch_object($res_cat);
 					$retour.=$lig_cat->nom_court;
 				}
 				$retour.="</td>\n";
 
 				$tab_v=array();
 				$sql="SELECT * FROM j_groupes_visibilite WHERE id_groupe='$lig->id';";
-				$res_v=mysql_query($sql);
-				while($lig_v=mysql_fetch_object($res_v)) {
+				$res_v=mysqli_query($GLOBALS["mysqli"], $sql);
+				while($lig_v=mysqli_fetch_object($res_v)) {
 					$tab_v[$lig_v->domaine]=$lig_v->visible;
 				}
 
@@ -2323,9 +2397,9 @@ function get_infos_maj_sconet($id_maj_sconet="", $ts_maj_sconet="") {
 	}
 
 	if(isset($sql)) {
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)>0) {
-			$lig=mysql_fetch_object($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)>0) {
+			$lig=mysqli_fetch_object($res);
 			$retour.="<p>Mise à jour d'après Sconet lancée par ".civ_nom_prenom($lig->login)." le ".formate_date($lig->date_debut, "y");
 			if($lig->date_fin!="0000-00-00 00:00:00") {
 				$retour.=" et achevée le ".formate_date($lig->date_fin, "y");
@@ -2349,9 +2423,9 @@ function get_infos_derniere_maj_sconet() {
 	$retour="";
 
 	$sql="SELECT * FROM log_maj_sconet ORDER BY date_debut DESC LIMIT 1;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
-		$lig=mysql_fetch_object($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		$lig=mysqli_fetch_object($res);
 		$retour.="<p>La précédente mise à jour d'après Sconet a été lancée par ".civ_nom_prenom($lig->login)." le ".formate_date($lig->date_debut, "y");
 		if($lig->date_fin!="0000-00-00 00:00:00") {
 			$retour.=" et achevée le ".formate_date($lig->date_fin, "y");
@@ -2415,4 +2489,639 @@ function retourne_html_histogramme_svg($tab_graph_note, $titre, $id, $nb_tranche
 	return $retour;
 }
 
+function liste_checkbox_utilisateurs($tab_statuts, $tab_user_preselectionnes=array(), $nom_champ='login_user', $nom_func_js_tout_cocher_decocher='cocher_decocher') {
+	$retour="";
+
+	$sql="SELECT login, civilite, nom, prenom, statut FROM utilisateurs WHERE (";
+	for($loop=0;$loop<count($tab_statuts);$loop++) {
+		if($loop>0) {
+			$sql.=" OR ";
+		}
+		$sql.="statut='".$tab_statuts[$loop]."'";
+	}
+	$sql.=") AND etat='actif' ORDER BY statut, login, nom, prenom;";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		$nombreligne=mysqli_num_rows($res);
+		$nbcol=3;
+		$nb_par_colonne=round($nombreligne/$nbcol);
+
+		$retour.="<table width='100%' summary=\"Tableau de choix des utilisateurs\">\n";
+		$retour.="<tr valign='top' align='center'>\n";
+		$retour.="<td align='left'>\n";
+
+		$cpt=0;
+		$statut_prec="";
+		while($lig=mysqli_fetch_object($res)) {
+			if(($cpt>0)&&(round($cpt/$nb_par_colonne)==$cpt/$nb_par_colonne)){
+				$retour.="</td>\n";
+				$retour.="<td align='left'>\n";
+			}
+
+			if($lig->statut!=$statut_prec) {
+				$retour.="<p><b>".ucfirst($lig->statut)."</b><br />\n";
+				$statut_prec=$lig->statut;
+			}
+
+			$retour.="<input type='checkbox' name='".$nom_champ."[]' id='".$nom_champ."_$cpt' value='$lig->login' ";
+			$retour.="onchange=\"checkbox_change('".$nom_champ."_$cpt')\" ";
+			if(in_array($lig->login, $tab_user_preselectionnes)) {
+				$retour.="checked ";
+				$temp_style=" style='font-weight: bold;'";
+			}
+			else {
+				$temp_style="";
+			}
+			$retour.="/><label for='".$nom_champ."_$cpt' title=\"$lig->login\"><span id='texte_".$nom_champ."_$cpt'$temp_style>$lig->civilite ".casse_mot($lig->nom, "maj")." ".casse_mot($lig->prenom, 'majf2')."</span></label><br />\n";
+
+			$cpt++;
+		}
+		$retour.="</td>\n";
+		$retour.="</tr>\n";
+		$retour.="</table>\n";
+
+		$retour.="<script type='text/javascript'>
+function $nom_func_js_tout_cocher_decocher(mode) {
+	for (var k=0;k<$cpt;k++) {
+		if(document.getElementById('".$nom_champ."_'+k)){
+			document.getElementById('".$nom_champ."_'+k).checked=mode;
+			checkbox_change('".$nom_champ."_'+k);
+		}
+	}
+}
+</script>\n";
+	}
+
+	return $retour;
+}
+
+function js_cdt_modif_etat_travail() {
+	global $class_notice_dev_fait, $class_notice_dev_non_fait;
+
+	$retour="<script type='text/javascript'>
+	function cdt_modif_etat_travail(login_eleve, id_ct) {
+		// Pour éviter trop de clics à la suite:
+		if(document.getElementById('div_etat_travail_'+id_ct)) {
+			document.getElementById('div_etat_travail_'+id_ct).innerHTML='<img src=\'../images/spinner.gif\' class=\'icone16\' />';
+		}
+
+		new Ajax.Updater($('div_etat_travail_'+id_ct),'../cahier_texte_2/ajax_cdt.php?login_eleve='+login_eleve+'&id_ct_devoir='+id_ct+'&mode=changer_etat".add_token_in_url(false)."',{method: 'get'});
+
+		setTimeout('cdt_maj_class_div_dev('+id_ct+')', 2000);
+	}
+
+	function cdt_maj_class_div_dev(id_ct) {
+		if(document.getElementById('div_etat_travail_'+id_ct)) {
+			if(document.getElementById('div_travail_'+id_ct)) {
+				chaine=document.getElementById('div_etat_travail_'+id_ct).innerHTML;
+				//alert(chaine);
+				if(chaine.indexOf('NON FAIT:',1)!='-1') {
+					document.getElementById('div_travail_'+id_ct).className='$class_notice_dev_non_fait';
+				}
+				else {
+					if(chaine.indexOf('FAIT:',1)!='-1') {
+						document.getElementById('div_travail_'+id_ct).className='$class_notice_dev_fait';
+					}
+				}
+			}
+		}
+	}
+</script>\n";
+	return $retour;
+}
+
+function js_dragresize($minWidth=50, $minHeight=50, $minLeft=0, $minTop=0, $maxLeft=10000, $maxTop=100000) {
+	/*
+	global $chaine_handles;
+	if($chaine_handles=="") {
+		$chaine_handles="'tl', 'tm', 'tr', 'ml', 'mr', 'bl', 'bm', 'br'";
+	}
+
+	// Reserve...
+	var dragresize = new DragResize('dragresize',
+	 { minWidth: $minWidth, minHeight: $minHeight, minLeft: $minLeft, minTop: $minTop, maxLeft: $maxLeft, maxTop: $maxTop },
+	 \"$chaine_handles\");
+
+	*/
+	global $mode_handles;
+
+	$retour="<script type='text/javascript'>
+// Using DragResize is simple!
+// You first declare a new DragResize() object, passing its own name and an object
+// whose keys constitute optional parameters/settings:
+
+var dragresize = new DragResize('dragresize',
+ { minWidth: $minWidth, minHeight: $minHeight, minLeft: $minLeft, minTop: $minTop, maxLeft: $maxLeft, maxTop: $maxTop },
+ \"$mode_handles\");
+
+// Optional settings/properties of the DragResize object are:
+//  enabled: Toggle whether the object is active.
+//  handles[]: An array of drag handles to use (see the .JS file).
+//  minWidth, minHeight: Minimum size to which elements are resized (in pixels).
+//  minLeft, maxLeft, minTop, maxTop: Bounding box (in pixels).
+
+// Next, you must define two functions, isElement and isHandle. These are passed
+// a given DOM element, and must \"return true\" if the element in question is a
+// draggable element or draggable handle. Here, I'm checking for the CSS classname
+// of the elements, but you have have any combination of conditions you like:
+
+dragresize.isElement = function(elm)
+{
+ if (elm.className && elm.className.indexOf('drsElement') > -1) return true;
+};
+dragresize.isHandle = function(elm)
+{
+ if (elm.className && elm.className.indexOf('drsMoveHandle') > -1) return true;
+};
+
+// You can define optional functions that are called as elements are dragged/resized.
+// Some are passed true if the source event was a resize, or false if it's a drag.
+// The focus/blur events are called as handles are added/removed from an object,
+// and the others are called as users drag, move and release the object's handles.
+// You might use these to examine the properties of the DragResize object to sync
+// other page elements, etc.
+
+dragresize.ondragfocus = function() { };
+dragresize.ondragstart = function(isResize) { };
+dragresize.ondragmove = function(isResize) { };
+dragresize.ondragend = function(isResize) { };
+dragresize.ondragblur = function() { };
+
+// Finally, you must apply() your DragResize object to a DOM node; all children of this
+// node will then be made draggable. Here, I'm applying to the entire document.
+dragresize.apply(document);
+</script>";
+
+	return $retour;
+}
+
+function input_password_to_text($id_champ) {
+	global $gepiPath;
+
+	$retour="<span id='span_liens_js_".$id_champ."' style='display:none'>
+	<a href='javascript:champ_text_".$id_champ."()' id='lien_text_".$id_champ."' title='Rendre le champ de saisie du mot de passe lisible (afficher en clair).'><img src='$gepiPath/images/icons/visible.png' width='19' height='16' alt='Mot de passe en clair' /></a>
+	<a href='javascript:champ_password_".$id_champ."()' id='lien_password_".$id_champ."' style='display:none' title='Rendre le champ de saisie du mot de passe non lisible par ceux qui regardent par dessus votre épaule (masquer).'><img src='$gepiPath/images/icons/invisible.png' width='19' height='16' alt='Mot de passe masqué' /></a>
+</span>
+
+<script type='text/javascript'>
+	isIE_input_password_to_text = (document.all);
+	if(!isIE_input_password_to_text) {
+		document.getElementById('span_liens_js_".$id_champ."').style.display='';
+	}
+
+	function champ_text_".$id_champ."() {
+		if(confirm(\"Vous allez afficher votre saisie de mot de passe en clair.\\nSi quelqu'un regarde par dessus votre épaule où si vous vidéoprojetez au tableau votre écran, ce n'est pas souhaitable.\\nEtes-vous sûr de vouloir afficher le mot de passe en clair ?\")) {
+			document.getElementById('".$id_champ."').setAttribute('type', 'text');
+			//setTimeout(\"document.getElementById('".$id_champ."').setAttribute('type', 'text')\", 1000);
+
+			document.getElementById('lien_text_".$id_champ."').style.display='none';
+			document.getElementById('lien_password_".$id_champ."').style.display='';
+		}
+	}
+	function champ_password_".$id_champ."() {
+		document.getElementById('".$id_champ."').setAttribute('type','password');
+		//setTimeout(\"document.getElementById('".$id_champ."').setAttribute('type', 'password')\", 1000);
+
+			document.getElementById('lien_text_".$id_champ."').style.display='';
+			document.getElementById('lien_password_".$id_champ."').style.display='none';
+	}
+</script>
+<!--p>Cela fonctionne avec Firefox et Chrome, mais avec MSIE qui interdit les changements de type d'un input.</p-->";
+
+	return $retour;
+}
+
+function html_ajout_suffixe_ou_renommer($id_nom_court, $id_nom_complet, $id_nom_matiere) {
+	$retour="
+	<p><strong>Ajouter un suffixe</strong> au nom court actuel de l'enseignement et au nom complet actuel&nbsp;:</p>
+	<table class='boireaus'>
+		<tr>
+			<td class='lig1'>
+				<a href=\"javascript:ajout_suffixe_nom_grp('_1', ' (groupe 1)')\">_1 et (groupe 1)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_2', ' (groupe 2)')\">_2 et (groupe 2)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_3', ' (groupe 3)')\">_3 et (groupe 3)</a></p>
+			</td>
+			<td class='lig-1'>
+				<a href=\"javascript:ajout_suffixe_nom_grp('_g1', ' (groupe 1)')\">_g1 et (groupe 1)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_g2', ' (groupe 2)')\">_g2 et (groupe 2)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_g3', ' (groupe 3)')\">_g3 et (groupe 3)</a></p>
+			</td>
+			<td class='lig1'>
+				<a href=\"javascript:ajout_suffixe_nom_grp('_A', ' (groupe A)')\">_A et (groupe A)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_B', ' (groupe B)')\">_B et (groupe B)</a><br />
+				<a href=\"javascript:ajout_suffixe_nom_grp('_C', ' (groupe C)')\">_C et (groupe C)</a>
+			</td>
+		</tr>
+	</table>
+
+	<br />
+	<p>ou</p>
+
+	<p><strong>Renommer</strong> l'enseignement en&nbsp;:</p>
+	<table class='boireaus'>
+		<tr>
+			<td class='lig1'>
+				<a href=\"javascript:modif_nom_grp('_1', ' (groupe 1)')\">_1 et (groupe 1)</a><br />
+				<a href=\"javascript:modif_nom_grp('_2', ' (groupe 2)')\">_2 et (groupe 2)</a><br />
+				<a href=\"javascript:modif_nom_grp('_3', ' (groupe 3)')\">_3 et (groupe 3)</a></p>
+			</td>
+			<td class='lig-1'>
+				<a href=\"javascript:modif_nom_grp('_g1', ' (groupe 1)')\">_g1 et (groupe 1)</a><br />
+				<a href=\"javascript:modif_nom_grp('_g2', ' (groupe 2)')\">_g2 et (groupe 2)</a><br />
+				<a href=\"javascript:modif_nom_grp('_g3', ' (groupe 3)')\">_g3 et (groupe 3)</a></p>
+			</td>
+			<td class='lig1'>
+				<a href=\"javascript:modif_nom_grp('_A', ' (groupe A)')\">_A et (groupe A)</a><br />
+				<a href=\"javascript:modif_nom_grp('_B', ' (groupe B)')\">_B et (groupe B)</a><br />
+				<a href=\"javascript:modif_nom_grp('_C', ' (groupe C)')\">_C et (groupe C)</a>
+			</td>
+		</tr>
+	</table>
+
+	<script type='text/javascript'>
+		function ajout_suffixe_nom_grp(suffixe_nom_court, suffixe_nom_complet) {
+			document.getElementById('$id_nom_court').value=document.getElementById('$id_nom_court').value+suffixe_nom_court;
+			document.getElementById('$id_nom_complet').value=document.getElementById('$id_nom_complet').value+suffixe_nom_complet;
+		}
+
+		function modif_nom_grp(suffixe_nom_court, suffixe_nom_complet) {
+			prefixe=document.getElementById('$id_nom_matiere').options[document.getElementById('$id_nom_matiere').selectedIndex].value;
+			prefixe_nom_complet=document.getElementById('$id_nom_matiere').options[document.getElementById('$id_nom_matiere').selectedIndex].getAttribute('nom_matiere');
+			document.getElementById('$id_nom_court').value=prefixe+suffixe_nom_court;
+			document.getElementById('$id_nom_complet').value=prefixe_nom_complet+suffixe_nom_complet;
+		}
+	</script>\n";
+
+	return $retour;
+}
+
+function img_calendrier_js($id_champ, $id_img) {
+	global $gepiPath;
+	return '<img id="'.$id_img.'" src="'.$gepiPath.'/images/icons/calendrier.gif" alt="" />
+<script type="text/javascript">
+	Calendar.setup({
+		inputField     :    "'.$id_champ.'",     // id of the input field
+		ifFormat       :    "%d/%m/%Y",      // format of the input field
+		button         :    "'.$id_img.'",  // trigger for the calendar (button ID)
+		align          :    "Tl",           // alignment (defaults to "Bl")
+		singleClick    :    true,
+		showsTime	:   false
+	});
+</script>';
+}
+
+/**
+ * Fonction destinée à présenter une liste de liens répartis en $nbcol colonnes
+ * 
+ *
+ * @param type $tab_txt tableau des textes
+ * @param type $tab_nom_champ tableau des noms des champs checkbox
+ * @param type $tab_id_champ tableau des id des champs checkbox
+ * @param type $tab_valeur_champ tableau des valeurs des champs checkbox
+ * @param int $nbcol Nombre de colonnes
+ * @param type $tab_valeurs_preselectionnees tableau des valeurs présélectionnées
+ * @param type $extra_options Options supplémentaires
+ */
+function tab_liste_checkbox($tab_txt, $tab_nom_champ, $tab_id_champ, $tab_valeur_champ, $nom_js_func = "", $nom_func_tout_cocher="modif_coche", $nbcol=3, $tab_valeurs_preselectionnees=array()) {
+
+	// Nombre d'enregistrements à afficher
+	$nombreligne=count($tab_txt);
+
+	if(!is_int($nbcol)){
+		$nbcol=3;
+	}
+
+	// Nombre de lignes dans chaque colonne:
+	$nb_class_par_colonne=round($nombreligne/$nbcol);
+
+	echo "<table width='100%' summary=\"Tableau de choix\">\n";
+	echo "<tr valign='top' align='center'>\n";
+	echo "<td align='left'>\n";
+
+	$i = 0;
+	$chaine_var_js="var tab_id_$nom_func_tout_cocher=new Array(";
+	while ($i < $nombreligne){
+
+		if(($i>0)&&(round($i/$nb_class_par_colonne)==$i/$nb_class_par_colonne)){
+			echo "</td>\n";
+			echo "<td align='left'>\n";
+		}
+
+		//echo "<br />\n";
+		//$chaine_var_js.="tab_id_".$nom_func_tout_cocher."[$i]='".$tab_id_champ[$i]."';\n";
+		if($i>0) {
+			$chaine_var_js.=", ";
+		}
+		$chaine_var_js.="'".$tab_id_champ[$i]."'";
+		echo "<input type='checkbox' name='".$tab_nom_champ[$i]."' id='".$tab_id_champ[$i]."' value='".$tab_valeur_champ[$i]."' ";
+		if($nom_js_func!="") {
+			echo " onchange=\"$nom_js_func('$tab_id_champ[$i]')\"";
+		}
+		if(in_array($tab_valeur_champ[$i] , $tab_valeurs_preselectionnees)) {
+			echo " checked";
+		}
+		echo " /><label for='".$tab_id_champ[$i]."' id='label_".$tab_id_champ[$i]."'";
+		if(in_array($tab_valeur_champ[$i] , $tab_valeurs_preselectionnees)) {
+			echo " style='font-weight:bold;'";
+		}
+		echo ">".$tab_txt[$i]."</label>";
+		echo "<br />\n";
+		$i++;
+	}
+	echo "</td>\n";
+	echo "</tr>\n";
+	echo "</table>\n";
+
+	if($nom_js_func!="") {
+		echo js_checkbox_change_style($nom_js_func, 'label_', "y");
+	}
+	$chaine_var_js.=");\n";
+
+	if($nom_func_tout_cocher!="") {
+		echo "<p><a href=\"javascript:$nom_func_tout_cocher('true')\">Tout cocher</a> - <a href=\"javascript:$nom_func_tout_cocher('false')\">Tout décocher</a></p>
+<script type='text/javascript'>
+	$chaine_var_js
+	function $nom_func_tout_cocher(mode) {
+		for(i=0;i<$i;i++) {
+			//if(i<5) {alert(tab_id_".$nom_func_tout_cocher."[i])}
+			if(document.getElementById(tab_id_".$nom_func_tout_cocher."[i])) {
+				if(mode=='true') {
+					document.getElementById(tab_id_".$nom_func_tout_cocher."[i]).checked=true;";
+		if($nom_js_func!="") {
+			echo "
+					$nom_js_func(tab_id_".$nom_func_tout_cocher."[i]);";
+		}
+		echo "
+				}
+				else {
+					document.getElementById(tab_id_".$nom_func_tout_cocher."[i]).checked=false;";
+		if($nom_js_func!="") {
+			echo "
+					$nom_js_func(tab_id_".$nom_func_tout_cocher."[i]);";
+		}
+		echo "
+				}
+			}
+		}
+	}
+</script>";
+	}
+}
+
+
+/**
+ * Fonction destinée à présenter en tableau HTML un tableau d'élèves
+ * 
+ *
+ * @param type $tab tableau des élèves au format
+ *                  $tab[$cpt]['login']
+ *                  $tab[$cpt]['nom']
+ *                  $tab[$cpt]['prenom']
+ *                  $tab[$cpt]['classe'][]
+ */
+function tableau_eleves($tab) {
+	global $gepiPath;
+
+	$retour="";
+	if(count($tab)==0) {
+		$retour.="<p style='color:red'>Aucun élève.</p>";
+	}
+	else {
+		$acces_modify_eleve=acces('/eleves/modify_eleve.php', $_SESSION['statut']);
+
+		$retour.="<table class='boireaus boireaus_alt' summary='Tableau des élèves'>
+	<tr>
+		<th>Login</th>
+		<th>Nom</th>
+		<th>Prénom</th>
+		<th>Classe</th>
+	</tr>";
+		for($loop=0;$loop<count($tab);$loop++) {
+			$retour.="
+	<tr>";
+
+			if($acces_modify_eleve) {
+				$retour.="
+		<th><a href='$gepiPath/eleves/modify_eleve.php?eleve_login=".$tab[$loop]['login']."' title=\"\" target='_blank'>".$tab[$loop]['login']."</a></th>";
+			}
+			else {
+				$retour.="
+		<th>".$tab[$loop]['login']."</th>";
+			}
+
+			$retour.="
+		<th>".$tab[$loop]['nom']."</th>
+		<th>".$tab[$loop]['prenom']."</th>
+		<th>";
+			if(isset($tab[$loop]['classe'])) {
+				for($loop2=0;$loop2<count($tab[$loop]['classe']);$loop2++) {
+					if($loop2>0) {$retour.=", ";}
+					$retour.=$tab[$loop]['classe'][$loop2];
+				}
+			}
+		$retour.="</th>
+	</tr>";
+		}
+		$retour.="
+</table>";
+	}
+	return $retour;
+}
+
+/**
+ * Fonction destinée à retourner un champ SELECT de classe
+ * 
+ * @param string $login Login de l'utilisateur concerné
+ * @param string $statut Statut de l'utilisateur concerné
+ * @param string $nom_champ Attribut name du champ SELECT
+ * @param string $id_champ Attribut id du champ SELECT
+ * @param integer $id_classe_selected id de la classe pré-sélectionnée
+ * @param string $onchange Chaine javascript à exécuter sur événement onchange
+ */
+function champ_select_classe($login, $statut, $nom_champ, $id_champ, $id_classe_selected='', $avec_option_vide="y", $onchange='') {
+	$retour="";
+
+	$tab=get_classes_from_user($login, $statut);
+
+	if(count($tab)>0) {
+		$retour.="<select";
+		if($nom_champ!="") {
+			$retour.=" name='$nom_champ'";
+		}
+		if($id_champ!="") {
+			$retour.=" id='$id_champ'";
+		}
+		if($onchange!="") {
+			$retour.=" onchange=\"$onchange\"";
+		}
+		$retour.=">\n";
+		if($avec_option_vide=="y") {
+			$retour.="<option value=''>---</option>";
+		}
+		foreach($tab as $id_classe => $classe) {
+			$retour.="<option value='$id_classe'";
+			if(($id_classe_selected!="")&&($id_classe==$id_classe_selected)) {
+				$retour.=" selected='selected'";
+			}
+			$retour.=">".$classe."</option>\n";
+		}
+		$retour.="</select>\n";
+	}
+
+	return $retour;
+}
+
+/**
+ * Fonction destinée à retourner un tableau de textes d'explication concernant le CDT2
+ * On n'inscrit ainsi les textes d'explication qu'à un endroit... et on les appelle dans plusieurs pages
+ */
+function get_texte_CDT2() {
+	$tab=array();
+
+	$tab['attribut_title_CDT2_Voir_NP']="Voir toutes les Notices Privées attachées à cet enseignement.";
+	$tab['attribut_title_CDT2_Banque']="Ouvrir en fenêtre popup une liste (personnalisable) de termes/formules que vous pourrez insérer d'un clic dans vos notices.
+Vous pouvez par exemple vous préparer des formules comme:
+- Exercice n°... page ...
+- Correction de l'exercice n°... page ...
+- Réviser pour un contrôle en classe portant sur...
+C'est une banque dans laquelle vous ne trouverez que ce que vous y aurez mis, ni plus ni moins;).";
+	$tab['attribut_title_CDT2_Archives']="Ouvrir une fenêtre popup pour consulter vos archives de cahiers de textes des années précédentes.";
+	$tab['attribut_title_CDT2_Travaux_pour_ce_jour']="Voir les travaux à faire pour ce jour dans tous les enseignements associés à la classe.
+Cela peut vous permettre d'éviter de placer un contrôle en classe alors qu'il y en a déjà trois de programmés pour ce jour.";
+
+	return $tab;
+}
+
+function liste_des_prof_suivi_de_telle_classe($id_classe) {
+	$retour="";
+
+	$tab=get_tab_prof_suivi($id_classe);
+	for($loop=0;$loop<count($tab);$loop++) {
+		if($loop>0) {$retour.=", ";}
+		$retour.=civ_nom_prenom($tab[$loop]);
+	}
+	return $retour;
+}
+
+function choix_heure($champ_heure,$div_choix_heure, $mode_retour="echo") {
+	global $tabdiv_infobulle;
+
+	$retour="";
+
+	$sql="SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode;";
+	$res_abs_cren=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_abs_cren)>0) {
+		if($mode_retour=="echo") {
+			echo " <a href='#' onclick=\"afficher_div('$div_choix_heure','y',10,-40); return false;\">Choix</a>";
+		}
+		else {
+			$retour=" <a href='#' onclick=\"afficher_div('$div_choix_heure','y',10,-40); return false;\">Choix</a>";
+		}
+
+		$texte="<table class='boireaus boireaus_alt' style='margin: auto;border:1px;'><caption class='invisible'>Choix d'une heure</caption>\n";
+		while($lig_ac=mysqli_fetch_object($res_abs_cren)) {
+			$td_style="";
+			$tmp_bgcolor="";
+			if($lig_ac->type_creneaux=='cours') {
+				$td_style="";
+				//$td_style=" style='background-color: lightgreen;'";
+				//$tmp_bgcolor="lightgreen";
+				$tmp_bgcolor="";
+			}
+			elseif($lig_ac->type_creneaux=='pause') {
+				$td_style=" style='background-color: lightgrey;'";
+				$tmp_bgcolor="lightgrey";
+			}
+			elseif($lig_ac->type_creneaux=='repas') {
+				$td_style=" style='background-color: lightgrey;'";
+				$tmp_bgcolor="lightgrey";
+			}
+
+			$texte.="<tr class='white_hover'$td_style onmouseover=\"this.style.backgroundColor='white'\" onmouseout=\"this.style.backgroundColor='$tmp_bgcolor'\">\n";
+			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');changement();return false;\">".$lig_ac->nom_definie_periode."</a></td>\n";
+			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');changement();return false;\" style='text-decoration: none; color: black;'>".$lig_ac->heuredebut_definie_periode."</a></td>\n";
+			$texte.="<td><a href='#' onclick=\"document.getElementById('$champ_heure').value='$lig_ac->nom_definie_periode';cacher_div('$div_choix_heure');changement();return false;\" style='text-decoration: none; color: black;'>".$lig_ac->heurefin_definie_periode."</a></td>\n";
+			$texte.="</tr>\n";
+		}
+		$texte.="</table>\n";
+
+		$tabdiv_infobulle[]=creer_div_infobulle("$div_choix_heure","Choix d'une heure","",$texte,"",13,0,'y','y','n','n');
+	}
+
+	if($mode_retour!="echo") {
+		return $retour;
+	}
+
+}
+
+function affiche_tableau_pp($tab_classe=array()) {
+	if(count($tab_classe)==0) {
+		if($_SESSION['statut']=='scolarite'){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c, j_scol_classes jsc WHERE jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe";
+		}
+		if($_SESSION['statut']=='professeur'){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c,j_groupes_classes jgc,j_groupes_professeurs jgp WHERE jgp.login = '".$_SESSION['login']."' AND jgc.id_groupe=jgp.id_groupe AND jgc.id_classe=c.id ORDER BY c.classe";
+		}
+		if($_SESSION['statut']=='cpe'){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c,j_eleves_cpe jec,j_eleves_classes jecl WHERE jec.cpe_login = '".$_SESSION['login']."' AND jec.e_login=jecl.login AND jecl.id_classe=c.id ORDER BY c.classe";
+		}
+		if($_SESSION['statut']=='administrateur'){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
+		}
+
+		if(($_SESSION['statut']=='scolarite')&&(getSettingValue("GepiAccesVisuToutesEquipScol") =="yes")){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
+		}
+		if(($_SESSION['statut']=='cpe')&&(getSettingValue("GepiAccesVisuToutesEquipCpe") =="yes")){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
+		}
+		if(($_SESSION['statut']=='professeur')&&(getSettingValue("GepiAccesVisuToutesEquipProf") =="yes")){
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
+		}
+
+		if(($_SESSION['statut']=='autre')&&(acces('/groupes/visu_profs_class.php', 'autre'))) {
+			$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
+		}
+
+		$result_classes=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_classes = mysqli_num_rows($result_classes);
+		$tab_classe=array();
+		if(mysqli_num_rows($result_classes)>0){
+			$nb_classes=mysqli_num_rows($result_classes);
+			while($lig_class=mysqli_fetch_object($result_classes)){
+				$tab_classe[$lig_class->id]=$lig_class->classe;
+			}
+		}
+	}
+
+	$retour="
+	<table class='boireaus boireaus_alt'>
+		<tr>
+			<th>Classe</th>
+			<th>
+				".ucfirst(getSettingValue('gepi_prof_suivi'))."
+			</th>
+		</tr>";
+	$tab_pp=get_tab_prof_suivi();
+	foreach($tab_classe as $current_id_classe => $current_classe) {
+		$retour.="
+		<tr>
+			<td>$current_classe</td>
+			<td>";
+		if(isset($tab_pp[$current_id_classe])) {
+			for($loop=0;$loop<count($tab_pp[$current_id_classe]);$loop++) {
+				if($loop>0) {$retour.="<br />";}
+				$designation_user=civ_nom_prenom($tab_pp[$current_id_classe][$loop]);
+				$retour.="<div style='float:right; width:16px'>".affiche_lien_mailto_si_mail_valide($tab_pp[$current_id_classe][$loop], $designation_user)."</div>";
+				$retour.=$designation_user;
+			}
+		}
+			$retour.="</td>
+		</tr>";
+	}
+	$retour.="
+	</table>";
+
+	return $retour;
+}
 ?>

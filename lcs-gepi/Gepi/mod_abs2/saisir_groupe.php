@@ -61,32 +61,10 @@ if ($utilisateur->getStatut()=="professeur" &&  getSettingValue("active_module_a
 
 
 //**************** FONCTIONS *****************
-//fonction redimensionne les photos petit format
-function redimensionne_image_petit($photo)
- {
-    // prendre les informations sur l'image
-    $info_image = getimagesize($photo);
-    // largeur et hauteur de l'image d'origine
-    $largeur = $info_image[0];
-    $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
-             $taille_max_largeur = 45;
-             $taille_max_hauteur = 45;
+$photo_redim_taille_max_largeur=45;
+$photo_redim_taille_max_hauteur=45;
 
-    // calcule le ratio de redimensionnement
-     $ratio_l = $largeur / $taille_max_largeur;
-     $ratio_h = $hauteur / $taille_max_hauteur;
-     $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-    // définit largeur et hauteur pour la nouvelle image
-     $nouvelle_largeur = $largeur / $ratio;
-     $nouvelle_hauteur = $hauteur / $ratio;
-
-   // on renvoit la largeur et la hauteur
-    return array($nouvelle_largeur, $nouvelle_hauteur);
- }
-
- function format_selectbox_heure($utilisateur, $id_creneau, $dt_date_absence_eleve, $id_box) {
+function format_selectbox_heure($utilisateur, $id_creneau, $dt_date_absence_eleve, $id_box) {
      	if ($utilisateur->getStatut() != 'professeur' || getSettingValue("abs2_saisie_prof_decale_journee")=='y' || getSettingValue("abs2_saisie_prof_decale")=='y') {
 ?>
 <label class="invisible" for="<?php echo $id_box; ?>">heure</label>
@@ -140,7 +118,7 @@ function redimensionne_image_petit($photo)
  }
  
 $journeePossible = FALSE;
-if ('cpe' == $_SESSION['statut'] || 'scolarite' == $_SESSION['statut']) {
+if ('cpe' == $_SESSION['statut'] || 'scolarite' == $_SESSION['statut'] || 'autre' == $_SESSION['statut']) {
 	$journeePossible = TRUE;
 }
 
@@ -172,6 +150,8 @@ $type_selection = isset($_POST["type_selection"]) ? $_POST["type_selection"] :(i
 $date_absence_eleve = isset($_POST["date_absence_eleve"]) ? $_POST["date_absence_eleve"] :(isset($_GET["date_absence_eleve"]) ? $_GET["date_absence_eleve"] :(isset($_SESSION["date_absence_eleve"]) ? $_SESSION["date_absence_eleve"] : NULL));
 $id_semaine = isset($_POST["id_semaine"]) ? $_POST["id_semaine"] :(isset($_GET["id_semaine"]) ? $_GET["id_semaine"] :(isset($_SESSION["id_semaine"]) ? $_SESSION["id_semaine"] : NULL));
 $cahier_texte = isset($_POST["cahier_texte"]) ? $_POST["cahier_texte"] :(isset($_GET["cahier_texte"]) ? $_GET["cahier_texte"] :NULL);
+
+$tri=isset($_POST['tri']) ? $_POST['tri'] : isset($_GET['tri']) ? $_GET['tri'] : NULL;
 
 if (isset($id_groupe) && $id_groupe != null) $_SESSION['id_groupe_abs'] = $id_groupe;
 if (isset($id_classe) && $id_classe != null) $_SESSION['id_classe_abs'] = $id_classe;
@@ -302,7 +282,7 @@ if (getSettingValue("abs2_saisie_prof_hors_cours")!='y'
 	//le reglage specifie que le prof n'a pas le droit de saisir autre chose que son cours
 	//donc on affiche pas de selection, le cours est automatiquement selectionné
 } else {
-    if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+    if ((getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe")||($utilisateur->getStatut() == "autre")) {
 		$groupe_col = GroupeQuery::create()->orderByName()->useJGroupesClassesQuery()->useClasseQuery()->orderByNom()->endUse()->endUse()
 							->leftJoinWith('Groupe.JGroupesClasses')
 							->leftJoinWith('JGroupesClasses.Classe')
@@ -325,7 +305,7 @@ if (getSettingValue("abs2_saisie_prof_decale_journee")!='y'
 } else {
 	$edt_cours_aff = new PropelCollection();
     //on affiche une boite de selection avec les cours
-    if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+    if ((getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe")||($utilisateur->getStatut() == "autre")) {
 		//la collection entière des cours est trop grosse et inexploitable sous la forme d'une liste. ça consomme de la ressource donc c'est désactivé
 		$edt_cours_col = new PropelCollection();
     } else {
@@ -391,7 +371,7 @@ if (getSettingValue("abs2_saisie_prof_decale_journee")!='y'
 }
 
 //**************** CLASSES *****************
-if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+if ((getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe")||($utilisateur->getStatut() == "autre")) {
     $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 } else {
     $classe_col = $utilisateur->getClasses();
@@ -441,6 +421,28 @@ if (isset($current_groupe) && $current_groupe != null) {
             ->orderBy('Eleve.Prenom','asc')
             ->distinct();
     $eleve_col = $query->find();
+}
+
+if((isset($tri))&&($tri=='classe')) {
+	$eleve_col->uasort(function($a, $b) {
+		$aclasseNom='';
+		$aclasse = $a->getClasse();
+		if ($aclasse != null) {
+		    $aclasseNom = $aclasse->getNom();
+		}
+		$bclasseNom='';
+		$bclasse = $b->getClasse();
+		if ($bclasse != null) {
+		    $bclasseNom = $bclasse->getNom();
+		}
+
+		if ($aclasseNom != $bclasseNom) {
+		    return $aclasseNom > $bclasseNom;
+		} else {
+		    //on tri par nom
+		    return $a->getNom().''.$a->getPrenom() > $b->getNom().''.$b->getPrenom();
+		}
+	});
 }
 
 //l'utilisateurs a-t-il deja saisie ce creneau ?
@@ -741,78 +743,31 @@ if(count($tab_regimes)>0) {
 }
 
 //==============================================
-$style_specifique[] = "templates/origine/css/bandeau";
+$style_specifique[] = "templates/DefaultEDT/css/style_edt";
 $style_specifique[] = "mod_abs2/lib/abs_style";
-$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
 $style_specifique[] = "mod_abs2/lib/saisie_smart_large";
 $CSS_smartphone = "mod_abs2/lib/saisie_smart_mini";
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
 $javascript_specifique[] = "lib/DHTMLcalendar/calendar";
 $javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
 $javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 $javascript_specifique[] = "mod_abs2/lib/include";
+
 $titre_page = "Les absences";
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
-$tbs_last_connection = "";
-
-//**************** EN-TETE *****************
-require_once("../lib/header_template.inc.php");
-//include("../templates/origine/bandeau_template.php");
-?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
-
-<head>
-<!-- on inclut l'entête -->
-<?php 
-$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
-include('../templates/origine/header_template.php');
-//include("../templates/origine/bandeau_template.php");
-?>
-
-<!-- corrections internet Exploreur -->
-	<!--[if lte IE 7]>
-		<link title='bandeau' rel='stylesheet' type='text/css' href='./templates/origine/css/accueil_ie.css' media='screen' />
-		<link title='bandeau' rel='stylesheet' type='text/css' href='./templates/origine/css/bandeau_ie.css' media='screen' />
-	<![endif]-->
-	<!--[if lte IE 6]>
-		<link title='bandeau' rel='stylesheet' type='text/css' href='./templates/origine/css/accueil_ie6.css' media='screen' />
-	<![endif]-->
-	<!--[if IE 7]>
-		<link title='bandeau' rel='stylesheet' type='text/css' href='./templates/origine/css/accueil_ie7.css' media='screen' />
-	<![endif]-->
-
-<!-- Fin des styles -->
-
-
-</head>
-
-<!-- ******************************************** -->
-<!-- Appelle les sous-modèles                     -->
-<!-- templates/origine/header_template.php        -->
-<!-- templates/origine/accueil_menu_template.php  -->
-<!-- templates/origine/bandeau_template.php      -->
-<!-- ******************************************** -->
-
-<!-- ************************* -->
-<!-- Début du corps de la page -->
-<!-- ************************* -->
-
-<body onload="show_message_deconnexion();<?php if($tbs_charger_observeur) echo $tbs_charger_observeur;?>">
-
-
-<!-- on inclut le bandeau -->
-	<?php
-		include('../templates/origine/bandeau_template.php');
-		//debug_var();
-	?>
-
-<div id='container'>
-
-<?php 
+require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
-
+//debug_var();
 include('menu_abs2.inc.php');
+//===========================
+   
+   
+   
+   
+
+
+
 //===========================
 //debug_var();
 ?>
@@ -820,9 +775,13 @@ include('menu_abs2.inc.php');
 <div class='css-panes' id='containDiv'>
 
 	<?php
-		if((acces("/groupes/signalement_eleves.php", $_SESSION['statut']))&&(isset($id_groupe))) {
+		if((isset($id_groupe))&&(acces_modif_liste_eleves_grp_groupes($id_groupe))) {
 	?>
-	<!--div style='float:right; width:19px;'><a href='../groupes/signalement_eleves.php?id_groupe=<?php echo $id_groupe;?>' onclick="return confirm_abandon (this, change, '<?php echo $themessage;?>')"><img src='../images/icons/ico_question.png' width='19' height='19' title="Si la liste des élèves du groupe affiché n'est pas correcte, vous pouvez signaler ici les erreurs à l'administrateur." /></a></div-->
+	<div style='float:right; width:22px;'><a href='../groupes/grp_groupes_edit_eleves.php?id_groupe=<?php echo $id_groupe;?>' target="_blank" title="Si la liste des élèves du groupe affiché n'est pas correcte, vous êtes autorisé à modifier la liste."><img src='../images/icons/edit_user.png' class='icone16' title="Modifier." /></a></div>
+	<?php
+		}
+		elseif((acces("/groupes/signalement_eleves.php", $_SESSION['statut']))&&(isset($id_groupe))) {
+	?>
 	<div style='float:right; width:22px;'><a href='../groupes/signalement_eleves.php?id_groupe=<?php echo $id_groupe;?>' target="_blank" title="Si la liste des élèves du groupe affiché n'est pas correcte, vous pouvez signaler ici les erreurs à l'administrateur."><img src='../images/icons/ico_attention.png' width='22' height='19' title="Si la liste des élèves du groupe affiché n'est pas correcte, vous pouvez signaler ici les erreurs à l'administrateur." /></a></div>
 	<?php
 		}
@@ -1011,6 +970,13 @@ if (!$classe_col->isEmpty()) {
 
 //**************** ELEVES *****************
 
+$tab_types=array();
+$sql="select * from a_types;";
+$res_types=mysqli_query($GLOBALS["mysqli"], $sql);
+while($lig_type=mysqli_fetch_object($res_types)) {
+	$tab_types[$lig_type->id]['manquement_obligation_presence']=$lig_type->manquement_obligation_presence;
+}
+
 if (TRUE == $_SESSION['showJournee']) {
 	include 'lib/saisir_groupe_journee.php';
 } else {
@@ -1159,21 +1125,21 @@ if ($eleve_col->isEmpty()) {
 					if($_SESSION['statut']=='professeur' && isset($id_cours) && is_numeric($id_cours)) {
 						// Récupérer l'id_groupe pour tester s'il y a un plan de classe
 						$sql="SELECT id_groupe FROM edt_cours WHERE id_cours='".$id_cours."';";
-						$res_edt=mysql_query($sql);
-						if(mysql_num_rows($res_edt)>0) {
-							$id_groupe=mysql_result($res_edt, 0, "id_groupe");
+						$res_edt=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_edt)>0) {
+							$id_groupe=old_mysql_result($res_edt, 0, "id_groupe");
 
 							$sql="SELECT 1=1 FROM t_plan_de_classe WHERE id_groupe='".$id_groupe."' AND login_prof='".$_SESSION['login']."';";
-							$test_pdc=mysql_query($sql);
-							if(mysql_num_rows($test_pdc)>0) {
+							$test_pdc=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_pdc)>0) {
 								echo " <a href='saisir_groupe_plan.php?type_selection=id_cours&amp;id_cours=$id_cours'><img src='../images/icons/trombino.png' width='20' height='20' title='Saisie sur plan de classe' /></a>";
 							}
 						}
 					}
 					elseif($_SESSION['statut']=='professeur' && isset($current_groupe) && $current_groupe != null && $current_creneau != null) {
 						$sql="SELECT 1=1 FROM t_plan_de_classe WHERE id_groupe='".$id_groupe."' AND login_prof='".$_SESSION['login']."';";
-						$test_pdc=mysql_query($sql);
-						if(mysql_num_rows($test_pdc)>0) {
+						$test_pdc=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($test_pdc)>0) {
 							echo " <a href='saisir_groupe_plan.php?type_selection=id_groupe&amp;id_groupe=$id_groupe&amp;id_creneau=".$current_creneau->getIdDefiniePeriode()."'><img src='../images/icons/trombino.png' width='20' height='20' title='Saisie sur plan de classe' /></a>";
 						}
 					}
@@ -1194,8 +1160,8 @@ if ($eleve_col->isEmpty()) {
 				if(isset($id_groupe)) {
 					$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='$id_groupe' AND domaine='cahier_texte' AND visible='n';";
 					//echo "$sql<br />";
-					$test_cdt=mysql_query($sql);
-					if(mysql_num_rows($test_cdt)>0) {
+					$test_cdt=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_cdt)>0) {
 						$afficher_passer_au_cdt="n";
 					}
 				}
@@ -1224,13 +1190,78 @@ if ($eleve_col->isEmpty()) {
 						<th class="center" abbr="élèves">Liste des élèves</th>
 						<th colspan="<?php echo EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime()->count(); ?>" 
 							class="th_abs_suivi" abbr="Créneaux">Suivi sur la journée</th>
+					<?php
+						// 20131012
+						if ((getSettingValue("active_module_trombinoscopes")=='y')) {
+							// Colonne Photo
+							echo "
+						<th>
+						</th>";
+						}
+
+						if ($current_creneau != null) {
+							// Colonne Commentaire
+							echo "
+						<th>
+						</th>";
+						}
+					?>
 					</tr>
 					<tr>
 						<td></td>
 						<td class="center<?php
 							if ($afficheEleve['0']['creneau_courant'] != 0) {
 								echo ' noSmartphone';
-							} ?>" ></td>
+							} ?>" >
+
+						<?php
+							if(isset($id_groupe)) {
+								$sql="SELECT DISTINCT id_classe FROM j_groupes_classes WHERE id_groupe='$id_groupe';";
+								$test_plusieurs_classes=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($test_plusieurs_classes)>1) {
+									// Il faut récupérer la liste des paramètres à passer selon ce qui a été choisi groupe, classe ou cours
+
+									if(isset($type_selection)) {
+										$prefixe_param_tri="type_selection=$type_selection";
+									}
+									else {
+										$prefixe_param_tri="type_selection=id_groupe";
+									}
+
+									if(isset($id_creneau)) {
+										$prefixe_param_tri.="&amp;id_creneau=$id_creneau";
+									}
+
+									if(isset($id_groupe)) {
+										$prefixe_param_tri.="&amp;id_groupe=$id_groupe";
+									}
+
+									/*
+									// Quand on réclame une classe, on n'a pas de multiclasse
+									if(isset($id_classe)) {
+										$prefixe_param_tri.="&amp;id_classe=$id_classe";
+									}
+									*/
+
+									if(isset($id_cours)) {
+										$prefixe_param_tri.="&amp;id_cours=$id_cours";
+									}
+
+									if(isset($id_semaine)) {
+										$prefixe_param_tri.="&amp;id_semaine=$id_semaine";
+									}
+
+									if(isset($date_absence_eleve)) {
+										$prefixe_param_tri.="&amp;date_absence_eleve=$date_absence_eleve";
+									}
+
+									echo "
+							Trier par <a href='".$_SERVER['PHP_SELF']."?$prefixe_param_tri&amp;tri=eleve' onclick=\"return confirm_abandon (this, change, '$themessage')\">nom d'élève</a> ou par <a href='".$_SERVER['PHP_SELF']."?$prefixe_param_tri&amp;tri=classe' onclick=\"return confirm_abandon (this, change, '$themessage')\">classe</a>";
+								}
+							}
+						?>
+
+						</td>
 						<?php $i=0;
 						foreach(EdtCreneauPeer::retrieveAllEdtCreneauxOrderByTime() as $edt_creneau){ ?>
 						<td class="td_nom_creneau<?php
@@ -1242,32 +1273,56 @@ if ($eleve_col->isEmpty()) {
 							<?php
 								// 20120618
 								if($afficheEleve['0']['creneau_courant'] == $i) {
-									echo "<a href=\"javascript:cocher_decocher_abs_eleves();\">".$edt_creneau->getNomDefiniePeriode()."</a>";
+									echo "<a href=\"javascript:cocher_decocher_abs_eleves();changement();\">".$edt_creneau->getNomDefiniePeriode()."</a>";
 								}
 								else {
 									echo $edt_creneau->getNomDefiniePeriode();
 								}
 							?>
 						</td>
-				<?php $i++;
+						<?php
+							$i++;
+						}
+						
+						// 20131012
+						if ((getSettingValue("active_module_trombinoscopes")=='y')) {
+							// Colonne Photo
+							echo "
+						<td>
+						</td>";
+						}
 
-				}?>
+						if ($current_creneau != null) {
+							// Colonne Commentaire
+							echo "
+						<td>
+						</td>";
+						}
+						?>
 					</tr>
 				</thead>
 				<tbody>
 <?php 
+	//===============================
+	// Boucle sur la liste des élèves
 	$compteur_eleve=0;
 	foreach($afficheEleve as $eleve) {
 		$compteur_eleve++;
 ?>
 <!--tr><td>plop</td></tr-->
-					<tr class='<?php echo $eleve['background'];?>'>
+					<tr class='<?php 
+					//echo $eleve['background'];
+					if($compteur_eleve%2==0) {echo "pair";} else {echo "impair";}
+					?>'>
+						<!-- Colonne Veille -->
 						<td class = "<?php echo($eleve['class_hier']);
 							if ($eleve['creneau_courant'] != 0) {
 								echo ' noSmartphone';
 							} ?>">
 							<span class="description" title="<?php echo htmlspecialchars($eleve['bulle_hier']); ?>"><?php echo $eleve['text_hier']; ?></span>
 						</td>
+
+						<!-- Colonne Nom prénom de l'élève -->
 						<td class='td_abs_eleves'>
 							<input type="hidden" 
 								   name="id_eleve_absent[<?php echo $eleve['position']; ?>]" 
@@ -1285,6 +1340,7 @@ if ($eleve_col->isEmpty()) {
 <?php } ?>
 						</td>
 <?php 
+// Boucle sur les créneaux horaires
 for($i = 0; $i<$eleve['creneaux_possibles']; $i++){ ?>
 						<td colspan="<?php echo $eleve['nb_creneaux_a_saisir'][$i]; ?>" 
 							class="<?php echo $eleve['style'][$i];
@@ -1364,17 +1420,34 @@ if (isset ($eleve['type_autorises'][$i])) {
                         $radioButtonTypeHasHidden = true;
                         break;
                 }
-        } ?>
+        }
+
+		/*
+        foreach ($eleve['type_autorises'][$i] as $type) {
+           echo "<p>\$eleve['type_autorises'][$i]:</p>
+           <pre>";
+           print_r($type);
+           echo "</pre><hr />";
+        }
+		*/
+        ?>
 
                                                     <label class="invisible" for="type_absence_eleve_<?php echo $eleve['position']; ?>">Type d'absence</label>
 						    <select class="selects"
 									onchange="this.form.elements['active_absence_eleve_<?php echo $eleve['position']; ?>'].checked = (this.options[this.selectedIndex].value != -1);
-									<?php if ($radioButtonType) {?>this.form.elements['radio_sans_type_absence_eleve_<?php echo $eleve['position']; ?>'].checked = true; <?php } ?>"
+									<?php if ($radioButtonType) {?>this.form.elements['radio_sans_type_absence_eleve_<?php echo $eleve['position']; ?>'].checked = true; <?php } ?>;click_active_absence('<?php echo $eleve['position']; ?>');changement();"
 									name="type_absence_eleve[<?php echo $eleve['position']; ?>]"
 									id="liste_type_absence_eleve_<?php echo $eleve['position']; ?>" >
 								<option class="pc88" value="-1"> </option>
 <?php foreach ($eleve['type_autorises'][$i] as $type) { ?>
-								<option class="pc88" value="<?php echo $type['type']; ?>">
+								<option class="pc88" manquement="<?php
+									if(isset($tab_types[$type['type']]['manquement_obligation_presence'])) {
+										echo $tab_types[$type['type']]['manquement_obligation_presence'];
+									}
+									else {
+										echo 'FAUX';
+									}
+								?>" value="<?php echo $type['type']; ?>">
 								<?php echo $type['nom']; ?> 
 								</option>
 <?php } ?>
@@ -1396,8 +1469,17 @@ foreach ($eleve['type_autorises'][$i] as $type) {
 										echo "
 									   class='type_abs_regime_".$type['type']."_".$indice_tab_regime[$eleve['regime']]."'";
 									}
+									// Nom du champ Radio
+									$id_champ_radio="radio_";
+									if (($type['modeInterface'] == AbsenceEleveType::MODE_INTERFACE_CHECKBOX_HIDDEN)||($type['modeInterface'] == AbsenceEleveType::MODE_INTERFACE_CHECKBOX_HIDDEN_REGIME)) {
+										$id_champ_radio.='hidden_';
+									}
+									$id_champ_radio.="type_absence_eleve_";
+									$id_champ_radio.=$type['type'];
+									$id_champ_radio.="_";
+									$id_champ_radio.=$eleve['position'];
 									?>
-									   onchange="this.form.elements['liste_type_absence_eleve_<?php echo $eleve['position']; ?>'].selectedIndex = 0; this.form.elements['active_absence_eleve_<?php echo $eleve['position']; ?>'].checked = true;"
+									   onchange="this.form.elements['liste_type_absence_eleve_<?php echo $eleve['position']; ?>'].selectedIndex = 0; this.form.elements['active_absence_eleve_<?php echo $eleve['position']; ?>'].checked = true; change_select_type_absence('<?php echo $id_champ_radio;?>', '<?php echo $eleve['position']; ?>');changement();"
 									   id="radio_<?php if (($type['modeInterface'] == AbsenceEleveType::MODE_INTERFACE_CHECKBOX_HIDDEN)||($type['modeInterface'] == AbsenceEleveType::MODE_INTERFACE_CHECKBOX_HIDDEN_REGIME)) echo 'hidden_'?>type_absence_eleve_<?php echo $type['type']; ?>_<?php echo $eleve['position']; ?>"
 									   name="check[<?php echo $eleve['position']; ?>]"
 									   <?php if($type['modeInterface'] == AbsenceEleveType::MODE_INTERFACE_CHECKBOX_HIDDEN_REGIME) {
@@ -1409,14 +1491,14 @@ foreach ($eleve['type_autorises'][$i] as $type) {
 								</label>
 							</p>
 <?php   }
-    }//on affiche une case vide pour saisier un élève sans option
+    }//on affiche une case vide pour saisir un élève sans option
     if ($radioButtonType) {?>
 							<p>
                                                                 <input type="radio" <?php
 																	echo "
                                                                         class='type_abs_regime_decoche_".$indice_tab_regime[$eleve['regime']]."'";
 																?>
-                                                                        onchange="this.form.elements['active_absence_eleve_<?php echo $eleve['position']; ?>'].checked = false;"
+                                                                        onchange="this.form.elements['active_absence_eleve_<?php echo $eleve['position']; ?>'].checked = false;changement();"
                                                                         id="radio_sans_type_absence_eleve_<?php echo $eleve['position']; ?>"
                                                                         name="check[<?php echo $eleve['position']; ?>]"
                                                                         value="<?php echo false ?>"
@@ -1435,17 +1517,19 @@ if ($eleve['creneau_courant'] == $i) { ?>
 							</label>
 							<input class="pc88"
 								   onclick="click_active_absence('<?php echo $eleve['position']; ?>')"
+								   onchange="changement();"
 								   id="active_absence_eleve_<?php echo $eleve['position']; ?>"
 								   name="active_absence_eleve[<?php echo $eleve['position']; ?>]"
 								   value="1"
 								   type="checkbox" />
 								<label class="invisible" for="heure_debut_absence_eleve_<?php echo $eleve['position']; ?>">de</label>
 								<input class="pc88"
-									   onchange="this.form.elements['active_absence_eleve[<?php echo $eleve['position']; ?>]'].checked = true;"
+									   onchange="this.form.elements['active_absence_eleve[<?php echo $eleve['position']; ?>]'].checked = true;changement();"
 									   name="heure_debut_absence_eleve[<?php echo $eleve['position']; ?>]"
 									   id="heure_debut_absence_eleve_<?php echo $eleve['position']; ?>"
 									   value="<?php echo $heure_debut_appel; ?>"
 									   type="text"
+									   onKeyDown="clavier_heure(this.id, event);" AutoComplete="off"
 									   maxlength="5"
 									   size="4"/>
 								<input class="pc88"
@@ -1455,10 +1539,11 @@ if ($eleve['creneau_courant'] == $i) { ?>
 								<label class="invisible" for="heure_fin_absence_eleve_<?php echo $eleve['position']; ?>">à</label>
 								<input class="pc88"
 									   id="heure_fin_absence_eleve_<?php echo $eleve['position']; ?>"
-									   onchange="this.form.elements['active_absence_eleve[<?php echo $eleve['position']; ?>]'].checked = true;"
+									   onchange="this.form.elements['active_absence_eleve[<?php echo $eleve['position']; ?>]'].checked = true;changement();"
 									   name="heure_fin_absence_eleve[<?php echo $eleve['position']; ?>]"
 									   value="<?php echo $heure_fin_appel ?>"
 									   type="text"
+									   onKeyDown="clavier_heure(this.id, event);" AutoComplete="off"
 									   maxlength="5"
 									   size="4"/>
 								<input class="pc88"
@@ -1473,7 +1558,10 @@ if ($eleve['creneau_courant'] == $i) { ?>
 	}
 	
 } ?>
-<?php if (isset ($eleve['nom_photo'])) { ?>
+<?php
+	// Colonne Photo de l'élève
+	if (isset ($eleve['nom_photo'])) {
+?>
 						<td>
 							<label for='active_absence_eleve_<?php echo $eleve['position']; ?>'>
 							<img src="<?php echo $eleve['nom_photo']; ?>"
@@ -1483,13 +1571,17 @@ if ($eleve['creneau_courant'] == $i) { ?>
 								 title="" />
 							</label>
 						</td>
-<?php } ?>
-<?php 				if ($current_creneau != null) {
+<?php
+	}
+
+	// Colonne Saisie d'un commentaire
+	if ($current_creneau != null) {
 ?>
 						<td class="commentaire">
 							<label for="commentaire_absence_eleve_<?php echo $eleve['position']; ?>">Commentaire :</label>
 							<input id="commentaire_absence_eleve_<?php echo $eleve['position']; ?>"
 									name="commentaire_absence_eleve[<?php echo $eleve['position']; ?>]" 
+									onchange="changement();"
 									value="" 
 									type="text" 
 									maxlength="150" 

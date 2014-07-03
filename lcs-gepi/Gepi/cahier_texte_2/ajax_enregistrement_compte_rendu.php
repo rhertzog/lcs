@@ -77,7 +77,7 @@ if ($uid_post==$uid_prime) {
 		if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
 	
 		$sql="INSERT INTO ct_private_entry SET date_ct='$date_ct', heure_entry='".strftime("%H:%M:%S")."', id_login='".$_SESSION['login']."', id_groupe='$id_groupe', contenu='<b>COPIE DE SAUVEGARDE</b><br />$contenu_cor';";
-		$insert=mysql_query($sql);
+		$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		echo("Erreur enregistrement de compte rendu : formulaire déjà posté précédemment.\nUne copie de sauvegarde a été créée en notice privée.");
 	}
@@ -134,13 +134,13 @@ if ($ctCompteRendu->getVise() == 'y') {
 
 if((isset($_POST['get_devoirs_du_jour']))&&($_POST['get_devoirs_du_jour']=='y')) {
 	$sql="SELECT id_ct, contenu FROM ct_devoirs_entry WHERE id_groupe='$id_groupe' AND date_ct='".$date_ct."';";
-	$res_ct=mysql_query($sql);
-	if(mysql_num_rows($res_ct)==0) {
+	$res_ct=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_ct)==0) {
 		echo "Erreur : Aucun travail à importer.";
 		die();
 	}
-	elseif(mysql_num_rows($res_ct)==1) {
-		$lig_ct=mysql_fetch_object($res_ct);
+	elseif(mysqli_num_rows($res_ct)==1) {
+		$lig_ct=mysqli_fetch_object($res_ct);
 		$contenu.=$lig_ct->contenu;
 	}
 	else {
@@ -149,7 +149,7 @@ if((isset($_POST['get_devoirs_du_jour']))&&($_POST['get_devoirs_du_jour']=='y'))
 		die();
 		*/
 		// Ou tout importer:
-		while($lig_ct=mysql_fetch_object($res_ct)) {
+		while($lig_ct=mysqli_fetch_object($res_ct)) {
 			$contenu.=$lig_ct->contenu;
 		}
 	}
@@ -167,6 +167,15 @@ if ($contenu_cor == "" or $contenu_cor == "<br>") {$contenu_cor = "...";}
 //if(getSettingValue('get_img_formules_math')=='y') {
 	$contenu_cor=get_img_formules_math($contenu_cor, $id_groupe, "c");
 //}
+
+//=============================
+// Corriger en chemins relatifs les chemins absolus débutant par getSettingValue('url_racine_gepi')...
+// pas seulement: on peut avoir le nom DNS et l'IP dans le cas d'un gepi en DMZ ou plus généralement atteint en IP ou en nom DNS.
+$url_absolues_gepi=getSettingValue("url_absolues_gepi");
+if($url_absolues_gepi!="") {
+	$contenu_cor=cdt_changer_chemin_absolu_en_relatif($contenu_cor);
+}
+//=============================
 
 $ctCompteRendu->setContenu($contenu_cor);
 $ctCompteRendu->setDateCt($date_ct);

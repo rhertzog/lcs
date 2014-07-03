@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -49,13 +49,48 @@ if (!checkAccess()) {
 
 if ((isset($_POST['is_posted']))&&(isset($_POST['activer']))) {
 	check_token();
-    if (!saveSetting("active_mod_discipline", $_POST['activer'])) {
-		$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation !";
+	$msg="";
+
+	if (!saveSetting("active_mod_discipline", $_POST['activer'])) {
+		$msg.= "Erreur lors de l'enregistrement du paramètre activation/désactivation !<br />";
 	}
 
 	$autorise_commentaires_mod_disc=isset($_POST['autorise_commentaires_mod_disc']) ? $_POST['autorise_commentaires_mod_disc'] : "no";
 	if (!saveSetting("autorise_commentaires_mod_disc", $autorise_commentaires_mod_disc)) {
-		$msg = "Erreur lors de l'enregistrement du paramètre activation/désactivation \"autorise_commentaires_mod_disc\" !";
+		$msg.= "Erreur lors de l'enregistrement du paramètre activation/désactivation \"autorise_commentaires_mod_disc\" !<br />";
+	}
+
+	$mod_disc_terme_incident=isset($_POST['mod_disc_terme_incident']) ? $_POST['mod_disc_terme_incident'] : "incident";
+	$mod_disc_terme_incident=preg_replace("/[^A-Za-z".$liste_caracteres_accentues."' -]/","",$mod_disc_terme_incident);
+	if($mod_disc_terme_incident=="") {
+		$msg.="Le terme choisi pour 'incident' est invalide.<br />";
+	}
+	else {
+		if (!saveSetting("mod_disc_terme_incident", $mod_disc_terme_incident)) {
+			$msg.= "Erreur lors de l'enregistrement du paramètre \"mod_disc_terme_incident\" !<br />";
+		}
+	}
+
+	$mod_disc_terme_sanction=isset($_POST['mod_disc_terme_sanction']) ? $_POST['mod_disc_terme_sanction'] : "sanction";
+	$mod_disc_terme_sanction=preg_replace("/[^A-Za-z".$liste_caracteres_accentues."' -]/","",$mod_disc_terme_sanction);
+	if($mod_disc_terme_sanction=="") {
+		$msg.="Le terme choisi pour 'sanction' est invalide.<br />";
+	}
+	else {
+		if (!saveSetting("mod_disc_terme_sanction", $mod_disc_terme_sanction)) {
+			$msg.= "Erreur lors de l'enregistrement du paramètre \"mod_disc_terme_sanction\" !<br />";
+		}
+	}
+
+	$mod_disc_terme_avertissement_fin_periode=isset($_POST['mod_disc_terme_avertissement_fin_periode']) ? $_POST['mod_disc_terme_avertissement_fin_periode'] : "sanction";
+	$mod_disc_terme_avertissement_fin_periode=preg_replace("/[^A-Za-z".$liste_caracteres_accentues."' -]/","",$mod_disc_terme_avertissement_fin_periode);
+	if($mod_disc_terme_avertissement_fin_periode=="") {
+		$msg.="Le terme choisi pour 'avertissement de fin de période' est invalide.<br />";
+	}
+	else {
+		if (!saveSetting("mod_disc_terme_avertissement_fin_periode", $mod_disc_terme_avertissement_fin_periode)) {
+			$msg.= "Erreur lors de l'enregistrement du paramètre \"mod_disc_terme_avertissement_fin_periode\" !<br />";
+		}
 	}
 }
 
@@ -99,25 +134,4 @@ $nom_gabarit = '../templates/'.$_SESSION['rep_gabarits'].'/mod_discipline/discip
 $tbs_last_connection=""; // On n'affiche pas les dernières connexions
 include($nom_gabarit);
 
-
-/*
-?>
-<p class=bold><a href="../accueil_modules.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>
-<h2>Configuration générale</h2>
-<i>La désactivation du module Discipline n'entraîne aucune suppression des données. Lorsque le module est désactivé, les utilisateurs n'ont pas accès au module.</i>
-<br />
-<form action="discipline_admin.php" name="form1" method="post">
-<p>
-<input type="radio" name="activer" id='activer_y' value="y" <?php if (getSettingValue("active_mod_discipline")=='y') echo " checked"; ?> />&nbsp;<label for='activer_y' style='cursor: pointer;'>Activer le module Discipline</label><br />
-<input type="radio" name="activer" id='activer_n' value="n" <?php if (getSettingValue("active_mod_discipline")=='n') echo " checked"; ?> />&nbsp;<label for='activer_n' style='cursor: pointer;'>Désactiver le module Discipline</label>
-</p>
-
-<input type="hidden" name="is_posted" value="1" />
-<center><input type="submit" value="Enregistrer" style="font-variant: small-caps;"/></center>
-</form>
-<?php
-	echo "<p><br /></p>\n";
-	require("../lib/footer.inc.php");
- *
- */
 ?>

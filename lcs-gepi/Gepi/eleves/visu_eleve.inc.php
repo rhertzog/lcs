@@ -120,18 +120,22 @@ if((!isset($ele_login))&&(!isset($Recherche_sans_js))) {
 
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' onsubmit=\"cherche_eleves('nom');return false;\" method='post' name='formulaire'>";
 	echo "<p>\n";
+	//echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <strong>nom</strong> contient&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type='text' name='rech_nom' id='rech_nom' value='".(isset($_SESSION['rech_nom']) ? $_SESSION['rech_nom'] : "")."' onchange=\"affichage_et_action('nom')\" />\n";
 	echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <strong>nom</strong> contient&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type='text' name='rech_nom' id='rech_nom' value='' onchange=\"affichage_et_action('nom')\" />\n";
 	echo "<input type='hidden' name='page' value='$page' />\n";
 	echo "<input type='button' name='Recherche' id='Recherche_nom' value='Rechercher' onclick=\"cherche_eleves('nom')\" />\n";
+	//echo "<a href=\"#\" onclick=\"document.getElementById('rech_nom').value=''; return false;\" title='Vider le critère de recherche sur le nom.'><img src='../images/icons/balai.png' class='icone16' alt='Vider' /></a>";
 	echo $champ_quitter_page_ou_non;
 	echo "</p>\n";
 	echo "</form>\n";
 
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' onsubmit=\"cherche_eleves('prenom');return false;\" method='post' name='formulaire'>";
 	echo "<p>\n";
+	//echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <strong>prénom</strong> contient&nbsp;: <input type='text' name='rech_prenom' id='rech_prenom' value='".(isset($_SESSION['rech_prenom']) ? $_SESSION['rech_prenom'] : "")."' onchange=\"affichage_et_action('prenom')\" />\n";
 	echo "Afficher les ".$gepiSettings['denomination_eleves']." dont le <strong>prénom</strong> contient&nbsp;: <input type='text' name='rech_prenom' id='rech_prenom' value='' onchange=\"affichage_et_action('prenom')\" />\n";
 	echo "<input type='hidden' name='page' value='$page' />\n";
 	echo "<input type='button' name='Recherche' id='Recherche_prenom' value='Rechercher' onclick=\"cherche_eleves('prenom')\" />\n";
+	//echo "<a href=\"#\" onclick=\"document.getElementById('rech_prenom').value=''; return false;\" title='Vider le critère de recherche sur le prénom.'><img src='../images/icons/balai.png' class='icone16' alt='Vider' /></a>";
 	echo $champ_quitter_page_ou_non;
 	echo "</p>\n";
 	echo "</form>\n";
@@ -151,14 +155,14 @@ if(document.getElementById('rech_nom')) {document.getElementById('rech_nom').foc
 	if(isset($id_classe)) {
 		$sql="SELECT DISTINCT e.login,e.nom,e.prenom FROM eleves e, j_eleves_classes jec WHERE jec.login=e.login AND jec.id_classe='$id_classe' ORDER BY e.nom,e.prenom;";
 		//echo "$sql<br />";
-		$res_ele=mysql_query($sql);
-		if(mysql_num_rows($res_ele)>0) {
-			echo "<p>".ucfirst($gepiSettings['denomination_eleves'])." de la classe de ".get_class_from_id($id_classe).":</p>\n";
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ele)>0) {
+			echo "<a name='classe'></a><p class='bold'>".casse_mot($gepiSettings['denomination_eleves'], 'majf2')." de la classe de ".get_class_from_id($id_classe).":</p>\n";
 
 			$tab_txt=array();
 			$tab_lien=array();
 
-			while($lig_ele=mysql_fetch_object($res_ele)) {
+			while($lig_ele=mysqli_fetch_object($res_ele)) {
 				$tab_txt[]=casse_mot($lig_ele->prenom,'majf2')." ".my_strtoupper($lig_ele->nom);
 				$tab_lien[]=$_SERVER['PHP_SELF']."?ele_login=".$lig_ele->login."&amp;id_classe=".$id_classe;
 			}
@@ -196,16 +200,16 @@ if(document.getElementById('rech_nom')) {document.getElementById('rech_nom').foc
 		$sql="SELECT DISTINCT c.id,c.classe FROM classes c ORDER BY c.classe";
 	}
 	//echo "$sql<br />";
-	$res_clas=mysql_query($sql);
-	if(mysql_num_rows($res_clas)>0) {
+	$res_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_clas)>0) {
 		echo "<p>Ou choisir un ".$gepiSettings['denomination_eleve']." dans une classe:</p>\n";
 
 		$tab_txt=array();
 		$tab_lien=array();
 
-		while($lig_clas=mysql_fetch_object($res_clas)) {
+		while($lig_clas=mysqli_fetch_object($res_clas)) {
 			$tab_txt[]=$lig_clas->classe;
-			$tab_lien[]=$_SERVER['PHP_SELF']."?id_classe=".$lig_clas->id;
+			$tab_lien[]=$_SERVER['PHP_SELF']."?id_classe=".$lig_clas->id."#classe";
 		}
 
 		echo "<blockquote>\n";
@@ -251,9 +255,9 @@ else {
 
 	if(!isset($id_classe)) {
 		$sql="SELECT id_classe FROM j_eleves_classes WHERE login='$ele_login' ORDER BY periode DESC;";
-		$res_class_tmp=mysql_query($sql);
-		if(mysql_num_rows($res_class_tmp)>0){
-			$lig_class_tmp=mysql_fetch_object($res_class_tmp);
+		$res_class_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_class_tmp)>0){
+			$lig_class_tmp=mysqli_fetch_object($res_class_tmp);
 			$id_classe=$lig_class_tmp->id_classe;
 		}
 	}
@@ -264,16 +268,16 @@ else {
 
 		$chaine_options_eleves="";
 
-		$res_ele_tmp=mysql_query($sql);
-		if(mysql_num_rows($res_ele_tmp)>0){
+		$res_ele_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ele_tmp)>0){
 			$ele_login_prec="";
 			$ele_login_suiv="";
 			$temoin_tmp=0;
-			while($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)) {
+			while($lig_ele_tmp=mysqli_fetch_object($res_ele_tmp)) {
 				if($lig_ele_tmp->login==$ele_login) {
 					$chaine_options_eleves.="<option value='$lig_ele_tmp->login' selected='true'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
 					$temoin_tmp=1;
-					if($lig_ele_tmp=mysql_fetch_object($res_ele_tmp)) {
+					if($lig_ele_tmp=mysqli_fetch_object($res_ele_tmp)) {
 						$chaine_options_eleves.="<option value='$lig_ele_tmp->login'>$lig_ele_tmp->nom $lig_ele_tmp->prenom</option>\n";
 						$ele_login_suiv=$lig_ele_tmp->login;
 					}
@@ -295,6 +299,8 @@ else {
 		if(!isset($onglet)) {
 			$onglet="eleve";
 		}
+
+		echo "<span id='champ_select_classe' style='display:none'> : ".champ_select_classe($_SESSION['login'], $_SESSION['statut'], 'select_id_classe', 'select_id_classe', $id_classe, "y", "change_classe_et_submit()")."</span>";
 
 		if($ele_login_prec!=""){
 			echo " | <a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login_prec&amp;id_classe=$id_classe";
@@ -338,6 +344,11 @@ else {
 	echo "' />\n";
 	echo "</form>\n";
 
+
+	echo "<form id='form_changement_classe' action='".$_SERVER['PHP_SELF']."' method='post'>
+	<input type='hidden' name='id_classe' id='id_classe_form_changement_classe' value='' />
+</form>\n";
+
 	// Affichage des onglets pour l'élève choisi
 
 	echo "<div id='patience'>
@@ -349,6 +360,17 @@ Patientez pendant l'extraction des données... merci.
 
 	echo "<script type='text/javascript'>
 	document.getElementById('patience').innerHTML=\"Patientez pendant l'extraction des données... merci.\";
+
+	// On affiche le champ si JS est actif
+	if(document.getElementById('champ_select_classe')) {
+		document.getElementById('champ_select_classe').style.display='';
+	}
+
+	function change_classe_et_submit() {
+		id_classe=document.getElementById('select_id_classe').options[document.getElementById('select_id_classe').selectedIndex].value;
+		document.getElementById('id_classe_form_changement_classe').value=id_classe;
+		document.getElementById('form_changement_classe').submit();
+	}
 
 	function passer_a_eleve(ele_login,id_classe) {
 		if(document.getElementById('onglet_courant')) {
@@ -389,17 +411,36 @@ Patientez pendant l'extraction des données... merci.
 	$tab_couleur['anna']="blanchedalmond";
 	$tab_couleur['absences']="azure";
 	$tab_couleur['discipline']="salmon";
-    $tab_couleur['fp']="linen";
+	$tab_couleur['fp']="linen";
 
 	// On vérifie que l'élève existe
 	$sql="SELECT 1=1 FROM eleves WHERE login='$ele_login';";
-	$res_ele=mysql_query($sql);
+	$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if(mysql_num_rows($res_ele)==0){
+	if(mysqli_num_rows($res_ele)==0){
 		// On ne devrait pas arriver là.
 		echo "<p>L'".$gepiSettings['denomination_eleve']." dont le login serait $ele_login n'est pas dans la table 'eleves'.</p>\n";
 	}
-	else{
+	else {
+		if(getSettingAOui('active_mod_discipline')) {
+			require("../mod_discipline/mod_discipline.lib.php");
+		}
+
+
+		if((isset($_GET['envoi_bulletin_resp_legal_0']))&&(($_GET['envoi_bulletin_resp_legal_0']=='y')||($_GET['envoi_bulletin_resp_legal_0']=='n'))) {
+			check_token();
+
+			$sql="UPDATE responsables2 SET envoi_bulletin='".$_GET['envoi_bulletin_resp_legal_0']."' WHERE pers_id='".$_GET['pers_id']."' AND ele_id='".$_GET['ele_id']."';";
+			$update=mysqli_query($GLOBALS["mysqli"], $sql);
+			if($update) {
+				$msg="Modification de la génération ou non des bulletins pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']." effectuée.<br />";
+			}
+			else {
+				$msg="Erreur lors de la modification de la génération ou non des bulletins pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']."<br />";
+			}
+		}
+
+
 		//================================
 		unset($day);
 		$day = isset($_POST["day"]) ? $_POST["day"] : (isset($_GET["day"]) ? $_GET["day"] : date("d"));
@@ -446,7 +487,7 @@ Patientez pendant l'extraction des données... merci.
 		$acces_anna="n";
 		$acces_absences="n";
 		$acces_discipline="n";
-        $acces_fp="n";
+		$acces_fp="n";
 
 		$active_annees_anterieures=getSettingValue('active_annees_anterieures');
 
@@ -467,9 +508,9 @@ Patientez pendant l'extraction des données... merci.
 			if (getSettingValue("GepiAccesTouteFicheEleveScolarite")!='yes') {
 			    $sql="SELECT 1=1 FROM j_scol_classes jsc, j_eleves_classes jec WHERE jec.id_classe=jsc.id_classe AND jsc.login='".$_SESSION['login']."' AND jec.login='".$ele_login."';";
 
-			    $test=mysql_query($sql);
+			    $test=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			    if(mysql_num_rows($test)==0) {
+			    if(mysqli_num_rows($test)==0) {
 				    echo "<p>Vous n'êtes pas responsable d'un ".$gepiSettings['denomination_eleve']." dont le login serait $ele_login.</p>\n";
 				    require_once("../lib/footer.inc.php");
 				    die();
@@ -482,7 +523,7 @@ Patientez pendant l'extraction des données... merci.
 			$acces_absences="y";
 
 			$acces_discipline="y";
-            $acces_fp="y";
+			$acces_fp="y";
 
 			$GepiAccesReleveScol=getSettingValue('GepiAccesReleveScol');
 			if($GepiAccesReleveScol=="yes") {
@@ -507,9 +548,9 @@ Patientez pendant l'extraction des données... merci.
 		elseif($_SESSION['statut']=='cpe') {
 			if (getSettingValue("GepiAccesTouteFicheEleveCpe")!='yes') {
 			    $sql="SELECT 1=1 FROM j_eleves_cpe WHERE cpe_login='".$_SESSION['login']."' AND e_login='".$ele_login."';";
-			    $test=mysql_query($sql);
+			    $test=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			    if(mysql_num_rows($test)==0) {
+			    if(mysqli_num_rows($test)==0) {
 				    echo "<p>Vous n'êtes pas responsable d'un ".$gepiSettings['denomination_eleve']." dont le login serait $ele_login.</p>\n";
 				    require_once("../lib/footer.inc.php");
 				    die();
@@ -531,9 +572,9 @@ Patientez pendant l'extraction des données... merci.
 			}
 			elseif($GepiAccesReleveCpe=="yes") {
 				$sql="SELECT 1=1 FROM j_eleves_cpe WHERE cpe_login='".$_SESSION['login']."' AND e_login='".$ele_login."';";
-				$test=mysql_query($sql);
+				$test=mysqli_query($GLOBALS["mysqli"], $sql);
 
-				if(mysql_num_rows($test)>0) {
+				if(mysqli_num_rows($test)>0) {
 					$acces_releves="y";
 				}
 			}
@@ -563,12 +604,12 @@ Patientez pendant l'extraction des données... merci.
 			$acces_absences="n";
 
 			$acces_discipline="n";
-            $acces_fp="y";
+			$acces_fp="y";
 
 			$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE login='".$ele_login."' AND professeur='".$_SESSION['login']."';";
-			$test=mysql_query($sql);
+			$test=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($test)>0) {
+			if(mysqli_num_rows($test)>0) {
 				$is_pp="y";
 				$acces_absences="y";
 			}
@@ -606,9 +647,9 @@ Patientez pendant l'extraction des données... merci.
 									jgc.id_groupe=jgp.id_groupe AND
 									jgp.login='".$_SESSION['login']."';";
 			//echo "$sql<br />";
-			$test_eleve_classe_prof=mysql_query($sql);
+			$test_eleve_classe_prof=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($test_eleve_classe_prof)>0) {
+			if(mysqli_num_rows($test_eleve_classe_prof)>0) {
 				$eleve_classe_prof="y";
 			}
 			//=====================================
@@ -618,9 +659,9 @@ Patientez pendant l'extraction des données... merci.
 									jeg.id_groupe=jgp.id_groupe AND
 									jgp.login='".$_SESSION['login']."';";
 			//echo "$sql<br />";
-			$test_eleve_groupe_prof=mysql_query($sql);
+			$test_eleve_groupe_prof=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($test_eleve_groupe_prof)>0) {
+			if(mysqli_num_rows($test_eleve_groupe_prof)>0) {
 				$eleve_groupe_prof="y";
 			}
 			//=====================================
@@ -733,16 +774,19 @@ Patientez pendant l'extraction des données... merci.
 						}
 					}
 				}
+				if(($acces_anna!="y")&&(getSettingAOui('AAProfPrinc'))&&(is_pp($_SESSION['login'], '', $ele_login))) {
+					$acces_anna="y";
+				}
 			}
 		}
 		elseif($_SESSION['statut'] == 'autre'){
 
 			// On récupère les droits de ce statuts pour savoir ce qu'on peut afficher
 			$sql_d = "SELECT * FROM droits_speciaux WHERE id_statut = '" . $_SESSION['statut_special_id'] . "'";
-			$query_d = mysql_query($sql_d);
+			$query_d = mysqli_query($GLOBALS["mysqli"], $sql_d);
 			$auth_other = array();
 
-			while($rep_d = mysql_fetch_array($query_d)){
+			while($rep_d = mysqli_fetch_array($query_d)){
 
 				//print_r($rep_d);
 				if ($rep_d['nom_fichier'] == '/voir_resp' AND $rep_d['autorisation'] == 'V') {
@@ -809,7 +853,6 @@ Patientez pendant l'extraction des données... merci.
 		$gepiSchoolPays=getSettingValue("gepiSchoolPays") ? getSettingValue("gepiSchoolPays") : "";
 		$gepiYear = getSettingValue("gepiYear");
 
-		$gepi_prof_suivi=getSettingValue("prof_suivi") ? getSettingValue("prof_suivi") : "";
 
 		// Photo si module trombino actif
 		$active_module_trombinoscopes=getSettingValue("active_module_trombinoscopes");
@@ -897,6 +940,7 @@ Patientez pendant l'extraction des données... merci.
 		$releve_col_matiere_largeur=getSettingValue("releve_col_matiere_largeur") ? getSettingValue("releve_col_matiere_largeur") : 150;
 
 		$gepi_prof_suivi=getSettingValue("gepi_prof_suivi") ? getSettingValue("gepi_prof_suivi") : "professeur principal";
+		$gepi_cpe_suivi=getSettingValue("gepi_cpe_suivi") ? getSettingValue("gepi_cpe_suivi") : "C.P.E.";
 
 		$releve_affiche_eleve_une_ligne=getSettingValue("releve_affiche_eleve_une_ligne") ? getSettingValue("releve_affiche_eleve_une_ligne") : "n";
 		$releve_mention_nom_court=getSettingValue("releve_mention_nom_court") ? getSettingValue("releve_mention_nom_court") : "y";
@@ -932,6 +976,15 @@ Patientez pendant l'extraction des données... merci.
 		// On extrait un tableau de l'ensemble des infos sur l'élève (bulletins, relevés de notes,... inclus)
 		$tab_ele=info_eleve($ele_login);
 
+		// 20140522
+		$acces_impression_bulletin=false;
+		$acces_impression_releve_notes=false;
+		if(($acces_releves=="y")||($acces_bulletins=="y")) {
+			$acces_impression_bulletin=acces_impression_bulletin($ele_login);
+			$acces_impression_releve_notes=acces_impression_releve_notes($ele_login);
+		}
+
+		$date_debut_log=get_date_debut_log();
 		/*
 		echo "<pre>";
 		print_r($tab_ele);
@@ -954,11 +1007,15 @@ Patientez pendant l'extraction des données... merci.
 			echo "</p>\n";
 		}
 		if(!isset($tab_ele['cpe'])) {
-			echo "<p style='color:red;'>Aucun CPE n'est associé à cet(te) élève.";
+			echo "<p style='color:red;'>Aucun ".$gepi_cpe_suivi." n'est associé à cet(te) élève.";
 			if(isset($tab_ele['classe'][$indice_derniere_classe]['id_classe'])) {
-				echo " <a href='../classes/classes_const.php?id_classe=".$tab_ele['classe'][$indice_derniere_classe]['id_classe']."#".$tab_ele['login']."'>Associer</a>.";
+			   if(acces("/classes/classes_const.php", $_SESSION['statut'])) {
+				   echo " <a href='../classes/classes_const.php?id_classe=".$tab_ele['classe'][$indice_derniere_classe]['id_classe']."#".$tab_ele['login']."'>Associer</a>.";
+			   }
+			
 			}
 			echo "</p>\n";
+			
 		}
 
 		if((getSettingAOui('autorise_edt_tous'))||
@@ -971,7 +1028,7 @@ Patientez pendant l'extraction des données... merci.
 			$texte_infobulle="";
 			$tabdiv_infobulle[]=creer_div_infobulle('edt_eleve',$titre_infobulle,"",$texte_infobulle,"",40,0,'y','y','n','n');
 
-			echo "<div style='float:right; width:3em;'><a href='../edt_organisation/index_edt.php?login_edt=".$ele_login."&amp;type_edt_2=eleve&amp;no_entete=y&amp;no_menu=y&amp;lien_refermer=y' onclick=\"affiche_edt_en_infobulle();return false;\" title=\"Emploi du temps de ".$tab_ele['prenom']." ".$tab_ele['nom']."\" target='_blank'>EDT</a></div>
+			echo "<div style='float:right; width:3em;'><a href='../edt_organisation/index_edt.php?login_edt=".$ele_login."&amp;type_edt_2=eleve&amp;no_entete=y&amp;no_menu=y&amp;lien_refermer=y' onclick=\"affiche_edt_en_infobulle();return false;\" title=\"Emploi du temps de ".$tab_ele['prenom']." ".$tab_ele['nom']."\" target='_blank'><img src='../images/icons/edt.png' class='icone16' alt='EDT' /></a></div>
 
 <style type='text/css'>
 	.lecorps {
@@ -1168,6 +1225,12 @@ Patientez pendant l'extraction des données... merci.
 		if($onglet!="eleve") {echo " display:none;";}
 		echo "background-color: ".$tab_couleur['eleve']."; ";
 		echo "'>";
+
+		if((getSettingAOui('active_mod_discipline'))&&(acces("/mod_discipline/saisie_incident.php", $_SESSION['statut']))) {
+			//require("../mod_discipline/mod_discipline.lib.php");;
+			echo "<div style='float:right; text-align:center; width: 7em; background-image: url(\"../images/background/opacite50.png\"); border:1px solid black;'><a href='../mod_discipline/saisie_incident.php?ele_login[0]=".$ele_login."&amp;is_posted=y".add_token_in_url()."' title=\"Saisir un nouvel ".$mod_disc_terme_incident." dans le module Discipline\">Saisie<br />".$mod_disc_terme_incident."</a></div>";
+		}
+
 		echo "<h2>Informations sur l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
 		//affichage de la date de sortie de l'élève de l'établissement
 		if ($tab_ele['date_sortie']!=0) {
@@ -1175,7 +1238,8 @@ Patientez pendant l'extraction des données... merci.
 		}
 
 		if(isset($tab_ele['compte_utilisateur'])) {
-			if(in_array($_SESSION['statut'], array('administrateur', 'scolarite', 'cpe'))) {
+			if((in_array($_SESSION['statut'], array('administrateur', 'scolarite', 'cpe')))||
+			(($_SESSION['statut']=='professeur')&&((isset($tab_ele['compte_utilisateur']['DerniereConnexionEle']))||(isset($tab_ele['compte_utilisateur']['DerniereConnexionEle_Echec']))))) {
 				echo "<div style='float:right; width:20em; text-align:center;'>\n";
 					echo "<strong>Compte</strong>\n";
 					echo "<table class='boireaus' summary='Infos compte élève'>\n";
@@ -1184,11 +1248,29 @@ Patientez pendant l'extraction des données... merci.
 					echo "<tr class='lig$alt'><th style='text-align: left;'>Compte&nbsp;:</th><td>".$tab_ele['compte_utilisateur']['login']."</td></tr>";
 					$alt=$alt*(-1);
 					echo "<tr class='lig$alt'><th style='text-align: left;'>Etat&nbsp;:</th><td>".$tab_ele['compte_utilisateur']['etat']."</td></tr>";
+					if(isset($tab_ele['compte_utilisateur']['DerniereConnexionEle'])) {
+						$alt=$alt*(-1);
+						if(isset($tab_ele['compte_utilisateur']['DerniereConnexionEle']['START'])) {
+							echo "<tr class='lig$alt'><th style='text-align: left;'>Dernière connexion&nbsp;:</th><td>";
+							echo formate_date($tab_ele['compte_utilisateur']['DerniereConnexionEle']['START'], 'y');
+						}
+						elseif(isset($tab_ele['compte_utilisateur']['DerniereConnexionEle_Echec']['START'])) {
+							echo "<tr style='background-color:red' title=\"Cet utilisateur ne s'est jamais connecté avec succès (du moins, si les log n'ont pas été vidés récemment).\nEn revanche, un échec de connexion est constaté à la date indiquée.\"><th style='text-align: left;'>Dernière tentative de connexion&nbsp;:</th><td>";
+							echo formate_date($tab_ele['compte_utilisateur']['DerniereConnexionEle_Echec']['START'], 'y');
+						}
+						else {
+							echo "<tr class='lig$alt'><th style='text-align: left;'>Dernière connexion&nbsp;:</th><td>";
+							echo "<img src='../images/disabled.png' class='icone20' title=\"Cet élève ne s'est jamais connecté (aussi loin que remontent les journaux de connexion (à savoir : $date_debut_log)).\"/>";
+						}
+						echo "</td></tr>";
+					}
 					$alt=$alt*(-1);
 					echo "<tr class='lig$alt'><th style='text-align: left;'>Authentification&nbsp;:</th><td title=\"Gepi permet selon les configurations plusieurs modes d'authentification:
 - gepi : Authentification sur la base mysql de Gepi,
 - sso : Authentification CAS ou LCS assurée par une autre machine,
-- ldap : Authentification en recherchant la correspondance login/mot_de_passe dans un annuaire LDAP.\">".$tab_ele['compte_utilisateur']['auth_mode']."</td></tr>";
+- ldap : Authentification en recherchant la correspondance login/mot_de_passe dans un annuaire LDAP.\">".$tab_ele['compte_utilisateur']['auth_mode'];
+					echo temoin_compte_sso($tab_ele['login']);
+					echo "</td></tr>";
 
 					if(($_SESSION['statut']=='administrateur')||
 						(($_SESSION['statut']=='scolarite')&&(getSettingAOui('ScolResetPassEle')))||
@@ -1231,7 +1313,7 @@ Patientez pendant l'extraction des données... merci.
 			(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiAccesTouteFicheEleveCpe')))||
 			(($_SESSION['statut']=='cpe')&&(is_cpe($_SESSION['login'],'',$ele_login)))||
 			(($_SESSION['statut']=='professeur')&&(is_pp($_SESSION['login'],"",$ele_login))&&(getSettingAOui('GepiAccesGestElevesProfP')))) {
-				echo "<a href='modify_eleve.php?eleve_login=".$ele_login."&amp;quelles_classes=certaines&amp;order_type=nom,prenom&amp;motif_rech='>".$tab_ele['nom']."</a>";
+				echo "<a href='modify_eleve.php?eleve_login=".$ele_login."&amp;quelles_classes=certaines&amp;order_type=nom,prenom&amp;motif_rech=' title=\"Modifier la fiche élève\">".$tab_ele['nom']."</a>";
 			}
 			else {
 				echo $tab_ele['nom'];
@@ -1280,11 +1362,13 @@ Patientez pendant l'extraction des données... merci.
 				echo "<tr class='lig$alt'><th style='text-align: left;'>N°INE&nbsp;:</th><td>".$tab_ele['no_gep']."</td></tr>\n";
 			}
 
+			echo "<tr class='lig$alt'><th style='text-align: left;'>MEF&nbsp;:</th><td>".$tab_ele['mef']."</td></tr>\n";
+
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt'><th style='text-align: left;'>Email&nbsp;:</th><td>";
 			$tmp_date=getdate();
 			//echo "<a href='mailto:".$tab_ele['email']."?subject=GEPI&amp;body=";
-			echo "<a href='mailto:".$tab_ele['email']."?subject=GEPI&amp;body=";
+			echo "<a href='mailto:".$tab_ele['email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI&amp;body=";
 			if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 			echo ",%0d%0aCordialement.'>";
 			echo $tab_ele['email'];
@@ -1353,7 +1437,7 @@ Patientez pendant l'extraction des données... merci.
 						echo "<tr class='lig$alt'><th style='text-align: left;'>Nom:</th><td>";
 
 						if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
-							echo "<a href='../responsables/modify_resp.php?pers_id=".$tab_ele['resp'][$i]['pers_id']."'>".$tab_ele['resp'][$i]['nom']."</a>";
+							echo "<a href='../responsables/modify_resp.php?pers_id=".$tab_ele['resp'][$i]['pers_id']."' title=\"Modifier la fiche responsable\">".$tab_ele['resp'][$i]['nom']."</a>";
 						}
 						else {
 							echo $tab_ele['resp'][$i]['nom'];
@@ -1380,7 +1464,7 @@ Patientez pendant l'extraction des données... merci.
 							$tmp_date=getdate();
 							$alt=$alt*(-1);
 							echo "<tr class='lig$alt'><th style='text-align: left;'>Courriel:</th><td>";
-							echo "<a href='mailto:".$tab_ele['resp'][$i]['mel']."?subject=GEPI&amp;body=";
+							echo "<a href='mailto:".$tab_ele['resp'][$i]['mel']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI&amp;body=";
 							if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 							echo ",%0d%0aCordialement.'>";
 							echo $tab_ele['resp'][$i]['mel'];
@@ -1418,7 +1502,20 @@ Patientez pendant l'extraction des données... merci.
 - sso : Authentification CAS ou LCS assurée par une autre machine,
 - ldap : Authentification en recherchant la correspondance login/mot_de_passe dans un annuaire LDAP.\">";
 								echo "Auth.: ".$tab_ele['resp'][$i]['auth_mode'];
+								echo temoin_compte_sso($tab_ele['resp'][$i]['login']);
 								echo "</span>";
+							}
+
+							if(isset($tab_ele['resp'][$i]['DerniereConnexionResp'])) {
+								if(isset($tab_ele['resp'][$i]['DerniereConnexionResp']['START'])) {
+									echo "<br />Dernière connexion&nbsp;: ".formate_date($tab_ele['resp'][$i]['DerniereConnexionResp']['START'], 'y');
+								}
+								elseif(isset($tab_ele['resp'][$i]['DerniereConnexionResp_Echec']['START'])) {
+									echo "<br /><span title=\"Cet utilisateur ne s'est jamais connecté avec succès (du moins, si les log n'ont pas été vidés récemment). En revanche, un échec de connexion est constaté à la date indiquée.\">Dernière tentative de connexion&nbsp;: ".formate_date($tab_ele['resp'][$i]['DerniereConnexionResp_Echec']['START'], 'y')."</span>";
+								}
+								else {
+									echo "<br />Dernière connexion&nbsp;: <img src='../images/disabled.png' class='icone20' title=\"Cet utilisateur ne s'est jamais connecté (aussi loin que remontent les journaux de connexion (à savoir : $date_debut_log)).\"/>";
+								}
 							}
 							echo "</td></tr>\n";
 
@@ -1478,6 +1575,55 @@ Patientez pendant l'extraction des données... merci.
 							echo "<tr class='lig$alt'><th style='text-align: left;'>Pays:</th><td>".$tab_ele['resp'][$i]['pays']."</td></tr>\n";
 						}
 
+						// 20140522
+						if($acces_bulletins=="y") {
+							$alt=$alt*(-1);
+							echo "<tr class='lig$alt'><th style='text-align: left;'>Bulletins:</th><td>";
+							// Imprimer le bulletin avec l'adresse de ce parent en particulier.
+
+
+							if($acces_impression_bulletin) {
+								$type_bulletin_par_defaut="pdf";
+
+								$chaine_intercaler_releve_notes="";
+								if($acces_impression_releve_notes) {
+									$chaine_intercaler_releve_notes="&intercaler_releve_notes=y&rn_param_auto=y";
+								}
+
+								for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+									$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+									$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+									if($loop_per>0) {
+										echo " - ";
+									}
+									echo "<a href='../bulletin/bull_index.php?mode_bulletin=".$type_bulletin_par_defaut.$chaine_intercaler_releve_notes."&type_bulletin=-1&choix_periode_num=fait&valide_select_eleves=y&tab_selection_ele_0_0[0]=".$ele_login."&tab_id_classe[0]=".$current_id_classe."&tab_periode_num[0]=".$current_num_periode."&pers_id=".$tab_ele['resp'][$i]['pers_id']."' target='_blank' title=\"Voir dans un nouvel onglet le bulletin ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode.".
+
+Le bulletin sera affiché/généré pour l'adresse responsable de ".$tab_ele['resp'][$i]['civilite']." ".$tab_ele['resp'][$i]['nom']." ".$tab_ele['resp'][$i]['prenom']."\">P".$current_num_periode."</a>";
+
+								}
+							}
+
+							echo "</td></tr>\n";
+						}
+
+						if(($acces_releves=="y")&&($acces_impression_releve_notes)) {
+							$alt=$alt*(-1);
+							echo "<tr class='lig$alt'><th style='text-align: left;'>Relevés:</th><td>";
+
+							$type_bulletin_par_defaut="pdf";
+
+							for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+								$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+								$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+								if($loop_per>0) {
+									echo " - ";
+								}
+								echo "<a href='../cahier_notes/visu_releve_notes_bis.php?tab_id_classe[0]=$current_id_classe&choix_periode=periode&tab_periode_num[0]=$current_num_periode&mode_bulletin=$type_bulletin_par_defaut&valide_select_eleves=y&choix_parametres=effectue&tab_selection_ele_0_0[0]=$ele_login&rn_adr_resp[0]=y&pers_id=".$tab_ele['resp'][$i]['pers_id']."&rn_param_auto=y' target='_blank' title=\"Voir dans un nouvel onglet le relevé de notes ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode."\">P".$current_num_periode."</a>";
+							}
+
+							echo "</td></tr>\n";
+						}
+
 						echo "</table>\n";
 						echo "</td>\n";
 					}
@@ -1503,7 +1649,7 @@ Patientez pendant l'extraction des données... merci.
 							echo "<tr class='lig$alt'><th style='text-align: left;'>Nom:</th><td>";
 
 							if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')) {
-								echo "<a href='../responsables/modify_resp.php?pers_id=".$tab_ele['resp'][$i]['pers_id']."'>".$tab_ele['resp'][$i]['nom']."</a>";
+								echo "<a href='../responsables/modify_resp.php?pers_id=".$tab_ele['resp'][$i]['pers_id']."' title=\"Modifier la fiche responsable\">".$tab_ele['resp'][$i]['nom']."</a>";
 							}
 							else {
 								echo $tab_ele['resp'][$i]['nom'];
@@ -1530,12 +1676,41 @@ Patientez pendant l'extraction des données... merci.
 								$tmp_date=getdate();
 								$alt=$alt*(-1);
 								echo "<tr class='lig$alt'><th style='text-align: left;'>Courriel:</th><td>";
-								echo "<a href='mailto:".$tab_ele['resp'][$i]['mel']."?subject=GEPI&amp;body=";
+								echo "<a href='mailto:".$tab_ele['resp'][$i]['mel']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI&amp;body=";
 								if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 								echo ",%0d%0aCordialement.'>";
 								echo $tab_ele['resp'][$i]['mel'];
 								echo "</a>";
 								echo "</td></tr>\n";
+							}
+
+							if($tab_ele['resp'][$i]['envoi_bulletin']!='') {
+								$alt=$alt*(-1);
+								echo "<tr class='lig$alt'><th style='text-align: left;'>Envoi bulletin:</th><td>";
+								if(in_array($_SESSION['statut'], array('administrateur', 'scolarite'))) {
+									if($tab_ele['resp'][$i]['envoi_bulletin']=="y") {
+										echo " <a href='".$_SERVER['PHP_SELF']."?ele_login=".$ele_login."&amp;onglet=responsables&amp;pers_id=".$tab_ele['resp'][$i]['pers_id']."&amp;ele_id=".$tab_ele['ele_id']."&amp;envoi_bulletin_resp_legal_0=n".add_token_in_url()."'";
+										echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+										echo "><img src='../images/icons/bulletin.png' width='16' height='16' title=\"Le responsable non légal ".$tab_ele['resp'][$i]['prenom']." ".$tab_ele['resp'][$i]['nom']." est destinataire des bulletins générés dans Gepi.
+
+Cliquez pour supprimer la génération de bulletins à destination de ce responsable.\" /></a>";
+									}
+									else {
+										echo " <a href='".$_SERVER['PHP_SELF']."?ele_login=".$ele_login."&amp;onglet=responsables&amp;pers_id=".$tab_ele['resp'][$i]['pers_id']."&amp;ele_id=".$tab_ele['ele_id']."&amp;envoi_bulletin_resp_legal_0=y".add_token_in_url()."'";
+										echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+										echo "><img src='../images/icons/bulletin_barre.png' width='16' height='16' title=\"Le responsable non légal ".$tab_ele['resp'][$i]['prenom']." ".$tab_ele['resp'][$i]['nom']." n'est pas destinataire des bulletins générés dans Gepi.
+
+Cliquez pour activer la génération des bulletins à destination de ce responsable.\" /></a>";
+									}
+								}
+								else {
+									if($tab_ele['resp'][$i]['envoi_bulletin']=="y") {
+										echo " <img src='../images/icons/bulletin.png' width='16' height='16' title=\"Le responsable non légal ".$tab_ele['resp'][$i]['prenom']." ".$tab_ele['resp'][$i]['nom']." est destinataire des bulletins générés dans Gepi.\" />";
+									}
+									else {
+										echo " <img src='../images/icons/bulletin_barre.png' width='16' height='16' title=\"Le responsable non légal ".$tab_ele['resp'][$i]['prenom']." ".$tab_ele['resp'][$i]['nom']." n'est pas destinataire des bulletins générés dans Gepi.\" />";
+									}
+								}
 							}
 
 							if(!isset($tab_ele['resp'][$i]['etat'])) {
@@ -1554,7 +1729,6 @@ Patientez pendant l'extraction des données... merci.
 									else {
 										echo " <img src='../images/rouge.png' width='16' height='16' title=\"Ce 'responsable/contact' qui n'est pas responsable légal de l'élève, n'a pas accès aux informations de l'élève s'il se connecte.\" />";
 									}
-
 								}
 								else {
 									echo "Oui";
@@ -1576,7 +1750,20 @@ Patientez pendant l'extraction des données... merci.
 	- sso : Authentification CAS ou LCS assurée par une autre machine,
 	- ldap : Authentification en recherchant la correspondance login/mot_de_passe dans un annuaire LDAP.\">";
 									echo "Auth.: ".$tab_ele['resp'][$i]['auth_mode'];
+									echo temoin_compte_sso($tab_ele['resp'][$i]['login']);
 									echo "</span>";
+								}
+
+								if(isset($tab_ele['resp'][$i]['DerniereConnexionResp'])) {
+									if(isset($tab_ele['resp'][$i]['DerniereConnexionResp']['START'])) {
+										echo "<br />Dernière connexion&nbsp;: ".formate_date($tab_ele['resp'][$i]['DerniereConnexionResp']['START'], 'y');
+									}
+									elseif(isset($tab_ele['resp'][$i]['DerniereConnexionResp_Echec']['START'])) {
+										echo "<br /><span title=\"Cet utilisateur ne s'est jamais connecté avec succès (du moins, si les log n'ont pas été vidés récemment). En revanche, un échec de connexion est constaté à la date indiquée.\">Dernière tentative de connexion&nbsp;: ".formate_date($tab_ele['resp'][$i]['DerniereConnexionResp_Echec']['START'], 'y')."</span>";
+									}
+									else {
+										echo "<br />Dernière connexion&nbsp;: <img src='../images/disabled.png' class='icone20' title=\"Cet utilisateur ne s'est jamais connecté (aussi loin que remontent les journaux de connexion (à savoir : $date_debut_log)).\"/>";
+									}
 								}
 								echo "</td></tr>\n";
 
@@ -1637,6 +1824,54 @@ Patientez pendant l'extraction des données... merci.
 								echo "<tr class='lig$alt'><th style='text-align: left;'>Pays:</th><td>".$tab_ele['resp'][$i]['pays']."</td></tr>\n";
 							}
 
+
+							// 20140522
+							if(($acces_bulletins=="y")&&($acces_impression_bulletin)) {
+								$alt=$alt*(-1);
+								echo "<tr class='lig$alt'><th style='text-align: left;'>Bulletins:</th><td>";
+
+								// Imprimer le bulletin avec l'adresse de ce parent en particulier.
+
+								$type_bulletin_par_defaut="pdf";
+
+								$chaine_intercaler_releve_notes="";
+								if($acces_impression_releve_notes) {
+									$chaine_intercaler_releve_notes="&intercaler_releve_notes=y&rn_param_auto=y";
+								}
+
+								for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+									$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+									$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+									if($loop_per>0) {
+										echo " - ";
+									}
+									echo "<a href='../bulletin/bull_index.php?mode_bulletin=".$type_bulletin_par_defaut.$chaine_intercaler_releve_notes."&type_bulletin=-1&choix_periode_num=fait&valide_select_eleves=y&tab_selection_ele_0_0[0]=".$ele_login."&tab_id_classe[0]=".$current_id_classe."&tab_periode_num[0]=".$current_num_periode."&pers_id=".$tab_ele['resp'][$i]['pers_id']."' target='_blank' title=\"Voir dans un nouvel onglet le bulletin ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode.".
+
+Le bulletin sera affiché/généré pour l'adresse responsable de ".$tab_ele['resp'][$i]['civilite']." ".$tab_ele['resp'][$i]['nom']." ".$tab_ele['resp'][$i]['prenom']."\">P".$current_num_periode."</a>";
+
+								}
+
+								echo "</td></tr>\n";
+							}
+
+							if(($acces_releves=="y")&&($acces_impression_releve_notes)) {
+								$alt=$alt*(-1);
+								echo "<tr class='lig$alt'><th style='text-align: left;'>Relevés:</th><td>";
+
+								$type_bulletin_par_defaut="pdf";
+
+								for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+									$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+									$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+									if($loop_per>0) {
+										echo " - ";
+									}
+									echo "<a href='../cahier_notes/visu_releve_notes_bis.php?tab_id_classe[0]=$current_id_classe&choix_periode=periode&tab_periode_num[0]=$current_num_periode&mode_bulletin=$type_bulletin_par_defaut&valide_select_eleves=y&choix_parametres=effectue&tab_selection_ele_0_0[0]=$ele_login&rn_adr_resp[0]=y&pers_id=".$tab_ele['resp'][$i]['pers_id']."&rn_param_auto=y' target='_blank' title=\"Voir dans un nouvel onglet le relevé de notes ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode."\">P".$current_num_periode."</a>";
+								}
+
+								echo "</td></tr>\n";
+							}
+
 							echo "</table>\n";
 							echo "</td>\n";
 						}
@@ -1661,6 +1896,36 @@ Patientez pendant l'extraction des données... merci.
 			echo "'>";
 			echo "<h2>Enseignements suivis par l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
 
+			$acces_edit_group=acces("/groupes/edit_group.php", $_SESSION['statut']);
+
+			$acces_eleve_options=acces("/classes/eleve_options.php", $_SESSION['statut']);
+			if($acces_eleve_options) {
+				for($j=0;$j<count($tab_ele['periodes']);$j++) {
+					$tab_classe_acces_eleve_options[$j]=true;
+
+					if($_SESSION['statut']=="scolarite") {
+						// Tester si le compte scolarité a accès à cette classe...
+						// Si ce n'est pas le cas -> intrusion...
+
+						$sql="SELECT 1=1 FROM j_scol_classes jsc WHERE jsc.id_classe='".$tab_ele['periodes'][$j]['id_classe']."' AND jsc.login='".$_SESSION['login']."';";
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						if ($test == "0") {
+							$tab_classe_acces_eleve_options[$j]=false;
+						}
+					}
+				}
+			}
+
+			$acces_edit_eleves=acces("/groupes/edit_eleves.php", $_SESSION['statut']);
+			if($acces_edit_eleves) {
+				if(($_SESSION['statut']=='cpe')&&(!getSettingAOui('CpeEditElevesGroupes'))) {
+					$acces_edit_eleves=false;
+				}
+				elseif(($_SESSION['statut']=='scolarite')&&(!getSettingAOui('ScolEditElevesGroupes'))) {
+					$acces_edit_eleves=false;
+				}
+			}
+
 			if((!isset($tab_ele['periodes']))||(!isset($tab_ele['groupes']))) {
 				echo "<p>Aucune période ou aucun enseignement n'a été trouvé pour cet ".$gepiSettings['denomination_eleve'].".</p>\n";
 			}
@@ -1671,7 +1936,14 @@ Patientez pendant l'extraction des données... merci.
 				echo "<th>Professeur(s)</th>\n";
 				for($j=0;$j<count($tab_ele['periodes']);$j++) {
 					echo "<th>\n";
-					echo $tab_ele['periodes'][$j]['nom_periode'];
+
+					if(($acces_eleve_options)&&($tab_classe_acces_eleve_options[$j])) {
+						echo "<a href='../classes/eleve_options.php?login_eleve=".$ele_login."&amp;id_classe=".$tab_ele['periodes'][$j]['id_classe']."' title=\"Modifier la liste des enseignements suivis par cet élève.\">".$tab_ele['periodes'][$j]['nom_periode']."</a>";
+					}
+					else {
+						echo $tab_ele['periodes'][$j]['nom_periode'];
+					}
+
 					echo "</th>\n";
 				}
 				echo "</tr>\n";
@@ -1680,12 +1952,17 @@ Patientez pendant l'extraction des données... merci.
 				for($i=0;$i<count($tab_ele['groupes']);$i++) {
 					$alt=$alt*(-1);
 					echo "<tr class='lig$alt'>\n";
-					echo "<th>".htmlspecialchars($tab_ele['groupes'][$i]['name'])."<br /><span style='font-size: x-small;'>".htmlspecialchars($tab_ele['groupes'][$i]['description'])."</span></th>\n";
+					if($acces_edit_group) {
+						echo "<th><a href='../groupes/edit_group.php?id_groupe=".$tab_ele['groupes'][$i]['id_groupe']."&amp;mode=groupe' title=\"Modifier cet enseignement.\">".htmlspecialchars($tab_ele['groupes'][$i]['name'])."<br /><span style='font-size: x-small;'>".htmlspecialchars($tab_ele['groupes'][$i]['description'])."</span></a></th>\n";
+					}
+					else {
+						echo "<th>".htmlspecialchars($tab_ele['groupes'][$i]['name'])."<br /><span style='font-size: x-small;'>".htmlspecialchars($tab_ele['groupes'][$i]['description'])."</span></th>\n";
+					}
 					echo "<td>\n";
-                                        $nbre_professeurs = isset($tab_ele['groupes'][$i]['prof']) ? count($tab_ele['groupes'][$i]['prof']) : 0;
+					$nbre_professeurs = isset($tab_ele['groupes'][$i]['prof']) ? count($tab_ele['groupes'][$i]['prof']) : 0;
 					for($j=0;$j<$nbre_professeurs;$j++) {
 						if($tab_ele['groupes'][$i]['prof'][$j]['email']!='') {
-							echo "<a href='mailto:".$tab_ele['groupes'][$i]['prof'][$j]['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+							echo "<a href='mailto:".$tab_ele['groupes'][$i]['prof'][$j]['email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
 							if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 							echo ",%0d%0aCordialement.' title=\"Envoyer un email à ce professeur\">";
 						}
@@ -1707,7 +1984,13 @@ Patientez pendant l'extraction des données... merci.
 						if(in_array($tab_ele['periodes'][$j]['num_periode'],$tab_ele['groupes'][$i]['periodes'])) {
 							echo ">\n";
 							//echo "X";
-							echo $tab_ele['periodes'][$j]['classe'];
+
+							if($acces_edit_eleves) {
+								echo "<a href='../groupes/edit_eleves.php?id_groupe=".$tab_ele['groupes'][$i]['id_groupe']."' title=\"Modifier la liste des élèves inscrits dans cet enseignement.\">".$tab_ele['periodes'][$j]['classe']."</a>";
+							}
+							else {
+								echo $tab_ele['periodes'][$j]['classe'];
+							}
 						}
 						else {
 							echo " style='background-color: gray;";
@@ -1727,7 +2010,7 @@ Patientez pendant l'extraction des données... merci.
 						if($tab_ele['classe'][$loop]['pp']['email']!="") {
 							//echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."'>";
 							//echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."'>";
-							echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+							echo "<a href='mailto:".$tab_ele['classe'][$loop]['pp']['email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
 							if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 							echo ",%0d%0aCordialement.' title=\"Envoyer un email au ".$gepi_prof_suivi."\">";
 						}
@@ -1740,13 +2023,13 @@ Patientez pendant l'extraction des données... merci.
 				}
 				echo "</p>\n";
 
-				echo "<p><strong>CPE chargé(e) du suivi</strong>: ";
+				echo "<p><strong>".ucfirst($gepi_cpe_suivi)." chargé(e) du suivi</strong>: ";
 				if($tab_ele['cpe']['email']!="") {
 					//echo "<a href='mailto:".$tab_ele['cpe']['email']."'>";
 					//echo "<a href='mailto:".$tab_ele['cpe']['email']."'>";
-					echo "<a href='mailto:".$tab_ele['cpe']['email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+					echo "<a href='mailto:".$tab_ele['cpe']['email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
 					if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
-					echo ",%0d%0aCordialement.' title=\"Envoyer un email au CPE\">";
+					echo ",%0d%0aCordialement.' title=\"Envoyer un email au ".$gepi_cpe_suivi."\">";
 				}
 				echo $tab_ele['cpe']['civ_nom_prenom'];
 				if($tab_ele['cpe']['email']!="") {
@@ -1757,10 +2040,10 @@ Patientez pendant l'extraction des données... merci.
 				if($tab_ele['equipe_liste_email']!="") {
 					$tmp_date=getdate();
 					//echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=GEPI&amp;body=";
-					echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
+					echo "<p>Ecrire un email à <a href='mailto:".$tab_ele['equipe_liste_email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI - [".remplace_accents($tab_ele['nom'],'all')." ".remplace_accents($tab_ele['prenom'],'all')."]&amp;body=";
 					if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 					if(preg_match("/,/",$tab_ele['equipe_liste_email'])) {echo " à tou(te)s";}
-					echo ",%0d%0aCordialement.'>tous les enseignants et au CPE de l'élève</a>.</p>\n";
+					echo ",%0d%0aCordialement.'>tous les enseignants et au ".$gepi_cpe_suivi." de l'élève</a>.</p>\n";
 				}
 			}
 			echo "</div>\n";
@@ -1778,13 +2061,51 @@ Patientez pendant l'extraction des données... merci.
 			echo "background-color: ".$tab_couleur['bulletins']."; ";
 			echo "'>";
 
+			if($acces_impression_bulletin) {
+				echo "<div style='float:right; width:9em; text-align:center;' class='fieldset_opacite50' title=\"Imprimer les bulletins\">";
+
+				$type_bulletin_par_defaut="pdf";
+
+				$chaine_intercaler_releve_notes="";
+				if($acces_impression_releve_notes) {
+					$chaine_intercaler_releve_notes="&intercaler_releve_notes=y&rn_param_auto=y";
+				}
+
+				$chaine_periodes="";
+				$current_id_classe=$tab_ele['periodes'][0]['id_classe'];
+				$chaine_preselection_eleve="";
+				for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+					$chaine_periodes.="&amp;tab_periode_num[$loop_per]=".$tab_ele['periodes'][$loop_per]['num_periode'];
+					$chaine_preselection_eleve.="&amp;preselection_eleves[".$tab_ele['periodes'][$loop_per]['num_periode']."]=|".$ele_login."|";
+				}
+				//valide_select_eleves=y&
+				echo "<a href='../bulletin/bull_index.php?mode_bulletin=".$type_bulletin_par_defaut.$chaine_intercaler_releve_notes."&type_bulletin=-1&choix_periode_num=fait&tab_selection_ele_0_0[0]=".$ele_login."&tab_id_classe[0]=".$current_id_classe.$chaine_periodes.$chaine_preselection_eleve."' target='_blank' title=\"Voir dans un nouvel onglet les bulletins de cet élève.\"><img src='../images/icons/print.png' class='icone16' alt='Imprimer' /></a>";
+
+				for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+					$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+					$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+					echo " - <a href='../bulletin/bull_index.php?mode_bulletin=".$type_bulletin_par_defaut.$chaine_intercaler_releve_notes."&type_bulletin=-1&choix_periode_num=fait&valide_select_eleves=y&tab_selection_ele_0_0[0]=".$ele_login."&tab_id_classe[0]=".$current_id_classe."&tab_periode_num[0]=".$current_num_periode."' target='_blank' title=\"Voir dans un nouvel onglet le bulletin ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode."\">P".$current_num_periode."</a>";
+					/*
+					A AJOUTER
+
+					&intercaler_releve_notes=y
+
+					A CREER/PRENDRE EN COMPTE:
+					&param_rn_defaut=y
+					pour récupérer les paramètres de la classe.
+					*/
+				}
+
+				echo "</div>";
+			}
+
 			echo "<h2>Bulletins de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
 
 			$sql="SELECT MIN(periode) AS min_per, MAX(periode) AS max_per FROM matieres_notes WHERE login='".$ele_login."';";
 			//echo "$sql<br />";
-			$res_per=mysql_query($sql);
-			if(mysql_num_rows($res_per)>0) {
-				$lig_per=mysql_fetch_object($res_per);
+			$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_per)>0) {
+				$lig_per=mysqli_fetch_object($res_per);
 				// Afficher les trois trimestres sur le bulletin simplifié affiche des infos erronées quant au nom des professeurs si l'élève a changé de classe.
 				$periode_numero_1=$lig_per->min_per;
 				$periode_numero_2=$lig_per->max_per;
@@ -1846,7 +2167,7 @@ Patientez pendant l'extraction des données... merci.
 
 
 						// On teste la présence d'au moins un coeff pour afficher la colonne des coef
-						$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
+						$test_coef = mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], "SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 						// Apparemment, $test_coef est réaffecté plus loin dans un des include()
 						$nb_coef_superieurs_a_zero=$test_coef;
 
@@ -2127,14 +2448,40 @@ Patientez pendant l'extraction des données... merci.
 
 			$sql="SELECT MIN(ccn.periode) AS min_per, MAX(ccn.periode) AS max_per FROM cn_cahier_notes ccn,j_eleves_groupes jeg WHERE jeg.login='".$ele_login."' AND jeg.id_groupe=ccn.id_groupe AND jeg.periode=ccn.periode;";
 			//echo "$sql<br />";
-			$res_per=mysql_query($sql);
-			if(mysql_num_rows($res_per)>0) {
-				$lig_per=mysql_fetch_object($res_per);
+			$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_per)>0) {
+				$lig_per=mysqli_fetch_object($res_per);
 				$periode_numero_1=$lig_per->min_per;
 				$periode_numero_2=$lig_per->max_per;
 			}
 			else {
 				// Il ne faut pas proposer de relevé de notes?
+			}
+
+			if($acces_impression_releve_notes) {
+				echo "<div style='float:right; width:9em; text-align:center;' class='fieldset_opacite50' title=\"Imprimer les relevés de notes\">";
+
+				$type_bulletin_par_defaut="pdf";
+
+				$chaine_periodes="";
+				$current_id_classe=$tab_ele['periodes'][0]['id_classe'];
+				$chaine_preselection_eleve="";
+				for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+					$chaine_periodes.="&amp;tab_periode_num[$loop_per]=".$tab_ele['periodes'][$loop_per]['num_periode'];
+					//$chaine_preselection_eleve.="&amp;preselection_eleves[".$tab_ele['periodes'][$loop_per]['num_periode']."]=|".$ele_login."|";
+					$chaine_preselection_eleve.="&amp;tab_selection_ele_0_".$loop_per."[]=".$ele_login."";
+				}
+
+				echo "<a href='../cahier_notes/visu_releve_notes_bis.php?tab_id_classe[0]=".$current_id_classe.$chaine_periodes.$chaine_preselection_eleve."&choix_periode=periode' target='_blank' title=\"Voir dans un nouvel onglet les relevés de notes de cet élève.\"><img src='../images/icons/print.png' class='icone16' alt='Imprimer' /></a>";
+				//&valide_select_eleves=y&mode_bulletin=pdf&choix_parametres=effectue&tab_selection_ele_0_0[0]=chandelc&rn_param_auto=y
+
+				for($loop_per=0;$loop_per<count($tab_ele['periodes']);$loop_per++) {
+					$current_id_classe=$tab_ele['periodes'][$loop_per]['id_classe'];
+					$current_num_periode=$tab_ele['periodes'][$loop_per]['num_periode'];
+					echo " - <a href='../cahier_notes/visu_releve_notes_bis.php?tab_id_classe[0]=$current_id_classe&choix_periode=periode&tab_periode_num[0]=$current_num_periode&mode_bulletin=$type_bulletin_par_defaut&valide_select_eleves=y&choix_parametres=effectue&tab_selection_ele_0_0[0]=$ele_login&rn_param_auto=y' target='_blank' title=\"Voir dans un nouvel onglet le relevé de notes ".casse_mot($type_bulletin_par_defaut, "maj")." de la période ".$current_num_periode."\">P".$current_num_periode."</a>";
+				}
+
+				echo "</div>";
 			}
 
 			echo "<h2>Relevés de notes de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
@@ -2209,7 +2556,7 @@ Patientez pendant l'extraction des données... merci.
 						include "../lib/periodes.inc.php";
 
 						// On teste la présence d'au moins un coeff pour afficher la colonne des coef
-						$test_coef = mysql_num_rows(mysql_query("SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
+						$test_coef = mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], "SELECT coef FROM j_groupes_classes WHERE (id_classe='".$id_classe."' and coef > 0)"));
 						//echo "\$test_coef=$test_coef<br />";
 						// Apparemment, $test_coef est réaffecté plus loin dans un des include()
 						$nb_coef_superieurs_a_zero=$test_coef;
@@ -2266,6 +2613,10 @@ Patientez pendant l'extraction des données... merci.
 
 		if($acces_cdt=="y") {
 			$contexte_affichage_docs_joints="visu_eleve";
+			$lignes_cdt_mail="";
+
+			$mail_dest=isset($_POST['mail_dest']) ? $_POST['mail_dest'] : NULL;
+			$envoi_mail=isset($_POST['envoi_mail']) ? $_POST['envoi_mail'] : "n";
 
 			echo "<div id='cdt' class='onglet' style='";
 			if($onglet!="cdt") {echo " display:none;";}
@@ -2281,11 +2632,19 @@ Patientez pendant l'extraction des données... merci.
 				}
 			}
 
-			echo "<h2>Cahier de textes de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
+			$chaine_tmp="<h2>Cahier de textes de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
+			$lignes_cdt_mail.=$chaine_tmp;
+			echo $chaine_tmp;
+
+			echo "<div id='div_compte_rendu_envoi_mail' style='text-align:center;'></div>";
 
 			echo "<p align='center'>";
 			echo "<a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login&amp;onglet=cdt&amp;day=$j_sem_prec&amp;month=$m_sem_prec&amp;year=$y_sem_prec".$chaine_quitter_page_ou_non."'><img src='../images/icons/back.png' width='16' height='16' alt='Semaine précédente' /></a> ";
-			echo "Du ".jour_en_fr(date("D",$date_ct1))." ".date("d/m/Y",$date_ct1)." au ".jour_en_fr(date("D",$date_ct2))." ".date("d/m/Y",$date_ct2);
+
+			$chaine_tmp="Du ".jour_en_fr(date("D",$date_ct1))." ".date("d/m/Y",$date_ct1)." au ".jour_en_fr(date("D",$date_ct2))." ".date("d/m/Y",$date_ct2);
+			$lignes_cdt_mail.=$chaine_tmp;
+			echo $chaine_tmp;
+
 			echo " <a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login&amp;onglet=cdt&amp;day=$j_sem_suiv&amp;month=$m_sem_suiv&amp;year=$y_sem_suiv".$chaine_quitter_page_ou_non."'><img src='../images/icons/forward.png' width='16' height='16' alt='Semaine suivante' /></a>";
 			echo "</p>\n";
 
@@ -2293,8 +2652,8 @@ Patientez pendant l'extraction des données... merci.
 			$couleur_entry="#C7FF99";
 
 			echo "<div align='center'>\n";
-			echo "<table class='boireaus' border='1' summary='CDT'>\n";
-			echo "<tr><th>Date</th><th>Travail à effectuer</th><th>Compte rendu de séance</th></tr>\n";
+			$chaine_tmp="<table class='boireaus' border='1' summary='CDT'>\n";
+			$chaine_tmp.="<tr><th>Date</th><th>Travail à effectuer</th><th>Compte rendu de séance</th></tr>\n";
 
 			// On compte les entrées du cdt
 			if (isset($tab_ele['cdt'])) {
@@ -2305,52 +2664,52 @@ Patientez pendant l'extraction des données... merci.
 
 			for($j=0;$j<$nbre_cdt;$j++) {
 
-				echo "<tr>\n";
-				echo "<td>\n";
+				$chaine_tmp.="<tr>\n";
+				$chaine_tmp.="<td>\n";
 				//echo "Date ".jour_en_fr(date("D",$tab_ele['cdt'][$j]['date_ct']))." ".date("d/m/Y",$tab_ele['cdt'][$j]['date_ct'])."<br />\n";
-				echo ucfirst(jour_en_fr(date("D",$tab_ele['cdt'][$j]['date_ct'])))." ".date("d/m/Y",$tab_ele['cdt'][$j]['date_ct'])."<br />\n";
-				echo "</td>\n";
+				$chaine_tmp.=ucfirst(jour_en_fr(date("D",$tab_ele['cdt'][$j]['date_ct'])))." ".date("d/m/Y",$tab_ele['cdt'][$j]['date_ct'])."<br />\n";
+				$chaine_tmp.="</td>\n";
 
 				//echo "<td valign='top' style='padding:3px;'>\n";
-				echo "<td valign='top'>\n";
+				$chaine_tmp.="<td valign='top'>\n";
 				//echo "<div style='border:1px solid black; padding:2px;'>\n";
 				if(isset($tab_ele['cdt'][$j]['dev'])) {
 					for($k=0;$k<count($tab_ele['cdt'][$j]['dev']);$k++) {
 						//echo "<div style='border:1px solid black; background-color: lightyellow; margin:1px; display:block; width:40%;'>\n";
-						echo "<table class='boireaus' border='1' style='margin:3px; width:100%;' summary='CDT'>\n";
-						echo "<tr style='background-color:$couleur_dev;'>\n";
-						echo "<td>\n";
-						echo $tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['matiere_nom_complet']." <span style='font-size:x-small;'>(".$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['name'].")</span>";
-						echo "</td>\n";
+						$chaine_tmp.="<table class='boireaus' border='1' style='margin:3px; width:100%;' summary='CDT'>\n";
+						$chaine_tmp.="<tr style='background-color:$couleur_dev;'>\n";
+						$chaine_tmp.="<td>\n";
+						$chaine_tmp.=$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['matiere_nom_complet']." <span style='font-size:x-small;'>(".$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['name'].")</span>";
+						$chaine_tmp.="</td>\n";
 
-						echo "<td>\n";
+						$chaine_tmp.="<td>\n";
 						//echo "Prof ".$tab_ele['cdt'][$j]['dev'][$k]['id_login']."<br />\n";
-						echo $tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['prof_liste']."<br />\n";
-						echo "</td>\n";
-						echo "</tr>\n";
+						$chaine_tmp.=$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['dev'][$k]['id_groupe']]]['prof_liste']."<br />\n";
+						$chaine_tmp.="</td>\n";
+						$chaine_tmp.="</tr>\n";
 
-						echo "<tr style='background-color:$couleur_dev;'>\n";
-						echo "<td colspan='2' style='text-align:left;'>\n";
+						$chaine_tmp.="<tr style='background-color:$couleur_dev;'>\n";
+						$chaine_tmp.="<td colspan='2' style='text-align:left;'>\n";
 						//echo "Date ".jour_en_fr(date("D",$tab_ele['cdt'][$j]['dev'][$k]['date_ct']))." ".date("d/m/Y",$tab_ele['cdt'][$j]['dev'][$k]['date_ct'])."<br />\n";
-						echo nl2br($tab_ele['cdt'][$j]['dev'][$k]['contenu']);
+						$chaine_tmp.=nl2br($tab_ele['cdt'][$j]['dev'][$k]['contenu']);
 
 						$adj=affiche_docs_joints($tab_ele['cdt'][$j]['dev'][$k]['id_ct'],"t");
 						if($adj!='') {
-							echo "<div style='border: 1px dashed black'>\n";
-							echo $adj;
-							echo "</div>\n";
+							$chaine_tmp.="<div style='border: 1px dashed black'>\n";
+							$chaine_tmp.=$adj;
+							$chaine_tmp.="</div>\n";
 						}
 
 						//echo "</div>\n";
-						echo "</td>\n";
-						echo "</tr>\n";
-						echo "</table>\n";
+						$chaine_tmp.="</td>\n";
+						$chaine_tmp.="</tr>\n";
+						$chaine_tmp.="</table>\n";
 					}
 				}
-				echo "</td>\n";
+				$chaine_tmp.="</td>\n";
 
 				//echo "<td valign='top' style='padding:3px;'>\n";
-				echo "<td valign='top'>\n";
+				$chaine_tmp.="<td valign='top'>\n";
 				if(isset($tab_ele['cdt'][$j]['entry'])) {
 					for($k=0;$k<count($tab_ele['cdt'][$j]['entry']);$k++) {
 						//echo "<div style='border:1px solid black; background-color: lightgreen; margin:1px; display:block; width:40%;'>\n";
@@ -2358,40 +2717,108 @@ Patientez pendant l'extraction des données... merci.
 						//echo "Prof ".$tab_ele['cdt'][$j]['entry'][$k]['id_login']."<br />\n";
 						//echo "Date ".jour_en_fr(date("D",$tab_ele['cdt'][$j]['dev'][$k]['date_ct']))." ".date("d/m/Y",$tab_ele['cdt'][$j]['dev'][$k]['date_ct'])."<br />\n";
 						//echo $tab_ele['cdt'][$j]['entry'][$k]['contenu'];
-						echo "<table class='boireaus' border='1' style='margin:3px; width:100%;' summary='CDT'>\n";
-						echo "<tr style='background-color:$couleur_entry;'>\n";
-						echo "<td>\n";
-						echo $tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['matiere_nom_complet']." <span style='font-size:x-small;'>(".$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['name'].")</span>";
-						echo "</td>\n";
+						$chaine_tmp.="<table class='boireaus' border='1' style='margin:3px; width:100%;' summary='CDT'>\n";
+						$chaine_tmp.="<tr style='background-color:$couleur_entry;'>\n";
+						$chaine_tmp.="<td>\n";
+						$chaine_tmp.=$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['matiere_nom_complet']." <span style='font-size:x-small;'>(".$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['name'].")</span>";
+						$chaine_tmp.="</td>\n";
 
-						echo "<td>\n";
-						echo $tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['prof_liste']."<br />\n";
-						echo "</td>\n";
-						echo "</tr>\n";
+						$chaine_tmp.="<td>\n";
+						$chaine_tmp.=$tab_ele['groupes'][$tab_ele['index_grp'][$tab_ele['cdt'][$j]['entry'][$k]['id_groupe']]]['prof_liste']."<br />\n";
+						$chaine_tmp.="</td>\n";
+						$chaine_tmp.="</tr>\n";
 
-						echo "<tr style='background-color:$couleur_entry;'>\n";
-						echo "<td colspan='2' style='text-align:left;'>\n";
-						echo nl2br($tab_ele['cdt'][$j]['entry'][$k]['contenu']);
+						$chaine_tmp.="<tr style='background-color:$couleur_entry;'>\n";
+						$chaine_tmp.="<td colspan='2' style='text-align:left;'>\n";
+						$chaine_tmp.=nl2br($tab_ele['cdt'][$j]['entry'][$k]['contenu']);
 
 						$adj=affiche_docs_joints($tab_ele['cdt'][$j]['entry'][$k]['id_ct'],"c");
 						if($adj!='') {
-							echo "<div style='border: 1px dashed black'>\n";
-							echo $adj;
-							echo "</div>\n";
+							$chaine_tmp.="<div style='border: 1px dashed black'>\n";
+							$chaine_tmp.=$adj;
+							$chaine_tmp.="</div>\n";
 						}
-						echo "</td>\n";
-						echo "</tr>\n";
-						echo "</table>\n";
+						$chaine_tmp.="</td>\n";
+						$chaine_tmp.="</tr>\n";
+						$chaine_tmp.="</table>\n";
 					}
 				}
 
 				//echo "</div>\n";
-				echo "</tr>\n";
+				$chaine_tmp.="</tr>\n";
 			}
 
 			//echo "</div>\n";
-			echo "</table>\n";
-			echo "</div>\n";
+			$chaine_tmp.="</table>\n";
+			$chaine_tmp.="</div>\n";
+			$lignes_cdt_mail.=$chaine_tmp;
+			echo $chaine_tmp;
+
+			if($envoi_mail=="y") {
+				if(!check_mail($_POST['mail_dest'])) {
+					$message="L'adresse mail choisie '".$_POST['mail_dest']."' est invalide.";
+					echo "<p style='color:red; text-align:center;'>$message</p>
+					<script type='text/javascript'>
+						document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:red'>$message</span>\";
+					</script>\n";
+				}
+				else {
+					$sujet="Cahier de textes";
+					$message="Bonjour(soir),\nVoici le contenu du cahier de textes pour pour la semaine choisie :\n".$lignes_cdt_mail;
+					$destinataire=$_POST['mail_dest'];
+					$header_suppl="";
+					if((isset($_SESSION['email']))&&(check_mail($_SESSION['email']))) {
+						$header_suppl.="Bcc:".$_SESSION['email']."\r\n";
+					}
+					$envoi=envoi_mail($sujet, $message, $destinataire, $header_suppl, "html");
+					if($envoi) {
+						$message="Le cahier de textes de la semaine choisie a été expédié à l'adresse mail choisie '".$_POST['mail_dest']."'.";
+						echo "<p style='color:green; text-align:center;'>$message</p>
+						<script type='text/javascript'>
+							document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:green'>$message</span>\";
+						</script>\n";
+					}
+					else {
+						$message="Echec de l'envoi du cahier de textes à l'adresse mail choisie '".$_POST['mail_dest']."'.";
+						echo "<p style='color:red; text-align:center;'>$message</p>
+						<script type='text/javascript'>
+							document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:red'>$message</span>\";
+						</script>\n";
+					}
+				}
+
+				// DEBUG:
+				//echo "<div style='border: 1px solid red; text-align:center;'>$lignes_cdt_mail</div>";
+			}
+
+			//++++++++++++++++++++++++++++++
+			echo "<div id='lien_mail' style='text-align:right; display:none'><a href=\"javascript:afficher_div('div_envoi_cdt_par_mail','y',10,10)\" title=\"Envoyer par mail *la semaine affichée* du cahier de textes
+(par exemple pour envoyer à un parent d'élève qui a oublié ses compte et mot de passe).
+Pour envoyer plus d'une semaine par mail, vous pouvez utiliser la page de consultation des cahiers de textes.\"><img src='../images/icons/courrier_envoi.png' class='icone16' alt='Mail' /></a></div>
+			<script type='text/javascript'>document.getElementById('lien_mail').style.display=''</script>\n";
+			//echo "</div>\n";
+
+			$titre_infobulle="Envoi du CDT par mail";
+			$texte_infobulle="<form action='".$_SERVER['PHP_SELF']."' name='form_envoi_cdt_mail' method='post'>
+		<input type='hidden' name='envoi_mail' value='y' />
+		<input type='hidden' name='ele_login' value='$ele_login' />
+		<input type='hidden' name='onglet' value='cdt' />";
+
+			//https://127.0.0.1/steph/gepi_git_trunk/eleves/visu_eleve.php?ele_login=allaixe&onglet=cdt&day=25&month=10&year=2013
+			if((isset($day))&&(isset($month))&&(isset($year))) {
+				$texte_infobulle.="
+		<input type='hidden' name='day' value='$day' />
+		<input type='hidden' name='month' value='$month' />
+		<input type='hidden' name='year' value='$year' />";
+			}
+
+			$texte_infobulle.="
+		<p>Précisez à quelle adresse vous souhaitez envoyer le contenu du cahier de textes&nbsp;:<br />
+		Mail&nbsp;:&nbsp;<input type='text' name='mail_dest' value='' />
+		<input type='submit' value='Envoyer' />
+</form>";
+			$tabdiv_infobulle[]=creer_div_infobulle('div_envoi_cdt_par_mail',$titre_infobulle,"",$texte_infobulle,"",30,0,'y','y','n','n');
+			//++++++++++++++++++++++++++++++
 
 			if((getSettingAOui('rss_cdt_eleve'))||(getSettingAOui('rss_cdt_responsable'))) {
 				if($_SESSION['statut']=='administrateur') {
@@ -2403,7 +2830,7 @@ Patientez pendant l'extraction des données... merci.
 						$test_https = 'n';
 					}
 
-					echo "<div style='text-align:right; width:16;'>\n";
+					echo "<div style='text-align:right;'>\n";
 					$uri_el = retourneUri($ele_login, $test_https, 'cdt');
 					if($uri_el['uri']!="#") {
 						echo "<a href='".$uri_el['uri']."' title='Flux RSS du cahier de textes de cet élève' target='_blank'><img src='../images/icons/rss.png' width='16' height='16' /></a>";
@@ -2424,7 +2851,7 @@ Patientez pendant l'extraction des données... merci.
 						$test_https = 'n';
 					}
 
-					echo "<div style='text-align:right; width:16;'>\n";
+					echo "<div style='text-align:right;'>\n";
 					$uri_el = retourneUri($ele_login, $test_https, 'cdt');
 					if($uri_el['uri']!="#") {
 						echo "<a href='".$uri_el['uri']."' title='Flux RSS du cahier de textes de cet élève' target='_blank'><img src='../images/icons/rss.png' width='16' height='16' /></a>";
@@ -2451,27 +2878,27 @@ Patientez pendant l'extraction des données... merci.
 			if($onglet!="fp") {echo " display:none;";}
 			echo "background-color: ".$tab_couleur['fp']."; ";
 			echo "'>";
-      $call_data = mysql_query("SELECT j.indice_aid, j.id_aid FROM  j_aid_eleves j, aid_config a where
+      $call_data = mysqli_query($GLOBALS["mysqli"], "SELECT j.indice_aid, j.id_aid FROM  j_aid_eleves j, aid_config a where
        j.login='$ele_login' and a.indice_aid=j.indice_aid and a.outils_complementaires='y' order by j.indice_aid");
 
-      $nb_aid = mysql_num_rows($call_data);
+      $nb_aid = mysqli_num_rows($call_data);
       if ($nb_aid>0) {
   			echo "<h2>Tous les projets de l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
         echo "<table width=\"80%\" border=\"1\" cellspacing=\"1\" cellpadding=\"3\">";
         $z=0;
         while ($z < $nb_aid) {
-          $indice_aid = @mysql_result($call_data, $z, "indice_aid");
-          $aid_id =  @mysql_result($call_data, $z, "id_aid");
+          $indice_aid = @old_mysql_result($call_data, $z, "indice_aid");
+          $aid_id =  @old_mysql_result($call_data, $z, "id_aid");
           $nom_type_aid =  sql_query1("SELECT nom FROM aid_config  WHERE (indice_aid='$indice_aid')");
           $nom_aid = sql_query1("SELECT nom FROM aid WHERE (id='$aid_id' and indice_aid='$indice_aid')");
-          $aid_prof_resp_query = mysql_query("SELECT id_utilisateur FROM j_aid_utilisateurs WHERE (id_aid='$aid_id' and indice_aid='$indice_aid')");
-          $nb_lig = mysql_num_rows($aid_prof_resp_query);
+          $aid_prof_resp_query = mysqli_query($GLOBALS["mysqli"], "SELECT id_utilisateur FROM j_aid_utilisateurs WHERE (id_aid='$aid_id' and indice_aid='$indice_aid')");
+          $nb_lig = mysqli_num_rows($aid_prof_resp_query);
           $n = '0';
           while ($n < $nb_lig) {
-            $aid_prof_resp_login = @mysql_result($aid_prof_resp_query, $n, "id_utilisateur");
-            $aid_prof_query = @mysql_query("SELECT nom,prenom FROM utilisateurs WHERE login='$aid_prof_resp_login'");
-            $aid_prof_resp_nom[$n] = @mysql_result($aid_prof_query, 0, "nom");
-            $aid_prof_resp_prenom[$n] = @mysql_result($aid_prof_query, 0, "prenom");
+            $aid_prof_resp_login = @old_mysql_result($aid_prof_resp_query, $n, "id_utilisateur");
+            $aid_prof_query = @mysqli_query($GLOBALS["mysqli"], "SELECT nom,prenom FROM utilisateurs WHERE login='$aid_prof_resp_login'");
+            $aid_prof_resp_nom[$n] = @old_mysql_result($aid_prof_query, 0, "nom");
+            $aid_prof_resp_prenom[$n] = @old_mysql_result($aid_prof_query, 0, "prenom");
             $n++;
           }
           echo "<tr><td><span class='small'><strong>$nom_type_aid</strong>";
@@ -2491,26 +2918,33 @@ Patientez pendant l'extraction des données... merci.
 
       // Affichage des projets des années antérieures
       $id_nat = sql_query1("select no_gep from eleves where login='".$ele_login."'");
-      $call_data = mysql_query("select ta.annee, ta.id, a.id, ta.nom, a.nom, a.responsables
+      $sql_projet_aa="select ta.annee, 
+                             ta.id AS ta_id, 
+                             a.id AS a_id, 
+                             ta.nom AS ta_nom, 
+                             a.nom AS a_nom, 
+                             a.responsables
       from archivage_aids a, archivage_types_aid ta, archivage_aid_eleve ae
       where ta.outils_complementaires='y' and
       a.id=ae.id_aid and
       ae.id_eleve='".$id_nat."' and
       a.id_type_aid = ta.id
-      order by ta.annee");
+      order by ta.annee";
+      $call_data = mysqli_query($GLOBALS["mysqli"], $sql_projet_aa);
 
-      $nb_aid = mysql_num_rows($call_data);
+      $nb_aid = mysqli_num_rows($call_data);
       if ($nb_aid>0) {
         echo "<h2>Les projets des années antérieures</h2>";
         echo "<table width=\"$larg_tab\" border=\"1\" cellspacing=\"1\" cellpadding=\"3\">";
         $z=0;
-        while ($z < $nb_aid) {
-          $annee = @mysql_result($call_data, $z, "ta.annee");
-          $indice_aid = @mysql_result($call_data, $z, "ta.id");
-          $aid_id =  @mysql_result($call_data, $z, "a.id");
-          $nom_type_aid = @mysql_result($call_data, $z, "ta.nom");
-          $nom_aid =  @mysql_result($call_data, $z, "a.nom");
-          $aid_prof_resp =  @mysql_result($call_data, $z, "a.responsables");
+        //while ($z < $nb_aid) {
+        while($obj_projet_aa=$call_data->fetch_object()) {
+          $annee = $obj_projet_aa->annee;
+          $indice_aid = $obj_projet_aa->ta_id;
+          $aid_id =  $obj_projet_aa->a_id;
+          $nom_type_aid = $obj_projet_aa->ta_nom;
+          $nom_aid =  $obj_projet_aa->a_nom;
+          $aid_prof_resp =  $obj_projet_aa->responsables;
           echo "<tr>\n";
           echo "<td><span class='small'>".$annee."</td>\n";
           echo "<td><span class='small'><strong>$nom_type_aid</strong>";
@@ -2638,7 +3072,7 @@ Patientez pendant l'extraction des données... merci.
 			    require_once("../lib/initialisationsPropel.inc.php");
 			    $eleve = EleveQuery::create()->findOneByLogin($ele_login);
 
-			    echo "<table class='boireaus'>\n";
+			    echo "<table class='boireaus boireaus_alt'>\n";
 				echo "<caption>Bilan des absences</caption>\n";
 			    echo "<tr>\n";
 			    echo "<th title=\"Les dates de fin de période correspondent à ce qui est paramétré en colonne 'Date de fin' de la page de Verrouillage des périodes de notes (page accessible en compte scolarité).\">Période</th>\n";
@@ -2647,14 +3081,12 @@ Patientez pendant l'extraction des données... merci.
 			    echo "<th>Nombre de retards</th>\n";
 			    echo "<th>Appréciation</th>\n";
 			    echo "</tr>\n";
-			    $alt=1;
 			    foreach($eleve->getPeriodeNotes() as $periode_note) {
 				    if ($periode_note->getDateDebut() == null) {
 					//periode non commencee
 					continue;
 				    }
-				    $alt=$alt*(-1);
-				    echo "<tr class='lig$alt'>\n";
+				    echo "<tr>\n";
 				    echo "<td>".$periode_note->getNomPeriode();
 				    echo " du ".$periode_note->getDateDebut('d/m/Y');
 				    echo " au ";
@@ -2678,8 +3110,8 @@ Patientez pendant l'extraction des données... merci.
 				    //           Revoir la façon dont on remplit l'appréciation, peut-être donner l'accès à la page absences/saisie_absences.php
 				    //           sans permettre la modif des retards/abs/nj)
 					$sql="SELECT * FROM absences WHERE (login='".$ele_login."' AND periode='".$periode_note->getNumPeriode()."');";
-					$current_eleve_absences_query = mysql_query($sql);
-					$current_eleve_appreciation_absences = @mysql_result($current_eleve_absences_query, 0, "appreciation");
+					$current_eleve_absences_query = mysqli_query($GLOBALS["mysqli"], $sql);
+					$current_eleve_appreciation_absences = @old_mysql_result($current_eleve_absences_query, 0, "appreciation");
 					echo $current_eleve_appreciation_absences;
 				    echo "</td>\n";
 				    echo "</tr>\n";
@@ -2703,26 +3135,51 @@ Patientez pendant l'extraction des données... merci.
 			echo "background-color: ".$tab_couleur['discipline']."; ";
 			echo "'>";
 
+			$div_en_haut_a_droite="";
 			if(acces('/mod_discipline/saisie_incident.php', $_SESSION['statut'])) {
-				echo "<div style='float:right; width:4em;'>\n";
+				//echo "<div style='float:right; width:4em;'>\n";
 				//echo "<a href='../mod_discipline/saisie_incident.php?ele_login[0]=".$ele_login."&amp;Ajouter=Ajouter".add_token_in_url()."' title='Saisir un incident'><img src='../images/icons/saisie.png' width='16' height='16' /></a>";
-				echo "<form action='../mod_discipline/saisie_incident.php' name='form_saisie_disc' method='post' />\n";
-				echo add_token_field();
-				echo "<input type='hidden' name='ele_login[0]' value=\"$ele_login\" />\n";
-				echo "<input type='hidden' name='is_posted' value=\"y\" />\n";
-				echo "<input type='hidden' name='Ajouter' value=\"Ajouter\" />\n";
-				echo "<input type='submit' name='Saisir' value=\"Saisir\" title=\"Saisir un nouvel incident\" />\n";
-				echo "</form>\n";
-				echo "</div>\n";
+				$div_en_haut_a_droite.="<form action='../mod_discipline/saisie_incident.php' name='form_saisie_disc' method='post' />\n";
+				$div_en_haut_a_droite.=add_token_field();
+				$div_en_haut_a_droite.="<input type='hidden' name='ele_login[0]' value=\"$ele_login\" />\n";
+				$div_en_haut_a_droite.="<input type='hidden' name='is_posted' value=\"y\" />\n";
+				$div_en_haut_a_droite.="<input type='hidden' name='Ajouter' value=\"Ajouter\" />\n";
+				$div_en_haut_a_droite.="<input type='submit' name='Saisir' value=\"Saisir\" title=\"Saisir un nouvel $mod_disc_terme_incident dans le module Discipline\" />\n";
+				$div_en_haut_a_droite.="</form>\n";
+				//$div_en_haut_a_droite.="</div>\n";
 			}
 
-			echo "<h2>Incidents \"concernant\" l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
+			// A FAIRE: 20140418
+			$div_en_haut_a_droite.="<div style='float:right; width:4em; color:red; text-align:center;'>
+	<a href='../mod_discipline/mod_discipline_extraction_ooo.php?protagoniste_incident=$ele_login' title=\"Exporter les ".$mod_disc_terme_incident."s au format ODT.\">ODT</a><br />
+	<a href='../mod_discipline/afficher_incidents_eleve.php?login_ele=$ele_login' title=\"Afficher cette page avec/sans les informations concernant les autres protagonistes des ".$mod_disc_terme_incident."s.
+Vous pourrez choisir d'afficher ou non les informations concernant les éventuels autres protagonistes.\">HTML</a><br />
+</div>\n";
+
+			if((acces('/mod_discipline/saisie_avertissement_fin_periode.php', $_SESSION['statut']))&&(acces_saisie_avertissement_fin_periode($ele_login))) {
+				$div_en_haut_a_droite.="<div style='float:right; width:4em; text-align:center;'><a href='../mod_discipline/saisie_avertissement_fin_periode.php?login_ele=$ele_login' title=\"Saisir un ".getSettingValue('mod_disc_terme_avertissement_fin_periode')."\">Saisie AVT</a></div>\n";
+			}
+
+			if($div_en_haut_a_droite!="") {
+				echo "<div style='float:right; width:4em;'>$div_en_haut_a_droite</div>";
+			}
+
+			//if(acces('/mod_discipline/imprimer_bilan_periode.php', $_SESSION['statut'])) {
+				$tableau_des_avertissements_de_fin_de_periode_eleve_de_cet_eleve=tableau_des_avertissements_de_fin_de_periode_eleve($ele_login);
+				if($tableau_des_avertissements_de_fin_de_periode_eleve_de_cet_eleve!='') {
+					echo "<div style='float:right; width:25em; margin-bottom:0.5em; margin-left:0.5em;'>".$tableau_des_avertissements_de_fin_de_periode_eleve_de_cet_eleve."</div>\n";
+				}
+			//}
+
+			echo "<h2>".ucfirst($mod_disc_terme_incident)."s \"concernant\" l'".$gepiSettings['denomination_eleve']." ".$tab_ele['nom']." ".$tab_ele['prenom']."</h2>\n";
 
 			//=======================
 			//Configuration du calendrier
+			/*
 			include("../lib/calendrier/calendrier.class.php");
 			$cal1 = new Calendrier("form_date_disc", "date_debut_disc");
 			$cal2 = new Calendrier("form_date_disc", "date_fin_disc");
+			*/
 			//=======================
 
 			echo "<form action='".$_SERVER['PHP_SELF']."' name='form_date_disc' method='post' />\n";
@@ -2730,12 +3187,13 @@ Patientez pendant l'extraction des données... merci.
 			echo "<p>Extraire les incidents entre le ";
 			//echo "<input type='text' name='date_debut_disc' value='' />\n";
 			echo "<input type='text' name = 'date_debut_disc' id= 'date_debut_disc' size='10' value = \"".$date_debut_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-			echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
-
+			//echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+			echo img_calendrier_js("date_debut_disc", "img_bouton_date_debut_disc");
 			echo "et le ";
 			//echo "<input type='text' name='date_fin_disc' value='' />\n";
 			echo "<input type='text' name = 'date_fin_disc' id= 'date_fin_disc' size='10' value = \"".$date_fin_disc."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-			echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+			//echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier\" border=\"0\" /></a>\n";
+			echo img_calendrier_js("date_fin_disc", "img_bouton_date_fin_disc");
 
 			echo "<input type='submit' name='restreindre_intervalle_dates' value='Valider' />\n";
 
@@ -2788,16 +3246,16 @@ Patientez pendant l'extraction des données... merci.
 			//$sql="SELECT DISTINCT annee,num_periode,nom_periode FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee DESC, num_periode ASC";
 			//$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='$ine' ORDER BY annee DESC;";
 			$sql="SELECT DISTINCT annee FROM archivage_disciplines WHERE ine='".$tab_ele['no_gep']."' ORDER BY annee ASC;";
-			$res_ant=mysql_query($sql);
+			$res_ant=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($res_ant)==0){
+			if(mysqli_num_rows($res_ant)==0){
 				echo "<p>Aucun résultat antérieur n'a été conservé pour cet ".$gepiSettings['denomination_eleve'].".</p>\n";
 			}
 			else{
 
 				unset($tab_annees);
 
-				$nb_annees=mysql_num_rows($res_ant);
+				$nb_annees=mysqli_num_rows($res_ant);
 
 				//echo "<p>Bulletins simplifiés:</p>\n";
 				//echo "<table border='0'>\n";
@@ -2806,7 +3264,7 @@ Patientez pendant l'extraction des données... merci.
 				echo "<tr class='lig$alt'>\n";
 				echo "<th rowspan='".$nb_annees."' valign='top'>Bulletins simplifiés:</th>";
 				$cpt=0;
-				while($lig_ant=mysql_fetch_object($res_ant)){
+				while($lig_ant=mysqli_fetch_object($res_ant)){
 
 					$tab_annees[]=$lig_ant->annee;
 
@@ -2818,9 +3276,9 @@ Patientez pendant l'extraction des données... merci.
 					echo "<td style='font-weight:bold;'>$lig_ant->annee : </td>\n";
 
 					$sql="SELECT DISTINCT num_periode,nom_periode FROM archivage_disciplines WHERE ine='".$tab_ele['no_gep']."' AND annee='$lig_ant->annee' ORDER BY num_periode ASC";
-					$res_ant2=mysql_query($sql);
+					$res_ant2=mysqli_query($GLOBALS["mysqli"], $sql);
 
-					if(mysql_num_rows($res_ant2)==0){
+					if(mysqli_num_rows($res_ant2)==0){
 						echo "<td>Aucun résultat antérieur n'a été conservé pour cet ".$gepiSettings['denomination_eleve'].".</td>\n";
 					}
 					else{
@@ -2830,7 +3288,7 @@ Patientez pendant l'extraction des données... merci.
 						}
 
 						$cpt=0;
-						while($lig_ant2=mysql_fetch_object($res_ant2)){
+						while($lig_ant2=mysqli_fetch_object($res_ant2)){
 							//if($cpt>0){echo "<td> - </td>\n";}
 
 							// $id_classe=$tab_ele['periodes'][$index_per]['id_classe']

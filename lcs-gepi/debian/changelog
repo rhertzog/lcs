@@ -1,3 +1,9 @@
+lcs-gepi (2.4.10~2) Lcs; urgency=low
+
+  * update to version 1.6.5   
+ 
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Jul 2014 13:50:57 +0200
+
 lcs-gepi (2.4.10~1) LCS; urgency=low
 
   * Make a 2.4.10 reelease for Wheezy repository

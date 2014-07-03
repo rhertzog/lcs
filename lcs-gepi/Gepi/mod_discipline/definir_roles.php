@@ -2,7 +2,7 @@
 
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -47,6 +47,8 @@ if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') 
 	die();
 }
 
+require('sanctions_func_lib.php');
+
 $acces_ok="n";
 if(($_SESSION['statut']=='administrateur')||
 (($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirRolesCpe')))||
@@ -54,7 +56,7 @@ if(($_SESSION['statut']=='administrateur')||
 	$acces_ok="y";
 }
 else {
-	$msg="Vous n'avez pas le droit de définir les rôles dans les incidents.";
+	$msg="Vous n'avez pas le droit de définir les rôles dans les ".$mod_disc_terme_incident."s.";
 	header("Location: ./index.php?msg=$msg");
 	die();
 }
@@ -62,8 +64,6 @@ else {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // REMARQUE: Le terme de 'qualité' a été remplacé par 'rôle'
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-require('sanctions_func_lib.php');
 
 $msg="";
 
@@ -77,7 +77,7 @@ if(isset($suppr_qualite)) {
 	for($i=0;$i<$cpt;$i++) {
 		if(isset($suppr_qualite[$i])) {
 			$sql="DELETE FROM s_qualites WHERE id='$suppr_qualite[$i]';";
-			$suppr=mysql_query($sql);
+			$suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 			if(!$suppr) {
 				//$msg.="ERREUR lors de la suppression de la qualité n°".$suppr_qualite[$i].".<br />\n";
 				$msg.="ERREUR lors de la suppression du rôle n°".$suppr_qualite[$i].".<br />\n";
@@ -93,10 +93,10 @@ if((isset($qualite))&&($qualite!='')) {
 	$a_enregistrer='y';
 
 	$sql="SELECT qualite FROM s_qualites ORDER BY qualite;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		$tab_qualite=array();
-		while($lig=mysql_fetch_object($res)) {
+		while($lig=mysqli_fetch_object($res)) {
 			$tab_qualite[]=$lig->qualite;
 		}
 
@@ -108,8 +108,8 @@ if((isset($qualite))&&($qualite!='')) {
 
 		$qualite=suppression_sauts_de_lignes_surnumeraires($qualite);
 
-		$sql="INSERT INTO s_qualites SET qualite='".mysql_real_escape_string($qualite)."';";
-		$res=mysql_query($sql);
+		$sql="INSERT INTO s_qualites SET qualite='".mysqli_real_escape_string($GLOBALS["mysqli"], $qualite)."';";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$res) {
 			$msg.="ERREUR lors de l'enregistrement de ".$qualite."<br />\n";
 		}
@@ -121,7 +121,6 @@ if((isset($qualite))&&($qualite!='')) {
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-//$titre_page = "Sanctions: Définition des qualités";
 $titre_page = "Discipline: Définition des rôles";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
@@ -135,13 +134,13 @@ echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' meth
 echo add_token_field();
 
 //echo "<p class='bold'>Saisie des qualités dans un incident&nbsp;:</p>\n";
-echo "<p class='bold'>Saisie des rôles dans un incident&nbsp;:</p>\n";
+echo "<p class='bold'>Saisie des rôles dans un ".$mod_disc_terme_incident."&nbsp;:</p>\n";
 echo "<blockquote>\n";
 
 $cpt=0;
 $sql="SELECT * FROM s_qualites ORDER BY qualite;";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
 	//echo "<p>Aucune qualité n'est encore définie.</p>\n";
 	echo "<p>Aucun rôle n'est encore défini.</p>\n";
 }
@@ -156,7 +155,7 @@ else {
 	echo "<th>Supprimer</th>\n";
 	echo "</tr>\n";
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
 

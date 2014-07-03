@@ -56,7 +56,7 @@ if(($_SESSION['statut']=='administrateur')||
 	$acces_ok="y";
 }
 else {
-	$msg="Vous n'avez pas le droit de définir les lieux de sanctions.";
+	$msg="Vous n'avez pas le droit de définir les lieux de ".$mod_disc_terme_incident."s.";
 	header("Location: ./index.php?msg=$msg");
 	die();
 }
@@ -75,7 +75,7 @@ if(isset($suppr_lieu)) {
 	for($i=0;$i<$cpt;$i++) {
 		if(isset($suppr_lieu[$i])) {
 			$sql="DELETE FROM s_lieux_incidents WHERE id='$suppr_lieu[$i]';";
-			$suppr=mysql_query($sql);
+			$suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 			if(!$suppr) {
 				//$msg.="ERREUR lors de la suppression de la qualité n°".$suppr_lieu[$i].".<br />\n";
 				$msg.="ERREUR lors de la suppression du lieu n°".$suppr_lieu[$i].".<br />\n";
@@ -91,10 +91,10 @@ if((isset($lieu))&&($lieu!='')) {
 	$a_enregistrer='y';
 
 	$sql="SELECT lieu FROM s_lieux_incidents ORDER BY lieu;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		$tab_lieu=array();
-		while($lig=mysql_fetch_object($res)) {
+		while($lig=mysqli_fetch_object($res)) {
 			$tab_lieu[]=$lig->lieu;
 		}
 
@@ -106,8 +106,8 @@ if((isset($lieu))&&($lieu!='')) {
 
 		$lieu=suppression_sauts_de_lignes_surnumeraires($lieu);
 
-		$sql="INSERT INTO s_lieux_incidents SET lieu='".mysql_real_escape_string($lieu)."';";
-		$res=mysql_query($sql);
+		$sql="INSERT INTO s_lieux_incidents SET lieu='".mysqli_real_escape_string($GLOBALS["mysqli"], $lieu)."';";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$res) {
 			$msg.="ERREUR lors de l'enregistrement de ".$lieu."<br />\n";
 		}
@@ -119,7 +119,6 @@ if((isset($lieu))&&($lieu!='')) {
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-//$titre_page = "Sanctions: Définition des qualités";
 $titre_page = "Discipline: Définition des lieux";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
@@ -133,13 +132,13 @@ echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' meth
 echo add_token_field();
 
 //echo "<p class='bold'>Saisie des qualités dans un incident&nbsp;:</p>\n";
-echo "<p class='bold'>Saisie les lieux des incidents&nbsp;:</p>\n";
+echo "<p class='bold'>Saisie les lieux des ".$mod_disc_terme_incident."s&nbsp;:</p>\n";
 echo "<blockquote>\n";
 
 $cpt=0;
 $sql="SELECT * FROM s_lieux_incidents ORDER BY lieu;";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
 	//echo "<p>Aucune qualité n'est encore définie.</p>\n";
 	echo "<p>Aucun lieu n'est encore défini.</p>\n";
 }
@@ -154,7 +153,7 @@ else {
 	echo "<th>Supprimer</th>\n";
 	echo "</tr>\n";
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
 

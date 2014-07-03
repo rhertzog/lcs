@@ -178,6 +178,11 @@ fi
 	echo "Changement des droits sur l'arborescence du module"
 	#
 	$CONF/Scripts/chown.sh $MODULE
+	#maj de la base
+        cd $PATHPLUG/utilitaires
+        ladate=`date +%Y%m%d%H%M`
+        mysqldump --opt gepi_plug > /var/backups/sql/gepi_$ladate.sql
+        ./maj.sh forcer
 	cd $CHEMIN
 	echo "Fin de l'installation"
 ;;

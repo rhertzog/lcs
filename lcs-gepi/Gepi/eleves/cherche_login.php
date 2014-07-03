@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -34,8 +34,8 @@ if ($resultat_session == 'c') {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/eleves/cherche_login.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 	$sql="INSERT INTO droits SET id='/eleves/cherche_login.php',
 	administrateur='V',
 	professeur='F',
@@ -47,7 +47,7 @@ if(mysql_num_rows($test)==0) {
 	autre='F',
 	description='Ajax: Recherche d un login',
 	statut='';";
-	$insert=mysql_query($sql);
+	$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
@@ -59,15 +59,29 @@ header('Content-Type: text/html; charset=utf-8');
 
 $auth_sso=getSettingValue("auth_sso") ? getSettingValue("auth_sso") : "";
 
+$gepi_non_plugin_lcs_mais_recherche_ldap=false;
+if((getSettingAOui('gepi_non_plugin_lcs_mais_recherche_ldap'))&&(file_exists("../secure/config_ldap.inc.php"))) {
+	include("../secure/config_ldap.inc.php");
+
+	$lcs_ldap_base_dn=$ldap_base_dn;
+	$lcs_ldap_host=$ldap_host;
+	$lcs_ldap_port=$ldap_port;
+	$gepi_non_plugin_lcs_mais_recherche_ldap=true;
+
+	$lcs_ldap_people_dn = 'ou=people,'.$lcs_ldap_base_dn;
+	$lcs_ldap_groups_dn = 'ou=groups,'.$lcs_ldap_base_dn;
+}
+
 $nom=isset($_POST['nom']) ? $_POST['nom'] : (isset($_GET['nom']) ? $_GET['nom'] : "");
 $prenom=isset($_POST['prenom']) ? $_POST['prenom'] : (isset($_GET['prenom']) ? $_GET['prenom'] : "");
+$statut_recherche=isset($_POST['statut_recherche']) ? $_POST['statut_recherche'] : (isset($_GET['statut_recherche']) ? $_GET['statut_recherche'] : "eleve");
 
 if(($nom!="")||($prenom!="")) {
 
 	$nom=preg_replace("[A-Za-z]","*",$nom);
 	$prenom=preg_replace("[A-Za-z]","*",$prenom);
 
-	if($auth_sso=='lcs') {
+	if(($auth_sso=='lcs')||($gepi_non_plugin_lcs_mais_recherche_ldap)) {
 		function connect_ldap($l_adresse,$l_port,$l_login,$l_pwd) {
 			$ds = @ldap_connect($l_adresse, $l_port);
 			if($ds) {
@@ -140,42 +154,81 @@ if(($nom!="")||($prenom!="")) {
 					echo print_r($info);
 					echo "</pre>";
 					*/
-					echo "<table class='boireaus'>\n";
-					echo "<tr>\n";
-					echo "<th>Login LCS</th>\n";
-					echo "<th>Nom</th>\n";
-					echo "<th>Prénom</th>\n";
-					echo "<th>Naissance</th>\n";
-					echo "</tr>\n";
-					$alt=1;
-					for($i=0;$i<$info["count"];$i++) {
-
-						$tab=explode(",",$info[$i]["gecos"][0]);
-						$jour=mb_substr($tab[1],6,2);
-						$mois=mb_substr($tab[1],4,2);
-						$annee=mb_substr($tab[1],0,4);
-						$naissance=$jour."/".$mois."/".$annee;
-
-						$sexe=$tab[2];
-
-						$alt=$alt*(-1);
-						echo "<tr class='lig$alt'>\n";
-						echo "<td><a href=\"#\" onclick=\"document.getElementById('reg_login').value='".$info[$i]["uid"][0]."';
-															document.getElementById('nom').value='".$info[$i]["sn"][0]."';
-															document.getElementById('prenom').value='".$info[$i]["givenname"][0]."';
-															document.getElementById('birth_day').value='".$jour."';
-															document.getElementById('birth_month').value='".$mois."';
-															document.getElementById('birth_year').value='".$annee."';
-															document.getElementById('reg_email').value='".$info[$i]["mail"][0]."';
-															document.getElementById('elenoet').value='".$info[$i]["employeenumber"][0]."';
-															document.getElementById('reg_sexe$sexe').checked=true;
-															return false;\">".$info[$i]["uid"][0]."</a></td>\n";
-						echo "<td>".$info[$i]["sn"][0]."</td>\n";
-						echo "<td>".$info[$i]["givenname"][0]."</td>\n";
-						echo "<td>".$naissance."</td>\n";
+					if($statut_recherche=="eleve") {
+						echo "<table class='boireaus'>\n";
+						echo "<tr>\n";
+						echo "<th>Login LCS</th>\n";
+						echo "<th>Nom</th>\n";
+						echo "<th>Prénom</th>\n";
+						echo "<th>Naissance</th>\n";
 						echo "</tr>\n";
+						$alt=1;
+						for($i=0;$i<$info["count"];$i++) {
+
+							$tab=explode(",",$info[$i]["gecos"][0]);
+							$jour=mb_substr($tab[1],6,2);
+							$mois=mb_substr($tab[1],4,2);
+							$annee=mb_substr($tab[1],0,4);
+							$naissance=$jour."/".$mois."/".$annee;
+
+							$sexe=$tab[2];
+
+							$alt=$alt*(-1);
+							echo "<tr class='lig$alt'>\n";
+							echo "<td><a href=\"#\" onclick=\"document.getElementById('reg_login').value='".$info[$i]["uid"][0]."';
+																document.getElementById('nom').value='".$info[$i]["sn"][0]."';
+																document.getElementById('prenom').value='".$info[$i]["givenname"][0]."';
+																document.getElementById('birth_day').value='".$jour."';
+																document.getElementById('birth_month').value='".$mois."';
+																document.getElementById('birth_year').value='".$annee."';
+																document.getElementById('reg_email').value='".$info[$i]["mail"][0]."';
+																document.getElementById('elenoet').value='".$info[$i]["employeenumber"][0]."';
+																document.getElementById('reg_sexe$sexe').checked=true;
+																return false;\"
+											title=\"Compléter les champs de formulaire avec les informations trouvées dans l'annuaire LDAP pour cet identifiant.\">".$info[$i]["uid"][0]."</a></td>\n";
+							echo "<td>".$info[$i]["sn"][0]."</td>\n";
+							echo "<td>".$info[$i]["givenname"][0]."</td>\n";
+							echo "<td>".$naissance."</td>\n";
+							echo "</tr>\n";
+						}
+						echo "</table>\n";
 					}
-					echo "</table>\n";
+					else {
+						echo "<table class='boireaus'>\n";
+						echo "<tr>\n";
+						echo "<th>Login LCS</th>\n";
+						echo "<th>Nom</th>\n";
+						echo "<th>Prénom</th>\n";
+						echo "</tr>\n";
+						$alt=1;
+						for($i=0;$i<$info["count"];$i++) {
+
+							$tab=explode(",",$info[$i]["gecos"][0]);
+							/*
+							$jour=mb_substr($tab[1],6,2);
+							$mois=mb_substr($tab[1],4,2);
+							$annee=mb_substr($tab[1],0,4);
+							$naissance=$jour."/".$mois."/".$annee;
+							*/
+							$sexe=$tab[2];
+
+							$alt=$alt*(-1);
+							echo "<tr class='lig$alt'>\n";
+							echo "<td><a href=\"#\" onclick=\"document.getElementById('reg_login').value='".$info[$i]["uid"][0]."';
+																document.getElementById('reg_nom').value='".$info[$i]["sn"][0]."';
+																document.getElementById('reg_prenom').value='".$info[$i]["givenname"][0]."';
+																document.getElementById('reg_email').value='".$info[$i]["mail"][0]."';
+																if('$sexe'=='F') {document.getElementById('reg_civilite').selectedIndex=2;} else {document.getElementById('reg_civilite').selectedIndex=1;}
+																//document.getElementById('elenoet').value='".$info[$i]["employeenumber"][0]."';
+																return false;\"
+											title=\"Compléter les champs de formulaire avec les informations trouvées dans l'annuaire LDAP pour cet identifiant.\">".$info[$i]["uid"][0]."</a></td>\n";
+							echo "<td>".$info[$i]["sn"][0]."</td>\n";
+							echo "<td>".$info[$i]["givenname"][0]."</td>\n";
+							//echo "<td>".$naissance."</td>\n";
+							echo "</tr>\n";
+						}
+						echo "</table>\n";
+					}
 				}
 				@ldap_free_result ( $result );
 			}

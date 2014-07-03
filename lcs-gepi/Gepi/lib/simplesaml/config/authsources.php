@@ -1,20 +1,6 @@
 <?php
 
-/*
- * Paramètre de configuration spécifique à gepi :
- * 'portal_return_url' => 'mon url', //adresse de redirection lorsque l'on quitte gepi. Si cette url est présente, on affiche un lien retour au portail et non un lien déconnection
- * 'do_source_logout' => true, //true par défaut, Sur une identification distante sans single logout, il faut éviter et mettre false pour ne pas déconnecter le portail a tord
-*/
 $config = array(
-
-	/*authentification admin saml en utilisant un profil administrateur gepi
-	'admin' => array(
-		'gepiauth:LocalDB',
-		'required_statut' => 'administrateur',
-		'name' => array(
-		    'fr' => 'Administration simplesaml',
-		),
-	),*/
 
 	//authentification gepi
 	'Authentification locale gepi' => array(
@@ -46,20 +32,6 @@ $config = array(
 		'sources' => array('Authentification locale gepi', 'Authentification cas e-lyco')
 	),
     
-	/*authentification en s'appuyant sur un gepi-maitre distant (à décommenter sur le gepi esclave)
-	'Authentification sur un serveur gepi distant' => array(
-		'saml:SP',
-		'idp' => 'gepi-idp',
-		'entityID' => 'gepi-esclave-sp',
-		//ce paramêtre doit correspondre avec l' entityID dans le fichier simplesaml/metadata/saml20-sp-remote.php du fournisseur d'identité (gepi maitre)
-		'portal_return_url' => 'http://www.mon-serveur-esclave-gepi.fr',
-		'do_source_logout' => false,
-	),
-	'Authentification au choix locale ou sur serveur gepi distant' => array(
-		'multiauth:MultiAuth',
-		'sources' => array('Authentification locale gepi', 'Authentification sur un serveur gepi distant')
-	),
-	*/
 	
 );
 
@@ -69,3 +41,4 @@ if (!empty($sources_array)) {
 	//la source définie ci dessous est utilisé par la classe SimpleSAML_Auth_GepiSimple dans les cas d'erreur de configuration de choix de source
 	$config['Authentification au choix entre toutes les sources configurees'] = array('multiauth:MultiAuth', 'sources' => $sources_array);
 }
+

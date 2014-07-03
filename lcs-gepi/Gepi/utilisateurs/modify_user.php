@@ -85,6 +85,20 @@ $_SESSION['uid_prime'] = $uid;
 
 // fin pour module trombinoscope
 
+$auth_sso=getSettingValue("auth_sso") ? getSettingValue("auth_sso") : "";
+$gepi_non_plugin_lcs_mais_recherche_ldap=false;
+if((getSettingAOui('gepi_non_plugin_lcs_mais_recherche_ldap'))&&(file_exists("../secure/config_ldap.inc.php"))) {
+	include("../secure/config_ldap.inc.php");
+
+	$lcs_ldap_base_dn=$ldap_base_dn;
+	$lcs_ldap_host=$ldap_host;
+	$lcs_ldap_port=$ldap_port;
+	$gepi_non_plugin_lcs_mais_recherche_ldap=true;
+
+	$lcs_ldap_people_dn = 'ou=people,'.$lcs_ldap_base_dn;
+	$lcs_ldap_groups_dn = 'ou=groups,'.$lcs_ldap_base_dn;
+}
+
 if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 check_token();
 //------------------------------------------------------
@@ -144,8 +158,8 @@ check_token();
 				if((isset($info_verif_mot_de_passe))&&($info_verif_mot_de_passe!="")) {$msg.="<br />".$info_verif_mot_de_passe;}
 			} else {
 				// Le teste suivant détecte si un utilisateur existe avec le même login (insensible à la casse)
-				$test = mysql_query("SELECT login FROM utilisateurs WHERE (login = '".$_POST['new_login']."' OR login = '".strtoupper($_POST['new_login'])."')");
-				$nombreligne = mysql_num_rows($test);
+				$test = mysqli_query($GLOBALS["mysqli"], "SELECT login FROM utilisateurs WHERE (login = '".$_POST['new_login']."' OR login = '".strtoupper($_POST['new_login'])."')");
+				$nombreligne = mysqli_num_rows($test);
 				if ($nombreligne != 0) {
 					$resultat = "NON";
 					$msg = "*** Attention ! Un utilisateur ayant le même identifiant existe déjà. Enregistrement impossible ! ***";
@@ -179,21 +193,21 @@ check_token();
 						// Ensuite, on enregistre dans la base, en distinguant selon le type d'authentification.
 						if ($_POST['reg_auth_mode'] == "gepi") {
 							// On enregistre le mot de passe
-							$reg_data = mysql_query("INSERT INTO utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."',login='".$_POST['new_login']."',password='$reg_password_c',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."', auth_mode = '".$_POST['reg_auth_mode']."',etat='actif', change_mdp='y'");
+							$reg_data = mysqli_query($GLOBALS["mysqli"], "INSERT INTO utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."',login='".$_POST['new_login']."',password='$reg_password_c',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."', auth_mode = '".$_POST['reg_auth_mode']."',etat='actif', change_mdp='y'");
 						} else {
 							// Auth LDAP ou SSO, pas de mot de passe.
-							$reg_data = mysql_query("INSERT INTO utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."',login='".$_POST['new_login']."',password='',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."', auth_mode = '".$_POST['reg_auth_mode']."',etat='actif', change_mdp='n'");
+							$reg_data = mysqli_query($GLOBALS["mysqli"], "INSERT INTO utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."',login='".$_POST['new_login']."',password='',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."', auth_mode = '".$_POST['reg_auth_mode']."',etat='actif', change_mdp='n'");
 						}
 
 						if ($_POST['reg_statut'] == "professeur") {
-							$del = mysql_query("DELETE FROM j_professeurs_matieres WHERE id_professeur = '".$_POST['new_login']."'");
+							$del = mysqli_query($GLOBALS["mysqli"], "DELETE FROM j_professeurs_matieres WHERE id_professeur = '".$_POST['new_login']."'");
 							$m = 0;
 							while ($m < $_POST['max_mat']) {
 								if ($reg_matiere[$m] != '') {
-									$test = mysql_query("SELECT * FROM j_professeurs_matieres WHERE (id_professeur = '".$_POST['new_login']."' and id_matiere = '$reg_matiere[$m]')");
-									$resultat = mysql_num_rows($test);
+									$test = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_professeurs_matieres WHERE (id_professeur = '".$_POST['new_login']."' and id_matiere = '$reg_matiere[$m]')");
+									$resultat = mysqli_num_rows($test);
 									if ($resultat == 0) {
-										$reg = mysql_query("INSERT INTO j_professeurs_matieres SET id_professeur = '".$_POST['new_login']."', id_matiere = '$reg_matiere[$m]', ordre_matieres = '0'");
+										$reg = mysqli_query($GLOBALS["mysqli"], "INSERT INTO j_professeurs_matieres SET id_professeur = '".$_POST['new_login']."', id_matiere = '$reg_matiere[$m]', ordre_matieres = '0'");
 									}
 								}
 								$reg_matiere[$m] = '';
@@ -215,11 +229,11 @@ check_token();
 			if($temoin_ajout_ou_modif_ok=="y") {
 				if ($_POST['reg_statut']=='scolarite'){
 					$sql="SELECT c.id FROM classes c;";
-					$res_liste_classes=mysql_query($sql);
-					if(mysql_num_rows($res_liste_classes)>0){
-						while($ligtmp=mysql_fetch_object($res_liste_classes)) {
+					$res_liste_classes=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_liste_classes)>0){
+						while($ligtmp=mysqli_fetch_object($res_liste_classes)) {
 							$sql="INSERT INTO j_scol_classes SET id_classe='$ligtmp->id', login='".$_POST['new_login']."';";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$insert){
 								$msg.="<br />Erreur lors de l'association avec la classe ".get_class_from_id($ligtmp->id);
 							}
@@ -243,18 +257,26 @@ check_token();
 			}
 
 			// Si on change le mode d'authentification, il faut quelques opérations particulières
-			$old_auth_mode = mysql_result(mysql_query("SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
+			$old_auth_mode = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
 			if ($old_auth_mode == "gepi" && ($_POST['reg_auth_mode'] == "ldap" || $_POST['reg_auth_mode'] == "sso")) {
 				// On passe du mode Gepi à un mode externe : il faut supprimer le mot de passe
-				$oldmd5password = mysql_result(mysql_query("SELECT password FROM utilisateurs WHERE login = '".$user_login."'"), 0);
-				mysql_query("UPDATE utilisateurs SET password = '', salt = '' WHERE login = '".$user_login."'");
+				$oldmd5password = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT password FROM utilisateurs WHERE login = '".$user_login."'"), 0);
+				// 20140301
+				if(!getSettingAOui('auth_sso_ne_pas_vider_MDP_gepi')) {
+					mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET password = '', salt = '' WHERE login = '".$user_login."'");
+				}
 				$msg = "Passage à un mode d'authentification externe : ";
 				// Et si on a un accès en écriture au LDAP, il faut créer l'utilisateur !
 				if ($gepiSettings['ldap_write_access'] == "yes") {
 					$create_ldap_user = true;
 					$msg .= "le mot de passe de l'utilisateur est inchangé.<br/>";
 				} else {
-					$msg .= "le mot de passe de l'utilisateur a été effacé.<br/>";
+					if(!getSettingAOui('auth_sso_ne_pas_vider_MDP_gepi')) {
+						$msg .= "le mot de passe de l'utilisateur a été effacé.<br/>";
+					}
+					else {
+						$msg .= "le mot de passe de l'utilisateur a été conservé.<br/>";
+					}
 				}
 			} elseif (($old_auth_mode == "sso" || $old_auth_mode == "ldap") && $_POST['reg_auth_mode'] == "gepi") {
 				// On passe d'un mode externe à un mode Gepi. On prévient l'admin qu'il faut modifier le mot de passe.
@@ -267,8 +289,8 @@ check_token();
 			$change = "yes";
 			$flag = '';
 			if ($_POST['reg_statut'] != "professeur") {
-				$test = mysql_query("SELECT * FROM j_groupes_professeurs WHERE (login='".$user_login."')");
-				$nb = mysql_num_rows($test);
+				$test = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_groupes_professeurs WHERE (login='".$user_login."')");
+				$nb = mysqli_num_rows($test);
 				if ($nb != 0) {
 					$msg = "Impossible de changer le statut. Cet utilisateur est actuellement professeur dans certaines classes !";
 					$change = "no";
@@ -283,10 +305,10 @@ check_token();
 
 			if ($_POST['reg_statut'] == "professeur") {
 				//$test = mysql_query("SELECT jgm.id_matiere FROM j_groupes_professeurs jgp, j_groupes_matieres jgm WHERE (" .
-				$test = mysql_query("SELECT DISTINCT(jgm.id_matiere) FROM j_groupes_professeurs jgp, j_groupes_matieres jgm WHERE (" .
+				$test = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT(jgm.id_matiere) FROM j_groupes_professeurs jgp, j_groupes_matieres jgm WHERE (" .
 					"jgp.login = '".$user_login."' and " .
 					"jgm.id_groupe = jgp.id_groupe)");
-				$nb = mysql_num_rows($test);
+				$nb = mysqli_num_rows($test);
 				if ($nb != 0) {
 					$k = 0;
 					$change = "yes";
@@ -295,7 +317,7 @@ check_token();
 						// Pour chaque matière associée au prof, on réinitialise le témoin:
 						$flag="no";
 						// ===============
-						$id_matiere = mysql_result($test, $k, 'id_matiere');
+						$id_matiere = old_mysql_result($test, $k, 'id_matiere');
 						//echo "\$k=$k<br />";
 						//echo "\$id_matiere=$id_matiere<br />";
 						$m = 0;
@@ -324,14 +346,14 @@ check_token();
 				$temoin_ajout_ou_modif_ok="y";
 
 				$sql="SELECT statut FROM utilisateurs WHERE login='$user_login';";
-				$res_statut_user=mysql_query($sql);
-				$lig_tmp=mysql_fetch_object($res_statut_user);
+				$res_statut_user=mysqli_query($GLOBALS["mysqli"], $sql);
+				$lig_tmp=mysqli_fetch_object($res_statut_user);
 
 				// Si l'utilisateur était CPE, il faut supprimer les associations dans la table j_eleves_cpe
 				if($lig_tmp->statut=="cpe"){
 					if($_POST['reg_statut']!="cpe"){
 						$sql="DELETE FROM j_eleves_cpe WHERE cpe_login='$user_login';";
-						$nettoyage=mysql_query($sql);
+						$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 					}
 				}
 
@@ -339,7 +361,7 @@ check_token();
 				if($lig_tmp->statut=="scolarite"){
 					if($_POST['reg_statut']!="scolarite"){
 						$sql="DELETE FROM j_scol_classes WHERE login='$user_login';";
-						$nettoyage=mysql_query($sql);
+						$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 					}
 				}
 
@@ -368,16 +390,16 @@ check_token();
 				}
 
 
-				$reg_data = mysql_query("UPDATE utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."', login='".$_POST['reg_login']."',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."',etat='".$_POST['reg_etat']."',auth_mode='".$_POST['reg_auth_mode']."' WHERE login='".$user_login."'");
-				$del = mysql_query("DELETE FROM j_professeurs_matieres WHERE id_professeur = '".$user_login."'");
+				$reg_data = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET nom='".$_POST['reg_nom']."',prenom='".$_POST['reg_prenom']."',civilite='".$_POST['reg_civilite']."', login='".$_POST['reg_login']."',statut='".$_POST['reg_statut']."',email='".$_POST['reg_email']."',etat='".$_POST['reg_etat']."',auth_mode='".$_POST['reg_auth_mode']."' WHERE login='".$user_login."'");
+				$del = mysqli_query($GLOBALS["mysqli"], "DELETE FROM j_professeurs_matieres WHERE id_professeur = '".$user_login."'");
 				$m = 0;
 				while ($m < $_POST['max_mat']) {
 					$num=$m+1;
 					if ($reg_matiere[$m] != '') {
-						$test = mysql_query("SELECT * FROM j_professeurs_matieres WHERE (id_professeur = '".$user_login."' and id_matiere = '$reg_matiere[$m]')");
-						$resultat = mysql_num_rows($test);
+						$test = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_professeurs_matieres WHERE (id_professeur = '".$user_login."' and id_matiere = '$reg_matiere[$m]')");
+						$resultat = mysqli_num_rows($test);
 						if ($resultat == 0) {
-						$reg = mysql_query("INSERT INTO j_professeurs_matieres SET id_professeur = '".$user_login."', id_matiere = '$reg_matiere[$m]', ordre_matieres = '$num'");
+						$reg = mysqli_query($GLOBALS["mysqli"], "INSERT INTO j_professeurs_matieres SET id_professeur = '".$user_login."', id_matiere = '$reg_matiere[$m]', ordre_matieres = '$num'");
 						}
 						$reg_matiere[$m] = '';
 					}
@@ -404,7 +426,7 @@ check_token();
 			// pour le module trombinoscope
 			// Envoi de la photo
 			$i_photo = 0;
-			$calldata_photo = mysql_query("SELECT * FROM utilisateurs WHERE (login = '".$user_login."')");
+			$calldata_photo = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM utilisateurs WHERE (login = '".$user_login."')");
 
 		// En multisite, on ajoute le répertoire RNE
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
@@ -479,26 +501,26 @@ elseif(isset($_POST['suppression_assoc_user_groupes'])) {
 
 	$user_group=isset($_POST["user_group"]) ? $_POST["user_group"] : array();
 
-	$call_classes = mysql_query("SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
+	$call_classes = mysqli_query($GLOBALS["mysqli"], "SELECT g.id group_id, g.name name, c.classe classe, c.id classe_id " .
 			"FROM j_groupes_professeurs jgp, j_groupes_classes jgc, groupes g, classes c WHERE (" .
 			"jgp.login = '$user_login' and " .
 			"g.id = jgp.id_groupe and " .
 			"jgc.id_groupe = jgp.id_groupe and " .
 			"c.id = jgc.id_classe) order by jgc.id_classe");
-	$nb_classes = mysql_num_rows($call_classes);
+	$nb_classes = mysqli_num_rows($call_classes);
 	if($nb_classes>0) {
 		$k = 0;
 		$user_classe=array();
 		while ($k < $nb_classes) {
-			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
-			$user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
-			$user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
-			$user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
+			$user_classe['classe_nom_court'] = old_mysql_result($call_classes, $k, "classe");
+			$user_classe['matiere_nom_court'] = old_mysql_result($call_classes, $k, "name");
+			$user_classe['classe_id'] = old_mysql_result($call_classes, $k, "classe_id");
+			$user_classe['group_id'] = old_mysql_result($call_classes, $k, "group_id");
 
 			if(!in_array($user_classe['group_id'],$user_group)) {
 				$sql="DELETE FROM j_groupes_professeurs WHERE id_groupe='".$user_classe['group_id']."' AND login='$user_login';";
 				//echo "$sql<br />\n";
-				$suppr=mysql_query($sql);
+				$suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 				if($suppr) {
 					$msg.="Suppression de l'association avec l'enseignement ".$user_classe['matiere_nom_court']." en ".$user_classe['classe_nom_court']."<br />\n";
 				}
@@ -515,38 +537,38 @@ elseif(isset($_POST['suppression_assoc_user_groupes'])) {
 // On appelle les informations de l'utilisateur pour les afficher :
 if (isset($user_login) and ($user_login!='')) {
 
-	$call_user_info = mysql_query("SELECT * FROM utilisateurs WHERE login='".$user_login."'");
-	$user_auth_mode = mysql_result($call_user_info, "0", "auth_mode");
-	$user_nom = mysql_result($call_user_info, "0", "nom");
-	$user_prenom = mysql_result($call_user_info, "0", "prenom");
-	$user_civilite = mysql_result($call_user_info, "0", "civilite");
-	$user_statut = mysql_result($call_user_info, "0", "statut");
-	$user_email = mysql_result($call_user_info, "0", "email");
-	$user_etat = mysql_result($call_user_info, "0", "etat");
-	$date_verrouillage = mysql_result($call_user_info, "0", "date_verrouillage");
+	$call_user_info = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM utilisateurs WHERE login='".$user_login."'");
+	$user_auth_mode = old_mysql_result($call_user_info, "0", "auth_mode");
+	$user_nom = old_mysql_result($call_user_info, "0", "nom");
+	$user_prenom = old_mysql_result($call_user_info, "0", "prenom");
+	$user_civilite = old_mysql_result($call_user_info, "0", "civilite");
+	$user_statut = old_mysql_result($call_user_info, "0", "statut");
+	$user_email = old_mysql_result($call_user_info, "0", "email");
+	$user_etat = old_mysql_result($call_user_info, "0", "etat");
+	$date_verrouillage = old_mysql_result($call_user_info, "0", "date_verrouillage");
 
-	$call_matieres = mysql_query("SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '".$user_login."' ORDER BY ordre_matieres");
-	$nb_mat = mysql_num_rows($call_matieres);
+	$call_matieres = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '".$user_login."' ORDER BY ordre_matieres");
+	$nb_mat = mysqli_num_rows($call_matieres);
 	$k = 0;
 	while ($k < $nb_mat) {
-		$user_matiere[$k] = mysql_result($call_matieres, $k, "id_matiere");
+		$user_matiere[$k] = old_mysql_result($call_matieres, $k, "id_matiere");
 		$k++;
 	}
 
 	// Utilisateurs précédent/suivant:
 	//$sql="SELECT login,nom,prenom FROM utilisateurs WHERE statut='$user_statut' ORDER BY nom,prenom";
 	$sql="SELECT login,nom,prenom FROM utilisateurs WHERE statut='$user_statut' AND etat='actif' ORDER BY nom,prenom";
-	$res_liste_user=mysql_query($sql);
-	if(mysql_num_rows($res_liste_user)>0){
+	$res_liste_user=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_liste_user)>0){
 		$login_user_prec="";
 		$login_user_suiv="";
 		$temoin_tmp=0;
 		$liste_options_user="";
-		while($lig_user_tmp=mysql_fetch_object($res_liste_user)){
+		while($lig_user_tmp=mysqli_fetch_object($res_liste_user)){
 			if("$lig_user_tmp->login"=="$user_login"){
 				$liste_options_user.="<option value='$lig_user_tmp->login' selected='true'>".mb_strtoupper($lig_user_tmp->nom)." ".ucfirst(mb_strtolower($lig_user_tmp->prenom))."</option>\n";
 				$temoin_tmp=1;
-				if($lig_user_tmp=mysql_fetch_object($res_liste_user)){
+				if($lig_user_tmp=mysqli_fetch_object($res_liste_user)){
 					$login_user_suiv=$lig_user_tmp->login;
 					$liste_options_user.="<option value='$lig_user_tmp->login'>".mb_strtoupper($lig_user_tmp->nom)." ".ucfirst(mb_strtolower($lig_user_tmp->prenom))."</option>\n";
 				}
@@ -581,6 +603,8 @@ if (isset($user_login) and ($user_login!='')) {
 	}
 }
 
+$avec_js_et_css_edt="y";
+
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 $themessage2 = "Êtes-vous sûr de vouloir effectuer cette opération ?\\n Actuellement cet utilisateur se connecte à GEPI en s\'authentifiant auprès d\'un SSO.\\n En attribuant un mot de passe, vous lancerez la procédure, qui génèrera un mot de passe local. Cet utilisateur ne pourra donc plus se connecter à GEPI via le SSO mais uniquement localement.";
 //**************** EN-TETE *****************
@@ -608,6 +632,46 @@ require_once("../lib/header.inc.php");
 
 //echo "\$login_user_prec=$login_user_prec<br />";
 //echo "\$login_user_suiv=$login_user_suiv<br />";
+
+	//============================================================================================================
+	// Div pour l'affichage de l'EDT
+
+	if((getSettingAOui('autorise_edt_tous'))||
+		((getSettingAOui('autorise_edt_admin'))&&($_SESSION['statut']=='administrateur'))) {
+
+		$titre_infobulle="EDT de <span id='id_ligne_titre_infobulle_edt'></span>";
+		$texte_infobulle="";
+		$tabdiv_infobulle[]=creer_div_infobulle('edt_prof',$titre_infobulle,"",$texte_infobulle,"",40,0,'y','y','n','n');
+
+//https://127.0.0.1/steph/gepi_git_trunk/edt_organisation/index_edt.php?login_edt=boireaus&type_edt_2=prof&no_entete=y&no_menu=y&lien_refermer=y
+
+		function affiche_lien_edt_prof($login_prof, $info_prof) {
+			return " <a href='../edt_organisation/index_edt.php?login_edt=".$login_prof."&amp;type_edt_2=prof&amp;no_entete=y&amp;no_menu=y&amp;lien_refermer=y' onclick=\"affiche_edt_en_infobulle('$login_prof', '".addslashes($info_prof)."');return false;\" title=\"Emploi du temps de ".$info_prof."\" target='_blank'><img src='../images/icons/edt.png' class='icone16' alt='EDT' /></a>";
+		}
+
+		echo "
+<style type='text/css'>
+	.lecorps {
+		margin-left:0px;
+	}
+</style>
+
+<script type='text/javascript'>
+	function affiche_edt_en_infobulle(login_prof, info_prof) {
+		document.getElementById('id_ligne_titre_infobulle_edt').innerHTML=info_prof;
+
+		new Ajax.Updater($('edt_prof_contenu_corps'),'../edt_organisation/index_edt.php?login_edt='+login_prof+'&type_edt_2=prof&no_entete=y&no_menu=y&mode_infobulle=y',{method: 'get'});
+		afficher_div('edt_prof','y',-20,20);
+	}
+</script>\n";
+	}
+	else {
+		function affiche_lien_edt_prof($login_prof, $info_prof) {
+			return "";
+		}
+	}
+
+	//============================================================================================================
 
 echo "<form enctype='multipart/form-data' name='form_choix_user' action='modify_user.php' method='post'>\n";
 
@@ -650,7 +714,8 @@ if ($ldap_write_access) {
 ?>
 
 <form enctype="multipart/form-data" action="modify_user.php" method="post">
-<fieldset>
+<fieldset style='border: 1px solid grey; background-image: url("../images/background/opacite50.png");'>
+		<legend style='border: 1px solid grey; background-color: white; color: black; font-weight:normal;'>Informations utilisateur</legend>
 <?php
 echo add_token_field();
 if (isset($user_login)) {
@@ -660,13 +725,14 @@ if (isset($user_login)) {
 <!--span class = "norme"-->
 <div class = "norme">
 <b>Identifiant <?php
-if (!isset($user_login)) echo "(<em>" . $longmax_login . " caractères maximum</em>) ";?>:</b>
+if (!isset($user_login)) echo "(<em title=\"La longueur maximale est fonction du format de login choisi
+dans 'Gestion générale/Configuration générale'\">" . $longmax_login . " caractères maximum</em>) ";?>:</b>
 <?php
 if (isset($user_login) and ($user_login!='')) {
 	echo "<b>".$user_login."</b>\n";
-	echo "<input type='hidden' name='reg_login' value=\"".$user_login."\" />\n";
+	echo "<input type='hidden' name='reg_login' id='reg_login' value=\"".$user_login."\" />\n";
 } else {
-	echo "<input type='text' name='new_login' size='20' value=\"";
+	echo "<input type='text' name='new_login' id='reg_login' size='20' value=\"";
 	if (isset($user_login)) {echo $user_login;}
 	elseif(isset($_POST['new_login'])) {echo $_POST['new_login'];}
 	echo "\" onchange=\"changement()\" />\n";
@@ -689,14 +755,18 @@ if (!$session_gepi->auth_ldap || !$session_gepi->auth_sso) {
 }
 
 if (($_SESSION['statut']=='administrateur') and (isset($user_login)) and ($user_login!='')) {
-	echo "<div style='float:right; width:10em; margin-top: 0.5em; text-align:center; border: 1px solid black;'>\n";
+	echo "<div style='float:right; width:10em; margin-top: 0.5em; padding:3px; text-align:center; border: 1px solid black; background-image: url(\"../images/background/opacite50.png\");'>\n";
 	echo affiche_actions_compte($user_login, '_blank');
 	echo "<br />\n";
 	echo affiche_reinit_password($user_login);
 	echo "</div>\n";
 }
 
+if(($auth_sso=='lcs')||($gepi_non_plugin_lcs_mais_recherche_ldap)) {
+	echo "<div id='suggestion_login' style='float:right; width:400px; height: 200px; border: 1px solid black; overflow:auto; display:none; margin-right:0.5em; padding:3px; background-image: url(\"../images/background/opacite50.png\");'></div>\n";
+}
 ?>
+
 <table summary="Infos">
 	<tr><td>
 	<table summary="Authentification">
@@ -718,20 +788,70 @@ if (!isset($user_login) or $user_login == '') {
 <?php
 if ($ldap_write_access) {
 	echo "<tr><td></td>&nbsp;<td>";
-	echo "<p style='font-size: small;'><input type='checkbox' name='prevent_ldap_removal' value='yes' checked /> Ne pas supprimer du LDAP<br/>(si cette case est décochée et que vous passez d'un mode d'authentification LDAP ou SSO à un mode d'authentification locale, l'utilisateur sera supprimé de l'annuaire LDAP).</p>";
+	echo "<p style='font-size: small;'><input type='checkbox' name='prevent_ldap_removal' value='yes' checked onchange=\"changement()\" /> Ne pas supprimer du LDAP<br/>(si cette case est décochée et que vous passez d'un mode d'authentification LDAP ou SSO à un mode d'authentification locale, l'utilisateur sera supprimé de l'annuaire LDAP).</p>";
 	echo "</td></tr>";
 }
  ?>
-<tr><td>Nom&nbsp;:</td><td><input type=text name=reg_nom size=20 <?php if (isset($user_nom)) { echo "value=\"".$user_nom."\"";}?> /></td></tr>
-<tr><td>Prénom&nbsp;:</td><td><input type=text name=reg_prenom size=20 <?php if (isset($user_prenom)) { echo "value=\"".$user_prenom."\"";}?> /></td></tr>
-<tr><td>Civilité&nbsp;:</td><td><select name="reg_civilite" size="1" onchange="changement()">
+<tr><td>Nom&nbsp;:</td><td><input type='text' name='reg_nom' id='reg_nom' size='20' onchange="changement()" <?php
+	if (isset($user_nom)) {
+		echo "value=\"".$user_nom."\"";
+	}
+
+	if(($auth_sso=='lcs')||($gepi_non_plugin_lcs_mais_recherche_ldap)) {
+
+		//if($auth_sso=='lcs') {
+			echo " onblur=\"affiche_login_lcs('reg_nom')\"";
+		//}
+		echo " />";
+
+		echo "
+	<script type='text/javascript'>
+		// <![CDATA[
+		function affiche_login_lcs(champ) {
+
+			valeur=document.getElementById(champ).value;
+			if(valeur!='') {
+
+				nom=document.getElementById('reg_nom').value;
+				prenom=document.getElementById('reg_prenom').value;
+
+				document.getElementById('suggestion_login').style.display='';
+
+				//alert('valeur='+valeur);
+				/*
+				if(champ=='nom') {
+					//new Ajax.Updater($('suggestion_login'),'cherche_login.php?champ='+champ+'&valeur='+valeur,{method: 'get'});
+					new Ajax.Updater($('suggestion_login'),'cherche_login.php?nom='+nom,{method: 'get'});
+				}
+				elseif(champ=='prenom') {
+				*/
+					new Ajax.Updater($('suggestion_login'),'../eleves/cherche_login.php?statut_recherche=personnel&nom='+nom+'&prenom='+prenom,{method: 'get'});
+				//}
+			}
+		}
+		//]]>
+	</script>\n";
+	}
+	else {
+		echo " />";
+	}
+
+?></td></tr>
+<tr><td>Prénom&nbsp;:</td><td><input type='text' name='reg_prenom' id='reg_prenom' size='20' onchange="changement()" <?php
+	if (isset($user_prenom)) { echo "value=\"".$user_prenom."\"";}
+
+	if(($auth_sso=='lcs')||($gepi_non_plugin_lcs_mais_recherche_ldap)) {
+		echo " onblur=\"affiche_login_lcs('reg_nom')\"";
+	}
+?> /></td></tr>
+<tr><td>Civilité&nbsp;:</td><td><select name="reg_civilite" id="reg_civilite" size="1" onchange="changement()">
 <option value=''>(néant)</option>
 <option value='M.' <?php if ($user_civilite=='M.') echo " selected ";  ?>>M.</option>
 <option value='Mme' <?php if ($user_civilite=='Mme') echo " selected ";  ?>>Mme</option>
 <option value='Mlle' <?php if ($user_civilite=='Mlle') echo " selected ";  ?>>Mlle</option>
 </select>
 </td></tr>
-<tr><td>Email&nbsp;:</td><td><input type=text name=reg_email size=30 <?php if (isset($user_email)) { echo "value=\"".$user_email."\"";}?> onchange="changement()" /></td></tr>
+<tr><td>Email&nbsp;:</td><td><input type="text" name="reg_email" id="reg_email" size="30" <?php if (isset($user_email)) { echo "value=\"".$user_email."\"";}?> onchange="changement()" /></td></tr>
 </table>
 </td>
 
@@ -843,6 +963,10 @@ if (getSettingValue("statuts_prives") == "y") {
 
 </select>
 <?php
+if(($user_statut == "professeur")&&(isset($user_nom))&&(isset($user_prenom))) {
+	echo affiche_lien_edt_prof($user_login, $user_prenom." ".$user_nom);
+}
+
 if (getSettingValue("statuts_prives") == "y") {
 	if ($user_statut == "autre") {
 		echo "<a href='creer_statut.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Préciser le statut 'autre'</a>";
@@ -865,13 +989,13 @@ while ($k < $nb_mat+1) {
 	echo "Matière N°$num_mat (<em>si professeur</em>)&nbsp;: ";
 	$temp = "matiere_".$k;
 	echo "<select size=1 name='$temp' onchange=\"changement()\">\n";
-	$calldata = mysql_query("SELECT * FROM matieres ORDER BY matiere");
-	$nombreligne = mysql_num_rows($calldata);
+	$calldata = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM matieres ORDER BY matiere");
+	$nombreligne = mysqli_num_rows($calldata);
 	echo "<option value='' "; if (!(isset($user_matiere[$k]))) {echo " selected";} echo ">(vide)</option>\n";
 	$i = 0;
 	while ($i < $nombreligne){
-		$matiere_list = mysql_result($calldata, $i, "matiere");
-		$matiere_complet_list = mysql_result($calldata, $i, "nom_complet");
+		$matiere_list = old_mysql_result($calldata, $i, "matiere");
+		$matiere_complet_list = old_mysql_result($calldata, $i, "nom_complet");
 		//echo "<option value=$matiere_list "; if (isset($user_matiere[$k]) and ($matiere_list == $user_matiere[$k])) {echo " selected";} echo ">$matiere_list | $matiere_complet_list</option>\n";
 		echo "<option value=$matiere_list "; if (isset($user_matiere[$k]) and ($matiere_list == $user_matiere[$k])) {echo " selected";} echo ">$matiere_list | ".htmlspecialchars($matiere_complet_list)."</option>\n";
 		$i++;
@@ -911,13 +1035,19 @@ if (isset($user_login) and ($user_login!='')) {
 	}
 }
 
-echo "<input type=hidden name=max_mat value=$nb_mat />\n";
+echo "<input type='hidden' name='max_mat' value='$nb_mat' />\n";
 ?>
-<input type=hidden name=valid value="yes" />
-<?php if (isset($user_login)) echo "<input type=hidden name=user_login value=\"".$user_login."\" />\n"; ?>
-<center><input type=submit value=Enregistrer /></center>
+<input type='hidden' name='valid' value="yes" />
+<?php if (isset($user_login)) echo "<input type='hidden' name='user_login' value=\"".$user_login."\" />\n"; ?>
+<center><input type='submit' value='Enregistrer' /></center>
 <!--/span-->
 </div>
+
+<script type='text/javascript'>
+	if(document.getElementById('reg_login')) {
+		document.getElementById('reg_login').focus();
+	}
+</script>
 </fieldset>
 </form>
 
@@ -927,17 +1057,18 @@ echo "<input type=hidden name=max_mat value=$nb_mat />\n";
 		if(count($groups)>0) {
 			echo "<p>&nbsp;</p>\n";
 			echo "<form enctype='multipart/form-data' action='modify_user.php' method='post'>\n";
-			echo "<fieldset>\n";
+			echo "<fieldset style='border: 1px solid grey; background-image: url(\"../images/background/opacite50.png\");'>
+	<legend style='border: 1px solid grey; background-color: white; color: black; font-weight:normal;'>Enseignements du professeur</legend>";
 			echo add_token_field();
 			echo "<p>Le professeur est associé aux enseignements suivants.<br />Vous pouvez supprimer (<i>décocher</i>) l'association avec certains enseignements&nbsp;:</p>";
 			$k = 0;
 			foreach($groups as $current_group) {
-				echo "<input type='checkbox' id='user_group_$k' name='user_group[]' value='".$current_group["id"]."' checked /><label for='user_group_$k'> ".$current_group['name']." (<em>".$current_group['description'];
+				echo "<input type='checkbox' id='user_group_$k' name='user_group[]' value='".$current_group["id"]."' checked onchange=\"changement()\" /><label for='user_group_$k'> ".$current_group['name']." (<em>".$current_group['description'];
 				if((($current_group['name']!=$current_group['matiere']['matiere']))&&
 				 (($current_group['description']!=$current_group['matiere']['nom_complet']))) {
 					echo " (".$current_group['matiere']['matiere'].")";
 				}
-				echo "</em>) en ".$current_group['classlist_string']."</label><br />\n";
+				echo "</em>) en ".$current_group['classlist_string']."</label> <a href='../groupes/edit_group.php?id_groupe=".$current_group['id']."' title='Éditer cet enseignement' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/edit16.png' class='icone16' alt='Éditer cet enseignement' /></a><br />\n";
 				$k++;
 			}
 			echo "<input type='hidden' name='user_login' value='$user_login' />\n";

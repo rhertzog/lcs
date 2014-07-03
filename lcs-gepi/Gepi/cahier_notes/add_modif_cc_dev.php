@@ -74,15 +74,17 @@ if(!isset($id_racine)) {
 
 // On teste si le carnet de notes appartient bien à la personne connectée
 if (!(Verif_prof_cahier_notes($_SESSION['login'],$id_racine))) {
-    $mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
-    header("Location: index.php?msg=$mess");
-    die();
+	$mess=rawurlencode("Vous tentez de pénétrer dans un carnet de notes qui ne vous appartient pas !");
+	header("Location: index.php?msg=$mess");
+	die();
 }
 
-$appel_cahier_notes = mysql_query("SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
-$id_groupe = mysql_result($appel_cahier_notes, 0, 'id_groupe');
+$appel_cahier_notes = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
+$obj_cn=$appel_cahier_notes->fetch_object();
+$id_groupe = $obj_cn->id_groupe;
 $current_group = get_group($id_groupe);
-$periode_num = mysql_result($appel_cahier_notes, 0, 'periode');
+$periode_num = $obj_cn->periode;
+
 /**
  * Gestion des périodes
  */
@@ -92,13 +94,15 @@ $id_dev = isset($_POST["id_dev"]) ? $_POST["id_dev"] : (isset($_GET["id_dev"]) ?
 
 if ($id_dev)  {
 	$sql="SELECT * FROM cc_dev WHERE id='$id_dev' AND id_groupe='$id_groupe';";
-	$query = mysql_query($sql);
+	$query = mysqli_query($GLOBALS["mysqli"], $sql);
 	if($query) {
-		$id_cn_dev = mysql_result($query, 0, 'id_cn_dev');
-		$nom_court = mysql_result($query, 0, 'nom_court');
-		$nom_complet = mysql_result($query, 0, 'nom_complet');
-		$description = nettoyage_retours_ligne_surnumeraires(mysql_result($query, 0, 'description'));
-	    $precision = mysql_result($query, 0, 'arrondir');
+		$tab_cc_dev=$query->fetch_array();
+		$id_cn_dev = $tab_cc_dev['id_cn_dev'];
+		$nom_court = $tab_cc_dev['nom_court'];
+		$nom_complet = $tab_cc_dev['nom_complet'];
+		$description = nettoyage_retours_ligne_surnumeraires($tab_cc_dev['description']);
+		$precision = $tab_cc_dev['arrondir'];
+		$famille=$tab_cc_dev['vision_famille'];
 	}
 	else {
 		header("Location: index.php?msg=".rawurlencode("Le numéro de devoir n est pas associé à ce groupe."));
@@ -112,6 +116,7 @@ else {
 	$description = "";
 	//$precision="s1";
 	$precision=getPref($_SESSION['login'], 'eval_cumul_precision', 's1');
+	$famille=getPref($_SESSION['login'], 'eval_cumul_vision_famille', 'no');;
 }
 
 $matiere_nom = $current_group["matiere"]["nom_complet"];
@@ -128,20 +133,23 @@ if (isset($_POST['is_posted'])) {
 	$nom_complet=traitement_magic_quotes($_POST['nom_complet']);
 	$description=traitement_magic_quotes($_POST['description']);
 	$precision=$_POST['precision'];
+	$famille=$_POST['famille'];
 	if(!my_ereg("^(s1|s5|se|p1|p5|pe)$", $precision)) {
 		$msg.="Précision '$precision' invalide; Elle a été remplacée par 's1'.";
 	}
 
+	// Il faudrait plutôt permettre de paramétrer ce choix dans utilisateurs/mon_compte.php
 	savePref($_SESSION['login'], 'eval_cumul_precision', $precision);
+	savePref($_SESSION['login'], 'eval_cumul_vision_famille', $famille);
 
 	if(!isset($id_dev)) {
-		$sql="INSERT INTO cc_dev SET id_groupe='$id_groupe', nom_court='$nom_court', nom_complet='$nom_complet', description='$description', arrondir='$precision';";
-		$insert=mysql_query($sql);
+		$sql="INSERT INTO cc_dev SET id_groupe='$id_groupe', nom_court='$nom_court', nom_complet='$nom_complet', description='$description', arrondir='$precision', vision_famille='$famille';";
+		$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$insert) {
 			$msg.="Erreur lors de la création du $nom_cc.";
 		}
 		else {
-			$id_dev=mysql_insert_id();
+			$id_dev=((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["mysqli"]))) ? false : $___mysqli_res);
 			$msg.="Création du $nom_cc effectuée.";
 		}
 		header("Location: index_cc.php?id_racine=$id_racine&msg=$msg");
@@ -153,8 +161,8 @@ if (isset($_POST['is_posted'])) {
 
 		// Sinon, il faut mettre à jour le devoir associé
 		
-		$sql="UPDATE cc_dev SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', arrondir='$precision' WHERE id_groupe='$id_groupe' AND id='$id_dev';";
-		$update=mysql_query($sql);
+		$sql="UPDATE cc_dev SET nom_court='$nom_court', nom_complet='$nom_complet', description='$description', arrondir='$precision', vision_famille='$famille' WHERE id_groupe='$id_groupe' AND id='$id_dev';";
+		$update=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$update) {
 			$msg.="Erreur lors de la mise à jour du $nom_cc.";
 		}
@@ -339,7 +347,29 @@ else {
 	echo "</td>\n";
 	echo "</tr>\n";
 }
+?>
+<tr>
+    <td style='background-color: #aae6aa; font-weight: bold;'>
+        <?php echo 'Visibilité&nbsp;:';?>
+    </td>
+    <td style="text-align: left;">
+        <input type="radio" id="famille_voit" 
+               name="famille" 
+               <?php if ("yes" == $famille) echo "checked='checked'"; ?>
+               value="yes" />
+        <label for="famille_voit">Les élèves et les parents voient cette évaluation</label>
+        <br />
+        <input type="radio" 
+               id="famille_voit_pas" 
+               name="famille" 
+               <?php if ("no" == $famille) echo "checked='checked'"; ?>
+               value="no" />
+        <label for="famille_voit_pas">Les élèves et les parents ne voient pas cette évaluation</label>
+        <br />
+    </td>
+</tr>
 
+<?php
 echo "</table>\n";
 
 if(isset($id_dev)) {

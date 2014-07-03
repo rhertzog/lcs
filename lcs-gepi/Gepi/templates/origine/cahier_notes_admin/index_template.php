@@ -91,7 +91,8 @@
 
   <div id='container'>
 
-  <form action="index.php" id="form1" method="post">
+  <form action="index.php" id="form1" method="post" style='border: 1px solid grey; background-image: url("../images/background/opacite50.png")'>
+	
 	<p class="center">
 <?php
 	echo add_token_field();
@@ -233,6 +234,16 @@
 </div>
 
 <p><br /></p>\n";
+
+		echo "<p><em>Remarque&nbsp;:</em> Il est possible de ";
+		if(getSettingAOui('active_carnets_notes')) {
+			echo "<a href='../cahier_notes_admin/creation_conteneurs_par_lots.php'>créer des ".casse_mot(getSettingValue("gepi_denom_boite"), 'min')."s par lots</a></p>";
+		}
+		else {
+			echo "créer des ".casse_mot(getSettingValue("gepi_denom_boite"), 'min')."s par lots (<em>lorsque le module est actif</em>)</p>";
+		}
+		echo "<p><br /></p>\n";
+
 ?>
 
 	<h2>
@@ -275,8 +286,28 @@
 
 </form>
 
+<p><br /></p>
 
-
+<p style='margin-left:4em; text-indent:-4em;'><em>NOTE&nbsp;:</em> Les carnets de notes et relevés de notes ne sont pas accessibles aux comptes administrateurs.<br />
+En revanche, ils sont accessibles, selon ce qui a été défini dans les <a href='../gestion/droits_acces.php'>Droits d'accès</a> aux profils suivants&nbsp;:<br />
+<ul>
+	<li>
+		<p>
+			<strong>Scolarité&nbsp;:</strong> pour l'impression des relevés de notes, des moyennes de carnets de notes, de l'état d'ouverture/verrouillage en saisie de telle période dans telle classe.
+		</p>
+	</li>
+	<li>
+		<p>
+			<strong>Professeurs&nbsp;:</strong> pour créer des évaluations, saisir les notes,... dans leurs carnets de notes et, selon les droits donnés dans Droits d'accès, consulter les relevés de notes, moyennes de carnets de notes,...
+		</p>
+	</li>
+	<li>
+		<p>
+			<strong>Élèves et parents&nbsp;:</strong> Selon les droits donnés... consulter leurs notes<br />
+	(<em>certaines notes peuvent n'être visibibles qu'à partir d'une date définie par le professeur (par exemple pour éviter de donner aux élèves leurs notes avant que la correction ait eu lieu... pour qu'ils restent attentifs pendant la correction)</em>).
+		</p>
+	</li>
+</ul>
 
 
 

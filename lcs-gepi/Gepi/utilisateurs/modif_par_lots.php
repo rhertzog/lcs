@@ -35,10 +35,10 @@ if ($resultat_session == 'c') {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/cahier_notes/utilisateurs/modif_par_lots.php';";
-$res_test=mysql_query($sql);
-if (mysql_num_rows($res_test)==0) {
+$res_test=mysqli_query($GLOBALS["mysqli"], $sql);
+if (mysqli_num_rows($res_test)==0) {
 	$sql="INSERT INTO droits VALUES ('/utilisateurs/modif_par_lots.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F','F', 'Personnels : Traitements par lots', '1');";
-	$res_insert=mysql_query($sql);
+	$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
@@ -71,7 +71,7 @@ if(isset($_POST['action'])) {
 	if(($_POST['action']=="etat")&&(isset($_POST['etat']))&&(in_array($_POST['etat'], $tab_etat))) {
 		for($loop=0;$loop<count($u_login);$loop++) {
 			$sql="UPDATE utilisateurs SET etat='".$_POST['etat']."' WHERE login='".$u_login[$loop]."';";
-			$update=mysql_query($sql);
+			$update=mysqli_query($GLOBALS["mysqli"], $sql);
 			if($update) {
 				$cpt_reg++;
 			}
@@ -84,8 +84,21 @@ if(isset($_POST['action'])) {
 	}
 	elseif(($_POST['action']=="auth_mode")&&(isset($_POST['auth_mode']))&&(in_array($_POST['auth_mode'], $tab_auth_mode))) {
 		for($loop=0;$loop<count($u_login);$loop++) {
-			$sql="UPDATE utilisateurs SET auth_mode='".$_POST['auth_mode']."' WHERE login='".$u_login[$loop]."';";
-			$update=mysql_query($sql);
+			$chaine_vidage_mdp="";
+			if((($_POST['auth_mode']=="ldap")||($_POST['auth_mode']=="sso"))&&
+			(!getSettingAOui('auth_sso_ne_pas_vider_MDP_gepi'))) {
+				$sql="SELECT auth_mode FROM utilisateurs WHERE login='".$u_login[$loop]."';";
+				$res_old_auth_mode=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_old_auth_mode)>0) {
+					$lig_old_auth_mode=mysqli_fetch_object($res_old_auth_mode);
+					if($lig_old_auth_mode->auth_mode=="gepi") {
+						$chaine_vidage_mdp=", password='', salt='', change_mdp='n' ";
+					}
+				}
+			}
+			$sql="UPDATE utilisateurs SET auth_mode='".$_POST['auth_mode']."' $chaine_vidage_mdp WHERE login='".$u_login[$loop]."';";
+			//echo "$sql<br />";
+			$update=mysqli_query($GLOBALS["mysqli"], $sql);
 			if($update) {
 				$cpt_reg++;
 			}
@@ -204,7 +217,7 @@ echo "
 
 //statut='administrateur' OR
 $sql="SELECT * FROM utilisateurs WHERE statut='scolarite' OR statut='professeur' OR statut='cpe' OR statut='secours' ORDER BY statut, nom, prenom;";
-$res=mysql_query($sql);
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
 echo "
 	<p><input type='submit' value='Valider' /></p>
 	<table class='boireaus' summary='Tableau des comptes'>
@@ -221,7 +234,7 @@ echo "
 $statut_prec="";
 $alt=1;
 $cpt=0;
-while($lig=mysql_fetch_object($res)) {
+while($lig=mysqli_fetch_object($res)) {
 	if((in_array($lig->statut, $aff_statut))&&(in_array($lig->etat, $aff_etat))) {
 		$alt=$alt*(-1);
 		if($statut_prec!=$lig->statut) {

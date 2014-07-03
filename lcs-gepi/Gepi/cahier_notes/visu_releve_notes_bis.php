@@ -37,10 +37,10 @@ if ($resultat_session == 'c') {
 
 
 $sql="SELECT 1=1 FROM droits WHERE id='/cahier_notes/visu_releve_notes_bis.php';";
-$res_test=mysql_query($sql);
-if (mysql_num_rows($res_test)==0) {
+$res_test=mysqli_query($GLOBALS["mysqli"], $sql);
+if (mysqli_num_rows($res_test)==0) {
 	$sql="INSERT INTO droits VALUES ('/cahier_notes/visu_releve_notes_bis.php', 'V', 'V', 'V', 'V', 'V', 'V', 'V','F', 'Relevé de notes', '1');";
-	$res_insert=mysql_query($sql);
+	$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -51,6 +51,8 @@ if(($_SESSION['statut']=='autre')&&(!acces("/cahier_notes/visu_releve_notes_bis.
 	header("Location: ../accueil.php?msg=Acces_non_autorise");
 	die();
 }
+
+//debug_var();
 
 //================================
 
@@ -63,9 +65,17 @@ $contexte_document_produit="releve_notes";
 
 $releve_pdf_debug=isset($_POST['releve_pdf_debug']) ? $_POST['releve_pdf_debug'] : "n";
 
+$choix_parametres=isset($_POST['choix_parametres']) ? $_POST['choix_parametres'] : (isset($_GET['choix_parametres']) ? $_GET['choix_parametres'] : NULL);
+$mode_bulletin=isset($_POST['mode_bulletin']) ? $_POST['mode_bulletin'] : (isset($_GET['mode_bulletin']) ? $_GET['mode_bulletin'] : NULL);
+
 //====================================================
 //=============== ENTETE STANDARD ====================
-if(!isset($_POST['choix_parametres'])) {
+if(!isset($choix_parametres)) {
+	$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+	$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+	$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+	$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
+
 	//**************** EN-TETE *********************
 	$titre_page = "Visualisation relevé de notes";
 	require_once("../lib/header.inc.php");
@@ -74,14 +84,14 @@ if(!isset($_POST['choix_parametres'])) {
 //============== FIN ENTETE STANDARD =================
 //====================================================
 //============== ENTETE BULLETIN HTML ================
-elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='html')) {
+elseif ((isset($mode_bulletin))&&($mode_bulletin=='html')) {
 	include("header_releve_html.php");
 	//debug_var();
 }
 //============ FIN ENTETE BULLETIN HTML ==============
 //====================================================
 //============== ENTETE BULLETIN PDF ================
-elseif ((isset($_POST['mode_bulletin']))&&($_POST['mode_bulletin']=='pdf')) {
+elseif ((isset($mode_bulletin))&&($mode_bulletin=='pdf')) {
 	if($releve_pdf_debug=='y') {
 		echo "<p style='color:red'>DEBUG:<br />
 La génération du PDF va échouer parce qu'on affiche ces informations de debuggage,<br />
@@ -104,19 +114,21 @@ include("visu_releve_notes_func.lib.php");
 
 //=========================
 // Classes sélectionnées:
-$tab_id_classe=isset($_POST['tab_id_classe']) ? $_POST['tab_id_classe'] : NULL;
+$tab_id_classe=isset($_POST['tab_id_classe']) ? $_POST['tab_id_classe'] : (isset($_GET['tab_id_classe']) ? $_GET['tab_id_classe'] : NULL);
 
 // Période:
 // $choix_periode='periode' ou 'intervalle'
-$choix_periode=isset($_POST['choix_periode']) ? $_POST['choix_periode'] : NULL;
+$choix_periode=isset($_POST['choix_periode']) ? $_POST['choix_periode'] : (isset($_GET['choix_periode']) ? $_GET['choix_periode'] : NULL);
 // Si $choix_periode='periode'
 //$periode=isset($_POST['periode']) ? $_POST['periode'] : NULL;
-$tab_periode_num=isset($_POST['tab_periode_num']) ? $_POST['tab_periode_num'] : NULL;
+$tab_periode_num=isset($_POST['tab_periode_num']) ? $_POST['tab_periode_num'] : (isset($_GET['tab_periode_num']) ? $_GET['tab_periode_num'] : NULL);
 // Si $choix_periode='intervalle'
 $display_date_debut=isset($_POST['display_date_debut']) ? $_POST['display_date_debut'] : NULL;
 $display_date_fin=isset($_POST['display_date_fin']) ? $_POST['display_date_fin'] : NULL;
 
-$choix_parametres=isset($_POST['choix_parametres']) ? $_POST['choix_parametres'] : NULL;
+$valide_select_eleves=isset($_POST['valide_select_eleves']) ? $_POST['valide_select_eleves'] : (isset($_GET['valide_select_eleves']) ? $_GET['valide_select_eleves'] : NULL);
+
+//$choix_parametres=isset($_POST['choix_parametres']) ? $_POST['choix_parametres'] : NULL;
 
 // Un prof peut choisir un groupe plutôt qu'une liste de classes
 $id_groupe=($_SESSION['statut']=='professeur') ? (isset($_POST['id_groupe']) ? $_POST['id_groupe'] : NULL) : NULL;
@@ -131,8 +143,8 @@ if(isset($id_groupe)) {
 
 	// On vérifie si le prof est bien associé au groupe
 	$sql="SELECT 1=1 FROM j_groupes_professeurs WHERE id_groupe='$id_groupe' AND login='".$_SESSION['login']."';";
-	$test_grp_prof=mysql_query($sql);
-	if(mysql_num_rows($test_grp_prof)==0) {
+	$test_grp_prof=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_grp_prof)==0) {
 		//intrusion
 		tentative_intrusion(2, "Tentative d'un professeur d'accéder aux relevés de notes d'un groupe auquel il n'est pas associé.");
 		echo "<p>Vous n'êtes pas associé au groupe choisi.</p>\n";
@@ -168,15 +180,15 @@ if($_SESSION['statut']=='eleve') {
 	}
 
 	$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (jec.id_classe=c.id AND jec.login='".$_SESSION['login']."');";
-	$test_ele_clas=mysql_query($sql);
-	if(mysql_num_rows($test_ele_clas)==0) {
+	$test_ele_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_ele_clas)==0) {
 		echo "<p>Vous n'êtes pas affecté dans une classe et donc pas autorisé à accéder aux relevés de notes.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
-	elseif(mysql_num_rows($test_ele_clas)==1) {
+	elseif(mysqli_num_rows($test_ele_clas)==1) {
 		// On préremplit la classe
-		$lig_clas=mysql_fetch_object($test_ele_clas);
+		$lig_clas=mysqli_fetch_object($test_ele_clas);
 		$tab_id_classe=array();
 		$tab_id_classe[]=$lig_clas->id;
 		//echo "\$lig_clas->id=$lig_clas->id<br />";
@@ -199,15 +211,15 @@ elseif($_SESSION['statut']=='responsable') {
 					rp.login='".$_SESSION['login']."' AND
 					c.id=jec.id_classe AND
 					jec.login=e.login);";
-	$test_ele_clas=mysql_query($sql);
-	if(mysql_num_rows($test_ele_clas)==0) {
+	$test_ele_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_ele_clas)==0) {
 		echo "<p>Aucun des élèves dont vous êtes responsable ne semble inscrit dans une classe; vous n'êtes donc pas autorisé à accéder aux relevés de notes.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
-	elseif(mysql_num_rows($test_ele_clas)==1) {
+	elseif(mysqli_num_rows($test_ele_clas)==1) {
 		// On préremplit la classe
-		$lig_clas=mysql_fetch_object($test_ele_clas);
+		$lig_clas=mysqli_fetch_object($test_ele_clas);
 		$tab_id_classe=array();
 		$tab_id_classe[]=$lig_clas->id;
 		//echo "\$lig_clas->id=$lig_clas->id<br />";
@@ -226,40 +238,40 @@ elseif($_SESSION['statut']=='responsable') {
 if ((!isset($tab_id_classe))&&(!isset($id_groupe))) {
 	echo "<p class='bold'>";
 	if($_SESSION['statut']=='professeur') {
-		echo "<a href='index.php'>Retour</a>";
+		echo "<a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 		if(getSettingAOui('GepiProfImprRelSettings')) {
 			echo " | ";
-			echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
+			echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
 		}
 	}
 	elseif($_SESSION['statut']=='scolarite') {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 		if(getSettingAOui('GepiScolImprRelSettings')) {
 			echo " | ";
-			echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
+			echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
 		}
-		echo " | ";
-		echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
+		//echo " | ";
+		//echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
 	}
 	elseif($_SESSION['statut']=='cpe') {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 		if(getSettingAOui('GepiCpeImprRelSettings')) {
 			echo " | ";
-			echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
+			echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
 		}
-		echo " | ";
-		echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
+		//echo " | ";
+		//echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
 	}
 	elseif($_SESSION['statut']=='administrateur') {
 		// Normalement, l'administrateur n'a pas accès aux relevés de notes...
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 		echo " | ";
-		echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
-		echo " | ";
-		echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
+		echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
+		//echo " | ";
+		//echo "<a href='visu_releve_notes.php'>Ancien dispositif</a>";
 	}
 	else {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 	}
 	echo "</p>\n";
 
@@ -323,8 +335,8 @@ if ((!isset($tab_id_classe))&&(!isset($id_groupe))) {
 		}
 		elseif(getSettingValue("GepiAccesReleveProfP")=="yes") {
 			$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."' LIMIT 1;";
-			$test_acces=mysql_query($sql);
-			if(mysql_num_rows($test_acces)>0) {
+			$test_acces=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($test_acces)>0) {
 				$sql="SELECT DISTINCT c.* FROM j_eleves_professeurs jep,
 											classes c
 									WHERE (
@@ -379,9 +391,9 @@ if ((!isset($tab_id_classe))&&(!isset($id_groupe))) {
 		die();
 	}
 	//echo "$sql<br />";
-	$call_classes=mysql_query($sql);
+	$call_classes=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	$nb_classes=mysql_num_rows($call_classes);
+	$nb_classes=mysqli_num_rows($call_classes);
 	if($nb_classes==0){
 		echo "<p>Aucune classe avec élève affecté n'a été trouvée.</p>\n";
 		require("../lib/footer.inc.php");
@@ -392,20 +404,21 @@ if ((!isset($tab_id_classe))&&(!isset($id_groupe))) {
 	// Affichage sur 3 colonnes
 	$nb_classes_par_colonne=round($nb_classes/3);
 
-	echo "<table width='100%' summary='Tableau de choix des classes'>\n";
-	echo "<tr valign='top' align='center'>\n";
+	echo "<table style='width:100%'>\n";
+	echo "<caption class='invisible'>Choix des classes</caption>\n";
+	echo "<tr style='vertical-align:top;'>\n";
 
 	$cpt = 0;
 
 	echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
-	echo "<td align='left'>\n";
+	echo "<td>\n";
 
-	while($lig_clas=mysql_fetch_object($call_classes)) {
+	while($lig_clas=mysqli_fetch_object($call_classes)) {
 
 		//affichage 2 colonnes
 		if(($cpt>0)&&(round($cpt/$nb_classes_par_colonne)==$cpt/$nb_classes_par_colonne)){
 			echo "</td>\n";
-			echo "<td align='left'>\n";
+			echo "<td>\n";
 		}
 
 		echo "<label id='label_tab_id_classe_$cpt' for='tab_id_classe_$cpt' style='cursor: pointer;'><input type='checkbox' name='tab_id_classe[]' id='tab_id_classe_$cpt' value='$lig_clas->id' onchange='unCheckRadio();change_style_classe($cpt)' /> $lig_clas->classe</label>";
@@ -492,19 +505,30 @@ elseif(!isset($choix_periode)) {
 
 	echo "<p class='bold'>";
 	if($_SESSION['statut']=='professeur') {
-		echo "<a href='index.php'>Retour</a>";
+		echo "<a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
 	}
-	elseif(($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='administrateur')) {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+	elseif($_SESSION['statut']=='scolarite') {
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
+		echo " | ";
+		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
+		if(getSettingAOui('GepiScolImprRelSettings')) {
+			echo " | ";
+			echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
+		}
+	}
+	elseif($_SESSION['statut']=='administrateur') {
+		// Normalement, l'administrateur n'a pas accès aux relevés de notes...
+		// On ne devrait jamais passer là sauf modification de la politique des rôles.
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
 		echo " | ";
-		echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
+		echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
 	}
 	else {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 	}
 	echo "</p>\n";
 
@@ -515,14 +539,14 @@ elseif(!isset($choix_periode)) {
 			// On a fait un choix de groupe... on refait la liste des classes d'après l'id_groupe choisi
 			unset($tab_id_classe);
 			$sql="SELECT DISTINCT id_classe FROM j_groupes_classes WHERE id_groupe='$id_groupe';";
-			$res_clas=mysql_query($sql);
-			if(mysql_num_rows($res_clas)==0) {
+			$res_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_clas)==0) {
 				echo "<p>ERREUR: Le groupe choisi ne semble associé à aucune classe???</p>\n";
 				require("../lib/footer.inc.php");
 				die();
 			}
 
-			while($lig_clas=mysql_fetch_object($res_clas)) {
+			while($lig_clas=mysqli_fetch_object($res_clas)) {
 				$tab_id_classe[]=$lig_clas->id_classe;
 			}
 		}
@@ -555,11 +579,13 @@ elseif(!isset($choix_periode)) {
 	//debug_var();
 	//=======================
 	//Configuration du calendrier
+	/*
 	include("../lib/calendrier/calendrier.class.php");
 	//$cal1 = new Calendrier("form_choix_edit", "display_date_debut");
 	//$cal2 = new Calendrier("form_choix_edit", "display_date_fin");
 	$cal1 = new Calendrier("formulaire", "display_date_debut");
 	$cal2 = new Calendrier("formulaire", "display_date_fin");
+	*/
 	//=======================
 
 	echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' id='formulaire'>\n";
@@ -597,11 +623,16 @@ elseif(!isset($choix_periode)) {
 	echo "<label for='display_date_debut' style='cursor: pointer;'> \nDe la date : </label>";
 
     echo "<input type='text' name = 'display_date_debut' id = 'display_date_debut' size='10' value = \"".$display_date_debut."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onkeydown=\"clavier_date(this.id,event);\" />";
-    echo "<label for='display_date_fin' style='cursor: pointer;'><a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier début\" style=\"border:0;\" /></a>\n";
+    echo "<label for='display_date_fin' style='cursor: pointer;'>";
+    //echo "<a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier début\" style=\"border:0;\" /></a>\n";
+	echo img_calendrier_js("display_date_debut", "img_bouton_display_date_debut");
 
     echo "&nbsp;à la date : </label>";
     echo "<input type='text' name = 'display_date_fin' id = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onfocus=\"document.getElementById('choix_periode_dates').checked=true;\" onkeydown=\"clavier_date(this.id,event);\" />";
-    echo "<label for='choix_periode_dates' style='cursor: pointer;'><a href=\"#calend\" onclick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier fin\" style=\"border:0;\" /></a>\n";
+    echo "<label for='choix_periode_dates' style='cursor: pointer;'>";
+    //echo "<a href=\"#calend\" onclick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier fin\" style=\"border:0;\" /></a>\n";
+	echo img_calendrier_js("display_date_fin", "img_bouton_display_date_fin");
+
 	echo "<br />\n";
     echo " (<em>Veillez à respecter le format jj/mm/aaaa</em>)</label>\n";
 	echo "</td>\n";
@@ -628,8 +659,8 @@ elseif(!isset($choix_periode)) {
 	echo "<td>\n";
 
 		$sql="SELECT MAX(num_periode) max_per FROM periodes;";
-		$res_max_per=mysql_query($sql);
-		$lig_max_per=mysql_fetch_object($res_max_per);
+		$res_max_per=mysqli_query($GLOBALS["mysqli"], $sql);
+		$lig_max_per=mysqli_fetch_object($res_max_per);
 		$max_per=$lig_max_per->max_per;
 
 		$tab_periode_exclue=array();
@@ -641,6 +672,8 @@ elseif(!isset($choix_periode)) {
 		echo "<th>Classe</th>\n";
 		for($j=1;$j<=$max_per;$j++) {
 			echo "<th>Période $j</th>\n";
+			$date_1ere_evaluation[$j]="9999-12-31 00:00:00";
+			$date_derniere_evaluation[$j]="0000-00-00 00:00:00";
 		}
 		echo "</tr>\n";
 		$alt=1;
@@ -654,23 +687,40 @@ elseif(!isset($choix_periode)) {
 				if(!isset($tab_nom_periode[$j])) {$tab_nom_periode[$j]=array();}
 
 				$sql="SELECT * FROM periodes WHERE num_periode='$j' AND id_classe='".$tab_id_classe[$i]."';";
-				$res_per=mysql_query($sql);
-				if(mysql_num_rows($res_per)==0) {
+				$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_per)==0) {
 					if(!in_array($j,$tab_periode_exclue)) {$tab_periode_exclue[]=$j;}
 					echo "<td style='background-color:red;'>X</td>\n";
 				}
 				else {
-					$lig_per=mysql_fetch_object($res_per);
+					$lig_per=mysqli_fetch_object($res_per);
 					if(!in_array($lig_per->nom_periode,$tab_nom_periode[$j])) {$tab_nom_periode[$j][]=$lig_per->nom_periode;}
 					echo "<td>";
+					$dates_notes_first_last=get_premiere_et_derniere_date_cn_devoirs_classe_periode($tab_id_classe[$i], $j);
+					if(isset($dates_notes_first_last[0])) {
+						$tmp_date=formate_date($dates_notes_first_last[0]);
+						echo "<span style='font-size:x-small' title=\"Date de la première évaluation de la période $j pour la classe.
+
+Cliquez pour prendre cette date comme date de début
+dans l'extraction DATE à DATE.\"><a href=\"#\" onclick=\"document.getElementById('display_date_debut').value='$tmp_date';return false;\" style='color:black;text-decoration:none;'>".$tmp_date."</a></span><br />";
+						if($dates_notes_first_last[0]<$date_1ere_evaluation[$j]) {$date_1ere_evaluation[$j]=$dates_notes_first_last[0];}
+					}
 					if($lig_per->verouiller=="O") {
-						echo "Close";
+						echo "<span style='color:".$couleur_verrouillage_periode['O']."' title=\"".$explication_verrouillage_periode['O']."\">Close.</span>";
 					}
 					elseif($lig_per->verouiller=="N") {
-						echo "Non close";
+						echo "<span style='color:".$couleur_verrouillage_periode['N']."' title=\"".$explication_verrouillage_periode['N']."\">Non close.</span>";
 					}
 					else {
-						echo "Partiellement close";
+						echo "<span style='color:".$couleur_verrouillage_periode['P']."' title=\"".$explication_verrouillage_periode['P']."\">Partiellement close.</span>";
+					}
+					if(isset($dates_notes_first_last[1])) {
+						$tmp_date=formate_date($dates_notes_first_last[1]);
+						echo "<br /><span style='font-size:x-small' title=\"Date de la dernière évaluation de la période $j pour la classe.
+
+Cliquez pour prendre cette date comme date de fin
+dans l'extraction DATE à DATE.\"><a href=\"#\" onclick=\"document.getElementById('display_date_fin').value='$tmp_date';return false;\" style='color:black;text-decoration:none;'>".$tmp_date."</a></span>";
+						if($dates_notes_first_last[1]>$date_derniere_evaluation[$j]) {$date_derniere_evaluation[$j]=$dates_notes_first_last[1];}
 					}
 					echo "</td>\n";
 				}
@@ -686,6 +736,13 @@ elseif(!isset($choix_periode)) {
 				//echo "<td style='background-color:lightgreen;' onclick=\"alterne_coche('tab_periode_num_$j')\">";
 				echo "<td style='background-color:lightgreen;'>";
 				//echo "<label for='choix_periode' style='cursor: pointer;'><input type=\"radio\" name=\"periode\" value='$j' /></label>\n";
+				if($date_derniere_evaluation[$j]!="9999-12-31 00:00:00") {
+					$tmp_date=formate_date($date_1ere_evaluation[$j]);
+					echo "<span style='font-size:x-small' title=\"Date de la première évaluation de la période $j pour les classes sélectionnées.
+
+Cliquez pour prendre cette date comme date de début
+dans l'extraction DATE à DATE.\"><a href=\"#\" onclick=\"document.getElementById('display_date_debut').value='$tmp_date';return false;\" style='color:black;text-decoration:none;'>".$tmp_date."</a></span><br />";
+				}
 				echo "<span style='cursor: pointer;'>
 				<label for=\"tab_periode_num_$j\" style=\"display:none;\">Période $j</label>
 				<input type=\"checkbox\" name=\"tab_periode_num[]\" id=\"tab_periode_num_$j\" value='$j' ";
@@ -695,6 +752,13 @@ elseif(!isset($choix_periode)) {
 				}
 				echo "onchange=\"document.getElementById('choix_periode').checked=true\" ";
 				echo "/></span>\n";
+				if($date_derniere_evaluation[$j]!="0000-00-00 00:00:00") {
+					$tmp_date=formate_date($date_derniere_evaluation[$j]);
+						echo "<br /><span style='font-size:x-small' title=\"Date de la dernière évaluation de la période $j pour les classes sélectionnées.
+
+Cliquez pour prendre cette date comme date de fin
+dans l'extraction DATE à DATE.\"><a href=\"#\" onclick=\"document.getElementById('display_date_fin').value='$tmp_date';return false;\" style='color:black;text-decoration:none;'>".$tmp_date."</a></span>";
+				}
 			}
 			else {
 				echo "<td style='background-color:red;'>&nbsp;";
@@ -755,12 +819,14 @@ elseif(!isset($choix_periode)) {
 <?php
 	echo "<p><br /></p>\n";
 
-	echo "<p><em>Remarque&nbsp;:</em></p>\n";
-	echo "<blockquote>\n";
-	echo "<p>Les relevés d'une date à une autre ne font apparaître que les matières dans lesquelles il y a des notes.<br />\n";
-	echo "Les relevés pour une période complète en revanche font apparaître toutes les matières, même si aucune note n'est saisie.</p>\n";
-	echo "<p>On choisit en général la période complète lorsqu'on veut imprimer un relevé en même temps que le bulletin (<em>au verso par exemple</em>) et en fin de période, il est bon d'avoir toutes les matières.</p>\n";
-	echo "</blockquote>\n";
+	echo "<p><em>Remarques&nbsp;:</em></p>\n";
+	echo "<ul>\n";
+	echo "<li><p>Les relevés d'une date à une autre ne font apparaître que les matières dans lesquelles il y a des notes.<br />
+	C'est un bon choix pour un relevé de notes de demi-période (<em>afficher les enseignements dans lesquels il n'y a pas encore de notes ne présente pas vraiment d'intérêt</em>).<br />
+	Ce choix permet généralement d'imprimer deux relevés de notes par page (<em>case à cocher à l'étape suivante</em>).</p></li>\n";
+	echo "<li><p>Les relevés pour une période complète en revanche font apparaître toutes les matières, même si aucune note n'est saisie.</p>\n";
+	echo "<p>On choisit en général la période complète lorsqu'on veut imprimer un relevé en même temps que le bulletin (<em>au verso par exemple</em>) et en fin de période, il est bon d'avoir tous les enseignements.</p></li>\n";
+	echo "</ul>\n";
 
 	echo "<script type='text/javascript'>
 	//<![CDATA[ 
@@ -790,27 +856,42 @@ elseif(!isset($choix_periode)) {
 }
 //======================================================
 //==============CHOIX DE LA SELECTION D'ELEVES==========
-elseif(!isset($_POST['valide_select_eleves'])) {
+elseif(!isset($valide_select_eleves)) {
+
+	//$preselection_eleves=isset($_POST['preselection_eleves']) ? $_POST['preselection_eleves'] : (isset($_GET['preselection_eleves']) ? $_GET['preselection_eleves'] : NULL);
 
 	if(isset($display_date_debut)) {$_SESSION['display_date_debut']=$display_date_debut;}
 	if(isset($display_date_fin)) {$_SESSION['display_date_fin']=$display_date_fin;}
 
 	echo "<p class='bold'>";
 	if($_SESSION['statut']=='professeur') {
-		echo "<a href='index.php'>Retour</a>";
+		echo "<a href='index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."' onclick=\"document.forms['form_retour'].submit();return false;\">Choisir d'autres périodes</a>\n";
 	}
-	elseif(($_SESSION['statut']=='scolarite')||($_SESSION['statut']=='administrateur')) {
-		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
+	elseif($_SESSION['statut']=='scolarite') {
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
+		echo " | ";
+		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
+		echo " | ";
+		echo "<a href='".$_SERVER['PHP_SELF']."' onclick=\"document.forms['form_retour'].submit();return false;\">Choisir d'autres périodes</a>\n";
+		if(getSettingAOui('GepiScolImprRelSettings')) {
+			echo " | ";
+			echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
+		}
+	}
+	elseif($_SESSION['statut']=='administrateur') {
+		// Normalement, l'administrateur n'a pas accès aux relevés de notes...
+		// On ne devrait jamais passer là sauf modification de la politique des rôles.
+		echo "<a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour à l'accueil</a>";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."'>Choisir d'autres classes</a>\n";
 		echo " | ";
 		echo "<a href='".$_SERVER['PHP_SELF']."' onclick=\"document.forms['form_retour'].submit();return false;\">Choisir d'autres périodes</a>\n";
 		echo " | ";
-		echo "<a href='param_releve_html.php' target='_blank'>Paramètres du relevé HTML</a>";
+		echo "<a href='param_releve_html.php' target='_blank'><img src='../images/icons/configure.png' class='icone16' alt='Paramétrer' /> Paramètres du relevé HTML</a>";
 	}
 	else {
 		echo "<a href='../accueil.php'>Retour à l'accueil</a>";
@@ -848,7 +929,8 @@ elseif(!isset($_POST['valide_select_eleves'])) {
 
 	//debug_var();
 
-	if((isset($_POST['choix_periode']))&&($_POST['choix_periode']=='periode')&&(!isset($_POST['tab_periode_num']))) {
+	//if((isset($_POST['choix_periode']))&&($_POST['choix_periode']=='periode')&&(!isset($_POST['tab_periode_num']))) {
+	if((isset($choix_periode))&&($choix_periode=='periode')&&(!isset($tab_periode_num))) {
 		echo "<p style='color:red'>Vous avez choisi un relevé de période, mais omis de choisir la période.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
@@ -908,8 +990,18 @@ echo "</p>";
 	//echo "<input type='hidden' name='mode_bulletin' value='html' />\n";
 	//echo "<input type='hidden' name='un_seul_bull_par_famille' value='non' />\n";
 
-	echo "<p><input type='radio' id='releve_html' name='mode_bulletin' value='html' checked='checked' onchange='griser_lignes_specifiques_pdf();' /><label for='releve_html'> Relevé HTML</label><br />\n";
-	echo "<input type='radio' id='releve_pdf' name='mode_bulletin' value='pdf' onchange='display_div_param_pdf();griser_lignes_specifiques_html();' /><label for='releve_pdf'> Relevé PDF</label></p>\n";
+	// 20131013
+	if(getParamClasse($tab_id_classe[0], "rn_type_par_defaut", "html")=="html") {
+		$checked_html=" checked='checked'";
+		$checked_pdf="";
+	}
+	else {
+		$checked_html="";
+		$checked_pdf=" checked='checked'";
+	}
+
+	echo "<p><input type='radio' id='releve_html' name='mode_bulletin' value='html'$checked_html onchange='griser_lignes_specifiques_pdf();' /><label for='releve_html'> Relevé HTML</label><br />\n";
+	echo "<input type='radio' id='releve_pdf' name='mode_bulletin' value='pdf'$checked_pdf onchange='display_div_param_pdf();griser_lignes_specifiques_html();' /><label for='releve_pdf'> Relevé PDF</label></p>\n";
 
 	echo "<div id='div_param_pdf'>\n";
 		//echo "<br />\n";
@@ -922,7 +1014,7 @@ echo "</p>";
 		//$texte_infobulle.="\n";
 		$tabdiv_infobulle[]=creer_div_infobulle('a_propos_cell_ajustee',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 
-		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('a_propos_cell_ajustee','y',100,100);\"  onmouseout=\"cacher_div('a_propos_cell_ajustee');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' alt='Aide Fonction cell_ajustee()' /></a>";
+		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('a_propos_cell_ajustee','y',100,100);\"  onmouseout=\"cacher_div('a_propos_cell_ajustee');\"><img src='../images/icons/ico_ampoule.png' class='icone15x25' alt='Aide Fonction cell_ajustee()' /></a>";
 
 		echo "<br />\n";
 
@@ -934,7 +1026,7 @@ echo "</p>";
 		//$texte_infobulle.="\n";
 		$tabdiv_infobulle[]=creer_div_infobulle('div_bull_debug_pdf',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 
-		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('div_bull_debug_pdf','y',100,100);\"  onmouseout=\"cacher_div('div_bull_debug_pdf');\"><img src='../images/icons/ico_ampoule.png' width='15' height='25' alt='Aide Debug' /></a>";
+		echo "<a href=\"#\" onclick='return false;' onmouseover=\"afficher_div('div_bull_debug_pdf','y',100,100);\"  onmouseout=\"cacher_div('div_bull_debug_pdf');\"><img src='../images/icons/ico_ampoule.png' class='icone15x25' alt='Aide Debug' /></a>";
 
 		echo "<br />\n";
 
@@ -972,7 +1064,7 @@ echo "</p>";
 	}
 	else {
 		echo "<p>\n";
-		echo "<strong>Paramètres:</strong> \n";
+		echo "<strong><img src='../images/icons/configure.png' class='icone16' alt='Paramètres' /> Paramètres:</strong> \n";
 		echo "<span id='pliage_param_releve'>\n";
 		echo "(<em>";
 		echo "<a href='#' onclick=\"document.getElementById('div_param_releve').style.display='';return false;\">Afficher</a>";
@@ -1105,15 +1197,15 @@ echo "</script>\n";
 			for($j=0;$j<count($tab_periode_num);$j++) {
 				//echo "<th>Période $j</th>\n";
 				$sql="SELECT nom_periode FROM periodes WHERE id_classe='".$tab_id_classe[$i]."' AND num_periode='".$tab_periode_num[$j]."';";
-				$res_per=mysql_query($sql);
-				$lig_per=mysql_fetch_object($res_per);
+				$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+				$lig_per=mysqli_fetch_object($res_per);
 				echo "<th>\n";
 
 				echo $lig_per->nom_periode;
 
 				echo "<br />\n";
 
-				echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.",".$j.");\"><img src='../images/enabled.png' width='15' height='15' alt='Cocher tous les élèves' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.",".$j.");\"><img src='../images/disabled.png' width='15' height='15' alt='Décocher tous les élèves' /></a>\n";
+				echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.",".$j.");\"><img src='../images/enabled.png' class='icone15' alt='Cocher tous les élèves' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.",".$j.");\"><img src='../images/disabled.png' class='icone15' alt='Décocher tous les élèves' /></a>\n";
 
 				echo "</th>\n";
 			}
@@ -1122,7 +1214,7 @@ echo "</script>\n";
 			echo "<th>\n";
 			echo "Du $display_date_debut au $display_date_fin<br />\n";
 
-			echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.",'".$periode."');\"><img src='../images/enabled.png' width='15' height='15' alt='Cocher tous les élèves' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.",'".$periode."');\"><img src='../images/disabled.png' width='15' height='15' alt='Décocher tous les élèves' /></a>\n";
+			echo "<a href=\"javascript:CocheColonneSelectEleves(".$i.",'".$periode."');\"><img src='../images/enabled.png' class='icone15' alt='Cocher tous les élèves' /></a> / <a href=\"javascript:DecocheColonneSelectEleves(".$i.",'".$periode."');\"><img src='../images/disabled.png' class='icone15' alt='Décocher tous les élèves' /></a>\n";
 
 			echo "</th>\n";
 		}
@@ -1190,8 +1282,8 @@ echo "</script>\n";
 								jep.professeur='".$_SESSION['login']."' AND
 								jec.id_classe='".$tab_id_classe[$i]."'
 						ORDER BY e.nom,e.prenom;";
-					$test_acces=mysql_query($sql);
-					if(mysql_num_rows($test_acces)==0) {
+					$test_acces=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_acces)==0) {
 						// On pourrait mettre un tentative_intrusion()
 						echo "<p>Vous n'êtes pas ".getSettingValue("gepi_prof_suivi")." de cette classe, donc pas autorisé à accéder aux relevés de notes de ces élèves.</p>\n";
 						require("../lib/footer.inc.php");
@@ -1243,10 +1335,12 @@ echo "</script>\n";
 		}
 		//echo "$sql<br />";
 
-		$res_ele=mysql_query($sql);
+		$temoin_preselection_eleve_faite="n";
+
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
 		$alt=1;
 		$cpt=0;
-		while($lig_ele=mysql_fetch_object($res_ele)) {
+		while($lig_ele=mysqli_fetch_object($res_ele)) {
 
 			//$acces_prof_a_cet_eleve="y";
 			//if() {
@@ -1267,22 +1361,25 @@ echo "</script>\n";
 					$sql="SELECT 1=1 FROM j_eleves_classes jec
 						WHERE jec.id_classe='".$tab_id_classe[$i]."' AND
 								jec.periode='".$tab_periode_num[$j]."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)>0) {
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)>0) {
 						if (isset($id_groupe)) {
 							// Cas d'un prof
 							// Dans le cas du choix d'un groupe, on contrôle si l'élève fait partie du groupe
 							$sql="SELECT 1=1 FROM j_eleves_groupes WHERE (login='".$lig_ele->login."' AND id_groupe='$id_groupe' AND periode='".$tab_periode_num[$j]."');";
-							$test_ele_grp=mysql_query($sql);
-							if(mysql_num_rows($test_ele_grp)>0) {
+							$test_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_ele_grp)>0) {
 								echo "<td>
 									<label for='tab_selection_ele_".$i."_".$j."[]'_".$cpt."' class='invisible'>".$lig_ele->nom." ".$lig_ele->prenom." periode ".$j."</label>
 									<input type='checkbox' name='tab_selection_ele_".$i."_".$j."[]' id='tab_selection_ele_".$i."_".$j."_".$cpt."' value=\"".$lig_ele->login."\" ";
 								// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-								$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : array();
-								if(in_array($lig_ele->login,$tab_selection_eleves)) {
+								$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : (isset($_GET['tab_selection_ele_'.$i.'_'.$j]) ? $_GET['tab_selection_ele_'.$i.'_'.$j] : array());
+
+								if(in_array($lig_ele->login, $tab_selection_eleves)) {
 									echo "checked='checked' ";
+									$temoin_preselection_eleve_faite="y";
 								}
+
 								echo "/></td>\n";
 							}
 							else {
@@ -1302,8 +1399,8 @@ echo "</script>\n";
 														jgp.login='".$_SESSION['login']."' AND
 														jeg.periode='".$tab_periode_num[$j]."'
 														);";
-								$test_ele_grp=mysql_query($sql);
-								if(mysql_num_rows($test_ele_grp)==0) {
+								$test_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($test_ele_grp)==0) {
 									echo "<td>-</td>\n";
 								}
 								else {
@@ -1311,9 +1408,10 @@ echo "</script>\n";
 									<label for='tab_selection_ele_".$i."_".$j."_".$cpt."' class='invisible'>".$lig_ele->nom." ".$lig_ele->prenom." periode ".$j."</label>
 									<input type='checkbox' name='tab_selection_ele_".$i."_".$j."[]' id='tab_selection_ele_".$i."_".$j."_".$cpt."' value=\"".$lig_ele->login."\" ";
 									// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-									$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : array();
+									$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : (isset($_GET['tab_selection_ele_'.$i.'_'.$j]) ? $_GET['tab_selection_ele_'.$i.'_'.$j] : array());
 									if(in_array($lig_ele->login,$tab_selection_eleves)) {
 										echo "checked='checked' ";
+										$temoin_preselection_eleve_faite="y";
 									}
 									echo "/></td>\n";
 								}
@@ -1323,7 +1421,7 @@ echo "</script>\n";
 								echo "<td>";
 								echo "<label for='tab_selection_ele_".$i."_".$j."_".$cpt."' class='invisible'>".$lig_ele->nom." ".$lig_ele->prenom." periode ".$j."</label>
 									<input type='hidden' name='tab_selection_ele_".$i."_".$j."[]' id='tab_selection_ele_".$i."_".$j."_".$cpt."' value=\"".$_SESSION['login']."\" />";
-								echo "<img src='../images/enabled.png' width='15' height='15' alt='Coché' />";
+								echo "<img src='../images/enabled.png' class='icone15' alt='Coché' />";
 								echo "</td>\n";
 							}
 							elseif($_SESSION['statut']=='responsable') {
@@ -1339,8 +1437,8 @@ echo "</script>\n";
 												WHERE (jec.id_classe='".$tab_id_classe[$i]."' AND
 														jec.login='".$lig_ele->login."' AND
 														jec.periode='".$tab_periode_num[$j]."');";
-								$test_ele_grp=mysql_query($sql);
-								if(mysql_num_rows($test_ele_grp)==0) {
+								$test_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($test_ele_grp)==0) {
 									echo "<td>-</td>\n";
 								}
 								else {
@@ -1348,11 +1446,12 @@ echo "</script>\n";
 										<label for='tab_selection_ele_".$i."_".$j."_".$cpt."' class='invisible'>".$lig_ele->nom." ".$lig_ele->prenom." periode ".$j."</label>
 									<input type='checkbox' name='tab_selection_ele_".$i."_".$j."[]' id='tab_selection_ele_".$i."_".$j."_".$cpt."' value=\"".$lig_ele->login."\" ";
 									// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-									$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : array();
+									$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$j]) ? $_POST['tab_selection_ele_'.$i.'_'.$j] : (isset($_GET['tab_selection_ele_'.$i.'_'.$j]) ? $_GET['tab_selection_ele_'.$i.'_'.$j] : array());
 									if(in_array($lig_ele->login,$tab_selection_eleves)) {
 										echo "checked='checked' ";
+										$temoin_preselection_eleve_faite="y";
 									}
-									echo "/></td>\n";
+									echo "/>";
 								}
 							}
 						}
@@ -1368,15 +1467,16 @@ echo "</script>\n";
 				if (isset($id_groupe)) {
 					// Dans le cas du choix d'un groupe, on contrôle si l'élève fait partie du groupe
 					$sql="SELECT 1=1 FROM j_eleves_groupes WHERE (login='".$lig_ele->login."' AND id_groupe='$id_groupe');";
-					$test_ele_grp=mysql_query($sql);
-					if(mysql_num_rows($test_ele_grp)>0) {
+					$test_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_ele_grp)>0) {
 						echo "<label for='tab_selection_ele_".$i."_".$periode."_".$cpt."' class='invisible'>".$lig_ele->nom." ".$lig_ele->prenom." periode ".$periode."</label>
 									<input type='checkbox' name='tab_selection_ele_".$i."_".$periode."[]' id='tab_selection_ele_".$i."_".$periode."_".$cpt."' value=\"".$lig_ele->login."\" ";
 
 						// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-						$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : array();
+						$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : (isset($_GET['tab_selection_ele_'.$i.'_'.$periode]) ? $_GET['tab_selection_ele_'.$i.'_'.$periode] : array());
 						if(in_array($lig_ele->login,$tab_selection_eleves)) {
 							echo "checked='checked' ";
+							$temoin_preselection_eleve_faite="y";
 						}
 						echo "/></td>\n";
 					}
@@ -1395,8 +1495,8 @@ echo "</script>\n";
 												jeg.login='".$lig_ele->login."' AND
 												jgp.login='".$_SESSION['login']."'
 												);";
-						$test_ele_grp=mysql_query($sql);
-						if(mysql_num_rows($test_ele_grp)==0) {
+						$test_ele_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($test_ele_grp)==0) {
 							echo "<td>-</td>\n";
 						}
 						else {
@@ -1404,9 +1504,10 @@ echo "</script>\n";
 								<input type='checkbox' name='tab_selection_ele_".$i."_".$periode."[]' id='tab_selection_ele_".$i."_".$periode."_".$cpt."' value=\"".$lig_ele->login."\" ";
 
 							// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-							$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : array();
+							$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : (isset($_GET['tab_selection_ele_'.$i.'_'.$periode]) ? $_GET['tab_selection_ele_'.$i.'_'.$periode] : array());
 							if(in_array($lig_ele->login,$tab_selection_eleves)) {
 								echo "checked='checked' ";
+								$temoin_preselection_eleve_faite="y";
 							}
 							echo "/></td>\n";
 						}
@@ -1416,9 +1517,10 @@ echo "</script>\n";
 								<input type='checkbox' name='tab_selection_ele_".$i."_".$periode."[]' id='tab_selection_ele_".$i."_".$periode."_".$cpt."' value=\"".$lig_ele->login."\" ";
 
 						// Dans le cas d'un retour en arrière, des cases peuvent avoir été cochées
-						$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : array();
+						$tab_selection_eleves=isset($_POST['tab_selection_ele_'.$i.'_'.$periode]) ? $_POST['tab_selection_ele_'.$i.'_'.$periode] : (isset($_GET['tab_selection_ele_'.$i.'_'.$periode]) ? $_GET['tab_selection_ele_'.$i.'_'.$periode] : array());
 						if(in_array($lig_ele->login,$tab_selection_eleves)) {
 							echo "checked='checked' ";
+							$temoin_preselection_eleve_faite="y";
 						}
 						echo "/></td>\n";
 					}
@@ -1527,8 +1629,12 @@ function decocher_tous_eleves() {
 	document.getElementById('formulaire').submit();
 }\n";
 	}
-	echo "// On coche tous les élèves par défaut:
-cocher_tous_eleves();
+
+	if($temoin_preselection_eleve_faite=="n") {
+		echo "// On coche tous les élèves par défaut:
+cocher_tous_eleves();";
+	}
+	echo "
 ////]]>
 </script>\n";
 
@@ -1560,7 +1666,8 @@ cocher_tous_eleves();
 //=======================================================
 //===EXTRACTION DES DONNEES PUIS AFFICHAGE DES RELEVES===
 else {
-	$mode_bulletin=isset($_POST['mode_bulletin']) ? $_POST['mode_bulletin'] : "html";
+	//$mode_bulletin=isset($_POST['mode_bulletin']) ? $_POST['mode_bulletin'] : "html";
+
 	$un_seul_bull_par_famille=isset($_POST['un_seul_bull_par_famille']) ? $_POST['un_seul_bull_par_famille'] : "non";
 	$deux_releves_par_page=isset($_POST['deux_releves_par_page']) ? $_POST['deux_releves_par_page'] : "non";
 
@@ -1742,10 +1849,14 @@ else {
 	
 					echo "</div>\n";
 				}
-
+/*
+echo "DEBUG : 1837
+<pre>";
+print_r($tab_releve);
+echo "</pre>";
+*/
 				//$compteur_releve=0;
 				if(isset($tab_releve[$id_classe][$periode_num]['eleve'])) {
-
 					unset($tmp_tab);
 					unset($rg);
 					//$tri_par_etab_orig="y";

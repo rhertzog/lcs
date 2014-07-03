@@ -169,14 +169,14 @@ function ajout_index_sous_dossiers($dossier) {
 		echo ajout_index_sous_dossiers("../documents");
 
 		$sql="SELECT * FROM infos_actions WHERE titre='Contrôle des index dans les documents des CDT requis';";
-		$res_test=mysql_query($sql);
-		if(mysql_num_rows($res_test)>0) {
-			while($lig_ia=mysql_fetch_object($res_test)) {
+		$res_test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_test)>0) {
+			while($lig_ia=mysqli_fetch_object($res_test)) {
 				$sql="DELETE FROM infos_actions_destinataires WHERE id_info='$lig_ia->id';";
-				$del=mysql_query($sql);
+				$del=mysqli_query($GLOBALS["mysqli"], $sql);
 				if($del) {
 					$sql="DELETE FROM infos_actions WHERE id='$lig_ia->id';";
-					$del=mysql_query($sql);
+					$del=mysqli_query($GLOBALS["mysqli"], $sql);
 				}
 			}
 		}
@@ -360,9 +360,13 @@ echo add_token_field();
 		Délai :
 		<input type="text"
 			   name="delai_devoirs"
+			   id="delai_devoirs"
 			 onchange='changement();'
 			 title="Délai des devoirs"
-			   value="<?php echo getSettingValue("delai_devoirs"); ?>"
+			 onKeyDown="clavier_2(this.id,event,0,365);"
+			 AutoComplete="off"
+			 title="Délai des devoirs : Vous pouvez le modifier à l'aide des flèches Up et Down du pavé de direction."
+ 			   value="<?php echo getSettingValue("delai_devoirs"); ?>"
 			   size="2" />
 		jours
 	  </p>
@@ -430,7 +434,7 @@ echo add_token_field();
 			 onchange='changement();'
 			   <?php if (getSettingValue("cdt_autoriser_modif_multiprof") == "yes") {echo " checked='checked'";}?> />
 		<label for='cdt_autoriser_modif_multiprof_y' style='cursor: pointer;'>
-		  Autoriser les collègues travaillant en binome sur une enseignement à modifier les notices/devoirs créés par leur collègue.
+		  Autoriser les collègues travaillant en binome sur un enseignement à modifier les notices/devoirs créés par leur collègue.
 		</label>
 	  <br />
 		  <input type='radio'
@@ -462,6 +466,7 @@ echo add_token_field();
 	  <li><a href='../cahier_texte_2/archivage_cdt.php'>Archivage des cahiers de textes en fin d'année scolaire</a></li>
 	  <li><a href='../cahier_texte_2/export_cdt.php'>Export de cahiers de textes et accès inspecteur (<em>sans authentification</em>)</a></li>
 	  <li><a href='../cahier_texte_2/correction_notices_cdt_formules_maths.php'>Téléchargement des images de formules mathématiques et correction des notices en conséquence</a></li>
+	  <li><a href='../cahier_texte_2/correction_notices_url_absolues_docs_joints.php'>URL absolues à corriger en URL relatives pour les documents joints aux cahiers de textes.</a></li>
 	</ul>
 	
 	<hr />

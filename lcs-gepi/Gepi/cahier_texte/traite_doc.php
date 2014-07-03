@@ -88,7 +88,10 @@ function ajout_doc($doc_file,$id_ct,$doc_name,$cpt_doc) {
         $id_type = $row[0];
     }
     else {
-        return "Ce type de fichier n'est pas autorisé en téléchargement";
+        return "Erreur : Ce type de fichier n'est pas autorisé en téléchargement.<br />
+Si vous trouvez cela regrettable, contactez l'administrateur.<br />
+Il pourra modifier ce paramétrage dans<br />
+*Gestion des modules/Cahiers de textes/Types de fichiers autorisés en téléchargement*.";
         die();
     }
 
@@ -159,7 +162,7 @@ function ajout_doc($doc_file,$id_ct,$doc_name,$cpt_doc) {
 	else
 	    $query = "INSERT INTO ct_documents SET taille='$taille', emplacement='$dest_path', id_ct='$id_ct', titre='".corriger_caracteres($doc_name[$cpt_doc])."'";
         sql_query($query);
-        $id_document = mysql_insert_id();
+        $id_document = ((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["mysqli"]))) ? false : $___mysqli_res);
         $nouveau = true;
     } else {
 	if (isset($edit_devoir))

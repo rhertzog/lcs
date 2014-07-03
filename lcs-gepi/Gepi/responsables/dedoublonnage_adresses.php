@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001-2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2014 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -23,9 +23,6 @@
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
 
-//extract($_GET, EXTR_OVERWRITE);
-//extract($_POST, EXTR_OVERWRITE);
-
 // Resume session
 $resultat_session = $session_gepi->security_check();
 if ($resultat_session == 'c') {
@@ -36,13 +33,10 @@ if ($resultat_session == 'c') {
     die();
 }
 
-// INSERT INTO `droits` VALUES ('/responsables/dedoublonnage_adresses.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Dédoublonnage des adresses responsables', '');
-
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
     die();
 }
-
 
 function affiche_debug($texte){
 	// Passer à 1 la variable pour générer l'affichage des infos de debug...
@@ -66,6 +60,11 @@ function info_debug($texte){
 	}
 }
 
+//$largeur_tranche=20;
+$largeur_tranche=getSettingValue('dedoublonnage_adresses_resp_largeur_tranche');
+if($largeur_tranche=="") {
+	$largeur_tranche=100;
+}
 
 // Etape...
 $step=isset($_POST['step']) ? $_POST['step'] : (isset($_GET['step']) ? $_GET['step'] : NULL);
@@ -76,9 +75,59 @@ $nb_parcours=isset($_POST['nb_parcours']) ? $_POST['nb_parcours'] : NULL;
 
 $stop=isset($_POST['stop']) ? $_POST['stop'] : (isset($_GET['stop']) ? $_GET['stop'] :'n');
 
+$id_info=isset($_POST['id_info']) ? $_POST['id_info'] : (isset($_GET['id_info']) ? $_GET['id_info'] :'');
+
 //$style_specifique="responsables/maj_import2";
 
 //$gepiSchoolRne=getSettingValue("gepiSchoolRne") ? getSettingValue("gepiSchoolRne") : "";
+
+function get_id_infos_action_dedoublonnage() {
+	global $id_info;
+
+	if($id_info!='') {
+		return $id_info;
+	}
+	else {
+		return new_id_infos_action_dedoublonnage();
+	}
+}
+
+function new_id_infos_action_dedoublonnage() {
+	//$id_info="";
+
+	$titre="Dédoublonnage des adresses responsables : ".strftime("%d/%m/%Y à %H:%M:%S");
+	$texte="Dédoublonnage des adresses responsables...<br />";
+	$destinataire="administrateur";
+	$mode="statut";
+	$id_info=enregistre_infos_actions($titre,$texte,$destinataire,$mode);
+
+	return $id_info;
+}
+
+function update_infos_action_dedoublonnage($id_info, $texte) {
+	$retour="";
+
+	$sql="SELECT description FROM infos_actions WHERE id='$id_info';";
+	//echo "$sql<br />\n";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		$lig=mysqli_fetch_object($res);
+
+		//$sql="UPDATE infos_actions SET description='".addslashes($lig->description).addslashes($texte)."<hr align=\"center\" width=\"200\" />' WHERE id='$id_info';";
+		$sql="UPDATE infos_actions SET description='".addslashes($lig->description).addslashes($texte)."' WHERE id='$id_info';";
+		//echo "$sql<br />\n";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(!$res) {$retour="ERREUR lors de la mise à jour de la description de l'information n°$id_info.";}
+	}
+	else {
+		$retour="ERREUR : L'information n°$id_info n'existe pas.";
+	}
+
+	//echo $retour;
+
+	return $retour;
+}
+
 
 //**************** EN-TETE *****************
 $titre_page = "Dédoublonnage des adresses responsables";
@@ -86,7 +135,6 @@ require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //debug_var();
-
 
 if(isset($step)) {
 	check_token(false);
@@ -135,7 +183,6 @@ function test_stop(num){
 		//setTimeout(\"document.location.replace('".$_SERVER['PHP_SELF']."?step=1')\",2000);
 		document.location.replace('".$_SERVER['PHP_SELF']."?step='+num+'".add_token_in_url(false)."'";
 
-	// AJOUT A FAIRE VALEUR STOP
 	echo "+'&stop='+stop";
 
 	echo ");
@@ -169,7 +216,6 @@ function test_stop_suite(num){
 	}
 
 	document.location.replace('".$_SERVER['PHP_SELF']."?step='+num";
-	// AJOUT A FAIRE VALEUR STOP
 	echo "+'&stop='+stop+'";
 
 	echo add_token_in_url(false);
@@ -222,23 +268,23 @@ else{
 		echo "<p>Initialisation du processus.</p>\n";
 
 		$sql="TRUNCATE TABLE tempo2;";
-		$res=mysql_query($sql);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		$sql="INSERT INTO tempo2 SELECT pers_id,adr_id FROM resp_pers;";
-		$res=mysql_query($sql);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		$sql="SELECT 1=1 FROM tempo2;";
-		$res1=mysql_query($sql);
-		$nb_resp=mysql_num_rows($res1);
+		$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_resp=mysqli_num_rows($res1);
 		if($nb_resp==0){
 			echo "<p>La table 'tempo2' est vide???<br />Aucun responsable ne serait encore défini?</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 
-		echo "<p>Les ".$nb_resp." responsables vont être parcourus par tranches de 20 à la recherche de différences.</p>\n";
+		echo "<p>Les ".$nb_resp." responsables vont être parcourus par tranches de $largeur_tranche à la recherche de différences.</p>\n";
 
-		$nb_parcours=ceil($nb_resp/20);
+		$nb_parcours=ceil($nb_resp/$largeur_tranche);
 
 		$parcours_diff=0;
 		echo "<p>Parcours de la tranche <b>$parcours_diff</b>.</p>\n";
@@ -247,7 +293,30 @@ else{
 		echo "<p>Parcours de la tranche <b>$parcours_diff/$nb_parcours</b>.</p>\n";
 	}
 
+	$id_info=get_id_infos_action_dedoublonnage();
+
 	flush();
+
+	$sql="SELECT * FROM tempo2 LIMIT $largeur_tranche;";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
+		$retour="<p>Dédoublonnage achevé.</p>\n";
+		update_infos_action_dedoublonnage($id_info, $retour);
+		echo $retour;
+
+		echo "<hr /><p class='bold'>Récapitulatif&nbsp;:</p>";
+		$sql="SELECT description FROM infos_actions WHERE id='$id_info';";
+		//echo "$sql<br />\n";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)>0) {
+			$lig=mysqli_fetch_object($res);
+			echo $lig->description;
+		}
+
+
+		require("../lib/footer.inc.php");
+		die();
+	}
 
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='formulaire' method='post'>\n";
 	echo add_token_field();
@@ -255,49 +324,43 @@ else{
 	// AJOUT pour tenir compte de l'automatisation ou non:
 	echo "<input type='hidden' name='stop' id='id_form_stop' value='$stop' />\n";
 	//==============================
-
-	$sql="SELECT * FROM tempo2 LIMIT 20;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
-		echo "<p>Dédoublonnage achevé.</p>\n";
-		require("../lib/footer.inc.php");
-		die();
-	}
+	echo "<input type='hidden' name='id_info' id='id_info' value='$id_info' />\n";
 
 	//echo "<p>";
 	$cpt=0;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$pers_id=$lig->col1;
 		//$adr_id=$lig->col2;
 		//$sql="SELECT adr_id FROM resp_pers WHERE pers_id='$pers_id';";
 		$sql="SELECT adr_id, nom, prenom FROM resp_pers WHERE pers_id='$pers_id';";
-		$res1=mysql_query($sql);
-		$lig1=mysql_fetch_object($res1);
+		$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+		$lig1=mysqli_fetch_object($res1);
 		$adr_id=$lig1->adr_id;
 
 		//echo "<p>\$pers_id=$pers_id (adr_id=$adr_id) ";
 
 		$sql="SELECT * FROM resp_adr WHERE adr_id='$adr_id';";
-		$res2=mysql_query($sql);
-		if(mysql_num_rows($res2)>0) {
-			$lig2=mysql_fetch_object($res2);
+		$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res2)>0) {
+			$lig2=mysqli_fetch_object($res2);
 			if((($lig2->adr1!="")||($lig2->adr2!="")||($lig2->adr3!="")||($lig2->adr4!=""))&&
 				($lig2->commune!="")) {
 				//$sql="SELECT adr_id FROM resp_adr WHERE adr_id!='$adr_id' AND adr1='$lig2->adr1' AND adr2='$lig2->adr2' AND adr3='$lig2->adr3' AND adr4='$lig2->adr4' AND cp='$lig2->cp' AND commune='$lig2->commune' AND pays='$lig2->pays';";
 				$sql="SELECT ra.adr_id, rp.pers_id, rp.nom, rp.prenom FROM resp_adr ra, resp_pers rp
 					WHERE ra.adr_id!='$adr_id' AND ra.adr1='".addslashes($lig2->adr1)."' AND ra.adr2='".addslashes($lig2->adr2)."' AND ra.adr3='".addslashes($lig2->adr3)."' AND ra.adr4='".addslashes($lig2->adr4)."' AND ra.cp='".addslashes($lig2->cp)."' AND ra.commune='".addslashes($lig2->commune)."' AND ra.pays='".addslashes($lig2->pays)."' AND ra.adr_id=rp.adr_id;";
 				//echo "<br />$sql<br />";
-				$res3=mysql_query($sql);
-				if(mysql_num_rows($res3)>0) {
-					while($lig3=mysql_fetch_object($res3)) {
+				$res3=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res3)>0) {
+					$texte_info_action="";
+					while($lig3=mysqli_fetch_object($res3)) {
 						$temoin="n";
 
 						$tab_ele1=array();
 						// On vérifie si les deux responsables sont bien liés via responsables2
 						$sql="SELECT ele_id FROM responsables2 WHERE pers_id='$pers_id' AND (resp_legal='1' OR resp_legal='2');";
-						$res_ele1=mysql_query($sql);
-						if(mysql_num_rows($res_ele1)>0) {
-							while($lig_ele1=mysql_fetch_object($res_ele1)) {
+						$res_ele1=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_ele1)>0) {
+							while($lig_ele1=mysqli_fetch_object($res_ele1)) {
 								$tab_ele1[]=$lig_ele1->ele_id;
 							}
 						}
@@ -305,9 +368,9 @@ else{
 						//$tab_ele2=array();
 						// On vérifie si les deux responsables sont bien liés via responsables2
 						$sql="SELECT ele_id FROM responsables2 WHERE pers_id='$lig3->pers_id' AND (resp_legal='1' OR resp_legal='2');";
-						$res_ele2=mysql_query($sql);
-						if(mysql_num_rows($res_ele2)>0) {
-							while($lig_ele2=mysql_fetch_object($res_ele2)) {
+						$res_ele2=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_ele2)>0) {
+							while($lig_ele2=mysqli_fetch_object($res_ele2)) {
 								//$tab_ele2[]=$lig_ele2->ele_id;
 
 								if(in_array($lig_ele2->ele_id,$tab_ele1)) {
@@ -320,30 +383,35 @@ else{
 						if($temoin=="y") {
 							$sql="UPDATE resp_pers SET adr_id='$adr_id' WHERE pers_id='$lig3->pers_id';";
 							//echo "<br />$sql<br />";
-							$update=mysql_query($sql);
-
-							/*
-							$sql="UPDATE tempo2 SET col2='$adr_id' WHERE col1='$lig3->pers_id';";
-							//echo "<br />$sql<br />";
-							$update=mysql_query($sql);
-							*/
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							//echo " <span style='color:red'>$lig3->pers_id</span>";
-							if($cpt==0) {echo "<p><b>Dédoublonnage pour:</b> ";} else {echo " - ";}
+							$echo_html="";
+							if($cpt==0) {
+								$echo_html.="<p><b>Dédoublonnage pour:</b> ";
+							}
+							else {
+								$echo_html.=" - ";
+							}
 
-							echo mb_strtoupper($lig1->nom)." ".ucfirst(mb_strtolower($lig1->prenom))." (<i>".mb_strtoupper($lig3->nom)." ".ucfirst(mb_strtolower($lig3->prenom))."</i>)";
+							$echo_html.=mb_strtoupper($lig1->nom)." ".ucfirst(mb_strtolower($lig1->prenom))." (<i>".mb_strtoupper($lig3->nom)." ".ucfirst(mb_strtolower($lig3->prenom))."</i>)";
+
+							$texte_info_action.=$echo_html;
+							echo $echo_html;
 
 							$cpt++;
 						}
 
 					}
+
+					update_infos_action_dedoublonnage($id_info, $texte_info_action);
 				}
 			}
 		}
 
 		//$sql="DELETE FROM tempo2 WHERE col1='$pers_id' AND col2='$adr_id';";
 		$sql="DELETE FROM tempo2 WHERE col1='$pers_id';";
-		$nettoyage=mysql_query($sql);
+		$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 	}
 	if($cpt>0) {echo "</p>\n";}
 
@@ -353,7 +421,7 @@ else{
 	$parcours_diff++;
 	//echo "<input type='hidden' name='parcours_diff' value='$parcours_diff' />\n";
 
-	//if(count($tab_ele_id)>20){
+	//if(count($tab_ele_id)>$largeur_tranche){
 		echo "<input type='hidden' name='parcours_diff' value='$parcours_diff' />\n";
 
 		echo "<input type='hidden' name='step' value='1' />\n";

@@ -48,7 +48,7 @@ $pas_de_decalage_infobulle = "oui";
 function menuEdtJs($numero){
 	$aff_menu_edt = "";
 	// On récupère la valeur du réglage "param_menu_edt"
-	$reglage = mysql_fetch_array(mysql_query("SELECT valeur FROM edt_setting WHERE reglage = 'param_menu_edt'"));
+	$reglage = mysqli_fetch_array(mysqli_query($GLOBALS["mysqli"], "SELECT valeur FROM edt_setting WHERE reglage = 'param_menu_edt'"));
 	if ($reglage["valeur"] == "mouseover") {
 		$aff_menu_edt = " onmouseover=\"javascript:montre('sEdTmenu".$numero."');\"";
 	} elseif ($reglage["valeur"] == "click") {
@@ -60,7 +60,7 @@ function menuEdtJs($numero){
 }
 function displaydd($numero){
 		// On récupère la valeur du réglage "param_menu_edt"
-	$reglage = mysql_fetch_array(mysql_query("SELECT valeur FROM edt_setting WHERE reglage = 'param_menu_edt'"));
+	$reglage = mysqli_fetch_array(mysqli_query($GLOBALS["mysqli"], "SELECT valeur FROM edt_setting WHERE reglage = 'param_menu_edt'"));
 	if ($reglage["valeur"] == "rien") {
 		return " style=\"display: block;\"";
 	}else {
@@ -71,8 +71,8 @@ function displaydd($numero){
 function statutAutreSetting(){
 	// On cherche quel est le droit dont dispose cet utilisateur 'autre'
 	if ($_SESSION["statut"] == 'autre') {
-		$query = mysql_query("SELECT autorisation FROM droits_speciaux WHERE id_statut = '".$_SESSION["statut_special_id"]."' AND nom_fichier = '/tous_les_edt'");
-		$rep = mysql_result($query, 0,"autorisation");
+		$query = mysqli_query($GLOBALS["mysqli"], "SELECT autorisation FROM droits_speciaux WHERE id_statut = '".$_SESSION["statut_special_id"]."' AND nom_fichier = '/tous_les_edt'");
+		$rep = old_mysql_result($query, 0,"autorisation");
 
 		if ($rep["autorisation"] == 'V') {
 			return 'oui';
@@ -90,13 +90,12 @@ function statutAutreSetting(){
 <!-- On affiche le menu edt -->
 
 	<div id="agauche">
-
 <?php
 
 if (getSettingValue("use_only_cdt") != 'y' OR $_SESSION["statut"] != 'professeur') 
 { ?>
         <div class="dates_header"></div>
-        <div class="dates">
+        <div class="dates" title="Semaine courante">
   		<p>
 		<?php echo (WEEK_NUMBER.date("W")); ?>
 		</p>
@@ -112,6 +111,7 @@ if (getSettingValue("use_only_cdt") != 'y' OR $_SESSION["statut"] != 'professeur
 		<p>
 		<?php 
 			$semActu = typeSemaineActu();
+			//echo "\$semActu=$semActu<br />";
 			if ($semActu != NULL) {
 				echo "Semaine ".typeSemaineActu();
 			}

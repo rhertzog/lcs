@@ -219,7 +219,7 @@ $fb_gab_perso=getSettingValue("fb_gab_perso");
 	echo "<tr";
 	if($alt==1){echo " style='background: white;'";}else{echo " style='background: silver;'";}
 	echo ">\n";
-	echo "<td valign='top'>Gabarits : <br />Vous pouvez utiliser les gabarits intégrés à Gepi (construits à partir des fiches brevets de Nantes) <br />ou utiliser le module OpenOffice pour enregistrer vos propres gabarits</td>\n";
+	echo "<td valign='top'>Gabarits : <br />Vous pouvez utiliser les gabarits intégrés à Gepi<br />(<em>construits à partir des fiches brevets de Rouen</em>) <br />ou utiliser le module OpenOffice pour enregistrer vos propres gabarits</td>\n";
 	echo "<td>";
 	echo "<input type='radio' name='fb_gab_perso' id='fb_gab_perso_1' value='1' ";
 	if($fb_gab_perso=="1"){
@@ -251,6 +251,16 @@ $fb_dezip_ooo=getSettingValue("fb_dezip_ooo");
 	echo "</td>";
 	echo "<td>";
 
+	echo "<input type='radio' name='fb_dezip_ooo' id='fb_dezip_ooo_3' value='3' ";
+	if($fb_dezip_ooo=="3"){
+	  echo "checked='checked' />";
+	}
+	else{
+	  echo "/>";
+	}
+	echo "<label for='fb_dezip_ooo_3'> Zlib + openTBS : le meilleur choix mais nécessite que php ait été compilé avec l'extension zlib (voir la configuration du serveur)</label><br />\n";
+	
+
 	echo "<input type='radio' name='fb_dezip_ooo' id='fb_dezip_ooo_0' value='0' ";
 	if($fb_dezip_ooo=="0"){
 	  echo "checked='checked' />";
@@ -258,7 +268,7 @@ $fb_dezip_ooo=getSettingValue("fb_dezip_ooo");
 	else{
 	  echo "/>";
 	}
-	echo "<label for='fb_dezip_ooo_0'> ZIPARCHIVE et TinyDoc : le choix par défaut mais peut créer des fichiers corrompus si votre version de PHP est inférieure à 5.2.8 (utiliser OOo 3.2 pour réparer les fichiers) </label><br />\n";
+	echo "<label for='fb_dezip_ooo_0'> ZIPARCHIVE et TinyDoc : peut créer des fichiers corrompus si votre version de PHP est inférieure à 5.2.8 (utiliser OOo 3.2 pour réparer les fichiers) </label><br />\n";
 	
 	echo "<input type='radio' name='fb_dezip_ooo' id='fb_dezip_ooo_1' value='1' ";
 	if($fb_dezip_ooo=="1"){
@@ -287,6 +297,15 @@ $fb_dezip_ooo=getSettingValue("fb_dezip_ooo");
 	echo "<p style='text-align: center;'><input type='submit' name='enregistrer_param' value='Enregistrer' /></p>\n";
 	echo "</form>\n";
 
+
+	echo "<p><em>NOTES&nbsp;:</em></p>
+<ul>
+	<li><p>Si, lors de la génération des fiches brevet, vous obtenez une erreur mentionnant <strong>TinyButStrong</strong>, il est probable que vous utilisez un modèle OOo défecteux ou obsolète.</p></li>
+	<li><p>Le choix <strong>Gabarit personnel</strong> nécessite que vous ayez envoyé un modèle personnel dans <a href='../../mod_ooo/gerer_modeles_ooo.php#MODULE_NOTANET'>Modèle Open Office/Gérer les modèles de document OOo de l'établissement</a></p>
+	<p style='text-indent:-4em;margin-left:4em;'><em>Remarque&nbsp;:</em> Si vous obtenez une erreur, avec un <strong>Gabarit personnel</strong>, commencez par tester si le modèle officiel Gepi permet de régler le problème.</p></li>
+</ul>";
+
+
 	require("../../lib/footer.inc.php");
 	die();
 
@@ -304,8 +323,8 @@ $fb_dezip_ooo=getSettingValue("fb_dezip_ooo");
 //===================================================
 
 $sql="SELECT DISTINCT type_brevet FROM notanet_ele_type ORDER BY type_brevet;";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
 
 	//**************** EN-TETE *****************
 	require_once("../../lib/header.inc.php");
@@ -321,8 +340,8 @@ if(mysql_num_rows($res)==0) {
 }
 
 $sql="SELECT DISTINCT type_brevet FROM notanet_corresp WHERE $sql_indices_types_brevets ORDER BY type_brevet;";
-$res=mysql_query($sql);
-$nb_type_brevet=mysql_num_rows($res);
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+$nb_type_brevet=mysqli_num_rows($res);
 
 if($nb_type_brevet==0) {
 
@@ -366,7 +385,7 @@ if(!isset($type_brevet)) {
 	echo "</div>\n";
 
 	echo "<ul>\n";
-		while($lig=mysql_fetch_object($res)) {
+		while($lig=mysqli_fetch_object($res)) {
 			switch ($lig->type_brevet ) {
 				case 0 :
 					echo "<li><a href='".$_SERVER['PHP_SELF']."?type_brevet=".$lig->type_brevet."'>Générer les fiches brevet pour ".$tab_type_brevet[$lig->type_brevet]."</a></li>\n";
@@ -395,6 +414,10 @@ if(!isset($type_brevet)) {
 			}
 		}
 	echo "</ul>\n";
+
+
+	echo "<p style='text-indent:-4em;margin-left:4em;'><em>NOTES&nbsp;:</em> Si vous avez mis en place des modèles personnels dans la rubrique <strong>Modèle Open Office/Gérer les modèles de document OOo de l'établissement</strong> accessible depuis la page d'accueil, vous devez encore préciser ci-dessus dans <strong>Paramétrer</strong> si vous souhaitez utiliser des <strong>Gabarits personnels</strong> ou si vous préférez utiliser les <strong>Gabarits Gepi</strong>.</p>";
+
 
 	require("../../lib/footer.inc.php");
 	die();
@@ -448,14 +471,14 @@ if (!isset($id_classe)) {
 	echo "</div>\n";
 
 	// Les tables notanet ne sont pas renseignées, on s'arrête
-	$call_data = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p, notanet n,notanet_ele_type net WHERE p.id_classe = c.id AND c.id=n.id_classe AND n.login=net.login AND net.type_brevet='$type_brevet' ORDER BY classe");
+	$call_data = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT c.* FROM classes c, periodes p, notanet n,notanet_ele_type net WHERE p.id_classe = c.id AND c.id=n.id_classe AND n.login=net.login AND net.type_brevet='$type_brevet' ORDER BY classe");
 	if(!$call_data){
 		echo "<p><font color='red'>Attention:</font> Il semble que vous n'ayez pas mené la procédure notanet à son terme.<br />Cette procédure renseigne des tables requises pour générer les fiches brevet.<br />Effectuez la <a href='../index.php'>procédure notanet</a>.</p>\n";
 
 		require("../../lib/footer.inc.php");
 		die();
 	}
-	$nombre_lignes = mysql_num_rows($call_data);
+	$nombre_lignes = mysqli_num_rows($call_data);
 
 	echo "<div>\n";
 
@@ -470,8 +493,8 @@ if (!isset($id_classe)) {
 	echo "<p><select name='id_classe[]' multiple='multiple' size='$size'>\n";
 	$i = 0;
 	while ($i < $nombre_lignes){
-		$classe = mysql_result($call_data, $i, "classe");
-		$ide_classe = mysql_result($call_data, $i, "id");
+		$classe = old_mysql_result($call_data, $i, "classe");
+		$ide_classe = old_mysql_result($call_data, $i, "id");
 		echo "<option value='$ide_classe'";
 		if($nombre_lignes==1) {echo " selected='selected'";}
 		echo ">$classe</option>\n";
@@ -485,6 +508,19 @@ if (!isset($id_classe)) {
 
 	echo "</blockquote>\n";
 	echo "</form>\n";
+
+	echo "<p><em>NOTES&nbsp;:</em></p>
+<ul>
+	<li><p>Si une ou des classes n'apparaissent pas dans le champ de sélection ci-dessus, c'est très probablement que l'extraction n'a pas été faite pour ces classes.<br />
+	Cela peut arriver par exemple quand les notes d'EPS n'ont pas été saisies.</p></li>
+	<li><p>Si vous obtenez une erreur mentionnant <strong>TinyButStrong</strong>, il est probable que vous utilisez un modèle OOo défecteux ou obsolète.</p></li>
+	<li><p>Si vous obtenez une page blanche, peut-être avez-vous sélectionné trop de classes d'un coup.<br />
+	Essayez de ne sélectionner dans un premier temps qu'une classe ci-dessus pour éliminer un éventuel problème avec le nombre de variables envoyées.</p></li>
+	<li><p>Le modèle OpenOffice utilisé se définit en suivant le lien <a href='".$_SERVER['PHP_SELF']."?parametrer=y'>Paramétrer</a>.<br />
+	Vous pouvez y choisir d'utiliser un modèle personnalisé en sélectionnant <strong>Gabarit personnel</strong> plutôt que <strong>Gabarit Gepi</strong>.<br />
+	Le choix <strong>Gabarit personnel</strong> nécessite que vous ayez envoyé un modèle personnel dans <a href='../../mod_ooo/gerer_modeles_ooo.php#MODULE_NOTANET'>Modèle Open Office/Gérer les modèles de document OOo de l'établissement</a></p>
+	<p style='text-indent:-4em;margin-left:4em;'><em>Remarque&nbsp;:</em> Si vous obtenez une erreur, avec un <strong>Gabarit personnel</strong>, commencez par tester si le modèle officiel Gepi permet de régler le problème.</p></li>
+</ul>";
 
 	// Fermeture du DIV container initialisé dans le header.inc.php
 	echo "</div>\n";
@@ -576,9 +612,9 @@ for($i=0;$i<count($id_classe);$i++){
 	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT ROUND(AVG(note),1) moyenne FROM notanet WHERE note!='DI' AND note!='AB' AND note!='NN' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
-			$res_moy=mysql_query($sql);
-			if(mysql_num_rows($res_moy)>0){
-				$lig_moy=mysql_fetch_object($res_moy);
+			$res_moy=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_moy)>0){
+				$lig_moy=mysqli_fetch_object($res_moy);
 				$moy_classe[$j]=$lig_moy->moyenne;
 			}
 			else{
@@ -593,9 +629,9 @@ for($i=0;$i<count($id_classe);$i++){
 	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
 		if($tabmatieres[$j][0]!=''){
 			$sql="SELECT * FROM notanet_corresp WHERE notanet_mat='".$tabmatieres[$j][0]."' AND type_brevet='$type_brevet' LIMIT 1";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)>0){
-				$lig=mysql_fetch_object($res);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)>0){
+				$lig=mysqli_fetch_object($res);
 				$tabmatieres[$j][-4]=$lig->statut;
 				// On ne récupère qu'une seule des matières Gepi associées, là.
 				$tabmatieres[$j][-5]=$lig->matiere;
@@ -618,10 +654,10 @@ for($i=0;$i<count($id_classe);$i++){
 									net.login=n.login AND
 									net.type_brevet='$type_brevet'
 							ORDER BY e.login;";
-	$res1=mysql_query($sql);
-	if(mysql_num_rows($res1)>0){
+	$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res1)>0){
 		// Boucle sur la liste des élèves
-		while($lig1=mysql_fetch_object($res1)){
+		while($lig1=mysqli_fetch_object($res1)){
 
 			$tab_eleves_OOo[$nb_eleve]=array();
 			$tab_eleves_OOo[$nb_eleve]['fb_session']=$fb_session;
@@ -645,10 +681,10 @@ for($i=0;$i<count($id_classe);$i++){
 			$tab_eleves_OOo[$nb_eleve]['session']=$fb_session;
 
 			$sql="SELECT doublant FROM j_eleves_regime WHERE login='".$lig1->login."';";
-			$res_reg=mysql_query($sql);
+			$res_reg=mysqli_query($GLOBALS["mysqli"], $sql);
 			$doublant='n';
-			if(mysql_num_rows($res_reg)>0) {
-				$lig_reg=mysql_fetch_object($res_reg);
+			if(mysqli_num_rows($res_reg)>0) {
+				$lig_reg=mysqli_fetch_object($res_reg);
 				if($lig_reg->doublant=='R') {
 					$doublant='y';
 				}
@@ -685,9 +721,9 @@ for($i=0;$i<count($id_classe);$i++){
 
 						$sql="SELECT note, matiere FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
 						//echo "$sql<br />";
-						$res_note=mysql_query($sql);
-						if(mysql_num_rows($res_note)>0){
-							$lig_note=mysql_fetch_object($res_note);
+						$res_note=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_note)>0){
+							$lig_note=mysqli_fetch_object($res_note);
 							$tab_eleves_OOo[$nb_eleve][$j][0]=$lig_note->note;			// On récupère la note
 
 							// Dans le cas où il a fallu vider une des deux notes parce quil y avait plusieurs matières gepi remplies et associées à la même matière notanet, il faut récupérer l'appréciation associée à la bonne matière
@@ -701,9 +737,9 @@ for($i=0;$i<count($id_classe);$i++){
 																		   notanet_socles s
 																	  WHERE m.matiere=s.lv AND
 																			login='$lig1->login'";
-									$res_lang=mysql_query($sql_langue);
-									if(mysql_num_rows($res_lang)>0){
-									  $lig_matiere=mysql_fetch_object($res_lang);
+									$res_lang=mysqli_query($GLOBALS["mysqli"], $sql_langue);
+									if(mysqli_num_rows($res_lang)>0){
+									  $lig_matiere=mysqli_fetch_object($res_lang);
 									  $tab_eleves_OOo[$nb_eleve][115][1]=$lig_matiere->nom_complet;
 									}
 									else {
@@ -720,16 +756,16 @@ for($i=0;$i<count($id_classe);$i++){
 								case '0':												// Seuls les points au dessus de la moyenne comptent
 									// on cherche le nom de l'option
 									$sql_mat_fac="SELECT matiere FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
-									$res_mat_fac=mysql_query($sql_mat_fac);
-									if(mysql_num_rows($res_mat_fac)>0){
-										$lig_mat_fac=mysql_fetch_object($res_mat_fac);
+									$res_mat_fac=mysqli_query($GLOBALS["mysqli"], $sql_mat_fac);
+									if(mysqli_num_rows($res_mat_fac)>0){
+										$lig_mat_fac=mysqli_fetch_object($res_mat_fac);
 										$tab_eleves_OOo[$nb_eleve][$j][2]=ucfirst(accent_min(mb_strtolower($lig_mat_fac->matiere)));
 
 										$sql_opt="SELECT m.nom_complet FROM matieres m
 										WHERE m.matiere='$lig_mat_fac->matiere'";
-										$res_opt=mysql_query($sql_opt);
-										if(mysql_num_rows($res_opt)>0){
-											$lig_matiere=mysql_fetch_object($res_opt);
+										$res_opt=mysqli_query($GLOBALS["mysqli"], $sql_opt);
+										if(mysqli_num_rows($res_opt)>0){
+											$lig_matiere=mysqli_fetch_object($res_opt);
 											$tab_eleves_OOo[$nb_eleve][$j][5]=$lig_matiere->nom_complet;
 										}
 
@@ -751,9 +787,9 @@ for($i=0;$i<count($id_classe);$i++){
 								default:
 									// on cherche le nom de la matière
 									$sql_mat_fac="SELECT matiere FROM notanet WHERE login='$lig1->login' AND id_classe='$id_classe[$i]' AND notanet_mat='".$tabmatieres[$j][0]."'";
-									$res_mat_fac=mysql_query($sql_mat_fac);
-									if(mysql_num_rows($res_mat_fac)>0){
-										$lig_mat_fac=mysql_fetch_object($res_mat_fac);
+									$res_mat_fac=mysqli_query($GLOBALS["mysqli"], $sql_mat_fac);
+									if(mysqli_num_rows($res_mat_fac)>0){
+										$lig_mat_fac=mysqli_fetch_object($res_mat_fac);
 										$tab_eleves_OOo[$nb_eleve][$j][2]=ucfirst(accent_min(mb_strtolower($lig_mat_fac->matiere)));
 
 										//if(preg_match("/|/", $lig_mat_fac->matiere)) {
@@ -764,9 +800,9 @@ for($i=0;$i<count($id_classe);$i++){
 												if($tab_tmp_mat[$loop]!="") {
 													$sql_opt="SELECT m.nom_complet FROM matieres m
 													WHERE m.matiere='".$tab_tmp_mat[$loop]."'";
-													$res_opt=mysql_query($sql_opt);
-													if(mysql_num_rows($res_opt)>0){
-														$lig_matiere=mysql_fetch_object($res_opt);
+													$res_opt=mysqli_query($GLOBALS["mysqli"], $sql_opt);
+													if(mysqli_num_rows($res_opt)>0){
+														$lig_matiere=mysqli_fetch_object($res_opt);
 														$tab_eleves_OOo[$nb_eleve][$j][5+$loop]=$lig_matiere->nom_complet;
 													}
 												}
@@ -775,9 +811,9 @@ for($i=0;$i<count($id_classe);$i++){
 										else {
 											$sql_opt="SELECT m.nom_complet FROM matieres m
 											WHERE m.matiere='$lig_mat_fac->matiere'";
-											$res_opt=mysql_query($sql_opt);
-											if(mysql_num_rows($res_opt)>0){
-												$lig_matiere=mysql_fetch_object($res_opt);
+											$res_opt=mysqli_query($GLOBALS["mysqli"], $sql_opt);
+											if(mysqli_num_rows($res_opt)>0){
+												$lig_matiere=mysqli_fetch_object($res_opt);
 												$tab_eleves_OOo[$nb_eleve][$j][5]=$lig_matiere->nom_complet;
 											}
 										}
@@ -819,14 +855,14 @@ for($i=0;$i<count($id_classe);$i++){
                 // Langue régionale
 
                 $sql="SELECT * FROM notanet_lvr_ele WHERE login='$lig1->login' ";
-                $res_note=mysql_query($sql);
-                if(mysql_num_rows($res_note)>0){
-                  $lig_note=mysql_fetch_object($res_note);
+                $res_note=mysqli_query($GLOBALS["mysqli"], $sql);
+                if(mysqli_num_rows($res_note)>0){
+                  $lig_note=mysqli_fetch_object($res_note);
                   $tab_eleves_OOo[$nb_eleve][130][0]=$lig_note->note;
                   $sql_lvr="SELECT Intitule FROM notanet_lvr WHERE id='$lig_note->id_lvr' ";
-                  $res_lvr=mysql_query($sql_lvr);
-                  if(mysql_num_rows($res_lvr)>0){
-                    $lig_lvr=mysql_fetch_object($res_lvr);
+                  $res_lvr=mysqli_query($GLOBALS["mysqli"], $sql_lvr);
+                  if(mysqli_num_rows($res_lvr)>0){
+                    $lig_lvr=mysqli_fetch_object($res_lvr);
                     $tab_eleves_OOo[$nb_eleve][130][1]=$lig_lvr->Intitule;
                   }
                 }
@@ -850,9 +886,9 @@ for($i=0;$i<count($id_classe);$i++){
 			$tab_eleves_OOo[$nb_eleve]['avis']= "";			// on initialise le champ pour ne pas avoir d'erreur
 
 			$sql="SELECT * FROM notanet_avis WHERE login='$lig1->login';";
-			$res_avis=mysql_query($sql);
-			if(mysql_num_rows($res_avis)>0) {
-				$lig_avis=mysql_fetch_object($res_avis);
+			$res_avis=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_avis)>0) {
+				$lig_avis=mysqli_fetch_object($res_avis);
 				if($lig_avis->favorable=="O") {$tab_eleves_OOo[$nb_eleve]['decision']="Avis favorable";}
 				elseif($lig_avis->favorable=="N") {$tab_eleves_OOo[$nb_eleve]['decision']="Doit faire ses preuves";}
 				//$tab_eleves_OOo[$nb_eleve]['appreciation']= htmlspecialchars($lig_avis->avis);
@@ -988,10 +1024,10 @@ for($i=0;$i<count($id_classe);$i++){
 			$tab_eleves_OOo[$nb_eleve]['sc']['nbItemValide']=0;
 
 			$sql="SELECT * FROM notanet_socle_commun WHERE login='$lig1->login';";
-			$res_socle=mysql_query($sql);
-			if(mysql_num_rows($res_socle)>0) {
+			$res_socle=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_socle)>0) {
 				$ligne=0;
-				while($lig_socle=mysql_fetch_object($res_socle)) {
+				while($lig_socle=mysqli_fetch_object($res_socle)) {
 					$tab_eleves_OOo[$nb_eleve]['sc']["$lig_socle->champ"]=$lig_socle->valeur;
 					//echo "\$tab_eleves_OOo[$nb_eleve]['sc']['$lig_socle->champ']=".$tab_eleves_OOo[$nb_eleve]['sc']["$lig_socle->champ"]."<br />\n";
 					if (($lig_socle->valeur =="MS")&&($ligne!=0)){

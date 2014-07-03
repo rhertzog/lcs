@@ -64,6 +64,7 @@ class class_page_accueil {
  */
   function __construct($statut, $gepiSettings, $niveau_arbo,$ordre_menus) {
 
+      global $mysqli;
 
 	switch ($niveau_arbo){
 	  case 0:
@@ -81,22 +82,28 @@ class class_page_accueil {
 	  default:
 		$this->cheminRelatif = './';
 	}
-
+    
 	$this->statutUtilisateur = $statut;
 	$this->gepiSettings=$gepiSettings;
 	$this->loginUtilisateur=$_SESSION['login'];
 
 	$this->chargeOrdreMenu($ordre_menus);
 
-	// On teste si on l'utilisateur est un prof avec des matières. Si oui, on affiche les lignes relatives au cahier de textes et au carnet de notes
-	$this->test_prof_matiere = sql_count(sql_query("SELECT login
+	// On teste si l'utilisateur est un prof avec des matières. Si oui, on affiche les lignes relatives au cahier de textes et au carnet de notes
+	    $sql = "SELECT login
 			FROM j_groupes_professeurs
-			WHERE login = '".$this->loginUtilisateur."'"));
+			WHERE login = '".$this->loginUtilisateur."'";
+        $resultat = mysqli_query($mysqli, $sql);  
+		$this->test_prof_matiere = $resultat->num_rows; 
+    
 
 // On teste si le l'utilisateur est prof de suivi. Si oui on affiche la ligne relative remplissage de l'avis du conseil de classe
-	$this->test_prof_suivi = sql_count(sql_query("SELECT professeur
+        $sql = "SELECT professeur
 			FROM j_eleves_professeurs
-			WHERE professeur = '".$this->loginUtilisateur."'"));
+			WHERE professeur = '".$this->loginUtilisateur."'";
+        $resultat = mysqli_query($mysqli, $sql);  
+		$this->test_prof_suivi = $resultat->num_rows; 
+	
 
 	$this->test_https = 'y'; // pour ne pas avoir à refaire le test si on a besoin de l'URL complète (rss)
 	if (!isset($_SERVER['HTTPS'])
@@ -168,6 +175,10 @@ class class_page_accueil {
 
 /***** Outils destinés essentiellement aux parents et aux élèves *****/
 
+// Informations famille
+	$this->verif_exist_ordre_menu('bloc_infos_famille');
+	if ($this->infosFamille())
+	$this->chargeAutreNom('bloc_infos_famille');
 // Cahier de textes
 	$this->verif_exist_ordre_menu('bloc_cahier_texte_famille');
 	if ($this->cahierTexteFamille())
@@ -176,6 +187,40 @@ class class_page_accueil {
 	$this->verif_exist_ordre_menu('bloc_carnet_notes_famille');
 	if ($this->releveNotesFamille())
 	$this->chargeAutreNom('bloc_carnet_notes_famille');
+// Relevés de notes cumulées
+    if ('eleve' == $this->statutUtilisateur) {
+        $result = FALSE;
+            $sql = "SELECT 1=1 FROM `cc_notes_eval` WHERE login ='".$this->loginUtilisateur."'"; 
+            $resultat = mysqli_query($mysqli, $sql);  
+            $result = $nb_aid = $resultat->num_rows;
+        
+        // $result += 1;
+    } elseif ('responsable' == $this->statutUtilisateur) {
+        $result = FALSE;
+        
+            $sql = "SELECT 1=1 
+            FROM `cc_notes_eval` ne ,
+                 `resp_pers` rp,
+                 `responsables2` r2,
+                 `eleves` e
+            WHERE rp.login = '".$this->loginUtilisateur."'
+                AND rp.pers_id = r2.pers_id
+                AND r2.ele_id = e.ele_id
+                AND e.login = ne.login"; 
+            $resultat = mysqli_query($mysqli, $sql);  
+            $result = $nb_aid = $resultat->num_rows;
+        
+    } else {
+        $result = FALSE;
+    }
+    if ($result) {    
+        if(getSettingAOui('GepiAccesEvalCumulEleve')) {
+            $this->verif_exist_ordre_menu('bloc_carnet_notes_cumules');
+            if ($this->notesCumulFamille())
+            $this->chargeAutreNom('bloc_carnet_notes_cumules');
+        }    
+    }
+    
 // Equipes pédagogiques
 	$this->verif_exist_ordre_menu('bloc_equipe_peda_famille');
 	if ($this->equipePedaFamille())
@@ -229,9 +274,13 @@ if(getSettingAOui('active_bulletins')) {
 	$this->chargeAutreNom('bloc_annees_antérieures');
 
 /***** Gestion des messages *****/
-	$this->verif_exist_ordre_menu('bloc_panneau_affichage');
-	if ($this->messages())
-	$this->chargeAutreNom('bloc_panneau_affichage');
+	if(($_SESSION['statut']=='administrateur')||
+	($_SESSION['statut']=='scolarite')||
+	(($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiAccesPanneauAffichageCpe')))) {
+		$this->verif_exist_ordre_menu('bloc_panneau_affichage');
+		if ($this->messages())
+		$this->chargeAutreNom('bloc_panneau_affichage');
+	}
 
 /***** Module inscription *****/
 	$this->verif_exist_ordre_menu('bloc_module_inscriptions');
@@ -428,8 +477,9 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function saisie(){
+      global $mysqli;
 
-	$this->b=0;
+      $this->b=0;
 
 	$afficher_correction_validation="n";
 	if($_SESSION['statut']=='scolarite') {
@@ -441,9 +491,9 @@ if(getSettingAOui('active_bulletins')) {
 		//$sql="SELECT 1=1 FROM matieres_app_corrections;";
 		$sql="SELECT DISTINCT c.id, c.classe FROM matieres_app_corrections mac, j_groupes_classes jgc, classes c WHERE mac.id_groupe=jgc.id_groupe AND jgc.id_classe=c.id ORDER BY classe;";
 	}
-	$test_mac=mysql_query($sql);
-	if($test_mac AND mysql_num_rows($test_mac)>0) {$afficher_correction_validation="y";}
-
+    
+        $resultat = mysqli_query($mysqli, $sql);
+        if($resultat AND ($resultat->num_rows > 0)) {$afficher_correction_validation="y";}
 
 	if(getSettingAOui('active_bulletins')) {
 		    if (getSettingValue("active_module_absence")!='2' || getSettingValue("abs2_import_manuel_bulletin")=='y') {
@@ -480,8 +530,11 @@ if(getSettingAOui('active_bulletins')) {
 			$texte_item="Cet outil vous permet de valider les corrections d'appréciations proposées par des professeurs après la clôture d'une période.";
 			if($_SESSION['statut']=='scolarite') {
 				$sql="SELECT 1=1 FROM matieres_app_corrections map, j_scol_classes jsc, j_groupes_classes jgc where jsc.login='".$_SESSION['login']."' AND jsc.id_classe=jgc.id_classe AND jgc.id_groupe=map.id_groupe;";
-				$test_map=mysql_query($sql);
-				if(mysql_num_rows($test_map)>0) {
+				
+                    $resultat = mysqli_query($mysqli, $sql);  
+                    $nb_aid = $resultat->num_rows;
+                
+				if($nb_aid>0) {
 					$texte_item.="<br /><span style='color:red;'>Une ou des propositions requièrent votre attention.</span>\n";
 				}
 			}
@@ -515,11 +568,14 @@ if(getSettingAOui('active_bulletins')) {
 				AND jgc.id_groupe = jeg.id_groupe
 				AND jeg.login = jep.login AND jep.professeur = '".$this->loginUtilisateur."')"));
 	} else {
-		$this->test_scol_ects = sql_count(sql_query("SELECT jgc.saisie_ects
+        
+            $sql = "SELECT jgc.saisie_ects
 				FROM j_groupes_classes jgc, j_scol_classes jsc
 				WHERE (jgc.saisie_ects = TRUE
 				AND jgc.id_classe = jsc.id_classe
-				AND jsc.login = '".$this->loginUtilisateur."')"));
+				AND jsc.login = '".$this->loginUtilisateur."')";
+            $resultat = mysqli_query($mysqli, $sql); 
+            $this->test_scol_ects = $resultat->num_rows;
 	}
 	$conditions_ects = ($this->gepiSettings['active_mod_ects'] == 'y' AND
 		  (($this->test_prof_suivi != "0" and $this->gepiSettings['GepiAccesSaisieEctsPP'] =='yes'
@@ -536,45 +592,48 @@ if(getSettingAOui('active_bulletins')) {
 
 	if(getSettingAOui('active_bulletins')) {
 		// Pour un professeur, on n'appelle que les aid qui sont sur un bulletin
-		$call_data = mysql_query("SELECT * FROM aid_config
+         
+        
+            $sql = "SELECT * FROM aid_config
 								  WHERE display_bulletin = 'y'
 								  OR bull_simplifie = 'y'
-								  ORDER BY nom");
-		$nb_aid = mysql_num_rows($call_data);
-		$i=0;
-		while ($i < $nb_aid) {
-		  $indice_aid = @mysql_result($call_data, $i, "indice_aid");
-		  $call_prof = mysql_query("SELECT * FROM j_aid_utilisateurs
-									WHERE (id_utilisateur = '".$this->loginUtilisateur."'
-									AND indice_aid = '".$indice_aid."')");
-		  $nb_result = mysql_num_rows($call_prof);
-		  if (($nb_result != 0) or ($this->statutUtilisateur == 'secours')) {
-			$nom_aid = @mysql_result($call_data, $i, "nom");
-			$this->creeNouveauItem("/saisie/saisie_aid.php?indice_aid=".$indice_aid,
-					$nom_aid,
-					"Cet outil permet la saisie des appréciations des ".$this->gepiSettings['denomination_eleves']." pour les $nom_aid.");
-		  }
-		  $i++;
-		}
+								  ORDER BY nom"; 
+            $resultat = mysqli_query($mysqli, $sql); 
+            while ($obj = $resultat->fetch_object()) {
+                $indice_aid = $obj->indice_aid;
+                $call_prof = mysqli_query($mysqli, "SELECT * FROM j_aid_utilisateurs
+                                          WHERE (id_utilisateur = '".$this->loginUtilisateur."'
+                                          AND indice_aid = '".$indice_aid."')");
+                $nb_result = $resultat->num_rows;
+                if (($nb_result != 0) or ($this->statutUtilisateur == 'secours')) {
+                    $nom_aid = $obj->nom;
+                    $this->creeNouveauItem("/saisie/saisie_aid.php?indice_aid=".$indice_aid,
+                          $nom_aid,
+                          "Cet outil permet la saisie des appréciations des ".$this->gepiSettings['denomination_eleves']." pour les $nom_aid.");
+                }
+            }  
+        
 
 		//==============================
 		// Pour permettre la saisie de commentaires-type, renseigner la variable $commentaires_types dans /lib/global.inc
 		// Et récupérer le paquet commentaires_types sur... ADRESSE A DEFINIR:
 		if(file_exists('saisie/commentaires_types.php')) {
-		  if ((($this->statutUtilisateur=='professeur')
-				  AND (getSettingValue("CommentairesTypesPP")=='yes')
-				  AND (mysql_num_rows(mysql_query("SELECT 1=1 FROM j_eleves_professeurs
-												  WHERE professeur='".$this->loginUtilisateur."'"))>0))
-				  OR (($this->statutUtilisateur=='scolarite')
-						  AND (getSettingValue("CommentairesTypesScol")=='yes'))
-				  OR (($this->statutUtilisateur=='cpe')
-						  AND (getSettingValue("CommentairesTypesCpe")=='yes'))
-			)
-		  {
-			$this->creeNouveauItem("/saisie/commentaires_types.php",
-					"Saisie de commentaires-types",
-					"Permet de définir des commentaires-types pour l'avis du conseil de classe.");
-		  }
+                $resultat = $nb_lignes = mysqli_query($mysqli, "SELECT 1=1 FROM j_eleves_professeurs
+												  WHERE professeur='".$this->loginUtilisateur."'");
+                $nb_lignes = $resultat->num_rows;
+            if ((($this->statutUtilisateur=='professeur')
+                    AND (getSettingValue("CommentairesTypesPP")=='yes')
+                    AND ($nb_lignes >0))
+                    OR (($this->statutUtilisateur=='scolarite')
+                            AND (getSettingValue("CommentairesTypesScol")=='yes'))
+                    OR (($this->statutUtilisateur=='cpe')
+                            AND (getSettingValue("CommentairesTypesCpe")=='yes'))
+              )
+            {
+                $this->creeNouveauItem("/saisie/commentaires_types.php",
+                      "Saisie de commentaires-types",
+                      "Permet de définir des commentaires-types pour l'avis du conseil de classe.");
+            }
 		}
 
 		  if ($this->b>0){
@@ -627,7 +686,8 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function trombinoscope(){
-	//On vérifie si le module est activé
+      global $mysqli;
+      //On vérifie si le module est activé
 
 	$active_module_trombinoscopes=getSettingValue("active_module_trombinoscopes");
 	$active_module_trombino_pers=getSettingValue("active_module_trombino_pers");
@@ -673,25 +733,27 @@ if(getSettingAOui('active_bulletins')) {
 			  "Cet outil vous permet de visualiser les trombinoscopes des classes.");
 
 	  // On appelle les aid "trombinoscope"
-	  $call_data = mysql_query("SELECT * FROM aid_config
-								WHERE indice_aid= '".getSettingValue("num_aid_trombinoscopes")."'
-								ORDER BY nom");
-	  $nb_aid = mysql_num_rows($call_data);
-	  $i=0;
-	  while ($i < $nb_aid) {
-		$indice_aid = @mysql_result($call_data, $i, "indice_aid");
-		$call_prof = mysql_query("SELECT * FROM j_aid_utilisateurs_gest
-								  WHERE (id_utilisateur = '" . $this->loginUtilisateur . "'
-								  AND indice_aid = '$indice_aid')");
-		$nb_result = mysql_num_rows($call_prof);
-		if (($nb_result != 0) or ($this->statutUtilisateur == 'secours')) {
-		  $nom_aid = @mysql_result($call_data, $i, "nom");
-		  $this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
-				  $nom_aid,
-				  "Cet outil vous permet de visualiser quels ".$this->gepiSettings['denomination_eleves']." ont le droit d'envoyer/modifier leur photo.");
-		}
-		$i++;
-	  }
+      
+            $sql = "SELECT * FROM aid_config
+                        WHERE indice_aid= '".getSettingValue("num_aid_trombinoscopes")."'
+                        ORDER BY nom"; 
+            $call_data = mysqli_query($mysqli, $sql);  
+            $nb_aid = $call_data->num_rows;
+            while ($obj = $call_data->fetch_object()) {
+                $indice_aid = $obj->indice_aid; 
+                $call_prof = mysqli_query($mysqli, "SELECT * FROM j_aid_utilisateurs_gest
+                                        WHERE (id_utilisateur = '" . $this->loginUtilisateur . "'
+                                        AND indice_aid = '$indice_aid')");
+                $nb_result = $call_prof->num_rows;
+                if (($nb_result != 0) or ($this->statutUtilisateur == 'secours')) {
+                    $nom_aid = $obj->nom;
+                    $this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
+                          $nom_aid,
+                          "Cet outil vous permet de visualiser quels ".$this->gepiSettings['denomination_eleves']." ont le droit d'envoyer/modifier leur photo.");
+                }
+            }
+            
+      
 	}
 
 	  if ($this->b>0){
@@ -735,7 +797,7 @@ if(getSettingAOui('active_bulletins')) {
 			  "Visualisation et impression des relevés de notes",
 			  "Cet outil vous permet de visualiser à l'écran et d'imprimer les relevés de notes, ".$this->gepiSettings['denomination_eleve']." par ".$this->gepiSettings['denomination_eleve'].", classe par classe.");
 
-	if ($condition && $condition2)
+	if ($condition && (($condition2)||(is_pp($this->loginUtilisateur))))
 	  $this->creeNouveauItem("/cahier_notes/index2.php",
 			  "Visualisation des moyennes des carnets de notes",
 			  "Cet outil vous permet de visualiser à l'écran les moyennes calculées d'après le contenu des carnets de notes, indépendamment de la saisie des moyennes sur les bulletins.");
@@ -887,6 +949,26 @@ if(getSettingAOui('active_bulletins')) {
 	}
   }
 
+  protected function notesCumulFamille(){
+	$this->b=0;
+
+   $condition = (
+		getSettingValue("active_carnets_notes")=='y' AND (
+			($this->statutUtilisateur == "responsable" AND getSettingValue("GepiAccesReleveParent") == 'yes')
+			OR ($this->statutUtilisateur == "eleve" AND getSettingValue("GepiAccesReleveEleve") == 'yes')
+			));
+
+	if ($condition) {
+		  $this->creeNouveauItem("/cahier_notes/visu_cc_elv.php",
+				  "Notes cumulées",
+				  "Permet de consulter les notes cumulées.");
+	}
+	if ($this->b>0){
+	  $this->creeNouveauTitre('accueil',"Notes cumulées",'images/icons/releve.png');
+	  return true;
+	}
+  }
+
 
   private function modDiscFamille(){
 	$this->b=0;
@@ -1024,40 +1106,51 @@ if(getSettingAOui('active_bulletins')) {
 	}
   }
 
-  protected function gestionAID(){
+  protected function infosFamille(){
 	$this->b=0;
+	$conditions = ($this->statutUtilisateur == "responsable");
 
-	$call_data = sql_query("SELECT distinct ac.indice_aid, ac.nom
-		  FROM aid_config ac, aid a
-		  WHERE ac.outils_complementaires = 'y'
-		  AND a.indice_aid=ac.indice_aid
-		  ORDER BY ac.nom_complet");
-	$nb_aid = mysql_num_rows($call_data);
-
-	$call_data2 = sql_query("SELECT id
-		  FROM archivage_types_aid
-		  WHERE outils_complementaires = 'y'");
-	$nb_aid_annees_anterieures = mysql_num_rows($call_data2);
-	$nb_total=$nb_aid+$nb_aid_annees_anterieures;
-
-	if ($nb_total != 0) {
-	  $i = 0;
-	  while ($i<$nb_aid) {
-		$indice_aid = mysql_result($call_data,$i,"indice_aid");
-		$nom_aid = mysql_result($call_data,$i,"nom");
-		if ($this->AfficheAid($indice_aid)) {
-		  $this->creeNouveauItem("/aid/index_fiches.php?indice_aid=".$indice_aid,
-				  $nom_aid,
-				  "Tableau récapitulatif, liste des ".$this->gepiSettings['denomination_eleves'].", ...");
-		}
-		$i++;
-	  }
-	  if (($nb_aid_annees_anterieures > 0)) {
-		$this->creeNouveauItem("/aid/annees_anterieures_accueil.php",
-				"Fiches projets des années antérieures",
-				"Accès aux fiches projets des années antérieures");
-	  }
+	if ($conditions) {
+	  $this->creeNouveauItem("/responsables/infos_parent.php",
+			  "Informations",
+			  "Permet de consulter les nom, prénom, date de naissance, adresse, téléphone,... que vous avez fournis pour éventuellement signaler une erreur ou une modification.");
 	}
+
+	if ($this->b>0){
+	  $this->creeNouveauTitre('accueil',"Informations",'images/icons/document.png');
+	  return true;
+	}
+  }
+
+  protected function gestionAID(){
+      global $mysqli;
+      $this->b=0;
+    
+        $sql = "SELECT distinct ac.indice_aid, ac.nom
+              FROM aid_config ac, aid a
+              WHERE ac.outils_complementaires = 'y'
+              AND a.indice_aid=ac.indice_aid
+              ORDER BY ac.nom_complet"; 
+        $call_data = mysqli_query($mysqli, $sql);  
+        $nb_aid = $call_data->num_rows;
+    
+        $sql2 = "SELECT id
+            FROM archivage_types_aid
+            WHERE outils_complementaires = 'y'"; 
+        $resultat2 = mysqli_query($mysqli, $sql2);  
+        $nb_aid_annees_anterieures = $resultat2->num_rows;
+        $nb_total=$nb_aid+$nb_aid_annees_anterieures;
+        if ($nb_total != 0) {
+            while ($obj = $call_data->fetch_object()) {
+                $indice_aid = $obj->indice_aid;
+                $nom_aid = $obj->nom;
+                if ($this->AfficheAid($indice_aid)) {
+                    $this->creeNouveauItem("/aid/index_fiches.php?indice_aid=".$indice_aid,
+                        $nom_aid,
+                        "Tableau récapitulatif, liste des ".$this->gepiSettings['denomination_eleves'].", ...");
+                }
+            }            
+        }
 
 	if ($this->b>0){
 	  $this->creeNouveauTitre('accueil',
@@ -1081,15 +1174,19 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   protected function bulletins(){
-	$this->b=0;
+      global $mysqli;
+      $this->b=0;
 
 	if(getSettingAOui('active_bulletins')) {
 
 		if (($this->statutUtilisateur=='administrateur')&&(getSettingAOui('GepiAdminValidationCorrectionBulletins'))&&(acces('/saisie/validation_corrections.php', 'administrateur'))) {
 			$afficher_correction_validation="n";
-			$sql="SELECT 1=1 FROM matieres_app_corrections;";
-			$test_mac=mysql_query($sql);
-			if($test_mac AND mysql_num_rows($test_mac)>0) {$afficher_correction_validation="y";}
+			$sql="SELECT 1=1 FROM matieres_app_corrections;";  
+                $test_mac = mysqli_query($mysqli, $sql);  
+                $nb_lignes = $test_mac->num_rows;
+
+			
+			if($test_mac AND $nb_lignes>0) {$afficher_correction_validation="y";}
 
 			if($afficher_correction_validation=="y") {
 				$texte_item="Cet outil vous permet de valider les corrections d'appréciations proposées par des professeurs après la clôture d'une période.";
@@ -1219,6 +1316,8 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function impression(){
+      global $mysqli;
+      
 	$this->b=0;
 
 	if(getSettingAOui('active_bulletins')) {
@@ -1264,6 +1363,15 @@ if(getSettingAOui('active_bulletins')) {
 		$this->creeNouveauItem("/groupes/visu_mes_listes.php",
 			"Visualisation de mes élèves",
 			"Ce menu permet de vous permet de consulter vos listes d'".$this->gepiSettings['denomination_eleves']." par groupe constitué et enseigné.");
+	}
+
+	if((acces_modif_liste_eleves_grp_groupes())&&
+		(($this->statutUtilisateur=='scolarite')||
+			($this->statutUtilisateur=='professeur')||
+			($this->statutUtilisateur=='cpe'))) {
+		$this->creeNouveauItem("/groupes/grp_groupes_edit_eleves.php",
+			"Correction des listes d'".$this->gepiSettings['denomination_eleves']."",
+			"Ce menu permet de vous permet de corriger les listes d'".$this->gepiSettings['denomination_eleves']." de certains groupes/enseignements.");
 	}
 
 	if ((($this->statutUtilisateur=='cpe')&&(getSettingAOui('GepiAccesTouteFicheEleveCpe')))||
@@ -1371,43 +1479,42 @@ if(getSettingAOui('active_bulletins')) {
 		elseif(($this->statutUtilisateur=='professeur')&&(getSettingValue("GepiAccesBulletinSimplePP")=="yes")) {
 		  $sql="SELECT 1=1 FROM j_eleves_professeurs
 				WHERE professeur='".$this->loginUtilisateur."';";
-		  $test_pp=mysql_num_rows(mysql_query($sql));
+                  
+                $resultat = mysqli_query($mysqli, $sql);  
+                $test_pp = $resultat->num_rows; 
 		  if($test_pp>0) {
 			$this->creeNouveauItem("/prepa_conseil/index3.php",
 					"Visualiser les bulletins simplifiés",
 					"Bulletins simplifiés d'une classe.");
 		  }
-		}
-
-		$call_data = mysql_query("SELECT * FROM aid_config
-						WHERE display_bulletin = 'y'
-						OR bull_simplifie = 'y'
-						ORDER BY nom");
-		$nb_aid = mysql_num_rows($call_data);
-
-		$i=0;
-		while ($i < $nb_aid) {
-		  $indice_aid = @mysql_result($call_data, $i, "indice_aid");
-		  $call_prof = mysql_query("SELECT * FROM j_aid_utilisateurs
-									WHERE (id_utilisateur = '".$this->loginUtilisateur."'
-									AND indice_aid = '".$indice_aid."')");
-		  $nb_result = mysql_num_rows($call_prof);
-		  if ($nb_result != 0) {
-			$nom_aid = @mysql_result($call_data, $i, "nom");
-			$this->creeNouveauItem("/prepa_conseil/visu_aid.php?indice_aid=".$indice_aid,
-					"Visualiser des appréciations ".$nom_aid,
-					"Cet outil permet la visualisation et l'impression des appréciations des ".$this->gepiSettings['denomination_eleves']." pour les ".$nom_aid.".");
-		  }
-		  $i++;
-		}
+		}        
+        
+            $call_data = mysqli_query($mysqli, "SELECT * FROM aid_config
+                            WHERE display_bulletin = 'y'
+                            OR bull_simplifie = 'y'
+                            ORDER BY nom"); 
+            while ($obj = $call_data->fetch_object()) {
+                $indice_aid = $obj->indice_aid;
+                $call_prof = mysqli_query($mysqli, "SELECT * FROM j_aid_utilisateurs
+                                          WHERE (id_utilisateur = '".$this->loginUtilisateur."'
+                                          AND indice_aid = '".$indice_aid."')");
+                $nb_result = $call_prof->num_rows;
+                if ($nb_result != 0) {
+                    $nom_aid = $obj->nom;
+                    $this->creeNouveauItem("/prepa_conseil/visu_aid.php?indice_aid=".$indice_aid,
+                          "Visualiser des appréciations ".$nom_aid,
+                          "Cet outil permet la visualisation et l'impression des appréciations des ".$this->gepiSettings['denomination_eleves']." pour les ".$nom_aid.".");
+                }
+            }
 	}
 
 	if(($this->statutUtilisateur=='professeur')&&(getSettingValue('GepiAccesGestElevesProfP')=='yes')) {
 	  // Le professeur est-il professeur principal dans une classe au moins.
 	  $sql="SELECT 1=1 FROM j_eleves_professeurs
 			WHERE professeur='".$this->loginUtilisateur."';";
-	  $test=mysql_query($sql);
-	  if (mysql_num_rows($test)>0) {
+                $test = mysqli_query($mysqli, $sql);
+                $nb_lignes = $test->num_rows;
+	  if ($nb_lignes>0) {
 		$gepi_prof_suivi=getSettingValue('gepi_prof_suivi');
 		$this->creeNouveauItem("/eleves/index.php",
 				"Gestion des ".$this->gepiSettings['denomination_eleves'],
@@ -1433,7 +1540,8 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function notanet(){
-	$this->b=0;
+      global $mysqli;
+      $this->b=0;
 
 	$affiche='yes';
 	if($this->statutUtilisateur=='professeur') {
@@ -1451,14 +1559,15 @@ if(getSettingAOui('active_bulletins')) {
 						  jgm.id_groupe=g.id AND
 						  jgm.id_matiere=n.matiere
 					  ORDER BY jgc.id_classe;";
-	  //echo "$sql<br />";
-	  $res_grp=mysql_query($sql);
-	  if(mysql_num_rows($res_grp)==0) {
+	  //echo "$sql<br />";   
+            $resultat = mysqli_query($mysqli, $sql);  
+            $nb_lignes = $resultat->num_rows;  
+	  if($nb_lignes==0) {
 		  $affiche='no';
 	  }
 	}
 
-	if ((getSettingValue("active_notanet")=='y')&&($affiche=='yes')) {
+	if ((getSettingValue("active_notanet")=='y')&&(($affiche=='yes')||(getSettingAOui("notanet_saisie_note_ouverte")))) {
 	  if($this->statutUtilisateur=='professeur') {
 		$this->creeNouveauItem("/mod_notanet/index.php",
 				"Notanet/Fiches Brevet",
@@ -1481,6 +1590,7 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function anneeAnterieure(){
+      global $mysqli;
 	$this->b=0;
 
 	if (getSettingValue("active_annees_anterieures")=='y') {
@@ -1508,8 +1618,12 @@ if(getSettingAOui('active_bulletins')) {
 							WHERE jep.professeur='".$this->loginUtilisateur."' AND
 									jep.id_classe=c.id
 							ORDER BY c.classe";
-			$test=mysql_query($sql);
-			if(mysql_num_rows($test)>0){
+                   
+                $resultat = mysqli_query($mysqli, $sql);  
+                $nb_lignes = $resultat->num_rows;
+                $resultat->close();
+			
+			if($nb_lignes>0){
 			  $this->creeNouveauItem("/mod_annees_anterieures/consultation_annee_anterieure.php",
 					  "Années antérieures",
 					  "Cet outil permet de consulter les données d'années antérieures (bulletins simplifiés,...).");
@@ -1529,8 +1643,12 @@ if(getSettingAOui('active_bulletins')) {
 		  elseif($AAScolResp=="yes"){
 			$sql="SELECT 1=1 FROM j_scol_classes jsc
 							WHERE jsc.login='".$this->loginUtilisateur."';";
-			$test=mysql_query($sql);
-			if(mysql_num_rows($test)>0){
+            
+                $resultat = mysqli_query($mysqli, $sql);  
+                $nb_lignes = $resultat->num_rows;
+                $resultat->close();
+            
+			if($nb_lignes>0){
 			  $this->creeNouveauItem("/mod_annees_anterieures/consultation_annee_anterieure.php",
 					  "Années antérieures",
 					  "Cet outil permet de consulter les données d'années antérieures (bulletins simplifiés,...).");
@@ -1549,9 +1667,12 @@ if(getSettingAOui('active_bulletins')) {
 		  }
 		  elseif($AACpeResp=="yes"){
 			$sql="SELECT 1=1 FROM j_eleves_cpe WHERE cpe_login='".$this->loginUtilisateur."'";
-			$test=mysql_query($sql);
+            
+                $resultat = mysqli_query($mysqli, $sql);  
+                $nb_lignes = $resultat->num_rows;
+                $resultat->close();
 
-			if(mysql_num_rows($test)>0){
+			if($nb_lignes>0){
 			  $this->creeNouveauItem("/mod_annees_anterieures/consultation_annee_anterieure.php",
 					  "Années antérieures",
 					  "Cet outil permet de consulter les données d'années antérieures (bulletins simplifiés,...).");
@@ -1569,8 +1690,11 @@ if(getSettingAOui('active_bulletins')) {
 				WHERE rp.pers_id=r.pers_id AND
 					  r.ele_id=e.ele_id AND
 					  rp.login='".$this->loginUtilisateur."'";
-			$test=mysql_query($sql);
-			if(mysql_num_rows($test)>0){
+            
+                $resultat = mysqli_query($mysqli, $sql);  
+                $nb_lignes = $resultat->num_rows;
+                $resultat->close();
+			if($nb_lignes>0){
 			  $this->creeNouveauItem("/mod_annees_anterieures/consultation_annee_anterieure.php",
 					  "Années antérieures",
 					  "Cet outil permet de consulter les données d'années antérieures (bulletins simplifiés,...).");
@@ -1683,49 +1807,45 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function plugins(){
+      global $mysqli;
 	$this->b=0;
+    
+    $sql = "SELECT * FROM plugins WHERE ouvert = 'y' order by description";
+      
+        $query = mysqli_query($mysqli, $sql); 
+        while ($plugin =  $query->fetch_object()) {
+            $this->b=0;
+            $nomPlugin=$plugin->nom;
+            $this->verif_exist_ordre_menu('bloc_plugin_'.$nomPlugin);
+            // On offre la possibilité d'inclure un fichier functions_nom_du_plugin.php
+            // Ce fichier peut lui-même contenir une fonction calcul_autorisation_nom_du_plugin voir plus bas.
+            if (file_exists($this->cheminRelatif."mod_plugins/".$nomPlugin."/functions_".$nomPlugin.".php"))
+                include_once($this->cheminRelatif."mod_plugins/".$nomPlugin."/functions_".$nomPlugin.".php");
+            $querymenu = mysqli_query($mysqli, 'SELECT * FROM plugins_menus
+                                      WHERE plugin_id = "'.$plugin->id.'"
+                                      ORDER by titre_item');
+            while ($menuItem = $querymenu->fetch_object()) {
+                // On regarde si le plugin a prévu une surcharge dans le calcul de l'affichage de l'item dans le menu
+                // On commence par regarder si une fonction du type calcul_autorisation_nom_du_plugin existe
+                $nom_fonction_autorisation = "calcul_autorisation_".$nomPlugin;
+                if (function_exists($nom_fonction_autorisation)) {
+                    // Si une fonction du type calcul_autorisation_nom_du_plugin existe, on calcule le droit de l'utilisateur à afficher cet item dans le menu
+                    $result_autorisation = $nom_fonction_autorisation($this->loginUtilisateur,$menuItem->lien_item);
+                } else {
+                    $result_autorisation=true;
+                }
+                if (($menuItem->user_statut == $this->statutUtilisateur) and ($result_autorisation)) {
+                    $this->creeNouveauItemPlugin("/".$menuItem->lien_item,
+                        supprimer_numero($menuItem->titre_item),
+                        $menuItem->description_item);
+                }
+            }
 
-	$query = mysql_query('SELECT * FROM plugins WHERE ouvert = "y" order by description');
-
-	while ($plugin = mysql_fetch_object($query)){
-	$this->b=0;
-	  $nomPlugin=$plugin->nom;
-	  $this->verif_exist_ordre_menu('bloc_plugin_'.$nomPlugin);
-	  // On offre la possibilité d'inclure un fichier functions_nom_du_plugin.php
-	  // Ce fichier peut lui-même contenir une fonction calcul_autorisation_nom_du_plugin voir plus bas.
-	  if (file_exists($this->cheminRelatif."mod_plugins/".$nomPlugin."/functions_".$nomPlugin.".php"))
-		include_once($this->cheminRelatif."mod_plugins/".$nomPlugin."/functions_".$nomPlugin.".php");
-
-	  $querymenu = mysql_query('SELECT * FROM plugins_menus
-								WHERE plugin_id = "'.$plugin->id.'"
-								ORDER by titre_item');
-
-	  while ($menuItem = mysql_fetch_object($querymenu)){
-		// On regarde si le plugin a prévu une surcharge dans le calcul de l'affichage de l'item dans le menu
-		// On commence par regarder si une fonction du type calcul_autorisation_nom_du_plugin existe
-		$nom_fonction_autorisation = "calcul_autorisation_".$nomPlugin;
-
-		if (function_exists($nom_fonction_autorisation))
-		  // Si une fonction du type calcul_autorisation_nom_du_plugin existe, on calcule le droit de l'utilisateur à afficher cet item dans le menu
-		  $result_autorisation = $nom_fonction_autorisation($this->loginUtilisateur,$menuItem->lien_item);
-		else
-		  $result_autorisation=true;
-
-		if (($menuItem->user_statut == $this->statutUtilisateur) and ($result_autorisation)) {
-		  $this->creeNouveauItemPlugin("/".$menuItem->lien_item,
-				supprimer_numero($menuItem->titre_item),
-				$menuItem->description_item);
-		}
-
-	  }
-
-	  if ($this->b>0){
-        $descriptionPlugin = $plugin->description;
-		$this->creeNouveauTitre('accueil',"$descriptionPlugin",'images/icons/package.png');
-	  }
-
-	}
-
+              if ($this->b>0){
+                  $descriptionPlugin = $plugin->description;
+                  $this->creeNouveauTitre('accueil',"$descriptionPlugin",'images/icons/package.png');
+              }
+        }	
   }
 
   protected function geneseClasses(){
@@ -1782,7 +1902,7 @@ if(getSettingAOui('active_bulletins')) {
 										<br />
 										<em style='font-size:small'>Avec cette URL, vous pourrez consulter les travaux à faire sans devoir vous connecter dans Gepi.<br />Firefox, Internet Explorer,... savent lire les flux RSS.<br />Il existe également des lecteurs de flux RSS pour les SmartPhone,...</em>");
 
-				$tab_ele_resp=get_enfants_from_resp_login($this->loginUtilisateur, 'avec_classe', "y");
+				$tab_ele_resp=get_enfants_from_resp_login($this->loginUtilisateur, 'avec_classe', "yy");
 				if(count($tab_ele_resp)>2) {
 					$cpt_ele_rss=0;
 					$this->canal_rss_plus="";
@@ -1813,6 +1933,7 @@ if(getSettingAOui('active_bulletins')) {
 	}
 
   protected function statutAutre(){
+      global $mysqli;
 
 	$this->b=0;
 
@@ -1829,10 +1950,12 @@ if(getSettingAOui('active_bulletins')) {
 				  WHERE id_statut = '".$_SESSION["statut_special_id"]."'
 				  AND nom_fichier = '".$autorise[$a][0]."'
 				  ORDER BY id";
-		$query_f = mysql_query($sql_f) OR trigger_error('Impossible de trouver le droit : '.mysql_error(), E_USER_WARNING);
-		$nbre = mysql_num_rows($query_f);
+        
+            $query_f = mysqli_query($mysqli, $sql_f) OR trigger_error('Impossible de trouver le droit : '.mysqli_error($GLOBALS["mysqli"]), E_USER_WARNING);
+            $nbre = $query_f->num_rows;
+		
 		if ($nbre >= 1) {
-		  $rep_f = mysql_result($query_f, 0, "autorisation");
+		  $rep_f = old_mysql_result($query_f, 0, "autorisation");
 		}else{
 		  $rep_f = '';
 		}
@@ -1929,7 +2052,8 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   private function gestionEleveAID(){
-	$this->b=0;
+      global $mysqli;
+      $this->b=0;
 
 	if (getSettingValue("active_mod_gest_aid")=='y') {
 
@@ -1952,36 +2076,31 @@ if(getSettingAOui('active_bulletins')) {
 		  $sql .= "and indice_aid!= '".getSettingValue("indice_aid_autorisations_publi")."'";
 
 	  $sql .= " ORDER BY nom";
-	  $call_data = mysql_query($sql);
-	  $nb_aid = mysql_num_rows($call_data);
-	  $i=0;
-
-	  while ($i < $nb_aid) {
-		$indice_aid = @mysql_result($call_data, $i, "indice_aid");
-
-		$call_prof1 = mysql_query("SELECT *
-					FROM j_aid_utilisateurs_gest
-					WHERE indice_aid = '".$indice_aid."' and id_utilisateur='".$this->loginUtilisateur."'");
-		$nb_result1 = mysql_num_rows($call_prof1);
-		$call_prof2 = mysql_query("SELECT *
-					FROM j_aidcateg_super_gestionnaires
-					WHERE indice_aid = '".$indice_aid."' and id_utilisateur='".$this->loginUtilisateur."'");
-		$nb_result2 = mysql_num_rows($call_prof2);
-
-		if (($nb_result1 != 0) or ($nb_result2 != 0)) {
-		  $nom_aid = @mysql_result($call_data, $i, "nom");
-  		if ($nb_result2 != 0)
-      		$this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
-				  $nom_aid,
-				  "Cet outil vous permet de gérer les groupes (création, suppression, modification).");
-			else
-      		$this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
-				  $nom_aid,
-				  "Cet outil vous permet de gérer l'appartenance des élèves aux différents groupes.");
-		}
-
-		$i++;
-	  }
+      
+            $call_data = mysqli_query($mysqli, $sql);             
+            while ($obj = $call_data->fetch_object()) {
+                $indice_aid = $obj->indice_aid;
+                $call_prof1 = mysqli_query($mysqli, "SELECT *
+                          FROM j_aid_utilisateurs_gest
+                          WHERE indice_aid = '".$indice_aid."' and id_utilisateur='".$this->loginUtilisateur."'");
+                $nb_result1 = $call_prof1->num_rows;
+                $call_prof2 = mysqli_query($mysqli, "SELECT *
+                          FROM j_aidcateg_super_gestionnaires
+                          WHERE indice_aid = '".$indice_aid."' and id_utilisateur='".$this->loginUtilisateur."'");
+                $nb_result2 = $call_prof2->num_rows;
+                if (($nb_result1 != 0) or ($nb_result2 != 0)) {
+                  //$nom_aid = @old_mysql_result($call_data, $i, "nom");
+                  $nom_aid = $obj->nom;
+                if ($nb_result2 != 0)
+                    $this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
+                          $nom_aid,
+                          "Cet outil vous permet de gérer les groupes (création, suppression, modification).");
+                    else
+                    $this->creeNouveauItem("/aid/index2.php?indice_aid=".$indice_aid,
+                          $nom_aid,
+                          "Cet outil vous permet de gérer l'appartenance des élèves aux différents groupes.");
+                }
+            }
 
 	}
 
@@ -2015,50 +2134,56 @@ if(getSettingAOui('active_bulletins')) {
   }
 
   protected function chargeOrdreMenu($ordre_menus){
-	//$this->ordre_menus=$ordre_menus;
-	$sql="SHOW TABLES LIKE 'mn_ordre_accueil'";
-	$resp = mysql_query($sql);
+      global $mysqli;
+      //$this->ordre_menus=$ordre_menus;
+        $sql="SHOW TABLES LIKE 'mn_ordre_accueil'";
 
-	if(mysql_num_rows($resp)>0) {
-	  $sql2="SELECT bloc, num_menu
-			FROM mn_ordre_accueil
-			WHERE statut
-			LIKE '$this->statutUtilisateur' " ;
-	  $resp2 = mysql_query($sql2);
-	  if (mysql_num_rows($resp2)>0){
-		while($lig_log=mysql_fetch_object($resp2)) {
-		  $this->ordre_menus[$lig_log->bloc]=$lig_log->num_menu;
-		}
-	  }else{
-		$this->ordre_menus=$ordre_menus;
-	  }
-	}else{
-	  $this->ordre_menus=$ordre_menus;
-	}
+            $resultat = mysqli_query($mysqli, $sql);
+            $nb_lignes = $resultat->num_rows;
 
+        if($nb_lignes > 0) {
+          $sql2="SELECT bloc, num_menu
+                FROM mn_ordre_accueil
+                WHERE statut
+                LIKE '$this->statutUtilisateur' " ;
+
+                $resultat2 = mysqli_query($mysqli, $sql2);
+                $nb_lignes2 = $resultat2->num_rows;
+                if ($nb_lignes2 > 0){
+                    while($lig_log = $resultat2->fetch_object()) {
+                        $this->ordre_menus[$lig_log->bloc]=$lig_log->num_menu;
+                    }
+                }else{
+                    $this->ordre_menus=$ordre_menus;
+                }
+        } else {
+            $this->ordre_menus=$ordre_menus;
+        }
   }
 
   private function chargeAutreNom($bloc){
+      global $mysqli;
 
 	$sql1="SHOW TABLES LIKE 'mn_ordre_accueil'";
-	$resp1 = mysql_query($sql1);
+    
+        $resultat1 = mysqli_query($mysqli, $sql1);
+        $nb_lignes1 = $resultat1->num_rows;
 
-	if(mysql_num_rows($resp1)>0) {
+	if($nb_lignes1 > 0) {
 	  $sql="SELECT nouveau_nom FROM mn_ordre_accueil
 			WHERE bloc LIKE '$bloc'
 			AND statut LIKE '$this->statutUtilisateur'
 			AND nouveau_nom NOT LIKE ''
 			;";
-	  $resp=mysql_query($sql);
-
-	  if (mysql_num_rows($resp)>0){
-		$this->titre_Menu[$this->a]->texte=mysql_fetch_object($resp)->nouveau_nom;
-	  }
+    
+            $resultat = mysqli_query($mysqli, $sql);
+            $nb_lignes = $resultat->num_rows;
+            if ($nb_lignes > 0) {
+                $tmp_obj_nouveau_nom=$resultat->fetch_object();
+                $this->titre_Menu[$this->a]->texte = $tmp_obj_nouveau_nom->nouveau_nom;
+            }
 	}
-
   }
-
-
 }
 
 ?>

@@ -47,6 +47,41 @@ $periode=isset($_GET['periode']) ? $_GET['periode'] : 0;
 $action_apres=isset($_GET['action']) ? $_GET['action'] : NULL;
 
 
+if((isset($_GET['mode']))&&($_GET['mode']="change_verrouillage")&&
+(isset($_GET['id_classe']))&&(preg_match("/[0-9]{1,}/", $_GET['id_classe']))&&
+(isset($_GET['num_periode']))&&(preg_match("/[0-9]{1,}/", $_GET['num_periode']))&&
+(isset($_GET['etat']))&&(in_array($_GET['etat'], array("O", "P", "N")))) {
+	check_token();
+
+	$sql="SELECT verouiller, date_fin FROM periodes p, 
+						j_scol_classes jsc 
+					WHERE jsc.login='".$_SESSION['login']."' AND 
+						jsc.id_classe=p.id_classe AND 
+						p.id_classe='".$_GET['id_classe']."' AND 
+						p.num_periode='".$_GET['num_periode']."';";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		$lig=mysqli_fetch_object($res);
+		if ($lig->date_fin==0) {//la date de fin n'est pas renseignee, on la renseigne
+			$sql="UPDATE periodes SET verouiller='".$_GET['etat']."', date_verrouillage=NOW(), date_fin=NOW() WHERE (num_periode='".$_GET['num_periode']."' and id_classe='".$_GET['id_classe']."')";
+		} else {
+			$sql="UPDATE periodes SET verouiller='".$_GET['etat']."', date_verrouillage=NOW() WHERE (num_periode='".$_GET['num_periode']."' and id_classe='".$_GET['id_classe']."')";
+		}
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if (!$res) {
+			echo "<span style='color:red'>KO</a>";
+		}
+		else {
+			echo "<span style='color:".$couleur_verrouillage_periode[$_GET['etat']]."' title=\"Période ".$traduction_verrouillage_periode[$_GET['etat']].".
+".$explication_verrouillage_periode[$_GET['etat']]."\">Période ".$traduction_verrouillage_periode[$_GET['etat']]."</a>";
+		}
+	}
+	else {
+		echo "<span style='color:red'>KO</a>";
+	}
+	die();
+}
+
 if (isset($_POST['deverouillage_auto_periode_suivante'])) {
 	check_token();
 	if (!saveSetting("deverouillage_auto_periode_suivante", $_POST['deverouillage_auto_periode_suivante'])) {
@@ -108,13 +143,13 @@ if (isset($_POST['ok'])) {
 		if (($_POST['deverouillage_auto_periode_suivante'])=='y') {
 			//recherche du nombre de période pour la classe
 			$sql_periode = "SELECT * FROM periodes WHERE id_classe='$classe';";
-			$result_periode = mysql_query($sql_periode);
-			$nb_periodes_classe = mysql_num_rows($result_periode);
+			$result_periode = mysqli_query($GLOBALS["mysqli"], $sql_periode);
+			$nb_periodes_classe = mysqli_num_rows($result_periode);
 			//echo $nb_periodes_classe;
 			$periode_en_cours = $periode;
 			$periode_suivante = $periode+1;
 			//Pour la période modifiée on récupère son état
-			$etat_periode=mysql_result($result_periode, $periode-1, "verouiller");
+			$etat_periode=old_mysql_result($result_periode, $periode-1, "verouiller");
 			//echo "<br/>".$etat_periode;
 			//echo "<br/>".$periode_en_cours;
 			//echo "<br/>".$nb_periodes_classe;
@@ -126,7 +161,7 @@ if (isset($_POST['ok'])) {
 				//$sql_maj_periode_suivante = "UPDATE periodes SET verouiller='N', date_verrouillage='".time()."' WHERE (num_periode='".$periode_suivante."' and id_classe='".$classe."')";
 				$sql_maj_periode_suivante = "UPDATE periodes SET verouiller='N', date_verrouillage=NOW() WHERE (num_periode='".$periode_suivante."' and id_classe='".$classe."')";
 				//echo "<br/>".$sql_maj_periode_suivante;
-				$result_maj_periode_suivante = mysql_query($sql_maj_periode_suivante);
+				$result_maj_periode_suivante = mysqli_query($GLOBALS["mysqli"], $sql_maj_periode_suivante);
 				if (!$result_maj_periode_suivante) {$pb_reg_ver = 'yes';}
 				}
 			}
@@ -200,6 +235,15 @@ if($_SESSION['statut']=='scolarite') {
 if(($_SESSION['statut']=='scolarite')&&(getSettingValue('GepiScolImprBulSettings')=='yes')) {
 	echo " | <a href='param_bull.php'>Paramétrage des bulletins</a>";
 }
+
+if(acces("/bulletin/verif_bulletins.php", $_SESSION['statut'])) {
+	echo " | <a href='verif_bulletins.php' title=\"Vérifier le remplissage des bulletins.\">Vérification bulletins</a>";
+}
+
+if(acces("/classes/dates_classes.php", $_SESSION['statut'])) {
+	echo "| <a href='../classes/dates_classes.php' title=\"Définir des événements particuliers pour les classes (conseils de classe, arrêt des notes,...).\">Événements classe</a>";
+}
+
 echo "</p>\n";
 
 $texte_deverrouiller = urlencode("Déverrouiller");
@@ -211,7 +255,7 @@ if (!(($classe != 0) AND ($periode !=0))) {
 	// On va chercher les classes déjà existantes, et on les affiche.
 	$max_per = sql_query1("SELECT num_periode FROM periodes ORDER BY num_periode DESC LIMIT 1");
 	//$calldata = sql_query("SELECT DISTINCT c.id, c.classe FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
-	$calldata = mysql_query("SELECT DISTINCT c.id, c.classe FROM classes c, periodes p, j_scol_classes jsc WHERE p.id_classe = c.id  AND jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe");
+	$calldata = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT c.id, c.classe FROM classes c, periodes p, j_scol_classes jsc WHERE p.id_classe = c.id  AND jsc.id_classe=c.id AND jsc.login='".$_SESSION['login']."' ORDER BY classe");
 	$nombreligne = sql_count($calldata);
 	echo "Total : $nombreligne classes\n";
 }
@@ -221,8 +265,8 @@ echo "<ul>
 bulletins simples est autorisée mais la visualisation et l'impression des bulletins officiels sont impossibles.<br /><br /></li>
 <li>Lorsqu'une période est <b>verrouillée partiellement</b>, seuls le remplissage et/ou la modification
 de l'avis du conseil de classe";
-if ($gepiSettings['active_mod_ects'] == 'y') echo "et des crédits ECTS ";
-echo "sont possibles. La visualisation et l'impression des bulletins officiels sont autorisées.<br /><br /></li>
+if ($gepiSettings['active_mod_ects'] == 'y') echo " et des crédits ECTS ";
+echo " sont possibles. La visualisation et l'impression des bulletins officiels sont autorisées.<br /><br /></li>
 <li>Lorsqu'une période est <b>verrouillée totalement</b>, le remplissage et la modification du bulletin pour la période concernée
 sont impossibles. la visualisation et l'impression sont autorisées.</li>\n";
 echo "</ul>\n";
@@ -249,7 +293,7 @@ if (($classe != 0) AND ($periode !=0)) {
 	// Affichage de la classe (nom court)
 	$sql_classe = "SELECT classe FROM classes WHERE id = '$classe'";
 	$requete_classe = sql_query($sql_classe);
-	$donner_modele = mysql_fetch_array($requete_classe);
+	$donner_modele = mysqli_fetch_array($requete_classe);
 	$nom_court_classe = $donner_modele['classe'];
 	echo "<td><b>$nom_court_classe</b> ";
 	echo "</td>\n";
@@ -333,11 +377,11 @@ if (($classe != 0) AND ($periode !=0)) {
 			echo "<a href=\"javascript:CocheCase(2,".$i.")\">Tout verrouiller partiellement</a><br />\n";
 			echo "<a href=\"javascript:CocheCase(3,".$i.")\">Tout verrouiller  totalement</a>\n";
 			echo "</th>\n";
-			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_deverrouiller."&amp;width=22\" width=\"22\" border=0 alt=\"Déverrouiller\" /></th>\n";
-			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_part."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller partiellement\" /></th>\n";
-			echo "<th><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_tot."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller totalement\" /></th>\n";
+			echo "<th><a href=\"javascript:CocheCase(1,".$i.")\"><img src=\"../lib/create_im_mat.php?texte=".$texte_deverrouiller."&amp;width=22\" width=\"22\" border=0 alt=\"Déverrouiller\" /></a></th>\n";
+			echo "<th><a href=\"javascript:CocheCase(2,".$i.")\"><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_part."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller partiellement\" /></a></th>\n";
+			echo "<th><a href=\"javascript:CocheCase(3,".$i.")\"><img src=\"../lib/create_im_mat.php?texte=".$texte_verrouiller_tot."&amp;width=22\" width=\"22\" border=0 alt=\"Verrouiller totalement\" /></a></th>\n";
             if(getSettingValue("active_module_absence")=="2"){
-                echo "<th title=\"Il est possible de mettre à jour d'un coup, en compte administrateur, les dates de fin de période depuis le paramétrage du module Emploi du temps : Menu Gestion/Gestion du calendrier/Mettre à jour les dates de fin de période pour le module Absences, d'après les date de périodes de cours ci-dessous.\">Date Fin</th>\n";
+                echo "<th title=\"Il est possible de mettre à jour d'un coup, en compte administrateur, les dates de fin de période depuis le paramétrage du module Emploi du temps : Menu Gestion/Gestion du calendrier/Mettre à jour les dates de fin de période pour le module Absences, d'après les dates de périodes de cours ci-dessous.\">Date Fin</th>\n";
             }
 		}
 		echo "</tr>\n";
@@ -467,12 +511,15 @@ Calendar.setup({
 
 		echo "<p><i>Remarques&nbsp;:</i></p>
 <ul>
-	<li><p><span style='margin-left: 3em;'>Si vous ne voyez pas toutes les classes, il se peut que certaines classes ne vous soient pas associées.</span><br /><span style='margin-left: 3em;'>Demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></span></p></li>";
+	<li><p>Si vous ne voyez pas toutes les classes, il se peut que certaines classes ne vous soient pas associées.<br />Demandez alors à un compte administrateur de vous associer des classes dans <b>Gestion des bases/Gestion des classes/Paramétrage scolarité</b></p></li>";
 		if(getSettingValue("active_module_absence")=="2"){
 			echo "
-	<li><p>Il est possible de mettre à jour d'un coup, en compte administrateur, les dates de fin de période depuis le paramétrage du module Emploi du temps : Menu Gestion/Gestion du calendrier/Mettre à jour les dates de fin de période pour le module Absences, d'après les date de périodes de cours ci-dessous.</p></li>";
+	<li><p>Il est possible de mettre à jour d'un coup, en compte administrateur, les dates de fin de période depuis le paramétrage du module Emploi du temps : Menu Gestion/Gestion du calendrier/Mettre à jour les dates de fin de période pour le module Absences, d'après les dates de périodes de cours ci-dessous.</p></li>
+	<li><p>Notez bien que les dates indiquées ne correspondent pas à des dates de verrouillage automatique des périodes.<br />
+	Ces dates sont juste prises en compte dans le module Absences pour proposer les bonnes listes d'élèves à une date donnée.</p></li>";
 		}
 		echo "
+	<li><p>Il est possible d'<strong>autoriser exceptionnellement un professeur à saisir</strong> des notes dans des <a href='../cahier_notes/autorisation_exceptionnelle_saisie.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">carnets de notes</a> ou dans les <a href='../bulletin/autorisation_exceptionnelle_saisie_note.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">bulletins</a> ou à saisir des <a href='../bulletin/autorisation_exceptionnelle_saisie_app.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">appréciations dans les bulletins</a> <strong>sans devoir ouvrir la période en saisie pour tous</strong> les professeurs.</p></li>
 </ul>\n";
 
 	}

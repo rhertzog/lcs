@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Stephane Boireau
  *
  * This file is part of GEPI.
  *
@@ -59,6 +59,8 @@ else {
 	die();
 }
 
+require('sanctions_func_lib.php');
+
 if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 	check_token();
 
@@ -73,8 +75,8 @@ if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 			if(isset($_POST['case_'.$i.'_'.$j])){
 			    $requete= "SELECT 1=1 FROM s_alerte_mail WHERE id_classe='".$tab_id_clas[$j]."' AND destinataire='".$tab_statut[$i]."'";
 				//echo $requete; echo "</br>";
-				$test=mysql_query($requete);
-				if(mysql_num_rows($test)==0){
+				$test=mysqli_query($GLOBALS["mysqli"], $requete);
+				if(mysqli_num_rows($test)==0){
 				    // Modif Eric Ajout Adresse autre
 					if(isset($_POST['adresse_'.$i.'_'.$j]) and isset($_POST['case_'.$i.'_'.$j])){ 
 					    $contenu_adresse = $_POST['adresse_'.$i.'_'.$j];
@@ -85,7 +87,7 @@ if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 					    $sql="INSERT INTO s_alerte_mail SET id_classe='".$tab_id_clas[$j]."', destinataire='".$tab_statut[$i]."'";
 					}
 					// Fin modif
-					$reg_data=mysql_query($sql);
+					$reg_data=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$reg_data){
 						$msg.= "Erreur lors de l'insertion d'un nouvel enregistrement $tab_id_clas[$j] pour $tab_statut[$i].";
 						$notok = true;
@@ -94,10 +96,10 @@ if (isset($_POST['action']) and ($_POST['action'] == "reg_dest")) {
 				// Sinon: l'enregistrement est déjà présent.
 			}
 			else{
-				$test=mysql_query("SELECT 1=1 FROM s_alerte_mail WHERE id_classe='".$tab_id_clas[$j]."' AND destinataire='".$tab_statut[$i]."'");
-				if(mysql_num_rows($test)>0){
+				$test=mysqli_query($GLOBALS["mysqli"], "SELECT 1=1 FROM s_alerte_mail WHERE id_classe='".$tab_id_clas[$j]."' AND destinataire='".$tab_statut[$i]."'");
+				if(mysqli_num_rows($test)>0){
 					$sql="DELETE FROM s_alerte_mail WHERE id_classe='".$tab_id_clas[$j]."' AND destinataire='".$tab_statut[$i]."'";
-					$reg_data=mysql_query($sql);
+					$reg_data=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$reg_data){
 						$msg.= "Erreur lors de la suppression de l'enregistrement $tab_id_clas[$j] pour $tab_statut[$i].";
 						$notok = true;
@@ -129,8 +131,8 @@ echo "<a href='index.php' onClick=\"if(confirm_abandon (this, change, '$themessa
 echo "</p>\n";
 ?>
 
-<p>Choisissez les destinataires des mails d'alerte pour des incidents dont des élèves sont protagonistes.</p>
 <?php
+	echo "<p>Choisissez les destinataires des mails d'alerte pour des ".$mod_disc_terme_incident."s dont des élèves sont protagonistes.</p>\n";
 
 	echo "<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>\n";
 	echo add_token_field();
@@ -174,14 +176,14 @@ echo "</p>\n";
 	echo "<th>&nbsp;</th>\n";
 	echo "</tr>\n";
 
-	$call_data = mysql_query("SELECT * FROM classes ORDER BY classe");
-	$nombre_lignes = mysql_num_rows($call_data);
+	$call_data = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM classes ORDER BY classe");
+	$nombre_lignes = mysqli_num_rows($call_data);
 	
 	if ($nombre_lignes != 0) {
 		// Lignes classes...
 		$j=0;
 		$alt=1;
-		while($lig_clas=mysql_fetch_object($call_data)){
+		while($lig_clas=mysqli_fetch_object($call_data)){
 			if(($j%10==0)&&$j>0){echo $ligne_statuts;}
 
 			$alt=$alt*(-1);
@@ -196,18 +198,18 @@ echo "</p>\n";
 			for($i=0;$i<count($tab_statut);$i++){
 				$sql="SELECT 1=1 FROM s_alerte_mail WHERE id_classe='".$lig_clas->id."' AND destinataire='".$tab_statut[$i]."';";
 				//echo "$sql<br />";
-				$test=mysql_query($sql);
+				$test=mysqli_query($GLOBALS["mysqli"], $sql);
 				//if(mysql_num_rows($test)==0){$checked="";$bgcolor="";}else{$checked="checked ";$bgcolor="background-color: #AAE6AA;";}
-				if(mysql_num_rows($test)==0){$checked="";$bgcolor="";}else{$checked="checked ";$bgcolor="background-color: plum;";}
+				if(mysqli_num_rows($test)==0){$checked="";$bgcolor="";}else{$checked="checked ";$bgcolor="background-color: plum;";}
 
 				echo "<td style='text-align:center;$bgcolor'>\n";
 				echo "<input type='checkbox' name='case_".$i."_".$j."' id='case_".$i."_".$j."' value='y' onchange='changement();' $checked/>\n";
 				//Ajout Eric traitement autre mail
 				$sql="SELECT * FROM s_alerte_mail WHERE id_classe='".$lig_clas->id."' AND destinataire='mail';";
 				//echo $sql;
-				$test=mysql_query($sql);
-				if(mysql_num_rows($test)!=0) {
-					$contenu_requete=mysql_fetch_object($test);
+				$test=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($test)!=0) {
+					$contenu_requete=mysqli_fetch_object($test);
 					if ($tab_statut[$i]== 'mail') {
 					    if ($contenu_requete->adresse != NULL) {
 						    $contenu_adresse = $contenu_requete->adresse;
@@ -231,43 +233,42 @@ echo "</p>\n";
 		echo "</table>\n";
 		echo "<input type='hidden' name='action' value='reg_dest' />\n";
 		echo "<p align='center'><input type='submit' value='Enregistrer' /></p>\n";
+
+		//============================================
+		echo "
+		<p style='text-indent:-4em;margin-left:4em;'><em>NOTES&nbsp;:</em> Les destinataires (<em>sauf 'Adresses autres'</em>) peuvent choisir dans 'Mon compte' pour quelles catégories d'incidents ils souhaitent être informés.<br />
+		Un utilisateur, le chef d'établissement par exemple, pourra souhaiter être informé des violences,... mais pas d'incidents plus mineurs.</p>
+
+		<script type='text/javascript' language='javascript'>
+			function modif_case(id,statut,mode){
+				// id: numéro de:
+				//					. colonne correspondant au login
+				//					. ligne
+				// statut: true ou false
+				// mode: col ou lig
+				if(mode=='col'){
+					for(k=0;k<$nombre_lignes;k++){
+						if(document.getElementById('case_'+id+'_'+k)){
+							document.getElementById('case_'+id+'_'+k).checked=statut;
+						}
+					}
+				}
+				else{
+					for(k=0;k<".count($tab_statut).";k++){
+						if(document.getElementById('case_'+k+'_'+id)){
+							document.getElementById('case_'+k+'_'+id).checked=statut;
+						}
+					}
+				}
+				changement();
+			}
+		</script>\n";
+		//============================================
+
 	} else {
 		echo "</table>\n";
 		echo "<p class='grand'><b>Attention :</b> aucune classe n'a été définie dans la base GEPI !</p>\n";
 	}
-
-
-
-
-
-
-	//============================================
-	// AJOUT: boireaus
-	echo "<script type='text/javascript' language='javascript'>
-		function modif_case(id,statut,mode){
-			// id: numéro de:
-			//					. colonne correspondant au login
-			//					. ligne
-			// statut: true ou false
-			// mode: col ou lig
-			if(mode=='col'){
-				for(k=0;k<$nombre_lignes;k++){
-					if(document.getElementById('case_'+id+'_'+k)){
-						document.getElementById('case_'+id+'_'+k).checked=statut;
-					}
-				}
-			}
-			else{
-				for(k=0;k<".count($tab_statut).";k++){
-					if(document.getElementById('case_'+k+'_'+id)){
-						document.getElementById('case_'+k+'_'+id).checked=statut;
-					}
-				}
-			}
-			changement();
-		}
-	</script>\n";
-	//============================================
 ?>
 </form>
 <?php require("../lib/footer.inc.php");?>

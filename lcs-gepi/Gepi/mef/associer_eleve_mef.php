@@ -52,6 +52,9 @@ if ($utilisateur == null) {
 	die();
 }
 
+$photo_redim_taille_max_largeur=45;
+$photo_redim_taille_max_hauteur=45;
+
 //récupération des paramètres de la requète
 $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom_eleve"]) ? $_GET["nom_eleve"] :(isset($_SESSION["nom_eleve"]) ? $_SESSION["nom_eleve"] : NULL));
 $id_eleve = isset($_POST["id_eleve"]) ? $_POST["id_eleve"] :(isset($_GET["id_eleve"]) ? $_GET["id_eleve"] :(isset($_SESSION["id_eleve"]) ? $_SESSION["id_eleve"] : NULL));
@@ -83,17 +86,21 @@ $titre_page = "MEF";
 $utilisation_jsdivdrag = "non";
 $_SESSION['cacher_header'] = "y";
 $javascript_specifique[] = "mod_abs2/lib/include";
+
+$javascript_specifique[] = "lib/tablekit";
+$utilisation_tablekit="ok";
+
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
-echo "<table cellspacing='15px' cellpadding='5px'><tr>";
+echo "<table style='border-spacing: 15px;' ><tr>";
 
 //on affiche une boite de selection pour l'eleve
-echo "<td style='border : 1px solid; padding : 10 px;'>";
-echo "<form action=\"\" method=\"post\" style=\"width: 100%;\">\n";
+echo "<td style='border : 1px solid; padding : 5px;'>";
+echo "<form action=\"#\" method=\"post\" style=\"width: 100%;\">\n";
 echo '<p>';
-echo 'Nom : <input type="hidden" name="type_selection" value="nom_eleve"/> ';
-echo '<input type="text" name="nom_eleve" size="10" value="'.$nom_eleve.'"/> ';
+echo '<label for="nom_eleve">Nom</label> : <input type="hidden" name="type_selection" value="nom_eleve"/> ';
+echo '<input type="text" name="nom_eleve" id="nom_eleve" size="10" value="'.$nom_eleve.'"/> ';
 echo '<button type="submit">Rechercher</button>';
 echo '</p>';
 echo '</form>';
@@ -104,11 +111,11 @@ echo '</td>';
 //on affiche une boite de selection avec les classes
 $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 if (!$classe_col->isEmpty()) {
-	echo "<td style='border : 1px solid; padding : 10 px;'>";
-	echo "<form action=\"\" method=\"post\" style=\"width: 100%;\">\n";
+	echo "<td style='border : 1px solid; padding : 5px;'>";
+	echo "<form action=\"#\" method=\"post\" style=\"width: 100%;\">\n";
 	echo '<p>';
 	echo '<input type="hidden" name="type_selection" value="id_classe"/>';
-	echo ("Classe : <select name=\"id_classe\" style=\"width:160px\">");
+	echo ("<label for='id_classe'>Classe</label> : <select id=\"id_classe\" name=\"id_classe\" style=\"width:160px\">");
 	echo "<option value='-1'>choisissez une classe</option>\n";
 	foreach ($classe_col as $classe) {
 		echo "<option value='".$classe->getId()."'";
@@ -167,7 +174,7 @@ if (!$eleve_col->isEmpty()) {
 <!-- Legende du tableau-->
 	<?php echo ('<p>');
 	    $mef_collection = MefQuery::create()->find();
-            echo ("MEF : <select name=\"id_mef\" class=\"small\">");
+            echo ("<label for=\"id_mef\">MEF</label> : <select id=\"id_mef\" name=\"id_mef\" class=\"small\">");
             echo "<option value='-1'></option>\n";
             foreach ($mef_collection as $mef) {
                     echo "<option value='".$mef->getId()."'>";
@@ -181,18 +188,17 @@ if (!$eleve_col->isEmpty()) {
 <!-- Fin de la legende -->
 <p><input type="hidden" name="total_eleves" value="<?php echo $eleve_col->count()?>" /></p>
 <table><tr><td style="vertical-align : top;">
-	<table style="width:750px;" >
+	<table style="width:750px;" class='sortable resizable'>
 		<tbody>
 			<tr class="titre_tableau_gestion" style="white-space: nowrap;">
-				<th style="text-align : center;" abbr="élèves">Liste des &eacute;l&egrave;ves.
+				<th style="text-align : center;" class='text' title='Cliquer pour trier'>Liste des &eacute;l&egrave;ves.
 				Sélectionner :
 				<a href="#" onclick="SetAllCheckBoxes('liste_mef_eleve', 'active_mef_eleve[]', '', true); return false;">Tous</a>
 				<a href="#" onclick="SetAllCheckBoxes('liste_mef_eleve', 'active_mef_eleve[]', '', false); return false;">Aucun</a>
 				</th>
-				<th style="text-align : center;">MEF actuel</th>
+				<th style="text-align : center;" class='text' title='Cliquer pour trier'>MEF actuel</th>
 				<th style="text-align : center;">modifier</th>
-				<!--th></th>
-				<th></th-->
+				<th> </th>
 			</tr>
 <?php
 //echo '<input type="hidden" name="total_eleves" value="'.$eleve_col->count().'" />';
@@ -226,7 +232,9 @@ foreach($eleve_col as $eleve) {
                         }
 			echo '</p></td> ';
 
-                        echo '<td style="vertical-align: top;"><input style="font-size:88%;" name="active_mef_eleve[]" value="'.$eleve->getPrimaryKey().'" type="checkbox"';
+                        echo '<td style="vertical-align: top;">
+    <label for="active_mef_'.$eleve->getPrimaryKey().'" class="invisible">mef de '.$eleve->getPrimaryKey().'</label>
+    <input style="font-size:88%;" id="active_mef_'.$eleve->getPrimaryKey().'" name="active_mef_eleve[]" value="'.$eleve->getPrimaryKey().'" type="checkbox"';
 			if ($eleve_col->count() == 1) {
 			    echo "checked=\"checked\" ";
 			}
@@ -271,28 +279,4 @@ echo "</div>\n";
 
 require_once("../lib/footer.inc.php");
 
-//fonction redimensionne les photos petit format
-function redimensionne_image_petit($photo)
- {
-    // prendre les informations sur l'image
-    $info_image = getimagesize($photo);
-    // largeur et hauteur de l'image d'origine
-    $largeur = $info_image[0];
-    $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
-             $taille_max_largeur = 45;
-             $taille_max_hauteur = 45;
-
-    // calcule le ratio de redimensionnement
-     $ratio_l = $largeur / $taille_max_largeur;
-     $ratio_h = $hauteur / $taille_max_hauteur;
-     $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-    // définit largeur et hauteur pour la nouvelle image
-     $nouvelle_largeur = $largeur / $ratio;
-     $nouvelle_hauteur = $hauteur / $ratio;
-
-   // on renvoit la largeur et la hauteur
-    return array($nouvelle_largeur, $nouvelle_hauteur);
- }
 ?>

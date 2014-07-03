@@ -62,6 +62,8 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite" &
     die("acces interdit");
 }
 
+$photo_redim_taille_max_largeur=45;
+$photo_redim_taille_max_hauteur=45;
 
 //récupération des paramètres de la requète
 $nom_eleve = isset($_POST["nom_eleve"]) ? $_POST["nom_eleve"] :(isset($_GET["nom_eleve"]) ? $_GET["nom_eleve"] :(isset($_SESSION["nom_eleve"]) ? $_SESSION["nom_eleve"] : NULL));
@@ -184,7 +186,7 @@ if (!$groupe_col->isEmpty()) {
 }
 
 //on affiche une boite de selection avec les classes
-if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+if ((getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe")||($utilisateur->getStatut() == "autre")) {
     $classe_col = ClasseQuery::create()->orderByNom()->orderByNomComplet()->find();
 } else {
     $classe_col = $utilisateur->getClasses();
@@ -214,7 +216,7 @@ if (!$classe_col->isEmpty()) {
 }
 
 //on affiche une boite de selection avec les aid
-if (getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe") {
+if ((getSettingValue("GepiAccesAbsTouteClasseCpe")=='yes' && $utilisateur->getStatut() == "cpe")||($utilisateur->getStatut() == "autre")) {
     $aid_col = AidDetailsQuery::create()->find();
 } else {
     $aid_col = $utilisateur->getAidDetailss();
@@ -443,7 +445,7 @@ foreach($eleve_col as $eleve) {
 ?>
 		  <a href="./saisir_eleve.php?type_selection=id_eleve&amp;id_eleve=<?php echo $eleve->getPrimaryKey() ;?>">
 <?php
-		  echo '<span class="td_abs_eleves">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')';
+		  echo '<span class="td_abs_eleves" id="label_nom_prenom_eleve_'.$eleve->getPrimaryKey().'" title="Effectuer une saisie pour cet élève.">'.strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().')';
 			if(!isset($current_classe) && $eleve->getClasse()!=null){
                             echo ' '.$eleve->getClasse()->getNom().'';
                         }
@@ -458,7 +460,7 @@ echo '<div id="edt_'.$eleve->getLogin().'" style="display: none; position: stati
 			echo("</td>");
 
 
-			echo '<td style="vertical-align: top;"><input style="font-size:88%;" name="active_absence_eleve[]" value="'.$eleve->getPrimaryKey().'" type="checkbox"';
+			echo '<td style="vertical-align: top;"><input style="font-size:88%;" name="active_absence_eleve[]" id="active_absence_eleve_'.$eleve->getPrimaryKey().'" value="'.$eleve->getPrimaryKey().'" type="checkbox" onchange="click_active_absence('.$eleve->getPrimaryKey().')" ';
 			if ($eleve_col->count() == 1) {
 			    echo "checked=\"true\" ";
 			}
@@ -476,7 +478,7 @@ echo '<div id="edt_'.$eleve->getLogin().'" style="display: none; position: stati
 			    }
 			    $valeur = redimensionne_image_petit($photos);
 			    ?>
-		      <div style="float: left;"><img src="<?php echo $photos; ?>" style="width: <?php echo $valeur[0]; ?>px; height: <?php echo $valeur[1]; ?>px; border: 0px" alt="" title="" />
+		      <div style="float: left;"><label for="active_absence_eleve_<?php echo $eleve->getPrimaryKey(); ?>"><img src="<?php echo $photos; ?>" style="width: <?php echo $valeur[0]; ?>px; height: <?php echo $valeur[1]; ?>px;" alt="" title="Cocher cet élève" id="img_photo_eleve_<?php echo $eleve->getPrimaryKey(); ?>" class='trombine' /></label>
 		      </div>
 <?php
 			}
@@ -654,28 +656,4 @@ echo "</div>\n";
 
 require_once("../lib/footer.inc.php");
 
-//fonction redimensionne les photos petit format
-function redimensionne_image_petit($photo)
- {
-    // prendre les informations sur l'image
-    $info_image = getimagesize($photo);
-    // largeur et hauteur de l'image d'origine
-    $largeur = $info_image[0];
-    $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
-             $taille_max_largeur = 45;
-             $taille_max_hauteur = 45;
-
-    // calcule le ratio de redimensionnement
-     $ratio_l = $largeur / $taille_max_largeur;
-     $ratio_h = $hauteur / $taille_max_hauteur;
-     $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-    // définit largeur et hauteur pour la nouvelle image
-     $nouvelle_largeur = $largeur / $ratio;
-     $nouvelle_hauteur = $hauteur / $ratio;
-
-   // on renvoit la largeur et la hauteur
-    return array($nouvelle_largeur, $nouvelle_hauteur);
- }
 ?>

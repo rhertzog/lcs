@@ -3,6 +3,158 @@
 |= CHANGELOG GEPI =|
 |==================|
 
+Gepi-1.6.5 (14/06/2014)
+===========================
+Cahier de textes:
+- Possibilité de définir en administrateur des URL absolues à corriger en URL relatives pour les documents joints aux cahiers de textes.
+
+Cahier de notes:
+- Possibilité de choisir la hauteur de ligne dans l'export PDF de toutes les moyennes de la classe.
+- Relevés de notes: Dans le choix dates/périodes, affichage des dates de 1ère et dernière évaluation dans chaque période pour chacune des classes sélectionnées.
+
+Bulletins:
+- Possibilité de choisir la hauteur de ligne dans l'export PDF de toutes les moyennes de la classe.
+- Possibilité de donner le droit aux comptes scolarité de corriger des appréciations
+  (avec envoi de mail de compte-rendu de modification).
+- Possibilité de donner le droit aux professeurs d'autoriser (via Gérer mon compte) tel ou tel professeur principal à corriger leurs appréciations
+  (avec envoi de mail de compte-rendu de modification).
+
+EDT: 
+- Facilités de navigation Classe/Prof/Salle en cliquant dans le créneau affiché.
+
+Absences2:
+- Tableau des appels: Possibilité d'afficher l'EDT de la classe en infobulle.
+
+Gestion:
+- Gestion des classes/enseignements: Ajout de liens d'affichage de l'EDT prof en infobulle.
+- Consultation élève: Ajout de l'affichage de MEF.
+- Possibilité de définir des événements à telles dates pour telles classes avec affichage en Panneau d'affichage.
+- Possibilité de conserver des mots de passe dans la base Gepi en mode SSO pour mettre en place un accès de secours quand l'authentification SSO fait des siennes.
+- Possibilité de générer les bulletins pour certains responsables non légaux (cas des familles d'accueil).
+- Possibilité de créer des groupes de groupes dont la liste des élèves peut être administrée par des comptes professeurs, cpe, scolarité.
+
+Discipline:
+- Possibilité de définir des avertissements de fin de période,
+  de les saisir depuis les pages de saisie de l'avis du conseil de classe,
+  et de les imprimer au format OOo.
+- Possibilité d'afficher les incidents sans référence aux autres protagonistes
+  (cette page imprimée peut être communiquée aux responsables sans soucis de confidentialité vis à vis d'autres protagonistes des incidents).
+
+Panneau d'affichage:
+- Possibilité de déposer un message pour les élèves ou parents de telle classe.
+- Possibilité de donner aux CPE l'accès à la saisie des message.
+
+Épreuves blanches:
+- A la saisie (pour l'admin), possibilité de trier les copies par numéro anonymat.
+- Possibilité d'accéder au bilan pdf/csv une fois l'épreuve close.
+
+Examens blancs:
+- Possibilité de sélectionner une épreuve blanche en guise de note pour un groupe.
+
+Années antérieures:
+- Conservation d'informations supplémentaires dans l'archivage des années en prévision de l'extraction demandée dans le Livret Scolaire Lycée.
+
+Divers:
+- Statistiques de connexion:
+   . Possibilité de cumuler les connexions élèves et parents.
+   . Export CSV des dates/effectifs de connexion.
+- Possibilité de choisir les groupes à faire apparaitre en page d'accueil simplifiée (et leur ordre).
+
+Gepi-1.6.4 (01/02/2014)
+===========================
+
+Note importante:
+  Les fonctions mysql_* de PHP sont marquées obsolètes dans les versions récentes de PHP.
+  Il est recommandé de passer à l'utilisation de fonctions mysqli_* de l'extension mysqli.
+  Gepi-1.6.4 suit donc les préconisations des développeurs PHP quant à l'abandon de ces fonctions.
+  Si vous mettez à jour depuis une version antérieure de Gepi, vous pouvez contrôler 
+  dans Gepi si l'extension mysqli est active en vous rendant dans 
+     Gestion générale/Configuration serveur/Liste des modules implémentés avec votre PHP
+  Le passage à mysqli devrait être transparent pour les utilisateurs, mais il implique de mettre à 
+  jour les éventuels plugins mis en place sur votre Gepi.
+  Les plugins officiels mis à jour sont disponibles ici: 
+     http://www.sylogix.org/projects/gepi/files
+
+Bulletins:
+- Bulletins HTML: Possibilité de définir la taille des textes des cellules Avis du conseil de classe et Signature.
+- Possibilité de gérer plusieurs fichiers de signature des bulletins.
+- Affichage de l'appréciation concernant le groupe classe dans la page Mes moyennes et appréciations.
+- Possibilité de modifier l'accès parent/élève aux appréciations depuis les pages 
+  de saisie de l'avis du conseil de classe dans le cas où l'accès est basculé manuellement.
+- Possibilité de désactiver la recherche de lapsus lors des saisies d'appréciations et avis du conseil de classe.
+- Possibilité de proposer des corrections d'appréciations depuis le bulletins et plus seulement depuis la saisie d'appréciations.
+- Formatage de l'identité des élèves pour les bulletins.
+- Possibilité de faire apparaitre les mentions sur l'export PDF des avis de conseil de classe.
+- Mise en évidence des coefficients nuls avant la génération des bulletins (pour repérer un coefficient différent des autres).
+
+Graphes:
+- Possibilité de définir la taille du texte sous le graphique.
+- Possibilité de régler la vitesse de défilement des appréciations dans le champ Textarea.
+
+Carnets de notes:
+- Visualiser toutes les notes de l'année: Affichage de la moyenne annuelle.
+- Visualiser toutes les notes de l'année: Possibilité d'afficher les moyennes de bulletins en plus des moyennes de carnets de notes.
+- Possibilité d'interdire la création/paramétrage de boites/conteneurs par les professeurs.
+- Possibilité, en tant qu'administrateur, de créer des boites/conteneurs par lots dans les carnets de notes d'une sélection d'enseignements.
+- Accès des professeurs principaux à la page Moyennes des carnets de notes si ils ont accès à la Visualisation des carnets de notes.
+- Évaluations cumulées: Possibilité de choisir les évaluations visibles des parents/élèves.
+
+Cahier de textes:
+- Possibilité d'afficher la liste des documents joints à un CDT.
+- Possibilité pour les parents et élèves de pointer leurs travaux faits ou non.
+- Possibilité de redimensionner les infobulles dans l'affichage semaine.
+- Possibilité d'envoyer par mail une portion du cahier de textes.
+- CDT2: Possibilité de préciser le nombre de notices à afficher par défaut dans WinListeNotices.
+
+Absences2:
+- Possibilité de modifier les dates/heure de début et fin d'une saisie depuis la page de saisie d'un traitement.
+- Accès à l'onglet 'Saisir un groupe' pour les statuts 'autre' avec le droit 'Saisir les absences de tous les élèves'.
+- Possibilité de créer des traitements et notifications par lots.
+- Possibilité de filtrer Retards/Manquements/Non_manquements dans la page Bilan jour.
+
+Discipline:
+- Affichage par tranches des incidents à traiter (pour limiter le temps de chargement de la page).
+- Possibilité d'imprimer des fichiers OOo pour les sanctions  de type travail et autre.
+- Possibilité de modifier les termes 'incident' et 'sanction'.
+- Possibilité de saisir certaines sanctions en tant que professeur (liste à préciser dans Définir les sanctions).
+- Possibilité de restreindre dans Mon compte ce qui a été défini dans Définir les destinataires d'alertes,
+  les catégories d'incidents pour lesquelles on souhaite être averti.
+- Saisie d'incident: Recherche des élèves et personnels dans le même formulaire.
+- Possibilité d'imprimer des fichiers OOo avec adresse responsable pour les rapports d'incidents.
+
+Modèles Ooo:
+- Possibilité de gérer des modèles OOo en compte scolarité ou cpe.
+
+Gestion:
+- Ajout de la date d'entrée d'un élève dans l'établissement.
+- Possibilité de choisir l'adresse mail destinataire de l'information comme quoi un changement d'adresse mail responsable ou élève a eu lieu.
+- Possibilité d'ajouter un préfixe au sujet des mails envoyés par Gepi.
+- Possibilité de donner l'accès à l'impression de leur Fiche Bienvenue pour les différents statuts depuis la page Gérer mon compte.
+- Possibilité de définir des messages d'information à faire apparaître dans 'Gérer mon compte' (messages éventuellement différents pour chaque statut).
+- Possibilité d'accéder à la date de dernière connexion d'élèves/responsables.
+- Possibilité de donner l'accès aux statistiques, voire aux détails de connexion pour les comptes scolarité, cpe, professeurs principaux et/ou professeurs.
+- Possibilité de choisir le professeur principal depuis la page d'index Élèves.
+- Facilités pour renommer les enseignements que l'on crée ou modifie.
+- Facilités pour créer des demi-groupes,... d'après un groupe existant.
+- Gestion des responsables: Possibilité de lancer la même recherche sur les autres catégories (resp1,2,ele) quand la recherche n'a pas abouti.
+- Possibilité de donner le droit aux comptes scolarité/cpe de modifier la composition des groupes.
+- Gestion des élèves: Possibilité d'extraire les élèves sans compte d'utilisateur ou avec compte inactif.
+- Ajout d'une page de recherche (pour les administrateurs, scolarité et cpe) sur les élèves/responsables/personnels par nom, prénom, matière,... avec possibilité d'export CSV.
+- Possibilité d'envoyer la fiche bienvenue par mail.
+- Ajout de barres de menu élève et responsable.
+- Ajout d'une facilité d'édition d'un message du Panneau d'affichage.
+- Dénomination du C.P.E. modifiable dans les paramètres généraux
+
+Alertes:
+- Possibilité d'utiliser le module Alertes en compte 'autre'.
+- Possibilité d'exclure du mod_alerte certains utilisateurs.
+
+Divers:
+- Ajout d'une page pour que les parents puissent contrôler les informations élève/resp.
+- Possibilité d'afficher le mot de passe lors de la saisie (pour ceux qui s'empêtrent dans les majuscules/minuscules, clavier avec ou sans pavé numérique).
+- Possibilité de donner l'accès aux grilles PDF et listes CSV aux statuts autres.
+- Affichage des trombinoscopes des AID.
+
 Gepi-1.6.3 (17/06/2013)
 ===========================
 Bulletins:

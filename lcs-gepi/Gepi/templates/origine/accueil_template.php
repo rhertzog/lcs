@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <?php
 /*
  * $Id$
@@ -62,7 +62,7 @@
 
 <div id='container'>
 
-<a name='haut_de_page'></a>
+<a id='haut_de_page'></a>
 
 <div class='fixeMilieuDroit'>
 	<a href='#haut_de_page'><img src='images/up.png' width='18' height='18' alt="haut de la page" title="Remonter en haut de la page" /></a>
@@ -167,7 +167,7 @@
 
 
 	</div>
-	<a name="contenu" class="invisible">Début de la page</a>
+	<a id="contenu" class="invisible">Début de la page</a>
 
 <!-- Signalements d'erreurs d'affectations -->
 <?php
@@ -185,26 +185,25 @@
 <?php
 
 	if((getSettingValue('active_cahiers_texte')=='y')&&(getSettingValue('GepiCahierTexteVersion')=='2')) {
-		if(!file_exists("./temp/info_jours.js")) {
+        if(!file_exists("./temp/info_jours.js")) {
 			creer_info_jours_js();
 			if(!file_exists("./temp/info_jours.js")) {
-				$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
-				$test_info_jours=mysql_query($sql);
-				if(mysql_num_rows($test_info_jours)==0) {
-					enregistre_infos_actions("Fichier info_jours.js absent","Le fichier info_jours.js destiné à tenir compte des jours ouvrés dans les saisies du cahier de textes n'est pas renseigné.\nVous pouvez le renseigner en <a href='$gepiPath/edt_organisation/admin_horaire_ouverture.php?action=visualiser'>saisissant ou re-validant les horaires d'ouverture</a> de l'établissement.","administrateur",'statut');
-				}
-			}
-		}
-		else {
-			$sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
-			$test_info_jours=mysql_query($sql);
-			if(mysql_num_rows($test_info_jours)>0) {
-				while($lig_action=mysql_fetch_object($test_info_jours)) {
+                $sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+                $test_info_jours = mysqli_query($mysqli, $sql);
+                if($test_info_jours->num_rows == 0) {
+                    enregistre_infos_actions("Fichier info_jours.js absent","Le fichier info_jours.js destiné à tenir compte des jours ouvrés dans les saisies du cahier de textes n'est pas renseigné.\nVous pouvez le renseigner en <a href='$gepiPath/edt_organisation/admin_horaire_ouverture.php?action=visualiser'>saisissant ou re-validant les horaires d'ouverture</a> de l'établissement.","administrateur",'statut');
+                }
+            }
+        } else {
+            $sql="SELECT * FROM infos_actions WHERE titre='Fichier info_jours.js absent'";
+            $test_info_jours = mysqli_query($mysqli, $sql);
+            if($test_info_jours->num_rows > 0) {
+				while($lig_action=$test_info_jours->fetch_object($test_info_jours)) {
 					del_info_action($lig_action->id);
 				}
-			}
-		}
-	}
+            }
+        }
+    }
 
 	affiche_infos_actions();
 ?>
@@ -216,7 +215,12 @@
 
 <!-- messagerie -->
 <?php
-	if (count($afficheAccueil->message)) :
+	if(in_array($_SESSION['statut'], array('professeur', 'cpe', 'scolarite', 'responsable', 'eleve'))) {
+		//echo "<div align='center'>".afficher_les_evenements()."</div>";
+		$liste_evenements=afficher_les_evenements();
+	}
+
+	if ((count($afficheAccueil->message))||((isset($liste_evenements))&&($liste_evenements!=""))) :
 ?>
 
 	<div class="panneau_affichage">
@@ -234,11 +238,26 @@
 			<div class="panneau_coingb"></div>
 			<div class="panneau_coindb"></div>
 			<div class="panneau_bas"></div>
-			<div class="panneau_centre">	
-				<?php foreach ($afficheAccueil->message as $value) : ?>
-				<div class="postit"><?php echo $value['message']; ?></div>
-				<?php endforeach; ?>
-				<?php unset ($value); ?>	
+			<div class="panneau_centre">
+				<?php 
+				if(isset($liste_evenements)) {
+					echo "<div class='postit' title=\"Événements à venir (définis) pour vos classes.\">".$liste_evenements."</div>";
+				}
+
+				if (count($afficheAccueil->message)) :
+					foreach ($afficheAccueil->message as $value) : 
+				?>
+				<div class="postit"><?php
+					if(acces("/messagerie/index.php", $_SESSION['statut'])) {
+						echo "<div style='float:right; width:16' title=\"Éditer/modifier le message.\"><a href='$gepiPath/messagerie/index.php?id_mess=".$value['id']."'><img src='images/edit16.png' class='icone16' /></a></div>";
+					}
+					echo $value['message'];
+				?></div>
+				<?php
+				endforeach;
+				endif;
+				?>
+				<?php unset ($value); ?>
 			</div>
 		</div>
 	</div>
@@ -247,26 +266,7 @@
 	<?php endif; ?>
 
 	<!-- <div id='messagerie'> -->
-<?php
-		  /* foreach ($afficheAccueil->message as $value) {
 
-		  if ($value['suite']=='') {
-			  echo "";
-		  }else{
-			  echo "<hr>";
-		  }
-		  echo "
-			$value[message]
-		  ";
-		  if ($value['suite']=='') {
-			  echo "";
-		  }else{
-			  echo "</hr>";
-		  }
-
-		}
-		unset ($value); */
-?>
 	<!--	</div> -->
 <?php /* } */ ?>
 	
@@ -299,6 +299,7 @@
 
 
 <?php
+
 		if ($newEntreeMenu->texte=="Votre flux RSS") {
 ?>
 		  <div class='div_tableau'>
@@ -393,59 +394,11 @@
 	  }
 	  unset($newEntreeMenu);
 	}
+    
 ?>
 
 <!-- début RSS	-->
-		<?php
-/*
-
-
-			if ($tbs_canal_rss_flux==1) {
-							echo "
-	<div>
-		<h2 class='accueil'>
-			<img src='./images/icons/rss.png' alt=''/> - Votre flux rss
-		</h2>
-				";
-
-		echo "
-<div class='div_tableau'>
-			";
-		if ($tbs_canal_rss[0]["mode"]==1) {
-			echo "
-	<h3 class=\"colonne ie_gauche flux_rss\" title=\"A utiliser avec un lecteur de flux rss\" onclick=\"changementDisplay('divuri', 'divexpli')\" >
-		Votre uri pour les cahiers de textes
-	</h3>
-	<p class=\"colonne ie_droite vert\">
-		<span id=\"divexpli\" style=\"display: block;\">
-				";
-				echo $tbs_canal_rss[0]['expli'];
-				echo "
-		</span>
-		<span id=\"divuri\" style=\"display: none;\">
-	<a onclick=\"window.open(this.href, '_blank'); return false;\" href=\""; echo $tbs_canal_rss[0]['lien']; echo";\">
-							"; echo $tbs_canal_rss[0]['texte']; echo"
-	</a>
-		</span>
-	</p>
-
-</div>
-	</div>
-				";
-		}else if ($tbs_canal_rss[0]["mode"]==2){
-			echo "
-	<h3 class=\"colonne ie_gauche\">
-			Votre uri pour les cahiers de textes
-	</h3>
-	<p class=\"colonne ie_droite vert\">
-					Veuillez la demander à l'administration de votre établissement.
-	</p>
-				";
-		}
-	}
- *
- */
-?>
+		
 <!-- fin RSS	-->
 
 <!-- Début du pied -->
@@ -476,22 +429,33 @@
 		</div>
 		<div>
 			<div style="padding-left: 1px;">
-				<!--div style="text-align:center;"-->
-				<div align="center">
-					<table class='boireaus'>
+				<div style="text-align:center;">
+					<table class='boireaus boireaus_alt sortable resizable' style='margin: .5em auto;'>
 						<tr>
-							<th>Personne</th>
-							<th>Statut</th>
-							<th>Fin session</th>
+							<th class='text'>Personne</th>
+							<th class='text'>Statut</th>
+							<th class='text'>Fin session</th>
 						</tr>
 <?php
+		/*
+		// A REVOIR: Pour pouvoir grouper les connexions multiples d'un même utilisateur
+		$tab_personne_connectee=array();
+		foreach ($afficheAccueil->nom_connecte as $newentree) {
+
+
+		}
+		*/
+
 		foreach ($afficheAccueil->nom_connecte as $newentree) {
 ?>
-						<tr class='<?php echo $newentree['style']; ?>'>
+						<!--tr class='<?php echo $newentree['style']; ?>'-->
+						<tr>
 							<td>
 								<?php
 									if((getSettingAOui('active_mod_alerte'))&&(in_array($newentree['statut'], array("administrateur", "scolarite", "cpe", "professeur", "secours", "autre")))) {
-										echo "<div style='float:right; width:16px;'><a href='./mod_alerte/form_message.php?message_envoye=y&amp;login_dest=".$newentree['login'].add_token_in_url()."' title=\"Déposer un message d'alerte/information à destination de ".$newentree['texte']." .\" target='_blank'><img src='./images/icons/mail.png' width='16' height='16' /></a></div>";
+										if(check_mae($_SESSION['login'])) {
+											echo "<div style='float:right; width:16px;'><a href='./mod_alerte/form_message.php?message_envoye=y&amp;login_dest=".$newentree['login'].add_token_in_url()."' title=\"Déposer un message d'alerte/information à destination de ".$newentree['texte']." .\" target='_blank'><img src='./images/icons/mail.png' width='16' height='16' alt='courriel' /></a></div>";
+										}
 									}
 
 									if(($newentree['courriel']!="")&&(check_mail($newentree['courriel']))) {
@@ -538,7 +502,8 @@
 							</td>
 							<td>
 								<?php
-									echo formate_date($newentree['end'], 'y');
+									$date_fin_session=formate_date($newentree['end'], 'y');
+									echo "<span title=\"La session démarrée le ".formate_date($newentree['start'], 'y')." depuis ".$newentree['remote_addr']." devrait se terminer d'elle-même, si l'utilisateur n'agit plus, le ".$date_fin_session.".\">".$date_fin_session."</span>";
 								?>
 							</td>
 						</tr>
@@ -567,7 +532,7 @@
 	</script>
 
 
-<a name='bas_de_page'></a>
+<a id='bas_de_page'></a>
 </div>
 
 		<?php

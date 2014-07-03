@@ -61,6 +61,64 @@ if ($utilisateur->getStatut()=="professeur" &&  getSettingValue("active_module_a
     die("Le module n'est pas activé.");
 }
 
+if(isset($_GET['test_heure_ouverture'])) {
+	$date_debut=$_GET['date_debut'];
+	$heure_debut=$_GET['heure_debut'];
+
+	if(preg_match("#[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}#", $date_debut)) {
+		$tab=explode("/", $date_debut);
+
+		$jour=$tab[0];
+		$mois=$tab[1];
+		$annee=$tab[2];
+	}
+	elseif(preg_match("/[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}/", $date_debut)) {
+		$tab=explode("-", $date_debut);
+
+		$jour=$tab[2];
+		$mois=$tab[1];
+		$annee=$tab[0];
+	}
+
+	if((isset($jour))&&
+	(preg_match("/[0-9]{1,2}:[0-9]{1,2}/", $heure_debut))) {
+
+		$tab=explode(":", $heure_debut);
+		$h=$tab[0];
+		$min=$tab[1];
+
+		$ts=mktime($h, $min, 0, $mois, $jour, $annee);
+
+		$num_jour=strftime("%u", $ts);
+
+		$tab_sem[1] = 'lundi';
+		$tab_sem[2] = 'mardi';
+		$tab_sem[3] = 'mercredi';
+		$tab_sem[4] = 'jeudi';
+		$tab_sem[5] = 'vendredi';
+		$tab_sem[6] = 'samedi';
+		$tab_sem[7] = 'dimanche';
+
+		$sql="SELECT ouverture_horaire_etablissement FROM horaires_etablissement WHERE jour_horaire_etablissement='".$tab_sem[$num_jour]."';";
+		//echo "$sql<br />";
+		$res=mysqli_query($mysqli, $sql);
+		if($res->num_rows > 0) {
+			$lig=mysqli_fetch_object($res);
+
+			if(strftime("%H:%M:%S", $ts)<$lig->ouverture_horaire_etablissement) {
+				echo " <img src='../images/icons/flag.png' class='icone16' alt='Anomalie' title=\"L'heure de début est antérieure à l'heure d'ouverture de l'établissement.
+Dans le cas d'une absence ou d'un retard, il se peut qu'il ne soit pas pris en compte dans le décompte.\" />";
+			}
+		}
+	}
+	else {
+		//echo "\$date_debut=$date_debut<br />";
+		//echo "\$heure_debut=$heure_debut<br />";
+	}
+
+	die();
+}
+
 //récupération des paramètres de la requète
 $id_saisie = isset($_POST["id_saisie"]) ? $_POST["id_saisie"] :(isset($_GET["id_saisie"]) ? $_GET["id_saisie"] :(isset($_SESSION["id_saisie"]) ? $_SESSION["id_saisie"] : NULL));
 $menu = isset($_POST["menu"]) ? $_POST["menu"] :(isset($_GET["menu"]) ? $_GET["menu"] : NULL);
@@ -141,6 +199,15 @@ echo $saisie->getPrimaryKey();
     	echo ')</font> ';
     }
 echo '</td><td>';
+
+if (($saisie->getEleve() != null)&&($saisie->getGroupe() != null)) {
+	if(!is_eleve_du_groupe($saisie->getEleve()->getLogin(), $saisie->getGroupe()->getId())) {
+		echo "<div style='float:right; width:22px;'><img src='../images/icons/ico_attention.png' width='22' height='19' alt='Attention' title=\"L'élève n'est plus membre du groupe ".$saisie->getGroupe()->getNameAvecClasses()." actuellement.
+Il en a peut-être été membre plus tôt dans l'année.
+Mais il n'en n'est plus membre aujourd'hui.\" /></div>";
+	}
+}
+
 if ($modifiable) {   
     echo '<form dojoType="dijit.form.Form" jsId="suppression_restauration" id="suppression_restauration"  method="post" action="./enregistrement_modif_saisie.php">';
     echo '<input type="hidden" name="id_saisie" value="' . $saisie->getPrimaryKey() . '"/>';
@@ -247,10 +314,10 @@ echo '</td><td colspan="2">';
 if (!$modifiable || $saisie->getDeletedAt() != null ) {
     echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getDebutAbs('U')));
 } else {
-    echo '<nobr><input name="heure_debut" id="heure_debut" value="'.$saisie->getDebutAbs("H:i").'" type="text" maxlength="5" size="4" onkeydown="clavier_heure(this.id,event);" autocomplete="off" />&nbsp;';
+    echo '<nobr><input name="heure_debut" id="heure_debut" value="'.$saisie->getDebutAbs("H:i").'" type="text" maxlength="5" size="4" onkeydown="clavier_heure(this.id,event);" autocomplete="off" title="Vous pouvez modifier l\'heure en utilisant les flèches Haut/Bas et PageUp/PageDown du clavier" onchange="teste_validite_heure_debut_abs()" onblur="teste_validite_heure_debut_abs()" />&nbsp;';
     if ($utilisateur->getStatut() == 'professeur') {//on autorise pas au professeur a changer la date
 	echo (strftime(" %a %d/%m/%Y", $saisie->getDebutAbs('U')));
-	echo '<input name="date_debut" value="'.$saisie->getDebutAbs('d/m/Y').'" type="hidden"/></nobr> ';
+	echo '<input name="date_debut" id="trigger_calendrier_debut" value="'.$saisie->getDebutAbs('d/m/Y').'" type="hidden"/></nobr> ';
 ?>
 <button type="button" style="cursor:pointer;" onclick="heureActuelle('heure_debut')">
   Maintenant
@@ -273,7 +340,7 @@ if (!$modifiable || $saisie->getDeletedAt() != null ) {
 	</script>';*/
     }
 }
-echo '</td></tr>';
+echo '<span id="commentaire_heure_debut_abs"></span></td></tr>';
 
 echo '<tr><td>';
 echo 'Fin : ';
@@ -281,7 +348,7 @@ echo '</td><td colspan="2">';
 if (!$modifiable || $saisie->getDeletedAt() != null) {
     echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getFinAbs('U')));
 } else {
-    echo '<nobr><input name="heure_fin" id="heure_fin" value="'.$saisie->getFinAbs("H:i").'" type="text" maxlength="5" size="4" onkeydown="clavier_heure(this.id,event);" autocomplete="off" />&nbsp;';
+    echo '<nobr><input name="heure_fin" id="heure_fin" value="'.$saisie->getFinAbs("H:i").'" type="text" maxlength="5" size="4" onkeydown="clavier_heure(this.id,event);" autocomplete="off" title="Vous pouvez modifier l\'heure en utilisant les flèches Haut/Bas et PageUp/PageDown du clavier" />&nbsp;';
     //if ($utilisateur->getStatut() == 'professeur' && getSettingValue("abs2_saisie_prof_decale") != 'y') {
     if ($utilisateur->getStatut() == 'professeur') {
 	echo (strftime(" %a %d/%m/%Y", $saisie->getFinAbs('U')));
@@ -315,6 +382,7 @@ echo 'Traitement : ';
 echo '</td><td style="background-color:#ebedb5;" colspan="2">';
 $type_autorises = AbsenceEleveTypeStatutAutoriseQuery::create()->filterByStatut($utilisateur->getStatut())->useAbsenceEleveTypeQuery()->orderBySortableRank()->endUse()->find();
 $total_traitements_modifiable = 0;
+$total_traitements_modifiable_non_prof = 0;
 $tab_traitements_deja_affiches=array();
 foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
 	if(!in_array($traitement->getId(), $tab_traitements_deja_affiches)) {
@@ -347,6 +415,7 @@ foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
 		}
 		}else {
 		if ($utilisateur->getStatut() != 'professeur') {
+			$total_traitements_modifiable_non_prof++;
 			echo "<a href='visu_traitement.php?id_traitement=".$traitement->getId()."&id_saisie_appel=".$id_saisie."";
 		    if($menu){
 		            echo"&menu=false";
@@ -516,7 +585,14 @@ if ($utilisateur->getStatut()=="cpe" || $utilisateur->getStatut()=="scolarite") 
     echo '<tr><td colspan="3" style="text-align : center;">';
     echo '<button dojoType="dijit.form.Button" type="submit" name="creation_traitement" value="oui"';
     if ($saisie->getDeletedAt() != null) echo 'disabled';
-    echo '>Traiter la saisie</button>';
+    if(($total_traitements_modifiable>0)||($total_traitements_modifiable_non_prof>0)) {
+        echo ' title="Il existe déjà au moins un traitement modifiable pour la saisie.
+Il serait sans doute préférable de modifier le traitement existant ci-dessus,
+mais vous pouvez aussi en créer un nouveau.">Créer un *nouveau* traitement pour la saisie</button>';
+    }
+    else {
+        echo '>Traiter la saisie</button>';
+    }
     echo '<button dojoType="dijit.form.Button" type="submit" name="creation_notification" value="oui"';
     if ($saisie->getDeletedAt() != null) echo 'disabled';
     echo '>Notifier la saisie</button>';
@@ -581,39 +657,27 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 </script>';
 ?>
 <script type="text/javascript">
-  //<![CDATA[
-  function heureActuelle(e) {
-	maintenant = new Date();
-	document.getElementById(e).value = maintenant.getHours()+':'+maintenant.getMinutes();
-	delete (maintenant);
-  }
+	//<![CDATA[
+	function heureActuelle(e) {
+		maintenant = new Date();
+		document.getElementById(e).value = maintenant.getHours()+':'+maintenant.getMinutes();
+		delete (maintenant);
+	}
+
+	function teste_validite_heure_debut_abs() {
+		if((document.getElementById('trigger_calendrier_debut'))&&(document.getElementById('heure_debut'))) {
+			date_debut=document.getElementById('trigger_calendrier_debut').value;
+			heure_debut=document.getElementById('heure_debut').value;
+
+			//alert('heure_debut='+heure_debut);
+
+			new Ajax.Updater($('commentaire_heure_debut_abs'),'visu_saisie.php?test_heure_ouverture=y&date_debut='+date_debut+'&heure_debut='+heure_debut,{method: 'get'});
+		}
+	}
+
+	teste_validite_heure_debut_abs();
   //]]>
 </script>
 <?php
 require_once("../lib/footer.inc.php");
-
-//fonction redimensionne les photos petit format
-function redimensionne_image_petit($photo)
- {
-    // prendre les informations sur l'image
-    $info_image = getimagesize($photo);
-    // largeur et hauteur de l'image d'origine
-    $largeur = $info_image[0];
-    $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
-             $taille_max_largeur = 35;
-             $taille_max_hauteur = 35;
-
-    // calcule le ratio de redimensionnement
-     $ratio_l = $largeur / $taille_max_largeur;
-     $ratio_h = $hauteur / $taille_max_hauteur;
-     $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-    // définit largeur et hauteur pour la nouvelle image
-     $nouvelle_largeur = $largeur / $ratio;
-     $nouvelle_hauteur = $hauteur / $ratio;
-
-   // on renvoit la largeur et la hauteur
-    return array($nouvelle_largeur, $nouvelle_hauteur);
- }
 ?>

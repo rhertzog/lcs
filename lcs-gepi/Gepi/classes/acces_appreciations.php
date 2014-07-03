@@ -45,14 +45,14 @@ $msg="";
 //GepiAccesRestrAccesAppProfP
 if($_SESSION['statut']=="professeur") {
 	if(getSettingValue('GepiAccesRestrAccesAppProfP')!="yes") {
-		$msg="Accès interdit au paramétrage des accès aux appréciatons/avis pour les parents et élèves.";
+		$msg="Accès interdit au paramétrage des accès aux appréciations/avis pour les parents et élèves.";
 		header("Location: ../accueil.php?msg=".rawurlencode($msg));
 	    die();
 	}
 
 	$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."';";
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)==0){
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)==0){
 		$gepi_prof_suivi=getSettingValue('gepi_prof_suivi');
 		$msg="Vous n'êtes pas ".$gepi_prof_suivi.".<br />Vous ne devriez donc pas accéder à cette page.";
 		header("Location: ../accueil.php?msg=".rawurlencode($msg));
@@ -68,7 +68,7 @@ $sql="CREATE TABLE IF NOT EXISTS `matieres_appreciations_acces` (
 `date` DATE NOT NULL ,
 `acces` ENUM( 'y', 'n', 'date', 'd' ) NOT NULL
 ) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
-$creation_table=mysql_query($sql);
+$creation_table=mysqli_query($GLOBALS["mysqli"], $sql);
 /*
 if(isset($_POST['submit'])) {
 	$max_per=isset($_POST['max_per']) ? $_POST['max_per'] : 0;
@@ -155,7 +155,12 @@ if(isset($_POST['submit'])) {
 }
 */
 
-$javascript_specifique="classes/acces_appreciations";
+$javascript_specifique[]="classes/acces_appreciations";
+
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 
 //include "../lib/periodes.inc.php";
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
@@ -176,8 +181,8 @@ if($_SESSION['statut']=="professeur") {
 	$gepi_prof_suivi=getSettingValue('gepi_prof_suivi');
 
 	$sql="SELECT 1=1 FROM j_eleves_professeurs WHERE professeur='".$_SESSION['login']."';";
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)==0){
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)==0){
 		echo "<p>Vous n'êtes pas ".$gepi_prof_suivi.".<br />Vous ne devriez donc pas accéder à cette page.</p>\n";
 		echo "<p><br /></p>\n";
 		require("../lib/footer.inc.php");
@@ -199,9 +204,9 @@ elseif($_SESSION['statut']=="scolarite") {
 elseif($_SESSION['statut']=="administrateur") {
 	$sql="SELECT DISTINCT c.* FROM classes c ORDER BY c.classe;";
 }
-$res_classe=mysql_query($sql);
+$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
 
-if(mysql_num_rows($res_classe)==0) {
+if(mysqli_num_rows($res_classe)==0) {
 	echo "<p>Vous n'avez accès à aucune classe.</p>\n";
 	echo "<p><br /></p>\n";
 	require("../lib/footer.inc.php");
@@ -241,16 +246,16 @@ if(isset($_POST['choix_date_valider2'])) {
 			$tabdate=explode("/",$choix_date2);
 			$mysql_date=$tabdate[2]."-".$tabdate[1]."-".$tabdate[0];
 	
-			while ($lig=mysql_fetch_object($res_classe)) {
+			while ($lig=mysqli_fetch_object($res_classe)) {
 				$sql2="UPDATE matieres_appreciations_acces SET acces='date', date='$mysql_date' WHERE id_classe='$lig->id' AND periode='$periode2';";
 				//echo "$sql2<br />";
-				$update=mysql_query($sql2);
+				$update=mysqli_query($GLOBALS["mysqli"], $sql2);
 			}
 		}
 	}
 
 	// On refait la requête de liste des classes
-	$res_classe=mysql_query($sql);
+	$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 elseif(isset($_POST['modif_manuelle_periode'])) {
 	check_token(false);
@@ -263,31 +268,31 @@ elseif(isset($_POST['modif_manuelle_periode'])) {
 	if(($acces!='y')&&($acces!='n')) {$acces=NULL;}
 
 	if(($periode!=NULL)&&($acces!=NULL)) {
-		while ($lig=mysql_fetch_object($res_classe)) {
+		while ($lig=mysqli_fetch_object($res_classe)) {
 			$sql2="UPDATE matieres_appreciations_acces SET acces='$acces' WHERE id_classe='$lig->id' AND periode='$periode';";
 			//echo "$sql2<br />";
-			$update=mysql_query($sql2);
+			$update=mysqli_query($GLOBALS["mysqli"], $sql2);
 		}
 	}
 
 	// On refait la requête de liste des classes
-	$res_classe=mysql_query($sql);
+	$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 $tab_classe=array();
 $cpt=0;
 $max_per=0;
-while($lig=mysql_fetch_object($res_classe)){
+while($lig=mysqli_fetch_object($res_classe)){
 
 	$sql="SELECT MAX(num_periode) AS max_per FROM periodes WHERE id_classe='$lig->id';";
-	$res_per=mysql_query($sql);
+	$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if(mysql_num_rows($res_per)!=0) {
+	if(mysqli_num_rows($res_per)!=0) {
 		$tab_classe[$cpt]=array();
 		$tab_classe[$cpt]['id']=$lig->id;
 		$tab_classe[$cpt]['classe']=$lig->classe;
 
-		$lig_per=mysql_fetch_object($res_per);
+		$lig_per=mysqli_fetch_object($res_per);
 		if($lig_per->max_per>$max_per) {$max_per=$lig_per->max_per;}
 
 		$cpt++;
@@ -335,8 +340,10 @@ echo "<li><img src='../images/icons/securite.png' width='16' height='16' alt=\"P
 
 //=============================================
 
+/*
 include("../lib/calendrier/calendrier.class.php");
 $cal = new Calendrier("form", "choix_date");
+*/
 
 $titre="Choix de la date";
 //$texte="<input type='text' name='choix_date' id='choix_date' size='10' value='$display_date'";
@@ -350,7 +357,8 @@ $texte.="<input type='hidden' name='statut' id='choix_date_statut' value='' />\n
 $texte.="<input type='hidden' name='id_classe' id='choix_date_id_classe' value='' />\n";
 $texte.="<input type='hidden' name='periode' id='choix_date_periode' value='' />\n";
 $texte.="<input type='text' name='choix_date' id='choix_date' size='10' value='' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-$texte.="<a href='#calend' onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";document.getElementById('choix_date').checked='true';\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
+//$texte.="<a href='#calend' onClick=\"".$cal->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";document.getElementById('choix_date').checked='true';\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
+$texte.=img_calendrier_js("choix_date", "img_bouton_choix_date");
 $texte.="<br />\n";
 $texte.="<input type='button' name='choix_date_valider' value='Valider' onclick=\"g_date()\" />\n";
 $texte.="</p>\n";
@@ -360,7 +368,7 @@ $tabdiv_infobulle[]=creer_div_infobulle('infobulle_choix_date',$titre,"",$texte,
 
 //=============================================
 
-$cal2 = new Calendrier("form3", "choix_date2");
+//$cal2 = new Calendrier("form3", "choix_date2");
 
 $titre="Choix de la date";
 //$texte="<input type='text' name='choix_date' id='choix_date' size='10' value='$display_date'";
@@ -374,7 +382,8 @@ $texte.="<p align='center'>\n";
 $texte.=add_token_field(true);
 $texte.="<input type='hidden' name='periode2' id='choix_date_periode2' value='' />\n";
 $texte.="<input type='text' name='choix_date2' id='choix_date2' size='10' value='' onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-$texte.="<a href='#calend' onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
+//$texte.="<a href='#calend' onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src='../lib/calendrier/petit_calendrier.gif' alt='Calendrier' border='0' /></a>\n";
+$texte.=img_calendrier_js("choix_date2", "img_bouton_choix_date2");
 $texte.="<br />\n";
 //$texte.="<input type='button' name='choix_date_valider2' value='Valider' onclick=\"g_date()\" />\n";
 $texte.="<input type='submit' name='choix_date_valider2' value='Valider' />\n";
@@ -406,9 +415,9 @@ if($acces_app_ele_resp=='manuel') {
 	echo "<tr>\n";
 	for($i=1;$i<=$max_per;$i++) {
 		$sql="SELECT DISTINCT nom_periode FROM periodes WHERE num_periode='$i';";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==1) {
-			$lig_per=mysql_fetch_object($test);
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==1) {
+			$lig_per=mysqli_fetch_object($test);
 			echo "<th>$lig_per->nom_periode</th>\n";
 		}
 		else{
@@ -463,8 +472,8 @@ if($acces_app_ele_resp=='manuel') {
 					//$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='$tab_statut[$k]';";
 					$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='eleve';";
 					//echo "$sql<br />\n";
-					$res=mysql_query($sql);
-					if(mysql_num_rows($res)==0) {
+					$res=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res)==0) {
 						$mode="manuel";
 						$accessible="n";
 
@@ -472,20 +481,20 @@ if($acces_app_ele_resp=='manuel') {
 						// On synchronise aussi pour les responsables
 						$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 						//echo "$sql<br />\n";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==0) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==0) {
 							$sql="INSERT INTO matieres_appreciations_acces SET acces='$accessible', id_classe='$id_classe', periode='$i', statut='responsable';";
 							//echo "$sql<br />\n";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 						else {
 							$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 							//echo "$sql<br />\n";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 					}
 					else {
-						$lig=mysql_fetch_object($res);
+						$lig=mysqli_fetch_object($res);
 
 						if($lig->acces=="date") {
 							$mode="date";
@@ -504,22 +513,22 @@ if($acces_app_ele_resp=='manuel') {
 							// On force la valeur en mode 'manuel'
 							$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i';";
 							//echo "$sql<br />\n";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 							//echo "$sql<br />\n";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='$accessible', id_classe='$id_classe', periode='$i', statut='responsable';";
 								//echo "$sql<br />\n";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 								//echo "$sql<br />\n";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 						}
 						elseif($lig->acces=="d") {
@@ -546,22 +555,22 @@ if($acces_app_ele_resp=='manuel') {
 							// On force la valeur en mode 'manuel'
 							$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i';";
 							//echo "$sql<br />\n";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 							//echo "$sql<br />\n";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='$accessible', id_classe='$id_classe', periode='$i', statut='responsable';";
 								//echo "$sql<br />\n";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 								//echo "$sql<br />\n";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 
 						}
@@ -572,16 +581,16 @@ if($acces_app_ele_resp=='manuel') {
 							// On synchronise pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 							//echo "$sql<br />\n";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='$accessible', id_classe='$id_classe', periode='$i', statut='responsable';";
 								//echo "$sql<br />\n";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='$accessible' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
 								//echo "$sql<br />\n";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 						}
 					}
@@ -657,9 +666,9 @@ elseif($acces_app_ele_resp=='date') {
 	echo "<tr>\n";
 	for($i=1;$i<=$max_per;$i++) {
 		$sql="SELECT DISTINCT nom_periode FROM periodes WHERE num_periode='$i';";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==1) {
-			$lig_per=mysql_fetch_object($test);
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==1) {
+			$lig_per=mysqli_fetch_object($test);
 			echo "<th>$lig_per->nom_periode</th>\n";
 		}
 		else{
@@ -703,8 +712,8 @@ elseif($acces_app_ele_resp=='date') {
 					// Avec le nouveau dispositif, on ne distingue pas élève et responsable
 					//$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='$tab_statut[$k]';";
 					$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='eleve';";
-					$res=mysql_query($sql);
-					if(mysql_num_rows($res)==0) {
+					$res=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res)==0) {
 						// Initialisation
 						$mode="date";
 						$accessible="n";
@@ -719,25 +728,25 @@ elseif($acces_app_ele_resp=='date') {
 
 						// On force la valeur en mode 'date' (pour eleve et responsable)
 						$sql="INSERT INTO matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour', id_classe='$id_classe', periode='$i', statut='eleve';";
-						$insert=mysql_query($sql);
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 
 						// On synchronise aussi pour les responsables
 						$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==0) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==0) {
 							$sql="INSERT INTO matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour', id_classe='$id_classe', periode='$i', statut='responsable';";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 						else {
 							$sql="UPDATE matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 
 						$display_date="$tmp_jour/$tmp_mois/$tmp_annee";
 						$chaine_debug.="1 \$display_date=$display_date<br />";
 					}
 					else {
-						$lig=mysql_fetch_object($res);
+						$lig=mysqli_fetch_object($res);
 
 						$chaine_debug.="\$lig->acces=$lig->acces<br />";
 
@@ -803,18 +812,18 @@ elseif($acces_app_ele_resp=='date') {
 
 							// On force la valeur en mode 'date'
 							$sql="UPDATE matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour' WHERE id_classe='$id_classe' AND periode='$i';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour', id_classe='$id_classe', periode='$i', statut='responsable';";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 
 							$chaine_debug.="2 \$display_date=$display_date<br />";
@@ -841,18 +850,18 @@ elseif($acces_app_ele_resp=='date') {
 
 							// On force la valeur en mode 'date'
 							$sql="UPDATE matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour' WHERE id_classe='$id_classe' AND periode='$i';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour', id_classe='$id_classe', periode='$i', statut='responsable';";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='date', date='$tmp_annee-$tmp_mois-$tmp_jour' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 
 							$display_date="$tmp_jour/$tmp_mois/$tmp_annee";
@@ -911,9 +920,9 @@ elseif($acces_app_ele_resp=='periode_close') {
 	echo "<tr>\n";
 	for($i=1;$i<=$max_per;$i++) {
 		$sql="SELECT DISTINCT nom_periode FROM periodes WHERE num_periode='$i';";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==1) {
-			$lig_per=mysql_fetch_object($test);
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==1) {
+			$lig_per=mysqli_fetch_object($test);
 			echo "<th>$lig_per->nom_periode</th>\n";
 		}
 		else{
@@ -964,8 +973,8 @@ elseif($acces_app_ele_resp=='periode_close') {
 					//$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='$tab_statut[$k]';";
 					$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='eleve';";
 					$chaine_debug.="$sql<br />";
-					$res=mysql_query($sql);
-					if(mysql_num_rows($res)==0) {
+					$res=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res)==0) {
 						// Initialisation
 						$mode="d";
 
@@ -989,22 +998,22 @@ elseif($acces_app_ele_resp=='periode_close') {
 
 						// On force la valeur en mode 'date' (pour eleve et responsable)
 						$sql="INSERT INTO matieres_appreciations_acces SET acces='d', id_classe='$id_classe', periode='$i', statut='eleve';";
-						$insert=mysql_query($sql);
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 
 						// On synchronise aussi pour les responsables
 						$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==0) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==0) {
 							$sql="INSERT INTO matieres_appreciations_acces SET acces='d', id_classe='$id_classe', periode='$i', statut='responsable';";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 						else {
 							$sql="UPDATE matieres_appreciations_acces SET acces='d' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 					}
 					else {
-						$lig=mysql_fetch_object($res);
+						$lig=mysqli_fetch_object($res);
 
 						$chaine_debug.="\$lig->acces=$lig->acces<br />";
 
@@ -1031,14 +1040,14 @@ elseif($acces_app_ele_resp=='periode_close') {
 
 							// On force la valeur en mode 'd' soit 'periode_close' pour eleve et responsable
 							$sql="UPDATE matieres_appreciations_acces SET acces='d' WHERE id_classe='$id_classe' AND periode='$i';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='d', id_classe='$id_classe', periode='$i', statut='responsable';";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							/*
 							else {
@@ -1076,14 +1085,14 @@ elseif($acces_app_ele_resp=='periode_close') {
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='d', id_classe='$id_classe', periode='$i', statut='responsable';";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							else {
 								$sql="UPDATE matieres_appreciations_acces SET acces='d' WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 
 						}
@@ -1111,14 +1120,14 @@ elseif($acces_app_ele_resp=='periode_close') {
 
 							// On force la valeur en mode 'd' soit 'periode_close' pour eleve et responsable
 							$sql="UPDATE matieres_appreciations_acces SET acces='d' WHERE id_classe='$id_classe' AND periode='$i';";
-							$update=mysql_query($sql);
+							$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							// On synchronise aussi pour les responsables
 							$sql="SELECT * FROM matieres_appreciations_acces WHERE id_classe='$id_classe' AND periode='$i' AND statut='responsable';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)==0) {
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)==0) {
 								$sql="INSERT INTO matieres_appreciations_acces SET acces='d', id_classe='$id_classe', periode='$i', statut='responsable';";
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							}
 							/*
 							else {
@@ -1132,7 +1141,7 @@ elseif($acces_app_ele_resp=='periode_close') {
 						// On force la valeur en mode 'd' soit 'periode_close' pour eleve et responsable
 						$sql="UPDATE matieres_appreciations_acces SET acces='d' WHERE id_classe='$id_classe' AND periode='$i';";
 						$chaine_debug.="$sql<br />";
-						$update=mysql_query($sql);
+						$update=mysqli_query($GLOBALS["mysqli"], $sql);
 
 					}
 
@@ -1197,7 +1206,7 @@ elseif($acces_app_ele_resp=='periode_close') {
 }
 
 if($_SESSION['statut']=="administrateur") {
-	echo "Le mode d'accès aux appréciatons (<i>manuel/date/période close</i>) ainsi que le délais après clôture de période se paramètrent en administrateur dans <a href='../gestion/param_gen.php#delais_apres_cloture'>Gestion générale/Configuration générale</a>";
+	echo "Le mode d'accès aux appréciations (<i>manuel/date/période close</i>) ainsi que le délai après clôture de période se paramètrent en administrateur dans <a href='../gestion/param_gen.php#delais_apres_cloture'>Gestion générale/Configuration générale</a>";
 }
 
 echo "<p><br /></p>\n";

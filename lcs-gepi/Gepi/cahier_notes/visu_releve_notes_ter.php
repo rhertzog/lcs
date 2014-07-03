@@ -36,16 +36,22 @@ if ($resultat_session == 'c') {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/cahier_notes/visu_releve_notes_ter.php';";
-$res_test=mysql_query($sql);
-if (mysql_num_rows($res_test)==0) {
+$res_test=mysqli_query($GLOBALS["mysqli"], $sql);
+if (mysqli_num_rows($res_test)==0) {
 	$sql="INSERT INTO droits VALUES ('/cahier_notes/visu_releve_notes_ter.php', 'F', 'F', 'F', 'F', 'V', 'V', 'F','F', 'Relevé de notes : accès parents et élèves', '1');";
-	$res_insert=mysql_query($sql);
+	$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+$nom_cc=getSettingValue('nom_cc');
+if($nom_cc=='') {
+	$nom_cc="evaluation-cumul";
+}
+
 /*
 if(($_SESSION['statut']=='autre')&&(!acces("/cahier_notes/visu_releve_notes_ter.php", $_SESSION['statut']))) {
 	header("Location: ../accueil.php?msg=Acces_non_autorise");
@@ -62,6 +68,7 @@ $id_classe=isset($_POST['id_classe']) ? $_POST['id_classe'] : (isset($_GET['id_c
 $num_periode=isset($_POST['num_periode']) ? $_POST['num_periode'] : (isset($_GET['num_periode']) ? $_GET['num_periode'] : NULL);
 $ele_login=isset($_POST['ele_login']) ? $_POST['ele_login'] : (isset($_GET['ele_login']) ? $_GET['ele_login'] : NULL);
 
+// On force le mode HTML pour l'accès parents/élève
 $mode_bulletin="html";
 
 //====================================================
@@ -113,6 +120,22 @@ echo "<p class='bold'>";
 echo "<a href='../accueil.php'>Retour à l'accueil</a>";
 echo " | <a href='visu_releve_notes_bis.php' title=\"Par opposition à l'interface simplifiée propsoée ici.\">Interface classique</a>";
 
+// l'élève a-t-il des évaluations cumules
+
+if ($ele_login) {
+    $mysqli = new mysqli($dbHost, $dbUser, $dbPass, $dbDb);
+/* Modification du jeu de résultats en utf8 */
+    if (!$mysqli->set_charset("utf8")) {
+        printf("Erreur lors du chargement du jeu de caractères utf8 : %s\n", $mysqli->error);
+    }
+    
+    $result = $mysqli->query("SELECT 1=1 FROM `cc_notes_eval` WHERE login ='".$ele_login."'");
+    if ($result->num_rows) {
+        echo " | <a href='visu_cc_elv.php' title=\"\">$nom_cc</a>";
+    }
+}
+
+
 if($_SESSION['statut']=='eleve') {
 	echo "</p>\n";
 
@@ -125,28 +148,28 @@ if($_SESSION['statut']=='eleve') {
 	}
 
 	$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (jec.id_classe=c.id AND jec.login='".$_SESSION['login']."');";
-	$test_ele_clas=mysql_query($sql);
-	if(mysql_num_rows($test_ele_clas)==0) {
+	$test_ele_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_ele_clas)==0) {
 		echo "<p>Vous n'êtes pas affecté dans une classe et donc pas autorisé à accéder aux relevés de notes.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
 	echo "<p>Pour quelle période souhaitez-vous afficher vos notes&nbsp;?</p>\n";
-	while ($lig_clas=mysql_fetch_object($test_ele_clas)) {
-		if(mysql_num_rows($test_ele_clas)==1) {
+	while ($lig_clas=mysqli_fetch_object($test_ele_clas)) {
+		if(mysqli_num_rows($test_ele_clas)==1) {
 			$id_classe=$lig_clas->id;
 		}
 
 		echo "<p><strong>$lig_clas->classe (<em>$lig_clas->nom_complet</em>)&nbsp;:</strong> ";
 		$sql="SELECT * FROM periodes WHERE id_classe='".$lig_clas->id."' ORDER BY num_periode;";
-		$res_per=mysql_query($sql);
-		if(mysql_num_rows($res_per)==0) {
+		$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_per)==0) {
 			echo " <span style='color:red'>Aucune période???</span>";
 		}
 		else {
 			$cpt_per=0;
-			while($lig_per=mysql_fetch_object($res_per)) {
+			while($lig_per=mysqli_fetch_object($res_per)) {
 				if($cpt_per>0) {echo " - ";}
 				echo "<a href='".$_SERVER['PHP_SELF']."?id_classe=".$lig_clas->id."&amp;num_periode=".$lig_per->num_periode."&amp;mode_bulletin=html'>$lig_per->nom_periode</a>";
 				$cpt_per++;
@@ -183,8 +206,8 @@ elseif($_SESSION['statut']=='responsable') {
 					r.resp_legal='0' AND r.acces_sp='y' AND jec.login=e.login) ORDER BY e.naissance)";
 	}
 	$sql.=";";
-	$res_ele=mysql_query($sql);
-	if(mysql_num_rows($res_ele)==0) {
+	$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_ele)==0) {
 		echo "</p>\n";
 		echo "<p style='color:red'>Vous n'êtes responsable d'aucun élève???</p>\n";
 		require("../lib/footer.inc.php");
@@ -194,7 +217,7 @@ elseif($_SESSION['statut']=='responsable') {
 	$tab_ele=array();
 	$tab_login=array();
 	$cpt_ele=0;
-	while($lig_ele=mysql_fetch_object($res_ele)) {
+	while($lig_ele=mysqli_fetch_object($res_ele)) {
 		$tab_ele[$cpt_ele]['login']=$lig_ele->login;
 		$tab_ele[$cpt_ele]['nom_prenom']=casse_mot($lig_ele->nom, 'maj')." ".casse_mot($lig_ele->prenom, 'majf2');
 		$tab_login[]=$lig_ele->login;
@@ -238,28 +261,28 @@ elseif($_SESSION['statut']=='responsable') {
 
 		// Liste des classes/périodes
 		$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (jec.id_classe=c.id AND jec.login='".$ele_login."');";
-		$test_ele_clas=mysql_query($sql);
-		if(mysql_num_rows($test_ele_clas)==0) {
+		$test_ele_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_ele_clas)==0) {
 			echo "<p>".$tab_ele[$indice_eleve_courant]['nom_prenom']." n'est affecté dans aucune classe???</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 
 		echo "<p>Pour quelle période souhaitez-vous afficher les notes&nbsp;?</p>\n";
-		while ($lig_clas=mysql_fetch_object($test_ele_clas)) {
-			if(mysql_num_rows($test_ele_clas)==1) {
+		while ($lig_clas=mysqli_fetch_object($test_ele_clas)) {
+			if(mysqli_num_rows($test_ele_clas)==1) {
 				$id_classe=$lig_clas->id;
 			}
 
 			echo "<p><strong>$lig_clas->classe (<em>$lig_clas->nom_complet</em>)&nbsp;:</strong> ";
 			$sql="SELECT * FROM periodes WHERE id_classe='".$lig_clas->id."' ORDER BY num_periode;";
-			$res_per=mysql_query($sql);
-			if(mysql_num_rows($res_per)==0) {
+			$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_per)==0) {
 				echo " <span style='color:red'>Aucune période???</span>";
 			}
 			else {
 				$cpt_per=0;
-				while($lig_per=mysql_fetch_object($res_per)) {
+				while($lig_per=mysqli_fetch_object($res_per)) {
 					if($cpt_per>0) {echo " - ";}
 					echo "<a href='".$_SERVER['PHP_SELF']."?ele_login=$ele_login&amp;id_classe=".$lig_clas->id."&amp;num_periode=".$lig_per->num_periode."&amp;mode_bulletin=html'>$lig_per->nom_periode</a>";
 					$cpt_per++;

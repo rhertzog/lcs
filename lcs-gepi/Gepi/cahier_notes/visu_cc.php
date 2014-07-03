@@ -68,10 +68,10 @@ if (!(Verif_prof_cahier_notes ($_SESSION['login'],$id_racine))) {
     die();
 }
 
-$appel_cahier_notes=mysql_query("SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
-$id_groupe=mysql_result($appel_cahier_notes, 0, 'id_groupe');
+$appel_cahier_notes=mysqli_query($GLOBALS["mysqli"], "SELECT * FROM cn_cahier_notes WHERE id_cahier_notes ='$id_racine'");
+$id_groupe=old_mysql_result($appel_cahier_notes, 0, 'id_groupe');
 $current_group=get_group($id_groupe);
-$periode_num=mysql_result($appel_cahier_notes, 0, 'periode');
+$periode_num=old_mysql_result($appel_cahier_notes, 0, 'periode');
 include "../lib/periodes.inc.php";
 
 unset($id_dev);
@@ -83,13 +83,13 @@ if(!isset($id_dev)) {
 }
 
 $sql="SELECT * FROM cc_dev WHERE id='$id_dev' AND id_groupe='$id_groupe';";
-$query=mysql_query($sql);
-if(mysql_num_rows($query)>0) {
-	$id_cn_dev=mysql_result($query, 0, 'id_cn_dev');
-	$nom_court_dev=mysql_result($query, 0, 'nom_court');
-	$nom_complet_dev=mysql_result($query, 0, 'nom_complet');
-	$description_dev=mysql_result($query, 0, 'description');
-	$precision=mysql_result($query, 0, 'arrondir');
+$query=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($query)>0) {
+	$id_cn_dev=old_mysql_result($query, 0, 'id_cn_dev');
+	$nom_court_dev=old_mysql_result($query, 0, 'nom_court');
+	$nom_complet_dev=old_mysql_result($query, 0, 'nom_complet');
+	$description_dev=old_mysql_result($query, 0, 'description');
+	$precision=old_mysql_result($query, 0, 'arrondir');
 }
 else {
 	header("Location: index.php?msg=".rawurlencode("Le numéro de devoir n est pas associé à ce groupe."));
@@ -109,8 +109,8 @@ if(isset($_GET['export_csv'])) {
 
 	$sql="SELECT * FROM cc_eval WHERE id_dev='$id_dev' ORDER BY date, nom_court, nom_complet;";
 	//echo "$sql<br />";
-	$res_eval=mysql_query($sql);
-	if(mysql_num_rows($res_eval)==0) {
+	$res_eval=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_eval)==0) {
 		$msg="Aucune évaluation n'est associée au $nom_cc n°$id_dev<br />";
 	}
 	else {
@@ -123,7 +123,7 @@ if(isset($_GET['export_csv'])) {
 		$ligne3="INFO_EV;NOTE_SUR_EVAL;;;;";
 		$ligne4="INFO_EV;LOGIN;NOM;PRENOM;CLASSE;";
 
-		while($lig_eval=mysql_fetch_object($res_eval)) {
+		while($lig_eval=mysqli_fetch_object($res_eval)) {
 			$csv.="INFO_EVAL;$lig_eval->id;$lig_eval->nom_court;$lig_eval->nom_complet;".formate_date($lig_eval->date).";$lig_eval->note_sur;".";\r\n";
 
 			$ligne1.=$lig_eval->nom_court.";";
@@ -136,17 +136,17 @@ if(isset($_GET['export_csv'])) {
 
 			$sql="SELECT cc.* FROM cc_notes_eval cc WHERE cc.id_eval='$lig_eval->id' ORDER BY cc.login;";
 			//echo "$sql<br />";
-			$res_en=mysql_query($sql);
-			if(mysql_num_rows($res_en)>0) {
-				while($lig_en=mysql_fetch_object($res_en)) {
+			$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_en)>0) {
+				while($lig_en=mysqli_fetch_object($res_en)) {
 
 					//if(!in_array($lig_en->login,$tab_ele)) {
 					if(!isset($tab_ele[$lig_en->login])) {
 						$sql="SELECT c.classe, e.nom, e.prenom FROM classes c, eleves e, j_eleves_classes jec WHERE e.login=jec.login AND jec.id_classe=c.id AND jec.periode='$periode_num' AND e.login='$lig_en->login';";
 						//echo "$sql<br />";
-						$res_ele=mysql_query($sql);
-						if(mysql_num_rows($res_ele)>0) {
-							$lig_ele=mysql_fetch_object($res_ele);
+						$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_ele)>0) {
+							$lig_ele=mysqli_fetch_object($res_ele);
 							$tab_ele[$lig_en->login]['classe']=$lig_ele->classe;
 							$tab_ele[$lig_en->login]['nom']=$lig_ele->nom;
 							$tab_ele[$lig_en->login]['prenom']=$lig_ele->prenom;
@@ -236,8 +236,8 @@ if(isset($_GET['export_pdf'])) {
 
 	$sql="SELECT * FROM cc_eval WHERE id_dev='$id_dev' ORDER BY date, nom_court, nom_complet;";
 	//echo "$sql<br />";
-	$res_eval=mysql_query($sql);
-	if(mysql_num_rows($res_eval)==0) {
+	$res_eval=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_eval)==0) {
 		$msg="Aucune évaluation n'est associée au $nom_cc n°$id_dev<br />";
 	}
 	else {
@@ -249,7 +249,7 @@ if(isset($_GET['export_pdf'])) {
 		$tab_eval=array();
 		$tab_ele=array();
 
-		while($lig_eval=mysql_fetch_object($res_eval)) {
+		while($lig_eval=mysqli_fetch_object($res_eval)) {
 			$tab_eval[$cpt]['nom_court']=$lig_eval->nom_court;
 			$tab_eval[$cpt]['nom_complet']=$lig_eval->nom_complet;
 			$tab_eval[$cpt]['date']=formate_date($lig_eval->date);
@@ -258,17 +258,17 @@ if(isset($_GET['export_pdf'])) {
 
 			$sql="SELECT cc.* FROM cc_notes_eval cc WHERE cc.id_eval='$lig_eval->id' ORDER BY cc.login;";
 			//echo "$sql<br />";
-			$res_en=mysql_query($sql);
-			if(mysql_num_rows($res_en)>0) {
-				while($lig_en=mysql_fetch_object($res_en)) {
+			$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_en)>0) {
+				while($lig_en=mysqli_fetch_object($res_en)) {
 
 					//if(!in_array($lig_en->login,$tab_ele)) {
 					if(!isset($tab_ele[$lig_en->login])) {
 						$sql="SELECT c.classe, e.nom, e.prenom FROM classes c, eleves e, j_eleves_classes jec WHERE e.login=jec.login AND jec.id_classe=c.id AND jec.periode='$periode_num' AND e.login='$lig_en->login';";
 						//echo "$sql<br />";
-						$res_ele=mysql_query($sql);
-						if(mysql_num_rows($res_ele)>0) {
-							$lig_ele=mysql_fetch_object($res_ele);
+						$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_ele)>0) {
+							$lig_ele=mysqli_fetch_object($res_ele);
 							$tab_ele[$lig_en->login]['classe']=$lig_ele->classe;
 							$tab_ele[$lig_en->login]['nom']=$lig_ele->nom;
 							$tab_ele[$lig_en->login]['prenom']=$lig_ele->prenom;
@@ -581,6 +581,304 @@ if(isset($_GET['export_pdf'])) {
 	}
 }
 
+if(isset($_GET['export_pdf2'])) {
+
+	define('TopMargin','15');
+	define('RightMargin','15');
+	define('LeftMargin','15');
+	define('BottomMargin','15');
+	define('LargeurPage','210');
+
+	require_once('../fpdf/fpdf.php');
+	require_once('../fpdf/ex_fpdf.php');
+
+	$pdf=new Ex_FPDF("P","mm","A4");
+	$pdf->SetTopMargin(TopMargin);
+	$pdf->SetRightMargin(RightMargin);
+	$pdf->SetLeftMargin(LeftMargin);
+	$pdf->SetAutoPageBreak(true, BottomMargin);
+	// Couleur des traits
+	$pdf->SetDrawColor(0,0,0);
+
+	// Pour les tests : permet de voir les bords des cadres
+	$bord = 0;
+	// on appelle une nouvelle page pdf
+	$pdf->AddPage("P");
+	$pdf->SetFontSize(10);
+
+	$titre=$nom_court_dev." : ".$nom_complet_dev;
+
+	//Positionnement du titre
+	$w=$pdf->GetStringWidth($titre)+6;
+	$pdf->SetX((LargeurPage-$w)/2);
+	//Couleurs du cadre, du fond et du texte
+	$pdf->SetDrawColor(0,0,0);
+	$pdf->SetFillColor(255,255,255);
+	$pdf->SetTextColor(0,0,0);
+	//Titre centré
+	$pdf->Cell($w,9,$titre,$bord,1,'C',0);
+	//Saut de ligne
+
+	//Initialisation pour le pdf
+	$w_pdf=array();
+	$w1 = "i"; //largeur de la première colonne
+	$w1b = "d"; //largeur de la colonne "classe" si présente
+	$w2 = "n"; // largeur des colonnes "notes"
+	$w3 = "c"; // largeur des colonnes "commentaires"
+
+	$header_pdf=array();
+	$data_pdf=array();
+
+	$sql="SELECT * FROM cc_eval WHERE id_dev='$id_dev' ORDER BY date, nom_court, nom_complet;";
+	//echo "$sql<br />";
+	$res_eval=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_eval)==0) {
+		$msg="Aucune évaluation n'est associée au $nom_cc n°$id_dev<br />";
+	}
+	else {
+
+		$w_pdf[] = $w1;
+		$header_pdf[] = "Evaluation : ";
+
+		//$w_pdf[] = $w1b;
+		$w_pdf[] = $w1;
+		$header_pdf[] = "Classe";
+
+		$cpt=0;
+		$tab_eval=array();
+		$tab_ele=array();
+
+		while($lig_eval=mysqli_fetch_object($res_eval)) {
+			$w_pdf[] = $w2;
+			$header_pdf[] = ($lig_eval->nom_court." (".formate_date($lig_eval->date).")");
+
+			$tab_eval[$cpt]['id_eval']=$lig_eval->id;
+			$tab_eval[$cpt]['note_sur']=$lig_eval->note_sur;
+
+			$cpt++;
+		}
+
+		$w_pdf[] = $w2;
+		$header_pdf[] = "Total";
+
+		$w_pdf[] = $w2;
+		$header_pdf[] = "Sur_total";
+
+		$w_pdf[] = $w2;
+		$header_pdf[] = "Moyenne";
+
+		//========================================
+		$data_pdf[0][] = ("Nom Prénom /Note sur");
+		$data_pdf[0][] = "";
+		for($loop=0;$loop<count($tab_eval);$loop++) {
+			$data_pdf[0][] = $tab_eval[$loop]['note_sur'];
+		}
+		$data_pdf[0][] = "";
+		$data_pdf[0][] = "";
+		$data_pdf[0][] = "";
+		//========================================
+
+		$tab_tot=array();
+		$total_tot=0;
+		$tab_moy=array();
+		$total_moy=0;
+		$nb_moy=0;
+
+		$num_ligne=1;
+		$sql="SELECT DISTINCT e.login, e.nom, e.prenom FROM eleves e, cc_eval cce, cc_notes_eval ccne WHERE cce.id_dev='$id_dev' AND cce.id=ccne.id_eval AND ccne.login=e.login ORDER BY e.nom, e.prenom;";
+		//echo "$sql<br />";
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ele)>0) {
+			while($lig=mysqli_fetch_object($res_ele)) {
+
+				$total_ele=0;
+				$total_sur=0;
+
+				$data_pdf[$num_ligne][] = $lig->nom." ".$lig->prenom;
+
+				$sql="SELECT c.classe FROM j_eleves_classes jec, classes c WHERE jec.id_classe=c.id AND jec.login='$lig->login' ORDER BY periode DESC LIMIT 1;";
+				$res_class=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_class)==0) {
+					$data_pdf[$num_ligne][] = "???";
+				}
+				else {
+					$lig_class=mysqli_fetch_object($res_class);
+					$data_pdf[$num_ligne][] = $lig_class->classe;
+				}
+
+				for($loop=0;$loop<count($tab_eval);$loop++) {
+
+					$sql="SELECT cc.* FROM cc_notes_eval cc WHERE cc.id_eval='".$tab_eval[$loop]['id_eval']."' AND login='$lig->login';";
+					//echo "$sql<br />";
+					$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_en)>0) {
+						$lig_en=mysqli_fetch_object($res_en);
+
+						if($lig_en->statut=='v') {
+							$data_pdf[$num_ligne][]="";
+						}
+						elseif($lig_en->statut!='') {
+							$data_pdf[$num_ligne][]=$lig_en->statut;
+						}
+						else {
+							$data_pdf[$num_ligne][]=strtr($lig_en->note,'.',',');
+							$total_ele+=$lig_en->note;
+							$total_sur+=$tab_eval[$loop]['note_sur'];
+						}
+					}
+					else {
+						// Ca ne devrait pas arriver... sauf élève arrivé en cours d'année et en cours d'éval-cumul.
+						$data_pdf[$num_ligne][]="";
+					}
+				}
+
+				if($total_sur==0) {
+					$data_pdf[$num_ligne][] = "-";
+					$data_pdf[$num_ligne][] = "-";
+					$data_pdf[$num_ligne][] = "-";
+				}
+				else {
+					$data_pdf[$num_ligne][] = strtr($total_ele,'.',',');
+					$data_pdf[$num_ligne][] = strtr($total_sur,'.',',');
+
+					$moy=precision_arrondi(20*$total_ele/$total_sur,$precision);
+					$data_pdf[$num_ligne][] = strtr($moy,'.',',');
+
+					$total_tot+=$total_ele;
+					$tab_tot[]=$total_ele;
+
+					$total_moy+=$moy;
+					$tab_moy[]=$moy;
+
+					$nb_moy++;
+				}
+				$num_ligne++;
+			}
+
+
+			$data_pdf[$num_ligne][] = "Moyennes";
+			$data_pdf[$num_ligne][] = "";
+
+			for($loop=0;$loop<count($tab_eval);$loop++) {
+				$sql="SELECT round(avg(cc.note),1) as moyenne FROM cc_notes_eval cc WHERE cc.id_eval='".$tab_eval[$loop]['id_eval']."' AND statut='';";
+				$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_en)>0) {
+					$lig_en=mysqli_fetch_object($res_en);
+					$data_pdf[$num_ligne][]=$lig_en->moyenne;
+				}
+				else {
+					$data_pdf[$num_ligne][]="";
+				}
+			}
+
+			if($nb_moy==0) {
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+			}
+			else {
+				$moy=precision_arrondi($total_tot/$nb_moy,$precision);
+				$data_pdf[$num_ligne][] = $moy;
+
+				$data_pdf[$num_ligne][] = "";
+
+				$moy=precision_arrondi($total_moy/$nb_moy,$precision);
+				$data_pdf[$num_ligne][] = $moy;
+			}
+			$num_ligne++;
+
+			//==========================================
+
+			$data_pdf[$num_ligne][] = "Min.:";
+			$data_pdf[$num_ligne][] = "";
+
+			for($loop=0;$loop<count($tab_eval);$loop++) {
+				$sql="SELECT min(cc.note) as min FROM cc_notes_eval cc WHERE cc.id_eval='".$tab_eval[$loop]['id_eval']."' AND statut='';";
+				$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_en)>0) {
+					$lig_en=mysqli_fetch_object($res_en);
+					$data_pdf[$num_ligne][]=$lig_en->min;
+				}
+				else {
+					$data_pdf[$num_ligne][]="";
+				}
+			}
+
+			if($nb_moy==0) {
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+			}
+			else {
+				$data_pdf[$num_ligne][] = min($tab_tot);
+
+				$data_pdf[$num_ligne][] = "";
+
+				$data_pdf[$num_ligne][] = min($tab_moy);
+			}
+			$num_ligne++;
+
+			//==========================================
+
+			$data_pdf[$num_ligne][] = "Max.:";
+			$data_pdf[$num_ligne][] = "";
+
+			for($loop=0;$loop<count($tab_eval);$loop++) {
+				$sql="SELECT max(cc.note) as max FROM cc_notes_eval cc WHERE cc.id_eval='".$tab_eval[$loop]['id_eval']."' AND statut='';";
+				$res_en=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_en)>0) {
+					$lig_en=mysqli_fetch_object($res_en);
+					$data_pdf[$num_ligne][]=$lig_en->max;
+				}
+				else {
+					$data_pdf[$num_ligne][]="";
+				}
+			}
+			if($nb_moy==0) {
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+				$data_pdf[$num_ligne][] = "";
+			}
+			else {
+				$data_pdf[$num_ligne][] = max($tab_tot);
+
+				$data_pdf[$num_ligne][] = "";
+
+				$data_pdf[$num_ligne][] = max($tab_moy);
+			}
+			$num_ligne++;
+
+
+			/*
+			echo "\$header_pdf<pre>";
+			print_r($header_pdf);
+			echo "</pre><hr />";
+			echo "\$header_pdf<pre>";
+			print_r($w_pdf);
+			echo "</pre><hr />";
+			echo "\$header_pdf<pre>";
+			print_r($data_pdf);
+			echo "</pre><hr />";
+			*/
+
+			$pdf->SetFont('DejaVu','',8);
+			$pdf->FancyTable($w_pdf,$header_pdf,$data_pdf,"v","R");
+
+			$pref_output_mode_pdf=get_output_mode_pdf();
+
+			$date=date("Ymd_Hi");
+			$nom_fich='evaluation_cumul_'.$id_dev.'_'.$date.'.pdf';
+			send_file_download_headers('application/pdf',$nom_fich);
+			$pdf->Output($nom_fich,$pref_output_mode_pdf);
+			die();
+
+		}
+		else {
+			$msg="Aucun élève.";
+		}
+
+	}
+}
 //$message_enregistrement = "Les modifications ont été enregistrées !";
 //$themessage  = 'Des notes ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
@@ -601,6 +899,7 @@ echo "<p id='LiensSousBandeau' class='bold'>\n";
 echo "<a href=\"index_cc.php?id_racine=$id_racine\" onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour </a>";
 echo " | Export <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;export_csv=y'>CSV</a>";
 echo " | Export <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;export_pdf=y'>PDF</a>";
+echo " | Export <a href='".$_SERVER['PHP_SELF']."?id_racine=$id_racine&amp;id_dev=$id_dev&amp;export_pdf2=y'>PDF (2)</a>";
 //echo "|";
 echo "</p>\n";
 
@@ -608,10 +907,10 @@ echo "<h2 class='noprint'>$nom_cc n°$id_dev&nbsp;: $nom_court_dev (<i>$nom_comp
 
 $cc_eval=array();
 $sql="SELECT * FROM cc_eval WHERE id_dev='$id_dev' ORDER BY date, nom_court;";
-$res2=mysql_query($sql);
-if(mysql_num_rows($res2)>0) {
+$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res2)>0) {
 	$i=0;
-	while($lig2=mysql_fetch_object($res2)) {
+	while($lig2=mysqli_fetch_object($res2)) {
 		$cc_eval[$i]=array();
 		$cc_eval[$i]['nom_court']=$lig2->nom_court;
 		$cc_eval[$i]['nom_complet']=$lig2->nom_court;
@@ -620,9 +919,9 @@ if(mysql_num_rows($res2)>0) {
 		$cc_eval[$i]['date']=formate_date($lig2->date);
 
 		$sql="SELECT * FROM cc_notes_eval WHERE id_eval='$lig2->id' ORDER BY login;";
-		$res_note=mysql_query($sql);
-		if(mysql_num_rows($res_note)>0) {
-			while($lig_note=mysql_fetch_object($res_note)) {
+		$res_note=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_note)>0) {
+			while($lig_note=mysqli_fetch_object($res_note)) {
 				if($lig_note->statut=='v') {
 					$cc_eval[$i]['note'][$lig_note->login]='';
 				}

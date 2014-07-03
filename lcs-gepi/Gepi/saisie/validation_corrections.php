@@ -88,7 +88,7 @@ if(isset($_POST['action_corrections'])) {
 
 						if($action[$i]=='supprimer') {
 							$sql="DELETE FROM matieres_app_corrections WHERE (login='' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
-							$del=mysql_query($sql);
+							$del=mysqli_query($GLOBALS["mysqli"], $sql);
 							if($del) {
 								$msg.="Suppression de l'enregistrement temporaire $enregistrement[$i].<br />";
 								//$nb_reg++;
@@ -104,13 +104,13 @@ if(isset($_POST['action_corrections'])) {
 						elseif($action[$i]=='valider') {
 							//$sql="UPDATE matieres_appreciations SET appreciation='$app' WHERE (login='$current_login_ele' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
 							$sql="DELETE FROM matieres_appreciations_grp WHERE (id_groupe='$current_id_groupe' AND periode='$current_periode');";
-							$menage=mysql_query($sql);
+							$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 	
 							$sql="INSERT INTO matieres_appreciations_grp SET id_groupe='$current_id_groupe', periode='$current_periode', appreciation='$app';";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							if($insert) {
 								$sql="DELETE FROM matieres_app_corrections WHERE (login='' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
-								$del=mysql_query($sql);
+								$del=mysqli_query($GLOBALS["mysqli"], $sql);
 								if($del) {
 									$nb_reg++;
 									$msg.="Suppression de l'enregistrement temporaire $enregistrement[$i].<br />";
@@ -162,7 +162,7 @@ if(isset($_POST['action_corrections'])) {
 	
 						if($action[$i]=='supprimer') {
 							$sql="DELETE FROM matieres_app_corrections WHERE (login='$current_login_ele' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
-							$del=mysql_query($sql);
+							$del=mysqli_query($GLOBALS["mysqli"], $sql);
 							if($del) {
 								$msg.="Suppression de l'enregistrement temporaire $enregistrement[$i].<br />";
 								//$nb_reg++;
@@ -178,13 +178,13 @@ if(isset($_POST['action_corrections'])) {
 						elseif($action[$i]=='valider') {
 							//$sql="UPDATE matieres_appreciations SET appreciation='$app' WHERE (login='$current_login_ele' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
 							$sql="DELETE FROM matieres_appreciations WHERE (login='$current_login_ele' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
-							$menage=mysql_query($sql);
+							$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 	
 							$sql="INSERT INTO matieres_appreciations SET login='$current_login_ele', id_groupe='$current_id_groupe', periode='$current_periode', appreciation='$app';";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							if($insert) {
 								$sql="DELETE FROM matieres_app_corrections WHERE (login='$current_login_ele' AND id_groupe='$current_id_groupe' AND periode='$current_periode');";
-								$del=mysql_query($sql);
+								$del=mysqli_query($GLOBALS["mysqli"], $sql);
 								if($del) {
 									$nb_reg++;
 									$msg.="Suppression de l'enregistrement temporaire $enregistrement[$i].<br />";
@@ -240,9 +240,9 @@ if(isset($_POST['action_corrections'])) {
 				$sql.=" UNION (select nom, prenom, civilite, email from utilisateurs u, j_scol_classes jsc, j_groupes_classes jgc where u.statut='scolarite' AND u.email!='' AND etat='actif' AND u.login=jsc.login AND jsc.id_classe=jgc.id_classe AND jgc.id_groupe='".$tab_liste_id_groupe[$loop]."')";
 			}
 			//echo "$sql<br />";
-			$req=mysql_query($sql);
-			if(mysql_num_rows($req)>0) {
-				while($lig_u=mysql_fetch_object($req)) {
+			$req=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($req)>0) {
+				while($lig_u=mysqli_fetch_object($req)) {
 					if(!in_array($lig_u->email, $tab_email_reply)) {
 						if($email_reply!="") {$email_reply.=", ";}
 						$email_reply.=$lig_u->email;
@@ -258,11 +258,11 @@ if(isset($_POST['action_corrections'])) {
 					// Recherche des profs du groupe
 					$sql="SELECT DISTINCT u.email FROM utilisateurs u, j_groupes_professeurs jgp WHERE jgp.id_groupe='$id_groupe' AND jgp.login=u.login AND u.email!='';";
 					//echo "$sql<br />";
-					$req=mysql_query($sql);
-					if(mysql_num_rows($req)>0) {
-						$lig_u=mysql_fetch_object($req);
+					$req=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($req)>0) {
+						$lig_u=mysqli_fetch_object($req);
 						$email_destinataires.=$lig_u->email;
-						while($lig_u=mysql_fetch_object($req)) {$email_destinataires.=",".$lig_u->email;}
+						while($lig_u=mysqli_fetch_object($req)) {$email_destinataires.=",".$lig_u->email;}
 					}
 
 					if($email_destinataires!='') {
@@ -316,8 +316,8 @@ if(!isset($tab_id_classe)) {
 		$sql="SELECT DISTINCT c.id, c.classe FROM matieres_app_corrections mac, j_groupes_classes jgc, classes c WHERE mac.id_groupe=jgc.id_groupe AND jgc.id_classe=c.id ORDER BY classe;";
 	}
 	//echo "$sql<br />\n";
-	$res=mysql_query($sql);
-	$nb_classes=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_classes=mysqli_num_rows($res);
 	if($nb_classes==0) {
 		echo "<p>Aucune proposition de correction ne requiert votre attention.</p>\n";
 		echo "<p><br /></p>\n";
@@ -335,7 +335,7 @@ if(!isset($tab_id_classe)) {
 	echo "<table width='100%' summary=\"Choix des classes\">\n";
 	echo "<tr valign='top' align='center'>\n";
 	echo "<td align='left'>\n";
-	while($lig_clas=mysql_fetch_object($res)) {
+	while($lig_clas=mysqli_fetch_object($res)) {
 		if(($cpt>0)&&(round($cpt/$nb_class_par_colonne)==$cpt/$nb_class_par_colonne)){
 			echo "</td>\n";
 			echo "<td align='left'>\n";
@@ -413,7 +413,17 @@ else {
 	echo add_token_field();
 	echo "<input type='hidden' name='action_corrections' value='y' />\n";
 
+	$nb_app_proposees_en_attente=0;
+	$tab_cpt_classe=array();
+	$classe_prec="";
 	for($i=0;$i<count($tab_id_classe);$i++) {
+		if($tab_id_classe[$i]!=$classe_prec) {
+			$tab_cpt_classe[$tab_id_classe[$i]][]=$compteur;
+			$classe_prec=$tab_id_classe[$i];
+			if($i>0) {
+				$tab_cpt_classe[$tab_id_classe[$i-1]][]=$compteur;
+			}
+		}
 		$classe=get_class_from_id($tab_id_classe[$i]);
 		echo "<p class='bold'>".$classe."</p>\n";
 		echo "<input type='hidden' name='tab_id_classe[]' value='$tab_id_classe[$i]' />\n";
@@ -422,8 +432,8 @@ else {
 		// Groupes associés à la classe
 		$sql="SELECT DISTINCT jgc.id_groupe FROM j_groupes_classes jgc, matieres_app_corrections mac WHERE jgc.id_classe='$tab_id_classe[$i]' AND jgc.id_groupe=mac.id_groupe;";
 		//echo "$sql<br />\n";
-		$res=mysql_query($sql);
-		$nb_grp=mysql_num_rows($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_grp=mysqli_num_rows($res);
 		if($nb_grp==0) {
 			echo "<p>Aucun enseignement associé à cette classe ne présente (plus) de proposition de correction.</p>\n";
 		}
@@ -438,13 +448,22 @@ else {
 			echo "</tr>\n";
 
 			echo "<tr>\n";
-			echo "<th>En attente</th>\n";
-			echo "<th>Valider</th>\n";
-			echo "<th>Supprimer</th>\n";
+			echo "<th>
+	En attente<br />
+	<a href=\"javascript:modif_case($tab_id_classe[$i],'attente')\" title='Tout laisser en attente'><img src='../images/enabled.png' width='15' height='15' alt='Tout laisser en attente' /></a>
+</th>\n";
+			echo "<th>
+	Valider<br />
+	<a href=\"javascript:modif_case($tab_id_classe[$i],'valider')\" title='Tout valider'><img src='../images/enabled.png' width='15' height='15' alt='Tout valider' /></a>
+</th>\n";
+			echo "<th>
+	Supprimer<br />
+	<a href=\"javascript:modif_case($tab_id_classe[$i],'supprimer')\" title='Tout supprimer'><img src='../images/enabled.png' width='15' height='15' alt='Tout supprimer' /></a>
+</th>\n";
 			echo "</tr>\n";
 
 			$alt=1;
-			while($lig=mysql_fetch_object($res)) {
+			while($lig=mysqli_fetch_object($res)) {
 				$current_group=get_group($lig->id_groupe);
 
 				// Elèves avec correction associés au groupe
@@ -453,10 +472,10 @@ else {
 
 				$sql="SELECT DISTINCT mac.* FROM matieres_app_corrections mac WHERE mac.id_groupe='$lig->id_groupe' AND mac.login='';";
 				//echo "$sql<br />\n";
-				$res_grp=mysql_query($sql);
+				$res_grp=mysqli_query($GLOBALS["mysqli"], $sql);
 
-				if(mysql_num_rows($res_grp)>0) {
-					$lig_grp=mysql_fetch_object($res_grp);
+				if(mysqli_num_rows($res_grp)>0) {
+					$lig_grp=mysqli_fetch_object($res_grp);
 
 					$alt=$alt*(-1);
 					echo "<tr class='lig$alt'>\n";
@@ -475,9 +494,9 @@ else {
 					echo "<b>Appréciation enregistrée&nbsp;:</b> ";
 					//echo nl2br($lig_ele->old_app);
 					$sql="SELECT * FROM matieres_appreciations_grp WHERE periode='$lig_grp->periode' AND id_groupe='$lig_grp->id_groupe';";
-					$res_old_app=mysql_query($sql);
-					if(mysql_num_rows($res_old_app)>0) {
-						$lig_old=mysql_fetch_object($res_old_app);
+					$res_old_app=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_old_app)>0) {
+						$lig_old=mysqli_fetch_object($res_old_app);
 						echo nl2br($lig_old->appreciation);
 					}
 					else {
@@ -497,14 +516,16 @@ else {
 					echo "</tr>\n";
 
 					$compteur++;
+
+					$nb_app_proposees_en_attente++;
 				}
 
 				$sql="SELECT DISTINCT mac.* FROM matieres_app_corrections mac, j_eleves_classes jec WHERE jec.id_classe='$tab_id_classe[$i]' AND jec.periode=mac.periode AND jec.login=mac.login AND mac.id_groupe='$lig->id_groupe' ORDER BY mac.login;";
 				//echo "$sql<br />\n";
-				$res_ele=mysql_query($sql);
-				$nb_eleves=mysql_num_rows($res_ele);
+				$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+				$nb_eleves=mysqli_num_rows($res_ele);
 				$cpt=0;
-				while($lig_ele=mysql_fetch_object($res_ele)) {
+				while($lig_ele=mysqli_fetch_object($res_ele)) {
 					$alt=$alt*(-1);
 					echo "<tr class='lig$alt'>\n";
 					if($cpt==0) {
@@ -524,9 +545,9 @@ else {
 					echo "<b>Appréciation enregistrée&nbsp;:</b> ";
 					//echo nl2br($lig_ele->old_app);
 					$sql="SELECT * FROM matieres_appreciations WHERE periode='$lig_ele->periode' AND id_groupe='$lig_ele->id_groupe' AND login='$lig_ele->login';";
-					$res_old_app=mysql_query($sql);
-					if(mysql_num_rows($res_old_app)>0) {
-						$lig_old=mysql_fetch_object($res_old_app);
+					$res_old_app=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_old_app)>0) {
+						$lig_old=mysqli_fetch_object($res_old_app);
 						echo nl2br($lig_old->appreciation);
 					}
 					else {
@@ -546,18 +567,44 @@ else {
 					echo "</tr>\n";
 					$cpt++;
 					$compteur++;
+
+					$nb_app_proposees_en_attente++;
 				}
 			}
 			echo "</table>\n";
 		}
+		/*
+		echo "<pre>";
+		print_r($tab_cpt_classe);
+		echo "</pre>";
+		*/
 		echo "</blockquote>\n";
 	}
-
-	echo "<p><a href='#' onClick=\"ToutCocher('action_valider_'); return false;\">Tout valider</a> / <a href='#' onClick=\"ToutCocher('action_supprimer_'); return false;\">Tout supprimer</a> / <a href='#' onClick=\"ToutCocher('action_attente_'); return false;\">Tout remettre en attente</a></p>\n";
-	echo "<p><input type='submit' value='Enregistrer' /></p>\n";
-	echo "</form>\n";
+	$tab_cpt_classe[$tab_id_classe[$i-1]][]=$compteur;
+	/*
+	echo "<br />\$tab_cpt_classe:<pre>";
+	print_r($tab_cpt_classe);
+	echo "</pre>";
 
 	echo "<script type='text/javascript'>
+	alert(0);
+</script>";
+*/
+
+	if($nb_app_proposees_en_attente>0) {
+		//$chaine_js="var tab_classe_indice=new Array();\n";
+		$chaine_js="";
+		foreach($tab_cpt_classe as $id_classe => $indice) {
+			//$chaine_js.="var tab_classe_indice[$id_classe][0]=".$indice[0].";\n";
+			//$chaine_js.="var tab_classe_indice[$id_classe][1]=".$indice[1].";\n";
+			$chaine_js.="var tab_classe_indice_$id_classe=new Array(".$indice[0].",".$indice[1].");\n";
+		}
+
+		echo "<p><a href='#' onClick=\"ToutCocher('action_valider_'); return false;\">Tout valider</a> / <a href='#' onClick=\"ToutCocher('action_supprimer_'); return false;\">Tout supprimer</a> / <a href='#' onClick=\"ToutCocher('action_attente_'); return false;\">Tout remettre en attente</a></p>\n";
+		echo "<p><input type='submit' value='Enregistrer' /></p>\n";
+		echo "</form>\n";
+
+		echo "<script type='text/javascript'>
 	function ToutCocher(prefixe) {
 		for (var k=0;k<$compteur;k++) {
 			if(document.getElementById(prefixe+k)){
@@ -565,8 +612,26 @@ else {
 			}
 		}
 	}
-</script>\n";
 
+	//alert(1);
+	$chaine_js
+	//alert(2);
+	function modif_case(id_classe, mode) {
+		//alert(3);
+		//rang1=tab_classe_indice[id_classe][0];
+		//rang2=tab_classe_indice[id_classe][1];
+		tab=eval('tab_classe_indice_'+id_classe);
+		rang1=tab[0];
+		rang2=tab[1];
+		for(i=rang1;i<rang2;i++) {
+			if(document.getElementById('action_'+mode+'_'+i)){
+				document.getElementById('action_'+mode+'_'+i).checked=true;
+			}
+		}
+		changement();
+	}
+</script>\n";
+	}
 }
 
 echo "<p><br /></p>\n";

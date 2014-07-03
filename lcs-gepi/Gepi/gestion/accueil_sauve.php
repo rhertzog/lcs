@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001-2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001-2014 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -34,12 +34,16 @@ $action = isset($_POST["action"]) ? $_POST["action"] : (isset($_GET["action"]) ?
 
 $dossier_a_archiver=isset($_POST['dossier']) ? $_POST['dossier'] : (isset($_GET['dossier']) ? $_GET['dossier'] : '');
 
-//debug_var();
+// debug_var();
 
 // Resume session
 $resultat_session = $session_gepi->security_check();
 //Décommenter la ligne suivante pour le mode "manuel et bavard"
 //$debug="yes";
+
+// Désactiver le mode deflate afin que les ob_flush() et flush() fonctionnent
+if (function_exists('apache_setenv')) apache_setenv("no-gzip","1");
+//apache_setenv("dont-vary","1");
 
 if (!isset($action) or ($action != "restaure")) {
     if ($resultat_session == 'c') {
@@ -80,9 +84,9 @@ if (isset($action) and ($action == 'upload'))  {
 //echo "\$sav_file['tmp_name']=".$sav_file['tmp_name']."<br />";
 
     if (!isset($sav_file['tmp_name']) or ($sav_file['tmp_name'] =='')) {
-        $msg = "Erreur de téléchargement.";
+        $msg = "Erreur de téléchargement ".$sav_file['tmp_name'].' '.$dirname;
     } else if (!file_exists($sav_file['tmp_name'])) {
-        $msg = "Erreur de téléchargement.";
+        $msg = "Erreur de téléchargement.".$dirname.' '.$sav_file['tmp_name'];
     } else if (!preg_match('/sql$/',$sav_file['name']) AND !preg_match('/gz$/',$sav_file['name'])){
         $msg = "Erreur : seuls les fichiers ayant l'extension .sql ou .gz sont autorisés.";
     } else {
@@ -213,18 +217,18 @@ function test_ecriture_backup() {
 }
 
 function mysql_version2() {
-   $result = mysql_query('SELECT VERSION() AS version');
-   if ($result != FALSE && @mysql_num_rows($result) > 0)
+   $result = mysqli_query($GLOBALS["mysqli"], 'SELECT VERSION() AS version');
+   if ($result != FALSE && @mysqli_num_rows($result) > 0)
    {
-      $row = mysql_fetch_array($result);
+      $row = mysqli_fetch_array($result);
       $match = explode('.', $row['version']);
    }
    else
    {
-      $result = @mysql_query('SHOW VARIABLES LIKE \'version\'');
-      if ($result != FALSE && @mysql_num_rows($result) > 0)
+      $result = @mysqli_query($GLOBALS["mysqli"], 'SHOW VARIABLES LIKE \'version\'');
+      if ($result != FALSE && @mysqli_num_rows($result) > 0)
       {
-         $row = mysql_fetch_row($result);
+         $row = mysqli_fetch_row($result);
          $match = explode('.', $row[1]);
       }
    }
@@ -272,14 +276,14 @@ function backupMySql($db,$dumpFile,$duree,$rowlimit) {
         fwrite ($fileHandle,$todump);
     }
 	$sql="SHOW TABLES;";
-    $result=mysql_query($sql);
+    $result=mysqli_query($GLOBALS["mysqli"], $sql);
     $numtab=0;
-    while ($t = mysql_fetch_array($result)) {
+    while ($t = mysqli_fetch_array($result)) {
         $tables[$numtab]=$t[0];
         $numtab++;
     }
-    if (mysql_error()) {
-       echo "<hr />\n<font color='red'>ERREUR lors de la sauvegarde du à un problème dans la la base.</font><br />".mysql_error()."<hr/>\n";
+    if (mysqli_error($GLOBALS["mysqli"])) {
+       echo "<hr />\n<font color='red'>ERREUR lors de la sauvegarde du à un problème dans la la base.</font><br />".mysqli_error($GLOBALS["mysqli"])."<hr/>\n";
        return false;
        die();
     }
@@ -345,9 +349,9 @@ function restoreMySqlDump($duree) {
 
 	$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='log' AND value!='setting' AND value!='utilisateurs' AND value!='a_tmp_setting' ORDER BY name LIMIT 1;";
 	if($debug_restaure=='y') {echo "<span style='color:red; font-size: x-small;'>$sql</span><br />\n";}
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
-		$lig=mysql_fetch_object($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		$lig=mysqli_fetch_object($res);
 
 		$num_table=preg_replace('/^table_/','',$lig->name);
 		$nom_table=$lig->value;
@@ -359,13 +363,13 @@ function restoreMySqlDump($duree) {
 		}
 
 		$sql="SELECT value FROM a_tmp_setting WHERE name='nb_tables';";
-		$res=mysql_query($sql);
-		$lig=mysql_fetch_object($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$lig=mysqli_fetch_object($res);
 		$nb_tables=$lig->value;
 
 		$sql="SELECT 1=1 FROM a_tmp_setting WHERE name LIKE 'table_%';";
-		$res=mysql_query($sql);
-		$nb_tables_passees=$nb_tables-mysql_num_rows($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_tables_passees=$nb_tables-mysqli_num_rows($res);
 		// Ca ne correspond plus à un nombre de tables, mais à un nombre de fichiers
 
 		echo "<p style='text-align:center;'>Fichier ".($nb_tables_passees+1)."/".$nb_tables."</p>\n";
@@ -382,9 +386,9 @@ function restoreMySqlDump($duree) {
 			current_time();
 			if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
 				if ($old_offset == $offset) {
-					echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
+					echo "<p class= 'rouge center'><strong>La procédure de restauration ne peut pas continuer.
 					<br />Un problème est survenu lors du traitement d'une requête près de :.
-					<br />".$debut_req."</font></b></p><hr />\n";
+					<br />".$debut_req."</strong></p><hr />\n";
 					return FALSE;
 				}
 				$old_offset = $offset;
@@ -404,7 +408,7 @@ function restoreMySqlDump($duree) {
 				//echo $formattedQuery."<hr />";
 				if ($formattedQuery) {
 					$sql = $formattedQuery;
-					if (mysql_query($sql)) {//réussie sinon continue à concaténer
+					if (mysqli_query($GLOBALS["mysqli"], $sql)) {//réussie sinon continue à concaténer
 						if(preg_match("/^DROP TABLE /",$sql)) {
 							echo "Suppression de la table <span style='color:green;'>$nom_table</span> si elle existe.<br />";
 						}
@@ -441,15 +445,15 @@ function restoreMySqlDump($duree) {
 			echo "$cpt_insert enregistrement(s) restauré(s).";
 		}
 
-		if (mysql_error()) {
-			echo "<hr />\nERREUR à partir de ".nl2br($formattedQuery)." <br />".mysql_error()."<hr />\n";
+		if (mysqli_error($GLOBALS["mysqli"])) {
+			echo "<hr />\nERREUR à partir de ".nl2br($formattedQuery)." <br />".mysqli_error($GLOBALS["mysqli"])."<hr />\n";
 			$erreur_mysql=TRUE;
 		}
 		gzclose($fileHandle);
 
 		$sql="DELETE FROM a_tmp_setting WHERE name='table_".$num_table."';";
 		if($debug_restaure=='y') {
-			if($nettoyage=mysql_query($sql)) {
+			if($nettoyage=mysqli_query($GLOBALS["mysqli"], $sql)) {
 				echo "Succès de la suppression dans a_tmp_setting.<br />\n";
 			}
 			else {
@@ -464,7 +468,7 @@ function restoreMySqlDump($duree) {
 			}
 		}
 		else {
-			if(!$nettoyage=mysql_query($sql)) {
+			if(!$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql)) {
 				echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
 			}
 
@@ -482,11 +486,11 @@ function restoreMySqlDump($duree) {
 		for($i=0;$i<count($tab_tables);$i++) {
 
 			$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value='".$tab_tables[$i]."';";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)>0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)>0) {
 				// On peut avoir plusieurs enregistrements pour une même table s'il y a plus de 1000 enregistrements dans la table
 				// Ou alors, il ne faut pas scinder ces tables
-				while($lig=mysql_fetch_object($res)) {
+				while($lig=mysqli_fetch_object($res)) {
 					$num_table=preg_replace('/^table_/','',$lig->name);
 					$nom_table=$lig->value;
 	
@@ -508,9 +512,9 @@ function restoreMySqlDump($duree) {
 						current_time();
 						if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
 							if ($old_offset == $offset) {
-								echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
+								echo "<p class=\"rouge center\"><strong>La procédure de restauration ne peut pas continuer.
 								<br />Un problème est survenu lors du traitement d'une requête près de :.
-								<br />".$debut_req."</font></b></p><hr />\n";
+								<br />".$debut_req."</strong></p><hr />\n";
 								return FALSE;
 							}
 							$old_offset = $offset;
@@ -530,7 +534,7 @@ function restoreMySqlDump($duree) {
 							//echo $formattedQuery."<hr />";
 							if ($formattedQuery) {
 								$sql = $formattedQuery;
-								if (mysql_query($sql)) {//réussie sinon continue à concaténer
+								if (mysqli_query($GLOBALS["mysqli"], $sql)) {//réussie sinon continue à concaténer
 									if(preg_match("/^DROP TABLE /",$sql)) {
 										echo "Suppression de la table <span style='color:green;'>$nom_table</span> si elle existe.<br />";
 									}
@@ -568,8 +572,8 @@ function restoreMySqlDump($duree) {
 						//echo "</div>\n";
 					}
 	
-					if (mysql_error()) {
-						echo "<hr />\nERREUR à partir de <br />".nl2br($formattedQuery)."<br />".mysql_error()."<hr />\n";
+					if (mysqli_error($GLOBALS["mysqli"])) {
+						echo "<hr />\nERREUR à partir de <br />".nl2br($formattedQuery)."<br />".mysqli_error($GLOBALS["mysqli"])."<hr />\n";
 						$erreur_mysql=TRUE;
 					}
 	
@@ -577,7 +581,7 @@ function restoreMySqlDump($duree) {
 	
 					$sql="DELETE FROM a_tmp_setting WHERE name='table_".$num_table."';";
 					if($debug_restaure=='y') {
-						if($nettoyage=mysql_query($sql)) {
+						if($nettoyage=mysqli_query($GLOBALS["mysqli"], $sql)) {
 							echo "Succès de la suppression dans a_tmp_setting.<br />\n";
 						}
 						else {
@@ -592,7 +596,7 @@ function restoreMySqlDump($duree) {
 						}
 					}
 					else {
-						if(!$nettoyage=mysql_query($sql)) {
+						if(!$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql)) {
 							echo "<p style='color:red;'>Erreur lors de la suppression dans 'a_tmp_setting'.</p>\n";
 						}
 	
@@ -648,9 +652,9 @@ function extractMySqlDump($dumpFile,$duree) {
         current_time();
         if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
             if ($old_offset == $offset) {
-                echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
+                echo "<p  class=\"rouge center\"><strong>La procédure de restauration ne peut pas continuer.
                 <br />Un problème est survenu lors du traitement d'une requête près de :.
-                <br />".$debut_req."</font></b></p><hr />\n";
+                <br />".$debut_req."</strong></p><hr />\n";
                 return FALSE;
             }
             $old_offset = $offset;
@@ -669,7 +673,7 @@ function extractMySqlDump($dumpFile,$duree) {
 				$nom_table=trim(preg_replace("/[ `;]/","",preg_replace("/^DROP TABLE /","",preg_replace("/^DROP TABLE IF EXISTS /","",$buffer))));
 
 				$sql="INSERT INTO a_tmp_setting SET name='table_".sprintf("%03d",$num_table)."', value='$nom_table';";
-				$res=mysql_query($sql);
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 				$cpt_lignes_fichier=0;
 
@@ -692,7 +696,7 @@ function extractMySqlDump($dumpFile,$duree) {
 						$fich=fopen("../backup/".$dirname."/base_extraite_table_".sprintf("%03d",$num_table).".sql","w+");
 						// Le nom de table n'a pas changé:	
 						$sql="INSERT INTO a_tmp_setting SET name='table_".sprintf("%03d",$num_table)."', value='$nom_table';";
-						$res=mysql_query($sql);
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 						$cpt_lignes_fichier=0;
 						$num_table++; // Du coup, la variable ne correspond plus au nombre de tables, mais au nombre de morceaux.
@@ -711,7 +715,7 @@ function extractMySqlDump($dumpFile,$duree) {
     gzclose($fileHandle);
 
 	$sql="INSERT INTO a_tmp_setting SET name='nb_tables', value='$num_table';";
-	$res=mysql_query($sql);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
     return TRUE;
 }
@@ -746,9 +750,9 @@ function restoreMySqlDump_old($dumpFile,$duree) {
         current_time();
         if ($duree>0 and $TPSCOUR>=$duree) {  //on atteint la fin du temps imparti
             if ($old_offset == $offset) {
-                echo "<p align=\"center\"><b><font color=\"#FF0000\">La procédure de restauration ne peut pas continuer.
+                echo "<p  class=\"rouge center\"><strong>La procédure de restauration ne peut pas continuer.
                 <br />Un problème est survenu lors du traitement d'une requête près de :.
-                <br />".$debut_req."</font></b></p><hr />\n";
+                <br />".$debut_req."</strong></p><hr />\n";
                 return FALSE;
             }
             $old_offset = $offset;
@@ -767,7 +771,7 @@ function restoreMySqlDump_old($dumpFile,$duree) {
               //echo $formattedQuery."<hr />";
             if (trim($formattedQuery)!="") {
                 $sql = $formattedQuery;
-                if (mysql_query($sql)) {//réussie sinon continue à concaténer
+                if (mysqli_query($GLOBALS["mysqli"], $sql)) {//réussie sinon continue à concaténer
                     $offset=gztell($fileHandle);
                     //echo $offset;
                     $formattedQuery = "";
@@ -779,8 +783,8 @@ function restoreMySqlDump_old($dumpFile,$duree) {
         }
     }
 
-    if (mysql_error()) {
-        echo "<hr />\nERREUR à partir de ".nl2br($formattedQuery)."<br />".mysql_error()."<hr />\n";
+    if (mysqli_error($GLOBALS["mysqli"])) {
+        echo "<hr />\nERREUR à partir de ".nl2br($formattedQuery)."<br />".mysqli_error($GLOBALS["mysqli"])."<hr />\n";
 		$erreur_mysql=TRUE;
     }
 
@@ -804,8 +808,8 @@ function get_def($db, $table) {
     $def .="DROP TABLE IF EXISTS `$table`;\n";
     // requete de creation de la table
     $query = "SHOW CREATE TABLE $table";
-    $resCreate = mysql_query($query);
-    $row = mysql_fetch_array($resCreate);
+    $resCreate = mysqli_query($GLOBALS["mysqli"], $query);
+    $row = mysqli_fetch_array($resCreate);
     $schema = $row[1].";";
     $def .="$schema\n";
     return $def;
@@ -817,16 +821,16 @@ function get_content($db, $table,$from,$limit) {
     // les données de la table
     $def = '';
     $query = "SELECT * FROM $table LIMIT $from,$limit";
-    $resData = @mysql_query($query);
+    $resData = @mysqli_query($GLOBALS["mysqli"], $query);
     //peut survenir avec la corruption d'une table, on prévient
     if (!$resData) {
         $def .="Problème avec les données de $table, corruption possible !\n";
     } else {
-        if (@mysql_num_rows($resData) > 0) {
+        if (@mysqli_num_rows($resData) > 0) {
              $sFieldnames = "";
-             $num_fields = mysql_num_fields($resData);
+             $num_fields = (($___mysqli_tmp = mysqli_num_fields($resData)) ? $___mysqli_tmp : false);
               $sInsert = "INSERT INTO $table $sFieldnames values ";
-              while($rowdata = mysql_fetch_row($resData)) {
+              while($rowdata = mysqli_fetch_row($resData)) {
                   $lesDonnees = "";
                   for ($mp = 0; $mp < $num_fields; $mp++) {
                       if (is_null($rowdata[$mp])) {
@@ -1022,7 +1026,7 @@ if (isset($action) and ($action == 'restaure'))  {
 
 		if ($percent >= 0) {
 			$percentwitdh=$percent*4;
-			echo "<div align='center'><table class='tab_cadre' width='400'><tr><td width='400' align='center'><b>Restauration en cours</b><br /><br />Progression ".$percent."%</td></tr><tr><td><table><tr><td bgcolor='red'  width='$percentwitdh' height='20'>&nbsp;</td></tr></table></td></tr></table></div>\n";
+			echo "<div class=\"center\"><table class='tab_cadre' width='400'><tr><td width='400'  class=\"center\"><strong>Restauration en cours</strong><br /><br />Progression ".$percent."%</td></tr><tr><td><table><tr><td bgcolor='red'  width='$percentwitdh' height='20'>&nbsp;</td></tr></table></td></tr></table></div>\n";
 		}
 		if (ob_get_contents()) {
                     ob_flush();
@@ -1059,7 +1063,7 @@ if (isset($action) and ($action == 'restaure'))  {
 			$m=$t_duree%60;
 			$h=floor($t_duree/60);
 
-			echo "<div align='center'><p>Restauration terminée en ".$h." h ".$m." min ".$s." s.<br /><br />Votre session GEPI n'est plus valide, vous devez vous reconnecter<br /><a href = \"../login.php\">Se connecter</a></p></div>\n";
+			echo "<div class=\"center\"><p>Restauration terminée en ".$h." h ".$m." min ".$s." s.<br /><br />Votre session GEPI n'est plus valide, vous devez vous reconnecter<br /><a href = \"../login.php\">Se connecter</a></p></div>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
@@ -1188,20 +1192,20 @@ if (isset($action) and ($action == 'restaure'))  {
 		if (!isset($_GET["duree"])) {$duree=$_SESSION['defaulttimeout'];}
 			else {$duree=$_GET["duree"];}
 
-		echo "<div align='center'><b>Restauration en cours</b></div>\n";
+		echo "<div  class=\"center\"><strong>Restauration en cours</strong></div>\n";
 
 		$suite_restauration=isset($_GET['suite_restauration']) ? $_GET['suite_restauration'] : NULL;
 		if(!isset($suite_restauration)) {
 			// EXTRAIRE -> SCINDER
 
 			$sql="SHOW TABLES LIKE 'a_tmp_setting';";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)>0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)>0) {
 				// Nettoyage au cas où la restauration précédente aurait échoué
 				$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%';";
-				$res=mysql_query($sql);
-				if(mysql_num_rows($res)>0) {
-					while($lig=mysql_fetch_object($res)) {
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res)>0) {
+					while($lig=mysqli_fetch_object($res)) {
 						$num_table=preg_replace('/^table_/','',$lig->name);
 						unlink("../backup/".$dirname."/base_extraite_table_".$num_table.".sql");
 					}
@@ -1210,18 +1214,18 @@ if (isset($action) and ($action == 'restaure'))  {
 
 			// On achève le ménage:
 			$sql="DROP TABLE a_tmp_setting;";
-			$res=mysql_query($sql);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			$sql="CREATE TABLE a_tmp_setting (
 name VARCHAR(255) NOT NULL,
 value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
-			$res=mysql_query($sql);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			$sql="INSERT INTO a_tmp_setting SET name='offset', value='0';";
-			$res=mysql_query($sql);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			$sql="INSERT INTO a_tmp_setting SET name='nom_table', value='';";
-			$res=mysql_query($sql);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			echo "<p>Extraction de l'archive...<br />";
 			if(extractMySqlDump($path.$file,$duree)) {
@@ -1232,8 +1236,8 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 		else {
 			// TESTER S'IL RESTE DES table_%
 			$sql="SELECT 1=1 FROM a_tmp_setting WHERE name LIKE 'table_%';";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)>0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)>0) {
 				$erreur_mysql=FALSE;
 				// Il reste des tables à restaurer
 				//if (restoreMySqlDump($path."/base_extraite.sql",$duree)) {
@@ -1246,7 +1250,7 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 
 				// On ne devrait pas arriver là.
 
-				echo "<div align='center'><p>Restauration terminée.<br /><br />Votre session GEPI n'est plus valide, vous devez vous reconnecter<br /><a href = \"../login.php\">Se connecter</a></p></div>\n";
+				echo "<div  class=\"center\"><strong>><p>Restauration terminée.<br /><br />Votre session GEPI n'est plus valide, vous devez vous reconnecter<br /><a href = \"../login.php\">Se connecter</a></p></div>\n";
 
 				require("../lib/footer.inc.php");
 				die();
@@ -1269,11 +1273,9 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 			//$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%';";
 			// Pour nettoyer aussi une trace d'une sauvegarde consécutive à une restauration ratée... pas sûr que ce soit prudent...
 			$sql="SELECT * FROM a_tmp_setting WHERE name LIKE 'table_%' AND value!='a_tmp_setting';";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)==0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==0) {
 				echo "<div id='div_fin_restauration' class='infobulle_corps' style='position:absolute; top: 200px; left:100px; border:1px solid black; width: 30em;'>\n";
-				//echo "<div id='div_fin_restauration' class='infobulle_corps' style='position:absolute; border:1px solid black; width: 30em;'>\n";
-				//background-color: white;
 
 					echo "<div class='infobulle_entete' style='color: #ffffff; cursor: move; font-weight: bold; padding: 0px; width: 30em;'";
 					// Là on utilise les fonctions de http://www.brainjar.com stockées dans brainjar_drag.js
@@ -1281,7 +1283,7 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 					echo "Restauration terminée";
 					echo "</div>\n";
 
-					echo "<div align='center'>\n";
+					echo "<div  class=\"center\">\n";
 					echo "<p>Restauration terminée en ".$h." h ".$m." min ".$s." s.<br /><br />Votre session GEPI n'est plus valide, vous devez vous reconnecter<br /><a href=\"../login.php\">Se connecter</a></p>\n";
 					//echo "<p><em>NOTE:</em> J'ai un problème bizarre! Alors que le lien pointe bien vers ../login.php, je me retrouve un dossier plus haut sur un logout.php hors du dossier de Gepi si bien que j'obtiens un 404 Not Found???</p>\n";
 					echo "</div>\n";
@@ -1291,7 +1293,7 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 				// Il peut rester un fichier base_extraite_table_XXX.sql correspondant à a_tmp_setting si on a restauré une sauvegarde faite après une restauration ratée/incomplète... inquiètant.
 
 				$sql="DROP TABLE a_tmp_setting;";
-				$res=mysql_query($sql);
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 				// Il ne faut pas recharger la page après restauration des tables log, setting, utilisateurs.
 
@@ -1300,7 +1302,7 @@ value VARCHAR(255) NOT NULL) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_gener
 			}
 
 			// RESOUMETTRE
-			echo "<form action='".$_SERVER['PHP_SELF']."' method='get' name='form_suite'>\n";
+			echo "<form action='".$_SERVER['PHP_SELF']."' method='get' id='form_suite'>\n";
             echo "<p>\n";
 			echo "<input type='hidden' name='suite_restauration' value='y' />\n";
 			echo "<input type='hidden' name='action' value='restaure' />\n";
@@ -1354,7 +1356,7 @@ if (isset($action) and ($action == 'dump'))  {
 	// Ce nom est modifié à chaque passage dans action=dump, mais pour les passages suivant le premier, on reçoit $fichier en $_GET donc on n'utilise pas $filename
 
     if (!isset($_GET["duree"])&&is_file($filename)){
-        echo "<font color=\"#FF0000\"><center><b>Le fichier existe déjà. Patientez une minute avant de retenter la sauvegarde.</b></center></font>\n<hr />\n";
+        echo "<span class='rouge centre'><strong>Le fichier existe déjà. Patientez une minute avant de retenter la sauvegarde.</strong></span>\n<hr />\n";
     } else {
         init_time(); //initialise le temps
         //début de fichier
@@ -1379,8 +1381,8 @@ if (isset($action) and ($action == 'dump'))  {
 
 
 		$sql="SHOW TABLES;";
-		$tab=mysql_query($sql);
-        $tot=mysql_num_rows($tab);
+		$tab=mysqli_query($GLOBALS["mysqli"], $sql);
+        $tot=mysqli_num_rows($tab);
         if(isset($offsettable)){
             if ($offsettable>=0)
                 $percent=min(100,round(100*$offsettable/$tot,0));
@@ -1390,8 +1392,8 @@ if (isset($action) and ($action == 'dump'))  {
 
         if ($percent >= 0) {
             $percentwitdh=$percent*4;
-            echo "<div align='center'>\n<table width=\"400\" border=\"0\">
-            <tr><td width='400' align='center'><b>Sauvegarde en cours</b><br/>
+            echo "<div class=\"center\">\n<table width=\"400\" border=\"0\">
+            <tr><td width='400' class=\"center\"><strong>Sauvegarde en cours</strong><br/>
             <br/>A la fin de la sauvegarde, Gepi vous proposera automatiquement de télécharger le fichier.
             <br/><br/>Progression ".$percent."%</td></tr>\n<tr><td>\n<table><tr><td bgcolor='red'  width='$percentwitdh' height='20'>&nbsp;</td></tr></table>\n</td></tr>\n</table>\n</div>\n";
         }
@@ -1439,7 +1441,7 @@ if (isset($action) and ($action == 'dump'))  {
 			$m=$t_duree%60;
 			$h=floor($t_duree/60);
 
-			echo "<div align='center'><p>Sauvegarde terminée en ".$h." h ".$m." min ".$s." s.<br />\n";
+			echo "<div class=\"center\"><p>Sauvegarde terminée en ".$h." h ".$m." min ".$s." s.<br />\n";
 
 			//$nomsql.$filetype
 			$handle=opendir($path);
@@ -1510,7 +1512,7 @@ if (isset($action) and ($action == 'system_dump'))  {
 		$dbDb = escapeshellarg($dbDb);
 	}
 
-	$req_version = mysql_result(mysql_query("SELECT version();"), 0);
+	$req_version = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT version();"), 0);
 	$ver_mysql = explode(".", $req_version);
 	if (!is_numeric(mb_substr($ver_mysql[2], 1, 1))) {
 		$ver_mysql[2] = mb_substr($ver_mysql[2], 0, 1);
@@ -1555,7 +1557,7 @@ if (isset($action) and ($action == 'system_dump'))  {
 
 	if (filesize($filename) > 10000) {
 		echo "<script>document.getElementById('sauvegarde_en_cours').innerHTML=''</script>";
-		echo "<center><p style='color: red; font-weight: bold;'>La sauvegarde a été réalisée avec succès en ".$h." h ".$m." min ".$s." s.</p></center>\n";
+		echo "<p class='centre' style='color: red; font-weight: bold;'>La sauvegarde a été réalisée avec succès en ".$h." h ".$m." min ".$s." s.</p>\n";
 		if((isset($_POST['description_sauvegarde']))&&($_POST['description_sauvegarde']!='')) {
 			$f_desc=fopen($filename.".txt", "a+");
 			$description_sauvegarde=suppression_sauts_de_lignes_surnumeraires($_POST['description_sauvegarde']);
@@ -1563,7 +1565,7 @@ if (isset($action) and ($action == 'system_dump'))  {
 			fclose($f_desc);
 		}
 	} else {
-		echo "<center><p style='color: red; font-weight: bold;'>Erreur lors de la sauvegarde.</p></center>\n";
+		echo "<p class='centre' style='color: red; font-weight: bold;'>Erreur lors de la sauvegarde.</p>\n";
 	}
 }
 
@@ -1659,56 +1661,7 @@ if (isset($action) and ($action == 'zip'))  {
 		case "photos":
 			$retour=cree_zip_archive_avec_msg_erreur("photos",1);
 			if ($retour!="") die("<p style='color:red; text-align:center'>".$retour."</p>\n");
-			/*
-			$chemin_stockage = $path."/_photos".$suffixe_zip.".zip";
-			$dossier_a_traiter = '../photos/'; //le dossier à traiter
-			$dossier_dans_archive = 'photos'; //le nom du dossier dans l'archive créée
 
-			if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
-				//$dossier_a_traiter .=$_COOKIE['RNE']."/";
-				if((isset($_COOKIE['RNE']))&&($_COOKIE['RNE']!='')) {
-					if(!preg_match('/^[A-Za-z0-9]*$/', $_COOKIE['RNE'])) {
-						echo "<p style='color:red; text-align:center'>RNE invalide&nbsp;: ".$_COOKIE['RNE']."</p>\n";
-						$chemin_stockage="";
-					}
-					else {
-						$dossier_a_traiter = '../photos/'.$_COOKIE['RNE'].'/'; //le dossier à traiter
-					}
-				}
-				else {
-					echo "<p style='color:red; text-align:center'>RNE invalide.</p>\n";
-					$chemin_stockage="";
-				}
-			}
-
-			if ($chemin_stockage !='') {
-
-				// Si l'encodage des noms de photos est activé on sauvegarde la valeur 'alea_nom_photo'
-				if (getSettingAOui('encodage_nom_photo'))
-					{
-					$fic_alea=fopen($dossier_a_traiter."alea_nom_photo.txt","w");
-					fwrite($fic_alea,getSettingValue("alea_nom_photo"));
-					fclose($fic_alea);
-					}
-
-				$archive = new PclZip($chemin_stockage);
-				$v_list = $archive->create($dossier_a_traiter,
-											PCLZIP_OPT_REMOVE_PATH,$dossier_a_traiter,
-											PCLZIP_OPT_ADD_PATH, $dossier_dans_archive);
-
-				// on supprime le fichier alea_nom_photo.txt
-				if (file_exists($dossier_a_traiter."alea_nom_photo.txt")) @unlink($dossier_a_traiter."alea_nom_photo.txt");
-
-				if ($v_list == 0) {
-					die("<p style='color:red; text-align:center'>Error : ".$archive->errorInfo(true)."</p>");
-				}
-				else {
-					echo "<p style='color:red; text-align:center;'>Le Zip a été créé.</p>\n";
-					// Apparemment volume_dir() et volume_dir_human() donnent des résultats fantaisistes... (surévalués 3 à 4 fois)
-					//echo "<p style='color:red; text-align:center;'>Le Zip a été créé (<em>volume du dossier photos&nbsp;: ".volume_dir_human($dossier_a_traiter)."</em>).</p>\n";
-				}
-			}
-			*/
 			break;
 		default:
 			$chemin_stockage = '';
@@ -1739,19 +1692,22 @@ else {
 
 // Test présence de fichiers htaccess
 if (!(file_exists("../backup/".$dirname."/.htaccess")) or !(file_exists("../backup/".$dirname."/.htpasswd"))) {
+    echo "</p >\n";
     echo "<h3 class='gepi'>Répertoire backup non protégé :</h3>\n";
-    echo "<p><font color=\"#FF0000\"><b>Le répertoire \"/backup\" n'est actuellement pas protégé</b></font>.
+    echo "<p class='rouge'><strong>Le répertoire \"/backup\" n'est actuellement pas protégé</strong>.
     Si vous stockez des fichiers dans ce répertoire, ils seront accessibles de l'extérieur à l'aide d'un simple navigateur.</p>\n";
-    echo "<form action=\"accueil_sauve.php\" name=\"protect\" method=\"post\">\n";
+    echo "<form action=\"accueil_sauve.php\" id=\"protect\" method=\"post\">\n";
     echo "<p >\n";
 	echo add_token_field();
     echo "</p >\n";
-    echo "<table><tr><td>Nouvel identifiant : </td><td><input type=\"text\" name=\"login_backup\" value=\"\" size=\"20\" /></td></tr>\n";
-    echo "<tr><td>Nouveau mot de passe : </td><td><input type=\"password\" name=\"pwd1_backup\" value=\"\" size=\"20\" /></td></tr>\n";
-    echo "<tr><td>Confirmation du mot de passe : </td><td><input type=\"password\" name=\"pwd2_backup\" value=\"\" size=\"20\" /></td></tr></table>\n";
+    echo "<table><tr><td><label for='login_backup'>Nouvel identifiant : </label></td><td><input type=\"text\" id=\"login_backup\" name=\"login_backup\" value=\"\" size=\"20\" /></td></tr>\n";
+    echo "<tr><td><label for='pwd1_backup'>Nouveau mot de passe : </label></td><td><input type=\"password\" id=\"pwd1_backup\" name=\"pwd1_backup\" value=\"\" size=\"20\" /></td></tr>\n";
+    echo "<tr><td><label for='pwd2_backup'>Confirmation du mot de passe : </label></td><td><input type=\"password\" id=\"pwd2_backup\" name=\"pwd2_backup\" value=\"\" size=\"20\" /></td></tr></table>\n";
 
-    echo "<p align=\"center\"><input type=\"submit\" Value=\"Envoyer\" /></p>\n";
+    echo "<p class=\"center\"><input type=\"submit\" value=\"Envoyer\" /></p>\n";
+    echo "<p >\n";
     echo "<input type=\"hidden\" name=\"action\" value=\"protect\" />\n";
+    echo "</p >\n";
     echo "</form>\n";
     echo "<hr />\n";
 } else {
@@ -1768,14 +1724,14 @@ if (!(file_exists("../backup/".$dirname."/.htaccess")) or !(file_exists("../back
 			<br /><br />Cliquez sur le bouton ci-dessous pour <b>supprimer la protection</b>
 			ou bien pour définir un nouvel <b>identifiant et un mot de passe</b></p>\n";
     echo "
-			<form action=\"accueil_sauve.php\" name=\"del_protect\" method=\"post\">\n";
-    echo "<p >\n";
+			<form action=\"accueil_sauve.php\" id=\"del_protect\" method=\"post\">\n";
+    echo "<p>\n";
 	echo add_token_field();
     echo "</p >\n";
     echo "
-			<p align=\"center\"><input type=\"submit\" Value=\"Modifier/supprimer la protection du répertoire\" /></p>\n";
+			<p class=\"center\"><input type=\"submit\" value=\"Modifier/supprimer la protection du répertoire\" /></p>\n";
     echo "
-			<input type=\"hidden\" name=\"action\" value=\"del_protect\" />\n";
+			<p><input type=\"hidden\" name=\"action\" value=\"del_protect\" /></p>\n";
     echo "
 			</form>
 		</td>
@@ -1786,7 +1742,7 @@ if (!(file_exists("../backup/".$dirname."/.htaccess")) or !(file_exists("../back
 
 ?>
 
-<H3>Créer un fichier de sauvegarde/restauration de la base <?php echo $dbDb; ?></H3>
+<h3>Créer un fichier de sauvegarde/restauration de la base <?php echo $dbDb; ?></h3>
 <p>Deux méthodes de sauvegarde sont disponibles : l'utilisation de la commande système mysqldump ou bien le système intégré à Gepi.<br/>
 La première méthode (mysqldump) est vigoureusement recommandée car beaucoup moins lourde en ressources, mais ne fonctionnera que sur certaines configurations serveurs.<br />
 La seconde méthode est lourde en ressources mais passera sur toutes les configurations.</p>
@@ -1794,37 +1750,47 @@ La seconde méthode est lourde en ressources mais passera sur toutes les configu
 if (substr(PHP_OS,0,3) == 'WIN' && !file_exists("mysqldump.exe"))
 	{
 ?>
-<p><b><font color="#FF0000">Attention : </font></b>pour utiliser la commande système mysqldump lorsque Gepi est hébergé sous Windows il faut au préalable copier le fichier "mysqldump.exe" dans le dossier "gestion" de Gepi. Ce fichier "mysqldump.exe" se trouve généralement dans le sous-dossier "bin" du dossier d'installation de MySQL.</p>
+<p>
+    <b>
+        <span class="rouge">Attention : </span>
+    </b>pour utiliser la commande système mysqldump lorsque Gepi est hébergé sous Windows il faut au préalable copier le fichier "mysqldump.exe" dans le dossier "gestion" de Gepi. Ce fichier "mysqldump.exe" se trouve généralement dans le sous-dossier "bin" du dossier d'installation de MySQL.
+</p>
 <?php
 	}
 ?>
-<br />
-<form enctype="multipart/form-data" action="accueil_sauve.php" method="post" name="formulaire">
+
+<form enctype="multipart/form-data" action="accueil_sauve.php" method="post" id="formulaire">
     <p>
 <?php
 	echo add_token_field();
 ?>
     </p>
-<div align='center'>
-<input type="submit" value="Sauvegarder" />
-<select name='action' size='1'>
+    <div class="center">
+        <p><input type="submit" value="Sauvegarder" /></p>
+        <label for='action' class='invisible'>type de sauvegarde</label>
+        <select id='action' name='action' size='1'>
 <?php
 if ((substr(PHP_OS,0,3) == 'WIN' && file_exists("mysqldump.exe"))||
 	(substr(PHP_OS,0,3) != 'WIN'))
 	{
 ?>
-	<option value='system_dump'<?php if (getSettingValue("mode_sauvegarde") == "mysqldump") echo " SELECTED";?>>avec mysqldump</option>
+            <option value='system_dump'<?php if (getSettingValue("mode_sauvegarde") == "mysqldump") echo " selected='selected'";?>>avec mysqldump</option>
 <?php
 	}
 ?>
-<option value='dump'<?php if (getSettingValue("mode_sauvegarde") == "gepi") echo " SELECTED";?>>sans mysqldump</option>
-</select>
-<br />
-Description (<em>facultative</em>) de la sauvegarde&nbsp;:<br /><textarea name='description_sauvegarde' cols='30'></textarea>
-</div>
+            <option value='dump'<?php if (getSettingValue("mode_sauvegarde") == "gepi") echo " selected='selected'";?>>sans mysqldump</option>
+            </select>
+        <p>
+            <label for='description_sauvegarde'>Description (<em>facultative</em>) de la sauvegarde&nbsp;:</label><br />
+            <textarea id='description_sauvegarde' name='description_sauvegarde' cols='30' rows='2'></textarea>
+        </p>
+    </div>
 </form>
 
-<br /><span class='small'><b>Remarque</b> : les répertoires 'documents' (contenant les documents joints aux cahiers de textes) et 'photos' (contenant les photos du trombinoscope) ne seront pas sauvegardés. Un outil de sauvegarde spécifique se trouve en bas de <a href='#zip'>cette page</a>.</span>
+<p>
+    <span class='small'>
+        <b>Remarque</b> : les répertoires 'documents' (contenant les documents joints aux cahiers de textes) et 'photos' (contenant les photos du trombinoscope) ne seront pas sauvegardés. Un outil de sauvegarde spécifique se trouve en bas de <a href='#zip'>cette page</a>.
+    </span>
 <hr />
 
 
@@ -1853,13 +1819,14 @@ arsort($tab_file);
 if ($n > 0) {
     echo "<h3>Fichiers de restauration</h3>\n";
     echo "<p>Le tableau ci-dessous indique la liste des fichiers de restauration actuellement stockés dans le répertoire \"backup\" à la racine de GEPI.</p>\n";
-    echo "<center>\n<table class='boireaus' cellpadding=\"5\" cellspacing=\"1\">\n<tr><th><b>Nom du fichier de sauvegarde</b></th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>\n";
+    // echo "<table class='boireaus centre' cellpadding=\"5\" cellspacing=\"1\">\n<tr><th><strong>Nom du fichier de sauvegarde</strong></th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>\n";
+    echo "<table class='boireaus centre' style='margin:auto;' >\n<tr><th><strong>Nom du fichier de sauvegarde</strong></th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th></tr>\n";
     $m = 0;
 	$alt=1;
     foreach($tab_file as $value) {
         $alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
-        echo "<td>\n";
+        echo "<td style='padding:5px;'>\n";
         echo "<em>";
 		if(file_exists('../backup/'.$dirname.'/'.$value.'.txt')) {
 			$handle = fopen('../backup/'.$dirname.'/'.$value.'.txt', "r");
@@ -1881,57 +1848,54 @@ if ($n > 0) {
 		}
 		echo "</em>&nbsp;&nbsp;(". round((filesize("../backup/".$dirname."/".$value)/1024),0)." Ko)\n";
         echo "</td>\n";
-        echo "<td><a href='accueil_sauve.php?action=sup&amp;file=$value".add_token_in_url()."'>Supprimer</a></td>\n";
-		//if (($value=='_photos.zip')||($value=='_cdt.zip')){
-		/*if ((preg_match('/^_photos/i',$value)&&preg_match('/.zip$/i',$value))||(preg_match('/^_cdt/i',$value)&&preg_match('/.zip$/i',$value))){
-		   echo "<td><a href='accueil_sauve.php?action=restaure_confirm&amp;file=$value".add_token_in_url()."'>Restaurer</a></td>\n";
-		} else {
-            echo "<td>a href='../mod_trombinoscopes/trombinoscopes_admin.php?action=restaurer&amp;file=$value".add_token_in_url()."'>Restaurer</a></td>\n";
-		}*/
+        echo "<td style='padding:5px;'><a href='accueil_sauve.php?action=sup&amp;file=$value".add_token_in_url()."'>Supprimer</a></td>\n";
 		$type_sauvegarde="";
 		if (preg_match('/^_photos/i',$value)&& preg_match('/.zip$/i',$value))$type_sauvegarde="photos";
 		if (preg_match('/^_cdt/i',$value)&& preg_match('/.zip$/i',$value)) $type_sauvegarde="cdt";
-		//if (preg_match('/^gepi-/i',$value)&& (preg_match('/.gz$/i',$value) || preg_match('/.sql$/i',$value))) $type_sauvegarde="base";
 		if ((preg_match('/.sql.gz$/i',$value) || preg_match('/.sql$/i',$value))) $type_sauvegarde="base";
 		switch ($type_sauvegarde) {
 			case "photos" :
-				//echo "<td><a href='../mod_trombinoscopes/trombinoscopes_admin.php?action=restaurer_photos&amp;file=$value".add_token_in_url()."'>Restaurer</a></td>\n";
 				echo "<td></td>\n";
 				break;
 			case "base" :
-				echo "<td><a href='accueil_sauve.php?action=restaure_confirm&amp;file=$value".add_token_in_url()."#restaurer'>Restaurer</a></td>\n";
+				echo "<td style='padding:5px;'><a href='accueil_sauve.php?action=restaure_confirm&amp;file=$value".add_token_in_url()."#restaurer'>Restaurer</a></td>\n";
 				break;
 			default :
 				echo "<td></td>\n";
 				break;
 		}
-        echo "<td><a href='savebackup.php?fileid=$m'>Télécharger</a></td>\n";
-        echo "<td><a href='../backup/".$dirname."/".$value."'>Téléch. direct</a></td>\n";
+        echo "<td style='padding:5px;'><a href='savebackup.php?fileid=$m'>Télécharger</a></td>\n";
+        echo "<td style='padding:5px;'><a href='../backup/".$dirname."/".$value."'>Téléch. direct</a></td>\n";
         echo "</tr>\n";
         $m++;
     }
     clearstatcache();
-    echo "</table>\n</center>\n<hr />\n";
+    echo "</table>\n<hr />\n";
 }
 
 echo "<h3>Uploader un fichier (de restauration) vers le répertoire backup</h3>\n";
-echo "<form enctype=\"multipart/form-data\" action=\"accueil_sauve.php\" method=\"post\" name=\"formulaire2\">\n";
+echo "<form enctype=\"multipart/form-data\" action=\"accueil_sauve.php\" method=\"post\" id=\"formulaire2\">\n";
 
 echo "<p >\n";
 echo add_token_field();
 echo "</p >\n";
 $sav_file="";
+echo "<p >\n";
 echo "Les fichiers de sauvegarde sont sauvegardés dans un sous-répertoire du répertoire \"/backup\", dont le nom change de manière aléatoire régulièrement.
 Si vous le souhaitez, vous pouvez uploader un fichier de sauvegarde directement dans ce répertoire.
 Une fois cela fait, vous pourrez le sélectionner dans la liste des fichiers de restauration, sur cette page.\n";
-
-echo "<br />Vous pouvez également directement télécharger le fichier par ftp dans le répertoire \"/backup\".\n";
-
-echo "<br /><br /><b>Fichier à \"uploader\" </b>: <input type=\"file\" name=\"sav_file\" />
-<input type=\"hidden\" name=\"action\" value=\"upload\" />
-<input type=\"submit\" value=\"Valider\" name=\"bouton1\" />
-</form>
-<br />\n";
+echo "</p >\n";
+echo "<p >\n";
+echo "Vous pouvez également directement télécharger le fichier par ftp dans le répertoire \"/backup\".\n";
+echo "</p >\n";
+echo "<p >\n";
+echo "<br />
+    <label for='sav_file'><strong>Fichier à \"uploader\" </strong>: </label>
+    <input type=\"file\" id=\"sav_file\" name=\"sav_file\" />
+    <input type=\"hidden\" name=\"action\" value=\"upload\" />
+    <input type=\"submit\" value=\"Valider\" name=\"bouton1\" />
+    </p >
+</form>\n";
 
 $post_max_size=ini_get('post_max_size');
 $upload_max_filesize=ini_get('upload_max_filesize');
@@ -1940,8 +1904,7 @@ echo "<p style='margin-left: 20px;'>Selon la configuration du serveur et la tail
 (<i>par exemple si la taille du fichier dépasse la <b>taille maximale autorisée lors des téléchargements</b></i>).
 <br />Si c'est le cas, signalez le problème à l'administrateur du serveur.</p>\n";
 
-//echo "<table border='1' align='center'>\n";
-echo "<table class='boireaus' align='center'>\n";
+echo "<table class='boireaus center'>\n";
 echo "<tr><th style='font-weight: bold; text-align: center;'>Variable</th><th style='font-weight: bold; text-align: center;'>Valeur</th></tr>\n";
 echo "<tr class='lig1'><td style='font-weight: bold; text-align: center;'>post_max_size</td><td style='text-align: center;'>$post_max_size</td></tr>\n";
 echo "<tr class='lig-1'><td style='font-weight: bold; text-align: center;'>upload_max_filesize</td><td style='text-align: center;'>$upload_max_filesize</td></tr>\n";
@@ -1951,7 +1914,7 @@ echo "<br /><hr />";
 echo "<h3 id=\"zip\">Créer une archive (Zip) de dossiers de Gepi</h3>\n";
 echo "Une fois créée, pour télécharger l'archive, rendez-vous à la section \"Fichiers de restauration\" de cette page. <br />";
 echo "<p style=\"color: red;\">ATTENTION : veillez à supprimer le fichier créé une fois l'archive téléchargée.</p>";
-echo "<form enctype=\"multipart/form-data\" action=\"accueil_sauve.php\" method=\"post\" name=\"formulaire3\">\n";
+echo "<form enctype=\"multipart/form-data\" action=\"accueil_sauve.php\" method=\"post\" id=\"formulaire3\">\n";
 echo "<p >\n";
 echo add_token_field();
 echo "<br />Dossier à sauvegarder :<br />";
@@ -1979,7 +1942,7 @@ if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 		$dossiers_OK = false;
 	}
 }
-echo "<input type=\"radio\" name=\"dossier\" id=\"dossier_photos\" value=\"photos\" checked/><label for='dossier_photos'> Dossier Photos (<em>_photos_le_DATE_a_HEURE.zip</em>)</label>";
+echo "<p><input type=\"radio\" name=\"dossier\" id=\"dossier_photos\" value=\"photos\" checked='checked' /><label for='dossier_photos'> Dossier Photos (<em>_photos_le_DATE_a_HEURE.zip</em>)</label>";
 if ($dossiers_OK) {
 	echo "<br />&nbsp;&nbsp;(<em>volume du dossier 'photos'&nbsp;: ".volume_dir_human($dossier_photos)."</em>)";
 }
@@ -2000,6 +1963,7 @@ if(!getSettingAOui('active_cahiers_texte')) {echo "<span style='color:red; margi
 echo "<br />\n";
 echo "<input type=\"hidden\" name=\"action\" value=\"zip\" />\n
 	  <input type=\"submit\" value=\"Créer l'archive\" name=\"bouton3\" />\n
+      </p>
 	  </form>\n";
 
 echo "<br /><hr />";

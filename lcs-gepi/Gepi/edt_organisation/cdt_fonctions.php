@@ -9,7 +9,8 @@ function RecupereNotices(&$tab_data, $entetes) {
 
 	$jour = 0;
 	while (isset($entetes['entete'][$jour])) {
-		$timestamp = RecupereTimestampJour($jour);
+		//$timestamp = RecupereTimestampJour($jour);
+		$timestamp = RecupereTimestampJour_CDT2($jour);
 		//$timestamp-=3600;	
 		//echo "jour = ".$jour."<br/>";
 		//echo strftime("%S %M %H %d %b %Y", 1288825200 	)."<br/>";		
@@ -29,8 +30,8 @@ function RecupereNotices(&$tab_data, $entetes) {
 																date_ct >= '".$timestamp."' AND 
 																date_ct < '".($timestamp+24*3600)."' ORDER BY date_ct;";
 			//echo $sql_request."<br/>";
-			$req = mysql_query($sql_request);
-			if ($rep = mysql_fetch_array($req)) {
+			$req = mysqli_query($GLOBALS["mysqli"], $sql_request);
+			if ($rep = mysqli_fetch_array($req)) {
 			//echo $rep['id_ct']."  ".$rep['date_ct'];
 				$tab_data[$jour]['id_ct'][$index_box] = $rep['id_ct'];
 			}
@@ -57,7 +58,7 @@ function AfficheIconePlusNew_CDT($id_groupe, $login_edt, $type_edt, $heuredeb_de
         }
 		if ($id_ct == 0) {
 			echo ("<span class=\"image\">");
-			$MaDate = RecupereTimestampJour($jour);
+			$MaDate = RecupereTimestampJour_CDT2($jour);
 			echo "<a href=\"#\" style=\"font-size: 11pt;\"  onclick=\"javascript:
 					id_groupe = '".$id_groupe."';
 					getWinDernieresNotices().hide();
@@ -78,7 +79,7 @@ function AfficheIconePlusNew_CDT($id_groupe, $login_edt, $type_edt, $heuredeb_de
 		}
 		else {
 			echo ("<span class=\"image\">");
-			$MaDate = RecupereTimestampJour($jour);
+			$MaDate = RecupereTimestampJour_CDT2($jour);
 			echo "<a href=\"#\" style=\"font-size: 11pt;\"  onclick=\"javascript:
 					id_groupe = '".$id_groupe."';
 					getWinDernieresNotices().hide();
@@ -151,16 +152,16 @@ function AfficheBarCommutateurSemaines_CDT($login_edt, $visioedt, $type_edt_2, $
     echo "<div class=\"spacer\"></div>";
 
     echo "<div style=\"float:left;width:100%;\";>";
-    echo "<p>Semaine sélectionnée : ";
+    echo "<p class='bold'>Semaine sélectionnée : ";
 
     echo $tab[$week_selected-1]["lundis"]." - ";      
     echo $tab[$week_selected-1]["vendredis"];
     $avec_semAB="y";
     if($avec_semAB=='y') {
     	$sql="SELECT type_edt_semaine FROM edt_semaines WHERE id_edt_semaine='$week_selected' AND type_edt_semaine!='';";
-    	$res=mysql_query($sql);
-    	if(mysql_num_rows($res)>0) {
-    		$lig=mysql_fetch_object($res);
+    	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+    	if(mysqli_num_rows($res)>0) {
+    		$lig=mysqli_fetch_object($res);
     		echo " ($lig->type_edt_semaine)";
     	}
     }

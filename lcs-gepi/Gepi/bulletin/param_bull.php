@@ -57,6 +57,7 @@ else {
 	$titre_page = "Paramètres bloc adresse responsables";
 }
 
+//debug_var();
 
 // Tableau des couleurs HTML:
 $tabcouleur=Array("aliceblue","antiquewhite","aqua","aquamarine","azure","beige","bisque","black","blanchedalmond","blue","blueviolet","brown","burlywood","cadetblue","chartreuse","chocolate","coral","cornflowerblue","cornsilk","crimson","cyan","darkblue","darkcyan","darkgoldenrod","darkgray","darkgreen","darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkseagreen","darkslateblue","darkslategray","darkturquoise","darkviolet","deeppink","deepskyblue","dimgray","dodgerblue","firebrick","floralwhite","forestgreen","fuchsia","gainsboro","ghostwhite","gold","goldenrod","gray","green","greenyellow","honeydew","hotpink","indianred","indigo","ivory","khaki","lavender","lavenderblush","lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan","lightgoldenrodyellow","lightgreen","lightgrey","lightpink","lightsalmon","lightseagreen","lightskyblue","lightslategray","lightsteelblue","lightyellow","lime","limegreen","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid","mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise","mediumvioletred","midnightblue","mintcream","mistyrose","moccasin","navajowhite","navy","oldlace","olive","olivedrab","orange","orangered","orchid","palegoldenrod","palegreen","paleturquoise","palevioletred","papayawhip","peachpuff","peru","pink","plum","powderblue","purple","red","rosybrown","royalblue","saddlebrown","salmon","sandybrown","seagreen","seashell","sienna","silver","skyblue","slateblue","slategray","snow","springgreen","steelblue","tan","teal","thistle","tomato","turquoise","violet","wheat","white","whitesmoke","yellow","yellowgreen");
@@ -85,7 +86,29 @@ if (isset($_POST['is_posted'])) {
 			$reg_ok = 'no';
 		}
 	}
+
+	if (isset($_POST['bull_cell_pp_textsize'])) {
 	
+		if (!(preg_match ("/^[0-9]{1,}$/", $_POST['bull_cell_pp_textsize'])) || $_POST['bull_cell_pp_textsize'] < 1) {
+			$_POST['bull_cell_pp_textsize'] = 10;
+		}
+		if (!saveSetting("bull_cell_pp_textsize", $_POST['bull_cell_pp_textsize'])) {
+			$msg .= "Erreur lors de l'enregistrement de bull_cell_pp_textsize !";
+			$reg_ok = 'no';
+		}
+	}
+
+	if (isset($_POST['bull_cell_signature_textsize'])) {
+	
+		if (!(preg_match ("/^[0-9]{1,}$/", $_POST['bull_cell_signature_textsize'])) || $_POST['bull_cell_signature_textsize'] < 1) {
+			$_POST['bull_cell_signature_textsize'] = 10;
+		}
+		if (!saveSetting("bull_cell_signature_textsize", $_POST['bull_cell_signature_textsize'])) {
+			$msg .= "Erreur lors de l'enregistrement de bull_cell_signature_textsize !";
+			$reg_ok = 'no';
+		}
+	}
+
 	//==================================
 	// AJOUT: boireaus
 	if (isset($_POST['p_bulletin_margin'])) {
@@ -486,41 +509,45 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 
+	if (isset($_POST['bull_affiche_abs_cpe'])) {
+		if (!saveSetting("bull_affiche_abs_cpe", $_POST['bull_affiche_abs_cpe'])) {
+			$msg .= "Erreur lors de l'enregistrement de bull_affiche_abs_cpe !";
+			$reg_ok = 'no';
+		}
+	}
+
 	if (isset($_POST['bull_affiche_avis'])) {
-	
 		if (!saveSetting("bull_affiche_avis", $_POST['bull_affiche_avis'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_avis !";
 			$reg_ok = 'no';
 		}
 	}
 	if (isset($_POST['bull_affiche_aid'])) {
-	
 		if (!saveSetting("bull_affiche_aid", $_POST['bull_affiche_aid'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_aid !";
 			$reg_ok = 'no';
 		}
 	}
 	if (isset($_POST['bull_affiche_formule'])) {
-	
 		if (!saveSetting("bull_affiche_formule", $_POST['bull_affiche_formule'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_formule !";
 			$reg_ok = 'no';
 		}
 	}
 	if (isset($_POST['bull_affiche_signature'])) {
-	
 		if (!saveSetting("bull_affiche_signature", $_POST['bull_affiche_signature'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_signature !";
 			$reg_ok = 'no';
 		}
 	}
+	/*
 	if (isset($_POST['bull_affiche_img_signature'])) {
-	
 		if (!saveSetting("bull_affiche_img_signature", $_POST['bull_affiche_img_signature'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_img_signature !";
 			$reg_ok = 'no';
 		}
 	}
+	*/
 
 	if (isset($_POST['bull_hauteur_img_signature'])) {
 		$bull_hauteur_img_signature=$_POST['bull_hauteur_img_signature'];
@@ -553,7 +580,6 @@ if (isset($_POST['is_posted'])) {
 	}
 
 	if (isset($_POST['bull_affiche_numero'])) {
-	
 		if (!saveSetting("bull_affiche_numero", $_POST['bull_affiche_numero'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_numero !";
 			$reg_ok = 'no';
@@ -567,24 +593,21 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 	
-	
 	if(isset($_POST['bull_bordure_classique'])) {
 		if (!saveSetting("bull_bordure_classique", $_POST['bull_bordure_classique'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_bordure_classique !";
 			$reg_ok = 'no';
 		}
 	}
-	
+
 	if (isset($_POST['choix_bulletin'])) {
-	
 		if (!saveSetting("choix_bulletin", $_POST['choix_bulletin'])) {
 			$msg .= "Erreur lors de l'enregistrement de choix_bulletin";
 			$reg_ok = 'no';
 		}
 	}
-	
+
 	if (isset($_POST['min_max_moyclas'])) {
-	
 		if (!saveSetting("min_max_moyclas", $_POST['min_max_moyclas'])) {
 			$msg .= "Erreur lors de l'enregistrement de min_max_moyclas !";
 			$reg_ok = 'no';
@@ -604,7 +627,6 @@ if (isset($_POST['is_posted'])) {
 			$reg_ok = 'no';
 		}
 	}
-
 
 	if(isset($_POST['activer_photo_bulletin'])) {
 		if (!saveSetting("activer_photo_bulletin", $_POST['activer_photo_bulletin'])) {
@@ -637,7 +659,6 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 	
-	
 	if(isset($_POST['bull_intitule_app'])) {
 		if (!saveSetting("bull_intitule_app", $_POST['bull_intitule_app'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_intitule_app !";
@@ -652,14 +673,13 @@ if (isset($_POST['is_posted'])) {
 		}
 	}
 	
-	
 	if(isset($_POST['bull_affiche_tel'])) {
 		if (!saveSetting("bull_affiche_tel", $_POST['bull_affiche_tel'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_tel !";
 			$reg_ok = 'no';
 		}
 	}
-	
+
 	if(isset($_POST['bull_affiche_fax'])) {
 		if (!saveSetting("bull_affiche_fax", $_POST['bull_affiche_fax'])) {
 			$msg .= "Erreur lors de l'enregistrement de bull_affiche_fax !";
@@ -801,6 +821,8 @@ function SetDefaultValues(nb){
 	if (nb=='A4V') {
 		window.document.formulaire.titlesize.value = '14';
 		window.document.formulaire.textsize.value = '8';
+		window.document.formulaire.bull_cell_pp_textsize.value = '8';
+		window.document.formulaire.bull_cell_signature_textsize.value = '8';
 		window.document.formulaire.largeurtableau.value = '800';
 		window.document.formulaire.col_matiere_largeur.value = '150';
 		window.document.formulaire.col_note_largeur.value = '30';
@@ -811,6 +833,8 @@ function SetDefaultValues(nb){
 	if(nb=='A3H'){
 		window.document.formulaire.titlesize.value = '16';
 		window.document.formulaire.textsize.value = '10';
+		window.document.formulaire.bull_cell_pp_textsize.value = '10';
+		window.document.formulaire.bull_cell_signature_textsize.value = '10';
 		window.document.formulaire.largeurtableau.value = '1440';
 		window.document.formulaire.col_matiere_largeur.value = '300';
 		window.document.formulaire.col_note_largeur.value = '50';
@@ -907,7 +931,35 @@ if(getSettingAOui('active_bulletins')) {
         <td><input type="text" name="textsize" id="textsize" size="20" value="<?php echo(getSettingValue("textsize")); ?>" onKeyDown="clavier_2(this.id,event,0,100);" />
         </td>
     </tr>
-    <!-- Début AJOUT: boireaus -->
+
+    <tr <?php 
+    	if ($nb_ligne % 2) {echo "bgcolor=".$bgcolor;$nb_ligne++;}
+    	$bull_cell_pp_textsize=getSettingValue('bull_cell_pp_textsize');
+    	if($bull_cell_pp_textsize=="") {
+    		$bull_cell_pp_textsize=8;
+    	}
+    ?>>
+        <td style="font-variant: small-caps;">
+        <label for='bull_cell_pp_textsize' style='cursor: pointer;'>Taille en points du texte de la cellule 'Avis du conseil de classe' :</label>
+        </td>
+        <td><input type="text" name="bull_cell_pp_textsize" id="bull_cell_pp_textsize" size="20" value="<?php echo $bull_cell_pp_textsize; ?>" onKeyDown="clavier_2(this.id,event,0,100);" />
+        </td>
+    </tr>
+
+    <tr <?php 
+    	if ($nb_ligne % 2) {echo "bgcolor=".$bgcolor;$nb_ligne++;}
+    	$bull_cell_signature_textsize=getSettingValue('bull_cell_signature_textsize');
+    	if($bull_cell_signature_textsize=="") {
+    		$bull_cell_signature_textsize=8;
+    	}
+    ?>>
+        <td style="font-variant: small-caps;">
+        <label for='bull_cell_signature_textsize' style='cursor: pointer;'>Taille en points du texte de la cellule Signature :</label>
+        </td>
+        <td><input type="text" name="bull_cell_signature_textsize" id="bull_cell_signature_textsize" size="20" value="<?php echo $bull_cell_signature_textsize; ?>" onKeyDown="clavier_2(this.id,event,0,100);" />
+        </td>
+    </tr>
+
     <tr <?php if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;$nb_ligne++; ?>>
         <td style="font-variant: small-caps;">
         <label for='p_bulletin_margin' style='cursor: pointer;'>Marges hautes et basses des paragraphes en points du texte (hormis les titres) :</label>
@@ -921,7 +973,6 @@ if(getSettingAOui('active_bulletins')) {
 		}?>" onKeyDown="clavier_2(this.id,event,0,40);" />
         </td>
     </tr>
-    <!-- Fin AJOUT: boireaus -->
     <tr <?php if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;$nb_ligne++; ?>>
         <td style="font-variant: small-caps;">
         <label for='largeurtableau' style='cursor: pointer;'>Largeur du tableau en pixels :</label>
@@ -1366,16 +1417,18 @@ if(getSettingAOui('active_bulletins')) {
 
     <?php
         // A mettre dans 162_to_163
-        if((getSettingValue("bull_affiche_abs_tot")=="")&&(getSettingValue("bull_affiche_abs_nj")=="")&&(getSettingValue("bull_affiche_abs_ret")=="")) {
+        if((getSettingValue("bull_affiche_abs_tot")=="")&&(getSettingValue("bull_affiche_abs_nj")=="")&&(getSettingValue("bull_affiche_abs_ret")=="")&&(getSettingValue("bull_affiche_abs_cpe")=="")) {
             if(getSettingValue("bull_affiche_absences")=="y") {
                 saveSetting("bull_affiche_abs_tot", "y");
                 saveSetting("bull_affiche_abs_nj", "y");
                 saveSetting("bull_affiche_abs_ret", "y");
+                saveSetting("bull_affiche_abs_cpe", "y");
             }
             else {
                 saveSetting("bull_affiche_abs_tot", "n");
                 saveSetting("bull_affiche_abs_nj", "n");
                 saveSetting("bull_affiche_abs_ret", "n");
+                saveSetting("bull_affiche_abs_cpe", "n");
             }
         }
     ?>
@@ -1424,6 +1477,22 @@ if(getSettingAOui('active_bulletins')) {
         echo "<input type=\"radio\" name=\"bull_affiche_abs_ret\" id=\"bull_affiche_abs_retn\" value=\"n\" ";
         if (getSettingValue("bull_affiche_abs_ret") != 'y') echo " checked";
         echo " /><label for='bull_affiche_abs_retn' style='cursor: pointer;'>&nbsp;Non</label>";
+
+        ?>
+        </td>
+    </tr>
+    <tr <?php /*if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;$nb_ligne++;*/ ?>>
+        <td style="font-variant: small-caps;">
+        Afficher le nom du C.P.E.&nbsp;:
+        </td>
+        <td>
+        <?php
+        echo "<input type=\"radio\" name=\"bull_affiche_abs_cpe\" id=\"bull_affiche_abs_cpey\" value=\"y\" ";
+        if (getSettingValue("bull_affiche_abs_cpe") == 'y') echo " checked";
+        echo " /><label for='bull_affiche_abs_cpey' style='cursor: pointer;'>&nbsp;Oui</label>";
+        echo "<input type=\"radio\" name=\"bull_affiche_abs_cpe\" id=\"bull_affiche_abs_cpen\" value=\"n\" ";
+        if (getSettingValue("bull_affiche_abs_cpe") != 'y') echo " checked";
+        echo " /><label for='bull_affiche_abs_cpen' style='cursor: pointer;'>&nbsp;Non</label>";
 
         ?>
         </td>
@@ -1510,7 +1579,9 @@ if(getSettingAOui('active_bulletins')) {
         </td>
     </tr>
 
-    <tr <?php if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;$nb_ligne++; ?>>
+    <!--tr <?php if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;
+    //$nb_ligne++;
+    ?>>
         <td style="font-variant: small-caps;">
         Insérer la signature ou cachet de l'établissement&nbsp;:
         <?php
@@ -1534,11 +1605,16 @@ if(getSettingAOui('active_bulletins')) {
         echo " /><label for='bull_affiche_img_signaturen' style='cursor: pointer;'>&nbsp;Non</label>";
         ?>
         </td>
-    </tr>
+    </tr-->
 
     <tr <?php if ($nb_ligne % 2) echo "bgcolor=".$bgcolor;$nb_ligne++; ?>>
         <td style="font-variant: small-caps; vertical-align:top;">
         Dimensions maximales (<em>en pixels</em>) de l'image de la signature ou cachet de l'établissement&nbsp;:
+        <?php
+            if(acces('/gestion/gestion_signature.php', $_SESSION['statut'])) {
+                echo "<br />Voir <a href='../gestion/gestion_signature.php' target='_blank'>Gestion du ou des fichiers de signature</a>";
+            }
+        ?>
        </td>
         <td>
         <?php

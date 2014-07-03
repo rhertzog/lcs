@@ -62,7 +62,7 @@ $active_module_trombinoscopes=getSettingValue("active_module_trombinoscopes");
 if(($active_carnets_notes!='y')&&($active_cahiers_texte!='y')&&($active_module_trombinoscopes!='y')) {
 	//die("Le module n'est pas activé.");
 	$sql="UPDATE preferences SET value='n' WHERE name='accueil_simpl' AND login='".$_SESSION['login']."';";
-	$res=mysql_query($sql);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	header("Location: ./accueil.php");
 	die();
@@ -107,6 +107,84 @@ if($pref_accueil_visu=="y") {
 if($pref_accueil_liste_pdf=="y"){$colspan++;}
 
 
+$afficher_col_notanet="n";
+if (getSettingValue("active_notanet") == "y") {
+	$tab_groupes_notanet=array();
+	$sql="SELECT nv.*, jgc.id_groupe FROM notanet_verrou nv, 
+						j_groupes_classes jgc, 
+						j_groupes_professeurs jgp
+					WHERE nv.id_classe=jgc.id_classe AND 
+							jgc.id_groupe=jgp.id_groupe AND 
+							jgp.login='".$_SESSION['login']."';";
+	//echo "$sql<br />";
+	$res_notanet=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_notanet)>0) {
+		//$afficher_col_notanet="y";
+		while($lig_notanet=mysqli_fetch_object($res_notanet)) {
+			// On peut avoir plusieurs lignes retournées, s'il y a plusieurs types_brevet dans une classe/groupe
+			if(isset($tab_groupes_notanet[$lig_notanet->id_groupe]['verrouillage'])) {
+				if($lig_notanet->verrouillage=="N") {
+					$tab_groupes_notanet[$lig_notanet->id_groupe]['verrouillage']=$lig_notanet->verrouillage;
+				}
+			}
+			else {
+				$tab_groupes_notanet[$lig_notanet->id_groupe]['verrouillage']=$lig_notanet->verrouillage;
+			}
+			//echo "\$tab_groupes_notanet[$lig_notanet->id_groupe]['verrouillage']=".$tab_groupes_notanet[$lig_notanet->id_groupe]['verrouillage']."<br />";
+
+			if($lig_notanet->verrouillage=="N") {
+				$afficher_col_notanet="y";
+			}
+			// mod_notanet/saisie_app.php?id_groupe=2253
+		}
+	}
+
+
+	$tab_groupes_notanet_saisie_note=array();
+	// Test sur le fait qu'il y a de telles notes à saisir pour le prof connecté
+	$sql="SELECT DISTINCT jgp.id_groupe FROM notanet_ele_type net,
+				j_eleves_groupes jeg,
+				j_groupes_professeurs jgp,
+				j_groupes_matieres jgm,
+				notanet_corresp nc
+			WHERE net.login=jeg.login AND
+				jeg.id_groupe=jgp.id_groupe AND
+				jgp.login='".$_SESSION['login']."' AND
+				jeg.id_groupe=jgm.id_groupe AND
+				jgm.id_matiere=nc.matiere AND
+				nc.mode='saisie';";
+	//echo "$sql<br />";
+	$res_notanet=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_notanet)>0) {
+		while($lig_notanet=mysqli_fetch_object($res_notanet)) {
+			if(!getSettingAOui("notanet_saisie_note_ouverte")) {
+				$tab_groupes_notanet_saisie_note[$lig_notanet->id_groupe]['verrouillage']="O";
+				//echo $lig_notanet->id_groupe."<br />";
+			}
+			else {
+				$tab_groupes_notanet_saisie_note[$lig_notanet->id_groupe]['verrouillage']="N";
+				$afficher_col_notanet="y";
+			}
+		}
+	}
+}
+
+//=================================================
+$accueil_afficher_tous_les_groupes=isset($_POST['accueil_afficher_tous_les_groupes']) ? $_POST['accueil_afficher_tous_les_groupes'] : (isset($_GET['accueil_afficher_tous_les_groupes']) ? $_GET['accueil_afficher_tous_les_groupes'] : (isset($_SESSION['accueil_afficher_tous_les_groupes']) ? $_SESSION['accueil_afficher_tous_les_groupes'] : NULL));
+
+if(!isset($accueil_afficher_tous_les_groupes)) {
+	$accueil_afficher_tous_les_groupes="n";
+}
+
+$_SESSION['accueil_afficher_tous_les_groupes']=$accueil_afficher_tous_les_groupes;
+//=================================================
+
+/*
+echo "<pre>";
+print_r($tab_groupes_notanet);
+echo "</pre>";
+*/
+
 // Préférences des profs à récupérer par la suite dans la table 'preferences':
 // 1: icones
 // 2: textes
@@ -118,7 +196,7 @@ $accueil_aff_txt_icon=1;
 // CELA A ETE DESACTIVE... PARCE QUE LISIBLE UNIQUEMENT EN MODE icones seuls
 
 
-// Styles spacifiques à la page avec chemin relatif à la racine du Gepi:
+// Styles specifiques à la page avec chemin relatif à la racine du Gepi:
 //$style_specifique="accueil_simpl_prof.css";
 $style_specifique="accueil_simpl_prof";
 
@@ -139,11 +217,28 @@ echo "<a href=\"./accueil.php?accueil_simpl=n\">Accès au menu d'accueil</a>";
 echo " | \n";
 //echo "<a href='./gestion/config_prefs.php'> Paramétrer mon interface </a>\n";
 echo "<a href='./utilisateurs/mon_compte.php#accueil_simpl_prof'> Paramétrer mon interface </a>\n";
+
+if($accueil_afficher_tous_les_groupes=="n") {
+	echo "| <a href='".$_SERVER['PHP_SELF']."?accueil_afficher_tous_les_groupes=y'>Afficher tous les groupes sans tri</a>\n";
+}
+else {
+	echo "| <a href='".$_SERVER['PHP_SELF']."?accueil_afficher_tous_les_groupes=n' title=\"Vous pouvez choisir les groupes à afficher en page d'accueil simplifiée.
+Pour cela consultez la rubrique
+    Page d'accueil simplifiée
+de la page
+    Gérer mon compte.\">Trier mes groupes</a>\n";
+}
+
 echo "</p>\n";
 echo "</div>\n";
 
 // Liste des Accès ouverts en consultation à vos CDT
 affiche_acces_cdt();
+
+if(in_array($_SESSION['statut'], array('professeur', 'cpe', 'scolarite'))) {
+	//echo "<div align='center'>".afficher_les_evenements()."</div>";
+	$liste_evenements=afficher_les_evenements();
+}
 
 echo "<center>\n";
 
@@ -156,17 +251,60 @@ $invisibilite_groupe['bulletins']=array();
 $invisibilite_groupe['cahier_notes']=array();
 $invisibilite_groupe['cahier_texte']=array();
 $sql="SELECT jgv.* FROM j_groupes_visibilite jgv, j_groupes_professeurs jgp WHERE jgv.id_groupe=jgp.id_groupe AND jgp.login='".$_SESSION['login']."' AND jgv.visible='n';";
-$res_jgv=mysql_query($sql);
-if(mysql_num_rows($res_jgv)>0) {
-	while($lig_jgv=mysql_fetch_object($res_jgv)) {
+$res_jgv=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res_jgv)>0) {
+	while($lig_jgv=mysqli_fetch_object($res_jgv)) {
 		$invisibilite_groupe[$lig_jgv->domaine][]=$lig_jgv->id_groupe;
 	}
+}
+
+//================================
+if($accueil_afficher_tous_les_groupes=="n") {
+	$tab_grp_order=array();
+	$tab_grp_hidden=array();
+	$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name LIKE 'accueil_simpl_id_groupe_order_%' ORDER BY value;";
+	$res_grp_order=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_grp_order)>0) {
+		while($lig_grp_order=mysqli_fetch_object($res_grp_order)) {
+			$tmp_id_groupe=preg_replace("/^accueil_simpl_id_groupe_order_/", "", $lig_grp_order->name);
+			if($lig_grp_order->value=='-1') {
+				$tab_grp_hidden[]=$tmp_id_groupe;
+			}
+			else {
+				$tab_grp_order[]=$tmp_id_groupe;
+			}
+		}
+	}
+
+	// On passe en revue les groupes qui ont été triés dans Mon compte
+	$groups=array();
+	$tmp_groups=get_groups_for_prof($_SESSION["login"]);
+	for($loop=0;$loop<count($tab_grp_order);$loop++) {
+		for($i=0;$i<count($tmp_groups);$i++) {
+			if($tmp_groups[$i]['id']==$tab_grp_order[$loop]) {
+				$groups[]=$tmp_groups[$i];
+				break;
+			}
+		}
+	}
+
+	// Les groupes qui n'ont pas été triés dans Mon compte et pas cachés non plus
+	for($i=0;$i<count($tmp_groups);$i++) {
+		if((!in_array($tmp_groups[$i]['id'], $tab_grp_order))&&(!in_array($tmp_groups[$i]['id'], $tab_grp_hidden))) {
+			$groups[]=$tmp_groups[$i];
+		}
+	}
+
+}
+else {
+	$groups=get_groups_for_prof($_SESSION["login"]);
 }
 //================================
 
 
+//================================
+
 // Récupérer le nombre max de périodes
-$groups=get_groups_for_prof($_SESSION["login"]);
 $maxper=0;
 $tab_noms_periodes=array();
 $tab_num_periodes_ouvertes=array();
@@ -397,7 +535,7 @@ if($colspan>0){
 											jeg.periode='$i' AND
 											jgp.login='".$_SESSION['login']."' AND
 											jeg.id_groupe='".$groups[$k]['id']."' LIMIT 1;";
-					$res_test_acces_bull_simp=mysql_num_rows(mysql_query($sql));
+					$res_test_acces_bull_simp=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], $sql));
 					if($res_test_acces_bull_simp>0) {$test_acces_bull_simp[$i]="y";break;}
 				}
 
@@ -409,7 +547,7 @@ if($colspan>0){
 													jep.professeur='".$_SESSION['login']."' AND
 													jeg.id_groupe='".$groups[$k]['id']."' LIMIT 1;";
 					//echo "$sql<br />";
-					$res_test_acces_bull_simp=mysql_num_rows(mysql_query($sql));
+					$res_test_acces_bull_simp=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], $sql));
 					if($res_test_acces_bull_simp>0) {$test_acces_bull_simp[$i]="y";break;}
 				}
 			}
@@ -438,7 +576,7 @@ elseif($colspan>0) {
 
 
 //echo "<table border='1'>\n";
-echo "<table class='contenu' summary=\"Tableau de la liste des enseignements avec les liens vers le Carnet de notes, les bulletins, les graphes,...\">\n";
+echo "<table class='contenu boireaus boireaus_alt' summary=\"Tableau de la liste des enseignements avec les liens vers le Carnet de notes, les bulletins, les graphes,...\">\n";
 echo "<tr>\n";
 echo "<th";
 echo $chaine_rowspan_ligne_entete;
@@ -529,6 +667,15 @@ if(($pref_accueil_cn=="y")||
 			}
 		}
 	}
+}
+if($afficher_col_notanet=="y") {
+	echo "<th";
+	if(($active_carnets_notes=="y")&&($pref_accueil_cn=="y")&&($colspan>0)){echo " rowspan='3'";}
+	echo ">\n";
+	echo "<span title=\"Remplissage des appréciations pour le brevet des collèges (DNB).
+
+Saisie ou import des notes d'EPS.\">Brevet</span>\n";
+	echo "</th>\n";
 }
 echo "</tr>\n";
 
@@ -749,7 +896,8 @@ for($i=0;$i<count($groups);$i++){
 							}
 						}
 						else {
-							echo "<td class='$class_style'>\n";
+							//echo "<td class='$class_style'>\n";
+							echo "<td>\n";
 						}
 
 						if(!in_array($groups[$i]['id'],$invisibilite_groupe['cahier_notes'])) {
@@ -778,13 +926,13 @@ for($i=0;$i<count($groups);$i++){
 						// Calcul du nombre de notes et du nombre d'appréciations présentes sur le bulletin
 						$sql="SELECT 1=1 FROM matieres_notes WHERE id_groupe='".$groups[$i]['id']."' AND periode='".$groups[$i]['periodes'][$j]['num_periode']."';";
 						// AND statut='' ?
-						$test=mysql_query($sql);
-						$nb_notes_bulletin=mysql_num_rows($test);
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						$nb_notes_bulletin=mysqli_num_rows($test);
 	
 						$sql="SELECT 1=1 FROM matieres_appreciations WHERE id_groupe='".$groups[$i]['id']."' AND periode='".$groups[$i]['periodes'][$j]['num_periode']."';";
 						// AND statut='' ?
-						$test=mysql_query($sql);
-						$nb_app_bulletin=mysql_num_rows($test);
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						$nb_app_bulletin=mysqli_num_rows($test);
 	
 						$effectif_groupe=count($groups[$i]["eleves"][$groups[$i]['periodes'][$j]['num_periode']]["users"]);
 	
@@ -799,7 +947,8 @@ for($i=0;$i<count($groups);$i++){
 							}
 						}
 						else {
-							echo "<td class='$class_style'>\n";
+							//echo "<td class='$class_style'>\n";
+							echo "<td>\n";
 						}
 						if(!in_array($groups[$i]['id'],$invisibilite_groupe['bulletins'])) {
 							echo "<div id='h_bn_".$i."_".$j."'>";
@@ -830,7 +979,17 @@ for($i=0;$i<count($groups);$i++){
 	
 	
 						// Appréciation sur le bulletin:
-						echo "<td class='$class_style'>\n";
+						if($class_style!="deverrouille") {
+							if(acces_exceptionnel_saisie_bull_app_groupe_periode($groups[$i]['id'], $j)) {
+								echo "<td style='background-color:orange;' title='Accès exceptionnellement ouvert'>\n";
+							}
+							else {
+								echo "<td class='$class_style'>\n";
+							}
+						}
+						else {
+							echo "<td>\n";
+						}
 						echo "<div id='h_ba_".$i."_".$j."'>";
 						if(!in_array($groups[$i]['id'],$invisibilite_groupe['bulletins'])) {
 							echo "<a href='saisie/saisie_appreciations.php?id_groupe=".$groups[$i]['id']."&amp;periode_cn=".$groups[$i]['periodes'][$j]['num_periode']."'";
@@ -863,7 +1022,12 @@ for($i=0;$i<count($groups);$i++){
 	
 					if($pref_accueil_visu=="y"){
 						// Graphe:
-						echo "<td class='$class_style'>\n";
+						if($class_style!="deverrouille") {
+							echo "<td class='$class_style'>\n";
+						}
+						else {
+							echo "<td>\n";
+						}
 						echo "<div id='h_g_".$i."_".$j."'>";
 						$cpt=0;
 						foreach($groups[$i]["classes"]["classes"] as $classe){
@@ -898,7 +1062,12 @@ for($i=0;$i<count($groups);$i++){
 						// <input type=hidden name=id_classe value=$id_classe />
 	
 						if($test_acces_bull_simp[$j]=="y") {
-							echo "<td class='$class_style'>\n";
+							if($class_style!="deverrouille") {
+								echo "<td class='$class_style'>\n";
+							}
+							else {
+								echo "<td>\n";
+							}
 							echo "<div id='h_bs_".$i."_".$j."'>";
 							$cpt=0;
 							foreach($groups[$i]["classes"]["classes"] as $classe){
@@ -919,7 +1088,7 @@ for($i=0;$i<count($groups);$i++){
 																	jeg.periode='$j' AND
 																	jec.id_classe='".$classe['id']."' AND
 																	jep.professeur='".$_SESSION['login']."';";
-									$res_test_affiche_bull_simp_cette_classe=mysql_num_rows(mysql_query($sql));
+									$res_test_affiche_bull_simp_cette_classe=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], $sql));
 									//echo "$sql";
 									if($res_test_affiche_bull_simp_cette_classe>0) {$affiche_bull_simp_cette_classe="y";}
 								}
@@ -951,7 +1120,12 @@ for($i=0;$i<count($groups);$i++){
 	
 	
 					if($pref_accueil_liste_pdf=="y"){
-						echo "<td class='$class_style'>\n";
+						if($class_style!="deverrouille") {
+							echo "<td class='$class_style'>\n";
+						}
+						else {
+							echo "<td>\n";
+						}
 						echo "<div id='h_listes_".$i."_".$j."'>";
 						echo "<a href='impression/liste_pdf.php' onClick=\"valide_liste_pdf('".$groups[$i]['id']."','".$groups[$i]['periodes'][$j]['num_periode']."'); return false;\" target='_blank'";
 						if($pref_accueil_infobulles=="y"){
@@ -979,6 +1153,52 @@ for($i=0;$i<count($groups);$i++){
 		}
 	}
 
+	if($afficher_col_notanet=="y") {
+		if((isset($tab_groupes_notanet[$groups[$i]['id']]['verrouillage']))||(isset($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage']))) {
+
+			if(((isset($tab_groupes_notanet[$groups[$i]['id']]['verrouillage']))&&($tab_groupes_notanet[$groups[$i]['id']]['verrouillage']=="N"))||((isset($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage']))&&($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage']=="N"))) {
+				echo "<td class='deverrouille'>";
+
+				if(isset($tab_groupes_notanet[$groups[$i]['id']]['verrouillage'])) {
+					if($tab_groupes_notanet[$groups[$i]['id']]['verrouillage']=="N") {
+						echo "<a href='./mod_notanet/saisie_app.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/bulletin_edit.png' width='34' height='34' title=\"Saisir les appréciations pour les Fiches Brevet\" /></a>";
+					}
+					else {
+						echo "<a href='./mod_notanet/saisie_app.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/chercher.png' width='34' height='34' title=\"Consulter vos appréciations pour les Fiches Brevet\" /></a>\n";
+					}
+				}
+
+				if(isset($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage'])) {
+					if($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage']=="N") {
+						echo " <a href='./mod_notanet/saisie_notes.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/bulletin_edit.png' width='34' height='34' title=\"Saisir les notes pour les Notanet et les Fiches Brevet\" /></a>";
+					}
+					else {
+						echo " <a href='./mod_notanet/saisie_notes.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/chercher.png' width='34' height='34' title=\"Consulter vos notes pour Notanet et les Fiches Brevet\" /></a>\n";
+					}
+				}
+
+				echo "</td>\n";
+			}
+			else {
+				echo "<td class='verrouillagepart'>";
+				//echo "<a href='./mod_notanet/saisie_app.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/chercher.png' width='34' height='34' title=\"Consulter vos appréciations pour les Fiches Brevet\" /></a>";
+
+				if(isset($tab_groupes_notanet[$groups[$i]['id']]['verrouillage'])) {
+					echo "<a href='./mod_notanet/saisie_app.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/chercher.png' width='34' height='34' title=\"Consulter vos appréciations pour les Fiches Brevet\" /></a>\n";
+				}
+
+				if(isset($tab_groupes_notanet_saisie_note[$groups[$i]['id']]['verrouillage'])) {
+					echo " <a href='./mod_notanet/saisie_notes.php?id_groupe=".$groups[$i]['id']."'><img src='./images/icons/chercher.png' width='34' height='34' title=\"Consulter vos notes pour Notanet et les Fiches Brevet\" /></a>\n";
+				}
+
+				echo "</td>\n";
+			}
+		}
+		else {
+			echo "<td>&nbsp;</td>\n";
+		}
+	}
+
 	echo "</tr>\n";
 	flush();
 	/*
@@ -1000,33 +1220,33 @@ $sql="SELECT * FROM aid_config
 		WHERE display_bulletin = 'y'
 			OR bull_simplifie = 'y'
 			ORDER BY nom;";
-$res_aid=mysql_query($sql);
+$res_aid=mysqli_query($GLOBALS["mysqli"], $sql);
 $i=0;
 $tmp_nb_aid_a_afficher=0;
 $nb_aid=0;
 while ($i < $tmp_nb_aid) {
-	$tmp_indice_aid = @mysql_result($res_aid, $i, "indice_aid");
-	$tmp_aid_display_begin = @mysql_result($res_aid, $i, "display_begin");
-	$tmp_aid_display_end = @mysql_result($res_aid, $i, "display_end");
-	$tmp_aid_display_bulletin = @mysql_result($res_aid, $i, "display_bulletin");
-	$tmp_aid_bull_simplifie = @mysql_result($res_aid, $i, "bull_simplifie");
-	$tmp_aid_type_note = @mysql_result($res_aid, $i, "type_note");
+	$tmp_indice_aid = @old_mysql_result($res_aid, $i, "indice_aid");
+	$tmp_aid_display_begin = @old_mysql_result($res_aid, $i, "display_begin");
+	$tmp_aid_display_end = @old_mysql_result($res_aid, $i, "display_end");
+	$tmp_aid_display_bulletin = @old_mysql_result($res_aid, $i, "display_bulletin");
+	$tmp_aid_bull_simplifie = @old_mysql_result($res_aid, $i, "bull_simplifie");
+	$tmp_aid_type_note = @old_mysql_result($res_aid, $i, "type_note");
 
 	$sql="SELECT * FROM j_aid_utilisateurs
 		WHERE (id_utilisateur = '".$_SESSION['login']."'
 		AND indice_aid = '".$tmp_indice_aid."')";
 	//echo "$sql<br />";
-	$tmp_call_prof = mysql_query($sql);
-	$tmp_nb_result = mysql_num_rows($tmp_call_prof);
+	$tmp_call_prof = mysqli_query($GLOBALS["mysqli"], $sql);
+	$tmp_nb_result = mysqli_num_rows($tmp_call_prof);
 	if (($tmp_nb_result != 0) or ($_SESSION['statut'] == 'secours')) {
-		$tmp_nom_aid = @mysql_result($tmp_call_data, $i, "nom");
+		$tmp_nom_aid = @old_mysql_result($tmp_call_data, $i, "nom");
 
 		$sql="SELECT a.nom, a.id, a.numero FROM j_aid_utilisateurs j, aid a WHERE (j.id_utilisateur = '" . $_SESSION['login'] . "' and a.id = j.id_aid and a.indice_aid=j.indice_aid and j.indice_aid='$tmp_indice_aid') ORDER BY a.numero, a.nom";
 		//echo "$sql<br />";
-		$tmp_call_prof_aid = mysql_query($sql);
-		$tmp_nombre_aid = mysql_num_rows($tmp_call_prof_aid);
+		$tmp_call_prof_aid = mysqli_query($GLOBALS["mysqli"], $sql);
+		$tmp_nombre_aid = mysqli_num_rows($tmp_call_prof_aid);
 		//if ($tmp_nombre_aid>0) {
-		while($lig_aid=mysql_fetch_object($tmp_call_prof_aid)) {
+		while($lig_aid=mysqli_fetch_object($tmp_call_prof_aid)) {
 
 
 /*
@@ -1056,17 +1276,17 @@ while ($i < $tmp_nb_aid) {
 							jae.indice_aid='$tmp_indice_aid'
 					ORDER BY c.classe, c.nom_complet;";
 			//echo "$sql<br />";
-			$res_clas_aid=mysql_query($sql);
+			$res_clas_aid=mysqli_query($GLOBALS["mysqli"], $sql);
 			$tmp_aid_max_per=0;
-			while($lig_clas_aid=mysql_fetch_object($res_clas_aid)) {
+			while($lig_clas_aid=mysqli_fetch_object($res_clas_aid)) {
 				$tab_clas_aid[$cpt_clas_aid]['id']=$lig_clas_aid->id;
 				$tab_clas_aid[$cpt_clas_aid]['classe']=$lig_clas_aid->classe;
 				$tab_clas_aid[$cpt_clas_aid]['nom_complet']=$lig_clas_aid->nom_complet;
 
 				$sql="SELECT num_periode FROM periodes WHERE id_classe='$lig_clas_aid->id' ORDER BY num_periode DESC LIMIT 1;";
-				$tmp_res_per_clas=mysql_query($sql);
-				if(mysql_num_rows($tmp_res_per_clas)>0) {
-					$lig_tmp_per_clas=mysql_fetch_object($tmp_res_per_clas);
+				$tmp_res_per_clas=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($tmp_res_per_clas)>0) {
+					$lig_tmp_per_clas=mysqli_fetch_object($tmp_res_per_clas);
 					if($lig_tmp_per_clas->num_periode>$tmp_aid_max_per) {$tmp_aid_max_per=$lig_tmp_per_clas->num_periode;}
 				}
 				$cpt_clas_aid++;
@@ -1147,9 +1367,9 @@ while ($i < $tmp_nb_aid) {
 							for($loop=0;$loop<count($tab_clas_aid);$loop++) {
 								$sql="SELECT * FROM periodes WHERE num_periode='$j' AND id_classe='".$tab_clas_aid[$loop]['id']."';";
 								//echo "$sql<br />";
-								$res_ver=mysql_query($sql);
-								if(mysql_num_rows($res_ver)>0) {
-									$lig_ver=mysql_fetch_object($res_ver);
+								$res_ver=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($res_ver)>0) {
+									$lig_ver=mysqli_fetch_object($res_ver);
 									if($lig_ver->verouiller=='P') {$nb_verrpart++;}
 									if($lig_ver->verouiller=='O') {$nb_verrtot++;}
 									if($lig_ver->verouiller=='N') {$nb_non_close++;}
@@ -1178,18 +1398,18 @@ while ($i < $tmp_nb_aid) {
 								// Calcul du nombre de notes et du nombre d'appréciations présentes sur le bulletin
 								$sql="SELECT 1=1 FROM aid_appreciations WHERE id_aid='$lig_aid->id' AND indice_aid='$tmp_indice_aid' AND statut!='other' AND periode='$j';";
 								// AND statut='' ?
-								$test=mysql_query($sql);
-								$nb_notes_bulletin=mysql_num_rows($test);
+								$test=mysqli_query($GLOBALS["mysqli"], $sql);
+								$nb_notes_bulletin=mysqli_num_rows($test);
 	
 								$sql="SELECT 1=1 FROM aid_appreciations WHERE id_aid='$lig_aid->id' AND indice_aid='$tmp_indice_aid' AND appreciation!='' AND periode='$j';";
 								// AND statut='' ?
-								$test=mysql_query($sql);
-								$nb_app_bulletin=mysql_num_rows($test);
+								$test=mysqli_query($GLOBALS["mysqli"], $sql);
+								$nb_app_bulletin=mysqli_num_rows($test);
 	
 								$sql="SELECT 1=1 FROM j_aid_eleves WHERE id_aid='$lig_aid->id' AND indice_aid='$tmp_indice_aid';";
 								// AND statut='' ?
-								$test=mysql_query($sql);
-								$effectif_aid=mysql_num_rows($test);
+								$test=mysqli_query($GLOBALS["mysqli"], $sql);
+								$effectif_aid=mysqli_num_rows($test);
 
 								// Note sur le bulletin:
 								echo "<!-- Colonne Note Bulletin -->\n";
@@ -1321,7 +1541,7 @@ while ($i < $tmp_nb_aid) {
 																				jeg.periode='$j' AND
 																				jec.id_classe='".$tab_clas_aid[$loop]['id']."' AND
 																				jep.professeur='".$_SESSION['login']."';";
-												$res_test_affiche_bull_simp_cette_classe=mysql_num_rows(mysql_query($sql));
+												$res_test_affiche_bull_simp_cette_classe=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], $sql));
 												//echo "$sql";
 												if($res_test_affiche_bull_simp_cette_classe>0) {$affiche_bull_simp_cette_classe="y";}
 											}

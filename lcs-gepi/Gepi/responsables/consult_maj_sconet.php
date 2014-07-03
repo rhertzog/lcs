@@ -52,7 +52,7 @@ if(isset($_POST['suppr'])) {
 	$cpt_suppr=0;
 	for($i=0;$i<count($suppr);$i++) {
 		$sql="DELETE FROM log_maj_sconet WHERE id='".$suppr[$i]."';";
-		$res=mysql_query($sql);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$res) {
 			$msg.="Erreur lors de la suppression du compte-rendu n°".$suppr[$i]."<br />";
 		}
@@ -76,8 +76,8 @@ echo "<p class='bold'>
 echo "<h2>Mises à jour d'après Sconet/Siècle</h2>";
 
 $sql="SELECT * FROM log_maj_sconet ORDER BY date_debut;";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0){
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0){
 	echo "<p>Aucun compte-rendu de mise à jour d'après Sconet n'est enregistré dans la table 'log_maj_sconet'.</p>\n";
 	require("../lib/footer.inc.php");
 	die();
@@ -89,13 +89,14 @@ echo "<form action='".$_SERVER['PHP_SELF']."' method='post' />
 	<table class='boireaus' summary=\"Tableau des Mises à jour d'après Sconet\">
 		<thead>
 			<tr>
-				<th colspan='2'>Date de</th>
-				<th rowspan='2'>Effectuée<br />par</th>
-				<th rowspan='2'>Compte-rendu</th>
 				<th rowspan='2'>
 					<input type='submit' value='Supprimer' /><br />
 					<a href='javascript:CocheColonne();changement();'><img src='../images/enabled.png' width='15' height='15' alt='Tout cocher' title='Tout cocher' /></a> / <a href='javascript:DecocheColonne();changement();'><img src='../images/disabled.png' width='15' height='15' alt='Tout décocher' title='Tout décocher' /></a>
 				</th>
+				<th rowspan='2' title=\"Identifiant de l'enregistrement.\">Id</th>
+				<th colspan='2'>Date de</th>
+				<th rowspan='2'>Effectuée<br />par</th>
+				<th rowspan='2'>Compte-rendu</th>
 			</tr>
 			<tr>
 				<th>début</th>
@@ -105,15 +106,16 @@ echo "<form action='".$_SERVER['PHP_SELF']."' method='post' />
 		<tbody>";
 $cpt=0;
 $alt=1;
-while($lig=mysql_fetch_object($res)) {
+while($lig=mysqli_fetch_object($res)) {
 	$alt=$alt*(-1);
 	echo "
 			<tr class='lig$alt white_hover'>
+				<td><input type='checkbox' name='suppr[]' id='suppr_$cpt' value='".$lig->id."' /></td>
+				<td>".$lig->id."</td>
 				<td>".formate_date($lig->date_debut, 'y')."</td>
 				<td>".(($lig->date_fin!="0000-00-00 00:00:00") ? formate_date($lig->date_fin, 'y') : "")."</td>
 				<td>".civ_nom_prenom($lig->login)."</td>
 				<td>".$lig->texte."</td>
-				<td><input type='checkbox' name='suppr[]' id='suppr_$cpt' value='".$lig->id."' /></td>
 			</tr>";
 	$cpt++;
 }

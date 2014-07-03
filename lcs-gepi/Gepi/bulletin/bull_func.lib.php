@@ -110,7 +110,7 @@ function bulletin_html($tab_bull,$i,$tab_rel) {
 		// Paramètres généraux:
 		// En admin, dans Gestion générale/Configuration générale
 		$gepi_prof_suivi,
-
+		$gepi_cpe_suivi,
 		$RneEtablissement,
 		$gepiSchoolName,
 		$gepiSchoolAdress1,
@@ -164,6 +164,7 @@ function bulletin_html($tab_bull,$i,$tab_rel) {
 		$bull_affiche_abs_tot,
 		$bull_affiche_abs_nj,
 		$bull_affiche_abs_ret,
+		$bull_affiche_abs_cpe,
 
 		$bull_affiche_avis,
 
@@ -172,11 +173,11 @@ function bulletin_html($tab_bull,$i,$tab_rel) {
 		// L'affichage des graphes devrait provenir des Paramètres d'impression des bulletins HTML, mais le paramètre a été stocké dans $tab_bull
 		$bull_affiche_signature,	// affichage du nom du PP et du chef d'établissement
 
-		$bull_affiche_img_signature,
-		$url_fich_sign,
+		//$bull_affiche_img_signature,
+		//$url_fich_sign,
+		$signature_bull,
 
 		$bull_affiche_etab,			// Etablissement d'origine
-
 
 		$activer_photo_bulletin,
 		// $bull_photo_largeur_max et $bull_photo_hauteur_max sont récupérées via global dans redimensionne_image()
@@ -426,11 +427,51 @@ function bulletin_html($tab_bull,$i,$tab_rel) {
 				}
 			}
 		}
+
+		// Envoi du bulletin à des resp_legal=0
+		if (isset($tab_bull['eleve'][$i]['resp'][2])) {
+			//$indice_tab_adr=count($tab_adr_ligne1);
+			foreach($tab_bull['eleve'][$i]['resp'] as $key => $value) {
+				if($key>=2) {
+					//echo "DEBUG: \$key=$key<br />";
+					if($tab_bull['eleve'][$i]['resp'][$key]['civilite']!="") {
+						$tab_adr_ligne1[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['civilite']." ".$tab_bull['eleve'][$i]['resp'][$key]['nom']." ".$tab_bull['eleve'][$i]['resp'][$key]['prenom'];
+					}
+					else {
+						$tab_adr_ligne1[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['nom']." ".$tab_bull['eleve'][$i]['resp'][$key]['prenom'];
+					}
+
+					$tab_adr_ligne2[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['adr1'];
+					if($tab_bull['eleve'][$i]['resp'][$key]['adr2']!=""){
+						$tab_adr_ligne2[$nb_bulletins].="<br />\n".$tab_bull['eleve'][$i]['resp'][$key]['adr2'];
+					}
+					if($tab_bull['eleve'][$i]['resp'][$key]['adr3']!=""){
+						$tab_adr_ligne2[$nb_bulletins].="<br />\n".$tab_bull['eleve'][$i]['resp'][$key]['adr3'];
+					}
+					if($tab_bull['eleve'][$i]['resp'][$key]['adr4']!=""){
+						$tab_adr_ligne2[$nb_bulletins].="<br />\n".$tab_bull['eleve'][$i]['resp'][$key]['adr4'];
+					}
+					$tab_adr_ligne3[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['cp']." ".$tab_bull['eleve'][$i]['resp'][$key]['commune'];
+
+					if(($tab_bull['eleve'][$i]['resp'][$key]['pays']!="")&&(my_strtolower($tab_bull['eleve'][$i]['resp'][$key]['pays'])!=my_strtolower($gepiSchoolPays))) {
+						if($tab_adr_ligne3[$nb_bulletins]!=" "){
+							$tab_adr_ligne3[$nb_bulletins].="<br />";
+						}
+						$tab_adr_ligne3[$nb_bulletins].=$tab_bull['eleve'][$i]['resp'][$key]['pays'];
+					}
+
+					$nb_bulletins++;
+				}
+			}
+		}
+
 	}
 	// Fin de la préparation des lignes adresse responsable
 
 	// Pour afficher deux moyennes générales: avec les coeff de Gestion des bases/<Classe> Enseignements et avec des coef à 1
 	$affiche_deux_moy_gen=$tab_bull['affiche_moyenne_general_coef_1'];
+
+	//echo "DEBUG : \$nb_bulletins=$nb_bulletins<br />";
 
 	// Début des bulletins
 	for ($bulletin=0; $bulletin<$nb_bulletins; $bulletin++) {
@@ -549,7 +590,8 @@ width:".$largeur1."%;\n";
 			//affichage des données sur une seule ligne ou plusieurs
 			if  ($bull_affiche_eleve_une_ligne == 'no') { // sur plusieurs lignes
 				echo "<p class='bulletin'>\n";
-				echo "<b><span class=\"bgrand\">".$tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']."</span></b><br />";
+				//echo "<b><span class=\"bgrand\">".$tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']."</span></b><br />";
+				echo "<b><span class=\"bgrand\">".affiche_eleve($tab_bull['eleve'][$i]['nom'],$tab_bull['eleve'][$i]['prenom'],$tab_bull['id_classe'])."</span></b><br />";
 				echo "Né";
 				if (mb_strtoupper($tab_bull['eleve'][$i]['sexe'])=="F") {echo "e";}
 				echo "&nbsp;le&nbsp;".$tab_bull['eleve'][$i]['naissance'];
@@ -582,7 +624,7 @@ width:".$largeur1."%;\n";
 			}
 			else { //sur une ligne
 				echo "<p class='bulletin'>\n";
-				echo "<b><span class=\"bgrand\">".$tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']."</span></b><br />";
+				echo "<b><span class=\"bgrand\">".affiche_eleve($tab_bull['eleve'][$i]['nom'],$tab_bull['eleve'][$i]['prenom'],$tab_bull['id_classe'])."</span></b><br />";
 				echo "Né";
 				if (mb_strtoupper($tab_bull['eleve'][$i]['sexe'])=="F") {echo "e";}
 				echo "&nbsp;le&nbsp;".$tab_bull['eleve'][$i]['naissance'];
@@ -684,7 +726,7 @@ width:".$largeur1."%;\n";
 				//affichage des données sur une seule ligne ou plusieurs
 			if  ($bull_affiche_eleve_une_ligne == 'no') { // sur plusieurs lignes
 				echo "<p class='bulletin'>\n";
-				echo "<b><span class=\"bgrand\">".$tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']."</span></b><br />";
+				echo "<b><span class=\"bgrand\">".affiche_eleve($tab_bull['eleve'][$i]['nom'],$tab_bull['eleve'][$i]['prenom'],$tab_bull['id_classe'])."</span></b><br />";
 				echo "Né";
 				if (mb_strtoupper($tab_bull['eleve'][$i]['sexe'])=="F") {echo "e";}
 				echo "&nbsp;le&nbsp;".$tab_bull['eleve'][$i]['naissance'];
@@ -718,7 +760,7 @@ width:".$largeur1."%;\n";
 
 			} else { //sur une ligne
 				echo "<p class='bulletin'>\n";
-				echo "<b><span class=\"bgrand\">".$tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']."</span></b><br />";
+				echo "<b><span class=\"bgrand\">".affiche_eleve($tab_bull['eleve'][$i]['nom'],$tab_bull['eleve'][$i]['prenom'],$tab_bull['id_classe'])."</span></b><br />";
 				echo "Né";
 				if (mb_strtoupper($tab_bull['eleve'][$i]['sexe'])=="F") {echo "e";}
 				echo "&nbsp;le&nbsp;".$tab_bull['eleve'][$i]['naissance'];
@@ -877,14 +919,16 @@ width:".$largeur1."%;\n";
 					echo "<i> Nombre de retards&nbsp;: </i><b>".$tab_bull['eleve'][$i]['eleve_retards']."</b>";
 				}
 			}
+			// C.P.E.
+			if($bull_affiche_abs_cpe=='y') {
+				echo "  (".ucfirst($gepi_cpe_suivi)." chargé";
 
-			echo "  (C.P.E. chargé";
-
-			if($tab_bull['eleve'][$i]['cperesp_civilite']!="M.") {
-				echo "e";
+				if($tab_bull['eleve'][$i]['cperesp_civilite']!="M.") {
+					echo "e";
+				}
+				echo " du suivi : ". affiche_utilisateur($tab_bull['eleve'][$i]['cperesp_login'],$tab_bull['id_classe']) . ")";
 			}
 
-			echo " du suivi : ". affiche_utilisateur($tab_bull['eleve'][$i]['cperesp_login'],$tab_bull['id_classe']) . ")";
 			if ($tab_bull['eleve'][$i]['appreciation_absences']!="") {echo "<br />".texte_html_ou_pas($tab_bull['eleve'][$i]['appreciation_absences']);}
 			echo "</p>\n";
 			echo "</td>\n</tr>\n</table>\n";
@@ -910,15 +954,22 @@ width:".$largeur1."%;\n";
 		}
 
         if ($bull_affiche_avis == 'y') {
+			$span1="";
+			$span2="";
+			if(getSettingValue('bull_cell_pp_textsize')!="") {
+				$span1="<span style='font-size:".getSettingValue('bull_cell_pp_textsize')."pt'>";
+				$span2="</span>";
+			}
+
 			//
 			// Case de gauche : avis des conseils de classe
 			//
 			echo "<td style='vertical-align: top; text-align: left;'>\n";
 			// 1) l'avis
-			echo "<span class='bulletin'><i>Avis du conseil de classe:</i></span><br />\n";
+			echo "<span class='bulletin'><i>".$span1."Avis du conseil de classe:".$span2."</i></span><br />\n";
 
 			if($tab_bull['avis'][$i]!="") {
-				echo "<span class='avis_bulletin'>";
+				echo "<span class='avis_bulletin'>".$span1;
 				/*
 				if((strstr($tab_bull['avis'][$i],">"))||(strstr($tab_bull['avis'][$i],"<"))){
 					echo $tab_bull['avis'][$i];
@@ -928,7 +979,7 @@ width:".$largeur1."%;\n";
 				}
 				*/
 				echo texte_html_ou_pas($tab_bull['avis'][$i]);
-				echo "</span>";
+				echo $span2."</span>";
 
 				// **** AJOUT POUR LES MENTIONS ****
 				if(getSettingValue('bull_affich_mentions')!="n") {
@@ -938,10 +989,12 @@ width:".$largeur1."%;\n";
 					//if((trim($tab_bull['id_mention'][$i])!="")||($avec_coches_mentions=="y")) {
 					if(isset($tableau_des_mentions_sur_le_bulletin[$tab_bull['id_mention'][$i]])) {
 						echo "<br/>\n";
+						echo $span1;
 						if(getSettingValue('bull_affich_intitule_mentions')!="n") {
 							echo "<b>".ucfirst($gepi_denom_mention)." : </b>";
 						}
 						echo texte_html_ou_pas(traduction_mention($tab_bull['id_mention'][$i]));
+						echo $span2;
 					}
 				}
 				// **** FIN D'AJOUT POUR LES MENTIONS ****
@@ -962,10 +1015,12 @@ width:".$largeur1."%;\n";
 					//if((trim($tab_bull['id_mention'][$i])!="")||($avec_coches_mentions=="y")) {
 					if(isset($tableau_des_mentions_sur_le_bulletin[$tab_bull['id_mention'][$i]])) {
 						echo "<br/>\n";
+						echo $span1;
 						if(getSettingValue('bull_affich_intitule_mentions')!="n") {
 							echo "<b>".ucfirst($gepi_denom_mention)." : </b>";
 						}
 						echo texte_html_ou_pas(traduction_mention($tab_bull['id_mention'][$i]));
+						echo $span2;
 						$n++;
 					}
 				}
@@ -998,12 +1053,20 @@ width:".$largeur1."%;\n";
 			}
 			*/
 			if(isset($tab_bull['eleve'][$i]['pp'][0])) {
+				$span1="";
+				$span2="";
+				if(getSettingValue('bull_cell_pp_textsize')!="") {
+					$span1="<span style='font-size:".getSettingValue('bull_cell_pp_textsize')."pt'>";
+					$span2="</span>";
+				}
+				echo $span1;
 				echo "<b>".ucfirst($gepi_prof_suivi)."</b> ";
 				echo "<i>".affiche_utilisateur($tab_bull['eleve'][$i]['pp'][0]['login'],$tab_bull['eleve'][$i]['id_classe'])."</i>";
 				for($i_pp=1;$i_pp<count($tab_bull['eleve'][$i]['pp']);$i_pp++) {
 					echo ", ";
 					echo "<i>".affiche_utilisateur($tab_bull['eleve'][$i]['pp'][$i_pp]['login'],$tab_bull['eleve'][$i]['id_classe'])."</i>";
 				}
+				echo $span2;
 			}
 
 			echo "</td>\n";
@@ -1012,42 +1075,39 @@ width:".$largeur1."%;\n";
 			//
 			echo "<td style='vertical-align: top; text-align: left;' width='30%'>\n";
 			echo "<!-- Case: paraphe du proviseur -->\n";
-			if($tab_bull['formule']!='') {echo "<span class='bulletin'><b>".$tab_bull['formule']."</b>:</span><br />";}
-			if($tab_bull['suivi_par']!='') {echo "<span class='bulletin'><i>".$tab_bull['suivi_par']."</i></span>";}
+			$span1="";
+			$span2="";
+			if(getSettingValue('bull_cell_signature_textsize')!="") {
+				$span1="<span style='font-size:".getSettingValue('bull_cell_signature_textsize')."pt'>";
+				$span2="</span>";
+			}
+			if($tab_bull['formule']!='') {echo "<span class='bulletin'><b>".$span1.$tab_bull['formule'].$span2."</b>:</span><br />";}
+			if($tab_bull['suivi_par']!='') {echo "<span class='bulletin'><i>".$span1.$tab_bull['suivi_par'].$span2."</i></span>";}
 
-			// 20120716
 			// Si une image de signature doit être insérée...
-			/*
-			$tmp_fich=getSettingValue('fichier_signature');
-			$fich_sign = '../backup/'.getSettingValue('backup_directory').'/'.$tmp_fich;
-			//echo "\$fich_sign=$fich_sign<br />\n";
-			if($bull_affiche_img_signature=='y' and ($tmp_fich!='') and file_exists($fich_sign))
-			{
-				$sql="SELECT 1=1 FROM droits_acces_fichiers WHERE fichier='signature_img' AND ((identite='".$_SESSION['statut']."' AND type='statut') OR (identite='".$_SESSION['login']."' AND type='individu'))";
-				$test=mysql_query($sql);
-				if(mysql_num_rows($test)>0) {
-			*/
-			if($url_fich_sign!="") {
-					$fich_sign=$url_fich_sign;
+			//if($url_fich_sign!="") {
+			// 20130719
+			if((isset($signature_bull[$tab_bull['id_classe']]))&&($signature_bull[$tab_bull['id_classe']]!="")) {
+				//$fich_sign=$url_fich_sign;
+				$fich_sign=$signature_bull[$tab_bull['id_classe']];
 
-					$largeur_dispo=getSettingValue('bull_largeur_img_signature');
-					$hauteur_dispo=getSettingValue('bull_hauteur_img_signature');
+				$largeur_dispo=getSettingValue('bull_largeur_img_signature');
+				$hauteur_dispo=getSettingValue('bull_hauteur_img_signature');
 
-					$tmp_dim_photo=getimagesize($fich_sign);
-					$ratio_l=$tmp_dim_photo[0]/$largeur_dispo;
-					$ratio_h=$tmp_dim_photo[1]/$hauteur_dispo;
-					if($ratio_l>$ratio_h) {
-						$L_sign = $largeur_dispo;
-						$H_sign = $largeur_dispo*$tmp_dim_photo[1]/$tmp_dim_photo[0];
-					}
-					else {
-						$H_sign = $hauteur_dispo;
-						$L_sign = $hauteur_dispo*$tmp_dim_photo[0]/$tmp_dim_photo[1];
-					}
-					echo "<center>\n";
-					echo "<img src='$fich_sign' width='$L_sign' height='$H_sign' />\n";
-					echo "</center>\n";
-				//}
+				$tmp_dim_photo=getimagesize($fich_sign);
+				$ratio_l=$tmp_dim_photo[0]/$largeur_dispo;
+				$ratio_h=$tmp_dim_photo[1]/$hauteur_dispo;
+				if($ratio_l>$ratio_h) {
+					$L_sign = $largeur_dispo;
+					$H_sign = $largeur_dispo*$tmp_dim_photo[1]/$tmp_dim_photo[0];
+				}
+				else {
+					$H_sign = $hauteur_dispo;
+					$L_sign = $hauteur_dispo*$tmp_dim_photo[0]/$tmp_dim_photo[1];
+				}
+				echo "<center>\n";
+				echo "<img src='$fich_sign' width='$L_sign' height='$H_sign' />\n";
+				echo "</center>\n";
 			}
 		}
 
@@ -1115,7 +1175,7 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 		// Paramètres généraux:
 		// En admin, dans Gestion générale/Configuration générale
 		$gepi_prof_suivi,
-
+		$gepi_cpe_suivi,
 		$RneEtablissement,
 		$gepiSchoolName,
 		$gepiSchoolAdress1,
@@ -1159,6 +1219,8 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 
 		//$avec_coches_mentions,
 		$gepi_denom_mention,
+
+		$signature_bull,
 
 		// Objet PDF initié hors de la présente fonction donnant la page du bulletin pour un élève
 		$pdf;
@@ -1543,6 +1605,63 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 				$tab_adr_ligne7[0]=$tab_bull['eleve'][$i]['resp'][0]['pays'];
 				$tab_adr_lignes[0].="\n";
 				$tab_adr_lignes[0].=$tab_adr_ligne7[0];
+			}
+		}
+	}
+
+	// Envoi du bulletin à des resp_legal=0
+	if (isset($tab_bull['eleve'][$i]['resp'][2])) {
+		//$indice_tab_adr=count($tab_adr_ligne1);
+		foreach($tab_bull['eleve'][$i]['resp'] as $key => $value) {
+			if($key>=2) {
+				$tab_adr_lignes[$nb_bulletins]="";
+				if($tab_bull['eleve'][$i]['resp'][$key]['civilite']!="") {
+					$tab_adr_ligne1[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['civilite']." ".$tab_bull['eleve'][$i]['resp'][$key]['nom']." ".$tab_bull['eleve'][$i]['resp'][$key]['prenom'];
+				}
+				else {
+					$tab_adr_ligne1[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['nom']." ".$tab_bull['eleve'][$i]['resp'][$key]['prenom'];
+				}
+				$tab_adr_lignes[$nb_bulletins].="<b>".$tab_adr_ligne1[0]."</b>";
+
+				$tab_adr_ligne2[$nb_bulletins]="";
+				if($tab_bull['eleve'][$i]['resp'][$key]['adr1']!='') {
+					$tab_adr_ligne2[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['adr1'];
+					$tab_adr_lignes[$nb_bulletins].="\n";
+					$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne2[0];
+				}
+
+				if($tab_bull['eleve'][$i]['resp'][$key]['adr2']!=""){
+					$tab_adr_ligne3[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['adr2'];
+
+					$tab_adr_lignes[$nb_bulletins].="\n";
+					$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne3[0];
+				}
+
+				if($tab_bull['eleve'][$i]['resp'][$key]['adr3']!=""){
+					$tab_adr_ligne4[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['adr3'];
+
+					$tab_adr_lignes[$nb_bulletins].="\n";
+					$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne4[0];
+				}
+
+				if($tab_bull['eleve'][$i]['resp'][$key]['adr4']!=""){
+					$tab_adr_ligne5[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['adr4'];
+
+					$tab_adr_lignes[$nb_bulletins].="\n";
+					$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne5[0];
+				}
+
+				$tab_adr_ligne6[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['cp']." ".$tab_bull['eleve'][$i]['resp'][$key]['commune'];
+				$tab_adr_lignes[$nb_bulletins].="\n";
+				$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne6[0];
+
+				if(($tab_bull['eleve'][$i]['resp'][$key]['pays']!="")&&(my_strtolower($tab_bull['eleve'][$i]['resp'][$key]['pays'])!=my_strtolower($gepiSchoolPays))) {
+					$tab_adr_ligne7[$nb_bulletins]=$tab_bull['eleve'][$i]['resp'][$key]['pays'];
+					$tab_adr_lignes[$nb_bulletins].="\n";
+					$tab_adr_lignes[$nb_bulletins].=$tab_adr_ligne7[0];
+				}
+
+				$nb_bulletins++;
 			}
 		}
 	}
@@ -2111,7 +2230,7 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 			$pdf->SetXY($X_eleve_2,$Y_eleve_2);
 
 			//$pdf->Cell(90,7, ($tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']),0,2,'');
-			$nom_prenom=($tab_bull['eleve'][$i]['nom']." ".$tab_bull['eleve'][$i]['prenom']);
+			$nom_prenom=affiche_eleve($tab_bull['eleve'][$i]['nom'],$tab_bull['eleve'][$i]['prenom'],$tab_bull['id_classe']);
 
 			$hauteur_caractere_nom_prenom=14;
 			$pdf->SetFont('DejaVu','B',$hauteur_caractere_nom_prenom);
@@ -2671,7 +2790,7 @@ function bulletin_pdf($tab_bull,$i,$tab_rel) {
 					$largeur_utilise = $largeur_utilise + $tab_modele_pdf["largeur_d_une_moyenne"][$classe_id];
 				}
 
-				$pdf->SetFont('DejaVu','',10);
+				$pdf->SetFont('DejaVu','',8);
 
 				// rang de l'élève
 				if( $tab_modele_pdf["active_rang"][$classe_id] === '1' and $ordre_moyenne[$cpt_ordre] === 'rang' ) {
@@ -5484,34 +5603,35 @@ fclose($f);
 						$info_absence="<i>Aucune absence non justifiée</i>.";
 					} else {
 						$info_absence="<i>Nombre de demi-journées d'absence non justifiées ";
-						$info_absence.=": </i><b>".$tab_bull['eleve'][$i]['eleve_nj']."</b>";
+						$info_absence.=": </i><b>".$tab_bull['eleve'][$i]['eleve_nj'].".</b>";
 					}
 				}
 
-				//if($tab_modele_pdf["afficher_abs_ret"][$classe_id]==='1') {
 				if($tab_modele_pdf["afficher_abs_ret"][$classe_id]=='1') {
 					if($tab_bull['eleve'][$i]['eleve_retards'] != '0' and $tab_bull['eleve'][$i]['eleve_retards'] != '?')
 					{
-						$info_absence = $info_absence."<i> Nombre de retards : </i><b>".$tab_bull['eleve'][$i]['eleve_retards']."</b>";
+						$info_absence = $info_absence."<i> Nombre de retards : </i><b>".$tab_bull['eleve'][$i]['eleve_retards'].".</b>";
 					}
 				}
-				$pdf->SetFont('DejaVu','',8);
-
-				$info_absence = $info_absence." (C.P.E. chargé";
-				if($tab_bull['eleve'][$i]['cperesp_civilite']!="M.") {
-					$info_absence = $info_absence."e";
-				}
-				/*
-				$sql="SELECT civilite FROM utilisateurs WHERE login='".$cperesp_login[$i]."'";
-				$res_civi=mysql_query($sql);
-				if(mysql_num_rows($res_civi)>0){
-					$lig_civi=mysql_fetch_object($res_civi);
-					if($lig_civi->civilite!="M."){
+				if($tab_modele_pdf["afficher_abs_cpe"][$classe_id]=='1') {
+					$pdf->SetFont('DejaVu','',8);
+					// C.P.E.
+					$info_absence = $info_absence." (".ucfirst($gepi_cpe_suivi)." chargé";
+					if($tab_bull['eleve'][$i]['cperesp_civilite']!="M.") {
 						$info_absence = $info_absence."e";
 					}
+					/*
+					$sql="SELECT civilite FROM utilisateurs WHERE login='".$cperesp_login[$i]."'";
+					$res_civi=mysql_query($sql);
+					if(mysql_num_rows($res_civi)>0){
+						$lig_civi=mysql_fetch_object($res_civi);
+						if($lig_civi->civilite!="M."){
+							$info_absence = $info_absence."e";
+						}
+					}
+					*/
+					$info_absence = $info_absence." du suivi : <i>".affiche_utilisateur($tab_bull['eleve'][$i]['cperesp_login'],$tab_bull['id_classe'])."</i>)";
 				}
-				*/
-				$info_absence = $info_absence." du suivi : <i>".affiche_utilisateur($tab_bull['eleve'][$i]['cperesp_login'],$tab_bull['id_classe'])."</i>)";
 				//$pdf->MultiCellTag($tab_modele_pdf["largeur_cadre_absences"][$classe_id], 5, ($info_absence), '', 'J', '');
 				//$pdf->ext_MultiCellTag($tab_modele_pdf["largeur_cadre_absences"][$classe_id], 5, $info_absence, '', 'J', '');
 
@@ -5550,7 +5670,7 @@ $hauteur_pris_app_abs=0;
 				{
 					// supprimer les espaces
 					$text_absences_appreciation = trim(str_replace(array("\r\n","\r","\n"), ' ', unhtmlentities($tab_bull['eleve'][$i]['appreciation_absences'])));
-					$info_absence_appreciation = "<i>Avis CPE :</i> <b>".$text_absences_appreciation."</b>";
+					$info_absence_appreciation = "<i>Avis ".ucfirst($gepi_cpe_suivi)." :</i> <b>".$text_absences_appreciation."</b>";
 					$text_absences_appreciation = '';
 					$pdf->SetXY($tab_modele_pdf["X_absence"][$classe_id], $tab_modele_pdf["Y_absence"][$classe_id]+4);
 					$pdf->SetFont('DejaVu','',8);
@@ -5843,6 +5963,7 @@ $hauteur_pris_app_abs=0;
 				//$pdf->SetXY($tab_modele_pdf["X_sign_chef"][$classe_id],$tab_modele_pdf["Y_sign_chef"][$classe_id]);
 				$pdf->SetXY($tab_modele_pdf["X_sign_chef"][$classe_id],$Y_sign_chef_init);
 
+				/*
 				// 20120715
 				// Si une image de signature doit être insérée...
 				$tmp_fich=getSettingValue('fichier_signature');
@@ -5853,6 +5974,12 @@ $hauteur_pris_app_abs=0;
 					$sql="SELECT 1=1 FROM droits_acces_fichiers WHERE fichier='signature_img' AND ((identite='".$_SESSION['statut']."' AND type='statut') OR (identite='".$_SESSION['login']."' AND type='individu'))";
 					$test=mysql_query($sql);
 					if(mysql_num_rows($test)>0) {
+				*/
+
+				// 20130719
+				if((isset($signature_bull[$tab_bull['id_classe']]))&&($signature_bull[$tab_bull['id_classe']]!="")&&(file_exists($signature_bull[$tab_bull['id_classe']]))) {
+						$fich_sign=$signature_bull[$tab_bull['id_classe']];
+
 						$X_sign = $tab_modele_pdf["X_sign_chef"][$classe_id];
 						$Y_sign = $Y_sign_chef_init;
 
@@ -5893,7 +6020,7 @@ $hauteur_pris_app_abs=0;
 							//$pdf->Image($fich_sign, $X_sign, $Y_sign, $L_sign, $H_sign);
 							$pdf->Image($fich_sign, round($X_sign), round($Y_sign), round($L_sign), round($H_sign));
 						}
-					}
+					//}
 				}
 
 				$pdf->SetFont('DejaVu','',10);
@@ -5971,7 +6098,7 @@ $hauteur_pris_app_abs=0;
 function releve_pdf_20090429($tab_rel,$i) {
 	global $annee_scolaire,
 		$gepi_prof_suivi,
-
+		$gepi_cpe_suivi,
 		$RneEtablissement,
 		$gepiSchoolName,
 		$gepiSchoolAdress1,

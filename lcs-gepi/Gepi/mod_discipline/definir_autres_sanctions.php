@@ -2,7 +2,7 @@
 
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -50,6 +50,8 @@ if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') 
 	die();
 }
 
+require('sanctions_func_lib.php');
+
 $acces_ok="n";
 if(($_SESSION['statut']=='administrateur')||
 (($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirSanctionsCpe')))||
@@ -57,12 +59,10 @@ if(($_SESSION['statut']=='administrateur')||
 	$acces_ok="y";
 }
 else {
-	$msg="Vous n'avez pas le droit de définir les rôles dans les incidents.";
+	$msg="Vous n'avez pas le droit de définir de nouvelles ".$mod_disc_terme_sanction."s.";
 	header("Location: ./index.php?msg=$msg");
 	die();
 }
-
-require('sanctions_func_lib.php');
 
 $msg="";
 
@@ -80,13 +80,13 @@ if(isset($suppr_nature)) {
 			//$sql="SELECT 1=1 FROM s_autres_sanctions WHERE id_nature='$suppr_nature[$i]';";
 			$sql="SELECT 1=1 FROM s_sanctions WHERE id_nature_sanction='$suppr_nature[$i]';";
 			//echo "$sql<br />";
-			$test=mysql_query($sql);
-			if(mysql_num_rows($test)>0) {
-				$msg.="Il n'est pas possible de supprimer le type de sanction n°".$suppr_nature[$i]." parce qu'il est associé à une ou des sanctions déjà saisies pour un ou des élèves.<br />\n";
+			$test=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($test)>0) {
+				$msg.="Il n'est pas possible de supprimer le type de ".$mod_disc_terme_sanction." n°".$suppr_nature[$i]." parce qu'il est associé à une ou des ".$mod_disc_terme_sanction."s déjà saisies pour un ou des élèves.<br />\n";
 			}
 			else {
 				$sql="DELETE FROM s_types_sanctions2 WHERE id_nature='$suppr_nature[$i]';";
-				$suppr=mysql_query($sql);
+				$suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 				if(!$suppr) {
 					$msg.="ERREUR lors de la suppression de la nature n°".$suppr_nature[$i].".<br />\n";
 				}
@@ -104,12 +104,29 @@ if(isset($nature)) {
 
 	check_token();
 
+	$saisie_prof=isset($_POST['saisie_prof']) ? $_POST['saisie_prof'] : array();
+
 	$sql="SELECT * FROM s_types_sanctions2 ORDER BY nature;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		$tab_nature=array();
-		while($lig=mysql_fetch_object($res)) {
+		$tab_saisie_prof_avant=array();
+		while($lig=mysqli_fetch_object($res)) {
 			$tab_nature[]=$lig->nature;
+			if($lig->saisie_prof=="y") {
+				$tab_saisie_prof_avant[]=$lig->id_nature;
+			}
+
+			if((!in_array($lig->id_nature, $saisie_prof))&&(in_array($lig->id_nature, $tab_saisie_prof_avant))) {
+				$sql="UPDATE s_types_sanctions2 SET saisie_prof='n' WHERE id_nature='$lig->id_nature';";
+				$update=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(!$update) {
+					$msg.="Erreur lors de la suppression de la possibilité de saisie professeur de $lig->nature.<br />";
+				}
+				else {
+					$msg.="Suppression de la possibilité de saisie professeur de $lig->nature.<br />";
+				}
+			}
 		}
 
 		if(in_array($nature,$tab_nature)) {
@@ -118,18 +135,30 @@ if(isset($nature)) {
 		}
 	}
 
+	for($loop=0;$loop<count($saisie_prof);$loop++) {
+		if(!in_array($saisie_prof[$loop], $tab_saisie_prof_avant)) {
+			$sql="UPDATE s_types_sanctions2 SET saisie_prof='y' WHERE id_nature='".$saisie_prof[$loop]."';";
+			$update=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(!$update) {
+				$msg.="Erreur lors de la saisie de la possibilité de saisie professeur des $mod_disc_terme_sanction n°".$saisie_prof[$loop].".<br />";
+			}
+			else {
+				$msg.="Enregistrement de la possibilité de saisie professeur des $mod_disc_terme_sanction n°".$saisie_prof[$loop].".<br />";
+			}
+		}
+	}
 
 	if((isset($nature))&&($nature!='')) {
 		if($a_enregistrer=='y') {
 			if(!in_array($type, $types_autorises)) {
-				$msg.="Le type de sanction choisi n'est pas autorisé&nbsp;: ".$type.".<br />\n";
+				$msg.="Le type de ".$mod_disc_terme_sanction." choisi n'est pas autorisé&nbsp;: ".$type.".<br />\n";
 			}
 			else {
 				$nature=suppression_sauts_de_lignes_surnumeraires($nature);
 
 				$sql="INSERT INTO s_types_sanctions2 SET nature='".$nature."', type='".$type."';";
 				//echo "$sql<br />\n";
-				$res=mysql_query($sql);
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
 				if(!$res) {
 					$msg.="ERREUR lors de l'enregistrement de ".$nature."<br />\n";
 				}
@@ -143,7 +172,7 @@ if(isset($nature)) {
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-$titre_page = "Discipline: Définition des types de sanctions";
+$titre_page = "Discipline: Définition des types de ".$mod_disc_terme_sanction."s";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
@@ -152,32 +181,33 @@ require_once("../lib/header.inc.php");
 echo "<p class='bold'><a href='index.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>\n";
 echo "</p>\n";
 
-echo "<p>Les types de sanctions prédéfinis sont: Retenue, Exclusion, Travail.<br />
-La présente page est destinée à ajouter d'autres types de sanctions (<i>'mise au pilori', 'flagellation avec des orties', 'regarder Questions pour un champion',... selon les goûts de l'établissement en matière de supplices divers;o</i>).</p>
-<p>Vous pouvez maintenant aussi ajouter des sanctions variantes de retenue, d'exclusion,... en en précisant le type.</p>\n";
+echo "<p>Les types de ".$mod_disc_terme_sanction."s prédéfinis sont: Retenue, Exclusion, Travail.<br />
+La présente page est destinée à ajouter d'autres types de ".$mod_disc_terme_sanction."s (<i>'mise au pilori', 'flagellation avec des orties', 'regarder Questions pour un champion',... selon les goûts de l'établissement en matière de supplices divers;o</i>).</p>
+<p>Vous pouvez maintenant aussi ajouter des ".$mod_disc_terme_sanction."s variantes de retenue, d'exclusion,... en en précisant le type.</p>\n";
 
 echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
 echo add_token_field();
 
-echo "<p class='bold'>Saisie de types de sanctions&nbsp;:</p>\n";
+echo "<p class='bold'>Saisie de types de ".$mod_disc_terme_sanction."s&nbsp;:</p>\n";
 echo "<blockquote>\n";
 
 $cpt=0;
 $sql="SELECT * FROM s_types_sanctions2 ORDER BY type, nature;";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
-	echo "<p>Aucune sanction supplémentaire n'est encore définie.</p>\n";
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
+	echo "<p>Aucune ".$mod_disc_terme_sanction." supplémentaire n'est encore définie.</p>\n";
 }
 else {
-	echo "<p>Sanctions existantes&nbsp;:</p>\n";
-	echo "<table class='boireaus' border='1' summary='Tableau des sanctions existantes'>\n";
+	echo "<p>".$mod_disc_terme_sanction."s existantes&nbsp;:</p>\n";
+	echo "<table class='boireaus' border='1' summary='Tableau des ".$mod_disc_terme_sanction."s existantes'>\n";
 	echo "<tr>\n";
 	echo "<th>Nature</th>\n";
 	echo "<th>Type</th>\n";
+	echo "<th title=\"Précisez si un professeur peut ou non saisir lui-même ce type de ".$mod_disc_terme_sanction."\">Professeur</th>\n";
 	echo "<th>Supprimer</th>\n";
 	echo "</tr>\n";
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$alt=$alt*(-1);
 		echo "<tr class='lig$alt'>\n";
 
@@ -191,15 +221,21 @@ else {
 		echo $lig->type;
 		echo "</td>\n";
 
+		echo "<td>\n";
+		echo "<input type='checkbox' name='saisie_prof[]' id='saisie_prof_$cpt' value=\"$lig->id_nature\" ";
+		if($lig->saisie_prof=="y") {echo "checked ";}
+		echo "onchange='changement();' />";
+		echo "</td>\n";
+
 		echo "<td>";
 		$sql="SELECT 1=1 FROM s_sanctions WHERE id_nature_sanction='$lig->id_nature';";
 		//echo "$sql<br />";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==0) {
 			echo "<input type='checkbox' name='suppr_nature[]' id='suppr_nature_$cpt' value=\"$lig->id_nature\" onchange='changement();' />";
 		}
 		else {
-			echo "<span title='Cette nature de sanction est associée à ".mysql_num_rows($test)." sanction(s) donnée(s).'>Nature associée</span>";
+			echo "<span title='Cette nature de ".$mod_disc_terme_sanction." est associée à ".mysqli_num_rows($test)." ".$mod_disc_terme_sanction."(s) donnée(s).'>Nature associée</span>";
 		}
 		echo "</td>\n";
 		echo "</tr>\n";

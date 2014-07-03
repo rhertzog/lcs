@@ -37,8 +37,8 @@ if ($resultat_session == 'c') {
 //======================================================================================
 
 $sql="SELECT 1=1 FROM droits WHERE id='/mod_genese_classes/genere_ods.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/mod_genese_classes/genere_ods.php',
 administrateur='V',
 professeur='F',
@@ -50,7 +50,7 @@ secours='F',
 autre='F',
 description='Genèse des classes: Génération d un fichier ODS de listes',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 //======================================================================================
@@ -100,6 +100,9 @@ if (!checkAccess()) {
 		exit();
 	}
 
+	//$date_edition=strftime("%d/%m/%Y %H:%M:%S");
+	$date_edition=strftime("%d%m%Y_%H%M%S");
+
 	if($detail=="oui"){
 
 		//$fichier_content_xml=fopen("ods/content.xml","w+");
@@ -112,7 +115,9 @@ if (!checkAccess()) {
 		//$ecriture=fwrite($fichier_content_xml,'');
 
 		//$nom_feuillet="Feuillet_1";
-		$nom_feuillet=$projet;
+		$nom_feuillet=$projet." ($date_edition)";
+		//$nom_feuillet=$projet." $date_edition";
+		//$nom_feuillet=$projet."_$date_edition";
 
 		$ecriture=fwrite($fichier_content_xml,'<table:table table:name="'.$nom_feuillet.'" table:style-name="ta1" table:print="false"><office:forms form:automatic-focus="false" form:apply-design-mode="false"/>');
 
@@ -360,8 +365,9 @@ if (!checkAccess()) {
 		$ecriture=fwrite($fichier_content_xml,'<office:body><office:spreadsheet>');
 	
 		//$nom_feuillet="Feuillet_1";
-		$nom_feuillet=$projet;
-	
+		//$nom_feuillet=$projet;
+		$nom_feuillet=$projet." ($date_edition)";
+
 		$ecriture=fwrite($fichier_content_xml,'<table:table table:name="'.$nom_feuillet.'" table:style-name="ta1" table:print="false">');
 	
 		$ecriture=fwrite($fichier_content_xml,'<office:forms form:automatic-focus="false" form:apply-design-mode="false"/><table:table-column table:style-name="co1" table:default-cell-style-name="Default"/><table:table-column table:style-name="co2" table:default-cell-style-name="ce9"/><table:table-column table:style-name="co3" table:default-cell-style-name="ce9"/><table:table-column table:style-name="co4" table:default-cell-style-name="ce9"/><table:table-column table:style-name="co2" table:default-cell-style-name="ce9"/><table:table-column table:style-name="co5" table:default-cell-style-name="Default"/>');

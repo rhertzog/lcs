@@ -78,8 +78,8 @@ if (isset($_POST['is_posted'])) {
 			//if(($favorable[$i]=='O')||($favorable[$i]=='N')) {
 			if(($favorable[$i]=='O')||($favorable[$i]=='N')||($favorable[$i]=='')) {
 				$sql="SELECT 1=1 FROM notanet_avis WHERE login='".$ele_login[$i]."';";
-				$res_ele=mysql_query($sql);
-				if(mysql_num_rows($res_ele)==0) {
+				$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_ele)==0) {
 					$sql="INSERT INTO notanet_avis SET login='".$ele_login[$i]."'";
 					$sql.=",favorable='".$favorable[$i]."'";
 					$sql.=",avis='".$app."'";
@@ -89,7 +89,7 @@ if (isset($_POST['is_posted'])) {
 					$sql="UPDATE notanet_avis SET favorable='".$favorable[$i]."', avis='".$app."' WHERE login='".$ele_login[$i]."';";
 				}
 				//echo "$sql<br />";
-				$register=mysql_query($sql);
+				$register=mysqli_query($GLOBALS["mysqli"], $sql);
 				if (!$register) {
 					$msg .= "Erreur lors de l'enregistrement des données pour $ele_login[$i]<br />";
 					//echo "ERREUR<br />";
@@ -104,8 +104,8 @@ if (isset($_POST['is_posted'])) {
 		else {
 			// Si on ne coche pas l'avis favorable... pour ne pas perdre les saisies...
 			$sql="SELECT 1=1 FROM notanet_avis WHERE login='".$ele_login[$i]."';";
-			$res_ele=mysql_query($sql);
-			if(mysql_num_rows($res_ele)==0) {
+			$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_ele)==0) {
 				$sql="INSERT INTO notanet_avis SET login='".$ele_login[$i]."'";
 				//$sql.=",favorable='".$favorable[$i]."'";
 				$sql.=",favorable=''";
@@ -117,7 +117,7 @@ if (isset($_POST['is_posted'])) {
 				$sql="UPDATE notanet_avis SET favorable='', avis='".$app."' WHERE login='".$ele_login[$i]."';";
 			}
 			//echo "$sql<br />";
-			$register=mysql_query($sql);
+			$register=mysqli_query($GLOBALS["mysqli"], $sql);
 			if (!$register) {
 				$msg .= "Erreur lors de l'enregistrement des données pour $ele_login[$i]<br />";
 				//echo "ERREUR<br />";
@@ -160,9 +160,9 @@ if(!isset($id_classe)) {
 	//$sql="SELECT DISTINCT c.id,c.classe FROM classes c, periodes p, notanet n,notanet_ele_type net WHERE p.id_classe = c.id AND c.id=n.id_classe ORDER BY classe;";
 	$sql="SELECT DISTINCT c.id,c.classe FROM classes c, j_eleves_classes jec,notanet_ele_type net WHERE c.id=jec.id_classe AND net.login=jec.login ORDER BY classe;";
 	//echo "$sql<br />";
-	$call_classes=mysql_query($sql);
+	$call_classes=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	$nb_classes=mysql_num_rows($call_classes);
+	$nb_classes=mysqli_num_rows($call_classes);
 	if($nb_classes==0){
 		echo "<p>Aucune classe ne semble encore définie.</p>\n";
 
@@ -171,7 +171,9 @@ if(!isset($id_classe)) {
 	}
 	else{
 		// Choix de la classe...
-		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>\n";
+		echo "<form enctype='multipart/form-data' action='".$_SERVER['PHP_SELF']."' method='post' name='formulaire'>
+	<fieldset class='fieldset_opacite50'>
+		<p class='bold'>Choisissez les classes pour lesquelles vous souhaitez saisir l'avis du chef d'établissement&nbsp;:</p>\n";
 
 		// Affichage sur 3 colonnes
 		$nb_classes_par_colonne=round($nb_classes/2);
@@ -184,7 +186,7 @@ if(!isset($id_classe)) {
 		echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
 		echo "<td align='left'>\n";
 
-		while($lig_clas=mysql_fetch_object($call_classes)) {
+		while($lig_clas=mysqli_fetch_object($call_classes)) {
 
 			//affichage 2 colonnes
 			if(($cpt_i>0)&&(round($cpt_i/$nb_classes_par_colonne)==$cpt_i/$nb_classes_par_colonne)){
@@ -204,7 +206,7 @@ if(!isset($id_classe)) {
 		echo "</table>\n";
 
 		echo "<p align='center'><input type='submit' value='Valider' /></p>\n";
-		echo "</form>\n";
+		echo "</fieldset></form>\n";
 	}
 }
 else {
@@ -217,10 +219,11 @@ else {
 		avis TEXT NOT NULL ,
 		PRIMARY KEY ( login )
 		) ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
-	$create_table=mysql_query($sql);
+	$create_table=mysqli_query($GLOBALS["mysqli"], $sql);
 
 
-	echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">\n";
+	echo "<form enctype=\"multipart/form-data\" action=\"".$_SERVER['PHP_SELF']."\" method=\"post\">
+	<fieldset class='fieldset_opacite50'>\n";
 	echo add_token_field();
 
 	/*
@@ -242,8 +245,8 @@ else {
 
 		$sql="SELECT DISTINCT e.* FROM eleves e, j_eleves_classes jec WHERE (jec.id_classe='".$id_classe[$i]."' AND jec.login=e.login) ORDER BY e.nom,e.prenom,e.naissance;";
 		//echo "$sql<br />";
-		$res_ele=mysql_query($sql);
-		if(mysql_num_rows($res_ele)==0) {
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ele)==0) {
 			echo "Aucun élève dans cette classe.</p>\n";
 		}
 		else {
@@ -251,7 +254,12 @@ else {
 
 			//===========================
 			echo "<tr>\n";
-			echo "<th rowspan='3' colspan='2'>Elève</th>\n";
+			echo "<th rowspan='4' colspan='2'>Elève</th>\n";
+			echo "<th colspan='3'>Avis du chef d'établissement</th>\n";
+			echo "<th colspan='3'>Avis du conseil de classe</th>\n";
+			echo "</tr>\n";
+
+			echo "<tr>\n";
 			echo "<th colspan='2'>Avis favorable</th>\n";
 			echo "<th rowspan='2'>Avis mitigé<br />ou<br />non saisi</th>\n";
 			//echo "<th rowspan='3'>Motivation d'un avis défavorable</th>\n";
@@ -289,12 +297,12 @@ else {
 
 
 			$alt=1;
-			while($lig_ele=mysql_fetch_object($res_ele)) {
+			while($lig_ele=mysqli_fetch_object($res_ele)) {
 
 				//========================
 				$sql="SELECT elenoet FROM eleves WHERE login='$lig_ele->login';";
-				$res_ele2=mysql_query($sql);
-				$lig_ele2=mysql_fetch_object($res_ele2);
+				$res_ele2=mysqli_query($GLOBALS["mysqli"], $sql);
+				$lig_ele2=mysqli_fetch_object($res_ele2);
 				$eleve_elenoet=$lig_ele2->elenoet;
 
 				// Photo...
@@ -322,7 +330,7 @@ else {
 					echo "<td>";
 					if(file_exists($photo)) {
 						echo "<a href='#' onclick=\"afficher_div('div_photo_eleve','y',-100,20); affiche_photo('".$photo."','".addslashes(mb_strtoupper($lig_ele->nom)." ".ucfirst(mb_strtolower($lig_ele->prenom)))."');return false;\">";
-						echo "<img src='../images/icons/buddy.png' alt=\"$lig_ele->nom $lig_ele->prenom\" />";
+						echo "<img src='../mod_trombinoscopes/images/".(($lig_ele->sexe=="F") ? "photo_f.png" : "photo_g.png")."' class='icone16' alt=\"$lig_ele->nom $lig_ele->prenom\" />";
 						echo "</a>";
 					}
 				}
@@ -331,13 +339,13 @@ else {
 
 
 				$sql="SELECT * FROM notanet_avis WHERE login='".$lig_ele->login."';";
-				$res_avis=mysql_query($sql);
-				if(mysql_num_rows($res_avis)==0) {
+				$res_avis=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_avis)==0) {
 					$def_fav="";
 					$def_avis="";
 				}
 				else {
-					$lig_avis=mysql_fetch_object($res_avis);
+					$lig_avis=mysqli_fetch_object($res_avis);
 					$def_fav=$lig_avis->favorable;
 					$def_avis=$lig_avis->avis;
 				}
@@ -381,10 +389,18 @@ else {
 
 	echo "<center><div id='fixe'>";
 
-	if(getSettingValue('notanet_dfsp')=='y') {
+	//if(getSettingValue('notanet_dfsp')=='y') {
 		// INSERT INTO setting SET name='notanet_dfsp', value='y';
-		echo "<a href=\"#\" onClick=\"document.getElementById('n'+document.getElementById('focus_courant').value).value=document.getElementById('n'+document.getElementById('focus_courant').value).value+'Doit faire ses preuves';document.getElementById('n'+document.getElementById('focus_courant').value).focus();return false;\">Dfsp</a><br />\n";
-	}
+		echo "<a href=\"#\" onClick=\"document.getElementById('n'+document.getElementById('focus_courant').value).value=document.getElementById('n'+document.getElementById('focus_courant').value).value+'Avis très favorable.';document.getElementById('n'+document.getElementById('focus_courant').value).focus();return false;\" title=\"Insérer dans le champ de saisie la chaine suivante:
+
+Avis très favorable.\">ATF</a><br />\n";
+		echo "<a href=\"#\" onClick=\"document.getElementById('n'+document.getElementById('focus_courant').value).value=document.getElementById('n'+document.getElementById('focus_courant').value).value+'Avis favorable.';document.getElementById('n'+document.getElementById('focus_courant').value).focus();return false;\" title=\"Insérer dans le champ de saisie la chaine suivante:
+
+Avis favorable.\">AF</a><br />\n";
+		echo "<a href=\"#\" onClick=\"document.getElementById('n'+document.getElementById('focus_courant').value).value=document.getElementById('n'+document.getElementById('focus_courant').value).value+'Doit faire ses preuves.';document.getElementById('n'+document.getElementById('focus_courant').value).focus();return false;\" title=\"Insérer dans le champ de saisie la chaine suivante:
+
+Doit faire ses preuves.\">Dfsp</a><br />\n";
+	//}
 	echo "<input type='submit' value='Enregistrer' /><br />
 
 <!-- DIV destiné à afficher un décompte du temps restant pour ne pas se faire piéger par la fin de session -->
@@ -398,7 +414,23 @@ else {
 <input type='hidden' id='focus_courant' name='focus_courant' value='' size='3' />
 ";
 
-	echo "</form>\n";
+	echo "
+	</fieldset>
+</form>
+
+<p style='margin-top:2em;'><em>NOTES&nbsp;:</em></p>
+<ul style='margin-right:15em;'>
+	<li>Sur les fiches brevet, le champ correspondant à l'<strong>avis du chef d'établissement</strong> est désigné par <strong>[eleves.decision]</strong> et peut contenir&nbsp;:<br />
+	&nbsp;&nbsp;&nbsp;<em>Avis favorable</em><br />
+	ou<br />
+	&nbsp;&nbsp;&nbsp;<em>Doit faire ses preuves</em></li>
+	<li>Sur les fiches brevet, le champ correspondant à l'<strong>avis du conseil de classe</strong> est désigné par <strong>[eleves.appreciation]</strong> et contiendra ce que vous mettrez dans les champs ci-dessus.</li>
+	<li>Si vous préférez faire apparaître, sur les Fiches Brevet, l'avis du conseil dans les deux cases (<em>conseil et chefetab</em>), vous pouvez modifier le modèle OpenOffice proposé en page d'accueil dans <strong>Modèle Open Office/Gérer les modèles de document OOo de l'établissement</strong>, puis dans le module Notanet, à la rubrique&nbsp;:<br />
+	&nbsp;&nbsp;&nbsp;<strong>Générer les fiches brevet selon le modèle de:<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Modèle au format OpenOffice</strong><br />
+	en y choisissant dans <strong>Paramétrer</strong> d'utiliser des <strong>Gabarits personnels</strong>.
+	</li>
+</ul>\n";
 
 
 	echo "<script type='text/javascript'>

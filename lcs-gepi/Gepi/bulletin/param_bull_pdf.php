@@ -170,6 +170,8 @@ if(isset($_POST['valide_modif_model'])) {
 	else { if (isset($_GET['afficher_abs_nj'])) { $afficher_abs_nj = $_GET['afficher_abs_nj']; } if (isset($_POST['afficher_abs_nj'])) { $afficher_abs_nj = $_POST['afficher_abs_nj']; } }
 	if (empty($_GET['afficher_abs_ret']) and empty($_POST['afficher_abs_ret'])) { $afficher_abs_ret = ''; }
 	else { if (isset($_GET['afficher_abs_ret'])) { $afficher_abs_ret = $_GET['afficher_abs_ret']; } if (isset($_POST['afficher_abs_ret'])) { $afficher_abs_ret = $_POST['afficher_abs_ret']; } }
+	if (empty($_GET['afficher_abs_cpe']) and empty($_POST['afficher_abs_cpe'])) { $afficher_abs_cpe = ''; }
+	else { if (isset($_GET['afficher_abs_cpe'])) { $afficher_abs_cpe = $_GET['afficher_abs_cpe']; } if (isset($_POST['afficher_abs_cpe'])) { $afficher_abs_cpe = $_POST['afficher_abs_cpe']; } }
 
 	if (empty($_GET['active_bloc_note_appreciation']) and empty($_POST['active_bloc_note_appreciation'])) { $active_bloc_note_appreciation = ''; }
 	else { if (isset($_GET['active_bloc_note_appreciation'])) { $active_bloc_note_appreciation = $_GET['active_bloc_note_appreciation']; } if (isset($_POST['active_bloc_note_appreciation'])) { $active_bloc_note_appreciation = $_POST['active_bloc_note_appreciation']; } }
@@ -511,7 +513,7 @@ if(isset($_POST['valide_modif_model'])) {
 	if (empty($_GET['affiche_numero_responsable']) and empty($_POST['affiche_numero_responsable'])) { $affiche_numero_responsable = ''; }
 	else { if (isset($_GET['affiche_numero_responsable'])) { $affiche_numero_responsable = $_GET['affiche_numero_responsable']; } if (isset($_POST['affiche_numero_responsable'])) { $affiche_numero_responsable = $_POST['affiche_numero_responsable']; } }
 
-	$signature_img=isset($_POST['signature_img']) ? $_POST['signature_img'] : (isset($_GET['signature_img']) ? $_GET['signature_img'] : "");
+	//$signature_img=isset($_POST['signature_img']) ? $_POST['signature_img'] : (isset($_GET['signature_img']) ? $_GET['signature_img'] : "");
 
 	/*
 	if (empty($_GET['adresse_resp_fontsize_ligne_1']) and empty($_POST['adresse_resp_fontsize_ligne_1'])) { $adresse_resp_fontsize_ligne_1 = 12; }
@@ -556,7 +558,7 @@ if(!empty($valide_modif_model))
 				//$sql="INSERT INTO modele_bulletin SET id_model_bulletin='$id_model_bulletin', nom='$nom', valeur='".$$nom."';";
 				$sql="INSERT INTO modele_bulletin SET id_model_bulletin='$id_model_bulletin', nom='$nom', valeur='".$valeur."';";
 				//echo "$sql<br />\n";
-				$insert=mysql_query($sql);
+				$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 			}
 			else {
 				// Normalement, cela ne devrait pas arriver si on récupère correctement les valeurs soumises du formulaire.
@@ -578,18 +580,18 @@ if(!empty($valide_modif_model))
 				}
 
 				$sql="SELECT 1=1 FROM modele_bulletin WHERE id_model_bulletin='$id_model_bulletin' AND nom='$nom';";
-				$test=mysql_query($sql);
-				if(mysql_num_rows($test)==0) {
+				$test=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($test)==0) {
 					//$sql="INSERT INTO modele_bulletin SET id_model_bulletin='$id_model_bulletin', nom='$nom', valeur='".$$nom."';";
 					$sql="INSERT INTO modele_bulletin SET id_model_bulletin='$id_model_bulletin', nom='$nom', valeur='".$valeur."';";
 					//echo "$sql<br />\n";
-					$insert=mysql_query($sql);
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 				}
 				else {
 					//$sql="UPDATE modele_bulletin SET valeur='".$$nom."' WHERE id_model_bulletin='$id_model_bulletin' AND nom='$nom';";
 					$sql="UPDATE modele_bulletin SET valeur='".$valeur."' WHERE id_model_bulletin='$id_model_bulletin' AND nom='$nom';";
 					//echo "$sql<br />\n";
-					$update=mysql_query($sql);
+					$update=mysqli_query($GLOBALS["mysqli"], $sql);
 				}
 			}
 			/*
@@ -607,9 +609,9 @@ if(!empty($valide_modif_model))
 			//AJOUT ERIC Si on supprime un modèle, s'il est utilisé pour une classe on réinitialise pour la classe la valeur à NULL du champs modele_bulletin_pdf
 			$requete_classe="UPDATE classes SET modele_bulletin_pdf=NULL WHERE (modele_bulletin_pdf='$id_model_bulletin')";
 			//echo $requete_classe;
-			mysql_query($requete_classe) or die('Erreur SQL !'.$requete_classe.'<br>'.mysql_error());
+			mysqli_query($GLOBALS["mysqli"], $requete_classe) or die('Erreur SQL !'.$requete_classe.'<br>'.mysqli_error($GLOBALS["mysqli"]));
 
-			mysql_query($requete_model) or die('Erreur SQL !'.$requete_model.'<br>'.mysql_error());
+			mysqli_query($GLOBALS["mysqli"], $requete_model) or die('Erreur SQL !'.$requete_model.'<br>'.mysqli_error($GLOBALS["mysqli"]));
 		}
 	}
 	//mysql_query($requete_model) or die('Erreur SQL !'.$requete_model.'<br>'.mysql_error());
@@ -683,19 +685,19 @@ if ( isset($action) and $action === 'importmodelcsv' ) {
 						if($tab_valeurs_csv[$indice]=="") {
 							$sql="SELECT DISTINCT id_model_bulletin FROM modele_bulletin WHERE nom='nom_model_bulletin' AND valeur='".$tab_valeurs_csv[$indice_nom_modele]."';";
 							//echo "$sql<br />";
-							$res_nom_model=mysql_query($sql);
+							$res_nom_model=mysqli_query($GLOBALS["mysqli"], $sql);
 
-							if(mysql_num_rows($res_nom_model)>0) {
-								$tmp_lig_nom_model=mysql_fetch_object($res_nom_model);
+							if(mysqli_num_rows($res_nom_model)>0) {
+								$tmp_lig_nom_model=mysqli_fetch_object($res_nom_model);
 								$tab_valeurs_csv[$indice]=$tmp_lig_nom_model->id_model_bulletin;
 							}
 							else {
 								$sql="SELECT MAX(id_model_bulletin) AS max_id_model_bulletin FROM modele_bulletin;";
 								//echo "$sql<br />";
-								$res_max=mysql_query($sql);
+								$res_max=mysqli_query($GLOBALS["mysqli"], $sql);
 
-								if(mysql_num_rows($res_max)>0) {
-									$tmp_lig_max=mysql_fetch_object($res_max);
+								if(mysqli_num_rows($res_max)>0) {
+									$tmp_lig_max=mysqli_fetch_object($res_max);
 
 									$tab_valeurs_csv[$indice]=$tmp_lig_max->max_id_model_bulletin+1;
 								}
@@ -709,13 +711,13 @@ if ( isset($action) and $action === 'importmodelcsv' ) {
 						if($tab_valeurs_csv[$indice_nom_modele]!="") {
 							$sql="DELETE FROM modele_bulletin WHERE id_model_bulletin='".$tab_valeurs_csv[$indice]."';";
 							//echo "$sql<br />";
-							$nettoyage=mysql_query($sql);
+							$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 							for($i=0;$i<count($tab_champs_csv);$i++) {
 								if($i!=$indice) {
 									$sql="INSERT modele_bulletin SET id_model_bulletin='".$tab_valeurs_csv[$indice]."', nom='".$tab_champs_csv[$i]."', valeur='".$tab_valeurs_csv[$i]."';";
 									//echo "$sql<br />";
-									$insert=mysql_query($sql);
+									$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								}
 							}
 						}
@@ -809,8 +811,8 @@ function DecocheCheckbox() {
 		echo "<br /><br />\n";
 
 		$sql="SHOW TABLES LIKE 'modele_bulletin';";
-		$test_modele_bulletin=mysql_query($sql);
-		if(mysql_num_rows($test_modele_bulletin)==0) {
+		$test_modele_bulletin=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_modele_bulletin)==0) {
 			echo "<p style='color:red'>La table 'modele_bulletin' n'existe pas.</p>\n";
 
 			if($_SESSION['statut']=='administrateur') {
@@ -849,8 +851,8 @@ function DecocheCheckbox() {
 		$nb_modele = '0'; $varcoche = '';
 
 		//$requete_model = mysql_query('SELECT id_model_bulletin, nom_model_bulletin FROM '.$prefix_base.'model_bulletin');
-		$requete_model = mysql_query("SELECT id_model_bulletin, valeur FROM ".$prefix_base."modele_bulletin WHERE nom='nom_model_bulletin' ORDER BY id_model_bulletin;");
-        if(mysql_num_rows($requete_model)==0) {
+		$requete_model = mysqli_query($GLOBALS["mysqli"], "SELECT id_model_bulletin, valeur FROM ".$prefix_base."modele_bulletin WHERE nom='nom_model_bulletin' ORDER BY id_model_bulletin;");
+        if(mysqli_num_rows($requete_model)==0) {
             $message_alerte="<p style='text-align:center; color:red;'>Il semble qu'aucun modèle ne soit défini.<br />Ce n'est pas normal.<br />";
             if($_SESSION['login']=='administrateur') {
                 $message_alerte.="Vous devriez effectuer/forcer une <a href='../utilitaires/maj.php'>mise à jour de la base</a> pour corriger.<br />Prenez tout de même soin de vérifier que personne d'autre que vous n'est connecté.\n";
@@ -861,7 +863,7 @@ function DecocheCheckbox() {
             $message_alerte.="</p>\n";
         }
         else {
-            while($data_model = mysql_fetch_array($requete_model)) {
+            while($data_model = mysqli_fetch_array($requete_model)) {
                 if ($i === '1') { $i = '2'; $couleur_cellule = '#CCCCCC'; } else { $couleur_cellule = '#DEDEDE'; $i = '1'; }
 
                 echo "<tr>\n";
@@ -1050,8 +1052,8 @@ function DecocheCheckbox() {
 			// On récupère les valeurs du modèle $id_model_bulletin (que ce soit le modèle actuellement modifié ou celui qui sert de modèle pour une recopie)
 			$sql="SELECT * FROM modele_bulletin WHERE id_model_bulletin='".$id_model_bulletin."';";
 			//echo "$sql<br />\n";
-			$res_modele=mysql_query($sql);
-			while ($lig=mysql_fetch_object($res_modele)) {
+			$res_modele=mysqli_query($GLOBALS["mysqli"], $sql);
+			while ($lig=mysqli_fetch_object($res_modele)) {
 				$nom=$lig->nom;
 				$valeur=$lig->valeur;
 
@@ -1100,8 +1102,8 @@ function DecocheCheckbox() {
 			// sélection des modèles des bulletins.
 			//$requete_model = mysql_query('SELECT id_model_bulletin, nom_model_bulletin FROM '.$prefix_base.'model_bulletin ORDER BY '.$prefix_base.'model_bulletin.nom_model_bulletin ASC');
 			$sql="SELECT id_model_bulletin, valeur FROM modele_bulletin WHERE nom='nom_model_bulletin' ORDER BY nom ASC";
-			$requete_model = mysql_query($sql);
-			while($donner_model = mysql_fetch_array($requete_model))
+			$requete_model = mysqli_query($GLOBALS["mysqli"], $sql);
+			while($donner_model = mysqli_fetch_array($requete_model))
 			{
 				echo "<option value='".$donner_model['id_model_bulletin']."'";
 				if(!empty($type_bulletin) and $type_bulletin===$donner_model['id_model_bulletin']) {
@@ -1640,16 +1642,18 @@ function DecocheCheckbox() {
 
 			<?php
 				// A mettre dans 162_to_163
-				if((!isset($afficher_abs_tot))||($afficher_abs_tot=="")||(!isset($afficher_abs_nj))||($afficher_abs_nj=="")||(!isset($afficher_abs_ret))||($afficher_abs_ret=="")) {
+				if((!isset($afficher_abs_tot))||($afficher_abs_tot=="")||(!isset($afficher_abs_nj))||($afficher_abs_nj=="")||(!isset($afficher_abs_ret))||($afficher_abs_ret=="")||(!isset($afficher_abs_cpe))||($afficher_abs_cpe=="")) {
 					if($active_bloc_absence=="1") {
 						$afficher_abs_tot='1';
 						$afficher_abs_nj='1';
 						$afficher_abs_ret='1';
+						$afficher_abs_cpe='1';
 					}
 					else {
 						$afficher_abs_tot='0';
 						$afficher_abs_nj='0';
 						$afficher_abs_ret='0';
+						$afficher_abs_cpe='0';
 					}
 				}
 			?>
@@ -1674,6 +1678,11 @@ function DecocheCheckbox() {
 					<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 					<td>Affichage du nombre de retards&nbsp;:</td>
 					<td><input name="afficher_abs_ret" id="afficher_abs_ret_1" value="1" type="radio" <?php if(!empty($afficher_abs_ret) and $afficher_abs_ret==='1') { ?>checked="checked"<?php } ?> /><label for='afficher_abs_ret_1'>&nbsp;Activer</label> &nbsp;<input name="afficher_abs_ret" id="afficher_abs_ret_0" value="0" type="radio" <?php if(empty($afficher_abs_ret) or (!empty($afficher_abs_ret) and $afficher_abs_ret!='1')) { ?>checked="checked"<?php } ?> /><label for='afficher_abs_ret_0'>&nbsp;Désactiver</label></td>
+				</tr>
+				<tr>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td>Affichage du nom du CPE&nbsp;:</td>
+					<td><input name="afficher_abs_cpe" id="afficher_abs_cpe_1" value="1" type="radio" <?php if(!empty($afficher_abs_cpe) and $afficher_abs_cpe==='1') { ?>checked="checked"<?php } ?> /><label for='afficher_abs_cpe_1'>&nbsp;Activer</label> &nbsp;<input name="afficher_abs_cpe" id="afficher_abs_cpe_0" value="0" type="radio" <?php if(empty($afficher_abs_cpe) or (!empty($afficher_abs_cpe) and $afficher_abs_cpe!='1')) { ?>checked="checked"<?php } ?> /><label for='afficher_abs_cpe_0'>&nbsp;Désactiver</label></td>
 				</tr>
 			</table>
 
@@ -1751,7 +1760,7 @@ function DecocheCheckbox() {
 			</td>
 				<td style="vertical-align: top; white-space: nowrap; text-align: left; width: 50%;">
 
-				<div style="font-weight: bold; background: #CFCFCF;">Cadre signature du chef</div>
+				<div style="font-weight: bold; background: #CFCFCF;">Cadre signature du chef d'établissement</div>
 			<input name="active_bloc_chef" id="active_bloc_chef_1" value="1" type="radio" <?php if(!empty($active_bloc_chef) and $active_bloc_chef==='1') { ?>checked="checked"<?php } ?> /><label for='active_bloc_chef_1'>&nbsp;Activer &nbsp;</label><input name="active_bloc_chef" id="active_bloc_chef_0" value="0" type="radio" <?php if(empty($active_bloc_chef) or (!empty($active_bloc_chef) and $active_bloc_chef!='1')) { ?>checked="checked"<?php } ?> /><label for='active_bloc_chef_0'>&nbsp;Désactiver</label><br />
 			Positionnement X&nbsp;<input name="X_sign_chef" size="3" style="border: 1px solid #74748F;" type="text" <?php if(!empty($X_sign_chef)) { ?>value="<?php echo $X_sign_chef; ?>" <?php } ?> />mm&nbsp;/&nbsp;Positionnement Y&nbsp;<input name="Y_sign_chef" size="3" style="border: 1px solid #74748F;" type="text"  <?php if(!empty($Y_sign_chef)) { ?>value="<?php echo $Y_sign_chef; ?>" <?php } ?> />mm&nbsp;<br />
 			Largeur du bloc&nbsp;<input name="longeur_sign_chef" size="3" style="border: 1px solid #74748F;" type="text"  <?php if(!empty($longeur_sign_chef)) { ?>value="<?php echo $longeur_sign_chef; ?>" <?php } ?> />mm&nbsp;/&nbsp;Hauteur du bloc&nbsp;<input name="hauteur_sign_chef" size="3" style="border: 1px solid #74748F;" type="text"  <?php if(!empty($hauteur_sign_chef)) { ?>value="<?php echo $hauteur_sign_chef; ?>" <?php } ?> />mm&nbsp;<br />
@@ -1763,6 +1772,7 @@ function DecocheCheckbox() {
 			<input name="cadre_sign_chef" id="cadre_sign_chef" style="border: 1px solid #74748F;" type="checkbox" value="1" <?php if(!empty($cadre_sign_chef) and $cadre_sign_chef==='1') { ?>checked="checked"<?php } ?> /><label for='cadre_sign_chef'>&nbsp;Ajouter un encadrement</label><br /><br />
 
 			<?php
+				/*
 				echo "<input type='checkbox' name='signature_img' id='signature_img' value='1' ";
 				if(isset($signature_img) and $signature_img=='1') { 
 					echo "checked='checked'";
@@ -1776,6 +1786,7 @@ function DecocheCheckbox() {
 					echo "image de signature";
 				}
 				echo " ait été uploadée en administrateur<br />et que vous soyez autorisé à utiliser cette signature</em>)";
+				*/
 			?>
 
 			</td>
@@ -1826,14 +1837,14 @@ function check_coherence_coches_bulletin_pdf() {
 		echo "<h2>Supprimer un modèle de bulletin</h2>\n";
 
 		$sql="SELECT valeur FROM modele_bulletin WHERE id_model_bulletin='$model_bulletin' AND nom='nom_model_bulletin';";
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)==0) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)==0) {
 			echo "<p>Aucun modèle n'a été trouvé pour l'identifiant $model_bulletin</p>\n";
 			require("../lib/footer.inc.php");
 			die();
 		}
 		else {
-			$lig_tmp=mysql_fetch_object($res);
+			$lig_tmp=mysqli_fetch_object($res);
 			echo "<p>Vous allez supprimer le modèle <strong>$lig_tmp->valeur</strong></p>\n";
 	?>
 		<table style="text-align: left; width: 100%; border: 1px solid #74748F;" border="0" cellpadding="2" cellspacing="2" summary="Suppression d'un modèle">

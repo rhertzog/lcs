@@ -63,24 +63,34 @@ if(isset($reinitialiser)) {
 		}
 		else{
 			$sql="SELECT temp_dir FROM utilisateurs WHERE login='$reinit[$i]';";
-			$res_td=mysql_query($sql);
+			$res_td=mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($res_td)=="1"){
-				$lig_td=mysql_fetch_object($res_td);
+			if(mysqli_num_rows($res_td)=="1"){
+				$lig_td=mysqli_fetch_object($res_td);
 
 				$temp_dir=$lig_td->temp_dir;
 
-				if(($temp_dir=="")||(mb_strlen(preg_replace("/[A-Za-z0-9_.-]/","",$temp_dir))!=0)){
+				if(($temp_dir=="")||(mb_strlen(preg_replace("/[A-Za-z0-9_.-]/","",$temp_dir))!=0)) {
 					$msg.="La valeur de temp_dir pour $reinit[$i] est inattendue: <font color='green'>'</font>$temp_dir<font color='green'>'</font><br />\n";
 				}
-				else{
+				else {
 					if(file_exists("$chemin_temp/$temp_dir")){
 						//if(unlink("$chemin_temp/$temp_dir")){
 						if(is_file("$chemin_temp/$temp_dir")) {
 							$res_suppr=unlink("$chemin_temp/$temp_dir");
 						}
-						else{
-							if(vider_dir("$chemin_temp/$temp_dir")) {
+						else {
+							$suppression=vider_dir("$chemin_temp/$temp_dir", array("signature"));
+							if(is_array($suppression)) {
+								$res_suppr=false;
+								$msg.="$temp_dir contient des fichiers ou dossiers exclus de la suppression : ";
+								for($loop=0;$loop<count($suppression);$loop++) {
+									if($loop>0) {$msg.=", ";}
+									$msg.=$suppression[$loop];
+								}
+								$msg.=".<br />\n";
+							}
+							elseif($suppression) {
 								$res_suppr=rmdir("$chemin_temp/$temp_dir");
 							}
 							else{
@@ -88,6 +98,7 @@ if(isset($reinitialiser)) {
 								$msg.="Il n'a pas été possible de vider $temp_dir<br />\n";
 							}
 						}
+
 						if($res_suppr){
 							$nb_suppr++;
 						}
@@ -97,13 +108,16 @@ if(isset($reinitialiser)) {
 					}
 					else{
 						$msg.="Le dossier $temp_dir n'existe pas.<br />\n";
+						$res_suppr=true;
 					}
 
-					// On vide le champ temp_dir... une nouvelle valeur sera générée au prochain login
-					$sql="UPDATE utilisateurs SET temp_dir='' WHERE login='".$reinit[$i]."'";
-					$res_update=mysql_query($sql);
-					if(!$res_update){
-						$msg.="Erreur lors de la réinitialisation de temp_dir pour $reinit[$i].<br />\n";
+					if($res_suppr) {
+						// On vide le champ temp_dir... une nouvelle valeur sera générée au prochain login
+						$sql="UPDATE utilisateurs SET temp_dir='' WHERE login='".$reinit[$i]."'";
+						$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(!$res_update) {
+							$msg.="Erreur lors de la réinitialisation de temp_dir pour $reinit[$i].<br />\n";
+						}
 					}
 				}
 			}
@@ -129,15 +143,31 @@ else{
 						if(is_file("$chemin_temp/$suppr[$i]")) {
 							$res_suppr=unlink("$chemin_temp/$suppr[$i]");
 						}
-						else{
-							if(vider_dir("$chemin_temp/$suppr[$i]")) {
-								$res_suppr=rmdir("$chemin_temp/$suppr[$i]");
+						else {
+							if(isset($_POST['sans_exclusion'])) {
+								$res_suppr=deltree("$chemin_temp/$suppr[$i]");
 							}
-							else{
-								$res_suppr=false;
-								$msg.="Il n'a pas été possible de vider $suppr[$i]<br />\n";
+							else {
+								$suppression=vider_dir("$chemin_temp/$suppr[$i]", array("signature"));
+								if(is_array($suppression)) {
+									$res_suppr=false;
+									$msg.="$suppr[$i] contient des fichiers ou dossiers exclus de la suppression : ";
+									for($loop=0;$loop<count($suppression);$loop++) {
+										if($loop>0) {$msg.=", ";}
+										$msg.=$suppression[$loop];
+									}
+									$msg.=".<br />\n";
+								}
+								elseif($suppression) {
+									$res_suppr=rmdir("$chemin_temp/$suppr[$i]");
+								}
+								else{
+									$res_suppr=false;
+									$msg.="Il n'a pas été possible de vider $suppr[$i]<br />\n";
+								}
 							}
 						}
+
 						if($res_suppr){
 							$nb_suppr++;
 						}
@@ -170,9 +200,9 @@ if(isset($reinitialiser)) {
 	echo "<p>La réinitialisation des dossiers temporaires permet de supprimer le dossier temporaire d'un utilisateur et de vider le chemin aléatoire de ce dossier de façon à ce qu'une nouvelle valeur soit générée au login suivant.</p>\n";
 
 	$sql="SELECT login,nom,prenom FROM utilisateurs WHERE temp_dir!='' ORDER BY statut,nom,prenom";
-	$res_user=mysql_query($sql);
+	$res_user=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if(mysql_num_rows($res_user)==0){
+	if(mysqli_num_rows($res_user)==0){
 		echo "<p>Aucun utilisateur n'est encore concerné par la réinitialisation...</p>\n";
 	}
 	else{
@@ -181,7 +211,7 @@ if(isset($reinitialiser)) {
 
 		echo "<p>Voici la liste des utilisateurs dont l'aléa peut être recalculé<br />(<i>Les utilisateurs qui n'apparaissent pas, auront de toute façon un nouveau dossier temporaire généré lors de leur prochain login</i>):</p>\n";
 
-		while ($lig_user=mysql_fetch_object($res_user)){
+		while ($lig_user=mysqli_fetch_object($res_user)){
 			$tab_user_login[]=$lig_user->login;
 			$tab_user_info[]=my_strtoupper($lig_user->nom)." ".casse_mot($lig_user->prenom,'majf2');
 		}
@@ -352,9 +382,9 @@ else{
 				else{
 					$sql="SELECT nom,prenom,statut,etat FROM utilisateurs WHERE login='$tabtmp[0]'";
 					//echo "<!-- $sql -->\n";
-					$res_user=mysql_query($sql);
+					$res_user=mysqli_query($GLOBALS["mysqli"], $sql);
 
-					if(mysql_num_rows($res_user)==0){
+					if(mysqli_num_rows($res_user)==0){
 						echo "<td>$tabtmp[0]</td>\n";
 						echo "<td colspan='4' style='color:red;'>Login inconnu.</td>\n";
 						/*
@@ -388,7 +418,7 @@ else{
 						*/
 					}
 					else{
-						$ligtmp=mysql_fetch_object($res_user);
+						$ligtmp=mysqli_fetch_object($res_user);
 						echo "<td>$tabtmp[0]</td>\n";
 						echo "<td>$ligtmp->nom</td>\n";
 						echo "<td>$ligtmp->prenom</td>\n";
@@ -429,6 +459,7 @@ else{
 	}
 	echo "</table>\n";
 
+	echo "<input type='checkbox' id='sans_exclusion' name='sans_exclusion' value='y' /><label for='sans_exclusion'> Supprimer aussi les sous-dossiers et sans exclure certains dossiers/fichiers protégés (<em>fichiers de signature des bulletins,...</em>)</label><br />\n";
 	echo "<input type='hidden' name=is_posted value = '1' />\n";
 	echo "<center><input type='submit' name='Valider' value='Valider' /></center>\n";
 	echo "</form>\n";

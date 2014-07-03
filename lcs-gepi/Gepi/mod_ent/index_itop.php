@@ -35,8 +35,8 @@ if ($resultat_session == 'c') {
 
 
 $sql="SELECT 1=1 FROM droits WHERE id='/mod_ent/index_itop.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/mod_ent/index_itop.php',
 administrateur='V',
 professeur='F',
@@ -48,7 +48,7 @@ secours='F',
 autre='F',
 description='Rapprochement des comptes ENT/GEPI : ENT ITOP',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 if (!checkAccess()) {
     header("Location: ../logout.php?auto=1");
@@ -85,7 +85,7 @@ function echo_debug_itop($chaine) {
 
 // Menage:
 $sql="DELETE FROM sso_table_correspondance WHERE login_gepi='' OR login_sso='';";
-$menage=mysql_query($sql);
+$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 if((isset($_POST['temoin_suhosin_1']))&&(!isset($_POST['temoin_suhosin_2']))) {
 	$msg.="Il semble que certaines variables n'ont pas été transmises.<br />Cela peut arriver lorsqu'on tente de transmettre (<em>cocher trop de cases</em>) trop de variables.<br />Vous devriez tenter de cocher moins de cases et vous y prendre en plusieurs fois.<br />";
@@ -95,10 +95,10 @@ if(isset($_GET['supprimer_comptes_parents'])) {
 	check_token();
 
 	$sql="DELETE FROM utilisateurs WHERE statut='responsable';";
-	$suppr=mysql_query($sql);
+	$suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	$sql="UPDATE resp_pers SET login='';";
-	$vider_login=mysql_query($sql);
+	$vider_login=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	$msg.="Les comptes d'utilisateurs responsables ont été supprimés et leur login vidé dans la table 'resp_pers'.<br />";
 }
@@ -118,9 +118,9 @@ if(isset($_POST['recherche'])) {
 
 			$sql="SELECT login,nom,prenom,naissance FROM eleves WHERE nom LIKE '%".$nom_rech."%' AND prenom LIKE '%".$prenom_rech."%';";
 
-			$res=@mysql_query($sql);
+			$res=@mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($res)==0){
+			if(mysqli_num_rows($res)==0){
 				$chaine="Aucun résultat retourné.";
 			}
 			else {
@@ -150,7 +150,7 @@ if(isset($_POST['recherche'])) {
 				$chaine.="</tr>";
 
 				$alt=-1;
-				while($lig=mysql_fetch_object($res)){
+				while($lig=mysqli_fetch_object($res)){
 					//$chaine.="<tr>";
 
 					$alt=$alt*(-1);
@@ -204,9 +204,9 @@ if(isset($_POST['recherche'])) {
 
 			$sql="SELECT login,nom,prenom,pers_id FROM resp_pers WHERE nom LIKE '%".$nom_rech."%' AND prenom LIKE '%".$prenom_rech."%';";
 
-			$res=@mysql_query($sql);
+			$res=@mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($res)==0){
+			if(mysqli_num_rows($res)==0){
 				$chaine="Aucun résultat retourné.";
 			}
 			else {
@@ -232,7 +232,7 @@ if(isset($_POST['recherche'])) {
 				$chaine.="</tr>";
 
 				$alt=-1;
-				while($lig=mysql_fetch_object($res)){
+				while($lig=mysqli_fetch_object($res)){
 					//$chaine.="<tr>";
 
 					$alt=$alt*(-1);
@@ -284,9 +284,9 @@ if(isset($_POST['recherche'])) {
 
 			$sql="SELECT login,nom,prenom,statut FROM utilisateurs WHERE nom LIKE '%".$nom_rech."%' AND prenom LIKE '%".$prenom_rech."%';";
 
-			$res=@mysql_query($sql);
+			$res=@mysqli_query($GLOBALS["mysqli"], $sql);
 
-			if(mysql_num_rows($res)==0){
+			if(mysqli_num_rows($res)==0){
 				$chaine="Aucun résultat retourné.";
 			}
 			else {
@@ -312,7 +312,7 @@ if(isset($_POST['recherche'])) {
 				$chaine.="</tr>";
 
 				$alt=-1;
-				while($lig=mysql_fetch_object($res)){
+				while($lig=mysqli_fetch_object($res)){
 					//$chaine.="<tr>";
 
 					$alt=$alt*(-1);
@@ -371,8 +371,8 @@ if(isset($_POST['enregistrement_eleves'])) {
 	else {
 		$ligne_tempo2=array();
 		$sql="SELECT * FROM tempo2_sso;";
-		$res=mysql_query($sql);
-		while($lig=mysql_fetch_object($res)) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		while($lig=mysqli_fetch_object($res)) {
 			$ligne_tempo2[$lig->col1]=$lig->col2;
 		}
 
@@ -382,20 +382,20 @@ if(isset($_POST['enregistrement_eleves'])) {
 				if(isset($ligne_tempo2[$ligne[$loop]])) {
 					$tab=explode(";", $ligne_tempo2[$ligne[$loop]]);
 
-					$sql="SELECT login FROM eleves WHERE login='".mysql_real_escape_string($_POST['login_'.$ligne[$loop]])."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					$sql="SELECT login FROM eleves WHERE login='".mysqli_real_escape_string($GLOBALS["mysqli"], $_POST['login_'.$ligne[$loop]])."';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0) {
 						$msg.="Le login élève Gepi ".$_POST['login_'.$ligne[$loop]]." proposé n'existe pas.<br />\n";
 					}
 					else {
-						$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
-						$test=mysql_query($sql);
-						if(mysql_num_rows($test)==0) {
+						$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($test)==0) {
 							$sql="SELECT * FROM sso_table_correspondance WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
-								$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysql_real_escape_string($tab[0])."';";
-								$insert=mysql_query($sql);
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
+								$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$insert) {
 									$msg.="Erreur lors de l'insertion de l'association ".$tab[0]." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 								}
@@ -404,8 +404,8 @@ if(isset($_POST['enregistrement_eleves'])) {
 								}
 							}
 							else {
-								$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($tab[0])."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-								$update=mysql_query($sql);
+								$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$update) {
 									$msg.="Erreur lors de la mise à jour de l'association ".$tab[0]." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 								}
@@ -415,7 +415,7 @@ if(isset($_POST['enregistrement_eleves'])) {
 							}
 						}
 						else {
-							$lig=mysql_fetch_object($test);
+							$lig=mysqli_fetch_object($test);
 							$msg.="Le GUID $tab[0] est déjà associé à $lig->login_gepi<br />\n";
 						}
 					}
@@ -428,10 +428,10 @@ if(isset($_POST['enregistrement_eleves'])) {
 				if(isset($ligne_tempo2[$ligne[$loop]])) {
 					$tab=explode(";", $ligne_tempo2[$ligne[$loop]]);
 
-					$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
+					$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
 					echo_debug_itop("$sql<br />");
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0) {
 						$naissance=(isset($tab[5])) ? $tab[5] : "";
 						if(!preg_match("#[0-9]{2}/[0-9]{2}/[0-9]{4}#", $naissance)) {$naissance="";}
 
@@ -453,22 +453,22 @@ if(isset($_POST['enregistrement_eleves'])) {
 							$sql="SELECT * FROM eleves WHERE nom LIKE '".$nom_remplacement."' AND prenom LIKE '".$prenom_remplacement."' ORDER BY naissance;";
 						}
 						echo_debug_itop("$sql<br />");
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==0) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==0) {
 							$msg.="Aucun enregistrement dans la table 'eleves' pour ".$tab[1]." ".$tab[2]." !<br />\n";
 							$nb_pas_dans_eleves++;
 						}
-						elseif(mysql_num_rows($res)==1) {
+						elseif(mysqli_num_rows($res)==1) {
 							// Un seul élève correspond
-							$lig=mysql_fetch_object($res);
+							$lig=mysqli_fetch_object($res);
 
 							$sql="SELECT 1=1 FROM sso_table_correspondance WHERE login_gepi='$lig->login';";
 							echo_debug_itop("$sql<br />");
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
-								$sql="INSERT INTO sso_table_correspondance SET login_gepi='$lig->login', login_sso='".mysql_real_escape_string($tab[0])."';";
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
+								$sql="INSERT INTO sso_table_correspondance SET login_gepi='$lig->login', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
 								echo_debug_itop("$sql<br />");
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$insert) {
 									$msg.="Erreur lors de l'insertion de l'association ".$tab[0]." &gt; ".$lig->login."<br />\n";
 								}
@@ -477,9 +477,9 @@ if(isset($_POST['enregistrement_eleves'])) {
 								}
 							}
 							else {
-								$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($tab[0])."' WHERE login_gepi='$lig->login';";
+								$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."' WHERE login_gepi='$lig->login';";
 								echo_debug_itop("$sql<br />");
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$update) {
 									$msg.="Erreur lors de la mise à jour de l'association ".$tab[0]." &gt; ".$lig->login."<br />\n";
 								}
@@ -494,7 +494,7 @@ if(isset($_POST['enregistrement_eleves'])) {
 						}
 					}
 					else {
-						$lig=mysql_fetch_object($test);
+						$lig=mysqli_fetch_object($test);
 						$msg.="Le GUID $tab[0] est déjà associé à $lig->login_gepi<br />\n";
 					}
 				}
@@ -529,8 +529,8 @@ if(isset($_POST['enregistrement_responsables'])) {
 	}
 	else {
 		$sql="SELECT col2 FROM tempo2_sso WHERE col1='Ligne_entete';";
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)==0) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)==0) {
 			$msg="La ligne d'entête du CSV n'a pas été trouvée.<br />";
 		}
 		else {
@@ -538,7 +538,7 @@ if(isset($_POST['enregistrement_responsables'])) {
 			// Lire la ligne d'entête pour repérer les indices des colonnes recherchées
 			$tabchamps = array("Guid", "Nom", "Prénom", "Prenom", "Profil", "Groupe", "Guid_Enfant1", "Guid_Enfant2", "Guid_Enfant3");
 
-			$ligne_entete=mysql_fetch_object($res);
+			$ligne_entete=mysqli_fetch_object($res);
 			$en_tete=explode(";", trim($ligne_entete->col2));
 
 			$tabindice=array();
@@ -558,8 +558,8 @@ if(isset($_POST['enregistrement_responsables'])) {
 			else {
 				$ligne_tempo2=array();
 				$sql="SELECT * FROM tempo2_sso;";
-				$res=mysql_query($sql);
-				while($lig=mysql_fetch_object($res)) {
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
+				while($lig=mysqli_fetch_object($res)) {
 					$ligne_tempo2[$lig->col1]=$lig->col2;
 				}
 
@@ -573,20 +573,20 @@ if(isset($_POST['enregistrement_responsables'])) {
 							$nom_courant=$tab[$tabindice['Nom']];
 							$prenom_courant=$tab[$tabindice['Prénom']];
 
-							$sql="SELECT login FROM resp_pers WHERE login='".mysql_real_escape_string($_POST['login_'.$ligne[$loop]])."';";
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
+							$sql="SELECT login FROM resp_pers WHERE login='".mysqli_real_escape_string($GLOBALS["mysqli"], $_POST['login_'.$ligne[$loop]])."';";
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
 								$msg.="Le login responsable Gepi ".$_POST['login_'.$ligne[$loop]]." proposé n'existe pas.<br />\n";
 							}
 							else {
-								$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($guid_courant)."';";
-								$test=mysql_query($sql);
-								if(mysql_num_rows($test)==0) {
+								$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."';";
+								$test=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($test)==0) {
 									$sql="SELECT * FROM sso_table_correspondance WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-									$test=mysql_query($sql);
-									if(mysql_num_rows($test)==0) {
-										$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysql_real_escape_string($guid_courant)."';";
-										$insert=mysql_query($sql);
+									$test=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($test)==0) {
+										$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."';";
+										$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 										if(!$insert) {
 											$msg.="Erreur lors de l'insertion de l'association ".$guid_courant." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 										}
@@ -595,8 +595,8 @@ if(isset($_POST['enregistrement_responsables'])) {
 										}
 									}
 									else {
-										$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($guid_courant)."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-										$update=mysql_query($sql);
+										$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
+										$update=mysqli_query($GLOBALS["mysqli"], $sql);
 										if(!$update) {
 											$msg.="Erreur lors de la mise à jour de l'association ".$guid_courant." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 										}
@@ -606,7 +606,7 @@ if(isset($_POST['enregistrement_responsables'])) {
 									}
 								}
 								else {
-									$lig=mysql_fetch_object($test);
+									$lig=mysqli_fetch_object($test);
 									$msg.="Le GUID $guid_courant est déjà associé à $lig->login_gepi<br />\n";
 								}
 							}
@@ -636,21 +636,21 @@ if(isset($_POST['enregistrement_responsables'])) {
 								$guid_enfant3=$tab[$tabindice['Guid_Enfant3']];
 							}
 
-							$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($guid_courant)."';";
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
+							$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."';";
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
 
 								$chaine="";
 								if($guid_enfant1!="") {
-									$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant1)."'";
+									$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant1)."'";
 								}
 								if($guid_enfant2!="") {
 									if($chaine!="") {$chaine.=" OR ";}
-									$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant2)."'";
+									$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant2)."'";
 								}
 								if($guid_enfant3!="") {
 									if($chaine!="") {$chaine.=" OR ";}
-									$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant3)."'";
+									$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant3)."'";
 								}
 
 								$cpt_resp=0;
@@ -659,15 +659,15 @@ if(isset($_POST['enregistrement_responsables'])) {
 								if($chaine!="") {
 									$sql="SELECT e.* FROM eleves e, sso_table_correspondance s WHERE ($chaine) AND e.login=s.login_gepi ORDER BY e.nom, e.prenom;";
 									echo_debug_itop("$sql<br />");
-									$res_ele=mysql_query($sql);
-									if(mysql_num_rows($res_ele)>0) {
+									$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res_ele)>0) {
 										$cpt_ele=0;
-										while($lig_ele=mysql_fetch_object($res_ele)) {
-											$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.nom='".mysql_real_escape_string($nom_courant)."' AND rp.prenom='".mysql_real_escape_string($prenom_courant)."' AND rp.login!='';";
+										while($lig_ele=mysqli_fetch_object($res_ele)) {
+											$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $nom_courant)."' AND rp.prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $prenom_courant)."' AND rp.login!='';";
 											echo_debug_itop("$sql<br />");
-											$res_resp=mysql_query($sql);
-											if(mysql_num_rows($res_resp)>0) {
-												while($lig_resp=mysql_fetch_object($res_resp)) {
+											$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+											if(mysqli_num_rows($res_resp)>0) {
+												while($lig_resp=mysqli_fetch_object($res_resp)) {
 													if(!in_array($lig_resp->login, $tab_resp_login)) {
 														$tab_resp_login[]=$lig_resp->login;
 														$tab_resp[$cpt_resp]['login']=$lig_resp->login;
@@ -686,9 +686,9 @@ if(isset($_POST['enregistrement_responsables'])) {
 											else {
 												$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.login!='';";
 												echo_debug_itop("$sql<br />");
-												$res_resp=mysql_query($sql);
-												if(mysql_num_rows($res_resp)>0) {
-													while($lig_resp=mysql_fetch_object($res_resp)) {
+												$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+												if(mysqli_num_rows($res_resp)>0) {
+													while($lig_resp=mysqli_fetch_object($res_resp)) {
 														if(!in_array($lig_resp->login, $tab_resp_login)) {
 															$tab_resp_login[]=$lig_resp->login;
 															$tab_resp[$cpt_resp]['login']=$lig_resp->login;
@@ -713,13 +713,13 @@ if(isset($_POST['enregistrement_responsables'])) {
 									*/
 									if(count($tab_resp)==1) {
 										// Un seul responsable correspond
-										$lig=mysql_fetch_object($res);
+										$lig=mysqli_fetch_object($res);
 
 										$sql="SELECT 1=1 FROM sso_table_correspondance WHERE login_gepi='".$tab_resp_login[0]."';";
-										$test=mysql_query($sql);
-										if(mysql_num_rows($test)==0) {
-											$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$tab_resp_login[0]."', login_sso='".mysql_real_escape_string($guid_courant)."';";
-											$insert=mysql_query($sql);
+										$test=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($test)==0) {
+											$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$tab_resp_login[0]."', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."';";
+											$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 											if(!$insert) {
 												$msg.="Erreur lors de l'insertion de l'association ".$guid_courant." &gt; ".$tab_resp_login[0]."<br />\n";
 											}
@@ -728,8 +728,8 @@ if(isset($_POST['enregistrement_responsables'])) {
 											}
 										}
 										else {
-											$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($guid_courant)."' WHERE login_gepi='".$tab_resp_login[0]."';";
-											$update=mysql_query($sql);
+											$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_courant)."' WHERE login_gepi='".$tab_resp_login[0]."';";
+											$update=mysqli_query($GLOBALS["mysqli"], $sql);
 											if(!$update) {
 												$msg.="Erreur lors de la mise à jour de l'association ".$guid_courant." &gt; ".$tab_resp_login[0]."<br />\n";
 											}
@@ -747,7 +747,7 @@ if(isset($_POST['enregistrement_responsables'])) {
 								}
 							}
 							else {
-								$lig=mysql_fetch_object($test);
+								$lig=mysqli_fetch_object($test);
 								$msg.="Le GUID $guid_courant est déjà associé à $lig->login_gepi<br />\n";
 							}
 						}
@@ -781,8 +781,8 @@ if(isset($_POST['enregistrement_personnels'])) {
 	else {
 		$ligne_tempo2=array();
 		$sql="SELECT * FROM tempo2_sso;";
-		$res=mysql_query($sql);
-		while($lig=mysql_fetch_object($res)) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		while($lig=mysqli_fetch_object($res)) {
 			$ligne_tempo2[$lig->col1]=$lig->col2;
 		}
 
@@ -792,20 +792,20 @@ if(isset($_POST['enregistrement_personnels'])) {
 				if(isset($ligne_tempo2[$ligne[$loop]])) {
 					$tab=explode(";", $ligne_tempo2[$ligne[$loop]]);
 
-					$sql="SELECT login FROM utilisateurs WHERE login='".mysql_real_escape_string($_POST['login_'.$ligne[$loop]])."' AND statut!='eleve' AND statut!='responsable';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					$sql="SELECT login FROM utilisateurs WHERE login='".mysqli_real_escape_string($GLOBALS["mysqli"], $_POST['login_'.$ligne[$loop]])."' AND statut!='eleve' AND statut!='responsable';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0) {
 						$msg.="Le login de personnel Gepi ".$_POST['login_'.$ligne[$loop]]." proposé n'existe pas.<br />\n";
 					}
 					else {
-						$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
-						$test=mysql_query($sql);
-						if(mysql_num_rows($test)==0) {
+						$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($test)==0) {
 							$sql="SELECT * FROM sso_table_correspondance WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
-								$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysql_real_escape_string($tab[0])."';";
-								$insert=mysql_query($sql);
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
+								$sql="INSERT INTO sso_table_correspondance SET login_gepi='".$_POST['login_'.$ligne[$loop]]."', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$insert) {
 									$msg.="Erreur lors de l'insertion de l'association ".$tab[0]." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 								}
@@ -814,8 +814,8 @@ if(isset($_POST['enregistrement_personnels'])) {
 								}
 							}
 							else {
-								$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($tab[0])."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
-								$update=mysql_query($sql);
+								$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."' WHERE login_gepi='".$_POST['login_'.$ligne[$loop]]."';";
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$update) {
 									$msg.="Erreur lors de la mise à jour de l'association ".$tab[0]." &gt; ".$_POST['login_'.$ligne[$loop]]."<br />\n";
 								}
@@ -825,7 +825,7 @@ if(isset($_POST['enregistrement_personnels'])) {
 							}
 						}
 						else {
-							$lig=mysql_fetch_object($test);
+							$lig=mysqli_fetch_object($test);
 							$msg.="Le GUID $tab[0] est déjà associé à $lig->login_gepi<br />\n";
 						}
 					}
@@ -838,21 +838,21 @@ if(isset($_POST['enregistrement_personnels'])) {
 				if(isset($ligne_tempo2[$ligne[$loop]])) {
 					$tab=explode(";", $ligne_tempo2[$ligne[$loop]]);
 
-					$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0) {
+					$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0) {
 
-						$sql="SELECT * FROM utilisateurs WHERE nom='".mysql_real_escape_string($tab[1])."' AND prenom='".mysql_real_escape_string($tab[2])."' AND statut!='eleve' AND statut!='responsable';";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==1) {
+						$sql="SELECT * FROM utilisateurs WHERE nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[1])."' AND prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[2])."' AND statut!='eleve' AND statut!='responsable';";
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==1) {
 							// Un seul élève correspond
-							$lig=mysql_fetch_object($res);
+							$lig=mysqli_fetch_object($res);
 
 							$sql="SELECT 1=1 FROM sso_table_correspondance WHERE login_gepi='$lig->login';";
-							$test=mysql_query($sql);
-							if(mysql_num_rows($test)==0) {
-								$sql="INSERT INTO sso_table_correspondance SET login_gepi='$lig->login', login_sso='".mysql_real_escape_string($tab[0])."';";
-								$insert=mysql_query($sql);
+							$test=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test)==0) {
+								$sql="INSERT INTO sso_table_correspondance SET login_gepi='$lig->login', login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$insert) {
 									$msg.="Erreur lors de l'insertion de l'association ".$tab[0]." &gt; ".$lig->login."<br />\n";
 								}
@@ -861,8 +861,8 @@ if(isset($_POST['enregistrement_personnels'])) {
 								}
 							}
 							else {
-								$sql="UPDATE sso_table_correspondance SET login_sso='".mysql_real_escape_string($tab[0])."' WHERE login_gepi='$lig->login';";
-								$update=mysql_query($sql);
+								$sql="UPDATE sso_table_correspondance SET login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."' WHERE login_gepi='$lig->login';";
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$update) {
 									$msg.="Erreur lors de la mise à jour de l'association ".$tab[0]." &gt; ".$lig->login."<br />\n";
 								}
@@ -871,7 +871,7 @@ if(isset($_POST['enregistrement_personnels'])) {
 								}
 							}
 						}
-						elseif(mysql_num_rows($res)==0) {
+						elseif(mysqli_num_rows($res)==0) {
 							$msg.="Aucun enregistrement dans la table 'utilisateurs' pour ".$tab[1]." ".$tab[2]." !<br />\n";
 						}
 						else {
@@ -880,7 +880,7 @@ if(isset($_POST['enregistrement_personnels'])) {
 						}
 					}
 					else {
-						$lig=mysql_fetch_object($test);
+						$lig=mysqli_fetch_object($test);
 						$msg.="Le GUID $tab[0] est déjà associé à $lig->login_gepi<br />\n";
 					}
 				}
@@ -910,18 +910,18 @@ if(isset($_POST['enregistrement_saisie_manuelle'])) {
 	}
 	else {
 		$sql="SELECT * FROM sso_table_correspondance WHERE login_sso='".$login_sso."';";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)==0) {
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)==0) {
 			$sql="SELECT statut FROM utilisateurs WHERE login='$login_gepi';";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)==1) {
-				$statut_compte=mysql_result($res, 0, "statut");
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==1) {
+				$statut_compte=old_mysql_result($res, 0, "statut");
 
 				$sql="SELECT 1=1 FROM sso_table_correspondance WHERE login_gepi='$login_gepi';";
-				$test=mysql_query($sql);
-				if(mysql_num_rows($test)==0) {
+				$test=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($test)==0) {
 					$sql="INSERT INTO sso_table_correspondance SET login_gepi='$login_gepi', login_sso='$login_sso';";
-					$insert=mysql_query($sql);
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$insert) {
 						$msg.="Erreur lors de l'insertion de l'association ".$login_sso." &gt; ".$login_gepi."<br />\n";
 					}
@@ -931,7 +931,7 @@ if(isset($_POST['enregistrement_saisie_manuelle'])) {
 				}
 				else {
 					$sql="UPDATE sso_table_correspondance SET login_sso='".$login_sso."' WHERE login_gepi='$login_gepi';";
-					$update=mysql_query($sql);
+					$update=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$update) {
 						$msg.="Erreur lors de la mise à jour de l'association ".$login_sso." &gt; ".$login_gepi."<br />\n";
 					}
@@ -940,7 +940,7 @@ if(isset($_POST['enregistrement_saisie_manuelle'])) {
 					}
 				}
 			}
-			elseif(mysql_num_rows($res)==0) {
+			elseif(mysqli_num_rows($res)==0) {
 				$msg.="Aucun enregistrement dans la table 'eleves' pour $login_gepi<br />\n";
 			}
 			else {
@@ -948,7 +948,7 @@ if(isset($_POST['enregistrement_saisie_manuelle'])) {
 			}
 		}
 		else {
-			$lig=mysql_fetch_object($test);
+			$lig=mysqli_fetch_object($test);
 			$msg.="Le GUID $login_sso est déjà associé à $lig->login_gepi<br />\n";
 		}
 	}
@@ -975,7 +975,7 @@ if(isset($_POST['suppr'])) {
 	$suppr=$_POST['suppr'];
 	for($loop=0;$loop<count($suppr);$loop++) {
 		$sql="DELETE FROM sso_table_correspondance WHERE login_gepi='".$suppr[$loop]."';";
-		$menage=mysql_query($sql);
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 		if(!$menage) {
 			$msg.="Erreur lors de la suppression de ".$suppr[$loop]."<br />";
 		}
@@ -993,7 +993,7 @@ if($mode=='vider') {
 	check_token();
 
 	$sql="TRUNCATE sso_table_correspondance;";
-	$menage=mysql_query($sql);
+	$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($menage) {
 		$msg.="Table sso_table_correspondance vidée.<br />";
 	}
@@ -1008,11 +1008,11 @@ if($mode=='suppr_scories') {
 	check_token();
 
 	$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_gepi NOT IN (SELECT login FROM utilisateurs);";
-	$res=mysql_query($sql);
-	$nb_scories=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_scories=mysqli_num_rows($res);
 	if($nb_scories>0) {
 		$sql="DELETE FROM sso_table_correspondance WHERE login_gepi NOT IN (SELECT login FROM utilisateurs);";
-		$res=mysql_query($sql);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
 		if($res) {
 			$msg.="$nb_scories association(s) obsolète(s) supprimée(s).<br />";
 		}
@@ -1068,9 +1068,9 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 
 	$tab_tempo4=array();
 	$sql="SELECT * FROM tempo4;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
-		while($lig=mysql_fetch_object($res)) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		while($lig=mysqli_fetch_object($res)) {
 			$tab_tempo4[$lig->col1]['login']=$lig->col2;
 			$tab_tempo4[$lig->col1]['md5_password']=$lig->col3;
 		}
@@ -1080,13 +1080,13 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 		if($pers_id!="") {
 			$sql="SELECT * FROM resp_pers WHERE pers_id='$pers_id';";
 			echo_debug_itop("$sql<br />");
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)==0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==0) {
 				$msg.="ERREUR : Le responsable n°$pers_id n'existe pas dans la table 'resp_pers'.<br />";
 				$nb_erreur++;
 			}
 			else {
-				$lig=mysql_fetch_object($res);
+				$lig=mysqli_fetch_object($res);
 
 				if(!isset($tab_tempo4[$id_col1])) {
 					$msg.="ERREUR : Le numéro $id_col1 de l'enregistrement 'tempo4' que vous souhaitez associer au responsable n°$pers_id (<em>$lig->nom $lig->prenom</em>) n'existe pas dans la table 'tempo4'.<br />";
@@ -1095,9 +1095,9 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 				else {
 					$sql="SELECT * FROM utilisateurs WHERE login='".$tab_tempo4[$id_col1]['login']."';";
 					echo_debug_itop("$sql<br />");
-					$test_u=mysql_query($sql);
-					if(mysql_num_rows($test_u)>0) {
-						$lig_u=mysql_fetch_object($test_u);
+					$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_u)>0) {
+						$lig_u=mysqli_fetch_object($test_u);
 
 						$msg.="ERREUR : Le login ".$tab_tempo4[$id_col1]['login']." que vous souhaitez associer au responsable n°$pers_id (<em>$lig->nom $lig->prenom</em>) est déjà associé à un utilisateur de statut '$lig_u->statut' nommé $lig_u->nom $lig_u->prenom.<br />";
 						$nb_erreur++;
@@ -1106,11 +1106,11 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 						if($lig->login!="") {
 							$sql="SELECT * FROM utilisateurs WHERE login='".$lig->login."' AND statut='responsable';";
 							echo_debug_itop("$sql<br />");
-							$test_u=mysql_query($sql);
-							if(mysql_num_rows($test_u)>0) {
+							$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($test_u)>0) {
 								$sql="DELETE FROM utilisateurs WHERE login='".$lig->login."' AND statut='responsable';";
 								echo_debug_itop("$sql<br />");
-								$menage=mysql_query($sql);
+								$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$menage) {
 									$msg.="ERREUR : La suppression de l'ancien compte d'utilisateur $lig->login associé au responsable n°$pers_id (<em>$lig->nom $lig->prenom</em>) a échoué.<br />";
 									$nb_erreur++;
@@ -1119,21 +1119,33 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 									$sql="INSERT INTO utilisateurs SET login='".$tab_tempo4[$id_col1]['login']."', 
 												password='".$tab_tempo4[$id_col1]['md5_password']."', 
 												salt='', 
-												nom='".mysql_real_escape_string($lig->nom)."', 
-												prenom='".mysql_real_escape_string($lig->prenom)."', 
+												nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->nom)."', 
+												prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->prenom)."', 
 												civilite='$lig->civilite', 
 												change_mdp='n', 
-												email='".mysql_real_escape_string($lig->mel)."', 
+												email='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->mel)."', 
 												auth_mode='gepi', 
 												statut='responsable', 
 												etat='inactif';";
 									echo_debug_itop("$sql<br />");
-									$insert=mysql_query($sql);
+									$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 									if($insert) {
 										$sql="UPDATE resp_pers SET login='".$tab_tempo4[$id_col1]['login']."' WHERE pers_id='$pers_id';";
 										echo_debug_itop("$sql<br />");
-										$update=mysql_query($sql);
+										$update=mysqli_query($GLOBALS["mysqli"], $sql);
 										if($update) {
+
+											// Ménage:
+											$sql="SELECT id FROM infos_actions WHERE titre LIKE 'Nouveau responsable%($pers_id)';";
+											//if($debug_create_resp=="y") {echo "$sql<br />\n";}
+											$res_actions=mysqli_query($GLOBALS["mysqli"], $sql);
+											if(mysqli_num_rows($res_actions)>0) {
+												while($lig_action=mysqli_fetch_object($res_actions)) {
+													$menage=del_info_action($lig_action->id);
+													if(!$menage) {$msg.="Erreur lors de la suppression de l'action en attente en page d'accueil à propos de ".$tab_tempo4[$id_col1]['login']."<br />";}
+												}
+											}
+
 											$nb_comptes_remplaces++;
 										}
 										else {
@@ -1151,21 +1163,33 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 								$sql="INSERT INTO utilisateurs SET login='".$tab_tempo4[$id_col1]['login']."', 
 											password='".$tab_tempo4[$id_col1]['md5_password']."', 
 											salt='', 
-											nom='".mysql_real_escape_string($lig->nom)."', 
-											prenom='".mysql_real_escape_string($lig->prenom)."', 
+											nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->nom)."', 
+											prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->prenom)."', 
 											civilite='$lig->civilite', 
 											change_mdp='n', 
-											email='".mysql_real_escape_string($lig->mel)."', 
+											email='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->mel)."', 
 											auth_mode='gepi', 
 											statut='responsable', 
 											etat='inactif';";
 								echo_debug_itop("$sql<br />");
-								$insert=mysql_query($sql);
+								$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 								if($insert) {
 									$sql="UPDATE resp_pers SET login='".$tab_tempo4[$id_col1]['login']."' WHERE pers_id='$pers_id';";
 									echo_debug_itop("$sql<br />");
-									$update=mysql_query($sql);
+									$update=mysqli_query($GLOBALS["mysqli"], $sql);
 									if($update) {
+
+										// Ménage:
+										$sql="SELECT id FROM infos_actions WHERE titre LIKE 'Nouveau responsable%($pers_id)';";
+										//if($debug_create_resp=="y") {echo "$sql<br />\n";}
+										$res_actions=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res_actions)>0) {
+											while($lig_action=mysqli_fetch_object($res_actions)) {
+												$menage=del_info_action($lig_action->id);
+												if(!$menage) {$msg.="Erreur lors de la suppression de l'action en attente en page d'accueil à propos de ".$tab_tempo4[$id_col1]['login']."<br />";}
+											}
+										}
+
 										$nb_nouveaux_comptes++;
 									}
 									else {
@@ -1182,21 +1206,33 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 							$sql="INSERT INTO utilisateurs SET login='".$tab_tempo4[$id_col1]['login']."', 
 										password='".$tab_tempo4[$id_col1]['md5_password']."', 
 										salt='', 
-										nom='".mysql_real_escape_string($lig->nom)."', 
-										prenom='".mysql_real_escape_string($lig->prenom)."', 
+										nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->nom)."', 
+										prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->prenom)."', 
 										civilite='$lig->civilite', 
 										change_mdp='n', 
-										email='".mysql_real_escape_string($lig->mel)."', 
+										email='".mysqli_real_escape_string($GLOBALS["mysqli"], $lig->mel)."', 
 										auth_mode='gepi', 
 										statut='responsable', 
 										etat='inactif';";
 							echo_debug_itop("$sql<br />");
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 							if($insert) {
 								$sql="UPDATE resp_pers SET login='".$tab_tempo4[$id_col1]['login']."' WHERE pers_id='$pers_id';";
 								echo_debug_itop("$sql<br />");
-								$update=mysql_query($sql);
+								$update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if($update) {
+
+									// Ménage:
+									$sql="SELECT id FROM infos_actions WHERE titre LIKE 'Nouveau responsable%($pers_id)';";
+									//if($debug_create_resp=="y") {echo "$sql<br />\n";}
+									$res_actions=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res_actions)>0) {
+										while($lig_action=mysqli_fetch_object($res_actions)) {
+											$menage=del_info_action($lig_action->id);
+											if(!$menage) {$msg.="Erreur lors de la suppression de l'action en attente en page d'accueil à propos de ".$tab_tempo4[$id_col1]['login']."<br />";}
+										}
+									}
+
 									$nb_nouveaux_comptes++;
 								}
 								else {
@@ -1236,10 +1272,93 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 	$msg.="Vous devrez activer ces comptes dans Gestion des bases/Gestion des comptes d'utilisateurs/Responsables.<br />";
 
 	// Ménage:
-	//$sql="TRUNCATE tempo4;";
-	$menage=mysql_query($sql);
+	$sql="TRUNCATE tempo4;";
+	$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	//unset($mode);
+	$mode="";
+}
+
+if($mode=='valider_forcer_mdp_eleves') {
+	check_token();
+
+	$nb_reg=0;
+	$nb_erreur=0;
+	$ligne=isset($_POST['ligne']) ? $_POST['ligne'] : array();
+
+	$tab_tempo4=array();
+	$sql="SELECT * FROM tempo4;";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		while($lig=mysqli_fetch_object($res)) {
+			$tab_tempo4[$lig->col1]['login']=$lig->col2;
+			$tab_tempo4[$lig->col1]['md5_password']=$lig->col3;
+		}
+	}
+
+	foreach($ligne as $id_col1 => $login_gepi) {
+		if($login_gepi!="") {
+			$sql="SELECT * FROM eleves WHERE login='$login_gepi';";
+			echo_debug_itop("$sql<br />");
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==0) {
+				$msg.="ERREUR : In n'existe pas d'élève dans la table 'eleves' qui soit associé au login $login_gepi.<br />";
+				$nb_erreur++;
+			}
+			else {
+				$lig=mysqli_fetch_object($res);
+
+				if(!isset($tab_tempo4[$id_col1])) {
+					$msg.="ERREUR : Le numéro $id_col1 de l'enregistrement 'tempo4' que vous souhaitez associer à l'élève $login_gepi (<em>$lig->nom $lig->prenom</em>) n'existe pas dans la table 'tempo4'.<br />";
+					$nb_erreur++;
+				}
+				else {
+					$sql="SELECT * FROM utilisateurs WHERE login='".$tab_tempo4[$id_col1]['login']."';";
+					echo_debug_itop("$sql<br />");
+					$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test_u)==0) {
+						$msg.="ERREUR : L'élève $login_gepi (<em>$lig->nom $lig->prenom</em>) n'a pas de compte dans la table 'utilisateurs'.<br />";
+						$nb_erreur++;
+					}
+					else {
+						//$lig_u=mysqli_fetch_object($test_u);
+
+						$sql="UPDATE utilisateurs SET password='".$tab_tempo4[$id_col1]['md5_password']."', 
+											salt='', 
+											change_mdp='n' 
+										WHERE login='".$tab_tempo4[$id_col1]['login']."';";
+						echo_debug_itop("$sql<br />");
+						//echo "$sql<br />";
+						$update=mysqli_query($GLOBALS["mysqli"], $sql);
+						if($update) {
+							$nb_reg++;
+						}
+						else {
+							$msg.="ERREUR : Le remplacement du mot de passe dans 'utilisateurs' pour ".$tab_tempo4[$id_col1]['login']." (<em>$lig->nom $lig->prenom</em>) a échoué.<br />";
+							$nb_erreur++;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Les comptes créés sont pour le moment inactifs.
+	if($nb_erreur>0) {
+		$msg.="<br />";
+		$msg.="$nb_erreur erreurs se sont produites.<br />";
+	}
+
+	if($nb_reg>0) {
+		$msg.="<br />";
+		$msg.="$nb_reg mots de passe ont été définis/remplacés.<br />";
+	}
+
+	// Ménage:
+	$sql="TRUNCATE tempo4;";
+	$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+
+	unset($mode);
 	$mode="";
 }
 
@@ -1247,6 +1366,10 @@ if($mode=='valider_forcer_logins_mdp_responsables') {
 $titre_page = "ENT ITOP : Rapprochement";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
+
+//========================================================
+include("../utilisateurs/change_auth_mode.inc.php");
+//========================================================
 
 if($msg!="") {
 	echo "<div style='position:absolute; top:100px; left:20px; width:18px;' class='noprint'><a href='#lien_retour'><img src='../images/down.png' width='18' height='18' title='Passer les messages' /></a></div>\n";
@@ -1260,7 +1383,7 @@ if($suhosin_post_max_totalname_length!='') {
 
 //debug_var();
 $sql="CREATE TABLE IF NOT EXISTS tempo2_sso ( col1 varchar(100) NOT NULL default '', col2 TEXT NOT NULL default '') ENGINE=MyISAM CHARACTER SET utf8 COLLATE utf8_general_ci;";
-$create_table=mysql_query($sql);
+$create_table=mysqli_query($GLOBALS["mysqli"], $sql);
 
 ?>
 
@@ -1309,38 +1432,38 @@ if((!isset($mode))||($mode=="")) {
 
 	//$sql="SELECT e.*, s.* FROM eleves e, sso_table_correspondance s WHERE s.login_gepi=e.login ORDER BY e.nom, e.prenom LIMIT 1;";
 	$sql="SELECT 1=1 FROM eleves e, sso_table_correspondance s WHERE s.login_gepi=e.login;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "
 	<li>Aucune association élève n'est encore enregistrée.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_eleves'>Consulter les associations élèves</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_eleves'>Consulter les associations élèves</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	//$sql="SELECT rp.*, s.* FROM resp_pers rp, sso_table_correspondance s WHERE s.login_gepi=rp.login ORDER BY rp.nom, rp.prenom LIMIT 1;";
 	$sql="SELECT 1=1 FROM resp_pers rp, sso_table_correspondance s WHERE s.login_gepi=rp.login;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "
 	<li>Aucune association responsable n'est encore enregistrée.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_responsables'>Consulter les associations responsables</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_responsables'>Consulter les associations responsables</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	//$sql="SELECT u.*, s.* FROM utilisateurs u, sso_table_correspondance s WHERE s.login_gepi=u.login AND u.statut!='eleve' AND u.statut!='responsable' LIMIT 1;";
 	$sql="SELECT 1=1 FROM utilisateurs u, sso_table_correspondance s WHERE s.login_gepi=u.login AND u.statut!='eleve' AND u.statut!='responsable';";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "
 	<li>Aucune association n'est encore enregistrée pour les personnels de l'établissement.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_personnels'>Consulter les associations personnels</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=consult_personnels'>Consulter les associations personnels</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	echo "
@@ -1354,45 +1477,45 @@ if((!isset($mode))||($mode=="")) {
 <ul>";
 
 	$sql="SELECT 1=1 FROM eleves e, sso_table_correspondance s WHERE s.login_gepi=e.login;";
-	$res=mysql_query($sql);
-	$nb_corresp_ele=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_corresp_ele=mysqli_num_rows($res);
 	if($nb_corresp_ele==0) {
 		echo "
 	<li>Aucune association élève n'est encore enregistrée.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_eleves'>Générer les Fiches Bienvenue élèves</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_eleves'>Générer les Fiches Bienvenue élèves</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	//===================================================
 	// Fiches bienvenue Responsables
 	//$sql="SELECT rp.*, s.* FROM resp_pers rp, sso_table_correspondance s WHERE s.login_gepi=rp.login ORDER BY rp.nom, rp.prenom LIMIT 1;";
 	$sql="SELECT 1=1 FROM resp_pers rp, sso_table_correspondance s WHERE s.login_gepi=rp.login;";
-	$res=mysql_query($sql);
-	$nb_corresp_resp=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_corresp_resp=mysqli_num_rows($res);
 	if($nb_corresp_resp==0) {
 		echo "
 	<li>Aucune association responsable n'est encore enregistrée.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_responsables'>Générer les Fiches Bienvenue responsables</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_responsables'>Générer les Fiches Bienvenue responsables</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	//===================================================
 	// Fiches bienvenue Personnels
 	//$sql="SELECT u.*, s.* FROM utilisateurs u, sso_table_correspondance s WHERE s.login_gepi=u.login AND u.statut!='eleve' AND u.statut!='responsable' LIMIT 1;";
 	$sql="SELECT 1=1 FROM utilisateurs u, sso_table_correspondance s WHERE s.login_gepi=u.login AND u.statut!='eleve' AND u.statut!='responsable';";
-	$res=mysql_query($sql);
-	$nb_corresp_pers=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_corresp_pers=mysqli_num_rows($res);
 	if($nb_corresp_pers==0) {
 		echo "
 	<li>Aucune association n'est encore enregistrée pour les personnels de l'établissement.</li>";
 	}
 	else {
 		echo "
-	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_personnels'>Générer les Fiches Bienvenue personnels</a> (<em>".mysql_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
+	<li><a href='".$_SERVER['PHP_SELF']."?mode=publipostage_personnels'>Générer les Fiches Bienvenue personnels</a> (<em>".mysqli_num_rows($res)." association(s) enregistrée(s)</em>)</li>";
 	}
 
 	echo "
@@ -1402,25 +1525,26 @@ if((!isset($mode))||($mode=="")) {
 	//===================================================
 	// Scories:
 	$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_gepi NOT IN (SELECT login FROM utilisateurs);";
-	$res=mysql_query($sql);
-	$nb_scories=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_scories=mysqli_num_rows($res);
 	if($nb_scories>0) {
 		echo "
 <br />
-<p><strong style='color:red'>SCORIES&nbsp;:</strong> ".$nb_scories." association(s) existent dans la table 'sso_table_correspondance' pour des login qui n'existent plus dans Gepi.<br />
+<p><strong style='color:red;'>SCORIES&nbsp;:</strong> ".$nb_scories." association(s) existent dans la table 'sso_table_correspondance' pour des login qui n'existent plus dans Gepi.<br />
 Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
+Par exemple, si un utilisateur a un nouveau login et qu'une association GUID_ENT est enregistrée pour un ancien login, il ne vous sera plus proposé lors des importations, ni même pour la consultation.<br />
 <a href='".$_SERVER['PHP_SELF']."?mode=suppr_scories".add_token_in_url()."' >Supprimer ces scories</a></p>";
 	}
 
 	//===================================================
 	// Vider:
 	$sql="SELECT 1=1 FROM sso_table_correspondance;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		echo "
 <br />
 <p>ou <a href='".$_SERVER['PHP_SELF']."?mode=vider".add_token_in_url()."' onclick=\"return confirmlink(this, 'ATTENTION !!! Êtes-vous vraiment sûr de vouloir vider la table sso_table_correspondance ?', 'Confirmation du vidage')\">vider la table des correspondances</a></p>";
-		echo "<p>La table de correspondances contient actuellement ".mysql_num_rows($res)." enregistrements.</p>\n";
+		echo "<p>La table de correspondances contient actuellement ".mysqli_num_rows($res)." enregistrements.</p>\n";
 	}
 
 	//===================================================
@@ -1430,14 +1554,14 @@ Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
 <p><strong>Associations manquantes&nbsp;:</strong></p>";
 
 		$sql="select distinct e.login, e.nom, e.prenom from eleves e, utilisateurs u where e.login=u.login AND u.auth_mode='sso' and e.login not in (select login_gepi from sso_table_correspondance);";
-		$res=mysql_query($sql);
-		$nb_assoc_manquantes_ele=mysql_num_rows($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_assoc_manquantes_ele=mysqli_num_rows($res);
 		if($nb_assoc_manquantes_ele>0) {
 			echo "
 <br />
 <p>Il manque $nb_assoc_manquantes_ele association(s) élève(s)&nbsp;: ";
 			$cpt=0;
-			while($lig=mysql_fetch_object($res)) {
+			while($lig=mysqli_fetch_object($res)) {
 				if($cpt>0) {echo ", ";}
 				echo "<a href='../eleves/modify_eleve.php?eleve_login=$lig->login' target='_blank'>".casse_mot($lig->nom, 'maj')." ".casse_mot($lig->prenom, 'majf2')."</a>";
 				$cpt++;
@@ -1446,14 +1570,14 @@ Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
 		}
 
 		$sql="select distinct rp.login, rp.nom, rp.prenom, rp.civilite, rp.pers_id FROM resp_pers rp, utilisateurs u where u.auth_mode='sso' AND u.login=rp.login AND rp.login!='' and rp.login not in (select login_gepi from sso_table_correspondance);";
-		$res=mysql_query($sql);
-		$nb_assoc_manquantes_resp=mysql_num_rows($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_assoc_manquantes_resp=mysqli_num_rows($res);
 		if($nb_assoc_manquantes_resp>0) {
 			echo "
 <br />
 <p>Il manque $nb_assoc_manquantes_resp association(s) responsable(s)&nbsp;: ";
 			$cpt=0;
-			while($lig=mysql_fetch_object($res)) {
+			while($lig=mysqli_fetch_object($res)) {
 				if($cpt>0) {echo ", ";}
 				echo "<a href='../responsables/modify_resp.php?pers_id=$lig->pers_id' target='_blank'>".$lig->civilite." ".casse_mot($lig->nom, 'maj')." ".casse_mot($lig->prenom, 'majf2')."</a>";
 				$cpt++;
@@ -1462,14 +1586,14 @@ Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
 		}
 
 		$sql="select distinct u.login, u.nom, u.prenom, u.civilite from utilisateurs u where u.auth_mode='sso' AND u.statut!='eleve' and u.statut!='responsable' and u.login not in (select login_gepi from sso_table_correspondance);";
-		$res=mysql_query($sql);
-		$nb_assoc_manquantes_resp=mysql_num_rows($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_assoc_manquantes_resp=mysqli_num_rows($res);
 		if($nb_assoc_manquantes_resp>0) {
 			echo "
 <br />
 <p>Il manque $nb_assoc_manquantes_resp association(s) personnel(s)&nbsp;: ";
 			$cpt=0;
-			while($lig=mysql_fetch_object($res)) {
+			while($lig=mysqli_fetch_object($res)) {
 				if($cpt>0) {echo ", ";}
 				echo "<a href='../utilisateurs/modify_user.php?user_login=$lig->login' target='_blank'>".$lig->civilite." ".casse_mot($lig->nom, 'maj')." ".casse_mot($lig->prenom, 'majf2')."</a>";
 				$cpt++;
@@ -1495,34 +1619,34 @@ Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
 	}
 
 	$sql="SELECT 1=1 FROM utilisateurs WHERE statut!='eleve' AND statut!='responsable' AND auth_mode='sso';";
-	$res=mysql_query($sql);
-	$nb_pers_sso=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_pers_sso=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs WHERE statut!='eleve' AND statut!='responsable' AND auth_mode='ldap';";
-	$res=mysql_query($sql);
-	$nb_pers_ldap=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_pers_ldap=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs WHERE statut!='eleve' AND statut!='responsable' AND auth_mode='gepi';";
-	$res=mysql_query($sql);
-	$nb_pers_gepi=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_pers_gepi=mysqli_num_rows($res);
 
 	$sql="SELECT 1=1 FROM utilisateurs u, eleves e WHERE u.statut='eleve' AND e.login=u.login AND auth_mode='sso';";
-	$res=mysql_query($sql);
-	$nb_ele_sso=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_ele_sso=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs u, eleves e WHERE u.statut='eleve' AND e.login=u.login AND auth_mode='ldap';";
-	$res=mysql_query($sql);
-	$nb_ele_ldap=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_ele_ldap=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs u, eleves e WHERE u.statut='eleve' AND e.login=u.login AND auth_mode='gepi';";
-	$res=mysql_query($sql);
-	$nb_ele_gepi=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_ele_gepi=mysqli_num_rows($res);
 
 	$sql="SELECT 1=1 FROM utilisateurs u, resp_pers rp WHERE u.statut='responsable' AND rp.login=u.login AND auth_mode='sso';";
-	$res=mysql_query($sql);
-	$nb_resp_sso=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_resp_sso=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs u, resp_pers rp WHERE u.statut='responsable' AND rp.login=u.login AND auth_mode='ldap';";
-	$res=mysql_query($sql);
-	$nb_resp_ldap=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_resp_ldap=mysqli_num_rows($res);
 	$sql="SELECT 1=1 FROM utilisateurs u, resp_pers rp WHERE u.statut='responsable' AND rp.login=u.login AND auth_mode='gepi';";
-	$res=mysql_query($sql);
-	$nb_resp_gepi=mysql_num_rows($res);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb_resp_gepi=mysqli_num_rows($res);
 
 	echo "<p><em>NOTES&nbsp;:</em></p>
 <ul>
@@ -1618,7 +1742,47 @@ Ces scories peuvent perturber l'association GUID_ENT/Login_GEPI.<br />
 	En revanche, que les comptes parents soient en authentification locale ou en authentification SSO (<em>CAS</em>) importe peu.</p>
 
 </div>
-\n";
+
+
+
+<h2>Forcer les mots de passe élèves (<em>expérimental</em>)</h2>
+
+<div style='margin-left:4em;'>
+	<p>Si l'accès SSO de l'ENT vers Gepi pose parfois des problèmes, il est possible d'activer une fonctionnalité dans <a href='../gestion/options_connexct.php'>Options de connexion</a> pour conserver des mots de passe dans la base Gepi bien que les comptes soient en mode d'authentification SSO.<br />
+	(<em>par défaut, en mode SSO, il n'y a plus de mot de passe dans la base Gepi pour l'utilisateur; l'authentification est effectuée côté ENT</em>)</p>
+	<p>Vous disposez alors d'un accès de secours pour ces utilisateurs.</p>
+	<p>Si vous conservez tout de même des mots de passe dans Gepi pour les élèves, vous pouvez forcer ici les mots de passe d'après un fichier CSV au format&nbsp;:<br />
+	&nbsp;&nbsp;&nbsp;&nbsp;LOGIN_GEPI;MOT_DE_PASSE_GEPI<br />
+	A vous de faire en sorte de disposer d'un tel CSV, mais vous aurez intérêt à mettre les mêmes mots de passe que pour l'accès à l'ENT<br />
+	(<em>ATTENTION&nbsp;: en cas de changement de mot de passe dans Gepi ou dans l'ENT, il n'y aura pas de synchronisation automatique des mots de passe</em>).</p>
+
+	<p><br /></p>
+
+	<form action='".$_SERVER['PHP_SELF']."' method='post' enctype='multipart/form-data'>
+		<fieldset style='border: 1px solid grey; background-image: url(\"../images/background/opacite50.png\");'>
+			".add_token_field()."
+			<p>Fournir le fichier CSV des comptes et mots de passe Gepi.<br />
+			</p>
+			<input type='hidden' name='mode' value='forcer_mdp_eleves' />
+			<input type=\"file\" size=\"65\" name=\"csv_file\" style='border: 1px solid grey; background-image: url(\"../images/background/opacite50.png\"); padding:5px; margin:5px;' /><br />
+			<input type='submit' value='Envoyer' />
+		</fieldset>
+	</form>
+
+	<p><br /></p>
+
+	<p style='text-indent:-4em; margin-left:4em;'><em>NOTES&nbsp;:</em></p>
+	<ul>
+		<li>Le CSV attendu doit avoir une ligne d'entête comportant les champs suivants&nbsp;:<br />
+		&nbsp;&nbsp;&nbsp;&nbsp;LOGIN_GEPI;MOT_DE_PASSE_GEPI</li>
+		<li>Une fois le fichier CSV envoyé, vous devrez choisir les élèves pour lesquels vous souhaitez imposer les mots de passe.<br />
+		Les élèves qui ont déjà un mot de passe dans Gepi seront signalés (<em>en revanche, le mot de passe en lui-même ne sera pas affiché</em>).</li>
+		<li>Seuls les élèves qui disposent d'un compte utilisateur seront affichés.</li>
+	</ul>
+
+	<p><br /></p>
+
+</div>\n";
 
 	require("../lib/footer.inc.php");
 	die();
@@ -1708,7 +1872,7 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		echo "</p>\n";
 
 		$sql="TRUNCATE tempo2_sso;";
-		$menage=mysql_query($sql);
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		echo creer_div_infobulle("div_search","Formulaire de recherche dans la table 'eleves'","","<p>Saisir une portion du nom à rechercher...</p>
 <form name='recherche' action='".$_SERVER['PHP_SELF']."' method='post'>
@@ -1767,8 +1931,8 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		//$tab_login_associe_a_un_guid=array();
 		$tab_guid_associe_a_un_login=array();
 		$sql="SELECT u.statut, u.nom, u.prenom, stc.* FROM sso_table_correspondance stc, utilisateurs u WHERE stc.login_gepi=u.login;";
-		$res=mysql_query($sql);
-		while($lig=mysql_fetch_object($res)) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		while($lig=mysqli_fetch_object($res)) {
 			//$tab_login_associe_a_un_guid[$lig->login_sso]['login_gepi']=$lig->login_gepi;
 			//$tab_login_associe_a_un_guid[$lig->login_sso]['info']=$lig->nom." ".$lig->prenom." (".$lig->statut.")";
 
@@ -1795,10 +1959,48 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 					// Juste stocker ce qui est déjà associé et l'afficher dans un 2è tableau.
 					// Pouvoir supprimer une association du 2è tableau (ou voir dans mode=consult_eleves)
 
-					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)>0) {
+					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)>0) {
 						$cpt_deja_enregistres++;
+
+						$lig_test=mysqli_fetch_object($test);
+						$current_login_gepi=$lig_test->login_gepi;
+						// On vérifie si le login correspond bien à un compte responsable
+						$sql="SELECT * FROM utilisateurs WHERE login='$current_login_gepi';";
+						$res_u=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_u)>0) {
+							$lig_u=mysqli_fetch_object($res_u);
+							if($lig_u->statut!='eleve') {
+								// ANOMALIE
+								// Ce devrait être un compte de élève.
+							}
+						}
+						else {
+							// ANOMALIE
+
+							$naissance=(isset($tab[5])) ? $tab[5] : "";
+							if(!preg_match("#[0-9]{2}/[0-9]{2}/[0-9]{4}#", $naissance)) {$naissance="";}
+
+							echo "
+	<tr class='white_hover' style='background-color:red' title=\"ANOMALIE : Le login actuellement enregistré $current_login_gepi 
+           ne correspond à personne.
+           Vous devriez supprimer les enregistrements associés à l'aide
+           du lien
+                 SCORIES : Supprimer ces scories.
+           en page d'index, et refaire ensuite une importation.\">
+		<td><!--input type='checkbox' name='ligne[]' id='ligne_$cpt' value='$cpt' onchange=\"change_graisse($cpt)\" /--></td>
+		<td>".$tab[0]."</td>
+		<td>".$tab[1]."</td>
+		<td>".$tab[2]."</td>
+		<td>".$tab[3]."</td>
+		<td>".preg_replace("/".getSettingValue('gepiSchoolRne')."\\$/", "", $tab[4])."</td>
+		<td>".$naissance."</td>
+		<td></td>
+	</tr>";
+
+						}
+
 					}
 					elseif((!isset($_POST['exclure_classes_anormales']))||(!preg_match("/BASE20/", $tab[4]))) {
 						$naissance=(isset($tab[5])) ? $tab[5] : "";
@@ -1832,15 +2034,15 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 
 						// Recherche dans la table eleves de personnes pouvant correspondre à la ligne courante du CSV.
 						if($naissance!="") {
-							$sql="SELECT * FROM eleves WHERE nom='".mysql_real_escape_string($tab[1])."' AND prenom='".mysql_real_escape_string($tab[2])."' AND naissance='".formate_date2($naissance, "jj/mm/aaaa", "aaaammjj")."'";
+							$sql="SELECT * FROM eleves WHERE nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[1])."' AND prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[2])."' AND naissance='".formate_date2($naissance, "jj/mm/aaaa", "aaaammjj")."'";
 						}
 						else {
-							$sql="SELECT * FROM eleves WHERE nom='".mysql_real_escape_string($tab[1])."' AND prenom='".mysql_real_escape_string($tab[2])."' ORDER BY naissance;";
+							$sql="SELECT * FROM eleves WHERE nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[1])."' AND prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[2])."' ORDER BY naissance;";
 						}
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==1) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==1) {
 							// Un seul élève correspond
-							$lig=mysql_fetch_object($res);
+							$lig=mysqli_fetch_object($res);
 
 							echo "
 		<td title=\"$lig->nom $lig->prenom ".formate_date($lig->naissance)."\">
@@ -1883,7 +2085,7 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 							// Plusieurs élèves correspondent
 							// Il va falloir choisir
 							$chaine_options="";
-							while($lig=mysql_fetch_object($res)) {
+							while($lig=mysqli_fetch_object($res)) {
 								$chaine_options.="				<option value=\"$lig->login\"";
 								// 20130912
 								if(array_key_exists($lig->login, $tab_guid_associe_a_un_login)) {
@@ -1955,8 +2157,8 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 							}
 						}
 
-						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysql_real_escape_string($ligne)."';";
-						$insert=mysql_query($sql);
+						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysqli_real_escape_string($GLOBALS["mysqli"], $ligne)."';";
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$insert) {
 							echo "<span style='color:red'>ERREUR</span>";
 						}
@@ -2075,8 +2277,8 @@ if($mode=="consult_eleves") {
 ";
 
 	$sql="SELECT e.*, s.* FROM eleves e, sso_table_correspondance s WHERE s.login_gepi=e.login ORDER BY e.nom, e.prenom";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "<p>Aucun rapprochement élève n'est enregistré.</p>\n";
 
 		require("../lib/footer.inc.php");
@@ -2085,7 +2287,7 @@ if($mode=="consult_eleves") {
 
 	echo "
 <form action='".$_SERVER['PHP_SELF']."' method='post' enctype='multipart/form-data'>
-	<p>Les rapprochements enregistrés (".mysql_num_rows($res).") sont les suivants&nbsp;:</p>
+	<p>Les rapprochements enregistrés (".mysqli_num_rows($res).") sont les suivants&nbsp;:</p>
 	".add_token_field()."
 	<input type='hidden' name='mode' value='consult_eleves' />
 	<input type='hidden' name='temoin_suhosin_1' value='eleve' />
@@ -2118,7 +2320,7 @@ if($mode=="consult_eleves") {
 
 	$cpt=0;
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$tab_classe=get_class_from_ele_login($lig->login);
 		$classe=isset($tab_classe['liste_nbsp']) ? $tab_classe['liste_nbsp'] : "";
 
@@ -2130,22 +2332,26 @@ if($mode=="consult_eleves") {
 			<td><label for='suppr_$cpt'>$lig->login</label></td>
 			<td>";
 		$sql="SELECT auth_mode, etat FROM utilisateurs WHERE login='".$lig->login."' AND statut='eleve';";
-		$test_u=mysql_query($sql);
-		if(mysql_num_rows($test_u)==0) {
+		$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_u)==0) {
 			echo "<a href='../utilisateurs/create_eleve.php?filtrage=Afficher&amp;critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."&amp;afficher_tous_les_eleves=n' title='Pas de compte utilisateur dans Gepi pour cet élève.
 Créer le compte?' target='_blank'>-</a>";
 		}
 		else {
-			echo "<label for='suppr_$cpt'>";
-			$lig_u=mysql_fetch_object($test_u);
+			$lig_u=mysqli_fetch_object($test_u);
 			if($lig_u->etat=='actif') {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_eleve.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Désactiver le compte utilisateur de cet élève.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></span></a></div>\n";
 			}
 			else {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_eleve.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Activer le compte utilisateur de cet élève.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></a></span></div>\n";
 			}
+
+			echo "<a href='../utilisateurs/ajax_modif_utilisateur.php?mode=changer_auth_mode2&amp;login_user=".$lig->login."&amp;auth_mode_user=".$lig_u->auth_mode."".add_token_in_url()."' onclick=\"afficher_changement_auth_mode_avec_param('$lig->login', '$lig_u->auth_mode', 'auth_mode_".$cpt."_".$lig->login."') ;return false;\" title=\"Modifier le mode d'authentification\">";
+			echo "<span id='auth_mode_".$cpt."_".$lig->login."'>";
 			echo $lig_u->auth_mode;
-			echo "</label>";
+			echo "</span>";
+			echo "</a>";
+
 		}
 		echo "</td>
 			<td><label for='suppr_$cpt'><span id='nom_$cpt'>$lig->nom</span></label></td>
@@ -2295,10 +2501,10 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		}
 
 		$sql="TRUNCATE tempo2_sso;";
-		$menage=mysql_query($sql);
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
-		$sql="INSERT INTO tempo2_sso SET col1='Ligne_entete', col2='".mysql_real_escape_string($ligne_entete)."';";
-		$insert=mysql_query($sql);
+		$sql="INSERT INTO tempo2_sso SET col1='Ligne_entete', col2='".mysqli_real_escape_string($GLOBALS["mysqli"], $ligne_entete)."';";
+		$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		echo creer_div_infobulle("div_search","Formulaire de recherche dans la table 'resp_pers'","","<p>Saisir une portion du nom à rechercher...</p>
 <form name='recherche' action='".$_SERVER['PHP_SELF']."' method='post'>
@@ -2321,6 +2527,8 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 
 ","",32,0,"y","y","n","n");
 
+		$tab_lignes_sans_eleve_associe=array();
+
 		echo "
 <h2>Rapprochement des comptes responsables ENT ITOP/GEPI</h2>
 
@@ -2329,6 +2537,8 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 <input type='hidden' name='mode' value='import_responsables' />
 <input type='hidden' name='enregistrement_responsables' value='y' />
 <input type='hidden' name='temoin_suhosin_1' value='responsable' />
+
+<p id='p_masquer_lignes_sans_eleve_associe' style='display:none;'><a href='javascript:masquer_lignes_sans_eleve_associe()'>Masquer les lignes sans élève associé.</a></p>
 
 <table class='boireaus'>
 	<tr>
@@ -2359,8 +2569,8 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		//$tab_login_associe_a_un_guid=array();
 		$tab_guid_associe_a_un_login=array();
 		$sql="SELECT u.statut, u.nom, u.prenom, stc.* FROM sso_table_correspondance stc, utilisateurs u WHERE stc.login_gepi=u.login;";
-		$res=mysql_query($sql);
-		while($lig=mysql_fetch_object($res)) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		while($lig=mysqli_fetch_object($res)) {
 			//$tab_login_associe_a_un_guid[$lig->login_sso]['login_gepi']=$lig->login_gepi;
 			//$tab_login_associe_a_un_guid[$lig->login_sso]['info']=$lig->nom." ".$lig->prenom." (".$lig->statut.")";
 
@@ -2388,10 +2598,69 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 					// Juste stocker ce qui est déjà associé et l'afficher dans un 2è tableau.
 					// Pouvoir supprimer une association du 2è tableau (ou voir dans mode=consult_eleves)
 
-					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[$tabindice['Guid']])."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)>0) {
+					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[$tabindice['Guid']])."';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)>0) {
 						$cpt_deja_enregistres++;
+
+						$lig_test=mysqli_fetch_object($test);
+						$current_login_gepi=$lig_test->login_gepi;
+						// On vérifie si le login correspond bien à un compte responsable
+						$sql="SELECT * FROM utilisateurs WHERE login='$current_login_gepi';";
+						$res_u=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_u)>0) {
+							$lig_u=mysqli_fetch_object($res_u);
+							if($lig_u->statut!='responsable') {
+								// ANOMALIE
+								// Ce devrait être un compte responsable.
+							}
+						}
+						else {
+							// ANOMALIE
+
+							$guid_courant=$tab[$tabindice['Guid']];
+							$nom_courant=$tab[$tabindice['Nom']];
+							$prenom_courant=$tab[$tabindice['Prénom']];
+							$profil_courant=$tab[$tabindice['Profil']];
+
+							$groupe_courant="";
+							if(isset($tab[$tabindice['Groupe']])) {
+								$groupe_courant=$tab[$tabindice['Groupe']];
+							}
+
+							$guid_enfant1="";
+							$guid_enfant2="";
+							$guid_enfant3="";
+							if(isset($tab[$tabindice['Guid_Enfant1']])) {
+								$guid_enfant1=$tab[$tabindice['Guid_Enfant1']];
+							}
+							if(isset($tab[$tabindice['Guid_Enfant2']])) {
+								$guid_enfant2=$tab[$tabindice['Guid_Enfant2']];
+							}
+							if(isset($tab[$tabindice['Guid_Enfant3']])) {
+								$guid_enfant3=$tab[$tabindice['Guid_Enfant3']];
+							}
+
+							echo "
+	<tr class='white_hover' style='background-color:red' title=\"ANOMALIE : Le login actuellement enregistré $current_login_gepi 
+           ne correspond à personne.
+           Vous devriez supprimer les enregistrements associés à l'aide
+           du lien
+                 SCORIES : Supprimer ces scories.
+           en page d'index, et refaire ensuite une importation.\">
+		<td><!--input type='checkbox' name='ligne[]' id='ligne_$cpt' value='$cpt' onchange=\"change_graisse($cpt)\" /--></td>
+		<td>".$guid_courant."</td>
+		<td>".$nom_courant."</td>
+		<td>".$prenom_courant."</td>
+		<td>".$profil_courant."</td>
+		<td>".$groupe_courant."</td>
+		<td></td>
+		<td></td>
+	</tr>";
+
+
+						}
+
 					}
 					else {
 /*
@@ -2442,7 +2711,7 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 
 						$alt=$alt*(-1);
 						echo "
-	<tr class='lig$alt white_hover'$style_css>
+	<tr id='tr_$cpt' class='lig$alt white_hover'$style_css>
 		<td><input type='checkbox' name='ligne[]' id='ligne_$cpt' value='$cpt' onchange=\"change_graisse($cpt)\" />$ancre_doublon_ou_pas</td>
 		<td><label for='ligne_$cpt'>".$guid_courant."</label></td>
 		<td><label for='ligne_$cpt'><span id='nom_$cpt'>".$nom_courant."</span></label></td>
@@ -2453,15 +2722,15 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 
 						$chaine="";
 						if($guid_enfant1!="") {
-							$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant1)."'";
+							$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant1)."'";
 						}
 						if($guid_enfant2!="") {
 							if($chaine!="") {$chaine.=" OR ";}
-							$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant2)."'";
+							$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant2)."'";
 						}
 						if($guid_enfant3!="") {
 							if($chaine!="") {$chaine.=" OR ";}
-							$chaine.="s.login_sso='".mysql_real_escape_string($guid_enfant3)."'";
+							$chaine.="s.login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $guid_enfant3)."'";
 						}
 
 						$temoin_eleve_associe="n";
@@ -2472,21 +2741,21 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 						if($chaine!="") {
 							$sql="SELECT e.* FROM eleves e, sso_table_correspondance s WHERE ($chaine) AND e.login=s.login_gepi ORDER BY e.nom, e.prenom;";
 							echo_debug_itop("$sql<br />");
-							$res_ele=mysql_query($sql);
-							if(mysql_num_rows($res_ele)>0) {
+							$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_ele)>0) {
 								$temoin_eleve_associe="y";
 								$cpt_ele=0;
-								while($lig_ele=mysql_fetch_object($res_ele)) {
+								while($lig_ele=mysqli_fetch_object($res_ele)) {
 									if($cpt_ele>0) {echo "<br />";}
 									echo $lig_ele->nom." ".$lig_ele->prenom;
 									$tab_classe=get_class_from_ele_login($lig_ele->login);
 									if(isset($tab_classe['liste_nbsp'])) {echo " (<em>".$tab_classe['liste_nbsp']."</em>)";}
 
-									$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.nom='".mysql_real_escape_string($nom_courant)."' AND rp.prenom='".mysql_real_escape_string($prenom_courant)."' AND rp.login!='';";
+									$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $nom_courant)."' AND rp.prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $prenom_courant)."' AND rp.login!='';";
 									echo_debug_itop("$sql<br />");
-									$res_resp=mysql_query($sql);
-									if(mysql_num_rows($res_resp)>0) {
-										while($lig_resp=mysql_fetch_object($res_resp)) {
+									$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res_resp)>0) {
+										while($lig_resp=mysqli_fetch_object($res_resp)) {
 											if(!in_array($lig_resp->login, $tab_resp_login)) {
 												$tab_resp_login[]=$lig_resp->login;
 												$tab_resp[$cpt_resp]['login']=$lig_resp->login;
@@ -2504,9 +2773,9 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 									}
 									else {
 										$sql="SELECT rp.*, r.resp_legal FROM resp_pers rp, responsables2 r WHERE r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND rp.login!='';";
-										$res_resp=mysql_query($sql);
-										if(mysql_num_rows($res_resp)>0) {
-											while($lig_resp=mysql_fetch_object($res_resp)) {
+										$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res_resp)>0) {
+											while($lig_resp=mysqli_fetch_object($res_resp)) {
 												if(!in_array($lig_resp->login, $tab_resp_login)) {
 													$tab_resp_login[]=$lig_resp->login;
 													$tab_resp[$cpt_resp]['login']=$lig_resp->login;
@@ -2524,6 +2793,14 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 									}
 									$cpt_ele++;
 								}
+								/*
+								if($cpt_ele==0) {
+									$tab_lignes_sans_eleve_associe[]=$cpt;
+								}
+								*/
+							}
+							else {
+								$tab_lignes_sans_eleve_associe[]=$cpt;
 							}
 						}
 						echo "</label></td>\n";
@@ -2627,8 +2904,8 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 ";
 						}
 
-						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysql_real_escape_string($ligne)."';";
-						$insert=mysql_query($sql);
+						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysqli_real_escape_string($GLOBALS["mysqli"], $ligne)."';";
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$insert) {
 							echo "<span style='color:red'>ERREUR</span>";
 						}
@@ -2641,6 +2918,9 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 		echo "
 </table>
 <input type='hidden' name='temoin_suhosin_2' value='responsable' />
+
+<p id='p_masquer_lignes_sans_eleve_associe2' style='display:none;'><a href='javascript:masquer_lignes_sans_eleve_associe()'>Masquer les lignes sans élève associé.</a></p>
+
 <input type='submit' id='bouton_submit_import' value='Enregistrer' />
 <input type='button' id='bouton_button_import' value='Enregistrer' style='display:none;' onclick='verif_puis_submit()' />
 
@@ -2739,8 +3019,24 @@ Ajouter une variable en fin de formulaire pour détecter les pb de transmission 
 		else {
 			alert('Vous n avez rien coché!?');
 		}
-	}
+	}";
 
+		if(count($tab_lignes_sans_eleve_associe)>0) {
+			echo "
+	document.getElementById('p_masquer_lignes_sans_eleve_associe').style.display='';
+	document.getElementById('p_masquer_lignes_sans_eleve_associe2').style.display='';
+
+	function masquer_lignes_sans_eleve_associe() {";
+			for($loop=0;$loop<count($tab_lignes_sans_eleve_associe);$loop++) {
+			echo "
+				document.getElementById('tr_".$tab_lignes_sans_eleve_associe[$loop]."').style.display='none';
+		";
+			}
+			echo "
+	}";
+		}
+
+		echo "
 </script>
 ";
 		// En fin d'enregistrement, renvoyer vers consult_eleves pour afficher les associations
@@ -2761,8 +3057,8 @@ if($mode=="consult_responsables") {
 ";
 
 	$sql="SELECT rp.*, s.* FROM resp_pers rp, sso_table_correspondance s WHERE s.login_gepi=rp.login ORDER BY rp.nom, rp.prenom";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "<p>Aucun rapprochement élève n'est enregistré.</p>\n";
 
 		require("../lib/footer.inc.php");
@@ -2771,7 +3067,7 @@ if($mode=="consult_responsables") {
 
 	echo "
 <form action='".$_SERVER['PHP_SELF']."' method='post' enctype='multipart/form-data'>
-	<p>Les rapprochements enregistrés (".mysql_num_rows($res).") sont les suivants&nbsp;:</p>
+	<p>Les rapprochements enregistrés (".mysqli_num_rows($res).") sont les suivants&nbsp;:</p>
 	".add_token_field()."
 	<input type='hidden' name='mode' value='consult_responsables' />
 	<input type='hidden' name='temoin_suhosin_1' value='responsable' />
@@ -2804,7 +3100,7 @@ if($mode=="consult_responsables") {
 
 	$cpt=0;
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$tab_ele=get_enfants_from_resp_login($lig->login, 'avec_classe');
 		$chaine_ele="";
 		for($loop=1;$loop<count($tab_ele);$loop+=2) {
@@ -2822,19 +3118,24 @@ if($mode=="consult_responsables") {
 			<td><label for='suppr_$cpt'>$lig->login</label></td>
 			<td><label for='suppr_$cpt'>";
 		$sql="SELECT auth_mode, etat FROM utilisateurs WHERE login='".$lig->login."' AND statut='responsable';";
-		$test_u=mysql_query($sql);
-		if(mysql_num_rows($test_u)==0) {
+		$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_u)==0) {
 			echo "<span title='Pas de compte utilisateur pour ce responsable.'>-</span>";
 		}
 		else {
-			$lig_u=mysql_fetch_object($test_u);
+			$lig_u=mysqli_fetch_object($test_u);
 			if($lig_u->etat=='actif') {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_responsable.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Désactiver le compte utilisateur de ce responsable.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></span></a></div>\n";
 			}
 			else {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_responsable.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Activer le compte utilisateur de ce responsable.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></a></span></div>\n";
 			}
+
+			echo "<a href='../utilisateurs/ajax_modif_utilisateur.php?mode=changer_auth_mode2&amp;login_user=".$lig->login."&amp;auth_mode_user=".$lig_u->auth_mode."".add_token_in_url()."' onclick=\"afficher_changement_auth_mode_avec_param('$lig->login', '$lig_u->auth_mode', 'auth_mode_".$cpt."_".$lig->login."') ;return false;\" title=\"Modifier le mode d'authentification\">";
+			echo "<span id='auth_mode_".$cpt."_".$lig->login."'>";
 			echo $lig_u->auth_mode;
+			echo "</span>";
+			echo "</a>";
 		}
 		echo "</label></td>
 			<td><label for='suppr_$cpt'><span id='nom_$cpt'>$lig->nom</span></label></td>
@@ -2951,7 +3252,7 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		echo "</p>\n";
 
 		$sql="TRUNCATE tempo2_sso;";
-		$menage=mysql_query($sql);
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		echo creer_div_infobulle("div_search","Formulaire de recherche dans la table 'utilisateurs'","","<p>Saisir une portion du nom à rechercher...</p>
 <form name='recherche' action='".$_SERVER['PHP_SELF']."' method='post'>
@@ -3019,10 +3320,43 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 				$tab=explode(";", ensure_utf8($ligne));
 				if(!preg_match("/^Guid;/i", trim($ligne))) {
 
-					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysql_real_escape_string($tab[0])."';";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)>0) {
+					$sql="SELECT login_gepi FROM sso_table_correspondance WHERE login_sso='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[0])."';";
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)>0) {
 						$cpt_deja_enregistres++;
+
+						$lig_test=mysqli_fetch_object($test);
+						$current_login_gepi=$lig_test->login_gepi;
+						// On vérifie si le login correspond bien à un compte responsable
+						$sql="SELECT * FROM utilisateurs WHERE login='$current_login_gepi';";
+						$res_u=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_u)>0) {
+							$lig_u=mysqli_fetch_object($res_u);
+							if(($lig_u->statut=='responsable')||($lig_u->statut=='eleve')) {
+								// ANOMALIE
+								// Ce devrait être un compte de personnel.
+							}
+						}
+						else {
+							// ANOMALIE
+
+							echo "
+	<tr class='white_hover' style='background-color:red' title=\"ANOMALIE : Le login actuellement enregistré $current_login_gepi 
+           ne correspond à personne.
+           Vous devriez supprimer les enregistrements associés à l'aide
+           du lien
+                 SCORIES : Supprimer ces scories.
+           en page d'index, et refaire ensuite une importation.\">
+		<td><!--input type='checkbox' name='ligne[]' id='ligne_$cpt' value='$cpt' onchange=\"change_graisse($cpt)\" /--></td>
+		<td>".$tab[0]."</td>
+		<td>".$tab[1]."</td>
+		<td>".$tab[2]."</td>
+		<td>".$tab[3]."</td>
+		<td></td>
+	</tr>";
+
+						}
+
 					}
 					else {
 
@@ -3050,11 +3384,11 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 		<td><label for='ligne_$cpt'><span id='prenom_$cpt'>".$tab[2]."</span></label></td>
 		<td><label for='ligne_$cpt'>".$tab[3]."</label></td>";
 
-						$sql="SELECT * FROM utilisateurs WHERE nom='".mysql_real_escape_string($tab[1])."' AND prenom='".mysql_real_escape_string($tab[2])."' AND statut!='eleve' AND statut!='responsable' ORDER BY statut;";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)==1) {
+						$sql="SELECT * FROM utilisateurs WHERE nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[1])."' AND prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab[2])."' AND statut!='eleve' AND statut!='responsable' ORDER BY statut;";
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)==1) {
 							// Un seul personnel correspond
-							$lig=mysql_fetch_object($res);
+							$lig=mysqli_fetch_object($res);
 
 							echo "
 		<td title=\"$lig->nom $lig->prenom ($lig->statut)\">
@@ -3079,7 +3413,7 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 							// Plusieurs personnels correspondent
 							// Il va falloir choisir
 							$chaine_options="";
-							while($lig=mysql_fetch_object($res)) {
+							while($lig=mysqli_fetch_object($res)) {
 								$chaine_options.="				<option value=\"$lig->login\">$lig->nom $lig->prenom (".$lig->statut.")";
 								$chaine_options.="</option>\n";
 							}
@@ -3143,8 +3477,8 @@ si cela ne fonctionne pas, corriger l'association élève en mettant le GUID de 
 							}
 						}
 
-						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysql_real_escape_string($ligne)."';";
-						$insert=mysql_query($sql);
+						$sql="INSERT INTO tempo2_sso SET col1='$cpt', col2='".mysqli_real_escape_string($GLOBALS["mysqli"], $ligne)."';";
+						$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$insert) {
 							echo "<span style='color:red'>ERREUR</span>";
 						}
@@ -3264,8 +3598,8 @@ if($mode=="consult_personnels") {
 ";
 
 	$sql="SELECT u.*, s.* FROM utilisateurs u, sso_table_correspondance s WHERE s.login_gepi=u.login AND u.statut!='eleve' AND u.statut!='responsable' ORDER BY u.nom, u.prenom";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)==0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
 		echo "<p>Aucun rapprochement de personnel n'est enregistré.</p>\n";
 
 		require("../lib/footer.inc.php");
@@ -3274,7 +3608,7 @@ if($mode=="consult_personnels") {
 
 	echo "
 <form action='".$_SERVER['PHP_SELF']."' method='post' enctype='multipart/form-data'>
-	<p>Les rapprochements enregistrés (".mysql_num_rows($res).") sont les suivants&nbsp;:</p>
+	<p>Les rapprochements enregistrés (".mysqli_num_rows($res).") sont les suivants&nbsp;:</p>
 	".add_token_field()."
 	<input type='hidden' name='mode' value='consult_personnels' />
 	<input type='hidden' name='temoin_suhosin_1' value='personnel' />
@@ -3302,7 +3636,7 @@ if($mode=="consult_personnels") {
 
 	$cpt=0;
 	$alt=1;
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		$alt=$alt*(-1);
 		echo "
 		<tr class='lig$alt white_hover'>
@@ -3311,19 +3645,24 @@ if($mode=="consult_personnels") {
 			<td><label for='suppr_$cpt'>$lig->login</label></td>
 			<td><label for='suppr_$cpt'>";
 		$sql="SELECT auth_mode, etat FROM utilisateurs WHERE login='".$lig->login."';";
-		$test_u=mysql_query($sql);
-		if(mysql_num_rows($test_u)==0) {
+		$test_u=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_u)==0) {
 			echo "<span title='Pas de compte utilisateur pour ce personnel.' style='color:red'>???</span>";
 		}
 		else {
-			$lig_u=mysql_fetch_object($test_u);
+			$lig_u=mysqli_fetch_object($test_u);
 			if($lig_u->etat=='actif') {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_eleve.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Désactiver le compte utilisateur de cet élève.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy.png' width='16' height='16' title='Compte actif' /></span></a></div>\n";
 			}
 			else {
-				echo "<div style='float:right;width:16px;'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></div>\n";
+				echo "<div style='float:right;width:16px;'><a href='../utilisateurs/edit_eleve.php?critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig->nom)."' target='_blank' onclick=\"changer_etat_utilisateur('$lig->login', 'etat_".$cpt."_".$lig->login."') ;return false;\" title=\"Activer le compte utilisateur de cet élève.\"><span id='etat_".$cpt."_".$lig->login."'><img src='../images/icons/buddy_no.png' width='16' height='16' title='Compte inactif' /></a></span></div>\n";
 			}
+
+			echo "<a href='../utilisateurs/ajax_modif_utilisateur.php?mode=changer_auth_mode2&amp;login_user=".$lig->login."&amp;auth_mode_user=".$lig_u->auth_mode."".add_token_in_url()."' onclick=\"afficher_changement_auth_mode_avec_param('$lig->login', '$lig_u->auth_mode', 'auth_mode_".$cpt."_".$lig->login."') ;return false;\" title=\"Modifier le mode d'authentification\">";
+			echo "<span id='auth_mode_".$cpt."_".$lig->login."'>";
 			echo $lig_u->auth_mode;
+			echo "</span>";
+			echo "</a>";
 		}
 		echo "</label></td>
 			<td><label for='suppr_$cpt'><span id='nom_$cpt'>$lig->nom</label></span></td>
@@ -3395,9 +3734,9 @@ if($mode=="publipostage_eleves") {
 
 		// Liste des classes avec élève:
 		$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (c.id=jec.id_classe) ORDER BY c.classe;";
-		$call_classes=mysql_query($sql);
+		$call_classes=mysqli_query($GLOBALS["mysqli"], $sql);
 
-		$nb_classes=mysql_num_rows($call_classes);
+		$nb_classes=mysqli_num_rows($call_classes);
 		if($nb_classes==0){
 			echo "<p>Aucune classe avec élève affecté n'a été trouvée.</p>\n";
 			require("../lib/footer.inc.php");
@@ -3424,7 +3763,7 @@ if($mode=="publipostage_eleves") {
 		echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
 		echo "<td align='left'>\n";
 
-		while($lig_clas=mysql_fetch_object($call_classes)) {
+		while($lig_clas=mysqli_fetch_object($call_classes)) {
 
 			//affichage 2 colonnes
 			if(($cpt>0)&&(round($cpt/$nb_classes_par_colonne)==$cpt/$nb_classes_par_colonne)){
@@ -3721,9 +4060,9 @@ if($mode=="publipostage_responsables") {
 
 		// Liste des classes avec élève:
 		$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (c.id=jec.id_classe) ORDER BY c.classe;";
-		$call_classes=mysql_query($sql);
+		$call_classes=mysqli_query($GLOBALS["mysqli"], $sql);
 
-		$nb_classes=mysql_num_rows($call_classes);
+		$nb_classes=mysqli_num_rows($call_classes);
 		if($nb_classes==0){
 			echo "<p>Aucune classe avec élève affecté n'a été trouvée.</p>\n";
 			require("../lib/footer.inc.php");
@@ -3750,7 +4089,7 @@ if($mode=="publipostage_responsables") {
 		echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
 		echo "<td align='left'>\n";
 
-		while($lig_clas=mysql_fetch_object($call_classes)) {
+		while($lig_clas=mysqli_fetch_object($call_classes)) {
 
 			//affichage 2 colonnes
 			if(($cpt>0)&&(round($cpt/$nb_classes_par_colonne)==$cpt/$nb_classes_par_colonne)){
@@ -4253,7 +4592,8 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		// 20131106
 		//﻿﻿Nom;Prénom;Login;Numéro de jointure;Mot de passe;Email;Adresse;Code postal;Ville;Nom enfant 1;Prénom enfant 1;Classe enfant 1;Etat;Date de désactivation<br />
 		// Lire la ligne d'entête pour repérer les indices des colonnes recherchées
-		$tabchamps = array("Nom", "Prénom", "Login", "Mot de passe", "Email", "Adresse", "Code postal", "Ville", "Nom enfant 1", "Prénom enfant 1", "Classe enfant 1", "Etat", "Date de désactivation");
+		//$tabchamps = array("Nom", "Prénom", "Login", "Mot de passe", "Email", "Adresse", "Code postal", "Ville", "Nom enfant 1", "Prénom enfant 1", "Classe enfant 1", "Etat", "Date de désactivation");
+		$tabchamps = array("Nom", "Prénom", "Login", "Mot de passe", "Email", "Adresse", "Code postal", "Ville", "Nom enfant 1", "Prénom enfant 1", "Classe enfant 1", "Classe", "Etat", "Date de désactivation");
 
 		// Lecture de la ligne 1 et la mettre dans $temp
 		$temp=fgets($fp,4096);
@@ -4281,7 +4621,7 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 
 
 		$sql="TRUNCATE tempo4;";
-		$menage=mysql_query($sql);
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 		$cpt=0;
 		$cpt2=0;
@@ -4292,6 +4632,9 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 			if((substr($ligne,0,3) == "\xEF\xBB\xBF")) {
 				$ligne=substr($ligne,3);
 			}
+
+			// DEBUG:
+			//echo "$ligne<br />";
 
 			if($ligne!='') {
 				$tab=explode(";", ensure_utf8($ligne));
@@ -4311,6 +4654,10 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 					// On exclut l'année précédente
 					$ligne_a_prendre_en_compte="n";
 				}
+				elseif((isset($tabindice['Classe']))&&(preg_match("/^BASE20/",$tab[$tabindice['Classe']]))) {
+					// On exclut l'année précédente
+					$ligne_a_prendre_en_compte="n";
+				}
 				elseif((isset($tabindice['Etat']))&&($tab[$tabindice['Etat']]!='Actif')) {
 					// On exclut les comptes "Désactivé"
 					$ligne_a_prendre_en_compte="n";
@@ -4319,11 +4666,14 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 
 				if($ligne_a_prendre_en_compte=="y") {
 
-					if(!isset($tabindice['Classe enfant 1'])) {
+					if((!isset($tabindice['Classe enfant 1']))&&(!isset($tabindice['Classe']))) {
 						$classe_courante="classe_inconnue";
 					}
-					else {
+					elseif(isset($tabindice['Classe enfant 1'])) {
 						$classe_courante=$tab[$tabindice['Classe enfant 1']];
+					}
+					else {
+						$classe_courante=$tab[$tabindice['Classe']];
 					}
 
 					/*
@@ -4368,7 +4718,9 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 					$tab_classe_parent[$classe_courante][$cpt]['cpt_tempo4']=$cpt2;
 
 					$sql="INSERT INTO tempo4 SET col1='$cpt2', col2='".$tab[$tabindice['Login']]."', col3=MD5('".$tab[$tabindice['Mot de passe']]."');";
-					$insert=mysql_query($sql);
+					// DEBUG:
+					//echo "$sql<br />";
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 
 					$cpt2++;
 				}
@@ -4380,12 +4732,11 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 	".add_token_field()."
 	<input type='hidden' name='temoin_suhosin_1' value='forcer_logins_mdp_responsables' />
 	<input type='hidden' name='mode' value='valider_forcer_logins_mdp_responsables' />
-	<input type='hidden' name='temoin_suhosin_1' value='forcer_logins_mdp_responsables' />
 
 <table class='boireaus boireaus_alt' summary='Tableau des responsables'>
 	<tr>
 		<th colspan='6'>Informations ENT</th>
-		<th colspan='4'>Informations Gepi</th>
+		<th colspan='5'>Informations Gepi</th>
 	</tr>
 	<tr>
 		<th>Nom prénom</th>
@@ -4421,9 +4772,9 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 			*/
 			for($loop=0;$loop<count($tab_parent);$loop++) {
 				$rowspan="";
-				$sql="SELECT * FROM resp_pers WHERE nom='".mysql_real_escape_string($tab_parent[$loop]['nom'])."' AND prenom='".mysql_real_escape_string($tab_parent[$loop]['prenom'])."';";
-				$res_resp=mysql_query($sql);
-				$nb_resp=mysql_num_rows($res_resp);
+				$sql="SELECT * FROM resp_pers WHERE nom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab_parent[$loop]['nom'])."' AND prenom='".mysqli_real_escape_string($GLOBALS["mysqli"], $tab_parent[$loop]['prenom'])."';";
+				$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+				$nb_resp=mysqli_num_rows($res_resp);
 				if($nb_resp>1) {
 					$rowspan=" rowspan='".($nb_resp+1)."'";
 				}
@@ -4449,7 +4800,7 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 				//==============================================================
 				elseif($nb_resp==1) {
 					// Un seul nom prénom identique trouvé
-					$lig_resp=mysql_fetch_object($res_resp);
+					$lig_resp=mysqli_fetch_object($res_resp);
 
 					if($lig_resp->login==$tab_parent[$loop]['login_ent']) {
 						$nb_comptes_login_deja_ok++;
@@ -4517,7 +4868,7 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 	</tr>";
 					$cpt++;
 					$cpt_resp=0;
-					while($lig_resp=mysql_fetch_object($res_resp)) {
+					while($lig_resp=mysqli_fetch_object($res_resp)) {
 						/*
 						if($cpt_resp>0) {
 							echo "
@@ -4574,7 +4925,6 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		Ce serait préférable, mais si l'accès via l'ENT est mis en place par la suite avec les comptes et mots de passe présentement mis en place, ne pas changer de mot de passe peut simplifier des choses.</li>
 	</ul>
 
-	<input type='hidden' name='temoin_suhosin_2' value='forcer_logins_mdp_responsables' />
 </form>
 
 <script type='text/javascript'>
@@ -4589,6 +4939,279 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 		for(i=0;i<$cpt;i++) {
 			if(document.getElementById('ligne_'+i)) {
 				if(document.getElementById('ligne_'+i).getAttribute('type')=='checkbox') {
+					document.getElementById('ligne_'+i).checked=true;
+					change_graisse(i);
+				}
+			}
+		}
+	}
+
+	function tout_decocher() {
+		var i;
+		for(i=0;i<$cpt;i++) {
+			if(document.getElementById('ligne_'+i)) {
+				document.getElementById('ligne_'+i).checked=false;
+				change_graisse(i);
+			}
+		}
+	}
+
+	function change_graisse(num) {
+		if((document.getElementById('ligne_'+num))&&(document.getElementById('nom_prenom_'+num))) {
+			//alert(num);
+			if(document.getElementById('ligne_'+num).checked==true) {
+				document.getElementById('nom_prenom_'+num).style.fontWeight='bold';
+			}
+			else {
+				document.getElementById('nom_prenom_'+num).style.fontWeight='';
+			}
+		}
+	}
+</script>
+\n";
+	}
+
+	require("../lib/footer.inc.php");
+	die();
+}
+
+//==================================================================================
+if($mode=="forcer_mdp_eleves") {
+	echo "
+ | <a href='".$_SERVER['PHP_SELF']."'>Index rapprochement ENT ITOP</a>
+</p>";
+
+	$csv_file = isset($_FILES["csv_file"]) ? $_FILES["csv_file"] : NULL;
+
+	echo "
+<h2>Imposer les mots de passe élèves</h2>";
+
+	if((!isset($csv_file))||($csv_file['tmp_name']=='')) {
+		echo "<p>Aucun fichier n'a été fourni.</p>";
+	}
+	else {
+		check_token(false);
+		$fp=fopen($csv_file['tmp_name'],"r");
+
+		$impression=getSettingValue('ImpressionFicheEleve');
+
+		if(!$fp){
+			echo "<p>Impossible d'ouvrir le fichier CSV !</p>";
+			echo "<p><a href='".$_SERVER['PHP_SELF']."'>Cliquer ici </a> pour recommencer !</center></p>\n";
+			require("../lib/footer.inc.php");
+			die();
+		}
+
+		$tabchamps = array("LOGIN_GEPI", "MOT_DE_PASSE_GEPI");
+
+		// Lecture de la ligne 1 et la mettre dans $temp
+		$temp=fgets($fp,4096);
+		//echo "$temp<br />";
+		$en_tete=explode(";", trim($temp));
+
+		$tabindice=array();
+
+		// On range dans tabindice les indices des champs retenus
+		for ($k = 0; $k < count($tabchamps); $k++) {
+			//echo "<p style='text-indent:-4em;margin-left:4em'>Recherche du champ ".$tabchamps[$k]."<br />";
+			for ($i = 0; $i < count($en_tete); $i++) {
+				//echo "\$en_tete[$i]=$en_tete[$i]<br />";
+				if (casse_mot(remplace_accents($en_tete[$i]),'min') == casse_mot(remplace_accents($tabchamps[$k]), 'min')) {
+					$tabindice[$tabchamps[$k]] = $i;
+					//echo "\$tabindice[$tabchamps[$k]]=$i<br />";
+				}
+			}
+		}
+		if((!isset($tabindice['LOGIN_GEPI']))||(!isset($tabindice['MOT_DE_PASSE_GEPI']))) {
+			echo "<p style='color:red'>La ligne d'entête ne comporte pas un des champs indispensables (<em>LOGIN_GEPI, MOT_DE_PASSE_GEPI</em>).</p>";
+			require("../lib/footer.inc.php");
+			die();
+		}
+
+
+		$sql="TRUNCATE tempo4;";
+		$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+
+		$cpt=0;
+		$cpt2=0;
+		$tab_eleve=array();
+		while (!feof($fp)) {
+			$ligne = trim(fgets($fp, 4096));
+			if((substr($ligne,0,3) == "\xEF\xBB\xBF")) {
+				$ligne=substr($ligne,3);
+			}
+
+			// DEBUG:
+			//echo "$ligne<br />";
+
+			if($ligne!='') {
+				$tab=explode(";", ensure_utf8($ligne));
+
+				$ligne_a_prendre_en_compte="y";
+				if(preg_match("/LOGIN_GEPI/i", trim($ligne))) {
+					$ligne_a_prendre_en_compte="n";
+				}
+				elseif(preg_match("/MOT_DE_PASSE_GEPI/i", trim($ligne))) {
+					$ligne_a_prendre_en_compte="n";
+				}
+
+				if($ligne_a_prendre_en_compte=="y") {
+					$tab_eleve[$cpt2]["LOGIN_GEPI"]=$tab[$tabindice['LOGIN_GEPI']];
+					$tab_eleve[$cpt2]["MOT_DE_PASSE_GEPI"]=$tab[$tabindice['MOT_DE_PASSE_GEPI']];
+
+					$tab_eleve[$cpt2]["nom"]="";
+					$tab_eleve[$cpt2]["prenom"]="";
+					$tab_eleve[$cpt2]["classe"]="";
+					$tab_eleve[$cpt2]["password"]="";
+					$tab_eleve[$cpt2]["auth_mode"]="";
+
+					// Récupérer les infos élève
+					$sql="SELECT e.nom, e.prenom, u.password, u.auth_mode FROM eleves e, utilisateurs u WHERE e.login=u.login AND u.login='".$tab[$tabindice['LOGIN_GEPI']]."';";
+					// DEBUG:
+					//echo "$sql<br />";
+					$res=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res)>0) {
+
+						$lig=mysqli_fetch_object($res);
+						$tab_eleve[$cpt2]["nom"]=$lig->nom;
+						$tab_eleve[$cpt2]["prenom"]=$lig->prenom;
+						if($lig->password!="") {
+							$tab_eleve[$cpt2]["password"]="<span title=\"Le mot de passe dans la base Gepi n'est pas vide.\">XXXXXXXXXX</span>";
+						}
+						$tab_eleve[$cpt2]["auth_mode"]=$lig->auth_mode;
+
+						$tmp_tab_classe=get_class_from_ele_login($tab[$tabindice['LOGIN_GEPI']]);
+						if(isset($tmp_tab_classe['liste_nbsp'])) {
+							$tab_eleve[$cpt2]["classe"]=$tmp_tab_classe['liste_nbsp'];
+						}
+					}
+
+					$sql="INSERT INTO tempo4 SET col1='$cpt2', col2='".$tab[$tabindice['LOGIN_GEPI']]."', col3=MD5('".$tab[$tabindice['MOT_DE_PASSE_GEPI']]."');";
+					// DEBUG:
+					//echo "$sql<br />";
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
+
+					$cpt2++;
+				}
+			}
+		}
+
+		echo "
+<form action='".$_SERVER['PHP_SELF']."' method='post' enctype='multipart/form-data'>
+	".add_token_field()."
+	<input type='hidden' name='temoin_suhosin_1' value='forcer_mdp_eleves' />
+	<input type='hidden' name='mode' value='valider_forcer_mdp_eleves' />
+
+	<div id=\"fixe\"><p><input type='submit' value='Valider' /></p></div>
+
+<table class='boireaus boireaus_alt' summary='Tableau des élèves'>
+	<tr>
+		<th rowspan='2'>
+			Cocher
+			<span id='tout_cocher_decocher' style='display:none;'>
+				<br />
+				<a href=\"javascript:tout_cocher()\" title='Cocher tous les élèves.'><img src='../images/enabled.png' width='20' height='20' /></a>
+				/
+				<a href=\"javascript:tout_cocher_si_mdp_vide()\" title='Cocher tous les élèves pour lesquels le mot de passe est vide.'><img src='../images/icons/wizard.png' width='20' height='20' /></a>
+				/
+				<a href=\"javascript:tout_decocher()\" title='Tout décocher'><img src='../images/disabled.png' width='20' height='20' /></a>
+			</span>
+		</th>
+
+		<th colspan='4'>Informations Gepi</th>
+		<th colspan='2'>Informations CSV</th>
+	</tr>
+	<tr>
+		<th>Nom prénom</th>
+		<th>Classe</th>
+		<th>Password</th>
+		<th>auth_mode</th>
+
+		<th>Login</th>
+		<th>Mot de passe</th>
+	</tr>";
+		$cpt=0;
+		$ancre_doublon_ou_pas="";
+		$style_css="";
+		$nb_comptes_login_deja_ok=0;
+		foreach($tab_eleve as $key => $eleve_courant) {
+			/*
+			echo "<pre>";
+			print_r($eleve_courant);
+			echo "</pre>";
+			*/
+
+			//==============================================================
+			echo "
+<tr class='white_hover'".$style_css.">
+	<td><input type='checkbox' name='ligne[".$key."]' id='ligne_$cpt' value='".$eleve_courant['LOGIN_GEPI']."' onchange=\"change_graisse($cpt)\" />$ancre_doublon_ou_pas</td>
+	<td id='nom_prenom_$cpt'><label for='ligne_$cpt'>".$eleve_courant['nom']." ".$eleve_courant['prenom']."</label></td>
+	<td>".$eleve_courant['classe']."</td>
+	<td id='td_password_actuel_$cpt'>".$eleve_courant['password']."</td>
+	<td>".$eleve_courant['auth_mode']."</td>
+
+	<td><label for='ligne_$cpt'>".$eleve_courant['LOGIN_GEPI']."</label>";
+			if($eleve_courant['nom']=="") {
+				$sql="SELECT nom, prenom FROM eleves WHERE login='".$eleve_courant['LOGIN_GEPI']."';";
+				$res_ele_nom=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_ele_nom)==0) {
+					echo " <img src='../images/icons/flag.png' class='icone16' alt='Non trouvé' title=\"Aucun élève n'a été trouvé pour le login indiqué.\" />";
+				}
+				else {
+					$lig_ele_nom=mysqli_fetch_object($res_ele_nom);
+					echo " <a href='../utilisateurs/create_eleve.php?filtrage=Afficher&amp;critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $lig_ele_nom->nom)."' title=\"L'élève $lig_ele_nom->nom $lig_ele_nom->prenom existe dans Gepi, mais il n'a pas de compte d'utilisateur.
+
+Suivez ce lien pour contrôler et créer un compte pour cet élève.\"><img src='../images/icons/buddy_plus.png' class='icone16' alt='Créer' /></a>";
+				}
+			}
+			echo "</td>
+	<td>".$eleve_courant['MOT_DE_PASSE_GEPI']."</td>";
+
+				echo "
+</tr>";
+				flush();
+				$cpt++;
+			//==============================================================
+			flush();
+		}
+		echo "
+</table>
+
+	<p><input type='submit' value='Valider' /></p>
+	<input type='hidden' name='temoin_suhosin_2' value='forcer_mdp_eleves' />
+	<p><br /></p>
+
+	<!--p><em>NOTES&nbsp;:</em></p>
+	<ul>
+		<li>...</li>
+	</ul-->
+
+</form>
+
+<script type='text/javascript'>
+	document.getElementById('tout_cocher_decocher').style.display='';
+	/*
+	document.getElementById('bouton_button_import').style.display='';
+	document.getElementById('bouton_submit_import').style.display='none';
+	*/
+
+	function tout_cocher() {
+		var i;
+		for(i=0;i<$cpt;i++) {
+			if(document.getElementById('ligne_'+i)) {
+				if(document.getElementById('ligne_'+i).getAttribute('type')=='checkbox') {
+					document.getElementById('ligne_'+i).checked=true;
+					change_graisse(i);
+				}
+			}
+		}
+	}
+
+	function tout_cocher_si_mdp_vide() {
+		var i;
+		for(i=0;i<$cpt;i++) {
+			if(document.getElementById('td_password_actuel_'+i)) {
+				if(document.getElementById('td_password_actuel_'+i).innerHTML=='') {
 					document.getElementById('ligne_'+i).checked=true;
 					change_graisse(i);
 				}
@@ -4642,9 +5265,9 @@ if($mode=="envoi_mail_logins_mdp") {
 
 		// Liste des classes avec élève:
 		$sql="SELECT DISTINCT c.* FROM j_eleves_classes jec, classes c WHERE (c.id=jec.id_classe) ORDER BY c.classe;";
-		$call_classes=mysql_query($sql);
+		$call_classes=mysqli_query($GLOBALS["mysqli"], $sql);
 
-		$nb_classes=mysql_num_rows($call_classes);
+		$nb_classes=mysqli_num_rows($call_classes);
 		if($nb_classes==0){
 			echo "<p>Aucune classe avec élève affecté n'a été trouvée.</p>\n";
 			require("../lib/footer.inc.php");
@@ -4671,7 +5294,7 @@ if($mode=="envoi_mail_logins_mdp") {
 		echo "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>\n";
 		echo "<td align='left'>\n";
 
-		while($lig_clas=mysql_fetch_object($call_classes)) {
+		while($lig_clas=mysqli_fetch_object($call_classes)) {
 
 			//affichage 2 colonnes
 			if(($cpt>0)&&(round($cpt/$nb_classes_par_colonne)==$cpt/$nb_classes_par_colonne)){
@@ -4811,9 +5434,9 @@ Vous seriez-vous trompé de fichier&nbsp;?</span>";
 						$tab_classe_parent[$tab[11]][$cpt]['resp_de']=$tab[9]." ".$tab[10]." (".$tab[11].")";
 
 						$sql="SELECT mel FROM resp_pers WHERE login='".$tab[2]."' AND mel LIKE '%@%';";
-						$res_mel=mysql_query($sql);
-						if(mysql_num_rows($res_mel)>0) {
-							$mel=mysql_result($res_mel, 0, 'mel');
+						$res_mel=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_mel)>0) {
+							$mel=old_mysql_result($res_mel, 0, 'mel');
 							if(check_mail($mel, "", "y")) {
 								$tab_classe_parent[$tab[11]][$cpt]['email_gepi']=$mel;
 							}

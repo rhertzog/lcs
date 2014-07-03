@@ -74,35 +74,35 @@ if (is_numeric($id_groupe)) {
 unset($selected_eleve);
 $login_eleve = isset($_POST["login_eleve"]) ? $_POST["login_eleve"] :(isset($_GET["login_eleve"]) ? $_GET["login_eleve"] :false);
 if ($login_eleve) {
-	$selected_eleve = mysql_fetch_object(mysql_query("SELECT e.login, e.nom, e.prenom FROM eleves e WHERE login = '" . $login_eleve . "'"));
+	$selected_eleve = mysqli_fetch_object(mysqli_query($GLOBALS["mysqli"], "SELECT e.login, e.nom, e.prenom FROM eleves e WHERE login = '" . $login_eleve . "'"));
 } else {
 	$selected_eleve = false;
 }
 
 if ($_SESSION['statut'] == 'eleve') {
-	$selected_eleve = mysql_fetch_object(mysql_query("SELECT e.login, e.nom, e.prenom FROM eleves e WHERE login = '".$_SESSION['login'] . "'"));
+	$selected_eleve = mysqli_fetch_object(mysqli_query($GLOBALS["mysqli"], "SELECT e.login, e.nom, e.prenom FROM eleves e WHERE login = '".$_SESSION['login'] . "'"));
 } elseif ($_SESSION['statut'] == "responsable") {
-	$get_eleves = mysql_query("SELECT e.login, e.nom, e.prenom " .
+	$get_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT e.login, e.nom, e.prenom " .
 			"FROM eleves e, resp_pers r, responsables2 re " .
 			"WHERE (" .
 			"e.ele_id = re.ele_id AND " .
 			"re.pers_id = r.pers_id AND " .
 			"r.login = '".$_SESSION['login']."')");
 
-	if (mysql_num_rows($get_eleves) == 1) {
+	if (mysqli_num_rows($get_eleves) == 1) {
 			// Un seul élève associé : on initialise tout de suite la variable $selected_eleve
 			// Cela signifie entre autre que l'on ne prend pas en compte $login_eleve, fermant ainsi une
 			// potentielle faille de sécurité.
-		$selected_eleve = mysql_fetch_object($get_eleves);
-	} elseif (mysql_num_rows($get_eleves) == 0) {
+		$selected_eleve = mysqli_fetch_object($get_eleves);
+	} elseif (mysqli_num_rows($get_eleves) == 0) {
 		$selected_eleve = false;
-	} elseif (mysql_num_rows($get_eleves) > 1 and $selected_eleve) {
+	} elseif (mysqli_num_rows($get_eleves) > 1 and $selected_eleve) {
 		// Si on est là, c'est que la variable $login_eleve a été utilisée pour
 		// générer $selected_eleve
 		// On va vérifier que l'élève ainsi sélectionné fait bien partie des élèves
 		// associés à l'utilisateur au statut 'responsable'
 		$ok = false;
-		while($test = mysql_fetch_object($get_eleves)) {
+		while($test = mysqli_fetch_object($get_eleves)) {
 			if ($test->login == $selected_eleve->login) $ok = true;
 		}
 		if (!$ok) $selected_eleve = false;
@@ -111,8 +111,8 @@ if ($_SESSION['statut'] == 'eleve') {
 $selected_eleve_login = $selected_eleve ? $selected_eleve->login : "";
 
 // Nom complet de la classe
-$appel_classe = mysql_query("SELECT classe FROM classes WHERE id='$id_classe'");
-$classe_nom = @mysql_result($appel_classe, 0, "classe");
+$appel_classe = mysqli_query($GLOBALS["mysqli"], "SELECT classe FROM classes WHERE id='$id_classe'");
+$classe_nom = @old_mysql_result($appel_classe, 0, "classe");
 
 // Nom complet de la matière
 $matiere_nom = $current_group["matiere"]["nom_complet"];
@@ -226,8 +226,8 @@ if ($current_group) {
 }
 
 echo "<hr />";
-$test_cahier_texte = mysql_query("SELECT contenu  FROM ct_entry WHERE (id_groupe='$id_groupe')");
-$nb_test = mysql_num_rows($test_cahier_texte);
+$test_cahier_texte = mysqli_query($GLOBALS["mysqli"], "SELECT contenu  FROM ct_entry WHERE (id_groupe='$id_groupe')");
+$nb_test = mysqli_num_rows($test_cahier_texte);
 if ($nb_test == 0) {
 	echo "\n<h2 class='gepi centre_texte'>\n";
 	if ($_SESSION['statut'] == "responsable") {
@@ -249,10 +249,10 @@ if ($nb_test == 0) {
 	die();
 }
 // Affichage des informations générales
-$appel_info_cahier_texte = mysql_query("SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and date_ct='')");
-$nb_cahier_texte = mysql_num_rows($appel_info_cahier_texte);
-$content = @mysql_result($appel_info_cahier_texte, 0, 'contenu');
-$id_ct = @mysql_result($appel_info_cahier_texte, 0, 'id_ct');
+$appel_info_cahier_texte = mysqli_query($GLOBALS["mysqli"], "SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and date_ct='')");
+$nb_cahier_texte = mysqli_num_rows($appel_info_cahier_texte);
+$content = @old_mysql_result($appel_info_cahier_texte, 0, 'contenu');
+$id_ct = @old_mysql_result($appel_info_cahier_texte, 0, 'id_ct');
 $content .= affiche_docs_joints($id_ct,"c");
 if ($content != '') {
 	echo "<h2 class='grande_ligne couleur_bord_tableau_notice'>\n<strong>INFORMATIONS GENERALES</strong>\n</h2>\n";
@@ -285,8 +285,18 @@ else {
 		and date_ct <= '".getSettingValue("end_bookings")."')
 		ORDER BY date_ct ".$current_ordre.", heure_entry ".$current_ordre;
 }
-$res_notices = mysql_query($req_notices);
-$notice = mysql_fetch_object($res_notices);
+$res_notices = mysqli_query($GLOBALS["mysqli"], $req_notices);
+$notice = mysqli_fetch_object($res_notices);
+
+// 20130727
+$CDTPeutPointerTravailFait=getSettingAOui('CDTPeutPointerTravailFait'.ucfirst($_SESSION['statut']));
+
+$class_notice_dev_fait="see_all_notice couleur_bord_tableau_notice color_fond_notices_t_fait";
+$class_notice_dev_non_fait="see_all_notice couleur_bord_tableau_notice color_fond_notices_t";
+if(($selected_eleve_login!='')&&($CDTPeutPointerTravailFait)) {
+	$tab_etat_travail_fait=get_tab_etat_travail_fait($selected_eleve_login);
+	echo js_cdt_modif_etat_travail();
+}
 
 $ts_limite_visibilite_devoirs_pour_eleves=time()+getSettingValue('delai_devoirs')*24*3600;
 
@@ -305,8 +315,8 @@ $req_devoirs =
 	and date_ct >= '".getSettingValue("begin_bookings")."'
 	and date_ct <= '".$ts_limite_dev."'
 	) order by date_ct ".$current_ordre;
-$res_devoirs = mysql_query($req_devoirs);
-$devoir = mysql_fetch_object($res_devoirs);
+$res_devoirs = mysqli_query($GLOBALS["mysqli"], $req_devoirs);
+$devoir = mysqli_fetch_object($res_devoirs);
 
 $timestamp_courant=time();
 // Boucle d'affichage des notices dans la colonne de gauche
@@ -317,13 +327,13 @@ while (true) {
 		if ($notice && (!$devoir || $notice->date_ct >= $devoir->date_ct)) {
 			// Il y a encore une notice et elle est plus récente que le prochain devoir, où il n'y a plus de devoirs
 			$not_dev = $notice;
-			$notice = mysql_fetch_object($res_notices);
+			$notice = mysqli_fetch_object($res_notices);
 
 			$type_notice="notice";
 		} elseif($devoir) {
 			// Plus de notices et toujours un devoir, ou devoir plus récent
 			$not_dev = $devoir;
-			$devoir = mysql_fetch_object($res_devoirs);
+			$devoir = mysqli_fetch_object($res_devoirs);
 
 			$type_notice="devoir";
 		} else {
@@ -335,13 +345,13 @@ while (true) {
 		if ($notice && (!$devoir || $notice->date_ct <= $devoir->date_ct)) {
 			// Il y a encore une notice et elle est plus récente que le prochain devoir, où il n'y a plus de devoirs
 			$not_dev = $notice;
-			$notice = mysql_fetch_object($res_notices);
+			$notice = mysqli_fetch_object($res_notices);
 
 			$type_notice="notice";
 		} elseif($devoir) {
 			// Plus de notices et toujours un devoir, ou devoir plus récent
 			$not_dev = $devoir;
-			$devoir = mysql_fetch_object($res_devoirs);
+			$devoir = mysqli_fetch_object($res_devoirs);
 
 			$type_notice="devoir";
 		} else {
@@ -386,7 +396,42 @@ while (true) {
 			}
 		}
 		// echo("<table style=\"border-style:solid; border-width:1px; border-color: ".$couleur_bord_tableau_notice.";\" width=\"100%\" cellpadding=\"1\" bgcolor=\"".$color_fond_notices[$not_dev->type]."\">\n<tr>\n<td>\n$content</td>\n</tr>\n</table>\n<br/>\n");
-		echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_".$not_dev->type."'>";
+		if($type_notice=='devoir') {
+			// 20130727
+			$class_color_fond_notice="color_fond_notices_t";
+			if($CDTPeutPointerTravailFait) {
+				get_etat_et_img_cdt_travail_fait($not_dev->id_ct);
+				/*
+				if(array_key_exists($not_dev->id_ct, $tab_etat_travail_fait)) {
+					if($tab_etat_travail_fait[$not_dev->id_ct]['etat']=='fait') {
+						$image_etat="../images/edit16b.png";
+						$texte_etat_travail="FAIT: Le travail est actuellement pointé comme fait.\n";
+						if($tab_etat_travail_fait[$not_dev->id_ct]['date_modif']!=$tab_etat_travail_fait[$not_dev->id_ct]['date_initiale']) {
+							$texte_etat_travail.="Le travail a été pointé comme fait la première fois le ".formate_date($tab_etat_travail_fait[$not_dev->id_ct]['date_initiale'], "y")."\net modifié pour la dernière fois par la suite le ".formate_date($tab_etat_travail_fait[$not_dev->id_ct]['date_modif'], "y")."\n";
+						}
+						else {
+							$texte_etat_travail.="Le travail a été pointé comme fait le ".formate_date($tab_etat_travail_fait[$not_dev->id_ct]['date_initiale'], "y")."\n";
+						}
+						$texte_etat_travail.="Cliquer pour corriger si le travail n'est pas encore fait.";
+						$class_color_fond_notice="color_fond_notices_t_fait";
+					}
+					else {
+						$image_etat="../images/edit16.png";
+						$texte_etat_travail="NON FAIT: Le travail n'est actuellement pas fait.\nCliquer pour pointer le travail comme fait.";
+					}
+				}
+				else {
+					$image_etat="../images/edit16.png";
+					$texte_etat_travail="NON FAIT: Le travail n'est actuellement pas fait.\nCliquer pour pointer le travail comme fait.";
+				}
+				*/
+			}
+
+			echo "<div id='div_travail_".$not_dev->id_ct."' class='see_all_notice couleur_bord_tableau_notice $class_color_fond_notice' style='min-height:2em;'>";
+		}
+		else {
+			echo "<div class='see_all_notice couleur_bord_tableau_notice color_fond_notices_".$not_dev->type."' style='min-height:2em;'>";
+		}
 		/* if ($not_dev->type == "t") {
 			echo "see_all_a_faire'>\n";
 		} else {
@@ -395,6 +440,10 @@ while (true) {
 
 		if(($type_notice=='devoir')&&($not_dev->date_visibilite_eleve!='0000-00-00 00:00:00')) {
 			echo "<div style='float:right; width: 6em; border: 1px solid black; margin: 2px; font-size: xx-small; text-align: center;'>Donné le ".formate_date($not_dev->date_visibilite_eleve)."</div>\n";
+		}
+
+		if(($type_notice=='devoir')&&($CDTPeutPointerTravailFait)) {
+			echo "<div id='div_etat_travail_".$not_dev->id_ct."' style='float:right; width: 16px; margin: 2px; text-align: center;'><a href=\"javascript:cdt_modif_etat_travail('$selected_eleve_login', '".$not_dev->id_ct."')\" title=\"$texte_etat_travail\"><img src='$image_etat' class='icone16' /></a></div>\n";
 		}
 
 		echo "$content\n</div>\n";

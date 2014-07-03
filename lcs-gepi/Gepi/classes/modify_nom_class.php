@@ -88,6 +88,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 	if (!isset($ects_fonction_signataire_attestation)) $ects_fonction_signataire_attestation = '';
 
 	// =========================
+	if (!isset($rn_type_par_defaut)) $rn_type_par_defaut = "html";
 	// 20121027
 	// Paramètres enregistrés dans la table 'classes_param':
 	if (!isset($rn_aff_classe_nom)) $rn_aff_classe_nom = 1;
@@ -109,11 +110,12 @@ if (isset($is_posted) and ($is_posted == '1')) {
 
 			//$register_class = mysql_query("UPDATE classes SET classe='$reg_class_name', nom_complet='$reg_nom_complet', suivi_par='$reg_suivi_par', formule= '$reg_formule', format_nom='$reg_format', display_rang='$display_rang', display_address='$display_address', display_coef='$display_coef', display_mat_cat ='$display_mat_cat', display_nbdev ='$display_nbdev',display_moy_gen='$display_moy_gen' WHERE id = '$id_classe'");
 
-			$register_class = mysql_query("UPDATE classes SET classe='$reg_class_name',
+			$register_class = mysqli_query($GLOBALS["mysqli"], "UPDATE classes SET classe='$reg_class_name',
 													nom_complet='$reg_nom_complet',
 													suivi_par='$reg_suivi_par',
 													formule= '".html_entity_decode($reg_formule)."',
 													format_nom='$reg_format',
+													format_nom_eleve='$reg_elformat',
 													display_rang='$display_rang',
 													display_address='$display_address',
 													display_coef='$display_coef',
@@ -147,8 +149,8 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			// On enregistre les infos relatives aux catégories de matières
 			$tab_priorites_categories=array();
 			$temoin_pb_ordre_categories="n";
-			$get_cat = mysql_query("SELECT id, nom_court, priority FROM matieres_categories");
-			while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
+			$get_cat = mysqli_query($GLOBALS["mysqli"], "SELECT id, nom_court, priority FROM matieres_categories");
+			while ($row = mysqli_fetch_array($get_cat,  MYSQLI_ASSOC)) {
 				//echo $row['nom_court']." : ";
 				$reg_priority = $_POST['priority_'.$row["id"]];
 				if (isset($_POST['moyenne_'.$row["id"]])) {$reg_aff_moyenne = 1;} else { $reg_aff_moyenne = 0;}
@@ -161,10 +163,10 @@ if (isset($is_posted) and ($is_posted == '1')) {
 				}
 				$tab_priorites_categories[]=$reg_priority;
 				//echo "$reg_priority<br />";
-				//$test = mysql_result(mysql_query("select count(classe_id) FROM j_matieres_categories_classes WHERE (categorie_id = '" . $row["id"] . "' and classe_id = '" . $id_classe . "')"), 0);
+				//$test = old_mysql_result(mysql_query("select count(classe_id) FROM j_matieres_categories_classes WHERE (categorie_id = '" . $row["id"] . "' and classe_id = '" . $id_classe . "')"), 0);
 
-				$res_test=mysql_query("select count(classe_id) FROM j_matieres_categories_classes WHERE (categorie_id = '" . $row["id"] . "' and classe_id = '" . $id_classe . "')");
-				$test = mysql_result($res_test, 0);
+				$res_test=mysqli_query($GLOBALS["mysqli"], "select count(classe_id) FROM j_matieres_categories_classes WHERE (categorie_id = '" . $row["id"] . "' and classe_id = '" . $id_classe . "')");
+				$test = old_mysql_result($res_test, 0);
 
 				if ($test == 0) {
 					// Pas d'entrée... on créé
@@ -174,7 +176,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 					$sql="UPDATE j_matieres_categories_classes SET priority = '" . $reg_priority . "', affiche_moyenne = '" . $reg_aff_moyenne . "' WHERE (classe_id = '" . $id_classe . "' and categorie_id = '" . $row["id"] . "');";
 				}
 				//echo "$sql<br />";
-				$res = mysql_query($sql);
+				$res = mysqli_query($GLOBALS["mysqli"], $sql);
 				if (!$res) {
 					$msg .= "<br/>Une erreur s'est produite lors de l'enregistrement des données de catégorie.";
 				}
@@ -185,7 +187,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 
 			// =========================
 			// 20121027
-			$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy');
+			$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy', 'rn_type_par_defaut');
 			for($loop=0;$loop<count($tab_param);$loop++) {
 				$tmp_name=$tab_param[$loop];
 				if(!saveParamClasse($id_classe, $tmp_name, $$tmp_name)) {
@@ -202,11 +204,12 @@ if (isset($is_posted) and ($is_posted == '1')) {
 		if ($reg_class_name) {
 		//$register_class = mysql_query("INSERT INTO classes SET classe = '$reg_class_name', nom_complet = '$reg_nom_complet', suivi_par = '$reg_suivi_par', formule = '$reg_formule', format_nom = '$reg_format', display_rang = '$display_rang', display_address = '$display_address', display_coef = '$display_coef', display_mat_cat = '$display_mat_cat'");
 		//$register_class = mysql_query("INSERT INTO classes SET classe = '$reg_class_name', nom_complet = '$reg_nom_complet', suivi_par = '$reg_suivi_par', formule = '$reg_formule', format_nom = '$reg_format', display_rang = '$display_rang', display_address = '$display_address', display_coef = '$display_coef', display_mat_cat = '$display_mat_cat', display_nbdev ='$display_nbdev'");
-		$register_class = mysql_query("INSERT INTO classes SET classe = '$reg_class_name',
+		$register_class = mysqli_query($GLOBALS["mysqli"], "INSERT INTO classes SET classe = '$reg_class_name',
 													nom_complet = '$reg_nom_complet',
 													suivi_par = '$reg_suivi_par',
 													formule = '$reg_formule',
 													format_nom = '$reg_format',
+													format_nom_eleve = '$reg_elformat',
 													display_rang = '$display_rang',
 													display_address = '$display_address',
 													display_coef = '$display_coef',
@@ -234,13 +237,13 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			$msg .= "Une erreur s'est produite lors de l'enregistrement de la nouvelle classe.";
 		} else {
 			$msg .= "La nouvelle classe a bien été enregistrée.";
-			$id_classe = mysql_insert_id();
+			$id_classe = ((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["mysqli"]))) ? false : $___mysqli_res);
 
 			// On enregistre les infos relatives aux catégories de matières
 			$tab_priorites_categories=array();
 			$temoin_pb_ordre_categories="n";
-			$get_cat = mysql_query("SELECT id, nom_court, priority FROM matieres_categories");
-			while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
+			$get_cat = mysqli_query($GLOBALS["mysqli"], "SELECT id, nom_court, priority FROM matieres_categories");
+			while ($row = mysqli_fetch_array($get_cat,  MYSQLI_ASSOC)) {
 				$reg_priority = $_POST['priority_'.$row["id"]];
 				if (isset($_POST['moyenne_'.$row["id"]])) {$reg_aff_moyenne = 1;} else { $reg_aff_moyenne = 0;}
 				if (!is_numeric($reg_priority)) $reg_priority = 0;
@@ -252,7 +255,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 				}
 				$tab_priorites_categories[]=$reg_priority;
 
-				$res = mysql_query("INSERT INTO j_matieres_categories_classes SET classe_id = '" . $id_classe . "', categorie_id = '" . $row["id"] . "', priority = '" . $reg_priority . "', affiche_moyenne = '" . $reg_aff_moyenne . "'");
+				$res = mysqli_query($GLOBALS["mysqli"], "INSERT INTO j_matieres_categories_classes SET classe_id = '" . $id_classe . "', categorie_id = '" . $row["id"] . "', priority = '" . $reg_priority . "', affiche_moyenne = '" . $reg_aff_moyenne . "'");
 
 				if (!$res) {
 					$msg .= "<br/>Une erreur s'est produite lors de l'enregistrement des données de catégorie.";
@@ -264,12 +267,12 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			}
 
 			$sql="SELECT login FROM utilisateurs WHERE etat='actif' AND statut='scolarite';";
-			$res_scol=mysql_query($sql);
-			if(mysql_num_rows($res_scol)>0) {
+			$res_scol=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_scol)>0) {
 				$nb_scol=0;
-				while($lig_scol=mysql_fetch_object($res_scol)) {
+				while($lig_scol=mysqli_fetch_object($res_scol)) {
 					$sql="INSERT INTO j_scol_classes SET login='$lig_scol->login', id_classe='$id_classe';";
-					$insert=mysql_query($sql);
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$insert) {
 						$msg.="<br />Erreur lors de l'association du compte $lig_scol->login avec la classe.";
 					}
@@ -288,7 +291,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 
 			// =========================
 			// 20121027
-			$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy');
+			$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy', 'rn_type_par_defaut');
 			for($loop=0;$loop<count($tab_param);$loop++) {
 				$tmp_name=$tab_param[$loop];
 				if(!saveParamClasse($id_classe, $tmp_name, $$tmp_name)) {
@@ -322,8 +325,8 @@ if (isset($id_classe)) {
 	// AJOUT: boireaus
 	//$chaine_options_classes="";
 	$sql="SELECT id, classe FROM classes ORDER BY classe";
-	$res_class_tmp=mysql_query($sql);
-	if(mysql_num_rows($res_class_tmp)>0){
+	$res_class_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_class_tmp)>0){
 		$id_class_prec=0;
 		$id_class_suiv=0;
 		$temoin_tmp=0;
@@ -331,14 +334,14 @@ if (isset($id_classe)) {
 		$cpt_classe=0;
 		$num_classe=-1;
 
-		while($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+		while($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 			if($lig_class_tmp->id==$id_classe){
 				// Index de la classe dans les <option>
 				$num_classe=$cpt_classe;
 
 				$chaine_options_classes.="<option value='$lig_class_tmp->id' selected='true'>$lig_class_tmp->classe</option>\n";
 				$temoin_tmp=1;
-				if($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+				if($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 					$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
 					$id_class_suiv=$lig_class_tmp->id;
 				}
@@ -448,56 +451,58 @@ if(getSettingValue('GepiAdminImprBulSettings')!='yes') {
 
 if (isset($id_classe)) {
 
-	$call_nom_class = mysql_query("SELECT * FROM classes WHERE id = '$id_classe'");
+	$call_nom_class = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM classes WHERE id = '$id_classe'");
 
-	if(mysql_num_rows($call_nom_class)==0) {
+	if(mysqli_num_rows($call_nom_class)==0) {
 		echo "<p>L'identifiant de classe '$id_classe' est inconnu.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
-	$classe = mysql_result($call_nom_class, 0, 'classe');
-	$nom_complet = mysql_result($call_nom_class, 0, 'nom_complet');
-	$suivi_par = mysql_result($call_nom_class, 0, 'suivi_par');
-	$formule = mysql_result($call_nom_class, 0, 'formule');
-	$format_nom = mysql_result($call_nom_class, 0, 'format_nom');
-	$display_rang = mysql_result($call_nom_class, 0, 'display_rang');
-	$display_address = mysql_result($call_nom_class, 0, 'display_address');
-	$display_coef = mysql_result($call_nom_class, 0, 'display_coef');
-	$display_mat_cat = mysql_result($call_nom_class, 0, 'display_mat_cat');
-	$display_nbdev = mysql_result($call_nom_class, 0, 'display_nbdev');
-	$display_moy_gen = mysql_result($call_nom_class, 0, 'display_moy_gen');
-	$modele_bulletin_pdf = mysql_result($call_nom_class, 0, 'modele_bulletin_pdf');
+	$classe = old_mysql_result($call_nom_class, 0, 'classe');
+	$nom_complet = old_mysql_result($call_nom_class, 0, 'nom_complet');
+	$suivi_par = old_mysql_result($call_nom_class, 0, 'suivi_par');
+	$formule = old_mysql_result($call_nom_class, 0, 'formule');
+	$format_nom = old_mysql_result($call_nom_class, 0, 'format_nom');
+	$format_nom_eleve = old_mysql_result($call_nom_class, 0, 'format_nom_eleve');
+	$display_rang = old_mysql_result($call_nom_class, 0, 'display_rang');
+	$display_address = old_mysql_result($call_nom_class, 0, 'display_address');
+	$display_coef = old_mysql_result($call_nom_class, 0, 'display_coef');
+	$display_mat_cat = old_mysql_result($call_nom_class, 0, 'display_mat_cat');
+	$display_nbdev = old_mysql_result($call_nom_class, 0, 'display_nbdev');
+	$display_moy_gen = old_mysql_result($call_nom_class, 0, 'display_moy_gen');
+	$modele_bulletin_pdf = old_mysql_result($call_nom_class, 0, 'modele_bulletin_pdf');
 
 	// =========================
-	$rn_nomdev=mysql_result($call_nom_class, 0, 'rn_nomdev');
-	$rn_toutcoefdev=mysql_result($call_nom_class, 0, 'rn_toutcoefdev');
-	$rn_coefdev_si_diff=mysql_result($call_nom_class, 0, 'rn_coefdev_si_diff');
-	$rn_datedev=mysql_result($call_nom_class, 0, 'rn_datedev');
-	$rn_formule=mysql_result($call_nom_class, 0, 'rn_formule');
-	$rn_sign_chefetab=mysql_result($call_nom_class, 0, 'rn_sign_chefetab');
-	$rn_sign_pp=mysql_result($call_nom_class, 0, 'rn_sign_pp');
-	$rn_sign_resp=mysql_result($call_nom_class, 0, 'rn_sign_resp');
-	$rn_sign_nblig=mysql_result($call_nom_class, 0, 'rn_sign_nblig');
+	$rn_nomdev=old_mysql_result($call_nom_class, 0, 'rn_nomdev');
+	$rn_toutcoefdev=old_mysql_result($call_nom_class, 0, 'rn_toutcoefdev');
+	$rn_coefdev_si_diff=old_mysql_result($call_nom_class, 0, 'rn_coefdev_si_diff');
+	$rn_datedev=old_mysql_result($call_nom_class, 0, 'rn_datedev');
+	$rn_formule=old_mysql_result($call_nom_class, 0, 'rn_formule');
+	$rn_sign_chefetab=old_mysql_result($call_nom_class, 0, 'rn_sign_chefetab');
+	$rn_sign_pp=old_mysql_result($call_nom_class, 0, 'rn_sign_pp');
+	$rn_sign_resp=old_mysql_result($call_nom_class, 0, 'rn_sign_resp');
+	$rn_sign_nblig=old_mysql_result($call_nom_class, 0, 'rn_sign_nblig');
 
-	//$rn_col_moy=mysql_result($call_nom_class, 0, 'rn_col_moy');
+	//$rn_col_moy=old_mysql_result($call_nom_class, 0, 'rn_col_moy');
 	// =========================
-	$rn_abs_2=mysql_result($call_nom_class, 0, 'rn_abs_2');
+	$rn_abs_2=old_mysql_result($call_nom_class, 0, 'rn_abs_2');
 	//=========================
 	// Ajout : Module ECTS
-	$ects_type_formation = mysql_result($call_nom_class, 0, 'ects_type_formation');
-	$ects_parcours = mysql_result($call_nom_class, 0, 'ects_parcours');
-	$ects_code_parcours = mysql_result($call_nom_class, 0, 'ects_code_parcours');
-	$ects_fonction_signataire_attestation = mysql_result($call_nom_class, 0, 'ects_fonction_signataire_attestation');
-	$ects_domaines_etude = mysql_result($call_nom_class, 0, 'ects_domaines_etude');
+	$ects_type_formation = old_mysql_result($call_nom_class, 0, 'ects_type_formation');
+	$ects_parcours = old_mysql_result($call_nom_class, 0, 'ects_parcours');
+	$ects_code_parcours = old_mysql_result($call_nom_class, 0, 'ects_code_parcours');
+	$ects_fonction_signataire_attestation = old_mysql_result($call_nom_class, 0, 'ects_fonction_signataire_attestation');
+	$ects_domaines_etude = old_mysql_result($call_nom_class, 0, 'ects_domaines_etude');
 	// =========================
 	// 20121027
 	// Paramètres enregistrés dans la table 'classes_param':
-	$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy');
+	$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy', 'rn_type_par_defaut');
 	for($loop=0;$loop<count($tab_param);$loop++) {
 		$tmp_name=$tab_param[$loop];
 		$$tmp_name=getParamClasse($id_classe, $tmp_name, "");
 	}
+	if($rn_type_par_defaut=="") {$rn_type_par_defaut="html";}
 	if($rn_aff_classe_nom=="") {$rn_aff_classe_nom=1;}
 	if($rn_rapport_standard_min_font=="") {$rn_rapport_standard_min_font=3;}
 	// =========================
@@ -509,6 +514,7 @@ if (isset($id_classe)) {
 	$formule = '';
 	//$format_nom = 'np';
 	$format_nom = 'cni';
+	$format_nom = 'np';
 	$display_rang = 'n';
 	$display_address = 'n';
 	$display_coef = 'n';
@@ -533,7 +539,7 @@ if (isset($id_classe)) {
 	$rn_abs_2='n';
 	// =========================
 	// 20121027
-	$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy');
+	$tab_param=array('rn_aff_classe_nom','rn_app', 'rn_moy_classe', 'rn_moy_min_max_classe', 'rn_retour_ligne','rn_rapport_standard_min_font', 'rn_adr_resp', 'rn_bloc_obs', 'rn_col_moy', 'rn_type_par_defaut');
 	for($loop=0;$loop<count($tab_param);$loop++) {
 		$tmp_name=$tab_param[$loop];
 		/*
@@ -542,6 +548,7 @@ if (isset($id_classe)) {
 		*/
 		$$tmp_name="n";
 	}
+	if($rn_type_par_defaut=="") {$rn_type_par_defaut="html";}
 	if($rn_aff_classe_nom=="") {$rn_aff_classe_nom=1;}
 	if($rn_rapport_standard_min_font=="") {$rn_rapport_standard_min_font=3;}
 	// =========================
@@ -600,6 +607,14 @@ if ($gepiSettings['active_mod_ects'] == "y") {
 <input type="radio" name="reg_format" id='reg_format_cn' value="<?php echo "cn"; ?>" <?php   if ($format_nom=="cn") echo " checked='checked ' "; ?> onchange='changement()' />
 <label for='reg_format_cn' style='cursor: pointer;'>Civ. Nom  (<em>M. Durand</em>)</label>
 
+<p><b>Formatage de l'identité des élèves pour les bulletins&nbsp;:</b>
+<br /><br />
+<input type="radio" name="reg_elformat" id='reg_elformat_np' value="<?php echo "np"; ?>" <?php if ($format_nom_eleve=="np") echo " checked='checked ' "; ?> onchange='changement()' />
+<label for='reg_elformat_np' style='cursor: pointer;'>Nom Prénom (<em>Durand Albert</em>)</label>
+<br />
+<input type="radio" name="reg_elformat" id='reg_elformat_pn' value="<?php echo "pn"; ?>" <?php if ($format_nom_eleve=="pn") echo " checked='checked ' "; ?> onchange='changement()' />
+<label for='reg_elformat_pn' style='cursor: pointer;'>Prénom Nom (<em>Albert Durand</em>)</label>
+
 <input type=hidden name=is_posted value=1 />
 <?php if (isset($id_classe)) {echo "<input type=hidden name=id_classe value=$id_classe />";} ?>
 <br />
@@ -638,21 +653,21 @@ td {
 		</tr>
 		<?php
 		$max_priority_cat=0;
-		$get_max_cat = mysql_query("SELECT priority FROM matieres_categories ORDER BY priority DESC LIMIT 1");
-		if(mysql_num_rows($get_max_cat)>0) {
-			$max_priority_cat=mysql_result($get_max_cat, 0, "priority");
+		$get_max_cat = mysqli_query($GLOBALS["mysqli"], "SELECT priority FROM matieres_categories ORDER BY priority DESC LIMIT 1");
+		if(mysqli_num_rows($get_max_cat)>0) {
+			$max_priority_cat=old_mysql_result($get_max_cat, 0, "priority");
 		}
 
 		$tab_priorites_categories=array();
 		$temoin_pb_ordre_categories="n";
-		$get_cat = mysql_query("SELECT id, nom_court, priority FROM matieres_categories");
-		while ($row = mysql_fetch_array($get_cat, MYSQL_ASSOC)) {
+		$get_cat = mysqli_query($GLOBALS["mysqli"], "SELECT id, nom_court, priority FROM matieres_categories");
+		while ($row = mysqli_fetch_array($get_cat,  MYSQLI_ASSOC)) {
 			// Pour la catégorie, on récupère les infos déjà enregistrées pour la classe
 			if (isset($id_classe)) {
 				$sql="SELECT priority, affiche_moyenne FROM j_matieres_categories_classes WHERE (categorie_id = '" . $row["id"] ."' and classe_id = '" . $id_classe . "');";
 				//echo "$sql<br />";
-				$res_cat_classe=mysql_query($sql);
-				$infos = mysql_fetch_object($res_cat_classe);
+				$res_cat_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+				$infos = mysqli_fetch_object($res_cat_classe);
 			} else {
 				$infos = false;
 			}
@@ -766,8 +781,8 @@ td {
 
 		// sélection des modèle des bulletins.
 		//$requete_modele = mysql_query('SELECT id_model_bulletin, nom_model_bulletin FROM '.$prefix_base.'model_bulletin ORDER BY '.$prefix_base.'model_bulletin.nom_model_bulletin ASC');
-		$requete_modele = mysql_query("SELECT id_model_bulletin, valeur as nom_model_bulletin FROM ".$prefix_base."modele_bulletin WHERE nom='nom_model_bulletin' ORDER BY ".$prefix_base."modele_bulletin.valeur ASC;");
-		if(mysql_num_rows($requete_modele)==0) {
+		$requete_modele = mysqli_query($GLOBALS["mysqli"], "SELECT id_model_bulletin, valeur as nom_model_bulletin FROM ".$prefix_base."modele_bulletin WHERE nom='nom_model_bulletin' ORDER BY ".$prefix_base."modele_bulletin.valeur ASC;");
+		if(mysqli_num_rows($requete_modele)==0) {
 			echo "<p style='color:red'>ANOMALIE&nbsp;: Il n'existe aucun modèle de bulletin PDF.";
 			if($_SESSION['login']=='administrateur') {
 				echo "Vous devriez effectuer/forcer une <a href='../utilitaires/maj.php'>mise à jour de la base</a> pour corriger.<br />Prenez tout de même soin de vérifier que personne d'autre que vous n'est connecté.\n";
@@ -783,7 +798,7 @@ td {
 			if ($quel_modele == NULL) {
 			echo "<option value=\"NULL\" selected=\"selected\" >Aucun modèle de sélectionné</option>";
 			}
-			while($donner_modele = mysql_fetch_array($requete_modele)) {
+			while($donner_modele = mysqli_fetch_array($requete_modele)) {
 				echo "<option value=\"".$donner_modele['id_model_bulletin']."\"";
 				if($quel_modele==$donner_modele['id_model_bulletin']) {
 					echo "selected=\"selected\"";
@@ -807,13 +822,13 @@ if(isset($id_classe)) {
 	<td><?php
 		$sql="SELECT DISTINCT m.* FROM j_mentions_classes j, mentions m WHERE j.id_classe='$id_classe' AND j.id_mention=m.id ORDER BY j.ordre, m.mention;";
 		//echo "$sql<br />\n";
-		 $res=mysql_query($sql);
-		if(mysql_num_rows($res)==0) {
+		 $res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)==0) {
 			echo "<p>Aucune $gepi_denom_mention n'est définie pour cette classe.</p>\n";
 		}
 		else {
 			echo "<ol>\n";
-			while($lig=mysql_fetch_object($res)) {
+			while($lig=mysqli_fetch_object($res)) {
 				echo "<li>".$lig->mention."</li>\n";
 			}
 			echo "</ol>\n";
@@ -846,7 +861,18 @@ Afficher une case pour la signature du prof principal
 Afficher une case pour la signature du chef d'établissement
 -->
 
-<!-- 20121027 -->
+<tr>
+	<td>&nbsp;&nbsp;&nbsp;</td>
+	<td style="font-variant: small-caps;">
+		Type de relevé à produire par défaut&nbsp;:<br />
+		<em style='font-size:small'>(si plusieurs classes sont sélectionnées, c'est le type de la première qui est proposé par défaut)</em>
+	</td>
+	<td>
+		<input type="radio" value="html" name="rn_type_par_defaut" id="rn_type_par_defaut_html"  <?php   if ($rn_type_par_defaut!="pdf") echo " checked='checked ' "; ?> onchange='changement()' /><label for='rn_type_par_defaut_html' style='cursor: pointer;'>HTML</label><br />
+		<input type="radio" value="pdf" name="rn_type_par_defaut" id="rn_type_par_defaut_pdf"  <?php   if ($rn_type_par_defaut=="pdf") echo " checked='checked ' "; ?> onchange='changement()' /><label for='rn_type_par_defaut_pdf' style='cursor: pointer;'>PDF</label>
+	</td>
+</tr>
+
 <tr>
 	<td>&nbsp;&nbsp;&nbsp;</td>
 	<td style="font-variant: small-caps;">

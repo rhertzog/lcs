@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -52,12 +52,25 @@ if((isset($_GET['acces_resp_legal_0']))&&(($_GET['acces_resp_legal_0']=='y')||($
 	check_token();
 
 	$sql="UPDATE responsables2 SET acces_sp='".$_GET['acces_resp_legal_0']."' WHERE pers_id='".$_GET['pers_id']."' AND ele_id='".$_GET['ele_id']."';";
-	$update=mysql_query($sql);
+	$update=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($update) {
 		$msg="Modification de l'accès aux données pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']." effectuée.<br />";
 	}
 	else {
 		$msg="Erreur lors de la modification de l'accès aux données pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']."<br />";
+	}
+}
+
+if((isset($_GET['envoi_bulletin_resp_legal_0']))&&(($_GET['envoi_bulletin_resp_legal_0']=='y')||($_GET['envoi_bulletin_resp_legal_0']=='n'))) {
+	check_token();
+
+	$sql="UPDATE responsables2 SET envoi_bulletin='".$_GET['envoi_bulletin_resp_legal_0']."' WHERE pers_id='".$_GET['pers_id']."' AND ele_id='".$_GET['ele_id']."';";
+	$update=mysqli_query($GLOBALS["mysqli"], $sql);
+	if($update) {
+		$msg="Modification de la génération ou non des bulletins pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']." effectuée.<br />";
+	}
+	else {
+		$msg="Erreur lors de la modification de la génération ou non des bulletins pour pers_id=".$_GET['pers_id']." et ele_id=".$_GET['ele_id']."<br />";
 	}
 }
 
@@ -129,8 +142,8 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			//if(isset($pers_id)){
 			if((isset($pers_id))&&(isset($tab_nom_prenom_resp))) {
 				$compte_resp_existe="n";
-				$test1_login=mysql_query("SELECT login FROM resp_pers WHERE pers_id = '$pers_id'");
-				if(mysql_num_rows($test1_login)>0) {$compte_resp_existe="y";}
+				$test1_login=mysqli_query($GLOBALS["mysqli"], "SELECT login FROM resp_pers WHERE pers_id = '$pers_id'");
+				if(mysqli_num_rows($test1_login)>0) {$compte_resp_existe="y";}
 
 				$sql="UPDATE resp_pers SET nom='$resp_nom',
 								prenom='$resp_prenom',
@@ -152,17 +165,17 @@ if (isset($is_posted) and ($is_posted == '1')) {
 				*/
 				$sql.=" WHERE pers_id='$pers_id'";
 				//echo "$sql<br />\n";
-				$res_update=mysql_query($sql);
+				$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 				if(!$res_update){
 					$msg.="Erreur lors de la mise à jour dans 'resp_pers'. ";
 				} else {
 					// On met également à jour la table utilisateurs si le responsable a un compte
-					$test1_login = mysql_result(mysql_query("SELECT login FROM resp_pers WHERE pers_id = '$pers_id'"), 0);
+					$test1_login = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT login FROM resp_pers WHERE pers_id = '$pers_id'"), 0);
 					//echo "\$test1_login=$test1_login<br />\n";
 					if ($test1_login != '') {
 						$sql="SELECT count(login) FROM utilisateurs WHERE login = '".$test1_login."'";
 						//echo "$sql<br />\n";
-						$test2_login = mysql_result(mysql_query($sql), 0);
+						$test2_login = old_mysql_result(mysqli_query($GLOBALS["mysqli"], $sql), 0);
 						if ($test2_login == 1) {
 							$sql="UPDATE utilisateurs SET nom = '".$resp_nom."', prenom = '" . $resp_prenom . "', civilite='$civilite'";
 							//if((getSettingValue('mode_email_resp')!='mon_compte')&&(isset($mel))) {
@@ -171,7 +184,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 							}
 							$sql.=" WHERE login ='" . $test1_login ."'";
 							//echo "$sql<br />\n";
-							$res = mysql_query($sql);
+							$res = mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 					}
 				}
@@ -189,13 +202,13 @@ if (isset($is_posted) and ($is_posted == '1')) {
 						// Recherche du plus grand adr_id
 						$sql="SELECT adr_id FROM resp_adr WHERE adr_id LIKE 'a%' ORDER BY adr_id DESC";
 						//echo "$sql<br />\n";
-						$res1=mysql_query($sql);
-						if(mysql_num_rows($res1)==0){
+						$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res1)==0){
 							//$adr_id="a1";
 							$adr_id="a".sprintf("%09d","1");
 						}
 						else{
-							$ligtmp=mysql_fetch_object($res1);
+							$ligtmp=mysqli_fetch_object($res1);
 							$nb=mb_substr($ligtmp->adr_id,1);
 							$nb++;
 							//$adr_id="a".$nb;
@@ -210,7 +223,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 										pays='$pays',
 										adr_id='$adr_id'";
 						//echo "$sql<br />\n";
-						$res_insert=mysql_query($sql);
+						$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$res_insert){
 							$msg.="Erreur lors de l'insertion de la nouvelle adresse. ";
 						}
@@ -218,7 +231,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 							$sql="UPDATE resp_pers SET adr_id='$adr_id' ";
 							$sql.="WHERE pers_id='$pers_id'";
 							//echo "$sql<br />\n";
-							$res_update=mysql_query($sql);
+							$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res_update){
 								$msg.="Erreur lors de la mise à jour de l'identifiant d'adresse dans 'resp_pers'. ";
 							}
@@ -234,7 +247,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 										pays='$pays'
 									WHERE adr_id='$adr_id'";
 						//echo "$sql<br />\n";
-						$res_update=mysql_query($sql);
+						$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$res_update){
 							$msg.="Erreur lors de la mise à jour de l'adresse dans 'resp_adr'. ";
 						}
@@ -250,7 +263,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 									pays='$pays'
 								WHERE adr_id='$adr_id'";
 					//echo "$sql<br />\n";
-					$res_update=mysql_query($sql);
+					$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res_update){
 						$msg.="Erreur lors de la mise à jour de l'adresse dans 'resp_adr'. ";
 					}
@@ -274,7 +287,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 						//echo "\$suppr_ele_id[$i]=".$suppr_ele_id[$i]."<br />";
 						$sql="DELETE FROM responsables2 WHERE pers_id='$pers_id' AND ele_id='$suppr_ele_id[$i]'";
 						//echo "$sql<br />\n";
-						$res_suppr=mysql_query($sql);
+						$res_suppr=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$res_suppr){
 							$msg.="Erreur lors de la suppression de l'association avec l'élève $suppr_ele_id[$i] dans 'responsables2'. ";
 						}
@@ -285,7 +298,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 						if($resp_legal[$i]==0) {
 							$sql="UPDATE responsables2 SET resp_legal='$resp_legal[$i]' WHERE pers_id='$pers_id' AND ele_id='$ele_id[$i]'";
 							//echo "$sql<br />\n";
-							$res_update=mysql_query($sql);
+							$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res_update){
 								$msg.="Erreur lors de la mise à jour de 'resp_legal' pour le responsable $pers_id. ";
 							}
@@ -304,7 +317,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 									if($loop==0) {
 										$sql="UPDATE responsables2 SET resp_legal='$resp_legal2' WHERE pers_id='".$tmp_pers_id2[$loop]."' AND ele_id='$ele_id[$i]'";
 										//echo "$sql<br />\n";
-										$res_update=mysql_query($sql);
+										$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 										if(!$res_update){
 											$msg.="Erreur lors de la mise à jour de 'resp_legal' pour l'autre responsable (".$tmp_pers_id2[$loop]."). ";
 											$temoin_erreur="oui";
@@ -313,7 +326,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 									else {
 										$sql="UPDATE responsables2 SET resp_legal='0' WHERE pers_id='".$tmp_pers_id2[$loop]."' AND ele_id='$ele_id[$i]'";
 										//echo "$sql<br />\n";
-										$res_update=mysql_query($sql);
+										$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 										if(!$res_update){
 											$msg.="Erreur lors de la mise à jour de 'resp_legal' pour l'autre responsable (".$tmp_pers_id2[$loop]."). ";
 											$temoin_erreur="oui";
@@ -328,7 +341,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 							if($temoin_erreur!="oui"){
 								$sql="UPDATE responsables2 SET resp_legal='$resp_legal[$i]' WHERE pers_id='$pers_id' AND ele_id='$ele_id[$i]'";
 								//echo "$sql<br />\n";
-								$res_update=mysql_query($sql);
+								$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$res_update){
 									$msg.="Erreur lors de la mise à jour de 'resp_legal' pour le responsable $pers_id. ";
 								}
@@ -341,19 +354,19 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			if((isset($add_ele_id))&&(isset($pers_id))&&($msg=='')){
 				if($add_ele_id!=''){
 					$sql="SELECT 1=1 FROM responsables2 WHERE pers_id!='$pers_id' AND ele_id='$add_ele_id'";
-					$test=mysql_query($sql);
-					if(mysql_num_rows($test)==0){
+					$test=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($test)==0){
 						$resp_legal=1;
 					}
 					else{
 						$sql="SELECT resp_legal FROM responsables2 WHERE ele_id='$add_ele_id'";
-						$res_tmp=mysql_query($sql);
-						$ligtmp=mysql_fetch_object($res_tmp);
+						$res_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+						$ligtmp=mysqli_fetch_object($res_tmp);
 						if($ligtmp->resp_legal==1){$resp_legal=2;}else{$resp_legal=1;}
 					}
 
 					$sql="INSERT INTO responsables2 SET pers_id='$pers_id', ele_id='$add_ele_id', resp_legal='$resp_legal'";
-					$res_update=mysql_query($sql);
+					$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res_update){
 						$msg.="Erreur lors de l'ajout de l'élève $add_ele_id. ";
 					}
@@ -367,13 +380,13 @@ if (isset($is_posted) and ($is_posted == '1')) {
 			// Recherche du plus grand pers_id
 			$sql="SELECT pers_id FROM resp_pers WHERE pers_id LIKE 'p%' ORDER BY pers_id DESC";
 			//echo "$sql<br />\n";
-			$res1=mysql_query($sql);
-			if(mysql_num_rows($res1)==0){
+			$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res1)==0){
 				//$pers_id="p1";
 				$pers_id="p".sprintf("%09d","1");
 			}
 			else{
-				$ligtmp=mysql_fetch_object($res1);
+				$ligtmp=mysqli_fetch_object($res1);
 				$nb=mb_substr($ligtmp->pers_id,1);
 				$nb++;
 				//$pers_id="p".$nb;
@@ -392,7 +405,7 @@ if (isset($is_posted) and ($is_posted == '1')) {
 								tel_prof='$tel_prof',
 								mel='$mel'";
 			//echo "$sql<br />\n";
-			$res_insert=mysql_query($sql);
+			$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 			if(!$res_insert){
 				$msg.="Erreur lors de l'insertion dans 'resp_pers'. ";
 			}
@@ -405,13 +418,13 @@ if (isset($is_posted) and ($is_posted == '1')) {
 					// Recherche du plus grand adr_id
 					$sql="SELECT adr_id FROM resp_adr WHERE adr_id LIKE 'a%' ORDER BY adr_id DESC";
 					//echo "$sql<br />\n";
-					$res1=mysql_query($sql);
-					if(mysql_num_rows($res1)==0){
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res1)==0){
 						//$adr_id="a1";
 						$adr_id="a".sprintf("%09d","1");
 					}
 					else{
-						$ligtmp=mysql_fetch_object($res1);
+						$ligtmp=mysqli_fetch_object($res1);
 						$nb=mb_substr($ligtmp->adr_id,1);
 						$nb++;
 						//$adr_id="a".$nb;
@@ -428,13 +441,13 @@ if (isset($is_posted) and ($is_posted == '1')) {
 										pays='$pays',
 										adr_id='$adr_id'";
 						//echo "$sql<br />\n";
-						$res_insert=mysql_query($sql);
+						$res_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$res_insert){
 							$msg.="Erreur lors de l'insertion de l'adresse dans 'resp_adr'. ";
 						}
 						else{
 							$sql="UPDATE resp_pers SET adr_id='$adr_id' WHERE pers_id='$pers_id'";
-							$res_update=mysql_query($sql);
+							$res_update=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res_update){
 								$msg.="Erreur lors de la mise à jour de l'association de la personne avec son adresse. ";
 							}
@@ -469,8 +482,8 @@ require_once("../lib/header.inc.php");
 
 if(!getSettingValue('conv_new_resp_table')){
 	$sql="SELECT 1=1 FROM responsables";
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0){
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0){
 		echo "<p>Une conversion des données responsables est requise.</p>\n";
 		echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 		require("../lib/footer.inc.php");
@@ -478,8 +491,8 @@ if(!getSettingValue('conv_new_resp_table')){
 	}
 
 	$sql="SHOW COLUMNS FROM eleves LIKE 'ele_id'";
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)==0){
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)==0){
 		echo "<p>Une conversion des données élèves/responsables est requise.</p>\n";
 		echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 		require("../lib/footer.inc.php");
@@ -487,8 +500,8 @@ if(!getSettingValue('conv_new_resp_table')){
 	}
 	else{
 		$sql="SELECT 1=1 FROM eleves WHERE ele_id=''";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)>0){
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)>0){
 			echo "<p>Une conversion des données élèves/responsables est requise.</p>\n";
 			echo "<p>Suivez ce lien: <a href='conversion.php'>CONVERTIR</a></p>\n";
 			require("../lib/footer.inc.php");
@@ -572,14 +585,14 @@ if(isset($associer_eleve)) {
 	$sql="SELECT rp.* FROM resp_pers rp WHERE
 					rp.pers_id='$pers_id'";
 	//echo "$sql<br />\n";
-	$res_resp=mysql_query($sql);
+	$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	$lig_pers=mysql_fetch_object($res_resp);
+	$lig_pers=mysqli_fetch_object($res_resp);
 
 	$sql="SELECT DISTINCT e.ele_id,e.nom,e.prenom,e.login FROM eleves e ORDER BY e.nom,e.prenom";
-	$res_ele=mysql_query($sql);
+	$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if(mysql_num_rows($res_ele)==0){
+	if(mysqli_num_rows($res_ele)==0){
 		echo "<p>Il semblerait qu'aucun élève ne soit encore dans la base.</p>\n";
 
 		require("../lib/footer.inc.php");
@@ -588,12 +601,12 @@ if(isset($associer_eleve)) {
 
 	$tab_anomalie_ele_id=array();
 	$compteur=0;
-	while($lig_ele=mysql_fetch_object($res_ele)){
+	while($lig_ele=mysqli_fetch_object($res_ele)){
 		// On ne propose que les élèves n'ayant pas déjà leurs deux responsables légaux
 		//$sql="SELECT * FROM responsables2 WHERE ele_id='$lig_ele->ele_id'";
 		$sql="SELECT * FROM responsables2 WHERE ele_id='$lig_ele->ele_id' AND (resp_legal='1' OR resp_legal='2')";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)<2){
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)<2){
 
 			if($compteur==0){
 				echo "<form enctype='multipart/form-data' name='resp' action='modify_resp.php' method='post'>\n";
@@ -689,6 +702,14 @@ if(isset($quitter_la_page)) {
 	echo "<input type='hidden' name='quitter_la_page' value='$quitter_la_page' />\n";
 }
 
+if ((!isset($pers_id))&&(isset($login_resp))&&($login_resp!="")) {
+	$sql="SELECT pers_id FROM resp_pers WHERE login='$login_resp';";
+	$res_pers_id=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_pers_id)>0) {
+		$pers_id=old_mysql_result($res_pers_id, 0, "pers_id");
+	}
+}
+
 //$temoin_compte_utilisateur="n";
 $temoin_adr=0;
 //if (isset($ereno)) {
@@ -704,15 +725,15 @@ if (isset($pers_id)) {
 	$sql="SELECT rp.* FROM resp_pers rp WHERE
 					rp.pers_id='$pers_id'";
 	//echo "$sql<br />\n";
-	$res_resp=mysql_query($sql);
+	$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
 
-	if(mysql_num_rows($res_resp)==0) {
+	if(mysqli_num_rows($res_resp)==0) {
 		echo "<p style='color:red'><strong>Erreur&nbsp;:</strong> Aucun responsable n'est (<em>plus</em>) associé au n°$pers_id dans la table 'resp_pers'.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
 
-	$lig_pers=mysql_fetch_object($res_resp);
+	$lig_pers=mysqli_fetch_object($res_resp);
 
 	$resp_login_tmp=$lig_pers->login;
 	$resp_nom=$lig_pers->nom;
@@ -726,12 +747,12 @@ if (isset($pers_id)) {
 
 	if(getSettingValue('mode_email_resp')=='mon_compte') {
 		$sql="SELECT email FROM utilisateurs WHERE login='$resp_login_tmp' and statut='responsable';";
-		$res_email_utilisateur_resp=mysql_query($sql);
-		if(mysql_num_rows($res_email_utilisateur_resp)>0) {
-			$lig_email_utilisateur_resp=mysql_fetch_object($res_email_utilisateur_resp);
+		$res_email_utilisateur_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_email_utilisateur_resp)>0) {
+			$lig_email_utilisateur_resp=mysqli_fetch_object($res_email_utilisateur_resp);
 			if($lig_email_utilisateur_resp->email!=$mel) {
 				$sql="UPDATE resp_pers SET mel='$lig_email_utilisateur_resp->email' WHERE login='$resp_login_tmp' and statut='responsable';";
-				$update_email=mysql_query($sql);
+				$update_email=mysqli_query($GLOBALS["mysqli"], $sql);
 				if($update_email) {echo "<span style='color:red;'>Adresse mail mise à jour d'après celle du compte d'utilisateur.</span><br />";}
 			}
 			$mel=$lig_email_utilisateur_resp->email;
@@ -742,9 +763,9 @@ if (isset($pers_id)) {
 	$sql="SELECT ra.* FROM resp_adr ra WHERE
 					ra.adr_id='$lig_pers->adr_id'";
 	//echo "$sql<br />\n";
-	$res_adr=mysql_query($sql);
-	if(mysql_num_rows($res_adr)>0){
-		$lig_adr=mysql_fetch_object($res_adr);
+	$res_adr=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_adr)>0){
+		$lig_adr=mysqli_fetch_object($res_adr);
 
 		//echo "adr_id=";
 		echo "<input type='hidden' name='adr_id' value='$lig_adr->adr_id' />\n";
@@ -780,6 +801,8 @@ if (!isset($tel_port)) $tel_port='';
 if (!isset($tel_prof)) $tel_prof='';
 if (!isset($mel)) $mel='';
 
+$AccesDetailConnexionResp=false;
+
 echo "<table>\n";
 echo "<tr>\n";
 // Colonne nom, prénom, adresse, tel du responsable:
@@ -794,21 +817,25 @@ echo "<td valign='top'>\n";
 		echo " (<i>n°$pers_id</i>)";
 
 		$sql="SELECT u.login, u.email, u.auth_mode FROM utilisateurs u, resp_pers rp WHERE rp.login=u.login AND rp.pers_id='$pers_id' AND u.login!='';";
-		$test_compte=mysql_query($sql);
-		if(mysql_num_rows($test_compte)>0) {
+		$test_compte=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test_compte)>0) {
 			$compte_resp_existe="y";
-			$lig_resp_login=mysql_fetch_object($test_compte);
+			$lig_resp_login=mysqli_fetch_object($test_compte);
 
 			$resp_login=$lig_resp_login->login;
 			$resp_u_email=$lig_resp_login->email;
 			$resp_auth_mode=$lig_resp_login->auth_mode;
+
+			$AccesDetailConnexionResp=AccesInfoResp('AccesDetailConnexionResp', $resp_login);
 
 			if($_SESSION['statut']=='administrateur') {$avec_lien="y";}
 			else {$avec_lien="n";}
 			$lien_image_compte_utilisateur=lien_image_compte_utilisateur($resp_login, "responsable", "_blank", $avec_lien);
 
 			if($_SESSION['statut']=='administrateur') {
-				echo " (<em title=\"Compte d'utilisateur\"><a href='../utilisateurs/edit_responsable.php?critere_recherche_login=$resp_login'>$resp_login</a>";
+				echo " (<em title=\"Compte d'utilisateur\"><a href='../utilisateurs/edit_responsable.php?critere_recherche_login=$resp_login'";
+				echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+				echo ">$resp_login</a>";
 				if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
 				echo "</em>)";
 			}
@@ -817,12 +844,38 @@ echo "<td valign='top'>\n";
 				if($lien_image_compte_utilisateur!="") {echo " ".$lien_image_compte_utilisateur;}
 				echo "</em>)";
 			}
+			echo temoin_compte_sso($resp_login);
 		}
 		else {
 			$compte_resp_existe="n";
+
+			if($_SESSION['statut']=="administrateur") {
+				$tmp_tab=get_enfants_from_pers_id($pers_id, 'simple', "n");
+				if(count($tmp_tab)>0) {
+					echo " <a href='../utilisateurs/create_responsable.php?filtrage=Afficher&amp;critere_recherche=".preg_replace("/[^A-Za-z]/", "%", $resp_nom)."'";
+					echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+					echo " title=\"Ajouter un compte d'utilisateur pour ce responsable.\"><img src='../images/icons/buddy_plus.png' class='icone16' /></a>";
+				}
+				elseif(getSettingAOui('GepiMemesDroitsRespNonLegaux')) {
+					// Il ne faut pas "yy" parce que le droit spécial ne peut être donné qu'une fois le compte créé.
+					$tmp_tab=get_enfants_from_pers_id($pers_id, 'simple', "y");
+					/*
+					echo "<pre>";
+					print_r($tmp_tab);
+					echo "</pre>";
+					*/
+					if(count($tmp_tab)>0) {
+						echo " <a href='../utilisateurs/create_responsable.php?filtrage_rl0=Afficher&amp;critere_recherche_rl0=".preg_replace("/[^A-Za-z]/", "%", $resp_nom)."'";
+						echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+						echo " title=\"Ajouter un compte d'utilisateur pour ce responsable.\"><img src='../images/icons/buddy_plus.png' class='icone16' /></a>";
+					}
+				}
+			}
 		}
 
-		if(($compte_resp_existe=="y")&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+		if(($compte_resp_existe=="y")&&
+				($AccesDetailConnexionResp)
+			) {
 			$journal_connexions=isset($_POST['journal_connexions']) ? $_POST['journal_connexions'] : (isset($_GET['journal_connexions']) ? $_GET['journal_connexions'] : 'n');
 			$duree=isset($_POST['duree']) ? $_POST['duree'] : NULL;
 		
@@ -899,7 +952,7 @@ echo "<td valign='top'>\n";
 	}
 	if($mel!='') {
 		$tmp_date=getdate();
-		echo " <a href='mailto:".$mel."?subject=GEPI&amp;body=";
+		echo " <a href='mailto:".$mel."?subject=".getSettingValue('gepiPrefixeSujetMail')."GEPI&amp;body=";
 		if($tmp_date['hours']>=18) {echo "Bonsoir";} else {echo "Bonjour";}
 		echo ",%0d%0aCordialement.'>";
 		echo "<img src='../images/imabulle/courrier.jpg' width='20' height='15' alt='Envoyer un courriel' border='0' />";
@@ -920,10 +973,10 @@ if(isset($pers_id)){
 	//$sql="SELECT DISTINCT ele_id FROM responsables2 WHERE pers_id='$pers_id'";
 	//$sql="SELECT e.nom,e.prenom,e.ele_id,r.resp_legal FROM responsables2 r, eleves e WHERE e.ele_id=r.ele_id AND r.pers_id='$pers_id' ORDER BY e.nom,e.prenom;";
 	//$sql="SELECT e.nom,e.prenom,e.login,e.ele_id,r.resp_legal FROM responsables2 r, eleves e WHERE (e.ele_id=r.ele_id AND r.pers_id='$pers_id' AND (r.resp_legal='1' OR r.resp_legal='2')) ORDER BY e.nom,e.prenom;";
-	$sql="SELECT e.nom,e.prenom,e.login,e.ele_id,r.resp_legal, r.acces_sp FROM responsables2 r, eleves e WHERE (e.ele_id=r.ele_id AND r.pers_id='$pers_id') ORDER BY e.nom,e.prenom;";
+	$sql="SELECT e.nom,e.prenom,e.login,e.ele_id,r.resp_legal, r.acces_sp, r.envoi_bulletin FROM responsables2 r, eleves e WHERE (e.ele_id=r.ele_id AND r.pers_id='$pers_id') ORDER BY e.nom,e.prenom;";
 	//echo "$sql<br />\n";
-	$res1=mysql_query($sql);
-	if(mysql_num_rows($res1)==0){
+	$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res1)==0){
 		echo "<p>Ce responsable n'est encore rattaché à aucun élève.</p>\n";
 	}
 	else{
@@ -943,10 +996,15 @@ if(isset($pers_id)){
 		echo "</tr>\n";
 		$cpt=0;
 		$alt=-1;
-		while($lig_ele=mysql_fetch_object($res1)){
+		while($lig_ele=mysqli_fetch_object($res1)){
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt'>\n";
-			echo "<td style='text-align:center;'><input type='hidden' name='ele_id[$cpt]' value='$lig_ele->ele_id' /><a href='../eleves/modify_eleve.php?eleve_login=".$lig_ele->login."'>".ucfirst(mb_strtolower($lig_ele->prenom))." ".mb_strtoupper($lig_ele->nom)."</a></td>\n";
+			echo "<td style='text-align:center;'><input type='hidden' name='ele_id[$cpt]' value='$lig_ele->ele_id' /><a href='../eleves/modify_eleve.php?eleve_login=".$lig_ele->login."' title=\"Éditer/Modifier la fiche élève.\">".ucfirst(mb_strtolower($lig_ele->prenom))." ".mb_strtoupper($lig_ele->nom);
+			$tmp_clas=get_class_from_ele_login($lig_ele->login);
+			if(isset($tmp_clas['liste_nbsp'])) {
+				echo " <span style='font-size:small'>(<em>".$tmp_clas['liste_nbsp']."</em>)</span>";
+			}
+			echo "</a></td>\n";
 
 			$resp_legal1=$lig_ele->resp_legal;
 
@@ -954,10 +1012,10 @@ if(isset($pers_id)){
 			//$sql="SELECT rp.nom,rp.prenom,rp.pers_id FROM resp_pers rp, responsables2 r WHERE (rp.pers_id!='$pers_id' AND r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id' AND (r.resp_legal='1' OR r.resp_legal='2'));";
 			$sql="SELECT rp.nom,rp.prenom,rp.pers_id, r.resp_legal FROM resp_pers rp, responsables2 r WHERE (rp.pers_id!='$pers_id' AND r.pers_id=rp.pers_id AND r.ele_id='$lig_ele->ele_id') ORDER BY r.resp_legal='1' DESC;";
 			//echo "$sql<br />\n";
-			$res_resp=mysql_query($sql);
+			$res_resp=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			// S'il n'y a pas de deuxième responsable et que le responsable déclaré n'est pas le n°1:
-			if((mysql_num_rows($res_resp)==0)&&($resp_legal1!=1)){
+			if((mysqli_num_rows($res_resp)==0)&&($resp_legal1!=1)){
 				$tmpbg="background-color:red;";
 			}
 			else{
@@ -969,7 +1027,7 @@ if(isset($pers_id)){
 			echo " /></td>\n";
 
 			echo "<td style='text-align:center;'>";
-			if(mysql_num_rows($res_resp)>0){
+			if(mysqli_num_rows($res_resp)>0){
 				echo "<input type='radio' name='resp_legal[$cpt]' value='2' onchange='changement();'";
 				//if($resp_legal1!=1){echo " checked";}
 				if($resp_legal1==2){echo " checked";}
@@ -978,7 +1036,7 @@ if(isset($pers_id)){
 			echo "</td>\n";
 
 			echo "<td style='text-align:center;'>";
-			if(mysql_num_rows($res_resp)>0){
+			if(mysqli_num_rows($res_resp)>0){
 				echo "<input type='radio' name='resp_legal[$cpt]' value='0' onchange='changement();'";
 				if($resp_legal1==0){echo " checked";}
 				echo " />";
@@ -989,13 +1047,32 @@ if(isset($pers_id)){
 						if($lig_ele->acces_sp=='y') {
 							echo " <a href='".$_SERVER['PHP_SELF']."?pers_id=$pers_id&amp;ele_id=".$lig_ele->ele_id."&amp;acces_resp_legal_0=n".add_token_in_url()."'";
 							echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
-							echo "><img src='../images/vert.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom a accès aux données notes, CDT,... de l'élève (si ces modules sont actifs)\" /></a>";
+							echo "><img src='../images/vert.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom a accès aux données notes, CDT,... de l'élève (si ces modules sont actifs).
+
+Cliquez pour supprimer l'accès.\" /></a>";
 						}
 						else {
 							echo " <a href='".$_SERVER['PHP_SELF']."?pers_id=$pers_id&amp;ele_id=".$lig_ele->ele_id."&amp;acces_resp_legal_0=y".add_token_in_url()."'";
 							echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
-							echo "><img src='../images/rouge.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom n'a pas accès aux données notes, CDT,... de l'élève (si ces modules sont actifs)\" /></a>";
+							echo "><img src='../images/rouge.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom n'a pas accès aux données notes, CDT,... de l'élève (si ces modules sont actifs)
+
+Cliquez pour donner l'accès.\" /></a>";
 						}
+					}
+
+					if($lig_ele->envoi_bulletin=='y') {
+						echo " <a href='".$_SERVER['PHP_SELF']."?pers_id=$pers_id&amp;ele_id=".$lig_ele->ele_id."&amp;envoi_bulletin_resp_legal_0=n".add_token_in_url()."'";
+						echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+						echo "><img src='../images/icons/bulletin.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom est destinataire des bulletins générés dans Gepi.
+
+Cliquez pour supprimer la génération de bulletins à destination de ce responsable.\" /></a>";
+					}
+					else {
+						echo " <a href='".$_SERVER['PHP_SELF']."?pers_id=$pers_id&amp;ele_id=".$lig_ele->ele_id."&amp;envoi_bulletin_resp_legal_0=y".add_token_in_url()."'";
+						echo " onclick=\"return confirm_abandon (this, change, '$themessage')\"";
+						echo "><img src='../images/icons/bulletin_barre.png' width='16' height='16' title=\"Le responsable non légal $resp_prenom $resp_nom n'est pas destinataire des bulletins générés dans Gepi.
+
+Cliquez pour activer la génération des bulletins à destination de ce responsable.\" /></a>";
 					}
 				}
 			}
@@ -1005,28 +1082,13 @@ if(isset($pers_id)){
 
 			echo "<td style='text-align:center;'>\n";
 
-			if(mysql_num_rows($res_resp)>0){
-				/*
-				if(mysql_num_rows($res_resp)==1){
-					$lig_resp=mysql_fetch_object($res_resp);
-					echo "<span title='Responsable légal $lig_resp->resp_legal'><a href='modify_resp.php?pers_id=$lig_resp->pers_id' onclick=\"return confirm_abandon (this, change, '$themessage')\">".mb_strtoupper($lig_resp->nom)." ".ucfirst(mb_strtolower($lig_resp->prenom))."</a>($lig_resp->resp_legal)</span>\n";
-					echo "<input type='hidden' name='pers_id2[".$cpt."]' value='$lig_resp->pers_id' />\n";
-				}
-				else{
-					echo "<input type='hidden' name='resp_erreur[".$cpt."]' value='y' />\n";
-					// 20121213 : A FAIRE: CA BUGGUE AVEC L'AFFICHAGE DES RESP_LEGAL=0
-					echo "<font color='red'>L'élève a trop de responsables légaux. Faites le ménage!</font><br />\n";
-					while($lig_resp=mysql_fetch_object($res_resp)){
-						echo "<span title='Responsable légal $lig_resp->resp_legal'><a href='modify_resp.php?pers_id=$lig_resp->pers_id' onclick=\"return confirm_abandon (this, change, '$themessage')\">".mb_strtoupper($lig_resp->nom)." ".ucfirst(mb_strtolower($lig_resp->prenom))."</a>($lig_resp->resp_legal)</span><br />\n";
-					}
-				}
-				*/
+			if(mysqli_num_rows($res_resp)>0){
 				$nb_resp_legaux_1=0;
 				if($resp_legal1==1) {$nb_resp_legaux_1++;}
 				$nb_resp_legaux_2=0;
 				if($resp_legal1==2) {$nb_resp_legaux_2++;}
 				$affichage_message_erreur_resp_legaux=0;
-				while($lig_resp=mysql_fetch_object($res_resp)){
+				while($lig_resp=mysqli_fetch_object($res_resp)){
 					if($lig_resp->resp_legal==2) {
 						$nb_resp_legaux_2++;
 					}
@@ -1040,7 +1102,8 @@ if(isset($pers_id)){
 						$affichage_message_erreur_resp_legaux++;
 					}
 
-					echo "<span title='Responsable légal $lig_resp->resp_legal'><a href='modify_resp.php?pers_id=$lig_resp->pers_id' onclick=\"return confirm_abandon (this, change, '$themessage')\">".mb_strtoupper($lig_resp->nom)." ".ucfirst(mb_strtolower($lig_resp->prenom))."</a>($lig_resp->resp_legal)</span>\n";
+					echo "<span title='Responsable légal $lig_resp->resp_legal
+Éditer/Modifier la fiche de ce responsable.'><a href='modify_resp.php?pers_id=$lig_resp->pers_id' onclick=\"return confirm_abandon (this, change, '$themessage')\">".mb_strtoupper($lig_resp->nom)." ".ucfirst(mb_strtolower($lig_resp->prenom))."</a>($lig_resp->resp_legal)</span>\n";
 					//if(($lig_resp->resp_legal==2)&&($nb_resp_legaux_2<=1)) {
 					//if(($nb_resp_legaux_1<=1)&&($nb_resp_legaux_2<=1)) {
 					if(($lig_resp->resp_legal==1)||($lig_resp->resp_legal==2)) {
@@ -1089,7 +1152,7 @@ if((isset($compte_resp_existe))&&($compte_resp_existe=="y")&&(isset($resp_login)
 		(($_SESSION['statut']=='cpe')&&(getSettingAOui('CpeResetPassResp')))
 	)
 ) {
-	echo "<div style='float: right; width:15 em; text-align: center; border: 1px solid black;'>\n";
+	echo "<div style='float: right; width:15 em; text-align: center; border: 1px solid black; background-image: url(\"../images/background/opacite50.png\");'>\n";
 	if($_SESSION['statut']=="administrateur") {
 		echo affiche_actions_compte($resp_login);
 		echo "<br />\n";
@@ -1113,12 +1176,12 @@ echo "<div id='div_saisie_ad'>\n";
 if($temoin_adr==1){
 	$sql="SELECT * FROM resp_pers WHERE adr_id='$adr_id'";
 	//echo "$sql<br />\n";
-	$res_adr=mysql_query($sql);
-	if(mysql_num_rows($res_adr)==0){
+	$res_adr=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_adr)==0){
 		// Bizarre!
 		// Ce n'est pas possible d'après ce qui a été fait auparavant.
 	}
-	elseif(mysql_num_rows($res_adr)==1){
+	elseif(mysqli_num_rows($res_adr)==1){
 		// L'adresse n'est associée qu'au responsable courant.
 		echo "<p>Corriger/modifier l'adresse:</p>\n";
 	}
@@ -1199,13 +1262,16 @@ echo "<p>(*): saisie obligatoire<br />(**): un des deux champs au moins doit êt
 echo "<input type='hidden' name='is_posted' value='1' />\n";
 echo "</form>\n";
 
-if((isset($pers_id))&&($compte_resp_existe=="y")&&($journal_connexions=='n')&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
-
+if((isset($pers_id))&&($compte_resp_existe=="y")&&(isset($journal_connexions))&&($journal_connexions=='n')&&
+		($AccesDetailConnexionResp)
+	) {
 	echo "<hr />\n";
 	echo "<p><a href='".$_SERVER['PHP_SELF']."?pers_id=$pers_id&amp;journal_connexions=y#connexion' title='Journal des connexions'>Journal des connexions</a></p>\n";
 }
 
-if((isset($pers_id))&&($compte_resp_existe=="y")&&($journal_connexions=='y')&&(($_SESSION['statut']=="administrateur")||($_SESSION['statut']=="scolarite"))) {
+if((isset($pers_id))&&($compte_resp_existe=="y")&&(isset($journal_connexions))&&($journal_connexions=='y')&&
+		($AccesDetailConnexionResp)
+	) {
 	echo "<hr />\n";
 	// Journal des connexions
 	echo "<a name=\"connexion\"></a>\n";

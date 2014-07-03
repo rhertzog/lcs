@@ -39,8 +39,8 @@ if ($resultat_session == "c") {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/statistiques/index.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/statistiques/index.php',
 administrateur='V',
 professeur='V',
@@ -52,7 +52,7 @@ secours='F',
 autre='F',
 description='Statistiques',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
@@ -73,8 +73,59 @@ echo "</p>\n";
 echo "<ul>\n";
 echo "<li><a href='classes_effectifs.php'>Classes, effectifs,...</a></li>\n";
 if($_SESSION['statut']=='administrateur') {
-	echo "<li><a href='export_donnees_bulletins.php'>Export de données des bulletins</a></li>\n";
+	if(getSettingAOui('active_bulletins')) {
+		echo "<li><a href='export_donnees_bulletins.php'>Export de données des bulletins</a></li>\n";
+	}
 	echo "<li><a href='stat_connexions.php'>Statistiques de connexion</a></li>\n";
+}
+elseif($_SESSION['statut']=='scolarite') {
+	if(getSettingAOui('active_bulletins')) {
+		echo "<li><a href='export_donnees_bulletins.php'>Export de données des bulletins</a></li>\n";
+	}
+	if((getSettingAOui('AccesStatConnexionEleScolarite'))||
+	(getSettingAOui('AccesDetailConnexionEleScolarite'))||
+	(getSettingAOui('AccesStatConnexionRespScolarite'))||
+	(getSettingAOui('AccesDetailConnexionRespScolarite'))) {
+		echo "<li><a href='stat_connexions.php'>Statistiques de connexion</a></li>\n";
+	}
+}
+elseif($_SESSION['statut']=='cpe') {
+	/*
+	if(getSettingAOui('active_bulletins')) {
+		echo "<li><a href='export_donnees_bulletins.php'>Export de données des bulletins</a></li>\n";
+	}
+	*/
+	if((getSettingAOui('AccesStatConnexionEleCpe'))||
+	(getSettingAOui('AccesDetailConnexionEleCpe'))||
+	(getSettingAOui('AccesStatConnexionRespCpe'))||
+	(getSettingAOui('AccesDetailConnexionRespCpe'))) {
+		echo "<li><a href='stat_connexions.php'>Statistiques de connexion</a></li>\n";
+	}
+}
+elseif($_SESSION['statut']=='professeur') {
+	$acces="n";
+
+	if((getSettingAOui('AccesStatConnexionEleProfesseur'))||
+	(getSettingAOui('AccesDetailConnexionEleProfesseur'))||
+	(getSettingAOui('AccesStatConnexionRespProfesseur'))||
+	(getSettingAOui('AccesDetailConnexionRespProfesseur'))) {
+		$acces="y";
+	}
+
+	if($acces=="n") {
+		if(is_pp($_SESSION['login'])) {
+			if((getSettingAOui('AccesStatConnexionEleProfP'))||
+			(getSettingAOui('AccesDetailConnexionEleProfP'))||
+			(getSettingAOui('AccesStatConnexionRespProfP'))||
+			(getSettingAOui('AccesDetailConnexionRespProfP'))) {
+				$acces="y";
+			}
+		}
+	}
+
+	if($acces=="y") {
+		echo "<li><a href='stat_connexions.php'>Statistiques de connexion</a></li>\n";
+	}
 }
 
 if(getSettingAOui('active_mod_discipline')) {

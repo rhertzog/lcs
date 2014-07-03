@@ -11,8 +11,8 @@ include("../lib/calendrier/calendrier.class.php");
 //Variable : $dernier  on afficher le dernier créneau si $dernier='o' (paramètre pour une exclusion)
 function choix_heure2($champ_heure,$selected,$dernier) {
 	$sql="SELECT * FROM edt_creneaux ORDER BY heuredebut_definie_periode;";
-	$res_abs_cren=mysql_query($sql);
-	$num_row = mysql_num_rows($res_abs_cren); //le nombre de ligne de la requète
+	$res_abs_cren=mysqli_query($GLOBALS["mysqli"], $sql);
+	$num_row = mysqli_num_rows($res_abs_cren); //le nombre de ligne de la requète
 	if($num_row==0) {
 		echo "La table edt_creneaux n'est pas renseignée!";
 	}
@@ -21,7 +21,7 @@ function choix_heure2($champ_heure,$selected,$dernier) {
 		//echo "<select name='$champ_heure' id='$champ_heure' onchange='changement();' >\n";
 		echo "<select name='$champ_heure' id='$champ_heure' onchange=\"if(document.getElementById('display_heure_main')) {document.getElementById('display_heure_main').value=document.getElementById('$champ_heure').options[document.getElementById('$champ_heure').selectedIndex].value};changement();\" >\n";
 		
-		while($lig_ac=mysql_fetch_object($res_abs_cren)) {
+		while($lig_ac=mysqli_fetch_object($res_abs_cren)) {
 			echo "<option value='$lig_ac->nom_definie_periode'";
 			if(($lig_ac->nom_definie_periode==$selected)||(($dernier=='o')&&($cpt==$num_row))) {echo " selected='selected'";}
 			echo ">$lig_ac->nom_definie_periode&nbsp;: $lig_ac->heuredebut_definie_periode à $lig_ac->heurefin_definie_periode</option>\n";
@@ -48,7 +48,7 @@ if(isset($ele_login)) {
 		$tab_protagonistes=get_protagonistes($id_incident,array('Responsable'),array('eleve'));
 		if(count($tab_protagonistes)>1) {
 			//echo "plup";
-			$meme_sanction_pour_autres_protagonistes.="Même sanction pour&nbsp;:<br />\n";
+			$meme_sanction_pour_autres_protagonistes.="Même ".$mod_disc_terme_sanction." pour&nbsp;:<br />\n";
 			for($loop=0;$loop<count($tab_protagonistes);$loop++) {
 				if($tab_protagonistes[$loop]!=$ele_login) {
 					$meme_sanction_pour_autres_protagonistes.="<input type='checkbox' name='autre_protagoniste_meme_sanction[]' id='autre_protagoniste_meme_sanction_$loop' value=\"$tab_protagonistes[$loop]\" /><label for='autre_protagoniste_meme_sanction_$loop'>".get_nom_prenom_eleve($tab_protagonistes[$loop])."</label><br />\n";
@@ -64,12 +64,12 @@ if(isset($ele_login)) {
 
 
 $sql="SELECT * FROM s_types_sanctions2 WHERE id_nature='$valeur';";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
-	echo "<p style='color:red;'>Type de sanction inconnu.</p>\n";
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
+	echo "<p style='color:red;'>Type de ".$mod_disc_terme_sanction." inconnu.</p>\n";
 }
 else {
-	$lig=mysql_fetch_object($res);
+	$lig=mysqli_fetch_object($res);
 	$nature_sanction=$lig->nature;
 	$type_sanction=$lig->type;
 
@@ -87,9 +87,9 @@ else {
 		$heure_retour=strftime("%H").":".strftime("%M");
 		if(isset($id_sanction)) {
 			$sql="SELECT * FROM s_travail WHERE id_sanction='$id_sanction';";
-			$res_sanction=mysql_query($sql);
-			if(mysql_num_rows($res_sanction)>0) {
-				$lig_sanction=mysql_fetch_object($res_sanction);
+			$res_sanction=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_sanction)>0) {
+				$lig_sanction=mysqli_fetch_object($res_sanction);
 				$date_retour=formate_date($lig_sanction->date_retour);
 				$heure_retour=$lig_sanction->heure_retour;
 				$travail=$lig_sanction->travail;
@@ -98,9 +98,9 @@ else {
 
 		if(($travail=="")&&(isset($id_incident))&&(isset($ele_login))) {
 			$sql="SELECT * FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$ele_login."';";
-			$res_travail_mesure_demandee=mysql_query($sql);
-			if(mysql_num_rows($res_travail_mesure_demandee)>0) {
-				$lig_travail_mesure_demandee=mysql_fetch_object($res_travail_mesure_demandee);
+			$res_travail_mesure_demandee=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_travail_mesure_demandee)>0) {
+				$lig_travail_mesure_demandee=mysqli_fetch_object($res_travail_mesure_demandee);
 				$travail=$lig_travail_mesure_demandee->travail;
 			}
 		}
@@ -155,7 +155,7 @@ else {
 		if($meme_sanction_pour_autres_protagonistes!="") {
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt'>\n";
-			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même sanction&nbsp;: </td>\n";
+			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même ".$mod_disc_terme_sanction."&nbsp;: </td>\n";
 			echo "<td style='text-align:left;'>\n";
 			echo $meme_sanction_pour_autres_protagonistes;
 			echo "</td>\n";
@@ -188,9 +188,9 @@ else {
         $materiel="";
 		if(isset($id_sanction)) {
 			$sql="SELECT * FROM s_retenues WHERE id_sanction='$id_sanction';";
-			$res_sanction=mysql_query($sql);
-			if(mysql_num_rows($res_sanction)>0) {
-				$lig_sanction=mysql_fetch_object($res_sanction);
+			$res_sanction=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_sanction)>0) {
+				$lig_sanction=mysqli_fetch_object($res_sanction);
 				$date_retenue=formate_date($lig_sanction->date);
 				$heure_debut=$lig_sanction->heure_debut;
 				$duree_retenue=$lig_sanction->duree;
@@ -202,9 +202,9 @@ else {
 
 		if(($travail=="")&&(isset($id_incident))&&(isset($ele_login))) {
 			$sql="SELECT * FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$ele_login."';";
-			$res_travail_mesure_demandee=mysql_query($sql);
-			if(mysql_num_rows($res_travail_mesure_demandee)>0) {
-				$lig_travail_mesure_demandee=mysql_fetch_object($res_travail_mesure_demandee);
+			$res_travail_mesure_demandee=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_travail_mesure_demandee)>0) {
+				$lig_travail_mesure_demandee=mysqli_fetch_object($res_travail_mesure_demandee);
 				$travail=$lig_travail_mesure_demandee->travail;
                 $materiel=$lig_travail_mesure_demandee->materiel;
 			}
@@ -271,13 +271,13 @@ else {
 		}
 		$sql.=" ORDER BY lieu;";
 		//echo "$sql<br />";
-		$res_lieu=mysql_query($sql);
+		$res_lieu=mysqli_query($GLOBALS["mysqli"], $sql);
 		//$tab_lieux=array();
 		//$chaine_lieux="";
-		if(mysql_num_rows($res_lieu)>0) {
+		if(mysqli_num_rows($res_lieu)>0) {
 			echo "<select name='choix_lieu' id='choix_lieu' onchange=\"maj_lieu('lieu_retenue','choix_lieu');changement();\">\n";
 			echo "<option value=''>---</option>\n";
-			while($lig_lieu=mysql_fetch_object($res_lieu)) {
+			while($lig_lieu=mysqli_fetch_object($res_lieu)) {
 				echo "<option value=\"$lig_lieu->lieu\">$lig_lieu->lieu</option>\n";
 				//$tab_lieux[]=urlencode($lig_lieu->lieu);
 				//$chaine_lieux.=", '".urlencode($lig_lieu->lieu)."'";
@@ -360,7 +360,7 @@ else {
 		if($meme_sanction_pour_autres_protagonistes!="") {
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt'>\n";
-			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même sanction&nbsp;: </td>\n";
+			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même ".$mod_disc_terme_sanction."&nbsp;: </td>\n";
 			echo "<td style='text-align:left;'>\n";
 			echo $meme_sanction_pour_autres_protagonistes;
 			echo "</td>\n";
@@ -410,9 +410,9 @@ else {
 	
 		if(isset($id_sanction)) {
 			$sql="SELECT * FROM s_exclusions WHERE id_sanction='$id_sanction';";
-			$res_sanction=mysql_query($sql);
-			if(mysql_num_rows($res_sanction)>0) {
-				$lig_sanction=mysql_fetch_object($res_sanction);
+			$res_sanction=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_sanction)>0) {
+				$lig_sanction=mysqli_fetch_object($res_sanction);
 				$date_debut=formate_date($lig_sanction->date_debut);
 				$date_fin=formate_date($lig_sanction->date_fin);
 				$heure_debut=$lig_sanction->heure_debut;
@@ -430,9 +430,9 @@ else {
 
 		if(($travail=="")&&(isset($id_incident))&&(isset($ele_login))) {
 			$sql="SELECT * FROM s_travail_mesure WHERE id_incident='$id_incident' AND login_ele='".$ele_login."';";
-			$res_travail_mesure_demandee=mysql_query($sql);
-			if(mysql_num_rows($res_travail_mesure_demandee)>0) {
-				$lig_travail_mesure_demandee=mysql_fetch_object($res_travail_mesure_demandee);
+			$res_travail_mesure_demandee=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_travail_mesure_demandee)>0) {
+				$lig_travail_mesure_demandee=mysqli_fetch_object($res_travail_mesure_demandee);
 				$travail=$lig_travail_mesure_demandee->travail;
 			}
 		}
@@ -488,11 +488,11 @@ else {
 		echo "<input type='text' name='lieu_exclusion' id='lieu_exclusion' value=\"$lieu_exclusion\" onchange='changement();' />\n";
 		// Sélectionner parmi des lieux déjà saisis?
 		$sql="SELECT DISTINCT lieu FROM s_exclusions WHERE lieu!='' ORDER BY lieu;";
-		$res_lieu=mysql_query($sql);
-		if(mysql_num_rows($res_lieu)>0) {
+		$res_lieu=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_lieu)>0) {
 			echo "<select name='choix_lieu' id='choix_lieu' onchange=\"maj_lieu('lieu_exclusion','choix_lieu');changement();\">\n";
 			echo "<option value=''>---</option>\n";
-			while($lig_lieu=mysql_fetch_object($res_lieu)) {
+			while($lig_lieu=mysqli_fetch_object($res_lieu)) {
 				echo "<option value=\"$lig_lieu->lieu\">$lig_lieu->lieu</option>\n";
 			}
 			echo "</select>\n";
@@ -586,11 +586,11 @@ else {
 		echo "<td style='text-align:left;'>\n";
 		// Sélectionner parmi les signataires déjà saisis?
 		$sql="SELECT * FROM s_delegation ORDER BY fct_autorite";
-		$res_signataire=mysql_query($sql);
-		if(mysql_num_rows($res_signataire)>0) {
+		$res_signataire=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_signataire)>0) {
 			echo "<select name='signataire' id='choix_signataire' onchange=\"changement();\">\n";
 			echo "<option value=''>---</option>\n";
-			while($lig_signataire=mysql_fetch_object($res_signataire)) {
+			while($lig_signataire=mysqli_fetch_object($res_signataire)) {
 				if ($signataire==$lig_signataire->id_delegation) {
 				echo "<option value=\"$lig_signataire->id_delegation\" selected >$lig_signataire->fct_autorite</option>\n";
 				} else {
@@ -607,7 +607,7 @@ else {
 		if($meme_sanction_pour_autres_protagonistes!="") {
 			$alt=$alt*(-1);
 			echo "<tr class='lig$alt'>\n";
-			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même sanction&nbsp;: </td>\n";
+			echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même ".$mod_disc_terme_sanction."&nbsp;: </td>\n";
 			echo "<td style='text-align:left;'>\n";
 			echo $meme_sanction_pour_autres_protagonistes;
 			echo "</td>\n";
@@ -638,9 +638,9 @@ else {
 
 			if(isset($id_sanction)) {
 				$sql="SELECT * FROM s_autres_sanctions WHERE id_sanction='$id_sanction';";
-				$res_sanction=mysql_query($sql);
-				if(mysql_num_rows($res_sanction)>0) {
-					$lig_sanction=mysql_fetch_object($res_sanction);
+				$res_sanction=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_sanction)>0) {
+					$lig_sanction=mysqli_fetch_object($res_sanction);
 					$description=$lig_sanction->description;
 				}
 			}
@@ -666,7 +666,7 @@ else {
 			if($meme_sanction_pour_autres_protagonistes!="") {
 				$alt=$alt*(-1);
 				echo "<tr class='lig$alt'>\n";
-				echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même sanction&nbsp;: </td>\n";
+				echo "<td style='font-weight:bold;vertical-align:top;text-align:left;'>Même ".$mod_disc_terme_sanction."&nbsp;: </td>\n";
 				echo "<td style='text-align:left;'>\n";
 				echo $meme_sanction_pour_autres_protagonistes;
 				echo "</td>\n";

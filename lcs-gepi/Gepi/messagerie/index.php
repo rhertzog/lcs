@@ -51,11 +51,23 @@ if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+if(($_SESSION['statut']=='cpe')&&(!getSettingAOui('GepiAccesPanneauAffichageCpe'))) {
+	header("Location: ../accueil.php?msg=Acces non autorisé");
+	die();
+}
+
 //Configuration du calendrier
+/*
 include("../lib/calendrier/calendrier.class.php");
 $cal1 = new Calendrier("formulaire", "display_date_debut");
 $cal2 = new Calendrier("formulaire", "display_date_fin");
 $cal3 = new Calendrier("formulaire", "display_date_decompte");
+*/
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 
 // initialisation de $id_mess
 $id_mess = isset($_POST["id_mess"]) ? $_POST["id_mess"] :(isset($_GET["id_mess"]) ? $_GET["id_mess"] :NULL);
@@ -80,7 +92,7 @@ function ajout_bouton_supprimer_message($contenu_cor,$id_message)
 	<button type="submit" title=" Supprimer ce message " style="border: none; background: none; float: right;"><img style="vertical-align: bottom;" src="images/icons/delete.png"></button>
 	</form>'.$contenu_cor;
 	$r_sql="UPDATE messages SET texte='".$contenu_cor."' WHERE id='".$id_message."'";
-	return mysql_query($r_sql)?true:false;
+	return mysqli_query($GLOBALS["mysqli"], $r_sql)?true:false;
 	}
 
 //function update_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statuts_destinataires,$login_destinataire,$matiere_destinataire)
@@ -96,7 +108,7 @@ function update_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statu
 	login_destinataire='".$login_destinataire."'
 	WHERE id ='".$_POST['id_mess']."'";
 	//", matiere_destinataire='".$matiere_destinataire."'";
-	return mysql_query($r_sql)?true:false;
+	return mysqli_query($GLOBALS["mysqli"], $r_sql)?true:false;
 	}
 
 //function set_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statuts_destinataires,$login_destinataire,$matiere_destinataire)
@@ -111,10 +123,10 @@ function set_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statuts_
 	statuts_destinataires = '".$statuts_destinataires."',
 	login_destinataire='".$login_destinataire."'";
 	//$r_sql.=", matiere_destinataire='".$matiere_destinataire."'";
-	$retour=mysql_query($r_sql)?true:false;
+	$retour=mysqli_query($GLOBALS["mysqli"], $r_sql)?true:false;
 	if ($retour)
 		{
-		$id_message=mysql_insert_id();
+		$id_message=((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["mysqli"]))) ? false : $___mysqli_res);
 		if (isset($_POST['suppression_possible']) && $_POST['suppression_possible']=="oui" &&  $statuts_destinataires=="_")
 			$retour=ajout_bouton_supprimer_message($contenu_cor,$id_message);
 		}
@@ -129,13 +141,14 @@ $msg_erreur=""; $msg_OK="";
 //
 if (isset($_POST['purger']))
 	{
+	check_token();
 	//$r_sql="DELETE FROM messages WHERE date_fin+86400 <= ".mktime(0,0,0,date("m"),date("d"),date("Y"));
 	$r_sql="DELETE FROM messages WHERE date_fin+86400 <= ".time();
-	if (!mysql_query($r_sql)) $msg_erreur="Erreur lors de la purge des messages&nbsp;: ".mysql_error();
+	if (!mysqli_query($GLOBALS["mysqli"], $r_sql)) $msg_erreur="Erreur lors de la purge des messages&nbsp;: ".mysqli_error($GLOBALS["mysqli"]);
 	else	{
 			$msg_OK="Purge effectuée. ";
-			if (mysql_affected_rows()==0) $msg_OK.="Aucun message supprimé.";
-				else $msg_OK.="Nombre de message(s) supprimé(s)&nbsp;: ".mysql_affected_rows();
+			if (mysqli_affected_rows($GLOBALS["mysqli"])==0) $msg_OK.="Aucun message supprimé.";
+				else $msg_OK.="Nombre de message(s) supprimé(s)&nbsp;: ".mysqli_affected_rows($GLOBALS["mysqli"]);
 			}
 	}
 
@@ -173,7 +186,7 @@ if ((isset($action)) and ($action == 'message') and (isset($_POST['message'])) a
 	if (isset($_POST['desti_r'])) $statuts_destinataires .= 'r';
 	if (isset($_POST['desti_e'])) $statuts_destinataires .= 'e';
 
-	if ($statuts_destinataires=="_" && $_POST['id_classe']=="" && $_POST['login_destinataire']=="" && $_POST['matiere_destinataire']=="") {
+	if ($statuts_destinataires=="_" && $_POST['id_classe']=="" && $_POST['login_destinataire']=="" && $_POST['matiere_destinataire']=="" && $_POST['eleves_id_classe']=="" && $_POST['parents_id_classe']=="") {
 		$msg_erreur = "ATTENTION : aucun destinataire saisi.<br />(message non enregitré)";
 		$record = 'no';
 	}
@@ -211,8 +224,8 @@ if ((isset($action)) and ($action == 'message') and (isset($_POST['message'])) a
 			$moisd = mb_substr($_POST['display_date_decompte'],3,2);
 			$jourd = mb_substr($_POST['display_date_decompte'],0,2);
 			//echo "$jourd/$moisd/$anneed<br />";
-			while ((!checkdate($moisf, $jourf, $anneef)) and ($jourf > 0)) {
-				$jourf--;
+			while ((!checkdate($moisd, $jourd, $anneed)) and ($jourd > 0)) {
+				$jourd--;
 				//echo "$jourd/$moisd/$anneed<br />";
 			}
 			$date_decompte=mktime(0,0,0,$moisd,$jourd,$anneed);
@@ -249,33 +262,78 @@ if ((isset($action)) and ($action == 'message') and (isset($_POST['message'])) a
 		// un destinataire
 		if ($_POST['login_destinataire']<>"") 
 			{$t_login_destinataires[]=$_POST['login_destinataire'];$login_destinataire=$_POST['login_destinataire'];}
+
 		// les professeurs d'une classe
 		if ($_POST['id_classe']<>"")
 			{
 			$id_classe=$_POST['id_classe'];
 			$r_sql="SELECT DISTINCT utilisateurs.login FROM j_groupes_classes,groupes,j_groupes_professeurs,utilisateurs WHERE j_groupes_classes.id_classe='".$id_classe."' AND j_groupes_classes.id_groupe=groupes.id AND groupes.id=j_groupes_professeurs.id_groupe AND j_groupes_professeurs.login=utilisateurs.login";
-			$R_professeurs=mysql_query($r_sql);
-			while ($un_professeur=mysql_fetch_assoc($R_professeurs))
+			$R_professeurs=mysqli_query($GLOBALS["mysqli"], $r_sql);
+			while ($un_professeur=mysqli_fetch_assoc($R_professeurs))
 				if(!in_array($un_professeur['login'], $t_login_destinataires)) {
 					$t_login_destinataires[]=$un_professeur['login'];
 				}
 			}
+
 		// les professeurs d'une matière
 		if ($_POST['matiere_destinataire']<>"")
 			{
 			$matiere_destinataire=$_POST['matiere_destinataire'];
 			$r_sql="SELECT DISTINCT u.login FROM j_groupes_matieres jgm, j_groupes_professeurs jgp, utilisateurs u WHERE jgm.id_groupe=jgp.id_groupe AND jgp.login=u.login AND jgm.id_matiere='".$matiere_destinataire."';";
 			//echo "$r_sql<br />";
-			$R_professeurs=mysql_query($r_sql);
-			while ($un_professeur=mysql_fetch_assoc($R_professeurs))
+			$R_professeurs=mysqli_query($GLOBALS["mysqli"], $r_sql);
+			while ($un_professeur=mysqli_fetch_assoc($R_professeurs))
 				if(!in_array($un_professeur['login'], $t_login_destinataires)) {
 					$t_login_destinataires[]=$un_professeur['login'];
+				}
+			}
+
+		// les élèves d'une classe
+		if ($_POST['eleves_id_classe']<>"")
+			{
+			$eleves_id_classe=$_POST['eleves_id_classe'];
+			$r_sql="SELECT DISTINCT u.login FROM j_eleves_classes jec, 
+									utilisateurs u 
+								WHERE jec.id_classe='".$eleves_id_classe."' AND 
+								jec.login=u.login";
+			$R_eleves=mysqli_query($GLOBALS["mysqli"], $r_sql);
+			while ($un_eleve=mysqli_fetch_assoc($R_eleves))
+				if(!in_array($un_eleve['login'], $t_login_destinataires)) {
+					$t_login_destinataires[]=$un_eleve['login'];
+				}
+			}
+
+		// les responsables élèves d'une classe
+		if ($_POST['parents_id_classe']<>"")
+			{
+			$parents_id_classe=$_POST['parents_id_classe'];
+			$r_sql="SELECT DISTINCT u.login FROM j_eleves_classes jec, 
+									eleves e,
+									responsables2 r,
+									resp_pers rp,
+									utilisateurs u 
+								WHERE jec.id_classe='".$parents_id_classe."' AND 
+								jec.login=e.login AND
+								e.ele_id=r.ele_id AND
+								r.pers_id=rp.pers_id AND
+								rp.login=u.login";
+			$R_parents=mysqli_query($GLOBALS["mysqli"], $r_sql);
+			while ($un_parent=mysqli_fetch_assoc($R_parents))
+				if(!in_array($un_parent['login'], $t_login_destinataires)) {
+					$t_login_destinataires[]=$un_parent['login'];
 				}
 			}
 
 	// on enregistre le message
 	if ($record == 'yes') {
 		$erreur=false;
+
+		/*
+		echo "\$date_debut=$date_debut<br />";
+		echo "\$date_fin=$date_fin<br />";
+		echo "\$date_decompte=$date_decompte<br />";
+		*/
+
 		if (count($t_login_destinataires)==0)
 			if (isset($_POST['id_mess']))
 				$erreur=!update_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statuts_destinataires,"");
@@ -291,24 +349,28 @@ if ((isset($action)) and ($action == 'message') and (isset($_POST['message'])) a
 				else
 					$erreur=!set_message($contenu_cor,$date_debut,$date_fin,$date_decompte,$statuts_destinataires,$login_destinataire) && $erreur;
 			}
-	if (!$erreur) {
-		$msg_OK = "Le message a été enregistré.";
-		unset($contenu_cor);
-		unset($_POST['display_date_debut']);
-		unset($_POST['display_date_fin']);
-		unset($_POST['display_date_decompte']);
-		unset($id_mess);
-		unset($statuts_destinataires);
-		unset($login_destinataire);
-		//unset($matiere_destinataire);
-		unset($id_classe);
-	} else {
-		$msg_erreur = "Erreur lors de l'enregistrement du message&nbsp;: <br  />".mysql_error();
-	}
+
+		if (!$erreur) {
+			$msg_OK = "Le message a été enregistré.";
+			unset($contenu_cor);
+			unset($_POST['display_date_debut']);
+			unset($_POST['display_date_fin']);
+			unset($_POST['display_date_decompte']);
+			unset($id_mess);
+			unset($statuts_destinataires);
+			unset($login_destinataire);
+			//unset($matiere_destinataire);
+			unset($id_classe);
+			unset($eleves_id_classe);
+			unset($parents_id_classe);
+		} else {
+			$msg_erreur = "Erreur lors de l'enregistrement du message&nbsp;: <br  />".mysqli_error($GLOBALS["mysqli"]);
+		}
 	}
 }
 
 
+$themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 $message_suppression = "Confirmation de suppression";
 //**************** EN-TETE *****************
 $titre_page = "Gestion des messages";
@@ -316,7 +378,7 @@ require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *************
 
 //debug_var();
-
+//onclick=\"return confirm_abandon (this, change, '$themessage')\"
 echo "<a name=\"debut_de_page\"></a>";
 
 //debug_var();
@@ -328,7 +390,11 @@ echo "</div>";
 
 echo "<script type=\"text/javascript\" language=\"JavaScript\" SRC=\"../lib/clock_fr.js\"></SCRIPT>\n";
 //-----------------------------------------------------------------------------------
-echo "<p class='bold'><a href='../accueil.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>\n";
+echo "<p class='bold'><a href='../accueil.php' onclick=\"return confirm_abandon (this, change, '$themessage')\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a> | <a href='".$_SERVER['PHP_SELF']."' onclick=\"return confirm_abandon (this, change, '$themessage')\">Nouveau message</a>";
+if(acces("/classes/dates_classes.php", $_SESSION['statut'])) {
+	echo " | <a href='../classes/dates_classes.php' onclick=\"return confirm_abandon (this, change, '$themessage')\">Nouvel événement classe</a>";
+}
+"</p>\n";
 echo "<table width=\"98%\" cellspacing=0 align=\"center\">\n";
 echo "<tr>\n";
 echo "<td valign='top'>\n";
@@ -348,7 +414,8 @@ echo "<td width = \"350px\" valign=\"top\">\n";
 
 echo "<span class='grand'>Purge des messages</span><br />\n";
 echo "<p>La purge des messages consiste à supprimer tous les messages dont la date de fin d'affichage est antérieure de plus de 24 h. à la date actuelle.</p>";
-echo "<form alin=\"center\" action=\"./index.php\" method=\"post\" style=\"width: 100%;\">\n";
+echo "<form align=\"center\" action=\"./index.php\" method=\"post\" style=\"width: 100%;\">\n";
+echo add_token_field();
 echo "<p align=\"center\"><input type=\"submit\" name=\"purger\" value=\" Purger les messages \"></p>";
 echo "</form>";
 echo "<br /><br />";
@@ -356,30 +423,31 @@ echo "<br /><br />";
 // Affichage des messages éditables
 //
 
-$appel_messages = mysql_query("SELECT * FROM messages WHERE texte <> '' AND statuts_destinataires <> '_'  AND login_destinataire='' order by ".$order_by." DESC");
-$nb_messages = mysql_num_rows($appel_messages);
+$appel_messages = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM messages WHERE texte <> '' AND statuts_destinataires <> '_'  AND login_destinataire='' order by ".$order_by." DESC");
+$nb_messages = mysqli_num_rows($appel_messages);
 
 if ($nb_messages>0) {
-	echo "<span class='grand'>Messages pouvant être modifiés&nbsp;:</span><br />\n";
+	echo "<span class='grand' title=\"Seuls les messages destinés à tel ou tel statut peuvent être modifiés.
+Les messages destinés à une classe, une matière ou un individu ne peuvent pas être modifiés après coup.\">Messages pouvant être modifiés&nbsp;:</span><br />\n";
 	echo "<span class='small'>Classer par : ";
-	echo "<a href='index.php?order_by=date_debut'>date début</a> | <a href='index.php?order_by=date_fin'>date fin</a> | <a href='index.php?order_by=id'>date création</a>\n";
+	echo "<a href='index.php?order_by=date_debut' onclick=\"return confirm_abandon (this, change, '$themessage')\">date début</a> | <a href='index.php?order_by=date_fin' onclick=\"return confirm_abandon (this, change, '$themessage')\">date fin</a> | <a href='index.php?order_by=id' onclick=\"return confirm_abandon (this, change, '$themessage')\">date création</a>\n";
 	echo "</span><br /><br />\n";
 	$ind = 0;
 	while ($ind < $nb_messages) {
-	  $content = mysql_result($appel_messages, $ind, 'texte');
+	  $content = old_mysql_result($appel_messages, $ind, 'texte');
 	  // Mise en forme du texte
-	  $date_debut1 = mysql_result($appel_messages, $ind, 'date_debut');
-	  $date_fin1 = mysql_result($appel_messages, $ind, 'date_fin');
-	  $date_decompte1 = mysql_result($appel_messages, $ind, 'date_decompte');
-	  $auteur1 = mysql_result($appel_messages, $ind, 'auteur');
-	  $statuts_destinataires1 = mysql_result($appel_messages, $ind, 'statuts_destinataires');
-	  $login_destinataire1=mysql_result($appel_messages, $ind, 'login_destinataire');
-	  //$matiere_destinataire1=mysql_result($appel_messages, $ind, 'matiere_destinataire');
+	  $date_debut1 = old_mysql_result($appel_messages, $ind, 'date_debut');
+	  $date_fin1 = old_mysql_result($appel_messages, $ind, 'date_fin');
+	  $date_decompte1 = old_mysql_result($appel_messages, $ind, 'date_decompte');
+	  $auteur1 = old_mysql_result($appel_messages, $ind, 'auteur');
+	  $statuts_destinataires1 = old_mysql_result($appel_messages, $ind, 'statuts_destinataires');
+	  $login_destinataire1=old_mysql_result($appel_messages, $ind, 'login_destinataire');
+	  //$matiere_destinataire1=old_mysql_result($appel_messages, $ind, 'matiere_destinataire');
 	//  $nom_auteur = sql_query1("SELECT nom from utilisateurs where login = '".$auteur1."'");
 	//  $prenom_auteur = sql_query1("SELECT prenom from utilisateurs where login = '".$auteur1."'");
 
 
-	  $id_message =  mysql_result($appel_messages, $ind, 'id');
+	  $id_message =  old_mysql_result($appel_messages, $ind, 'id');
 
 
 	//  echo "<b><i>Message de </i></b>: ".$prenom_auteur." ".$nom_auteur.";
@@ -422,7 +490,7 @@ if ($nb_messages>0) {
 		}
 		echo $chaine_statuts_destinataires;
 		//echo "<br /><b><i>Login du destinataire </i></b> : ".$login_destinataire1;
-		echo "<br /><a href='index.php?id_mess=$id_message'>modifier</a>
+		echo "<br /><a href='index.php?id_mess=$id_message' onclick=\"return confirm_abandon (this, change, '$themessage')\">modifier</a>
 		- <a href='index.php?id_del=$id_message&action=sup_entry".add_token_in_url()."' onclick=\"return confirmlink(this, 'Etes-vous sûr de vouloir supprimer ce message ?', '".$message_suppression."')\">supprimer</a>
 		<table border=0 width = '100%' cellpadding='5'><tr><td style=\"border:1px solid black\">".$content."</td></tr></table><br />\n";
 		$ind++;
@@ -441,15 +509,15 @@ echo "<td valign=\"top\">\n";
 //
 if (isset($id_mess)) {
 	$titre_mess = "Modification d'un message";
-	$appel_message = mysql_query("SELECT  id, texte, date_debut, date_fin, date_decompte, auteur, statuts_destinataires, login_destinataire  FROM messages
+	$appel_message = mysqli_query($GLOBALS["mysqli"], "SELECT  id, texte, date_debut, date_fin, date_decompte, auteur, statuts_destinataires, login_destinataire  FROM messages
 	WHERE (id = '".$id_mess."')");
-	$contenu = mysql_result($appel_message, 0, 'texte');
-	$date_debut = mysql_result($appel_message, 0, 'date_debut');
-	$date_fin = mysql_result($appel_message, 0, 'date_fin');
-	$date_decompte = mysql_result($appel_message, 0, 'date_decompte');
-	$statuts_destinataires = mysql_result($appel_message, 0, 'statuts_destinataires');
-	$login_destinataire=mysql_result($appel_message, 0, 'login_destinataire');
-	//$matiere_destinataire=mysql_result($appel_message, 0, 'matiere_destinataire');
+	$contenu = old_mysql_result($appel_message, 0, 'texte');
+	$date_debut = old_mysql_result($appel_message, 0, 'date_debut');
+	$date_fin = old_mysql_result($appel_message, 0, 'date_fin');
+	$date_decompte = old_mysql_result($appel_message, 0, 'date_decompte');
+	$statuts_destinataires = old_mysql_result($appel_message, 0, 'statuts_destinataires');
+	$login_destinataire=old_mysql_result($appel_message, 0, 'login_destinataire');
+	//$matiere_destinataire=old_mysql_result($appel_message, 0, 'matiere_destinataire');
 	$display_date_debut = strftime("%d", $date_debut)."/".strftime("%m", $date_debut)."/".strftime("%Y", $date_debut);
 	$display_date_fin = strftime("%d", $date_fin)."/".strftime("%m", $date_fin)."/".strftime("%Y", $date_fin);
 	$display_date_decompte = strftime("%d", $date_decompte)."/".strftime("%m", $date_decompte)."/".strftime("%Y", $date_decompte);
@@ -484,6 +552,7 @@ if (isset($id_mess)) {
 }
 echo "<table style=\"border:1px solid black\" cellpadding=\"5\" cellspacing=\"0\"><tr><td>\n";
 echo "<form action=\"./index.php#debut_de_page\" method=\"post\" style=\"width: 100%;\" name=\"formulaire\">\n";
+echo "<fieldset style='border: 1px solid grey; background-image: url(\"../images/background/opacite50.png\");'>\n";
 echo add_token_field();
 if (isset($id_mess)) echo "<input type=\"hidden\" name=\"id_mess\" value=\"$id_mess\" />\n";
 echo "<input type=\"hidden\" name=\"action\" value=\"message\" />\n";
@@ -507,17 +576,24 @@ echo "</span></td></tr>\n";
 echo "<tr><td colspan=\"4\">\n";
 echo "<p><i>Le message sera affiché :</i><br />de la date : ";
 echo "<input type='text' name = 'display_date_debut' id= 'display_date_debut' size='10' value = \"".$display_date_debut."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+
+//echo "<a href=\"#\" onClick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+echo img_calendrier_js("display_date_debut", "img_bouton_display_date_debut");
+
 echo "&nbsp;à la date : ";
 echo "<input type='text' name = 'display_date_fin' id = 'display_date_fin' size='10' value = \"".$display_date_fin."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+//echo "<a href=\"#\" onClick=\"".$cal2->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+echo img_calendrier_js("display_date_fin", "img_bouton_display_date_fin");
+
 echo "<br />(<span style='font-size:small'>Respectez le format jj/mm/aaaa</span>)</p></td></tr>\n";
 
 //Date pour décompte
 echo "<tr><td colspan=\"4\">\n";
 echo "<p><i>Décompte des jours jusqu'au :</i> ";
 echo "<input type='text' name = 'display_date_decompte' id= 'display_date_decompte' size='10' value = \"".$display_date_decompte."\" onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\" />\n";
-echo "<a href=\"#\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+//echo "<a href=\"#\" onClick=\"".$cal3->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Calendrier\" /></a>\n";
+echo img_calendrier_js("display_date_decompte", "img_bouton_display_date_decompte");
+
 echo " à <input type='text' name = 'display_heure_decompte' id= 'display_heure_decompte' size='5' value = \"".$display_heure_decompte."\" onKeyDown=\"clavier_heure(this.id,event);\" AutoComplete=\"off\" />\n";
 echo "<br />(<span style='font-size:small'>Respectez le format jj/mm/aaaa</span>)<br />Saisir une chaine <b>_DECOMPTE_</b> dans le corps du message pour que cette date soit prise en compte.\n";
 
@@ -578,10 +654,10 @@ echo "<tr><td  colspan=\"4\" >\n";
 		<optgroup>
 		<option></option>
 	<?php
-	$r_sql="SELECT login,nom,prenom,etat FROM utilisateurs WHERE statut IN ('administrateur','professeur','cpe','scolarite','secours','autre') ORDER BY nom,prenom";
-	$R_utilisateurs=mysql_query($r_sql);
+	$r_sql="SELECT login,nom,prenom,etat, statut FROM utilisateurs WHERE statut IN ('administrateur','professeur','cpe','scolarite','secours','autre') ORDER BY nom,prenom";
+	$R_utilisateurs=mysqli_query($GLOBALS["mysqli"], $r_sql);
 	$initiale_courante=0;
-	while($utilisateur=mysql_fetch_array($R_utilisateurs))
+	while($utilisateur=mysqli_fetch_array($R_utilisateurs))
 		{
 		$nom=mb_strtoupper($utilisateur['nom'])." ".$utilisateur['prenom'];
 		$initiale=ord(mb_strtoupper($nom));
@@ -591,7 +667,7 @@ echo "<tr><td  colspan=\"4\" >\n";
 			echo "\t</optgroup><optgroup label=\"".chr($initiale)."\">";
 			}
 		?>
-		<option value="<?php echo $utilisateur['login']; ?>" <?php if (isset($login_destinataire)) {if ($utilisateur['login']==$login_destinataire) {echo "selected";}} if($utilisateur['etat']=="inactif") { echo " style='background-color:grey;'";} ?>><?php echo $nom." (".$utilisateur['login'].")"; ?></option>
+		<option value="<?php echo $utilisateur['login']; ?>" <?php if (isset($login_destinataire)) {if ($utilisateur['login']==$login_destinataire) {echo "selected";}} if($utilisateur['etat']=="inactif") { echo " style='background-color:grey;'";} ?> title="<?php echo $utilisateur['statut'];?>"><?php echo $nom." (".$utilisateur['login'].")"; ?></option>
 		<?php
 		}
 	?>
@@ -615,9 +691,9 @@ echo "<tr><td  colspan=\"4\" >\n";
 			jgp.id_groupe=jgm.id_groupe AND
 			jgm.id_matiere=m.matiere
 		ORDER BY m.matiere, m.nom_complet";
-	$R_matieres=mysql_query($r_sql);
+	$R_matieres=mysqli_query($GLOBALS["mysqli"], $r_sql);
 	$initiale_courante=0;
-	while($matiere=mysql_fetch_array($R_matieres))
+	while($matiere=mysqli_fetch_array($R_matieres))
 		{
 		/*
 		<option value="<?php echo $matiere['matiere']; ?>" <?php if (isset($matiere_destinataire)) {if ($matiere['matiere']==$matiere_destinataire) {echo "selected";}}?>><?php echo $matiere['matiere']." (".$matiere['nom_complet'].")"; ?></option>
@@ -642,11 +718,72 @@ echo "<tr><td  colspan=\"4\" >\n";
 		<option></option>
 	<?php
 	$r_sql="SELECT id,nom_complet,classe FROM classes ORDER BY classe";
-	$R_classes=mysql_query($r_sql);
-	while($classe=mysql_fetch_array($R_classes))
+	$R_classes=mysqli_query($GLOBALS["mysqli"], $r_sql);
+	while($classe=mysqli_fetch_array($R_classes))
 		{
 		?>
-		<option value="<?php echo $classe['id']; ?>" <?php if (isset($id_classe)) if ($classe['id']==$id_classe) echo "selected"; ?>><?php
+		<option value="<?php echo $classe['id']; ?>" <?php if (isset($id_classe)) if ($classe['id']==$id_classe) echo "selected"; ?> title="Déposer un message sur le Panneau d'affichage
+pour tous les professeurs de la classe de <?php echo $classe['classe'];?>.
+Pour information, le <?php echo getSettingValue('gepi_prof_suivi')?> de la classe est :
+<?php echo liste_des_prof_suivi_de_telle_classe($classe['id']);?>"><?php
+			echo $classe['nom_complet'];
+			if($classe['nom_complet']!=$classe['classe']) {echo " (".$classe['classe'].")";}
+		?></option>
+		<?php
+		}
+	?>
+		</optgroup>
+	</select>
+<br><br>
+
+<?php
+echo "</td></tr>\n";
+
+echo "<tr><td  colspan=\"4\" >\n";
+?>
+<i>Élèves de la classe de&nbsp;:&nbsp;</i><br />
+	<select name="eleves_id_classe" style="margin-left: 20px; max-width: 500px; width: 300px;">
+		<optgroup>
+		<option></option>
+	<?php
+	$r_sql="SELECT id,nom_complet,classe FROM classes ORDER BY classe";
+	$R_classes=mysqli_query($GLOBALS["mysqli"], $r_sql);
+	while($classe=mysqli_fetch_array($R_classes))
+		{
+		?>
+		<option value="<?php echo $classe['id']; ?>" <?php if (isset($eleves_id_classe)) if ($classe['id']==$eleves_id_classe) echo "selected"; ?> title="Déposer un message sur le Panneau d'affichage
+pour tous les élèves de la classe de <?php echo $classe['classe'];?>.
+Pour information, le <?php echo getSettingValue('gepi_prof_suivi')?> de la classe est :
+<?php echo liste_des_prof_suivi_de_telle_classe($classe['id']);?>"><?php
+			echo $classe['nom_complet'];
+			if($classe['nom_complet']!=$classe['classe']) {echo " (".$classe['classe'].")";}
+		?></option>
+		<?php
+		}
+	?>
+		</optgroup>
+	</select>
+<br><br>
+
+<?php
+echo "</td></tr>\n";
+
+echo "<tr><td  colspan=\"4\" >\n";
+?>
+<i>Responsables (parents,...) d'élèves de la classe de&nbsp;:&nbsp;</i><br />
+	<select name="parents_id_classe" style="margin-left: 20px; max-width: 500px; width: 300px;">
+		<optgroup>
+		<option></option>
+	<?php
+	$r_sql="SELECT id,nom_complet,classe FROM classes ORDER BY classe";
+	$R_classes=mysqli_query($GLOBALS["mysqli"], $r_sql);
+	while($classe=mysqli_fetch_array($R_classes))
+		{
+		?>
+		<option value="<?php echo $classe['id']; ?>" <?php if (isset($parents_id_classe)) if ($classe['id']==$parents_id_classe) echo "selected"; ?> title="Déposer un message sur le Panneau d'affichage
+pour tous les responsables (parents,...) d'élèves de la classe de <?php echo $classe['classe'];?>.
+Pour information, le <?php echo getSettingValue('gepi_prof_suivi')?> de la classe est :
+<?php echo liste_des_prof_suivi_de_telle_classe($classe['id']);?>"><?php
 			echo $classe['nom_complet'];
 			if($classe['nom_complet']!=$classe['classe']) {echo " (".$classe['classe'].")";}
 		?></option>
@@ -669,7 +806,11 @@ echo "<tr><td  colspan=\"4\" >\n";
 
 <?php
 $titre_infobulle="SUPPRESSION\n";
-$texte_infobulle="Après lecture un utilisateur ne peut pas supprimer un message si celui-ci est destiné à un ou plusieurs statuts.<br />\n";
+$texte_infobulle="Après lecture, un utilisateur ne peut pas supprimer un message si celui-ci est destiné à un ou plusieurs statuts.<br />
+Seuls les messages destinés à des individus, matière précise ou classe précise peuvent être supprimés par leur destinataire.<br />
+<br />
+Lors de la définition d'un message destiné à un ou plusieurs statuts, un seul message est enregistré (<em>il peut ainsi être modifié par la suite</em>)<br />
+En revanche, lors de la saisie d'un message destiné à des individus, classe, matière, il y a autant de messages générés que d'individus (<em>après leur enregistrement, ils ne peuvent plus être modifiés et ils n'apparaissent pas dans la liste sur la gauche</em>).\n";
 //$texte_infobulle.="\n";
 $tabdiv_infobulle[]=creer_div_infobulle('SUPPRESSION',$titre_infobulle,"",$texte_infobulle,"",35,0,'y','y','n','n');
 
@@ -779,6 +920,7 @@ if (isset($id_mess)) echo "<input type=\"submit\" value=\"Annuler\" style=\"font
 echo "</td></tr>\n";
 
 echo "</table>\n";
+echo "</fieldset>\n";
 echo "</form></td></tr></table>\n";
 
 // Fin de la colonne de droite

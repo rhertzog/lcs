@@ -19,6 +19,9 @@
  * along with GEPI; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+ 
+// On indique qu'il faut creer des variables non protégées (voir fonction cree_variables_non_protegees())
+//$variables_non_protegees = 'yes';
 
 // Initialisations files
 require_once("../lib/initialisations.inc.php");
@@ -38,6 +41,8 @@ if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
 	die();
 }
+
+include("../ckeditor/ckeditor.php");
 
 $msg="";
 
@@ -60,47 +65,50 @@ if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
   $rep_photos='../photos/personnels/';
 }
 
+if(!function_exists('imageFlip')) {
+	function ImageFlip($imgsrc, $type)
+		{
+		  //source de cette fonction : http://www.developpez.net/forums/showthread.php?t=54169
+		   $width = imagesx($imgsrc);
+		   $height = imagesy($imgsrc);
 
-function ImageFlip($imgsrc, $type)
-	{
-	  //source de cette fonction : http://www.developpez.net/forums/showthread.php?t=54169
-	   $width = imagesx($imgsrc);
-	   $height = imagesy($imgsrc);
+		   $imgdest = imagecreatetruecolor($width, $height);
 
-	   $imgdest = imagecreatetruecolor($width, $height);
+		   switch( $type )
+			   {
+			   // mirror wzgl. osi
+			   case IMAGE_FLIP_HORIZONTAL:
+				   for( $y=0 ; $y<$height ; $y++ )
+					   imagecopy($imgdest, $imgsrc, 0, $height-$y-1, 0, $y, $width, 1);
+				   break;
 
-	   switch( $type )
-		   {
-		   // mirror wzgl. osi
-		   case IMAGE_FLIP_HORIZONTAL:
-			   for( $y=0 ; $y<$height ; $y++ )
-				   imagecopy($imgdest, $imgsrc, 0, $height-$y-1, 0, $y, $width, 1);
-			   break;
+			   case IMAGE_FLIP_VERTICAL:
+				   for( $x=0 ; $x<$width ; $x++ )
+					   imagecopy($imgdest, $imgsrc, $width-$x-1, 0, $x, 0, 1, $height);
+				   break;
 
-		   case IMAGE_FLIP_VERTICAL:
-			   for( $x=0 ; $x<$width ; $x++ )
-				   imagecopy($imgdest, $imgsrc, $width-$x-1, 0, $x, 0, 1, $height);
-			   break;
+			   case IMAGE_FLIP_BOTH:
+				   for( $x=0 ; $x<$width ; $x++ )
+					   imagecopy($imgdest, $imgsrc, $width-$x-1, 0, $x, 0, 1, $height);
 
-		   case IMAGE_FLIP_BOTH:
-			   for( $x=0 ; $x<$width ; $x++ )
-				   imagecopy($imgdest, $imgsrc, $width-$x-1, 0, $x, 0, 1, $height);
+				   $rowBuffer = imagecreatetruecolor($width, 1);
+				   for( $y=0 ; $y<($height/2) ; $y++ )
+					   {
+					   imagecopy($rowBuffer, $imgdest  , 0, 0, 0, $height-$y-1, $width, 1);
+					   imagecopy($imgdest  , $imgdest  , 0, $height-$y-1, 0, $y, $width, 1);
+					   imagecopy($imgdest  , $rowBuffer, 0, $y, 0, 0, $width, 1);
+					   }
 
-			   $rowBuffer = imagecreatetruecolor($width, 1);
-			   for( $y=0 ; $y<($height/2) ; $y++ )
-				   {
-				   imagecopy($rowBuffer, $imgdest  , 0, 0, 0, $height-$y-1, $width, 1);
-				   imagecopy($imgdest  , $imgdest  , 0, $height-$y-1, 0, $y, $width, 1);
-				   imagecopy($imgdest  , $rowBuffer, 0, $y, 0, 0, $width, 1);
-				   }
+				   imagedestroy( $rowBuffer );
+				   break;
+			   }
 
-			   imagedestroy( $rowBuffer );
-			   break;
-		   }
+		   return( $imgdest );
+		}
 
-	   return( $imgdest );
-	}
 
+}
+    
 function ImageRotateRightAngle( $imgSrc, $angle )
 {
 	//source de cette fonction : http://www.developpez.net/forums/showthread.php?t=54169
@@ -255,6 +263,55 @@ $tab_auth_mode=array('gepi', 'ldap', 'sso');
 
 $afficher_matiere=isset($_POST['afficher_matiere']) ? $_POST['afficher_matiere'] : (isset($_GET['afficher_matiere']) ? $_GET['afficher_matiere'] : "");
 
+if(isset($_POST['enregistrer_MonCompteAfficheInfo'])) {
+	check_token();
+
+	$nb_reg=0;
+	$tab_statuts_MonCompteAfficheInfo=array('administrateur', 'scolarite', 'cpe', 'professeur', 'secours', 'eleve', 'responsable', 'autre');
+	for($loop=0;$loop<count($tab_statuts_MonCompteAfficheInfo);$loop++) {
+		if(isset($_POST['MonCompteAfficheInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])])) {
+			$valeur="y";
+		}
+		else {
+			$valeur="n";
+		}
+
+		if(!saveSetting('MonCompteAfficheInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]), $valeur)) {
+			$msg.="Erreur lors de l'enregistrement du paramètre 'MonCompteAfficheInfo".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."'<br />";
+		}
+		else {
+			$nb_reg++;
+		}
+		/*
+		if (isset($NON_PROTECT['MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])])) {
+			$info = traitement_magic_quotes(corriger_caracteres($NON_PROTECT['MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])]));
+
+			if(!saveSetting('MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]), $info)) {
+				$msg.="Erreur lors de l'enregistrement du paramètre 'MonCompteInfo".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."'<br />";
+			}
+			else {
+				$nb_reg++;
+			}
+		}
+		*/
+
+		if(isset($_POST['MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]).'FCK'])) {
+			$info = html_entity_decode($_POST['MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]).'FCK']);
+
+			if(!saveSetting('MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]), $info)) {
+				$msg.="Erreur lors de l'enregistrement du paramètre 'MonCompteInfo".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."'<br />";
+			}
+			else {
+				$nb_reg++;
+			}
+		}
+	}
+
+	if($nb_reg>0) {
+		$msg.=$nb_reg." enregistrement(s) effectué(s).<br />";
+	}
+}
+
 //**************** EN-TETE *****************************
 if($mode=='personnels') {
 	$titre_page = "Gestion des personnels";
@@ -290,7 +347,54 @@ $_SESSION['chemin_retour'] = "../utilisateurs/index.php";
 //unset($mode);
 //$mode = isset($_POST["mode"]) ? $_POST["mode"] : (isset($_GET["mode"]) ? $_GET["mode"] : '');
 
-if ($mode != "personnels") {
+if($mode=="MonCompteAfficheInfo") {
+	echo "<p class='bold'>
+	<a href='./index.php'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>
+</p>
+
+<form action='".$_SERVER['PHP_SELF']."' name='form1' method='post'>
+".add_token_field()."
+<p class='bold'>Vous pouvez définir ici des informations particulières à chaque statut à faire apparaître dans la page 'Gérer mon compte&nbsp;:</p>
+<table class='boireaus boireaus_alt' summary=\"Tableau des informations à afficher ou non selon les statuts\">
+	<tr>
+		<th>Statut</th>
+		<th>Afficher</th>
+		<th>Informations</th>
+	</tr>";
+
+	$tab_statuts_MonCompteAfficheInfo=array('administrateur', 'scolarite', 'cpe', 'professeur', 'secours', 'eleve', 'responsable', 'autre');
+	for($loop=0;$loop<count($tab_statuts_MonCompteAfficheInfo);$loop++) {
+		echo "
+	<tr>
+		<th>".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."</th>
+		<td><input type='checkbox' name='MonCompteAfficheInfo".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."' value='y' ";
+		if(getSettingAOui('MonCompteAfficheInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]))) { echo "checked ";}
+		echo "/></td>
+		<td>";
+
+		//echo "<textarea name='no_anti_inject_MonCompteInfo".ucfirst($tab_statuts_MonCompteAfficheInfo[$loop])."' rows='5' cols='80'>".getSettingValue('MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]))."</textarea>";
+
+			$oCKeditor = new CKeditor('../ckeditor/');
+			$oCKeditor->editor('MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]).'FCK',getSettingValue('MonCompteInfo'.ucfirst($tab_statuts_MonCompteAfficheInfo[$loop]))) ;
+
+		echo "
+		</td>
+	</tr>";
+	}
+
+	echo "
+</table>
+<input type='hidden' name='mode' value='MonCompteAfficheInfo' />
+<input type='hidden' name='enregistrer_MonCompteAfficheInfo' value='y' />
+<p><input type='submit' value='Enregistrer' /></p>
+</form>
+
+<p><br /></p>\n";
+
+	require("../lib/footer.inc.php");
+	die();
+}
+elseif ($mode != "personnels") {
 ?>
 <p class="bold">
 <a href="../accueil_admin.php"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>
@@ -300,6 +404,8 @@ if ($mode != "personnels") {
 <p style='padding-left: 10%; margin-top: 15px;'><a href="index.php?mode=personnels"><img src='../images/icons/forward.png' alt='Personnels' class='back_link' /> Personnels de l'établissement (professeurs, scolarité, CPE, administrateurs)</a></p>
 <p style='padding-left: 10%; margin-top: 15px;'><a href="edit_responsable.php"><img src='../images/icons/forward.png' alt='Responsables' class='back_link' /> Responsables d'élèves (parents)</a></p>
 <p style='padding-left: 10%; margin-top: 15px;'><a href="edit_eleve.php"><img src='../images/icons/forward.png' alt='Eleves' class='back_link' /> Élèves</a></p>
+<br/><br/>
+<p><a href="<?php echo $_SERVER['PHP_SELF'].'?mode=MonCompteAfficheInfo';?>">Définir des informations par statut</a> à afficher dans la page 'Gérer mon compte'.</p>
 <?php
 } else {
 ?>
@@ -401,11 +507,11 @@ echo ">Autre</option>\n";
 if($afficher_statut=="professeur") {
 	// Proposer de filtrer par matière
 	$sql="SELECT DISTINCT m.* FROM matieres m, j_professeurs_matieres jpm WHERE jpm.id_matiere=m.matiere ORDER BY matiere, nom_complet";
-	$res_matieres=mysql_query($sql);
-	if(mysql_num_rows($res_matieres)>0) {
+	$res_matieres=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_matieres)>0) {
 		echo "<select name='afficher_matiere' onchange=\"document.forms['form1'].submit();\">
 	<option value=''>---</option>";
-		while($lig_matiere=mysql_fetch_object($res_matieres)) {
+		while($lig_matiere=mysqli_fetch_object($res_matieres)) {
 			echo "
 	<option value='".$lig_matiere->matiere."'";
 			if((isset($afficher_matiere))&&($lig_matiere->matiere==$afficher_matiere)) {
@@ -423,9 +529,9 @@ if($afficher_statut=="professeur") {
 
 <?php
 $sql="SELECT DISTINCT auth_mode FROM utilisateurs ORDER BY auth_mode;";
-$test_auth_mode=mysql_query($sql);
-if(mysql_num_rows($test_auth_mode)==1) {
-	$lig_auth_mode=mysql_fetch_object($test_auth_mode);
+$test_auth_mode=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test_auth_mode)==1) {
+	$lig_auth_mode=mysqli_fetch_object($test_auth_mode);
 	echo "<input type='hidden' name='afficher_auth_mode' value='$lig_auth_mode->auth_mode' />\n";
 }
 else {
@@ -433,7 +539,7 @@ else {
 	echo "<p>\n";
 	echo "&nbsp;&nbsp;<select name='afficher_auth_mode' onchange=\"document.forms['form1'].submit();\">
 	<option value=''>Tout auth_mode</option>\n";
-	while($lig_auth_mode=mysql_fetch_object($test_auth_mode)) {
+	while($lig_auth_mode=mysqli_fetch_object($test_auth_mode)) {
 		echo "<option value='$lig_auth_mode->auth_mode'\n";
 		if($afficher_auth_mode=="$lig_auth_mode->auth_mode") {echo " selected='true'";}
 		echo ">$lig_auth_mode->auth_mode</option>\n";
@@ -549,22 +655,22 @@ else {
 	}
 }
 //echo "$sql<br />";
-$calldata = mysql_query($sql);
-$nombreligne = mysql_num_rows($calldata);
+$calldata = mysqli_query($GLOBALS["mysqli"], $sql);
+$nombreligne = mysqli_num_rows($calldata);
 $i = 0;
 $alt=1;
 while ($i < $nombreligne){
-    $user_nom = mysql_result($calldata, $i, "nom");
-    $user_prenom = mysql_result($calldata, $i, "prenom");
+    $user_nom = old_mysql_result($calldata, $i, "nom");
+    $user_prenom = old_mysql_result($calldata, $i, "prenom");
     // rajout trombinoscope
-    $user_civilite = mysql_result($calldata, $i, "civilite");
+    $user_civilite = old_mysql_result($calldata, $i, "civilite");
     // fin de rajout trombinoscope
-    $user_auth_mode = mysql_result($calldata, $i, "auth_mode");
-    $user_statut = mysql_result($calldata, $i, "statut");
-    $user_login = mysql_result($calldata, $i, "login");
-    $user_pwd = mysql_result($calldata, $i, "password");
-    $user_etat[$i] = mysql_result($calldata, $i, "etat");
-//    $date_verrouillage[$i] = mysql_result($calldata, $i, "date_verrouillage");
+    $user_auth_mode = old_mysql_result($calldata, $i, "auth_mode");
+    $user_statut = old_mysql_result($calldata, $i, "statut");
+    $user_login = old_mysql_result($calldata, $i, "login");
+    $user_pwd = old_mysql_result($calldata, $i, "password");
+    $user_etat[$i] = old_mysql_result($calldata, $i, "etat");
+//    $date_verrouillage[$i] = old_mysql_result($calldata, $i, "date_verrouillage");
     if (($user_etat[$i] == 'actif') and (($display == 'tous') or ($display == 'actifs'))) {
         $affiche = 'yes';
     } else if (($user_etat[$i] != 'actif') and (($display == 'tous') or ($display == 'inactifs'))) {
@@ -583,18 +689,18 @@ while ($i < $nombreligne){
     $col[$i]['auth_mode'] = $user_auth_mode;
 
 	//echo "<p>Contrôle des matières de $user_login: <br />\n";
-    $call_matieres = mysql_query("SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '$user_login' ORDER BY ordre_matieres");
-    $nb_mat = mysql_num_rows($call_matieres);
+    $call_matieres = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '$user_login' ORDER BY ordre_matieres");
+    $nb_mat = mysqli_num_rows($call_matieres);
     $k = 0;
 	$kk=0;
     while ($k < $nb_mat) {
-        $user_matiere_id = mysql_result($call_matieres, $k, "id_matiere");
+        $user_matiere_id = old_mysql_result($call_matieres, $k, "id_matiere");
 		//echo "SELECT matiere FROM matieres WHERE matiere='$user_matiere_id'<br />\n";
-        //$user_matiere[$k] = mysql_result(mysql_query("SELECT matiere FROM matieres WHERE matiere='$user_matiere_id'"),0);
+        //$user_matiere[$k] = old_mysql_result(mysql_query("SELECT matiere FROM matieres WHERE matiere='$user_matiere_id'"),0);
 		$sql="SELECT matiere FROM matieres WHERE matiere='$user_matiere_id';";
-		$res_test_matiere=mysql_query($sql);
-		if(mysql_num_rows($res_test_matiere)>0) {
-			$user_matiere[$kk] = mysql_result($res_test_matiere,0);
+		$res_test_matiere=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_test_matiere)>0) {
+			$user_matiere[$kk] = old_mysql_result($res_test_matiere,0);
 			$kk++;
 		}
 		else {
@@ -642,14 +748,14 @@ while ($i < $nombreligne){
 				"g.id = jgp.id_groupe and " .
 				"jgc.id_groupe = jgp.id_groupe and " .
 				"c.id = jgc.id_classe) order by c.classe;";
-		$call_classes = mysql_query($sql);
-		$nb_classes = mysql_num_rows($call_classes);
+		$call_classes = mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_classes = mysqli_num_rows($call_classes);
 		$k = 0;
 		while ($k < $nb_classes) {
-			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
-			$user_classe['matiere_nom_court'] = mysql_result($call_classes, $k, "name");
-			$user_classe['classe_id'] = mysql_result($call_classes, $k, "classe_id");
-			$user_classe['group_id'] = mysql_result($call_classes, $k, "group_id");
+			$user_classe['classe_nom_court'] = old_mysql_result($call_classes, $k, "classe");
+			$user_classe['matiere_nom_court'] = old_mysql_result($call_classes, $k, "name");
+			$user_classe['classe_id'] = old_mysql_result($call_classes, $k, "classe_id");
+			$user_classe['group_id'] = old_mysql_result($call_classes, $k, "group_id");
 	
 			$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
 	
@@ -670,13 +776,13 @@ while ($i < $nombreligne){
 				"jecpe.e_login = jec.login and " .
 				"jec.id_classe = c.id) order by c.classe;";
 		//echo "$sql<br />";
-		$call_classes = mysql_query($sql);
-		$nb_classes = mysql_num_rows($call_classes);
+		$call_classes = mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_classes = mysqli_num_rows($call_classes);
 		$k = 0;
 		$col[$i][5] = '';
 		while ($k < $nb_classes) {
-			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
-			$user_classe['classe_id'] = mysql_result($call_classes, $k, "id");
+			$user_classe['classe_nom_court'] = old_mysql_result($call_classes, $k, "classe");
+			$user_classe['classe_id'] = old_mysql_result($call_classes, $k, "id");
 	
 			//$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
 			$col[$i][5] .= $user_classe['classe_nom_court'];
@@ -694,13 +800,13 @@ while ($i < $nombreligne){
 				"jsc.login = '$user_login' and " .
 				"jsc.id_classe = c.id) order by c.classe;";
 		//echo "$sql<br />";
-		$call_classes = mysql_query($sql);
-		$nb_classes = mysql_num_rows($call_classes);
+		$call_classes = mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_classes = mysqli_num_rows($call_classes);
 		$k = 0;
 		$col[$i][5] = '';
 		while ($k < $nb_classes) {
-			$user_classe['classe_nom_court'] = mysql_result($call_classes, $k, "classe");
-			$user_classe['classe_id'] = mysql_result($call_classes, $k, "id");
+			$user_classe['classe_nom_court'] = old_mysql_result($call_classes, $k, "classe");
+			$user_classe['classe_id'] = old_mysql_result($call_classes, $k, "id");
 	
 			//$col[$i][5] .= "<a href='../groupes/edit_group.php?id_classe=".$user_classe["classe_id"] . "&amp;id_groupe=".$user_classe["group_id"] . "&amp;chemin_retour=$chemin_retour&amp;ancre=$user_login'>" . $user_classe['classe_nom_court']." (".$user_classe['matiere_nom_court'].")</a>\n";
 			$col[$i][5] .= $user_classe['classe_nom_court'];
@@ -714,13 +820,13 @@ while ($i < $nombreligne){
     if ($col[$i][5]=='') {$col[$i][5] = "&nbsp;";}
 
     // Affichage de la classe suivie
-    $call_suivi = mysql_query("SELECT distinct(id_classe) FROM j_eleves_professeurs j WHERE j.professeur = '$user_login'");
-    $nb_classes_suivies = mysql_num_rows($call_suivi);
+    $call_suivi = mysqli_query($GLOBALS["mysqli"], "SELECT distinct(id_classe) FROM j_eleves_professeurs j WHERE j.professeur = '$user_login'");
+    $nb_classes_suivies = mysqli_num_rows($call_suivi);
     $k = 0;
     $col[$i][6] = '';
     while ($k < $nb_classes_suivies) {
-        $user_classe_suivie_id = mysql_result($call_suivi, $k, "id_classe");
-        $user_classe_suivie = mysql_result(mysql_query("SELECT classe FROM classes WHERE id='$user_classe_suivie_id'"),0);
+        $user_classe_suivie_id = old_mysql_result($call_suivi, $k, "id_classe");
+        $user_classe_suivie = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT classe FROM classes WHERE id='$user_classe_suivie_id'"),0);
         $col[$i][6]=$col[$i][6]."$user_classe_suivie<br />\n";
         $k++;
     }
@@ -813,10 +919,10 @@ while ($i < $nombreligne){
     // Si c'est un professeur : matières si c'est un "autre" alors on affiche son statut personnalisé
     if ($col[$i][7] == "autre" AND getSettingValue("statuts_prives") == "y") {
     	// On récupère son statut personnalisé
-		$query_s = mysql_query("SELECT nom_statut FROM droits_statut ds, droits_utilisateurs du WHERE login_user = '".$user_login."' AND id_statut = ds.id");
+		$query_s = mysqli_query($GLOBALS["mysqli"], "SELECT nom_statut FROM droits_statut ds, droits_utilisateurs du WHERE login_user = '".$user_login."' AND id_statut = ds.id");
 		if ($query_s) {
 
-			$special = mysql_fetch_array($query_s);
+			$special = mysqli_fetch_array($query_s);
 
 		}else{
 

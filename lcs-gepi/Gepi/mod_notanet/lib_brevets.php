@@ -52,13 +52,13 @@ $indice_brevet_pro_lv=103;
 function get_classe_from_id($id){
 	//$sql="SELECT * FROM classes WHERE id='$id_classe[0]'";
 	$sql="SELECT * FROM classes WHERE id='$id'";
-	$resultat_classe=mysql_query($sql);
-	if(mysql_num_rows($resultat_classe)!=1){
+	$resultat_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($resultat_classe)!=1){
 		//echo "<p>ERREUR! La classe d'identifiant '$id_classe[0]' n'a pas pu être identifiée.</p>";
 		echo "<p>ERREUR! La classe d'identifiant '$id' n'a pas pu être identifiée.</p>";
 	}
 	else{
-		$ligne_classe=mysql_fetch_object($resultat_classe);
+		$ligne_classe=mysqli_fetch_object($resultat_classe);
 		$classe=$ligne_classe->classe;
 		return $classe;
 	}
@@ -127,7 +127,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
 			$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE';
 			//$tabmatieres[110][0]='DEUXIEME LANGUE VIVANTE OU DECOUVERTE PROFESSIONNELLE (module de 6 heures)';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 			//$tabmatieres[113][0]='OPTION FACULTATIVE (1)';
 			$tabmatieres[113][0]='OPTION FACULTATIVE';
 
@@ -185,7 +185,8 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
+
 
 
 			// Colonnes pour les fiches brevet:
@@ -222,6 +223,16 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115]['socle']='y';
 			$tabmatieres[130]['socle']='y'; // 20100425
 
+			//===============================================
+			// 20140317:
+			/*
+			// Pour gérer la note d'EPS qui ne provient pas de la moyenne des 3 trimestres:
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
+				$tabmatieres[$j]['extraction_moyenne']='y';
+			}
+			$tabmatieres[106]['extraction_moyenne']='n';
+			*/
+			//===============================================
 
 			/*
 			$tabmatieres['liste_mat_fb']=array();
@@ -270,7 +281,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[110][0]='DECOUVERTE PROFESSIONNELLE (module de 6 heures)';
 			$tabmatieres[110][0]='DÉCOUVERTE PROFESSIONNELLE 6 heures';
 			$tabmatieres[111][0]='';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 			//$tabmatieres[113][0]='OPTION FACULTATIVE (1)';
 			$tabmatieres[113][0]='OPTION FACULTATIVE';
 
@@ -329,7 +340,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 			// Colonnes pour les fiches brevet:
 			//for($j=$indice_premiere_matiere;$j<=122;$j++){
@@ -545,7 +556,7 @@ function tabmatieres($type_brevet){
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='SCIENCES ET TECHNOLOGIE';
 			$tabmatieres[110][0]='DECOUVERTE PROFESSIONNELLE';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
@@ -607,7 +618,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[114][-3]='MS ME MN AB';
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 
 			// Colonnes pour les fiches brevet:
@@ -665,6 +676,17 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130]['socle']='y'; //20100425
 
+			//===============================================
+			// 20140317:
+			/*
+			// Pour gérer la note d'EPS qui ne provient pas de la moyenne des 3 trimestres:
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){ // 20100425
+				$tabmatieres[$j]['extraction_moyenne']='y';
+			}
+			$tabmatieres[106]['extraction_moyenne']='n';
+			*/
+			//===============================================
+
 			break;
 		case 3:
 			// PROFESSIONNELLE, option de série DP6
@@ -691,7 +713,7 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][0]='TECHNOLOGIE';
 			// DP6 A PLACER....
 			$tabmatieres[111][0]='DÉCOUVERTE PROFESSIONNELLE (module 6 heures)';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
@@ -756,7 +778,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 			// Colonnes pour les fiches brevet:
 			//for($j=$indice_premiere_matiere;$j<=122;$j++){
@@ -823,7 +845,7 @@ function tabmatieres($type_brevet){
 			$tabmatieres[105][0]='PREVENTION SANTE ENVIRONNEMENT';
 			//$tabmatieres[105][0]='ECONOMIE FAMILIALE ET SOCIALE';
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
-			$tabmatieres[107][0]='EDUCATION SOCIO-CULTURELLE';
+			$tabmatieres[107][0]='EDUCATION SOCIOCULTURELLE'; // 20140317
 			// CES TROIS Là DEVRAIENT ETRE SUR UNE MEME LIGNE POUR LES FICHES BREVET
 			//$tabmatieres[108][0]='TECHNOLOGIE';
 			//$tabmatieres[109][0]='SCIENCES BIOLOGIQUES';
@@ -831,7 +853,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[109][0]='TECHNOLOGIE: SCIENCES BILOGIQUES ET SCIENCES PHYSIQUES';
 			$tabmatieres[109][0]='TECHNOLOGIE, SCIENCES ET DECOUVERTE DE LA VIE PROFESSIONNELLE ET DES METIERS';
 
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 			$tabmatieres[113][0]='';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
@@ -892,7 +914,8 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
+
 
 
 			$tabmatieres["num_fb_col"]=1;
@@ -956,6 +979,17 @@ function tabmatieres($type_brevet){
 
 			$tabmatieres[130]['socle']='y'; // 20100425
 
+			//===============================================
+			// 20140317:
+			/*
+			// Pour gérer la note d'EPS qui ne provient pas de la moyenne des 3 trimestres:
+			for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++) {
+				$tabmatieres[$j]['extraction_moyenne']='y';
+			}
+			$tabmatieres[106]['extraction_moyenne']='n';
+			*/
+			//===============================================
+
 			break;
 		case 5:
 			// TECHNOLOGIQUE, sans option de série
@@ -976,7 +1010,7 @@ function tabmatieres($type_brevet){
 			$tabmatieres[106][0]='EDUCATION PHYSIQUE ET SPORTIVE';
 			$tabmatieres[107][0]='EDUCATION ARTISTIQUE';
 			$tabmatieres[108][0]='TECHNOLOGIE';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
@@ -1035,7 +1069,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 			// Colonnes pour les fiches brevet:
 			//for($j=$indice_premiere_matiere;$j<=122;$j++){
@@ -1101,7 +1135,7 @@ function tabmatieres($type_brevet){
 			$tabmatieres[108][0]='TECHNOLOGIE';
 			$tabmatieres[109][0]='';
 			$tabmatieres[110][0]='DÉCOUVERTE PROFESSIONNELLE (module 6 heures)';
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE';
@@ -1160,7 +1194,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 
 			// Colonnes pour les fiches brevet:
@@ -1227,7 +1261,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[108][0]='SCIENCES BIOLOGIQUES';
 			$tabmatieres[109][0]='TECHNOLOGIE: SECTEUR SCIENCES BIOLOGIQUES, TECHNIQUES AGRICOLES ET AGROALIMENTAIRES, ACTIVITES TERTIAIRES';
 
-			$tabmatieres[112][0]='VIE SCOLAIRE';
+			//$tabmatieres[112][0]='VIE SCOLAIRE';
 
 			//$tabmatieres[114][0]='SOCLE B2I';
 			//$tabmatieres[115][0]='SOCLE NIVEAU A2 DE LANGUE ETRANGERE'; // 20100425
@@ -1281,7 +1315,7 @@ function tabmatieres($type_brevet){
 			//$tabmatieres[115][-3]='MS ME AB';
 			//$tabmatieres[115][-3]='MS ME MN AB';
 
-			$tabmatieres[130][-3]='AB VA NV DI'; // 20130427
+			$tabmatieres[130][-3]='AB VA NV'; // 20140317
 
 			// Colonnes pour les fiches brevet:
 			// Il n'y a qu'une seule colonne pour les fiches brevet en agricole
@@ -1316,6 +1350,22 @@ function tabmatieres($type_brevet){
 
 			break;
 	}
+
+	//===============================================
+	// 20140326
+	// Pour gérer la note d'EPS qui ne provient pas de la moyenne des 3 trimestres:
+	for($j=$indice_premiere_matiere;$j<=$indice_max_matieres;$j++){
+		$tabmatieres[$j]['extraction_moyenne']='y';
+	}
+	$sql="SELECT id_mat FROM notanet_corresp WHERE mode='saisie';";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		while($lig=mysqli_fetch_object($res)) {
+			$tabmatieres[$lig->id_mat]['extraction_moyenne']='n';
+		}
+	}
+	//===============================================
+
 	return $tabmatieres;
 }
 
@@ -1368,6 +1418,8 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	$tabmatieres=tabmatieres($tab_ele['type_brevet']);
 	//echo "count(\$tabmatieres)=".count($tabmatieres)."<br />";
 
+	// $tab_mat est rempli hors de cette fonction
+	// On y récupère (pour chaque matière Notanet) la liste des matières Gepi associées à une matière Notanet
 	$id_matiere=$tab_mat[$tab_ele['type_brevet']]['id_matiere'];
 	$statut_matiere=$tab_mat[$tab_ele['type_brevet']]['statut_matiere'];
 
@@ -1387,18 +1439,23 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	echo "<p>\n";
 	echo "<a name='tableau_des_moyennes_eleve_$num_eleve'></a>";
 	if($tab_ele['no_gep']==""){
-		echo "<b style='color:red;'>ERREUR:</b> Numéro INE non attribué: ".$tab_ele['nom']." ".$tab_ele['prenom']."<br />";
+		echo "<b style='color:red;'>ERREUR:</b> Numéro INE non attribué: ".$tab_ele['nom']." ".$tab_ele['prenom'];
+		echo " <a href='../eleves/visu_eleve.php?ele_login=".$tab_ele['login']."&amp;onglet=bulletins&amp;quitter_la_page=y' target='_blank' title=\"Voir la fiche élève et notamment les bulletins\"><img src='../images/icons/bulletin.png' class='icone16' alt='Bulletins' /></a>";
+		echo "<br />";
 		$temoin_notanet_eleve="ERREUR";
 		$info_erreur="Pas de numéro INE";
 		echo "INE: <input type='text' name='INE[$num_eleve]' value='' onchange='changement()' />\n";
 	}
 	else{
-		echo "<b>".$tab_ele['nom']." ".$tab_ele['prenom']."</b> ".$tab_ele['no_gep']."<br />\n";
+		echo "<b>".$tab_ele['nom']." ".$tab_ele['prenom']."</b> ".$tab_ele['no_gep'];
+		echo " <a href='../eleves/visu_eleve.php?ele_login=".$tab_ele['login']."&amp;onglet=bulletins&amp;quitter_la_page=y' target='_blank' title=\"Voir la fiche élève et notamment les bulletins.\"><img src='../images/icons/bulletin.png' class='icone16' alt='Bulletins' /></a>";
+		echo "<br />\n";
 		$INE=$tab_ele['no_gep'];
 		echo "INE: <input type='text' name='INE[$num_eleve]' value='$INE' onchange='changement()' />\n";
 	}
 	// Guillemets sur la valeur à cause des apostrophes dans des noms...
 	echo "<input type='hidden' name='nom_eleve[$num_eleve]' value=\"".$tab_ele['nom']." ".$tab_ele['prenom']." ($classe)\" />\n";
+		echo " <a href='../eleves/modify_eleve.php?eleve_login=".$tab_ele['login']."&amp;quitter_la_page=y' target='_blank' title=\"Modifier les informations élève.\"><img src='../images/edit16.png' class='icone16' alt='Modifier' /></a>";
 	echo "</p>\n";
 
 
@@ -1413,7 +1470,7 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	$sql="SELECT DISTINCT num_periode FROM periodes WHERE id_classe='$id_clas' ORDER BY num_periode";
 	//$sql="SELECT DISTINCT num_periode, verouiller FROM periodes WHERE id_classe='$id_clas' ORDER BY num_periode";
 	//echo "$sql<br />";
-	$resultat_periodes=mysql_query($sql);
+	$resultat_periodes=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	//$tab_ver_per=array();
 	echo "<table class='boireaus'>\n";
@@ -1421,7 +1478,7 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	echo "<th>Id</th>\n";
 	echo "<th>Matière</th>\n";
 	echo "<th>Moyenne</th>\n";
-	while($ligne_periodes=mysql_fetch_object($resultat_periodes)){
+	while($ligne_periodes=mysqli_fetch_object($resultat_periodes)){
 		echo "<th>T $ligne_periodes->num_periode</th>\n";
 		//$tab_ver_per[$ligne_periodes->num_periode]=$ligne_periodes->verouiller;
 	}
@@ -1443,9 +1500,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 	$type_brevet_ele="";
 	$sql="SELECT type_brevet FROM notanet_ele_type WHERE login='".$tab_ele['login']."';";
 	//echo "$sql<br />";
-	$res_ele_type=mysql_query($sql);
-	if(mysql_num_rows($res_ele_type)>0) {
-		$type_brevet_ele=mysql_result($res_ele_type, 0, "type_brevet");
+	$res_ele_type=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_ele_type)>0) {
+		$type_brevet_ele=old_mysql_result($res_ele_type, 0, "type_brevet");
 	}
 	//echo "<tr></td>\$type_brevet_ele=$type_brevet_ele</td></tr>";
 
@@ -1461,9 +1518,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 				<td><input type='text' name='liste_matiere_brevet_pro_lv[$num_eleve]' size='7' value='$liste_matiere_brevet_pro_lv' /></td>";
 			$sql="SELECT DISTINCT num_periode, verouiller FROM periodes WHERE id_classe='$id_clas' ORDER BY num_periode";
 			//echo "<td>$sql</td>";
-			$resultat_periodes=mysql_query($sql);
+			$resultat_periodes=mysqli_query($GLOBALS["mysqli"], $sql);
 			echo "
-				<td colspan='".mysql_num_rows($resultat_periodes)."'>($chaine_total_brevet_pro_lv)/$temoin_brevet_pro_lv</td>";
+				<td colspan='".mysqli_num_rows($resultat_periodes)."'>($chaine_total_brevet_pro_lv)/$temoin_brevet_pro_lv</td>";
 
 			$k="0";
 			echo "
@@ -1473,9 +1530,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 			if($affiche_enregistrements_precedents=="y") {
 				echo "<td>\n";
 				$sql="SELECT note FROM notanet WHERE login='".$tab_ele['login']."' AND matiere='".$liste_matiere_brevet_pro_lv."' AND notanet_mat='".$tabmatieres[$j][0]."' AND id_mat='$indice_brevet_pro_lv';";
-				$enr=mysql_query($sql);
-				if(mysql_num_rows($enr)>0) {
-					$lig_enr=mysql_fetch_object($enr);
+				$enr=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($enr)>0) {
+					$lig_enr=mysqli_fetch_object($enr);
 
 					if($moy_NOTANET[$indice_brevet_pro_lv]!=$lig_enr->note) {
 						echo "<a href=\"#tableau_des_moyennes_eleve_$num_eleve\" onclick=\"document.getElementById('n".$compteur_champs_notes."').value='$lig_enr->note'; return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='Rétablir la valeur enregistrée' /></a>";
@@ -1521,7 +1578,8 @@ function tab_extract_moy($tab_ele,$id_clas) {
 
 				$moyenne=NULL;
 				//echo "<p><b>".$tabmatieres[$j][0]."</b><br />\n";
-				for($k=0;$k<count($id_matiere[$j]);$k++){
+				// Boucle sur les différentes matières Gepi associées à matière Notanet
+				for($k=0;$k<count($id_matiere[$j]);$k++) {
 					$alt=$alt*(-1);
 					if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
 					($type_brevet_ele!=2)) {
@@ -1541,15 +1599,34 @@ function tab_extract_moy($tab_ele,$id_clas) {
 					$temoin_moyenne="";
 					//======================================================================
 					//$sql="SELECT round(avg(note),1) as moyenne FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='')";
-					$sql="SELECT round(avg(mn.note),1) as moyenne FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.statut ='' AND mn.id_groupe=jgm.id_groupe)";
+
+
+					// 20140325
+					if((isset($tabmatieres[$j]['extraction_moyenne']))&&($tabmatieres[$j]['extraction_moyenne']=="n")) {
+						$sql="SELECT mn.note moyenne FROM notanet_saisie mn WHERE (mn.matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."')";
+					}
+					else {
+						$sql="SELECT round(avg(mn.note),1) as moyenne FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.statut ='' AND mn.id_groupe=jgm.id_groupe)";
+					}
+
 					//echo "$sql<br />\n";
-					$resultat_moy=mysql_query($sql);
-					if(mysql_num_rows($resultat_moy)>0){
-						$ligne_moy=mysql_fetch_object($resultat_moy);
+					$resultat_moy=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($resultat_moy)>0){
+						$ligne_moy=mysqli_fetch_object($resultat_moy);
 						//echo "$ligne_moy->moyenne<br />";
-						echo "<td style='font-weight:bold; text-align:center;'>$ligne_moy->moyenne</td>\n";
+						$moyenne=$ligne_moy->moyenne;
+						if((isset($tabmatieres[$j]['extraction_moyenne']))&&($tabmatieres[$j]['extraction_moyenne']=="n")) {
+							echo "<td style='font-weight:bold; text-align:center; color:blue; font-style: italic;";
+							if($moyenne=="") {
+								echo " background-color:red;";
+							}
+							echo "' title=\"Note saisie\">$moyenne</td>\n";
+						}
+						else {
+							echo "<td style='font-weight:bold; text-align:center;' title=\"Moyenne des trois trimestres\">$moyenne</td>\n";
+						}
 						//$cpt++;
-						if($ligne_moy->moyenne!=""){
+						if($moyenne!=""){
 							$temoin_moyenne="oui";
 						}
 					}
@@ -1563,279 +1640,262 @@ function tab_extract_moy($tab_ele,$id_clas) {
 					// Cette solution donne les infos, mais ne permet pas de contrôler si tout est OK...
 					//======================================================================
 
-					$total=0;
-					$nbnotes=0;
-					//$sql="SELECT DISTINCT num_periode FROM periodes WHERE id_classe='$id_classe[$i]' ORDER BY num_periode";
-					$sql="SELECT DISTINCT num_periode, verouiller FROM periodes WHERE id_classe='$id_clas' ORDER BY num_periode";
-					//echo "<td>$sql</td>";
-					$resultat_periodes=mysql_query($sql);
-					while($ligne_periodes=mysql_fetch_object($resultat_periodes)){
-						//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='') ORDER BY periode";
-						//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='' AND periode='$ligne_periodes->num_periode')";
+					if((isset($tabmatieres[$j]['extraction_moyenne']))&&($tabmatieres[$j]['extraction_moyenne']=="n")) {
+						echo "<td></td><td></td><td></td>\n";
 
-						//===================================================================
-						// SUR LE STATUT... IL FAUDRAIT VOIR CE QUE DONNENT LES dispensés,...
-						// POUR POUVOIR LES CODER DANS L'EXPORT NOTANET
-						//===================================================================
-						//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='' AND periode='$ligne_periodes->num_periode')";
-						$sql="SELECT mn.* FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.statut ='' AND mn.periode='$ligne_periodes->num_periode' AND mn.id_groupe=jgm.id_groupe)";
+						echo "<td style='font-weight:bold; text-align:center;";
+						if($moyenne=="") {
+							echo " background-color:red;";
+						}
+						echo "'>$moyenne</td>\n";
 
-						//echo "<!-- $sql -->\n";
-						//echo "$sql<br />\n";
-						$resultat_notes=mysql_query($sql);
-						//echo "<!-- mysql_num_rows(\$resultat_notes)=".mysql_num_rows($resultat_notes)." -->\n";
-						if(mysql_num_rows($resultat_notes)>0){
-							if(mysql_num_rows($resultat_notes)>1){
+						if($moyenne=="") {
+							$moyenne_arrondie="";
 
-
-								// 20130429 : A VOIR : Dans le cas brevet professionnel, pour les langues vivantes, si on a 2, c'est bon, mais il faudrait faire la moyenne.
-								//            Et comment stocker la liste des matières pour la fiche brevet? Refaire une extraction des listes de matières dans fiches_brevet.php ou stocker dans une table? Ou ajouter un champ dans la table notanet... ou notanet.matiere="AGL1|ESP2" et exploser suivant | dans fiches_brevet.php
-
-								// 20130429
-								/*
-								if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
-								($type_brevet_ele!=2)) {
-								*/
-									//$infos="Erreur? Il y a plusieurs notes/moyennes pour une même période! ";
-									$infos="<p>Erreur? Il y a plusieurs notes/moyennes pour une même période!<br />";
-
-									//$infos.="<br />$sql<br />";
-
-									$temoin_notanet_eleve="ERREUR";
-									if($info_erreur==""){
-										$info_erreur="Plusieurs notes/moyennes pour une même période.";
-
-										$info_erreur.="<br />Dans ce cas, la moyenne est la somme des moyennes affichées divisée par le nombre de moyennes.<br />La valeur est correcte, s'il y a le même nombre de moyennes sur chaque trimestre et si on donne le même poids aux différentes moyennes.<br />";
-
-									}
-									else{
-										$info_erreur=$info_erreur." - Plusieurs notes/moyennes pour une même période.";
-									}
-									$chaine_couleur=" bgcolor='red'";
-								/*
+							if($statut_matiere[$j]=='imposee'){
+								// Si la matière est imposée, alors il y a un problème à régler...
+								$temoin_notanet_eleve="ERREUR";
+								if($info_erreur==""){
+									$info_erreur="Pas de moyenne à une matière non optionnelle: <b>".$id_matiere[$j][0]."</b><br />(<i><span style='font-size:xx-small;'>valeurs non numériques autorisées: ".$tabmatieres[$j][-3]."</span></i>)<br />";
 								}
-								// 20130429
-								elseif(($type_brevet_ele==2)&&($j==$indice_brevet_pro_lv)) {
+								else{
+									$info_erreur=$info_erreur."Pas de moyenne à une matière non optionnelle: <b>".$id_matiere[$j][0]."</b><br />(<i><span style='font-size:xx-small;'>valeurs non numériques autorisées: ".$tabmatieres[$j][-3]."</span></i>)<br />";
+								}
+							}
+						}
+						elseif(($moyenne=="DI")||($moyenne=="AB")) {
+							$moyenne_arrondie=$moyenne;
+						}
+						else {
+							$moyenne_arrondie=ceil($moyenne*2)/2;
+						}
 
-									$chaine_couleur=" bgcolor=' lightpink'";
+						echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='".$moyenne_arrondie."' size='6' onKeyDown=\"clavier(this.id,event);\" onchange='changement()' autocomplete=\"off\" onfocus=\"javascript:this.select()\" />";
+						echo "</td>\n";
 
+						$moy_NOTANET[$j]="$moyenne_arrondie";
+
+						// Témoin comme quoi, il y a une note pour l'enseignement notanet en cours
+						$cpt++;
+
+					}
+					else {
+						$total=0;
+						$nbnotes=0;
+						//$sql="SELECT DISTINCT num_periode FROM periodes WHERE id_classe='$id_classe[$i]' ORDER BY num_periode";
+						$sql="SELECT DISTINCT num_periode, verouiller FROM periodes WHERE id_classe='$id_clas' ORDER BY num_periode";
+						//echo "<td>$sql</td>";
+						$resultat_periodes=mysqli_query($GLOBALS["mysqli"], $sql);
+						while($ligne_periodes=mysqli_fetch_object($resultat_periodes)){
+							//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='') ORDER BY periode";
+							//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='' AND periode='$ligne_periodes->num_periode')";
+
+
+							//===================================================================
+							// SUR LE STATUT... IL FAUDRAIT VOIR CE QUE DONNENT LES dispensés,...
+							// POUR POUVOIR LES CODER DANS L'EXPORT NOTANET
+							//===================================================================
+							//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND statut ='' AND periode='$ligne_periodes->num_periode')";
+							$sql="SELECT mn.* FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.statut ='' AND mn.periode='$ligne_periodes->num_periode' AND mn.id_groupe=jgm.id_groupe)";
+
+							//echo "<!-- $sql -->\n";
+							//echo "$sql<br />\n";
+							$resultat_notes=mysqli_query($GLOBALS["mysqli"], $sql);
+							//echo "<!-- mysql_num_rows(\$resultat_notes)=".mysql_num_rows($resultat_notes)." -->\n";
+							if(mysqli_num_rows($resultat_notes)>0){
+								if(mysqli_num_rows($resultat_notes)>1){
+
+
+									// 20130429 : A VOIR : Dans le cas brevet professionnel, pour les langues vivantes, si on a 2, c'est bon, mais il faudrait faire la moyenne.
+									//            Et comment stocker la liste des matières pour la fiche brevet? Refaire une extraction des listes de matières dans fiches_brevet.php ou stocker dans une table? Ou ajouter un champ dans la table notanet... ou notanet.matiere="AGL1|ESP2" et exploser suivant | dans fiches_brevet.php
+
+									// 20130429
+									/*
+									if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
+									($type_brevet_ele!=2)) {
+									*/
+										//$infos="Erreur? Il y a plusieurs notes/moyennes pour une même période! ";
+										$infos="<p>Erreur? Il y a plusieurs notes/moyennes pour une même période!<br />";
+
+										//$infos.="<br />$sql<br />";
+
+										$temoin_notanet_eleve="ERREUR";
+										if($info_erreur==""){
+											$info_erreur="Plusieurs notes/moyennes pour une même période.";
+
+											$info_erreur.="<br />Dans ce cas, la moyenne est la somme des moyennes affichées divisée par le nombre de moyennes.<br />La valeur est correcte, s'il y a le même nombre de moyennes sur chaque trimestre et si on donne le même poids aux différentes moyennes.<br />";
+
+										}
+										else{
+											$info_erreur=$info_erreur." - Plusieurs notes/moyennes pour une même période.";
+										}
+										$chaine_couleur=" bgcolor='red'";
+									/*
+									}
+									// 20130429
+									elseif(($type_brevet_ele==2)&&($j==$indice_brevet_pro_lv)) {
+
+										$chaine_couleur=" bgcolor=' lightpink'";
+
+									}
+									else {
+										// On ne passe jamais ici, il me semble...
+										$infos="";
+										$chaine_couleur="";
+									}
+									*/
 								}
 								else {
-									// On ne passe jamais ici, il me semble...
 									$infos="";
 									$chaine_couleur="";
 								}
-								*/
+
+								// Il ne devrait y avoir qu'une seule valeur:
+								echo "<td$chaine_couleur style='text-align: center;'>\n";
+								//echo "<!-- ... -->\n";
+								while($ligne_notes=mysqli_fetch_object($resultat_notes)){
+									//echo "<td>".$infos.$ligne_notes->note."</td>\n";
+
+									//echo $infos.$ligne_notes->note." ";
+									if($infos!="") {
+										echo $infos."<b>".$ligne_notes->note."</b> ";
+										//echo "<div style='font-size:xx-small;'>".$infos."</div>".$ligne_notes->note." ";
+										//echo "<span style='font-size:xx-small;'>".$infos."</span>".$ligne_notes->note." ";
+									}
+									else {
+										echo $ligne_notes->note." ";
+									}
+
+									// Le test devrait toujours être vrai puisqu'on a exclu les moyennes avec un statut non vide
+									if(($ligne_notes->note!="")&&($ligne_notes->note!="-")){
+										// PROBLEME: S'il y a plusieurs notes pour une même période, le total est faussé et la moyenne itou...
+										// ... mais cela ne devrait pas arriver, ou alors la base GEPI n'est pas nette.
+										$total=$total+$ligne_notes->note;
+										$nbnotes++;
+										//echo "<!-- \$total=$total\n \$nbnotes=$nbnotes-->\n";
+										//echo "<\$total=$total\n \$nbnotes=$nbnotes>\n";
+
+
+										//$temoin_au_moins_une_note="y";
+
+										//echo "\$temoin_au_moins_une_note=$temoin_au_moins_une_note<br />";
+										//echo "\$cpt=$cpt<br />";
+									}
+								}
+								if($ligne_periodes->verouiller=='N') {
+									echo "<img src='../images/icons/ico_attention.png' width='22' height='19' alt=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" title=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" />\n";
+								}
+								echo "</td>\n";
+							}
+							else{
+
+								if($temoin_moyenne=="oui"){
+									$chaine_couleur=" bgcolor='yellow'";
+								}
+								else{
+									$chaine_couleur="";
+								}
+
+								//echo "<td>X</td>\n";
+								// S'il n'y a pas de moyenne avec statut vide, on cherche si un statut dispensé ou autre est dans la table 'matieres_notes':
+								//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND periode='$ligne_periodes->num_periode')";
+								$sql="SELECT mn.* FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.periode='$ligne_periodes->num_periode' AND mn.id_groupe=jgm.id_groupe)";
+								$resultat_notes=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($resultat_notes)>0){
+									$ligne_notes=mysqli_fetch_object($resultat_notes);
+									if($ligne_notes->statut!=""){
+										$chaine_couleur=" bgcolor='red'";
+									}
+									echo "<td$chaine_couleur style='text-align:center;'>".$ligne_notes->note." - ".$ligne_notes->statut;
+								}
+								else{
+									echo "<td$chaine_couleur style='text-align:center;'>X";
+								}
+
+								if($ligne_periodes->verouiller=='N') {
+									echo "<img src='../images/icons/ico_attention.png' width='22' height='19' alt=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" title=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" style='float:right' />\n";
+								}
+
+								echo "</td>\n";
+
+							}
+						}
+
+						// Initialisation
+						$moyenne_arrondie="";
+						if($nbnotes>0) {
+							$cpt++;
+							$liste_matieres_gepi.=" ".$id_matiere[$j][$k];
+							$moyenne=round($total/$nbnotes,1);
+							//echo "<td style='font-weight:bold; text-align:center;'>$total/$nbnotes = $moyenne</td>\n";
+							echo "<td style='font-weight:bold; text-align:center;'>$moyenne</td>\n";
+
+							$moyenne_arrondie=ceil($moyenne*2)/2;
+
+							// 20130429
+							if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
+							($type_brevet_ele!=2)) {
+								echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='".$moyenne_arrondie."' size='6' onKeyDown=\"clavier(this.id,event);\" onchange='changement()' autocomplete=\"off\" onfocus=\"javascript:this.select()\" />";
+								//$compteur_champs_notes++;
+								//echo "<input type='hidden' name='matiere_".$j."_[$num_eleve]' value='".$id_matiere[$j][$k]."' size='6' />";
+								echo "</td>\n";
+
+								//$moy_NOTANET[$j]="$moyenne";
+								$moy_NOTANET[$j]="$moyenne_arrondie";
 							}
 							else {
-								$infos="";
-								$chaine_couleur="";
+								$total_brevet_pro_lv+=$moyenne;
+								$temoin_brevet_pro_lv++;
+								echo "<td></td>\n";
+
+								if($liste_matiere_brevet_pro_lv!="") {$liste_matiere_brevet_pro_lv.="|";}
+								$liste_matiere_brevet_pro_lv.=$id_matiere[$j][$k];
+
+								if($chaine_total_brevet_pro_lv!="") {$chaine_total_brevet_pro_lv.="+";}
+								$chaine_total_brevet_pro_lv.=$moyenne;
+
+								// Au dernier tour dans la matière LV pour le brevet pro, le contenu est correct:
+								$moy_NOTANET[$j]=ceil(($total_brevet_pro_lv/$temoin_brevet_pro_lv)*2)/2;
 							}
 
-							// Il ne devrait y avoir qu'une seule valeur:
-							echo "<td$chaine_couleur style='text-align: center;'>\n";
-							//echo "<!-- ... -->\n";
-							while($ligne_notes=mysql_fetch_object($resultat_notes)){
-								//echo "<td>".$infos.$ligne_notes->note."</td>\n";
-
-								//echo $infos.$ligne_notes->note." ";
-								if($infos!="") {
-									echo $infos."<b>".$ligne_notes->note."</b> ";
-									//echo "<div style='font-size:xx-small;'>".$infos."</div>".$ligne_notes->note." ";
-									//echo "<span style='font-size:xx-small;'>".$infos."</span>".$ligne_notes->note." ";
-								}
-								else {
-									echo $ligne_notes->note." ";
-								}
-
-								// Le test devrait toujours être vrai puisqu'on a exclu les moyennes avec un statut non vide
-								if(($ligne_notes->note!="")&&($ligne_notes->note!="-")){
-									// PROBLEME: S'il y a plusieurs notes pour une même période, le total est faussé et la moyenne itou...
-									// ... mais cela ne devrait pas arriver, ou alors la base GEPI n'est pas nette.
-									$total=$total+$ligne_notes->note;
-									$nbnotes++;
-									//echo "<!-- \$total=$total\n \$nbnotes=$nbnotes-->\n";
-									//echo "<\$total=$total\n \$nbnotes=$nbnotes>\n";
-
-
-									//$temoin_au_moins_une_note="y";
-
-									//echo "\$temoin_au_moins_une_note=$temoin_au_moins_une_note<br />";
-									//echo "\$cpt=$cpt<br />";
-								}
-							}
-							if($ligne_periodes->verouiller=='N') {
-								echo "<img src='../images/icons/ico_attention.png' width='22' height='19' alt=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" title=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" />\n";
-							}
-							echo "</td>\n";
 						}
 						else{
 
-							if($temoin_moyenne=="oui"){
-								$chaine_couleur=" bgcolor='yellow'";
+							$sql="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND jeg.login='".$tab_ele['login']."' AND jgm.id_groupe=jeg.id_groupe);";
+							$test_ele_matiere=mysqli_query($GLOBALS["mysqli"], $sql);
+
+							//if((($statut_matiere[$j]=='imposee'))&&($k+1==count($id_matiere[$j]))&&($moy_NOTANET[$j]=="")){
+							if((($statut_matiere[$j]=='imposee'))&&(mysqli_num_rows($test_ele_matiere)!=0)&&($moy_NOTANET[$j]=="")) {
+								$bgmoy="background-color:red";
 							}
 							else{
-								$chaine_couleur="";
+								$bgmoy="";
 							}
 
-							//echo "<td>X</td>\n";
-							// S'il n'y a pas de moyenne avec statut vide, on cherche si un statut dispensé ou autre est dans la table 'matieres_notes':
-							//$sql="SELECT * FROM matieres_notes WHERE (matiere='".$id_matiere[$j][$k]."' AND login='$ligne->login' AND periode='$ligne_periodes->num_periode')";
-							$sql="SELECT mn.* FROM matieres_notes mn, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND mn.login='".$tab_ele['login']."' AND mn.periode='$ligne_periodes->num_periode' AND mn.id_groupe=jgm.id_groupe)";
-							$resultat_notes=mysql_query($sql);
-							if(mysql_num_rows($resultat_notes)>0){
-								$ligne_notes=mysql_fetch_object($resultat_notes);
-								if($ligne_notes->statut!=""){
-									$chaine_couleur=" bgcolor='red'";
-								}
-								echo "<td$chaine_couleur style='text-align:center;'>".$ligne_notes->note." - ".$ligne_notes->statut;
+
+							echo "<td style='font-weight:bold; text-align:center;$bgmoy'>X</td>\n";
+
+							// 20130429
+							if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
+							($type_brevet_ele!=2)) {
+								echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='' size='6' onKeyDown=\"clavier(this.id,event);\" onchange='changement()' autocomplete=\"off\" onfocus=\"javascript:this.select()\" /></td>\n";
 							}
-							else{
-								echo "<td$chaine_couleur style='text-align:center;'>X";
+							else {
+								echo "<td></td>\n";
 							}
-
-							if($ligne_periodes->verouiller=='N') {
-								echo "<img src='../images/icons/ico_attention.png' width='22' height='19' alt=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" title=\"ATTENTION: La période n'est pas verrouillée ! Les notes peuvent encore changer !\" style='float:right' />\n";
-							}
-
-							echo "</td>\n";
-
-						}
-					}
-
-					// Initialisation
-					$moyenne_arrondie="";
-					if($nbnotes>0) {
-						$cpt++;
-						$liste_matieres_gepi.=" ".$id_matiere[$j][$k];
-						$moyenne=round($total/$nbnotes,1);
-						//echo "<td style='font-weight:bold; text-align:center;'>$total/$nbnotes = $moyenne</td>\n";
-						echo "<td style='font-weight:bold; text-align:center;'>$moyenne</td>\n";
-						//echo "<td><input type='text' name='' value='$moyenne'></td>\n";
-
-						/*
-						//if($tabmatieres[$j][-1]=="POINTS"){
-						//if(($tabmatieres[$j][-1]=="POINTS")||($tabmatieres[$j][-1]=="NOTNONCA")){
-						if($tabmatieres[$j][-1]=="POINTS"){
-							$ligne_NOTANET=$ligne_NOTANET."|$moyenne|";
-							$TOT=$TOT+$moyenne;
-						}
-						else{
-							if($tabmatieres[$j][-1]=="PTSUP"){
-								$ptsup=$moyenne-10;
-								if($ptsup>0){
-									$ligne_NOTANET=$ligne_NOTANET."|$ptsup|";
-									$TOT=$TOT+$ptsup;
-								}
-							}
-							else{
-								//$tabmatieres[$j][-1]="NOTNONCA";
-								// On ne modifie pas... euh si... une ligne est insérée, mais elle n'intervient pas dans le calcul du TOTal.
-								if($tabmatieres[$j][-1]=="NOTNONCA"){
-									$ligne_NOTANET=$ligne_NOTANET."|$moyenne|";
-								}
-							}
-						}
-						*/
-
-						//$moy_NOTANET[$j]="$moyenne";
-
-						//echo "<td><input type='text' name='moy.$j.$k[$num_eleve]' value='$moyenne' size='6'></td>\n";
-						//echo "<td><input type='text' name='moy_$j"."_"."$k[$num_eleve]' value='$moyenne' size='6'></td>\n";
-						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='$moyenne' size='6'></td>\n";
-
-						//$moyenne_arrondie=round($moyenne*2)/2;
-						//La note globale attribuée aux élèves dans chaque discipline, à l'issue des deux classes, est calculée sur la base de la moyenne des deux notes attribuées en quatrième et en troisième. Chaque note globale est affectée du coefficient défini par l'arrêté du 18 août 1999. Les notes globales, arrondies au demi point supérieur, sont arrêtées par le conseil des professeurs du troisième trimestre.
-						$moyenne_arrondie=ceil($moyenne*2)/2;
-						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' /></td>\n";
-						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='".$moyenne_arrondie."' size='6' />";
-
-						// 20130429
-						if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
-						($type_brevet_ele!=2)) {
-							echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='".$moyenne_arrondie."' size='6' onKeyDown=\"clavier(this.id,event);\" onchange='changement()' autocomplete=\"off\" onfocus=\"javascript:this.select()\" />";
 							//$compteur_champs_notes++;
-							//echo "<input type='hidden' name='matiere_".$j."_[$num_eleve]' value='".$id_matiere[$j][$k]."' size='6' />";
-							echo "</td>\n";
-
-							//$moy_NOTANET[$j]="$moyenne";
-							$moy_NOTANET[$j]="$moyenne_arrondie";
-						}
-						else {
-							$total_brevet_pro_lv+=$moyenne;
-							$temoin_brevet_pro_lv++;
-							echo "<td></td>\n";
-
-							if($liste_matiere_brevet_pro_lv!="") {$liste_matiere_brevet_pro_lv.="|";}
-							$liste_matiere_brevet_pro_lv.=$id_matiere[$j][$k];
-
-							if($chaine_total_brevet_pro_lv!="") {$chaine_total_brevet_pro_lv.="+";}
-							$chaine_total_brevet_pro_lv.=$moyenne;
-
-							// Au dernier tour dans la matière LV pour le brevet pro, le contenu est correct:
-							$moy_NOTANET[$j]=ceil(($total_brevet_pro_lv/$temoin_brevet_pro_lv)*2)/2;
+							//echo "<td></td>\n";
 						}
 
 					}
-					else{
-
-						$sql="SELECT 1=1 FROM j_eleves_groupes jeg, j_groupes_matieres jgm WHERE (jgm.id_matiere='".$id_matiere[$j][$k]."' AND jeg.login='".$tab_ele['login']."' AND jgm.id_groupe=jeg.id_groupe);";
-						$test_ele_matiere=mysql_query($sql);
-
-						//if((($statut_matiere[$j]=='imposee'))&&($k+1==count($id_matiere[$j]))&&($moy_NOTANET[$j]=="")){
-						if((($statut_matiere[$j]=='imposee'))&&(mysql_num_rows($test_ele_matiere)!=0)&&($moy_NOTANET[$j]=="")) {
-							$bgmoy="background-color:red";
-						}
-						else{
-							$bgmoy="";
-						}
-
-
-						echo "<td style='font-weight:bold; text-align:center;$bgmoy'>X</td>\n";
-						//echo "<td><input type='text' name='moy.$j.$k[$num_eleve]' value='' size='6'></td>\n";
-						//echo "<td><input type='text' name='moy_$j"."_"."$k[$num_eleve]' value='' size='6'></td>\n";
-						//echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' value='' size='6' /></td>\n";
-
-						// 20130429
-						if((($type_brevet_ele==2)&&($j!=$indice_brevet_pro_lv))||
-						($type_brevet_ele!=2)) {
-							echo "<td><input type='text' name='moy_$j"."_".$k."[$num_eleve]' id='n".$compteur_champs_notes."' value='' size='6' onKeyDown=\"clavier(this.id,event);\" onchange='changement()' autocomplete=\"off\" onfocus=\"javascript:this.select()\" /></td>\n";
-						}
-						else {
-							echo "<td></td>\n";
-						}
-						//$compteur_champs_notes++;
-						//echo "<td></td>\n";
-					}
-					/*
-					else{
-						if($statut_matiere[$j]=='imposee'){
-							$temoin_notanet_eleve="ERREUR";
-							if($info_erreur==""){
-								$info_erreur="Pas de moyenne à une matière non optionnelle.";
-							}
-							else{
-								$info_erreur=$info_erreur." - Pas de moyenne à une matière non optionnelle.";
-							}
-						}
-					}
-					*/
-
-
-					/*
-					//if($temoin_notanet_eleve!="ERREUR"){
-					if(($temoin_notanet_eleve!="ERREUR")&&($moyenne!="")){
-						echo "<td>$ligne_NOTANET</td>\n";
-					}
-					*/
 
 
 					if($affiche_enregistrements_precedents=="y") {
 						echo "<td>\n";
 						$sql="SELECT note FROM notanet WHERE login='".$tab_ele['login']."' AND matiere='".$id_matiere[$j][$k]."' AND notanet_mat='".$tabmatieres[$j][0]."' AND id_mat='$j';";
-						$enr=mysql_query($sql);
-						if(mysql_num_rows($enr)>0) {
-							$lig_enr=mysql_fetch_object($enr);
+						$enr=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($enr)>0) {
+							$lig_enr=mysqli_fetch_object($enr);
 
 							if($moyenne_arrondie!=$lig_enr->note) {
 								echo "<a href=\"#tableau_des_moyennes_eleve_$num_eleve\" onclick=\"document.getElementById('n".$compteur_champs_notes."').value='$lig_enr->note'; return false;\"><img src='../images/icons/back.png' width='16' height='16' alt='Rétablir la valeur enregistrée' /></a>";
@@ -1884,9 +1944,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 				$note_a2="";
 
 				$sql="SELECT * FROM notanet_socles WHERE login='".$tab_ele['login']."';";
-				$res_soc=mysql_query($sql);
-				if(mysql_num_rows($res_soc)>0) {
-					$lig_soc=mysql_fetch_object($res_soc);
+				$res_soc=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_soc)>0) {
+					$lig_soc=mysqli_fetch_object($res_soc);
 					$note_b2i=$lig_soc->b2i;
 					$note_a2=$lig_soc->a2;
 				}
@@ -1918,9 +1978,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 					if($affiche_enregistrements_precedents=="y") {
 						echo "<td>\n";
 						$sql="SELECT note FROM notanet WHERE login='".$tab_ele['login']."' AND notanet_mat='".$tabmatieres[$j][0]."' AND id_mat='$j';";
-						$enr=mysql_query($sql);
-						if(mysql_num_rows($enr)>0) {
-							$lig_enr=mysql_fetch_object($enr);
+						$enr=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($enr)>0) {
+							$lig_enr=mysqli_fetch_object($enr);
 							echo $lig_enr->note;
 						}
 						else {
@@ -1961,9 +2021,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 					if($affiche_enregistrements_precedents=="y") {
 						echo "<td>\n";
 						$sql="SELECT note FROM notanet WHERE login='".$tab_ele['login']."' AND notanet_mat='".$tabmatieres[$j][0]."' AND id_mat='$j';";
-						$enr=mysql_query($sql);
-						if(mysql_num_rows($enr)>0) {
-							$lig_enr=mysql_fetch_object($enr);
+						$enr=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($enr)>0) {
+							$lig_enr=mysqli_fetch_object($enr);
 							echo $lig_enr->note;
 						}
 						else {
@@ -1982,9 +2042,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 					$note_lvr="";
 	
 					$sql="SELECT * FROM notanet_lvr_ele WHERE login='".$tab_ele['login']."';";
-					$res_lvr=mysql_query($sql);
-					if(mysql_num_rows($res_lvr)>0) {
-						$lig_lvr=mysql_fetch_object($res_lvr);
+					$res_lvr=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_lvr)>0) {
+						$lig_lvr=mysqli_fetch_object($res_lvr);
 						$note_lvr=$lig_lvr->note;
 
 						$alt=$alt*(-1);
@@ -2013,9 +2073,9 @@ function tab_extract_moy($tab_ele,$id_clas) {
 						if($affiche_enregistrements_precedents=="y") {
 							echo "<td>\n";
 							$sql="SELECT note FROM notanet WHERE login='".$tab_ele['login']."' AND notanet_mat='".$tabmatieres[$j][0]."' AND id_mat='$j';";
-							$enr=mysql_query($sql);
-							if(mysql_num_rows($enr)>0) {
-								$lig_enr=mysql_fetch_object($enr);
+							$enr=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($enr)>0) {
+								$lig_enr=mysqli_fetch_object($enr);
 								echo $lig_enr->note;
 							}
 							else {

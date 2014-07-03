@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* Copyright 2001-2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001-2014 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -107,6 +107,11 @@ $texteItem="a accès aux relevés de notes des ".$gepiSettings['denomination_ele
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='GepiPeutCreerBoitesProf';
+$texteItem="a le droit de créer et paramétrer des ".$gepiSettings['gepi_denom_boite']."s dans ses carnets de notes";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 //+++++++++++++++++++++++++++
 
 $titreItem='';
@@ -169,6 +174,16 @@ $texteItem="peut signaler, en période ouverte ou partiellement close, (<em>aux 
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='visuCorrectionsAppProposeesProfs';
+$texteItem="peut voir, sur les bulletins simplifiés, les propositions de correction d'appréciation soumises et non encore validées.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='PeutAutoriserPPaCorrigerSesApp';
+$texteItem="peut autoriser le ".getSettingValue('gepi_prof_suivi')." à corriger les fautes de frappe;) dans ses appréciations.<br />(<em>l'autorisation se fait enseignement par enseignement, par le professeur lui-même dans 'Gérer mon compte'.<br />Le professeur concerné reçoit un mail l'informant d'une modification par le ".getSettingValue('gepi_prof_suivi').".</em>).<br />";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 //+++++++++++++++++++++++++++
 
 $titreItem='';
@@ -194,9 +209,41 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='GepiAccesGestElevesProf';
-$texteItem="a accès aux fiches des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+$texteItem="a accès aux fiches des ".$gepiSettings['denomination_eleves']." dont il est professeur.<br />(<em>ce droit donne aussi accès à l'adresse des parents, à l'INE de l'élève, à l'établissement d'origine,...</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+$titreItem='AccesDerniereConnexionEleProfesseur';
+$texteItem="a accès à la date de la dernière connexion des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionEleProfesseur';
+$texteItem="a accès aux statistiques de connexion des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionEleProfesseur';
+$texteItem="a accès au détail de connexion des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionRespProfesseur';
+$texteItem="a accès à la date de la dernière connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionRespProfesseur';
+$texteItem="a accès aux statistiques de connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionRespProfesseur';
+$texteItem="a accès au détail de connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est professeur.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 
 $titreItem='AccesProf_EdtProfs';
 $texteItem="a accès aux emplois du temps des autres professeurs (<em>sous réserve que le <a href='../edt_organisation/edt.php' target='_blank'>module EDT soit activé</a></em>)";
@@ -210,6 +257,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 $titreItem='GepiAccesModifMaPhotoProfesseur';
 $texteItem="a le droit d'envoyer/modifier lui-même sa photo dans 'Gérer mon compte'";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesFicheBienvenueProfesseur';
+$texteItem="a le droit d'imprimer sa Fiche Bienvenue depuis 'Gérer mon compte'";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -254,6 +306,8 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 //+++++++++++++++++++++++++++
 
+$mod_disc_terme_avertissement_fin_periode=getSettingValue('mod_disc_terme_avertissement_fin_periode');
+
 if(getSettingValue('active_mod_discipline')=='y') {
 
   $titreItem='';
@@ -276,6 +330,11 @@ if(getSettingValue('active_mod_discipline')=='y') {
 	if(getSettingValue('active_mod_ooo')=='y') {
 		$titreItem='imprDiscProfRetenueOOo';
 		$texteItem="peut imprimer dans le module Discipline une demande de Retenue au format OpenOffice pour un élève pour lequel le professeur saisit un incident";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+		$titreItem='imprDiscProfAvtOOo';
+		$texteItem="peut imprimer dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour les élèves de ses classes.";
 		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
 	}
@@ -315,7 +374,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='CommentairesTypesPP';
-$texteItem="peut utiliser des commentaires-types dans ces saisies d'avis du conseil de classe
+$texteItem="peut utiliser des commentaires-types dans ses saisies d'avis du conseil de classe
 	  <br />(<em>sous réserve de pouvoir saisir les avis du conseil de classe</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
@@ -365,13 +424,33 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 //+++++++++++++++++++++++++++
 
+if(getSettingAOui('active_mod_discipline')) {
+	if(getSettingAOui('active_mod_ooo')) {
+		$titreItem='';
+		$texteItem="";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+		  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+		$titreItem='imprDiscProfPAvtOOo';
+		$texteItem="peut imprimer dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour les élèves des classes dont il est ".getSettingValue("gepi_prof_suivi").".";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+		$titreItem='saisieDiscProfPAvt';
+		$texteItem="peut saisir dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour les élèves des classes dont il est ".getSettingValue("gepi_prof_suivi").".";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+	}
+}
+//+++++++++++++++++++++++++++
+
 $titreItem='';
 $texteItem="";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='GepiAccesGestElevesProfP';
-$texteItem="a accès aux fiches des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+$texteItem="a accès aux fiches des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi")."<br />(<em>ce droit donne aussi accès à l'adresse des parents, à l'INE de l'élève, à l'établissement d'origine,...</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -381,6 +460,38 @@ $texteItem="a accès à l'upload des photos de ses ".$gepiSettings['denomination
 		".$gepiSettings['denomination_eleves']." (<em>ci-dessus</em>).";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+
+$titreItem='AccesDerniereConnexionEleProfP';
+$texteItem="a accès à la date de la dernière connexion des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionEleProfP';
+$texteItem="a accès aux statistiques de connexion des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionEleProfP';
+$texteItem="a accès au détail de connexion des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionRespProfP';
+$texteItem="a accès à la date de la dernière connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionRespProfP';
+$texteItem="a accès aux statistiques de connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionRespProfP';
+$texteItem="a accès au détail de connexion des responsables des ".$gepiSettings['denomination_eleves']." dont il est ".getSettingValue("gepi_prof_suivi");
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 
 //+++++++++++++++++++++++++++
 
@@ -436,7 +547,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='CommentairesTypesScol';
-$texteItem="peut utiliser des commentaires-types dans ces saisies d'avis du conseil de classe<br />
+$texteItem="peut utiliser des commentaires-types dans ses saisies d'avis du conseil de classe<br />
 			(<em>sous réserve de pouvoir saisir les avis du conseil de classe</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
@@ -453,6 +564,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 $titreItem='PeutDonnerAccesBullNotePeriodeCloseScol';
 $texteItem="a accès à l'ouverture exceptionnelle de saisie/correction de notes du bulletin d'un enseignement particulier en période partiellement close<br />(<em>typiquement pour corriger une erreur sans devoir rouvrir complètement la période en saisie pour tous les professeurs, ni devoir passer par un compte secours pour faire la modification à la place du professeur.</em>).";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesModifAppreciationScol';
+$texteItem="peut corriger les appréciations des professeurs en période non close.<br />(<em>cela permet de corriger des fautes pendant le conseil de classe.<br />Le professeur concerné reçoit un mail l'informant de la modification.</em>).";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -535,8 +651,44 @@ $texteItem="a accès à la Visualisation de toutes les équipes";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='ScolEditElevesGroupes';
+$texteItem="peut modifier la liste des élèves participant à tel ou tel enseignement<br />
+(<em>cela permet de prendre en compte les signalements d'erreurs d'affectation d'élèves remontés par les professeurs</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 $titreItem='GepiAccesTouteFicheEleveScolarite';
 $texteItem="a le droit d'accéder à toutes les fiches élève";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionEleScolarite';
+$texteItem="a accès à la date de la dernière connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionEleScolarite';
+$texteItem="a accès aux statistiques de connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionEleScolarite';
+$texteItem="a accès au détail de connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionRespScolarite';
+$texteItem="a accès à la date de la dernière connexion des responsables d'".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionRespScolarite';
+$texteItem="a accès aux statistiques de connexion des des responsables d'".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionRespScolarite';
+$texteItem="a accès au détail de connexion des des responsables d'".$gepiSettings['denomination_eleves'].".";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -599,6 +751,26 @@ if(getSettingValue('active_mod_ooo')=='y') {
   $texteItem="a accès à l'upload de fichiers modèles OpenOffice personnels.";
   if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadScolDiscipline';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Discipline.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadScolAbs2';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Absences 2.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadScolNotanet';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Notanet.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadScolECTS';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module ECTS.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
 }
 
 //+++++++++++++++++++++++++++
@@ -615,6 +787,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 $titreItem='GepiAccesModifMaPhotoScolarite';
 $texteItem="a le droit d'envoyer/modifier lui-même sa photo dans 'Gérer mon compte'";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesFicheBienvenueScolarite';
+$texteItem="a le droit d'imprimer sa Fiche Bienvenue depuis 'Gérer mon compte'";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -749,7 +926,7 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 $titreItem='CommentairesTypesCpe';
-$texteItem="peut utiliser des commentaires-types dans ces saisies d'avis du conseil de classe<br />
+$texteItem="peut utiliser des commentaires-types dans ses saisies d'avis du conseil de classe<br />
 			(<em>sous réserve de pouvoir saisir les avis du conseil de classe</em>)";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
@@ -809,6 +986,11 @@ $texteItem="a le droit d'envoyer/modifier lui-même sa photo dans 'Gérer mon co
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='AccesFicheBienvenueCpe';
+$texteItem="a le droit d'imprimer sa Fiche Bienvenue depuis 'Gérer mon compte'";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 //+++++++++++++++++++++++++++
 
 $titreItem='';
@@ -855,10 +1037,46 @@ $texteItem="a accès à la Visualisation de toutes les équipes<br />
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='CpeEditElevesGroupes';
+$texteItem="peut modifier la liste des élèves participant à tel ou tel enseignement<br />
+(<em>cela permet de prendre en compte les signalements d'erreurs d'affectation d'élèves remontés par les professeurs</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 // Photos
 $titreItem='GepiAccesTouteFicheEleveCpe';
 $texteItem="a le droit d'accéder à toutes les fiches élève<br />
 (<em>Par défaut, un CPE ne voit que les fiches des élèves dont il est responsable</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionEleCpe';
+$texteItem="a accès à la date de la dernière connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionEleCpe';
+$texteItem="a accès aux statistiques de connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionEleCpe';
+$texteItem="a accès au détail de connexion des ".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDerniereConnexionRespCpe';
+$texteItem="a accès à la date de la dernière connexion des responsables d'".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesStatConnexionRespCpe';
+$texteItem="a accès aux statistiques de connexion des des responsables d'".$gepiSettings['denomination_eleves'].".";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesDetailConnexionRespCpe';
+$texteItem="a accès au détail de connexion des des responsables d'".$gepiSettings['denomination_eleves'].".";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -868,6 +1086,11 @@ if(!getSettingAOui('active_module_trombinoscopes')) {
 	$texteItem.="in";
 }
 $texteItem.="actif</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='GepiAccesPanneauAffichageCpe';
+$texteItem="a accès à la saisie de message dans le Panneau d'affichage";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -934,14 +1157,31 @@ if(getSettingValue('active_mod_discipline')=='y') {
 	  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 	$titreItem='DisciplineCpeChangeDeclarant';
-	$texteItem="a le droit de changer le déclarant d'un incident";
+	$texteItem="a le droit de changer le déclarant d'un incident<br />(<em>pour saisir des incidents à la place d'un professeur,<br />sous réserve que le droit soit explicitement donné par le professeur dans '<strong>Gérer mon compte</strong>'</em>)";
 	if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 		  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
 	$titreItem='DisciplineCpeChangeDefaut';
-	$texteItem="Par défaut, a le droit de changer le déclarant d'un incident (si ce droit existe)";
+	$texteItem="a, par défaut, le droit de changer le déclarant d'un incident<br />(<em>pour saisir des incidents à la place des professeurs qui ont autorisé/délégué la saisie de leurs incidents par un CPE<br />et pour ceux n'ont pas explicitement interdit la saisie par un CPE à leur place</em>)";
 	if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 		  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+	$titreItem='saisieDiscCpeAvt';
+	$texteItem="peut saisir dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour les élèves des classes dont il est CPE responsable.";
+	if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+		$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+	$titreItem='saisieDiscCpeAvtTous';
+	$texteItem="peut saisir dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour les élèves de toutes classes.";
+	if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+		$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+	if(getSettingAOui('active_mod_ooo')) {
+		$titreItem='imprDiscCpeAvtOOo';
+		$texteItem="peut imprimer dans le module Discipline les '".$mod_disc_terme_avertissement_fin_periode."' pour tous les élèves de toutes les classes.";
+		if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+			$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+	}
 }
 
 // OOo
@@ -955,6 +1195,26 @@ if(getSettingValue('active_mod_ooo')=='y') {
 
   $titreItem='OOoUploadCpe';
   $texteItem="a accès à l'upload de fichiers modèles OpenOffice personnels.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadCpeDiscipline';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Discipline.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadCpeAbs2';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Absences 2.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadCpeNotanet';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module Notanet.";
+  if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+  $titreItem='OOoUploadCpeECTS';
+  $texteItem="a accès à l'upload de fichiers modèles OpenOffice pour le module ECTS.";
   if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 	$tbs_message = 'Erreur lors du chargement de '.$titreItem;
 }
@@ -1049,6 +1309,11 @@ $texteItem="a accès aux moyennes min/classe/max de chaque devoir";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='GepiAccesEvalCumulEleve';
+$texteItem="peut voir les évaluations cumulées (ouvre également le droit aux parents)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 //+++++++++++++++++++++++++++
 
 $titreItem='';
@@ -1061,6 +1326,11 @@ $texteItem="a accès à son cahier de texte";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='CDTPeutPointerTravailFaitEleve';
+$texteItem="peut pointer les travaux faits ou non du CDT";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 //+++++++++++++++++++++++++++
 
 $titreItem='';
@@ -1070,6 +1340,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 $titreItem='GepiPasswordReinitEleve';
 $texteItem="peut réinitialiser lui-même son mot de passe perdu (<em>si fonction activée</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesFicheBienvenueEleve';
+$texteItem="a le droit d'imprimer sa Fiche Bienvenue depuis 'Gérer mon compte'";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
@@ -1287,6 +1562,11 @@ $texteItem="a accès au cahier de texte des ".$gepiSettings['denomination_eleves
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 
+$titreItem='CDTPeutPointerTravailFaitResponsable';
+$texteItem="peut pointer les travaux faits ou non du CDT pour les ".$gepiSettings['denomination_eleves']." dont il est responsable.";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
 
 //+++++++++++++++++++++++++++
 
@@ -1297,6 +1577,11 @@ if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
 
 $titreItem='GepiPasswordReinitParent';
 $texteItem="peut réinitialiser lui-même son mot de passe perdu (<em>si fonction activée</em>)";
+if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
+  $tbs_message = 'Erreur lors du chargement de '.$titreItem;
+
+$titreItem='AccesFicheBienvenueResponsable';
+$texteItem="a le droit d'imprimer sa Fiche Bienvenue depuis 'Gérer mon compte'";
 if (!$droitAffiche->set_entree($statutItem, $titreItem, $texteItem))
   $tbs_message = 'Erreur lors du chargement de '.$titreItem;
 

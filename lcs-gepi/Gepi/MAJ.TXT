@@ -1,5 +1,7 @@
-GEPI-1.6.3 -- Procédure de mise à jour
+Gepi-1.6.5 -- Procédure de mise à jour
 ==========================================
+
+La branche stable actuelle est la 1.6.4
 
 *************
 Mise en garde

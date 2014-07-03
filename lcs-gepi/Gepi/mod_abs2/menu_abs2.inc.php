@@ -68,7 +68,7 @@ if(($_SESSION['statut']=='cpe')||
     echo "title='Liste des saisies'>Saisies</a></li>\n";
 
     echo "<li><a href='liste_traitements.php' ";
-    if($url_end=='liste_traitements.php'|| $url_end=='visu_traitement.php' || $url_end=='enregistrement_modif_traitement.php') {echo "class='current' style='background-color:#ebedb5; border-bottom:2px solid #ebedb5;' ";}
+    if($url_end=='liste_traitements.php'|| $url_end=='visu_traitement.php' || $url_end=='enregistrement_modif_traitement.php' || $url_end=='traitements_par_lots.php') {echo "class='current' style='background-color:#ebedb5; border-bottom:2px solid #ebedb5;' ";}
     else {echo "style='background-color:#f9f9de;' ";}
     echo "title='Traitement'>Traitements</a></li>\n";
 
@@ -80,13 +80,13 @@ if(($_SESSION['statut']=='cpe')||
     echo "title='Notifications'>Notifications</a></li>\n";
 
     if($url_end=='saisir_eleve.php' || $url_end=='enregistrement_saisie_eleve.php' || $url_end=='saisir_groupe.php' || $url_end=='enregistrement_saisie_groupe.php') {
-	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe">wiki</a></li>';
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Saisie_cpe" target="_blank">wiki</a></li>';
     } else if($url_end=='liste_notifications.php') {
-	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi">wiki</a></li>';
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Suivi" target="_blank">wiki</a></li>';
     } else if($url_end=='tableau_des_appels.php'|| $url_end=='absences_du_jour.php'||$url_end=='bilan_du_jour.php'||$url_end=='totaux_du_jour.php'||$url_end=='extraction_saisies.php'||$url_end=='extraction_demi-journees.php'||$url_end=='bilan_individuel.php'||$url_end=='statistiques.php'||$url_end=='stat_justifications.php') {
-	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans">wiki</a></li>';
+	echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Bilans" target="_blank">wiki</a></li>';
     } else {
-    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification">wiki</a></li>';
+    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Traitement_notification" target="_blank">wiki</a></li>';
     }
 
     echo "</ul>\n";
@@ -113,7 +113,7 @@ if(($_SESSION['statut']=='cpe')||
         echo "title='Bilans'>Bilan individuel</a></li>\n";
     }
 
-    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Fond_de_salle">wiki</a></li>';
+    echo '<li style="float :right"><a href="http://www.sylogix.org/projects/gepi/wiki/Fond_de_salle" target="_blank">wiki</a></li>';
 
     echo "</ul>\n";
 
@@ -121,6 +121,11 @@ if(($_SESSION['statut']=='cpe')||
 
 	echo "<ul class='css-tabs' id='menutabs'>\n";
 
+    if(acces('/mod_abs2/saisir_groupe.php','autre')) {
+        echo "<li><a href='saisir_groupe.php' ";
+        if($url_end=='saisir_groupe.php') {echo "class='current' ";}
+        echo "title='Saisir pour un groupe'>Saisir un groupe</a></li>\n";        
+    }
     if(acces('/mod_abs2/saisir_eleve.php','autre')) {
         echo "<li><a href='saisir_eleve.php' ";
         if($url_end=='saisir_eleve.php') {echo "class='current' ";}

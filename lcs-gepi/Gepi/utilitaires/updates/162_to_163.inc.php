@@ -115,9 +115,9 @@ if ($test == -1) {
 }
 
 $result .= "&nbsp;-> Ajout d'un champ 'date_visibilite' à la table 'messagerie'<br />";
-$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM messagerie LIKE 'date_visibilite';"));
+$test_champ=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], "SHOW COLUMNS FROM messagerie LIKE 'date_visibilite';"));
 if ($test_champ==0) {
-	$query = mysql_query("ALTER TABLE messagerie ADD date_visibilite timestamp NOT NULL AFTER date_msg;");
+	$query = mysqli_query($GLOBALS["mysqli"], "ALTER TABLE messagerie ADD date_visibilite timestamp NOT NULL AFTER date_msg;");
 	if ($query) {
 			$result .= msj_ok("Ok !");
 	} else {
@@ -223,11 +223,11 @@ $result .= "<br />";
 $result .= "<strong>MEF :</strong><br />";
 $result .= "Contrôle du champ 'mef_code' dans la table 'mef' : ";
 $sql="show columns from mef where type like 'bigint%' and field='mef_code';";
-$test=mysql_query($sql);
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
 //echo "$sql<br />";
 //echo "mysql_num_rows(\$test)=".mysql_num_rows($test)."<br />";
-if(mysql_num_rows($test)>0) {
-	$tab=mysql_fetch_array($test);
+if(mysqli_num_rows($test)>0) {
+	$tab=mysqli_fetch_array($test);
 	/*
 	echo "<pre>";
 	print_r($tab);
@@ -235,7 +235,7 @@ if(mysql_num_rows($test)>0) {
 	*/
 	$sql ="ALTER TABLE mef CHANGE mef_code mef_code VARCHAR( 50 ) DEFAULT '' NOT NULL COMMENT 'code mef de la formation de l''eleve';";
 	//echo "$sql<br />";
-	$query = mysql_query($sql);
+	$query = mysqli_query($GLOBALS["mysqli"], $sql);
 	if ($query) {
 			$result .= msj_ok("Ok !");
 	} else {
@@ -262,9 +262,9 @@ else {
 
 $result .= "Contrôle du champ 'mef_code' dans la table 'eleves' : ";
 $sql="show columns from eleves where type like 'bigint%' and field='mef_code';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)>0) {
-	$query = mysql_query("ALTER TABLE eleves CHANGE mef_code mef_code VARCHAR( 50 ) DEFAULT '' NOT NULL COMMENT 'code mef de la formation de l''eleve';");
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	$query = mysqli_query($GLOBALS["mysqli"], "ALTER TABLE eleves CHANGE mef_code mef_code VARCHAR( 50 ) DEFAULT '' NOT NULL COMMENT 'code mef de la formation de l''eleve';");
 	if ($query) {
 			$result .= msj_ok("Ok !");
 	} else {
@@ -285,9 +285,9 @@ if(	$temoin_modif_mef_code=="y") {
 }
 
 $result .= "&nbsp;-> Ajout d'un champ 'code_mefstat' à la table 'mef'<br />";
-$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM mef LIKE 'code_mefstat';"));
+$test_champ=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], "SHOW COLUMNS FROM mef LIKE 'code_mefstat';"));
 if ($test_champ==0) {
-	$query = mysql_query("ALTER TABLE mef ADD code_mefstat varchar(50) NOT NULL default '';");
+	$query = mysqli_query($GLOBALS["mysqli"], "ALTER TABLE mef ADD code_mefstat varchar(50) NOT NULL default '';");
 	if ($query) {
 			$result .= msj_ok("Ok !");
 	} else {
@@ -298,9 +298,9 @@ if ($test_champ==0) {
 }
 
 $result .= "&nbsp;-> Ajout d'un champ 'mef_rattachement' à la table 'mef'<br />";
-$test_champ=mysql_num_rows(mysql_query("SHOW COLUMNS FROM mef LIKE 'mef_rattachement';"));
+$test_champ=mysqli_num_rows(mysqli_query($GLOBALS["mysqli"], "SHOW COLUMNS FROM mef LIKE 'mef_rattachement';"));
 if ($test_champ==0) {
-	$query = mysql_query("ALTER TABLE mef ADD mef_rattachement varchar(50) NOT NULL default '';");
+	$query = mysqli_query($GLOBALS["mysqli"], "ALTER TABLE mef ADD mef_rattachement varchar(50) NOT NULL default '';");
 	if ($query) {
 			$result .= msj_ok("Ok !");
 	} else {
@@ -319,6 +319,28 @@ if(!in_array($output_mode_pdf, array("D", "I"))) {
 	} else {
 		$result .= msj_ok("Ok !");
 	}
+}
+
+$result .= "<br /><strong>Correction taille du champ 'num' de la table 'tempo' pour qu'il corresponde à celle du champ 'SESSION_ID' de la table 'log'&nbsp;:</strong><br />";
+$test1 = mysqli_query($GLOBALS["mysqli"], "SHOW COLUMNS FROM tempo LIKE 'num'");
+$test2 = mysqli_query($GLOBALS["mysqli"], "SHOW COLUMNS FROM log LIKE 'SESSION_ID'");
+
+if (mysqli_num_rows($test1) != 0 && mysqli_num_rows($test2) != 0) {
+   $obj_test1 = $test1->fetch_object();
+   $obj_test2 = $test2->fetch_object();
+   $result .= "Passage du champ à ".$obj_test2->Type."<br />";
+   if ($obj_test1->Type != $obj_test2->Type) {
+	  $querynp = mysqli_query($GLOBALS["mysqli"], "ALTER TABLE `tempo` CHANGE `num` `num` ".$obj_test2->Type." CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '0';");
+	  if ($querynp) {
+		  $result .= msj_ok('Ok !');
+	  } else {
+		  $result .= msj_erreur('!');
+	  }
+	} else {
+	   $result .= msj_present("Le champ a déjà la bonne taille");
+	}
+} else {
+	$result .= msj_erreur("Un des champs n'existe pas<br />");
 }
 
 ?>

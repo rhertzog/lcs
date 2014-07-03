@@ -60,6 +60,7 @@
 
 // Based off of code from:header.inc
  
+
 $donnees_enfant=array();
 
 /**
@@ -70,38 +71,42 @@ $donnees_enfant=array();
  */
 function last_connection() {
 	global $gepiPath;
+    global $mysqli;
    $sql = "select START, AUTOCLOSE, REMOTE_ADDR from log where LOGIN = '".$_SESSION['login']."' and SESSION_ID != '".session_id()."' order by START desc";
-   $res = sql_query($sql);
-   $r = '';
-   if ($res) {
-      $row = sql_row($res, 0);
-      $annee_b = substr($row[0],0,4);
-      $mois_b =  substr($row[0],5,2);
-      $jour_b =  substr($row[0],8,2);
-      $heures_b = substr($row[0],11,2);
-      $minutes_b = substr($row[0],14,2);
-      $secondes_b = substr($row[0],17,2);
-      if ($row[0]  != '') {
-          if ($row[1]  == "4") {
-              $r = "<span style=\"color: red\"><strong>Tentative de connexion le ".$jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b. " avec un mot de passe erroné</strong></span> (<a href='".$gepiPath."/utilisateurs/mon_compte.php#connexion'".insert_confirm_abandon().">journal des connexions</a>)";
-              // On compte le nombre de tentatives infructueuses successives
-              $nb_tentative = 0;
-              $flag = 0;
-              for ($i = 0; (($row_b = sql_row($res, $i)) and ($flag < 1)); $i++)
-              {
-				if (($row_b[1]  == "2") and ($row_b[2]  == $row[2])) {
-					$nb_tentative++;
-				}
-				else {
-					$flag = 1;
-				}
-              }
-              if ($nb_tentative > 1) {$r .= "<br /><strong>Nombre de tentatives de connexion successives : ".$nb_tentative.".</strong></font>";}
-          } else {
-              $r = "  Dernière session ouverte le ".$jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b. " (<a href='".$gepiPath."/utilisateurs/mon_compte.php#connexion'".insert_confirm_abandon().">journal des connexions</a>)";
-			}
-      }
-    }
+           
+        $res = mysqli_query($mysqli, $sql);
+        $r = '';
+        if ($res) {
+            $row = $res->fetch_row();
+            $annee_b = substr($row[0],0,4);
+            $mois_b =  substr($row[0],5,2);
+            $jour_b =  substr($row[0],8,2);
+            $heures_b = substr($row[0],11,2);
+            $minutes_b = substr($row[0],14,2);
+            $secondes_b = substr($row[0],17,2);
+            if ($row[0]  != '') {
+                if ($row[1]  == "4") {
+                    $r = "<span style=\"color: red\"><strong>Tentative de connexion le ".$jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b. " avec un mot de passe erroné</strong></span> (<a href='".$gepiPath."/utilisateurs/mon_compte.php#connexion'".insert_confirm_abandon().">journal des connexions</a>)";
+                    // On compte le nombre de tentatives infructueuses successives
+                    $nb_tentative = 0;
+                    $flag = 0;
+                    for ($i = 0; (($row_b = sql_row($res, $i)) and ($flag < 1)); $i++) {
+                        if (($row_b[1]  == "2") and ($row_b[2]  == $row[2])) {
+                            $nb_tentative++;
+                        }
+                        else {
+                            $flag = 1;
+                        }
+                    }
+                    if ($nb_tentative > 1) {$r .= "<br /><strong>Nombre de tentatives de connexion successives : ".$nb_tentative.".</strong></font>";}
+                } else {
+                    $r = "  Dernière session ouverte le ".$jour_b."/".$mois_b."/".$annee_b." à ".$heures_b." h ".$minutes_b. " (<a href='".$gepiPath."/utilisateurs/mon_compte.php#connexion'".insert_confirm_abandon().">journal des connexions</a>)";
+                }
+                
+            }
+        }
+        $res->close();
+        
     return $r;
     
 }
@@ -158,8 +163,8 @@ if ($windows == 'oui') {
 	$tbs_librairies[]=$gepiPath."/edt_effets/javascripts/effects.js";
 	$tbs_librairies[]=$gepiPath."/edt_effets/javascripts/window.js";
 	$tbs_librairies[]=$gepiPath."/edt_effets/javascripts/window_effects.js";
-	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/default.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
-	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/alphacube.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
+	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/default.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
+	$tbs_CSS[]=array("fichier"=> $gepiPath."/edt_effets/themes/alphacube.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
 }
 
 // Utilisation de tablekit
@@ -243,7 +248,7 @@ if(isset($style_specifique)) {
 	foreach($style_specifique as $current_style_specifique) {
 	  if(mb_strlen(my_ereg_replace("[A-Za-z0-9_/]","",$current_style_specifique))==0) {
 		//// Styles spécifiques à une page:
-		$tbs_CSS[]=array("fichier"=> $gepiPath."/".$current_style_specifique.".css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
+		$tbs_CSS[]=array("fichier"=> $gepiPath."/".$current_style_specifique.".css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
 
 	  }
 
@@ -251,7 +256,7 @@ if(isset($style_specifique)) {
   } else {
 	if(mb_strlen(my_ereg_replace("[A-Za-z0-9_/]","",$style_specifique))==0) {
 	  // Styles spécifiques à une page:
-	  $tbs_CSS[]=array("fichier"=> $gepiPath."/".$style_specifique.".css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
+	  $tbs_CSS[]=array("fichier"=> $gepiPath."/".$style_specifique.".css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
 	}
   }
 }
@@ -259,7 +264,7 @@ if(isset($style_specifique)) {
 // vérifie si on est dans le modules absences
 $files = array("gestion_absences", "select", "ajout_abs", "ajout_ret", "ajout_dip", "ajout_inf", "tableau", "impression_absences", "prof_ajout_abs", "statistiques", "alert_suivi", "admin_config_semaines", "admin_motifs_absences", "admin_horaire_ouverture", "admin_actions_absences", "admin_periodes_absences");
 if(in_array(basename($_SERVER['PHP_SELF'],".php"), $files)) {
-	$tbs_CSS[]=array("fichier"=> $gepiPath."/mod_absences/styles/mod_absences.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
+	$tbs_CSS[]=array("fichier"=> $gepiPath."/mod_absences/styles/mod_absences.css" , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
 }
 
 
@@ -300,12 +305,12 @@ if (isset($style_screen_ajout))  {
 		
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
 			if (@file_exists($gepiPath2.'/style_screen_ajout_'.getSettingValue("gepiSchoolRne").'.css')) {
-				$Style_CSS[]=array("fichier"=>$gepiPath."/style_screen_ajout_".getSettingValue("gepiSchoolRne").".css"  , "rel"=>"stylesheet" , "type"=>"text/css","media"=>"" , "title"=>"");
+				$Style_CSS[]=array("fichier"=>$gepiPath."/style_screen_ajout_".getSettingValue("gepiSchoolRne").".css"  , "rel"=>"stylesheet" , "type"=>"text/css","media"=>"all" , "title"=>"");
 				
 			}
 		} else {
 			if (@file_exists($gepiPath2.'/style_screen_ajout.css')) {
-				$Style_CSS[]=array("fichier"=>$gepiPath."/style_screen_ajout.css"  , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"" , "title"=>"");
+				$Style_CSS[]=array("fichier"=>$gepiPath."/style_screen_ajout.css"  , "rel"=>"stylesheet" , "type"=>"text/css" , "media"=>"all" , "title"=>"");
 			}
 		}
 	}
@@ -399,14 +404,17 @@ if (isset($titre_page)) {
 	if(isset($_SESSION['login'])) {
 		if((!isset($_SESSION['prenom']))||(!isset($_SESSION['nom']))) {
 			$sql="SELECT nom, prenom FROM utilisateurs WHERE login='".$_SESSION['login']."';";
-			$res_np=mysql_query($sql);
-			if(mysql_num_rows($res_np)>0) {
-				$lig_np=mysql_fetch_object($res_np);
-				$_SESSION['prenom']=$lig_np->prenom;
-				$_SESSION['nom']=$lig_np->nom;
-			}
+                    
+                $res_np = mysqli_query($mysqli, $sql);
+                if($res_np->num_rows > 0) {
+                    $lig_np=$res_np->fetch_object();
+                    $_SESSION['prenom']=$lig_np->prenom;
+                    $_SESSION['nom']=$lig_np->nom;
+                }
+                $res_np->close(); 
 		}
 	}
+    
 	if((isset($_SESSION['prenom']))||(isset($_SESSION['nom']))) {
 		$tbs_nom_prenom=$_SESSION['prenom'] . " " . $_SESSION['nom'];
 	}else {
@@ -598,6 +606,8 @@ $tbs_menu_prof= array();
 $tbs_menu_admin = array();
 $tbs_menu_scol = array();
 $tbs_menu_cpe = array();
+$tbs_menu_responsable = array();
+$tbs_menu_eleve = array();
 if (!isset($nobar)) { $nobar = "non"; }
 if(isset($_SESSION['statut'])) {
 	if (getSettingValue("utiliserMenuBarre") != "no" AND $_SESSION["statut"] == "professeur" AND $nobar != 'oui') {
@@ -685,7 +695,46 @@ if(isset($_SESSION['statut'])) {
 		         */
 				include("header_barre_cpe_template.php");
 			}
-	
+	} else if ((getSettingValue("utiliserMenuBarre") != "no") AND ($_SESSION["statut"] == "responsable") AND ($nobar != 'oui')) {
+			// Il n'y a pas de préférence enregistrée pour des non_prof
+			// Du coup, on récupère la valeur par défaut: 'yes'
+			if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
+				if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+		          /**
+		           * Fonctions de calendrier
+		           */
+					require_once($prefix."edt_organisation/fonctions_calendrier.php");
+				} else if(file_exists("fonctions_calendrier.php")) {
+		          /**
+		           * Fonctions de calendrier
+		           */
+					require_once("./fonctions_calendrier.php");
+				}
+		        /**
+		         * Barre de menu de cpe
+		         */
+				include("header_barre_responsable_template.php");
+			}
+	} else if ((getSettingValue("utiliserMenuBarre") != "no") AND ($_SESSION["statut"] == "eleve") AND ($nobar != 'oui')) {
+			// Il n'y a pas de préférence enregistrée pour des non_prof
+			// Du coup, on récupère la valeur par défaut: 'yes'
+			if (getPref($_SESSION["login"], "utiliserMenuBarre", "yes") == "yes") {
+				if (file_exists($prefix."edt_organisation/fonctions_calendrier.php")) {
+		          /**
+		           * Fonctions de calendrier
+		           */
+					require_once($prefix."edt_organisation/fonctions_calendrier.php");
+				} else if(file_exists("fonctions_calendrier.php")) {
+		          /**
+		           * Fonctions de calendrier
+		           */
+					require_once("./fonctions_calendrier.php");
+				}
+		        /**
+		         * Barre de menu de cpe
+		         */
+				include("header_barre_eleve_template.php");
+			}
 	} else {
 		$tbs_menu_prof=array();
 	}
@@ -695,7 +744,8 @@ if(isset($_SESSION['statut'])) {
 
 	$tbs_msg="" ;
 	if ((isset($_GET['msg'])) or (isset($_POST['msg'])) or (isset($msg))) {
-		$msg = isset($_POST['msg']) ? unslashes($_POST['msg']) : (isset($_GET['msg']) ? unslashes($_GET['msg']) : $msg);
+		//$msg = isset($_POST['msg']) ? unslashes($_POST['msg']) : (isset($_GET['msg']) ? unslashes($_GET['msg']) : $msg);
+        $msg = isset($_POST['msg']) ? stripslashes($_POST['msg']) : (isset($_GET['msg']) ? stripslashes($_GET['msg']) : $msg);
 		if ($msg != '') {
 			$tbs_msg=$msg ;
 		}

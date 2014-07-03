@@ -50,10 +50,18 @@ $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
 | <a href='classes_param.php'>Paramétrage de plusieurs classes par lots</a>
 | <a href='../init_xml2/init_alternatif.php?cat=classes' title="Création d'enseignements par lots">Créations par lots</a>
 | <a href='cpe_resp.php'>Paramétrage rapide CPE Responsable</a>
-| <a href='scol_resp.php'>Paramétrage scolarité</a>
+| <a href='scol_resp.php' title="Définir les comptes scolarité associés à telles et telles classes.
+Ce choix permet de limiter la liste des classes proposées aux différents comptes scolarité quand le suivi est réparti entre plusieurs personnes.">Paramétrage scolarité</a>
 | <a href='acces_appreciations.php'>Paramétrage de l'accès aux appréciations</a>
 | <a href='../groupes/repartition_ele_grp.php'>Répartir des élèves entre plusieurs groupes</a>
 | <a href='../groupes/check_enseignements.php'>Vérifications</a>
+<?php
+	if(getSettingAOui('active_carnets_notes')) {echo "| <a href='../cahier_notes_admin/creation_conteneurs_par_lots.php'>Créer des ".casse_mot(getSettingValue("gepi_denom_boite"), 'min')."s par lots</a>";}
+
+	if(acces("/classes/dates_classes.php", $_SESSION['statut'])) {
+		echo "| <a href='dates_classes.php' title=\"Définir des événements particuliers pour les classes (conseils de classe, arrêt des notes,...).\">Événements classe</a>";
+	}
+?>
 </p>
 <p style='margin-top: 10px;'>
 <img src='../images/icons/add.png' alt='' class='back_link' /> <a href="modify_nom_class.php">Ajouter une classe</a>
@@ -61,18 +69,18 @@ $_SESSION['chemin_retour'] = $_SERVER['REQUEST_URI'];
 
 <?php
 // On va chercher les classes déjà existantes, et on les affiche.
-$call_data = mysql_query("SELECT * FROM classes ORDER BY classe");
-$nombre_lignes = mysql_num_rows($call_data);
+$call_data = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM classes ORDER BY classe");
+$nombre_lignes = mysqli_num_rows($call_data);
 if ($nombre_lignes != 0) {
 	// 20130313
 	$classe_sans_scol="n";
 	$sql="SELECT c.* FROM classes c, periodes p WHERE p.id_classe=c.id AND c.id NOT IN (SELECT id_classe FROM j_scol_classes jsc, utilisateurs u WHERE u.login=jsc.login AND u.etat='actif');";
 	//echo "$sql<br />";
-	$test_scol=mysql_query($sql);
-	if(mysql_num_rows($test_scol)>0) {
+	$test_scol=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_scol)>0) {
 		$classe_sans_scol="y";
 		$tab_classe_sans_scol=array();
-		while($lig_tmp=mysql_fetch_object($test_scol)) {
+		while($lig_tmp=mysqli_fetch_object($test_scol)) {
 			$tab_classe_sans_scol[]=$lig_tmp->id;
 		}
 	}
@@ -84,8 +92,8 @@ if ($nombre_lignes != 0) {
 	$alt=1;
 	while ($i < $nombre_lignes){
 		$alt=$alt*(-1);
-		$id_classe = mysql_result($call_data, $i, "id");
-		$classe = mysql_result($call_data, $i, "classe");
+		$id_classe = old_mysql_result($call_data, $i, "id");
+		$classe = old_mysql_result($call_data, $i, "classe");
 		echo "<tr";
 		echo " class='lig$alt white_hover'";
 		echo ">\n";
@@ -98,8 +106,8 @@ if ($nombre_lignes != 0) {
 		//echo "<td>|<a href='modify_class.php?id_classe=$id_classe'>Gérer les matières</a></td>\n";
 
 		$sql="select id_classe from periodes where id_classe = '$id_classe';";
-		$res_nb_per=mysql_query($sql);
-		$nb_per = mysql_num_rows($res_nb_per);
+		$res_nb_per=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_per = mysqli_num_rows($res_nb_per);
 		echo "<td>\n";
 		if ($nb_per != 0) {
 			echo "<a href='classes_const.php?id_classe=$id_classe'><img src='../images/icons/edit_user.png' alt=\"Éditer les élèves associés à la classe\" title=\"Éditer les élèves associés à la classe\" /> Élèves</a>\n";

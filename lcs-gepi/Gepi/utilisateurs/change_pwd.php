@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -64,7 +64,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 	}
 
 	if(($mdp_INE=='y')&&($user_statut=='eleve')&&($ine_password!="")) {
-		$auth_mode = mysql_result(mysql_query("SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
+		$auth_mode = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
 		if ($auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == 'yes') {
 			// On est en mode d'écriture LDAP
 			$ldap_server = new LDAPServer;
@@ -76,7 +76,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 
 		//ajout Eric En cas de réinitialisation par l'admin, il faut forcer à la première connexion la changement du mot de passe
 		if ($_SESSION['statut'] == 'administrateur') {
-			$reg_data = mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
+			$reg_data = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
 		}
 
 		if (!$reg_data) {
@@ -92,7 +92,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 			$msg = "Erreur lors de la saisie du mot de passe (<em>voir les recommandations</em>), veuillez recommencer !";
 			if((isset($info_verif_mot_de_passe))&&($info_verif_mot_de_passe!="")) {$msg.="<br />".$info_verif_mot_de_passe;}
 		} else {
-			$auth_mode = mysql_result(mysql_query("SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
+			$auth_mode = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT auth_mode FROM utilisateurs WHERE login = '".$user_login."'"), 0);
 			if ($auth_mode != "gepi" && $gepiSettings['ldap_write_access'] == 'yes') {
 				// On est en mode d'écriture LDAP
 				$ldap_server = new LDAPServer;
@@ -104,7 +104,7 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 
 			//ajout Eric En cas de réinitialisation par l'admin, il faut forcer à la première connexion la changement du mot de passe
 			if ($_SESSION['statut'] == 'administrateur') {
-				$reg_data = mysql_query("UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
+				$reg_data = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET change_mdp = 'y' WHERE login='".$user_login."'");
 			}
 
 			if (!$reg_data) {
@@ -118,20 +118,30 @@ if (isset($_POST['valid']) and ($_POST['valid'] == "yes")) {
 
 // On appelle les informations de l'utilisateur
 if (isset($user_login) and ($user_login!='')) {
-    $call_user_info = mysql_query("SELECT nom,prenom,statut,auth_mode FROM utilisateurs WHERE login='".$user_login."'");
-    $auth_mode = mysql_result($call_user_info, "0", "auth_mode");
-    $user_statut = mysql_result($call_user_info, "0", "statut");
-    $user_nom = mysql_result($call_user_info, "0", "nom");
-    $user_prenom = mysql_result($call_user_info, "0", "prenom");
+    $call_user_info = mysqli_query($GLOBALS["mysqli"], "SELECT nom,prenom,statut,auth_mode FROM utilisateurs WHERE login='".$user_login."'");
+    $auth_mode = old_mysql_result($call_user_info, "0", "auth_mode");
+    $user_statut = old_mysql_result($call_user_info, "0", "statut");
+    $user_nom = old_mysql_result($call_user_info, "0", "nom");
+    $user_prenom = old_mysql_result($call_user_info, "0", "prenom");
 }
 
 //**************** EN-TETE *****************
 $titre_page = "Gestion des utilisateurs | Modifier un mot de passe";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
-?>
-<p class='bold'><a href="index.php"><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | <a href="help.php">Aide</a></p>
-<?php
+
+echo "<p class='bold'><a href='";
+if((isset($user_statut))&&($user_statut!='responsable')&&($user_statut!='eleve')) {
+	echo "index.php?mode=personnels";
+}
+elseif((isset($user_statut))&&($user_statut=='responsable')) {
+	echo "edit_responsable.php";
+}
+elseif((isset($user_statut))&&($user_statut=='eleve')) {
+	echo "edit_eleve.php";
+}
+echo "'><img src='../images/icons/back.png' alt='Retour' class='back_link' /> Retour</a> | <a href='help.php'>Aide</a></p>\n";
+
 // dans le cas de LCS, existence d'utilisateurs locaux reprérés grâce au champ password non vide.
 $testpassword = sql_query1("select password from utilisateurs where login = '".$user_login."'");
 if ($testpassword == -1) $testpassword = '';
@@ -182,22 +192,36 @@ if (mb_strtoupper($user_login) != mb_strtoupper($_SESSION['login'])) {
         echo "Il doit comporter au moins une lettre et au moins un chiffre.";
     echo "</b></p>\n";
     echo "<br />\n";
-	echo "<table summary='Mot de passe'>\n<tr><td>Nouveau mot de passe (<em>".getSettingValue("longmin_pwd")." caractères minimum</em>) : </td>\n<td><input type='password' name='no_anti_inject_password' size='20' /></td></tr>\n";
-    echo "<tr><td>Nouveau mot de passe (<em>à confirmer</em>) :</td><td><input type='password' name='reg_password2' size='20' /></td></tr>\n";
-    echo "</table><input type='hidden' name='valid' value=\"yes\" />\n";
-    echo "<input type='hidden' name='user_login' value='".$user_login."' />\n";
+	echo "<table summary='Mot de passe'>
+	<tr>
+		<td>Nouveau mot de passe (<em>".getSettingValue("longmin_pwd")." caractères minimum</em>) : </td>
+		<td>
+			<input type='password' name='no_anti_inject_password' id='no_anti_inject_password' size='20' tabindex='1' />
+			".input_password_to_text('no_anti_inject_password')."
+		</td>
+	</tr>
+	<tr>
+		<td>Nouveau mot de passe (<em>à confirmer</em>) :</td>
+		<td>
+			<input type='password' name='reg_password2' id='reg_password2' size='20' tabindex='2' />
+			".input_password_to_text('reg_password2')."
+		</td>
+	</tr>
+</table>
+<input type='hidden' name='valid' value=\"yes\" />
+<input type='hidden' name='user_login' value='".$user_login."' />\n";
 
-    echo "<br /><center><input type='submit' value='Enregistrer' /></center>";
+	echo "<br /><center><input type='submit' value='Enregistrer' tabindex='3' /></center>";
 
 	$user_statut = sql_query1("select statut from utilisateurs where login='".$user_login."';");
 	if($user_statut=='eleve') {
 		$sql="SELECT no_gep FROM eleves WHERE login='$user_login';";
-		$res_ine=mysql_query($sql);
-		if(mysql_num_rows($res_ine)>0){
-			$lig_ine=mysql_fetch_object($res_ine);
+		$res_ine=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ine)>0){
+			$lig_ine=mysqli_fetch_object($res_ine);
 			if($lig_ine->no_gep!='') {
 				echo "<input type='hidden' name='ine_password' value=\"$lig_ine->no_gep\" />\n";
-				echo "<p><input type='checkbox' name='mdp_INE' id='mdp_INE' value='y' /> <label for='mdp_INE' style='cursor:pointer'>Utiliser le numéro national de l'élève (<em>INE</em>) comme mot de passe initial lorsqu'il est renseigné.</label></p>\n";
+				echo "<p><input type='checkbox' name='mdp_INE' id='mdp_INE' value='y' tabindex='4' /> <label for='mdp_INE' style='cursor:pointer'>Utiliser le numéro national de l'élève (<em>INE</em>) comme mot de passe initial lorsqu'il est renseigné.</label></p>\n";
 			}
 		}
 	}

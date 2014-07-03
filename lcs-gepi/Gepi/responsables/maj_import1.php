@@ -199,8 +199,8 @@ else{
 
 								//$sql="SELECT * FROM eleves WHERE elenoet='$affiche[4]'";
 								$sql="SELECT * FROM eleves WHERE (elenoet='$affiche[4]' OR elenoet='".sprintf("%05d",$affiche[4])."')";
-								$res1=mysql_query($sql);
-								if(mysql_num_rows($res1)>0){
+								$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($res1)>0){
 									//$sql="UPDATE eleves SET ele_id='$affiche[5]' WHERE elenoet='$affiche[4]'";
 
 									// FAUT-IL FAIRE LES UPDATE SANS CONTRÔLE OU SIGNALER LES MODIFS SEULEMENT...
@@ -210,14 +210,9 @@ else{
 									// CASES A COCHER POUR VALIDER
 
 
-									//$res_update=mysql_query($sql);
-									//if(!$res_update){
-									//	$erreur++;
-									//}
-
 									//$eleves[$cpt]
 
-									$lig_ele=mysql_fetch_object($res1);
+									$lig_ele=mysqli_fetch_object($res1);
 									//$tabtmp=explode("/",$affiche[3]);
 									// $lig_ele->naissance!=$tabtmp[2]."-".$tabtmp[1]."-".$tabtmp[0])||
 
@@ -267,10 +262,10 @@ else{
 									*/
 
 									$sql="SELECT * FROM j_eleves_regime WHERE (login='$lig_ele->login')";
-									$res2=mysql_query($sql);
-									if(mysql_num_rows($res2)>0){
+									$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res2)>0){
 										$tmp_regime="";
-										$lig2=mysql_fetch_object($res2);
+										$lig2=mysqli_fetch_object($res2);
 										//=========================
 										// MODIF: boireaus 20071024
 										$tmp_new_regime=traite_regime_sconet($affiche[8]);
@@ -729,7 +724,7 @@ else{
 								no_gep='$nonat'
 								WHERE (ele_id='$ele_id')";
 					//			WHERE elenoet='$elenoet'";
-					$res1=mysql_query($sql);
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
 					//echo "<p>$sql</p>\n";
 					if(!$res1){
 						//echo " (<font color='red'>erreur</font>)";
@@ -740,7 +735,7 @@ else{
 					$sql="UPDATE j_eleves_regime SET doublant='$doublant',
 								regime='$regime'
 								WHERE (login='$login_eleve')";
-					$res2=mysql_query($sql);
+					$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res2){
 						//echo " (<font color='red'>erreur</font>)";
 						echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -811,7 +806,7 @@ else{
 								ele_id='$ele_id'";
 					//,			login='$login_eleve'
 					//echo "$sql<br />\n";
-					$res1=mysql_query($sql);
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res1){
 						//echo " (<font color='red'>erreur</font>)";
 						echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -819,13 +814,13 @@ else{
 					}
 					else{
 						$sql="SELECT 1=1 FROM j_eleves_regime WHERE (login='$login_eleve')";
-						$res2=mysql_query($sql);
-						if(mysql_num_rows($res2)==0){
+						$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res2)==0){
 							$sql="INSERT INTO j_eleves_regime SET doublant='$doublant',
 										regime='$regime',
 										login='$login_eleve'";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -837,7 +832,7 @@ else{
 										regime='$regime',
 										WHERE (login='$login_eleve')";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -919,10 +914,6 @@ else{
 					$adr_new=array();
 					$adr_modif=array();
 
-					// On vide la table avant traitement (au cas où il aurait fallu s'y prendre à deux fois)
-					//$sql="TRUNCATE TABLE resp_adr";
-					//$res_truncate=mysql_query($sql);
-
 					// on constitue le tableau des champs à extraire
 					$tabchamps=array("adr_id","adr1","adr2","adr3","adr4","cp","pays","commune");
 
@@ -992,24 +983,6 @@ else{
 									//$ind = $tabindice[$i];
 									$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($tabligne[$tabindice[$i]]))));
 								}
-								/*
-								$req = mysql_query("insert into resp_adr set
-											adr_id = '$affiche[0]',
-											adr1 = '$affiche[1]',
-											adr2 = '$affiche[2]',
-											adr3 = '$affiche[3]',
-											adr4 = '$affiche[4]',
-											cp = '$affiche[5]',
-											pays = '$affiche[6]',
-											commune = '$affiche[7]'
-											");
-								if(!$req) {
-									$nb_reg_no2++;
-									echo mysql_error();
-								} else {
-									$nb_record2++;
-								}
-								*/
 
 								// Stockage des données:
 								$adresse[$affiche[0]]=array();
@@ -1018,38 +991,16 @@ else{
 								}
 
 
-								/*
-								$sql="SELECT * FROM resp_adr WHERE (adr_id='$affiche[0]')";
-								//echo "$sql<br />\n";
-								$res1=mysql_query($sql);
-								if(mysql_num_rows($res1)==0){
-									$adr_new[]=$affiche[0];
-										//echo "Ajout de l'adresse n°$affiche[0]<br />\n";
-								}
-								else{
-									$lig=mysql_fetch_object($res1);
-									if((stripslashes($lig->adr1)!=stripslashes($affiche[1]))||
-									(stripslashes($lig->adr2)!=stripslashes($affiche[2]))||
-									(stripslashes($lig->adr3)!=stripslashes($affiche[3]))||
-									(stripslashes($lig->adr4)!=stripslashes($affiche[4]))||
-									(stripslashes($lig->cp)!=stripslashes($affiche[5]))||
-									(stripslashes($lig->pays)!=stripslashes($affiche[6]))||
-									(stripslashes($lig->commune)!=stripslashes($affiche[7]))){
-										$adr_modif[]=$affiche[0];
-										//echo "Modification de l'adresse n°$affiche[0]<br />\n";
-									}
-								}
-								*/
 
 								$temoin_nouvelle_adresse="n";
 								$sql="SELECT * FROM resp_adr WHERE (adr_id='$affiche[0]')";
 								//echo "$sql<br />\n";
-								$res1=mysql_query($sql);
-								if(mysql_num_rows($res1)==0){
+								$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($res1)==0){
 									$sql="SELECT * FROM resp_pers WHERE (adr_id='$affiche[0]')";
 									//echo "$sql<br />\n";
-									$res2=mysql_query($sql);
-									if(mysql_num_rows($res2)==0){
+									$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res2)==0){
 										$adr_new[]=$affiche[0];
 										$temoin_nouvelle_adresse="y";
 										//echo "Ajout de l'adresse n°$affiche[0]<br />\n";
@@ -1061,7 +1012,7 @@ else{
 										//echo "Ajout de l'adresse n°$affiche[0]<br />\n";
 								}
 								else{
-									$lig=mysql_fetch_object($res1);
+									$lig=mysqli_fetch_object($res1);
 									if((stripslashes($lig->adr1)!=stripslashes($affiche[1]))||
 									(stripslashes($lig->adr2)!=stripslashes($affiche[2]))||
 									(stripslashes($lig->adr3)!=stripslashes($affiche[3]))||
@@ -1119,10 +1070,6 @@ else{
 					$personne=array();
 					$pers_new=array();
 					$pers_modif=array();
-
-					// On vide la table avant traitement (au cas où il aurait fallu s'y prendre à deux fois)
-					//$sql="TRUNCATE TABLE resp_pers";
-					//$res_truncate=mysql_query($sql);
 
 					// on constitue le tableau des champs à extraire
 					//$tabchamps=array("pers_id","nom","prenom","tel_pers","tel_port","tel_prof","mel","adr_id");
@@ -1187,24 +1134,6 @@ else{
 									$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($tabligne[$tabindice[$i]]))));
 									//echo "\$affiche[$i]=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim(\$tabligne[\$tabindice[$i]]))))=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim(\$tabligne[$tabindice[$i]]))))=traitement_magic_quotes(corriger_caracteres(dbase_filter(trim(".$tabligne[$tabindice[$i]]."))));<br />\n";
 								}
-								/*
-								$req = mysql_query("insert into resp_pers set
-											pers_id = '$affiche[0]',
-											nom = '$affiche[1]',
-											prenom = '$affiche[2]',
-											tel_pers = '$affiche[3]',
-											tel_port = '$affiche[4]',
-											tel_prof = '$affiche[5]',
-											mel = '$affiche[6]',
-											adr_id = '$affiche[7]'
-											");
-								if(!$req) {
-									$nb_reg_no3++;
-									echo mysql_error();
-								} else {
-									$nb_record3++;
-								}
-								*/
 
 								// Stockage des données:
 								$personne[$affiche[0]]=array();
@@ -1214,14 +1143,14 @@ else{
 								}
 
 								$sql="SELECT * FROM resp_pers WHERE (pers_id='$affiche[0]')";
-								$res1=mysql_query($sql);
-								if(mysql_num_rows($res1)==0){
+								$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($res1)==0){
 									$pers_new[]=$affiche[0];
 									//echo "Ajout de pers_id=$affiche[0] pour $affiche[1] $affiche[2]<br />\n";
 								}
 								else{
 
-									$lig=mysql_fetch_object($res1);
+									$lig=mysqli_fetch_object($res1);
 									if((stripslashes($lig->nom)!=stripslashes($affiche[1]))||
 									(stripslashes($lig->prenom)!=stripslashes($affiche[2]))||
 									(mb_strtolower(stripslashes($lig->civilite))!=(mb_strtolower(stripslashes($affiche[3]))))||
@@ -1273,36 +1202,6 @@ else{
 
 
 			// ***************************************
-			/*
-			for($i=0;$i<count($resp_modif);$i++){
-				$tabchamps=array("pers_id","nom","prenom","tel_pers","tel_port","tel_prof","mel","adr_id");
-
-				$tmp=explode(":",$resp_modif[$i]);
-				$ele_id=$tmp[0];
-				$pers_id=$tmp[1];
-				if((!in_array($pers_id,$pers_modif))||(!in_array($pers_id,$pers_new))){
-					if(!isset($personne[$pers_id])){
-						$personne[$pers_id]=array();
-						$sql="SELECT * FROM resp_pers WHERE pers_id='$pers_id'";
-						$res1=mysql_query($sql);
-
-						if(mysql_num_rows($res1)==0){
-							// PROBLEME: s'il y a modif de responsable...
-							// ... et que le responsable n'est pas dans la table resp_pers, c'est que c'est une nouvelle personne...
-							// Mais alors elle devrait être dans le tableau $personne
-						}
-						else{
-							$lig1=mysql_fetch_object($res1);
-							for($j=1;$j<count($tabchamps);$j++) {
-								$pers_modif[]=$pers_id;
-								$personne[$pers_id]["$tabchamps[$j]"]=$lig1->$tabchamps[$j];
-								echo "\$personne[$pers_id][\"$tabchamps[$j]\"]=".$personne[$pers_id]["$tabchamps[$j]"]."<br />\n";
-							}
-						}
-					}
-				}
-			}
-			*/
 
 			/*
 			// DEBUG:
@@ -1323,12 +1222,12 @@ else{
 				}
 				if($temoin==""){
 					$sql="SELECT * FROM resp_pers WHERE (adr_id='".$adr_modif[$i]."')";
-					$res1=mysql_query($sql);
-					if(mysql_num_rows($res1)==0){
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res1)==0){
 						// L'adresse n'est plus utilisée? Mais encore présente dans sconet? et aurait changé?
 					}
 					else{
-						while($lig1=mysql_fetch_object($res1)){
+						while($lig1=mysqli_fetch_object($res1)){
 							$pers_id=$lig1->pers_id;
 							$personne[$pers_id]=array();
 
@@ -1420,8 +1319,8 @@ else{
 				echo "</td>\n";
 
 				$sql="SELECT * FROM resp_pers WHERE (pers_id='$pers_id')";
-				$res1=mysql_query($sql);
-				$lig1=mysql_fetch_object($res1);
+				$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+				$lig1=mysqli_fetch_object($res1);
 
 				echo "<td style='text-align:center;";
 				if(stripslashes($lig1->nom)!=stripslashes($personne[$pers_id]["nom"])){
@@ -1566,8 +1465,8 @@ else{
 				echo "<td style='text-align:center;";
 				$sql="SELECT * FROM resp_adr WHERE (adr_id='".$personne[$pers_id]["adr_id"]."')";
 				$adr_id=$personne[$pers_id]["adr_id"];
-				$res2=mysql_query($sql);
-				$lig2=mysql_fetch_object($res2);
+				$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+				$lig2=mysqli_fetch_object($res2);
 				if((in_array($personne[$pers_id]["adr_id"],$adr_modif))||(in_array($personne[$pers_id]["adr_id"],$adr_new))){
 					echo " background-color:lightgreen;'>";
 					if(($lig2->adr1!="")||($lig2->adr2!="")||($lig2->adr3!="")||($lig2->adr4!="")||($lig2->cp!="")||($lig2->commune!="")||($lig2->pays!="")){
@@ -1763,11 +1662,11 @@ else{
 				echo "<td style='text-align:center;";
 				$sql="SELECT * FROM resp_adr WHERE (adr_id='".$personne[$pers_id]["adr_id"]."')";
 				$adr_id=$personne[$pers_id]["adr_id"];
-				$res2=mysql_query($sql);
+				$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 
 				unset($lig2);
-				if(mysql_num_rows($res2)>0){
-					$lig2=mysql_fetch_object($res2);
+				if(mysqli_num_rows($res2)>0){
+					$lig2=mysqli_fetch_object($res2);
 				}
 
 				if((in_array($personne[$pers_id]["adr_id"],$adr_modif))||(in_array($personne[$pers_id]["adr_id"],$adr_new))){
@@ -1946,7 +1845,7 @@ else{
 									adr_id='$adr_id'
 								WHERE (pers_id='$pers_id')";
 					//echo "$sql<br />\n";
-					$res1=mysql_query($sql);
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res1){
 						//echo " (<font color='red'>erreur</font>)";
 						echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -1967,8 +1866,8 @@ else{
 
 						$sql="SELECT 1=1 FROM resp_adr WHERE (adr_id='$adr_id')";
 						//echo "$sql<br />\n";
-						$res2=mysql_query($sql);
-						if(mysql_num_rows($res2)==0){
+						$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res2)==0){
 							$sql="INSERT INTO resp_adr SET adr_id='$adr_id',
 											adr1='$adr1',
 											adr2='$adr2',
@@ -1978,7 +1877,7 @@ else{
 											commune='$commune',
 											pays='$pays'";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -1995,7 +1894,7 @@ else{
 											pays='$pays'
 										WHERE (adr_id='$adr_id')";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2037,7 +1936,7 @@ else{
 									mel='$mel',
 									adr_id='$adr_id'";
 					//echo "$sql<br />\n";
-					$res1=mysql_query($sql);
+					$res1=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$res1){
 						//echo " (<font color='red'>erreur</font>)";
 						echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2058,8 +1957,8 @@ else{
 
 						$sql="SELECT 1=1 FROM resp_adr WHERE (adr_id='$adr_id')";
 						//echo "$sql<br />\n";
-						$res2=mysql_query($sql);
-						if(mysql_num_rows($res2)==0){
+						$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res2)==0){
 							$sql="INSERT INTO resp_adr SET adr_id='$adr_id',
 											adr1='$adr1',
 											adr2='$adr2',
@@ -2069,7 +1968,7 @@ else{
 											commune='$commune',
 											pays='$pays'";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2086,7 +1985,7 @@ else{
 											pays='$pays'
 										WHERE (adr_id='$adr_id')";
 							//echo "$sql<br />\n";
-							$res3=mysql_query($sql);
+							$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res3){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2160,10 +2059,6 @@ else{
 					$responsable=array();
 					$resp_new=array();
 					$resp_modif=array();
-
-					// On vide la table avant traitement (au cas où il aurait fallu s'y prendre à deux fois)
-					//$sql="TRUNCATE TABLE responsables2";
-					//$res_truncate=mysql_query($sql);
 
 					// on constitue le tableau des champs à extraire
 					$tabchamps=array("ele_id","pers_id","resp_legal","pers_contact");
@@ -2259,21 +2154,6 @@ else{
 									$affiche[$i] = traitement_magic_quotes(corriger_caracteres(dbase_filter(trim($tabligne[$tabindice[$i]]))));
 								}
 
-								/*
-								$req = mysql_query("insert into responsables2 set
-											ele_id = '$affiche[0]',
-											pers_id = '$affiche[1]',
-											resp_legal = '$affiche[2]',
-											pers_contact = '$affiche[3]'
-											");
-								if(!$req) {
-									$nb_reg_no1++;
-									echo mysql_error();
-								} else {
-									$nb_record1++;
-								}
-								*/
-
 								// Stockage des données:
 								$responsable[$affiche[0]]=array();
 								for($i=1;$i<count($tabchamps);$i++) {
@@ -2289,8 +2169,8 @@ else{
 
 								//$sql="SELECT * FROM responsables2 WHERE ele_id='$affiche[0]' AND pers_id='$affiche[1]'";
 								$sql="SELECT * FROM responsables2 WHERE (ele_id='$ele_id' AND pers_id='$pers_id')";
-								$res1=mysql_query($sql);
-								if(mysql_num_rows($res1)==0){
+								$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+								if(mysqli_num_rows($res1)==0){
 									// L'association responsable/eleve n'existe pas encore
 									$resp_new[]="$affiche[0]:$affiche[1]";
 
@@ -2306,8 +2186,8 @@ else{
 									echo ";'>\n";
 
 									$sql="SELECT nom,prenom FROM resp_pers WHERE (pers_id='$pers_id')";
-									$res2=mysql_query($sql);
-									if(mysql_num_rows($res2)==0){
+									$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+									if(mysqli_num_rows($res2)==0){
 										// Problème: On ne peut pas importer l'association sans que la personne existe.
 										// Est-ce que l'étape d'import de la personne a été refusée?
 										echo "<td>&nbsp;</td>\n";
@@ -2318,7 +2198,7 @@ else{
 										echo "<td colspan='7'>Aucune personne associée???</td>\n";
 									}
 									else{
-										$lig2=mysql_fetch_object($res2);
+										$lig2=mysqli_fetch_object($res2);
 										echo "<td style='text-align:center;'>\n";
 										echo "<input type='checkbox' id='check_".$cpt."' name='new[]' value='$cpt' />";
 										echo "</td>\n";
@@ -2345,8 +2225,8 @@ else{
 										echo "<td style='text-align:center;";
 										//$sql="SELECT 1=1 FROM responsables2 WHERE (pers_id!='$pers_id' AND ele_id='$ele_id' AND resp_legal='$resp_legal')";
 										$sql="SELECT 1=1 FROM responsables2 WHERE (pers_id!='$pers_id' AND ele_id='$ele_id' AND resp_legal='$resp_legal' AND (resp_legal='1' OR resp_legal='2'))";
-										$res3=mysql_query($sql);
-										if(mysql_num_rows($res3)==0){
+										$res3=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res3)==0){
 											echo "'>\n";
 										}
 										else{
@@ -2363,14 +2243,14 @@ else{
 
 										// Elève(s) associé(s)
 										$sql="SELECT nom,prenom FROM eleves WHERE (ele_id='$ele_id')";
-										$res4=mysql_query($sql);
-										if(mysql_num_rows($res4)==0){
+										$res4=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res4)==0){
 											echo "<td style='text-align:center; background-color:red;' colspan='3'>\n";
 											echo "Aucun élève pour ele_id=$ele_id ???";
 											echo "</td>\n";
 										}
 										else{
-											$lig4=mysql_fetch_object($res4);
+											$lig4=mysqli_fetch_object($res4);
 											echo "<td style='text-align:center;'>\n";
 											echo "$lig4->nom";
 											echo "<input type='hidden' name='new_".$cpt."_ele_nom' value=\"$lig4->nom\" />\n";
@@ -2393,7 +2273,7 @@ else{
 								else{
 
 
-									$lig1=mysql_fetch_object($res1);
+									$lig1=mysqli_fetch_object($res1);
 									if((stripslashes($lig1->resp_legal)!=stripslashes($affiche[2]))||
 									(stripslashes($lig1->pers_contact)!=stripslashes($affiche[3]))){
 										// L'un des champs resp_legal ou pers_contact au moins a changé
@@ -2419,8 +2299,8 @@ else{
 										echo ";'>\n";
 
 										$sql="SELECT nom,prenom FROM resp_pers WHERE (pers_id='$pers_id')";
-										$res2=mysql_query($sql);
-										if(mysql_num_rows($res2)==0){
+										$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res2)==0){
 											// Problème: On ne peut pas importer l'association sans que la personne existe.
 											// Est-ce que l'étape d'import de la personne a été refusée?
 											echo "<td>&nbsp;</td>\n";
@@ -2430,7 +2310,7 @@ else{
 											echo "<td colspan='5'>Aucune personne associée???</td>\n";
 										}
 										else{
-											$lig2=mysql_fetch_object($res2);
+											$lig2=mysqli_fetch_object($res2);
 											echo "<td style='text-align:center;'>\n";
 											echo "<input type='checkbox' id='check_".$cpt."' name='modif[]' value='$cpt' />";
 											echo "</td>\n";
@@ -2459,8 +2339,8 @@ else{
 											echo "<td style='text-align:center;";
 											//$sql="SELECT 1=1 FROM responsables2 WHERE (pers_id!='$pers_id' AND ele_id='$ele_id' AND resp_legal='$resp_legal')";
 											$sql="SELECT 1=1 FROM responsables2 WHERE (pers_id!='$pers_id' AND ele_id='$ele_id' AND resp_legal='$resp_legal' AND (resp_legal='1' OR resp_legal='2'))";
-											$res3=mysql_query($sql);
-											if(mysql_num_rows($res3)==0){
+											$res3=mysqli_query($GLOBALS["mysqli"], $sql);
+											if(mysqli_num_rows($res3)==0){
 												echo "'>\n";
 											}
 											else{
@@ -2477,14 +2357,14 @@ else{
 
 											// Elève(s) associé(s)
 											$sql="SELECT nom,prenom FROM eleves WHERE (ele_id='$ele_id')";
-											$res4=mysql_query($sql);
-											if(mysql_num_rows($res4)==0){
+											$res4=mysqli_query($GLOBALS["mysqli"], $sql);
+											if(mysqli_num_rows($res4)==0){
 												echo "<td style='text-align:center; background-color:red;' colspan='3'>\n";
 												echo "Aucun élève pour ele_id=$ele_id ???";
 												echo "</td>\n";
 											}
 											else{
-												$lig4=mysql_fetch_object($res4);
+												$lig4=mysqli_fetch_object($res4);
 												echo "<td style='text-align:center;'>\n";
 												echo "$lig4->nom";
 												//echo "<input type='hidden' name='modif_".$cpt."_ele_nom' value=\"".addslashes($lig4->nom)."\" />\n";
@@ -2605,7 +2485,7 @@ else{
 										pers_contact='$pers_contact'
 									WHERE (pers_id='$pers_id' AND ele_id='$ele_id')";
 						//echo "<p>$sql</p>\n";
-						$res1=mysql_query($sql);
+						$res1=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$res1){
 							//echo " (<font color='red'>erreur</font>)";
 							echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2655,26 +2535,24 @@ else{
 						// On supprime l'inscription précédente si elle existe:
 						$sql="SELECT pers_id FROM responsables2 WHERE (pers_id='$pers_id' AND ele_id='$ele_id')";
 						//echo "$sql<br />\n";
-						$res1=mysql_query($sql);
-						if(mysql_num_rows($res1)>0){
-							//$lig1=mysql_fetch_object($sql);
-							//$sql="DELETE FROM responsables2 WHERE pers_id='$lig1->pers_id',
+						$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res1)>0){
 							$sql="DELETE FROM responsables2 WHERE (pers_id='$pers_id' AND
 											ele_id='$ele_id')";
 							//echo "$sql<br />\n";
-							$res2=mysql_query($sql);
+							$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 
 						// On teste s'il faut supprimer un autre responsable de même rang resp_legal:
 						$sql="SELECT pers_id FROM responsables2 WHERE (pers_id!='$pers_id' AND ele_id='$ele_id' AND resp_legal='$resp_legal')";
-						$res1=mysql_query($sql);
-						if(mysql_num_rows($res1)==0){
+						$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res1)==0){
 							$sql="INSERT INTO responsables2 SET pers_id='$pers_id',
 											ele_id='$ele_id',
 											resp_legal='$resp_legal',
 											pers_contact='$pers_contact'";
 							//echo "$sql<br />\n";
-							$res2=mysql_query($sql);
+							$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res2){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2682,11 +2560,11 @@ else{
 							}
 						}
 						else{
-							$lig1=mysql_fetch_object($res1);
+							$lig1=mysqli_fetch_object($res1);
 							$sql="DELETE FROM responsables2 WHERE (pers_id='$lig1->pers_id' AND
 											ele_id='$ele_id' AND
 											resp_legal='$resp_legal')";
-							$res2=mysql_query($sql);
+							$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 							if(!$res2){
 								//echo " (<font color='red'>erreur</font>)";
 								echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";
@@ -2698,7 +2576,7 @@ else{
 												resp_legal='$resp_legal',
 												pers_contact='$pers_contact'";
 								//echo "$sql<br />\n";
-								$res3=mysql_query($sql);
+								$res3=mysqli_query($GLOBALS["mysqli"], $sql);
 								if(!$res3){
 									//echo " (<font color='red'>erreur</font>)";
 									echo "<br />\n<font color='red'>Erreur:</font> $sql<br />\n";

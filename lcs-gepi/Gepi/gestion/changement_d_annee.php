@@ -35,8 +35,8 @@ if ($resultat_session == 'c') {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/gestion/changement_d_annee.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/gestion/changement_d_annee.php',
 administrateur='V',
 professeur='F',
@@ -48,7 +48,7 @@ secours='F',
 autre='F',
 description='Changement d\'année.',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 // Check access
@@ -67,27 +67,38 @@ if (isset($_POST['is_posted'])) {
 			if (!saveSetting("gepiYear", $_POST['gepiYear'])) {
 				$msg .= "Erreur lors de l'enregistrement de l'année scolaire !";
 			}
+			else {
+				$msg .= "Enregistrement de l'année scolaire effectué.<br />";
+			}
 		}
 
 		if (isset($_POST['begin_day']) and isset($_POST['begin_month']) and isset($_POST['begin_year'])) {
 			$begin_bookings = mktime(0,0,0,$_POST['begin_month'],$_POST['begin_day'],$_POST['begin_year']);
-			if (!saveSetting("begin_bookings", $begin_bookings))
-					$msg .= "Erreur lors de l'enregistrement de begin_bookings !";
+			if (!saveSetting("begin_bookings", $begin_bookings)) {
+				$msg .= "Erreur lors de l'enregistrement de begin_bookings !";
+			}
+			else {
+				$msg .= "Enregistrement de begin_bookings effectué.<br />";
+			}
 		}
 		if (isset($_POST['end_day']) and isset($_POST['end_month']) and isset($_POST['end_year'])) {
 			$end_bookings = mktime(0,0,0,$_POST['end_month'],$_POST['end_day'],$_POST['end_year']);
-			if (!saveSetting("end_bookings", $end_bookings))
+			if (!saveSetting("end_bookings", $end_bookings)) {
 					$msg .= "Erreur lors de l'enregistrement de end_bookings !";
+			}
+			else {
+				$msg .= "Enregistrement de end_bookings effectué.<br />";
+			}
 		}
 
 		if((isset($_POST['reserve_comptes_eleves']))&&($_POST['reserve_comptes_eleves']=='y')) {
 			$sql="DELETE FROM tempo_utilisateurs WHERE statut='eleve';";
 			//echo "<span style='color:green;'>$sql</span><br />";
-			$nettoyage=mysql_query($sql);
+			$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			$sql="INSERT INTO tempo_utilisateurs SELECT u.login,u.password,u.salt,u.email,e.ele_id,e.elenoet,u.statut,u.auth_mode,NOW(),u.statut FROM utilisateurs u, eleves e WHERE u.login=e.login AND u.statut='eleve';";
 			//echo "<span style='color:green;'>$sql</span><br />";
-			$svg_insert=mysql_query($sql);
+			$svg_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 			if($svg_insert) {
 				$msg.="Mise en réserve des comptes élèves effectuée.<br />";
 			}
@@ -99,11 +110,11 @@ if (isset($_POST['is_posted'])) {
 		if((isset($_POST['reserve_comptes_responsables']))&&($_POST['reserve_comptes_responsables']=='y')) {
 			$sql="DELETE FROM tempo_utilisateurs WHERE statut='responsable';";
 			//echo "<span style='color:green;'>$sql</span><br />";
-			$nettoyage=mysql_query($sql);
+			$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 			$sql="INSERT INTO tempo_utilisateurs SELECT u.login,u.password,u.salt,u.email,rp.pers_id,rp.pers_id,u.statut,u.auth_mode,NOW(),u.statut FROM utilisateurs u, resp_pers rp WHERE u.login=rp.login AND u.statut='responsable';";
 			//echo "<span style='color:green;'>$sql</span><br />";
-			$svg_insert=mysql_query($sql);
+			$svg_insert=mysqli_query($GLOBALS["mysqli"], $sql);
 			if($svg_insert) {
 				$msg.="Mise en réserve des comptes responsables effectuée.<br />";
 			}
@@ -111,43 +122,31 @@ if (isset($_POST['is_posted'])) {
 				$msg.="Erreur lors de la mise en réserve des comptes responsables.<br />";
 			}
 		}
+
+
+		$sql="SELECT 1=1 FROM preferences WHERE name LIKE 'accueil_simpl_id_groupe_order_%';";
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)>0) {
+			$sql="DELETE FROM preferences WHERE name LIKE 'accueil_simpl_id_groupe_order_%';";
+			$del=mysqli_query($GLOBALS["mysqli"], $sql);
+			if($del) {
+				$msg.="La suppression des préférences d'affichage ou non des enseignements en page d'accueil simplifiée est effectuée.<br />";
+			}
+			else {
+				$msg.="Erreur lors de la suppression des préférences d'affichage ou non des enseignements en page d'accueil simplifiée.<br />";
+			}
+		}
+
 	}
 	elseif ($_POST['is_posted']=='2') {
 		check_token();
 
-		if (isset($_POST['log_day']) and isset($_POST['log_month']) and isset($_POST['log_year'])) {
-			//$log_clean_date = mktime(0,0,0,$_POST['log_month'],$_POST['log_day'],$_POST['log_year']);
-			//echo $log_clean_date;
+		if (isset($_POST['clean_log']) and isset($_POST['log_day']) and isset($_POST['log_month']) and isset($_POST['log_year'])) {
+			$msg.="Nettoyage des logs de connexion antérieurs à ".$_POST['log_day']."/".$_POST['log_month']."/".$_POST['log_year']." : ".clean_table_log($_POST['log_day']."/".$_POST['log_month']."/".$_POST['log_year'])."<br />";
+		}
 
-			unset($log_year);
-			unset($log_month);
-			unset($log_day);
-			if(preg_match('/^[0-9]+$/',$_POST['log_year'])) {$log_year=$_POST['log_year'];}
-			if(preg_match('/^[0-9]+$/',$_POST['log_month'])) {$log_month=$_POST['log_month'];}
-			if(preg_match('/^[0-9]+$/',$_POST['log_day'])) {$log_day=$_POST['log_day'];}
-
-			if((isset($log_year))&&(isset($log_month))&&(isset($log_day))) {
-				// Pour éviter de flinguer la session en cours
-				$hier_day=date('d', mktime() - 24*3600);
-				$hier_month=date('m', mktime() - 24*3600);
-				$hier_year=date('Y', mktime() - 24*3600);
-
-				//$sql="SELECT * FROM log WHERE start<'$log_year-$log_month-$log_day 00:00:00' AND start<'".date('Y')."-".date('m')."-".$hier." 00:00:00';";
-				$sql="DELETE FROM log WHERE start<'$log_year-$log_month-$log_day 00:00:00' AND start<'".$hier_year."-".$hier_month."-".$hier_day." 00:00:00';";
-				//echo "$sql<br />\n";
-				$del=mysql_query($sql);
-				if(!$del) {
-					$msg.="Echec du nettoyage.<br />\n";
-				}
-				else {
-					$msg.="Nettoyage effectué.<br />\n";
-				}
-			}
-			else {
-				$msg .= "La date proposée est invalide.<br />";
-			}
-			//if (!)
-			//		$msg .= "Erreur lors de l'enregistrement de log_bookings !";
+		if (isset($_POST['clean_tentative_intrusion']) and isset($_POST['ti_day']) and isset($_POST['ti_month']) and isset($_POST['ti_year'])) {
+			$msg.="Nettoyage des logs de tentatives d'intrusion antérieurs à ".$_POST['ti_day']."/".$_POST['ti_month']."/".$_POST['ti_year']." : ".clean_table_tentative_intrusion($_POST['ti_day']."/".$_POST['ti_month']."/".$_POST['ti_year'])."<br />";
 		}
 	}
 }
@@ -155,7 +154,7 @@ if (isset($_POST['is_posted'])) {
 if (isset($_GET['reinit_dates_verrouillage_periode'])) {
 	check_token();
 	$sql="update periodes set date_verrouillage='0000-00-00 00:00:00';";
-	$res=mysql_query($sql);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($res) {
 		$msg.="Réinitialisation des dates de verrouillage de périodes effectuée.<br />";
 	}
@@ -167,7 +166,7 @@ if (isset($_GET['reinit_dates_verrouillage_periode'])) {
 if (isset($_GET['suppr_reserve_eleve'])) {
 	check_token();
 	$sql="DELETE FROM tempo_utilisateurs WHERE statut='eleve';";
-	$res=mysql_query($sql);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($res) {
 		$msg.="Suppression de la réserve sur les comptes élèves effectuée.<br />";
 	}
@@ -179,7 +178,7 @@ if (isset($_GET['suppr_reserve_eleve'])) {
 if (isset($_GET['suppr_reserve_resp'])) {
 	check_token();
 	$sql="DELETE FROM tempo_utilisateurs WHERE statut='responsable';";
-	$res=mysql_query($sql);
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($res) {
 		$msg.="Suppression de la réserve sur les comptes responsables effectuée.<br />";
 	}
@@ -215,7 +214,9 @@ echo "<p class='bold'><a href='index.php#chgt_annee' ".insert_confirm_abandon().
 echo "<p>Au changement d'année, avant d'initialiser la nouvelle année scolaire, il convient d'effectuer quelques opérations.<br />Elles sont en principe détaillées (<i>peut-être même plus à jour si des ajouts y ont été apportés après la sortie de votre version de GEPI</i>) sur le <a href='https://www.sylogix.org/projects/gepi/wiki/GuideAdministrateur' target='_blank'>Wiki</a>.</p>\n";
 
 echo "<form action='".$_SERVER['PHP_SELF']."' method='post' name='form1' style='width: 100%;'>\n";
-echo "<fieldset>\n";
+echo "<fieldset style='border: 1px solid grey;";
+echo "background-image: url(\"../images/background/opacite50.png\"); ";
+echo "'>\n";
 echo add_token_field();
 
 $msg_svg="Il est recommandé de faire une copie de sauvegarde sur un périphérique externe (à stocker au coffre par exemple)";
@@ -298,16 +299,16 @@ auth_mode ENUM('gepi','ldap','sso') NOT NULL default 'gepi',
 date_reserve DATE DEFAULT '0000-00-00',
 temoin VARCHAR( 50 ) NOT NULL
 );";
-$creation_table=mysql_query($sql);
+$creation_table=mysqli_query($GLOBALS["mysqli"], $sql);
 
 echo "<p>Pour pouvoir imposer les mêmes comptes parents et/ou élèves d'une année sur l'autre (<em>pour se connecter dans Gepi, consulter les cahiers de textes, les notes,...</em>), il convient avant d'initialiser la nouvelle année (<em>opération qui vide/nettoye un certain nombre de tables</em>) de mettre en réserve dans une table temporaire les login, mot de passe, email et statut des parents/élèves de façon à leur redonner le même login et restaurer l'accès lors de l'initialisation.</p>\n";
 
 echo "<p>";
 $sql="SELECT 1=1 FROM utilisateurs WHERE statut='eleve';";
 if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-$test=mysql_query($sql);
-if(mysql_num_rows($test)>0) {
-	echo "Il existe actuellement ".mysql_num_rows($test)." comptes élèves.<br />";
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	echo "Il existe actuellement ".mysqli_num_rows($test)." comptes élèves.<br />";
 	$temoin_compte_ele="y";
 }
 else {
@@ -316,16 +317,16 @@ else {
 }
 $sql="SELECT 1=1 FROM tempo_utilisateurs WHERE statut='eleve';";
 if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-$test=mysql_query($sql);
-if(mysql_num_rows($test)>0) {
-	echo mysql_num_rows($test)." comptes élèves sont actuellement mis en réserve";
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	echo mysqli_num_rows($test)." comptes élèves sont actuellement mis en réserve";
 	$sql="SELECT DISTINCT date_reserve FROM tempo_utilisateurs WHERE statut='eleve' ORDER BY date_reserve;";
 	if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0) {
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0) {
 		echo " (<em>date de mise en réserve&nbsp;: ";
 		$cpt=0;
-		while($lig_res=mysql_fetch_object($test)) {
+		while($lig_res=mysqli_fetch_object($test)) {
 			if($cpt>0) {echo ", ";}
 			echo formate_date($lig_res->date_reserve);
 			$cpt++;
@@ -344,9 +345,9 @@ echo "</p>\n";
 echo "<p>";
 $sql="SELECT 1=1 FROM utilisateurs WHERE statut='responsable';";
 if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-$test=mysql_query($sql);
-if(mysql_num_rows($test)>0) {
-	echo "Il existe actuellement ".mysql_num_rows($test)." comptes responsables.<br />";
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	echo "Il existe actuellement ".mysqli_num_rows($test)." comptes responsables.<br />";
 	$temoin_compte_resp="y";
 }
 else {
@@ -355,16 +356,16 @@ else {
 }
 $sql="SELECT 1=1 FROM tempo_utilisateurs WHERE statut='responsable';";
 if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-$test=mysql_query($sql);
-if(mysql_num_rows($test)>0) {
-	echo mysql_num_rows($test)." comptes responsables sont actuellement mis en réserve";
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	echo mysqli_num_rows($test)." comptes responsables sont actuellement mis en réserve";
 	$sql="SELECT DISTINCT date_reserve FROM tempo_utilisateurs WHERE statut='responsable' ORDER BY date_reserve;";
 	if($debug_ele=='y') {echo "<span style='color:green;'>$sql</span><br />";}
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0) {
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0) {
 		echo " (<em>date de mise en réserve&nbsp;: ";
 		$cpt=0;
-		while($lig_res=mysql_fetch_object($test)) {
+		while($lig_res=mysqli_fetch_object($test)) {
 			if($cpt>0) {echo ", ";}
 			echo formate_date($lig_res->date_reserve);
 			$cpt++;
@@ -391,6 +392,13 @@ echo "<p><em>NOTE&nbsp;:</em> En cochant les cases ci-dessus, on commence par vi
 echo "</li>\n";
 echo "</ol>\n";
 
+$sql="SELECT 1=1 FROM preferences WHERE name LIKE 'accueil_simpl_id_groupe_order_%';";
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)>0) {
+	echo "<p style='margin-bottom:1em;'>Un ou des professeurs ont paramétré l'ordre d'affichage de leurs enseignements ou le non affichage de certains enseignements en page d'accueil simplifiée.<br />
+	Les nouveaux enseignements créés avec l'année qui va commencer ne devraient pas avoir les mêmes identifiants (<em>id_groupe</em>), mais par précaution, ces préférences seront supprimées lors de la validation de ce formulaire.</p>";
+}
+
 echo "<input type='hidden' name='is_posted' value='1' />\n";
 echo "<input type='submit' name='Valider' value='Valider' />\n";
 echo "</fieldset>\n";
@@ -398,23 +406,31 @@ echo "</form>\n";
 
 echo "<br />\n";
 
-echo "<form action='".$_SERVER['PHP_SELF']."' method='post' name='form1' style='width: 100%;'>\n";
-echo "<fieldset>\n";
-echo add_token_field();
-echo "<p><em>Optionnel&nbsp;:</em> Nettoyer la table 'log'.<br />\n";
-echo "Cette table contient les dates de connexion/déconnexion des utilisateurs.<br />\n";
-echo "Conserver ces informations au-delà d'une année n'a pas vraiment d'intérêt.<br >\n";
-echo "Au besoin, si vous avez pris soin d'effectuer une sauvegarde de la base, les informations y sont.</p>\n";
 $lday = strftime("%d", getSettingValue("end_bookings"));
 $lmonth = strftime("%m", getSettingValue("end_bookings"));
 $lyear = date('Y')-1;
-echo "<p>Nettoyer les logs antérieurs au&nbsp;:&nbsp;\n";
+
+echo "<form action='".$_SERVER['PHP_SELF']."' method='post' name='form1' style='width: 100%;'>
+	<fieldset style='border: 1px solid grey; background-image: url(\"../images/background/opacite50.png\"); '>
+		".add_token_field()."
+		<p>
+			<em>Optionnel&nbsp;:</em> Nettoyer les tables 'log' et 'tentative_intrusion'.<br />
+			Cette table contient les dates de connexion/déconnexion des utilisateurs.<br />
+			Conserver ces informations au-delà d'une année n'a pas vraiment d'intérêt.<br >
+			Au besoin, si vous avez pris soin d'effectuer une sauvegarde de la base, les informations y sont.
+		</p>
+		<p><input type='checkbox' id='clean_log' name='clean_log' value='y' checked /><label for='clean_log'>Nettoyer les logs de connexion antérieurs au</label>&nbsp;:&nbsp;";
 genDateSelector("log_",$lday,$lmonth,$lyear,"more_years");
-echo "<input type='hidden' name='is_posted' value='2' />\n";
-echo "<input type='submit' name='Valider' value='Valider' />\n";
-echo "</p>\n";
-echo "</fieldset>\n";
-echo "</form>\n";
+echo "<br />
+			<input type='checkbox' id='clean_tentative_intrusion' name='clean_tentative_intrusion' value='y' checked /><label for='clean_tentative_intrusion'>Nettoyer les logs de tentatives d'intrusion antérieurs au</label>&nbsp;:&nbsp;";
+genDateSelector("ti_",$lday,$lmonth,$lyear,"more_years");
+echo "</p>
+		<input type='hidden' name='is_posted' value='2' />
+		<input type='submit' name='Valider' value='Valider' />
+
+		<p><em>NOTE&nbsp;:</em> La CNIL recommande de ne pas conserver plus de 6 mois de journaux de connexion.</p>
+	</fieldset>
+</form>\n";
 
 echo "<p><br /></p>\n";
 

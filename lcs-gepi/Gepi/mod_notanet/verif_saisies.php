@@ -2,7 +2,7 @@
 /*
 * $Id$
 *
-* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
+* Copyright 2001, 2014 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun, Laurent Viénot-Hauger
 *
 * This file is part of GEPI.
 *
@@ -38,8 +38,8 @@ if ($resultat_session == 'c') {
 }
 
 $sql="SELECT 1=1 FROM droits WHERE id='/mod_notanet/verif_saisies.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/mod_notanet/verif_saisies.php',
 administrateur='V',
 professeur='F',
@@ -51,7 +51,7 @@ secours='F',
 autre='F',
 description='Notanet: Verification avant impression des fiches brevet',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
@@ -76,6 +76,8 @@ $titre_page = "Fiches brevet | Vérification des saisies";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
+//debug_var();
+
 $tmp_timeout=(getSettingValue("sessionMaxLength"))*60;
 
 // Bibliothèque pour Notanet et Fiches brevet
@@ -85,8 +87,8 @@ echo "<div class='noprint'>\n";
 echo "<p class='bold'><a href='../accueil.php'".insert_confirm_abandon().">Accueil</a> | <a href='index.php'".insert_confirm_abandon().">Retour à l'accueil Notanet</a>";
 
 $sql="SELECT DISTINCT type_brevet FROM notanet_ele_type ORDER BY type_brevet";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
 	echo "</p>\n";
 	echo "</div>\n";
 
@@ -97,8 +99,8 @@ if(mysql_num_rows($res)==0) {
 }
 
 $sql="SELECT DISTINCT type_brevet FROM notanet_corresp ORDER BY type_brevet";
-$res=mysql_query($sql);
-$nb_types_brevets=mysql_num_rows($res);
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+$nb_types_brevets=mysqli_num_rows($res);
 if($nb_types_brevets==0) {
 	echo "</p>\n";
 	echo "</div>\n";
@@ -110,7 +112,7 @@ if($nb_types_brevets==0) {
 }
 
 if($nb_types_brevets==1) {
-	$type_brevet=mysql_result($res, 0, 'type_brevet');
+	$type_brevet=old_mysql_result($res, 0, 'type_brevet');
 }
 
 if(!isset($type_brevet)) {
@@ -120,7 +122,7 @@ if(!isset($type_brevet)) {
 	echo "<p>Pour quel brevet souhaitez-vous contrôler les saisies&nbsp;?";
 	echo "</p>\n";
 	echo "<ul>\n";
-	while($lig=mysql_fetch_object($res)) {
+	while($lig=mysqli_fetch_object($res)) {
 		echo "<li><a href='".$_SERVER['PHP_SELF']."?type_brevet=".$lig->type_brevet."'>Contrôler les saisies pour ".$tab_type_brevet[$lig->type_brevet]."</a></li>\n";
 	}
 	echo "</ul>\n";
@@ -146,8 +148,8 @@ if ((!isset($id_classe))||(count($id_classe)==0)||(($check_app=='n')&&($check_av
 	echo "<input type='hidden' name='type_brevet' value='$type_brevet' />\n";
 	echo "<p>Sélectionnez les classes&nbsp;: </p>\n";
 	echo "<blockquote>\n";
-	$call_data = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
-	$nombre_lignes = mysql_num_rows($call_data);
+	$call_data = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
+	$nombre_lignes = mysqli_num_rows($call_data);
 	//echo "<select name='id_classe[]' multiple='true' size='10'>\n";
 
 	$nb_class_par_colonne=round($nombre_lignes/3);
@@ -161,8 +163,8 @@ if ((!isset($id_classe))||(count($id_classe)==0)||(($check_app=='n')&&($check_av
 
 	$i = 0;
 	while ($i < $nombre_lignes){
-		$classe = mysql_result($call_data, $i, "classe");
-		$ide_classe = mysql_result($call_data, $i, "id");
+		$classe = old_mysql_result($call_data, $i, "classe");
+		$ide_classe = old_mysql_result($call_data, $i, "id");
 		//echo "<a href='eleve_classe.php?id_classe=$ide_classe'>$classe</a><br />\n";
 		//echo "<option value='$ide_classe'>$classe</option>\n";
 
@@ -181,8 +183,8 @@ if ((!isset($id_classe))||(count($id_classe)==0)||(($check_app=='n')&&($check_av
 						jec.id_classe='$ide_classe' AND
 						n.type_brevet='$type_brevet'
 				ORDER BY e.nom,e.prenom";
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)!=0) {
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)!=0) {
 			echo "checked ";
 		}
 
@@ -221,18 +223,18 @@ echo "</div>\n";
 unset($tab_mat);
 //$sql="SELECT * FROM notanet_corresp ORDER BY type_brevet;";
 $sql="SELECT DISTINCT type_brevet FROM notanet_corresp ORDER BY type_brevet;";
-$res1=mysql_query($sql);
-while($lig1=mysql_fetch_object($res1)) {
+$res1=mysqli_query($GLOBALS["mysqli"], $sql);
+while($lig1=mysqli_fetch_object($res1)) {
 	//$sql="SELECT * FROM notanet_corresp WHERE type_brevet='$lig1->type_brevet';";
 	// Le ORDER BY id_mat, id permet de tenir compte de l'ordre des options ajoutées dans select_matieres (pas moyen autrement de faire passer les LV2 après les LV1 (dans le brevet pro, c'est mélangé...))
 	$sql="SELECT * FROM notanet_corresp WHERE type_brevet='$lig1->type_brevet' ORDER BY id_mat, id;";
 	//echo "$sql<br />";
-	$res2=mysql_query($sql);
+	$res2=mysqli_query($GLOBALS["mysqli"], $sql);
 
 	unset($id_matiere);
 	unset($statut_matiere);
 
-	while($lig2=mysql_fetch_object($res2)) {
+	while($lig2=mysqli_fetch_object($res2)) {
 		$id_matiere[$lig2->id_mat][]=$lig2->matiere;
 		//$statut_matiere[$lig2->id_mat][]=$lig2->statut;
 		$statut_matiere[$lig2->id_mat]=$lig2->statut;
@@ -272,8 +274,8 @@ for($i=0;$i<count($id_classe);$i++) {
 	$tab_prof_manques=array();
 
 	$sql="SELECT DISTINCT jec.login, e.nom, e.prenom FROM j_eleves_classes jec, notanet_ele_type net, eleves e WHERE net.login=jec.login AND e.login=jec.login AND jec.id_classe='".$id_classe[$i]."' ORDER BY e.nom, e.prenom;";
-	$res_ele=mysql_query($sql);
-	while($lig_ele=mysql_fetch_object($res_ele)) {
+	$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+	while($lig_ele=mysqli_fetch_object($res_ele)) {
 		//$cpt_notes=0;
 		$cpt_app=0;
 		$cpt_avis=0;
@@ -298,19 +300,19 @@ for($i=0;$i<count($id_classe);$i++) {
 
 				$sql="SELECT matiere FROM notanet WHERE login='".$lig_ele->login."' AND id_mat='$j' AND id_classe='".$id_classe[$i]."';";
 				//echo "$sql<br />";
-				$res_notanet=mysql_query($sql);
-				if(mysql_num_rows($res_notanet)>0) {
+				$res_notanet=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_notanet)>0) {
 					// Test appréciation
 					if($check_app=='y') {
-						$matiere=mysql_result($res_notanet, 0, 'matiere');
+						$matiere=old_mysql_result($res_notanet, 0, 'matiere');
 						//$sql="SELECT * FROM notanet_app WHERE login='".$lig_ele->login."' AND id_mat='$j' AND matiere='".$matiere."' AND appreciation!='';";
 						// id_mat n'est pas rempli dans notanet_app
 						// Est-ce qu'on pourrait associer deux fois une matière Gepi à des matières notanet différentes?
 						// N'est-ce pas le cas dans HIGEO/EDCIV
 						$sql="SELECT * FROM notanet_app WHERE login='".$lig_ele->login."' AND matiere='".$matiere."' AND appreciation!='';";
 						//echo "$sql<br />";
-						$res_na=mysql_query($sql);
-						if(mysql_num_rows($res_na)==0) {
+						$res_na=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res_na)==0) {
 							/*
 							$tab_ele_manques[$lig_ele->login]['nom_prenom']=casse_mot($lig_ele->nom,'maj')." ".casse_mot($lig_ele->prenom,'majf2');
 							$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]=$tab_mat[$type_brevet]['id_matiere'][$j][0];
@@ -334,13 +336,13 @@ for($i=0;$i<count($id_classe);$i++) {
 																	jeg.login='$lig_ele->login'
 																ORDER BY g.name;";
 							//echo "$sql<br />";
-							$res_grp=mysql_query($sql);
-							if(mysql_num_rows($res_grp)>0) {
+							$res_grp=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_grp)>0) {
 								$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['matiere']=$matiere;
 
 								$cpt_grp=0;
 								$tab_ele_manques[$lig_ele->login]['nom_prenom']=casse_mot($lig_ele->nom,'maj')." ".casse_mot($lig_ele->prenom,'majf2');
-								while($lig_grp=mysql_fetch_object($res_grp)) {
+								while($lig_grp=mysqli_fetch_object($res_grp)) {
 									$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['id_groupe']=$lig_grp->id;
 									$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['name']=$lig_grp->name;
 									$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['description']=$lig_grp->description;
@@ -348,8 +350,8 @@ for($i=0;$i<count($id_classe);$i++) {
 									$cpt_prof=0;
 									$sql="SELECT u.login, u.nom, u.prenom, u.civilite, u.email FROM utilisateurs u, j_groupes_professeurs jgp WHERE jgp.login=u.login AND jgp.id_groupe='$lig_grp->id' ORDER BY u.nom, u.prenom;";
 									//echo "$sql<br />";
-									$res_prof=mysql_query($sql);
-									while($lig_prof=mysql_fetch_object($res_prof)) {
+									$res_prof=mysqli_query($GLOBALS["mysqli"], $sql);
+									while($lig_prof=mysqli_fetch_object($res_prof)) {
 										$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['prof'][$cpt_prof]['login']=$lig_prof->login;
 										$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['prof'][$cpt_prof]['nom']=$lig_prof->nom;
 										$tab_ele_manques[$lig_ele->login]['app'][$cpt_app]['groupe'][$cpt_grp]['prof'][$cpt_prof]['prenom']=$lig_prof->prenom;
@@ -389,14 +391,17 @@ for($i=0;$i<count($id_classe);$i++) {
 			}
 		}
 
-		// Test avis
-		$sql="SELECT 1=1 FROM notanet_avis WHERE login='".$lig_ele->login."' AND (favorable!='' OR avis!='');";
-		$test_avis=mysql_query($sql);
-		if(mysql_num_rows($test_avis)==0) {
-			if(!isset($tab_ele_manques[$lig_ele->login]['nom_prenom'])) {
-				$tab_ele_manques[$lig_ele->login]['nom_prenom']=casse_mot($lig_ele->nom,'maj')." ".casse_mot($lig_ele->prenom,'majf2');
+		// Test avis du chef d'établissement
+		if($check_avis=='y') {
+			// Test avis
+			$sql="SELECT 1=1 FROM notanet_avis WHERE login='".$lig_ele->login."' AND (favorable!='' OR avis!='');";
+			$test_avis=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($test_avis)==0) {
+				if(!isset($tab_ele_manques[$lig_ele->login]['nom_prenom'])) {
+					$tab_ele_manques[$lig_ele->login]['nom_prenom']=casse_mot($lig_ele->nom,'maj')." ".casse_mot($lig_ele->prenom,'majf2');
+				}
+				$tab_ele_manques[$lig_ele->login]['avis']='';
 			}
-			$tab_ele_manques[$lig_ele->login]['avis']='';
 		}
 	}
 
@@ -486,7 +491,7 @@ echo "</pre>";
 					if(check_mail($tab_prof_manques[$login_prof]['email'])) {
 						$tab_num_mail[]=$num;
 						$sujet_mail="[Gepi]: Appreciations des Fiches Brevet manquantes";
-						echo "<a href='mailto:".$tab_prof_manques[$login_prof]['email']."?subject=$sujet_mail&amp;body=".rawurlencode($message)."' title=\"Envoyer un message à $info_prof via votre logiciel de courrier externe (Thunderbird,...)\">".$info_prof."</a>";
+						echo "<a href='mailto:".$tab_prof_manques[$login_prof]['email']."?subject=".getSettingValue('gepiPrefixeSujetMail')."$sujet_mail&amp;body=".rawurlencode($message)."' title=\"Envoyer un message à $info_prof via votre logiciel de courrier externe (Thunderbird,...)\">".$info_prof."</a>";
 						echo "<input type='hidden' name='sujet_$num' id='sujet_$num' value=\"$sujet_mail\" />\n";
 						echo "<input type='hidden' name='mail_$num' id='mail_$num' value=\"".$tab_prof_manques[$login_prof]['email']."\" />\n";
 					}

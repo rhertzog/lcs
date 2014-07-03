@@ -1,7 +1,7 @@
 <?php
 /*
 *
-* Copyright 2001, 2012 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+* Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
 *
 * This file is part of GEPI.
 *
@@ -66,9 +66,9 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	$reg_show_email = isset($_POST["reg_show_email"]) ? $_POST["reg_show_email"] : "no";
 
 	// On commence par récupérer quelques infos.
-	$req = mysql_query("SELECT password, auth_mode FROM utilisateurs WHERE (login = '".$session_gepi->login."')");
-	$old_password = mysql_result($req, 0, "password");
-	$user_auth_mode = mysql_result($req, 0, "auth_mode");
+	$req = mysqli_query($GLOBALS["mysqli"], "SELECT password, auth_mode FROM utilisateurs WHERE (login = '".$session_gepi->login."')");
+	$old_password = old_mysql_result($req, 0, "password");
+	$user_auth_mode = old_mysql_result($req, 0, "auth_mode");
 	if ($no_anti_inject_password_a != '') {
 		// Modification du mot de passe
 
@@ -96,7 +96,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', '', '', $no_anti_inject_password1,'');
 					if ($write_ldap_success) {
 						$msg = "Le mot de passe a ete modifié !";
-						$reg = mysql_query("UPDATE utilisateurs SET change_mdp='n' WHERE login = '" . $session_gepi->login . "'");
+						$reg = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET change_mdp='n' WHERE login = '" . $session_gepi->login . "'");
 						$no_modif = "no";
 						if (isset($_POST['retour'])) {
 							header("Location:../accueil.php?msg=$msg");
@@ -124,7 +124,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					} else {
 						$reg = Session::change_password_gepi($session_gepi->login,$NON_PROTECT['password1']);
 						if ($reg) {
-							mysql_query("UPDATE utilisateurs SET change_mdp='n' WHERE login = '$session_gepi->login'");
+							mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET change_mdp='n' WHERE login = '$session_gepi->login'");
 							$msg = "Le mot de passe a ete modifié !";
 							$no_modif = "no";
 							if (isset($_POST['retour'])) {
@@ -142,9 +142,9 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		}
 	}
 
-	$call_email = mysql_query("SELECT email,show_email FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
-	$user_email = mysql_result($call_email, 0, "email");
-	$user_show_email = mysql_result($call_email, 0, "show_email");
+	$call_email = mysqli_query($GLOBALS["mysqli"], "SELECT email,show_email FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
+	$user_email = old_mysql_result($call_email, 0, "email");
+	$user_show_email = old_mysql_result($call_email, 0, "show_email");
 
 	if(($_SESSION['statut']!='responsable')&&($_SESSION['statut']!='eleve')) {
 		if ($user_email != $reg_email) {
@@ -157,7 +157,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					if (!isset($ldap_server)) $ldap_server = new LDAPServer;
 					$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
 				}
-				$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+				$reg = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
 				if ($reg) {
 					if($msg!="") {$msg.="<br />";}
 					$msg.="L'adresse e_mail a été modifiéé !";
@@ -177,7 +177,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					if (!isset($ldap_server)) $ldap_server = new LDAPServer;
 					$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
 				}
-				$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+				$reg = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
 				if ($reg) {
 					if($msg!="") {$msg.="<br />";}
 					$msg.="L'adresse e_mail a été modifiéé !";
@@ -186,20 +186,23 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 					if((getSettingValue('mode_email_resp')=='mon_compte')) {
 						$sql="UPDATE resp_pers SET mel='$reg_email' WHERE login='".$_SESSION['login']."';";
-						$update_resp=mysql_query($sql);
+						$update_resp=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$update_resp) {$msg.="<br />Erreur lors de la mise à jour de la table 'resp_pers'.";}
 
 						if((getSettingValue('envoi_mail_actif')!='n')&&(getSettingValue('informer_scolarite_modif_mail')!='n')) {
 							$sujet_mail=remplace_accents("Mise à jour mail ".$_SESSION['nom']." ".$_SESSION['prenom'],'all');
 							$message_mail="L'adresse email du responsable ";
 							$message_mail.=remplace_accents($_SESSION['nom']." ".$_SESSION['prenom'],'all')." est passée à '$reg_email'. Vous devriez mettre à jour Sconet en conséquence.";
-							$destinataire_mail=getSettingValue('gepiSchoolEmail');
-							if(getSettingValue('gepiSchoolEmail')!='') {
+							$destinataire_mail=getSettingValue('email_dest_info_modif_mail');
+							if($destinataire_mail=="") {
+								$destinataire_mail=getSettingValue('gepiSchoolEmail');
+							}
+							if(($destinataire_mail!='')&&(check_mail($destinataire_mail))) {
 								envoi_mail($sujet_mail, $message_mail, $destinataire_mail);
 							}
 						}
 
-						if(getSettingValue('envoi_mail_actif')!='n') {
+						if((getSettingValue('envoi_mail_actif')!='n')&&(check_mail($user_email))) {
 							$sujet_mail="Mise à jour de votre adresse mail";
 							$message_mail="Vous avez procédé à la modification de votre adresse mail dans 'Gérer mon compte' le ".strftime('%A %d/%m/%Y à %H:%M:%S').". Votre nouvelle adresse est donc '$reg_email'. C'est cette adresse qui sera utilisée pour les éventuels prochains messages.";
 							$destinataire_mail=$user_email;
@@ -220,7 +223,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 					if (!isset($ldap_server)) $ldap_server = new LDAPServer;
 					$write_ldap_success = $ldap_server->update_user($session_gepi->login, '', '', $reg_email, '', '', '');
 				}
-				$reg = mysql_query("UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
+				$reg = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET email = '$reg_email' WHERE login = '" . $_SESSION['login'] . "'");
 				if ($reg) {
 					if($msg!="") {$msg.="<br />";}
 					$msg.="L'adresse e_mail a été modifiéé !";
@@ -229,15 +232,18 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 					if((getSettingValue('mode_email_ele')=='mon_compte')) {
 						$sql="UPDATE eleves SET email='$reg_email' WHERE login='".$_SESSION['login']."';";
-						$update_eleve=mysql_query($sql);
+						$update_eleve=mysqli_query($GLOBALS["mysqli"], $sql);
 						if(!$update_eleve) {$msg.="<br />Erreur lors de la mise à jour de la table 'eleves'.";}
 
 						if((getSettingValue('envoi_mail_actif')!='n')&&(getSettingValue('informer_scolarite_modif_mail')!='n')) {
 							$sujet_mail=remplace_accents("Mise à jour mail ".$_SESSION['nom']." ".$_SESSION['prenom'],'all');
 							$message_mail="L'adresse email de l'élève ";
 							$message_mail.=remplace_accents($_SESSION['nom']." ".$_SESSION['prenom'],'all')." est passée à '$reg_email'. Vous devriez mettre à jour Sconet en conséquence.";
-							$destinataire_mail=getSettingValue('gepiSchoolEmail');
-							if(getSettingValue('gepiSchoolEmail')!='') {
+							$destinataire_mail=getSettingValue('email_dest_info_modif_mail');
+							if($destinataire_mail=="") {
+								$destinataire_mail=getSettingValue('gepiSchoolEmail');
+							}
+							if(($destinataire_mail!='')&&(check_mail($destinataire_mail))) {
 								envoi_mail($sujet_mail, $message_mail, $destinataire_mail);
 							}
 						}
@@ -251,7 +257,7 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	if ($_SESSION['statut'] == "scolarite" OR $_SESSION['statut'] == "professeur" OR $_SESSION['statut'] == "cpe")
 	if ($user_show_email != $reg_show_email) {
 	if ($reg_show_email != "no" and $reg_show_email != "yes") $reg_show_email = "no";
-		$reg = mysql_query("UPDATE utilisateurs SET show_email = '$reg_show_email' WHERE login = '" . $_SESSION['login'] . "'");
+		$reg = mysqli_query($GLOBALS["mysqli"], "UPDATE utilisateurs SET show_email = '$reg_show_email' WHERE login = '" . $_SESSION['login'] . "'");
 		if ($reg) {
 			if($msg!="") {$msg.="<br />";}
 			$msg.="Le paramétrage d'affichage de votre email a été modifié !";
@@ -277,9 +283,9 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		// si modification du nom ou du prénom ou du pseudo il faut modifier le nom de la photo d'identitée
 		$i_photo = 0;
 		$user_login=$_SESSION['login'];
-		$calldata_photo = mysql_query("SELECT * FROM utilisateurs WHERE (login = '".$user_login."')");
-		$ancien_nom = mysql_result($calldata_photo, $i_photo, "nom");
-		$ancien_prenom = mysql_result($calldata_photo, $i_photo, "prenom");
+		$calldata_photo = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM utilisateurs WHERE (login = '".$user_login."')");
+		$ancien_nom = old_mysql_result($calldata_photo, $i_photo, "nom");
+		$ancien_prenom = old_mysql_result($calldata_photo, $i_photo, "prenom");
 
 		// En multisite, on ajoute le répertoire RNE
 		if (isset($GLOBALS['multisite']) AND $GLOBALS['multisite'] == 'y') {
@@ -403,9 +409,9 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		}
 
 		$sql="SELECT elenoet FROM eleves WHERE login='".$_SESSION['login']."';";
-		$res_elenoet=mysql_query($sql);
-		if(mysql_num_rows($res_elenoet)>0) {
-			$lig_tmp_elenoet=mysql_fetch_object($res_elenoet);
+		$res_elenoet=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_elenoet)>0) {
+			$lig_tmp_elenoet=mysqli_fetch_object($res_elenoet);
 			$reg_no_gep=$lig_tmp_elenoet->elenoet;
 
 			// Envoi de la photo
@@ -438,8 +444,8 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 						// Contrôler qu'un seul élève a bien cet elenoet???
 						$sql="SELECT 1=1 FROM eleves WHERE elenoet='$reg_no_gep'";
-						$test=mysql_query($sql);
-						$nb_elenoet=mysql_num_rows($test);
+						$test=mysqli_query($GLOBALS["mysqli"], $sql);
+						$nb_elenoet=mysqli_num_rows($test);
 						if($nb_elenoet==1) {
 							if(isset($_FILES['filephoto']['tmp_name'])) {
 								// filephoto
@@ -558,10 +564,10 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 
 		$sql="SELECT DISTINCT jpm.id_matiere FROM j_professeurs_matieres jpm WHERE (jpm.id_professeur='".$_SESSION["login"]."') ORDER BY jpm.ordre_matieres;";
 		//echo "$sql<br />\n";
-		$test=mysql_query($sql);
-		if(mysql_num_rows($test)>0) {
+		$test=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($test)>0) {
 			$tab_matieres=array();
-			while($lig_mat=mysql_fetch_object($test)) {
+			while($lig_mat=mysqli_fetch_object($test)) {
 				$tab_matieres[]=$lig_mat->id_matiere;
 				//echo $lig_mat->id_matiere." ";
 			}
@@ -573,18 +579,18 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 				if($_POST['matiere_principale']!=$tab_matieres[0]) {
 					$sql="DELETE FROM j_professeurs_matieres WHERE id_professeur='".$_SESSION["login"]."';";
 					//echo "$sql<br />\n";
-					$nettoyage=mysql_query($sql);
+					$nettoyage=mysqli_query($GLOBALS["mysqli"], $sql);
 
 					$ordre_matieres=1;
 					$sql="INSERT INTO j_professeurs_matieres SET id_professeur='".$_SESSION["login"]."', id_matiere='".$_POST['matiere_principale']."', ordre_matieres='$ordre_matieres';";
 					//echo "$sql<br />\n";
-					$insert=mysql_query($sql);
+					$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 					for($loop=0;$loop<count($tab_matieres);$loop++) {
 						if($_POST['matiere_principale']!=$tab_matieres[$loop]) {
 							$ordre_matieres++;
 							$sql="INSERT INTO j_professeurs_matieres SET id_professeur='".$_SESSION["login"]."', id_matiere='".$tab_matieres[$loop]."', ordre_matieres='$ordre_matieres';";
 							//echo "$sql<br />\n";
-							$insert=mysql_query($sql);
+							$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 						}
 					}
 
@@ -607,12 +613,12 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 		}
 		else {
 			$sql="SELECT civilite FROM utilisateurs WHERE login='".$_SESSION['login']."';";
-			$res_civ=mysql_query($sql);
-			if(mysql_num_rows($res_civ)>0) {
-				$tmp_civ=mysql_result($res_civ, 0, "civilite");
+			$res_civ=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_civ)>0) {
+				$tmp_civ=old_mysql_result($res_civ, 0, "civilite");
 				if($tmp_civ!=$_POST['reg_civilite']) {
 					$sql="UPDATE utilisateurs SET civilite='".$_POST['reg_civilite']."' WHERE login='".$_SESSION['login']."';";
-					$update=mysql_query($sql);
+					$update=mysqli_query($GLOBALS["mysqli"], $sql);
 					if(!$update) {
 						$msg.="Erreur lors de la mise à jour de la civilité.";
 					}
@@ -632,8 +638,10 @@ if ((isset($_POST['valid'])) and ($_POST['valid'] == "yes"))  {
 	}
 }
 
-
+//debug_var();
 if (($_SESSION["statut"] == "professeur")&&(isset($_POST['valide_accueil_simpl_prof']))) {
+	check_token();
+
 	$i=0;
 	$prof[$i]=$_SESSION['login'];
 
@@ -664,12 +672,55 @@ if (($_SESSION["statut"] == "professeur")&&(isset($_POST['valide_accueil_simpl_p
 
 	$msg.="$nb_reg enregistrement(s) effectué(s).<br />";
 	$message_accueil_simpl_prof.="<p style='color:green'>$nb_reg enregistrement(s) effectué(s).</p>";
+
+
+		$tab_grp_order=array();
+		$tab_grp_hidden=array();
+		$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name LIKE 'accueil_simpl_id_groupe_order_%' ORDER BY value;";
+		$res_grp_order=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_grp_order)>0) {
+			while($lig_grp_order=mysqli_fetch_object($res_grp_order)) {
+				$tmp_id_groupe=preg_replace("/^accueil_simpl_id_groupe_order_/", "", $lig_grp_order->name);
+				if($lig_grp_order->value=='-1') {
+					$tab_grp_hidden[]=$tmp_id_groupe;
+				}
+				else {
+					$tab_grp_order[]=$tmp_id_groupe;
+				}
+			}
+		}
+
+	$accueil_simpl_afficher_grp=isset($_POST['accueil_simpl_afficher_grp']) ? $_POST['accueil_simpl_afficher_grp'] : array();
+	if(count($accueil_simpl_afficher_grp)>0) {
+		$accueil_simpl_afficher_grp_rang=isset($_POST['accueil_simpl_afficher_grp_rang']) ? $_POST['accueil_simpl_afficher_grp_rang'] : array();
+
+		$nb_reg=0;
+		$nb_err=0;
+
+		for($loop=1;$loop<count($accueil_simpl_afficher_grp)+1;$loop++) {
+			if(isset($accueil_simpl_afficher_grp_rang[$loop])) {
+				if(savePref($_SESSION['login'], "accueil_simpl_id_groupe_order_".$accueil_simpl_afficher_grp[$loop], $accueil_simpl_afficher_grp_rang[$loop])) {
+					$nb_reg++;
+				}
+				else{
+					$nb_err++;
+				}
+			}
+		}
+		$msg.="Enregistrement de l'ordre des groupes pour $nb_reg groupe(s) avec $nb_err erreur(s)<br />";
+		$message_accueil_simpl_prof.="<p style='color:green'>Enregistrement de l'ordre des groupes pour $nb_reg groupe(s).";
+		if($nb_err>0) {
+			$message_accueil_simpl_prof.="<br />$nb_err erreur(s) lors de l'enregistrement.";
+		}
+		$message_accueil_simpl_prof.="</p>";
+	}
 }
 
 //================================================================================
 
 // 20121128
 if (($_SESSION["statut"] == "professeur")&&(isset($_POST['valide_nom_ou_description_groupe']))) {
+	check_token();
 
 	$nb_reg=0;
 	$message_nom_ou_description_groupe="";
@@ -694,13 +745,15 @@ if (($_SESSION["statut"] == "professeur")&&(isset($_POST['valide_nom_ou_descript
 }
 
 if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "professeur")&&(isset($_POST['valide_form_cn']))) {
+	check_token();
+
 	$i=0;
 	$prof[$i]=$_SESSION['login'];
 
 	$nb_reg=0;
 	$message_cn="";
 
-	$tab=array('add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_note_autre_que_referentiel','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite');
+	$tab=array('add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_note_autre_que_referentiel','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite', 'add_modif_dev_display_parents', 'add_modif_dev_display_parents_app');
 	for($j=0;$j<count($tab);$j++){
 		unset($valeur);
 		//$valeur=isset($_POST[$tab[$j]]) ? $_POST[$tab[$j]] : NULL;
@@ -752,19 +805,6 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	else {
 		$msg.="Erreur lors de l'enregistrement de aff_photo_cn à $aff_photo_cn.<br />\n";
 		$message_cn.="Erreur lors de l'enregistrement de aff_photo_cn à $aff_photo_cn.<br />";
-	}
-
-	$saisie_app_nb_cols_textarea=isset($_POST['saisie_app_nb_cols_textarea']) ? $_POST['saisie_app_nb_cols_textarea'] : 100;
-	if((!is_numeric($saisie_app_nb_cols_textarea))||($saisie_app_nb_cols_textarea<=0)) {
-		$msg.="Valeur invalide sur saisie_app_nb_cols_textarea.<br />\n";
-		$message_cn.="Valeur invalide sur saisie_app_nb_cols_textarea.<br />";
-	}
-	elseif(!savePref($_SESSION['login'], 'saisie_app_nb_cols_textarea', $saisie_app_nb_cols_textarea)) {
-		$msg.="Erreur lors de l'enregistrement de saisie_app_nb_cols_textarea.<br />\n";
-		$message_cn.="Erreur lors de l'enregistrement de saisie_app_nb_cols_textarea.<br />";
-	}
-	else {
-		$nb_reg++;
 	}
 
 	$cn_avec_min_max=isset($_POST['cn_avec_min_max']) ? $_POST['cn_avec_min_max'] : "n";
@@ -851,7 +891,10 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 }
 
 
-if(($_SESSION['statut']=='professeur')&&(isset($_POST['saisie_app_nb_cols_textarea']))) {
+if(($_SESSION['statut']=='professeur')&&(isset($_POST['valide_form_bull']))) {
+	check_token();
+
+	$message_bulletins="";
 
 	$aff_photo_saisie_app=isset($_POST['aff_photo_saisie_app']) ? $_POST['aff_photo_saisie_app'] : "n";
 	$insert=savePref($_SESSION['login'], 'aff_photo_saisie_app', $aff_photo_saisie_app);
@@ -860,37 +903,148 @@ if(($_SESSION['statut']=='professeur')&&(isset($_POST['saisie_app_nb_cols_textar
 	}
 	else {
 		$msg.="Erreur lors de l'enregistrement de aff_photo_saisie_app à $aff_photo_saisie_app.<br />\n";
-		$message_cn.="Erreur lors de l'enregistrement de aff_photo_saisie_app à $aff_photo_saisie_app.<br />";
+		$message_bulletins.="Erreur lors de l'enregistrement de aff_photo_saisie_app à $aff_photo_saisie_app.<br />";
 	}
 
 	$saisie_app_nb_cols_textarea=isset($_POST['saisie_app_nb_cols_textarea']) ? $_POST['saisie_app_nb_cols_textarea'] : 100;
 	if((!is_numeric($saisie_app_nb_cols_textarea))||($saisie_app_nb_cols_textarea<=0)) {
 		$msg.="Valeur invalide sur saisie_app_nb_cols_textarea pour ".$_SESSION['login']."<br />\n";
-		$message_bulletins="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+		$message_bulletins.="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
 	}
 	elseif(!savePref($_SESSION['login'], 'saisie_app_nb_cols_textarea', $saisie_app_nb_cols_textarea)) {
 		$msg.="Erreur lors de l'enregistrement de saisie_app_nb_cols_textarea pour ".$_SESSION['login']."<br />\n";
-		$message_bulletins="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+		$message_bulletins.="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
 	}
 	else {
 		$msg.="Enregistrement de saisie_app_nb_cols_textarea effectué.<br />\n";
-		$message_bulletins="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+		$message_bulletins.="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
 	}
+
+
+
+	$id_groupe_AppPP=isset($_POST['id_groupe_AppPP']) ? $_POST['id_groupe_AppPP'] : array();
+	$id_groupe_PP_correction_autorisee=isset($_POST['id_groupe_PP_correction_autorisee']) ? $_POST['id_groupe_PP_correction_autorisee'] : array();
+
+	$cpt_modif=0;
+	$cpt_err=0;
+	for($loop=0;$loop<count($id_groupe_AppPP);$loop++) {
+		if(acces_correction_app_pp($id_groupe_AppPP[$loop])) {
+			if(isset($id_groupe_PP_correction_autorisee[$loop])) {
+				// Pas de changement.
+			}
+			else {
+				$sql="DELETE FROM groupes_param WHERE id_groupe='".$id_groupe_AppPP[$loop]."' AND name='AutoriserCorrectionAppreciationParPP';";
+				$del=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(!$del) {
+					$cpt_err++;
+				}
+				else {
+					$cpt_modif++;
+				}
+			}
+		}
+		else {
+			if(isset($id_groupe_PP_correction_autorisee[$loop])) {
+				$sql="INSERT INTO groupes_param SET id_groupe='".$id_groupe_AppPP[$loop]."', name='AutoriserCorrectionAppreciationParPP', value='y';";
+				$insert=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(!$insert) {
+					$cpt_err++;
+				}
+				else {
+					$cpt_modif++;
+				}
+			}
+		}
+	}
+
+	$msg.="$cpt_modif modification(s) d'autorisation de correction d'appréciation par le ".getSettingValue('gepi_prof_suivi')."<br />";
+	$msg.="$cpt_err erreur(s) lors de l'opération.<br />";
+
+	$message_bulletins.="<span style='color:green'>$cpt_modif modification(s) d'autorisation de correction d'appréciation par le ".getSettingValue('gepi_prof_suivi')."</span><br />";
+	$message_bulletins.="<span style='color:red'>$cpt_err erreur(s) lors de l'opération.</span><br />";
 }
 
 
-if(($_SESSION['statut']=='professeur')&&(isset($_POST['ouverture_auto_WinDevoirsDeLaClasse']))) {
+if(($_SESSION['statut']=='professeur')&&(isset($_POST['validation_form_cdt2']))) {
 	check_token();
 
-	if(($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='y')||($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='n')) {
-		if(!savePref($_SESSION['login'],'ouverture_auto_WinDevoirsDeLaClasse',$_POST['ouverture_auto_WinDevoirsDeLaClasse'])) {
-			$msg.="Erreur lors de l'enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
-			$message_cdt="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+	$message_cdt="";
+	$temoin_erreur_cdt=0;
+	$temoin_reg_cdt=0;
+	if(isset($_POST['ouverture_auto_WinDevoirsDeLaClasse'])) {
+		if(($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='y')||($_POST['ouverture_auto_WinDevoirsDeLaClasse']=='n')) {
+			if(!savePref($_SESSION['login'],'ouverture_auto_WinDevoirsDeLaClasse',$_POST['ouverture_auto_WinDevoirsDeLaClasse'])) {
+				$msg.="Erreur lors de l'enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
+				$message_cdt.="<p style='color:red'>Erreur lors de l'enregistrement de ouverture_auto_WinDevoirsDeLaClasse.</p>\n";
+				$temoin_erreur_cdt++;
+			}
+			else {
+				$msg.="Enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
+				$temoin_reg_cdt++;
+				//$message_cdt.="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+			}
+		}
+	}
+
+	if(isset($_POST['cdt2_WinListeNotices_nb_compte_rendus'])) {
+		if((!preg_match("/^[0-9]*$/", $_POST['cdt2_WinListeNotices_nb_compte_rendus']))||($_POST['cdt2_WinListeNotices_nb_compte_rendus']<=0)||($_POST['cdt2_WinListeNotices_nb_compte_rendus']=="")) {
+			$msg.="Valeur invalide pour cdt2_WinListeNotices_nb_compte_rendus.<br />";
+			$temoin_erreur_cdt++;
 		}
 		else {
-			$msg.="Enregistrement de ouverture_auto_WinDevoirsDeLaClasse.<br />";
-			$message_cdt="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+			if(!savePref($_SESSION['login'],'cdt2_WinListeNotices_nb_compte_rendus',$_POST['cdt2_WinListeNotices_nb_compte_rendus'])) {
+				$msg.="Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_compte_rendus.<br />";
+				$message_cdt.="<p style='color:red'>Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_compte_rendus.</p>\n";
+				$temoin_erreur_cdt++;
+			}
+			else {
+				$msg.="Enregistrement de cdt2_WinListeNotices_nb_compte_rendus.<br />";
+				$temoin_reg_cdt++;
+			}
 		}
+	}
+
+	if(isset($_POST['cdt2_WinListeNotices_nb_devoirs'])) {
+		if((!preg_match("/^[0-9]*$/", $_POST['cdt2_WinListeNotices_nb_devoirs']))||($_POST['cdt2_WinListeNotices_nb_devoirs']<=0)||($_POST['cdt2_WinListeNotices_nb_devoirs']=="")) {
+			$msg.="Valeur invalide pour cdt2_WinListeNotices_nb_devoirs.<br />";
+			$temoin_erreur_cdt++;
+		}
+		else {
+			if(!savePref($_SESSION['login'],'cdt2_WinListeNotices_nb_devoirs',$_POST['cdt2_WinListeNotices_nb_devoirs'])) {
+				$msg.="Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_devoirs.<br />";
+				$message_cdt.="<p style='color:red'>Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_devoirs.</p>\n";
+				$temoin_erreur_cdt++;
+			}
+			else {
+				$msg.="Enregistrement de cdt2_WinListeNotices_nb_devoirs.<br />";
+				$temoin_reg_cdt++;
+			}
+		}
+	}
+
+	if(isset($_POST['cdt2_WinListeNotices_nb_notices_privees'])) {
+		if((!preg_match("/^[0-9]*$/", $_POST['cdt2_WinListeNotices_nb_notices_privees']))||($_POST['cdt2_WinListeNotices_nb_notices_privees']<=0)||($_POST['cdt2_WinListeNotices_nb_notices_privees']=="")) {
+			$msg.="Valeur invalide pour cdt2_WinListeNotices_nb_notices_privees.<br />";
+			$temoin_erreur_cdt++;
+		}
+		else {
+			if(!savePref($_SESSION['login'],'cdt2_WinListeNotices_nb_notices_privees',$_POST['cdt2_WinListeNotices_nb_notices_privees'])) {
+				$msg.="Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_notices_privees.<br />";
+				$message_cdt.="<p style='color:red'>Erreur lors de l'enregistrement de cdt2_WinListeNotices_nb_notices_privees.</p>\n";
+				$temoin_erreur_cdt++;
+			}
+			else {
+				$msg.="Enregistrement de cdt2_WinListeNotices_nb_notices_privees.<br />";
+				$temoin_reg_cdt++;
+			}
+		}
+	}
+
+	if($temoin_erreur_cdt>0) {
+		$message_cdt.="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+	}
+	elseif($temoin_reg_cdt>0) {
+		$message_cdt.="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
 	}
 }
 
@@ -905,6 +1059,59 @@ if(isset($_POST['mod_discipline_travail_par_defaut'])) {
 		$msg.="Enregistrement de mod_discipline_travail_par_defaut.<br />";
 		$message_mod_discipline="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
 	}
+
+	//debug_var();
+	/*
+	$_POST['mod_disc_mail_cat_incluse']=	Array (*)
+		$_POST[mod_disc_mail_cat_incluse]['0']=	2
+		$_POST[mod_disc_mail_cat_incluse]['1']=	5
+		$_POST[mod_disc_mail_cat_incluse]['2']=	6
+	$_POST['mod_disc_mail_cat_incluse_NC']=	y
+
+	for($loop=0;$loop<count($mod_disc_mail_cat_incluse);$loop++) {
+		
+	}
+	*/
+	$chaine="";
+	$mod_disc_mail_cat_incluse=isset($_POST['mod_disc_mail_cat_incluse']) ? $_POST['mod_disc_mail_cat_incluse'] : array();
+
+	$sql="SELECT * FROM s_categories ORDER BY categorie;";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
+		while($lig=mysqli_fetch_object($res)) {
+			if(!in_array($lig->id, $mod_disc_mail_cat_incluse)) {
+				$chaine.="|".$lig->id;
+			}
+		}
+		$chaine.="|";
+
+		if(!savePref($_SESSION['login'],'mod_discipline_natures_exclues_mail', $chaine)) {
+			$msg.="Erreur lors de l'enregistrement de mod_discipline_natures_exclues_mail.<br />";
+			$message_mod_discipline="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+		}
+		else {
+			$msg.="Enregistrement de mod_discipline_natures_exclues_mail.<br />";
+			$message_mod_discipline="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+		}
+	}
+
+
+	if(isset($_POST['mod_disc_mail_cat_incluse_NC'])) {
+		$value="n";
+	}
+	else {
+		$value="y";
+	}
+
+	if(!savePref($_SESSION['login'],'mod_discipline_natures_non_categorisees_exclues_mail', $value)) {
+		$msg.="Erreur lors de l'enregistrement de mod_discipline_natures_non_categorisees_exclues_mail.<br />";
+		$message_mod_discipline="<p style='color:red'>Erreur lors de l'enregistrement&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+	}
+	else {
+		$msg.="Enregistrement de mod_discipline_natures_non_categorisees_exclues_mail.<br />";
+		$message_mod_discipline="<p style='color:green'>Enregistrement effectué&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S').".</p>\n";
+	}
+
 }
 
 
@@ -912,6 +1119,8 @@ if(isset($_POST['mod_discipline_travail_par_defaut'])) {
 $tab_statuts_barre=array('professeur', 'cpe', 'scolarite', 'administrateur');
 $modifier_barre=isset($_POST['modifier_barre']) ? $_POST['modifier_barre'] : NULL;
 if((isset($modifier_barre))&&(in_array($_SESSION['statut'], $tab_statuts_barre))) {
+	check_token();
+
 	$afficher_menu=isset($_POST['afficher_menu']) ? $_POST['afficher_menu'] : NULL;
 	if(!savePref($_SESSION['login'], 'utiliserMenuBarre', $afficher_menu)) {
 		$msg.="Erreur lors de la sauvegarde de la préférence d'affichage de la barre de menu.<br />\n";
@@ -926,6 +1135,8 @@ if((isset($modifier_barre))&&(in_array($_SESSION['statut'], $tab_statuts_barre))
 
 
 if(isset($_POST['choix_encodage_csv'])) {
+	check_token();
+
 	if(in_array($_POST['choix_encodage_csv'],array("ascii", "utf-8", "windows-1252"))) {
 		if(!savePref($_SESSION['login'], 'choix_encodage_csv', $_POST['choix_encodage_csv'])) {
 			$msg.="Erreur lors de la sauvegarde de la préférence d'encodage des fichiers CSV.<br />\n";
@@ -939,6 +1150,8 @@ if(isset($_POST['choix_encodage_csv'])) {
 }
 
 if(isset($_POST['output_mode_pdf'])) {
+	check_token();
+
 	if(in_array($_POST['output_mode_pdf'],array("D", "I"))) {
 		if(!savePref($_SESSION['login'], 'output_mode_pdf', $_POST['output_mode_pdf'])) {
 			$msg.="Erreur lors de la sauvegarde de la préférence d'export PDF.<br />\n";
@@ -1002,6 +1215,8 @@ if ($niveau_arbo == "0") {
 $tab_sound=get_tab_file($chemin_sound);
 
 if((count($tab_sound)>0)&&(isset($_POST['footer_sound']))&&(((in_array($_POST['footer_sound'],$tab_sound))&&(preg_match('/\.wav/i',$_POST['footer_sound']))&&(file_exists($chemin_sound.$_POST['footer_sound'])))|| $_POST['footer_sound']=='')) {
+	check_token();
+
 	if(!savePref($_SESSION['login'],'footer_sound',$_POST['footer_sound'])) {
 		$msg.="Erreur lors de l'enregistrement de l'alerte sonore de fin de session.<br />";
 		$message_footer_sound = "<p style='color: red;'>Impossible d'enregistrer la modification&nbsp;: ".strftime('%d/%m/%Y à %H:%M:%S')."</p>";
@@ -1025,14 +1240,234 @@ if (isset($_POST['AlertesAvecSon'])) {
 	}
 }
 
+if (isset($_POST['ajout_fichier_signature'])) {
+	check_token();
+
+	$tab_signature=get_tab_signature_bull();
+
+	$sign_file = isset($_FILES["sign_file"]) ? $_FILES["sign_file"] : NULL;
+
+	$msg_tmp="";
+	$temoin_erreur_sign=0;
+	if((isset($sign_file))&&((!isset($sign_file['error']))||($sign_file['error']!=4))) {
+		if((!preg_match("/\.jpeg$/i", $sign_file['name']))&&(!preg_match("/\.jpg$/i", $sign_file['name']))) {
+			$msg_tmp.= "Seule l'extension JPG est autorisée.<br />";
+			$temoin_erreur_sign++;
+		}
+		else {
+			if(!check_user_temp_directory($_SESSION['login'], 1)) {
+				$msg_tmp.= "Votre dossier temporaire ne peut pas être créé ou n'est pas accessible en écriture.<br />";
+				$temoin_erreur_sign++;
+			}
+			else {
+				$dirname=get_user_temp_directory($_SESSION['login']);
+				if((!$dirname)||($dirname=="")) {
+					$msg_tmp.= "Votre dossier temporaire n'existe pas ou n'est pas accessible en écriture.<br />";
+					$temoin_erreur_sign++;
+				}
+				else {
+					$tmp_dim_img=getimagesize($sign_file['tmp_name']);
+					if((isset($tmp_dim_img[2]))&&($tmp_dim_img[2]==2)) {
+						$dirname="../temp/".$dirname."/signature";
+
+						if(!file_exists($dirname)) {
+							mkdir($dirname);
+							if ($f = @fopen("$dirname/index.html", "w")) {
+								@fputs($f, '<html><head><script type="text/javascript">
+		document.location.replace("../../../login.php")
+	</script></head></html>');
+								@fclose($f);
+							}
+						}
+
+						if(!file_exists($dirname)) {
+							$msg_tmp.= "Il n'a pas été possible de créer un dossier 'signature' dans votre dossier temporaire.<br />";
+							$temoin_erreur_sign++;
+						}
+						else {
+							$ok = false;
+							if ($f = @fopen("$dirname/.test", "w")) {
+								@fputs($f, '<'.'?php $ok = true; ?'.'>');
+								@fclose($f);
+								include("$dirname/.test");
+							}
+
+							//$msg_tmp.=$dirname."<br />";
+
+							if (!$ok) {
+								$msg_tmp.= "Problème d'écriture sur votre répertoire temporaire.<br />Veuillez signaler ce problème à l'administrateur du site.<br />";
+								$temoin_erreur_sign++;
+							} else {
+								if (file_exists($dirname."/".$sign_file['name'])) {
+									@unlink($dirname."/".$sign_file['name']);
+									$sql="DELETE FROM signature_fichiers WHERE fichier='".mysqli_real_escape_string($GLOBALS["mysqli"], $sign_file['name'])."' AND login='".$_SESSION['login']."';";
+									$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+									$msg_tmp.= "Un fichier de même nom existait pour cet utilisateur.<br />Le fichier précédent a été supprimé.<br />";
+								}
+								$ok = @copy($sign_file['tmp_name'], $dirname."/".$sign_file['name']);
+								if (!$ok) {$ok = @move_uploaded_file($sign_file['tmp_name'], $dirname."/".$sign_file['name']);}
+								if (!$ok) {
+									$msg_tmp.= "Problème de transfert : le fichier n'a pas pu être transféré dans votre répertoire temporaire.<br />Veuillez signaler ce problème à l'administrateur du site<br />.";
+									$temoin_erreur_sign++;
+								}
+								else {
+									$msg_tmp.= "Le fichier a été transféré.<br />";
+
+									// Par précaution, pour éviter des blagues avec des scories...
+									$sql="DELETE FROM signature_fichiers WHERE fichier='".mysqli_real_escape_string($GLOBALS["mysqli"], $sign_file['name'])."' AND login='".$_SESSION['login']."';";
+									$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+
+									$sql="INSERT INTO signature_fichiers SET login='".$_SESSION['login']."', fichier='".mysqli_real_escape_string($GLOBALS["mysqli"], $sign_file['name'])."';";
+									$insert=mysqli_query($GLOBALS["mysqli"], $sql);
+									if (!$insert) {
+										$msg_tmp.="Erreur lors de l'enregistrement dans la table 'signature_fichiers'.<br />";
+										$temoin_erreur_sign++;
+									}
+								}
+							}
+						}
+					}
+					else {
+						$msg_tmp.= "Le type de l'image est incorrect.<br />";
+						$temoin_erreur_sign++;
+					}
+				}
+			}
+		}
+	}
+	if($msg_tmp!="") {
+		$msg.=$msg_tmp;
+		if($temoin_erreur_sign>0) {
+			$message_signature_bulletins_ajout="<span style='color:red'>".$msg_tmp."</span>";
+		}
+		else {
+			$message_signature_bulletins_ajout="<span style='color:green'>".$msg_tmp."</span>";
+		}
+	}
+
+
+	// Association classe/fichier:
+	// Il faut faire l'association avant la suppression pour éviter des erreurs.
+	$msg_tmp="";
+	$temoin_erreur_sign=0;
+	$fich_sign_classe = isset($_POST["fich_sign_classe"]) ? $_POST["fich_sign_classe"] : array();
+	foreach($fich_sign_classe as $id_classe => $id_fichier) {
+		if(array_key_exists($id_classe, $tab_signature['classe'])) {
+			if($id_fichier!=$tab_signature['classe'][$id_classe]['id_fichier']) {
+				if(($id_fichier!=-1)&&(!array_key_exists($id_fichier, $tab_signature['fichier']))) {
+					$msg_tmp.="Le fichie de signature n°$id_fichier, pour peu qu'il existe, ne vous appartient pas.<br />";
+					$temoin_erreur_sign++;
+				}
+				else {
+					$sql="UPDATE signature_classes SET id_fichier='".$id_fichier."' WHERE id_classe='$id_classe' AND login='".$_SESSION['login']."';";
+					$update=mysqli_query($GLOBALS["mysqli"], $sql);
+					if($update) {
+						if($id_fichier==-1) {
+							$msg_tmp.="Suppression de l'association de fichier signature avec la classe ".get_nom_classe($id_classe)." effectuée.<br />";
+						}
+						else {
+							$msg_tmp.="Association du fichier de signature n°$id_fichier avec la classe ".get_nom_classe($id_classe)." effectuée.<br />";
+						}
+					}
+					else {
+						$msg_tmp.="Erreur lors de l'association du fichier de signature n°$id_fichier avec la classe ".get_nom_classe($id_classe)."<br />";
+						$temoin_erreur_sign++;
+					}
+				}
+			}
+		}
+		else {
+			$msg_tmp.="Vous n'avez pas le droit d'associer un fichier de signature à la classe ".get_nom_classe($id_classe)."<br />";
+			$temoin_erreur_sign++;
+		}
+	}
+	if($msg_tmp!="") {
+		$msg.=$msg_tmp;
+		if($temoin_erreur_sign>0) {
+			$message_signature_bulletins_assoc_fichier_classe="<span style='color:red'>".$msg_tmp."</span>";
+		}
+		else {
+			$message_signature_bulletins_assoc_fichier_classe="<span style='color:green'>".$msg_tmp."</span>";
+		}
+	}
+
+
+	// Suppression de fichier
+	$msg_tmp="";
+	$cpt_suppr=0;
+	$cpt_fich_suppr=0;
+	$temoin_erreur_sign=0;
+	$suppr_fichier = isset($_POST["suppr_fichier"]) ? $_POST["suppr_fichier"] : array();
+	for($loop=0;$loop<count($suppr_fichier);$loop++) {
+		$sql="SELECT * FROM signature_fichiers WHERE id_fichier='".$suppr_fichier[$loop]."' AND login='".$_SESSION['login']."';";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)>0) {
+			$lig=mysqli_fetch_object($res);
+
+			$dirname=get_user_temp_directory($_SESSION['login']);
+			$fichier_courant="../temp/".$dirname."/signature/".$lig->fichier;
+			if(($dirname)&&($dirname!="")&&(file_exists($fichier_courant))) {
+				$menage=unlink($fichier_courant);
+				if(!$menage) {
+					$msg_tmp.="Erreur lors de la suppression du fichier $fichier_courant<br />";
+					$temoin_erreur_sign++;
+				}
+				else {
+					$cpt_fich_suppr++;
+				}
+			}
+
+			if(isset($tab_signature['fichier'][$suppr_fichier[$loop]]['id_classe'])) {
+				for($loop2=0;$loop2<count($tab_signature['fichier'][$suppr_fichier[$loop]]['id_classe']);$loop2++) {
+					$sql="UPDATE signature_classes WHERE SET id_fichier='-1' WHERE login='".$_SESSION['login']."' AND id_classe='".$tab_signature['fichier'][$suppr_fichier[$loop]]['id_classe'][$loop2]."';";
+					$menage2=mysqli_query($GLOBALS["mysqli"], $sql);
+				}
+			}
+
+			$sql="DELETE FROM signature_fichiers WHERE id_fichier='".$suppr_fichier[$loop]."';";
+			$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+			if($menage) {
+				$cpt_suppr++;
+			}
+			else {
+				$msg_tmp.="Erreur lors de la suppression de l'enregistrement concernant $fichier_courant<br />";
+				$temoin_erreur_sign++;
+			}
+		}
+		else {
+			$msg_tmp.="Le fichier n°".$suppr_fichier[$loop]." ne vous appartient pas.<br />";
+			$temoin_erreur_sign++;
+		}
+	}
+	if($cpt_suppr>0) {
+		$msg_tmp.="$cpt_suppr enregistrement(s) supprimé(s).<br />";
+	}
+	if($cpt_fich_suppr>0) {
+		$msg_tmp.="$cpt_fich_suppr fichier(s) supprimé(s).<br />";
+	}
+	if($msg_tmp!="") {
+		$msg.=$msg_tmp;
+		if($temoin_erreur_sign>0) {
+			$message_signature_bulletins_suppr="<span style='color:red'>".$msg_tmp."</span>";
+		}
+		else {
+			$message_signature_bulletins_suppr="<span style='color:green'>".$msg_tmp."</span>";
+		}
+	}
+
+	// Par précaution:
+	$sql="UPDATE signature_classes SET id_fichier='-1' WHERE login='".$_SESSION['login']."' AND id_fichier NOT IN (SELECT id_fichier FROM signature_fichiers);";
+	$menage=mysqli_query($GLOBALS["mysqli"], $sql);
+}
+
 // On appelle les informations de l'utilisateur pour les afficher :
-$call_user_info = mysql_query("SELECT nom,prenom,statut,email,show_email,civilite FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
-$user_civilite = mysql_result($call_user_info, "0", "civilite");
-$user_nom = mysql_result($call_user_info, "0", "nom");
-$user_prenom = mysql_result($call_user_info, "0", "prenom");
-$user_statut = mysql_result($call_user_info, "0", "statut");
-$user_email = mysql_result($call_user_info, "0", "email");
-$user_show_email = mysql_result($call_user_info, "0", "show_email");
+$call_user_info = mysqli_query($GLOBALS["mysqli"], "SELECT nom,prenom,statut,email,show_email,civilite FROM utilisateurs WHERE login='" . $_SESSION['login'] . "'");
+$user_civilite = old_mysql_result($call_user_info, "0", "civilite");
+$user_nom = old_mysql_result($call_user_info, "0", "nom");
+$user_prenom = old_mysql_result($call_user_info, "0", "prenom");
+$user_statut = old_mysql_result($call_user_info, "0", "statut");
+$user_email = old_mysql_result($call_user_info, "0", "email");
+$user_show_email = old_mysql_result($call_user_info, "0", "show_email");
 
 //**************** EN-TETE *****************
 $titre_page = "Gérer son compte";
@@ -1052,8 +1487,14 @@ if ($session_gepi->current_auth_mode == "gepi" || $gepiSettings['ldap_write_acce
 	$affiche_bouton_submit = 'no';
 }
 
-echo "<p class='bold'><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>\n";
+echo "<p class='bold'><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+if(($_SESSION['statut']!='administrateur')&&(getSettingAOui("AccesFicheBienvenue".ucfirst($_SESSION['statut'])))) {
+	echo " | <a href=\"./impression_bienvenue.php\" target='_blank'>Imprimer ma fiche Bienvenue</a>";
+}
+echo "</p>\n";
 echo "<form enctype=\"multipart/form-data\" action=\"mon_compte.php\" method=\"post\">\n";
+
+$tabindex=1;
 
 echo "<fieldset id='infosPerso' style='border: 1px solid grey;";
 echo "background-image: url(\"../images/background/opacite50.png\"); ";
@@ -1093,7 +1534,7 @@ if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_acce
 		($_SESSION['statut']=='scolarite')||
 		($_SESSION['statut']=='cpe')) {
 ?>
-                            <select name='reg_civilite' onchange='changement()'>
+                            <select name='reg_civilite' onchange='changement()' <?php echo "tabindex='$tabindex'";$tabindex++;?>>
                                 <option value='M.'<?php if ($user_civilite=='M.') {echo " selected='selected' ";} ?> >M.</option>
                                 <option value='Mme'<?php if ($user_civilite=='Mme') {echo " selected='selected' ";} ?> >Mme</option>
                                 <option value='Mlle'<?php if ($user_civilite=='Mlle') {echo " selected='selected' ";} ?> >Mlle</option>
@@ -1117,6 +1558,33 @@ if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_acce
                         <td><?php echo $user_prenom ?></td>
                     </tr>
 <?php
+	if($_SESSION['statut']=='eleve') {
+		$sql="SELECT naissance, lieu_naissance FROM eleves WHERE login='".$_SESSION['login']."';";
+		$res_nais=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_nais)>0) {
+			$user_naissance=old_mysql_result($res_nais, 0, "naissance");
+			echo "
+                    <tr>
+                        <td>Date de naissance : </td>
+                        <td>".formate_date($user_naissance)."</td>
+                    </tr>";
+
+			if(getSettingAOui('ele_lieu_naissance')) {
+				$code_lieu_naissance=old_mysql_result($res_nais, 0, "lieu_naissance");
+				$sql="SELECT * FROM communes WHERE code_commune_insee='$code_lieu_naissance';";
+				$res_nais=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_nais)>0) {
+					$lieu_naissance=old_mysql_result($res_nais, 0, "commune")." (".old_mysql_result($res_nais, 0, "departement").")";
+					echo "
+                    <tr>
+                        <td>Lieu de naissance : </td>
+                        <td>".$lieu_naissance."</td>
+                    </tr>";
+				}
+			}
+		}
+	}
+
 	if (($editable_user)&&
 		((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
 		(getSettingValue('mode_email_resp')!='sconet'))) {
@@ -1131,6 +1599,7 @@ if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_acce
                                    name=reg_email 
                                    size=30
                                    <?php if ($user_email) { echo " value=\"".$user_email."\"";} ?>
+                                    <?php echo " tabindex='$tabindex'";$tabindex++;?>
                                    />
                                    <?php
                                        if((isset($_GET['saisie_mail_requise']))&&($_GET['saisie_mail_requise']=='yes')) {
@@ -1169,6 +1638,8 @@ if ($session_gepi->current_auth_mode != "gepi" && $gepiSettings['ldap_write_acce
 		$affiche_bouton_submit = 'yes';
 		echo "<tr><td></td><td><label for='reg_show_email' style='cursor: pointer;'><input type='checkbox' name='reg_show_email' id='reg_show_email' value='yes'";
 		if ($user_show_email == "yes") echo " CHECKED";
+		echo " tabindex='$tabindex'";
+		$tabindex++;
 		echo "/> Autoriser l'affichage de mon adresse email<br />pour les utilisateurs non personnels de l'établissement **</label></td></tr>\n";
 	}
 	echo "<tr><td>Statut : </td><td>".statut_accentue($user_statut)."</td></tr>\n";
@@ -1197,8 +1668,8 @@ if(($_SESSION['statut']=='administrateur')||
 
 		if($_SESSION['statut']=='eleve') {
 			$sql="SELECT elenoet FROM eleves WHERE login='".$_SESSION['login']."';";
-			$res_elenoet=mysql_query($sql);
-			if(mysql_num_rows($res_elenoet)==0) {
+			$res_elenoet=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_elenoet)==0) {
 				echo "</td></tr></table>\n";
 				echo "<p><b>ERREUR !</b> Votre statut d'élève ne semble pas être confirmé dans la table 'eleves'.</p>\n";
 				// A FAIRE
@@ -1206,7 +1677,7 @@ if(($_SESSION['statut']=='administrateur')||
 				require("../lib/footer.inc.php");
 				die();
 			}
-			$lig_tmp_elenoet=mysql_fetch_object($res_elenoet);
+			$lig_tmp_elenoet=mysqli_fetch_object($res_elenoet);
 			$reg_no_gep=$lig_tmp_elenoet->elenoet;
 
 			if($reg_no_gep!="") {
@@ -1268,8 +1739,10 @@ if(($_SESSION['statut']=='administrateur')||
 					//echo "</span>\n";
 					echo "</div>\n";
 					echo "<div id='div_upload_photo' style='display:none; width:400px;'>";
-					echo "<input type='file' name='filephoto' size='30' />\n";
-					echo "<input type='submit' name='Envoi_photo' value='Envoyer' />\n";
+					echo "<input type='file' name='filephoto' size='30' tabindex='$tabindex' />\n";
+					$tabindex++;
+					echo "<input type='submit' name='Envoi_photo' value='Envoyer' tabindex='$tabindex' />\n";
+					$tabindex++;
 					if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
 						echo "<br /><span style='font-size:x-small;'><b>Remarque : </b>Les photographies sont automatiquement redimensionnées (largeur : ".getSettingValue("l_resize_trombinoscopes")." pixels, hauteur : ".getSettingValue("h_resize_trombinoscopes")." pixels). Afin que votre photographie ne soit pas trop réduite, les dimensions de celle-ci (respectivement largeur et hauteur) doivent être de préférence proportionnelles à ".getSettingValue("l_resize_trombinoscopes")." et ".getSettingValue("h_resize_trombinoscopes").".</span>"."<br /><span style='font-size:x-small;'>Les photos doivent de plus être au format JPEG avec l'extension '<strong>.jpg</strong>'.</span>";
 					}
@@ -1278,7 +1751,8 @@ if(($_SESSION['statut']=='administrateur')||
 						if(file_exists($photo)) {
 							echo "<br />\n";
 							//echo "<input type='checkbox' name='suppr_filephoto' value='y' /> Supprimer la photo existante\n";
-							echo "<input type='checkbox' name='suppr_filephoto' id='suppr_filephoto' value='y' />\n";
+							echo "<input type='checkbox' name='suppr_filephoto' id='suppr_filephoto' value='y' tabindex='$tabindex' />\n";
+							$tabindex++;
 							echo "&nbsp;<label for='suppr_filephoto' style='cursor: pointer; cursor: hand;'>Supprimer la photo existante</label>\n";
 						}
 					}
@@ -1331,16 +1805,19 @@ if(($_SESSION['statut']=='administrateur')||
 					}
 
 					echo "<div id='div_upload_photo' style='display: none; width:400px;'>\n";
-					echo "<input type='file' name='filephoto' size='30' />\n";
+					echo "<input type='file' name='filephoto' size='30' tabindex='$tabindex' />\n";
+					$tabindex++;
 
-					echo "<input type='submit' name='Envoi_photo' value='Envoyer' />\n";
+					echo "<input type='submit' name='Envoi_photo' value='Envoyer' tabindex='$tabindex' />\n";
+					$tabindex++;
 
 					if (getSettingValue("active_module_trombinoscopes_rd")=='y') {
 						echo "<br /><span style='font-size:x-small;'><b>Remarque : </b>Les photographies sont automatiquement redimensionnées (largeur : ".getSettingValue("l_resize_trombinoscopes")." pixels, hauteur : ".getSettingValue("h_resize_trombinoscopes")." pixels). Afin que votre photographie ne soit pas trop réduite, les dimensions de celle-ci (respectivement largeur et hauteur) doivent être de préférence proportionnelles à ".getSettingValue("l_resize_trombinoscopes")." et ".getSettingValue("h_resize_trombinoscopes").".</span>"."<br /><span style='font-size:x-small;'>Les photos doivent de plus être au format JPEG avec l'extension '<strong>.jpg</strong>'.</span>";
 					}
 					echo "<br />\n";
 					echo "<span style='text-align:right'>";
-					echo "<input type='checkbox' name='suppr_filephoto' id='suppr_filephoto' value='y' />\n";
+					echo "<input type='checkbox' name='suppr_filephoto' id='suppr_filephoto' value='y' tabindex='$tabindex' />\n";
+					$tabindex++;
 					echo "&nbsp;<label for='suppr_filephoto' style='cursor: pointer; cursor: hand; '>Supprimer la photo existante</label>\n";
 					echo "</span>\n";
 					echo "</span>\n";
@@ -1358,7 +1835,8 @@ if(($_SESSION['statut']=='administrateur')||
 echo "</td>\n";
 echo "</table>\n";
 if ($affiche_bouton_submit=='yes') {
-	echo "<p><input type='submit' value='Enregistrer' /></p>\n";
+	echo "<p><input type='submit' value='Enregistrer' tabindex='$tabindex' /></p>\n";
+	$tabindex++;
 }
 
 $groups = get_groups_for_prof($_SESSION["login"],"classe puis matière");
@@ -1377,12 +1855,13 @@ if (empty($groups)) {
 
 	// Matière principale:
 	$sql="SELECT DISTINCT jpm.id_matiere, m.nom_complet FROM j_professeurs_matieres jpm, matieres m WHERE (jpm.id_professeur='".$_SESSION["login"]."' AND m.matiere=jpm.id_matiere) ORDER BY m.nom_complet;";
-	$test=mysql_query($sql);
-	$nb=mysql_num_rows($test);
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	$nb=mysqli_num_rows($test);
 	//echo "\$nb=$nb<br />";
 	if ($nb>1) {
-		echo "Matière principale&nbsp;: <select name='matiere_principale'>\n";
-		while($lig_mat=mysql_fetch_object($test)) {
+		echo "Matière principale&nbsp;: <select name='matiere_principale' tabindex='$tabindex'>\n";
+		$tabindex++;
+		while($lig_mat=mysqli_fetch_object($test)) {
 			echo "<option value='$lig_mat->id_matiere'";
 			if($lig_mat->id_matiere==$_SESSION['matiere']) {echo " selected='selected'";}
 			echo ">$lig_mat->nom_complet</option>\n";
@@ -1392,15 +1871,15 @@ if (empty($groups)) {
 	}
 }
 
-$call_prof_classe = mysql_query("SELECT DISTINCT c.* FROM classes c, j_eleves_professeurs s, j_eleves_classes cc WHERE (s.professeur='" . $_SESSION['login'] . "' AND s.login = cc.login AND cc.id_classe = c.id)");
-$nombre_classe = mysql_num_rows($call_prof_classe);
+$call_prof_classe = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT c.* FROM classes c, j_eleves_professeurs s, j_eleves_classes cc WHERE (s.professeur='" . $_SESSION['login'] . "' AND s.login = cc.login AND cc.id_classe = c.id)");
+$nombre_classe = mysqli_num_rows($call_prof_classe);
 if ($nombre_classe != "0") {
 	$j = "0";
 	echo "<p>Vous êtes ".getSettingValue("gepi_prof_suivi")." dans la classe de :</p>\n";
 	echo "<ul>\n";
 	while ($j < $nombre_classe) {
-		$id_classe = mysql_result($call_prof_classe, $j, "id");
-		$classe_suivi = mysql_result($call_prof_classe, $j, "classe");
+		$id_classe = old_mysql_result($call_prof_classe, $j, "id");
+		$classe_suivi = old_mysql_result($call_prof_classe, $j, "classe");
 		echo "<li><b>$classe_suivi</b></li>\n";
 		$j++;
 	}
@@ -1429,6 +1908,14 @@ if ($_SESSION['statut'] == "scolarite" OR $_SESSION['statut'] == "professeur" OR
 <?php 
 }
 
+//==========================================
+if(getSettingAOui('MonCompteAfficheInfo'.ucfirst($_SESSION['statut']))) {
+	echo "<hr />
+<a hame='MonCompteAfficheInfo'></a>
+<h2>Information ".$_SESSION['statut']."</h2>
+
+".getSettingValue('MonCompteInfo'.ucfirst($_SESSION['statut']));
+}
 //==========================================
 
 // Changement du mot de passe
@@ -1466,16 +1953,21 @@ if ($editable_user) {
 <table summary='Mot de passe'>
     <tr>
         <td>Ancien mot de passe : </td>
-        <td><input type=password name=no_anti_inject_password_a size=20 /></td>
+        <td><input type='password' name='no_anti_inject_password_a' id='no_anti_inject_password_a' size='20' tabindex='<?php echo $tabindex;$tabindex++;?>' /><?php echo input_password_to_text('no_anti_inject_password_a');?></td>
     </tr>
     <tr>
-        <td>Nouveau mot de passe (<?php echo getSettingValue("longmin_pwd") ;?> caractères minimum) :</td>
+        <td>Nouveau mot de passe (<em><?php echo getSettingValue("longmin_pwd") ;?> caractères minimum</em>) :</td>
         <td>
             <input id="mypassword" 
                     type="password" 
                     name="no_anti_inject_password1" 
                     size="20" 
-                    onkeyup="runPassword(this.value, 'mypassword');" />
+                    onkeyup="runPassword(this.value, 'mypassword');" 
+                    tabindex='<?php echo $tabindex;$tabindex++;?>' />
+                    <?php
+                        // Cela merdoie: Il doit y avoir un conflit entre le test de solidité et le changement de type.
+                        echo input_password_to_text('mypassword');
+                    ?>
         </td>
         <td>
             Complexité de votre mot de passe : 
@@ -1486,8 +1978,8 @@ if ($editable_user) {
         </td>
     </tr>
     <tr>
-        <td>Nouveau mot de passe (à confirmer) : </td>
-        <td><input type=password name=reg_password2 size=20 /></td>
+        <td>Nouveau mot de passe (<em>à confirmer</em>) : </td>
+        <td><input type='password' name='reg_password2' id='reg_password2' size='20' tabindex='<?php echo $tabindex;$tabindex++;?>' /><?php echo input_password_to_text('reg_password2');?></td>
     </tr>
 </table>
 <?php
@@ -1498,7 +1990,8 @@ if ($editable_user) {
 <?php
 }
 if ($affiche_bouton_submit=='yes')
-	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" /></center>\n";
+	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" tabindex='$tabindex' /></center>\n";
+	$tabindex++;
 	echo "<input type=\"hidden\" name=\"valid\" value=\"yes\" />\n";
 echo "</fieldset>\n";
 echo "</form>\n";
@@ -1509,14 +2002,16 @@ echo "<br/>\n";
 
 
 function cellule_checkbox($prof_login,$item,$num,$special){
+	global $tabindex;
+
 	echo "<td align='center'";
 	echo " id='td_".$item."_".$num."' ";
 	$checked="";
 	$coche="";
 	$sql="SELECT * FROM preferences WHERE login='$prof_login' AND name='$item'";
-	$test=mysql_query($sql);
-	if(mysql_num_rows($test)>0){
-		$lig_test=mysql_fetch_object($test);
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0){
+		$lig_test=mysqli_fetch_object($test);
 		if($lig_test->value=="y"){
 			echo " class='coche'";
 			$checked=" checked";
@@ -1528,7 +2023,8 @@ function cellule_checkbox($prof_login,$item,$num,$special){
 		}
 	}
 	echo ">";
-	echo "<input type='checkbox' name='$item"."_"."$num' id='$item"."_"."$num' value='y'";
+	echo "<input type='checkbox' name='$item"."_"."$num' id='$item"."_"."$num' value='y' tabindex='$tabindex'";
+	$tabindex++;
 
 	echo $checked;
 	echo " onchange=\"changement_et_couleur('$item"."_"."$num','";
@@ -1574,18 +2070,27 @@ if($_SESSION['statut']=='professeur') {
 			<p>Vous pouvez choisir d'afficher le Nom ou la Description des enseignements/groupes dans différents modules&nbsp;:<br />
 
 				Barre de menu horizontale (<em>si elle est affichée</em>)&nbsp;: 
-				<input type='radio' name='nom_ou_description_groupe_barre_h' id='nom_ou_description_groupe_barre_h_name' value='name' ".($nom_ou_description_groupe_barre_h=='name' ? "checked " : "")."/><label for='nom_ou_description_groupe_barre_h_name'>Nom</label> - 
-				<input type='radio' name='nom_ou_description_groupe_barre_h' id='nom_ou_description_groupe_barre_h_description' value='description' ".($nom_ou_description_groupe_barre_h=='description' ? "checked " : "")."/><label for='nom_ou_description_groupe_barre_h_description'>Description</label>
-				<br />
-
+				<input type='radio' name='nom_ou_description_groupe_barre_h' id='nom_ou_description_groupe_barre_h_name' value='name' ".($nom_ou_description_groupe_barre_h=='name' ? "checked " : "")." tabindex='$tabindex' /><label for='nom_ou_description_groupe_barre_h_name'>Nom</label> - ";
+	$tabindex++;
+	echo "
+				<input type='radio' name='nom_ou_description_groupe_barre_h' id='nom_ou_description_groupe_barre_h_description' value='description' ".($nom_ou_description_groupe_barre_h=='description' ? "checked " : "")." tabindex='$tabindex' /><label for='nom_ou_description_groupe_barre_h_description'>Description</label>
+				<br />";
+	$tabindex++;
+	echo "
 				Cahiers de textes&nbsp;: 
-				<input type='radio' name='nom_ou_description_groupe_cdt' id='nom_ou_description_groupe_cdt_name' value='name' ".($nom_ou_description_groupe_cdt=='name' ? "checked " : "")."/><label for='nom_ou_description_groupe_cdt_name'>Nom</label> - 
-				<input type='radio' name='nom_ou_description_groupe_cdt' id='nom_ou_description_groupe_cdt_description' value='description' ".($nom_ou_description_groupe_cdt=='description' ? "checked " : "")."/><label for='nom_ou_description_groupe_cdt_description'>Description</label>
-				<br />
+				<input type='radio' name='nom_ou_description_groupe_cdt' id='nom_ou_description_groupe_cdt_name' value='name' ".($nom_ou_description_groupe_cdt=='name' ? "checked " : "")." tabindex='$tabindex' /><label for='nom_ou_description_groupe_cdt_name'>Nom</label> - ";
+	$tabindex++;
+	echo "
+				<input type='radio' name='nom_ou_description_groupe_cdt' id='nom_ou_description_groupe_cdt_description' value='description' ".($nom_ou_description_groupe_cdt=='description' ? "checked " : "")." tabindex='$tabindex' /><label for='nom_ou_description_groupe_cdt_description'>Description</label>
+				<br />";
+	$tabindex++;
+	echo "
 
 			</p>
 
-			<p style='text-align:center;'><input type='submit' name='Valider' value='Enregistrer' /></p>\n";
+			<p style='text-align:center;'><input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' /></p>\n";
+
+	$tabindex++;
 
 	if(isset($message_nom_ou_description_groupe)) {echo $message_nom_ou_description_groupe;}
 
@@ -1656,8 +2161,127 @@ if($_SESSION['statut']=='professeur') {
 
 	echo "</table>\n";
 
+
+	echo "<p class='bold' style='margin-top:1em;'>Vous pouvez trier/masquer des enseignements en page d'accueil simplifiée&nbsp;:</p>";
+	$tab_grp_order=array();
+	$tab_grp_hidden=array();
+	$sql="SELECT * FROM preferences WHERE login='".$_SESSION['login']."' AND name LIKE 'accueil_simpl_id_groupe_order_%' ORDER BY value;";
+	$res_grp_order=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_grp_order)>0) {
+		while($lig_grp_order=mysqli_fetch_object($res_grp_order)) {
+			$tmp_id_groupe=preg_replace("/^accueil_simpl_id_groupe_order_/", "", $lig_grp_order->name);
+			if($lig_grp_order->value=='-1') {
+				$tab_grp_hidden[]=$tmp_id_groupe;
+			}
+			else {
+				$tab_grp_order[]=$tmp_id_groupe;
+			}
+		}
+	}
+
+	// On passe en revue les groupes qui ont été triés dans Mon compte
+	$cpt=1;
+	if(count($tab_grp_order)>0) {
+		echo "<p style='margin-left:3em;text-indent:-2em;'>Les groupes suivants sont triés&nbsp;:<br />";
+		for($loop=0;$loop<count($tab_grp_order);$loop++) {
+			for($i=0;$i<count($groups);$i++) {
+				if($groups[$i]['id']==$tab_grp_order[$loop]) {
+
+					echo "<span id='texte_accueil_simpl_afficher_grp_$cpt'>".$groups[$i]['name']." (<em style='font-size:small'>".$groups[$i]['name']." en ".$groups[$i]['classlist_string'];
+					if(count($groups[$i]['profs']['list'])>1) {
+						echo " avec ".$groups[$i]['profs']['proflist_string'];
+					}
+					echo "</em>)"."</span>
+					<input type='hidden' name='accueil_simpl_afficher_grp[$cpt]' value='".$groups[$i]['id']."' />
+					<select name='accueil_simpl_afficher_grp_rang[$cpt]'>
+						<option value='-1'>Ne pas afficher ce groupe</option>";
+					for($loop2=1;$loop2<count($groups)+1;$loop2++) {
+						if($loop2==$cpt) {
+							$selected=" selected";
+						}
+						else {
+							$selected="";
+						}
+						echo "
+						<option value='$loop2'$selected>$loop2</option>";
+					}
+					echo "
+					</select></br />";
+					break;
+				}
+			}
+			$cpt++;
+		}
+		echo "</p>";
+	}
+
+	// Les groupes qui n'ont pas été triés dans Mon compte et pas cachés non plus
+	$temoin_grp_non_encore_trie="n";
+	for($i=0;$i<count($groups);$i++) {
+		if((!in_array($groups[$i]['id'], $tab_grp_order))&&(!in_array($groups[$i]['id'], $tab_grp_hidden))) {
+			if($temoin_grp_non_encore_trie=="n") {
+				echo "<p style='margin-left:3em;text-indent:-2em;'>L'ordre ou le masquage des groupes suivants n'a pas encore été défini (<em>ils seront affichés</em>)&nbsp;:<br />";
+				$temoin_grp_non_encore_trie="y";
+			}
+			echo "<span id='texte_accueil_simpl_afficher_grp_$cpt'>".$groups[$i]['name']." (<em style='font-size:small'>".$groups[$i]['name']." en ".$groups[$i]['classlist_string'];
+			if(count($groups[$i]['profs']['list'])>1) {
+				echo " avec ".$groups[$i]['profs']['proflist_string'];
+			}
+			echo "</em>)"."</span>
+			<input type='hidden' name='accueil_simpl_afficher_grp[$cpt]' value='".$groups[$i]['id']."' />
+			<select name='accueil_simpl_afficher_grp_rang[$cpt]'>
+				<option value='-1' selected>Ne pas afficher ce groupe</option>";
+			for($loop2=1;$loop2<count($groups)+1;$loop2++) {
+					if($loop2==$cpt) {
+					$selected=" selected";
+				}
+				else {
+					$selected="";
+				}
+				echo "
+				<option value='$loop2'$selected>$loop2</option>";
+			}
+			echo "
+			</select><br />";
+			$cpt++;
+		}
+	}
+	if($temoin_grp_non_encore_trie=="y") {
+		echo "</p>";
+	}
+
+	// Les groupes cachés
+	if(count($tab_grp_hidden)>0) {
+		echo "<p style='margin-left:3em;text-indent:-2em;'>Les groupes suivants sont actuellement cachés en page d'accueil simplifiée&nbsp;:<br />";
+		for($loop=0;$loop<count($tab_grp_hidden);$loop++) {
+			for($i=0;$i<count($groups);$i++) {
+				if($groups[$i]['id']==$tab_grp_hidden[$loop]) {
+
+					echo "<span id='texte_accueil_simpl_afficher_grp_$cpt'>".$groups[$i]['name']." (<em style='font-size:small'>".$groups[$i]['name']." en ".$groups[$i]['classlist_string'];
+					if(count($groups[$i]['profs']['list'])>1) {
+						echo " avec ".$groups[$i]['profs']['proflist_string'];
+					}
+					echo "</em>)"."</span>
+					<input type='hidden' name='accueil_simpl_afficher_grp[$cpt]' value='".$groups[$i]['id']."' />
+					<select name='accueil_simpl_afficher_grp_rang[$cpt]'>
+						<option value='-1' selected>Ne pas afficher ce groupe</option>";
+					for($loop2=1;$loop2<count($groups)+1;$loop2++) {
+						echo "
+						<option value='$loop2'>$loop2</option>";
+					}
+					echo "
+					</select><br />";
+					break;
+				}
+			}
+			$cpt++;
+		}
+		echo "</p>";
+	}
+
 	echo "<p style='text-align:center;'>\n";
-	echo "<input type='submit' name='Valider' value='Enregistrer' />\n";
+	echo "<input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	if(isset($message_accueil_simpl_prof)) {echo $message_accueil_simpl_prof;}
@@ -1693,7 +2317,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<input type='checkbox' name='aff_quartiles_cn' id='aff_quartiles_cn' value='y' ";
 	echo "onchange=\"checkbox_change('aff_quartiles_cn');changement()\" ";
 	if($aff_quartiles_cn=='y') {echo 'checked';}
-	echo "/><label for='aff_quartiles_cn' id='texte_aff_quartiles_cn'> Afficher par défaut l'infobulle contenant les moyenne, médiane, quartiles, min, max sur les carnets de notes.</label>\n";
+	echo " tabindex='$tabindex'";
+	$tabindex++;
+	echo " /><label for='aff_quartiles_cn' id='texte_aff_quartiles_cn'> Afficher par défaut l'infobulle contenant les moyenne, médiane, quartiles, min, max sur les carnets de notes.</label>\n";
 	echo "</p>\n";
 
 	$aff_photo_cn=getPref($_SESSION['login'], 'aff_photo_cn', 'n');
@@ -1701,7 +2327,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<input type='checkbox' name='aff_photo_cn' id='aff_photo_cn' value='y' ";
 	echo "onchange=\"checkbox_change('aff_photo_cn');changement()\" ";
 	if($aff_photo_cn=='y') {echo 'checked';}
-	echo "/><label for='aff_photo_cn' id='texte_aff_photo_cn'> Afficher par défaut la photo des élèves sur les carnets de notes.</label>\n";
+	echo " tabindex='$tabindex'";
+	$tabindex++;
+	echo " /><label for='aff_photo_cn' id='texte_aff_photo_cn'> Afficher par défaut la photo des élèves sur les carnets de notes.</label>\n";
 	echo "</p>\n";
 
 	echo "<p>\n";
@@ -1709,7 +2337,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<input type='checkbox' name='cn_avec_min_max' id='cn_avec_min_max' value='y' ";
 	echo "onchange=\"checkbox_change('cn_avec_min_max');changement()\" ";
 	if($cn_avec_min_max=='y') {echo 'checked';}
-	echo "/><label for='cn_avec_min_max' id='texte_cn_avec_min_max'> Afficher pour chaque colonne de notes les valeurs minimale et maximale.</label>\n";
+	echo " tabindex='$tabindex'";
+	$tabindex++;
+	echo " /><label for='cn_avec_min_max' id='texte_cn_avec_min_max'> Afficher pour chaque colonne de notes les valeurs minimale et maximale.</label>\n";
 	echo "</p>\n";
 
 	echo "<p>\n";
@@ -1717,7 +2347,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<input type='checkbox' name='cn_avec_mediane_q1_q3' id='cn_avec_mediane_q1_q3' value='y' ";
 	echo "onchange=\"checkbox_change('cn_avec_mediane_q1_q3');changement()\" ";
 	if($cn_avec_mediane_q1_q3=='y') {echo 'checked';}
-	echo "/><label for='cn_avec_mediane_q1_q3' id='texte_cn_avec_mediane_q1_q3'> Afficher pour chaque colonne de notes les valeur médiane, 1er et 3è quartiles.</label>\n";
+	echo " tabindex='$tabindex'";
+	$tabindex++;
+	echo " /><label for='cn_avec_mediane_q1_q3' id='texte_cn_avec_mediane_q1_q3'> Afficher pour chaque colonne de notes les valeur médiane, 1er et 3è quartiles.</label>\n";
 	echo "</p>\n";
 
 	echo "<p>Dans la page de saisie des notes de devoirs, trier par défaut <br />\n";
@@ -1725,11 +2357,16 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<input type='radio' name='cn_order_by' id='cn_order_by_classe' value='classe' ";
 	echo "onchange=\"checkbox_change('cn_order_by_classe');checkbox_change('cn_order_by_nom');changement()\" ";
 	if($cn_order_by=='classe') {echo 'checked';}
-	echo "/><label for='cn_order_by_classe' id='texte_cn_order_by_classe'>par classe puis ordre alphabétique des noms des élèves.</label><br />\n";
+	echo " tabindex='$tabindex'";
+	echo " /><label for='cn_order_by_classe' id='texte_cn_order_by_classe'>par classe puis ordre alphabétique des noms des élèves.</label><br />\n";
+	$tabindex++;
+
 	echo "<input type='radio' name='cn_order_by' id='cn_order_by_nom' value='nom' ";
 	echo "onchange=\"checkbox_change('cn_order_by_classe');checkbox_change('cn_order_by_nom');changement()\" ";
 	if($cn_order_by=='nom') {echo 'checked';}
-	echo "/><label for='cn_order_by_nom' id='texte_cn_order_by_nom'>par ordre alphabétique des noms des élèves.</label><br />\n";
+	echo " tabindex='$tabindex'";
+	echo " /><label for='cn_order_by_nom' id='texte_cn_order_by_nom'>par ordre alphabétique des noms des élèves.</label><br />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	echo "<table>";
@@ -1739,7 +2376,8 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "</td>";
 	echo "<td>";
 	$cn_default_nom_court=getPref($_SESSION['login'], 'cn_default_nom_court', 'Nouvelle évaluation');
-	echo "<input type='text' name='cn_default_nom_court' id='cn_default_nom_court' value='$cn_default_nom_court' />\n";
+	echo "<input type='text' name='cn_default_nom_court' id='cn_default_nom_court' value='$cn_default_nom_court' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</td>";
 	echo "</tr>";
 
@@ -1749,7 +2387,8 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "</td>";
 	echo "<td>";
 	$cn_default_nom_complet=getPref($_SESSION['login'], 'cn_default_nom_complet', 'Nouvelle évaluation');
-	echo "<input type='text' name='cn_default_nom_complet' id='cn_default_nom_complet' value='$cn_default_nom_complet' />\n";
+	echo "<input type='text' name='cn_default_nom_complet' id='cn_default_nom_complet' value='$cn_default_nom_complet' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</td>";
 	echo "</tr>";
 
@@ -1759,7 +2398,8 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	$cn_default_coef=getPref($_SESSION['login'], 'cn_default_coef', '1.0');
 	echo "</td>";
 	echo "<td>";
-	echo "<input type='text' name='cn_default_coef' id='cn_default_coef' value='$cn_default_coef' size='3' onkeydown=\"clavier_2(this.id,event,1,20);\" autocomplete='off' />\n";
+	echo "<input type='text' name='cn_default_coef' id='cn_default_coef' value='$cn_default_coef' size='3' onkeydown=\"clavier_2(this.id,event,1,20);\" autocomplete='off' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</td>";
 	echo "</tr>";
 
@@ -1772,9 +2412,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	echo "<p>Paramétrage de la page de <b>création d'évaluation</b></p>\n";
 	echo "<div style='margin-left:3em;'>\n";
 	if(getSettingValue("note_autre_que_sur_referentiel")=="V") {
-		$tabchamps=array( 'add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_note_autre_que_referentiel','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite');
+		$tabchamps=array( 'add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_note_autre_que_referentiel','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite', 'add_modif_dev_display_parents', 'add_modif_dev_display_parents_app');
 	} else {
-		$tabchamps=array( 'add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite');	
+		$tabchamps=array( 'add_modif_dev_simpl','add_modif_dev_nom_court','add_modif_dev_nom_complet','add_modif_dev_description','add_modif_dev_coef','add_modif_dev_date','add_modif_dev_date_ele_resp','add_modif_dev_boite', 'add_modif_dev_display_parents', 'add_modif_dev_display_parents_app');
 	}
 	//echo "<table border='1'>\n";
 	echo "<table class='boireaus' border='1' summary='Préférences professeurs'>\n";
@@ -1784,9 +2424,9 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	$lignes_entete.="<th rowspan='2'>".$gepiSettings['denomination_professeur']."</th>\n";
 	$lignes_entete.="<th rowspan='2'>Utiliser l'interface simplifiée</th>\n";
 	if(getSettingValue("note_autre_que_sur_referentiel")=="V") {
-		$lignes_entete.="<th colspan='8'>Afficher les champs</th>\n";
+		$lignes_entete.="<th colspan='10'>Afficher les champs</th>\n";
 	} else {
-		$lignes_entete.="<th colspan='7'>Afficher les champs</th>\n";
+		$lignes_entete.="<th colspan='9'>Afficher les champs</th>\n";
 	}
 	$lignes_entete.="</tr>\n";
 
@@ -1803,6 +2443,8 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 	$lignes_entete.="<th>Date</th>\n";
 	$lignes_entete.="<th>Date ele/resp</th>\n";
 	$lignes_entete.="<th>".casse_mot(getSettingValue("gepi_denom_boite"),'majf2')."</th>\n";
+	$lignes_entete.="<th title=\"Visibilité ou non de l'évaluation sur le relevé de notes\">Vis.CN</th>\n";
+	$lignes_entete.="<th title=\"Visibilité ou non du commentaire/appréciation sur le relevé de notes\">Vis.App.CN</th>\n";
 	$lignes_entete.="</tr>\n";
 
 	echo $lignes_entete;
@@ -1891,10 +2533,14 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 
 <input type='radio' name='cnBoitesModeMoy' id='cnBoitesModeMoy_1' value='1' ";
 	if($cnBoitesModeMoy=='1') {echo "checked ";}
+	echo "tabindex='$tabindex' ";
+	$tabindex++;
 	echo "/><label for='cnBoitesModeMoy_1'>la moyenne s'effectue sur toutes les notes contenues à la racine et dans les ".my_strtolower(getSettingValue("gepi_denom_boite"))."s sans tenir compte des options définies dans ces ".my_strtolower(getSettingValue("gepi_denom_boite"))."s.</label><br />
 
 <input type='radio' name='cnBoitesModeMoy' id='cnBoitesModeMoy_2' value='2' ";
 	if($cnBoitesModeMoy=='2') {echo "checked ";}
+	echo "tabindex='$tabindex' ";
+	$tabindex++;
 	echo "/><label for='cnBoitesModeMoy_2'>la moyenne s'effectue sur toutes les notes contenues à la racine et sur les moyennes des ".my_strtolower(getSettingValue("gepi_denom_boite"))."s en tenant compte des options dans ces ".my_strtolower(getSettingValue("gepi_denom_boite"))."s.</label><br />
 
 <p style='margin-left:2em;'><em>Explication&nbsp;:</em></p>
@@ -1906,7 +2552,8 @@ if ((getSettingValue('active_carnets_notes')!='n')&&($_SESSION["statut"] == "pro
 <p><br /></p>\n";
 
 	echo "<p style='text-align:center;'>\n";
-	echo "<input type='submit' name='Valider' value='Enregistrer' />\n";
+	echo "<input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	if(isset($message_cn)) {echo $message_cn;}
@@ -1930,13 +2577,17 @@ if($_SESSION["statut"] == "professeur") {
 	echo "background-color: white; ";
 	echo "'>Bulletins</legend>\n";
 
+	echo "<input type='hidden' name='valide_form_bull' value='y' />\n";
+
 	$aff_photo_saisie_app=getPref($_SESSION['login'], 'aff_photo_saisie_app', 'n');
 	
 	echo "<p>\n";
 	echo "<input type='checkbox' name='aff_photo_saisie_app' id='aff_photo_saisie_app' value='y' ";
 	echo "onchange=\"checkbox_change('aff_photo_saisie_app');changement()\" ";
 	if($aff_photo_saisie_app=='y') {echo 'checked';}
-	echo "/><label for='aff_photo_saisie_app' id='texte_aff_photo_saisie_app'> Afficher par défaut les photos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " /><label for='aff_photo_saisie_app' id='texte_aff_photo_saisie_app'> Afficher par défaut les photos des élèves lors de la saisie des appréciations sur les bulletins.</label>\n";
 	echo "</p>\n";
 
 
@@ -1946,10 +2597,58 @@ if($_SESSION["statut"] == "professeur") {
 	echo "<input type='text' name='saisie_app_nb_cols_textarea' id='saisie_app_nb_cols_textarea' value='$saisie_app_nb_cols_textarea' ";
 	echo "onchange=\"changement()\" ";
 	echo "size='3' onkeydown=\"clavier_2(this.id,event,20,200);\" autocomplete='off' ";
-	echo "/>";
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " />";
+
+	// 20140502
+	if((getSettingAOui('PeutAutoriserPPaCorrigerSesApp'))&&(count($groups)>0)) {
+		echo "<p style='margin-top:1em;'>Vous pouvez autoriser le ".getSettingValue('gepi_prof_suivi')." à corriger vos appréciations sur les bulletins.<br />
+(<em>vous recevrez un mail lors des modifications de vos appréciations</em>).</p>
+<p>Autoriser la modification/correction pour le ou les enseignements suivants&nbsp;:</p>
+<ul>";
+		$cpt_grp_pp=0;
+		foreach($groups as $group) {
+			/*
+			echo "<li><pre>";
+			print_r($group);
+			echo "</pre></li>";
+			*/
+
+			//if($group['visibilite']['bulletins']=="y") {
+			$sql="SELECT * FROM j_groupes_visibilite WHERE id_groupe='".$group['id']."' AND domaine='bulletins' AND visible='n';";
+			$res_vis=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_vis)==0) {
+				echo "
+	<li>
+		<input type='hidden' name='id_groupe_AppPP[$cpt_grp_pp]' value='".$group['id']."' />
+		<input type='checkbox' name='id_groupe_PP_correction_autorisee[$cpt_grp_pp]' id='id_groupe_PP_correction_autorisee_$cpt_grp_pp' value='y' onchange=\"checkbox_change('id_groupe_PP_correction_autorisee_$cpt_grp_pp');changement()\" ";
+				if(acces_correction_app_pp($group['id'])) {
+					echo "checked ";
+				}
+				echo "/><label for='id_groupe_PP_correction_autorisee_$cpt_grp_pp' id='texte_id_groupe_PP_correction_autorisee_$cpt_grp_pp'";
+				if(acces_correction_app_pp($group['id'])) {
+					echo "style='font-weight:bold;' ";
+				}
+				echo ">".$group['name']." (<em style='font-size:small;'>".$group['description']." en ".$group['classlist_string']." avec ".$group['profs']['proflist_string']."</em>)&nbsp;: ";
+				$cpt_class_grp=0;
+				foreach($group['classes']['classes'] as $current_id_classe => $current_classe) {
+					if($cpt_class_grp>0) {echo ", ";}
+					echo "<strong>".$current_classe['classe']."</strong> (<em title=\"".ucfirst(getSettingValue('gepi_prof_suivi'))."\">".liste_des_prof_suivi_de_telle_classe($current_id_classe)."</em>)";
+					$cpt_class_grp++;
+				}
+				echo "</label>
+	</li>";
+				$cpt_grp_pp++;
+			}
+		}
+		echo "
+</ul>";
+	}
 
 	echo "<p style='text-align:center;'>\n";
-	echo "<input type='submit' name='Valider' value='Enregistrer' />\n";
+	echo "<input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	if(isset($message_bulletins)) {echo $message_bulletins;}
@@ -1970,21 +2669,39 @@ if ((getSettingValue('active_cahiers_texte')!='n')&&($_SESSION["statut"] == "pro
 	echo "background-image: url(\"../images/background/opacite50.png\"); ";
 	echo "'>\n";
 	echo "<legend style='border: 1px solid grey;";
-	//echo "background-image: url(\"../images/background/opacite50.png\"); ";
 	echo "background-color: white; ";
 	echo "'>Cahier de textes 2</legend>\n";
 	echo "<p>Lors de la saisie de notices de Travaux à faire dans le CDT2,<br />\n";
 	echo "<input type='radio' name='ouverture_auto_WinDevoirsDeLaClasse' id='ouverture_auto_WinDevoirsDeLaClasse_y' value='y' ";
 	echo "onchange=\"checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_y');checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_n');changement()\" ";
 	if($ouverture_auto_WinDevoirsDeLaClasse=='y') {echo " checked";}
-	echo "/><label for='ouverture_auto_WinDevoirsDeLaClasse_y' id='texte_ouverture_auto_WinDevoirsDeLaClasse_y'> ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs,</label><br />\n";
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " /><label for='ouverture_auto_WinDevoirsDeLaClasse_y' id='texte_ouverture_auto_WinDevoirsDeLaClasse_y'> ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs,</label><br />\n";
 	echo "<input type='radio' name='ouverture_auto_WinDevoirsDeLaClasse' id='ouverture_auto_WinDevoirsDeLaClasse_n' value='n' ";
 	echo "onchange=\"checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_y');checkbox_change('ouverture_auto_WinDevoirsDeLaClasse_n');changement()\" ";
 	if($ouverture_auto_WinDevoirsDeLaClasse!='y') {echo " checked";}
-	echo "/><label for='ouverture_auto_WinDevoirsDeLaClasse_n' id='texte_ouverture_auto_WinDevoirsDeLaClasse_n'> ne pas ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs.</label><br />\n";
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " /><label for='ouverture_auto_WinDevoirsDeLaClasse_n' id='texte_ouverture_auto_WinDevoirsDeLaClasse_n'> ne pas ouvrir automatiquement la fenêtre listant les travaux donnés par les autres professeurs.</label><br />\n";
+
+	$cdt2_WinListeNotices_nb_compte_rendus=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_compte_rendus', 6);
+	$cdt2_WinListeNotices_nb_devoirs=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_devoirs', 6);
+	$cdt2_WinListeNotices_nb_notices_privees=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_notices_privees', 6);
+	$tabindex2=$tabindex+1;
+	$tabindex3=$tabindex+2;
+	echo "<br /><br />
+<p style='text-indent:-3em;margin-left:3em;'>Nombre de notices de chaque type à afficher par défaut dans la fenêtre intitulée 'Liste des notices'.<br />
+Compte-rendus&nbsp;:&nbsp;<input type='text' name='cdt2_WinListeNotices_nb_compte_rendus' id='cdt2_WinListeNotices_nb_compte_rendus' value='$cdt2_WinListeNotices_nb_compte_rendus' tabindex='$tabindex' size='3' onkeydown=\"clavier_2(this.id,event,1,100);\" autocomplete='off' /><br />
+Devoirs à faire&nbsp;:&nbsp;&nbsp;&nbsp;<input type='text' name='cdt2_WinListeNotices_nb_devoirs' id='cdt2_WinListeNotices_nb_devoirs' value='$cdt2_WinListeNotices_nb_devoirs' tabindex='$tabindex2' size='3' onkeydown=\"clavier_2(this.id,event,1,100);\" autocomplete='off' /><br />
+Notices privées&nbsp;:&nbsp;<input type='text' name='cdt2_WinListeNotices_nb_notices_privees' id='cdt2_WinListeNotices_nb_notices_privees' value='$cdt2_WinListeNotices_nb_notices_privees' tabindex='$tabindex3' size='3' onkeydown=\"clavier_2(this.id,event,1,100);\" autocomplete='off' /><br />
+<p>(<em>en cliquant sur 'Afficher toutes les notices' en bas de la fenêtre 'Liste des notices', vous pourrez tout de même afficher toutes les notices</em>)</p>";
+	$tabindex=$tabindex3+1;
 
 	echo "<p style='text-align:center;'>\n";
-	echo "<input type='submit' name='Valider' value='Enregistrer' />\n";
+	echo "<input type='hidden' name='validation_form_cdt2' value='y' />\n";
+	echo "<input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	if(isset($message_cdt)) {echo $message_cdt;}
@@ -1997,7 +2714,8 @@ if ((getSettingValue('active_cahiers_texte')!='n')&&($_SESSION["statut"] == "pro
 }
 
 //==============================================================================
-
+//debug_var();
+$chaine_champs_checkbox_mod_discipline="";
 $tab_statuts_mod_discipline=array('professeur', 'administrateur', 'scolarite', 'cpe');
 if ((getSettingValue('active_mod_discipline')!='n')&&(in_array($_SESSION['statut'], $tab_statuts_mod_discipline))) {
 	$mod_discipline_travail_par_defaut=getPref($_SESSION['login'], 'mod_discipline_travail_par_defaut', 'Travail : ');
@@ -2011,7 +2729,8 @@ if ((getSettingValue('active_mod_discipline')!='n')&&(in_array($_SESSION['statut
 	echo "background-color: white; ";
 	echo "'>Module Discipline et sanctions</legend>\n";
 	echo "<p>Lors de la saisie de travail à faire, le texte par défaut proposé sera&nbsp;: <br />\n";
-	echo "<input type='text' name='mod_discipline_travail_par_defaut' value='$mod_discipline_travail_par_defaut' size='30' /><br />\n";
+	echo "<input type='text' name='mod_discipline_travail_par_defaut' value='$mod_discipline_travail_par_defaut' size='30' tabindex='$tabindex' /><br />\n";
+	$tabindex++;
 
 if (getSettingAOui('DisciplineCpeChangeDeclarant')) {
     $tab_statuts_cpePeuChanger=array('professeur');
@@ -2022,21 +2741,202 @@ if (getSettingAOui('DisciplineCpeChangeDeclarant')) {
                id="cpePeuChanger" 
                name="cpePeuChanger" 
                value="yes" 
-               <?php if (getPref($_SESSION['login'],'cpePeuChanger' ,'yes' ) && getPref($_SESSION['login'],'cpePeuChanger' ,'no' ) == "yes")
-                       echo " checked='checked'"; ?>
+               <?php
+                   if (getPref($_SESSION['login'],'cpePeuChanger' ,'yes' ) && getPref($_SESSION['login'],'cpePeuChanger' ,'no' ) == "yes") {
+                       echo " checked='checked'";
+                   }
+                   echo " tabindex='$tabindex' ";
+                   $tabindex++;
+               ?>
                />
         <input type='hidden' name='autorise_cpe_declarant' value='ok' />
     
 <?php    
     }
 }
-        
+
+	echo "<p class='bold' style='margin-top:1em;'>Signalement d'incidents par mail&nbsp;:</p>\n";
+	$sql2="";
+	if($_SESSION['statut']=='cpe') {
+		$sql="(SELECT DISTINCT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, 
+																	classes c, 
+																	j_eleves_cpe jecpe, 
+																	j_eleves_classes jec 
+																WHERE sam.id_classe=c.id AND 
+																	sam.destinataire='cpe' AND
+																	jec.id_classe=sam.id_classe AND
+																	jec.login=jecpe.e_login AND
+																	jecpe.cpe_login='".$_SESSION['login']."'
+																ORDER BY c.classe)";
+		$qualite="CPE";
+	}
+	elseif($_SESSION['statut']=='professeur') {
+		$sql="(SELECT DISTINCT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, 
+																	classes c, 
+																	j_eleves_groupes jeg, 
+																	j_eleves_classes jec, 
+																	j_groupes_professeurs jgp 
+																WHERE sam.id_classe=c.id AND 
+																	sam.destinataire='professeur' AND 
+																	jec.id_classe=sam.id_classe AND 
+																	jec.login=jeg.login AND 
+																	jeg.id_groupe=jgp.id_groupe AND 
+																	jgp.login='".$_SESSION['login']."'
+																ORDER BY c.classe)";
+		$qualite="professeur";
+		if(is_pp($_SESSION['login'])) {
+			$sql2="(SELECT DISTINCT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, 
+																	classes c, 
+																	j_eleves_professeurs jep, 
+																	j_eleves_classes jec 
+																WHERE sam.id_classe=c.id AND 
+																	sam.destinataire='professeur' AND 
+																	jec.id_classe=sam.id_classe AND 
+																	jec.login=jep.login AND 
+																	jep.id_classe=jec.id_classe AND 
+																	jep.professeur='".$_SESSION['login']."'
+																ORDER BY c.classe)";
+		}
+	}
+	elseif($_SESSION['statut']=='administrateur') {
+		$sql="(SELECT DISTINCT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, classes c WHERE sam.id_classe=c.id AND destinataire='administrateur' ORDER BY c.classe)";
+		$qualite="Administrateur";
+	}
+	elseif($_SESSION['statut']=='scolarite') {
+		$sql="(SELECT DISTINCT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, 
+																	classes c, 
+																	j_scol_classes jsc 
+																WHERE sam.id_classe=c.id AND 
+																	sam.destinataire='scolarite' AND
+																	jsc.id_classe=sam.id_classe AND
+																	jsc.login='".$_SESSION['login']."'
+																ORDER BY c.classe)";
+		$qualite="compte Scolarité";
+	}
+	$res_mail=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_mail)>0) {
+		echo "<p>Vous êtes destinataire, en tant que $qualite, des mail concernant les incidents impliquant des élèves des classes suivantes&nbsp;: <br />";
+		$cpt=0;
+		$tab_classe_mail=array();
+		while($lig_mail=mysqli_fetch_object($res_mail)) {
+			if(!in_array($lig_mail->id_classe, $tab_classe_mail)) {
+				if($cpt>0) {
+					echo ", ";
+				}
+				echo $lig_mail->classe;
+				$tab_classe_mail[]=$lig_mail->id_classe;
+			}
+			$cpt++;
+		}
+
+	}
+	else {
+		echo "<p>Vous n'êtes destinataire, en tant que $qualite, d'aucun mail signalant des incidents.<br />Si vous pensez que c'est une erreur, contactez l'administrateur.</p>";
+	}
+
+	echo "<p style='margin-top:1em;'>Dans le cas où vous recevez des signalements par mail, vous pouvez restreindre les catégories d'incidents pour lesquelles vous souhaitez être informé&nbsp;: <br />\n";
+	$tab_id_categories_exclues=array();
+	$mod_discipline_natures_exclues_mail=getPref($_SESSION['login'], 'mod_discipline_natures_exclues_mail', '');
+	if($mod_discipline_natures_exclues_mail!="") {
+		$tmp_tab=explode("|", $mod_discipline_natures_exclues_mail);
+		for($loop=0;$loop<count($tmp_tab);$loop++) {
+			if($tmp_tab[$loop]!="") {
+				$tab_id_categories_exclues[]=$tmp_tab[$loop];
+			}
+		}
+	}
+	$sql="SELECT * FROM s_categories ORDER BY categorie;";
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)==0) {
+		echo "<p>Aucune catégorie n'est définie&nbsp;???</p>";
+	}
+	else {
+		while($lig=mysqli_fetch_object($res)) {
+			echo "<input type='checkbox' id='mod_disc_mail_cat_incluse_$lig->id' name='mod_disc_mail_cat_incluse[]' value='$lig->id' onchange=\"checkbox_change('mod_disc_mail_cat_incluse_$lig->id')\" ";
+			if(!in_array($lig->id, $tab_id_categories_exclues)) {
+				echo "checked ";
+			}
+			echo " tabindex='$tabindex' ";
+			$tabindex++;
+			echo " /><label for='mod_disc_mail_cat_incluse_$lig->id' id='texte_mod_disc_mail_cat_incluse_$lig->id'>$lig->categorie</label><br />";
+			if($chaine_champs_checkbox_mod_discipline!="") {$chaine_champs_checkbox_mod_discipline.=", ";}
+			$chaine_champs_checkbox_mod_discipline.="'mod_disc_mail_cat_incluse_$lig->id'";
+		}
+
+		echo "<input type='checkbox' id='mod_disc_mail_cat_incluse_NC' name='mod_disc_mail_cat_incluse_NC' value='y' onchange=\"checkbox_change('mod_disc_mail_cat_incluse_NC')\" ";
+		if(getPref($_SESSION['login'], 'mod_discipline_natures_non_categorisees_exclues_mail', "")!="y") {
+			echo "checked ";
+		}
+			echo " tabindex='$tabindex' ";
+			$tabindex++;
+		echo " /><label for='mod_disc_mail_cat_incluse_NC' id='texte_mod_disc_mail_cat_incluse_NC'>Incidents dont la nature n'est pas catégorisée.</label><br />";
+		if($chaine_champs_checkbox_mod_discipline!="") {$chaine_champs_checkbox_mod_discipline.=", ";}
+		$chaine_champs_checkbox_mod_discipline.="'mod_disc_mail_cat_incluse_NC'";
+
+		if(getSettingValue('DisciplineNaturesRestreintes')=='2') {
+			echo "<p>Vous utilisez une liste figée/restreinte de natures d'incidents.<br />Vous ne devriez pas avoir d'incidents de nature non catégorisée.</p>\n";
+		}
+	}
+
+	if($sql2!="") {
+		$res_mail=mysqli_query($GLOBALS["mysqli"], $sql2);
+		if(mysqli_num_rows($res_mail)>0) {
+			echo "<p style='margin-top:1em;'>Vous êtes destinataire, en tant que ".getSettingValue('gepi_prof_suivi').", des mail concernant les incidents impliquant des élèves des classes suivantes&nbsp;: ";
+			$cpt=0;
+			$tab_classe_mail=array();
+			while($lig_mail=mysqli_fetch_object($res_mail)) {
+				if(!in_array($lig_mail->id_classe, $tab_classe_mail)) {
+					if($cpt>0) {
+						echo ", ";
+					}
+					echo $lig_mail->classe;
+					$tab_classe_mail[]=$lig_mail->id_classe;
+				}
+				$cpt++;
+			}
+			echo "</p>\n";
+		}
+		else {
+			echo "<p>Vous n'êtes destinataire, en tant que ".getSettingValue('gepi_prof_suivi').", d'aucun mail signalant des incidents.<br />Si vous pensez que c'est une erreur, contactez l'administrateur.</p>";
+		}
+	}
+	//$sql.=" UNION (SELECT c.id, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, classes c WHERE sam.id_classe=c.id AND destinataire='mail' AND adresse='".$_SESSION['adresse']."' ORDER BY c.classe))";
+
+	$sql="(SELECT c.classe, sam.id_classe, sam.destinataire FROM s_alerte_mail sam, classes c WHERE sam.id_classe=c.id AND destinataire='mail' AND adresse='".$_SESSION['email']."' ORDER BY c.classe)";
+	//echo "$sql<br />";
+	$res_mail=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_mail)>0) {
+		echo "<p style='margin-top:1em;'>Vous êtes destinataire, par l'adresse mail saisie directement par l'administrateur, des mail concernant les incidents impliquant des élèves des classes suivantes&nbsp;: ";
+		$cpt=0;
+		$tab_classe_mail=array();
+		while($lig_mail=mysqli_fetch_object($res_mail)) {
+			if(!in_array($lig_mail->id_classe, $tab_classe_mail)) {
+				if($cpt>0) {
+					echo ", ";
+				}
+				echo $lig_mail->classe;
+				$tab_classe_mail[]=$lig_mail->id_classe;
+			}
+			$cpt++;
+		}
+		echo "</p>\n";
+
+		echo "<p>Il n'est pas possible actuellement de restreindre les signalements par mail à certaines catégories d'incidents avec ce mode.</p>";
+	}
+
 	echo "<p style='text-align:center;'>\n";
-	echo "<input type='submit' name='Valider' value='Enregistrer' />\n";
+	echo "<input type='submit' name='Valider' value='Enregistrer' tabindex='$tabindex' />\n";
+	$tabindex++;
 	echo "</p>\n";
 
 	if(isset($message_mod_discipline)) {echo $message_mod_discipline;}
-        
+
+	if(getSettingValue('DisciplineNaturesRestreintes')!='2') {
+		echo "<p style='text-indent:-4em;margin-left:4em;'><em>NOTES&nbsp;:</em> Les natures d'incidents ne sont pas figées/restreintes.<br />
+		Les utilisateurs peuvent taper librement de nouvelles natures d'incidents.<br />
+		Si vous refusez de recevoir les incidents de nature non catégorisée, vous risquez de rater un incident qui sera par la suite catégorisé dans une catégorie que vous suivez.</p>";
+	}
+
 	echo "</fieldset>\n";
 	echo "</form>\n";
 
@@ -2072,6 +2972,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 			echo "<input type='radio' id='visibleMenu' name='afficher_menu' value='yes'";
 			echo " onchange=\"checkbox_change('invisibleMenu');checkbox_change('visibleMenuLight');checkbox_change('visibleMenu');changement()\" ";
 			if($aff_checked=="yes") echo " checked";
+			echo " tabindex='$tabindex' ";
+			$tabindex++;
 			echo " />\n";
 			echo "</p>\n";
 		}
@@ -2081,6 +2983,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 		echo "<input type='radio' id='visibleMenuLight' name='afficher_menu' value='light'";
 		echo " onchange=\"checkbox_change('invisibleMenu');checkbox_change('visibleMenuLight');checkbox_change('visibleMenu');changement()\" ";
 		if($aff_checked=="light") echo " checked";
+		echo " tabindex='$tabindex' ";
+		$tabindex++;
 		echo " />\n";
 		echo "</p>\n";
 
@@ -2089,6 +2993,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 		echo "<input type='radio' id='invisibleMenu' name='afficher_menu' value='no'";
 		echo " onchange=\"checkbox_change('invisibleMenu');checkbox_change('visibleMenuLight');checkbox_change('visibleMenu');changement()\" ";
 		if($aff_checked=="no") echo " checked";
+		echo " tabindex='$tabindex' ";
+		$tabindex++;
 		echo " />\n";
 		echo "</p>\n";
 
@@ -2096,7 +3002,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 				<em>La barre de menu horizontale allégée a une arborescence moins profonde pour que les menus 'professeurs' s'affichent plus rapidement au cas où le serveur serait saturé.</em>
 			</p>\n";
 
-		echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" /></center>\n";
+		echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" tabindex='$tabindex' /></center>\n";
+		$tabindex++;
 
 		if(isset($message_modifier_barre)) {echo $message_modifier_barre;}
 
@@ -2127,7 +3034,9 @@ $petit_entete=getPref($_SESSION['login'], 'petit_entete', "n");
 if($petit_entete=="y") {
 	echo "checked";
 }
-echo "/>
+echo " tabindex='$tabindex' ";
+$tabindex++;
+echo " />
 		</p>
 		<p>
 			<label for='headerNormal' id='texte_headerNormal'>Utiliser l'entête classique complète</label>
@@ -2137,14 +3046,17 @@ echo "onchange=\"checkbox_change('headerBas');checkbox_change('headerNormal');ch
 if($petit_entete=="n") {
 	echo "checked";
 }
-echo "/>
+echo " tabindex='$tabindex' ";
+$tabindex++;
+echo " />
 		</p>\n";
 
 echo "<p style='text-align:center;'>\n";
-echo "<input type='submit' name='valider' id='change_header_user_button' value='Enregistrer' /></p>
+echo "<input type='submit' name='valider' id='change_header_user_button' value='Enregistrer' tabindex='$tabindex' /></p>
 <script type='text/javascript'>
 //document.getElementById('change_header_user_button').style.display='none';
 </script>\n";
+$tabindex++;
 
 if(isset($message_hauteur_header)) {echo $message_hauteur_header;}
 
@@ -2185,6 +3097,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 	echo "<input type='radio' id='choix_encodage_csv_ascii' name='choix_encodage_csv' value='ascii'";
 	echo " onchange=\" checkbox_change('choix_encodage_csv_ascii');checkbox_change('choix_encodage_csv_utf8');checkbox_change('choix_encodage_csv_windows_1252');changement()\"";
 	if($choix_encodage_csv=="ascii") {echo " checked";}
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
 	echo " />\n";
 	//echo "<label for='choix_encodage_csv_ascii' id='texte_choix_encodage_csv_ascii'>ASCII (<em>sans accents</em>)</label>\n";
 	echo "<label for='choix_encodage_csv_ascii' id='texte_choix_encodage_csv_ascii'>Sans accents</label>\n";
@@ -2194,6 +3108,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 	echo "<input type='radio' id='choix_encodage_csv_utf8' name='choix_encodage_csv' value='utf-8'";
 	echo " onchange=\" checkbox_change('choix_encodage_csv_ascii');checkbox_change('choix_encodage_csv_utf8');checkbox_change('choix_encodage_csv_windows_1252');changement()\"";
 	if($choix_encodage_csv=="utf-8") {echo " checked";}
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
 	echo " />\n";
 	echo "<label for='choix_encodage_csv_utf8' id='texte_choix_encodage_csv_utf8'>Accents UTF-8</label>\n";
 	echo "</p>\n";
@@ -2202,11 +3118,14 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 	echo "<input type='radio' id='choix_encodage_csv_windows_1252' name='choix_encodage_csv' value='windows-1252'";
 	echo " onchange=\" checkbox_change('choix_encodage_csv_ascii');checkbox_change('choix_encodage_csv_utf8');checkbox_change('choix_encodage_csv_windows_1252');changement()\"";
 	if($choix_encodage_csv=="windows-1252") {echo " checked";}
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
 	echo " />\n";
 	echo "<label for='choix_encodage_csv_windows_1252' id='texte_choix_encodage_csv_windows_1252'>Accents WINDOWS-1252</label>\n";
 	echo "</p>\n";
 
-	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" /></center>\n";
+	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" tabindex='$tabindex' /></center>\n";
+	$tabindex++;
 
 	if(isset($message_choixEncodageCsv)) {
 		echo $message_choixEncodageCsv;
@@ -2241,6 +3160,8 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 	echo "<input type='radio' id='output_mode_pdf_I' name='output_mode_pdf' value='I'";
 	echo " onchange=\" checkbox_change('output_mode_pdf_I');checkbox_change('output_mode_pdf_D');changement()\"";
 	if($output_mode_pdf!="D") {echo " checked";}
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
 	echo " />\n";
 	echo "<label for='output_mode_pdf_I' id='texte_output_mode_pdf_I'>Affichage interne au navigateur</label>\n";
 	echo "</p>\n";
@@ -2249,11 +3170,14 @@ if(in_array($_SESSION['statut'], $tab_statuts_barre)) {
 	echo "<input type='radio' id='output_mode_pdf_D' name='output_mode_pdf' value='D'";
 	echo " onchange=\" checkbox_change('output_mode_pdf_I');checkbox_change('output_mode_pdf_D');changement()\"";
 	if($output_mode_pdf=="D") {echo " checked";}
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
 	echo " />\n";
 	echo "<label for='output_mode_pdf_D' id='texte_output_mode_pdf_D'>Fenêtre de téléchargement/ouverture</label>\n";
 	echo "</p>\n";
 
-	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" /></center>\n";
+	echo "<br /><center><input type=\"submit\" value=\"Enregistrer\" tabindex='$tabindex' /></center>\n";
+	$tabindex++;
 
 	if(isset($message_output_mode_pdf)) {
 		echo $message_output_mode_pdf;
@@ -2282,7 +3206,8 @@ if(count($tab_sound)>=0) {
 	//echo "background-image: url(\"../images/background/opacite50.png\"); ";
 	echo "background-color: white; ";
 	echo "'>Choix de l'alerte sonore de fin de session</legend>
-	<p><select name='footer_sound' id='footer_sound' onchange='test_play_footer_sound()'>\n";
+	<p><select name='footer_sound' id='footer_sound' onchange='test_play_footer_sound()' tabindex='$tabindex'>\n";
+	$tabindex++;
 	echo "	<option value=''";
 	if($footer_sound_actuel=='') {echo " selected='true'";}
 	echo ">Aucun son</option>\n";
@@ -2296,7 +3221,8 @@ if(count($tab_sound)>=0) {
 	</p>\n";
 
 	echo "
-	<p align='center'><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' /></p>\n";
+	<p align='center'><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' tabindex='$tabindex' /></p>\n";
+	$tabindex++;
 
 	if(isset($message_footer_sound)) {
 		echo $message_footer_sound;
@@ -2339,27 +3265,179 @@ if(getSettingAOui("PeutChoisirAlerteSansSon".ucfirst($_SESSION['statut']))) {
 		<legend style='border: 1px solid grey; background-color: white;'>Accompagnement sonore des alertes</legend>
 			<p>Accepter ou non le son émis toutes les ".getSettingValue('MessagerieDelaisTest')."min lorsque le dispositif d'alerte interne signale la présence d'un message non lu&nbsp;:<br/>
 			<input type='radio' id='AlertesAvecSon_y' name='AlertesAvecSon' value='y'
-			 onchange=\"checkbox_change('AlertesAvecSon_y');checkbox_change('AlertesAvecSon_n');changement()\"".(($pref_AlertesAvecSon!="n") ? " checked" : "")." />
+			 onchange=\"checkbox_change('AlertesAvecSon_y');checkbox_change('AlertesAvecSon_n');changement()\"".(($pref_AlertesAvecSon!="n") ? " checked" : "");
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " />
 			<label for='AlertesAvecSon_y' id='texte_AlertesAvecSon_y'>Oui</label>
 			<br />
 
 			<input type='radio' id='AlertesAvecSon_n' name='AlertesAvecSon' value='n'
-			 onchange=\" checkbox_change('AlertesAvecSon_n');checkbox_change('AlertesAvecSon_y');changement()\"".(($pref_AlertesAvecSon=="n") ? " checked" : "")." />
+			 onchange=\" checkbox_change('AlertesAvecSon_n');checkbox_change('AlertesAvecSon_y');changement()\"".(($pref_AlertesAvecSon=="n") ? " checked" : "");
+	echo " tabindex='$tabindex' ";
+	$tabindex++;
+	echo " />
 			<label for='AlertesAvecSon_n' id='texte_AlertesAvecSon_n'>Non</label>
 			</p>
 
 	".(isset($message_AlertesAvecSon) ? $message_AlertesAvecSon : "")."
 
-			<p align='center'><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' /></p>
+			<p align='center'><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' tabindex='$tabindex' /></p>
 		</fieldset>
 	</form>\n";
+	$tabindex++;
+
 }
 
+
+if(getSettingAOui("active_bulletins")) {
+	$sql="SELECT 1=1 FROM signature_droits WHERE login='".$_SESSION['login']."';";
+	//echo "$sql<br />";
+	$test=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test)>0) {
+		$tab_signature=get_tab_signature_bull();
+		/*
+		echo "<pre>";
+		print_r($tab_signature);
+		echo "</pre>";
+		*/
+		echo "<br />
+<a name='signature_bulletins'></a>
+<form name='form_signature_bulletins' enctype=\"multipart/form-data\" method='post' action='".$_SERVER['PHP_SELF']."#signature_bulletins'>
+	".add_token_field()."
+	<fieldset style='border: 1px solid grey;
+	background-image: url(\"../images/background/opacite50.png\");'>
+		<legend style='border: 1px solid grey; background-color: white;'>Signature des bulletins</legend>";
+
+		if((isset($tab_signature['fichier']))&&(count($tab_signature['fichier'])>0)) {
+			echo "
+			<p class='bold'>Un ou des fichiers de signature sont en place&nbsp;:</p>
+			<ul>";
+			$cpt=0;
+			foreach($tab_signature['fichier'] as $id_fichier => $tmp_tab) {
+				if(isset($tab_signature['fichier'][$id_fichier]['chemin'])) {
+					if(file_exists($tab_signature['fichier'][$id_fichier]['chemin'])) {
+						$texte="<center><img src='".$tab_signature['fichier'][$id_fichier]['chemin']."' width='200' /></center>";
+						$tabdiv_infobulle[]=creer_div_infobulle('fichier_signature_'.$cpt,"Fichier de signature","",$texte,"",14,0,'y','y','n','n');
+
+						echo "
+					<li title=\"Cochez la case pour supprimer ce fichier\"><input type='checkbox' name='suppr_fichier[]' id='suppr_fichier_$cpt' value='".$id_fichier."' onchange='changement()' ";
+						echo " tabindex='$tabindex' ";
+						$tabindex++;
+						echo "/><label for='suppr_fichier_$cpt' onmouseover=\"delais_afficher_div('fichier_signature_$cpt','y',-100,20,1000,20,20);\"> ".$tab_signature['fichier'][$id_fichier]['fichier']."</label></li>";
+						$cpt++;
+					}
+					else {
+						echo "
+					<li title=\"Cochez la case pour supprimer ce fichier\"><input type='checkbox' name='suppr_fichier[]' id='suppr_fichier_$cpt' value='".$id_fichier."' onchange='changement()' ";
+						echo " tabindex='$tabindex' ";
+						$tabindex++;
+						echo "/><label for='suppr_fichier_$cpt'> ".$tab_signature['fichier'][$id_fichier]['fichier']." <span style='color:red'>ANOMALIE : Le fichier semble absent&nbsp;???</span></label></li>";
+						$cpt++;
+					}
+				}
+			}
+			echo "
+			</ul>
+			<p><input type='submit' value='Supprimer le ou les fichiers cochés' tabindex='$tabindex' /></p>
+
+			".(isset($message_signature_bulletins_suppr) ? $message_signature_bulletins_suppr : "");
+			$tabindex++;
+		}
+		else {
+			echo "
+			<p class='bold'>Aucun fichier de signature n'est encore en place.</p>";
+		}
+
+		echo "
+		<hr width='200px' />
+
+		<p class='bold' style='margin-top:3em;'>
+			Ajouter le fichier&nbsp;: 
+			<input type=\"file\" name=\"sign_file\" onchange='changement()' tabindex='$tabindex' />";
+		$tabindex++;
+		echo "
+			<input type='hidden' name='ajout_fichier_signature' value='y' />
+			<input type='submit' value='Valider' tabindex='$tabindex' />
+		</p>";
+		$tabindex++;
+
+		echo (isset($message_signature_bulletins_ajout) ? $message_signature_bulletins_ajout : "")."
+
+		<p style='margin-top:1em'><em>NOTE&nbsp;:</em> Seuls les fichiers JPEG sont autorisés.</p>";
+
+		if((isset($tab_signature['classe']))&&(count($tab_signature['classe'])>0)) {
+				echo "
+		<hr width='200px' />
+
+		<p class='bold' style='margin-top:3em;'>Associer votre(vos) fichier(s) aux classes&nbsp;:</p>
+		<table class='boireaus boireaus_alt' summary='Tableau des associations Fichier/Classe'>
+			<tr>
+				<th>Classe</th>
+				<th>Fichier</th>
+			</tr>";
+			foreach($tab_signature['classe'] as $id_classe => $tmp_tab) {
+				echo "
+			<tr>
+				<td>".get_nom_classe($id_classe)."</td>
+				<td>
+					<select name='fich_sign_classe[$id_classe]' onchange='changement()' tabindex='$tabindex'>
+						<option value='-1'>---</option>";
+				$tabindex++;
+				foreach($tab_signature['fichier'] as $id_fichier => $tmp_tab) {
+					if(isset($tmp_tab['fichier'])) {
+						echo "
+							<option value='$id_fichier'";
+						if((isset($tab_signature['classe'][$id_classe]['id_fichier']))&&($tab_signature['classe'][$id_classe]['id_fichier']==$id_fichier)) {
+							echo " selected='selected'";
+						}
+						echo ">".$tmp_tab['fichier']."</option>";
+					}
+				}
+				echo "
+					</select>
+				</td>
+			</tr>";
+			}
+			echo "
+		</table>
+
+		<p><input type='submit' name='enregistrer' value='Enregistrer' style='font-variant: small-caps;' tabindex='$tabindex' /></p>
+
+		".(isset($message_signature_bulletins_assoc_fichier_classe) ? $message_signature_bulletins_assoc_fichier_classe : "");
+			$tabindex++;
+		}
+		else {
+			echo "
+		<hr width='200px' />
+
+		<p class='bold' style='margin-top:3em;'>Vous n'avez pas de classe associée pour la signature.<br />
+		Contactez l'administrateur.</p>";
+		}
+
+		echo "
+
+		<p style='margin-top:3em;'><em>NOTES&nbsp;:</em></p>
+		<ul>
+			<li>
+				<p>Les fichiers mis en place ne sont pas protégés contre un téléchargement abusif.<br />
+				Toute personne connaissant le chemin (<em>aléatoire tout de même</em>) et le nom du fichier signature pourrait le récupérer.</p>
+			</li>
+			<li>
+				<p>Le chemin d'un fichier mis en place peut se trouver après affichage dans une page web,... dans le cache de votre navigateur ou dans les fichiers temporaires du navigateur.<br />
+				Pensez à effacer vos traces après impression de bulletins avec signature insérée.</p>
+			</li>
+		</ul>
+
+	</fieldset>
+</form>\n";
+	}
+}
 
 echo js_checkbox_change_style('checkbox_change', 'texte_', 'y');
 
 echo "<script type='text/javascript'>
-var champs_checkbox=new Array('aff_quartiles_cn', 'aff_photo_cn', 'aff_photo_saisie_app', 'cn_avec_min_max', 'cn_avec_mediane_q1_q3', 'cn_order_by_classe', 'cn_order_by_nom', 'visibleMenu', 'visibleMenuLight', 'invisibleMenu', 'headerBas', 'headerNormal', 'footer_sound_pour_qui_perso', 'footer_sound_pour_qui_tous_profs', 'footer_sound_pour_qui_tous_personnels', 'footer_sound_pour_qui_tous', 'ouverture_auto_WinDevoirsDeLaClasse_y', 'ouverture_auto_WinDevoirsDeLaClasse_n', 'choix_encodage_csv_ascii', 'choix_encodage_csv_utf8', 'choix_encodage_csv_windows_1252', 'output_mode_pdf_D', 'output_mode_pdf_I','AlertesAvecSon_y','AlertesAvecSon_n');
+var champs_checkbox=new Array('aff_quartiles_cn', 'aff_photo_cn', 'aff_photo_saisie_app', 'cn_avec_min_max', 'cn_avec_mediane_q1_q3', 'cn_order_by_classe', 'cn_order_by_nom', 'visibleMenu', 'visibleMenuLight', 'invisibleMenu', 'headerBas', 'headerNormal', 'footer_sound_pour_qui_perso', 'footer_sound_pour_qui_tous_profs', 'footer_sound_pour_qui_tous_personnels', 'footer_sound_pour_qui_tous', 'ouverture_auto_WinDevoirsDeLaClasse_y', 'ouverture_auto_WinDevoirsDeLaClasse_n', 'choix_encodage_csv_ascii', 'choix_encodage_csv_utf8', 'choix_encodage_csv_windows_1252', 'output_mode_pdf_D', 'output_mode_pdf_I','AlertesAvecSon_y','AlertesAvecSon_n', $chaine_champs_checkbox_mod_discipline);
 function maj_style_label_checkbox() {
 	for(i=0;i<champs_checkbox.length;i++) {
 		checkbox_change(champs_checkbox[i]);
@@ -2381,7 +3459,7 @@ $duree = $_POST['duree'];
 $duree = '7';
 }
 
-journal_connexions($_SESSION['login'],$duree);
+//journal_connexions($_SESSION['login'],$duree);
 
 require("../lib/footer.inc.php");
 ?>

@@ -70,6 +70,10 @@ NULL , 'Interface de GEPI', 'origine', 'n'
 
 */
 
+// On utilise mysqli
+$useMysqli = TRUE;
+
+
 //test version de php
 if (version_compare(PHP_VERSION, '5') < 0) {
     die('GEPI nécessite PHP5 pour fonctionner');
@@ -206,6 +210,8 @@ $test = 'templates/accueil_externe.php' ;
 		$tbs_message[] =array("classe"=>"","texte" => "Afin d'utiliser Gepi, vous devez vous identifier.");
 	}
 
+	$tbs_input_password_to_text= input_password_to_text('no_anti_inject_password');
+
 //==================================
 //	Mot de passe oublié
 	$tbs_password_recovery = "";
@@ -243,20 +249,20 @@ if (isset($style_screen_ajout))  {
 			if (@file_exists('./style_screen_ajout_'.getSettingValue("gepiSchoolRne").'.css')) {
 				$tbsStyleScreenAjout=$gepiPath."/style_screen_ajout_".getSettingValue("gepiSchoolRne").".css";	
 			}else {
-				$tbsStyleScreenAjout="n";	
+				$tbsStyleScreenAjout="";	
 			}
 		} else {
 			if (@file_exists('./style_screen_ajout.css')) {
 				$tbsStyleScreenAjout=$gepiPath."/style_screen_ajout.css";	
 			}else {
-				$tbsStyleScreenAjout="n";	
+				$tbsStyleScreenAjout="";	
 			}
 		}
 	} else {
-		$tbsStyleScreenAjout="n";	
+		$tbsStyleScreenAjout="";	
 	}
 } else {
-	$tbsStyleScreenAjout="n";	
+	$tbsStyleScreenAjout="";	
 }
 	
 
@@ -307,15 +313,25 @@ if (isset($style_screen_ajout))  {
 //==================================
 
 $msg_page_login="";
-$test = mysql_query("SHOW TABLES LIKE 'message_login'");
-if(mysql_num_rows($test)>0) {
-	$sql="SELECT ml.texte FROM message_login ml, setting s WHERE s.value=ml.id AND s.name='message_login';";
-	//echo "$sql <br />";
-	$res=mysql_query($sql);
 
-	if(mysql_num_rows($res)>0) {
-		$lig_page_login=mysql_fetch_object($res);
-		$msg_page_login=$lig_page_login->texte;
+// 20140301
+$auth_sso_secours=isset($_GET['auth_sso_secours']) ? $_GET['auth_sso_secours'] : "n";
+if((isset($auth_sso_secours))&&
+	($auth_sso_secours=="y")&&
+	(getSettingAOui('autoriser_sso_password_auth'))) {
+		$msg_page_login=getSettingValue('auth_sso_secours_msg');
+}
+else {
+	$test = mysqli_query($GLOBALS["mysqli"], "SHOW TABLES LIKE 'message_login'");
+	if(mysqli_num_rows($test)>0) {
+		$sql="SELECT ml.texte FROM message_login ml, setting s WHERE s.value=ml.id AND s.name='message_login';";
+		//echo "$sql <br />";
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+
+		if(mysqli_num_rows($res)>0) {
+			$lig_page_login=mysqli_fetch_object($res);
+			$msg_page_login=$lig_page_login->texte;
+		}
 	}
 }
 
@@ -331,14 +347,14 @@ if(mysql_num_rows($test)>0) {
 	$tbs_dossier_gabarit=array();
 
 
-$test = mysql_query("SHOW TABLES LIKE 'gabarits'");
+$test = mysqli_query($GLOBALS["mysqli"], "SHOW TABLES LIKE 'gabarits'");
 
 		$sql="SELECT texte, repertoire, pardefaut FROM gabarits ;";
-		$res_gab=mysql_query($sql);
+		$res_gab=mysqli_query($GLOBALS["mysqli"], $sql);
 	if($res_gab){
 	
-		if(mysql_num_rows($res_gab)>0) {
-			while($lig_gab=mysql_fetch_object($res_gab)) {
+		if(mysqli_num_rows($res_gab)>0) {
+			while($lig_gab=mysqli_fetch_object($res_gab)) {
 				$texte_gab=$lig_gab->texte;
 				$repertoire_gab=$lig_gab->repertoire;
 				$defaut_gab=$lig_gab->pardefaut;

@@ -199,6 +199,7 @@ function traiteEleve($eleve,$date_debut, $date_fin, $justifie_col, $donneeBrut, 
  * @param int $nbEleves Le nombre total d'élèves à traiter
  */
 function afficheChargement($indice,$nbEleves) {
+	global $mysqli;
   global $session_gepi; 
   require("../lib/global.inc.php");
   $gepiPath = "../";
@@ -603,7 +604,7 @@ include('menu_bilans.inc.php');
 	</fieldset>
   </form>
   
-  <table  class="sortable" style ="border:3px groove #aaaaaa;">
+  <table  class="sortable boireaus boireaus_alt" style ="border:3px groove #aaaaaa;">
 	<caption style ="font-size:larger;" >
 	  Justifications du
 	  <?php echo unserialize($_SESSION['statJustifie']['date_absence_eleve_debut']); ?>
@@ -644,7 +645,7 @@ include('menu_bilans.inc.php');
 	
 <?php if (count($donnees)) {
 foreach ($donnees as $donnee) { ?>
-	<tr>
+	<tr class='white_hover'>
 	  <td style ="border:1px groove #aaaaaa;">
 		<?php echo $donnee['nom']." ".$donnee['prenom']; ?>
 	  </td>
@@ -659,7 +660,7 @@ foreach ($donnees as $donnee) { ?>
 		<?php echo $donnee['non_justifiees']; ?>
 	  </td>
 	  <td style="border:1px groove #aaaaaa;text-align: center;
-<?php if (!$donneeBrut && ($donnee['totalDemi'] != $donnee['justifiees'])) echo 'background:#ff0000;'; ?>
+<?php if (!$donneeBrut && ($donnee['totalDemi'] != $donnee['justifiees'])) echo 'background:#ff0000;" title="Le nombre d\'absences justifiées diffère du nombre de demi-journées."'; ?>
 		  ">
 		<?php echo $donnee['justifiees']; ?>
 	  </td>

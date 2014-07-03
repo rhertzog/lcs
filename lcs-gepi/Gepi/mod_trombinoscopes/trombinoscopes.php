@@ -45,8 +45,8 @@ function classe_de($id_classe_eleve)
 		{
 		include("../secure/connect.inc.php");
 			$requete_classe_eleve ="SELECT ".$prefix_base."eleves.login, ".$prefix_base."eleves.nom, ".$prefix_base."eleves.prenom, ".$prefix_base."j_eleves_classes.login, ".$prefix_base."j_eleves_classes.id_classe, ".$prefix_base."j_eleves_classes.periode, ".$prefix_base."classes.classe, ".$prefix_base."classes.id, ".$prefix_base."classes.nom_complet FROM ".$prefix_base."eleves, ".$prefix_base."j_eleves_classes, ".$prefix_base."classes WHERE ".$prefix_base."eleves.login=".$prefix_base."j_eleves_classes.login AND ".$prefix_base."eleves.login='".$id_classe_eleve."' AND ".$prefix_base."j_eleves_classes.id_classe=".$prefix_base."classes.id";
-			$execution_classe_eleve = mysql_query($requete_classe_eleve) or die('Erreur SQL !'.$requete_classe_eleve.'<br />'.mysql_error());
-			$data_classe_eleve = mysql_fetch_array($execution_classe_eleve);
+			$execution_classe_eleve = mysqli_query($GLOBALS["mysqli"], $requete_classe_eleve) or die('Erreur SQL !'.$requete_classe_eleve.'<br />'.mysqli_error($GLOBALS["mysqli"]));
+			$data_classe_eleve = mysqli_fetch_array($execution_classe_eleve);
 			$id_classe_eleve = $data_classe_eleve['nom_complet'];
 		return($id_classe_eleve);
 		}
@@ -102,6 +102,9 @@ if (empty($_GET['classe']) and empty($_POST['classe'])) { $classe = ''; }
 else { if (isset($_GET['classe'])) { $classe = $_GET['classe']; } if (isset($_POST['classe'])) { $classe = $_POST['classe']; } }
 if (empty($_GET['groupe']) and empty($_POST['groupe'])) { $groupe = ''; }
 else { if (isset($_GET['groupe'])) { $groupe = $_GET['groupe']; } if (isset($_POST['groupe'])) { $groupe = $_POST['groupe']; } }
+
+$aid = isset($_POST['aid']) ? $_POST['aid'] : ( isset($_GET['aid']) ? $_GET['aid'] : '' );
+
 if (empty($_GET['equipepeda']) and empty($_POST['equipepeda'])) { $equipepeda = ''; }
 else { if (isset($_GET['equipepeda'])) { $equipepeda = $_GET['equipepeda']; } if (isset($_POST['equipepeda'])) { $equipepeda = $_POST['equipepeda']; } }
 if (empty($_GET['discipline']) and empty($_POST['discipline'])) { $discipline = ''; }
@@ -170,13 +173,13 @@ if(isset($_POST['upload_photo'])) {
 		} else {
 			$dest = $rep_photos;
 
-			$sql="SELECT elenoet FROM eleves WHERE login='".mysql_real_escape_string($_POST['login_photo'])."';";
-			$res_elenoet=mysql_query($sql);
-			if(mysql_num_rows($res_elenoet)==0) {
+			$sql="SELECT elenoet FROM eleves WHERE login='".mysqli_real_escape_string($GLOBALS["mysqli"], $_POST['login_photo'])."';";
+			$res_elenoet=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_elenoet)==0) {
 				$msg.="Aucun elenoet n'a été trouvé pour renommer la photo de cet élève.<br />\n";
 			}
 			else {
-				$quiestce=encode_nom_photo(mysql_result($res_elenoet,0,'elenoet'));
+				$quiestce=encode_nom_photo(old_mysql_result($res_elenoet,0,'elenoet'));
 				if (!deplacer_fichier_upload($sav_photo['tmp_name'], $rep_photos.$quiestce.".jpg")) {
 					$msg.="Problème de transfert : le fichier n'a pas pu être transféré sur le répertoire photos/eleves/<br />";
 				} else {
@@ -219,7 +222,7 @@ $style_specifique = "mod_trombinoscopes/styles/styles";
 $titre_page = "Visualisation des trombinoscopes";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
-//debug_var();
+// debug_var();
 ?>
 <script type="text/javascript">
 
@@ -283,13 +286,12 @@ function reactiver(mavar) {
 	if($_SESSION['statut']=='administrateur') {
 		echo " | <a href='trombino_decoupe.php'>Découpe trombinoscope</a>";
 	}
-
-	if( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $equipepeda != 'toutes' and $discipline != 'toutes' and ( $classe != '' or $groupe != '' or $equipepeda != '' or $discipline != '' or $statusgepi != '' ) ) {
+	if( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $equipepeda != 'toutes' and $discipline != 'toutes' and ( $classe != '' or $groupe != '' or $aid != '' or $equipepeda != '' or $discipline != '' or $statusgepi != '' ) ) {
 		//echo " | <a href='trombinoscopes.php'>Retour à la sélection</a>";
 
 		//if(acces('/mod_trombinoscopes/trombi_impr.php',$_SESSION['statut'])) {
 		if(($_SESSION['statut']=='autre')||(acces('/mod_trombinoscopes/trombi_impr.php',$_SESSION['statut']))) {
-			echo " | <a href='trombi_impr.php?classe=$classe&amp;groupe=$groupe&amp;equipepeda=$equipepeda&amp;discipline=$discipline&amp;statusgepi=$statusgepi&amp;affdiscipline=$affdiscipline";
+			echo " | <a href='trombi_impr.php?classe=$classe&amp;groupe=$groupe&amp;aid=$aid&amp;equipepeda=$equipepeda&amp;discipline=$discipline&amp;statusgepi=$statusgepi&amp;affdiscipline=$affdiscipline";
 
 			if((isset($_POST['order_by']))&&($_POST['order_by']=='classe')) {
 				echo "&amp;order_by=classe";
@@ -299,7 +301,7 @@ function reactiver(mavar) {
 
 
 
-			echo " | <a href='trombino_pdf.php?classe=$classe&amp;groupe=$groupe&amp;equipepeda=$equipepeda&amp;discipline=$discipline&amp;statusgepi=$statusgepi&amp;affdiscipline=$affdiscipline";
+			echo " | <a href='trombino_pdf.php?classe=$classe&amp;groupe=$groupe&amp;aid=$aid&amp;equipepeda=$equipepeda&amp;discipline=$discipline&amp;statusgepi=$statusgepi&amp;affdiscipline=$affdiscipline";
 
 			if((isset($_POST['order_by']))&&($_POST['order_by']=='classe')) {
 				echo "&amp;order_by=classe";
@@ -334,16 +336,16 @@ function reactiver(mavar) {
 		}
 		$chaine_options_classes="";
 	
-		$res_class_tmp=mysql_query($sql);
-		if(mysql_num_rows($res_class_tmp)>0){
+		$res_class_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_class_tmp)>0){
 			$id_class_prec=0;
 			$id_class_suiv=0;
 			$temoin_tmp=0;
-			while($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+			while($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 				if($lig_class_tmp->id==$id_classe){
 					$chaine_options_classes.="<option value='$lig_class_tmp->id' selected='true'>$lig_class_tmp->classe</option>\n";
 					$temoin_tmp=1;
-					if($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+					if($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 						$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
 						$id_class_suiv=$lig_class_tmp->id;
 					}
@@ -390,7 +392,7 @@ function reactiver(mavar) {
 
 	$affichage_div_gauche="n";
 
-	if ( ( $classe === 'toutes' or $groupe === 'toutes' or $equipepeda === 'toutes' or $discipline === 'toutes' ) or ( $classe === '' and $groupe === '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) ) {
+	if ( ( $classe === 'toutes' or $groupe === 'toutes' or $equipepeda === 'toutes' or $discipline === 'toutes' ) or ( $classe === '' and $groupe === '' and $aid === '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) ) {
 
 		echo "<form method='post' action='trombinoscopes.php' name='form1' >\n";
 		echo "<div style='margin: auto; padding: 0px 20px 0px 20px;'>\n";
@@ -408,7 +410,7 @@ function reactiver(mavar) {
 
 			//=================================================================
 			// CLASSES
-			echo "<span style='margin-left: 15px;'>Par classe</span><br />\n";
+			echo "<label for='classe' style='margin-left: 15px;'>Par classe</label><br />\n";
 			echo "<select name='classe' id='classe' style='margin-left: 15px;'>\n";
 
 			//if ( $_SESSION['statut'] != 'professeur' ) { $classe = 'toutes'; }
@@ -439,7 +441,7 @@ function reactiver(mavar) {
 				$requete_classe_prof = ('SELECT * FROM '.$prefix_base.'classes c
 					ORDER BY c.nom_complet ASC');
 			}
-			$resultat_classe_prof = mysql_query($requete_classe_prof) or die('Erreur SQL !'.$requete_classe_prof.'<br />'.mysql_error());
+			$resultat_classe_prof = mysqli_query($GLOBALS["mysqli"], $requete_classe_prof) or die('Erreur SQL !'.$requete_classe_prof.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 
 			echo "<option value='' ";
 			if ( empty($classe) ) { echo "selected='selected'"; }
@@ -459,7 +461,7 @@ function reactiver(mavar) {
 
 			echo "<optgroup label='-- Les classes --'>\n";
 
-			while ( $data_classe_prof = mysql_fetch_array ($resultat_classe_prof)) {
+			while ( $data_classe_prof = mysqli_fetch_array($resultat_classe_prof)) {
 				echo "<option value='".$data_classe_prof['id']."'";
 				if(!empty($classe) and $classe == $data_classe_prof['id']) {
 					echo " selected='selected'";
@@ -475,7 +477,7 @@ function reactiver(mavar) {
 			//=================================================================
 			// GROUPES
 
-			echo "<span style='margin-left: 15px;'>Par groupe</span><br />\n";
+			echo "<label for='groupe' style='margin-left: 15px;'>Par groupe</label><br />\n";
 			echo "<select name='groupe' id='groupe' style='margin-left: 15px;'>\n";
 
 			//if ( $_SESSION['statut'] != 'professeur' ) { $groupe = 'toutes'; }
@@ -513,12 +515,12 @@ function reactiver(mavar) {
 											jgc.id_classe = c.id
 										ORDER BY name ASC, nom_complet ASC");
 			}
-			$resultat_groupe_prof = mysql_query($requete_groupe_prof) or die('Erreur SQL !'.$requete_groupe_prof.'<br />'.mysql_error());
+			$resultat_groupe_prof = mysqli_query($GLOBALS["mysqli"], $requete_groupe_prof) or die('Erreur SQL !'.$requete_groupe_prof.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 			echo "<option value=''";
 			if ( empty($classe) ) {
 				echo " selected='selected'";
 			}
-			echo "onclick=\"reactiver('classe,equipepeda,discipline,statusgepi,affdiscipline');\">pas de s&eacute;lection</option>\n";
+			echo " onclick=\"reactiver('classe,equipepeda,discipline,statusgepi,affdiscipline');\">pas de s&eacute;lection</option>\n";
 
 			if (( $groupe != 'toutes' )&&($_SESSION['statut']!='eleve')) {
 				echo "<option value='toutes'>voir tous les groupes</option>\n";
@@ -533,8 +535,8 @@ function reactiver(mavar) {
 			}
 
 			echo "<optgroup label='-- Les groupes --'>\n";
-			while ( $donnee_groupe_prof = mysql_fetch_array ($resultat_groupe_prof)) {
-				echo "<option value='".$donnee_groupe_prof['id_groupe']."'  onclick=\"desactiver('classe,equipepeda,discipline,statusgepi,affdiscipline');\">";
+			while ( $donnee_groupe_prof = mysqli_fetch_array($resultat_groupe_prof)) {
+				echo "<option value='".$donnee_groupe_prof['id_groupe']."' onclick=\"desactiver('classe,equipepeda,discipline,statusgepi,affdiscipline');\">";
 
 				//modif ERIC
 				echo ucwords($donnee_groupe_prof['description']);
@@ -549,13 +551,92 @@ function reactiver(mavar) {
 			echo "</select>\n";
 
 			echo "<br />\n";
-			echo "<span style='margin-left: 15px;'><input type='radio' order_by_alpha' name='order_by' value='alpha' checked /><label for='order_by_alpha'> Tri alphabétique</span></label><br />\n";
-			echo "<span style='margin-left: 15px;'><input type='radio' id='order_by_classe' name='order_by' value='classe' /><label for='order_by_classe'> Tri par classe</span></label><br />\n";
+			echo "<span style='margin-left: 15px;'><input type='radio' id='order_by_alpha' name='order_by' value='alpha' checked='checked' /><label for='order_by_alpha'> Tri alphabétique</label></span><br />\n";
+			echo "<span style='margin-left: 15px;'><input type='radio' id='order_by_classe' name='order_by' value='classe' /><label for='order_by_classe'> Tri par classe</label></span><br />\n";
 			echo "<br />";
+			
+			
 
+			//=================================================================
+			// AID
+			
+			
+			if (($_SESSION['statut']=='eleve')) {
+			   $sql = "SELECT DISTINCT ac.indice_aid, ac.nom, ac.nom_complet
+			      FROM aid_config ac, j_aid_eleves u
+			      WHERE ac.outils_complementaires = 'y'
+			      AND u.indice_aid = ac.indice_aid
+                  AND u.login='".$_SESSION['login']."'
+                  ORDER BY ac.nom_complet"; 
+			   
+			} else {
+			   $sql = "SELECT DISTINCT ac.indice_aid, ac.nom, ac.nom_complet
+			      FROM aid_config ac, j_aid_utilisateurs u
+			      WHERE ac.outils_complementaires = 'y'
+			      AND u.indice_aid = ac.indice_aid
+                  AND u.id_utilisateur='".$_SESSION['login']."'
+                  ORDER BY ac.nom_complet"; 
+			}
+			// echo $sql;
+			
+        	$call_data = mysqli_query($mysqli, $sql);  
+        	$nb_aid = $call_data->num_rows;
+			
+			if ($nb_aid != 0) {
+?>
+   <p style="padding-bottom: 1em">
+	 <label for='aid' style='margin-left: 15px;'>Par AID</label>
+	 <br />
+	 <select name='aid' id='aid' style='margin-left: 15px;'>
+		<option value='' selected='selected'>pas de sélection</option>
+	
+<?php
+while ($aid_prof = mysqli_fetch_object($call_data)) {
+   if ($_SESSION['statut']=='eleve') {
+	  $sql2 = "SELECT DISTINCT a.nom, a.id, a.indice_aid
+			   FROM aid a , j_aid_eleves u
+			   WHERE a.indice_aid = '".$aid_prof->indice_aid."'
+			   AND a.id = u.id_aid 
+               AND u.login = '".$_SESSION['login']."'
+			    ";
+	} else {
+      $sql2 = "SELECT  a.nom, a.id, a.indice_aid
+			   FROM aid a , j_aid_utilisateurs u
+			   WHERE a.indice_aid = '".$aid_prof->indice_aid."'
+			   AND a.id = u.id_aid 
+               AND u.id_utilisateur = '".$_SESSION['login']."'"; 
+	}
+   $call_aid =  mysqli_query($mysqli, $sql2);
+?>
+		<optgroup label='-- <?php echo $aid_prof->nom_complet ?> --'>
+	
+<?php
+   while ($obj_aid = mysqli_fetch_object($call_aid)) {
+?>		   
+		   <option value='<?php echo $obj_aid->id ?>'>
+			  <?php echo $obj_aid->nom ?>
+		   </option>
+<?php	
+}
+?>
+		</optgroup>
+<?php	
+}
+?>
+	 </select>
+	 <br />
+   </p >
+<?php
+			}
+			
+			//=================================================================
+			// FIN AID
+			
+			echo "<p >\n";
 			echo "<input value='2' name='etape' type='hidden' />\n";
 
 			echo "<input value='valider' name='Valider' id='valid1' type='submit' onClick=\"this.form.submit();this.disabled=true;this.value='En cours'\" />\n";
+			echo "</p >\n";
 			echo "</div>";
 		}
 
@@ -584,7 +665,7 @@ function reactiver(mavar) {
 
 			//==========================================================
 			// EQUIPES PEDAGOGIQUES
-			echo "<span style='margin-left: 15px;'>Par équipe pédagogique</span><br />\n";
+			echo "<label for='equipepeda' style='margin-left: 15px;'>Par équipe pédagogique</label><br />\n";
 			echo "<select name='equipepeda' id='equipepeda' style='margin-left: 15px;'>\n";
 
 			//if ( $_SESSION['statut'] != 'professeur' ) { $equipepeda = 'toutes'; }
@@ -616,7 +697,7 @@ function reactiver(mavar) {
 				$requete_equipe_pedagogique = ('SELECT * FROM '.$prefix_base.'classes c
 					ORDER BY c.nom_complet ASC');
 			}
-			$resultat_equipe_pedagogique = mysql_query($requete_equipe_pedagogique) or die('Erreur SQL !'.$requete_equipe_pedagogique.'<br />'.mysql_error());
+			$resultat_equipe_pedagogique = mysqli_query($GLOBALS["mysqli"], $requete_equipe_pedagogique) or die('Erreur SQL !'.$requete_equipe_pedagogique.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 
 			echo "<option value=''";
 			if ( empty($equipepeda) ) {
@@ -639,7 +720,7 @@ function reactiver(mavar) {
 			}
 
 			echo "<optgroup label='-- Les classes --'>\n";
-			while ( $donnee_equipe_pedagogique = mysql_fetch_array ($resultat_equipe_pedagogique)) {
+			while ( $donnee_equipe_pedagogique = mysqli_fetch_array($resultat_equipe_pedagogique)) {
 
 				echo "<option value='".$donnee_equipe_pedagogique['id']."'";
 				if(!empty($equipepeda) and $equipepeda == $donnee_equipe_pedagogique['id']) {
@@ -660,7 +741,7 @@ function reactiver(mavar) {
 				echo "<br />&nbsp;&nbsp;&nbsp;<input type='checkbox' name='affdiscipline' id='affdiscipline' value='oui' />&nbsp;<label for='affdiscipline' style='cursor: pointer; cursor: hand;'>Afficher les disciplines</label>\n";
 				echo "<br /><br />\n";
 
-				echo "<span style='margin-left: 15px;'>Par discipline</span><br />\n";
+				echo "<label for='discipline' style='margin-left: 15px;'>Par discipline</label><br />\n";
 				echo "<select name='discipline' id='discipline' style='margin-left: 15px;'>\n";
 
 				if ( $_SESSION['statut'] != 'professeur' ) { $discipline = 'toutes'; }
@@ -686,7 +767,7 @@ function reactiver(mavar) {
 					$requete_discipline = ('SELECT * FROM '.$prefix_base.'matieres m
 								ORDER BY m.nom_complet ASC');
 				}
-				$resultat_discipline = mysql_query($requete_discipline) or die('Erreur SQL !'.$requete_discipline.'<br />'.mysql_error());
+				$resultat_discipline = mysqli_query($GLOBALS["mysqli"], $requete_discipline) or die('Erreur SQL !'.$requete_discipline.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 
 
 
@@ -704,7 +785,7 @@ function reactiver(mavar) {
 				}
 
 				echo "<optgroup label='-- Les disciplines --'>\n";
-				while ( $donnee_discipline = mysql_fetch_array ($resultat_discipline)) {
+				while ( $donnee_discipline = mysqli_fetch_array($resultat_discipline)) {
 					echo "<option value='".$donnee_discipline['matiere']."'";
 
 					if(!empty($discipline) and $discipline == $donnee_discipline['matiere']) {
@@ -720,7 +801,7 @@ function reactiver(mavar) {
 			echo "<br /><br />\n";
 			//==========================================================
 			// PAR STATUT
-			echo "<span style='margin-left: 15px;'>Par statut (CPE/Professeur/Scolarité)</span><br />\n";
+			echo "<label for='statusgepi' style='margin-left: 15px;'>Par statut (CPE/Professeur/Scolarité)</label><br />\n";
 			echo "<select name='statusgepi' id='statusgepi' style='margin-left: 15px;'>\n";
 
 			if ( $statusgepi == '' ) {
@@ -737,7 +818,7 @@ function reactiver(mavar) {
 							ORDER BY u.statut ASC');
 				}
 			}
-			$resultat_statusgepi = mysql_query($requete_statusgepi) or die('Erreur SQL !'.$requete_statusgepi.'<br />'.mysql_error());
+			$resultat_statusgepi = mysqli_query($GLOBALS["mysqli"], $requete_statusgepi) or die('Erreur SQL !'.$requete_statusgepi.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 
 
 			echo "<option value=''";
@@ -746,7 +827,7 @@ function reactiver(mavar) {
 			}
 			echo " onclick=\"reactiver('classe,groupe,equipepeda,discipline,affdiscipline');\">pas de s&eacute;lection</option>\n";
 			echo "<optgroup label='-- Les statuts --'>\n";
-			while ( $donnee_statusgepi = mysql_fetch_array ($resultat_statusgepi)) {
+			while ( $donnee_statusgepi = mysqli_fetch_array($resultat_statusgepi)) {
 				echo "<option value='".$donnee_statusgepi['statut']."'";
 				if(!empty($statusgepi) and $statusgepi == $donnee_statusgepi['statut']) {
 					echo " selected='selected'";
@@ -771,7 +852,7 @@ function reactiver(mavar) {
 
 //==================================================================================
 /* affichage vignettes */
-if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipline != 'toutes' and $equipepeda != 'toutes' and ( $classe != '' or $groupe != '' or $equipepeda != '' or $discipline != '' or $statusgepi != '') ) {
+if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipline != 'toutes' and $equipepeda != 'toutes' and ( $classe != '' or $groupe != '' or $aid != '' or $equipepeda != '' or $discipline != '' or $statusgepi != '') ) {
 
 	echo "<div style='text-align: center;'>\n";
 	echo "<table width='100%' border='0' cellspacing='0' cellpadding='2' style='border : thin dashed #242424; background-color: #FFFFB8;' summary='Choix'>\n";
@@ -786,13 +867,17 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 	echo "<b>\n";
 
 	// on regarde ce qui a été choisi
-	if ( $classe != '' and $groupe === '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) {
+	if ( $classe != '' and $groupe === '' and $aid === ''  and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) {
 		// c'est une classe
 		$action_affiche = 'classe';
 	}
-	elseif ( $classe === '' and $groupe != '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) {
+	elseif ( $classe === '' and $groupe != '' and $aid === '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) {
 		// c'est un groupe
 		$action_affiche = 'groupe';
+	}
+	elseif ( $classe === '' and $groupe === '' and $aid != '' and $equipepeda === '' and $discipline === '' and $statusgepi === '' ) {
+		// c'est un groupe
+		$action_affiche = 'aid';
 	}
 	elseif ( $classe === '' and $groupe === '' and $equipepeda != '' and $discipline === '' and $statusgepi === '' ) {
 		// c'est une équipe pédagogique
@@ -843,6 +928,27 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 		else {
 			$requete_qui = 'SELECT g.id, g.name FROM '.$prefix_base.'groupes g WHERE g.id = "'.$groupe.'"';
 		}
+	}
+
+	if ( $action_affiche === 'aid' ) {
+		if($_SESSION['statut']=='eleve') {
+			if($GepiAccesEleTrombiTousEleves=='yes') {
+				$requete_qui = "SELECT id , nom FROM aid WHERE id = '".$aid."'";
+			}
+			elseif($GepiAccesEleTrombiElevesClasse=='yes') {
+				$requete_qui = "SELECT id , nom FROM aid WHERE id = '".$aid."'";
+			}
+			else {
+				echo "<p>Vous n'avez pas accès aux trombinoscopes de groupes.</p>\n";
+				require("../lib/footer.inc.php");
+				die();
+			}
+		   
+		}
+		else {
+			$requete_qui = "SELECT id , nom FROM aid WHERE id = '".$aid."'";
+		}
+	   
 	}
 
 	if ( $action_affiche === 'equipepeda' ) {
@@ -896,14 +1002,14 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 		$requete_qui = 'SELECT statut FROM '.$prefix_base.'utilisateurs u WHERE u.statut = "'.$statusgepi.'" AND etat="actif";';
 	}
 
-	$execute_qui = mysql_query($requete_qui) or die('Erreur SQL !'.$requete_qui.'<br />'.mysql_error());
-	if(mysql_num_rows($execute_qui)==0) {
+	$execute_qui = mysqli_query($GLOBALS["mysqli"], $requete_qui) or die('Erreur SQL !'.$requete_qui.'<br />'.mysqli_error($GLOBALS["mysqli"]));
+	if(mysqli_num_rows($execute_qui)==0) {
 		// On doit être dans le cas d'un élève qui a tenté d'accéder aux photos d'une classe, groupe, équipe,... à laquelle il n'est pas associé.
 		echo "<p>La requête n'a retourné aucun enregistrement.</p>\n";
 		require("../lib/footer.inc.php");
 		die();
 	}
-	$donnees_qui = mysql_fetch_array($execute_qui) or die('Erreur SQL !'.$execute_qui.'<br />'.mysql_error());
+	$donnees_qui = mysqli_fetch_array($execute_qui) or die('Erreur SQL !'.$execute_qui.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 
 	if ( $action_affiche === 'classe' ) {
 		echo "Classe : ".$donnees_qui['nom_complet'];
@@ -920,6 +1026,37 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 								GROUP BY nom, prenom";
 	}
 
+	if ( $action_affiche === 'aid' ) {
+		echo "AID : ".$donnees_qui['nom'];
+		$repertoire = 'eleves';
+		if((isset($_POST['order_by']))&&($_POST['order_by']=='classe')) {
+			$grp_order_by="c.classe, e.nom, e.prenom";
+			$requete_trombi = "SELECT e.login , e.nom, e.prenom , e.elenoet , a.id , a.nom nom_complet
+									FROM eleves e, aid a, j_aid_eleves j , j_eleves_classes jec , classes c
+									WHERE j.login = e.login
+									AND  e.login = jec.login
+									AND jec.id_classe = c.id
+									AND j.id_aid = a.id
+									AND a.id = '".$aid."'
+									AND (e.date_sortie is NULL OR e.date_sortie NOT LIKE '20%')
+									GROUP BY e.login , e.nom , e.prenom
+									ORDER BY $grp_order_by;";	
+			
+		}
+		else {
+			$grp_order_by="e.nom, e.prenom";
+			$requete_trombi = "SELECT e.login, e.nom, e.prenom, e.elenoet, a.id, a.nom nom_complet
+									FROM eleves e , aid a , j_aid_eleves j , classes c
+									WHERE j.login = e.login
+									AND j.id_aid = a.id
+									AND a.id = '".$aid."'
+									AND (e.date_sortie is NULL OR e.date_sortie NOT LIKE '20%')
+									GROUP BY e.nom, e.prenom
+									ORDER BY $grp_order_by;";			
+		}
+
+	}
+	
 	if ( $action_affiche === 'groupe' ) {
 		$current_group=get_group($groupe);
 		echo "Groupe : ".htmlspecialchars($donnees_qui['name'])." (<em>".$current_group['classlist_string']."</em>)";
@@ -1030,19 +1167,18 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 					AND jgm.id_matiere = m.matiere
 					AND jgp.id_groupe = jgm.id_groupe
 					AND jgp.login = "'.$prof.'"';
-			$execution_matiere = mysql_query($requete_matiere) or die('Erreur SQL !'.$requete_matiere.'<br />'.mysql_error());
-			while ($donnee_matiere = mysql_fetch_array($execution_matiere)) {
+			$execution_matiere = mysqli_query($GLOBALS["mysqli"], $requete_matiere) or die('Erreur SQL !'.$requete_matiere.'<br />'.mysqli_error($GLOBALS["mysqli"]));
+			while ($donnee_matiere = mysqli_fetch_array($execution_matiere)) {
 				$prof_de = $prof_de.'<br />'.htmlspecialchars($donnee_matiere['nom_complet']).' ';
 			}
 		}
 		return ($prof_de);
 	}
 	//===========================================
-
-
-	$execution_trombi = mysql_query($requete_trombi) or die('Erreur SQL !'.$requete_trombi.'<br />'.mysql_error());
+	
+	$execution_trombi = mysqli_query($GLOBALS["mysqli"], $requete_trombi) or die('Erreur SQL !'.$requete_trombi.'<br />'.mysqli_error($GLOBALS["mysqli"]));
 	$cpt_photo = 1;
-	while ($donnee_trombi = mysql_fetch_array($execution_trombi))
+	while ($donnee_trombi = mysqli_fetch_array($execution_trombi))
 	{
 		//insertion de l'élève dans la varibale $eleve_absent
 		$login_trombinoscope[$cpt_photo] = $donnee_trombi['login'];
@@ -1051,6 +1187,9 @@ if ( $etape === '2' and $classe != 'toutes' and $groupe != 'toutes' and $discipl
 
 		if ( $action_affiche === 'classe' ) { $id_photo_trombinoscope[$cpt_photo] = mb_strtolower($donnee_trombi['elenoet']); }
 		if ( $action_affiche === 'groupe' ) { $id_photo_trombinoscope[$cpt_photo] = mb_strtolower($donnee_trombi['elenoet']); }
+		if ( $action_affiche === 'aid' ) { 
+		   $id_photo_trombinoscope[$cpt_photo] = mb_strtolower($donnee_trombi['elenoet']); 
+		}
 		if ( $action_affiche === 'equipepeda' ) { $id_photo_trombinoscope[$cpt_photo] = $donnee_trombi['login']; }
 		if ( $action_affiche === 'discipline' ) { $id_photo_trombinoscope[$cpt_photo] = $donnee_trombi['login']; }
 		if ( $action_affiche === 'statusgepi' ) { $id_photo_trombinoscope[$cpt_photo] = $donnee_trombi['login']; }

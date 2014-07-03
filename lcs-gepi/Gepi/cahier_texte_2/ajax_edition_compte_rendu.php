@@ -54,6 +54,8 @@ if ($utilisateur == null) {
 	die();
 }
 
+$tab_termes_CDT2=get_texte_CDT2();
+
 //récupération des parametres
 //id du compte rendu
 $id_ct = isset($_POST["id_ct"]) ? $_POST["id_ct"] :(isset($_GET["id_ct"]) ? $_GET["id_ct"] :NULL);
@@ -132,12 +134,12 @@ if(isset($_GET['change_visibilite'])) {
 	$id_document=$_GET['id_document'];
 	if(($id_ct!='')&&(preg_match("/^[0-9]*$/", $id_ct))&&($id_document!='')&&(preg_match("/^[0-9]*$/", $id_document))) {
 		$sql="SELECT visible_eleve_parent FROM ct_documents WHERE id='$id_document' AND id_ct='$id_ct';";
-		$res=mysql_query($sql);
-		if(mysql_num_rows($res)>0) {
-			$lig=mysql_fetch_object($res);
+		$res=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res)>0) {
+			$lig=mysqli_fetch_object($res);
 			if($lig->visible_eleve_parent=='0') {$visible_eleve_parent='1';} else {$visible_eleve_parent='0';}
 			$sql="UPDATE ct_documents SET visible_eleve_parent='$visible_eleve_parent' WHERE id='$id_document' AND id_ct='$id_ct';";
-			$res=mysql_query($sql);
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
 			if($res) {
 				if($visible_eleve_parent=='1') {
 					echo "<img src='../images/icons/visible.png' width='19' height='16' alt='Document visible des élèves et responsables' title='Document visible des élèves et responsables' />";
@@ -181,8 +183,8 @@ echo "<option value='-1'>choisissez un groupe</option>\n";
 $groups = $utilisateur->getGroupes();
 foreach ($groups as $group_iter) {
 	$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='".$group_iter->getId()."' AND domaine='cahier_texte' AND visible='n';";
-	$test_grp_visib=mysql_query($sql);
-	if(mysql_num_rows($test_grp_visib)==0) {
+	$test_grp_visib=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_grp_visib)==0) {
 		echo "<option id='colonne_droite_select_group_option_".$group_iter->getId()."' value='".$group_iter->getId()."'";
 		if ($groupe->getId() == $group_iter->getId()) echo " SELECTED ";
 
@@ -226,18 +228,18 @@ echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"j
 // Voir les notices privees:
 echo " <button style='background-color:".$color_fond_notices['p']."' onclick=\"javascript:
 						getWinListeNoticesPrivees().setAjaxContent('./ajax_liste_notices_privees.php?id_groupe=".$groupe->getId()."&today='+getCalendarUnixDate());
-					\">Voir NP</button>\n";
+					\" title=\"".$tab_termes_CDT2['attribut_title_CDT2_Voir_NP']."\">Voir NP</button>\n";
 
 echo "<button style='background-color:lightblue' onclick=\"javascript:
 						getWinBanqueTexte().setAjaxContent('./ajax_affichage_banque_texte.php',{});
-					\">Banque</button>\n";
+					\" title=\"".$tab_termes_CDT2['attribut_title_CDT2_Banque']."\">Banque</button>\n";
 
 if(file_exists("./archives.php")) {
 	// Mon fichier contient juste:
 	/* <?php echo "<iframe src='../documents/archives/index.php' width='100%' height='100%'/>"; ?> */
 	echo "<button style='background-color:bisque' onclick=\"javascript:
 						getWinArchives().setAjaxContent('./archives.php',{});
-					\">Archives</button>\n";
+					\" title=\"".$tab_termes_CDT2['attribut_title_CDT2_Archives']."\">Archives</button>\n";
 }
 
 echo "<a href=\"javascript:insere_texte_dans_ckeditor(document.getElementById('div_tableau_eleves').innerHTML)\" title='Insérer un tableau de la liste des élèves dans le texte de la notice'><img src='../images/icons/tableau.png' width='16' height='16' alt='Insérer un tableau de la liste des élèves dans le texte de la notice' /></a>";
@@ -411,9 +413,9 @@ if ($succes_modification == 'oui') {$label_enregistrer='Succès';}
 		<?php
 			$sql="SELECT * FROM ct_devoirs_entry WHERE id_groupe='$id_groupe' AND date_ct='".$ctCompteRendu->getDateCt()."';";
 			//echo "$sql<br />";
-			$res_devoirs=mysql_query($sql);
-			if(mysql_num_rows($res_devoirs)==1) {
-				$lig_dev=mysql_fetch_object($res_devoirs);
+			$res_devoirs=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_devoirs)==1) {
+				$lig_dev=mysqli_fetch_object($res_devoirs);
 				echo "<button type='submit' style='font-variant: small-caps;'
 			onClick=\"javascript:$('get_devoirs_du_jour').value='y';\">Import trav.</button>";
 			}

@@ -56,7 +56,7 @@ if (is_numeric($id_groupe) && $id_groupe > 0) {
 if ($current_group) {
 	$nom_fic = $current_group["name"] . "-" . $current_group["classlist_string"] . ".csv";
 } else {
-	$classe = mysql_result(mysql_query("SELECT classe FROM classes WHERE id = '" . $id_classe . "'"), 0);
+	$classe = old_mysql_result(mysqli_query($GLOBALS["mysqli"], "SELECT classe FROM classes WHERE id = '" . $id_classe . "'"), 0);
 	$nom_fic = $classe . ".csv";
 }
 
@@ -76,22 +76,25 @@ if (my_ereg('MSIE', $_SERVER['HTTP_USER_AGENT'])) {
 include "../lib/periodes.inc.php";
 $fd = '';
 
+//$fin_de_ligne="\n";
+$fin_de_ligne="\r\n";
+
 if(isset($_GET['ligne_entete'])){
 	switch($_GET['mode']){
 		case "Id_Note_App":
-			$fd.="IDENTIFIANT;NOTE;APPRECIATION\n";
+			$fd.="IDENTIFIANT;NOTE;APPRECIATION$fin_de_ligne";
 			break;
 		case "Id_App":
-			$fd.="IDENTIFIANT;APPRECIATION\n";
+			$fd.="IDENTIFIANT;APPRECIATION$fin_de_ligne";
 			break;
 		case "Nom_Prenom_Id_App":
-			$fd.="NOM;PRENOM;IDENTIFIANT;APPRECIATION\n";
+			$fd.="NOM;PRENOM;IDENTIFIANT;APPRECIATION$fin_de_ligne";
 			break;
 		case "Nom_Prenom_Id":
-			$fd.="NOM;PRENOM;IDENTIFIANT\n";
+			$fd.="NOM;PRENOM;IDENTIFIANT$fin_de_ligne";
 			break;
 		case "Nom_Prenom_Id_Note_App":
-			$fd.="NOM;PRENOM;IDENTIFIANT;NOTE;APPRECIATION\n";
+			$fd.="NOM;PRENOM;IDENTIFIANT;NOTE;APPRECIATION$fin_de_ligne";
 			break;
 	}
 }
@@ -102,25 +105,11 @@ if ($current_group) {
 		$eleve_nom = $current_eleve["nom"];
 		$eleve_prenom = $current_eleve["prenom"];
 
-		/*
-		//if ($_GET['champs'] == 3) $fd.="\"".$eleve_nom."\",\"".$eleve_prenom."\",\"".$eleve_login."\""."\n";
-		if ($_GET['champs'] == 3) $fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."\n";
-		//if ($_GET['champs'] == 1) $fd.=$eleve_login."\n";
-		if ($_GET['champs'] == 1){
-			if(isset($_GET['ligne_entete'])){
-				$fd.=$eleve_login.";;\n";
-			}
-			else{
-				$fd.=$eleve_login."\n";
-			}
-		}
-		*/
-
 		$sql="SELECT note,statut FROM matieres_notes WHERE login='$eleve_login' AND periode='$periode_num' AND id_groupe='$id_groupe'";
 		//echo "$sql<br />\n";
-		$res_note=mysql_query($sql);
-		if(mysql_num_rows($res_note)){
-			$lig_note=mysql_fetch_object($res_note);
+		$res_note=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_note)){
+			$lig_note=mysqli_fetch_object($res_note);
 			if($lig_note->statut==''){
 				$note=my_ereg_replace("\.",",",$lig_note->note);
 			}
@@ -135,9 +124,9 @@ if ($current_group) {
 
 		$app="-";
 		$sql="SELECT appreciation FROM matieres_appreciations WHERE login='$eleve_login' AND periode='$periode_num' AND id_groupe='$id_groupe'";
-		$res_appreciation=mysql_query($sql);
-		if(mysql_num_rows($res_appreciation)){
-			$lig_appreciation=mysql_fetch_object($res_appreciation);
+		$res_appreciation=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_appreciation)){
+			$lig_appreciation=mysqli_fetch_object($res_appreciation);
 			//$app=my_ereg_replace("\n"," ",$lig_appreciation->appreciation);
 			$app=my_ereg_replace("\n"," ",my_ereg_replace("\r","",strtr($lig_appreciation->appreciation,";",".")));
 			//$app=strtr($lig_appreciation->appreciation,"\n"," ");
@@ -146,84 +135,70 @@ if ($current_group) {
 
 		switch($_GET['mode']){
 			case "Id_Note_App":
-				//$fd.=$eleve_login.";".";"."\n";
-				$fd.=$eleve_login.";".$note.";".$app."\n";
+				//$fd.=$eleve_login.";".";"."$fin_de_ligne";
+				$fd.=$eleve_login.";".$note.";".$app."$fin_de_ligne";
 				break;
 			case "Id_App":
-				//$fd.=$eleve_login.";"."\n";
-				$fd.=$eleve_login.";".$app."\n";
+				//$fd.=$eleve_login.";"."$fin_de_ligne";
+				$fd.=$eleve_login.";".$app."$fin_de_ligne";
 				break;
 			case "Nom_Prenom_Id_App":
-				//$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";"."\n";
-				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".$app."\n";
+				//$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";"."$fin_de_ligne";
+				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".$app."$fin_de_ligne";
 				break;
 			case "Nom_Prenom_Id":
-				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."\n";
+				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."$fin_de_ligne";
 				break;
 			case "Nom_Prenom_Id_Note_App":
-				//$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".";"."\n";
-				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".$note.";".$app."\n";
+				//$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".";"."$fin_de_ligne";
+				$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".$note.";".$app."$fin_de_ligne";
 				break;
 		}
 	}
 } else {
 	// Cas où on demande un fichier pour importation d'appréciations du conseil
-	$appel_donnees_eleves = mysql_query("SELECT DISTINCT e.*
+	$appel_donnees_eleves = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT e.*
 		FROM eleves e, j_eleves_classes j
 		WHERE (
 		j.id_classe='".$id_classe."' AND
 		j.login = e.login AND
 		periode='".$periode_num."'
 		) ORDER BY nom, prenom");
-	$nombre_lignes = mysql_num_rows($appel_donnees_eleves);
+	$nombre_lignes = mysqli_num_rows($appel_donnees_eleves);
 	$i = 0;
 	while($i < $nombre_lignes) {
-		$eleve_login = mysql_result($appel_donnees_eleves, $i, "login");
-		$eleve_nom = mysql_result($appel_donnees_eleves, $i, "nom");
-		$eleve_prenom = mysql_result($appel_donnees_eleves, $i, "prenom");
+		$eleve_login = old_mysql_result($appel_donnees_eleves, $i, "login");
+		$eleve_nom = old_mysql_result($appel_donnees_eleves, $i, "nom");
+		$eleve_prenom = old_mysql_result($appel_donnees_eleves, $i, "prenom");
 		$k=1;
 		$enr_eleve = 'no';
 		if ($_SESSION['statut'] != 'scolarite') {
-			$eleve_profsuivi_query = mysql_query("SELECT * FROM  j_eleves_professeurs
+			$eleve_profsuivi_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM  j_eleves_professeurs
 								WHERE (
 								login='".$eleve_login."' AND
 								professeur='".$_SESSION['login']."' AND
 								id_classe = '".$id_classe."')");
-			$test_suivi = mysql_num_rows($eleve_profsuivi_query);
+			$test_suivi = mysqli_num_rows($eleve_profsuivi_query);
 		}
 		else{
 			$test_suivi = 1;
 		}
 		if ($test_suivi != "0")  {
-			/*
-			//if ($_GET['champs'] == 3) $fd.="\"".$eleve_nom."\",\"".$eleve_prenom."\",\"".$eleve_login."\""."\n";
-			if ($_GET['champs'] == 3) $fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."\n";
-			//if ($_GET['champs'] == 1) $fd.=$eleve_login."\n";
-			if ($_GET['champs'] == 1){
-				if(isset($_GET['ligne_entete'])){
-					$fd.=$eleve_login.";;\n";
-				}
-				else{
-					$fd.=$eleve_login."\n";
-				}
-			}*/
-
-
 			switch($_GET['mode']){
 				case "Id_Note_App":
-					$fd.=$eleve_login.";".";"."\n";
+					$fd.=$eleve_login.";".";"."$fin_de_ligne";
 					break;
 				case "Id_App":
-					$fd.=$eleve_login.";"."\n";
+					$fd.=$eleve_login.";"."$fin_de_ligne";
 					break;
 				case "Nom_Prenom_Id_App":
-					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";"."\n";
+					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";"."$fin_de_ligne";
 					break;
 				case "Nom_Prenom_Id":
-					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."\n";
+					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login."$fin_de_ligne";
 					break;
 				case "Nom_Prenom_Id_Note_App":
-					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".";"."\n";
+					$fd.=$eleve_nom.";".$eleve_prenom.";".$eleve_login.";".";"."$fin_de_ligne";
 					break;
 			}
 		}

@@ -1,7 +1,7 @@
 <?php
 /*
  *
- * Copyright 2001, 2011 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
+ * Copyright 2001, 2013 Thomas Belliard, Laurent Delineau, Edouard Hue, Eric Lebrun
  *
  * This file is part of GEPI.
  *
@@ -42,6 +42,10 @@ if (!checkAccess()) {
     die();
 }
 
+if($_SESSION['statut']!='administrateur') {
+	$user_login=$_SESSION['login'];
+}
+
 $affiche_adresse_resp=isset($_POST["affiche_adresse_resp"]) ? $_POST["affiche_adresse_resp"] : "n";
 
 if(!isset($user_login)) {
@@ -74,6 +78,9 @@ if(!isset($user_login)) {
 			echo "<p class='bold'>";
 			echo "<a href='$url_retour_index_utilisateurs'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 			echo " | <a href='".$_SERVER['PHP_SELF']."'> Fiches bienvenue</a>";
+			if(acces("/gestion/modify_impression.php", $_SESSION['statut'])) {
+				echo " | <a href='../gestion/modify_impression.php?fiche=personnels'> Modifier les fiches bienvenue</a>";
+			}
 			echo "</p>\n";
 	
 			echo "<form action='".$_SERVER['PHP_SELF']."' method='post' target='_blank'>\n";
@@ -93,9 +100,9 @@ if(!isset($user_login)) {
 		for($i=0;$i<count($user_statut);$i++) {
 			if(in_array($user_statut[$i],$tab_statut)) {
 				$sql="SELECT login FROM utilisateurs WHERE statut='$user_statut[$i]' AND etat='actif' ORDER BY nom, prenom;";
-				$res=mysql_query($sql);
-				if(mysql_num_rows($res)>0) {
-					while($lig=mysql_fetch_object($res)) {$user_login[]=$lig->login;}
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res)>0) {
+					while($lig=mysqli_fetch_object($res)) {$user_login[]=$lig->login;}
 				}
 			}
 		}
@@ -110,6 +117,9 @@ if(!isset($user_login)) {
 			echo "<p class='bold'>";
 			echo "<a href='$url_retour_index_utilisateurs'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 			echo " | <a href='".$_SERVER['PHP_SELF']."'> Fiches bienvenue</a>";
+			if(acces("/gestion/modify_impression.php", $_SESSION['statut'])) {
+				echo " | <a href='../gestion/modify_impression.php?fiche=responsables'> Modifier les fiches bienvenue</a>";
+			}
 			echo "</p>\n";
 
 			$sql="SELECT DISTINCT c.id,c.classe FROM classes c,
@@ -124,14 +134,14 @@ if(!isset($user_login)) {
 												rp.login=u.login AND
 												jec.id_classe=c.id
 										ORDER BY classe;";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)==0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==0) {
 				echo "<p>Aucune compte responsable n'a encore été créé.</p>\n";
 			}
 			else {
 				echo "<form action='".$_SERVER['PHP_SELF']."' method='post' target='_blank'>\n";
 				echo "<p>Choisissez les classes pour lesquelles générer les fiches bienvenue&nbsp;:<br />\n";
-				while ($lig=mysql_fetch_object($res)) {
+				while ($lig=mysqli_fetch_object($res)) {
 					echo "<input type='checkbox' name='id_classe[]' id='id_classe_$lig->id' value='$lig->id' onchange='change_style_classe($lig->id)'><label id='clas_id_classe_$lig->id' for='id_classe_$lig->id'> ".$lig->classe."</label><br />\n";
 				}
 				echo "<input type='checkbox' name='affiche_adresse_resp' id='affiche_adresse_resp' value='y' /><label for='affiche_adresse_resp'> avec l'adresse du responsable</label><br />\n";
@@ -173,9 +183,9 @@ if(!isset($user_login)) {
 															rp.login=u.login AND
 															jec.id_classe='$id_classe[$i]'
 													ORDER BY u.nom, u.prenom;";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)>0) {
-							while ($lig=mysql_fetch_object($res)) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)>0) {
+							while ($lig=mysqli_fetch_object($res)) {
 								if(!in_array($lig->login,$user_login)) {
 									$user_login[]=$lig->login;
 								}
@@ -196,9 +206,9 @@ if(!isset($user_login)) {
 													rp.login=u.login AND
 													jec.id_classe='$id_classe[$i]'
 											ORDER BY u.nom, u.prenom;";
-				$res=mysql_query($sql);
-				if(mysql_num_rows($res)>0) {
-					while ($lig=mysql_fetch_object($res)) {
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res)>0) {
+					while ($lig=mysqli_fetch_object($res)) {
 						if(!in_array($lig->login,$user_login)) {
 							$user_login[]=$lig->login;
 						}
@@ -220,20 +230,23 @@ if(!isset($user_login)) {
 			echo "<p class='bold'>";
 			echo "<a href='$url_retour_index_utilisateurs'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
 			echo " | <a href='".$_SERVER['PHP_SELF']."'> Fiches bienvenue</a>";
+			if(acces("/gestion/modify_impression.php", $_SESSION['statut'])) {
+				echo " | <a href='../gestion/modify_impression.php?fiche=eleves'> Modifier les fiches bienvenue</a>";
+			}
 			echo "</p>\n";
 
 			$sql="SELECT DISTINCT c.id,c.classe FROM classes c, j_eleves_classes jec, utilisateurs u
 									WHERE jec.login=u.login AND
 											jec.id_classe=c.id
 									ORDER BY classe;";
-			$res=mysql_query($sql);
-			if(mysql_num_rows($res)==0) {
+			$res=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res)==0) {
 				echo "<p>Aucune compte élève n'a encore été créé.</p>\n";
 			}
 			else {
 				echo "<form action='".$_SERVER['PHP_SELF']."' method='post' target='_blank'>\n";
 				echo "<p>Choisissez les classes pour lesquelles générer les fiches bienvenue&nbsp;:<br />\n";
-				while ($lig=mysql_fetch_object($res)) {
+				while ($lig=mysqli_fetch_object($res)) {
 					echo "<input type='checkbox' name='id_classe[]' id='id_classe_$lig->id' value='$lig->id'><label for='id_classe_$lig->id'> ".$lig->classe."</label><br />\n";
 				}
 				echo "<input type='submit' value='Valider' /></p>\n";
@@ -254,9 +267,9 @@ if(!isset($user_login)) {
 										WHERE jec.login=u.login AND
 												jec.id_classe='$id_classe[$i]'
 										ORDER BY u.nom, u.prenom;";
-						$res=mysql_query($sql);
-						if(mysql_num_rows($res)>0) {
-							while ($lig=mysql_fetch_object($res)) {
+						$res=mysqli_query($GLOBALS["mysqli"], $sql);
+						if(mysqli_num_rows($res)>0) {
+							while ($lig=mysqli_fetch_object($res)) {
 								if(!in_array($lig->login,$user_login)) {
 									$user_login[]=$lig->login;
 								}
@@ -270,9 +283,9 @@ if(!isset($user_login)) {
 								WHERE jec.login=u.login AND
 										jec.id_classe='$id_classe'
 								ORDER BY u.nom, u.prenom;";
-				$res=mysql_query($sql);
-				if(mysql_num_rows($res)>0) {
-					while ($lig=mysql_fetch_object($res)) {
+				$res=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res)>0) {
+					while ($lig=mysqli_fetch_object($res)) {
 						if(!in_array($lig->login,$user_login)) {
 							$user_login[]=$lig->login;
 						}
@@ -292,6 +305,9 @@ if(!isset($user_login)) {
 
 		echo "<p class='bold'>";
 		echo "<a href='$url_retour_index_utilisateurs'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour index utilisateurs</a>";
+		if(acces("/gestion/modify_impression.php", $_SESSION['statut'])) {
+			echo " | <a href='../gestion/modify_impression.php'> Modifier les fiches bienvenue</a>";
+		}
 		echo "</p>\n";
 
 		echo "<p>Fiches bienvenue&nbsp;:</p>";
@@ -313,6 +329,9 @@ if(!isset($user_login)) {
 		echo "<p class='bold'>";
 		echo "<a href='$url_retour_index_utilisateurs'><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour index utilisateurs</a>";
 		echo " | <a href='".$_SERVER['PHP_SELF']."'> Fiches bienvenue</a>";
+		if(acces("/gestion/modify_impression.php", $_SESSION['statut'])) {
+			echo " | <a href='../gestion/modify_impression.php'> Modifier les fiches bienvenue</a>";
+		}
 		echo "</p>\n";
 
 		echo "<p>Aucun utilisateur (<i>$mode</i>) n'a été sélectionné.</p>\n";
@@ -328,23 +347,25 @@ require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
 
 //function fiche_bienvenue($user_login, $mot_de_passe=NULL,$user_statut='personnels') {
-function fiche_bienvenue($user_login, $mot_de_passe=NULL) {
+function fiche_bienvenue($user_login, $mot_de_passe=NULL, $mode_retour="echo") {
 	global $affiche_adresse_resp;
 
-	$call_user_info = mysql_query("SELECT * FROM utilisateurs WHERE login='$user_login'");
+	$lignes_FB="";
+
+	$call_user_info = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM utilisateurs WHERE login='$user_login'");
 	
-	//$user_login = mysql_result($call_user_info, "0", "login");
-	$user_nom = mysql_result($call_user_info, "0", "nom");
-	$user_prenom = mysql_result($call_user_info, "0", "prenom");
-	$user_statut = mysql_result($call_user_info, "0", "statut");
-	$user_email = mysql_result($call_user_info, "0", "email");
+	//$user_login = old_mysql_result($call_user_info, "0", "login");
+	$user_nom = old_mysql_result($call_user_info, "0", "nom");
+	$user_prenom = old_mysql_result($call_user_info, "0", "prenom");
+	$user_statut = old_mysql_result($call_user_info, "0", "statut");
+	$user_email = old_mysql_result($call_user_info, "0", "email");
 
 	if($user_statut=='professeur') {
-		$call_matieres = mysql_query("SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '$user_login' ORDER BY ordre_matieres");
-		$nb_mat = mysql_num_rows($call_matieres);
+		$call_matieres = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM j_professeurs_matieres j WHERE j.id_professeur = '$user_login' ORDER BY ordre_matieres");
+		$nb_mat = mysqli_num_rows($call_matieres);
 		$k = 0;
 		while ($k < $nb_mat) {
-			$user_matiere[$k] = mysql_result($call_matieres, $k, "id_matiere");
+			$user_matiere[$k] = old_mysql_result($call_matieres, $k, "id_matiere");
 			$k++;
 		}
 	}
@@ -354,7 +375,7 @@ function fiche_bienvenue($user_login, $mot_de_passe=NULL) {
 	$nombre_classes = mysql_num_rows($call_data);
 	$i = 0;
 	while ($i < $nombre_classes){
-		$classe[$i] = mysql_result($call_data, $i, "classe");
+		$classe[$i] = old_mysql_result($call_data, $i, "classe");
 		$i++;
 	}
 	*/
@@ -402,14 +423,14 @@ function fiche_bienvenue($user_login, $mot_de_passe=NULL) {
 		*/
 
 		$sql="SELECT ra.*,rp.nom,rp.prenom,rp.civilite FROM resp_adr ra, resp_pers rp WHERE rp.adr_id=ra.adr_id AND rp.login='$user_login';";
-		$res_adr_resp=mysql_query($sql);
-		if(mysql_num_rows($res_adr_resp)==0) {
+		$res_adr_resp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_adr_resp)==0) {
 			$ligne1="<font color='red'><b>ADRESSE MANQUANTE</b></font>";
 			$ligne2="";
 			$ligne3="";
 		}
 		else {
-			$lig_adr_resp=mysql_fetch_object($res_adr_resp);
+			$lig_adr_resp=mysqli_fetch_object($res_adr_resp);
 
 			$ligne1=$lig_adr_resp->civilite." ".$lig_adr_resp->nom." ".$lig_adr_resp->prenom;
 			$ligne2=$lig_adr_resp->adr1;
@@ -443,16 +464,16 @@ function fiche_bienvenue($user_login, $mot_de_passe=NULL) {
 
 		}
 
-		echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+		$lignes_FB.="<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
 
 		// Cadre adresse du responsable:
-		echo "<div style='float:right;
+		$lignes_FB.="<div style='float:right;
 width:".$addressblock_length."mm;
 padding-top:".$addressblock_padding_top."mm;
 padding-bottom:".$addressblock_padding_text."mm;
 padding-right:".$addressblock_padding_right."mm;\n";
-		if($addressblock_debug=="y"){echo "border: 1px solid blue;\n";}
-		echo "font-size: ".$addressblock_font_size."pt;
+		if($addressblock_debug=="y"){$lignes_FB.="border: 1px solid blue;\n";}
+		$lignes_FB.="font-size: ".$addressblock_font_size."pt;
 '>
 <div align='left'>
 $ligne1<br />
@@ -464,65 +485,65 @@ $ligne3
 
 
 		// Cadre contenant le tableau Logo+Ad_etab et le nom, prénom,... de l'élève:
-		echo "<div style='float:left;
+		$lignes_FB.="<div style='float:left;
 left:0px;
 top:0px;
 width:".$largeur1."%;\n";
-		if($addressblock_debug=="y"){echo "border: 1px solid green;\n";}
-		echo "'>\n";
+		if($addressblock_debug=="y"){$lignes_FB.="border: 1px solid green;\n";}
+		$lignes_FB.="'>\n";
 
 	}
 
-	echo "<table border='0' summary='Destinataire fiche bienvenue $user_login'>\n";
-	echo "<tr>\n";
-	echo "<td>\n";
-	echo "A l'attention de&nbsp;: \n";
-	echo "</td>\n";
-	echo "<td>\n";
-	echo "<span class=\"bold\">$user_prenom $user_nom</span>\n";
-	echo "</td>\n";
-	echo "</tr>\n";
+	$lignes_FB.="<table border='0' summary='Destinataire fiche bienvenue $user_login'>\n";
+	$lignes_FB.="<tr>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="A l'attention de&nbsp;: \n";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="<span class=\"bold\">$user_prenom $user_nom</span>\n";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="</tr>\n";
 
-	echo "<tr>\n";
-	echo "<td>\n";
-	echo "Nom de login&nbsp;: \n";
-	echo "</td>\n";
-	echo "<td>\n";
-	echo "<span class = \"bold\">$user_login</span>";
-	echo "</td>\n";
-	echo "</tr>\n";
+	$lignes_FB.="<tr>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="Nom de login&nbsp;: \n";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="<span class = \"bold\">$user_login</span>";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="</tr>\n";
 
 	if (isset($mot_de_passe)) {
 		$mot_de_passe = urldecode($mot_de_passe);
-		echo "<tr>\n";
-		echo "<td>\n";
-		echo "Mot de passe&nbsp;: \n";
-		echo "</td>\n";
-		echo "<td>\n";
-		echo "<span class = \"bold\">".stripslashes($mot_de_passe)."</span>";
-		echo "</td>\n";
-		echo "</tr>\n";
+		$lignes_FB.="<tr>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="Mot de passe&nbsp;: \n";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="<span class = \"bold\">".stripslashes($mot_de_passe)."</span>";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="</tr>\n";
 	}
 	
-	echo "<tr>\n";
-	echo "<td>\n";
-	echo "Adresse E-mail&nbsp;: ";
-	echo "</td>\n";
-	echo "<td>\n";
-	echo "<span class = \"bold\">$user_email</span>";
-	echo "</td>\n";
-	echo "</tr>\n";
+	$lignes_FB.="<tr>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="Adresse E-mail&nbsp;: ";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="<td>\n";
+	$lignes_FB.="<span class = \"bold\">$user_email</span>";
+	$lignes_FB.="</td>\n";
+	$lignes_FB.="</tr>\n";
 
 	if($user_statut=='eleve') {
 		$tab_tmp_info_classes=get_noms_classes_from_ele_login($user_login);
-		echo "<tr>\n";
-		echo "<td>\n";
-		echo "Élève de&nbsp;: \n";
-		echo "</td>\n";
-		echo "<td>\n";
-		echo "<span class = \"bold\">".$tab_tmp_info_classes[count($tab_tmp_info_classes)-1]."</span>";
-		echo "</td>\n";
-		echo "</tr>\n";
+		$lignes_FB.="<tr>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="Élève de&nbsp;: \n";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="<span class = \"bold\">".$tab_tmp_info_classes[count($tab_tmp_info_classes)-1]."</span>";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="</tr>\n";
 	}
 	elseif($user_statut=='responsable') {
 		$tab_tmp_ele=get_enfants_from_resp_login($user_login);
@@ -542,36 +563,43 @@ width:".$largeur1."%;\n";
 				}
 			}
 		}
-		echo "<tr>\n";
-		echo "<td>\n";
-		echo "Responsable de&nbsp;: \n";
-		echo "</td>\n";
-		echo "<td>\n";
-		echo "<span class = \"bold\">$chaine_enfants</span>";
-		echo "</td>\n";
-		echo "</tr>\n";
+		$lignes_FB.="<tr>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="Responsable de&nbsp;: \n";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="<td>\n";
+		$lignes_FB.="<span class = \"bold\">$chaine_enfants</span>";
+		$lignes_FB.="</td>\n";
+		$lignes_FB.="</tr>\n";
 	}
 
-	echo "</table>\n";
+	$lignes_FB.="</table>\n";
 
 	if($affiche_adresse_resp=='y') {
-		echo "</div>\n";
+		$lignes_FB.="</div>\n";
 
 		// Pour que le texte de la fiche bienvenue ne remonte pas au delà de l'adresse
-		echo "<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
+		$lignes_FB.="<div style='clear: both; font-size: xx-small;'>&nbsp;</div>\n";
 	}
 
 	// La fiche bienvenue:
-	echo $impression;
+	$lignes_FB.=$impression;
 
 	if($impression=='') {
-		echo "<div class='info_fiche_bienvenue'><div align='center'>Information (<i>non imprimée</i>) : La fiche bienvenue pour <b
+		$lignes_FB.="<div class='info_fiche_bienvenue'><div align='center'>Information (<i>non imprimée</i>) : La fiche bienvenue pour <b
 	>$user_statut</b> n'est pas renseignée.<br />Vous pouvez paramétrer les fiches bienvenue à la page suivante&nbsp;: <a href='../gestion/modify_impression.php?fiche=";
-		if($user_statut=='responsable') {echo 'responsables';}
-		elseif($user_statut=='eleve') {echo 'eleves';}
-		else {echo 'personnels';}
-		echo "' target='_blank'>Clic</a></div></div>\n";
+		if($user_statut=='responsable') {$lignes_FB.='responsables';}
+		elseif($user_statut=='eleve') {$lignes_FB.='eleves';}
+		else {$lignes_FB.='personnels';}
+		$lignes_FB.="' target='_blank'>Clic</a></div></div>\n";
 
+	}
+
+	if($mode_retour=="return") {
+		return $lignes_FB;
+	}
+	else {
+		echo $lignes_FB;
 	}
 }
 
@@ -606,12 +634,87 @@ if(is_array($user_login)) {
 	}
 }
 else {
+
+	//++++++++++++++++++++++++++++++
+	$mail_user=get_mail_user($user_login);
+
+	echo "<div id='div_compte_rendu_envoi_mail' style='text-align:center;' class='noprint'></div>\n";
+
+	echo "<div id='lien_mail' style='float:right; width:16px; display:none' class='noprint'><a href=\"javascript:afficher_div('div_envoi_FB_par_mail','y',10,10)\" title=\"Envoyer par mail la Fiche Bienvenue de $user_login.\"><img src='../images/icons/courrier_envoi.png' class='icone16' alt='Mail' /></a></div>
+	<script type='text/javascript'>document.getElementById('lien_mail').style.display=''</script>\n";
+	//echo "</div>\n";
+
+	$titre_infobulle="Envoi Fiche Bienvenue par mail";
+	$texte_infobulle="<form action='".$_SERVER['PHP_SELF']."' name='form_envoi_fb_mail' method='post'>
+<p>Fiche bienvenue de <strong>$user_login</strong></p>
+<input type='hidden' name='envoi_mail' value='y' />
+<input type='hidden' name='user_login' value='$user_login' />";
+
 	if(isset($mot_de_passe)) {
-		fiche_bienvenue($user_login, $mot_de_passe);
+		$texte_infobulle.="
+<input type='hidden' name='mot_de_passe' value='$mot_de_passe' />";
+	}
+
+	$texte_infobulle.="
+<p>Précisez à quelle adresse vous souhaitez envoyer la fiche bienvenue&nbsp;:<br />
+Mail&nbsp;:&nbsp;<input type='text' name='mail_dest' value='$mail_user' />
+<input type='submit' value='Envoyer' id='button_submit_form_envoi_fb_mail' onclick='afficher_envoi_mail_en_cours()' />
+<img src='../images/spinner.gif' class='icone16' title='Envoi en cours' alt='Envoi en cours' style='display:none' id='img_envoi_fb_mail' />
+</form>
+<script type='text/javascript'>
+	function afficher_envoi_mail_en_cours() {
+		document.getElementById('button_submit_form_envoi_fb_mail').style.display='none';
+		document.getElementById('img_envoi_fb_mail').style.display='';
+	}
+</script>";
+	$tabdiv_infobulle[]=creer_div_infobulle('div_envoi_FB_par_mail',$titre_infobulle,"",$texte_infobulle,"",30,0,'y','y','n','n');
+	//++++++++++++++++++++++++++++++
+	if(isset($mot_de_passe)) {
+		$lignes_FB=fiche_bienvenue($user_login, $mot_de_passe, "return");
 	}
 	else {
-		fiche_bienvenue($user_login);
+		$lignes_FB=fiche_bienvenue($user_login, NULL, "return");
 	}
+	echo $lignes_FB;
+	//++++++++++++++++++++++++++++++
+	$mail_dest=isset($_POST['mail_dest']) ? $_POST['mail_dest'] : NULL;
+	$envoi_mail=isset($_POST['envoi_mail']) ? $_POST['envoi_mail'] : "n";
+
+	if($envoi_mail=="y") {
+		if(!check_mail($_POST['mail_dest'])) {
+			$message="L'adresse mail choisie '".$_POST['mail_dest']."' est invalide.";
+			echo "<p style='color:red; text-align:center;' class='noprint'>$message</p>
+			<script type='text/javascript'>
+				document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:red'>$message</span>\";
+			</script>\n";
+		}
+		else {
+			$sujet="Fiche Bienvenue Gepi";
+			$message="Bonjour(soir),\nVoici votre Fiche Bienvenue Gepi :\n".$lignes_FB;
+			$destinataire=$_POST['mail_dest'];
+			$header_suppl="";
+			if((isset($_SESSION['email']))&&(check_mail($_SESSION['email']))) {
+				$header_suppl.="Bcc:".$_SESSION['email']."\r\n";
+			}
+			$envoi=envoi_mail($sujet, $message, $destinataire, $header_suppl, "html");
+			if($envoi) {
+				$message="La Fiche Bienvenue a été expédiée à l'adresse mail choisie '".$_POST['mail_dest']."'.";
+				echo "<p style='color:green; text-align:center;' class='noprint'>$message</p>
+				<script type='text/javascript'>
+					document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:green'>$message</span>\";
+				</script>\n";
+			}
+			else {
+				$message="Echec de l'envoi de la Fiche Bienvenue à l'adresse mail choisie '".$_POST['mail_dest']."'.";
+				echo "<p style='color:red; text-align:center;' class='noprint'>$message</p>
+				<script type='text/javascript'>
+					document.getElementById('div_compte_rendu_envoi_mail').innerHTML=\"<span style='color:red'>$message</span>\";
+				</script>\n";
+			}
+		}
+	}
+	//++++++++++++++++++++++++++++++
+
 }
 
 echo "<style type='text/css'>
@@ -627,6 +730,10 @@ echo "<style type='text/css'>
 
 @media print{
 	.info_fiche_bienvenue {
+		display:none;
+	}
+
+	.noprint {
 		display:none;
 	}
 }

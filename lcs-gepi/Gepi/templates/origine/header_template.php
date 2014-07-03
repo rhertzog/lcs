@@ -5,16 +5,20 @@
 ?>
  
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta http-equiv="Pragma" content="no-cache" />
-	<meta http-equiv="Cache-Control" content="no-cache" />
-	<meta http-equiv="Expires" content="0" />
 	<!-- <meta http-equiv="refresh" content="[tbs_refresh.tempsmax]; URL=[tbs_refresh.lien]/logout.php?auto=3&amp;debut_session=[tbs_refresh.debut]&amp;session_id=[tbs_refresh.id_session]" /> -->
 
-	<!-- déclaration par défaut pour les scripts et les mises en page -->
-	<meta http-equiv="Content-Script-Type" content="text/javascript" />
-	<meta http-equiv="Content-Style-Type" content="text/css" />
 
-	<title><?php echo "$titre_page : $tbs_gepiSchoolName" ?></title>
+	<title><?php
+		if((isset($titre_page))&&($titre_page!="")) {
+			echo "$titre_page : $tbs_gepiSchoolName";
+		}
+		elseif((isset($titre_page_title))&&($titre_page_title!="")) {
+			echo "$titre_page_title : $tbs_gepiSchoolName";
+		}
+		else {
+			echo "$tbs_gepiSchoolName";
+		}
+	?></title>
 	
 	
 <!-- ================= Affichage du favicon =================== -->
@@ -43,16 +47,6 @@
 <!-- Fin des styles -->
 
 <!-- Début des fichiers en javascript -->
-	<!-- christian -->
-	<script type="text/javascript">
-		//<![CDATA[ 
-		function ouvre_popup(url) {
-				eval("window.open('/mod_miseajour/utilisateur/fenetre.php','fen','width=600,height=500,menubar=no,scrollbars=yes')");
-				fen.focus();
-			}
-		//]]>
-	</script>
-
 
 	<script type="text/javascript" src="<?php echo $tbs_gepiPath ?>/lib/functions.js"></script>
 	<?php
@@ -237,8 +231,6 @@
 			}
 		//]]>
 	</script>
-
-
 
 
 

@@ -61,6 +61,25 @@ if ($utilisateur->getStatut()!="cpe" && $utilisateur->getStatut()!="scolarite") 
     die("acces interdit");
 }
 
+// 20130814
+if ((isset($_POST["creation_lot_traitements"]))&&($_POST["creation_lot_traitements"]=="yes")) {
+    // On ne fait pas un header("Location:...");
+    // Avec include, les variables POSTées sont récupérées dans la page incluse... mais on reste en apparence sur absences_du_jour.php
+    include('traitements_par_lots.php');
+    die();
+}
+
+/*
+if ((isset($_POST["chercher_traitements_a_rattacher"]))&&($_POST["chercher_traitements_a_rattacher"]=="yes")) {
+    // On reçoit:
+    // id_traitement=XXXXX
+    // filter_recherche_saisie_a_rattacher=oui
+    // rattachement_preselection=y
+    include('liste_saisies_selection_traitement.php');
+    die();
+}
+*/
+
 if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_traitement"])) {
     include('creation_traitement.php');
 }
@@ -68,6 +87,9 @@ if (isset($_POST["creation_traitement"]) || isset($_POST["ajout_traitement"])) {
 if (isset($_POST["creation_notification"])) {
     include('creation_notification.php');
 }
+
+$photo_redim_taille_max_largeur=45;
+$photo_redim_taille_max_hauteur=45;
 
 //récupération des paramètres de la requète
 //contrairement aux autres pages, on ne recupere pas les parametres dans la session
@@ -510,14 +532,24 @@ Cela devrait permettre de contourner le problème.\">
 			<input type="hidden" id="creation_notification" name="creation_notification" value="no"/>
 			<input type="hidden" id="ajout_traitement" name="ajout_traitement" value="no"/>
 			<input type="hidden" id="id_traitement" name="id_traitement" value=""/>
+			<input type="hidden" id="creation_lot_traitements" name="creation_lot_traitements" value="no"/>
+
+			<!--input type="hidden" id="chercher_traitements_a_rattacher" name="chercher_traitements_a_rattacher" value="no"/>
+			<input type="hidden" id="filter_recherche_saisie_a_rattacher" name="filter_recherche_saisie_a_rattacher" value=""/>
+			<input type="hidden" id="rattachement_preselection" name="rattachement_preselection" value=""/-->
+
 			<p>
 			<div dojoType="dijit.form.DropDownButton" style="display: inline">
 				<span>Ajouter au traitement</span>
+				<?php
+					// 20130814
+					// Ajouter un type de "traitement" redirigeant vers une nouvelle page sans créer immédiatement de id_traitement... pour les traitements par lots (cas des grèves,...): Même traitements/notifications pour tous
+				?>
 				<div dojoType="dijit.Menu" style="display: inline">
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.creer_traitement.submit();">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'no'; document.creer_traitement.submit();">
 						Créer un nouveau traitement
 					</button>
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_notification').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.creer_traitement.submit();">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_notification').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'no'; document.creer_traitement.submit();">
 						Créer une nouvelle notification
 					</button>
 
@@ -526,21 +558,26 @@ Cela devrait permettre de contourner le problème.\">
 	if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 	$traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 	echo '
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">
 						Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')
 					</button>'."\n";
 	}
 ?>
+
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_notification').value = 'no'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'yes'; document.creer_traitement.submit();">
+						Créer un lot de traitements
+					</button>
+
 				</div>
 			</div>
 
 			<div dojoType="dijit.form.DropDownButton" style="display: inline">
 				<span>Ajouter au traitement (popup)</span>
 				<div dojoType="dijit.Menu" style="display: inline">
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement);">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('creation_lot_traitements').value = 'no'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement);">
 						Créer un nouveau traitement
 					</button>
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_notification').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement);">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_notification').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'no'; pop_it(document.creer_traitement);">
 						Créer une nouvelle notification
 					</button>
 <?php
@@ -548,7 +585,7 @@ Cela devrait permettre de contourner le problème.\">
 	if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 		$traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
 		echo '
-					<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">
+					<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">
 						Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup
 					</button>'."\n";
 	}
@@ -599,7 +636,26 @@ Cela devrait permettre de contourner le problème.\">
 	$tab_eleve_id=array();
 	foreach($eleve_col as $eleve) {        
 		$compteur = $compteur + 1;
-		$regime_eleve=$eleve->getEleveRegimeDoublant();
+		//$regime_eleve=$eleve->getEleveRegimeDoublant();
+
+		//$regime_eleve=EleveRegimeDoublantQuery::create()->findPk($eleve->getlogin())->getRegime();
+		if(EleveRegimeDoublantQuery::create()->findPk($eleve->getlogin())!=null) {
+			$regime_eleve=EleveRegimeDoublantQuery::create()->findPk($eleve->getlogin())->getRegime();
+
+			if($regime_eleve=="") {
+				$regime_eleve="<span style='color:red; text-decoration:blink;' title=\"Le régime de cet élève enregistré dans la base pour cet élève est vide.
+Vous devriez demander à l'administrateur de revalider la fiche de l'élève dans
+   Gestion des bases/Gestion des élèves/...\">???</span>";
+			}
+		}
+		else {
+			$regime_eleve="<span style='color:red; text-decoration:blink;' title=\"Le régime de cet élève n'est pas enregistré dans la base.
+Demandez à l'administrateur de revalider la fiche de l'élève dans
+   Gestion des bases/Gestion des élèves/
+      Les élèves (affectés dans des classes) dont le régime
+      n'est pas renseigné \">???</span>";
+		}
+
 		//$eleve = new Eleve();
 			$traitement_col = new PropelCollection();//liste des traitements pour afficher des boutons 'ajouter au traitement'
 
@@ -625,6 +681,9 @@ Cela devrait permettre de contourner le problème.\">
 
 			$ligne_courante.="<td".$color_hier.">".$aff_compter_hier."</td>\n";
 			$ligne_courante.="<td>";
+
+			$ligne_courante.="<a name='ancre_login_eleve_".$eleve->getLogin()."'></a>";
+			$ligne_courante.="<a name='ancre_id_eleve_".$eleve->getId()."'></a>";
 
 			$ligne_courante.=strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom()).' ('.$eleve->getCivilite().') ('.$regime_eleve.')';
 			$ligne_courante.=' ';
@@ -657,20 +716,32 @@ Cela devrait permettre de contourner le problème.\">
 				$absences_du_creneau = $eleve->getAbsenceEleveSaisiesDuCreneau($edt_creneau, $dt_date_absence_eleve);
 				$violet = false;
 				$style = '';
-				foreach ($absences_du_creneau as $absence) {                      
+				$chaine_conflits="";
+				foreach ($absences_du_creneau as $absence) {
 					$traitement_col->addCollection($absence->getAbsenceEleveTraitements());
 					if (getSettingValue("abs2_alleger_abs_du_jour")!='y' && $absence->isSaisiesContradictoiresManquementObligation()) {
 						//if (!($absence->getSaisiesContradictoiresManquementObligation()->isEmpty())) {
 						$violet = true;
 						break;
 					} else {
-						$style = 'style="background-color :'.$absence->getColor().'"';   
+						$style = 'style="background-color :'.$absence->getColor().'"';
 					}
 				}
 				if ($violet) {
 					$style = 'style="background-color : purple"';
 				} 
 				$ligne_courante.='<td '.$style.'>';
+
+				/*
+				if($violet) {
+					echo "<div style='float:left; width:30em; height:30em; font-size:x-small; overflow:auto;'>";
+					echo "<p>".strtoupper($eleve->getNom()).' '.ucfirst($eleve->getPrenom())." en ".$edt_creneau->getNomDefiniePeriode()." (".$absence->getId().")</p>";
+					echo "<pre>";
+					print_r($absence->getSaisiesContradictoiresManquementObligation(false));
+					echo "</pre>";
+					echo "</div>";
+				}
+				*/
 
 				//si il y a des absences de l'utilisateurs on va proposer de les modifier
 				$nb_checkbox_eleve_courant_sur_ce_creneau=0;
@@ -693,7 +764,21 @@ Cela devrait permettre de contourner le problème.\">
 					if(!in_array($eleve_id_courant, $tab_eleve_id)) {$tab_eleve_id[]=$eleve_id_courant;}
 
 					$chaine_contenu_td.='/>';
-					$chaine_contenu_td.='<a style="font-size:88%;" href="#" onClick="javascript:showwindow(\'visu_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&menu=false\',\'Modifier,traiter ou notifier une saisie\');return false"><img src="../images/icons/saisie.png" title="Voir la saisie n°'.$saisie->getPrimaryKey().'"/>';
+/*
+echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getCreatedAt('U')));
+echo ' par '.  $saisie->getUtilisateurProfessionnel()->getCivilite().' '.$saisie->getUtilisateurProfessionnel()->getNom().' '.mb_substr($saisie->getUtilisateurProfessionnel()->getPrenom(), 0, 1).'.';
+
+if ($saisie->getCreatedAt('U') != $saisie->getVersionCreatedAt('U')) {
+    echo 'Modifiée le : ';
+    echo (strftime("%a %d/%m/%Y %H:%M", $saisie->getVersionCreatedAt('U')));
+    $modifie_par_utilisateur = UtilisateurProfessionnelQuery::create()->filterByLogin($saisie->getVersionCreatedBy())->findOne();
+    if ($modifie_par_utilisateur != null) {
+		echo ' par '.  $modifie_par_utilisateur->getCivilite().' '.$modifie_par_utilisateur->getNom().' '.mb_substr($modifie_par_utilisateur->getPrenom(), 0, 1).'.';
+    }
+}
+*/
+					$chaine_contenu_td.='<a style="font-size:88%;" href="#" onClick="javascript:showwindow(\'visu_saisie.php?id_saisie='.$saisie->getPrimaryKey().'&menu=false\',\'Modifier,traiter ou notifier une saisie\');return false"><img src="../images/icons/saisie.png" title="Voir la saisie n°'.$saisie->getPrimaryKey().'
+Du '.get_date_heure_from_mysql_date($saisie->getDebutAbs()).' au '.get_date_heure_from_mysql_date($saisie->getFinAbs()).'"/>';
 
 					$nb_checkbox_eleve_courant++;
 					$nb_checkbox_eleve_courant_sur_ce_creneau++;
@@ -766,6 +851,26 @@ Cela devrait permettre de contourner le problème.\">
 						$ligne_courante.=$saisie_justifiee_ou_pas;
 						$ligne_courante.="</span>";
 
+						// 20140429
+						if($violet) {
+							foreach ($saisie->getAbsenceEleveTraitements() as $traitement) {
+								/*
+								$ligne_courante.="<a href=\"#\" title=\"Chercher des saisies à rattacher au traitement n°".$traitement->getId()." pour régler le conflit.\" onclick=\"document.getElementById('id_traitement').value = '".$traitement->getId()."'; 
+								document.getElementById('creation_traitement').value='no'; 
+								document.getElementById('ajout_traitement').value='no'; 
+								document.getElementById('creation_lot_traitements').value = 'no'; 
+								document.getElementById('chercher_traitements_a_rattacher').value='yes'; 
+								document.getElementById('filter_recherche_saisie_a_rattacher').value='oui'; 
+								document.getElementById('rattachement_preselection').value='y'; 
+								pop_it(document.creer_traitement);
+								return false;\" target=\"_blank\">";
+								*/
+								$ligne_courante.="<a href=\"liste_saisies_selection_traitement.php?id_traitement=".$traitement->getId()."&amp;filter_recherche_saisie_a_rattacher=oui&amp;rattachement_preselection=y&amp;id_eleve=".$eleve->getId()."\" title=\"Chercher des saisies à rattacher au traitement n°".$traitement->getId()." pour régler le conflit.\"\"><img src='../images/icons/chercher.png' class='icone16' alt='Chercher' /></a>";
+								// target=\"_blank\"
+
+							}
+						}
+
 						/*
 						$ligne_courante.="<br />";
 						$tab_traitements_deja_affiches=array();
@@ -802,13 +907,13 @@ Cela devrait permettre de contourner le problème.\">
 			$ligne_courante.='<div add_select_shorcuts_button="true" eleve_id="'.$eleve->getPrimaryKey().'"></div>';
 			$ligne_courante.='<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
 				<span>Ajouter au traitement</span>
-				<div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';              		
+				<div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';
 			foreach ($traitement_col as $traitement) {
 				$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="';
 				if($nb_checkbox_eleve_courant==1) {
 					$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 				}
-				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.creer_traitement.submit();">';
+				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.creer_traitement.submit();">';
 				$ligne_courante.=' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
 				$ligne_courante.='</button>';
 			}
@@ -816,23 +921,23 @@ Cela devrait permettre de contourner le problème.\">
 			if($nb_checkbox_eleve_courant==1) {
 				$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 			}
-			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.creer_traitement.submit();">
+			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.creer_traitement.submit();">
 				Créer un nouveau traitement
 			</button>';
-			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.creer_traitement.submit();">
+			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.creer_traitement.submit();">
 				Créer une nouvelle notification
 			</button>';
 			$ligne_courante.='</div></div><br/>';
 
 			$ligne_courante.='<div dojoType="dijit.form.DropDownButton"  style="white-space: nowrap; display: inline">
 				<span>Ajouter (fenêtre)</span>
-				<div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';				
+				<div dojoType="dijit.Menu"  style="white-space: nowrap; display: inline">';
 			foreach ($traitement_col as $traitement) {
 				$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="';
 				if($nb_checkbox_eleve_courant==1) {
 					$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 				}
-				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">';
+				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">';
 				$ligne_courante.=' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
 				$ligne_courante.='</button>';
 			}
@@ -841,10 +946,10 @@ Cela devrait permettre de contourner le problème.\">
 			if($nb_checkbox_eleve_courant==1) {
 				$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 			}
-			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
+			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
 				Créer un nouveau traitement (fenêtre)
 			</button>';
-			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
+			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; postwindow(document.creer_traitement,\'Traiter et notifier des saisies\');">
 				Créer une nouvelle notification (fenêtre)
 			</button>';
 			$ligne_courante.='</div></div><br/>';
@@ -857,7 +962,7 @@ Cela devrait permettre de contourner le problème.\">
 				if($nb_checkbox_eleve_courant==1) {
 					$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 				}
-				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; pop_it(document.creer_traitement);">';
+				$ligne_courante.='document.getElementById(\'id_traitement\').value = \''.$traitement->getId().'\'; document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; pop_it(document.creer_traitement);">';
 				$ligne_courante.=' Ajouter au traitement n° '.$traitement->getId().' ('.$traitement->getDescription().')';
 				$ligne_courante.='</button>';
 			}
@@ -866,10 +971,10 @@ Cela devrait permettre de contourner le problème.\">
 			if($nb_checkbox_eleve_courant==1) {
 				$ligne_courante.="if(document.getElementById('$id_checkbox_eleve_courant')) {document.getElementById('$id_checkbox_eleve_courant').checked=true;}";
 			}
-			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; pop_it(document.creer_traitement);">
+			$ligne_courante.='document.getElementById(\'creation_traitement\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; pop_it(document.creer_traitement);">
 				Créer un nouveau traitement (popup)
 			</button>';
-			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; pop_it(document.creer_traitement);">
+			$ligne_courante.='<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_notification\').value = \'yes\'; document.getElementById(\'ajout_traitement\').value = \'no\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; pop_it(document.creer_traitement);">
 				Créer une nouvelle notification (popup)
 			</button>';
 			$ligne_courante.='</div></div>';
@@ -899,20 +1004,20 @@ Cela devrait permettre de contourner le problème.\">
     <div dojoType="dijit.form.DropDownButton" style="display: inline">
 	<span>Ajouter Les saisies cochées à un traitement</span>
 	<div dojoType="dijit.Menu" style="display: inline">
-	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.creer_traitement.submit();">
+	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'no'; document.creer_traitement.submit();">
 		Créer un nouveau traitement
 	    </button>
-	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; pop_it(document.creer_traitement)">
+	    <button dojoType="dijit.MenuItem" onClick="document.getElementById('creation_traitement').value = 'yes'; document.getElementById('ajout_traitement').value = 'no'; document.getElementById('creation_lot_traitements').value = 'no'; pop_it(document.creer_traitement)">
 		Créer un nouveau traitement dans une popup
 	    </button>
     <?php
     $id_traitement = isset($_POST["id_traitement"]) ? $_POST["id_traitement"] :(isset($_GET["id_traitement"]) ? $_GET["id_traitement"] :(isset($_SESSION["id_traitement"]) ? $_SESSION["id_traitement"] : NULL));
     if ($id_traitement != null && AbsenceEleveTraitementQuery::create()->findPk($id_traitement) != null) {
 	$traitement = AbsenceEleveTraitementQuery::create()->findPk($id_traitement);
-	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">'."\n";
+	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; document.creer_traitement.submit();">'."\n";
 	echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().')'."\n";
 	echo '	</button>'."\n";
-	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">'."\n";
+	echo '	<button dojoType="dijit.MenuItem" onClick="document.getElementById(\'creation_traitement\').value = \'no\'; document.getElementById(\'ajout_traitement\').value = \'yes\'; document.getElementById(\'creation_lot_traitements\').value = \'no\'; document.getElementById(\'id_traitement\').value = \''.$id_traitement.'\'; pop_it(document.creer_traitement);">'."\n";
 	echo '	    Ajouter les saisies au traitement n° '.$id_traitement.' ('.$traitement->getDescription().') dans une popup'."\n";
 	echo '	</button>'."\n";
     }
@@ -1045,27 +1150,4 @@ $javascript_footer_texte_specifique = '<script type="text/javascript">
 
 require_once("../lib/footer.inc.php");
 
-//fonction redimensionne les photos petit format
-function redimensionne_image_petit($photo) {
-    // prendre les informations sur l'image
-    $info_image = getimagesize($photo);
-    // largeur et hauteur de l'image d'origine
-    $largeur = $info_image[0];
-    $hauteur = $info_image[1];
-    // largeur et/ou hauteur maximum à afficher
-             $taille_max_largeur = 45;
-             $taille_max_hauteur = 45;
-
-    // calcule le ratio de redimensionnement
-     $ratio_l = $largeur / $taille_max_largeur;
-     $ratio_h = $hauteur / $taille_max_hauteur;
-     $ratio = ($ratio_l > $ratio_h)?$ratio_l:$ratio_h;
-
-    // définit largeur et hauteur pour la nouvelle image
-     $nouvelle_largeur = $largeur / $ratio;
-     $nouvelle_hauteur = $hauteur / $ratio;
-
-   // on renvoit la largeur et la hauteur
-    return array($nouvelle_largeur, $nouvelle_hauteur);
- }
 ?>

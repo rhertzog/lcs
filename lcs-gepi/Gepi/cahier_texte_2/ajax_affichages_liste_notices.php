@@ -101,8 +101,8 @@ echo ("<select id=\"id_groupe_colonne_gauche\" onChange=\"javascript:
 echo "<option value='-1'>choisissez un groupe</option>\n";
 foreach ($utilisateur->getGroupes() as $group) {
 	$sql="SELECT 1=1 FROM j_groupes_visibilite WHERE id_groupe='".$group->getId()."' AND domaine='cahier_texte' AND visible='n';";
-	$test_grp_visib=mysql_query($sql);
-	if(mysql_num_rows($test_grp_visib)==0) {
+	$test_grp_visib=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($test_grp_visib)==0) {
 		echo "<option id='colonne_gauche_select_group_option_".$group->getId()."' value='".$group->getId()."'";
 		if ($current_group->getId() == $group->getId()) echo " SELECTED ";
 
@@ -152,8 +152,8 @@ foreach ($current_group->getClasses() as $classe) {
 			from ct_devoirs_entry
 			where (id_groupe = '" . $group->getId() . "'
 			and date_ct > $aujourdhui)";
-		$res_total = mysql_query($req_total);
-		$sum = mysql_fetch_object($res_total);
+		$res_total = mysqli_query($GLOBALS["mysqli"], $req_total);
+		$sum = mysqli_fetch_object($res_total);
 		$total[$classe->getId()] += $sum->total;
 		if ($sum->date > $date[$classe->getId()]) $date[$classe->getId()] = $sum->date;
 	}
@@ -195,17 +195,28 @@ $criteria->addDescendingOrderByColumn(CahierTexteNoticePriveePeer::DATE_CT);
 $liste_notice_privee = $current_group->getCahierTexteNoticePrivees($criteria);
 $compteur_nb_total_notices = $compteur_nb_total_notices + $liste_notice_privee->count();
 
+$cdt2_WinListeNotices_nb_compte_rendus=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_compte_rendus', 6);
+$cdt2_WinListeNotices_nb_devoirs=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_devoirs', 6);
+$cdt2_WinListeNotices_nb_notices_privees=getPref($_SESSION['login'], 'cdt2_WinListeNotices_nb_notices_privees', 6);
+
 // Boucle d'affichage des notices dans la colonne de gauche
 $compteur_notices_affiches = 0;
 $date_ct_old = -1;
 while (true) {
+
 	$devoir = $liste_devoir->getCurrent();
 	$compte_rendu = $liste_comptes_rendus->getCurrent();
 	$notice_privee = $liste_notice_privee->getCurrent();
 	if ($affiche_tout != "oui") {
-	    if ($liste_devoir->getPosition() > 6) { $devoir = null; }
-	    if ($liste_comptes_rendus->getPosition() > 6) { $compte_rendu = null; }
-	    if ($liste_notice_privee->getPosition() > 6) { $notice_privee = null; }
+	    if ($liste_devoir->getPosition() > $cdt2_WinListeNotices_nb_devoirs) { 
+	        //echo "DEBUG : On vide \$devoir car \$liste_devoir->getPosition()=".$liste_devoir->getPosition()."<br />";
+	        $devoir = null; 
+	    }
+	    if ($liste_comptes_rendus->getPosition() > $cdt2_WinListeNotices_nb_compte_rendus) {
+	        //echo "DEBUG : On vide \$compte_rendu car \$liste_comptes_rendus->getPosition()=".$liste_comptes_rendus->getPosition()."<br />";
+	        $compte_rendu = null;
+	    }
+	    if ($liste_notice_privee->getPosition() > $cdt2_WinListeNotices_nb_notices_privees) { $notice_privee = null; }
 	}
 
 	
@@ -238,12 +249,20 @@ while (true) {
 }
 
 // Ajout d'un lien pour aficher plus de notices
-if ($compteur_nb_total_notices > 1)
-$legend = "Actuellement : ".$compteur_notices_affiches." notices affichées sur un total de ".$compteur_nb_total_notices."<br />";
-else if ($compteur_nb_total_notices == 1)
-$legend = "Actuellement : 1 notice.<br />";
-else
-$legend = "";
+if ($compteur_nb_total_notices > 1) {
+	$legend = "<span title=\"D'après le paramétrage dans 'Gérer mon compte',
+l'affichage dans la présente fenêtre est limité par défaut à:
+   $cdt2_WinListeNotices_nb_compte_rendus compte-rendus,
+   $cdt2_WinListeNotices_nb_devoirs travaux à faire,
+   $cdt2_WinListeNotices_nb_notices_privees notices privées.
+NOTE: Ce paramétrage n'a pas d'influence sur l'affichage élève.\">Actuellement : ".$compteur_notices_affiches." notices affichées sur un total de ".$compteur_nb_total_notices."</span><br />";
+}
+else if ($compteur_nb_total_notices == 1) {
+	$legend = "Actuellement : 1 notice.<br />";
+}
+else {
+	$legend = "";
+}
 if ($compteur_nb_total_notices > $compteur_notices_affiches) {
 	echo "<fieldset style=\"border: 1px solid grey; font-size: 0.8em; padding-top: 8px; padding-bottom: 8px;  margin-left: auto; margin-right: auto;\">";
 	echo $legend;

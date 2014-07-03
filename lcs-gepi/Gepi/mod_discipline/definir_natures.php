@@ -34,10 +34,10 @@ if ($resultat_session == 'c') {
 	die();
 }
 $sql = "SELECT 1=1 FROM `droits` WHERE id='/mod_discipline/definir_natures.php';";
-$test = mysql_query($sql);
-if (mysql_num_rows($test) == 0) {
+$test = mysqli_query($GLOBALS["mysqli"], $sql);
+if (mysqli_num_rows($test) == 0) {
 	$sql = "INSERT INTO droits VALUES ( '/mod_discipline/definir_natures.php', 'V', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'Discipline: Définir les natures', '')";
-	$test = mysql_query($sql);
+	$test = mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 if (!checkAccess()) {
@@ -52,6 +52,8 @@ if(mb_strtolower(mb_substr(getSettingValue('active_mod_discipline'),0,1))!='y') 
 	die();
 }
 
+require('sanctions_func_lib.php');
+
 $acces_ok="n";
 if(($_SESSION['statut']=='administrateur')||
 (($_SESSION['statut']=='cpe')&&(getSettingAOui('GepiDiscDefinirNaturesCpe')))||
@@ -59,12 +61,10 @@ if(($_SESSION['statut']=='administrateur')||
 	$acces_ok="y";
 }
 else {
-	$msg="Vous n'avez pas le droit de définir les natures d'incidents.";
+	$msg="Vous n'avez pas le droit de définir les natures d'".$mod_disc_terme_incident."s.";
 	header("Location: ./index.php?msg=$msg");
 	die();
 }
-
-require('sanctions_func_lib.php');
 
 $msg = "";
 
@@ -84,7 +84,7 @@ if (isset($suppr_nature)) {
 		if (isset($suppr_nature[$i])) {
 			$sql = "DELETE FROM s_natures WHERE id='$suppr_nature[$i]';";
 			//echo "$sql<br />";
-			$suppr = mysql_query($sql);
+			$suppr = mysqli_query($GLOBALS["mysqli"], $sql);
 			if (!$suppr) {
 				//$msg.="ERREUR lors de la suppression de la qualité n°".$suppr_lieu[$i].".<br />\n";
 				$msg.="ERREUR lors de la suppression de la nature n°" . $suppr_nature[$i] . ".<br />\n";
@@ -98,9 +98,9 @@ if (isset($suppr_nature)) {
 $tab_categorie=array();
 $sql = "SELECT * FROM s_categories ORDER BY categorie;";
 //echo "$sql<br />";
-$res2 = mysql_query($sql);
-if(mysql_num_rows($res2)>0) {
-	while ($lig2=mysql_fetch_object($res2)) {
+$res2 = mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res2)>0) {
+	while ($lig2=mysqli_fetch_object($res2)) {
 		$tab_categorie[$lig2->id]=$lig2->categorie;
 	}
 }
@@ -112,10 +112,10 @@ if ((isset($nature))&&($nature != '')) {
 
 	$sql = "SELECT nature FROM s_natures ORDER BY nature;";
 	//echo "$sql<br />";
-	$res = mysql_query($sql);
-	if (mysql_num_rows($res) > 0) {
+	$res = mysqli_query($GLOBALS["mysqli"], $sql);
+	if (mysqli_num_rows($res) > 0) {
 		$tab_nature = array();
-		while ($lig = mysql_fetch_object($res)) {
+		while ($lig = mysqli_fetch_object($res)) {
 			$tab_nature[] = $lig->nature;
 		}
 
@@ -133,9 +133,9 @@ if ((isset($nature))&&($nature != '')) {
 			$msg.="La catégorie choisie pour la nouvelle nature n'existe pas.<br />";
 		}
 
-		$sql = "INSERT INTO s_natures SET nature='" . mysql_real_escape_string($nature) . "', id_categorie='".$id_categorie_nature_nouvelle."';";
+		$sql = "INSERT INTO s_natures SET nature='" . mysqli_real_escape_string($GLOBALS["mysqli"], $nature) . "', id_categorie='".$id_categorie_nature_nouvelle."';";
 		//echo "$sql<br />";
-		$res = mysql_query($sql);
+		$res = mysqli_query($GLOBALS["mysqli"], $sql);
 		if (!$res) {
 			$msg.="ERREUR lors de l'enregistrement de " . $nature . "<br />\n";
 		} else {
@@ -153,7 +153,7 @@ if((isset($id_nature))&&(count($id_nature)>0)&&(isset($id_categorie))&&(count($i
 		if(($id_categorie[$i]==0)||(array_key_exists($id_categorie[$i],$tab_categorie))) {
 			$sql="UPDATE s_natures SET id_categorie='$id_categorie[$i]' WHERE id='$id_nature[$i]';";
 			//echo "$sql<br />";
-			$update=mysql_query($sql);
+			$update=mysqli_query($GLOBALS["mysqli"], $sql);
 			if (!$update) {
 				//$msg.="Erreur lors de la mise à jour de la catégorie pour la nature ".$tab_nature[$id_nature[$i]]['nature']."<br />";
 				$msg.="Erreur lors de la mise à jour de la catégorie pour la nature n°".$id_nature[$i]."<br />";
@@ -168,20 +168,20 @@ $tab_nature=array();
 // Il y a un problème de tri avec UNION SELECT... je passe à deux requêtes
 $sql = "SELECT sn.* FROM s_natures sn, s_categories sc WHERE sn.id_categorie=sc.id ORDER BY sc.categorie;";
 //echo "$sql<br />";
-$res = mysql_query($sql);
+$res = mysqli_query($GLOBALS["mysqli"], $sql);
 
 $sql = "SELECT * FROM s_natures WHERE id_categorie NOT IN (SELECT id FROM s_categories) ORDER BY nature;";
 //echo "$sql<br />";
-$res2 = mysql_query($sql);
-if((mysql_num_rows($res)>0)||(mysql_num_rows($res2)>0)) {
+$res2 = mysqli_query($GLOBALS["mysqli"], $sql);
+if((mysqli_num_rows($res)>0)||(mysqli_num_rows($res2)>0)) {
 	$cpt=0;
-	while ($lig=mysql_fetch_object($res)) {
+	while ($lig=mysqli_fetch_object($res)) {
 		$tab_nature[$cpt]['id']=$lig->id;
 		$tab_nature[$cpt]['nature']=$lig->nature;
 		$tab_nature[$cpt]['id_categorie']=$lig->id_categorie;
 		$cpt++;
 	}
-	while ($lig2=mysql_fetch_object($res2)) {
+	while ($lig2=mysqli_fetch_object($res2)) {
 		$tab_nature[$cpt]['id']=$lig2->id;
 		$tab_nature[$cpt]['nature']=$lig2->nature;
 		$tab_nature[$cpt]['id_categorie']=$lig2->id_categorie;
@@ -194,15 +194,15 @@ else {
 	for($i=0;$i<count($tab_natures_par_defaut);$i++) {
 		$sql="INSERT INTO s_natures SET nature='".$tab_natures_par_defaut[$i]."';";
 		//echo "$sql<br />";
-		$insert=mysql_query($sql);
+		$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 	}
 
 	$sql = "SELECT * FROM s_natures ORDER BY nature;";
 	//echo "$sql<br />";
-	$res2 = mysql_query($sql);
-	if(mysql_num_rows($res2)>0) {
+	$res2 = mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res2)>0) {
 		$cpt=0;
-		while ($lig2=mysql_fetch_object($res2)) {
+		while ($lig2=mysqli_fetch_object($res2)) {
 			$tab_nature[$cpt]['id']=$lig2->id;
 			$tab_nature[$cpt]['nature']=$lig2->nature;
 			$tab_nature[$cpt]['id_categorie']=$lig2->id_categorie;
@@ -250,7 +250,6 @@ if($DisciplineNaturesRestreintes=='') {
 
 $themessage = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
-//$titre_page = "Sanctions: Définition des qualités";
 $titre_page = "Discipline: Définition des natures";
 require_once("../lib/header.inc.php");
 //**************** FIN EN-TETE *****************
@@ -262,7 +261,7 @@ echo "</p>\n";
 echo "<form enctype='multipart/form-data' action='" . $_SERVER['PHP_SELF'] . "' method='post' name='formulaire'>\n";
 echo add_token_field();
 
-echo "<p class='bold'>Saisie des natures d'incidents&nbsp;:</p>\n";
+echo "<p class='bold'>Saisie des natures d'".$mod_disc_terme_incident."s&nbsp;:</p>\n";
 echo "<blockquote>\n";
 
 $cpt = 0;
@@ -327,15 +326,15 @@ echo "<input type='hidden' name='cpt' value='$cpt' />\n";
 echo "<p>\n";
 echo "<input type='radio' name='DisciplineNaturesRestreintes' id='DisciplineNaturesRestreintes_0' value='0' ";
 if($DisciplineNaturesRestreintes=="0") {echo "checked ";}
-echo "/><label for='DisciplineNaturesRestreintes_0'> Ne pas utiliser la liste de natures proposées ici.<br />Les utilisateurs pourront saisir des natures d'incident librement et ne se verront proposer que des natures parmi celles saisies précédemment lors d'autres incidents.</label><br />\n";
+echo "/><label for='DisciplineNaturesRestreintes_0'> Ne pas utiliser la liste de natures proposées ici.<br />Les utilisateurs pourront saisir des natures d'".$mod_disc_terme_incident." librement et ne se verront proposer que des natures parmi celles saisies précédemment lors d'autres ".$mod_disc_terme_incident."s.</label><br />\n";
 
 echo "<input type='radio' name='DisciplineNaturesRestreintes' id='DisciplineNaturesRestreintes_1' value='1' ";
 if($DisciplineNaturesRestreintes=="1") {echo "checked ";}
-echo "/><label for='DisciplineNaturesRestreintes_1'> Les utilisateurs pourront saisir des natures d'incident librement, mais ne se verront proposer que les natures de la liste ci-dessus.</label><br />\n";
+echo "/><label for='DisciplineNaturesRestreintes_1'> Les utilisateurs pourront saisir des natures d'".$mod_disc_terme_incident." librement, mais ne se verront proposer que les natures de la liste ci-dessus.</label><br />\n";
 
 echo "<input type='radio' name='DisciplineNaturesRestreintes' id='DisciplineNaturesRestreintes_2' value='2' ";
 if($DisciplineNaturesRestreintes=="2") {echo "checked ";}
-echo "/><label for='DisciplineNaturesRestreintes_2'> Restreindre les natures d'incidents pouvant être sélectionnées aux seules natures ci-dessus.<br />Les utilisateurs devront choisir une des natures de la liste ci-dessus.</label><br />\n";
+echo "/><label for='DisciplineNaturesRestreintes_2'> Restreindre les natures d'".$mod_disc_terme_incident."s pouvant être sélectionnées aux seules natures ci-dessus.<br />Les utilisateurs devront choisir une des natures de la liste ci-dessus.</label><br />\n";
 echo "</p>\n";
 
 echo "<p><br /><input type='hidden' name='is_posted' value='y' /></p>\n";
@@ -347,7 +346,7 @@ echo "<p><br /></p>\n";
 echo "<p><em>NOTES&nbsp;:</em></p>
 <ul>
 	<li>
-		<p>Restreindre les natures d'incidents pouvant être sélectionnées aux seules natures ci-dessus permet d'éviter une trop grande dispersion des natures (<i>on peut sinon avoir 'Insolence', 'Comportement insolent', 'insolent',...</i>).<br />
+		<p>Restreindre les natures d'".$mod_disc_terme_incident."s pouvant être sélectionnées aux seules natures ci-dessus permet d'éviter une trop grande dispersion des natures (<i>on peut sinon avoir 'Insolence', 'Comportement insolent', 'insolent',...</i>).<br />
 		Cependant, trop les restreindre peut gêner les utilisateurs.</p>
 	</li>
 </ul>\n";

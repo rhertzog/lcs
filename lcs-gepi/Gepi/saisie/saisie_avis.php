@@ -58,7 +58,13 @@ if (($_SESSION['statut'] == 'cpe') and getSettingValue("GepiRubConseilCpe")!='ye
 }
 
 
-echo "<p class=bold><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a></p>";
+echo "<p class=bold><a href=\"../accueil.php\"><img src='../images/icons/back.png' alt='Retour' class='back_link'/> Retour</a>";
+if((($_SESSION['statut']=='professeur')&&(getSettingAOui('CommentairesTypesPP')))||
+(($_SESSION['statut']=='scolarite')&&(getSettingAOui('CommentairesTypesScol')))||
+(($_SESSION['statut']=='professeur')&&(getSettingAOui('CommentairesTypesCpe')))) {
+	echo " | <a href='commentaires_types.php'>Saisie de commentaires-types</a>";
+}
+echo "</p>";
 if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') or ($_SESSION['statut'] == 'cpe')) {
     //$call_classe = mysql_query("SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe");
 
@@ -76,37 +82,47 @@ if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') o
 	else {
 		$sql="SELECT DISTINCT c.* FROM classes c, periodes p WHERE p.id_classe = c.id  ORDER BY classe";
 	}
-	$call_classe = mysql_query($sql);
+	$call_classe = mysqli_query($GLOBALS["mysqli"], $sql);
 
-    $nombre_classe = mysql_num_rows($call_classe);
+    $nombre_classe = mysqli_num_rows($call_classe);
 	if($nombre_classe==0){
 		echo "<p>Aucune classe ne vous est attribuée.<br />Contactez l'administrateur pour qu'il effectue le paramétrage approprié dans la Gestion des classes.</p>\n";
 	}
 	else{
 
 		$sql="SELECT MAX(num_periode) nb_max_periode FROM periodes;";
-		$res_per=mysql_query($sql);
-		$tmp_per=mysql_fetch_object($res_per);
+		$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+		$tmp_per=mysqli_fetch_object($res_per);
 		$nb_max_periode=$tmp_per->nb_max_periode;
 
 		echo "<table class='boireaus'>\n";
 
+		$acces_import_app_cons=acces("/saisie/import_app_cons.php", $_SESSION['statut']);
+
 		echo "<tr>\n";
-		echo "<th rowspan='2'>Classe</th>\n";
-		echo "<th rowspan='2' onMouseover=\"afficher_div('info_classe','y',10,10)\" onmouseout=\"cacher_div('info_classe')\">Avis seul</th>\n";
-		echo "<th rowspan='2'>Individuel avec<br />appréciations</th>\n";
-		echo "<th colspan='$nb_max_periode'>Import CSV</th>\n";
+		if($acces_import_app_cons) {
+			echo "<th rowspan='2'>Classe</th>\n";
+			echo "<th rowspan='2' onMouseover=\"afficher_div('info_classe','y',10,10)\" onmouseout=\"cacher_div('info_classe')\">Avis seul</th>\n";
+			echo "<th rowspan='2'>Individuel avec<br />appréciations</th>\n";
+			echo "<th colspan='$nb_max_periode'>Import CSV</th>\n";
+		}
+		else {
+			echo "<th>Classe</th>\n";
+			echo "<th onMouseover=\"afficher_div('info_classe','y',10,10)\" onmouseout=\"cacher_div('info_classe')\">Avis seul</th>\n";
+			echo "<th>Individuel avec<br />appréciations</th>\n";
+		}
 		echo "</tr>\n";
 
 		$tabdiv_infobulle[]=creer_div_infobulle("info_classe","","","<center>Saisir les avis, pour toute la classe, avec rappel des avis des autres périodes.</center>","",10,0,"n","n","y","n");
 
 
-		echo "<tr>\n";
-		for($i=1;$i<=$nb_max_periode;$i++){
-			echo "<th>Période $i</th>\n";
+		if($acces_import_app_cons) {
+			echo "<tr>\n";
+			for($i=1;$i<=$nb_max_periode;$i++){
+				echo "<th>Période $i</th>\n";
+			}
+			echo "</tr>\n";
 		}
-		echo "</tr>\n";
-
 
 		$tabdiv_infobulle[]=creer_div_infobulle("saisie_avis1","","","<center>Saisir les avis, pour toute la classe, avec rappel des avis des autres périodes.</center>","",15,0,"n","n","y","n");
 		$tabdiv_infobulle[]=creer_div_infobulle("saisie_avis2","","","<center>Saisir les avis, élève par élève, avec visualisation des résultats de l'élève.</center>","",15,0,"n","n","y","n");
@@ -115,8 +131,8 @@ if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') o
 		$j = "0";
 		$alt=1;
 		while ($j < $nombre_classe) {
-			$id_classe = mysql_result($call_classe, $j, "id");
-			$classe_suivi = mysql_result($call_classe, $j, "classe");
+			$id_classe = old_mysql_result($call_classe, $j, "id");
+			$classe_suivi = old_mysql_result($call_classe, $j, "classe");
 
 			/*
 			echo "<br /><b>$classe_suivi</b> --- <a href='saisie_avis1.php?id_classe=$id_classe'>Saisir les avis, pour toute la classe, avec rappel des avis des autres périodes.</a>";
@@ -147,21 +163,23 @@ if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') o
 			echo "</a></td>\n";
 
 
-			include "../lib/periodes.inc.php";
-			$k="1";
-			while ($k < $nb_periode) {
-				if ($ver_periode[$k] != "O") {
-					echo "<td><a href='import_app_cons.php?id_classe=$id_classe&amp;periode_num=$k'><img src='../images/import_notes_app.png' width='30' height='30'";
-					echo " onmouseover=\"afficher_div('import_avis','y',10,10)\" onmouseout=\"cacher_div('import_avis')\" />\n";
-					echo "</a></td>\n";
+			if($acces_import_app_cons) {
+				include "../lib/periodes.inc.php";
+				$k="1";
+				while ($k < $nb_periode) {
+					if ($ver_periode[$k] != "O") {
+						echo "<td><a href='import_app_cons.php?id_classe=$id_classe&amp;periode_num=$k'><img src='../images/import_notes_app.png' width='30' height='30'";
+						echo " onmouseover=\"afficher_div('import_avis','y',10,10)\" onmouseout=\"cacher_div('import_avis')\" />\n";
+						echo "</a></td>\n";
+					}
+					else{
+						echo "<td>\n";
+						echo "<img src='../images/disabled.png' width='20' height='20'";
+						echo " onmouseover=\"afficher_div('periode_close','y',10,10)\" onmouseout=\"cacher_div('periode_close')\" />\n";
+						echo "</td>\n";
+					}
+					$k++;
 				}
-				else{
-					echo "<td>\n";
-					echo "<img src='../images/disabled.png' width='20' height='20'";
-					echo " onmouseover=\"afficher_div('periode_close','y',10,10)\" onmouseout=\"cacher_div('periode_close')\" />\n";
-					echo "</td>\n";
-				}
-				$k++;
 			}
 			echo "</tr>\n";
 
@@ -171,16 +189,16 @@ if (($_SESSION['statut'] == 'scolarite') or ($_SESSION['statut'] == 'secours') o
 
 	}
 } else {
-    $call_prof_classe = mysql_query("SELECT DISTINCT c.* FROM classes c, j_eleves_professeurs s, j_eleves_classes cc WHERE (s.professeur='" . $_SESSION['login'] . "' AND s.login = cc.login AND cc.id_classe = c.id)");
-    $nombre_classe = mysql_num_rows($call_prof_classe);
+    $call_prof_classe = mysqli_query($GLOBALS["mysqli"], "SELECT DISTINCT c.* FROM classes c, j_eleves_professeurs s, j_eleves_classes cc WHERE (s.professeur='" . $_SESSION['login'] . "' AND s.login = cc.login AND cc.id_classe = c.id)");
+    $nombre_classe = mysqli_num_rows($call_prof_classe);
     if ($nombre_classe == "0") {
         echo "Vous n'êtes pas ".getSettingValue("gepi_prof_suivi")." ! Il ne vous revient donc pas de saisir les avis de conseil de classe.";
     } else {
         $j = "0";
         echo "<p>Vous êtes ".getSettingValue("gepi_prof_suivi")." dans la classe de :</p>";
         while ($j < $nombre_classe) {
-            $id_classe = mysql_result($call_prof_classe, $j, "id");
-            $classe_suivi = mysql_result($call_prof_classe, $j, "classe");
+            $id_classe = old_mysql_result($call_prof_classe, $j, "id");
+            $classe_suivi = old_mysql_result($call_prof_classe, $j, "classe");
             echo "<br />$classe_suivi --- <a href='saisie_avis1.php?id_classe=$id_classe'>Saisir les avis pour mon groupe.</a>";
             echo "<br />$classe_suivi --- <a href='saisie_avis2.php?id_classe=$id_classe'>Saisir les avis pour mon groupe, avec visualisation des résultats.</a>";
             include "../lib/periodes.inc.php";

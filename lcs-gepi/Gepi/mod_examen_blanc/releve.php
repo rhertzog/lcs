@@ -37,8 +37,8 @@ if ($resultat_session == 'c') {
 
 
 $sql="SELECT 1=1 FROM droits WHERE id='/mod_examen_blanc/releve.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 $sql="INSERT INTO droits SET id='/mod_examen_blanc/releve.php',
 administrateur='V',
 professeur='V',
@@ -50,7 +50,7 @@ secours='F',
 autre='F',
 description='Examen blanc: Relevé',
 statut='';";
-$insert=mysql_query($sql);
+$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 
 
@@ -96,23 +96,23 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 	if(isset($id_exam)) {
 		$sql="SELECT * FROM ex_examens WHERE id='$id_exam';";
 		//echo "$sql<br />\n";
-		$res_test_id_exam=mysql_query($sql);
-		if(mysql_num_rows($res_test_id_exam)==0) {
+		$res_test_id_exam=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_test_id_exam)==0) {
 			$msg="L'examen choisi (<i>$id_exam</i>) n'existe pas.<br />\n";
 		}
 		else {
 			//===========================
 			// Classes 
 			$sql="SELECT c.classe, ec.id_classe FROM classes c, ex_classes ec WHERE ec.id_exam='$id_exam' AND c.id=ec.id_classe ORDER BY c.classe;";
-			$res_classes=mysql_query($sql);
-			$nb_classes=mysql_num_rows($res_classes);
+			$res_classes=mysqli_query($GLOBALS["mysqli"], $sql);
+			$nb_classes=mysqli_num_rows($res_classes);
 			if($nb_classes==0) {
 				$msg="<p>Aucune classe n'est associée à l'examen???</p>\n";
 			}
 			else {
 				$tab_id_classe=array();
 				$tab_classe=array();
-				while($lig=mysql_fetch_object($res_classes)) {
+				while($lig=mysqli_fetch_object($res_classes)) {
 					$tab_id_classe[]=$lig->id_classe;
 					$tab_classe[]=$lig->classe;
 				}
@@ -122,8 +122,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 				//$sql="SELECT m.*,em.coef,em.bonus FROM ex_matieres em, matieres m WHERE em.matiere=m.matiere AND id_exam='$id_exam' ORDER BY em.ordre, m.matiere;";
 				// Pour mettre les matières à bonus à la fin si aucun ordre n'a été défini
 				$sql="SELECT m.*,em.coef,em.bonus FROM ex_matieres em, matieres m WHERE em.matiere=m.matiere AND id_exam='$id_exam' ORDER BY em.ordre, em.bonus, m.matiere;";
-				$res_matieres=mysql_query($sql);
-				$nb_matieres=mysql_num_rows($res_matieres);
+				$res_matieres=mysqli_query($GLOBALS["mysqli"], $sql);
+				$nb_matieres=mysqli_num_rows($res_matieres);
 				if($nb_matieres==0) {
 					$msg="<p>Aucune matière n'est associée à l'examen???</p>\n";
 				}
@@ -131,17 +131,26 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 					$tab_matiere=array();
 					$tab_coef=array();
 					$tab_bonus=array();
-					while($lig=mysql_fetch_object($res_matieres)) {
+					while($lig=mysqli_fetch_object($res_matieres)) {
 						$tab_matiere[]=$lig->matiere;
 						$tab_coef[]=$lig->coef;
 						$tab_bonus[]=$lig->bonus;
 					}
 					//===========================
-				
+
+					// Tableau des notes des élèves
 					$tab_note=array();
+
+					// Tableau des identifiants d'infobulle déjà créés (pour ne pas créer deux fois les mêmes infobulles)
 					$tab_dev=array();
 					$tab_bull=array();
 					$tab_moy_plusieurs_periodes=array();
+					$tab_moy_epb=array();
+
+					// Tableau des paramètres des évaluations et épreuves blanches (pour ramener sur 20)
+					$tab_dev_param=array();
+					$tab_epb_param=array();
+
 					for($i=0;$i<$nb_classes;$i++) {
 						//echo "\$tab_id_classe[$i]=$tab_id_classe[$i]<br />";
 						//echo "\$tab_classe[$i]=$tab_classe[$i]<br />";
@@ -150,16 +159,16 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 							//$sql="SELECT eg.id_dev, eg.type, eg.valeur, eg.id_groupe FROM ex_groupes eg, j_groupes_classes jgc WHERE eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND jgc.id_groupe=eg.id_groupe AND jgc.id_classe='$tab_id_classe[$i]';";
 							$sql="SELECT eg.id AS id_ex_grp,eg.id_dev, eg.type, eg.valeur, eg.id_groupe FROM ex_groupes eg, j_groupes_classes jgc WHERE eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND jgc.id_groupe=eg.id_groupe AND jgc.id_classe='$tab_id_classe[$i]';";
 							//echo "$sql<br />\n";
-							$res_groupe=mysql_query($sql);
-							if(mysql_num_rows($res_groupe)>0) {
-								while($lig_groupe=mysql_fetch_object($res_groupe)) {
+							$res_groupe=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_groupe)>0) {
+								while($lig_groupe=mysqli_fetch_object($res_groupe)) {
 
 									if($lig_groupe->type=='moy_bull') {
 										$sql="SELECT * FROM matieres_notes WHERE id_groupe='$lig_groupe->id_groupe' AND periode='$lig_groupe->valeur';";
 										//echo "$sql<br />\n";
-										$res_bull=mysql_query($sql);
-										if(mysql_num_rows($res_bull)>0) {
-											while($lig_bull=mysql_fetch_object($res_bull)) {
+										$res_bull=mysqli_query($GLOBALS["mysqli"], $sql);
+										if(mysqli_num_rows($res_bull)>0) {
+											while($lig_bull=mysqli_fetch_object($res_bull)) {
 												$tab_note["$lig_bull->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["statut"]=$lig_bull->statut;
 												$tab_note["$lig_bull->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["note"]=$lig_bull->note;
 
@@ -171,8 +180,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 
 												$sql="SELECT nom_periode FROM periodes WHERE num_periode='$lig_groupe->valeur' AND id_classe='$tab_id_classe[$i]';";
 												//echo "$sql<br />\n";
-												$res_per=mysql_query($sql);
-												$lig_per=mysql_fetch_object($res_per);
+												$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+												$lig_per=mysqli_fetch_object($res_per);
 
 												$titre="Moyenne du bulletin (<i>$lig_per->nom_periode</i>)";
 												$texte="<p><b>Moyenne du bulletin sur la période $lig_per->nom_periode</b>";
@@ -185,54 +194,70 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 										}
 									}
 									elseif($lig_groupe->type=='') {
-										$sql="SELECT * FROM cn_notes_devoirs WHERE id_devoir='$lig_groupe->id_dev';";
-										//echo "$sql<br />\n";
-										$res_dev=mysql_query($sql);
-										if(mysql_num_rows($res_dev)>0) {
-											while($lig_dev=mysql_fetch_object($res_dev)) {
-												//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
-												//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["note"]=$lig_dev->note;
-												$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
-												$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["note"]=$lig_dev->note;
-												$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["id_dev"]=$lig_groupe->id_dev;
+										// Si $lig_groupe->type est vide et si $lig_groupe->id_dev est nul, alors c'est que le choix du devoir n'est pas encore fait dans le paramétrage de l'examen blanc
+										if($lig_groupe->id_dev!="0") {
+											$note_sur=20;
+											if(!array_key_exists($lig_groupe->id_dev, $tab_dev_param)) {
+												$tab_dev_param[$lig_groupe->id_dev]=get_tab_infos_cn_devoir($lig_groupe->id_dev);
+												if(isset($tab_dev_param[$lig_groupe->id_dev]['note_sur'])) {
+													$note_sur=$tab_dev_param[$lig_groupe->id_dev]['note_sur'];
+												}
+												else {
+													if(!isset($msg)) {$msg="";}
+													$msg.="Anomalie : Le devoir n°$lig_groupe->id_dev n'a pas été trouvé.<br />";
+													//echo $msg;
+												}
 											}
 
-											if(!in_array($lig_groupe->id_dev,$tab_dev)) {
-												$tab_dev[]=$lig_groupe->id_dev;
+											$sql="SELECT * FROM cn_notes_devoirs WHERE id_devoir='$lig_groupe->id_dev';";
+											//echo "$sql<br />\n";
+											$res_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+											if(mysqli_num_rows($res_dev)>0) {
+												while($lig_dev=mysqli_fetch_object($res_dev)) {
+													//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
+													//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["note"]=$lig_dev->note;
+													$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
+													$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["note"]=$lig_dev->note*20/$note_sur;
+													$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["id_dev"]=$lig_groupe->id_dev;
+												}
+
+												if(!in_array($lig_groupe->id_dev,$tab_dev)) {
+													$tab_dev[]=$lig_groupe->id_dev;
 						
-												$sql="SELECT cd.nom_court, cd.nom_complet, cd.description, cd.date, ccn.periode FROM cn_devoirs cd, cn_cahier_notes ccn WHERE ccn.id_cahier_notes=cd.id_racine AND cd.id='$lig_groupe->id_dev';";
-												//echo "$sql<br />\n";
-												$res_info_dev=mysql_query($sql);
+													$sql="SELECT cd.nom_court, cd.nom_complet, cd.description, cd.date, ccn.periode FROM cn_devoirs cd, cn_cahier_notes ccn WHERE ccn.id_cahier_notes=cd.id_racine AND cd.id='$lig_groupe->id_dev';";
+													//echo "$sql<br />\n";
+													$res_info_dev=mysqli_query($GLOBALS["mysqli"], $sql);
 
-												$lig_info_dev=mysql_fetch_object($res_info_dev);
-												$sql="SELECT nom_periode FROM periodes WHERE num_periode='$lig_info_dev->periode' AND id_classe='$tab_id_classe[$i]';";
-												//echo "$sql<br />\n";
-												$res_per=mysql_query($sql);
-												$lig_per=mysql_fetch_object($res_per);
+													$lig_info_dev=mysqli_fetch_object($res_info_dev);
+													$sql="SELECT nom_periode FROM periodes WHERE num_periode='$lig_info_dev->periode' AND id_classe='$tab_id_classe[$i]';";
+													//echo "$sql<br />\n";
+													$res_per=mysqli_query($GLOBALS["mysqli"], $sql);
+													$lig_per=mysqli_fetch_object($res_per);
 
-												$titre="Devoir n°$lig_groupe->id_dev (<i>$lig_per->nom_periode</i>)";
-												$texte="<p><b>".htmlspecialchars($lig_info_dev->nom_court)."</b>";
-												if($lig_info_dev->nom_court!=$lig_info_dev->nom_complet) {
-													$texte.=" (<i>".htmlspecialchars($lig_info_dev->nom_complet)."</i>)";
+													$titre="Devoir n°$lig_groupe->id_dev (<i>$lig_per->nom_periode</i>)";
+													$texte="<p><b>".htmlspecialchars($lig_info_dev->nom_court)."</b>";
+													if($lig_info_dev->nom_court!=$lig_info_dev->nom_complet) {
+														$texte.=" (<i>".htmlspecialchars($lig_info_dev->nom_complet)."</i>)";
+													}
+													$texte.="<br />";
+													if($lig_info_dev->description!='') {
+														$texte.=htmlspecialchars($lig_info_dev->description);
+													}
+													//$tabdiv_infobulle[]=creer_div_infobulle('div_dev_'.$lig_groupe->id_dev,$titre,"",$texte,"",30,0,'y','y','n','n');
+													$reserve_header_tabdiv_infobulle[]=creer_div_infobulle('div_dev_'.$lig_groupe->id_dev,$titre,"",$texte,"",30,0,'y','y','n','n');
+	//echo "count(\$reserve_header_tabdiv_infobulle)=".count($reserve_header_tabdiv_infobulle)." pour div_dev_$lig_groupe->id_dev<br />";
 												}
-												$texte.="<br />";
-												if($lig_info_dev->description!='') {
-													$texte.=htmlspecialchars($lig_info_dev->description);
-												}
-												//$tabdiv_infobulle[]=creer_div_infobulle('div_dev_'.$lig_groupe->id_dev,$titre,"",$texte,"",30,0,'y','y','n','n');
-												$reserve_header_tabdiv_infobulle[]=creer_div_infobulle('div_dev_'.$lig_groupe->id_dev,$titre,"",$texte,"",30,0,'y','y','n','n');
-//echo "count(\$reserve_header_tabdiv_infobulle)=".count($reserve_header_tabdiv_infobulle)." pour div_dev_$lig_groupe->id_dev<br />";
 											}
 										}
 									}
-									elseif($lig_groupe->type='moy_plusieurs_periodes') {
+									elseif($lig_groupe->type=='moy_plusieurs_periodes') {
 
 										$chaine_mpp="moy_plusieurs_periodes_".$lig_groupe->id_groupe."_".strtr($lig_groupe->valeur," ","_");
 
 										$sql="SELECT en.* FROM ex_notes en WHERE en.id_ex_grp='$lig_groupe->id_ex_grp';";
 										//echo "$sql<br />\n";
-										$res_dev=mysql_query($sql);
-										while($lig_dev=mysql_fetch_object($res_dev)) {
+										$res_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+										while($lig_dev=mysqli_fetch_object($res_dev)) {
 											// Comme on fait une requête sur j_eleves_classes pour lister les élèves, les entrées inutiles du tableau $tab_note ci-dessous ne seront pas prises en compte dans le tableau des résultats
 											$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
 											$tab_note["$lig_dev->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["note"]=$lig_dev->note;
@@ -250,6 +275,52 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 											//$tabdiv_infobulle[]=creer_div_infobulle('div_bull_'.$lig_groupe->id_groupe.'_'.$lig_groupe->valeur,$titre,"",$texte,"",30,0,'y','y','n','n');
 										}
 									}
+									elseif($lig_groupe->type=='epreuve_blanche') {
+										$note_sur=20;
+										if(!array_key_exists($lig_groupe->valeur, $tab_epb_param)) {
+											$tab_epb_param[$lig_groupe->valeur]=get_tab_infos_epreuve_blanche($lig_groupe->valeur);
+											if(isset($tab_epb_param[$lig_groupe->valeur]['note_sur'])) {
+												$note_sur=$tab_epb_param[$lig_groupe->valeur]['note_sur'];
+											}
+											else {
+												if(!isset($msg)) {$msg="";}
+												$msg.="Anomalie : L'épreuve blanche n°$lig_groupe->valeur n'a pas été trouvée.<br />";
+											}
+										}
+
+										$chaine_mpp="note_epreuve_blanche_".$lig_groupe->id_groupe."_".strtr($lig_groupe->valeur," ","_");
+
+										$sql="SELECT DISTINCT ec.* FROM eb_copies ec, 
+													eb_groupes eg,
+													j_eleves_groupes jeg
+												WHERE eg.id_groupe='".$lig_groupe->id_groupe."' AND 
+													eg.id_groupe=jeg.id_groupe AND 
+													jeg.login=ec.login_ele AND 
+													eg.id_epreuve=ec.id_epreuve AND 
+													eg.id_epreuve='".$lig_groupe->valeur."' AND 
+													ec.statut!='v';";
+										//echo "$sql<br />\n";
+										$res_notes_epb=mysqli_query($GLOBALS["mysqli"], $sql);
+										$eff_notes_epb=mysqli_num_rows($res_notes_epb);
+										if($eff_notes_epb>0) {
+											while($lig_note=mysqli_fetch_object($res_notes_epb)) {
+												$tab_note["$lig_note->login_ele"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["statut"]=$lig_note->statut;
+												$tab_note["$lig_note->login_ele"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["note"]=$lig_note->note*20/$note_sur;
+												$tab_note["$lig_note->login_ele"][$tab_id_classe[$i]]["$tab_matiere[$j]"]["infobulle"]=$chaine_mpp;
+											}
+										}
+
+										if(!in_array($chaine_mpp,$tab_moy_epb)) {
+											$tab_moy_epb[]=$chaine_mpp;
+
+											$titre="Note EPB $lig_groupe->valeur";
+											$texte="<p><b>Note provenant de l'épreuve blanche n°$lig_groupe->valeur</b>";
+											$texte.="<br />";
+
+											$reserve_header_tabdiv_infobulle[]=creer_div_infobulle('div_'.$chaine_mpp,$titre,"",$texte,"",30,0,'y','y','n','n');
+										}
+									}
+
 								}
 							}
 							/*
@@ -273,8 +344,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 						//$sql="SELECT en.* FROM ex_groupes eg, ex_notes en WHERE eg.id=en.id_ex_grp AND eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]';";
 						$sql="SELECT en.* FROM ex_groupes eg, ex_notes en WHERE eg.id=en.id_ex_grp AND eg.id_exam='$id_exam' AND eg.matiere='$tab_matiere[$j]' AND eg.type='hors_enseignement';";
 						//echo "$sql<br />\n";
-						$res_dev=mysql_query($sql);
-						while($lig_dev=mysql_fetch_object($res_dev)) {
+						$res_dev=mysqli_query($GLOBALS["mysqli"], $sql);
+						while($lig_dev=mysqli_fetch_object($res_dev)) {
 							//echo "\$tab_note[\"$lig_dev->login\"][\"$tab_matiere[$j]\"]['statut']<br />";
 							//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["statut"]=$lig_dev->statut;
 							//$tab_note["$lig_dev->login"]["$tab_matiere[$j]"]["note"]=$lig_dev->note;
@@ -306,9 +377,9 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 							// Problème avec les élèves qui ont changé de classe en cours d'année... il faudrait choisir une période de référence pour l'appartenance de classe
 							$sql="SELECT DISTINCT e.nom, e.prenom, e.login FROM eleves e, j_eleves_classes jec WHERE jec.id_classe='$tab_id_classe[$i]' AND jec.login=e.login ORDER BY e.nom, e.prenom;";
 							//echo "$sql<br />\n";
-							$res_ele=mysql_query($sql);
-							if(mysql_num_rows($res_ele)>0) {
-								while($lig_ele=mysql_fetch_object($res_ele)) {
+							$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_ele)>0) {
+								while($lig_ele=mysqli_fetch_object($res_ele)) {
 									$tot_ele=0;
 									$tot_coef=0;
 									$csv.=$tab_classe[$i].";";
@@ -408,7 +479,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 						$h_ligne_titre=10;
 						$h_ligne_titre_tableau=10;
 						$h_cell=10;
-						$h_min_cell=7;
+						$h_min_cell=6;
 						$h_max_cell=10;
 
 						$x0=$marge_gauche;
@@ -433,13 +504,14 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 						$nb_max_eleves_par_classe=0;
 						for($i=0;$i<$nb_classes;$i++) {
 							$sql="SELECT DISTINCT login FROM j_eleves_classes WHERE id_classe='$tab_id_classe[$i]';";
-							$res=mysql_query($sql);
-							if(mysql_num_rows($res)>0) {
-								if(mysql_num_rows($res)>$nb_max_eleves_par_classe) {$nb_max_eleves_par_classe=mysql_num_rows($res);}
+							$res=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res)>0) {
+								if(mysqli_num_rows($res)>$nb_max_eleves_par_classe) {$nb_max_eleves_par_classe=mysqli_num_rows($res);}
 							}
 						}
 						if($nb_max_eleves_par_classe>0) {
-							$h_cell=floor(($hauteur_page-$h_ligne_titre-$h_ligne_titre_tableau-$marge_haute-$marge_basse)/$nb_max_eleves_par_classe);
+							// On ajoute les 6 lignes de stat en bas de tableau
+							$h_cell=floor(($hauteur_page-$h_ligne_titre-$h_ligne_titre_tableau-$marge_haute-$marge_basse)/($nb_max_eleves_par_classe+6));
 
 							if($h_cell>$h_max_cell) {$h_cell=$h_max_cell;}
 
@@ -463,6 +535,9 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 						$fonte='DejaVu';
 
 						for($i=0;$i<$nb_classes;$i++) {
+							$tab_notes=array();
+							$tab_moy=array();
+
 							$pdf->AddPage();
 							//========================================
 							// Titre
@@ -518,9 +593,9 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 							// Problème avec les élèves qui ont changé de classe en cours d'année... il faudrait choisir une période de référence pour l'appartenance de classe
 							$sql="SELECT DISTINCT e.nom, e.prenom, e.login FROM eleves e, j_eleves_classes jec WHERE jec.id_classe='$tab_id_classe[$i]' AND jec.login=e.login ORDER BY e.nom, e.prenom;";
 							//echo "$sql<br />\n";
-							$res_ele=mysql_query($sql);
-							if(mysql_num_rows($res_ele)>0) {
-								while($lig_ele=mysql_fetch_object($res_ele)) {
+							$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+							if(mysqli_num_rows($res_ele)>0) {
+								while($lig_ele=mysqli_fetch_object($res_ele)) {
 									$tot_ele=0;
 									$tot_coef=0;
 
@@ -585,6 +660,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 													$tot_ele+=max(0,($tab_note["$lig_ele->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]['note']-10)*$tab_coef[$j]);
 												}
 												$texte=strtr($tab_note["$lig_ele->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]['note'],".",",");
+
+												$tab_notes[$j][]=$tab_note["$lig_ele->login"][$tab_id_classe[$i]]["$tab_matiere[$j]"]['note'];
 											}
 										}
 										else {
@@ -601,6 +678,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 										$moyenne=round(10*$tot_ele/$tot_coef)/10;
 
 										$texte=strtr($moyenne,".",",");
+
+										$tab_moy[]=$moyenne;
 									}
 									else {
 										$texte="";
@@ -614,13 +693,187 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 								}
 							}
 
+							// 20140603
+							$graisse='B';
+							//=============================================
+							for($j=0;$j<$nb_matieres;$j++) {
+								$tab_stat[$j]=calcul_moy_med($tab_notes[$j]);
+							}
+							$tab_stat2=calcul_moy_med($tab_moy);
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="Moyenne";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['moyenne'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['moyenne'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="1er quartile";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['q1'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['q1'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="Médiane";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['mediane'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['mediane'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="3è quartile";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['q3'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['q3'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="Min";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['min'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['min'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+							if($y2+$h_ligne>$hauteur_page-$marge_basse) {
+								$pdf->AddPage();
+								$y2=$y0;
+							}
+
+							$x2=$x0;
+							$pdf->SetXY($x2, $y2);
+							$largeur_dispo=$largeur_col_nom_ele;
+							$texte="Max";
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+
+							$largeur_dispo=$largeur_col_note;
+							for($j=0;$j<$nb_matieres;$j++) {
+								$pdf->SetXY($x2, $y2);
+								$texte=strtr($tab_stat[$j]['max'],".",",");
+								cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+								$x2+=$largeur_dispo;
+							}
+
+							$pdf->SetXY($x2, $y2);
+							$texte=strtr($tab_stat2['max'],".",",");
+							cell_ajustee_une_ligne(($texte),$pdf->GetX(),$pdf->GetY(),$largeur_dispo,$h_ligne,$taille_max_police,$fonte,$graisse,$alignement,$bordure);
+							$x2+=$largeur_dispo;
+							$y2+=$h_cell;
+							//=============================================
+
+
 							//========================================
 
 						}
 
+						$pref_output_mode_pdf=get_output_mode_pdf();
+
 						$nom_fic="releve_examen_num_".$id_exam.".pdf";
 						send_file_download_headers('application/pdf',$nom_fic);
-						$pdf->Output($nom_fic,'I');
+						$pdf->Output($nom_fic,$pref_output_mode_pdf);
 						die();
 					}
 				}
@@ -671,8 +924,8 @@ if(!isset($id_exam)) {
 
 $sql="SELECT * FROM ex_examens WHERE id='$id_exam';";
 //echo "$sql<br />\n";
-$res=mysql_query($sql);
-if(mysql_num_rows($res)==0) {
+$res=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res)==0) {
 	echo "</p>\n";
 
 	echo "<p>L'examen choisi (<i>$id_exam</i>) n'existe pas.</p>\n";
@@ -729,12 +982,12 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 		//echo " count(\$tabdiv_infobulle)=".count($tabdiv_infobulle)."<br />";
 	}
 
-	echo "<div style='float:right; width: 5em; text-align:center; border: 1px solid black;'>\n";
+	echo "<div style='float:right; width: 5em; text-align:center; border: 1px solid black;' class='fieldset_opacite50'>\n";
 	echo "<a href='releve.php?id_exam=$id_exam&amp;mode=csv".add_token_in_url()."'";
-	echo ">CSV</a>\n";
+	echo " target='_blank'>CSV</a>\n";
 	echo "<br />\n";
 	echo "<a href='releve.php?id_exam=$id_exam&amp;mode=pdf".add_token_in_url()."'";
-	echo ">PDF</a>\n";
+	echo " target='_blank'>PDF</a>\n";
 	echo "</div>\n";
 
 	//$csv="";
@@ -744,8 +997,8 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 		// Problème avec les élèves qui ont changé de classe en cours d'année... il faudrait choisir une période de référence pour l'appartenance de classe
 		$sql="SELECT DISTINCT e.nom, e.prenom, e.login FROM eleves e, j_eleves_classes jec WHERE jec.id_classe='$tab_id_classe[$i]' AND jec.login=e.login ORDER BY e.nom, e.prenom;";
 		//echo "$sql<br />\n";
-		$res_ele=mysql_query($sql);
-		$nb_ele=mysql_num_rows($res_ele);
+		$res_ele=mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_ele=mysqli_num_rows($res_ele);
 		if($nb_ele==0) {
 			echo "<p>Aucun élève dans cette classe???</p>\n";
 			require("../lib/footer.inc.php");
@@ -779,7 +1032,7 @@ if(($_SESSION['statut']=='administrateur')||($_SESSION['statut']=='scolarite')||
 
 		$alt=1;
 		$cpt_ele=0;
-		while($lig_ele=mysql_fetch_object($res_ele)) {
+		while($lig_ele=mysqli_fetch_object($res_ele)) {
 			$tot_ele=0;
 			$tot_coef=0;
 			$alt=$alt*(-1);

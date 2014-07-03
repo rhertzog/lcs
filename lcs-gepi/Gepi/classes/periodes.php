@@ -50,15 +50,15 @@ if (isset($is_posted) and ($is_posted == "yes")) {
     // Insertion et suppression de périodes
     //
     $pb_reg_per = '';
-    $periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe'");
-    $nb_periode = mysql_num_rows($periode_query);
+    $periode_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM periodes WHERE id_classe = '$id_classe'");
+    $nb_periode = mysqli_num_rows($periode_query);
     if ($nombre_periode < $nb_periode) {
         $k = $nombre_periode + 1;
         $nb_periode++;
         $autorisation_efface = 'oui';
         while ($k < $nb_periode) {
-            $test = mysql_query("SELECT * FROM  j_eleves_classes WHERE (periode = '$k' and id_classe='$id_classe')");
-            if (mysql_num_rows($test) !=0) {
+            $test = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM  j_eleves_classes WHERE (periode = '$k' and id_classe='$id_classe')");
+            if (mysqli_num_rows($test) !=0) {
                 $msg .= "Cette classe contient des élèves pour la periode $k ! Suppression impossible. Vous devez d'abord retirer les élèves de la classe.<br />";
                 $autorisation_efface = 'non';
             }
@@ -68,19 +68,19 @@ if (isset($is_posted) and ($is_posted == "yes")) {
             $pb_reg_per = 'no';
             $k = $nombre_periode + 1;
             while ($k < $nb_periode) {
-                $efface = mysql_query("DELETE FROM periodes WHERE (num_periode = '$k' AND id_classe = '$id_classe')");
+                $efface = mysqli_query($GLOBALS["mysqli"], "DELETE FROM periodes WHERE (num_periode = '$k' AND id_classe = '$id_classe')");
                 if (!$efface) {$pb_reg_per = 'yes';}
-                $test = mysql_query("SELECT login FROM j_eleves_classes WHERE (periode = '$k' AND id_classe = '$id_classe')");
-                $nb_ligne = mysql_num_rows($test);
+                $test = mysqli_query($GLOBALS["mysqli"], "SELECT login FROM j_eleves_classes WHERE (periode = '$k' AND id_classe = '$id_classe')");
+                $nb_ligne = mysqli_num_rows($test);
                 $j = 0;
                 while ($j < $nb_ligne) {
-                    $login_eleve = mysql_result($test, $j, 'login');
-                    $efface = mysql_query("DELETE FROM j_eleves_groupes WHERE (periode = '$k' AND login = '$login_eleve')");
+                    $login_eleve = old_mysql_result($test, $j, 'login');
+                    $efface = mysqli_query($GLOBALS["mysqli"], "DELETE FROM j_eleves_groupes WHERE (periode = '$k' AND login = '$login_eleve')");
                     if (!$efface) {$pb_reg_per = 'yes';}
                     $j++;
                 }
 
-                $efface = mysql_query("DELETE FROM j_eleves_classes WHERE (periode='$k' AND id_classe='$id_classe')");
+                $efface = mysqli_query($GLOBALS["mysqli"], "DELETE FROM j_eleves_classes WHERE (periode='$k' AND id_classe='$id_classe')");
                 if (!$efface) {$pb_reg_per = 'yes';}
                 $k++;
 
@@ -93,7 +93,7 @@ if (isset($is_posted) and ($is_posted == "yes")) {
         while ($k < $nombre_periode) {
             $sql="INSERT INTO periodes SET nom_periode='période ".$k."', num_periode='$k', verouiller = 'N', id_classe='$id_classe';";
             //echo "$sql<br />";
-            $register = mysql_query($sql);
+            $register = mysqli_query($GLOBALS["mysqli"], $sql);
             if (!$register) {$pb_reg_per = 'yes';}
             $k++;
         }
@@ -105,8 +105,8 @@ if (isset($is_posted) and ($is_posted == "yes")) {
 
     $date_fin_period=isset($_POST['date_fin_period']) ? $_POST['date_fin_period'] : NULL;
 
-    $periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe'");
-    $nb_periode = mysql_num_rows($periode_query) + 1 ;
+    $periode_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM periodes WHERE id_classe = '$id_classe'");
+    $nb_periode = mysqli_num_rows($periode_query) + 1 ;
     $k = "1";
     while ($k < $nb_periode) {
         if (!isset($nom_period[$k])) $nom_period[$k] = '';
@@ -125,7 +125,7 @@ if (isset($is_posted) and ($is_posted == "yes")) {
         }
         $sql.=" WHERE (num_periode='$k' and id_classe='$id_classe');";
         //echo "$sql<br />";
-        $register = mysql_query($sql);
+        $register = mysqli_query($GLOBALS["mysqli"], $sql);
         if (!$register) {$pb_reg_per = 'yes';}
         $k++;
     }
@@ -139,10 +139,10 @@ if (isset($is_posted) and ($is_posted == "yes")) {
 
 }
 
-$call_data = mysql_query("SELECT classe FROM classes WHERE id = '$id_classe'");
-$classe = mysql_result($call_data, 0, "classe");
-$periode_query = mysql_query("SELECT * FROM periodes WHERE id_classe = '$id_classe'");
-$test_periode = mysql_num_rows($periode_query) ;
+$call_data = mysqli_query($GLOBALS["mysqli"], "SELECT classe FROM classes WHERE id = '$id_classe'");
+$classe = old_mysql_result($call_data, 0, "classe");
+$periode_query = mysqli_query($GLOBALS["mysqli"], "SELECT * FROM periodes WHERE id_classe = '$id_classe'");
+$test_periode = mysqli_num_rows($periode_query) ;
 include "../lib/periodes.inc.php";
 
 
@@ -151,8 +151,8 @@ include "../lib/periodes.inc.php";
 // AJOUT: boireaus
 $chaine_options_classes="";
 $sql="SELECT id, classe FROM classes ORDER BY classe";
-$res_class_tmp=mysql_query($sql);
-if(mysql_num_rows($res_class_tmp)>0){
+$res_class_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res_class_tmp)>0){
 	$id_class_prec=0;
 	$id_class_suiv=0;
 	$temoin_tmp=0;
@@ -160,14 +160,14 @@ if(mysql_num_rows($res_class_tmp)>0){
     $cpt_classe=0;
 	$num_classe=-1;
 
-	while($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+	while($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 		if($lig_class_tmp->id==$id_classe){
 			// Index de la classe dans les <option>
 			$num_classe=$cpt_classe;
 
 			$chaine_options_classes.="<option value='$lig_class_tmp->id' selected='true'>$lig_class_tmp->classe</option>\n";
 			$temoin_tmp=1;
-			if($lig_class_tmp=mysql_fetch_object($res_class_tmp)){
+			if($lig_class_tmp=mysqli_fetch_object($res_class_tmp)){
 				$chaine_options_classes.="<option value='$lig_class_tmp->id'>$lig_class_tmp->classe</option>\n";
 				$id_class_suiv=$lig_class_tmp->id;
 			}
@@ -187,6 +187,11 @@ if(mysql_num_rows($res_class_tmp)>0){
 	}
 }
 // =================================
+
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
 
 $themessage  = 'Des informations ont été modifiées. Voulez-vous vraiment quitter sans enregistrer ?';
 //**************** EN-TETE *****************
@@ -274,11 +279,13 @@ echo "</form>\n";
 
 ?>
 
-<form enctype="multipart/form-data" method="post" action="periodes.php">
+<form enctype="multipart/form-data" method="post" name="formulaire" action="periodes.php">
 <center><input type='submit' value='Enregistrer' /></center>
 <p class='bold'>Classe : <?php echo $classe; ?></p>
-<p><b>Remarque&nbsp;: </b>Le verrouillage/déverrouillage d'une période est possible en étant connecté sous un compte ayant le statut "scolarité"<br />
-(<em>il est question ici de verrrouillage des saisies dans le carnet de notes, contrairement à la date de fin proposée ci-dessous</em>).</p>
+<br />
+<p style='text-indent:-7em; margin-left:7em;'><b>Remarque&nbsp;: </b>Le verrouillage/déverrouillage d'une période (*) est possible en étant connecté sous un compte ayant le statut "<strong>scolarité</strong>"<br />
+(<em>(*) il est question dans cette remarque de verrouillage des saisies dans le carnet de notes, contrairement à la date de fin proposée ci-dessous qui concerne les absences et listes d'élèves proposées</em>).</p>
+<br />
 
 <?php
 
@@ -288,8 +295,8 @@ echo "<p>Nombre de périodes&nbsp;: ";
 
 //$sql="SELECT 1=1 FROM j_groupes_classes WHERE id_classe='$id_classe';";
 $sql="SELECT 1=1 FROM j_groupes_classes jgc, j_eleves_groupes jeg WHERE jgc.id_classe='$id_classe' AND jeg.id_groupe=jgc.id_groupe;";
-$verif=mysql_query($sql);
-if(mysql_num_rows($verif)>0) {
+$verif=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($verif)>0) {
 	$temp = $nb_periode - 1;
 	echo "<b>".$temp."</b>";
 	echo "<input type='hidden' name='nombre_periode' value='$temp' />\n";
@@ -313,7 +320,7 @@ echo "</p>\n";
 
 if ($test_periode == 0) {
 	echo "<p>Si vous choisissez de ne pas définir de périodes pour cette classe (nombre de périodes = 0), cette classe sera considérée comme virtuelle.</p>\n";
-	echo "<p>Remarques : </p>\n";
+	echo "<p>Remarques&nbsp;: </p>\n";
 	echo "<ul><li>Vous pouvez affecter une ou plusieurs matières à une classe virtuelle.</li>\n";
 	echo "<li>Vous ne pouvez pas affecter d'élèves à une classe virtuelle.</li>\n";
 	echo "<li>Une classe virtuelle peut être utilisée dans le cadre des cahiers de texte : création d'une rubrique accessible au public et remplie par un professeur d'une matière affectée à cette classe.</li>\n";
@@ -333,9 +340,15 @@ Il n'est pas question ici de verrouiller automatiquement une période de note à
 <?php
 	$k = '1';
 	$alt=1;
+
+	include("../lib/calendrier/calendrier.class.php");
+
 	while ($k < $nb_periode) {
 		if ($nom_periode[$k] == '') {$nom_periode[$k] = "période ".$k;}
 		$alt=$alt*(-1);
+
+		//$cal[$k] = new Calendrier("formulaire", "date_fin_period_".$k);
+
 		echo "<tr class='lig$alt'>\n";
 		echo "<td style='padding: 5px;'>Période $k</td>\n";
 		echo "<td style='padding: 5px;'><input type='text' id='nom_period_$k' name='nom_period[$k]'";
@@ -344,7 +357,11 @@ Il n'est pas question ici de verrouiller automatiquement une période de note à
 		echo "<td style='padding: 5px;'><input type='text' id='date_fin_period_$k' name='date_fin_period[$k]'";
 		echo " onchange='changement()'";
 		echo " onKeyDown=\"clavier_date(this.id,event);\" AutoComplete=\"off\"";
-		echo " value=\"".strftime("%d/%m/%Y", mysql_date_to_unix_timestamp($date_fin_periode[$k]))."\" size='10' /></td>\n";
+		echo " value=\"".strftime("%d/%m/%Y", mysql_date_to_unix_timestamp($date_fin_periode[$k]))."\" size='10' />";
+
+		//echo "<a href=\"#calend\" onClick=\"".$cal[$k]->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170)."\"><img src=\"../lib/calendrier/petit_calendrier.gif\" border=\"0\" alt=\"Petit calendrier\" /></a>\n";
+		echo img_calendrier_js("date_fin_period_".$k, "img_bouton_date_fin_period_".$k);
+		echo "</td>\n";
 		echo "</tr>\n";
 	$k++;
 	}
@@ -367,8 +384,8 @@ if($ouvrir_infobulle_nav=='y') {
 if($nb_periode>1) {
 	//$sql="SELECT num_periode, nom_periode, date_fin, COUNT(date_fin) AS eff_date_fin FROM periodes  GROUP BY nom_periode ORDER BY eff_date_fin DESC, num_periode ASC;";
 	$sql="SELECT DISTINCT num_periode, nom_periode, date_fin FROM periodes ORDER BY num_periode ASC;";
-	$res=mysql_query($sql);
-	if(mysql_num_rows($res)>0) {
+	$res=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res)>0) {
 		echo "<p>Prendre modèle sur d'autres classes&nbsp;:</p>
 <table class='boireaus'>
 	<tr>
@@ -381,7 +398,7 @@ if($nb_periode>1) {
 	</tr>";
 		$alt=1;
 		$cpt=0;
-		while($lig=mysql_fetch_object($res)) {
+		while($lig=mysqli_fetch_object($res)) {
 			$alt=$alt*(-1);
 			$date_fin_formatee=formate_date($lig->date_fin);
 			echo "
@@ -396,9 +413,9 @@ if($nb_periode>1) {
 		<td>";
 			//formate_date($lig->date_fin)
 			$sql="SELECT COUNT(date_fin) AS eff_date_fin FROM periodes p WHERE p.num_periode='".$lig->num_periode."' AND p.nom_periode='".$lig->nom_periode."' AND p.date_fin='".$lig->date_fin."';";
-			$res2=mysql_query($sql);
-			if(mysql_num_rows($res2)>0) {
-				$lig2=mysql_fetch_object($res2);
+			$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res2)>0) {
+				$lig2=mysqli_fetch_object($res2);
 				echo $lig2->eff_date_fin;
 			}
 		echo "</td>
@@ -406,10 +423,10 @@ if($nb_periode>1) {
 
 			$sql="SELECT c.id, c.classe FROM classes c, periodes p WHERE p.id_classe=c.id AND p.num_periode='".$lig->num_periode."' AND p.nom_periode='".$lig->nom_periode."' AND p.date_fin='".$lig->date_fin."' ORDER BY c.classe;";
 			//echo "$sql<br />";
-			$res2=mysql_query($sql);
-			if(mysql_num_rows($res2)>0) {
+			$res2=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res2)>0) {
 				$cpt2=0;
-				while($lig2=mysql_fetch_object($res2)) {
+				while($lig2=mysqli_fetch_object($res2)) {
 					if($cpt2>0) {echo ", ";}
 					echo $lig2->classe;
 					$cpt2++;
@@ -450,7 +467,7 @@ echo "<br />
 Il s'agit de dates prises en compte pour l'appartenance d'élèves à la classe pour telle période.<br />
 C'est utile notamment pour les élèves qui changent de classe.<br />
 Ces dates sont aussi prises en compte dans les modules Absences.</p></li>
-<li><p>Le verrouillage des périodes de notes s'effectue en compte \"scolarité\" à la rubrique \"Verrouillage/déverrouillage des périodes\".</p></li>
+<li><p>Le verrouillage des périodes de notes s'effectue en compte \"<strong>scolarité</strong>\" à la rubrique \"Verrouillage/déverrouillage des périodes\".</p></li>
 <li><p>L'accès des parents/élèves aux appréciations et avis des conseils de classe se paramètre en compte \"administrateur\" ou sous réserve d'en donner le droit dans Gestion générale/Droits d'accès en compte \"scolarité\" ou \"professeur\" s'il est ".getSettingValue('gepi_prof_suivi').".</p></li>
 </ul>\n";
 

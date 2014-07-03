@@ -102,6 +102,13 @@ interface discipline_admin {
 	<fieldset class="no_bordure">
 <?php
 echo add_token_field();
+
+$mod_disc_terme_incident=getSettingValue('mod_disc_terme_incident');
+if($mod_disc_terme_incident=="") {$mod_disc_terme_incident="incident";}
+$mod_disc_terme_sanction=getSettingValue('mod_disc_terme_sanction');
+if($mod_disc_terme_sanction=="") {$mod_disc_terme_sanction="sanction";}
+$mod_disc_terme_avertissement_fin_periode=getSettingValue('mod_disc_terme_avertissement_fin_periode');
+if($mod_disc_terme_avertissement_fin_periode=="") {$mod_disc_terme_avertissement_fin_periode="avertissement de fin de période";}
 ?>
 	  <legend class="invisible">Activation</legend>
 	  <input type="radio"
@@ -121,6 +128,33 @@ echo add_token_field();
 	  <label for='activer_n' style='cursor: pointer;'>
 		Désactiver le module Discipline
 	  </label>
+	</fieldset>
+
+	<fieldset class="no_bordure">
+	  <legend class="invisible">Choix de termes personnalisés</legend>
+
+	  Terme à utiliser à la place du terme '<strong>incident</strong>' dans le module Discipline&nbsp;: 
+	  <input type="text"
+			 name="mod_disc_terme_incident"
+			 id='mod_disc_terme_incident'
+			 value="<?php echo $mod_disc_terme_incident; ?>" />
+	  <br />
+
+	  Terme à utiliser à la place du terme '<strong>sanction</strong>' dans le module Discipline&nbsp;: 
+	  <input type="text"
+			 name="mod_disc_terme_sanction"
+			 id='mod_disc_terme_sanction'
+			 value="<?php echo $mod_disc_terme_sanction; ?>" />
+	  <br />
+
+	  Terme à utiliser à la place du terme '<strong>avertissement de fin de période</strong>' dans le module Discipline&nbsp;: 
+	  <input type="text"
+			 name="mod_disc_terme_avertissement_fin_periode"
+			 id='mod_disc_terme_avertissement_fin_periode'
+			 size='30'
+			 value="<?php echo $mod_disc_terme_avertissement_fin_periode; ?>" />
+	  <br />
+
 	</fieldset>
 
 	<h2>Autoriser l'utilisation d'une zone commentaire dans la gestion des incidents</h2>
@@ -153,7 +187,11 @@ echo add_token_field();
 	</p>
   </form>
   
-
+	<?php
+		if((getSettingAOui('active_mod_discipline'))&&(acces("/mod_discipline/index.php", $_SESSION['statut']))) {
+			echo "<p style='margin-top:1em;'><a href='index.php'>Accéder au module Discipline</a></p>";
+		}
+	?>
 
 <!-- Début du pied -->
 	<div id='EmSize' style='visibility:hidden; position:absolute; left:1em; top:1em;'></div>

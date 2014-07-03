@@ -51,8 +51,8 @@ if (getSettingValue("GepiCahierTexteVersion") != '2') {
 
 
 $sql="SELECT 1=1 FROM droits WHERE id='/cahier_texte_2/consultation2.php';";
-$test=mysql_query($sql);
-if(mysql_num_rows($test)==0) {
+$test=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($test)==0) {
 	$sql="INSERT INTO droits SET id='/cahier_texte_2/consultation2.php',
 	administrateur='V',
 	professeur='V',
@@ -64,7 +64,7 @@ if(mysql_num_rows($test)==0) {
 	autre='V',
 	description='Cahiers de textes: Consultation',
 	statut='';";
-	$insert=mysql_query($sql);
+	$insert=mysqli_query($GLOBALS["mysqli"], $sql);
 }
 if (!checkAccess()) {
 	header("Location: ../logout.php?auto=1");
@@ -95,6 +95,16 @@ if(isset($today)) {
 	$day=strftime("%d",$today);
 	$month=strftime("%m",$today);
 	$year=strftime("%Y",$today);
+}
+
+$today_jjmmaaaa = isset($_POST["today_jjmmaaaa"]) ? $_POST["today_jjmmaaaa"] : (isset($_GET["today_jjmmaaaa"]) ? $_GET["today_jjmmaaaa"] : NULL);
+if(isset($today_jjmmaaaa)) {
+	$tmp_date=explode("/", $today_jjmmaaaa);
+	if(isset($tmp_date[2])) {
+		$day=$tmp_date[0];
+		$month=$tmp_date[1];
+		$year=$tmp_date[2];
+	}
 }
 
 // Vérification sur les dates: Est-ce une date dans la période d'ouverture des cahiers de textes
@@ -148,6 +158,15 @@ $tab_couleur_edt=array('','blue','lime','maroon','purple','red','yellow','aqua',
 $style_specifique[] = "cahier_texte_2/consultation2";
 $javascript_specifique[] = "cahier_texte_2/consultation2";
 
+//$chaine_handles="'ml', 'mr'";
+$mode_handles="m";
+$charger_js_dragresize="y";
+/*
+$style_specifique[] = "lib/DHTMLcalendar/calendarstyle";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar";
+$javascript_specifique[] = "lib/DHTMLcalendar/lang/calendar-fr";
+$javascript_specifique[] = "lib/DHTMLcalendar/calendar-setup";
+*/
 //**************** EN-TETE *****************
 $titre_page = "Cahier de textes";
 require_once("../lib/header.inc.php");
@@ -238,10 +257,10 @@ else {
 	$tab_profs=array();
 	$tab_profs2=array();
 	$sql="SELECT u.civilite, u.nom, u.prenom, u.login FROM utilisateurs u WHERE etat='actif' AND statut='professeur' ORDER BY u.nom, u.prenom;";
-	$res_prof=mysql_query($sql);
-	if(mysql_num_rows($res_prof)>0) {
+	$res_prof=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_prof)>0) {
 		$cpt=0;
-		while($lig_prof=mysql_fetch_object($res_prof)) {
+		while($lig_prof=mysqli_fetch_object($res_prof)) {
 			$tab_profs[$cpt]['login']=$lig_prof->login;
 			$tab_profs[$cpt]['civ_nom_prenom']=$lig_prof->civilite." ".casse_mot($lig_prof->nom,'maj')." ".casse_mot($lig_prof->prenom,'majf2');
 			$tab_profs2[$lig_prof->login]=$tab_profs[$cpt]['civ_nom_prenom'];
@@ -252,10 +271,10 @@ else {
 	// Récupération de la liste des classes de l'établissement
 	$tab_classe=array();
 	$sql="SELECT id, classe FROM classes ORDER BY classe;";
-	$res_classe=mysql_query($sql);
-	if(mysql_num_rows($res_classe)>0) {
+	$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+	if(mysqli_num_rows($res_classe)>0) {
 		$cpt=0;
-		while($lig_class_prof=mysql_fetch_object($res_classe)) {
+		while($lig_class_prof=mysqli_fetch_object($res_classe)) {
 			$tab_classe[$cpt]['id_classe']=$lig_class_prof->id;
 			$tab_classe[$cpt]['classe']=$lig_class_prof->classe;
 			$cpt++;
@@ -267,10 +286,10 @@ else {
 		$tab_classe_du_prof=array();
 		$sql="SELECT c.classe, jgc.id_classe FROM j_groupes_classes jgc, j_groupes_professeurs jgp, classes c WHERE jgc.id_groupe=jgp.id_groupe AND jgp.login='".$_SESSION['login']."' AND jgc.id_classe=c.id ORDER BY c.classe;";
 
-		$res_classe=mysql_query($sql);
-		if(mysql_num_rows($res_classe)>0) {
+		$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_classe)>0) {
 			$cpt=0;
-			while($lig_prof=mysql_fetch_object($res_classe)) {
+			while($lig_prof=mysqli_fetch_object($res_classe)) {
 				$tab_classe_du_prof[$cpt]['id_classe']=$lig_prof->id_classe;
 				$tab_classe_du_prof[$cpt]['classe']=$lig_prof->classe;
 				$cpt++;
@@ -285,10 +304,10 @@ else {
 		$tab_eleve_de_la_classe=array();
 		$sql="SELECT DISTINCT e.nom, e.prenom, e.login FROM j_eleves_classes jec, eleves e WHERE jec.login=e.login AND jec.id_classe='$id_classe' ORDER BY e.nom, e.prenom;";
 		//echo "$sql<br />";
-		$res_ele_classe=mysql_query($sql);
-		if(mysql_num_rows($res_ele_classe)>0) {
+		$res_ele_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_ele_classe)>0) {
 			$cpt=0;
-			while($lig_ele=mysql_fetch_object($res_ele_classe)) {
+			while($lig_ele=mysqli_fetch_object($res_ele_classe)) {
 				$tab_eleve_de_la_classe[$cpt]['login']=$lig_ele->login;
 				$tab_eleve_de_la_classe[$cpt]['nom_prenom']=casse_mot($lig_ele->nom,'maj')." ".casse_mot($lig_ele->prenom,'majf2');
 				$cpt++;
@@ -441,17 +460,17 @@ if($mode=='classe') {
 	if(!isset($id_classe)) {
 		if($_SESSION['statut']=='professeur') {
 			$sql="SELECT id_classe FROM j_groupes_classes jgc, j_groupes_professeurs jgp, classes c WHERE jgc.id_groupe=jgp.id_groupe AND jgp.login='".$_SESSION['login']."' AND jgc.id_classe=c.id ORDER BY c.classe LIMIT 1;";
-			$res_classe=mysql_query($sql);
-			if(mysql_num_rows($res_classe)>0) {
-				$id_classe = mysql_result($res_classe, 0, 'id_classe');
+			$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_classe)>0) {
+				$id_classe = old_mysql_result($res_classe, 0, 'id_classe');
 			}
 		}
 
 		if(!isset($id_classe)) {
 			$sql="SELECT id AS id_classe FROM classes ORDER BY classe LIMIT 1;";
-			$res_classe=mysql_query($sql);
-			if(mysql_num_rows($res_classe)>0) {
-				$id_classe = mysql_result($res_classe, 0, 'id_classe');
+			$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_classe)>0) {
+				$id_classe = old_mysql_result($res_classe, 0, 'id_classe');
 			}
 		}
 	}
@@ -463,7 +482,41 @@ if($mode=='classe') {
 	}
 
 	// Passage à la semaine précédente/courante/suivante
-	echo "<div style='float: right; width:25em; text-align:center;'><a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;id_classe=$id_classe'>Aujourd'hui</a> - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;id_classe=$id_classe'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;id_classe=$id_classe'>suivante</a></div>\n";
+	include("../lib/calendrier/calendrier.class.php");
+	$cal1 = new Calendrier("form_choix_date", "today_jjmmaaaa");
+
+	echo "<div style='float: right; width:25em;'>
+	<form action='".$_SERVER['PHP_SELF']."' name='form_choix_date' id='form_choix_date' method='post'>
+		<input type='hidden' name='today_jjmmaaaa' id='today_jjmmaaaa' value='' />
+		<input type='hidden' name='id_classe' value='$id_classe' />
+		<input type='hidden' name='mode' value='$mode' />
+
+		<a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;id_classe=$id_classe'>Aujourd'hui</a>";
+
+		echo "
+		<a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier début\" style=\"border:0;\" /></a>";
+
+		//echo " ".img_calendrier_js("today_jjmmaaaa", "img_bouton_today_jjmmaaaa");
+
+		echo "
+		 - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;id_classe=$id_classe'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;id_classe=$id_classe'>suivante</a>
+	</form>
+
+	<script type='text/javascript'>
+		var today_jjmmaaaa_0='';
+
+		function teste_modif_date() {
+			if(document.getElementById('today_jjmmaaaa').value!=today_jjmmaaaa_0) {
+				document.getElementById('form_choix_date').submit();
+			}
+			else {
+				setTimeout('teste_modif_date()', 1000);
+			}
+		}
+
+		setTimeout('teste_modif_date()', 2000);
+	</script>
+</div>\n";
 
 	$classe=get_class_from_id($id_classe);
 
@@ -480,9 +533,9 @@ elseif($mode=='eleve') {
 
 	if(!isset($id_classe)) {
 		$sql="SELECT id_classe FROM j_eleves_classes WHERE login='$login_eleve' ORDER BY periode DESC LIMIT 1;";
-		$res_classe=mysql_query($sql);
-		if(mysql_num_rows($res_classe)>0) {
-			$id_classe = mysql_result($res_classe, 0, 'id_classe');
+		$res_classe=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_classe)>0) {
+			$id_classe = old_mysql_result($res_classe, 0, 'id_classe');
 		}
 	}
 
@@ -491,7 +544,42 @@ elseif($mode=='eleve') {
 	$groups=get_groups_for_eleve($login_eleve, $id_classe);
 
 	// Passage à la semaine précédente/courante/suivante
-	echo "<div style='float: right; width:25em;'><a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>Aujourd'hui</a> - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>suivante</a></div>\n";
+	include("../lib/calendrier/calendrier.class.php");
+	$cal1 = new Calendrier("form_choix_date", "today_jjmmaaaa");
+
+	echo "<div style='float: right; width:25em;'>
+	<form action='".$_SERVER['PHP_SELF']."' name='form_choix_date' id='form_choix_date' method='post'>
+		<input type='hidden' name='today_jjmmaaaa' id='today_jjmmaaaa' value='' />
+		<input type='hidden' name='login_eleve' value='$login_eleve' />
+		<input type='hidden' name='id_classe' value='$id_classe' />
+		<input type='hidden' name='mode' value='$mode' />
+
+		<a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>Aujourd'hui</a>";
+		
+		echo "
+		<a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier début\" style=\"border:0;\" /></a>";
+		
+		//echo " ".img_calendrier_js("today_jjmmaaaa", "img_bouton_today_jjmmaaaa");
+
+		echo "
+		 - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;login_eleve=$login_eleve&amp;id_classe=$id_classe'>suivante</a>
+	</form>
+
+	<script type='text/javascript'>
+		var today_jjmmaaaa_0='';
+
+		function teste_modif_date() {
+			if(document.getElementById('today_jjmmaaaa').value!=today_jjmmaaaa_0) {
+				document.getElementById('form_choix_date').submit();
+			}
+			else {
+				setTimeout('teste_modif_date()', 1000);
+			}
+		}
+
+		setTimeout('teste_modif_date()', 2000);
+	</script>
+ </div>\n";
 
 	echo "<p>Affichage pour un élève&nbsp;: <strong>".civ_nom_prenom($login_eleve)." (<em>$classe</em>)</strong></p>\n";
 
@@ -503,9 +591,9 @@ elseif($mode=='professeur') {
 		}
 		else {
 			$sql="SELECT u.civilite, u.nom, u.prenom, u.login FROM utilisateurs u WHERE statut='professeur' AND etat='actif' ORDER BY u.nom, u.prenom LIMIT 1;";
-			$res_prof=mysql_query($sql);
-			if(mysql_num_rows($res_prof)>0) {
-				$login_prof = mysql_result($res_prefs, 0, 'login');
+			$res_prof=mysqli_query($GLOBALS["mysqli"], $sql);
+			if(mysqli_num_rows($res_prof)>0) {
+				$login_prof = old_mysql_result($res_prefs, 0, 'login');
 			}
 		}
 
@@ -519,7 +607,39 @@ elseif($mode=='professeur') {
 	$groups=get_groups_for_prof($login_prof);
 
 	// Passage à la semaine précédente/courante/suivante
-	echo "<div style='float: right; width:25em;'><a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;login_prof=$login_prof'>Aujourd'hui</a> - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;login_prof=$login_prof'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;login_prof=$login_prof'>suivante</a></div>\n";
+	include("../lib/calendrier/calendrier.class.php");
+	$cal1 = new Calendrier("form_choix_date", "today_jjmmaaaa");
+
+	echo "<div style='float: right; width:25em;'>
+	<form action='".$_SERVER['PHP_SELF']."' name='form_choix_date' id='form_choix_date' method='post'>
+		<input type='hidden' name='today_jjmmaaaa' id='today_jjmmaaaa' value='' />
+		<input type='hidden' name='login_prof' value='$login_prof' />
+		<input type='hidden' name='mode' value='$mode' />
+		<a href='".$_SERVER['PHP_SELF']."?today=".$ts_aujourdhui."&amp;mode=$mode&amp;login_prof=$login_prof'>Aujourd'hui</a>";
+	
+	echo "
+		<a href=\"#calend\" onclick=\"".$cal1->get_strPopup('../lib/calendrier/pop.calendrier.php', 350, 170).";\"><img src=\"../lib/calendrier/petit_calendrier.gif\" alt=\"Calendrier début\" style=\"border:0;\" /></a>";
+	
+	//echo " ".img_calendrier_js("today_jjmmaaaa", "img_bouton_today_jjmmaaaa");
+	echo "
+		 - Semaines <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_precedente."&amp;mode=$mode&amp;login_prof=$login_prof'>précédente</a> / <a href='".$_SERVER['PHP_SELF']."?today=".$ts_semaine_suivante."&amp;mode=$mode&amp;login_prof=$login_prof'>suivante</a>
+	</form>
+
+	<script type='text/javascript'>
+		var today_jjmmaaaa_0='';
+
+		function teste_modif_date() {
+			if(document.getElementById('today_jjmmaaaa').value!=today_jjmmaaaa_0) {
+				document.getElementById('form_choix_date').submit();
+			}
+			else {
+				setTimeout('teste_modif_date()', 1000);
+			}
+		}
+
+		setTimeout('teste_modif_date()', 2000);
+	</script>
+ </div>\n";
 
 	echo "<p>Affichage pour un professeur&nbsp;: <strong>".$tab_profs2[$login_prof]."</strong></p>\n";
 }
@@ -533,9 +653,9 @@ if($_SESSION['statut']=='professeur') {
 	if($mode!='professeur') {
 		//$tab_mes_groupes=get_groups_for_prof($_SESSION['login']);
 		$sql="SELECT id_groupe FROM j_groupes_professeurs WHERE login='".$_SESSION['login']."'";
-		$res_tmp=mysql_query($sql);
-		if(mysql_num_rows($res_tmp)>0) {
-			while($lig_tmp=mysql_fetch_object($res_tmp)) {
+		$res_tmp=mysqli_query($GLOBALS["mysqli"], $sql);
+		if(mysqli_num_rows($res_tmp)>0) {
+			while($lig_tmp=mysqli_fetch_object($res_tmp)) {
 				$tab_mes_groupes[]=$lig_tmp->id_groupe;
 			}
 		}
@@ -554,9 +674,9 @@ $couleur_matiere=array();
 
 $sql="SELECT m.matiere, es.valeur FROM edt_setting es, matieres m WHERE es.reglage = CONCAT('M_',m.matiere);";
 //echo "$sql<br />";
-$res_couleur=mysql_query($sql);
-if(mysql_num_rows($res_couleur)>0) {
-	while($lig_couleur=mysql_fetch_object($res_couleur)) {
+$res_couleur=mysqli_query($GLOBALS["mysqli"], $sql);
+if(mysqli_num_rows($res_couleur)>0) {
+	while($lig_couleur=mysqli_fetch_object($res_couleur)) {
 		$couleur_matiere[$lig_couleur->matiere]=$lig_couleur->valeur;
 	}
 }
@@ -608,25 +728,26 @@ for($i=0;$i<14;$i++) {
 
 		$sql="SELECT * FROM ct_entry WHERE id_groupe='$id_groupe' AND date_ct>=$ts_jour_debut AND date_ct<$ts_jour_fin ORDER BY date_ct;";
 		//echo "$sql<br />";
-		$res_ct=mysql_query($sql);
+		$res_ct=mysqli_query($GLOBALS["mysqli"], $sql);
 		$cpt=0;
-		while($ligne_ct=mysql_fetch_object($res_ct)) {
+		while($ligne_ct=mysqli_fetch_object($res_ct)) {
 			//if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
 			if((($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes)))||
 			($ligne_ct->date_ct<=$ts_aujourdhui)) {
 				//echo "<div style='border:1px solid black; margin:0.5em;'>".$current_group['name']."<br />".$ligne_ct->contenu."</div>\n";
-				$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]="";
+				$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['id_ct']=$ligne_ct->id_ct;
+				$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['contenu']="";
 
 				// Lien d'édition de la notice:
 				//if(($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes))) {
 					if(($_SESSION['statut']=='professeur')&&(($ligne_ct->id_login==$_SESSION['login'])||(getSettingAOui('cdt_autoriser_modif_multiprof')))) {
 						if((!getSettingAOui('visa_cdt_inter_modif_notices_visees'))||($ligne_ct->vise!='y')){
-							$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;type_notice=cr'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
+							$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['contenu'].="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;type_notice=cr'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
 						}
 					}
 
 					// Notice proprement dite:
-					$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].=$ligne_ct->contenu;
+					$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['contenu'].=$ligne_ct->contenu;
 				/*
 				}
 				else {
@@ -642,15 +763,15 @@ for($i=0;$i<14;$i++) {
 				if((($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes)))||
 					($ligne_ct->date_ct<=$ts_aujourdhui)) {
 					$sql="SELECT * FROM ct_documents where id_ct='$ligne_ct->id_ct';";
-					$res_doc=mysql_query($sql);
-					if(mysql_num_rows($res_doc)>0) {
-						$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<br /><strong>Documents joints&nbsp;:</strong>";
-						while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
+					$res_doc=mysqli_query($GLOBALS["mysqli"], $sql);
+					if(mysqli_num_rows($res_doc)>0) {
+						$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['contenu'].="<br /><strong>Documents joints&nbsp;:</strong>";
+						while($ligne_ct_doc=mysqli_fetch_object($res_doc)) {
 							// Tester si le document est visible ou non dans le cas ele/resp
 							if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
 							($ligne_ct_doc->visible_eleve_parent==1))
 							{
-								$tab_notice[$i][$id_groupe]['ct_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
+								$tab_notice[$i][$id_groupe]['ct_entry'][$cpt]['contenu'].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
 							}
 						}
 					}
@@ -661,36 +782,37 @@ for($i=0;$i<14;$i++) {
 
 		$sql="SELECT * FROM ct_devoirs_entry WHERE id_groupe='$id_groupe' AND date_ct>=$ts_jour_debut AND date_ct<$ts_jour_fin ORDER BY date_ct;";
 		//echo "$sql<br />";
-		$res_ct=mysql_query($sql);
+		$res_ct=mysqli_query($GLOBALS["mysqli"], $sql);
 		$cpt=0;
-		while($ligne_ct=mysql_fetch_object($res_ct)) {
+		while($ligne_ct=mysqli_fetch_object($res_ct)) {
 			if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
 			($ligne_ct->date_ct<=$ts_limite_visibilite_devoirs_pour_eleves)) {
 
-				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]="";
+				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['id_ct']=$ligne_ct->id_ct;
+				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['contenu']="";
 
 				// Lien d'édition de la notice:
 				if(($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes))) {
 					if(($ligne_ct->id_login==$_SESSION['login'])||(getSettingAOui('cdt_autoriser_modif_multiprof'))) {
 						if((!getSettingAOui('visa_cdt_inter_modif_notices_visees'))||($ligne_ct->vise!='y')){
-							$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;edit_devoir=yes&amp;type_notice=dev'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
+							$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['contenu'].="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;edit_devoir=yes&amp;type_notice=dev'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
 						}
 					}
 				}
 
 				// Notice proprement dite:
-				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].=$ligne_ct->contenu;
+				$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['contenu'].=$ligne_ct->contenu;
 
 				// Documents joints:
 				$sql="SELECT * FROM ct_devoirs_documents where id_ct_devoir='$ligne_ct->id_ct';";
-				$res_doc=mysql_query($sql);
-				if(mysql_num_rows($res_doc)>0) {
-					$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<br /><strong>Documents joints&nbsp;:</strong>";
-					while($ligne_ct_doc=mysql_fetch_object($res_doc)) {
+				$res_doc=mysqli_query($GLOBALS["mysqli"], $sql);
+				if(mysqli_num_rows($res_doc)>0) {
+					$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['contenu'].="<br /><strong>Documents joints&nbsp;:</strong>";
+					while($ligne_ct_doc=mysqli_fetch_object($res_doc)) {
 						if((($_SESSION['statut']!='eleve')&&($_SESSION['statut']!='responsable'))||
 						($ligne_ct_doc->visible_eleve_parent==1))
 						{
-							$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
+							$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$cpt]['contenu'].="<br />\n<a href='$ligne_ct_doc->emplacement' title=\"$ligne_ct_doc->titre\" target='_blank'>".$ligne_ct_doc->titre."</a>";
 						}
 					}
 				}
@@ -700,19 +822,19 @@ for($i=0;$i<14;$i++) {
 
 		$sql="SELECT * FROM ct_private_entry WHERE id_groupe='$id_groupe' AND date_ct>=$ts_jour_debut AND date_ct<$ts_jour_fin ORDER BY date_ct;";
 		//echo "$sql<br />";
-		$res_ct=mysql_query($sql);
+		$res_ct=mysqli_query($GLOBALS["mysqli"], $sql);
 		$cpt=0;
-		while($ligne_ct=mysql_fetch_object($res_ct)) {
+		while($ligne_ct=mysqli_fetch_object($res_ct)) {
 			//$tab_notice[$i][$id_groupe]['ct_private_entry'][$cpt]="";
 
 			// Lien d'édition de la notice:
 			// Les notices privées en multiprof??? sont-elles visibles du seul prof ou des profs du groupe?
 			if(($_SESSION['statut']=='professeur')&&(in_array($id_groupe,$tab_mes_groupes))) {
 				if(($ligne_ct->id_login==$_SESSION['login'])||(getSettingAOui('cdt_autoriser_modif_multiprof'))) {
-					$tab_notice[$i][$id_groupe]['ct_private_entry'][$cpt]="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;type_notice=np'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
+					$tab_notice[$i][$id_groupe]['ct_private_entry'][$cpt]['contenu']="<div style='float:right; width:16px;'><a href='../cahier_texte/index.php?id_groupe=$id_groupe&amp;id_ct=$ligne_ct->id_ct&amp;type_notice=np'><img src='../images/edit16.png' width='16' height='16' /></a></div>";
 
 					// Notice proprement dite:
-					$tab_notice[$i][$id_groupe]['ct_private_entry'][$cpt].=$ligne_ct->contenu;
+					$tab_notice[$i][$id_groupe]['ct_private_entry'][$cpt]['contenu'].=$ligne_ct->contenu;
 					$cpt++;
 				}
 			}
@@ -729,6 +851,21 @@ foreach($groups as $current_group) {
 	$chaine_id_groupe.="'$id_groupe'";
 }
 //=============================================================
+
+//================================================
+// 20130727
+$class_notice_dev_fait="color_fond_notices_t_fait";
+$class_notice_dev_non_fait="color_fond_notices_t";
+
+$CDTPeutPointerTravailFait=getSettingAOui('CDTPeutPointerTravailFait'.ucfirst($_SESSION['statut']));
+
+if($CDTPeutPointerTravailFait) {
+	if($login_eleve!='') {
+		$tab_etat_travail_fait=get_tab_etat_travail_fait($login_eleve);
+		echo js_cdt_modif_etat_travail();
+	}
+}
+//================================================
 
 //=============================================================
 // Boucle sur les 14 jours affichés
@@ -808,8 +945,20 @@ for($i=0;$i<14;$i++) {
 			if(isset($tab_notice[$i][$id_groupe]['ct_devoirs_entry'])) {
 				// Liste des devoirs donnés pour ce jour dans ce groupe:
 				for($j=0;$j<count($tab_notice[$i][$id_groupe]['ct_devoirs_entry']);$j++) {
-					$texte_dev_courant.="<div style='background-color:".$color_fond_notices['t']."; border: 1px solid black; margin: 1px;'>\n";
-					$texte_dev_courant.=$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j];
+					// 20130727
+					$class_color_fond_notice="color_fond_notices_t";
+					if($CDTPeutPointerTravailFait) {
+						get_etat_et_img_cdt_travail_fait($tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['id_ct']);
+					}
+
+					//$texte_dev_courant.="<div id='div_travail_".$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['id_ct']."' style='background-color:".$color_fond_notices['t']."; border: 1px solid black; margin: 1px;'$chaine_class_color_fond_notice>\n";
+					$texte_dev_courant.="<div id='div_travail_".$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['id_ct']."' style='border: 1px solid black; margin: 1px;' class='$class_color_fond_notice'>\n";
+
+					if($CDTPeutPointerTravailFait) {
+						$texte_dev_courant.="<div id='div_etat_travail_".$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['id_ct']."' style='float:right; width: 16px; margin: 2px; text-align: center;'><a href=\"javascript:cdt_modif_etat_travail('$login_eleve', '".$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['id_ct']."')\" title=\"$texte_etat_travail\"><img src='$image_etat' class='icone16' /></a></div>\n";
+					}
+
+					$texte_dev_courant.=$tab_notice[$i][$id_groupe]['ct_devoirs_entry'][$j]['contenu'];
 					$texte_dev_courant.="</div>\n";
 					$temoin_dev_non_vides++;
 				}
@@ -833,7 +982,7 @@ for($i=0;$i<14;$i++) {
 				// Liste des compte-renddus pour ce jour dans ce groupe:
 				for($j=0;$j<count($tab_notice[$i][$id_groupe]['ct_entry']);$j++) {
 					$texte_cr_courant.="<div style='background-color:palegreen; border: 1px solid black; margin: 1px;'>\n";
-					$texte_cr_courant.=$tab_notice[$i][$id_groupe]['ct_entry'][$j];
+					$texte_cr_courant.=$tab_notice[$i][$id_groupe]['ct_entry'][$j]['contenu'];
 					$texte_cr_courant.="</div>\n";
 					$temoin_cr_non_vides++;
 				}
@@ -857,7 +1006,7 @@ for($i=0;$i<14;$i++) {
 				// Liste des notices privées pour ce jour dans ce groupe:
 				for($j=0;$j<count($tab_notice[$i][$id_groupe]['ct_private_entry']);$j++) {
 					$texte_np_courant.="<div style='background-color:".$color_fond_notices['p']."; border: 1px solid black; margin: 1px;'>\n";
-					$texte_np_courant.=$tab_notice[$i][$id_groupe]['ct_private_entry'][$j];
+					$texte_np_courant.=$tab_notice[$i][$id_groupe]['ct_private_entry'][$j]['contenu'];
 					$texte_np_courant.="</div>\n";
 					$temoin_np_non_vides++;
 				}
@@ -977,21 +1126,21 @@ for($i=0;$i<14;$i++) {
 	if(($temoin_dev_non_vides>0)||($temoin_cr_non_vides>0)||($temoin_np_non_vides>0)) {
 		$ajout="";
 		if($temoin_cr_non_vides>0) {
-			$ajout.="<a id='lien_alterne_affichage_compte_rendu_jour_$i' href='#' onclick=\"alterne_affichage_global('compte_rendu',$i);return false;\" style='background-color: ".$color_fond_notices['c'].";'>";
+			$ajout.="<a id='lien_alterne_affichage_compte_rendu_jour_$i' href='#' onclick=\"alterne_affichage_global('compte_rendu',$i);return false;\" style='background-color: ".$color_fond_notices['c'].";' title=\"Alterner l'affichage/masquage des compte-rendus de séances\">";
 			$ajout.="C";
 			$ajout.="</a>\n";
 		}
 
 		if($temoin_dev_non_vides>0) {
 			$ajout.=" ";
-			$ajout.="<a id='lien_alterne_affichage_devoirs_jour_$i' href='#' onclick=\"alterne_affichage_global('devoirs',$i);return false;\" style='background-color: ".$color_fond_notices['t'].";'>";
+			$ajout.="<a id='lien_alterne_affichage_devoirs_jour_$i' href='#' onclick=\"alterne_affichage_global('devoirs',$i);return false;\" style='background-color: ".$color_fond_notices['t'].";' title=\"Alterner l'affichage/masquage des travaux à faire\">";
 			$ajout.="T";
 			$ajout.="</a>\n";
 		}
 
 		if($temoin_np_non_vides>0) {
 			$ajout.=" ";
-			$ajout.="<a href='#' id='lien_alterne_affichage_notice_privee_jour_$i' onclick=\"alterne_affichage_global('notice_privee',$i);return false;\" style='background-color: ".$color_fond_notices['p'].";'>";
+			$ajout.="<a href='#' id='lien_alterne_affichage_notice_privee_jour_$i' onclick=\"alterne_affichage_global('notice_privee',$i);return false;\" style='background-color: ".$color_fond_notices['p'].";' title=\"Alterner l'affichage/masquage des notices privées\">";
 			$ajout.="P";
 			$ajout.="</a>\n";
 		}
@@ -1012,7 +1161,8 @@ document.getElementById('p_jour_$i').style.innerHTML='$jour_courant';
 </script>\n";
 	}
 
-	$tabdiv_infobulle[]=creer_div_infobulle("travail_jour_".$i,$titre_infobulle_jour,"",$texte_infobulle_jour,"pink",20,0,'y','y','n','n');
+	//$tabdiv_infobulle[]=creer_div_infobulle("travail_jour_".$i,$titre_infobulle_jour,"",$texte_infobulle_jour,"pink",20,0,'y','y','n','n');
+	$tabdiv_infobulle[]=creer_div_infobulle2("travail_jour_".$i,$titre_infobulle_jour,"",$texte_infobulle_jour,"pink",20,0,'y','y','n','n');
 
 	echo "</div></td>\n";
 }
@@ -1075,10 +1225,10 @@ if(count($tab_grp)>0) {
 		//$sql="SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and (date_ct='' OR date_ct='0'));";
 		$sql="SELECT contenu, id_ct  FROM ct_entry WHERE (id_groupe='$id_groupe' and date_ct='');";
 		//echo "$sql<br />";
-		$appel_info_cahier_texte = mysql_query($sql);
-		$nb_cahier_texte = mysql_num_rows($appel_info_cahier_texte);
-		$content = @mysql_result($appel_info_cahier_texte, 0, 'contenu');
-		$id_ct = @mysql_result($appel_info_cahier_texte, 0, 'id_ct');
+		$appel_info_cahier_texte = mysqli_query($GLOBALS["mysqli"], $sql);
+		$nb_cahier_texte = mysqli_num_rows($appel_info_cahier_texte);
+		$content = @old_mysql_result($appel_info_cahier_texte, 0, 'contenu');
+		$id_ct = @old_mysql_result($appel_info_cahier_texte, 0, 'id_ct');
 		$content.=affiche_docs_joints($id_ct,"c");
 
 		if($content!="") {
