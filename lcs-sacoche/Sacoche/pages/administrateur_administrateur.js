@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -80,11 +80,11 @@ $(document).ready
       // login
       memo_login = login;
       var texte_box  = (mode=='modifier') ? "inchangé" : "automatique (modèle "+tab_login_modele[profil]+")" ;
-      $('#f_login').val(login).css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
+      $('#f_login').val(login).parent().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       $('#box_login').prop('checked',true).next().show(0).html(texte_box);
       // mot de passe
       var texte_box  = (mode=='modifier') ? "inchangé" : "aléatoire" ;
-      $('#f_password').val('').css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
+      $('#f_password').val('').parent().css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       $('#box_password').prop('checked',true).next().show(0).html(texte_box);
       // pour finir
       $('#form_gestion h2').html(mode[0].toUpperCase() + mode.substring(1) + " un utilisateur");

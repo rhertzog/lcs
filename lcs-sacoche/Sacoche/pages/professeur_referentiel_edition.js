@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -28,9 +28,11 @@
 // Permettre l'utilisation de caractères spéciaux
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-var tab_entite_nom = new Array('&sup2;','&sup3;','&times;','&divide;','&minus;','&pi;','&rarr;','&radic;','&infin;','&asymp;','&ne;','&le;','&ge;');
-var tab_entite_val = new Array('²'     ,'³'     ,'×'      ,'÷'       ,'–'      ,'π'   ,'→'     ,'√'      ,'∞'      ,'≈'      ,'≠'   ,'≤'   ,'≥'   );
-var imax = tab_entite_nom.length;
+var tab_entite_nom   = new Array('&sup2;','&sup3;','&times;','&divide;','&minus;','&pi;','&rarr;','&radic;','&infin;','&asymp;','&ne;','&le;','&ge;');
+var tab_entite_val   = new Array('²'     ,'³'     ,'×'      ,'÷'       ,'–'      ,'π'   ,'→'     ,'√'      ,'∞'      ,'≈'      ,'≠'   ,'≤'   ,'≥'   );
+var imax             = tab_entite_nom.length;
+var memo_text_delete = '';
+var memo_objet       = null;
 function entity_convert(string)
 {
   for(i=0;i<imax;i++)
@@ -58,23 +60,23 @@ $(document).ready
     var objet = false;
     var images = new Array();
     images[1]  = '';
-    images[1] += '<q class="n1_edit" lang="edit" title="Renommer ce domaine (avec sa référence)."></q>';
-    images[1] += '<q class="n1_add" lang="add" title="Ajouter un domaine à la suite."></q>';
-    images[1] += '<q class="n1_move" lang="move" title="Déplacer ce domaine (et renuméroter)."></q>';
-    images[1] += '<q class="n1_del" lang="del" title="Supprimer ce domaine ainsi que tout son contenu."></q>';
-    images[1] += '<q class="n2_add" lang="add" title="Ajouter un thème au début de ce domaine (et renuméroter)."></q>';
+    images[1] += '<q class="n1_edit" data-action="edit" title="Renommer ce domaine (avec sa référence)."></q>';
+    images[1] += '<q class="n1_add"  data-action="add"  title="Ajouter un domaine à la suite."></q>';
+    images[1] += '<q class="n1_move" data-action="move" title="Déplacer ce domaine (et renuméroter)."></q>';
+    images[1] += '<q class="n1_del"  data-action="del"  title="Supprimer ce domaine ainsi que tout son contenu."></q>';
+    images[1] += '<q class="n2_add"  data-action="add"  title="Ajouter un thème au début de ce domaine (et renuméroter)."></q>';
     images[2]  = '';
-    images[2] += '<q class="n2_edit" lang="edit" title="Renommer ce thème."></q>';
-    images[2] += '<q class="n2_add" lang="add" title="Ajouter un thème à la suite (et renuméroter)."></q>';
-    images[2] += '<q class="n2_move" lang="move" title="Déplacer ce thème (et renuméroter)."></q>';
-    images[2] += '<q class="n2_del" lang="del" title="Supprimer ce thème ainsi que tout son contenu (et renuméroter)."></q>';
-    images[2] += '<q class="n3_add" lang="add" title="Ajouter un item au début de ce thème (et renuméroter)."></q>';
+    images[2] += '<q class="n2_edit" data-action="edit" title="Renommer ce thème."></q>';
+    images[2] += '<q class="n2_add"  data-action="add"  title="Ajouter un thème à la suite (et renuméroter)."></q>';
+    images[2] += '<q class="n2_move" data-action="move" title="Déplacer ce thème (et renuméroter)."></q>';
+    images[2] += '<q class="n2_del"  data-action="del"  title="Supprimer ce thème ainsi que tout son contenu (et renuméroter)."></q>';
+    images[2] += '<q class="n3_add"  data-action="add"  title="Ajouter un item au début de ce thème (et renuméroter)."></q>';
     images[3]  = '';
-    images[3] += '<q class="n3_edit" lang="edit" title="Renommer, coefficienter, autoriser cet item."></q>';
-    images[3] += '<q class="n3_add" lang="add" title="Ajouter un item à la suite (et renuméroter)."></q>';
-    images[3] += '<q class="n3_move" lang="move" title="Déplacer cet item (et renuméroter)."></q>';
-    images[3] += '<q class="n3_fus" lang="fus" title="Fusionner avec un autre item (et renuméroter)."></q>';
-    images[3] += '<q class="n3_del" lang="del" title="Supprimer cet item (et renuméroter)."></q>';
+    images[3] += '<q class="n3_edit" data-action="edit" title="Renommer, coefficienter, autoriser cet item."></q>';
+    images[3] += '<q class="n3_add"  data-action="add"  title="Ajouter un item à la suite (et renuméroter)."></q>';
+    images[3] += '<q class="n3_move" data-action="move" title="Déplacer cet item (et renuméroter)."></q>';
+    images[3] += '<q class="n3_fus"  data-action="fus"  title="Fusionner avec un autre item (et renuméroter)."></q>';
+    images[3] += '<q class="n3_del"  data-action="del"  title="Supprimer cet item (et renuméroter)."></q>';
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Charger le form zone_elaboration_referentiel en ajax
@@ -147,7 +149,7 @@ $(document).ready
         $('#zone_elaboration_referentiel').html("&nbsp;");
         afficher_masquer_images_action('show'); // au cas où on serait en train d'éditer qq chose
         $('#zone_choix_referentiel').show('fast');
-        return(false);
+        return false;
       }
     );
 
@@ -158,7 +160,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=add]',
+      'q[data-action=add]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
@@ -169,26 +171,26 @@ $(document).ready
         switch(contexte)
         {
           case 'n1' :  // domaine
-            new_li += '<i>Ref.</i> <input id="f_ref" name="f_ref" size="1" maxlength="1" type="text" value="" /> <i>Nom</i> <input id="f_nom" name="f_nom" size="100" maxlength="128" type="text" value="" /> <img alt="" src="./_img/bulle_aide.png" title="Indiquer une lettre référence et un nom de domaine." />';
+            new_li += '<i>Ref.</i> <input id="f_ref" name="f_ref" size="1" maxlength="1" type="text" value="" /> <i>Nom</i> <input id="f_nom" name="f_nom" size="100" maxlength="128" type="text" value="" /> <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer une lettre référence et un nom de domaine." />';
             texte = 'ce domaine';
             break;
           case 'n2' :  // thème
-            new_li += '<i>Nom</i> <input id="f_nom" name="f_nom" size="100" maxlength="128" type="text" value="" /> <img alt="" src="./_img/bulle_aide.png" title="Indiquer un nom de thème." />';
+            new_li += '<i>Nom</i> <input id="f_nom" name="f_nom" size="100" maxlength="128" type="text" value="" /> <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer un nom de thème." />';
             texte = 'ce thème';
             break;
           case 'n3' :  // item
-            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Indiquer un nom d\'item." /> Nom</i><input id="f_nom" name="f_nom" size="125" maxlength="256" type="text" value="" /><br />';
-            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Appartenance éventuelle au socle commun." /> Socle</i><input id="f_intitule" name="f_intitule" size="90" maxlength="256" type="text" value="Hors-socle." readonly /><input id="f_socle" name="f_socle" type="hidden" value="0" /><q class="choisir_compet" title="Sélectionner un item du socle commun."></q><br />';
-            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Coefficient facultatif (entier entre 0 et 20)." /> Coef.</i><input id="f_coef" name="f_coef" type="text" value="1" size="1" maxlength="2" class="sep" />';
+            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer un nom d\'item." /> Nom</i><input id="f_nom" name="f_nom" size="125" maxlength="256" type="text" value="" /><br />';
+            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Appartenance éventuelle au socle commun." /> Socle</i><input id="f_intitule" name="f_intitule" size="90" maxlength="256" type="text" value="Hors-socle." readonly /><input id="f_socle" name="f_socle" type="hidden" value="0" /><q class="choisir_compet" title="Sélectionner un item du socle commun."></q><br />';
+            new_li += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Coefficient facultatif (entier entre 0 et 20)." /> Coef.</i><input id="f_coef" name="f_coef" type="text" value="1" size="1" maxlength="2" class="sep" />';
             new_li += '<i>Demande</i> <input id="f_cart1" name="f_cart" type="radio" value="1" checked /><label for="f_cart1"><img src="./_img/etat/cart_oui.png" title="Demande possible." /></label> <input id="f_cart0" name="f_cart" type="radio" value="0" /><label for="f_cart0" class="sep"><img src="./_img/etat/cart_non.png" title="Demande interdite." /></label>';
-            new_li += 'Lien <img alt="" src="./_img/bulle_aide.png" title="Utiliser la page &#34;Associer des ressources aux items&#34; pour affecter à l\'item un lien vers des ressources (entraînement, remédiation&hellip;)." class="sep" />';
+            new_li += 'Lien <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Utiliser la page &#34;Associer des ressources aux items&#34; pour affecter à l\'item un lien vers des ressources (entraînement, remédiation&hellip;)." class="sep" />';
             new_li += '<i>Action</i> ';
             texte = 'cet item';
             break;
           default :
             texte = '???';
         }
-        new_li += '<q class="valider" lang="ajouter" title="Valider l\'ajout de '+texte+'."></q><q class="annuler" lang="ajouter" title="Annuler l\'ajout de '+texte+'."></q> <label id="ajax_msg">&nbsp;</label>';
+        new_li += '<q class="valider" data-action="ajouter" title="Valider l\'ajout de '+texte+'."></q><q class="annuler" data-action="ajouter" title="Annuler l\'ajout de '+texte+'."></q> <label id="ajax_msg">&nbsp;</label>';
         new_li += '</li>';
         // On insère le formulaire dans la page
         if($(this).parent().attr('id').substring(0,2)==contexte)
@@ -219,7 +221,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=edit]',
+      'q[data-action=edit]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
@@ -234,13 +236,13 @@ $(document).ready
             span = $(this).parent().children('span').text();
             ref = span.charAt(0);
             nom = span.substring(4);
-            new_div += '<i>Ref.</i> <input id="f_ref" name="f_ref" size="1" maxlength="1" type="text" value="'+ref+'" /> <i>Nom</i> <input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,118)+'" maxlength="128" type="text" value="'+escapeQuote(nom)+'" /> <img alt="" src="./_img/bulle_aide.png" title="Indiquer une lettre référence et un nom de domaine." />';
+            new_div += '<i>Ref.</i> <input id="f_ref" name="f_ref" size="1" maxlength="1" type="text" value="'+ref+'" /> <i>Nom</i> <input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,118)+'" maxlength="128" type="text" value="'+escapeQuote(nom)+'" /> <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer une lettre référence et un nom de domaine." />';
             texte = 'ce domaine';
             break;
           case 'n2' :  // thème
             // On récupère le nom
             nom = $(this).parent().children('span').text();
-            new_div += '<i>Nom</i> <input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,128)+'" maxlength="128" type="text" value="'+escapeQuote(nom)+'" /> <img alt="" src="./_img/bulle_aide.png" title="Indiquer un nom de thème." />';
+            new_div += '<i>Nom</i> <input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,128)+'" maxlength="128" type="text" value="'+escapeQuote(nom)+'" /> <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer un nom de thème." />';
             texte = 'ce thème';
             break;
           case 'n3' :  // item
@@ -255,21 +257,21 @@ $(document).ready
             check1 = (cart=='oui') ? ' checked' : '' ;
             check0 = (cart=='non') ? ' checked' : '' ;
             // On récupère le socle
-            socle_id  = $(this).parent().children('b').children('img:eq(2)').attr('lang').substring(3);
+            socle_id  = $(this).parent().children('b').children('img:eq(2)').data('id');
             socle_txt = $('label[for=socle_'+socle_id+']').text();
             // On assemble
-            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Indiquer un nom d\'item." /> Nom</i><input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,128)+'" maxlength="256" type="text" value="'+escapeQuote(nom)+'" /><br />';
-            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Appartenance éventuelle au socle commun." /> Socle</i><input id="f_intitule" name="f_intitule" size="90" maxlength="256" type="text" value="'+socle_txt+'" readonly /><input id="f_socle" name="f_socle" type="hidden" value="'+socle_id+'" /><q class="choisir_compet" title="Sélectionner un item du socle commun."></q><br />';
-            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" title="Coefficient facultatif (entier entre 0 et 20)." /> Coef.</i><input id="f_coef" name="f_coef" type="text" value="'+coef+'" size="1" maxlength="2" class="sep" />';
+            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Indiquer un nom d\'item." /> Nom</i><input id="f_nom" name="f_nom" size="'+Math.min(10+nom.length,128)+'" maxlength="256" type="text" value="'+escapeQuote(nom)+'" /><br />';
+            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Appartenance éventuelle au socle commun." /> Socle</i><input id="f_intitule" name="f_intitule" size="90" maxlength="256" type="text" value="'+socle_txt+'" readonly /><input id="f_socle" name="f_socle" type="hidden" value="'+socle_id+'" /><q class="choisir_compet" title="Sélectionner un item du socle commun."></q><br />';
+            new_div += '<i class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Coefficient facultatif (entier entre 0 et 20)." /> Coef.</i><input id="f_coef" name="f_coef" type="text" value="'+coef+'" size="1" maxlength="2" class="sep" />';
             new_div += '<i>Demande</i> <input id="f_cart1" name="f_cart" type="radio" value="1"'+check1+' /><label for="f_cart1"><img src="./_img/etat/cart_oui.png" title="Demande possible." /></label> <input id="f_cart0" name="f_cart" type="radio" value="0"'+check0+' /><label for="f_cart0" class="sep"><img src="./_img/etat/cart_non.png" title="Demande interdite." /></label>';
-            new_div += 'Lien <img alt="" src="./_img/bulle_aide.png" title="Utiliser la page &#34;Associer des ressources aux items&#34; pour affecter à l\'item un lien vers des ressources (entraînement, remédiation&hellip;)." class="sep" />';
+            new_div += 'Lien <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Utiliser la page &#34;Associer des ressources aux items&#34; pour affecter à l\'item un lien vers des ressources (entraînement, remédiation&hellip;)." class="sep" />';
             new_div += '<i>Action</i>';
             texte = 'cet item';
             break;
           default :
             texte = '???';
         }
-        new_div += '<q class="valider" lang="editer" title="Valider la modification de '+texte+'."></q><q class="annuler" lang="editer" title="Annuler la modification de '+texte+'."></q> <label id="ajax_msg">&nbsp;</label>';
+        new_div += '<q class="valider" data-action="editer" title="Valider la modification de '+texte+'."></q><q class="annuler" data-action="editer" title="Annuler la modification de '+texte+'."></q> <label id="ajax_msg">&nbsp;</label>';
         new_div += '</div>';
         // On insère le formulaire dans la page
         if(contexte=='n3')
@@ -298,33 +300,39 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=del]',
+      'q[data-action=del]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
         contexte = $(this).attr('class').substring(0,2);
         afficher_masquer_images_action('hide');
         // On créé le formulaire à valider
+        var matiere_nom = $('#zone_elaboration_referentiel h2').text();
         switch(contexte)
         {
           case 'n1' :  // domaine
             alerte = 'Tout le contenu de ce domaine ainsi que tous les résultats des items concernés seront perdus !';
-            texte = 'ce domaine';
+            texte1 = 'ce domaine';
+            texte2 = 'le domaine'+' &laquo;&nbsp;'+matiere_nom+'&nbsp;||&nbsp;'+$(this).parent().children('span').text()+'&nbsp;&raquo;';
             break;
           case 'n2' :  // thème
             alerte = 'Tout le contenu de ce thème ainsi que les résultats des items concernés seront perdus (et les thèmes suivants seront renumérotés) !';
-            texte = 'ce thème';
+            texte1 = 'ce thème';
+            texte2 = 'le thème'+' &laquo;&nbsp;'+matiere_nom+'&nbsp;||&nbsp;'+$(this).parent().children('span').text()+'&nbsp;&raquo;';
             break;
           case 'n3' :  // item
             alerte = 'Tous les résultats associés seront perdus et les items suivants seront renumérotés !';
-            texte = 'cet item';
+            texte1 = 'cet item';
+            texte2 = 'l\'item sélectionné';
             break;
           default :
             alerte = '???';
-            texte = '???';
+            texte1 = '???';
+            texte2 = '???';
         }
+        memo_text_delete = texte2;
         new_div = '<div id="form_del" class="danger">'+alerte;  // un div.danger est utilisé au lieu du span.danger car un clic sur un span enroule/déroule le contenu
-        new_div += '<q class="valider" lang="supprimer" title="Valider la suppression de '+texte+'."></q><q class="annuler" lang="supprimer" title="Annuler la suppression de '+texte+'."></q> <label id="ajax_msg">&nbsp;</label>';
+        new_div += '<q class="valider" data-action="supprimer" title="Valider la suppression de '+texte1+'."></q><q class="annuler" data-action="supprimer" title="Annuler la suppression de '+texte1+'."></q> <label id="ajax_msg">&nbsp;</label>';
         new_div += '</div>';
         // On insère le formulaire dans la page
         if(contexte=='n3')
@@ -345,14 +353,14 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=fus]',
+      'q[data-action=fus]',
       function()
       {
         afficher_masquer_images_action('hide');
         // On ajoute les boutons à cocher
         id = $(this).parent().attr('id');
-        $('#zone_elaboration_referentiel li.li_n3').each( function(){ if($(this).attr('id')!=id){$(this).children('b').after('<q class="n3_fus2" lang="fus2" title="Valider l\'absorption de l\'item choisi en 1er par celui-ci."></q>');} } );
-        new_img = '<q class="annuler" lang="fusionner" title="Annuler la fusion de cet item."></q><label id="ajax_msg">&nbsp;</label>';
+        $('#zone_elaboration_referentiel li.li_n3').each( function(){ if($(this).attr('id')!=id){$(this).children('b').after('<q class="n3_fus2" data-action="fus2" title="Valider l\'absorption de l\'item choisi en 1er par celui-ci."></q>');} } );
+        new_img = '<q class="annuler" data-action="fusionner" title="Annuler la fusion de cet item."></q><label id="ajax_msg">&nbsp;</label>';
         // On insère le formulaire dans la page
         $(this).after(new_img);
       }
@@ -365,7 +373,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=move]',
+      'q[data-action=move]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
@@ -376,16 +384,16 @@ $(document).ready
         switch(contexte)
         {
           case 'n1' :  // domaine
-            $('#zone_elaboration_referentiel li.li_m2').each( function(){ $(this).children('span').after('<q class="n1_move2" lang="move2" title="Valider le déplacement du domaine au début de ce niveau."></q>'); } );
-            $('#zone_elaboration_referentiel li.li_n1').each( function(){ if($(this).attr('id')!=id){$(this).children('span').after('<q class="n1_move2" lang="move2" title="Valider le déplacement du domaine à la suite de celui-ci."></q>');} } );
+            $('#zone_elaboration_referentiel li.li_m2').each( function(){ $(this).children('span').after('<q class="n1_move2" data-action="move2" title="Valider le déplacement du domaine au début de ce niveau."></q>'); } );
+            $('#zone_elaboration_referentiel li.li_n1').each( function(){ if($(this).attr('id')!=id){$(this).children('span').after('<q class="n1_move2" data-action="move2" title="Valider le déplacement du domaine à la suite de celui-ci."></q>');} } );
             break;
           case 'n2' :  // thème
-            $('#zone_elaboration_referentiel li.li_n1').each( function(){ $(this).children('span').after('<q class="n2_move2" lang="move2" title="Valider le déplacement du thème au début de ce domaine (et renuméroter)."></q>'); } );
-            $('#zone_elaboration_referentiel li.li_n2').each( function(){ if($(this).attr('id')!=id){$(this).children('span').after('<q class="n2_move2" lang="move2" title="Valider le déplacement du thème à la suite de celui-ci."></q>');} } );
+            $('#zone_elaboration_referentiel li.li_n1').each( function(){ $(this).children('span').after('<q class="n2_move2" data-action="move2" title="Valider le déplacement du thème au début de ce domaine (et renuméroter)."></q>'); } );
+            $('#zone_elaboration_referentiel li.li_n2').each( function(){ if($(this).attr('id')!=id){$(this).children('span').after('<q class="n2_move2" data-action="move2" title="Valider le déplacement du thème à la suite de celui-ci."></q>');} } );
             break;
           case 'n3' :  // item
-            $('#zone_elaboration_referentiel li.li_n2').each( function(){ $(this).children('span').after('<q class="n3_move2" lang="move2" title="Valider le déplacement de l\'item au début de ce thème (et renuméroter)."></q>'); } );
-            $('#zone_elaboration_referentiel li.li_n3').each( function(){ if($(this).attr('id')!=id){$(this).children('b').after('<q class="n3_move2" lang="move2" title="Valider le déplacement de l\'item à la suite de celui-ci."></q>');} } );
+            $('#zone_elaboration_referentiel li.li_n2').each( function(){ $(this).children('span').after('<q class="n3_move2" data-action="move2" title="Valider le déplacement de l\'item au début de ce thème (et renuméroter)."></q>'); } );
+            $('#zone_elaboration_referentiel li.li_n3').each( function(){ if($(this).attr('id')!=id){$(this).children('b').after('<q class="n3_move2" data-action="move2" title="Valider le déplacement de l\'item à la suite de celui-ci."></q>');} } );
             break;
         }
         // On créé le formulaire à valider
@@ -403,7 +411,7 @@ $(document).ready
           default :
             texte = '???';
         }
-        new_img = '<q class="annuler" lang="deplacer" title="Annuler le déplacement de '+texte+'."></q><label id="ajax_msg">&nbsp;</label>';
+        new_img = '<q class="annuler" data-action="deplacer" title="Annuler le déplacement de '+texte+'."></q><label id="ajax_msg">&nbsp;</label>';
         // On insère le formulaire dans la page
         $(this).after(new_img);
       }
@@ -478,7 +486,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.valider[lang=ajouter]',
+      'q.valider[data-action=ajouter]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
@@ -588,7 +596,7 @@ $(document).ready
                     cart_texte  = '<img src="./_img/etat/cart_'+cart_image+'.png" title="'+cart_title+'" />';
                     socle_image = (socle>0) ? 'oui' : 'non' ;
                     socle_title = $('#f_intitule').val();
-                    socle_texte = '<img src="./_img/etat/socle_'+socle_image+'.png" alt="" title="'+socle_title+'" lang="id_'+socle+'" />';
+                    socle_texte = '<img src="./_img/etat/socle_'+socle_image+'.png" alt="" title="'+socle_title+'" data-id="'+socle+'" />';
                     lien_image  = 'non';
                     lien_title  = 'Absence de ressource.';
                     lien_texte  = '<img src="./_img/etat/link_'+lien_image+'.png" alt="" title="'+lien_title+'" />';
@@ -619,7 +627,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.valider[lang=editer]',
+      'q.valider[data-action=editer]',
       function()
       {
         // On récupère le contexte de la demande : n1 ou n2 ou n3
@@ -707,7 +715,7 @@ $(document).ready
                   cart_texte  = '<img src="./_img/etat/cart_'+cart_image+'.png" title="'+cart_title+'" />';
                   socle_image = (socle>0) ? 'oui' : 'non' ;
                   socle_title = $('#f_intitule').val();
-                  socle_texte = '<img src="./_img/etat/socle_'+socle_image+'.png" alt="" title="'+socle_title+'" lang="id_'+socle_id+'" />';
+                  socle_texte = '<img src="./_img/etat/socle_'+socle_image+'.png" alt="" title="'+socle_title+'" data-id="'+socle_id+'" />';
                   lien_image  = (tab_ressources[element_id]) ? 'oui' : 'non' ;
                   lien_title  = (tab_ressources[element_id]) ? tab_ressources[element_id] : 'Absence de ressource.' ;
                   lien_texte  = '<img src="./_img/etat/link_'+lien_image+'.png" alt="" title="'+lien_title+'" />';
@@ -737,58 +745,96 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.valider[lang=supprimer]',
+      'q.valider[data-action=supprimer]',
       function()
       {
-        if(confirm("--- ATTENTION --- DERNIÈRE DEMANDE DE CONFIRMATION ---\nTous les résultats associés des élèves seront perdus !\nÊtes-vous bien certain de vouloir supprimer cet élément de référentiel ?"))
-        {
-          // On récupère le contexte de la demande : n1 ou n2 ou n3
-          contexte = $(this).parent().parent().attr('id').substring(0,2);
-          // On récupère l'id de l'élément concerné (domaine ou theme ou item)
-          element_id = $(this).parent().parent().attr('id').substring(3);
-          // On récupère la liste des éléments suivants dont il faudra diminuer l'ordre
-          li = $(this).parent().parent();
-          tab_id = new Array();
-          while(li.next().length)
-          {
-            li = li.next();
-            tab_id.push(li.attr('id').substring(3));
-          }
-          // Envoi des infos en ajax pour le traitement de la demande
-          $('#ajax_msg').removeAttr("class").addClass("loader").html("En cours&hellip;");
-          $.ajax
-          (
-            {
-              type : 'POST',
-              url : 'ajax.php?page='+PAGE,
-              data : 'csrf='+CSRF+'&action=del'+'&contexte='+contexte+'&element='+element_id+'&tab_id='+tab_id,
-              dataType : "html",
-              error : function(jqXHR, textStatus, errorThrown)
-              {
-                $('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
-              },
-              success : function(responseHTML)
-              {
-                initialiser_compteur();
-                if(responseHTML=='ok')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
-                {
-                  $('#ajax_msg').parent().parent().remove();
-                  afficher_masquer_images_action('show');
-                }
-                else
-                {
-                  $('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
-                }
-              }
-            }
-          );
-        }
-        else
-        {
-          $('q.annuler').click();
-        }
+        memo_objet = $(this);
+        $.prompt(prompt_etapes);
       }
     );
+
+    var prompt_etapes = {
+      etape_2: {
+        title   : 'Demande de confirmation (2/3)',
+        html    : "Tous les résultats des élèves qui en dépendent seront perdus !<br />Souhaitez-vous vraiment supprimer cet élément de référentiel ?",
+        buttons : {
+          "Non, c'est une erreur !" : false ,
+          "Oui, je confirme !" : true
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            event.preventDefault();
+            $('#referentiel_infos_prompt').html(memo_text_delete);
+            $.prompt.goToState('etape_3');
+            return false;
+          }
+          else {
+            $('q.annuler').click();
+          }
+        }
+      },
+      etape_3: {
+        title   : 'Demande de confirmation (3/3)',
+        html    : "Attention : dernière demande de confirmation !!!<br />Êtes-vous bien certain de vouloir supprimer "+'<span id="referentiel_infos_prompt"></span>'+" ?<br />Est-ce définitivement votre dernier mot ???",
+        buttons : {
+          "Oui, j'insiste !" : true ,
+          "Non, surtout pas !" : false
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            envoyer_action_confirmee();
+            return true;
+          }
+          else {
+            $('q.annuler').click();
+          }
+        }
+      }
+    };
+
+    function envoyer_action_confirmee()
+    {
+      // On récupère le contexte de la demande : n1 ou n2 ou n3
+      contexte = memo_objet.parent().parent().attr('id').substring(0,2);
+      // On récupère l'id de l'élément concerné (domaine ou theme ou item)
+      element_id = memo_objet.parent().parent().attr('id').substring(3);
+      // On récupère la liste des éléments suivants dont il faudra diminuer l'ordre
+      li = memo_objet.parent().parent();
+      tab_id = new Array();
+      while(li.next().length)
+      {
+        li = li.next();
+        tab_id.push(li.attr('id').substring(3));
+      }
+      // Envoi des infos en ajax pour le traitement de la demande
+      $('#ajax_msg').removeAttr("class").addClass("loader").html("En cours&hellip;");
+      $.ajax
+      (
+        {
+          type : 'POST',
+          url : 'ajax.php?page='+PAGE,
+          data : 'csrf='+CSRF+'&action=del'+'&contexte='+contexte+'&element='+element_id+'&tab_id='+tab_id,
+          dataType : "html",
+          error : function(jqXHR, textStatus, errorThrown)
+          {
+            $('#ajax_msg').removeAttr("class").addClass("alerte").html('Échec de la connexion !');
+          },
+          success : function(responseHTML)
+          {
+            initialiser_compteur();
+            if(responseHTML=='ok')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
+            {
+              $('#ajax_msg').parent().parent().remove();
+              afficher_masquer_images_action('show');
+            }
+            else
+            {
+              $('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
+            }
+          }
+        }
+      );
+    }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clic sur l'image pour confirmer la fusion d'un item avec un second qui l'absorbe
@@ -797,13 +843,13 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=fus2]',
+      'q[data-action=fus2]',
       function()
       {
         //
         // Element de départ
         //
-        li = $('q.annuler[lang=fusionner]').parent();
+        li = $('q.annuler[data-action=fusionner]').parent();
         li_id_depart = li.attr('id');
         element_id = li_id_depart.substring(3);
         // On récupère la liste des éléments suivants dont il faudra diminuer l'ordre
@@ -837,7 +883,7 @@ $(document).ready
               if(responseHTML=='ok')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
               {
                 $('#ajax_msg').parent().remove();
-                $('q[lang=fus2]').remove();
+                $('q[data-action=fus2]').remove();
                 afficher_masquer_images_action('show');
               }
               else
@@ -857,13 +903,13 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q[lang=move2]',
+      'q[data-action=move2]',
       function()
       {
         //
         // Element de départ
         //
-        li = $('q.annuler[lang=deplacer]').parent();
+        li = $('q.annuler[data-action=deplacer]').parent();
         li_id_depart = li.attr('id');
         // On récupère le contexte de la demande : n1 ou n2 ou n3
         // On récupère l'id de l'élément concerné (domaine ou theme ou item)
@@ -956,9 +1002,9 @@ $(document).ready
                 {
                   $('#'+li_id_arrivee).children('ul').prepend( $('#'+li_id_depart) );
                 }
-                $('q.annuler[lang=deplacer]').remove();
+                $('q.annuler[data-action=deplacer]').remove();
                 $('#ajax_msg').remove();
-                $('q[lang=move2]').remove();
+                $('q[data-action=move2]').remove();
                 afficher_masquer_images_action('show');
               }
               else
@@ -978,7 +1024,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.annuler[lang=ajouter]',
+      'q.annuler[data-action=ajouter]',
       function()
       {
         $(this).parent().remove();
@@ -993,7 +1039,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.annuler[lang=editer]',
+      'q.annuler[data-action=editer]',
       function()
       {
         $(this).parent().parent().children().show();
@@ -1009,7 +1055,7 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.annuler[lang=supprimer]',
+      'q.annuler[data-action=supprimer]',
       function()
       {
         $(this).parent().parent().children().show();
@@ -1025,12 +1071,12 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.annuler[lang=fusionner]',
+      'q.annuler[data-action=fusionner]',
       function()
       {
         $(this).remove();
         $('#ajax_msg').remove();
-        $('q[lang=fus2]').remove();
+        $('q[data-action=fus2]').remove();
         afficher_masquer_images_action('show');
       }
     );
@@ -1042,12 +1088,12 @@ $(document).ready
     $('#zone_elaboration_referentiel').on
     (
       'click',
-      'q.annuler[lang=deplacer]',
+      'q.annuler[data-action=deplacer]',
       function()
       {
         $(this).remove();
         $('#ajax_msg').remove();
-        $('q[lang=move2]').remove();
+        $('q[data-action=move2]').remove();
         afficher_masquer_images_action('show');
       }
     );

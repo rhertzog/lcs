@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -172,7 +172,7 @@ class Webmestre
     $texte.= 'Vous êtes aussi désormais le contact référent de votre établissement pour cette installation de SACoche.'."\r\n";
     $texte.= 'Pour modifier les coordonnées de la personne référente, rendez-vous dans votre espace d\'administration.'."\r\n";
     $texte.= "\r\n";
-    $texte.= 'Ce logiciel est mis à votre disposition gratuitement, mais sans garantie, conformément à la licence libre GNU GPL3.'."\r\n";
+    $texte.= 'Ce logiciel est mis à votre disposition gratuitement, mais sans garantie, conformément à la licence libre GNU AGPL3.'."\r\n";
     $texte.= 'Les administrateurs et les professeurs sont responsables de toute conséquence d\'une mauvaise manipulation de leur part.'."\r\n";
     $texte.= "\r\n";
     $texte.= 'Merci de consulter la documentation disponible depuis le site du projet :'."\r\n";
@@ -210,8 +210,9 @@ class Webmestre
     $texte = 'Bonjour '.$contact_prenom.' '.$contact_nom.','."\r\n";
     $texte.= "\r\n";
     $texte.= 'Un nouveau mot de passe vient d\'être généré pour '.$admin_prenom.' '.$admin_nom.', administrateur de SACoche pour l\'établissement "'.$denomination.'" sur le serveur "'.HEBERGEUR_DENOMINATION.'".'."\r\n";
+    $texte.= 'Vous le recevez en tant que contact référent de votre établissement pour cette installation de SACoche.'."\r\n";
     $texte.= "\r\n";
-    $texte.= 'Pour se connecter, cet administrateur doit utiliser le lien'."\r\n";
+    $texte.= 'Pour se connecter avec ce compte administrateur, utiliser le lien'."\r\n";
     $texte.= $url_dir_sacoche.'?id='.$base_id."\r\n";
     $texte.= 'et entrer les identifiants'."\r\n";
     $texte.= 'nom d\'utilisateur :   '.$admin_login."\r\n";
@@ -219,8 +220,9 @@ class Webmestre
     $texte.= "\r\n";
     $texte.= 'Ces identifiants sont modifiables depuis l\'espace d\'administration.'."\r\n";
     $texte.= 'Un administrateur peut déléguer son rôle en créant d\'autres administrateurs.'."\r\n";
+    $texte.= 'Si ce compte correspond à un administrateur qui n\'est plus présent dans votre établissement, vous pouvez modifier ses coordonnées depuis l\'espace d\'administration.'."\r\n";
     $texte.= "\r\n";
-    $texte.= 'Rappel : ce logiciel est mis à votre disposition gratuitement, mais sans garantie, conformément à la licence libre GNU GPL3.'."\r\n";
+    $texte.= 'Rappel : ce logiciel est mis à votre disposition gratuitement, mais sans garantie, conformément à la licence libre GNU AGPL3.'."\r\n";
     $texte.= 'Les administrateurs et les professeurs sont responsables de toute conséquence d\'une mauvaise manipulation de leur part.'."\r\n";
     $texte.= "\r\n";
     $texte.= 'Merci de consulter la documentation disponible depuis le site du projet :'."\r\n";

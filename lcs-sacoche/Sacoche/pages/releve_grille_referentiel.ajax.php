@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -51,6 +51,7 @@ $orientation       = (isset($_POST['f_orientation']))   ? Clean::texte($_POST['f
 $couleur           = (isset($_POST['f_couleur']))       ? Clean::texte($_POST['f_couleur'])                : '';
 $legende           = (isset($_POST['f_legende']))       ? Clean::texte($_POST['f_legende'])                : '';
 $marge_min         = (isset($_POST['f_marge_min']))     ? Clean::texte($_POST['f_marge_min'])              : '';
+$pages_nb          = (isset($_POST['f_pages_nb']))      ? Clean::texte($_POST['f_pages_nb'])               : '';
 $cases_nb          = (isset($_POST['f_cases_nb']))      ? Clean::entier($_POST['f_cases_nb'])              : -1;
 $cases_largeur     = (isset($_POST['f_cases_larg']))    ? Clean::entier($_POST['f_cases_larg'])            : 0;
 
@@ -95,7 +96,7 @@ if(in_array($_SESSION['USER_PROFIL_TYPE'],array('parent','eleve')))
 // Si pas grille générique et si notes demandées ou besoin pour colonne bilan ou besoin pour synthèse
 $besoin_notes = ( !$type_generique && ( ($remplissage=='plein') || ($colonne_bilan=='oui') || $type_synthese ) ) ? TRUE : FALSE ;
 
-if( !$matiere_id || !$niveau_id || !$matiere_nom || !$niveau_nom || !$remplissage || !$colonne_bilan || ( $besoin_notes && !$periode_id && (!$date_debut || !$date_fin) ) || ( $besoin_notes && !$retroactif ) || !$orientation || !$couleur || !$legende || !$marge_min || ($cases_nb<0) || !$cases_largeur || !count($tab_type) )
+if( !$matiere_id || !$niveau_id || !$matiere_nom || !$niveau_nom || !$remplissage || !$colonne_bilan || ( $besoin_notes && !$periode_id && (!$date_debut || !$date_fin) ) || ( $besoin_notes && !$retroactif ) || !$orientation || !$couleur || !$legende || !$marge_min || !$pages_nb || ($cases_nb<0) || !$cases_largeur || !count($tab_type) )
 {
   exit('Erreur avec les données transmises !');
 }
@@ -455,7 +456,7 @@ if( $type_generique || $type_individuel )
   $releve_HTML_individuel .= $affichage_direct ? '' : '<h2>'.html($matiere_nom.' - Niveau '.$niveau_nom.$msg_socle.$msg_periode).'</h2>'.NL;
   // Appel de la classe et définition de qqs variables supplémentaires pour la mise en page PDF
   $releve_PDF = new PDF( FALSE /*officiel*/ , $orientation , $marge_min /*marge_gauche*/ , $marge_min /*marge_droite*/ , $marge_min /*marge_haut*/ , $marge_min /*marge_bas*/ , $couleur , $legende );
-  $releve_PDF->grille_referentiel_initialiser( $cases_nb , $cases_largeur , $lignes_nb , $colonne_bilan , $colonne_vide , ($retroactif!='non') /*anciennete_notation*/ , ($colonne_bilan=='oui') /*score_bilan*/ );
+  $releve_PDF->grille_referentiel_initialiser( $cases_nb , $cases_largeur , $lignes_nb , $colonne_bilan , $colonne_vide , ($retroactif!='non') /*anciennete_notation*/ , ($colonne_bilan=='oui') /*score_bilan*/ , $pages_nb );
   $separation = (count($tab_eleve)>1) ? '<hr />'.NL : '' ;
 
   // Pour chaque élève...
@@ -498,7 +499,7 @@ if( $type_generique || $type_individuel )
                 }
                 if($aff_lien)
                 {
-                  $texte_lien_avant = ($item_lien) ? '<a class="lien_ext" href="'.html($item_lien).'">' : '';
+                  $texte_lien_avant = ($item_lien) ? '<a target="_blank" href="'.html($item_lien).'">' : '';
                   $texte_lien_apres = ($item_lien) ? '</a>' : '';
                 }
                 $score = (isset($tab_score_eleve_item[$eleve_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$item_id] : FALSE ;
@@ -725,7 +726,7 @@ if($affichage_direct)
 {
   echo'<hr />'.NL;
   echo'<ul class="puce">'.NL;
-  echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.$fichier_nom_type1.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.$fichier_nom_type1.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
   echo'</ul>'.NL;
   echo $releve_HTML_individuel;
 }
@@ -735,8 +736,8 @@ else
   {
     echo'<h2>Synthèse collective</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.$fichier_nom_type2.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.$fichier_nom_type2.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.$fichier_nom_type2.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.$fichier_nom_type2.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo'</ul>'.NL;
   }
   if( $type_generique || $type_individuel )
@@ -744,8 +745,8 @@ else
     $h2 = ($type_individuel) ? 'Relevé individuel' : 'Relevé générique' ;
     echo'<h2>'.$h2.'</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.$fichier_nom_type1.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.$fichier_nom_type1.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.$fichier_nom_type1.'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.$fichier_nom_type1.'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo'</ul>'.NL;
   }
 }

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -138,6 +138,12 @@ class Session
   {
     Session::param();
     $ID = $_COOKIE[SESSION_NOM];
+    // Pour éviter "PHP Warning:  session_start(): The session id is too long or contains illegal characters, valid characters are a-z, A-Z, 0-9 and '-,' in ..."
+    if( !preg_match('/^[a-z0-9]{45}$/',$ID) ) // car formé dans open_new() avec uniqid().md5() donc 13+32 caractères alphanumériques
+    {
+      Session::close(FALSE); // Sinon on repasse par ici en boucle
+      exit_error( 'Ouverture de session' /*titre*/ , 'L\'identifiant de session n\'est pas conforme.<br />Valeur du cookie de session modifiée manuellement ?' /*contenu*/ );
+    }
     session_id($ID);
     if( !session_start() )
     {
@@ -287,16 +293,19 @@ class Session
    * Appelé une fois depuis /webservices/argos_parent.php et une fois depuis ajax.php
    * Remarque: pour obliger à une reconnexion sans détruire la session (donc les infos des fournisseurs de SSO), il suffit de faire $_SESSION['USER_PROFIL_SIGLE'] = 'OUT';
    * 
-   * @param void
+   * @param bool   is_initialized   TRUE par défaut ; FALSE pour éviter "Warning: session_destroy(): Trying to destroy uninitialized session"
    * @return void
    */
-  public static function close()
+  public static function close($is_initialized=TRUE)
   {
     // Pas besoin de session_start() car la session a déjà été ouverte avant appel à cette fonction.
     $_SESSION = array();
     session_unset();
     setcookie( session_name() /*name*/ , '' /*value*/ , $_SERVER['REQUEST_TIME']-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
-    session_destroy();
+    if($is_initialized)
+    {
+      session_destroy();
+    }
   }
 
   /*
@@ -413,6 +422,7 @@ class Session
       '_maj_select_domaines',
       '_maj_select_eleves',
       '_maj_select_eval',
+      '_maj_select_items',
       '_maj_select_matieres',
       '_maj_select_matieres_famille',
       '_maj_select_matieres_prof',
@@ -468,6 +478,9 @@ class Session
    * Appelé par ajax.php pour vérifier un jeton CSRF lors d'un appel ajax (soumission de données) d'une page donnée (vérifie sa valeur en session, quitte si pb).
    * Peut être aussi potentiellement appelé par de rares pages PHP s'envoyant un formulaire sans passer par AJAX (seule officiel_accueil.php est concernée au 10/2012).
    * On utilise REQUEST car c'est tranmis en POST si ajax maison mais en GET si utilisation de jquery.form.js.
+   * On teste aussi la présence de données en POST car s'il n'y en a pas alors :
+   * - ce peut être à cause de l'upload d'un trop gros fichier qui fait que les variables postées n'arrivent pas
+   * - dans ce cas, il n'y a pas vraiment de risque CSRF, puisque aucune (mauvaise) donnée postée n'est traitée
    * La session doit être ouverte.
    *
    * @param string $page
@@ -477,7 +490,7 @@ class Session
   {
     if(Session::page_avec_jeton_CSRF($page))
     {
-      if( empty($_REQUEST['csrf']) || empty($_SESSION['CSRF'][$_REQUEST['csrf'].'.'.$page]) )
+      if( ( empty($_REQUEST['csrf']) || empty($_SESSION['CSRF'][$_REQUEST['csrf'].'.'.$page]) ) && !empty($_POST) )
       {
         exit_error( 'Alerte CSRF' /*titre*/ , 'Jeton anti-CSRF invalide.<br />Plusieurs onglets ouverts avec des sessions incompatibles ?' /*contenu*/ );
       }

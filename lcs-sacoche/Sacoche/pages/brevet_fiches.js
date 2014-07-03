@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -300,7 +300,7 @@ $(document).ready
         $('#zone_action_eleve').html("&nbsp;").hide(0);
         $('#cadre_photo').hide(0);
         $('#cadre_statut , #table_accueil').show(0);
-        return(false);
+        return false;
       }
     );
 
@@ -310,7 +310,7 @@ $(document).ready
       {
         $('#zone_chx_rubriques').hide(0);
         $('#cadre_statut , #table_accueil').show(0);
-        return(false);
+        return false;
       }
     );
 
@@ -324,7 +324,7 @@ $(document).ready
         $('#zone_action_classe , #zone_imprimer , #zone_voir_archive').css('display','none'); // .hide(0) ne fonctionne pas bien ici...
         $('#ajax_msg_imprimer , #ajax_msg_voir_archive').removeAttr("class").html("");
         $('#cadre_statut , #table_accueil').show(0);
-        return(false);
+        return false;
       }
     );
 
@@ -536,7 +536,6 @@ $(document).ready
               else
               {
                 $('#ajax_msg_archiver_imprimer').removeAttr("class").html(responseHTML);
-                format_liens('#ajax_msg_archiver_imprimer');
               }
             }
           }
@@ -580,8 +579,7 @@ $(document).ready
               }
               else
               {
-                $.fancybox( '<h4>Test impression PDF finale</h4><p class="astuce">Ce fichier comprend l\'exemplaire archivé ainsi que le ou les exemplaires pour les responsables légaux.</p><div id="imprimer_liens"><ul class="puce"><li><a class="lien_ext" href="'+responseHTML.substring(3)+'"><span class="file file_pdf">Récupérer le test d\'impression de la fiche brevet demandée.</span></a></li></ul></div>' , {'centerOnScroll':true} );
-                format_liens('#imprimer_liens');
+                $.fancybox( '<h3>Test impression PDF finale</h3><p class="astuce">Ce fichier comprend l\'exemplaire archivé ainsi que le ou les exemplaires pour les responsables légaux.</p><div id="imprimer_liens"><ul class="puce"><li><a target="_blank" href="'+responseHTML.substring(3)+'"><span class="file file_pdf">Récupérer le test d\'impression de la fiche brevet demandée.</span></a></li></ul></div>' , {'centerOnScroll':true} );
               }
             }
           }
@@ -905,8 +903,7 @@ $(document).ready
                 $('#id_'+tab_listing_id[key]).children('td:last').html('Oui, le '+TODAY_FR);
               }
               $('#ajax_msg_imprimer').removeAttr("class").html("");
-              $.fancybox( '<h4>Bilans PDF imprimés</h4>'+'<p class="danger b">Archivez soigneusement ces documents : les originaux ne sont pas conservés par <em>SACoche</em> !</p>'+'<div id="imprimer_liens">'+responseHTML+'</div>' , {'centerOnScroll':true} );
-              format_liens('#imprimer_liens');
+              $.fancybox( '<h3>Bilans PDF imprimés</h3>'+'<p class="danger b">Archivez soigneusement ces documents : les originaux ne sont pas conservés par <em>SACoche</em> !</p>'+'<div id="imprimer_liens">'+responseHTML+'</div>' , {'centerOnScroll':true} );
             }
           }
         }
@@ -968,7 +965,6 @@ $(document).ready
               $('#zone_'+memo_objet+' table tbody').html(responseHTML);
               $('#ajax_msg_'+memo_objet).removeAttr("class").html("");
               $('#form_choix_classe button , #form_choix_classe select , #valider_imprimer').prop('disabled',false);
-              format_liens('#zone_voir_archive');
             }
           }
         }
@@ -1137,7 +1133,7 @@ $(document).ready
           var input_value = ( $('#avis_conseil_classe').text() == 'Avis favorable' ) ? 'F' : 'D' ;
           input_avis_conseil = '<input type="hidden" name="f_avis_conseil" id="f_avis_conseil" value="'+input_value+'" />';
         }
-        var message_contenu = $('h1').text().substring(2)+' - '+$('#groupe_'+memo_classe+'_'+memo_groupe).text()+"\n"+'Concernant '+$('#go_selection_eleve option:selected').text()+', ';
+        var message_contenu = $('h1').text()+' - '+$('#groupe_'+memo_classe+'_'+memo_groupe).text()+"\n"+'Concernant '+$('#go_selection_eleve option:selected').text()+', ';
         $('#f_destinataires_liste').val(prof_id);
         // Affichage supplémentaire si correction de l'appréciation
         if(objet=='corriger')
@@ -1192,7 +1188,7 @@ $(document).ready
         $('#section_corriger').html("");
         $('#ajax_msg_signaler_corriger').removeAttr("class").html("");
         $.fancybox.close();
-        return(false);
+        return false;
       }
     );
 

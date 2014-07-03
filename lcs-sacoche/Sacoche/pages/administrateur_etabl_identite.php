@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -66,12 +66,12 @@ if(HEBERGEUR_INSTALLATION=='multi-structures')
   $contact_courriel = $DB_ROW['structure_contact_courriel'];
   $user_readonly = (CONTACT_MODIFICATION_USER!='non') ? '' : ' readonly' ;
   $mail_readonly = (CONTACT_MODIFICATION_MAIL!='non') ? '' : ' readonly' ;
-  $user_title    = (CONTACT_MODIFICATION_USER=='oui') ? '' : ' <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable directement.<br />Utiliser le lien ci-dessous." />' ;
-  $mail_title    = (CONTACT_MODIFICATION_MAIL=='oui') ? '' : ( (CONTACT_MODIFICATION_MAIL=='non') ? ' <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable directement.<br />Utiliser le lien ci-dessous." />' : ' <img alt="" src="./_img/bulle_aide.png" title="Valeur modifiable mais restreinte par le webmestre au domaine \''.CONTACT_MODIFICATION_MAIL.'\'." />' ) ;
+  $user_title    = (CONTACT_MODIFICATION_USER=='oui') ? '' : ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable directement.<br />Utiliser le lien ci-dessous." />' ;
+  $mail_title    = (CONTACT_MODIFICATION_MAIL=='oui') ? '' : ( (CONTACT_MODIFICATION_MAIL=='non') ? ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable directement.<br />Utiliser le lien ci-dessous." />' : ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur modifiable mais restreinte par le webmestre au domaine \''.CONTACT_MODIFICATION_MAIL.'\'." />' ) ;
   $contact_class_valider = ( $user_readonly && $mail_readonly ) ? 'hide' : 'show' ;
   $contact_class_mailto  = ( $user_readonly || $mail_readonly ) ? 'show' : 'hide' ;
-  $GLOBALS['HEAD']['js']['inline'][] = 'var CONTACT_MODIFICATION_USER = "'.CONTACT_MODIFICATION_USER.'";';
-  $GLOBALS['HEAD']['js']['inline'][] = 'var CONTACT_MODIFICATION_MAIL = "'.CONTACT_MODIFICATION_MAIL.'";';
+  Layout::add( 'js_inline_before' , 'var CONTACT_MODIFICATION_USER = "'.CONTACT_MODIFICATION_USER.'";' );
+  Layout::add( 'js_inline_before' , 'var CONTACT_MODIFICATION_MAIL = "'.CONTACT_MODIFICATION_MAIL.'";' );
 }
 else
 {
@@ -98,14 +98,14 @@ else
   <form action="#" method="post" id="form_sesamath">
     <hr />
     <h2>Identification de l'établissement dans la base Sésamath</h2>
+    <ul class="puce"><li><a id="ouvrir_recherche" href="#"><img width="16" height="16" src="./_img/find.png" alt="Rechercher" /> Rechercher l'établissement dans la base Sésamath</a> afin de pouvoir échanger ensuite avec le serveur communautaire.</li></ul>
     <p>
-      <label class="tab" for="f_sesamath_id">Identifiant <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessous." /> :</label><input id="f_sesamath_id" name="f_sesamath_id" size="5" type="text" value="<?php echo html($_SESSION['SESAMATH_ID']); ?>" readonly /><br />
-      <label class="tab" for="f_sesamath_uai">Code UAI <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessous." /> :</label><input id="f_sesamath_uai" name="f_sesamath_uai" size="8" type="text" value="<?php echo html($_SESSION['SESAMATH_UAI']); ?>" readonly /><br />
-      <label class="tab" for="f_sesamath_type_nom">Dénomination <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessous." /> :</label><input id="f_sesamath_type_nom" name="f_sesamath_type_nom" size="50" type="text" value="<?php echo html($_SESSION['SESAMATH_TYPE_NOM']); ?>" readonly /><br />
-      <label class="tab" for="f_sesamath_key">Clef de contrôle <img alt="" src="./_img/bulle_aide.png" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessous." /> :</label><input id="f_sesamath_key" name="f_sesamath_key" size="35" type="text" value="<?php echo html($_SESSION['SESAMATH_KEY']); ?>" readonly /><br />
+      <label class="tab" for="f_sesamath_id">Identifiant <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessus." /> :</label><input id="f_sesamath_id" name="f_sesamath_id" size="5" type="text" value="<?php echo html($_SESSION['SESAMATH_ID']); ?>" readonly /><br />
+      <label class="tab" for="f_sesamath_uai">Code UAI <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessus." /> :</label><input id="f_sesamath_uai" name="f_sesamath_uai" size="8" type="text" value="<?php echo html($_SESSION['SESAMATH_UAI']); ?>" readonly /><br />
+      <label class="tab" for="f_sesamath_type_nom">Dénomination <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessus." /> :</label><input id="f_sesamath_type_nom" name="f_sesamath_type_nom" size="50" type="text" value="<?php echo html($_SESSION['SESAMATH_TYPE_NOM']); ?>" readonly /><br />
+      <label class="tab" for="f_sesamath_key">Clef de contrôle <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur non modifiable manuellement.<br />Utiliser le lien ci-dessus." /> :</label><input id="f_sesamath_key" name="f_sesamath_key" size="35" type="text" value="<?php echo html($_SESSION['SESAMATH_KEY']); ?>" readonly /><br />
       <span class="tab"></span><button id="bouton_valider_sesamath" type="submit" class="parametre">Valider.</button><label id="ajax_msg_sesamath">&nbsp;</label>
     </p>
-  <ul class="puce"><li><a id="ouvrir_recherche" href="#"><img alt="" src="./_img/find.png" /> Rechercher l'établissement dans la base Sésamath</a> afin de pouvoir échanger ensuite avec le serveur communautaire.</li></ul>
   </form>
 
   <form action="#" method="post" id="form_contact" class="<?php echo $contact_class_zone ?>">

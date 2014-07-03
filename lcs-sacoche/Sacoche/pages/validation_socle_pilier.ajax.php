@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -48,7 +48,7 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
 {
   Form::save_choix('palier');
   $affichage = '';
-  $tab_modif_cellule = array();  // ['html'] , ['class'] , ['title'] , ['lang']
+  $tab_modif_cellule = array();  // ['html'] , ['class'] , ['title'] , ['data_etat']
   // Tableau des langues
   $tfoot = '';
   require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
@@ -74,6 +74,8 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
   $affichage .=   '<p><label for="Afficher_pourcentage"><input type="checkbox" id="Afficher_pourcentage" /> <span for="Afficher_pourcentage" class="socle_info voir">Afficher / Masquer le nombre d\'items du socle validés et invalidés.</span></label></p>';
   $affichage .=   '<p class="danger">Rappel : la validation d\'une compétence est définitive (une invalidation peut être changée).</p>';
   $affichage .=   '<p><button id="Enregistrer_validation" type="button" class="valider">Enregistrer les validations</button> <button id="fermer_zone_validation" type="button" class="retourner">Retour</button><label id="ajax_msg_validation"></label></p>';
+  $affichage .=   '<div><button id="go_precedent_groupe" type="button" class="go_precedent" title="Classe / groupe précédent.">&nbsp;</button> <button id="go_suivant_groupe" type="button" class="go_suivant" title="Classe / groupe suivant.">&nbsp;</button> <span class="m1 b">@GROUPE@</span></div>';
+  $affichage .=   '<div><button id="go_precedent_palier" type="button" class="go_precedent" title="Palier précédent.">&nbsp;</button> <button id="go_suivant_palier" type="button" class="go_suivant" title="Palier suivant.">&nbsp;</button> <span class="m1 b">@PALIER@</span></div>';
   $affichage .= '</th>';
   $affichage .= '</tr></thead>';
   $affichage .= '<tbody>';
@@ -84,14 +86,14 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
     $affichage .= '<th id="U'.$eleve_id.'" class="down1" title="Modifier la validation de toutes les compétences pour cet élève."></th>';
   }
   $affichage .= '<th id="P'.$palier_id.'" class="diag1" title="Modifier la validation de toutes les compétences pour tous les élèves."></th>';
-  $affichage .= '<th class="nu" colspan="2"><div class="m1 b">@PALIER@</div></th>';
+  $affichage .= '<th class="nu" colspan="2"></th>';
   $affichage .= '</tr>';
   // Récupérer l'arborescence des piliers du palier du socle (enfin... uniquement les piliers, ça suffit ici)
   $tab_pilier_id = array(); // listing des ids des piliers mis à jour au cas où la récupération dans la base soit différente des ids transmis...
   $DB_TAB = DB_STRUCTURE_SOCLE::DB_recuperer_piliers($palier_id);
   foreach($DB_TAB as $DB_ROW)
   {
-    $pilier_id = $DB_ROW['pilier_id'];
+    $pilier_id = $DB_ROW['rubrique_id'];
     if(in_array($pilier_id,$tab_pilier))
     {
       $tab_pilier_id[] = $pilier_id;
@@ -99,11 +101,11 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
       $affichage .= '<tr>';
       foreach($tab_eleve_id as $eleve_id)
       {
-        $affichage .= '<td id="U'.$eleve_id.'C'.$pilier_id.'"></td>'; // class/title + lang + contenu seront ajoutés ensuite 
-        $tab_modif_cellule[$eleve_id][$pilier_id] = array( 'html_v1'=>'0' , 'html_v0'=>'0' , 'class'=>' class="v2"' , 'title'=>'' , 'lang'=>'' );
+        $affichage .= '<td id="U'.$eleve_id.'C'.$pilier_id.'"></td>'; // class/title + data-etat + contenu seront ajoutés ensuite 
+        $tab_modif_cellule[$eleve_id][$pilier_id] = array( 'html_v1'=>'0' , 'html_v0'=>'0' , 'class'=>' class="v2"' , 'title'=>'' , 'data_etat'=>'' );
       }
       $affichage .= '<th id="C'.$pilier_id.'" class="left1" title="Modifier la validation de cette compétence pour tous les élèves."></th>';
-      $affichage .= '<th class="nu" colspan="2"><div class="n1">'.html($DB_ROW['pilier_nom']).'</div></th>';
+      $affichage .= '<th class="nu" colspan="2"><div class="n1">'.html($DB_ROW['rubrique_nom']).'</div></th>';
       $affichage .= '</tr>';
     }
   }
@@ -116,11 +118,11 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
   $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_jointure_user_pilier( $listing_eleve_id , $listing_pilier_id , 0 /*palier_id*/ ); // en fait on connait aussi le palier mais la requête est plus simple (pas de jointure) avec les piliers
   foreach($DB_TAB as $DB_ROW)
   {
-    $etat = ($DB_ROW['validation_pilier_etat']) ? 'Validé' : 'Invalidé' ;
-    $lang = ($DB_ROW['validation_pilier_etat']) ? ' lang="lock"' : '' ;
+    $title_etat = ($DB_ROW['validation_pilier_etat']) ? 'Validé' : 'Invalidé' ;
+    $data_etat  = ($DB_ROW['validation_pilier_etat']) ? ' data-etat="lock"' : '' ;
     $tab_modif_cellule[$DB_ROW['user_id']][$DB_ROW['pilier_id']]['class'] = ' class="v'.$DB_ROW['validation_pilier_etat'].'"';
-    $tab_modif_cellule[$DB_ROW['user_id']][$DB_ROW['pilier_id']]['title'] = ' title="'.$etat.' le '.convert_date_mysql_to_french($DB_ROW['validation_pilier_date']).' par '.html($DB_ROW['validation_pilier_info']).'"';
-    $tab_modif_cellule[$DB_ROW['user_id']][$DB_ROW['pilier_id']]['lang']  = $lang;
+    $tab_modif_cellule[$DB_ROW['user_id']][$DB_ROW['pilier_id']]['title'] = ' title="'.$title_etat.' le '.convert_date_mysql_to_french($DB_ROW['validation_pilier_date']).' par '.html($DB_ROW['validation_pilier_info']).'"';
+    $tab_modif_cellule[$DB_ROW['user_id']][$DB_ROW['pilier_id']]['data_etat']  = $data_etat;
   }
 
   // Compter le nombre d'items validés par élève et compétence
@@ -137,10 +139,10 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
   {
     foreach($tab_pilier_id as $pilier_id)
     {
-      extract($tab_modif_cellule[$eleve_id][$pilier_id]);  // $lang $class $title $html_v1 $html_v0
-      $html = ($tab_modif_cellule[$eleve_id][$pilier_id]['lang']) ? '' : ( ($html_v1 || $html_v0) ? $html_v1.'<br />'.$html_v0 : '-' ) ;
+      extract($tab_modif_cellule[$eleve_id][$pilier_id]);  // $data_etat $class $title $html_v1 $html_v0
+      $html = ($tab_modif_cellule[$eleve_id][$pilier_id]['data_etat']) ? '' : ( ($html_v1 || $html_v0) ? $html_v1.'<br />'.$html_v0 : '-' ) ;
       $tab_bad[] = 'U'.$eleve_id.'C'.$pilier_id.'"></td>';
-      $tab_bon[] = 'U'.$eleve_id.'C'.$pilier_id.'"'.$lang.$class.$title.'>'.$html.'</td>';
+      $tab_bon[] = 'U'.$eleve_id.'C'.$pilier_id.'"'.$data_etat.$class.$title.'>'.$html.'</td>';
     }
   }
   $affichage = str_replace($tab_bad,$tab_bon,$affichage);

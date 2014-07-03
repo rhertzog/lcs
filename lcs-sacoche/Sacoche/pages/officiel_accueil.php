@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -117,19 +117,20 @@ if($BILAN_TYPE=='bulletin')
   $li = '<li><span class="astuce">Un administrateur ou un directeur doit indiquer le type de synthèse adapté suivant chaque référentiel (<span class="manuel"><a class="pop_up" href="'.SERVEUR_DOCUMENTAIRE.'?fichier=releves_bilans__reglages_syntheses_bilans#toggle_type_synthese">DOC</a></span>).</span></li>'.NL;
   $nb_inconnu = DB_STRUCTURE_BILAN::DB_compter_modes_synthese_inconnu();
   $s = ($nb_inconnu>1) ? 's' : '' ;
-  $li .= ($nb_inconnu) ? '<li><label class="alerte">Il y a '.$nb_inconnu.' référentiel'.$s.' <img alt="" src="./_img/bulle_aide.png" title="'.str_replace('§BR§','<br />',html(html(DB_STRUCTURE_BILAN::DB_recuperer_modes_synthese_inconnu()))).'" /> dont le format de synthèse est inconnu (donc non pris en compte).</label></li>'.NL : '<li><label class="valide">Tous les référentiels ont un format de synthèse prédéfini.</label></li>'.NL ; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
+  $li .= ($nb_inconnu) ? '<li><label class="alerte">Il y a '.$nb_inconnu.' référentiel'.$s.' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.str_replace('§BR§','<br />',html(html(DB_STRUCTURE_BILAN::DB_recuperer_modes_synthese_inconnu()))).'" /> dont le format de synthèse est inconnu (donc non pris en compte).</label></li>'.NL : '<li><label class="valide">Tous les référentiels ont un format de synthèse prédéfini.</label></li>'.NL ; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
 }
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var USER_ID           = '.$_SESSION['USER_ID'].';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var TODAY_FR          = "'.TODAY_FR.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var BILAN_TYPE        = "'.$BILAN_TYPE.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var APP_RUBRIQUE      = '.$_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_RUBRIQUE'].';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var APP_GENERALE      = '.$_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_GENERALE'].';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var CONVERSION_SUR_20 = '.$_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20'].';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var BACKGROUND_NA     = "'.$_SESSION['BACKGROUND_NA'].'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var BACKGROUND_VA     = "'.$_SESSION['BACKGROUND_VA'].'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var BACKGROUND_A      = "'.$_SESSION['BACKGROUND_A'].'";';
+Layout::add( 'js_inline_before' , 'var USER_ID           = '.$_SESSION['USER_ID'].';' );
+Layout::add( 'js_inline_before' , 'var TODAY_FR          = "'.TODAY_FR.'";' );
+Layout::add( 'js_inline_before' , 'var BILAN_TYPE        = "'.$BILAN_TYPE.'";' );
+Layout::add( 'js_inline_before' , 'var APP_RUBRIQUE      = '.$_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_RUBRIQUE'].';' );
+Layout::add( 'js_inline_before' , 'var APP_GENERALE      = '.$_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'_APPRECIATION_GENERALE'].';' );
+Layout::add( 'js_inline_before' , 'var CONVERSION_SUR_20 = '.$_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20'].';' );
+Layout::add( 'js_inline_before' , 'var BACKGROUND_NA     = "'.$_SESSION['BACKGROUND_NA'].'";' );
+Layout::add( 'js_inline_before' , 'var BACKGROUND_VA     = "'.$_SESSION['BACKGROUND_VA'].'";' );
+Layout::add( 'js_inline_before' , 'var BACKGROUND_A      = "'.$_SESSION['BACKGROUND_A'].'";' );
+Layout::add( 'js_inline_before' , 'var URL_IMPORT        = "'.URL_DIR_IMPORT.'";' );
 ?>
 
 <ul class="puce">
@@ -279,10 +280,10 @@ foreach($DB_TAB as $DB_ROW)
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Javascript : tableau utilisé pour désactiver des options d'un select.
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_disabled = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["examiner"] = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["imprimer"] = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["voir_pdf"] = new Array();';
+Layout::add( 'js_inline_before' , 'var tab_disabled = new Array();' );
+Layout::add( 'js_inline_before' , 'tab_disabled["examiner"] = new Array();' );
+Layout::add( 'js_inline_before' , 'tab_disabled["imprimer"] = new Array();' );
+Layout::add( 'js_inline_before' , 'tab_disabled["voir_pdf"] = new Array();' );
 
 $listing_classes_id = implode(',',array_keys($tab_classe));
 $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_jointure_groupe_periode($listing_classes_id);
@@ -415,9 +416,9 @@ foreach($DB_TAB as $DB_ROW)
     $disabled_examiner = strpos($icone_verification,'detailler_non') ? 'true' : 'false' ;
     $disabled_imprimer = strpos($icone_impression  ,'imprimer_non')  ? 'true' : 'false' ;
     $disabled_voir_pdf = strpos($icone_voir_pdf    ,'archive_non')   ? 'true' : 'false' ;
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["examiner"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_examiner.';';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["imprimer"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_imprimer.';';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_disabled["voir_pdf"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_voir_pdf.';';
+    Layout::add( 'js_inline_before' , 'tab_disabled["examiner"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_examiner.';' );
+    Layout::add( 'js_inline_before' , 'tab_disabled["imprimer"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_imprimer.';' );
+    Layout::add( 'js_inline_before' , 'tab_disabled["voir_pdf"]["'.$classe_id.'_'.$groupe_id.'_'.$DB_ROW['periode_id'].'"]='.$disabled_voir_pdf.';' );
   }
 }
 
@@ -446,7 +447,7 @@ if($affichage_formulaire_statut)
   }
   echo'
     <form action="#" method="post" id="cadre_statut">
-      <h4>Accès / Statut : <img alt="" src="./_img/bulle_aide.png" title="Pour les cases cochées du tableau (classes uniquement)." /></h4>
+      <h3>Accès / Statut : <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour les cases cochées du tableau (classes uniquement)." /></h3>
       <div>'.implode('<br />',$tab_radio).'</div>
       <p><input id="listing_ids" name="listing_ids" type="hidden" value="" /><input id="csrf" name="csrf" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider</button><label id="ajax_msg_gestion">&nbsp;</label></p>
     </form>
@@ -530,7 +531,8 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 ?>
 
-<div id="zone_action_eleve"></div>
+<div id="zone_action_eleve">
+</div>
 
 <div id="zone_action_classe" class="hide">
   <h2>Recherche de saisies manquantes | Imprimer le bilan (PDF)</h2>
@@ -585,6 +587,41 @@ foreach($tab_checkbox_rubriques as $i => $contenu)
 
 <?php
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Formulaire pour afficher le résultat de l'analyse d'un fichier CSV et demander confirmation.
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+Layout::add( 'css_inline' , '.insert{color:green}.update{color:red}.idem{color:grey}' ); // Pour le rapport d'analyse
+?>
+
+<form action="#" method="post" id="zone_action_deport" class="hide" onsubmit="return false">
+  <h2>Saisie déportée</h2>
+  <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span></p>
+  <ul class="puce">
+    <li><a id="export_file_saisie_deportee" target="_blank" href=""><span class="file file_txt">Récupérer un fichier vierge à compléter pour une saisie déportée (format <em>csv</em>).</span></a></li>
+    <li><button id="import_file" type="button" class="fichier_import">Envoyer un fichier d'appréciations complété (format <em>csv</em>).</button></li>
+  </ul>
+  <p class="ti">
+    <label id="msg_import">&nbsp;</label>
+  </p>
+</form>
+
+<form action="#" method="post" id="zone_action_import" class="hide" onsubmit="return false">
+  <h2>Analyse des données à importer</h2>
+  <p class="astuce">Les informations <span class="insert">en vert seront ajoutées</span>, <span class="update">celles en rouge modifiées</span>, et <span class="idem">celles en gris inchangées</span>.</p>
+  <table id="table_import_analyse" class="t9">
+    <thead>
+      <tr><td class="nu" colspan="3"></td></tr>
+    </thead>
+    <tbody>
+      <tr><td class="nu" colspan="3"></td></tr>
+    </tbody>
+  </table>
+  <p class="ti">
+    <input type="hidden" value="" name="f_import_info" id="f_import_info" /><button id="valider_importer" type="button" class="valider">Confirmer</button>&nbsp;&nbsp;&nbsp;<button id="fermer_zone_importer" type="button" class="annuler">Annuler / Retour</button><label id="ajax_msg_importer">&nbsp;</label>
+  </p>
+</form>
+
+<?php
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Formulaire pour signaler ou corriger une faute dans une appréciation.
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 $date_plus1semaine = date('d/m/Y',mktime(0,0,0,date('m'),date('d')+7,date('Y'))); // 1 semaine après
@@ -618,6 +655,7 @@ $date_plus1semaine = date('d/m/Y',mktime(0,0,0,date('m'),date('d')+7,date('Y')))
 
 <div id="zone_archiver_imprimer" class="hide">
   <h2>Archiver / Imprimer des données</h2>
+  <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=releves_bilans__officiel_imprimer_saisies">DOC : Imprimer tableaux notes / appréciations.</a></span></p>
   <p class="noprint">Afin de préserver l'environnement, n'imprimer qu'en cas de nécessité !</p>
   <ul class="puce">
     <?php if($BILAN_TYPE=='bulletin'): ?>
@@ -629,6 +667,7 @@ $date_plus1semaine = date('d/m/Y',mktime(0,0,0,date('m'),date('d')+7,date('Y')))
       <?php endif; ?>
       <?php if($_SESSION['OFFICIEL']['BULLETIN_MOYENNE_SCORES']): ?>
         <li><button id="imprimer_donnees_eleves_moyennes" type="button" class="imprimer">Archiver / Imprimer</button> le tableau des moyennes pour chaque élève.</li>
+        <li><button id="imprimer_donnees_eleves_recapitulatif" type="button" class="imprimer">Archiver / Imprimer</button> un récapitulatif annuel des moyennes et appréciations par élève.</li>
       <?php endif; ?>
     <?php else: ?>
       <li><button id="imprimer_donnees_eleves_prof" type="button" class="imprimer">Archiver / Imprimer</button> mes appréciations pour chaque élève.</li>

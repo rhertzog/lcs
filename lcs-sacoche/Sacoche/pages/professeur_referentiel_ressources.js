@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -143,7 +143,7 @@ $(document).ready
         $('#zone_elaboration_referentiel').html("&nbsp;");
         afficher_masquer_images_action('show'); // au cas où on serait en train d'éditer qq chose
         $('#zone_choix_referentiel').show('fast');
-        return(false);
+        return false;
       }
     );
 
@@ -184,7 +184,7 @@ $(document).ready
       function()
       {
         $(this).parent().children('label').removeAttr("class").addClass("alerte").html("Penser à valider !");
-        return(false);
+        return false;
       }
     );
 
@@ -293,7 +293,6 @@ $(document).ready
                 // montrer le cadre
                 $('#sortable').html(responseHTML);
                 $('#zone_resultat_recherche_liens').html('');
-                format_liens('#sortable');
                 $('#zone_ressources q').show();
                 $('#ajax_ressources_msg').removeAttr("class").html("&nbsp;");
                 $.fancybox( { 'href':'#zone_ressources' , onStart:function(){$('#zone_ressources').css("display","block");} , onClosed:function(){$('#zone_ressources').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
@@ -420,8 +419,7 @@ $(document).ready
         {
           var lien_url = escapeHtml( $(this).parent().children('input[name=lien_url_old]').val() );
           var lien_nom = escapeHtml( $(this).parent().children('input[name=lien_nom_old]').val() );
-          $(this).parent().html('<a href="'+lien_url+'" title="'+lien_url+'" class="lien_ext">'+lien_nom+'</a>'+images[2]);
-          format_liens('#sortable');
+          $(this).parent().html('<a href="'+lien_url+'" title="'+lien_url+'" target="_blank">'+lien_nom+'</a>'+images[2]);
         }
         return false;
       }
@@ -479,8 +477,7 @@ $(document).ready
           }
           else
           {
-            $(this).parent().html('<a href="'+lien_url+'" title="'+lien_url+'" class="lien_ext">'+lien_nom+'</a>'+images[2]+'</q>');
-            format_liens('#sortable');
+            $(this).parent().html('<a href="'+lien_url+'" title="'+lien_url+'" target="_blank">'+lien_nom+'</a>'+images[2]+'</q>');
           }
         }
         initialiser_compteur();
@@ -548,9 +545,8 @@ $(document).ready
         $('label[for=lien_nom]').removeAttr("class").html('');
         // ok
         initialiser_compteur();
-        $('#sortable').append('<li><a href="'+lien_url+'" title="'+lien_url+'" class="lien_ext">'+lien_nom+'</a>'+images[2]+'</li>');
+        $('#sortable').append('<li><a href="'+lien_url+'" title="'+lien_url+'" target="_blank">'+lien_nom+'</a>'+images[2]+'</li>');
         $('#sortable li.i').remove();
-        format_liens('#sortable');
         $('#lien_url').val('');
         $('#lien_nom').val('');
       }
@@ -689,7 +685,6 @@ $(document).ready
                 var reg = new RegExp('</a>',"g"); // Si on ne prend pas une expression régulière alors replace() ne remplace que la 1e occurence
                 responseHTML = responseHTML.replace(reg,'</a>'+images[3]);
                 $('#zone_resultat_recherche_liens').html('<ul>'+responseHTML+'</ul>');
-                format_liens('#zone_resultat_recherche_liens');
                 initialiser_compteur();
               }
             }
@@ -713,9 +708,8 @@ $(document).ready
         var lien_nom = $(this).prev().html();
         $(this).parent().remove();
         initialiser_compteur();
-        $('#sortable').append('<li><a href="'+lien_url+'" title="'+lien_url+'" class="lien_ext">'+lien_nom+'</a>'+images[2]+'</li>');
+        $('#sortable').append('<li><a href="'+lien_url+'" title="'+lien_url+'" target="_blank">'+lien_nom+'</a>'+images[2]+'</li>');
         $('#sortable li.i').remove();
-        format_liens('#sortable');
       }
     );
 
@@ -724,25 +718,21 @@ $(document).ready
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Envoi du fichier avec jquery.ajaxupload.js
-    new AjaxUpload
-    ('#bouton_import',
-      {
-        action: 'ajax.php?page='+PAGE,
-        name: 'userfile',
-        data: {'csrf':CSRF,'action':'Uploader_document'},
-        autoSubmit: true,
-        responseType: "html",
-        onChange: changer_fichier,
-        onSubmit: verifier_fichier,
-        onComplete: retourner_fichier
-      }
-    );
 
-    function changer_fichier(fichier_nom,fichier_extension)
+    if( $('#zone_ressources_form').length ) // Indéfini si pas de droit d'accès à cette fonctionnalité.
     {
-      $('#ajax_ressources_upload').removeAttr("class").html('&nbsp;');
-      $('#zone_ressources_upload button').prop('disabled',true);
-      return true;
+      new AjaxUpload
+      ('#bouton_import',
+        {
+          action: 'ajax.php?page='+PAGE,
+          name: 'userfile',
+          data: {'csrf':CSRF,'action':'Uploader_document'},
+          autoSubmit: true,
+          responseType: "html",
+          onSubmit: verifier_fichier,
+          onComplete: retourner_fichier
+        }
+      );
     }
 
     function verifier_fichier(fichier_nom,fichier_extension)
@@ -750,19 +740,11 @@ $(document).ready
       if (fichier_nom==null || fichier_nom.length<5)
       {
         $('#ajax_ressources_upload').removeAttr("class").addClass("erreur").html('Cliquer sur "Parcourir..." pour indiquer un chemin de fichier correct.');
-        $('#zone_ressources_upload button').prop('disabled',false);
-        return false;
-      }
-      else if ( ('.doc.docx.odg.odp.ods.odt.ppt.pptx.rtf.sxc.sxd.sxi.sxw.xls.xlsx.'.indexOf('.'+fichier_extension.toLowerCase()+'.')!=-1) && !confirm('Vous devriez convertir votre fichier au format PDF.\nEtes-vous certain de vouloir l\'envoyer sous ce format ?') )
-      {
-        $('#ajax_ressources_upload').removeAttr("class").addClass("erreur").html('Convertissez votre fichier en "pdf".');
-        $('#zone_ressources_upload button').prop('disabled',false);
         return false;
       }
       else if ('.bat.com.exe.php.zip.'.indexOf('.'+fichier_extension.toLowerCase()+'.')!=-1)
       {
         $('#ajax_ressources_upload').removeAttr("class").addClass("erreur").html('Extension non autorisée.');
-        $('#zone_ressources_upload button').prop('disabled',false);
         return false;
       }
       else
@@ -775,6 +757,7 @@ $(document).ready
 
     function retourner_fichier(fichier_nom,responseHTML)  // Attention : avec jquery.ajaxupload.js, IE supprime mystérieusement les guillemets et met les éléments en majuscules dans responseHTML.
     {
+      fichier_extension = fichier_nom.split('.').pop();
       $('#zone_ressources_upload button').prop('disabled',false);
       if(responseHTML.substring(0,4)!='http')
       {
@@ -790,6 +773,15 @@ $(document).ready
         $('label[for=lien_nom]').removeAttr("class").addClass("alerte").html("Validez l'ajout&hellip;");
         $('#lien_url').val(upload_lien);
         $('#lien_nom').focus();
+        if ( ('.doc.docx.odg.odp.ods.odt.ppt.pptx.rtf.sxc.sxd.sxi.sxw.xls.xlsx.'.indexOf('.'+fichier_extension.toLowerCase()+'.')!=-1) )
+        {
+          $.prompt(
+            "Votre fichier a bien été enregistré comme ressource.<br />Néanmoins, pour être consulté, il nécessite un ordinateur équipé d'une suite bureautique adaptée.<br />Pour une meilleure accessibilité, il serait préférable de le convertir au format PDF.",
+            {
+              title  : 'Information'
+            }
+          );
+        }
       }
     }
 
@@ -845,7 +837,6 @@ $(document).ready
                 var reg = new RegExp('</a>',"g"); // Si on ne prend pas une expression régulière alors replace() ne remplace que la 1e occurence
                 responseHTML = responseHTML.replace(reg,'</a>'+images[4]);
                 $('#zone_resultat_recherche_ressources').html('<ul>'+responseHTML+'</ul>');
-                format_liens('#zone_resultat_recherche_ressources');
                 initialiser_compteur();
               }
             }

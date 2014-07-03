@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -30,7 +30,7 @@ $TITRE = "Importer des fichiers d'utilisateurs";
 ?>
 
 <?php
-$alerte = DB_STRUCTURE_ADMINISTRATEUR::DB_compter_devoirs_annee_scolaire_precedente() ? '<p class="danger b">Année scolaire précédente non nettoyée&nbsp;! Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>' : '' ;
+$alerte = DB_STRUCTURE_ADMINISTRATEUR::DB_compter_devoirs_annees_scolaires_precedentes() ? '<p class="danger b">Année scolaire précédente non nettoyée&nbsp;! Au changement d\'année scolaire il faut <a href="./index.php?page=administrateur_nettoyage">lancer l\'initialisation annuelle des données</a>.</p>' : '' ;
 $alerte.= DB_STRUCTURE_ADMINISTRATEUR::compter_niveaux_etabl( FALSE /*with_specifiques*/ ) ? '' : '<p class="danger b">Aucun niveau de classe choisi pour l\'établissement&nbsp;! Commencez par <a href="./index.php?page=administrateur_etabl_niveau">indiquer les niveaux de classe de votre établissement</a>.</p>' ;
 
 $test_UAI = ($_SESSION['WEBMESTRE_UAI']) ? 'oui' : 'non' ;
@@ -43,9 +43,9 @@ $jour_debut_annee_scolaire = jour_debut_annee_scolaire('mysql');
 $check_eleve      = ( $jour_debut_annee_scolaire > $_SESSION['DATE_LAST_IMPORT_ELEVES']      ) ? 'complet' : 'partiel' ;
 $check_parent     = ( $jour_debut_annee_scolaire > $_SESSION['DATE_LAST_IMPORT_PARENTS']     ) ? 'complet' : 'partiel' ;
 $check_professeur = ( $jour_debut_annee_scolaire > $_SESSION['DATE_LAST_IMPORT_PROFESSEURS'] ) ? 'complet' : 'partiel' ;
-$GLOBALS['HEAD']['js']['inline'][] = 'var check_eleve      = "'.$check_eleve.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var check_parent     = "'.$check_parent.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var check_professeur = "'.$check_professeur.'";';
+Layout::add( 'js_inline_before' , 'var check_eleve      = "'.$check_eleve.'";' );
+Layout::add( 'js_inline_before' , 'var check_parent     = "'.$check_parent.'";' );
+Layout::add( 'js_inline_before' , 'var check_professeur = "'.$check_professeur.'";' );
 
 ?>
 

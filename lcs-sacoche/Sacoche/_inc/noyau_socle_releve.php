@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -71,8 +71,8 @@ if( ($make_html) || ($make_pdf) )
   if(!$aff_socle) { $texte_socle      = ''; }
   if(!$aff_lien)  { $texte_lien_avant = ''; }
   if(!$aff_lien)  { $texte_lien_apres = ''; }
-  $toggle_img   = ($aff_start) ? 'toggle_moins' : 'toggle_plus' ;
-  $toggle_class = ($aff_start) ? '' : ' class="hide"' ;
+  $toggle_class = ($aff_start) ? 'toggle_moins' : 'toggle_plus' ;
+  $toggle_etat  = ($aff_start) ? '' : ' class="hide"' ;
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,11 +280,11 @@ foreach($tab_eleve as $tab)
                       }
                       if($aff_lien)
                       {
-                        $texte_lien_avant = ($item_lien) ? '<a class="lien_ext" href="'.html($item_lien).'">' : '';
+                        $texte_lien_avant = ($item_lien) ? '<a target="_blank" href="'.html($item_lien).'">' : '';
                         $texte_lien_apres = ($item_lien) ? '</a>' : '';
                       }
                       $texte_demande_eval = ($_SESSION['USER_PROFIL_TYPE']!='eleve') ? '' : ( ($item_cart) ? '<q class="demander_add" id="demande_'.$matiere_id.'_'.$item_id.'_'.$score.'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
-                      $tab_infos_socle_eleve[$socle_id][$eleve_id][] = '<span class="'.$tab_etat[$indice].'">'.$texte_coef.$texte_socle.$texte_lien_avant.html($item_ref.' || '.$item_nom.' ['.$score.'%]').'</span>'.$texte_lien_apres.$texte_demande_eval;
+                      $tab_infos_socle_eleve[$socle_id][$eleve_id][] = '<span class="pourcentage '.$tab_etat[$indice].'">'.$score.'%</span> '.$texte_coef.$texte_socle.$texte_lien_avant.html($item_ref.' - '.$item_nom).$texte_lien_apres.$texte_demande_eval;
                     }
                     // on enregistre les infos
                     $tab_score_socle_eleve[$socle_id][$eleve_id][$indice]++;
@@ -459,12 +459,13 @@ $titre1 = ($mode=='manuel') ? 'Relevé de maîtrise du socle commun [matières r
 $titre2 = ($memo_demande=='palier') ? $palier_nom : $palier_nom.' – '.mb_substr($pilier_nom,0,mb_strpos($pilier_nom,'–')) ;
 if($make_html)
 {
-  $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'       : '' ;
+  $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
   $bouton_print_test = (!empty($is_bouton_test_impression)) ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
+  $bouton_import_csv = ($make_action=='saisir')             ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
   $releve_HTML  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>'.NL;
   $releve_HTML .= $affichage_direct ? '' : '<h1>'.html($titre1).'</h1>'.NL;
   $releve_HTML .= $affichage_direct ? '' : '<h2>'.html($titre2).'</h2>'.NL;
-  $releve_HTML .= '<div class="astuce">Cliquer sur <img src="./_img/toggle_plus.gif" alt="+" /> / <img src="./_img/toggle_moins.gif" alt="+" /> pour afficher / masquer le détail.'.$bouton_print_appr.$bouton_print_test.'</div>'.NL;
+  $releve_HTML .= '<div class="astuce">Cliquer sur <span class="toggle_plus"></span> / <span class="toggle_moins"></span> pour afficher / masquer le détail.'.$bouton_print_appr.$bouton_print_test.$bouton_import_csv.'</div>'.NL;
   $separation = (count($tab_eleve)>1) ? '<hr />'.NL : '' ;
   // Légende identique pour tous les élèves car pas de codes de notation donc pas de codages spéciaux.
   $legende_html = ($legende=='oui') ? Html::legende( FALSE /*codes_notation*/ , FALSE /*anciennete_notation*/ , FALSE /*score_bilan*/ , $test_affichage_Pourcentage /*etat_acquisition*/ , $test_affichage_Pourcentage /*pourcentage_acquis*/ , $test_affichage_Validation /*etat_validation*/ , $make_officiel , TRUE /*force_nb*/  ) : '' ;
@@ -568,15 +569,15 @@ foreach($tab_eleve as $tab)
                         if($make_html)
                         {
                           $socle_nom  = html($socle_nom);
-                          $socle_nom  = (mb_strlen($socle_nom)<160) ? $socle_nom : mb_substr($socle_nom,0,150).' [...] <img src="./_img/bulle_aide.png" alt="" title="'.html($socle_nom).'" />'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
+                          $socle_nom  = (mb_strlen($socle_nom)<160) ? $socle_nom : mb_substr($socle_nom,0,150).' [...] <img src="./_img/bulle_aide.png" width="16" height="16" alt="" title="'.html($socle_nom).'" />'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
                           if( $tab_infos_socle_eleve[$socle_id][$eleve_id] )
                           {
-                            $lien_toggle = '<a href="#" id="to_'.$socle_id.'_'.$eleve_id.'"><img src="./_img/'.$toggle_img.'.gif" alt="" title="Voir / masquer le détail des items associés." class="toggle" /></a> ';
-                            $div_competences = '<div id="'.$socle_id.'_'.$eleve_id.'"'.$toggle_class.'>'.'<div>'.implode('</div><div>',$tab_infos_socle_eleve[$socle_id][$eleve_id]).'</div>'.'</div>';
+                            $lien_toggle = '<a href="#toggle" class="'.$toggle_class.'" title="Voir / masquer le détail des items associés." id="to_'.$socle_id.'_'.$eleve_id.'"></a> ';
+                            $div_competences = '<div id="'.$socle_id.'_'.$eleve_id.'"'.$toggle_etat.'>'.'<div>'.implode('</div><div>',$tab_infos_socle_eleve[$socle_id][$eleve_id]).'</div>'.'</div>';
                           }
                           else
                           {
-                            $lien_toggle = '<img src="./_img/toggle_none.gif" alt="" /> ';
+                            $lien_toggle = '<span class="toggle_none"></span> ';
                             $div_competences = '';
                           }
                           $case_score = $test_affichage_Pourcentage ? Html::td_pourcentage( 'td' , $tab_score_socle_eleve[$socle_id][$eleve_id] , TRUE /*detail*/ , FALSE /*largeur*/ ) : '' ;
@@ -606,8 +607,8 @@ foreach($tab_eleve as $tab)
                     extract($tab);  // $periode_nom_avant $prof_info $appreciation $note
                     $tab_ligne[$prof_id] = html('['.$prof_info.'] '.$appreciation);
                   }
-                  $tab_periode_liens[]  = '<a href="#" id="to_avant_'.$eleve_id.'_'.$pilier_id.'_'.$periode_ordre.'"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer les informations de cette période." class="toggle" /></a> '.html($periode_nom_avant);
-                  $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.$pilier_id.'_'.$periode_ordre.'" class="appreciation hide">'.$periode_nom_avant.' :<br />'.implode('<br />',$tab_ligne).'</div>';
+                  $tab_periode_liens[]  = '<a href="#toggle" class="toggle_plus" title="Voir / masquer les informations de cette période." id="to_avant_'.$eleve_id.'_'.$pilier_id.'_'.$periode_ordre.'"></a> '.html($periode_nom_avant);
+                  $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.$pilier_id.'_'.$periode_ordre.'" class="appreciation bordertop hide">'.'<b>'.$periode_nom_avant.' :'.'</b>'.'<br />'.implode('<br />',$tab_ligne).'</div>';
                 }
                 $releve_HTML .= '<tr>'.$case_score.'<td colspan="2" class="avant">'.implode('&nbsp;&nbsp;&nbsp;',$tab_periode_liens).implode('',$tab_periode_textes).'</td>'.$case_valid.'</tr>'.NL;
               }
@@ -676,8 +677,8 @@ foreach($tab_eleve as $tab)
                 extract($tab);  // $periode_nom_avant $prof_info $appreciation $note
                 $tab_ligne[$prof_id] = html('['.$prof_info.'] '.$appreciation);
               }
-              $tab_periode_liens[]  = '<a href="#" id="to_avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer les informations de cette période." class="toggle" /></a> '.html($periode_nom_avant);
-              $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'" class="appreciation hide">'.$periode_nom_avant.' :<br />'.implode('<br />',$tab_ligne).'</div>';
+              $tab_periode_liens[]  = '<a href="#toggle" class="toggle_plus" title="Voir / masquer les informations de cette période." id="to_avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'"></a> '.html($periode_nom_avant);
+              $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'" class="appreciation bordertop hide">'.'<b>'.$periode_nom_avant.' :'.'</b>'.'<br />'.implode('<br />',$tab_ligne).'</div>';
             }
             $releve_HTML .= '<tr>'.$case_score.'<td colspan="2" class="avant">'.implode('&nbsp;&nbsp;&nbsp;',$tab_periode_liens).implode('',$tab_periode_textes).'</td>'.$case_valid.'</tr>'.NL;
           }

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -33,7 +33,7 @@ $TITRE = "Notation : codes, couleurs, légendes";
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_notes_txt.php');
 
 $dossier = './_img/note/';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_notes_txt = new Array();';
+Layout::add( 'js_inline_before' , 'var tab_notes_txt = new Array();' );
 
 $simulation_lignes = array('','','','','');
 foreach($tab_notes_info as $note_code => $tab_note_info)
@@ -46,11 +46,11 @@ foreach($tab_notes_info as $note_code => $tab_note_info)
     $simulation_lignes[2] .=   '<td><img alt="'.$tab_note_info['R' ].'" src="'.$dossier.$note_code.'/h/R.gif"  /><br />'.$tab_note_info['R' ].'</td>';
     $simulation_lignes[3] .=   '<td><img alt="'.$tab_note_info['V' ].'" src="'.$dossier.$note_code.'/h/V.gif"  /><br />'.$tab_note_info['V' ].'</td>';
     $simulation_lignes[4] .=   '<td><img alt="'.$tab_note_info['VV'].'" src="'.$dossier.$note_code.'/h/VV.gif" /><br />'.$tab_note_info['VV'].'</td>';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_notes_txt["'.html($note_code).'"] = new Array();';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_notes_txt["'.$note_code.'"]["RR"]="'.$tab_note_info['RR'].'";';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_notes_txt["'.$note_code.'"]["R"]="'.$tab_note_info['R'].'";';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_notes_txt["'.$note_code.'"]["V"]="'.$tab_note_info['V'].'";';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_notes_txt["'.$note_code.'"]["VV"]="'.$tab_note_info['VV'].'";';
+    Layout::add( 'js_inline_before' , 'tab_notes_txt["'.html($note_code).'"] = new Array();' );
+    Layout::add( 'js_inline_before' , 'tab_notes_txt["'.$note_code.'"]["RR"]="'.$tab_note_info['RR'].'";' );
+    Layout::add( 'js_inline_before' , 'tab_notes_txt["'.$note_code.'"]["R"] ="'.$tab_note_info['R'].'";' );
+    Layout::add( 'js_inline_before' , 'tab_notes_txt["'.$note_code.'"]["V"] ="'.$tab_note_info['V'].'";' );
+    Layout::add( 'js_inline_before' , 'tab_notes_txt["'.$note_code.'"]["VV"]="'.$tab_note_info['VV'].'";' );
   }
 }
 
@@ -97,7 +97,7 @@ foreach($tab_acquis as $acquis => $class)
 
 <form action="#" method="post" id="form_acquis">
   <h2>Degrés d'acquisitions calculés : couleurs de fond, équivalents textes, légende</h2>
-  <!-- Pas mis dans un tableau, sinon colorpicker bugue avec IE -->
+  <?php /* Pas mis dans un tableau, sinon colorpicker bugue avec IE */ ?>
   <?php echo $acquis_box; ?>
   <div id="colorpicker" class="hide"></div>
   <div style="clear:both"></div>

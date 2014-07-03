@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -83,7 +83,7 @@ $(document).ready
         $("#f_eleve").html('<option value=""></option>').parent().hide();
         $('#ajax_msg').removeAttr("class").html('');
         $('#zone_eval_choix').hide();
-        var groupe_id = $("#f_groupe").val();
+        var groupe_id = $("#f_groupe option:selected").val();
         if(groupe_id)
         {
           groupe_type = $("#f_groupe option:selected").parent().attr('label');
@@ -188,6 +188,15 @@ $(document).ready
         }
         $('#zone_eval_choix').show();
         eval( responseHTML.substring(position_script+8) );
+        // Afficher des résultats au chargement
+        if(auto_voir_devoir_id)
+        {
+          if( $('#devoir_'+auto_voir_devoir_id).length )
+          {
+            $('#devoir_'+auto_voir_devoir_id).children('q.'+auto_mode).click();
+          }
+          auto_voir_devoir_id = false;
+        }
       }
       else
       {
@@ -262,7 +271,7 @@ $(document).ready
               {
                 $('#titre_voir').html('Devoir du ' + texte_date + ' par ' + texte_prof + ' [ ' + texte_info + ' ]');
                 // séparer lignes de résultat et légende
-                var position_legende = responseHTML.lastIndexOf('<h4>');
+                var position_legende = responseHTML.lastIndexOf('<h3>');
                 if(position_legende==-1)
                 {
                   var html_tableau = responseHTML;
@@ -275,7 +284,6 @@ $(document).ready
                 }
                 $('#table_voir tbody').html(html_tableau);
                 $('#report_legende'  ).html(html_legende);
-                format_liens('#table_voir');
                 tableau_maj_voir();
                 $.fancybox( { 'href':'#zone_eval_voir' , onStart:function(){$('#zone_eval_voir').css("display","block");} , onClosed:function(){$('#zone_eval_voir').css("display","none");} , 'centerOnScroll':true } );
               }
@@ -331,7 +339,6 @@ $(document).ready
                 $('#msg_saisir').removeAttr("class").html("");
                 $('#f_devoir').val(devoir_id);
                 $('#table_saisir tbody').html(responseHTML);
-                format_liens('#table_saisir');
                 tableau_maj_voir();
                 $.fancybox( { 'href':'#zone_eval_saisir' , onStart:function(){$('#zone_eval_saisir').css("display","block");} , onClosed:function(){$('#zone_eval_saisir').css("display","none");} , 'margin':0 , 'modal':true , 'centerOnScroll':true } );
               }

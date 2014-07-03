@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -64,7 +64,7 @@ if( ($action=='afficher_parents') && $eleve_id )
     $tab_adresse     = array( $DB_ROW['adresse_ligne1'] , $DB_ROW['adresse_ligne2'] , $DB_ROW['adresse_ligne3'] , $DB_ROW['adresse_ligne4'] , $DB_ROW['adresse_postal_code'] , $DB_ROW['adresse_postal_libelle'] , $DB_ROW['adresse_pays_nom'] );
     $adresse         = html(implode(' ; ',array_filter($tab_adresse)));
     $responsabilites = html($DB_ROW['enfants_liste']);
-    $tab_parents[$DB_ROW['resp_legal_num']] = '<table id="parent_'.$DB_ROW['parent_id'].'"><tbody><tr><th class="vu" style="width:6em">$TITRE$</th><td><em>'.$identite.'</em><hr /><img alt="" src="./_img/home.png" /> '.$adresse.'<br /><img alt="" src="./_img/groupe.png" /> '.$responsabilites.'</td><th class="nu"><q class="modifier" title="Changer ce responsable."></q><q class="supprimer" title="Retirer ce responsable."></q></th></tr></tbody></table>';
+    $tab_parents[$DB_ROW['resp_legal_num']] = '<table id="parent_'.$DB_ROW['parent_id'].'"><tbody><tr><th class="vu" style="width:6em">$TITRE$</th><td><em>'.$identite.'</em><hr /><img alt="" src="./_img/home.png" width="16" height="15" /> '.$adresse.'<br /><img alt="" src="./_img/groupe.png" width="16" height="16" /> '.$responsabilites.'</td><th class="nu"><q class="modifier" title="Changer ce responsable."></q><q class="supprimer" title="Retirer ce responsable."></q></th></tr></tbody></table>';
   }
   foreach($tab_parents AS $resp_legal_num => $affichage)
   {

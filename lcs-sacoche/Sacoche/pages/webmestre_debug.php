@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -94,7 +94,7 @@ $listing_fichiers = count($tab_fichiers) ? implode('',$tab_fichiers) : '<li>Pas 
   <p class="astuce">Si des fichiers de logs phpCAS existent déjà, ils ne seront pas déplacés : penser à les supprimer avant.</p>
   <?php echo $alerte_dossier_invalide ?>
   <label class="tab" for="f_chemin_logs">Chemin</label><input type="text" size="100" id="f_chemin_logs" name="f_chemin_logs" value="<?php echo PHPCAS_CHEMIN_LOGS ?>" /><br />
-  <label class="tab" for="f_etabl_id_listing">Établissements <img alt="" src="./_img/bulle_aide.png" title="Si installation de type mono-structure, alors champ sans objet.<br />Sinon, identifiants à prendre dans la page de gestion des établissements (1e colonne).<br />Valeurs à séparer, faire précéder et terminer par des virgules.<br />Laisser le champ vide active les logs pour tous les établissements (déconseillé)." /></label><input type="text" size="100" id="f_etabl_id_listing" name="f_etabl_id_listing" value="<?php echo PHPCAS_ETABL_ID_LISTING ?>" /><br />
+  <label class="tab" for="f_etabl_id_listing">Établissements <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Si installation de type mono-structure, alors champ sans objet.<br />Sinon, identifiants à prendre dans la page de gestion des établissements (1e colonne).<br />Valeurs à séparer, faire précéder et terminer par des virgules.<br />Laisser le champ vide active les logs pour tous les établissements (déconseillé)." /></label><input type="text" size="100" id="f_etabl_id_listing" name="f_etabl_id_listing" value="<?php echo PHPCAS_ETABL_ID_LISTING ?>" /><br />
   <span class="tab"></span><button id="bouton_phpCAS" type="button" class="parametre">Enregistrer.</button><label id="ajax_phpCAS">&nbsp;</label>
 </fieldset></form>
 

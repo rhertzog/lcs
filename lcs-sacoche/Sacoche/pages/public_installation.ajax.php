@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -137,17 +137,17 @@ if( $step==4 )
     $uai_div_hide_apres   = ($installation=='mono-structure') ? '' : '</div>' ;
     $affichage .= '<fieldset>'.NL;
     $affichage .= '<h2>Caractéristiques de l\'hébergement</h2>'.NL;
-    $affichage .= '<label class="tab" for="f_installation">Installation <img alt="" src="./_img/bulle_aide.png" title="Valeur déjà renseignée." /> :</label><input id="f_installation" name="f_installation" size="18" type="text" value="'.$installation.'" readonly /><br />'.NL;
-    $affichage .= '<label class="tab" for="f_denomination">Dénomination <img alt="" src="./_img/bulle_aide.png" title="Exemple : '.$exemple_denomination.'" /> :</label><input id="f_denomination" name="f_denomination" size="55" type="text" value="" /><br />'.NL;
-    $affichage .= $uai_div_hide_avant.'<label class="tab" for="f_uai">n° UAI (ex-RNE) <img alt="" src="./_img/bulle_aide.png" title="Ce champ est facultatif." /> :</label><input id="f_uai" name="f_uai" size="8" type="text" value="" /><br />'.$uai_div_hide_apres.NL;
-    $affichage .= '<label class="tab" for="f_adresse_site">Adresse web <img alt="" src="./_img/bulle_aide.png" title="Exemple : '.$exemple_adresse_web.'<br />Ce champ est facultatif." /> :</label><input id="f_adresse_site" name="f_adresse_site" size="60" type="text" value="" /><br />'.NL;
+    $affichage .= '<label class="tab" for="f_installation">Installation <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur déjà renseignée." /> :</label><input id="f_installation" name="f_installation" size="18" type="text" value="'.$installation.'" readonly /><br />'.NL;
+    $affichage .= '<label class="tab" for="f_denomination">Dénomination <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : '.$exemple_denomination.'" /> :</label><input id="f_denomination" name="f_denomination" size="55" type="text" value="" /><br />'.NL;
+    $affichage .= $uai_div_hide_avant.'<label class="tab" for="f_uai">n° UAI (ex-RNE) <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Ce champ est facultatif." /> :</label><input id="f_uai" name="f_uai" size="8" type="text" value="" /><br />'.$uai_div_hide_apres.NL;
+    $affichage .= '<label class="tab" for="f_adresse_site">Adresse web <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : '.$exemple_adresse_web.'<br />Ce champ est facultatif." /> :</label><input id="f_adresse_site" name="f_adresse_site" size="60" type="text" value="" /><br />'.NL;
     $affichage .= '<h2>Coordonnées du webmestre</h2>'.NL;
     $affichage .= '<label class="tab" for="f_nom">Nom :</label><input id="f_nom" name="f_nom" size="20" type="text" value="" /><br />'.NL;
     $affichage .= '<label class="tab" for="f_prenom">Prénom :</label><input id="f_prenom" name="f_prenom" size="20" type="text" value="" /><br />'.NL;
     $affichage .= '<label class="tab" for="f_courriel">Courriel :</label><input id="f_courriel" name="f_courriel" size="60" type="text" value="" /><br />'.NL;
     $affichage .= '<h2>Mot de passe du webmestre</h2>'.NL;
     $affichage .= '<div class="astuce">Ce mot de passe doit être complexe pour offrir un niveau de sécurité suffisant !</div>'.NL;
-    $affichage .= '<label class="tab" for="f_password1"><img alt="" src="./_img/bulle_aide.png" title="La robustesse du mot de passe indiqué dans ce champ est estimée ci-dessous." /> Saisie 1/2 :</label><input id="f_password1" name="f_password1" size="20" type="password" value="" /><br />'.NL;
+    $affichage .= '<label class="tab" for="f_password1"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="La robustesse du mot de passe indiqué dans ce champ est estimée ci-dessous." /> Saisie 1/2 :</label><input id="f_password1" name="f_password1" size="20" type="password" value="" /><br />'.NL;
     $affichage .= '<label class="tab" for="f_password2">Saisie 2/2 :</label><input id="f_password2" name="f_password2" size="20" type="password" value="" />'.NL;
     $affichage .= '<p><span class="tab"></span><input id="f_step" name="f_step" type="hidden" value="41" /><button id="f_submit" type="submit" class="valider">Valider.</button><label id="ajax_msg">&nbsp;</label></p>'.NL;
     $affichage .= '<hr />'.NL;
@@ -254,8 +254,8 @@ if( $step==5 )
     $affichage .= '<p class="danger">Comme indiqué précédemment, '.$texte_alerte.'.</p>'.NL;
     $affichage .= '<fieldset>'.NL;
     $affichage .= '<h2>Paramètres MySQL</h2>'.NL;
-    $affichage .= '<label class="tab" for="f_host"><img alt="" src="./_img/bulle_aide.png" title="Parfois \'localhost\' sur un serveur que l\'on administre." /> Hôte ou IP :</label><input id="f_host" name="f_host" size="20" type="text" value="" /><br />'.NL;
-    $affichage .= '<label class="tab" for="f_port"><img alt="" src="./_img/bulle_aide.png" title="Valeur 3306 par défaut (dans la quasi totalité des situations)." /> Port :</label><input id="f_port" name="f_port" size="20" type="text" value="3306" /><label class="alerte">Ne changez pas cette valeur, sauf rares exceptions !</label><br />'.NL;
+    $affichage .= '<label class="tab" for="f_host"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Parfois \'localhost\' sur un serveur que l\'on administre." /> Hôte ou IP :</label><input id="f_host" name="f_host" size="20" type="text" value="" /><br />'.NL;
+    $affichage .= '<label class="tab" for="f_port"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Valeur 3306 par défaut (dans la quasi totalité des situations)." /> Port :</label><input id="f_port" name="f_port" size="20" type="text" value="3306" /><label class="alerte">Ne changez pas cette valeur, sauf rares exceptions !</label><br />'.NL;
     $affichage .= '<label class="tab" for="f_user">Nom d\'utilisateur :</label><input id="f_user" name="f_user" size="20" type="text" value="" /><br />'.NL;
     $affichage .= '<label class="tab" for="f_pass">Mot de passe :</label><input id="f_pass" name="f_pass" size="20" type="password" value="" /><br />'.NL;
     $affichage .= '<span class="tab"></span><input id="f_name" name="f_name" size="20" type="hidden" value="remplissage bidon" /><input id="f_step" name="f_step" type="hidden" value="51" /><button id="f_submit" type="submit" class="valider">Valider.</button><label id="ajax_msg">&nbsp;</label>'.NL;

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -71,7 +71,7 @@ if( ($action=='Afficher_evaluations') && $eleve_id && $date_debut && $date_fin )
   }
   // Lister les évaluations
   $script = '';
-  $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_devoirs_eleve( $eleve_id , $classe_id , $date_debut_mysql , $date_fin_mysql , $_SESSION['USER_PROFIL_TYPE'] );
+  $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_devoirs_groupes_eleve( $eleve_id , $classe_id , $date_debut_mysql , $date_fin_mysql , $_SESSION['USER_PROFIL_TYPE'] );
   if(empty($DB_TAB))
   {
     exit('Aucune évaluation trouvée sur la période '.$date_debut.' ~ '.$date_fin.' !');
@@ -79,8 +79,8 @@ if( ($action=='Afficher_evaluations') && $eleve_id && $date_debut && $date_fin )
   foreach($DB_TAB as $DB_ROW)
   {
     $date_affich = convert_date_mysql_to_french($DB_ROW['devoir_date']);
-    $image_sujet   = ($DB_ROW['devoir_doc_sujet'])   ? '<a href="'.$DB_ROW['devoir_doc_sujet'].'" target="_blank"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
-    $image_corrige = ($DB_ROW['devoir_doc_corrige']) ? '<a href="'.$DB_ROW['devoir_doc_corrige'].'" target="_blank"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
+    $image_sujet   = ($DB_ROW['devoir_doc_sujet'])   ? '<a href="'.$DB_ROW['devoir_doc_sujet'].'" target="_blank" class="no_puce"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
+    $image_corrige = ($DB_ROW['devoir_doc_corrige']) ? '<a href="'.$DB_ROW['devoir_doc_corrige'].'" target="_blank" class="no_puce"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
     // Afficher une ligne du tableau
     echo'<tr>';
     echo  '<td>'.html($date_affich).'</td>';
@@ -140,7 +140,7 @@ if( ($action=='Voir_notes') && $eleve_id && $devoir_id )
     $DB_ROW = $DB_TAB_COMP[$item_id][0];
     $item_ref = $DB_ROW['item_ref'];
     $texte_socle = ($DB_ROW['entree_id']) ? '[S] ' : '[–] ';
-    $texte_lien_avant = ($DB_ROW['item_lien']) ? '<a class="lien_ext" href="'.html($DB_ROW['item_lien']).'">' : '';
+    $texte_lien_avant = ($DB_ROW['item_lien']) ? '<a target="_blank" href="'.html($DB_ROW['item_lien']).'">' : '';
     $texte_lien_apres = ($DB_ROW['item_lien']) ? '</a>' : '';
     $tab_scores[$item_id] = (isset($tab_devoirs[$item_id])) ? calculer_score($tab_devoirs[$item_id],$DB_ROW['referentiel_calcul_methode'],$DB_ROW['referentiel_calcul_limite']) : FALSE ;
     $texte_demande_eval = ($_SESSION['USER_PROFIL_TYPE']!='eleve') ? '' : ( ($DB_ROW['item_cart']) ? '<q class="demander_add" id="demande_'.$DB_ROW['matiere_id'].'_'.$item_id.'_'.$tab_scores[$item_id].'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
@@ -189,6 +189,7 @@ if( ($action=='Saisir_notes') && $eleve_id && $devoir_id )
   $tab_liste_item = array_keys($DB_TAB_COMP);
   $liste_item_id = implode(',',$tab_liste_item);
   // boutons radio
+  $tab_radio_boutons = array();
   $tab_notes = array( 'X'=>'commun' , 'RR'=>$_SESSION['NOTE_DOSSIER'] , 'R'=>$_SESSION['NOTE_DOSSIER'] , 'V'=>$_SESSION['NOTE_DOSSIER'] , 'VV'=>$_SESSION['NOTE_DOSSIER'] );
   foreach($tab_notes as $note => $dossier)
   {
@@ -208,7 +209,7 @@ if( ($action=='Saisir_notes') && $eleve_id && $devoir_id )
     $DB_ROW = $DB_TAB_COMP[$item_id][0];
     $item_ref = $DB_ROW['item_ref'];
     $texte_socle = ($DB_ROW['entree_id']) ? '[S] ' : '[–] ';
-    $texte_lien_avant = ($DB_ROW['item_lien']) ? '<a class="lien_ext" href="'.html($DB_ROW['item_lien']).'">' : '';
+    $texte_lien_avant = ($DB_ROW['item_lien']) ? '<a target="_blank" href="'.html($DB_ROW['item_lien']).'">' : '';
     $texte_lien_apres = ($DB_ROW['item_lien']) ? '</a>' : '';
     $boutons = (isset($tab_radio[$item_id])) ? $tab_radio[$item_id] : str_replace( 'value="X"' , 'value="X" checked' , $radio_boutons ) ;
     $boutons = str_replace( 'item_X' , 'item_'.$item_id , $boutons );

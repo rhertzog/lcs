@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -88,6 +88,21 @@ function replaceAll(find, replace, str)
 }
 
 /**
+ * Fonction pour extraire le hash (sans le dièse) d'une URL
+ * Mise en place car un substring() ne passe pas si 
+ * session.use_trans_sid = ON et session.use_only_cookies = OFF
+ * car alors PHP rajoute ?SACoche-session= dans les liens
+ *
+ * @param href
+ * @return string
+ */
+function extract_hash(href)
+{
+  var pos_hash = href.lastIndexOf('#');
+  return (pos_hash!==-1) ? href.substr(pos_hash+1) : '' ;
+}
+
+/**
  * Fonction pour interpréter une erreur d'extraction json
  *
  * @param jqXHR      l'objet retourné par ajax, contenant la réponse du serveur
@@ -136,24 +151,6 @@ function afficher_masquer_images_action(why)
 }
 
 /**
- * Fonction pour formater les liens
- *
- * - vers l'extérieur (nouvel onglet)
- * - vers l'aide en ligne (nouvelle fenêtre pop-up)
- * - de type mailto
- *
- * @param element "body" ou un élément sur lequel restreindre la recherche
- * @return void
- */
-function format_liens(element)
-{
-  $(element).find("a.lien_ext" ).attr("target","_blank");
-  $(element).find("a.lien_ext" ).css({"padding-right":"14px" , "background":"url(./_img/puce/puce_popup_onglet.gif) no-repeat right"});
-  $(element).find("a.pop_up" ).css({"padding-right":"18px" , "background":"url(./_img/puce/puce_popup_window.gif) no-repeat right"});
-  $(element).find("a.lien_mail").css({"padding-left":"15px" , "background":"url(./_img/puce/puce_mail.gif) no-repeat left"});
-}
-
-/**
  * Fonction pour appliquer une infobulle au survol de tous les éléments possédants un attribut "title"
  *
  * Remarque : attention, cela fait disparaitre le contenu de l'attribut alt"...
@@ -166,7 +163,8 @@ function infobulle()
   $(document).tooltip
   (
     {
-      items: "img[title] , th[title] , td[title] , a[title] , q[title]",
+      track: true,
+      position: { my: "left+15 top+15", collision: "flipfit" },
       content: function()
       {
         if( ($(this).hasClass('fancybox-nav')) || ($(this).hasClass('fancybox-item')) )
@@ -581,7 +579,7 @@ function tester_compteur()
       $("#clock").html(DUREE_AFFICHEE+' min').parent().removeAttr("class").addClass("button clock_anim");
       if(DUREE_AFFICHEE==0)
       {
-        fermer_session();
+        fermer_session_en_ajax('inactivite');
       }
     }
   }
@@ -604,13 +602,25 @@ function conserver_session_active()
       dataType : "html",
       error : function(jqXHR, textStatus, errorThrown)
       {
-        alert('Avertissement : échec lors de la connexion au serveur !\nLe travail en cours pourrait ne pas pouvoir être sauvegardé...');
+        $('div.jqibox').remove(); // Sinon il y a un pb d'affichage lors d'appels successifs
+        $.prompt(
+          "Échec lors de la connexion au serveur !<br />Le travail en cours pourrait ne pas pouvoir être sauvegardé...",
+          {
+            title  : 'Avertissement'
+          }
+        );
       },
       success : function(responseHTML)
       {
         if(responseHTML != 'ok')
         {
-          alert(responseHTML);
+          $('div.jqibox').remove(); // Sinon il y a un pb d'affichage lors d'appels successifs
+          $.prompt(
+            responseHTML ,
+            {
+              title: 'Anomalie'
+            }
+          );
         }
       }
     }
@@ -620,10 +630,10 @@ function conserver_session_active()
 /**
  * Fonction pour fermer la session : appel si le compteur arrive à zéro (en ajax)
  *
- * @param void
- * @return void
+ * @param string motif   inactivite | redirection
+ * @return bool
  */
-function fermer_session()
+function fermer_session_en_ajax(motif)
 {
   $.ajax
   (
@@ -642,18 +652,25 @@ function fermer_session()
         {
           return false;
         }
-        $("body").stopTime('compteur');
-        $('#menu').remove();
-        if(CONNEXION_USED=='normal')
+        if(motif=='redirection')
         {
-          var adresse = ( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') ) ? './index.php' : './index.php?'+PROFIL_TYPE ;
-          $('#top_info').html('<span class="button alerte">Votre session a expiré. Vous êtes désormais déconnecté de SACoche !</span> <span class="button connexion"><a href="'+adresse+'">Se reconnecter&hellip;</a></span>');
+          window.document.location.href = DECONNEXION_REDIR ;
         }
-        else
+        if(motif=='inactivite')
         {
-          $('#top_info').html('<span class="button alerte">Session expirée. Vous êtes déconnecté de SACoche mais sans doute pas du SSO !</span> <span class="button connexion"><a href="#" onclick="document.location.reload()">Recharger la page&hellip;</a></span>');
+          $("body").stopTime('compteur');
+          $('#menu').remove();
+          if(CONNEXION_USED=='normal')
+          {
+            var adresse = ( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') ) ? './index.php' : './index.php?'+PROFIL_TYPE ;
+            $('#top_info').html('<span class="button expiration">Votre session a expiré. Vous êtes désormais déconnecté de SACoche !</span> <span class="button connexion"><a href="'+adresse+'">Se reconnecter&hellip;</a></span>');
+          }
+          else
+          {
+            $('#top_info').html('<span class="button expiration">Session expirée. Vous êtes déconnecté de SACoche mais sans doute pas du SSO !</span> <span class="button connexion"><a href="#" onclick="document.location.reload()">Recharger la page&hellip;</a></span>');
+          }
+          $.fancybox( '<div class="danger">Délai de '+DUREE_AUTORISEE+'min sans activité atteint &rarr; session fermée.<br />Toute action ultérieure ne sera pas enregistrée.</div>' , {'centerOnScroll':true} );
         }
-        $.fancybox( '<div class="danger">Délai de '+DUREE_AUTORISEE+'min sans activité atteint &rarr; session fermée.<br />Toute action ultérieure ne sera pas enregistrée.</div>' , {'centerOnScroll':true} );
       }
     }
   );
@@ -819,10 +836,10 @@ $(document).ready
   function()
   {
 
-    // Initialisation
-    format_liens('body');
+    /**
+     * Initialisation
+     */
     infobulle();
-
 
     /**
      * Alerte si usage frame / iframe
@@ -830,8 +847,7 @@ $(document).ready
     if(top.frames.length!=0)
     {
       var endroit = ($('#titre_logo').length) ? '#titre_logo' : 'h1' ;
-      $(endroit).after('<div class="probleme">L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" class="lien_ext">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a></div>');
-      format_liens('div.probleme');
+      $(endroit).after('<div class="probleme">L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" target="_blank">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a></div>');
     }
     /**
      * Alerte si non acceptation des cookies
@@ -853,39 +869,106 @@ $(document).ready
     }
 
     /**
+     * Clic sur une image-lien afin d'afficher ou de masquer le détail d'une synthese ou d'un relevé socle
+     */
+    $(document).on
+    (
+      'click',
+      'a[href=#toggle]',
+      function()
+      {
+        var id   = $(this).attr('id').substring(3); // 'to_' + id
+        var class_old = $(this).attr('class');
+        var class_new = (class_old=='toggle_plus') ? 'toggle_moins' : 'toggle_plus' ;
+        $(this).removeAttr("class").addClass(class_new);
+        $('#'+id).toggle('fast');
+        return false;
+      }
+    );
+
+    /**
+     * Clic sur un lien pour ouvrir une fenêtre d'aide en ligne (pop-up)
+     */
+    $(document).on
+    (
+      'click',
+      'a.pop_up',
+      function()
+      {
+        adresse = $(this).attr("href");
+        // Fenêtre principale ; si ce n'est pas le pop-up, on la redimensionne / repositionne
+        if(window.name!='popup')
+        {
+          var largeur = Math.max( 1000 , screen.width - 600 );
+          var hauteur = screen.height * 1 ;
+          var gauche = 0 ;
+          var haut  = 0 ;
+          window.moveTo(gauche,haut);
+          window.resizeTo(largeur,hauteur);
+        }
+        // Fenêtre pop-up
+        var largeur = 600 ;
+        var hauteur = screen.height * 1 ;
+        var gauche = screen.width - largeur ;
+        var haut  = 0 ;
+        w = window.open( adresse , 'popup' ,"toolbar=no,location=no,menubar=no,directories=no,status=no,scrollbars=yes,resizable=yes,copyhistory=no,width="+largeur+",height="+hauteur+",top="+haut+",left="+gauche ) ;
+        w.focus() ;
+        return false;
+      }
+    );
+
+// ////////////////////////////////////////////////////////////////////////////////
+// La suite n'est à exécuter que si l'on est connecté.
+// Remarque : poursuivre l'analyse en l'état provoquerait des erreurs.
+// ////////////////////////////////////////////////////////////////////////////////
+    if(PAGE.substring(0,6)=='public') return false;
+// ////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Plugin Impromptu - Options par défaut
+     */
+    jQuery.prompt.setDefaults({
+      opacity: 0.7, // Combiné au background-color:#000 modifié dans le css
+      zIndex : 9000 // Pour passer devant un fancybox
+    });
+    jQuery.prompt.setStateDefaults({
+      focus  : null // Pas de focus particulier ; ne fonctionne qu'avec la syntaxe utilisant une collection d'étapes, pas la syntaxe directe simplifiée.
+    });
+
+    /**
      * Ajouter une méthode de tri au plugin TableSorter
      */
-      $.tablesorter.addParser
-      (
+    $.tablesorter.addParser
+    (
+      {
+        // set a unique id
+        id: 'date_fr',
+        is: function(date_fr)
         {
-          // set a unique id
-          id: 'date_fr',
-          is: function(date_fr)
+          // return false so this parser is not auto detected
+          return false;
+        },
+        format: function(date_fr)
+        {
+          // format your data for normalization
+          if(date_fr=='-')
           {
-            // return false so this parser is not auto detected
-            return false;
-          },
-          format: function(date_fr)
+            return 99991231;
+          }
+          tab_date = date_fr.split('/');
+          if(tab_date.length==3)
           {
-            // format your data for normalization
-            if(date_fr=='-')
-            {
-              return 99991231;
-            }
-            tab_date = date_fr.split('/');
-            if(tab_date.length==3)
-            {
-              return tab_date[2]+tab_date[1]+tab_date[0]; // Il s'agit bien d'une concaténation, pas d'une somme.
-            }
-            else
-            {
-              return 0;
-            }
-          },
-          // set type, either numeric or text
-          type: 'numeric'
-        }
-      );
+            return tab_date[2]+tab_date[1]+tab_date[0]; // Il s'agit bien d'une concaténation, pas d'une somme.
+          }
+          else
+          {
+            return 0;
+          }
+        },
+        // set type, either numeric or text
+        type: 'numeric'
+      }
+    );
 
     /**
      * MENU - Rendre transparente la page au survol.
@@ -919,23 +1002,28 @@ $(document).ready
       );
     }
     page_transparente();
-
+    
     /**
-     * Si on appuie sur la touche entrée, le premier élèment de formulaire est actionné.
-     * S'il s'agit d'un input type image, cela peut dé-cocher tout un ensemble de cases à l'insu de l'utilisateur.
-     * Feinte de balayeur trouvée : insérer en premier un input type image inoffensif.
-     * Mais il faut aussi saisir son interception, sinon le formulaire est envoyée et la page rechargée.
+     * MENU - Déploiement au clic et plus seulement au survol pour les dispositifs tactiles.
      */
-    // 
-    $(document).on
-    (
-      'click',
-      'input[name=leurre]',
-      function()
-      {
-        return false;
-      }
-    );
+    if(isMobile)
+    {
+      $('#menu').on
+      (
+        'click',
+        'li',
+        function()
+        {
+          var obj_ul = $(this).children('ul');
+          if(typeof(obj_ul!=='undefined'))
+          {
+            var css_left = (obj_ul.css('left')=='auto') ? '-9999em' : 'auto' ;
+            $('#menu ul').css('left','-9999em');
+            obj_ul.css('left',css_left);
+          }
+        }
+      );
+    }
 
     /**
      * Select multiples remplacés par une liste de checkbox (code plus lourd, mais résultat plus maniable pour l'utilisateur)
@@ -969,6 +1057,7 @@ $(document).ready
         obj_select_multiple.children('label').addClass('check');
       }
     );
+
     $('span.check_multiple q.cocher_rien').click
     (
       function()
@@ -978,6 +1067,7 @@ $(document).ready
         obj_select_multiple.children('label').removeAttr('class');
       }
     );
+
     $('span.check_multiple q.cocher_inverse').click
     (
       function()
@@ -1087,8 +1177,18 @@ $(document).ready
     (
       function()
       {
-        var adresse = ( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') && (PROFIL_TYPE!='developpeur') ) ? './index.php' : './index.php?'+PROFIL_TYPE ;
-        window.document.location.href = adresse;
+        if(DECONNEXION_REDIR!='')
+        {
+          fermer_session_en_ajax('redirection');
+        }
+        else if( (PROFIL_TYPE!='webmestre') && (PROFIL_TYPE!='partenaire') && (PROFIL_TYPE!='developpeur') )
+        {
+          window.document.location.href = './index.php' ;
+        }
+        else
+        {
+          window.document.location.href = './index.php?'+PROFIL_TYPE ;
+        }
       }
     );
 
@@ -1106,6 +1206,18 @@ $(document).ready
     );
 
     /**
+     * Clic sur un lien afin d'afficher ou de masquer un groupe d'options d'un formulaire
+     */
+    $('a.toggle').click
+    (
+      function()
+      {
+        $("div.toggle").toggle("slow");
+        return false;
+      }
+    );
+
+    /**
      * Clic sur une image-lien pour imprimer un referentiel en consultation
      */
     $(document).on
@@ -1119,87 +1231,17 @@ $(document).ready
     );
 
     /**
-     * Clic sur un lien afin d'afficher ou de masquer un groupe d'options d'un formulaire
-     */
-    $('a.toggle').click
-    (
-      function()
-      {
-        $("div.toggle").toggle("slow");
-        return false;
-      }
-    );
-
-    /**
-     * Clic sur une image-lien afin d'afficher ou de masquer le détail d'une synthese ou d'un relevé socle
-     */
-    $(document).on
-    (
-      'click',
-      'img.toggle',
-      function()
-      {
-        id = $(this).parent().attr('id').substring(3); // 'to_' + id
-        $('#'+id).toggle('fast');
-        src = $(this).attr('src');
-        if( src.indexOf("plus") > 0 )
-        {
-          $(this).attr('src',src.replace('plus','moins'));
-        }
-        else
-        {
-          $(this).attr('src',src.replace('moins','plus'));
-        }
-        return false;
-      }
-    );
-
-    /**
-     * Clic sur un lien pour ouvrir une fenêtre d'aide en ligne (pop-up)
-     */
-    $(document).on
-    (
-      'click',
-      'a.pop_up',
-      function()
-      {
-        adresse = $(this).attr("href");
-        // Fenêtre principale ; si ce n'est pas le pop-up, on la redimensionne / repositionne
-        if(window.name!='popup')
-        {
-          var largeur = Math.max( 1000 , screen.width - 600 );
-          var hauteur = screen.height * 1 ;
-          var gauche = 0 ;
-          var haut  = 0 ;
-          window.moveTo(gauche,haut);
-          window.resizeTo(largeur,hauteur);
-        }
-        // Fenêtre pop-up
-        var largeur = 600 ;
-        var hauteur = screen.height * 1 ;
-        var gauche = screen.width - largeur ;
-        var haut  = 0 ;
-        w = window.open( adresse , 'popup' ,"toolbar=no,location=no,menubar=no,directories=no,status=no,scrollbars=yes,resizable=yes,copyhistory=no,width="+largeur+",height="+hauteur+",top="+haut+",left="+gauche ) ;
-        w.focus() ;
-        return false;
-      }
-    );
-
-    /**
      * Gestion de la durée d'inactivité
      *
      * Fonction tester_compteur() à appeler régulièrement (un diviseur de 60s).
      */
-    if(PAGE.substring(0,6)!='public')
-    {
-      initialiser_compteur();
-      $("body").everyTime
-      ('15s', 'compteur' , function()
-        {
-          tester_compteur();
-        }
-      );
-    }
+    initialiser_compteur();
+    $("body").everyTime
+    ('15s', 'compteur' , function()
+      {
+        tester_compteur();
+      }
+    );
 
     /**
      * Ajoute au document un calque qui est utilisé pour afficher un calendrier
@@ -1436,7 +1478,7 @@ $(document).ready
         {
           $.fancybox( { 'href':'#zone_eval_voir' , onStart:function(){$('#zone_eval_voir').css("display","block");} , onClosed:function(){$('#zone_eval_voir').css("display","none");} , 'centerOnScroll':true } );
         }
-        return(false);
+        return false;
       }
     );
 

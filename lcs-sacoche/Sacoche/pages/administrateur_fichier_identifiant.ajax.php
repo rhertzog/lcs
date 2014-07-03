@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -154,8 +154,8 @@ if( (($action=='generer_login')||($action=='generer_mdp')||($action=='forcer_mdp
   // Affichage du résultat
   // ////////////////////////////////////////////////////////////////////////////////////////////////////
   echo'<ul class="puce">'.NL;
-  echo  '<li><a class="lien_ext" href="'.URL_DIR_LOGINPASS.$fnom.'.pdf"><span class="file file_pdf">Nouveaux identifiants &rarr; Archiver / Imprimer (étiquettes <em>pdf</em>)</span></a></li>'.NL;
-  echo  '<li><a class="lien_ext" href="./force_download.php?auth&amp;fichier='.$fnom.'.csv"><span class="file file_txt">Nouveaux identifiants &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="'.URL_DIR_LOGINPASS.$fnom.'.pdf"><span class="file file_pdf">Nouveaux identifiants &rarr; Archiver / Imprimer (étiquettes <em>pdf</em>)</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="./force_download.php?auth&amp;fichier='.$fnom.'.csv"><span class="file file_txt">Nouveaux identifiants &rarr; Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a></li>'.NL;
   if($action=='generer_mdp')
   {
     echo'<li><label class="alerte">Les mots de passe, cryptés, ne sont plus accessibles ultérieurement !</label></li>'.NL;
@@ -182,7 +182,7 @@ if($action=='user_export')
   // On archive dans un fichier tableur (csv tabulé)
   $fnom = 'export_'.$_SESSION['BASE'].'_mdp_'.fabriquer_fin_nom_fichier__date_et_alea();
   FileSystem::ecrire_fichier( CHEMIN_DOSSIER_EXPORT.$fnom.'.csv' , To::csv($fcontenu_csv) );
-  exit('<ul class="puce"><li><a class="lien_ext" href="./force_download.php?fichier='.$fnom.'.csv"><span class="file file_txt">Récupérer le fichier exporté de la base SACoche (format <em>csv</em>).</span></a></li></ul>');
+  exit('<ul class="puce"><li><a target="_blank" href="./force_download.php?fichier='.$fnom.'.csv"><span class="file file_txt">Récupérer le fichier exporté de la base SACoche (format <em>csv</em>).</span></a></li></ul>');
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -359,7 +359,7 @@ if($action=='import_loginmdp')
       $pdf -> Add_Label(To::pdf($text));
     }
     $pdf->Output(CHEMIN_DOSSIER_LOGINPASS.$fnom.'.pdf','F');
-    echo'<li><a class="lien_ext" href="'.URL_DIR_LOGINPASS.$fnom.'.pdf"><span class="file file_pdf">Archiver / Imprimer les identifiants modifiés (étiquettes <em>pdf</em>).</span></a></li>'.NL;
+    echo'<li><a target="_blank" href="'.URL_DIR_LOGINPASS.$fnom.'.pdf"><span class="file file_pdf">Archiver / Imprimer les identifiants modifiés (étiquettes <em>pdf</em>).</span></a></li>'.NL;
     echo'<li><label class="alerte">Les mots de passe, cryptés, ne sont plus accessibles ultérieurement !</label></li>'.NL;
   }
   // On affiche le bilan
@@ -566,9 +566,11 @@ if($action=='import_ent')
       $id_sconet = ($tab_infos_csv['csv_id_sconet']==NULL) ? '' : $tab_elements[ $tab_infos_csv['csv_id_sconet'] ] ;
       if( ($id_ent!='') && ($nom!='') && ($prenom!='') )
       {
-        if(in_array($_SESSION['CONNEXION_NOM'],array('celia','lilie')))
+        if(substr($_SESSION['CONNEXION_NOM'],0,7)=='logica_')
         {
-          $id_ent = str_replace('ID : ','UT',$id_ent); // Dans les CSV de Lilie & Celi@, il faut par exemple remplacer "ID : 75185265" par "UT75185265"
+          // Dans les CSV de Lilie & Celi@ & PCN, il faut remplacer "ID : " par "UT" (exemple : "ID : 75185265" devient "UT75185265").
+          // 06/06/2014 - Dans PCN c'est maintenant bon, ils exportent un CSV propre et compatible avec tous les utilisateurs.
+          $id_ent = str_replace('ID : ','UT',$id_ent);
         }
         $tab_users_fichier['id_ent'][]    = Clean::id_ent($id_ent);
         $tab_users_fichier['nom'][]       = Clean::nom(Clean::accents($nom)); // En cas de comparaison sur nom / prénom, maieux vaut éviter les accents
@@ -973,6 +975,15 @@ if( ($action=='COPY_id_argos_profs_TO_id_ent') || ($action=='COPY_id_argos_eleve
   echo  '</tbody>'.NL;
   echo'</table>'.NL;
   exit();
+}
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Il se peut que rien n'ait été récupéré à cause de l'upload d'un fichier trop lourd
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if(empty($_POST))
+{
+  exit('Erreur : aucune donnée reçue ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

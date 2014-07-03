@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -153,16 +153,16 @@ if( ($action=='ajouter') && $profil && $nom && $prenom && ($box_login || $login)
   // Afficher le retour
   echo'<tr id="id_'.$user_id.'" class="new">';
   echo  '<td class="nu"><input type="checkbox" name="f_ids" value="'.$user_id.'" /></td>';
-  echo  '<td class="label">0 <img alt="" src="./_img/bulle_aide.png" title="Aucun lien de responsabilité !" /></td>';
+  echo  '<td class="label">0 <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Aucun lien de responsabilité !" /></td>';
   echo  '<td class="label">'.html($id_ent).'</td>';
   echo  '<td class="label">'.html($id_gepi).'</td>';
   echo  '<td class="label">'.html($sconet_id).'</td>';
   echo  '<td class="label">'.html($reference).'</td>';
-  echo  '<td class="label">'.html($profil).' <img alt="" src="./_img/bulle_aide.png" title="'.$_SESSION['TAB_PROFILS_ADMIN']['TYPE'][$profil].'" /></td>';
+  echo  '<td class="label">'.html($profil).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.$_SESSION['TAB_PROFILS_ADMIN']['TYPE'][$profil].'" /></td>';
   echo  '<td class="label">'.html($nom).'</td>';
   echo  '<td class="label">'.html($prenom).'</td>';
-  echo  '<td class="label new">'.html($login).' <img alt="" src="./_img/bulle_aide.png" title="Pensez à relever le login généré !" /></td>';
-  echo  '<td class="label new">'.html($password).' <img alt="" src="./_img/bulle_aide.png" title="Pensez à noter le mot de passe !" /></td>';
+  echo  '<td class="label new">'.html($login).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pensez à relever le login généré !" /></td>';
+  echo  '<td class="label new">'.html($password).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pensez à noter le mot de passe !" /></td>';
   echo  '<td class="label">'.html($courriel).'</td>';
   echo  '<td class="label">'.$sortie_date.'</td>';
   echo  '<td class="nu">';
@@ -268,11 +268,11 @@ if( ($action=='modifier') && $id && $profil && $nom && $prenom && ($box_login ||
   echo'<td class="label">'.html($id_gepi).'</td>';
   echo'<td class="label">'.html($sconet_id).'</td>';
   echo'<td class="label">'.html($reference).'</td>';
-  echo'<td class="label">'.html($profil).' <img alt="" src="./_img/bulle_aide.png" title="'.$_SESSION['TAB_PROFILS_ADMIN']['TYPE'][$profil].'" /></td>';
+  echo'<td class="label">'.html($profil).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.$_SESSION['TAB_PROFILS_ADMIN']['TYPE'][$profil].'" /></td>';
   echo'<td class="label">'.html($nom).'</td>';
   echo'<td class="label">'.html($prenom).'</td>';
   echo'<td class="label">'.html($login).'</td>';
-  echo ($box_password) ? '<td class="label i">champ crypté</td>' : '<td class="label new">'.$password.' <img alt="" src="./_img/bulle_aide.png" title="Pensez à noter le mot de passe !" /></td>' ;
+  echo ($box_password) ? '<td class="label i">champ crypté</td>' : '<td class="label new">'.$password.' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pensez à noter le mot de passe !" /></td>' ;
   echo'<td class="label">'.html($courriel).'</td>';
   echo'<td class="label">'.$sortie_date.'</td>';
   echo'<td class="nu">';

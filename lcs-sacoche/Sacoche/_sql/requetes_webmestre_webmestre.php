@@ -2,32 +2,32 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  *
  * Ce fichier est une partie de SACoche.
  *
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  *
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  *
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  *
  */
  
 // Extension de classe qui étend DB (pour permettre l'autoload)
 
-// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structure).
+// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structures).
 // Ces méthodes ne concernent que le webmestre.
 
 class DB_WEBMESTRE_WEBMESTRE extends DB
@@ -56,7 +56,8 @@ public static function DB_recuperer_structure_by_Id($base_id)
  */
 public static function DB_recuperer_convention_structure_info($convention_id)
 {
-  $DB_SQL = 'SELECT sacoche_base, connexion_nom, convention_date_debut, convention_date_fin, convention_signature, convention_paiement, convention_activation, ';
+  $DB_SQL = 'SELECT sacoche_base, connexion_nom, convention_date_debut, convention_date_fin, ';
+  $DB_SQL.= 'convention_signature, convention_paiement, convention_relance, convention_activation, convention_mail_renouv, ';
   $DB_SQL.= 'structure_denomination, structure_contact_nom, structure_contact_prenom, structure_contact_courriel ';
   $DB_SQL.= 'FROM sacoche_convention ';
   $DB_SQL.= 'LEFT JOIN sacoche_structure USING (sacoche_base) ';
@@ -143,17 +144,22 @@ public static function DB_lister_partenaires_conventionnes()
 /**
  * Lister les conventions des établissements
  *
- * @param void
+ * @param string $where_string
  * @return array
  */
-public static function DB_lister_conventions_structures()
+public static function DB_lister_conventions_structures($where_string)
 {
-  $DB_SQL = 'SELECT sacoche_base, convention_id, connexion_nom, convention_date_debut, convention_date_fin, convention_signature, convention_paiement, convention_activation, ';
+  $DB_SQL = 'SELECT sacoche_base, convention_id, connexion_nom, convention_date_debut, convention_date_fin,  ';
+  $DB_SQL.= 'convention_signature, convention_paiement, convention_relance, convention_activation, convention_mail_renouv, convention_commentaire, ';
   $DB_SQL.= 'structure_uai, structure_localisation, structure_denomination, structure_contact_nom, structure_contact_prenom, structure_contact_courriel, ';
   $DB_SQL.= 'geo_ordre, geo_nom ';
   $DB_SQL.= 'FROM sacoche_convention ';
   $DB_SQL.= 'LEFT JOIN sacoche_structure USING (sacoche_base) ';
   $DB_SQL.= 'LEFT JOIN sacoche_geo USING (geo_id) ';
+  if($where_string)
+  {
+    $DB_SQL.= 'WHERE '.$where_string.' ';
+  }
   $DB_SQL.= 'ORDER BY convention_date_debut DESC, geo_ordre ASC, structure_localisation ASC, structure_denomination ASC ';
   return DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , NULL);
 }
@@ -436,7 +442,7 @@ public static function DB_modifier_zone($geo_id,$geo_ordre,$geo_nom)
  * Modifier une date d'une convention
  *
  * @param int    convention_id
- * @param string objet         signature | paiement
+ * @param string objet         signature | paiement | relance | mail_renouv
  * @param string date_mysql
  * @return void
  */
@@ -462,6 +468,22 @@ public static function DB_modifier_convention_activation($convention_id,$activat
   $DB_SQL.= 'SET convention_activation=:activation_etat ';
   $DB_SQL.= 'WHERE convention_id=:convention_id ';
   $DB_VAR = array(':convention_id'=>$convention_id,':activation_etat'=>$activation_etat);
+  DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
+}
+
+/**
+ * Modifier le commentaire d'une convention
+ *
+ * @param int    convention_id
+ * @param string commentaire
+ * @return void
+ */
+public static function DB_modifier_convention_commentaire($convention_id,$commentaire)
+{
+  $DB_SQL = 'UPDATE sacoche_convention ';
+  $DB_SQL.= 'SET convention_commentaire=:commentaire ';
+  $DB_SQL.= 'WHERE convention_id=:convention_id ';
+  $DB_VAR = array(':convention_id'=>$convention_id,':commentaire'=>$commentaire);
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 

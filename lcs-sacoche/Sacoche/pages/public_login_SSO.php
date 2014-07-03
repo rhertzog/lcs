@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -43,13 +43,13 @@ $TITRE = "Connexion SSO";
  * Normalement on passe en GET le numéro de la base, mais il se peut qu'une connection directe ne puisse être établie qu'avec l'UAI (connu de l'ENT) en non avec le numéro de la base SACoche (inconnu de l'ENT).
  * Dans ce cas, on récupère le numéro de la base et on le remplace dans les variable PHP, pour ne pas avoir à recommencer ce petit jeu à chaque échange avec le serveur SSO pendant l'authentification.
  * 
- * URL directe mono-structure            : http://adresse.com/?sso
- * URL directe multi-structure normale   : http://adresse.com/?sso&base=... | http://adresse.com/?sso&id=...
- * URL directe multi-structure spéciale  : http://adresse.com/?sso&uai=...
+ * URL directe mono-structure             : http://adresse.com/?sso
+ * URL directe multi-structures normale   : http://adresse.com/?sso&base=... | http://adresse.com/?sso&id=...
+ * URL directe multi-structures spéciale  : http://adresse.com/?sso&uai=...
  * 
- * URL profonde mono-structure           : http://adresse.com/?page=...&sso
- * URL profonde multi-structure normale  : http://adresse.com/?page=...&sso&base=... | http://adresse.com/?page=...&sso&id=...
- * URL profonde multi-structure spéciale : http://adresse.com/?page=...&sso&uai=...
+ * URL profonde mono-structure            : http://adresse.com/?page=...&sso
+ * URL profonde multi-structures normale  : http://adresse.com/?page=...&sso&base=... | http://adresse.com/?page=...&sso&id=...
+ * URL profonde multi-structures spéciale : http://adresse.com/?page=...&sso&uai=...
  */
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,52 +254,55 @@ if($connexion_mode=='cas')
     }
     return $str_traces;
   }
-  // Pour tester, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
-  if(DEBUG_PHPCAS)
-  {
-    if( (HEBERGEUR_INSTALLATION=='mono-structure') || !PHPCAS_ETABL_ID_LISTING || (strpos(PHPCAS_ETABL_ID_LISTING,','.$BASE.',')!==FALSE) )
-    {
-      $fichier_nom_debut = 'debugcas_'.$BASE;
-      $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
-      phpCAS::setDebug(PHPCAS_CHEMIN_LOGS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
-    }
-  }
-  // Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
-  phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
-  phpCAS::setLang(PHPCAS_LANG_FRENCH);
-  // Surcharge éventuelle des URL
-  if ($cas_serveur_url_login)    { phpCAS::setServerLoginURL($cas_serveur_url_login); }
-  if ($cas_serveur_url_logout)   { phpCAS::setServerLogoutURL($cas_serveur_url_logout); }
-  if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
-  // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
-  if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
-  {
-    phpCAS::setExtraCurlOption(CURLOPT_PROXY     , SERVEUR_PROXY_NAME);
-    phpCAS::setExtraCurlOption(CURLOPT_PROXYPORT , (int)SERVEUR_PROXY_PORT);
-    phpCAS::setExtraCurlOption(CURLOPT_PROXYTYPE , constant(SERVEUR_PROXY_TYPE));
-    if(SERVEUR_PROXY_AUTH_USED)
-    {
-      phpCAS::setExtraCurlOption(CURLOPT_PROXYAUTH    , constant(SERVEUR_PROXY_AUTH_METHOD));
-      phpCAS::setExtraCurlOption(CURLOPT_PROXYUSERPWD , SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS);
-    }
-  }
-  // On indique qu'il faut vérifier la validité du certificat SSL, sauf exception paramétrée, mais alors dans ce cas ça ne sert à rien d'utiliser une connexion sécurisée.
-  if(strpos(PHPCAS_NO_CERTIF_LISTING,','.$connexion_nom.',')===FALSE)
-  {
-    phpCAS::setCasServerCACert(CHEMIN_FICHIER_CA_CERTS_FILE);
-  }
-  else
-  {
-    phpCAS::setNoCasServerValidation();
-  }
-  // Gestion du single sign-out
-  phpCAS::handleLogoutRequests(FALSE);
-  // Demander à CAS d'aller interroger le serveur
-  // Cette méthode permet de forcer CAS à demander au client de s'authentifier s'il ne trouve aucun client d'authentifié.
-  // (redirige vers le serveur d'authentification si aucun utilisateur authentifié n'a été trouvé par le client CAS)
   try
   {
+    // Si besoin, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
+    if(DEBUG_PHPCAS)
+    {
+      if( (HEBERGEUR_INSTALLATION=='mono-structure') || !PHPCAS_ETABL_ID_LISTING || (strpos(PHPCAS_ETABL_ID_LISTING,','.$BASE.',')!==FALSE) )
+      {
+        $fichier_nom_debut = 'debugcas_'.$BASE;
+        $fichier_nom_fin   = fabriquer_fin_nom_fichier__pseudo_alea($fichier_nom_debut);
+        phpCAS::setDebug(PHPCAS_CHEMIN_LOGS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
+      }
+    }
+    // Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
+    phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
+    phpCAS::setLang(PHPCAS_LANG_FRENCH);
+    // Surcharge éventuelle des URL
+    if ($cas_serveur_url_login)    { phpCAS::setServerLoginURL($cas_serveur_url_login); }
+    if ($cas_serveur_url_logout)   { phpCAS::setServerLogoutURL($cas_serveur_url_logout); }
+    if ($cas_serveur_url_validate) { phpCAS::setServerServiceValidateURL($cas_serveur_url_validate); }
+    // Appliquer un proxy si défini par le webmestre ; voir cURL::get_contents() pour les commentaires.
+    if( (defined('SERVEUR_PROXY_USED')) && (SERVEUR_PROXY_USED) )
+    {
+      phpCAS::setExtraCurlOption(CURLOPT_PROXY     , SERVEUR_PROXY_NAME);
+      phpCAS::setExtraCurlOption(CURLOPT_PROXYPORT , (int)SERVEUR_PROXY_PORT);
+      phpCAS::setExtraCurlOption(CURLOPT_PROXYTYPE , constant(SERVEUR_PROXY_TYPE));
+      if(SERVEUR_PROXY_AUTH_USED)
+      {
+        phpCAS::setExtraCurlOption(CURLOPT_PROXYAUTH    , constant(SERVEUR_PROXY_AUTH_METHOD));
+        phpCAS::setExtraCurlOption(CURLOPT_PROXYUSERPWD , SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS);
+      }
+    }
+    // On indique qu'il faut vérifier la validité du certificat SSL, sauf exception paramétrée, mais alors dans ce cas ça ne sert à rien d'utiliser une connexion sécurisée.
+    if(strpos(PHPCAS_NO_CERTIF_LISTING,','.$connexion_nom.',')===FALSE)
+    {
+      phpCAS::setCasServerCACert(CHEMIN_FICHIER_CA_CERTS_FILE);
+    }
+    else
+    {
+      phpCAS::setNoCasServerValidation();
+    }
+    // Gestion du single sign-out
+    phpCAS::handleLogoutRequests(FALSE);
+    // Demander à CAS d'aller interroger le serveur
+    // Cette méthode permet de forcer CAS à demander au client de s'authentifier s'il ne trouve aucun client d'authentifié.
+    // (redirige vers le serveur d'authentification si aucun utilisateur authentifié n'a été trouvé par le client CAS)
     phpCAS::forceAuthentication();
+    // A partir de là, l'utilisateur est forcément authentifié sur son CAS.
+    // Récupérer l'identifiant (login ou numéro interne...) de l'utilisateur authentifié pour le traiter dans l'application
+    $id_ENT = phpCAS::getUser();
   }
   catch(Exception $e)
   {
@@ -324,19 +327,6 @@ if($connexion_mode=='cas')
       trigger_error('phpCAS::forceAuthentication() sur '.$cas_serveur_host.' a planté mais ce n\'est pas une CAS_AuthenticationException');
       exit_error( 'Erreur d\'authentification CAS' /*titre*/ , '<p>L\'authentification CAS sur '.$cas_serveur_host.' a échouée.<br />'.$e->getMessage().'</p>'.$msg_sup /*contenu*/ );
     }
-  }
-  // A partir de là, l'utilisateur est forcément authentifié sur son CAS.
-  // Récupérer l'identifiant (login ou numéro interne...) de l'utilisateur authentifié pour le traiter dans l'application
-  $id_ENT = phpCAS::getUser();
-  // Récupérer les attributs CAS => SACoche ne récupère aucun attribut, il n'y a pas de récupération de données via le ticket et donc pas de nécessité de convention.
-  if( IS_HEBERGEMENT_SESAMATH && (SERVEUR_TYPE=='DEV') )
-  {
-    // Test temporaire pour Rennes
-    $tab_attributs = phpCAS::getAttributes();
-    echo'<pre>';
-    var_dump($tab_attributs);
-    echo'</pre>';
-    exit();
   }
   // Forcer à réinterroger le serveur CAS en cas de nouvel appel à cette page pour être certain que c'est toujours le même utilisateur qui est connecté au CAS.
   unset($_SESSION['phpCAS']);
@@ -402,7 +392,7 @@ if($connexion_mode=='cas')
         {
           require(CHEMIN_DOSSIER_PARTENARIAT.$fichier_chemin);
           $partenaire_logo_url = ($partenaire_logo_actuel_filename) ? URL_DIR_PARTENARIAT.$partenaire_logo_actuel_filename : URL_DIR_IMG.'auto.gif' ;
-          $partenaire_lien_ouvrant = ($partenaire_adresse_web) ? '<a href="'.html($partenaire_adresse_web).'" class="lien_ext">' : '' ;
+          $partenaire_lien_ouvrant = ($partenaire_adresse_web) ? '<a href="'.html($partenaire_adresse_web).'" target="_blank">' : '' ;
           $partenaire_lien_fermant = ($partenaire_adresse_web) ? '</a>' : '' ;
           $_SESSION['CONVENTION_PARTENAIRE_ENT_COMMUNICATION'] = $partenaire_lien_ouvrant.'<span id="partenaire_logo"><img src="'.html($partenaire_logo_url).'" /></span><span id="partenaire_message">'.nl2br(html($partenaire_message)).'</span>'.$partenaire_lien_fermant.'<hr id="partenaire_hr" />';
         }

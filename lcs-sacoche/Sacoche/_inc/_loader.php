@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -375,37 +375,8 @@ if(DEBUG>3)
 // URL de base du serveur
 // ============================================================================
 
-// Code issu de la fonction _getServerUrl() provenant de phpCAS/CAS/Client.php
-// Les variables HTTP_X_FORWARDED_* sont définies quand un serveur web (ou un proxy) qui récupère la main la passe à un serveur php (qui peut ou pas être un autre serveur web, mais en général pas accessible directement).
-// Concernant HTTP_X_FORWARDED_HOST, il peut contenir plusieurs HOST successifs séparés par des virgules : on explose le tableau et on utilise la première valeur.
-// Daniel privilégie HTTP_HOST (qui provient de la requete HTTP) à SERVER_NAME (qui vient de la conf du serveur) quand les 2 existent, mais phpCAS fait le contraire ; en général c'est pareil, sauf s'il y a des alias sans redirection (ex d'un site qui donne les mêmes pages avec et sans les www), dans ce cas le 1er est l'alias demandé et le 2nd le nom principal configuré du serveur (qui peut être avec ou sans les www, suivant la conf).
-// Il arrive (très rarement) que HTTP_HOST ne soit pas défini (HTTP 1.1 impose au client web de préciser un nom de site, ce qui n'était pas le cas en HTTP 1.0 ; HTTP 1.1 date de 1999, avec un brouillon en 1996 ; et puis il y a aussi les appels en mode CLI).
-
-function getServerUrl()
-{
-  if (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))   { return current(explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'])); }
-  if (!empty($_SERVER['HTTP_X_FORWARDED_SERVER'])) { return $_SERVER['HTTP_X_FORWARDED_SERVER']; }
-  if (!empty($_SERVER['HTTP_HOST']))               { return $_SERVER['HTTP_HOST']; }
-  if (!empty($_SERVER['SERVER_NAME']))             { return $_SERVER['SERVER_NAME']; }
-  exit_error( 'HOST indéfini' /*titre*/ , 'SACoche n\'arrive pas à déterminer le nom du serveur hôte !<br />HTTP_HOST, SERVER_NAME, HTTP_X_FORWARDED_HOST et HTTP_X_FORWARDED_SERVER sont tous indéfinis.' /*contenu*/ );
-}
-
-$HOST = getServerUrl();
-
-function getServerProtocole()
-{
-  // $_SERVER['HTTPS'] peut valoir 'on' ou 'off' ou ''
-  return ( isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS']=='on') ) ? 'https://' : 'http://' ;
-}
-
-function getServerPort()
-{
-  global $HOST;
-  // Rien à indiquer si port 80 (protocole standard HTTP) ou 443 (protocole standard HTTPS) ou port déjà indiqué dans le HOST (les navigateurs indiquent le port dans le header Host de la requete http quand il est non standard comme la norme http1/1 le préconise http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23 mais le serveur web ne le file généralement pas à PHP dans HTTP_HOST)
-  return ( !isset($_SERVER['SERVER_PORT']) || in_array($_SERVER['SERVER_PORT'],array(80,443)) || strpos($HOST,':') ) ? '' : ':'.$_SERVER['SERVER_PORT'] ;
-}
-
-define('URL_BASE',getServerProtocole().$HOST.getServerPort());
+$host = getServerUrl();
+define('URL_BASE',getServerProtocole().$host.getServerPort($host));
 
 // ============================================================================
 // Type de serveur (LOCAL|DEV|PROD)
@@ -415,8 +386,19 @@ define('URL_BASE',getServerProtocole().$HOST.getServerPort());
 // - $_SERVER['HTTP_HOST'] peut ne pas renvoyer localhost sur un serveur local (si configuration de domaines locaux via fichiers hosts / httpd.conf par exemple).
 // - gethostbyname($_SERVER['HTTP_HOST']) peut renvoyer "127.0.0.1" sur un serveur non local car un serveur a en général 2 ip (une publique - ou privée s'il est sur un lan - et une locale).
 // - $_SERVER['SERVER_ADDR'] peut renvoyer "127.0.0.1" avec nginx + apache sur 127.0.0.1 ...
-$serveur_type = ( mb_strpos(URL_BASE,'localhost') || mb_strpos(URL_BASE,'127.0.0.1') || mb_strpos(URL_BASE,'.local') ) ? 'LOCAL' : 
-              ( ( mb_strpos(URL_BASE,'.sesamath.net:8080') || mb_strpos(URL_BASE,'.sesamath.net:8443') ) ? 'DEV' : 'PROD' ) ;
+if( mb_strpos(URL_BASE,'localhost') || mb_strpos(URL_BASE,'127.0.0.1') || mb_strpos(URL_BASE,'.local') )
+{
+  $serveur_type = 'LOCAL';
+}
+elseif( mb_strpos(URL_BASE,'.sesamath.net:8080') || mb_strpos(URL_BASE,'.sesamath.net:8443') )
+{
+  $serveur_type = 'DEV';
+}
+else
+{
+  $serveur_type = 'PROD';
+}
+
 define('SERVEUR_TYPE',$serveur_type); // PROD | DEV | LOCAL
 
 // ============================================================================
@@ -488,8 +470,8 @@ define('CONVENTION_ENT_START_DATE_MYSQL','2013-09-01');
 
 // Identifiants particuliers (à ne pas modifier)
 define('ID_DEMO'                   , 9999); // id de l'établissement de démonstration (pour $_SESSION['SESAMATH_ID']) ; 0 pose des pbs, et il fallait prendre un id disponible dans la base d'établissements de Sésamath
-define('ID_MATIERE_PARTAGEE_MAX'   , 9999); // id de la matière transversale dans la table "sacoche_matiere" ; c'est l'id maximal des matières partagées (les id des matières spécifiques sont supérieurs)
-define('ID_NIVEAU_MAX'             , 1000); // Un id de niveau supérieur correspond à un id de famille qui a été incrémenté de cette constante
+define('ID_MATIERE_PARTAGEE_MAX'   , 9999); // id maximal des matières partagées (les id des matières spécifiques sont supérieurs)
+define('ID_NIVEAU_PARTAGE_MAX'     ,  215); // id maximal des niveaux partagés (les id des niveaux spécifiques sont supérieurs)
 define('ID_FAMILLE_MATIERE_USUELLE',   99);
 define('CODE_BREVET_EPREUVE_TOTAL' ,  255);
 
@@ -583,6 +565,7 @@ function __autoload($class_name)
     'InfoServeur'                 => '_inc'.DS.'class.InfoServeur.php' ,
     'JSMin'                       => '_inc'.DS.'class.JavaScriptMinified.php' ,
     'JavaScriptPacker'            => '_inc'.DS.'class.JavaScriptPacker.php' ,
+    'Layout'                      => '_inc'.DS.'class.Layout.php' ,
     'LockAcces'                   => '_inc'.DS.'class.LockAcces.php' ,
     'Mobile_Detect'               => '_inc'.DS.'class.MobileDetect.php' ,
     'MyDOMDocument'               => '_inc'.DS.'class.domdocument.php' ,
@@ -670,6 +653,76 @@ function __autoload($class_name)
 }
 
 // ============================================================================
+// Fonctions utilisées pour déterminer l'URL de base du serveur
+// ============================================================================
+
+// Code issu de la fonction _getServerUrl() provenant de phpCAS/CAS/Client.php
+// Les variables HTTP_X_FORWARDED_* sont définies quand un serveur web (ou un proxy) qui récupère la main la passe à un serveur php (qui peut ou pas être un autre serveur web, mais en général pas accessible directement).
+// Concernant HTTP_X_FORWARDED_HOST, il peut contenir plusieurs HOST successifs séparés par des virgules : on explose le tableau et on utilise la première valeur.
+// Daniel privilégie HTTP_HOST (qui provient de la requete HTTP) à SERVER_NAME (qui vient de la conf du serveur) quand les 2 existent, mais phpCAS fait le contraire ; en général c'est pareil, sauf s'il y a des alias sans redirection (ex d'un site qui donne les mêmes pages avec et sans les www), dans ce cas le 1er est l'alias demandé et le 2nd le nom principal configuré du serveur (qui peut être avec ou sans les www, suivant la conf).
+// Il arrive (très rarement) que HTTP_HOST ne soit pas défini (HTTP 1.1 impose au client web de préciser un nom de site, ce qui n'était pas le cas en HTTP 1.0 ; HTTP 1.1 date de 1999, avec un brouillon en 1996 ; et puis il y a aussi les appels en mode CLI).
+
+/**
+ * getServerUrl
+ *
+ * @param void
+ * @return string
+ */
+function getServerUrl()
+{
+  if (!empty($_SERVER['HTTP_X_FORWARDED_HOST']))   { return current(explode(',', $_SERVER['HTTP_X_FORWARDED_HOST'])); }
+  if (!empty($_SERVER['HTTP_X_FORWARDED_SERVER'])) { return $_SERVER['HTTP_X_FORWARDED_SERVER']; }
+  if (!empty($_SERVER['HTTP_HOST']))               { return $_SERVER['HTTP_HOST']; }
+  if (!empty($_SERVER['SERVER_NAME']))             { return $_SERVER['SERVER_NAME']; }
+  exit_error( 'HOST indéfini' /*titre*/ , 'SACoche n\'arrive pas à déterminer le nom du serveur hôte !<br />HTTP_HOST, SERVER_NAME, HTTP_X_FORWARDED_HOST et HTTP_X_FORWARDED_SERVER sont tous indéfinis.' /*contenu*/ );
+}
+
+/**
+ * getServerProtocole
+ *
+ * @param void
+ * @return string
+ */
+function getServerProtocole()
+{
+  // $_SERVER['HTTPS'] peut valoir 'on' ou 'off' ou ''
+  if ( isset($_SERVER['HTTPS']) && (strtolower($_SERVER['HTTPS'])=='on') )
+  {
+    return 'https://';
+  }
+  // Pour les serveurs derrière un équilibreur de charge (@see http://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Common_non-standard_request_headers)
+  if( isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && ($_SERVER['HTTP_X_FORWARDED_PROTO']=='https') )
+  {
+    return 'https://';
+  }
+  return 'http://';
+}
+
+/**
+ * getServerProtocole
+ *
+ * @param string $host
+ * @return string
+ */
+function getServerPort($host)
+{
+  if(!empty($_SERVER['HTTP_X_FORWARDED_PORT']))
+  {
+    $port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+  }
+  elseif(!empty($_SERVER['SERVER_PORT']))
+  {
+    $port = $_SERVER['SERVER_PORT'];
+  }
+  else
+  {
+    $port = NULL;
+  }
+  // Rien à indiquer si port 80 (protocole standard HTTP) ou 443 (protocole standard HTTPS) ou port déjà indiqué dans le HOST (les navigateurs indiquent le port dans le header Host de la requete http quand il est non standard comme la norme http1/1 le préconise http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23 mais le serveur web ne le file généralement pas à PHP dans HTTP_HOST)
+  return ( !$port || in_array($port,array(80,443)) || strpos($host,':') ) ? '' : ':'.$port ;
+}
+
+// ============================================================================
 // Fonctions d'affichage et de sortie
 // ============================================================================
 
@@ -707,31 +760,31 @@ function html($text)
  */
 function exit_error( $titre , $contenu , $lien='accueil' )
 {
-  if(SACoche!='ajax')
+  header('Content-Type: text/html; charset='.CHARSET);
+  if( in_array( SACoche , array('ajax','appel_externe') ) )
   {
-    header('Content-Type: text/html; charset='.CHARSET);
+    echo str_replace('<br />',' ',$contenu);
+  }
+  else
+  {
     echo'<!DOCTYPE html>'.NL;
-    echo'<html>'.NL;
+    echo'<html lang="fr">'.NL;
     echo  '<head>'.NL;
     echo    '<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'.NL;
-    echo    '<link rel="stylesheet" type="text/css" href="./_css/style.css" />'.NL;
+    echo    '<link rel="stylesheet" type="text/css" href="'.URL_DIR_SACOCHE.'_css/style.css" />'.NL;
     echo    '<style type="text/css">#cadre_milieu{color:#D00}</style>'.NL;
     echo    '<title>SACoche » '.$titre.'</title>'.NL;
     echo  '</head>'.NL;
     echo  '<body>'.NL;
     echo    '<div id="cadre_milieu">'.NL;
-    echo      '<div class="hc"><img src="./_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>'.NL;
+    echo      '<div class="hc"><img src="'.URL_DIR_SACOCHE.'_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>'.NL;
     echo      '<h1>'.$titre.'</h1>'.NL;
     echo      '<p>'.str_replace('<br />','</p><p>',$contenu).'</p>'.NL;
-        if($lien=='accueil') { echo'<p><a href="./index.php">Retour en page d\'accueil de SACoche.</a></p>'.NL; } 
-    elseif($lien=='install') { echo'<p><a href="./index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'.NL; } 
+        if($lien=='accueil') { echo'<p><a href="'.URL_DIR_SACOCHE.'index.php">Retour en page d\'accueil de SACoche.</a></p>'.NL; } 
+    elseif($lien=='install') { echo'<p><a href="'.URL_DIR_SACOCHE.'index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'.NL; } 
     echo    '</div>'.NL;
     echo  '</body>'.NL;
     echo'</html>'.NL;
-  }
-  else
-  {
-    echo str_replace('<br />',' ',$contenu);
   }
   exit();
 }
@@ -768,8 +821,4 @@ function exit_json( $statut , $value=NULL )
   exit( json_encode( array_merge($tab_statut,$tab_valeur) ) );
 }
 
-/*
- * Pour retenir les données qui seront à afficher dans la section <head></head> de la page.
- */
-$GLOBALS['HEAD'] = array();
 ?>

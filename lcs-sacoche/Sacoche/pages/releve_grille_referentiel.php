@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -30,7 +30,7 @@ $TITRE = "Grille d'items d'un référentiel";
 
 if(!test_user_droit_specifique($_SESSION['DROIT_VOIR_GRILLES_ITEMS']))
 {
-  echo'<p class="danger">Vous n\'avez pas un profil autorisé pour accéder à cette fonctionnalité !</p>'.NL;
+  echo'<p class="danger">Vous n\'êtes pas habilité à accéder à cette fonctionnalité !</p>'.NL;
   echo'<div class="astuce">Profils autorisés (par les administrateurs) :</div>'.NL;
   echo afficher_profils_droit_specifique($_SESSION['DROIT_VOIR_GRILLES_ITEMS'],'li');
   return; // Ne pas exécuter la suite de ce fichier inclus.
@@ -107,6 +107,7 @@ $select_groupe        = Form::afficher_select($tab_groupes                    , 
 $select_periode       = Form::afficher_select($tab_periodes                   , 'f_periode'       /*select_nom*/ , 'periode_personnalisee' /*option_first*/ , FALSE                                 /*selection*/ ,              '' /*optgroup*/);
 $select_orientation   = Form::afficher_select(Form::$tab_select_orientation   , 'f_orientation'   /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['orientation']       /*selection*/ ,              '' /*optgroup*/);
 $select_marge_min     = Form::afficher_select(Form::$tab_select_marge_min     , 'f_marge_min'     /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['marge_min']         /*selection*/ ,              '' /*optgroup*/);
+$select_pages_nb      = Form::afficher_select(Form::$tab_select_pages_nb      , 'f_pages_nb'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['pages_nb']          /*selection*/ ,              '' /*optgroup*/);
 $select_couleur       = Form::afficher_select(Form::$tab_select_couleur       , 'f_couleur'       /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['couleur']           /*selection*/ ,              '' /*optgroup*/);
 $select_legende       = Form::afficher_select(Form::$tab_select_legende       , 'f_legende'       /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['legende']           /*selection*/ ,              '' /*optgroup*/);
 $select_cases_nb      = Form::afficher_select(Form::$tab_select_cases_nb      , 'f_cases_nb'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['cases_nb']          /*selection*/ ,              '' /*optgroup*/);
@@ -143,9 +144,9 @@ else
 $is_periode_requise = ($class_form_periode=='show') ? 'true' : 'false' ;
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var date_mysql      = "'.TODAY_MYSQL.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var is_multiple     = '.$is_select_multiple.';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var periode_requise = '.$is_periode_requise.';';
+Layout::add( 'js_inline_before' , 'var date_mysql      = "'.TODAY_MYSQL.'";' );
+Layout::add( 'js_inline_before' , 'var is_multiple     = '.$is_select_multiple.';' );
+Layout::add( 'js_inline_before' , 'var periode_requise = '.$is_periode_requise.';' );
 
 // Fabrication du tableau javascript "tab_groupe_periode" pour les jointures groupes/périodes
 Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode*/ , FALSE /*tab_groupe_niveau*/ );
@@ -159,10 +160,10 @@ Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode
     <label class="tab">Type de document :</label><label for="f_type_generique"><input type="checkbox" id="f_type_generique" name="f_type[]" value="generique"<?php echo $check_type_generique ?> /> Fiche générique</label><span id="generique_non_1" class="<?php echo $class_form_generique ?>">&nbsp;&nbsp;&nbsp;<label for="f_type_individuel"><input type="checkbox" id="f_type_individuel" name="f_type[]" value="individuel"<?php echo $check_type_individuel ?> /> Relevé individuel</label>&nbsp;&nbsp;&nbsp;<label for="f_type_synthese"><input type="checkbox" id="f_type_synthese" name="f_type[]" value="synthese"<?php echo $check_type_synthese ?> /> Synthèse collective</label></span><br />
     <span id="generique_non_2" class="<?php echo $class_form_generique ?>">
       <span id="options_individuel" class="<?php echo $class_form_individuel ?>">
-        <label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Paramétrage du relevé individuel." /> Opt. relevé :</label><?php echo $select_remplissage ?> <?php echo $select_colonne_bilan ?> <?php echo $select_colonne_vide ?><br />
+        <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Paramétrage du relevé individuel." /> Opt. relevé :</label><?php echo $select_remplissage ?> <?php echo $select_colonne_bilan ?> <?php echo $select_colonne_vide ?><br />
       </span>
       <span id="options_synthese" class="<?php echo $class_form_synthese ?>">
-        <label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Paramétrage du tableau de synthèse." /> Opt. synthèse :</label><?php echo $select_tri_objet ?> <?php echo $select_tri_mode ?><br />
+        <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Paramétrage du tableau de synthèse." /> Opt. synthèse :</label><?php echo $select_tri_objet ?> <?php echo $select_tri_mode ?><br />
       </span>
     </span>
   </p>
@@ -173,12 +174,12 @@ Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode
     <span id="bloc_eleve" class="hide"><label class="tab" for="f_eleve">Élève(s) :</label><?php echo $select_eleves ?></span>
   </p>
   <p id="zone_periodes" class="<?php echo $class_form_periode ?>">
-    <label class="tab" for="f_periode"><img alt="" src="./_img/bulle_aide.png" title="Les items pris en compte sont ceux qui sont évalués<br />au moins une fois sur cette période." /> Période :</label><?php echo $select_periode ?>
+    <label class="tab" for="f_periode"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Les items pris en compte sont ceux qui sont évalués<br />au moins une fois sur cette période." /> Période :</label><?php echo $select_periode ?>
     <span id="dates_perso" class="show">
       du <input id="f_date_debut" name="f_date_debut" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french') ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
       au <input id="f_date_fin" name="f_date_fin" size="9" type="text" value="<?php echo TODAY_FR ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
     </span><br />
-    <span class="radio"><img alt="" src="./_img/bulle_aide.png" title="Le bilan peut être établi uniquement sur la période considérée<br />ou en tenant compte d'évaluations antérieures des items concernés.<br />En automatique, les paramètres enregistrés pour chaque référentiel s'appliquent." /> Prise en compte des évaluations antérieures :</span>
+    <span class="radio"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Le bilan peut être établi uniquement sur la période considérée<br />ou en tenant compte d'évaluations antérieures des items concernés.<br />En automatique, les paramètres enregistrés pour chaque référentiel s'appliquent." /> Prise en compte des évaluations antérieures :</span>
       <label for="f_retroactif_auto"><input type="radio" id="f_retroactif_auto" name="f_retroactif" value="auto"<?php echo $check_retroactif_auto ?> /> automatique (selon référentiels)</label>&nbsp;&nbsp;&nbsp;
       <label for="f_retroactif_non"><input type="radio" id="f_retroactif_non" name="f_retroactif" value="non"<?php echo $check_retroactif_non ?> /> non</label>&nbsp;&nbsp;&nbsp;
       <label for="f_retroactif_oui"><input type="radio" id="f_retroactif_oui" name="f_retroactif" value="oui"<?php echo $check_retroactif_oui ?> /> oui (sans limite)</label>&nbsp;&nbsp;&nbsp;
@@ -191,7 +192,7 @@ Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode
     <span class="tab"></span><a href="#" class="puce_moins toggle">Afficher moins d'options</a><br />
     <label class="tab">Restriction :</label><label for="f_restriction"><input type="checkbox" id="f_restriction" name="f_restriction" value="1"<?php echo $check_only_socle ?> /> Uniquement les items liés au socle</label><br />
     <label class="tab">Indications :</label><label for="f_coef"><input type="checkbox" id="f_coef" name="f_coef" value="1"<?php echo $check_aff_coef ?> /> Coefficients</label>&nbsp;&nbsp;&nbsp;<label for="f_socle"><input type="checkbox" id="f_socle" name="f_socle" value="1"<?php echo $check_aff_socle ?> /> Appartenance au socle</label>&nbsp;&nbsp;&nbsp;<label for="f_lien"><input type="checkbox" id="f_lien" name="f_lien" value="1"<?php echo $check_aff_lien ?> /> Liens (ressources pour travailler)</label><br />
-    <label class="tab"><img alt="" src="./_img/bulle_aide.png" title="Pour le format pdf." /> Impression :</label><?php echo $select_orientation ?> <?php echo $select_couleur ?> <?php echo $select_legende ?> <?php echo $select_marge_min ?><br />
+    <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour le format pdf." /> Impression :</label><?php echo $select_orientation ?> <?php echo $select_couleur ?> <?php echo $select_legende ?> <?php echo $select_marge_min ?> <?php echo $select_pages_nb ?><br />
     <label class="tab">Évaluations :</label><?php echo $select_cases_nb ?> de largeur <?php echo $select_cases_larg ?>
   </div>
   <p><span class="tab"></span><button id="bouton_valider" type="submit" class="generer">Générer.</button><label id="ajax_msg">&nbsp;</label></p>

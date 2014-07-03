@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -29,15 +29,15 @@
 
 define(  'CHROME_VERSION_MINI_REQUISE'   , 3  ); define(  'CHROME_TEXTE_MINI_REQUIS'     , 'Version 3 minimum (sortie en 2009).');
 define(  'CHROME_VERSION_MINI_CONSEILLEE', 5  );
-define(  'CHROME_VERSION_LAST'           ,32  ); define(  'CHROME_URL_DOWNLOAD'          , 'http://www.google.fr/chrome');
+define(  'CHROME_VERSION_LAST'           ,35  ); define(  'CHROME_URL_DOWNLOAD'          , 'http://www.google.fr/chrome');
 
 define( 'FIREFOX_VERSION_MINI_REQUISE'   , 3.5); define( 'FIREFOX_TEXTE_MINI_REQUIS'     , 'Version 3.5 minimum (sortie en 2009).');
 define( 'FIREFOX_VERSION_MINI_CONSEILLEE', 4  );
-define( 'FIREFOX_VERSION_LAST'           ,27  ); define( 'FIREFOX_URL_DOWNLOAD'          , 'http://www.mozilla-europe.org/fr/');
+define( 'FIREFOX_VERSION_LAST'           ,30  ); define( 'FIREFOX_URL_DOWNLOAD'          , 'http://www.mozilla-europe.org/fr/');
 
 define(   'OPERA_VERSION_MINI_REQUISE'   ,10  ); define(   'OPERA_TEXTE_MINI_REQUIS'     , 'Version 10 minimum (sortie en 2009).');
 define(   'OPERA_VERSION_MINI_CONSEILLEE',11  );
-define(   'OPERA_VERSION_LAST'           ,19  ); define(   'OPERA_URL_DOWNLOAD'          , 'http://www.opera-fr.com/telechargements/');
+define(   'OPERA_VERSION_LAST'           ,22  ); define(   'OPERA_URL_DOWNLOAD'          , 'http://www.opera-fr.com/telechargements/');
 
 define(  'SAFARI_VERSION_MINI_REQUISE'   , 4  ); define(  'SAFARI_TEXTE_MINI_REQUIS'     , 'Version 4 minimum (sortie en 2009).');
 define(  'SAFARI_VERSION_MINI_CONSEILLEE', 5  );
@@ -116,6 +116,12 @@ class Browser
       $tab_retour['modele']  = 'explorer';
       $tab_retour['version'] = (preg_match('#msie\s([0-9]+\.?[0-9]*)#',$UserAgent,$array)) ? (int)$array[1] : 0 ;
     }
+    // IE11 ne contient plus "MSIE" pour ne pas se faire repérer comme étant IE ! Alors on cherche aussi "Trident" (IE8+).
+    elseif( (!preg_match('#opera|webtv#', $UserAgent)) && (strstr($UserAgent,'trident')) )
+    {
+      $tab_retour['modele']  = 'explorer';
+      $tab_retour['version'] = (preg_match('#rv:([0-9]+\.?[0-9]*)#',$UserAgent,$array)) ? (int)$array[1] : 0 ;
+    }
     elseif(strstr($UserAgent,'firefox'))
     {
       $tab_retour['modele']  = 'firefox';
@@ -177,7 +183,7 @@ class Browser
     $tab_chaine = array();
     foreach(Browser::$tab_navigo as $navigo_ref => $navigo_name)
     {
-      $tab_chaine[$navigo_ref] = '<a class="lien_ext" href="'.constant(strtoupper($navigo_ref).'_URL_DOWNLOAD').'"><span class="navigo navigo_'.$navigo_ref.'">'.ucfirst($navigo_ref).' '.constant(strtoupper($navigo_ref).'_VERSION_LAST').'</span></a>';
+      $tab_chaine[$navigo_ref] = '<a target="_blank" href="'.constant(strtoupper($navigo_ref).'_URL_DOWNLOAD').'"><span class="navigo navigo_'.$navigo_ref.'">'.ucfirst($navigo_ref).' '.constant(strtoupper($navigo_ref).'_VERSION_LAST').'</span></a>';
     }
     // Affichage
     return $tab_chaine;

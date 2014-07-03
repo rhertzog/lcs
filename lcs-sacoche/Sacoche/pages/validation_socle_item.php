@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -70,8 +70,8 @@ $select_groupe  = Form::afficher_select($tab_groupes  , 'f_groupe'  /*select_nom
 $select_matiere = Form::afficher_select($tab_matieres , 'f_matiere' /*select_nom*/ , FALSE /*option_first*/ , TRUE                          /*selection*/ ,              '' /*optgroup*/ , TRUE /*multiple*/);
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var seuil_R = parseInt("'.$_SESSION['CALCUL_SEUIL']['R'].'",10);';
-$GLOBALS['HEAD']['js']['inline'][] = 'var seuil_V = parseInt("'.$_SESSION['CALCUL_SEUIL']['V'].'",10);';
+Layout::add( 'js_inline_before' , 'var seuil_R = parseInt("'.$_SESSION['CALCUL_SEUIL']['R'].'",10);' );
+Layout::add( 'js_inline_before' , 'var seuil_V = parseInt("'.$_SESSION['CALCUL_SEUIL']['V'].'",10);' );
 ?>
 
 <ul class="puce">
@@ -90,7 +90,7 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var seuil_V = parseInt("'.$_SESSION['CALCU
     <label class="tab" for="f_groupe">Classe / groupe :</label><?php echo $select_groupe ?><input type="hidden" id="f_groupe_type" name="f_groupe_type" value="" /><label id="ajax_maj_eleve">&nbsp;</label><br />
     <span id="bloc_eleve" class="hide"><label class="tab" for="f_eleve">Élève(s) :</label><span id="f_eleve" class="select_multiple"></span><span class="check_multiple"><q class="cocher_tout" title="Tout cocher."></q><br /><q class="cocher_rien" title="Tout décocher."></q></span></span>
   </p>
-  <label class="tab">Items récoltés :</label><label for="f_mode_auto"><input type="radio" id="f_mode_auto" name="f_mode" value="auto"<?php echo $check_mode_auto ?> /> Automatique (recommandé) <img alt="" src="./_img/bulle_aide.png" title="Items de tous les référentiels de langue, sauf pour la compétence 2 où on ne prend que les items des référentiels de la langue associée à l'élève." /></label>&nbsp;&nbsp;&nbsp;<label for="f_mode_manuel"><input type="radio" id="f_mode_manuel" name="f_mode" value="manuel"<?php echo $check_mode_manuel ?> /> Sélection manuelle <img alt="" src="./_img/bulle_aide.png" title="Pour choisir les matières des référentiels dont les items collectés sont issus." /></label>
+  <label class="tab">Items récoltés :</label><label for="f_mode_auto"><input type="radio" id="f_mode_auto" name="f_mode" value="auto"<?php echo $check_mode_auto ?> /> Automatique (recommandé) <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Items de tous les référentiels de langue, sauf pour la compétence 2 où on ne prend que les items des référentiels de la langue associée à l'élève." /></label>&nbsp;&nbsp;&nbsp;<label for="f_mode_manuel"><input type="radio" id="f_mode_manuel" name="f_mode" value="manuel"<?php echo $check_mode_manuel ?> /> Sélection manuelle <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour choisir les matières des référentiels dont les items collectés sont issus." /></label>
   <div id="div_matiere" class="<?php echo $class_div_matiere ?>"><span class="tab"></span><span id="f_matiere" class="select_multiple"><?php echo $select_matiere ?></span><span class="check_multiple"><q class="cocher_tout" title="Tout cocher."></q><br /><q class="cocher_rien" title="Tout décocher."></q></span></div>
   <p><span class="tab"></span><input type="hidden" id="f_memo_matieres" value="" /><input type="hidden" name="f_action" value="Afficher_bilan" /><button id="Afficher_validation" type="submit" class="valider">Afficher le tableau des validations.</button><label id="ajax_msg_choix">&nbsp;</label></p>
 </fieldset></form>
@@ -102,7 +102,7 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var seuil_V = parseInt("'.$_SESSION['CALCU
 </form>
 
 <div id="zone_information" class="hide" style="height:25ex">
-  <h4>Aide à la décision : bilan des évaluations associées à un item du socle <span id="span_restriction"></span></h4>
+  <h3>Aide à la décision : bilan des évaluations associées à un item du socle <span id="span_restriction"></span></h3>
   <ul class="puce">
     <li><span id="identite" class="socle_info eleve"></span></li>
     <li><span id="entree" class="socle_info socle_n3"></span></li>

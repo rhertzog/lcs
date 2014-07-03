@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -217,17 +217,17 @@ if($make_pdf)
   $pdf_coords_epreuve_eleve[113]  = array( 'G'=>array(71,221, 14,13) );
   $pdf_coords_epreuve_appr[113]   = array( 'G'=>array(85,221,108,13) );
   // Histoire-géographie || Histoire-géographie éducation civique [pb pour P de partage de la case en 2 sur la fiche]
-  $pdf_coords_epreuve_classe[121] = array( 'G'=>array(56,255, 15,7) , 'P'=>array(52,249, 14,13) );
-  $pdf_coords_epreuve_eleve[121]  = array( 'G'=>array(71,255, 14,7) , 'P'=>array(66,249, 14,13) );
-  $pdf_coords_epreuve_appr[121]   = array( 'G'=>array(85,255,108,7) , 'P'=>array(80,249,113,13) );
+  $pdf_coords_epreuve_classe[121] = array( 'G'=>array(56,235, 15,7) , 'P'=>array(52,229, 14,13) );
+  $pdf_coords_epreuve_eleve[121]  = array( 'G'=>array(71,235, 14,7) , 'P'=>array(66,229, 14,13) );
+  $pdf_coords_epreuve_appr[121]   = array( 'G'=>array(85,235,108,7) , 'P'=>array(80,229,113,13) );
   // Éducation civique
-  $pdf_coords_epreuve_classe[122] = array( 'G'=>array(56,262, 15,6) );
-  $pdf_coords_epreuve_eleve[122]  = array( 'G'=>array(71,262, 14,6) );
-  $pdf_coords_epreuve_appr[122]   = array( 'G'=>array(85,262,108,6) );
+  $pdf_coords_epreuve_classe[122] = array( 'G'=>array(56,242, 15,6) );
+  $pdf_coords_epreuve_eleve[122]  = array( 'G'=>array(71,242, 14,6) );
+  $pdf_coords_epreuve_appr[122]   = array( 'G'=>array(85,242,108,6) );
   // Niveau A2 de langue régionale
-  $pdf_coords_epreuve_classe[130] = array( 'G'=>array(56,134, 15,13) , 'P'=>array(52,228, 14,13) );
-  $pdf_coords_epreuve_eleve[130]  = array( 'G'=>array(71,134, 14,13) , 'P'=>array(66,228, 14,13) );
-  $pdf_coords_epreuve_appr[130]   = array( 'G'=>array(85,134,108,13) , 'P'=>array(80,228,113,13) );
+  // $pdf_coords_epreuve_classe[130] = array( 'G'=>array(56,134, 15,13) , 'P'=>array(52,228, 14,13) );
+  // $pdf_coords_epreuve_eleve[130]  = array( 'G'=>array(71,134, 14,13) , 'P'=>array(66,228, 14,13) );
+  // $pdf_coords_epreuve_appr[130]   = array( 'G'=>array(85,134,108,13) , 'P'=>array(80,228,113,13) );
   // Avis circonstancié du chef d’établissement
   $pdf_coords_epreuve_eleve[CODE_BREVET_EPREUVE_TOTAL] = array( 'G'=>array( 15,72,47,11) , 'P'=>array( 15,77,48,13) );
   $pdf_coords_epreuve_appr[ CODE_BREVET_EPREUVE_TOTAL] = array( 'G'=>array(106,72,86,11) , 'P'=>array(109,77,82,13) );
@@ -251,7 +251,7 @@ foreach($tab_eleve as $tab)
   if($make_pdf)
   {
     // indiquer le fichier source
-    $source_pdf = ($eleve_brevet_serie_initiale=='G') ? 'DNB_Fiche_scolaire_pour_le_jury_Serie_generale_2012_12' : 'DNB_Fiche_scolaire_pour_le_jury_Serie_professionnelle_2012_12' ;
+    $source_pdf = ($eleve_brevet_serie_initiale=='G') ? 'DNB_Fiche_scolaire_pour_le_jury_Serie_generale_2014_01' : 'DNB_Fiche_scolaire_pour_le_jury_Serie_professionnelle_2014_01' ;
     $releve_PDF->setSourceFile('./_pdf/'.$source_pdf.'.pdf');
   }
   for( $numero_tirage=0 ; $numero_tirage<$nombre_tirages ; $numero_tirage++ )

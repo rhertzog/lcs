@@ -2,32 +2,32 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  *
  * Ce fichier est une partie de SACoche.
  *
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  *
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  *
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  *
  */
  
 // Extension de classe qui étend DB (pour permettre l'autoload)
 
-// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structure).
+// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structures).
 // Ces méthodes ne concernent que les administrateurs d'un établissement donné.
 
 class DB_WEBMESTRE_ADMINISTRATEUR extends DB
@@ -100,7 +100,11 @@ public static function DB_tester_convention_precise($base_id,$connexion_nom,$con
   $DB_SQL = 'SELECT convention_id ';
   $DB_SQL.= 'FROM sacoche_convention ';
   $DB_SQL.= 'WHERE sacoche_base=:base_id AND connexion_nom=:connexion_nom AND convention_date_debut=:convention_date_debut ';
-  $DB_VAR = array(':base_id'=>$base_id,':connexion_nom'=>$connexion_nom,':convention_date_debut'=>$convention_date_debut);
+  $DB_VAR = array(
+    ':base_id'               => $base_id,
+    ':connexion_nom'         => $connexion_nom,
+    ':convention_date_debut' => $convention_date_debut,
+  );
   return (int)DB::queryOne(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -115,9 +119,19 @@ public static function DB_tester_convention_precise($base_id,$connexion_nom,$con
  */
 public static function DB_ajouter_convention($base_id,$connexion_nom,$convention_date_debut,$convention_date_fin)
 {
-  $DB_SQL = 'INSERT INTO sacoche_convention(sacoche_base,connexion_nom,convention_date_debut,convention_date_fin,convention_creation,convention_signature,convention_paiement,convention_activation) ';
-  $DB_SQL.= 'VALUES(:base_id,:connexion_nom,:convention_date_debut,:convention_date_fin,NOW(),:convention_signature,:convention_paiement,:convention_activation)';
-  $DB_VAR = array(':base_id'=>$base_id,':connexion_nom'=>$connexion_nom,':convention_date_debut'=>$convention_date_debut,':convention_date_fin'=>$convention_date_fin,':convention_signature'=>NULL,':convention_paiement'=>NULL,':convention_activation'=>0);
+  $DB_SQL = 'INSERT INTO sacoche_convention(sacoche_base,connexion_nom,convention_date_debut,convention_date_fin,convention_creation,convention_signature,convention_paiement,convention_activation,convention_mail_renouv,convention_commentaire) ';
+  $DB_SQL.= 'VALUES(:base_id,:connexion_nom,:convention_date_debut,:convention_date_fin,NOW(),:convention_signature,:convention_paiement,:convention_activation,:convention_mail_renouv,:convention_commentaire)';
+  $DB_VAR = array(
+    ':base_id'                => $base_id,
+    ':connexion_nom'          => $connexion_nom,
+    ':convention_date_debut'  => $convention_date_debut,
+    ':convention_date_fin'    => $convention_date_fin,
+    ':convention_signature'   => NULL,
+    ':convention_paiement'    => NULL,
+    ':convention_activation'  => 0,
+    ':convention_mail_renouv' => NULL,
+    ':convention_commentaire' => NULL,
+  );
   DB::query(SACOCHE_WEBMESTRE_BD_NAME , $DB_SQL , $DB_VAR);
   return DB::getLastOid(SACOCHE_WEBMESTRE_BD_NAME);
 }

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -76,6 +76,8 @@ if( ($make_html) || ($make_pdf) )
   if(!$aff_socle) { $texte_socle      = ''; }
   if(!$aff_lien)  { $texte_lien_avant = ''; }
   if(!$aff_lien)  { $texte_lien_apres = ''; }
+  if(!$highlight_id) { $texte_fluo_avant = ''; }
+  if(!$highlight_id) { $texte_fluo_apres = ''; }
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -483,14 +485,16 @@ if($type_individuel)
   $jour_debut_annee_scolaire = jour_debut_annee_scolaire('mysql'); // Date de fin de l'année scolaire précédente
   if($make_html)
   {
-    $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'       : '' ;
+    $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
     $bouton_print_test = (!empty($is_bouton_test_impression)) ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
+    $bouton_import_csv = ($make_action=='saisir')             ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
     $releve_HTML_individuel  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>'.NL;
     $releve_HTML_individuel .= $affichage_direct ? '' : '<h1>Bilan '.$tab_titre[$format].'</h1>'.NL;
     $releve_HTML_individuel .= $affichage_direct ? '' : '<h2>'.html($texte_periode).'</h2>'.NL;
-    $releve_HTML_individuel .= ($bouton_print_appr || $bouton_print_test) ? '<div class="ti">'.$bouton_print_appr.$bouton_print_test.'</div>'.NL : '' ;
+    $releve_HTML_individuel .= ($bouton_print_appr || $bouton_print_test || $bouton_import_csv) ? '<div class="ti">'.$bouton_print_appr.$bouton_print_test.$bouton_import_csv.'</div>'.NL : '' ;
     $bilan_colspan = $cases_nb + 2 ;
     $separation = (count($tab_eleve)>1) ? '<hr class="breakafter" />'.NL : '' ;
+    $releve_HTML_individuel_javascript = '';
   }
   if($make_pdf)
   {
@@ -579,11 +583,16 @@ if($type_individuel)
                   {
                     if($aff_lien)
                     {
-                      $texte_lien_avant = ($item_lien) ? '<a class="lien_ext" href="'.html($item_lien).'">' : '';
+                      $texte_lien_avant = ($item_lien) ? '<a target="_blank" href="'.html($item_lien).'">' : '';
                       $texte_lien_apres = ($item_lien) ? '</a>' : '';
                     }
+                    if($highlight_id)
+                    {
+                      $texte_fluo_avant = ($highlight_id!=$item_id) ? '' : '<span class="fluo">';
+                      $texte_fluo_apres = ($highlight_id!=$item_id) ? '' : '</span>';
+                    }
                     $texte_demande_eval = ($_SESSION['USER_PROFIL_TYPE']!='eleve') ? '' : ( ($item_cart) ? '<q class="demander_add" id="demande_'.$matiere_id.'_'.$item_id.'_'.$tab_score_eleve_item[$eleve_id][$matiere_id][$item_id].'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
-                    $releve_HTML_table_body .= '<tr><td>'.$item_ref.'</td><td>'.$texte_coef.$texte_socle.$texte_lien_avant.html($item_nom).$texte_lien_apres.$texte_demande_eval.'</td>';
+                    $releve_HTML_table_body .= '<tr><td>'.$item_ref.'</td><td>'.$texte_coef.$texte_socle.$texte_lien_avant.$texte_fluo_avant.html($item_nom).$texte_fluo_apres.$texte_lien_apres.$texte_demande_eval.'</td>';
                   }
                   if($make_pdf)
                   {
@@ -699,7 +708,7 @@ if($type_individuel)
                 {
                   $releve_HTML_table_foot = ($releve_HTML_table_foot) ? '<tfoot>'.NL.$releve_HTML_table_foot.'</tfoot>'.NL : '';
                   $releve_HTML_individuel .= '<table id="table'.$eleve_id.'x'.$matiere_id.'" class="bilan hsort">'.NL.$releve_HTML_table_head.$releve_HTML_table_foot.$releve_HTML_table_body.'</table>'.NL;
-                  $releve_HTML_individuel .= '<script type="text/javascript">$("#table'.$eleve_id.'x'.$matiere_id.'").tablesorter();</script>'.NL;
+                  $releve_HTML_individuel_javascript .= '$("#table'.$eleve_id.'x'.$matiere_id.'").tablesorter();';
                 }
                 if( ($make_html) && ($make_officiel) && ($_SESSION['OFFICIEL']['RELEVE_APPRECIATION_RUBRIQUE']) )
                 {
@@ -717,8 +726,8 @@ if($type_individuel)
                         extract($tab);  // $periode_nom_avant $prof_info $appreciation $note
                         $tab_ligne[$prof_id] = html('['.$prof_info.'] '.$appreciation);
                       }
-                      $tab_periode_liens[]  = '<a href="#" id="to_avant_'.$eleve_id.'_'.$matiere_id.'_'.$periode_ordre.'"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer les informations de cette période." class="toggle" /></a> '.html($periode_nom_avant);
-                      $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.$matiere_id.'_'.$periode_ordre.'" class="appreciation hide">'.$periode_nom_avant.' :<br />'.implode('<br />',$tab_ligne).'</div>';
+                      $tab_periode_liens[]  = '<a href="#toggle" class="toggle_plus" title="Voir / masquer les informations de cette période." id="to_avant_'.$eleve_id.'_'.$matiere_id.'_'.$periode_ordre.'"></a> '.html($periode_nom_avant);
+                      $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.$matiere_id.'_'.$periode_ordre.'" class="appreciation bordertop hide">'.'<b>'.$periode_nom_avant.' :'.'</b>'.'<br />'.implode('<br />',$tab_ligne).'</div>';
                     }
                     $appreciations_avant = '<tr><td class="avant">'.implode('&nbsp;&nbsp;&nbsp;',$tab_periode_liens).implode('',$tab_periode_textes).'</td></tr>'.NL;
                   }
@@ -784,8 +793,8 @@ if($type_individuel)
                   extract($tab);  // $periode_nom_avant $prof_info $appreciation $note
                   $tab_ligne[$prof_id] = html('['.$prof_info.'] '.$appreciation);
                 }
-                $tab_periode_liens[]  = '<a href="#" id="to_avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer les informations de cette période." class="toggle" /></a> '.html($periode_nom_avant);
-                $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'" class="appreciation hide">'.$periode_nom_avant.' :<br />'.implode('<br />',$tab_ligne).'</div>';
+                $tab_periode_liens[]  = '<a href="#toggle" class="toggle_plus" title="Voir / masquer les informations de cette période." id="to_avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'"></a> '.html($periode_nom_avant);
+                $tab_periode_textes[] = '<div id="avant_'.$eleve_id.'_'.'0'.'_'.$periode_ordre.'" class="appreciation bordertop hide">'.'<b>'.$periode_nom_avant.' :'.'</b>'.'<br />'.implode('<br />',$tab_ligne).'</div>';
               }
               $releve_HTML_individuel .= '<tr><td class="avant">'.implode('&nbsp;&nbsp;&nbsp;',$tab_periode_liens).implode('',$tab_periode_textes).'</td></tr>'.NL;
             }
@@ -903,6 +912,8 @@ if($type_individuel)
       }
     }
   }
+  // Ajout du javascript en fin de fichier
+  $releve_HTML_individuel .= '<script type="text/javascript">'.$releve_HTML_individuel_javascript.'</script>'.NL;
   // On enregistre les sorties HTML et PDF
   if($make_html) { FileSystem::ecrire_fichier(CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.html',$releve_HTML_individuel); }
   if($make_pdf)  { $releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf','F'); }

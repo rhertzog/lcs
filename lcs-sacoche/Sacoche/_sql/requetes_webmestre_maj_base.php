@@ -2,32 +2,32 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
  
 // Extension de classe qui étend DB (pour permettre l'autoload)
 
-// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structure).
+// Ces méthodes ne concernent que la base WEBMESTRE (donc une installation multi-structures).
 // Ces méthodes ne concernent que le webmestre.
 
 // Ce script est appelé automatiquement si besoin lorsque :
@@ -170,6 +170,44 @@ public static function DB_maj_base($version_base_webmestre_actuelle)
     DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_webmestre_actuelle.'" WHERE parametre_nom="version_base"' );
     // Modification d'un champ
     DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'ALTER TABLE sacoche_structure CHANGE structure_contact_courriel structure_contact_courriel VARCHAR(63)  COLLATE utf8_unicode_ci NOT NULL DEFAULT "" ' );
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // MAJ 2013-12-03 => 2014-04-22
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  if($version_base_webmestre_actuelle=='2013-12-03')
+  {
+    // Actualisation date de version
+    $version_base_webmestre_actuelle = '2014-04-22';
+    DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_webmestre_actuelle.'" WHERE parametre_nom="version_base"' );
+    // ajout d'une colonne à la table sacoche_convention
+    if(empty($reload_sacoche_convention))
+    {
+      DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'ALTER TABLE sacoche_convention ADD convention_commentaire TEXT COLLATE utf8_unicode_ci AFTER convention_activation ');
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+  // MAJ 2014-04-22 => 2014-06-19
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  if($version_base_webmestre_actuelle=='2014-04-22')
+  {
+    // Actualisation date de version
+    $version_base_webmestre_actuelle = '2014-06-19';
+    DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_webmestre_actuelle.'" WHERE parametre_nom="version_base"' );
+    // oubli d'une colonne à la table sacoche_convention sur certaines install
+    $DB_TAB = DB::queryTab(SACOCHE_WEBMESTRE_BD_NAME , 'SHOW COLUMNS FROM sacoche_convention LIKE "convention_relance"');
+    if(empty($DB_TAB))
+    {
+      DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'ALTER TABLE sacoche_convention ADD convention_relance DATE DEFAULT NULL AFTER convention_paiement ');
+    }
+    // ajout d'une colonne à la table sacoche_convention
+    if(empty($reload_sacoche_convention))
+    {
+      DB::query(SACOCHE_WEBMESTRE_BD_NAME , 'ALTER TABLE sacoche_convention ADD convention_mail_renouv DATE DEFAULT NULL AFTER convention_activation ');
+    }
   }
 
 }

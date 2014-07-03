@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -65,16 +65,17 @@ elseif(in_array($_SESSION['CALCUL_METHODE'],array('bestof2','bestof3')))  // si 
 }
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var calcul_methode          = "'.$_SESSION['CALCUL_METHODE'].'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var calcul_limite           = "'.$_SESSION['CALCUL_LIMITE'].'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var calcul_retroactif       = "'.$_SESSION['CALCUL_RETROACTIF'].'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var calcul_texte            = "'.$calcul_texte.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var id_matiere_partagee_max = '.ID_MATIERE_PARTAGEE_MAX.';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_partage_etat      = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_calcul_methode    = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_calcul_limite     = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_calcul_retroactif = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_information       = new Array();';
+Layout::add( 'js_inline_before' , 'var calcul_methode          = "'.$_SESSION['CALCUL_METHODE'].'";' );
+Layout::add( 'js_inline_before' , 'var calcul_limite           = "'.$_SESSION['CALCUL_LIMITE'].'";' );
+Layout::add( 'js_inline_before' , 'var calcul_retroactif       = "'.$_SESSION['CALCUL_RETROACTIF'].'";' );
+Layout::add( 'js_inline_before' , 'var calcul_texte            = "'.$calcul_texte.'";' );
+Layout::add( 'js_inline_before' , 'var ID_MATIERE_PARTAGEE_MAX = '.ID_MATIERE_PARTAGEE_MAX.';' );
+Layout::add( 'js_inline_before' , 'var ID_NIVEAU_PARTAGE_MAX   = '.ID_NIVEAU_PARTAGE_MAX.';' );
+Layout::add( 'js_inline_before' , 'var tab_partage_etat      = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_calcul_methode    = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_calcul_limite     = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_calcul_retroactif = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_information       = new Array();' );
 ?>
 
 <form action="#" method="post" id="form_instance">
@@ -128,11 +129,11 @@ else
       $tab_niveau[$DB_ROW['valeur']] = html($DB_ROW['texte']);
     }
     // On récupère la liste des référentiels par matière et niveau
-    $tab_partage = array('oui'=>'<img title="Référentiel partagé sur le serveur communautaire (MAJ le ◄DATE►)." alt="" src="./_img/etat/partage_oui.gif" />','non'=>'<img title="Référentiel non partagé avec la communauté (choix du ◄DATE►)." alt="" src="./_img/etat/partage_non.gif" />','bof'=>'<img title="Référentiel dont le partage est sans intérêt (pas novateur)." alt="" src="./_img/etat/partage_non.gif" />','hs'=>'<img title="Référentiel dont le partage est sans objet (matière spécifique)." alt="" src="./_img/etat/partage_non.gif" />');
+    $tab_partage = array('oui'=>'<img title="Référentiel partagé sur le serveur communautaire (MAJ le ◄DATE►)." alt="" src="./_img/etat/partage_oui.gif" />','non'=>'<img title="Référentiel non partagé avec la communauté (choix du ◄DATE►)." alt="" src="./_img/etat/partage_non.gif" />','bof'=>'<img title="Référentiel dont le partage est sans intérêt (pas novateur)." alt="" src="./_img/etat/partage_non.gif" />','hs'=>'<img title="Référentiel dont le partage est sans objet (matière ou niveau spécifique)." alt="" src="./_img/etat/partage_non.gif" />');
     $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_referentiels_infos_details_matieres_niveaux();
     if(!empty($DB_TAB))
     {
-      $GLOBALS['HEAD']['js']['inline'][] = '// <![CDATA[';
+      Layout::add( 'js_inline_before' , '// <![CDATA[' );
       foreach($DB_TAB as $DB_ROW)
       {
         // Définition de $methode_calcul_texte
@@ -163,13 +164,13 @@ else
           $methode_calcul_texte = ($DB_ROW['referentiel_calcul_limite']==0) ? 'Moyenne des '.$nb_best.' meilleures saisies '.$texte_retroactif.'.' : 'Moyenne des '.$nb_best.' meilleures saisies parmi les '.$DB_ROW['referentiel_calcul_limite'].' dernières '.$texte_retroactif.'.';
         }
         $tab_colonne[$DB_ROW['matiere_id']][$DB_ROW['niveau_id']] = '<td class="hc">'.str_replace('◄DATE►',Html::date($DB_ROW['referentiel_partage_date']),$tab_partage[$DB_ROW['referentiel_partage_etat']]).'</td>'.'<td>'.$methode_calcul_texte.'</td>';
-        $GLOBALS['HEAD']['js']['inline'][] = '     tab_partage_etat["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_partage_etat'].'";';
-        $GLOBALS['HEAD']['js']['inline'][] = '   tab_calcul_methode["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_methode'].'";';
-        $GLOBALS['HEAD']['js']['inline'][] = '    tab_calcul_limite["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_limite'].'";';
-        $GLOBALS['HEAD']['js']['inline'][] = 'tab_calcul_retroactif["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_retroactif'].'";';
-        $GLOBALS['HEAD']['js']['inline'][] = '      tab_information["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.str_replace('"','\"',$DB_ROW['referentiel_information']).'";';
+        Layout::add( 'js_inline_before' , '     tab_partage_etat["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_partage_etat'].'";' );
+        Layout::add( 'js_inline_before' , '   tab_calcul_methode["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_methode'].'";' );
+        Layout::add( 'js_inline_before' , '    tab_calcul_limite["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_limite'].'";' );
+        Layout::add( 'js_inline_before' , 'tab_calcul_retroactif["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.$DB_ROW['referentiel_calcul_retroactif'].'";' );
+        Layout::add( 'js_inline_before' , '      tab_information["'.$DB_ROW['matiere_id'].'_'.$DB_ROW['niveau_id'].'"] = "'.str_replace('"','\"',$DB_ROW['referentiel_information']).'";' );
       }
-      $GLOBALS['HEAD']['js']['inline'][] = '// ]]>';
+      Layout::add( 'js_inline_before' , '// ]]>' );
     }
     // Construction du formulaire select du nombre de demandes
     $select_demandes = '<select name="f_eleve_demandes" class="t9">';
@@ -179,26 +180,26 @@ else
       $select_demandes .= '<option value="'.$nb_demandes.'">'.$texte.'</option>';
     }
     $select_demandes .= '</select>';
-    $infobulle = ' <img src="./_img/bulle_aide.png" alt="" title="Nombre maximal de demandes d\'évaluations simultanées autorisées pour un élève." />';
+    $infobulle = ' <img src="./_img/bulle_aide.png" width="16" height="16" alt="" title="Nombre maximal de demandes d\'évaluations simultanées autorisées pour un élève." />';
     $label = '<label>&nbsp;</label>';
     // On construit et affiche les tableaux résultants
     foreach($tab_matiere as $matiere_id => $tab)
     {
       $matiere_nom    = $tab['nom'];
       $matiere_coord  = $tab['coord'];
-      $matiere_perso  = ($matiere_id>ID_MATIERE_PARTAGEE_MAX) ? 1 : 0 ;
       $matiere_droit  = test_user_droit_specifique( $_SESSION['DROIT_GERER_REFERENTIEL'] , $matiere_coord /*matiere_coord_or_groupe_pp_connu*/ );
       $matiere_ajout  = ($matiere_droit) ? '<q class="ajouter" title="Créer un référentiel vierge ou importer un référentiel existant."></q>' : '<q class="ajouter_non" title="Droit d\'accès :<br />'.$texte_profil.'."></q>' ;
       echo'<h2 id="h2_'.$matiere_id.'">'.$matiere_nom.'</h2>'.NL;
-      echo'<table id="mat_'.$matiere_id.'" class="vm_nug"><thead>'.NL.'<tr><th>Niveau</th><th>Partage</th><th>Méthode de calcul</th><th class="nu" id="th_'.$matiere_id.'_'.$matiere_perso.'">'.$matiere_ajout.'</th></tr>'.NL.'</thead><tbody>'.NL;
+      echo'<table id="mat_'.$matiere_id.'" class="vm_nug"><thead>'.NL.'<tr><th>Niveau</th><th>Partage</th><th>Méthode de calcul</th><th class="nu" id="th_'.$matiere_id.'">'.$matiere_ajout.'</th></tr>'.NL.'</thead><tbody>'.NL;
       if(isset($tab_colonne[$matiere_id]))
       {
         foreach($tab_colonne[$matiere_id] as $niveau_id => $referentiel_info)
         {
-          $ids = 'ids'.'_'.$matiere_id.'_'.$niveau_id.'_'.$matiere_perso;
+          $partageable = ( ( $matiere_id <= ID_MATIERE_PARTAGEE_MAX ) && ( $niveau_id <= ID_NIVEAU_PARTAGE_MAX ) ) ? TRUE : FALSE ;
+          $ids = 'ids'.'_'.$matiere_id.'_'.$niveau_id;
           if($matiere_droit)
           {
-            $partager = ($matiere_perso) ? '<q class="partager_non" title="Le référentiel d\'une matière spécifique à l\'établissement ne peut être partagé."></q>' : '<q class="partager" title="Modifier le partage de ce référentiel."></q>' ;
+            $partager = ($partageable) ? '<q class="partager" title="Modifier le partage de ce référentiel."></q>' : '<q class="partager_non" title="Le référentiel d\'une matière ou d\'un niveau spécifique à l\'établissement ne peut être partagé."></q>' ;
             $envoyer = (strpos($tab_colonne[$matiere_id][$niveau_id],'partage_oui.gif')) ? '<q class="envoyer" title="Mettre à jour sur le serveur de partage la dernière version de ce référentiel."></q>' : '<q class="envoyer_non" title="Un référentiel non partagé ne peut pas être transmis à la collectivité."></q>' ;
             $colonnes = $tab_colonne[$matiere_id][$niveau_id].'<td class="nu" id="'.$ids.'"><q class="voir" title="Voir le détail de ce référentiel."></q>'.$partager.$envoyer.'<q class="calculer" title="Modifier le mode de calcul associé à ce référentiel."></q><q class="supprimer" title="Supprimer ce référentiel."></q></td>';
           }
@@ -225,7 +226,7 @@ else
 </div>
 
 <div id="choisir_referentiel" class="hide">
-  <h2>Créer un référentiel &rarr; <span></span><input id="matiere_id" name="matiere_id" type="hidden" value="" /><input id="matiere_perso" name="matiere_perso" type="hidden" value="" /></h2>
+  <h2>Créer un référentiel &rarr; <span></span><input id="matiere_id" name="matiere_id" type="hidden" value="" /></h2>
   <p>
   <?php
   if($nb_matieres && $nb_niveaux);
@@ -271,7 +272,7 @@ $select_famille_niveau  = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_fami
     <label class="tab" for="f_niveau">Niveau :</label><select id="f_niveau" name="f_niveau"><option value="0">Tous les niveaux</option></select>
   </p>
   <fieldset>
-    <label class="tab" for="f_structure"><img alt="" src="./_img/bulle_aide.png" title="Seules les structures partageant au moins un référentiel apparaissent." /> Structure :</label><select id="f_structure" name="f_structure"><option></option></select><br />
+    <label class="tab" for="f_structure"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Seules les structures partageant au moins un référentiel apparaissent." /> Structure :</label><select id="f_structure" name="f_structure"><option></option></select><br />
     <span class="tab"></span><button id="rechercher" type="button" class="rechercher">Lancer / Actualiser la recherche.</button><label id="ajax_msg">&nbsp;</label><br />
     <span class="tab"></span><button id="rechercher_annuler" type="button" class="annuler">Annuler la recherche d'un référentiel.</button>
   </fieldset>
@@ -325,11 +326,11 @@ foreach($tab_options as $val)
         <option value="oui">Partagé sur le serveur communautaire.</option>
         <option value="bof">Partage sans intérêt (pas novateur).</option>
         <option value="non">Non partagé avec la communauté.</option>
-        <option value="hs">Sans objet (matière spécifique).</option>
+        <option value="hs">Sans objet (matière ou niveau spécifique).</option>
       </select>
     </div>
     <div id="ligne_information">
-      <label class="tab" for="f_information"><img alt="" src="./_img/bulle_aide.png" title="Ce commentaire sera visible dans le resultat d'une recherche de référentiels partagés.<br />Champ facultatif, à utiliser avec parcimonie : complétez-le seulement pour apporter un éclairage particulier." /> Commentaire :</label><input id="f_information" name="f_information" type="text" size="80" maxlength="120" />
+      <label class="tab" for="f_information"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Ce commentaire sera visible dans le resultat d'une recherche de référentiels partagés.<br />Champ facultatif, à utiliser avec parcimonie : complétez-le seulement pour apporter un éclairage particulier." /> Commentaire :</label><input id="f_information" name="f_information" type="text" size="80" maxlength="120" />
     </div>
   </div>
   <div id="gestion_calculer">

@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -208,7 +208,7 @@ $(document).ready
       {
         $('#zone_ajout_form').hide();
         $('#zone_partage, #zone_perso, #form_move').show();
-        return(false);
+        return false;
       }
     );
 
@@ -225,7 +225,7 @@ $(document).ready
         $('#ajax_msg_recherche').removeAttr("class").html("&nbsp;");
         if(mode=='famille')
         {
-          $('#f_famille option[value=0]').prop('selected',true);
+          $('#f_famille').find('option:first').prop('selected',true);
           $("#f_recherche_motclef").hide();
           $("#f_recherche_famille").show();
         }
@@ -472,20 +472,63 @@ $(document).ready
       success : retour_form_valide
     };
 
+    var prompt_etapes_confirmer_suppression = {
+      etape_2: {
+        title   : 'Demande de confirmation (2/3)',
+        html    : "Les éventuels référentiels associés seront supprimés !<br />Les résultats des élèves qui en dépendent seront perdus !<br />Souhaitez-vous vraiment supprimer cette matière ?",
+        buttons : {
+          "Non, c'est une erreur !" : false ,
+          "Oui, je confirme !" : true
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            event.preventDefault();
+            $('#prompt_indication').html( $('#f_nom').val() );
+            $.prompt.goToState('etape_3');
+            return false;
+          }
+          else {
+            annuler();
+          }
+        }
+      },
+      etape_3: {
+        title   : 'Demande de confirmation (3/3)',
+        html    : "Attention : dernière demande de confirmation !!!<br />Êtes-vous bien certain de vouloir supprimer la matière &laquo;&nbsp;"+'<span id="prompt_indication"></span>'+"&nbsp;&raquo; ?<br />Est-ce définitivement votre dernier mot ???",
+        buttons : {
+          "Oui, j'insiste !" : true ,
+          "Non, surtout pas !" : false
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            formulaire.ajaxSubmit(ajaxOptions); // Pas de $(this) ici...
+            return true;
+          }
+          else {
+            annuler();
+          }
+        }
+      }
+    };
+
     // Envoi du formulaire (avec jquery.form.js)
     formulaire.submit
     (
       function()
       {
-        if (!please_wait)
+        if (please_wait)
         {
-          $(this).ajaxSubmit(ajaxOptions);
           return false;
+        }
+        else if( (mode=='supprimer') && ($('#f_id').val()>ID_MATIERE_PARTAGEE_MAX) )
+        {
+          $.prompt(prompt_etapes_confirmer_suppression);
         }
         else
         {
-          return false;
+          $(this).ajaxSubmit(ajaxOptions);
         }
+        return false;
       }
     ); 
 

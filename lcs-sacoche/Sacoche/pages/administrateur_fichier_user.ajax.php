@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -156,7 +156,7 @@ if( $step==10 )
   echo'<fieldset>'.NL;
   echo  '<div><label class="valide">Votre fichier a été correctement réceptionné.</label></div>'.NL;
   echo  $alerte;
-  echo  '<p class="li"><a href="#step20" id="passer_etape_suivante">Passer à l\'étape 2.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo  '<ul class="puce p"><li><a href="#step20" id="passer_etape_suivante">Passer à l\'étape 2.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   echo'</fieldset>'.NL;
   exit();
 }
@@ -825,7 +825,7 @@ if( $step==20 )
             $tab_users_fichier['profil_sigle'][] = 'TUT';
             $tab_users_fichier['nom'         ][] = Clean::nom($nom);
             $tab_users_fichier['prenom'      ][] = Clean::prenom($prenom);
-            $tab_users_fichier['adresse'     ][] = array( Clean::adresse($adresse_ligne1) , Clean::adresse($adresse_ligne2) , Clean::adresse($adresse_ligne3) , Clean::adresse($adresse_ligne4) , Clean::entier($codepostal) , Clean::commune($commune) , Clean::pays($pays) ) ;
+            $tab_users_fichier['adresse'     ][] = array( Clean::adresse($adresse_ligne1) , Clean::adresse($adresse_ligne2) , Clean::adresse($adresse_ligne3) , Clean::adresse($adresse_ligne4) , Clean::codepostal($codepostal) , Clean::commune($commune) , Clean::pays($pays) ) ;
             $tab_users_fichier['enfant'      ][] = $tab_enfants;
             $tab_adresses_uniques[$adresse_ligne1.'#'.$adresse_ligne2.'#'.$adresse_ligne3.'#'.$adresse_ligne4.'#'.$codepostal.'#'.$commune.'#'.$pays] = TRUE;
           }
@@ -983,12 +983,12 @@ if( $step==20 )
       $tab_elements = str_getcsv($ligne_contenu,$separateur);
       if(count($tab_elements)>$numero_max)
       {
-        $nom        = Clean::nom(    $tab_elements[$tab_numero_colonne['nom']       ]);
-        $prenom     = Clean::prenom( $tab_elements[$tab_numero_colonne['prenom']    ]);
-        $adresse    = Clean::adresse($tab_elements[$tab_numero_colonne['adresse']   ]);
-        $codepostal = Clean::entier( $tab_elements[$tab_numero_colonne['codepostal']]);
-        $commune    = Clean::commune($tab_elements[$tab_numero_colonne['commune']   ]);
-        $pays       = Clean::pays(   $tab_elements[$tab_numero_colonne['pays']      ]);
+        $nom        = Clean::nom(       $tab_elements[$tab_numero_colonne['nom']       ]);
+        $prenom     = Clean::prenom(    $tab_elements[$tab_numero_colonne['prenom']    ]);
+        $adresse    = Clean::adresse(   $tab_elements[$tab_numero_colonne['adresse']   ]);
+        $codepostal = Clean::codepostal($tab_elements[$tab_numero_colonne['codepostal']]);
+        $commune    = Clean::commune(   $tab_elements[$tab_numero_colonne['commune']   ]);
+        $pays       = Clean::pays(      $tab_elements[$tab_numero_colonne['pays']      ]);
         if( ($nom!='') && ($prenom!='') )
         {
           $tab_enfants = array();
@@ -1154,7 +1154,7 @@ if( $step==20 )
   }
   // Fin de l'extraction
   $step = ($import_profil=='parent') ? '5' : '3' ;
-  echo'<p class="li"><a href="#step'.$step.'1" id="passer_etape_suivante">Passer à l\'étape 3.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step'.$step.'1" id="passer_etape_suivante">Passer à l\'étape 3.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -1211,7 +1211,7 @@ if( $step==31 )
   {
     $select_niveau = '<option value=""></option>';
     $tab_niveau_ref = array();
-    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(FALSE /*with_specifiques*/);
+    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(FALSE /*with_particuliers*/);
     foreach($DB_TAB as $DB_ROW)
     {
       $select_niveau .= '<option value="'.$DB_ROW['niveau_id'].'">'.html($DB_ROW['niveau_nom']).'</option>';
@@ -1276,7 +1276,7 @@ if( $step==31 )
   echo($lignes_del) ? $lignes_del : '<tr><td colspan="2">Aucune</td></tr>'.NL;
   echo  '</tbody>'.NL;
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step32" id="envoyer_infos_regroupements">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step32" id="envoyer_infos_regroupements">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -1370,7 +1370,7 @@ if( $step==32 )
     echo'</table>'.NL;
   }
   $step = ( ($import_origine=='base_eleves') && ($import_profil=='eleve') ) ? '5' : '4' ;
-  echo'<p class="li"><a href="#step'.$step.'1" id="passer_etape_suivante">Passer à l\'étape 4.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step'.$step.'1" id="passer_etape_suivante">Passer à l\'étape 4.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -1427,7 +1427,7 @@ if( $step==41 )
   {
     $select_niveau = '<option value=""></option>';
     $tab_niveau_ref = array();
-    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(FALSE /*with_specifiques*/);
+    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_niveaux_etablissement(FALSE /*with_particuliers*/);
     foreach($DB_TAB as $DB_ROW)
     {
       $select_niveau .= '<option value="'.$DB_ROW['niveau_id'].'">'.html($DB_ROW['niveau_nom']).'</option>';
@@ -1488,7 +1488,7 @@ if( $step==41 )
   echo($lignes_del) ? $lignes_del : '<tr><td colspan="2">Aucun</td></tr>'.NL;
   echo  '</tbody>'.NL;
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step42" id="envoyer_infos_regroupements">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step42" id="envoyer_infos_regroupements">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -1581,7 +1581,7 @@ if( $step==42 )
     echo  '</tbody>'.NL;
     echo'</table>'.NL;
   }
-  echo'<p class="li"><a href="#step51" id="passer_etape_suivante">Passer à l\'étape 5.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step51" id="passer_etape_suivante">Passer à l\'étape 5.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -1842,7 +1842,7 @@ if( $step==51 )
     echo  '</tbody>'.NL;
   }
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step52" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step52" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2058,7 +2058,7 @@ if( $step==52 )
   }
   if($nb_add)
   {
-    echo'<p class="li"><a href="#" class="step53">Récupérer les identifiants de tout nouvel utilisateur inscrit.</a><input id="archive" name="archive" type="hidden" value="'.$fnom.'" /><label id="ajax_msg">&nbsp;</label></p>'.NL;
+    echo'<ul class="puce p"><li><a href="#" class="step53">Récupérer les identifiants de tout nouvel utilisateur inscrit.</a><input id="archive" name="archive" type="hidden" value="'.$fnom.'" /><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   }
   else
   {
@@ -2074,7 +2074,7 @@ if( $step==52 )
       case 'base_eleves+parent' : $etape = 4; $step = 71; break;
       case 'base_eleves+eleve'  : $etape = 5; $step = 90; break;
     }
-    echo'<p class="li"><a href="#step'.$step.'" id="passer_etape_suivante">Passer à l\'étape '.$etape.'.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+    echo'<ul class="puce p"><li><a href="#step'.$step.'" id="passer_etape_suivante">Passer à l\'étape '.$etape.'.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   }
   exit();
 }
@@ -2092,8 +2092,8 @@ if( $step==53 )
   }
   echo'<p><label class="alerte">Voici les identifiants des nouveaux inscrits :</label></p>'.NL;
   echo'<ul class="puce">'.NL;
-  echo  '<li><a class="lien_ext" href="'.URL_DIR_LOGINPASS.$archive.'.pdf"><span class="file file_pdf">Archiver / Imprimer (étiquettes <em>pdf</em>).</span></a></li>'.NL;
-  echo  '<li><a class="lien_ext" href="./force_download.php?auth&amp;fichier='.$archive.'.csv"><span class="file file_txt">Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="'.URL_DIR_LOGINPASS.$archive.'.pdf"><span class="file file_pdf">Archiver / Imprimer (étiquettes <em>pdf</em>).</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="./force_download.php?auth&amp;fichier='.$archive.'.csv"><span class="file file_txt">Récupérer / Manipuler (fichier <em>csv</em> pour tableur).</span></a></li>'.NL;
   echo'</ul>'.NL;
   echo'<p class="danger">Les mots de passe, cryptés, ne sont plus accessibles ultérieurement !</p>'.NL;
   switch($import_origine.'+'.$import_profil)
@@ -2107,7 +2107,7 @@ if( $step==53 )
     case 'base_eleves+parent' : $etape = 4; $step = 71; break;
     case 'base_eleves+eleve'  : $etape = 5; $step = 90; break;
   }
-  echo'<p class="li"><a href="#step'.$step.'" id="passer_etape_suivante">Passer à l\'étape '.$etape.'.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step'.$step.'" id="passer_etape_suivante">Passer à l\'étape '.$etape.'.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2437,7 +2437,7 @@ if( $step==61 )
   echo($lignes_groupes_del) ? $lignes_groupes_del : '<tr><td colspan="3">Aucune</td></tr>'.NL;
   echo    '</tbody>'.NL;
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step62" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step62" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2518,7 +2518,7 @@ if( $step==62 )
     }
   }
   echo'<p><label class="valide">Modifications associations utilisateurs / groupes effectuées : '.$nb_asso_groupes.'</label></p>'.NL;
-  echo'<p class="li"><a href="#step90" id="passer_etape_suivante">Passer à l\'étape 7.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step90" id="passer_etape_suivante">Passer à l\'étape 7.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2622,7 +2622,7 @@ if( $step==71 )
     echo    '</tbody>'.NL;
   }
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step72" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step72" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2665,7 +2665,7 @@ if( $step==72 )
   // Afficher le résultat
   echo'<p><label class="valide">Nouvelles adresses ajoutées : '.$nb_add.'</label></p>'.NL;
   echo'<p><label class="valide">Anciennes adresses modifiées : '.$nb_mod.'</label></p>'.NL;
-  echo'<p class="li"><a href="#step81" id="passer_etape_suivante">Passer à l\'étape 5.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step81" id="passer_etape_suivante">Passer à l\'étape 5.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2811,7 +2811,7 @@ if( $step==81 )
     echo    '</tbody>'.NL;
   }
   echo'</table>'.NL;
-  echo'<p class="li"><a href="#step82" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step82" id="envoyer_infos_utilisateurs">Valider et afficher le bilan obtenu.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2854,7 +2854,7 @@ if( $step==82 )
   // Afficher le résultat
   $s = ($nb_modifs_eleves>1) ? 's' : '' ;
   echo'<p><label class="valide">Liens de responsabilités modifiés pour '.$nb_modifs_eleves.' élève'.$s.'</label></p>'.NL;
-  echo'<p class="li"><a href="#step90" id="passer_etape_suivante">Passer à l\'étape 6.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#step90" id="passer_etape_suivante">Passer à l\'étape 6.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
 }
 
@@ -2877,8 +2877,17 @@ if( $step==90 )
   $_SESSION[strtoupper($nom_variable)] = TODAY_MYSQL;
   // Game over
   echo'<p><label class="valide">Fichiers temporaires effacés, procédure d\'import terminée !</label></p>'.NL;
-  echo'<p class="li"><a href="#" id="retourner_depart">Retour au départ.</a><label id="ajax_msg">&nbsp;</label></p>'.NL;
+  echo'<ul class="puce p"><li><a href="#" id="retourner_depart">Retour au départ.</a><label id="ajax_msg">&nbsp;</label></li></ul>'.NL;
   exit();
+}
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Il se peut que rien n'ait été récupéré à cause de l'upload d'un fichier trop lourd
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if(empty($_POST))
+{
+  exit('Erreur : aucune donnée reçue ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload());
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////

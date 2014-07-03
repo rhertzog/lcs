@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -121,7 +121,7 @@ if($action=='proposer')
   {
     $note_affichee = ($_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20']) ? $DB_ROW['saisie_note'] : (round($DB_ROW['saisie_note']*5)).'%' ;
     $tab_moyennes_bulletin[$DB_ROW['matiere_id']]['note'][$DB_ROW['periode_id']] = $DB_ROW['saisie_note'];
-    $tab_moyennes_bulletin[$DB_ROW['matiere_id']]['txt' ][$DB_ROW['periode_id']] = $note_affichee.' <img alt="" src="./_img/bulle_aide.png" title="'.html($DB_ROW['periode_nom']).'" />';
+    $tab_moyennes_bulletin[$DB_ROW['matiere_id']]['txt' ][$DB_ROW['periode_id']] = $note_affichee.' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.html($DB_ROW['periode_nom']).'" />';
   }
   // Récupérer les noms des matières
   $DB_TAB = DB_STRUCTURE_COMMUN::DB_OPT_matieres_etabl();
@@ -167,19 +167,19 @@ if($action=='proposer')
     // 1/4 Épreuve
     if(!$epreuve_note_comptee)
     {
-      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" title="Présence d\'une note obligatoire, mais seulement à titre informatif, celle-ci n\'étant pas comptabilisée dans le total des points." />';
+      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Présence d\'une note obligatoire, mais seulement à titre informatif, celle-ci n\'étant pas comptabilisée dans le total des points." />';
     }
     elseif(!$epreuve_note_chiffree)
     {
-      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" title="Pas de note chiffrée à saisir pour cette épreuve : uniquement un état de validation." />';
+      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pas de note chiffrée à saisir pour cette épreuve : uniquement un état de validation." />';
     }
     elseif($epreuve_point_sup_10)
     {
-      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" title="Épreuve dont seuls les points supérieurs à la moyenne sont pris en compte." />';
+      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Épreuve dont seuls les points supérieurs à la moyenne sont pris en compte." />';
     }
     elseif($epreuve_coefficient!=1)
     {
-      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" title="Épreuve de coefficient '.$epreuve_coefficient.' (note sur '.($epreuve_coefficient*20).')." />';
+      $infobulle = ' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Épreuve de coefficient '.$epreuve_coefficient.' (note sur '.($epreuve_coefficient*20).')." />';
     }
     else
     {

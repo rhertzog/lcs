@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -218,7 +218,33 @@ $(document).ready
     (
       function()
       {
-        $(this).ajaxSubmit(ajaxOptions);
+        if( (parseInt($('#valeurVV').val(),10)>100) && ($('#action').val()=='enregistrer') )
+        {
+          $.prompt(
+            "Souhaitez-vous vraiment une valeur supérieure à 100 pour le meilleur code de réussite ?",
+            {
+              title   : 'Demande de confirmation',
+              buttons : {
+                "Non, c'est une erreur !" : false ,
+                "Oui, je confirme !" : true
+              },
+              submit  : function(event, value, message, formVals) {
+                if(value)
+                {
+                  formulaire.ajaxSubmit(ajaxOptions); // Pas de $(this) ici...
+                }
+                else
+                {
+                  $('#ajax_msg').removeAttr("class").addClass("erreur").html("Valeur d'un code : 100 maximum conseillé.").show();
+                }
+              }
+            }
+          );
+        }
+        else
+        {
+          $(this).ajaxSubmit(ajaxOptions);
+        }
         return false;
       }
     ); 
@@ -238,10 +264,6 @@ $(document).ready
         else if( parseInt($('#valeurVV').val(),10)>200 )
         {
           $('#ajax_msg').removeAttr("class").addClass("erreur").html("Valeur d'un code : 200 maximum pour le meilleur code.").show();
-        }
-        else if( (parseInt($('#valeurVV').val(),10)>100) && ($('#action').val()=='enregistrer') && !confirm("Confirmez-vous souhaiter une valeur supérieure à 100 pour le meilleur code de réussite ?") )
-        {
-          $('#ajax_msg').removeAttr("class").addClass("erreur").html("Valeur d'un code : 100 maximum conseillé.").show();
         }
         else if( (parseInt($('#valeurRR').val(),10)>parseInt($('#valeurR').val(),10)) || (parseInt($('#valeurR').val(),10)>parseInt($('#valeurV').val(),10)) || (parseInt($('#valeurV').val(),10)>parseInt($('#valeurVV').val(),10)) )
         {
@@ -268,7 +290,7 @@ $(document).ready
         }
         else if( $('#action').val()=='enregistrer' )
         {
-        memoriser_valeurs();
+          memoriser_valeurs();
         }
         $('button').prop('disabled',true);
         $('#ajax_msg').removeAttr("class").addClass("loader").html("En cours&hellip;").show();

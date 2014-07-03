@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -322,7 +322,6 @@ $(document).ready
               $('#export_file_saisir_tableau_scores_csv'   ).attr("href", './force_download.php?fichier='+'saisie_deportee_'+tab_response[1]+'.csv' );
               $('#export_file_saisir_tableau_scores_vierge').attr("href", url_export+'tableau_sans_notes_'+tab_response[1]+'.pdf' );
               colorer_cellules();
-              format_liens('#table_saisir');
               $('#radio_'+memo_pilotage).click();
               $('#arrow_continue_'+memo_direction).click();
               nb_colonnes = $('#table_saisir thead th').length;
@@ -356,8 +355,19 @@ $(document).ready
      */
     var voir = function()
     {
-      mode = $(this).attr('class');
-      var objet_tds     = $(this).parent().parent().find('td');
+      // Afficher au chargement
+      if(auto_voir_devoir_id && auto_voir_groupe_id)
+      {
+        mode = 'voir';
+        var objet_tds = $('#devoir_'+auto_voir_devoir_id+'_E'+auto_voir_groupe_id).parent().find('td');
+        auto_voir_devoir_id = false;
+        auto_voir_groupe_id = false;
+      }
+      else
+      {
+        mode = $(this).attr('class');
+        var objet_tds     = $(this).parent().parent().find('td');
+      }
       // Récupérer les informations de la ligne concernée
       var ref           = objet_tds.eq(9).attr('id').substring(7); // "devoir_" + ref
       var date_fr       = objet_tds.eq(0).html();
@@ -393,7 +403,6 @@ $(document).ready
               $('#ajax_msg_voir').removeAttr("class").html('&nbsp;');
               $('#table_voir').html(tab_response[0]);
               $('#table_voir tbody tr th img').css('display','none'); // .hide(0) s'avère bcp plus lent dans FF et pose pb si bcp élèves / items ...
-              format_liens('#table_voir');
               $('#export_file_voir_tableau_scores_csv'    ).attr("href", './force_download.php?fichier='+'saisie_deportee_'+tab_response[1]+'.csv' );
               $('#export_file_voir_tableau_scores_vierge' ).attr("href", url_export+'tableau_sans_notes_'           +tab_response[1]+'.pdf' );
               $('#export_file_voir_tableau_scores_couleur').attr("href", url_export+'tableau_avec_notes_couleur_'   +tab_response[1]+'.pdf' );
@@ -545,7 +554,6 @@ $(document).ready
               // Afficher la zone
               $('#table_voir_repart1').html(tab_response[0]);
               $('#table_voir_repart2').html(tab_response[1]);
-              format_liens('#zone_voir_repart');
               $('#export_voir_repart_quantitative_couleur').attr("href", url_export+'repartition_quantitative_couleur_'+tab_response[2]+'.pdf' );
               $('#export_voir_repart_quantitative_gris'   ).attr("href", url_export+'repartition_quantitative_monochrome_'+tab_response[2]+'.pdf' );
               $('#export_voir_repart_nominative_couleur'  ).attr("href", url_export+'repartition_nominative_couleur_'+tab_response[2]+'.pdf' );
@@ -585,8 +593,8 @@ $(document).ready
       var groupe        = objet_tds.eq(3).html();
       var description   = objet_tds.eq(5).html();
       // Sujet & Corrigé
-      var img_sujet     = (tab_sujets[ref])   ? '<a href="'+tab_sujets[ref]+'" target="_blank"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
-      var img_corrige   = (tab_corriges[ref]) ? '<a href="'+tab_corriges[ref]+'" target="_blank"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
+      var img_sujet     = (tab_sujets[ref])   ? '<a href="'+tab_sujets[ref]+'" target="_blank" class="no_puce"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
+      var img_corrige   = (tab_corriges[ref]) ? '<a href="'+tab_corriges[ref]+'" target="_blank" class="no_puce"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
       // Renseigner les champs dynamique affichés
       $('#titre_upload').html(groupe+' | '+date_fr+' | '+description);
       $('#ajax_document_upload').removeAttr("class").html("");
@@ -729,7 +737,7 @@ $(document).ready
       function()
       {
         $.fancybox( { 'href':'#form_gestion' , onStart:function(){$('#form_gestion').css("display","block");} , onClosed:function(){$('#form_gestion').css("display","none");} , 'modal':true , 'minWidth':600 , 'centerOnScroll':true } );
-        return(false);
+        return false;
       }
     );
 
@@ -751,7 +759,7 @@ $(document).ready
       }
       $('#zone_saisir').css("display","none");
       $('#form_prechoix , #table_action').show('fast');
-      return(false);
+      return false;
     }
 
     $('#fermer_zone_saisir').click
@@ -765,7 +773,7 @@ $(document).ready
         else
         {
           $.fancybox( { 'href':'#zone_confirmer_fermer_saisir' , onStart:function(){$('#zone_confirmer_fermer_saisir').css("display","block");} , onClosed:function(){$('#zone_confirmer_fermer_saisir').css("display","none");} , 'modal':true , 'centerOnScroll':true } );
-          return(false);
+          return false;
         }
       }
     );
@@ -803,7 +811,7 @@ $(document).ready
         }
         $('#zone_voir').css("display","none");
         $('#form_prechoix , #table_action').show('fast');
-        return(false);
+        return false;
       }
     );
 
@@ -973,7 +981,6 @@ $(document).ready
               {
                 $('#ajax_msg_imprimer').removeAttr("class").addClass("valide").html("Cartouches générés !");
                 $('#zone_imprimer_retour').html(responseHTML);
-                format_liens('#zone_imprimer_retour');
               }
             }
           }
@@ -1963,7 +1970,6 @@ $(document).ready
         data: {'csrf':CSRF,'f_action':'uploader_document','f_doc_objet':'sujet','f_ref':'maj_plus_tard'},
         autoSubmit: true,
         responseType: "html",
-        onChange: changer_fichier_document,
         onSubmit: verifier_fichier_document,
         onComplete: retourner_fichier_document
       }
@@ -1978,30 +1984,16 @@ $(document).ready
         data: {'csrf':CSRF,'f_action':'uploader_document','f_doc_objet':'corrige','f_ref':'maj_plus_tard'},
         autoSubmit: true,
         responseType: "html",
-        onChange: changer_fichier_document,
         onSubmit: verifier_fichier_document,
         onComplete: retourner_fichier_document
       }
     );
-
-    function changer_fichier_document(fichier_nom,fichier_extension)
-    {
-      $('#ajax_document_upload').removeAttr("class").html('&nbsp;');
-      $('#zone_upload button').prop('disabled',true);
-      return true;
-    }
 
     function verifier_fichier_document(fichier_nom,fichier_extension)
     {
       if (fichier_nom==null || fichier_nom.length<5)
       {
         $('#ajax_document_upload').removeAttr("class").addClass("erreur").html('Cliquer sur "Parcourir..." pour indiquer un chemin de fichier correct.');
-        activer_boutons_upload(uploader_sujet['_settings']['data']['f_ref']);
-        return false;
-      }
-      else if ( ('.doc.docx.odg.odp.ods.odt.ppt.pptx.rtf.sxc.sxd.sxi.sxw.xls.xlsx.'.indexOf('.'+fichier_extension.toLowerCase()+'.')!=-1) && !confirm('Vous devriez convertir votre fichier au format PDF.\nEtes-vous certain de vouloir l\'envoyer sous ce format ?') )
-      {
-        $('#ajax_document_upload').removeAttr("class").addClass("erreur").html('Convertissez votre fichier en "pdf".');
         activer_boutons_upload(uploader_sujet['_settings']['data']['f_ref']);
         return false;
       }
@@ -2021,6 +2013,7 @@ $(document).ready
 
     function retourner_fichier_document(fichier_nom,responseHTML)  // Attention : avec jquery.ajaxupload.js, IE supprime mystérieusement les guillemets et met les éléments en majuscules dans responseHTML.
     {
+      fichier_extension = fichier_nom.split('.').pop();
       var tab_infos = responseHTML.split(']¤[');
       if(tab_infos[0]!='ok')
       {
@@ -2035,9 +2028,18 @@ $(document).ready
         var url   = tab_infos[3];
         if(objet=='sujet') { var alt='sujet';   var title='Sujet';   var numero=0; tab_sujets[ref] = url; }
         else               { var alt='corrigé'; var title='Corrigé'; var numero=1; tab_corriges[ref] = url; }
-        var lien        = '<a href="'+url+'" target="_blank"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
+        var lien        = '<a href="'+url+'" target="_blank" class="no_puce"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
         $('#span_'+objet).html(lien);
         $('#devoir_'+ref).prev().prev().children().eq(numero).replaceWith(lien);
+        if ( ('.doc.docx.odg.odp.ods.odt.ppt.pptx.rtf.sxc.sxd.sxi.sxw.xls.xlsx.'.indexOf('.'+fichier_extension.toLowerCase()+'.')!=-1) )
+        {
+          $.prompt(
+            "Votre fichier a bien été joint au devoir.<br />Néanmoins, pour être consulté, il nécessite un ordinateur équipé d'une suite bureautique adaptée.<br />Pour une meilleure accessibilité, il serait préférable de le convertir au format PDF.",
+            {
+              title  : 'Information'
+            }
+          );
+        }
       }
       activer_boutons_upload(ref);
     }
@@ -2143,7 +2145,7 @@ $(document).ready
                   $('#ajax_document_upload').removeAttr("class").addClass("valide").html("Document référencé.");
                   if(objet=='sujet') { var alt='sujet';   var title='Sujet';   var numero=0; tab_sujets[ref] = url; }
                   else               { var alt='corrigé'; var title='Corrigé'; var numero=1; tab_corriges[ref] = url; }
-                  var lien        = '<a href="'+url+'" target="_blank"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
+                  var lien        = '<a href="'+url+'" target="_blank" class="no_puce"><img alt="'+alt+'" src="./_img/document/'+objet+'_oui.png" title="'+title+' disponible." /></a>';
                   $('#span_'+objet).html(lien);
                   $('#devoir_'+ref).prev().prev().children().eq(numero).replaceWith(lien);
                 }
@@ -2394,6 +2396,19 @@ $(document).ready
         if( reception_todo )
         {
           $('q.ajouter').click();
+        }
+        // Afficher des résultats au chargement
+        if(auto_voir_devoir_id && auto_voir_groupe_id)
+        {
+          if( $('#devoir_'+auto_voir_devoir_id+'_E'+auto_voir_groupe_id).length )
+          {
+            voir();
+          }
+          else
+          {
+            auto_voir_devoir_id = false;
+            auto_voir_groupe_id = false;
+          }
         }
       }
     }

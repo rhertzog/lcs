@@ -2,31 +2,37 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
 $TITRE = "Associer des ressources aux items";
+
+// Acces serveur communautaire
+$acces_serveur_communautaire = ( $_SESSION['SESAMATH_ID'] && $_SESSION['SESAMATH_KEY'] ) ? TRUE : FALSE ;
+
+// Javascript
+Layout::add( 'js_inline_before' , 'var etablissement_identifie = '.(int)$acces_serveur_communautaire.';' );
 
 if(!test_user_droit_specifique( $_SESSION['DROIT_GERER_RESSOURCE'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ ))
 {
@@ -35,12 +41,6 @@ if(!test_user_droit_specifique( $_SESSION['DROIT_GERER_RESSOURCE'] , NULL /*mati
   echo afficher_profils_droit_specifique($_SESSION['DROIT_GERER_RESSOURCE'],'li');
   return; // Ne pas exécuter la suite de ce fichier inclus.
 }
-
-// Acces serveur communautaire
-$acces_serveur_communautaire = ( $_SESSION['SESAMATH_ID'] && $_SESSION['SESAMATH_KEY'] ) ? TRUE : FALSE ;
-
-// Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var etablissement_identifie = '.(int)$acces_serveur_communautaire.';';
 ?>
 
 <ul class="puce">

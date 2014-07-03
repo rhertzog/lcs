@@ -2,30 +2,34 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
+
+// Réception d'id transmis via un lien de [Évaluer un élève à la volée].
+$auto_voir_devoir_id = isset($_GET['devoir_id']) ? Clean::entier($_GET['devoir_id']) : 'false' ;
+$auto_voir_groupe_id = isset($_GET['groupe_id']) ? Clean::entier($_GET['groupe_id']) : 'false' ;
 
 // Réception d'un formulaire depuis un tableau de synthèse bilan
 // Dans ce cas il s'agit d'une évaluation sur une sélection d'élèves.
@@ -79,24 +83,25 @@ $TITRE = ($TYPE=='groupe') ? "Évaluer une classe ou un groupe" : "Évaluer des 
 $date_autoeval = date('d/m/Y',mktime(0,0,0,date('m'),date('d')+7,date('Y'))); // 1 semaine après
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var TYPE           = "'.$TYPE.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var url_export     = "'.URL_DIR_EXPORT.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var input_date     = "'.TODAY_FR.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var date_mysql     = "'.TODAY_MYSQL.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var input_autoeval = "'.$date_autoeval.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var isMobile       = '.(int)$_SESSION['BROWSER']['mobile'].';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_items      = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_profs      = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_eleves     = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_sujets     = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_corriges   = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_niveau     = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_groupe     = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var reception_todo = '.$reception_todo.';';
-$GLOBALS['HEAD']['js']['inline'][] = 'var reception_items_texte = "'.$txt_items.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var reception_users_texte = "'.$txt_users.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var reception_items_liste = "'.implode('_',$tab_items).'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var reception_users_liste = "'.implode('_',$tab_users).'";';
+Layout::add( 'js_inline_before' , 'var TYPE           = "'.$TYPE.'";' );
+Layout::add( 'js_inline_before' , 'var url_export     = "'.URL_DIR_EXPORT.'";' );
+Layout::add( 'js_inline_before' , 'var input_date     = "'.TODAY_FR.'";' );
+Layout::add( 'js_inline_before' , 'var date_mysql     = "'.TODAY_MYSQL.'";' );
+Layout::add( 'js_inline_before' , 'var input_autoeval = "'.$date_autoeval.'";' );
+Layout::add( 'js_inline_before' , 'var tab_items      = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_profs      = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_eleves     = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_sujets     = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_corriges   = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_niveau     = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_groupe     = new Array();' );
+Layout::add( 'js_inline_before' , 'var reception_todo = '.$reception_todo.';' );
+Layout::add( 'js_inline_before' , 'var reception_items_texte = "'.$txt_items.'";' );
+Layout::add( 'js_inline_before' , 'var reception_users_texte = "'.$txt_users.'";' );
+Layout::add( 'js_inline_before' , 'var reception_items_liste = "'.implode('_',$tab_items).'";' );
+Layout::add( 'js_inline_before' , 'var reception_users_liste = "'.implode('_',$tab_users).'";' );
+Layout::add( 'js_inline_before' , 'var auto_voir_devoir_id = '.$auto_voir_devoir_id.';' );
+Layout::add( 'js_inline_before' , 'var auto_voir_groupe_id = '.$auto_voir_groupe_id.';' );
 
 require(CHEMIN_DOSSIER_INCLUDE.'fonction_affichage_sections_communes.php');
 
@@ -114,8 +119,8 @@ if($TYPE=='groupe')
   {
     $groupe = strtoupper($DB_ROW['groupe_type']{0}).$DB_ROW['groupe_id'];
     $tab_options[$DB_ROW['groupe_type']] .= '<option value="'.$groupe.'">'.html($DB_ROW['groupe_nom']).'</option>';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_niveau["'.$groupe.'"]="'.sprintf("%02u",$DB_ROW['niveau_ordre']).'";';
-    $GLOBALS['HEAD']['js']['inline'][] = 'tab_groupe["'.$groupe.'"]="'.html($DB_ROW['groupe_nom']).'";';
+    Layout::add( 'js_inline_before' , 'tab_niveau["'.$groupe.'"]="'.sprintf("%02u",$DB_ROW['niveau_ordre']).'";' );
+    Layout::add( 'js_inline_before' , 'tab_groupe["'.$groupe.'"]="'.html($DB_ROW['groupe_nom']).'";' );
   }
   foreach($tab_options as $type => $contenu)
   {
@@ -137,9 +142,9 @@ $tab_groupes = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN:
 Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode*/ , FALSE /*tab_groupe_niveau*/ );
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = '// <![CDATA[';
-$GLOBALS['HEAD']['js']['inline'][] = 'var select_groupe = "'.str_replace('"','\"','<option value=""></option>'.$select_eleve).'";';
-$GLOBALS['HEAD']['js']['inline'][] = '// ]]>';
+Layout::add( 'js_inline_before' , '// <![CDATA[' );
+Layout::add( 'js_inline_before' , 'var select_groupe = "'.str_replace('"','\"','<option value=""></option>'.$select_eleve).'";' );
+Layout::add( 'js_inline_before' , '// ]]>' );
 ?>
 
 <ul class="puce">
@@ -241,8 +246,8 @@ $GLOBALS['HEAD']['js']['inline'][] = '// ]]>';
   <div><span class="tab"></span><button id="valider_compet" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_compet" type="button" class="annuler">Annuler / Retour</button></div>
   <hr />
   <p>
-    <label class="tab" for="f_selection_items"><img alt="" src="./_img/bulle_aide.png" title="Pour choisir un regroupement d'items mémorisé." /> Initialisation</label><?php echo $select_selection_items ?><br />
-    <label class="tab" for="f_liste_items_nom"><img alt="" src="./_img/bulle_aide.png" title="Pour enregistrer le groupe d'items cochés." /> Mémorisation</label><input id="f_liste_items_nom" name="f_liste_items_nom" size="30" type="text" value="" maxlength="60" /> <button id="f_enregistrer_items" type="button" class="fichier_export">Enregistrer</button><label id="ajax_msg_memo">&nbsp;</label>
+    <label class="tab" for="f_selection_items"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour choisir un regroupement d'items mémorisé." /> Initialisation</label><?php echo $select_selection_items ?><br />
+    <label class="tab" for="f_liste_items_nom"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour enregistrer le groupe d'items cochés." /> Mémorisation</label><input id="f_liste_items_nom" name="f_liste_items_nom" size="30" type="text" value="" maxlength="60" /> <button id="f_enregistrer_items" type="button" class="fichier_export">Enregistrer</button><label id="ajax_msg_memo">&nbsp;</label>
   </p>
 </form>
 
@@ -268,12 +273,12 @@ $GLOBALS['HEAD']['js']['inline'][] = '// ]]>';
   <p>
     <label class="tab">Sujet :</label><span id="span_sujet"></span> <button id="bouton_supprimer_sujet" type="button" class="supprimer">Retirer</button><br />
     <span class="tab"></span><button id="bouton_referencer_sujet" type="button" class="referencer_lien">Diriger vers ce lien externe.</button> <input id="f_adresse_sujet" name="f_adresse_sujet" maxlength="256" size="50" type="text" value="" /><br />
-    <span class="tab"></span><button id="bouton_uploader_sujet" type="button" class="fichier_import">Envoyer un fichier à utiliser.</button> <?php echo FICHIER_TAILLE_MAX ?> Ko maxi, conservé <?php echo FICHIER_DUREE_CONSERVATION ?> mois. <img alt="" src="./_img/bulle_aide.png" title="La taille maximale autorisée et la durée de conservation des fichiers sont fixées par le webmestre." />
+    <span class="tab"></span><button id="bouton_uploader_sujet" type="button" class="fichier_import">Envoyer un fichier à utiliser.</button> <?php echo FICHIER_TAILLE_MAX ?> Ko maxi, conservé <?php echo FICHIER_DUREE_CONSERVATION ?> mois. <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="La taille maximale autorisée et la durée de conservation des fichiers sont fixées par le webmestre." />
   </p>
   <p>
     <label class="tab">Corrigé :</label><span id="span_corrige"></span> <button id="bouton_supprimer_corrige" type="button" class="supprimer">Retirer</button><br />
     <span class="tab"></span><button id="bouton_referencer_corrige" type="button" class="referencer_lien">Diriger vers ce lien externe.</button> <input id="f_adresse_corrige" name="f_adresse_corrige" maxlength="256" size="50" type="text" value="" /><br />
-    <span class="tab"></span><button id="bouton_uploader_corrige" type="button" class="fichier_import">Envoyer un fichier à utiliser.</button> <?php echo FICHIER_TAILLE_MAX ?> Ko maxi, conservé <?php echo FICHIER_DUREE_CONSERVATION ?> mois. <img alt="" src="./_img/bulle_aide.png" title="La taille maximale autorisée et la durée de conservation des fichiers sont fixées par le webmestre." />
+    <span class="tab"></span><button id="bouton_uploader_corrige" type="button" class="fichier_import">Envoyer un fichier à utiliser.</button> <?php echo FICHIER_TAILLE_MAX ?> Ko maxi, conservé <?php echo FICHIER_DUREE_CONSERVATION ?> mois. <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="La taille maximale autorisée et la durée de conservation des fichiers sont fixées par le webmestre." />
   </p>
   <p><span class="tab"></span><button id="fermer_zone_upload" type="button" class="retourner">Retour</button><label id="ajax_document_upload">&nbsp;</label></p>
 </form>
@@ -330,8 +335,8 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   </table>
   <hr />
   <ul class="puce">
-    <li><a id="export_voir_repart_quantitative_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> en couleurs).</span></a></li>
-    <li><a id="export_voir_repart_quantitative_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> monochrome).</span></a></li>
+    <li><a id="export_voir_repart_quantitative_couleur" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> en couleurs).</span></a></li>
+    <li><a id="export_voir_repart_quantitative_gris" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition quantitative des scores (format <em>pdf</em> monochrome).</span></a></li>
   </ul>
   <hr />
   <table id="table_voir_repart2" class="scor_eval">
@@ -339,13 +344,13 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   </table>
   <hr />
   <ul class="puce">
-    <li><a id="export_voir_repart_nominative_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> en couleurs).</span></a></li>
-    <li><a id="export_voir_repart_nominative_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> monochrome).</span></a></li>
+    <li><a id="export_voir_repart_nominative_couleur" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> en couleurs).</span></a></li>
+    <li><a id="export_voir_repart_nominative_gris" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec la répartition nominative des scores (format <em>pdf</em> monochrome).</span></a></li>
   </ul>
   <hr />
 </div>
 
-<!-- Sans onsubmit="return false" une soumission incontrôlée s'effectue quand on presse "entrée" dans le cas d'un seul élève évalué sur un seul item. -->
+<?php /* Sans onsubmit="return false" une soumission incontrôlée s'effectue quand on presse "entrée" dans le cas d'un seul élève évalué sur un seul item. */ ?>
 <form action="#" method="post" id="zone_saisir" class="hide" onsubmit="return false">
   <h2>Saisir les acquisitions à une évaluation</h2>
   <p>
@@ -373,12 +378,12 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
     <span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_resultats#toggle_saisies_multiples ">DOC : Report multiple.</a></span>
   </p>
   <div>
-    <a id="to_zone_saisir_deport" href="#"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer la saisie déportée." class="toggle" /></a> Saisie déportée
-    <div id="zone_saisir_deport" class="hide">
+    <a id="to_zone_saisir_deport" href="#toggle" class="toggle_plus" title="Voir / masquer la saisie déportée."></a> Saisie déportée
+    <div id="zone_saisir_deport" class="p hide">
       <ul class="puce">
         <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span></li>
-        <li><a id="export_file_saisir_tableau_scores_csv" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier vierge pour une saisie déportée (format <em>csv</em>).</span></a></li>
-        <li><a id="export_file_saisir_tableau_scores_vierge" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
+        <li><a id="export_file_saisir_tableau_scores_csv" target="_blank" href=""><span class="file file_txt">Récupérer un fichier vierge pour une saisie déportée (format <em>csv</em>).</span></a></li>
+        <li><a id="export_file_saisir_tableau_scores_vierge" target="_blank" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
         <li><button id="import_file" type="button" class="fichier_import">Envoyer un fichier de notes complété (format <em>csv</em>).</button><label id="msg_import">&nbsp;</label></li>
       </ul>
       <p class="astuce">Pour récupérer un fichier <em>csv</em> ou un tableau <em>pdf</em> avec les notes saisies, choisir "<em>Voir les acquisitions</em>".</p>
@@ -395,14 +400,14 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
     <tbody><tr><td></td></tr></tbody>
   </table>
   <p>&nbsp;</p>
-  <a id="to_zone_voir_deport" href="#"><img src="./_img/toggle_plus.gif" alt="" title="Voir / masquer la saisie déportée." class="toggle" /></a> Saisie déportée &amp; archivage
-  <div id="zone_voir_deport" class="hide">
+  <a id="to_zone_voir_deport" href="#toggle" class="toggle_plus" title="Voir / masquer la saisie déportée."></a> Saisie déportée &amp; archivage
+  <div id="zone_voir_deport" class="p hide">
     <ul class="puce">
       <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_saisie_deportee">DOC : Saisie déportée.</a></span></li>
-      <li><a id="export_file_voir_tableau_scores_csv" class="lien_ext" href=""><span class="file file_txt">Récupérer un fichier des scores pour une saisie déportée (format <em>csv</em>).</span></a></li>
-      <li><a id="export_file_voir_tableau_scores_vierge" class="lien_ext" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
-      <li><a id="export_file_voir_tableau_scores_couleur" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> en couleurs).</span></a></li>
-      <li><a id="export_file_voir_tableau_scores_gris" class="lien_ext" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> monochrome).</span></a></li>
+      <li><a id="export_file_voir_tableau_scores_csv" target="_blank" href=""><span class="file file_txt">Récupérer un fichier des scores pour une saisie déportée (format <em>csv</em>).</span></a></li>
+      <li><a id="export_file_voir_tableau_scores_vierge" target="_blank" href=""><span class="file file_pdf">Imprimer un tableau vierge utilisable pour un report manuel des notes (format <em>pdf</em>).</span></a></li>
+      <li><a id="export_file_voir_tableau_scores_couleur" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> en couleurs).</span></a></li>
+      <li><a id="export_file_voir_tableau_scores_gris" target="_blank" href=""><span class="file file_pdf">Archiver / Imprimer le tableau avec les scores (format <em>pdf</em> monochrome).</span></a></li>
     </ul>
     <p class="astuce">Pour importer un fichier <em>csv</em> de notes complété, choisir "<em>Saisir les acquisitions</em>".</p>
   </div>
@@ -417,7 +422,7 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   </p>
 </div>
 
-<!--  Clavier virtuel pour les dispositifs tactiles -->
+<?php /*  Clavier virtuel pour les dispositifs tactiles */ ?>
 <div id="cadre_tactile">
   <div><kbd id="kbd_37"><img alt="Gauche" src="./_img/fleche/fleche_g1.gif" /></kbd><kbd id="kbd_39"><img alt="Droite" src="./_img/fleche/fleche_d1.gif" /></kbd><kbd id="kbd_38"><img alt="Haut" src="./_img/fleche/fleche_h1.gif" /></kbd><kbd id="kbd_40"><img alt="Bas" src="./_img/fleche/fleche_b1.gif" /></kbd></div>
   <div><kbd id="kbd_97"><img alt="RR" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/RR.gif" /></kbd><kbd id="kbd_98"><img alt="R" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/R.gif" /></kbd><kbd id="kbd_99"><img alt="V" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/V.gif" /></kbd><kbd id="kbd_100"><img alt="VV" src="./_img/note/<?php echo $_SESSION['NOTE_DOSSIER'] ?>/h/VV.gif" /></kbd></div>

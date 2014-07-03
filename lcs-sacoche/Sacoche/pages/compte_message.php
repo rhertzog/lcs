@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -40,9 +40,9 @@ $select_profil.= '<option value="eleve">Élèves</option>' ;
 $select_profil.= '<option value="parent">Responsables légaux</option>';
 
 // Javascript
-$GLOBALS['HEAD']['js']['inline'][] = 'var input_date = "'.TODAY_FR.'";';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_destinataires = new Array();';
-$GLOBALS['HEAD']['js']['inline'][] = 'var tab_msg_contenus  = new Array();';
+Layout::add( 'js_inline_before' , 'var input_date = "'.TODAY_FR.'";' );
+Layout::add( 'js_inline_before' , 'var tab_destinataires = new Array();' );
+Layout::add( 'js_inline_before' , 'var tab_msg_contenus  = new Array();' );
 ?>
 
 <ul class="puce">
@@ -67,7 +67,7 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var tab_msg_contenus  = new Array();';
     $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_messages_user_auteur($_SESSION['USER_ID']);
     if(!empty($DB_TAB))
     {
-      $GLOBALS['HEAD']['js']['inline'][] = '// <![CDATA[';
+      Layout::add( 'js_inline_before' , '// <![CDATA[' );
       foreach($DB_TAB as $DB_ROW)
       {
         // Afficher une ligne du tableau
@@ -88,10 +88,10 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var tab_msg_contenus  = new Array();';
         echo  '</td>';
         echo'</tr>'.NL;
         // Javascript
-        $GLOBALS['HEAD']['js']['inline'][] = 'tab_destinataires['.$DB_ROW['message_id'].']="'.$destinataires_liste.'";';
-        $GLOBALS['HEAD']['js']['inline'][] = 'tab_msg_contenus['.$DB_ROW['message_id'].']="'.str_replace(array("\r\n","\r","\n"),array('\r\n','\r','\n'),html($DB_ROW['message_contenu'])).'";';
+        Layout::add( 'js_inline_before' , 'tab_destinataires['.$DB_ROW['message_id'].']="'.$destinataires_liste.'";' );
+        Layout::add( 'js_inline_before' , 'tab_msg_contenus['.$DB_ROW['message_id'].']="'.str_replace(array("\r\n","\r","\n"),array('\r\n','\r','\n'),html($DB_ROW['message_contenu'])).'";' );
       }
-      $GLOBALS['HEAD']['js']['inline'][] = '// ]]>';
+      Layout::add( 'js_inline_before' , '// ]]>' );
     }
     else
     {
@@ -150,7 +150,7 @@ $GLOBALS['HEAD']['js']['inline'][] = 'var tab_msg_contenus  = new Array();';
 </form>
 
 <form action="#" method="post" id="form_message" class="hide">
-  <h4>Contenu du message</h4>
+  <h3>Contenu du message</h3>
   <div>
     <textarea id="f_message" rows="20" cols="80"></textarea><br />
     <span class="tab"></span><label id="f_message_reste"></label><br />

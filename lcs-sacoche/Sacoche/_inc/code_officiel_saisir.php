@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -43,6 +43,7 @@ $rubrique_id  = (isset($_POST['f_rubrique']))     ? Clean::entier($_POST['f_rubr
 $prof_id      = (isset($_POST['f_prof']))         ? Clean::entier($_POST['f_prof'])        : 0; // id du prof dont on corrige l'appréciation
 $appreciation = (isset($_POST['f_appreciation'])) ? Clean::texte($_POST['f_appreciation']) : '';
 $moyenne      = (isset($_POST['f_moyenne']))      ? Clean::decimal($_POST['f_moyenne'])    : -1;
+$import_info  = (isset($_POST['f_import_info']))  ? Clean::texte($_POST['f_import_info'])  : '';
 // Autres chaines spécifiques...
 $listing_matieres = (isset($_POST['f_listing_matieres'])) ? $_POST['f_listing_matieres'] : '' ;
 $listing_piliers  = (isset($_POST['f_listing_piliers']))  ? $_POST['f_listing_piliers']  : '' ;
@@ -52,6 +53,7 @@ $liste_matiere_id = implode(',',$tab_matiere_id);
 $liste_pilier_id  = implode(',',$tab_pilier_id);
 
 $is_sous_groupe = ($groupe_id) ? TRUE : FALSE ;
+$groupe_id      = ($groupe_id) ? $groupe_id : $classe_id ; // Le groupe = le groupe transmis ou sinon la classe (cas le plus fréquent).
 
 $tab_objet  = array('modifier','tamponner','voir'); // "voir" car on peut corriger une appréciation dans ce mode
 $tab_action = array('initialiser','charger','enregistrer_appr','corriger_faute','enregistrer_note','supprimer_appr','supprimer_note','recalculer_note');
@@ -68,7 +70,7 @@ $tab_types = array
 
 // On vérifie les paramètres principaux
 
-if( (!in_array($ACTION,$tab_action)) || (!isset($tab_types[$BILAN_TYPE])) || (!in_array($objet,$tab_objet)) || (!in_array($mode,$tab_mode)) || !$periode_id || !$classe_id || ( (!$eleve_id)&&($ACTION!='initialiser')&&($BILAN_TYPE!='bulletin') ) )
+if( (!in_array($ACTION,$tab_action)) || (!isset($tab_types[$BILAN_TYPE])) || (!in_array($objet,$tab_objet)) || (!in_array($mode,$tab_mode)) || !$periode_id || !$classe_id || ( (!$eleve_id)&&($BILAN_TYPE!='bulletin')&&($ACTION!='initialiser') ) )
 {
   exit('Erreur avec les données transmises !');
 }
@@ -113,15 +115,7 @@ if($ACTION=='enregistrer_appr')
   {
     exit('Erreur avec les données transmises !');
   }
-  // élève ou classe
-  $saisie_type        = ($eleve_id) ? 'eleve'   : 'classe' ;
-  $eleve_ou_classe_id = ($eleve_id) ? $eleve_id : $classe_id ;
-  if($rubrique_id==0)
-  {
-    // Dans le cas d'une appréciation générale, si c'est une autre personne en a saisi la version précédente, le REPLACE INTO ne la supprimera pas.
-    DB_STRUCTURE_OFFICIEL::DB_supprimer_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_ou_classe_id , 0 /*rubrique_id*/ , 0 /*prof_id*/ , $saisie_type );
-  }
-  DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_ou_classe_id , $rubrique_id , $_SESSION['USER_ID'] , $saisie_type , NULL , $appreciation );
+  enregistrer_appreciation( $BILAN_TYPE , $periode_id , $eleve_id , $classe_id , $rubrique_id , $_SESSION['USER_ID'] , $appreciation );
   $prof_info = afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE);
   $ACTION = ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
   exit('<div class="notnow">'.html($prof_info).$ACTION.'</div><div class="appreciation">'.html($appreciation).'</div>');
@@ -133,10 +127,7 @@ if($ACTION=='corriger_faute')
   {
     exit('Erreur avec les données transmises !');
   }
-  // élève ou classe
-  $saisie_type        = ($eleve_id) ? 'eleve'   : 'classe' ;
-  $eleve_ou_classe_id = ($eleve_id) ? $eleve_id : $classe_id ;
-  DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_ou_classe_id , $rubrique_id , $prof_id , $saisie_type , NULL , $appreciation );
+  enregistrer_appreciation( $BILAN_TYPE , $periode_id , $eleve_id , $classe_id , $rubrique_id , $prof_id , $appreciation );
   exit('<ok>'.html($appreciation));
 }
 
@@ -146,9 +137,7 @@ if($ACTION=='enregistrer_note')
   {
     exit('Erreur avec les données transmises !');
   }
-  $note = ($_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20']) ? round($moyenne,1) : round($moyenne/5,1) ;
-  $appreciation = 'Moyenne figée reportée par '.afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE);
-  DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_id , $rubrique_id , 0 /*prof_id*/ , 'eleve' , $note , $appreciation );
+  list( $note , $appreciation ) = enregistrer_note( $BILAN_TYPE , $periode_id , $eleve_id , $rubrique_id , $moyenne );
   $note = ($_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20']) ? $note : ($note*5).'&nbsp;%' ;
   $action = ' <button type="button" class="modifier">Modifier</button> <button type="button" class="nettoyer">Effacer et recalculer.</button> <button type="button" class="supprimer">Supprimer sans recalculer</button>' ;
   exit('<td class="now moyenne">'.$note.'</td><td class="now"><span class="notnow">'.html($appreciation).$action.'</span></td>');
@@ -214,6 +203,7 @@ $groupe_nom = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_
 
 if($ACTION=='initialiser')
 {
+  $separateur = ';';
   $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
   if(empty($DB_TAB))
   {
@@ -303,7 +293,7 @@ $affichage_assiduite = ($_SESSION['OFFICIEL'][$tab_types[$BILAN_TYPE]['droit'].'
 if( $affichage_assiduite && $eleve_id )
 {
   $DB_ROW = DB_STRUCTURE_OFFICIEL::DB_recuperer_officiel_assiduite( $periode_id , $eleve_id );
-  $tab_assiduite[$eleve_id] = (empty($DB_ROW)) ? array( 'absence' => NULL , 'non_justifie' => NULL , 'retard' => NULL ) : array( 'absence' => $DB_ROW['assiduite_absence'] , 'non_justifie' => $DB_ROW['assiduite_non_justifie'] , 'retard' => $DB_ROW['assiduite_retard'] ) ;
+  $tab_assiduite[$eleve_id] = (empty($DB_ROW)) ? array( 'absence' => NULL , 'absence_nj' => NULL , 'retard' => NULL , 'retard_nj' => NULL ) : array( 'absence' => $DB_ROW['assiduite_absence'] , 'absence_nj' => $DB_ROW['assiduite_absence_nj'] , 'retard' => $DB_ROW['assiduite_retard'] , 'retard_nj' => $DB_ROW['assiduite_retard_nj'] ) ;
 }
 
 // Récupérer les professeurs principaux
@@ -356,7 +346,7 @@ if($BILAN_TYPE=='releve')
   $with_coef              = 1; // Il n'y a que des relevés par matière et pas de synthèse commune : on prend en compte les coefficients pour chaque relevé matière.
   $matiere_id             = TRUE;
   $matiere_nom            = '';
-  $groupe_id              = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
+  $groupe_id              = $groupe_id;  // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom             = $groupe_nom; // Déjà défini avant car on en avait besoin
   $date_debut             = '';
   $date_fin               = '';
@@ -377,6 +367,7 @@ if($BILAN_TYPE=='releve')
   $pages_nb               = $_SESSION['OFFICIEL']['RELEVE_PAGES_NB'];
   $cases_nb               = $_SESSION['OFFICIEL']['RELEVE_CASES_NB'];
   $cases_largeur          = 5; // pas jugé utile de le mettre en option...
+  $highlight_id           = 0; // Ne sert que pour le relevé d'items d'une matière
   $tab_eleve              = array($eleve_id); // tableau de l'unique élève à considérer
   $liste_eleve            = (string)$eleve_id;
   $tab_type[]             = 'individuel';
@@ -390,7 +381,7 @@ if($BILAN_TYPE=='releve')
 elseif($BILAN_TYPE=='bulletin')
 {
   $format         = 'multimatiere' ;
-  $groupe_id      = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
+  $groupe_id      = $groupe_id;  // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom     = $groupe_nom; // Déjà défini avant car on en avait besoin
   $date_debut     = '';
   $date_fin       = '';
@@ -422,7 +413,7 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
   $only_presence  = $_SESSION['OFFICIEL']['SOCLE_ONLY_PRESENCE'];
   $aff_socle_PA   = $_SESSION['OFFICIEL']['SOCLE_POURCENTAGE_ACQUIS'];
   $aff_socle_EV   = $_SESSION['OFFICIEL']['SOCLE_ETAT_VALIDATION'];
-  $groupe_id      = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
+  $groupe_id      = $groupe_id;  // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom     = $groupe_nom; // Déjà défini avant car on en avait besoin
   $mode           = 'auto';
   $aff_coef       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
@@ -453,7 +444,12 @@ if( in_array($BILAN_TYPE,array('releve','bulletin')) && !count($tab_eval) && emp
 
 if($ACTION=='initialiser')
 {
-  exit('<h2>'.$sous_titre.'</h2>'.$form_choix_eleve.'<form action="#" method="post" id="zone_resultat_eleve" onsubmit="return false">'.${$nom_bilan_html}.'</form>'.$js_graph);
+  exit(
+    '<h2>'.$sous_titre.'</h2>'.
+    $form_choix_eleve.
+    '<form action="#" method="post" id="zone_resultat_eleve" onsubmit="return false">'.${$nom_bilan_html}.'</form>'.
+    $js_graph
+  );
 }
 else
 {

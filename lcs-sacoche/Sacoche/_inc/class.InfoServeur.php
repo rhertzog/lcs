@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -154,7 +154,7 @@ class InfoServeur
     foreach($tab_objets as $nom_objet => $nom_affichage)
     {
       $cellule  = (version_compare(PHP_VERSION,'5.2.3','>=')) ? call_user_func('InfoServeur::'.$nom_objet) : call_user_func( array('InfoServeur',$nom_objet) ) ;
-      $tab_tr[] = '<tr><td><img alt="" src="./_img/bulle_aide.png" title="'.InfoServeur::commentaire($nom_objet).'" /> '.$nom_affichage.'</td>'.$cellule.'</tr>';
+      $tab_tr[] = '<tr><td><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.InfoServeur::commentaire($nom_objet).'" /> '.$nom_affichage.'</td>'.$cellule.'</tr>';
     }
     return'<table class="p"><thead><tr><th colspan="2">'.$titre.'</th></tr></thead><tbody>'.implode('',$tab_tr).'</tbody></table>';
   }
@@ -247,7 +247,7 @@ class InfoServeur
   /**
    * version_sacoche_base_webmestre
    * Retourne une chaîne indiquant la version logicielle de la base de données de SACoche.
-   * En mode multi-structure, celle-ci est propre à chaque établissement.
+   * En mode multi-structures, celle-ci est propre à chaque établissement.
    *
    * @param void
    * @return string   AAAA-MM-JJ
@@ -700,17 +700,17 @@ class InfoServeur
       }
       $lignes .= '</tr>';
     }
-    $tr_head = '<tr><th colspan="'.$nb_colonnes.'">Modules PHP compilés et chargés <img alt="" src="./_img/bulle_aide.png" title="'.InfoServeur::commentaire('modules_PHP').'" /></th></tr>';
+    $tr_head = '<tr><th colspan="'.$nb_colonnes.'">Modules PHP compilés et chargés <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.InfoServeur::commentaire('modules_PHP').'" /></th></tr>';
     return'<table id="tab_modules" class="p"><thead>'.$tr_head.'</thead><tbody>'.$lignes.'</tbody></table>';
   }
 
   public static function tableau_reglages_Suhosin()
   {
     $tab_tr = array();
-    $tab_tr[0] = '<tr><th>Suhosin <img alt="" src="./_img/bulle_aide.png" title="'.InfoServeur::commentaire('suhosin').'" /></th>';
+    $tab_tr[0] = '<tr><th>Suhosin <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.InfoServeur::commentaire('suhosin').'" /></th>';
     if(version_compare(PHP_VERSION,5.4,'>='))
     {
-      $tab_tr[1] .= '<tr><td class="hc">---</td></tr>';
+      $tab_tr[1] = '<tr><td class="hc">---</td></tr>';
     }
     else
     {
@@ -752,7 +752,7 @@ class InfoServeur
       {
         $search_version = preg_match( '/[0-9.]+/' , $tab_gd_options[$nom_objet] , $tab_match);
         $gd_version = ($search_version) ? $tab_match[0] : '' ;
-        $img = ($nom_objet=='GD Version') ? '<img alt="" src="./_img/bulle_aide.png" title="La fonction imagecreatetruecolor() requiert la bibliothèque GD version 2.0.1 ou supérieure, 2.0.28 ou supérieure étant recommandée." /> ' : '' ;
+        $img = ($nom_objet=='GD Version') ? '<img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="La fonction imagecreatetruecolor() requiert la bibliothèque GD version 2.0.1 ou supérieure, 2.0.28 ou supérieure étant recommandée." /> ' : '' ;
              if(version_compare($gd_version,'2.0.28','>=')) $td = InfoServeur::cellule_coloree_centree($tab_gd_options[$nom_objet],'vert');
         else if(version_compare($gd_version,'2.0.1' ,'>=')) $td = InfoServeur::cellule_coloree_centree($tab_gd_options[$nom_objet],'jaune');
         else                                                $td = InfoServeur::cellule_coloree_centree($tab_gd_options[$nom_objet],'rouge');

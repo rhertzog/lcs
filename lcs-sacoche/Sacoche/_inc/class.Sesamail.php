@@ -6,20 +6,20 @@
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -103,19 +103,26 @@ class Sesamail
     if ($this->charset != 'utf-8') {
       throw new \Exception("Cette classe Mail ne fonctionne qu'avec un mb_internal_encoding en UTF-8 (ici on a " .$this->charset .')');
     }
-    
+
     // le from par défaut (utilisé en Return-Path)
-    $this->default_sender = WEBMESTRE_PRENOM.' '.WEBMESTRE_NOM.' <'.WEBMESTRE_COURRIEL.'>';
-    
+    if(defined('WEBMESTRE_COURRIEL'))
+    {
+      $this->default_sender = WEBMESTRE_PRENOM.' '.WEBMESTRE_NOM.' <'.WEBMESTRE_COURRIEL.'>';
+    }
+    else if(defined('MAIL_SACOCHE_CONTACT'))
+    {
+      $this->default_sender = 'Contact SACoche <'.MAIL_SACOCHE_CONTACT.'>';
+    }
+
     // le préfixe du sujet
-    $this->subject_prefix = 'SACoche '.HEBERGEUR_DENOMINATION.' - ';
-    
+    $this->subject_prefix = (defined('HEBERGEUR_DENOMINATION')) ? 'SACoche '.HEBERGEUR_DENOMINATION.' - ' : $this->subject_prefix = 'SACoche - ' ;
+
     // Les headers communs à tous nos mails
     $this->headers = '';
-    
+
     // Return-Path
     $this->headers .= 'Return-Path: ' .$this->default_sender ."\r\n"; 
-    
+
     // Content
     $this->headers .= 'Content-type: text/plain; charset=' .$this->charset ."\r\n";
     $this->headers .= 'Content-Transfer-Encoding: 8bit'."\r\n";

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -62,13 +62,13 @@ foreach($tab_select_proxy_auth_method as $option_value => $option_texte)
 <form action="#" method="post" id="form_proxy"><fieldset>
   <span class="tab"></span><label for="f_proxy_used"><input type="checkbox" id="f_proxy_used" name="f_proxy_used" value="1"<?php echo $check_proxy_used ?> /> Mon serveur nécessite d'utiliser un proxy.</label>
   <div id="div_proxy_used" class="<?php echo $class_proxy_used ?>">
-    <label class="tab" for="f_proxy_name">Nom du proxy <img alt="" src="./_img/bulle_aide.png" title="Exemple : proxy2" /> :</label><input id="f_proxy_name" name="f_proxy_name" size="10" type="text" value="<?php echo html(SERVEUR_PROXY_NAME); ?>" /><br />
-    <label class="tab" for="f_proxy_port">Numéro du port <img alt="" src="./_img/bulle_aide.png" title="Exemple : 8080" /> :</label><input id="f_proxy_port" name="f_proxy_port" size="5" type="text" value="<?php echo html(SERVEUR_PROXY_PORT); ?>" /><br />
-    <label class="tab" for="f_proxy_type">Type de proxy <img alt="" src="./_img/bulle_aide.png" title="Par défaut HTTP" /> :</label><select id="f_proxy_type" name="f_proxy_type"><?php echo $select_proxy_type ?></select><br />
+    <label class="tab" for="f_proxy_name">Nom du proxy <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : proxy2" /> :</label><input id="f_proxy_name" name="f_proxy_name" size="10" type="text" value="<?php echo html(SERVEUR_PROXY_NAME); ?>" /><br />
+    <label class="tab" for="f_proxy_port">Numéro du port <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : 8080" /> :</label><input id="f_proxy_port" name="f_proxy_port" size="5" type="text" value="<?php echo html(SERVEUR_PROXY_PORT); ?>" /><br />
+    <label class="tab" for="f_proxy_type">Type de proxy <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Par défaut HTTP" /> :</label><select id="f_proxy_type" name="f_proxy_type"><?php echo $select_proxy_type ?></select><br />
     &nbsp;<br />
     <span class="tab"></span><label for="f_proxy_auth_used"><input type="checkbox" id="f_proxy_auth_used" name="f_proxy_auth_used" value="1"<?php echo $check_proxy_auth_used ?> /> Ce proxy nécessite une authentification.</label>
     <div id="div_proxy_auth_used" class="<?php echo $class_proxy_auth_used ?>">
-      <label class="tab" for="f_proxy_auth_method">Méthode <img alt="" src="./_img/bulle_aide.png" title="Par défaut BASIC.<br />Seuls deux protocoles sont actuellement supportés par cURL." /> :</label><select id="f_proxy_auth_method" name="f_proxy_auth_method"><?php echo $select_proxy_auth_method ?></select><br />
+      <label class="tab" for="f_proxy_auth_method">Méthode <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Par défaut BASIC.<br />Seuls deux protocoles sont actuellement supportés par cURL." /> :</label><select id="f_proxy_auth_method" name="f_proxy_auth_method"><?php echo $select_proxy_auth_method ?></select><br />
       <label class="tab" for="f_proxy_auth_user">Nom d'utilisateur :</label><input id="f_proxy_auth_user" name="f_proxy_auth_user" size="10" type="text" value="<?php echo html(SERVEUR_PROXY_AUTH_USER); ?>" /><br />
       <label class="tab" for="f_proxy_auth_pass">Mot de passe : </label><input id="f_proxy_auth_pass" name="f_proxy_auth_pass" size="10" type="text" value="<?php echo html(SERVEUR_PROXY_AUTH_PASS); ?>" />
     </div>

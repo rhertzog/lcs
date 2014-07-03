@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -40,7 +40,7 @@ $WS_qui  = (isset($_POST['qui']))  ? Clean::texte($_POST['qui']) : ( (isset($_GE
 $WS_cle  = (isset($_POST['cle']))  ? Clean::texte($_POST['cle']) : '';
 $WS_uai  = (isset($_POST['uai']))  ? Clean::uai($_POST['uai'])   : '';
 $WS_uid  = (isset($_POST['uid']))  ? Clean::texte($_POST['uid']) : '';
-$WS_data = (isset($_POST['data'])) ? $_POST['data']              : ''; // tableau sérializé
+$WS_data = (isset($_POST['data'])) ? $_POST['data']              : ''; // tableau sérialisé
 
 /**
  * Cas d'un service externe récupérant les données d'un user authentifié sur SACoche.
@@ -66,7 +66,7 @@ if($WS_qui=='AutoMaths')
 }
 
 /**
- * Place aux autres webservices à présent (pour l'instant seulement deux, qui se truovent sur le serveur de Bordeaux).
+ * Place aux autres webservices à présent (pour l'instant seuls ceux pour Bordeaux sont appelés depuis l'extérieur).
  * On ne vérifie dans un premier temps que le 1er paramètre (le service web prendra éventuellement en charge la suite).
  */
 $tab_ws = array('argos_parent','argos_ajout');

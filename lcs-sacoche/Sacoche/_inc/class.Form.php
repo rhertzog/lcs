@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -183,7 +183,7 @@ class Form
     ),
     'familles_niveaux' => array(
       1 => 'Niveaux classes',
-      2 => 'Niveaux spécifiques',
+      2 => 'Niveaux particuliers',
     ),
     'profs_directeurs' => array(
       'directeur'  => 'Directeurs',
@@ -344,8 +344,8 @@ class Form
         $tab_choix_new = compact('orientation','couleur','legende','marge_min','cart_contenu','cart_detail');
         break;
       case 'grille_referentiel' :
-        global $matiere_id,$niveau_id,$type_generique,$type_individuel,$type_synthese,$tableau_tri_objet,$tableau_tri_mode,$retroactif,$only_socle,$aff_coef,$aff_socle,$aff_lien,$cases_nb,$cases_largeur,$remplissage,$colonne_bilan,$colonne_vide,$orientation,$couleur,$legende,$marge_min;
-        $tab_choix_new = compact('matiere_id','niveau_id','type_generique','type_individuel','type_synthese','retroactif','only_socle','aff_coef','aff_socle','aff_lien','cases_nb','cases_largeur','remplissage','colonne_bilan','colonne_vide','orientation','couleur','legende','marge_min');
+        global $matiere_id,$niveau_id,$type_generique,$type_individuel,$type_synthese,$tableau_tri_objet,$tableau_tri_mode,$retroactif,$only_socle,$aff_coef,$aff_socle,$aff_lien,$cases_nb,$cases_largeur,$remplissage,$colonne_bilan,$colonne_vide,$orientation,$couleur,$legende,$marge_min,$pages_nb;
+        $tab_choix_new = compact('matiere_id','niveau_id','type_generique','type_individuel','type_synthese','retroactif','only_socle','aff_coef','aff_socle','aff_lien','cases_nb','cases_largeur','remplissage','colonne_bilan','colonne_vide','orientation','couleur','legende','marge_min','pages_nb');
         break;
       case 'items_matiere' :
         global $matiere_id,$type_individuel,$type_synthese,$type_bulletin,$aff_etat_acquisition,$aff_moyenne_scores,$aff_pourcentage_acquis,$conversion_sur_20,$tableau_tri_objet,$tableau_tri_mode,$retroactif,$only_socle,$aff_coef,$aff_socle,$aff_lien,$aff_domaine,$aff_theme,$cases_nb,$cases_largeur,$orientation,$couleur,$legende,$marge_min,$pages_nb;
@@ -491,7 +491,7 @@ class Form
       }
       else
       {
-        // ... sélectionner une ou plusieurs option ; $selection contient la valeur / le tableau à sélectionner
+        // ... sélectionner une ou plusieurs option(s) ; $selection contient la valeur ou le tableau de valeurs à sélectionner
         if(!is_array($selection))
         {
           $options = (!$multiple) ? str_replace( 'value="'.$selection.'"' , 'value="'.$selection.'" selected' , $options ) : str_replace( array($selection.'"><input',$selection.'" />') , array($selection.'" class="check"><input',$selection.'" checked />') , $options ) ;
@@ -520,12 +520,12 @@ class Form
    * @param array     $tab_groupes          tableau des données [i] => [valeur texte optgroup]
    * @param bool      $tab_groupe_periode   charger ou non "tab_groupe_periode" pour les jointures groupes/périodes
    * @param bool      $tab_groupe_niveau    charger ou non "tab_groupe_niveau"  pour les jointures groupes/niveaux
-   * @return void     complète $GLOBALS['HEAD']['js']['inline'][]
+   * @return void     alimente Layout::$tab_js_inline[]
    */
   public static function fabriquer_tab_js_jointure_groupe($tab_groupes,$tab_groupe_periode,$tab_groupe_niveau)
   {
-    $GLOBALS['HEAD']['js']['inline'][] = 'var tab_groupe_periode = new Array();';
-    $GLOBALS['HEAD']['js']['inline'][] = 'var tab_groupe_niveau  = new Array();';
+    Layout::add( 'js_inline_before' , 'var tab_groupe_periode = new Array();' );
+    Layout::add( 'js_inline_before' , 'var tab_groupe_niveau  = new Array();' );
     if(is_array($tab_groupes))
     {
       // On liste les ids des classes et groupes
@@ -550,9 +550,9 @@ class Form
             if(!isset($tab_memo_groupes[$DB_ROW['groupe_id']]))
             {
               $tab_memo_groupes[$DB_ROW['groupe_id']] = TRUE;
-              $GLOBALS['HEAD']['js']['inline'][] = 'tab_groupe_periode['.$DB_ROW['groupe_id'].'] = new Array();';
+              Layout::add( 'js_inline_before' , 'tab_groupe_periode['.$DB_ROW['groupe_id'].'] = new Array();' );
             }
-            $GLOBALS['HEAD']['js']['inline'][] = 'tab_groupe_periode['.$DB_ROW['groupe_id'].']['.$DB_ROW['periode_id'].']="'.$DB_ROW['jointure_date_debut'].'_'.$DB_ROW['jointure_date_fin'].'";';
+            Layout::add( 'js_inline_before' , 'tab_groupe_periode['.$DB_ROW['groupe_id'].']['.$DB_ROW['periode_id'].']="'.$DB_ROW['jointure_date_debut'].'_'.$DB_ROW['jointure_date_fin'].'";' );
           }
         }
         // Charger le tableau js $tab_groupe_niveau de jointures groupes/périodes
@@ -561,7 +561,7 @@ class Form
           $DB_TAB = DB_STRUCTURE_BILAN::DB_recuperer_niveau_groupes($listing_groupe_id);
           foreach($DB_TAB as $DB_ROW)
           {
-            $GLOBALS['HEAD']['js']['inline'][] = 'tab_groupe_niveau['.$DB_ROW['groupe_id'].'] = new Array('.$DB_ROW['niveau_id'].',"'.html($DB_ROW['niveau_nom']).'");';
+            Layout::add( 'js_inline_before' , 'tab_groupe_niveau['.$DB_ROW['groupe_id'].'] = new Array('.$DB_ROW['niveau_id'].',"'.html($DB_ROW['niveau_nom']).'");' );
           }
         }
       }

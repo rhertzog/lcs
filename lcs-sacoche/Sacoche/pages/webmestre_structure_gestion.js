@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -34,8 +34,9 @@ $(document).ready
 // Initialisation
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    var mode = false;
+    var mode        = false;
     var please_wait = false;
+    var listing_id  = new Array();
 
     // tri du tableau (avec jquery.tablesorter.js).
     $('#table_action').tablesorter({ headers:{0:{sorter:false},1:{sorter:false},6:{sorter:'date_fr'},7:{sorter:false}} });
@@ -85,7 +86,7 @@ $(document).ready
       }
       else
       {
-        $('#p_ajout , #span_envoi').hide(0);
+        $('#p_ajout , #span_envoi').css('display','none'); // plutôt que .hide(0) car suite au passage vers jQuery 1.11.0 un hide() sur un élément déjà caché provoque ici sa réapparition...
       }
       if(mode!='supprimer')
       {
@@ -110,8 +111,9 @@ $(document).ready
     var ajouter = function()
     {
       mode = $(this).attr('class');
+      var geo = escapeHtml($('#f_geo_id option[value='+geo_defaut+']').text());
       // Afficher le formulaire
-      afficher_form_gestion( mode , '' /*base_id*/ , $('#f_geo_id option[value='+geo_defaut+']').text() /*geo ; volontairement sans unescapeHtml() */ , '' /*localisation*/ , '' /*denomination*/ , '' /*uai*/ , '' /*contact_nom*/ , '' /*contact_prenom*/ , '' /*contact_courriel*/ , input_date /*date_fr*/ , 'bloquer' /*acces*/ , '' /*check*/ );
+      afficher_form_gestion( mode , '' /*base_id*/ , geo , '' /*localisation*/ , '' /*denomination*/ , '' /*uai*/ , '' /*contact_nom*/ , '' /*contact_prenom*/ , '' /*contact_courriel*/ , input_date /*date_fr*/ , 'bloquer' /*acces*/ , '' /*check*/ );
     };
 
     /**
@@ -289,8 +291,6 @@ $(document).ready
         var objet   = $(this);
         var action  = $(this).attr('class');
         var base_id = $(this).parent().parent().next().next().html();
-        var img_src = $(this).attr('src');
-        $(this).removeAttr("class").attr('src','./_img/ajax/ajax_loader.gif');
         $.ajax
         (
           {
@@ -300,7 +300,7 @@ $(document).ready
             dataType : "html",
             error : function(jqXHR, textStatus, errorThrown)
             {
-              objet.addClass(action).attr('src',img_src);
+              $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
               return false;
             },
             success : function(responseHTML)
@@ -308,7 +308,7 @@ $(document).ready
               initialiser_compteur();
               if(responseHTML.substring(0,4)!='<img')  // Attention aux caractères accentués : l'utf-8 pose des pbs pour ce test
               {
-                objet.addClass(action).attr('src',img_src);
+                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
               }
               else
               {
@@ -324,6 +324,38 @@ $(document).ready
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Clic sur un bouton pour effectuer une action sur les structures cochées
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    var prompt_etapes_supprimer_cochees = {
+      etape_1: {
+        title   : 'Demande de confirmation (1/2)',
+        html    : "Souhaitez-vous vraiment supprimer les bases des structures cochées ?<br />Toutes les données associées seront perdues !",
+        buttons : {
+          "Non, c'est une erreur !" : false ,
+          "Oui, je confirme !" : true
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            event.preventDefault(); 
+            $.prompt.goToState('etape_2');
+            return false;
+          }
+        }
+      },
+      etape_2: {
+        title   : 'Demande de confirmation (2/2)',
+        html    : "Êtes-vous bien certain de vouloir supprimer ces bases ?<br />Est-ce définitivement votre dernier mot ???",
+        buttons : {
+          "Oui, j'insiste !" : true ,
+          "Non, surtout pas !" : false
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            supprimer_structures_cochees(listing_id);
+            return true;
+          }
+        }
+      }
+    };
 
     var supprimer_structures_cochees = function(listing_id)
     {
@@ -370,7 +402,8 @@ $(document).ready
       function()
       {
         // Grouper les checkbox dans un champ unique afin d'éviter tout problème avec une limitation du module "suhosin" (voir par exemple http://xuxu.fr/2008/12/04/nombre-de-variables-post-limite-ou-tronque) ou "max input vars" généralement fixé à 1000.
-        var listing_id = new Array(); $("#table_action input[type=checkbox]:checked").each(function(){listing_id.push($(this).val());});
+        listing_id = [];
+        $("#table_action input[type=checkbox]:checked").each(function(){listing_id.push($(this).val());});
         if(!listing_id.length)
         {
           $('#ajax_supprimer').removeAttr("class").addClass("erreur").html("Aucune structure cochée !");
@@ -380,10 +413,7 @@ $(document).ready
         var id = $(this).attr('id');
         if(id=='bouton_supprimer')
         {
-          if(confirm("Toutes les bases des structures cochées seront supprimées !\nConfirmez-vous vouloir effacer les données de ces structures ?"))
-          {
-            supprimer_structures_cochees(listing_id);
-          }
+          $.prompt(prompt_etapes_supprimer_cochees);
         }
         else
         {
@@ -441,9 +471,6 @@ $(document).ready
               }
               else
               {
-                // var reg = new RegExp('<BR />',"g");  // Si on transmet les retours à la ligne en ajax alors ils se font pas...
-                // var message = responseHTML.replace(reg,'\n').substring(4);
-                // alert( message );
                 $.fancybox( '<p>'+responseHTML+'</p>' , {'centerOnScroll':true} );
               }
             }
@@ -508,20 +535,40 @@ $(document).ready
       success : retour_form_valide
     };
 
+    var prompt_etapes_confirmer_inscription = {
+      etape_1: {
+        title   : 'Demande de confirmation',
+        html    : "Le mot de passe du premier administrateur, non récupérable ultérieurement, ne sera pas transmis !<br />Souhaitez-vous vraiment ne pas vouloir envoyer le courriel d'inscription ?",
+        buttons : {
+          "Non, c'est une erreur !" : false ,
+          "Oui, je confirme !" : true
+        },
+        submit  : function(event, value, message, formVals) {
+          if(value) {
+            formulaire.ajaxSubmit(ajaxOptions); // Pas de $(this) ici...
+          }
+        }
+      }
+    };
+
     // Envoi du formulaire (avec jquery.form.js)
     formulaire.submit
     (
       function()
       {
-        if (!please_wait)
+        if (please_wait)
         {
-          $(this).ajaxSubmit(ajaxOptions);
           return false;
+        }
+        else if( (mode=='ajouter') && ($('#f_courriel_envoi').is(':checked')==false) )
+        {
+          $.prompt(prompt_etapes_confirmer_inscription);
         }
         else
         {
-          return false;
+          $(this).ajaxSubmit(ajaxOptions);
         }
+        return false;
       }
     ); 
 
@@ -542,14 +589,7 @@ $(document).ready
     function test_form_avant_envoi(formData, jqForm, options)
     {
       $('#ajax_msg_gestion').removeAttr("class").html("&nbsp;");
-      if( (mode!='ajouter') || ($('#f_courriel_envoi').is(':checked')) || confirm("Le mot de passe du premier administrateur, non récupérable ultérieurement, ne sera pas transmis !\nConfirmez-vous ne pas vouloir envoyer le courriel d'inscription ?") )
-      {
-        var readytogo = validation.form();
-      }
-      else
-      {
-        var readytogo = false;
-      }
+      var readytogo = validation.form();
       if(readytogo)
       {
         please_wait = true;

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -51,7 +51,7 @@ $section = (isset($_POST['f_section'])) ? Clean::texte($_POST['f_section']) : ''
     'palier3'  => array( 'droit'=>'SOCLE'    , 'titre'=>'Maîtrise du palier 3'  ) ,
   );
 
-if( in_array( $section , array('officiel_saisir','officiel_examiner','officiel_consulter','officiel_imprimer') ) )
+if( in_array( $section , array('officiel_saisir','officiel_examiner','officiel_consulter','officiel_imprimer','officiel_importer') ) )
 {
   if( ($section=='officiel_consulter') && ($action=='imprimer') )
   {
@@ -71,7 +71,7 @@ if( in_array( $section , array('officiel_saisir','officiel_examiner','officiel_c
 
 if( ($action=='signaler_faute') || ($action=='corriger_faute') )
 {
-  $_POST['f_action']='ajouter';
+  $_POST['f_action'] = 'ajouter';
   require(CHEMIN_DOSSIER_PAGES.'compte_message.ajax.php');
   exit(); // Normalement, on n'arrive pas jusque là.
 }
@@ -82,17 +82,27 @@ if( ($action=='signaler_faute') || ($action=='corriger_faute') )
 
 $tab_actions = array
 (
-  'imprimer_donnees_eleves_prof'      => 'Mes appréciations pour chaque élève et le groupe classe',
-  'imprimer_donnees_eleves_collegues' => 'Appréciations des collègues pour chaque élève',
-  'imprimer_donnees_classe_collegues' => 'Appréciations des collègues sur le groupe classe',
-  'imprimer_donnees_eleves_syntheses' => 'Appréciations de synthèse générale pour chaque élève',
-  'imprimer_donnees_eleves_moyennes'  => 'Tableau des moyennes pour chaque élève',
+  'imprimer_donnees_eleves_prof'          => 'Mes appréciations pour chaque élève et le groupe classe',
+  'imprimer_donnees_eleves_collegues'     => 'Appréciations des collègues pour chaque élève',
+  'imprimer_donnees_classe_collegues'     => 'Appréciations des collègues sur le groupe classe',
+  'imprimer_donnees_eleves_syntheses'     => 'Appréciations de synthèse générale pour chaque élève',
+  'imprimer_donnees_eleves_moyennes'      => 'Tableau des moyennes pour chaque élève',
+  'imprimer_donnees_eleves_recapitulatif' => 'Récapitulatif annuel des moyennes et appréciations par élève',
 );
 
 if( isset($tab_actions[$action]) )
 {
   require(CHEMIN_DOSSIER_INCLUDE.'code_officiel_archiver.php');
   exit(); // Normalement, on n'arrive pas jusque là.
+}
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Il se peut que rien n'ait été récupéré à cause de l'upload d'un fichier trop lourd
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+if(empty($_POST))
+{
+  exit('Erreur : aucune donnée reçue ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload());
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -70,6 +70,7 @@ $marge_min              = (isset($_POST['f_marge_min']))          ? Clean::entie
 $pages_nb               = (isset($_POST['f_pages_nb']))           ? Clean::texte($_POST['f_pages_nb'])               : '';
 $cases_nb               = (isset($_POST['f_cases_nb']))           ? Clean::entier($_POST['f_cases_nb'])              : -1;
 $cases_largeur          = (isset($_POST['f_cases_larg']))         ? Clean::entier($_POST['f_cases_larg'])            : 0;
+$highlight_id           = (isset($_POST['f_highlight_id']))       ? Clean::entier($_POST['f_highlight_id'])          : 0;
 
 // Normalement ce sont des tableaux qui sont transmis, mais au cas où...
 $tab_eleve = (isset($_POST['f_eleve'])) ? ( (is_array($_POST['f_eleve'])) ? $_POST['f_eleve'] : explode(',',$_POST['f_eleve']) ) : array() ;
@@ -128,7 +129,7 @@ if($affichage_direct)
 {
   echo'<hr />'.NL;
   echo'<ul class="puce">'.NL;
-  echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+  echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
   echo'</ul>'.NL;
   echo $releve_HTML_individuel;
 }
@@ -138,32 +139,32 @@ else
   {
     echo'<h2>Relevé individuel</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','individuel',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','individuel',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.str_replace('<REPLACE>','individuel',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo'</ul>'.NL;
   }
   if($type_synthese)
   {
     echo'<h2>Synthèse collective</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','synthese',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.str_replace('<REPLACE>','synthese',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo'</ul>'.NL;
   }
   if($type_bulletin)
   {
     echo'<h2>Bulletin SACoche</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo $bulletin_form;
     echo'</ul>'.NL;
     echo $bulletin_alerte;
     echo'<h2>Bulletin Gepi</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer notes (moyennes scores) et appréciations (% items acquis) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les notes (moyennes scores) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation_PA',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations (% items acquis) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
-    echo  '<li><a class="lien_ext" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation_MS',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations (moyennes scores) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note_appreciation',$fichier_nom).'.csv"><span class="file file_txt">Récupérer notes (moyennes scores) et appréciations (% items acquis) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_note',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les notes (moyennes scores) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation_PA',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations (% items acquis) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./force_download.php?fichier='.str_replace('<REPLACE>','bulletin_appreciation_MS',$fichier_nom).'.csv"><span class="file file_txt">Récupérer les appréciations (moyennes scores) à importer dans GEPI (format <em>csv</em>).</span></a></li>'.NL;
     echo'</ul>'.NL;
   }
 }

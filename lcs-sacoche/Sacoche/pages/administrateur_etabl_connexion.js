@@ -1,25 +1,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -203,25 +203,25 @@ $(document).ready
             type : 'POST',
             url : 'ajax.php?page='+PAGE,
             data : 'csrf='+CSRF+'&f_action='+'enregistrer_mode_identification'+'&f_connexion_mode='+connexion_mode+'&f_connexion_ref='+connexion_ref+'&'+$("#form_mode").serialize(),
-            dataType : "html",
+            dataType : 'json',
             error : function(jqXHR, textStatus, errorThrown)
             {
               $("#bouton_valider_mode").prop('disabled',false);
               $('#ajax_msg_mode').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
               return false;
             },
-            success : function(responseHTML)
+            success : function(responseJSON)
             {
               initialiser_compteur();
               $("#bouton_valider_mode").prop('disabled',false);
-              if(responseHTML!='ok')
-              {
-                $('#ajax_msg_mode').removeAttr("class").addClass("alerte").html(responseHTML);
-              }
-              else
+              if(responseJSON['statut']==true)
               {
                 $('#ajax_msg_mode').removeAttr("class").addClass("valide").html("Mode de connexion enregistré !");
                 $('#table_action thead q').removeAttr("class").addClass("ajouter").attr("title","Ajouter une convention.");
+              }
+              else
+              {
+                $('#ajax_msg_mode').removeAttr("class").addClass("alerte").html(responseJSON['value']);
               }
             }
           }
@@ -283,27 +283,29 @@ $(document).ready
             type : 'POST',
             url : 'ajax.php?page='+PAGE,
             data : 'csrf='+CSRF+'&f_action='+'ajouter_convention'+'&f_connexion_mode='+connexion_mode+'&f_connexion_ref='+connexion_ref+'&f_annee='+f_annee,
-            dataType : "html",
+            dataType : 'json',
             error : function(jqXHR, textStatus, errorThrown)
             {
               $("#form_ajout button").prop('disabled',false);
               $('#ajax_msg_ajout').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
               return false;
             },
-            success : function(responseHTML)
+            success : function(responseJSON)
             {
               initialiser_compteur();
               $("#form_ajout button").prop('disabled',false);
-              if(responseHTML.substring(0,2)!='<t')
-              {
-                $('#ajax_msg_ajout').removeAttr("class").addClass("alerte").html(responseHTML);
-              }
-              else
+              if(responseJSON['statut']==true)
               {
                 $('#ajax_msg_ajout').removeAttr("class").addClass("valide").html("Convention ajoutée !");
                 $('#table_action tbody tr td[colspan=7]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
-                $('#table_action tbody').prepend(responseHTML);
-                $('#table_action tbody tr:first td:last q.voir_archive').click();
+                $('#table_action tbody').prepend(responseJSON['tr']);
+                var convention_id = responseJSON['convention_id'];
+                var first_time    = 'oui';
+                imprimer_documents_convention( convention_id , first_time );
+              }
+              else
+              {
+                $('#ajax_msg_ajout').removeAttr("class").addClass("alerte").html(responseJSON['value']);
               }
             }
           }
@@ -321,39 +323,44 @@ $(document).ready
       'q.voir_archive' ,
       function()
       {
-        var f_convention_id = $(this).parent().parent().attr('id').substring(3);
-        $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
-        $.ajax
-        (
-          {
-            type : 'POST',
-            url : 'ajax.php?page='+PAGE,
-            data : 'csrf='+CSRF+'&f_action='+'imprimer_documents'+'&f_convention_id='+f_convention_id,
-            dataType : "html",
-            error : function(jqXHR, textStatus, errorThrown)
-            {
-              $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
-              return false;
-            },
-            success : function(responseHTML)
-            {
-              initialiser_compteur();
-              var tab_response = responseHTML.split(']¤[');
-              if(tab_response[0]!='ok')
-              {
-                $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
-              }
-              else
-              {
-                $('#fichier_convention').attr("href",tab_response[1]);
-                $('#fichier_facture'   ).attr("href",tab_response[2]);
-                $.fancybox( { 'href':'#form_impression' , onStart:function(){$('#form_impression').css("display","block");} , onClosed:function(){$('#form_impression').css("display","none");} , 'centerOnScroll':true } );
-              }
-            }
-          }
-        );
+        var convention_id = $(this).parent().parent().attr('id').substring(3);
+        var first_time    = 'non';
+        imprimer_documents_convention(convention_id,first_time);
       }
     );
+
+    function imprimer_documents_convention(convention_id,first_time)
+    {
+      $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
+      $.ajax
+      (
+        {
+          type : 'POST',
+          url : 'ajax.php?page='+PAGE,
+          data : 'csrf='+CSRF+'&f_action='+'imprimer_documents'+'&f_convention_id='+convention_id+'&f_first_time='+first_time,
+          dataType : 'json',
+          error : function(jqXHR, textStatus, errorThrown)
+          {
+            $.fancybox( '<label class="alerte">'+'Échec de la connexion !'+'</label>' , {'centerOnScroll':true} );
+            return false;
+          },
+          success : function(responseJSON)
+          {
+            initialiser_compteur();
+            if(responseJSON['statut']==true)
+            {
+              $('#fichier_contrat').attr("href",responseJSON['fichier_contrat']);
+              $('#fichier_facture').attr("href",responseJSON['fichier_facture']);
+              $.fancybox( { 'href':'#form_impression' , onStart:function(){$('#form_impression').css("display","block");} , onClosed:function(){$('#form_impression').css("display","none");} , 'centerOnScroll':true } );
+            }
+            else
+            {
+              $.fancybox( '<label class="alerte">'+responseJSON['value']+'</label>' , {'centerOnScroll':true} );
+            }
+          }
+        }
+      );
+    }
 
   }
 );

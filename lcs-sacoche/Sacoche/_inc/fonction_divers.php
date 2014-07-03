@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -230,160 +230,6 @@ function ajouter_log_PHP($log_objet,$log_contenu,$log_fichier,$log_ligne,$only_s
   {
     $SEP = ' ║ ';
     error_log('SACoche info' . $SEP . $log_objet . $SEP . 'base '.$_SESSION['BASE'] . $SEP . 'user '.$_SESSION['USER_ID'] . $SEP . basename($log_fichier).' '.$log_ligne . $SEP . $log_contenu,0);
-  }
-}
-
-/**
- * Affichage déclaration + section head du document
- * 
- * Utilise aussi le tableau $GLOBALS['HEAD'] avec les clefs suivantes :
- * ['title'] - ['css']['file'][] - ['css_ie']['file'][] - ['css']['inline'][] - ['js']['file'][] - ['js']['inline'][]
- * 
- * @param bool   $is_meta_robots  affichage ou non des balises meta pour les robots
- * @param bool   $is_favicon      affichage ou non du favicon
- * @param bool   $is_rss          affichage ou non du flux RSS associé
- * @return void
- */
-function afficher_page_entete( $is_meta_robots ,$is_favicon , $is_rss )
-{
-  header('Content-Type: text/html; charset='.CHARSET);
-  echo'<!DOCTYPE html>'.NL;
-  echo'<html>'.NL;
-  echo  '<head>'.NL;
-  echo    '<meta http-equiv="Content-Type" content="text/html; charset='.CHARSET.'" />'.NL;
-  if($is_meta_robots)
-  {
-    echo    '<meta name="description" content="SACoche - Suivi d\'Acquisition de Compétences - Evaluation par compétences - Valider le socle commun" />'.NL;
-    echo    '<meta name="keywords" content="SACoche Sésamath évaluer évaluation compétences compétence validation valider socle commun collège points note notes Lomer" />'.NL;
-    echo    '<meta name="author" content="Thomas Crespin pour Sésamath" />'.NL;
-    echo    '<meta name="robots" content="index,follow" />'.NL;
-  }
-  if($is_favicon)
-  {
-    echo    '<link rel="shortcut icon" type="images/x-icon" href="./favicon.ico" />'.NL;
-    echo    '<link rel="icon" type="image/png" href="./favicon.png" />'.NL;
-    echo    '<link rel="apple-touch-icon" href="./_img/apple-touch-icon-114x114.png" />'.NL;
-    echo    '<link rel="apple-touch-icon-precomposed" href="./_img/apple-touch-icon-114x114.png" />'.NL;
-  }
-  if($is_rss)
-  {
-    echo    '<link rel="alternate" type="application/rss+xml" href="'.SERVEUR_RSS.'" title="SACoche" />'.NL;
-  }
-  // Titre
-  $title = !empty($GLOBALS['HEAD']['title']) ? $GLOBALS['HEAD']['title'] : 'SACoche' ;
-  echo    '<title>'.$title.'</title>'.NL;
-  // CSS fichiers
-  if(!empty($GLOBALS['HEAD']['css']['file']))
-  {
-    foreach($GLOBALS['HEAD']['css']['file'] as $css_file)
-    {
-      echo    '<link rel="stylesheet" type="text/css" href="'.$css_file.'" />'.NL;
-    }
-  }
-  // CSS fichiers IE (non utilisé)
-  if(!empty($GLOBALS['HEAD']['css_ie']['file']))
-  {
-    foreach($GLOBALS['HEAD']['css_ie']['file'] as $css_ie_file)
-    {
-      echo    '<!--[if lte IE 8]><link rel="stylesheet" type="text/css" href="'.$css_ie_file.'" /><![endif]-->'.NL;
-    }
-  }
-  // CSS inline (personnalisations)
-  if(!empty($GLOBALS['HEAD']['css']['inline']))
-  {
-    echo    '<style type="text/css">'.NL;
-    foreach($GLOBALS['HEAD']['css']['inline'] as $css_inline)
-    {
-      echo      $css_inline.NL;
-    }
-    echo    '</style>'.NL;
-  }
-  // JS inline (données dynamiques, telles des constantes supplémentaires)
-  if(!empty($GLOBALS['HEAD']['js']['inline']))
-  {
-    echo    '<script type="text/javascript">'.NL;
-    foreach($GLOBALS['HEAD']['js']['inline'] as $js_inline)
-    {
-      echo      $js_inline.NL;
-    }
-    echo    '</script>'.NL;
-  }
-  // JS fichiers
-  if(!empty($GLOBALS['HEAD']['js']['file']))
-  {
-    foreach($GLOBALS['HEAD']['js']['file'] as $js_file)
-    {
-      echo    '<script type="text/javascript" charset="'.CHARSET.'" src="'.$js_file.'"></script>'.NL;
-    }
-  }
-  echo  '</head>'.NL;
-}
-
-/**
- * Compression ou minification d'un fichier css ou js sur le serveur en production, avec date auto-insérée si besoin pour éviter tout souci de mise en cache.
- * Si pas de compression (hors PROD), ajouter un GET dans l'URL force le navigateur à mettre à jour son cache.
- * Attention cependant concernant cette dernière technique : avec les réglages standards d'Apache, ajouter un GET dans l'URL fait que beaucoup de navigateurs ne mettent pas le fichier en cache (donc il est rechargé tout le temps, même si le GET est le même) ; pas de souci si le serveur envoie un header avec une date d'expiration explicite...
- * 
- * @param string $chemin    chemin complet vers le fichier
- * @param string $methode   soit "pack" soit "mini" soit "comm"
- * @return string           chemin vers le fichier à prendre en compte (à indiquer dans la page web) ; il sera relatif si non compressé, absolu si compressé
- */
-function compacter($chemin,$methode)
-{
-  $fichier_original_chemin = $chemin;
-  $fichier_original_date   = filemtime($fichier_original_chemin);
-  $fichier_original_url    = $fichier_original_chemin.'?t='.$fichier_original_date;
-  if(SERVEUR_TYPE == 'PROD')
-  {
-    // On peut se permettre d'enregistrer les js et css en dehors de leur dossier d'origine car les répertoires sont tous de mêmes niveaux.
-    // En cas d'appel depuis le site du projet il faut éventuellement respecter le chemin vers le site du projet.
-    $tmp_appli = ( (!defined('APPEL_SITE_PROJET')) || (strpos($chemin,'/sacoche/')!==FALSE) ) ? TRUE : FALSE ;
-    // Conserver les extensions des js et css (le serveur pouvant se baser sur les extensions pour sa gestion du cache et des charsets).
-    $fichier_original_extension = pathinfo($fichier_original_chemin,PATHINFO_EXTENSION);
-    $fichier_chemin_sans_slash  = substr( str_replace( array('./sacoche/','./','/') , array('','','__') , $fichier_original_chemin ) , 0 , -(strlen($fichier_original_extension)+1) );
-    $fichier_compact_nom        = $fichier_chemin_sans_slash.'_'.$fichier_original_date.'.'.$methode.'.'.$fichier_original_extension;
-    $fichier_compact_chemin     = ($tmp_appli) ? CHEMIN_DOSSIER_TMP.$fichier_compact_nom : CHEMIN_DOSSIER_PROJET_TMP.$fichier_compact_nom ;
-    $fichier_compact_url        = ($tmp_appli) ?        URL_DIR_TMP.$fichier_compact_nom :        URL_DIR_PROJET_TMP.$fichier_compact_nom ;
-    $fichier_compact_date       = (is_file($fichier_compact_chemin)) ? filemtime($fichier_compact_chemin) : 0 ;
-    // Sur le serveur en production, on compresse le fichier s'il ne l'est pas.
-    if($fichier_compact_date<$fichier_original_date)
-    {
-      $fichier_original_contenu = file_get_contents($fichier_original_chemin);
-      $fichier_original_contenu = utf8_decode($fichier_original_contenu); // Attention, il faut envoyer à ces classes de l'iso et pas de l'utf8.
-      if( ($fichier_original_extension=='js') && ($methode=='pack') )
-      {
-        $myPacker = new JavaScriptPacker($fichier_original_contenu, 62, TRUE, FALSE);
-        $fichier_compact_contenu = $myPacker->pack();
-      }
-      elseif( ($fichier_original_extension=='js') && ($methode=='mini') )
-      {
-        $fichier_compact_contenu = JSMin::minify($fichier_original_contenu);
-      }
-      elseif( ($fichier_original_extension=='js') && ($methode=='comm') )
-      {
-        // Retrait des /*! ... */ et /** ... */ ; option de recherche "s" (PCRE_DOTALL) pour inclure les retours à la lignes (@see http://fr.php.net/manual/fr/reference.pcre.pattern.modifiers.php).
-        $fichier_compact_contenu = preg_replace( '#'.'/\*!'.'(.*?)'.'\*/'.'#s' , '' , preg_replace( '#'.'/\*\*'.'(.*?)'.'\*/'.'#s' , '' , $fichier_original_contenu ) );
-      }
-      elseif( ($fichier_original_extension=='css') && ($methode=='mini') )
-      {
-        $fichier_compact_contenu = cssmin::minify($fichier_original_contenu);
-      }
-      else
-      {
-        // Normalement on ne doit pas en arriver là... sauf à passer de mauvais paramètres à la fonction.
-        $fichier_compact_contenu = $fichier_original_contenu;
-      }
-      $fichier_compact_contenu = utf8_encode($fichier_compact_contenu);  // On réencode donc en UTF-8...
-      // Il se peut que le droit en écriture ne soit pas autorisé et que la procédure d'install ne l'ai pas encore vérifié ou que le dossier __tmp n'ait pas encore été créé.
-      $test_ecriture = FileSystem::ecrire_fichier_si_possible($fichier_compact_chemin,$fichier_compact_contenu);
-      return $test_ecriture ? $fichier_compact_url : $fichier_original_url ;
-    }
-    return $fichier_compact_url;
-  }
-  else
-  {
-    // Sur un serveur local on n'encombre pas le SVN, en DEV on garde le fichier normal pour debugguer si besoin.
-    return $fichier_original_url;
   }
 }
 
@@ -961,6 +807,28 @@ function afficher_identite_initiale( $partie1 , $is_initiale1 , $partie2 , $is_i
   $partie1 = ( $is_initiale1 && strlen($partie1) ) ? $partie1{0}.'.' : $partie1 ;
   $partie2 = ( $is_initiale2 && strlen($partie2) ) ? $partie2{0}.'.' : $partie2 ;
   return trim($partie1.' '.$partie2);
+}
+
+/**
+ * Afficher un texte tronqué au dela d'un certain nombre de caractères
+ *
+ * @param string $texte
+ * @param int    $longueur_max
+ * @return string
+ */
+function afficher_texte_tronque( $texte , $longueur_max )
+{
+  if( mb_strlen($texte) < $longueur_max )
+  {
+    return $texte;
+  }
+  $pos_espace = mb_strpos( $texte , ' ' , $longueur_max-10 );
+  $chaine_de_fin = ' [...]';
+  if($pos_espace!==FALSE)
+  {
+    return mb_substr( $texte , 0 , $pos_espace ).$chaine_de_fin;
+  }
+  return mb_substr( $texte , 0 , $longueur_max-5 ).$chaine_de_fin;
 }
 
 ?>

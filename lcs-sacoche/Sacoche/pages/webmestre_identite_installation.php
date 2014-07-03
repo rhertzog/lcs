@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -46,17 +46,17 @@ $cnil_dates_class     = intval(CNIL_NUMERO) ? 'show' : 'hide' ;
 
 <form action="#" method="post" id="form_gestion"><fieldset>
   <h2>Caractéristiques de l'hébergement</h2>
-  <label class="tab" for="f_denomination">Dénomination <img alt="" src="./_img/bulle_aide.png" title="Exemple : <?php echo $exemple_denomination ?>" /> :</label><input id="f_denomination" name="f_denomination" size="55" type="text" value="<?php echo html(HEBERGEUR_DENOMINATION); ?>" /><br />
+  <label class="tab" for="f_denomination">Dénomination <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : <?php echo $exemple_denomination ?>" /> :</label><input id="f_denomination" name="f_denomination" size="55" type="text" value="<?php echo html(HEBERGEUR_DENOMINATION); ?>" /><br />
   <?php echo $uai_div_hide_avant ?>
-  <label class="tab" for="f_uai">n° UAI (ex-RNE) <img alt="" src="./_img/bulle_aide.png" title="Ce champ est facultatif." /> :</label><input id="f_uai" name="f_uai" size="8" type="text" value="<?php echo html(HEBERGEUR_UAI); ?>" /><br />
+  <label class="tab" for="f_uai">n° UAI (ex-RNE) <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Ce champ est facultatif." /> :</label><input id="f_uai" name="f_uai" size="8" type="text" value="<?php echo html(HEBERGEUR_UAI); ?>" /><br />
   <?php echo $uai_div_hide_apres ?>
-  <label class="tab" for="f_adresse_site">Adresse web <img alt="" src="./_img/bulle_aide.png" title="Exemple : <?php echo $exemple_adresse_web ?>" /> :</label><input id="f_adresse_site" name="f_adresse_site" size="60" type="text" value="<?php echo html(HEBERGEUR_ADRESSE_SITE); ?>" /><br />
+  <label class="tab" for="f_adresse_site">Adresse web <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Exemple : <?php echo $exemple_adresse_web ?>" /> :</label><input id="f_adresse_site" name="f_adresse_site" size="60" type="text" value="<?php echo html(HEBERGEUR_ADRESSE_SITE); ?>" /><br />
   <label class="tab" for="f_logo">Logo :</label><select id="f_logo" name="f_logo"></select><label id="ajax_logo"></label><br />
-  <h2>Déclaration C.N.I.L. <img alt="" src="./_img/bulle_aide.png" title="Voir la documentation." /></h2>
+  <h2>Déclaration C.N.I.L. <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Voir la documentation." /></h2>
   <label class="tab" for="f_logo">État :</label><label for="f_cnil_non"><input type="radio" id="f_cnil_non" name="f_cnil_etat" value="non"<?php echo $cnil_check_non ?> /> non renseignée</label>&nbsp;&nbsp;&nbsp;<label for="f_cnil_oui"><input type="radio" id="f_cnil_oui" name="f_cnil_etat" value="oui"<?php echo $cnil_check_oui ?> /> n°</label><input id="f_cnil_numero" name="f_cnil_numero" size="10" type="text" value="<?php echo $cnil_numero ?>" />
   <div id="cnil_dates" class="<?php echo $cnil_dates_class; ?>">
-    <label class="tab" for="f_cnil_date_engagement">Date engagement <img alt="" src="./_img/bulle_aide.png" title="Date à laquelle la demande a été effectuée auprès de la CNIL." /> :</label><input id="f_cnil_date_engagement" name="f_cnil_date_engagement" size="9" type="text" value="<?php echo html(CNIL_DATE_ENGAGEMENT); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q><br />
-    <label class="tab" for="f_cnil_date_recepisse">Date récépissé <img alt="" src="./_img/bulle_aide.png" title="Date à laquelle la CNIL a retourné le récépissé de déclaration." /> :</label><input id="f_cnil_date_recepisse" name="f_cnil_date_recepisse" size="9" type="text" value="<?php echo html(CNIL_DATE_RECEPISSE); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
+    <label class="tab" for="f_cnil_date_engagement">Date engagement <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Date à laquelle la demande a été effectuée auprès de la CNIL." /> :</label><input id="f_cnil_date_engagement" name="f_cnil_date_engagement" size="9" type="text" value="<?php echo html(CNIL_DATE_ENGAGEMENT); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q><br />
+    <label class="tab" for="f_cnil_date_recepisse">Date récépissé <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Date à laquelle la CNIL a retourné le récépissé de déclaration." /> :</label><input id="f_cnil_date_recepisse" name="f_cnil_date_recepisse" size="9" type="text" value="<?php echo html(CNIL_DATE_RECEPISSE); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
   </div>
   <h2>Coordonnées du webmestre</h2>
   <label class="tab" for="f_nom">Nom :</label><input id="f_nom" name="f_nom" size="20" type="text" value="<?php echo html(WEBMESTRE_NOM); ?>" /><br />

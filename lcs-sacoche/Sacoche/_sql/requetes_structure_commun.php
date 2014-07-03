@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  *
  * Ce fichier est une partie de SACoche.
  *
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  *
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  *
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  *
  */
@@ -209,6 +209,43 @@ public static function DB_recuperer_arborescence($prof_id,$matiere_id,$niveau_id
 }
 
 /**
+ * Retourner un tableau [valeur texte optgroup] de l'arborescence d'un référentiel, pour une matière donnée et pour un niveau donné
+ *
+ * @param int  $matiere_id
+ * @param int  $niveau_id
+ * @return array
+ */
+public static function DB_OPT_arborescence($matiere_id,$niveau_id)
+{
+  $longueur_max = 125;
+  $DB_SQL = 'SELECT item_id AS valeur, item_nom AS texte, CONCAT(domaine_id,"_",theme_id) AS optgroup, CONCAT(domaine_nom," || ",theme_nom) AS optgroup_info ';
+  $DB_SQL.= 'FROM sacoche_referentiel ';
+  $DB_SQL.= 'LEFT JOIN sacoche_referentiel_domaine USING (matiere_id,niveau_id) ';
+  $DB_SQL.= 'LEFT JOIN sacoche_referentiel_theme USING (domaine_id) ';
+  $DB_SQL.= 'LEFT JOIN sacoche_referentiel_item USING (theme_id) ';
+  $DB_SQL.= 'WHERE matiere_id=:matiere_id AND niveau_id=:niveau_id ';
+  $DB_SQL.= 'ORDER BY domaine_ordre ASC, theme_ordre ASC, item_ordre ASC ';
+  $DB_VAR = array(':matiere_id'=>$matiere_id,':niveau_id'=>$niveau_id);
+  $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  $tab_optgroup = array();
+  foreach($DB_TAB as $key => $DB_ROW)
+  {
+    if(mb_strlen($DB_TAB[$key]['texte'])>$longueur_max)
+    {
+      $DB_TAB[$key]['texte'] = mb_substr($DB_TAB[$key]['texte'],0,$longueur_max-5).' [...]';
+    }
+    if(mb_strlen($DB_TAB[$key]['optgroup'])>$longueur_max)
+    {
+      $DB_TAB[$key]['optgroup'] = mb_substr($DB_TAB[$key]['optgroup'],0,$longueur_max-5).' [...]';
+    }
+    $tab_optgroup[$DB_ROW['optgroup']] = $DB_ROW['optgroup_info'];
+    unset($DB_TAB[$key]['optgroup_info']);
+  }
+  Form::$tab_select_optgroup['referentiel'] = $tab_optgroup;
+  return !empty($DB_TAB) ? $DB_TAB : 'Ce référentiel ne comporte aucun item !' ;
+}
+
+/**
  * recuperer_arborescence_palier
  *
  * @param int   $palier_id (facultatif ; les paliers de l'établissement sinon
@@ -292,16 +329,16 @@ public static function DB_lister_tables()
 /**
  * lister_niveaux_etablissement
  *
- * @param bool $with_specifiques
+ * @param bool $with_particuliers
  * @return array
  */
-public static function DB_lister_niveaux_etablissement($with_specifiques)
+public static function DB_lister_niveaux_etablissement($with_particuliers)
 {
   $DB_SQL = 'SELECT niveau_id, niveau_ordre, niveau_ref, code_mef, niveau_nom ';
   $DB_SQL.= 'FROM sacoche_niveau ';
-  $DB_SQL.= ($with_specifiques) ? '' : 'LEFT JOIN sacoche_niveau_famille USING (niveau_famille_id) ';
+  $DB_SQL.= ($with_particuliers) ? '' : 'LEFT JOIN sacoche_niveau_famille USING (niveau_famille_id) ';
   $DB_SQL.= 'WHERE niveau_actif=1 ';
-  $DB_SQL.= ($with_specifiques) ? '' : 'AND niveau_famille_categorie=1 ';
+  $DB_SQL.= ($with_particuliers) ? '' : 'AND niveau_famille_categorie=1 ';
   $DB_SQL.= 'ORDER BY niveau_ordre ASC';
   return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
 }
@@ -958,7 +995,7 @@ public static function DB_OPT_niveaux()
  */
 public static function DB_OPT_niveaux_famille($niveau_famille_id)
 {
-  Form::$tab_select_option_first['niveaux_famille'] = array(ID_NIVEAU_MAX+$niveau_famille_id,'Tous les niveaux de cette famille');
+  Form::$tab_select_option_first['niveaux_famille'] = array(ID_NIVEAU_PARTAGE_MAX+$niveau_famille_id,'Tous les niveaux de cette famille');
   // Ajouter, si pertinent, les niveaux spécifiques qui sinon ne sont pas trouvés car à part...
   // Attention en cas de modification : ce tableau est dans 3 fichiers différents (dépôt SACoche x2 + dépôt portail x1).
   $tab_sql = array(
@@ -1018,7 +1055,7 @@ public static function DB_OPT_paliers_etabl()
 }
 
 /**
- * Retourner un tableau [valeur texte] des piliers du socle de tous les paliers de l'établissement, avec optgroup
+ * Retourner un tableau [valeur texte optgroup] des piliers du socle de tous les paliers de l'établissement
  *
  * @param void
  * @return array|string
@@ -1032,9 +1069,10 @@ public static function DB_OPT_paliers_piliers()
   $DB_SQL.= 'ORDER BY palier_ordre ASC, pilier_ordre ASC';
   $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_optgroup = array();
-  foreach($DB_TAB as $DB_ROW)
+  foreach($DB_TAB as $key => $DB_ROW)
   {
     $tab_optgroup[$DB_ROW['optgroup']] = $DB_ROW['optgroup_info'];
+    unset($DB_TAB[$key]['optgroup_info']);
   }
   Form::$tab_select_optgroup['paliers'] = $tab_optgroup;
   return !empty($DB_TAB) ? $DB_TAB : 'Aucun palier du socle commun n\'est rattaché à l\'établissement.' ;

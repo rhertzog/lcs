@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -133,17 +133,17 @@ $select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements
 
   <fieldset id="fieldset_import_id_ent_normal" class="hide">
     <hr />
-    <div class="astuce">Vous devez commencer par sélectionner votre ENT depuis la page "<a href="./index.php?page=administrateur_etabl_connexion">Mode d'identification</a>".</div>
+    <div class="astuce">Vous devez commencer par sélectionner votre ENT depuis la page "<a href="./index.php?page=administrateur_etabl_connexion">Mode d'identification / Connecteur ENT</a>".</div>
   </fieldset>
 
   <fieldset id="fieldset_import_id_ent_cas" class="hide">
     <hr />
-    <h4>En important un fichier</h4>
+    <h3>En important un fichier</h3>
     <ul class="puce">
       <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_mode_identification__<?php echo $_SESSION['CONNEXION_NOM'] ?>">DOC : <?php echo $tab_connexion_info[$_SESSION['CONNEXION_MODE']][$_SESSION['CONNEXION_DEPARTEMENT'].'|'.$_SESSION['CONNEXION_NOM']]['txt'] ?></a></span></li>
       <li>Importer le fichier <b>csv</b> provenant de l'ENT : <button id="import_ent" type="button" class="fichier_import">Parcourir...</button></li>
     </ul>
-    <h4>En dupliquant un autre champ</h4>
+    <h3>En dupliquant un autre champ</h3>
     <ul class="puce">
       <li><button name="dupliquer" id="COPY_id_gepi_TO_id_ent" type="button" class="mdp_groupe">Dupliquer l'identifiant de Gepi enregistré</button> comme identifiant de l'ENT pour tous les utilisateurs.</li>
       <li><button name="dupliquer" id="COPY_login_TO_id_ent" type="button" class="mdp_groupe">Dupliquer le login de SACoche enregistré</button> comme identifiant de l'ENT pour tous les utilisateurs.</li>
@@ -152,14 +152,14 @@ $select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements
 
   <fieldset id="fieldset_import_id_gepi" class="hide">
     <hr />
-    <h4>En important un fichier</h4>
+    <h3>En important un fichier</h3>
     <ul class="puce">
       <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__import_identifiant_Gepi_SACoche">DOC : Import des identifiants de Gepi dans SACoche.</a></span></li>
       <li>Importer le fichier <b>base_professeur_gepi.csv</b> issu de Gepi : <button id="import_gepi_profs" type="button" class="fichier_import">Parcourir...</button></li>
       <li>Importer le fichier <b>base_responsable_gepi.csv</b> issu de Gepi : <button id="import_gepi_parents" type="button" class="fichier_import">Parcourir...</button></li>
       <li>Importer le fichier <b>base_eleve_gepi.csv</b> issu de Gepi : <button id="import_gepi_eleves" type="button" class="fichier_import">Parcourir...</button></li>
     </ul>
-    <h4>En dupliquant un autre champ</h4>
+    <h3>En dupliquant un autre champ</h3>
     <ul class="puce">
       <li><button name="dupliquer" id="COPY_id_ent_TO_id_gepi" type="button" class="mdp_groupe">Dupliquer l'identifiant de l'ENT enregistré</button> comme identifiant de Gepi pour tous les utilisateurs.</li>
       <li><button name="dupliquer" id="COPY_login_TO_id_gepi" type="button" class="mdp_groupe">Dupliquer le login de SACoche enregistré</button> comme identifiant de Gepi pour tous les utilisateurs.</li>

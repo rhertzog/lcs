@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -310,10 +310,11 @@ function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id
 function texte_ligne_assiduite($tab_assiduite)
 {
   $intro = 'Assiduité et ponctualité : ';
-  extract($tab_assiduite); // $nb_absence $non_justifie $retard
-  $nb_absence      = is_null($absence)      ? NULL : (int)$absence ;
-  $nb_non_justifie = is_null($non_justifie) ? NULL : (int)$non_justifie ;
-  $nb_retard       = is_null($retard)       ? NULL : (int)$retard ;
+  extract($tab_assiduite); // $absence $absence_nj $retard $retard_nj
+  $nb_absence    = is_null($absence)    ? NULL : (int)$absence ;
+  $nb_absence_nj = is_null($absence_nj) ? NULL : (int)$absence_nj ;
+  $nb_retard     = is_null($retard)     ? NULL : (int)$retard ;
+  $nb_retard_nj  = is_null($retard_nj)  ? NULL : (int)$retard_nj ;
   // Quelques cas particuliers
   if( ($nb_absence===NULL) && ($nb_retard===NULL) )
   {
@@ -344,22 +345,22 @@ function texte_ligne_assiduite($tab_assiduite)
   {
     $s = ($nb_absence>1) ? 's' : '' ;
     $txt_absences = $nb_absence.' demi-journée'.$s.' d\'absence';
-    if($nb_non_justifie===NULL)
+    if($nb_absence_nj===NULL)
     {
       $txt_absences .= '' ;
     }
-    else if($nb_non_justifie===0)
+    else if($nb_absence_nj===0)
     {
       $txt_absences .= ($s) ? ', toutes justifiées' : ', justifiée' ;
     }
-    else if($nb_non_justifie==$nb_absence)
+    else if($nb_absence_nj==$nb_absence)
     {
       $txt_absences .= ($s) ? ', dont aucune justifiée' : ', non justifiée' ;
     }
     else
     {
-      $s = ($nb_non_justifie>1) ? 's' : '' ;
-      $txt_absences .= ', dont '.$nb_non_justifie.' non justifiée'.$s;
+      $s = ($nb_absence_nj>1) ? 's' : '' ;
+      $txt_absences .= ', dont '.$nb_absence_nj.' non justifiée'.$s;
     }
   }
   // Les retards
@@ -375,10 +376,54 @@ function texte_ligne_assiduite($tab_assiduite)
   {
     $s = ($nb_retard>1) ? 's' : '' ;
     $txt_retards = $nb_retard.' retard'.$s;
+    if($nb_retard_nj===NULL)
+    {
+      $txt_retards .= '' ;
+    }
+    else if($nb_retard_nj===0)
+    {
+      $txt_retards .= ($s) ? ', tous justifiés' : ', justifié' ;
+    }
+    else if($nb_retard_nj==$nb_retard)
+    {
+      $txt_retards .= ($s) ? ', dont aucun justifié' : ', non justifié' ;
+    }
+    else
+    {
+      $s = ($nb_retard_nj>1) ? 's' : '' ;
+      $txt_retards .= ', dont '.$nb_retard_nj.' non justifié'.$s;
+    }
   }
   // On assemble
   $txt_absences_et_retards = ( $txt_absences && $txt_retards ) ? $txt_absences.', et '.$txt_retards : $txt_absences.$txt_retards;
   return $intro.$txt_absences_et_retards.'.';
+}
+
+/*
+ * Fonction appelée par code_officiel_saisir.php pour un enregistrement simple et aussi lors de l'enregistrement d'un import CSV
+ */
+function enregistrer_appreciation( $BILAN_TYPE , $periode_id , $eleve_id , $classe_id , $rubrique_id , $prof_id , $appreciation )
+{
+  // élève ou classe
+  $saisie_type        = ($eleve_id) ? 'eleve'   : 'classe' ;
+  $eleve_ou_classe_id = ($eleve_id) ? $eleve_id : $classe_id ;
+  if($rubrique_id==0)
+  {
+    // Dans le cas d'une appréciation générale, si c'est une autre personne en a saisi la version précédente, le REPLACE INTO ne la supprimera pas.
+    DB_STRUCTURE_OFFICIEL::DB_supprimer_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_ou_classe_id , 0 /*rubrique_id*/ , 0 /*prof_id*/ , $saisie_type );
+  }
+  DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_ou_classe_id , $rubrique_id , $prof_id , $saisie_type , NULL , $appreciation );
+}
+
+/*
+ * Fonction appelée par code_officiel_saisir.php pour un enregistrement simple et aussi lors de l'enregistrement d'un import CSV
+ */
+function enregistrer_note( $BILAN_TYPE , $periode_id , $eleve_id , $rubrique_id , $moyenne )
+{
+  $note = ($_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20']) ? round($moyenne,1) : round($moyenne/5,1) ;
+  $appreciation = 'Moyenne figée reportée par '.afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE);
+  DB_STRUCTURE_OFFICIEL::DB_modifier_bilan_officiel_saisie( $BILAN_TYPE , $periode_id , $eleve_id , $rubrique_id , 0 /*prof_id*/ , 'eleve' , $note , $appreciation );
+  return array( $note , $appreciation );
 }
 
 ?>

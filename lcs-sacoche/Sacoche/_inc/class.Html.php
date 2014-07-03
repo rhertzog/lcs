@@ -2,25 +2,25 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010
+ * @copyright Thomas Crespin 2010-2014
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
  * © Thomas Crespin pour Sésamath <http://www.sesamath.net> - Tous droits réservés.
- * Logiciel placé sous la licence libre GPL 3 <http://www.rodage.org/gpl-3.0.fr.html>.
+ * Logiciel placé sous la licence libre Affero GPL 3 <https://www.gnu.org/licenses/agpl-3.0.html>.
  * ****************************************************************************************************
  * 
  * Ce fichier est une partie de SACoche.
  * 
  * SACoche est un logiciel libre ; vous pouvez le redistribuer ou le modifier suivant les termes 
- * de la “GNU General Public License” telle que publiée par la Free Software Foundation :
+ * de la “GNU Affero General Public License” telle que publiée par la Free Software Foundation :
  * soit la version 3 de cette licence, soit (à votre gré) toute version ultérieure.
  * 
  * SACoche est distribué dans l’espoir qu’il vous sera utile, mais SANS AUCUNE GARANTIE :
  * sans même la garantie implicite de COMMERCIALISABILITÉ ni d’ADÉQUATION À UN OBJECTIF PARTICULIER.
- * Consultez la Licence Générale Publique GNU pour plus de détails.
+ * Consultez la Licence Publique Générale GNU Affero pour plus de détails.
  * 
- * Vous devriez avoir reçu une copie de la Licence Générale Publique GNU avec SACoche ;
+ * Vous devriez avoir reçu une copie de la Licence Publique Générale GNU Affero avec SACoche ;
  * si ce n’est pas le cas, consultez : <http://www.gnu.org/licenses/>.
  * 
  */
@@ -446,7 +446,7 @@ class Html
       $retour .= '</div>'.NL;
     }
     // retour
-    return ($retour) ? '<h4>Légende</h4>'.NL.'<div class="legende">'.NL.$retour.'</div>'.NL : '' ;
+    return ($retour) ? '<h3>Légende</h3>'.NL.'<div class="legende">'.NL.$retour.'</div>'.NL : '' ;
   }
 
   /**
@@ -468,7 +468,7 @@ class Html
       elseif( !$avec_texte_nombre && !$avec_texte_code ) { $texte_complet = '&nbsp;'; }
       elseif(  $avec_texte_nombre && !$avec_texte_code ) { $texte_complet = $nb; }
       $texte = ( (5*strlen($texte_complet)<$span_width) || !$avec_texte_code ) ? $texte_complet : ( ($avec_texte_nombre) ? $nb : '&nbsp;' ) ;
-      $span .= '<span class="'.Html::$tab_couleur[$etat].'" style="display:inline-block;width:'.$span_width.'px">'.$texte.'</span>';
+      $span .= '<span class="'.Html::$tab_couleur[$etat].'" style="display:inline-block;width:'.$span_width.'px;padding:2px 0">'.$texte.'</span>';
     }
     return '<td style="padding:0;width:'.$td_width.'px" class="hc">'.$span.'</td>';
   }
@@ -605,7 +605,7 @@ class Html
         switch($aff_lien)
         {
           case 'click' :
-            $lien_texte_avant = ($DB_ROW['item_lien']) ? '<a class="lien_ext" href="'.html($DB_ROW['item_lien']).'">' : '';
+            $lien_texte_avant = ($DB_ROW['item_lien']) ? '<a target="_blank" href="'.html($DB_ROW['item_lien']).'">' : '';
             $lien_texte_apres = ($DB_ROW['item_lien']) ? '</a>' : '';
           case 'image' :
             $lien_image = ($DB_ROW['item_lien']) ? 'oui' : 'non' ;
@@ -805,7 +805,7 @@ class Html
       '</span>'.
     '</p>'.NL : 
     '<p>'.
-      '<label class="tab">Action <img alt="" src="./_img/bulle_aide.png" title="Cocher auparavant les cases adéquates." /> :</label>'.
+      '<label class="tab">Action <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Cocher auparavant les cases adéquates." /> :</label>'.
       '<button type="button" class="ajouter" name="evaluation_gestion">Préparer une évaluation.</button> '.
       '<button type="button" class="ajouter" name="professeur_groupe_besoin">Constituer un groupe de besoin.</button> '.
       '<label id="check_msg"></label>'.
