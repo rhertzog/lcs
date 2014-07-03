@@ -1,8 +1,9 @@
-lcs-dns (2.4.10~1) Lcs; urgency=low
+lcs-dns (2.4.10~2) Lcs; urgency=low
 
   * Make a 2.4.10 release for wheezy
+  * Fix install after lcs-preinstall
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Nov 2013 10:40:58 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 03 Jul 2014 13:50:47 +0200
 
 lcs-dns (2.4.9) Lcs; urgency=low
 

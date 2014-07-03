@@ -4,8 +4,8 @@ set -e
 
 # lecture d'un parametre lcs dans lcs_db.params
 get_lcsdb_params() {
-mysqlpass=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
-PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u lcsmgr -p$mysqlpass lcs_db -N`
+mysqlpass=`cat /root/.my.cnf | grep password | cut -d "'" -f 2`
+PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql -u root -p$mysqlpass lcs_db -N`
 echo "$PARAMS"
 }
 
