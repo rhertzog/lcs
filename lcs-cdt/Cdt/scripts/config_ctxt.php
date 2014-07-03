@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de personnalisation du cahier de textes -
@@ -29,7 +29,7 @@ if ($code!='s61lyc6uby54trh')
     $cible="";//valeur par defaut du numero de la rubrique
     $val_edt='';
     }
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -140,7 +140,7 @@ if (isset($_POST['cours_edt']))
     $val_matiere =$donnee[1];
     }
 
-// §1.ENREGISTRER OU MODIFIER UNE RUBRIQUE
+// 1.ENREGISTRER OU MODIFIER UNE RUBRIQUE
 if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
     {
     $rq="";
@@ -204,7 +204,7 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
 //fin enregistrement ou modification d'une rubrique
 
 
-//§2. SUPPRESSION D'UNE RUBRIQUE
+//2. SUPPRESSION D'UNE RUBRIQUE
 
 //si la suppression d'une rubrique est confirmee
 if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
@@ -227,7 +227,7 @@ if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['
 $action ="";
 $num="";
 
-// §3. MODIFICATION D'UNE RUBRIQUE
+// 3. MODIFICATION D'UNE RUBRIQUE
 if (isset($_GET['modrub'])&& isset($_GET['num']))
     {
     $action=$_GET['modrub'];

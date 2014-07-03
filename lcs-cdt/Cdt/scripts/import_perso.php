@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import de donnees perso dans sa base-
@@ -13,7 +13,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -23,23 +23,22 @@ if (!isset($_SESSION['login']) )exit;
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 
-if (isset($_POST['Fermer'])) 
+if (isset($_POST['Fermer']))
 echo '<script type="text/javascript">
             //<![CDATA[
             window.close();
            //]]>
             </script>';
-					
+
 include "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers,$log) = isauth();
-if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
- 
+if (isset($_COOKIE['LCSuser']))   $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
+
 function SansAccent($texte){
-    $accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
+    $accent='Ã€ÃÃ‚ÃƒÃ„Ã…Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã’Ã“Ã”Ã•Ã–Ã˜Ã²Ã³Ã´ÃµÃ¶Ã¸ÃˆÃ‰ÃŠÃ‹Ã©Ã¨ÃªÃ«Ã‡Ã§ÃŒÃÃŽÃÃ¬Ã­Ã®Ã¯Ã™ÃšÃ›ÃœÃ¹ÃºÃ»Ã¼Ã¿Ã‘Ã±';
     $noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
     $texte = strtr($texte,$accent,$noaccent);
     return $texte;
-} 
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -58,11 +57,11 @@ function SansAccent($texte){
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-    {	
+    {
     //verification de l'existence du repertoire
-    if (file_exists("/home/".$_SESSION['login']."/public_html/")) 
+    if (file_exists("/home/".$_SESSION['login']."/public_html/"))
         {
-        //traitement du  fichier 	
+        //traitement du  fichier
         if ((!empty($_FILES["FileSelection1"]["name"])))
             {
             if ($_FILES["FileSelection1"]["size"]>0)
@@ -72,7 +71,6 @@ if (isset($_POST['Valider']))
                 $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
                 //chargement du fichier
                 copy($nomTemporaire,"/home/".$_SESSION['login']."/public_html/my_cdt.tgz");
-
                 //test de la presence du fichier uploade
                 if (file_exists("/home/".$_SESSION['login']."/public_html/my_cdt.tgz"))
                     {
@@ -91,18 +89,18 @@ if (isset($_POST['Valider']))
                             $exlogin=$test[0];
                             $cmd=" cd /home/".$_SESSION['login']."/public_html/ && sed -i 's/~".$exlogin."/~".$_SESSION['login']."/g' dump.sql";
                             exec($cmd,$li,$ret);
-                            if ($ret != 0) 
+                            if ($ret != 0)
                             $mess1= "<h3 class='ko'>1. les liens vers les pi&#232;ces jointes  n\'ont pas pu &#234;tre mise &#224; jour avec le nouveau login"."<br /></h3>";
                             $cmd=" cd /home/".$_SESSION['login']."/public_html/ && mysql -u".$_SESSION['login']." -p".$_LCSkey." ".mb_ereg_replace("\.","",$_SESSION['login'])."_db < dump.sql";
                             exec($cmd,$li,$ret);
                             if ($ret == 0) $mess1="<h3 class='ok'>Les donn&#233;es ont &#233;t&#233; import&#233;es.<br /></h3>";
                             else $mess1 = "<h3 class='ko'>Une erreur s'est produite lors de l'import des donn&#233;es.<br /></h3>";
-                            }							
+                            }
                         else $mess1= "<h3 class='ko'> le fichier n'a pas pu &#234;tre d&#233;compress&#233; <br /></h3>";
                         }
                     else  $mess1= "<h3 class='ko'> le fichier n'est pas conforme <br /></h3>";
                     $cmd=" cd /home/".$_SESSION['login']."/public_html/ && rm -rf dump.sql my_cdt.tgz ctrl.txt";
-                    exec($cmd);			
+                    exec($cmd);
                     }
                 else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <br /></h3>";
                 }
@@ -134,7 +132,7 @@ if (!isset($_POST['Valider']))
     <input class="bt-fermer" type="submit" name="Fermer" value="" />';
     }
 //affichage du resultat
-else 
+else
     {
     if ($mess1!="") echo $mess1;
     echo '<input class="bt-fermer" type="submit" name="Fermer" value="" />';

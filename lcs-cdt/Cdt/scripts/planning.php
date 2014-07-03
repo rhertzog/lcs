@@ -2,14 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de plannification d'un devoir par un prof -
 			_-=-_
     "Valid XHTML 1.0 Strict"
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -72,14 +72,13 @@ if (isset($_POST['enregistrer']) )
         else
             {
             // htlmpurifier
-            $Sujet = $_POST['sujet'];
+            $Sujet = utf8_decode($_POST['sujet']);
             $config = HTMLPurifier_Config::createDefault();
-            //$config->set('Core.Encoding', 'ISO-8859-15');
+            $config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $purifier = new HTMLPurifier($config);
             $Sujet = $purifier->purify($Sujet);
             $Sujet=mysql_real_escape_string($Sujet);
-            $Sujet=  utf8_decode($Sujet);
             }
         }
     else
@@ -592,7 +591,7 @@ if ($nb>0)
 </table>
 <table id="plan-cdt" cellpadding="1" cellspacing="2">
 <thead>
-<tr><th><img src="../images/livre.gif" alt="+" />�</th>
+<tr><th><img src="../images/livre.gif" alt="+" /> </th>
 <?php
 // Affichage des jours et dates de la semaine en haut du tableau"j-M-Y",
 for ($i=0; $i<=5; $i++)

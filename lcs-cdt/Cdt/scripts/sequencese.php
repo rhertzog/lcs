@@ -2,19 +2,19 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de gestion des sequences -
 			_-=-_
     "Valid XHTML 1.0 Strict"
    =================================================== */
-   
+
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
-header("Pragma: no-cache"); 
-session_name("Cdt_Lcs");
+header("Pragma: no-cache");
+session_name("Lcs");
 @session_start();
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -25,14 +25,14 @@ $tsmp=time();
 $tsmp2=time() + 604800;//j+7
 // Connexion a la base de donnaes
 require_once ('../Includes/config.inc.php');
-// Creer la requete (Recuperer les rubriques de l'utilisateur// doit etre identique  a la requete du cdt prof) 
+// Creer la requete (Recuperer les rubriques de l'utilisateur// doit etre identique  a la requete du cdt prof)
 $rq = "SELECT classe,matiere,id_prof FROM onglets  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 // lancer la requ&egrave;ete
 $result = mysql_query ($rq) or die (mysql_error());
-if ( mysql_num_rows($result)>0) 
+if ( mysql_num_rows($result)>0)
     {
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {
         $clas[$loop]=$enrg[0];
         $mat[$loop]=utf8_encode($enrg[1]);
@@ -56,7 +56,7 @@ if ( mysql_num_rows($result)>0)
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 <script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
-<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>  
+<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>
 <script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 <script type="text/javascript" src="../../../libjs/tiny-mce/tiny_mce.js"></script>
 <script type="text/javascript" src="../Includes/conf-tiny_mce.js"></script>
@@ -101,7 +101,7 @@ echo '</ul>';
 <input type="hidden" id="numseq" value= "" />
 <input type="hidden" id="closeandsubmit" value= "" />
 </div>
-</form> 
+</form>
 <button id="record">Enregistrer</button> <button id="update">Enregistrer les modifications </button> <button id="hider">Fermer</button>
 </div>
 <!-- End masquable -->
@@ -137,8 +137,8 @@ for ($loop=0; $loop < count ($clas); $loop++)
     // lancer la requete
     $result = @mysql_query ($rq) or die (mysql_error());
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result); 
-    //on recupère les donnees
+    $nb = mysql_num_rows($result);
+    //on recupere les donnees
     $j=0;
     $TitreSeq=array();
     while ($row = mysql_fetch_object($result))
@@ -149,10 +149,10 @@ for ($loop=0; $loop < count ($clas); $loop++)
         $ContenuSeq[$j]=utf8_encode($row->contenu);
         $OrdreSeq[$j]=$row->ordre;
         $j++;
-        } 
+        }
     //affichage des sequences de l'onglet
     for ($i=0; $i< count ($TitreSeq); $i++)
-        {	
+        {
         echo '<li class="ui-state-default sequ" id="li'.$IdSeq[$i].'"  title="'.$TitreCourSeq[$i].'">
         <span class="ui-icon ui-icon-arrow-4 handdle"></span>
         <span class="order" >'.$OrdreSeq[$i].'</span>

@@ -15,7 +15,7 @@ header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
 
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;

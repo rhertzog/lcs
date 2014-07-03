@@ -33,12 +33,6 @@ class HTMLPurifier_URISchemeTest extends HTMLPurifier_URIHarness
         );
     }
 
-    function test_http_uppercase() {
-        $this->assertValidation(
-            'http://example.com/FOO'
-        );
-    }
-
     function test_http_removeDefaultPort() {
         $this->assertValidation(
             'http://example.com:80',

@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~4) Lcs; urgency=low
+
+  * release wwheezy version  from squueeze
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Jul 2014 16:23:34 +0200
+
 lcs-cdt (2.4.10.~3) LCS; urgency=low
 
   * fix accented character bug in sequences

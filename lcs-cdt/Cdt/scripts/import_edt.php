@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 03/03/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import d'emploi du temps-
@@ -13,7 +13,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -32,7 +32,7 @@ echo '<script type="text/javascript">
 
 
 function SansAccent($texte){
-    $accent='¿¡¬√ƒ≈‡·‚„‰Â“”‘’÷ÿÚÛÙıˆ¯»… ÀÈËÍÎ«ÁÃÕŒœÏÌÓÔŸ⁄€‹˘˙˚¸ˇ—Ò';
+    $accent='√Ä√Å√Ç√É√Ñ√Ö√†√°√¢√£√§√•√í√ì√î√ï√ñ√ò√≤√≥√¥√µ√∂√∏√à√â√ä√ã√©√®√™√´√á√ß√å√ç√é√è√¨√≠√Æ√Ø√ô√ö√õ√ú√π√∫√ª√º√ø√ë√±';
     $noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
     $texte = strtr($texte,$accent,$noaccent);
     return $texte;
@@ -69,6 +69,7 @@ function offset_search( ) {
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
     {
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable jsonfiles");
     //verification de l'existence du repertoire
     if ($_POST['choice']==1 || $_POST['choice']==2 || !isset($_POST['choice']))
         {
@@ -83,6 +84,7 @@ if (isset($_POST['Valider']))
                 $nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
                 $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
                 //chargement du fichier
+
                 copy($nomTemporaire,"../json_files/".$_SESSION['login'].".ics");
 
                 //test de la presence du fichier uploade
@@ -147,7 +149,7 @@ if (isset($_POST['Valider']))
                             fclose($fichier);
                             $mess2= ($_POST['choice']==1 ||  !isset($_POST['choice'])) ? " cr&#233;&#233;s " : " ajout&#233;s " ;
                             $mess1="<h3 class='ok'> ".count($data)." cours ont &#233;t&#233; ".$mess2." <br /></h3>";
-                            if (count($data)>0) $mess1.="<p>Vous pouvez maintenant associer ces cours &#224; vos onglets en cliquant <a href='config_ctxt.php'> ICI </a> 
+                            if (count($data)>0) $mess1.="<p>Vous pouvez maintenant associer ces cours &#224; vos onglets en cliquant <a href='config_ctxt.php'> ICI </a>
                             <a href=\"#\" class=\"open_wi\" onclick=\"open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php#edt2')\"  ><img class=\"nobord\" src=\"../images/planifier-cdt-aide.png\" alt=\"Aide\" title=\"Aide\" /></a>
 </p>";
                             unlink($ICS);
@@ -158,7 +160,8 @@ if (isset($_POST['Valider']))
             }
         else $mess1= "<h3 class='ko'>2. Pas de fichier s&#233;lectionn&#233;  <br /></h3>";
         }
-        elseif ($_POST['choice']==3) unlink("../json_files/".$_SESSION['login'].".json");
+        elseif ($_POST['choice']==3)  unlink("../json_files/".$_SESSION['login'].".json");
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable jsonfiles");
     }
 
 ?>
@@ -171,7 +174,7 @@ if (isset($_POST['Valider']))
 //affichage du formulaire
 if (!isset($_POST['Valider']))
     {
-    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps &#224; partir d\'un fichier ical (fichier .ics). 
+    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps &#224; partir d\'un fichier ical (fichier .ics).
         Vous devez donc pr&#233;alablement r&#233;cup&#233;rer un export de votre <b>E</b>mploi <b>D</b>u <b>T</b>emps au <u>format ical</u>
         <ul><li> soit dans Pronote -> emploi du temps personnel -> ic&#244;ne en haut &#224; droite </li>
         <li> soit aupr&#232;s de la direction de votre &#233;tablissement </li></ul></p>';

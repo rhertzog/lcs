@@ -2,16 +2,16 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d action sur les sequences-
 			_-=-_
    =================================================== */
-
+   
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 //si la page est appeleee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
@@ -31,7 +31,7 @@ else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 if (isset($_POST['num_seq']) && (isset($_POST['action'])))
     {
     if ($_POST['action'] == "lire")
-        {
+        {	
         $ru=$_POST['num_seq'];
         $rq = "SELECT titrecourt,titre,contenu FROM sequences
         WHERE id_seq='$ru'";
@@ -39,13 +39,13 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $result = @mysql_query ($rq) or die (mysql_error());
         // Combien y a-t-il d'enregistrements ?
         if (mysql_num_rows($result)>0)
-            {
-            $row = mysql_fetch_array($result, MYSQL_NUM);//)
+            {  
+            $row = mysql_fetch_array($result, MYSQL_NUM);//) 
             /*echo "<?xml version=\"1.0\"?>\n";
             echo "<sequence>\n";*/
-            echo "<span id='sht'>" .  utf8_encode($row[0]) . "</span>\n";
-            echo "<span id='lgt'>" . utf8_encode($row[1]) . "</span>\n";
-            echo "<span id='dn'>" . utf8_encode($row[2]) . "</span>\n";
+            echo "<span id='sht'>" .  htmlentities($row[0]) . "</span>\n";
+            echo "<span id='lgt'>" . htmlentities($row[1]) . "</span>\n";
+            echo "<span id='dn'>" . htmlentities($row[2]) . "</span>\n";
             //echo "</sequences>\n";
             }
         else echo "Erreur de lecture";
@@ -58,33 +58,33 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $ru=$_POST['num_seq'];
         $ord=$_POST['posission'];
         $rq = "UPDATE  sequences SET ordre='$ord' WHERE id_seq='$ru'";
-        $result = mysql_query($rq);
+        $result = mysql_query($rq); 
         if (!$result)  // Si l'enregistrement est incorrect
-            {
+            {                           
             echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
             mysql_close();     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
-        exit;
+        exit; 	
         }
 
-    //deplacement d'une sequence
+    //deplacement d'une sequence	
     if ($_POST['action'] == "deplace")
         {
         $ru=$_POST['num_seq'];
         $dest=$_POST['ong_dest'];
         $rq = "UPDATE sequences SET id_ong = '$dest' WHERE id_seq='$ru';";
-        $result = mysql_query($rq);
+        $result = mysql_query($rq); 
          if (!$result)  // Si l'enregistrement est incorrect
-            {
+            {                           
             echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
             mysql_close();     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
-        exit;
+        exit; 	
         }
 
-    //copier/coller d'une sequence
+    //copier/coller d'une sequence	
     if ($_POST['action'] == "ajoute")
         {
         $dest=$_POST['ong_dest'];
@@ -94,22 +94,22 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $result = @mysql_query ($rq) or die (mysql_error());
         // Combien y a-t-il d'enregistrements ?
         if (mysql_num_rows($result)>0)
-            {
+            {  
             $row = mysql_fetch_array($result, MYSQL_NUM);
             $d0=mysql_real_escape_string($row[0]);
             $d1=mysql_real_escape_string($row[1]);
             $d2=mysql_real_escape_string($row[2]);
             }
-        $rq = "INSERT INTO sequences (id_ong,titrecourt,titre,contenu)
-        VALUES ( '$dest','$d0','$d1' ,'$d2')";
-        $result = mysql_query($rq);
+        $rq = "INSERT INTO sequences (id_ong,titrecourt,titre,contenu) 
+        VALUES ( '$dest','$d0','$d1' ,'$d2')";	
+        $result = mysql_query($rq); 
        if (!$result)  // Si l'enregistrement est incorrect
-            {
+            {                           
             echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
             mysql_close();     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
-        exit;
+        exit; 	
         }
 
     //test si des seances sont associees a une sequence
@@ -129,23 +129,23 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
          exit;
         }
     }
-
+	
 //suppression
 if ($_POST['action'] == "delete")
     {
     $ru=$_POST['num_seq'];
     $rq= "DELETE FROM sequences WHERE id_seq ='$ru' ";
-    $result = mysql_query($rq);
+    $result = mysql_query($rq); 
     if (!$result)  // Si l'enregistrement est incorrect
-        {
+        {                           
         echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
         mysql_close();     // refermer la connexion avec la base de donnees
         }
     else echo "OK";
-    exit;
+    exit; 	
     }
 
- //enregistrement/mise a jour d'une sequence
+ //enregistrement/mise a jour d'une sequence 
 if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descript'])) && (isset($_POST['action'])))
     {
     if (get_magic_quotes_gpc())
@@ -161,27 +161,25 @@ if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descr
     else
         {
         // htlmpurifier
-        $Title1  = $_POST['titre1'];
-        $Title2  =$_POST['titre2'];
+        $Title1  = utf8_decode($_POST['titre1']);
+        $Title2  =utf8_decode($_POST['titre2']);
         $Desc = $_POST['descript'];
         $config = HTMLPurifier_Config::createDefault();
-        //$config->set('Core.Encoding', 'ISO-8859-15');
+        $config->set('Core.Encoding', 'ISO-8859-15');
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
-        $cont1 =  $purifier->purify($Title1);
+        //$Cours = addSlashes($Cours);
+        $cont1 = $purifier->purify($Title1);
         $cont1 = mysql_real_escape_string($cont1);
-        $cont1=  utf8_decode($cont1);
         $cont2 = $purifier->purify($Title2);
         $cont2 = mysql_real_escape_string($cont2);
-        $cont2=  utf8_decode($cont2);
-        $cont3=$purifier->purify($Desc);
+        $cont3= $purifier->purify($Desc);
         $cont3 = mysql_real_escape_string($cont3);
-       $cont3=  utf8_decode($cont3);
         }
 
     if ($_POST['action'] == "save")
-        {
-        $rq = "INSERT INTO sequences (id_ong,titre,titrecourt,contenu)
+        {	
+        $rq = "INSERT INTO sequences (id_ong,titre,titrecourt,contenu) 
         VALUES ( '{$_POST["num_rub"]}','$cont2', '$cont1', '$cont3')";
          }
 
@@ -192,7 +190,7 @@ if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descr
         }
     $result = mysql_query($rq);
     if (!$result)  // Si l'enregistrement est incorrect
-        {
+        {                           
         echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
         mysql_close();     // refermer la connexion avec la base de donnees
         }

@@ -2,15 +2,15 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 20/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de configuration du cahier de textes -
 			_-=-_
   "Valid XHTML 1.0 Strict"
    =================================================== */
-session_name("Cdt_Lcs");
-@session_start(); 
+session_name("Lcs");
+@session_start();
 include "../Includes/check.php";
 if (!check()) exit;
 //error_reporting(0);
@@ -24,14 +24,14 @@ elseif ($_SESSION['login']!="admin") exit;
 include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
-include "$BASEDIR/Annu/includes/ihm.inc.php"; 
+include "$BASEDIR/Annu/includes/ihm.inc.php";
 $cren_off=array();
 if (isset($_POST['Sauver']))
-    {	
+    {
     header ("location: ./export.php");
     exit;
     }
-	
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -53,19 +53,23 @@ if (isset($_POST['Sauver']))
 if (isset($_POST['res_nores']))
     {
     require_once "../Includes/config.inc.php";
-    $com= 'mv /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp && cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp | sed -e "s/ABSENCE='.$FLAG_ABSENCE.'/ABSENCE='.$_POST['absence'].'/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php && rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp';
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable conf");
+    $com= 'cp /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.tmp.php && cat /usr/share/lcs/Plugins/Cdt/Includes/config.tmp.php | sed -e "s/ABSENCE='.$FLAG_ABSENCE.'/ABSENCE='.$_POST['absence'].'/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php && rm /usr/share/lcs/Plugins/Cdt/Includes/config.tmp.php';
     exec($com,$rien,$retour);
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable conf");
     }
-//le fichier de conf doit etre re-inclus apres une modif eventuelle	
+//le fichier de conf doit etre re-inclus apres une modif eventuelle
 include "../Includes/config.inc.php";
 
-//changement du grain de sel 
+//changement du grain de sel
 if (isset($_POST['change_grain']))
     {
-    $com= 'mv /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp && 
-     pass=`pwgen -1`  && cat /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp | sed -e "s/^\$Grain.*/\$Grain=\"$pass\";/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php && rm /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php.tmp';
-    exec($com,$rien,$retour);
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable conf");
+    $com= 'cp /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php /usr/share/lcs/Plugins/Cdt/Includes/config.tmp.php &&  pass=`pwgen -1`  && cat /usr/share/lcs/Plugins/Cdt/Includes/config.tmp.php | sed -e "s/^\$Grain.*/\$Grain=\"$pass\";/g" > /usr/share/lcs/Plugins/Cdt/Includes/config.inc.php ';
+    exec($com,$rien,$retour);echo $retour;
     if ($retour == 0)  $cle="ok"; else $cle="ko";
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable conf");
+
     }
 
 /***********************
@@ -80,7 +84,7 @@ if (isset($_POST['Importer']))
     //recherche des groupes classes
     $groups=search_groups('cn=classe*');
     if (count($groups))
-        {    
+        {
         for ($loop=0; $loop < count($groups); $loop++)
             {
             //raccourci des noms pour le format court
@@ -92,10 +96,10 @@ if (isset($_POST['Importer']))
         }
     else  $mess1= "<h3 class='nook'> Erreur dans l'importation <br /></h3>";
     }
-		
+
 if (isset($_POST['Creer']))
-    {		
-    //traitement du fichier texte		
+    {
+    //traitement du fichier texte
     if (!empty($_FILES["FileSelection3"]["name"]))
         {
         if (($_FILES["FileSelection3"]["size"]>0) && ($_FILES["FileSelection3"]["type"]=="text/plain"))
@@ -106,7 +110,7 @@ if (isset($_POST['Creer']))
             copy($nomTemporaire,"../Includes/".$nomFichier);
             //renommage du fichier
             rename("../Includes/".$nomFichier,"../Includes/flist.txt");
-            //Ouverture du fichier		
+            //Ouverture du fichier
             if($fichier_ok == fopen("../Includes/flist.txt", "r"))
                 {
                 $loop=0;
@@ -115,13 +119,13 @@ if (isset($_POST['Creer']))
                     {
                     $donnees_extraites = fgetcsv($fichier_ok, 2048);
                     for($n=0; $n<count($donnees_extraites); $n++)
-                        {				
+                        {
                         $data[$loop]=$donnees_extraites[$n];
                         $loop++;
                         }
                     }
                 fclose($fichier_ok);
-                }	
+                }
             //effacement du fichier
             unlink ("../Includes/flist.txt");
 
@@ -132,10 +136,11 @@ if (isset($_POST['Creer']))
         else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier texte "."<br /></h3>";
         }
     }
-	
+
 //creation du fichier
 if (isset($_POST['Creer']) || isset($_POST['Importer']))
     {
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable data");
     $nom_fichier="../Includes/data.inc.php";
     $fichier=fopen($nom_fichier,"w");
     fputs($fichier, "<?php \n");
@@ -145,13 +150,15 @@ if (isset($_POST['Creer']) || isset($_POST['Importer']))
         }
     fputs($fichier, " ?>\n");
     fclose($fichier);
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable data");
     }
-	
-//si clic sur Enregistrer	
+
+//si clic sur Enregistrer
 if (isset($_POST['Enregistrer']))
     {
     $crenoff=$_POST['crenoff'];
     $nom_fichier="../Includes/creneau.inc.php";
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable creneau");
     $fichier=fopen($nom_fichier,"w");
     fputs($fichier, "<?php \n");
     for ($index=0;$index<10;$index++)
@@ -162,38 +169,39 @@ if (isset($_POST['Enregistrer']))
         }
 
     $i=0;
-    if (in_array("M4", $crenoff)) 
+    if (in_array("M4", $crenoff))
         {
         fputs($fichier,"\$cren_off[$i]=\"M4\";\n");$i++;
         fputs($fichier,"\$cren_off[$i]=\"M5\";\n");$i++;
         }
-    elseif (in_array("M5", $crenoff)) 
+    elseif (in_array("M5", $crenoff))
         {
         fputs($fichier,"\$cren_off[$i]=\"M5\";\n");$i++;
         }
-    if (in_array("S4", $crenoff)) 
+    if (in_array("S4", $crenoff))
         {
         fputs($fichier,"\$cren_off[$i]=\"S4\";\n");$i++;
         fputs($fichier,"\$cren_off[$i]=\"S5\";\n");$i++;
         }
-    elseif (in_array("S5", $crenoff)) 
+    elseif (in_array("S5", $crenoff))
         {
         fputs($fichier,"\$cren_off[$i]=\"S5\";\n");
         }
     fputs($fichier, " ?>\n");
     fclose($fichier);
+     exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable creneau");
     }
-	
+
 /******************
 * test de la coherence *
 *******************/
-	
+
 if (isset($_POST['test']))
     {
     //recherche des groupes classes
     $groups=search_groups('cn=classe*');
     //Pour chaque classe, recherche d'une occurence unique dans l'annuaire
-    include "../Includes/data.inc.php"; 
+    include "../Includes/data.inc.php";
     //initialisation des variables
     $index=0;
     $error=array();
@@ -206,8 +214,8 @@ if (isset($_POST['test']))
             if ((mb_ereg("(_$classe[$n])$",$groups[$loop]["cn"])) || ($classe[$n]==$groups[$loop]["cn"]))
             $occ++;
             }
-        //si le nb d'occurence est <> de 1, -->probl�me	
-        if ($occ!=1) 
+        //si le nb d'occurence est <> de 1, -->probl�me
+        if ($occ!=1)
             {
             $error[$index]=$classe[$n];
             $index++;
@@ -230,21 +238,21 @@ if (isset($_POST['test']))
             echo $error[$n].' ';
             }
         echo "')</script>";
-        }	
+        }
     }
-/**************	
+/**************
 *  gestion de la bd *
 ***************/
 //si clic sur le bouton Archiver
 if (isset($_POST['Archiver']))
-    {	
+    {
     // Verifier $name_arch et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['name_arch']) > 0)
-        { 
+        {
         $name_arch= addSlashes(strip_tags(stripslashes($_POST['name_arch'])));
         }
     else
-        { 
+        {
         $name_arch= date("Y",mktime()-31536000)."_".date("Y");
         }
     //Verification d'une archive existante
@@ -265,15 +273,15 @@ if (isset($_POST['Archiver']))
     else
         {
         echo "<script type='text/javascript'>";
-        echo" if (confirm('Remplacer l\'archive existante ? ')){";	        
+        echo" if (confirm('Remplacer l\'archive existante ? ')){";
         echo ' location.href = "';
         echo $_SERVER['PHP_SELF'];
         echo '"+ "?delarch=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'"+ "&nom_arch=" + "'.$name_arch.'#bdd" ;} else {';
         echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"  ;} </script> ';
         }
     }
-	
-//confirmation de remplacement de l'archive	
+
+//confirmation de remplacement de l'archive
 if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
     {
     if ($_GET['delarch']=='yes')
@@ -292,7 +300,7 @@ if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_S
         if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
         }
     }
-	
+
 //initilisation des tables
 if (isset($_POST['Vider']))
     {
@@ -303,8 +311,8 @@ if (isset($_POST['Vider']))
     echo '"+ "?vidtab=" + "yes" + "&TA=" + "'.md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])).'";} else {';
     echo ' location.href = "';echo $_SERVER['PHP_SELF'];echo'"   ;} </script> ';
     }
-	
-//confirmation d'initialisation des tables	
+
+//confirmation d'initialisation des tables
 if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])))
     {
     if ($_GET['vidtab']=='yes')
@@ -329,15 +337,15 @@ if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SE
     }
 
 if (isset($_POST['Restaurer']))
-    {	
-    function get_key() 
+    {
+    function get_key()
         {
         $val=array();
         $cmd = "cat /etc/LcSeConfig.ph | grep 'mysqlServerPw ' | cut -d\"'\" -f2";
         exec($cmd,$val,$ret_val);
         return $val[0];
-        }	
-    //traitement du fichier texte		
+        }
+    //traitement du fichier texte
     if (!empty($_FILES["FileSelection4"]["name"]))
         {
          if (($_FILES["FileSelection4"]["size"]>0) && ($_FILES["FileSelection4"]["type"]=="text/x-sql"))
@@ -361,7 +369,7 @@ if (isset($_POST['Actualiser']) && isset($_POST['zone']))
     require_once('../Includes/parsical/SG_iCal.php');
     setlocale(LC_TIME, "fr_FR");
     $texte= '<table id="plan-cdt" cellpadding="1" cellspacing="2" class="vac">
-    <thead> 
+    <thead>
     <tr><th class="vac">Dates enregistr&eacute;es</th><td class="vac"> Du </td><td class="vac"> Au </td>
     </tr></thead>
     <tbody>';
@@ -371,7 +379,7 @@ if (isset($_POST['Actualiser']) && isset($_POST['zone']))
     $evts = $query->Between($ical,time(),time()+31190400);
     $data = array();
     $i=0;
-    foreach($evts as $id => $ev) 
+    foreach($evts as $id => $ev)
         {
         $jsEvt = array(
             "id" => ($id+1),
@@ -389,12 +397,13 @@ if (isset($_POST['Actualiser']) && isset($_POST['zone']))
             $F1[$i]=$jsEvt["end"];
             $i++;
             }
-        }   
+        }
     $texte.= '</tbody></table>';
     $text=addslashes($texte);
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable vac");
     $nom_fichier="../Includes/vac.inc.php";
     $fichier=fopen($nom_fichier,"w");
-    fputs($fichier, "<?php \n");    
+    fputs($fichier, "<?php \n");
     fputs($fichier,"\$zaune=\"$zon\";\n");
     for ($index=0;$index<count($Dbut);$index++)
         {
@@ -404,6 +413,7 @@ if (isset($_POST['Actualiser']) && isset($_POST['zone']))
     fputs($fichier,"\$texte=\"$text\";\n");
     fputs($fichier, " ?>\n");
     fclose($fichier);
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh NoWritable vac");
     }
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#liste'; ?>" method="post" enctype="multipart/form-data">
@@ -417,7 +427,7 @@ include ("../Includes/data.inc.php");
 $jo="";
 echo "<select name='CLASSE' style='background-color:#E6E6FA'>";
 foreach ($classe as $clef => $valeur)
-  { 
+  {
   echo "<option value=\"$valeur\"";
   echo ">$valeur</option>\n";
   }
@@ -429,7 +439,7 @@ echo "</select>\n";
  affichage du formulaire *
 ************************/
 echo '
-<h4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e &#224; partir d\'un fichier Php.<br /> 
+<h4 class="perso">La liste des classes sous forme de menu d&eacute;roulant est &eacute;labor&eacute;e &#224; partir d\'un fichier Php.<br />
 Ce fichier peut &#234;tre g&eacute;n&eacute;r&eacute; soit : <br /></h4>
 <ul class="perso">
 <li> &agrave; partir de l\'annuaire du LCS
@@ -452,7 +462,7 @@ Indiquez le chemin du fichier texte :
 </ul>
 <h4 class="perso"><input type="submit" name="test" value="Tester la coh&#233;rence" />  du fichier classe avec l\'annuaire pour un bon fonctionnement.
 </h4>';
-	
+
 //affichage du resultat
 if ($mess1!="") echo $mess1;
 ?>
@@ -467,7 +477,7 @@ if ($mess1!="") echo $mess1;
 
 <?php
 echo '
-<h4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre 
+<h4 class="perso"> L\'acc&eacute;s au cahier de texte par les parents se fait par un lien avec le nom des classes crypt&eacute;es. Le crytage doit &#234;tre
 renouvel&eacute; en d&eacute;but de chaque ann&eacute;e pour que les liens de l\'ann&eacute;e pr&eacute;c&eacute;dente ne soient plus valides.</h4>
 <h4 class="perso"><input type="submit" name="change_grain" value="Changer" /> la cl&#233; de cryptage </h4>';
 if ( $cle=="ok") echo  "<h4 class='cok'> La cl&#233; a &eacute;t&eacute; chang&eacute;e </h4>";
@@ -488,7 +498,7 @@ echo '
 Cela implique que tous les professeurs saisissent les absences via le carnet d\'absences du Cdt. </h4>
 <ul class="perso">
 <li>Actuellement, la visualisation des absences est';
-if ($FLAG_ABSENCE==0) echo ' : <span class="nook">D&#233;sactiv&#233;e</span>'; 
+if ($FLAG_ABSENCE==0) echo ' : <span class="nook">D&#233;sactiv&#233;e</span>';
 else echo ' :  <span class="cok">Activ&#233;e </span>';
 echo '<p><input type="radio" name="absence" value="0" ';
 if ($FLAG_ABSENCE==1) echo ' checked="checked"';
@@ -528,7 +538,7 @@ echo '</p></li>';
 echo '<li><b> Sauvegarde</b><p>Le bouton ci dessous permet de g&#233;n&#233;rer un fichier de sauvegarde compl&#233;te de la base de donn&#233;es (structure + donn&#233;es)<br /><br />
 <input type="submit" name="Sauver" value="Sauvegarder la base de donn&#233;es" />	</p></li>
 <li><b> Restauration</b><p>Le bouton ci dessous permet d\'importer les donn&#233;es &#224; partir d\'un fichier de sauvegarde. Attention, la structure et  les donn&#233;es pr&#233;sentes dans la base, seront SUPPRIMEES et REMPLACEES par celles du fichier s&#233;lectionn&#233; <br />
-S&#233;lectionner le fichier de sauvegarde : 
+S&#233;lectionner le fichier de sauvegarde :
 <br /><input type="file" name="FileSelection4" size="30" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" name="Restaurer" value="Restaurer la base de donn&#233;es" />
 </p>
@@ -567,7 +577,7 @@ for ($index=0;$index<10;$index++)
     echo "<select name='hd".$index."'\n >";
     $heure = 8;
     while ($heure <= 17)
-        { 
+        {
         echo "<option value=\"$heure\"";
         if ($heure==date('G',$deb[$index])) {echo ' selected="selected"';}
         echo ">$heure</option>\n";
@@ -578,7 +588,7 @@ for ($index=0;$index<10;$index++)
     echo "<select name='md".$index."' \n >";
     $min = 00;
     while ($min <= 55)
-        { 
+        {
         echo "<option value=\"$min\"";
         if ($min==date('i',$deb[$index])) {echo ' selected="selected"';}
         echo ">$min</option>\n";
@@ -589,7 +599,7 @@ for ($index=0;$index<10;$index++)
     echo "<select name='hf".$index."' \n >";
     $heure = 8;
     while ($heure <= 18)
-        { 
+        {
         echo "<option value=\"$heure\"";
         if ($heure==date('G',$fin[$index])) {echo ' selected="selected"';}
         echo ">$heure</option>\n";
@@ -600,34 +610,34 @@ for ($index=0;$index<10;$index++)
     echo "<select name='mf".$index."' \n >";
     $min = 0;
     while ($min <= 55)
-        { 
+        {
         echo "<option value=\"$min\"";
         if ($min==date('i',$fin[$index])) {echo ' selected="selected"';}
         echo ">$min</option> \n";
         $min+=5;
         }
     echo "</select> min \n";
-    if ($index==3 || $index==4  || $index==8 || $index==9) 
+    if ($index==3 || $index==4  || $index==8 || $index==9)
         {
-        echo '<span ><input type="checkbox"  name="crenoff[]"   value="'.$horaire[$index].'"'; 
+        echo '<span ><input type="checkbox"  name="crenoff[]"   value="'.$horaire[$index].'"';
         if (in_array($horaire[$index], $cren_off)) echo ' checked="checked"';
         echo ' /> masquer ce cr&eacute;neau</span>';
         }
     echo"</li> ";
     }
-//fin de boucle 
+//fin de boucle
 echo '</ul>';
 //affichage du bouton
 echo '<div ><input type="submit" name="Enregistrer" value="Enregistrer" /></div>';
 //affichage du resultat de parametrage
-for ($h=0; $h<9; $h++) 
+for ($h=0; $h<9; $h++)
     {
     if ($deb[$h]>=$deb[$h+1] || $deb[$h]>=$fin[$h]) $mess3="  Il y a une incoh&#233;rence dans les horaires ! ";
     }
 if (isset ($mess3)) echo "<h3 class='nook'>".$mess3;
 ?>
 </fieldset>
-</div>	
+</div>
 </form>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']).'#vacances'; ?>" method="post" >
 <div><input name="TA" type="hidden"  value="<?php echo md5($_SESSION['RT'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
@@ -639,21 +649,21 @@ if (isset ($mess3)) echo "<h3 class='nook'>".$mess3;
 $texte="";
 if (is_file("../Includes/vac.inc.php")) include ("../Includes/vac.inc.php");
 echo '<h4 class="perso"> Permet aux utilistateurs de voir le <b>T</b>ravail <b>A</b> <b>F</b>aire pour les 15 prochains jours <b>ouvrables</b><br />
-<br />S&eacute;lectionnez votre zone : 
-<input type="radio" name="zone" value="A" '; 
+<br />S&eacute;lectionnez votre zone :
+<input type="radio" name="zone" value="A" ';
 if ($zaune=="A") echo ' checked="checked"';
 echo ' />Zone A
-<input type="radio" name="zone" value="B" '; 
+<input type="radio" name="zone" value="B" ';
 if ($zaune=="B") echo ' checked="checked"';
 echo '/>Zone B
-<input type="radio" name="zone" value="C"'; 
+<input type="radio" name="zone" value="C"';
 if ($zaune=="C") echo ' checked="checked"';
 echo ' />Zone C
 <br /></h4><br /><br /><br /><br />';
 echo stripslashes($texte).'<input type="submit" name="Actualiser" value="Actualiser" />';
 ?>
 </fieldset>
-</div>	
+</div>
 </form>
 <?php
 include ('../Includes/pied.inc');

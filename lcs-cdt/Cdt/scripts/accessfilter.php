@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script acces parents  -
@@ -21,23 +21,12 @@ include '../Includes/data.inc.php';
 include "../Includes/phpqrcode/qrlib.php";
 require_once "../Includes/class.inputfilter_clean.php";
 
+function SansAccent($texte){
 
-function suppr_accents($str, $encoding='utf-8')
-{
-// transformer les caractères accentués en entités HTML
-$str = htmlentities($str, ENT_NOQUOTES, $encoding);
-
-// remplacer les entités HTML pour avoir juste le premier caractères non accentués
-// Exemple : "&ecute;" => "e", "&Ecute;" => "E", "Ã " => "a" ...
-$str = preg_replace('#&([A-za-z])(?:acute|grave|cedil|circ|orn|ring|slash|th|tilde|uml);#', '\1', $str);
-
-// Remplacer les ligatures tel que : Œ, Æ ...
-// Exemple "Å“" => "oe"
-$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
-// Supprimer tout le reste
-$str = preg_replace('#&[^;]+;#', '', $str);
-
-return $str;
+$accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
+$noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
+$texte = strtr($texte,$accent,$noaccent);
+return $texte;
 }
 
 function calendar_auto_1($offset,$var_j,$var_m,$var_a,$tsmp)
@@ -175,29 +164,24 @@ if (isset($_POST['Valider']))
             {
             $erreur[$indecs]="false";
             //nettoyer les entrees
-
-            //$oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
-            //$nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
+            $nom_propre[$indecs]  =utf8_decode($_POST['nom'.$indecs]);
+            $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
+            $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
             if (get_magic_quotes_gpc())
                 {
-                $nom_propre[$indecs]  =utf8_decode($_POST['nom'.$indecs]);
                 $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
                 $nom_propre[$indecs] = $oMyFilter->process($nom_propre[$indecs]);
                 }
             else
                 {
                 // htlmpurifier
-                $nom_propre[$indecs]  =$_POST['nom'.$indecs];
                 $config = HTMLPurifier_Config::createDefault();
-                //$config->set('Core.Encoding', 'ISO-8859-15');
+                $config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $nom_propre[$indecs] = $purifier->purify($nom_propre[$indecs]);
-               // $nom_propre[$indecs] = utf8_decode($nom_propre[$indecs]);
                 }
-                $nom_propre[$indecs] = suppr_accents($nom_propre[$indecs]);
-            //$nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
-            //echo $nom_propre[$indecs];exit;
+            $nom_propre[$indecs] = SansAccent($nom_propre[$indecs]);
             $nom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$nom_propre[$indecs]);
             $nom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$nom_propre[$indecs]);
             $nom_propre1[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$nom_propre[$indecs]);
@@ -206,24 +190,22 @@ if (isset($_POST['Valider']))
             $nom_propre2[$indecs] = StrToLower($nom_propre2[$indecs]);
             $nom_propre1[$indecs] = strip_tags(stripslashes($nom_propre1[$indecs]));
             $nom_propre2[$indecs] = strip_tags(stripslashes($nom_propre2[$indecs]));
-
+            $prenom_propre[$indecs]  =utf8_decode($_POST['prenom'.$indecs]);
             if (get_magic_quotes_gpc())
                 {
-                $prenom_propre[$indecs]  =utf8_decode($_POST['prenom'.$indecs]);
                 $oMyFilter = new InputFilter($aAllowedTags, $aAllowedAttr, 0, 0, 1);
                 $prenom_propre[$indecs] = $oMyFilter->process($prenom_propre[$indecs]);
                 }
             else
                 {
-                $prenom_propre[$indecs]  =$_POST['prenom'.$indecs];
                 // htlmpurifier
                 $config = HTMLPurifier_Config::createDefault();
-                //$config->set('Core.Encoding', 'ISO-8859-15');
+                $config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $prenom_propre[$indecs] = $purifier->purify($prenom_propre[$indecs]);
                 }
-            $prenom_propre[$indecs] = suppr_accents($prenom_propre[$indecs]);
+            $prenom_propre[$indecs] = SansAccent($prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("^[[:blank:]]","",$prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("[[:blank:]]$","",$prenom_propre[$indecs]);
             $prenom_propre[$indecs] = mb_ereg_replace("'|[[:blank:]]","_",$prenom_propre[$indecs]);

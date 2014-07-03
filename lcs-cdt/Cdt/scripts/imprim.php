@@ -2,14 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'impression -
 			_-=-_
   "Valid XHTML 1.0 Strict"
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -32,8 +32,8 @@ function Imprime_seance($param) {
         {
         while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
           {
-          $textcours=stripslashes($ligne[1]);
-          $textafaire=stripslashes($ligne[2]);
+          $textcours=utf8_encode(stripslashes($ligne[1]));
+          $textafaire=utf8_encode(stripslashes($ligne[2]));
           $jour=LeJour (strToTime($ligne[5]));
           //debut
           if ($ligne[1]!="")

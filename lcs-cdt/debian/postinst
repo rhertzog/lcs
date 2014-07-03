@@ -189,6 +189,8 @@ EOF
 	$CONF/Scripts/chown.sh $MODULE
 	cd $CHEMIN
 	echo "Fin de l'installation"
+	# Update sudoers
+        /usr/sbin/lcs-make-sudoers
 ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

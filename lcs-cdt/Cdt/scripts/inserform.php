@@ -2,23 +2,23 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
-   - script d'edition d'équation -
+   - script d'edition d'equation -
 			_-=-_
     "Valid XHTML 1.0 Strict"
    =================================================== */
-   
+
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
 
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
-if (!check()) exit; 
+if (!check()) exit;
 //si la page est appelee par un utilisateur non identifie
 if (!isset($_SESSION['login']) )exit;
 
@@ -26,11 +26,11 @@ if (!isset($_SESSION['login']) )exit;
 elseif ($_SESSION['cequi']!="prof") exit;
 
 function SansAccent($texte){
-    $accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
+    $accent='Ã€ÃÃ‚ÃƒÃ„Ã…Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã’Ã“Ã”Ã•Ã–Ã˜Ã²Ã³Ã´ÃµÃ¶Ã¸ÃˆÃ‰ÃŠÃ‹Ã©Ã¨ÃªÃ«Ã‡Ã§ÃŒÃÃŽÃÃ¬Ã­Ã®Ã¯Ã™ÃšÃ›ÃœÃ¹ÃºÃ»Ã¼Ã¿Ã‘Ã±';
     $noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
     $texte = strtr($texte,$accent,$noaccent);
     return $texte;
-    } 
+    }
 exec("rm -f /usr/share/lcs/Plugins/Cdt/phpmathpublisher/img/*.png");
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -53,17 +53,17 @@ exec("rm -f /usr/share/lcs/Plugins/Cdt/phpmathpublisher/img/*.png");
 //si clic sur le bouton Valider
 if ((isset($_POST['Valider']) || (isset($_POST['Previsualiser']))))
     {
-    // Vérifier $equation et la débarrasser de tout antislash et tags possibles
+    // Verifier $equation et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['equation']) > 0)
-        { 
+        {
         $equation= ($_POST['equation']);
         }
     }
 if (isset($_POST['Valider']) )
-    {		
+    {
     $sousrep='Images_Cdt';
-    //vérification de l'existence du repertoire
-    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep)) 
+    //verification de l'existence du repertoire
+    if (file_exists("/home/".$_SESSION['login']."/public_html/".$sousrep))
         {
         if (!is_dir("/home/".$_SESSION['login']."/public_html/".$sousrep))
             {
@@ -71,22 +71,22 @@ if (isset($_POST['Valider']) )
             $pb=1;
             }
         else $pb=0;
-        } 
-    else 
+        }
+    else
         {
-        //création du répertoire
+        //crï¿½ation du rï¿½pertoire
         mkdir("/home/".$_SESSION['login']."/public_html/".$sousrep);
         $pb=0;
         }
 
-    //création, transfert de l'image de l'image 
+    //crï¿½ation, transfert de l'image de l'image
     include("../phpmathpublisher/mathpublisher.php") ;
     $message="<m>". $equation."</m>";
     $size=$_POST['taille'];
     $pathtoimg='../phpmathpublisher/img/';
 
-    if ( isset($equation) && $equation!='' ) 
-        {	
+    if ( isset($equation) && $equation!='' )
+        {
         $retour =mathfilter($message,$size,$pathtoimg);
         $lien=explode('"',$retour);
         $name=explode('/',$lien[1]);
@@ -132,7 +132,7 @@ if (!isset($_POST['Valider']))
     echo '<li>Taille ';
     echo "<select name='taille' style='background-color:#E6E6FA'>";
     foreach ($choix as $cle => $valeur)
-        { 
+        {
         echo "<option value=\"$valeur\"";
         if ($valeur==$_POST['taille']) {echo ' selected="selected"';}
         echo ">$valeur</option>\n";
@@ -147,8 +147,8 @@ if (!isset($_POST['Valider']))
         $message="<m>".$equation."</m>";
         $size=$_POST['taille'];
         $pathtoimg='../phpmathpublisher/img/';
-        if ( isset($equation) && $equation!='' ) 
-            {	
+        if ( isset($equation) && $equation!='' )
+            {
             $retour =mathfilter($message,$size,$pathtoimg);
             echo "&nbsp;".$retour;
             }

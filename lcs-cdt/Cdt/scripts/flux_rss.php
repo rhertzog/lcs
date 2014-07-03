@@ -2,18 +2,18 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de generation du flux RSS -
 			_-=-_
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 //if ((!isset($_SESSION['version'])) || (!isset( $_SESSION['saclasse']) && !isset($_SESSION['login'])) ) exit;
 include ('../Includes/data.inc.php');
 include "../Includes/functions2.inc.php";
-include ("/var/www/Annu/includes/ldap.inc.php");	
+include ("/var/www/Annu/includes/ldap.inc.php");
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ihm.inc.php");
 
@@ -22,27 +22,27 @@ function xml_character_encode($string, $trans='') {
     foreach ($trans as $k=>$v)
     $trans[$k]= "&#".ord($k).";";
     return strtr($string, $trans);
-}  
+}
 
 // Connexion a la base de donnees
 require_once ('../Includes/config.inc.php');
-//initialisation 
+//initialisation
 $tsmp=time();
 $tsmp15=$tsmp+1209600;
 $Delta=0;
-if (is_file("../Includes/vac.inc.php")) 
+if (is_file("../Includes/vac.inc.php"))
     {
     include ("../Includes/vac.inc.php");
     for ($loop=0; $loop < count ($debv) ; $loop++)
         {
         // t15 pendant vacances
-        if ( $tsmp15>$debv[$loop] && $tsmp15<$finv[$loop]) 
+        if ( $tsmp15>$debv[$loop] && $tsmp15<$finv[$loop])
             {
             $Delta=$finv[$loop]-$debv[$loop] ;
             break;
             }
         //to avant vacances & t15 apres fin vacances
-        if ( $tsmp<$debv[$loop] && $tsmp15>$finv[$loop]) 
+        if ( $tsmp<$debv[$loop] && $tsmp15>$finv[$loop])
             {
             $Delta=$finv[$loop]-$debv[$loop] ;
             break;
@@ -54,15 +54,15 @@ if (is_file("../Includes/vac.inc.php"))
             break;
             }
         //to pendant vacances &t15 avant fin vacances
-        if ( ($tsmp>$debv[$loop] && $tsmp<$finv[$loop]) && $tsmp15<$finv[$loop]) 
+        if ( ($tsmp>$debv[$loop] && $tsmp<$finv[$loop]) && $tsmp15<$finv[$loop])
             {
             $Delta=$finv[$loop]-$tsmp15[$loop] + 1209600;
             break;
             }
         }
     }
-    
-//contrôle des parametres $_GET
+
+//controle des parametres $_GET
 if (!isset($_GET['div'])) exit;
 else
     {
@@ -77,7 +77,7 @@ exec($cmd,$hn,$retour);
 $hostn= $hn[0];
 
 
-// Creer la requete (Recuperer les rubriques de la classe) 
+// Creer la requete (Recuperer les rubriques de la classe)
 $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
@@ -89,7 +89,7 @@ if ($nb>0)
     {
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
         {
         $prof[$loop]=$enrg[0];//nom du prof
         $mat[$loop]=$enrg[1];//matiere
@@ -98,22 +98,22 @@ if ($nb>0)
         $loop++;
         }
     }
-    
+
 //recherche des onglets "cours d'un eleve"
-if ($uid_actif!="") 
+if ($uid_actif!="")
     {
     $groups=people_get_cours($uid_actif);
-    if ( count($groups) > 0 ) 
+    if ( count($groups) > 0 )
         {
-        for ($loopo=0; $loopo < count ($groups) ; $loopo++) 
+        for ($loopo=0; $loopo < count ($groups) ; $loopo++)
             {
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets  WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
             $result = @mysql_query ($rq) or die (mysql_error());
-            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
+            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
-                //on recupere les donnees 
-                while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                //on recupere les donnees
+                while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
                     {
                     $prof[$loop]=$enrg[0];//nom du prof
                     $mat[$loop]=$enrg[1];//matiere
@@ -125,31 +125,31 @@ if ($uid_actif!="")
             }
         }
     }
-else 
+else
     {
     //recherche des onglets "Cours" de la classe
 
-    if (!mb_ereg("^Classe",$ch)) 
+    if (!mb_ereg("^Classe",$ch))
         {
         $grp_cl=search_groups("cn=Classe_*".$ch);
         $grp_cl=$grp_cl[0]["cn"];
         }
     else $grp_cl=$ch;
-    $uids = search_uids ("(cn=".$grp_cl.")", "half");	
+    $uids = search_uids ("(cn=".$grp_cl.")", "half");
     $liste_cours=array();
     $i=0;
     for ($loup=0; $loup < count($uids); $loup++)
         {
         $logun= $uids[$loup]["uid"];
-        if (is_eleve($logun)) 
+        if (is_eleve($logun))
             {
             $groops=people_get_cours($logun);
             if (count($groops))
                 {
                 for($n=0; $n<count($groops); $n++)
-                    { 
-                    if (!in_array($groops[$n]["cn"], $liste_cours)) 
-                        {	
+                    {
+                    if (!in_array($groops[$n]["cn"], $liste_cours))
+                        {
                         $liste_cours[$i]=$groops[$n]["cn"];
                         $i++;
                         }
@@ -165,11 +165,11 @@ else
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
             WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
             $result = @mysql_query ($rq) or die (mysql_error());
-            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ? 
+            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
-                //on recupere les donnees 
-                while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                //on recupere les donnees
+                while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
                     {
                     $prof[$loop]=$enrg[0];//nom du prof
                     $mat[$loop]=$enrg[1];//matiere
@@ -191,7 +191,7 @@ if (count($numero)>0)
     $ind=0;
     for ($loop=0; $loop < count($numero) ; $loop++)
         {
-        $rq = "SELECT afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,datafaire FROM cahiertxt 
+        $rq = "SELECT afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,datafaire FROM cahiertxt
         WHERE (id_auteur='$numero[$loop]') AND (datafaire<='$dat') AND (datafaire>='$dat2') AND (afaire!='') AND datevisibi<='$dat2'";
 
         // lancer la requete
@@ -200,8 +200,8 @@ if (count($numero)>0)
         // Combien y a-t-il d'enregistrements ?
         $nb2 = mysql_num_rows($result);
         //on fait un tableau de donnees
-        while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
-            { 
+        while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+            {
             $idtaf[$ind]=$ligne[2];
             $idtafcrypt[$ind]=$ligne[2].":".substr(md5(crypt($ligne[2],$Grain)),2);
             $mattaf[$ind]=$mat[$loop];
@@ -226,12 +226,12 @@ echo '<?xml version="1.0" encoding="ISO-8859-15" ?>'."\n";
 echo '<rss version="2.0">
 <channel>
 <generator>LCS RSS</generator>
-<title>Travail &#224; faire en '.$ch.'</title> 
+<title>Travail &#224; faire en '.$ch.'</title>
 <link>http://'.$hostn.'/</link>
 <description>Travaux donn&#233;s &#224; la classe enti&#232;re ET &#224; tous les groupes</description>
 <image>
-<url>../images/appli22_on.png</url>     
-</image> 
+<url>../images/appli22_on.png</url>
+</image>
 <language>fr</language>
 <ttl>5</ttl>'."\n\n";
 
@@ -254,5 +254,5 @@ else
     <link>http://'.$hostn.'/</link>
     </item>'. "\n";
     }
-echo '</channel>' . "\n" . '</rss>' . "\n";  
+echo '</channel>' . "\n" . '</rss>' . "\n";
 ?>

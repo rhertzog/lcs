@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des pieces jointes-
@@ -12,7 +12,7 @@
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
-header("Pragma: no-cache");session_name("Cdt_Lcs");
+header("Pragma: no-cache");session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -95,7 +95,9 @@ if (isset($_POST['Valider']))
         {
         //creation du repertoire
         mkdir("/home/".$_SESSION['login']."/public_html/".$sousrep);
-        exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 770 ".$_SESSION['login']." "."/home/".$_SESSION['login']."/public_html/".$sousrep);
+        //exec ("/usr/bin/sudo /usr/share/lcs/scripts/chacces.sh 770 ".$_SESSION['login']." "."/home/".$_SESSION['login']."/public_html/".$sousrep);
+       // chaccess_cdt.sh
+        exec ("/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable MesDocsCdt  ".$_SESSION['login']." ".$sousrep);
         $pb=0;
         }
 

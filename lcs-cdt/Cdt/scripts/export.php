@@ -2,13 +2,13 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de sauvegarde de la bdd-
 			_-=-_
    =================================================== */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start(); 
 
 //si la page est appelee par un utilisateur non identifie

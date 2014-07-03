@@ -139,11 +139,6 @@ class HTMLPurifier_Strategy_FixNestingTest extends HTMLPurifier_StrategyHarness
         $this->assertResult('<blockquote>text</blockquote>', '<blockquote><p>text</p></blockquote>');
     }
 
-    function testDisabledExcludes() {
-        $this->config->set('Core.DisableExcludes', true);
-        $this->assertResult('<pre><font><font></font></font></pre>');
-    }
-
 }
 
 // vim: et sw=4 sts=4

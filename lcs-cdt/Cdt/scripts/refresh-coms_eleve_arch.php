@@ -2,23 +2,23 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de mise a jour du cdt archives eleve-
 			_-=-_
    =================================================== */
-   
+
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 //si la page est appelee par un utilisateur non identifiee
 if (!isset($_SESSION['login']) )exit;
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 //indique que le type de la reponse renvoyee au client sera du Texte
-header("Content-Type: text/plain" ); 
+header("Content-Type: text/plain" );
 //anti Cache pour HTTP/1.1
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
@@ -28,7 +28,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
     $tsmp=$_POST['kan'];
     $cible=$_POST['blabla'];
     $ann_arch=$_POST['thean_arch'];
-    // Connexion à la base de donnees
+    // Connexion a la base de donnees
     require_once ('../Includes/config.inc.php');
     include_once("../Includes/fonctions.inc.php");
     if ($cible!="")
@@ -38,7 +38,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,date FROM cahiertxt".$ann_arch."
         WHERE id_auteur=$cible  ORDER BY date asc";
 
-        // lancer la requête
+        // lancer la requete
         $result = @mysql_query ($rq) or die (mysql_error());
 
         // Combien y a-t-il d'enregistrements ?
@@ -52,7 +52,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
             //$day="1,0,0,12,1,2007";echo $day;
             $jour=LeJour(strToTime($ligne[5]));
             //debut
-            if ($ligne[1]!="") 
+            if ($ligne[1]!="")
                 {
                 echo '<tbody><tr><th colspan="2"></th></tr></tbody>';
                 echo '<tbody>';
@@ -64,7 +64,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
                 else echo '<td class="contenu">';
                 echo $textcours.'</td></tr>';
                 //affichage, s'il existe, du travail a effectuer
-                if ($ligne[2]!="") 
+                if ($ligne[2]!="")
                     {
                     echo '<tr><td class="afaire">A faire pour le :<br />'.$ligne[3].'</td><td class="contenu">';
                     echo $textafaire.'</td></tr>';
@@ -81,7 +81,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
                 //affichage de la seance
                 echo '<td class="afaire">Donn&eacute; le :&nbsp;'.$ligne[0].'<br />Visible le '.$ligne[7];
                 //affichage, s'il existe, du travail a effectuer
-                if ($ligne[2]!="") 
+                if ($ligne[2]!="")
                     {
                     echo '<br/>Pour le :&nbsp;'.$ligne[3].'</td>';
                     if($ligne[6]==1) echo '<td class="contenu2">';
@@ -98,5 +98,5 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         include ('../Includes/pied.inc');
         }
     }
-else echo "error";		
+else echo "error";
 ?>

@@ -2,14 +2,14 @@
  /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - contenu.php -
    			_-=-_
   * "Valid XHTML 1.0 Strict"
    ============================================= */
- session_name("Cdt_Lcs");
+ session_name("Lcs");
 @session_start();
 
 if ((!isset($_SESSION['version'])) || (!isset( $_SESSION['saclasse']) && !isset($_SESSION['login'])) && !isset($_SESSION['aliasprof'])) exit;

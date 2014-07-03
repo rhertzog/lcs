@@ -155,20 +155,4 @@ $(document).ready(function() {
        $("#datejavav").attr("size",15);
        $("#datejaf").attr("size",15);
        }
-
-      //chargement modele
-    $(function(){
-            $(".load-model").click(function() {
-                    var num= $(this).attr('dest') ;
-                    var lop=$(this).attr('key');
-                    //alert ('n='+num+' , key='+lop);
-                    $.post("load_modele.php", { cibl: num , TA: lop },function(data){
-                   var cours_mod =$(data).filter('#mod_c').text();
-                   var af_mod = $(data).filter('#mod_af').text();
-                    tinyMCE.get('coursfield').setContent( cours_mod);
-                    tinyMCE.get('afairefield').setContent(af_mod);
-                   });
-            });
-    });
-
     });

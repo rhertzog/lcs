@@ -3,13 +3,13 @@
 /* ==================================================
   Projet LCS : Linux Communication Server
   Plugin "cahier de textes"
-  VERSION 2.5 du 20/04/2012
+  VERSION 2.5 du 25/04/2014
   par philippe LECLERC
   philippe.leclerc1@ac-caen.fr
   - script de redirection -
   _-=-_
   =================================================== */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 if (isset($_SESSION['saclasse']))
     unset($_SESSION['saclasse']);
@@ -17,6 +17,14 @@ if (isset($_SESSION['saclasse']))
 include ("/var/www/lcs/includes/user_lcs.inc.php");
 include ("/var/www/lcs/includes/functions.inc.php");
 include ("./Includes/functions2.inc.php");
+
+//logout si perte session
+if (! isset($_SESSION['login']) && (mb_ereg("($domain/lcs/applis.php|$domain/desktop\/)$", $_SERVER['HTTP_REFERER']))) {
+            echo "<script type='text/javascript'>";
+            echo 'alert("Suite \340 une p\351riode d\'inactivit\351 trop longue, votre session a expir\351 .\n\n Vous devez vous r\351authentifier");';
+            echo 'location.href = "../../lcs/logout.php"</script>';
+                exit;
+            }	
 
 //Inclusion de la liste des classes
 include ('./Includes/data.inc.php');
@@ -30,12 +38,11 @@ else
 
 // recuperation des donnees de l'utilisateur
 
-$login = auth_lcs();
+$login = $_SESSION['login'];
 
 // Si $login, on recupere les datas de l'utilisateur
 if ($login) {
     list($user, $groups) = people_get_variables($login, true);
-    $_SESSION['login'] = $login;
     $_SESSION['name'] = $user["nom"];
     $_SESSION['nomcomplet'] = $user["fullname"];
     $_SESSION['RT'] = rand();

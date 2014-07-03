@@ -2,14 +2,14 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultation des absences -
 			_-=-_
   "Valid XHTML 1.0 Strict"
    =================================================== */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/functions2.inc.php";
 include "../Includes/fonctions.inc.php";
@@ -19,21 +19,21 @@ $BASEDIR="/var/www";
 //include "../Includes/basedir.inc.php";
 include "$BASEDIR/lcs/includes/headerauth.inc.php";
 include "$BASEDIR/Annu/includes/ldap.inc.php";
-include "$BASEDIR/Annu/includes/ihm.inc.php";  
-	
+include "$BASEDIR/Annu/includes/ihm.inc.php";
+
 //si la page est appelee par un utilisateur non identifie ou non autorise
 if (!isset($_SESSION['login'])) exit;
 elseif ((ldap_get_right("Cdt_is_cpe",$_SESSION['login'])=="N") &&  (ldap_get_right("Cdt_can_sign",$_SESSION['login'])=="N")) exit;
 
-//Connexion a  la base de donnees
+//Connexion aï¿½ la base de donnees
 require_once ('../Includes/config.inc.php');
 
 function SansAccent($texte){
-$accent='ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËéèêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑñ';
+$accent='Ã€ÃÃ‚ÃƒÃ„Ã…Ã Ã¡Ã¢Ã£Ã¤Ã¥Ã’Ã“Ã”Ã•Ã–Ã˜Ã²Ã³Ã´ÃµÃ¶Ã¸ÃˆÃ‰ÃŠÃ‹Ã©Ã¨ÃªÃ«Ã‡Ã§ÃŒÃÃŽÃÃ¬Ã­Ã®Ã¯Ã™ÃšÃ›ÃœÃ¹ÃºÃ»Ã¼Ã¿Ã‘Ã±';
 $noaccent='AAAAAAaaaaaaOOOOOOooooooEEEEeeeeCcIIIIiiiiUUUUuuuuyNn';
 $texte = strtr($texte,$accent,$noaccent);
 return $texte;
-} 
+}
 
 function date_incoherente($date1,$date2){
 $splidat1=explode('/',$date1);
@@ -42,14 +42,14 @@ $splidat2=explode('/',$date2);
 $newdate2=$splidat2[2].$splidat2[1].$splidat2[0];
 if ($newdate1>$newdate2) return true; else return false;
 }
- 
+
 $tsmp=time();
 $tsmp2=time() -604800;//j-7
 $cren_off=array();
 
 //dates  au jour courant
-if (!isset($_POST['datecren'])) $datcreno=date('d/m/Y',$tsmp); 
-else 
+if (!isset($_POST['datecren'])) $datcreno=date('d/m/Y',$tsmp);
+else
     {
     $datcreno=$_POST['datecren'];
     $Morceauc=explode('/',$_POST['datecren']);
@@ -58,14 +58,14 @@ else
 if (!isset($_POST['datecl_fin'])) $datfincla=date('d/m/Y',$tsmp); else $datfincla=$_POST['datecl_fin'];
 if (!isset($_POST['datepot_fin'])) $datfinpot=date('d/m/Y',$tsmp); else $datfinpot=$_POST['datepot_fin'];
 
-//dates a  j-7	
+//dates a j-7
 if (!isset($_POST['datecl_deb'])) $datdebcla=date('d/m/Y',$tsmp2); else $datdebcla=$_POST['datecl_deb'];
 if (!isset($_POST['datepot_deb'])) $datdebpot=date('d/m/Y',$tsmp2); else $datdebpot=$_POST['datepot_deb'];
-if (isset($_POST['division'])) 
+if (isset($_POST['division']))
     {
     $ch=$_POST['division'];
     $ch2=$_POST['division'];
-    } 
+    }
 if (isset($_POST['Classe'])) $ch=$_POST['Classe'];
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -81,34 +81,34 @@ if (isset($_POST['Classe'])) $ch=$_POST['Classe'];
 <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
 <![endif]-->
 	<script type="text/javascript" src="../../../libjs/jquery/jquery.js"></script>
-	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script> 
+	<script type="text/javascript" src="../../../libjs/jquery-ui/jquery-ui.js"></script>
 	<script type="text/javascript" src="../Includes/JQ/cdt-script.js"></script>
 </head>
 <body>
 <h1 class='title'>Consultation des absences</h1>
 <?php
-$tab_cren=array();	
+$tab_cren=array();
 if ((isset($_POST['OK'])) && count($_POST['cren']))
     {
     $tab_cren=$_POST['cren'];
     $kreno="";
-    for ($i = 0; $i < count($_POST['cren']); $i++) 
+    for ($i = 0; $i < count($_POST['cren']); $i++)
         {
         if ($i>0) $kreno.="-";
         $kreno.=$_POST['cren'][$i];
-        }		
+        }
     echo '<script type="text/javascript">
     //<![CDATA[
     window.open("./bilancpe2.php?kr='.$kreno.'&dkr='.$_POST['datecren'].'","","menubar=no, status=no, scrollbars=yes , width=900, height=600");
     //]]>
     </script>';
     }// fin OK
-	
+
 if (isset($_POST['OKclasse']))
     {
     $mess_dat="";
     if (date_incoherente($datdebcla,$datfincla)) $mess_dat=" Incoh&eacute;rence dans les dates ";
-    else 
+    else
         {
         echo '<script type="text/javascript">
         //<![CDATA[
@@ -136,7 +136,7 @@ if (isset($_POST['OKeleve']))
     //1.recherche de la classe dans le ldap
     $groups=search_groups('cn=classe*');
     if (count($groups))
-        {    
+        {
         for ($loup=0; $loup < count($groups); $loup++)
             {
             $cla = $_POST['division'];
@@ -148,32 +148,32 @@ if (isset($_POST['OKeleve']))
             }
         }
 
-    //2.recherche d'une occurence du cn parmi le eleves de la classe --> uid 
-    //recherches des uids des eleves  
+    //2.recherche d'une occurence du cn parmi le eleves de la classe --> uid
+    //recherches des uids des eleves
     $membres = search_uids ("(cn=".$full_classe.")", "half");
 
-    //recherche de l' uid correspondants au nom saisi 
+    //recherche de l' uid correspondants au nom saisi
     $le_cn = $prenom_propre." ".$nom_propre;
     $filtre ="(cn=$le_cn)";
     $gus= search_people ($filtre);
     $uidpotache="";
-    if (count($gus)) 
+    if (count($gus))
         {
-        for ($loop=0; $loop < count($gus); $loop++) 
-            {	 
+        for ($loop=0; $loop < count($gus); $loop++)
+            {
             $uidgus= $gus[$loop]["uid"];
-            for ($iteration = 0; $iteration <= count($membres); $iteration++) 
+            for ($iteration = 0; $iteration <= count($membres); $iteration++)
                 {
-                if ($membres[$iteration]["uid"] ==  $uidgus) 
+                if ($membres[$iteration]["uid"] ==  $uidgus)
                     {
                     $uidpotache= $gus[$loop]["uid"];
-                    break;								
+                    break;
                     }//uids differents (endif)
                 }//fin de recherche de correspondance dans la classe pour un uid(iteration)
             }//fin de recherche pour tous les uids(loop)
         }//ya pas de gus avec cet uid dans la classe;(endif count)
-    $mess_error="";		
-    if ($uidpotache=="" || (date_incoherente($datdebpot,$datfinpot)))	
+    $mess_error="";
+    if ($uidpotache=="" || (date_incoherente($datdebpot,$datfinpot)))
         {
         if  ($uidpotache=="")
             {
@@ -192,7 +192,7 @@ if (isset($_POST['OKeleve']))
         //]]>
         </script>';
     }//fin OKeleve
-	
+
 ?>
 <form action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>" method="post" >
 <fieldset id="field7">
@@ -209,9 +209,9 @@ echo '<li>Date : <input id="cpe-abs" size="10" name="datecren" value="'.$datcren
 echo '<li>Creneau(x) : ';
 include ("../Includes/creneau.inc.php");
 $horaire = array("M1","M2","M3","M4","M5","S1","S2","S3","S4","S5");
-for ($h=0; $h<=9; $h++) 
+for ($h=0; $h<=9; $h++)
     {
-    if (in_array($horaire[$h], $cren_off)) 
+    if (in_array($horaire[$h], $cren_off))
         {
         echo "&nbsp;";
         continue;
@@ -236,7 +236,7 @@ echo '<p>Lister les absences/retards d&acute;une classe pour une p&eacute;riode 
 echo '<ul>';
 echo '<li>Classe : <select name="Classe" style="background-color:#E6E6FA">';
 foreach ($classe as $cle => $valeur)
-    { 
+    {
     echo '<option value="'.$valeur.'"';
     if ($valeur==$ch) echo ' selected="selected"';
     echo '>'.$valeur.'</option>';
@@ -260,7 +260,7 @@ echo '<ul>';
 echo '<li>Nom : <input type = "text" style="background:#E6E6FA;" name ="nom" value = "'.$nom_propre.'" />&nbsp;&nbsp;&nbsp;Pr&eacute;nom : <input type = "text" style="background:#E6E6FA;" name ="prenom" value = "'.$prenom_propre.'" /></li>';
 echo '<li>Classe : <select name="division" style="background-color:#E6E6FA">';
 foreach ($classe as $cle => $valeur)
-    { 
+    {
     echo '<option value="'.$valeur.'"';
     if ($valeur==$ch2) echo ' selected="selected"';
     echo '>'.$valeur.'</option>';

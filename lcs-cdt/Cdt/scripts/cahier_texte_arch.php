@@ -2,14 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives du cahier de textes -
 			_-=-_
     "Valid XHTML 1.0 Strict"
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 
 // autorisation d'acces ?
@@ -58,9 +58,6 @@ if (isset($_POST['copie']))
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
         <!--[if IE]>
         <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
         <![endif]-->

@@ -2,22 +2,25 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives perso du cahier de textes -
 			_-=-_
     "Valid XHTML 1.0 Strict"
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 
 // autorisation d'acces ?
-if ($_SESSION['cequi']!="prof")	exit;
+if ($_SESSION['cequi']!="prof" || !isset($_COOKIE['LCSuser'])) exit;
+require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 
 if (isset($_GET['arch']))
     {
-    $arch=$_GET['arch'];
+    $config = HTMLPurifier_Config::createDefault();
+    $config->set('Core.Encoding', 'ISO-8859-15');
+    $arch=$purifier->purify($_GET['arch']);
     }
     else $arch="";
 
@@ -57,9 +60,6 @@ if (isset($_POST['copie']))
 	<link href="../style/style.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/deroulant.css" rel="stylesheet" type="text/css" />
 	<link  href="../style/navlist-prof.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.all.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.datepicker.css" rel="stylesheet" type="text/css" />
-	<link  href="../style/ui.theme.css" rel="stylesheet" type="text/css" />
          <!--[if IE]>
         <link href="../style/style-ie.css"  rel="stylesheet" type="text/css"/>
         <![endif]-->
@@ -83,8 +83,7 @@ echo '<div id="bt-fixe" ><input class="bt2-fermer" type="submit" name="Fermer" v
 
 // Connexion a la base de donnees
 include_once "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers,$log) = isauth();
-if ($idpers)  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
+if (isset($_COOKIE['LCSuser']))  $_LCSkey = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
 $nom_bdd=mb_ereg_replace("\.","",$_SESSION['login']);
 DEFINE ('DBP_USER', $_SESSION['login']);
 DEFINE ('DBP_PASSWORD', $_LCSkey);

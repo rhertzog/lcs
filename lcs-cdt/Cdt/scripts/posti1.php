@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de mise a jour du post-it-
@@ -11,7 +11,7 @@
 
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) {echo "Erreur";exit;}
@@ -32,7 +32,7 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
     else require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
     // Connexion a la base de donnees
     require_once ('../Includes/config.inc.php');
-    //Creer la requete pour la mise a� jour des donnees
+    //Creer la requete pour la mise a jour des donnees
     if (get_magic_quotes_gpc())
         {
         $Contenu  =htmlentities($_POST['blabla']);
@@ -47,13 +47,12 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
         $Contenu = $_POST['blabla'];
         $Cib = addSlashes($_POST['cibl']);
         $config = HTMLPurifier_Config::createDefault();
-       // $config->set('Core.Encoding', 'ISO-8859-15');
+        $config->set('Core.Encoding', 'ISO-8859-15');
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
         $cont = mysql_real_escape_string($cont);
-       // $cont=  utf8_decode($cont);
         }
 
     $cible= $_POST['cibl'];

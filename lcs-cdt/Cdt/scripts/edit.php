@@ -2,14 +2,14 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 20/04/2012
+   VERSION 2.5 du 10/04/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'edition de la liste des classes-
 			_-=-_
     "Valid XHTML 1.0 Strict"
    =================================================== */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 include "../Includes/check.php";
 if (!check()) exit;
@@ -21,10 +21,10 @@ elseif ($_SESSION['login']!="admin") exit;
 
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
-    {	
+    {
     // Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['list']) > 0)
-        { 
+        {
         $list= addSlashes(strip_tags(stripslashes($_POST['list'])));
         }
     else
@@ -34,7 +34,7 @@ if (isset($_POST['Valider']))
     $loop=0;
     $donnees_extraites = explode( ",",$list);
     for($n=0; $n<count($donnees_extraites); $n++)
-        {				
+        {
         $data[$loop]=$donnees_extraites[$n];
         $loop++;
         }
@@ -81,7 +81,7 @@ if (!isset($_POST['Valider']))
             {
             $UneLigne= fgets($NameFile,255);
             $extr=explode("\"",$UneLigne);
-            if  (count($extr)==3 ) // ce n'est pas la 1ere ou la deniïere ligne
+            if  (count($extr)==3 ) // ce n'est pas la 1ere ou la deniere ligne
                 {
                 if ($extr[0]!="\$classe[0]=") echo ",";//on ne met pas de virgule devant la premiere classe
                 echo ($extr[1]);
