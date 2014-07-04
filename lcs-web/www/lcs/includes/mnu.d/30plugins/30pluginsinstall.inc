@@ -1,1 +1,0 @@
-Plugins install&#233;s,../Plugins/plugins_installes.php,lcs_is_admin
