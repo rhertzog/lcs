@@ -1,5 +1,5 @@
 <?php
-/* Annu/includes/ldap.inc.php Derniere version : 20/12/2013 */
+/* Annu/includes/ldap.inc.php Derniere version : 23/05/2014 */
 
 // Fonctions de comparaison utilisees dans la fonction usort
 
@@ -64,7 +64,7 @@ function people_get_variables ($uid, $mode)
   global $ldap_server, $ldap_port, $dn;
   global $error;
   $error="";
- $ret_people= $ret_group=array();
+  $ret_people= $ret_group=array();
   // LDAP attribute
   $ldap_people_attr = array(
     "uid",				// login
@@ -96,21 +96,26 @@ function people_get_variables ($uid, $mode)
         $info = @ldap_get_entries ( $ds, $result );
         if ( $info["count"]) {
           // Traitement du champ gecos pour extraction de date de naissance, sexe
-          $gecos = $info[0]["gecos"][0];
-          $tmp = preg_split ("/,/",$info[0]["gecos"][0],4);
+          //init variables si champ ldap non renseigne
+          $gecos = (isset($info[0]["gecos"][0])) ?$info[0]["gecos"][0] :" ,000000, ,N";
+          $telelph=(isset($info[0]["gelephonenumber"][0])) ?$info[0]["gelephonenumber"][0] : "";
+          $descript=(isset($info[0]["description"][0]))?$info[0]["description"][0] : " ";
+          $prenom=(isset($info[0]["givenname"][0]))?$info[0]["givenname"][0] : " ";
+          $pseud=(isset($info[0]["initials"][0]))?$info[0]["initials"][0] : "";
+          $tmp = preg_split ("/,/",$gecos,4);
           $ret_people = array (
-              "uid"		=> $info[0]["uid"][0],
-              "nom"		=> stripslashes( $info[0]["sn"][0] ),
-              "fullname"		=> stripslashes( $info[0]["cn"][0] ),
-              "prenom"		=> $info[0]["givenname"][0],
-              "pseudo"		=> $info[0]["initials"][0],
-              "gecos"		=> $info[0]["gecos"][0],
-              "email"		=> $info[0]["mail"][0],
-            //  "tel"		=> $info[0]["telephonenumber"][0],
-              "homedirectory"	=> $info[0]["homedirectory"][0],
-              //"description"		=> $info[0]["description"][0],
-              "shell"		=> $info[0]["loginshell"][0],
-              "sexe"		=> $tmp[2]
+              "uid" => $info[0]["uid"][0],
+              "nom" => stripslashes( $info[0]["sn"][0] ),
+              "fullname" => stripslashes( $info[0]["cn"][0] ),
+              "prenom" => $prenom,
+              "pseudo" => $pseud,
+              "gecos"=> $gecos,
+              "email" => $info[0]["mail"][0],
+              "tel"=> $telelph,
+              "homedirectory" => $info[0]["homedirectory"][0],
+              "description"	=> $descript,
+              "shell" => $info[0]["loginshell"][0],
+              "sexe" => $tmp[2]
             );
         }
         @ldap_free_result ( $result );
@@ -126,10 +131,11 @@ function people_get_variables ($uid, $mode)
             for ($loop=0; $loop<$info["count"];$loop++) {
               //if ($info[$loop]["member"][0] == "") $typegr="posixGroup"; else $typegr="groupOfNames";
               $typegr="posixGroup";
+              $descript=(isset($info[0]["description"][0]))?$info[0]["description"][0] : " ";
               $ret_group[$loop] = array (
-                "cn"			=> $info[$loop]["cn"][0],
-                "description"	=> $info[$loop]["description"][0],
-                "type" 			=> $typegr
+                "cn" => $info[$loop]["cn"][0],
+                "description"	=> $descript,
+                "type" => $typegr
               );
             }
             usort($ret_group, "cmp_cn");
@@ -192,7 +198,7 @@ function search_people ($filter) {
   global $ldap_server, $ldap_port, $dn;
   global $error;
   $error="";
-
+  $ret=array();
   //LDAP attributes
   $ldap_search_people_attr = array(
     "uid",   // login
@@ -211,9 +217,9 @@ function search_people ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop<$info["count"];$loop++) {
             $ret[$loop] = array (
-				"uid"		=> $info[$loop]["uid"][0],
-				"fullname"  => $info[$loop]["cn"][0],
-				"name"		=> $info[$loop]["sn"][0]
+            "uid" => $info[$loop]["uid"][0],
+            "fullname"  => $info[$loop]["cn"][0],
+            "name" => $info[$loop]["sn"][0]
             );
           }
         }
@@ -234,115 +240,17 @@ function search_people ($filter) {
   return $ret;
 }
 
-/*
-// Recherche des uids dans des classes et equipes repondant au critere $filter  dans la branche Groups
-function search_uids ($filter, $mode) {
-  global $ldap_server, $ldap_port, $dn, $ldap_classe_attr, $ldap_equipe_attr;
-  global $error;
-  $error="";
-
-  // LDAP attributs
-  $ldap_classe_attr = array (
-    "cn",
-    "memberuid" // Membres du groupe Classe
-  );
-
-  $ldap_equipe_attr = array (
-    "cn",
-    "member",   // Membres du groupe Profs
-    "owner"     // proprietaire du groupe
-  );
-
-  // echo "filtre : $filter";
-  $ds = @ldap_connect ( $ldap_server, $ldap_port );
-  if ( $ds ) {
-    $r = @ldap_bind ( $ds ); // Bind anonyme
-    if ($r) {
-      if ((!mb_ereg("Matiere",$filter,$matche) && !mb_ereg("Equipe",$filter,$matche))||mb_ereg("Classe",$filter,$matche)) {
-      // Debug
-      //echo "filtre 1 memberuid : $filter<BR>";
-
-      // Recherche dans la branche Groups Classe_ et Cours_
-      $result=@ldap_list ($ds, $dn["groups"], $filter, $ldap_classe_attr);
-      if ($result) {
-        $info = @ldap_get_entries( $ds, $result );
-        if ($info["count"]) {
-          // Stockage des logins des membres des classes
-          //  dans le tableau $ret
-          $init=0;
-          for ($loop=0; $loop < $info["count"]; $loop++) {
-            $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
-            for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
-              // Ajout de wawa : test si le gus est prof
-              $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
-              $result1=@ldap_read($ds,"cn=Profs,".$dn["groups"],$filtre1);
-              $ret[$init]["prof"]=@ldap_count_entries($ds,$result1);
-              @ldap_free_result ( $result1 );
-              // fin patch a wawa
-              $ret[$init]["uid"] = $info[$loop]["memberuid"][$i];
-              $ret[$init]["group"] = $group[1];
-              $ret[$init]["cat"] = $group[0];
-              $init++;
-            }
-          }
-
-        }
-        ldap_free_result ( $result );
-      }
-      }
-      if (mb_ereg("Classe",$filter,$matche)||mb_ereg("Matiere",$filter,$matche)||mb_ereg("Equipe",$filter,$matche)) {
-        // Modifie par Wawa: filter2 supprime
-         if ($mode=="full") {
-           $filter2 = mb_ereg_replace("Classe_","Equipe_",$filter);
-         } else {  $filter2=$filter; }
-        // Debug
-        // echo "filtre 2 member : $filter2<BR>";
-        $result=@ldap_list ($ds, $dn["groups"], $filter2, $ldap_equipe_attr);
-        if ($result) {
-          $info = @ldap_get_entries( $ds, $result );
-          if ($info["count"]) {
-            $init=count($ret);
-            $owner = extract_login ($info[0]["owner"][0]);
-            for ($loop=0; $loop < $info["count"]; $loop++) {
-              $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
-              for ( $i = 0; $i < $info[$loop]["member"]["count"]; $i++ ) {
-	     		  // Cas ou un champ member est non vide
-              		if ( extract_login ($info[$loop]["member"][$i])!="") {
-               			$ret[$init]["uid"] = extract_login ($info[$loop]["member"][$i]);
-                		if ($owner == extract_login ($info[$loop]["member"][$i])) $ret[$init]["owner"] = true;
-                		$ret[$init]["group"] = $group[1];
-                		$ret[$init]["cat"] = $group[0];
-                		$init++;
-						}
-              }
-            }
-          }
-          @ldap_free_result ( $result );
-        }
-      }
-    } else {
-      $error = "Echec du bind anonyme";
-    }
-    @ldap_close ( $ds );
-  } else {
-    $error = "Erreur de connection au serveur LDAP";
-  }
-  //$ret = doublon ($ret);
-  return $ret;
-}
-*/
 function search_uids ($filter, $mode) {
   global $ldap_server, $ldap_port, $dn, $ldap_grp_attr;
   global $error;
   $error="";
-
+  $ret=array();
   // LDAP attributs
   $ldap_grp_attr = array (
     "cn",
     "memberuid" // Membres du groupe Classe
   );
 
-  // echo "filtre : $filter";
   $ds = @ldap_connect ( $ldap_server, $ldap_port );
   if ( $ds ) {
     $r = @ldap_bind ( $ds ); // Bind anonyme
@@ -360,7 +268,8 @@ function search_uids ($filter, $mode) {
           $init=0;
           for ($loop=0; $loop < $info["count"]; $loop++) {
             $group=preg_split ("/_/",$info[$loop]["cn"][0],2);
-            for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
+            if (isset($info[$loop]["memberuid"])) {
+                for ( $i = 0; $i < $info[$loop]["memberuid"]["count"]; $i++ ) {
               // Ajout de wawa : test si le gus est prof
               $filtre1 = "(memberUid=".$info[$loop]["memberuid"][$i].")";
               $result1=@ldap_read($ds,"cn=Profs,".$dn["groups"],$filtre1);
@@ -368,9 +277,10 @@ function search_uids ($filter, $mode) {
               @ldap_free_result ( $result1 );
               // fin patch a wawa
               $ret[$init]["uid"] = $info[$loop]["memberuid"][$i];
-              $ret[$init]["group"] = $group[1];
-              $ret[$init]["cat"] = $group[0];
+              if (isset($group[1]))$ret[$init]["group"] = $group[1];
+               if (isset($group[0]))$ret[$init]["cat"] = $group[0];
               $init++;
+            }
             }
           }
         }
@@ -379,7 +289,6 @@ function search_uids ($filter, $mode) {
     } else $error = "Echec du bind anonyme";
     @ldap_close ( $ds );
   } else $error = "Erreur de connection au serveur LDAP";
-  //$ret = doublon ($ret);
   return $ret;
 }
 
@@ -398,7 +307,7 @@ function search_groups ($filter) {
     //"member",
     "description"  // Description du groupe
   );
-
+  $groups=array();
   $ds = @ldap_connect ( $ldap_server, $ldap_port );
   if ( $ds ) {
     $r = @ldap_bind ( $ds ); // Bind anonyme
@@ -409,7 +318,7 @@ function search_groups ($filter) {
         if ( $info["count"]) {
           for ($loop=0; $loop < $info["count"]; $loop++) {
             $groups[$loop]["cn"] = $info[$loop]["cn"][0];
-            $groups[$loop]["description"] = $info[$loop]["description"][0];
+            $groups[$loop]["description"] = (isset($info[$loop]["description"][0])) ?$info[$loop]["description"][0] :"";
             /* Recherche de posixGroup ou groupOfNames
             for ($i=0; $i < $info[$loop]["objectclass"]["count"]; $i++) {
               if  ($info[$loop]["objectclass"][$i] != "top") $type =  $info[$loop]["objectclass"][$i];
@@ -436,7 +345,7 @@ function search_people_groups ($uids,$filter,$order) {
   global $ldap_server, $ldap_port, $dn;
   global $error;
   $error="";
-
+  $ret=array();
   // LDAP attributs
   $ldap_user_attr = array(
     "cn",                 // Prenom  Nom
@@ -457,18 +366,21 @@ function search_people_groups ($uids,$filter,$order) {
           if ( $info["count"]) {
             // echo "debug".$info["count"]." ".$init."<BR>";
             // traitement du gecos pour identification du sexe
-            $gecos = $info[0]["gecos"][0];
+            $gecos = (isset($info[0]["gecos"][0])) ?$info[0]["gecos"][0] :" ,000000, ,N";
+            $owner=(isset($uids[$loop]["owner"])) ?$uids[$loop]["owner"] :"";
+            $grp=(isset($uids[$loop]["group"])) ? $uids[$loop]["group"] :" ";
+            $catg=(isset($uids[$loop]["cat"])) ? $uids[$loop]["cat"] :"";
             $tmp = preg_split ("/,/",$gecos,4);
             $ret[$init] = array (
-				"uid"       => $uids[$loop]["uid"],
-				"fullname"  => $info[0]["cn"][0],
-				"name"		=> $info[0]["sn"][0],
-				"sexe"      => $tmp[2],
-				"owner"     => $uids[$loop]["owner"],
-				"group"     => $uids[$loop]["group"],
-				"cat"       => $uids[$loop]["cat"],
-				"prof"      => $uids[$loop]["prof"],
-				"gecos"     => $gecos
+                "uid" => $uids[$loop]["uid"],
+                "fullname"  => $info[0]["cn"][0],
+                "name" => $info[0]["sn"][0],
+                "sexe" => $tmp[2],
+                "owner" => $owner,
+                "group" => $grp,
+                "cat" =>$catg ,
+                "prof" => $uids[$loop]["prof"],
+                "gecos"  => $gecos
             );
             $init++;
           }
@@ -487,8 +399,9 @@ function search_people_groups ($uids,$filter,$order) {
     if ( $order == "cat" ) usort ($ret, "cmp_cat");
       elseif ( $order == "group" ) usort ($ret, "cmp_group");
     # Recherche du nombre de categories ou d'intitules de groupe
-    $i = 0;
-    for ( $loop=0; $loop < count($ret); $loop++) {
+    $i = 1;
+    $tab_order[0] = $ret[0][$order];
+    for ( $loop=1; $loop < count($ret); $loop++) {
 	 	if ( $ret[$loop][$order] != $ret[$loop-1][$order]) {
 	    	$tab_order[$i] = $ret[$loop][$order];
 	    	$i++;
@@ -527,7 +440,7 @@ function search_people_groups ($uids,$filter,$order) {
 function search_machines ($filter,$branch) {
   global $ldap_server, $ldap_port, $dn;
   global $error;
-
+$computers=array();
   // LDAP attributs
   if ("$branch"=="computers")
     $ldap_computer_attr = array (
@@ -703,13 +616,15 @@ function user_has_ad_auth($uid, $ds = NULL) {
 
 // Changement mot de passe
 function userChangedPwd($uid, $userpwd, $old) {
-  global $scriptsbinpath;
-  exec ("$scriptsbinpath/userChangePwd.pl '$uid' '$userpwd' '$old'",$AllOutPut,$ReturnValue);
+  global $scriptsbinpath, $key_priv;
+  exec ( escapeshellarg("$scriptsbinpath/userChangePwd.pl")." ". escapeshellarg($uid) ." ". escapeshellarg($userpwd) ." ". escapeshellarg($old) ,$AllOutPut,$ReturnValue);
+
   if ($ReturnValue == "0") {
     // Resynchro du mdp admin pour le mode sans echec
-    if ( $uid == "admin" ) {
-    	$action = "synchro_mdp";
-    	exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh $action $userpwd");
+    if ( $uid == "admin" && user_valid_passwd ( "admin", $userpwd ) ) {
+                # reencode temporarily pass with openssl
+                $cryptpass = exec ("echo ". escapeshellarg($userpwd) ." | openssl aes-256-cbc -a -salt -pass pass:$key_priv");
+                exec ("/usr/bin/sudo /usr/share/lcs/scripts/action.sh 'synchro_mdp' '$cryptpass'" , $AllOutput, $ReturnValue);
     }
     return true;
   } else return false;
@@ -762,7 +677,6 @@ function pwdMustChange ($login) {
         // Recuperation de la date de naissance
         $filter="(uid=$login)";
         $ldap_search_people_attr = array("gecos");
-
         $ds = @ldap_connect ( $ldap_server, $ldap_port );
         if ( $ds ) {
             $r = @ldap_bind ( $ds ); // Bind anonyme
@@ -773,8 +687,8 @@ function pwdMustChange ($login) {
                     $info = @ldap_get_entries ( $ds, $result );
                     if ( $info["count"]) {
                         for ($loop=0; $loop<$info["count"];$loop++) {
-                            $gecos = $info[0]["gecos"][0];
-                            $tmp = explode (",",$info[0]["gecos"][0]);
+                            $gecos = (isset($info[0]["gecos"][0])) ?$info[0]["gecos"][0] :" ,000000, , ";
+                            $tmp = explode (",",$gecos);
                             $date_naiss=$tmp[1];
                         }
                     }

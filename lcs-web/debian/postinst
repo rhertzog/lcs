@@ -46,7 +46,7 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
                         fi
                     fi 
                     # restart apache2
-                    invoke-rc.d apache2 restart
+                    invoke-rc.d apache2 reload
                 fi
                 # Update for 2.4.9
 					 if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9; then
@@ -112,6 +112,10 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
             # Fix rights on lcs-web tree
             #
             /usr/sbin/lcs-web-fixrights
+            #
+            # GRANT mysql rights select for lcsmgr
+            #
+            mysql -e "GRANT SHOW DATABASES ON *.* TO 'lcsmgr'@'localhost';"
             #
             # Update sudoers
             # 

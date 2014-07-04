@@ -1,35 +1,50 @@
 <?php
-/* Annu/mod_user_entry.php derniere modification : 22/04/2011 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
+$login=$_SESSION['login'];
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
 include "includes/ihm.inc.php";
 include ("../lcs/includes/jlcipher.inc.php");
 
-// register globals
-$uid=$_GET['uid'];
-if ($uid=="") { $uid=$_POST['uid']; }
-$user_entry=$_POST['user_entry'];
-$telephone=$_POST['telephone'];
-$nom=$_POST['nom'];
-$prenom=$_POST['prenom'];
-$description=$_POST['description'];
-$userpwd=$_POST['userpwd'];
-$shell=$_POST['shell'];
-$password=$_POST['password'];
-$string_auth=$_POST['string_auth'];
-$pseudo=$_POST['pseudo'];
-
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
+$user_entry=false;
+$html="";
+if ( count($_GET)>0 || count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    	//purification des variables
+	if ( count($_GET)>0) $uid=$purifier->purify($_GET['uid']);
+                  if (count($_POST)>0 ) {
+                    $uid=$purifier->purify($_POST['uid']);
+                    $user_entry=$purifier->purify($_POST['user_entry']);
+                    $telephone=$purifier->purify($_POST['telephone']);
+                    $nom=$purifier->purify($_POST['nom']);
+                    $prenom=$purifier->purify($_POST['prenom']);
+                    $description=$purifier->purify($_POST['description']);
+                    $userpwd=@$purifier->purify($_POST['userpwd']);
+                    $shell=$purifier->purify($_POST['shell']);
+                    $password=@$purifier->purify($_POST['password']);
+                    $string_auth=$purifier->purify($_POST['string_auth']);
+                    $pseudo=$purifier->purify($_POST['pseudo']);
+                  }
+}
 
 $isadmin=is_admin("Annu_is_admin",$login);
-
 if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_is_admin",$login)=="Y"))) {
     // Recuperation des entrees de l'utilisateur a modifier
     $user=people_get_variables ($uid, false);
     // Decryptage du mot de passe
-    if ( $user_entry && $string_auth) 
+    if ( $user_entry && $string_auth)
         $userpwd = decodekey($string_auth);
     // Modification des entrees
     if ( !$user_entry || ($user_entry && (!verifPseudo($pseudo) || !verifTel($telephone) || !verifEntree($nom) || !verifEntree($prenom) || !verifDescription($description) || ($userpwd && !verifPwd($userpwd)) ) ) ) {
@@ -86,7 +101,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	    </tr>
 	    <?php } else {
 	    	echo "<input type=\"hidden\" name=\"pseudo\" value=\"".$user[0]["pseudo"]."\" size=\"20\">";
-	       } 
+	       }
 	    ?>
 	    <tr>
 	      <td>Mot de passe :&nbsp;</td>
@@ -104,6 +119,7 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
 	    <tr>
 	      <td></td>
 	      <td align="left">
+                 <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
                 <input type="hidden" name="uid" value="<?php echo $uid ?>">
                 <input type="hidden" name="user_entry" value="true">
                 <input type="submit" value="Lancer la requ&#234;te">
@@ -176,9 +192,9 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
       if ( $shell ) {
 		$entry["loginshell"] = $shell;
 		$dnToModify = "uid=".$uid.",".$dn['people'];
-		exec ("$scriptsbinpath/toggleShell.pl $dnToModify $shell");
+		exec ("$scriptsbinpath/toggleShell.pl ". escapeshellarg($dnToModify) ." ". escapeshellarg($shell));
 	}
-      if ( $pseudo && verifPseudo($pseudo) ) 
+      if ( $pseudo && verifPseudo($pseudo) )
           $entry["initials"]=$pseudo;
       if ( $telephone && verifTel($telephone) )
           $entry["telephonenumber"]=$telephone ;
@@ -192,9 +208,13 @@ if (($isadmin=="Y") or ((tstclass($login,$uid)==1) and (ldap_get_right("sovajon_
               if (ldap_modify ($ds, "uid=".$uid.",".$dn["people"],$entry)) {
                   if ( $pseudo != $user[0]["pseudo"] ) {
                       // log de la modification dans /var/log/lcs/lcs_pseudo.log
+                      if (getenv("HTTP_CLIENT_IP")) $ip = getenv("HTTP_CLIENT_IP");
+                        else if (getenv("HTTP_X_FORWARDED_FOR")) $ip = getenv("HTTP_X_FORWARDED_FOR");
+                        else if (getenv("REMOTE_ADDR")) $ip = getenv("REMOTE_ADDR");
+                        else $ip = "UNKNOWN";
                       $fp=fopen($logpath."pseudo.log","a");
                       if($fp) {
-                          fputs($fp,$uid."|".$pseudo."|".date("j/m/y:H:i")."|".$nom." ".$prenom."|".$REMOTE_ADDR."\n");
+                          fputs($fp,$uid."|".$pseudo."|".date("j/m/y:H:i")."|".$nom." ".$prenom."|".$ip."\n");
                           fclose($fp);
                        } else exit;
                        // fin ecriture fichier de log

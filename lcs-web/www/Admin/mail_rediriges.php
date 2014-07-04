@@ -1,13 +1,15 @@
 <?
-/* =============================================
-   Projet LCS-SE3
-   Administration serveur LCS 
-   Log des redirections de mails
-   mail_rediriges.php
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
    Equipe Tice academie de Caen
-   07/06/2012 
    Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
 
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
@@ -15,6 +17,7 @@ include ("/var/www/Annu/includes/ldap.inc.php");
 $head = "<html>\n";
 $head .= "	<head>\n";
 $head .= "         <title>...::: Interface d'administration Serveur LCS :::...</title>\n";
+$head .= '<meta http-equiv="content-type" content="text/html;charset=utf-8" />';
 $head .= "         <link rel='stylesheet' href='./style/stylesort.css' />\n";
 $head .= "         <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n";
 $head .= " 		   <link rel='stylesheet' type='text/css' media='screen' href='../libjs/jquery-ui/css/redmond/jquery-ui.css'> \n";
@@ -28,7 +31,6 @@ $head .= "	<body>\n";
 
 $msgIntro = "<h1>Redirection des mails</h1>\n <br/>";
 
-list ($idpers, $login)= isauth();
 if (ldap_get_right("lcs_is_admin",$login)!="Y") {
     echo $head;
     die (gettext("Vous n'avez pas les droits suffisants pour acc&eacute;der &agrave; cette fonction")."</body></html>");
@@ -48,12 +50,11 @@ if ($result) {
 
 if ($test_squir=="0") {
     echo $head;
-    die (gettext("<div class='error_msg'>Cette fonction n&eacute;cessite Squirrelmail fonctionnel</div>")."</body></html>");
+    die (gettext("<div class='error_msg'>Cette fonction n&eacute;cessite un Webmail fonctionnel</div>")."</body></html>");
 }
-echo $head;	
+echo $head;
 echo $msgIntro;
-
 echo '<table id="sorter"></table>
-<div id="pager"></div>';     
+<div id="pager"></div>';
 include ("/var/www/lcs/includes/pieds_de_page.inc.php");
 ?>

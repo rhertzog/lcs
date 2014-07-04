@@ -1,21 +1,27 @@
 <?php
- /* =============================================
-   Projet LcSE3 : Export LDIF
-   AdminLCS/export_ldif.php
+ /*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
    Equipe Tice academie de Caen
-   V 1.4 maj : 02/02/2004
-   Distribué selon les termes de la licence GPL
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
+if (count($_POST)>0) {
+  //configuration objet
+  include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  //purification des variables
+  $filtre=$purifier->purify($_POST['filtre']);
+}
 
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
-
-list ($idpers, $login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-
-//register global
-$filtre=$_POST['filtre'];
 
 if (is_admin("lcs_is_admin",$login)=="Y") {
 	if (isset($filtre)) {

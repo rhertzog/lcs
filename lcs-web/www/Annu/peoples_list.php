@@ -1,19 +1,32 @@
 <?php
-/* Annu/peoples_list.php maj : 22/04/2011 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
-  
-  $nom=$_POST['nom'];
-  $prenom=$_POST['prenom'];
-  $priority_name=$_POST['priority_name'];
-  $priority_surname=$_POST['priority_surname'];
-  $priority_classe=$_POST['priority_classe'];
-  $classe=$_POST['classe'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
 
-  list ($idpers)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
+if ( count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$nom=$purifier->purify($_POST['nom']);
+  	$prenom=$purifier->purify($_POST['prenom']);
+  	$priority_name=$purifier->purify($_POST['priority_name']);
+  	$priority_surname=$purifier->purify($_POST['priority_surname']);
+  	$priority_classe=$purifier->purify($_POST['priority_classe']);
+  	$classe=$purifier->purify($_POST['classe']);
+}
+
   header_html();
   // Construction du filtre de la branche people
   if ($nom && !$prenom) {
@@ -90,15 +103,15 @@
 
       echo "<UL>\n";
       for ($loop=0; $loop<count($users);$loop++) {
-        echo "<LI><A href=\"people.php?uid=".$users[$loop]["uid"]."\">".$users[$loop]["fullname"]."</A></LI>\n";
+        echo "<LI><A href=\"people.php?uid=".$users[$loop]["uid"]."&jeton=".md5($_SESSION['token'].htmlentities("/Annu/people.php"))."\">".$users[$loop]["fullname"]."</A></LI>\n";
       }
       echo "</UL>\n";
     } else {
-        echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR>\n";
+        echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR> Retour au <A href=\"search.php\">formulaire de recherche</A><BR>\n";
     }
 
   } elseif ($classe) {
-       // Recherche des classes et équipes dans la branche groups de l'annuaire
+       // Recherche des classes et ï¿½quipes dans la branche groups de l'annuaire
        if ($priority_classe=="contient") {
          $filter_classe="(cn=Classe_*$classe*)";
        } elseif($priority_classe=="commence") {
@@ -128,7 +141,7 @@
          } else {
            echo "<p><STRONG>".count($people)."</STRONG> utilisateurs r&#233;pondent &#224; ces crit&#232;res de recherche.</p>\n";
          }
-         // affichage des résultats
+         // affichage des rï¿½sultats
          echo "<table border=\"0\">\n";
          for ($loop=0; $loop < count($people); $loop++) {
            if ( $people[$loop]["group"] != $people[$loop-1]["group"]) {
@@ -148,17 +161,16 @@
                echo "<tr><td><img src=\"images/eleve_g_bleu.jpg\" width=16 height=16 hspace=3 border=0></td>\n";
              }
            }
-           echo "<td><A href=\"people.php?uid=".$people[$loop]["uid"]."\">".$people[$loop]["fullname"]."</A></td></tr>\n";
+           echo "<td><A href=\"people.php?uid=".$people[$loop]["uid"]."&jeton=".md5($_SESSION['token'].htmlentities("/Annu/people.php"))."\">".$people[$loop]["fullname"]."</A></td></tr>\n";
          }
          echo "</table>\n";
        } else {
-           echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR>
-                  Retour au <A href=\"index.php\">formulaire de recherche</A>...<BR>\n";
+           echo " <STRONG>Pas de r&#233;sultats</STRONG> correspondant aux crit&#232;res s&#233;lectionn&#233;s.<BR> Retour au <A href=\"search.php\">formulaire de recherche</A>...<BR>\n";
        }
   } else {
-       // Aucun critères de recherche
+       // Aucun critï¿½res de recherche
        echo " <STRONG>Pas de r&#233;sultats !</STRONG><BR>
-       Veuillez compl&#233;ter au moins l'un des trois champs (nom, pr&#233;nom, classe) du <A href=\"index.php\">formulaire de recherche</A> !<BR>\n";
+       Veuillez compl&#233;ter au moins l'un des trois champs (nom, pr&#233;nom, classe) du <A href=\"search.php\">formulaire de recherche</A> !<BR>\n";
   }
 
 

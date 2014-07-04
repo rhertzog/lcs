@@ -1,34 +1,47 @@
 <?php
-/* Annu/add_user.php derniere modification : 20/11/2009 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
-  include "../lcs/includes/jlcipher.inc.php";
+$login=$_SESSION['login'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+include "../lcs/includes/jlcipher.inc.php";
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-
-  header_crypto_html("Creation utilisateur");
-  aff_trailer ("7");
-  // register globals
-  $nom=$_POST['nom'];
-  $prenom=$_POST['prenom'];
-  $naissance=$_POST['naissance'];
-  $sexe=$_POST['sexe'];
-  $categorie=$_POST['categorie'];
-  $add_user=$_POST['add_user'];
-  $string_auth=$_POST['string_auth'];
-  $string_auth1=$_POST['string_auth1'];
-  $dummy=$_POST['dummy'];
-  $dummy1=$_POST['dummy1'];
+header_crypto_html("Creation utilisateur");
+aff_trailer ("7");
+$userpwd=$naissance=$nom=$prenom=false;
+if ( count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    	//purification des variables
+  	if ( isset($_POST['nom'])) $nom=$purifier->purify($_POST['nom']);
+  	if ( isset($_POST['prenom'])) $prenom=$purifier->purify($_POST['prenom']);
+  	if ( isset($_POST['naissance'])) $naissance=$purifier->purify($_POST['naissance']);
+  	if ( isset($_POST['sexe'])) $sexe=$purifier->purify($_POST['sexe']);
+  	if ( isset($_POST['categorie'])) $categorie=$purifier->purify($_POST['categorie']);
+  	if ( isset($_POST['add_user'])) $add_user=$purifier->purify($_POST['add_user']);
+  	$string_auth=( isset($_POST['string_auth'])) ? $purifier->purify($_POST['string_auth']) :"";
+  	$string_auth1=( isset($_POST['string_auth1'])) ? $purifier->purify($_POST['string_auth1']) :"";
+  	if ( isset($_POST['dummy'])) $dummy=$purifier->purify($_POST['dummy']);
+  	if ( isset($_POST['dummy1'])) $dummy1=$purifier->purify($_POST['dummy1']);
+}
 
   if (is_admin("Annu_is_admin",$login)=="Y") {
-    // Decryptage des champs cryptes
-     if ( $add_user && ($string_auth || $string_auth1) ) {
-        $naissance = decodekey($string_auth);
-        $userpwd = decodekey($string_auth1);
-     }
+	// Decryptage des champs cryptes
+	if ( isset($add_user) && (isset($string_auth) || isset($string_auth1)) ) {
+	if ($string_auth !="")	$naissance = decodekey($string_auth);
+        	if ($string_auth1!="") $userpwd = decodekey($string_auth1);
+	}
     // Ajout d'un utilisateur
     if (    ( !$nom || !$prenom )    // absence de nom ou de prenom
          || ( !$naissance && ( !$userpwd || ( $userpwd && !verifPwd($userpwd) ) ) ) // pas de date de naissance et mot de passe absent ou invalide
@@ -112,6 +125,7 @@
               <td></td>
               <td></td>
 	      <td >
+                 <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
                 <input type="hidden" name="add_user" value="true">
                 <input type="submit" value="Lancer la requ&ecirc;te">
               </td>
@@ -122,7 +136,7 @@
       <?php
         // Affichage logo crypto
         crypto_nav();
-        if ($add_user) {
+        if (isset($add_user)) {
           if ( (!$nom)||(!$prenom)) {
             echo "<div class='error_msg'>Vous devez obligatoirement renseigner les champs : nom, pr&eacute;nom !</div>\n<br />\n";
           } elseif ( !$naissance && !$userpwd ) {
@@ -133,7 +147,7 @@
             if ( ($userpwd) && !verifPwd($userpwd) ){
               echo "<div class='error_msg'>
                     Vous devez proposer un mot de passe d'une longueur comprise entre 4 et 8 caract&egrave;res
-                    composé de lettre(s) et de chiffre(s) avec &eacute;ventuellement les caract&egrave;res sp&eacute;ciaux suivants&nbsp;(".$char_spec.")&nbsp;
+                    compos&eacute; de lettre(s) et de chiffre(s) avec &eacute;ventuellement les caract&egrave;res sp&eacute;ciaux suivants&nbsp;(".$char_spec.")&nbsp;
                     ou &agrave; d&eacute;faut, laisser le champ mot de passe vide et dans ce cas c'est la date de naissance qui sera utilis&eacute;e.
                   </div><br />\n";
             }
@@ -161,7 +175,7 @@
         if (!$userpwd ) $userpwd=$naissance;
 	$nom = stripslashes($nom); $prenom = stripslashes($prenom);
         // Creation du nouvel utilisateur
-        exec ("$scriptsbinpath/userAdd.pl \"$prenom\" \"$nom\" \"$userpwd\" \"$naissance\" \"$sexe\" \"$categorie\"",$AllOutPut,$ReturnValue);
+        exec ("$scriptsbinpath/userAdd.pl ". escapeshellarg($prenom) . " ". escapeshellarg($nom) ." ". escapeshellarg($userpwd) ." ". escapeshellarg($naissance) ." ". escapeshellarg($sexe) ." ". escapeshellarg($categorie),$AllOutPut,$ReturnValue);
         ### DEBUG echo" \"$prenom\" \"$nom\" \"$userpwd\" \"$naissance\" \"$sexe\" \"$categorie\"<br />";
         // Compte rendu de creation
         if ($ReturnValue == "0") {
@@ -170,7 +184,7 @@
           	echo "L'utilisateur $prenom $nom a &eacute;t&eacute; cr&eacute;&eacute; avec succes";
 		if ( count ($users) ) {
 			echo ", l'identifiant&nbsp;<b>".$users[0]["uid"]."</b>&nbsp; lui a &eacute;t&eacute; attribu&eacute;";
-			echo "<ul><li><a href='add_user_group.php?uid=".$users[0]["uid"]."'>Ajouter &agrave; des groupes...</a></ul>\n";
+			echo "<ul><li><a href='add_user_group.php?uid=".$users[0]["uid"]."&jeton=".md5($_SESSION['token'].htmlentities("/Annu/add_user_group.php"))."'>Ajouter &agrave; des groupes...</a></ul>\n";
 		}
 		echo "<br />\n";
         } else {

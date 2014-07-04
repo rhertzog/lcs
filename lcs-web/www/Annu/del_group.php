@@ -1,27 +1,34 @@
 <?php
 /* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/del_group.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
    Equipe Tice academie de Caen
-   V 1.3 maj : 29/05/2009
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
+$login=$_SESSION['login'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
 
-  $cn=$_GET['cn'];
+if (count($_GET)>0) {
+	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$cn=$purifier->purify($_GET['cn']);
+}
+
 
   header_html();
   aff_trailer ("6");
   if (is_admin("Annu_is_admin",$login)=="Y") {
     if ( $cn !="Eleves" && $cn !="Profs" && $cn !="Administratifs" ) {
-      exec ("$scriptsbinpath/groupDel.pl $cn",$AllOutPut,$ReturnValue);
+      exec ("$scriptsbinpath/groupDel.pl ". escapeshellarg($cn),$AllOutPut,$ReturnValue);
       if ($ReturnValue == "0") {
         echo "<strong>Le groupe $cn a &#233;t&#233; supprim&#233; avec succ&#232;s.</strong><br>\n";
       } else {

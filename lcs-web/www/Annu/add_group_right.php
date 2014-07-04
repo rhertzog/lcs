@@ -1,24 +1,43 @@
 <?php
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification :23/05/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
+$login=$_SESSION['login'];
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
 include "includes/ihm.inc.php";
 
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-
-$uid=$_GET['cn'];
-if ($uid=="") { $uid=$_POST['cn']; }
-$action=$_POST['action'];
-$delrights=$_POST['delrights'];
-$newrights=$_POST['newrights'];
+$action="";
+if ( count($_GET)>0 || count($_POST)>0 ) {
+    //configuration objet
+    include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
+    //purification des variables
+    if ( count($_GET)>0) $uid=$purifier->purify($_GET['cn']);
+    if (count($_POST)>0 ) {
+        $uid=$purifier->purify($_POST['cn']);
+        $action=$purifier->purify($_POST['action']);
+        if ( isset($_POST['delrights']) )
+            $delrights=$purifier->purifyArray($_POST['delrights']);
+        if ( isset($_POST['newrights']) )
+            $newrights=$purifier->purifyArray($_POST['newrights']);
+    }
+}
 
 header_html();
 
 $filtre = "8_".$uid;
 aff_trailer ("3");
 
-if (ldap_get_right("se3_is_admin",$login)=="Y") {
+if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 
 	// Ajoute un droit
 	if ($action == "AddRights") {
@@ -30,7 +49,7 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
         		echo gettext("D&#233;l&#233;gation du droit")." <u>$right</u> ".gettext("&#224; l'utilisateur")." $uid<br />";
         		$cDn = "cn=$uid,$groupsRdn,$ldap_base_dn";
         		$pDn = "cn=$right,$rightsRdn,$ldap_base_dn";
-        		exec ("$scriptsbinpath/groupAddEntry.pl \"$cDn\" \"$pDn\"");
+        		exec ("$scriptsbinpath/groupAddEntry.pl ". escapeshellarg($cDn) . " ". escapeshellarg($pDn));
         		echo "<br />";
       		}
     	}
@@ -45,14 +64,14 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
         		echo gettext("Suppression du droit")." <u>$right</u> ".gettext("pour le groupe")." $uid<br />";
         		$cDn = "cn=$uid,$groupsRdn,$ldap_base_dn";
         		$pDn = "cn=$right,$rightsRdn,$ldap_base_dn";
-        		exec ("$scriptsbinpath/groupDelEntry.pl \"$cDn\" \"$pDn\"");
+        		exec ("$scriptsbinpath/groupDelEntry.pl ". escapeshellarg($cDn) ." ". escapeshellarg($pDn));
         		echo "<br />";
       		}
     	}
 
     	list($user, $groups)=people_get_variables($uid, true);
     	// Affichage du nom et de la description de l'utilisateur
-    	echo "<h3>".gettext("D&#233;l&#233;gation de droits &#224; ")."". $user["fullname"] ." (<u>$uid</u>)</h3>\n";
+    	echo "<h3>".gettext("D&#233;l&#233;gation de droits &#224; ")."" ." (<u>$uid</u>)</h3>\n";
     	echo gettext("S&#233;lectionnez les droits &#224; supprimer (liste de gauche) ou &#224; ajouter (liste de droite) ");
     	echo gettext("et validez &#224; l'aide du bouton correspondant.")."<br /><br />\n";
     	// Lecture des droits disponibles
@@ -85,6 +104,7 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
 		?>
 
 		</select><br /><br />
+        <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
   		<input type="submit" value="Retirer ces droits" onClick="this.form.action.value ='DelRights';return true;">
 		<?php
     	} else {
@@ -101,6 +121,7 @@ if (ldap_get_right("se3_is_admin",$login)=="Y") {
       		}
 		?>
   		</select><br /><br />
+  		<input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
   		<input type="submit" value="<?php echo gettext("Ajouter ces droits"); ?>" onClick="this.form.action.value ='AddRights';return true;">
 		<?php
     	} else {

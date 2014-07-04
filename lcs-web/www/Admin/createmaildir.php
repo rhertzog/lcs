@@ -1,11 +1,18 @@
 <?php
-/* createmaildir.php */
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
-
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
 
 $header="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n
 <html>\n
@@ -16,7 +23,7 @@ $header="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http
         <script type='text/javascript' src='../libjs/jquery/jquery.js'></script>\n
 	</head>\n
 <body>\n";
-echo $header;          
+echo $header;
 
 if (is_admin("lcs_is_admin",$login)=="Y") {
 
@@ -27,13 +34,13 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 	$html.="#info.vno {display:none;}\n";
 	$html.="#CR {text-align:center}\n";
 	$html.="</style>\n";
-			
-	$html.="<div id='main'>\n"; 
+
+	$html.="<div id='main'>\n";
 	$html.="<h3>Cr&eacute;ation des r&eacute;pertoires <tt class='computeroutput'>Maildir</tt> de <b>TOUS</b> les utilisateurs <span id='info'>Veuillez patienter...</span></h3>\n";
 	$html.="<h4 id='wait' style='text-align:center'><img src='Images/wait.gif' /></h4>\n";
     $html.="<h4 id='CR'></h4>\n";
     $html.="</div>\n";
-    
+
 
 ?>
 <script language='JavaScript' type='text/javascript'>
@@ -42,12 +49,12 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
                     type: 'POST',
                     url : 'createmaildirJQ.php',
                     async: true,
-                    dataType: 'text', 
+                    dataType: 'text',
   					complete: function(data) {
     					$('#CR').html(data.responseText);
     					$('#wait').addClass('vno');
     					$('#info').addClass('vno');
-  					},			
+  					},
   					error: function() {
                         alert('Echec creation Maildir');
                     }
@@ -56,10 +63,10 @@ if (is_admin("lcs_is_admin",$login)=="Y") {
 </script>
 
 <?php
-	
-} else 
+
+} else
 	$html = "<div class=error_msg>Cette fonctionnalit&#233;, n&#233;cessite les droits d'administrateur du serveur LCS !</div>";
-	
+
 echo $html;
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

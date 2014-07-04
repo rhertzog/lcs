@@ -1,32 +1,43 @@
-<?
+<?php
 /* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/constitutiongroupe.php
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
    Equipe Tice academie de Caen
-   V 1.4 maj : 27/06/2009
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
+
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
 include "includes/ihm.inc.php";
 
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-
 header_html();
 aff_trailer ("8");
-$cn=$_POST['cn'];
-$eleves=$_POST['eleves'];
-if (is_admin("Annu_is_admin",$login)=="Y") { 
+
+if (count($_POST)>0) {
+	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    	//purification des variables
+  	$cn=$purifier->purify($_POST['cn']);
+  	if (count($_POST['eleves'])>0)$eleves=$purifier->purifyArray($_POST['eleves']);
+}
+
+if (is_admin("Annu_is_admin",$login)=="Y") {
 	// Ajout des membres au groupe
-	echo "<H4>Ajout des membres au groupe : <A href=\"/Annu/group.php?filter=$cn\">$cn</A></H4>\n";
+	echo "<h4>Ajout des membres au groupe : <a href=\"/Annu/group.php?filter=$cn&jeton=".md5($_SESSION['token'].htmlentities("/Annu/group.php"))."\">$cn</a></h4>\n";
 	for ($loop=0; $loop < count ($eleves) ; $loop++) {
-		exec("$scriptsbinpath/groupAddUser.pl  $eleves[$loop] $cn" ,$AllOutPut,$ReturnValue);
+		exec("$scriptsbinpath/groupAddUser.pl  ". escapeshellarg($eleves[$loop]) ." ". escapeshellarg($cn) ,$AllOutPut,$ReturnValue);
 		echo  "Ajout de l'utilisateur&nbsp;".$eleves[$loop]."&nbsp;";
 		if ($ReturnValue == 0 ) {
-			echo "<strong>R&#233;ussi</strong><BR>";
-		} else { 
-			echo "</strong><font color=\"orange\">Echec</font></strong><BR>"; $err++; 
+			echo "<strong>R&#233;ussi</strong><br/>";
+		} else {
+			echo "</strong><font color=\"orange\">Echec</font></strong><br/>"; $err++;
 		}
 	}
 }//fin is_admin

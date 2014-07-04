@@ -1,6 +1,10 @@
 <?php
-/* functions.inc.php Derniere version : 20/12/2013  */
-
+/*===========================================
+   Projet LcSE3
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
 include ("/var/www/lcs/includes/xoft.php");
@@ -63,10 +67,11 @@ include ("/var/www/lcs/includes/xoft.php");
         if ($idpers):
             /* Renvoie le nombre de connexions */
             //$result=mysql_db_query("$DBAUTH","SELECT stat FROM personne WHERE id=$idpers", $authlink);
-	    if (!@mysql_select_db($DBAUTH, $authlink))
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
-	    $query="SELECT stat FROM personne WHERE id=$idpers";
-	    $result=@mysql_query($query,$authlink);
+	    	if (!@mysql_select_db($DBAUTH, $authlink))
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
+			$idpers=mysql_real_escape_string($idpers);
+	    	$query="SELECT stat FROM personne WHERE id=$idpers";
+	    	$result=@mysql_query($query,$authlink);
             if ($result && @mysql_num_rows($result)):
                 $stat=@mysql_result($result,0,0);
                 @mysql_free_result($result);
@@ -86,14 +91,15 @@ include ("/var/www/lcs/includes/xoft.php");
             //$result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers", $authlink);
 	    if (!@mysql_select_db($DBAUTH, $authlink))
     		die ("S&#233;lection de base de donn&#233;es impossible.");
+		$idpers=mysql_real_escape_string($idpers);
 	    $query="SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers";
-            $result=@mysql_query($query,$authlink);
-            if ($result && @mysql_num_rows($result)):
-                $der_log=@mysql_result($result,0,0);
-                @mysql_free_result($result);
-            else:
-                $der_log="";
-            endif;
+        $result=@mysql_query($query,$authlink);
+        if ($result && @mysql_num_rows($result)):
+        	$der_log=@mysql_result($result,0,0);
+            @mysql_free_result($result);
+         else:
+			$der_log="";
+		endif;
             return $der_log;
         endif;
      }
@@ -104,9 +110,9 @@ include ("/var/www/lcs/includes/xoft.php");
         if ($idpers):
             $date=date("YmdHis");
             //$result=mysql_db_query("$DBAUTH","UPDATE personne SET act_log=$date WHERE id=$idpers", $authlink);
-	    if (!@mysql_select_db($DBAUTH, $authlink))
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
-	    $query="UPDATE personne SET act_log=$date WHERE id=$idpers";
+	    	if (!@mysql_select_db($DBAUTH, $authlink))
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
+	    	$query="UPDATE personne SET act_log=$date WHERE id=$idpers";
             $result=@mysql_query($query,$authlink);
         endif;
      }
@@ -133,24 +139,37 @@ include ("/var/www/lcs/includes/xoft.php");
         global $authlink, $DBAUTH;
 
         $idpers=0;$login="";
-        if (! empty($_COOKIE["LCSAuth"])) {
-            $sess=$_COOKIE["LCSAuth"];
-	    	if (!@mysql_select_db($DBAUTH, $authlink))
-    			die ("S&#233;lection de base de donn&#233;es impossible.");
-	    	$query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
+			if (! empty($_COOKIE["LCSAuth"])) {
+            if (!@mysql_select_db($DBAUTH, $authlink))
+            	die ("S&#233;lection de base de donn&#233;es impossible.");
+            $cookie_auth = $_COOKIE["LCSAuth"];
+            $sess = mysql_real_escape_string($cookie_auth);
+            if (strcmp($sess,$cookie_auth)!=0) {
+            	echo "*** Security : Tentative d'intrusion detectee ! <br/>\n";
+               echo "Votre cookie de valeur :".htmlspecialchars($cookie_auth)." est invalide<br/>\n";
+               if (getenv("HTTP_CLIENT_IP")) $ip = getenv("HTTP_CLIENT_IP");
+               else if (getenv("HTTP_X_FORWARDED_FOR")) $ip = getenv("HTTP_X_FORWARDED_FOR");
+               else if (getenv("REMOTE_ADDR")) $ip = getenv("REMOTE_ADDR");
+               else $ip = "UNKNOWN";
+               //error_log("*** SECURITY : cookie ".addslashes($cookie_auth)." from IP : $ip \n",3,"/var/log/lcs/secu.log");
+               error_log(("d-m-Y H:i:s"). " [Error token] [client $ip] [cookie ".addslashes($cookie_auth)."] \n",3,"/var/log/lcs/check.log");
+					die("IP : $ip <br>");
+            }
+	    		$query="SELECT remote_ip, idpers FROM sessions WHERE sess='$sess'";
             $result=@mysql_query($query,$authlink);
             if ($result && @mysql_num_rows($result) ) {
 				// Split ip variable too take first ip only
 				// (BDD field is too short on multiple proxy case)
                // list($ip_session,$null) = preg_split("/,/",mysql_result($result,0,0),2);
                 $ip_session= mysql_result($result,0,0);
-              //  list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
+                //list($first_remote_ip,$null) = preg_split("/,/",remote_ip(),2);
                 $first_remote_ip=remote_ip();
                 if ( $ip_session == $first_remote_ip ) {
                         $idpers =  mysql_result($result,0,1);
                         // Recherche du login a partir de l'idpers
+                        $idpers=mysql_real_escape_string($idpers);
                         $query="SELECT login FROM personne WHERE id=$idpers";
-						$result=@mysql_query($query,$authlink);
+                        $result=@mysql_query($query,$authlink);
                         if ($result && @mysql_num_rows($result)) $login=str_replace(" ", "", @mysql_result($result,0,0));
                 }
                 @mysql_free_result($result);
@@ -171,10 +190,11 @@ include ("/var/www/lcs/includes/xoft.php");
             $count--;
             for ($i = 0; $i < $SessLen ; $i++)
                 $sid .= mb_substr($Pool, (mt_rand()%(mb_strlen($Pool))),1);
-	    if (!@mysql_select_db($DBAUTH, $authlink))
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
+	    	if (!@mysql_select_db($DBAUTH, $authlink))
+    			die ("S&#233;lection de base de donn&#233;es impossible.");
+    		$sid=mysql_real_escape_string($sid);
             $query="SELECT id FROM sessions WHERE sess='$sid'";
-	    //$result=@mysql_db_query("$DBAUTH",$query, $authlink);
+	    	//$result=@mysql_db_query("$DBAUTH",$query, $authlink);
             $result=@mysql_query($query,$authlink);
             $res=mysql_num_rows($result);
         }
@@ -233,6 +253,7 @@ include ("/var/www/lcs/includes/xoft.php");
 	        if (!@mysql_select_db($DBAUTH, $authlink))
     			die ("S&#233;lection de base de donn&#233;es impossible.");
                 // Ouvre une session et la stocke dans la table sessions de lcs_db
+                $login=mysql_real_escape_string($login);
                 $query="SELECT id, stat FROM personne WHERE login='$login'";
                 //$result=mysql_db_query("$DBAUTH",$query, $authlink);
                 $result=@mysql_query($query,$authlink);
@@ -243,11 +264,12 @@ include ("/var/www/lcs/includes/xoft.php");
                 } else {
                         // le login n'est pas encore dans la base... creation de l'entree
                         // $result=mysql_db_query("$DBAUTH","INSERT INTO personne  VALUES ('', '', '', '$login', '')", $authlink);
-						$query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
-						$result=@mysql_query($query,$authlink);
+                        $query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
+                        $result=@mysql_query($query,$authlink);
+                        $login=mysql_real_escape_string($login);
                         $query="SELECT id, stat FROM personne WHERE login='$login'";
                         //$result=mysql_db_query("$DBAUTH",$query, $authlink);
-						$result=@mysql_query($query,$authlink);
+                        $result=@mysql_query($query,$authlink);
                         if ($result && mysql_num_rows($result)) {
                                 $idpers=mysql_result($result,0,0);
                                 $stat=mysql_result($result,0,1)+1;
@@ -258,50 +280,55 @@ include ("/var/www/lcs/includes/xoft.php");
                 // Poste du cookie LCS
                 setcookie("LCSAuth", "$sessid", 0,"/","",0);
                 // Poste du cookie LCSuser
-				if ( $auth_mod != "ENT" )
-                	setcookie("LCSuser", xoft_encode( urlencode($passwd) ,$key_priv), 0,"/","",0);
-				else {
-					// Verification si une entree login existe dans la table ent_lcs.login_lcs
-					$query="SELECT id FROM ent_lcs WHERE login_lcs='$login'";
-					$result=@mysql_query($query,$authlink);
-					$token = substr(sha1(uniqid('', TRUE)),0,30);
-					if ( mysql_num_rows($result) == "0" ) {
-						// Creation du token
-						$query="INSERT INTO ent_lcs (login_lcs, token) VALUES ('$login', '$token')";
-					} else {
-						// Update du token
-						$query="UPDATE ent_lcs SET token='$token' WHERE login_lcs='$login'";
-					}
-					$result=mysql_query($query,$authlink);
-					system ("echo \"DBG >> login : $login token : $token mod auth ENT\" >> /tmp/log.lcs");
-				}
+                if ( $auth_mod != "ENT" )
+                setcookie("LCSuser", xoft_encode( urlencode($passwd) ,$key_priv), 0,"/","",0);
+                else {
+                        // Verification si une entree login existe dans la table ent_lcs.login_lcs
+                        $login=mysql_real_escape_string($login);
+                        $query="SELECT id FROM ent_lcs WHERE login_lcs='$login'";
+                        $result=@mysql_query($query,$authlink);
+                        $token = substr(sha1(uniqid('', TRUE)),0,30);
+                        if ( mysql_num_rows($result) == "0" ) {
+                        // Creation du token
+                        $token_escp=mysql_real_escape_string($token);
+                        $query="INSERT INTO ent_lcs (login_lcs, token) VALUES ('$login', '$token_escp')";
+                        } else {
+                        // Update du token
+                        $query="UPDATE ent_lcs SET token='$token_escp' WHERE login_lcs='$login'";
+                        }
+                        $result=mysql_query($query,$authlink);
+                        system ("echo \"DBG >> login : $login token : $token_escp mod auth ENT\" >> /tmp/log.lcs");
+                }
                 // lecture IP du client
                 $ip = remote_ip();
+                $ip_escp= mysql_real_escape_string($ip);
+                $sessid_escp=  mysql_real_escape_string($sessid);
+                $idpers_escp=  mysql_real_escape_string($idpers);
+                $stat_escp=  mysql_real_escape_string($stat);
                 // Stocke la session et met a jour la table personne avec les stats
                 //$result=mysql_db_query("$DBAUTH","INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')", $authlink);
                 //$result=mysql_db_query("$DBAUTH","UPDATE personne SET stat=$stat WHERE id=$idpers");
-                $query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')";
+                $query="INSERT INTO sessions  VALUES ('', '$sessid_escp', '','$idpers_escp','$ip_escp')";
                 $result=@mysql_query($query,$authlink);
-                $query="UPDATE personne SET stat=$stat WHERE id=$idpers";
+                $query="UPDATE personne SET stat=$stat WHERE id=$idpers_escp";
                 $result=@mysql_query($query,$authlink);
                 set_act_login($idpers);
                 // Creation Espace Perso Utilisateur
                 if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) &&
-                                                  ( !@is_dir("/home/".$login."/public_html")
-                                                  || !@is_dir("/home/".$login."/Maildir")
-                                                  || !@is_dir("/home/".$login."/Documents")
-                                                  || !@is_dir("/home/".$login."/Profile"))) ) {
-					#system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs");
-					if ( is_eleve($login) ) $group="eleves"; else $group="profs";
-					exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
-                } else {
+                ( !@is_dir("/home/".$login."/public_html")
+                || !@is_dir("/home/".$login."/Maildir")
+                || !@is_dir("/home/".$login."/Documents")
+                || !@is_dir("/home/".$login."/Profile"))) ) {
+						#system ("echo \"DBG >> Creation Espace perso\" >> /tmp/log.lcs");
+						$group=strtolower(people_get_group ($login));
+						exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh ".escapeshellarg($login)." '$group' '$cryptpasswd' > /dev/null 2>&1");
+					 } else {
                       // Verification acces bdd et reinitialisation le cas echeant
-                      #
                       #system ("echo \"DBG >> Verif. acces mysql $login $passwd\" >> /tmp/log.lcs");
                       @mysql_close();
                       @mysql_connect("localhost", $login, $passwd );
                       if ( mysql_error() ) {
-                          exec ("$scriptsbinpath/mysqlPasswInit.pl $login $passwd");
+                          exec ( escapeshellarg("$scriptsbinpath/mysqlPasswInit.pl")." ". escapeshellarg($login) ." ". escapeshellarg($passwd) );
                           #system ("echo \"DBG >> Reinit mdp mysql $login $passwd\" >> /tmp/log.lcs");
                       }
                       @mysql_close();
@@ -332,10 +359,11 @@ include ("/var/www/lcs/includes/xoft.php");
 		// Destruction cookie tgt service CAS
 		$t=$_COOKIE['tgt'];
 		if ( isset($t) ) {
-			$query="DELETE from casserver.casserver_tgt where ticket='$t'";
-			$result=@mysql_query($query) or die($query);
-			setcookie("lt","", 0,"/","",0);
-			setcookie("tgt","", 0,"/","",0);
+                                        $t= mysql_real_escape_string($t);
+                                        $query="DELETE from casserver.casserver_tgt where ticket='$t'";
+                                        $result=@mysql_query($query) or die($query);
+                                        setcookie("lt","", 0,"/","",0);
+                                        setcookie("tgt","", 0,"/","",0);
 		}
 		// Destruction des cookies Squirrelmail
 		//setcookie("SQMSESSID","", 0,"/","",0);
@@ -364,8 +392,9 @@ include ("/var/www/lcs/includes/xoft.php");
         /* update last_log */
         // lecture de act_log
         //$result=mysql_db_query("$DBAUTH","SELECT act_log FROM personne WHERE id=$idpers", $authlink);
-		$query="SELECT act_log FROM personne WHERE id=$idpers";
-		$result=@mysql_query($query,$authlink);
+        $idpers=mysql_real_escape_string($idpers);
+        $query="SELECT act_log FROM personne WHERE id=$idpers";
+        $result=@mysql_query($query,$authlink);
         if ($result && mysql_num_rows($result)):
           $act_log=@mysql_result($result,0,0);
           @mysql_free_result($result);
@@ -414,7 +443,7 @@ function ldap_get_right($type,$login)
 
             // Recherche du nom exact
             $search_filter = "(member=$nom)";
-            $ret=ldap_get_right_search ($type,$search_filter,$ldap);//,$base_search);
+            $ret=ldap_get_right_search ($type,$search_filter,$ldap);
             if ($ret=="N") {
                 // Recherche sur les Posixgroups d'appartenance
             	$result1 = @ldap_list ( $ldap, $dn["groups"], "memberUid=$login", array ("cn") );
@@ -424,7 +453,7 @@ function ldap_get_right($type,$login)
                         $loop=0;
                         while (($loop < $info["count"]) && ($ret=="N")){
                             $search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
-                            $ret=ldap_get_right_search ($type,$search_filter,$ldap);//,$base_search,$search_attributes);
+                            $ret=ldap_get_right_search ($type,$search_filter,$ldap);
                             $loop++;
                 	}
                     }
@@ -440,7 +469,7 @@ function ldap_get_right($type,$login)
                         $loop=0;
                         while (($loop < $info["count"]) && ($ret=="N")){
                             $search_filter = "(member=cn=".$info[$loop]["cn"][0].",".$dn["groups"].")";
-                            $ret=ldap_get_right_search ($type,$search_filter,$ldap);//,$base_search,$search_attributes);
+                            $ret=ldap_get_right_search ($type,$search_filter,$ldap);
                             $loop++;
                 	}
             	   }
@@ -487,7 +516,14 @@ function getmenuarray()
                 if ( mb_strlen($tmp) > 0 ) {
                     $element = explode(",",$tmp);
                     for ($k=0; $k < count($element); $k++) {
-                        $liens[$i][$loop] = $element[$k];
+                        if ($loop>0) {
+                            if ( $k==1 && strstr($element[$k], "?")) {
+                                $url=  explode("?", $element[$k]);
+                                $liens[$i][$loop] = $element[$k].'&jeton='.md5($_SESSION['token'].htmlentities("/Admin/".$url[0]));
+                                }
+                             else    $liens[$i][$loop] = $element[$k];
+                        }
+                        else   $liens[$i][$loop] = $element[$k];
                         $loop++;
                     }
                 }

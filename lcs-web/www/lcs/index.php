@@ -1,7 +1,20 @@
 <?
-/* lcs/index.php Derniere version : 20/12/2013 */
-$url_redirect=(empty($_GET['url_redirect'])) ? '' : $_GET['url_redirect'];
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 15/05/2014
+   ============================================= */
+//configuration objet
+  include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  //purification des variables
+$url_redirect=(isset($_GET['url_redirect'])) ? $purifier->purify($_GET['url_redirect']) : '';
 require  "../lcs/includes/headerauth.inc.php";
+//init variables
+$desktop=$monlcs=0;
 $query = "SELECT * from applis";
 $result=@mysql_query($query, $authlink);
 if ($result)
@@ -16,8 +29,6 @@ $ua = $_SERVER['HTTP_USER_AGENT'];
 $ie5 = mb_strpos($ua, 'MSIE 5') !== false;
 $ie6 = mb_strpos($ua, 'MSIE 6') !== false;
 // Redirects to desktop if not IE.
-if (!isset($desktop)) $desktop=0;
-if (!isset($monlcs)) $monlcs=0;
 if ( $desktop ==1 && ! $ie5 && ! $ie6 ) header("Location:../desktop/");
 if ( $url_redirect == "accueil.php" || $url_redirect == "../squidGuard/pageinterdite.html" ) $url_accueil = $url_redirect;
 if ( $url_accueil == "accueil.php" && $monlcs== 1 ) $url_accueil = "/monlcs/index.php";

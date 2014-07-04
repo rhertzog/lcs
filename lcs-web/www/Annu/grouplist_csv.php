@@ -1,18 +1,18 @@
 <?php
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-/* Annu/grouplist_csv.php Derniere modifications : 22/04/2011 */
-
-
-//====================================
-// Portion de code correspondant a la partie entete.inc.php sans l'affichage HTML
-
+$login=$_SESSION['login'];
 include "../lcs/includes/headerauth.inc.php";
 include "ldap.inc.php";
 include "ihm.inc.php";
-
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-
 
 // Prise en compte de la page demandee initialement - leb 25/6/2005
 if ($login == "") {
@@ -24,9 +24,14 @@ if ($login == "") {
 } else {
 //====================================
 
-
-
-	$filter=$_GET['filter'];
+	if (count($_GET)>0) {
+  		//configuration objet
+ 		include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 		$config = HTMLPurifier_Config::createDefault();
+ 		$purifier = new HTMLPurifier($config);
+    	//purification des variables
+  		$filter=$purifier->purify($_GET['filter']);
+    }
 
 	if ((is_admin("Annu_is_admin",$login)=="Y") || (is_admin("sovajon_is_admin",$login)=="Y")) {
 

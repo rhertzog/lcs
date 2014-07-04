@@ -1,5 +1,13 @@
 <?php
-/* lcs/ajax_ent.php derniere mise a jour : 12/01/2012 */
+/*===========================================
+   Projet LcSE3
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
+$login=$_SESSION['login'];
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Content-Type: text/plain" );
@@ -12,46 +20,57 @@ include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 include ("./includes/jlcipher.inc.php");
-  
+
+if (count($_POST)>0) {
+  //configuration objet
+  include ("../Annu/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  //purification des variables
+  if (isset($_POST['string_mdp'])) $string_mdp=$purifier->purify($_POST['string_mdp']);
+  if (isset($_POST['string_login'])) $string_login=$purifier->purify($_POST['string_login']);
+  if (isset($_POST['string_lilie'])) $string_lilie=$purifier->purify($_POST['string_lilie']);
+  if ( isset($_POST['string_old_mdp'])) $string_old_mdp=$purifier->purify($_POST['string_old_mdp']);
+  if (isset($_POST['string_new_mdp'])) $string_new_mdp=$purifier->purify($_POST['string_new_mdp']);
+  if (isset($_POST['string_renew_mdp'])) $string_renew_mdp=$purifier->purify($_POST['string_renew_mdp']);
+}
 //ckeck Lcs account
 if (isset($_POST['string_mdp']) && (isset($_POST['string_login']))&& (isset($_POST['string_lilie'])))
 	{
-	// Verif login / password on LCS LDAP 
-    $password = decodekey($_POST['string_mdp']);
-    if ( user_valid_passwd ( $_POST['string_login'], $password ) ) 
+	// Verif login / password on LCS LDAP
+    $password = decodekey($string_mdp);
+    if ( user_valid_passwd ( $string_login, $password ) )
     	{
     	// If password account OK
 		// Create user home folder and data base
-		$login = $_POST['string_login'];
-		$cryptpasswd = $_POST['string_mdp'];
-        if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && ( !@is_dir("/home/".$login."/public_html") || !@is_dir("/home/".$login."/Maildir") || !@is_dir("/home/".$login."/Documents"))) )
+		$login = $string_login;
+		$cryptpasswd = $string_mdp;
+		if ( !@is_dir("/home/".$login) ||  (@is_dir("/home/".$login) && ( !@is_dir("/home/".$login."/public_html") || !@is_dir("/home/".$login."/Maildir") || !@is_dir("/home/".$login."/Documents"))) )
 			{
-			if ( is_eleve($login) ) $group="eleves"; else $group="profs";
-				exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh $login $group $cryptpasswd > /dev/null 2>&1");
-			}		
-        //Compare with date of birth 
-		if ( ! pwdMustChange ($_POST['string_login']) ) 
+			$group=strtolower(people_get_group ($login));
+			exec ("/usr/bin/sudo /usr/share/lcs/scripts/mkhdir.sh ".escapeshellarg($login)." '$group' '$cryptpasswd' > /dev/null 2>&1");
+			}
+        //Compare with date of birth
+		if ( ! pwdMustChange ($string_login) )
 			{
             //If password account is different than date of birth
 			// Insert data in ent_lcs table
-			if (!@mysql_select_db($DBAUTH, $authlink)) 
+			if (!@mysql_select_db($DBAUTH, $authlink))
     				die ("S&#233;lection de base de donn&#233;es impossible.");
 			// Verification si une entree login existe dans la table ent_lcs.login_lcs
-			$query="SELECT id FROM ent_lcs WHERE login_lcs='$login'";
+			$login=mysql_real_escape_string($login);
+			$string_lilie=mysql_real_escape_string($tring_lilie);
+			$query="SELECT id FROM ent_lcs WHERE login_lcs='$login_escp'";
 			$result=@mysql_query($query,$authlink);
 			if ( mysql_num_rows($result) == "0" ) {
 				// Creation
-				$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$_POST['string_lilie']."', '".$_POST['string_login']."', '$token')";					
+				$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$string_lilie."', '".$login."', '$token')";
 			} else {
 				// Update
-				$query="UPDATE ent_lcs SET id_ent='".$_POST['string_lilie']."', token='$token' WHERE login_lcs='".$_POST['string_login']."'";
+				$query="UPDATE ent_lcs SET id_ent='".$string_lilie."', token='$token' WHERE login_lcs='".$login."'";
 			}
         	$result=mysql_query($query,$authlink);
 
-/*			
-			$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$_POST['string_lilie']."', '".$_POST['string_login']."', '$token')";
-        	$result=mysql_query($query,$authlink);
-*/
 			// And return string OK
 			$cr='OK';
 			// If password account is egal than date of birth then return string "MustChange"
@@ -64,32 +83,32 @@ if (isset($_POST['string_mdp']) && (isset($_POST['string_login']))&& (isset($_PO
     }
 
   //check password account
-  if ( isset($_POST['string_old_mdp']) && (isset($_POST['string_new_mdp'])) && (isset($_POST['string_renew_mdp'])) && (isset($_POST['string_login'])) )
+  if ( isset($_POST['string_old_mdp']) && (isset($_POST['string_new_mdp'])) && (isset($_POST['string_renew_mdp'])) && (isset($string_login)) )
     {
     // Must return "OK" if succes, "NOK" if unsucces and "ERROR" if system error
-    
-	$login = $_POST['string_login'];
+
+	$login = $string_login;
     // Decode crypt string
-    $old_password = decodekey($_POST['string_old_mdp']);
-    $new_password = decodekey($_POST['string_new_mdp']);
-    $verif_password = decodekey($_POST['string_renew_mdp']);
-    if ( verifPwd($new_password) && ($new_password == $verif_password) && (user_valid_passwd ( $_POST['string_login'], $old_password )) && ($new_password!=$old_password) )
-		{ 
-		if ( userChangedPwd($_POST['string_login'], $new_password, $old_password ) ) 
+    $old_password = decodekey($string_old_mdp);
+    $new_password = decodekey($string_new_mdp);
+    $verif_password = decodekey($string_renew_mdp);
+    if ( verifPwd($new_password) && ($new_password == $verif_password) && (user_valid_passwd ( $string_login, $old_password )) && ($new_password!=$old_password) )
+		{
+		if ( userChangedPwd($string_login, $new_password, $old_password ) )
 			{
 			$cr1='OK';
 			// verify if password data base of the user must change
 			@mysql_close();
             @mysql_connect("localhost", $login, $new_password );
-            if ( mysql_error() ) 
-				exec ("$scriptsbinpath/mysqlPasswInit.pl $login $new_password");
+            if ( mysql_error() )
+            	exec ( escapeshellarg("$scriptsbinpath/mysqlPasswInit.pl")." ". escapeshellarg($login) ." ". escapeshellarg($passwd) );
 			@mysql_close();
 			}
     	else $cr1='NOK';
 		}
-    else $cr1='NOK';  	
-   
-    if ( $cr1 != "") 
+    else $cr1='NOK';
+
+    if ( $cr1 != "")
     echo $cr1;
     exit;
     } else echo "ERROR";

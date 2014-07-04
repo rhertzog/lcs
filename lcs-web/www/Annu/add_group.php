@@ -1,18 +1,34 @@
 <?php
-/* Annu/add_group.php Derniere modification : 20/10/2011 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
+  $login=$_SESSION['login'];
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
-  
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-  $prefix=$_POST['prefix'];
-  $categorie=$_POST['categorie'];
-  $intitule=$_POST['intitule'];
-  $description=$_POST['description'];
-  $add_group=$_POST['add_group'];
+  $add_group=$description=$intitule=false;
+  if (count($_POST)>0) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$prefix=$purifier->purify($_POST['prefix']);
+  	$categorie=$purifier->purify($_POST['categorie']);
+  	$intitule=$purifier->purify($_POST['intitule']);
+  	$description=$purifier->purify($_POST['description']);
+  	$add_group=$purifier->purify($_POST['add_group']);
+  }
+
+
   header_html();
   aff_trailer ("6");
    if (is_admin("Annu_is_admin",$login)=="Y") {
@@ -51,6 +67,7 @@
 	      <td></td>
 	      <td >
                 <input type="hidden" name="add_group" value="true">
+                <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
                 <input type="submit" value="Lancer la requ&#234;te">
               </td>
 	    </tr>
@@ -84,7 +101,7 @@
         // Test de la categorie
         //if ($categorie == "Equipe_" || $categorie == "Matiere_" ) $groupType = "2"; else $groupType = "1";
         $groupType = "1";
-        exec ("$scriptsbinpath/groupAdd.pl $groupType $cn \"$description\"",$AllOutPut,$ReturnValue);
+        exec ("$scriptsbinpath/groupAdd.pl ". escapeshellarg($groupType) . " ". escapeshellarg($cn) . " ". escapeshellarg($description),$AllOutPut,$ReturnValue);
         if ($ReturnValue == "0") {
           echo "<div class=error_msg>Le groupe <font color='#0080ff'>$cn</font> a &#233;t&#233; ajout&#233; avec succ&#232;s.</div><br>\n";
         } else {

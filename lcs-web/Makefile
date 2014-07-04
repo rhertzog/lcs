@@ -43,7 +43,6 @@ install:
 
 # install lcs web lib
 	install -d $(DESTDIR)/usr/lib/cgi-bin $(DESTDIR)/usr/share/perl5
-	install -m 755 lib/cgi-bin/gep2.cgi $(DESTDIR)/usr/lib/cgi-bin/
 	install -m 644 lib/perl5/LcSe.pm $(DESTDIR)/usr/share/perl5/
 
 # install sbin

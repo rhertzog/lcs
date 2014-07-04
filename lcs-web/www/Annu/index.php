@@ -1,14 +1,19 @@
 <?php
-/* Annu/index.php Derniere mise à jour : 22/04/2011  */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+$login=$_SESSION['login'];
 
-  $action= $_GET[action];
-
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
   header_html();
   aff_trailer ("1");
   // Affichage des coordonnees de l'Etablissement
@@ -37,7 +42,7 @@
             echo $info[0]["postofficebox"][0]."&nbsp;-&nbsp;";
           }
           echo $info[0]["postalcode"][0]." ".$info[0]["l"][0]."<br />\n";
-          echo "Tél. ".$info[0]["telephonenumber"][0]."\n";
+          echo "Tel. ".$info[0]["telephonenumber"][0]."\n";
           echo"</blockquote>\n";
         }
         @ldap_free_result ( $result );
@@ -54,13 +59,12 @@
   if (ldap_get_right("lcs_is_admin",$login)=="Y") {
     echo "<ul>
     <li><a href=\"delete_right.php\">Enlever un droit d'administration</a></li>
-    <li><a href=\"userdirphptype.php?action=list\">Gestion du type php des espaces web de publication</a></li>
-    </ul>\n";
+       </ul>\n";
   }
   if (ldap_get_right("annu_is_admin",$login)=="Y") {
   echo "<ul>
     <li><a href=\"mod_shell.php\">Modification du shell des utilisateurs</a></li>
     </ul>\n";
-  }  
+  }
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

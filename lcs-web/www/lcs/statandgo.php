@@ -1,24 +1,38 @@
 <?php
-/* lcs/statandgo.php version du :  01/10/2010 */
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+  Derniere modification : 04/04/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
+
+$login=$_SESSION['login'];
 require ("./includes/headerauth.inc.php");
 require ("../Annu/includes/ldap.inc.php");
-
-//register global
-$use=$_GET['use'];
-
+if (count($_GET)>0) {
+        //configuration objet
+        include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+        $config = HTMLPurifier_Config::createDefault();
+        $purifier = new HTMLPurifier($config);
+        //purification des variables
+        $use=$purifier->purify($_GET['use']);
+}
 #
 # Determination de url_accueil et version du LCS
 #
 $query="SELECT value from applis where name='url_accueil'";
 $result=@mysql_query($query);
 if ($result) {
-    while ($r=@mysql_fetch_array($result)) 
+    while ($r=@mysql_fetch_array($result))
                $url_accueil=$r["value"];
 }
 $query="SELECT value from params where name='VER'";
 $result=@mysql_query($query);
 if ($result) {
-    while ($r=@mysql_fetch_array($result)) 
+    while ($r=@mysql_fetch_array($result))
                $VER=$r["value"];
 }
 @mysql_free_result($result);
@@ -50,7 +64,7 @@ elseif ( ! isset($urluse) ) {
                 # en attendant de rectifier les paquets modules
                 if ( $r->name=="smbwebclient" )
                     $urluse = "../".$r->name."/smbwebclient.php";
-                elseif ( $r->name=="squirrelmail" ) 
+                elseif ( $r->name=="squirrelmail" )
                     $urluse="../squirrelmail/src/redirect.php";
                 else $urluse = "../".$r->name."/";
                 $module=1;
@@ -60,7 +74,7 @@ elseif ( ! isset($urluse) ) {
     mysql_free_result($result);
 }
 if (  ! isset ($module) && ! isset($urluse) ) {
-    # Cas des plugins 
+    # Cas des plugins
     $query="SELECT chemin, name, value from applis where type='P' OR type='N' order by name";
     $result=mysql_query($query);
     if ($result) {
@@ -71,19 +85,19 @@ if (  ! isset ($module) && ! isset($urluse) ) {
         }
     }
     mysql_free_result($result);
-} 
+}
 if ( ! isset ($urluse) ) $urluse=$url_accueil;
 #
 # Detection de l'origine de la requete
 #
-list ($ip_client_prefix) = explode (".", remote_ip()); 
+list ($ip_client_prefix) = explode (".", remote_ip());
 list ($ip_serv_prefix) = explode (".",getenv("SERVER_ADDR"));
 if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
 #
-# Determination du groupe principal de l'utilisateur connecté
+# Determination du groupe principal de l'utilisateur connecte
 #
-list ($idpers, $login)= isauth();
-$group=people_get_group ($login); 
+#list ($idpers, $login)= isauth();
+$group=people_get_group ($login);
 #
 # TimeStamp
 #
@@ -91,7 +105,7 @@ $date=date("YmdHis");
 #
 # Enregistrement dans la table statusages
 #
-//$result=mysql_db_query("$DBAUTH","INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')", $authlink);
+$use=mysql_real_escape_string($use);
 $query="INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')";
 $result=@mysql_query($query, $authlink);
 #

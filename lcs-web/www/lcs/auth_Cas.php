@@ -1,5 +1,5 @@
 <?php
-/* lcs/auth_ent.php version du :  16/03/2012 Renomme lcs/auth_Cas.php*/
+/* lcs/auth_ent.php version du :  28/03/2012 Renomme lcs/auth_Cas.php*/
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("./includes/jlcipher.inc.php");
@@ -27,7 +27,8 @@ if (isset($_REQUEST['logout'])) {
 // If authenticate
 if (!mysql_select_db($DBAUTH, $authlink)) 
 	die ("S&#233;lection de base de donn&#233;es impossible.");
-$query="select login_lcs from ent_lcs where id_ent='".phpCAS::getUser()."'";
+$user_escp=mysql_real_escape_string(phpCAS::getUser());	
+$query="select login_lcs from ent_lcs where id_ent='$user_escp'";
 $result=mysql_query($query,$authlink);
 
 if ($result) {
@@ -47,12 +48,12 @@ elseif (mysql_num_rows($result)==1)
 	//Open LCS session
 	$retour= mysql_fetch_array($result);
 	$login=$retour[0];
-
-    $new_password = decodekey($_POST['string_new_mdp']);
+	$login_escp=mysql_real_escape_string($login);
+	$new_password = decodekey($_POST['string_new_mdp']);
 	// Open session and write in sessions table of lcs_db
-    $query="SELECT id, stat FROM personne WHERE login='$login'";
-    $result=@mysql_query($query,$authlink);
-    if ($result && mysql_num_rows($result)) 
+	$query="SELECT id, stat FROM personne WHERE login='$login_escp'";
+	$result=@mysql_query($query,$authlink);
+	if ($result && mysql_num_rows($result)) 
 		{
 		$idpers=mysql_result($result,0,0);
 		$stat=mysql_result($result,0,1)+1;
@@ -61,16 +62,16 @@ elseif (mysql_num_rows($result)==1)
 	else 
 		{
 		// The login is not in the base... Create entry
-		$query="INSERT INTO personne  VALUES ('', '', '', '$login', '')";
-		$result=@mysql_query($query,$authlink);
-		$query="SELECT id, stat FROM personne WHERE login='$login'";
+		$query="INSERT INTO personne  VALUES ('', '', '', '$login_escp', '')";
+		$result=@mysql_query($query,$authlink);		
+		$query="SELECT id, stat FROM personne WHERE login='$login_escp'";
 		$result=@mysql_query($query,$authlink);
 		if ($result && mysql_num_rows($result))
 			{
 			$idpers=mysql_result($result,0,0);
 			$stat=mysql_result($result,0,1)+1;
 			mysql_free_result($result);
-            }
+         }
 		}
 	$sessid=mksessid();
 	//Post LCS cookie
@@ -78,13 +79,15 @@ elseif (mysql_num_rows($result)==1)
 	// Read client IP
 	$ip = remote_ip();
 	// Write session and release table personne with stats
-	$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers','$ip')";
+	$ip_escp=mysql_real_escape_string($ip);
+	$idpers_escp=mysql_real_escape_string($idpers);
+	$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers_escp','$ip_escp')";
 	$result=@mysql_query($query,$authlink);
-	$query="UPDATE personne SET stat=$stat WHERE id=$idpers";
+	$query="UPDATE personne SET stat=$stat WHERE id=$idpers_escp";
 	$result=@mysql_query($query,$authlink);
 	// Generate token for local CAS service 
 	$token = substr(sha1(uniqid('', TRUE)),0,30);
-	$query="UPDATE ent_lcs SET token='$token' WHERE login_lcs='$login'";
+	$query="UPDATE ent_lcs SET token='$token' WHERE login_lcs='$login_escp'";
 	$result=@mysql_query($query,$authlink);
 	// Log acces authentication in /var/log/lcs/acces.log
 	set_act_login($idpers);
@@ -97,13 +100,13 @@ elseif (mysql_num_rows($result)==1)
 	// Statusage
 	// Detect from where ? LAN or WAN
 	list ($ip_client_prefix) = explode (".", remote_ip()); 
-    list ($ip_serv_prefix) = explode (".",getenv("SERVER_ADDR"));
-    if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
+   list ($ip_serv_prefix) = explode (".",getenv("SERVER_ADDR"));
+   if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
 	$date=date("YmdHis");
 	// record in statusage table
 	if (!@mysql_select_db($DBAUTH, $authlink)) 
 		die ("S&#233;lection de base de donn&#233;es impossible.");
-	$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
+	$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login_escp')";
 	$result=@mysql_query($query,$authlink);
 	// Open Spip session if spip is install
 	if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") )

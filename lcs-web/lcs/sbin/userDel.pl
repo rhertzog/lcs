@@ -1,23 +1,29 @@
 #!/usr/bin/perl
-
+# userDel.pl 22/02/2014
 require '/etc/LcSeConfig.ph';
 
-die("Erreur d'argument.\n") if ($#ARGV != 0);
+die("ERR argument.\n") if ($#ARGV != 0);
 $uid = shift @ARGV;
 
+die ("ERR : Empty login.\n") if $uid eq '';
+
+die ("ERR : No root login.\n") if $uid eq 'root';
+
+die ("ERR : Improper login.\n") if ($uid =~ m/[^a-z0-9._-]/);
+
+$res = `ldapsearch -xLLL uid="$uid" | grep -c "uid:"`;
+die ("ERR : Unknow login. \n") if $res == 0;
+
 $dn = 'uid=' . $uid . ',' . $peopleDn;
-#$uid =~ /^(\w*)\.(\w*)$/;
+$res = system("/usr/share/lcs/sbin/entryDel.pl $dn");
+
+# Prepare Database name
 $dbName = $uid;
 $dbName =~ s/\.//;
 $dbName =~ s/\-//;
 $dbName =~ s/_//;
 $dbName .= '_db';
-
-die if $uid eq '';
-
-$res = system("/usr/share/lcs/sbin/entryDel.pl $dn");
-
-# Suppression de la base de données
+# Erase database
 open SQL, ">/tmp/UserSql.tmp";
 print SQL
   "use mysql;\n",
@@ -28,10 +34,10 @@ print SQL
 system("mysqladmin -f -u$mysqlServerUsername -p$mysqlServerPw drop $dbName");
 system("mysql -f -u$mysqlServerUsername -p$mysqlServerPw < /tmp/UserSql.tmp");
 
-# Suppression du home perso...
-system("rm -r /home/$uid");
+# Remove user home
+system("rm -rf /home/$uid");
 
-# Nettoyage
+# Cleaning
 system("rm /tmp/UserSql.tmp");
 
 exit O;

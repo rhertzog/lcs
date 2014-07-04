@@ -1,8 +1,6 @@
-Cmnd_Alias LCS = /usr/share/lcs/scripts/mkhdir.sh, /usr/share/lcs/scripts/webperso.sh, /usr/share/lcs/scripts/chacces.sh, /usr/share/lcs/scripts/createmaildir.sh
-Cmnd_Alias LCS1 = /usr/share/lcs/scripts/action.sh, /usr/share/lcs/scripts/edit_params.sh, /usr/share/lcs/sbin/delHome.pl, /usr/share/lcs/sbin/userDel.pl
-Cmnd_Alias LCS2 = /usr/share/lcs/scripts/mkSlapdConf.sh, /usr/share/lcs/sbin/mkslurpd
-Cmnd_Alias PLUGINS = /usr/share/lcs/scripts/execution_script_plugin.sh
-www-data ALL=NOPASSWD:LCS,NOPASSWD:LCS1,NOPASSWD:LCS2,NOPASSWD:PLUGINS
+Cmnd_Alias LCS = /usr/share/lcs/scripts/mkhdir.sh, /usr/share/lcs/scripts/webperso.sh, /usr/share/lcs/scripts/createmaildir.sh, /usr/share/lcs/scripts/redir.sh
+Cmnd_Alias LCS1 = /usr/share/lcs/scripts/action.sh, /usr/share/lcs/scripts/edit_params.sh, /usr/share/lcs/scripts/gestkeys.sh, /usr/share/lcs/sbin/delHome.pl, /usr/share/lcs/sbin/userDel.pl
+www-data ALL=NOPASSWD:LCS,NOPASSWD:LCS1
 
 Cmnd_Alias LISTDIFFLDAP =  /usr/share/lcs/scripts/eff_liste_diff.sh, /usr/share/lcs/scripts/add_liste_diff.sh
 www-data ALL=NOPASSWD:LISTDIFFLDAP
@@ -10,11 +8,8 @@ www-data ALL=NOPASSWD:LISTDIFFLDAP
 Cmnd_Alias IMPORTSCONET = /usr/share/lcs/scripts/run_import_comptes.sh, /usr/share/lcs/scripts/sauvegarde_ldap_avant_import.sh
 www-data ALL=NOPASSWD:IMPORTSCONET
 
-Cmnd_Alias PAQUETS = /usr/share/lcs/scripts/gestpack.sh 
+Cmnd_Alias PAQUETS = /usr/share/lcs/scripts/gestpack.sh, /usr/share/lcs/scripts/action_modul.sh, /usr/share/lcs/scripts/fin_mod.sh 
 www-data ALL=NOPASSWD:PAQUETS
-
-Cmnd_Alias USERDIRPHP = /usr/share/lcs/scripts/userdirphp.sh
-www-data ALL=NOPASSWD:USERDIRPHP
 
 Cmnd_Alias LDAPEDU = /usr/sbin/ldapedu-server-config-ad-auth, /usr/share/lcs/scripts/lcs2ldapedu.sh
 www-data ALL=NOPASSWD:LDAPEDU

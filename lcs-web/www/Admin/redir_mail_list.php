@@ -1,25 +1,29 @@
 <?php
-/* =============================================
-   Projet LCS-SE3
-   Administration serveur LCS 
-   execution requetes jqGrid
-   redir_mail_list.php
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
    Equipe Tice academie de Caen
-   25/05/2012 
    Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
 
+$login=$_SESSION['login'];
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
-list ($idpers, $login)= isauth();
+
 if (ldap_get_right("lcs_is_admin",$login)!="Y") exit;
-//recherche
-$wh = "";
-$searchOn = $_REQUEST['_search'];
+//configuration objet
+  include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  $wh = "";
+$searchOn = $purifier->purify($_REQUEST['_search']);
 if($searchOn=='true') {
-	$fld = $_REQUEST['searchField'];
-	$fldata = $_REQUEST['searchString'];
-		$foper = $_REQUEST['searchOper'];
+	$fld = $purifier->purify($_REQUEST['searchField']);
+	$fldata = $purifier->purify($_REQUEST['searchString']);
+		$foper = $purifier->purify($_REQUEST['searchOper']);
 		// construct where
 		$wh .= " AND ".$fld;
 		switch ($foper) {
@@ -81,46 +85,47 @@ if($searchOn=='true') {
 	}
 //suppression
 if (isset($_POST['oper'])){
-$oper=$_POST['oper']; 
-$del_ids=mb_split(",",$_POST['id']);
+$oper=$purifier->purify($_POST['oper']);
+$idp=$purifier->purify($_POST['id']);
+$del_ids=mb_split(",",$idp);
 for ($i=0;$i<count($del_ids);$i++) {
 $SQL = "DELETE from `redirmail` where `id`=".$del_ids[$i];
-$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error()); 
+$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error());
 }
 }else {
 //affichage
-$page = $_GET['page']; 
-$limit = $_GET['rows'];  
-$sidx = $_GET['sidx']; 
-$sord = $_GET['sord'];  
+$page = $purifier->purify($_GET['page']);
+$limit = $purifier->purify($_GET['rows']);
+$sidx = $purifier->purify($_GET['sidx']);
+$sord =$purifier->purify( $_GET['sord']);
 if(!$sidx) $sidx =1;
-$query= "SELECT COUNT(*) AS count FROM `redirmail`"; 
+$query= "SELECT COUNT(*) AS count FROM `redirmail`";
 $result=mysql_query($query);
-$row = mysql_fetch_array($result,MYSQL_ASSOC); 
+$row = mysql_fetch_array($result,MYSQL_ASSOC);
 $count = $row['count'];
-if( $count >0 ) { $total_pages = ceil($count/$limit); } else { $total_pages = 0; } 
-if ($page > $total_pages) $page=$total_pages; $start = $limit*$page - $limit; 
+if( $count >0 ) { $total_pages = ceil($count/$limit); } else { $total_pages = 0; }
+if ($page > $total_pages) $page=$total_pages; $start = $limit*$page - $limit;
 $SQL = "SELECT * from `redirmail` where 1 ".$wh." ORDER BY $sidx $sord LIMIT $start , $limit";
-$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error()); 
+$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error());
 if ( stristr($_SERVER["HTTP_ACCEPT"],"application/xhtml+xml") ) {
- header("Content-type: application/xhtml+xml;charset=utf-8"); } 
- else { header("Content-type: text/xml;charset=utf-8"); } 
- $et = ">"; 
- echo "<?xml version='1.0' encoding='utf-8'?$et\n"; 
- echo "<rows>"; 
- echo "<page>".$page."</page>"; 
- echo "<total>".$total_pages."</total>"; 
- echo "<records>".$count."</records>"; 
- while($row = mysql_fetch_array($result,MYSQL_ASSOC)) { 
- echo "<row id='". $row[id]."'>"; 
- echo "<cell>". $row[id]."</cell>"; 
- echo "<cell>". $row[faitpar]."</cell>"; 
- echo "<cell><![CDATA[". $row[pour]."]]></cell>"; 
- echo "<cell>". $row[vers]."</cell>"; 
-echo "<cell>". $row[copie]."</cell>"; 
-echo "<cell>". $row[date]."</cell>"; 
-echo "<cell><![CDATA[". $row[remote_ip]."]]></cell>"; 
-echo "</row>"; } 
-echo "</rows>"; 
+ header("Content-type: application/xhtml+xml;charset=utf-8"); }
+ else { header("Content-type: text/xml;charset=utf-8"); }
+ $et = ">";
+ echo "<?xml version='1.0' encoding='utf-8'?$et\n";
+ echo "<rows>";
+ echo "<page>".$page."</page>";
+ echo "<total>".$total_pages."</total>";
+ echo "<records>".$count."</records>";
+ while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+ echo "<row id='". $row[id]."'>";
+ echo "<cell>". $row[id]."</cell>";
+ echo "<cell>". $row[faitpar]."</cell>";
+ echo "<cell><![CDATA[". $row[pour]."]]></cell>";
+ echo "<cell>". $row[vers]."</cell>";
+echo "<cell>". $row[copie]."</cell>";
+echo "<cell>". $row[date]."</cell>";
+echo "<cell><![CDATA[". $row[remote_ip]."]]></cell>";
+echo "</row>"; }
+echo "</rows>";
 }
 ?>

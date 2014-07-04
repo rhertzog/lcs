@@ -70,8 +70,8 @@ div.alert_msg {
       text-align: center;
       color: #ff8f00;
       font-size: normal;
-      font-weight: normal
-      font-family: arial, helvetica,sans-serif;
+      font-weight: normal;
+      font-family: arial, helvetica,sans-serif
       }
 
 div.pdp {
@@ -79,5 +79,5 @@ div.pdp {
      font-size: small;
      height:50px;
      padding-top: 5px;
-     border-top: solid 2px #486591;
+     border-top: solid 2px #486591
 }

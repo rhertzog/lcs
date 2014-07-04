@@ -1,5 +1,15 @@
 <?php
-
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 05/06/2014
+   ============================================= */
+   
+// LCS Security check 
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
    /**
 
@@ -25,11 +35,15 @@
    */
 
 
+        //configuration purifier object
+        include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+        $config = HTMLPurifier_Config::createDefault();
+        $purifier = new HTMLPurifier($config);
 
 	include "se3orlcs_import_sconet.php";
 
 	if (is_admin("Annu_is_admin",$login)=="Y") {
-                require ( $pathlcsorse3."config.inc.php");
+		require ( $pathlcsorse3."config.inc.php");
 		require ( $path_crob_ldap_functions."crob_ldap_functions.php");
 
 		// echo "<h2>Import des comptes, groupes,...</h2>\n";
@@ -40,15 +54,17 @@
 
 			echo "<h2>Suppression des fichiers CSV g&#233;n&#233;r&#233;s</h2>\n";
 			echo "<blockquote>\n";
-			// Filtrer le $_GET['dossier']... A FAIRE
-			if(file_exists($racine_www.$chemin_csv."/".$_GET['dossier'])){
+			// $_GET['dossier'] purify
+			$pur_dossier =  realpath($purifier->purify($pur_dossier));
+			
+			if(file_exists($racine_www.$chemin_csv."/".$pur_dossier)){
 
-				if(is_dir($racine_www.$chemin_csv."/".$_GET['dossier'])){
+				if(is_dir($racine_www.$chemin_csv."/".$pur_dossier)){
 					echo "<p>Suppression de:</p>\n";
 					echo "<ul>\n";
-					if(file_exists($racine_www.$chemin_csv."/".$_GET['dossier']."/f_ele.txt")){
+					if(file_exists($racine_www.$chemin_csv."/".$pur_dossier."/f_ele.txt")){
 						echo "<li>f_ele.txt: ";
-						if(unlink($racine_www.$chemin_csv."/".$_GET['dossier']."/f_ele.txt")){
+						if(unlink($racine_www.$chemin_csv."/".$pur_dossier."/f_ele.txt")){
 							echo "<font color='green'>SUCCES</font>";
 						}
 						else{
@@ -56,9 +72,9 @@
 						}
 						echo "</li>\n";
 					}
-					if(file_exists($racine_www.$chemin_csv."/".$_GET['dossier']."/f_div.txt")){
+					if(file_exists($racine_www.$chemin_csv."/".$pur_dossier."/f_div.txt")){
 						echo "<li>f_div.txt: ";
-						if(unlink($racine_www.$chemin_csv."/".$_GET['dossier']."/f_div.txt")){
+						if(unlink($racine_www.$chemin_csv."/".$pur_dossier."/f_div.txt")){
 							echo "<font color='green'>SUCCES</font>";
 						}
 						else{
@@ -66,9 +82,9 @@
 						}
 						echo "</li>\n";
 					}
-					if(file_exists($racine_www.$chemin_csv."/".$_GET['dossier']."/f_men.txt")){
+					if(file_exists($racine_www.$chemin_csv."/".$pur_dossier."/f_men.txt")){
 						echo "<li>f_men.txt: ";
-						if(unlink($racine_www.$chemin_csv."/".$_GET['dossier']."/f_men.txt")){
+						if(unlink($racine_www.$chemin_csv."/".$pur_dossier."/f_men.txt")){
 							echo "<font color='green'>SUCCES</font>";
 						}
 						else{
@@ -76,9 +92,9 @@
 						}
 						echo "</li>\n";
 					}
-					if(file_exists($racine_www.$chemin_csv."/".$_GET['dossier']."/f_wind.txt")){
+					if(file_exists($racine_www.$chemin_csv."/".$pur_dossier."/f_wind.txt")){
 						echo "<li>f_wind.txt: ";
-						if(unlink($racine_www.$chemin_csv."/".$_GET['dossier']."/f_wind.txt")){
+						if(unlink($racine_www.$chemin_csv."/".$pur_dossier."/f_wind.txt")){
 							echo "<font color='green'>SUCCES</font>";
 						}
 						else{
@@ -86,9 +102,9 @@
 						}
 						echo "</li>\n";
 					}
-					//if(disk_total_space($racine_www."/Admin/csv/".$_GET['dossier'])==0){
-						echo "<li>Dossier ".$racine_www.$chemin_csv."/".$_GET['dossier'].": ";
-						if(rmdir($racine_www.$chemin_csv."/".$_GET['dossier'])){
+					//if(disk_total_space($racine_www."/Admin/csv/".$pur_dossier)==0){
+						echo "<li>Dossier ".$racine_www.$chemin_csv."/".$pur_dossier.": ";
+						if(rmdir($racine_www.$chemin_csv."/".$pur_dossier)){
 							echo "<font color='green'>SUCCES</font>";
 						}
 						else{
@@ -112,8 +128,10 @@
 			exit();
 		}
 
-		if(!isset($_POST['is_posted'])){
-			$deverrouiller=isset($_GET['deverrouiller']) ? $_GET['deverrouiller'] : 'n';
+		$is_posted=$purifier->purify($_POST['is_posted']);
+		if( $is_posted != 'yes' ) {
+			
+			$deverrouiller=$purifier->purify($_GET['deverrouiller']);
 
 			// Deverrouillage si un import etait annonce deja en cours:
 			if($deverrouiller=='y'){
@@ -146,16 +164,16 @@
 				$res2=mysql_query($sql);
 				if(mysql_num_rows($res1)>0){
 					$ligtmp=mysql_fetch_object($res2);
-					echo ":<br />\n<a href='$urlse3/Admin/result.".$ligtmp->value.".html' target='_blank'>$urlse3/Admin/result.".$ligtmp->value.".html</a>";
+					echo ":<br />\n<a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 				}
 
     echo "<br />\n";
 				echo "Si vous &#234;tes certain que ce n'est pas le cas, vous pouvez faire sauter le verrou.<br />Sinon, il vaut mieux patienter quelques minutes.</p>\n";
 
-				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y'>Faire sauter le verrou</a>.</p>\n";
+				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."'>Faire sauter le verrou</a>.</p>\n";
 			}
 			else{
-				echo "<h3>Choix des fichiers source</h3>\n";
+				echo "<h2><u>Choix des fichiers source</u></h2>\n";
 
 				// ===========================================================
 				// AJOUTS: 20070914 boireaus
@@ -184,7 +202,7 @@
 				echo "<tr>\n";
 				echo "<td width='45%'><input type='radio' id='type_csv' name='type_fichier_eleves' value='csv' onchange=\"document.getElementById('id_csv').style.display='';document.getElementById('id_xml').style.display='none';\" /> Export CSV de Sconet";
 				echo "&nbsp;&nbsp;";
-				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br />Application Sconet/Acc&#232;s Base Eleves.<br />Choisir l\'ann&#233;e \(<i>en cours ou en pr&#233;paration selon que la bascule est ou non effectu&#233;e</i>\) Exploitation-Extraction et choisir personnalis&#233;e.<br />Les champs requis sont:<ul><li>Nom</li><li>Pr&#233;nom 1</li><li>Date de naissance</li><li>N° Interne</li><li>Sexe</li><li>Division</li>')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
+				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('<b>Le cheminement pour r&#233;aliser cette extraction depuis Sconet est:</b><br />Application Sconet/Acc&#232;s Base Eleves.<br />Choisir l\'ann&#233;e \(<i>en cours ou en pr&#233;paration selon que la bascule est ou non effectu&#233;e</i>\) Exploitation-Extraction et choisir personnalis&#233;e.<br />Les champs requis sont:<ul><li>Nom</li><li>Pr&#233;nom 1</li><li>Date de naissance</li><li>Nï¿½ Interne</li><li>Sexe</li><li>Division</li>')")."\"><img name=\"action_image1\"  src=\"$helpinfo\"></u>\n";
 
 				echo "</td>\n";
 				echo "<td width='10%' align='center'>ou</td>\n";
@@ -203,7 +221,7 @@
 				echo "<li>Nom</li>\n";
 				echo "<li>Pr&#233;nom 1</li>\n";
 				echo "<li>Date de naissance</li>\n";
-				echo "<li>N° Interne</li>\n";
+				echo "<li>Nï¿½ Interne</li>\n";
 				echo "<li>Sexe</li>\n";
 				echo "<li>Division</li>\n";
 				echo "</ul>\n";
@@ -263,7 +281,7 @@
 				echo "</p>\n";
 				echo "<br />\n";
 
-				echo "<h3>Configuration de l'import</h3>";
+				echo "<h2><u>Configuration de l'import</u></h2>";
 
 				echo "<h4>Pr&#233;fixe &#233;ventuel : <input type='text' name='prefix' size='5' maxlength='5' value='' />\n";
 				echo "&nbsp;&nbsp;";
@@ -281,13 +299,13 @@
 				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('Dans le mode simulation, les nouveaux comptes et comptes retrouv&#233;s (cr&#233;&#233;s auparavant &#224; la main et pour lesquels l\'employeeNumber n\'est pas renseign&#233;) sont affich&#233;s sans &#234;tre pour autant cr&#233;&#233;s.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
 				echo "</h4>";
 
-
+/*
 				echo "<h4><label for='temoin_creation_fichiers' style='cursor: pointer;'>G&#233;n&#233;rer des fichiers CSV ? </label><input name='temoin_creation_fichiers' id='temoin_creation_fichiers' type='checkbox' value='oui' />\n";
 
 				echo "&nbsp;&nbsp;";
 				echo "<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('L\'import fonctionne tr&#232;s bien automatiquement (sans eux), mais si vous y tenez.')")."\"><img name=\"action_image5\"  src=\"$helpinfo\"></u>\n";
 				echo "</h4>";
-
+*/
 				echo "<h4><label for='chrono' style='cursor: pointer;'>Afficher les dates et heures dans l'import? </label><input name='chrono' id='chrono' type='checkbox' value='y' />\n";
 
 				echo "&nbsp;&nbsp;";
@@ -297,7 +315,7 @@
 
 				// ===========================================================
 				// AJOUTS: 20070914 boireaus
-				echo "<h4>Param&#232;tres de l'import</h4>\n";
+				echo "<h2><u>Param&#232;tres de l'import</u></h2>\n";
 				echo "<ul>\n";
 				echo "<li>\n";
 				echo "<label for='creer_equipes_vides' style='cursor: pointer;'>Cr&#233;er les Equipes sans les peupler ? </label><input name='creer_equipes_vides' id='creer_equipes_vides' type='checkbox' value='y' />\n";
@@ -337,7 +355,7 @@
 
 
 				echo "<input type='hidden' name='is_posted' value='yes'>\n";
-
+                                                                        echo '<input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
 				//echo "<p><input type='submit' value='Valider'></p>\n";
 				echo "<p><input type='button' value='Valider' onClick='verif_et_valide()' /></p>\n";
 
@@ -396,13 +414,13 @@
 				$res2=mysql_query($sql);
 				if(mysql_num_rows($res1)>0){
 					$ligtmp=mysql_fetch_object($res2);
-					echo ":<br />\n<a href='$urlse3/Admin/result.".$ligtmp->value.".html' target='_blank'>$urlse3/Admin/result.".$ligtmp->value.".html</a>";
+					echo ":<br />\n<a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 				}
 
 				echo "<br />\n";
 				echo "Si vous &#234;tes certain que ce n'est pas le cas, vous pouvez faire sauter le verrou.<br />Sinon, il vaut mieux patienter quelques minutes.</p>\n";
 
-				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y'>Faire sauter le verrou</a>.</p>\n";
+				echo "<p><a href='".$_SERVER['PHP_SELF']."?deverrouiller=y&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."'>Faire sauter le verrou</a>.</p>\n";
 				include $pathlcsorse3."pdp.inc.php";
 				exit();
 			}
@@ -432,14 +450,14 @@
 					$res2=mysql_query($sql);
 					if(mysql_num_rows($res1)>0){
 						$ligtmp=mysql_fetch_object($res2);
-						echo ": <a href='$urlse3/Admin/result.".$ligtmp->value.".html' target='_blank'>$urlse3/Admin/result.".$ligtmp->value.".html</a>";
+						echo ": <a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 					}
 					else{
 						echo ".";
 					}
 
 					echo("<br />Veuillez patienter.</p>\n");
-					echo("<p><a href='".$_SERVER['PHP_SELF']."'>Retour</a>.</p>\n");
+					echo("<p><a href='".$_SERVER['PHP_SELF']."&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."'>Retour</a>.</p>\n");
 					echo("</body>\n</html>\n");
 					exit();
 				}
@@ -466,7 +484,7 @@
 
 			if(($_FILES["eleves_file"]["name"]=="")&&($_FILES["sts_xml_file"]["name"]=="")){
 				echo "<p style='color:red;'><b>ERREUR:</b> Aucun fichier n'a &#233;t&#233; fourni!</p>\n";
-				echo "<p><a href='".$_SERVER['PHP_SELF']."'>Retour</a>.</p>\n";
+				echo "<p><a href='".$_SERVER['PHP_SELF']."&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."'>Retour</a>.</p>\n";
 				echo "</body>\n</html>\n";
 				exit();
 			}
@@ -478,7 +496,10 @@
 
 
 
-			$type_fichier_eleves=$_POST['type_fichier_eleves'];
+
+			$type_fichier_eleves=$purifier->purify($_POST['type_fichier_eleves']);
+			
+			
 
 			$tmp_eleves_file=$_FILES['eleves_file']['tmp_name'];
 			$eleves_file=$_FILES['eleves_file']['name'];
@@ -522,24 +543,24 @@
 				$source_file=stripslashes("$tmp_eleves_file");
 				$res_copy=copy("$source_file" , "$dest_file");
 
-				// Si jamais un XML non dézippé a été fourni
+				// Si jamais un XML non dï¿½zippï¿½ a ï¿½tï¿½ fourni
 				$extension_fichier_emis=strtolower(strrchr($eleves_file,"."));
 				if (($extension_fichier_emis==".zip")||($_FILES['eleves_file']['type']=="application/zip")) {
 
 					//if(!file_exists($racine_www."/includes/pclzip.lib.php")) {
 					if(!file_exists($chemin_www_includes."/pclzip.lib.php")) {
-						echo "<p style='color:red;'>Erreur : Un fichier ZIP a été fourni, mais la bibliothèque de dézippage est absente.</p>\n";
+						echo "<p style='color:red;'>Erreur : Un fichier ZIP a ï¿½tï¿½ fourni, mais la bibliothï¿½que de dï¿½zippage est absente.</p>\n";
 						require("../includes/pdp.inc.php");
 						die();
 					}
 					else {
 						//$unzipped_max_filesize=getSettingValue('unzipped_max_filesize')*1024*1024;
 
-						// On considère un XML élève de 20Mo maxi
+						// On considï¿½re un XML ï¿½lï¿½ve de 20Mo maxi
 						$unzipped_max_filesize=20*1024*1024;
 
 						// $unzipped_max_filesize = 0    pas de limite de taille pour les fichiers extraits
-						// $unzipped_max_filesize < 0    extraction zip désactivée
+						// $unzipped_max_filesize < 0    extraction zip dï¿½sactivï¿½e
 						if($unzipped_max_filesize>=0) {
 							//require_once('../lib/pclzip.lib.php');
 							require_once('pclzip.lib.php');
@@ -565,14 +586,14 @@
 							//echo "<p>\$unzipped_max_filesize=".$unzipped_max_filesize."</p>\n";
 
 							if(($list_file_zip[0]['size']>$unzipped_max_filesize)&&($unzipped_max_filesize>0)) {
-								echo "<p style='color:red;'>Erreur : La taille du fichier extrait (<i>".$list_file_zip[0]['size']." octets</i>) dépasse la limite paramétrée (<i>$unzipped_max_filesize octets</i>).</p>\n";
+								echo "<p style='color:red;'>Erreur : La taille du fichier extrait (<i>".$list_file_zip[0]['size']." octets</i>) dï¿½passe la limite paramï¿½trï¿½e (<i>$unzipped_max_filesize octets</i>).</p>\n";
 								require("../includes/pdp.inc.php");
 								die();
 							}
 
 							$res_extract=$archive->extract(PCLZIP_OPT_PATH, "$dossier_tmp_import_comptes/");
 							if ($res_extract != 0) {
-								echo "<p>Le fichier uploadé a été dézippé.</p>\n";
+								echo "<p>Le fichier uploadï¿½ a ï¿½tï¿½ dï¿½zippï¿½.</p>\n";
 								$fichier_extrait=$res_extract[0]['filename'];
 								$res_copy=rename("$fichier_extrait" , "$dest_file");
 							}
@@ -648,7 +669,7 @@
 
 
 			//$timestamp=ereg_replace(" ","_",microtime());
-			$echo_file="$racine_www/Admin/result.$timestamp.html";
+			$echo_file="$racine_www/import/result.$timestamp.html";
 			$dest_mode="file";
 			$fich=fopen("$echo_file","w+");
 			fwrite($fich,"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
@@ -706,26 +727,26 @@ decompte(cpt);
 
 
 
-
-			$chrono=isset($_POST['chrono']) ? $_POST['chrono'] : "n";
+			#$chrono=isset($_POST['chrono']) ? $_POST['chrono'] : "n";
+			if ( $_POST['chrono'] == 'y' ) $chrono='y'; else $chrono='n';
 
 
 
 			// ===========================================================
 			// AJOUTS: 20070914 boireaus
-			$creer_equipes_vides=isset($_POST['creer_equipes_vides']) ? $_POST['creer_equipes_vides'] : 'n';
-			$creer_cours=isset($_POST['creer_cours']) ? $_POST['creer_cours'] : 'y';
-			$creer_matieres=isset($_POST['creer_matieres']) ? $_POST['creer_matieres'] : 'y';
+			if ( $_POST['creer_equipes_vides'] == 'y' ) $creer_equipes_vides ='y'; else $creer_equipes_vides ='n';
+			if ( $_POST['creer_cours'] == 'n' ) $creer_cours ='n'; else $creer_cours ='y';
+			if ( $_POST['creer_matieres'] == 'n' ) $creer_matieres ='n'; else $creer_matieres ='y';
 			// ===========================================================
-			$corriger_gecos_si_diff=isset($_POST['corriger_gecos_si_diff']) ? $_POST['corriger_gecos_si_diff'] : 'n';
-			$alimenter_groupe_pp=isset($_POST['alimenter_groupe_pp']) ? $_POST['alimenter_groupe_pp'] : 'n';
+			if ( $_POST['corriger_gecos_si_diff'] == 'y' ) $corriger_gecos_si_diff ='y'; else $corriger_gecos_si_diff ='n';
+			if ( $_POST['alimenter_groupe_pp'] == 'y' ) $alimenter_groupe_pp ='y'; else $alimenter_groupe_pp ='n';
 
 
 			// Dossier pour les CSV
 
 			//$temoin_creation_fichiers="non";
 			//$temoin_creation_fichiers="oui";
-			$temoin_creation_fichiers=isset($_POST['temoin_creation_fichiers']) ? $_POST['temoin_creation_fichiers'] : "non";
+			if ( $_POST['temoin_creation_fichiers'] == 'oui' ) $temoin_creation_fichiers ='oui'; else $temoin_creation_fichiers ='non';
 			if($temoin_creation_fichiers!="non"){
 				if(!file_exists($racine_www.$chemin_csv)){
 					mkdir($racine_www.$chemin_csv);
@@ -753,15 +774,16 @@ decompte(cpt);
 
 
 			// Importation annuelle
-			$annuelle=isset($_POST['annuelle']) ? $_POST['annuelle'] : "n";
+			if ( $_POST['annuelle'] == 'y' ) $annuelle ='y'; else $annuelle ='n';
 
 			// Mode simulation
-			$simulation=isset($_POST['simulation']) ? $_POST['simulation'] : "n";
+			if ( $_POST['simulation'] == 'y' ) $simulation ='y'; else $simulation ='n';
 
 			// Prefixe LP/LEGT,...
-			$prefix=isset($_POST['prefix']) ? $_POST['prefix'] : "";
+			$prefix=isset($_POST['prefix']) ? $purifier->purify($_POST['prefix']) : "";
+			
 			#$prefix=strtoupper(ereg_replace("[^A-Za-z0-9_]", "", strtr(remplace_accents($prefix)," ","_")));
-                        $prefix=strtoupper(ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
+            $prefix=strtoupper(ereg_replace("[^A-Za-z0-9]", "", remplace_accents($prefix)));
 			if(strlen(ereg_replace("_","",$prefix))==0) $prefix="";
 			if (strlen($prefix)>0) $prefix=$prefix."_";
 
@@ -804,9 +826,9 @@ decompte(cpt);
 
 			//echo "\$resultat=exec(\"/usr/bin/at -f /var/remote_adm/import_comptes.sh $heure_aujourdhui:$d_minute_aujourdhui\",$retour);";
 			//$resultat=exec("/usr/bin/at -f $dossier_tmp_import_comptes/import_comptes.sh $heure_aujourdhui:$d_minute_aujourdhui",$retour);
-                        // sudo
-                        //echo "DBG >>/usr/bin/sudo $chemin/run_import_comptes.sh $dossier_tmp_import_comptes<br />";
-                        $resultat=exec("/usr/bin/sudo $chemin/run_import_comptes.sh $dossier_tmp_import_comptes", $retour);
+            // sudo
+            //echo "DBG >>/usr/bin/sudo $chemin/run_import_comptes.sh $dossier_tmp_import_comptes<br />";
+            $resultat=exec("/usr/bin/sudo $chemin/run_import_comptes.sh ". escapeshellarg($dossier_tmp_import_comptes), $retour);
 
 			if(count($retour)>0){
 				echo "<p>Il semble que la programmation ait &#233;chou&#233;...";
@@ -825,7 +847,7 @@ decompte(cpt);
 			if($prefix!=""){echo " avec le pr&#233;fixe <b>$prefix</b>";}
 			echo ".</p>\n";
 
-			echo "<p>Patientez un peu, puis suivez ce lien: <a href='../Admin/result.$timestamp.html' target='_blank'>R&#233;sultat</a></p>\n";
+			echo "<p>Patientez un peu, puis suivez ce lien: <a href='../import/result.$timestamp.html' target='_blank'>R&#233;sultat</a></p>\n";
 
 			echo("<p><i>NOTES:</i></p>\n");
 			echo("<ul>\n");
@@ -846,7 +868,7 @@ decompte(cpt);
 /*
 			//echo "On va lancer le script PHP.";
 
-			$type_fichier_eleves=$_POST['type_fichier_eleves'];
+			$type_fichier_eleves=$purifier->purify($_POST['type_fichier_eleves']);
 
 			$tmp_eleves_file=$_FILES['eleves_file']['tmp_name'];
 			$eleves_file=$_FILES['eleves_file']['name'];

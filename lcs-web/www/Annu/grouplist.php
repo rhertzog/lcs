@@ -1,24 +1,29 @@
 <?php
-
 /* =============================================
    Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/grouplist.php
-   * @auteurs Equipe Tice academie de Caen
-   Derniere modifications : 21/05/2010
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
    Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-
+$login=$_SESSION['login'];
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
 include "includes/ihm.inc.php";
 
 header_html();
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
 
-$filter=$_GET['filter'];
+if (count($_GET)>0) {
+	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$filter=$purifier->purify($_GET['filter']);
+}
 
 if ((is_admin("Annu_is_admin",$login)=="Y") || (is_admin("sovajon_is_admin",$login)=="Y")) {
 	$group=search_groups ("(cn=".$filter.")");
@@ -52,7 +57,7 @@ if ((is_admin("Annu_is_admin",$login)=="Y") || (is_admin("sovajon_is_admin",$log
 		}
 		echo "</table>\n";
 
-		echo "<p>G&#233;n&#233;rer un <a href='grouplist_csv.php?filter=$filter' target='blank'>export CSV du groupe</a></p>\n";
+		echo "<p>G&#233;n&#233;rer un <a href='grouplist_csv.php?filter=$filter&jeton=".md5($_SESSION['token'].htmlentities("/Annu/grouplist_csv.php"))."' target='blank'>export CSV du groupe</a></p>\n";
   	} else {
     		echo " <b>".gettext("Pas de membres")." </b> ".gettext(" dans le groupe")." $filter.<br />";
   	}

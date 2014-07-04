@@ -31,10 +31,6 @@ push @args, $optionalArg if $groupType eq 'posixGroup';
 $res = 0xffff & system @args;
 die("Erreur lors de l'ajoût du groupe.\n") if $res != 0;
 
-# Generate samba's configuration (group's shares)
-`sudo /usr/share/lcs/scripts/execution_script_plugin.sh /usr/share/lcs/sbin/lcs-smb-config &>/dev/null &`
-    if(-x "/usr/share/lcs/sbin/lcs-smb-config");
-
 exit 0;
 
 sub getFirstFreeGid {

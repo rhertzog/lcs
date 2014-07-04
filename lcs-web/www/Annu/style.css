@@ -119,8 +119,8 @@ div.alert_msg {
       text-align: center;
       color: #ff8f00;
       font-size: normal;
-      font-weight: normal
-      font-family: arial, helvetica,sans-serif;
+      font-weight: normal;
+      font-family: arial, helvetica,sans-serif
       }
 
 div#container {
@@ -207,7 +207,7 @@ blockquote.note {
 	color: gray;
 	}
 tt.shell {
-	color: #ff8f00; 
+	color: #ff8f00;
 	font-size: medium;
         }
 

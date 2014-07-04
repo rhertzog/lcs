@@ -1,26 +1,33 @@
 <?php
 /* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/add_list_users_group.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
    Equipe Tice academie de Caen
-   26/10/2009
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-  
-//modif register
-$new_uids=$_POST['new_uids'];
-if ( isset($_POST['cn']))  $cn = $_POST['cn'];
-elseif ( isset($_GET['cn'])) $cn = $_GET['cn'];
-$add_list_users_group=$_POST['add_list_users_group']; 
-  
+$login=$_SESSION['login'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+
+
+if ( count($_GET)>0 || count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+	if ( count($_POST['new_uids'])>0 ) $new_uids=$purifier->purifyArray($_POST['new_uids']);
+	if ( isset($_POST['cn']))  $cn = $purifier->purify($_POST['cn']);
+	elseif ( isset($_GET['cn'])) $cn = $purifier->purify($_GET['cn']);
+	if ( isset($_POST['add_list_users_group'])) $add_list_users_group=$purifier->purify($_POST['add_list_users_group']);
+}
+
+
   header_html();
   aff_trailer ("31");
    if (is_admin("Annu_is_admin",$login)=="Y") {
@@ -51,10 +58,10 @@ $add_list_users_group=$_POST['add_list_users_group'];
       } elseif   ( mb_ereg ("Classe_", $cn) ) {
         // Recherche de la liste des Eleves appartenant a une classe
         $uids_eleves_classes =   search_uids ("(cn=Classe_*)", "half");
-        
+
         // Recherche de la liste des Eleves
         $uids_eleves = search_uids ("(cn=Eleves)", "half");
-        
+
         // Recherche des Eleves qui ne sont pas affect&#233;s &#224; une classe
         $k=0;
         for ($i=0; $i < count($uids_eleves); $i++ ) {
@@ -84,6 +91,7 @@ $add_list_users_group=$_POST['add_list_users_group'];
          }
         $form="</select></p>\n";
         $form.="<input type=\"hidden\" name=\"cn\" value=\"$cn\">\n";
+         $form.='<input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
         $form.="<input type=\"hidden\" name=\"add_list_users_group\" value=\"true\">\n";
         $form.="<input type=\"reset\" value=\"R&#233;initialiser la s&#233;lection\">\n";
         $form.="<input type=\"submit\" value=\"Valider\">\n";
@@ -94,9 +102,9 @@ $add_list_users_group=$_POST['add_list_users_group'];
       }
     }   else {
       // Ajout des membres au groupe
-       echo "<H4>Ajout des membres au groupe : <A href=\"group.php?filter=$cn\">$cn</A></H4>\n";
+       echo "<H4>Ajout des membres au groupe : <A href=\"group.php?filter=$cn&jeton=".md5($_SESSION['token'].htmlentities("/Annu/group.php"))."\">$cn</A></H4>\n";
        for ($loop=0; $loop < count ($new_uids) ; $loop++) {
-          exec("$scriptsbinpath/groupAddUser.pl  $new_uids[$loop] $cn" ,$AllOutPut,$ReturnValue);
+          exec("$scriptsbinpath/groupAddUser.pl ". escapeshellarg($new_uids[$loop]) ." ". escapeshellarg($cn) ,$AllOutPut,$ReturnValue);
           echo  "Ajout de l'utilisateur&nbsp;".$new_uids[$loop]."&nbsp;";
           if ($ReturnValue == 0 ) {
             echo "<strong>R&#233;ussi</strong><BR>";

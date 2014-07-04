@@ -1,34 +1,54 @@
-<?php   /* lcs/setup_keys.php maj : 16/09/2011 */ 
+<?php
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+  Derniere modification : 23/05/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
+if (count($_POST)>0) {
+	//configuration objet
+	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+	$config = HTMLPurifier_Config::createDefault();
+	$purifier = new HTMLPurifier($config);
+	//purification des variables
+	$p=$purifier->purify($_POST['p']);
+	$q=$purifier->purify($_POST['q']);
+	$pq=$purifier->purify($_POST['pq']);
+	$d=$purifier->purify($_POST['d']);
+	$e=$purifier->purify($_POST['e']);
+}
 require "./includes/headerauth.inc.php";
 require "../Annu/includes/ldap.inc.php";
 require "../Annu/includes/ihm.inc.php";
 
-list ($idpers,$login)= isauth(); 
-if ($idpers == "0") header("Location:$urlauth");
-
-// Calcul du random seed 
+// Calcul du random seed
 $allow = "abcdef0123456789";
-srand((double)microtime()*1000000); 
-for($j=0; $j<2; $j++) {
-        $RandomSeed .=  $allow[rand()%mb_strlen($allow)];
-}
+srand((double)microtime()*1000000);
+for($j=0; $j<2; $j++)
+	$RandomSeed =  $allow[rand()%mb_strlen($allow)];
+
 for  ($i=0; $i<1023; $i++) {
-        $tmp=""; 
-        for($j=0; $j<2; $j++) { 
-                $tmp .= $allow[rand()%mb_strlen($allow)];
-        }
-        $RandomSeed.=" ".$tmp." ";
-}  
+	$tmp="";
+	for($j=0; $j<2; $j++)
+		$tmp .= $allow[rand()%mb_strlen($allow)];
+	$RandomSeed.=" ".$tmp." ";
+}
 echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
-echo "<HTML>\n";  
-?> 
+echo "<html>\n";
+?>
 <head>
-<title>...::: LCS  renouvellement cl&#233;s d'authentification  :::...</title>
-<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
-                <script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
-                <script language = 'javascript' type = 'text/javascript' src="../lcs/public_key.js"></script>
-                <script language = 'javascript' type = 'text/javascript'>
-                <!--
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>...::: LCS  renouvellement cl&#233;s d'authentification  :::...</title>
+	<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
+	<script language = 'javascript' type = 'text/javascript' src="../lcs/crypto.js"></script>
+	<script language = 'javascript' type = 'text/javascript' src="../lcs/public_key.js"></script>
+    <script language = 'javascript' type = 'text/javascript'>
+<!--
 // seed the random number generator with entropy in s
 function seed(s) {
  rSeed=[];
@@ -344,6 +364,7 @@ seed('<? echo $RandomSeed
         <input type='button' value='Cryptage' onClick='enc(document.t)'>
         <input type='button' value='D&#233;cryptage' onClick='dec(document.t)'>
         <input type='hidden' name='keys' value=''>
+        <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities("/lcs/save_keys.php")); ?>" />
         <p><input type='submit' value='V&#233;rification des cl&#233;s OK ? Sauvegarde des cl&#233;s !' onClick='encrypt(document.t)'>
 </div>
 </form>

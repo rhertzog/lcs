@@ -71,53 +71,53 @@ a:visited {color: #0080ff;text-decoration: none; }
     font-size: 12px;
     color: #CCCCCC
 }
-.menuheader_up a:link { 
+.menuheader_up a:link {
 	color: #F8F8FF;
-	width: 20px; /* largeur de l'image réactive */
-	height: 12px; /* hauteur de l'image réactive */
-	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de départ */
+	width: 20px; /* largeur de l'image rï¿½active */
+	height: 12px; /* hauteur de l'image rï¿½active */
+	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de dï¿½part */
 	background-position: left;
-	border: 0; /* on évite les bordures autour de l'image */ 
-	
+	border: 0; /* on ï¿½vite les bordures autour de l'image */
+
 }
-.menuheader_up a:visited { 
+.menuheader_up a:visited {
 	color: #F8F8FF;
-	width: 20px; /* largeur de l'image réactive */
-	height: 12px; /* hauteur de l'image réactive */
-	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de départ */
+	width: 20px; /* largeur de l'image rï¿½active */
+	height: 12px; /* hauteur de l'image rï¿½active */
+	background: url(../../lcs/images/menu/up.png) no-repeat; /* source de l'image de dï¿½part */
 	background-position: left;
-	border: 0; /* on évite les bordures autour de l'image */
+	border: 0; /* on ï¿½vite les bordures autour de l'image */
 }
-.menuheader_up a:hover { 
-	color: #F9B854; 
+.menuheader_up a:hover {
+	color: #F9B854;
 	background: url(../../lcs/images/menu/up_over.png) no-repeat;
-	background-position: left; 
+	background-position: left;
 	text-decoration: none;
-	
+
 }
-.menuheader_down a:link { 
+.menuheader_down a:link {
 	color: #F8F8FF;
-	width: 20px; /* largeur de l'image réactive */
-	height: 12px; /* hauteur de l'image réactive */
-	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de départ */
+	width: 20px; /* largeur de l'image rï¿½active */
+	height: 12px; /* hauteur de l'image rï¿½active */
+	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de dï¿½part */
 	background-position: left;
-	border: 0; /* on évite les bordures autour de l'image */ 
-	
+	border: 0; /* on ï¿½vite les bordures autour de l'image */
+
 }
-.menuheader_down a:visited { 
+.menuheader_down a:visited {
 	color: #F8F8FF;
-	width: 20px; /* largeur de l'image réactive */
-	height: 12px; /* hauteur de l'image réactive */
-	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de départ */
+	width: 20px; /* largeur de l'image rï¿½active */
+	height: 12px; /* hauteur de l'image rï¿½active */
+	background: url(../../lcs/images/menu/down.png) no-repeat; /* source de l'image de dï¿½part */
 	background-position: left;
-	border: 0; /* on évite les bordures autour de l'image */
+	border: 0; /* on ï¿½vite les bordures autour de l'image */
 }
-.menuheader_down a:hover { 
-	color: #F9B854; 
+.menuheader_down a:hover {
+	color: #F9B854;
 	background: url(../../lcs/images/menu/down_over.png) no-repeat;
-	background-position: left; 
+	background-position: left;
 	text-decoration: none;
-	
+
 }
 .menucell a:link { color: #333333}
 .menucell a:visited { color: #333333}
@@ -139,7 +139,7 @@ div.alert_msg {
       font-family: arial, helvetica,sans-serif;
 }
 pre.screen {
-        font-family: monospace:
+        font-family: monospace;
         border-style: ridge outset;
         border-color: navy;
         margin-right: 1em;
@@ -147,7 +147,5 @@ pre.screen {
         padding-left: 1em;
         padding-right: 1em;
         background-color: lightgrey;
-#       color: AntiqueWhite4;
         color: black;
 }
-	

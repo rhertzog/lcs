@@ -2,17 +2,17 @@
 
 
    /**
-   
+
    * Page servant a detecter si on est en presence d'un Se3 ou d'un LCS pour les pages d'import Sconet
-   * @Version $Id$ 
-   
-   * @Projet LCS / SambaEdu 
-   
+   * @Version $Id$
+
+   * @Projet LCS / SambaEdu
+
    * @auteurs Stephane Boireau (Animateur de Secteur pour les TICE sur Bernay/Pont-Audemer (27))
    * @auteurs jLCF jean-luc.chretien@tice.ac-caen.fr Portage LCSorSE3
-   
+
    * @Licence Distribue selon les termes de la licence GPL
-   
+
    * @note Include depuis import_sconet.php
    */
 
@@ -70,17 +70,22 @@ if ( file_exists("/var/www/se3") ) {
     $chemin="/usr/share/lcs/scripts";
     $chemin_fich="$dossier_tmp_import_comptes";
     // Style du rapport
-    $background ="Images/espperso.jpg";
-    $stylecss="style/style.css";
+    $background ="../Admin/Images/espperso.jpg";
+    $stylecss="../Admin/style/style.css";
     $helpinfo="../images/system-help.png";
 
     include "../lcs/includes/headerauth.inc.php";
     include "includes/ldap.inc.php";
     include "includes/ihm.inc.php";
-
-    list ($idpers,$login)= isauth();
-    if ($idpers == "0") header("Location:$urlauth");
-
+session_name("Lcs");
+@session_start();
+if ( ! isset($_SESSION['login'])) {
+     echo "<script type='text/javascript'>";
+    echo 'alert("Suite \340 une p\351riode d\'inactivit\351 trop longue, votre session a expir\351 .\n\n Vous devez vous r\351authentifier");';
+    echo 'location.href = "../lcs/logout.php"</script>';
+    exit;
+    }
+  $login=$_SESSION['login'];
     header_html();
 }
 ?>

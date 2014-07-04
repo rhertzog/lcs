@@ -1,9 +1,8 @@
 <?php
-/* lcs/logout.php Derniere version : 20/12/2013*/
+/* lcs/logout.php version du : 22/05/2014*/
 require ("./includes/headerauth.inc.php");
-//init variables
-$spip=$squirrelmail=$roundcube=0;
 // Liste des applis installees
+$spip=$squirrelmail=$roundcube="";
 $result=@mysql_db_query("$DBAUTH","SELECT * from applis", $authlink);
 if ($result)
 	while ($r=mysql_fetch_array($result))
@@ -14,6 +13,13 @@ mysql_free_result($result);
 // Logout LCS session
 list ($idpers,$login)= isauth();
 close_session($idpers);
+//Destruction session
+session_name("Lcs");
+@session_start();
+// On detruit toutes les variables de session
+$_SESSION = array();
+// On detruit la session sur le serveur.
+session_destroy();
 // HTML Header
 $html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 $html .= "<html>\n";

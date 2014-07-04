@@ -1,23 +1,20 @@
 <?php
 /* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/Search.php
-   [LCS CoreTeam]
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   Equipe Tice académie de Caen
-   maj : 24/03/2009
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
    ============================================= */
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
-  
-  
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  list ($idpers)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-  header_html();
-  aff_trailer ("2");
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+
+header_html();
+aff_trailer ("2");
 ?>
 <H2>Rechercher un utilisateur</H2>
    <form action="peoples_list.php" method = post>
@@ -27,9 +24,9 @@
 	    <td>Nom complet :</td>
 	    <td>
 	      <select name="priority_surname">
-		<option value="contient">contient</option>
-		<option value="commence">commence par</option>
-		<option value="finit">finit par</option>
+			<option value="contient">contient</option>
+			<option value="commence">commence par</option>
+			<option value="finit">finit par</option>
 	      </select>
 	    </td>
 	    <td><input type="text" name="prenom"></td>
@@ -38,9 +35,9 @@
 	    <td>Nom :</td>
 	    <td>
 	      <select name="priority_name">
-		<option value="contient">contient</option>
-		<option value="commence">commence par</option>
-		<option value="finit">finit par</option>
+			<option value="contient">contient</option>
+			<option value="commence">commence par</option>
+			<option value="finit">finit par</option>
 	      </select>
 	    </td>
 	    <td><input type="text" name="nom"></td>
@@ -49,16 +46,16 @@
 	    <td>Classe :</td>
 	    <td>
 	      <select name="priority_classe">
-		<option value="contient">contient</option>
-		<option value="commence">commence par</option>
-		<option value="finit">finit par</option>
+			<option value="contient">contient</option>
+			<option value="commence">commence par</option>
+			<option value="finit">finit par</option>
 	      </select>
 	    </td>
 	    <td><input type="text" name="classe"></td>
 	  </tr>
 	  <tr>
 	    <td></td>
-	    <td></td>
+	    <td><input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities("/Annu/peoples_list.php")); ?>" /></td>
 	    <td align="right"><input type="submit" Value="Lancer la recherche"></td>
 	  </tr>
 	</tbody>
@@ -73,16 +70,16 @@
 	    <td>Groupe :</td>
 	    <td>
 	      <select name="priority_group">
-		<option value="contient">contient</option>
-		<option value="commence">commence par</option>
-		<option value="finit">finit par</option>
+			<option value="contient">contient</option>
+			<option value="commence">commence par</option>
+			<option value="finit">finit par</option>
 	      </select>
 	    </td>
 	    <td><input type="text" name="group"></td>
 	  </tr>
 	  <tr>
 	    <td></td>
-	    <td></td>
+	    <td><input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities("/Annu/groups_list.php")); ?>" /></td>
 	    <td align="right"><input type="submit" Value="Lancer la recherche"></td>
 	  </tr>
 	</tbody>

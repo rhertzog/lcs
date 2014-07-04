@@ -63,7 +63,7 @@ $motif = "^[0-9]{8}$";
 
  if ( mb_ereg($motif, $date) ) {
    // Vérification de l'année
-   if ( (date(Y) - mb_substr ($date,0,4) < 75) && (date(Y) - mb_substr ($date,0,4) > 4) ) {
+   if ( (date('Y') - mb_substr ($date,0,4) < 75) && (date('Y') - mb_substr ($date,0,4) > 4) ) {
      // Verification du mois
      if ( (mb_substr ($date,4,2) > 0) && (mb_substr ($date,4,2) <= 12 ) ) {
        if ( (mb_substr ($date,6,2) > 0) && (mb_substr ($date,6,2) <= 31) ) {
@@ -164,7 +164,7 @@ function  aff_mnu_search($user_type)
            <li><a href=\"add_sous-group.php\">un sous-groupe...</a></li>
          </ul>
        </li>
-       <li><a href=\"../doc/web/html/import/\">G&#233;n&#233;rer les comptes de l'annuaire...</a></li>
+       <li><a href=\"import_sconet.php\">G&#233;n&#233;rer les comptes de l'annuaire...</a></li>
      </ul>\n";
 
 

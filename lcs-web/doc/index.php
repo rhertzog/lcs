@@ -49,7 +49,7 @@ $lcsdoc[7]['comment']="Cache mandataire squid";
 $lcsdoc[8]['module']="squidguard";
 $lcsdoc[8]['comment']="Filtrage d'URL squidguard";
 
-for ( $i=0;$i <= count($lcsdoc);$i++  ) {
+for ( $i=0;$i < count($lcsdoc);$i++  ) {
     if ( is_dir( "/usr/share/doc/lcs/".$lcsdoc[$i]['module'] ) ) {
         echo "<h3><a href=\"".$lcsdoc[$i]['module']."/html/\">".$lcsdoc[$i]['comment']."</a></h3>";
     } 

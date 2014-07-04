@@ -1,21 +1,35 @@
 <?php
-/* lcs/accueil Derniere version : 20/12/2013 */
-
+/*===========================================
+   Projet LcSE3
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 15/05/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+session_name("Lcs");
+@session_start();
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 include ("./includes/jlcipher.inc.php");
 
-list ($idpers, $login)= isauth();
-if ($idpers == "0")
-    {
+if ( !isset($_SESSION['login'])) {
     header("Location:$urlauth");
-    exit;}
-elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
+    exit;
+}
+
+$login=$_SESSION['login'];
+
+if ( pwdMustChange($login) ) {
+    header("Location:../Annu/must_change_default_pwd.php");
+    exit;
+}
+
 // Recherche du nom a partir du login
 list($user, $groups)=people_get_variables ($login, false);
 // Recherche si l'utilisateur connecte possede le droit lcs_is_admin
 $is_admin = is_admin("Lcs_is_admin",$login);
+
 // Recherche si monlcs est present
 if (!@mysql_select_db($DBAUTH, $authlink))
     die ("S&#233;lection de base de donn&#233;es impossible.");
@@ -44,20 +58,6 @@ $html .= "<h5 style='text-align:left'>Bienvenue sur votre espace perso LCS</h5>\
 $html .= "</div>\n";
 $html .= "<ul>\n";
 echo $html;
-
-  if (!displogin($idpers)) {
-    echo "<li><tt>F&#233;licitation, vous venez de vous connecter pour la 1&#232;re fois sur votre
-          espace perso Lcs. Afin de garantir la confidentialit&#233; de vos donn&#233;es, nous
-          vous encourageons, a changer votre mot de passe <a href=\"../Annu/mod_pwd.php\">en suivant ce lien... </a>
-          </tt></li>\n";
-  } else {
-    $accord = "";
-    if ($user["sexe"] == "F") $accord="e";
-    echo "<li><tt>Derni&#232;re connexion le : " . displogin($idpers) . "</tt></li>\n";
-    /* Affichage des stats user */
-    echo "<li><tt>Vous vous &#234;tes connect&#233;".$accord." " . dispstats($idpers) . " fois &#224; votre espace perso.</tt></li>\n";
-  }
-
   echo "</ul>\n";
   echo "<br />&nbsp;\n";
 
@@ -70,8 +70,8 @@ echo $html;
   }
 
   // Affichage des Menus users non privilegies
-//Initialisation
-$clientftp = $elfinder = $pma = $smbwebclient = false;
+ //Initialisation
+ $clientftp = $elfinder = $pma = $smbwebclient = false;
   // lecture lcs_applis
   $query="SELECT  name, value from applis where type='M' order by name";
   $result=@mysql_query($query);

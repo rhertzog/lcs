@@ -1,23 +1,38 @@
 <?php
-/* Annu/mod_pwd.php derniere modification : 01/07/2010 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
-  include ("../lcs/includes/jlcipher.inc.php");
-  $DEBUG="0";
+$login=$_SESSION['login'];
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-  
-  //register globals
-  $string_auth=$_POST['string_auth'];
-  $dummy=$_POST['dummy'];
-  $string_auth1=$_POST['string_auth1'];
-  $dummy1=$_POST['dummy1'];
-  $string_auth2=$_POST['string_auth2'];
-  $dummy2=$_POST['dummy2'];
-  $mod_pwd=$_POST['mod_pwd'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+include ("../lcs/includes/jlcipher.inc.php");
+// Debug
+$DEBUG="0";
+
+if ( count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+	$string_auth=$purifier->purify($_POST['string_auth']);
+	$dummy=$purifier->purify($_POST['dummy']);
+	$string_auth1=$purifier->purify($_POST['string_auth1']);
+	$dummy1=$purifier->purify($_POST['dummy1']);
+	$string_auth2=$purifier->purify($_POST['string_auth2']);
+	$dummy2=$purifier->purify($_POST['dummy2']);
+	$mod_pwd=$purifier->purify($_POST['mod_pwd']);
+}
+
 
   if ($mod_pwd) {
         // decryptage des mdp
@@ -38,7 +53,7 @@
         (($mod_pwd)&&($new_password==$old_password))
      ) {
         header_crypto_html("Modification mot de passe");
-        aff_trailer ("5");         
+        aff_trailer ("5");
     ?>
     <div class="cadrepwd">
       <h3>Changement de mot de passe</h3>
@@ -67,6 +82,7 @@
           <tr>
           <tr>
             <td colspan=2 align=center>
+               <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
               <input type="hidden" name="mod_pwd" value="true">
               <input type="submit" value="Valider">
             </td>
@@ -94,7 +110,7 @@
         echo gettext("<div class='error_msg'>Le nouveau mot de passe doit &ecirc;tre diff&eacute;rent de l'ancien !</div><br />\n");
       }
     }
-  } else {    
+  } else {
     // Changement du mot de passe
     if ( userChangedPwd($login, $new_password, $old_password) ) {
       // On reposte le cookie LCSuser en cas de succes du changement du mot de passe
@@ -102,7 +118,7 @@
       $html = "<strong>Votre mot de passe a &#233;t&#233; modifi&#233; avec succ&#232;s.</strong><br>\n";
     } else $html = "<div class='error_msg'>Echec de la modification de votre mot de passe, veuillez contacter <A href='mailto:$MelAdminLCS?subject=PB changement mot de passe'>l'administrateur du syst&#232;me</A></div><br />\n";
     header_crypto_html("Modification mot de passe");
-    aff_trailer ("5");    
+    aff_trailer ("5");
     echo $html;
   }
   include ("../lcs/includes/pieds_de_page.inc.php");

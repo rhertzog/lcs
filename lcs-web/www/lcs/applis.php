@@ -1,6 +1,13 @@
 <?php
-/* lcs/applis.php Derniere version :20/12/2013 */
-
+/*===========================================
+   Projet LcSE3
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification :15/05/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
+ $login=$_SESSION['login'];
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
@@ -20,14 +27,10 @@ else
     die ("param&#232;tres absents de la base de donn&#233;es");
 @mysql_free_result($result);
 
-// Verification de l'authentification
-list ($idpers, $login)= isauth();
-if ($idpers == "0")    {
-    header("Location:$urlauth");
+if ( pwdMustChange($login) ) {
+    header("Location:../Annu/must_change_default_pwd.php");
     exit;
 }
-elseif ( pwdMustChange($login) ) header("Location:../Annu/must_change_default_pwd.php");
-
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
 $html .= "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"fr\">\n";
@@ -48,7 +51,7 @@ $liste['Titres'] = array();
 
 // Appli Annuaire
 $liste['Images'][] = "images/bt-V2-3.png";
-$liste['Liens'][] = "statandgo.php?use=Annu";
+$liste['Liens'][] = "statandgo.php?use=Annu&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
 $liste['Titres'][] = "Annuaire des utilisateurs";
 
 // Affichage des Menus users non privilegies
@@ -68,22 +71,22 @@ $clientftp = $elfinder = $pma = $smbwebclient = false;
 
 if ( $clientftp ) {
   $liste['Images'][] = "images/bt-V1-2.jpg";
-  $liste['Liens'][] = "statandgo.php?use=clientftp";
+  $liste['Liens'][] = "statandgo.php?use=clientftp&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
   $liste['Titres'][] = "Explorateur de fichiers";
 }
 if ( $elfinder ) {
   $liste['Images'][] = "images/bt-V1-2.jpg";
-  $liste['Liens'][] = "statandgo.php?use=elfinder";
+  $liste['Liens'][] = "statandgo.php?use=elfinder&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
   $liste['Titres'][] = "Explorateur de fichiers";
 }
 if ( $pma ) {
   $liste['Images'][] = "images/bt-V1-3.jpg";
-  $liste['Liens'][] = "statandgo.php?use=pma";
+  $liste['Liens'][] = "statandgo.php?use=pma&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
   $liste['Titres'][] = "Gestion base de donn&#233;es";
 }
 if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
   $liste['Images'][] = "images/bt-V1-4.jpg";
-  $liste['Liens'][] = "statandgo.php?use=smbwebclient";
+  $liste['Liens'][] = "statandgo.php?use=smbwebclient&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
   $liste['Titres'][] = "Client SE3";
 }
 
@@ -94,7 +97,7 @@ if ($result) {
         while ($r=mysql_fetch_object($result)) {
           if (( $r->value == "1" ) and ! ( file_exists("/usr/share/lcs/Plugins/".$r->chemin."/.applihide"))) {
             $liste['Images'][] = "../Plugins/".$r->chemin."/Images/plugin_icon.png";
-            $liste['Liens'][] = "statandgo.php?use=".$r->name;
+            $liste['Liens'][] = "statandgo.php?use=".$r->name."&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
             $liste['Titres'][] = $r->descr;
             }
         }

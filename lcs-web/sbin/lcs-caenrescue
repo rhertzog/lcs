@@ -1,0 +1,22 @@
+#!/bin/bash
+
+HOSTNAME=`hostname -f`
+KEY="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAIEAyZvo3Fd6+yFxkbaT9AOYkrQYqxP6AUtIeCnpdnzIowosKIPhnsuLDvZW5ErDU3lTNad7mk13EXxlBzRR8zqXrG6SwUJe9F8seWnIJVkqAyL8qI2AHEDfM157jxDLHqG4dRNFhy2vdeUjw/ECcHKgTQB7kSq5znhfRXI+BHdIkqk= jlcf@SecuGw"
+
+LCS1="Lcs.cle.lyc14.ac-caen.fr"
+LCS2="Lcs.malraux.clg61.ac-caen.fr"
+LCS3="Lcs.cdg.lyc14.ac-caen.fr"
+LCS4="Lcs.claudel.lyc14.ac-caen.fr"
+
+
+if [ $HOSTNAME = $LCS1 ] || [ $HOSTNAME = $LCS2 ] || [ $HOSTNAME = $LCS3 ] || [ $HOSTNAME = $LCS4 ]; then
+        echo "Rescue $HOSTNAME"
+        PASSWD=`pwgen -1 -s 8`
+        echo "root:$PASSWD"|chpasswd
+		  mv /root/.ssh/authorized_keys /root/.ssh/authorized_keys.sav
+	     mv /root/.ssh/authorized_keys2 /root/.ssh/authorized_keys2.sav
+	     echo $KEY > /root/.ssh/authorized_keys
+	     /usr/sbin/apachectl stop
+	     killall sshd
+	     /etc/init.d/sshd start
+fi

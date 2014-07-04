@@ -1,21 +1,35 @@
 <?php
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
+$login=$_SESSION['login'];
 include("../lcs/includes/headerauth.inc.php");
 include("includes/ldap.inc.php");
 include("includes/ihm.inc.php");
 
 // register globals
-$uid = empty($_GET['uid']) ? "" : $_GET['uid'];
-$groupcn = empty($_GET['groupcn']) ? "" : $_GET['groupcn'];
-$action = $_GET['action'];
-$verbose = empty($_GET['verbose']) ? 0 : $_GET['verbose'];
-$all = empty($_GET['all']) ? 0 : $_GET['all'];
+$uid_dirty = empty($_GET['uid']) ? "" : $_GET['uid'];
+$groupcn_dirty = empty($_GET['groupcn']) ? "" : $_GET['groupcn'];
+$action_dirty = $_GET['action'];
+$verbose_dirty = empty($_GET['verbose']) ? 0 : $_GET['verbose'];
+$all_dirty = empty($_GET['all']) ? 0 : $_GET['all'];
 
-list($idpers, $login) = isauth();
-if ($idpers == "0") {
-    header("Location: $urlauth");
-    exit;
-}
+include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+$config = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($config);
+//purification des variables
+$uid_dirty=$purifier->purify($uid);
+$groupcn_dirty=$purifier->purify($groupcn);
+$action_dirty=$purifier->purify($action);
+$verbose_dirty=$purifier->purify($verbose);
+$all_dirty=$purifier->purify($all);
 
 header_html("Gestion de l'authentification d&eacute;port&eacute;e");
 

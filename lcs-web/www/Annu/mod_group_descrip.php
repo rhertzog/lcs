@@ -1,26 +1,39 @@
 <?php
-/* Annu/mod_group_descrip.php Derniere modification : 22/04/2011 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
-
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
-
-//modif register
-$description=$_POST['description'];
-if ( isset($_POST['cn']))  $cn = $_POST['cn'];
-elseif ( isset($_GET['cn'])) $cn = $_GET['cn'];
-$mod_descrip=$_POST['mod_descrip'];
+$login=$_SESSION['login'];
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
+$description="";
+if ( count($_GET)>0 || count($_POST)>0 ) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+    if (isset($_POST['cn']))  $cn=$purifier->purify($_POST['cn']);
+    elseif (isset($_GET['cn'])) $cn=$purifier->purify($_GET['cn']);
+            if (count($_POST)>0 ) {
+            $description=$purifier->purify($_POST['description']);
+            $mod_descrip=$purifier->purify($_POST['mod_descrip']);
+            }
+}
 
   header_html();
   aff_trailer ("3");
   if (is_admin("Annu_is_admin",$login)=="Y") {
     $group=search_groups("cn=".$cn);
     if (
-         (!$mod_descrip) ||
-         ( $mod_descrip && (!$description || !verifDescription($description)) )
+         (!isset($mod_descrip)) ||  ( isset($mod_descrip) && (!isset($description) || !verifDescription($description)) )
        ) {
       echo "Modification de la description du groupe : <b>".$group[0]["cn"]."</b>\n";
       ?>
@@ -33,6 +46,7 @@ $mod_descrip=$_POST['mod_descrip'];
 	      <td></td>
 	    </tr>
 	      <td align="left">
+                 <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
                 <input type="hidden" name="cn" value="<? echo $cn ?>">
                 <input type="hidden" name="mod_descrip" value="true">
                 <input type="submit" value="Lancer la requ&#234;te">
@@ -42,8 +56,8 @@ $mod_descrip=$_POST['mod_descrip'];
         </table>
       </form>
       <?
-      if ( $mod_descrip ) {
-        if ( !$description ) {
+      if ( isset($mod_descrip )) {
+        if ( !isset($description )) {
           echo "<div class=\"error_msg\">Vous devez saisir une description pour ce groupe !</div><BR>\n";
         } elseif (!verifDescription($description)) {
           echo "<div class=error_msg>Le champ description comporte des caract&#232;res interdits !</div><br>\n";
@@ -62,10 +76,6 @@ $mod_descrip=$_POST['mod_descrip'];
 
             echo "La description du groupe&nbsp;<strong>".$group[0]["cn"]."</strong>&nbsp;&#224; &#233;t&#233; modifi&#233;e avec succ&#232;s.</br>\n";
             echo "<u>Nouvelle description</u> :&nbsp;".stripslashes($description)."<BR>\n";
-
-			# Generate samba's configuration (group's shares)
-			if(is_executable("/usr/share/lcs/sbin/lcs-smb-config")) 
-				exec("sudo /usr/share/lcs/scripts/execution_script_plugin.sh /usr/share/lcs/sbin/lcs-smb-config &");
 
           } else {
             echo "<strong>Echec de la modification du groupe".$group[0]["cn"].", veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB modification de la description d'un groupe>l'administrateur du syst&#232;me</A><BR>\n";

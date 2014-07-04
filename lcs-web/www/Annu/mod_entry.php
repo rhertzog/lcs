@@ -1,27 +1,43 @@
 <?php
-/* Annu/mod_entry.php Derniere modification 22/04/2011 */
+/* =============================================
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 04/04/2014
+   ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
 
-  include "../lcs/includes/headerauth.inc.php";
-  include "includes/ldap.inc.php";
-  include "includes/ihm.inc.php";
+include "../lcs/includes/headerauth.inc.php";
+include "includes/ldap.inc.php";
+include "includes/ihm.inc.php";
 
-  $pseudo = $_POST['pseudo'];
-  $telephone = $_POST['telephone'];
-  $mod_entry = $_POST['mod_entry'];
+if (count($_POST)>0) {
+	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$pseudo=$purifier->purify($_POST['pseudo']);
+  	$telephone=$purifier->purify($_POST['telephone']);
+  	$mod_entry=$purifier->purify($_POST['mod_entry']);
+}
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
+
+  $login=$_SESSION['login'];
+  $jeton_mod_user=md5($_SESSION['token'].htmlentities("/Annu/mod_user_entry.php"));
 
   // Recuperation des entrees de l'utilisateur a modifier
   $people_attr=people_get_variables ($login, false);
   $people_attr[0]["prenom"]=getprenom($people_attr[0]["fullname"],$people_attr[0]["nom"]);
   if (is_admin("Annu_is_admin",$login)=="Y") {
     // Redirection vers mod_user_entry.php
-    header("Location:mod_user_entry.php?uid=$login");
+    header("Location:mod_user_entry.php?uid=$login&jeton=$jeton_mod_user");exit;
   } else {
     header_html();
     aff_trailer ("4");
-    // Changement uniquement du pseudo pour l'utilisateur de «base»
+    // Changement uniquement du pseudo pour l'utilisateur de ï¿½baseï¿½
       if ( (!$mod_entry) || ( $mod_entry && ( !$pseudo || !verifPseudo($pseudo) ) ) ) {
       ?>
       <form action="mod_entry.php" method="post">
@@ -38,7 +54,7 @@
 	      <td></td>
 	    </tr>
 	    <tr>
-	      <td>Adresse mèl :</td>
+	      <td>Adresse mail :</td>
 	      <td colspan="2"><tt><strong><?php echo $people_attr[0]["email"] ?></strong></tt></td>
 	      <!--td></td-->
 	    </tr>
@@ -49,7 +65,7 @@
                 <font color="orange">
                 <u>Attention</u> : toutes les modifications apport&#233;es
 	        &nbsp;&#224; votre pseudo sont m&#233;moris&#233;es et accessibles
-                &nbsp;par l'administrateur du système Lcs.
+                &nbsp;par l'administrateur du syst&#232;me Lcs.
                 </font>
               </td>
 	    </tr>
@@ -60,6 +76,7 @@
 	    <tr>
 	      <td></td>
               <td >
+                  <input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])); ?>" />
                 <input type="hidden" name="mod_entry" value="true">
                 <input type="submit" value="Lancer la requ&#234;te">
               </td>
@@ -82,7 +99,7 @@
           $pseudo = ucfirst(mb_strtolower(unac_string_with_underscore($pseudo)));
           $entry["initials"]=$pseudo;
           if ( $telephone && verifTel($telephone) )
-            $entry["telephonenumber"]=$telephone ; 
+            $entry["telephonenumber"]=$telephone ;
           if (@ldap_modify ($ds, "uid=".$people_attr[0]["uid"].",".$dn["people"],$entry)) {
             // log de la modification dans /var/log/lcs/lcs_pseudo.log
             $fp=fopen($logpath."pseudo.log","a");
@@ -91,14 +108,14 @@
               fclose($fp);
             } else {exit;}
             // fin ecriture fichier de log
-            echo "<strong>La modification de votre pseudo en <font color=\"orange\">".$pseudo."</font> a r&#233;ussie.</strong><BR>\n";
+            echo "<strong>La modification de votre pseudo en <font color=\"orange\">".$pseudo."</font> a r&#233;ussi.</strong><BR>\n";
           } else {
-            echo "<strong>Echec de la modification, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB changement pseudo'>l'administrateur du système</A><BR>\n";
+            echo "<strong>Echec de la modification, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB changement pseudo'>l'administrateur du syst&#232;me</A><BR>\n";
           }
         }
         @ldap_close ( $ds );
       } else {
-        echo "Erreur de connection &#224; l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du système</A>administrateur<BR>\n";
+        echo "Erreur de connection &#224; l'annuaire, veuillez contacter </strong><A HREF='mailto:$MelAdminLCS?subject=PB connection a l'annuaire'>l'administrateur du syst&#232;me</A>administrateur<BR>\n";
       }
       // Fin modification pseudo
     }

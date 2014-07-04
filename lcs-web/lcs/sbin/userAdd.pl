@@ -32,10 +32,6 @@ if ($res1 =~ /<tt><strong>(.*)<\/strong>/) {
 		$uid = $1;
 		$res = 0xffff & system("/usr/share/lcs/sbin/groupAddEntry.pl uid=$uid,$peopleDn cn=$categorie,$groupsDn > /dev/null 2>&1");
 		die("Erreur lors de l'ajoût de l'utilisateur au groupe $categorie.\n") if $res != 0;
-
-		# Create homedir with root privileges
-		system("sudo /usr/share/lcs/scripts/execution_script_plugin.sh \"/usr/share/lcs/sbin/lcs-smb-mkhomedir $uid\"")
-			if(-x "/usr/share/lcs/sbin/lcs-smb-mkhomedir");
 }
 
 exit $uid;

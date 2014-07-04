@@ -119,8 +119,8 @@
 		$www_import="/Annu/import_sconet.php";
 		$chemin_http_csv="setup/csv/".$timestamp."_".$randval;
 		$dossiercsv=$racine_www."/".$chemin_http_csv;
-		$echo_file="$racine_www/Admin/result.$timestamp.html";
-		$echo_http_file="$baseurl/Admin/result.$timestamp.html";
+		$echo_file="$racine_www/import/result.$timestamp.html";
+		$echo_http_file="$baseurl/import/result.$timestamp.html";
 		$dossier_tmp_import_comptes="/var/lib/lcs/import_comptes";
 		$pathscripts="/usr/share/lcs/scripts";
 		$user_web = "www-data";

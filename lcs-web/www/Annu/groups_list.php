@@ -1,28 +1,33 @@
 <?php
 /* =============================================
    Projet LCS-SE3
-   Consultation de l'annuaire LDAP
-   Annu/groups_list.php
-   « jLCF >:> » jean-luc.chretien@tice.ac-caen.fr
-   « wawa »  olivier.lecluse@crdp.ac-caen.fr
+   Consultation/ Gestion de l'annuaire LDAP
    Equipe Tice academie de Caen
-   Derniere mise a jour  : 30/10/2012
    Distribue selon les termes de la licence GPL
+   Derniere modification : 22/05/2014
    ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
+$login=$_SESSION['login'];
   include "../lcs/includes/headerauth.inc.php";
   include "includes/ldap.inc.php";
   include "includes/ihm.inc.php";
-  
-  $priority_group=$_POST['priority_group'];
-  $group=$_POST['group'];
 
-  list ($idpers,$login)= isauth();
-  if ($idpers == "0") header("Location:$urlauth");
 
-//test si un webmail est installe pour mailto vers les groupes
+if (count($_POST)>0) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+                  //purification des variables
+ 	 if (isset($_POST['priority_group'])) $priority_group=$purifier->purify($_POST['priority_group']);
+                   if (isset($_POST['group'])) $group=$purifier->purify($_POST['group']);
+  }
+
+@//test si un webmail est installe pour mailto vers les groupes
   $query="SELECT value from applis where name='squirrelmail' or name='roundcube'";
   $result=mysql_query($query);
-  if ($result) 
+  if ($result)
 	{
           if ( mysql_num_rows($result) !=0 ) {
           $r=mysql_fetch_object($result);
@@ -44,12 +49,12 @@
     $filter = "(cn=*)";
   } else {
     if ($priority_group == "contient") {
-      $filter = "(cn=*$group*)";	
+      $filter = "(cn=*$group*)";
     } elseif ($priority_group == "commence") {
       $filter = "(|(cn=Classe_$group*)(cn=Cours_$group*)(cn=Equipe_$group*)(cn=Matiere_$group*)(cn=$group*))";
     } else {
       // finit par
-      $filter = "(|(cn=Classe_*$group)(cn=Cours_*$group)(cn=Equipe_*$group)(cn=Matiere_*$group)(cn=*$group))";	
+      $filter = "(|(cn=Classe_*$group)(cn=Cours_*$group)(cn=Equipe_*$group)(cn=Matiere_*$group)(cn=*$group))";
     }
   }
   $filter=mb_ereg_replace("\*\*\*","*",$filter);
@@ -64,7 +69,7 @@
   #############
   # Fin DEBUG #
   #############
-  // affichage de la liste des groupes trouvés
+  // affichage de la liste des groupes trouvï¿½s
   if (count($groups)) {
     if (count($groups)==1) {
       echo "<p><STRONG>".count($groups)."</STRONG> groupe r&#233;pond &#224; ces crit&#232;res de recherche</p>\n";
@@ -78,7 +83,7 @@
     }
     */
     for ($loop=0; $loop < count($groups); $loop++) {
-        echo "<LI><A href=\"group.php?filter=".$groups[$loop]["cn"]."\">";
+        echo "<LI><A href=\"group.php?filter=".$groups[$loop]["cn"]."&jeton=".md5($_SESSION['token'].htmlentities("/Annu/group.php"))."\">";
         /*
         if ($groups[$loop]["type"]=="posixGroup")
           echo "<STRONG>".$groups[$loop]["cn"]."</STRONG>";
@@ -86,8 +91,8 @@
         */
         echo $groups[$loop]["cn"];
         echo "</A>&nbsp;&nbsp;&nbsp;<font size=\"-2\">".$groups[$loop]["description"]."</font>";
-         if (! is_eleve($login) && $listediff && $test_squir=="1") 
-         echo "<a href=\"mailto:".$groups[$loop]["cn"]."@".$domain."\" >  <img src=\"images/mail.png\" alt=\"Envoyer un mail\"  
+         if (! is_eleve($login) && $listediff && $test_squir=="1")
+         echo "<a href=\"mailto:".$groups[$loop]["cn"]."@".$domain."\" >  <img src=\"images/mail.png\" alt=\"Envoyer un mail\"
          title=\"Envoyer un mail &#224; ce groupe\" border=0 ></a><br>\n</LI>\n";
     }
 

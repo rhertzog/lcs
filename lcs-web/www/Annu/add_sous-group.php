@@ -1,21 +1,22 @@
-<?
+<?php
 /* =============================================
-   Projet LCS : Linux Communication Server
-   Consultation de l'annuaire LDAP
-   Annu/add_sous-group.php
+   Projet LCS-SE3
+   Consultation/ Gestion de l'annuaire LDAP
    Equipe Tice academie de Caen
-   V 1.4 maj : 15/03/2007
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
    ============================================= */
+include "includes/check-token.php";
+if (!check_acces()) exit;
+
+ $login=$_SESSION['login'];
 include "../lcs/includes/headerauth.inc.php";
 include "includes/ldap.inc.php";
 include "includes/ihm.inc.php";
 
-list ($idpers,$login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-
 header_html();
 aff_trailer ("8");
-
+$cn=$description=$filter="";
 if (is_admin("Annu_is_admin",$login)=="Y") {
 echo "<form action=\"affichageleve.php\" method=\"post\">";
 echo "<table border=\"0\">";
@@ -61,6 +62,7 @@ for ($loop=0; $loop < count ($list_groups) ; $loop++) {
 <td>Autres</td>
 </tr>
 <tr>
+ <td><input name="jeton" type="hidden"  value="<?php echo md5($_SESSION['token'].htmlentities("/Annu/affichageleve.php")); ?>" /></td>
 <td valign="top">
 <?
 echo "<select name= \"classe_gr[]\"  size=\"10\" multiple=\"multiple\">\n";
@@ -83,12 +85,12 @@ echo "<select name= \"classe_gr[]\"  size=\"10\" multiple=\"multiple\">\n";
     echo "</select></td></tr></table>";
     echo " <input type=\"submit\" value=\"valider\">
 	   <input type=\"reset\" value=\"R&#233;initialiser la s&#233;lection\">";
-    
+
     echo "</form>";
-    
-    
-	
-}//fin is_admin	
+
+
+
+}//fin is_admin
 else echo "Vous n'avez pas les droits n&#233;cessaires pour ouvrir cette page...";
 include ("../lcs/includes/pieds_de_page.inc.php");
 ?>
