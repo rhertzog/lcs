@@ -1,6 +1,6 @@
 #!/bin/bash
 # Misterphi 
-# Version du : 04/11/2011 
+# Version du : 04/07/2014 
 # $1 : repertoire source du paquet ( doit commencer obligatoirement par lcs- )  
 # $2 : N° de version
 # $3 : Distribution : squeeze
@@ -13,9 +13,9 @@ if [ "$1" = "--help" -o "$1" = "-h" ] || [ -z "$1" ] || [ -z "$2" ] || [ -z "$3"
         echo "Script destine referencer un paquet Debian LCS-*"
         echo ""
         echo "Usage : ref_pkg <repertoire source du paquet> <N° de Version> <Distribution> <branche de destination> <description>"
-        echo "Les distributions possibles sont etch, lenny ou squeeze"
+        echo "Les distributions possibles sont  squeeze ou wheezy"
         echo "Les branches possibles sont : stable testing experimentale (ou xp) "
-        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 lenny xp 'Administration web serveur LDAPLCS' "
+        echo "Exemple : ./ref_pkg.sh lcs-pla 2.1~2 wheezy xp 'Administration web serveur LDAPLCS' "
         exit
 fi
 
@@ -45,20 +45,6 @@ if grep -q ", 'M');\"$" $1/$Deb/postinst || grep -q ", 'S');\"$" $1/$Deb/postins
   	 		 	br="LcsTesting"
 			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
 	   		 	depot="LcswheezyXP"
-	   		 	br="LcsXP"
-			else 
-			echo "branche erronee"
-			exit 
-			fi
-		elif [ "$3" == "lenny" ];then
-			if [ "$4" == "stable" ];then
-  	  			depot="Lennycs"
-  	  			br="Lcs"
-			elif [ "$4" == "testing" ];then
-  	 		 	depot="LennycsTesting"
-  	 		 	br="LcsTesting"
-			elif [ "$4" == "experimentale" -o "$4" == "xp" ];then
-	   		 	depot="LennycsXP"
 	   		 	br="LcsXP"
 			else 
 			echo "branche erronee"
