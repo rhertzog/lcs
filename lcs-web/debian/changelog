@@ -1,27 +1,57 @@
-lcs-web (2.4.10~3) LCS; urgency=low
+lcs-web (2.4.10~4) Lcs; urgency=low
 
-  * Non-maintainer upload.
-  * fix Apache errors (Undefined variable, index or string)
+  * Modify for Debian Wheezy
+  * Synchronization with 2.4.9 tree
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 09 Dec 2013 13:40:04 +0100
+  * Fix create/delete user mysql db in Annu/people.php
+  * Fix create admin folder for first acces
 
-lcs-web (2.4.10~2) Lcs; urgency=low
+  [ Philippe Leclerc ]
+  * Fix notices php in /var/www 
+  [Jean Luc Chretien]
+  * Purify import accounts
+  * Set flag executable on mkSlapdConf.sh
+  * Replace apache2 restart by reload 
+  * Modify mkhdir.sh ajax_ent.php and functions.inc.php (open_session() ) for administratif group
 
-  * Replace mkTicket.rb by a php section code in log2cas*.php
+  [ Philippe Leclerc ]
+  * new  function check_acces() in dirs Annu, Admin and lcs
+  * fix loop auth in auth.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 08 Nov 2013 17:01:07 +0100
+  [ Jean-Luc Chrétien ]
+  * Add tests in action.sh mkhdir.sh webperso.sh userDel.pl
+  * Add mkhdir.sh in sudo.d/01-lcs-web 
+  * Modify user_lcs.inc.php (log in /var/log/lcs/check.log
+  * Add purififier and escape mysql request in statando.php
+  * Add robots.txt and favicon.ico in /var/www
+  * Filter sanitize string filter in group.php
+  * Invalidate replica and ad sync
+  * Mysql_escape variables in lcs
+  * autocomplete off in auth.php
 
-lcs-web (2.4.9.6~4) Lcs; urgency=low
+  [ Philippe Leclerc ]
+  * Add log for check token
+  * Add mail redirection
+  * Modules securised : Add token, new session,htmlpurifier and escapeshellarg
+  * Mysql_escape variables in modules and www/lcs/includes scripts
+
+  [ Philippe Leclerc ]
+  * Annu securised : Add token, new session and htmlpurifier
+  [ Jean-Luc Chretien ]
+  * Remove maj tgz, modify isauth()
+  * Remove Plugins Interface and menu
+  * Modify user_lcs_inc.php auth_lcs() function real_escape
+  * Escape mysql request select in functions.inc.php
+  * add exit after header redirection
+
+  [Jean-Luc Chretien]
+  * Fix rights on lcs-web tree
+  * exit webalizer
 
   * Add .htaccess Options -Indexes in swekey and Plugins folders
   * Modify groupAddEntry.pl for wheezy
   * Add del_profil_desktop.php
   * Modifiy mKSlapdConf.sh (acl and default config...)
-
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 May 2013 10:56:41 +0200
-
-lcs-web (2.4.9.5) Lcs; urgency=low
-
   * Add rouncube in test "webmail present" 
   * Fix accented characters
   * Modify mkSlapdConf.sh to fix bug at task
@@ -30,7 +60,7 @@ lcs-web (2.4.9.5) Lcs; urgency=low
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
 
- -- Jean-Luc Chretien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 14 Dec 2012 17:20:31 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 04 Jul 2014 09:49:13 +0200
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
