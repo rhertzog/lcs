@@ -1,16 +1,29 @@
 <?php
-# /var/www/Admin/listesdiff.php derniere version du : 23/01/09
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/05/2014
+   ============================================= */
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
+if (count($_POST)>0) {
+  //configuration objet
+  include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  //purification des variables
+  if (isset($_POST['valideffliste'])) $valideffliste=$purifier->purify($_POST['valideffliste']);
+  if (isset($_POST['valideaddliste'])) $valideaddliste=$purifier->purify($_POST['valideaddliste']);
+}
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 
-$valideffliste=$_POST['valideffliste'] ;
-$valideaddliste=$_POST['valideaddliste'] ;
-
-
-list ($idpers, $login)= isauth();
-if ($idpers == "0") header("Location:$urlauth");
-$html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n 
+$html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n
 	  <head>\n
 	  <title>...::: S&#233;lection briques fonctionnelles LCS  :::...</title>\n
 	  <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n
@@ -27,12 +40,14 @@ if (is_admin("system_is_admin",$login)=="Y") {
 	   Liste de diffusion ldap : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     if (($listediff == 1 && !isset($valideffliste)) || isset($valideaddliste)) {
 	echo "<input type=\"hidden\" name=\"valideffliste\" value=\"true\">
+            <input name=\"jeton\" type=\"hidden\"  value='".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."' />
 	       <input type=\"submit\" value=\"D&#233;sactivation\">
 	       </form>";
         echo "<u onmouseover=\"return escape('<strong>D&#233;sactivation des listes de  diffusion <em>LDAP</em></strong> : D&#233;sactive les listes de diffusion <em>LDAP</em>, les utilisateurs <em>LCS</em>, ne pourront plus poster des messages &#224;des groupes.')\"><img src='../images/help-info.gif'></u>\n";
     }
     if (($listediff == 0 && !isset($valideaddliste)) || isset($valideffliste)) {
 	echo "<input type=\"hidden\" name=\"valideaddliste\" value=\"true\">
+                            <input name=\"jeton\" type=\"hidden\"  value='".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."' />
 	       <input type=\"submit\" value=\"Activation\">
 	       </form>";
         echo "<u onmouseover=\"return escape('<strong>Mise en place des listes de diffusion <em>LDAP</em></strong> : Les listes de diffusion <strong><em>LDAP</em></strong> permettent &#224;un utilisateur de poster un mail &#224;l\'ensemble des membres d\'un groupe. <br /><u>Exemple</u> : Il existe dans l\'annuaire un groupe <strong>Classe_2A</strong>, il sera posssible adresser un mail &#224;l\'ensemble des membres de ce groupe en postant un mail &#224;l\'adresse suivante : <strong><em>Classe_2A@lcs</em></strong> .')\"><img src='../images/help-info.gif' alt='infos'></u>\n";
@@ -41,19 +56,19 @@ if (is_admin("system_is_admin",$login)=="Y") {
         exec("/usr/bin/sudo /usr/share/lcs/scripts/eff_liste_diff.sh ");
     }
     if (isset($valideaddliste)){
-	$main  = "#<listediffusionldap>\n";
-	$main .= "server_host = $ldap_server\n";
-	$main .= "search_base = $ldap_base_dn\n";
-	$main .= "query_filter = (cn=%s)\n";
-	$main .= "result_attribute = memberUid,mail\n";
-        $main .= "bind = no\n";
-	$main .= "special_result_attribute = member\n";
-        $main .= "alias_maps = ldap:ldapsource\n";
-        $main .= "#</listediffusionldap>";
-         exec("/usr/bin/sudo /usr/share/lcs/scripts/add_liste_diff.sh \"$main\" ");
+		$main  = "#<listediffusionldap>\n";
+		$main .= "server_host = $ldap_server\n";
+		$main .= "search_base = $ldap_base_dn\n";
+		$main .= "query_filter = (cn=%s)\n";
+		$main .= "result_attribute = memberUid,mail\n";
+      $main .= "bind = no\n";
+		$main .= "special_result_attribute = member\n";
+      $main .= "alias_maps = ldap:ldapsource\n";
+      $main .= "#</listediffusionldap>";
+      exec("/usr/bin/sudo /usr/share/lcs/scripts/add_liste_diff.sh ". escapeshellarg($main));
     }
     #fin liste de diffusion ldap
-    
+
 }// fin is_admin
 else echo "Vous n'avez pas les droits n&#233;cessaires pour ordonner cette action...";
 echo "</div><!-- Fin container-->\n";
