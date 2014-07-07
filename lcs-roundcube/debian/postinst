@@ -4,14 +4,15 @@ set -e
 
 case "$1" in
 	install|configure)
+		if [ "$2" = "" ]; then
 			# on each configuration
 			. /usr/share/slis/slis-common.sh
 				handle_initial_config lcs-roundcube-config 95
+		else
 			# Update Roundcube
-			if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.10; then
-				echo "Update Roundcube."
-				/usr/sbin/lcs-roundcube-update
-			fi
+			echo "Update Roundcube."
+			/usr/sbin/lcs-roundcube-update
+		fi
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
