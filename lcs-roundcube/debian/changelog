@@ -1,10 +1,10 @@
-lcs-roundcube (2.4.10~9) Lcs; urgency=low
+lcs-roundcube (2.4.10~10) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Update Roundcube to 1.0.1
   * Add .htaccess in some folders
  
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 07 Jul 2014 10:55:45 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Mon, 07 Jul 2014 14:54:19 +0200
 
 lcs-roundcube (2.4.9.2) Lcs; urgency=low
 

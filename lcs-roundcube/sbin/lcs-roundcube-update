@@ -8,7 +8,7 @@ MYSQLDUMP="/var/lib/lcs/roundcube/Sql"
 CONFIG_PATH="/var/lib/lcs/roundcube/Config_rc"
 CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
 CONFIGRC_TMP="config.inc.php.dist"
-CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
+CONFIGRC_PATH="config.inc.php"
 CONFIGRCPLUG_PATH="/usr/share/lcs/roundcube/plugins"
 MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
 # Read lcs parametre in lcs_db.params
@@ -25,24 +25,8 @@ echo "UPDATE lcs_db.applis SET version='$VER' WHERE name='roundcube';" | mysql -
 #
 # Update database
 #
-
-if [ $VER = 2.4.9.2 ]; then
-	echo "update roundcube database 0.4.2 -> 0.8.1"
-	mysql roundcube < $MYSQLDUMP/mysql.update.sql
-elif [ $VER > 2.4.9.2 ]; then
-	echo "update roundcube database 0.8.1 -> 0.9.4"
-	if ! mysql -se "use roundcube;show tables;" | grep system; then
-     	mysql roundcube < $MYSQLDUMP/system.sql   
-	fi
-	mysql roundcube < $MYSQLDUMP/2012080700.sql
-	mysql roundcube < $MYSQLDUMP/2013011000.sql
-fi
-
-
-
-
 if ! mysql -se "show tables from roundcube;" | grep system ; then
-	echo "update roundcube database 0.8.1 -> 0.9.4"
+	echo "Add system table 2011121400"
 	mysql roundcube < $MYSQLDUMP/system.sql
 fi
 
@@ -51,18 +35,17 @@ RC_VER=`mysql -se " select value from roundcube.system where name='roundcube-ver
 if [ "$RC_VER" = "2011121400" ]; then
 	echo "update roundcube database 0.8.1 -> 0.9.4"
 	mysql roundcube < $MYSQLDUMP/2012080700.sql
-	mysql roundcube < $MYSQLDUMP/2013011000.sql	        
+	mysql roundcube < $MYSQLDUMP/2013011000.sql
+	mysql roundcube < $MYSQLDUMP/updateversion094.sql	        
 fi
 	
-if [ "$RC_VER" = "2012080700" ]; then
+if [ "$RC_VER" = "2012080700" ] || [ "$RC_VER" = "201311700" ]; then
 	echo "update roundcube database 0.9.4 -> 1.0.1" 
 	mysql roundcube < $MYSQLDUMP/2013052500.sql	       
 	mysql roundcube < $MYSQLDUMP/2013061000.sql	
-	mysql roundcube < $MYSQLDUMP/2014042900.sql	
+	mysql roundcube < $MYSQLDUMP/2014042900.sql
+	mysql roundcube < $MYSQLDUMP/updateversion101.sql		
 fi
-
-
-
 
 # Update config files
 #
