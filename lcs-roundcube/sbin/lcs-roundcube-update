@@ -7,6 +7,8 @@ set -e
 MYSQLDUMP="/var/lib/lcs/roundcube/Sql"
 CONFIG_PATH="/var/lib/lcs/roundcube/Config_rc"
 CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
+CONFIGRC_TMP="config.inc.php.dist"
+CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
 CONFIGRCPLUG_PATH="/usr/share/lcs/roundcube/plugins"
 MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
 # Read lcs parametre in lcs_db.params
@@ -39,31 +41,30 @@ fi
 #
 # Make roundcube config
 #
-cp $CONFIG_PATH/db.inc.php.dist $CONFIGRC_PATH/db.inc.php
-sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRC_PATH/db.inc.php
+cp $CONFIG_PATH/$CONFIGRC_TMP $CONFIGRC_PATH/$CONFIGRC_FILE	
+sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
 CRYPT24=`pwgen 24 1`
-cp $CONFIG_PATH/main.inc.php.dist $CONFIGRC_PATH/main.inc.php
-sed -i "s|#CRYPT24#|"$CRYPT24"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#CRYPT24#|"$CRYPT24"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
 MAILDOMAIN=`hostname -d`
-sed -i "s|#MAILDOMAIN#|"$MAILDOMAIN"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#MAILDOMAIN#|"$MAILDOMAIN"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
 LDAP_SERVER=$(get_lcsdb_params ldap_server)
 LDAP_BASE_DN=$(get_lcsdb_params ldap_base_dn)
 LDAP_PEOPLE_RDN=$(get_lcsdb_params peopleRdn)	
-sed -i "s|#LDAP_SERVER#|"$LDAP_SERVER"|g" $CONFIGRC_PATH/main.inc.php	
-sed -i "s|#LDAP_BASE_DN#|"$LDAP_BASE_DN"|g" $CONFIGRC_PATH/main.inc.php
-sed -i "s|#LDAP_PEOPLE_RDN#|"$LDAP_PEOPLE_RDN"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#LDAP_SERVER#|"$LDAP_SERVER"|g" $CONFIGRC_PATH/$CONFIGRC_FILE	
+sed -i "s|#LDAP_BASE_DN#|"$LDAP_BASE_DN"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
+sed -i "s|#LDAP_PEOPLE_RDN#|"$LDAP_PEOPLE_RDN"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
 # Config Roundcube authentication mode
 AUTH_MOD=$(get_lcsdb_params auth_mod)
 if [ ! -z $AUTH_MOD ]; then
 	if [ "$AUTH_MOD" = "ENT" ]; then
- 		MODAUTHENTICATION="cas_authentication"
+		MODAUTHENTICATION="cas_authentication"
 	else
 		MODAUTHENTICATION="lcs_authentication"
 	fi
 else
-	MODAUTHENTICATION="lcs_authentication"
+		MODAUTHENTICATION="lcs_authentication"
 fi
-sed -i "s|#MODAUTHENTICATION#|"$MODAUTHENTICATION"|g" $CONFIGRC_PATH/main.inc.php
+sed -i "s|#MODAUTHENTICATION#|"$MODAUTHENTICATION"|g" $CONFIGRC_PATH/$CONFIGRC_FILE
 # Make lcs_authentication config
 cp $CONFIG_PATH/config_auth_lcs.inc.php.dist $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
 sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRCPLUG_PATH/lcs_authentication/config_auth_lcs.inc.php
@@ -73,3 +74,5 @@ cp $CONFIG_PATH/config_auth_cas.inc.php.dist $CONFIGRCPLUG_PATH/cas_authenticati
 sed -i "s|#HOSTNAME#|"$HOSTNAME"|g" $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
 # Fix rights on module
 /var/lib/lcs/roundcube/Scripts/fixrights.sh
+
+exit 0
