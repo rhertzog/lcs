@@ -8,7 +8,7 @@ MYSQLDUMP="/var/lib/lcs/roundcube/Sql"
 CONFIG_PATH="/var/lib/lcs/roundcube/Config_rc"
 CONFIGRC_PATH="/usr/share/lcs/roundcube/config"
 CONFIGRC_TMP="config.inc.php.dist"
-CONFIGRC_PATH="config.inc.php"
+CONFIGRC_FILE="config.inc.php"
 CONFIGRCPLUG_PATH="/usr/share/lcs/roundcube/plugins"
 MYSQLPASS=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
 # Read lcs parametre in lcs_db.params
@@ -25,8 +25,13 @@ echo "UPDATE lcs_db.applis SET version='$VER' WHERE name='roundcube';" | mysql -
 #
 # Update database
 #
+# 2011121400 0.8.1
+# 2012080700 0.9b
+# 201311700 Err màj package 2.4.10~8
+# 2014042900 1.0.1
+
 if ! mysql -se "show tables from roundcube;" | grep system ; then
-	echo "Add system table 2011121400"
+	echo "Add system table 0.8.1 2011121400 "
 	mysql roundcube < $MYSQLDUMP/system.sql
 fi
 
@@ -38,8 +43,10 @@ if [ "$RC_VER" = "2011121400" ]; then
 	mysql roundcube < $MYSQLDUMP/2013011000.sql
 	mysql roundcube < $MYSQLDUMP/updateversion094.sql	        
 fi
+
+RC_VER=`mysql -se " select value from roundcube.system where name='roundcube-version';"`
 	
-if [ "$RC_VER" = "2012080700" ] || [ "$RC_VER" = "201311700" ]; then
+if [ "$RC_VER" = "2012080700" ] || [ "$RC_VER" = "2013011700" ]; then
 	echo "update roundcube database 0.9.4 -> 1.0.1" 
 	mysql roundcube < $MYSQLDUMP/2013052500.sql	       
 	mysql roundcube < $MYSQLDUMP/2013061000.sql	
