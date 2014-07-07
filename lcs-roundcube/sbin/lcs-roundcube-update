@@ -37,6 +37,33 @@ elif [ $VER > 2.4.9.2 ]; then
 	mysql roundcube < $MYSQLDUMP/2012080700.sql
 	mysql roundcube < $MYSQLDUMP/2013011000.sql
 fi
+
+
+
+
+if ! mysql -se "show tables from roundcube;" | grep system ; then
+	echo "update roundcube database 0.8.1 -> 0.9.4"
+	mysql roundcube < $MYSQLDUMP/system.sql
+fi
+
+RC_VER=`mysql -se " select value from roundcube.system where name='roundcube-version';"`
+
+if [ "$RC_VER" = "2011121400" ]; then
+	echo "update roundcube database 0.8.1 -> 0.9.4"
+	mysql roundcube < $MYSQLDUMP/2012080700.sql
+	mysql roundcube < $MYSQLDUMP/2013011000.sql	        
+fi
+	
+if [ "$RC_VER" = "2012080700" ]; then
+	echo "update roundcube database 0.9.4 -> 1.0.1" 
+	mysql roundcube < $MYSQLDUMP/2013052500.sql	       
+	mysql roundcube < $MYSQLDUMP/2013061000.sql	
+	mysql roundcube < $MYSQLDUMP/2014042900.sql	
+fi
+
+
+
+
 # Update config files
 #
 # Make roundcube config
@@ -72,6 +99,11 @@ sed -i "s|#PASS#|"$MYSQLPASS"|g" $CONFIGRCPLUG_PATH/lcs_authentication/config_au
 HOSTNAME=`hostname -f`
 cp $CONFIG_PATH/config_auth_cas.inc.php.dist $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
 sed -i "s|#HOSTNAME#|"$HOSTNAME"|g" $CONFIGRCPLUG_PATH/cas_authentication/config.inc.php
+# Clean old config files 
+rm -f $CONFIGRC_PATH/db.inc.php  
+rm -f $CONFIGRC_PATH/db.inc.php.dist  
+rm -f $CONFIGRC_PATH/main.inc.php  
+rm -f $CONFIGRC_PATH/main.inc.php.dist
 # Fix rights on module
 /var/lib/lcs/roundcube/Scripts/fixrights.sh
 
