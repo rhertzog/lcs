@@ -51,7 +51,9 @@ if [ "$RC_VER" = "2012080700" ] || [ "$RC_VER" = "2013011700" ]; then
 	mysql roundcube < $MYSQLDUMP/2013052500.sql	       
 	mysql roundcube < $MYSQLDUMP/2013061000.sql	
 	mysql roundcube < $MYSQLDUMP/2014042900.sql
-	mysql roundcube < $MYSQLDUMP/updateversion101.sql		
+	mysql roundcube < $MYSQLDUMP/updateversion101.sql	
+	# Reload apache2
+	invoke-rc.d apache2 reload	
 fi
 
 # Update config files
