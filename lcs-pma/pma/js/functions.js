@@ -1526,6 +1526,10 @@ function catchKeypressesFromSqlTextboxes(event) {
  */
 function PMA_doc_add($elm, params)
 {
+    if (typeof mysql_doc_template == 'undefined') {
+        return;
+    }
+
     var url = $.sprintf(
         mysql_doc_template,
         params[0]
@@ -2688,7 +2692,7 @@ AJAX.registerOnload('functions.js', function () {
         } else {
             title = PMA_messages.enum_columnVals.replace(
                 /%s/,
-                '"' + decodeURIComponent(colname) + '"'
+                '"' + escapeHtml(decodeURIComponent(colname)) + '"'
             );
         }
         // Get the values as a string
@@ -3548,7 +3552,7 @@ AJAX.registerOnload('functions.js', function () {
         var question = PMA_messages.strDropTableStrongWarning + ' ';
         question += $.sprintf(
             PMA_messages.strDoYouReally,
-            'DROP TABLE ' + PMA_commonParams.get('table')
+            'DROP TABLE ' + escapeHtml(PMA_commonParams.get('table'))
         );
 
         $(this).PMA_confirm(question, $(this).attr('href'), function (url) {
@@ -3581,7 +3585,7 @@ AJAX.registerOnload('functions.js', function () {
         var question = PMA_messages.strDropTableStrongWarning + ' ';
         question += $.sprintf(
             PMA_messages.strDoYouReally,
-            'DROP VIEW ' + PMA_commonParams.get('table')
+            'DROP VIEW ' + escapeHtml(PMA_commonParams.get('table'))
         );
 
         $(this).PMA_confirm(question, $(this).attr('href'), function (url) {
@@ -3614,7 +3618,7 @@ AJAX.registerOnload('functions.js', function () {
         var question = PMA_messages.strTruncateTableStrongWarning + ' ';
         question += $.sprintf(
             PMA_messages.strDoYouReally,
-            'TRUNCATE ' + PMA_commonParams.get('table')
+            'TRUNCATE ' + escapeHtml(PMA_commonParams.get('table'))
         );
         $(this).PMA_confirm(question, $(this).attr('href'), function (url) {
             PMA_ajaxShowMessage(PMA_messages.strProcessingRequest);
