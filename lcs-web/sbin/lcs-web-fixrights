@@ -17,8 +17,8 @@ chmod -R 770 /var/www/lcs/includes/htmlpurifier/library/HTMLPurifier/DefinitionC
 # /usr/share/lcs
 chown root:www-data /usr/share/lcs
 chmod 750 /usr/share/lcs
-chown -Rf www-data:www-data /usr/share/lcs/Plugins
-chown -Rf www-data:www-data /usr/share/lcs/Modules
+chown -f root:www-data /usr/share/lcs/Plugins
+chown -Rf root:www-data /usr/share/lcs/Modules
 chown -Rf www-data:www-data /usr/share/lcs/privatekey
 chmod 600 /usr/share/lcs/privatekey/privateKey.py
 chmod 644 /usr/share/lcs/privatekey/decode.py
@@ -49,5 +49,7 @@ chmod 750 /var/log/lcs
 mkdir -p  /var/lib/lcs/import_comptes
 chown www-data:root /var/lib/lcs/import_comptes
 chmod 755 /var/lib/lcs/import_comptes
+# Clean old install
+rm -Rf /usr/share/lcs/plugins/Logs
 
 

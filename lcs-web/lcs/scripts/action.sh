@@ -1,22 +1,33 @@
 #!/bin/bash
 # action.sh ordonnancement d'une action sur le serveur LcSe3
-# Version du 27/02/2014
+# Version du 04/08/2014
 
 #$1 action : halt, reboot, settime, update, synchro_mdp
 #$2 crypt passwd for synchro_mdp
 
-# get params
-WWWPATH="/var/www"
-if [ -e $WWWPATH/lcs/includes/config.inc.php ] && [ $1 = "settime" -o $1 = "synchro_mdp" ]; then
-  		dbhost=`cat $WWWPATH/lcs/includes/config.inc.php | grep "HOSTAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
-  		dbname=`cat $WWWPATH/lcs/includes/config.inc.php | grep "DBAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
-  		dbuser=`cat $WWWPATH/lcs/includes/config.inc.php | grep "USERAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
-  		dbpass=`cat $WWWPATH/lcs/includes/config.inc.php | grep "PASSAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
-else
-	echo "Missing config"
-  	exit 1
+
+# Empty command	
+if [ -z $1 ]; then
+        echo "ERR : Command unknow !"
+        exit 1
+fi
+
+# Get params
+
+if  [ $1 = "settime" -o $1 = "synchro_mdp" ]; then
+        WWWPATH="/var/www"
+        if [ -e $WWWPATH/lcs/includes/config.inc.php ]; then
+                dbhost=`cat $WWWPATH/lcs/includes/config.inc.php | grep "HOSTAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+                dbname=`cat $WWWPATH/lcs/includes/config.inc.php | grep "DBAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+                dbuser=`cat $WWWPATH/lcs/includes/config.inc.php | grep "USERAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+                dbpass=`cat $WWWPATH/lcs/includes/config.inc.php | grep "PASSAUTH=" | cut -d = -f 2 |cut -d \" -f 2`
+        else
+                echo "missing config"
+                exit 1
+        fi
 fi
 	
+
 case $1 in
   halt)
     /sbin/shutdown -h now &
