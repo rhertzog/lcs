@@ -3,8 +3,7 @@
 ##
 # Configuration inital de OpenVPN
 # Projet LCS 2
-# auteur : Simon CAVEY 
-# creation : 04/01/2009 modification 29/11/2013 jLCF
+# creation : 18/09/2014
 ##
 
 . /etc/lcs/lcs.conf
@@ -20,7 +19,6 @@ DH=1024
 VPNPORT=1193
 HOSTNAME=`hostname`
 FULLDOMAINE=`hostname -f`
-DOMAINE=`hostname -d`
 VLAN=0
 VPNCONNEXIONS=10
 VPNCLIENTTOCLIENT=0
@@ -83,18 +81,11 @@ sslpassword=`pwgen 8 1`
 sed -e "s|@@passwd@@|"$sslpassword"|g" /var/lib/lcs/openvpn/openssl.cnf.in > /etc/lcs/openvpn/openssl.cnf
 
 ## Patch des fichier de config interface web
-cp /var/lib/lcs/openvpn/config.inc /usr/share/lcs/openvpn/config.inc
+cp /usr/share/lcs/openvpn/config.inc /usr/share/lcs/openvpn/config_openvpn.inc.php
 sed -i'' "s/@@HOSTNAME@@/$HOSTNAME/g" /usr/share/lcs/openvpn/config.inc
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@CONTRY@/$COUNTRYNAME/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@PROVINCE@/$PROVINCENAME/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@CITY@/$LOCALITYNAME/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@ORG@/$ORGANIZATIONNAME/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@ORGUNIT@/$ORGANIZATIONALUNITNAME/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@COMMONNAME@/admin/g" /usr/share/lcs/openvpn/config.inc
-sed -i'' "s/@EMAIL@/admin@$DOMAINE/g" /usr/share/lcs/openvpn/config.inc
 
-## On adapte le mail pour les utilisateurs
+## On adapt le mail pour les utilisateurs
 sed -i'' "s/@@FULLDOMAINE@@/$FULLDOMAINE/g" /var/lib/lcs/openvpn/openvpn-mail-client.in
 
 ## On lance le scipt de generation du certif

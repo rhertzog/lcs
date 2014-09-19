@@ -25,7 +25,7 @@
 {/strip}
 
 {sectionelse}
-<tr><td colspan="5" align="center"><i>Il n'y a pas de client connecté actuellement.</i></td></tr>
+<tr><td colspan="5" align="center"><i>Il n'y a pas de client connecté actuelement.</i></td></tr>
 
 {/section}
 </table>

@@ -1,14 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 
 # revoke a certificate, regenerate CRL,
 # and verify revocation
+
+export KEY_DIR=/usr/share/lcs/openvpn/keys
+export KEY_COUNTRY=$COUNTRYNAME
+export KEY_PROVINCE=$PROVINCENAME
+export KEY_CITY=$LOCALITYNAME
+export KEY_ORG=$ORGANIZATIONNAME
+export KEY_EMAIL=admin@$DOMAIN
+export KEY_SIZE=1024
+export KEY_CONFIG=/etc/lcs/openvpn/openssl.cnf
+export KEY_COMMONNAME=$1
 
 CRL=crl.pem
 RT=revoke-test.pem
 
 if test $# -ne 1; then
-        echo "usage: revoke-full <name>";
-exit 1
+	echo "usage: lcs-openvpn-revoke <name>";
+	exit 1
 fi
              
 if test $KEY_DIR; then

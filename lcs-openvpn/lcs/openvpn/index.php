@@ -1,17 +1,27 @@
 <?php
+
+
+include "/var/www/Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
+
+$login=$_SESSION['login'];
+
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
-$msgIntro = "<H1>Gestion LCS OpenVPN</H1>\n";
-list ($idpers, $login)= isauth();
+
+
+
+
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y")
   die (gettext("Vous n'avez pas les droits suffisants pour acc&egrave;der &agrave; cette fonction.")."</BODY></HTML>");
+
 define ("LOCAL_SECURITY_KEY", true);
 
 session_name ('openvpn-web-gui-session');
 session_start ();
 
-include_once ('config.inc');
+include_once ('config_openvpn.inc.php');
 include_once ('include/functions.inc');
 
 if (!isset ($_SESSION['username']))

@@ -1,11 +1,11 @@
-lcs-openvpn (2.4.9.2) Lcs; urgency=low
+lcs-openvpn (2.4.10~6) Lcs; urgency=low
 
-  * Fix Fulldomain in mail
-  * Fix path for smarty3
-  * Fix config.inc parameters
-  * Make a 2.4.10 release for Wheezy
+  * Remove .htaccess
+  * Add purifier and escapeshellarg in index.php, newclient.php, config.php
+  * Fix lcs-openvpn-revoke and lcs-openvpn-list-genered
+  * Deny keys acces
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Jun 2014 09:38:07 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2014 11:18:29 +0200
 
 lcs-openvpn (2.4.9.1) Lcs; urgency=low
 
