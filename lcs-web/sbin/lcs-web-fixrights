@@ -50,6 +50,6 @@ mkdir -p  /var/lib/lcs/import_comptes
 chown www-data:root /var/lib/lcs/import_comptes
 chmod 755 /var/lib/lcs/import_comptes
 # Clean old install
-rm -Rf /usr/share/lcs/plugins/Logs
+rm -Rf /usr/share/lcs/Plugins/Logs
 
 
