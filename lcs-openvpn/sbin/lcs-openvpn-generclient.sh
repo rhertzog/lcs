@@ -32,13 +32,20 @@ if test $# -ne 1; then
         echo "usage: lcs-openvpn-generclient.sh <name>";
         exit 1
 fi
-## on verifi l'existance du compte
+
+## on verifie l'existance du compte
 getent passwd $1
 if test $? -ne 0; then
         echo "Utilisateur inconnu";
         exit 1
 fi
 
+## On verifie si le client existe deja
+if /usr/share/lcs/sbin/lcs-openvpn-list-genered | grep -q $1; then
+	## Si oui, on revoque le client
+   /usr/share/lcs/sbin/lcs-openvpn-revoke $1	
+fi
+	
 ##
 if test $KEY_DIR; then
 	export KEY_COMMONNAME=$1
