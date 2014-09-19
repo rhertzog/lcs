@@ -130,12 +130,16 @@ else
 	    
 fi
 	#
+
 	# 
 	echo "Changement des droits sur l'arborescence du module"
 	#
 	$CONF/Scripts/chown.sh $MODULE
 	cd $CHEMIN
 	echo "Fin de l'installation"
+	# Update sudoers
+        /usr/sbin/lcs-make-sudoers
+	chmod 750 /usr/share/lcs/scripts/init_gedowl.sh
 ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

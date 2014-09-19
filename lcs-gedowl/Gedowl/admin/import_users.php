@@ -59,11 +59,7 @@ print("<tr>\n");
 if (isset($_POST['Importer']))
 	{
 	//suppression des documents,des utilisateurs,initialisation de la base de données
-	$fichier_script_sudo = "/usr/share/lcs/scripts/execution_script_plugin.sh";
-	$script = './init.sh';
-	$cmd = "/usr/bin/sudo -H -u root " . $fichier_script_sudo . " " . $script;
-	exec($cmd,$lignes_retournees,$ret_val);
-		
+	exec( "/usr/bin/sudo /usr/share/lcs/scripts/init_gedowl.sh");	
 	
 	
 	//fichiers nécessaires à l'exploitation de l'API

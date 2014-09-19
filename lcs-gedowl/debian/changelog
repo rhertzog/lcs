@@ -1,3 +1,10 @@
+lcs-gedowl (2.4.10~2) Lcs; urgency=low
+
+  * fix rights on tree
+  * add sudo script
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 19 Sep 2014 11:36:46 +0200
+
 lcs-gedowl (2.4.10~1) LCS; urgency=low
 
   * release 
