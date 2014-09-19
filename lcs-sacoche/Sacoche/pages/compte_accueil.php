@@ -176,7 +176,7 @@ elseif($_SESSION['USER_PROFIL_TYPE']=='administrateur')
         foreach($tab_memo_ent_possible as $connexion_ref => $connexion_nom)
         {
           list($departement,$connexion_nom) = explode('|',$connexion_ref);
-          if(isset($tab_connecteurs_convention[$connexion_ref]))
+          if( isset($tab_connecteurs_convention[$connexion_ref]) && $tab_ent_convention_infos[$tab_connecteurs_convention[$connexion_ref]]['actif'] )
           {
             $texte_ent_possibles .= '<br /><a target="_blank" href="'.SERVEUR_GUIDE_ENT.'#toggle_partenariats">'.$tab_ent_convention_infos[$tab_connecteurs_convention[$connexion_ref]]['texte'].'</a>';
           }
@@ -215,7 +215,7 @@ else
   }
   if($_SESSION['CONNEXION_MODE']!='normal')
   {
-    $get_base = ($_SESSION['BASE']) ? '&amp;base='.$_SESSION['BASE'] : '' ;
+    $get_base = ($_SESSION['BASE']) ? '='.$_SESSION['BASE'] : '' ;
     $tab_accueil['user']['contenu'] .= '<div>Adresse à utiliser pour une connexion automatique avec l\'authentification externe&nbsp;: <b>'.URL_DIR_SACOCHE.'?sso'.$get_base.'</b></div>';
   }
 }
