@@ -1,2 +1,0 @@
-Tunnelblick 3.2.6
-openvpn-gui 2.2.2

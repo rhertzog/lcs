@@ -1,12 +1,14 @@
-lcs-openvpn (2.4.10~7) Lcs; urgency=low
+lcs-openvpn (2.4.10~8) Lcs; urgency=low
 
   * Remove .htaccess
   * Add purifier and escapeshellarg in index.php, newclient.php, config.php
   * Fix lcs-openvpn-revoke and lcs-openvpn-list-genered
   * Deny keys acces
   * Revoke client before generate
+  * Remove downloads openvpn clients repository
+  * Modify mail notify
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2014 15:03:19 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 25 Sep 2014 13:47:36 +0200
 
 lcs-openvpn (2.4.9.1) Lcs; urgency=low
 
