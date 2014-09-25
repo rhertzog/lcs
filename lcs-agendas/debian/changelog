@@ -1,3 +1,9 @@
+lcs-agendas (2.4.10~2) Lcs; urgency=low
+
+  * fix security rules
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 25 Sep 2014 16:53:07 +0200
+
 lcs-agendas (2.4.10~1) LCS; urgency=low
 
   * Make a 2.4.10 reelease for Wheezy repository
