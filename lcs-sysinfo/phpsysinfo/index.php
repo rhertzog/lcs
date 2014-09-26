@@ -1,4 +1,17 @@
 <?php
+/* LCS section  */
+include "/var/www/Annu/includes/check-token.php";
+if (!check_acces(1)) exit;
+$login=$_SESSION['login'];
+include ("/var/www/lcs/includes/headerauth.inc.php");
+include ("/var/www/Annu/includes/ldap.inc.php");
+if ( ldap_get_right("system_is_admin",$login)!="Y" && ldap_get_right("lcs_is_admin",$login)!="Y" ) {
+	echo "Vous n'avez pas les droits d'acces a cette application !";
+	die();
+}  
+
+/* End LCS section */
+
 /**
  * start page for webaccess
  * redirect the user to the supported page type by the users webbrowser (js available or not)

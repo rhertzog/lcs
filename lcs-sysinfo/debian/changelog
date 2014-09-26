@@ -1,8 +1,9 @@
-lcs-sysinfo (2.4.10~1) Lcs; urgency=low
+lcs-sysinfo (2.4.10~2) Lcs; urgency=low
 
   * Update phpsysinfo to 3.1.8 Version
+  * Modify lcs check auth (replace isauth check_access
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Nov 2013 16:26:01 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Sep 2014 13:54:56 +0200
 
 lcs-sysinfo (2.4.9) Lcs; urgency=low
 
