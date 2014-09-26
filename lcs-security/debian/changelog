@@ -1,8 +1,14 @@
-lcs-security (2.4.10~1) Lcs; urgency=low
+lcs-security (2.4.10~2) Lcs; urgency=low
 
-  * Make a 2.4.10 release for Wheezy
+  * Make a 2.4.10~ XP release for Wheezy
+  
+  [Philippe Leclerc]
+  * new function check_acces() in mod_security.php 
+  * add security rule  on failed token 
+  * add security rule on invalid request
+  * add security rule on shellcode request
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Nov 2013 10:41:52 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Sep 2014 10:52:39 +0200
 
 lcs-security (2.4.9.3~1) unstable; urgency=low
 

@@ -30,6 +30,14 @@ filter  = apache-overflows
 logpath = /var/log/apache*/*error.log
 maxretry = 6
 
+[courierauth]
+
+enabled  = false
+port     = imap2,imap3,imaps
+filter   = courierlogin
+logpath  = /var/log/mail.log
+maxretry = 6
+
 [lcs-auth]
 
 enabled = true
@@ -38,10 +46,27 @@ filter  = lcs-auth
 logpath = /var/log/lcs/error.log
 maxretry = 6
 
-[courierauth]
+[lcs-check]
 
-enabled  = false
-port     = imap2,imap3,imaps
-filter   = courierlogin
-logpath  = /var/log/mail.log
-maxretry = 6
+enabled = true
+port    = http,https
+filter  = lcs-check
+logpath = /var/log/lcs/check.log
+maxretry = 1
+
+[lcs-invalid-request]
+
+enabled = true
+port    = http,https
+filter  = lcs-invalid-request
+logpath = /var/log/apache2/lcs-main.error.log
+maxretry = 1
+bantime = 84600
+
+[lcs-noshellcode]
+enabled = true
+port    = http,https
+filter  = lcs-noshellcode
+logpath = /var/log/apache2/lcs-main.access.log
+maxretry = 1
+bantime = 84600
