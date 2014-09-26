@@ -1,3 +1,9 @@
+lcs-claro (2.4.10~2) UNRELEASED; urgency=low
+
+  * fix rights on tree
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 26 Sep 2014 10:48:22 +0200
+
 lcs-claro (2.4.10~1) LCS; urgency=low
 
   * Make a 2.4.10 reelease for Wheezy repository
