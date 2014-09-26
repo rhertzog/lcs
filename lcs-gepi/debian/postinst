@@ -30,10 +30,11 @@ CHEMIN=`pwd`
 	echo "Pas de patchconf a executer"
 	fi
 
-# test si le plugin est installe
-TEST=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='$MODULE';"`
-	
-if [ "$2" = "" -o "$2" = "$VER" ] && [ "$TEST" != "P" ]; then
+# test si le plugin/module  est installe
+Test_Plugin=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='$MODULE';"`
+Test_Module=`mysql -se "SELECT type FROM lcs_db.applis WHERE name='$module';"`
+if [ "$2" = "" -o "$2" = "$VER" ] && [ "$Test_Plugin" != "P" ] && [ "$Test_Module" != "N" ]; then
+
 
 #----------------
 #install initiale 
