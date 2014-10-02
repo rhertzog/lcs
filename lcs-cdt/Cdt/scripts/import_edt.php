@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 03/03/2014
+   VERSION 2.5 du 03/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import d'emploi du temps-
@@ -69,7 +69,7 @@ function offset_search( ) {
 //si clic sur le bouton Valider
 if (isset($_POST['Valider']))
     {
-    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable jsonfiles");
+    exec( "/usr/bin/sudo /usr/share/lcs/scripts/chaccess_cdt.sh Writable jsonfiles ".$_SESSION['login']);
     //verification de l'existence du repertoire
     if ($_POST['choice']==1 || $_POST['choice']==2 || !isset($_POST['choice']))
         {
@@ -145,13 +145,15 @@ if (isset($_POST['Valider']))
                             elseif ($_POST['choice']==1 ||  !isset($_POST['choice']))  $all_events=$data;
                             $events = json_encode($all_events);
                             $fichier=  fopen($nom_fichier,"w");
+                            $pb_w=(!$fichier) ? true : false;
                             fputs($fichier, $events);
                             fclose($fichier);
                             $mess2= ($_POST['choice']==1 ||  !isset($_POST['choice'])) ? " cr&#233;&#233;s " : " ajout&#233;s " ;
                             $mess1="<h3 class='ok'> ".count($data)." cours ont &#233;t&#233; ".$mess2." <br /></h3>";
-                            if (count($data)>0) $mess1.="<p>Vous pouvez maintenant associer ces cours &#224; vos onglets en cliquant <a href='config_ctxt.php'> ICI </a>
+                            if (count($data)>0 && !$pb_w) $mess1.="<p>Vous pouvez maintenant associer ces cours &#224; vos onglets en cliquant <a href='config_ctxt.php'> ICI </a>
                             <a href=\"#\" class=\"open_wi\" onclick=\"open_new_win('http://linux.crdp.ac-caen.fr/pluginsLcs/doc_help/raccourcis.php#edt2')\"  ><img class=\"nobord\" src=\"../images/planifier-cdt-aide.png\" alt=\"Aide\" title=\"Aide\" /></a>
-</p>";
+                            </p>";
+                            else $mess1= "<h3 class='ko'>1. Erreur dans l'enregistrement  des données <br /></h3>";
                             unlink($ICS);
                     }
                 else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <br /></h3>";

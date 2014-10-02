@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~5) Lcs; urgency=low
+
+  * fix update ed
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 26 Sep 2014 22:24:23 +0200
+
 lcs-cdt (2.4.10.~4) Lcs; urgency=low
 
   * release wwheezy version  from squueeze
