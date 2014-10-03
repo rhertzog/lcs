@@ -1,3 +1,9 @@
+lcs-gepi (2.4.10~4) UNRELEASED; urgency=low
+
+  * add recursive right w on backup directory
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 03 Oct 2014 10:03:08 +0200
+
 lcs-gepi (2.4.10~3) Lcs; urgency=low
 
   * fix rights on tree
