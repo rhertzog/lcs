@@ -1,6 +1,6 @@
-lcs-wiki (2.4.9.2) Lcs; urgency=low
+lcs-wiki (2.4.10.1) Lcs; urgency=low
 
-  * fix rights on tree
+  * release for wheezy
 
  -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 05 Oct 2014 19:55:25 +0200
 

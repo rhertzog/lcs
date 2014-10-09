@@ -1,0 +1,279 @@
+===== Guide des règles de mise en page ""WikiNiMST"" =====
+:::##Lorsque vous éditez une page du WikiniMST il apparaît  un menu au haut de la zone d'édition.  Ce menu vous offre la possibilité d'appliquer les codes de mise en page à du texte sélectionné.  La barre d'édition ne fonctionne pas en IE sous Mac OS X.   Mozilla Firefox, Camino et Safari offrent cette possibilité sous Mac OS X.##:::
+ Vous pouvez effectuer vos propres test dans le BacASable : 
+  c'est un endroit fait pour ça.
+----
+{{toc large="300px"}}
+=====Règles de base :=====
+
+ ""**Texte en gras !** -----""> **Texte en gras !** ---
+ ""//Texte en italique.// -----""> //Texte en italique.// ---
+ ""Texte __souligné__ ! -----""> Texte __souligné__ ! ---
+ ""##texte à espacement fixe## -----""> ##texte à espacement fixe## ---
+ ""@@Texte biffé ! @@ ----""> @@Texte biffé ! @@
+
+----
+
+=====Quelques codes maisons ajoutés par Gilles Jobin et Pierre Lachance :=====
+
+ ""~~En surbrillance~~ -----""> ~~En surbrillance~~
+
+ ""#B# En bleu ! #B# -----""> #B# En bleu ! #B#
+
+ ""#R# En rouge ! #R# -----""> #R# En rouge ! #R# 
+
+ ""#V# En vert ! #V# -----""> #V# En vert ! #V#
+
+ #C#""#C# Centré ! #C#""#C#
+
+ :::""::: Cadre pointillé ! ::: ---"">Cadre pointillé !:::
+
+----
+
+** ""%%code%%""
+""%%(php) PHP code%%"" **
+ - Dans un ""WiKi"" [[http://www.djo.ca/w01red.gif WikiNi]] MST
+  - le texte écrit entre deux paires de "%" comme ceci :
+""
+%%<br />
+apparaît dans une fenêtre comme celle qui suit.<br />
+%%
+""
+%%
+""
+Par ailleurs, les //codes WikiNi// tapés à l'édition, 
+à l'intérieur de **deux paires** de guillemets doubles, 
+comme dans cette phrase, @@ne formatent pas@@ le texte ; 
+ainsi, on les voit dans la __p@ge WiKi éditée__ . 
+""
+
+------------------------------------------------------------
+
+Parallèlement, si, à l'édition, 
+hors d'une paire de <i>guillemets doubles</i>, 
+comme dans cette <u>phrase-ci</u>, 
+vous écrivez des <b>codes HTML</b>, 
+vous les verrez dans la p@ge publiée, 
+car <s>ils ne sont pas interprétés par votre navigateur</s> : 
+
+Dans une fenêtre comme celle-ci, entre deux paires de "%",
+   les deux paires de guillemets doubles perdent leur pouvoir m@gique :
+      les formatages <b>HTML</b> et **WikiNi** ne fonctionnent plus.
+   ""les formatages <b>HTML</b> et **WikiNi** ne fonctionnent plus.""
+                  <hr /> ---- ** ** ---
+Les spécialistes utilisent fréquemment ces fenêtres pour y
+         traiter, discuter, construire des
+                  code (php) code PHP (delphi) code delphi/pascal
+
+%%
+
+----
+
+=====En-têtes===== 
+
+ == Petit en-tête ==
+ ""== Petit en-tête =="" (2 "=" de chaque coté)
+
+ === En-tête normal ===
+ ""=== En-tête normal ==="" (3 "=" de chaque coté)
+  **Est ± égal à deux paires d'astérisques**, *.
+
+ ==== En-tête gros ==== ""==== En-tête gros ===="" (4 "=" de chaque coté)
+
+ ===== En-tête très gros ===== ""===== En-tête très gros ====="" (5 "=" de chaque coté)
+
+ ====== En-tête énorme ====== ""====== En-tête énorme ======"" (6 "=" de chaque coté)
+
+----
+
+ Ligne horizontale : ""-----""
+ Retour de ligne forcé : ""---""
+
+----
+{{indiquer ici="liens"}}
+=====Liens web et création de page dans le wiki:=====
+
+ http://www.mon-site.org -> lien directement copié dans la page sera cliquable.
+ ""[[http://www.mon-site.org Mon-site]]"" -> Si on veut modifier le texte cliquable.
+
+ **Créer une nouvelle page WikiNi** ""[[NomDeLaPageWiki Nom visible de la page Wiki]]"" -> [[NomDeLaPageWiki Nom visible de la page Wiki]] (LeNomPage doit contenir au moins 2 majuscules séparées par des minuscules, pas d'accents no espace).
+
+{{indiquer ici="actionlien"}}
+ **Action lien :** ""{{lien url="http://lien.com" texte="Texte du lien" titre="Titre du lien" image="http://lienversimage"}}"" Permet d'afficher un titre à un lien ou encore de mettre une image au lieu du texte.
+  **Exemple :** {{lien url="http://recitmst.qc.ca/wikinimst/wakka.php?wiki=PageAccueil" texte="P@ge d'accueil du Wikini MST" titre="P@ge d'accueil du Wikini MST" image="http://recitmst.qc.ca/wikinimst/upload_dir/DjO/w01blueMST_20041205181331_20041205181410.gif"}}
+
+
+ **Lien dans une boite:**
+  -{{box url="http://google.com" texte="Exemple de lien externe dans une boite" large="800"}} ""{{box url="http://google.com" texte="Exemple de lien externe" }}""
+
+ **Lien-infobulle:**
+  -""{{infobulle mot="mot à infobuller" titre="Titre de la bulle" texte="texte de l'infobulle" lien="http://recitmst.qc.ca/wikinimst/"}}"" donne {{infobulle mot="mot à infobuller" titre="Titre de la bulle" texte="texte de l'infobulle" lien="http://recitmst.qc.ca/wikinimst/"}}
+  -Note: Le titre et le lien sont facultatif si on ne veut que mettre du texte dans la bulle.
+----
+
+=====Listes:=====
+
+ L'indentation de textes se fait avec la touche "Espace". 
+
+ Vous pouvez aussi créer des listes à puces ou numérotées :
+  ""- liste à puce""
+  ""1) liste numérotée (chiffres arabes)""
+  ""A) liste numérotée (capitales alphabétiques)""
+  ""a) liste numérotée (minuscules alphabétiques)""
+  ""i) liste numérotée (chiffres romains)""
+----
+
+=====Présentation=====
+
+ Grâce à la balise ""#D#"" vous pouvez créer une présentation web. Voir les sources de [[FonctionPrez cette page]] pour plus de détails.
+
+ //Pour que les titres des diapos s'affichent dans le menu déroulant, on doit faire ""#D#======Titre======"" sur une seule ligne.//
+
+----
+
+=====Ancres=====
+
+ Pour les pages longues, il peut être intéressant de pouvoir naviguer dans la page à l'aide d'ancres. Voici [[AncresDansUnePage comment gérer les ancres]] dans une page.
+ On utilise entre autre ceci: ""{{indiquer ici="haut" bas="bas" voir="milieu" Texte="Du texte..."}}""
+
+----
+
+=====Note de bas de page et note «Post-it»=====
+
+ **Une note:** ""{{note texte="On peut écrire une petite note qui apparaîtra à droite de la page. Le code **wiki** [[http://recitmst.qc.ca sera]] interprété."}}"" Si on veut changer le nom de la note on insère ceci dans la commande: **titre="autre titre"** {{note texte="On peut écrire une petite note qui apparaîtra à droite de la page. Le code **wiki** [[http://recitmst.qc.ca sera]] interprété."}}
+
+ **Des notes de bas de page (nbp)** peuvent être utile pour clarifier une phrase. Voici comment insérer une note: ""{{nbp note="Voici la note"}}"" et comment faire afficher les notes au bas de la page: ""{{nbp/disp}}"" Voir [[NoteBasPage un exemple]].
+
+----{{indiquer ici="tableau"}}
+
+=====Des tableaux:=====  
+
+====Première version (séparateur = |)====
+[[http://codedb.delphicenter.com/wiki/wakka.php?wiki=WikiTableau La page officielle du développeur]]
+
+""
+[|<br />
+!style="background:red"!|cellule1|cellule2|cellule3|<br />
+|cellule1|cellule2|[[PageAccueil cellule3]]|<br />
+|]<br />
+""  
+
+ Donne 
+
+[|
+!style="background:red"!|cellule1|cellule2|cellule3|
+|cellule1|cellule2|[[PageAccueil cellule3]]|
+|]
+
+
+{{indiquer ici="csv"}}
+====Tableau simple pour exportation en csv====
+
+""||<br />
+Titre 1;Titre 2;Titre 3<br />
+1;2;3<br />
+4;5;6<br />
+7;8;9<br />
+||""
+
+donne
+||
+Titre 1;Titre 2;Titre 3
+1;2;3
+4;5;6
+7;8;9
+||
+
+On peut télécharger le fichier csv en utilisant le bouton sous le tableau.
+
+{{indiquer ici="tableausimple"}}
+====Tableau plus simple à construire====
+##Note: le «;» délimite les colonnes et une ligne vide délimite les lignes.##
+""
+|><br />
+Colonne 1<br />
+;<br />
+Colonne 2<br />
+;<br />
+Colonne 3<br />
+<br /><br />
+Plus simple<br />
+;<br />
+On peu mieux voir<br />
+;<br />
+Ce qui se passe en mode édition<br />
+<br /><br />
+On cherche<br />
+;<br />
+moins<br />
+;<br />
+où sont les données<br /><br />
+
+<|""
+
+donne
+
+|>
+Colonne 1
+;
+Colonne 2
+;
+Colonne 3
+
+Plus simple
+;
+On peu mieux voir
+;
+Ce qui se passe en mode édition
+
+On cherche
+;
+moins
+;
+où sont les données
+
+<|
+----
+
+{{indiquer ici="attacher"}}=====Lier un document à une page===== //Note du webmestre: nous surveillons notre serveur de près, n'utilisez pas cette option sans but pédagogique SVP.   Nous supprimerons tous fichiers inconnus.//
+
+ - Attacher un fichier: ##""{{attacher fichier="fichier.ext"}}""##
+ - Attacher un fichier avec une description ##""{{attacher fichier="fichier.ext" description="Nom du fichier"}}""##
+ - Afficher une image: ##""{{attacher fichier="image.png" description="Voici une image"}}""##
+ - Afficher une image lien: ##""{{attacher fichier="image.png" description="Voici une image" lien="PagePrincipale"}}
+ou {{attacher fichier="image.png" description="Voici une image" lien="http://www.wikini.net"}}""##
+ - Afficher une image collé sur le bord droit et sans contour: ##""{{attacher fichier="image.png" description="Voici une image" class="right noborder"}}""##
+ -Pour voir les fichiers liés à une page (vous devez être propriétaire de la page), insérez ""{{attachfm}}"" quelque part dans la page.
+
+La page du développeur: http://www.wikini.net/wakka.php?wiki=ActionAttach
+----
+
+=====Formules mathématiques=====
+ #B#Pour en savoir plus sur l'utilisation de ""TeX"" pour la construction de formules #B#
+  - http://fr.wikipedia.org/wiki/Wikip%C3%A9dia:Formules_TeX 
+  - ""<a href="http://www.elec.ucl.ac.be/enseignement/ELEC2000/pages/latex/introduction.pdf">Lien trop long</a> (élargissait <i>indûment</i> la p@ge)""
+
+#R#On doit mettre un \ devant une formule que l'on balise de (""FormuleTEX""\). #R#
+
+Exemple: ""\(\left|\sum_{i=1}^n a_ib_i^2\right|\)""
+
+//Principe: WikiniMST convertit les formules TEX en image png.  Vous pouvez copier les images et les insérer dans un autre logiciel (SPIP, OpenOffice.org, etc).//
+
+----
+
+//#R#Tout texte placé entre deux guillemets doubles - " - est présenté tel quel et le code html sera interprété.#R#//
+
+"" 
+<div style="text-align: center;"><a
+ href="http://wikidjo.opossum.ca/wakka.php?wiki=FoXparleXhtml" onclick="this.target = '_blank';"  title="ouvre dans une nouvelle fenetre"
+ onmouseover="i584490.src='http://www.djo.ca/htmlWikiS2.gif'"
+ onmouseout="i584490.src='http://www.djo.ca/htmlWikiS.gif'">
+<img
+ src="http://www.djo.ca/htmlWikiS.gif" 
+ id="i584490" alt="HTML in Wakka Wikis"  />
+</a>
+</div> 
+""
+ Vous pouvez effectuer vos propres test dans le BacASable : 
+  c'est un endroit fait pour ça.
+

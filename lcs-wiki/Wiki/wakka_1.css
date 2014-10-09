@@ -1,0 +1,516 @@
+/* Le présent style du WIkiNiMST est tiré de -> andreas09 v1.0 (Dec 10th 2005) - An open source template by Andreas Viklund - http://andreasviklund.com. Free to use for any purpose as long as the proper credits are given to the original author. */
+body { 	background: #353530;
+	color: #5A5A50;
+	font: normal 1.3em Georgia,sans-serif;
+	height: 100%;
+	padding-bottom: 1px; /* force scrollbars */
+}
+html {
+	font-size: 62.5%; /* reset 1em to 10px */
+	height: 100%;
+}
+p {
+	line-height: 1.4em;
+	padding: 0.2em 0 1.2em;
+}
+
+h1 {font: normal 3em Georgia,sans-serif;text-align:center;letter-spacing: 2px;}
+h2 {font: normal 2.2em Georgia,sans-serif;}
+h3 {font: normal 2em Georgia,sans-serif;}
+h4 {font: normal 1.8em Georgia,sans-serif;}
+h5 {font: normal 1.6em Georgia,sans-serif;}
+h6 {font: bold 1.2em Georgia,sans-serif;}
+
+h1,h2,h3,h4,h5,h6 {margin-bottom: 0.2em;}
+
+/* 
+   Floats
+------------------------------------------------------------------- */
+
+.left {float: left;}
+.right {float: right;}
+
+.clear,.clearer {clear: both;}
+.clearer {
+	display: block;
+	font-size: 0;
+	line-height: 0;	
+}
+
+/* 
+   Layout 
+------------------------------------------------------------------- */
+
+/* General */
+.center_wrapper {
+	margin: 0 auto;
+	width: 855px;
+}
+
+#header {
+	background: #35322B url('themes/img_1/backgrounds.gif') repeat-x 0 0;
+	padding-top: 8px;
+}
+
+
+/* Toplinks */
+#toplinks {
+	background: #353530 url('themes/img_1/toplinks.gif') no-repeat left top;
+	color: #554;
+	float: right;
+	font-size: 0.9em;
+	height: 27px;
+	width: 230px;
+}
+#toplinks_inner {
+	padding-top: 3px;
+	text-align: center;
+}
+#toplinks a {color: #887;}
+#toplinks a:hover {color: #DDC;}
+
+/* Site title */
+#site_title {
+	color: #998;
+	padding: 0 0 16px;
+}
+#site_title a {
+	color: #FFF;
+	text-decoration: none;
+}
+#site_title a:hover {color: #FFB;}
+#site_title h1 span {color: #CCB;}
+
+
+/* Navigation */
+#navigation ul, #navigation li {display: inline;}
+#navigation li {display: inline;}
+#navigation, #navigation a {background: #958573 url('themes/img_1/backgrounds.gif') repeat-x 0 -222px;}
+#navigation a {
+	border-right: 1px solid #AFA69C;
+	color: #654;
+	float: left;
+	font: bold 1em Georgia,Tahoma,sans-serif;
+	margin-right: 1px;
+	padding: 10px 12px;
+	text-align: center;
+	text-decoration: none;
+}
+#navigation li:first-child a {border-left: 1px solid #AFA69C;}
+#navigation a:hover,#navigation li.current_page_item a {
+	background-position: 0 -294px;
+	color: #543;
+}
+
+
+/* Main */
+#main_wrapper_outer {background: url('themes/img_1/grain.gif');}
+#main_wrapper_inner {
+	background: url('themes/img_1/main_wrapper_inner.gif') repeat-x left top;
+	line-height: 1.4em;
+	padding: 24px 0;
+}
+#main {
+	
+	width: 600px;
+}
+
+#main ol, #main ul {margin: 0 0 1.2em 1.6em;}
+#main ul li {list-style: disc;}
+#main ol li {list-style: decimal;}
+#main li {padding: 2px 0;}
+
+
+/* Sidebar */
+#sidebar {
+	color: #665;
+	width: 216px;
+	border-right: 1px solid #CCB;
+}
+#sidebar_content {padding-right: 25px;}
+#sidebar a {color: #665;}
+#sidebar a:hover {color: #C40;}
+#sidebar h4{
+	background: url('themes/img_1/grain_dark.gif');
+	color: #665;
+	
+	padding: 5px 8px;
+}
+
+/* Dashboard */
+#dashboard {
+	background: #DDD url('themes/img_1/grain_dark.gif');
+	border-top: 1px dashed #C0C0B0;
+}
+#dashboard_content {padding: 16px 0 22px;}
+
+#dashboard .col3 {width: 255px;}
+#dashboard .col3mid {width: 337px;}
+#dashboard .col3mid .col3_content {
+	border-left: 1px solid #CCB;
+	border-right: 1px solid #CCB;
+	padding: 0 20px;
+	margin: 0 20px;
+}
+
+#dashboard li {
+	color: #887;
+	padding: 5px 0;
+}
+#dashboard li {border-top: 1px dashed #C6C6B6;}
+#dashboard li a {
+	color: #606050;
+	text-decoration: none;
+}
+#dashboard li a:hover {
+	color: #332;
+	text-decoration: underline;
+}
+
+
+/* Footer links */
+#footer {
+	color: #AA9;
+	padding: 12px 0;
+}
+#footer a {color: #BBA;}
+#footer .right, #footer .right a {
+	color: #777;
+	text-decoration: none;
+}
+#footer a:hover {color: #CCB;}
+
+/* 
+   IE float/background fixes
+------------------------------------------------------------------- */
+
+.legend, blockquote, #sidebar {min-height: 0.01%;}
+
+
+a {color: #543;}
+a:hover {
+	color: #C40;
+	text-decoration: underline;
+}
+a img {border : none;}
+
+/* 
+  les anciens css
+------------------------------------------------------------------- */
+ul { margin-top: 0px; padding-top: 0px; padding-bottom: 0px; list-style-image: url(images/fleche.png); list-style-type: circle}
+ol { margin-top: 0px; padding-top: 0px; padding-bottom: 0px;}
+
+form { margin: 0px; padding: 0px; }
+tt { color: Navy; font-size: 130%;}
+hr { border: 0px; color: #3b3f8c; /* Internet Explorer */ background-color: #3b3f8c; height: 1px; }
+
+/*Gestion de la position des différentes parties de la page wiki*/
+/*** Content wrap ***/
+
+
+.page { 
+	
+
+	padding:15px 20px 5px;
+	text-align:justify;
+}
+
+
+/*Fin de la gestion du positionnement.*/
+
+
+.wiki_name { float: left; margin: 0px 15px 0px 10px; font-size: 150%; }
+.page_name { font-size: 150%; }
+
+.error { color: #CC3333; font-weight: bold; }
+.indent { margin-left: 40px; }
+.additions { color: #008800; }
+.deletions { color: #880000; }
+.add { font-weight: bold; color: #c00; text-decoration: underline; }
+.del { font-style: italic; color: #c00; text-decoration: line-through; }
+.header {padding-bottom: 20px; padding-top: 7px; }
+
+.navigation {
+	padding: 2px; border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #9c9ec9;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #9c9ec9;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #9c9ec9;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #9c9ec9;
+	background: #fafafa ;
+}
+input {
+	border-top : 1px solid #9c9ec9;
+	border-right : 2px solid #9c9ec9;
+	border-bottom : 2px solid #9c9ec9;
+	border-left : 1px solid #9c9ec9;
+
+
+
+	font-size : 12px;
+}
+fieldset {border: 0px; padding: 0;}
+.prev_alert { background-color: red; color: white; font-size: 1.7em; font-weight: bold; margin-bottom: 5px; }
+
+.textarea{width:100%; }
+.edit { width: 100%; height: 100%; }
+.edit {  float:right;background: #fafafa;font-size : 12px;color: #557; border-width: 1px; border-color: #9c9ec9; border-style: solid;}
+.footer {background-color: #DDDDDD; padding: 5px 10px; border: 1px solid #CCCCCC; border-top: none; border-top: 1px solid #CCCCCC }
+.code { background: #FFFFFF; border: solid #888888 2px; font-family: 'Courier New', Courier; color: black;  width: 99%; height: 400px; overflow: scroll; padding: 3px; }
+.revisioninfo { color: #AAAAAA; padding-bottom: 20px; }
+
+.commentsheader { 	background: url('themes/img_1/grain_dark.gif');color: #665;background-color: #DDDDDD; margin-top: 10px;padding: 2px 10px; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC }
+.comment { background: url('themes/img_1/grain_dark.gif');color: #665;background-color: #EEEEEE; padding: 10px; border-left:1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #EEEEEE; }
+.commentinfo { color: #AAAAAA; }
+.commentform { 	background: url('themes/img_1/grain_dark.gif');color: #665;background-color: #EEEEEE; padding: 10px; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC }
+
+.copyright { font-size: 11px; color: #AAAAAA; text-align: center; padding: 5px 10px 3px 3px;}
+.copyright A { color: #AAAAAA; }
+.searchbox { background: #FFFFF8; border: 0px; border-bottom: 1px solid #CCCCAA; padding: 0px; margin: 0px; }
+.debug { font-size: 11px; color: #888888; }
+
+.hr_clear { clear: both; visibility: hidden; }
+.include_right { float: right; width: 17%; } /* bloc flotant à droite */
+.include_left { float: left; width: 17%; } /* bloc flotant à gauche */
+.include_solid_border { border: solid; padding: 2px; } /* encadré noir */
+.include_gray_background { background-color: #DDDDDD; } /* fond gris */
+.include_small_fonts { font-size: 0.8em; } /* petit*/
+
+
+.include_big_fonts { font-size: 1.2em; } /* grandes polces */
+
+.include_height10em { height: 10em; overflow: scroll; } /* boite de 10em de hauteur, avec ascenseur */
+.include_height15em { height: 15em; overflow: scroll; }
+.include_height30em { height: 30em; overflow: scroll; }
+.include_height60em { height: 60em; overflow: scroll; }
+
+.trail_table { line-height: 30px;}
+.trail_button { color: #993333; }
+
+
+/*Pour les ajouts de couleurs.*/
+.rouge {color:#c71f1f;} 
+.vert {color:#33ff33;}
+.bleu {color:blue;}
+.surbrillance {background-color:yellow;}
+.centrer {text-align:center;}
+.pointille {border:2px dotted red; }
+
+.attach_margin05em { margin: 0.5em;}             /* marge de 0.5 em autour de l'image*/
+.attach_margin1em { margin: 1em;}                /* marge de 1em autour de l'image*/
+.attach_left {float: left;}                      /* bloc flotant à gauche */
+.attach_right {float: right;}                    /* bloc flotant à droite */
+.attach_center {
+display:block;
+width:100%;
+margin:auto;
+    text-align:center;
+}
+.attach_noborder {border-width: 0px;}            /* pas de bordure */
+.attach_vmiddle {vertical-align: text-bottom;}   /* aligenement vertical au milieu */
+
+.tableFM {border: thin solid Black; width: 100%;  }
+.tableFM THEAD { background-color: Silver; font-weight: bold; text-align: center;   }
+.tableFM TFOOT { background-color: Silver; font-weight: bold; text-align: left;   }
+.tableFM TBODY TR { text-align: center;  }
+.tableFMCol1 { background-color: Aqua; }
+.tableFMCol2 { background-color: Yellow; }
+
+
+
+div.math_inline { display: inline; }
+div.math_center { text-align: center; }
+
+.buttons { background: #ccc; border: 0px solid #ccc; margin: 1px; float:left; }
+.raise{ border-top: 1px solid buttonhighlight; border-left: 1px solid buttonhighlight; border-bottom: 1px solid buttonshadow; border-right: 1px solid buttonshadow; background: #ccc; margin:0px;    float:left; }
+.press { border-top: 1px solid buttonshadow; border-left: 1px solid buttonshadow; border-bottom: 1px solid buttonhighlight; border-right: 1px solid buttonhighlight; background: #ccc; margin:0px; float:left; }
+/* ci dessous les petits champs */
+.ACsearchbox { background: #FFFFF8; border: 0px; border-bottom: 1px solid #CCCCAA; padding: 0px; margin: 0px; font-size: 10px; }
+.texteChampsImage {font-size: 10px; }
+#toolbar { margin: 0px; width: 550px; padding: 0px; height:20px; background: #ccc; border-top: 1px solid buttonhighlight; border-left: 1px solid buttonhighlight; border-bottom: 1px solid buttonshadow; border-right: 1px solid buttonshadow; text-align:left; }
+
+.image_left {float: left;} /* bloc flotant à gauche */
+.image_right {float: right;} /* bloc flotant à droite */
+.image_center {text-align:center;} /* bloc centré */
+
+.ancrer {
+	float: right;
+	padding: 1px; border-left-width: 1px;
+	border-left-style: dotted;
+	border-left-color: red;
+	border-right-width: 1px;
+	border-right-style: dotted;
+	border-right-color: red;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: red;
+	border-top-width: 1px;
+	border-top-style: dotted;
+	border-top-color: red;
+}
+.ancrer a {
+	text-decoration: none;border-bottom: 0px;
+}
+.ancre a {
+	color: red;
+}
+/* pour les fonctions d'attachement */
+.floatr {float: right; width: 48%; margin: 0.5%; padding: 0.5%; background: #EEE;}
+.commenteditlink { float: right; margin: 2px; }
+.footnote {background-color: #eee; padding: 5px;}
+
+.souligne {text-decoration: underline; }
+/* sidenote.css */
+/* Contains css for tip, note and warn actions. */
+
+/* postit note-style information box */
+#note {
+
+        font-size: 10pt;
+        float: right;
+        width: 200px;
+        border: 1px solid #AAAAAA;
+        margin: -10px 10px 10px 10px;
+        padding: 0px;
+        background-color: #FFF900;
+        text-align: justify;
+        vertical-align: top;
+}
+
+#note hr {
+        height: 1px;
+        border: 1px solid #AAAAAA;
+        width: 100%;
+}
+
+#note .title {
+        text-align: center;
+        font-weight: bold;
+        background-color: #EEE800;
+        border-bottom: 1px solid #AAAAAA;
+
+}
+
+#note #text {
+        padding: 4px;
+        
+}
+
+/*Gestion tableau csv*/
+.csvtable {
+	border: thin solid #a6a6a6;
+	border-collapse: collapse;
+
+}
+
+.csvtable th {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #dddddd; 	text-align: center;}
+
+.csvtable td {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #fff; 
+	color: #006;
+}
+.question {
+	color:#c71f1f;
+	font-weight: bold;
+}
+.commentspam { color:#c71f1f; background-color: yellow; padding: 10px; border-left:1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #EEEEEE; }
+
+/*Action toc*/
+#sommaire {float: right;  border: 1px solid #ccc; padding: 10px; margin: 10px; background: url('themes/img_1/grain_dark.gif');
+	color: #665; font-size: 0.9em;}
+#sommaire a {font-weight: normal;color:#505050; background-color: transparent;text-decoration:none;border-bottom: 0px dotted #505050;}
+#sommaire a:hover {color:#c71f1f; background-color: transparent;text-decoration:none;border-bottom: 0px dotted #505050;}
+div.toc { margin-bottom: 0px; padding-bottom: 0px; }
+div.toc1 { margin-left: 1em; }
+div.toc1 img { border: 0px; }
+div.toc2 { margin-left: 2.5em; }
+div.toc2 img { border: 0px; }
+div.toc3 { margin-left: 3.9em; }
+div.toc3 img { border: 0px; }
+div.toc4 { margin-left: 5.1em; }
+div.toc4 img { border: 0px; }
+div.toc5 { margin-left: 6.5em; }
+div.toc5 img { border: 0px; }
+
+.grabcodebutton {margin-top: 10px;}
+.form {padding: 0px;}
+/*Infobulle-----------------------------------------*/
+
+a.info_bulle
+{				
+  color           : #2F368A;
+  
+  text-decoration : none; 
+  
+  padding         : 2px 16px 2px 2px; /*Définition des marges intérieures de notre lien */
+  
+  /* Définition de l'arrière plan de notre lien */
+  background      : transparent url('images/comment.gif') no-repeat right center;
+  
+  position        : relative; /* Indispensable pour le bon positionnement de l'info-bulle */ 
+}  
+ 
+a.info_bulle:hover 
+{
+  border          : 0;  /* ligne qui corrige le bug d'IE6 et inférieur */
+} 
+
+/* Rend invisible tout notre bloc span */
+a.info_bulle span.info_bulle 
+{								   
+  position   :  absolute;
+  top        :  -2000em;
+  left       :  -2000em;
+  width      :  1px;
+  height     :  1px;
+  overflow   :  hidden; 
+} 
+
+/* Rend visible tout notre bloc span et lui attribue une taille */
+a.info_bulle:hover span.info_bulle, a.info_bulle:focus span.info_bulle
+{
+  top:2em;
+  left       :  auto;
+  width      :  220px;
+  height     :  auto;
+  overflow   :  visible;
+}  
+
+span.headerinfo
+{
+   display         : block; 
+   height          : 76px;  /* Hauteur correspondant à celle de notre image */
+   line-height     : 820%;  /* Propriété qui centrera le texte verticalement */
+   text-align      : center;
+   background      : transparent url('images/top.png') no-repeat 0 0; 
+   font-size       : 15px; 
+   font-weight     : bold;
+} 
+
+span.contentinfo
+{
+   display     : block; 
+   background  : transparent url('images/milieu.png') repeat-y;
+   padding     : 0 15px;
+} 
+
+span.footerinfo
+{
+   display     : block; 
+   height      : 29px; 
+   background  : url('images/bot.png') no-repeat bottom left; 
+   font-size   : 0; /* Corrige l'espacement inutile sous IE */
+} 

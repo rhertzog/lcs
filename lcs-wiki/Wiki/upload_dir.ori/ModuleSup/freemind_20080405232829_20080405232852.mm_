@@ -1,0 +1,71 @@
+<map version="0.9.0_Beta_8">
+<!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
+<node CREATED="1135342535152" ID="Freemind_Link_206513978" MODIFIED="1135342950231" TEXT="FreeMind ou Esprit Libre">
+<edge COLOR="#ff9900" STYLE="bezier" WIDTH="2"/>
+<font BOLD="true" NAME="SansSerif" SIZE="14"/>
+<node CREATED="1135342535153" HGAP="19" ID="Freemind_Link_1312419192" MODIFIED="1165516991827" POSITION="right" STYLE="bubble" TEXT="Forces" VSHIFT="-88">
+<node CREATED="1135342535153" MODIFIED="1135342535153" TEXT="Licence libre (GPL)"/>
+<node CREATED="1135342858177" ID="Freemind_Link_666277213" MODIFIED="1135342863490" TEXT="Exporte en html"/>
+<node CREATED="1135342548845" ID="_" MODIFIED="1135342624452" TEXT="Exporte en xhtml"/>
+<node CREATED="1165517092351" ID="Freemind_Link_1719207104" MODIFIED="1165517101383" TEXT="Exportation en format Flash"/>
+<node CREATED="1135342535153" ID="Freemind_Link_804215351" MODIFIED="1135342621955" TEXT="Exporte pour le web en Java "/>
+<node CREATED="1135342592490" ID="Freemind_Link_215462326" MODIFIED="1135342608237" TEXT="Exporte en image (jpg, png)"/>
+<node CREATED="1165517116444" ID="Freemind_Link_211205833" MODIFIED="1165517122152" TEXT="Exportation en format pdf"/>
+<node CREATED="1135342648287" ID="Freemind_Link_1854445476" MODIFIED="1135342662964" TEXT="Exporte pour OpenOffice Writer"/>
+<node CREATED="1135342674517" ID="Freemind_Link_1875572884" MODIFIED="1135342685043" TEXT="Exporte en SVG (dessin vectoriel)"/>
+<node CREATED="1135342535153" ID="Freemind_Link_427188146" MODIFIED="1135342535153" TEXT="Francis&#xe9;"/>
+<node CREATED="1135342535153" ID="Freemind_Link_374873023" MODIFIED="1135368115400">
+<richcontent TYPE="NODE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <img align="middle" src="http://recitmst.qc.ca/wikinimst/upload_dir/FonctionFreemind/sourir_20051223150124_20051223150140.png" />
+    On peut mettre des images
+  </body>
+</html>
+</richcontent>
+</node>
+<node CREATED="1135342535153" HGAP="40" ID="Freemind_Link_1010399683" MODIFIED="1165517050050" TEXT="Fonctionne sous Windows, Mac OS X et Linux" VSHIFT="24"/>
+<node CREATED="1135342535153" HGAP="56" ID="Freemind_Link_951111762" MODIFIED="1165517047263" TEXT="On peut cacher les bulles &#xab;enfants&#xbb;.&#xa;Donc pendant une pr&#xe9;sentation, on&#xa;ne garde ouvert que ce qui est en cours." VSHIFT="55"/>
+<node CREATED="1135342535153" HGAP="70" ID="Freemind_Link_894487165" MODIFIED="1165516952170" TEXT="On peut mettre un groupe &#xa;de concepts en &#xe9;vidence" VSHIFT="43">
+<cloud/>
+</node>
+<node CREATED="1135342810494" HGAP="55" ID="Freemind_Link_1486347653" MODIFIED="1165516954929" TEXT="On peut lier deux bulles" VSHIFT="55">
+<arrowlink DESTINATION="Freemind_Link_894487165" ENDARROW="Default" ENDINCLINATION="57;0;" ID="Freemind_Arrow_Link_1678488349" STARTARROW="None" STARTINCLINATION="57;0;"/>
+</node>
+<node CREATED="1165517001143" ID="Freemind_Link_563165561" MODIFIED="1165517011800" TEXT="On peut disposer les bulles o&#xf9; on veut"/>
+<node CREATED="1165517016176" HGAP="17" ID="Freemind_Link_273114757" MODIFIED="1165517054618" TEXT="La publication sur le web est simplifi&#xe9;e gr&#xe2;ce au WikiNiMST" VSHIFT="17"/>
+<node CREATED="1165517148537" ID="Freemind_Link_1007662106" MODIFIED="1165517391132" TEXT="On peut laisser une note">
+<richcontent TYPE="NOTE"><html>
+  <head>
+    
+  </head>
+  <body>
+    <p>
+      Tr&#232;s facilement... Avec du <b>HTML</b> pour un peu de mise en page.
+    </p>
+    <ol>
+      <li>
+        Liste aussi
+      </li>
+      <li>
+        Pour expliquer
+      </li>
+      <li>
+        Quelque chose
+      </li>
+    </ol>
+  </body>
+</html>
+</richcontent>
+</node>
+</node>
+<node CREATED="1135342535153" HGAP="51" ID="Freemind_Link_1205769749" LINK="http://freemind.sourceforge.net/" MODIFIED="1165516987721" POSITION="left" STYLE="bubble" TEXT="T&#xe9;l&#xe9;chargement" VSHIFT="-28"/>
+<node CREATED="1135342535153" HGAP="37" ID="Freemind_Link_191628484" MODIFIED="1165516984960" POSITION="left" STYLE="bubble" TEXT="Faiblesses" VSHIFT="68">
+<node CREATED="1135342535153" ID="Freemind_Link_671979973" MODIFIED="1135342535153" TEXT="Les formes possible des bulles &#xa;ne sont pas tr&#xe8;s nombreuses"/>
+<node CREATED="1135342535153" MODIFIED="1135342535153" TEXT="On ne peut placer les bulles &#xa;o&#xf9; l&apos;on veut dans la fen&#xea;tre"/>
+<node CREATED="1135342535153" MODIFIED="1135342535153" TEXT="Les pr&#xe9;f&#xe9;rences ne sont modifiables &#xa;qu&apos;en &#xe9;ditant un fichier texte"/>
+</node>
+</node>
+</map>

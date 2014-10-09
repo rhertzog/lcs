@@ -1,0 +1,415 @@
+* { margin: 0; outline: none; } 
+html, body { height: 100%; }
+
+body { background: #fff url(themes/img_2/top_line.png) repeat-x 0 0; color: #666; font: normal 13px/1.2em Verdana, Arial, Helvetica, Sans-Serif; margin: 30px 0 20px 0; padding: 0; line-height: 1.5em; word-spacing: 0.1em; }
+
+#maincontainer { background: url(themes/img_2/spiral.png) repeat-y  top right;width: 960px;  height: auto !important; height: 100%; margin: 0 auto -50px; }
+
+.page_haut { background: url(themes/img_2/header2.png) no-repeat 0 0; height: 158px; }
+
+.page_haut h1 { font-size: 2.7em; line-height: 1em; font-weight: normal; margin: 20px 0 0 112px; padding-top: 40px; }
+
+.page_haut span { font-size: 1.3em; line-height: 1em; font-weight: normal; margin: 0 0 0 112px; }
+
+#contentwrapper {  float: left; width: 100%; }
+
+
+
+/*LEFT COLUMN*/
+
+
+
+#leftside h4 { font-size: 1.1em; background-color: #4682b4; color: #fff; margin: 0; padding-left: 4px; text-transform: none; line-height: 1.6em; }
+
+/* Le footer------------------------------------------------*/
+#footer2 {font-size: 10px;
+	clear : both; 
+	margin-left : -13px;margin-right : -13px;
+	padding-top : 20px; padding-left: 20px; padding-right: 20px;
+	color: #ccc; background: #585858 url(themes/img_2/footer.png) repeat-x top;
+	font-style: italic;background-color: #585858; height: 120px;
+}
+#footer2 a {
+	font-size: 10px;
+	color: #ccc;border-bottom: none;text-decoration: underline;
+}
+.collabo {
+	color: #22558F;
+	float : right;
+	font-weight: bold;
+}
+.bas_page {
+	float : left;
+	font-size: 11px;
+	width: 70%;
+}
+.bas_pagenoire {background-color: #585858;}	
+
+#navlist { padding: 5px 0; margin: 0; width: 217px; }
+
+#navlist li { background: #fff url(themes/img_2/points.png) repeat-x 0 1.3em; list-style: none; line-height: 2em; margin: 0 0 0 10px; }
+
+#navlist li a, #navlist li a:link, #navlist li a:visited { border-bottom: none;background-color: #fff;  text-decoration: none; padding-left: 5px; }
+
+.seagreen1 { border-left: 30px solid yellow; }
+.seagreen { border-left: 30px solid #2e8b57; }
+.rawsienna { border-left: 30px solid #c76114; }
+.lightblue { border-left: 30px solid #7d9ec0; }
+.beet { border-left: 30px solid #8e388e;}
+.steelblue { border-left: 30px solid #4682b4;}
+.beet2 { border-left: 30px solid #d974e8;}
+
+
+#navlist li a:hover { color: #cc0000; text-decoration: underline; }
+
+.greybox { background: #fff url(images/greybox.png) repeat-x 0% 0%; text-transform: none; padding: 5px 10px; }
+.listnumber { color: #4682b4; float: left; font-size: 3.2em; line-height: 83%; padding-right: 3px; }
+
+h2 { border-bottom: 1px solid #000; font-size: 1.9em; font-weight: normal; line-height: 1em; margin: 0 0 16px 0; padding-bottom: 8px; }
+
+h3 { font-size: 1.5em; font-weight: normal; line-height: 1em; margin: 0 0 16px 0; }
+
+h4 { font-size: 1.3em; font-weight: normal; line-height: 1em; margin: 0 0 8px 0; }
+
+
+
+a:link{color:#006; background-color: transparent;text-decoration:none;border-bottom: 1px #006 dotted;}
+a:visited{color:#006; background-color: transparent; text-decoration:none;border-bottom: 1px #006 dotted;}
+a:hover {color: #ff0032; background-color: transparent; text-decoration:none; border-bottom: 1px #ff0032 dotted;} 
+a img {border: 0px;}
+body, p, td, li,  select, textarea { font-family: Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif; font-size: 13px; }
+
+blockquote { border: 1px solid #4682b4; border-top-width: 0; margin: -5px 40px 16px 20px; padding: 0; margin-bottom: 20px;}
+
+blockquote p { font-size: 1.1em; letter-spacing: 1px; padding: 5px 10px; }
+
+blockquote em { font-size: 1.3em; color: #4682b4; line-height: 1.6em; }
+
+ul { margin-top: 0px; padding-top: 0px; padding-bottom: 0px; list-style-image: url(puce.gif); list-style-type: circle}
+ol { margin-top: 0px; padding-top: 0px; padding-bottom: 0px;}
+form { margin: 0px; padding: 0px; }
+tt { color: Navy; }
+hr { border: 0px; color: #3b3f8c; /* Internet Explorer */ background-color: #3b3f8c; height: 1px; }
+
+
+/*Gestion de la position des différentes parties de la page wiki*/
+/*** Content wrap ***/
+
+#wrap {
+	clear:both;
+	padding:0;
+}
+/*** menu gauche ***/
+#leftside {
+	
+	margin:0;
+	padding:0 ;
+	width:220px;
+}
+
+#leftside {background: #ffffff;
+	float:left;
+border-right: 2px solid #4682b4; border-bottom: 2px solid #4682b4; border-left: 1px solid #4682b4;
+}
+#leftside ul { margin-left: -5px;margin-top: 0px; padding-top: 0px; padding-bottom: 0px; list-style-type: circle}
+
+#leftside ol { margin-top: 0px; padding-top: 0px; padding-bottom: 0px;}
+/*** Contenu à droite, l apage wiki comme tel ***/
+#content {margin: 0 70px 20px 230px; }
+
+.page { background-color:#fff;
+	margin-bottom: 60px;
+	color:#666;
+	padding:15px 20px 5px;
+}
+.wiki_name { float: left; margin: 0px 15px 0px 10px; font-size: 150%; }
+.page_name { font-size: 150%; }
+
+.error { color: #CC3333; font-weight: bold; }
+.indent { margin-left: 40px; }
+.additions { color: #008800; }
+.deletions { color: #880000; }
+.add { font-weight: bold; color: #c00; text-decoration: underline; }
+.del { font-style: italic; color: #c00; text-decoration: line-through; }
+.header { padding: 10px; padding-top: 0px }
+
+
+.navigation {
+	padding: 2px; border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #9c9ec9;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #9c9ec9;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #9c9ec9;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #9c9ec9;
+	background: #fafafa ;
+}
+.prev_alert { background-color: red; color: white; font-size: 1.7em; font-weight: bold; margin-bottom: 5px; }
+input {
+	border-top : 1px solid #9c9ec9;
+	border-right : 2px solid #9c9ec9;
+	border-bottom : 2px solid #9c9ec9;
+	border-left : 1px solid #9c9ec9;
+	background: #f8f8f8;
+	color : #557;
+	font-weight: bold;
+	font-size : 12px;
+}
+fieldset {border: 0px; padding: 0;}
+.textarea{width:100%; }
+.edit { width: 100%; height: 100%; float:right;background: #fafafa;font-size : 12px;color: #557; border-width: 1px; border-color: #9c9ec9; border-style: solid;}
+.footer {  margin-top: 5px;padding: 0;  }
+.code { background: #FFFFFF; border: solid #888888 2px; font-family: 'Courier New', Courier; color: black;  width: 99%; height: 400px; overflow: scroll; padding: 3px; }
+.revisioninfo { color: #AAAAAA; padding-bottom: 20px; }
+
+.commentsheader { margin-bottom: 20px; background-color: #eee; padding: 2px 10px; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC }
+.comment { margin-bottom: 20px;background-color: #EEEEEE; padding: 10px; border-left:1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #EEEEEE; }
+.commentinfo { color: #AAAAAA; }
+.commentform { margin-bottom: 60px;background-color: #EEEEEE; padding: 10px; border-left: 1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC }
+
+.copyright { font-size: 11px; color: #AAAAAA;  padding-top: 10px; }
+.copyright A { color: #AAAAAA; }
+.searchbox { background: #FFFFF8; border: 0px; border-bottom: 1px solid #CCCCAA; padding: 0px; margin: 0px; }
+.debug { font-size: 11px; color: #888888; }
+
+.hr_clear { clear: both; visibility: hidden; }
+.include_right { float: right; width: 17%; } /* bloc flotant à droite */
+.include_left { float: left; width: 17%; } /* bloc flotant à gauche */
+.include_solid_border { border: solid; padding: 2px; } /* encadré noir */
+.include_gray_background { background-color: #DDDDDD; } /* fond gris */
+.include_small_fonts { font-size: 0.8em; } /* petit*/
+
+
+.include_big_fonts { font-size: 1.2em; } /* grandes polces */
+.include_height10em { height: 10em; overflow: scroll; } /* boite de 10em de hauteur, avec ascenseur */
+.include_height15em { height: 15em; overflow: scroll; }
+.include_height30em { height: 30em; overflow: scroll; }
+.include_height60em { height: 60em; overflow: scroll; }
+
+.trail_table { line-height: 30px;}
+.trail_button { color: #993333; }
+
+
+/*Pour les ajouts de couleurs.*/
+.rouge {color:#c71f1f;} 
+.vert {color:#33ff33;}
+.bleu {color:blue;}
+.surbrillance {background-color:yellow;}
+.centrer {text-align:center;}
+.pointille {border:2px dotted red; margin-left: 25px; margin-right: 25px;}
+
+.attach_margin05em { margin: 0.5em;}             /* marge de 0.5 em autour de l'image*/
+.attach_margin1em { margin: 1em;}                /* marge de 1em autour de l'image*/
+.attach_left {float: left;}                      /* bloc flotant à gauche */
+.attach_right {float: right;}                    /* bloc flotant à droite */
+.attach_center {
+display:block;
+width:100%;
+margin:auto;
+    text-align:center;
+}
+.attach_noborder {border-width: 0px;}            /* pas de bordure */
+.attach_vmiddle {vertical-align: text-bottom;}   /* aligenement vertical au milieu */
+
+.tableFM {border: thin solid Black; width: 100%;  }
+.tableFM THEAD { background-color: Silver; font-weight: bold; text-align: center;   }
+.tableFM TFOOT { background-color: Silver; font-weight: bold; text-align: left;   }
+.tableFM TBODY TR { text-align: center;  }
+.tableFMCol1 { background-color: Aqua; }
+.tableFMCol2 { background-color: Yellow; }
+
+
+
+div.math_inline { display: inline; }
+div.math_center { text-align: center; }
+
+.buttons { background: #ccc; border: 0px solid #ccc; margin: 1px; float:left; }
+.raise{ border-top: 1px solid buttonhighlight; border-left: 1px solid buttonhighlight; border-bottom: 1px solid buttonshadow; border-right: 1px solid buttonshadow; background: #ccc; margin:0px;    float:left; }
+.press { border-top: 1px solid buttonshadow; border-left: 1px solid buttonshadow; border-bottom: 1px solid buttonhighlight; border-right: 1px solid buttonhighlight; background: #ccc; margin:0px; float:left; }
+/* ci dessous les petits champs */
+.ACsearchbox { background: #FFFFF8; border: 0px; border-bottom: 1px solid #CCCCAA; padding: 0px; margin: 0px; font-size: 10px; }
+.texteChampsImage {font-size: 10px; }
+#toolbar { margin: 0px; width: 550px; padding: 0px; height:20px; background: #ccc; border-top: 1px solid buttonhighlight; border-left: 1px solid buttonhighlight; border-bottom: 1px solid buttonshadow; border-right: 1px solid buttonshadow; text-align:left; }
+
+.image_left {float: left;} /* bloc flotant à gauche */
+.image_right {float: right;} /* bloc flotant à droite */
+.image_center {text-align:center;} /* bloc centré */
+
+.ancrer {
+	float: right;
+	padding: 1px; border-left-width: 1px;
+	border-left-style: dotted;
+	border-left-color: red;
+	border-right-width: 1px;
+	border-right-style: dotted;
+	border-right-color: red;
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: red;
+	border-top-width: 1px;
+	border-top-style: dotted;
+	border-top-color: red;
+}
+.ancrer a {
+	text-decoration: none;border-bottom: 0px;
+}
+.ancre a {
+	color: red;
+}
+/* pour les fonctions d'attachement */
+.floatr {float: right; width: 48%; margin: 0.5%; padding: 0.5%; background: #EEE;}
+.commenteditlink { float: right; margin: 2px; }
+.footnote {background-color: #eee; padding: 5px;}
+.souligne {text-decoration: underline; }
+/* sidenote.css */
+/* Contains css for tip, note and warn actions. */
+
+/* postit note-style information box */
+#note {
+        font-size: 10pt;
+        float: right;
+        width: 200px;
+        border-style: ridge;border-width: 1px;border-color: #a7680d;
+        margin: -10px 10px 10px 10px;
+        padding: 5px;
+        background-color: #FFF900;
+        text-align: justify;
+        vertical-align: top;
+}
+
+#note hr {
+        height: 1px;
+  
+        width: 100%;
+}
+
+#note .title {
+	background: #ded660 url(images/pin.png) no-repeat top right;
+	border-bottom: 1px solid #dfd65f; 
+	color: #000;
+	font-size: 120%;
+	padding: 5px 10px;
+
+}
+
+#note #text {
+        padding: 4px;
+        
+}
+
+/*Gestion tableau csv*/
+.csvtable {
+	border: thin solid #a6a6a6;
+	border-collapse: collapse;
+	text-align: center;
+}
+
+.csvtable th {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #dddddd; }
+
+.csvtable td {
+	font-family: monospace;
+	border: thin solid #a6a6a6;
+	padding: 5px;
+	background-color: #fff; 
+	color: #006;
+}
+.question {
+	color:#c71f1f;
+	font-weight: bold;
+}
+.commentspam { color:#c71f1f; background-color: yellow; padding: 10px; border-left:1px solid #CCCCCC; border-right: 1px solid #CCCCCC; border-top: 1px solid #CCCCCC; border-bottom: 1px solid #EEEEEE; }
+
+/*Action toc*/
+#sommaire {float: right; border: 1px solid #ccc; padding: 10px; margin: 10px; background: #eee;}
+#sommaire a {color:#505050; background-color: transparent;text-decoration:none;border-bottom: 0px dotted #505050;}
+div.toc { margin-bottom: 0px; padding-bottom: 0px; }
+div.toc1 { margin-left: 1em; }
+div.toc1 img { border: 0px; }
+div.toc2 { margin-left: 2.5em; }
+div.toc2 img { border: 0px; }
+div.toc3 { margin-left: 3.9em; }
+div.toc3 img { border: 0px; }
+div.toc4 { margin-left: 5.1em; }
+div.toc4 img { border: 0px; }
+div.toc5 { margin-left: 6.5em; }
+div.toc5 img { border: 0px; }
+
+.grabcodebutton {margin-top: 10px;}
+.form {padding: 0px;}
+
+/*Infobulle-----------------------------------------*/
+
+a.info_bulle
+{				
+  color           : #2F368A;
+  
+  text-decoration : none; 
+  
+  padding         : 2px 16px 2px 2px; /*Définition des marges intérieures de notre lien */
+  
+  /* Définition de l'arrière plan de notre lien */
+  background      : transparent url('images/comment.gif') no-repeat right center;
+  
+  position        : relative; /* Indispensable pour le bon positionnement de l'info-bulle */ 
+}  
+ 
+a.info_bulle:hover 
+{
+  border          : 0;  /* ligne qui corrige le bug d'IE6 et inférieur */
+} 
+
+/* Rend invisible tout notre bloc span */
+a.info_bulle span.info_bulle 
+{								   
+  position   :  absolute;
+  top        :  -2000em;
+  left       :  -2000em;
+  width      :  1px;
+  height     :  1px;
+  overflow   :  hidden; 
+} 
+
+/* Rend visible tout notre bloc span et lui attribue une taille */
+a.info_bulle:hover span.info_bulle, a.info_bulle:focus span.info_bulle
+{
+  top:2em;
+  left       :  auto;
+  width      :  220px;
+  height     :  auto;
+  overflow   :  visible;
+}  
+
+span.headerinfo
+{
+   display         : block; 
+   height          : 76px;  /* Hauteur correspondant à celle de notre image */
+   line-height     : 820%;  /* Propriété qui centrera le texte verticalement */
+   text-align      : center;
+   background      : transparent url('images/top.png') no-repeat 0 0; 
+   font-size       : 15px; 
+   font-weight     : bold;
+} 
+
+span.contentinfo
+{
+   display     : block; 
+   background  : transparent url('images/milieu.png') repeat-y;
+   padding     : 0 20px;
+} 
+
+span.footerinfo
+{
+   display     : block; 
+   height      : 29px; 
+   background  : url('images/bot.png') no-repeat bottom left; 
+   font-size   : 0; /* Corrige l'espacement inutile sous IE */
+} 

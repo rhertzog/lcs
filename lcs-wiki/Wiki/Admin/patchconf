@@ -1,0 +1,60 @@
+#!/bin/bash
+if [ ! -e ../Includes/config.inc.php ]; then
+    pass=`pwgen -1`
+    echo "Patch du fichier de la base MySQL..."
+    cp -a install_mysql.sql install_mysql.sq
+    cat install_mysql.sq | sed -e "s/#PASS#/$pass/g" > install_mysql.sql
+    echo "Patch du fichier config.inc.php..."
+    cat ../Includes/config.inc.ph | sed -e "s/#PASS#/$pass/g" > ../Includes/config.inc.php
+    chown www-data:www-data ../Includes/config.inc.php install_mysql.sql
+    rm ../Includes/config.inc.ph
+fi
+
+#si il existe déjà un wakka.config.php, on ne l'écrase pas
+if [ ! -e ../wakka.config.php ]; then
+ { 
+  echo "Patch du fichier wakka.config.php : le fichier n'existe pas"
+  cat ../wakka.config.ph | sed -e "s/#PASS#/$pass/g" > ../wakka.config.php
+  chown www-data.www-data ../wakka.config.php
+ }
+ else
+ {
+  echo "il existe un wakka.config.php"
+  rm ../wakka.config.ph
+  #on modifie le fichier existant
+  echo "sauvegarde du fichier wakka.config.php en wakka.config.php.sauv"
+  #on renomme le fichier existant
+  mv ../wakka.config.php ../wakka.config.php.sauv
+  cat ../wakka.config.php.sauv | awk -F"\"" '
+  {
+  if ($1 ~ /^require/) { print "require (\"/var/www/lcs/includes/config.inc.php\");">> "../wakka.config.php" }
+  else {
+  if ($2=="url_site") {
+  print "\t\"url_site\""$3"\""$4"/\""$5 >> "../wakka.config.php"
+  }
+  else {
+  print $0 >> "../wakka.config.php"
+  }
+  }
+  }';
+  chown www-data.www-data ../wakka.config.php
+ }
+fi
+
+#si il existe déjà un repertoire upload_dir, on ne l'écrase pas
+if [ ! -e ../upload_dir ]; then
+ { 
+  echo "Patch du repertoire uplaod_dir : le dossier n'existe pas"
+  mv ../upload_dir.ori ../upload_dir
+  chown -R www-data.www-data ../upload_dir
+ }
+ else
+ {
+  echo "il existe un dossier upload_dir"
+  rm -rf ../upload_dir.ori    
+ }
+fi
+
+# Fin
+#
+echo "Fin des patches..."

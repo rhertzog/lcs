@@ -1,0 +1,197 @@
+= jQuery LiveTwitter
+
+LiveTwitter is a lightweight, live updating Twitter search plugin for jQuery.
+
+
+== Usage
+
+ <div id="twitterSearch"></div>
+
+ $("#twitterSearch").liveTwitter('bacon', {limit: 10, rate: 15000});
+
+You can also show tweets from a user's timeline:
+
+ $("#twitterSearch").liveTwitter('elektronaut', {limit: 10, rate: 300000, mode: 'user_timeline'});
+
+..or a list:
+
+ $("#twitterSearch").liveTwitter({user: 'jquery', list: 'team'}, {limit: 10, rate: 300000, mode: 'list'});
+
+Showing profile image and username is toggleable, and disabled by default in user_time mode. Use showAuthor to enable.
+
+ $("#twitterSearch").liveTwitter('elektronaut', {limit: 10, rate: 300000, mode: 'user_timeline', showAuthor: true});
+
+Note: You might want to be careful with low refresh rates here to play nice with API rate limits.
+
+Changing the query or options is pretty easy, just call liveTwitter again with the new parameters:
+
+ $("#twitterSearch").liveTwitter('salad');
+ $("#twitterSearch").liveTwitter('celery', {limit: 25});
+ $("#twitterSearch").liveTwitter(false, {limit: 25});
+
+You disable automatic refreshing by passing refresh: false
+
+ $("#twitterSearch").liveTwitter('bacon', {limit: 10, refresh: false});
+
+Stopping, starting and refreshing manually:
+
+ $("#twitterSearch").each(function(){ this.twitter.stop(); });
+ $("#twitterSearch").each(function(){ this.twitter.start(); });
+ $("#twitterSearch").each(function(){ this.twitter.refresh(); });
+
+If you want to clear the tweets on changing query, you can do this:
+
+ $("#twitterSearch").each(function(){ this.twitter.clear(); }).liveTwitter('my new query');
+
+Using status.net (identi.ca) service:
+
+ $('#twitterSearch').liveTwitter('test', {service:'identi.ca'});
+ $('#twitterSearch').liveTwitter('test', {service:'youracccount.status.net'});
+
+
+== Search options
+
+Restricting results by geocode is possible:
+
+ $("#twitterSearch").liveTwitter('bacon', {geocode: '59.919151,10.749950,50km'});
+
+..or by language:
+
+ $("#twitterSearch").liveTwitter('crossaint', {lang: 'fr'});
+
+
+== Filtering tweets
+
+You can filter tweets by providing a function: 
+
+ $('#twitterSearch').liveTwitter('bacon', {limit: 5, rate: 5000, rpp: 100, filter: function(tweet){
+   return ($.inArray(tweet.iso_language_code, ['no', 'sv']) > -1); // Show only norwegian and swedish tweets
+ }});
+
+
+== HTML options
+
+You can disable linking the timestamp to the tweet:
+
+ $("#twitterSearch").liveTwitter('bacon', {timeLink: false});
+
+Or use a custom image size:
+
+ $("#twitterSearch").liveTwitter('bacon', {imageSize: 48});
+
+== Callbacks and events
+
+If you want to apply behavior when new tweets are loaded, you can pass a callback function:
+
+ $('#twitterSearch').liveTwitter('bacon', {}, function(container, newCount){
+   alert(newCount + ' new tweets loaded!');
+ });
+
+..or if events are more your style:
+
+ $('#twitterSearch').liveTwitter('bacon').bind('tweets', function(){
+   alert('New tweets!');
+ });
+
+
+== Changelog 
+
+=== 1.6.2
+
+* Marcel van der Boom added support for home_timeline
+
+=== 1.6.1
+
+* Image size is now configurable
+
+=== 1.6.0
+
+* Now also supports status.net/identi.ca thanks to Roman Weinberger
+
+=== 1.5.4
+
+* Timestamp links are optional (thanks, Tony!)
+
+=== 1.5.3
+
+* Support for empty queries
+
+=== 1.5.2
+
+* Timestamp now links to the tweet.
+
+=== 1.5.1
+
+* You can now clear the tweets (thanks to Ryan!).
+
+=== 1.5.0
+
+* Following lists is now supported.
+
+=== 1.4.4
+
+* Tweet filtering. Thanks to Alexander Støver.
+
+=== 1.4.3
+
+* Hashtags are now automatically linked. Fixed issue with username linking.
+
+=== 1.4.2
+
+* Fixed issue with higher limits than Twitter returns by default (thanks to Paul from Zerofee!)
+
+=== 1.4.1
+
+* Fixed broken parsing of timestamps in IE in user_timeline mode (thanks to Matt Adams!)
+
+=== 1.4.0
+
+* Callback and event trigger
+* Support for language selection
+
+=== 1.3.3
+
+* Now supports geocoding
+
+=== 1.3.2
+
+* Profile image and username is toggleable, can also be shown on user_timeline.
+
+=== 1.3.1
+
+* Smarter timestamps
+* Automatic refreshing can be disabled
+
+=== 1.3.0
+
+* Query parameters and options are changeable on the fly
+* stop(), start() and refresh()
+* Bugfixes
+
+
+
+== License:
+
+(The MIT License)
+
+Copyright (c) 2009 Inge Jørgensen
+
+The MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
