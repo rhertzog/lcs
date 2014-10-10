@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~6) Lcs; urgency=low
+
+  * fix bug in cahier_texte_arch_perso.php 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Mon, 06 Oct 2014 07:47:50 +0200
+
 lcs-cdt (2.4.10.~5) Lcs; urgency=low
 
   * fix update ed

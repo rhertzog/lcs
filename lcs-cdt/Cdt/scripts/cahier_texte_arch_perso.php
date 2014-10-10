@@ -20,6 +20,7 @@ if (isset($_GET['arch']))
     {
     $config = HTMLPurifier_Config::createDefault();
     $config->set('Core.Encoding', 'ISO-8859-15');
+    $purifier = new HTMLPurifier($config);
     $arch=$purifier->purify($_GET['arch']);
     }
     else $arch="";
