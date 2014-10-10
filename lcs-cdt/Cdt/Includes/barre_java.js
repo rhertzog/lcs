@@ -181,9 +181,9 @@ function modeleLoad (cib,key) {
                 alert('erreur');
                 else {
                 var docXML= xhr.responseXML;
-                var items = docXML.getElementsByTagName("donnee")
-                tinyMCE.get('coursfield').setContent(items.item(0).firstChild.data);
-                tinyMCE.get('afairefield').setContent(items.item(1).firstChild.data);
+                var items = docXML.getElementsByTagName("donnee");
+                if (items.item(0).firstChild != null) tinyMCE.get('coursfield').setContent(items.item(0).firstChild.data);
+                if (items.item(1).firstChild != null) {tinyMCE.get('afairefield').setContent(items.item(1).firstChild.data);}
                         }
                 }
                 else

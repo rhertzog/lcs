@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de mise a jour du post-it-
@@ -47,12 +47,13 @@ if(isset($_POST['blibli']) && isset($_POST['cibl']))
         $Contenu = $_REQUEST['blibli'];
         $Cib = addSlashes($_REQUEST['cibl']);
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('Core.Encoding', 'ISO-8859-15');
+        //$config->set('Core.Encoding', 'ISO-8859-15');
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
         $cont = mysql_real_escape_string($cont);
+	$cible= mysql_real_escape_string($cible);
         }
     $cible= $_REQUEST['cibl'];
     // Creer la requete.

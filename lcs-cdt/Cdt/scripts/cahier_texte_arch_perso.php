@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script archives perso du cahier de textes -
@@ -19,7 +19,7 @@ require_once '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 if (isset($_GET['arch']))
     {
     $config = HTMLPurifier_Config::createDefault();
-    $config->set('Core.Encoding', 'ISO-8859-15');
+    //$config->set('Core.Encoding', 'ISO-8859-15');
     $purifier = new HTMLPurifier($config);
     $arch=$purifier->purify($_GET['arch']);
     }

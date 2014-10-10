@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 03/032014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de mise a jour du fichier json-
@@ -67,7 +67,7 @@ include '../Includes/htmlpur/library/HTMLPurifier.auto.php';
 if(!isset($_POST['di']) && isset($_POST['title']) && isset($_POST['ereitam']) && isset($_POST['trats'])  && isset($_POST['dne']) && isset($_POST['dayall']) && isset($_POST['lru'])  && isset($_POST['action'])  )
     {
     $config = HTMLPurifier_Config::createDefault();
-    $config->set('Core.Encoding', 'ISO-8859-15');
+    //$config->set('Core.Encoding', 'ISO-8859-15');
     $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
     $purifier = new HTMLPurifier($config);
     $_id = $purifier->purify($_POST['di']);
@@ -138,7 +138,7 @@ deplacement cours
             if ($_POST['action']=="update_event")
                 {
                 $config = HTMLPurifier_Config::createDefault();
-                $config->set('Core.Encoding', 'ISO-8859-15');
+                //$config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $_id = $purifier->purify($_POST['di']);
@@ -174,7 +174,7 @@ modification cours
     if ($_POST['action']=="modif_event")
                 {
                 $config = HTMLPurifier_Config::createDefault();
-                $config->set('Core.Encoding', 'ISO-8859-15');
+                //$config->set('Core.Encoding', 'ISO-8859-15');
                 $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                 $purifier = new HTMLPurifier($config);
                 $_id = $purifier->purify($_POST['di']);

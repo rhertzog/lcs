@@ -2,7 +2,7 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de plannification d'un devoir par un prof -
@@ -72,14 +72,15 @@ if (isset($_POST['enregistrer']) )
         else
             {
             // htlmpurifier
-            $Sujet = utf8_decode($_POST['sujet']);
+            $Sujet = $_POST['sujet'];
             $config = HTMLPurifier_Config::createDefault();
-            $config->set('Core.Encoding', 'ISO-8859-15');
+            //$config->set('Core.Encoding', 'ISO-8859-15');
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $purifier = new HTMLPurifier($config);
             $Sujet = $purifier->purify($Sujet);
             $Sujet=mysql_real_escape_string($Sujet);
-            }
+            $Sujet= utf8_decode($Sujet);
+	    }
         }
     else
         { // Si aucun sujet n'a ete saisi

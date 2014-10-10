@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de carnet absence-
@@ -168,14 +168,15 @@ if (isset($_POST['Valider']))
                     else
                        {
                         // htlmpurifier
-                        $mot_x = utf8_decode($_POST['motif_x'][$uidpot]);
+                        $mot_x = $_POST['motif_x'][$uidpot];
                         $config = HTMLPurifier_Config::createDefault();
-                        $config->set('Core.Encoding', 'ISO-8859-15');
+                        //$config->set('Core.Encoding', 'ISO-8859-15');
                         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $mot_x = $purifier->purify($mot_x);
                         $mot_x=mysql_real_escape_string($mot_x);
-                        }
+                        $mot_x=utf8_decode($mot_x);
+			}
                     }
             elseif (in_array($uidpot, $tab_retx)) 
                     {
@@ -188,14 +189,15 @@ if (isset($_POST['Valider']))
                     else
                         {
                         // htlmpurifier
-                        $mot_x = utf8_decode($_POST['motif_x'][$uidpot]);
+                        $mot_x = $_POST['motif_x'][$uidpot];
                         $config = HTMLPurifier_Config::createDefault();
-                        $config->set('Core.Encoding', 'ISO-8859-15');
+                        //$config->set('Core.Encoding', 'ISO-8859-15');
                         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $mot_x = $purifier->purify($mot_x);
                         $mot_x=mysql_real_escape_string($mot_x);
-                        }
+                        $mot_x=utf8_decode($mot_x);
+			}
                     }
             else 	
                     {
@@ -259,14 +261,15 @@ if (isset($_POST['Valider']))
                     else
                          {
                           // htlmpurifier
-                          $motiph = utf8_decode($_POST['motif_'.$valeur.''][$uidpot]);
+                          $motiph = $_POST['motif_'.$valeur.''][$uidpot];
                           $config = HTMLPurifier_Config::createDefault();
-                          $config->set('Core.Encoding', 'ISO-8859-15'); 
+                          //$config->set('Core.Encoding', 'ISO-8859-15'); 
                           $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                           $purifier = new HTMLPurifier($config);
                           $motiph = $purifier->purify($motiph);
                           $motiph=mysql_real_escape_string($motiph);
-                          }
+                        $motiph=utf8_decode($motiph);  
+			}
                       }
                     elseif (in_array($uidpot, $$tabr)) 
                         {
@@ -279,13 +282,14 @@ if (isset($_POST['Valider']))
                         else
                             {
                             // htlmpurifier
-                            $motiph = utf8_decode($_POST['motif_'.$valeur.''][$uidpot]);
+                            $motiph = $_POST['motif_'.$valeur.''][$uidpot];
                             $config = HTMLPurifier_Config::createDefault();
-                            $config->set('Core.Encoding', 'ISO-8859-15'); 
+                            //$config->set('Core.Encoding', 'ISO-8859-15'); 
                             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                             $purifier = new HTMLPurifier($config);
                             $motiph = $purifier->purify($motiph);
                             $motiph=mysql_real_escape_string($motiph);
+			    $motiph=utf8_decode($motiph);
                             }
                           }
                      else 	

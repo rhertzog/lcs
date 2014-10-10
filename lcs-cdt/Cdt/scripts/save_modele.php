@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 10/10/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'enregistrement du modele-
@@ -48,7 +48,7 @@ if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl']) 
         $Contenuaf  =$_POST['afmod'];
         $Cib = addSlashes($_POST['cibl']);
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('Core.Encoding', 'ISO-8859-15'); 
+        //$config->set('Core.Encoding', 'ISO-8859-15'); 
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         //$Cours = addSlashes($Cours);

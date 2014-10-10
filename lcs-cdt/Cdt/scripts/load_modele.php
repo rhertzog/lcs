@@ -54,7 +54,7 @@ if ( isset($_POST['cibl']))
         // htlmpurifier
         $Cib = $_REQUEST['cibl'];
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('Core.Encoding', 'ISO-8859-15'); 
+        //$config->set('Core.Encoding', 'ISO-8859-15'); 
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         $cible= $purifier->purify($Cib);
@@ -63,12 +63,9 @@ if ( isset($_POST['cibl']))
     $result = mysql_query($rq);
     if (mysql_num_rows($result)>0)
         {  
-        $row = mysql_fetch_array($result, MYSQL_NUM);//) 
-        echo "<?xml version=\"1.0\"?>\n";
-        echo "<modele>\n";
-        echo "<donnee>" . xml_character_encode($row[0]) . "</donnee>\n";
-        echo "<donnee>" .  xml_character_encode($row[1]) . "</donnee>\n";
-        echo "</modele>\n";
+        $row = mysql_fetch_array($result, MYSQL_NUM);
+	echo "<span id='mod_c'>" .  htmlentities($row[0]) . "</span>\n";
+        echo "<span id='mod_af'>" . htmlentities($row[1]) . "</span>\n";
         }
     if (!$result)  // Si l'enregistrement est incorrect
         { 
