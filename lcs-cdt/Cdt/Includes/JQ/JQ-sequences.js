@@ -147,7 +147,7 @@ $(function() {
                     var $resp = $(data);
                     var smalltitre =$(data).filter('#sht').text();
                     var longtitre = $(data).filter('#lgt').text();
-                    var description = $(data).filter('#dn').text();
+                    var description = $(data).filter('#dn').html();
                     $("#tc").val( smalltitre );
                     $("#tl").val( longtitre );
                     tinyMCE.get('contenu_sequence').setContent( description);

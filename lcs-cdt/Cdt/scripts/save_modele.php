@@ -8,7 +8,7 @@
    - script d'enregistrement du modele-
 			_-=-_
    =================================================== */
-   
+
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 session_name("Lcs");
@@ -20,7 +20,7 @@ if (!isset($_SESSION['login']) )exit;
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
 //indique que le type de la reponse renvoyee au client sera du Texte
-header("Content-Type: text/plain" ); 
+header("Content-Type: text/plain" );
 //anti Cache pour HTTP/1.1
 header("Cache-Control: no-cache , private");
 //anti Cache pour HTTP/1.0
@@ -48,25 +48,25 @@ if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl']) 
         $Contenuaf  =$_POST['afmod'];
         $Cib = addSlashes($_POST['cibl']);
         $config = HTMLPurifier_Config::createDefault();
-        //$config->set('Core.Encoding', 'ISO-8859-15'); 
+        //$config->set('Core.Encoding', 'ISO-8859-15');
         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
         $purifier = new HTMLPurifier($config);
         //$Cours = addSlashes($Cours);
         $cont1 = $purifier->purify($Contenucours);
-        $cont1 = mysql_real_escape_string($cont1);
+        $cont1 = utf8_decode(mysql_real_escape_string($cont1));
         $cont2 = $purifier->purify($Contenuaf);
-        $cont2 = mysql_real_escape_string($cont2);
+        $cont2 = utf8_decode(mysql_real_escape_string($cont2));
         $cible= $purifier->purify($Cib);
-        }	
+        }
     $rq = "UPDATE  onglets SET mod_cours='$cont1', mod_afaire='$cont2' WHERE id_prof='$cible'";
     // lancer la requete
-    $result = mysql_query($rq); 
+    $result = mysql_query($rq);
     if (!$result)  // Si l'enregistrement est incorrect
-        {  
-        mysql_close();                         
+        {
+        mysql_close();
         echo "<p>Votre mod&#232; n'a pas pu &#234;tre enregistr&#233; !".
         "<p></p>" . mysql_error() . "<p></p>";
-        //sortir	
+        //sortir
         exit();
         }
     else echo 'OK';

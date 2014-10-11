@@ -9,7 +9,7 @@
    			_-=-_
    "Valid XHTML 1.0 Strict"
    ============================================= */
-session_name("Cdt_Lcs");
+session_name("Lcs");
 @session_start();
 if ((!isset($_SESSION['version']))  ) exit;
 if ( ! mb_ereg('Plugins/Cdt/index.php',$_GET['qrurl'])) $_GET['qrurl']= 'y a un os';

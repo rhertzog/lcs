@@ -163,8 +163,8 @@ $(document).ready(function() {
                     var lop=$(this).attr('key');
                     //alert ('n='+num+' , key='+lop);
                     $.post("load_modele.php", { cibl: num , TA: lop },function(data){
-                   var cours_mod =$(data).filter('#mod_c').text();
-                   var af_mod = $(data).filter('#mod_af').text();
+                   var cours_mod =$(data).filter('#mod_c').html();
+                   var af_mod = $(data).filter('#mod_af').html();
                     tinyMCE.get('coursfield').setContent( cours_mod);
                     tinyMCE.get('afairefield').setContent(af_mod);
                    });
