@@ -1,4 +1,4 @@
-<?php // $Id: database.lib.php 14167 2012-05-30 09:02:51Z zefredz $
+<?php // $Id: database.lib.php 14734 2014-02-28 07:11:48Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -26,7 +26,7 @@
  * 4. Database_Connection_Exception exception class specific to database
  *  connections
  *
- * @version     $Revision: 14167 $
+ * @version     $Revision: 14734 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -269,11 +269,14 @@ class Mysql_Database_Connection implements Database_Connection
     {
         if ( function_exists( 'mysql_set_charset' ) )
         {
+            pushClaroMessage('mysql_set_charset');
             @mysql_set_charset( $charset, $this->dbLink );
         }
         else
         {
-            @mysql_exec( "SET NAMES '{$charset}'", $this->dbLink );
+            pushClaroMessage('set names');
+            @mysql_query( "SET CHARACTER SET {$charset}", $this->dbLink );
+            @mysql_query( "SET NAMES {$charset}", $this->dbLink );
         }
     }
     
@@ -354,7 +357,7 @@ extends
 
         try
         {
-            $affectedRows =  parent::exec( self::prepareQueryForExecution( $sql ) );
+            parent::exec( self::prepareQueryForExecution( $sql ) );
 
             if ( claro_debug_mode() && get_conf('CLARO_PROFILE_SQL',false) )
             {
@@ -793,10 +796,14 @@ class Mysql_ResultSet implements Database_ResultSet
             {
                 $data = (array)$row;
             }
+            else
+            {
+                $data = $row;
+            }
 
             if ( ! array_key_exists( $this->idKeyName, $data) )
             {
-                throw new Claroline_Database_Exception("Id key {$this->idKeyName} not found in the current row");
+                throw new Database_Connection_Exception("Id key {$this->idKeyName} not found in the current row");
             }
 
             $this->idKeyValue = $data[$this->idKeyName];

@@ -1,11 +1,11 @@
-<?php // $Id: viewforum.php 14368 2013-01-30 12:02:42Z zefredz $
+<?php // $Id: viewforum.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Displays the list of topics gathered within a forum.
  *
- * @version     $Revision: 14368 $
+ * @version     $Revision: 14450 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @copyright   (c) 2001 The phpBB Group
  * @author      Claroline Team <info@claroline.net>
@@ -265,9 +265,7 @@ else
 }
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
 
 JavascriptLoader::getInstance()->load('forum');
 

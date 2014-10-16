@@ -1,11 +1,11 @@
-<?php // $Id: class.wiki2xhtmlrenderer.php 14384 2013-02-08 09:18:36Z zefredz $
+<?php // $Id: class.wiki2xhtmlrenderer.php 14397 2013-02-14 13:54:21Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE
  *
- * @version 1.11 $Revision: 14384 $
+ * @version 1.11 $Revision: 14397 $
  *
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
@@ -685,7 +685,7 @@ class Wiki2xhtmlRenderer extends wiki2xhtml
      * @param string pageName name of the page
      * @return string hypertext reference to wiki page
      */
-    private function _getWikiPageLink( $pageName, &$tag, &$attr, &$type )
+    protected function _getWikiPageLink( $pageName, &$tag, &$attr, &$type )
     {
         if ( get_lang('Main page') == $pageName )
         {

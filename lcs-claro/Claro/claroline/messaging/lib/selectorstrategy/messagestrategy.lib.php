@@ -1,11 +1,11 @@
-<?php // $Id: messagestrategy.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: messagestrategy.lib.php 14430 2013-04-25 09:28:50Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * messageStrategy class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14430 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -26,6 +26,8 @@ abstract class MessageStrategy implements SelectorStrategy
     
     const ORDER_DESC = "DESC";
     const ORDER_ASC = "ASC";
+    
+    const ORDER_BY_DATE = "M.send_time %order%";
     
     protected $search = "";
     protected $searchStrategy = self::SEARCH_STRATEGY_WORD;

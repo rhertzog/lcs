@@ -1,4 +1,4 @@
-<?php // $Id: campusProblem.php 13910 2012-01-04 15:57:30Z abourguignon $
+<?php // $Id: campusProblem.php 14552 2013-10-03 08:26:03Z ldumorti $
 
 /**
  * CLAROLINE
@@ -8,7 +8,7 @@
  * Theses tests check if data are logical.
  * This script use Cache_lite.
  *
- * @version     $Revision: 13910 $
+ * @version     $Revision: 14552 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/ADMIN
@@ -398,7 +398,7 @@ switch ($display)
 
                 if (false === $datagrid[$levelView] = $Cache_Lite->get($levelView))
                 {
-                    $sql = "SELECT `us`.`username`,
+                    $sql = "SELECT `us`.`username`, `nom`, `prenom`, `email`, 
                                MAX(`tr`.`date`) AS qty
                     FROM `" . $tbl_user . "`               AS us
                     LEFT JOIN `" . $tbl_tracking_event . "` AS tr
@@ -420,7 +420,7 @@ switch ($display)
                     $loginWithoutAccessResults = claro_sql_query_fetch_all($sql);
                     if (!is_array($loginWithoutAccessResults) || 0 == sizeof($loginWithoutAccessResults))
                     $loginWithoutAccessResults[] = array( '-','qty'=>'-');
-                    $dg->set_colTitleList(array(get_lang('Username'), get_lang('Login date')));
+                    $dg->set_colTitleList(array(get_lang('Username'), get_lang('Last name'), get_lang('First name'), get_lang('Email'), get_lang('Login date')));                    
                     $dg->set_grid($loginWithoutAccessResults);
                     $datagrid[$levelView] = $dg->render();
                     $Cache_Lite->save($datagrid[$levelView], $levelView);

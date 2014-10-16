@@ -3,7 +3,7 @@
 /**
  * Sample local auth driver for alumnus
  *
- * @version     1.11 $Revision: 13480 $
+ * @version     1.11 $Revision: 14517 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -22,7 +22,8 @@ $driverConfig['driver'] = array(
     'class' => 'AlumniAuthDriver',
     'authSourceType' => 'local',
     'authSourceName' => 'alumni',
-    'userRegistrationAllowed' => false
+    'userRegistrationAllowed' => false,
+    'lostPasswordAllowed' => true
 );
 
 // you can change the driver from this point

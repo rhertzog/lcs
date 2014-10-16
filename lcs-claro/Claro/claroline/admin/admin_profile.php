@@ -1,11 +1,11 @@
-<?php // $Id: admin_profile.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: admin_profile.php 14470 2013-06-13 07:39:57Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users' profiles.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14470 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     ADMIN
@@ -179,6 +179,16 @@ if (!empty($userId))
             'img' => 'back',
             'name' => get_lang('Back to user list'),
             'url' => claro_htmlspecialchars('admin_users.php')
+        );
+    }
+    elseif (isset($_REQUEST['cfrom']) && $_REQUEST['cfrom'] == 'culist' ) // if we come form course user list, we must display go back to list
+    {
+        $cid = isset($_REQUEST['cid']) ? $_REQUEST['cid'] : null;
+        
+        $cmdList[] = array(
+            'img' => 'back',
+            'name' => get_lang('Back to user list'),
+            'url' => claro_htmlspecialchars(get_path('url').'/claroline/user/user.php?cidReq='.$cid.'&cidReset=true')
         );
     }
 }

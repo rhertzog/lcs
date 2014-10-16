@@ -1,11 +1,11 @@
-<?php // $Id: display.lib.php 13211 2011-05-25 14:46:17Z abourguignon $
+<?php // $Id: display.lib.php 14482 2013-06-21 07:58:40Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Display library.
  *
- * @version     $Revision: 13211 $
+ * @version     $Revision: 14482 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -91,6 +91,9 @@ class ClaroPage implements Display
 
     public function __construct()
     {
+        // HACK : force loading translation here to avoid having to rewrite the kernel !
+        language::load_translation();
+        
         $this->header = ClaroHeader::getInstance();
         $this->body = ClaroBody::getInstance();
         $this->banner = ClaroBanner::getInstance();
@@ -446,6 +449,11 @@ class ClaroFramesetPage extends ClaroFrameset
     
     public function __construct()
     {
+        // HACK : force loading translation here to avoid having to rewrite the kernel !
+        language::load_translation();
+        language::load_locale_settings();
+        language::load_module_translation();
+        
         $this->header = ClaroHeader::getInstance();
     }
 

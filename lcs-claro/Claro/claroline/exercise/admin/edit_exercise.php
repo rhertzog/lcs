@@ -1,9 +1,9 @@
-<?php // $Id: edit_exercise.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: edit_exercise.php 14419 2013-04-12 12:21:09Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14419 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -218,10 +218,14 @@ $cmdList[] = array(
     'name' => get_lang('New question'),
     'url' => claro_htmlspecialchars(Url::Contextualize('./edit_question.php?exId='.$exId.'&cmd=rqEdit'))
 );
-$cmdList[] = array(
-    'name' => get_lang('Get a question from another exercise'),
-    'url' => claro_htmlspecialchars(Url::Contextualize('./question_pool.php?exId='.$exId))
-);
+
+if ( $exId )
+{
+    $cmdList[] = array(
+        'name' => get_lang('Get a question from another exercise'),
+        'url' => claro_htmlspecialchars(Url::Contextualize('./question_pool.php?exId='.$exId))
+    );
+}
 
 
 /*

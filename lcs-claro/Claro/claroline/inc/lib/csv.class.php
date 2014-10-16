@@ -1,4 +1,4 @@
-<?php // $Id: csv.class.php 13378 2011-07-29 10:27:24Z abourguignon $
+<?php // $Id: csv.class.php 14406 2013-02-25 07:27:37Z zefredz $
 
 FromKernel::uses('csvexporter.class');
 
@@ -11,39 +11,30 @@ FromKernel::uses('csvexporter.class');
  * CsvImporter classes.
  * Meanwhile, it will just act as a patch solution.
  *
- * @version     $Revision: 13378 $
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+ * @version     Claroline 1.11 $Revision: 14406 $
+ * @copyright   (c) 2001-2013, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     KERNEL
  * @author      Claro Team <cvs@claroline.net>
  */
 
-class Csv extends CsvExporter
+class CsvRecordlistExporter // extends CsvExporter
 {
     public $recordList = array();
     
+    private $csvExporter;
+    
     public function __construct($delimiter = ',', $quote = '"')
     {
-        parent::__construct($delimiter, $quote);
+        $this->csvExporter = new CsvExporter($delimiter, $quote);
     }
     
     /**
-     * Alias for the constructor.
-     *
-     * @deprecated
-     */
-    public function csv($delimiter = ',', $quote = '"')
-    {
-        self::__construct($delimiter, $quote);
-    }
-    
-    /**
-     * Alias for parent's method export().
-     *
-     * @deprecated
+     * Export internal record list to csv
+     * @return string
      */
     public function export()
     {
-        return parent::export($this->recordList);
+        return $this->csvExporter->export($this->recordList);
     }
 }

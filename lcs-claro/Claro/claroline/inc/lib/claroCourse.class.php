@@ -1,11 +1,11 @@
-<?php // $Id: claroCourse.class.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: claroCourse.class.php 14543 2013-09-16 12:35:47Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Course Class.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14543 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     Kernel
@@ -259,7 +259,7 @@ class ClaroCourse
                 $courseObj = new Claro_Course($courseSysCode);
                 $courseObj->load();
 
-                $courseRegistration = new CourseUserRegistration(
+                $courseRegistration = new Claro_CourseUserRegistration(
                     AuthProfileManager::getUserAuthProfile($GLOBALS['_uid']),
                     $courseObj,
                     null,
@@ -531,6 +531,10 @@ class ClaroCourse
                 OR cours_id = " . $this->sourceCourseId . "
                 OR c.sourceCourseId = " . $this->sourceCourseId;
         }
+        
+        $sql .= "
+            ORDER BY c.isSourceCourse DESC
+        ";
         
         return claro_sql_query_fetch_all($sql);
     }

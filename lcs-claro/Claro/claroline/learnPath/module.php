@@ -1,9 +1,9 @@
-<?php // $Id: module.php 14128 2012-04-25 13:37:43Z zefredz $
+<?php // $Id: module.php 14400 2013-02-15 14:05:59Z kitan1982 $
 
 /**
  * CLAROLINE 1.11
  *
- * @version     $Revision: 14128 $
+ * @version     $Revision: 14400 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Piraux Sebastien <pir@cerdecam.be>
@@ -293,6 +293,21 @@ if($module['contentType'] != CTLABEL_ )
         $out .= commentBox(LEARNINGPATHMODULE_, DISPLAY_);
     }
 } //  if($module['contentType'] != CTLABEL_ )
+
+//#####################################################################################################\\
+//################################## DOCUMENT MODULE DEFAULT TIME BOX #################################\\
+//#####################################################################################################\\
+if( $is_allowedToEdit && $module['contentType'] == CTDOCUMENT_ )
+{
+    if ( $cmd == "updateDefaultTime" )
+    {
+        $out .= documentDefaultTimeBox( UPDATE_ );
+    }
+    else
+    {
+        $out .= documentDefaultTimeBox( DISPLAY_ );
+    }
+}
 
 //####################################################################################\\
 //############################ PROGRESS  AND  START LINK #############################\\

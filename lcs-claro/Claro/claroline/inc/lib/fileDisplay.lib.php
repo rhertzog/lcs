@@ -1,4 +1,4 @@
-<?php // $Id: fileDisplay.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: fileDisplay.lib.php 14587 2013-11-08 12:47:41Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 14314 $
+ * @version     1.9 $Revision: 14587 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -171,7 +171,7 @@ function format_file_size($fileSize)
 
 function format_date($fileDate)
 {
-    return date('d.m.Y', $fileDate);
+    return claro_html_localised_date( get_locale( 'dateFormatNumeric' ), $fileDate );
 }
 
 //------------------------------------------------------------------------------

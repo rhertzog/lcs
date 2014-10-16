@@ -1,4 +1,4 @@
-<?php // $Id: announcement.lib.php 14338 2012-12-03 14:44:41Z zefredz $
+<?php // $Id: announcement.lib.php 14461 2013-05-29 09:34:33Z jrm_ $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -19,7 +19,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  * ordre      : order of the announcement display
  *              (the announcements are display in desc order)
  *
- * @version     1.8 $Revision: 14338 $
+ * @version     1.8 $Revision: 14461 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLANN
@@ -115,7 +115,8 @@ function announcement_get_items_portlet($personnalCourseList)
     foreach($personnalCourseList as $thisCourse)
     {
         if ( is_module_installed_in_course_lightversion ( 'CLANN', $thisCourse ) 
-            && is_tool_activated_in_course_lightversion( $clannToolId, $thisCourse ) )
+            && is_tool_activated_in_course_lightversion( $clannToolId, $thisCourse )
+            && is_tool_visible_for_portlet( $clannToolId, $thisCourse['sysCode'] ) )
         {
             $courseEventList = announcement_get_course_item_list_portlet($thisCourse, get_conf('announcementPortletMaxItems', 3));
 

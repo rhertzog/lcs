@@ -1,4 +1,4 @@
-<?php // $Id: create.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: create.php 14422 2013-04-15 07:14:27Z zefredz $
 
 /**
  * CLAROLINE
@@ -9,7 +9,7 @@
  * - Wait
  * - Done
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14422 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLCRS/
@@ -164,7 +164,7 @@ else
     }
     else
     {
-        $backUrl = get_path('url');
+        $backUrl = get_path('url') . '/index.php';
     }
 }
 

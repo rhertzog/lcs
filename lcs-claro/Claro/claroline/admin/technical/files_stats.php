@@ -1,11 +1,11 @@
-<?php // $Id: files_stats.php 13859 2011-11-28 15:12:11Z ffervaille $
+<?php // $Id: files_stats.php 14587 2013-11-08 12:47:41Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This  tool compute the disk Usage of each course.
  *
- * @version     $Revision: 13859 $
+ * @version     $Revision: 14587 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Antonin Bourguignon <antonin.bourguignon@claroline.net>
@@ -204,14 +204,15 @@ if ($cmd == 'run' || $inProgress)
 
             foreach ($extensions as $key => $ext)
             {
-              $csvSubTab[$key.'_count'] = 'Quantity of ' . get_lang($ext);
-              $csvSubTab[$key.'_size'] = 'Size of ' . get_lang($ext) . ' in KB';
+                $csvSubTab[$key.'_count'] = get_lang('Quantity of %ext', array('%ext' => $ext));
+                $csvSubTab[$key.'_size'] = get_lang('Size of %ext in KiB', array('%ext' => $ext));
             }
-            $csvSubTab['other_count'] = 'Quantity of other files' ;
-            $csvSubTab['other_size'] = 'Size of other files' ;
 
-            $csvSubTab['sum_count'] = 'Total quantity of files' ;
-            $csvSubTab['sum_size'] = 'Total size' ;
+            $csvSubTab['other_count'] = get_lang('Quantity of other files');
+            $csvSubTab['other_size'] = get_lang('Size of other files');
+
+            $csvSubTab['sum_count'] = get_lang('Total quantity of files');
+            $csvSubTab['sum_size'] = get_lang('Total size');
 
             $csvSubTab['courseCategory'] = get_lang('Category');
 
@@ -246,8 +247,8 @@ if ($cmd == 'run' || $inProgress)
     else
     {
         $dialogBox->warning(get_lang('Statistics in progress, please don\'t refresh until further instructions ! ') .
-                                        get_lang('Course actually treated : '). $course['title'] .
-                                        get_lang(' Number of course treated : ' ). count($stats) );
+                                        '<br />' . get_lang('Course actually treated : '). $course['title'] .
+                                        '<br />' . get_lang(' Number of course treated : ' ). count($stats) );
         
         $claroline->display->body->appendContent($dialogBox->render());
         echo $claroline->display->render();
@@ -283,7 +284,7 @@ else
 
 
 /**
- * Convert a size (Bytes) to K/M/G/TB
+ * Convert a size (Bytes) to KiB/MiB/GiB/TiB
  * @param int $size
  * @return string
  *
@@ -291,7 +292,7 @@ else
  */
 function format_bytes($size)
 {
-    $units = array(' B', ' KB', ' MB', ' GB', ' TB');
+    $units = array(' B', ' KiB', ' MiB', ' GiB', ' TiB');
     for ($i = 0; $size >= 1024 && $i < 4; $i++) $size /= 1024;
     return round($size, 2).$units[$i];
 }

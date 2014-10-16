@@ -1,11 +1,11 @@
-<?php // $Id: work.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: work.php 14483 2013-07-02 13:13:28Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Main script for work tool.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14483 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLWRK/
@@ -110,6 +110,12 @@ if( !is_null($cmd) )
             $assignment->setDescription(trim( $_REQUEST['description'] ));
 
         }
+        
+        if ( isset($_REQUEST['submission_visibility_applies_to_all']) && $_REQUEST['submission_visibility_applies_to_all'] == 'yes' )
+        {
+            $assignment->visibilityModificationAppliesToOldSubmissions ( true );
+            $assignment->forceVisibilityChange();
+        }
 
         if ( isset($_REQUEST['def_submission_visibility']) )     $assignment->setDefaultSubmissionVisibility($_REQUEST['def_submission_visibility']);
         if ( isset($_REQUEST['assignment_type']) )                $assignment->setAssignmentType($_REQUEST['assignment_type']);
@@ -147,7 +153,7 @@ if( !is_null($cmd) )
 }
 
 // Submission download requested
-if( $is_allowedToEdit && $cmd == 'rqDownload' && get_conf('allow_download_all_submissions') )
+if( $is_allowedToEdit && $cmd == 'rqDownload' && (claro_is_platform_admin() || get_conf('allow_download_all_submissions')) )
 {
     require_once($includePath . '/lib/form.lib.php');
     
@@ -159,6 +165,8 @@ if( $is_allowedToEdit && $cmd == 'rqDownload' && get_conf('allow_download_all_su
     .     claro_html_date_form('day', 'month', 'year', time(), 'long') . ' '
     .     claro_html_time_form('hour', 'minute', time() - fmod(time(), 86400) - 3600) . '<small>' . get_lang('(d/m/y hh:mm)') . '</small>' . '<br /><br />' . "\n"
     .     '<input type="radio" name="downloadMode" id="downloadMode_all" value="all" /><label for="downloadMode_all">' . get_lang('All submissions') . '</label><br /><br />' . "\n"
+    .     '<input type="checkbox" name="downloadOnlyCurrentMembers" id="downloadOnlyCurrentMembers_id" value="yes" checked="checked" /><label for="downloadOnlyCurrentMembers_id">'.get_lang('Download only submissions from current course members').'</label><br /><br />' . "\n"
+    .     '<input type="checkbox" name="downloadScore" id="downloadScore_id" value="yes" checked="checked" /><label for="downloadScore_id">'.get_lang('Download score').'</label><br /><br />' . "\n"
     .     '<input type="submit" value="'.get_lang('OK').'" />&nbsp;' . "\n"
     .    claro_html_button('work.php', get_lang('Cancel'))
     .     '</form>'."\n"
@@ -312,9 +320,7 @@ if ($is_allowedToEdit)
                             HEADER
   --------------------------------------------------------------------*/
 
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
 
 JavascriptLoader::getInstance()->load('work');
 
@@ -419,7 +425,7 @@ if( $is_allowedToEdit )
         'url' => claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=rqMkAssig'))
     );
     
-    if( get_conf('allow_download_all_submissions') )
+    if( claro_is_platform_admin() || get_conf('allow_download_all_submissions') )
     {
         $cmdList[] = array(
             'img' => 'save',
@@ -517,6 +523,9 @@ if ($is_allowedToEdit)
                 <br />
                 <input type="radio" name="def_submission_visibility" id="invisible" value="INVISIBLE" '. ( $assignment->getDefaultSubmissionVisibility() == "INVISIBLE" ? 'checked="checked"' : '') . ' />
                 <label for="invisible">&nbsp;'. get_lang('Only visible for teacher(s) and submitter(s)') . '</label>'
+              . '<br /><br />
+                <input type="checkbox" name="submission_visibility_applies_to_all" id="submission_visibility_applies_to_all_id" value="yes" />
+                <label for="submission_visibility_applies_to_all_id">&nbsp;'. get_lang('Apply default visibility also to sumissions already posted') . '</label>'
               . '</dd>'
               
               . '<dt>&nbsp;</dt>'

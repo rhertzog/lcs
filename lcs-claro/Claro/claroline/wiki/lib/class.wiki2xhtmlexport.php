@@ -1,11 +1,11 @@
-<?php // $Id: class.wiki2xhtmlexport.php 14351 2013-01-11 10:43:42Z zefredz $
+<?php // $Id: class.wiki2xhtmlexport.php 14585 2013-11-08 12:36:31Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE
  *
- * @version 1.11 $Revision: 14351 $
+ * @version 1.11 $Revision: 14585 $
  *
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
@@ -37,7 +37,7 @@ class WikiToSingleHTMLExporter extends Wiki2xhtmlRenderer
      */
     public function __construct( $wiki )
     {
-        Wiki2xhtmlRenderer::Wiki2xhtmlRenderer( $wiki );
+        parent::__construct( $wiki );
         $this->setOpt( 'first_title_level', 3 );
         $this->setOpt('note_str','<div class="footnotes"><h5>Notes</h5>%s</div>');
         $this->wiki =& $wiki;
@@ -58,8 +58,8 @@ class WikiToSingleHTMLExporter extends Wiki2xhtmlRenderer
         foreach ( $pageList as $page )
         {
             $wikiPage = new WikiPage(
-                $this->wiki->con
-                , $this->wiki->config
+                $this->wiki->getDatabaseConnection()
+                , $this->wiki->getConfig()
                 , $this->wiki->getWikiId() );
 
             $wikiPage->loadPage($page['title']);
@@ -183,8 +183,9 @@ td {
     private function _htmlHeader()
     {
         $header = '<html>' . "\n" . '<head>' . "\n"
-            . $this->_getWikiStyle()
+            . '<meta charset="' . get_conf ('charset') . '">' . "\n"
             . '<title>' . $this->wiki->getTitle() . '</title>' . "\n"
+            . $this->_getWikiStyle()
             . '</head>' . "\n" . '<body>' . "\n"
             ;
 
@@ -208,10 +209,10 @@ td {
     /**
      * @see Wiki2xhtmlRenderer
      */
-    protected function parseWikiWord( $str, $tag, $attr, $type )
+    protected function parseWikiWord( $str, &$tag, &$attr, &$type )
     {
-        // $tag = 'a';
-        // $attr = ' href="'.$this->_makePageTitleAnchor( $str ).'"';
+        $tag = '';
+        $attr = '';
 
         if ( $this->wiki->pageExists( $str ) )
         {
@@ -233,12 +234,12 @@ td {
     /**
      * @see Wiki2xhtmlRenderer
      */
-    private function _getWikiPageLink( $pageName, &$tag, &$attr, &$type )
+    protected function _getWikiPageLink( $pageName, &$tag, &$attr, &$type )
     {
         // allow links to use wikiwords for wiki page locations
         if ($this->getOpt('active_wikiwords') && $this->getOpt('words_pattern'))
         {
-            $pageName = preg_replace('/���'.$this->getOpt('words_pattern').'���/msU', '$1', $pageName);
+            $pageName = preg_replace('/¶¶¶'.$this->getOpt('words_pattern').'¶¶¶/msU', '$1', $pageName);
         }
 
         if ($this->wiki->pageExists( $pageName ) )

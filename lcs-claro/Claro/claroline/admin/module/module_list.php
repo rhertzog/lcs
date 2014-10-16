@@ -1,11 +1,11 @@
-<?php // $Id: module_list.php 14370 2013-01-30 14:52:26Z zefredz $
+<?php // $Id: module_list.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Claroline extension modules management script.
  *
- * @version     $Revision: 14370 $
+ * @version     $Revision: 14450 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
  *              version 2 or later
@@ -73,9 +73,7 @@ $dialogBox = new DialogBox;
 $nameTools = get_lang('Modules');
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to uninstall the module %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure you want to uninstall the module %name ?');
 
 JavascriptLoader::getInstance()->load('admin');
 

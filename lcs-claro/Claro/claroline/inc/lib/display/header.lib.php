@@ -1,11 +1,11 @@
-<?php // $Id: header.lib.php 13866 2011-12-07 09:08:41Z zefredz $
+<?php // $Id: header.lib.php 14453 2013-05-16 08:15:37Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Class used to configure and display the page header.
  *
- * @version     $Revision: 13866 $
+ * @version     $Revision: 14453 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -71,12 +71,12 @@ class ClaroHeader extends CoreTemplate
     
     public static function getInstance()
     {
-        if ( ! ClaroHeader::$instance )
+        if ( ! self::$instance )
         {
-            ClaroHeader::$instance = new ClaroHeader;
+            self::$instance = new self();
         }
 
-        return ClaroHeader::$instance;
+        return self::$instance;
     }
 
     /**
@@ -198,6 +198,8 @@ class ClaroHeader extends CoreTemplate
     public function render()
     {
         $this->_globalVarsCompat();
+        
+        $this->addInlineJavascript(JavascriptLanguage::getInstance()->buildJavascript());
         
         $titlePage = '';
 

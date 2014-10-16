@@ -1,11 +1,11 @@
-<?php // $Id: manage.lib.php 14250 2012-08-22 15:00:42Z dkp1060 $
+<?php // $Id: manage.lib.php 14567 2013-10-23 08:44:05Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Claroline extension modules management library
  *
- * @version     $Revision: 14250 $
+ * @version     $Revision: 14567 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html
  *      GNU GENERAL PUBLIC LICENSE version 2 or later
@@ -379,7 +379,7 @@ function generate_module_names_translation_cache()
 
                         if ( isset($_lang[$module['name']]) )
                         {
-                            $langVars[$langName] .= '$_lang[\''.$module['name'].'\'] = "'.addslashes($_lang[ $module['name'] ])."\";\n";
+                            $langVars[$langName] .= '$_lang[\''.$module['name'].'\'] = \''.str_replace( "'", "\\'", $_lang[ $module['name'] ]).'\';'."\n";
                         }
                     }
                 }
@@ -548,6 +548,9 @@ function install_module($modulePath, $skipCheckDir = false, $registerModuleInCou
                 }
                 else
                 {
+                    // force access rights on module root dir after rename() because some modules written on M$ Win$#!t are causing issues
+                    chmod( $destPath,CLARO_FILE_PERMISSIONS );
+                    
                     //5-Include the local 'install.sql' and 'install.php' file of the module if they exist
                     if ( isset( $installSqlScript ) ) unset ( $installSqlScript );
                     $installSqlScript = get_module_path( $module_info['LABEL'] ) . '/setup/install.sql';

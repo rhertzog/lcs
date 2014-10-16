@@ -1,4 +1,4 @@
-<!-- // $Id: forum_editpost.tpl.php 14314 2012-11-07 09:09:19Z zefredz $ -->
+<!-- // $Id: forum_editpost.tpl.php 14428 2013-04-23 09:55:21Z ldumorti $ -->
 
 <form id="#formPost" action="<?php echo claro_htmlspecialchars( $_SERVER['PHP_SELF'] )?>" method="post">
     <input type="hidden" name="forum" value="<?php echo $this->forumId ?>" />
@@ -28,7 +28,16 @@
     <?php endif;?>
             <tr valign="top"><td>&nbsp;</td>
                 <td><input class="confirm" type="submit" name="submit" value="<?php echo get_lang( 'Ok' )?>" />&nbsp;
-                    <?php echo claro_html_button( claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . '?topic=' . $this->topicId ) ), get_lang( 'Cancel' ) )?>
+                   <?php  
+                      if ($this->editMode != "add") 
+                      {
+                        echo claro_html_button( claro_htmlspecialchars( Url::Contextualize( $_SERVER['PHP_SELF'] . '?topic=' . $this->topicId ) ), get_lang( 'Cancel' ) ); 
+                      }
+                      else
+                      {    
+                        echo claro_html_button( claro_htmlspecialchars( Url::Contextualize( get_module_url('CLFRM') . '/viewforum.php?forum='. $this->forumId   ) ), get_lang('Cancel') );
+                      }
+                      ?>
                 </td>
             </tr>
         </tbody>

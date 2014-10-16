@@ -1,4 +1,4 @@
-<?php // $Id: phpInfo.php 14175 2012-06-08 07:00:42Z zefredz $
+<?php // $Id: phpInfo.php 14587 2013-11-08 12:47:41Z zefredz $
 
 /**
  * CLAROLINE
@@ -7,7 +7,7 @@
  * - configuration of Claroline, PHP, Mysql, Webserver
  * - credits
  *
- * @version     $Revision: 14175 $
+ * @version     $Revision: 14587 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author :    Christophe Gesche <moosh@claroline.net>
@@ -143,37 +143,37 @@ if ($is_allowedToAdmin)
         <table class="claroTable">
             <thead>
                 <tr>
-                    <th scope="col">Software</th>
-                    <th scope="col">Version</th>
+                    <th scope="col"><?php echo get_lang('Software') ;?></th>
+                    <th scope="col"><?php echo get_lang('Version') ;?></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th scope="row">Claroline Install/Last Major Upgrade Version</th>
+                    <th scope="row"><?php echo get_lang('Claroline Install/Last Major Upgrade Version') ;?></th>
                     <td><?php echo $clarolineVersion ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Claroline Current Version</th>
+                    <th scope="row"><?php echo get_lang('Claroline Current Version') ;?></th>
                     <td><?php echo $new_version ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Claroline API Version</th>
+                    <th scope="row"><?php echo get_lang('Claroline API Version') ;?></th>
                     <td><?php echo $clarolineAPIVersion ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Claroline Database Version</th>
+                    <th scope="row"><?php echo get_lang('Claroline Database Version') ;?></th>
                     <td><?php echo $clarolineDBVersion ;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">PHP version (installed/minimum)</th>
+                    <th scope="row"><?php echo get_lang('PHP version (installed/minimum)') ;?></th>
                     <td><?php echo phpversion() . ' / ' . $requiredPhpVersion; ?></td>
                 </tr>
                 <tr>
-                    <th scope="row">MySQL (installed/minimum)</th>
+                    <th scope="row"><?php echo get_lang('MySQL (installed/minimum)') ;?></th>
                     <td><?php echo mysql_get_server_info() . ' / ' . $requiredMySqlVersion;?></td>
                 </tr>
                 <tr>
-                    <th scope="row">WebServer</th>
+                    <th scope="row"><?php echo get_lang('Web server') ;?></th>
                     <td><?php echo $_SERVER['SERVER_SOFTWARE'] ;?></td>
                 </tr>
             </tbody>

@@ -1,11 +1,11 @@
-<?php // $Id: login.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: login.php 14388 2013-02-12 13:14:08Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This script allows users to log on platform and back to requested ressource.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14388 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLAUTH
@@ -208,7 +208,7 @@ else
                     $out .= '<p align="center">' . "\n"
                           . get_lang('Your user profile doesn\'t seem to be enrolled on this course').'<br />'
                           . get_lang('If you wish to enrol on this course') . ' : '
-                          . ' <a href="' . get_path('clarolineRepositoryWeb') . 'auth/courses.php?cmd=rqReg&amp;keyword=' . urlencode($_course['officialCode']) . '">'
+                          . ' <a href="' . get_path('clarolineRepositoryWeb') . 'auth/courses.php?cmd=exReg&amp;course=' . urlencode(  claro_get_current_course_id () ) . '">'
                           . get_lang('Enrolment').'</a>' . "\n"
                           . '</p>' . "\n";
                 }

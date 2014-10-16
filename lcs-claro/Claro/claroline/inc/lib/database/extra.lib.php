@@ -1,4 +1,4 @@
-<?php // $Id: extra.lib.php 13302 2011-07-11 15:19:09Z abourguignon $
+<?php // $Id: extra.lib.php 14427 2013-04-22 13:34:49Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -8,7 +8,7 @@
  * Light Object-Oriented Database Layer for Claroline :
  * Advanced API
  *
- * @version     $Revision: 13302 $
+ * @version     $Revision: 14427 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -156,13 +156,14 @@ class Database_Multiple_Query
         return $ret;
     }
     
-    protected function executeQueries( $queryString )
+    protected function executeQueries()
     {
         foreach ( $this->sqlQueryArray as $query )
         {
+            $sql = $query['query'];
+            
             try
-            {
-                $sql = $query['query'];
+            {    
                 Claroline::getDatabase()->exec( $sql );
             }
             catch( Exception $e )
@@ -205,12 +206,12 @@ class Database_PreparedStatement
     
     public function query( $params = array() )
     {
-        return $this->dbConn->query( $this->transformQuery( $sql, $params ) );
+        return $this->dbConn->query( $this->transformQuery( $this->sql, $params ) );
     }
     
     public function exec( $params = array() )
     {
-        return $this->dbConn->exec( $this->transformQuery( $sql, $params ) );
+        return $this->dbConn->exec( $this->transformQuery( $this->sql, $params ) );
     }
     
     protected function transformQuery( $sql, $params )
@@ -293,5 +294,3 @@ class Claroline_PreparedStatement extends Database_PreparedStatement
         parent::__construct( Claroline::getDatabase() );
     }
 }
-
-

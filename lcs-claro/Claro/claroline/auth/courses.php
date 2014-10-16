@@ -1,11 +1,11 @@
-<?php // $Id: courses.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: courses.php 14564 2013-10-18 09:35:35Z ldumorti $
 
 /**
  * CLAROLINE
  *
  * Prupose list of course to enroll or leave.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14564 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -36,6 +36,7 @@ require_once get_path('incRepositorySys') . '/lib/coursesearchbox.class.php';
 
 include claro_get_conf_repository() . 'user_profile.conf.php';
 include claro_get_conf_repository() . 'course_main.conf.php';
+include claro_get_conf_repository() . 'CLHOME.conf.php';
 
 $parentCategoryCode = '';
 $userSettingMode    = false;
@@ -225,7 +226,7 @@ Unsubscribe from a course
 
 if ( $cmd == 'exUnreg' )
 {
-    if ( user_remove_from_course($userId, $courseCode, false, false, false) )
+    if ( user_remove_from_course($userId, $courseCode, false, false, null) )
     {
         $claroline->log('COURSE_UNSUBSCRIBE', array('user'=>$userId,'course'=>$courseCode));
         $dialogBox->success( get_lang('Your enrolment on the course has been removed') );
@@ -269,7 +270,7 @@ if ( $cmd == 'exReg' )
     $courseObj = new Claro_Course($courseCode);
     $courseObj->load();
     
-    $courseRegistration = new CourseUserRegistration(
+    $courseRegistration = new Claro_CourseUserRegistration(
         AuthProfileManager::getUserAuthProfile($userId),
         $courseObj,
         $registrationKey,
@@ -278,7 +279,10 @@ if ( $cmd == 'exReg' )
     
     if ( !empty( $classId ) )
     {
-        $courseRegistration->setClassRegistrationMode();
+        $claroClass = new Claro_Class();
+        $claroClass->load($classId);
+        
+        $courseRegistration->setClass( $claroClass );
     }
     
     if ( $courseRegistration->addUser() )
@@ -311,21 +315,21 @@ if ( $cmd == 'exReg' )
     {
         switch ($courseRegistration->getStatus())
         {
-            case CourseUserRegistration::STATUS_KEYVALIDATION_FAILED :
+            case Claro_CourseUserRegistration::STATUS_KEYVALIDATION_FAILED :
             {
                 $displayMode = DISPLAY_REGISTRATION_KEY_FORM;
                 $dialogBox->error( $courseRegistration->getErrorMessage() );
             }
             break;
             
-            case CourseUserRegistration::STATUS_SYSTEM_ERROR :
+            case Claro_CourseUserRegistration::STATUS_SYSTEM_ERROR :
             {
                 $displayMode = DISPLAY_MESSAGE_SCREEN;
                 $dialogBox->error( $courseRegistration->getErrorMessage() );
             }
             break;
             
-            case CourseUserRegistration::STATUS_REGISTRATION_NOTAVAILABLE :
+            case Claro_CourseUserRegistration::STATUS_REGISTRATION_NOTAVAILABLE :
             {
                 $displayMode = DISPLAY_REGISTRATION_DISABLED_FORM;
                 $dialogBox->error( $courseRegistration->getErrorMessage() );
@@ -378,7 +382,7 @@ Search a course to register
 if ( $cmd == 'rqReg' ) // show course of a specific category
 {
     // Set user id to null if we're working on a class
-    $uderId = ($fromAdmin == 'class') ? null : $userId;
+    $userId = ($fromAdmin == 'class') ? null : $userId;
     
     // Build the category browser
     $categoryBrowser  = new CategoryBrowser($categoryId, $userId);
@@ -439,6 +443,7 @@ if ( $cmd == 'rqReg' ) // show course of a specific category
    Display Section
   =====================================================================*/
 
+$newLink = '';
 // Set the back link
 if ( $cmd == 'rqReg' && ( !empty($categoryId) || !empty($parentCategoryId) ) )
 {
@@ -460,8 +465,15 @@ else
         if ( $fromAdmin == 'usercourse' ) // admin tool used: list of a user's courses.
         {
             $backUrl   = '../admin/adminusercourses.php?uidToEdit=' . $userId;
-            $backLabel = get_lang('Back to user\'s course list');
-        }
+            $backLabel = get_lang('Back to user\'s course list');    
+            
+            if ($courseCode !='')
+            {
+                $asTeacherInfo = ($asTeacher)?'true':false;
+                $newLink = '<p><a class="backLink" href="'.$_SERVER['PHP_SELF'].'?cmd=rqReg&amp;fromAdmin=usercourse&amp;uidToEdit='.$userId.'&amp;asTeacher='.$asTeacherInfo.'">'. 
+                    get_lang('Enrol to a new course') .'</a></p>';
+            }
+        }   
     }
     elseif ( $fromAdmin == 'class' ) // admin tool used : class registration
     {
@@ -476,13 +488,22 @@ else
     }
     else
     {
-        $backUrl   = '../../index.php?';
-        $backLabel = get_lang('Back to my personal course list');
+        if ( claro_is_in_a_course() )
+        {
+            // add cidReset to force relaod user privileges in course
+            $backUrl = '../course/index.php?cidReset=true&cid='.claro_get_current_course_id();
+            $backLabel = get_lang('Course homepage');
+        }
+        else
+        {
+            $backUrl   = '../../index.php';
+            $backLabel = get_lang('Back to my personal course list');
+        }
     }
 } // end if ( $cmd == 'rqReg' && ( !empty($categoryId) || !empty($parentCategoryId) ) )
 
 // Notify userid of the user we are working with in admin mode and that we come from admin
-$backUrl .= Url::buildUrl($backUrl, $urlParamList, null)->toUrl(); 
+$backUrl = Url::buildUrl($backUrl, $urlParamList, null)->toUrl(); 
 $backLink = '<p><a class="backLink" href="' . $backUrl 
           . '" title="' . $backLabel. '" >'
           . $backLabel . '</a></p>' . "\n\n";
@@ -616,6 +637,10 @@ switch ( $displayMode )
     
 } // end of switch ($displayMode)
 
+if ($newLink != '')
+{
+    $out .= $newLink;
+}
 $out .= $backLink;
 
 $claroline->display->body->appendContent($out);

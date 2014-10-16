@@ -1,6 +1,6 @@
 <?php
 
-// $Id: agenda.lib.php 14240 2012-08-08 09:26:23Z zefredz $
+// $Id: agenda.lib.php 14461 2013-05-29 09:34:33Z jrm_ $
 if ( count ( get_included_files () ) == 1 )
     die ( '---' );
 /**
@@ -12,7 +12,7 @@ if ( count ( get_included_files () ) == 1 )
  *         - Add entries
  *         - generate an "announce" entries about an entries
  *
- * @version     1.8 $Revision: 14240 $
+ * @version     1.8 $Revision: 14461 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLCAL
@@ -295,7 +295,8 @@ function get_agenda_items_compact_mode ( $userCourseList, $month, $year )
     foreach ( $userCourseList as $thisCourse )
     {
         if ( is_module_installed_in_course_lightversion ( 'CLCAL', $thisCourse )
-            && is_tool_activated_in_course_lightversion ( $toolId, $thisCourse ) )
+            && is_tool_activated_in_course_lightversion ( $toolId, $thisCourse )
+            && is_tool_visible_for_portlet( $toolId, $thisCourse['sysCode'] ) )
         {
             $courseEventList = get_agenda_items_list ( $thisCourse, $month, $year );
 

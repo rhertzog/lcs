@@ -1,4 +1,4 @@
-<?php // $Id: index.php 13954 2012-01-25 10:56:32Z zefredz $
+<?php // $Id: index.php 14468 2013-06-10 08:22:10Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * User desktop index.
  *
- * @version     $Revision: 13954 $
+ * @version     $Revision: 14468 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     DESKTOP
@@ -62,7 +62,14 @@ try
             {
                 $portlet = new $className($portletInDB['label']);
                 
-                $portletList->addPortlet( $portlet->getLabel(), $portlet->getName() );
+                if ( $portlet->getLabel() )
+                {
+                    $portletList->addPortlet( $portlet->getLabel(), $portlet->getName() );
+                }
+                else
+                {
+                    Console::warning("Portlet {$className} has no label !");
+                }
             }
         }
         else
@@ -95,7 +102,15 @@ try
                     if ( class_exists($className) )
                     {
                         $portlet = new $className($portletInDB['label']);
-                        $portletList->addPortlet( $portlet->getLabel(), $portlet->getName() );
+                        
+                        if ( $portlet->getLabel() )
+                        {
+                            $portletList->addPortlet( $portlet->getLabel(), $portlet->getName() );
+                        }
+                        else
+                        {
+                            Console::warning("Portlet {$className} has no label !");
+                        }
                     }
                 }
                 
@@ -123,10 +138,16 @@ if ( !empty( $portletList ) )
     {
         try
         {
+            if ( empty( $portlet['label'] ) )
+            {
+                pushClaroMessage( "Portlet with no label found ! Please check your database", 'warning' );
+                continue;
+            }
+            
             // load portlet
             if( ! class_exists( $portlet['label'] ) )
             {
-                pushClaroMessage("User desktop : class {$portlet['label']} not found !");
+                pushClaroMessage("User desktop : class {$portlet['label']} not found !", 'warning');
                 continue;
             }
             
@@ -135,7 +156,9 @@ if ( !empty( $portletList ) )
                 continue;
             }
             
-            $portlet = new $portlet['label']($portlet['label']);
+            $plabel = $portlet['label'];
+            
+            $portlet = new $plabel($plabel);
             
             if( ! $portlet instanceof UserDesktopPortlet )
             {

@@ -1,11 +1,11 @@
-<?php // $Id: authmanager.lib.php 14213 2012-07-24 06:12:20Z zefredz $
+<?php // $Id: authmanager.lib.php 14536 2013-09-11 05:47:40Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Authentication Manager
  *
- * @version     Claroline 1.11 $Revision: 14213 $
+ * @version     Claroline 1.11 $Revision: 14536 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -273,6 +273,7 @@ class AuthUserTable
 class AuthDriverManager
 {
     protected static $drivers = false;
+    protected static $driversAllowingLostPassword = false;
     
     public static function getRegisteredDrivers()
     {
@@ -376,6 +377,38 @@ class AuthDriverManager
                 }
             }
         }
+        
+        if ( isset($driverConfig['driver']['lostPasswordAllowed']) && $driverConfig['driver']['lostPasswordAllowed'] == true )
+        {
+            self::$driversAllowingLostPassword[$driverConfig['driver']['authSourceName']] = $driverConfig['driver']['authSourceName'];
+        }
+    }
+    
+    public static function getDriversAllowingLostPassword()
+    {
+        if ( ! self::$drivers )
+        {
+            self::initDriverList();
+        }
+        
+        return self::$driversAllowingLostPassword;
+    }
+    
+    public static function checkIfDriverSupportsLostPassword( $authSourceName )
+    {
+        if ( ! self::$drivers )
+        {
+            self::initDriverList();
+        }
+        
+        if ( isset( self::$driversAllowingLostPassword[$authSourceName] ) )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     protected static function initDriverList()
@@ -384,8 +417,12 @@ class AuthDriverManager
         self::$drivers = array(
             'claroline' => new ClarolineLocalAuthDriver(),
             'disabled' => new UserDisabledAuthDriver(),
-            'temp' => new TemporaryAccountAuthDriver(),
-            'CAS' => new ClarolineLocalAuthDriver()
+            'temp' => new TemporaryAccountAuthDriver()
+        );
+        
+        self::$driversAllowingLostPassword = array(
+            'claroline' => 'claroline',
+            'clarocrypt' => 'clarocrypt'
         );
         
         // load dynamic drivers

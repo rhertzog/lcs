@@ -1,11 +1,11 @@
-<?php // $Id: user_add.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: user_add.php 14516 2013-08-14 07:46:57Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This tool allow to add a user in a specific course (and in the platform).
  *
- * @version     1.11 $Revision: 14314 $
+ * @version     1.11 $Revision: 14516 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
@@ -217,7 +217,7 @@ if ( $cmd == 'registration' )
         $courseObj = new Claro_Course(claro_get_current_course_id());
         $courseObj->load();
 
-        $courseRegistration = new CourseUserRegistration(
+        $courseRegistration = new Claro_CourseUserRegistration(
             AuthProfileManager::getUserAuthProfile($userId),
             $courseObj,
             null,

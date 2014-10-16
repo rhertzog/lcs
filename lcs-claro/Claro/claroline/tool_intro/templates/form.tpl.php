@@ -1,4 +1,4 @@
-<!-- $Id: form.tpl.php 14314 2012-11-07 09:09:19Z zefredz $ -->
+<!-- $Id: form.tpl.php 14476 2013-06-18 14:14:54Z zefredz $ -->
 
 <form method="post" action="<?php echo claro_htmlspecialchars($this->formAction); ?>">
     <fieldset>
@@ -11,6 +11,7 @@
         <?php if ($this->intro->getId()) : ?>
         <input type="hidden" name="id" value="<?php echo $this->intro->getId(); ?>" />
         <input type="hidden" name="rank" value="<?php echo $this->intro->getRank(); ?>" />
+        <input type="hidden" name="visibility" value="<?php echo $this->intro->getVisibility(); ?>" />
         <?php endif; ?>
         
         <dl>

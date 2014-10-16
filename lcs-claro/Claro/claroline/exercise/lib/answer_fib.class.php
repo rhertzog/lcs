@@ -1,11 +1,11 @@
 <?php
 
-// $Id: answer_fib.class.php 14315 2012-11-08 14:51:17Z zefredz $
+// $Id: answer_fib.class.php 14441 2013-05-02 06:51:52Z ldumorti $
 
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 14315 $
+ * @version 1.8 $Revision: 14441 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *
@@ -518,8 +518,7 @@ class answerFillInBlanks
             }
 
             //
-            $correctAnswer = claro_htmlspecialchars ( $this->answerDecode ( $this->answerList[ $i ] ) );
-            $correctAnswer = claro_htmlspecialchars ( $correctAnswer );
+            $correctAnswer = claro_htmlspecialchars ( $this->answerDecode ( $this->answerList[ $i ] ) );          
 
             $replacementList[ ] = str_replace ( '$', '\$', '[' . $userAnswer . ' / <span class="correct"><b>' . $correctAnswer . '</b></span>]' . "\n" );
         }

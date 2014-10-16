@@ -1,8 +1,8 @@
-<?php // $Id: tableOfContent.php 14341 2012-12-05 14:56:25Z ffervaille $
+<?php // $Id: tableOfContent.php 14405 2013-02-20 15:17:16Z kitan1982 $
 /**
  * CLAROLINE
  *
- * @version 1.11 $Revision: 14341 $
+ * @version 1.11 $Revision: 14405 $
  *
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
@@ -16,6 +16,7 @@
  *
  */
 
+$tlabelReq = 'CLLNP';
 require '../../inc/claro_init_global.inc.php';
 
 if (! claro_is_course_allowed()) claro_disp_auth_form();
@@ -57,6 +58,69 @@ if($lpUid)
 else // anonymous
 {
    $uidCheckString = "AND UMP.`user_id` IS NULL ";
+}
+
+$sql = "SELECT `contentType`
+          FROM `".$TABLEMODULE."`
+         WHERE `module_id` = ". (int)$_SESSION['module_id'];
+
+$currentModuleContentType = claro_sql_query_get_single_value($sql);
+
+if( $currentModuleContentType == CTDOCUMENT_ && get_conf( 'cllnp_countTimeSpentOnDocument' ) )
+{
+    $documentTrackingData = $_SESSION['documentTrackingData'];
+    $documentStartDate = $documentTrackingData['documentStartDate'];
+    $documentPreviousTotalTime = $documentTrackingData['documentPreviousTotalTime'];
+    $documentSessionTime = $documentTrackingData['documentSessionTime'];
+    $documentUserModuleProgressId = $documentTrackingData['documentUserModuleProgressId'];
+    unset( $_SESSION['documentTrackingData'] );
+    
+    $documentTrackingUpdateScriptUrl = Url::Contextualize( get_module_url( 'CLLNP' ) . '/navigation/updateDocumentTracking.php' );
+    
+    $documentSessionTimeTab = explode( ':', $documentSessionTime );
+    $documentSessionTimeInMin = (int)$documentSessionTimeTab[0] * 60 + (int)$documentSessionTimeTab[1];
+    
+    ?>
+    
+    <script language="javascript">
+        var spentTime = 0;
+        var delayInMin = <?php echo get_conf( 'cllnp_countTimeIntervalCheck' ); ?>;
+        var delayInMilli = delayInMin * 60000;
+        var overDefault = <?php echo get_conf( 'cllnp_countTimeOverDefault' ) ? 'true' : 'false' ; ?>;
+        var timeLimit = <?php echo $documentSessionTimeInMin; ?>;
+
+        var userModuleProgressId = <?php echo $documentUserModuleProgressId; ?>;
+        var previousTotalTime = '<?php echo $documentPreviousTotalTime; ?>';
+        var courseCode = '<?php echo claro_get_current_course_id(); ?>';
+        var userId = <?php echo claro_get_current_user_id(); ?>;
+        var learnPathId = <?php echo (int)$_SESSION['path_id']; ?>;
+        var moduleId = <?php echo (int)$_SESSION['module_id']; ?>;
+        var date = '<?php echo $documentStartDate; ?>';
+        
+        var documentTrackingUpdateUrl = '<?php echo $documentTrackingUpdateScriptUrl; ?>';
+        
+        function computeSpentTime()
+        {
+            spentTime += delayInMin
+            if( ( overDefault && spentTime > timeLimit ) || !overDefault )
+            {
+                $.get( documentTrackingUpdateUrl,
+                       { spentTime: spentTime,
+                         userModuleProgressId: userModuleProgressId,
+                         previousTotalTime: previousTotalTime,
+                         date: date,
+                         userId: userId,
+                         courseCode: courseCode,
+                         learnPathId: learnPathId,
+                         moduleId: moduleId
+                       }
+                );
+            }
+        }
+        setInterval( computeSpentTime, delayInMilli );
+    </script>
+
+    <?php
 }
 
 // get the list of available modules
@@ -122,105 +186,6 @@ $out .= '<p><b>'.wordwrap($lpName,$moduleNameLength,' ',1).'</b></p>'."\n"
     . '<table width="100%">'."\n\n"
     ;
 
-
-//debut modif
-$previous = ""; // temp id of previous module, used as a buffer in foreach
-$previousModule = ""; // module id that will be used in the previous link
-$nextModule = ""; // module id that will be used in the next link
-
-foreach ($flatElementList as $module)
-{
-    if ( !$is_blocked )
-    {
-        if($module['contentType'] == CTLABEL_) // chapter head
-        {
-//            $out .= '<b>'. claro_utf8_decode( $module['name'], get_conf( 'charset' ) ).'</b>';
-        }
-        else
-        {
-
-
-            // bold the title of the current displayed module
-            if( $_SESSION['module_id'] == $module['module_id'] )
-            {
-                $displayedName = '<b>'.$displayedName.'</b>';
-                $previousModule = $previous;
-            }
-            // store next value if user has the right to access it
-            if( $previous == $_SESSION['module_id'] )
-            {
-                $nextModule = $module['module_id'];
-            }
-//            $out .= '<a href="startModule.php?viewModule_id='.$module['module_id'].'" target="mainFrame" title="'.htmlspecialchars($module['name']).'">'
-//                .'<img src="' . $moduleImg . '" alt="'.$contentType_alt.' " border="0" />'.$displayedName.'</a>';
-        }
-        // a module ALLOW access to the following modules if
-        // document module : credit == CREDIT || lesson_status == 'completed'
-        // exercise module : credit == CREDIT || lesson_status == 'passed'
-        // scorm module : credit == CREDIT || lesson_status == 'passed'|'completed'
-
-        if( $module['lock'] == 'CLOSE' && $module['credit'] != 'CREDIT' && $module['lesson_status'] != 'COMPLETED' && $module['lesson_status'] != 'PASSED' && !$passExercise )
-        {
-            if($lpUid)
-            {
-                $is_blocked = true; // following modules will be unlinked
-            }
-            else // anonymous : don't display the modules that are unreachable
-            {
-                $atleastOne = true; // trick to avoid having the "no modules" msg to be displayed
-                break ;
-            }
-        }
-
-    }
-
-
-
-    if($module['contentType'] != CTLABEL_ )
-    {
-        $moduleNb++; // increment number of modules used to compute global progression except if the module is a title
-
-    }
-
-
-
-    // used in the foreach the remember the id of the previous module_id
-    // don't remember if label...
-    if ($module['contentType'] != CTLABEL_ )
-        $previous = $module['module_id'];
-
-
-}
-if ( $moduleNb > 1 )
-{$out .= '<br />'."\n\n".'<center>'."\n";
-    $prevNextString = '<small>';
-
-    if( $previousModule != '' )
-    {
-        $prevNextString .= '<a  href="startModule.php?viewModule_id='.$previousModule.'" target="mainFrame">'.get_lang('Previous').'</a>';
-    }
-    else
-    {
-        $prevNextString .=  get_lang('Previous');
-    }
-    $prevNextString .=  ' | ';
-
-    if( $nextModule != '' )
-    {
-        $prevNextString .=  '<a href="startModule.php?viewModule_id='.$nextModule.'" target="mainFrame">'.get_lang('Next').'</a>';
-    }
-    else
-    {
-        $prevNextString .=  get_lang('Next');
-    }
-    $prevNextString .=  '</small><br />'."\n";
-
-    $out .= $prevNextString.'</center>';
-
-}
-
-//fin modif
-
 $previous = ""; // temp id of previous module, used as a buffer in foreach
 $previousModule = ""; // module id that will be used in the previous link
 $nextModule = ""; // module id that will be used in the next link
@@ -284,6 +249,29 @@ foreach ($flatElementList as $module)
         }
         else
         {
+            $useRedirectUrl = false;
+            
+            if ( $module['contentType'] == 'DOCUMENT' )
+            {
+                
+                $pathInfo = get_path('coursesRepositorySys') . claro_get_course_path(). '/document/' . ltrim($module['path'],'/');
+                $pathContents = file_get_contents($pathInfo);       
+                $extension = get_file_extension($pathInfo);
+
+                if ( $extension == 'url' )
+                {
+                    // 
+                    
+                    $matches = array();
+
+                    if ( preg_match( '/<meta http-equiv="refresh" content="0;url=(.*?)">/', $pathContents, $matches ) && isset( $matches[1] ) )
+                    {
+                        $redirectionURL = $matches[1];
+                        $useRedirectUrl = true;
+                    }
+                }
+            }
+            
             if ( strlen($module['name']) > $moduleNameLength)
                 $displayedName = substr( claro_utf8_decode( $module['name'], get_conf( 'charset' ) ),0,$moduleNameLength)."...";
             else
@@ -300,8 +288,24 @@ foreach ($flatElementList as $module)
             {
                 $nextModule = $module['module_id'];
             }
-            $out .= '<a href="'.claro_htmlspecialchars(Url::Contextualize('startModule.php?viewModule_id='.$module['module_id'])).'" target="mainFrame" title="'.claro_htmlspecialchars($module['name']).'">'
-                .'<img src="' . $moduleImg . '" alt="'.$contentType_alt.' " border="0" />'.$displayedName.'</a>';
+            
+            if ( $useRedirectUrl )
+            {
+                $out .= '<a id="url_'.$module['module_id'].'" href="'.claro_htmlspecialchars(Url::Contextualize('startModule.php?viewModule_id='.$module['module_id'])).'" target="mainFrame" title="'.claro_htmlspecialchars($module['name']).'">'
+                    .'<img src="' . $moduleImg . '" alt="'.$contentType_alt.' " border="0" />'.$displayedName.'</a><script type="text/javascript">
+                      $(function(){
+                        $("#url_'.$module['module_id'].'").click(function(){ window.open("'.claro_htmlspecialchars($redirectionURL).'") });
+                      });
+                        </script>';
+                
+                /*$out .= '<a href="'.claro_htmlspecialchars($redirectionURL).'" target="mainFrame" title="'.claro_htmlspecialchars($module['name']).'" onclick="function(){$(\'#mainFrame\').html=\'page opened in new window or tab\';return true;}">'
+                    .'<img src="' . $moduleImg . '" alt="'.$contentType_alt.' " border="0" />'.$displayedName.'</a>';*/
+            }
+            else
+            {
+                $out .= '<a href="'.claro_htmlspecialchars(Url::Contextualize('startModule.php?viewModule_id='.$module['module_id'])).'" target="mainFrame" title="'.claro_htmlspecialchars($module['name']).'">'
+                    .'<img src="' . $moduleImg . '" alt="'.$contentType_alt.' " border="0" />'.$displayedName.'</a>';
+            }
         }
         // a module ALLOW access to the following modules if
         // document module : credit == CREDIT || lesson_status == 'completed'
@@ -403,7 +407,7 @@ if ( $moduleNb > 1 )
     {
         $prevNextString .=  get_lang('Previous');
     }
-
+    
     $prevNextString .=  ' | ';
 
     if( $nextModule != '' )
@@ -414,7 +418,7 @@ if ( $moduleNb > 1 )
     {
         $prevNextString .=  get_lang('Next');
     }
-
+    
     $prevNextString .=  '</small><br /><br />'."\n";
 
     $out .= $prevNextString;
@@ -424,9 +428,9 @@ if ( $moduleNb > 1 )
 if(!empty($_SESSION['returnToTrackingUserId']))
 {
     $returl = Url::Contextualize(
-        get_path('clarolineRepositoryWeb')
+        get_path('clarolineRepositoryWeb') 
         . 'tracking/lp_modules_details.php?uInfo='
-        . (int)$_SESSION['returnToTrackingUserId']
+        . (int)$_SESSION['returnToTrackingUserId'] 
         . '&path_id=' . (int)$_SESSION['path_id'] );
 }
 elseif ( claro_is_allowed_to_edit() && (!isset($_SESSION['asStudent']) || $_SESSION['asStudent'] == 0 ) )

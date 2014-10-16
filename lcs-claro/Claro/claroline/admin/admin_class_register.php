@@ -1,11 +1,11 @@
-<?php //$Id: admin_class_register.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php //$Id: admin_class_register.php 14583 2013-11-08 12:32:46Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users registration to classes.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14583 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -41,7 +41,7 @@ $tbl_class_user = $tbl_mdb_names['user_rel_profile_category'];
 $cmd = isset($_REQUEST['cmd'])?$_REQUEST['cmd']:null;
 $user_id = isset($_REQUEST['user_id'])?(int)$_REQUEST['user_id']:0;
 $class_id = isset($_REQUEST['class_id'])?(int)$_REQUEST['class_id']:0;
-$search = isset($_REQUEST['search'])?$_REQUEST['search']:'';
+$search = isset($_REQUEST['search'])?trim($_REQUEST['search']):'';
 
 // find info about the class
 
@@ -135,9 +135,20 @@ if ( !empty($class_id) )
         {
             $toAdd = " ORDER BY CU.`user_id` ".$_SESSION['admin_class_reg_user_dir'];
         }
+        elseif ( $_SESSION['admin_class_reg_user_order_crit'] != 'nom')
+        {    
+            $toAdd = " ORDER BY `".$_SESSION['admin_class_reg_user_order_crit']."` ".$_SESSION['admin_class_reg_user_dir'];
+        }
         else
         {
-            $toAdd = " ORDER BY `".$_SESSION['admin_class_reg_user_order_crit']."` ".$_SESSION['admin_class_reg_user_dir'];
+            if ($_SESSION['admin_class_reg_user_dir'] == 'ASC')
+            {
+                $toAdd = " ORDER BY `".$_SESSION['admin_class_reg_user_order_crit']."` ".$_SESSION['admin_class_reg_user_dir']. ",`prenom` ASC ";
+            }
+            else
+            {
+                $toAdd = " ORDER BY `".$_SESSION['admin_class_reg_user_order_crit']."` ".$_SESSION['admin_class_reg_user_dir']. ",`prenom` DESC ";
+            }            
         }
         $sql.=$toAdd;
     }

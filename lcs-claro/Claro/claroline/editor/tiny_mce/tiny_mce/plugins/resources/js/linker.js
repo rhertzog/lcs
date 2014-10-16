@@ -1,4 +1,4 @@
-/* $Id: linker.js 11805 2009-06-05 14:33:47Z dimitrirambout $ */
+/* $Id: linker.js 14510 2013-08-09 08:36:48Z zefredz $ */
 
 /*
 This code will work with html like this
@@ -24,42 +24,18 @@ $(document).ready(function(){
     // activity  
     $("#lnk_ajax_loading").hide();
     
-    // load link list
+    // output list to page
+    
+        // load link list
     linkerFrontend.loadLinkList();
     
     // load list
     linkerFrontend.loadList();
     
-    // output list to page
-    
-    // bind event on each added icon
-    // - on category : min max display || select resource ?
-    // - on resources : select resources
-    
-    // listen to browse events - binded with livequery as these item are added and removed to DOM
-    $("#lnk_location a.navigable").livequery( 'click', function(){
-        linkerFrontend.loadList($(this).attr("rel"), $(this).attr("title"));
-        return false;
-    });
-    
-    $("#lnk_resources a.navigable").livequery( 'click', function(){
-        linkerFrontend.loadList($(this).attr("rel"), $(this).attr("title"));
-        return false;
-    });
-    
-    // listen to attach events
-    $("#lnk_resources a.linkable").livequery( 'click', function(){
-        linkerFrontend.select($(this).attr("id"), $(this).attr("title"));
-        return false;
-    });
-    // listen to detach events
-    $("#lnk_selected_resources div a").livequery( 'click', function(){
-        linkerFrontend.unselect($(this).attr("rel"));
-        return false;
-    });
+    registerClickFunctions();
     
     // listen to close events (min/max display)
-    // do not use livequery here as these items always exists in DOM
+    // do not use $.on here as these items always exists in DOM
     $("#lnk_show_browser").click(function(){
         $("#lnk_browser").show();
         // toggle commands
@@ -75,16 +51,61 @@ $(document).ready(function(){
     });
     
     // ajax activity led
-    $("#lnk_ajax_loading").ajaxStart(function(){
-        $(this).show();
+    $(document).ajaxStart(function(){
+        $("#lnk_ajax_loading").show();
     });
         
-    $("#lnk_ajax_loading").ajaxStop(function(){
-        $(this).hide();
+    $(document).ajaxStop(function(){
+        $("#lnk_ajax_loading").hide();
     });
-    
 
 });
+
+var registerClickFunctions = function() {
+    // bind event on each added icon
+    // - on category : min max display || select resource ?
+    // - on resources : select resources
+    
+    // listen to browse events - binded with $.on as these item are added and removed to DOM
+    $("#lnk_location a.navigable").on( 'click', function(){
+        console.log('click function registered');
+        linkerFrontend.loadList($(this).attr("rel"), $(this).attr("title"));
+        return false;
+    });
+    
+    $("#lnk_resources a.navigable").on( 'click', function(){
+        console.log('click function registered');
+        linkerFrontend.loadList($(this).attr("rel"), $(this).attr("title"));
+        return false;
+    });
+    
+    // listen to attach events
+    $("#lnk_resources a.linkable").on( 'click', function(){
+        console.log('click function registered');
+        
+        if( ($(this).attr('class')) == 'linkable invisible' )
+        {
+            if( linkerFrontend.alertVisible( false ) )
+            {
+                linkerFrontend.select($(this).attr("id"), $(this).attr("title"));
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            linkerFrontend.select($(this).attr("id"), $(this).attr("title"));
+        }
+        // return false;
+    });
+    // listen to detach events
+    $("#lnk_selected_resources div a").on( 'click', function(){
+        linkerFrontend.unselect($(this).attr("rel"));
+        // return false;
+    });
+};
 
 var linkerFrontend = {
 
@@ -126,7 +147,10 @@ var linkerFrontend = {
                     linkerFrontend.addSelected( data[i].crl, data[i].name );
                 }
             }
-        })
+            
+            registerClickFunctions();
+        });
+        
     },
    
     loadList : function(crl, resourceName ) {
@@ -245,6 +269,8 @@ var linkerFrontend = {
                     
                     $("<br />").appendTo("#lnk_resources"); 
                   }
+                  
+                  registerClickFunctions();
               });
     },
     
@@ -314,6 +340,8 @@ var linkerFrontend = {
              
              i++;
         }
+        
+        registerClickFunctions();
     },
     
     addSelected : function(crl, name) {
@@ -382,5 +410,9 @@ var linkerFrontend = {
               $(this).remove();
           }
         });
-    }
+        
+        registerClickFunctions();
+    },
+    
+    
 }

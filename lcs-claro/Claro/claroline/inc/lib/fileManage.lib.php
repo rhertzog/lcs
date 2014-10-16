@@ -1,4 +1,4 @@
-<?php // $Id: fileManage.lib.php 14343 2012-12-12 10:57:36Z zefredz $
+<?php // $Id: fileManage.lib.php 14387 2013-02-11 14:09:40Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 )
 /**
  * CLAROLINE
  *
- * @version     1.9 $Revision: 14343 $
+ * @version     1.9 $Revision: 14387 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -557,7 +557,7 @@ function claro_search_file($searchPattern             , $baseDirPath,
             $filePath = $baseDirPath.'/'.$fileName;
 
             if (   $fileName == '.' || $fileName == '..'
-                || in_array($filePath, $excludedPathList ) )
+                || in_array('/'.ltrim($filePath,'/'), $excludedPathList ) )
             {
                 continue;
             }
@@ -648,7 +648,7 @@ function getInvisibleDocumentList ( $baseWorkDir, $cidReq = null )
 
     for( $i=0; $i < count($documentList); $i++ )
     {
-        $documentList[$i] = $baseWorkDir.$documentList[$i];
+        $documentList[$i] = '/' . ltrim($baseWorkDir.$documentList[$i],'/');
     }
 
     return $documentList ;

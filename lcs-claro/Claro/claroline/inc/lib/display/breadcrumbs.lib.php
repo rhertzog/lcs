@@ -1,11 +1,11 @@
-<?php // $Id: breadcrumbs.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: breadcrumbs.lib.php 14414 2013-03-20 09:19:53Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * BreadCrumbs.
  *
- * @version     1.9 $Revision: 14314 $
+ * @version     1.9 $Revision: 14414 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @license     http://www.gnu.org/copyleft/gpl.html
@@ -34,7 +34,7 @@
  *
  * FIXME : reverse order for prepend !!!!
  *
- * @version     1.9 $Revision: 14314 $
+ * @version     1.9 $Revision: 14414 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -178,7 +178,7 @@ class BreadCrumbsNode
             $nodeHtml .= claro_html_icon( 'home', null, null ).'&nbsp;';
         }
 
-        $nodeHtml .= claro_htmlspecialchars( $this->name );
+        $nodeHtml .= $this->name;
 
         if ( ! empty( $this->url ) )
         {

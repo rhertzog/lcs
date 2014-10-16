@@ -1,9 +1,9 @@
-<?php // $Id: user_work.php 14336 2012-11-30 08:01:10Z zefredz $
+<?php // $Id: user_work.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     Claroline 1.11 $Revision: 14336 $
+ * @version     Claroline 1.11 $Revision: 14450 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLWRK/
@@ -991,9 +991,7 @@ if( !$dispWrkForm && !$dispWrkDet )
 CssLoader::getInstance()->load( 'clwrk', 'screen');
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
 
 JavascriptLoader::getInstance()->load('work');
 

@@ -1,11 +1,11 @@
-<?php // $Id: page.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: page.php 14426 2013-04-19 07:12:52Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE
  *
- * @version     1.11 $Revision: 14314 $
+ * @version     1.11 $Revision: 14426 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  *              This program is under the terms of the GENERAL PUBLIC LICENSE (GPL)
@@ -185,7 +185,7 @@ else
     if ( is_array( $accessControlList ) )
     {
         // course member
-        if ( claro_is_course_member() )
+        if ( claro_is_course_member() || claro_is_platform_admin () )
         {
             $is_allowedToRead = $is_allowedToAdmin
                 || WikiAccessControl::isAllowedToReadPage( $accessControlList, 'course' );

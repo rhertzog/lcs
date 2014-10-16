@@ -1,10 +1,10 @@
-<?php // $Id: GenericEditor.class.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: GenericEditor.class.php 14642 2014-01-20 07:56:18Z zefredz $
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14642 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -100,7 +100,7 @@ class GenericEditor
         $textArea .= 'rows="'.$this->rows.'" '
         .    'cols="'.$this->cols.'" '
         .   $this->optAttrib.' >'
-        .    "\n".claro_htmlspecialchars($this->content)."\n"
+        .   claro_htmlspecialchars($this->content)
         .    '</textarea>'."\n";
 
         return $textArea;

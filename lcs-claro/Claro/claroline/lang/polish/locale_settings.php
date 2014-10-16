@@ -1,8 +1,8 @@
-<?php // $Id: locale_settings.php 13926 2012-01-10 16:17:15Z abourguignon $
+<?php // $Id: locale_settings.php 14437 2013-04-29 14:22:34Z zefredz $
 /**
  * CLAROLINE
  *
- * @version 1.8 $Revision: 13926 $
+ * @version 1.8 $Revision: 14437 $
  *
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  *

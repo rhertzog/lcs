@@ -1,6 +1,6 @@
 <?php
 
-// $Id: CLMAIN.def.conf.inc.php 14308 2012-10-31 14:08:16Z zefredz $
+// $Id: CLMAIN.def.conf.inc.php 14713 2014-02-17 08:30:54Z zefredz $
 
 if (count(get_included_files()) == 1)
     die('---');
@@ -8,7 +8,7 @@ if (count(get_included_files()) == 1)
 /**
  * CLAROLINE main configuration file variable definitions
  *
- * @version     $Revision: 14308 $
+ * @version     $Revision: 14713 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -839,8 +839,9 @@ $conf_def_property_list['crslist_DisplayUnpublishedToAllUsers'] =
 $conf_def_property_list['clmain_serverTimezone'] =
     array('label' => 'Set server timezone'
         , 'description' => 'Set this value to use another timezone than the one defined by PHP. See http://www.php.net/manual/en/timezones.php for a list of accepted timezones (for instance Europe/Brussels)'
-        , 'default' => ''
-        , 'type' => 'string'
+        , 'default' => 'Europe/Brussels'
+        , 'type' => 'enum'
+        , 'acceptedValueType' => 'timezone'
 );
 
 $conf_def_property_list['mysqlSetNames'] =

@@ -20,5 +20,9 @@ if [ ! -e ../platform/conf/claro_main.conf.php ]; then
     chown www-data:www-data ../platform/conf/claro_main.conf.php install_mysql.sql ../platform/conf/auth.cas.conf.php ../platform/conf/auth.sso.conf.php
 fi
 
+#ajout du rep extauth pour la version 1.11.10
+if [ ! -e ../platform/conf/extauth ]; then
+mkdir  ../platform/conf/extauth
+fi
 
 echo "Fin des patches..."

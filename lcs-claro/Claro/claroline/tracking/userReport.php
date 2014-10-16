@@ -1,9 +1,9 @@
-<?php // $Id: userReport.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: userReport.php 14418 2013-04-09 09:09:07Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14418 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Sebastien Piraux <seb@claroline.net>
  * @package     CLTRACK
@@ -45,6 +45,11 @@ else
 {
     if( claro_is_in_a_course() ) $courseId = claro_get_current_course_id();
     else                         $courseId = null;
+}
+
+if ( claro_is_in_a_course() )
+{
+    Claroline::getDisplay()->body->hideCourseTitleAndTools();
 }
 
 $selfStatistics = ( $userId == claro_get_current_user_id() ) ? true : false;

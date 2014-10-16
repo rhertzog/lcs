@@ -1,4 +1,4 @@
-<?php // $Id: lostPassword.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: lostPassword.php 14517 2013-08-14 07:47:46Z zefredz $
 
 /**
  * CLAROLINE
@@ -10,7 +10,7 @@
  * Special case : If the password are encrypted in the database, we have
  * to generate a new one.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14517 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLAUTH
@@ -62,10 +62,11 @@ if ( isset($_REQUEST['searchPassword']) && !empty($emailTo) )
 
     if ( count($userList) > 0 )
     {
+        $allowedAuthSources = AuthDriverManager::getDriversAllowingLostPassword();
+        
         foreach ( $userList as $user )
         {
-            if ( in_array(strtolower($user['authSource']),
-                          array('claroline', 'clarocrypt')))
+            if ( isset( $allowedAuthSources[$user['authSource']] ) )
             {
                 $passwordFound = true;
 

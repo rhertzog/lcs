@@ -1,9 +1,9 @@
-<?php // $Id: question.class.php 14144 2012-05-07 09:01:42Z zefredz $
+<?php // $Id: question.class.php 14558 2013-10-10 12:35:59Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14144 $
+ * @version     $Revision: 14558 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -311,7 +311,7 @@ class Question
         $duplicated->setDescription($this->description);
         $duplicated->setType($this->type);
         $duplicated->setGrade($this->grade);
-        $duplicated->setcayegoryId($this->categoryId);
+        $duplicated->setCategoryId($this->categoryId);
         
         $duplicatedId = $duplicated->save();
         

@@ -1,10 +1,10 @@
-<?php // $Id: user.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: user.lib.php 14551 2013-09-25 12:36:31Z zefredz $
 
 /**
  * CLAROLINE
  *
  * User lib contains function to manage users on the platform
- * @version     1.9 $Revision: 14314 $
+ * @version     1.9 $Revision: 14551 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLUSR
@@ -348,7 +348,7 @@ function user_delete($userId)
     $courseList = claro_sql_query_fetch_all_cols($sql);
 
     $log = array();
-    if ( user_remove_from_course($userId, $courseList['code'], true, true, true) == false ) return false;
+    if ( user_remove_from_course($userId, $courseList['code'], true, true ) == false ) return false;
     else
     {
         foreach ($courseList['code'] as $k=>$courseCode) $log['course_' . $k] = $courseCode;
@@ -849,7 +849,7 @@ function user_validate_form($formMode, $data, $userId = null)
     if (in_array('login', $editableFields))
     {
         $validator->addRule('username' , get_lang('You left some required fields empty'), 'required');
-        $validator->addRule('username' , get_lang('Username is too long (maximum 20 characters)'), 'maxlength',20);
+        $validator->addRule('username' , get_lang('Username is too long (maximum 60 characters)'), 'maxlength',60);
     }
     
     if (in_array('email', $editableFields) && !get_conf('userMailCanBeEmpty'))

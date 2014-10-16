@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `__CL_MAIN__user` (
   `user_id` INT(11)  UNSIGNED NOT NULL AUTO_INCREMENT,
   `nom` VARCHAR(60) DEFAULT NULL,
   `prenom` VARCHAR(60) DEFAULT NULL,
-  `username` VARCHAR(20) DEFAULT 'empty',
+  `username` VARCHAR(255) DEFAULT 'empty',
   `password` VARCHAR(50) DEFAULT 'empty',
   `language` VARCHAR(15) DEFAULT NULL,
   `authSource` VARCHAR(50) DEFAULT 'claroline',
@@ -369,7 +369,7 @@ UPDATE `__CL_MAIN__category`
 SET `id` = 0 
 WHERE `code` = 'ROOT';
 
-INSERT INTO `__CL_MAIN__coursehomepage_portlet` 
+INSERT IGNORE INTO `__CL_MAIN__coursehomepage_portlet` 
 (`label`, `name`) 
 VALUES
 ('CLTI',    'Headlines'),

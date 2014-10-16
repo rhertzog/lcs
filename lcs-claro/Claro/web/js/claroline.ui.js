@@ -1,5 +1,5 @@
 /*
- * $Id: claroline.ui.js 14353 2013-01-21 09:30:26Z zefredz $
+ * $Id: claroline.ui.js 14510 2013-08-09 08:36:48Z zefredz $
  */
 
 Claroline.spoil = function(item) {
@@ -140,12 +140,12 @@ $(document).ready(function(){
     // ajax loader
     $("#loading").hide();
     
-    $("#loading").ajaxStart(function(){
-        $(this).show();
+    $(document).ajaxStart(function(){
+        $("#loading").show();
     });
     
-    $("#loading").ajaxStop(function(){
-        $(this).hide();
+    $(document).ajaxStop(function(){
+        $("#loading").hide();
     });
     
     // multiple select

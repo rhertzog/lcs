@@ -1,4 +1,4 @@
-<?php // $Id: defaultsetting.inc.php 13348 2011-07-18 13:58:28Z abourguignon $
+<?php // $Id: defaultsetting.inc.php 14712 2014-02-17 08:30:15Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -9,7 +9,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  * Most of def value are from def file.
  * Special case are set are. def file would evoluate to deprecate this script.
  *
- * @version     $Revision: 13348 $
+ * @version     $Revision: 14712 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Install
@@ -61,6 +61,7 @@ $institutionForm     = $conf_def_property_list['institution_name'] ['default'];
 $institutionUrlForm  = $conf_def_property_list['institution_url'] ['default'];
 
 $languageForm = $conf_def_property_list['platformLanguage']['default'];
+$clmain_serverTimezone = $conf_def_property_list['clmain_serverTimezone']['default'];
 
 $userPasswordCrypted = $conf_def_property_list['userPasswordCrypted']['default'];
 

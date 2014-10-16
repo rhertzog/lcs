@@ -1,4 +1,4 @@
-<?php // $Id: config.class.php 13965 2012-01-30 15:14:56Z zefredz $
+<?php // $Id: config.class.php 14713 2014-02-17 08:30:54Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -10,7 +10,7 @@ if ( count( get_included_files() ) == 1 )
  *
  * Config lib contain function to manage conf file
  *
- * @version 1.9 $Revision: 13965 $
+ * @version 1.9 $Revision: 14713 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see http://www.claroline.net/wiki/config_def/
@@ -387,6 +387,9 @@ class Config
                 case 'editor':
                     $acceptedValue = array_merge( $acceptedValue, $this->retrieve_accepted_values_from_folder(get_path('rootSys').'claroline/editor','folder') );
                     break;
+                case 'timezone':
+                    $acceptedValue = array_merge( $acceptedValue, $this->get_timezone_list() );
+                    break;
             }
         }
 
@@ -738,6 +741,23 @@ class Config
         {
             return false;
         }
+    }
+
+    function get_timezone_list ()
+    {
+        $timezone_identifiers = DateTimeZone::listIdentifiers ();
+
+        foreach ( $timezone_identifiers as $val )
+        {
+            $atz   = new DateTimeZone ( $val );
+            $aDate = new DateTime ( "now", $atz );
+            $timeArray[ "$val" ] = $val;
+        }
+
+        asort ( $timeArray );
+
+        return $timeArray;
+
     }
 
     /**

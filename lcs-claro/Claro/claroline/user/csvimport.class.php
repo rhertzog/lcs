@@ -1,4 +1,4 @@
-<?php // $Id: csvimport.class.php 14290 2012-10-17 09:59:43Z ffervaille $
+<?php // $Id: csvimport.class.php 14516 2013-08-14 07:46:57Z zefredz $
 
 /**
  * CLAROLINE
@@ -37,6 +37,11 @@ class CsvImport extends parseCSV
         
         parent::__construct();
     }*/
+    
+    static public $requiredFields = array( 'lastname'
+                                          ,'firstname'
+                                          ,'username'
+                                          ,'email' );
     
     public function importUsers( $userList = array(), $class_id, $updateUserProperties, $sendEmail = 0 )
     {
@@ -254,7 +259,7 @@ class CsvImport extends parseCSV
                     }
                     else
                     {
-                        if( !user_add_to_course( $userId, $courseId, false, false, false) )
+                        if( !user_add_to_course( $userId, $courseId, false, false, null) )
                         {
                             $logs['errors'][] = get_lang( 'Unable to add user %username in this course', array('%username' => $userInfo['username'] ) );
                         }
@@ -344,6 +349,22 @@ class CsvImport extends parseCSV
     public function put( $data )
     {
         $this->data = $data;
+    }
+    
+    /**
+     * Validate fields name
+     * @return boolean
+     */
+    public function validateFields()
+    {
+        if( count( array_intersect( self::$requiredFields , $this->titles ) ) == 4 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     /**

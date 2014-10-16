@@ -1,4 +1,4 @@
-<?php // $Id: viewtopic.php 14368 2013-01-30 12:02:42Z zefredz $
+<?php // $Id: viewtopic.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
@@ -6,7 +6,7 @@
  * Script handling topics and posts in forum tool (new topics, replies, topic review, etc.)
  * As from Claroline 1.9.6, gathers functionality of deprecated scripts newtopic.php, reply.php and editpost.php
  *
- * @version     $Revision: 14368 $
+ * @version     $Revision: 14450 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @copyright   (c) 2001 The phpBB Group
  * @author      Claroline Team <info@claroline.net>
@@ -448,10 +448,8 @@ JavaScriptLoader::getInstance()->load( 'forum' );
 CssLoader::getInstance()->load( 'clfrm', 'screen' );
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-$jslang->addLangVar('Do you really want to sign your contribution ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
+JavascriptLanguage::getInstance()->addLangVar('Do you really want to sign your contribution ?');
 
 JavascriptLoader::getInstance()->load('forum');
 

@@ -1,18 +1,29 @@
-<?php // $Id: index.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: index.php 14722 2014-02-18 07:01:37Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Claroline installer.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14722 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/install/
  * @author      Claro Team <cvs@claroline.net>
  * @package     INSTALL
  */
+$tz = ini_get('date.timezone');
 
+if ( empty( $tz ) )
+{
+    ini_set('date.timezone','UTC');
+    date_default_timezone_set('UTC');
+}
+else
+{
+    ini_set('date.timezone',date_default_timezone_get());
+    date_default_timezone_set(date_default_timezone_get());
+}
 
 /* LET DEFINE ON SEPARATE LINES !!!*/
 // __LINE__ use to have arbitrary number but order of panels
@@ -744,7 +755,8 @@ echo '<input type="hidden" name="alreadyVisited" value="1" />'                  
 .    '<input type="hidden" name="userPasswordCrypted"          value="'.$userPasswordCrypted.'" />'            ."\n"
 .    '<input type="hidden" name="encryptPassForm"              value="'.$encryptPassForm.'" />'                ."\n"
 .    '<input type="hidden" name="confirmUseExistingMainDb"     value="'.$confirmUseExistingMainDb.'" />'       ."\n"
-.    '<input type="hidden" name="confirmUseExistingStatsDb"    value="'.$confirmUseExistingStatsDb.'" />';
+.    '<input type="hidden" name="confirmUseExistingStatsDb"    value="'.$confirmUseExistingStatsDb.'" />'      . "\n"
+.    '<input type="hidden" name="clmain_serverTimezone"        value="'.$clmain_serverTimezone.'" />';
 
 
 ##### PANNELS  ######
@@ -1622,6 +1634,18 @@ elseif(DISP_PLATFORM_SETTING == $display)
     .    '</div>' . "\n"
     .    '</div>' . "\n\n"
     
+    .    '<div class="row">' . "\n"
+    .    '<div class="rowTitle">' . "\n"
+    .    '<label for="clmain_serverTimezone"><span class="required">*</span> '.get_lang('Server timezone').'</label>' . "\n"
+    .    '</div>' . "\n"
+    .    '<div class="rowField">' . "\n"
+    .    claro_html_form_select( 'clmain_serverTimezone'
+                               , get_timezone_list ()
+                               , $clmain_serverTimezone
+                               , array('id'=>'clmain_serverTimezone')) . "\n"
+    .    '</div>' . "\n"
+    .    '</div>' . "\n\n"
+    
     .    '</fieldset>' . "\n\n"
     
     .    '<fieldset>' . "\n"
@@ -1959,6 +1983,15 @@ elseif(DISP_LAST_CHECK_BEFORE_INSTALL == $display )
     .    '</td>' . "\n"
     .    '<td class="checkValue">' . "\n"
     .    ucwords($languageForm)
+    .    '</td>' . "\n"
+    .    '</tr>' . "\n\n"
+        
+    .    '<tr class="check">' . "\n"
+    .    '<td class="checkTitle">' . "\n"
+    .    get_lang('Server timezone') . ' : ' . "\n"
+    .    '</td>' . "\n"
+    .    '<td class="checkValue">' . "\n"
+    .    ucwords($clmain_serverTimezone)
     .    '</td>' . "\n"
     .    '</tr>' . "\n\n"
     

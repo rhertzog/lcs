@@ -1,11 +1,11 @@
-<?php // $Id: track_exercise_details.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: track_exercise_details.php 14463 2013-06-03 05:52:14Z dkp1060 $
 
 /**
  * CLAROLINE
  *
  * This page display global information about.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14463 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      claro team <info@claroline.net>
@@ -69,7 +69,8 @@ class TrackAnswerMultipleChoice extends answerMultipleChoice
         // get the answers the user has gaven for this question
         $sql = "SELECT `answer`
                 FROM `" . $tbl_qwz_tracking_answers . "`
-                WHERE `details_id` = " . (int) $attemptDetailsId;
+                WHERE `details_id` = " . (int) $attemptDetailsId . 
+                " ORDER BY `id` ASC ";
 
         $trackedAnswers = claro_sql_query_fetch_all($sql);
 
@@ -100,7 +101,8 @@ class TrackAnswerTrueFalse extends answerTrueFalse
         // get the answers the user has gaven for this question
         $sql = "SELECT `answer`
                 FROM `" . $tbl_qwz_tracking_answers . "`
-                WHERE `details_id` = " . (int) $attemptDetailsId;
+                WHERE `details_id` = " . (int) $attemptDetailsId . 
+                " ORDER BY `id` ASC ";
 
         $this->response = claro_sql_query_get_single_value($sql);
 
@@ -118,7 +120,8 @@ class TrackAnswerFillInBlanks extends answerFillInBlanks
         // get the answers the user has gaven for this question
         $sql = "SELECT `answer`
                 FROM `" . $tbl_qwz_tracking_answers . "`
-                WHERE `details_id` = " . (int) $attemptDetailsId;
+                WHERE `details_id` = " . (int) $attemptDetailsId . 
+                " ORDER BY `id` ASC ";
 
         $answers = claro_sql_query_fetch_all($sql);
 
@@ -141,7 +144,8 @@ class TrackAnswerMatching extends answerMatching
         // get the answers the user has gaven for this question
         $sql = "SELECT `answer`
                 FROM `" . $tbl_qwz_tracking_answers . "`
-                WHERE `details_id` = " . (int) $attemptDetailsId;
+                WHERE `details_id` = " . (int) $attemptDetailsId . 
+                " ORDER BY `id` ASC ";
 
         $trackedAnswers = claro_sql_query_fetch_all($sql);
 

@@ -1,11 +1,11 @@
-<?php // $Id: user.php 14379 2013-02-05 07:29:04Z zefredz $
+<?php // $Id: user.php 14684 2014-02-11 10:00:41Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for the users of a specific course.
  *
- * @version     1.11 $Revision: 14379 $
+ * @version     1.11 $Revision: 14684 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>
@@ -45,9 +45,7 @@ include claro_get_conf_repository() . 'user_profile.conf.php';
    JavaScript - Delete Confirmation
   ----------------------------------------------------------------------*/
 
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
 
 JavascriptLoader::getInstance()->load('user');
 
@@ -109,6 +107,19 @@ if (isset($_REQUEST['user_id']))
     elseif ( 0 < (int) $_REQUEST['user_id'] )  $req['user_id'] = (int) $_REQUEST['user_id'];
     else                                       $req['user_id'] = false;
 }
+
+if ( $cmd == 'unregister' )
+{
+    if ( isset( $_REQUEST['deleteClasses'] ) )
+    {
+        $req['keepClasses'] = false;
+    }
+    else
+    {
+        $req['keepClasses'] = true;
+    }
+}
+
 /*=====================================================================
   Main section
   =====================================================================*/
@@ -122,7 +133,7 @@ if ( $is_allowedToEdit )
     // Register a new user
     if ( $cmd == 'register' && $req['user_id'])
     {
-        $done = user_add_to_course($req['user_id'], claro_get_current_course_id(), false, false, false);
+        $done = user_add_to_course($req['user_id'], claro_get_current_course_id(), false, false, null);
 
         if ($done)
         {
@@ -134,42 +145,97 @@ if ( $is_allowedToEdit )
     // Unregister a user
     if ( $cmd == 'unregister')
     {
+        $forceUnenrolment = false;
+            
+        if ( claro_is_platform_admin () )
+        {
+            if ( isset($_REQUEST['force'] ) && $_REQUEST['force'] == '1' )
+            {
+                $forceUnenrolment = true;
+            }
+        }
+            
         // Unregister user from course
         // (notice : it does not delete user from claroline main DB)
         
         if ( 'allStudent' == $req['user_id'] )
         {
             // TODO : add a function to unenroll all users from a course
-            $userIdList = Claroline::getDatabase()->query( "SELECT `user_id` FROM `" . $tbl_rel_course_user . "`
-                    WHERE `code_cours` = '" . claro_sql_escape(claro_get_current_course_id()) . "'
-                    AND `profile_id` = ( SELECT profile_id FROM `". $tbl_right_profile . "` WHERE `label` = 'user')" );
+            $course = new Claro_Course( claro_get_current_course_id() );
+            $course->load();
             
-            $unregisterdUserCount = user_remove_userlist_from_course( $userIdList, claro_get_current_course_id(), false, false, false );
+            $claroCourseRegistration = new Claro_BatchCourseRegistration( $course );
+            $claroCourseRegistration->removeAllUsers( $req['keepClasses'] );
             
-            Console::log( "{$req['user_id']} ({$unregisterdUserCount}) removed by user ". claro_get_current_user_id(), 'COURSE_UNSUBSCRIBE');
+            $result = $claroCourseRegistration->getResult();
             
-            $dialogBox->success( get_lang('%number student(s) unregistered from this course', array ( '%number' => $unregisterdUserCount) ) );
-        }
-        elseif ( 0 < (int)  $req['user_id'] )
-        {
-            // delete user from course user list
-            if ( user_remove_from_course(  $req['user_id'], claro_get_current_course_id(), false, false, false) )
+            if ( !$result->hasError() || !$result->checkStatus( Claro_BatchRegistrationResult::STATUS_ERROR_DELETE_FAIL ) )
             {
-                Console::log( "{$req['user_id']} removed by user ". claro_get_current_user_id(), 'COURSE_UNSUBSCRIBE');
-                $dialogBox->success( get_lang('The user has been successfully unregistered from course') );
+                $unregisterdUserCount = count($result->getDeletedUserList());
+
+                if ( $unregisterdUserCount )
+                {
+                    Console::log( "{$req['user_id']} ({$unregisterdUserCount}) removed by user ". claro_get_current_user_id(), 'COURSE_UNSUBSCRIBE');                 
+                }
+
+                $dialogBox->info( get_lang('%number student(s) unregistered from this course', array ( '%number' => $unregisterdUserCount) ) );
             }
             else
             {
-                switch ( claro_failure::get_last_failure() )
+                Console::error("Error while deleting all users from course " . claro_get_current_course_id() . " : " . var_export( $result->getErrorLog(), true ) );
+                
+                $dialogBox->error( get_lang('An error occured') . ' : <ul><li>' . implode('</li><li>', $result->getErrorLog() ) . '</li></ul>' );
+            }
+        }
+        elseif ( 0 < (int)  $req['user_id'] )
+        {
+            if ( $forceUnenrolment )
+            {
+                $course = new Claro_Course( claro_get_current_course_id () );
+                $course->load();
+
+                $userCourseRegistration = new Claro_CourseUserRegistration(
+                    AuthProfileManager::getUserAuthProfile($req['user_id'] ),
+                    $course
+                );
+
+                if ( claro_is_platform_admin () )
                 {
-                    case 'cannot_unsubscribe_the_last_course_manager' :
-                        $dialogBox->error( get_lang('You cannot unsubscribe the last course manager of the course') );
-                        break;
-                    case 'course_manager_cannot_unsubscribe_himself' :
-                        $dialogBox->error( get_lang('Course manager cannot unsubscribe himself') );
-                        break;
-                    default :
-                        $dialogBox->error( get_lang('Error!! you cannot unregister a course manager') );
+                    $userCourseRegistration->forceUnregistrationOfManager();
+                }
+
+
+                if ( !$userCourseRegistration->forceRemoveUser( false, array() ) )
+                {
+                    $dialogBox->error( get_lang('The user cannot be removed from the course') );
+                }
+                else
+                {
+                    Console::log( "{$req['user_id']} removed [forced] by admin ". claro_get_current_user_id(), 'COURSE_UNSUBSCRIBE');
+                    $dialogBox->success( get_lang('The user has been successfully unregistered from course') );
+                }
+            }
+            else
+            {
+                // delete user from course user list
+                if ( user_remove_from_course(  $req['user_id'], claro_get_current_course_id(), false, false, null) )
+                {
+                    Console::log( "{$req['user_id']} removed by user ". claro_get_current_user_id(), 'COURSE_UNSUBSCRIBE');
+                    $dialogBox->success( get_lang('The user has been successfully unregistered from course') );
+                }
+                else
+                {
+                    switch ( claro_failure::get_last_failure() )
+                    {
+                        case 'cannot_unsubscribe_the_last_course_manager' :
+                            $dialogBox->error( get_lang('You cannot unsubscribe the last course manager of the course') );
+                            break;
+                        case 'course_manager_cannot_unsubscribe_himself' :
+                            $dialogBox->error( get_lang('Course manager cannot unsubscribe himself') );
+                            break;
+                        default :
+                            $dialogBox->error( get_lang('Error!! you cannot unregister a course manager') );
+                    }
                 }
             }
         }
@@ -248,6 +314,17 @@ if ( $is_allowedToEdit )
     }
 }    // end if allowed to edit
 
+$courseUserList = new Claro_CourseUserList(claro_get_current_course_id());
+        
+if ( $courseUserList->has_registrationPending () )
+{
+    $usersPanelUrl = claro_htmlspecialchars(Url::Contextualize( get_module_entry_url ( 'CLUSR' ) ) );
+    
+    $dialogBox->warning(
+        get_lang('You have to validate users to give them access to this course through the <a href="%url">course user list</a>', array('%url' => $usersPanelUrl))
+    );
+}
+
 
 /*----------------------------------------------------------------------
    Get Course informations
@@ -276,6 +353,8 @@ $sqlGetUsers = "
         `course_user`.`tutor`  AS `tutor`,
         `course_user`.`role`   AS `role`,
         `course_user`.`enrollment_date`,
+        `course_user`.`count_class_enrol`,
+        `course_user`.`count_user_enrol`,
 
 	GROUP_CONCAT(`grp`.name ORDER BY `grp`.name SEPARATOR ',' ) AS `groups`
 
@@ -398,6 +477,21 @@ if ($is_allowedToEdit)
         'params' => array('onclick' => 'return confirmationUnregisterAll();')
     );
     
+    $courseObj = new Claro_Course(claro_get_current_course_id());
+    $courseObj->load();
+    $courseClassList = new Claro_CourseClassList($courseObj);
+    $courseClassListIt = $courseClassList->getClassListIterator();
+    
+    if ( count($courseClassListIt) )
+    {
+        $htmlHeadXtra[] = '<script>var mustConfirmClassDelete = true;</script>';
+    }
+    else
+    {
+        $htmlHeadXtra[] = '<script>var mustConfirmClassDelete = false;</script>';
+    }
+    
+    
     $htmlHeadXtra[] =
     '<script type="text/javascript">
 
@@ -405,12 +499,31 @@ if ($is_allowedToEdit)
     {
         if (confirm(\'' . clean_str_for_javascript( get_lang( "Are you sure you want to unregister all students from your course ?")) . '\'))
         {
-            return true;
+            if ( mustConfirmClassDelete && confirm(\'' . clean_str_for_javascript( get_lang( "Do you also want to unregister all classes from your course ?")) . '\') )
+            {
+                document.location.href = \''.Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=unregister&user_id=allStudent&deleteClasses=1').'\'; 
+                    return false;
+            }
+            else
+            {
+                return true;
+            }
         }
         else
         {
             return false;
         }
+    };
+
+    </script>'."\n";
+    
+    $htmlHeadXtra[] =
+    '<script type="text/javascript">
+
+    function warnCannotDeleteClassStudent ()
+    {
+        alert(\'' . clean_str_for_javascript( get_lang( "This student is enroled from a class and cannot be removed directly from the course. You have to delete the whole class instead")) . '\');
+        return false;
     };
 
     </script>'."\n";
@@ -481,6 +594,11 @@ if ( $is_allowedToEdit ) // EDIT COMMANDS
         . '<th>'.get_lang('Unregister').'</th>'."\n"
         . '<th>'.get_lang('Activation').'</th>'."\n" 
         ;
+    
+    if ( claro_is_platform_admin () )
+    {
+        $out .= '<th>'.get_lang('User profile').'</th>' . "\n";
+    }
 }
 
 $out .= '</tr>'."\n"
@@ -545,7 +663,7 @@ foreach ( $userList as $thisUser )
     }
     else
     {
-        $out .= '<td>'.  htmlspecialchars($thisUser['groups']).'</td>'."\n";
+        $out .= '<td>'.  claro_htmlspecialchars($thisUser['groups']).'</td>'."\n";
     }
 
     if ($previousUser == $thisUser['user_id'])
@@ -593,15 +711,40 @@ foreach ( $userList as $thisUser )
             // Unregister user column
             . '<td>'
             ;
-
+        
         if ($thisUser['user_id'] != claro_get_current_user_id())
         {
-            $out .= '<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF']
-                . '?cmd=unregister&user_id=' . $thisUser['user_id'] )) . '&offset='.$offset . '" '
-                . 'onclick="return CLUSR.confirmation(\''.clean_str_for_javascript($thisUser['nom'].' '.$thisUser['prenom']).'\');">'
-                . '<img alt="' . get_lang('Unregister') . '" src="' . get_icon_url('unenroll') . '" />'
-                . '</a>'
-                ;
+            if ( (int)$thisUser['count_class_enrol'] > 0 )
+            {
+                $out .= '<a href="javascript:warnCannotDeleteClassStudent()">'
+                    . '<img alt="' . get_lang('class enrolment') . '" 
+                        title="'.get_lang('This student is enroled from a class and cannot be removed directly from the course. You have to delete the whole class instead').'" 
+                        src="' . get_icon_url('unenroll_disabled') . '" />'
+                    . '</a>'
+                    ;
+                
+                
+                if ( claro_is_platform_admin () )
+                {
+                    $out .= '&nbsp;<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF']
+                        . '?cmd=unregister&force=1&user_id=' . $thisUser['user_id'] )) . '&offset='.$offset . '" '
+                        . 'onclick="return CLUSR.confirmation(\''.clean_str_for_javascript($thisUser['nom'].' '.$thisUser['prenom']).'\');">'
+                        . '<img alt="' . get_lang('Force unenrolment') . '" 
+                            title="'.get_lang('Force unenrolment').'" 
+                            src="' . get_icon_url('unenroll') . '" />'
+                        . '</a>'
+                        ;
+            }
+            }
+            else
+            {
+                $out .= '<a href="'.claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF']
+                    . '?cmd=unregister&user_id=' . $thisUser['user_id'] )) . '&offset='.$offset . '" '
+                    . 'onclick="return CLUSR.confirmation(\''.clean_str_for_javascript($thisUser['nom'].' '.$thisUser['prenom']).'\');">'
+                    . '<img alt="' . get_lang('Unregister') . '" src="' . get_icon_url('unenroll') . '" />'
+                    . '</a>'
+                    ;
+            }
         }
         else
         {
@@ -644,6 +787,15 @@ foreach ( $userList as $thisUser )
         }
         
         $out .= '</td>' . "\n";
+        
+        if ( claro_is_platform_admin () )
+        {
+            $out .= '<td><a href="'.claro_htmlspecialchars(get_path('url')
+                . '/claroline/admin/admin_profile.php?uidToEdit=' . $thisUser['user_id'] ). '&cfrom=culist&cid='.  claro_get_current_course_id ().'&cidReset=true&cidReq=">'
+                . '<img alt="' . get_lang('User profile') . '" src="' . get_icon_url('usersetting') . '" />'
+                . '</a></td>'
+                ;
+        }
         
     }  // END - is_allowedToEdit
 

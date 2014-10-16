@@ -1,4 +1,4 @@
-<?php // $Id: config_edit.php 13348 2011-07-18 13:58:28Z abourguignon $
+<?php // $Id: config_edit.php 14587 2013-11-08 12:47:41Z zefredz $
 
 /**
  * CLAROLINE
@@ -40,7 +40,7 @@
  *   and their values.
  * - this script should continue to generate a def conf file.
  *
- * @version     $Revision: 13348 $
+ * @version     $Revision: 14587 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/config_def/
@@ -145,7 +145,8 @@ else
 
     if ( $config->is_modified() )
     {
-        $dialogBox->warning( 'Note. This configuration file has been manually changed. The system will try to retrieve all the configuration values, but it can not guarantee to retrieve additional settings manually inserted');
+        $dialogBox->warning( 
+            get_lang('Note. This configuration file has been manually changed. The system will try to retrieve all the configuration values, but it can not guarantee to retrieve additional settings manually inserted'));
     }
 
 }

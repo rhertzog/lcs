@@ -1,4 +1,4 @@
-<!-- $Id: user_profilebox.tpl.php 14314 2012-11-07 09:09:19Z zefredz $ -->
+<!-- $Id: user_profilebox.tpl.php 14448 2013-05-15 08:47:35Z zefredz $ -->
 
 <div id="userProfileBox">
     <h3 class="blockHeader">
@@ -52,12 +52,28 @@
             
             <?php endif; ?>
             
+            <?php if( $this->userId == claro_get_current_user_id() || claro_is_platform_admin () ): ?>
             <p>
+                
+                <?php if( $this->userId == claro_get_current_user_id() ): ?>
+                
                 <a class="claroCmd" href="<?php  echo get_path('clarolineRepositoryWeb'); ?>auth/profile.php">
                 <img src="<?php echo get_icon_url('edit'); ?>" alt="<?php echo get_lang('Manage my account'); ?>" />
                 <?php echo get_lang('Manage my account'); ?>
                 </a>
+                
+                <?php else: ?>
+                
+                <a class="claroCmd" href="<?php  echo get_path('clarolineRepositoryWeb'); ?>admin/admin_profile.php?uidToEdit=<?php echo $this->userId; ?>">
+                <img src="<?php echo get_icon_url('edit'); ?>" alt="<?php echo get_lang('User settings'); ?>" />
+                <?php echo get_lang('User settings'); ?>
+                </a>
+                
+                <?php endif; ?>
+                
             </p>
+            <?php endif; ?>
+            
         </div>
     </div>
     

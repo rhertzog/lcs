@@ -1,9 +1,9 @@
-<?php // $Id: index.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: index.php 14525 2013-08-21 07:05:21Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14525 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  *              old version : http://cvs.claroline.net/cgi-bin/viewcvs.cgi/claroline/claroline/course_home/course_home.php
@@ -31,6 +31,7 @@ $portletClass   = (isset($portletLabel) ? ($portletLabel.'_portlet') : null);
 require '../inc/claro_init_global.inc.php';
 
 require_once get_path('incRepositorySys') . '/lib/claroCourse.class.php';
+require_once get_path('incRepositorySys') . '/lib/users/userlist.lib.php';
 
 require_once dirname(__FILE__) . '/coursehomepage/lib/coursehomepageportlet.class.php';
 require_once dirname(__FILE__) . '/coursehomepage/lib/coursehomepageportletiterator.class.php';
@@ -233,12 +234,17 @@ if (claro_is_allowed_to_edit())
             array('%userLimit' => $thisCourse->userLimit)));
     }
     
-    if ($thisCourse->registration == 'validation')
+    if ( $thisCourse->registration == 'validation' )
     {
-        $usersPanelUrl = claro_htmlspecialchars(Url::Contextualize( $toolRepository . 'user/user.php' ));
-        $dialogBox->warning(
-            get_lang('You have to validate users to give them access to this course through the <a href="%url">course user list</a>', array('%url' => $usersPanelUrl))
-        );
+        $courseUserList = new Claro_CourseUserList(claro_get_current_course_id());
+        
+        if ( $courseUserList->has_registrationPending () )
+        {
+            $usersPanelUrl = claro_htmlspecialchars(Url::Contextualize( $toolRepository . 'user/user.php' ));
+            $dialogBox->warning(
+                get_lang('You have to validate users to give them access to this course through the <a href="%url">course user list</a>', array('%url' => $usersPanelUrl))
+            );
+        }
     }
 }
 

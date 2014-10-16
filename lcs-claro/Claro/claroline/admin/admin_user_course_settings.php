@@ -1,11 +1,11 @@
-<?php // $Id: admin_user_course_settings.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: admin_user_course_settings.php 14576 2013-11-07 09:27:59Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This tool edit status of user in a course.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14576 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
@@ -42,12 +42,20 @@ ClaroBreadCrumbs::getInstance()->prepend( get_lang('Administration'), get_path('
 
 if ( isset($_REQUEST['uidToEdit']) && isset($_REQUEST['cidToEdit']) )
 {
-    $uidToEdit = $_REQUEST['uidToEdit'];
-    $cidToEdit = $_REQUEST['cidToEdit'];
+    $uidToEdit = (int) $_REQUEST['uidToEdit'];
+    $cidToEdit = strip_tags( $_REQUEST['cidToEdit'] );
 }
 else
 {
     claro_die('Missing parameters');
+}
+
+$courseData = claro_get_course_data($cidToEdit);
+
+if ( ! $courseData )
+{
+    unset($_REQUEST['cidToEdit']);
+    claro_die( 'ERROR : COURSE NOT FOUND!!!' );
 }
 
 $dialogBox = new DialogBox();
@@ -122,9 +130,7 @@ if ( isset($uidToEdit) )
 //------------------------------------
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to unregister %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure you want to unregister %name ?');
 
 JavascriptLoader::getInstance()->load('admin');
 
@@ -143,7 +149,7 @@ $cmd_menu[] = '<a class="claroCmd" href="adminuserunregistered.php'
 .             '?cidToEdit=' . $cidToEdit
 .             '&amp;cmd=UnReg'
 .             '&amp;uidToEdit=' . $uidToEdit . '" '
-.             ' onclick="return ADMINconfirmationUnReg(\'' . clean_str_for_javascript(claro_htmlspecialchars($courseUserProperties['firstName']) . ' ' . claro_htmlspecialchars($courseUserProperties['lastName'])) . '\');">'
+.             ' onclick="return ADMIN.confirmationUnReg(\'' . clean_str_for_javascript(claro_htmlspecialchars($courseUserProperties['firstName']) . ' ' . claro_htmlspecialchars($courseUserProperties['lastName'])) . '\');">'
 .             get_lang('Unsubscribe')
 .             '</a>'
 ;

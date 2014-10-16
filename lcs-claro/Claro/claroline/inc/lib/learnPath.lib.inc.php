@@ -1,4 +1,4 @@
-<?php // $Id: learnPath.lib.inc.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: learnPath.lib.inc.php 14400 2013-02-15 14:05:59Z kitan1982 $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * This functions library is used by most of the pages of the learning path tool.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14400 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Piraux Sébastien <pir@cerdecam.be>
@@ -337,6 +337,108 @@ function nameBox($type, $mode)
         }
         
         $out .=    '</h4>'."\n\n";
+    }
+
+    return $out;
+}
+
+/**
+ * This function is used to display the default time associated to a DOCUMENT module
+ * 
+ * @param string $mode display(DISPLAY_) or update(UPDATE_) mode
+ * @author Anh Thao PHAM <anhthao.pham@claroline.net>
+ */
+function documentDefaultTimeBox( $mode )
+{
+    $tbl = claro_sql_get_course_tbl();
+    $tblModule = $tbl['lp_module'];
+    
+    $out = '';
+    
+    // globals
+    global $is_allowedToEdit;
+
+    $dsp = false;
+    $colName = 'launch_data';
+    $whereCond = '`module_id` = ' . (int) $_SESSION['module_id'];
+    
+    // update mode
+    if ( $mode == UPDATE_ && $is_allowedToEdit )
+    {
+        if ( isset( $_POST['newTime'] ) )
+        {
+            $sql = "SELECT `" . $colName . "`
+                      FROM `" . $tblModule . "`
+                     WHERE `" . $colName . "` = '" . claro_sql_escape( $_POST['newTime'] ) . "'
+                       AND " . $whereCond;
+            $num = claro_sql_query_get_single_value($sql);
+
+            if ($num == 0 && ( preg_match( '/^\d+$/', $_POST['newTime'] ) || empty( $_POST['newTime'] ) ) )  // default time doesn't already exists
+            {
+                $newTimeValue = '';
+                if( preg_match( '/^\d+$/', $_POST['newTime'] ) )
+                {
+                    $newTimeValue = (int)$_POST['newTime'];
+                }
+                $sql = "UPDATE `" . $tblModule . "`
+                           SET `" . $colName . "` = '" . claro_sql_escape( $newTimeValue ) ."'
+                         WHERE " . $whereCond;
+                claro_sql_query( $sql );
+                $dsp = true;
+            }
+            else
+            {
+                $dsp = true;
+            }
+        }
+        else // display form
+        {
+            $out .= '<b>' . get_lang( 'Document default time' ) . '</b><br />';
+            
+            $sql = "SELECT `" . $colName . "`
+                    FROM `" . $tblModule . "`
+                    WHERE " . $whereCond;
+
+            $oldDefaultTime = claro_sql_query_get_single_value( $sql );
+
+            $out .= '<form method="post" action="' . $_SERVER['PHP_SELF'].'">' . "\n"
+            .    '<input type="text" name="newTime" size="8" maxlength="20" value="'.claro_htmlspecialchars( claro_utf8_decode( $oldDefaultTime, get_conf( 'charset' ) ) ).'" />'
+            .    ' ' . get_lang( 'minute(s)' ) . '<br />' . "\n"
+            .    '<input type="hidden" name="cmd" value="updateDefaultTime" />' ."\n"
+            .    '<input type="submit" value="' . get_lang('Ok') . '" />' . "\n"
+            .    '<br />' . "\n"
+            .    '</form>' . "<br />"
+            ;
+        }
+
+    }
+
+    // display if display mode or asked by the update
+    if ( $mode == DISPLAY_ || $dsp == true )
+    {
+        $sql = "SELECT `" . $colName . "`
+                  FROM `" . $tblModule . "`
+                 WHERE " . $whereCond;
+
+        $currentDefaultTime = claro_sql_query_get_single_value( $sql );
+        if( is_null( $currentDefaultTime ) || trim( $currentDefaultTime ) == '' )
+        {
+            $currentDefaultTime = get_conf( 'cllnp_documentDefaultTime' );
+        }
+        
+        $out .= '<b>' . get_lang( 'Document default time' ) . '</b><br />';
+        
+        $out .= claro_utf8_decode( $currentDefaultTime, get_conf( 'charset' ) ) . ' ' . get_lang( 'minute(s)' );
+
+        if ( $is_allowedToEdit )
+        {
+            $out .= '<br /><a href="' . $_SERVER['PHP_SELF'] . '?cmd=updateDefaultTime">'
+            .    '<img src="' . get_icon_url('edit') . '" alt="' . get_lang('Modify') . '" />'
+            .    '</a>' . "\n"
+            ;
+        }
+        
+        $out .= "<br /><br />";
     }
 
     return $out;

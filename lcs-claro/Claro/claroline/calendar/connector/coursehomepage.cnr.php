@@ -1,4 +1,4 @@
-<?php // $Id: coursehomepage.cnr.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: coursehomepage.cnr.php 14461 2013-05-29 09:34:33Z jrm_ $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Course home page: MyCalendar portlet
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14461 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLCHP
@@ -25,7 +25,8 @@ class CLCAL_Portlet extends CourseHomePagePortlet
         $toolId = get_tool_id_from_module_label('CLCAL');
         
         if ( is_module_installed_in_course ( 'CLCAL', claro_get_current_course_id () ) 
-            && is_tool_activated_in_course( $toolId, claro_get_current_course_id () ) )
+            && is_tool_activated_in_course( $toolId, claro_get_current_course_id () )
+            && claro_is_tool_visible( $toolId, claro_get_current_course_id () ) )
         {
             $output = '<div id="portletMycalendar">' . "\n"
                 . '<img src="'.get_icon_url('loading').'" alt="'.get_lang('Loading').'" />' . "\n"

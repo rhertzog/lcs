@@ -1,4 +1,4 @@
-<?php // $Id: module.lib.php 14396 2013-02-13 20:36:29Z zefredz $
+<?php // $Id: module.lib.php 14461 2013-05-29 09:34:33Z jrm_ $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -11,7 +11,7 @@ if ( count( get_included_files() ) == 1 )
  * This lib make the interface with kernel task and module extention for theses
  * task. It also provide some backward compatibility functions.
  *
- * @version     $Revision: 14396 $
+ * @version     $Revision: 14461 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
  *              version 2 or later
@@ -1271,4 +1271,32 @@ function get_module_list_by_type( $type, $onlyActivated = true )
         WHERE 
             M.`type` = ".Claroline::getDatabase()->quote($type)."
         {$activation}" );
+}
+
+/**
+ * Helper to set current module label and load config and language files
+ * @param string $moduleLabel
+ */
+function set_and_load_current_module( $moduleLabel )
+{
+    load_module_language($moduleLabel);
+    load_module_config($moduleLabel);
+    set_current_module_label($moduleLabel);
+}
+
+/**
+ * Get tool visibility for course when not in course context
+ * @param int $toolId
+ * @param string $courseCode
+ * @return bool
+ * @since Claroline 1.11.7
+ */
+function is_tool_visible_for_portlet( $toolId, $courseCode )
+{ 
+    $tbl_cdb_names = claro_sql_get_course_tbl(claro_get_course_db_name_glued($courseCode));
+    return (bool) Claroline::getDatabase()->query( 
+            "SELECT `visibility`
+               FROM `" . $tbl_cdb_names['tool'] . "`
+              WHERE `tool_id` = " . Claroline::getDatabase()->quote( $toolId ) )->fetch(Mysql_ResultSet::FETCH_VALUE); ;
+   
 }

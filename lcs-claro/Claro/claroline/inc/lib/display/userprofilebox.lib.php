@@ -1,4 +1,4 @@
-<?php // $Id: userprofilebox.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: userprofilebox.lib.php 14448 2013-05-15 08:47:35Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -9,7 +9,7 @@ FromKernel::uses('user.lib');
  *
  * User account summary.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14448 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claroline team <info@claroline.net>
@@ -41,11 +41,13 @@ class UserProfileBox implements Display
     public function render()
     {
         CssLoader::getInstance()->load( 'profile', 'all' );
+        
         load_kernel_config('user_profile');
         
         $userData = user_get_properties( $this->userId );
         
         $pictureUrl = '';
+        
         if ( get_conf('allow_profile_picture') )
         {
             $picturePath = user_get_picture_path( $userData );
@@ -70,6 +72,7 @@ class UserProfileBox implements Display
         $dock = new ClaroDock('userProfileBox');
         
         $template = new CoreTemplate('user_profilebox.tpl.php');
+        $template->assign('userId', $this->userId);
         $template->assign('pictureUrl', $pictureUrl);
         $template->assign('userFullName', $userFullName);
         $template->assign('dock', $dock);

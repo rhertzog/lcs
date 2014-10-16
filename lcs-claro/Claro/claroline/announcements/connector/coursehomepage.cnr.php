@@ -1,4 +1,4 @@
-<?php // $Id: coursehomepage.cnr.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: coursehomepage.cnr.php 14461 2013-05-29 09:34:33Z jrm_ $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Course home page: Announcements portlet
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14461 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLCHP
@@ -29,7 +29,8 @@ class CLANN_Portlet extends CourseHomePagePortlet
         $toolId = get_tool_id_from_module_label('CLANN');
         
         if ( is_module_installed_in_course ( 'CLANN', claro_get_current_course_id () ) 
-            && is_tool_activated_in_course( $toolId, claro_get_current_course_id () ) )
+            && is_tool_activated_in_course( $toolId, claro_get_current_course_id () )
+            && claro_is_tool_visible( $toolId, claro_get_current_course_id () ) )
         {   
             $announcementList = announcement_get_course_item_list_portlet($course);
 

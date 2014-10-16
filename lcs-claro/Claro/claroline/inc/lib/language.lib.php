@@ -1,11 +1,11 @@
-<?php // $Id: language.lib.php 14317 2012-11-09 07:47:35Z zefredz $
+<?php // $Id: language.lib.php 14452 2013-05-15 13:20:33Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Language library.  Contains function to manage l10n.
  *
- * @version     $Revision: 14317 $
+ * @version     $Revision: 14452 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/CLUSR
@@ -669,52 +669,84 @@ function claro_utf8_encode_array( &$var )
 
 /*
  * Usage :
+ * =======
+ * 
+ * In PHP :
+ * --------
  *
- * $jslang = new JavascriptLanguage;
- * $jslang->addLangVar('User list');
- * // ...
- * ClaroHeader::getInstance()->addInlineJavascript( $jslang->render() );
- * Claroline.getLang('User list');
+ *      JavascriptLanguage::getInstance()->addLangVar('User list');
+ *      // ...
+ * 
+ * In javascript :
+ * ---------------
+ * 
+ *      Claroline.getLang('User list');
 */
 class JavascriptLanguage
-{
-    protected $lang = array();
-
-    public function addLangVar( $langVar, $langValue = null )
+{    
+    private static $variables = array();
+    
+    public function addLangVar ( $varName, $varValue = null )
     {
-        if ( empty ($langValue ) )
-        {
-            $this->lang[$langVar] = get_lang($langVar);
-        }
-        else
-        {
-            $this->lang[$langVar] = $langValue;
-        }
-
-        return $this;
+        self::$variables[$varName] = $varValue ? $varValue : get_lang($varName);
     }
+    
+    protected function pack()
+    {
+        $pack = array();
+        
+        foreach ( self::$variables as $name => $translation )
+        {
+            $pack[] = '"' 
+                . str_replace( '"', '\\"', claro_htmlspecialchars( $name ) ) 
+                . '" : \'' 
+                . str_replace( "'", "\\'", claro_htmlspecialchars( $translation ) ) 
+                . '\''
+                ;
+        }
+        
+        return implode ( ",\n\t", $pack ) . "\n";
+    }
+    
+    public function buildJavascript()
+    {
+        return "
+<script type=\"text/javascript\">
+var __ = (function(){
 
+    var translation = {
+    " . $this->pack() . "
+    };
+
+    return function(string) {
+        return translation[string] || string;
+    };
+
+})();
+</script>
+            ";
+    }
+    
+    /**
+     * @deprecated called automatically by kernel
+     * @return string
+     */
     public function render()
     {
-        $out = '<script type="text/javascript">' . "\n";
-
-        $out .= "Claroline.setLangArray( {"."\n";
+        Console::debug( __CLASS__ . '::' . __FUNCTION__ . " is deprecated" );
         
-        $tmp = array();
-
-        foreach ( $this->lang as $langVar => $langValue )
+        return '';
+    }
+    
+    protected static $instance = false;
+    
+    public static function getInstance()
+    {
+        if ( ! self::$instance )
         {
-            $langVar = str_replace ("'", "\\'",$langVar);
-            $langValue = str_replace ("'", "\\'",$langValue);
-            $tmp[] = "'$langVar':'$langValue'";
+            self::$instance = new self();
         }
         
-        $out .= implode(",\n", $tmp );
-
-        $out .= "});\n"
-            . "</script>\n"
-            ;
-
-        return $out;
+        return self::$instance;
     }
 }

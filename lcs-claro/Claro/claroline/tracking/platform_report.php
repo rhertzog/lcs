@@ -1,9 +1,9 @@
-<?php // $Id: platform_report.php 13498 2011-09-01 11:19:18Z zefredz $
+<?php // $Id: platform_report.php 14464 2013-06-03 05:57:30Z dkp1060 $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 13498 $
+ * @version     $Revision: 14464 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Sebastien Piraux <seb@claroline.net>
  * @package     CLTRACK
@@ -236,7 +236,7 @@ $count = claro_sql_query_get_single_value($sql);
 $content .= '&nbsp;&nbsp;&nbsp;'.get_lang('Number of users').' : '.$count.'<br />'."\n";
 
 //--  number of users by course
-$sql = "SELECT C.`code`, count( CU.user_id ) as `nb`
+$sql = "SELECT CONCAT(C.`administrativeNumber`, ' - ', C.`intitule`) , count( CU.user_id ) as `nb`
             FROM `" . $tbl_course . "` C, `" . $tbl_rel_course_user . "` CU
             WHERE CU.`code_cours` = C.`code`
                 AND `code` IS NOT NULL

@@ -1,11 +1,11 @@
-<?php // $Id: admincourseusers.php 13386 2011-08-03 12:35:29Z abourguignon $
+<?php // $Id: admincourseusers.php 14546 2013-09-18 09:39:23Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users registered to a specific course.
  *
- * @version     $Revision: 13386 $
+ * @version     $Revision: 14546 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
@@ -68,7 +68,7 @@ if ( $cmd == 'unsub' )
 
 if ( $do == 'unsub' )
 {
-    if ( user_remove_from_course($_REQUEST['user_id'], $_REQUEST['cidToEdit'], true, true, false) )
+    if ( user_remove_from_course($_REQUEST['user_id'], $_REQUEST['cidToEdit'], true, true, null) )
     {
         $dialogBox->success( get_lang('The user has been successfully unregistered') );
     }
@@ -157,9 +157,7 @@ foreach($userList as $lineId => $user)
 
 // Prepare output
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to unregister %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure you want to unregister %name ?');
 
 JavascriptLoader::getInstance()->load('admin');
 

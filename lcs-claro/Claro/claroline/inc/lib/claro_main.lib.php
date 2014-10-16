@@ -1,4 +1,4 @@
-<?php // $Id: claro_main.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: claro_main.lib.php 14711 2014-02-14 14:24:31Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
 
@@ -8,7 +8,7 @@ if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
  * This lib contain many parts of frequently used function.
  * This is not a thematic lib
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14711 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
  *              version 2 or later
@@ -488,6 +488,7 @@ function claro_get_main_group_properties($courseId)
 
         $propertyList ['registrationAllowed'] =  isset( $tempList['self_registration'] ) && $tempList['self_registration'] == 1;
         $propertyList ['unregistrationAllowed'] =  isset($tempList['self_unregistration']) && $tempList['self_unregistration'] == 1;
+        $propertyList ['tutorRegistrationAllowed'] =  isset( $tempList['tutor_registration'] ) && $tempList['tutor_registration'] == 1;
         $propertyList ['private'            ] =  !isset( $tempList['private'] ) || $tempList['private']  == 1;
         $propertyList ['nbGroupPerUser'     ] =  isset( $tempList['nbGroupPerUser'] ) ? $tempList['nbGroupPerUser'] : 1;
 
@@ -1283,7 +1284,7 @@ function claro_html_tool_view_option($viewModeRequested = false)
     {
         case 'COURSE_ADMIN' :
 
-            $studentButton = '<a href="' . $url . $sep . 'viewMode=STUDENT">'
+            $studentButton = '<a href="' . claro_htmlspecialchars( Url::Contextualize($url . $sep . 'viewMode=STUDENT' ) ) . '">'
             .                get_lang('Student')
             .                '</a>'
             ;
@@ -1294,7 +1295,7 @@ function claro_html_tool_view_option($viewModeRequested = false)
         case 'STUDENT' :
 
             $studentButton     = '<b class="userName">'.get_lang('Student').'</b>';
-            $courseAdminButton = '<a href="' . $url . $sep . 'viewMode=COURSE_ADMIN">'
+            $courseAdminButton = '<a href="'.claro_htmlspecialchars( Url::Contextualize($url . $sep . 'viewMode=COURSE_ADMIN' ) ) . '">'
             . get_lang('Course manager')
             . '</a>';
             break;
@@ -1580,20 +1581,16 @@ function claro_get_conf_repository($context=array())
 
 function get_conf($param, $default = null)
 {
-    if (CLARO_DEBUG_MODE)
+    /* if ( ! isset($GLOBALS['_conf'][$param]) && ! isset($GLOBALS[$param]) && !defined($param))
     {
+        static $paramList = array();
 
-        if ( ! isset($GLOBALS['_conf'][$param]) && ! isset($GLOBALS[$param]) && !defined($param))
+        if (!in_array($param,$paramList))
         {
-            static $paramList = array();
-
-            if (!in_array($param,$paramList))
-            {
-                $paramList[]=$param;
-                pushClaroMessage( __FUNCTION__ .  ' : ' . claro_htmlspecialchars($param) . ' use but not set. use default :' . var_export($default,1),'warning');
-            }
+            $paramList[]=$param;
+            pushClaroMessage( __FUNCTION__ .  ' : ' . claro_htmlspecialchars($param) . ' use but not set. use default :' . var_export($default,1),'debug');
         }
-    }
+    } */
 
     if     ( isset($GLOBALS['_conf'][$param]) )  return $GLOBALS['_conf'][$param];
     elseif ( isset($GLOBALS[$param]) )           return $GLOBALS[$param];
@@ -1618,6 +1615,12 @@ function claro_die($message)
     $dialogBox->error( $message );
     
     Claroline::getInstance()->display->setContent( $dialogBox->render() );
+    
+    if ( claro_debug_mode () )
+    {
+        
+        pushClaroMessage(  var_export(  debug_backtrace (), true ), 'debug' );
+    }
     
     echo Claroline::getInstance()->display->render();
 
@@ -2084,4 +2087,61 @@ function claro_is_group_required()
     }
 
     return false;
+}
+
+/**
+ * Secure a backlink url by replacing it with a platform url, when the given 
+ * url is not from the platform
+ * @param string $url
+ * @return string
+ */
+function secure_backlink_url( $url )
+{
+    // cleanup url of potential html injection
+    $url = strip_tags($url);
+    
+    // if url does not start with urlAppend or rootWeb, we need to "secure" it
+    if ( !preg_match( "!^".get_path('url')."!", $url ) 
+        && !preg_match (  "!^".get_path('rootWeb')."!", $url )
+        && !preg_match ( "!^".  str_replace ( 'http://', 'https://', get_path('rootWeb') )."!", $url )
+        && !preg_match ( "!^".  str_replace ( 'http://', '', get_path('rootWeb') )."!", $url )
+    )
+    {
+        if ( stristr ( $_SERVER['HTTP_HOST'], ':' ) )
+        {
+            $http_hostArr = explode(":", $_SERVER['HTTP_HOST']);
+            $http_host = $http_hostArr[0];
+        }
+        else
+        {
+            $http_host = $_SERVER['HTTP_HOST'];
+        }
+        
+        // if url starts with HTTP_HOST -> OK
+        if( stristr( $url, $http_host ) )
+        {
+            return $url;
+        }
+        // else replace with context root url
+        else
+        {
+            if ( isset( $GLOBALS['tlabelReq'] ) )
+            {
+                return Url::Contextualize(get_module_entry_url($GLOBALS['tlabelReq']));
+            }
+            elseif ( claro_is_in_a_course () )
+            {
+                return get_path('clarolineRepositoryWeb').'course/index.php?cid='.  claro_get_current_course_id ();
+            }
+            else
+            {
+                return get_path('url');
+            }
+        }
+    }
+    // else url is OK -> return it
+    else
+    {
+        return $url;
+    }
 }

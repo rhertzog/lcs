@@ -1,11 +1,11 @@
-<?php // $Id: profile_list.php 14147 2012-05-10 06:35:07Z zefredz $
+<?php // $Id: profile_list.php 14576 2013-11-07 09:27:59Z zefredz $
 
 /**
  * CLAROLINE
  *
  * List profiles available on the platform.
  *
- * @version     $Revision: 14147 $
+ * @version     $Revision: 14576 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -107,7 +107,7 @@ $sql = " SELECT profile_id as id, name, description, locked, required
          FROM `" . $tblProfile . "`
          WHERE type = 'COURSE' ";
 
-$offset = (isset($_REQUEST['offset']) && !empty($_REQUEST['offset']) ) ? $_REQUEST['offset'] : 0;
+$offset = (isset($_REQUEST['offset']) && !empty($_REQUEST['offset']) ) ? (int) $_REQUEST['offset'] : 0;
 $profilePager = new claro_sql_pager($sql,$offset, $itemPerPage);
 $profileList = $profilePager->get_result_list();
 

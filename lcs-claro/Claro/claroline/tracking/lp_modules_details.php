@@ -1,9 +1,9 @@
-<?php  // $Id: lp_modules_details.php 14214 2012-07-24 12:16:59Z ffervaille $
+<?php  // $Id: lp_modules_details.php 14403 2013-02-18 08:18:35Z kitan1982 $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14214 $
+ * @version     $Revision: 14403 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -224,7 +224,7 @@ if($is_allowedToTrack && get_conf('is_trackingEnabled'))
               $total_time = preg_replace("/\.[0-9]{0,2}/", "", $module['total_time']);
               $global_time = addScormTime($global_time,$total_time);
           }
-          elseif($module['contentType'] == CTLABEL_ || $module['contentType'] == CTEXERCISE_)
+          elseif($module['contentType'] == CTLABEL_ || $module['contentType'] == CTEXERCISE_ || $module['contentType'] == CTDOCUMENT_)
           {
               $session_time = $module['session_time'];
               $total_time = $module['total_time'];

@@ -1,11 +1,11 @@
-<?php // $Id: coursesearchbox.class.php 13876 2011-12-08 17:23:18Z abourguignon $
+<?php // $Id: coursesearchbox.class.php 14576 2013-11-07 09:27:59Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Course search box Class.
  *
- * @version     $Revision: 13876 $
+ * @version     $Revision: 14576 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -56,7 +56,7 @@ class CourseSearchBox implements Display
         if (isset($_REQUEST['coursesearchbox_keyword']))
         {
             // Note: $keyword get secured later, in the SQL request
-            $this->keyword = $_REQUEST['coursesearchbox_keyword'];
+            $this->keyword = preg_replace( "/[^0-9\w _.]/", ' ', $_REQUEST['coursesearchbox_keyword'] );
         }
         else
         {

@@ -1,11 +1,24 @@
-<?php // $Id: claro_init_global.inc.php 14353 2013-01-21 09:30:26Z zefredz $
+<?php // $Id: claro_init_global.inc.php 14721 2014-02-18 07:01:21Z zefredz $
+
+$tz = ini_get('date.timezone');
+
+if ( empty( $tz ) )
+{
+    ini_set('date.timezone','UTC');
+    date_default_timezone_set('UTC');
+}
+else
+{
+    ini_set('date.timezone',date_default_timezone_get());
+    date_default_timezone_set(date_default_timezone_get());
+}
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14353 $
+ * @version     $Revision: 14721 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLKERNEL
@@ -25,11 +38,7 @@ define('CLARO_INCLUDE_ALLOWED', true);
 // Determine the directory path where this current file lies
 // This path will be useful to include the other intialisation files
 
-require_once  dirname(__FILE__) . '/lib/claro_main.lib.php';
-
-$_SERVER['PHP_SELF'] = php_self();
-
-$mainConfigurationFile = dirname(__FILE__) . '/../../platform/conf/claro_main.conf.php';
+$mainConfigurationFile = __DIR__ . '/../../platform/conf/claro_main.conf.php';
 
 if ( file_exists($mainConfigurationFile) )
 {
@@ -46,10 +55,15 @@ else
        .'</center>');
 }
 
-if ( get_conf('clmain_serverTimezone','') )
+if ( !empty($GLOBALS['clmain_serverTimezone']) )
 {
-    date_default_timezone_set(get_conf('clmain_serverTimezone'));
+    ini_set('date.timezone', $GLOBALS['clmain_serverTimezone']);
+    date_default_timezone_set($GLOBALS['clmain_serverTimezone']);
 }
+
+require_once  __DIR__ . '/lib/claro_main.lib.php';
+
+$_SERVER['PHP_SELF'] = php_self();
 
 // Most PHP package has increase the error reporting.
 // The line below set the error reporting to the most fitting one for Claroline
@@ -69,15 +83,15 @@ if( claro_debug_mode() )
   Various Path Init
   ----------------------------------------------------------------------*/
 
-$includePath            = get_path('incRepositorySys');
-$clarolineRepositorySys = get_path('clarolineRepositorySys');
-$clarolineRepositoryWeb = get_path('clarolineRepositoryWeb');
-$coursesRepositorySys   = get_path('coursesRepositorySys');
-$coursesRepositoryWeb   = get_path('coursesRepositoryWeb');
-$rootAdminWeb           = get_path('rootAdminWeb');
-$imgRepositoryAppend    = get_path('imgRepositoryAppend');
-$imgRepositorySys       = get_path('imgRepositorySys');
-$imgRepositoryWeb       = get_path('imgRepositoryWeb');
+$GLOBALS['includePath']            = get_path('incRepositorySys');
+$GLOBALS['clarolineRepositorySys'] = get_path('clarolineRepositorySys');
+$GLOBALS['clarolineRepositoryWeb'] = get_path('clarolineRepositoryWeb');
+$GLOBALS['coursesRepositorySys']   = get_path('coursesRepositorySys');
+$GLOBALS['coursesRepositoryWeb']   = get_path('coursesRepositoryWeb');
+$GLOBALS['rootAdminWeb']           = get_path('rootAdminWeb');
+$GLOBALS['imgRepositoryAppend']    = get_path('imgRepositoryAppend');
+$GLOBALS['imgRepositorySys']       = get_path('imgRepositorySys');
+$GLOBALS['imgRepositoryWeb']       = get_path('imgRepositoryWeb');
 
 /*
  * Path to the PEAR library. PEAR stands for "PHP Extension and Application
@@ -103,9 +117,9 @@ define('CLARO_FILE_PERMISSIONS', 0777);
 
 // Web server
 
-$is_IIS = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
-$is_Apache = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
-$is_Apache2 = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache/2') ? 1 : 0;
+$GLOBALS['is_IIS'] = strstr($_SERVER['SERVER_SOFTWARE'], 'Microsoft-IIS') ? 1 : 0;
+$GLOBALS['is_Apache'] = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache') ? 1 : 0;
+$GLOBALS['is_Apache2'] = strstr($_SERVER['SERVER_SOFTWARE'], 'Apache/2') ? 1 : 0;
 
 // Compatibility with IIS web server - REQUEST_URI
 
@@ -178,9 +192,18 @@ try
 }
 catch ( Exception $e )
 {
-    Console::error( $e->__toString() );
+    if ( claro_debug_mode() ) 
+    {
+        $details = '<pre>' . var_export( $e->__toString(), true ) . '</pre>';
+    }
+    else
+    {
+        $details = '';
+    }
+    
     die ('<center>'
         .$e->getMessage()
+        . $details
         .'</center>');
 }
 
@@ -272,13 +295,27 @@ if ( isset( $tlabelReq ) && !empty( $tlabelReq ) )
     
     if ( get_module_data( $tlabelReq, 'type' ) == 'admin' && ! claro_is_platform_admin() )
     {
-        claro_die(get_lang('Not allowed'));
+        if ( !claro_is_user_authenticated() )
+        {
+            claro_disp_auth_form();
+        }
+        else
+        {
+            claro_die(get_lang('Not allowed'));
+        }
     }
     
     if ( get_module_data( $tlabelReq, 'type' ) == 'crsmanage' 
         && ! ( claro_is_course_manager() || claro_is_platform_admin() ) )
     {
-        claro_die(get_lang('Not allowed'));
+        if ( !claro_is_user_authenticated() )
+        {
+            claro_disp_auth_form(true);
+        }
+        else
+        {
+            claro_die(get_lang('Not allowed'));
+        }
     }
     
     if ( $tlabelReq !== 'CLWRK' && $tlabelReq !== 'CLGRP' && ! claro_is_module_allowed()
@@ -332,8 +369,8 @@ else
 if ( isset($_REQUEST['embedded']) && $_REQUEST['embedded'] == 'true' )
 {
     // old school method
-    $hide_banner = true;
-    $hide_footer = true;
+    $GLOBALS['hide_banner'] = true;
+    $GLOBALS['hide_footer'] = true;
     
     // fashion victim method
     $claroline->setDisplayType(Claroline::FRAME);
@@ -343,8 +380,8 @@ if ( isset($_REQUEST['embedded']) && $_REQUEST['embedded'] == 'true' )
   ----------------------------------------------------------------------*/
 
 // for backward compatibility
-$eventNotifier = $claroline->notifier;
-$claro_notifier = $claroline->notification;
+$GLOBALS['eventNotifier'] = $claroline->notifier;
+$GLOBALS['claro_notifier'] = $claroline->notification;
 
 
 // Register listener in the event manager for the NOTIFICATION system :
@@ -428,7 +465,7 @@ if ( claro_is_user_authenticated() )
 {
     if ( empty( $_SESSION['csrf_token'] ) || !isset( $_SESSION['csrf_token'] ) )
     {
-        $_SESSION['csrf_token'] = strrev(md5(time())); //set a token with a reverse string and md5 encryption of the user's password
+        $_SESSION['csrf_token'] = strrev(md5(time()));
     }
     
     if ( defined('CSRF_PROTECTED') && CSRF_PROTECTED )
@@ -476,9 +513,16 @@ if ( isset($_POST['claroFormId']) )
  ----------------------------------------------------------------------*/
 
 JavascriptLoader::getInstance()->load('jquery');
+
+if ( claro_debug_mode() )
+{
+    JavascriptLoader::getInstance()->load('jquery-migrate');
+}
+
 JavascriptLoader::getInstance()->load('jquery.qtip');
 JavascriptLoader::getInstance()->load('claroline');
 JavascriptLoader::getInstance()->load('claroline.ui');
+
 // add other default platform javascript here
 
 // Load course home page javascript
@@ -559,3 +603,70 @@ if ( !claro_is_platform_admin () )
         claro_die( get_lang('This course is not available anymore, please contact the platform administrator.') );
     }
 }
+
+// post kernel access check
+
+if ( claro_is_in_a_course() )
+{
+    if ( !( 
+        basename ( php_self () ) == 'courses.php' 
+        && isset($_REQUEST['cmd']) 
+        && $_REQUEST['cmd'] == 'exReg' 
+    ) )
+    {
+        if ( !claro_is_course_allowed() ) 
+        {
+            if ( !claro_is_user_authenticated() ) 
+            {
+                claro_disp_auth_form();
+            }
+            else
+            {
+                if ( claro_get_current_course_data('access') == 'private' && !claro_is_course_member () )
+                {
+                    claro_die(get_lang("You have to be enroled to this course to access its contents") 
+                        . '<br /><a href="'
+                        . claro_htmlspecialchars( get_path('clarolineRepositoryWeb')
+                            . 'auth/courses.php?cmd=exReg&course='
+                            . claro_get_current_course_id() )
+                        . '">'
+                        . claro_html_icon( 'enroll' ) . ' '
+                        . '<b>' . get_lang('Enrolment') . '</b>'
+                        . '</a>'
+                    );
+                }
+                else
+                {
+                    claro_die(get_lang("Not allowed!"));
+                }
+            }
+        }
+    }
+}
+
+// group_space.php?registration=1&selfReg=1
+
+if ( claro_is_in_a_group() )
+{
+    if ( !( 
+        basename ( php_self () ) == 'group_space.php' 
+        && isset($_REQUEST['registration']) 
+        && $_REQUEST['registration'] == '1' 
+    ) )
+    {
+        if (! claro_is_group_allowed() )
+        { 
+            if ( !claro_is_user_authenticated() ) 
+            {
+                claro_disp_auth_form();
+            }
+            else
+            {
+                claro_die(get_lang("Not allowed!"));
+            }
+        }
+    }
+}
+
+// FORCE reloading current module translation here
+language::load_module_translation();

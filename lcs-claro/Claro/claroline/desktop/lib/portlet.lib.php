@@ -1,4 +1,4 @@
-<?php // $Id: portlet.lib.php 13923 2012-01-09 13:09:32Z abourguignon $
+<?php // $Id: portlet.lib.php 14466 2013-06-10 08:17:34Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -9,7 +9,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  *
  * User desktop portlet classes.
  *
- * @version     $Revision: 13923 $
+ * @version     $Revision: 14466 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     DESKTOP
@@ -110,6 +110,11 @@ class PortletList
     // save
     public function addPortlet( $label, $name, $rank = null, $visible = true )
     {
+        if ( Claroline::getDatabase()->query("SELECT `label` FROM `{$this->tblDesktopPortlet}` WHERE `label` = '" . claro_sql_escape($label) . "'")->numRows() )
+        {
+            return false;
+        }
+        
         $sql = "SELECT MAX(rank) FROM  `" . $this->tblDesktopPortlet . "`";
         $maxRank = claro_sql_query_get_single_value($sql);
         

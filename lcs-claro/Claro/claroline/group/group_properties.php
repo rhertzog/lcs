@@ -1,9 +1,9 @@
-<?php // $Id: group_properties.php 14080 2012-03-21 07:57:25Z zefredz $
+<?php // $Id: group_properties.php 14429 2013-04-23 10:03:14Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14080 $
+ * @version     $Revision: 14429 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLGRP
@@ -52,6 +52,11 @@ $tpl->assign( 'registrationAllowedInGroup', $_groupProperties ['registrationAllo
 $tpl->assign( 'unregistrationAllowedInGroup',
     isset( $_groupProperties ['unregistrationAllowed'] )
     ? $_groupProperties ['unregistrationAllowed']
+    : false
+);
+$tpl->assign( 'tutorRegistrationAllowedInGroup',
+    isset( $_groupProperties ['tutorRegistrationAllowed'] )
+    ? $_groupProperties ['tutorRegistrationAllowed']
     : false
 );
 $tpl->assign( 'groupPrivate', $_groupProperties ['private'] );

@@ -1,4 +1,4 @@
-<?php // $Id: html.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: html.lib.php 14642 2014-01-20 07:56:18Z zefredz $
 
 if ( count( get_included_files() ) == 1 )
 {
@@ -11,7 +11,7 @@ if ( count( get_included_files() ) == 1 )
  * This lib provide html stream for various
  * uniformised output.
  *
- * @version     1.9 $Revision: 14314 $
+ * @version     1.9 $Revision: 14642 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      see 'credits' file
@@ -199,6 +199,7 @@ function claro_html_link($url,$label,$attributeList=array())
 */
 function claro_html_button($url, $text, $confirmMessage = '')
 {
+    $url = secure_backlink_url($url);
 
     if ($confirmMessage != '')
     {
@@ -557,7 +558,7 @@ function claro_html_textarea_editor($name, $content = '', $rows=20, $cols=80, $o
         .'rows="'.$rows.'" '
         .'cols="'.$cols.'" '
         .$optAttrib.' >'
-        ."\n".claro_htmlspecialchars($content)."\n"
+        .claro_htmlspecialchars($content)
         .'</textarea>'."\n";
     }
 
@@ -1011,6 +1012,14 @@ class claro_datagrid
  */
 function claro_disp_auth_form($cidRequired = false)
 {
+    if ( isset($_SESSION['login_already_claimed']) && $_SESSION['login_already_claimed'] === true )
+    {
+        $_SESSION['login_already_claimed'] = false;
+        return;
+    }
+    
+    $_SESSION['login_already_claimed'] = true;
+    
     // TODO check if it does not break the CAS mechanism
     if( get_conf('claro_secureLogin', false) )
     {

@@ -1,4 +1,4 @@
-<?php // $Id: install.lib.inc.php 13348 2011-07-18 13:58:28Z abourguignon $
+<?php // $Id: install.lib.inc.php 14712 2014-02-17 08:30:15Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
 
@@ -7,7 +7,7 @@ if ( count( get_included_files() ) == 1 ) die( basename(__FILE__) );
  *
  * This lib prupose function use by installer.
  *
- * @version     $Revision: 13348 $
+ * @version     $Revision: 14712 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Install
@@ -243,4 +243,21 @@ function displayDbError( $query, $error, $errno )
         . '<hr size="1" noshade>';
         
     return true;
+}
+
+function get_timezone_list ()
+{
+    $timezone_identifiers = DateTimeZone::listIdentifiers ();
+
+    foreach ( $timezone_identifiers as $val )
+    {
+        $atz   = new DateTimeZone ( $val );
+        $aDate = new DateTime ( "now", $atz );
+        $timeArray[ "$val" ] = $val;
+    }
+
+    asort ( $timeArray );
+
+    return $timeArray;
+    
 }

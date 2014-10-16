@@ -1,11 +1,11 @@
-<?php // $Id: class.wikipage.php 14170 2012-06-07 09:35:35Z zefredz $
+<?php // $Id: class.wikipage.php 14581 2013-11-07 15:39:52Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE
  *
- * @version 1.11 $Revision: 14170 $
+ * @version 1.11 $Revision: 14581 $
  *
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
@@ -315,7 +315,7 @@ class WikiPage
             FROM 
                 `" . $this->config['tbl_wiki_pages'] . "`
             WHERE 
-                BINARY `title` = " . $this->con->quote($title) . "
+                `title` = " . $this->con->quote($title) . "
             AND 
                 `wiki_id` = " . $this->con->escape( $this->getWikiId() )
         )->numRows() > 0;
@@ -340,7 +340,7 @@ class WikiPage
                 `" . $this->config['tbl_wiki_pages'] . "` AS p, 
                 `" . $this->config['tbl_wiki_pages_content'] . "` AS c 
             WHERE 
-                BINARY p.`title` = " . $this->con->quote($title) . " 
+                p.`title` = " . $this->con->quote($title) . " 
             AND 
                 c.`id` = p.`last_version`
             AND 

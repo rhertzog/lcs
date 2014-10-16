@@ -1,8 +1,8 @@
-<?php // $Id: drivers.auth.conf.php.dist 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: drivers.auth.conf.php.dist 14469 2013-06-10 08:58:56Z zefredz $
 //----------------------------------------------------------------------
 // CLAROLINE
 //----------------------------------------------------------------------
- * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
+// @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
 //----------------------------------------------------------------------
 // This program is under the terms of the GENERAL PUBLIC LICENSE (GPL)
 // as published by the FREE SOFTWARE FOUNDATION. The GPL is available
@@ -23,7 +23,7 @@
  * authentication drivers stored inside the Claroline/auth/extauth/drivers
  * directory.
  *
- * @version 1.6 $Revision: 12923 $
+ * @version 1.6 $Revision: 14469 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @See more information in : /claroline/auth/extauth/README.txt
@@ -92,5 +92,3 @@
 // $extAuthSource['mambo']['login'  ] = $clarolineRepositorySys.'auth/extauth/drivers/mambo.inc.php';
 // $extAuthSource['mambo']['newUser'] = $clarolineRepositorySys.'auth/extauth/drivers/mambo.inc.php';
 
-
-?>

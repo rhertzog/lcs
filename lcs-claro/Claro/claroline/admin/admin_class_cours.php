@@ -1,11 +1,11 @@
-<?php //$Id: admin_class_cours.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php //$Id: admin_class_cours.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for courses' classes.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14450 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Damien Garros <dgarros@univ-catholyon.fr>
@@ -36,9 +36,7 @@ $tbl_course_class          = $tbl_mdb_names['rel_course_class'];
 $tbl_class              = $tbl_mdb_names['class'];
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to unregister %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance ()->addLangVar('Are you sure you want to unregister %name ?');
 
 JavascriptLoader::getInstance()->load('admin');
 

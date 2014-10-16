@@ -1,9 +1,9 @@
-<?php // $Id: module.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: module.php 14576 2013-11-07 09:27:59Z zefredz $
 
 /**
  * Claroline extension modules settings script.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14576 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GENERAL PUBLIC LICENSE
  *  version 2 or later
@@ -80,11 +80,16 @@ $section_selected = isset($_REQUEST['section'])
     ;
 
 $moduleId = isset($_REQUEST['module_id'])
-    ? $_REQUEST['module_id']
+    ? (int) $_REQUEST['module_id']
     : null
     ;
 
 $module = get_module_info($moduleId);
+
+if ( ! $module )
+{
+    claro_die("ERROR: INVALID MODULE ID!!!");
+}
 
 language::load_module_translation( $module['label'] );
 

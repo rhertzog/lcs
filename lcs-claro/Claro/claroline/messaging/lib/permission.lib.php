@@ -1,11 +1,11 @@
-<?php // $Id: permission.lib.php 14262 2012-09-03 12:50:49Z ffervaille $
+<?php // $Id: permission.lib.php 14672 2014-01-27 11:51:13Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * function used for to know if the current user is allowed to send a message
  *
- * @version     1.9 $Revision: 14262 $
+ * @version     1.9 $Revision: 14672 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -68,7 +68,7 @@ function current_user_is_allowed_to_send_message_to_user($userId)
         $select =
            "SELECT count(*)\n"
            .    " FROM `" . $tableName['im_message'] . "` as M\n"
-           .    " INNER JOIN `" . $tableName['im_recipient'] . "` as R ON M.message_id = M.message_id\n"
+           .    " INNER JOIN `" . $tableName['im_recipient'] . "` as R ON R.message_id = M.message_id\n"
            .    " WHERE (R.user_id = " . (int)claro_get_current_user_id() . " OR R.user_id = 0)\n"
            .        " AND M.sender = " . (int)$userId
            ;

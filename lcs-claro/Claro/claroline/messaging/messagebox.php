@@ -1,4 +1,4 @@
-<?php // $Id: messagebox.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: messagebox.php 14576 2013-11-07 09:27:59Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -7,7 +7,7 @@
  *
  * Front controler for message box.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14576 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -71,7 +71,7 @@ $linkPage = $_SERVER['PHP_SELF'];
 
 $acceptedValues = array('inbox','outbox','trashbox');
 
-if (!isset($_REQUEST['box']) && !in_array($_REQUEST['box'],$acceptedValues))
+if (!isset($_REQUEST['box']) || !in_array($_REQUEST['box'],$acceptedValues))
 {
     $_REQUEST['box'] = "inbox";
 }
@@ -97,6 +97,7 @@ else
 
 $claroline->display->banner->breadcrumbs->append($title,$_SERVER['PHP_SELF'].'?box='.$link_arg['box']);
 $claroline->display->body->appendContent(claro_html_tool_title($title));
+$claroline->display->body->appendContent(claro_text_zone::get_block ( 'textzone_messaging_top', claro_is_platform_admin () ));
 $claroline->display->body->appendContent($content);
 // ------------ display ----------------------
 

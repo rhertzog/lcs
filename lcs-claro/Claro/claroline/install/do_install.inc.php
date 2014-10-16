@@ -1,4 +1,4 @@
-<?php // $Id: do_install.inc.php 13842 2011-11-24 10:41:30Z zefredz $
+<?php // $Id: do_install.inc.php 14712 2014-02-17 08:30:15Z zefredz $
 
 if ( count( get_included_files() ) == 1 ) die( '---' );
 
@@ -17,7 +17,7 @@ if ( count( get_included_files() ) == 1 ) die( '---' );
  * third block is building paths
  * Forth block check some right
  *
- * @version     $Revision: 13842 $
+ * @version     $Revision: 14712 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/Install
@@ -250,6 +250,7 @@ try
             $form_value_list['allowSelfReg']     = (bool) $allowSelfReg;
             $form_value_list['platformLanguage'] = $languageForm ;
             $form_value_list['claro_stylesheet'] = 'classic';
+            $form_value_list['clmain_serverTimezone'] = $clmain_serverTimezone;
 
             ######### DEALING WITH FILES #########################################
 

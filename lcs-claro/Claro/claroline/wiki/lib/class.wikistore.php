@@ -1,11 +1,11 @@
-<?php // $Id: class.wikistore.php 14094 2012-03-22 13:34:16Z zefredz $
+<?php // $Id: class.wikistore.php 14581 2013-11-07 15:39:52Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * CLAROLINE
  *
- * @version 1.11 $Revision: 14094 $
+ * @version 1.11 $Revision: 14581 $
  *
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  *
@@ -100,7 +100,7 @@ class WikiStore
             FROM 
                 `".$this->config['tbl_wiki_pages']."` 
             WHERE 
-                BINARY `title` = ".$this->con->quote( $title )." 
+                `title` = ".$this->con->quote( $title )." 
             AND 
                 `wiki_id` = " . $this->con->escape( $wikiId ) 
         )->numRows() > 0;

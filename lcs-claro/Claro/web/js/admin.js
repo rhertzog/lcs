@@ -1,5 +1,5 @@
 /*
- * $Id: admin.js 13386 2011-08-03 12:35:29Z abourguignon $
+ * $Id: admin.js 14443 2013-05-06 08:11:23Z ldumorti $
  */
 
 var ADMIN = {};
@@ -37,6 +37,20 @@ ADMIN.confirmationUninstall = function (name)
     var arr = {"%name" : name};
     
     if (confirm(Claroline.getLang('Are you sure you want to uninstall the module %name ?', arr)))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+ADMIN.confirmationUnRegForAllCourses = function (name)
+{
+    var arr = {"%name" : name};
+    
+    if (confirm(Claroline.getLang('Are you sure you want to unregister %name for all courses?', arr)))
     {
         return true;
     }

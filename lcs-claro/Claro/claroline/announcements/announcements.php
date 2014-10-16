@@ -1,4 +1,4 @@
-<?php // $Id: announcements.php 14339 2012-12-03 14:52:15Z zefredz $
+<?php // $Id: announcements.php 14716 2014-02-17 12:46:15Z zefredz $
 
 /**
  * CLAROLINE
@@ -34,7 +34,7 @@
  *            announcement list
  *            form to fill new or modified announcement
  *
- * @version     $Revision: 14339 $
+ * @version     $Revision: 14716 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLANN
@@ -289,10 +289,24 @@ if($is_allowedToEdit) // check teacher status
                         if (CONFVAL_LOG_ANNOUNCEMENT_UPDATE) $claroling->log('ANNOUNCEMENT', array ('UPDATE_ENTRY'=>$_REQUEST['id']));
                         $autoExportRefresh = true;
                     }
+                    else
+                    {
+                        if ( $failure = claro_failure::get_last_failure() )
+                        {
+                            $dialogBox->error( $failure );
+                        }
+                        else
+                        {
+                            $dialogBox->error( get_lang('Impossible to modify the announcement') );
+                        }
+                        
+                        $emailOption = 0;
+                    }
                 }
                 else
                 {
                     $dialogBox->error( get_lang('The "visible from" date can\'t exceed the "visible until" date') );
+                    $emailOption = 0;
                 }
             }
             
@@ -304,6 +318,7 @@ if($is_allowedToEdit) // check teacher status
                 {
                     // Determine the rank of the new announcement
                     $insert_id = announcement_add_item($title, $content, $visible_from, $visible_until, $visibility) ;
+                    
                     if ( $insert_id )
                     {
                         $dialogBox->success( get_lang('Announcement has been added') );
@@ -322,10 +337,25 @@ if($is_allowedToEdit) // check teacher status
                         if (CONFVAL_LOG_ANNOUNCEMENT_INSERT) $claroline->log('ANNOUNCEMENT',array ('INSERT_ENTRY'=>$insert_id));
                         $autoExportRefresh = true;
                     }
+                    else
+                    {
+                        if ( $failure = claro_failure::get_last_failure() )
+                        {
+                            $dialogBox->error( $failure );
+                        }
+                        else
+                        {
+                            $dialogBox->error( get_lang('Impossible to add the announcement') );
+                        }
+                        
+                        $emailOption = 0;
+                    }
                 }
                 else
                 {
+                    
                     $dialogBox->error( get_lang('The "visible from" date can\'t exceed the "visible until" date') );
+                    $emailOption = 0;
                 }
             } // end elseif cmd == exCreate
             
@@ -408,11 +438,14 @@ $cmdList = array();
 
 if ( $displayButtonLine )
 {
-    $cmdList[] = array(
-        'img' => 'announcement_new',
-        'name' => get_lang('Add announcement'),
-        'url' => claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=rqCreate'))
-    );
+    if ( $cmd != 'rqEdit' && $cmd != 'rqCreate'  )
+    {
+        $cmdList[] = array(
+            'img' => 'announcement_new',
+            'name' => get_lang('Add announcement'),
+            'url' => claro_htmlspecialchars(Url::Contextualize($_SERVER['PHP_SELF'] . '?cmd=rqCreate'))
+        );
+    }
     
     if ( claro_is_course_manager() )
     {
@@ -443,10 +476,8 @@ $nameTools = get_lang('Announcements');
 $noQUERY_STRING = true;
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to delete all the announcements ?');
-$jslang->addLangVar('Are you sure to delete %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure you want to delete all the announcements ?');
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
 
 JavascriptLoader::getInstance()->load('announcements');
 

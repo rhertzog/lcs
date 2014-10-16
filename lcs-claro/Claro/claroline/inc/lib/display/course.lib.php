@@ -1,11 +1,11 @@
-<?php // $Id: course.lib.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: course.lib.php 14481 2013-06-21 07:50:13Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * Course tool list display class
  *
- * @version     Claroline 1.11 $Revision: 14314 $
+ * @version     Claroline 1.11 $Revision: 14481 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Frederic Minne <zefredz@claroline.net>

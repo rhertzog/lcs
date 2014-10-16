@@ -1,11 +1,11 @@
-<?php //$Id: admin_class_user.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php //$Id: admin_class_user.php 14450 2013-05-15 12:02:23Z zefredz $
 
 /**
  * CLAROLINE
  *
  * Management tools for users registration to classes.
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14450 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claro Team <cvs@claroline.net>
@@ -31,9 +31,7 @@ $tbl_class      = $tbl_mdb_names['user_category'];
 $tbl_class_user = $tbl_mdb_names['user_rel_profile_category'];
 
 // Javascript confirm pop up declaration for header
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure you want to unregister %name ?');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance ()->addLangVar('Are you sure you want to unregister %name ?');
 
 JavascriptLoader::getInstance()->load('admin');
 

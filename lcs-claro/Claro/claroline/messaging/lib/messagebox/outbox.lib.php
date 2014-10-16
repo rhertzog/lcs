@@ -1,11 +1,11 @@
-<?php // $Id: outbox.lib.php 12923 2011-03-03 14:23:57Z abourguignon $
+<?php // $Id: outbox.lib.php 14493 2013-07-10 13:50:41Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
 /**
  * out box  class
  *
- * @version     1.9 $Revision: 12923 $
+ * @version     1.9 $Revision: 14493 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      Claroline Team <info@claroline.net>
  * @author      Christophe Mertens <thetotof@gmail.com>
@@ -65,9 +65,9 @@ class OutBox extends MessageBox
             $tableName = get_module_main_tbl(array('im_message'));
             
             $sql =
-                "SELECT message_id, sender, subject, message, send_time, course, `group`, tools \n"
-                . "FROM `".$tableName['im_message']."` \n"
-                . "WHERE sender = ".(int)$this->userId . "\n"
+                "SELECT M.message_id, M.sender, M.subject, M.message, M.send_time, M.course, M.`group`, M.tools \n"
+                . "FROM `".$tableName['im_message']."` AS M \n"
+                . "WHERE M.sender = ".(int)$this->userId . "\n"
                 .    " " . $strategy
                 .    " " . $order
                 .    " " . $limit
@@ -110,8 +110,8 @@ class OutBox extends MessageBox
             
             $readSQL =
                 "SELECT count(*) \n"
-                . "FROM `".$tableName['im_message']."` \n"
-                . "WHERE sender = ".(int)$this->userId . "\n"
+                . "FROM `".$tableName['im_message']."` AS M \n"
+                . "WHERE M.sender = ".(int)$this->userId . "\n"
                 .    " " . $strategy
                 ;
     

@@ -1,9 +1,9 @@
-<?php // $Id: document.php 14342 2012-12-10 10:01:33Z zefredz $
+<?php // $Id: document.php 14548 2013-09-19 08:58:33Z jrm_ $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 14342 $
+ * @version     $Revision: 14548 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLDOC
@@ -257,20 +257,20 @@ if ( $is_allowedToEdit ) // Document edition are reserved to certain people
                     $cur_dir = $cwd;
 
                     // add comment to each file
-                    foreach ( $uploadedFileNameList as $uploadedFileName )
+                    foreach ( $uploadedFileNameList as $fileName )
                     {
-                        $uploadedFileName = secure_file_path( $uploadedFileName);
+                        $fileName = secure_file_path($fileName);
 
-                        if ( dirname($uploadedFileName) != $cwd )
+                        if ( dirname($fileName) != $cwd )
                         {
                             // put a comment on the folder
-                            update_db_info('update', dirname($uploadedFileName),
+                            update_db_info('update', dirname($fileName),
                                             array('comment' => $comment ) );
-                            $cur_dir = dirname($uploadedFileName);
+                            $cur_dir = dirname($fileName);
                         }
 
                         // put a comment on the file
-                        update_db_info('update', $uploadedFileName,
+                        update_db_info('update', $fileName,
                                         array('comment' => $comment ) );
                     }
                 }
@@ -1465,11 +1465,9 @@ $_SERVER['QUERY_STRING'] = '';
 
 
 // Display (3 view modes: image, thumbnails or files)
-$jslang = new JavascriptLanguage;
-$jslang->addLangVar('Are you sure to delete %name ?');
-$jslang->addLangVar('Click to zoom out');
-$jslang->addLangVar('Click to zoom in');
-ClaroHeader::getInstance()->addInlineJavascript($jslang->render());
+JavascriptLanguage::getInstance()->addLangVar('Are you sure to delete %name ?');
+JavascriptLanguage::getInstance()->addLangVar('Click to zoom out');
+JavascriptLanguage::getInstance()->addLangVar('Click to zoom in');
 
 JavascriptLoader::getInstance()->load('documents');
 

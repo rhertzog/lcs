@@ -1,9 +1,9 @@
-<?php // $Id: ldapauthdriver.lib.php 14365 2013-01-29 07:33:37Z zefredz $
+<?php // $Id: ldapauthdriver.lib.php 14511 2013-08-12 06:56:21Z zefredz $
 
 /**
  * LDAP Authentication Driver
  *
- * @version     2.5 $Revision: 14365 $
+ * @version     2.5 $Revision: 14511 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.fsf.org/licensing/licenses/agpl-3.0.html
@@ -148,7 +148,16 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
         catch ( Exception $e )
         {
             $this->setFailureMessage($e->getMessage());
-            Console::error($e->getMessage());
+            
+            if ( claro_debug_mode () )
+            {
+                Console::error($e->__toString());
+            }
+            else
+            {
+                Console::error($e->getMessage());
+            }
+            
             return false;
         }
     }
@@ -187,7 +196,7 @@ class ClaroLdapAuthDriver extends AbstractAuthDriver
             {
                 if ( ! is_null($this->user->$extAuthAttribName) )
                 {
-                    $userAttrList[$claroAttribName] = $this->user->extAuthAttribName;
+                    $userAttrList[$claroAttribName] = $this->user->$extAuthAttribName;
                 }
             }
         }

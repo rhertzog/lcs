@@ -1,9 +1,9 @@
-<?php // $Id: editFile.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: editFile.php 14587 2013-11-08 12:47:41Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version $Revision: 14314 $
+ * @version $Revision: 14587 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLMANAGE
@@ -57,6 +57,9 @@ $textZoneList['textzone_edit_profile_form.inc.html'] = array( 'filename' => get_
 $textZoneList['textzone_upload_file_disclaimer.inc.html'] = array( 'filename' => get_path('rootSys') . 'platform/textzone/textzone_upload_file_disclaimer.inc.html',
                          'desc' => get_lang('Message displayed on the file upload pages'));
 
+$textZoneList['textzone_messaging_top.inc.html'] = array( 'filename' => get_path('rootSys') . 'platform/textzone/textzone_messaging_top.inc.html',
+                         'desc' => get_lang('Message displayed in the internal messaging'));
+
 $display = DISP_FILE_LIST;
 
 // Get command
@@ -105,7 +108,7 @@ if ( !is_null($fileId) )
 
         if ( $cmd == 'rqEdit' )
         {
-            $subtitle = 'Edit : ' . basename($textZoneList[$fileId]['filename']);
+            $subtitle = get_lang('Edit : %textZone', array ('%textZone' => $textZoneList[$fileId]['desc']) );
             $display = DISP_EDIT_FILE;
         }
         else

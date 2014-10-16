@@ -1,9 +1,9 @@
-<?php // $Id: learningPathAdmin.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: learningPathAdmin.php 14587 2013-11-08 12:47:41Z zefredz $
 
 /**
  * CLAROLINE 1.11
  *
- * @version     $Revision: 14314 $
+ * @version     $Revision: 14587 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claroline Team
@@ -451,7 +451,7 @@ if (isset($displayChangePosForm) && $displayChangePosForm)
     $dialogBox->form( '<form action="' . $_SERVER['PHP_SELF'] . '" method="post">'
         . claro_form_relay_context()
         . '<h4>'
-        . get_lang('Move') . " ' " . $moduleInfos['name']." ' ".get_lang('To') . '</h4>'
+        . get_lang('Move "%moduleName" to', array('%moduleName' => $moduleInfos['name'])) . '</h4>'
 
         // Build select input - $elementList has been declared in the previous big cmd case
         . claro_build_nested_select_menu("newPos",$elementList)

@@ -1,11 +1,11 @@
-<?php // $Id: addcsvusers.php 14361 2013-01-28 10:38:58Z zefredz $
+<?php // $Id: addcsvusers.php 14390 2013-02-13 17:02:53Z ffervaille $
 
 /**
  * CLAROLINE
  *
  * Tool for bulk subscribe.
  *
- * @version     1.11 $Revision: 14361 $
+ * @version     1.11 $Revision: 14390 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @package     CLUSR
@@ -273,6 +273,10 @@ switch( $step )
             if( ! $csvImport->auto( $tmpName ) )
             {
                 $dialogBox->error(get_lang('Unable to read the content of the CSV'));
+            }
+            elseif( ! $csvImport->validateFields() )
+            {
+                $dialogBox->error(get_lang('Missing field(s)'));
             }
             else
             {

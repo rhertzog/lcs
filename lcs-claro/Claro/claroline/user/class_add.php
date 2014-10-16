@@ -1,11 +1,11 @@
-<?php // $Id: class_add.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: class_add.php 14516 2013-08-14 07:46:57Z zefredz $
 
 /**
  * CLAROLINE
  *
  * This tool list classes and prupose to subscribe it to the current course.
  *
- * @version     1.11 $Revision: 14314 $
+ * @version     1.11 $Revision: 14516 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @see         http://www.claroline.net/wiki/index.php/CLUSR
@@ -62,7 +62,9 @@ switch ( $cmd )
 
     case 'exEnrol' :
 
-        if ( register_class_to_course( $form_data['class_id'], claro_get_current_course_id()) )
+        $registration = register_class_to_course( $form_data['class_id'], claro_get_current_course_id());
+        
+        if ( !$registration->hasError() )
         {
             Console::log(
                 "Class {$form_data['class_id']} enroled to course "
@@ -73,13 +75,26 @@ switch ( $cmd )
 
             $dialogBox->success( get_lang('Class has been enroled') ) ;
         }
+        else
+        {
+            Console::error(
+                "Class {$form_data['class_id']} cannot be enroled to course "
+                . claro_get_current_course_id()
+                . " by " . claro_get_current_user_id() . " : " . var_export($registration->getErrorLog(), true )
+            );
+
+            $dialogBox->error( get_lang('Cannot enrol class') ) ;
+        }
+        
         break;
 
     // Unenrol a class to the course
 
     case 'exUnenrol' :
-
-        if ( unregister_class_to_course( $form_data['class_id'], claro_get_current_course_id()) )
+        
+        $registration = unregister_class_to_course( $form_data['class_id'], claro_get_current_course_id());
+        
+        if ( ! $registration->hasError () )
         {
             Console::log(
                 "Class {$form_data['class_id']} removed from course "
@@ -90,6 +105,17 @@ switch ( $cmd )
 
             $dialogBox->success( get_lang('Class has been unenroled') );
         }
+        else
+        {
+            Console::error(
+                "Class {$form_data['class_id']} cannot be removed from course "
+                . claro_get_current_course_id()
+                . " by " . claro_get_current_user_id() . " : " . var_export($registration->getErrorLog(), true )
+            );
+
+            $dialogBox->error( get_lang('Cannot enrol class') ) ;
+        }
+        
         break;
 }
 

@@ -1,4 +1,4 @@
-<?php // $Id: export.php 14283 2012-10-10 12:28:32Z zefredz $
+<?php // $Id: export.php 14490 2013-07-03 13:02:00Z zefredz $
 
 // vim: expandtab sw=4 ts=4 sts=4:
 
@@ -9,7 +9,7 @@
  * As from 1.9.6 replaces $cmd = 'exDownload' in both work.php and work_list.php
  * As from 1.9.6 uses pclzip instead of zip.lib
  *
- * @version     $Revision: 14283 $
+ * @version     $Revision: 14490 $
  * @copyright   (c) 2001-2011, Universite catholique de Louvain (UCL)
  * @author      FUNDP - WebCampus <webcampus@fundp.ac.be>
  * @author      Jean-Roch Meurisse <jmeuriss@fundp.ac.be>
@@ -37,6 +37,7 @@ require_once get_path( 'incRepositorySys' ) . '/lib/course_utils.lib.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/fileManage.lib.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/file/garbagecollector.lib.php';
 require_once get_path( 'incRepositorySys' ) . '/lib/thirdparty/pclzip/pclzip.lib.php';
+require_once dirname(__FILE__).'/lib/score.lib.php';
 
 //init general purpose vars
 $out ='';
@@ -44,7 +45,9 @@ $out ='';
 $dialogBox = new DialogBox();
 
 $downloadMode = isset( $_REQUEST['downloadMode'] ) && is_string( $_REQUEST['downloadMode'] ) ? $_REQUEST['downloadMode'] : 'all';
+$downloadScore = isset( $_REQUEST['downloadScore'] ) && $_REQUEST['downloadScore'] == 'yes' ? true : false;
 $assignmentId = isset( $_REQUEST['assigId'] ) && is_numeric( $_REQUEST['assigId'] ) ? $_REQUEST['assigId'] : 0;
+$downloadOnlyCurrentMembersSubmissions = isset( $_REQUEST['downloadOnlyCurrentMembers'] ) && $_REQUEST['downloadOnlyCurrentMembers'] == 'yes' ? true : false;
 
 if( $assignmentId )
 {
@@ -52,10 +55,13 @@ if( $assignmentId )
     $assignment->load( $assignmentId );
 }
 
-if( get_conf( 'allow_download_all_submissions' ) )
+if( claro_is_platform_admin() || get_conf( 'allow_download_all_submissions' ) )
 {
     $courseTbl = claro_sql_get_course_tbl();
     $submissionTbl = $courseTbl['wrk_submission'];
+    
+    $mainTbl = claro_sql_get_main_tbl();
+    $courseUserTbl = $mainTbl['rel_course_user'];
     
     if( $downloadMode == 'from' )
     {
@@ -85,13 +91,22 @@ if( get_conf( 'allow_download_all_submissions' ) )
         $wanted = '_' . replace_dangerous_char( get_lang( 'From' ) ) . '_' . date( 'Y_m_d', $unixRequestDate ) . '_'
                 . replace_dangerous_char( get_lang( 'to' ) ) . '_' . date( 'Y_m_d' )
         ;
-        $sqlDateCondition = " AND `last_edit_date` >= '" . $downloadRequestDate . "' ";
+        $sqlDateCondition = " AND s.`last_edit_date` >= '" . $downloadRequestDate . "' ";
     }
     else
     {
         $wanted = '';
 
         $sqlDateCondition = '';
+    }
+    
+    if ( $downloadOnlyCurrentMembersSubmissions )
+    {
+        $userRestrictions = "JOIN `{$courseUserTbl}` AS cu On cu.user_id = s.user_id AND cu.code_cours = '".claro_get_current_course_id()."'" ;
+    }
+    else
+    {
+        $userRestrictions = "";
     }
     
     //load_module_config('CLDOC');
@@ -115,7 +130,7 @@ if( get_conf( 'allow_download_all_submissions' ) )
     }
     else
     {
-        $assignmentRestriction = " AND `assignment_id` = " . (int)$assignmentId;
+        $assignmentRestriction = " AND s.`assignment_id` = " . (int)$assignmentId;
         
         if ( !empty($tmpFolderPath) )
         {
@@ -146,20 +161,21 @@ if( get_conf( 'allow_download_all_submissions' ) )
 
     $downloadArchiveFilePath = $downloadArchiveFolderPath . '/' . $zipName;
 
-    $sql = "SELECT `id`,
-                   `assignment_id`,
-                   `authors`,
-                   `submitted_text`,
-                   `submitted_doc_path`,
-                   `title`,
-                   `creation_date`,
-                   `last_edit_date`
-              FROM `" . $submissionTbl . "`
-             WHERE `parent_id` IS NULL "
+    $sql = "SELECT s.`id`,
+                   s.`assignment_id`,
+                   s.`authors`,
+                   s.`submitted_text`,
+                   s.`submitted_doc_path`,
+                   s.`title`,
+                   s.`creation_date`,
+                   s.`last_edit_date`
+              FROM `" . $submissionTbl . "` AS s
+              {$userRestrictions}
+             WHERE s.`parent_id` IS NULL "
                    . $assignmentRestriction
                    . $sqlDateCondition . "
-          ORDER BY `authors`,
-                   `creation_date`";
+          ORDER BY s.`authors`,
+                   s.`creation_date`";
 
     if( !is_dir( $zipPath ) )
     {
@@ -172,7 +188,7 @@ if( get_conf( 'allow_download_all_submissions' ) )
     {
         $previousAuthors = '';
         $i = 1;
-
+        
         foreach ( $results as $row => $result )
         {
             //create assignment directory if necessary
@@ -189,7 +205,7 @@ if( get_conf( 'allow_download_all_submissions' ) )
             {
                 $assigDir = '';
             }
-
+            
             $assignmentPath = get_path( 'coursesRepositorySys' ) . claro_get_course_path(claro_get_current_course_id()) . '/work/assig_' . (int)$result['assignment_id'] . '/';
             
             //  count author's submissions for the name of directory
@@ -209,6 +225,31 @@ if( get_conf( 'allow_download_all_submissions' ) )
             {
                 mkdir( $zipPath . $assigDir . '/' . $authorsDir, CLARO_FILE_PERMISSIONS, true );
             }
+            
+            if ( $downloadScore && ! ( isset($currAssigId) && $currAssigId == $result['assignment_id'] )  )
+            {
+                $course = new Claro_Course(  claro_get_current_course_id () );
+                $course->load();
+
+                $assignment = new Assignment();
+                $assignment->load( $result['assignment_id']  );
+                $currAssigId = $result['assignment_id'] ;
+
+                $scoreList = new CLWRK_AssignementScoreList( $assignment );
+                
+                if ( ! $downloadOnlyCurrentMembersSubmissions )
+                {
+                    $scoreList->setOptAllUsers();
+                }
+                
+                $scoreListIterator = $scoreList->getScoreList();
+
+                $scoreListRenderer = new CLWRK_ScoreListRenderer( $course, $assignment, $scoreListIterator );
+
+                file_put_contents( $zipPath . $assigDir . '/scores.html', $scoreListRenderer->render() );
+            }
+            
+            
             
             $submissionPrefix = $assigDir . $authorsDir . replace_dangerous_char( get_lang( 'Submission' ) ) . '_' . $i . '_';
 

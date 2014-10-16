@@ -1,9 +1,9 @@
-<?php // $Id: insertMyDoc.php 14314 2012-11-07 09:09:19Z zefredz $
+<?php // $Id: insertMyDoc.php 14730 2014-02-20 15:45:42Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     1.11 $Revision: 14314 $
+ * @version     1.11 $Revision: 14730 $
  * @copyright   (c) 2001-2012, Universite catholique de Louvain (UCL)
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Piraux Sebastien <pir@cerdecam.be>
@@ -193,7 +193,7 @@ while ($iterator <= $_REQUEST['maxDocForm'])
                 // create new module
                 $sql = "INSERT INTO `".$TABLEMODULE."`
                         (`name` , `comment`, `contentType`, `launch_data`)
-                        VALUES ('". claro_sql_escape($basename) ."' , '". claro_sql_escape(get_block('blockDefaultModuleComment')) . "', '".CTDOCUMENT_."', '' )";
+                        VALUES ('". claro_sql_escape($basename) ."' , '". claro_sql_escape(get_block('blockDefaultModuleComment')) . "', '".CTDOCUMENT_. "', '' )";
                 $query = claro_sql_query($sql);
 
                 $insertedModule_id = claro_sql_insert_id();

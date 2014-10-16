@@ -1,9 +1,9 @@
-<?php // $Id: export.lib.php 13982 2012-02-01 10:58:29Z zefredz $
+<?php // $Id: export.lib.php 14410 2013-03-14 08:31:45Z zefredz $
 
 /**
  * CLAROLINE
  *
- * @version     $Revision: 13982 $
+ * @version     $Revision: 14410 $
  * @license     http://www.gnu.org/copyleft/gpl.html (GPL) GENERAL PUBLIC LICENSE
  * @author      Claroline team <info@claroline.net>
  * @package     CLUSR
@@ -68,14 +68,14 @@ class UserInfoList
 }
 
 
-class csvUserList extends csv
+class csvUserList extends CsvRecordlistExporter
 {
     private $course_id;
     private $exId;
     
     public function __construct( $course_id )
     {
-        parent::csv(); // call constructor of parent class
+        parent::__construct(); // call constructor of parent class
         
         $this->course_id = $course_id;
     }
