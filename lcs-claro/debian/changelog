@@ -1,3 +1,9 @@
+lcs-claro (2.4.10~3) Lcs; urgency=low
+
+  * update phpcasclient to 1.3.3 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sun, 12 Oct 2014 17:41:14 +0200
+
 lcs-claro (2.4.10~2) Lcs; urgency=low
 
   * fix rights on tree
