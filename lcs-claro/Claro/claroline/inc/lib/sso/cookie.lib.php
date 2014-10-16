@@ -25,7 +25,7 @@ class SingleSignOnCookie
         $tbl = claro_sql_get_main_tbl();
         
         $ssoCookieExpireTime = time() + get_conf('ssoCookiePeriodValidity',3600);
-        $ssoCookieValue = md5( mktime() . rand(100, 1000000) );
+        $ssoCookieValue = md5( time() . rand(100, 1000000) );
         
         $sql = "UPDATE `{$tbl['sso']}`\n"
             . "SET cookie    = '".$ssoCookieValue."',\n"
