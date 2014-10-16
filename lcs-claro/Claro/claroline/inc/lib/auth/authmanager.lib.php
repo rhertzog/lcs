@@ -417,7 +417,8 @@ class AuthDriverManager
         self::$drivers = array(
             'claroline' => new ClarolineLocalAuthDriver(),
             'disabled' => new UserDisabledAuthDriver(),
-            'temp' => new TemporaryAccountAuthDriver()
+            'temp' => new TemporaryAccountAuthDriver(),
+            'CAS' => new ClarolineLocalAuthDriver()
         );
         
         self::$driversAllowingLostPassword = array(
