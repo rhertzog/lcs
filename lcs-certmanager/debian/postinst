@@ -41,6 +41,10 @@ case "$1" in
             # Add sudoers section
             #
 				/usr/sbin/lcs-make-sudoers
+				#
+				# fix rights on certmanager
+				#
+				chown root:www-data /usr/share/lcs/certmanager
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)
