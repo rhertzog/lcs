@@ -1,14 +1,19 @@
 <?php
-# /var/www/Admin/importcertssl.php derniere version du : 28/03/2013
+# /var/www/Admin/importcertssl.php derniere version du : 16/10/2014
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit; 
+
+$login=$_SESSION['login'];
+
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 
-list ($idpers, $login)= isauth();
-
 $DEBUG = false;
+
 $extensions = array('.pem', '.crt');
-$keystore="/var/www/keystore/";
+$keystore="/usr/share/lcs/certmanager/";
+
 // Messages d'aide
 function msgaide($msg) {
     return ("&nbsp;<u onmouseover=\"this.T_SHADOWWIDTH=5;this.T_STICKY=1;return escape".gettext("('".$msg."')")."\"><img name=\"action_image2\"  src=\"../images/help-info.gif\"></u>");
@@ -27,20 +32,18 @@ $html = "
 $html .= "<div id='container'><h2>LCS gestion des certificats SSL</h2>\n";
 echo $html;
 if (is_admin("system_is_admin",$login)=="Y") {
-    $html = "<h3>Importation d'un certificat SSL</h3>\n";
-    echo $html;
-?>    
+	$html  = "<h3>Importation d'un certificat SSL</h3>\n";
+	$html .= "<form action=\"importcertssl.php\" method=\"post\" enctype=\"multipart/form-data\">\n";  
+	$html .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"10000\" />\n";
+	$html .= "<p>Certificat SSL (.crt) <input name=\"userfile[]\" type=\"file\" /><p />\n";
+	$html .= "<p>Clé privée (.pem) <input name=\"userfile[]\" type=\"file\" /><p />\n";
+	$html .= "<p>Mot de passe de la clé privée <input type=\"password\" name=\"pwdkey\"/></p>\n";
+	$html .= "<p>Certificat racine de l'autorité de certification (.pem) <input name=\"userfile[]\" type=\"file\" /><p />\n";	
+	$html .= "<input name=\"jeton\" type=\"hidden\"  value=\"". md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."\" />\n";    
+   $html .= "<input type=\"submit\" value=\"Importer le certificat\" />\n"; 
+	echo $html;
 
-<form action="importcertssl.php" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="MAX_FILE_SIZE" value="10000" />
-  <p>Certificat SSL (.crt) <input name="userfile[]" type="file" /><p />
-  <p>Clé privée (.pem) <input name="userfile[]" type="file" /><p />
-  <p>Mot de passe de la clé privée <input type="password" name="pwdkey"/></p>
-  <p>Certificat racine de l'autorité de certification (.pem) <input name="userfile[]" type="file" /><p /> 
-  <input type="submit" value="Importer le certificat" />
-</form> 
- 
-<? 
+
 
 if (is_uploaded_file($_FILES["userfile"]["tmp_name"][0]) && is_uploaded_file($_FILES["userfile"]["tmp_name"][1]) && is_uploaded_file($_FILES["userfile"]["tmp_name"][2]) ) {
 	// Messages debug
@@ -88,13 +91,9 @@ if (is_uploaded_file($_FILES["userfile"]["tmp_name"][0]) && is_uploaded_file($_F
 		 	move_uploaded_file($_FILES['userfile']['tmp_name'][2], $keystore . $namecert . "_trusted_ca.pem")
 	   	 ) {
 			// Traitement du certificat
-			exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -i '".$_FILES['userfile']['name'][0]."' '".$_FILES['userfile']['name'][1]."' '".$_POST["pwdkey"]."' '$namecert'");
-			echo "/usr/bin/sudo /usr/sbin/lcs-certmanager -i ".$_FILES['userfile']['name'][0]." ".$_FILES['userfile']['name'][1]." ".$_POST["pwdkey"]." ".$namecert. " ";
+			exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -i ". escapeshellarg($_FILES['userfile']['name'][0]) ." ". escapeshellarg($_FILES['userfile']['name'][1]) ." ". escapeshellarg($_POST["pwdkey"]) ." ". escapeshellarg($namecert));
+			if ( $DEBUG == "true" ) echo "/usr/bin/sudo /usr/sbin/lcs-certmanager -i ".$_FILES['userfile']['name'][0]." ".$_FILES['userfile']['name'][1]." ".$_POST["pwdkey"]." ".$namecert. " ";
 			echo "Import du certificat réussi.<br />";
-			#echo "/usr/bin/sudo /usr/sbin/lcs-certmanager -i '".$_FILES['userfile']['name'][0]."' '".$_FILES['userfile']['name'][1]."' '".$_POST["pwdkey"]."' '$namecert'";
-			#exec("/usr/bin/sudo /usr/sbin/lcs-certssl-import '".$_FILES['userfile']['name'][0]."' '".$_FILES['userfile']['name'][1]."' '".$_POST["pwdkey"]."' '$namecert'");
-			#echo "/usr/bin/sudo /usr/sbin/lcs-certssl-import '".$_FILES['userfile']['name'][0]."' '".$_FILES['userfile']['name'][1]."' '".$_POST["pwdkey"]."' '$namecert'";
-			#/usr/bin/sudo /usr/sbin/lcs-certssl-import 'lcs.ac-caen.fr.crt' 'lcs.ac-caen.fr.privkey.pem' 'lyc.clg.ac-caen.fr.lcs145061' 'lcs.ac-caen.fr'			
 		} else 
 			echo "Echec de la mise en place de ce certificat !<br />";
 	}

@@ -1,9 +1,9 @@
  #!/bin/bash
-# lcs-certmanager 14/06/2013
+# lcs-certmanager 16/10/2014
 
 IN_CONFIG_PATH="/var/lib/lcs/certmanager"
 OUT_CERT_PATH="/etc/ssl/lcs"
-IN_CERT_PATH="/var/www/keystore"
+IN_CERT_PATH="/usr/share/lcs/certmanager"
 
 
 case $1 in
@@ -108,7 +108,7 @@ case $1 in
 
 		fi
 		# Remove certificates in tmp keystore		
-		rm -f IN_CERT_PATH/*			
+		rm -f $IN_CERT_PATH/*			
 	;;
 	-s)
 		echo "LCS Cert manager : select a SSL certificate"

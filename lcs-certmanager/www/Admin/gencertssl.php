@@ -1,12 +1,25 @@
 <?
-# /var/www/Admin/gencertssl.php derniere version du : 15/03/2013
+# /var/www/Admin/gencertssl.php derniere version du : 16/10/2014
+
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit;
+
+$login=$_SESSION['login'];
+
+  
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 
-list ($idpers, $login)= isauth();
-
-$newcert = $_GET['newcert'];
+# Purify 
+if (count($_GET)>0) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+    //purification des variables
+  	$newcert=$purifier->purify($_GET['newcert']);
+}
 
 // Messages d'aide
 function msgaide($msg) {
@@ -14,7 +27,6 @@ function msgaide($msg) {
 }
 $msg1="Régénération du certificat SSL pour les services LCS (CAS, apache-ssl, imap-ssl) une période de 365 jours.";
 
-if ($idpers == "0") header("Location:$urlauth");
 $html = "
 	  <head>\n
 	  <title>...::: Génération certificat apache ssl  :::...</title>\n
@@ -25,22 +37,19 @@ $html = "
 $html .= "<div id='container'><h2>Services intranet LCS</h2>\n";
 echo $html;
 if (is_admin("system_is_admin",$login)=="Y") {
-    $html = "<h3>Regénération certificat SSL LCS</h3>\n";
-    if ( ! isset($newcert) ) {
-        $html .= "<ul>\n<li>\n";  
-        $html .= "\t<a href=\"gencertssl.php?newcert=1\">Lancer la régénération du certificat.</a>".msgaide($msg1)."\n";
-        $html .= "</ul>\n</li>\n";
-        echo $html;
-    } else {
-		#$fqn="$hostname.$domain";
-        #exec("/usr/bin/sudo /usr/sbin/lcs-certssl-gen '$fqn' '$domain' '$country' '$province' '$locality' '$organization' '$organizationalunit'");
-        exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -c");
-        $html .= "<ul>\n<li>\n";  
-        $html .= "\tLe certificat SSL du serveur LCS a été regénéré pour une période de 365 jours. \n";
-        $html .= "</ul>\n</li>\n";
-        echo $html;        
-    }
-
+	$html = "<h3>Regénération certificat SSL LCS</h3>\n";
+	if ( ! isset($newcert) ) {
+		$html .= "<ul>\n<li>\n";  
+		$html .= "\t<a href=\"gencertssl.php?newcert=1&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))."\">Lancer la régénération du certificat.</a>".msgaide($msg1)."\n";
+		$html .= "</ul>\n</li>\n";
+		echo $html;
+	} else {
+		exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -c");
+		$html .= "<ul>\n<li>\n";  
+		$html .= "\tLe certificat SSL du serveur LCS a été regénéré pour une période de 365 jours. \n";
+		$html .= "</ul>\n</li>\n";
+		echo $html;        
+	}
 }// fin is_admin
 else echo "Vous n'avez pas les droits nécessaires pour ordonner cette action...";
 echo "</div><!-- Fin container-->\n";

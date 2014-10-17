@@ -1,6 +1,6 @@
-lcs-certmanager (2.4.10~4) Lcs; urgency=low
+lcs-certmanager (2.4.10~5) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
-  * Initial release.
+  * Initial release for wheezy
 
- -- jlcf <jean-luc.chretien@tice.ac-caen.fr>  Thu, 17 Oct 2013 14:11:26 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 17 Oct 2014 14:57:23 +0200

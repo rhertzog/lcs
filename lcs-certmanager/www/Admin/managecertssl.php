@@ -1,12 +1,27 @@
 <?
-# /var/www/Admin/managecertssl.php derniere version du : 13/06/2013
+# /var/www/Admin/managecertssl.php derniere version du : 16/10/2014
+
+include "../Annu/includes/check-token.php";
+if (!check_acces()) exit; 
+
+$login=$_SESSION['login'];
+
 include ("../lcs/includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
 include ("../Annu/includes/ihm.inc.php");
 
-list ($idpers, $login)= isauth();
+if (count($_POST)>0) {
+  	//configuration objet
+ 	include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+	//purification des variables
+  	$sel=$purifier->purify($_POST['sel']);
+  	$del=$purifier->purify($_POST['del']);
+  	$managecert=$purifier->purify($_POST['managecert']);	
+}
 
-$DEBUG = true;
+$DEBUG = false;
 
 // Messages d'aide
 function msgaide($msg) {
@@ -14,7 +29,6 @@ function msgaide($msg) {
 }
 $msg1="";
 
-if ($idpers == "0") header("Location:$urlauth");
 $html = "
 	  <head>\n
 	  <title>...::: Gestion certificats SSL  :::...</title>\n
@@ -43,13 +57,13 @@ $html .= "<div id='container'><h2>Gestion certificats SSL LCS</h2>\n";
 echo $html;
 // debut is_admin
 if (is_admin("system_is_admin",$login)=="Y") {
-
 	// Traitement Formulaire
-	if(isset($_POST["managecert"])) {
+	if(isset($managecert)) {
 		if ( $DEBUG == "true" ) {
 			echo "<u>DEBUG manage cert:</u></br>";
-			echo "cert sel " . $_POST["sel"] ."<br/>";
-			echo "cert erase " . $_POST["delete"] ."<br/>";
+			echo "cert sel = $sel<br/>";
+			echo "cert erase : '$del'<br/>";
+			
 		}
 		// test si le certificat selectionné est différent du certificat actif
 		$query="SELECT id from sslcert where sel='1'";
@@ -60,11 +74,12 @@ if (is_admin("system_is_admin",$login)=="Y") {
 			if ( $DEBUG == "true" ) echo "id certificat actif ".$r[0]."<br />";
 		}
 		mysql_free_result($result);	
-		if ( $sslcertsel != $_POST["sel"] ) {
-			echo "Le certificat sélectionné est différent du certificat actif ! On change !<br />";
+		// Si changement de selection 
+		if ( $sslcertsel != $sel ) {
+			if ( $DEBUG == "true" ) echo "Le certificat sélectionné est différent du certificat actif ! On change !<br />";
 			echo "Le changement de certificat sera effectif dans une minute, attention, les services (apache, imap-sssl, cas) vont redémarrer !<br />";
 			// recherche du nom du certificat selectionné
-			$query="SELECT name from sslcert where id='".$_POST["sel"]."'";
+			$query="SELECT name from sslcert where id='$sel'";
 			$result=mysql_query($query);
 			if ($result) {
 				$r=mysql_fetch_row($result);
@@ -73,29 +88,29 @@ if (is_admin("system_is_admin",$login)=="Y") {
 			}
 			mysql_free_result($result);	
 			// Execution de la tache sudo
-			exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -s '$sslcertname'");
+			exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -s ". escapeshellarg($sslcertname));
 
 		} else {
 			echo "Le certificat sélectionné est le même que le certificat actif ! Pas de modification.<br />";	
 		}
 		
-		// test si le certificat a effacer est différent du certificat actif
-		if ( $_POST["sel"] != $_POST["delete"] ) {
+		// Si demande d'effacement et si le certificat a effacer est différent du certificat actif
+		if ( $del != "" && $sel != $del ) {
 			// recherche du nom du certificat selectionné pour effacement
-			$query="SELECT name from sslcert where id='".$_POST["delete"]."'";
+			$query="SELECT name from sslcert where id='$del'";
 			$result=mysql_query($query);
 			if ($result) {
 				$r=mysql_fetch_row($result);
 				$sslcertname = $r[0];
-				echo "name certificat a effacer ".$r[0]."<br />";
 			}
 			mysql_free_result($result);	
 			// Execution de la tache sudo			
-				echo "Le certificat a été effacé du magasin.<br />";
-				exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -r '$sslcertname'");
-		} else {
-			echo "Impossible d'effacer le certificat actif.</br>";
-		}
+			echo "Le certificat ".$r[0]." a été effacé du magasin.<br />";
+			exec("/usr/bin/sudo /usr/sbin/lcs-certmanager -r ". escapeshellarg($sslcertname));
+		} 
+		//else {
+		//	echo "Il est impossible d'effacer le certificat actif.</br>";
+		//}
 	}	
 	// En tete formulaire
 	echo "<form name =\"managecertssl\" action=\"managecertssl.php\" method=\"post\">\n";
@@ -113,9 +128,9 @@ if (is_admin("system_is_admin",$login)=="Y") {
 	";
 	echo $html;
 	
-    $query="SELECT * from sslcert";
+	$query="SELECT * from sslcert";
 	$result=mysql_query($query);
-    if ($result) {
+	if ($result) {
 		while ($r=mysql_fetch_array($result)) {
 			echo "<tr>\n";
 			echo "<td>".$r['name']."</td>\n";
@@ -125,19 +140,19 @@ if (is_admin("system_is_admin",$login)=="Y") {
 			echo "<td><input type='radio'";  
 			if ( $r['sel'] == "1" ) echo " checked ";
 			echo "name='sel' value='".$r[id]."'></td>\n";
-			echo "<td><input type='radio' name='delete' value='".$r[id]."'</td>\n";
+			echo "<td><input type='radio' name='del' value='".$r[id]."'</td>\n";
 			echo "<tr>\n";
 		}
-    }	
-    mysql_free_result($result);
-    // Fin tableau
-    $html ="</table>\n";
-    // Fin formulaire
-    $html .= "<input type=\"hidden\" name=\"managecert\" value=\"true\">\n";
+	}	
+	mysql_free_result($result);
+	// Fin tableau
+	$html ="</table>\n";
+	// Fin formulaire
+	$html .= "<input type=\"hidden\" name=\"managecert\" value=\"true\">\n";
+	$html .='<input name="jeton" type="hidden"  value="'. md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" /> ';
 	$html .= "<input type=\"submit\" value=\"Valider sélections\">\n";
 	$html .= "</form>\n";
 	echo $html;
-	
 }
 // fin is_admin
 else echo "Vous n'avez pas les droits nécessaires pour ordonner cette action...";
