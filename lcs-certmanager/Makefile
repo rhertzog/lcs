@@ -23,7 +23,7 @@ install:
 
 # install lcs certmanager certmanager	
 	install -d $(DESTDIR)/usr/share/lcs/certmanager
-	chown root:ww-data $(DESTDIR)/usr/share/lcs/certmanager
+	chown root:www-data $(DESTDIR)/usr/share/lcs/certmanager
 	chmod 770 $(DESTDIR)/usr/share/lcs/certmanager
 
 	
