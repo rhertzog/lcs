@@ -1,6 +1,7 @@
-lcs-certmanager (2.4.10~7) Lcs; urgency=low
+lcs-certmanager (2.4.10~8) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
   * Initial release for wheezy
+  * Restart apache2, courier-imap-ssl and lcs-cas when select new certificate
 
  -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 17 Oct 2014 17:43:13 +0200

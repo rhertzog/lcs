@@ -1,5 +1,5 @@
  #!/bin/bash
-# lcs-certmanager 16/10/2014
+# lcs-certmanager 13/11/2014
 
 IN_CONFIG_PATH="/var/lib/lcs/certmanager"
 OUT_CERT_PATH="/etc/ssl/lcs"
@@ -144,7 +144,13 @@ case $1 in
           		echo "Rechargement configuration Apache2 dans 1mn"
           		at now+1minutes <<END
 /etc/init.d/apache2 restart
-sleep 2
+if [ -e /etc/init.d/courier-imap-ssl ]; then
+	invoke-rc.d courier-imap-ssl restart
+fi
+if [ -e /etc/init.d/rubycas-lcs ]; then
+        echo "Restart CAS service"
+        invoke-rc.d rubycas-lcs restart
+fi
 END
 				exit 0
 			fi			
