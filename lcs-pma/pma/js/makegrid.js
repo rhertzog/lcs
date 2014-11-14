@@ -952,7 +952,7 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
                         }, function (data) {
                             g.lastXHR = null;
                             $editArea.removeClass('edit_area_loading');
-                            if (data.success === true) {
+                            if (typeof data !== 'undefined' && data.success === true) {
                                 if ($td.is('.truncated')) {
                                     // get the truncated data length
                                     g.maxTruncatedLen = $(g.currentEditCell).text().length - 3;
@@ -1023,6 +1023,7 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
                         e.stopPropagation();
                     });
 
+                    g.isEditCellTextEditable = true;
                 } else {
                     g.isEditCellTextEditable = true;
                     // only append edit area hint if there is a null checkbox
@@ -1101,6 +1102,9 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
             $('td.to_be_saved').parents('tr').each(function () {
                 var $tr = $(this);
                 var where_clause = $tr.find('.where_clause').val();
+                if (typeof where_clause === 'undefined') {
+                    where_clause = '';
+                }
                 full_where_clause.push(PMA_urldecode(where_clause));
                 var condition_array = jQuery.parseJSON($tr.find('.condition_array').val());
 
@@ -1244,7 +1248,7 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
                             $('div.save_edited').removeClass('saving_edited_data')
                                 .find('input').removeProp('disabled');  // enable the save button back
                         }
-                        if (data.success === true) {
+                        if (typeof data !== 'undefined' && data.success === true) {
                             PMA_ajaxShowMessage(data.message);
 
                             // update where_clause related data in each edited row

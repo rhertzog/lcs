@@ -262,7 +262,9 @@ if ($GLOBALS['is_ajax_request']
     && ! isset($_REQUEST['export'])
     && (! isset($_REQUEST['submit_mult']) || $_REQUEST['submit_mult'] != 'export')
     && (! isset($_REQUEST['adduser']) || $_add_user_error)
-    && (! isset($_REQUEST['initial']) || empty($_REQUEST['initial']))
+    && (! isset($_REQUEST['initial'])
+    || $_REQUEST['initial'] === null
+    || $_REQUEST['initial'] === '')
     && ! isset($_REQUEST['showall'])
     && ! isset($_REQUEST['edit_user_dialog'])
     && ! isset($_REQUEST['edit_user_group_dialog'])
@@ -288,7 +290,7 @@ if ($GLOBALS['is_ajax_request']
  * Displays the links
  */
 if (isset($_REQUEST['viewing_mode']) && $_REQUEST['viewing_mode'] == 'db') {
-    $_REQUEST['db'] = $_REQUEST['checkprivsdb'];
+    $GLOBALS['db'] = $_REQUEST['db'] = $_REQUEST['checkprivsdb'];
 
     $url_query .= '&amp;goto=db_operations.php';
 

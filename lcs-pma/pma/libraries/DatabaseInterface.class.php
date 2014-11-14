@@ -139,10 +139,11 @@ class PMA_DatabaseInterface
             $_SESSION['debug']['queries'][$hash] = array();
             if ($result == false) {
                 $_SESSION['debug']['queries'][$hash]['error']
-                    = '<b style="color:red">' . mysqli_error($link) . '</b>';
+                    = '<b style="color:red">'
+                        . htmlspecialchars(mysqli_error($link)) . '</b>';
             }
             $_SESSION['debug']['queries'][$hash]['count'] = 1;
-            $_SESSION['debug']['queries'][$hash]['query'] = $query;
+            $_SESSION['debug']['queries'][$hash]['query'] = htmlspecialchars($query);
             $_SESSION['debug']['queries'][$hash]['time'] = $time;
         }
 
@@ -1903,7 +1904,8 @@ class PMA_DatabaseInterface
             . ', EVENT_OBJECT_TABLE, ACTION_TIMING, ACTION_STATEMENT'
             . ', EVENT_OBJECT_SCHEMA, EVENT_OBJECT_TABLE, DEFINER'
             . ' FROM information_schema.TRIGGERS'
-            . ' WHERE TRIGGER_SCHEMA= \'' . PMA_Util::sqlAddSlashes($db) . '\'';
+            . ' WHERE TRIGGER_SCHEMA ' . PMA_Util::getCollateForIS() . '='
+            . ' \'' . PMA_Util::sqlAddSlashes($db) . '\'';
 
         if (! empty($table)) {
             $query .= " AND EVENT_OBJECT_TABLE = '"
