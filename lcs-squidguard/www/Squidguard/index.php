@@ -1,5 +1,22 @@
 <?php
-/* squidGuard/index.php */
+/*===========================================
+   Projet LcSE3
+   Equipe Tice academie de Caen
+   SquidGuard
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 14/02/2014
+   ============================================= */
+session_name("Lcs");
+@session_start();
+include "../Annu/includes/check-token.php";
+if (!check_variables()) exit;
+if ( ! isset($_SESSION['login'])) {
+     echo "<script type='text/javascript'>";
+    echo 'alert("Suite \340 une p\351riode d\'inactivit\351 trop longue, votre session a expir\351 .\n\n Vous devez vous r\351authentifier");';
+    echo 'location.href = "../lcs/logout.php"</script>';
+    exit;
+    }
+ $login=$_SESSION['login'];
 
 include "../lcs/includes/headerauth.inc.php";
 include "../Annu/includes/ldap.inc.php";
@@ -11,22 +28,28 @@ $path2wl="/var/lib/squidguard/db/whitelists/";
 
 // Initialisation variables :
 // Methode POST
-$list_del = $_POST['list_del'];
-$list_add = $_POST['list_add'];
-$raz_db = $_POST['raz_db'];
-$webmail = $_POST['webmail'];
-$forums = $_POST['forums'];
-$audiovideo =  $_POST['audiovideo'];
-$blog = $_POST['blog'];
-$ads = $_POST['ads'];
-$malware = $_POST['malware'];
-$marketingware = $_POST['marketingware'];
-$phishing= $_POST['phishing'];
-$redirecteurs = $_POST['redirecteurs'];
-$bl = $_POST['bl'];
-$modif_status = $_POST['modif_status'];
-$action = $_POST['action'];
-
+if (count($_POST)>0) {
+  //configuration objet
+  include ("../lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+  $config = HTMLPurifier_Config::createDefault();
+  $purifier = new HTMLPurifier($config);
+  //purification des variables
+if (isset($_POST['list_del']))$list_del = $purifier->purifyArray($_POST['list_del']);
+if (isset($_POST['list_add']))$list_add = $purifier->purify($_POST['list_add']);
+if (isset($_POST['raz_db']))$raz_db = $purifier->purify($_POST['raz_db']);
+if (isset($_POST['webmail']))$webmail = $purifier->purify($_POST['webmail']);
+if (isset($_POST['forums']))$forums = $purifier->purify($_POST['forums']);
+if (isset($_POST['audiovideo']))$audiovideo = $purifier->purify( $_POST['audiovideo']);
+if (isset($_POST['blog']))$blog = $purifier->purify($_POST['blog']);
+if (isset($_POST['ads']))$ads = $purifier->purify($_POST['ads']);
+if (isset($_POST['malware']))$malware = $purifier->purify($_POST['malware']);
+if (isset($_POST['marketingware']))$marketingware = $purifier->purify($_POST['marketingware']);
+if (isset($_POST['phishing']))$phishing= $purifier->purify($_POST['phishing']);
+if (isset($_POST['redirecteurs']))$redirecteurs = $purifier->purify($_POST['redirecteurs']);
+if (isset($_POST['bl']))$bl =$purifier->purify( $_POST['bl']);
+if (isset($_POST['modif_status']))$modif_status = $purifier->purify($_POST['modif_status']);
+if (isset($_POST['action']))$action = $purifier->purify($_POST['action']);
+}
 // Messages
 $msg_webmail="Bloque l\'acc&egrave;s &agrave; une liste de services de webmail.";
 $msg_forums="Bloque l\'acc&egrave;s &agrave; une liste de forums.";
@@ -61,7 +84,7 @@ function is_ip($ip) {
 function extract_domain($entry) {
 	// Extraction  du nom de domaine
 	$tmp=explode("/",$entry,3);
-	return $tmp[0]; 
+	return $tmp[0];
 }
 
 function read_black_list ($name) {
@@ -74,18 +97,13 @@ function read_black_list ($name) {
 			if ( !ereg ("^#", $tmp ) && $tmp !="" ) {
 				$file_content[$k] = trim($tmp);
 				$k++;
-			}										
+			}
 		}
-		fclose($fd);			
+		fclose($fd);
 	}
 	return $file_content;
 }
 
-list ($idpers,$login)= isauth();
-if ($idpers == "0") {
-	header("Location:$urlauth");
-	exit;
-}
 
 $html  ="<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 $html .= "<html>\n";
@@ -113,11 +131,11 @@ echo $html;
 }
 
 .cadregb {
-	border-left: 1px #333333 solid; 
+	border-left: 1px #333333 solid;
 	border-bottom: 1px #333333 solid;
 }
 .cadredb {
-	border-right: 1px #333333 solid; 
+	border-right: 1px #333333 solid;
 	border-bottom: 1px #333333 solid;
 }
 
@@ -128,7 +146,7 @@ echo $html;
 .cadredbg {
 	border-right: 1px #333333 solid;
 	border-bottom: 1px #333333 solid;
-	border-left: 1px #333333 solid;		
+	border-left: 1px #333333 solid;
 }
 </style>
 
@@ -140,17 +158,17 @@ echo $html;
 // Modif de la configuration squidGuard.conf
 if ( $modif_status ) {
 
-	if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
-	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
- 	if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
-	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
+    if ( $webmail == "webmailOn" ) $cmd = $webmail; else $cmd = "webmailOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
+    if ( $forums == "forumsOn" ) $cmd = $forums; else $cmd = "forumsOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $audiovideo == "audiovideoOn" ) $cmd = $audiovideo; else $cmd = "audiovideoOff";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $blog == "blogOn" ) $cmd = $blog; else $cmd = "blogOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
     if ( $ads == "adsOn" ) $cmd = $ads; else $cmd = "adsOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
+    if ( $malware == "malwareOn" ) $cmd = $malware; else $cmd = "malwareOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
     if ( $marketingware == "marketingwareOn" ) $cmd = $marketingware; else $cmd = "marketingwareOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
@@ -158,19 +176,19 @@ if ( $modif_status ) {
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
     if ( $redirecteurs == "redirecteursOn" ) $cmd = $redirecteurs; else $cmd = "redirecteursOff";
     exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
-	if ( $bl == "bl_full" ) $cmd = $bl; else $cmd = "bl_lcs";
-	exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
- 	if ( $raz_db == "1" ) exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh raz_db");
+    if ( $bl == "bl_full" ) $cmd = $bl; else $cmd = "bl_lcs";
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh $cmd");
+    if ( $raz_db == "1" ) exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh raz_db");
     // Recharger la configuration squid
-    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");	
+    exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");
 }
 
 if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 	echo "<div align='center'><h2>Modification de la &#171;Liste Noire&#187; LCS</h2></div>\n";
-	if ( !$action || ( $action=="Ajouter" && !$list_add ) || ( $action=="Supprimer" && count($list_del) == 0 ) ) {	
+	if ( !$action || ( $action=="Ajouter" && !$list_add ) || ( $action=="Supprimer" && count($list_del) == 0 ) ) {
 		// lecture des fichiers domains pour affichage de l'etat de la liste LCS
 		$file_domains=read_black_list ("domains");
-		// lecture des fichiers urls pour affichage de l'etat de la liste LCS		
+		// lecture des fichiers urls pour affichage de l'etat de la liste LCS
 		$file_urls=read_black_list ("urls");
 		// Affichage du rormulaire d'ajout/suppression
 		$html  = "<form method='POST' action='index.php'>\n";
@@ -181,56 +199,57 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "    <th>&nbsp;</th>\n";
       		$html .= "    <th class='header'>Suppression</th>\n";
     		$html .= "  </tr>\n";
-  		$html .= "</thead>\n";		
+  		$html .= "</thead>\n";
 		$html .= "<tr>\n<td class='cadreg'>\n";
 		$html .= "		<b>DOMAINE ou URL</b> de la forme :<br><br>\n";
 		$html .= "		<center>\n";
 		$html .= "		www.domaine.extension<br>\n";
 		$html .= "		ou<br>\n";
 		$html .= "		adresse IP<br>\n";
-		$html .= "		ou<br>\n";								
+		$html .= "		ou<br>\n";
 		$html .= "		www.domaine.ext/r&eacute;pertoire/fichier&nbsp;\n";
 		$html .= "		</center>\n";
 		$html .= "	</td>\n";
 		$html .= "	<td class='cadred'><textarea name='list_add' rows='12' cols='30'></textarea></td>\n";
 		$html .= "	<td></td>\n";
 		$html .= "	<td align='top' class='cadredg'>\n";
-        	$html .= "        <select size='10' name='list_del[]' multiple='multiple'>\n";
+                                    $html .= "        <select size='10' name='list_del[]' multiple='multiple'>\n";
 		$html .= "          <optgroup label='Domaines'>\n";
    		for ($loop=0; $loop < count($file_domains); $loop++) {
           		$html .=  "           <option value='".$file_domains[$loop]."'>".$file_domains[$loop]."\n";
    		}
 		$html .= "          </optgroup>\n";
-        	$html .= "          <optgroup label='Urls'>\n";
-        	
+                                    $html .= "          <optgroup label='Urls'>\n";
+
    		for ($loop=0; $loop < count($file_urls); $loop++) {
           		$html .=  "           <option value='".$file_urls[$loop]."'>".$file_urls[$loop]."\n";
    		}
 		$html .= "          </optgroup>\n";
-        	$html .= "        </select>\n";				
+                                    $html .= "        </select>\n";
 		$html .= "      </td>\n";
 		$html .= "</tr>\n";
 		$html .= "<tr>\n";
-		$html .= "  <td align='right' class='cadregb'>\n";		
+		$html .= "  <td align='right' class='cadregb'>\n";
 		$html .= "    <input type='reset' value='R&eacute;initialiser'>\n";
 		$html .= "  </td>\n";
 		$html .= "  <td align='center' class='cadredb'>\n";
 		$html .= "    <input type='submit' name='action' value='Ajouter'>\n";
-		$html .= "  </td>\n";	
-		$html .= "	<td></td>\n";	
+		$html .= "  </td>\n";
+		$html .= "	<td></td>\n";
 		$html .= "  <td align='center' class='cadredbg'>\n";
+                                    $html .='<input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
 		$html .= "    <input type='submit' name='action' value='Supprimer'>\n";
-		$html .= "  </td>\n";		
+		$html .= "  </td>\n";
 		$html .= "</tr>\n";
 		$html .= "</table>\n";
 		$html .= "</form>\n";
 		echo $html;
 		if ( $action == "Ajouter" && !$list_add ) echo "<div class='error_msg'>Vous devez compl&eacute;ter le champ de saisie avec au moins un nom de domaine une url ou une adresse IP &agrave; ajouter !</div>";
 		if ( $action == "Supprimer" && count($list_del) == 0 ) echo "<div class='error_msg'>Vous devez choisir dans la liste au moins un &eacute;l&eacute;ment &agrave; supprimer !</div>";
-		
+
 		// Section formulaire de choix type de liste noire et liste noir webmail webmail
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh status", $AllOutPut);
-		$status=explode(" ",$AllOutPut[0]); 
+		$status=explode(" ",$AllOutPut[0]);
 		$html = "<div align='center'><h2>Configuration des &#171;Listes Noires&#187;</h2></div>\n";
 		$html .= "<form method='POST' action='index.php'>\n";
         //$html .= "RAZ liste noire LCS : <input type='checkbox' value='1' name='raz_db'><br>\n";
@@ -251,12 +270,13 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		$html .= "Validation liste noire phishing : <input type='checkbox' value='phishingOn' name='phishing'";
 		if ( $status[6] == "phishingOn") $html.="checked>".msgaide($msg_pishing)."<br>\n"; else $html.=">".msgaide($msg_pishing)."<br>\n";
 		$html .= "Validation liste noire redirecteurs : <input type='checkbox' value='redirecteursOn' name='redirecteurs'";
-		if ( $status[8] == "redirecteursOn") $html.="checked>".msgaide($msg_redir)."<br>\n"; else $html.=">".msgaide($msg_redir)."<br>\n";	
+		if ( $status[8] == "redirecteursOn") $html.="checked>".msgaide($msg_redir)."<br>\n"; else $html.=">".msgaide($msg_redir)."<br>\n";
 		$html .= "Validation liste noire LCS + listes Nationales sur Proxy LCS : <input type='checkbox' value='bl_full' name='bl'";
 		if ( $status[9] == "bl_full") $html.="checked>".msgaide($msg_lcsnat)."<br>\n"; else $html.=">".msgaide($msg_lcsnat)."<br>\n";
-		$html .= "R&eacute;initialisation de la liste noire LCS : <input type='checkbox' value='1' name='raz_db'>".msgaide($msg_raz)."<br>\n";		
+		$html .= "R&eacute;initialisation de la liste noire LCS : <input type='checkbox' value='1' name='raz_db'>".msgaide($msg_raz)."<br>\n";
 		$html .= "	<input type='hidden' value='1' name='modif_status'>\n";
-		$html .= "	<input type='submit' value='Modifier'></td>\n";	
+		$html .= "	<input type='submit' value='Modifier'></td>\n";
+                                     $html .='<input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
 		$html .= "</form>\n";
 		echo $html;
 	} elseif ( $action == "Ajouter" ) {
@@ -270,7 +290,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		for ($loop=0; $loop < count($result); $loop++) {
 			// suppression des espaces
 			$tmp = trim($result[$loop]);
-			// suppression de http:// 
+			// suppression de http://
 			$result[$loop] = ereg_replace ("^http://","",$tmp);
 			// $result[$loop] ne comporte pas de slash => Transfert dans $domains_list[$loop] si le domain est valide
 			if ( strpos($result[$loop],"/") === False  ) {
@@ -278,8 +298,8 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 				if ( is_ip($result[$loop]) == "true" ) {
 				        // L'entree est une adresse ip
 					if ( gethostbyaddr($result[$loop]) != $result[$loop] ) {
-						$domains_list[$i] = $result[$loop];$i++;	
-					}						
+						$domains_list[$i] = $result[$loop];$i++;
+					}
 				} else {
 				        // L'entree n'est pas une adresse ip
 					if ( is_ip( gethostbyname($result[$loop]) ) == "true" ) {
@@ -299,7 +319,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 					if ( is_ip( gethostbyname( extract_domain($result[$loop]) ) ) == "true" ) {
 						$urls_list[$j] = $result[$loop];$j++;
 					}
-				}				
+				}
 			}
 		}
 		if ( count($domains_list) !=0 ) {
@@ -319,8 +339,8 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 					print "<li>".$domains_list[$loop]." ajout&eacute; &agrave; la liste noire<br>\n";
 				}
 			}
-			@fclose($fp);	
-			@fclose($fp1);				
+			@fclose($fp);
+			@fclose($fp1);
 			$add_domains=true;
 		}
 		if ( count($urls_list) !=0 ) {
@@ -340,19 +360,19 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 					print "<li>".$urls_list[$loop]." ajout&eacute; &agrave; la liste noire<br>\n";
 				}
 			}
-			@fclose($fp);	
-			@fclose($fp1);				
+			@fclose($fp);
+			@fclose($fp1);
 			$add_urls=true;
 		}
-		if ( $add_domains || $add_urls ) {			
+		if ( $add_domains || $add_urls ) {
 			// Modification de la blacklist LCS pour AJOUTs
 			exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
-                        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
+                        exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");
 		} else {
 			echo "<h4>Aucune modification n'a &eacute;t&eacute; apport&eacute;e &agrave; la base de donn&eacute;es squidguard .</h4>\n";
 			echo "<div class='error_msg'>Vous devez compl&eacute;ter le champ de saisie avec au moins un nom de domaine une URL ou une adresse IP valide !</div>\n";
-		}		
-		
+		}
+
 	} else {
 		// SUPPRIMER
 		echo "<h4>Les domaines, adresses IP ou urls ci-dessous :</h4>\n<ul>\n";
@@ -368,12 +388,12 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			} else {
 				if ($fp1) fwrite($fp1,"-".$list_del[$loop]."\n");
 				$list_del_urls[$j] = $list_del[$loop];
-				$j++;				
+				$j++;
 				echo "<li>".$list_del[$loop]."<br>";
 			}
 		}
-		@fclose($fp);	
-		@fclose($fp1);	
+		@fclose($fp);
+		@fclose($fp1);
 		echo "</ul>\n<h4>ont &eacute;t&eacute; supprim&eacute;es de la &#171;liste noire&#187; LCS.</h4>\n";
 		if ( count($list_del_domains) > 0 ) {
 			$domain_file = read_black_list ("domains");
@@ -387,7 +407,7 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 			@fclose($fp);
 		}
 		if ( count($list_del_urls) > 0 ) {
-			$urls_file = read_black_list ("urls");		
+			$urls_file = read_black_list ("urls");
 			$result_urls = array_diff($urls_file, $list_del_urls);
 			unlink ($path2bl."urls");
 			$fp=@fopen($path2bl."urls","a");
@@ -399,8 +419,8 @@ if (ldap_get_right("lcs_is_admin",$login)=="Y") {
 		}
 		// Modification de la blacklist LCS pour SUPPRESSIONs
 		exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh lcs");
-      exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");		
-										
+      exec ("/usr/bin/sudo /usr/share/lcs/scripts/squidGuard.sh reload");
+
 	}
 
 } else {
