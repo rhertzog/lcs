@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 03/10/2014
+   VERSION 2.5 du 22/11/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'import d'emploi du temps-
@@ -84,19 +84,48 @@ if (isset($_POST['Valider']))
                 $nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
                 $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
                 //chargement du fichier
-
+		if (file_exists("../json_files/".$_SESSION['login'].".tmp"))
+                    {unlink("../json_files/".$_SESSION['login'].".tmp");}
                 copy($nomTemporaire,"../json_files/".$_SESSION['login'].".ics");
-
+                copy($nomTemporaire,"../json_files/".$_SESSION['login'].".tmp");
                 //test de la presence du fichier uploade
                 if (file_exists("../json_files/".$_SESSION['login'].".ics"))
                     {
+                    //test pronote ou UndeuxTemps
+                    $handle = @fopen("../json_files/".$_SESSION['login'].".tmp","r");
+                    if ($handle) {
+                        $buffer = fgets($handle);
+                        $buffer = fgets($handle);
+                        if (mb_eregi("Pronote",$buffer)) $type_edt= 'pronote';
+                        elseif (mb_eregi("UnDeuxTEMPS",$buffer))
+                            {
+                            $type_edt= 'UnDeuxTEMPS';
+                            //on ajoute un champ UID
+                            $handle2 = @fopen("../json_files/".$_SESSION['login'].".ics", "w");
+                            if ($handle2)
+                                {
+                                while (($buffer = fgets($handle)) !== false)
+                                    {
+                                    if(mb_ereg('BEGIN:VEVENT', $buffer))
+                                        {
+                                         fputs($handle2,$buffer.'UID:'.$i."\n"); $i++;
+                                        }
+                                    else    fputs($handle2,$buffer);
+                                    }
+                                }
+                            fclose($handle2);
+                            }
+                            fclose($handle);
+                    }
                     require_once('../Includes/parsical/SG_iCal.php');
                     setlocale(LC_TIME,"french");
-                   $ICS = "../json_files/".$_SESSION['login'].".ics";
-                        $ical = new SG_iCalReader($ICS);
-                        $query = new SG_iCal_Query();
-                        $evts = $ical->getEvents();
-                        $delta=0;//incremente l'id des evenements repetitifs
+                    $ICS = "../json_files/".$_SESSION['login'].".ics";
+                    $ical = new SG_iCalReader($ICS);
+                    $query = new SG_iCal_Query();
+                    $evts = $ical->getEvents();
+                    $delta=0;//incremente l'id des evenements repetitifs
+                    //echo count($evts);
+                    if ($type_edt=='pronote') {
                         foreach($evts as $id => $ev) {
                                 $mat_tronc=mb_split(':',$ev->getDescription());
                                 $mat_tronc[1]=preg_replace ( "/[\r\n]+/", "@", $mat_tronc[1]);
@@ -112,8 +141,7 @@ if (isset($_POST['Valider']))
                                         "end"   => $ev->getEnd()-1,
                                         "allDay" => $ev->isWholeDay(),
                                         "url" => 'cahier_texte_prof.php?id='.($id+1).'&start='.$ev->getStart()
-
-                                );
+                                         );
                                 if (isset($ev->recurrence)) {
                                         $count = 0;
                                         $start = $ev->getStart();
@@ -131,11 +159,46 @@ if (isset($_POST['Valider']))
                                                 $data[] = $jsEvt;
                                         }
                                 } else
+                                $data[] = $jsEvt;
+                          }
+                       }
+                        //parsage UDT
+                        else {
+                                foreach($evts as $id => $ev) {
+                                $mat_tronc=mb_split(':',$ev->getProperty('summary'));
+                                $mat_tronquee=mb_split(' - ',$ev->getProperty('summary'),2);
+                                $classe=$mat_tronquee[1];
+                                $mat_finale=$mat_tronquee[0];
+                                $jsEvt = array(
+                                        "id" => ($id+$offset+$delta+1),
+                                        "title" => $classe,
+                                        "matiere"=> $mat_finale,
+                                        "start" => $ev->getStart(),
+                                        "end"   => $ev->getEnd()-1,
+                                        "allDay" => $ev->isWholeDay(),
+                                        "url" => 'cahier_texte_prof.php?id='.($id+1).'&start='.$ev->getStart()
+                                         );
+                                if (isset($ev->recurrence)) {
+                                        $count = 0;
+                                        $start = $ev->getStart();
+                                        $freq = $ev->getFrequency();
+                                        if ($freq->firstOccurrence() == $start)
                                         $data[] = $jsEvt;
+                                        while (($next = $freq->nextOccurrence($start)) > 0 ) {
+                                                if (!$next or $count >= 1000) break;
+                                                $count++;$delta++;
+                                                $start = $next;
+                                                $jsEvt["id"] =$id+$offset+$delta;
+                                                $jsEvt["start"] = $start;
+                                                $jsEvt["end"] = $start + $ev->getDuration()-1;
+                                                 $jsEvt["url"] ='cahier_texte_prof.php?id='.($id+$offset+$delta).'&start='.$start;
+                                                $data[] = $jsEvt;
+                                        }
+                                } else
+                                $data[] = $jsEvt;
 
+                            }//fin parsge udt
                         }
-
-
                             $nom_fichier="../json_files/".$_SESSION['login'].".json";
                             if ($_POST['choice']==2)
                                 {
@@ -155,6 +218,8 @@ if (isset($_POST['Valider']))
                             </p>";
                             else $mess1= "<h3 class='ko'>1. Erreur dans l'enregistrement  des données <br /></h3>";
                             unlink($ICS);
+			    if (file_exists("../json_files/".$_SESSION['login'].".tmp"))
+                    		{unlink("../json_files/".$_SESSION['login'].".tmp");}
                     }
                 else $mess1= "<h3 class='ko'>1. Erreur dans le transfert du fichier <br /></h3>";
                 }
@@ -176,8 +241,8 @@ if (isset($_POST['Valider']))
 //affichage du formulaire
 if (!isset($_POST['Valider']))
     {
-    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps &#224; partir d\'un fichier ical (fichier .ics).
-        Vous devez donc pr&#233;alablement r&#233;cup&#233;rer un export de votre <b>E</b>mploi <b>D</b>u <b>T</b>emps au <u>format ical</u>
+    echo ' <p>Ce formulaire vous permet d\'importer votre emploi du temps  &#224; partir d\'un fichier ical (fichier .ics ) issu de Pronote ou UnDeuxTemps .</br>
+        Vous devez  pr&#233;alablement r&#233;cup&#233;rer un export (<b>de l\'ann&#233;e compl&#232;te</b>) de votre <b>E</b>mploi <b>D</b>u <b>T</b>emps au <u>format ical</u>
         <ul><li> soit dans Pronote -> emploi du temps personnel -> ic&#244;ne en haut &#224; droite </li>
         <li> soit aupr&#232;s de la direction de votre &#233;tablissement </li></ul></p>';
     //echo '<p></p>';

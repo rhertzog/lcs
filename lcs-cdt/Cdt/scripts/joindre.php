@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 20/11/2014
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de traitement des pieces jointes-
@@ -21,7 +21,8 @@ if (!isset($_SESSION['login']) )exit;
 
 //si la page est appelee par un utilisateur non prof
 elseif ($_SESSION['cequi']!="prof") exit;
-
+$mess1=$mess2="";
+include ('../Includes/config.inc.php');
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -72,9 +73,7 @@ if (isset($_POST['Valider']))
 "application/pdf",
 "application/xhtml+xml",
 "application/x-shockwave-flash",
-"application/zip",
-"application/force-download",
-"binary/octet-stream");
+"application/zip");
     // Verifier $nom_lien et la debarrasser de tout antislash et tags possibles
     if (strlen($_POST['nom_lien']) > 0) $nom_lien= addSlashes(strip_tags(stripslashes($_POST['nom_lien'])));
     else $nom_lien= "Fichier joint";
@@ -106,7 +105,10 @@ if (isset($_POST['Valider']))
         {
         if ($_FILES["FileSelection1"]["size"]>0)
             {
-            if (in_array($_FILES["FileSelection1"]["type"], $file_autorised))
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $file=$_FILES["FileSelection1"]["tmp_name"];
+            $typefile = $finfo->file($file);
+            if (in_array($typefile, $file_autorised))
                 {
                 $nomFichier=mb_ereg_replace("[^A-Za-z0-9\.\-_]","",$_FILES["FileSelection1"]["name"]);
                 $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
@@ -130,7 +132,7 @@ if (isset($_POST['Valider']))
                     }
                 else $mess1= "<h3 class='nook'> Erreur dans le transfert du fichier"."<br /></h3>";
                 }
-            else $mess1= "<h3 class='nook'> Type de fichier <b>".$_FILES["FileSelection1"]["type"]."</b> non  autoris&eacute; "."<br /></h3>";
+            else $mess1= "<h3 class='nook'> Type de fichier <b>".$typefile."</b> non  autoris&eacute; "."<br /></h3>";
             }
         else $mess1= "<h3 class='nook'> Erreur dans l'importation du fichier "."<br /></h3>";
         }
