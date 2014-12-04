@@ -139,6 +139,7 @@ class elFinder {
 		'7z'    => 'application/x-7z-compressed',
 		// texts
 		'txt'   => 'text/plain',
+		'csv'	  => 'text/plain',
 		'php'   => 'text/x-php',
 		'html'  => 'text/html',
 		'htm'   => 'text/html',
