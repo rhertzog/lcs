@@ -1,0 +1,20 @@
+#!/bin/bash
+# Make csv  dns local Zone on LCS server
+# jLCF <jean-luc.chretien@ac-caen.fr> on 05/12/2014
+#
+
+IN_CONFIG_PATH="/home/admin/Documents/ZonesDNS"
+IN_CONFIG_BIND="/etc/bind"
+LOCALNETCSV="localnetdb.csv"
+LOCALNETDB="localnet.db"
+
+mkdir -p $IN_CONFIG_PATH
+chown -R admin:lcs-users $IN_CONFIG_PATH
+IPNET1=`mysql -se "select value from lcs_db.params where name='iplcs';"| cut -d '.' -f 1`
+IPNET2=`mysql -se "select value from lcs_db.params where name='iplcs';"| cut -d '.' -f 2`
+IPNET3=`mysql -se "select value from lcs_db.params where name='iplcs';"| cut -d '.' -f 3`
+IPNET=$IPNET1.$IPNET2.$IPNET3
+cat $IN_CONFIG_BIND/$LOCALNETDB | grep $IPNET > $IN_CONFIG_PATH/$LOCALNETCSV
+sed -i s/'	IN	A	'/,/g $IN_CONFIG_PATH/$LOCALNETCSV
+chown admin:lcs-users $IN_CONFIG_PATH/$LOCALNETCSV
+chmod -R 770 $IN_CONFIG_PATH

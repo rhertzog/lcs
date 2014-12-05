@@ -7,6 +7,6 @@ Standards-Version: 3.6.2
 
 Package: lcs-dns
 Architecture: all
-Depends: lcs-preinstall, bind9, dnsutils
+Depends: lcs-preinstall, lcs-web, bind9, dnsutils
 Description: Install DNS capability on LCS server
  This package installs a DNS configuration suitable for the LCS project.

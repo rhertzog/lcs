@@ -1,0 +1,99 @@
+#!/bin/bash
+# Configures dns local Zone on LCS server
+# jLCF <jean-luc.chretien@ac-caen.fr> on 05/12/2014
+#
+IN_CONFIG_PATH="/home/admin/Documents/ZonesDNS"
+IN_CONFIG_BIND="/etc/bind"
+### localnet.db
+LOCALNETCSV="localnetdb.csv"
+LOCALNETDB="localnet.db"
+ZONELOCALTMP="localnetdbtmp"
+### lacalnet.rev
+LOCALNETREV="localnet.rev"
+#
+LCSDOMAIN=`hostname -d`
+LCSFULLDOMAIN=`hostname -f`
+LCSNAME=`hostname`
+#### Gen. localnet.db
+echo ";
+\$TTL 604800
+@ IN SOA #LCSDOMAIN# admin.#LCSDOMAIN#. (
+ #SERIAL# ; Serial
+ 604800 ; Refresh
+ 86400 ; Retry
+ 2419200 ; Expire
+ 604800 ) ; Negative Cache TTL
+;
+@	IN	NS	#LCSFULLDOMAIN#." > $IN_CONFIG_PATH/$LOCALNETDB
+cp $IN_CONFIG_PATH/$LOCALNETCSV $IN_CONFIG_PATH/$ZONELOCALTMP 
+sed -i s/\,/"    IN    A    "/g $IN_CONFIG_PATH/$ZONELOCALTMP
+cat $IN_CONFIG_PATH/$ZONELOCALTMP >> $IN_CONFIG_PATH/$LOCALNETDB
+echo "
+www             IN      CNAME   #LCSFULLDOMAIN#
+" >> $IN_CONFIG_PATH/$LOCALNETDB 
+rm -f $IN_CONFIG_PATH/$ZONELOCALTMP
+#
+# Search serial number in localnet.db
+#
+if [ -e /etc/bind/localnet.db ]; then
+    SERIALDB=`grep Serial /etc/bind/localnet.db | cut -d ";" -f 1 | cut -d " " -f 2`
+    if [ -n $SERIALDB ]; then
+        let SERIALDB+=1
+    else
+        SERIALDB="1"
+    fi
+else
+    SERIALDB="1"
+fi
+sed -i s/#SERIAL#/$SERIALDB/g $IN_CONFIG_PATH/$LOCALNETDB
+sed -i s/#LCSDOMAIN#/$LCSDOMAIN/g $IN_CONFIG_PATH/$LOCALNETDB
+sed -i s/#LCSFULLDOMAIN#/$LCSFULLDOMAIN/g $IN_CONFIG_PATH/$LOCALNETDB
+#### Gen. localnet.rev
+echo ";
+\$TTL 604800
+@ IN SOA #LCSDOMAIN#. admin.#LCSDOMAIN#. (
+ #SERIAL# ; Serial
+ 604800 ; Refresh
+ 86400 ; Retry
+ 2419200 ; Expire
+ 604800 ) ; Negative Cache TTL
+;
+@ IN NS #LCSNAME#." > $IN_CONFIG_PATH/$LOCALNETREV
+#
+while read LINE; do
+        NAME=`echo $LINE | cut -d ',' -f 1`
+        ADDRESS=`echo $LINE | cut -d ',' -f 2 | cut -d '.' -f 4`
+        echo "$ADDRESS  IN      PTR     $NAME.$LCSDOMAIN." >> $IN_CONFIG_PATH/$ZONELOCALTMP
+done < $IN_CONFIG_PATH/$LOCALNETCSV
+cat $IN_CONFIG_PATH/$ZONELOCALTMP >> $IN_CONFIG_PATH/$LOCALNETREV
+#
+rm -f $IN_CONFIG_PATH/$ZONELOCALTMP
+#
+# Search serial number in localnet.rev
+#
+if [ -e /etc/bind/localnet.rev ]; then
+    SERIALREV=`grep Serial /etc/bind/localnet.rev | cut -d ";" -f 1 | cut -d " " -f 2`
+    if [ -n $SERIALREV ]; then
+        let SERIALREV+=1
+    else
+        SERIALREV="1"
+    fi
+else
+    SERIALREV="1"
+fi
+sed -i s/#SERIAL#/$SERIALREV/g $IN_CONFIG_PATH/$LOCALNETREV
+sed -i s/#LCSDOMAIN#/$LCSDOMAIN/g $IN_CONFIG_PATH/$LOCALNETREV
+sed -i s/#LCSNAME#/$LCSNAME/g $IN_CONFIG_PATH/$LOCALNETREV
+
+OKDB=`named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETDB | grep OK`
+OKREV=`named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETREV | grep OK`
+
+if [ "$OKDB" == "OK" ] && [ "$OKREV" == "OK" ]; then
+	cp $IN_CONFIG_PATH/$LOCALNETDB $IN_CONFIG_BIND/$LOCALNETDB
+	cp $IN_CONFIG_PATH/$LOCALNETREV $IN_CONFIG_BIND/$LOCALNETREV
+	invoke-rc.d bind9 reload
+	exit 0
+else
+	echo "KO"
+	exit 1	
+fi
