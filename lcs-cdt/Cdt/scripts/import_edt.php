@@ -83,7 +83,9 @@ if (isset($_POST['Valider']))
                 $nomFichier = SansAccent($_FILES["FileSelection1"]["name"]) ;
                 $nomFichier=mb_ereg_replace("'|[[:blank:]]","_",$nomFichier);
                 $nomTemporaire = $_FILES["FileSelection1"]["tmp_name"] ;
-                //chargement du fichier
+		//supp anciens fichiers + chargement du fichier
+                if (file_exists("../json_files/".$_SESSION['login'].".ics"))
+                    {unlink("../json_files/".$_SESSION['login'].".ics");}	
 		if (file_exists("../json_files/".$_SESSION['login'].".tmp"))
                     {unlink("../json_files/".$_SESSION['login'].".tmp");}
                 copy($nomTemporaire,"../json_files/".$_SESSION['login'].".ics");

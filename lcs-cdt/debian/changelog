@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~10) Lcs; urgency=low
+
+  * delete old ics file before statement new ics file
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 11 Dec 2014 17:25:38 +0100
+
 lcs-cdt (2.4.10.~9) Lcs; urgency=low
 
   * add import edt from UDT
