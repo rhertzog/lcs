@@ -1,8 +1,8 @@
 lcs-elfinder (2.4.10~1) Lcs; urgency=low
 
-  * Add csv type 
+  * Update elfinder to 2.0 RC1 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Dec 2014 16:55:19 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2014 16:10:39 +0100
 
 lcs-elfinder (2.4.9) Lcs; urgency=low
 

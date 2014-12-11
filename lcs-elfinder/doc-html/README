@@ -1,88 +1,60 @@
-      _ ______ _           _           
-     | |  ____(_)         | |          
-  ___| | |__   _ _ __   __| | ___ _ __ 
- / _ \ |  __| | | '_ \ / _` |/ _ \ '__|
-|  __/ | |    | | | | | (_| |  __/ |   
- \___|_|_|    |_|_| |_|\__,_|\___|_|   
 
+2012-04-10 Troex Nevelin <troex@fury.scancode.ru>
+* elFinder (2.0 rc1):
+2012-04-10 Troex Nevelin <troex@fury.scancode.ru>
+* elFinder (2.0 rc1):
+- Major code refactor
+- 200+ bugs fixed since beta version
+- 14 new translations
+- FTP volume driver
+- Advanced image editing dialog
+2011-07-10 Troex Nevelin <troex@fury.scancode.ru>
+* elFinder (2.0 beta):
+- New branch 2.x, total rewrite from scratch
+- MySQL volume driver support (as file storage)
+- Full drag & drop support with HTML5 upload
+2011-06-20 Troex Nevelin <troex@fury.scancode.ru>
+* elFinder (1.2):
+- jQuery and UI updated
+- Python connector improvements
+- QuickLook fixed
+- CSS fixes
+- New icons from http://pixel-mixer.com/
+- New languages: Czech, Dutch, German, Greek, French, Hungarian,
+Italian, Japanese, Latvian, Polish, Brazilian Portuguese,
+Slovak, Thai, Turkish, Vietnamese, Simplified Chinese,
+Traditional Chinese
+2010-03-11 Troex Nevelin <troex@fury.scancode.ru>
+* elFinder (1.1):
+- Total rewrite from scratch.
+- New PHP connector.
+- Python connector.
+- Create/Extract archives.
+- QuickLook.
+- "Places" for favorites.
+- Background thumbnails creation.
+- Exteneded configuration options of connector and client.
+- Spanish localization.
+- JSON API description.
+- Full documentation in English, Russian and Spanish.
+- No more use of jquery plugins.
+- Website update.
+- [bugfix] All known bugs fixed.
+2009-11-09 Dmitry Levashov <dio@std42.ru>
+* elFinder (1.0.1):
+- In directory tree panel added arrows to open/close directories
+without entering in.
+- Added shortcut support for copy/cut/paste/delete files and
+folders. For Mac users added Command+Backspace support.
+- Added context menu to current directory.
+- Added help.
+- [bugfix] invalid determing files/folders permissions using
+"perms" options in php connector
 
-
-Description
-===========
-
-Homepage:  http://elrte.org/elfinder
-E-mail:    dev@std42.ru
-
-elFinder is an open-source file manager for web, written in JavaScript using
-jQuery UI. As you can see its creation is inspired by simplicity and convenience
-of Finder program used in Mac OS X operating system.
-
-
-Features
-========
-
- * All general operations with files and folders on a remote server (copy, move,
-   upload, create folder/file, rename, etc.)
- * Two types of view: list and icons
- * High performance of server and client parts
- * Multifile upload
- * Standart methods of file/group selection using mouse or keyboard
- * Context menu
- * "Hot keys" for most actions
- * Move/Copy files with Drag & Drop
- * Work with archives
- * Preview for most types of files
- * Edit text files and resize images
- * "Places" for your favorites
- * Calculate directory sizes
- * Background creation of thumbnails for image files
- * Easy to integrate with web editors (elRTE, CKEditor, TinyMCE)
- * Flexible configuration of access rights, upload file types, user interface
-   and other
- * Extensibility
- * Simple client-server API based on JSON
-
-
-Requirements
-============
-
-Client:
- * Modern browser. elFinder was tested in Firefox 3.5+, Internet Explorer 7 & 8,
-   Safari 4, Opera 10 and Chrome
-Server:
- * Connector, at the moment there are connectors for PHP and Python
- * Image preview requires:
-   - PHP: mogrify utility or GD/Imagick module
-   - Python: PIL library
-
-
-Documentation
-=============
-
-http://elrte.org/redmine/projects/elfinder/wiki
-
-
-Authors
-=======
-
-JavaScript and PHP connector: Dmitry "dio" Levashov <dio@std42.ru>
-Python connector, testing, support: Troex Nevelin <troex@fury.scancode.ru>
-Design: Valentin Razumnyh
-
-We hope our tools will be helpful for you.
-
-
-License:
-========
-
+-----------------
 elFinder is issued under a 3-clauses BSD license.
-elFinder uses and comes with jQuery and jQuery-UI witch are issued under
-MIT and GPL licenses.
 
-
-This software is available under a 3-clauses BSD license:
-
-Copyright (c) 2009-2011, Studio 42 Ltd.
+Copyright (c) 2009-2012, Studio 42
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -96,14 +68,13 @@ modification, are permitted provided that the following conditions are met:
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY Studio 42 Ltd. ''AS IS'' AND ANY
-EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL Studio 42 Ltd. BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+DISCLAIMED. IN NO EVENT SHALL "STUDIO 42" BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
