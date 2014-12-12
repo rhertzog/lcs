@@ -37,11 +37,11 @@ $TITRE = "Connexion SSO";
  * En cas d'installation de type multi-structures, SACoche doit connaître la structure concernée AVANT de lancer SAML ou CAS pour savoir si l'établissement l'a configuré ou pas, et avec quels paramètres !
  * Si on ne sait pas de quel établissement il s'agit, on ne peut pas savoir s'il y a un CAS, un SAML-GEPI, et si oui quelle URL appeler, etc.
  * (sur un même serveur il peut y avoir un SACoche avec authentification reliée à l'ENT de Nantes, un SACoche relié à un LCS, un SACoche relié à un SAML-GEPI, ...)
- * D'autre part on ne peut pas me fier à une éventuelle info transmise par SAML ou CAS ; non seulement car elle arrive trop tard comme je viens de l'expliquer, mais aussi car ce n'est pas le même schéma partout.
+ * D'autre part on ne peut pas se fier à une éventuelle info transmise par SAML ou CAS ; non seulement car elle arrive trop tard comme je viens de l'expliquer, mais aussi car ce n'est pas le même schéma partout.
  * (CAS, par exemple, peut renvoyer le RNE en attribut APRES authentification à une appli donnée, dans une acad donnée, mais pas pour autant à une autre appli, ou dans une autre acad)
  * 
- * Normalement on passe en GET le numéro de la base, mais il se peut qu'une connection directe ne puisse être établie qu'avec l'UAI (connu de l'ENT) en non avec le numéro de la base SACoche (inconnu de l'ENT).
- * Dans ce cas, on récupère le numéro de la base et on le remplace dans les variable PHP, pour ne pas avoir à recommencer ce petit jeu à chaque échange avec le serveur SSO pendant l'authentification.
+ * Normalement on passe en GET le numéro de la base, mais il se peut qu'une connection directe ne puisse être établie qu'avec l'UAI (connu de l'ENT) et non avec le numéro de la base SACoche (inconnu de l'ENT).
+ * Dans ce cas, on récupère le numéro de la base et on le remplace dans les variables PHP, pour ne pas avoir à recommencer ce petit jeu à chaque échange avec le serveur SSO pendant l'authentification.
  * 
  * URL directe mono-structure             : http://adresse.com/?sso
  * URL directe multi-structures normale   : http://adresse.com/?sso&base=[BASE] | http://adresse.com/?sso&id=[BASE] | http://adresse.com/?sso=[BASE]
@@ -150,33 +150,29 @@ if($connexion_mode=='cas')
     exit();
   }
   /**
-   * Renvoie les traces d'une exception sous forme de chaîne
+   * Renvoie les traces d'une exception sous forme d'une chaîne
    *
    * @author Daniel Caillibaud <daniel.caillibaud@sesamath.net>
-   * @param Exception $e L'exception dont on veut les traces
-   * @return string Les traces (une par ligne sous la forme "clé : valeur")
+   * @param  Exception $e L'exception dont on veut les traces
+   * @return string Les traces (liste à puces)
    * @throws Exception 
    */
   function get_string_traces($e)
   {
-    if (!is_a($e, 'Exception'))
-    {
-      throw new Exception('get_string_traces() veut une exception en paramètre');
-    }
-    $traces = $e->getTrace();
-    $str_traces = '';
-    $i = 0;
-    foreach ($traces as $trace)
+    $tab_traces = $e->getTrace();
+    $str_traces = '<ul>';
+    $indice = 0;
+    foreach ($tab_traces as $trace)
     {
       // init
-      $str_traces .= "\n\t".'trace '.$i.' => ';
+      $str_traces .= '<li>'.$indice.' &rArr; ';
       // class
       if (isset($trace['class']))
       {
-        $str_traces .= $trace['class'].' :->: ';
+        $str_traces .= $trace['class'].' &rarr; ';
         unset($trace['class']);
       }
-
+      // function
       if (isset($trace['function']))
       {
         // le nom de la fct concernée
@@ -193,7 +189,7 @@ if($connexion_mode=='cas')
           {
             if (is_scalar($arg))
             {
-              $args_aff[] = $arg;
+              $args_aff[] = str_replace(CHEMIN_DOSSIER_SACOCHE,'',$arg);
             }
             elseif (is_array($arg))
             {
@@ -213,35 +209,36 @@ if($connexion_mode=='cas')
           unset($trace['args']);
         }
         else
-        { // pas d'args, on ajoute les () pour mieux voir que c'est une fct
+        {
+          // pas d'args, on ajoute les () pour mieux voir que c'est une fct
           $str_traces .= '()';
         }
       }
       // line
       if (isset($trace['line']))
       {
-        $str_traces .= ' on line '.$trace['line'];
+        $str_traces .= ' ligne '.$trace['line'];
         unset($trace['line']);
       }
       // file
       if (isset($trace['file']))
       {
-        $str_traces .= ' in '.$trace['file'];
+        $str_traces .= ' dans '.str_replace(CHEMIN_DOSSIER_SACOCHE,'',$trace['file']);
         unset($trace['file']);
       }
       // type
       if (isset($trace['type']))
       {
-        if ( ($trace['type']!='') && ($trace['type']!='->') )
+        if ( ($trace['type']!='') && ($trace['type']!='->') && ($trace['type']!='::') )
         {
-          $str_traces .=  ' type : '.$trace['type'];
+          $str_traces .= ' type : '.$trace['type'];
         }
-        unset($trace['file']);
+        unset($trace['type']);
       }
       // si jamais il reste des trucs...
       if (count($trace))
       {
-        $str_traces .= ' et il reste les infos :';
+        $str_traces .= ' autres infos :';
         foreach ($trace as $key => $value)
         {
           $str_traces .= " ".$key.' : ';
@@ -255,12 +252,19 @@ if($connexion_mode=='cas')
           }
         }
       }
-      $i++;
+      $indice++;
+      $str_traces .= '</li>'."\n";
     }
     return $str_traces;
   }
   try
   {
+    // Pour la méthode error() de phpCAS qui comporte un echo
+    ob_start();
+    // Appeler getVersion() est juste une ruse pour charger l'autoload de phpCAS avant l'appel client()
+    phpCAS::getVersion();
+    // Maintenant que l'autoload est chargé on peut appeler cette méthode avant l'appel client()
+    CAS_GracefullTerminationException::throwInsteadOfExiting();
     // Si besoin, cette méthode statique créé un fichier de log sur ce qui se passe avec CAS
     if(DEBUG_PHPCAS)
     {
@@ -271,9 +275,7 @@ if($connexion_mode=='cas')
         phpCAS::setDebug(PHPCAS_CHEMIN_LOGS.$fichier_nom_debut.'_'.$fichier_nom_fin.'.txt');
       }
     }
-    // Initialiser la connexion avec CAS  ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
-    // $cas_protocole = ($BASE!=100500) ? '2.0' /* CAS_VERSION_2_0 */ : 'S1' /*SAML_VERSION_1_1*/ ;
-    // phpCAS::client($cas_protocole, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
+    // Initialiser la connexion avec CAS ; le premier argument est la version du protocole CAS ; le dernier argument indique qu'on utilise la session existante
     phpCAS::client(CAS_VERSION_2_0, $cas_serveur_host, (int)$cas_serveur_port, $cas_serveur_root, FALSE);
     phpCAS::setLang(PHPCAS_LANG_FRENCH);
     // Surcharge éventuelle des URL
@@ -310,29 +312,33 @@ if($connexion_mode=='cas')
     // A partir de là, l'utilisateur est forcément authentifié sur son CAS.
     // Récupérer l'identifiant (login ou numéro interne...) de l'utilisateur authentifié pour le traiter dans l'application
     $id_ENT = phpCAS::getUser();
+    // Pour mettre fin au ob_start() ; cas 1/2 où il n'y a pas eu d'erreur.
+    ob_end_clean();
   }
-  catch(Exception $e)
+  catch(CAS_Exception $e)
   {
+    // Pour mettre fin au ob_start() ; cas 2/2 où il y a eu une erreur.
+    ob_end_clean();
     // @author Daniel Caillibaud <daniel.caillibaud@sesamath.net>
-    $msg  = 'phpCAS::forceAuthentication() sur '.$cas_serveur_host.' pour l\'établissement n°'.$BASE.' qui utilise l\'ENT '.$connexion_nom.' a planté ';
-    $msg .= $e->getMessage();
+    $msg_log = 'phpCAS::forceAuthentication() sur '.$cas_serveur_host.' pour l\'établissement n°'.$BASE.' qui utilise l\'ENT '.$connexion_nom.' a planté ';
+    $msg_log .= $e->getMessage();
     // on ajoute les traces dans le log
-    $traces = get_string_traces($e);
-    if ($traces != '')
+    $puces_traces = get_string_traces($e);
+    if ($puces_traces != '')
     {
-      $msg .= ' avec la trace :'."\n".$traces;
+      $msg_log .= ' avec la trace :'."\n".$puces_traces;
     }
-    trigger_error($msg);
-    $msg_sup = '<p>Cette erreur peut être due à des paramètres de serveur CAS incorrects, ou un XML renvoyé par le serveur CAS syntaxiquement invalide.</p>';
+    trigger_error($msg_log);
+    $msg_screen = '<p>Cette erreur peut être due à des données invalides renvoyées par le serveur CAS.</p>'.$puces_traces;
     if (is_a($e, 'CAS_AuthenticationException'))
     {
-      exit_CAS_Exception($msg_sup);
+      exit_CAS_Exception($msg_screen);
     }
     else
     {
       // peut-on passer là ?
       trigger_error('phpCAS::forceAuthentication() sur '.$cas_serveur_host.' a planté mais ce n\'est pas une CAS_AuthenticationException');
-      exit_error( 'Erreur d\'authentification CAS' /*titre*/ , '<p>L\'authentification CAS sur '.$cas_serveur_host.' a échouée.<br />'.$e->getMessage().'</p>'.$msg_sup /*contenu*/ );
+      exit_error( 'Erreur d\'authentification CAS' /*titre*/ , '<p>L\'authentification CAS sur '.$cas_serveur_host.' a échouée.<br />'.$e->getMessage().'</p>'.$msg_screen /*contenu*/ );
     }
   }
   // Forcer à réinterroger le serveur CAS en cas de nouvel appel à cette page pour être certain que c'est toujours le même utilisateur qui est connecté au CAS.
@@ -345,8 +351,8 @@ if($connexion_mode=='cas')
   }
   // Vérifier la présence d'une convention valide si besoin,
   // sauf pour les administrateurs qui doivent pouvoir accéder à leur espace pour régulariser la situation (même s'il leur est toujours possible d'utiliser une authentification locale),
-  // et sauf pour les établissements pour tester les connecteurs ENT en PROD, d'identifiants >= 100 000.
-  if( IS_HEBERGEMENT_SESAMATH && (SERVEUR_TYPE=='PROD') && CONVENTION_ENT_REQUISE && (CONVENTION_ENT_START_DATE_MYSQL<=TODAY_MYSQL) && ($auth_DB_ROW['user_profil_type']!='administrateur') && ($BASE<100000) )
+  // et sauf pour les établissements destinés à tester les connecteurs ENT en PROD
+  if( IS_HEBERGEMENT_SESAMATH && (SERVEUR_TYPE=='PROD') && CONVENTION_ENT_REQUISE && (CONVENTION_ENT_START_DATE_MYSQL<=TODAY_MYSQL) && ($auth_DB_ROW['user_profil_type']!='administrateur') && ($BASE<CONVENTION_ENT_ID_ETABL_MAXI) )
   {
     // Vérifier que les paramètres de la base n'ont pas été trafiqués (via une sauvegarde / restauration de la base avec modification intermédiaire) pour passer outre : nom de connexion mis à perso ou modifié etc.
     $connexion_ref = $connexion_departement.'|'.$connexion_nom;
@@ -358,7 +364,7 @@ if($connexion_mode=='cas')
     $tab_info = $tab_connexion_info[$connexion_mode][$connexion_ref];
     if($connexion_nom!='perso')
     {
-      if( (strpos($cas_serveur_host,$tab_info['serveur_host_domain'])===FALSE) || ($tab_info['serveur_port']!=$cas_serveur_port) || ($tab_info['serveur_root']!=$cas_serveur_root) || ($tab_info['serveur_url_login']!=$cas_serveur_url_login) || ($tab_info['serveur_url_logout']!=$cas_serveur_url_logout) || ($tab_info['serveur_url_validate']!=$cas_serveur_url_validate) )
+      if( (strpos($cas_serveur_host,$tab_info['serveur_host_domain'])===FALSE) || ( ($tab_info['serveur_port']!=$cas_serveur_port) && ($tab_info['serveur_port']!='*') ) || ($tab_info['serveur_root']!=$cas_serveur_root) || ($tab_info['serveur_url_login']!=$cas_serveur_url_login) || ($tab_info['serveur_url_logout']!=$cas_serveur_url_logout) || ($tab_info['serveur_url_validate']!=$cas_serveur_url_validate) )
       {
         exit_error( 'Paramètres CAS anormaux' /*titre*/ , 'Les paramètres CAS enregistrés ne correspondent pas à ceux attendus pour la référence "'.$connexion_ref.'" !<br />Un administrateur doit revalider la sélection depuis son menu [Paramétrage&nbsp;établissement] [Mode&nbsp;d\'identification].' /*contenu*/ );
       }
@@ -467,7 +473,6 @@ ProxyPassReverse /sacoche/ https://ent2d.ac-bordeaux.fr/sacoche/
 [HTTP_UID]
 [HTTP_UNSCOPED_AFFILIATION]
 
-
 */
 
 if($connexion_mode=='shibboleth')
@@ -504,7 +509,7 @@ if($connexion_mode=='shibboleth')
     }
     if($auth_resultat_siecle!='ok')
     {
-      // [3] Enfin, on peut regarder HTTP_FREDUVECTEUR, disponible pour les élèves et les parents (pour les parents, on n'a même que ça...).
+      // [3] Enfin, on peut regarder HTTP_FREDUVECTEUR, disponible pour les élèves et les parents (pour les parents, on a même que ça...).
       // Pour les parents, il peut être multivalué, les différentes valeurs étant alors séparées par un « ; » (je ne m'embête pas, je prends la première valeur, inutile de tester tous les enfants, les associations doivent avoir été faites dans SACoche).
       $fr_edu_vecteur = (!empty($_SERVER['HTTP_FREDUVECTEUR'])) ? $_SERVER['HTTP_FREDUVECTEUR'] : '' ;
       $tab_vecteur = explode( ';' , $fr_edu_vecteur );

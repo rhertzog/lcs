@@ -338,6 +338,20 @@ class FileSystem
   }
 
   /**
+   * Ecrire la sortie de FPDF dans un fichier, exit() en cas d'erreur
+   * 
+   * @param string   $fichier_chemin
+   * @param string   $objet_PDF
+   * @return TRUE
+   */
+  public static function ecrire_sortie_PDF($fichier_chemin,$objet_PDF)
+  {
+    @umask(FileSystem::systeme_umask());
+    $objet_PDF->Output($fichier_chemin,'F');
+    return TRUE;
+  }
+
+  /**
    * Ecrire du contenu dans un fichier, retourne un booléen indiquant la réussite de l'opération
    * 
    * @param string   $fichier_chemin
@@ -789,9 +803,9 @@ class FileSystem
     // Si le fichier dépasse les capacités du serveur, il se peut que $_FILES ne soit même pas renseigné.
     if(!isset($_FILES['userfile']))
     {
-      return 'Erreur : problème de transfert ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
+      return 'Problème de transfert ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
     }
-    // Si $_FILES est renseigné, il se peut qu'il y ait quand même eu un dépassement des limites.
+    // Si $_FILES est renseigné, il se peut qu'il y ait quand même eu un dépassement des limites ou un problème d'écriture.
     $tab_file = $_FILES['userfile'];
     $fichier_tmp_nom    = $tab_file['name'];
     $fichier_tmp_chemin = $tab_file['tmp_name'];
@@ -799,7 +813,9 @@ class FileSystem
     $fichier_tmp_erreur = $tab_file['error'];
     if( (!file_exists($fichier_tmp_chemin)) || (!$fichier_tmp_taille) || ($fichier_tmp_erreur) )
     {
-      return 'Problème de récupération ! Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
+      $alerte_open_basedir = InfoServeur::is_open_basedir() ? ' Variable serveur "open_basedir" mal renseignée ?' : '' ;
+      $alerte_upload_size = ' Fichier trop lourd ? '.InfoServeur::minimum_limitations_upload();
+      return 'Problème de récupération !'.$alerte_open_basedir.$alerte_upload_size;
     }
     // Vérification d'une sécurité sur le nom
     if($fichier_tmp_nom{0}=='.')

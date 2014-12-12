@@ -67,12 +67,12 @@ else
   <tbody>
     <?php
     // Lister les demandes d'évaluation
-    $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_demandes_eleve($_SESSION['USER_ID']);
+    $DB_TAB = DB_STRUCTURE_DEMANDE::DB_lister_demandes_eleve($_SESSION['USER_ID']);
     if(!empty($DB_TAB))
     {
       foreach($DB_TAB as $DB_ROW)
       {
-        $destinataires = ($DB_ROW['prof_id']) ? html(afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE)) : 'enseignants concernés' ;
+        $destinataires = ($DB_ROW['prof_id']) ? html(afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE,$DB_ROW['user_genre'])) : 'enseignants concernés' ;
         $score  = ($DB_ROW['demande_score']!==null) ? $DB_ROW['demande_score'] : FALSE ;
         $statut = ($DB_ROW['demande_statut']=='eleve') ? 'demande non traitée' : 'évaluation en préparation' ;
         $texte_lien_avant = ($DB_ROW['item_lien']) ? '<a target="_blank" href="'.html($DB_ROW['item_lien']).'">' : '';
@@ -84,7 +84,7 @@ else
         echo  '<td>'.html($DB_ROW['matiere_nom']).'</td>';
         echo  '<td>'.$destinataires.'</td>';
         echo  '<td>'.$texte_lien_avant.html($DB_ROW['item_ref']).$texte_lien_apres.' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.html(html($DB_ROW['item_nom'])).'" /></td>'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
-        echo  Html::td_score( $score , 'score' /*methode_tri*/ , '' /*pourcent*/ );
+        echo  str_replace( '</td>' , ' <q class="actualiser" title="Actualiser le score (enregistré lors de la demande)."></q></td>' , Html::td_score( $score , 'score' /*methode_tri*/ , '' /*pourcent*/ ) );
         echo  '<td>'.$statut.'</td>';
         echo  '<td>'.$commentaire.'</td>';
         echo  '<td class="nu"><q class="supprimer" title="Supprimer cette demande d\'évaluation."></q></td>';

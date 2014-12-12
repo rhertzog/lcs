@@ -95,6 +95,7 @@ Layout::add( 'js_inline_before' , 'var tab_sujets     = new Array();' );
 Layout::add( 'js_inline_before' , 'var tab_corriges   = new Array();' );
 Layout::add( 'js_inline_before' , 'var tab_niveau     = new Array();' );
 Layout::add( 'js_inline_before' , 'var tab_groupe     = new Array();' );
+Layout::add( 'js_inline_before' , 'var user_id        = '.$_SESSION['USER_ID'].';' );
 Layout::add( 'js_inline_before' , 'var reception_todo = '.$reception_todo.';' );
 Layout::add( 'js_inline_before' , 'var reception_items_texte = "'.$txt_items.'";' );
 Layout::add( 'js_inline_before' , 'var reception_users_texte = "'.$txt_users.'";' );
@@ -102,8 +103,6 @@ Layout::add( 'js_inline_before' , 'var reception_items_liste = "'.implode('_',$t
 Layout::add( 'js_inline_before' , 'var reception_users_liste = "'.implode('_',$tab_users).'";' );
 Layout::add( 'js_inline_before' , 'var auto_voir_devoir_id = '.$auto_voir_devoir_id.';' );
 Layout::add( 'js_inline_before' , 'var auto_voir_groupe_id = '.$auto_voir_groupe_id.';' );
-
-require(CHEMIN_DOSSIER_INCLUDE.'fonction_affichage_sections_communes.php');
 
 // Formulaires de choix des élèves et de choix d'une période dans le cas d'une évaluation sur un groupe
 $select_eleve   = '';
@@ -141,10 +140,18 @@ $select_selection_items = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_sele
 $tab_groupes = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_groupes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_groupes_etabl() ;
 Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode*/ , FALSE /*tab_groupe_niveau*/ );
 
+// Longueur max pour un enregistrement audio (de toutes façons limitée techniquement à 120s).
+// Selon les tests effectués la taille du MP3 enregistrée est de 3,9 Ko/s.
+$AUDIO_DUREE_MAX = min( 120 , FICHIER_TAILLE_MAX/4 );
+
 // Javascript
+Layout::add( 'js_inline_before' , 'var AUDIO_DUREE_MAX = '.$AUDIO_DUREE_MAX.';' );
 Layout::add( 'js_inline_before' , '// <![CDATA[' );
 Layout::add( 'js_inline_before' , 'var select_groupe = "'.str_replace('"','\"','<option value=""></option>'.$select_eleve).'";' );
 Layout::add( 'js_inline_before' , '// ]]>' );
+
+Form::load_choix_memo();
+$select_eleves_ordre = Form::afficher_select(Form::$tab_select_eleves_ordre , 'f_eleves_ordre' /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['eleves_ordre'] /*selection*/ , '' /*optgroup*/);
 ?>
 
 <ul class="puce">
@@ -175,7 +182,7 @@ Layout::add( 'js_inline_before' , '// ]]>' );
       <th>Date visible</th>
       <th>Fin auto-éval.</th>
       <th><?php echo($TYPE=='groupe')?'Classe / Groupe':'Élèves'; ?></th>
-      <th>Collègues</th>
+      <th>Partage</th>
       <th>Description</th>
       <th>Items</th>
       <th>Fichiers</th>
@@ -200,13 +207,14 @@ Layout::add( 'js_inline_before' , '// ]]>' );
     </p>
     <p>
       <?php if($TYPE=='groupe'): ?>
-        <label class="tab" for="f_groupe">Classe / groupe :</label><select id="f_groupe" name="f_groupe"><option></option></select><br />
+        <label class="tab" for="f_groupe">Classe / groupe :</label><select id="f_groupe" name="f_groupe"><option></option></select> <span id="bloc_ordre" class="hide"><?php echo $select_eleves_ordre ?></span><br />
         <span id="alerte_groupe" class="hide danger b">Attention : si vous modifiez le groupe, alors les notes de l'évaluation seront effacées !<br />En cas de même évaluation sur plusieurs groupes, il faut la <span class="u">dupliquer</span> et non la <span class="u">modifier</span>.</span><br />
       <?php endif; ?>
       <?php if($TYPE=='selection'): ?>
-        <label class="tab" for="f_eleve_nombre">Élèves :</label><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /><q class="choisir_eleve" title="Voir ou choisir les élèves."></q><br />
+        <label class="tab" for="f_eleve_nombre">Élèves :</label><input id="f_eleve_nombre" name="f_eleve_nombre" size="10" type="text" value="" readonly /><input id="f_eleve_liste" name="f_eleve_liste" type="hidden" value="" /> <?php echo $select_eleves_ordre ?><q class="choisir_eleve" title="Voir ou choisir les élèves."></q><br />
       <?php endif; ?>
-      <label class="tab" for="f_prof_nombre">Collègues :</label><input id="f_prof_nombre" name="f_prof_nombre" size="10" type="text" value="" readonly /><q class="choisir_prof" title="Voir ou choisir les collègues."></q><input id="f_prof_liste" name="f_prof_liste" type="hidden" value="" />
+      <label class="tab" for="f_prof_nombre">Partage collègues :</label><input id="f_prof_nombre" name="f_prof_nombre" size="10" type="text" value="" readonly /><q id="choisir_prof" class="choisir_prof" title="Voir ou choisir les collègues."></q><input id="f_prof_liste" name="f_prof_liste" type="hidden" value="" />
+      <span id="choisir_prof_non" class="astuce">Choix restreint au propriétaire de l'évaluation.</span>
     <p>
       <label class="tab" for="f_description">Description :</label><input id="f_description" name="f_description" type="text" value="" size="50" maxlength="60" /><br />
       <label class="tab" for="f_compet_nombre">Items :</label><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="" readonly /><q class="choisir_compet" title="Voir ou choisir les items."></q><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="" />
@@ -252,8 +260,17 @@ Layout::add( 'js_inline_before' , '// ]]>' );
 </form>
 
 <form action="#" method="post" id="zone_profs" class="hide">
-  <div class="astuce">Vous pouvez permettre à des collègues de co-saisir les notes de ce devoir (et de le dupliquer).</div>
-  <?php echo afficher_form_element_checkbox_collegues() ?>
+  <div class="astuce">Résumé des différents niveaux de droits (les plus élevés incluent les plus faibles)&nbsp;:</div>
+  <ul class="puce">
+    <li>0 &rarr; <span class="select_img droit_x">&nbsp;</span> aucun droit</li>
+    <li>1 &rarr; <span class="select_img droit_v">&nbsp;</span> visualiser le devoir (et le dupliquer)</li>
+    <li>2 &rarr; <span class="select_img droit_s">&nbsp;</span> co-saisir les notes du devoir</li>
+    <li>3 &rarr; <span class="select_img droit_m">&nbsp;</span> modifier les paramètres (élèves, items, &hellip;) <span class="danger">Risqué : à utiliser en connaissance de cause&nbsp;!</span></li>
+  </ul>
+  <hr />
+  <span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion#toggle_evaluations_profs">DOC : Associer des collègues à une évaluation.</a></span>
+  <hr />
+  <?php echo Html::afficher_form_element_select_collegues( array( 1=>'v' , 2=>'s' , 3=>'m' ) ) ?>
   <div style="clear:both"><button id="valider_profs" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_profs" type="button" class="annuler">Annuler / Retour</button></div>
 </form>
 
@@ -261,7 +278,7 @@ Layout::add( 'js_inline_before' , '// ]]>' );
 <form action="#" method="post" id="zone_eleve" class="arbre_dynamique hide">
   <div><button id="indiquer_eleves_deja" type="button" class="eclair">Indiquer les élèves associés à une évaluation de même nom</button> depuis le <input id="f_date_deja" name="f_date_deja" size="9" type="text" value="<?php echo jour_debut_annee_scolaire('french'); ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q><label id="msg_indiquer_eleves_deja"></label></div>
   <p>Cocher ci-dessous (<span class="astuce">cliquer sur un intitulé pour déployer son contenu</span>) :</p>
-  <?php echo afficher_form_element_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
+  <?php echo Html::afficher_form_element_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
   <p id="alerte_eleves" class="fluo"><span class="danger b">Une évaluation dont la saisie a commencé ne devrait pas voir ses élèves modifiés.<br />En particulier, retirer des élèves d'une évaluation efface les scores correspondants déjà saisis !</span></p>
   <div><span class="tab"></span><button id="valider_eleve" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_eleve" type="button" class="annuler">Annuler / Retour</button></div>
 </form>
@@ -298,18 +315,20 @@ Layout::add( 'js_inline_before' , '// ]]>' );
 <?php
 // Fabrication des éléments select du formulaire
 Form::load_choix_memo();
-$select_cart_contenu = Form::afficher_select(Form::$tab_select_cart_contenu , 'f_contenu'     /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['cart_contenu'] /*selection*/ , '' /*optgroup*/);
-$select_cart_detail  = Form::afficher_select(Form::$tab_select_cart_detail  , 'f_detail'      /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['cart_detail']  /*selection*/ , '' /*optgroup*/);
-$select_orientation  = Form::afficher_select(Form::$tab_select_orientation  , 'f_orientation' /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['orientation']  /*selection*/ , '' /*optgroup*/);
-$select_couleur      = Form::afficher_select(Form::$tab_select_couleur      , 'f_couleur'     /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['couleur']      /*selection*/ , '' /*optgroup*/);
-$select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f_marge_min'   /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['marge_min']    /*selection*/ , '' /*optgroup*/);
+$select_cart_detail   = Form::afficher_select(Form::$tab_select_cart_detail   , 'f_detail'      /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['cart_detail']   /*selection*/ , '' /*optgroup*/);
+$select_cart_cases_nb = Form::afficher_select(Form::$tab_select_cart_cases_nb , 'f_cases_nb'    /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['cart_cases_nb'] /*selection*/ , '' /*optgroup*/);
+$select_cart_contenu  = Form::afficher_select(Form::$tab_select_cart_contenu  , 'f_contenu'     /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['cart_contenu']  /*selection*/ , '' /*optgroup*/);
+$select_orientation   = Form::afficher_select(Form::$tab_select_orientation   , 'f_orientation' /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['orientation']   /*selection*/ , '' /*optgroup*/);
+$select_couleur       = Form::afficher_select(Form::$tab_select_couleur       , 'f_couleur'     /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['couleur']       /*selection*/ , '' /*optgroup*/);
+$select_marge_min     = Form::afficher_select(Form::$tab_select_marge_min     , 'f_marge_min'   /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['marge_min']     /*selection*/ , '' /*optgroup*/);
 ?>
 
 <form action="#" method="post" id="zone_imprimer" class="hide"><fieldset>
   <h2>Imprimer le cartouche d'une évaluation</h2>
   <p class="b" id="titre_imprimer"></p>
-  <label class="tab" for="f_contenu">Remplissage :</label><?php echo $select_cart_contenu ?><br />
   <label class="tab" for="f_detail">Détail :</label><?php echo $select_cart_detail ?><br />
+  <label class="tab" for="f_cases_nb">Nombre de cases :</label><?php echo $select_cart_cases_nb ?><br />
+  <label class="tab" for="f_contenu">Remplissage :</label><?php echo $select_cart_contenu ?><br />
   <div class="toggle">
     <span class="tab"></span><a href="#" class="puce_plus toggle">Afficher plus d'options</a>
   </div>
@@ -322,6 +341,7 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   <input id="imprimer_ref" name="f_ref" type="hidden" value="" />
   <input id="imprimer_date_fr" name="f_date_fr" type="hidden" value="" />
   <input id="imprimer_groupe_nom" name="f_groupe_nom" type="hidden" value="" />
+  <input id="imprimer_eleves_ordre" name="f_eleves_ordre" type="hidden" value="" />
   <input id="imprimer_description" name="f_description" type="hidden" value="" />
   <p id="zone_imprimer_retour"></p>
 </fieldset></form>
@@ -358,6 +378,7 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
     <input id="saisir_ref" name="f_ref" type="hidden" value="" />
     <input id="saisir_date_fr" name="f_date_fr" type="hidden" value="" />
     <input id="saisir_date_visible" name="f_date_visible" type="hidden" value="" />
+    <input id="saisir_eleves_ordre" name="f_eleves_ordre" type="hidden" value="" />
     <input id="saisir_description" name="f_description" type="hidden" value="" />
     <input id="saisir_fini" name="f_fini" type="hidden" value="" />
   </p>
@@ -395,6 +416,7 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
   <h2>Voir les acquisitions à une évaluation</h2>
   <p>
     <b id="titre_voir"></b> <button id="fermer_zone_voir" type="button" class="retourner">Retour</button> <label id="ajax_msg_voir"></label>
+    <input id="voir_ref" name="f_ref" type="hidden" value="" />
   </p>
   <table id="table_voir" class="scor_eval">
     <tbody><tr><td></td></tr></tbody>
@@ -412,6 +434,70 @@ $select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f
     <p class="astuce">Pour importer un fichier <em>csv</em> de notes complété, choisir "<em>Saisir les acquisitions</em>".</p>
   </div>
 </div>
+
+<div id="zone_voir_commentaires" class="hide">
+  <h2>Consulter un commentaire pour un élève à une évaluation</h2>
+  <p id="titre_voir_commentaires" class="b"></p>
+  <div id="report_texte">
+    <h3>Commentaire écrit</h3>
+    <textarea id="f_voir_texte" rows="10" cols="60" readonly></textarea>
+  </div>
+  <div id="report_audio">
+    <h3>Commentaire audio</h3>
+    <audio id="f_ecouter_audio" controls="" src="" class="prof"><span class="probleme">Votre navigateur est trop ancien, il ne supporte pas la balise [audio] !</span></audio>
+  </div>
+</div>
+
+<form action="#" method="post" id="zone_enregistrer_texte" class="hide"><fieldset>
+  <h2>Commentaire écrit personnalisé</h2>
+  <hr />
+  <ul class="puce">
+    <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion#toggle_evaluations_commentaire_texte">DOC : Commentaire écrit personnalisé.</a></span></li>
+  </ul>
+  <hr />
+  <p class="b">
+    <label class="tab">Élève :</label><span id="titre_enregistrer_texte"></span>
+  </p>
+  <div>
+    <label for="f_msg_texte" class="tab">Message :</label><textarea name="f_msg_data" id="f_msg_texte" rows="10" cols="60"></textarea><br />
+    <span class="tab"></span><label id="f_msg_texte_reste"></label>
+  </div>
+  <p>
+    <span class="tab"></span><button id="valider_enregistrer_texte" type="button" class="valider">Valider</button> <button id="annuler_enregistrer_texte" type="button" class="annuler">Annuler</button> <label id="ajax_msg_enregistrer_texte">&nbsp;</label>
+    <input id="enregistrer_texte_ref" name="f_ref" type="hidden" value="" />
+    <input id="enregistrer_texte_eleve_id" name="f_eleve_id" type="hidden" value="" />
+    <input id="enregistrer_texte_msg_url" name="f_msg_url" type="hidden" value="" />
+    <input id="enregistrer_texte_msg_autre" name="f_msg_autre" type="hidden" value="" />
+  </p>
+</fieldset></form>
+
+<form action="#" method="post" id="zone_enregistrer_audio" class="hide"><fieldset>
+  <h2>Commentaire audio personnalisé</h2>
+  <hr />
+  <ul class="puce">
+    <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_professeur__evaluations_gestion#toggle_evaluations_commentaire_audio">DOC : Commentaire audio personnalisé.</a></span></li>
+    <li><span class="danger">Fonctionnalité expérimentale ! <span class="fluo">Usage du navigateur Chrome quasi-obligatoire !</span></span></li>
+    <li><span class="astuce">Enregistrement de <?php echo $AUDIO_DUREE_MAX ?> s maximum, conservé <?php echo FICHIER_DUREE_CONSERVATION ?> mois. <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="La taille maximale autorisée et la durée de conservation des fichiers sont fixées par le webmestre.<br />Dans tous les cas l'enregistrement ne peut techniquement pas dépasser 120 secondes." /></span></li>
+  </ul>
+  <hr />
+  <p class="b">
+    <label class="tab">Élève :</label><span id="titre_enregistrer_audio"></span>
+  </p>
+  <p>
+    <label class="tab">Enregistrement :</label><span id="record_start" class="hide"><button id="audio_enregistrer_start" type="button" class="enregistrer_start">Démarrer</button></span><span id="record_stop" class="hide"><button id="audio_enregistrer_stop" type="button" class="enregistrer_stop">Arrêter</button></span> <label id="ajax_msg_enregistrer_audio">&nbsp;</label>
+  </p>
+  <p>
+    <label class="tab">Lecture :</label><span id="record_play" class="hide"><audio id="audio_lecture" controls="" src="" class="prof"><span class="probleme">Votre navigateur est trop ancien, il ne supporte pas la balise [audio] !</span></audio></span> <span id="record_delete" class="hide"><button id="audio_enregistrer_supprimer" type="button" class="supprimer">Supprimer</button></span>
+  </p>
+  <div>
+    <span class="tab"></span><button id="fermer_enregistrer_audio" type="button" class="retourner">Retour</button>
+    <input id="enregistrer_audio_ref" name="f_ref" type="hidden" value="" />
+    <input id="enregistrer_audio_eleve_id" name="f_eleve_id" type="hidden" value="" />
+    <input id="enregistrer_audio_msg_url" name="f_msg_url" type="hidden" value="" />
+    <input id="enregistrer_audio_msg_autre" name="f_msg_autre" type="hidden" value="" />
+    <input id="enregistrer_audio_msg_data" name="f_msg_data" type="hidden" value="" />
+  </div>
+</fieldset></form>
 
 <div id="zone_confirmer_fermer_saisir" class="hide">
   <p class="danger">Des saisies ont été effectuées, mais n'ont pas été enregistrées.</p>

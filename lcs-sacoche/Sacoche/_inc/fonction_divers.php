@@ -39,12 +39,12 @@ function html_decode($text)
 }
 
 /**
- * Fonctions utilisées avec array_filter() ; teste si différent de FALSE.
+ * Fonctions utilisées avec array_filter() ; teste si différent de FALSE et de NULL.
  * @return bool
  */
-function non_nul($n)
+function non_vide($n)
 {
-  return $n!==FALSE ;
+  return ($n!==FALSE) && ($n!==NULL) ;
 }
 /**
  * Fonctions utilisées avec array_filter() ; teste si différent de zéro.
@@ -52,7 +52,7 @@ function non_nul($n)
  */
 function non_zero($n)
 {
-  return $n!=0 ;
+  return $n!==0 ;
 }
 /**
  * Fonctions utilisées avec array_filter() ; teste si strictement positif.
@@ -794,19 +794,23 @@ function afficher_profils_droit_specifique($listing_droits_sigles,$format)
 }
 
 /**
- * Afficher un nom suivi d'un prénom (ou le contraire) dont l'un ou les deux sont éventuellement remplacés par leur initiale
+ * Afficher un nom suivi d'un prénom (ou le contraire) dont l'un ou les deux sont éventuellement remplacés par leur initiale.
+ * En cas de civilité présente, la deuxième partie sera retirée si seule son initiale est demandée.
  *
  * @param string $partie1
  * @param bool   $is_initiale1
  * @param string $partie2
  * @param bool   $is_initiale2
+ * @param string $genre   (facultatif)
  * @return string
  */
-function afficher_identite_initiale( $partie1 , $is_initiale1 , $partie2 , $is_initiale2 )
+function afficher_identite_initiale( $partie1 , $is_initiale1 , $partie2 , $is_initiale2 , $genre='I' )
 {
+  $tab_civilite = array( 'M'=>'M.' , 'F'=>'Mme' );
+  $civilite = ($genre!='I') ? $tab_civilite[$genre] : '' ;
   $partie1 = ( $is_initiale1 && strlen($partie1) ) ? $partie1{0}.'.' : $partie1 ;
   $partie2 = ( $is_initiale2 && strlen($partie2) ) ? $partie2{0}.'.' : $partie2 ;
-  return trim($partie1.' '.$partie2);
+  return ($civilite && $is_initiale2) ? trim($civilite.' '.$partie1) : trim($civilite.' '.$partie1.' '.$partie2) ;
 }
 
 /**

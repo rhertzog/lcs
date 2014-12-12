@@ -38,20 +38,13 @@ if( ($_SESSION['USER_PROFIL_TYPE']!='administrateur') && !test_user_droit_specif
 
 // Formulaire de choix d'une période (utilisé deux fois)
 // Formulaire des classes
-if( ($_SESSION['USER_PROFIL_TYPE']=='administrateur') || ($_SESSION['USER_PROFIL_TYPE']=='directeur') )
+if( ($_SESSION['USER_PROFIL_TYPE']=='administrateur') || ($_SESSION['USER_JOIN_GROUPES']=='all') ) // Ce dernier test laisse par exemple passer les directeurs et les CPE, ces derniers ayant un 'USER_PROFIL_TYPE' à 'professeur'.
 {
   $tab_groupes = DB_STRUCTURE_COMMUN::DB_OPT_classes_etabl(FALSE /*with_ref*/);
 }
-elseif($_SESSION['USER_PROFIL_TYPE']=='professeur')
+else // Ne passent ici que les professeurs
 {
-  if(test_droit_specifique_restreint($_SESSION['DROIT_OFFICIEL_SAISIR_ASSIDUITE'],'ONLY_PP'))
-  {
-    $tab_groupes = DB_STRUCTURE_COMMUN::DB_OPT_classes_prof_principal($_SESSION['USER_ID']);
-  }
-  else
-  {
-    $tab_groupes = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_classes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_etabl(FALSE /*with_ref*/) ;
-  }
+  $tab_groupes = (test_droit_specifique_restreint($_SESSION['DROIT_OFFICIEL_SAISIR_ASSIDUITE'],'ONLY_PP')) ? DB_STRUCTURE_COMMUN::DB_OPT_classes_prof_principal($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_professeur($_SESSION['USER_ID']) ;
 }
 
 $select_periode = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_periodes_etabl() ,      FALSE /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , '' /*optgroup*/);
@@ -75,15 +68,24 @@ Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode
     <label class="tab" for="f_choix_principal">Origine :</label>
     <select id="f_choix_principal" name="f_choix_principal">
       <option value=""></option>
-      <option value="import_siecle">issu de SIÈCLE</option>
-      <option value="import_gepi">issu de GEPI</option>
+      <option value="import_sconet">Sconet Absences</option>
+      <option value="import_siecle">Siècle Vie Scolaire</option>
+      <option value="import_gepi">GEPI Absences 2</option>
+      <option value="import_pronote">Pronote</option>
     </select>
   </p>
+  <ul class="puce hide" id="puce_import_sconet">
+    <li><span class="danger">Le ministère a remplacé <em>Sconet Absences</em> par <em>Siècle Vie Scolaire</em> à la rentrée 2014.</span></li>
+    <li>Indiquer le fichier <em>SIECLE_exportAbsence.xml</em> : <button type="button" id="import_sconet" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_sconet">&nbsp;</label></li>
+  </ul>
   <ul class="puce hide" id="puce_import_siecle">
-    <li>Indiquer le fichier <em>SIECLE_exportAbsence.xml</em> : <button type="button" id="import_siecle" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_siecle">&nbsp;</label></li>
+    <li><span class="danger"><em>Siècle Vie Scolaire</em> ne dispose pas de fonctionnalité d'export&nbsp;! Une demande d'évolution a été déposée auprès de l'équipe nationale&hellip;<button type="button" id="import_siecle" class="hide">Parcourir...</button></span></li>
   </ul>
   <ul class="puce hide" id="puce_import_gepi">
     <li>Indiquer le fichier <em>extraction_abs_plus_*.csv</em> : <button type="button" id="import_gepi" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_gepi">&nbsp;</label></li>
+  </ul>
+  <ul class="puce hide" id="puce_import_pronote">
+    <li>Indiquer le fichier <em>EXP_AbsencesEleves.xml</em> ou <em>EXP_Retards.xml</em> : <button type="button" id="import_pronote" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_pronote">&nbsp;</label></li>
   </ul>
 </form>
 
@@ -102,11 +104,16 @@ Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode
 
 <div id="zone_confirmer" class="hide">
   <h2>Confirmation d'import</h2>
+  <div class="hide" id="comfirm_import_sconet">
+    <p class="astuce">Ce fichier, généré le <b id="sconet_date_export"></b>, comporte les données de la période <b id="sconet_libelle"></b>, allant du <b id="sconet_date_debut"></b> au <b id="sconet_date_fin"></b>.</p>
+  </div>
   <div class="hide" id="comfirm_import_siecle">
-    <p class="astuce">Ce fichier, généré le <b id="date_export"></b>, comporte les données de la période <b id="periode_libelle"></b>, allant du <b id="periode_date_debut"></b> au <b id="periode_date_fin"></b>.</p>
   </div>
   <div class="hide" id="comfirm_import_gepi">
-    <p class="astuce">Ce fichier comporte les données de <b id="eleves_nb"></b> élève(s).</p>
+    <p class="astuce">Ce fichier comporte les données de <b id="gepi_eleves_nb"></b> élève(s).</p>
+  </div>
+  <div class="hide" id="comfirm_import_pronote">
+    <p class="astuce">Ce fichier comporte les <b id="pronote_objet"></b> de <b id="pronote_eleves_nb"></b> élève(s) entre le <b id="pronote_date_debut"></b> et le <b id="pronote_date_fin"</p>
   </div>
   <p>Confirmez-vous vouloir importer ces données dans <em>SACoche</em> pour la période <b id="periode_import"></b> ?</p>
   <form action="#" method="post">

@@ -110,7 +110,7 @@ if($action=='afficher')
     exit('Erreur avec les données transmises !');
   }
   // On récupère les élèves
-  $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , TRUE /*statut*/ , $tab_types[$groupe_type] , $groupe_id ) ;
+  $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , TRUE /*statut*/ , $tab_types[$groupe_type] , $groupe_id , 'alpha' /*eleves_ordre*/ ) ;
   if(empty($DB_TAB))
   {
     exit('Aucun élève trouvé dans ce regroupement.');
@@ -173,7 +173,8 @@ if( ($action=='envoyer_zip') ) //  $masque non encore testé car non récupéré
   }
   // Récupérer la liste des élèves et fabriquer le nom de fichier attendu correspondant à chacun
   $tab_bad = array( '[sconet_id]' , '[sconet_num]' , '[reference]' , '[nom]' , '[prenom]' , '[login]' , '[ent_id]' );
-  $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , 1 /*statut*/ , 'all' /*groupe_type*/ , 0 /*groupe_id*/ , 'user_id,user_id_ent,user_sconet_id,user_sconet_elenoet,user_reference,user_nom,user_prenom,user_login' );
+  $champs = 'user_id, user_id_ent, user_sconet_id, user_sconet_elenoet, user_reference, user_nom, user_prenom, user_login' ;
+  $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , 1 /*statut*/ , 'all' /*groupe_type*/ , 0 /*groupe_id*/ , 'alpha' /*eleves_ordre*/ , $champs );
   if(!empty($DB_TAB))
   {
     foreach($DB_TAB as $DB_ROW)
@@ -209,15 +210,18 @@ if( ($action=='envoyer_zip') ) //  $masque non encore testé car non récupéré
       {
         $tbody .= '<tr><td class="r">'.html($fichier_nom).'</td><td>Erreur : '.$result.' !</td></tr>';
       }
-      $tbody .= '<tr><td class="v">'.html($fichier_nom).'</td><td>Image prise en compte.</td></tr>';
+      else
+      {
+        $tbody .= '<tr><td class="v">'.html($fichier_nom).'</td><td>Image prise en compte.</td></tr>';
+      }
     }
   }
   // Supprimer le dossier temporaire
   FileSystem::supprimer_dossier($dossier_temp);
   // Enregistrement du rapport
   $fichier_nom = 'rapport_zip_photos_'.$_SESSION['BASE'].'_'.fabriquer_fin_nom_fichier__date_et_alea().'.html';
-  // Javascript
   FileSystem::fabriquer_fichier_rapport( $fichier_nom , $thead , $tbody );
+  // retour
   exit(']¤['.URL_DIR_EXPORT.$fichier_nom);
 }
 

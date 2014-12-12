@@ -37,6 +37,7 @@ $matiere_id              = (isset($_POST['f_matiere']))         ? Clean::entier(
 $matiere_nom             = (isset($_POST['f_matiere_nom']))     ? Clean::texte($_POST['f_matiere_nom'])            : '';
 $groupe_id               = (isset($_POST['f_groupe']))          ? Clean::entier($_POST['f_groupe'])                : 0;
 $groupe_nom              = (isset($_POST['f_groupe_nom']))      ? Clean::texte($_POST['f_groupe_nom'])             : '';
+$groupe_type             = (isset($_POST['f_groupe_type']))     ? Clean::texte($_POST['f_groupe_type'])            : '';
 $niveau_id               = (isset($_POST['f_niveau']))          ? Clean::entier($_POST['f_niveau'])                : 0;
 $niveau_nom              = (isset($_POST['f_niveau_nom']))      ? Clean::texte($_POST['f_niveau_nom'])             : '';
 $periode_id              = (isset($_POST['f_periode']))         ? Clean::entier($_POST['f_periode'])               : 0;
@@ -54,6 +55,7 @@ $marge_min               = (isset($_POST['f_marge_min']))       ? Clean::texte($
 $pages_nb                = (isset($_POST['f_pages_nb']))        ? Clean::texte($_POST['f_pages_nb'])               : '';
 $cases_nb                = (isset($_POST['f_cases_nb']))        ? Clean::entier($_POST['f_cases_nb'])              : -1;
 $cases_largeur           = (isset($_POST['f_cases_larg']))      ? Clean::entier($_POST['f_cases_larg'])            : 0;
+$eleves_ordre            = (isset($_POST['f_eleves_ordre']))    ? Clean::texte($_POST['f_eleves_ordre'])           : '';
 
 // Normalement ce sont des tableaux qui sont transmis, mais au cas où...
 $tab_eleve_id = (isset($_POST['f_eleve'])) ? ( (is_array($_POST['f_eleve'])) ? $_POST['f_eleve'] : explode(',',$_POST['f_eleve']) ) : array() ;
@@ -96,7 +98,7 @@ if(in_array($_SESSION['USER_PROFIL_TYPE'],array('parent','eleve')))
 // Si pas grille générique et si notes demandées ou besoin pour colonne bilan ou besoin pour synthèse
 $besoin_notes = ( !$type_generique && ( ($remplissage=='plein') || ($colonne_bilan=='oui') || $type_synthese ) ) ? TRUE : FALSE ;
 
-if( !$matiere_id || !$niveau_id || !$matiere_nom || !$niveau_nom || !$remplissage || !$colonne_bilan || ( $besoin_notes && !$periode_id && (!$date_debut || !$date_fin) ) || ( $besoin_notes && !$retroactif ) || !$orientation || !$couleur || !$legende || !$marge_min || !$pages_nb || ($cases_nb<0) || !$cases_largeur || !count($tab_type) )
+if( !$matiere_id || ( !$type_generique && (!$groupe_id || !$groupe_nom || !$groupe_type) ) || !$niveau_id || !$matiere_nom || !$niveau_nom || !$remplissage || !$colonne_bilan || ( $besoin_notes && !$periode_id && (!$date_debut || !$date_fin) ) || ( $besoin_notes && !$retroactif ) || !$orientation || !$couleur || !$legende || !$marge_min || !$pages_nb || ($cases_nb<0) || !$cases_largeur || !count($tab_type) || !$eleves_ordre )
 {
   exit('Erreur avec les données transmises !');
 }
@@ -229,7 +231,8 @@ if($_SESSION['USER_PROFIL_TYPE']=='eleve')
 }
 elseif(count($tab_eleve_id))
 {
-  $tab_eleve_infos = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $liste_eleve , FALSE /*with_gepi*/ , FALSE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
+  $eleves_ordre = ($groupe_type=='Classes') ? 'alpha' : $eleves_ordre ;
+  $tab_eleve_infos = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $liste_eleve , $eleves_ordre , FALSE /*with_gepi*/ , FALSE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
   if(!is_array($tab_eleve_infos))
   {
     exit('Aucun élève trouvé correspondant aux identifiants transmis !');
@@ -324,7 +327,7 @@ if(count($tab_eval))
     if($type_synthese)
     {
       // calcul des bilans des scores
-      $tableau_score_filtre = array_filter($tab_score_eleve_item[$eleve_id],'non_nul');
+      $tableau_score_filtre = array_filter($tab_score_eleve_item[$eleve_id],'non_vide');
       $nb_scores = count( $tableau_score_filtre );
       // la moyenne peut être pondérée par des coefficients
       $somme_scores_ponderes = 0;
@@ -373,7 +376,7 @@ if($type_synthese)
   // Pour chaque item...
   foreach($tab_liste_item as $item_id)
   {
-    $tableau_score_filtre = isset($tab_score_item_eleve[$item_id]) ? array_filter($tab_score_item_eleve[$item_id],'non_nul') : array() ; // Test pour éviter de rares "array_filter() expects parameter 1 to be array, null given"
+    $tableau_score_filtre = isset($tab_score_item_eleve[$item_id]) ? array_filter($tab_score_item_eleve[$item_id],'non_vide') : array() ; // Test pour éviter de rares "array_filter() expects parameter 1 to be array, null given"
     $nb_scores = count( $tableau_score_filtre );
     if($nb_scores)
     {
@@ -408,11 +411,11 @@ if( $type_synthese )
 {
   // $moyenne_moyenne_scores
   $somme  = array_sum($tab_moyenne_scores_eleve);
-  $nombre = count( array_filter($tab_moyenne_scores_eleve,'non_nul') );
+  $nombre = count( array_filter($tab_moyenne_scores_eleve,'non_vide') );
   $moyenne_moyenne_scores = ($nombre) ? round($somme/$nombre,0) : FALSE;
   // $moyenne_pourcentage_acquis
   $somme  = array_sum($tab_pourcentage_acquis_eleve);
-  $nombre = count( array_filter($tab_pourcentage_acquis_eleve,'non_nul') );
+  $nombre = count( array_filter($tab_pourcentage_acquis_eleve,'non_vide') );
   $moyenne_pourcentage_acquis = ($nombre) ? round($somme/$nombre,0) : FALSE;
 }
 
@@ -569,8 +572,8 @@ if( $type_generique || $type_individuel )
     }
   }
   // On enregistre les sorties HTML et PDF
-  FileSystem::ecrire_fichier(CHEMIN_DOSSIER_EXPORT.$fichier_nom_type1.'.html',$releve_HTML_individuel);
-  $releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.$fichier_nom_type1.'.pdf','F');
+  FileSystem::ecrire_fichier(    CHEMIN_DOSSIER_EXPORT.$fichier_nom_type1.'.html' , $releve_HTML_individuel );
+  FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$fichier_nom_type1.'.pdf'  , $releve_PDF );
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,8 +721,8 @@ if($type_synthese)
   $releve_HTML_synthese .= ($affichage_checkbox) ? Html::afficher_formulaire_synthese_exploitation('complet').'</form>'.NL : '';
   $releve_HTML_synthese .= '<script type="text/javascript">$("#table_s").tablesorter({ headers:{'.$num_hide.':{sorter:false}'.$num_hide_add.'} });</script>'.NL; // Non placé dans le fichier js car mettre une variable à la place d'une valeur pour $num_hide ne fonctionne pas
   // On enregistre les sorties HTML et PDF
-  FileSystem::ecrire_fichier(CHEMIN_DOSSIER_EXPORT.$fichier_nom_type2.'.html',$releve_HTML_synthese);
-  $releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.$fichier_nom_type2.'.pdf','F');
+  FileSystem::ecrire_fichier(    CHEMIN_DOSSIER_EXPORT.$fichier_nom_type2.'.html' , $releve_HTML_synthese );
+  FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$fichier_nom_type2.'.pdf'  , $releve_PDF );
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////

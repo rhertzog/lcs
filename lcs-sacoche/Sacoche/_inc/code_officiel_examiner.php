@@ -87,7 +87,7 @@ if(!in_array($BILAN_ETAT,array('2rubrique','3synthese')))
 
 // Lister les élèves concernés : soit d'une classe (en général) soit d'une classe ET d'un sous-groupe pour un prof affecté à un groupe d'élèves
 
-$DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
+$DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
 if(empty($DB_TAB))
 {
   exit('Aucun élève trouvé dans ce regroupement !');
@@ -116,7 +116,7 @@ if( ($BILAN_TYPE=='bulletin') && $_SESSION['OFFICIEL']['BULLETIN_MOYENNE_SCORES'
   else
   {
     $tab_eleve_id_tmp = array();
-    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id );
+    $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ );
     foreach($DB_TAB as $DB_ROW)
     {
       $tab_eleve_id_tmp[] = $DB_ROW['user_id'];
@@ -132,7 +132,8 @@ $tab_saisie = array();  // [eleve_id][rubrique_id][prof_id] => array(prof_info,a
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_eleves( $BILAN_TYPE , $periode_id , $liste_eleve_id , 0 /*prof_id*/ , FALSE /*with_rubrique_nom*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$DB_ROW['prof_info'] , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
+  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
+  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
 }
 
 
@@ -170,6 +171,7 @@ if($BILAN_TYPE=='releve')
   $matiere_nom              = '';
   $groupe_id                = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe   = la classe (par défaut) ou le groupe transmis
   $groupe_nom               = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type              = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
   $date_debut               = '';
   $date_fin                 = '';
   $retroactif               = $_SESSION['OFFICIEL']['RELEVE_RETROACTIF']; // C'est un relevé de notes sur une période donnée : aller chercher les notes antérieures serait curieux !
@@ -177,6 +179,7 @@ if($BILAN_TYPE=='releve')
   $aff_domaine              = 0;
   $aff_theme                = 0;
   $legende                  = 0;
+  $eleves_ordre             = 'alpha';
   $tab_eleve                = $tab_eleve_id;
   $liste_eleve              = $liste_eleve_id;
   $tab_type[]               = 'individuel';
@@ -191,6 +194,7 @@ elseif($BILAN_TYPE=='bulletin')
   $synthese_modele = 'multimatiere' ;
   $groupe_id       = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom      = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type     = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
   $date_debut      = '';
   $date_fin        = '';
   $retroactif      = $_SESSION['OFFICIEL']['BULLETIN_RETROACTIF'];
@@ -199,6 +203,7 @@ elseif($BILAN_TYPE=='bulletin')
   $only_socle      = $_SESSION['OFFICIEL']['BULLETIN_ONLY_SOCLE'];
   $only_niveau     = 0; // pas jugé utile de le mettre en option...
   $legende         = 0;
+  $eleves_ordre    = 'alpha';
   $tab_eleve       = $tab_eleve_id;
   $liste_eleve     = $liste_eleve_id;
   $tab_matiere_id  = $tab_rubrique_id; // N'est pas utilisé pour la récupération des résultats mais juste pour tester si on doit vérifier cette partie (ce serait un double souci sinon : il faut tester les bilans élèves qui ont des résultats ailleurs + ce tableau peut contenir la valeur 0).
@@ -206,18 +211,20 @@ elseif($BILAN_TYPE=='bulletin')
 }
 elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
 {
-  $palier_id       = (int)substr($BILAN_TYPE,-1);
-  $palier_nom      = 'Palier '.$palier_id;
-  $only_presence   = $_SESSION['OFFICIEL']['SOCLE_ONLY_PRESENCE'];
-  $aff_socle_PA    = $_SESSION['OFFICIEL']['SOCLE_POURCENTAGE_ACQUIS'];
-  $aff_socle_EV    = $_SESSION['OFFICIEL']['SOCLE_ETAT_VALIDATION'];
-  $groupe_id       = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
-  $groupe_nom      = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
-  $mode            = 'auto';
-  $legende         = 0;
-  $tab_pilier_id   = $tab_pilier_id; // Pas $tab_rubrique_id car il ne faut pas juste restreindre à la liste des rubriques dont on souhaite vérifier l'appréciation afin de récupérer les bilans de tous les élèves concernés.
-  $tab_eleve_id    = $tab_eleve_id;
-  $tab_matiere_id  = array();
+  $palier_id      = (int)substr($BILAN_TYPE,-1);
+  $palier_nom     = 'Palier '.$palier_id;
+  $only_presence  = $_SESSION['OFFICIEL']['SOCLE_ONLY_PRESENCE'];
+  $aff_socle_PA   = $_SESSION['OFFICIEL']['SOCLE_POURCENTAGE_ACQUIS'];
+  $aff_socle_EV   = $_SESSION['OFFICIEL']['SOCLE_ETAT_VALIDATION'];
+  $groupe_id      = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
+  $groupe_nom     = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type    = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
+  $mode           = 'auto';
+  $legende        = 0;
+  $eleves_ordre   = 'alpha';
+  $tab_pilier_id  = $tab_pilier_id; // Pas $tab_rubrique_id car il ne faut pas juste restreindre à la liste des rubriques dont on souhaite vérifier l'appréciation afin de récupérer les bilans de tous les élèves concernés.
+  $tab_eleve_id   = $tab_eleve_id;
+  $tab_matiere_id = array();
   require(CHEMIN_DOSSIER_INCLUDE.'noyau_socle_releve.php');
 }
 

@@ -99,7 +99,7 @@ if( !empty($is_test_impression) && ($_SESSION['USER_PROFIL_TYPE']!='administrate
 
 if($ACTION=='initialiser')
 {
-  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
+  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
   if(empty($DB_TAB))
   {
     exit('Aucun élève trouvé dans ce regroupement !');
@@ -122,7 +122,7 @@ if($ACTION=='initialiser')
     else
     {
       $tab_eleve_id_tmp = array();
-      $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id );
+      $DB_TAB = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ );
       foreach($DB_TAB as $DB_ROW)
       {
         $tab_eleve_id_tmp[] = $DB_ROW['user_id'];
@@ -277,14 +277,16 @@ $tab_prof_id = array();
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_eleves( $BILAN_TYPE , $periode_id , $liste_eleve_id , 0 /*prof_id*/ , FALSE /*with_rubrique_nom*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$DB_ROW['prof_info'] , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
+  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
+  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
   $tab_signature[$DB_ROW['prof_id']] = NULL ; // Initialisé
   $tab_prof_id[$DB_ROW['prof_id']] = $DB_ROW['prof_id']; // Pour savoir ensuite la liste des profs à chercher
 }
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_classe( $periode_id , $classe_id , 0 /*prof_id*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $tab_saisie[0][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$DB_ROW['prof_info'] , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
+  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
+  $tab_saisie[0][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
 }
 
 // Récupérer les signatures numériques
@@ -336,14 +338,14 @@ if( $affichage_prof_principal )
   }
   else if(count($DB_TAB)==1)
   {
-    $texte_prof_principal = 'Professeur principal : '.afficher_identite_initiale($DB_TAB[0]['user_nom'],FALSE,$DB_TAB[0]['user_prenom'],TRUE);
+    $texte_prof_principal = 'Professeur principal : '.afficher_identite_initiale($DB_TAB[0]['user_nom'],FALSE,$DB_TAB[0]['user_prenom'],TRUE,$DB_TAB[0]['user_genre']);
   }
   else
   {
     $tab_pp = array();
     foreach($DB_TAB as $DB_ROW)
     {
-      $tab_pp[] = afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE);
+      $tab_pp[] = afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE,$DB_ROW['user_genre']);
     }
     $texte_prof_principal = 'Professeurs principaux : '.implode(' ; ',$tab_pp);
   }
@@ -352,14 +354,15 @@ if( $affichage_prof_principal )
 // Récupérer les noms et coordonnées des responsables, ou simplement l'info de savoir si leurs adresses sont différentes
 
 $tab_destinataires = array();  // [eleve_id][i] => array(...) | 'archive' | NULL ;
+$tab_civilite = array( 'I'=>'' , 'M'=>'M.' , 'F'=>'Mme' );
 $pays_majoritaire = DB_STRUCTURE_OFFICIEL::DB_recuperer_pays_majoritaire();
 $DB_TAB = ( ($_SESSION['OFFICIEL']['INFOS_RESPONSABLES']!='non') || ($_SESSION['OFFICIEL']['NOMBRE_EXEMPLAIRES']=='deux_si_besoin') ) ? DB_STRUCTURE_OFFICIEL::DB_lister_adresses_parents_for_enfants($liste_eleve_id) : array() ;
 foreach($tab_eleve_id as $eleve_id)
 {
   if( (isset($DB_TAB[$eleve_id][0]['adresse_pays_nom'])) && ($DB_TAB[$eleve_id][0]['adresse_pays_nom']==$pays_majoritaire) ) {$DB_TAB[$eleve_id][0]['adresse_pays_nom']='';}
   if( (isset($DB_TAB[$eleve_id][1]['adresse_pays_nom'])) && ($DB_TAB[$eleve_id][1]['adresse_pays_nom']==$pays_majoritaire) ) {$DB_TAB[$eleve_id][1]['adresse_pays_nom']='';}
-  $tab_coords_resp1 = (isset($DB_TAB[$eleve_id][0])) ? array_filter(array($DB_TAB[$eleve_id][0]['user_nom'].' '.$DB_TAB[$eleve_id][0]['user_prenom'],$DB_TAB[$eleve_id][0]['adresse_ligne1'],$DB_TAB[$eleve_id][0]['adresse_ligne2'],$DB_TAB[$eleve_id][0]['adresse_ligne3'],$DB_TAB[$eleve_id][0]['adresse_ligne4'],$DB_TAB[$eleve_id][0]['adresse_postal_code'].' '.$DB_TAB[$eleve_id][0]['adresse_postal_libelle'],$DB_TAB[$eleve_id][0]['adresse_pays_nom'])) : NULL ;
-  $tab_coords_resp2 = (isset($DB_TAB[$eleve_id][1])) ? array_filter(array($DB_TAB[$eleve_id][1]['user_nom'].' '.$DB_TAB[$eleve_id][1]['user_prenom'],$DB_TAB[$eleve_id][1]['adresse_ligne1'],$DB_TAB[$eleve_id][1]['adresse_ligne2'],$DB_TAB[$eleve_id][1]['adresse_ligne3'],$DB_TAB[$eleve_id][1]['adresse_ligne4'],$DB_TAB[$eleve_id][1]['adresse_postal_code'].' '.$DB_TAB[$eleve_id][1]['adresse_postal_libelle'],$DB_TAB[$eleve_id][1]['adresse_pays_nom'])) : NULL ;
+  $tab_coords_resp1 = (isset($DB_TAB[$eleve_id][0])) ? array_filter(array($tab_civilite[$DB_TAB[$eleve_id][0]['user_genre']].' '.$DB_TAB[$eleve_id][0]['user_nom'].' '.$DB_TAB[$eleve_id][0]['user_prenom'],$DB_TAB[$eleve_id][0]['adresse_ligne1'],$DB_TAB[$eleve_id][0]['adresse_ligne2'],$DB_TAB[$eleve_id][0]['adresse_ligne3'],$DB_TAB[$eleve_id][0]['adresse_ligne4'],$DB_TAB[$eleve_id][0]['adresse_postal_code'].' '.$DB_TAB[$eleve_id][0]['adresse_postal_libelle'],$DB_TAB[$eleve_id][0]['adresse_pays_nom'])) : NULL ;
+  $tab_coords_resp2 = (isset($DB_TAB[$eleve_id][1])) ? array_filter(array($tab_civilite[$DB_TAB[$eleve_id][1]['user_genre']].' '.$DB_TAB[$eleve_id][1]['user_nom'].' '.$DB_TAB[$eleve_id][1]['user_prenom'],$DB_TAB[$eleve_id][1]['adresse_ligne1'],$DB_TAB[$eleve_id][1]['adresse_ligne2'],$DB_TAB[$eleve_id][1]['adresse_ligne3'],$DB_TAB[$eleve_id][1]['adresse_ligne4'],$DB_TAB[$eleve_id][1]['adresse_postal_code'].' '.$DB_TAB[$eleve_id][1]['adresse_postal_libelle'],$DB_TAB[$eleve_id][1]['adresse_pays_nom'])) : NULL ;
   // La copie du bilan qui sera 'archivée' jusqu'à la fin de l'année scolaire.
   $tab_destinataires[$eleve_id][0] = 'archive' ;
   // Tirage pour le 1er responsable
@@ -462,6 +465,7 @@ if($BILAN_TYPE=='releve')
   $matiere_nom              = '';
   $groupe_id                = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe   = la classe (par défaut) ou le groupe transmis
   $groupe_nom               = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type              = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
   $date_debut               = '';
   $date_fin                 = '';
   $retroactif               = $_SESSION['OFFICIEL']['RELEVE_RETROACTIF']; // C'est un relevé de notes sur une période donnée : aller chercher les notes antérieures serait curieux !
@@ -481,6 +485,7 @@ if($BILAN_TYPE=='releve')
   $pages_nb                 = $_SESSION['OFFICIEL']['RELEVE_PAGES_NB'];
   $cases_nb                 = $_SESSION['OFFICIEL']['RELEVE_CASES_NB'];
   $cases_largeur            = 5; // pas jugé utile de le mettre en option...
+  $eleves_ordre             = 'alpha';
   $tab_eleve                = $tab_eleve_id;
   $liste_eleve              = $liste_eleve_id;
   $tab_type[]               = 'individuel';
@@ -496,6 +501,7 @@ elseif($BILAN_TYPE=='bulletin')
   $synthese_modele = 'multimatiere' ;
   $groupe_id       = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom      = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type     = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
   $date_debut      = '';
   $date_fin        = '';
   $retroactif      = $_SESSION['OFFICIEL']['BULLETIN_RETROACTIF'];
@@ -513,6 +519,7 @@ elseif($BILAN_TYPE=='bulletin')
   $marge_droite    = $_SESSION['OFFICIEL']['MARGE_DROITE'];
   $marge_haut      = $_SESSION['OFFICIEL']['MARGE_HAUT'];
   $marge_bas       = $_SESSION['OFFICIEL']['MARGE_BAS'];
+  $eleves_ordre    = 'alpha';
   $tab_eleve       = $tab_eleve_id;
   $liste_eleve     = $liste_eleve_id;
   $tab_matiere_id  = array();
@@ -528,6 +535,7 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
   $aff_socle_EV   = $_SESSION['OFFICIEL']['SOCLE_ETAT_VALIDATION'];
   $groupe_id      = (!$is_sous_groupe) ? $classe_id  : $groupe_id ; // Le groupe = la classe (par défaut) ou le groupe transmis
   $groupe_nom     = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_COMMUN::DB_recuperer_groupe_nom($groupe_id) ;
+  $groupe_type    = (!$is_sous_groupe) ? 'Classe'  : 'Groupe' ;
   $mode           = 'auto';
   $aff_coef       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
   $aff_socle      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
@@ -539,6 +547,7 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
   $marge_droite   = $_SESSION['OFFICIEL']['MARGE_DROITE'];
   $marge_haut     = $_SESSION['OFFICIEL']['MARGE_HAUT'];
   $marge_bas      = $_SESSION['OFFICIEL']['MARGE_BAS'];
+  $eleves_ordre   = 'alpha';
   $tab_pilier_id  = $tab_pilier_id;
   $tab_eleve_id   = $tab_eleve_id;
   $tab_matiere_id = array();

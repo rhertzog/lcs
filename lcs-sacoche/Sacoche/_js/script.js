@@ -88,6 +88,22 @@ function replaceAll(find, replace, str)
 }
 
 /**
+ * Ajout de la méthode trim() pour les navigateurs embarquant un javascript de version < 1.8.1
+ * @see https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Objets_globaux/String/Trim
+ * @see http://www.w3schools.com/jsref/jsref_trim_string.asp
+ *
+ * @param string
+ * @return string
+ */
+if(!String.prototype.trim)
+{
+  String.prototype.trim = function()
+  {
+    return this.replace(/^\s+|\s+$/gm,'');
+  };
+}
+
+/**
  * Fonction pour extraire le hash (sans le dièse) d'une URL
  * Mise en place car un substring() ne passe pas si 
  * session.use_trans_sid = ON et session.use_only_cookies = OFF
@@ -100,6 +116,33 @@ function extract_hash(href)
 {
   var pos_hash = href.lastIndexOf('#');
   return (pos_hash!==-1) ? href.substr(pos_hash+1) : '' ;
+}
+
+/**
+ * Fonction pour envoyer un message vers la console javascript
+ *
+ * @param type  log | info | warn | error | table | time | timeEnd | group | dir | assert | trace
+ * @param msg   le contenu du message
+ * @return string
+ */
+function log(type,msg)
+{
+  try
+  {
+         if(type=='log')     { console.log(msg);     }
+    else if(type=='info')    { console.info(msg);    }
+    else if(type=='warn')    { console.warn(msg);    }
+    else if(type=='error')   { console.error(msg);   }
+    else if(type=='table')   { console.table(msg);   }
+    else if(type=='time')    { console.time(msg);    }
+    else if(type=='timeEnd') { console.timeEnd(msg); }
+    else if(type=='group')   { console.group(msg);   }
+    else if(type=='dir')     { console.dir(msg);     }
+    else if(type=='assert')  { console.assert(msg);  }
+    else if(type=='trace')   { console.trace(msg);   }
+  }
+  catch (e)
+  {}
 }
 
 /**
@@ -181,7 +224,7 @@ function infobulle()
 /**
  * Fonction pour un tester la robustesse d'un mot de passe.
  *
- * @param void
+ * @param mdp
  * @return void
  */
 function analyse_mdp(mdp)
@@ -371,40 +414,6 @@ function cocher_socle_item(socle_item_id)
 var cocher_socle_item_first_appel = true;
 
 /**
- * Fonction pour afficher et cocher une liste de profs donnés
- *
- * @param prof_liste : ids séparés par des underscores
- * @return void
- */
-function cocher_profs(prof_liste)
-{
-  // Décocher tout
-  $("#zone_profs input[type=checkbox]").each
-  (
-    function()
-    {
-      if(this.disabled == false)
-      {
-        this.checked = false;
-      }
-    }
-  );
-  // Cocher des cases des profs
-  if(prof_liste.length)
-  {
-    var tab_id = prof_liste.split('_');
-    for(i in tab_id)
-    {
-      var id = 'p_'+tab_id[i];
-      if($('#'+id).length)
-      {
-        $('#'+id).prop('checked',true);
-      }
-    }
-  }
-}
-
-/**
  * Fonction pour afficher et cocher une liste d'élèves donnés
  *
  * @param prof_liste : ids séparés par des underscores
@@ -441,7 +450,72 @@ function cocher_eleves(eleve_liste)
 }
 
 /**
- * Fonction pour afficher le nombre de caractères restant autorisés dans un textarea.
+ * Fonction pour cocher une liste de profs donnés
+ *
+ * @param prof_liste : ids séparés par des underscores
+ * @return void
+ */
+function cocher_profs(prof_liste)
+{
+  // Décocher tout
+  $("#zone_profs input[type=checkbox]").each
+  (
+    function()
+    {
+      if(this.disabled == false)
+      {
+        this.checked = false;
+      }
+    }
+  );
+  // Cocher des cases des profs
+  if(prof_liste.length)
+  {
+    var tab_id = prof_liste.split('_');
+    for(i in tab_id)
+    {
+      var id = 'p_'+tab_id[i];
+      if($('#'+id).length)
+      {
+        $('#'+id).prop('checked',true);
+      }
+    }
+  }
+}
+
+/**
+ * Fonction pour selectionner une option pour une liste de profs donnés
+ *
+ * @param prof_liste : { lettre de l'option concaténée avec l'id du prof } séparés par des underscores
+ * @return void
+ */
+function selectionner_profs_option(prof_liste)
+{
+  // Sélectionner l'option par défaut pour tous les profs
+  $('#zone_profs').find('select').find('option[value=x]').prop('selected',true);
+  $('.prof_liste').find('span.select_img').removeAttr('class').addClass('select_img droit_x');
+  // Décocher les boutons pour reporter une valeur à tous
+  $('#zone_profs').find('input[type=radio]').prop('checked',false);
+  // Modifier les sélections des profs concernés
+  if(prof_liste.length)
+  {
+    var tab_val = prof_liste.split('_');
+    for(i in tab_val)
+    {
+      var val_option = tab_val[i].substring(0,1);
+      var id_prof    = tab_val[i].substring(1);
+      var id_select  = 'p'+'_'+id_prof;
+      if($('#'+id_select).length)
+      {
+        $('#'+id_select+' option[value='+val_option+']').prop('selected',true);
+        $('#'+id_select).next('span').removeAttr('class').addClass('select_img droit_'+val_option);
+      }
+    }
+  }
+}
+
+/**
+ * Fonction pour afficher le nombre de caractères restants autorisés dans un textarea.
  * A appeler avec l'événement onkeyup.
  *
  * Inspiration : http://www.paperblog.fr/349086/limiter-le-nombre-de-caractere-d-un-textarea/
@@ -828,6 +902,62 @@ jQuery.validator.addMethod
 ); 
 
 /**
+ * Ajout d'une alerte dans le DOM sans jQuery.
+ * Utilisé par les deux tests qui suivent cette fonction.
+ */
+function ajout_alerte(texte)
+{
+  // Contenu
+  var paragraphe = document.createElement('div');
+  paragraphe.setAttribute('class', 'probleme');
+  paragraphe.innerHTML = texte;
+  // Emplacement
+  var endroit = false;
+  if( document.getElementById('titre_logo') !== null )
+  {
+    endroit = document.getElementById('titre_logo');
+  }
+  else if( document.getElementsByTagName('h1').length )
+  {
+    endroit = document.getElementsByTagName('h1').item(0);
+  }
+  // Insertion
+  if(endroit)
+  {
+    // Il n'existe pas de méthode insertAfter pour insérer un nœud après un autre, cependant on peut l'émuler avec une combinaison de insertBefore et nextSibling.
+    // @see https://developer.mozilla.org/fr/docs/DOM/element.insertBefore
+    endroit.parentNode.insertBefore( paragraphe , endroit.nextSibling );
+  }
+}
+
+/**
+ * Alerte si usage frame / iframe
+ * Écrit sans nécessiter jQuery car l'ENT d'Itop fait planter la bibliothèque sous IE (SACoche mis dans un iframe lui-même imbriqué récursivement dans 4 tableaux et 5 div, avec des scripts en pagaille).
+ */
+if(top.frames.length!=0)
+{
+  ajout_alerte('L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> est inapproprié et peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" target="_blank">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a>');
+}
+
+/**
+ * Alerte si non acceptation des cookies
+ * Peut se tester directement en javascript (éxécuté par le client) alors qu'en PHP il faut recharger une page (info envoyée au serveur dans les en-têtes)
+ */
+if(typeof(navigator.cookieEnabled)!="undefined")
+{
+  var accepteCookies = (navigator.cookieEnabled) ? true : false ;
+}
+else
+{
+  document.cookie = "test";
+  var accepteCookies = (document.cookie.indexOf("test") != -1) ? true : false ;
+}
+if(!accepteCookies)
+{
+  ajout_alerte('Pour utiliser <em>SACoche</em> vous devez configurer l\'acceptation des cookies par votre navigateur.');
+}
+
+/**
  * jQuery !
  */
 $(document).ready
@@ -839,34 +969,6 @@ $(document).ready
      * Initialisation
      */
     infobulle();
-
-    /**
-     * Alerte si usage frame / iframe
-     */
-    if(top.frames.length!=0)
-    {
-      var endroit = ($('#titre_logo').length) ? '#titre_logo' : 'h1' ;
-      $(endroit).after('<div class="probleme">L\'usage de cadres (frame/iframe) pour afficher <em>SACoche</em> est inapproprié et peut entrainer des dysfonctionnements.<br /><a href="'+location.href+'" target="_blank">Ouvrir <em>SACoche</em> dans un nouvel onglet.</a></div>');
-    }
-
-    /**
-     * Alerte si non acceptation des cookies
-     * Peut se tester directement en javascript (éxécuté par le client) alors qu'en PHP il faut recharger une page (info envoyée au serveur dans les en-têtes)
-     */
-    if(typeof(navigator.cookieEnabled)!="undefined")
-    {
-      var accepteCookies = (navigator.cookieEnabled) ? true : false ;
-    }
-    else
-    {
-      document.cookie = "test";
-      var accepteCookies = (document.cookie.indexOf("test") != -1) ? true : false ;
-    }
-    if(!accepteCookies)
-    {
-      var endroit = ($('#titre_logo').length) ? '#titre_logo' : 'h1' ;
-      $(endroit).after('<div class="probleme">Pour utiliser <em>SACoche</em> vous devez configurer l\'acceptation des cookies par votre navigateur.</div>');
-    }
 
     /**
      * Clic sur une image-lien afin d'afficher ou de masquer le détail d'une synthese ou d'un relevé socle
@@ -902,7 +1004,7 @@ $(document).ready
           var largeur = Math.max( 1000 , screen.width - 600 );
           var hauteur = screen.height * 1 ;
           var gauche = 0 ;
-          var haut  = 0 ;
+          var haut   = 0 ;
           window.moveTo(gauche,haut);
           window.resizeTo(largeur,hauteur);
         }
@@ -910,7 +1012,7 @@ $(document).ready
         var largeur = 600 ;
         var hauteur = screen.height * 1 ;
         var gauche = screen.width - largeur ;
-        var haut  = 0 ;
+        var haut   = 0 ;
         w = window.open( adresse , 'popup' ,"toolbar=no,location=no,menubar=no,directories=no,status=no,scrollbars=yes,resizable=yes,copyhistory=no,width="+largeur+",height="+hauteur+",top="+haut+",left="+gauche ) ;
         w.focus() ;
         return false;

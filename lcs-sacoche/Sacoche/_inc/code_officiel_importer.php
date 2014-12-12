@@ -121,7 +121,7 @@ if($ACTION!='enregistrer_saisie_csv')
   }
 
   // Élèves concernés
-  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
+  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
   if(empty($DB_TAB))
   {
     exit('Aucun élève trouvé dans ce regroupement !');
@@ -250,7 +250,7 @@ if($ACTION=='uploader_saisie_csv')
         elseif( ($ref1_objet=='groupe') && ($ref1_valeur==$groupe_id) && ($BILAN_TYPE=='bulletin') && ($rubrique_id!==NULL) )
         {
           $eleve_id = 0;
-          $appreciation = ($with_note) ? Clean::texte($col4) : Clean::texte($col3) ;
+          $appreciation = ($with_note) ? Clean::appreciation($col4) : Clean::appreciation($col3) ;
           if($appreciation)
           {
             $tab_donnees_csv[$rubrique_id][$eleve_id]['appreciation'] = array( 'val'=>mb_substr($appreciation,0,$longueur_maxi) , 'mode'=>'insert' );
@@ -265,7 +265,7 @@ if($ACTION=='uploader_saisie_csv')
             $moyenne = Clean::decimal($col3);
             $tab_donnees_csv[$rubrique_id][$eleve_id]['moyenne'] = array( 'val'=>$moyenne , 'mode'=>'insert' );
           }
-          $appreciation = ($with_note) ? Clean::texte($col4) : Clean::texte($col3) ;
+          $appreciation = ($with_note) ? Clean::appreciation($col4) : Clean::appreciation($col3) ;
           if($appreciation)
           {
             $tab_donnees_csv[$rubrique_id][$eleve_id]['appreciation'] = array( 'val'=>mb_substr($appreciation,0,$longueur_maxi) , 'mode'=>'insert' );
@@ -349,7 +349,7 @@ if($ACTION=='uploader_saisie_csv')
           $list_tr .= '<tr class="'.$tab_infos['appreciation']['mode'].'"><td>'.html($tab_eleve_id[$eleve_id]).'</td><td>Appreciation</td><td>'.html($appreciation).'</td></tr>';
           if($tab_infos['appreciation']['mode']!='idem')
           {
-            $tab_donnees_csv[$rubrique_id][$eleve_id]['appreciation'] = $tab_infos['appreciation']['val'];
+            $tab_donnees_csv[$rubrique_id][$eleve_id]['appreciation'] = $appreciation;
             $nb_modifs++;
           }
           else

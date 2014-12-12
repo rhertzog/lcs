@@ -48,30 +48,9 @@ if( ($action=='Afficher_evaluations') && $eleve_id && $date_debut && $date_fin )
   {
     exit('Erreur : la date de début est postérieure à la date de fin !');
   }
-  // Classe de l'élève
-  $classe_id = 0;
-  if( ($_SESSION['USER_PROFIL_TYPE']=='eleve') || ( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']==1) ) )
-  {
-    $classe_id = $_SESSION['ELEVE_CLASSE_ID'];
-  }
-  elseif( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']!=1) )
-  {
-    foreach($_SESSION['OPT_PARENT_ENFANTS'] as $tab_info)
-    {
-      if($tab_info['valeur']==$eleve_id)
-      {
-        $classe_id = $tab_info['classe_id'];
-        break;
-      }
-    }
-  }
-  else
-  {
-    $classe_id = DB_STRUCTURE_ELEVE::DB_recuperer_classe_eleve($eleve_id);
-  }
   // Lister les évaluations
   $script = '';
-  $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_devoirs_groupes_eleve( $eleve_id , $classe_id , $date_debut_mysql , $date_fin_mysql , $_SESSION['USER_PROFIL_TYPE'] );
+  $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_devoirs_eleve( $eleve_id , $date_debut_mysql , $date_fin_mysql , $_SESSION['USER_PROFIL_TYPE'] );
   if(empty($DB_TAB))
   {
     exit('Aucune évaluation trouvée sur la période '.$date_debut.' ~ '.$date_fin.' !');
@@ -81,14 +60,18 @@ if( ($action=='Afficher_evaluations') && $eleve_id && $date_debut && $date_fin )
     $date_affich = convert_date_mysql_to_french($DB_ROW['devoir_date']);
     $image_sujet   = ($DB_ROW['devoir_doc_sujet'])   ? '<a href="'.$DB_ROW['devoir_doc_sujet'].'" target="_blank" class="no_puce"><img alt="sujet" src="./_img/document/sujet_oui.png" title="Sujet disponible." /></a>' : '<img alt="sujet" src="./_img/document/sujet_non.png" />' ;
     $image_corrige = ($DB_ROW['devoir_doc_corrige']) ? '<a href="'.$DB_ROW['devoir_doc_corrige'].'" target="_blank" class="no_puce"><img alt="corrigé" src="./_img/document/corrige_oui.png" title="Corrigé disponible." /></a>' : '<img alt="corrigé" src="./_img/document/corrige_non.png" />' ;
+    $q_texte       = ($DB_ROW['jointure_texte'])     ? '<q class="texte_consulter" title="Commentaire écrit disponible."></q>' : '<q class="texte_consulter_non" title="Pas de commentaire écrit."></q>' ;
+    $q_audio       = ($DB_ROW['jointure_audio'])     ? '<q class="audio_ecouter" title="Commentaire audio disponible."></q>'   : '<q class="audio_ecouter_non" title="Pas de commentaire audio."></q>' ;
     // Afficher une ligne du tableau
     echo'<tr>';
     echo  '<td>'.html($date_affich).'</td>';
-    echo  '<td>'.html(afficher_identite_initiale($DB_ROW['prof_nom'],FALSE,$DB_ROW['prof_prenom'],TRUE)).'</td>';
+    echo  '<td>'.html(afficher_identite_initiale($DB_ROW['prof_nom'],FALSE,$DB_ROW['prof_prenom'],TRUE,$DB_ROW['prof_genre'])).'</td>';
     echo  '<td>'.html($DB_ROW['devoir_info']).'</td>';
     echo  '<td>'.$image_sujet.$image_corrige.'</td>';
     echo  '<td class="nu" id="devoir_'.$DB_ROW['devoir_id'].'">';
     echo    '<q class="voir" title="Voir les items et les notes (si saisies)."></q>';
+    echo    $q_texte;
+    echo    $q_audio;
     if($DB_ROW['devoir_autoeval_date']===NULL)
     {
       echo'<q class="saisir_non" title="Devoir sans auto-évaluation."></q>';
@@ -165,11 +148,46 @@ if( ($action=='Voir_notes') && $eleve_id && $devoir_id )
       $tab_affich[$item_id] .= Html::td_score( $tab_scores[$item_id] , 'score' /*methode_tri*/ , '' /*pourcent*/ );
     }
   }
+  $affichage = '<tr>'.implode('</tr><tr>',$tab_affich).'</tr>';
   // la légende, qui peut être personnalisée (codes ABS, NN, etc.)
   $score_legende  = (test_user_droit_specifique($_SESSION['DROIT_VOIR_ETAT_ACQUISITION_AVEC_EVALUATION'])) ? TRUE : FALSE ;
   $legende = Html::legende( TRUE /*codes_notation*/ , FALSE /*anciennete_notation*/ , $score_legende /*score_bilan*/ , FALSE /*etat_acquisition*/ , FALSE /*pourcentage_acquis*/ , FALSE /*etat_validation*/ , FALSE /*make_officiel*/ );
+  // Les commentaires texte ou audio
+  $commentaire_texte = '';
+  $commentaire_audio = '';
+  $DB_ROW = DB_STRUCTURE_ELEVE::DB_recuperer_devoir_commentaire($devoir_id,$eleve_id);
+  if(!empty($DB_ROW))
+  {
+    if($DB_ROW['jointure_texte'])
+    {
+      $msg_url = $DB_ROW['jointure_texte'];
+      if(strpos($msg_url,URL_DIR_SACOCHE)===0)
+      {
+        $fichier_chemin = url_to_chemin($msg_url);
+        $msg_data = is_file($fichier_chemin) ? file_get_contents($fichier_chemin) : 'Erreur : fichier avec le contenu du commentaire non trouvé.' ;
+      }
+      else
+      {
+        $msg_data = cURL::get_contents($msg_url);
+      }
+      $commentaire_texte = '<h3>Commentaire écrit</h3><textarea name="f_msg_data" id="f_msg_texte" rows="10" cols="100" readonly>'.html($msg_data).'</textarea>';
+    }
+    if($DB_ROW['jointure_audio'])
+    {
+      $msg_url = $DB_ROW['jointure_audio'];
+      if(strpos($msg_url,URL_DIR_SACOCHE)!==0)
+      {
+        // Violation des directives CSP si on essaye de le lire sur un serveur distant -> on le récupère et le copie localement temporairement
+        $msg_data = cURL::get_contents($msg_url);
+        $fichier_nom = 'devoir_'.$devoir_id.'_eleve_'.$eleve_id.'_audio_copie.mp3';
+        FileSystem::ecrire_fichier( CHEMIN_DOSSIER_IMPORT.$fichier_nom , $msg_data );
+        $msg_url = URL_DIR_IMPORT.$fichier_nom;
+      }
+      $commentaire_audio = '<h3>Commentaire audio</h3><audio id="audio_lecture" controls="" src="'.$msg_url.'" class="eleve"><span class="probleme">Votre navigateur est trop ancien, il ne supporte pas la balise [audio] !</span></audio>';
+    }
+  }
   // retour des infos
-  exit('<tr>'.implode('</tr><tr>',$tab_affich).'</tr>'.$legende);
+  exit('ok'.']¤['.$affichage.']¤['.$legende.']¤['.$commentaire_texte.']¤['.$commentaire_audio);
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -238,11 +256,10 @@ if( ($action=='Enregistrer_saisies') && $devoir_id )
   {
     exit('Auto-évaluation terminée le '.convert_date_mysql_to_french($DB_ROW['devoir_autoeval_date']).' !');
   }
-  $devoir_prof_id     = $DB_ROW['prof_id'];
+  $devoir_proprio_id  = $DB_ROW['proprio_id'];
   $devoir_date_mysql  = $DB_ROW['devoir_date'];
   $devoir_description = $DB_ROW['devoir_info'];
   $date_visible_mysql = $DB_ROW['devoir_visible_date'];
-  $tab_profs_rss      = ($DB_ROW['devoir_partage']) ? explode(',',$DB_ROW['devoir_partage']) : array($DB_ROW['prof_id']) ;
   // Tout est transmis : il faut comparer avec le contenu de la base pour ne mettre à jour que ce dont il y a besoin
   // On récupère les notes transmises dans $tab_post
   $tab_post = array();
@@ -261,7 +278,7 @@ if( ($action=='Enregistrer_saisies') && $devoir_id )
   }
   // On recupère le contenu de la base déjà enregistré pour le comparer ; on remplit au fur et à mesure $tab_nouveau_modifier / $tab_nouveau_supprimer
   // $tab_demande_supprimer sert à supprimer des demandes d'élèves dont on met une note.
-  $tab_nouveau_modifier = array();
+  $tab_nouveau_modifier  = array();
   $tab_nouveau_supprimer = array();
   $tab_demande_supprimer = array();
   $DB_TAB = DB_STRUCTURE_ELEVE::DB_lister_saisies_devoir_eleve( $devoir_id , $_SESSION['USER_ID'] , $_SESSION['USER_PROFIL_TYPE'] , TRUE /*with_REQ*/ );
@@ -298,25 +315,26 @@ if( ($action=='Enregistrer_saisies') && $devoir_id )
   {
     exit('Aucune modification détectée !');
   }
-  // L'information associée à la note comporte le nom de l'évaluation + celui de l'élève (c'est une information statique, conservée sur plusieurs années)
-  $info = $devoir_description.' ('.afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE).')';
+  // L'information associée à la note comporte le nom de l'évaluation + celui du professeur (c'est une information statique, conservée sur plusieurs années)
+  $info = $devoir_description.' ('.afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE,$_SESSION['USER_GENRE']).')';
   foreach($tab_nouveau_ajouter as $item_id => $note)
   {
-    DB_STRUCTURE_PROFESSEUR::DB_ajouter_saisie($devoir_prof_id,$_SESSION['USER_ID'],$devoir_id,$item_id,$devoir_date_mysql,$note,$info,$date_visible_mysql);
+    DB_STRUCTURE_PROFESSEUR::DB_ajouter_saisie( $devoir_proprio_id , $_SESSION['USER_ID'] , $devoir_id , $item_id , $devoir_date_mysql , $note , $info , $date_visible_mysql );
   }
   foreach($tab_nouveau_modifier as $item_id => $note)
   {
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_saisie($devoir_prof_id,$_SESSION['USER_ID'],$devoir_id,$item_id,$note,$info);
+    DB_STRUCTURE_PROFESSEUR::DB_modifier_saisie( $devoir_proprio_id , $_SESSION['USER_ID'] , $devoir_id , $item_id , $note , $info );
   }
   foreach($tab_nouveau_supprimer as $item_id)
   {
-    DB_STRUCTURE_PROFESSEUR::DB_supprimer_saisie($_SESSION['USER_ID'],$devoir_id,$item_id);
+    DB_STRUCTURE_PROFESSEUR::DB_supprimer_saisie( $_SESSION['USER_ID'] , $devoir_id , $item_id );
   }
   foreach($tab_demande_supprimer as $item_id)
   {
-    DB_STRUCTURE_PROFESSEUR::DB_supprimer_demande_precise($_SESSION['USER_ID'],$item_id);
+    DB_STRUCTURE_DEMANDE::DB_supprimer_demande_precise_eleve_item( $_SESSION['USER_ID'] , $item_id );
   }
   // Ajout aux flux RSS des profs concernés
+  $tab_profs_rss = array_merge( array($devoir_proprio_id) , DB_STRUCTURE_ELEVE::DB_lister_devoir_profs_droit_saisie($devoir_id) );
   $titre = 'Autoévaluation effectuée par '.afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE);
   $texte = $_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM'].' s\'auto-évalue sur le devoir "'.$devoir_description.'"';
   $guid  = 'autoeval_'.$devoir_id.'_'.$_SESSION['USER_ID'].'_'.$_SERVER['REQUEST_TIME']; // obligé d'ajouter un time pour unicité au cas où un élève valide 2x l'autoévaluation

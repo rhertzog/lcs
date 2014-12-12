@@ -473,7 +473,13 @@ if($version_base_structure_actuelle=='2011-08-20')
     foreach($DB_TAB as $DB_ROW)
     {
       $saisie_info = $DB_ROW['devoir_info'].' ('.afficher_identite_initiale($DB_ROW['user_nom'],FALSE,$DB_ROW['user_prenom'],TRUE).')';
-      $DB_VAR = array(':prof_id'=>$DB_ROW['prof_id'],':eleve_id'=>$DB_ROW['eleve_id'],':devoir_id'=>$DB_ROW['devoir_id'],':item_id'=>$DB_ROW['item_id'],':saisie_info'=>$saisie_info);
+      $DB_VAR = array(
+        ':prof_id'     => $DB_ROW['prof_id'],
+        ':eleve_id'    => $DB_ROW['eleve_id'],
+        ':devoir_id'   => $DB_ROW['devoir_id'],
+        ':item_id'     => $DB_ROW['item_id'],
+        ':saisie_info' => $saisie_info,
+      );
       DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
     }
   }
@@ -489,13 +495,16 @@ if($version_base_structure_actuelle=='2011-10-01')
   {
     $version_base_structure_actuelle = '2011-10-09';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , 'UPDATE sacoche_parametre SET parametre_valeur="'.$version_base_structure_actuelle.'" WHERE parametre_nom="version_base"' );
-    // suppression du champ groupe_prof_id pour un groupe de besoin ou un groupe d'évaluation (utilisation de la table de jointure existance à la place)
+    // suppression du champ groupe_prof_id pour un groupe de besoin ou un groupe d'évaluation (utilisation de la table de jointure existante à la place)
     $DB_SQL = 'SELECT groupe_id,groupe_prof_id FROM sacoche_groupe WHERE groupe_type IN ("besoin","eval")';
     $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL );
     $DB_SQL = 'REPLACE INTO sacoche_jointure_user_groupe (user_id,groupe_id,jointure_pp) VALUES(:user_id,:groupe_id,1)';
     foreach($DB_TAB as $DB_ROW)
     {
-      $DB_VAR = array(':user_id'=>$DB_ROW['groupe_prof_id'],':groupe_id'=>$DB_ROW['groupe_id']);
+      $DB_VAR = array(
+        ':user_id'   => $DB_ROW['groupe_prof_id'],
+        ':groupe_id' => $DB_ROW['groupe_id'],
+      );
       DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
     }
     DB::query(SACOCHE_STRUCTURE_BD_NAME , 'ALTER TABLE sacoche_groupe DROP groupe_prof_id' );

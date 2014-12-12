@@ -85,7 +85,10 @@ public static function DB_recuperer_arborescence_selection( $liste_eleve_id , $l
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel USING (matiere_id,niveau_id) ';
   $DB_SQL.= 'WHERE eleve_id IN('.$liste_eleve_id.') AND item_id IN('.$liste_item_id.') AND saisie_date>=:date_debut AND saisie_date<=:date_fin ';
   $DB_SQL.= 'ORDER BY matiere_ordre ASC, matiere_nom ASC, niveau_ordre ASC, domaine_ordre ASC, theme_ordre ASC, item_ordre ASC';
-  $DB_VAR = array( ':date_debut'=>$date_mysql_debut , ':date_fin'=>$date_mysql_fin );
+  $DB_VAR = array(
+    ':date_debut' => $date_mysql_debut,
+    ':date_fin'   => $date_mysql_fin,
+  );
   $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR , TRUE);
   $tab_matiere = array();
   foreach($DB_TAB as $item_id => $tab)
@@ -258,7 +261,10 @@ public static function DB_recuperer_items_travailles( $liste_eleve_id , $liste_m
   $DB_SQL.= 'LEFT JOIN sacoche_matiere USING (matiere_id) ';
   $DB_SQL.= 'WHERE eleve_id IN('.$liste_eleve_id.') '.$where_matiere.$where_date_debut.$where_date_fin;
   $DB_SQL.= 'GROUP BY item_id ';
-  $DB_VAR = array( ':date_debut'=>$date_mysql_debut , ':date_fin'=>$date_mysql_fin );
+  $DB_VAR = array(
+    ':date_debut' => $date_mysql_debut,
+    ':date_fin'   => $date_mysql_fin,
+  );
   $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR , TRUE);
   // Traiter le résultat de la requête pour en extraire un sous-tableau $tab_matiere
   $tab_matiere = array();
@@ -524,12 +530,13 @@ public static function DB_lister_result_eleves_palier_sans_infos_items( $liste_e
  * lister_eleves_cibles
  *
  * @param string   $listing_eleve_id   id des élèves séparés par des virgules
+ * @param string   $eleves_ordre       valeur parmi [alpha] [classe]
  * @param bool     $with_gepi
  * @param bool     $with_langue
  * @param bool     $with_brevet_serie
  * @return array|string                le tableau est de la forme [eleve_id] => array('eleve_nom'=>...,'eleve_prenom'=>...,'date_naissance'=>...,'eleve_id_gepi'=>...,'eleve_langue'=>...,'eleve_brevet_serie'=>...);
  */
-public static function DB_lister_eleves_cibles( $listing_eleve_id , $with_gepi , $with_langue , $with_brevet_serie )
+public static function DB_lister_eleves_cibles( $listing_eleve_id , $eleves_ordre , $with_gepi , $with_langue , $with_brevet_serie )
 {
   $DB_SQL = 'SELECT user_id AS eleve_id , user_nom AS eleve_nom , user_prenom AS eleve_prenom , user_naissance_date AS date_naissance ';
   $DB_SQL.= ($with_gepi)         ? ', user_id_gepi AS eleve_id_gepi ' : '' ;
@@ -537,8 +544,13 @@ public static function DB_lister_eleves_cibles( $listing_eleve_id , $with_gepi ,
   $DB_SQL.= ($with_brevet_serie) ? ', eleve_brevet_serie '            : '' ;
   $DB_SQL.= 'FROM sacoche_user ';
   $DB_SQL.= 'LEFT JOIN sacoche_user_profil USING (user_profil_sigle) ';
+  if($eleves_ordre=='classe')
+  {
+    $DB_SQL.= 'LEFT JOIN sacoche_groupe ON sacoche_user.eleve_classe_id=sacoche_groupe.groupe_id ';
+    $DB_SQL.= 'LEFT JOIN sacoche_niveau USING (niveau_id) ';
+  }
   $DB_SQL.= 'WHERE user_id IN('.$listing_eleve_id.') AND user_profil_type=:profil_type ';
-  $DB_SQL.= 'ORDER BY user_nom ASC, user_prenom ASC';
+  $DB_SQL.= ($eleves_ordre=='classe') ? 'ORDER BY niveau_ordre ASC, groupe_nom ASC, user_nom ASC, user_prenom ASC' : 'ORDER BY user_nom ASC, user_prenom ASC' ;
   $DB_VAR = array(':profil_type'=>'eleve');
   $DB_TAB = DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR, TRUE, TRUE);
   return !empty($DB_TAB) ? $DB_TAB : 'Aucun élève ne correspond aux identifiants transmis.' ;

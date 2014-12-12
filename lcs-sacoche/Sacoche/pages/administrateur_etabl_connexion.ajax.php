@@ -41,6 +41,7 @@ $cas_serveur_url_logout   = (isset($_POST['cas_serveur_url_logout']))   ? Clean:
 $cas_serveur_url_validate = (isset($_POST['cas_serveur_url_validate'])) ? Clean::texte($_POST['cas_serveur_url_validate']) : '';
 $serveur_host_subdomain   = (isset($_POST['serveur_host_subdomain']))   ? Clean::texte($_POST['serveur_host_subdomain'])   : '';
 $serveur_host_domain      = (isset($_POST['serveur_host_domain']))      ? Clean::texte($_POST['serveur_host_domain'])      : '';
+$serveur_port             = (isset($_POST['serveur_port']))             ? Clean::entier($_POST['serveur_port'])            : 0 ;
 $gepi_saml_url            = (isset($_POST['gepi_saml_url']))            ? Clean::texte($_POST['gepi_saml_url'])            : '';
 $gepi_saml_rne            = (isset($_POST['gepi_saml_rne']))            ? Clean::uai($_POST['gepi_saml_rne'])              : '';
 $gepi_saml_certif         = (isset($_POST['gepi_saml_certif']))         ? Clean::texte($_POST['gepi_saml_certif'])         : '';
@@ -65,6 +66,11 @@ if($f_action=='enregistrer_mode_identification')
     exit_json( FALSE , 'Sous-domaine manquant !' );
   }
 
+  if( ($f_connexion_mode=='cas') && ($tab_connexion_info[$f_connexion_mode][$f_connexion_ref]['serveur_port']=='*') && !$serveur_port )
+  {
+    exit_json( FALSE , 'Port manquant !' );
+  }
+
   list($f_connexion_departement,$f_connexion_nom) = explode('|',$f_connexion_ref);
 
   if( ($f_connexion_mode=='normal') || ($f_connexion_mode=='shibboleth') )
@@ -81,6 +87,8 @@ if($f_action=='enregistrer_mode_identification')
   {
     // Soit le host est saisi manuellement, soit il faut le recomposer si sous-domaine saisi (dans la situation majoritaire où il n'y a pas de sous-domaine variable, le résultat est le même)
     $cas_serveur_host = ($f_connexion_nom=='perso') ? $cas_serveur_host : ( ($serveur_host_subdomain!='') ? ( (substr($serveur_host_subdomain,-1)!='.') ? $serveur_host_subdomain.'.'.$serveur_host_domain : $serveur_host_subdomain.$serveur_host_domain ) : $serveur_host_domain ) ;
+    // Cas du port
+    $cas_serveur_port = ($tab_connexion_info[$f_connexion_mode][$f_connexion_ref]['serveur_port']!='*') ? $cas_serveur_port : $serveur_port ;
     // Vérifier les paramètres CAS en reprenant le code de phpCAS
     if ( empty($cas_serveur_host) || !preg_match('/[\.\d\-abcdefghijklmnopqrstuvwxyz]*/',$cas_serveur_host) )
     {
@@ -108,33 +116,37 @@ if($f_action=='enregistrer_mode_identification')
     {
       exit_json( FALSE , 'Syntaxe URL validate incorrecte !' );
     }
-    // Ne pas dupliquer en paramétrage CAS-perso un paramétrage CAS-ENT existant (utiliser la connexion CAS officielle)
-    if($f_connexion_nom=='perso')
+    // Deux tests sauf pour les établissements destinés à tester les connecteurs ENT
+    if( !IS_HEBERGEMENT_SESAMATH || ($_SESSION['BASE']<CONVENTION_ENT_ID_ETABL_MAXI) )
     {
-      foreach($tab_serveur_cas as $cas_nom => $tab_cas_param)
+      // Ne pas dupliquer en paramétrage CAS-perso un paramétrage CAS-ENT existant (utiliser la connexion CAS officielle)
+      if($f_connexion_nom=='perso')
       {
-        if($cas_nom)
+        foreach($tab_serveur_cas as $cas_nom => $tab_cas_param)
         {
-          $is_param_defaut_identiques = ( (strpos($cas_serveur_host,$tab_cas_param['serveur_host_domain'])!==FALSE) && ($cas_serveur_port==$tab_cas_param['serveur_port']) && ($cas_serveur_root==$tab_cas_param['serveur_root']) ) ? TRUE : FALSE ;
-          $is_param_force_identiques  = ( ($cas_serveur_url_login!='') && ( ($cas_serveur_url_login==$tab_cas_param['serveur_url_login']) || (strpos($cas_serveur_url_login,$tab_cas_param['serveur_host_domain'].':'.$tab_cas_param['serveur_port'].'/'.$tab_cas_param['serveur_root'])!==FALSE) ) ) ? TRUE : FALSE ;
-          if( $is_param_defaut_identiques || $is_param_force_identiques )
+          if($cas_nom)
           {
-            exit_json( FALSE , 'Paramètres d\'un ENT référencé : sélectionnez-le !' );
+            $is_param_defaut_identiques = ( (strpos($cas_serveur_host,$tab_cas_param['serveur_host_domain'])!==FALSE) && ($cas_serveur_root==$tab_cas_param['serveur_root']) ) ? TRUE : FALSE ; // Pas de test sur le sous-domaine ni le port car ils peuvent varier
+            $is_param_force_identiques  = ( ($cas_serveur_url_login!='') && ( ($cas_serveur_url_login==$tab_cas_param['serveur_url_login']) || (strpos($cas_serveur_url_login,$tab_cas_param['serveur_host_domain'].':'.$tab_cas_param['serveur_port'].'/'.$tab_cas_param['serveur_root'])!==FALSE) ) ) ? TRUE : FALSE ;
+            if( $is_param_defaut_identiques || $is_param_force_identiques )
+            {
+              exit_json( FALSE , 'Paramètres d\'un ENT référencé : sélectionnez-le !' );
+            }
           }
         }
       }
-    }
-    // Sur le serveur Sésamath, ne pas autoriser un paramétrage CAS correspondant à un hébergement académique (ne devrait pas se produire, Sésamath n'hébergeant pas ces établissements).
-    else if(IS_HEBERGEMENT_SESAMATH)
-    {
-      if(!is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT))
+      // Sur le serveur Sésamath, ne pas autoriser un paramétrage CAS correspondant à un hébergement académique (ne devrait pas se produire, Sésamath n'hébergeant pas ces établissements).
+      else if(IS_HEBERGEMENT_SESAMATH)
       {
-        exit_json( FALSE , 'Le fichier &laquo;&nbsp;<b>'.FileSystem::fin_chemin(CHEMIN_FICHIER_WS_SESAMATH_ENT).'</b>&nbsp;&raquo; (uniquement présent sur le serveur Sésamath) n\'a pas été détecté !' );
-      }  
-      require(CHEMIN_FICHIER_WS_SESAMATH_ENT); // Charge les tableaux   $tab_connecteurs_hebergement & $tab_connecteurs_convention
-      if( isset($tab_connecteurs_hebergement[$f_connexion_ref]) )
-      {
-        exit_json( FALSE , 'Paramètres d\'un serveur CAS à utiliser sur l\'hébergement académique dédié !' );
+        if(!is_file(CHEMIN_FICHIER_WS_SESAMATH_ENT))
+        {
+          exit_json( FALSE , 'Le fichier &laquo;&nbsp;<b>'.FileSystem::fin_chemin(CHEMIN_FICHIER_WS_SESAMATH_ENT).'</b>&nbsp;&raquo; (uniquement présent sur le serveur Sésamath) n\'a pas été détecté !' );
+        }  
+        require(CHEMIN_FICHIER_WS_SESAMATH_ENT); // Charge les tableaux   $tab_connecteurs_hebergement & $tab_connecteurs_convention
+        if( isset($tab_connecteurs_hebergement[$f_connexion_ref]) )
+        {
+          exit_json( FALSE , 'Paramètres d\'un serveur CAS à utiliser sur l\'hébergement académique dédié !' );
+        }
       }
     }
     // C'est ok
@@ -285,12 +297,12 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
     // type d'exemplaire
     $contrat_PDF->SetFont('Arial','B',$taille_police);
     $contrat_PDF->choisir_couleur_fond('gris_moyen');
-    $contrat_PDF->SetXY(20,65);
+    $contrat_PDF->SetXY(20,70);
     if($numero_exemplaire==0)
     {
       $contrat_PDF->CellFit( 70 , $hauteur_ligne , To::pdf('Exemplaire à retourner à :') , 1 /*bordure*/ , 2 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
-      $contrat_PDF->Rect( 20 , 65+$hauteur_ligne , 70 , $hauteur_ligne*3+2*$marge_bordure , 'DF' );
-      $contrat_PDF->SetXY(20+$marge_bordure,65+$hauteur_ligne+$marge_bordure);
+      $contrat_PDF->Rect( 20 , 70+$hauteur_ligne , 70 , $hauteur_ligne*3+2*$marge_bordure , 'DF' );
+      $contrat_PDF->SetXY(20+$marge_bordure,70+$hauteur_ligne+$marge_bordure);
       $contrat_PDF->CellFit( 70-2*$marge_bordure , $hauteur_ligne , To::pdf('M. RINDEL Christophe') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
       $contrat_PDF->CellFit( 70-2*$marge_bordure , $hauteur_ligne , To::pdf('32 Résidence la clé des champs') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
       $contrat_PDF->CellFit( 70-2*$marge_bordure , $hauteur_ligne , To::pdf('80160 Plachy Buyon') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
@@ -300,19 +312,19 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
       $contrat_PDF->CellFit( 70 , $hauteur_ligne , To::pdf('Exemplaire à conserver') , 1 /*bordure*/ , 2 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
     }
     // référence du connecteur
-    $contrat_PDF->SetXY(40,110);
+    $contrat_PDF->SetXY(40,116);
     $contrat_PDF->CellFit( 100 , $hauteur_ligne , To::pdf($connecteur_ref) , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
     // connecteur
-    $contrat_PDF->SetXY(93,136.5);
+    $contrat_PDF->SetXY(93,142);
     $contrat_PDF->CellFit( 100 , $hauteur_ligne , To::pdf('"'.$DB_ROW['connexion_nom'].'"') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
     // date fin
-    $contrat_PDF->SetXY(90,211);
+    $contrat_PDF->SetXY(90,216.5);
     $contrat_PDF->CellFit( 100 , $hauteur_ligne , To::pdf(convert_date_mysql_to_french($DB_ROW['convention_date_fin']).'.') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
     // date création
-    $contrat_PDF->SetXY(121,226.5);
+    $contrat_PDF->SetXY(121,237.5);
     $contrat_PDF->CellFit( 80 , $hauteur_ligne , To::pdf(convert_date_mysql_to_french($DB_ROW['convention_creation']).'.') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
     // signature
-    $contrat_PDF->Image( CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_conventions_sacoche_etablissement_signature.png' , 30 /*x*/ , 247 /*y*/ , 200*0.25 /*largeur*/ , 120*0.25 /*lomer_image_hauteur*/ , 'PNG' );
+    $contrat_PDF->Image( CHEMIN_DOSSIER_WEBSERVICES.'sesamath_ent_conventions_sacoche_etablissement_signature.png' , 30 /*x*/ , 254 /*y*/ , 254*0.2 /*largeur*/ , 158*0.2 /*hauteur*/ , 'PNG' );
     // ajouter une page ; y importer la page 2 ; l'utiliser comme support
     $contrat_PDF->AddPage();
     $tplIdx = $contrat_PDF->importPage(2);
@@ -320,7 +332,7 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
   }
   // On enregistre la sortie PDF
   $contrat_fichier_nom = 'convention_contrat_'.fabriquer_fin_nom_fichier__date_et_alea().'.pdf';
-  $contrat_PDF->Output(CHEMIN_DOSSIER_EXPORT.$contrat_fichier_nom,'F');
+  FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$contrat_fichier_nom , $contrat_PDF );
   //
   // Imprimer la facture.
   //
@@ -334,7 +346,7 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
   $facture_PDF->SetFont('Arial','',$taille_police);
   $facture_PDF->choisir_couleur_fond('gris_clair');
   $facture_PDF->SetXY(130,10);
-  $facture_PDF->CellFit( 50 , $hauteur_ligne , To::pdf('Convention n°'.$f_convention_id) , 0 /*bordure*/ , 2 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
+  $facture_PDF->CellFit( 50 , $hauteur_ligne , To::pdf('Facture n°'.$f_convention_id) , 0 /*bordure*/ , 2 /*br*/ , 'C' /*alignement*/ , TRUE /*remplissage*/ );
   // établissement
   $facture_PDF->Rect( 120-$marge_bordure , 20-$marge_bordure , 70+2*$marge_bordure , $hauteur_ligne*count($tab_etabl_coords)+2*$marge_bordure , 'D' );
   $facture_PDF->SetXY(120,20);
@@ -344,7 +356,7 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
   }
   // date création
   $facture_PDF->SetXY(14,99);
-  $facture_PDF->CellFit( 70 , $hauteur_ligne , To::pdf('À Plachy Buyon, le '.convert_date_mysql_to_french($DB_ROW['convention_creation']).'.') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
+  $facture_PDF->CellFit( 70 , $hauteur_ligne , To::pdf('À Erôme, le '.convert_date_mysql_to_french($DB_ROW['convention_creation']).'.') , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
   // référence du connecteur
   $facture_PDF->SetFont('Arial','B',$taille_police);
   $facture_PDF->SetXY(17,138);
@@ -381,7 +393,7 @@ if( ($f_action=='imprimer_documents') && $f_convention_id && in_array($f_first_t
   $facture_PDF->CellFit( 180 , $hauteur_ligne , To::pdf($texte) , 0 /*bordure*/ , 2 /*br*/ , 'L' /*alignement*/ , FALSE /*remplissage*/ );
   // On enregistre la sortie PDF
   $facture_fichier_nom = 'convention_facture_'.fabriquer_fin_nom_fichier__date_et_alea().'.pdf';
-  $facture_PDF->Output(CHEMIN_DOSSIER_EXPORT.$facture_fichier_nom,'F');
+  FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$facture_fichier_nom , $facture_PDF );
   //
   // Envoyer un courriel au contact.
   //

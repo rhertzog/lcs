@@ -63,7 +63,7 @@ if(!$BILAN_ETAT)
 // Récupérer la liste des élèves (on pourrait se faire transmettre les ids par l'envoi ajax, mais on a aussi besoin des noms-prénoms).
 
 $is_sous_groupe = ($groupe_id) ? TRUE : FALSE ;
-$DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
+$DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
 if(empty($DB_TAB))
 {
   exit('Aucun élève trouvé dans ce regroupement !');
@@ -210,7 +210,7 @@ if($action=='imprimer_donnees_eleves_collegues')
     if($DB_ROW['prof_id'])
     {
       // Les appréciations
-      $texte = $DB_ROW['prof_info'].' - '.$DB_ROW['saisie_appreciation'];
+      $texte = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ).' - '.$DB_ROW['saisie_appreciation'];
       $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']]['tab_appreciation'][] = suppression_sauts_de_ligne($texte);
       $nb_lignes_rubriques += nombre_de_ligne_supplémentaires($texte);
     }
@@ -266,7 +266,7 @@ if($action=='imprimer_donnees_classe_collegues')
     if($DB_ROW['prof_id'])
     {
       // Les appréciations
-      $texte = $DB_ROW['prof_info'].' - '.$DB_ROW['saisie_appreciation'];
+      $texte = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ).' - '.$DB_ROW['saisie_appreciation'];
       $tab_saisie[$DB_ROW['rubrique_id']]['tab_appreciation'][] = suppression_sauts_de_ligne($texte);
       $nb_lignes_supplémentaires += nombre_de_ligne_supplémentaires($texte);
     }
@@ -321,7 +321,7 @@ if($action=='imprimer_donnees_eleves_syntheses')
     if($DB_ROW['prof_id'])
     {
       // L'appréciation
-      $texte = $DB_ROW['prof_info'].' - '.$DB_ROW['saisie_appreciation'];
+      $texte = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ).' - '.$DB_ROW['saisie_appreciation'];
       $tab_saisie[$DB_ROW['eleve_id']]['appreciation'] = suppression_sauts_de_ligne($texte);
       $nb_lignes_supplémentaires += nombre_de_ligne_supplémentaires($texte);
     }
@@ -451,7 +451,7 @@ if($action=='imprimer_donnees_eleves_recapitulatif')
       if($DB_ROW['prof_id'])
       {
         $tab_saisies[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']]['appreciation'][$DB_ROW['periode_ordre']] = suppression_sauts_de_ligne($DB_ROW['saisie_appreciation']);
-        $tab_saisies[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']]['professeur'][$DB_ROW['prof_id']] = $DB_ROW['prof_info'];
+        $tab_saisies[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']]['professeur'][$DB_ROW['prof_id']] = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
       }
       else if($DB_ROW['saisie_note']!==NULL) // Remarque : un test isset() sur une valeur NULL renverra FALSE !!!
       {
@@ -470,7 +470,7 @@ if($action=='imprimer_donnees_eleves_recapitulatif')
       $tab_moyennes[$rubrique_id][$eleve_id] = isset($tab_saisies[$eleve_id][$rubrique_id]['note']) ? round( array_sum($tab_saisies[$eleve_id][$rubrique_id]['note']) / count($tab_saisies[$eleve_id][$rubrique_id]['note']) , 1 ) : NULL ;
     }
     $somme  = array_sum($tab_moyennes[$rubrique_id]);
-    $nombre = count( array_filter($tab_moyennes[$rubrique_id],'non_nul') );
+    $nombre = count( array_filter($tab_moyennes[$rubrique_id],'non_vide') );
     $tab_moyennes[$rubrique_id][0] = ($nombre) ? round($somme/$nombre,1) : NULL ;
   }
   // Calcul du nb de lignes requises par élève
@@ -563,7 +563,7 @@ if($action=='imprimer_donnees_eleves_recapitulatif')
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 $fichier_export = 'saisies_'.$BILAN_TYPE.'_'.Clean::fichier($periode_nom).'_'.Clean::fichier($classe_nom).'_'.$action.'_'.fabriquer_fin_nom_fichier__date_et_alea();
-$releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.$fichier_export.'.pdf','F');
+FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$fichier_export.'.pdf' , $releve_PDF );
 echo'<a target="_blank" href="'.URL_DIR_EXPORT.$fichier_export.'.pdf"><span class="file file_pdf">'.$tab_actions[$action].' (format <em>pdf</em>).</span></a>';
 // Et le csv éventuel
 if($action=='imprimer_donnees_eleves_moyennes')

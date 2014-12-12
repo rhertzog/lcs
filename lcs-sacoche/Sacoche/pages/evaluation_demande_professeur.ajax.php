@@ -91,7 +91,7 @@ if( ($action=='Afficher_demandes') && ( $matiere_nom || !$selection_matiere ) &&
 {
   $retour = '';
   // Récupérer la liste des élèves concernés
-  $DB_TAB = ($selection_groupe) ? DB_STRUCTURE_COMMUN::DB_OPT_eleves_regroupement($tab_types[$groupe_type],$groupe_id,$user_statut=1) : DB_STRUCTURE_PROFESSEUR::DB_OPT_lister_eleves_professeur($_SESSION['USER_ID'],$_SESSION['USER_JOIN_GROUPES']) ;
+  $DB_TAB = ($selection_groupe) ? DB_STRUCTURE_COMMUN::DB_OPT_eleves_regroupement($tab_types[$groupe_type],$groupe_id,$user_statut=1,$eleves_ordre='alpha') : DB_STRUCTURE_PROFESSEUR::DB_OPT_lister_eleves_professeur($_SESSION['USER_ID'],$_SESSION['USER_JOIN_GROUPES']) ;
   if(!is_array($DB_TAB))
   {
     exit($DB_TAB);  // Aucun élève trouvé. | Aucun élève ne vous est affecté.
@@ -115,7 +115,7 @@ if( ($action=='Afficher_demandes') && ( $matiere_nom || !$selection_matiere ) &&
   $messages_html = '<table><thead><tr><th>Matière - Item</th><th>Groupe - Élève</th><th>Message(s)</th></tr></thead><tbody>';
   $fichier_csv = 'Matière'.$separateur.'Item Ref'.$separateur.'Item Nom'.$separateur.'Groupe'.$separateur.'Élève'.$separateur.'Score'.$separateur.'Date'.$separateur.'Message'."\r\n";
   $tab_demandes = array();
-  $DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_demandes_prof($matiere_id,$listing_user_id);
+  $DB_TAB = DB_STRUCTURE_DEMANDE::DB_lister_demandes_prof( $_SESSION['USER_ID'] , $matiere_id , $listing_user_id );
   if(empty($DB_TAB))
   {
     exit('Aucune demande n\'a été formulée selon les critères indiqués !');
@@ -151,7 +151,7 @@ if( ($action=='Afficher_demandes') && ( $matiere_nom || !$selection_matiere ) &&
   $messages_html .= '</tbody></table>';
   // Calculer pour chaque item sa popularité (le nb de demandes pour les élèves affichés)
   $listing_demande_id = implode(',', $tab_demandes );
-  $DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_recuperer_item_popularite($listing_demande_id,$listing_user_id);
+  $DB_TAB = DB_STRUCTURE_DEMANDE::DB_recuperer_item_popularite($listing_demande_id,$listing_user_id);
   $tab_bad = array();
   $tab_bon = array();
   foreach($DB_TAB as $DB_ROW)
@@ -185,12 +185,12 @@ if( ($action=='creer') && in_array($qui,$tab_qui) && ( ($qui=='select') || ( (is
   $date_autoeval_mysql = convert_date_french_to_mysql($date_autoeval);
   $doc_sujet   = '';
   $doc_corrige = '';
-  $devoir_id = DB_STRUCTURE_PROFESSEUR::DB_ajouter_devoir($_SESSION['USER_ID'],$groupe_id,$date_mysql,$info,$date_visible_mysql,$date_autoeval_mysql,$doc_sujet,$doc_corrige);
+  $devoir_id = DB_STRUCTURE_PROFESSEUR::DB_ajouter_devoir( $_SESSION['USER_ID'] , $groupe_id , $date_mysql , $info , $date_visible_mysql , $date_autoeval_mysql , $doc_sujet , $doc_corrige , $eleves_ordre='alpha' );
   // Dans le cas d'une évaluation sur une liste d'élèves sélectionnés,
   // Affecter tous les élèves choisis
   if($qui=='select')
   {
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_user($devoir_id,$groupe_id,$tab_user_id,'creer');
+    DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_eleve($devoir_id,$groupe_id,$tab_user_id,'creer');
   }
   // Insérer les enregistrements des items de l'évaluation
   DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_item($devoir_id,$tab_item_id,'creer');
@@ -205,11 +205,11 @@ if( ($action=='creer') && in_array($qui,$tab_qui) && ( ($qui=='select') || ( (is
   $listing_demande_id = implode(',',$tab_demande_id);
   if($suite=='changer')
   {
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_demandes_statut($listing_demande_id,'prof',$message);
+    DB_STRUCTURE_DEMANDE::DB_modifier_demandes_statut($listing_demande_id,'prof',$message);
   }
   else
   {
-    DB_STRUCTURE_PROFESSEUR::DB_supprimer_demandes_devoir($listing_demande_id);
+    DB_STRUCTURE_DEMANDE::DB_supprimer_demandes_devoir($listing_demande_id);
   }
   exit('ok');
 }
@@ -224,7 +224,7 @@ if( ($action=='completer') && in_array($qui,$tab_qui) && ( ($qui=='select') || (
   if($qui=='select')
   {
     // Il faut ajouter tous les élèves choisis
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_user($devoir_id,$devoir_groupe_id,$tab_user_id,'ajouter'); // ($devoir_groupe_id et non $groupe_id qui correspond à la classe d'origine des élèves...)
+    DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_eleve($devoir_id,$devoir_groupe_id,$tab_user_id,'ajouter'); // ($devoir_groupe_id et non $groupe_id qui correspond à la classe d'origine des élèves...)
   }
   // Maintenant on peut modifier les items de l'évaluation
   DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_item($devoir_id,$tab_item_id,'ajouter');
@@ -241,11 +241,11 @@ if( ($action=='completer') && in_array($qui,$tab_qui) && ( ($qui=='select') || (
   $listing_demande_id = implode(',',$tab_demande_id);
   if($suite=='changer')
   {
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_demandes_statut($listing_demande_id,'prof',$message);
+    DB_STRUCTURE_DEMANDE::DB_modifier_demandes_statut($listing_demande_id,'prof',$message);
   }
   else
   {
-    DB_STRUCTURE_PROFESSEUR::DB_supprimer_demandes_devoir($listing_demande_id);
+    DB_STRUCTURE_DEMANDE::DB_supprimer_demandes_devoir($listing_demande_id);
   }
   exit('ok');
 }
@@ -258,7 +258,7 @@ if( ( ($action=='changer_prof') || ($action=='changer_eleve') ) && $nb_demandes 
 {
   $listing_demande_id = implode(',',$tab_demande_id);
   $statut = substr($action,8);
-  DB_STRUCTURE_PROFESSEUR::DB_modifier_demandes_statut($listing_demande_id,$statut,$message);
+  DB_STRUCTURE_DEMANDE::DB_modifier_demandes_statut($listing_demande_id,$statut,$message);
   exit('ok');
 }
 
@@ -269,7 +269,7 @@ if( ( ($action=='changer_prof') || ($action=='changer_eleve') ) && $nb_demandes 
 if( ($action=='retirer') && $nb_demandes )
 {
   $listing_demande_id = implode(',',$tab_demande_id);
-  DB_STRUCTURE_PROFESSEUR::DB_supprimer_demandes_devoir($listing_demande_id);
+  DB_STRUCTURE_DEMANDE::DB_supprimer_demandes_devoir($listing_demande_id);
   exit('ok');
 }
 
@@ -280,7 +280,7 @@ if( ($action=='retirer') && $nb_demandes )
 if( ($action=='actualiser_score') && ($nb_demandes==1) && ($nb_users==1) && ($nb_items==1) && ($score>-2) )
 {
   $tab_devoirs = array();
-  $DB_TAB = DB_STRUCTURE_PROFESSEUR::DB_lister_result_eleve_item( $tab_user_id[0] , $tab_item_id[0] );
+  $DB_TAB = DB_STRUCTURE_DEMANDE::DB_lister_result_eleve_item( $tab_user_id[0] , $tab_item_id[0] );
   foreach($DB_TAB as $DB_ROW)
   {
     $tab_devoirs[] = array('note'=>$DB_ROW['note']);
@@ -290,7 +290,7 @@ if( ($action=='actualiser_score') && ($nb_demandes==1) && ($nb_users==1) && ($nb
   {
     // maj score
     $score_new_bdd = ($score_new!=-1) ? $score_new : NULL ;
-    DB_STRUCTURE_PROFESSEUR::DB_modifier_demande_score( $tab_demande_id[0] , $score_new_bdd );
+    DB_STRUCTURE_DEMANDE::DB_modifier_demande_score( $tab_demande_id[0] , $score_new_bdd );
   }
   $score_retour = str_replace( $tab_td_score_bad , $tab_td_score_bon , Html::td_score( $score_new , 'score' /*methode_tri*/ , '' /*pourcent*/ ) );
   exit($score_retour);

@@ -85,8 +85,8 @@ class InfoServeur
   {
     switch($sujet)
     {
-      case 'version_php'                    : return 'Version '.PHP_VERSION_MINI_REQUISE.' ou ultérieure requise.<br \>Version '.PHP_VERSION_MINI_CONSEILLEE.' ou ultérieure conseillée.<br \>PHP 5.2 n\'est plus supporté depuis le 16 décembre 2010.';
-      case 'version_mysql'                  : return 'Version '.MYSQL_VERSION_MINI_REQUISE.' ou ultérieure requise.<br \>Version '.MYSQL_VERSION_MINI_CONSEILLEE.' ou ultérieure conseillée.<br \>MySQL 5.5 est stable depuis octobre 2010.';
+      case 'version_php'                    : return 'Version '.PHP_VERSION_MINI_REQUISE.' ou ultérieure requise.<br \>Version '.PHP_VERSION_MINI_CONSEILLEE.' ou ultérieure conseillée.<br \>PHP 5.2 n\'est plus supporté depuis le 16 décembre 2010.<br \>PHP 5.3 ne reçoit plus de correctifs de sécurité depuis le 14 août 2014.';
+      case 'version_mysql'                  : return 'Version '.MYSQL_VERSION_MINI_REQUISE.' ou ultérieure requise.<br \>Version '.MYSQL_VERSION_MINI_CONSEILLEE.' ou ultérieure conseillée.<br \>MySQL 5.1 n\'est plus supporté depuis le 31 décembre 2013.<br \>MySQL 5.5 est stable depuis octobre 2010.';
       case 'version_sacoche_prog'           : return 'Dernière version disponible : '.InfoServeur::SACoche_version_dispo();
       case 'version_sacoche_base_structure' : return InfoServeur::info_base_complement('structure').'Version attendue : '.VERSION_BASE_STRUCTURE;
       case 'version_sacoche_base_webmestre' : return InfoServeur::info_base_complement('webmestre').'Version attendue : '.VERSION_BASE_WEBMESTRE;
@@ -112,7 +112,7 @@ class InfoServeur
       case 'session_use_only_cookies'       : return 'Par défaut activé, ce qui indique d\'utiliser seulement les cookies pour stocker les identifiants de sessions du côté du navigateur.<br />C\'est une protection contre les attaques qui utilisent des identifiants de sessions dans les URL.';
       case 'zend_ze1_compatibility_mode'    : return 'Activer le mode de compatibilité avec le Zend Engine 1 (PHP 4).<br />C\'est incompatible avec classe PDO, et l\'utilisation de simplexml_load_string() ou DOMDocument (par exemples) provoquent des erreurs fatales.<br />Fonctionnalité obsolète et supprimée depuis PHP 5.3.';
       case 'server_protocole'               : return 'Variable serveur indiquant le protocole ; on regarde dans l\'ordre :<br />- HTTPS si définie correctement<br />- HTTP_X_FORWARDED_PROTO si définie correctement<br />- c\'est HTTP sinon';
-      case 'server_IP_serveur'              : return 'IP du serveur ; on regarde dans l\'ordre :<br />- HTTP_X_REAL_IP si définie<br />- HTTP_X_FORWARDED_FOR si définie<br />- REMOTE_ADDR sinon';
+      case 'server_IP_client'               : return 'IP cliente présentée au serveur ; on regarde dans l\'ordre :<br />- HTTP_X_REAL_IP si définie<br />- HTTP_X_FORWARDED_FOR si définie<br />- REMOTE_ADDR sinon';
       case 'modules_PHP'                    : return 'Les modules sur fond coloré sont requis par SACoche.<br />Cliquer sur un module pour consulter le détail des informations.';
       case 'suhosin'                        : return 'Module retiré à compter de PHP 5.4 (PHP prenant nativement en charge la plupart des fonctionnalités).';
       default                               : return '';
@@ -601,14 +601,14 @@ class InfoServeur
   }
 
   /**
-   * server_IP_serveur
+   * server_IP_client
    * Retourne l'IP du client.
    * Utilise la méthode get_IP() définie dans la classe Session.
    *
    * @param void
    * @return string
    */
-  private static function server_IP_serveur()
+  private static function server_IP_client()
   {
     $valeur = Session::get_IP();
     return InfoServeur::cellule_coloree_centree($valeur,'jaune');
@@ -675,6 +675,17 @@ function getServerProtocole()
       }
     }
     return ($avec_explication) ? 'min(memory_limit,post_max_size,upload_max_filesize) = '.$chaine_mini : $chaine_mini ;
+  }
+
+  /**
+   * is_open_basedir
+   *
+   * @param void
+   * @return bool
+   */
+  public static function is_open_basedir()
+  {
+    return (ini_get('open_basedir')) ? TRUE : FALSE ;
   }
 
   /**
@@ -768,8 +779,8 @@ function getServerProtocole()
   public static function tableau_verification_serveur()
   {
     $tab_objets = array(
-      'server_protocole'  => 'protocole',
-      'server_IP_serveur' => 'adresse IP',
+      'server_protocole' => 'protocole',
+      'server_IP_client' => 'adresse IP',
     );
     return InfoServeur::tableau_deux_colonnes( 'Connexion au serveur' , $tab_objets );
   }

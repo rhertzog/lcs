@@ -92,7 +92,8 @@ require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
 // Récupération de la liste des élèves
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$tab_eleve = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $tab_types[$groupe_type] , $groupe_id , 'user_id,user_nom,user_prenom,eleve_langue' ) ;
+$champs = 'user_id, user_nom, user_prenom, eleve_langue';
+$tab_eleve = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $tab_types[$groupe_type] , $groupe_id , 'alpha' /*eleves_ordre*/ , $champs ) ;
 $eleve_nb = count($tab_eleve);
 if(!$eleve_nb)
 {
@@ -234,7 +235,7 @@ if( $is_matiere_items_bilanMS || $is_matiere_items_bilanPA )
         $tab_score_item[$item_id] = calculer_score($tab_devoirs,$calcul_methode,$calcul_limite);
       }
       // calcul des bilans des scores
-      $tableau_score_filtre = array_filter($tab_score_item,'non_nul');
+      $tableau_score_filtre = array_filter($tab_score_item,'non_vide');
       $nb_scores = count( $tableau_score_filtre );
       // la moyenne peut être pondérée par des coefficients
       $somme_scores_ponderes = 0;

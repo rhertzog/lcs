@@ -30,6 +30,13 @@ $(document).ready
   function()
   {
 
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Initialisation
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    var groupe_id   = 0;
+    var groupe_type = '';
+
     // tri des tableaux (avec jquery.tablesorter.js).
     $('#table_action').tablesorter({ headers:{0:{sorter:'date_fr'},3:{sorter:false},4:{sorter:false}} });
     $('#table_voir'  ).tablesorter({ headers:{} });
@@ -51,7 +58,7 @@ $(document).ready
         {
           type : 'POST',
           url : 'ajax.php?page=_maj_select_eleves',
-          data : 'f_groupe_id='+groupe_id+'&f_groupe_type='+groupe_type+'&f_statut=1'+'&f_multiple=0',
+          data : 'f_groupe_id='+groupe_id+'&f_groupe_type='+groupe_type+'&f_eleves_ordre=alpha'+'&f_statut=1',
           dataType : "html",
           error : function(jqXHR, textStatus, errorThrown)
           {
@@ -83,7 +90,7 @@ $(document).ready
         $("#f_eleve").html('<option value=""></option>').parent().hide();
         $('#ajax_msg').removeAttr("class").html('');
         $('#zone_eval_choix').hide();
-        var groupe_id = $("#f_groupe option:selected").val();
+        groupe_id = $("#f_groupe option:selected").val();
         if(groupe_id)
         {
           groupe_type = $("#f_groupe option:selected").parent().attr('label');
@@ -232,13 +239,13 @@ $(document).ready
     maj_eval();
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Clic sur l'image pour Voir les notes saisies à un devoir
+// Clic sur l'image pour Voir les notes saisies à un devoir / Lire un commentaire écrit / Écouter un commentaire audio
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     $('#zone_eval_choix').on
     (
       'click',
-      'q.voir',
+      'q.voir , q.texte_consulter , q.audio_ecouter',
       function()
       {
         var objet_tds  = $(this).parent().parent().find('td');
@@ -263,27 +270,18 @@ $(document).ready
             success : function(responseHTML)
             {
               initialiser_compteur();
-              if(responseHTML.substring(0,4)!='<tr>')
+              var tab_response = responseHTML.split(']¤[');
+              if(tab_response[0]!='ok')
               {
                 $.fancybox( '<label class="alerte">'+responseHTML+'</label>' , {'centerOnScroll':true} );
               }
               else
               {
                 $('#titre_voir').html('Devoir du ' + texte_date + ' par ' + texte_prof + ' [ ' + texte_info + ' ]');
-                // séparer lignes de résultat et légende
-                var position_legende = responseHTML.lastIndexOf('<h3>');
-                if(position_legende==-1)
-                {
-                  var html_tableau = responseHTML;
-                  var html_legende = '';
-                }
-                else
-                {
-                  var html_tableau = responseHTML.substring(0,position_legende);
-                  var html_legende = responseHTML.substring(position_legende);
-                }
-                $('#table_voir tbody').html(html_tableau);
-                $('#report_legende'  ).html(html_legende);
+                $('#table_voir tbody').html(tab_response[1]);
+                $('#report_legende'  ).html(tab_response[2]);
+                $('#report_texte'    ).html(tab_response[3]);
+                $('#report_audio'    ).html(tab_response[4]);
                 tableau_maj_voir();
                 $.fancybox( { 'href':'#zone_eval_voir' , onStart:function(){$('#zone_eval_voir').css("display","block");} , onClosed:function(){$('#zone_eval_voir').css("display","none");} , 'centerOnScroll':true } );
               }
@@ -309,8 +307,6 @@ $(document).ready
         var texte_date = objet_tds.eq(0).html();
         var texte_prof = objet_tds.eq(1).html();
         var texte_info = objet_tds.eq(2).html();
-        // Date
-        var date_fr    = texte_date.substring(17,texte_date.length); // garder la date française (enlever la date mysql cachée)
         // Afficher la zone associée après avoir chargé son contenu
         $.fancybox( '<label class="loader">'+'En cours&hellip;'+'</label>' , {'centerOnScroll':true} );
         $.ajax
@@ -333,7 +329,7 @@ $(document).ready
               }
               else
               {
-                $('#titre_saisir').html('Devoir du ' + date_fr + ' par ' + texte_prof + ' [ ' + texte_info + ' ]');
+                $('#titre_saisir').html('Devoir du ' + texte_date + ' par ' + texte_prof + ' [ ' + texte_info + ' ]');
                 $('#report_date').html(tab_dates[devoir_id]);
                 $('#fermer_zone_saisir').removeAttr("class").addClass("retourner").html('Retour');
                 $('#msg_saisir').removeAttr("class").html("");

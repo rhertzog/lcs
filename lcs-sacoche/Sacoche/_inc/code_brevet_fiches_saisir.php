@@ -99,7 +99,7 @@ if($ACTION=='enregistrer_appr')
   }
   $avis_et_appreciation = ($epreuve_id!=CODE_BREVET_EPREUVE_TOTAL) ? $appreciation : $avis_conseil.'|'.$appreciation ;
   DB_STRUCTURE_BREVET::DB_modifier_brevet_appreciation($serie_ref , $epreuve_id , $eleve_id , $_SESSION['USER_ID'] , $avis_et_appreciation);
-  $prof_info = afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE);
+  $prof_info = afficher_identite_initiale($_SESSION['USER_NOM'],FALSE,$_SESSION['USER_PRENOM'],TRUE,$_SESSION['USER_GENRE']);
   $ACTION = ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
   $txt_avis_conseil_classe = ($epreuve_id!=CODE_BREVET_EPREUVE_TOTAL) ? '' : ( ($avis_conseil=='F') ? '<div id="avis_conseil_classe" class="b">Avis favorable</div>' : '<div id="avis_conseil_classe" class="b">Doit faire ses preuves</div>' ) ;
   exit('<div class="notnow">'.html($prof_info).$ACTION.'</div><div class="appreciation">'.html($appreciation).'</div>'.$txt_avis_conseil_classe);
@@ -140,7 +140,7 @@ $groupe_nom = (!$is_sous_groupe) ? $classe_nom : $classe_nom.' - '.DB_STRUCTURE_
 
 if($ACTION=='initialiser')
 {
-  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
+  $DB_TAB = (!$is_sous_groupe) ? DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' , 1 /*statut*/ , 'classe' , $classe_id , 'alpha' /*eleves_ordre*/ ) : DB_STRUCTURE_COMMUN::DB_lister_eleves_classe_et_groupe($classe_id,$groupe_id) ;
   if(empty($DB_TAB))
   {
     exit('Aucun élève trouvé dans ce regroupement !');

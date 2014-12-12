@@ -145,7 +145,8 @@ $liste_item = implode(',',$tab_liste_item);
 
 if(empty($is_appreciation_groupe))
 {
-  $tab_eleve_infos = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $liste_eleve , FALSE /*with_gepi*/ , FALSE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
+  $eleves_ordre = ($groupe_type=='Classes') ? 'alpha' : $eleves_ordre ;
+  $tab_eleve_infos = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $liste_eleve , $eleves_ordre , FALSE /*with_gepi*/ , FALSE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
   if(!is_array($tab_eleve_infos))
   {
     exit('Aucun élève trouvé correspondant aux identifiants transmis !');
@@ -227,6 +228,7 @@ $nb_syntheses_total = 0 ;
 // Pour chaque élève...
 if(empty($is_appreciation_groupe))
 {
+  $afficher_score = test_user_droit_specifique( $_SESSION['DROIT_VOIR_SCORE_BILAN'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ , $make_officiel /*forcer_parent*/ );
   foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
   {
     // Si cet élève a été évalué...
@@ -259,7 +261,8 @@ if(empty($is_appreciation_groupe))
               $texte_lien_apres = ($item_lien) ? '</a>' : '';
             }
             $texte_demande_eval = ($_SESSION['USER_PROFIL_TYPE']!='eleve') ? '' : ( ($item_cart) ? '<q class="demander_add" id="demande_'.$matiere_id.'_'.$item_id.'_'.$score.'" title="Ajouter aux demandes d\'évaluations."></q>' : '<q class="demander_non" title="Demande interdite."></q>' ) ;
-            $tab_infos_detail_synthese[$eleve_id][$synthese_ref][] = '<span class="pourcentage '.$tab_etat[$indice].'">'.$score.'%</span> '.$texte_coef.$texte_socle.$texte_lien_avant.html($item_ref.' - '.$item_nom).$texte_lien_apres.$texte_demande_eval;
+            $pourcentage = ($afficher_score) ? $score.'%' : '&nbsp;' ;
+            $tab_infos_detail_synthese[$eleve_id][$synthese_ref][] = '<span class="pourcentage '.$tab_etat[$indice].'">'.$pourcentage.'</span> '.$texte_coef.$texte_socle.$texte_lien_avant.html($item_ref.' - '.$item_nom).$texte_lien_apres.$texte_demande_eval;
           }
         }
       }
@@ -268,7 +271,7 @@ if(empty($is_appreciation_groupe))
       {
         foreach($tab_matiere_scores as $synthese_ref => $tab_synthese_scores)
         {
-          $tableau_score_filtre = array_filter($tab_synthese_scores,'non_nul');
+          $tableau_score_filtre = array_filter($tab_synthese_scores,'non_vide');
           $nb_scores = count( $tableau_score_filtre );
           if(!isset($tab_infos_acquis_eleve[$eleve_id][$matiere_id]))
           {
@@ -306,8 +309,7 @@ else
 
 $tab_nb_lignes = array();
 $tab_nb_lignes_par_matiere = array();
-$nb_lignes_appreciation_intermediaire_par_prof_hors_intitule = $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE'] / 100 / 2 ;
-$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE'] ) ? 1+6 : 0 ;
+$nb_lignes_appreciation_generale_avec_intitule = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE'] ) ? 1+max(6,$_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE']/100) : 0 ;
 $nb_lignes_assiduite                           = ( $make_officiel && ($affichage_assiduite) )                                  ? 1.3 : 0 ;
 $nb_lignes_prof_principal                      = ( $make_officiel && ($affichage_prof_principal) )                             ? 1.3 : 0 ;
 $nb_lignes_supplementaires                     = ( $make_officiel && $_SESSION['OFFICIEL']['BULLETIN_LIGNE_SUPPLEMENTAIRE'] )  ? 1.3 : 0 ;
@@ -325,14 +327,26 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
       // Ne pas compter les lignes de synthèses dont aucun item n'a été évalué
       foreach($tab_score_eleve_item[$eleve_id][$matiere_id] as $synthese_ref => $tab_items)
       {
-        $nb_items_evalues = count(array_filter($tab_items,'non_nul'));
+        $nb_items_evalues = count(array_filter($tab_items,'non_vide'));
         if(!$nb_items_evalues)
         {
           unset($tab_score_eleve_item[$eleve_id][$matiere_id][$synthese_ref]);
         }
       }
+      // Compter la longueur de chaque appréciation
+      $nb_lignes_appreciation_intermediaire = 0;
+      if(isset($tab_saisie[$eleve_id][$matiere_id]))
+      {
+        foreach($tab_saisie[$eleve_id][$matiere_id] as $prof_id => $tab)
+        {
+          if($prof_id) // Sinon c'est la note.
+          {
+            $nb_lignes_appreciation_intermediaire += max( 2 , ceil(strlen($tab['appreciation'])/100), min( substr_count($tab['appreciation'],"\n") + 1 , $_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE'] / 100 ) );
+          }
+        }
+      }
       $nb_lignes_rubriques = count($tab_score_eleve_item[$eleve_id][$matiere_id]) ;
-      $nb_lignes_appreciations = ( ($make_action=='imprimer') && ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE']) && (isset($tab_saisie[$eleve_id][$matiere_id])) ) ? ($nb_lignes_appreciation_intermediaire_par_prof_hors_intitule * count($tab_saisie[$eleve_id][$matiere_id]) ) + 1 : 0 ; // + 1 pour "Appréciation / Conseils pour progresser"
+      $nb_lignes_appreciations = ( ($make_action=='imprimer') && ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_RUBRIQUE']) && (isset($tab_saisie[$eleve_id][$matiere_id])) ) ? $nb_lignes_appreciation_intermediaire + 1 : 0 ; // + 1 pour "Appréciation / Conseils pour progresser"
       $tab_nb_lignes[$eleve_id][$matiere_id] = $nb_lignes_matiere_intitule_et_marge + max($nb_lignes_rubriques,$nb_lignes_appreciations) ;
     }
   }
@@ -777,8 +791,8 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
 // On enregistre les sorties HTML et PDF
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if($make_html) { FileSystem::ecrire_fichier(CHEMIN_DOSSIER_EXPORT.$fichier_nom.'.html',$releve_HTML); }
-if($make_pdf)  { $releve_PDF->Output(CHEMIN_DOSSIER_EXPORT.$fichier_nom.'.pdf','F'); }
+if($make_html) { FileSystem::ecrire_fichier(    CHEMIN_DOSSIER_EXPORT.$fichier_nom.'.html' , $releve_HTML ); }
+if($make_pdf)  { FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.$fichier_nom.'.pdf'  , $releve_PDF  ); }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // On fabrique les options js pour le diagramme graphique

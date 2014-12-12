@@ -48,7 +48,10 @@ public static function DB_recuperer_bilan_officiel_infos( $classe_id , $periode_
   $DB_SQL.= 'LEFT JOIN sacoche_groupe USING (groupe_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
   $DB_SQL.= 'WHERE groupe_id=:classe_id AND periode_id=:periode_id ';
-  $DB_VAR = array( ':classe_id'=>$classe_id , ':periode_id'=>$periode_id );
+  $DB_VAR = array(
+    ':classe_id'  => $classe_id,
+    ':periode_id' => $periode_id,
+  );
   return DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -90,7 +93,7 @@ public static function DB_recuperer_bilan_officiel_saisies_eleves( $officiel_typ
     $rubrique_champ_ordre = (substr($officiel_type,0,6)!='palier') ? 'matiere_ordre'   : 'pilier_ordre' ;
   }
   $periode_where = ($with_periodes_avant) ? '' : 'AND periode_id=:periode_id' ;
-  $DB_SQL = 'SELECT prof_id, eleve_ou_classe_id AS eleve_id, rubrique_id, saisie_note, saisie_appreciation, CONCAT(user_nom," ",SUBSTRING(user_prenom,1,1),".") AS prof_info ';
+  $DB_SQL = 'SELECT prof_id, eleve_ou_classe_id AS eleve_id, rubrique_id, saisie_note, saisie_appreciation, user_genre, user_nom, user_prenom ';
   $DB_SQL.= ($with_rubrique_nom)   ? ', '.$rubrique_champ_nom.' as rubrique_nom ' : '' ;
   $DB_SQL.= ($with_periodes_avant) ? ', periode_id , periode_ordre , periode_nom ' : '' ;
   $DB_SQL.= 'FROM sacoche_officiel_saisie ';
@@ -103,7 +106,7 @@ public static function DB_recuperer_bilan_officiel_saisies_eleves( $officiel_typ
   $DB_SQL.= 'ORDER BY ';
   $DB_SQL.= ($with_rubrique_nom)   ? $rubrique_champ_ordre.' ASC, ' : '' ;
   $DB_SQL.= ($with_periodes_avant) ? 'periode_ordre ASC, ' : '' ;
-  $DB_SQL.= 'prof_info ASC ';
+  $DB_SQL.= 'user_nom ASC, user_prenom ASC ';
   $DB_VAR = array(
     ':officiel_type' => $officiel_type,
     ':periode_id'    => $periode_id,
@@ -126,7 +129,7 @@ public static function DB_recuperer_bilan_officiel_saisies_eleves( $officiel_typ
 public static function DB_recuperer_bilan_officiel_saisies_classe( $periode_id , $classe_id , $prof_id , $with_periodes_avant , $only_synthese_generale )
 {
   $periode_where = ($with_periodes_avant) ? '' : 'AND periode_id=:periode_id' ;
-  $DB_SQL = 'SELECT prof_id, 0 AS eleve_id, rubrique_id, saisie_note, saisie_appreciation, CONCAT(user_nom," ",SUBSTRING(user_prenom,1,1),".") AS prof_info ';
+  $DB_SQL = 'SELECT prof_id, 0 AS eleve_id, rubrique_id, saisie_note, saisie_appreciation, user_genre, user_nom, user_prenom ';
   $DB_SQL.= ', matiere_nom as rubrique_nom ';
   $DB_SQL.= ($with_periodes_avant) ? ', periode_id , periode_ordre , periode_nom ' : '' ;
   $DB_SQL.= 'FROM sacoche_officiel_saisie ';
@@ -138,7 +141,7 @@ public static function DB_recuperer_bilan_officiel_saisies_classe( $periode_id ,
   $DB_SQL.= ($only_synthese_generale) ? 'AND rubrique_id=0 ' : '' ;
   $DB_SQL.= 'ORDER BY matiere_ordre ASC, ';
   $DB_SQL.= ($with_periodes_avant) ? 'periode_ordre ASC, ' : '' ;
-  $DB_SQL.= 'prof_info ASC ';
+  $DB_SQL.= 'user_nom ASC, user_prenom ASC ';
   $DB_VAR = array(
     ':officiel_type' => 'bulletin',
     ':periode_id'    => $periode_id,
@@ -167,7 +170,7 @@ public static function DB_recuperer_bilan_officiel_notes_eleves_periode( $period
   $DB_SQL.= ($tri_matiere) ? 'ORDER BY matiere_ordre ASC ' : '' ;
   $DB_VAR = array(
     ':officiel_type' => 'bulletin',
-    ':periode_id'      => $periode_id,
+    ':periode_id'    => $periode_id,
     ':prof_id'       => 0,
     ':saisie_type'   => 'eleve',
   );
@@ -230,7 +233,10 @@ public static function DB_recuperer_officiel_assiduite( $periode_id , $eleve_id 
   $DB_SQL = 'SELECT assiduite_absence, assiduite_absence_nj, assiduite_retard, assiduite_retard_nj ';
   $DB_SQL.= 'FROM sacoche_officiel_assiduite ';
   $DB_SQL.= 'WHERE periode_id=:periode_id AND user_id=:user_id ';
-  $DB_VAR = array( ':periode_id'=>$periode_id , ':user_id'=>$eleve_id );
+  $DB_VAR = array(
+    ':periode_id' => $periode_id,
+    ':user_id'    => $eleve_id,
+  );
   return DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -262,7 +268,10 @@ public static function DB_lister_bilan_officiel_fichiers( $officiel_type , $peri
   $DB_SQL.= 'FROM sacoche_officiel_fichier '.$join_periode;
   $DB_SQL.= 'WHERE '.$where_type.$where_periode.$where_profil.'user_id IN ('.implode(',',$tab_eleve_id).') ';
   $DB_SQL.= ( $order_type || $order_user ) ? 'ORDER BY '.$order_type.$order_sep.$order_user : '' ;
-  $DB_VAR = array( ':officiel_type'=>$officiel_type , ':periode_id'=>$periode_id );
+  $DB_VAR = array(
+    ':officiel_type' => $officiel_type,
+    ':periode_id'    => $periode_id,
+  );
   return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR, $key_eleve_id);
 }
 
@@ -290,12 +299,15 @@ public static function DB_lister_officiel_assiduite( $periode_id , $tab_eleve_id
  */
 public static function DB_lister_profs_principaux($classe_id)
 {
-  $DB_SQL = 'SELECT user_nom, user_prenom ';
+  $DB_SQL = 'SELECT user_genre, user_nom, user_prenom ';
   $DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
   $DB_SQL.= 'WHERE groupe_id=:groupe_id AND jointure_pp=:pp AND user_sortie_date>NOW() ';
   $DB_SQL.= 'ORDER BY user_nom ASC, user_prenom ASC ';
-  $DB_VAR = array( ':groupe_id'=>$classe_id , ':pp'=>1 );
+  $DB_VAR = array(
+    ':groupe_id' => $classe_id,
+    ':pp'        => 1,
+  );
   return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -307,7 +319,7 @@ public static function DB_lister_profs_principaux($classe_id)
  */
 public static function DB_lister_adresses_parents_for_enfants($listing_user_id)
 {
-  $DB_SQL = 'SELECT eleve_id, resp_legal_num, parent.user_nom, parent.user_prenom, sacoche_parent_adresse.* ';
+  $DB_SQL = 'SELECT eleve_id, resp_legal_num, parent.user_genre, parent.user_nom, parent.user_prenom, sacoche_parent_adresse.* ';
   $DB_SQL.= 'FROM sacoche_user AS enfant ';
   $DB_SQL.= 'LEFT JOIN sacoche_jointure_parent_eleve ON enfant.user_id=sacoche_jointure_parent_eleve.eleve_id ';
   $DB_SQL.= 'LEFT JOIN sacoche_user AS parent ON sacoche_jointure_parent_eleve.parent_id=parent.user_id ';
@@ -392,6 +404,7 @@ public static function DB_modifier_bilan_officiel_saisie( $officiel_type , $peri
 /**
  * modifier_officiel_assiduite
  *
+ * @param string   $mode     sconet | siecle | gepi | pronote | manuel
  * @param int      $periode_id
  * @param int      $user_id
  * @param int|null $nb_absence
@@ -400,10 +413,15 @@ public static function DB_modifier_bilan_officiel_saisie( $officiel_type , $peri
  * @param int|null $nb_retard_nj
  * @return void
  */
-public static function DB_modifier_officiel_assiduite( $periode_id , $user_id , $nb_absence , $nb_absence_nj , $nb_retard , $nb_retard_nj )
+public static function DB_modifier_officiel_assiduite( $mode , $periode_id , $user_id , $nb_absence , $nb_absence_nj , $nb_retard , $nb_retard_nj )
 {
-  $DB_SQL = 'REPLACE INTO sacoche_officiel_assiduite (periode_id, user_id, assiduite_absence, assiduite_absence_nj, assiduite_retard, assiduite_retard_nj) ';
-  $DB_SQL.= 'VALUES(:periode_id, :user_id, :assiduite_absence, :assiduite_absence_nj, :assiduite_retard, :assiduite_retard_nj) ';
+  // Pronote exporte un fichier pour les absences, et un autre pour les retards, il ne faut donc pas réinitialiser ce qui n'est pas importé.
+  $update_absences = 'assiduite_absence=:assiduite_absence, assiduite_absence_nj=:assiduite_absence_nj';
+  $update_retards  = 'assiduite_retard=:assiduite_retard, assiduite_retard_nj=:assiduite_retard_nj';
+  $update = ($mode!='pronote') ? $update_absences.', '.$update_retards : ( ($nb_absence!==NULL) ? $update_absences : $update_retards ) ;
+  $DB_SQL = 'INSERT INTO sacoche_officiel_assiduite ( periode_id,  user_id,  assiduite_absence,  assiduite_absence_nj,  assiduite_retard,  assiduite_retard_nj) ';
+  $DB_SQL.= 'VALUES                                 (:periode_id, :user_id, :assiduite_absence, :assiduite_absence_nj, :assiduite_retard, :assiduite_retard_nj) ';
+  $DB_SQL.= 'ON DUPLICATE KEY UPDATE '.$update;
   $DB_VAR = array(
     ':periode_id'           => $periode_id,
     ':user_id'              => $user_id,
