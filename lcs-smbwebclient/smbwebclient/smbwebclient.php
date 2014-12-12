@@ -777,25 +777,22 @@ global $_COOKIE,$key_priv;
 		case 'get':
 			if (@$_GET['auth'] == 1 OR ($this->cfgAnonymous <> true AND !isset($_SESSION['swcUser']))) {
 			     // Integration LCS
-			     
 			        echo "<script language=\"JavaScript\" type=\"text/javascript\">\n";
 			        echo "<!--\n";
 			        echo "top.location.href = '../lcs/index.php';\n";
 			        echo "//-->\n";
-			        echo "</script>\n";
-
-								     
+			        echo "</script>\n";		     
 				exit;
 			}
 			$this->user = @$_SESSION['swcUser'];
 			$this->pw = @$_SESSION['swcPw'];
 			break;
 		case 'submit':
-			list ($idpers, $login_LCS) = isauth();
-			if ( $idpers !=0 ) {
-	        		$password_LCS = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
-				$this->user = $login_LCS;
-				$this->pw = $password_LCS;
+			$login=$_SESSION['login'];
+			if ( $login ) {
+	        		$password = urldecode( xoft_decode($_COOKIE['LCSuser'],$key_priv) );
+				$this->user = $login;
+				$this->pw = $password;
 				$_SESSION['swcPw'] = $this->pw;
 				$_SESSION['swcUser'] = $this->user;
 				return true;
@@ -1691,84 +1688,22 @@ function _DirectoryName ($path='')
 ###################################################################
 
 if (! isset($SMBWEBCLIENT_CLASS)) {
-	
-	include "/var/www/lcs/includes/headerauth.inc.php";
-	include "/var/www/Annu/includes/ldap.inc.php";
-
-
-	list ($idpers,$login)= isauth();		
-	if ($idpers == "0") {   
+	require_once "/var/www/Annu/includes/check-token.php";
+	if (!check_acces()) exit;
+	$login=$_SESSION['login'];
+	if ( !$login ) {
 		$swc = new smbwebclient;
 		$swc->NoRun('noauth');		
 	}
-			
-	if ( $auth_mod != "ENT" ) {
-		### Auth SSO LCS
-		if(@ldap_get_right("smbweb_is_open",$login)!='Y') {
-                $swc = new smbwebclient;
-                $swc->NoRun('noright');
-		} else {
-			if(@ldap_get_right("lcs_is_admin",$login)=='Y') {
-				$acces="y";
-			} else {
-				// Test du changement du mot de passe
-				include("/var/www/Annu/includes/crob_ldap_functions.php");
-				$attribut=array("gecos");
-				$tab=get_tab_attribut("people", "uid=$login", $attribut);
-				// On ne doit avoir (au plus (*)) qu'un gecos par utilisateur.
-				// (*) admin n'a pas de gecos
-				$tab2=explode(",",$tab[0]);
-			
-				//echo "<p>\$login=$login<br />";
-				//echo "Naissance=".$tab2[1]."<br />";
-				if(user_valid_passwd($login,$tab2[1])) {$acces="n";} else {$acces="y";}
-			}
-
-			if($acces=="y") {
-				//echo "Acces autorise.";
-				$swc = new smbwebclient;
-				$swc->cfgUserAuth = 'LcsAuth';
-				$swc->cfgSambaRoot = strtoupper($se3domain);
-				$swc->cfgDefaultServer = strtoupper($se3netbios);
-				$swc->ShareView = $shareview;
-				$swc->Login = $login;
-				$swc->Run();
-			} else {
-				$swc = new smbwebclient;
-                $swc->NoRun('passdef');
-			}
-		}
-	} else {
-		### Auth ENT no SSO LCS for smbwebclient
-		if (@ldap_get_right("smbweb_is_open",$login)!='Y') {
-			$swc = new smbwebclient;
-            $swc->NoRun('noright');			
-		} else {
-			$swc = new smbwebclient;
-			$swc->cfgUserAuth = 'FormAuth';		
-			$swc->cfgSambaRoot = strtoupper($se3domain);
-			$swc->cfgDefaultServer = strtoupper($se3netbios);
-			$swc->ShareView = $shareview;
-			$swc->Run();
-		}	
-	}
-}
-
-/* 
-if (! isset($SMBWEBCLIENT_CLASS)) {
 	include "/var/www/lcs/includes/headerauth.inc.php";
-	include "/var/www/Annu/includes/ldap.inc.php";
-	list ($idpers,$login)= isauth();
-
+ 	include "/var/www/Annu/includes/ldap.inc.php";
 	if(@ldap_get_right("smbweb_is_open",$login)!='Y') {
-                $swc = new smbwebclient;
-                $swc->NoRun('noright');
-	}
-	else {
+		$swc = new smbwebclient;
+		$swc->NoRun('noright');
+	} else {
 		if(@ldap_get_right("lcs_is_admin",$login)=='Y') {
 			$acces="y";
-		}
-		else {
+		} else {
 			// Test du changement du mot de passe
 			include("/var/www/Annu/includes/crob_ldap_functions.php");
 			$attribut=array("gecos");
@@ -1776,27 +1711,22 @@ if (! isset($SMBWEBCLIENT_CLASS)) {
 			// On ne doit avoir (au plus (*)) qu'un gecos par utilisateur.
 			// (*) admin n'a pas de gecos
 			$tab2=explode(",",$tab[0]);
-			
-			//echo "<p>\$login=$login<br />";
-			//echo "Naissance=".$tab2[1]."<br />";
-			if(user_valid_passwd($login,$tab2[1])) {$acces="n";} else {$acces="y";}
+			if (user_valid_passwd($login,$tab2[1])) {$acces="n";} else {$acces="y";}
 		}
 
-		if($acces=="y") {
+		if ($acces=="y") {
 			//echo "Acces autorise.";
 			$swc = new smbwebclient;
-			$swc->cfgSambaRoot = mb_strtoupper($se3domain);
-			$swc->cfgDefaultServer = mb_strtoupper($se3netbios);
+			$swc->cfgUserAuth = 'LcsAuth';
+			$swc->cfgSambaRoot = strtoupper($se3domain);
+			$swc->cfgDefaultServer = strtoupper($se3netbios);
 			$swc->ShareView = $shareview;
 			$swc->Login = $login;
 			$swc->Run();
-		}
-		else {
+		} else {
 			$swc = new smbwebclient;
-                        $swc->NoRun('passdef');
+			$swc->NoRun('passdef');
 		}
 	}
 }
-*/
-
 ?>
