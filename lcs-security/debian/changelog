@@ -1,6 +1,7 @@
-lcs-security (2.4.10~2) Lcs; urgency=low
+lcs-security (2.4.10~3) Lcs; urgency=low
 
   * Make a 2.4.10~ XP release for Wheezy
+  * Modify fail2ban rules for ssh and sftp
   
   [Philippe Leclerc]
   * new function check_acces() in mod_security.php 
@@ -8,7 +9,7 @@ lcs-security (2.4.10~2) Lcs; urgency=low
   * add security rule on invalid request
   * add security rule on shellcode request
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Sep 2014 10:52:39 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 18 Dec 2014 13:42:39 +0100
 
 lcs-security (2.4.9.3~1) unstable; urgency=low
 
