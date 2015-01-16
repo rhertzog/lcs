@@ -1,6 +1,6 @@
 #!/bin/bash
 # Make csv  dns local Zone on LCS server
-# jLCF <jean-luc.chretien@ac-caen.fr> on 05/12/2014
+# jLCF <jean-luc.chretien@ac-caen.fr> on 16/01/2015
 #
 
 IN_CONFIG_PATH="/home/admin/Documents/ZonesDNS"

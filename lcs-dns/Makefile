@@ -9,6 +9,10 @@ install:
 	install -d $(DESTDIR)/var/lib/lcs/dns
 	install -m 0660 conf/* $(DESTDIR)/var/lib/lcs/dns
 
+# install lcs dns etc
+	install -d $(DESTDIR)/etc
+	cp -a etc/* $(DESTDIR)/etc/
+	
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 0750 sbin/* $(DESTDIR)/usr/sbin

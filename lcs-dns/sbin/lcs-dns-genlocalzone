@@ -1,6 +1,6 @@
 #!/bin/bash
 # Configures dns local Zone on LCS server
-# jLCF <jean-luc.chretien@ac-caen.fr> on 05/12/2014
+# jLCF <jean-luc.chretien@ac-caen.fr> on 16/01/2015
 #
 IN_CONFIG_PATH="/home/admin/Documents/ZonesDNS"
 IN_CONFIG_BIND="/etc/bind"
@@ -26,7 +26,8 @@ echo ";
 ;
 @	IN	NS	#LCSFULLDOMAIN#." > $IN_CONFIG_PATH/$LOCALNETDB
 cp $IN_CONFIG_PATH/$LOCALNETCSV $IN_CONFIG_PATH/$ZONELOCALTMP 
-sed -i s/\,/"    IN    A    "/g $IN_CONFIG_PATH/$ZONELOCALTMP
+#sed -i s/\,/"    IN    A    "/g $IN_CONFIG_PATH/$ZONELOCALTMP
+sed -i s/\,/"	IN	A	"/g $IN_CONFIG_PATH/$ZONELOCALTMP
 cat $IN_CONFIG_PATH/$ZONELOCALTMP >> $IN_CONFIG_PATH/$LOCALNETDB
 echo "
 www             IN      CNAME   #LCSFULLDOMAIN#
@@ -85,13 +86,13 @@ sed -i s/#SERIAL#/$SERIALREV/g $IN_CONFIG_PATH/$LOCALNETREV
 sed -i s/#LCSDOMAIN#/$LCSDOMAIN/g $IN_CONFIG_PATH/$LOCALNETREV
 sed -i s/#LCSNAME#/$LCSNAME/g $IN_CONFIG_PATH/$LOCALNETREV
 
-OKDB=`named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETDB | grep OK`
-OKREV=`named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETREV | grep OK`
+OKDB=`/usr/sbin/named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETDB | grep OK`
+OKREV=`/usr/sbin/named-checkzone $LCSDOMAIN $IN_CONFIG_PATH/$LOCALNETREV | grep OK`
 
 if [ "$OKDB" == "OK" ] && [ "$OKREV" == "OK" ]; then
 	cp $IN_CONFIG_PATH/$LOCALNETDB $IN_CONFIG_BIND/$LOCALNETDB
 	cp $IN_CONFIG_PATH/$LOCALNETREV $IN_CONFIG_BIND/$LOCALNETREV
-	invoke-rc.d bind9 reload
+	/usr/sbin/invoke-rc.d bind9 reload
 	exit 0
 else
 	echo "KO"
