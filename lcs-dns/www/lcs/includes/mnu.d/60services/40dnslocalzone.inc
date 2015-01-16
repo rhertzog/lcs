@@ -1,0 +1,1 @@
+Dns Zone locale,/Admin/dnslocalzone.php,lcs_is_admin
