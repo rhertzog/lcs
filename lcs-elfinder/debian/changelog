@@ -1,8 +1,8 @@
-lcs-elfinder (2.4.10~1) Lcs; urgency=low
+lcs-elfinder (2.4.10~2) Lcs; urgency=low
 
   * Update elfinder to 2.0 RC1 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 11 Dec 2014 16:10:39 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 22 Jan 2015 16:22:57 +0200
 
 lcs-elfinder (2.4.9) Lcs; urgency=low
 
