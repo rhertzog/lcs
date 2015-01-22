@@ -9,7 +9,11 @@ case "$1" in
         #
         # unsubscribe module certmanager
         #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1		             
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1		
+        #
+        # Remove sudoers entry
+        #  
+        /usr/sbin/lcs-make-sudoers           
         ;;
 
 	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
