@@ -4,11 +4,15 @@ set -e
 
 case "$1" in
 	install|configure)
-           # only if first configuration
+      # only if first configuration
 	   if [ "$2" = "" ]; then
 	       . /usr/share/slis/slis-common.sh
 	       handle_initial_config lcs-dns-config 75
 	   fi
+	   #
+      # Add sudoers section
+      #
+		/usr/sbin/lcs-make-sudoers
     	;;
 
     	abort-upgrade|abort-remove|abort-deconfigure)

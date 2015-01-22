@@ -16,6 +16,10 @@ install:
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
 	install -m 0750 sbin/* $(DESTDIR)/usr/sbin
+	
+	# install lcs dns www
+	install -d $(DESTDIR)/var/www
+	cp -a www/* $(DESTDIR)/var/www/
 
 # install doc
 	install -d $(DESTDIR)/usr/share/doc/lcs/dns/html

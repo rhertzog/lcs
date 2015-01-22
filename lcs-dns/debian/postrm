@@ -19,11 +19,11 @@ set -e
 
 
 case "$1" in
-       purge|upgrade|remove)
+		purge|upgrade|remove)
+			/usr/sbin/lcs-make-sudoers	
+		;;
 
-        ;;
-
-    *)
+		*)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 1
 
