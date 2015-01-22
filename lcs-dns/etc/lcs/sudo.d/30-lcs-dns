@@ -1,2 +1,2 @@
-Cmnd_Alias CONFDNS = /usr/sbin/lcs-dns-gencsv, lcs-dns-genlocalzone
+Cmnd_Alias CONFDNS = /usr/sbin/lcs-dns-gencsv, /usr/sbin/lcs-dns-genlocalzone
 www-data ALL=NOPASSWD:CONFDNS
