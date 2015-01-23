@@ -1,3 +1,10 @@
+lcs-dns (2.4.10~5+nmu1) Lcs; urgency=low
+
+  * Non-maintainer upload.
+  * add jQuery editor
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 23 Jan 2015 06:58:13 +0100
+
 lcs-dns (2.4.10~5) Lcs; urgency=low
 
   * Make a 2.4.10 release for wheezy

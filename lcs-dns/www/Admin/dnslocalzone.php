@@ -24,30 +24,57 @@ function msgaide($msg) {
 }
 $msg1="G&#233;n&#232;re un fichier CSV de la zone DNS locale disponible dans le r&#233;pertoire <b>Documents > ZoneDNS</b> du compte administrateur.";
 $msg2="Met &#224; jour la zone DNS locale &#224; partir du fichier CSV.";
+?>
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<title>...::: Gestion zone DNS locale LCS  :::...</title>
+<link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>
+<link rel='stylesheet' href='../libjs/jquery-ui/css/redmond/jquery-ui.css'>
+<script type='text/javascript' src='../libjs/jquery/jquery.js'></script>
+<script type='text/javascript' src='../libjs/jquery-ui/jquery-ui.js'></script>
+<script type='text/javascript' src='./js/script_dns.js'></script>
+</head>
+<body>
+<div id='container'><h2>Gestion zone locale DNS LCS</h2>
+<?php
+$mesg='<p>Le fichier de zone que vous pouvez éditer est au format "csv" : &lt;nom machine&gt;,&lt;adresse IP&gt;</p>
+<p>
+En règle générale, les noms de host et de domaine ont des restrictions sur certains caractères.
+</p>
+<p>Seuls les caractères suivants sont autorisés \'a-z\', \'A-Z\', \'0-9\', \'-\'
+</p>
+<p>
+Il est important de garder <b>toutes les lignes </b> et de ne modifier que celles voulues.
+</p>
+<p>
+Exemple : il existe dans le fichier de zone une ligne : machine6, XXX.XXX.XXX.6
+Vous possédez un serveur NAS a cette adresse.
+</p>
+<p>
+vous modifiez cette ligne ainsi : NAS,XXX.XXX.XXX.6
+</p>
+<p>
+Votre NAS sera accessible avec le nom suivant : NAS, ou NAS.domaine.fr où domaine est le nom de domaine de votre établissement.
+</p>
+<p>
+Une fois validé, le dispositif vérifie l\'intégrité de vos modifications et le cas échéant, met à jour la zone DNS.</p>';
 
-$html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n
-	  <head>\n
-	  <title>...::: Gestion zone DNS locale LCS  :::...</title>\n
-	  <link  href='../Annu/style.css' rel='StyleSheet' type='text/css'>\n
-	  </head>\n
-	  <body>\n";
-$html .= "<div id='container'><h2>Gestion zone locale DNS LCS</h2>\n";
-echo $html;
 if (is_admin("system_is_admin",$login)=="Y") {
-	$html = "<ul>\n";
-	$html .= "<li><a href='dnslocalzone.php?do=csv&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))." ' target ='main'>G&#233;n&#233;ration d'un fichier CSV de la zone DNS locale</a>".msgaide($msg1)."</li>\n";
-	$html .= "<li><a href='dnslocalzone.php?do=majz&jeton=".md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF']))." ' target ='main'>Mise a jour zone DNS locale</a>".msgaide($msg2)."</li>\n";
-	$html .= "</ul>\n";
-	$html .= "<h2>Edition zone DNS locale</h2>\n";
-	$html .= "<p>Pour &#233;diter et modifier la zone DNS locale, utiliser le module <strong>elfinder</strong> pour modifier le fichier CSV de la zone locale puis, clicker sur &#171; Mise  &#224; jour zone DNS locale &#187;.</p>\n";
-	echo $html;	
-	if ( $do == "csv" ) {
-		echo "gen csv";
-		exec ("/usr/bin/sudo /usr/sbin/lcs-dns-gencsv" , $AllOutput, $ReturnValue);
-	} elseif ( $do == "majz" ) {
-		exec ("/usr/bin/sudo /usr/sbin/lcs-dns-genlocalzone" , $AllOutput, $ReturnValue);
-	}
-	
+echo $mesg;
+echo ' <form id="form1" action="'. htmlentities($_SERVER['PHP_SELF']).'" method="post">
+    </form>
+    <button id="genere">Editer le fichier  de la zone DNS locale</button>
+    <div id="dialog" title="Edition du fichier de la zone DNS locale">
+<form>
+<fieldset class="ui-helper-reset">
+<p class="validateTips"></p>
+<textarea id="contenu" cols="50" rows="20"></textarea>
+<input type="hidden" name="jeton" id="jeton" value="'.md5($_SESSION['token'].htmlentities("/Admin/dns_ajax.php")).'"/>
+</fieldset>
+</form>
+</div>';
+
 }// fin is_admin
 else echo "Vous n'avez pas les droits n&#233;cessaires pour ordonner cette action...";
 echo "</div><!-- Fin container-->\n";
