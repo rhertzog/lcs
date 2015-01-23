@@ -1,4 +1,11 @@
 <?php
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/01/2015
+   ============================================= */
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 include "../Annu/includes/check-token.php";
@@ -16,7 +23,7 @@ if (count($_POST)>0) {
 
 if ($_POST['action']=="edite") {
     exec ("/usr/bin/sudo /usr/sbin/lcs-dns-gencsv" , $AllOutput, $ReturnValue);
-    if($fichier_ok = fopen("/home/admin/Documents/ZonesDNS/localnetdb.csv", "r")) {
+    if($fichier_ok = @fopen("/home/admin/Documents/ZonesDNS/localnetdb.csv", "r")) {
         while (($buffer = fgets($fichier_ok)) !== false) {
             echo $buffer;
         }

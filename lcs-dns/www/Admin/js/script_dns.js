@@ -1,3 +1,11 @@
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/01/2015
+   ============================================= */
+
 jQuery().ready(function() {
     $( "input[type=submit], a, button" ).button() ;
 
@@ -8,7 +16,6 @@ function updateTips( t,klass ) {
     tips.text( t ).addClass(klass);
     }
 
-
 // config : dialog
     var $dialog = $( "#dialog" ).dialog({
             autoOpen: false,
@@ -18,7 +25,7 @@ function updateTips( t,klass ) {
             show: "puff",
             hide: "explode",
             buttons: {
-            Mettre_a_jour: function() {
+            Mettre_à_jour: function() {
                 var lejeton=$("#jeton").val();
                 var donnees= $("#contenu").val();
                 $.ajax({
@@ -28,14 +35,13 @@ function updateTips( t,klass ) {
                         async: false,
                          success :function(data){
                             if (data == 1){
-                                updateTips( "Une erreur s'est produite lors de la mise à jour !", "ui-state-error" );}
+                                updateTips( "Une erreur a empêché la mise à jour de la zone DNS ! ", "ui-state-error" );}
                             else {
                                  updateTips( "La zone DNS locale a été mise à jour.", "ui-state-highlight");
                             }
                         }
                      });
-                    //setTimeout(function() {($( this ).dialog( "close" ));},1000);
-                },
+                 },
             Quitter: function() {
                 $( this ).dialog( "close" );
                 }
@@ -50,7 +56,7 @@ function updateTips( t,klass ) {
                         data : { jeton: lejeton, action: "edite"},
                         async: false,
                          success :function(data){
-                            if (data == "NOK") alert ("Erreur dans la lecture du fichier: " );
+                            if (data == "NOK") updateTips("Erreur dans la lecture du fichier: ","ui-state-error" );
                             else $("#contenu").text(data);
                             }
                      });
@@ -71,7 +77,7 @@ function updateTips( t,klass ) {
                     $dialog.dialog( "open" );
             });
 
-
+$("#contenu").mouseenter(function() {tips.text("");tips.removeClass("ui-state-highlight ui-state-error")});
 });
 
 

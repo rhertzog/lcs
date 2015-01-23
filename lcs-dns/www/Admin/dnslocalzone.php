@@ -1,4 +1,11 @@
 <?php
+/*===========================================
+   Projet LcSE3
+   Administration du serveur LCS
+   Equipe Tice academie de Caen
+   Distribue selon les termes de la licence GPL
+   Derniere modification : 23/01/2015
+   ============================================= */
 include "../Annu/includes/check-token.php";
 if (!check_acces()) exit;
 
@@ -49,7 +56,7 @@ Il est important de garder <b>toutes les lignes </b> et de ne modifier que celle
 </p>
 <p>
 Exemple : il existe dans le fichier de zone une ligne : machine6, XXX.XXX.XXX.6
-Vous possédez un serveur NAS a cette adresse.
+Vous possédez un serveur NAS à cette adresse.
 </p>
 <p>
 vous modifiez cette ligne ainsi : NAS,XXX.XXX.XXX.6
@@ -66,14 +73,14 @@ echo ' <form id="form1" action="'. htmlentities($_SERVER['PHP_SELF']).'" method=
     </form>
     <button id="genere">Editer le fichier  de la zone DNS locale</button>
     <div id="dialog" title="Edition du fichier de la zone DNS locale">
-<form>
-<fieldset class="ui-helper-reset">
-<p class="validateTips"></p>
-<textarea id="contenu" cols="50" rows="20"></textarea>
-<input type="hidden" name="jeton" id="jeton" value="'.md5($_SESSION['token'].htmlentities("/Admin/dns_ajax.php")).'"/>
-</fieldset>
-</form>
-</div>';
+    <form>
+    <fieldset class="ui-helper-reset">
+    <p class="validateTips"></p>
+    <textarea id="contenu" cols="50" rows="20"></textarea>
+    <input type="hidden" name="jeton" id="jeton" value="'.md5($_SESSION['token'].htmlentities("/Admin/dns_ajax.php")).'"/>
+    </fieldset>
+    </form>
+    </div>';
 
 }// fin is_admin
 else echo "Vous n'avez pas les droits n&#233;cessaires pour ordonner cette action...";

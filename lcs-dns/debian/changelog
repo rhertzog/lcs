@@ -1,3 +1,10 @@
+lcs-dns (2.4.10~7) Lcs; urgency=low
+
+  * modif error message
+  * add automatic delete feedback
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 23 Jan 2015 09:37:45 +0100
+
 lcs-dns (2.4.10~6) Lcs; urgency=low
 
   * add jQuery editor
