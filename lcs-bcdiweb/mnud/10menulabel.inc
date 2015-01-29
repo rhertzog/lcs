@@ -1,1 +1,0 @@
-BCDI WEB,lcs_is_admin

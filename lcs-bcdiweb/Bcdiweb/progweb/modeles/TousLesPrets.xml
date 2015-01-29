@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<#INIT_PRETS>
-<FICHES_XML COUNT="<#NB_PRETS>">
-<#LISTE_PRETS_TOUS PRET.XML>
-</FICHES_XML>
-
