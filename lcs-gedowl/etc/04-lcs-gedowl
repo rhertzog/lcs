@@ -1,3 +1,0 @@
-Cmnd_Alias GEDOWL = /usr/share/lcs/scripts/init_gedowl.sh
-www-data ALL=NOPASSWD:GEDOWL
-

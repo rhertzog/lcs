@@ -1,7 +1,0 @@
-AuthName "Private Area..."
-AuthType Basic
-AuthUserFile /etc/httpd/conf/passwordfile
-AuthGroupFile /etc/httpd/conf/webgroup
-<Limit GET>
-require group superuser
-</Limit>

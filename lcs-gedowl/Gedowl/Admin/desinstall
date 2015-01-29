@@ -1,8 +1,0 @@
-#!/bin/bash
-echo "Script de desinstallation du module gedowl";
-rm -f  /etc/apache2/lcs-main/70_gedowl.conf
-# Redemarrage apache2
-#
-echo "Apache2 sera redemarre  dans une minute"
-at now +1 minutes < /usr/share/lcs/Plugins/Gedowl/Admin/jobat2
-
