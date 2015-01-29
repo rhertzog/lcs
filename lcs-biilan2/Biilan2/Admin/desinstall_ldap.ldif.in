@@ -1,2 +1,0 @@
-dn: cn=Biilan2_is_admin,ou=Rights,@BASEDN@
-changetype: delete

@@ -1,4 +1,0 @@
-dn: cn=Biilan2_is_admin,ou=Rights,@BASEDN@
-objectClass: groupOfNames
-cn: Biilan2_is_admin
-member: uid=admin,ou=People,@BASEDN@

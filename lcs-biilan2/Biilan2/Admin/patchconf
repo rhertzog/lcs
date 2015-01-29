@@ -1,8 +1,0 @@
-if [ ! -e  install_mysql.sql ]; then
-PASSWD=`/usr/bin/makepasswd`
-sed -e "s/@PASSWD@/$PASSWD/" install_mysql.sql.in > install_mysql.sql
-sed -e "s/@PASSWD@/$PASSWD/" ../config.php.in > ../config.php
-BASEDN=`mysql -se "select value from lcs_db.params  where name='ldap_base_dn'"`
-sed -e "s/@BASEDN@/$BASEDN/g" install_ldap.ldif.in > install_ldap.ldif
-sed -e "s/@BASEDN@/$BASEDN/g" desinstall_ldap.ldif.in > desinstall_ldap.ldif
-fi
