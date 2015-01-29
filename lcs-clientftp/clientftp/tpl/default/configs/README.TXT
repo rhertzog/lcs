@@ -1,1 +1,0 @@
-smarty engine template directory
