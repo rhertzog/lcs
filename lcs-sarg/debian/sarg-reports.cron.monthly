@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ -x /usr/sbin/sarg-reports ]; then
-  /usr/sbin/sarg-reports monthly
-fi
-
-if [ -x /sbin/lcs-clean-sarg ]; then
-  /sbin/lcs-clean-sarg
-fi

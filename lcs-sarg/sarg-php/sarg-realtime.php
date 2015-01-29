@@ -1,5 +1,0 @@
-<?php
-
-system("sarg -r");
-
-?>
