@@ -1,0 +1,33 @@
+#CACHE{0}
+[(#SET{nb_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_sites_[(#ENV{bloc})]})]})]
+[(#SET{defil_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]defil_sites_[(#ENV{bloc})]})]})]
+[(#SET{haut_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_sites_[(#ENV{bloc})]})]})]
+[(#SET{titre_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_sites_[(#ENV{bloc})]})]})]
+[(#SET{intro_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_sites_[(#ENV{bloc})]})]})]
+[(#SET{intro_long_sites,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_long_sites_[(#ENV{bloc})]})]})]
+<B_sites>
+<h3 class="menu-titre">[(#GET{titre_sites,Sur le web})]</h3>
+	<dl id="sites#ENV{bloc}" class="demi_boite blocElement" [(#GET{defil_sites}|?{[ style="height:(#GET{haut_sites})px;overflow:hidden;"] })]>
+	<BOUCLE_sites(SITES){id_secteur ?}{id_rubrique ?}{!par date}{!par num nom_site}{0,#GET{nb_sites}}>
+		<dt>
+			<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out">
+				[(#LOGO_SITE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/world_go.png})]" alt='' />}) ][(#NOM_SITE|supprimer_tags)]
+				[(#GET{defil_sites}|?{' '})[<span style="display:block;font-size:.95em">(#DESCRIPTIF|couper{#GET{intro_long_sites, 150}})</span>]]
+			</a>
+		</dt>
+		[(#GET{defil_sites}|?{'',' '})	<dd style="margin-left:0;">[(#DESCRIPTIF|couper{#GET{intro_long_sites, 150}})]</dd> ]
+	</BOUCLE_sites>
+	</dl>
+[(#GET{defil_sites}|?{' '})
+
+<script type="text/javascript">
+$('#sites#ENV{bloc}').cycle({ 
+	fx:     'scrollUp', 
+    timeout: 5999, 
+    pause:   1 ,
+	delay:  -5300[,
+ 	height: (#GET{haut_sites})]
+	});
+</script>
+]
+</B_sites><//B_sites>

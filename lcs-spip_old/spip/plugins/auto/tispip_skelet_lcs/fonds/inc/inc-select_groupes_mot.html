@@ -1,0 +1,6 @@
+<select name="#ENV{groupe}" id="#ENV{groupe}" style="width:120px" class="fondl spip_xx-small">
+	<option value=""[ (#ENV{#ENV{groupe}}|?{'',selected="selected"})]>  </option>
+	<BOUCLE_groupes_mots(GROUPES_MOTS){par titre}>
+		<option value="[(#ID_GROUPE)]"[ (#ENV{#ENV{groupe}}|=={[(#ID_GROUPE)]}|?{selected="selected",''})]> [(#TITRE|supprimer_numero)] </option>
+	</BOUCLE_groupes_mots>
+</select>

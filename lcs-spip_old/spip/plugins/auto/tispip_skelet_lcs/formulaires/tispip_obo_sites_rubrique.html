@@ -1,0 +1,33 @@
+[(#ENV**{icone})]
+[(#SET{choix,[(#CONFIG{tispipskelet_conf/rubriques/afficher_site_[(#ENV{id_rubrique})]})]})]
+[(#SET{choix_global,[(#CONFIG{tispipskelet_conf/rubriques/listsites})]})]
+
+<div id="boite_affichage_tispip" class="formulaire_spip formulaire_pdf2swf" style="margin:5px;">
+[(#SET{choix,[(#CONFIG{tispipskelet_conf/rubriques/afficher_site_[(#ENV{id_rubrique})]})]})]
+	<form action="#URL_ACTION_AUTEUR{'sites_rubrique','id_rubrique='#ENV{id_rubrique},#URL_ECRIRE{naviguer}}" method="POST" enctype="multipart/form-data">
+		<ul>
+			<li>
+				<p class="titre">
+					<strong><:tispipskelet:afficher_sites:></strong>
+				</p>
+		[(#CONFIG{tispipskelet_conf/rubriques/afflistsites}|?{' '})
+				<div style='font-style:italic;font-size:.9em;'>Affichage par d&eacute;faut :<strong>[(#GET{choix_global})]</strong> .<br /> Vous pouvez n&eacute;anmoins modifier l&rsquo;affichage pour cette rubrique</div>
+				<input type='radio' name='afficher_site_#ENV{id_rubrique}' value='vide' id='afficher_site_[(#ENV{id_rubrique})_non]'  [(#GET{choix}|=={vide}|oui) checked='checked'] />
+				<label for='afficher_site_[(#ENV{id_rubrique})_non]'><:tispipskelet:afficher_non:></label><br />
+		]
+		[(#CONFIG{tispipskelet_conf/rubriques/afflistsites}|non)
+				<div style='font-style:italic;font-size:.9em;'>la config par défaut est : pas d&rsquo;afficgahe ds sites. Vous pouvez n&eacute;anmoins foecer l&rsquo;affichage pour cette rubrique</div>
+		]
+				<input type='radio' name='afficher_site_#ENV{id_rubrique}' value='liste' id='afficher_site_[(#ENV{id_rubrique})_list]'   [(#GET{choix}|=={liste}|oui) checked='checked'] />
+				<label for='afficher_site_[(#ENV{id_rubrique})_list]'><:tispipskelet:afficher_liste:></label><br />
+				<input type='radio' name='afficher_site_#ENV{id_rubrique}' value='portfolio' id='afficher_site_[(#ENV{id_rubrique})_portfolio]'   [(#GET{choix}|=={portfolio}|oui) checked='checked'] />
+				<label for='afficher_site_[(#ENV{id_rubrique})_portfolio]'><:tispipskelet:afficher_portfolio:></label><br />
+			</li>
+			<li>
+			</li>
+		</ul>
+		<p class="boutons">
+			<input type="submit" name="Valider" value="<:bouton_valider:>" class="submit" />
+		</p>
+	</form>
+</div>

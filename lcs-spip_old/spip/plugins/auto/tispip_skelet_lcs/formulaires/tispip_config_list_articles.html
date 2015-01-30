@@ -1,0 +1,88 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Liste d&apos;articles</legend>
+				<ul>
+					<li class="ligne">
+						<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title="Liste des derniers articles">?</a>
+						<label class="titre"><input type="checkbox" name="afflistart_rub" value="oui" [checked="(#ENV{afflistart_rub}|?{checked})"] id="afflistart_rub" /> <:tispipskelet:afficher_liste_articles_rubrique:>
+					</label>
+					<div class="help_text"><:tispipskelet:help_derniers_articles_rubrique:></div>
+					<div id="cfglistart_rub">
+						<label for="nbarts_rub">Nombre d&apos;articles &agrave; afficher : </label>
+						<select name="nbarts_rub">
+							<option value=" "[(#ENV{nbarts_rub}|?{'',selected="selected"})]> </option>
+							<option value="3"[(#ENV{nbarts_rub}|=={3}|?{selected="selected",''})]> 3 </option>
+							<option value="5"[(#ENV{nbarts_rub}|=={5}|?{selected="selected",''})]> 5 </option>
+							<option value="10"[(#ENV{nbarts_rub}|=={10}|?{selected="selected",''})]> 10 </option>
+						</select>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</fieldset>
+			<fieldset>
+				<legend>Liste d&apos;articles</legend>
+		[(#REM)
+			#ENV{id}<br />
+			#FOREACH{ENV}<br />
+		]
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+		
+				<ul id="anim_accueil">
+					<li class="ligne">
+								<a href='[(#CHEMIN{fonds/inc/aide/inc-help.html})]' class='boxy' title="Animation Flash en page d'accueil">?</a>
+						<label>
+							<input type="checkbox" name="affanim"  class="affCheckbox" value="oui" [checked="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]affanim}|?{checked})"] id="affanim" /> Afficher une animation en page d&rsquo;accueil
+						</label>
+						<ul id="conf_anim" style="clear:both">
+							<li class="ligne_240">
+								<label for="anim_accueil"><:tispipskelet:animation_id:> :</label>
+								<input type="text" name="anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]anim_accueil})"] size="4" id="anim_accueil"  />
+							</li>
+							<li class="ligne_240">
+								<label for="larg_anim_accueil"><:tispipskelet:animation_largeur:> :</label>
+								<input type="text" name="larg_anim_accueil"[ value="(#CONFIG{tispipskelet_conf/[(#ENV{id})/]larg_anim_accueil})"] size="4" id="larg_anim_accueil"  />
+							</li>
+						</ul>
+					<li>
+				</ul>
+			</fieldset>
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+
+			<script type="text/javascript"><!--
+				$(function() {
+				  $('.boxy').boxy();
+				});
+				
+				//cacher la conf de l'anim
+				$('#affanim')
+				.bind('change', function() {
+			            $('#conf_anim').slideToggle('slow');
+				})
+				if ($('#affanim:checked').length == 0)
+					$('#conf_anim').hide();
+			// --></script>
+			
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

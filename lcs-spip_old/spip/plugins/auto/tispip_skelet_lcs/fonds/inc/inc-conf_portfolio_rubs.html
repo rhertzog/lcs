@@ -1,0 +1,14 @@
+			<fieldset>
+				<legend>Afficher un portfolio des sous rubriques</legend>
+				<ul>
+				<BOUCLE_portfolio_rub(RUBRIQUES){racine}{par num titre, titre}>
+						<li class="ligne_240" >
+							<label for="portfolio_rub_#ID_RUBRIQUE">
+								[(#TITRE|supprimer_numero)]
+							</label>
+								<input type="checkbox" name="portfolio_rub_#ID_RUBRIQUE" id="portfolio_rub_#ID_RUBRIQUE" [(#ENV{portfolio_rub_#ID_RUBRIQUE}) checked="checked"]"  />
+						</li>
+					
+				</BOUCLE_portfolio_rub>
+				</ul>
+			</fieldset>

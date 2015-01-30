@@ -1,0 +1,22 @@
+	[(#REM) lien vers itunes ]
+[(#SET{podcast,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]podcast_[(#ENV{bloc})]})]})]
+<h3 class="menu-titre">Suivre la vie du site</h3>
+<dl id="lien-podcast" class="demi_boite">
+	[(#GET{newsletter}|oui)
+			<dt class="titre_boite">S'abonner &agrave; la newsletter</dt>
+			<dd style="text-align:center;margin:.37em 0 0 0;font-size:.72em">
+				<a href="spip.php?page=abonnement" title="S'abonner &agrave; la newsletter">
+			 		[<img src=" (#CHEMIN{img_pack/mailer_casquette.gif})" alt="Facteur" />]
+					<b style="line-height:2em">S'abonner</b>
+				</a>
+			</dd>
+	]
+	<dt class="titre_boite">[(#GET{podcast}|?{' '})Podcast et ]Fil RSS</dt>
+	<dd style="text-align:center;margin:.5em;">
+	[(#GET{podcast}|oui)
+		<a href="[(#URL_SITE_SPIP|url_itunes)?page=podcast]" title="Vers iTunes"><img src="[(#CHEMIN{i/podcast1.png})]" width="64" height="72" alt="" /></a>
+	]
+		<a href="[(#URL_PAGE{backend}|parametre_url{id_rubrique, #ID_RUBRIQUE})]" title="S'abonner au fil RSS"><img src="[(#CHEMIN{i/pp_rssIcon.png})]" alt="" /></a>
+	</dd>
+</dl>
+

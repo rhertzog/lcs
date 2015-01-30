@@ -1,0 +1,54 @@
+<br class="leon" />
+<style type="text/css">
+#slideCyclePager { margin: 0}
+#navCyclePager { width: 150px; margin: 0; float: left }
+#navCyclePager li { width: 52px;  background: #eee;float: left; margin: 0; list-style: none; padding: 6px; display: block }
+#navCyclePager a {  padding: 0px;border: 1px 0 1px 1px solid #ccc; }
+#navCyclePager li.activeLI { background: #ff8 }
+#navCyclePager a:focus { outline: none; }
+#navCyclePager img { border: none; display: block }
+</style>
+<script type="text/javascript" src="[(#CHEMIN{scripts/jquery.cycle.all.js})]"></script>
+<script type="text/javascript">
+// redefine Cycle's updateActivePagerLink function
+$.fn.cycle.updateActivePagerLink = function(pager, currSlideIndex) {
+    $(pager).find('li').removeClass('activeLI')
+        .filter('li:eq('+currSlideIndex+')').addClass('activeLI');
+};
+
+$(function() {
+    $('#slideCyclePager').cycle({
+        timeout: 6000,
+		speed:   1000, 
+		pause : 1,
+        pager:  '#navCyclePager',
+        pagerAnchorBuilder: function(idx, slide) {
+            return '<li><a href="#"><img src="' + slide.src + '" width="50" height="50" /></a></li>';
+        }
+    });
+});
+</script>
+<div class="clear:both;border:3px solid #666;position:relative">
+	<div id="demos">
+		<ul id="CyclePager">
+			<li style="float:left; width:204px;margin: 0; list-style: none; padding: 0; display: block">
+				<ul id="navCyclePager"></ul>
+			</li>
+			<li style="float:left; width:300px;margin: 0; list-style: none; padding: 0; display: block">
+				<BOUCLE_vignette_cycle_art(ARTICLES){id_article=186}>
+			        <DIV id="slideCyclePager" class="pics" style="position: relative; ">
+					<BOUCLE_vignette_cycle(DOCUMENTS){id_article}{extension IN gif,jpg,png}{!par date}>
+			            <IMG src="#FICHIER" width="200" height="200" style="position: absolute; top: 0px; left: 0px; z-index: 7; display: block; opacity: 1; " />
+					</BOUCLE_vignette_cycle>
+			<!--
+			            <IMG src="./JQuery Cycle Plugin - 'updateActivePagerLink' Demo_files/beach6.jpg" width="200" height="200" style="top: 0px; left: 0px; z-index: 2; position: absolute; opacity: 0; display: none; ">
+			            <IMG src="./JQuery Cycle Plugin - 'updateActivePagerLink' Demo_files/beach7.jpg" width="200" height="200" style="top: 0px; left: 0px; z-index: 1; position: absolute; opacity: 0; display: none; ">
+			-->
+						</DIV>
+				</BOUCLE_vignette_cycle_art>
+			</li>
+		</ul>
+	</div>
+</div>
+<br class="leon" />
+

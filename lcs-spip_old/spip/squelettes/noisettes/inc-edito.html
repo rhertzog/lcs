@@ -1,0 +1,32 @@
+	[(#REM) Grande boite edito]
+		[(#SET{nbartedit,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nbartedito})]})]
+		[(#SET{mot_edito,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]mot_edito})]})]
+		[(#SET{ctn_edito,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]edito})]})]
+		[(#SET{long_intro_edito,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]long_intro_edito})]})]
+		<B_edito>
+		<dl class="bloc">
+			<BOUCLE_edito(ARTICLES){titre_mot IN #GET{mot_edito}}{par date}{inverse}{0,#GET{nbartedit}}{doublons edito}>
+				<dt class="annonce">
+				
+					[<a href="#URL_ARTICLE" class="infobulle" >
+					[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]}|inserer_attribut{style,float:right})](#TITRE|supprimer_numero|supprimer_tags) 					</a>]
+					[(#CONFIG{tispipskelet_conf/sommaire/auteuredito}|?{'',' '})<em>[, par (#LESAUTEURS)]</em>]
+				</dt>	
+				[(#GET{ctn_edito}|=={intro}|?{' '})
+				<dd class="annonce">
+					[(#CONFIG{tispipskelet_conf/sommaire/datepubedito}|?{'',' '})<div class="date">[(#DATE|nom_jour)]<span>[(#DATE|jour)]</span>[(#DATE|nom_mois)] [(#DATE|annee)]</div>]
+					[(#DESCRIPTIF|sinon{[(#CHAPO|couper{#GET{long_intro_edito}}|sinon{[(#INTRODUCTION|couper{#GET{long_intro_edito}})]})]})]
+					<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+					<div class="leon"></div>
+				</dd>
+				]
+				[(#GET{ctn_edito}|=={texte}|?{' '})
+				<dd class="annonce">
+					[(#CONFIG{tispipskelet_conf/sommaire/datepubedito}|?{'',' '})<div class="date">[(#DATE|nom_jour)]<span>[(#DATE|jour)]</span>[(#DATE|nom_mois)] [(#DATE|annee)]</div>]
+					[(#TEXTE||image_reduire{540})]
+					<div class="leon"></div>
+				</dd>
+				]
+			</BOUCLE_edito>
+		</dl>
+		</B_edito>

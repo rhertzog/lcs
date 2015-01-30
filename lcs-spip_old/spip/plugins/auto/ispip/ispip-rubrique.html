@@ -1,0 +1,35 @@
+	<BOUCLE_rub(RUBRIQUES){id_rubrique}>
+		<ul id="rub[(#ID_RUBRIQUE)]" title="[(#TITRE|supprimer_numero)]" selected="true">
+			<form class="intro_rubrique">
+				<div class="cartouche">[(#LOGO_ARTICLE||image_reduire{300,200})]</div>
+				[<div class="#EDIT{descriptif} descriptif">(#DESCRIPTIF)</div>]
+				[<div class="#EDIT{texte} texte">(#TEXTE|image_reduire{300,200})</div>]
+			</form>
+
+			<B_sous_rub>
+				<li class="group"><:sous_rubriques:></li>
+			<BOUCLE_sous_rub(RUBRIQUES) {id_parent}{par num titre}>
+				[<li><a href="#URL_PAGE{ispip-rubrique,id_rubrique=#ID_RUBRIQUE}">(#TITRE|supprimer_numero)</a></li>]
+			</BOUCLE_sous_rub>
+			<B_art_list>
+				<li class="group"><:articles:></li>
+			<BOUCLE_art_list(ARTICLES){id_rubrique}{!par date}>
+				[<li><a href="#URL_PAGE{ispip-article,id_article=#ID_ARTICLE}">(#TITRE|supprimer_numero)</a></li>]
+			</BOUCLE_art_list>
+
+			[(#REM) Documents joints a l'article ]
+			<B_documents_joints>
+			<form class="panel">
+				<h2><:titre_documents_joints:></h2>
+				<ul>
+					<BOUCLE_documents_joints(DOCUMENTS) {id_rubrique} {par num titre, date}>
+					<li>
+						<a href="#URL_DOCUMENT" title="<:bouton_telecharger:>" type="#MIME_TYPE" target="_self" >[(#TITRE|supprimer_numero|sinon{<:info_document:>})]<br /><small>(#TYPE_DOCUMENT[ - (#TAILLE|taille_en_octets)])[ (#DESCRIPTIF)]</small></a>
+					</li>
+					</BOUCLE_documents_joints>
+				</ul>
+			</form>
+			</B_documents_joints>
+
+			</ul>
+	</BOUCLE_rub>

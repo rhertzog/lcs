@@ -1,0 +1,43 @@
+<plugin>
+	<nom>TiSpiP-sKeLeT</nom>
+	<description>
+		TiSpiP-sKeLeT.	Personnalisation de l&#146;affichage public. <br /><strong>Ce plugin n&#233;cessite l&#146;activation des plugins CFG, Palette et Recherche Multi-crit&#232;res</strong>
+	</description>
+	<lien>
+		<a href="http://tispip.etab.ac-caen.fr/?Installer-TiSpiP-sKeLeT-v-2" title="Voir la proc&#233;dure d&#146;installation">Installation </a> et <a href="http://tispip.etab.ac-caen.fr/?Documentation" title="Voir la documentation">documentation </a>
+	</lien>
+	<version>2.0.5</version>
+	<prefix>tispipskelet</prefix>
+	<etat>test</etat>
+	<auteur>D. Lepaisant- (domZ) - Equipe TICE - CRDP de Basse Normandie</auteur>
+	<icon>img_pack/tispip-skelet_24.png</icon>
+	<fonctions>tispipskelet_fonctions.php</fonctions>
+	<pipeline>
+		<nom>ajouter_boutons</nom>
+		<action>ajouterBoutons</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>ajouter_onglets</nom>
+		<action>ajouterOnglets</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>header_prive</nom>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>insert_head</nom>
+		<action>insert_head</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>insert_head</nom>
+		<action>insert_head</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+    <pipeline>
+    	<nom>affiche_droite</nom>
+        <inclure>tispipskelet_pipe.php</inclure>
+    </pipeline>
+</plugin>	

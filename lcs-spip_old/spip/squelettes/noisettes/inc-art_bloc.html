@@ -1,0 +1,20 @@
+#CACHE{24*3600}
+[(#SET{idart,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]idart_art_bloc_[(#ENV{bloc})]})]})]
+[(#SET{titre_art,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_art_bloc_[(#ENV{bloc})]})]})]
+[(#SET{overflow_art,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]overflow_art_bloc_[(#ENV{bloc})],hidden})]})]
+<BOUCLE_art_bloc(ARTICLES){statut IN publie,prop,prepa}{id_article=#GET{idart}}>
+	<h3 class="menu-titre"><a href="#URL_ARTICLE" title="#TITRE">[(#GET{titre_art,[(#TITRE|supprimer_numero)]})]</a></h3>
+	<dl id="art_bloc_#ENV{bloc}" class="demi_boite" style="[height:(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_art_bloc_[(#ENV{bloc})]})px;][overflow-y:(#GET{overflow_art})]">
+		<dd style="margin:0 5px;padding:0;padding:0;margin:0;">
+			[(#CONFIG{tispipskelet/[(#ENV{casier})/]afflogo_art_bloc_[(#ENV{bloc})]}|oui)
+				[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{75}|sinon{[(#LOGO_SITE_SPIP||image_reduire{75})]}|inserer_attribut{style,float:right})]
+			]
+			[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_art_bloc_[(#ENV{bloc})]}|!={texte}|?{' '})
+					[<span style="font-size:.9em;">(#TEXTE|supprimer_tags|couper{[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_long_art_bloc_[(#ENV{bloc})]})]})</span>]
+			]
+			[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_art_bloc_[(#ENV{bloc})]}|=={texte}|?{' '})
+					[(#TEXTE||image_reduire{100,9999999})]
+			]	
+		</dd>
+	</dl>
+</BOUCLE_art_bloc>

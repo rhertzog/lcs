@@ -1,0 +1,119 @@
+				<ul id="cfg_aff_onglets" class="ligne">
+				<li class="tiers">
+						<label class="titre" style="float:left;margin:0;padding:0;width:auto;"><input type="checkbox" name="accueil" value="oui" [checked="(#ENV{accueil}|?{checked})" ]/> Onglet <strong>Accueil</strong> 
+						</label>
+				</li>
+				<li class="tiers">
+						<label><input type="checkbox" name="prive" value="oui" [checked="(#ENV{prive}|?{checked})" ]/> Onglet <strong>Priv&eacute;</strong>
+						</label>
+				</li>
+				<li class="tiers" style="width:32%;">
+						<label><input type="checkbox" name="contact" value="oui" [checked="(#ENV{contact}|?{checked})" ]/> Onglet <strong>Contact</strong>
+						</label>
+					</li>
+		[(#CONFIG{plugin}|match{AGENDA}|?{
+				<li class="tiers">
+						<label><input type="checkbox" name="evenement" value="oui" [checked="(#ENV{evenement}|?{checked})" ]/> Onglet <strong>Ev&eacute;nements</strong>
+						</label>
+				</li>
+				,
+				<li class="tiers" style="font-size:.8em">Validez le plugin "Agenda" pour afficher l'onglet "Evénements"</li>
+		})]
+				<li class="tiers">
+						<label><input type="checkbox" name="recherche" value="oui" [checked="(#ENV{recherche}|?{checked})" ]/>Formulaire<strong>Recherche</strong>
+						</label>
+				</li>
+				<li class="tiers" style="width:32%;">
+						<label><input type="checkbox" name="plan" value="oui" [checked="(#ENV{plan}|?{checked})" ]/> Onglet <strong> Plan </strong>
+						</label>
+				</li>
+				<li class="tiers" style="width:49%;clear:both;">
+				[(#CONFIG{plugin}|match{REC_MC}|?{' '})
+						<label><input type="checkbox" name="form_recherche" value="oui" [checked="(#ENV{form_recherche}|?{checked})" ]/>Onglet <strong>Recherche avanc&eacute;</strong>]
+				</li>
+						<label><input type="checkbox" name="plan_freemind" value="oui" [checked="(#ENV{plan_freemind}|?{checked})" ]/> Onglet <strong> Plan Freemind </strong>
+						</label>
+				<li class="tiers" style="width:50%;">
+				</li>
+			[(#REM) a terminer doit ouvrir un div avec liste des rubriques si value=oui]
+				<li class="ligne">
+					<label><input type="checkbox" name="rubrique" value="oui" [checked="(#ENV{rubrique}|?{checked})" ]id="rubrique" />Onglet :<strong> Rubrique</strong>
+					</label>
+					<ul id="choixrub" style="clear:both;">
+						<li class="ligne_240">
+									<label for="idrubonglet">S&eacute;lectionnez la rubrique : </label>
+							<INCLURE{fond=fonds/inc/inc-select_rubrique}{obj=idrubonglet}>
+						</li>
+						<li class="ligne_240">
+							<label for="nomongletrub">Nom de l&apos;onglet Rubrique : </label>
+							<input type="text" name="nomongletrub" id="nomongletrub" value="#CONFIG{lcs_skel_conf/nomongletrub}" />
+							</li>
+					</ul>
+				</li>
+				<li class="ligne">
+						<label><input type="checkbox" name="article" value="oui" [checked="(#ENV{article}|?{checked})" ]id="article" />Onglet :<strong>  Article </strong>
+						</label>
+							<ul id="choixart" style="clear:both;">
+								<li class="ligne_240">
+									<label for="idartonglet">S&eacute;lectionnez l&apos;article : </label>
+										<INCLURE{fond=fonds/inc/inc-select_article}{name=idartonglet}>
+								</li>
+								<li class="ligne_240">
+									<label for="nomongletart">Nom de l&apos;onglet Article : </label>
+									<input type="text" name="nomongletart" id="nomongletart" value="#CONFIG{lcs_skel_conf/nomongletart}" />
+								</li>
+							</ul>
+				</li>
+				<li class="ligne">
+						<label><input type="checkbox" name="onglien_intranet" value="oui" id="intranet" [checked="(#ENV{onglien_intranet}|?{checked})" ]/> Onglet <strong>Intranet</strong>
+						</label>
+							<ul id="conf_intranet">
+								<li class="ligne_240">
+								<label for="nomongletintranet">Nom du lien :</label>
+								<input type="text" name="nomongletintranet" id="nomongletintranet" value="#ENV{nomongletintranet}" />
+							</li>
+							<li class="ligne_240">
+								<label for="urlongletintranet">Url du lien :</label>
+								<input type="text" name="urlongletintranet" id="urlongletintranet" value="#ENV{urlongletintranet}" />
+							</li>
+							<li class="ligne_240">
+								<label for="long_ongletintranet">Longeur de l&apos;onglet Intranet <em>(en pixels)</em>: </label>
+								<input type="text" name="long_ongletintranet" id="long_ongletintranet" size="3" value="#ENV{long_ongletintranet}" />
+							</li>
+						</ul>
+					</li>
+				</ul>
+<script type="text/javascript"><!--
+	//cacher le choix des onglets si on choisi de ne pas les afficher
+	$('#aff_onglets')
+	.bind('change', function() {
+            $('#cfg_aff_onglets').slideToggle('slow');
+	})
+	if ($('#aff_onglets:checked').length == 0)
+		$('#cfg_aff_onglets').hide();
+
+	//cacher le choix de la rubrique si pas de selection ds l'onglet
+	$('#rubrique')
+	.bind('change', function() {
+            $('#choixrub').slideToggle('slow');
+	})
+	if ($('#rubrique:checked').length == 0)
+		$('#choixrub').hide();
+
+	//cacher le choix de l'article si pas de selection ds l'onglet
+	$('#article')
+	.bind('change', function() {
+            $('#choixart').slideToggle('slow');
+	})
+	if ($('#article:checked').length == 0)
+		$('#choixart').hide();
+		
+	//cacher la conf du lien perso si pas de selection ds l'onglet
+	$('#intranet')
+	.bind('change', function() {
+            $('#conf_intranet').slideToggle('slow');
+	})
+	if ($('#intranet:checked').length == 0)
+		$('#conf_intranet').hide();
+
+// --></script>

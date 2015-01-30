@@ -1,0 +1,18 @@
+#CACHE{0}
+		<BOUCLE_art_plud1(ARTICLES) {id_rubrique} {1,1}>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+		</BOUCLE_art_plud1>
+		<BOUCLE_art_1seul(ARTICLES) {id_rubrique} {0,1}>
+			<B_verif_breves><BOUCLE_verif_breves(BREVES){id_rubrique}{0,1}> </BOUCLE_verif_breves>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+			</B_verif_breves>
+			<B_verif_sites><BOUCLE_verif_sites(SITES){id_rubrique}{0,1}> </BOUCLE_verif_sites>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+			</B_verif_sites>
+			<INCLURE{fond=article}{id_rubrique}{id_article}>
+			<//B_verif_sites>
+			<//B_verif_breves>
+		</BOUCLE_art_1seul>
+			<INCLURE{fond=rubrique-normal}{id_rubrique}>
+		<//B_art_1seul>
+		<//B_art_plud1>

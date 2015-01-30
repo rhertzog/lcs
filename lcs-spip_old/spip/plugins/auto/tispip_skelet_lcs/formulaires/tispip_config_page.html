@@ -1,0 +1,79 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+			[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+			<fieldset>
+				<legend><:tispipskelet:largeur_page:></legend>
+				<ul>
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=273&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title='Aide : Largeur de la page'>&nbsp;</a>
+						<label for="larg_page"><:tispipskelet:selectionner_largeur:></label>
+						<select name="larg_page" style="width:100px;" id="larg_page" class="fondl spip_xx-small">
+							<option value=""[(#ENV{larg_page}|?{'',selected="selected"})]>  </option>
+							<option value="800"[ (#ENV{larg_page}|=={800}|?{selected="selected",''})]> 800 <:tispipskelet:pixels:> </option>
+							<option value="1024"[ (#ENV{larg_page}|=={1024}|?{selected="selected",''})]> 1024 <:tispipskelet:pixels:> </option>
+							<option value="tout"[ (#ENV{larg_page}|=={tout}|?{selected="selected",''})]> <:tispipskelet:largeur_ecran:> </option>
+						</select>
+					</li>
+					<li class="ligne_280" id="nbColsLi">
+						<label for="nb_cols"><:tispipskelet:nb_colonnes:></label>
+						<select name="nb_cols" style="width:100px;" id="nb_cols" class="fondl spip_xx-small" onchange="$('li.pos_col').hide();$('li#pos_colonne_'+this.value).show();">
+							<option value="2"[(#ENV{nb_cols}|=={2}|?{selected="selected"})]> 2 colonnes</option>
+							<option value="3"[(#ENV{nb_cols}|=={3}|?{selected="selected"})]> 3 colonnes </option>
+						</select>
+					</li>
+					<li class="ligne_280 pos_col" id="pos_colonne_2">
+						<label for="position"><:tispipskelet:position_colonne:></label>
+						<select name="position" style="width:100px;" id="position" class="fondl spip_xx-small">
+							<option value="left"[(#ENV{position}|=={left}|?{selected="selected"})]>À gauche</option>
+							<option value="right"[(#ENV{position}|=={right}|?{selected="selected"})]> À droite </option>
+						</select>
+					</li>
+				</ul>
+			</fieldset>
+				<script type="text/javascript"><!--
+						$('#nb_cols2')
+						.bind('change', function() {
+					            $('#posblocs').slideDown('slow');
+								$('#test_pos_menu').empty();
+						})
+						if ($('#nb_cols2:checked').length == 0)
+							$('#posblocs').hide();
+					
+						$('#nb_cols3')
+						.bind('change', function() {
+					            $('#posblocs').slideUp('slow');
+								$('#posColDefaut').append('<input  name="position" type="hidden" value="" />');
+								 $('#posColLeft').removeAttr('checked');
+								 $('#posColRight').removeAttr('checked');
+					})
+						if ($('#nb_cols3:checked').length != 0)
+							$('#posblocs').hide();
+[(#ENV{nb_cols}|!={2}|oui)
+							$('li#pos_colonne_2').hide();
+							$('#nbColsLi').append('<input  name="position" type="hidden" value="" />');
+]							
+				// --></script>
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" class="fondo spip-xx_small" value="<:cfg:OK:>" />
+				<input type="reset" class="fondo spip-xx_small" value="<:cfg:Reset:>" />
+				<input type="submit" class="fondo spip-xx_small" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

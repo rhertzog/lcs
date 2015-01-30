@@ -1,0 +1,56 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=couleurs -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+	<fieldset>
+		<legend>Couleurs de la colonne latt&eacute;rale</legend>
+		<ul>
+			<li class="ligne_240">
+			<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=311&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Couleurs des colonnes latérales">&nbsp;</a>
+				<label for="color70">Fond de la colonne latt&eacute;rale :</label>
+				<input type="text" name="color70" id="color70"  class="palette forml spip_xx-small" size="7" style="width:75px;" value="[(#ENV{color70}|?{#ENV{color70},#cccccc})]" />
+			</li>
+			</ul>
+		<ul>
+			<li class="unquart">
+				<label for="color71">Fond des titres :</label>
+				<input type="text" name="color71" id="color71"  class="palette forml spip_xx-small" size="7" value="[(#ENV{color71}|?{#ENV{color71},#ffcc33})]" />
+			</li>
+			<li class="unquart">
+				<label for="color72">Titres :</label>
+				<input type="text" name="color72" id="color72"  class="palette forml spip_xx-small" size="7" value="[(#ENV{color72}|?{#ENV{color72},#336699})]" />
+			</li>
+			<li class="unquart">
+				<label for="color73">Fond des textes :</label>
+				<input type="text" name="color73" id="color73"  class="palette forml spip_xx-small" size="7" value="[(#ENV{color73}|?{#ENV{color73},#ffee99})]" />
+			</li>
+			<li class="unquart">
+				<label for="color74">Textes  :</label>
+				<input type="text" name="color74" id="color74"  class="palette forml spip_xx-small" size="7" value="[(#ENV{color74}|?{#ENV{color74},#336699})]" />
+			</li>
+			<li style="clear:both;"></li>
+		</ul>
+			
+			
+	</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

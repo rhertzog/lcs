@@ -1,0 +1,41 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg">	
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Contacts</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+				<ul>
+					<li class="ligne">
+						<div class="help_text">
+						Indiquez ici l'identifiant de l'auteur contact. <br />
+						Pour les établissements scolaires, cr&eacute;ez un nouvel auteur en complétant les champs de la façon suivante : <br />
+						&nbsp;&nbsp;&nbsp;-&nbsp; :  Champ <strong>Signature</strong> : Aministration ou Contact (ou une autre signature pertinente de votre choix)<br />
+						&nbsp;&nbsp;&nbsp;-&nbsp; :  Champ <strong>Bio</strong> : Saisissez ici un texte explicatif pour le visiteur <br />
+						&nbsp;&nbsp;&nbsp;-&nbsp; :  Champ <strong>Adresse mél</strong> : l'adresse courriel de l'&eacute;tablissement <br />
+						<p><blocquote>Cet auteur peut ne pas avoir publié d'articles. Il peut rester un auteur "virtuel".</blocquote></p>
+						<p>Saisissez l'identifiant dans le champ ci-dessous</p>
+						</div>
+					</li>
+					<li class="ligne_280">
+						<label for="adresse">Identifiant de l'auteur contact <em>(Obligatoire)</em></label>
+						<input type="text" name="contact_etab" id="contact_etab" size="3" value="[(#ENV{contact_etab,2})]" class="fondl spip_xx-small" />
+					</li>
+				</ul>
+			</fieldset>
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+][(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

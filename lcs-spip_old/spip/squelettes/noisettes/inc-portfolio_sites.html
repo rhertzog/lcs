@@ -1,0 +1,57 @@
+#SET{portfolio_sites,#ENV{id_rubrique}}
+[(#SET{mot,[(#CONFIG{tispipskelet_conf/rubriques/mot_portfolio_sites})]})]
+<B_verif_portfolio_sites><BOUCLE_verif_portfolio_sites(MOTS){id_rubrique}{tout}>
+[(#TITRE|=={#GET{mot,portfolio_sites}}|oui)#SET{portfolio_sites,#ID_RUBRIQUE}]
+ </BOUCLE_verif_portfolio_sites></B_verif_portfolio_sites></B_verif_portfolio_sites>
+						[(#SET{nb_cols_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_col_prtfl_sites[_(#ENV{id_rubrique})]})]})]
+						[(#SET{pagin_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]pagin_prtfl_sites[_(#ENV{id_rubrique})]})]})]
+						[(#SET{type_conf,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]type_prtfl_sites[_(#ENV{id_rubrique})]})]})]
+<B_sites>
+[(#REM)*****************************************************************
+		Contenu - Colonne centrale - Portfolio de tous les systèmes 
+		Pagination par ordre alphabétique total ou excusif
+	 ***************************************************************** ]
+[(#ANCRE_PAGINATION)]
+	<div class="pagination">
+				<span class="ligne1">#GRAND_TOTAL sites</span>
+
+					[<span class="pagination ligne2">(#PAGINATION)</span>]
+				<br class="leon" />
+	</div><!-- pagination -->
+[(#REM)*****************************************************************
+		Contenu - Colonne centrale - Portfolio - Passer la pagination en parametre ??
+	 ***************************************************************** ]
+	 
+						<BOUCLE_sites(SITES) {id_rubrique=#GET{portfolio_sites}}{par num nom_site}{par nom_site} {nom_site==^(#ENV{lettre,''})} {pagination #GET{pagin_conf,12}}>
+							<div class="portfolio_rubs" style="[width:(#GET{nb_cols_conf,32})%;]">
+								<h3 class="titre" style="margin:0;padding:5px 2px;color:#aaa;font-size:.9em;">
+									<a href="#URL_SITE" [title="(#TITRE|supprimer_numero)"] style="color:#369;display:block;margin:auto 0;">[(#NOM_SITE|supprimer_numero||couper{50})]</a>
+								</h3>
+
+[(#GET{type_conf}|=={list_syndics}|non)
+								<a href="#URL_SITE" title="[(#DESCRIPTIF|supprimer_tags)]" class="spip_out" style="display:block;text-align:center;height:90px;vertical-align:middle;" >
+								[(#REM)]
+									[(#LOGO_SITE||image_reduire{120,999999}|inserer_attribut{style,margin:auto}|sinon{<img src="http://open.thumbshots.org/image.aspx?url=#URL_SITE" alt="" style="margin: auto; " />})]
+								</a>
+]
+
+[(#GET{type_conf}|=={list_syndics}|oui)
+								<div style="text-align:left;font-size:.8em;overflow:auto;border-top:1px solid #ddd;height:125px;"><INCLURE{fond=noisettes/inc-list_syndics}{id_syndic}></div>
+]
+							</div><!-- portfolio_rubs -->
+						</BOUCLE_sites>
+[(#REM)*****************************************************************
+		Contenu - Colonne centrale - Portfolio - on impose le retour à la ligne
+	 ***************************************************************** ]
+					<div class="leon">&nbsp;</div>
+<em style="float:right;font-size:.8em;"><a href="http://www.thumbshots.com" target="_blank" title="Thumbnails Previews by Thumbshots" style="color:#ccc;">Thumbnails powered by Thumbshots</a></em>
+[(#REM)*****************************************************************
+		Contenu - Colonne centrale - Portfolio - Pagination
+	 ***************************************************************** ]
+	<div class="pagination">
+				<span class="ligne1">#GRAND_TOTAL sites</span>
+
+					[<span class="pagination ligne2">(#PAGINATION)</span>]
+				<br class="leon" />
+	</div><!-- pagination -->
+</B_sites>

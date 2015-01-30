@@ -1,0 +1,54 @@
+<plugin>
+	<nom>TiSpiP-sKeLeT</nom>
+	<description>
+		TiSpiP-sKeLeT.	Personnalisation de l&#146;affichage public. <br /><strong>Ce plugin n&#233;cessite l&#146;activation des plugins CFG, SPIP-Bonux et Champs Extras2</strong>
+	</description>
+	<lien>
+		<a href="http://tispip.etab.ac-caen.fr" title="Voir la documentation">Documentation </a>
+	</lien>
+	<version>2.4.8</version>
+	<prefix>tispipskelet</prefix>
+	<etat>test</etat>
+	<auteur>D. Lepaisant- (domZ) - Equipe TICE - CRDP de Basse Normandie</auteur>
+	<icon>img_pack/tispip-skelet_24.png</icon>
+	<fonctions>tispipskelet_fonctions.php</fonctions>
+	<install>action/tispipskelet_install.php</install>
+	<bouton id="creer_zones_groupes" parent="auteurs">
+		<icone>img_pack/logo_biduls_acces-restreint_24.png</icone>
+		<titre>Zones des groupes</titre>   
+		<url>creer_zones_groupes_lcs</url>   
+		<args></args>
+	</bouton>
+	<pipeline>
+		<nom>ajouter_boutons</nom>
+		<action>ajouterBoutons</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>ajouter_onglets</nom>
+		<action>ajouterOnglets</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>header_prive</nom>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+	<pipeline>
+		<nom>insert_head</nom>
+		<action>insert_head</action>
+		<inclure>tispipskelet_pipe.php</inclure>
+	</pipeline>
+    <pipeline>
+    	<nom>affiche_droite</nom>
+        <inclure>tispipskelet_pipe.php</inclure>
+    </pipeline>
+    <pipeline>
+    	<nom>affiche_gauche</nom>
+      <inclure>tispipskelet_pipe.php</inclure>
+		<action>afficher_tout</action>
+    </pipeline>
+	<necessite id="SPIP" version="[2.0.2;]" />
+	<necessite id="cfg" version="[1.10.5;]" />
+	<necessite id="spip_bonux" version="[1.8;]" />
+	<necessite id="cextras" version="[0.7;]" />
+</plugin>	

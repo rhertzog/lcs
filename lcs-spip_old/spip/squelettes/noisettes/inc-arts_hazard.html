@@ -1,0 +1,17 @@
+#CACHE{0}
+[(#REM)articles au hazard ]
+[(#SET{nb_arts_hasard,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]nb_arts_hasard_[(#ENV{bloc})]})]})]
+[(#SET{defil_arts_hasard,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]defil_arts_hasard_[(#ENV{bloc})]})]})]
+[(#SET{haut_arts_hasard,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]haut_arts_hasard_[(#ENV{bloc})]})]})]
+[(#SET{titre_arts_hasard,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]titre_arts_hasard_[(#ENV{bloc})]})]})]
+[(#SET{intro_long_arts_hasard,[(#CONFIG{tispipskelet_conf/[(#ENV{casier})/]intro_long_arts_hasard_[(#ENV{bloc})]})]})]
+<h3 class="menu-titre">[(#GET{titre_arts_hasard, Articles au hasard...})]</h3>
+	<dl id="arts_hasard_#ENV{bloc}" class="demi_boite cycle_arts_hasard blocElement">
+	<BOUCLE_arts_hasard(ARTICLES){par hasard}{0,#GET{nb_arts_hasard,5}}>
+		<dt style="font-size:.85em;padding-bottom:3px;margin-bottom:0;">
+		<a href="#URL_ARTICLE" title="[(#INTRODUCTION|couper{80}|texte_backend)]">
+		[(#TITRE|supprimer_numero|supprimer_tags)]
+		</a>
+	</dt>
+	</BOUCLE_arts_hasard>
+		</dl>

@@ -1,0 +1,46 @@
+<div class="formulaire_spip formulaire_cfg">
+<form method="post" id="form_cfg_tispipskelet" action="#SELF">
+	<fieldset>
+		<legend><:tispipskelet:configurer_bornes:></legend>
+		<ul>
+			<li class="ligne_240">
+				<label for="mot_cycle_img"><:tispipskelet:select_mot_articles:>S&eacute;lectionner le mot cl&eacute; associ&eacute; aux articles</label>
+				<select name="mot_cycle_borne">
+					<option value=""[(#ENV{mot_cycle_borne}|?{selected="selected",''})]>  </option>
+					<BOUCLE_mot_cycle_bornes(MOTS){par titre}>
+						<option value="[(#TITRE|supprimer_numero)]"[(#ENV{mot_cycle_borne}|=={[(#TITRE|supprimer_numero)]}|?{selected="selected",''})]> [(#TITRE|supprimer_numero)] </option>
+					</BOUCLE_mot_cycle_bornes>
+				</select>
+			</li>
+			<li class="ligne_240">
+							<label for="borne_effect"><:tispipskelet:cycle_transition:>Nature de la transition</label>
+							<select name="borne_effect">
+								[(#INCLURE{fond=fonds/inc/inc-cycle-effet}{val_actuel=#ENV{borne_effect}})]
+							</select>
+			</li>
+			<li class="ligne_240">
+							<label for="borne_duree">Durée d&rsquo;affichage<em>(en milisecondes)</em></label>
+							<select name="borne_duree">
+								[(#INCLURE{fond=fonds/inc/inc-cycle-duree}{val_actuel=#ENV{borne_duree}})]
+							</select>
+			</li>
+			<li class="ligne_240">
+							<label for="borne_time">Durée de la transition<em>(en milisecondes)</em></label>
+							<select name="borne_time">
+								[(#INCLURE{fond=fonds/inc/inc-cycle-transition}{val_actuel=#ENV{borne_time}})]
+							</select>
+			</li>
+			<li class="ligne_240">
+							<label><:tispipskelet:hauteur_bloc:><em>(px)</em>: 
+							<input type="text" name="borne_hauteur" size="4" value="#ENV{borne_hauteur}" /></label>
+			</li>
+			<li>
+				<input type="submit" name="submit" value="<:tispipskelet:sauvegarder:>" />
+			</li>
+		</ul>
+	</fieldset>
+</form>
+#FOREACH{env}
+</div>
+[(#REM)]
+

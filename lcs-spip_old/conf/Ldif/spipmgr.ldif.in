@@ -1,0 +1,18 @@
+dn: uid=spip.manager,#PEOPLE#,#BASEDN#
+uid: spip.manager
+cn: Spip Manager
+givenName: Spip
+sn: Manager
+initials: SpipM
+mail: spip.manager@#MAILDOMAIN#
+objectClass: top
+objectClass: posixAccount
+objectClass: shadowAccount
+objectClass: person
+objectClass: inetOrgPerson
+loginShell: /bin/true
+gidNumber: 5005
+homeDirectory: /usr/share/lcs/spip
+userPassword: {crypt}*LOCKED*
+gecos: Spip Manager,20081212,M,N
+uidNumber: 5002

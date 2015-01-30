@@ -1,0 +1,135 @@
+#!/bin/sh
+MODULE="spip"
+VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
+VERAPPLI="2.1.19"
+INDICEMAJNBR="9"
+CONF="/var/lib/lcs/$MODULE"
+PATHMOD="/usr/share/lcs/$MODULE"
+PATHMAJ="/var/lib/lcs/$MODULE"
+APACHECONF="/etc/lcs/apache.conf"
+
+LCSAPACHE2PATH="/etc/apache2/lcs-main/"
+APACHE2CONF=$LCSAPACHE2PATH"75_spip.conf"
+
+DOMAINE=`hostname -d`
+DOMAINENAME=`hostname -f`
+
+if [ "$2" = "" ] || [ "$2" = "$VER" ]; then
+    ##
+    ## Configuration initiale du module
+    ##
+    echo "Installation initiale du module spip"
+    # Création de la base de données.
+    echo "Création de la base de données."
+    mysqladmin create spip_lcs
+    mysql mysql < $CONF/Sql/DbInit.sql
+    mysqladmin flush-privileges
+
+    sed -e "s#@DOMAINE@#$DOMAINE#" $CONF/Sql/DbConfig.sql.in > /tmp/DbConfig.sql.in 
+    sed -e "s#@DOMAINENAME@#$DOMAINENAME#"  /tmp/DbConfig.sql.in > /tmp/DbConfig.sql
+    # Initialisation de la base de données.
+    echo "Initialisation de la base de données spip_lcs"
+    mysql spip_lcs < /tmp/DbConfig.sql
+    # Ajout de l'utilisateur manager de spip
+    if [ `getent passwd spip.manager | wc -l` = "0" ]; then
+        echo "Ajout de l'utilisateur manager de spip"
+        $CONF/Scripts/AddSpipMgr.sh
+    fi
+    #
+    # Inscription du module et de l'indice numero de version dans applis.lcs_db
+    #
+    /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'CMS LCS basé sur spip', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'M');"
+else
+    echo "Mise à jour du paquet module LCS $MODULE de $2 vers $VER"
+    #
+    # Lecture de l'indice de maj dans la table lcs_db.applis
+    #
+    MAJNBR=`mysql -se "SELECT num_maj FROM lcs_db.applis WHERE name='$MODULE';"`
+    MAJNBR=$((MAJNBR+1))
+    if [ ! -e $CONF/Maj/maj$MAJNBR.sh ]; then
+	echo "Pas de script de mise à jour à appliquer !"
+    else
+        while [ -e $CONF/Maj/maj$MAJNBR.sh ]; do
+            echo "Application du script Maj$MAJNBR"
+            $CONF/Maj/maj$MAJNBR.sh
+            MAJNBR=$((MAJNBR+1))
+	done
+        #
+        # Fin de la mise à jour
+        #
+	echo "Application des maj terminée."
+    fi
+        #
+        # Mise à jour de l'indice de Maj
+        #
+        /usr/bin/mysql -e "UPDATE lcs_db.applis SET num_maj='$INDICEMAJNBR', version='$VER' WHERE name='$MODULE';"
+
+fi
+#
+# Actions non liées a une installation initiale ou à une mise à jour.
+#
+    #
+    # Mise en place des variables de configuration.
+    #
+    echo "Mise en place des variables de configuration de connect.php."
+    #
+    # Read params for connect.php
+    #
+    ldapserver=`mysql -se "select value from lcs_db.params where name='ldap_server'"`
+    basedn=`mysql -se "select value from lcs_db.params where name='ldap_base_dn'"`
+    passwd=`cat /var/www/lcs/includes/config.inc.php | grep PASSAUTH= | cut -d = -f 2 | cut -d \" -f 2`
+
+    cp $CONF/Mod/config/connect.php.in $CONF/Mod/config/connect.php
+    sed -i "s#@passwd@#$passwd#" $CONF/Mod/config/connect.php
+    mv $CONF/Mod/config/connect.php $PATHMOD/config/
+
+    cp $CONF/Mod/config/ldap.php.in $CONF/Mod/config/ldap.php
+    sed -i "s#@ldapserver@#$ldapserver#" $CONF/Mod/config/ldap.php
+    sed -i "s#@basedn@#$basedn#" $CONF/Mod/config/ldap.php
+    mv $CONF/Mod/config/ldap.php $PATHMOD/config/
+
+    #
+    # Mise en place du rep plugins si il n'existe pas
+    #
+    echo "Mise en place du repertoire plugins/auto si il n'existe pas."
+    if [ ! -d $PATHMOD/plugins/auto ]; then
+        mkdir -p $PATHMOD/plugins/auto
+    fi
+    #
+    # Création de l'utilisateur spip.manager si il n'existe pas
+    #
+    if [ `getent passwd spip.manager | wc -l` = "0" ]; then
+        echo "Création de spip.manager car il n'est plus présent dans la base de compte"
+        $CONF/Scripts/AddSpipMgr.sh
+    fi
+    #
+    # Changement des droits sur l'arborescence du module
+    #
+    echo "Fixation des droits sur l'arborescence du module : $MODULE"
+    $CONF/Scripts/chown.sh $MODULE
+    # Configuration apache
+    if [ -d $LCSAPACHE2PATH ] && [ ! -e $APACHE2CONF ] ; then
+      cat >$APACHE2CONF <<EOF
+Alias /$MODULE/ /usr/share/lcs/$MODULE/
+<Directory  /usr/share/lcs/$MODULE/>
+        Allowoverride All
+</Directory>
+EOF
+      /etc/init.d/apache2 reload > /dev/null 2>&1
+    fi
+	#
+	# Cleaning spip/tmp
+	#
+	cd /usr/share/lcs/spip/tmp
+	mv sessions /tmp/
+	rm -Rf /usr/share/lcs/spip/tmp/* > /dev/null 2>&1
+	mv /tmp/sessions .
+	echo "deny from all" >> /usr/share/lcs/spip/tmp/.htaccess
+    #
+    # Mise en place du lien symbolique vers la documentation
+    #
+    if [ ! -e /usr/share/doc/lcs-$MODULE ]; then
+        ln -s /usr/share/doc/lcs/$MODULE /usr/share/doc/lcs-$MODULE
+    fi
+
+exit 0

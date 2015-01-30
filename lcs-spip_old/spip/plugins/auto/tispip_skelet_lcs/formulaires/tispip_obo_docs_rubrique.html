@@ -1,0 +1,19 @@
+<div class="formulaire_spip formulaire_pdf2swf ajax" style="margin:5px;">
+[(#SET{choix,[(#CONFIG{tispipskelet_conf/rubriques/afficher_docs_[(#ENV{id_rubrique})]})]})]
+	<form action="#URL_ACTION_AUTEUR{'docs_rubrique','id_rubrique='#ENV{id_rubrique},#URL_ECRIRE{naviguer}}" method="POST" enctype="multipart/form-data">
+		<ul>
+			<li>
+				<p class="titre">
+					<strong><:tispipskelet:afficher_documents_joints:></strong>
+				</p>
+				<label for='afficher_docs_rubrique_[(#ENV{id_rubrique})_oui]'><:tispipskelet:oui:></label>
+				<input type='radio' name='afficher_docs_rubrique_#ENV{id_rubrique}' value='1' id='afficher_docs_rubrique_[(#ENV{id_rubrique})_oui]'  [(#GET{choix}|=={1}|oui) checked='checked'] />
+				<input type='radio' name='afficher_docs_rubrique_#ENV{id_rubrique}' value='0' id='afficher_docs_rubrique_[(#ENV{id_rubrique})_non]' [(#GET{choix}|=={0}|oui) checked='checked'] />
+				<label for='afficher_docs_rubrique_[(#ENV{id_rubrique})_non]'><:tispipskelet:non:></label>
+			</li>
+		</ul>
+		<p class="boutons">
+			<input type="submit" name="Valider" value="<:bouton_valider:>" class="submit" />
+		</p>
+	</form>
+</div>

@@ -1,0 +1,15 @@
+[(#REM)
+/**
+ * Plugin Lcs-TiSpiP pour spip2.0
+ * Mise en concordance des auteurs avec l'annuaire
+ * Licence GPL (c) 2006-2011 Dominique Lepaisant 
+ * 
+ */
+]
+<B_tous_les_groupes>
+<BOUCLE_tous_les_groupes(POUR){tableau #ENV{all_groupes}}>
+[(#REM)
+][(#CLE|!={Groupes secondaires}|oui)[(#INCLURE{fond=prive/contenu/ajouter_zones_groupes_annuaire}{groupes_secondaires=#VALEUR}{titre=#CLE}{ajax}{env})] 
+<br class="nettoyeur" style="margin-bottom:20px;" />
+]</BOUCLE_tous_les_groupes>
+<B_tous_les_groupes>

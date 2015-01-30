@@ -1,0 +1,8 @@
+[(#REM)date de mise a jour du site]
+<B_maj>
+<p class="maj">
+	<BOUCLE_maj(RUBRIQUES){age>=0}{par date}{inverse}{0,1}>
+		M-&agrave;-J : <strong>[(#DATE|nom_jour)] [(#DATE|affdate)]</strong> 
+	</BOUCLE_maj>
+</p>
+</B_maj>

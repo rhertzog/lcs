@@ -1,0 +1,62 @@
+[(#REM)
+/******************************************************************
+***  Ce plugin EVA_freemind, créé par Olivier Gautier, est mis ***
+***      à disposition sous un contrat DNU/GPL	      *** 
+***                 consultable à l'adresse                     ***
+***      http://www.april.org/gnu/gpl_french.html	     ***
+******************************************************************/
+]
+[(#REM) version modifiée DoM pour afficher la carte freemind dynamique du plan du site ]
+
+[(#ENV{meme_fenetre}=={oui}|?{#SET{openurl,_self},#SET{openurl,_blank}})]
+[(#ENV{bulle_aide}|?{#SET{tooltip,#ENV{bulle_aide}},#SET{tooltip,200}})]
+[(#ENV{largeur_vignette}|?{#SET{shotswidth,#ENV{largeur_vignette}},#SET{shotswidth,300}})]
+<B_freeminddoc><BOUCLE_freeminddoc(DOCUMENTS){id_document=#ENV{doc}}{mode=document}{extension IN mm}>
+[(#SET{url,#URL_DOCUMENT})]
+[(#SET{id_doc,#ID_DOCUMENT})]
+</BOUCLE_freeminddoc>
+</B_freeminddoc>
+[(#ENV{page_fm}|?{[(#SET{url,#URL_PAGE{#ENV{page_fm}}})],[(#SET{url,#URL_SITE_SPIP/?page=plan_mm})]})]
+<//B_freeminddoc>
+	<script type="text/javascript" src="#CHEMIN{scripts/flashobject.js}"></script>
+	<div id="flashcontent">Flash ou Javascript ne sont pas activ&eacute;s. Activez-les et relancez la page !</div>
+	<script type="text/javascript">
+	// <![CDATA[
+	var fo = new FlashObject("#CHEMIN{scripts/visorFreemind.swf}", "visorFreeMind",
+	"[(#ENV**{largeur}|?{#ENV**{largeur},"100%"})]",
+	"[(#ENV**{hauteur}|?{#ENV**{hauteur},"600"})]",
+	6, "#ffffff");// pour compatibilité eva_freemind renommer  "lib" en "scripts" 
+	fo.addParam("quality", "high");
+	fo.addParam("bgcolor", "#ffffff");
+	fo.addVariable("openUrl", "#GET{openurl}");
+	fo.addVariable("initLoadFile", "#GET{url}");
+	fo.addVariable("startCollapsedToLevel","5");
+	fo.addVariable("ShotsWidth","#GET{shotswidth}");
+	fo.addVariable("defaultToolTipWordWrap","#GET{tooltip}");
+[(#ENV{pos_x}|?{' '})
+	fo.addVariable("offsetX",'#ENV{pos_x}'); // admet aussi "left" et"right"
+]
+[(#ENV{pos_y}|?{' '})
+	fo.addVariable("offsetY",'#ENV{pos_y}'); // admet aussi "top" et "bottom"
+]
+	fo.write("flashcontent");
+	/*
+	fo.addVariable("mainNodeShape","rectangle");
+	fo.addVariable("defaultWordWrap","300");
+	fo.addVariable("genAllShots","true");
+	fo.addVariable("unfoldAll","true");
+	fo.addVariable("justMap","false");
+	fo.addVariable("scaleTooltips","false");
+	fo.addVariable("toolTipsBgColor","0xaaeeaa");
+	*/
+	// ]]>
+  </script>
+  [(#REM)]
+[(#ENV{page_fm}|?{'',' '})
+[(#ENV{s5}|?{'',' '})
+[(#ENV{pp}|=={1}|?{
+	<p><a href="javascript:history.back()" title=" "><span style="background:white">Retour</span></a></p>
+	,
+	<p><a href="[(#URL_PAGE{fm,doc=#GET{id_doc}})]" title=" ">Voir en plein &eacute;cran</a></p>
+})]
+]]

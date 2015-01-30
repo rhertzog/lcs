@@ -1,0 +1,6 @@
+<select name="#ENV{optionName}" id="#ENV{optionName}" style="width:75px;" class="fondl spip_xx-small">
+	<option value=""[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|?{selected="selected",''})]>  </option>
+<BOUCLE_unadix(POUR){tableau 1:#ENV{fin}}>
+	<option value="#COMPTEUR_BOUCLE"[ (#CONFIG{tispipskelet_conf/[(#ENV{id})/]nbarticles}|=={#COMPTEUR_BOUCLE}|?{selected="selected",''})]> #COMPTEUR_BOUCLE </option>
+</BOUCLE_unadix>
+</select>
