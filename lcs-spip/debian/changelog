@@ -1,8 +1,9 @@
-lcs-spip (2.4.9.8~1) UNRELEASED; urgency=low
+lcs-spip (2.4.10~1) Lcs; urgency=low
 
-  * Remove isauth and idpers from spip
+  * Make a Wheezy 2.4.10 release
+  * remove isauth and idpers from spip
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Jan 2015 14:07:10 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Jan 2015 14:54:10 +0200
 
 lcs-spip (2.4.9.7) Lcs; urgency=low
 
