@@ -1,9 +1,5 @@
 #!/bin/bash
-<<<<<<< .mine
-# Creation du repertoire de l'utilisateur mkhdir.sh 28/06/2014
-=======
 # Creation du repertoire de l'utilisateur mkhdir.sh 04/04/2014
->>>>>>> .r5097
 # $1 : login
 # $2 : Groupe d'appartenance
 # $3 : Crypt passwd 
@@ -18,7 +14,7 @@ if [ -z $1 ]; then
 	exit 1
 fi
 
-if [[ ! $1 =~ ^[a-z2-9._-]+$ ]]; then
+if [[ ! $1 =~ ^[a-z0-9._-]+$ ]]; then
         echo "ERR : Improper login."
         exit 1
 fi
@@ -168,3 +164,4 @@ else
 	fi
 fi
 exit 0
+

@@ -1,4 +1,4 @@
-lcs-web (2.4.10~6) Lcs; urgency=low
+lcs-web (2.4.10~7) Lcs; urgency=low
 
   * Modify for Debian Wheezy
   * Synchronization with 2.4.9 tree
@@ -62,7 +62,7 @@ lcs-web (2.4.10~6) Lcs; urgency=low
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 19 Sep 2014 10:52:51 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Jan 2015 14:32:17 +0200
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
