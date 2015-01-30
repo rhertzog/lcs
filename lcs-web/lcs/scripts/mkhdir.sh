@@ -1,5 +1,9 @@
 #!/bin/bash
+<<<<<<< .mine
+# Creation du repertoire de l'utilisateur mkhdir.sh 28/06/2014
+=======
 # Creation du repertoire de l'utilisateur mkhdir.sh 04/04/2014
+>>>>>>> .r5097
 # $1 : login
 # $2 : Groupe d'appartenance
 # $3 : Crypt passwd 

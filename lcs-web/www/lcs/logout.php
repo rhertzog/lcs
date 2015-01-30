@@ -1,5 +1,5 @@
 <?php
-/* lcs/logout.php version du : 22/05/2014*/
+/* lcs/logout.php version du : 30/01/2015*/
 require ("./includes/headerauth.inc.php");
 // Liste des applis installees
 $spip=$squirrelmail=$roundcube="";
@@ -27,37 +27,6 @@ $html .= "<head>\n";
 $html .= "<title>...::: Logout LCS :::...</title>\n";
 $html .= " <meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=utf-8\">\n";
 $html .=  "<script type=\"text/javascript\" src=\"../libjs/jquery/jquery.js\"></script>\n";
-$html .= "</head>\n";
-$html .= "<body>\n";
-echo $html;
-// Requetes de logout
-$javascript = "<script language='JavaScript' type='text/javascript'>\n";
-$javascript .= "// <![CDATA[\n";
-if ( $spip=="1" ) {
-	// Logout spip
-	$URLSPIP = '../spip/?action=logout&logout=prive';
-	$javascript .= "	$.ajax({\n";
-	$javascript .= "	type: 'POST',\n";
-	$javascript .= "    url : '$URLSPIP',\n";
-	$javascript .= "    async: false,\n";
- 	$javascript .= "	error: function() {\n";
- 	$javascript .= "		console.log('Echec logout SPIP');\n";
-  	$javascript .= "		}\n";
-  	$javascript .= "	});\n";
-}
-if ( $squirrelmail=="1" ) {
-	// Logout squirrelmail
-	$URLSQUIRRELMAIL ='../squirrelmail/src/signout.php';
-	$javascript .= "	$.ajax({\n";
-	$javascript .= "	type: 'POST',\n";
-	$javascript .= "    url : '$URLSQUIRRELMAIL',\n";
-	$javascript .= "    async: false,\n";
- 	$javascript .= "	error: function() {\n";
- 	$javascript .= "		console.log('Echec logout SQUIRRELMAIL');\n";
-  	$javascript .= "		}\n";
-  	$javascript .= "	});\n";
-}
-
 if ( $roundcube=="1" && $auth_mod != "ENT" ) {
 	// Logout roundcube si mod_auth est different d'ENT
 	$URLROUNDCUBE = '../roundcube/?_task=logout';
@@ -70,12 +39,11 @@ if ( $roundcube=="1" && $auth_mod != "ENT" ) {
   	$javascript .= "		}\n";
   	$javascript .= "	});\n";
 }
-
 // Redirection
-if ( $auth_mod != "ENT" )
-	$javascript .= "top.location.href = '../lcs/index.php?url_redirect=accueil.php';\n";
-else {
-	$javascript .= "top.location.href = '../lcs/logout_ent.php';\n";
+if ( $spip=="1" ) {
+	$javascript .= "top.location.href = '../spip/?action=logout&logout=prive';\n";
+} else {
+	$javascript .= "top.location.href = '../lcs/index.php?url_redirect=accueil.php';\n";	
 }
 $javascript .= "//]]>\n";
 $javascript .= "</script>\n";
