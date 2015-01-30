@@ -1,0 +1,75 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=sommaire -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend><:tispipskelet:editorial:></legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+		
+				<ul>
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=291&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Afficher un article Editorial">&nbsp;</a>
+						<label for="affedito"><:tispipskelet:afficher_editorial:></label>
+							<input type="checkbox" name="affedito" class="affCheckbox" id="affedito" value="oui" [(#ENV{affedito}|?{checked="checked"}) ]/>
+							
+						
+					</li>
+				</ul>
+			[(#CONFIG{tispipskelet_conf/sommaire/affedito}|oui)
+				<ul id="cfgedito" class="deplier_conf ligne">
+					<li class="ligne_280">
+						<label for="mot_edito"><:tispipskelet:selectionner_mot_edito:></label>
+						<INCLURE{fond=fonds/inc/inc-select_mot}{mot=mot_edito}{env}{ajax}>	
+					</li>
+					<li class="ligne_280">
+						<label for="nbartedito"><:tispipskelet:nb_articles_editorial:></label>
+						<INCLURE{fond=fonds/inc/inc-select_1a5}{optionName=nbartedito}{env}{ajax}>	
+					</li>
+					<li class="ligne_280">
+						<label for="edito">Affichage de l&rsquo;&eacute;dito</label>
+						<select name="edito" id="edito" style="width:120px;" class="fondl spip_xx-small">
+							<option value="intro" [(#ENV{edito}|=={intro}|oui) selected="selected"]><:tispipskelet:afficher_introduction:></option>
+							<option value="texte" [(#ENV{edito}|=={texte}|oui) selected="selected"]><:tispipskelet:afficher_texte_complet:></option>
+						</select>
+					</li>
+					<li class="ligne_280">
+							<label for="datepubedito"><:tispipskelet:afficher_date_publication_non:></label>
+							<input type="checkbox" name="datepubedito" id="datepubedito" value="non" [checked="(#ENV{datepubedito}|?{checked})"] />
+					</li>
+					<li class="ligne_280">
+							<label for="auteuredito"><:tispipskelet:afficher_auteur_non:></label>
+							<input type="checkbox" name="auteuredito" id="auteuredito" value="non" [checked="(#ENV{auteuredito}|?{checked})"] />
+						</li>
+				</ul>
+				<script type="text/javascript"><!--
+					$('#affedito')
+					.bind('change', function() {
+				            $('#cfgedito').slideToggle('slow');
+					})
+					if ($('#affedito:checked').length == 0)
+						$('#cfgedito').hide();
+				// --></script>
+			]
+			</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

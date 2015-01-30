@@ -1,0 +1,5 @@
+			<a href="[(#SELF|parametre_url{repondre, oui})]#ancre_repondre" class="ajax" style="display:block;float:right;font-size:.9em;" rel="noindex nofollow">[(#ENV{texte}|=={message}|?{<:repondre_message:>, <:repondre_article:>})][ <img src="(#CHEMIN{i/user_comment.png})" alt="" /> ]</a><br class="leon" />
+			[(#ENV{repondre}|oui)
+						#FORMULAIRE_FORUM
+<a name="ancre_repondre"></a>
+			]

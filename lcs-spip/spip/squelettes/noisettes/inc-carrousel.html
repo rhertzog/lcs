@@ -1,0 +1,30 @@
+<B_img_carrousel>			
+<div id="carousel">
+	<BOUCLE_img_carrousel(MOTS){id_article ?}{id_rubrique ?}{titre=Carrousel}>
+	<BOUCLE_afficher_document(DOCUMENTS){id_article ?}{id_rubrique ?}{par date} {inverse} {mode=document}{extension IN png,jpg,gif}{doublons}>
+		[<a href="#URL_DOCUMENT" class="thickbox" title=" ">
+			(#EMBED_DOCUMENT||image_reduire{135,135}|inserer_attribut{alt,#TITRE}|inserer_attribut{style,vertical-align:bottom})
+		</a>]
+	</BOUCLE_afficher_document>
+<script type="text/javascript">
+	window.onload = 
+	function()
+		{
+			jQuery('#carousel').Carousel(
+				{
+					itemWidth: 135,
+					itemHeight: 135,
+					itemMinWidth: 63,
+					items: 'a',
+					reflections: .5,
+					rotationSpeed: 1.8
+				}
+			);
+		}
+	
+
+</script>
+	</BOUCLE_img_carrousel>			
+
+</div>
+</B_img_carrousel>

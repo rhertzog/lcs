@@ -1,0 +1,120 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<BOUCLE_principale(MOTS){id_mot}>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>[(#TITRE) - ]#NOM_SITE_SPIP</title>
+	[<meta name="description" content="(#DESCRIPTION|textebrut)" />]
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+			]
+			<div id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+				<div id="hierarchie">
+					<a href="#URL_SITE_SPIP/"><:accueil_site:></a><BOUCLE_ariane(HIERARCHIE){id_rubrique}> &gt; <a href="#URL_RUBRIQUE">[(#TITRE|couper{80})]</a></BOUCLE_ariane>[ &gt; (#TITRE|couper{80})]
+				</div>
+				<dl class="bloc">
+					<dt class="cartouche">
+							[(#LOGO_MOT||image_reduire{100}|inserer_attribut{style,float:right})][(#TITRE|supprimer_numero)]
+					</dt>
+					<dd class="cartouche">
+						[<div class="#EDIT{introduction} chapo">(#DESCRIPTIF)</div>]
+						[<div class="#EDIT{texte} chapo">(#TEXTE)</div>]
+					</dd>
+				</dl>
+				<B_articles>
+				<dl class="bloc">
+				<BOUCLE_articles (ARTICLES){id_mot}{id_rubrique ?} {par date} {inverse}>
+					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#CONFIG{plugin}|match{TISPIPSKELET}|?{' '})
+						<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#ID_RUBRIQUE|titre_parent)]" class="droite">[(#ID_RUBRIQUE|titre_parent)]</a></em>
+						]
+						[<a href="#URL_ARTICLE">
+							<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
+					</dt>		
+					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#INTRODUCTION|couper{200})]
+						<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+					</dd>
+					</BOUCLE_articles>
+				</dl>
+				</B_articles>
+				<B_rubriques>
+				<dl class="bloc">
+				<BOUCLE_rubriques (RUBRIQUES){id_mot}{id_rubrique ?} {par num titre} {par titre}{inverse}>
+					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[<a href="#URL_RUBRIQUE">
+							<span class="gauche">[(#LOGO_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
+					</dt>		
+					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#DESCRIPTIF|couper{200})]
+						<div class="suite"> <a href="#URL_RUBRIQUE"><:suite:>...</a></div>
+					</dd>
+					</BOUCLE_rubriques>
+				</dl>
+				</B_rubriques>
+				<B_parent>
+				<dl class="bloc">
+				<BOUCLE_parent(RUBRIQUES){id_mot}{id_parent} {par num titre} {par titre}{inverse}>
+					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[<a href="#URL_RUBRIQUE">
+							<span class="gauche">[(#LOGO_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE_SPIP||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+							<em>[, (#DATE|affdate_jourcourt)][, par (#LESAUTEURS)]</em>
+					</dt>		
+					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#DESCRIPTIF|couper{200})]
+						<div class="suite"> <a href="#URL_RUBRIQUE"><:suite:>...</a></div>
+					</dd>
+					</BOUCLE_parent>
+				</dl>
+				</B_parent>
+				<B_sites>
+				<dl class="bloc">
+				<BOUCLE_sites(SITES){id_mot}{id_rubrique ?} {par nom_site} {inverse} >
+					<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#CONFIG{plugin}|match{TISPIPSKELET}|?{' '})
+						<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#ID_RUBRIQUE|titre_parent)]" class="droite">[(#ID_RUBRIQUE|titre_parent)]</a></em>
+						]
+						[<a href="#URL_SITE">
+							<span class="gauche">[(#LOGO_SITE||image_reduire{50,60}|sinon{[(#LOGO_SITE||image_reduire{50,60})]})]</span>(#NOM_SITE)</a>]
+					</dt>		
+					<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						[(#DESCRIPTIF)]
+						<div class="suite"> <a href="#URL_SITE">Voir le site...</a></div>
+					</dd>
+					</BOUCLE_sites>
+				</dl>
+				</B_sites>
+		
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM)troiscols]
+			<div id="side2" class="colonne">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{id_mot}>
+			</div>[(#REM)side2]
+		]
+			</div>[(#REM)content]
+		
+			<div id="side" class="colonne">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{id_mot}>
+			</div>
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>
+</BOUCLE_principale>
+[(#INCURE{fond=page404})]
+<//B_principale>

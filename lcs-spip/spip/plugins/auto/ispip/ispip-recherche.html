@@ -1,0 +1,96 @@
+#CACHE{0}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="#LANG_DIR" lang="#LANG">
+
+<head>
+	<title>[(#NOM_SITE_SPIP|textebrut)] - <:resultats_recherche:></title>
+	
+	[(#REM) Lien vers l'icone destinee a la barre de bookmarks ]
+	[<link rel="shortcut icon" href="(#CHEMIN{favicon.ico})" />]
+	
+	[(#REM) Icone WebClip pour iPhone/iPod Touch ]
+	[<link rel="apple-touch-icon" href="(#CHEMIN{apple-touch-icon.png})"/>]
+	
+	[(#REM) Balise permettant aux plugins d'inserer des appels javascript ou css ]
+	#INSERT_HEAD
+	
+	[(#REM) Appliquer le _blank en fonction de certaines class]
+	<script type="text/javascript">
+	/* <![CDATA[ */
+	jQuery(document).ready(function () {
+	  jQuery("a.spip_out,a.spip_url,a.spip_glossaire").attr("target", "_self");
+	});
+	/* ]]> */
+	</script>		
+
+	<meta name="viewport" content="width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<link rel='stylesheet' href='#URL_PAGE{ispip_css}' type='text/css' media="screen" />
+	<script type="application/x-javascript" src="#CHEMIN{iui/iui.js}"></script>
+
+</head>
+
+<body onclick="console.log('Hello', event.target);">
+
+	[(#REM) BARRE D'OUTILS ]
+	<div class="toolbar">
+		<h1 id="pageTitle"><:resultats_recherche:></h1>
+		<a id="backButton" class="button" href="#"></a>
+		<a class="button" href="#searchForm"><:spip:info_rechercher:></a>
+	</div>
+
+	[(#REM) RESULTATS DE LA RECHERCHE ]
+	<ul id="home" title="<:resultats_recherche:>" selected="true">
+		<li style="text-align:center; font-style:italic;">["(#RECHERCHE)"]</li>
+		[(#REM) RESULTATS ARTICLES ]
+		<B_art>
+		<li class="group"><:articles:></li>
+		<BOUCLE_art(ARTICLES) {recherche} {par points}>
+			[<li><a href="#URL_PAGE{ispip-article,id_article=#ID_ARTICLE}">(#TITRE|supprimer_numero)</a></li>]
+		</BOUCLE_art>
+		[(#REM) RESULTATS AUTEURS ]
+		<B_aut>
+		<li class="group"><:spip:icone_auteurs:></li>
+		<BOUCLE_aut(AUTEURS) {recherche} {par points}>
+			<li><a href="#URL_PAGE{ispip-auteur,id_auteur=#ID_AUTEUR}">#NOM</a></li>
+		</BOUCLE_aut>
+		[(#REM) RESULTATS RUBRIQUES ]
+		<B_rub>
+		<li class="group"><:rubriques:></li>
+		<BOUCLE_rub(RUBRIQUES) {recherche} {par points}>
+			[<li><a href="#URL_PAGE{ispip-rubrique,id_rubrique=#ID_RUBRIQUE}">(#TITRE|supprimer_numero)</a></li>]
+		</BOUCLE_rub>		
+		[(#REM) RESULTATS MOTS ]
+		<B_mots>
+		<li class="group"><:mots_clefs:></li>
+		<BOUCLE_mots(MOTS) {recherche} {par points}>
+			[<li><a href="#URL_PAGE{ispip-mot,id_mot=#ID_mot}">(#TITRE|supprimer_numero)</a></li>]
+		</BOUCLE_mots>
+		[(#REM) RESULTATS DOCS ]
+		<B_docs>
+		<li class="group"><:spip:info_documents:></li>
+		<BOUCLE_docs(DOCUMENTS) {recherche} {par points}>
+			<li><a href="#URL_DOCUMENT" title="<:bouton_telecharger:>" type="#MIME_TYPE" target="_self" >[(#TITRE|supprimer_numero|sinon{<:info_document:>})]<br /><small>(#TYPE_DOCUMENT[ - (#TAILLE|taille_en_octets)])[ (#DESCRIPTIF)]</small></a></li>
+		</BOUCLE_docs>
+		<form class="panel">
+			<p><a class="whiteButton" href="#URL_PAGE{ispip}" target="_self"><:accueil_site:></a></p>
+			<p><a class="whiteButton" href="#URL_PAGE{recherche,recherche=#RECHERCHE}" target="_self"><:ispip:versionclassique:></a></p>
+		</form>
+	</ul>
+
+	[(#REM) FORMULAIRE DE RECHERCHE ]
+	<form id="searchForm" class="dialog" action="spip.php" method="get" target = "_self">
+		<fieldset>
+			<h1><:spip:info_rechercher:></h1>
+			[<input type="hidden" name="lang" value="(#ENV{lang})" />]
+			<input type="hidden" name="page" value="ispip-recherche" />
+			<!-- <a class="button leftButton" type="cancel"><:ispip:annuler:></a>
+			<a class="button blueButton" type="submit" id="recherche" name="recherche"><:spip:info_rechercher:></a> -->
+			<input type="text" class="forml" name="recherche" id="recherche" value="#RECHERCHE" />
+			<input type="submit" value="<:spip:info_rechercher:>" />
+			<input type="button" value="<:ispip:annuler:>" onClick='forms.searchForm.removeAttribute("selected");' />
+		</fieldset>
+	</form>
+
+
+</body>
+</html>

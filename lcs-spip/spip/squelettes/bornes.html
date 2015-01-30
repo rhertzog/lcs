@@ -1,0 +1,32 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+[(#INCLURE{fond=noisettes/inc-head})]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftycube.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/niftyLayout.js})"></script>]
+[<script type="text/javascript" src="(#CHEMIN{scripts/jquery.cycle.all.pack.js})"></script>]
+
+[(#INCLURE{fond=noisettes/inc-conf_skel})]
+</head>
+<body class="bornes">
+<div id="container" class="bornes">
+	<div  id="content" style="width:95%" class="bornes">
+		[(#INCLURE{fond=noisettes/inc-bornes})]
+	</div>
+<script type="text/javascript"><!--
+	$(document).ready(function() {
+		$('#copy').css('opacity',0.5);
+	});
+-->
+</script>
+<div id="copy"[ (#ENV{footer}|=={plan_fm}|?{' '}) style="width:auto"]>
+<p>
+	Copyleft &copy; 2008 TiSpiP-sKeLeT v-2.02 - R&eacute;alisation :<strong class="dom"> °(<span style="vertical-align: 4px; font-size: 70%">D</span><span style="vertical-align: -3px; font-size :70%">O</span><span style="vertical-align: 4px; font-size: 70%">M</span>)°</strong> - Equipe TICE - CRDP Basse-Normandie
+</p>
+	</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+USE_INODE_USRSHARELCS=$(df -i | grep "/usr/share/lcs$" | awk '{print $5}' | cut -d '%' -f 1)
+
+if [ -z $USE_INODE_USRSHARELCS ];then
+        exit 0
+fi
+
+if [ "$USE_INODE_USRSHARELCS" -gt "90" ]; then
+	cd /usr/share/lcs/spip
+	mkdir -p tmp_new/cache
+    chown spip.manager:www-data tmp_new
+	chmod 770 tmp_new
+	chown -R www-data:www-data tmp_new/cache
+	chmod 777 tmp_new/cache
+    mv tmp/dump tmp_new/
+	mv tmp/*.log tmp_new/
+	rm -R tmp
+    mv tmp_new tmp
+fi

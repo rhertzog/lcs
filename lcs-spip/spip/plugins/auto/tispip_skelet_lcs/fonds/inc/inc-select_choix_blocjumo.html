@@ -1,0 +1,10 @@
+<select name="#ENV{choixbj}" id="#ENV{choixbj}" style="width:140px;">
+	<option value=""[ (#ENV{#ENV{choixbj}}|?{selected="selected",''})]>  </option>
+	<option value="breves"[ (#ENV{#ENV{choixbj}}|=={breves}|?{selected="selected",''})]> Br&egrave;ves </option>
+	<option value="sites"[ (#ENV{#ENV{choixbj}}|=={sites}|?{selected="selected",''})]> Sites </option>
+	<option value="syndic"[ (#ENV{#ENV{choixbj}}|=={syndic}|?{selected="selected",''})]> Articles syndiqu&eacute;s </option>
+	<option value="messages"[ (#ENV{#ENV{choixbj}}|=={messages}|?{selected="selected",''})]> Derniers messages </option>
+	<option value="mots"[ (#ENV{#ENV{choixbj}}|=={mots}|?{selected="selected",''})]> Mots-cl&eacute; </option>
+	<option value="auteurs"[ (#ENV{#ENV{choixbj}}|=={auteurs}|?{selected="selected",''})]> Auteurs </option>
+	<option value="art_bloc"[ (#ENV{#ENV{choixbj}}|=={art_bloc}|?{selected="selected",''})]>Articles </option>
+</select>

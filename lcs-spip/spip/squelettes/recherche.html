@@ -1,0 +1,84 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP</title>
+	<meta name="description" content="[(#NOM_SITE_SPIP)]" />
+<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets}{rec_mc=activelink})]
+		</div>
+		<div id="container">
+			[(#CONFIG{tispipskelet_conf/affmenuh}|?{' '})
+				[(#INCLURE{fond=noisettes/inc-menu-horiz})]
+			]
+			<div  id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+				[<h3 class="titre-list"><:resultats_recherche:> <strong>(#RECHERCHE)</strong></h3>]
+				<B_articles>
+				<dl class="bloc">
+					<dt class="cartouche"><:articles:></dt> 
+					[<dd class="pagination">
+						<span class="ligne1">#GRAND_TOTAL <:articles:></span>
+						<span class="ligne2">(#PAGINATION)</span>
+					</dd>]<!-- pagination -->
+					#ANCRE_PAGINATION
+					<BOUCLE_articles(ARTICLES) {recherche} {par points} {inverse} {pagination}>
+						<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+							[(#LOGO_ARTICLE_RUBRIQUE|right||image_reduire{30,30})]
+							<a href="#URL_ARTICLE">#TITRE</a>
+							<br /><em>[Posté <:par_auteur:>(#LESAUTEURS)][( (#DATE|nom_jour)] [(#DATE|affdate) )]</em>
+						</dt>		
+						<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+							[(#INTRODUCTION|couper{200})] <a href="#URL_ARTICLE">[<:suite:>...]</a>
+						</dd>		
+					</BOUCLE_articles>
+					[<dd class="pagination">
+						<span class="ligne1">#GRAND_TOTAL <:articles:></span>
+						<span class="ligne2">(#PAGINATION)</span>
+					</dd>]<!-- pagination -->
+				</dl>		
+				</B_articles>
+		
+				<B_breves>
+				<div class="article">
+					<h3><:breves:></h3> 
+					<ul>
+					<BOUCLE_breves(BREVES) {recherche} {par points} {inverse} {0,8}>
+						<li><a href="#URL_BREVE">#TITRE</a> [ <span class="breve_info">(#DATE|affdate_court)</span>]</li>
+					</BOUCLE_breves>
+				</div>
+				</B_breves>
+		 
+				<B_sites>
+				<div class="article">
+					<h3><:sites:></h3>
+					<ul>
+					<BOUCLE_sites(SITES) {recherche} {par points} {inverse} {0,8}>
+						<li><a href="#URL_SITE" title="[(#DESCRIPTIF|textebrut|entites_html)]">[(#LOGO_SITE||image_reduire{50,50}) ] [(#NOM_SITE)]</a></li>
+					</BOUCLE_sites>
+					</ul>
+				</div>
+				</B_sites>
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM)troiscols]
+			<div id="side2" class="colonne">
+					<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}>
+			</div>[(#REM)side2]
+		]
+			</div>[(#REM)content]
+		
+			<div id="side" class="colonne">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}>
+			</div>
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>

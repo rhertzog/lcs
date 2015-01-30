@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	ATTRIBUTS POSSIBLES (tous sont facultatifs)
+	
+	* A) noeud racine du fichier XML "<freepaper>"
+			backgroundColor   :  <couleur du fond; Valeur par défaut : "0xDADADA" >
+			borderColor   :  <couleur de la bordure; Valeur par défaut : "0x444444" >
+			borderWidth   :  <épaisseur de la bordure en pixels; Valeur par défaut : "2" >
+			initialDisplay :  <affichage initial du document :(F)it to page, page(W)idth, page(H)eight, % zoom <number> : Valeur par défaut : "F" >
+	* B) noeud enfant de niveau 1 "<commandBar>"
+			leftImg : <nom complet de l'image pour la partie gauche de la barre de commande; Valeur par défaut: image métal gris avec arrondi (10x50 pixels)>
+			rightImg :  <nom complet de l'image pour la partie droite de la barre de commande; Valeur par défaut: image métal gris avec arrondi (10x50 pixels)>
+			currentImg : <nom complet de l'image pour la partie courante de la barre de commande; Valeur par défaut: image métal gris (40x50 pixels)>
+			horizAxis : <axe horizontal sur la barre de commande servant à aligner les éléments: Valeur par défaut : 20pixels) >
+	* C) noeud enfant de niveau 1 "<buttons>"
+	- Les boutons situés sur la barre de commandes
+		1) noeud enfant de niveau 2 "<fitToPage>"
+			upImg		: <nom complet de l'image pour l'état "haut"; Valeur par défaut: flèche d'agrandissement sur fond gris (26x24 pixels) >
+			downImg		: <nom complet de l'image pour l'état "bas"; Valeur par défaut: flèche de réduction sur fond gris (26x24 pixels) >
+			overImg		: <nom complet de l'image pour l'état "survolé"; Valeur par défaut: masque translucide (26x24 pixels)  >
+		2) noeud enfant de niveau 2 "<nextPage>"
+			upImg		: <nom complet de l'image pour l'état "haut"; Valeur par défaut: image fin sur fond gris (26x24 pixels)  >
+			downImg		: <nom complet de l'image pour l'état "bas"; Valeur par défaut: image fin enfoncée sur fond gris (26x24 pixels)  >
+			overImg		: <nom complet de l'image pour l'état "survolé"; Valeur par défaut: image fin sur fond gris contour orange (26x24 pixels)  >
+		3) noeud enfant de niveau 2 "<prevPage>"
+			upImg		: <nom complet de l'image pour l'état "haut"; Valeur par défaut: image début sur fond gris (26x24 pixels)  >
+			downImg		: <nom complet de l'image pour l'état "bas"; Valeur par défaut: image début enfoncée sur fond gris (26x24 pixels)   >
+			overImg		: <nom complet de l'image pour l'état "survolé"; Valeur par défaut: image début sur fond gris contour orange(26x24 pixels)  >
+		4) noeud enfant de niveau 2 "<zoomPlus>"
+			upImg		: <nom complet de l'image pour l'état "haut"; Valeur par défaut: image de "loupe avec +" sur fond gris (26x24 pixels)  >
+			downImg		: <nom complet de l'image pour l'état "bas"; Valeur par défaut:  image de "loupe avec +" enfoncée sur fond gris  (26x24 pixels)  >
+			overImg		: <nom complet de l'image pour l'état "survolé"; Valeur par défaut:  image de "loupe avec +" sur fond gris  contour orange(26x24 pixels)  >
+		5) noeud enfant de niveau 2 "<zoomMinus>"
+			upImg		: <nom complet de l'image pour l'état "haut"; Valeur par défaut: image de "loupe avec -" sur fond gris (26x24 pixels)  >
+			downImg		: <nom complet de l'image pour l'état "bas"; Valeur par défaut:  image de "loupe avec -" enfoncée sur fond gris  (26x24 pixels)  >
+			overImg		: <nom complet de l'image pour l'état "survolé"; Valeur par défaut:  image de "loupe avec -" sur fond gris  contour orange(26x24 pixels)  >
+
+	Pour ne pas modifier la valeur par défaut d'un attribut, il suffit de l'omettre ou de régler sa valeur à "".
+	
+	IMPORTANT :  pour que les chemins des images soient valides avec l'option "m_freepaper_OpenInNewWindow=true", il faut IMPERATIVEMENT exprimer les chemins ABSOLUS des images
+-->
+
+<freepaper backgroundColor="0xeeeeee" borderColor="0xcccccc" borderWidth="2" initialDisplay="F" >
+ 	<commandBar leftImg="plugins/pdf2swf2spip_v0.1-dev/images/commandBar/left.png" rightImg="plugins/pdf2swf2spip_v0.1-dev/images/commandBar/right.png" currentImg="plugins/pdf2swf2spip_v0.1-dev/images/commandBar/current.png" horizAxis="18" /> 
+</freepaper>

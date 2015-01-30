@@ -1,0 +1,50 @@
+		<ul class="ligne voir_conf"  style="margin:5px;border:1px solid #aaa;background:#fff;font-size:.9em;color:#666;padding-bottom:0;">
+			<li class="ligne">
+				<label>
+					<input type="radio" name="cycle_type_#ENV{bloc}" value="1" [(#ENV{cycle_type_#ENV{bloc}}|=={1}|?{checked})] />
+					<:tispipskelet:une_image_plus_articles:>
+				</label>
+			</li>
+			<li class="ligne">
+				<label>
+					<input type="radio" name="cycle_type_#ENV{bloc}" value="999999" [(#ENV{cycle_type_#ENV{bloc}}|=={999999}|?{checked})] class="fondl spip_xx-small" />
+					<:tispipskelet:plus_images_un_article:>
+				</label>
+			</li>
+			<li style="width:220px;margin:0;padding:0;">
+				<label for="mot_cycle_img_#ENV{bloc}" style="width:100%;margin-left:0;"><:tispipskelet:selectionner_mot_cycle_images:>
+				<select name="mot_cycle_img_#ENV{bloc}" id="mot_cycle_img" style="width:140px;display:block;margin:5px auto;" class="fondl spip_xx-small">
+					<option value=""[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]mot_cycle_img_[(#ENV{bloc})]}|?{'',selected="selected",''})]>  </option>
+					<BOUCLE_mot_cycle_img(MOTS){tous}{par titre}>
+						<option value="[(#ID_MOT)]" [(#CONFIG{tispipskelet_conf/[(#ENV{id})/]mot_cycle_img_[(#ENV{bloc})]}|=={[(#ID_MOT)]}|?{selected="selected",''})]> [(#TITRE|supprimer_numero)] </option>
+					</BOUCLE_mot_cycle_img>
+				</select>
+				</label>
+			</li>
+			<li class="ligne_140">
+				<label for="cycle_effect_#ENV{bloc}">Nature de la transition</label>
+				<select name="cycle_effect_#ENV{bloc}" id="cycle_effect" style="width:75px;" class="fondl spip_xx-small">
+					<INCLURE{fond=fonds/inc/inc-cycle-effet}{val_actuel=#ENV{cycle_effect_#ENV{bloc}}}>
+				</select>
+			</li>
+			<li class="ligne_140">
+				<label for="cycle_duree_#ENV{bloc}">Durée d&rsquo;affichage<em>(en milisecondes)</em></label>
+				<select name="cycle_duree_#ENV{bloc}" id="cycle_duree" style="width:75px" class="fondl spip_xx-small">
+					<INCLURE{fond=fonds/inc/inc-cycle-duree}{val_actuel=#ENV{cycle_duree_#ENV{bloc}}}>
+				</select>
+			</li>
+			<li class="ligne_140">
+				<label for="cycle_time_#ENV{bloc}">Durée de la transition<em>(en milisecondes)</em></label>
+				<select name="cycle_time_#ENV{bloc}" id="cycle_time" style="width:75px;" class="fondl spip_xx-small">
+					<INCLURE{fond=fonds/inc/inc-cycle-transition}{val_actuel=#ENV{cycle_time_#ENV{bloc}}}>
+				</select>
+			</li>
+			<li class="ligne">
+					<label class="titre"><input type="checkbox" name="cycle_pause_#ENV{bloc}" value="1" [checked="(#ENV{cycle_pause_#ENV{bloc}}|?{checked})" ]/> Effectuer une pause sur le cycle au survol de la souris
+					</label>
+			</li>
+			<li class="ligne">
+					<label class="titre" style="width:100%;margin-left:0;"><input type="checkbox" name="cycle_titre_#ENV{bloc}" value="oui" [checked="(#ENV{cycle_titre_#ENV{bloc}}|?{checked})" ]/> Afficher le titre de l'article (<em>Article contenant l'image</em>)
+					</label>
+			</li>
+		</ul>

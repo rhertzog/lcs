@@ -1,0 +1,62 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend style="width:80%;float:left;"><:tispipskelet:affichage_mef_article:></legend>
+				<ul>
+				[<li class="ligne"><p class='formulaire_erreur'>(#ENV*{message_erreur})</p></li>]
+				[<li class="ligne"><p class="formulaire_message">(#ENV*{message_ok})</p></li>]
+					<li class="ligne_280">
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=293&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Animation Flash en page d'accueil">&nbsp;</a>
+						<label for="dim_logo_art"><:tispipskelet:dimensions_logo_article:></label>
+						<input type="text" name="dim_logo_art" size="3" maxlenght="3" id="dim_logo_art" value="[(#ENV{dim_logo_art,75})]" class="fondl spip_xx-small" />
+					</li>
+					<li class="ligne_280">
+						<label for="art_logo_align">Alignement du logo</label>
+						<select name="art_logo_align" id="art_logo_align" style="width:75px" class="fondl spip_xx-small">
+						<option value="left" [(#ENV{art_logo_align}|=={left}|oui)selected="selected"]><:tispipskelet:gauche:></option>
+						<option value="right" [(#ENV{art_logo_align}|=={right}|oui)selected="selected"]><:tispipskelet:droite:></option>
+						</select>
+					</li>
+					<li class="ligne_280">
+						<label for="aff_datepubart"><:tispipskelet:afficher_date_publication_non:></label>
+						<input type="checkbox" name="aff_datepubart" id="aff_datepubart" value="non" [checked="(#ENV{aff_datepubart}|?{checked})"] />
+					</li>
+					<li class="ligne_280">
+						<label for="aff_datemodart"><:tispipskelet:afficher_date_modif_non:></label>
+						<input type="checkbox" name="aff_datemodart" id="aff_datemodart" value="non" [checked="(#ENV{aff_datemodart}|?{checked})"] />
+					</li>
+					<li class="ligne_280">
+						<label for="aff_auteurart"><:tispipskelet:afficher_auteur_non:></label>
+						<input type="checkbox" name="aff_auteurart" id="aff_auteurart" value="non" [checked="(#ENV{aff_auteurart}|?{checked})"] />
+					</li>
+					<li class="ligne_280">
+						<label for="textart_justify"><:tispipskelet:justifier_texte:></label>
+						<input type="checkbox" name="textart_justify" id="textart_justify" value="textart_justify" [checked="(#ENV{textart_justify}|?{checked})"] />
+					</li>
+					<li class="ligne_280">
+						<label for="liresuite_art"><:tispipskelet:modif_lire_suite:></label>
+						<input type="text" name="liresuite_art" id="liresuite_art" size="10" value="[(#ENV{liresuite_art, lire la suite...})]"  />
+					</li>
+				</ul>
+			</fieldset>
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

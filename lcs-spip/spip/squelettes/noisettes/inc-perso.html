@@ -1,0 +1,22 @@
+	[(#REM) bloc de contenu entièrement parametrable ]
+#SET{nb_perso,#CONFIG{tispipskelet_conf/sommaire/nb_perso_#ENV{bloc}}}
+#SET{text_perso,#CONFIG{tispipskelet_conf/sommaire/text_perso_#ENV{bloc}}}
+#SET{haut_perso,#CONFIG{tispipskelet_conf/sommaire/haut_perso_#ENV{bloc}}}
+#SET{textlien_perso,#CONFIG{tispipskelet_conf/sommaire/textlien_perso_#ENV{bloc}}}
+#SET{titre_perso,#CONFIG{tispipskelet_conf/sommaire/titre_perso_#ENV{bloc}}}
+#SET{url_perso,#CONFIG{tispipskelet_conf/sommaire/url_perso_#ENV{bloc}}}
+#SET{img_perso,#CONFIG{tispipskelet_conf/sommaire/img_perso_#ENV{bloc}}}
+
+[<h3 class="menu-titre">(#GET{titre_perso})</h3>]
+<dl id="perso_#ENV{bloc}" class="demi_boite blocElement" [(#GET{titre_perso}|non) style="padding:0;margin0;"]>
+	[<dt>
+		(#GET{text_perso})
+	</dt>]
+	[(#GET{textlien_perso}|oui) <dd style="margin-left:5px;">
+		<a href="#GET{url_perso}" title="#GET{textlien_perso}">#GET{textlien_perso}</a>
+	</dd>]
+[(#GET{img_perso}|oui)
+	<dd style="margin:0 auto;padding:0 auto;text-align:center;">
+		<a href="#GET{url_perso}" title="#GET{textlien_perso}">[(#CFG_CHEMIN{tispipskelet_conf/sommaire/img_perso_#ENV{bloc}}||image_reduire{150,99999})]</a>
+	</dd>]
+</dl>

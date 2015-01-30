@@ -1,0 +1,42 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+<!-- casier=s5 -->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+	<fieldset>
+		<legend>Diaporama d&rsquo;articles</legend>
+			<div class="annonce">
+				Vous pouvez afficher une série d'articles sous forme de diaporama (façon PowerPoint). 
+				Choisissez la rubrique dont chaque sous-rubrique correspondra à une présentation
+			</div>
+			<ul>
+			<li class="ligne">
+					<label for="id_rub_s5">S&eacute;lectionnez la rubrique de votre choix</label>
+<INCLURE{fond=fonds/inc/inc-select_rubrique}{obj=id_rub_s5}{env}{ajax}>
+			</li>
+			[(#CONFIG{tispipskelet_conf/s5/id_rub_s5}|?{' '})
+			<li><span class="titre">S&eacute;lectionnez le thème graphique par rubrique<span></li>
+			]
+<INCLURE{fond=fonds/inc/inc-select_theme_s5}{env}{ajax}>
+			</ul>
+	</fieldset>
+		 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

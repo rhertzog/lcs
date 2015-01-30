@@ -1,0 +1,83 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:25px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend>Contenu [(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{'des colonnes lat&eacute;rales ','de la colonne lat&eacute;rale'})]</legend>
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+		
+				<ul class="deux_colonnes" id="cfgcol">
+					<li class="une_colonne gauche" style="margin:0;padding:10px 0;clear:none; [width:(#CONFIG{tispipskelet_conf/nb_cols}|!={3}|?{100%, 49%;border-right:1px solid #aaa;float:right});] ">
+						<ul>
+							<li style="text-align:center;margin:0;padding:10px 0;">
+								[(#CONFIG{tispipskelet_conf/nb_cols}|!={3}|?{' '})
+									<input type="hidden" name="pos_menu" value="droite" />
+								]
+								<a href='[(#CHEMIN{fonds/inc/aide/inc-help_colonne.html})]' class='boxy boxyColonnes' title='Configurer les colonnes'>?</a>
+								<strong>Colonne de  [(#CONFIG{tispipskelet_conf/position}|=={left}|?{gauche,droite})]</strong>
+							</li>
+							[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+							<li style="margin:0;padding:10px 0;">
+								<label style="width:200px;clear:none;margin:0;padding:0;">
+								<input type="radio" name="pos_menu" value="droite" [(#ENV{pos_menu}|=={droite}|?{checked="checked",''})] />
+								Menu à droite
+
+								</label>
+							</li>
+							]
+							<li style="margin:0;padding:10px 0;">
+								<INCLURE{fond=fonds/inc/inc-select_choix_contenu_bloc}{contenu=ctncol_d_1}{titre='Rang1'}{env}{ajax}>
+							</li>
+							<INCLURE{fond=fonds/inc/inc-boucle_for_contenu_bloc}{bloc=col_d}{env}{ajax}>
+						</ul>
+					</li>
+					
+					
+[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+					<li class="une_colonne droite" style="margin:0;padding:10px 0;float:left;clear:none;width:50%">
+						<ul>
+							<li style="text-align:center;margin:0;padding:10px 0;">
+								<strong>Colonne de  gauche</strong>
+							</li>
+							<li style="margin:0;padding:10px 0;">
+								<label style="width:200px;clear:none;margin:0;padding:0;">
+								<input type="radio" name="pos_menu" value="gauche" [(#ENV{pos_menu}|=={gauche}|?{checked="checked",''})] />
+								Menu à gauche
+								</label>
+							</li>
+							<li style="margin:0;padding:10px 0;">
+								<INCLURE{fond=fonds/inc/inc-select_choix_contenu_bloc}{contenu=ctncol_g_1}{titre='Bloc 1'}{env}{ajax}><br />
+							</li>
+							<INCLURE{fond=fonds/inc/inc-boucle_for_contenu_bloc}{bloc=col_g}{env}{ajax}>
+						</ul>
+					</li>
+]
+				</ul>		
+			</fieldset>
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+
+			<script type='text/javascript'>
+			$(function() {
+			  $('.boxyColonnes').boxy();
+			});
+			</script>
+			
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" />
+				<input type="reset" value="<:cfg:Reset:>" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" />
+			</div>
+		</div>
+	</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

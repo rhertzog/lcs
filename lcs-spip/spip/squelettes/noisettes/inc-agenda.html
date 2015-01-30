@@ -1,0 +1,9 @@
+#CACHE{7200}
+[(#CONFIG{tispipskelet_conf/[(#ENV{casier})]/affsirub_agenda_[(#ENV{bloc})]}|oui)
+		<INCLURE {fond=noisettes/inc-evenements}{ajax}{env}{calendrier_mois}{calendrier_annee}{self}{lang=#LANG}>
+]
+[(#CONFIG{tispipskelet_conf/[(#ENV{casier})]/affsirub_agenda_[(#ENV{bloc})]}|!={oui}|?{' '})
+	<h3 class="menu-titre">[(#GET{titre_evenements}|?{#GET{titre_evenements},Evénements})]</h3>
+
+		<INCLURE {fond=noisettes/inc-mini_calendrier}{ajax}{env}{calendrier_mois}{calendrier_annee}{self}{lang=#LANG}>
+]

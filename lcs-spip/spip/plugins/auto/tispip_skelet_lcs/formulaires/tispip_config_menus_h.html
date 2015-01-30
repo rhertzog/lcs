@@ -1,0 +1,93 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+<form method="post" action="#SELF" style="margin-bottom:5px;">
+	<div> #ACTION_FORMULAIRE{#SELF} 
+	<fieldset>
+		<legend>Menu de navigation horizontal</legend>
+		[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+		[<p class="formulaire_message">(#ENV*{message_ok})</p>]
+		<ul>
+			<li class="ligne_280">
+			<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=314&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Menus horizontaux" style="margin:5px">&nbsp;</a>
+				<label for="affmenuh"><:tispipskelet:afficher_menu_horizontal:></label>
+				<input type="checkbox" name="affmenuh" value="oui" [checked="(#ENV{affmenuh}|?{checked})" ]id="aff_menuh"/>
+			</li>
+		</ul >
+		<ul id="cfg_menuh" style="[(#CONFIG{tispipskelet_conf/affmenuh}|non)display:none;]">
+			<li class="ligne_280">
+				<label for="menuhoriz_pos"><:tispipskelet:direction_ouverture_menu_items:></label>
+				<select name="menuhoriz_pos" id="menuhoriz_pos" class="fondl spip_xx-small">
+					<option value="left" [(#ENV{menuhoriz_pos}|=={left}|?{selected="selected"})]>Ouverture &agrave; gauche</option>
+					<option value="right" [(#ENV{menuhoriz_pos}|=={right}|?{selected="selected"})]>Ouverture &agrave; droite</option>
+				</select>
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_accueil"><:tispipskelet:afficher_lien_accueil:></label>
+				<input type="checkbox" name="menuh_accueil" value="oui" [checked="(#ENV{menuh_accueil}|?{checked})" ]id="menuh_accueil" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_hauteur" ><:tispipskelet:haut_case_menu_horiz:></label>
+				<input type="text" name="menuh_hauteur" id="menuh_hauteur" size="4" value="[(#ENV{menuh_hauteur,25})]" class="fondl spip_xx-small" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_largeur"><:tispipskelet:larg_case_menu_horiz:></label>
+				<input type="text" name="menuh_largeur" id="menuh_largeur" size="4" value="[(#ENV{menuh_largeur,120})]" class="fondl spip_xx-small" />
+				<span class="droite" style="float:right">
+				<label style="margin-left:10px;padding:0;width:75px"> <:tispipskelet:repartir:>
+				<input type="checkbox" name="menuh_repartir" id="menuh_repartir" [(#ENV{menuh_repartir}) checked="checked"] class="fondl spip_xx-small" /></label>
+				</span>
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_color_text"><:tispipskelet:couleurtexte:></label>
+				<input type="text" name="menuh_color_text" id="menuh_color_text" class="palette" size="7" value="[(#ENV{menuh_color_text,#003366})]" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_color_bg"><:tispipskelet:couleur_arriere_plan:></label>
+				<input type="text" name="menuh_color_bg" id="menuh_color_bg"  class="palette" size="7"  value="[(#ENV{menuh_color_bg,#ffcc33})]" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_color_text_survol"><:tispipskelet:couleur_texte_survol:></label>
+				<input type="text" name="menuh_color_text_survol" id="menuh_color_text_survol" class="palette" size="7" value="[(#ENV{menuh_color_text_survol,#ff6600})]" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_color_bg_survol"><:tispipskelet:couleur_arriere_plan_survol:></label>
+				<input type="text" name="menuh_color_bg_survol" id="menuh_color_bg_survol"  class="palette" size="7"  value="[(#ENV{menuh_color_bg_survol,#ffffff})]" />
+			</li>
+			<li class="ligne_280">
+				<label for="menuh_color_barre"><:tispipskelet:couleur_arriere_plan_barre_menu:></label>
+				<input type="text" name="menuh_color_barre" id="menuh_color_barre"  class="palette" size="7"  value="[(#ENV{menuh_color_barre,#dddddd})]" />
+			</li>
+		</ul>
+<script type="text/javascript"><!--
+	//cacher l'affichage de la conf
+	$('#aff_menuh')
+	.bind('change', function() {
+            $('#cfg_menuh').slideToggle('slow');
+	})
+	if ($('#aff_menuh:checked').length == 0)
+		$('#cfg_menuh').hide();
+
+// --></script>
+
+	</fieldset>
+ 		
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+		
+			<div style="text-align:center;">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+</form>
+</div>
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

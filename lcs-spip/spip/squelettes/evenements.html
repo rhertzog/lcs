@@ -1,0 +1,70 @@
+#CACHE{7200}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="#LANG">
+<head>
+<title>#NOM_SITE_SPIP - &Eacute;v&eacute;nements</title>
+	<meta name="description" content="Les &eactue;v&eacute;nements &agrave; venir[ - (#NOM_SITE_SPIP)]" />
+	<INCLURE{fond=noisettes/inc-head}>
+</head>
+<body>
+	<div id="grand_container">
+		<div id="header">
+			[(#INCLURE{fond=noisettes/inc-entete})]
+			[(#INCLURE{fond=noisettes/inc-menuonglets}{evenement=activelink})]
+		</div>
+		<div id="container">
+			<div  id="content">
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			<div id="troiscols">
+		]
+			[(#REM) titre]
+				<dl class="bloc">
+						<dt class="annonce">
+							Les &eacute;v&eacute;nements &agrave; venir...
+						</dt>		
+						<dd class="annonce" id="evenements">
+							[(#CALENDRIER_MINI{#ENV{date},'date',#SELF,page=#ENV{page}})]
+						</dd>
+				</dl>
+		<script type="text/javascript"><!--
+			$('#Calendrier').remove();
+			$('#a_venir').remove();
+			$('#evnmt').remove();
+		// --></script>
+		
+		<B_agenda>
+		[(#REM) 
+		<h2 class="titre"><:evenements:></h2>
+		]
+		<dl class="bloc">
+			<BOUCLE_agenda(EVENEMENTS){par date}{inverse}{statut=publie}>
+				<dt[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+						<BOUCLE_rub_art(RUBRIQUES){id_rubrique}>[(#ENV{page}|=={rubrique}|?{'',' '})<em><a href="#URL_RUBRIQUE" title="Aller &agrave; la rubrique [(#TITRE|supprimer_tags)]" class="droite">[(#TITRE|supprimer_tags)]</a></em>]</BOUCLE_rub_art>
+					[<a href="#URL_ARTICLE" [title="(#DESCRIPTIF|textebrut|entites_html)"]>
+					<span class="gauche">[(#LOGO_ARTICLE_RUBRIQUE||image_reduire{50,60}|sinon{[(#LOGO_SITE||image_reduire{50,60})]})]</span>(#TITRE|supprimer_numero)</a>]
+					<em>D&eacute;but : [(#DATE_DEBUT|nom_jour) ][(#DATE_DEBUT|jour) ][(#DATE_DEBUT|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)]<br />
+						[Fin : (#DATE_FIN|jour) ][(#DATE_FIN|nom_mois)] [ : (#DATE_FIN|heures)][:(#DATE_FIN|minutes)][:(#DATE_FIN|secondes)][, par (#LESAUTEURS)]</em>
+				</dt>		
+				<dd[ class="(#COMPTEUR_BOUCLE|alterner{'un','deux'})"]>
+					[(#INTRODUCTION|couper{200})]
+					<div class="suite"> <a href="#URL_ARTICLE"><:suite:>...</a></div>
+				</dd>
+			</BOUCLE_agenda>
+		</dl>
+		</B_agenda>
+		
+		[(#CONFIG{tispipskelet_conf/nb_cols}|=={3}|?{' '})
+			</div>[(#REM) fin troiscol]
+			<div id="side2" class="colonne">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=gauche}{bloc=col_g}{env}{ajax}>
+			</div>[(#REM) fin side2]
+		]
+				</div>[(#REM) fin content ]
+			<div id="side" class="colonne">
+				<INCLURE{fond=noisettes/inc-colonne}{colonne=droite}{bloc=col_d}{env}{ajax}>
+			</div>[(#REM) fin side ]
+			
+	<INCLURE{fond=noisettes/inc-fin_page}>
+			
+</body>
+</html>

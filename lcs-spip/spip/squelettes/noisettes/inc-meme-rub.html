@@ -1,0 +1,14 @@
+	[(#REM) Articles dans la meme rubrique ]
+<B_articles_rubrique>
+			<h3 class="menu-titre"><a href="#URL_RUBRIQUE"><:meme_rubrique:></a></h3>
+		<dl id="meme_rub">
+			<BOUCLE_articles_rubrique(ARTICLES){id_rubrique=#ENV{id_rubrique}}{!id_article}{par date}{inverse} {0,10}>
+				<dt>
+					<a href="#URL_ARTICLE" title="">
+						[(#LOGO_RUBRIQUE||image_reduire{16,16}|sinon{<img src="[(#CHEMIN{i/page_go.png})]" alt=" " />}) ] 
+						#TITRE
+					</a>
+				</dt>
+			</BOUCLE_articles_rubrique>
+		</dl>
+</B_articles_rubrique>

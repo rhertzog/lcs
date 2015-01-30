@@ -1,0 +1,84 @@
+<!-- autoriser=configurer -->
+<!-- depot=metapack -->
+<!-- nom=tispipskelet_conf-->
+#CACHE{0}
+[(#ENV{editable}|oui)
+<div class="formulaire_spip formulaire_cfg formulaire_tispip">
+	<form method="post" action="#SELF" style="margin-bottom:5px;">
+		<div> #ACTION_FORMULAIRE{#SELF} 
+			<fieldset>
+				<legend><:tispipskelet:affichage_blocs_jumeaux:></legend>
+	[(#REM)
+		#ENV{action}<br />
+		#ENV{id}<br />
+	]
+				[<p class='formulaire_erreur'>(#ENV*{message_erreur})</p>]
+				[<p class="formulaire_message message">(#ENV*{message_ok})</p>]
+		
+				<ul >
+					<li class="ligne">#ENV{toto}
+						<a href='http://tispip.etab.ac-caen.fr/spip.php?page=aide&id_article=292&TB_iframe=true&width=800&height=500' class='thickbox boxy2thickbox' title="Contenu et position des blocs jumeaux">&nbsp;</a>
+						<label class="titre"><input type="checkbox" name="affblocjumo" value="oui" [checked="(#ENV{affblocjumo}|?{checked})"] id="affblocjumo" /> <:tispipskelet:afficher_blocs_jumeaux:>
+						</label>
+					</li>
+				</ul>
+		[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]affblocjumo}|oui)
+		[(#SET{ctnblocg,[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]ctnblocg})]})]
+		[(#SET{ctnblocd,[(#CONFIG{tispipskelet_conf/[(#ENV{id})/]ctnblocd})]})]
+		[(#SET{contenug,[(#ENV{id})/]ctnblocg})]
+		[(#SET{contenud,[(#ENV{id})/]ctnblocd})]
+				<ul class="deux_colonnes cfgbj" id="cfgbj">
+					<li class="une_colonne gauche" style="margin:0;padding:5px 0;float:left;clear:none;width:49%;text-align:center;border-right:1px solid #aaa;">
+								<strong>À  gauche</strong>
+							<INCLURE{fond=fonds/inc/inc-boucle_for_contenu_bloc}{bloc=bj_g}{env}{ajax}>
+					</li>
+					<li class="une_colonne droite" style="margin:0;padding:5px 0;float:left;clear:none;width:50%;text-align:center;">
+								<strong>À  droite</strong>
+							<INCLURE{fond=fonds/inc/inc-boucle_for_contenu_bloc}{bloc=bj_d}{env}{ajax}>
+					</li>
+				</ul>		
+				<ul class="ligne cfgbj">
+					<li>
+						<label style="width:auto">
+							<input type="radio" name="posblocjumo" value="haut" [(#ENV{posblocjumo}|=={haut}|?{checked="checked",''})] />
+							Afficher en haut de page <em>(Apr&eacute;s l&apos;&eacute;dito et avant la liste d&apos;articles)</em>
+						</label>
+					</li>
+					<li>
+						<label style="width:auto">
+							<input type="radio" name="posblocjumo" value="bas" [(#ENV{posblocjumo}|=={bas}|?{checked="checked",''})] />
+							Afficher en bas de page <em>(Apr&eacute;s  la liste d&apos;articles)</em>
+						</label>
+					</li>
+				</ul>
+				<script type="text/javascript"><!--
+					$('#affblocjumo')
+					.bind('change', function() {
+				            $('ul.cfgbj').slideToggle('slow');
+					})
+					if ($('#affblocjumo:checked').length == 0)
+						$('ul.cfgbj').hide();
+
+					$(function() {
+					  $('.boxyBj').boxy();
+					});
+				// --></script>
+		]
+			</fieldset>
+			[<span class='erreur'>(#ENV**{erreurs}|table_valeur{description})</span>]
+			
+			<div style="text-align:center">
+				<input type="submit" name="_cfg_ok" value="<:cfg:OK:>" class="fondo spip_xx-small" />
+				<input type="reset" value="<:cfg:Reset:>" class="fondo spip_xx-small" />
+				<input type="submit" name="_cfg_delete" value="<:Supprimer:>" class="fondo spip_xx-small" />
+			</div>
+		</div>
+	</form>
+</div>
+
+
+]
+
+[(#ENV{editable}|non)
+Vous devez être connecté en administrateur pour pouvoir utiliser ce formulaire.
+]

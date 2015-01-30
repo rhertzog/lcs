@@ -1,0 +1,48 @@
+#CACHE{0}
+[(#SET{datedujour,[(#DATE|affdate{'Ymd'})]})]
+	<B_VerifEvenements>  
+	<BOUCLE_VerifEvenements(EVENEMENTS){date_debut >= #GET{datedujour}}{date_fin >= #GET{datedujour}}{unique}{0,1}>
+	</BOUCLE_VerifEvenements>  
+	<h3 class="menu-titre">[(#GET{titre_evenements}|?{#GET{titre_evenements},Evénements})]</h3>
+	<dl style="margin-top:0;">
+	<dt>
+		<INCLURE {fond=noisettes/inc-mini_calendrier}{ajax}{env}{calendrier_mois}{calendrier_annee}{self}{lang=#LANG}>
+	</dt> 
+	</dl> 
+	</B_VerifEvenements>  
+<BOUCLE_ListeSecteurs(RUBRIQUES){branche ?}>
+	<B_EvenementsSecteur>	
+	<dl style="margin:0;padding:0;">
+	<dt>
+	<ul style="font-size:.8em;background:transparent">
+	<BOUCLE_EvenementsSecteur(EVENEMENTS){branche}{date_debut >= #GET{datedujour}}{date_fin >= #GET{datedujour}}{unique}{par date}>
+		[(#GET{datedujour}|<={[(#DATE_FIN|affdate{'Ymd'})]}|oui)
+		<li>
+			<span style="font-size:.85em;font-style:italic;">	[(#DATE_DEBUT|affdate_court) : ] </span><a href="#mini-calendrier" class="bouton_#ID_EVENEMENT " title="Replier"><strong>#TITRE</strong></a>
+		</li>
+		<li id="blocEvnmt_#ID_EVENEMENT" class="blocEvnmt" >
+			<ul style="font-size:.85em;font-style:italic;border:1px solid #ccc;margin:3px 15px;">
+				[<li>D&eacute;but : (#DATE_DEBUT|affdate) - [(#HORAIRE|oui)[(#DATE_DEBUT|heures)][:(#DATE_DEBUT|minutes)] ]</li>]
+				[<li>Fin : (#DATE_FIN|affdate) - [(#HORAIRE|oui)[(#DATE_FIN|heures)][:(#DATE_FIN|minutes)] ]</li>]
+				[<li>Lieu&nbsp;:&nbsp;(#LIEU|supprimer_tags) [- (#ADRESSE)]</li>]
+			</ul>
+			[(#DESCRIPTIF)]
+			<span style="float:right"><a href="spip.php?article#ID_ARTICLE" title="Voir l'article"><em>Voir l'article</em></a></span>
+			
+			<script type="text/javascript"><!--
+				//cacher l'affichage de la conf
+				$('a.bouton_#ID_EVENEMENT').click( function() {
+			            $('#blocEvnmt_#ID_EVENEMENT').slideToggle('slow', function() {
+								$('li.blocEvnmt').not('#blocEvnmt_#ID_EVENEMENT').hide();
+			            });
+				})
+					$('#blocEvnmt_#ID_EVENEMENT').hide();
+			// --></script>
+			<br style="clear:both" />
+		</li>
+	]</BOUCLE_EvenementsSecteur>
+	</ul>
+	</dt> 
+	</dl>   
+	</B_EvenementsSecteur>
+</BOUCLE_ListeSecteurs>

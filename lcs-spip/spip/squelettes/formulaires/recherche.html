@@ -1,0 +1,19 @@
+<div class="formulaire_spip formulaire_recherche" id="formulaire_recherche">
+[(#CONFIG{tispipskelet_conf/larg_page}|=={800}|oui) 
+	#SET{rec_class,  style="width:80px;margin:5px;"} 
+	#SET{input_size, 6}
+	#SET{input_class, style="width:90px;margin:0;padding:0;"}
+]
+[(#CONFIG{tispipskelet_conf/larg_page}|=={1024}|oui) 
+	#SET{rec_class,  style="width:100px;margin:5px;"} 
+	#SET{input_size, 8}
+	#SET{input_class, style="width:110px;margin:0;padding:0;"}
+]
+<form action="[(#ENV{action})]" method="get"><div>
+	[(#ENV{action}|form_hidden)]
+	[<input type="hidden" name="lang" value="(#ENV{lang})" />]
+	[(#REM)<label for="recherche"><:info_rechercher_02:></label>]
+	<input type="text" class="text[ (#GET{rec_class})]" size="[(#GET{input_size,10})]" name="recherche" id="recherche"[ value="(#ENV{recherche})"] accesskey="4" />
+	<input type="submit" class="submit" value="&gt;&gt;" title="<:info_rechercher:>" />
+</div></form>
+</div>

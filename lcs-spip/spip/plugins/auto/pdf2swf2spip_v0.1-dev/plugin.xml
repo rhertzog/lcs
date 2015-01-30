@@ -1,0 +1,26 @@
+<plugin>
+    <nom>Pdf2Swf</nom>
+    <auteur>domz - cy_altern
+_ &#169; 2009 - distribu&#233; sous licence GNU/LGPL
+    </auteur>
+    <version>0.1</version>
+    <etat>dev</etat>
+    <description>
+Transformation d&rsquo;un document pdf en document flash (.swf) et import dans un article spip
+_ L'ensemble d'utilitaires swfTools doit être installé sur le serveur apache.
+    </description>
+  <lien></lien>
+    <icon>images/pdf2swf-52.png</icon>
+    <prefix>
+      pdf2swf
+    </prefix>
+    <pipeline>
+    	<nom>affiche_droite</nom>
+        <inclure>pdf2swf_pipelines.php</inclure>
+    </pipeline>
+	<pipeline>
+		<nom>header_prive</nom>
+		<inclure>pdf2swf_pipelines.php</inclure>
+	</pipeline>
+	<necessite id="SPIP" version="[2.0.5;]" />
+</plugin>
