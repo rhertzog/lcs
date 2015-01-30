@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -23,6 +23,8 @@ include_spip('inc/texte'); // inclut inc_filtre
 /// ceux-ci apparaissent TOUJOURS dans cet ordre 
 
 define('DEFAUT_D_ECHELLE',120); # 1 pixel = 2 minutes
+define('DEFAUT_DECALE', 4); # marge gauche en EM
+define('DEFAUT_TAILLE_HEURE', 0.7); # marge gauche en EM
 
 define('DEFAUT_PARTIE_M', "matin");
 define('DEFAUT_PARTIE_S', "soir");
@@ -370,7 +372,8 @@ function http_calendrier_mois_sept($annee, $mois, $premier_jour, $dernier_jour,$
 		    }
 		}
 		$fond .= $ligne ? "bordure_$spip_lang_right" :'bordure_double';
-		$ligne .= "\n<td class='$fond'>$res</td>";
+		$d = sprintf('D%4d-%02d-%02d', $annee_en_cours,$mois_en_cours,$jour);
+		$ligne .= "\n<td id='$d' class='$fond'>$res</td>";
 	}
 	return  $total . ($ligne ? "\n<tr>$ligne</tr>" : '');
 }
@@ -431,7 +434,7 @@ function http_calendrier_semaine($annee, $mois, $jour, $echelle, $partie_cal, $s
 			      $evenements[$d] = !$evenements[$d] ? $r : array_merge($evenements[$d], $r);
 			$evt = http_calendrier_mois_sept($annee, $mois, $init, $init+ 6, $evenements, $script, $finurl, $ancre);
 	  	}
-	} else $evt = "<tr><td>$evt</td></tr>";
+	} else $evt = "<tr><td >$evt</td></tr>";
 
 	$id = ($ancre ? $ancre : 'agenda') . "-nav";
 
@@ -511,13 +514,14 @@ function http_calendrier_semaine_sept($annee, $mois, $jour, $echelle, $partie_ca
 	$total = '';
 
 	for ($j=$jour; $j<$jour+7;$j++){
-		$v = mktime(0,0,0,$mois, $j, $annee);
-		$v = http_calendrier_ics($annee, $mois, $j, $echelle, $partie_cal, $largeur, $evt, '', ( (date("w",$v)==0 && test_espace_prive()) ? 
+		$d = mktime(0,0,0,$mois, $j, $annee);
+		$v = http_calendrier_ics($annee, $mois, $j, $echelle, $partie_cal, $largeur, $evt, '', ( (date("w",$d)==0 && test_espace_prive()) ? 
 			  " jour_dimanche" :
-			  ((date("Ymd", $v) == $today) ? 
+			  ((date("Ymd", $d) == $today) ? 
 			   " jour_encours" :
 			   " jour_gris") ) ) ;
-		$total .= "\n<td>$v</td>";
+		$d = sprintf('D%4d-%02d-%02d', $annee,$mois,$j);
+		$total .= "\n<td id='$d'>$v</td>";
 	}
 	return "\n<tr class='heure'>$total</tr>";
 }
@@ -594,10 +598,10 @@ function http_calendrier_jour_sept($annee, $mois, $jour, $echelle,  $partie_cal,
 	  $mil = http_calendrier_sept_un($annee, $mois, $jour, $evenements, $script, '', $ancre);
 	  $droite = (!test_espace_prive() ? "" :http_calendrier_sept_un($annee, $mois, $jour+1,$evenements, $script, '', $ancre));
 	}
-
+	$d = sprintf('D%4d-%02d-%02d', $annee,$mois,$jour);
 	if (!test_espace_prive())
-		return "<tr class='calendrier-3jours'><td colspan='5'>$mil</td></tr>";
-	$gauche = !$gauche ? "<td colspan='3'>" : "<td>$gauche</td><td></td><td>";
+		return "<tr class='calendrier-3jours'><td id='$d' colspan='5'>$mil</td></tr>";
+	$gauche = !$gauche ? "<td colspan='3' id='$d'>" : "<td>$gauche</td><td></td><td id='$d'>";
 	return  "<tr class='calendrier-3jours'>$gauche$mil</td><td></td><td>$droite</td></tr>";
 }
 
@@ -626,7 +630,7 @@ function http_calendrier_ics($annee, $mois, $jour, $echelle, $partie_cal, $large
 
 	list($dimheure, $dimjour, $fontsize, $padding) =
 	  calendrier_echelle($debut, $fin, $echelle);
-	$size = sprintf("%0.2f", 0.7+(10/$echelle));
+	$size = sprintf("%0.2f", DEFAUT_TAILLE_HEURE+(10/$echelle));
 	$style .= "height:${dimjour}px;font-size:${size}em;";
 	$date = date("Ymd", mktime(0,0,0,$mois, $jour, $annee));
 
@@ -705,7 +709,8 @@ function http_calendrier_ics_div($evts, $date, $debut, $fin, $dimheure, $dimjour
 		$hauteur = calendrier_height ("$heure_debut:$minutes_debut", "$heure_fin:$minutes_fin", $debut, $fin, $dimheure, $dimjour);
 
 		if ($bas_prec >= $haut) $decale += 1;
-		else $decale = ($echelle >= 120) ? 4 : 3;
+		else $decale = DEFAUT_DECALE -
+		       (($echelle >= DEFAUT_D_ECHELLE) ? 0 : 1);
 		if ($bas > $bas_prec) $bas_prec = $bas;
 			
 		$colors = $evenement['CATEGORIES'];
@@ -731,7 +736,7 @@ function http_calendrier_ics_div($evts, $date, $debut, $fin, $dimheure, $dimjour
 			$sum .= "\n<span class='calendrier-attendee $colors'>$perso</span>";
 		$sum = pipeline('agenda_rendu_evenement',array('args'=>array('evenement'=>$evenement,'type'=>'ics'),'data'=>$sum));
 
-		$width = ($largeur - 2 * ($padding+1));
+		$width = $largeur - ($padding<<1) - DEFAUT_DECALE;
 		$fontsize = sprintf("%0.2f", 1+(10/$echelle));
 		$style = "z-index:${i};${spip_lang_left}:${decale}em;top:${haut}px;height:${hauteur}px;width:${width}px;font-size:${fontsize}em;padding:${padding}px;$bordure";
 		$total .= "\n<div class='$colors calendrier-evt' style='$style'
@@ -900,17 +905,31 @@ function http_calendrier_avec_heure($evenement, $amj)
 	return "\n<div class='calendrier-arial10 calendrier-evenement $opacity'>$sum\n</div>\n"; 
 }
 
-/// Gestion du sous-tableau ATTENDEE.
-/// dans les version anterieures, ce n'etait pas un tableau
+/// Gestion du champ ATTENDEE.
+/// On admet un ID ou un mail, ou un tableau de ces choses.
+/// Si c'est un ID, on va chercher le mail dans la table des auteurs, 
+/// a defaut le nom.
+/// Dans les deux cas, si on a bien un mail, on place le pseudo-protocole mailto
 
 function construire_personne_ics($personnes)
 {
-  $r = is_array($personnes) ? $personnes : array($personnes);
-  foreach ($r as $k => $p) {
-    if ($a = email_valide($p) AND preg_match('/^[^@]+/', $a, $m))
-      $r[$k] = "<a href='mailto:$a'>".preg_replace('/[.]/', ' ', $m[0]). "</a>";
-  }
-  return join(' ', $r);
+	$r = is_array($personnes) ? $personnes : array($personnes);
+	foreach ($r as $k => $p) {
+		if (!is_numeric($p)) {
+			$mail = email_valide($p);
+			if (preg_match('/^[^@]+/', $mail, $m))
+				$r[$k] = preg_replace('/[.]/', ' ', $m[0]);
+		} else {
+			$m = sql_fetsel("email, nom", 'spip_auteurs', "id_auteur=$p");
+			if ($m) {
+			  $mail = $m['email'];
+			  $r[$k] = $m['nom'] ? $m['nom'] : ($mail ? $mail : $p);
+			}
+		}
+		if ($mail)
+			$r[$k] = "<a href='mailto:$mail'>" . $r[$k] . "</a>";
+	}
+	return join(' ', $r);
 }
 
 /// fabrique un agenda sur 3 mois. 
@@ -1512,7 +1531,7 @@ function quete_calendrier_interval_rv($avant, $apres) {
 		      $cat = 'calendrier-couleur12';
 		    else {
 		      $cat = 'calendrier-couleur9';
-		      $auteurs = array_map('array_shift', sql_allfetsel("nom", "spip_auteurs AS A LEFT JOIN spip_auteurs_messages AS L ON L.id_auteur=A.id_auteur", "(L.id_message=$id_message AND (A.id_auteur!=$connect_id_auteur))"));
+		      $auteurs = array_map('array_shift', sql_allfetsel('id_auteur', 'spip_auteurs_messages', "id_message=$id_message AND id_auteur!=$connect_id_auteur"));
 		    }
 		  }
 		}

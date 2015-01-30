@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -37,6 +37,7 @@ function action_supprimer_rubrique($r)
 {
 	list(,,$id_rubrique) = $r;
 	sql_delete("spip_rubriques", "id_rubrique=$id_rubrique");
+	sql_delete("spip_mots_rubriques", "id_rubrique=$id_rubrique");
 	// Les admin restreints qui n'administraient que cette rubrique
 	// deviennent redacteurs
 	// (il y a sans doute moyen de faire ca avec un having)

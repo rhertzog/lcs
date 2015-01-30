@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -435,6 +435,7 @@ function f_insert_head($texte) {
 // Inserer au besoin les boutons admins
 // http://doc.spip.org/@f_admin
 function f_admin ($texte) {
+	if (!$GLOBALS['html']) return $texte;
 	if ($GLOBALS['affiche_boutons_admin']) {
 		include_spip('public/admin');
 		$texte = affiche_boutons_admin($texte);
@@ -706,7 +707,7 @@ function public_previsualisation_dist($page)
 function envoyer_entetes($entetes) {
 	foreach ($entetes as $k => $v)
 	#	if (strncmp($k, 'X-Spip-', 7))
-			@header("$k: $v");
+			@header(strlen($v)?"$k: $v":$k);
 }
 
 ?>

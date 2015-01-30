@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2012                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -75,9 +75,12 @@ function formulaires_editer_auteur_verifier_dist($id_auteur='new', $retour='', $
 	$auth_methode = ($auth_methode ? $auth_methode : 'spip');
 	include_spip('inc/auth');
 	include_spip('inc/autoriser');
+	include_spip('inc/filtres');
 
+	if (!nom_acceptable(_request('nom'))) {
+		$erreurs['nom'] = _T("info_nom_pas_conforme");
+	}
 	if ($email = _request('email')){
-		include_spip('inc/filtres');
 		// un redacteur qui modifie son email n'a pas le droit de le vider si il y en avait un
 		if (!autoriser('modifier','auteur',$id_auteur,null,array('email'=>'?'))
 			AND $GLOBALS['visiteur_session']['id_auteur']==$id_auteur
@@ -89,6 +92,10 @@ function formulaires_editer_auteur_verifier_dist($id_auteur='new', $retour='', $
 		else if (!email_valide($email)){
 			$erreurs['email'] = _T('form_email_non_valide');
 		}
+	}
+
+	if (preg_match(",^\s*javascript,i", _request('url_site'))) {
+		$erreurs['url_site'] = _T('info_url_site_pas_conforme');
 	}
 
 	if ($err = auth_verifier_login($auth_methode, _request('new_login'), $id_auteur)){

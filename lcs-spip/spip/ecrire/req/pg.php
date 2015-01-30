@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -817,7 +817,9 @@ function spip_pg_insertq_multi($table, $tab_couples=array(), $desc=array(), $ser
 	
 	// recherche de champs 'timestamp' pour mise a jour auto de ceux-ci
 	// une premiere fois pour ajouter maj dans les cles
-	$les_cles = spip_pg_ajouter_champs_timestamp($table, $tab_couples[0], $desc, $serveur);
+	
+	$c = isset($tab_couples[0]) ? $tab_couples[0] : array();
+	$les_cles = spip_pg_ajouter_champs_timestamp($table, $c, $desc, $serveur);
 	
 	$cles = "(" . join(',',array_keys($les_cles)). ')';
 	$valeurs = array();
@@ -980,7 +982,7 @@ function spip_pg_sequence($table)
 function spip_pg_cite($v, $t)
 {
 	if (sql_test_date($t)) {
-		if (strpos("0123456789", $v[0]) === false)
+		if ($v AND (strpos("0123456789", $v[0]) === false))
 			return spip_pg_frommysql($v);
 		else {
 			if (strpos($v, "-00-00") <= 4) {
@@ -1037,6 +1039,8 @@ function spip_pg_in($val, $valeurs, $not='', $serveur) {
 //
 // IN (...) souvent limite a 255  elements, d'ou cette fonction assistante
 //
+	// s'il n'y a pas de valeur, eviter de produire un IN vide: PG rale.
+	if (!$valeurs) return $not ? '0=0' : '0=1';
 	if (strpos($valeurs, "CAST(x'") !== false)
 		return "($val=" . join("OR $val=", explode(',',$valeurs)).')';
 	$n = $i = 0;

@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -54,7 +54,7 @@ function copier_document($ext, $orig, $source) {
 
 	$orig = preg_replace(',\.\.+,', '.', $orig); // pas de .. dans le nom du doc
 	$dir = creer_repertoire_documents($ext);
-	$dest = preg_replace("/[^._=-\w\d]+/", "_", 
+	$dest = preg_replace("/[^.=\w-]+/", "_",
 			translitteration(preg_replace("/\.([^.]+)$/", "", 
 						      preg_replace("/<[^>]*>/", '', basename($orig)))));
 

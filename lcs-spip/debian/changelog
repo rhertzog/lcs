@@ -1,3 +1,9 @@
+lcs-spip (2.4.10~1) Lcs; urgency=low
+
+  * Remove isauth and idpers in spip_session_lcs.php
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 30 Jan 2015 13:54:34 +0200
+
 lcs-spip (2.4.9.5) Lcs; urgency=low
 
   * Update to spip 2.1.23

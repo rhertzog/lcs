@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -25,7 +25,7 @@ function install_etape_ldap4_dist()
 	$base_ldap_text = _request('base_ldap_text');
 	if (!$base_ldap) $base_ldap = $base_ldap_text;
 
-	echo install_debut_html();
+	echo install_debut_html('AUTO', ' onload="document.getElementById(\'suivant\').focus();return false;"');
 
 	$ldap_link = ldap_connect($adresse_ldap, $port_ldap);
 	@ldap_bind($ldap_link, $login_ldap, $pass_ldap);

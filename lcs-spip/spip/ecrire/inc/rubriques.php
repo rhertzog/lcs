@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -265,6 +265,15 @@ function propager_les_secteurs()
 	while ($row = sql_fetch($r))
 		sql_update("spip_syndic", array("id_secteur" => $row['secteur']), "id_syndic=".$row['id']);
 
+	// reparer les mots
+	$r = sql_select('id_rubrique', 'spip_mots_rubriques','', 'id_rubrique');
+	while ($row = sql_fetch($r)) {
+		$w = "id_rubrique=" .  $row['id_rubrique'];
+		if (!sql_fetsel(1, 'spip_rubriques', $w)) {
+			$n = sql_delete('spip_mots_rubriques', $w);
+			spip_log("nettoyage $w $n");
+		}
+	}
 	// avertir les plugins qui peuvent faire leur mises a jour egalement
 	pipeline('trig_propager_les_secteurs','');
 }

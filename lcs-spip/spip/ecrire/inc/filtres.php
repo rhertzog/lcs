@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -570,14 +570,9 @@ function attribut_html($texte,$textebrut = true) {
 function vider_url($url, $entites = true) {
 	# un message pour abs_url
 	$GLOBALS['mode_abs_url'] = 'url';
-
 	$url = trim($url);
-	if (preg_match(",^(http:?/?/?|mailto:?)$,iS", $url))
-		return '';
-
-	if ($entites) $url = entites_html($url);
-
-	return $url;
+	$r = ",^(?:" . _PROTOCOLES_STD . '):?/?/?$,iS';
+	return preg_match($r, $url) ?'': ($entites ? entites_html($url) : $url);
 }
 
 // Extraire une date de n'importe quel champ (a completer...)
@@ -1523,9 +1518,15 @@ function vider_attribut ($balise, $attribut) {
 
 // http://doc.spip.org/@tester_config
 function tester_config($id, $mode='') {
-
 	include_spip('inc/autoriser');
-	return autoriser('inscrireauteur', $mode, $id) ? $mode : '';
+	if ($mode)
+		return autoriser('inscrireauteur', $mode, $id) ? $mode : '';
+	elseif (
+	     autoriser('inscrireauteur', $mode = "1comite", $id)
+	  OR autoriser('inscrireauteur', $mode = "6forum", $id))
+		return $mode;
+
+	return '';
 }
 
 //
@@ -1575,6 +1576,33 @@ function modulo($nb, $mod, $add=0) {
 	return ($mod?$nb%$mod:0)+$add;
 }
 
+/**
+ * Vérifie qu'un nom (d'auteur) ne comporte pas d'autres tags que <multi>
+ * et ceux volontairement spécifiés dans la constante
+ *
+ * @param string $nom
+ *      Nom (signature) proposé
+ * @return bool
+ *      - false si pas conforme,
+ *      - true sinon
+**/
+function nom_acceptable($nom) {
+	if (!is_string($nom)) {
+		return false;
+	}
+	if (!defined('_TAGS_NOM_AUTEUR')) define('_TAGS_NOM_AUTEUR','');
+	$tags_acceptes = array_unique(explode(',', 'multi,' . _TAGS_NOM_AUTEUR));
+	foreach($tags_acceptes as $tag) {
+		if (strlen($tag)) {
+			$remp1[] = '<'.trim($tag).'>';
+			$remp1[] = '</'.trim($tag).'>';
+			$remp2[] = '\x60'.trim($tag).'\x61';
+			$remp2[] = '\x60/'.trim($tag).'\x61';
+		}
+	}	
+	$v_nom = str_replace($remp2, $remp1, supprimer_tags(str_replace($remp1, $remp2, $nom)));
+	return str_replace('&lt;', '<', $v_nom) == $nom;
+}
 
 // Verifier la conformite d'une ou plusieurs adresses email
 //  retourne false ou la  normalisation de la derniere adresse donnee

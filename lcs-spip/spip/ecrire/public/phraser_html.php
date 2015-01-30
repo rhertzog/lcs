@@ -3,7 +3,7 @@
 /***************************************************************************\
  *  SPIP, Systeme de publication pour l'internet                           *
  *                                                                         *
- *  Copyright (c) 2001-2013                                                *
+ *  Copyright (c) 2001-2014                                                *
  *  Arnaud Martin, Antoine Pitrou, Philippe Riviere, Emmanuel Saint-James  *
  *                                                                         *
  *  Ce programme est un logiciel libre distribue sous licence GNU/GPL.     *
@@ -138,7 +138,7 @@ function phraser_idiomes($texte,$ligne,$result) {
 		}
 		$champ->arg = $args;
 		$champ->nom_champ = strtolower($match[3]);
-		$champ->module = $match[2] ? $match[2] : MODULES_IDIOMES;
+		$champ->module = $match[2];
 		// pas d'imbrication pour les filtres sur langue
 		phraser_args(@$match[7], ":", '', array(), $champ);
 		$result[] = $champ;
