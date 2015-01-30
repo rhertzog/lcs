@@ -27,6 +27,12 @@ $html .= "<head>\n";
 $html .= "<title>...::: Logout LCS :::...</title>\n";
 $html .= " <meta HTTP-EQUIV=\"Content-Type\" CONTENT=\"tetx/html; charset=utf-8\">\n";
 $html .=  "<script type=\"text/javascript\" src=\"../libjs/jquery/jquery.js\"></script>\n";
+$html .= "</head>\n";
+$html .= "<body>\n";
+echo $html;
+// Requetes de logout
+$javascript = "<script language='JavaScript' type='text/javascript'>\n";
+$javascript .= "// <![CDATA[\n";
 if ( $roundcube=="1" && $auth_mod != "ENT" ) {
 	// Logout roundcube si mod_auth est different d'ENT
 	$URLROUNDCUBE = '../roundcube/?_task=logout';
