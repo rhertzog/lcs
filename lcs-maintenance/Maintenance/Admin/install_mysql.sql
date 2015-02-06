@@ -1,14 +1,14 @@
--- 
--- Base de données: `maint_plug`
--- 
+--
+-- Base de donnï¿½es: `maint_plug`
+--
 CREATE DATABASE maint_plug;
 
 USE maint_plug;
 
 -- --------------------------------------------------------
--- 
+--
 -- Structure de la table `maint_task`
--- 
+--
 
 CREATE TABLE `maint_task` (
   `Rid` int(10) NOT NULL auto_increment,
@@ -31,13 +31,13 @@ CREATE TABLE `maint_task` (
   `BoosTimeStamp` int(11) NOT NULL default '0',
   `NumBoost` tinyint(3) NOT NULL default '0',
   PRIMARY KEY  (`Rid`)
-) TYPE=MyISAM AUTO_INCREMENT=262 ;
+) ;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Structure de la table `maint_thread`
--- 
+--
 
 CREATE TABLE `maint_thread` (
   `Rid` int(10) NOT NULL auto_increment,
@@ -48,13 +48,13 @@ CREATE TABLE `maint_thread` (
   `TimeLife` int(11) NOT NULL default '0',
   `Cost` varchar(10) NOT NULL default '0',
   KEY `Rid` (`Rid`)
-) TYPE=MyISAM AUTO_INCREMENT=200 ;
+)  ;
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Structure de la table `params`
--- 
+--
 
 CREATE TABLE `params` (
   `id` smallint(5) unsigned NOT NULL auto_increment,
@@ -65,7 +65,7 @@ CREATE TABLE `params` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `id_2` (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=81 ;
+)  ;
 
 --
 -- Contenu de la table params
@@ -75,20 +75,20 @@ INSERT INTO params VALUES (2, 'VER_PLUG', '0.2.1', 'Version du plugin', 4);
 INSERT INTO params VALUES (3, 'NAME_PLUG', 'Support Info.', 'Nom de l''apllication', 4);
 -- --------------------------------------------------------
 
--- 
+--
 -- Structure de la table `secteur`
--- 
+--
 
 CREATE TABLE `secteur` (
   `id` tinyint(2) NOT NULL auto_increment,
   `descr` varchar(50) NOT NULL default '',
   KEY `id` (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=27 ;
+)  ;
 
--- 
+--
 -- Contenu de la table `secteur`
--- 
-INSERT INTO `secteur` VALUES (1, 'Général');
+--
+INSERT INTO `secteur` VALUES (1, 'Gï¿½nï¿½ral');
 INSERT INTO `secteur` VALUES (2, 'Tertiaire');
 INSERT INTO `secteur` VALUES (3, 'Industriel');
 INSERT INTO `secteur` VALUES (4, 'Administratif');
@@ -96,9 +96,9 @@ INSERT INTO `secteur` VALUES (5, 'Autre');
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Structure de la table `topologie`
--- 
+--
 
 CREATE TABLE `topologie` (
   `id` int(4) NOT NULL auto_increment,
@@ -106,23 +106,23 @@ CREATE TABLE `topologie` (
   `etage` varchar(15) NOT NULL default '',
   `salle` varchar(50) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM AUTO_INCREMENT=152 ;
+)  ;
 
 INSERT INTO `topologie` VALUES (1, 'A', '1er', 'A11');
 INSERT INTO `topologie` VALUES (2, 'A', '1er', 'A12');
 INSERT INTO `topologie` VALUES (3, 'A', '1er', 'A13');
-INSERT INTO `topologie` VALUES (4, 'A', '2ème', 'A21');
-INSERT INTO `topologie` VALUES (5, 'A', '2ème', 'A22');
-INSERT INTO `topologie` VALUES (6, 'A', '2ème', 'A23');
-INSERT INTO `topologie` VALUES (7, 'A', '3ème', 'A31');
-INSERT INTO `topologie` VALUES (8, 'A', '3ème', 'A32');
-INSERT INTO `topologie` VALUES (9, 'A', '3ème', 'A33');
+INSERT INTO `topologie` VALUES (4, 'A', '2ï¿½me', 'A21');
+INSERT INTO `topologie` VALUES (5, 'A', '2ï¿½me', 'A22');
+INSERT INTO `topologie` VALUES (6, 'A', '2ï¿½me', 'A23');
+INSERT INTO `topologie` VALUES (7, 'A', '3ï¿½me', 'A31');
+INSERT INTO `topologie` VALUES (8, 'A', '3ï¿½me', 'A32');
+INSERT INTO `topologie` VALUES (9, 'A', '3ï¿½me', 'A33');
 INSERT INTO `topologie` VALUES (10, 'B', '1er', 'B11');
 INSERT INTO `topologie` VALUES (11, 'B', '1er', 'B12');
 INSERT INTO `topologie` VALUES (12, 'B', '1er', 'B13');
-INSERT INTO `topologie` VALUES (13, 'B', '2ème', 'B21');
-INSERT INTO `topologie` VALUES (14, 'B', '2ème', 'B22');
-INSERT INTO `topologie` VALUES (15, 'B', '2ème', 'B23');
+INSERT INTO `topologie` VALUES (13, 'B', '2ï¿½me', 'B21');
+INSERT INTO `topologie` VALUES (14, 'B', '2ï¿½me', 'B22');
+INSERT INTO `topologie` VALUES (15, 'B', '2ï¿½me', 'B23');
 INSERT INTO `topologie` VALUES (16, 'B', 'RDC', 'A01');
 INSERT INTO `topologie` VALUES (17, 'B', 'RDC', 'A02');
 INSERT INTO `topologie` VALUES (18, 'B', 'RDC', 'A03');
