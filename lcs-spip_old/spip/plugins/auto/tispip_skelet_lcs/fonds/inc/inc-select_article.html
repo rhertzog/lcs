@@ -1,8 +1,0 @@
-<B_ongletart>
- 							<select name="[(#ENV{name})]" id="[(#ENV{name})]" style="width:150px">
-										<option value="" [(#CONFIG{lcs_skel_conf/[(#ENV{name})]}|?{'',selected="selected"})]> </option>
-										<BOUCLE_ongletart(ARTICLES){par titre}>
-											<option value="#ID_ARTICLE" [(#CONFIG{lcs_skel_conf/[(#ENV{name})]}|=={#ID_ARTICLE}|?{selected="selected",''})]>[(#ID_ARTICLE)][ - (#TITRE|supprimer_numero)]</option>
-										</BOUCLE_ongletart>
-									</select>
-</B_ongletart>

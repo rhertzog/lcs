@@ -1,7 +1,0 @@
-[(#REM) appel du fichier mots-cle choisi]
-[(#CONFIG{tispipskelet_conf/sommaire/type_mots_#ENV{bloc}}|oui)
-<INCLURE{fond=noisettes/inc-#CONFIG{tispipskelet_conf/sommaire/type_mots_#ENV{bloc}}}{casier=#ENV{casier}}{bloc=#ENV{bloc}}>
-]
-[(#CONFIG{tispipskelet_conf/sommaire/type_mots_#ENV{bloc}}|non)
-<INCLURE{fond=noisettes/inc-mots_acc}{casier=#ENV{casier}}{bloc=#ENV{bloc}}>
-]

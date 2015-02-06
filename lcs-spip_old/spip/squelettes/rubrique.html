@@ -1,8 +1,0 @@
-#CACHE{0}
-	<BOUCLE_p(RUBRIQUES){id_rubrique}>
-		[(#ID_PARENT|?{#SET{moman,#ID_PARENT},#SET{moman,#ID_RUBRIQUE}})]
-	</BOUCLE_p>
-	[(#CONFIG{tispipskelet_conf/s5/id_rub_s5}|=={#GET{moman}}|?{
-		#INCLURE{fond=s5-slideshow/s5}{id_rubrique}{theme=#CONFIG{tispipskelet_conf/s5/theme_s5}},
-		#INCLURE{fond=rubrique_redirige}{id_rubrique}
-	})]

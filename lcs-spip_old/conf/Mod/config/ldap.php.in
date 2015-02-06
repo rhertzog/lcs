@@ -1,7 +1,0 @@
-<?php
-if (!defined("_ECRIRE_INC_VERSION")) return;
-$GLOBALS['ldap_base'] = "@basedn@";
-$GLOBALS['ldap_link'] = @ldap_connect("@ldapserver@","389");
-@ldap_set_option($GLOBALS['ldap_link'],LDAP_OPT_PROTOCOL_VERSION,"3");
-@ldap_bind($GLOBALS['ldap_link'],"","");
-?>
