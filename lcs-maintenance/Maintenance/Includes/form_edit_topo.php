@@ -1,7 +1,7 @@
 <div id="dialogFormAddTopo" class="tableint" title="Ajouter un élément à la structure">
 	<div class="subconfigcontainer">
 		<form id="addTopoForm" action="action/edt_topo.ajax.php" method="post">
-			<ul class="2cols">
+			<ul class="twocols">
 				<li class="tableau" style="padding-left:-150px;display: block;">
 					<label for="bat" style="float: left; display: block;width:140px;">Bâtiment :</label>
 					<input type="text" name="bat" id="bat" maxlength="20" style="float: left; display: block;" /><br class="cleaner"/>
@@ -39,7 +39,7 @@
 <div id="dialogEditTopo" class="tableint" title="Modifier un élément">
 	<div class="subconfigcontainer">
 		<form id="editTopoForm" action="action/edt_topo.ajax.php" method="post">
-			<ul class="2cols">
+			<ul class="twocols">
 				<li class="tableau" style="padding-left:-150px;display: block;">
 					<label for="bat" style="float: left; display: block;width:140px;">Bâtiment :</label>
 			<input type="hidden" name="action" id="action" value="edit"/>

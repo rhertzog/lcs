@@ -1,28 +1,38 @@
 <?php
-	include "Includes/basedir.inc.php";
-	include "$BASEDIR/lcs/includes/headerauth.inc.php";
-  	include "$BASEDIR/Annu/includes/ldap.inc.php";
-  	include "$BASEDIR/Annu/includes/ihm.inc.php";
-	include "Includes/func_maint.inc.php";
-        include "Includes/config.inc.php";
+include "Includes/checking.php";
+ if (! check_acces()) {exit;}
+    include "Includes/basedir.inc.php";
+    include "$BASEDIR/lcs/includes/headerauth.inc.php";
+    include "$BASEDIR/Annu/includes/ldap.inc.php";
+    include "$BASEDIR/Annu/includes/ihm.inc.php";
+    include "Includes/func_maint.inc.php";
+    include "Includes/config.inc.php";
+    include ("$BASEDIR/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
 
+    if (count($_GET)>0) {
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
         // Register Global GET
-        $conf=$_GET['conf'];
-        $bat=$_GET['bat'];
-        $etage=$_GET['etage'];
-        $salle=$_GET['salle'];
-        $secteur=$_GET['secteur'];
-        // Register Global POST
-        $MAILMAINTCONF=$_POST['MAILMAINTCONF'];
-        $mailconf=$_POST['mailconf'];
-        $SECTEURNEW=$_POST['SECTEURNEW'];
-        $SECTEUROLD=$_POST['SECTEUROLD'];
-        $secteurconf=$_POST['secteurconf'];
-        $saveconf=$_POST['saveconf'];
-        $action=$_POST['action'];
-        $txtfile=$_FILES['txtfile']['name'];
-        $sqlfile=$_FILES['sqlfile']['name'];
-
+        $conf=$purifier->purify($_GET['conf']);
+        $bat=$purifier->purify($_GET['bat']);
+        $etage=$purifier->purify($_GET['etage']);
+        $salle=$purifier->purify($_GET['salle']);
+        $secteur=$purifier->purify($_GET['secteur']);
+    }
+    if (count($_POST)>0) {
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
+// Register Global POST
+        $MAILMAINTCONF=$purifier->purify($_POST['MAILMAINTCONF']);
+        $mailconf=$purifier->purify($_POST['mailconf']);
+        $SECTEURNEW=$purifier->purify($_POST['SECTEURNEW']);
+        $SECTEUROLD=$purifier->purify($_POST['SECTEUROLD']);
+        $secteurconf=$purifier->purify($_POST['secteurconf']);
+        $saveconf=$purifier->purify($_POST['saveconf']);
+        $action=$purifier->purify($_POST['action']);
+        $txtfile=$purifier->purify($_FILES['txtfile']['name']);
+        $sqlfile=$purifier->purify($_FILES['sqlfile']['name']);
+    }
         // SAUVEGARDE BASE
         if ( $saveconf == "Sauvegarde" ) {
           system("mysqldump $DBAUTHMAINT -u $USERAUTH -p$PASSAUTH  > /tmp/$DBAUTHMAINT.sql");
@@ -31,10 +41,10 @@
           header("Content-Disposition: attachment; filename=\"/tmp/$DBAUTHMAINT.sql\"");
           include ("/tmp/$DBAUTHMAINT.sql");
         }
-        // RESTAURATION BASE   
+        // RESTAURATION BASE
 	html();
-	list ($idpers,$uid)= isauth();
-  	if ($idpers == "0") {
+	$uid=  $_SESSION['login'];
+                  if ($uid == "") {
 		// L'utilisateur n'est pas authentifie
 		table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre &#171;&#160;Espace perso  LCS&#160;&#187; pour acc&#233;der &#224; cette application !");
 	} else {
@@ -63,10 +73,10 @@
                               $query="UPDATE secteur SET descr=\"$SECTEURNEW\" WHERE descr=\"$SECTEUROLD\"";
                           } elseif ( $action == "Supprimer" ) {
                               #echo "DBG SECTEURNEW $SECTEURNEW<BR>";
-                              $query="DELETE FROM secteur WHERE descr=\"$SECTEURNEW\"";                         
+                              $query="DELETE FROM secteur WHERE descr=\"$SECTEURNEW\"";
                           } elseif ( $action == "Ajouter" && $SECTEURNEW !="" ) {
                               #echo "DBG SECTEURNEW $SECTEURNEW<BR>";
-                              $query="INSERT INTO `secteur` (`id`, `descr`) VALUES ('', '$SECTEURNEW')";                        
+                              $query="INSERT INTO `secteur` (`id`, `descr`) VALUES ('', '$SECTEURNEW')";
                           }
                           $result=@mysql_query($query);
                         }
@@ -75,13 +85,13 @@
                           // upload du fichier
                           $tmptxtfile = $_FILES["txtfile"]["tmp_name"];
                           system ("/usr/share/lcs/Plugins/Maintenance/Scripts/import_topo.sh $tmptxtfile");
-	                 }    
+	                 }
                         // RESTAURATION BASE
                         if (isset ($sqlfile)) {
                           // upload du fichier
                           $tmpsqlfile = $_FILES["sqlfile"]["tmp_name"];
                           system ("/usr/bin/mysql -u $USERAUTH -p$PASSAUTH $DBAUTHMAINT < $tmpsqlfile");
-	                 }                                       
+	                 }
                         // FIN Traitement des modifications de configuration
 		 	$mode = "team";
 			// Affichage du menu haut
@@ -90,11 +100,11 @@
                         $html  = "<table style=\"width:100%;\"><tr><td>\n";
                         // Affichage du menu de configuration
                         $html .= "<div id=\"mnuconfig\">\n";
-                        $html .= "    <a href=\"config.php?conf=mail\" class=\"mail\">Mail</a>\n";
-                        $html .= "    <a href=\"config.php?conf=secteur\" class=\"secteur\">Secteur</a>\n";
-                        $html .= "    <a href=\"config.php?conf=topo\" class=\"topo\">Topologie</a>\n";
-                        $html .= "    <a href=\"config.php?conf=save\" class=\"save\">Sauvegarde base</a>\n";
-                        $html .= "    <a href=\"config.php?conf=restor\" class=\"restor\">Restauration base</a>\n";
+                        $html .= "    <a href=\"config.php?conf=mail&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" class=\"mail\">Mail</a>\n";
+                        $html .= "    <a href=\"config.php?conf=secteur&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" class=\"secteur\">Secteur</a>\n";
+                        $html .= "    <a href=\"config.php?conf=topo&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" class=\"topo\">Topologie</a>\n";
+                        $html .= "    <a href=\"config.php?conf=save&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" class=\"save\">Sauvegarde base</a>\n";
+                        $html .= "    <a href=\"config.php?conf=restor&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" class=\"restor\">Restauration base</a>\n";
                         $html .= "</div>\n";
                         // Affichage de mainconfig
                         if ( !isset($conf) || $conf == "mail" ) {
@@ -102,46 +112,48 @@
                           $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
                           $html .= "<div class=\"subconfigsubtitle\"><img src=\"Style/img/24/email.png\" alt=\"\"/>&nbsp;Adresse de diffusion des demandes d'intervention</div>\n";
                           $html .= "<div class=\"subconfigcontainer\">\n";
-                          $html .= "  <form method=\"post\" action=\"config.php?conf=mail\">\n";
+                          $html .= "  <form method=\"post\" action=\"config.php?conf=mail&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\">\n";
                           $html .= "    <p>Mail : <input type=\"text\" size=\"50\" name=\"MAILMAINTCONF\" value=\"$MAILMAINT\"></p>\n";
                           $html .= "    <input type=\"hidden\" name=\"mailconf\" value=\"true\">\n";
+                          $html.='  <input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
                           $html .= "    <p><input type=\"submit\" value=\"Valider\" class=\"button\"></p>\n";
                           $html .= "   </form>\n";
-                          $html .= "</div>\n"; 
-                          $html .= "</div>\n";                       
+                          $html .= "</div>\n";
+                          $html .= "</div>\n";
                         } elseif ( $conf == "secteur") {
-                          // Config secteurs d'intervention (Modification/Ajout/Suppression)    
+                          // Config secteurs d'intervention (Modification/Ajout/Suppression)
                           $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
                           $html .= "  <div class=\"subconfigsubtitle\"><img src=\"Style/img/24/map.png\" alt=\"\"/>&nbsp;Modification/ Ajout / Suppression des secteurs d'intervention</div>\n";
                           $html .= "  <div class=\"subconfigcontainer\">\n";
                           $result = @mysql_query("SELECT descr from  secteur");
-                          if ($result) { 
+                          if ($result) {
                           // 1er Form de selection d'un secteur
                           $html .= "  <p>S&#233;lectionnez un secteur pour modifier ou supprimer son intitul&#233;.</p>\n";
                           $html .= "      <select name=\"secteur\" size=\"5\" onChange=\"location = this.options[this.selectedIndex].value;\">\n";
                             while ( $r = @mysql_fetch_array($result) ) {
-                              $html .=  "      <option value=\"config.php?conf=secteur&secteur=".$r["descr"]."\"";
+                              $html .=  "      <option value=\"config.php?conf=secteur&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."&secteur=".$r["descr"]."\"";
                               if ( $secteur == $r["descr"]) $html .=  "selected";
                               $html .= ">".$r["descr"]."</option>\n";
                             }
-                          $html .= "      </select>\n"; 
-                          } else  $html .= "Pas de secteur d&#233;finit !\n";                                                                                  
-                          @mysql_free_result($result);  
+                          $html .= "      </select>\n";
+                          } else  $html .= "Pas de secteur d&#233;finit !\n";
+                          @mysql_free_result($result);
                           //  2eme form de modification suppression ajout
-                          $html .= "    <form method=\"post\" action=\"config.php?conf=secteur\">\n";
-                          $html .= "      <p><input type=\"text\" size=\"30\" name=\"SECTEURNEW\" value=\"$secteur\"></p>\n";                              
-                          $html .= "      <input type=\"hidden\" name=\"SECTEUROLD\" value=\"$secteur\">\n";  
+                          $html .= "    <form method=\"post\" action=\"config.php?conf=secteur&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\">\n";
+                          $html .= "      <p><input type=\"text\" size=\"30\" name=\"SECTEURNEW\" value=\"$secteur\"></p>\n";
+                          $html .= "      <input type=\"hidden\" name=\"SECTEUROLD\" value=\"$secteur\">\n";
                           $html .= "      <input type=\"hidden\" name=\"secteurconf\" value=\"true\">\n";
-                          if ( ! isset($secteur) )
+                          $html.='  <input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
+                          if ( ($secteur=="") )
                             $html .= "      <p><input type=\"submit\" name=\"action\" value=\"Ajouter\" class=\"button\">";
                           else {
                             $html .= "<input type=\"submit\" name=\"action\" value=\"Modifier\" class=\"button\">";
-                            $html .= "<input type=\"submit\" name=\"action\" value=\"Supprimer\" class=\"button\"></p>\n"; 
+                            $html .= "<input type=\"submit\" name=\"action\" value=\"Supprimer\" class=\"button\"></p>\n";
                           }
-                          $html .= "    </form>\n";             
-                          $html.= "   </div>\n";  
-                          $html .= "</div>\n";   
-                          //                       
+                          $html .= "    </form>\n";
+                          $html.= "   </div>\n";
+                          $html .= "</div>\n";
+                          //
                         } elseif ( $conf == "topo" ) {
                            // Config topologie de l'etablissement (Import)
                            //Consultation
@@ -156,11 +168,12 @@
                           $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
                           $html .= "  <h3 class=\"subconfigsubtitle\"><img src=\"Style/img/24/building.png\" alt=\"\"/>&nbsp;Importation d'une nouvelle structure</h3>\n";
                           $html .= "  <div class=\"subconfigcontainer\">\n";
-				          $html .= "    <form action=\"config.php?conf=topo\" method=\"post\" ENCTYPE=\"multipart/form-data\">\n";
-				          $html .= "      <div class=\"ui-state-highlight ui-corner-all message active\"><span class='exclam float_left'></span>&nbsp Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!<br />N'effectuez cette action qu'en connaissance de cause</div>\n";
-				          $html .= "      <p>Fichier texte &#224; importer : <input name='txtfile' type='file'></p>\n";
-				          $html .= "      <div align='center'><input type='submit' VALUE='Importer le fichier!!' class=\"button\"></div>\n";
-				          $html .= "    </form>\n";                          
+                            $html .= "    <form action=\"config.php?conf=topo&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" method=\"post\" ENCTYPE=\"multipart/form-data\">\n";
+                            $html .= "      <div class=\"ui-state-highlight ui-corner-all message active\"><span class='exclam float_left'></span>&nbsp Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!<br />N'effectuez cette action qu'en connaissance de cause</div>\n";
+                            $html .= "      <p>Fichier texte &#224; importer : <input name='txtfile' type='file'></p>\n";
+                            $html .= "      <div align='center'><input type='submit' VALUE='Importer le fichier!!' class=\"button\"></div>\n";
+                            $html.='  <input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
+                            $html .= "    </form>\n";
                           $html .= "  </div>";
                           $html .= "</div>\n";
    	                      // Suppression de la topo (vidage de table)
@@ -177,10 +190,11 @@
                           $html .= "<div id=\"subconfig\" class=\"tableint\">\n";
                           $html .= "  <div class=\"subconfigsubtitle\"><img src=\"Style/img/24/database_save.png\" alt=\"\"/>&nbsp;Sauvegarde de la base de donn&#233;es</div>\n";
                           $html .= "  <div class=\"subconfigcontainer\">\n";
-                          $html .= "    <form action=\"config.php?conf=save\" method=\"post\">\n";
-		          $html .= "      <p>Sauvegarde g&#233;n&#233;rale <input type=\"submit\" name=\"saveconf\" value=\"Sauvegarde\" class=\"button\">\n";
-		          $html .= "      <p>Sauvegarde de l'ann&#233;e en cours <input type=\"submit\" name=\"savethisyear\" value=\"Sauvegarde\" class=\"button\">\n";
-		          $html .= "    </form>\n";
+                          $html .= "    <form action=\"config.php?conf=save&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/config.php'))."\" method=\"post\">\n";
+                            $html .= "      <p>Sauvegarde g&#233;n&#233;rale <input type=\"submit\" name=\"saveconf\" value=\"Sauvegarde\" class=\"button\">\n";
+                            $html .= "      <p>Sauvegarde de l'ann&#233;e en cours <input type=\"submit\" name=\"savethisyear\" value=\"Sauvegarde\" class=\"button\">\n";
+                            $html.='  <input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities($_SERVER['PHP_SELF'])).'" />';
+                            $html .= "    </form>\n";
                           $html .= "  </div>\n";
                           $html .= "</div>\n";
                         } elseif ( $conf == "restor" ) {
@@ -191,12 +205,13 @@
           	          // Affichage du formulaire de restauration
                           $html .= "<div id=\"showdata\" class=\"ui-state-highlight ui-corner-all message\"></div>\n";
 		          #$html .= "    <form action=\"config.php?conf=restor\" method=\"post\" enctype=\"multipart/form-data\">\n";
-		          $html .= "    <form action=\"action/restor_db.ajax.php\" method=\"post\" enctype=\"multipart/form-data\" id=\"submitRestor\">\n";
+		          $html .= "    <form action=\"action/restor_db.ajax.php?jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/action/restor_db.ajax.php'))."\" method=\"post\" enctype=\"multipart/form-data\" id=\"submitRestor\">\n";
 		          $html .= "      <p class=\"ui-state-highlight ui-corner-all message active\"><span class=\"exclam float_left\"></span>&nbsp;Attention, les donn&#233;es existantes seront &#233;cras&#233;es!!<br />N'effectuez cette action qu'en connaissance de cause</p>\n";
 		          $html .= "      <p>Fichier sql &#224; importer : <input name='sqlfile' type='file'></p>\n";
 		          $html .= "      <div align='center'><input type='submit' value='Importer le fichier!!' class=\"button\" id=\"submitRestor\"></div>\n";
-		          $html .= "    </form>\n";                          
-                          $html .= "  </div>";                   
+                                                $html.='  <input name="jeton" type="hidden"  value="'.md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/action/restor_db.ajax.php')).'" />';
+		          $html .= "    </form>\n";
+                          $html .= "  </div>";
                           $html .= "</div>\n";
                         }
                         $html  .= "</td></tr></table>\n";
@@ -217,6 +232,6 @@
 	  		$('div#mnuconfig>a.'+str[1]).addClass('active');
 	 	});
 	</script>
-	";	
+	";
  	include "Includes/pieds_de_page.inc.php";
  ?>

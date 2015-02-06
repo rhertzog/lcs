@@ -18,39 +18,39 @@ $sql = "select * from maint_task order by Rid limit $start,$per_page";
 $rsd = mysql_query($sql);
 ?>
 <div align="center" id="content">
-	<table border="0" cellpadding="2" cellspacing="2" width="100%" id="table1">
-		<tr>
-		<td>Sl. No</td>
-		<?php
-		//Print the column headings
-		while($rsc = mysql_fetch_array($rsdc))
-		{
-		?>
-			<td><?=$rsc[0]?></td>
-		<?php
-		}
-		?>
-		</tr>
-		<?php
-		//Print the contents
-		$i = $start;
-		while($rs = mysql_fetch_array($rsd))
-		{
-			$i++;
-		?>
-		<tr>
-			<td><?=$i?>&nbsp;</td>
-			<?php
-			for($j=0; $j<$cols; $j++)
-			{
-			?>
-			<td><?=utf8_encode($rs[$j])?></td>
-			<?php
-			} //for
-			?>
-		</tr>
-		<?php
-		} //while
-		?>
-	</table>
+    <table border="0" cellpadding="2" cellspacing="2" width="100%" id="table1">
+            <tr>
+            <td>Sl. No</td>
+            <?php
+            //Print the column headings
+            while($rsc = mysql_fetch_array($rsdc))
+            {
+            ?>
+                    <td><?=$rsc[0]?></td>
+            <?php
+            }
+            ?>
+            </tr>
+            <?php
+            //Print the contents
+            $i = $start;
+            while($rs = mysql_fetch_array($rsd))
+            {
+                    $i++;
+            ?>
+            <tr>
+                    <td><?=$i?>&nbsp;</td>
+                    <?php
+                    for($j=0; $j<$cols; $j++)
+                    {
+                    ?>
+                    <td><?=utf8_encode($rs[$j])?></td>
+                    <?php
+                    } //for
+                    ?>
+            </tr>
+            <?php
+            } //while
+            ?>
+    </table>
 </div>

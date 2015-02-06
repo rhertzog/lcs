@@ -1,46 +1,56 @@
 <?php
+/* ==================================================
+   Projet LCS : Linux Communication Server
+   Module lcs-maintenance
+   06/02/2015
+   =================================================== */
+include "../Includes/checking.php";
+ if (! check_acces()) exit;
 extract($_REQUEST);
-	include "../Includes/basedir.inc.php";
-	include "$BASEDIR/lcs/includes/headerauth.inc.php";
-  	include "$BASEDIR/Annu/includes/ldap.inc.php";
-  	include "$BASEDIR/Annu/includes/ihm.inc.php";
-	include "../Includes/config.inc.php";
-	include "../Includes/func_maint.inc.php";
-
+include "../Includes/basedir.inc.php";
+include "$BASEDIR/lcs/includes/headerauth.inc.php";
+include "$BASEDIR/Annu/includes/ldap.inc.php";
+include "$BASEDIR/Annu/includes/ihm.inc.php";
+include "../Includes/config.inc.php";
+include "../Includes/func_maint.inc.php";
+include ("$BASEDIR/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+if (count($_POST)>0) {
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
       // Register Global POST
-      $nom=$_POST['nom'];
-      $secteur=$_POST['secteur'];
-      $bat=$_POST['bat'];
-      $etage=$_POST['etage'];
-      $salle=$_POST['salle'];
-      $marque=$_POST['marque'];
-      $poste=$_POST['poste'];
-      $se=$_POST['se'];
-      $typpb=$_POST['typpb'];
-      $mail=$_POST['mail'];
-      $texte=addslashes($_POST['texte']);
-
+      $nom=$purifier->purify($_POST['nom']);
+      $secteur=$purifier->purify($_POST['secteur']);
+      $bat=$purifier->purify($_POST['bat']);
+      $etage=$purifier->purify($_POST['etage']);
+      $salle=$purifier->purify($_POST['salle']);
+      $marque=$purifier->purify($_POST['marque']);
+      $poste=$purifier->purify($_POST['poste']);
+      $se=$purifier->purify($_POST['se']);
+      $typpb=$purifier->purify($_POST['typpb']);
+      $mail=$purifier->purify($_POST['mail']);
+      $texte=addslashes($purifier->purify($_POST['texte']));
+}
 //	html();
-        // Traitement des variables transmises par le form 
+        // Traitement des variables transmises par le form
         $tmp = explode ("&", $salle);
         $tmp1 = explode ("=", $tmp[0]);
       //  $bat = $tmp1[1];
         $tmp1 = explode ("=", $tmp[1]);
-     //   $etage = $tmp1[1];       
+     //   $etage = $tmp1[1];
         $tmp1 = explode ("=", $tmp[2]);
-    //    $salle = $tmp1[1];       
+    //    $salle = $tmp1[1];
         // Fin du traitement
-	list ($idpers,$uid)= isauth();
-  	if ($idpers == "0") {
+        $uid=  $_SESSION['login'];
+        if ($uid == "") {
 		// L'utilisateur n'est pas authentifie
-		table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre «Espace perso  LCS» pour acc&#233;der &#233; cette application !");
+		table_alert ("Vous devez pr&#233;alablement vous authentifier sur votre ï¿½Espace perso  LCSï¿½ pour acc&#233;der &#233; cette application !");
 	} else {
 		// L'utilisateur est authentifie
 		// Lecture des parametres LDAP associes a cet utilisateur
 		list($user, $groups)=people_get_variables($uid, false);
 		// Affichage du menu haut
      //           if (is_admin("Maint_is_admin",$uid)=="Y") $type_mnu="team"; else $type_mnu="user";
-      //          Aff_mnu($type_mnu);                
+      //          Aff_mnu($type_mnu);
 		$daterequete=date("d-m-Y");
 		// On commence par verifier si les champs sont vides
 		if(empty($nom) OR empty($secteur) OR empty($bat) OR empty($salle) OR empty($poste) OR empty($se) OR empty($texte)) {
@@ -63,8 +73,8 @@ extract($_REQUEST);
 			Author : Responsable(s) du traitement du pb
 			Sector : secteur
 			Building : Batiment
-			Room : N° de la salle
-			NumComp : N° du poste
+			Room : Nï¿½ de la salle
+			NumComp : Nï¿½ du poste
 			Mark : Marque du PC
 			Os : systeme d'exploitation
 			Cat : categorie de la demande

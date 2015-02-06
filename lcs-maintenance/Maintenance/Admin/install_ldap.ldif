@@ -1,5 +1,5 @@
-dn: cn=Maint_is_admin,ou=Rights,#BASEDN#
+dn: cn=Maint_is_admin,ou=Rights,dc=demo,dc=ac-caen,dc=fr
 objectClass: groupOfNames
 cn: Maint_is_admin
-member: uid=admin,ou=People,#BASEDN#
+member: uid=admin,ou=People,dc=demo,dc=ac-caen,dc=fr
 
