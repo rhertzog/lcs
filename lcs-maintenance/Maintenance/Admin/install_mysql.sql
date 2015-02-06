@@ -1,5 +1,5 @@
 --
--- Base de donn�es: `maint_plug`
+-- Base de données: `maint_plug`
 --
 CREATE DATABASE maint_plug;
 
@@ -88,7 +88,7 @@ CREATE TABLE `secteur` (
 --
 -- Contenu de la table `secteur`
 --
-INSERT INTO `secteur` VALUES (1, 'G�n�ral');
+INSERT INTO `secteur` VALUES (1, 'Général');
 INSERT INTO `secteur` VALUES (2, 'Tertiaire');
 INSERT INTO `secteur` VALUES (3, 'Industriel');
 INSERT INTO `secteur` VALUES (4, 'Administratif');
@@ -111,18 +111,18 @@ CREATE TABLE `topologie` (
 INSERT INTO `topologie` VALUES (1, 'A', '1er', 'A11');
 INSERT INTO `topologie` VALUES (2, 'A', '1er', 'A12');
 INSERT INTO `topologie` VALUES (3, 'A', '1er', 'A13');
-INSERT INTO `topologie` VALUES (4, 'A', '2�me', 'A21');
-INSERT INTO `topologie` VALUES (5, 'A', '2�me', 'A22');
-INSERT INTO `topologie` VALUES (6, 'A', '2�me', 'A23');
-INSERT INTO `topologie` VALUES (7, 'A', '3�me', 'A31');
-INSERT INTO `topologie` VALUES (8, 'A', '3�me', 'A32');
-INSERT INTO `topologie` VALUES (9, 'A', '3�me', 'A33');
+INSERT INTO `topologie` VALUES (4, 'A', '2eme', 'A21');
+INSERT INTO `topologie` VALUES (5, 'A', '2eme', 'A22');
+INSERT INTO `topologie` VALUES (6, 'A', '2eme', 'A23');
+INSERT INTO `topologie` VALUES (7, 'A', '3eme', 'A31');
+INSERT INTO `topologie` VALUES (8, 'A', '3eme', 'A32');
+INSERT INTO `topologie` VALUES (9, 'A', '3eme', 'A33');
 INSERT INTO `topologie` VALUES (10, 'B', '1er', 'B11');
 INSERT INTO `topologie` VALUES (11, 'B', '1er', 'B12');
 INSERT INTO `topologie` VALUES (12, 'B', '1er', 'B13');
-INSERT INTO `topologie` VALUES (13, 'B', '2�me', 'B21');
-INSERT INTO `topologie` VALUES (14, 'B', '2�me', 'B22');
-INSERT INTO `topologie` VALUES (15, 'B', '2�me', 'B23');
+INSERT INTO `topologie` VALUES (13, 'B', '2eme', 'B21');
+INSERT INTO `topologie` VALUES (14, 'B', '2eme', 'B22');
+INSERT INTO `topologie` VALUES (15, 'B', '2eme', 'B23');
 INSERT INTO `topologie` VALUES (16, 'B', 'RDC', 'A01');
 INSERT INTO `topologie` VALUES (17, 'B', 'RDC', 'A02');
 INSERT INTO `topologie` VALUES (18, 'B', 'RDC', 'A03');

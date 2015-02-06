@@ -144,7 +144,7 @@ function Aff_bar_mode ($message) {
         $header .= "<td><div class='titrebar'>$message</div>";
         if ( $mode == "team" ) {
             // mode team
-            if ( ereg ("^En", $message) || ereg ("^Votre", $message) ||$message == "Historique gen." ) {
+            if ( mb_ereg ("^En", $message) || mb_ereg ("^Votre", $message) ||$message == "Historique gen." ) {
                 if (  $mnuchoice=="historique") {
                     $header .= "<div class='order' id=\"btnHystoric\">";
                     $header .= "<img class=\"list disabled\" src=\"Style/img/24/list.png\" alt=\"\"/>&#160;&#160;";
@@ -160,7 +160,7 @@ function Aff_bar_mode ($message) {
             }
         } else {
             // mode user
-            if ( ereg ("^Votre", $message) ) {
+            if ( mb_ereg ("^Votre", $message) ) {
               $header .= "<div class='order'><A class='menu_barre'  href='index.php?mnuchoice=$mnuchoice&tri=date&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/index.php'))."'>Date</A><img alt=\"DESC\" src=\"Images/bullet_arrow_down.png\" hspace=\"4\" border=0></div>\n";
               $header .= "<div class='order'><A class='menu_barre' href='index.php?mnuchoice=$mnuchoice&tri=prisencharge&amp;jeton=".md5($_SESSION['token'].htmlentities('/Plugins/Maintenance/index.php'))."'>Prise en charge par</A><img alt=\"DESC\" src=\"Images/bullet_arrow_down.png\" hspace=\"4\" border=0></div></td>";
             }
