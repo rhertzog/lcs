@@ -1,7 +1,0 @@
-<?php
-# Acces param LCS DB    
-$USERAUTH="lcsmgr";
-$PASSAUTH="#PASS#";
-$DBAUTH="lcs_db";		
-require_once ("/var/www/lcs/includes/functions.inc.php");
-?>

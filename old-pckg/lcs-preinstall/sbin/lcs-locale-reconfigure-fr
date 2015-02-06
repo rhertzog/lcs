@@ -1,8 +1,0 @@
-#!/bin/bash
-
-echo "fr_FR.UTF-8 UTF-8" > /etc/locale.gen
-echo "fr_FR ISO-8859-1
-fr_FR@euro ISO-8859-15" >> /etc/locale.gen
-
-echo "LANG=fr_FR" > /etc/default/locale
-/usr/sbin/locale-gen
