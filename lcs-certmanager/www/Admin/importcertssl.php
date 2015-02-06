@@ -21,7 +21,8 @@ function msgaide($msg) {
 
 $msg1="Importation d'un certificat SSL pour les services LCS (CAS, apache-ssl, imap-ssl).";
 
-if ($idpers == "0") header("Location:$urlauth");
+if (is_admin("system_is_admin",$login)!="Y") header("Location:$urlauth");
+	
 $html = "
 	  <head>\n
 	  <title>...::: Importation d'un certificat SSL  :::...</title>\n
