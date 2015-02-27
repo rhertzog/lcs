@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -30,9 +30,14 @@
 // Il faut aussi indiquer le format page_section pour les appels ajax
 // //////////////////////////////////////////////////
 
+$tab_droits_profil_public                = array( 'public'=>1 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
 $tab_droits_profil_tous                  = array( 'public'=>1 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>1 , 'developpeur'=>1 , 'partenaire'=>1 );
 $tab_droits_profil_identifie             = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>1 , 'developpeur'=>1 , 'partenaire'=>1 );
-$tab_droits_profil_public                = array( 'public'=>1 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
+$tab_droits_profil_etablissement         = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>1 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
+$tab_droits_profil_eleve_parent_prof_dir = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
+$tab_droits_profil_prof_dir_admin        = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>1 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
+$tab_droits_profil_prof_dir              = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
+$tab_droits_profil_dir_admin             = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>1 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
 $tab_droits_profil_eleve                 = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
 $tab_droits_profil_parent                = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>1 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
 $tab_droits_profil_professeur            = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
@@ -41,10 +46,6 @@ $tab_droits_profil_administrateur        = array( 'public'=>0 , 'eleve'=>0 , 'pa
 $tab_droits_profil_webmestre_developpeur = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>1 , 'developpeur'=>1 , 'partenaire'=>0 );
 $tab_droits_profil_webmestre             = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>1 , 'developpeur'=>0 , 'partenaire'=>0 );
 $tab_droits_profil_partenaire            = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>0 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>1 );
-$tab_droits_profil_prof_dir              = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
-$tab_droits_profil_prof_dir_admin        = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>1 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
-$tab_droits_profil_dir_admin             = array( 'public'=>0 , 'eleve'=>0 , 'parent'=>0 , 'professeur'=>0 , 'directeur'=>1 , 'inspecteur'=>0 , 'administrateur'=>1 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
-$tab_droits_profil_eleve_parent_prof_dir = array( 'public'=>0 , 'eleve'=>1 , 'parent'=>1 , 'professeur'=>1 , 'directeur'=>1 , 'inspecteur'=>1 , 'administrateur'=>0 , 'webmestre'=>0 , 'developpeur'=>0 , 'partenaire'=>0 );
 
 $tab_droits_par_page = array
 (
@@ -52,17 +53,22 @@ $tab_droits_par_page = array
   'fermer_session'                          => $tab_droits_profil_tous, // Au cas où plusieurs onglets sont ouverts dont l'un a déjà déconnecté
   'webservices'                             => $tab_droits_profil_tous,
   'calque_date_calendrier'                  => $tab_droits_profil_tous, // Aussi utilisé par un espace de gestion Sésamath extérieur
+  'public_test_variables'                   => $tab_droits_profil_tous, // Pour permettre un appel à cette page sans que cela déconnecte
   // Profils identifiés
   'conserver_session_active'                => $tab_droits_profil_identifie,
   'compte_accueil'                          => $tab_droits_profil_identifie,
-  'compte_email'                            => $tab_droits_profil_identifie,
   'compte_password'                         => $tab_droits_profil_identifie,
+  // Profils établissement
+  'compte_email'                            => $tab_droits_profil_etablissement,
+  'compte_langue'                           => $tab_droits_profil_etablissement,
+  'consultation_notifications'              => $tab_droits_profil_etablissement,
   // Profil public
   'public_accueil'                          => $tab_droits_profil_public,
+  'public_contact_admin'                    => $tab_droits_profil_public,
+  'public_identifiants_perdus'              => $tab_droits_profil_public,
   'public_installation'                     => $tab_droits_profil_public,
   'public_logout_SSO'                       => $tab_droits_profil_public,
   'public_nouveau_mdp'                      => $tab_droits_profil_public,
-  'public_test_variables'                   => $tab_droits_profil_public,
   // Profil élève
   'evaluation_demande_eleve'                => $tab_droits_profil_eleve,
   'evaluation_demande_eleve_ajout'          => $tab_droits_profil_eleve,
@@ -141,11 +147,13 @@ $tab_droits_par_page = array
   'webmestre_database_test'                 => $tab_droits_profil_webmestre_developpeur,
   'webmestre_debug'                         => $tab_droits_profil_webmestre_developpeur,
   'webmestre_info_serveur'                  => $tab_droits_profil_webmestre_developpeur,
+  'webmestre_mail_bounces'                  => $tab_droits_profil_webmestre_developpeur,
   'webmestre_maintenance'                   => $tab_droits_profil_webmestre_developpeur,
   'webmestre_statistiques'                  => $tab_droits_profil_webmestre_developpeur,
   'webmestre_structure_bdd_repair'          => $tab_droits_profil_webmestre_developpeur,
   // Profil webmestre
   'webmestre_contact_modification'          => $tab_droits_profil_webmestre,
+  'webmestre_envoi_notifications'           => $tab_droits_profil_webmestre,
   'webmestre_fichiers_deposes'              => $tab_droits_profil_webmestre,
   'webmestre_geographie'                    => $tab_droits_profil_webmestre,
   'webmestre_identite_installation'         => $tab_droits_profil_webmestre,

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Référentiels partagés (serveur communautaire)";
+$TITRE = html(Lang::_("Référentiels partagés (serveur communautaire)"));
 
 if( !$_SESSION['SESAMATH_ID'] || !$_SESSION['SESAMATH_KEY'] )
 {
@@ -35,8 +35,8 @@ if( !$_SESSION['SESAMATH_ID'] || !$_SESSION['SESAMATH_KEY'] )
 }
 
 // Fabrication des éléments select du formulaire, pour pouvoir prendre un référentiel d'une autre matière ou d'un autre niveau (demandé...).
-$select_famille_matiere = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_familles_matieres() , 'f_famille_matiere' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'familles_matieres' /*optgroup*/);
-$select_famille_niveau  = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_familles_niveaux()  , 'f_famille_niveau'  /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'familles_niveaux'  /*optgroup*/);
+$select_famille_matiere = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_familles_matieres() , 'f_famille_matiere' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'familles_matieres' /*optgroup*/);
+$select_famille_niveau  = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_familles_niveaux()  , 'f_famille_niveau'  /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'familles_niveaux'  /*optgroup*/);
 ?>
 
 <form action="#" method="post">

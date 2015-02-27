@@ -1,7 +1,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -58,7 +58,7 @@ $(document).ready
             }
             else
             {
-              $('#ajax_info').append(responseHTML);
+              $('#ajax_info').html(responseHTML);
               initialiser_compteur();
               if(responseHTML.indexOf('en cours')!=-1)
               {
@@ -149,7 +149,7 @@ $(document).ready
       else
       {
         $.prompt(
-          "Souhaitez-vous vraiment restaurer la base contenue dans le fichier "+fichier_nom+"&nbsp;?<br />Toute action effectuée depuis le moment de cette sauvegarde sera à refaire&nbsp;!!!<br />En particulier les saisies d'évaluations et les modifications de référentiels seront perdues&hellip;",
+          "Souhaitez-vous vraiment restaurer la base contenue dans ce fichier&nbsp;?<br />==&gt; "+fichier_nom+"<br />Toute action effectuée depuis le moment de cette sauvegarde sera à refaire&nbsp;!!!<br />En particulier les saisies d'évaluations et les modifications de référentiels seront perdues&hellip;",
           {
             title   : 'Demande de confirmation',
             buttons : {
@@ -203,7 +203,7 @@ $(document).ready
             }
             else
             {
-              $('#ajax_info').append(responseHTML);
+              $('#ajax_info').html(responseHTML);
               initialiser_compteur();
               if(responseHTML.indexOf('en cours')!=-1)
               {

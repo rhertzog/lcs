@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -53,7 +53,7 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
   $tab_modif_cellule = array();  // ['html'] , ['class'] , ['title'] , ['data_etat']
   // Tableau des langues
   $tfoot = '';
-  require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
+  require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues_socle.php');
   // Récupérer les données des élèves
   $eleves_ordre = ($groupe_type=='Classes') ? 'alpha' : $eleves_ordre ;
   $tab_eleve_infos = DB_STRUCTURE_BILAN::DB_lister_eleves_cibles( $listing_eleve_id , $eleves_ordre , FALSE /*with_gepi*/ , TRUE /*with_langue*/ , FALSE /*with_brevet_serie*/ );
@@ -150,14 +150,14 @@ if( ($action=='Afficher_bilan') && $palier_id && count($tab_pilier) && count($ta
   }
   $affichage = str_replace($tab_bad,$tab_bon,$affichage);
   // Afficher le résultat
-  echo $affichage;
+  exit($affichage);
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Afficher les informations pour aider à valider un pilier précis pour un élève donné
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-elseif( ($action=='Afficher_information') && $eleve_id && $pilier_id )
+if( ($action=='Afficher_information') && $eleve_id && $pilier_id )
 {
   // Récupération de la liste des validations des items du palier
   $tab_item = array();  // [entree_id] => 0/1;
@@ -201,13 +201,14 @@ elseif( ($action=='Afficher_information') && $eleve_id && $pilier_id )
   }
   // Paragraphe des items
   echo'@'.$affichage_socle;
+  exit();
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Enregistrer les états de validation
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-elseif($action=='Enregistrer_validation')
+if($action=='Enregistrer_validation')
 {
   // Récupérer les triplets {eleve;pilier;valid}
   $tab_valid = (isset($_POST['f_valid'])) ? explode(',',$_POST['f_valid']) : array() ;

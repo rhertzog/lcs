@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Log des actions sensibles";
+$TITRE = html(Lang::_("Log des actions sensibles"));
 ?>
 
 <p class="astuce">Les actions sensibles sont enregistrées, ce qui permet aux administrateurs de rechercher quel compte est fautif en cas de problème...</p>

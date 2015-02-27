@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,13 +26,13 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Professeurs / Personnels";
+$TITRE = html(Lang::_("Professeurs / Personnels"));
 
 // Récupérer d'éventuels paramètres pour restreindre l'affichage
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
 $statut = (isset($_POST['f_statut'])) ? Clean::entier($_POST['f_statut']) : 1  ;
 // Construire et personnaliser le formulaire pour restreindre l'affichage
-$select_f_statuts = Form::afficher_select(Form::$tab_select_statut , 'f_statut' /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ , '' /*optgroup*/);
+$select_f_statuts = HtmlForm::afficher_select(Form::$tab_select_statut , 'f_statut' /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ , '' /*optgroup*/);
 
 // Options du formulaire de profils, et variable en session pour la page ajax associée
 $options = '';
@@ -88,7 +88,6 @@ foreach($_SESSION['TAB_PROFILS_ADMIN']['MDP_LONGUEUR_MINI'] as $profil_sigle => 
   </thead>
   <tbody>
     <?php
-    $tab_genre = array( 'I'=>'' , 'M'=>'M.' , 'F'=>'Mme' );
     // Lister les personnels (professeurs, directeurs, etc.)
     $DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_lister_users( array('professeur','directeur') , $statut , 'user_id,user_id_ent,user_id_gepi,user_sconet_id,user_reference,user_profil_sigle,user_profil_nom_long_singulier,user_genre,user_nom,user_prenom,user_login,user_email,user_sortie_date' /*liste_champs*/ , FALSE /*with_classe*/ );
     if(!empty($DB_TAB))
@@ -106,7 +105,7 @@ foreach($_SESSION['TAB_PROFILS_ADMIN']['MDP_LONGUEUR_MINI'] as $profil_sigle => 
         echo  '<td class="label">'.html($DB_ROW['user_sconet_id']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_reference']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_profil_sigle']).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.html(html($DB_ROW['user_profil_nom_long_singulier'])).'" /></td>'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
-        echo  '<td class="label">'.$tab_genre[$DB_ROW['user_genre']].'</td>';
+        echo  '<td class="label">'.Html::$tab_genre['adulte'][$DB_ROW['user_genre']].'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_nom']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_prenom']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_login']).'</td>';

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -38,7 +38,7 @@ $action = (isset($_POST['f_action'])) ? Clean::texte($_POST['f_action'])  : '';
 
 if($action=='Valider_CNIL')
 {
-  DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'connexion' , $_SESSION['USER_ID'] );
+  DB_STRUCTURE_PUBLIC::DB_enregistrer_date_connexion($_SESSION['USER_ID']);
   unset($_SESSION['STOP_CNIL']);
   exit('ok');
 }

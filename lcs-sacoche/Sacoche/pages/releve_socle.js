@@ -1,7 +1,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -234,6 +234,7 @@ $(document).ready
           f_lien          : { required:false },
           f_start         : { required:false },
           f_couleur       : { required:true },
+          f_fond          : { required:true },
           f_legende       : { required:true },
           f_marge_min     : { required:true }
         },
@@ -252,6 +253,7 @@ $(document).ready
           f_lien          : { },
           f_start         : { },
           f_couleur       : { required:"couleur manquante" },
+          f_fond          : { required:"fond manquant" },
           f_legende       : { required:"légende manquante" },
           f_marge_min     : { required:"marge mini manquante" }
         },
@@ -335,7 +337,7 @@ $(document).ready
         $('#ajax_msg').removeAttr("class").html('');
         // Mis dans le div bilan et pas balancé directement dans le fancybox sinon la mise en forme des liens nécessite un peu plus de largeur que le fancybox ne recalcule pas (et $.fancybox.update(); ne change rien).
         // Malgré tout, pour Chrome par exemple, la largeur est mal clculée et provoque des retours à la ligne, d'où le minWidth ajouté.
-        $('#bilan').html('<p class="noprint">Afin de préserver l\'environnement, n\'imprimer qu\'en cas de nécessité !</p>'+responseHTML);
+        $('#bilan').html('<p class="noprint">Afin de préserver l\'environnement, n\'imprimer que si nécessaire !</p>'+responseHTML);
         $.fancybox( { 'href':'#bilan' , onClosed:function(){$('#bilan').html("");} , 'centerOnScroll':true , 'minWidth':450 } );
       }
       else

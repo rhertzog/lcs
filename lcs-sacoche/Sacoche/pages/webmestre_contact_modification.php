@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Coordonnées du contact référent par établissement";
+$TITRE = "Coordonnées du contact référent par établissement"; // Pas de traduction car pas de choix de langue pour ce profil.
 
 $checked_user_oui = (CONTACT_MODIFICATION_USER=='oui') ? ' checked' : '' ;
 $checked_user_non = (CONTACT_MODIFICATION_USER=='non') ? ' checked' : '' ;

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Gérer les parents";
+$TITRE = html(Lang::_("Gérer les parents"));
 
 // Récupérer d'éventuels paramètres pour restreindre l'affichage
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
@@ -35,7 +35,7 @@ $debut_nom    = (isset($_POST['f_debut_nom']))    ? Clean::nom($_POST['f_debut_n
 $debut_prenom = (isset($_POST['f_debut_prenom'])) ? Clean::prenom($_POST['f_debut_prenom']) : '' ;
 $find_doublon = (isset($_POST['f_doublon']))      ? TRUE                                    : FALSE ;
 // Construire et personnaliser le formulaire pour restreindre l'affichage
-$select_f_statuts = Form::afficher_select(Form::$tab_select_statut , 'f_statut' /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ , '' /*optgroup*/);
+$select_f_statuts = HtmlForm::afficher_select(Form::$tab_select_statut , 'f_statut' /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ , '' /*optgroup*/);
 
 // Javascript
 Layout::add( 'js_inline_before' , 'var input_date      = "'.TODAY_FR.'";' );
@@ -130,7 +130,6 @@ elseif($find_doublon) // (forcément)
     <?php
     if(!empty($DB_TAB))
     {
-      $tab_genre = array( 'I'=>'' , 'M'=>'M.' , 'F'=>'Mme' );
       foreach($DB_TAB as $DB_ROW)
       {
         // Formater la date
@@ -145,7 +144,7 @@ elseif($find_doublon) // (forcément)
         echo  '<td class="label">'.html($DB_ROW['user_sconet_id']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_reference']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_profil_sigle']).' <img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="'.$_SESSION['TAB_PROFILS_ADMIN']['TYPE'][$DB_ROW['user_profil_sigle']].'" /></td>';
-        echo  '<td class="label">'.$tab_genre[$DB_ROW['user_genre']].'</td>';
+        echo  '<td class="label">'.Html::$tab_genre['adulte'][$DB_ROW['user_genre']].'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_nom']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_prenom']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_login']).'</td>';

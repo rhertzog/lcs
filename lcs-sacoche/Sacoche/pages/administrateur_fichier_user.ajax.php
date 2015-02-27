@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -112,9 +112,6 @@ function afficher_etapes($import_origine,$import_profil)
   return $puces;
 }
 
-$tab_genre_enfant = array( 'I'=>'' , 'M'=>'Masc.' , 'F'=>'Fém.' );
-$tab_genre_adulte = array( 'I'=>'' , 'M'=>'M.'    , 'F'=>'Mme'  );
-
 function aff_champ($profil,$type,$val)
 {
   if($type!='genre')
@@ -123,13 +120,11 @@ function aff_champ($profil,$type,$val)
   }
   else if($profil=='eleve')
   {
-    global $tab_genre_enfant;
-    return $tab_genre_enfant[$val];
+    return Html::$tab_genre['enfant'][$val];
   }
   else
   {
-    global $tab_genre_adulte;
-    return $tab_genre_adulte[$val];
+    return Html::$tab_genre['adulte'][$val];
   }
 }
 
@@ -1393,7 +1388,7 @@ if( $step==31 )
         }
         else
         {
-          $id_checked = (mb_strpos($ref,$masque_recherche)===0) ? $niveau_id : '';
+          $id_checked = (mb_strpos(str_replace(' ','',$ref),$masque_recherche)===0) ? $niveau_id : '';
         }
         if($id_checked)
         {
@@ -1447,21 +1442,17 @@ if( $step==32 )
   $tab_i_groupe_TO_id_base  = $tab_liens_id_base['groupes'];
   $tab_i_fichier_TO_id_base = $tab_liens_id_base['users'];
   // Récupérer les éléments postés
+  $tab_del = (!empty($_POST['f_del'])) ? Clean::map_entier(explode(',',$_POST['f_del'])) : array() ;
   $tab_add = array();
-  $tab_del = array();
-  foreach($_POST as $key => $val)
+  $tab_tmp = (!empty($_POST['f_add'])) ? explode(',',$_POST['f_add']) : array() ;
+  if(count($tab_tmp))
   {
-    if( (substr($key,0,4)=='add_') && (!in_array(substr($key,0,8),array('add_ref_','add_nom_','add_niv_'))) )
+    foreach($tab_tmp as $add_infos)
     {
-      $i = substr($key,4);
-      $tab_add[$i]['ref'] = Clean::ref($_POST['add_ref_'.$i]);
-      $tab_add[$i]['nom'] = Clean::ref($_POST['add_nom_'.$i]);
-      $tab_add[$i]['niv'] = Clean::ref($_POST['add_niv_'.$i]);
-    }
-    elseif(substr($key,0,4)=='del_')
-    {
-      $id = substr($key,4);
-      $tab_del[] = Clean::entier($id);
+      list( $i , $niv , $ref , $nom ) =  explode(']¤[',$add_infos);
+      $tab_add[$i]['ref'] = Clean::ref($ref);
+      $tab_add[$i]['nom'] = Clean::texte( $nom);
+      $tab_add[$i]['niv'] = Clean::entier($niv);
     }
   }
   // Ajouter des classes éventuelles
@@ -1470,7 +1461,7 @@ if( $step==32 )
   {
     foreach($tab_add as $i => $tab)
     {
-      if( (count($tab)==3) && $tab['ref'] && $tab['nom'] && $tab['niv'] )
+      if( $tab['ref'] && $tab['nom'] && $tab['niv'] )
       {
         $classe_id = DB_STRUCTURE_ADMINISTRATEUR::DB_ajouter_groupe_par_admin('classe',$tab['ref'],$tab['nom'],$tab['niv']);
         $nb_add++;
@@ -1605,7 +1596,7 @@ if( $step==41 )
         }
         else
         {
-          $id_checked = (mb_strpos($ref,$masque_recherche)===0) ? $niveau_id : '';
+          $id_checked = (mb_strpos(str_replace(' ','',$ref),$masque_recherche)===0) ? $niveau_id : '';
         }
         if($id_checked)
         {
@@ -1659,21 +1650,17 @@ if( $step==42 )
   $tab_i_groupe_TO_id_base  = $tab_liens_id_base['groupes'];
   $tab_i_fichier_TO_id_base = $tab_liens_id_base['users'];
   // Récupérer les éléments postés
+  $tab_del = (!empty($_POST['f_del'])) ? Clean::map_entier(explode(',',$_POST['f_del'])) : array() ;
   $tab_add = array();
-  $tab_del = array();
-  foreach($_POST as $key => $val)
+  $tab_tmp = (!empty($_POST['f_add'])) ? explode(',',$_POST['f_add']) : array() ;
+  if(count($tab_tmp))
   {
-    if( (substr($key,0,4)=='add_') && (!in_array(substr($key,0,8),array('add_ref_','add_nom_','add_niv_'))) )
+    foreach($tab_tmp as $add_infos)
     {
-      $i = substr($key,4);
-      $tab_add[$i]['ref'] = Clean::ref($_POST['add_ref_'.$i]);
-      $tab_add[$i]['nom'] = Clean::ref($_POST['add_nom_'.$i]);
-      $tab_add[$i]['niv'] = Clean::ref($_POST['add_niv_'.$i]);
-    }
-    elseif(substr($key,0,4)=='del_')
-    {
-      $id = substr($key,4);
-      $tab_del[] = Clean::entier($id);
+      list( $i , $niv , $ref , $nom ) =  explode(']¤[',$add_infos);
+      $tab_add[$i]['ref'] = Clean::ref($ref);
+      $tab_add[$i]['nom'] = Clean::texte( $nom);
+      $tab_add[$i]['niv'] = Clean::entier($niv);
     }
   }
   // Ajouter des groupes éventuels
@@ -1682,7 +1669,7 @@ if( $step==42 )
   {
     foreach($tab_add as $i => $tab)
     {
-      if( (count($tab)==3) && $tab['ref'] && $tab['nom'] && $tab['niv'] )
+      if( $tab['ref'] && $tab['nom'] && $tab['niv'] )
       {
         $groupe_id = DB_STRUCTURE_ADMINISTRATEUR::DB_ajouter_groupe_par_admin('groupe',$tab['ref'],$tab['nom'],$tab['niv']);
         $nb_add++;
@@ -2107,10 +2094,16 @@ if( $step==52 )
           $tab_memo_analyse['ajouter'][$i_fichier]['prenom'],
           $birth_date,
           '', /* user_email */
+          '', /* user_email_origine */
           $login,
           crypter_mdp($password),
           $tab_memo_analyse['ajouter'][$i_fichier]['classe']
         );
+        if($import_profil=='professeur')
+        {
+          // Pour les professeurs et directeurs, abonnement obligatoire aux signalements d'un souci pour une appréciation d'un bilan officiel
+          DB_STRUCTURE_NOTIFICATION::DB_ajouter_abonnement( $user_id , 'bilan_officiel_appreciation' , 'accueil' );
+        }
         $tab_i_fichier_TO_id_base[$i_fichier] = (int) $user_id;
         $nb_add++;
         $tab_password[$user_id] = $password;

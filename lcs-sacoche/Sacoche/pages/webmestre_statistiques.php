@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Statistiques d'utilisation";
+$TITRE = "Statistiques d'utilisation"; // Pas de traduction car pas de choix de langue pour ce profil.
 
 ?>
 
@@ -60,7 +60,7 @@ list($personnel_nb,$eleve_nb,$personnel_use,$eleve_use,$evaluation_nb,$validatio
 <?php
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
 $selection = (isset($_POST['listing_ids'])) ? explode(',',$_POST['listing_ids']) : FALSE ; // demande de stats depuis structure_multi.php
-$select_structure = Form::afficher_select( DB_WEBMESTRE_SELECT::DB_OPT_structures_sacoche() , 'f_base' /*select_nom*/ , FALSE /*option_first*/ , $selection , 'zones_geo' /*optgroup*/ , TRUE /*multiple*/ );
+$select_structure = HtmlForm::afficher_select( DB_WEBMESTRE_SELECT::DB_OPT_structures_sacoche() , 'f_base' /*select_nom*/ , FALSE /*option_first*/ , $selection , 'zones_geo' /*optgroup*/ , TRUE /*multiple*/ );
 ?>
 
 <form action="#" method="post" id="form_stats"><fieldset>

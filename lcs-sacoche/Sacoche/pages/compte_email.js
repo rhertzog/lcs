@@ -1,7 +1,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -34,6 +34,12 @@ $(document).ready
 // Initialisation
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // tri du tableau (avec jquery.tablesorter.js).
+    $('#table_notifications').tablesorter({ headers:{0:{sorter:'date_fr'},3:{sorter:false},4:{sorter:false}} });
+    var tableau_tri = function(){ $('#table_notifications').trigger( 'sorton' , [ [[0,1]] ] ); };
+    var tableau_maj = function(){ $('#table_notifications').trigger( 'update' , [ true ] ); };
+    tableau_tri();
+
     if(!($('#f_courriel').val()))
     {
       $('#f_courriel').focus();
@@ -47,16 +53,24 @@ $(document).ready
     (
       function()
       {
-        $('#ajax_msg').removeAttr("class").addClass("alerte").html("Enregistrer pour confirmer.");
+        $('#ajax_msg_courriel').removeAttr("class").addClass("alerte").html("Enregistrer pour confirmer.");
+      }
+    );
+
+    $("#table_abonnements input[type=radio]").change
+    (
+      function()
+      {
+        $('#ajax_msg_abonnements').removeAttr("class").addClass("alerte").html("Enregistrer pour confirmer.");
       }
     );
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Traitement du formulaire
+// Traitement du premier formulaire
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // Le formulaire qui va être analysé et traité en AJAX
-    var formulaire = $('form');
+    var formulaire = $('#form_courriel');
 
     // Vérifier la validité du formulaire (avec jquery.validate.js)
     var validation = formulaire.validate
@@ -82,10 +96,10 @@ $(document).ready
     {
       url : 'ajax.php?page='+PAGE+'&csrf='+CSRF,
       type : 'POST',
-      dataType : "html",
+      dataType : 'json',
       clearForm : false,
       resetForm : false,
-      target : "#ajax_msg",
+      target : "#ajax_msg_courriel",
       beforeSubmit : test_form_avant_envoi,
       error : retour_form_erreur,
       success : retour_form_valide
@@ -104,12 +118,12 @@ $(document).ready
     // Fonction précédent l'envoi du formulaire (avec jquery.form.js)
     function test_form_avant_envoi(formData, jqForm, options)
     {
-      $('#ajax_msg').removeAttr("class").html("&nbsp;");
+      $('#ajax_msg_courriel').removeAttr("class").html("&nbsp;");
       var readytogo = validation.form();
       if(readytogo)
       {
         $("#bouton_valider").prop('disabled',true);
-        $('#ajax_msg').removeAttr("class").addClass("loader").html("En cours&hellip;");
+        $('#ajax_msg_courriel').removeAttr("class").addClass("loader").html("En cours&hellip;");
       }
       return readytogo;
     }
@@ -118,23 +132,62 @@ $(document).ready
     function retour_form_erreur(jqXHR, textStatus, errorThrown)
     {
       $("#bouton_valider").prop('disabled',false);
-      $('#ajax_msg').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
+      $('#ajax_msg_courriel').removeAttr("class").addClass("alerte").html(afficher_json_message_erreur(jqXHR,textStatus));
     }
 
     // Fonction suivant l'envoi du formulaire (avec jquery.form.js)
-    function retour_form_valide(responseHTML)
+    function retour_form_valide(responseJSON)
     {
       initialiser_compteur();
       $("#bouton_valider").prop('disabled',false);
-      if(responseHTML=='ok')
+      if(responseJSON['statut']==true)
       {
-        $('#ajax_msg').removeAttr("class").addClass("valide").html("Adresse enregistrée !");
+        $('#info_adresse').html(responseJSON['info_adresse']);
+        $('#info_abonnement_mail').html(responseJSON['info_abonnement_mail']);
+        $('#ajax_msg_courriel').removeAttr("class").addClass("valide").html("Choix enregistré !");
       }
       else
       {
-        $('#ajax_msg').removeAttr("class").addClass("alerte").html(responseHTML);
+        $('#ajax_msg_courriel').removeAttr("class").addClass("alerte").html(responseJSON['value']);
       }
     }
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+// Traitement du deuxième formulaire
+// ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    $('#bouton_abonner').click
+    (
+      function()
+      {
+        $('#ajax_msg_abonnements').removeAttr("class").addClass("loader").html("En cours&hellip;");
+        $.ajax
+        (
+          {
+            type : 'POST',
+            url : 'ajax.php?page='+PAGE,
+            data : 'csrf='+CSRF+'&f_action=enregistrer_abonnements'+'&'+$('#form_abonnements').serialize(),
+            dataType : 'json',
+            error : function(jqXHR, textStatus, errorThrown)
+            {
+              $('#ajax_msg_abonnements').removeAttr("class").addClass("alerte").html(afficher_json_message_erreur(jqXHR,textStatus));
+            },
+            success : function(responseJSON)
+            {
+              initialiser_compteur();
+              if(responseJSON['statut']==true)
+              {
+                $('#ajax_msg_abonnements').removeAttr("class").addClass("valide").html("Choix enregistrés !");
+              }
+              else
+              {
+                $('#ajax_msg_abonnements').removeAttr("class").addClass("alerte").html(responseJSON['value']);
+              }
+            }
+          }
+        );
+      }
+    );
 
   }
 );

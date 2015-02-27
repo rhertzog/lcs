@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = ($_SESSION['USER_PROFIL_TYPE']=='professeur') ? "Fiches brevet" :  "Étape n°5 - Fiches brevet" ;
+$TITRE = ($_SESSION['USER_PROFIL_TYPE']=='professeur') ? html(Lang::_("Fiches brevet")) :  html(Lang::_("Étape n°5 - Fiches brevet")) ;
 
 // Javascript
 Layout::add( 'js_inline_before' , 'var TODAY_FR   = "'.TODAY_FR.'";' );
@@ -439,7 +439,7 @@ foreach($tab_brevet_series as $brevet_serie_ref => $brevet_serie_nom)
   <h2>Rechercher des saisies manquantes</h2>
   <div class="astuce">La recherche sera dans tous les cas aussi restreinte aux épreuves où les élèves ont des notes reportées.</div>
   <p><a href="#zone_chx_rubriques" id="rubrique_check_all" class="cocher_tout">Toutes</a>&nbsp;&nbsp;&nbsp;<a href="#zone_chx_rubriques" id="rubrique_uncheck_all" class="cocher_rien">Aucune</a></p>
-  <div class="prof_liste"><?php echo implode('</div><div class="prof_liste">',$tab_checkbox_rubriques) ?></div>
+  <div class="col_liste"><?php echo implode('</div><div class="col_liste">',$tab_checkbox_rubriques) ?></div>
   <p style="clear:both"><span class="tab"></span><button id="lancer_recherche" type="button" class="rechercher">Lancer la recherche</button> <button id="fermer_zone_chx_rubriques" type="button" class="annuler">Annuler</button><label id="ajax_msg_recherche">&nbsp;</label></p>
 </form>
 
@@ -542,7 +542,7 @@ $date_plus1semaine = date("d/m/Y",mktime(0,0,0,date("m"),date("d")+7,date("Y")))
 
 <div id="zone_archiver_imprimer" class="hide">
   <h2>Archiver / Imprimer des données</h2>
-  <p class="noprint">Afin de préserver l'environnement, n'imprimer qu'en cas de nécessité !</p>
+  <p class="noprint">Afin de préserver l'environnement, n'imprimer que si nécessaire !</p>
   <ul class="puce">
     <li><button id="imprimer_donnees_eleves_epreuves"  type="button" class="imprimer">Archiver / Imprimer</button> les appréciations par épreuve pour chaque élève.</li>
     <li><button id="imprimer_donnees_eleves_syntheses" type="button" class="imprimer">Archiver / Imprimer</button> les avis de synthèse pour chaque élève.</li>

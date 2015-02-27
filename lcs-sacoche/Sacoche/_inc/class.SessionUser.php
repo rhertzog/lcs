@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -40,27 +40,9 @@ class SessionUser
    */
   public static function tester_authentification_webmestre($password)
   {
-    // Si tentatives trop rapprochées...
-    $delai_tentative_secondes = $_SERVER['REQUEST_TIME'] - WEBMESTRE_ERREUR_DATE ;
-    if($delai_tentative_secondes<3)
-    {
-      FileSystem::fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>$_SERVER['REQUEST_TIME']) );
-      return'Calmez-vous et patientez 10s avant toute nouvelle tentative !';
-    }
-    elseif($delai_tentative_secondes<10)
-    {
-      $delai_attente_restant = 10-$delai_tentative_secondes ;
-      return'Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.';
-    }
-    // Si mdp incorrect...
+    global $PAGE;
     $password_crypte = crypter_mdp($password);
-    if($password_crypte!=WEBMESTRE_PASSWORD_MD5)
-    {
-      FileSystem::fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>$_SERVER['REQUEST_TIME']) );
-      return'Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.';
-    }
-    // Si on arrive ici c'est que l'identification s'est bien effectuée !
-    return'ok';
+    return ($password_crypte==WEBMESTRE_PASSWORD_MD5) ? 'ok' : 'Mot de passe incorrect ! Nouvelle tentative autorisée dans '.$_SESSION['FORCEBRUTE'][$PAGE]['DELAI'].'s.' ;
   }
 
   /**
@@ -72,27 +54,7 @@ class SessionUser
    */
   public static function tester_authentification_developpeur($password)
   {
-    // Si tentatives trop rapprochées...
-    $delai_tentative_secondes = $_SERVER['REQUEST_TIME'] - WEBMESTRE_ERREUR_DATE ;
-    if($delai_tentative_secondes<3)
-    {
-      FileSystem::fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>$_SERVER['REQUEST_TIME']) );
-      return'Calmez-vous et patientez 10s avant toute nouvelle tentative !';
-    }
-    elseif($delai_tentative_secondes<10)
-    {
-      $delai_attente_restant = 10-$delai_tentative_secondes ;
-      return'Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.';
-    }
-    // Si mdp incorrect...
-    $auth_result = ServeurCommunautaire::tester_auth_devel( crypter_mdp($password) );
-    if($auth_result!='ok')
-    {
-      FileSystem::fabriquer_fichier_hebergeur_info( array('WEBMESTRE_ERREUR_DATE'=>$_SERVER['REQUEST_TIME']) );
-      return $auth_result;
-    }
-    // Si on arrive ici c'est que l'identification s'est bien effectuée !
-    return'ok';
+    return ServeurCommunautaire::tester_auth_devel( crypter_mdp($password) );
   }
 
   /**
@@ -109,32 +71,18 @@ class SessionUser
     // Si id non trouvé...
     if(empty($DB_ROW))
     {
-      return array('Partenaire introuvable !',array());
-    }
-    // Si tentatives trop rapprochées...
-    if($DB_ROW['partenaire_tentative_date']!==NULL) // Sinon $DB_ROW['delai_tentative_secondes'] vaut NULL
-    {
-      if($DB_ROW['delai_tentative_secondes']<3)
-      {
-        DB_WEBMESTRE_PUBLIC::DB_enregistrer_partenaire_date_tentative($DB_ROW['partenaire_id']);
-        return array('Calmez-vous et patientez 10s avant la prochaine tentative !',array());
-      }
-      elseif($DB_ROW['delai_tentative_secondes']<10)
-      {
-        $delai_attente_restant = 10 - $DB_ROW['delai_tentative_secondes'] ;
-        return array('Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.',array());
-      }
+      return array( 'Partenaire introuvable !' , array() );
     }
     // Si mdp incorrect...
     if($DB_ROW['partenaire_password']!=crypter_mdp($password))
     {
-      DB_WEBMESTRE_PUBLIC::DB_enregistrer_partenaire_date_tentative($DB_ROW['partenaire_id']);
-      return array('Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.',array());
+      global $PAGE;
+      return array( 'Mot de passe incorrect ! Nouvelle tentative autorisée dans '.$_SESSION['FORCEBRUTE'][$PAGE]['DELAI'].'s.' , array() );
     }
     // Enregistrement d'un cookie sur le poste client servant à retenir le partenariat sélectionné si identification avec succès
     setcookie( COOKIE_PARTENAIRE /*name*/ , $DB_ROW['partenaire_id'] /*value*/ , $_SERVER['REQUEST_TIME']+31536000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ ); /* 60*60*24*365 */
     // Si on arrive ici c'est que l'identification s'est bien effectuée !
-    return array('ok',$DB_ROW);
+    return array( 'ok' , $DB_ROW );
   }
 
   /**
@@ -178,46 +126,32 @@ class SessionUser
     }
     // Blocage éventuel par le webmestre ou un administrateur ou l'automate
     LockAcces::stopper_si_blocage( $BASE , $DB_ROW['user_profil_sigle'] );
-    // Si tentatives trop rapprochées...
-    if($DB_ROW['user_tentative_date']!==NULL) // Sinon $DB_ROW['delai_tentative_secondes'] vaut NULL
-    {
-      if($DB_ROW['delai_tentative_secondes']<3)
-      {
-        DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'tentative' , $DB_ROW['user_id'] );
-        return array('Calmez-vous et patientez 10s avant la prochaine tentative !',array());
-      }
-      elseif($DB_ROW['delai_tentative_secondes']<10)
-      {
-        $delai_attente_restant = 10 - $DB_ROW['delai_tentative_secondes'] ;
-        return array('Merci d\'attendre encore '.$delai_attente_restant.'s avant une nouvelle tentative.',array());
-      }
-    }
     // Si mdp incorrect...
     if( ($mode_connection=='normal') && ($DB_ROW['user_password']!=crypter_mdp($password)) )
     {
-      DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'tentative' , $DB_ROW['user_id'] );
-      return array('Mot de passe incorrect ! Patientez 10s avant une nouvelle tentative.',array());
+      global $PAGE;
+      return array( 'Mot de passe incorrect ! Nouvelle tentative autorisée dans '.$_SESSION['FORCEBRUTE'][$PAGE]['DELAI'].'s.' , array() );
     }
     // Si compte desactivé...
     if($DB_ROW['user_sortie_date']<=TODAY_MYSQL)
     {
-      return array('Identification réussie mais ce compte est desactivé !',array());
+      return array( 'Identification réussie mais ce compte est desactivé !' , array() );
     }
     // Mémoriser la date de la (dernière) connexion (pour les autres cas, sera enregistré lors de la confirmation de la prise en compte des infos CNIL).
-    if( ($DB_ROW['user_connexion_date']!==NULL) || in_array($DB_ROW['user_profil_sigle'],array('webmestre','administrateur')) )
+    if( ($DB_ROW['user_connexion_date']!==NULL) || in_array($DB_ROW['user_profil_type'],array('webmestre','administrateur')) )
     {
-      DB_STRUCTURE_PUBLIC::DB_enregistrer_date( 'connexion' , $DB_ROW['user_id'] );
+      DB_STRUCTURE_PUBLIC::DB_enregistrer_date_connexion($DB_ROW['user_id']);
     }
     // Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
     setcookie( COOKIE_STRUCTURE /*name*/ , $BASE /*value*/ , $_SERVER['REQUEST_TIME']+31536000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ ); /* 60*60*24*365 */
     // Enregistrement d'un cookie sur le poste client servant à retenir le dernier mode de connexion utilisé si identification avec succès
     setcookie( COOKIE_AUTHMODE /*name*/ , $mode_connection /*value*/ , 0 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
     // Si on arrive ici c'est que l'identification s'est bien effectuée !
-    return array('ok',$DB_ROW);
+    return array( 'ok' , $DB_ROW );
   }
 
   /**
-   * Enregistrer en session les informations authentifiant un utilisateur (sauf le webmestre).
+   * Enregistrer en session les informations authentifiant un utilisateur (sauf profils webmestre / développeur / partenaire).
    * 
    * @param int     $BASE
    * @param array   $DB_ROW   ligne issue de la table sacoche_user correspondant à l'utilisateur qui se connecte.
@@ -227,8 +161,113 @@ class SessionUser
   {
     // On en profite pour effacer les fichiers inutiles
     FileSystem::nettoyer_fichiers_temporaires($BASE);
+    // Récupérer et Enregistrer en session les données associées à l'établissement (indices du tableau de session en majuscules).
+    $DB_TAB_PARAM = DB_STRUCTURE_PUBLIC::DB_lister_parametres();
+    $tab_type_entier  = array(
+      'SESAMATH_ID',
+      'MOIS_BASCULE_ANNEE_SCOLAIRE',
+      'DROIT_ELEVE_DEMANDES',
+      'CALCUL_VALEUR_RR',
+      'CALCUL_VALEUR_R',
+      'CALCUL_VALEUR_V',
+      'CALCUL_VALEUR_VV',
+      'CALCUL_SEUIL_R',
+      'CALCUL_SEUIL_V',
+      'CALCUL_LIMITE',
+      'CAS_SERVEUR_PORT',
+      'ENVELOPPE_HORIZONTAL_GAUCHE',
+      'ENVELOPPE_HORIZONTAL_MILIEU',
+      'ENVELOPPE_HORIZONTAL_DROITE',
+      'ENVELOPPE_VERTICAL_HAUT',
+      'ENVELOPPE_VERTICAL_MILIEU',
+      'ENVELOPPE_VERTICAL_BAS',
+      'OFFICIEL_ARCHIVE_AJOUT_MESSAGE_COPIE',
+      'OFFICIEL_ARCHIVE_RETRAIT_TAMPON_SIGNATURE',
+      'OFFICIEL_BULLETIN_ONLY_SOCLE',
+      'OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE_LONGUEUR',
+      'OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE_REPORT',
+      'OFFICIEL_BULLETIN_APPRECIATION_GENERALE_LONGUEUR',
+      'OFFICIEL_BULLETIN_APPRECIATION_GENERALE_REPORT',
+      'OFFICIEL_BULLETIN_ASSIDUITE',
+      'OFFICIEL_BULLETIN_BARRE_ACQUISITIONS',
+      'OFFICIEL_BULLETIN_ACQUIS_TEXTE_NOMBRE',
+      'OFFICIEL_BULLETIN_ACQUIS_TEXTE_CODE',
+      'OFFICIEL_BULLETIN_MOYENNE_SCORES',
+      'OFFICIEL_BULLETIN_CONVERSION_SUR_20',
+      'OFFICIEL_BULLETIN_MOYENNE_CLASSE',
+      'OFFICIEL_BULLETIN_MOYENNE_GENERALE',
+      'OFFICIEL_BULLETIN_FUSION_NIVEAUX',
+      'OFFICIEL_MARGE_GAUCHE',
+      'OFFICIEL_MARGE_DROITE',
+      'OFFICIEL_MARGE_HAUT',
+      'OFFICIEL_MARGE_BAS',
+      'OFFICIEL_RELEVE_ONLY_SOCLE',
+      'OFFICIEL_RELEVE_APPRECIATION_RUBRIQUE_LONGUEUR',
+      'OFFICIEL_RELEVE_APPRECIATION_RUBRIQUE_REPORT',
+      'OFFICIEL_RELEVE_APPRECIATION_GENERALE_LONGUEUR',
+      'OFFICIEL_RELEVE_APPRECIATION_GENERALE_REPORT',
+      'OFFICIEL_RELEVE_ASSIDUITE',
+      'OFFICIEL_RELEVE_ETAT_ACQUISITION',
+      'OFFICIEL_RELEVE_MOYENNE_SCORES',
+      'OFFICIEL_RELEVE_POURCENTAGE_ACQUIS',
+      'OFFICIEL_RELEVE_CONVERSION_SUR_20',
+      'OFFICIEL_RELEVE_CASES_NB',
+      'OFFICIEL_RELEVE_AFF_COEF',
+      'OFFICIEL_RELEVE_AFF_SOCLE',
+      'OFFICIEL_RELEVE_AFF_DOMAINE',
+      'OFFICIEL_RELEVE_AFF_THEME',
+      'OFFICIEL_SOCLE_APPRECIATION_RUBRIQUE_LONGUEUR',
+      'OFFICIEL_SOCLE_APPRECIATION_RUBRIQUE_REPORT',
+      'OFFICIEL_SOCLE_APPRECIATION_GENERALE_LONGUEUR',
+      'OFFICIEL_SOCLE_APPRECIATION_GENERALE_REPORT',
+      'OFFICIEL_SOCLE_ASSIDUITE',
+      'OFFICIEL_SOCLE_ONLY_PRESENCE',
+      'OFFICIEL_SOCLE_POURCENTAGE_ACQUIS',
+      'OFFICIEL_SOCLE_ETAT_VALIDATION',
+      'USER_DALTONISME',
+    );
+    $tab_type_tableau = array(
+      'CSS_BACKGROUND-COLOR',
+      'CALCUL_VALEUR',
+      'CALCUL_SEUIL',
+      'NOTE_IMAGE',
+      'NOTE_TEXTE',
+      'NOTE_LEGENDE',
+      'ACQUIS_TEXTE',
+      'ACQUIS_LEGENDE',
+      'ETABLISSEMENT',
+      'ENVELOPPE',
+      'OFFICIEL',
+      'CAS_SERVEUR',
+    );
+    foreach($DB_TAB_PARAM as $DB_ROW_PARAM)
+    {
+      $parametre_nom = strtoupper($DB_ROW_PARAM['parametre_nom']);
+      // Certains paramètres sont de type entier.
+      $parametre_valeur = (in_array($parametre_nom,$tab_type_entier)) ? (int) $DB_ROW_PARAM['parametre_valeur'] : $DB_ROW_PARAM['parametre_valeur'] ;
+      // Certains paramètres sont à enregistrer sous forme de tableau.
+      $find = FALSE;
+      foreach($tab_type_tableau as $key1)
+      {
+        $longueur_key1 = strlen($key1);
+        if(substr($parametre_nom,0,$longueur_key1)==$key1)
+        {
+          $key2 = substr($parametre_nom,$longueur_key1+1);
+          $_SESSION[$key1][$key2] = $parametre_valeur ;
+          $find = TRUE;
+          break;
+        }
+      }
+      // Les autres paramètres sont à enregistrer tels quels.
+      if(!$find)
+      {
+        $_SESSION[$parametre_nom] = $parametre_valeur ;
+      }
+    }
     // Enregistrer en session le numéro de la base.
     $_SESSION['BASE']                   = $BASE;
+    // C'est un utilisateur d'un établissement.
+    $_SESSION['USER_ETABLISSEMENT']     = TRUE;
     // Enregistrer en session les données associées au profil de l'utilisateur.
     $_SESSION['USER_PROFIL_SIGLE']      = $DB_ROW['user_profil_sigle'];
     $_SESSION['USER_PROFIL_TYPE']       = $DB_ROW['user_profil_type'];
@@ -243,8 +282,11 @@ class SessionUser
     $_SESSION['USER_GENRE']             = $DB_ROW['user_genre'];
     $_SESSION['USER_NOM']               = $DB_ROW['user_nom'];
     $_SESSION['USER_PRENOM']            = $DB_ROW['user_prenom'];
+    $_SESSION['USER_NAISSANCE_DATE']    = $DB_ROW['user_naissance_date'];
     $_SESSION['USER_EMAIL']             = $DB_ROW['user_email'];
+    $_SESSION['USER_EMAIL_ORIGINE']     = $DB_ROW['user_email_origine'];
     $_SESSION['USER_LOGIN']             = $DB_ROW['user_login'];
+    $_SESSION['USER_LANGUE']            = $DB_ROW['user_langue'];
     $_SESSION['USER_DALTONISME']        = $DB_ROW['user_daltonisme'];
     $_SESSION['USER_ID_ENT']            = $DB_ROW['user_id_ent'];
     $_SESSION['USER_ID_GEPI']           = $DB_ROW['user_id_gepi'];
@@ -297,103 +339,7 @@ class SessionUser
         $_SESSION['TAB_PROFILS_DROIT']['NOM_LONG_PLURIEL'][$DB_ROW['user_profil_sigle']] = $DB_ROW['user_profil_nom_long_pluriel'];
       }
     }
-    // Récupérer et Enregistrer en session les données associées à l'établissement (indices du tableau de session en majuscules).
-    $DB_TAB = DB_STRUCTURE_PUBLIC::DB_lister_parametres();
-    $tab_type_entier  = array(
-      'SESAMATH_ID',
-      'MOIS_BASCULE_ANNEE_SCOLAIRE',
-      'DROIT_ELEVE_DEMANDES',
-      'CALCUL_VALEUR_RR',
-      'CALCUL_VALEUR_R',
-      'CALCUL_VALEUR_V',
-      'CALCUL_VALEUR_VV',
-      'CALCUL_SEUIL_R',
-      'CALCUL_SEUIL_V',
-      'CALCUL_LIMITE',
-      'CAS_SERVEUR_PORT',
-      'ENVELOPPE_HORIZONTAL_GAUCHE',
-      'ENVELOPPE_HORIZONTAL_MILIEU',
-      'ENVELOPPE_HORIZONTAL_DROITE',
-      'ENVELOPPE_VERTICAL_HAUT',
-      'ENVELOPPE_VERTICAL_MILIEU',
-      'ENVELOPPE_VERTICAL_BAS',
-      'OFFICIEL_ARCHIVE_AJOUT_MESSAGE_COPIE',
-      'OFFICIEL_ARCHIVE_RETRAIT_TAMPON_SIGNATURE',
-      'OFFICIEL_BULLETIN_ONLY_SOCLE',
-      'OFFICIEL_BULLETIN_APPRECIATION_RUBRIQUE',
-      'OFFICIEL_BULLETIN_APPRECIATION_GENERALE',
-      'OFFICIEL_BULLETIN_ASSIDUITE',
-      'OFFICIEL_BULLETIN_BARRE_ACQUISITIONS',
-      'OFFICIEL_BULLETIN_ACQUIS_TEXTE_NOMBRE',
-      'OFFICIEL_BULLETIN_ACQUIS_TEXTE_CODE',
-      'OFFICIEL_BULLETIN_MOYENNE_SCORES',
-      'OFFICIEL_BULLETIN_CONVERSION_SUR_20',
-      'OFFICIEL_BULLETIN_MOYENNE_CLASSE',
-      'OFFICIEL_BULLETIN_MOYENNE_GENERALE',
-      'OFFICIEL_BULLETIN_FUSION_NIVEAUX',
-      'OFFICIEL_MARGE_GAUCHE',
-      'OFFICIEL_MARGE_DROITE',
-      'OFFICIEL_MARGE_HAUT',
-      'OFFICIEL_MARGE_BAS',
-      'OFFICIEL_RELEVE_ONLY_SOCLE',
-      'OFFICIEL_RELEVE_APPRECIATION_RUBRIQUE',
-      'OFFICIEL_RELEVE_APPRECIATION_GENERALE',
-      'OFFICIEL_RELEVE_ASSIDUITE',
-      'OFFICIEL_RELEVE_ETAT_ACQUISITION',
-      'OFFICIEL_RELEVE_MOYENNE_SCORES',
-      'OFFICIEL_RELEVE_POURCENTAGE_ACQUIS',
-      'OFFICIEL_RELEVE_CONVERSION_SUR_20',
-      'OFFICIEL_RELEVE_CASES_NB',
-      'OFFICIEL_RELEVE_AFF_COEF',
-      'OFFICIEL_RELEVE_AFF_SOCLE',
-      'OFFICIEL_RELEVE_AFF_DOMAINE',
-      'OFFICIEL_RELEVE_AFF_THEME',
-      'OFFICIEL_SOCLE_APPRECIATION_RUBRIQUE',
-      'OFFICIEL_SOCLE_APPRECIATION_GENERALE',
-      'OFFICIEL_SOCLE_ASSIDUITE',
-      'OFFICIEL_SOCLE_ONLY_PRESENCE',
-      'OFFICIEL_SOCLE_POURCENTAGE_ACQUIS',
-      'OFFICIEL_SOCLE_ETAT_VALIDATION',
-      'USER_DALTONISME',
-    );
-    $tab_type_tableau = array(
-      'CSS_BACKGROUND-COLOR',
-      'CALCUL_VALEUR',
-      'CALCUL_SEUIL',
-      'NOTE_TEXTE',
-      'NOTE_LEGENDE',
-      'ACQUIS_TEXTE',
-      'ACQUIS_LEGENDE',
-      'ETABLISSEMENT',
-      'ENVELOPPE',
-      'OFFICIEL',
-      'CAS_SERVEUR',
-    );
-    foreach($DB_TAB as $DB_ROW)
-    {
-      $parametre_nom = strtoupper($DB_ROW['parametre_nom']);
-      // Certains paramètres sont de type entier.
-      $parametre_valeur = (in_array($parametre_nom,$tab_type_entier)) ? (int) $DB_ROW['parametre_valeur'] : $DB_ROW['parametre_valeur'] ;
-      // Certains paramètres sont à enregistrer sous forme de tableau.
-      $find = FALSE;
-      foreach($tab_type_tableau as $key1)
-      {
-        $longueur_key1 = strlen($key1);
-        if(substr($parametre_nom,0,$longueur_key1)==$key1)
-        {
-          $key2 = substr($parametre_nom,$longueur_key1+1);
-          $_SESSION[$key1][$key2] = $parametre_valeur ;
-          $find = TRUE;
-          break;
-        }
-      }
-      // Les autres paramètres sont à enregistrer tels quels.
-      if(!$find)
-      {
-        $_SESSION[$parametre_nom] = $parametre_valeur ;
-      }
-    }
-    // Fabriquer $_SESSION['NOTE_DOSSIER'] et $_SESSION['BACKGROUND_...'] en fonction de $_SESSION['USER_DALTONISME'] à partir de $_SESSION['NOTE_IMAGE_STYLE'] et $_SESSION['CSS_BACKGROUND-COLOR']['...']
+    // Fabriquer $_SESSION['IMG_...'] et $_SESSION['BACKGROUND_...'] en fonction de $_SESSION['USER_DALTONISME'] à partir de $_SESSION['NOTE_IMAGE_...'] et $_SESSION['CSS_BACKGROUND-COLOR']['...']
     // remarque : $_SESSION['USER_DALTONISME'] ne peut être utilisé que pour les profils élèves/parents/profs/directeurs, pas les admins ni le webmestre
     SessionUser::adapter_daltonisme() ;
     // Enregistrer en session le CSS personnalisé
@@ -414,6 +360,8 @@ class SessionUser
   {
     // Numéro de la base
     $_SESSION['BASE']                          = 0;
+    // Ce n'est pas un utilisateur d'un établissement.
+    $_SESSION['USER_ETABLISSEMENT']            = FALSE;
     // Données associées au profil de l'utilisateur.
     $_SESSION['USER_PROFIL_SIGLE']             = 'WBM';
     $_SESSION['USER_PROFIL_TYPE']              = 'webmestre';
@@ -425,6 +373,7 @@ class SessionUser
     $_SESSION['USER_ID']                       = 0;
     $_SESSION['USER_NOM']                      = WEBMESTRE_NOM;
     $_SESSION['USER_PRENOM']                   = WEBMESTRE_PRENOM;
+    $_SESSION['USER_LANGUE']                   = LOCALE_DEFAULT;
     // Données associées à l'établissement.
     $_SESSION['SESAMATH_ID']                   = 0;
     $_SESSION['ETABLISSEMENT']['DENOMINATION'] = 'Gestion '.HEBERGEUR_INSTALLATION;
@@ -443,6 +392,8 @@ class SessionUser
   {
     // Numéro de la base
     $_SESSION['BASE']                          = 0;
+    // Ce n'est pas un utilisateur d'un établissement.
+    $_SESSION['USER_ETABLISSEMENT']            = FALSE;
     // Données associées au profil de l'utilisateur.
     $_SESSION['USER_PROFIL_SIGLE']             = 'DVL';
     $_SESSION['USER_PROFIL_TYPE']              = 'developpeur';
@@ -454,6 +405,7 @@ class SessionUser
     $_SESSION['USER_ID']                       = 0;
     $_SESSION['USER_NOM']                      = 'SACoche';
     $_SESSION['USER_PRENOM']                   = 'développeur';
+    $_SESSION['USER_LANGUE']                   = LOCALE_DEFAULT;
     // Données associées à l'établissement.
     $_SESSION['SESAMATH_ID']                   = 0;
     $_SESSION['ETABLISSEMENT']['DENOMINATION'] = HEBERGEUR_INSTALLATION;
@@ -472,6 +424,8 @@ class SessionUser
   {
     // Numéro de la base
     $_SESSION['BASE']                          = 0;
+    // Ce n'est pas un utilisateur d'un établissement.
+    $_SESSION['USER_ETABLISSEMENT']            = FALSE;
     // Données associées au profil de l'utilisateur.
     $_SESSION['USER_PROFIL_SIGLE']             = 'ENT';
     $_SESSION['USER_PROFIL_TYPE']              = 'partenaire';
@@ -483,6 +437,7 @@ class SessionUser
     $_SESSION['USER_ID']                       = (int) $DB_ROW['partenaire_id'];
     $_SESSION['USER_NOM']                      = $DB_ROW['partenaire_nom'];
     $_SESSION['USER_PRENOM']                   = $DB_ROW['partenaire_prenom'];
+    $_SESSION['USER_LANGUE']                   = LOCALE_DEFAULT;
     $_SESSION['USER_CONNECTEURS']              = $DB_ROW['partenaire_connecteurs'];
     // Données associées à l'établissement.
     $_SESSION['SESAMATH_ID']                   = 0;
@@ -501,7 +456,10 @@ class SessionUser
   public static function adapter_daltonisme()
   {
     // codes de notation
-    $_SESSION['NOTE_DOSSIER']  = $_SESSION['USER_DALTONISME'] ? 'Dalton'  : $_SESSION['NOTE_IMAGE_STYLE'] ;
+    $_SESSION['IMG_RR'] = $_SESSION['USER_DALTONISME'] ? './_img/note/daltonisme/h/RR.gif' : './_img/note/choix/h/'.$_SESSION['NOTE_IMAGE']['RR'].'.gif' ;
+    $_SESSION['IMG_R' ] = $_SESSION['USER_DALTONISME'] ? './_img/note/daltonisme/h/R.gif'  : './_img/note/choix/h/'.$_SESSION['NOTE_IMAGE']['R' ].'.gif' ;
+    $_SESSION['IMG_V' ] = $_SESSION['USER_DALTONISME'] ? './_img/note/daltonisme/h/V.gif'  : './_img/note/choix/h/'.$_SESSION['NOTE_IMAGE']['V' ].'.gif' ;
+    $_SESSION['IMG_VV'] = $_SESSION['USER_DALTONISME'] ? './_img/note/daltonisme/h/VV.gif' : './_img/note/choix/h/'.$_SESSION['NOTE_IMAGE']['VV'].'.gif' ;
     // couleurs des états d'acquisition
     $_SESSION['BACKGROUND_NA'] = $_SESSION['USER_DALTONISME'] ? '#909090' : $_SESSION['CSS_BACKGROUND-COLOR']['NA'] ;
     $_SESSION['BACKGROUND_VA'] = $_SESSION['USER_DALTONISME'] ? '#BEBEBE' : $_SESSION['CSS_BACKGROUND-COLOR']['VA'] ;
@@ -523,14 +481,14 @@ class SessionUser
   {
     $_SESSION['CSS']  = '';
     // codes de notation
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/RR.gif) no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/RR.gif) no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/R.gif)  no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/R.gif)  no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/V.gif)  no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/V.gif)  no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/h/VV.gif) no-repeat center center;}'.NL;
-    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url(./_img/note/'.$_SESSION['NOTE_DOSSIER'].'/v/VV.gif) no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.RR {background:#FFF url('.$_SESSION['IMG_RR'].') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.R  {background:#FFF url('.$_SESSION['IMG_R' ].') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.V  {background:#FFF url('.$_SESSION['IMG_V' ].') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.h td input.VV {background:#FFF url('.$_SESSION['IMG_VV'].') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.RR {background:#FFF url('.str_replace('/h/','/v/',$_SESSION['IMG_RR']).') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.R  {background:#FFF url('.str_replace('/h/','/v/',$_SESSION['IMG_R' ]).') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.V  {background:#FFF url('.str_replace('/h/','/v/',$_SESSION['IMG_V' ]).') no-repeat center center;}'.NL;
+    $_SESSION['CSS'] .= 'table.scor_eval tbody.v td input.VV {background:#FFF url('.str_replace('/h/','/v/',$_SESSION['IMG_VV']).') no-repeat center center;}'.NL;
     // couleurs des états d'acquisition
     $_SESSION['CSS'] .= 'table th.r , table td.r , div.r ,span.r ,label.r {background-color:'.$_SESSION['BACKGROUND_NA'].'}'.NL;
     $_SESSION['CSS'] .= 'table th.o , table td.o , div.o ,span.o ,label.o {background-color:'.$_SESSION['BACKGROUND_VA'].'}'.NL;
@@ -566,18 +524,27 @@ class SessionUser
    */
   public static function memoriser_menu()
   {
-    require(CHEMIN_DOSSIER_INCLUDE.'menu_'.$_SESSION['USER_PROFIL_TYPE'].'.php'); // récupère $tab_menu
-    $_SESSION['MENU'] = '<ul id="menu">'.NL;
-    foreach($tab_menu as $menu_titre => $tab_sous_menu)
+    $line_height = 37+1; // @see ./_css/style.css --> #menu li li a {line-height:30px}
+    $numero_menu = 0;
+    require(CHEMIN_DOSSIER_MENUS.'menu_'.$_SESSION['USER_PROFIL_TYPE'].'.php'); // récupère $tab_menu & $tab_sous_menu
+    $_SESSION['MENU'] = '<ul id="menu"><li><a class="boussole" href="#">'.html(Lang::_("MENU")).'</a><ul>'.NL;
+    $nombre_menu = count($tab_menu);
+    foreach($tab_menu as $menu_id => $menu_titre)
     {
-      $_SESSION['MENU'] .= '<li><a class="menu" href="#">'.$menu_titre.'</a><ul>'.NL;
-      foreach($tab_sous_menu as $sous_menu_titre => $tab)
+      $_SESSION['MENU'] .= '<li><a class="fleche" href="#">'.html($menu_titre).'</a><ul>'.NL;
+      $nombre_sous_menu = count($tab_sous_menu[$menu_id]);
+      $premier_sous_menu = TRUE;
+      foreach($tab_sous_menu[$menu_id] as $sous_menu_id => $tab)
       {
-        $_SESSION['MENU'] .= '<li><a class="'.$tab['class'].'" href="./index.php?'.$tab['href'].'">'.$sous_menu_titre.'</a></li>'.NL;
+        $nombre_cases_decalage = min( $numero_menu , $numero_menu-($nombre_menu-$nombre_sous_menu) );
+        $style = ($premier_sous_menu && $nombre_cases_decalage) ? ' style="margin-top:-'.($nombre_cases_decalage*$line_height).'px"' : '' ;
+        $_SESSION['MENU'] .= '<li><a class="'.$tab['class'].'"'.$style.' href="./index.php?'.$tab['href'].'">'.html($tab['texte']).'</a></li>'.NL;
+        $premier_sous_menu = FALSE;
       }
       $_SESSION['MENU'] .= '</ul></li>'.NL;
+      $numero_menu++;
     }
-    $_SESSION['MENU'] .= '</ul>'.NL;
+    $_SESSION['MENU'] .= '</ul></li></ul>'.NL;
   }
 
 }

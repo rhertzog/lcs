@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -30,7 +30,7 @@ $tab_fichier_integrite = array(
   '_inc/_loader.php',
   '_inc/class.Session.php',
   '_inc/class.ServeurCommunautaire.php',
-  '_inc/menu_professeur.php',
+  'menus/menu_professeur.php',
   'pages/validation_socle_fichier.ajax.php',
   'pages/validation_socle_item.ajax.php',
   'pages/validation_socle_pilier.ajax.php',

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -86,7 +86,7 @@ if( (!$critere_valide) || (!$groupe_id) || (!$groupe_nom) || (!isset($tab_types[
 $tab_eleve      = array();  // [i] => array(eleve_id,eleve_nom,eleve_prenom)
 
 // Tableau des langues
-require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
+require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues_socle.php');
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Récupération de la liste des élèves
@@ -126,10 +126,14 @@ $tab_item         = array();  // [item_id] => array(calcul_methode,calcul_limite
 
 if( $is_matiere_items_bilanMS || $is_matiere_items_bilanPA )
 {
-  $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_infos_items($compet_liste,$detail=TRUE);
+  $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_infos_items( $compet_liste , TRUE /*detail*/ );
   foreach($DB_TAB as $DB_ROW)
   {
-    $tab_item[$DB_ROW['item_id']] = array('item_coef'=>$DB_ROW['item_coef'],'calcul_methode'=>$DB_ROW['calcul_methode'],'calcul_limite'=>$DB_ROW['calcul_limite']);
+    $tab_item[$DB_ROW['item_id']] = array(
+      'item_coef'      => $DB_ROW['item_coef'],
+      'calcul_methode' => $DB_ROW['calcul_methode'],
+      'calcul_limite'  => $DB_ROW['calcul_limite'],
+    );
   }
   // Un directeur effectuant une recherche sur un grand nombre d'items pour tous les élèves de l'établissement peut provoquer un dépassement de mémoire.
   $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items( $liste_eleve , $compet_liste , 0 /*matiere_id*/ , NULL /*date_mysql_debut*/ , NULL /*date_mysql_fin*/ , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ , TRUE /*onlynote*/ );
@@ -157,10 +161,13 @@ if( $is_socle_item_pourcentage )
   if(count($tab_item))
   {
     $listing_item_id = implode(',',array_keys($tab_item));
-    $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_infos_items($listing_item_id,$detail=FALSE);
+    $DB_TAB = DB_STRUCTURE_SOCLE::DB_lister_infos_items( $listing_item_id , FALSE /*detail*/ );
     foreach($DB_TAB as $DB_ROW)
     {
-      $tab_item[$DB_ROW['item_id']] = array('calcul_methode'=>$DB_ROW['calcul_methode'],'calcul_limite'=>$DB_ROW['calcul_limite']);
+      $tab_item[$DB_ROW['item_id']] = array(
+        'calcul_methode' => $DB_ROW['calcul_methode'],
+        'calcul_limite'  => $DB_ROW['calcul_limite'],
+      );
     }
   }
 }
@@ -377,7 +384,7 @@ $releve_html .= ($affichage_checkbox) ? '<form id="form_synthese" action="#" met
 $releve_html .= '<table class="bilan"><thead>'.NL.'<tr>'.$checkbox.'<th>Élève</th><th>État</th></tr>'.NL.'</thead><tbody>'.NL;
 $releve_html .= ($nb_resultats) ? implode(NL,$tab_tr).NL : '<tr><td colspan="2">aucun résultat</td></tr>'.NL ;
 $releve_html .= '</tbody></table>'.NL;
-$releve_html .= ($affichage_checkbox && $nb_resultats) ? Html::afficher_formulaire_synthese_exploitation('simplifié') : '' ;
+$releve_html .= ($affichage_checkbox && $nb_resultats) ? HtmlForm::afficher_synthese_exploitation('eleves') : '' ;
 $releve_html .= ($affichage_checkbox) ? '</form>' : '' ;
 exit($releve_html);
 

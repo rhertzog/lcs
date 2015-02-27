@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Synthèse pluridisciplinaire";
+$TITRE = html(Lang::_("Synthèse pluridisciplinaire"));
 ?>
 
 <?php
@@ -80,12 +80,13 @@ if($_SESSION['USER_PROFIL_TYPE']=='eleve')
 }
 $tab_periodes = DB_STRUCTURE_COMMUN::DB_OPT_periodes_etabl();
 
-$select_groupe       = Form::afficher_select($tab_groupes                   , 'f_groupe'       /*select_nom*/ ,                   $of_g /*option_first*/ , $sel_g                           /*selection*/ , 'regroupements' /*optgroup*/);
-$select_eleves_ordre = Form::afficher_select(Form::$tab_select_eleves_ordre , 'f_eleves_ordre' /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['eleves_ordre'] /*selection*/ ,              '' /*optgroup*/);
-$select_periode      = Form::afficher_select($tab_periodes                  , 'f_periode'      /*select_nom*/ , 'periode_personnalisee' /*option_first*/ , FALSE                            /*selection*/ ,              '' /*optgroup*/);
-$select_marge_min    = Form::afficher_select(Form::$tab_select_marge_min    , 'f_marge_min'    /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['marge_min']    /*selection*/ ,              '' /*optgroup*/);
-$select_couleur      = Form::afficher_select(Form::$tab_select_couleur      , 'f_couleur'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['couleur']      /*selection*/ ,              '' /*optgroup*/);
-$select_legende      = Form::afficher_select(Form::$tab_select_legende      , 'f_legende'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['legende']      /*selection*/ ,              '' /*optgroup*/);
+$select_groupe       = HtmlForm::afficher_select($tab_groupes                   , 'f_groupe'       /*select_nom*/ ,                   $of_g /*option_first*/ , $sel_g                           /*selection*/ , 'regroupements' /*optgroup*/);
+$select_eleves_ordre = HtmlForm::afficher_select(Form::$tab_select_eleves_ordre , 'f_eleves_ordre' /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['eleves_ordre'] /*selection*/ ,              '' /*optgroup*/);
+$select_periode      = HtmlForm::afficher_select($tab_periodes                  , 'f_periode'      /*select_nom*/ , 'periode_personnalisee' /*option_first*/ , FALSE                            /*selection*/ ,              '' /*optgroup*/);
+$select_marge_min    = HtmlForm::afficher_select(Form::$tab_select_marge_min    , 'f_marge_min'    /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['marge_min']    /*selection*/ ,              '' /*optgroup*/);
+$select_couleur      = HtmlForm::afficher_select(Form::$tab_select_couleur      , 'f_couleur'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['couleur']      /*selection*/ ,              '' /*optgroup*/);
+$select_fond         = HtmlForm::afficher_select(Form::$tab_select_fond         , 'f_fond'         /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['fond']         /*selection*/ ,              '' /*optgroup*/);
+$select_legende      = HtmlForm::afficher_select(Form::$tab_select_legende      , 'f_legende'      /*select_nom*/ ,                   FALSE /*option_first*/ , Form::$tab_choix['legende']      /*selection*/ ,              '' /*optgroup*/);
 
 // Javascript
 Layout::add( 'js_inline_before' , 'var date_mysql  = "'.TODAY_MYSQL.'";' );
@@ -93,7 +94,7 @@ Layout::add( 'js_inline_before' , 'var is_multiple = '.$is_select_multiple.';' )
 
 // Fabrication du tableau javascript "tab_groupe_periode" pour les jointures groupes/périodes
 // Fabrication du tableau javascript "tab_groupe_niveau" pour les jointures groupes/niveaux
-Form::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode*/ , TRUE /*tab_groupe_niveau*/ );
+HtmlForm::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_periode*/ , TRUE /*tab_groupe_niveau*/ );
 ?>
 
 <div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=releves_bilans__synthese_multimatiere">DOC : Synthèse pluridisciplinaire.</a></span></div>
@@ -130,10 +131,10 @@ echo ($nb_inconnu) ? '<label class="alerte">Il y a '.$nb_inconnu.' référentiel
     <div class="toggle hide">
       <span class="tab"></span><a href="#" class="puce_moins toggle">Afficher moins d'options</a><br />
       <label class="tab">Mode de synthèse :</label><label for="f_fusion_niveaux"><input type="checkbox" id="f_fusion_niveaux" name="f_fusion_niveaux" value="1"<?php echo $check_fusion_niveaux ?> /> Ne pas indiquer le niveau et fusionner les synthèses de même intitulé</label><br />
-      <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour le format html, le détail des items peut être affiché." /> Indications :</label><label for="f_coef"><input type="checkbox" id="f_coef" name="f_coef" value="1"<?php echo $check_aff_coef ?> /> Coefficients</label>&nbsp;&nbsp;&nbsp;<label for="f_socle"><input type="checkbox" id="f_socle" name="f_socle" value="1"<?php echo $check_aff_socle ?> /> Appartenance au socle</label>&nbsp;&nbsp;&nbsp;<label for="f_lien"><input type="checkbox" id="f_lien" name="f_lien" value="1"<?php echo $check_aff_lien ?> /> Liens (ressources pour travailler)</label>&nbsp;&nbsp;&nbsp;<label for="f_start"><input type="checkbox" id="f_start" name="f_start" value="1"<?php echo $check_aff_start ?> /> Détails affichés au chargement</label><br />
+      <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour le format HTML, le détail des items peut être affiché." /> Indications :</label><label for="f_coef"><input type="checkbox" id="f_coef" name="f_coef" value="1"<?php echo $check_aff_coef ?> /> Coefficients</label>&nbsp;&nbsp;&nbsp;<label for="f_socle"><input type="checkbox" id="f_socle" name="f_socle" value="1"<?php echo $check_aff_socle ?> /> Appartenance au socle</label>&nbsp;&nbsp;&nbsp;<label for="f_lien"><input type="checkbox" id="f_lien" name="f_lien" value="1"<?php echo $check_aff_lien ?> /> Liens (ressources pour travailler)</label>&nbsp;&nbsp;&nbsp;<label for="f_start"><input type="checkbox" id="f_start" name="f_start" value="1"<?php echo $check_aff_start ?> /> Détails affichés au chargement</label><br />
       <label class="tab">Restrictions :</label><label for="f_restriction_socle"><input type="checkbox" id="f_restriction_socle" name="f_restriction_socle" value="1"<?php echo $check_only_socle ?> /> Uniquement les items liés au socle</label><br />
       <label class="tab"></label><label for="f_restriction_niveau"><input type="checkbox" id="f_restriction_niveau" name="f_restriction_niveau" value="1"<?php echo $check_only_niveau ?> /> Utiliser uniquement les items du niveau <em id="niveau_nom"></em></label><input type="hidden" id="f_niveau" name="f_niveau" value="" /><br />
-      <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour le format pdf." /> Impression :</label><?php echo $select_couleur ?> <?php echo $select_legende ?> <?php echo $select_marge_min ?>
+      <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Pour le format PDF." /> Impression :</label><?php echo $select_couleur ?> <?php echo $select_fond ?> <?php echo $select_legende ?> <?php echo $select_marge_min ?>
     </div>
   </div>
   <p>

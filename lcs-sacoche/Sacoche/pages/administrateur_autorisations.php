@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Réglage des autorisations";
+$TITRE = html(Lang::_("Réglage des autorisations"));
 
 // Tableau avec les noms des profils activés dans l'établissement
 $tab_profils_libelles = array();
@@ -79,7 +79,7 @@ $tab_droits  = array
   "Adresse e-mail" => array
   (
     'tous',
-    array( 'droit_modifier_email' , "modifier son adresse e-mail" , 'tous' ),
+    array( 'droit_modifier_email' , "donner la priorité à l'utilisateur pour la modifier" , 'tous' ),
   ),
   "Gestion des référentiels de l'établissement" => array
   (

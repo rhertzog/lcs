@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Modifier le contenu des référentiels";
+$TITRE = html(Lang::_("Modifier le contenu des référentiels"));
 
 if(!test_user_droit_specifique( $_SESSION['DROIT_GERER_REFERENTIEL'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ ))
 {
@@ -179,7 +179,7 @@ else
     $DB_TAB = DB_STRUCTURE_COMMUN::DB_recuperer_arborescence_palier();
     if(!empty($DB_TAB))
     {
-      echo Html::afficher_arborescence_socle_from_SQL( $DB_TAB , TRUE /*dynamique*/ , FALSE /*reference*/ , TRUE /*aff_input*/ , FALSE /*ids*/ );
+      echo HtmlArborescence::afficher_socle_from_SQL( $DB_TAB , TRUE /*dynamique*/ , FALSE /*reference*/ , TRUE /*aff_input*/ , FALSE /*ids*/ );
     }
     else
     {

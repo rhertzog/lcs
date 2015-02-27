@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Génération d'un nouveau mot de passe";
+$TITRE = "Génération d'un nouveau mot de passe"; // Pas de traduction car pas de choix de langue à ce niveau.
 
 // Récupération du code
 $code_mdp = (isset($_GET['code_mdp'])) ? Clean::texte($_GET['code_mdp']) : '';
@@ -83,4 +83,4 @@ DB_STRUCTURE_PUBLIC::DB_modifier_user_password_or_key ($DB_ROW['user_id'] , cryp
 </form>
 <p><span class="astuce">Le code transmis étant à usage unique, il ne peut pas être utilisé de nouveau.</span></p>
 <hr />
-<p><span class="tab"></span><a href="./index.php">Retour en page d'accueil de SACoche.</a></p>
+<p class="hc"><a href="./index.php">[ Retour en page d'accueil ]</a></p>

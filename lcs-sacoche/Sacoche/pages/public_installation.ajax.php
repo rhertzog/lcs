@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -192,6 +192,7 @@ if( $step==41 )
       'HEBERGEUR_UAI'              => $uai,
       'HEBERGEUR_ADRESSE_SITE'     => $adresse_site,
       'HEBERGEUR_LOGO'             => '',
+      'HEBERGEUR_MAILBOX_BOUNCE'   => '',
       'CNIL_NUMERO'                => 'non renseignée',
       'CNIL_DATE_ENGAGEMENT'       => '',
       'CNIL_DATE_RECEPISSE'        => '',
@@ -199,7 +200,6 @@ if( $step==41 )
       'WEBMESTRE_PRENOM'           => $prenom,
       'WEBMESTRE_COURRIEL'         => $courriel,
       'WEBMESTRE_PASSWORD_MD5'     => crypter_mdp($password),
-      'WEBMESTRE_ERREUR_DATE'      => 0,
       'SERVEUR_PROXY_USED'         => '',
       'SERVEUR_PROXY_NAME'         => '',
       'SERVEUR_PROXY_PORT'         => '',
@@ -216,6 +216,7 @@ if( $step==41 )
       'SYSTEME_UMASK'              => '000',
       'CONTACT_MODIFICATION_USER'  => 'non',
       'CONTACT_MODIFICATION_MAIL'  => 'non',
+      'COURRIEL_NOTIFICATION'      => 'oui',
     ) );
     $affichage .= '<p><label class="valide">Les informations concernant le webmestre et l\'hébergement sont maintenant renseignées.</label></p>'.NL;
     $affichage .= '<div class="astuce">Vous pourrez les modifier depuis l\'espace du webmestre, en particulier ajouter un logo et un numéro de déclaration à la CNIL.</div>'.NL;
@@ -471,7 +472,9 @@ if( $step==6 )
       DB_STRUCTURE_COMMUN::DB_modifier_parametres($tab_parametres);
       // Insérer un compte administrateur dans la base de la structure
       $password = fabriquer_mdp();
-      $user_id = DB_STRUCTURE_COMMUN::DB_ajouter_utilisateur( 0 /*user_sconet_id*/ , 0 /*user_sconet_elenoet*/ , '' /*reference*/ , 'ADM' , 'I' /*user_genre*/ , WEBMESTRE_NOM , WEBMESTRE_PRENOM , NULL /*user_naissance_date*/ , WEBMESTRE_COURRIEL , 'admin' /*login*/ , crypter_mdp($password) , 0 /*classe_id*/ , '' /*id_ent*/ , '' /*id_gepi*/ );
+      $user_id = DB_STRUCTURE_COMMUN::DB_ajouter_utilisateur( 0 /*user_sconet_id*/ , 0 /*user_sconet_elenoet*/ , '' /*reference*/ , 'ADM' , 'I' /*user_genre*/ , WEBMESTRE_NOM , WEBMESTRE_PRENOM , NULL /*user_naissance_date*/ , WEBMESTRE_COURRIEL , 'user' /*user_email_origine*/ , 'admin' /*login*/ , crypter_mdp($password) , 0 /*classe_id*/ , '' /*id_ent*/ , '' /*id_gepi*/ );
+      // Pour les admins, abonnement obligatoire aux contacts effectués depuis la page d'authentification
+      DB_STRUCTURE_NOTIFICATION::DB_ajouter_abonnement( $user_id , 'contact_externe' , 'accueil' );
       // Affichage du retour
       $affichage .= '<p><label class="valide">Les tables de la base de données ont été installées.</label></p>'.NL;
       $affichage .= '<span class="astuce">Le premier compte administrateur a été créé avec votre identité :</span>'.NL;

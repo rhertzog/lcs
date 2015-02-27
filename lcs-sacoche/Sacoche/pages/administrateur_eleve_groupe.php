@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,13 +26,13 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Affecter les élèves aux groupes";
+$TITRE = html(Lang::_("Affecter les élèves aux groupes"));
 ?>
 
 <?php
 // Fabrication des éléments select du formulaire
-$select_eleve  = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl() , 'select_groupe' /*select_nom*/ ,    '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
-$select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_groupes_etabl()       , 'f_groupe'      /*select_nom*/ , FALSE /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/ , $multiple=TRUE);
+$select_eleve  = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl() , 'select_groupe' /*select_nom*/ ,    '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
+$select_groupe = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_groupes_etabl()       , 'f_groupe'      /*select_nom*/ , FALSE /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/ , $multiple=TRUE);
 ?>
 
 <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_groupes">DOC : Gestion des groupes</a></span></p>

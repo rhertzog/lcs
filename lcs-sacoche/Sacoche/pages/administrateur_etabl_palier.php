@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Paliers du socle";
+$TITRE = html(Lang::_("Paliers du socle"));
 ?>
 
 <div><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__gestion_paliers_socle">DOC : Paliers du socle</a></span></div>
@@ -66,7 +66,7 @@ $TITRE = "Paliers du socle";
   <?php
   // Affichage de la liste des items du socle pour chaque palier
   $DB_TAB = DB_STRUCTURE_ADMINISTRATEUR::DB_recuperer_arborescence_paliers();
-  echo str_replace( '<li class="li_m1"' , '<li class="li_m1 hide"' , Html::afficher_arborescence_socle_from_SQL( $DB_TAB , TRUE /*dynamique*/ , FALSE /*reference*/ , FALSE /*aff_input*/ , FALSE /*ids*/ ) );
+  echo str_replace( '<li class="li_m1"' , '<li class="li_m1 hide"' , HtmlArborescence::afficher_socle_from_SQL( $DB_TAB , TRUE /*dynamique*/ , FALSE /*reference*/ , FALSE /*aff_input*/ , FALSE /*ids*/ ) );
   ?>
 </div>
 

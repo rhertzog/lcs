@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,8 +26,9 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Identité de l'établissement";
+$TITRE = html(Lang::_("Identité de l'établissement"));
 
+// Formulaire SELECT du mois de bascule de l'année scolaire
 $options_mois = '<option value="1">calquée sur l\'année civile</option>'
               . '<option value="2">bascule au 1er février</option>'
               . '<option value="3">bascule au 1er mars</option>'
@@ -41,6 +42,21 @@ $options_mois = '<option value="1">calquée sur l\'année civile</option>'
               . '<option value="11">bascule au 1er novembre</option>'
               . '<option value="12">bascule au 1er décembre</option>';
 $options_mois = str_replace( '"'.$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'].'"' , '"'.$_SESSION['MOIS_BASCULE_ANNEE_SCOLAIRE'].'" selected' , $options_mois );
+
+// Charger $tab_langues_traduction
+require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues_traduction.php');
+// Formulaire SELECT du choix de la langue
+$options_langue = '';
+foreach($tab_langues_traduction as $tab_langue)
+{
+  if($tab_langue['statut']!=0)
+  {
+    $langue_pays_code = $tab_langue['langue']['code'].'_'.$tab_langue['pays']['code'];
+    $langue_pays_nom  = $tab_langue['langue']['nom'].' - '.$tab_langue['pays']['nom'];
+    $selected = ($langue_pays_code==$_SESSION['ETABLISSEMENT']['LANGUE']) ? ' selected' : '' ;
+    $options_langue .= '<option value="'.$langue_pays_code.'"'.$selected.'>'.$langue_pays_nom.' ['.$langue_pays_code.']</option>';
+  }
+}
 
 // Récupérer le logo, si présent.
 $li_logo = '<li>Pas de logo actuellement enregistré.</li>';
@@ -92,7 +108,7 @@ else
       <label class="tab" for="f_webmestre_uai">Code UAI (ex-RNE) :</label><input id="f_webmestre_uai" name="f_webmestre_uai" size="8" type="text" value="<?php echo html($_SESSION['WEBMESTRE_UAI']); ?>" disabled /><br />
       <label class="tab" for="f_webmestre_denomination">Dénomination :</label><input id="f_webmestre_denomination" name="f_webmestre_denomination" size="50" type="text" value="<?php echo html($_SESSION['WEBMESTRE_DENOMINATION']); ?>" disabled />
     </p>
-    <ul class="puce"><li>En cas d'erreur, <?php echo Html::mailto(WEBMESTRE_COURRIEL,'Modifier données SACoche '.$_SESSION['BASE'].' ['.$_SESSION['WEBMESTRE_UAI'].']','contacter le webmestre'); ?> responsable des installations sur ce serveur.</li></ul>
+    <ul class="puce"><li>En cas d'erreur, <?php echo HtmlMail::to(WEBMESTRE_COURRIEL,'Modifier données SACoche '.$_SESSION['BASE'].' ['.$_SESSION['WEBMESTRE_UAI'].']','contacter le webmestre'); ?> responsable des installations sur ce serveur.</li></ul>
   </form>
 
   <form action="#" method="post" id="form_sesamath">
@@ -124,7 +140,7 @@ else
       <label class="tab" for="f_contact_courriel">Courriel<?php echo $mail_title ?> :</label><input id="f_contact_courriel" name="f_contact_courriel" size="50" type="text" value="<?php echo html($contact_courriel); ?>"<?php echo $mail_readonly ?> /><br />
       <span class="<?php echo $contact_class_valider ?>"><span class="tab"></span><button id="bouton_valider_contact" type="submit" class="parametre">Valider.</button><label id="ajax_msg_contact">&nbsp;</label></span>
     </p>
-    <ul class="puce <?php echo $contact_class_mailto ?>"><li>Si besoin, <?php echo Html::mailto(WEBMESTRE_COURRIEL,'Modifier contact SACoche n°'.$_SESSION['BASE'].' ['.$_SESSION['WEBMESTRE_UAI'].']','demander une modification au webmestre'); ?>.</li></ul>
+    <ul class="puce <?php echo $contact_class_mailto ?>"><li>Si besoin, <?php echo HtmlMail::to(WEBMESTRE_COURRIEL,'Modifier contact SACoche n°'.$_SESSION['BASE'].' ['.$_SESSION['WEBMESTRE_UAI'].']','demander une modification au webmestre'); ?>.</li></ul>
   </form>
 
   <form action="#" method="post" id="form_etablissement">
@@ -137,7 +153,8 @@ else
       <label class="tab" for="f_etablissement_adresse3">Adresse ligne 3 :</label><input id="f_etablissement_adresse3" name="f_etablissement_adresse3" size="50" maxlength="50" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['ADRESSE3']); ?>" /><br />
       <label class="tab" for="f_etablissement_telephone">Téléphone :</label><input id="f_etablissement_telephone" name="f_etablissement_telephone" size="25" maxlength="25" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['TELEPHONE']); ?>" /><br />
       <label class="tab" for="f_etablissement_fax">Fax :</label><input id="f_etablissement_fax" name="f_etablissement_fax" size="25" maxlength="25" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['FAX']); ?>" /><br />
-      <label class="tab" for="f_etablissement_courriel">Courriel :</label><input id="f_etablissement_courriel" name="f_etablissement_courriel" size="50" maxlength="50" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['COURRIEL']); ?>" /><br />
+      <label class="tab" for="f_etablissement_courriel">Courriel :</label><input id="f_etablissement_courriel" name="f_etablissement_courriel" size="60" maxlength="63" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['COURRIEL']); ?>" /><br />
+      <label class="tab" for="f_etablissement_url">Site internet :</label><input id="f_etablissement_url" name="f_etablissement_url" size="60" maxlength="63" type="text" value="<?php echo html($_SESSION['ETABLISSEMENT']['URL']); ?>" /><br />
       <span class="tab"></span><button id="bouton_valider_etablissement" type="submit" class="parametre">Valider.</button><label id="ajax_msg_etablissement">&nbsp;</label>
     </p>
   </form>
@@ -156,6 +173,15 @@ else
       <label class="tab" for="f_mois_bascule_annee_scolaire">Fonctionnement :</label><select id="f_mois_bascule_annee_scolaire" name="f_mois_bascule_annee_scolaire"><?php echo $options_mois; ?></select><br />
       <label class="tab">Affichage obtenu :</label><span class="i">&laquo;&nbsp;Année scolaire <span id="span_simulation"></span>&nbsp;&raquo;</span><br />
       <span class="tab"></span><button id="bouton_valider_annee_scolaire" type="button" class="parametre">Valider.</button><label id="ajax_msg_annee_scolaire">&nbsp;</label>
+    </p>
+  </form>
+
+  <form action="#" method="post" id="form_langue">
+    <hr />
+    <h2>Langue par défaut</h2>
+    <p>
+      <label class="tab" for="f_etablissement_langue">Langue :</label><select id="f_etablissement_langue" name="f_etablissement_langue"><?php echo $options_langue; ?></select><br />
+      <span class="tab"></span><button id="bouton_valider_langue" type="button" class="parametre">Valider.</button><label id="ajax_msg_langue">&nbsp;</label>
     </p>
   </form>
 

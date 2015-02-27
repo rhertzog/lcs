@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Gérer ses groupes de besoin";
+$TITRE = html(Lang::_("Gérer ses groupes de besoin"));
 
 $tab_groupe_proprio = array();
 $tab_groupe_associe = array();
@@ -105,11 +105,12 @@ Layout::add( 'js_inline_before' , '// <![CDATA[' );
 Layout::add( 'js_inline_before' , 'var select_niveau="'.str_replace('"','\"',$select_niveau).'";' );
 Layout::add( 'js_inline_before' , '// ]]>' );
 
-// Réception d'un formulaire depuis un tableau de synthèse bilan
+// Réception d'un formulaire depuis un tableau de synthèse bilan ou une évaluation
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
 $tab_users = ( isset($_POST['id_user']) && is_array($_POST['id_user']) ) ? $_POST['id_user'] : array() ;
 $tab_users = Clean::map_entier($tab_users);
 $tab_users = array_filter($tab_users,'positif');
+$tab_users = array_unique($tab_users); // Car un envoi depuis une évaluation peut comporter plusieurs fois le même élève.
 $nb_users  = count($tab_users);
 $txt_users = ($nb_users) ? ( ($nb_users>1) ? $nb_users.' élèves' : $nb_users.' élève' ) : 'aucun' ;
 $reception_todo = ($nb_users) ? 'true' : 'false' ;
@@ -235,13 +236,13 @@ else
 
 <form action="#" method="post" id="zone_profs" class="hide">
   <div class="astuce">Vous pouvez associer des collègues à vos groupes de besoin, mais pas vous retirer de vos propres groupes de besoin !</div>
-  <?php echo Html::afficher_form_element_checkbox_collegues() ?>
+  <?php echo HtmlForm::afficher_checkbox_collegues() ?>
   <div style="clear:both"><button id="valider_profs" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_profs" type="button" class="annuler">Annuler / Retour</button></div>
 </form>
 
 <form action="#" method="post" id="zone_eleve" class="arbre_dynamique hide">
   <p>Cocher ci-dessous (<span class="astuce">cliquer sur un intitulé pour déployer son contenu</span>) :</p>
-  <?php echo Html::afficher_form_element_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
+  <?php echo HtmlForm::afficher_checkbox_eleves_professeur(TRUE /*with_pourcent*/); ?>
   <p class="danger">Un groupe déjà utilisé lors d'une évaluation ne devrait pas voir ses élèves modifiés.<br />En particulier, retirer des élèves du groupe empêche l'accès aux notes saisies correspondantes !</p>
   <div><span class="tab"></span><button id="valider_eleve" type="button" class="valider">Valider la sélection</button>&nbsp;&nbsp;&nbsp;<button id="annuler_eleve" type="button" class="annuler">Annuler / Retour</button></div>
 </form>

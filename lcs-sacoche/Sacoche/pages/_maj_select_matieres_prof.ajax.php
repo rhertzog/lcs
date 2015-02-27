@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -42,6 +42,6 @@ $selection    = ($multiple) ? TRUE        : $matiere ;
 
 $tab_matieres = ($action=='ajouter') ? DB_STRUCTURE_COMMUN::DB_OPT_matieres_etabl() : DB_STRUCTURE_COMMUN::DB_OPT_matieres_professeur($_SESSION['USER_ID']) ;
 
-exit( Form::afficher_select( $tab_matieres , $select_nom , $option_first , $selection , '' /*optgroup*/ , $multiple ) );
+exit( HtmlForm::afficher_select( $tab_matieres , $select_nom , $option_first , $selection , '' /*optgroup*/ , $multiple ) );
 
 ?>

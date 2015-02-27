@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -101,7 +101,7 @@ if($action=='calculer')
       for($num_devoir=1;$num_devoir<=$nb_devoirs;$num_devoir++)
       {
         $code = $tab_codes[$num_devoir];
-        $tab_lignes[$cas] .= '<td><img alt="" src="./_img/note/'.$_SESSION['NOTE_IMAGE_STYLE'].'/h/'.$code.'.gif" /></td>';
+        $tab_lignes[$cas] .= '<td><img alt="" src="./_img/note/choix/h/'.$_SESSION['NOTE_IMAGE'][$code].'.gif" /></td>';
         // Si on prend ce devoir en compte
         if( ($limite==0) || ($nb_devoirs-$num_devoir<$limite) )
         {

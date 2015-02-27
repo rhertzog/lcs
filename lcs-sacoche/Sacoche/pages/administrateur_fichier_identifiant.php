@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,14 +26,14 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Importer / Imposer des identifiants";
+$TITRE = html(Lang::_("Importer / Imposer des identifiants"));
 ?>
 
 <?php
 require(CHEMIN_DOSSIER_INCLUDE.'tableau_sso.php');
 
 // Fabrication des éléments select du formulaire
-$select_groupe = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl(FALSE/*sans*/) , 'f_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
+$select_groupe = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl(FALSE/*sans*/) , 'f_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
 ?>
 
 <ul class="puce">

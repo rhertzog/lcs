@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,10 +26,10 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Photos des élèves";
+$TITRE = html(Lang::_("Photos des élèves"));
 
 // Fabrication des éléments select du formulaire
-$select_groupe = Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl( FALSE /*sans*/ , FALSE /*tout*/ ) , 'f_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
+$select_groupe = HtmlForm::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl( FALSE /*sans*/ , FALSE /*tout*/ ) , 'f_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
 ?>
 
 <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=support_administrateur__photos_eleves">DOC : Photos des élèves</a></span></p>

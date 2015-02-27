@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Liste des évaluations";
+$TITRE = html(Lang::_("Liste des évaluations"));
 
 // Réception d'id transmis via un lien en page d'accueil.
 $auto_voir_devoir_id   = isset($_GET['devoir_id']) ? Clean::entier($_GET['devoir_id']) : 'false' ;
@@ -53,7 +53,7 @@ if( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']!=1) )
 {
   $tab_groupes  = array();
   $of_g = FALSE; $sel_g = FALSE; $class_form_groupe = 'hide'; $class_form_eleve = 'show'; $js_aff_nom_eleve = 'true';
-  $select_eleves = Form::afficher_select($_SESSION['OPT_PARENT_ENFANTS'] , FALSE /*select_nom*/ , '' /*option_first*/ , $auto_select_eleve_id /*selection*/ , '' /*optgroup*/);
+  $select_eleves = HtmlForm::afficher_select($_SESSION['OPT_PARENT_ENFANTS'] , FALSE /*select_nom*/ , '' /*option_first*/ , $auto_select_eleve_id /*selection*/ , '' /*optgroup*/);
 }
 if( ($_SESSION['USER_PROFIL_TYPE']=='parent') && ($_SESSION['NB_ENFANTS']==1) )
 {
@@ -67,7 +67,7 @@ if($_SESSION['USER_PROFIL_TYPE']=='eleve')
   $of_g = FALSE; $sel_g = FALSE; $class_form_groupe = 'hide'; $class_form_eleve = 'hide'; $js_aff_nom_eleve = 'false';
   $select_eleves = '<option value="'.$_SESSION['USER_ID'].'" selected>'.html($_SESSION['USER_NOM'].' '.$_SESSION['USER_PRENOM']).'</option>';
 }
-$select_groupe = Form::afficher_select($tab_groupes , 'f_groupe' /*select_nom*/ , $of_g /*option_first*/ , $sel_g /*selection*/ , 'regroupements' /*optgroup*/ );
+$select_groupe = HtmlForm::afficher_select($tab_groupes , 'f_groupe' /*select_nom*/ , $of_g /*option_first*/ , $sel_g /*selection*/ , 'regroupements' /*optgroup*/ );
 
 $bouton_valider_autoeval = ($_SESSION['USER_PROFIL_TYPE']=='eleve') ? '<button id="valider_saisir" type="button" class="valider">Enregistrer les saisies</button>' : '<button type="button" class="valider" disabled>Réservé à l\'élève.</button>' ;
 
@@ -150,7 +150,6 @@ Layout::add( 'js_inline_before' , 'var auto_mode = "'.$auto_mode.'";' );
 <form action="#" method="post" id="zone_eval_saisir" class="hide" onsubmit="return false">
   <h2>S'auto-évaluer</h2>
   <p id="titre_saisir" class="b"></p>
-  <p>Auto-évaluation possible jusqu'au <span id="report_date" class="b"></span> (les notes peuvent ensuite être modifiées par le professeur).</p>
   <table id="table_saisir" class="vm_nug">
     <thead>
       <tr>
@@ -162,6 +161,12 @@ Layout::add( 'js_inline_before' , 'var auto_mode = "'.$auto_mode.'";' );
       <tr><td class="nu" colspan="6"></td></tr>
     </tbody>
   </table>
-  <p class="ti"><?php echo $bouton_valider_autoeval ?><input type="hidden" name="f_devoir" id="f_devoir" value="" /> <button id="fermer_zone_saisir" type="button" class="retourner">Retour</button><label id="msg_saisir"></label></p>
   <?php echo Html::legende( TRUE /*codes_notation*/ , FALSE /*anciennete_notation*/ , FALSE /*score_bilan*/ , FALSE /*etat_acquisition*/ , FALSE /*pourcentage_acquis*/ , FALSE /*etat_validation*/ , FALSE /*make_officiel*/ ); ?>
+  <div>
+    <h3>Commentaire éventuel</h3>
+    <textarea name="f_msg_data" id="f_msg_texte" rows="5" cols="100"></textarea><br />
+    <span class="tab"></span><label id="f_msg_texte_reste"></label>
+  </div>
+  <p class="astuce">Auto-évaluation possible jusqu'au <span id="report_date" class="b"></span> (les notes peuvent ensuite être modifiées par le professeur).</p>
+  <p class="ti"><?php echo $bouton_valider_autoeval ?><input type="hidden" name="f_devoir" id="f_devoir" value="" /><input type="hidden" name="f_msg_url" id="f_msg_url" value="" /><input type="hidden" name="f_msg_autre" id="f_msg_autre" value="" /> <button id="fermer_zone_saisir" type="button" class="retourner">Retour</button><label id="msg_saisir"></label></p>
 </form>

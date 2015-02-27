@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -99,7 +99,7 @@ $partageable = ( ( $matiere_id <= ID_MATIERE_PARTAGEE_MAX ) && ( $niveau_id <= I
 if( ($action=='voir_referentiel_etablissement') && $matiere_id && $niveau_id )
 {
   $DB_TAB = DB_STRUCTURE_COMMUN::DB_recuperer_arborescence( 0 /*prof_id*/ , $matiere_id , $niveau_id , FALSE /*only_socle*/ , FALSE /*only_item*/ , TRUE /*socle_nom*/ );
-  exit( Html::afficher_arborescence_matiere_from_SQL( $DB_TAB , FALSE /*dynamique*/ , FALSE /*reference*/ , TRUE /*aff_coef*/ , TRUE /*aff_cart*/ , 'image' /*aff_socle*/ , 'image' /*aff_lien*/ , FALSE /*aff_input*/ ) );
+  exit( HtmlArborescence::afficher_matiere_from_SQL( $DB_TAB , FALSE /*dynamique*/ , FALSE /*reference*/ , TRUE /*aff_coef*/ , TRUE /*aff_cart*/ , 'image' /*aff_socle*/ , 'image' /*aff_lien*/ , FALSE /*aff_input*/ ) );
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ if( ($action=='partager') && $matiere_id && $niveau_id && $partageable && $parta
   DB_STRUCTURE_REFERENTIEL::DB_modifier_referentiel( $matiere_id , $niveau_id , array(':partage_etat'=>$partage,':partage_date'=>TODAY_MYSQL,':information'=>$information) );
   // Retour envoyé
   $tab_partage = array('oui'=>'<img title="Référentiel partagé sur le serveur communautaire (MAJ le ◄DATE►)." alt="" src="./_img/etat/partage_oui.gif" />','non'=>'<img title="Référentiel non partagé avec la communauté (choix du ◄DATE►)." alt="" src="./_img/etat/partage_non.gif" />','bof'=>'<img title="Référentiel dont le partage est sans intérêt (pas novateur)." alt="" src="./_img/etat/partage_non.gif" />','hs'=>'<img title="Référentiel dont le partage est sans objet (matière ou niveau spécifique)." alt="" src="./_img/etat/partage_non.gif" />');
-  exit( str_replace('◄DATE►',Html::date(TODAY_MYSQL),$tab_partage[$partage]) );
+  exit( str_replace('◄DATE►',Html::date_texte(TODAY_MYSQL),$tab_partage[$partage]) );
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ if( ($action=='envoyer') && $matiere_id && $niveau_id && $partageable )
   // Tout s'est bien passé si on arrive jusque là...
   DB_STRUCTURE_REFERENTIEL::DB_modifier_referentiel( $matiere_id , $niveau_id , array(':partage_date'=>TODAY_MYSQL,':information'=>$information) );
   // Retour envoyé
-  exit('<img title="Référentiel partagé sur le serveur communautaire (MAJ le '.Html::date(TODAY_MYSQL).')." alt="" src="./_img/etat/partage_oui.gif" />');
+  exit('<img title="Référentiel partagé sur le serveur communautaire (MAJ le '.Html::date_texte(TODAY_MYSQL).')." alt="" src="./_img/etat/partage_oui.gif" />');
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -90,26 +90,6 @@ public static function DB_lister_devoir_profs_droit_saisie($devoir_id)
     ':jointure_droit_non' => 'voir',
   );
   return DB::queryCol(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR );
-}
-
-/**
- * recuperer_devoir_commentaire
- *
- * @param int    $devoir_id
- * @param int    $eleve_id
- * @return array
- */
-public static function DB_recuperer_devoir_commentaire($devoir_id,$eleve_id)
-{
-  $jointure = 'jointure_'.$msg_objet;
-  $DB_SQL = 'SELECT jointure_texte, jointure_audio ';
-  $DB_SQL.= 'FROM sacoche_jointure_devoir_eleve ';
-  $DB_SQL.= 'WHERE devoir_id=:devoir_id AND eleve_id=:eleve_id ';
-  $DB_VAR = array(
-    ':devoir_id' => $devoir_id,
-    ':eleve_id'  => $eleve_id,
-  );
-  return DB::queryRow(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
 /**
@@ -285,7 +265,9 @@ public static function DB_lister_derniers_resultats_eleve($eleve_id,$nb_jours)
 public static function DB_lister_items_devoir_avec_infos_pour_eleves($devoir_id)
 {
   $DB_SQL = 'SELECT item_id, item_nom, entree_id, ';
-  $DB_SQL.= 'item_cart, item_lien, matiere_id, referentiel_calcul_methode, referentiel_calcul_limite, referentiel_calcul_retroactif, ';
+  $DB_SQL.= 'item_cart, item_lien, ';
+  $DB_SQL.= 'matiere_id, matiere_nb_demandes, ';
+  $DB_SQL.= 'referentiel_calcul_methode, referentiel_calcul_limite, referentiel_calcul_retroactif, ';
   $DB_SQL.= 'CONCAT(matiere_ref,".",niveau_ref,".",domaine_ref,theme_ordre,item_ordre) AS item_ref ';
   $DB_SQL.= 'FROM sacoche_jointure_devoir_item ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_item USING (item_id) ';

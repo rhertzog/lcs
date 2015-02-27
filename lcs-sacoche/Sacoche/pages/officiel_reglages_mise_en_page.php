@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,13 +26,15 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Mise en page des bilans officiels";
+$TITRE = html(Lang::_("Mise en page des bilans officiels"));
 
-$check_adresse   = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'adresse'))   ? ' checked' : '' ;
-$check_telephone = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'telephone')) ? ' checked' : '' ;
-$check_fax       = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'fax'))       ? ' checked' : '' ;
-$check_courriel  = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'courriel'))  ? ' checked' : '' ;
-$check_logo      = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'logo'))      ? ' checked' : '' ;
+$check_denomination = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'denomination')) ? ' checked' : '' ;
+$check_adresse      = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'adresse'))      ? ' checked' : '' ;
+$check_telephone    = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'telephone'))    ? ' checked' : '' ;
+$check_fax          = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'fax'))          ? ' checked' : '' ;
+$check_courriel     = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'courriel'))     ? ' checked' : '' ;
+$check_url          = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'url'))          ? ' checked' : '' ;
+$check_logo         = (mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'logo'))         ? ' checked' : '' ;
 
 $check_archive_ajout_message_copie      = ($_SESSION['OFFICIEL']['ARCHIVE_AJOUT_MESSAGE_COPIE'])      ? ' checked' : '' ;
 $check_archive_retrait_tampon_signature = ($_SESSION['OFFICIEL']['ARCHIVE_RETRAIT_TAMPON_SIGNATURE']) ? ' checked' : '' ;
@@ -72,7 +74,7 @@ $options_vertical_milieu   = str_replace( '"'.$_SESSION['ENVELOPPE']['VERTICAL_M
 $options_vertical_bas      = str_replace( '"'.$_SESSION['ENVELOPPE']['VERTICAL_BAS']     .'"' , '"'.$_SESSION['ENVELOPPE']['VERTICAL_BAS']     .'" selected' , fabriquer_chaine_option(15,25) );
 
 // Formulaire avec la liste des directeurs et professeurs
-$select_user = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_professeurs_directeurs_etabl( 1 /*statut*/) , 'f_user' /*select_nom*/ , 'tampon_structure' /*option_first*/ , FALSE /*selection*/ , 'profs_directeurs' /*optgroup*/ );
+$select_user = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_professeurs_directeurs_etabl( 1 /*statut*/) , 'f_user' /*select_nom*/ , 'tampon_structure' /*option_first*/ , FALSE /*selection*/ , 'profs_directeurs' /*optgroup*/ );
 
 // Récupérer les signatures existantes, dont le tampon de l'établissement.
 $li_signatures = '';
@@ -99,10 +101,12 @@ $li_signatures = ($li_signatures) ? $li_signatures : '<li id="sgn_none">Aucun fi
   <h2>En-tête du document</h2>
   <p>
     <label class="tab">Infos établissement :</label>
+    <label for="f_coordonnees_denomination"><input type="checkbox" id="f_coordonnees_denomination" name="f_coordonnees[]" value="denomination"<?php echo $check_denomination ?> /> dénomination</label>&nbsp;&nbsp;&nbsp;
     <label for="f_coordonnees_adresse"><input type="checkbox" id="f_coordonnees_adresse" name="f_coordonnees[]" value="adresse"<?php echo $check_adresse ?> /> adresse</label>&nbsp;&nbsp;&nbsp;
     <label for="f_coordonnees_telephone"><input type="checkbox" id="f_coordonnees_telephone" name="f_coordonnees[]" value="telephone"<?php echo $check_telephone ?> /> téléphone</label>&nbsp;&nbsp;&nbsp;
     <label for="f_coordonnees_fax"><input type="checkbox" id="f_coordonnees_fax" name="f_coordonnees[]" value="fax"<?php echo $check_fax ?> /> fax</label>&nbsp;&nbsp;&nbsp;
     <label for="f_coordonnees_courriel"><input type="checkbox" id="f_coordonnees_courriel" name="f_coordonnees[]" value="courriel"<?php echo $check_courriel ?> /> courriel</label>&nbsp;&nbsp;&nbsp;
+    <label for="f_coordonnees_url"><input type="checkbox" id="f_coordonnees_url" name="f_coordonnees[]" value="url"<?php echo $check_url ?> /> site internet</label>&nbsp;&nbsp;&nbsp;
     <label for="f_coordonnees_logo"><input type="checkbox" id="f_coordonnees_logo" name="f_coordonnees[]" value="logo"<?php echo $check_logo ?> /> logo</label>
   </p>
   <p>

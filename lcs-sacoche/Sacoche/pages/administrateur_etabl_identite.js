@@ -1,7 +1,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -290,7 +290,8 @@ $(document).ready
           f_etablissement_adresse3     : { required:false , maxlength:50 },
           f_etablissement_telephone    : { required:false , maxlength:25 },
           f_etablissement_fax          : { required:false , maxlength:25 },
-          f_etablissement_courriel     : { required:false , maxlength:63 , email:true }
+          f_etablissement_courriel     : { required:false , maxlength:63 , email:true },
+          f_etablissement_url          : { required:false , maxlength:63 , url:true }
         },
         messages :
         {
@@ -300,7 +301,8 @@ $(document).ready
           f_etablissement_adresse3     : { maxlength:"50 caractères maximum" },
           f_etablissement_telephone    : { maxlength:"25 caractères maximum" },
           f_etablissement_fax          : { maxlength:"25 caractères maximum" },
-          f_etablissement_courriel     : { maxlength:"63 caractères maximum" , email:"courriel invalide" }
+          f_etablissement_courriel     : { maxlength:"63 caractères maximum" , email:"courriel invalide" },
+          f_etablissement_url          : { maxlength:"63 caractères maximum" , url:"url invalide (http:// manquant ?)" }
         },
         errorElement : "label",
         errorClass : "erreur",
@@ -435,6 +437,58 @@ $(document).ready
               else
               {
                 $('#ajax_msg_annee_scolaire').removeAttr("class").addClass("valide").html("Donnée enregistrée !");
+              }
+              return false;
+            }
+          }
+        );
+      }
+    );
+
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Traitement du formulaire form_langue
+    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // Alerter sur la nécessité de valider
+    $("#f_etablissement_langue").change
+    (
+      function()
+      {
+        $('#ajax_msg_langue').removeAttr("class").addClass("alerte").html("Enregistrer pour confirmer.");
+      }
+    );
+
+    $('#bouton_valider_langue').click
+    (
+      function()
+      {
+        $("#bouton_valider_langue").prop('disabled',true);
+        $('#ajax_msg_langue').removeAttr("class").addClass("loader").html("En cours&hellip;");
+        $.ajax
+        (
+          {
+            type : 'POST',
+            url : 'ajax.php?page='+PAGE,
+            data : 'csrf='+CSRF+'&f_etablissement_langue='+$('#f_etablissement_langue option:selected').val(),
+            dataType : "html",
+            error : function(jqXHR, textStatus, errorThrown)
+            {
+              $("#bouton_valider_langue").prop('disabled',false);
+              $('#ajax_msg_langue').removeAttr("class").addClass("alerte").html("Échec de la connexion !");
+              return false;
+            },
+            success : function(responseHTML)
+            {
+              initialiser_compteur();
+              $("#bouton_valider_langue").prop('disabled',false);
+              if(responseHTML!='ok')
+              {
+                $('#ajax_msg_langue').removeAttr("class").addClass("alerte").html(responseHTML);
+              }
+              else
+              {
+                $('#ajax_msg_langue').removeAttr("class").addClass("valide").html("Donnée enregistrée !");
               }
               return false;
             }

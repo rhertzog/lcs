@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -40,6 +40,6 @@ if( (!$matiere_id) || (!$niveau_id) )
 
 // Affichage du retour.
 
-exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_arborescence($matiere_id,$niveau_id) , FALSE /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'referentiel' /*optgroup*/ , FALSE /*multiple*/ ) );
+exit( HtmlForm::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_arborescence($matiere_id,$niveau_id) , FALSE /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'referentiel' /*optgroup*/ , FALSE /*multiple*/ ) );
 
 ?>

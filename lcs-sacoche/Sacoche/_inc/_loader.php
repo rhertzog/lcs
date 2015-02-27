@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -207,13 +207,16 @@ if(version_compare(PHP_VERSION,PHP_VERSION_MINI_REQUISE,'<'))
   exit_error( 'PHP trop ancien' /*titre*/ , 'Version de PHP utilisée sur ce serveur : '.PHP_VERSION.'<br />Version de PHP requise au minimum : '.PHP_VERSION_MINI_REQUISE /*contenu*/ );
 }
 
+// Modules PHP requis
+define('PHP_LISTE_EXTENSIONS' , ' curl , dom , gd , mbstring , mysql , PDO , pdo_mysql , session , zip , zlib '); // respecter le séparateur " , "
+
 // Vérifier la présence des modules nécessaires
-$extensions_chargees = get_loaded_extensions();
-$extensions_requises = array('curl','dom','gd','mbstring','mysql','PDO','pdo_mysql','session','zip','zlib');
-$extensions_manquantes = array_diff($extensions_requises,$extensions_chargees);
-if(count($extensions_manquantes))
+$tab_extensions_chargees = get_loaded_extensions();
+$tab_extensions_requises = explode( ' , ' , trim(PHP_LISTE_EXTENSIONS) );
+$tab_extensions_manquantes = array_diff( $tab_extensions_requises , $tab_extensions_chargees );
+if(count($tab_extensions_manquantes))
 {
-  exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : '.implode($extensions_manquantes,' ; ').'.<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
+  exit_error( 'PHP incomplet' /*titre*/ , 'Module(s) PHP manquant(s) : <b>'.implode($tab_extensions_manquantes,' ; ').'</b>.<br />Ce serveur n\'a pas la configuration minimale requise.' /*contenu*/ );
 }
 
 // Définir le décalage horaire par défaut de toutes les fonctions date/heure
@@ -265,6 +268,7 @@ define('CHEMIN_DOSSIER_FPDF_FONT'     , CHEMIN_DOSSIER_SACOCHE.'_lib'.DS.'FPDF'.
 define('CHEMIN_DOSSIER_SQL'           , CHEMIN_DOSSIER_SACOCHE.'_sql'.DS);
 define('CHEMIN_DOSSIER_SQL_STRUCTURE' , CHEMIN_DOSSIER_SACOCHE.'_sql'.DS.'structure'.DS);
 define('CHEMIN_DOSSIER_SQL_WEBMESTRE' , CHEMIN_DOSSIER_SACOCHE.'_sql'.DS.'webmestre'.DS);
+define('CHEMIN_DOSSIER_MENUS'         , CHEMIN_DOSSIER_SACOCHE.'menus'.DS);
 define('CHEMIN_DOSSIER_PAGES'         , CHEMIN_DOSSIER_SACOCHE.'pages'.DS);
 define('CHEMIN_DOSSIER_WEBSERVICES'   , CHEMIN_DOSSIER_SACOCHE.'webservices'.DS);
 define('CHEMIN_DOSSIER_CONFIG'        , CHEMIN_DOSSIER_PRIVATE.'config'.DS);
@@ -370,6 +374,7 @@ function SACoche_autoload($class_name)
     'PDF_Label'                   => '_lib'.DS.'FPDF'.DS.'PDF_Label.php' ,
     'FPDI'                        => '_lib'.DS.'FPDI'.DS.'fpdi.php' ,
     'PDFMerger'                   => '_lib'.DS.'FPDI'.DS.'PDFMerger.php' ,
+    'Lang'                        => '_lib'.DS.'gettext'.DS.'Lang.class.php' ,
     'phpCAS'                      => '_lib'.DS.'phpCAS'.DS.'CAS.php' ,
     // Pour SimpleSAMLphp c'est plus compliqué, on fait un include directement dans les 2 fichiers concernés...
 
@@ -381,6 +386,9 @@ function SACoche_autoload($class_name)
     'FileSystem'                  => '_inc'.DS.'class.FileSystem.php' ,
     'Form'                        => '_inc'.DS.'class.Form.php' ,
     'Html'                        => '_inc'.DS.'class.Html.php' ,
+    'HtmlArborescence'            => '_inc'.DS.'class.HtmlArborescence.php' ,
+    'HtmlForm'                    => '_inc'.DS.'class.HtmlForm.php' ,
+    'HtmlMail'                    => '_inc'.DS.'class.HtmlMail.php' ,
     'InfoServeur'                 => '_inc'.DS.'class.InfoServeur.php' ,
     'JSMin'                       => '_inc'.DS.'class.JavaScriptMinified.php' ,
     'JavaScriptPacker'            => '_inc'.DS.'class.JavaScriptPacker.php' ,
@@ -389,6 +397,18 @@ function SACoche_autoload($class_name)
     'Mobile_Detect'               => '_inc'.DS.'class.MobileDetect.php' ,
     'MyDOMDocument'               => '_inc'.DS.'class.domdocument.php' ,
     'PDF'                         => '_inc'.DS.'class.PDF.php' ,
+    'PDF_archivage_tableau'       => '_inc'.DS.'class.PDF_archivage_tableau.php' ,
+    'PDF_evaluation_cartouche'    => '_inc'.DS.'class.PDF_evaluation_cartouche.php' ,
+    'PDF_evaluation_tableau'      => '_inc'.DS.'class.PDF_evaluation_tableau.php' ,
+    'PDF_fiche_brevet'            => '_inc'.DS.'class.PDF_fiche_brevet.php' ,
+    'PDF_grille_referentiel'      => '_inc'.DS.'class.PDF_grille_referentiel.php' ,
+    'PDF_item_bulletin'           => '_inc'.DS.'class.PDF_item_bulletin.php' ,
+    'PDF_item_releve'             => '_inc'.DS.'class.PDF_item_releve.php' ,
+    'PDF_item_synthese'           => '_inc'.DS.'class.PDF_item_synthese.php' ,
+    'PDF_item_tableau'            => '_inc'.DS.'class.PDF_item_tableau.php' ,
+    'PDF_socle_releve'            => '_inc'.DS.'class.PDF_socle_releve.php' ,
+    'PDF_socle_synthese'          => '_inc'.DS.'class.PDF_socle_synthese.php' ,
+    'PDF_trombinoscope'           => '_inc'.DS.'class.PDF_trombinoscope.php' ,
     'RSS'                         => '_inc'.DS.'class.RSS.php' ,
     'SACocheLog'                  => '_inc'.DS.'class.SACocheLog.php' ,
     'ServeurCommunautaire'        => '_inc'.DS.'class.ServeurCommunautaire.php' ,
@@ -407,10 +427,12 @@ function SACoche_autoload($class_name)
 
     'DB_STRUCTURE_BILAN'          => '_sql'.DS.'requetes_structure_bilan.php' ,
     'DB_STRUCTURE_BREVET'         => '_sql'.DS.'requetes_structure_brevet.php' ,
+    'DB_STRUCTURE_COMMENTAIRE'    => '_sql'.DS.'requetes_structure_commentaire.php' ,
     'DB_STRUCTURE_COMMUN'         => '_sql'.DS.'requetes_structure_commun.php' ,
     'DB_STRUCTURE_DEMANDE'        => '_sql'.DS.'requetes_structure_demande.php' ,
     'DB_STRUCTURE_IMAGE'          => '_sql'.DS.'requetes_structure_image.php' ,
     'DB_STRUCTURE_MAJ_BASE'       => '_sql'.DS.'requetes_structure_maj_base.php' ,
+    'DB_STRUCTURE_NOTIFICATION'   => '_sql'.DS.'requetes_structure_notification.php' ,
     'DB_STRUCTURE_OFFICIEL'       => '_sql'.DS.'requetes_structure_officiel.php' ,
     'DB_STRUCTURE_REFERENTIEL'    => '_sql'.DS.'requetes_structure_referentiel.php' ,
     'DB_STRUCTURE_SOCLE'          => '_sql'.DS.'requetes_structure_socle.php' ,
@@ -577,22 +599,22 @@ define('URL_DIR_WEBSERVICES' , chemin_to_url(CHEMIN_DOSSIER_WEBSERVICES) );
 // URL externes appelées par l'application
 // ============================================================================
 
-define('SERVEUR_PROJET'         ,'https://sacoche.sesamath.net');            // URL du projet SACoche (en https depuis le 08/02/2012)
-define('SERVEUR_SSL'            ,'https://sacoche.sesamath.net');            // URL du serveur Sésamath sécurisé (idem serveur projet SACoche depuis le 08/02/2012)
-define('SERVEUR_ASSO'           ,'http://www.sesamath.net');                 // URL du serveur de l'association Sésamath
-define('SERVEUR_COMMUNAUTAIRE'  ,SERVEUR_PROJET.'/appel_externe.php');       // URL du fichier chargé d'effectuer la liaison entre les installations de SACoche et le serveur communautaire concernant les référentiels.
-define('SERVEUR_DOCUMENTAIRE'   ,SERVEUR_PROJET.'/appel_doc.php');           // URL du fichier chargé d'afficher les documentations
-define('SERVEUR_LPC_SIGNATURE'  ,SERVEUR_SSL   .'/appel_externe.php');       // URL du fichier chargé de signer un XML à importer dans LPC
-define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');      // URL du fichier renvoyant le ZIP de la dernière archive de SACoche disponible
-define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt');     // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
-define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?fichier=cnil');           // URL de la page "CNIL (données personnelles)"
-define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?fichier=contact');        // URL de la page "Où échanger autour de SACoche ?"
-define('SERVEUR_GUIDE_ENT'      ,SERVEUR_PROJET.'/?fichier=ent');            // URL de la page "Mode d'identification & Guide d'intégration aux ENT"
-define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?fichier=guide_admin');    // URL de la page "Guide de démarrage (administrateur de SACoche)"
-define('SERVEUR_GUIDE_RENTREE'  ,SERVEUR_PROJET.'/?fichier=guide_rentree');  // URL de la page "Guide de changement d'année (administrateur de SACoche)"
-define('SERVEUR_NEWS'           ,SERVEUR_PROJET.'/?fichier=news');           // URL de la page "Historique des nouveautés"
-define('SERVEUR_RSS'            ,SERVEUR_PROJET.'/_rss/rss.xml');            // URL du fichier comportant le flux RSS
-define('SERVEUR_BLOG_CONVENTION',SERVEUR_ASSO.'/blog/index.php/aM4');        // URL de la page expliquant les Conventions ENT
+define('SERVEUR_PROJET'         ,'https://sacoche.sesamath.net');        // URL du projet SACoche (en https depuis le 08/02/2012)
+define('SERVEUR_SSL'            ,'https://sacoche.sesamath.net');        // URL du serveur Sésamath sécurisé (idem serveur projet SACoche depuis le 08/02/2012)
+define('SERVEUR_ASSO'           ,'http://www.sesamath.net');             // URL du serveur de l'association Sésamath
+define('SERVEUR_COMMUNAUTAIRE'  ,SERVEUR_PROJET.'/appel_externe.php');   // URL du fichier chargé d'effectuer la liaison entre les installations de SACoche et le serveur communautaire concernant les référentiels.
+define('SERVEUR_DOCUMENTAIRE'   ,SERVEUR_PROJET.'/appel_doc.php');       // URL du fichier chargé d'afficher les documentations
+define('SERVEUR_LPC_SIGNATURE'  ,SERVEUR_SSL   .'/appel_externe.php');   // URL du fichier chargé de signer un XML à importer dans LPC
+define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');  // URL du fichier renvoyant le ZIP de la dernière archive de SACoche disponible
+define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt'); // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
+define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?page=cnil');          // URL de la page "CNIL (données personnelles)"
+define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?page=contact');       // URL de la page "Où échanger autour de SACoche ?"
+define('SERVEUR_GUIDE_ENT'      ,SERVEUR_PROJET.'/?page=ent');           // URL de la page "Mode d'identification & Guide d'intégration aux ENT"
+define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?page=guide_admin');   // URL de la page "Guide de démarrage (administrateur de SACoche)"
+define('SERVEUR_GUIDE_RENTREE'  ,SERVEUR_PROJET.'/?page=guide_rentree'); // URL de la page "Guide de changement d'année (administrateur de SACoche)"
+define('SERVEUR_NEWS'           ,SERVEUR_PROJET.'/?page=news');          // URL de la page "Historique des nouveautés"
+define('SERVEUR_RSS'            ,SERVEUR_PROJET.'/_rss/rss.xml');        // URL du fichier comportant le flux RSS
+define('SERVEUR_BLOG_CONVENTION',SERVEUR_ASSO.'/blog/index.php/aM4');    // URL de la page expliquant les Conventions ENT
 
 // ============================================================================
 // Autres constantes diverses... et parfois importantes !
@@ -654,6 +676,17 @@ define('PHOTO_DIMENSION_MAXI',144);
 // Avec une dimension maxi imposée de 144 pixels, on arrive à 6~7 Ko par photo par élève dans la base (en comptant le base64_encode).
 // Avec une dimension maxi imposée de 120 pixels, on arrive à 4~5 Ko par photo par élève dans la base (en comptant le base64_encode).
 define('JPEG_QUALITY',90);
+
+// Traductions
+define('LOCALE_DEFAULT', 'fr_FR');
+define('LOCALE_CHARSET', 'UTF-8');
+define('LOCALE_DOMAINE', 'traductions');
+define('LOCALE_DIR'    , CHEMIN_DOSSIER_SACOCHE.'_lang');
+if(!defined('LC_MESSAGES'))
+{
+  // Si PHP n'a pas été compilé avec "libintl"...
+  define('LC_MESSAGES', 5);
+}
 
 // ============================================================================
 // Fonctions utilisées pour déterminer l'URL de base du serveur
@@ -770,20 +803,33 @@ function exit_error( $titre , $contenu , $lien='accueil' )
   }
   else
   {
+    // URL_DIR_SACOCHE peut ne pas être encore définie si sortie au début du loader.
+    if(defined('URL_DIR_SACOCHE'))
+    {
+      $chemin = URL_DIR_SACOCHE;
+    }
+    elseif(defined('APPEL_SITE_PROJET'))
+    {
+      $chemin = './sacoche/';
+    }
+    else
+    {
+      $chemin = './';
+    }
     echo'<!DOCTYPE html>'.NL;
     echo'<html lang="fr">'.NL;
     echo  '<head>'.NL;
-    echo    '<link rel="stylesheet" type="text/css" href="'.URL_DIR_SACOCHE.'_css/style.css" />'.NL;
+    echo    '<link rel="stylesheet" type="text/css" href="'.$chemin.'_css/style.css" />'.NL;
     echo    '<style type="text/css">#cadre_milieu{color:#D00}</style>'.NL;
     echo    '<title>SACoche » '.$titre.'</title>'.NL;
     echo  '</head>'.NL;
     echo  '<body>'.NL;
     echo    '<div id="cadre_milieu">'.NL;
-    echo      '<div class="hc"><img src="'.URL_DIR_SACOCHE.'_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>'.NL;
+    echo      '<div class="hc"><img src="'.$chemin.'_img/logo_grand.gif" alt="SACoche" width="208" height="71" /></div>'.NL;
     echo      '<h1>'.$titre.'</h1>'.NL;
     echo      '<p>'.str_replace('<br />','</p><p>',$contenu).'</p>'.NL;
-        if($lien=='accueil') { echo'<p><a href="'.URL_DIR_SACOCHE.'index.php">Retour en page d\'accueil de SACoche.</a></p>'.NL; } 
-    elseif($lien=='install') { echo'<p><a href="'.URL_DIR_SACOCHE.'index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'.NL; } 
+        if($lien=='accueil') { echo'<p><a href="'.$chemin.'index.php">Retour en page d\'accueil de SACoche.</a></p>'.NL; } 
+    elseif($lien=='install') { echo'<p><a href="'.$chemin.'index.php?page=public_installation">Procédure d\'installation de SACoche.</a></p>'.NL; } 
     echo    '</div>'.NL;
     echo  '</body>'.NL;
     echo'</html>'.NL;

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Gestion des établissements";
+$TITRE = "Gestion des établissements"; // Pas de traduction car pas de choix de langue pour ce profil.
 
 // Page réservée aux installations multi-structures ; le menu webmestre d'une installation mono-structure ne permet normalement pas d'arriver ici
 if(HEBERGEUR_INSTALLATION=='mono-structure')
@@ -40,8 +40,8 @@ if(HEBERGEUR_INSTALLATION=='mono-structure')
 $geo_id = (isset($_POST['f_geo_id'])) ? Clean::entier($_POST['f_geo_id']) : -1 ;
 
 // Construire et personnaliser le formulaire "f_geo" pour le choix d'une zone géographique ainsi que le formulaire "f_geo_id" pour restreindre l'affichage
-$select_f_geo    = Form::afficher_select(DB_WEBMESTRE_SELECT::DB_OPT_lister_zones() ,      FALSE /*select_nom*/ , '' /*option_first*/ , FALSE   /*selection*/ , '' /*optgroup*/);
-$select_f_geo_id = Form::afficher_select(DB_WEBMESTRE_SELECT::DB_OPT_lister_zones() , 'f_geo_id' /*select_nom*/ , '' /*option_first*/ , $geo_id /*selection*/ , '' /*optgroup*/);
+$select_f_geo    = HtmlForm::afficher_select(DB_WEBMESTRE_SELECT::DB_OPT_lister_zones() ,      FALSE /*select_nom*/ , '' /*option_first*/ , FALSE   /*selection*/ , '' /*optgroup*/);
+$select_f_geo_id = HtmlForm::afficher_select(DB_WEBMESTRE_SELECT::DB_OPT_lister_zones() , 'f_geo_id' /*select_nom*/ , '' /*option_first*/ , $geo_id /*selection*/ , '' /*optgroup*/);
 $selected = ($geo_id===0) ? ' selected' : '' ;
 $select_f_geo_id = str_replace( '<option value=""></option>' , '<option value=""></option><option value="0"'.$selected.'>Toutes les zones</option>' , $select_f_geo_id );
 

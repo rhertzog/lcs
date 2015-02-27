@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -39,5 +39,5 @@ $multiple  = (empty($_POST['f_multiple']))  ? FALSE                             
 $select_nom   = ($multiple) ? 'f_user' : FALSE ;
 $option_first = ($multiple) ? FALSE    : ''    ;
 
-exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_professeurs_directeurs_etabl($statut) , $select_nom , $option_first , $selection , 'profs_directeurs' /*optgroup*/ , $multiple ) );
+exit( HtmlForm::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_professeurs_directeurs_etabl($statut) , $select_nom , $option_first , $selection , 'profs_directeurs' /*optgroup*/ , $multiple ) );
 ?>

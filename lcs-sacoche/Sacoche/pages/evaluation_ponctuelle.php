@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,33 +26,20 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Évaluer un élève à la volée";
+$TITRE = html(Lang::_("Évaluer un élève à la volée"));
 
 $tab_matieres = DB_STRUCTURE_COMMUN::DB_OPT_matieres_professeur($_SESSION['USER_ID']);
 $tab_groupes  = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_groupes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_groupes_etabl() ;
 
-$select_groupe  = Form::afficher_select($tab_groupes  , 'f_classe'  /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
-$select_matiere = Form::afficher_select($tab_matieres , 'f_matiere' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/);
+$select_groupe  = HtmlForm::afficher_select($tab_groupes  , 'f_classe'  /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/);
+$select_matiere = HtmlForm::afficher_select($tab_matieres , 'f_matiere' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/);
 
 // boutons radio
 $tab_radio_boutons = array();
-$tab_notes = array(
-  'RR'   => $_SESSION['NOTE_DOSSIER'] ,
-  'R'    => $_SESSION['NOTE_DOSSIER'] ,
-  'V'    => $_SESSION['NOTE_DOSSIER'] ,
-  'VV'   => $_SESSION['NOTE_DOSSIER'] ,
-  'NN'   => 'commun' ,
-  'NE'   => 'commun' ,
-  'NF'   => 'commun' ,
-  'NR'   => 'commun' ,
-  'ABS'  => 'commun' ,
-  'DISP' => 'commun' ,
-  'REQ'  => 'commun' ,
-  'X'    => 'commun' ,
-);
-foreach($tab_notes as $note => $dossier)
+$tab_notes = array( 'RR' , 'R' , 'V' , 'VV' , 'NN' , 'NE' , 'NF' , 'NR' , 'ABS' , 'DISP' , 'REQ' , 'X' );
+foreach($tab_notes as $note)
 {
-  $tab_radio_boutons[] = '<label for="note_'.$note.'"><span class="td"><input type="radio" id="note_'.$note.'" name="f_note" value="'.$note.'"> <img alt="'.$note.'" src="./_img/note/'.$dossier.'/h/'.$note.'.gif" /></span></label>';
+  $tab_radio_boutons[] = '<label for="note_'.$note.'"><span class="td"><input type="radio" id="note_'.$note.'" name="f_note" value="'.$note.'"> <img alt="'.$note.'" src="'.Html::note_src($note).'" /></span></label>';
 }
 $radio_boutons = implode(' ',$tab_radio_boutons);
 ?>
@@ -82,6 +69,6 @@ $radio_boutons = implode(' ',$tab_radio_boutons);
 <hr />
 <div id="bilan" class="hide">
   <ul class="puce">
-    <li>Une fois toutes vos notes saisies, vous pouvez <a id="bilan_lien" href="./index.php?page=evaluation_gestion&amp;section=selection&amp;devoir_id=0&amp;groupe_id=0">voir l'évaluation correspondante ainsi générée</a>.</li>
+    <li>Une fois toutes vos notes saisies, vous pouvez <a id="bilan_lien" href="./index.php?page=evaluation_gestion&amp;section=selection&amp;devoir_id=0&amp;groupe_type=E&amp;groupe_id=0">voir l'évaluation correspondante ainsi obtenue</a>.</li>
   </ul>
 </div>

@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Choisir la langue étrangère pour le socle commun";
+$TITRE = html(Lang::_("Choisir la langue étrangère pour le socle commun"));
 
 if( ($_SESSION['USER_PROFIL_TYPE']!='administrateur') && !test_user_droit_specifique( $_SESSION['DROIT_AFFECTER_LANGUE'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ ) )
 {
@@ -36,7 +36,7 @@ if( ($_SESSION['USER_PROFIL_TYPE']!='administrateur') && !test_user_droit_specif
   return; // Ne pas exécuter la suite de ce fichier inclus.
 }
 
-require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues.php');
+require(CHEMIN_DOSSIER_INCLUDE.'tableau_langues_socle.php');
 // Fonction adaptant le tableau pour un affichage dans un formulaire de type select avec des groupes d'options suivant que ces langues soient ou non enseignées dans l'établissement
 function OPT_langues($tab_langues)
 {
@@ -65,8 +65,8 @@ else // directeur ou administrateur
 {
   $tab_groupes = DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl();
 }
-$select_eleve  = Form::afficher_select($tab_groupes              , 'select_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/ );
-$select_langue = Form::afficher_select(OPT_langues($tab_langues) , 'f_langue'      /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,       'langues' /*optgroup*/ );
+$select_eleve  = HtmlForm::afficher_select($tab_groupes              , 'select_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/ );
+$select_langue = HtmlForm::afficher_select(OPT_langues($tab_langues) , 'f_langue'      /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,       'langues' /*optgroup*/ );
 ?>
 
 <p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=referentiels_socle__socle_choisir_langue">DOC : Choisir la langue étrangère pour le socle commun</a></span></p>

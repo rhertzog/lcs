@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -80,6 +80,15 @@ if($PAGE=='fermer_session')
 {
   Session::close();
   exit('ok');
+}
+
+// Traductions
+if($_SESSION['USER_PROFIL_TYPE']!='public')
+{
+  Lang::setlocale( LC_MESSAGES, Lang::get_locale_used() );
+  Lang::bindtextdomain( LOCALE_DOMAINE, LOCALE_DIR );
+  Lang::bind_textdomain_codeset( LOCALE_DOMAINE, LOCALE_CHARSET );
+  Lang::textdomain( LOCALE_DOMAINE );
 }
 
 // Blocage éventuel par le webmestre ou un administrateur ou l'automate (on ne peut pas le tester avant car il faut avoir récupéré les données de session)

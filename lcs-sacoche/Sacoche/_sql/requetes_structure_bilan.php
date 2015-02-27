@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -167,7 +167,6 @@ public static function DB_recuperer_arborescence_professeur( $liste_eleve_id , $
 /**
  * recuperer_arborescence_bilan
  * Retourner l'arborescence des items travaillés par des élèves donnés (ou un seul), pour une matière donnée (ou toutes), durant une période donnée
- * Appelé par [ releve_items_matiere.ajax.php ] [ releve_items_multimatiere.ajax.php ]
  *
  * @param string $liste_eleve_id   id des élèves séparés par des virgules ; il peut n'y avoir qu'un id, en particulier si c'est un élève qui demande un bilan
  * @param int    $matiere_id       id de la matière ; -1 pour toutes les matières
@@ -198,7 +197,7 @@ public static function DB_recuperer_arborescence_bilan( $liste_eleve_id , $matie
   $DB_SQL.= 'CONCAT(matiere_ref,".",niveau_ref,".",domaine_ref,theme_ordre,item_ordre) AS item_ref , ';
   $DB_SQL.= $item_nom.' , ';
   $DB_SQL.= 'item_coef , item_cart , entree_id AS item_socle , item_lien , ';
-  $DB_SQL.= ($matiere_id<0) ? 'matiere_id , matiere_nom , ' : '' ;
+  $DB_SQL.= ($matiere_id<0) ? 'matiere_id , matiere_nom , matiere_nb_demandes , ' : '' ;
   $DB_SQL.= 'referentiel_calcul_methode AS calcul_methode , referentiel_calcul_limite AS calcul_limite , referentiel_calcul_retroactif AS calcul_retroactif ';
   $DB_SQL.= 'FROM sacoche_saisie ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_item USING (item_id) ';
@@ -228,8 +227,11 @@ public static function DB_recuperer_arborescence_bilan( $liste_eleve_id , $matie
     {
       foreach($tab as $key => $DB_ROW)
       {
-        $tab_matiere[$DB_ROW['matiere_id']] = $DB_ROW['matiere_nom'];
-        unset($DB_TAB[$item_id][$key]['matiere_id'],$DB_TAB[$item_id][$key]['matiere_nom']);
+        $tab_matiere[$DB_ROW['matiere_id']] = array(
+          'matiere_nom'         => $DB_ROW['matiere_nom'],
+          'matiere_nb_demandes' => $DB_ROW['matiere_nb_demandes'],
+        );
+        unset( $DB_TAB[$item_id][$key]['matiere_id'] , $DB_TAB[$item_id][$key]['matiere_nom'] , $DB_TAB[$item_id][$key]['matiere_nb_demandes'] );
       }
     }
     return array($DB_TAB,$tab_matiere);
@@ -319,7 +321,6 @@ public static function DB_recuperer_matieres_travaillees( $classe_id , $liste_ma
 /**
  * recuperer_arborescence_synthese
  * Retourner l'arborescence des items travaillés par des élèves selectionnés, durant la période choisie => pour la synthèse matière ou multi-matières
- * Appelé par [ releve_synthese_matiere.ajax.php ] [ releve_synthese_multimatiere.ajax.php ]
  *
  * @param string $liste_eleve_id   id des élèves séparés par des virgules ; il peut n'y avoir qu'un id, en particulier si c'est un élève qui demande un bilan
  * @param int    $matiere_id       id de la matière ; 0 pour toutes les matières
@@ -333,7 +334,7 @@ public static function DB_recuperer_matieres_travaillees( $classe_id , $liste_ma
  */
 public static function DB_recuperer_arborescence_synthese( $liste_eleve_id , $matiere_id , $only_socle , $only_niveau , $mode_synthese='predefini' , $fusion_niveaux , $date_mysql_debut , $date_mysql_fin )
 {
-  $select_matiere    = (!$matiere_id)                ? 'matiere_id , matiere_nom , '                          : '' ;
+  $select_matiere    = (!$matiere_id)                ? 'matiere_id , matiere_nom , matiere_nb_demandes , '    : '' ;
   $select_synthese   = ($mode_synthese=='predefini') ? ', referentiel_mode_synthese AS mode_synthese '        : '' ;
   $where_eleve       = (strpos($liste_eleve_id,',')) ? 'eleve_id IN('.$liste_eleve_id.') '                    : 'eleve_id='.$liste_eleve_id.' ' ; // Pour IN(...) NE PAS passer la liste dans $DB_VAR sinon elle est convertie en nb entier
   $where_matiere     = ($matiere_id)                 ? 'AND matiere_id=:matiere '                             : 'AND matiere_active=1 ' ;
@@ -377,8 +378,11 @@ public static function DB_recuperer_arborescence_synthese( $liste_eleve_id , $ma
       if(!$matiere_id)
       {
         $prefixe_matiere = $DB_ROW['matiere_id'];
-        $tab_matiere[$DB_ROW['matiere_id']] = $DB_ROW['matiere_nom'];
-        unset($DB_TAB[$item_id][$key]['matiere_nom']);
+        $tab_matiere[$DB_ROW['matiere_id']] = array(
+          'matiere_nom'         => $DB_ROW['matiere_nom'],
+          'matiere_nb_demandes' => $DB_ROW['matiere_nb_demandes'],
+        );
+        unset( $DB_TAB[$item_id][$key]['matiere_nom'] , $DB_TAB[$item_id][$key]['matiere_nb_demandes'] );
       }
       else
       {
@@ -534,11 +538,11 @@ public static function DB_lister_result_eleves_palier_sans_infos_items( $liste_e
  * @param bool     $with_gepi
  * @param bool     $with_langue
  * @param bool     $with_brevet_serie
- * @return array|string                le tableau est de la forme [eleve_id] => array('eleve_nom'=>...,'eleve_prenom'=>...,'date_naissance'=>...,'eleve_id_gepi'=>...,'eleve_langue'=>...,'eleve_brevet_serie'=>...);
+ * @return array|string                le tableau est de la forme [eleve_id] => array('eleve_nom'=>...,'eleve_prenom'=>...,'eleve_genre'=>...,'date_naissance'=>...,'eleve_id_gepi'=>...,'eleve_langue'=>...,'eleve_brevet_serie'=>...);
  */
 public static function DB_lister_eleves_cibles( $listing_eleve_id , $eleves_ordre , $with_gepi , $with_langue , $with_brevet_serie )
 {
-  $DB_SQL = 'SELECT user_id AS eleve_id , user_nom AS eleve_nom , user_prenom AS eleve_prenom , user_naissance_date AS date_naissance ';
+  $DB_SQL = 'SELECT user_id AS eleve_id , user_nom AS eleve_nom , user_prenom AS eleve_prenom , user_genre AS eleve_genre , user_naissance_date AS date_naissance ';
   $DB_SQL.= ($with_gepi)         ? ', user_id_gepi AS eleve_id_gepi ' : '' ;
   $DB_SQL.= ($with_langue)       ? ', eleve_langue '                  : '' ;
   $DB_SQL.= ($with_brevet_serie) ? ', eleve_brevet_serie '            : '' ;

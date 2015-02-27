@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,13 +26,13 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Étape n°1 - Indiquer la série des élèves concernés";
+$TITRE = html(Lang::_("Étape n°1 - Indiquer la série des élèves concernés"));
 
 // Fabrication des éléments select du formulaire
 $tab_groupes = DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl();
 $tab_series  = DB_STRUCTURE_BREVET::DB_OPT_brevet_series();
-$select_eleve = Form::afficher_select($tab_groupes , 'select_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/ );
-$select_serie = Form::afficher_select($tab_series  , 'f_serie'       /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/ );
+$select_eleve = HtmlForm::afficher_select($tab_groupes , 'select_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/ );
+$select_serie = HtmlForm::afficher_select($tab_series  , 'f_serie'       /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ ,              '' /*optgroup*/ );
 ?>
 
 <p>

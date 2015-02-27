@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Statistiques globales";
+$TITRE = html(Lang::_("Statistiques globales"));
 
 list($personnel_nb,$eleve_nb,$parent_nb,$personnel_use,$eleve_use,$parent_use,$evaluation_nb,$validation_nb,$evaluation_use,$validation_use) = DB_STRUCTURE_DIRECTEUR::DB_recuperer_statistiques();
 ?>

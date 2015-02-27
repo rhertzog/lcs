@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  *
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -32,7 +32,7 @@
 require('./_inc/_loader.php');
 
 // Mémorisation de paramètres multiples transmis en GET pour les retrouver par la suite dans le cas où le service d'authentification externe en perd
-// C'est le cas lors de l'appel d'un l'IdP de type RSA FIM, application nationale du ministère...
+// C'est le cas lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...
 if(isset($_GET['memoget']))
 {
   $memoget = urldecode($_GET['memoget']);
@@ -85,6 +85,15 @@ Session::execute();
 if(count(Session::$tab_message_erreur))
 {
   $PAGE = ($_SESSION['USER_PROFIL_TYPE'] == 'public') ? 'public_accueil' : 'compte_accueil' ;
+}
+
+// Traductions
+if($_SESSION['USER_PROFIL_TYPE']!='public')
+{
+  Lang::setlocale( LC_MESSAGES, Lang::get_locale_used() );
+  Lang::bindtextdomain( LOCALE_DOMAINE, LOCALE_DIR );
+  Lang::bind_textdomain_codeset( LOCALE_DOMAINE, LOCALE_CHARSET );
+  Lang::textdomain( LOCALE_DOMAINE );
 }
 
 // Alerte si navigateur trop ancien
@@ -154,7 +163,7 @@ if(Session::$_sso_redirect)
 }
 
 // Suppression du cookie provisoire ayant servi à mémoriser des paramètres multiples transmis en GET dans le cas où le service d'authentification externe en perd.
-// C'est le cas lors de l'appel d'un l'IdP de type RSA FIM, application nationale du ministère...
+// C'est le cas lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...
 if(isset($_COOKIE[COOKIE_MEMOGET]))
 {
   setcookie( COOKIE_MEMOGET /*name*/ , '' /*value*/ , $_SERVER['REQUEST_TIME']-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
@@ -238,17 +247,21 @@ $body_class = ($_SESSION['BROWSER']['mobile']) ? 'touch' : 'mouse' ;
 echo Layout::afficher_page_entete('prog-'.$body_class);
 if($_SESSION['USER_PROFIL_TYPE']!='public')
 {
+  $lien_page_langue = ($_SESSION['USER_ETABLISSEMENT']) ? ' <a href="./index.php?page=compte_langue">['.Lang::get_locale_used().']</a>' : '' ;
   // Espace identifié : cadre_haut (avec le menu) et cadre_bas (avec le contenu).
   echo'<div id="cadre_haut">'.NL;
-  echo  '<img id="logo" alt="SACoche" src="./_img/logo_petit2.png" width="147" height="46" />'.NL;
+  echo  '<a target="_blank" href="'.SERVEUR_PROJET.'" class="no_puce"><img id="logo" alt="SACoche" src="./_img/logo_petit_menu.png" width="154" height="39" /></a>'.NL;
   echo  '<div id="top_info">'.NL;
-  echo    '<span class="button favicon"><a target="_blank" href="'.SERVEUR_PROJET.'">Site officiel</a></span>'.NL;
-  echo    '<span class="button home">'.html($_SESSION['ETABLISSEMENT']['DENOMINATION']).'</span>'.NL;
-  echo    '<span class="button profil_'.$_SESSION['USER_PROFIL_TYPE'].'">'.html($_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM']).' ('.$_SESSION['USER_PROFIL_NOM_COURT'].')</span>'.NL;
-  echo    '<span class="button clock_fixe"><span id="clock">'.$_SESSION['USER_DUREE_INACTIVITE'].' min</span></span>'.NL;
-  echo    '<button id="deconnecter" class="deconnecter">Déconnexion</button>'.NL;
+  echo    $_SESSION['MENU'];
+  echo    '<div>'.NL;
+  echo      '<span class="top home">'.html($_SESSION['ETABLISSEMENT']['DENOMINATION']).'</span><br />'.NL;
+  echo      '<span class="top profil_'.$_SESSION['USER_PROFIL_TYPE'].'">'.html($_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM']).' ('.$_SESSION['USER_PROFIL_NOM_COURT'].')'.$lien_page_langue.'</span>'.NL;
+  echo    '</div>'.NL;
+  echo    '<div>'.NL;
+  echo      '<span class="top clock_fixe"><span id="clock">'.$_SESSION['USER_DUREE_INACTIVITE'].' min</span></span><br />'.NL;
+  echo      '<a href="#"><span class="top deconnexion" id="deconnecter">Déconnexion</span></a>'.NL;
+  echo    '</div>'.NL;
   echo  '</div>'.NL;
-  echo  $_SESSION['MENU'];
   echo  '<audio id="audio_bip" preload="none" class="hide">'.NL;
   // On pourrait bien sur laisser le navigateur se débrouiller et prendre le format qui lui convient, il me semble que dans ce cas j'avais noté des avertissements dans Firebug.
   if(!in_array( $_SESSION['BROWSER']['modele'] , array('firefox','opera') ))

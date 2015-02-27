@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -129,10 +129,11 @@ if( ($BILAN_TYPE=='bulletin') && $_SESSION['OFFICIEL']['BULLETIN_MOYENNE_SCORES'
 // Récupérer les saisies déjà effectuées pour le bilan officiel concerné
 
 $tab_saisie = array();  // [eleve_id][rubrique_id][prof_id] => array(prof_info,appreciation,note);
+$tab_moyenne_exception_matieres = ( ($BILAN_TYPE!='bulletin') || !$_SESSION['OFFICIEL']['BULLETIN_MOYENNE_EXCEPTION_MATIERES'] ) ? array() : explode(',',$_SESSION['OFFICIEL']['BULLETIN_MOYENNE_EXCEPTION_MATIERES']) ; // sert plus tard
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_eleves( $BILAN_TYPE , $periode_id , $liste_eleve_id , 0 /*prof_id*/ , FALSE /*with_rubrique_nom*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
+  $prof_info = ($DB_ROW['prof_id']) ? afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ) : '' ;
   $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
 }
 
@@ -156,6 +157,7 @@ $make_brevet   = FALSE;
 $make_action   = 'examiner';
 $make_html     = FALSE;
 $make_pdf      = FALSE;
+$make_csv      = FALSE;
 $make_graph    = FALSE;
 
 if($BILAN_TYPE=='releve')
@@ -239,13 +241,50 @@ if(!$nb_pb_rubriques)
 }
 else
 {
+  // Tentative d'indication des collègues potentiellement concernés
+  $tab_rubrique_profs = array();
+  if(in_array($BILAN_TYPE,array('releve','bulletin')))
+  {
+    $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_professeurs_eleves_matieres( $classe_id , $liste_eleve_id , $liste_rubrique_id );
+    if(!empty($DB_TAB))
+    {
+      $tab_tmp = array();
+      foreach($DB_TAB as $DB_ROW)
+      {
+        $tab_tmp[$DB_ROW['matiere_id']][$DB_ROW['user_id']] = $DB_ROW['user_nom'].' '.$DB_ROW['user_prenom'];
+      }
+      foreach($tab_tmp as $matiere_id => $tab_profs)
+      {
+        // On peut avoir des matières qui n'apparaissent pas sur le bilan officiel
+        if(isset($tab_matiere[$matiere_id]))
+        {
+          $rubrique_nom = $tab_matiere[$matiere_id]['matiere_nom'];
+          $nb_profs = count($tab_profs);
+          if($nb_profs==1)
+          {
+            $tab_rubrique_profs[$rubrique_nom] = '['.current($tab_profs).']';
+          }
+          else if($nb_profs<=3)
+          {
+            $tab_rubrique_profs[$rubrique_nom] = '['.implode(' ; ',$tab_profs).']';
+          }
+          else
+          {
+            $tab_rubrique_profs[$rubrique_nom] = '['.$nb_profs.' professeurs]';
+          }
+        }
+      }
+    }
+  }
+  // Affichage du retour
   $nb_pb_saisies = count($tab_resultat_examen,COUNT_RECURSIVE) - $nb_pb_rubriques ;
   $sr = ($nb_pb_rubriques>1) ? 's' : '' ;
   $ss = ($nb_pb_saisies>1)   ? 's' : '' ;
   echo'<p class="ti"><label class="danger">'.$nb_pb_saisies.' saisie'.$ss.' manquante'.$ss.' répartie'.$ss.' parmi '.$nb_pb_rubriques.' rubrique'.$sr.' !</label></p>';
   foreach($tab_resultat_examen as $rubrique_nom => $tab)
   {
-    echo'<h3>'.html($rubrique_nom).'</h3>';
+    $rubrique_indication = isset($tab_rubrique_profs[$rubrique_nom]) ? $rubrique_nom.' '.$tab_rubrique_profs[$rubrique_nom] : $rubrique_nom ;
+    echo'<h3>'.html($rubrique_indication).'</h3>';
     echo'<ul class="puce"><li>'.implode('</li><li>',$tab).'</li></ul>';
   }
   exit();

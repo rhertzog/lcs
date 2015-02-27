@@ -1,7 +1,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -57,6 +57,7 @@ $(document).ready
       'f_coordonnees_telephone' : 'coordonnees',
       'f_coordonnees_fax'       : 'coordonnees',
       'f_coordonnees_courriel'  : 'coordonnees',
+      'f_coordonnees_url'       : 'coordonnees',
       'f_coordonnees_logo'      : 'coordonnees',
       'f_infos_responsables' : 'responsables',
       'f_nombre_exemplaires' : 'responsables',

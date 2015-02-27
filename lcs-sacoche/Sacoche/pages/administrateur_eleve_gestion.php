@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Gérer les élèves";
+$TITRE = html(Lang::_("Gérer les élèves"));
 
 // Récupérer d'éventuels paramètres pour restreindre l'affichage
 // Pas de passage par la page ajax.php, mais pas besoin ici de protection contre attaques type CSRF
@@ -35,8 +35,8 @@ $groupe      = (isset($_POST['f_groupes']))  ? Clean::texte($_POST['f_groupes'])
 $groupe_type = Clean::texte( substr($groupe,0,1) );
 $groupe_id   = Clean::entier( substr($groupe,1) );
 // Construire et personnaliser le formulaire pour restreindre l'affichage
-$select_f_groupes = Form::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl() , 'f_groupes' /*select_nom*/ ,    '' /*option_first*/ , $groupe /*selection*/ , 'regroupements' /*optgroup*/);
-$select_f_statuts = Form::afficher_select(Form::$tab_select_statut                          , 'f_statut'  /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ ,              '' /*optgroup*/);
+$select_f_groupes = HtmlForm::afficher_select(DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl() , 'f_groupes' /*select_nom*/ ,    '' /*option_first*/ , $groupe /*selection*/ , 'regroupements' /*optgroup*/);
+$select_f_statuts = HtmlForm::afficher_select(Form::$tab_select_statut                          , 'f_statut'  /*select_nom*/ , FALSE /*option_first*/ , $statut /*selection*/ ,              '' /*optgroup*/);
 
 // Javascript
 Layout::add( 'js_inline_before' , 'var input_date      = "'.TODAY_FR.'";' );
@@ -91,7 +91,6 @@ if(empty($_POST['f_afficher']))
   </thead>
   <tbody>
     <?php
-    $tab_genre = array( 'I'=>'' , 'M'=>'Masculin' , 'F'=>'Féminin' );
     // Lister les élèves
     $tab_types = array('d'=>'Divers' , 'n'=>'niveau' , 'c'=>'classe' , 'g'=>'groupe');
     $groupe_type = $tab_types[$groupe_type];
@@ -117,7 +116,7 @@ if(empty($_POST['f_afficher']))
         echo  '<td class="label">'.html($DB_ROW['user_sconet_id']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_sconet_elenoet']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_reference']).'</td>';
-        echo  '<td class="label">'.$tab_genre[$DB_ROW['user_genre']].'</td>';
+        echo  '<td class="label">'.Html::$tab_genre['enfant'][$DB_ROW['user_genre']].'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_nom']).'</td>';
         echo  '<td class="label">'.html($DB_ROW['user_prenom']).'</td>';
         echo  '<td class="label">'.$date_naissance.'</td>';

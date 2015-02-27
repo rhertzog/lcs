@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Valider les compétences (piliers) du socle";
+$TITRE = html(Lang::_("Valider les compétences (piliers) du socle"));
 
 if(!test_user_droit_specifique( $_SESSION['DROIT_VALIDATION_PILIER'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ ))
 {
@@ -61,9 +61,9 @@ else // Ne passent ici que les professeurs
 $tab_paliers = DB_STRUCTURE_COMMUN::DB_OPT_paliers_etabl();
 $of_p = (count($tab_paliers)<2) ? FALSE : '' ;
 
-$select_palier       = Form::afficher_select($tab_paliers                   , 'f_palier'       /*select_nom*/ , $of_p /*option_first*/ , Form::$tab_choix['palier_id']    /*selection*/ ,              '' /*optgroup*/);
-$select_groupe       = Form::afficher_select($tab_groupes                   , 'f_groupe'       /*select_nom*/ , $of_g /*option_first*/ , FALSE                            /*selection*/ , 'regroupements' /*optgroup*/);
-$select_eleves_ordre = Form::afficher_select(Form::$tab_select_eleves_ordre , 'f_eleves_ordre' /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['eleves_ordre'] /*selection*/ ,              '' /*optgroup*/);
+$select_palier       = HtmlForm::afficher_select($tab_paliers                   , 'f_palier'       /*select_nom*/ , $of_p /*option_first*/ , Form::$tab_choix['palier_id']    /*selection*/ ,              '' /*optgroup*/);
+$select_groupe       = HtmlForm::afficher_select($tab_groupes                   , 'f_groupe'       /*select_nom*/ , $of_g /*option_first*/ , FALSE                            /*selection*/ , 'regroupements' /*optgroup*/);
+$select_eleves_ordre = HtmlForm::afficher_select(Form::$tab_select_eleves_ordre , 'f_eleves_ordre' /*select_nom*/ , FALSE /*option_first*/ , Form::$tab_choix['eleves_ordre'] /*selection*/ ,              '' /*optgroup*/);
 ?>
 
 <ul class="puce">

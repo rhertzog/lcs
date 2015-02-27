@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -91,6 +91,17 @@ class To
     $tab_bad = array( '–' ,  '$' ,  '&' ,  '%' ,  '#' ,  '_' ,  '{' ,  '}' ,  '^' , '\\' );
     $tab_bon = array( '-' , '\$' , '\&' , '\%' , '\#' , '\_' , '\{' , '\}' , '\^' , '\textbackslash{}' );
     return str_replace( $tab_bad , $tab_bon , $text );
+  }
+
+  /**
+   * Afficher un équivalent texte de note pour une sortie CSV ou LaTeX.
+   *
+   * @param string $note
+   * @return string
+   */
+  public static function note_texte($note)
+  {
+    return (in_array($note,array('RR','R','V','VV'))) ? $_SESSION['NOTE_TEXTE'][$note] : $note ;
   }
 
 }

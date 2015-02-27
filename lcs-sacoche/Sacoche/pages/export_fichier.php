@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Export de données";
+$TITRE = html(Lang::_("Export de données"));
 
 Form::load_choix_memo();
 if($_SESSION['USER_PROFIL_TYPE']=='professeur')
@@ -51,9 +51,9 @@ if($_SESSION['USER_PROFIL_TYPE']=='administrateur')
   $of_p = FALSE;
 }
 
-$select_matiere = Form::afficher_select($tab_matieres , 'f_matiere' /*select_nom*/ ,    '' /*option_first*/ , Form::$tab_choix['matiere_id'] /*selection*/ ,              '' /*optgroup*/ );
-$select_groupe  = Form::afficher_select($tab_groupes  , 'f_groupe'  /*select_nom*/ ,    '' /*option_first*/ , FALSE                          /*selection*/ , 'regroupements' /*optgroup*/ );
-$select_palier  = Form::afficher_select($tab_paliers  , 'f_palier'  /*select_nom*/ , $of_p /*option_first*/ , Form::$tab_choix['palier_id']  /*selection*/ ,              '' /*optgroup*/ );
+$select_matiere = HtmlForm::afficher_select($tab_matieres , 'f_matiere' /*select_nom*/ ,    '' /*option_first*/ , Form::$tab_choix['matiere_id'] /*selection*/ ,              '' /*optgroup*/ );
+$select_groupe  = HtmlForm::afficher_select($tab_groupes  , 'f_groupe'  /*select_nom*/ ,    '' /*option_first*/ , FALSE                          /*selection*/ , 'regroupements' /*optgroup*/ );
+$select_palier  = HtmlForm::afficher_select($tab_paliers  , 'f_palier'  /*select_nom*/ , $of_p /*option_first*/ , Form::$tab_choix['palier_id']  /*selection*/ ,              '' /*optgroup*/ );
 
 if($_SESSION['USER_PROFIL_TYPE']!='administrateur')
 {

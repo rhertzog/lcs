@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -272,21 +272,24 @@ if( ($ACTION!='imprimer') || ($etape!=1) )
 
 $tab_saisie = array();  // [eleve_id][rubrique_id][prof_id] => array(prof_info,appreciation,note);
 $tab_signature = array(0=>NULL);  // [prof_id] => array(contenu,format,largeur,hauteur);
-$tab_assiduite = array_fill_keys( $tab_eleve_id , array( 'absence' => NULL , 'non_justifie' => NULL , 'retard' => NULL ) );  // [eleve_id] => array(absence,non_justifie,retard);
+$tab_assiduite = array_fill_keys( $tab_eleve_id , array( 'absence' => NULL , 'absence_nj' => NULL , 'retard' => NULL , 'retard_nj' => NULL ) );  // [eleve_id] => array(absence,absence_nj,retard,retard_nj);
+$tab_moyenne_exception_matieres = ( ($BILAN_TYPE!='bulletin') || !$_SESSION['OFFICIEL']['BULLETIN_MOYENNE_EXCEPTION_MATIERES'] ) ? array() : explode(',',$_SESSION['OFFICIEL']['BULLETIN_MOYENNE_EXCEPTION_MATIERES']) ;
 $tab_prof_id = array();
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_eleves( $BILAN_TYPE , $periode_id , $liste_eleve_id , 0 /*prof_id*/ , FALSE /*with_rubrique_nom*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
-  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
+  $prof_info = ($DB_ROW['prof_id']) ? afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ) : '' ;
+  $note = in_array($DB_ROW['rubrique_id'],$tab_moyenne_exception_matieres) ? NULL : $DB_ROW['saisie_note'] ;
+  $tab_saisie[$DB_ROW['eleve_id']][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$note );
   $tab_signature[$DB_ROW['prof_id']] = NULL ; // Initialisé
   $tab_prof_id[$DB_ROW['prof_id']] = $DB_ROW['prof_id']; // Pour savoir ensuite la liste des profs à chercher
 }
 $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_recuperer_bilan_officiel_saisies_classe( $periode_id , $classe_id , 0 /*prof_id*/ , FALSE /*with_periodes_avant*/ , FALSE /*only_synthese_generale*/ );
 foreach($DB_TAB as $DB_ROW)
 {
-  $prof_info = afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] );
-  $tab_saisie[0][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$DB_ROW['saisie_note'] );
+  $prof_info = ($DB_ROW['prof_id']) ? afficher_identite_initiale( $DB_ROW['user_nom'] , FALSE , $DB_ROW['user_prenom'] , TRUE , $DB_ROW['user_genre'] ) : '' ;
+  $note = in_array($DB_ROW['rubrique_id'],$tab_moyenne_exception_matieres) ? NULL : $DB_ROW['saisie_note'] ;
+  $tab_saisie[0][$DB_ROW['rubrique_id']][$DB_ROW['prof_id']] = array( 'prof_info'=>$prof_info , 'appreciation'=>$DB_ROW['saisie_appreciation'] , 'note'=>$note );
 }
 
 // Récupérer les signatures numériques
@@ -383,36 +386,44 @@ foreach($tab_eleve_id as $eleve_id)
 
 $tab_etabl_logo = NULL;
 $logo_hauteur = 0;
-if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'logo'))
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'logo'))
 {
   $DB_ROW = DB_STRUCTURE_IMAGE::DB_recuperer_image( 0 /*user_id*/ , 'logo' );
   if(!empty($DB_ROW))
   {
     $tab_etabl_logo = array( base64_decode($DB_ROW['image_contenu']) , $DB_ROW['image_format'] , $DB_ROW['image_largeur'] , $DB_ROW['image_hauteur'] );
-    $logo_hauteur = 5;
+    $logo_hauteur = 7;
   }
 }
 
 // Bloc des coordonnées de l'établissement
 
-$tab_etabl_coords = array( 0 => $_SESSION['ETABLISSEMENT']['DENOMINATION'] );
-if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'adresse'))
+$tab_etabl_coords = array();
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'denomination'))
 {
-  if($_SESSION['ETABLISSEMENT']['ADRESSE1']) { $tab_etabl_coords[] = $_SESSION['ETABLISSEMENT']['ADRESSE1']; }
-  if($_SESSION['ETABLISSEMENT']['ADRESSE2']) { $tab_etabl_coords[] = $_SESSION['ETABLISSEMENT']['ADRESSE2']; }
-  if($_SESSION['ETABLISSEMENT']['ADRESSE3']) { $tab_etabl_coords[] = $_SESSION['ETABLISSEMENT']['ADRESSE3']; }
+  $tab_etabl_coords['denomination'] = $_SESSION['ETABLISSEMENT']['DENOMINATION'];
 }
-if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'telephone'))
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'adresse'))
 {
-  if($_SESSION['ETABLISSEMENT']['TELEPHONE']) { $tab_etabl_coords[] = 'Tel : '.$_SESSION['ETABLISSEMENT']['TELEPHONE']; }
+  if($_SESSION['ETABLISSEMENT']['ADRESSE1']) { $tab_etabl_coords['adresse1'] = $_SESSION['ETABLISSEMENT']['ADRESSE1']; }
+  if($_SESSION['ETABLISSEMENT']['ADRESSE2']) { $tab_etabl_coords['adresse2'] = $_SESSION['ETABLISSEMENT']['ADRESSE2']; }
+  if($_SESSION['ETABLISSEMENT']['ADRESSE3']) { $tab_etabl_coords['adresse3'] = $_SESSION['ETABLISSEMENT']['ADRESSE3']; }
 }
-if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'fax'))
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'telephone'))
 {
-  if($_SESSION['ETABLISSEMENT']['FAX']) { $tab_etabl_coords[] = 'Fax : '.$_SESSION['ETABLISSEMENT']['FAX']; }
+  if($_SESSION['ETABLISSEMENT']['TELEPHONE']) { $tab_etabl_coords['telephone'] = 'Tel : '.$_SESSION['ETABLISSEMENT']['TELEPHONE']; }
 }
-if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'] ,'courriel'))
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'fax'))
 {
-  if($_SESSION['ETABLISSEMENT']['COURRIEL']) { $tab_etabl_coords[] = $_SESSION['ETABLISSEMENT']['COURRIEL']; }
+  if($_SESSION['ETABLISSEMENT']['FAX']) { $tab_etabl_coords['fax'] = 'Fax : '.$_SESSION['ETABLISSEMENT']['FAX']; }
+}
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'courriel'))
+{
+  if($_SESSION['ETABLISSEMENT']['COURRIEL']) { $tab_etabl_coords['courriel'] = 'Mel : '.$_SESSION['ETABLISSEMENT']['COURRIEL']; }
+}
+if(mb_substr_count($_SESSION['OFFICIEL']['INFOS_ETABLISSEMENT'],'url'))
+{
+  if($_SESSION['ETABLISSEMENT']['URL']) { $tab_etabl_coords['url'] = 'Web : '.$_SESSION['ETABLISSEMENT']['URL']; }
 }
 $etabl_coords__bloc_hauteur = 0.75 + ( max( count($tab_etabl_coords) , $logo_hauteur ) * 0.75 ) ;
 
@@ -450,6 +461,7 @@ $make_brevet   = FALSE;
 $make_action   = 'imprimer';
 $make_html     = FALSE;
 $make_pdf      = TRUE;
+$make_csv      = FALSE;
 $make_graph    = FALSE;
 
 if($BILAN_TYPE=='releve')
@@ -477,6 +489,7 @@ if($BILAN_TYPE=='releve')
   $aff_theme                = $_SESSION['OFFICIEL']['RELEVE_AFF_THEME'];
   $orientation              = 'portrait'; // pas jugé utile de le mettre en option...
   $couleur                  = $_SESSION['OFFICIEL']['RELEVE_COULEUR'];
+  $fond                     = $_SESSION['OFFICIEL']['RELEVE_FOND'];
   $legende                  = $_SESSION['OFFICIEL']['RELEVE_LEGENDE'];
   $marge_gauche             = $_SESSION['OFFICIEL']['MARGE_GAUCHE'];
   $marge_droite             = $_SESSION['OFFICIEL']['MARGE_DROITE'];
@@ -514,6 +527,7 @@ elseif($BILAN_TYPE=='bulletin')
   $only_socle      = $_SESSION['OFFICIEL']['BULLETIN_ONLY_SOCLE'];
   $only_niveau     = 0; // pas jugé utile de le mettre en option...
   $couleur         = $_SESSION['OFFICIEL']['BULLETIN_COULEUR'];
+  $fond            = $_SESSION['OFFICIEL']['BULLETIN_FOND'];
   $legende         = $_SESSION['OFFICIEL']['BULLETIN_LEGENDE'];
   $marge_gauche    = $_SESSION['OFFICIEL']['MARGE_GAUCHE'];
   $marge_droite    = $_SESSION['OFFICIEL']['MARGE_DROITE'];
@@ -542,6 +556,7 @@ elseif(in_array($BILAN_TYPE,array('palier1','palier2','palier3')))
   $aff_lien       = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
   $aff_start      = 0; // Sans objet, l'élève & sa famille n'ayant accès qu'à l'archive pdf
   $couleur        = $_SESSION['OFFICIEL']['SOCLE_COULEUR'];
+  $fond           = $_SESSION['OFFICIEL']['SOCLE_FOND'];
   $legende        = $_SESSION['OFFICIEL']['SOCLE_LEGENDE'];
   $marge_gauche   = $_SESSION['OFFICIEL']['MARGE_GAUCHE'];
   $marge_droite   = $_SESSION['OFFICIEL']['MARGE_DROITE'];

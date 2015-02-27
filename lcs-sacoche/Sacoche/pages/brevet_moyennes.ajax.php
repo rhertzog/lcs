@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -161,6 +161,7 @@ if($action=='proposer')
   $make_action              = '';
   $make_html                = FALSE;
   $make_pdf                 = FALSE;
+  $make_csv                 = FALSE;
   $make_graph               = FALSE;
   // Analyser épreuve par épreuve
   foreach($tab_epreuve as $epreuve_code => $tab_infos)

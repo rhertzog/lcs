@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -38,5 +38,5 @@ if(!$matiere)
   exit('Erreur avec les données transmises !');
 }
 
-exit( Form::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_niveaux_matiere($matiere) , FALSE /*select_nom*/ , $option_first , FALSE /*selection*/ , '' /*optgroup*/ ) );
+exit( HtmlForm::afficher_select( DB_STRUCTURE_COMMUN::DB_OPT_niveaux_matiere($matiere) , FALSE /*select_nom*/ , $option_first , FALSE /*selection*/ , '' /*optgroup*/ ) );
 ?>

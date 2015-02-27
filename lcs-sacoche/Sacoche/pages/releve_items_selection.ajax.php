@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -67,6 +67,7 @@ $aff_domaine              = (isset($_POST['f_domaine']))            ? 1         
 $aff_theme                = (isset($_POST['f_theme']))              ? 1                                                : 0;
 $orientation              = (isset($_POST['f_orientation']))        ? Clean::texte($_POST['f_orientation'])            : '';
 $couleur                  = (isset($_POST['f_couleur']))            ? Clean::texte($_POST['f_couleur'])                : '';
+$fond                     = (isset($_POST['f_fond']))               ? Clean::texte($_POST['f_fond'])                   : '';
 $legende                  = (isset($_POST['f_legende']))            ? Clean::texte($_POST['f_legende'])                : '';
 $marge_min                = (isset($_POST['f_marge_min']))          ? Clean::entier($_POST['f_marge_min'])             : 0;
 $pages_nb                 = (isset($_POST['f_pages_nb']))           ? Clean::texte($_POST['f_pages_nb'])               : '';
@@ -106,7 +107,7 @@ $type_bulletin   = (in_array('bulletin',$tab_type))   ? 1 : 0 ;
 
 $liste_eleve = implode(',',$tab_eleve);
 
-if( !$orientation || !$couleur || !$legende || !$marge_min || !$pages_nb || ($cases_nb<0) || !$cases_largeur || ( !$periode_id && (!$date_debut || !$date_fin) ) || !$retroactif || !$matiere_id || !$groupe_id || !$groupe_nom || !$groupe_type || !count($tab_eleve) || !count($tab_type) || !$eleves_ordre )
+if( !$orientation || !$couleur || !$fond || !$legende || !$marge_min || !$pages_nb || ($cases_nb<0) || !$cases_largeur || ( !$periode_id && (!$date_debut || !$date_fin) ) || !$retroactif || !$matiere_id || !$groupe_id || !$groupe_nom || !$groupe_type || !count($tab_eleve) || !count($tab_type) || !$eleves_ordre )
 {
   exit('Erreur avec les données transmises !');
 }
@@ -124,6 +125,7 @@ $make_brevet   = FALSE;
 $make_action   = '';
 $make_html     = TRUE;
 $make_pdf      = TRUE;
+$make_csv      = FALSE;
 $make_graph    = FALSE;
 
 require(CHEMIN_DOSSIER_INCLUDE.'noyau_items_releve.php');

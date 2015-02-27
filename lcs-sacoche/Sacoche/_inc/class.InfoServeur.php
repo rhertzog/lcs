@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -787,19 +787,19 @@ function getServerProtocole()
 
   public static function tableau_modules_PHP($nb_lignes)
   {
-    $tab_modules_requis = array('curl','dom','gd','mbstring','mysql','pdo','pdo_mysql','session','zip','zlib');
-    $lignes = '';
-    $tab_modules = InfoServeur::modules_php();
-    $nb_modules = count($tab_modules);
+    $tab_extensions_chargees = InfoServeur::modules_php();
+    $tab_extensions_requises = explode( ' , ' , trim(PHP_LISTE_EXTENSIONS) );
+    $nb_modules  = count($tab_extensions_chargees);
     $nb_colonnes = ceil($nb_modules/$nb_lignes);
+    $lignes = '';
     for($numero_ligne=0 ; $numero_ligne<$nb_lignes ; $numero_ligne++)
     {
       $lignes .= '<tr>';
       for($numero_colonne=0 ; $numero_colonne<$nb_colonnes ; $numero_colonne++)
       {
         $indice = $numero_colonne*$nb_lignes + $numero_ligne ;
-        $style  = ( ($indice<$nb_modules) && (in_array(strtolower($tab_modules[$indice]),$tab_modules_requis)) ) ? ' class="'.InfoServeur::$tab_style['vert'].'"' : '' ;
-        $lignes .= ($indice<$nb_modules) ? '<td'.$style.'><a href="#'.$tab_modules[$indice].'">'.$tab_modules[$indice].'</a></td>' : '<td class="hc">-</td>' ;
+        $style  = ( ($indice<$nb_modules) && (in_array(strtolower($tab_extensions_chargees[$indice]),$tab_extensions_requises)) ) ? ' class="'.InfoServeur::$tab_style['vert'].'"' : '' ;
+        $lignes .= ($indice<$nb_modules) ? '<td'.$style.'><a href="#'.$tab_extensions_chargees[$indice].'">'.$tab_extensions_chargees[$indice].'</a></td>' : '<td class="hc">-</td>' ;
       }
       $lignes .= '</tr>';
     }

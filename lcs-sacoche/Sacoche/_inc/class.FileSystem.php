@@ -2,7 +2,7 @@
 /**
  * @version $Id$
  * @author Thomas Crespin <thomas.crespin@sesamath.net>
- * @copyright Thomas Crespin 2010-2014
+ * @copyright Thomas Crespin 2009-2015
  * 
  * ****************************************************************************************************
  * SACoche <http://sacoche.sesamath.net> - Suivi d'Acquisitions de Compétences
@@ -319,6 +319,18 @@ class FileSystem
   }
 
   /**
+   * Déplacer un fichier
+   * 
+   * @param string   $fichier_chemin_origine
+   * @param string   $fichier_chemin_final
+   * @return bool
+   */
+  public static function deplacer_fichier($fichier_chemin_origine,$fichier_chemin_final)
+  {
+    return rename($fichier_chemin_origine , $fichier_chemin_final);
+  }
+
+  /**
    * Ecrire du contenu dans un fichier, exit() en cas d'erreur
    * 
    * @param string   $fichier_chemin
@@ -384,7 +396,7 @@ class FileSystem
   /**
    * Fabriquer ou mettre à jour le fichier de configuration de l'hébergement (gestion par le webmestre)
    * 
-   * @param array tableau $constante_nom => $constante_valeur des paramètres à modifier (sinon, on prend les constantes déjà définies)
+   * @param array $tab_constantes_modifiees => $constante_valeur des paramètres à modifier (sinon, on prend les constantes déjà définies)
    * @return void
    */
   public static function fabriquer_fichier_hebergeur_info($tab_constantes_modifiees)
@@ -395,6 +407,7 @@ class FileSystem
       'HEBERGEUR_UAI',
       'HEBERGEUR_ADRESSE_SITE',
       'HEBERGEUR_LOGO',
+      'HEBERGEUR_MAILBOX_BOUNCE',
       'CNIL_NUMERO',
       'CNIL_DATE_ENGAGEMENT',
       'CNIL_DATE_RECEPISSE',
@@ -402,7 +415,6 @@ class FileSystem
       'WEBMESTRE_PRENOM',
       'WEBMESTRE_COURRIEL',
       'WEBMESTRE_PASSWORD_MD5',
-      'WEBMESTRE_ERREUR_DATE',
       'SERVEUR_PROXY_USED',
       'SERVEUR_PROXY_NAME',
       'SERVEUR_PROXY_PORT',
@@ -419,6 +431,7 @@ class FileSystem
       'SYSTEME_UMASK',
       'CONTACT_MODIFICATION_USER',
       'CONTACT_MODIFICATION_MAIL',
+      'COURRIEL_NOTIFICATION',
     );
     $longueur_constante_maxi = 26;
     $fichier_contenu = '<?php'.NL;
