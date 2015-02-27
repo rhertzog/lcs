@@ -1,7 +1,7 @@
 <?php
- session_name(Lcs);
+ session_name('Lcs');
  @session_start();
- $login_lcs=$_SESSION[login];
+ $login_lcs=$_SESSION['login'];
  session_write_close();
 
 /* vim: set expandtab sw=4 ts=4 sts=4: */
