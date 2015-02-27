@@ -604,7 +604,9 @@ function PMA_getHtmlForColumnName(
         . (isset($columnMeta['Field'])
             ? htmlspecialchars($columnMeta['Field']) : '')
         . '"' . ' />';
-    if ($cfgRelation['central_columnswork'] && !(isset($columnMeta['column_status'])
+    if (isset($cfgRelation['central_columnswork'])
+        && $cfgRelation['central_columnswork']
+        && !(isset($columnMeta['column_status'])
         && !$columnMeta['column_status']['isEditable'])
     ) {
         $html .=  '<p style="font-size:80%;margin:5px 2px" '
@@ -1118,11 +1120,11 @@ function PMA_getHtmlForColumnDefault($columnNumber, $ci, $ci_offset, $type_upper
         && isset($columnMeta['Default'])
     ) {
         $columnMeta['Default'] = '';
-    }
-
-    if ($type_upper == 'BIT') {
+    } elseif ($type_upper == 'BIT') {
         $columnMeta['DefaultValue']
             = PMA_Util::convertBitDefaultValue($columnMeta['DefaultValue']);
+    } elseif ($type_upper == 'BINARY' || $type_upper == 'VARBINARY') {
+        $columnMeta['DefaultValue'] = bin2hex($columnMeta['DefaultValue']);
     }
 
     $html = '<select name="field_default_type[' . $columnNumber

@@ -174,7 +174,11 @@ function PMA_getHtmlBodyForTableSummary($num_tables, $server_slave_status,
     if ($server_slave_status) {
         $html_output .= '<th>' . __('Replication') . '</th>' . "\n";
     }
-    $html_output .= '<th colspan="' . ($db_is_system_schema ? 4 : 7) . '">'
+    $sum_colspan = ($db_is_system_schema ? 4 : 7);
+    if ($GLOBALS['cfg']['NumFavoriteTables'] == 0) {
+        $sum_colspan--;
+    }
+    $html_output .= '<th colspan="' . $sum_colspan . '">'
         . __('Sum')
         . '</th>';
 
@@ -1292,9 +1296,8 @@ function PMA_getHtmlForTableStructureHeader(
         . '<th>' . __('Default') . '</th>'
         . '<th>' . __('Extra') . '</th>';
 
-    if ($db_is_system_schema || $tbl_is_view) {
-        $html_output .= '<th>' . __('View') . '</th>';
-    } else { /* see tbl_structure.js, function moreOptsMenuResize() */
+    /* see tbl_structure.js, function moreOptsMenuResize() */
+    if (! $db_is_system_schema && ! $tbl_is_view) {
         $colspan = 9;
         if (PMA_DRIZZLE) {
             $colspan -= 2;
@@ -2124,7 +2127,7 @@ function PMA_getHtmlForActionsInTableStructure($type, $tbl_storage_engine,
         );
     }
     $html_output .= PMA_getHtmlForDistinctValueAction($url_query, $row, $titles);
-    if (isset($GLOBALS['cfgRelation']['central_columnswork']) 
+    if (isset($GLOBALS['cfgRelation']['central_columnswork'])
         && $GLOBALS['cfgRelation']['central_columnswork']
     ) {
         $html_output .= '<li class="browse nowrap">';
@@ -2940,7 +2943,11 @@ function PMA_getHtmlForFavoriteAnchor($db, $current_table, $titles)
 function PMA_addRemoveFavoriteTables($db)
 {
     $fav_instance = PMA_RecentFavoriteTable::getInstance('favorite');
-    $favorite_tables = json_decode($_REQUEST['favorite_tables'], true);
+    if (isset($_REQUEST['favorite_tables'])) {
+        $favorite_tables = json_decode($_REQUEST['favorite_tables'], true);
+    } else {
+        $favorite_tables = array();
+    }
     // Required to keep each user's preferences separate.
     $user = sha1($GLOBALS['cfg']['Server']['user']);
 

@@ -367,7 +367,9 @@ class Node
         $maxItems = $GLOBALS['cfg']['FirstLevelNavigationItems'];
         if ($GLOBALS['cfg']['NavigationTreeEnableGrouping']) {
             $dbSeparator = $GLOBALS['cfg']['NavigationTreeDbSeparator'];
-            if (! $GLOBALS['cfg']['Server']['DisableIS']) {
+            if (isset($GLOBALS['cfg']['Server']['DisableIS'])
+                && ! $GLOBALS['cfg']['Server']['DisableIS']
+            ) {
                 $query  = "SELECT `SCHEMA_NAME` ";
                 $query .= "FROM `INFORMATION_SCHEMA`.`SCHEMATA`, ";
                 $query .= "(";
@@ -429,6 +431,9 @@ class Node
                         $handle = $GLOBALS['dbi']->tryQuery($query);
                         if ($handle !== false) {
                             while ($arr = $GLOBALS['dbi']->fetchArray($handle)) {
+                                if ($this->_isHideDb($arr[0])) {
+                                    continue;
+                                }
                                 $prefix = strstr($arr[0], $dbSeparator, true);
                                 if ($prefix === false) {
                                     $prefix = $arr[0];
@@ -447,6 +452,9 @@ class Node
                         $handle = $GLOBALS['dbi']->tryQuery($query);
                         if ($handle !== false) {
                             while ($arr = $GLOBALS['dbi']->fetchArray($handle)) {
+                                if ($this->_isHideDb($arr[0])) {
+                                    continue;
+                                }
                                 if (! in_array($arr[0], $retval)) {
                                     foreach ($prefixes as $prefix) {
                                         $starts_with = strpos(
@@ -466,7 +474,9 @@ class Node
                 }
             }
         } else {
-            if (! $GLOBALS['cfg']['Server']['DisableIS']) {
+            if (isset($GLOBALS['cfg']['Server']['DisableIS'])
+                && ! $GLOBALS['cfg']['Server']['DisableIS']
+            ) {
                 $query  = "SELECT `SCHEMA_NAME` ";
                 $query .= "FROM `INFORMATION_SCHEMA`.`SCHEMATA` ";
                 $query .= $this->_getWhereClause('SCHEMA_NAME', $searchClause);
@@ -497,6 +507,9 @@ class Node
                         $handle = $GLOBALS['dbi']->tryQuery($query);
                         if ($handle !== false) {
                             while ($arr = $GLOBALS['dbi']->fetchArray($handle)) {
+                                if ($this->_isHideDb($arr[0])) {
+                                    continue;
+                                }
                                 if (! in_array($arr[0], $retval)) {
                                     if ($pos <= 0 && $count < $maxItems) {
                                         $retval[] = $arr[0];
@@ -529,7 +542,9 @@ class Node
     {
         if ($GLOBALS['cfg']['NavigationTreeEnableGrouping']) {
             $dbSeparator = $GLOBALS['cfg']['NavigationTreeDbSeparator'];
-            if (! $GLOBALS['cfg']['Server']['DisableIS']) {
+            if (isset($GLOBALS['cfg']['Server']['DisableIS'])
+                && ! $GLOBALS['cfg']['Server']['DisableIS']
+            ) {
                 $query = "SELECT COUNT(*) ";
                 $query .= "FROM ( ";
                 $query .= "SELECT DISTINCT SUBSTRING_INDEX(SCHEMA_NAME, ";
@@ -562,6 +577,9 @@ class Node
                         $handle = $GLOBALS['dbi']->tryQuery($query);
                         if ($handle !== false) {
                             while ($arr = $GLOBALS['dbi']->fetchArray($handle)) {
+                                if ($this->_isHideDb($arr[0])) {
+                                    continue;
+                                }
                                 $prefix = strstr($arr[0], $dbSeparator, true);
                                 if ($prefix === false) {
                                     $prefix = $arr[0];
@@ -574,7 +592,9 @@ class Node
                 }
             }
         } else {
-            if (! $GLOBALS['cfg']['Server']['DisableIS']) {
+            if (isset($GLOBALS['cfg']['Server']['DisableIS'])
+                && ! $GLOBALS['cfg']['Server']['DisableIS']
+            ) {
                 $query = "SELECT COUNT(*) ";
                 $query .= "FROM INFORMATION_SCHEMA.SCHEMATA ";
                 $query .= $this->_getWhereClause('SCHEMA_NAME', $searchClause);
@@ -598,6 +618,22 @@ class Node
             }
         }
         return $retval;
+    }
+
+    /**
+     * Detemines whether a given database should be hidden according to 'hide_db'
+     *
+     * @param string $db database name
+     *
+     * @return boolean whether to hide
+     */
+    private function _isHideDb($db) {
+        if (! empty($GLOBALS['cfg']['Server']['hide_db'])
+            && preg_match('/' . $GLOBALS['cfg']['Server']['hide_db'] . '/', $db)
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -713,7 +749,7 @@ class Node
     {
         if ($GLOBALS['cfg']['NavigationTreeDisableDatabaseExpansion']) {
             return '';
-        } elseif ($match && ! $this->is_group) {
+        } elseif ($match) {
             $this->visible = true;
             return PMA_Util::getImage('b_minus.png');
         } else {

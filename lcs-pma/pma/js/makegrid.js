@@ -254,7 +254,12 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
             $('table.pma_table').find('thead th:first').removeClass('before-condition');
             for (var n = 0, l = $firstRowCols.length; n < l; n++) {
                 var $col = $($firstRowCols[n]);
-                $($resizeHandles[n]).css('left', $col.position().left + $col.outerWidth(true))
+                if ($.browser.safari) {
+                    var colWidth = $col.outerWidth();
+                } else {
+                    var colWidth = $col.outerWidth(true);
+                }
+                $($resizeHandles[n]).css('left', $col.position().left + colWidth)
                    .show();
                 if ($col.hasClass('condition')) {
                     $($resizeHandles[n]).addClass('condition');
@@ -1020,14 +1025,6 @@ function PMA_makegrid(t, enableResize, enableReorder, enableVisib, enableGridEdi
                     });
 
                     $input_field.datepicker("show");
-
-                    //move ui-datepicker-div inside cEdit div
-                    var datepicker_div = $('#ui-datepicker-div');
-                    datepicker_div.css({'top': 0, 'left': 0, 'position': 'relative'});
-                    $(g.cEdit).append(datepicker_div);
-
-                    var edit_area_top = $('#ui-datepicker-div').height()+32;
-                    $(g.cEdit).find('.edit_area').css({'top' : edit_area_top+'px', 'position': 'absolute'});
 
                     if (is_null){
                         $(g.cEdit).find('.edit_area').hide();
