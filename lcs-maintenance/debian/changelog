@@ -1,3 +1,9 @@
+lcs-maintenance (2.4.10~3) Lcs; urgency=low
+
+  * delete script envoi.php
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 05 Mar 2015 12:12:53 +0100
+
 lcs-maintenance (2.4.10~2) Lcs; urgency=low
 
   * add purifier and token
