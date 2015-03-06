@@ -4,9 +4,9 @@ lcs-roundcube (2.4.10~12) Lcs; urgency=low
   * Update Roundcube to 1.0.1
   * Add .htaccess in some folders
   * Add desktop notify 
-  * Remove idpers from desktop notify
+  * Remove idpers from desktop notify and lcs authentication
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 05 Mar 2015 12:32:08 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 06 Mar 2015 17:07:18 +0200
 
 lcs-roundcube (2.4.9.2) Lcs; urgency=low
 
