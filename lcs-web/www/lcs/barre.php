@@ -3,7 +3,7 @@
    Projet LcSE3
    Equipe Tice academie de Caen
    Distribue selon les termes de la licence GPL
-   Derniere modification : 23/05/2014
+   Derniere modification : 12/03/2015
    ============================================= */
 include "../Annu/includes/check-token.php";
 require "includes/headerauth.inc.php";
@@ -192,7 +192,7 @@ if ( !$login ) {
             echo "<div class=\"bouton\"><a href=\"statandgo.php?use=roundcube&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"))."\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\" onMouseOver=\"MM_nbGroup('over','BP_r1_c5','images/$path/BP_r1_c5_f2.gif','images/$path/BP_r1_c5_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c5','images/$path/BP_r1_c5_f3.gif',1);\" ><img name=\"BP_r1_c5\" title=\"Webmail\" alt=\"Webmail\"  src=\"images/$path/BP_r1_c5.gif\" border=\"0\"></a></div>\n";
 	if ( isset($spip) ) // CMS
             echo "<div class=\"bouton\"><a href=\"statandgo.php?use=spip&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"))."\" target=\"principale\" onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c6','images/$path/BP_r1_c6_f2.gif','images/$path/BP_r1_c6_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c6','images/$path/BP_r1_c6_f3.gif',1);\" ><img name=\"BP_r1_c6\" title=\"Forum\" alt=\"Forum\" src=\"images/$path/BP_r1_c6.gif\" border=\"0\"></a></div>\n";
-        if ( acces_btn_admin(1, $login) =="Y") // acces au menu d'administration
+        if ( acces_btn_admin($login) =="Y") // acces au menu d'administration
    	    echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Admin&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"))."\" target=\"principale\"onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c7','images/$path/BP_r1_c7_f2.gif','images/$path/BP_r1_c7_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c7','images/$path/BP_r1_c7_f3.gif',1);\" ><img name=\"BP_r1_c7\" title=\"Administration\" alt=\"Administration\" src=\"images/$path/BP_r1_c7.gif\" border=\"0\"></a></div>\n";
 	// Aide
    	echo "<div class=\"bouton\"><a href=\"statandgo.php?use=Aide&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"))."\" target=\"principale\"  onMouseOut=\"MM_nbGroup('out');\"  onMouseOver=\"MM_nbGroup('over','BP_r1_c8','images/$path/BP_r1_c8_f2.gif','images/$path/BP_r1_c8_f3.gif',1);\"  onClick=\"MM_nbGroup('down','navbar1','BP_r1_c8','images/$path/BP_r1_c8_f3.gif',1);\" ><img name=\"BP_r1_c8\" title=\"Aide\" alt=\"Aide\" src=\"images/$path/BP_r1_c8.gif\" border=\"0\"></a></div>\n";
