@@ -8,6 +8,7 @@ lcs-web (2.4.10~9) Lcs; urgency=low
   * Fix bug in action.sh
   * Modify lcs-web-fixrights
   * Fix ntpdate cron task with -u option
+  * Remove idpers from LcSe.pm
 
   [ Philippe Leclerc ]
   * Fix notices php in /var/www 
@@ -63,7 +64,7 @@ lcs-web (2.4.10~9) Lcs; urgency=low
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 26 Feb 2015 12:41:35 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 12 Mar 2015 15:12:55 +0200
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 

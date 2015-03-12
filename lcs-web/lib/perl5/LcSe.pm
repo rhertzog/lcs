@@ -442,17 +442,22 @@ sub isAdmin {
   # ===============================
   # Recuperation du cookie
   %cookies = fetch CGI::Cookie;
-   if (exists $cookies{'LCSAuth'} ) { $session = $cookies{'LCSAuth'}->value; }
+  if (exists $cookies{'Lcs'} ) { $session = $cookies{'Lcs'}->value; }
+  if (exists $cookies{'Lcs'} ) { $session = $cookies{'Lcs'}->value; }
+  $datasess=`cat /var/lib/php5/sess_$session`;
+  my @fields = split /"/, $datasess; 
+  my $login = $fields[1];    
   # Connexion MySql
-  $lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
-  $requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
-  $requete->execute();
-  $id = $requete->fetchrow_array;
-  $requete = $lcs_db->prepare("select login from personne where (id = $id)");
-  $requete->execute();
-  $login = $requete->fetchrow_array;
-  $requete->finish;
-  $lcs_db->disconnect;
+  #$lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
+  #$requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
+  #$requete->execute();
+  #$id = $requete->fetchrow_array;
+  #$requete = $lcs_db->prepare("select login from personne where (id = $id)");
+  #$requete->execute();
+  #$login = $requete->fetchrow_array;
+  #$requete->finish;
+  #$lcs_db->disconnect;
+  # Connection LDAP
   $lcs_ldap = Net::LDAP->new("$ldap_server");
   $lcs_ldap->bind();
   # Validation
@@ -484,17 +489,21 @@ sub isRight {
   # ===============================
   # Recuperation du cookie
   %cookies = fetch CGI::Cookie;
-   if (exists $cookies{'LCSAuth'} ) { $session = $cookies{'LCSAuth'}->value; }
+  if (exists $cookies{'Lcs'} ) { $session = $cookies{'Lcs'}->value; }
+  $datasess=`cat /var/lib/php5/sess_$session`;
+  my @fields = split /"/, $datasess; 
+  my $login = $fields[1]; 
   # Connexion MySql
-  $lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
-  $requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
-  $requete->execute();
-  $id = $requete->fetchrow_array;
-  $requete = $lcs_db->prepare("select login from personne where (id = $id)");
-  $requete->execute();
-  $login = $requete->fetchrow_array;
-  $requete->finish;
-  $lcs_db->disconnect;
+  #$lcs_db = DBI->connect('DBI:mysql:lcs_db', $mysqlServerUsername, $mysqlServerPw);
+  #$requete = $lcs_db->prepare("select idpers from sessions where (sess = '$session')");
+  #$requete->execute();
+  #$id = $requete->fetchrow_array;
+  #$requete = $lcs_db->prepare("select login from personne where (id = $id)");
+  #$requete->execute();
+  #$login = $requete->fetchrow_array;
+  #$requete->finish;
+  #$lcs_db->disconnect;
+  # Connection LDAP
   $lcs_ldap = Net::LDAP->new("$ldap_server");
   $lcs_ldap->bind();
   # Validation
