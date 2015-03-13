@@ -14,7 +14,11 @@ function fich_debug($texte){
 
 require "/var/www/Annu/includes/check-token.php";if (!check_acces(1)) exit;$login=$_SESSION['login'];
 
-include ("/var/www/lcs/includes/user_lcs.inc.php");
+#include ("/var/www/lcs/includes/user_lcs.inc.php");
+include ("/var/www/lcs/includes/config.inc.php");
+include ("/var/www/Annu/includes/ldap.inc.php");
+$authlink=mysql_connect("$HOSTAUTH", "$USERAUTH", "$PASSAUTH");
+
 list($user, $groups)=people_get_variables($login, true);
 
 if ( $action=="login" ) {

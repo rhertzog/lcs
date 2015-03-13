@@ -47,7 +47,11 @@ function exec_creer_zones_groupes_lcs_dist(){
 	echo debut_droite('', true);
 	// contenu
  
-include ("/var/www/lcs/includes/user_lcs.inc.php");
+include ("/var/www/lcs/includes/config.inc.php");
+include ("/var/www/Annu/includes/ldap.inc.php");
+$authlink=mysql_connect("$HOSTAUTH", "$USERAUTH", "$PASSAUTH");
+
+list($user, $groups)=people_get_variables($login, true);
 include ("/var/www/lcs/includes/functions.inc.php");
 function my_people_get_variables ($serveur,$port,$Dn)
 {
