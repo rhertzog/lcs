@@ -1,4 +1,12 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 list($user, $groups)=people_get_variables($login, true);
 $i=0;
 $list_applis="listapplis {";
@@ -20,7 +28,7 @@ $liste['Blocks'] = array();
 $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter!!
 #############
 
-  // lecture lcs_applis 
+  // lecture lcs_applis
 	$queryM="SELECT  name, value from applis where type='M' order by name";
 	$resultM=mysql_query($queryM);
 	if ($resultM) {
@@ -28,7 +36,7 @@ $liste['Ids'] = array();// ajout pour l'ID des fenetres !!Voir si on peut eviter
             if ( $r->name == "clientftp" ) $clientftp = true;
             if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
-            if ( $r->name == "smbwebclient" ) $smbwebclient = true;            
+            if ( $r->name == "smbwebclient" ) $smbwebclient = true;
         }
     }
     mysql_free_result($resultM);
@@ -61,8 +69,8 @@ if(isset($squirrelmail)){
 	$liste['Liens'][] = "../lcs/statandgo.php?use=roundcube";
 	$liste['Titres'][] = "Webmail";
 	$liste['Blocks'][] = "#icon_dock_lcs_roundcube";
-	$liste['Ids'][] = "roundcube";	
-}	
+	$liste['Ids'][] = "roundcube";
+}
 // explorateur de fichier : clientftp ou elfinder
 if (isset($clientftp)) {
 	$liste['Images'][] = "../lcs/images/bt-V1-2.jpg";
@@ -94,7 +102,7 @@ if ( $se3netbios != "" && $se3domain != "" && isset($smbwebclient) ) {
 	$liste['Ids'][] = "smbwc";
 }
 
-// Liens dynamiques vers les plugins installes 
+// Liens dynamiques vers les plugins installes
 $query="SELECT * from applis where type='P' OR type='N' order by name";
 $result=mysql_query($query);
 if ($result) {
@@ -111,7 +119,7 @@ if ($result) {
 
 mysql_free_result($result);
 array_multisort($liste['Titres'],$liste['Liens'],$liste['Images'],$liste['Blocks'],$liste['Ids']);
-for ($x=0;$x<count($liste['Titres']);$x++) { 
+for ($x=0;$x<count($liste['Titres']);$x++) {
 	// prepare sub-menus bar top
 	switch($liste['Ids'][$x]) {
 		case "spip":
@@ -170,16 +178,16 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	$liste['Ids'][$x] == "annu" ? $c_sb.=" open_win ":'';
 	// Display menus bar top
 	$sbmn ="<a class=\"ext_link ".$c_sb."\"";
-	if (($c_rel=="") || ($liste['Ids'][$x] == "annu")) { 
-		$sbmn.=" href=\"".$liste['Blocks'][$x]."\" rel=\"".$liste['Liens'][$x]."\""; 
-	}else{ 
+	if (($c_rel=="") || ($liste['Ids'][$x] == "annu")) {
+		$sbmn.=" href=\"".$liste['Blocks'][$x]."\" rel=\"".$liste['Liens'][$x]."\"";
+	}else{
 		$sbmn.=" href=\"#\" rel=\"\"" ;
 	}
 	$sbmn.=" rev=\"".$liste['Ids'][$x]."\">"
 	."<img src=\"".$liste['Images'][$x]."\" alt=\"\" style=\"width:16px;height:16px;\" /> "
 	.$liste['Titres'][$x]
 	."</a>\n";
-	
+
 	// Display sub-menus bar top
 	if (is_array($c_rel) && $c_rel[0]!="") {
 		$sbmn .="<ul>\n";
@@ -196,20 +204,20 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 		}
 		$sbmn .="</ul>\n";
 	}
-	
+
 	// Split the menu applications into two parts: services and applications
-	// See if it is necessary and so, how to make choices ?	
+	// See if it is necessary and so, how to make choices ?
 	$services=array("clientftp", "elfinder", "pma", "smbwc", "annu", "maintinfo");
     if(!in_array($liste['Ids'][$x], $services)){
 	    $html_menu .= "<li>\n".$sbmn."</li>\n";
     }else{
 	    $html_menu_services   .= "<li>\n".$sbmn."</li>\n";
     }
-	
+
 	// Display wins
-	// on pourrait peut-etre creer les fenetres a la volee lors de l'appel d'une appli. 
+	// on pourrait peut-etre creer les fenetres a la volee lors de l'appel d'une appli.
 	// pour diminuer le temps de chargement de la page d'accueil (qques liogne de html en moins)
-	// 
+	//
 /*   $html.= "\t<div id=\"window_lcs_".$liste['Ids'][$x]."\" class=\"abs window ".$c."\">\n"
     ."\t\t<div class=\"abs window_inner\">\n"
     ."\t\t\t<div class=\"window_top\">\n"
@@ -231,10 +239,10 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
     ."\t\t</div>\n"
     ."\t\t<span class=\"abs ui-resizable-handle ui-resizable-se\"></span>\n"
     ."\t</div>\n";
-*/    
+*/
     // Too long title
 	if($liste['Titres'][$x]=="Gestion Electronique de Documents") $liste['Titres'][$x]="Gestion de Documents";
-	
+
 	// Status-bar
 	// Modify to display only icons ?
 	/*
@@ -253,7 +261,7 @@ for ($x=0;$x<count($liste['Titres']);$x++) {
 	    ."<img src=\"".$liste['Images'][$x]."\"  style=\"width:32px;\" />"
 	    .$liste['Titres'][$x]
     ."</a>";
-    
+
     // creation dune liste des applis
     $i_meta=$x.": '".$liste['Ids'][$x]."'";
     $x==0 ? $list_applis.=$i_meta : $list_applis.=", ".$i_meta ;

@@ -1,4 +1,5 @@
 <?php
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 require  "/var/www/lcs/includes/headerauth.inc.php";
 require "/var/www/Annu/includes/ldap.inc.php";
 ?>
@@ -9,8 +10,7 @@ require "/var/www/Annu/includes/ldap.inc.php";
 		<li><a href="core/forms/form_prefs_win.php">Fenêtres</a></li>
 		<li><a href="core/forms/form_prefs_dock.php">Quicklaunch</a></li>
 <?php
-list ($idpers, $login)= isauth();
-if ( acces_btn_admin($idpers, $login) == "Y" ) {
+if ( acces_btn_admin($login) == "Y" ) {
 	echo '<li class="admin_only"><a href="core/forms/form_admin.php">Admin</a></li>';
 }
 ?>

@@ -1,12 +1,16 @@
 <?php
-//__/__/__/__/__/__/__/__/__/__/
-# lcs-desktop 
-# recuperation du dernier article du forum
-//__/__/__/__/__/__/__/__/__/__/
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 $site = "http://".$_SERVER['HTTP_HOST']."/spip/?page=backend";
 
-$file = @fopen($site, 'r'); 
-if(is_dir('/usr/share/lcs/spip/') && $file){ 
+$file = @fopen($site, 'r');
+if(is_dir('/usr/share/lcs/spip/') && $file){
 	$rss = simplexml_load_file($site);
 	$resp="<div id=\"notify_container\">";
 	$ptrn = array("/T/","/Z/");
@@ -27,7 +31,7 @@ if(is_dir('/usr/share/lcs/spip/') && $file){
 	}
 	$resp.="<span class=\"spip_id_article\" style=\"display:none\">-1</span></div";
 	echo $resp;
-} 
+}
 else{
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

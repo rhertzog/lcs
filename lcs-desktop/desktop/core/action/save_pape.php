@@ -1,15 +1,26 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 header ('Content-type: text/html; charset=utf-8');
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 require  "/var/www/lcs/includes/headerauth.inc.php";
 include "/var/www/Annu/includes/ldap.inc.php";
 include "/var/www/Annu/includes/ihm.inc.php";
-list ($idpers, $login)= isauth();
-$resp=array();
 
-$who      = $_POST['user'] ;
-$title 	  = $_POST['name'];
-$action   = $_POST['act'];
-$name     = strtolower( filter( $title ) ) ;
+$resp=array();
+include ("/var/www/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+$config = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($config);
+$who = $purifier->purify($_POST['user']) ;
+$title = $purifier->purify($_POST['name']);
+$action  = $purifier->purify($_POST['act']);
+$name = strtolower( filter( $title ) ) ;
 $dir_ress = "/home/".$login."/Documents/Ressources";
 $dir_pape = $dir_ress."/".$name;
 
@@ -56,4 +67,4 @@ function filter($in) {
 	$replace = array ('e','a','i','u','o','c','_','');
 	return preg_replace($search, $replace, $in);
 }
-?> 
+?>

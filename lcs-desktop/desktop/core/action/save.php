@@ -1,20 +1,17 @@
 <?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @save.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* version 2.4.8
-* Derniere mise a jour: 06/03/2011
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
 header ('Content-type: text/html; charset=utf-8');
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 require  "/var/www/lcs/includes/headerauth.inc.php";
 include("../includes/functions.inc.php");
-#include("../includes/config_jqd.inc.php");
-list ($idpers, $login)= isauth();
-
 
 #__/__/__/__/__/__/__/__/__/__/
 # Test de création json
@@ -36,7 +33,7 @@ if( $_POST["ou"] == "group") {
         #$_t= htmlentities(trim($_j['txt']));
         $_t= htmlentities( preg_replace( "# #", "_", replace_accents($_j['txt'])  ) );
         if($login==$group) $resDir = "/home/".$login."/Documents/Ressources" ;
-        else if( acces_btn_admin($idpers, $login) == "Y" )  $resDir =  "../data/".$group;
+        else if( acces_btn_admin($login) == "Y" )  $resDir =  "../data/".$group;
         else return;
         if(!is_dir($resDir)){mkdir($resDir, 0770);}
         $fp=fopen($resDir."/ICON_".$login.'_'.stripAccents($_t).".json","w");
@@ -45,7 +42,7 @@ if( $_POST["ou"] == "group") {
         fclose($fp);
         $lg.=$group;
     }
-    
+
    // echo json_encode($_j);
         exit ( json_encode( array('default'=> 'Enregistrement effectué ! ','filename'=>'ICON_'.$login.'_'.stripAccents($_t).'.json') ) );
 }
@@ -88,13 +85,13 @@ else {
     	// n'est pas en fonction dans cette version
     	// a modifier en 2.4.9
     	/*
-			$rq2 = "INSERT INTO meta (id_user, name,value ) 
-			VALUES ('$login', 'prefs','$serial_j') 
+			$rq2 = "INSERT INTO meta (id_user, name,value )
+			VALUES ('$login', 'prefs','$serial_j')
 			ON DUPLICATE KEY UPDATE value='$serial_j'";
 			// lancer la requęte
-			$result2 = mysql_query($rq2); 
+			$result2 = mysql_query($rq2);
 			if (!$result2)  // Si l'enregistrement est incorrect
-			{                           
+			{
 				$resp['error']= 1;
 				$resp['mess']="Votre ressource n'a pas pu ętre enregistré &#333; cause d'une erreur syst&#323;me". mysql_error();
 				mysql_close();     // refermer la connexion avec la base de données
@@ -117,7 +114,7 @@ else {
 	    $_dflt["showGroups"]      = $_POST["showGroups"];
 	    $_dflt["notifForumFreq"]      = $_POST["notifForumFreq"];
 		$serial= serialize($_dflt);
-		
+
 		// on enregistre les prefs par defaut dans PREFS_default.json
 	    $_fp=fopen("../json/PREFS_default.json","w");
 	    $_json_fp=json_encode($_j);
@@ -138,13 +135,13 @@ else {
     	// n'est pas en fonction dans cette version
     	// a modifier en 2.4.9
     	/*
-				$rq = "INSERT INTO meta (id_user, name,value ) 
-				VALUES ('desktop', 'default','$serial') 
+				$rq = "INSERT INTO meta (id_user, name,value )
+				VALUES ('desktop', 'default','$serial')
 				ON DUPLICATE KEY UPDATE value='$serial'";
 				// lancer la requęte
-				$result = mysql_query($rq); 
+				$result = mysql_query($rq);
 				if (!$result)  // Si l'enregistrement est incorrect
-				{                           
+				{
 					$resp['error']= 1;
 					$resp['mess']="Votre ressource n'a pas pu ętre enregistré &#333; cause d'une erreur syst&#323;me". mysql_error();
 					mysql_close();     // refermer la connexion avec la base de données
@@ -156,11 +153,11 @@ else {
 				}
 		*/
 	    exit ( json_encode( array('default'=> 'Préférences par défaiut : enregistrement effectué', 'sql'=>$sql) ) );
-	} 
+	}
 }
 //
 function replace_accents($string)
 {
   return str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $string);
-} 
-?> 
+}
+?>

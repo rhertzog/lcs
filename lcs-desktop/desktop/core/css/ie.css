@@ -50,17 +50,17 @@ line-height:20px;
 height:25px;
 width:95%;
 }
-#bar_top ul.bar_top_right a.save, 
-#bar_top ul.bar_top_right a.wmail, 
-#bar_top ul.bar_top_right a.found, 
-#bar_top ul.bar_top_right a.reload, 
-#bar_top ul.bar_top_right a.spaces, 
+#bar_top ul.bar_top_right a.save,
+#bar_top ul.bar_top_right a.wmail,
+#bar_top ul.bar_top_right a.found,
+#bar_top ul.bar_top_right a.reload,
+#bar_top ul.bar_top_right a.spaces,
 #bar_top ul.bar_top_right a.maintinfo {
 	padding:0 8px
 }
 #bar_top ul li.buro{
-	margin-left:30px;
-}, 
+	margin-left:30px
+}
 
 /*
 #user_infos{

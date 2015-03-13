@@ -1,21 +1,22 @@
 <?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @delete.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* version 2.4.8
-* Derniere mise a jour: 06/03/2011
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
 header ('Content-type: text/html; charset=utf-8');
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
-
-$user = $_POST['user'] ;
-$file = $_POST['file'] ;	
-$ou = $_POST['ou'];
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
+include ("/var/www/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+    $config = HTMLPurifier_Config::createDefault();
+    $purifier = new HTMLPurifier($config);
+    $user = $purifier->purify( $_POST['user']) ;
+    $file =  $purifier->purify($_POST['file']) ;
+    $ou =  $purifier->purify($_POST['ou']);
 
 $koa=explode("_", $file);
 // tous les fichiers icone dans desktop/core/data appartenant au user
@@ -65,8 +66,8 @@ else if( is_array($ou) ){
 			}
 		}
 	}
-	
-		
+
+
 #	$mess= " / ".$ou[0]." | ".$ou[1]." | ".$ou[2]." | ".$ou[3]." | ".$ou;
 }
 else if( $ou=='buro' ){

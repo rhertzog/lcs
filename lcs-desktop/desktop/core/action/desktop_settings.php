@@ -1,22 +1,28 @@
 <?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @desktop_setting.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* version 0.2~20 Lcs-2.4.8
-* Derniere mise a jour => "04/10/2012"
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
+session_name("Lcs");
+@session_start();
 header ('Content-type" => "text/html; charset=utf-8');
 require  "/var/www/lcs/includes/headerauth.inc.php";
 require "/var/www/Annu/includes/ldap.inc.php";
-
-list ($idpers, $login)= isauth();
-
-$iam_user = $_POST['user']  ;
-$_actn = $_POST['actn'] ;	
+if (isset($_SESSION['login'])) $login=$_SESSION['login'];
+else {
+    $idpers=0;
+    $login="";
+}
+include ("/var/www/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+$config = HTMLPurifier_Config::createDefault();
+$purifier = new HTMLPurifier($config);
+$iam_user = $purifier->purify($_POST['user'] ) ;
+$_actn = $purifier->purify($_POST['actn'] );
 
 /**
 * $_srvr : tableau des  parametres serverur
@@ -45,7 +51,7 @@ $_user	= array();
 */
 $_opts	= array(
 	"wallpaper" => "core/images/misc/LCS_Desktop.jpg", // wallpaper
-	"pos_wallpaper" => "wallpaper", //position du wpp. Accepte "wallpaper", 
+	"pos_wallpaper" => "wallpaper", //position du wpp. Accepte "wallpaper",
 	"bgcolor" => "#6789ab",// background color
 	"bgopct" => 50, // background opacity
 	"iconsize" => 48, // icons size
@@ -63,8 +69,8 @@ $_opts	= array(
 */
 $_prms	= array(
 	"lang" => "fr",
-	"maintUrl" => '', 	
-	"showGroups" => 0, 	
+	"maintUrl" => '',
+	"showGroups" => 0,
 	"notifForumFreq" => 10 	// frequence of refresf of the forum notification, frequence de rafraichissement de la notif du forum
 );
 
@@ -82,7 +88,7 @@ $_apps	= array();
 $_noap	= array();
 
 /**
-* $_admn : tableau menu admministration. 
+* $_admn : tableau menu admministration.
 * est merge avec les applis ($_apps)
 *@type : Object
 */
@@ -183,7 +189,7 @@ $_ssmn = array(
 */
 
 /**
-*  infosEtab() : 
+*  infosEtab() :
 *@type : function
 *@return : array()  (infos etablissement)
 */
@@ -202,36 +208,36 @@ function infosEtab() {
 	}
 	else
 		$etb['$error'] = "Les param&#232;tres &#233;tablissement semblent absents de la base de donn&#233;e";
-	
+
 	return $etb;
 }
 
 /**
-*  menuApplis() : 
+*  menuApplis() :
 *@type : function
 *@param : $login - string : login de l'utilisateur)
-*@param : $idpers - integer : id de l'utilisateur)
+*@param : $idpers - integer : id de l'utilisateur)//non utilisee
 *@param : $stgo  - string : url des stats)
 *@return : array()  (liste des applis)
 */
-function menuApplis($login, $idpers, $_ssmn) {
-	
+function menuApplis($login, $_ssmn) {
+
 	// on passe par les stats
 	$stgo="../lcs/statandgo.php?use=";
-	
+
 	// tableau du type d'applis (buro, service, application, ressources aide)
 	$_srvc=array("pma", "clientftp","elfinder","maintenance","maintinfo", "squirrelmail", "roundcube");
-	
+
 	// Tableau des noms affiches dans le menu, certains etant beaucoup trop longs ou techniques.
 	// Voir pour une modif en amont ?
 	$_ttl = array("pma"=>"Gestion base de donn&#233;es", "spip"=>"Forum LCS", "elfinder"=>"Explorateur de fichiers", "clientftp"=>"Explorateur de fichiers", "smbwebclient"=>"Client SE3", "squirrelmail"=>"Webmail", "roundcube"=>"Webmail", "ent"=>"Portail ENT");
-	
+
 	// Creation du tableau du menu deroulant des applis et ajout de l'item Preferences
 	$_applis= array(
 		// l'annuaire n'est pas dans la bdd, on l'ajoute a la mano
 		'annu' => array(
 			"txt" => "Annuaire des utilisateurs",
-			"url" => $stgo."Annu",
+			"url" => $stgo."Annu&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php")),
 			"rev" => "annu",
 			"img" => "core/images/app/lcslogo-annu.png",
 			"typ" => "srvc",
@@ -258,26 +264,26 @@ function menuApplis($login, $idpers, $_ssmn) {
 				else if( is_file("../../".$imgplgn) ) $imgicon = $imgplgn;
 				// - l'icone par defaut made in desktop
 				else $imgicon = "core/".$imgdflt;
-				
+
 				$app_name = $r->name;
 				// on enregistre les applis du jour pour les nouvelles applis ou les applis invalidees
 				$applisDuJour[] = $app_name ;
 				// ya t'il un sous-menu
 				$smn = isset($_ssmn[strtolower($r->name)]) ? $_ssmn[strtolower($r->name)] : '';
-					
-				// squirrelmail ou roundcube 
+
+				// squirrelmail ou roundcube
 				if ( (strtolower($app_name) == "squirrelmail") || (strtolower($app_name) == "roundcube") ) {
-					
+
 					// nom et texte des sous menus identiques dans les deux cas
 					$app_name = "webmail";
 					$smn["view"]["txt"] = "Voir mes messages";
-					$smn["view"]["url"] = $stgo.$r->name;
+					$smn["view"]["url"] = $stgo.$r->name."&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
 					$smn["compose"]["txt"] = "Ecrire un nouveau message";
-					
-					// pour l'url ecrire ou ecrire a, on teste 
+
+					// pour l'url ecrire ou ecrire a, on teste
 					$smn["compose"]["url"] = strtolower($r->name) == "squirrelmail" ? "../squirrelmail/src/compose.php?mailbox=INBOX&startMessage=1":"../roundcube/?_task=mail&_action=compose";
 					$smn["compose"]["to"] =  strtolower($r->name) == "squirrelmail" ? "../squirrelmail/src/compose.php?send_to=" : $smn["compose"]["url"]."&_to=";
-					
+
 					// fichier appele pour les notifs de messages
 					$notifurl= strtolower($r->name) == "squirrelmail"?"../squirrelmail/plugins/notify/notify-desktop.php":"../roundcube/plugins/lcs-notify-desktop/index.php";
 				}
@@ -292,13 +298,13 @@ function menuApplis($login, $idpers, $_ssmn) {
 				// les autres applis
 				$_applis[$app_name] = array(
 					'txt' => isset($_ttl[strtolower($r->name)])?$_ttl[strtolower($r->name)]: utf8_encode($r->descr),
-					'url'  => $stgo.$r->name,
+					'url'  => $stgo.$r->name."&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php")),
 					'rev'  => strtolower($r->name),
 					'img'  => $imgicon,
 					"typ" => in_array(strtolower($r->name), $_srvc) ? "srvc": "appl",
 					"smn" => $smn
 				);
-				if ( (strtolower($app_name) == "webmail") ) 
+				if ( (strtolower($app_name) == "webmail") )
 					$_applis[$app_name]["notifurl"]=$notifurl;
 			}
 		}
@@ -306,75 +312,68 @@ function menuApplis($login, $idpers, $_ssmn) {
 	}
 	else
 		$_mess=array("error"=>"Pas d'applis dispo en bdd");
-	
+
 	return $_applis;
 };
 
 /**
-*  urlAccueil() : 
+*  urlAccueil() :
 *@type : function
 *@return : string  url_accueil
 */
 function urlAccueil() {
 	$result=mysql_query("SELECT `value` FROM `applis` WHERE name='url_accueil'");
-	if ($result) 
+	if ($result)
 		$r=mysql_result($result, 0);
-	else 
+	else
 		$r='';
-	
+
 	return $r;
 }
 
 /**
-*  infosUser() : 
+*  infosUser() :
 *@type : function
 *@param : $login (login user)
 *@param : $idpers (idpers user)
 *@return : Object  (infos utilisateur)
 */
-function infosUser($login, $idpers, $pwchg) {
-	if ( $idpers!=0 ) { 
-		
-		
+function infosUser($login,  $pwchg) {
+	if ( $login!="" ) {
+
 		// les infos ldap
 		list($user, $groups)=people_get_variables($login, true);
 		$_usr=$user;
 		$_usr["login"] = isset($login) ? $login:'default'; //le login du user
-		$_usr["idpers"] = $idpers; // idpers
+		$_usr["idpers"] = "x"; // idpers on s'en fou
 		$_usr["pwchg"] = $pwchg?"N":"Y" ;  // password modifié ?
-		
+                                    $_usr["jeton"]="&jeton=".md5($_SESSION['token'].htmlentities("/Annu/group.php"));
 		//test listes de diffusion
-		//@boulet@ la je ne comprends pas tout 
+		//@boulet@ la je ne comprends pas tout
 		exec ("/bin/grep \"#<listediffusionldap>\" /etc/postfix/mailing_list.cf", $AllOutPut, $ReturnValueShareName);
 		$listediff = 0;
 		if ( count($AllOutPut) >= 1) $listediff = 1;
 		// fin test listes de diffusion
-		
+
 		// infos de connexion
 		// a passer en chaine de langue l
 		// revoir aussi le message de changement de mot de passe a deplacer
 		// et aussi changer le message d'invite dans lcs-web
-		if (dispstats($idpers) < 2) { 
-			$_usr['connect'] = "F&#233;licitations, vous venez de vous connecter pour la 1&#232;re fois sur votre espace perso Lcs. Afin de garantir la confidentialit&#233; de vos donn&#233;es, nous vous encourageons, &agrave; changer votre mot de passe <a class=\"open_win ext_link\" href=\"../Annu/mod_pwd.php\" rel=\"annu\" title=\"\">en suivant ce lien... </a>";
-		} else {
-			$accord == "";
-			if ($user["sexe"] == "F") $accord="e";
-			$_usr['connect'] = displogin($idpers) . "<br />Vous vous &ecirc;tes connect&eacute;".$accord." " . dispstats($idpers) . " fois &agrave; votre espace perso." ;
-		}
-		
+		//section supprimee par mrfi
+
 		// les groupes
-		if ( count($groups) ) 
+		if ( count($groups) )
 		{
 			$dirIcn ="../data/";
 			$co=$ma=$eq=$di=$cl=0;
 			$tbl_gp = array("Administratifs","Profs","Eleves");
 			$ptrn= array('Classe','Cours','Equipe','Matiere');
-	
+
 			for ($loop=0; $loop < count ($groups) ; $loop++) {
 				$gex = explode('_', $groups[$loop]["cn"]);
 				$g = preg_replace('/ /','',$gex[0]);
 				// si on est admin
-				if ($groups[$loop]["cn"] == "admins") 
+				if ($groups[$loop]["cn"] == "admins")
 				{
 					// on passe Admin en "faux" groupe principal
 					$_usr['grps']['gp']= 'Admins';
@@ -383,13 +382,13 @@ function infosUser($login, $idpers, $pwchg) {
 				}
 				// sinon on recherche le groupe principal
 				else if (in_array($groups[$loop]["cn"], $tbl_gp))
-				{ 
+				{
 					$_usr['grps']['gp'] = preg_replace('/ /','',$gex[0]);
-				} 
+				}
 				// on recherche les groupes Classe,Cours,Equipe,Matiere
 				else if( in_array($g, $ptrn) )
 				//else if( $g == 'Classe' || $g == 'Cours' || $g == 'Equipe' || $g == 'Matiere'   )
-				{ 
+				{
 					$_usr['grps'][$g][] = preg_replace('/$g/',' ', $groups[$loop]["cn"]);
 				}
 				// et les autres
@@ -399,12 +398,12 @@ function infosUser($login, $idpers, $pwchg) {
 				if ($groups[$loop]["cn"]=="Eleves") $ToggleAff=1;
 		    }
 		}
-		else 
+		else
 			$_usr['grps']['gp']= 'Attention! Vous n\'appartenez à aucun groupe';
-	} 
-	else 
+	}
+	else
 	{
-		$_usr['idpers']=$idpers;
+		$_usr['idpers']="x";
 	}
 	return $_usr;
 }
@@ -434,7 +433,7 @@ function verifApps( $apps, $login ) {
 		$mess["countApps"] = count($apps) ;
 		$mess["countJson"] =count($objsn) ;
 		$mess["countVerif"] =count($verif) ;
-		
+
 		// y a t'i du nouveau ?
 		if (json_encode($apps) == json_encode($objsn) ) // pas de chagement
 		{
@@ -448,7 +447,7 @@ function verifApps( $apps, $login ) {
 				$mess["alert"] = "Une appli supprimée !!! celle-là: ".$icon_del ;
 			}
 			else if ( count( $apps ) > count($verif) )// une appli ajoutée
-			{  
+			{
 				foreach ( $apps as $k=>$val) !in_array($k, $verif) ? $icon_add=$k : '';// laquelle
 				$mess["alert"] = "Youpiiii !! Une nouvelle appli !!! celle-là: ".$icon_add ;
 			}
@@ -469,7 +468,7 @@ function verifApps( $apps, $login ) {
 	else	return  array("log"=>"Ya po d'fichier");
 }
 /**
-*  loadOpts() : 
+*  loadOpts() :
 *@type : function
 *@return : Object   opts: prefs user
 */
@@ -488,18 +487,18 @@ function loadOpts($login, $opts) {
 	else if( is_file('../json/PREFS_default.json') ) {
 		$url='../json/PREFS_default.json';
 		$optsjsn = json_decode(file_get_contents($url));
-		foreach( $optsjsn as $k=>$val) 
+		foreach( $optsjsn as $k=>$val)
 		{
 			$opts[$k]=$val ;
 		}
 	}
-	
+
 	return $opts;
-	
+
 }
 
 /**
-*  loadPrms() : 
+*  loadPrms() :
 *@type : function
 *@return : Object   opts: prefs user
 */
@@ -510,17 +509,17 @@ function loadPrms() {
 	if( is_file('../json/PARAMS_admin.json') ) {
 		$urlprms='../json/PARAMS_admin.json';
 		$prmsjsn = json_decode(file_get_contents($urlprms));
-		foreach( $prmsjsn as $k=>$val) 
+		foreach( $prmsjsn as $k=>$val)
 		{
 			$prms[$k]=$val ;
 		}
 	}
-	
+
 	return $prms;
 }
 
 /**
-*  loadIcons() : 
+*  loadIcons() :
 *@type : function
 *@return : array   icns:liste des icônes )
 */
@@ -539,7 +538,7 @@ function loadIcons($login, $apps) {
 	}
 	// sinon on prends la liste des applis (cas de la première connexion de l'admin)
 	else {
-		foreach ($apps as $app=>$icon) 
+		foreach ($apps as $app=>$icon)
 		{
 			// c'est ici qu'on peut aussi filtrer les icones
 			if( $app!="admin" && $app!="auth" && $app!="apdesk" && $icon['typ']!="buro" && $icon['typ']!="aide") {
@@ -547,14 +546,14 @@ function loadIcons($login, $apps) {
 			}
 		}
 	}
-	
+
 	return $icns;
 }
 
 /**
 *  loadRess() : les "liens partages"
 *@type : function
-*@param : $gp - groupe principal du user 
+*@param : $gp - groupe principal du user
 *@return : array()  tableau des liens:params
 */
 function loadRess($gp) {
@@ -568,11 +567,11 @@ function loadRess($gp) {
 				foreach($files as $t=>$icn){
 					if($icn !="." && $icn!=".." &&$icn !=$icnLast &&  is_file($dirData.$dirGp."/".$icn)){
 						$_ficn=$dirData.$dirGp."/".$icn;
-						if ($gp == "Admins") 
+						if ($gp == "Admins")
 						$ress[$icn] =  json_decode(file_get_contents($_ficn));
-						else	if ($dirGp == $gp) 
+						else	if ($dirGp == $gp)
 						$ress[$icn] =  json_decode(file_get_contents($_ficn));
-					
+
 						$icsLast=$icn;
 					}
 				}
@@ -583,16 +582,16 @@ function loadRess($gp) {
 }
 
 /**
-*  menuAdmin() : 
+*  menuAdmin() :
 *@type : function
 *@param : $login (login user)
 *@return : array()  (menu administration)
 */
-function menuAdmin($idpers, $login, $liens) {
-	if ( acces_btn_admin($idpers, $login) == "Y") { // acces au menu d'administration
+function menuAdmin($login, $liens) {
+	if ( acces_btn_admin($login) == "Y") { // acces au menu d'administration
 		for ($i=0; $i< count($liens); $i++) {
 			// Affichage item menu
-			if ( (strlen($liens[$i][0]) > 0) && ( ldap_get_right($liens[$i][1],$login)=="Y" ) ) 
+			if ( (strlen($liens[$i][0]) > 0) && ( ldap_get_right($liens[$i][1],$login)=="Y" ) )
 				$apps['admin'][$i] = array(
 				"txt" => $liens[$i][0],
 				"url" => "#",
@@ -612,16 +611,16 @@ function menuAdmin($idpers, $login, $liens) {
 						"txt" => $liens[$i][$j],
 						"url" => "../Admin/".preg_replace("/\/Admin\//","",$liens[$i][$j+1])
 					);
-		
+
 				}
-			  }	
+			  }
 		}
 
 	return $apps;
 	} // Fin menu admin
-	
+
 	return ;
-			
+
 }
 
 
@@ -633,7 +632,7 @@ function menuAdmin($idpers, $login, $liens) {
 $_srvr	= array(
 	"domain" 		=> $domain, // domains
 	"baseurl" 		=> $baseurl, // url lcs
-	"url_accueil" 	=> urlAccueil(), // url page d'accueil definie ds la conf generale serveur 
+	"url_accueil" 	=> urlAccueil(), // url page d'accueil definie ds la conf generale serveur
 	"stgo"			=> "../lcs/statandgo.php?use=", // url redirigee par les stats
 	"monlcs" 		=> is_dir("/var/www/monlcs") ? 1 : 0
 );
@@ -646,11 +645,11 @@ $_etab	=  infosEtab();
 // pour plus de securite et ne renvoyer que ce qu'il faut
 // c'est fait en js mais la fonction est-elle ultra sensible ?
 
-	
-if ( $idpers == "0" ) 
+
+if ( $login == "" )
 {
 	$_user["idpers"]=0;
-	
+
 	// lien de connexion
 	$_applis['auth'] = array(
 		"txt" => "Se connecter",
@@ -659,7 +658,7 @@ if ( $idpers == "0" )
 		"img" => "core/images/icons/icon_22_connect.png",
 		"typ" => "buro"
 	);
-	
+
 	// tableau renvoye
 	$resp=array(
 		"user"	=> $_user,
@@ -670,28 +669,28 @@ if ( $idpers == "0" )
 		"apps"	=> $_applis
 	);
 }
-else 
+else
 {
-	
-	//user
-	$_user = infosUser($login, $idpers, pwdMustChange($login) );
 
-	//les prefs du user 
+	//user
+	$_user = infosUser($login,  pwdMustChange($login) );
+
+	//les prefs du user
 	$_opts = loadOpts( $login, $_opts ) ;
-	
-	//les options admin 
+
+	//les options admin
 	$_prms = array_merge( $_prms, loadPrms() );
-	
+
 	// les ressources
 	$_ress = array_merge( $_ress, loadRess( isset( $_user["grps"]["gp"] ) ? $_user["grps"]["gp"] : "admin") );
 
 	// les applis ( du menu deroulant )
-	$_apps = menuApplis($login, $idpers, $_ssmn);
+	$_apps = menuApplis($login, $_ssmn);
 	// on place le lien pour l'appel maintenance
 	if ( isset( $_apps["maintenance"]) ) $_prms["maintUrl"] = $_apps["maintenance"]["smn"]["call"]["url"];
 	// else $_prms["maintUrl"] = $_apps["webmail"]["smn"]["compose"]["to"]. $_prms["maintUrl"]=="" ? "admin@".$_srvr["domain"] :  $_prms["maintUrl"];
 	else $_prms["maintUrl"] =  isset( $_apps["webmail"]) ? $_apps["webmail"]["smn"]["compose"]["to"]."admin@".$_srvr["domain"] : '';
-	
+
 	// lien de connexion
 	$_apps['auth'] = array(
 		"txt" => "Se d&eacute;connecter",
@@ -701,7 +700,7 @@ else
 		"typ" => "buro"
 	);
 
-	
+
 $_mess = verifApps( $_apps, $login ) ;
 
 	// on enregistre les applis du jour
@@ -728,11 +727,11 @@ $_mess = verifApps( $_apps, $login ) ;
 		$_apps['addicon']['txt']= "Ajouter un lien partag&eacute;";
 		// le menu admin
 		getmenuarray();
-		$_admn	= menuAdmin($idpers, $login, $liens);
+		$_admn	= menuAdmin($login, $liens);
 		// qu'on merge avec le menu applis
 		$_apps = array_merge($_apps , $_admn);
 	}
-	
+
 	// tableau renvoye
 	$resp=array(
 		"user"	=> $_user,

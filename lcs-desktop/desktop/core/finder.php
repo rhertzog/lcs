@@ -1,15 +1,24 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 isset($_GET['user'])?$who=$_GET['user']:$who='DtQ';
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
  if($login!=$who) {echo "<div>Probl&egrave;me d'acc&egrave;s &agrave; votre dossier. Veuillez v&eacute;rifier votre connexion</div>";
  return;
- } 
+ }
  else {
 ?>
 <script type="text/javascript">
 $(function(){
-	
+
 	var initFinder = function() {
 	/*
 	 * Initialise Finder
@@ -49,22 +58,22 @@ $(function(){
 			});
 		},
 		onInit : function(finderObj) {
-			
+
 //			debug('Finder initialised',arguments)
 		$('.ui-finder-action-current').click(function(){
 			$('[name="getCurrent"]').click();
 		});
 
-			
+
 		},
-		onItemSelect : function(listItem,eventTarget,finderObject){			
+		onItemSelect : function(listItem,eventTarget,finderObject){
 			var anchor = $('a',listItem),
 				href = anchor.attr('href');
-			
+
 		// Debug is a function specified in Finder script for debugging purposes
 		// Remove it if unnecessary
 //			debug('onItemSelect - URL: ',href)
-		
+
 		// By returning false, the url specified is not fetched
 		// ie. Do not display new column if selected item is not an image
 //			alert(href.indexOf('.png'));
@@ -74,7 +83,7 @@ $(function(){
 			var anchor = $('a',listItem),
 				href = anchor.attr('rel');
 //				$('a',listItem).closest('.ui-finder-column').next('.ui-finder-column').find('.ui-finder-content ol li:nth-child(odd)').css('background','#eaeaff');
-				
+
 //			debug('onFolderSelect - URL: ',href)
 		},
 		onItemOpen : function(listItem,newColumn,finderObject){
@@ -89,9 +98,9 @@ $(function(){
 				newColumn.find('.img_infos_more span').removeClass('down');
 			});
 			var aDir= '';
-			$.each(aText, function(index, value) { 
+			$.each(aText, function(index, value) {
 				value!=''? aDir+= '<span class="img_infos_more">'+value+'</span>':'';
-				//  alert(index + ': ' + value +aDir); 
+				//  alert(index + ': ' + value +aDir);
 			});
 
 			setTimeout(function(){
@@ -106,10 +115,10 @@ $(function(){
 					$(this).toggleClass("down");
 					$(this).next().toggleClass("down")
 				});
-				
+
 			},1000);
 
-			
+
 //			debug('onItemOpen - Column source: ',newColumn.attr('data-finder-list-source'))
 
 		},
@@ -118,9 +127,9 @@ $(function(){
 				href = anchor.attr('href'),
 				aText = anchor.attr('rev').split('/');
 				var aDir= '';
-			$.each(aText, function(index, value) { 
+			$.each(aText, function(index, value) {
 				aDir+= '<span class="img_infos_more">'+value+'</span>';
-				//  alert(index + ': ' + value +aDir); 
+				//  alert(index + ': ' + value +aDir);
 			});
 			$('.select_this').remove();
 			$('.ui-finder-title').html('Documents'+aDir);
@@ -130,11 +139,11 @@ $(function(){
 					JQD.init_link_open_win(this);
 				});
 			});
-				
-			
+
+
 //			alert('toto');
 //			$('ol li:nth-child(odd)').css('background','#eaeaff');
-			
+
 //			debug('onFolderOpen - Column source: ',newColumn.attr('data-finder-list-source'))
 		},
 		toolbarActions : function() {
@@ -158,11 +167,11 @@ $(function(){
 			<div class="ui-finder-button ui-state-default ui-finder-action-destroy ui-corner-all" title="Destroy">\
 				<span class="ui-icon ui-icon-closethick"/>\
 			</div>\*/
-		} 
-		
+		}
+
 	});
-	
-	
+
+
 };
 	$('[name="createFinder"]').toggle(function(){
 		initFinder();
@@ -191,7 +200,7 @@ $(function(){
 		$(this).text('Create Finder');
 		$(this).next('code').text( $(this).attr('data-code') )
 	});
-*/	
+*/
 /*
  * Some events to allow API interaction with buttons
  * Not a part of Finder script, they just show how to interact with API
@@ -212,7 +221,7 @@ $(function(){
 			$('#dirWallpaper').html(' ');
 			$('#ch_wlppr').show();
 		}
-			
+
 	});
 
 			$('.ui-finder-content').find('span.mess_info a').click(function(){
@@ -230,32 +239,32 @@ $(function(){
 
 
 	$('[name="createFinder"]').click();
-	
-	
+
+
 //	$('#switcher').themeswitcher();
 
 /*
  * A Click event to toggle the image preview, when viewing an image
- * Not a part of Finder script 
- */	
+ * Not a part of Finder script
+ */
 	$(document)
 	.unbind('click.FinderPreview') // Click event to handle file previews etc
 	.bind('click.FinderPreview',function(e){
 		var title = $(e.target);
-		
+
 		if( !title.hasClass('ui-finder-preview-heading')
 			&& title.parent('.ui-finder-preview-heading').length === 0 )
 			{ return; }
-		
+
 		title = ( title.hasClass('ui-finder-preview-heading') )
 					? title
 					: title.parent('.ui-finder-preview-heading') ;
-		
+
 		var image = title.siblings('.ui-finder-image'),
 			span = $('span',title);
-		
+
 		if( image.length != 1  ) { return; }
-		
+
 		if(image.is(':visible')) {
 			image.slideUp();
 			title.addClass('ui-finder-preview-heading-closed');
@@ -267,10 +276,10 @@ $(function(){
 			span.removeClass('ui-icon-circle-triangle-e');
 			span.addClass('ui-icon-circle-triangle-s');
 		};
-		
+
 		return false;
 	});
-	
+
 });
 </script>
 <div id="switcher"></div>

@@ -1,7 +1,15 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 #header ('Content-type: text/html; charset=utf-8');
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 
 // creation du XML
 $xmlPrefs = <<<XML
@@ -29,7 +37,7 @@ foreach($frstN as $thisN){
 	    $dom->createTextNode( $_POST[$thisN ] )
 	);
 $neud->appendChild( $$thisN  );
-}	
+}
 
 foreach($_POST['icons'] as $k=>$val){
 $noeud = $liste->item(0);
@@ -105,4 +113,4 @@ $json.="}}}";
 		echo $_json_fp;
 #		echo json_decode($json_fp);
 
-?> 
+?>

@@ -1,23 +1,23 @@
-<?
+<?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @load_prefs.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* version 0.2~20 Lcs-2.4.8
-* Derniere mise a jour " => " 24/05/2012
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
-
+session_name("Lcs");
+@session_start();
+if (isset($_SESSION['login'])) $login=$_SESSION['login'];
+else   $login="";
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
-
 require "/var/www/Annu/includes/ldap.inc.php";
 require "/var/www/Annu/includes/ihm.inc.php";
 include("core/includes/functions.inc.php");
 ?>
 
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -108,7 +108,7 @@ $(document).ready(function(){
 }
 
 // Cas service
-	// Select PATH request with mod_auth params (LCS or ENT)        
+	// Select PATH request with mod_auth params (LCS or ENT)
 	if ( $auth_mod != "ENT" ) {
 		$log2cas="log2cas_ajax.php";
 		$path2auth="auth.php";

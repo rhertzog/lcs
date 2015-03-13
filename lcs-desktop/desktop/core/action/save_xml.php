@@ -1,4 +1,12 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 
 	$user = $_POST['user'] ;
 	$file = $_POST['file'] ;
@@ -49,7 +57,7 @@
 		$img="alert";
 		$title="Erreur !";
 		$infos="";
-	}		
+	}
 $resp='{mess:"'.$mess.'",img:"'.$img.'",title:"'.$title.'",infos:"'.$infos.'"}';
 echo $resp;
 ?>

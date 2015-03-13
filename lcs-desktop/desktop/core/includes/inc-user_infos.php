@@ -1,8 +1,21 @@
-<?php 
-	$uid = $_GET[uid];
-	$toggle = $_GET[toggle];
-	$action = $_Get[action];
-	
+<?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
+include ("/var/www/lcs/includes/htmlpurifier/library/HTMLPurifier.auto.php");
+ 	$config = HTMLPurifier_Config::createDefault();
+ 	$purifier = new HTMLPurifier($config);
+        	$uid = $purifier->purify($_GET[uid]);
+	$toggle = $purifier->purify($_GET[toggle]);
+	$action =$purifier->purify( $_Get[action]);
+
 	//test si squirrelmail est installe pour redirection mails
 	if (isset($squirrelmail)) {
 		$test_webmail=$squirrelmail;
@@ -15,7 +28,7 @@
 	if (isset($roundcube)) {
 		$test_webmail=$roundcube;
 		$url_webmail="../roundcube/?_task=mail&_action=compose&send_to=";
-#		echo "<script>alert('$test_webmail');</script>";	
+#		echo "<script>alert('$test_webmail');</script>";
 	}
 	//fin test roundcube
 	//test listes de diffusion
@@ -25,19 +38,8 @@
 	// fin test listes de diffusion
 	$text_infos = "<h2>".$user["fullname"]."</h2>\n";
 	if ($user["description"]) $lstDesc = "<p>".$user["description"]."</p>";
-	list ($idpers, $login)= isauth();
-	if (!displogin($idpers)) {
-	$lstLastConnect= "<ul class=\"infos_user list_groups\"><li><tt>F&#233;licitations, vous venez de vous connecter pour la 1&#232;re fois sur votre
-          espace perso Lcs. Afin de garantir la confidentialit&#233; de vos donn&#233;es, nous
-          vous encourageons, &agrave; changer votre mot de passe <a class=\"open_win ext_link\" href=\"../Annu/mod_pwd.php\" rel=\"annu\" title=\"\">en suivant ce lien... </a>
-          </tt></li></ul>\n";
-	} else {
-    $accord == "";
-    if ($user["sexe"] == "F") $accord="e";
-		$lstLastConnect="<ul class=\"infos_user list_groups\"><li><tt>Derni\xe8re connexion le : " . displogin($idpers) . "</tt>\n";
-		/* Affichage des stats user */
-		$lstLastConnect.= "<br /><tt>Vous vous \xeates connect\xe9".$accord." " . dispstats($idpers) . " fois \xe0 votre espace perso.</tt></li></ul>\n";
-	}
+
+
 
 	if ( count($groups) ) {
 		$lstIntroGrps = "<h3 class=\"btn_groups triangle_updown\" style=\"padding-left:20px;\">Membre des groupes</h3>\n"
@@ -46,7 +48,7 @@
     	$co=$ma=$eq=$di=$cl=0;
     		$tbl_gp = array("Administratifs","Profs","Eleves");
     	for ($loop=0; $loop < count ($groups) ; $loop++) {
-    		if (in_array($groups[$loop]["cn"], $tbl_gp)){ 
+    		if (in_array($groups[$loop]["cn"], $tbl_gp)){
     			$group_principal = $groups[$loop]["cn"];
   				$lgp ="<li class=\"group_title\"><strong>Goupe principal :</strong></li>";
 				$lgp .=info_item_group($groups[$loop]["cn"],$groups[$loop]["type"],$domain,$login,$listediff,$test_webmail,$url_webmail);
@@ -119,7 +121,7 @@
 		."<img src=\"core/images/annu/mail-redirect.png\" style=\"width:20px;vertical-align:middle;\" width=\"20\"/> "
 		."Rediriger vers une boite personnelle</a>"
 	."<div class=\"small\">Vous pouvez rediriger vos courriels vers votre boite personnelle. Les courriels redirig&eacute;s pourrons  n&eacute;anmoins &ecirc;tre conserv&eacute;s dans votre boite &agrave; lettre Lcs</div>"
-		."</li>"; 
+		."</li>";
 	}
 
    	$lst .=  "</ul>";
@@ -140,7 +142,7 @@
 			$ret .= $group;
 			}
 		$ret .=  "</a>";
-		if (! is_eleve($login) && $listediff && $test_webmail=="1") 
+		if (! is_eleve($login) && $listediff && $test_webmail=="1")
 		$ret .="<a href=\"".$url_webmail.$group."@".$domain."\" class=\"open_win ext_link\" rel=\"squirrelmail\" title=\"Envoyer un message &agrave; ce groupe\">  <img src=\"core/images/annu/mail.png\" alt=\"\" class=\"float_right\" style=\"margin:5px 5px 0 0;\"/></a>";
 		/*
 		$ret .=  ",<small> ".$groups[$loop]["description"];
@@ -153,4 +155,4 @@
 return $ret;
   }
 	?>
-			
+

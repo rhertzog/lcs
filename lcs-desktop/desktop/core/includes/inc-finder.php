@@ -1,6 +1,15 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
+
 	$u!=''?$_u=$u.'/':$_u='';
 	$iDir="/home/".$login."/public_html/".$_u;
 	$itemList=scandir($iDir);

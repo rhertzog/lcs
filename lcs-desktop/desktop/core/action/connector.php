@@ -1,9 +1,16 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
+include "/usr/share/lcs/desktop/core/includes/desktop_check.php";
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
 
-// LCS on est conncte ?
-if ($idpers == 0){ $opts=array('root'=> "error");return;}
+if ($ilogin=""){ $opts=array('root'=> "error");return;}
 
 
 error_reporting(0); // Set E_ALL for debuging
@@ -17,7 +24,7 @@ include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'
  * Simple example how to use logger with elFinder
  **/
 class elFinderLogger implements elFinderILogger {
-	
+
 	public function log($cmd, $ok, $context, $err='', $errorData = array()) {
 		if (false != ($fp = fopen('./log.txt', 'a'))) {
 			if ($ok) {
@@ -29,7 +36,7 @@ class elFinderLogger implements elFinderILogger {
 			fclose($fp);
 		}
 	}
-	
+
 }
 
 $opts = array(
@@ -70,13 +77,13 @@ $opts = array(
 	  	)
 	  ),
 
-	// 'perms'        => array(),      // individual folders/files permisions    
+	// 'perms'        => array(),      // individual folders/files permisions
 	 'debug'        => true,         // send debug to client
 	 'archiveMimes' => array(),      // allowed archive's mimetypes to create. Leave empty for all available types.
 	// 'archivers'    => array()       // info about archivers to use. See example below. Leave empty for auto detect
 );
 
-$fm = new elFinder($opts); 
+$fm = new elFinder($opts);
 $fm->run();
 
 ?>

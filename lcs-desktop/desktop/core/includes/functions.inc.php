@@ -1,6 +1,14 @@
 <?php
+/*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
+* Projet LCS - Lcs-Desktop
+* auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
+* Equipe Tice academie de Caen
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
+*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 function stripAccents($string){
-	return str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $string); 
+	return str_replace( array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), $string);
 }
 
 function createThumbs( $pathToImages, $pathToThumbs, $thumbWidth=150 )
@@ -49,11 +57,11 @@ function createThumbs( $pathToImages, $pathToThumbs, $thumbWidth=150 )
 
 
 function alt_stat($file) {
- 
+
  clearstatcache();
  $ss=@stat($file);
  if(!$ss) return false; //Couldnt stat file
- 
+
  $ts=array(
   0140000=>'ssocket',
   0120000=>'llink',
@@ -63,10 +71,10 @@ function alt_stat($file) {
   0020000=>'cchar',
   0010000=>'pfifo'
  );
- 
+
  $p=$ss['mode'];
  $t=decoct($ss['mode'] & 0170000); // File Encoding Bit
- 
+
  $str =(array_key_exists(octdec($t),$ts))?$ts[octdec($t)]{0}:'u';
  $str.=(($p&0x0100)?'r':'-').(($p&0x0080)?'w':'-');
  $str.=(($p&0x0040)?(($p&0x0800)?'s':'x'):(($p&0x0800)?'S':'-'));
@@ -74,7 +82,7 @@ function alt_stat($file) {
  $str.=(($p&0x0008)?(($p&0x0400)?'s':'x'):(($p&0x0400)?'S':'-'));
  $str.=(($p&0x0004)?'r':'-').(($p&0x0002)?'w':'-');
  $str.=(($p&0x0001)?(($p&0x0200)?'t':'x'):(($p&0x0200)?'T':'-'));
- 
+
  $s=array(
  'perms'=>array(
   'umask'=>sprintf("%04o",@umask()),
@@ -85,7 +93,7 @@ function alt_stat($file) {
   'fileperms'=>@fileperms($file),
   'mode1'=>$p,
   'mode2'=>$ss['mode']),
- 
+
  'owner'=>array(
   'fileowner'=>$ss['uid'],
   'filegroup'=>$ss['gid'],
@@ -96,7 +104,7 @@ function alt_stat($file) {
   (function_exists('posix_getgrgid'))?
   @posix_getgrgid($ss['gid']):''
   ),
- 
+
  'file'=>array(
   'filename'=>$file,
   'realpath'=>(@realpath($file) != $file) ? @realpath($file) : '',
@@ -113,7 +121,7 @@ function alt_stat($file) {
   'is_readable'=> @is_readable($file),
   'is_writable'=> @is_writable($file)
   ),
- 
+
  'device'=>array(
   'device'=>$ss['dev'], //Device
   'device_number'=>$ss['rdev'], //Device number, if device.
@@ -121,13 +129,13 @@ function alt_stat($file) {
   'link_count'=>$ss['nlink'], //link count
   'link_to'=>($s['type']=='link') ? @readlink($file) : ''
   ),
- 
+
  'size'=>array(
   'size'=>$ss['size'], //Size of file, in bytes.
   'blocks'=>$ss['blocks'], //Number 512-byte blocks allocated
   'block_size'=> $ss['blksize'] //Optimal block size for I/O.
   ),
- 
+
  'time'=>array(
   'mtime'=>$ss['mtime'], //Time of last modification
   'atime'=>$ss['atime'], //Time of last access.
@@ -137,7 +145,7 @@ function alt_stat($file) {
   'created'=>@date('d M Y H:i:s',$ss['ctime'])
   ),
  );
- 
+
  clearstatcache();
  return $s;
 }
@@ -184,7 +192,7 @@ function ValidateUrl($url, $required = false)
 		}
 //		else throw new Exception('Please enter a valid address.');
 	}
-	
+
 }
 
 /**
@@ -214,7 +222,7 @@ function lcsListGroups($groups,$fGpSt,$fGpEn,$fClSt,$fSufXTi,$fSufX,$fPrefXTiSt,
      			}
 				$ar['groups'][]=$g;
       			$jsGs.=$js_prefX.$fGsSt.numToAZ($i).$fGsMi.$ng.$fGsEn;
-     			
+
      			$t_prefX=$prefX[0];
      			$i++;
      		}
@@ -233,10 +241,10 @@ function lcsUserInfos($login, $f="json")
 	if ($user["description"]) $lst = "<p>".$user["description"]."</p>";
 	if ( count($groups) ) {
 		switch($f) {
-			case "arra" : 
+			case "arra" :
 				$fEn='';
 				break;
-			case "html" : 
+			case "html" :
 				$fSt="<ul>\n\t<li class=\"fullname\"><strong>Nom : </strong>".$user["fullname"]."</li>\n"
 				."\t<li class=\"description\"><strong>Description : </strong>".$user["description"]."</li>\n";
 				$fEn="</ul>";
@@ -318,6 +326,6 @@ imagejpeg($thumbImg, "$thumbDirectory/$imageName");
 }
 
 
-//createThumbnail("desktop/images/misc","Virtual_Octopus.jpg","desktop/images/misc/thumbs",150);			
+//createThumbnail("desktop/images/misc","Virtual_Octopus.jpg","desktop/images/misc/thumbs",150);
 
 ?>

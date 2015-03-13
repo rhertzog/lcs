@@ -1,16 +1,17 @@
 <?php
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @user_form_prefs.php
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
-* version 0.2~20
-* Derniere mise a jour : 13/02/2011
-* Licence GNU-GPL -  Copyleft 2010-2011
+* version  Lcs-2.4.10
+* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
-
+session_name("Lcs");
+@session_start();
+$login=$_SESSION['login'];
 require  "/var/www/lcs/includes/headerauth.inc.php";
-list ($idpers, $login)= isauth();
+//list ($idpers, $login)= isauth();
 
 require "/var/www/Annu/includes/ihm.inc.php";
 include("includes/functions.inc.php");
@@ -62,7 +63,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 <body style="overflow:auto;text-align:left;">
 <!--<div class="bar_top">
 	<span style="padding-left:10px;">Param&eacute;tres du bureau</span>
-	<span class="float_right">Param&egrave;tres par d&eacute;faut</span> 
+	<span class="float_right">Param&egrave;tres par d&eacute;faut</span>
 </div>-->
 <div class="jqd_formulaires">
 	<form action="">
@@ -151,7 +152,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 				</li>
 			</ul>
 		</div>
-	
+
 	</fieldset>
 	<fieldset>
 	<legend>Ic&ocirc;nes</legend>
@@ -198,7 +199,7 @@ body{background:transparent url(images/gui/trans_white_95pc.png);}
 					<span class="bouton"><a href="#" id="valid_prefs">Enregistrer</a></span>
 					<span class="bouton"><a href="#" id="delete_prefs">Supprimer les pr&eacute;f&eacute;rences</a></span>
 				</p>
-	
+
 <script>
 $(document).ready(function() {
 	// recuperation du desktop
@@ -226,7 +227,7 @@ $(document).ready(function() {
 			}
 		});
 	});
-	
+
 	//ouverture du panneau des images wpp
 	$('#btn-openWpp').click(function(){
 		parent.JQD.utils.clear_active();
@@ -250,7 +251,7 @@ $(document).ready(function() {
 			success: function(msg){
 				$('#dirWallpaper').html(msg);
 			}
-		});	
+		});
 	});
 
 	// on met des couleurs odd-even sur les select option
@@ -262,19 +263,19 @@ $(document).ready(function() {
 		parent.JQD.options.user['bgopct']=$('#wp_trsp').val();
 		parent.JQD.save_prefs_dev('PREFS', 'hjy', $('#default_desktop_conf').val());
 	});
-			
+
 	// remove pref
 	$('#delete_prefs').click(function(){
 		//alert('PREFS_<?php echo $login; ?>');
                 var delusr = '<?php echo $login; ?>';
 		parent.JQD.rm('PREFS_', delusr, 'buro');
 	});
-		
+
 	// remove pref
 	$('#delprefsdef').click(function(){
 		parent.JQD.rm('PREFS_', '<?php echo $login; ?>', 'default');
 	});
-		
+
 	//colorpicker
 	// TODO: A supprimer
 	//$('#colorSelector .lcs_colorpicker').css('backgroundColor',_WP.find('#tmp_bgcolor').val());
@@ -305,7 +306,7 @@ $(document).ready(function() {
 		$('#listImgs,#ch_wlppr').hide();
 		var prfx=$('#select_walppr').val().match('~') ? '' : 'core/';
 		$('#wallpaper', window.parent.document).removeAttr('src').attr('src',prfx+$('#select_walppr').val().replace('thumbs/',''));
-		// TODO: tmp_wallpaper a supprimer. 
+		// TODO: tmp_wallpaper a supprimer.
 		//_WP.find('#tmp_wallpaper').attr('value',prfx+$('#select_walppr').val().replace('thumbs/',''));
 		parent.JQD.options.user['wallpaper'] = prfx+$('#select_walppr').val().replace('thumbs/','');
 	});
@@ -352,7 +353,7 @@ $(document).ready(function() {
 	$('#slider-vertical').slider( "option", "value",parent.JQD.options.user['iconsfield'] );
 		parent.JQD.options.user['wallpaper'] = $(this).children('img').width();
 //	parent.JQD.init_icons();
-	
+
 	// quicklaunch
 	var _a_q = $('#aff_quicklaunch');
 	var _t_q = parent.JQD.options.user['quicklaunch'];
@@ -363,7 +364,7 @@ $(document).ready(function() {
 	});
 	// init au chargement
 	 _t_q =='1' ? _a_q.attr('checked', 'checked') : _a_q.removeAttr('checked') ;
-	
+
 	// conf par defaut
 	if( $('#default_desktop_conf').length > 0 ) { //si on est admin
 		var _dc_c = $('#default_change_conf');
@@ -376,7 +377,7 @@ $(document).ready(function() {
 		_dc_c.removeAttr('checked') ;
 	}
 });
-	
+
 function TT_load_prefs_img(t_img) {
 	$('#select_walppr').attr('value',t_img);
 	$.ajax({
@@ -395,7 +396,7 @@ function TT_load_prefs_img(t_img) {
 			 	$(this).next().hide().prev().removeClass('down');
 			});
 		}
-	});	
+	});
 }
 /*
 (function($) {

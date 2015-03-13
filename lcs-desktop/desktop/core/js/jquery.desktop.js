@@ -1,6 +1,6 @@
 /*__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/
 * Projet LCS - Lcs-Desktop
-* @jquery.desktop.js 
+* @jquery.desktop.js
 * base sur jquery.desktop de Nathan Smith
 * auteur Dominique Lepaisant (DomZ0 <\°∆°/>) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
@@ -47,7 +47,7 @@ var JQD = (function($, window, undefined) {
 			opts: {
 				wallpaper: "core/images/misc/LCS_Desktop.jpg", // wallpaper hors connexion
 				pos_wallpaper : "wallpaper",
-				bgcolor: "#6789ab", // Couleur d'arrierre-plan 
+				bgcolor: "#6789ab", // Couleur d'arrierre-plan
 				bgopct: "50", //opacity (percent)
 				iconsize 		 : 48, // size of icon (width and height of image)
 				iconsfield 	 : 50, // height of icons field  (percent)
@@ -104,7 +104,7 @@ var JQD = (function($, window, undefined) {
 		 * JQD.btr : bar-top right side -
 		 * @Object
 		 */
-		btr : {  
+		btr : {
 			// zone de date
 			date: {
 				txt:"",
@@ -189,7 +189,7 @@ var JQD = (function($, window, undefined) {
 				var day = date_obj.getDate();
 				var year = date_obj.getFullYear();
 				var suffix = 'AM';
-	
+
 				// Table des jours de la semaine - weekday.
 				var weekday = [
 					'Dimanche',
@@ -215,16 +215,16 @@ var JQD = (function($, window, undefined) {
 					'Novembre',
 					'D&eacute;cembre'
 				];
-	
+
 				// Assign weekday, month, date, year.
 				weekday = weekday[date_obj.getDay()];
 				month = month[date_obj.getMonth()];
-	
+
 				// AM or PM?
 				if (hour >= 12) {
 					suffix = 'PM';
 				}
-	
+
 				// Convert to 12-hour.
 				if (hour > 12) {
 					hour = hour - 12;
@@ -233,16 +233,16 @@ var JQD = (function($, window, undefined) {
 					// Display 12:XX instead of 0:XX.
 					hour = 12;
 				}
-	
+
 				// Leading zero, if needed.
 				if (minute < 10) {
 					minute = '0' + minute;
 				}
-	
+
 				// Build two HTML strings.
 				var clock_time = weekday + ' ' + hour + ':' + minute + ' ' + suffix;
 				var clock_date = day + ' ' + month + ' ' + year;
-	
+
 				// Shove in the HTML.
 				$('#date span.date').html(clock_date);
 				$('#clock').html( clock_time ).dblclick( function() {
@@ -257,7 +257,7 @@ var JQD = (function($, window, undefined) {
 				}).click(function(){
 					return false;
 				});
-	
+
 				// Update every 60 seconds.
 				setTimeout(JQD.init.clock, 60000);
 			},
@@ -268,7 +268,7 @@ var JQD = (function($, window, undefined) {
 			mdrc : function() {
 				$(document).mousedown(function(ev) {
 					// on autorise aussi le focus dans les input et textarea
-					if (!$(ev.target).closest('a, input, textarea ,select , select option, form, div.slctname, #wp_url_m').length) { 	
+					if (!$(ev.target).closest('a, input, textarea ,select , select option, form, div.slctname, #wp_url_m').length) {
 						JQD.utils.cancel_editIcon();
 						JQD.utils.clear_active();
 						//return false;
@@ -277,7 +277,7 @@ var JQD = (function($, window, undefined) {
 					return false;
 				});
 			},
-			
+
 			/*
 			* JQD.init.topmnu() - init bar-top menus.
 			*@type : function
@@ -299,7 +299,7 @@ var JQD = (function($, window, undefined) {
 						$(this).addClass('active').next('ul.menu').show();
 					}
 				});
-				//add window open on simple-clic on link of menu bar 
+				//add window open on simple-clic on link of menu bar
 				$('a.open_win').not(".green, #blueone")
 				.bind('click', function() {
 					// on agit suivant le cas renvoye
@@ -312,7 +312,7 @@ var JQD = (function($, window, undefined) {
 			        helper: 'clone'
 			    });
 				$('a.addicon, a.ress').removeClass('open_win');
-				
+
 				// sort menu items in alphabetic order
 				$('ul.menu').each(function(i, v){
 					JQD.utils.sortLi( $(v), 'li' )
@@ -328,7 +328,7 @@ var JQD = (function($, window, undefined) {
 					if ( $(this).find('input').length == 0) {
 						var url = $(this).attr('href');
 						this.blur();
-		
+
 						if ( typeof url=='undefined' || url.match(/^#/)) {
 							return false;
 						}
@@ -356,7 +356,7 @@ var JQD = (function($, window, undefined) {
 					alignY: 'bottom',
 					offsetX: 0,
 					offsetY: 10
-				});	
+				});
 			},
 			/*
 			* JQD.init.icons() : Init desktop icons
@@ -422,7 +422,7 @@ var JQD = (function($, window, undefined) {
 						JQD.window_flat();
 						$(this).addClass('window_stack');
 						return false;
-					}); 
+					});
 				});
 			},
 			/*
@@ -464,7 +464,7 @@ var JQD = (function($, window, undefined) {
 			* JQD.init.trash() - Corbeille
 			*@type : function
 			*/
-			trash : function() {			
+			trash : function() {
 				$(".trash, ").droppable({
 					accept: 'a.abs.icon',
 					activeClass: 'ui-state-highlight',
@@ -492,51 +492,51 @@ var JQD = (function($, window, undefined) {
 					JQD.init.place_wppr( JQD.options );
 				 	JQD.init.icons();
 				});
-			},			
+			},
 			/*
 			* JQD.init.desktop() - init  desktop (drag and drop)
 			*@type : function
 			*/
 			desktop : function() {
 				// PARTIE A REVOIR
-				var menuDesk= [ 
-					{'Ajouter une ic&ocirc;ne':{ 
+				var menuDesk= [
+					{'Ajouter une ic&ocirc;ne':{
 						onclick:function(menuItem,menu) {
-							 JQD.utils.dispIcnForm({title:'Ajouter une ic\u00f4ne'}) 
-						}, 
-						icon:'core/images/gui/add-icon_16.png', 
-						disabled:false 
+							 JQD.utils.dispIcnForm({title:'Ajouter une ic\u00f4ne'})
+						},
+						icon:'core/images/gui/add-icon_16.png',
+						disabled:false
 					}  } ,
-					$.contextMenu.separator, 
-					{'Enregister les pr&eacute;f&eacute;rences':{ 
+					$.contextMenu.separator,
+					{'Enregister les pr&eacute;f&eacute;rences':{
 						onclick:function(menuItem,menu) {
-							JQD.save_prefs_dev('PREFS', JQD.options.user.login, 'buro') 
-						}, 
-						icon:'core/images/gui/save_16.png', 
-						disabled:false 
-					}  }, 
-					{'Supprimer les pr&eacute;f&eacute;rences':{ 
+							JQD.save_prefs_dev('PREFS', JQD.options.user.login, 'buro')
+						},
+						icon:'core/images/gui/save_16.png',
+						disabled:false
+					}  },
+					{'Supprimer les pr&eacute;f&eacute;rences':{
 						onclick:function(menuItem,menu) {
-							JQD.rm('PREFS_', JQD.options.user.login, 'buro') 
-						}, 
-						icon:'core/images/gui/delete.gif', 
-						disabled:false 
-					}  } , 
-					{'Actualiser le bureau':{ 
+							JQD.rm('PREFS_', JQD.options.user.login, 'buro')
+						},
+						icon:'core/images/gui/delete.gif',
+						disabled:false
+					}  } ,
+					{'Actualiser le bureau':{
 						onclick:function(menuItem,menu) {
-							 location.reload() 
-						}, 
-						icon:'core/images/gui/refresh_16.png', 
-						disabled:false 
+							 location.reload()
+						},
+						icon:'core/images/gui/refresh_16.png',
+						disabled:false
 					}  }
-				]; 
+				];
 				$("#desktop").droppable({
 					accept: '.open_win',
-					drop: function(event, ui) { 
+					drop: function(event, ui) {
 						// LCS Cas particulier d'un lien provenant du panneau infos user
 						//on verifie que le lien provient de infos user
-						fromwhere=$(ui.draggable).closest('ul#user_infos').length; 
-						newrel=$(ui.draggable).attr('href'); //on recupere la valeeur du lien		        	
+						fromwhere=$(ui.draggable).closest('ul#user_infos').length;
+						newrel=$(ui.draggable).attr('href'); //on recupere la valeeur du lien
 						img_w=$(this).find('a.abs.icon img').last().width();
 						//$(this).find('a.abs.icon').last().after($(ui.draggable).clone());
 						var icnOpts={
@@ -561,8 +561,8 @@ var JQD = (function($, window, undefined) {
 						JQD.utils.clear_active();
 					}
 			    })
-				// Theme name. Included themes are: 'default','xp','vista','osx','human','gloss'  
-				// Multiple themes may be applied with a comma-separated list.  
+				// Theme name. Included themes are: 'default','xp','vista','osx','human','gloss'
+				// Multiple themes may be applied with a comma-separated list.
 				.contextMenu(menuDesk,{theme:'lcsdesk'});
 			},
 			/*
@@ -590,8 +590,8 @@ var JQD = (function($, window, undefined) {
 			wpp: function( o ){
 				// on applique les prefs sur le body
 				var bgc = o.opts.bgcolor ? o.opts.bgcolor : '#123456';
-				$('body').css('background', bgc); 
-				
+				$('body').css('background', bgc);
+
 				//wallpaper
 				var x=o.opts.wallpaper;
 				x.match('~') ? x=x.replace('core/','') : '';
@@ -616,10 +616,10 @@ var JQD = (function($, window, undefined) {
 			*@param : o - JQD.options
 			*/
 			place_wppr: function( o ){
-				var dt=$('#desktop'), wp=$('#wallpaper'), 
+				var dt=$('#desktop'), wp=$('#wallpaper'),
 				w = dt.width(), h = dt.height(),
 				x = typeof(o.opts) !='undefined' ? o.opts.pos_wallpaper : 'wallpaper';
-				
+
 				wp.removeAttr('style').removeClass().addClass( x ).css({opacity: o.opts.bgopct / 100});
 				if(x.match('center_h')){l_wp = (w-wp.width())/2;wp.css({'left':l_wp+'px'});}
 				if(x.match('center_v')){l_hp = (h-wp.height())/2;wp.css({'top':l_hp+'px'});}
@@ -634,7 +634,7 @@ var JQD = (function($, window, undefined) {
 				setTimeout(function(){
 					JQD.notify_wmail();
 				},10000);
-				
+
 			},
 			/*
 			* JQD.init.isAppChange() - alert so modif dans les applis
@@ -646,7 +646,7 @@ var JQD = (function($, window, undefined) {
 				//	JQD.utils.dialog_mess({title:"Alerte", txt: JQD.options.mess.error || JQD.options.mess.alert || JQD.options.mess.success, intro:'Attention'});
 			},
 			/*
-			* JQD.init.myurl() 
+			* JQD.init.myurl()
 			*@type : function
 			*@TODO : A Confirmer n'a rien a faire ici A deplacer dans JQD.buildbuild
 			*/
@@ -711,8 +711,8 @@ var JQD = (function($, window, undefined) {
 					// cas ou le user n'appartient à aucun groupe
 					if(usrGp.match('Attention'))
 						usrIcon = 'core/images/annu/24/no_group.png';
-						
-					usri.html(opts.user.fullname).prepend( 
+
+					usri.html(opts.user.fullname).prepend(
 						$('<img/>').attr({
 							src: usrIcon.toLowerCase()
 						})
@@ -722,28 +722,28 @@ var JQD = (function($, window, undefined) {
 					});
 				}
 				var btrAuth = $('<a/>').addClass('auth'), imgConnect = parseInt(opts.user.idpers) == 0 ? 'connect':'stop';
-				if ( $('img.auth').length==0 ) 
-				$('<li/>').addClass('auth').append( 
+				if ( $('img.auth').length==0 )
+				$('<li/>').addClass('auth').append(
 					btrAuth.attr({
 						title: parseInt(opts.user.idpers) == 0 ? 'Se connecter' : 'Se déconnecter'
-					}).append( 
+					}).append(
 						$('<img/>').attr({src:'core/images/icons/icon_22_'+imgConnect+'.png', alt:''}).addClass('auth '+imgConnect)
 					).click(function(){
 						//JQD.logform(parseInt(opts.user.idpers) == 0 ? '../lcs/auth.php' : JQD.logform('../lcs/logout.php'));
 						JQD.logform(opts.apps.auth.url );
 
 						return false;
-					}) 
+					})
 				).prependTo( btrUl );
 				// si on a pas de webmail
-				if (  typeof JQD.options.apps.webmail =="undefined" ) {  
+				if (  typeof JQD.options.apps.webmail =="undefined" ) {
 					//on vire le bouton
 					$('#mess').remove();
 					// si pas d'appli maintenance
 					if ( typeof JQD.options.apps.maintenance =="undefined" ) $('#maintinfo').remove();
 				};
 				return btrUl;
-				
+
 			},
 
 			/*
@@ -781,9 +781,9 @@ var JQD = (function($, window, undefined) {
 						o.ress[i]['typ']='ress';
 						// on construit l'item
 						JQD.utils.ssmenu( o.ress[i] );
-						// on ajoute la couleur 
-						$('li.ress>ul>li:last-child').find('a').append( 
-							$('<span/>').css({width:'16px',height:'16px',margin:'4px -20px 0 5px',float:'right',backgroundColor:o.ress[i].color}) 
+						// on ajoute la couleur
+						$('li.ress>ul>li:last-child').find('a').append(
+							$('<span/>').css({width:'16px',height:'16px',margin:'4px -20px 0 5px',float:'right',backgroundColor:o.ress[i].color})
 						)
 					});
 				}
@@ -794,7 +794,7 @@ var JQD = (function($, window, undefined) {
 						url:'#',
 						txt:'Liens partag&eacute;s',
 						'img':'core/images/app/lcslogo-lcs.png',
-						rev:'ress', 
+						rev:'ress',
 						smn:o.ress
 					};
 					JQD.utils.ssmenu( optRess );
@@ -804,7 +804,7 @@ var JQD = (function($, window, undefined) {
 				$.each(app, function(i) {
 					if ( i != 'admin' )
 					JQD.utils.ssmenu( app[i] );
-					else 
+					else
 					$.each(app[i], function(j) {
 						if( typeof app[i][j].txt !=="undefined" )
 						JQD.utils.ssmenu( app[i][j] );
@@ -813,7 +813,7 @@ var JQD = (function($, window, undefined) {
 				$('li.admn>ul>li>a').removeClass('open_win');
 				//JQD.init.topmnu();
 			},
-			
+
 			/*
 			* JQD.build.btrSpace() le menu deroulant des bureaux secondaires
 			*@type : function
@@ -848,7 +848,7 @@ var JQD = (function($, window, undefined) {
 				// on renvoie rien s'il n'y a pas d'icones enregistrees
 				if ( typeof o.icns =='undefined' || o.icns == null ) return;
 				//else if ( o.icns.length == 0 ) return;
-				
+
 				//les variables
 				var icons = o.icns,
 				nb_icons = $('#desktop a.abs.icon').not('.launch').length,
@@ -856,9 +856,9 @@ var JQD = (function($, window, undefined) {
 				icfd = parseInt(o.opts["iconsfield"])/100, iwh = o.opts["iconsize"];
 
 				//on supprime toute les icones eventuellement presentes
-				if( $('#desktop > a.icon').length > 1 ) 
+				if( $('#desktop > a.icon').length > 1 )
 					$('#desktop > a.icon').each(function(){$(this).remove();});
-				// s'il le bureau est vierge		
+				// s'il le bureau est vierge
 				if( $('#desktop > a.icon').length ==0 )  {
 					$.each( icons.sort( JQD.utils.sortArray ), function(idx, icn) {
 						if (idx == "admin" || idx == "auth" || idx == "addicon" || idx == "doclcs" || idx == "apdesk") return;
@@ -919,7 +919,7 @@ var JQD = (function($, window, undefined) {
 					$('#quicklaunch').remove();
 				}
 			},
-			 
+
 			/*
 			* JQD.build.trash() la corbeille
 			*@type : function
@@ -970,14 +970,14 @@ var JQD = (function($, window, undefined) {
 							// on inserre sur le bureau
 							JQD.save_prefs_dev('PREFS', -1, 'lkhlm');
 							//icnGrp.val()!=''? JQD.save_prefs_dev('PREFS_', 'xx', 'shared') :'';
-							
+
 							if(JQD.options.user.statut=='admin'){
                         	    var gsv = JQD.utils.getSelectValue($(icnGrp));
 
 								var gpChecked=new Array(), myress;
 								$('#icnForm').find("input:checked").each(function (i) {
 									gpChecked[i] = $(this).val();
-								});                            
+								});
 								if(gpChecked.length>0){
                                		icnOpts['groups']=gpChecked;
 									icn.addClass('group');
@@ -995,7 +995,7 @@ var JQD = (function($, window, undefined) {
 							// on ferme le form dialog
 							$('#icondialog').dialog('close');
 						}
-					}) 
+					})
 				),
 				icnFrm = $('<form/>').attr({id:"icnForm"}).append(
 					icnFrmFldst
@@ -1033,7 +1033,7 @@ var JQD = (function($, window, undefined) {
 				 	if ( i == 'gp' ) {
 					//icnGrp.prepend( $('<option/>').attr('value', opts.user.grps.gp).html(opts.user.grps.gp) );
 					$('<option/>').attr('value', opts.user.grps.gp).html(opts.user.grps.gp).insertAfter( icnGrp.children('option:first-child') );
-				 	} 
+				 	}
 				 	else {
 				 	icnGrp.append( $('<optgroup/>').attr('label', i ) );
 				   $.each(opts.user.grps[i], function( ig, vg ) {
@@ -1051,9 +1051,9 @@ var JQD = (function($, window, undefined) {
 			*/
 			settingBg: function(){
 				var setBg=JQD.settingForms();
-				
+
 				var btnSetBg= $('<a class="float_left" id="btnsetbg"/>')
-				.click( 
+				.click(
 					function() {
 						if ( $('#setbg').length ==0 ) setBg.append( $('<div/>').load('core/forms/forms_prefs.php', function(){
 					$( "#tabs" ).tabs({
@@ -1062,7 +1062,7 @@ var JQD = (function($, window, undefined) {
 							if ( parseInt(ui.index)==4 ||  parseInt(ui.index)==3 ) {
 								var ind = parseInt(ui.index),
 								selectIcons = ind==4?'select#dispIcons4' : 'select#dispQuick' ;
-								
+
 								typeof JQD.selectAllApplis !='number' ? JQD.selectAllApplis=1 : JQD.selectAllApplis=0;
 								$.each( JQD.options.apps, function(index, appli) {
 									$(ui.panel).find( selectIcons ).append(
@@ -1083,7 +1083,7 @@ var JQD = (function($, window, undefined) {
 											parseInt(ui.index)==4 ? JQD.selectAllApplis=1 : JQD.selectAllQuick=1 ;
 										}
 										else
-										{ 
+										{
 											 $(ui.panel).find(' option').each(function(){$(this).removeClass('selected').removeAttr('disabled') })
 											parseInt(ui.index)==4 ? JQD.selectAllApplis=0 : JQD.selectAllQuick=0 ;
 										}
@@ -1111,7 +1111,7 @@ var JQD = (function($, window, undefined) {
 				})).appendTo('#desktop');
 						setBg.hasClass('active') ? $('#setbg').find('span.jqd-close').trigger('click') : setBg.animate({ bottom:0, opacity:1 }, 1000 ).addClass('active');
 						$(this).toggleClass('selected');
-					} 
+					}
 				)
 				.insertAfter('#show_desktop');
 			},
@@ -1156,7 +1156,7 @@ var JQD = (function($, window, undefined) {
 			* JQD.utils.message : affiche les messages desktop
 			*@type: Function
 			*@param: t texte du message
-			*@return: 
+			*@return:
 			*@TODO: passer la classe en param : error, info, alert, succes
 			*/
 			message: function( t ) {
@@ -1188,11 +1188,11 @@ var JQD = (function($, window, undefined) {
 				.prepend(
 				$('<img/>').attr({src: o.img}).css({width: o_u.iconsize+'px', height: o_u.iconsize+'px', background: typeof o.color ? o.color :'' }).width( o_u.iconsize ).height(o_u.iconsize)
 				);
-				if( typeof o.owner && o.owner==JQD.options.user.login ) 
-				icon.prepend($('<span/>').addClass('float_right jqd-close').click(function(){ 
+				if( typeof o.owner && o.owner==JQD.options.user.login )
+				icon.prepend($('<span/>').addClass('float_right jqd-close').click(function(){
 					JQD.utils.rmIcon( icon)
 				})
-				//.text('X') 
+				//.text('X')
 				);
 
 				return icon;
@@ -1205,19 +1205,19 @@ var JQD = (function($, window, undefined) {
 			initIcon: function( icon ) {
 				// le menu
 				//@TODO: a passer ailleurs
-				var menuIcon= [ 
-					{'Renommer l\'ic&ocirc;ne':{ 
+				var menuIcon= [
+					{'Renommer l\'ic&ocirc;ne':{
 						onclick:function(menuItem,menu) {
 							 JQD.utils.editIcon($(this) )
-						}, 
-						icon:'core/images/gui/textfield_rename.png ' 
-					}  } , 
-					{'Supprimer l\'ic&ocirc;ne':{ 
+						},
+						icon:'core/images/gui/textfield_rename.png '
+					}  } ,
+					{'Supprimer l\'ic&ocirc;ne':{
 						onclick:function(menuItem,menu) {
-							 if(confirm('Supprimer '+$(this).find('span').text()+' ?')){ JQD.utils.rmIcon($(this) ) ;} 
-						}, 
-						icon:'core/images/gui/delete.gif', 
-						disabled:false 
+							 if(confirm('Supprimer '+$(this).find('span').text()+' ?')){ JQD.utils.rmIcon($(this) ) ;}
+						},
+						icon:'core/images/gui/delete.gif',
+						disabled:false
 					}  } ,
 					{'<div id="icClr"><div style="float:left;">Choisir la couleur:</div></div><br/>':{
 						onclick:function(menuItem,cmenu,e) {
@@ -1230,10 +1230,10 @@ var JQD = (function($, window, undefined) {
 								$t.addClass('swatch-selected');
 							}
 							return false;
-						} 
+						}
 					}
 					}
-				]; 
+				];
 
 				// Desktop icons.
 				icon.draggable({
@@ -1251,16 +1251,16 @@ var JQD = (function($, window, undefined) {
 					// Get the link's target.
 					JQD.init_link_open_win( this );
 				}).contextMenu(menuIcon,{theme:'lcsdesk', //.not('.group') ?
-					beforeShow: function() { 
+					beforeShow: function() {
 						var allClr=['transparent','red','orange','yellow','green','blue','violet','black'];
-						$(this.menu).find('#icClr').each(function() { 
+						$(this.menu).find('#icClr').each(function() {
 							//if( $(this).hasClass('color') ) return ;
 							$.each(allClr, function(i){
-								if ($('#icClr').find( '.'+ allClr[i] ).length == 0 ) 
+								if ($('#icClr').find( '.'+ allClr[i] ).length == 0 )
 									$('#icClr').append( $('<div/>').addClass('swatch '+ allClr[i]).css('backgroundColor',allClr[i]) );
 							});
 							$(this).addClass('color');
-						}); 
+						});
 					}
 				});
 			},
@@ -1279,11 +1279,11 @@ var JQD = (function($, window, undefined) {
 					uTxt = 'de vos ressources personnelles', gTxt = ' le partage de ce lien avec les groupes :',
 					me = $('<p/>'), lgUl = $('<ul id="lgIcn"/>');
 					var dialogCfrm=$('<div/>').attr({id:'dialogCfrm',title:'Supprimer un lien partag&eacute;'}).append(
-						$('<div/>').css({'text-align':'left'}).text('Vous allez supprimer').prepend($('<span/>').addClass('ui-icon ui-icon-alert').css({float:'left', margin:'0 7px 0 0'}) ).append( 
+						$('<div/>').css({'text-align':'left'}).text('Vous allez supprimer').prepend($('<span/>').addClass('ui-icon ui-icon-alert').css({float:'left', margin:'0 7px 0 0'}) ).append(
 							$('<div/>').html('<strong>'+item.text() +'</strong>')
 							/*
 							*/
-							.append( $('<label for="delIcnUsr"/>').text(uTxt) ).prepend( 
+							.append( $('<label for="delIcnUsr"/>').text(uTxt) ).prepend(
 								$('<input type="checkbox"/>').attr({name:'delIcnUsr',id:'delIcnUsr', checked:'checked'}) //,disabled:'disabled'
 							)
 						).append(
@@ -1302,9 +1302,9 @@ var JQD = (function($, window, undefined) {
 								ckb=new Array(), chkbChkd= $('#lgIcn li input:checked'), gru;
 								chkbChkd.each(function (i) {
 									ckb[i] = $(this).attr('name');
-								});                            
+								});
 								gru = chkbChkd.length == $('#lgIcn li input').length ? 'all' : ckb;
-								
+
 								JQD.rm( f, u, gru);
 								item.hasClass('intr') ? item.parents('tr').remove():'';
 			                    $(this).dialog("close");
@@ -1319,7 +1319,7 @@ var JQD = (function($, window, undefined) {
 						$('<li/>').html('<label for="'+v+'">'+v+'</label>').prepend( $('<input type="checkbox"/>').attr({name:v,id:v, checked:'checked'}) ).appendTo(lgUl ) //,disabled:'disabled'
 					});
 					lgUl.appendTo(  $('#txtIcnGrp') );
-								
+
 				} else {
 				item.addClass('icon_trash')
 				.removeClass('abs')
@@ -1343,7 +1343,7 @@ var JQD = (function($, window, undefined) {
 					// On insère dans le <li> la nouvelle valeur du texte
 					itm.find('span').text( txt ).show();
 					editDiv.remove();
-					       
+
 			    }).live("keyup", function(e) {
 			        if(e.keyCode == 13) {
 			          // $(this).trigger("blur");
@@ -1368,7 +1368,7 @@ var JQD = (function($, window, undefined) {
 			    })
    			},
 			/*
-			* JQD.utils.cancel_editIcon : 
+			* JQD.utils.cancel_editIcon :
 			*@type: Function
 			*/
    			cancel_editIcon: function() {
@@ -1455,9 +1455,9 @@ var JQD = (function($, window, undefined) {
 				return this.itm;
 			},
 			/*
-			* JQD.utils.ssmenu: 
+			* JQD.utils.ssmenu:
 			*@type: Function
-			*@param: appl 
+			*@param: appl
 			*@TODO: A revoir
 			*/
 			ssmenu : function( appl ) {
@@ -1476,24 +1476,24 @@ var JQD = (function($, window, undefined) {
 				}
 			},
 			/*
-			* JQD.utils.itemnu: 
+			* JQD.utils.itemnu:
 			*@type: Function
-			*@param: o 
-			*@param: p 
+			*@param: o
+			*@param: p
 			*/
 			itemnu : function( o , p) {
-				var itLi = $('<li>').append( 
+				var itLi = $('<li>').append(
 					$('<a href="#"/>').addClass('open_win '+ o.rev).html('<span>'+ o.txt +'</span>' ).attr({
 						'rel': o.url,
 						'rev': p.rev
-					}).prepend( $('<img/>').attr('src', p.img) ) 
+					}).prepend( $('<img/>').attr('src', p.img) )
 				);
 				return itLi;
 			},
 			/*
-			* JQD.utils.idispIcnForm: 
+			* JQD.utils.idispIcnForm:
 			*@type: Function
-			*@param: opts 
+			*@param: opts
 			*/
 			dispIcnForm: function(opts) {
 				if( !typeof opts ) {
@@ -1509,10 +1509,10 @@ var JQD = (function($, window, undefined) {
 				});
 			},
 			/*
-			* JQD.utils.dialog_mess: 
+			* JQD.utils.dialog_mess:
 			*@type: Function
-			*@param: opts 
-			*@TODO: Verifier utilisation 
+			*@param: opts
+			*@TODO: Verifier utilisation
 			*/
 			dialog_mess: function(opts) {
 				$( "#dialog-message" ).dialog( "destroy" );
@@ -1533,10 +1533,10 @@ var JQD = (function($, window, undefined) {
 
 			},
 			/*
-			* JQD.utils.gqtSelectValue: 
+			* JQD.utils.gqtSelectValue:
 			*@type: Function
-			*@param: slct 
-			*@TODO: Verifier utilisation 
+			*@param: slct
+			*@TODO: Verifier utilisation
 			*/
             getSelectValue: function (slct) {
                 if($(slct).attr('multiple') == false) {
@@ -1549,40 +1549,40 @@ var JQD = (function($, window, undefined) {
                 return optGroup;
             },
 			/*
-			* JQD.utils.isValidEmailAddress: 
+			* JQD.utils.isValidEmailAddress:
 			*@type: Function
-			*@param: emailAddress 
-			*@TODO: Verifier utilisation 
+			*@param: emailAddress
+			*@TODO: Verifier utilisation
 			*/
             isValidEmailAddress: function(emailAddress) {
     			var pattern = new RegExp(/^(("[\w-+\s]+")|([\w-+]+(?:\.[\w-+]+)*)|("[\w-+\s]+")([\w-+]+(?:\.[\w-+]+)*))(@((?:[\w-+]+\.)*\w[\w-+]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][\d]\.|1[\d]{2}\.|[\d]{1,2}\.))((25[0-5]|2[0-4][\d]|1[\d]{2}|[\d]{1,2})\.){2}(25[0-5]|2[0-4][\d]|1[\d]{2}|[\d]{1,2})\]?$)/i);
     			return pattern.test(emailAddress);
-			}                        
+			}
 		},
-		
+
 		/*
 		* JQD.build.infusr : infos user
 		*@type: Function
-		*@param: opts 
-		*@TODO: A optimiser 
+		*@param: opts
+		*@TODO: A optimiser
 		*/
 		infusr: function( oiu ){
 			var uiUlLg = $('<ul/>').addClass('infos_user list_groups'),
 			uiGp = oiu.user.grps ? oiu.user.grps.gp ? oiu.user.grps.gp  : '' : '';
 			if( uiGp!=''){
 				uiUlLg.append( $('<li/>').addClass('group_title').html('Groupe Principal') )
-			 	.append( 
-			 		$('<li/>').addClass('user_link group').append( 
+			 	.append(
+			 		$('<li/>').addClass('user_link group').append(
 				 		$('<a/>').addClass('open_win group').attr({
-				 			href:'../Annu/group.php?filter=' + uiGp,
+				 			href:'../Annu/group.php?filter=' + uiGp+oiu.user.jeton,
 				 			title: 'Voir le groupe '+ uiGp
 				 		}).html(uiGp).prepend( $('<img/>').attr({src:'core/images/annu/16/'+uiGp.toLowerCase()+'.png'}) )
-				 	).prepend(typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_right').append( 
+				 	).prepend(typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_right').append(
 				 		$('<img/>').attr({src: 'core/images/annu/mail.png'}) ).attr({
 				 			href: JQD.options.apps.webmail.smn.compose.to + uiGp+'@'+oiu.srvr.domain,
 				 			title: 'Envoyer un message au groupe '+ uiGp
 				 		}) :''
-				 	) 
+				 	)
 				 );
 			}
 			if ( JQD.options.showGroups == 0 && uiGp=='Eleves') alert("I'm a sovajon and i can't see my groups !");
@@ -1591,35 +1591,35 @@ var JQD = (function($, window, undefined) {
 			 	if ( i != 'gp' ) {
 			 	uiUlLg.append( $('<li/>').addClass('group_title').html( i =='Equipe'? 'Equipe/Classe': i ) );
 			   $.each(oiu.user.grps[i], function( ig, vg ) {
-					uiUlLg.append( $('<li/>').addClass('user_link group').append( 
+					uiUlLg.append( $('<li/>').addClass('user_link group').append(
 				 		$('<a/>').addClass('open_win group iRdtq').attr({
-				 			href:'../Annu/group.php?filter=' + vg,
+				 			href:'../Annu/group.php?filter=' + vg+oiu.user.jeton,
 				 			title: 'Voir le groupe '+ vg
 				 		}).html( vg.replace(i, '').replace(/_/g, ' ') ).prepend( $('<img/>').attr({src:'core/images/annu/16/'+ i.toLowerCase()+'.png'}) )
 				 	).prepend(
-				 		typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_leftt').append( 
+				 		typeof JQD.options.apps.webmail !="undefined" ? $('<a/>').addClass('open_win mail float_leftt').append(
 					 		$('<img/>').attr({
 					 			src:  i=="Equipe"?'core/images/annu/16/equipe_mail.png':'core/images/annu/mail.png'
-					 		}) 
+					 		})
 				 		).attr({
 				 			href: JQD.options.apps.webmail.smn.compose.to + vg+'@'+oiu.srvr.domain,
 				 			title: 'Envoyer un message au groupe '+ vg
 				 		}) : ''
 				 	)
-				 	.prepend( 
-				 		oiu.user.grps.gp =='Profs' && i=="Equipe" ? 
+				 	.prepend(
+				 		oiu.user.grps.gp =='Profs' && i=="Equipe" ?
 				 		$('<a/>').addClass('open_win mail').css({float:'left'}).append( $('<img/>').attr({src: 'core/images/annu/16/classe.png'}) ).attr({
-				 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe'),
+				 			href:'../Annu/group.php?filter=' + vg.replace(/Equipe/,'Classe')+oiu.user.jeton,
 				 			title: 'Voir le groupe '+ vg.replace(/Equipe_/,'Classe ')
-				 		}) : '' ) .prepend( typeof JQD.options.apps.webmail !="undefined" && oiu.user.grps.gp=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append( 
+				 		}) : '' ) .prepend( typeof JQD.options.apps.webmail !="undefined" && oiu.user.grps.gp=='Profs' && i=="Equipe" ? $('<a/>').addClass('open_win mail').append(
 					 		$('<img/>').attr({
 					 			src:  i=="Equipe"?'core/images/annu/24/classe_mail.png':'core/images/annu/mail.png'
-					 		}) 
+					 		})
 				 		).attr({
 				 			href: JQD.options.apps.webmail.smn.compose.to + vg.replace(/Equipe/,'Classe')+'@'+oiu.srvr.domain,
 				 			title: 'Envoyer un message au groupe '+ vg.replace(/Equipe_/,'Classe ')
-				 		}) : '' ) 
-				 	)			 		
+				 		}) : '' )
+				 	)
 			   });
 			 	}
 			 });
@@ -1628,22 +1628,22 @@ var JQD = (function($, window, undefined) {
 				$('<div/>').css({display: 'block'}).addClass('box_trsp_black list_infos_user').append(
 					$('<span/>').addClass('jqd-close float_right')
 				).append( $('<h2/>').html( oiu.user.fullname ) ).append(
-					$('<div/>').addClass('info_connect').html(JQD._('derniere_connexion')+ oiu.user.connect )
-				).append( 
-					//$('<h3/>').addClass('btn_groups triangle_updown down').html( 'Membre des groupes' ) 
-					$('<h3/>').addClass('triangle_updown down').html( 'Membre des groupes' ) 
+					$('<div/>').addClass('info_connect').html(" " )
+				).append(
+					//$('<h3/>').addClass('btn_groups triangle_updown down').html( 'Membre des groupes' )
+					$('<h3/>').addClass('triangle_updown down').html( 'Membre des groupes' )
 				).append(
 					uiDivLg.append( uiUlLg ).append( $('<br/>').css('clear','both') )
 				).append(
-					$('<h3/>').addClass('triangle_updown').html( 'Pages perso' ) 
+					$('<h3/>').addClass('triangle_updown').html( 'Pages perso' )
 				).append(
 					$('<div/>').addClass('block_updown up').append(
-						$('<ul/>').addClass('infos_user').css('display','block').append( 
+						$('<ul/>').addClass('infos_user').css('display','block').append(
 							$('<li/>').addClass('user_link myweb').append(
 								$('<a href="../~'+ oiu.user.uid +'"/>').addClass('open_win')
 								.html('Mon espace perso').prepend(
 									$('<img/>').attr({
-										src: 'core/images/icons/16/network.png', 
+										src: 'core/images/icons/16/network.png',
 										alt: ''
 									}).css({
 										width: '20px',
@@ -1653,11 +1653,11 @@ var JQD = (function($, window, undefined) {
 							)
 						)
 					)
-				).append( 
-					$('<h3/>').addClass('triangle_updown').html( 'Webmail' ) 
+				).append(
+					$('<h3/>').addClass('triangle_updown').html( 'Webmail' )
 				).append(
 					$('<div/>').addClass('block_updown up').append(
-						$('<ul/>').addClass('infos_user').append( 
+						$('<ul/>').addClass('infos_user').append(
 							$('<li/>').addClass('user_link').css({height:'auto'}).append(
 								$('<input type="text"/>').addClass('open_win')
 								.attr({id: 'user_mail', value: oiu.user.email}).css({
@@ -1669,7 +1669,7 @@ var JQD = (function($, window, undefined) {
 							).append(
 								$('<div/>').addClass('info_connect').html('Cliquez sur l\'adresse et appuyez simultanement sur les touches Ctrl + c (Pomme + c pour Mac) pour copier votre adresse courriel')
 							)
-						).append( 
+						).append(
 							$('<li/>').addClass('user_link').append(
 								$('<a href="../Annu/mod_mail.php"/>').attr({
 									title: 'Aller &agrave; la redirection',
@@ -1689,7 +1689,7 @@ var JQD = (function($, window, undefined) {
 				alignY: 'bottom',
 				offsetX: 0,
 				offsetY: 5
-			});	
+			});
 
 			return uiUl;
 		},
@@ -1699,14 +1699,14 @@ var JQD = (function($, window, undefined) {
 		*@return : panneau infos user
 		*/
 		showTeam: function() {
-			// 
+			//
 			$('#LDT').remove();
 			$('<div id="LDT"/>')
 			.addClass('abs')
 			.append(
 				$('<h3/>')
 				.html('LcsDevTeam')
-				.append( $('<span/>').addClass('close ui-icon ui-icon-closethick float_right').click( function() { $('#LDT').remove() }) ) 
+				.append( $('<span/>').addClass('close ui-icon ui-icon-closethick float_right').click( function() { $('#LDT').remove() }) )
 			)
 			.append(
 				$('<ul/>')
@@ -1717,12 +1717,12 @@ var JQD = (function($, window, undefined) {
 				.append( $('<li/>').html('Philippe Leclerc') )
 				.append( $('<li/>').html('Olivier Lecluse') )
 				.append( $('<li/>').html('Dominique Lepaisant') )
-				.append( 
+				.append(
 					$('<li/>').html('<br/>Contact:<br/>').append(
 						$('<a/>').attr({
 							'href': 'mailto:LcsDevTeam@tice.ac-caen.fr&subject=[Lcs-Bureau]'
 						})
-						.html('<pre>LcsDevTeam@tice.ac-caen.fr</pre>') 
+						.html('<pre>LcsDevTeam@tice.ac-caen.fr</pre>')
 					)
 				)
 				.css('display', 'block')
@@ -1731,9 +1731,9 @@ var JQD = (function($, window, undefined) {
 			.slideDown('slow');
 		},
 		/*
-		* JQD.mnuzonurl : 
+		* JQD.mnuzonurl :
 		*@type: Function
-		*@return : 
+		*@return :
 		*/
 		mnuzonurl: function() {
 		// cas du champ d'url navigateur
@@ -1785,7 +1785,7 @@ var JQD = (function($, window, undefined) {
 			$('a.navigator').hover(function(){
 				return false;
 			});
-		
+
 		},
 
 		/*
@@ -1850,17 +1850,17 @@ var JQD = (function($, window, undefined) {
 			JQD.window_flat();
 			win.addClass('window_stack');
 		},
-		
+
 		/*
 		* JQD.rm :  Suppression fichier
 		*@type: Function
 		*@param : file - fichier a supprimer
-		*@param : usr - 
-		*@param : ou - 
-		*@param : force - 
+		*@param : usr -
+		*@param : ou -
+		*@param : force -
 		*@TODO : a transformer en fonction generique
 		*/
-		rm: function(file, usr, ou, force) { 
+		rm: function(file, usr, ou, force) {
 			var force = typeof force ? force : 0;
 			$.ajax({
 				type: "POST",
@@ -1879,15 +1879,15 @@ var JQD = (function($, window, undefined) {
 				},
 				error: function(data,err,errThrown){
 				}
-			});	
+			});
 		},
 
 		/*
 		* JQD.create_notify : Notification
 		*@type: Function
-		*@param : template - fichier a supprimer
-		*@param : vars - 
-		*@param : opts - 
+		*@param : template -
+		*@param : vars -
+		*@param : opts -
 		*@TODO : creer le html notif ici (il est ds index.php)
 		*/
 		create_notify: function( template, vars, opts ){
@@ -1895,12 +1895,14 @@ var JQD = (function($, window, undefined) {
 			var notifContainer = $("#container").notify();
 			return notifContainer.notify("create", template, vars, opts);
 		},
-		
+
 		/*
 		* JQD.notify_forum : Notification Forum_spip
 		*@type: Function
 		*/
 		notify_forum: function(){
+			// verif presence spip
+			if ( typeof JQD.options.apps.spip =="undefined" || JQD.options.apps.spip =="" ) return;
 			$.ajax({
 				type:'GET',
 				url:'core/action/load_spip_notify.php',
@@ -1911,7 +1913,7 @@ var JQD = (function($, window, undefined) {
 					var newidart_a= n_idart.split(' - ');
 					var newidart = parseInt( newidart_a[0].replace(/-/g, '') +newidart_a[1].replace(/\:/g, '') );
 					if(newidart > oldidart){
-						JQD.create_notify("withIcon", 
+						JQD.create_notify("withIcon",
 							{title:'<span style="color:#509fda;">Information Forum</span>', text:data.responseText, icon:'core/images/icons/info.png'},
 							{
 							expires:true,
@@ -1929,26 +1931,26 @@ var JQD = (function($, window, undefined) {
 					}
 				}
 			});
-			
+
 			setTimeout(function(){
 					JQD.notify_forum();
-			},parseInt(JQD.options.prms.notifForumFreq)*60000);	
+			},parseInt(JQD.options.prms.notifForumFreq)*60000);
 		},
 		/*
 		* JQD.notify_wmail : Notification webmail
 		*@type: Function
 		*/
 		notify_wmail: function() {
-			if (typeof JQD.options.apps.webmail =="undefined" ) return; 
+			if (typeof JQD.options.apps.webmail =="undefined" ) return;
 			// if squirrelmail is enable, notify new messages
 			$.get(JQD.options.apps.webmail.notifurl, function(data){
 				if (data != '')
 					JQD.create_notify("withIcon", {
-						title:'Messagerie', 
-						text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>', 
-						icon:'core/images/icons/mailicon.png' 
+						title:'Messagerie',
+						text: data + '<p><span style="text-decoration:underline;">Consulter sa messagerie</span>',
+						icon:'core/images/icons/mailicon.png'
 					},
-					{ 
+					{
 						expires:false,
 						click: function(e,instance){
 						JQD.init_link_open_win('<a title="Webmail" '
@@ -1961,7 +1963,7 @@ var JQD = (function($, window, undefined) {
 			});
 		},
 		testacc: function(){
-			var dAcc= $('<div id="accordion"/>'), 
+			var dAcc= $('<div id="accordion"/>'),
 			blocs = {groups : 'Membre des groupes', mail : 'Webmail',web: 'Espace web'};
 			$.each(blocs, function(i,v) {
 				dAcc.append(
@@ -1971,7 +1973,7 @@ var JQD = (function($, window, undefined) {
 				).accordion()
 			});
 		},
-		
+
 		/*
 		* JQD.buildform : construction des formulaires
 		*@type: Function
@@ -1980,7 +1982,7 @@ var JQD = (function($, window, undefined) {
 			var divFrm = $('<div/>').addClass('jqd_formulaires').append(
 				JQD.bFrm().append( JQD.bFrmUl() )
 			);
-				
+
 		},
 		bFrm : function(opts) {
 			var bForm = $('<form/>').attr({
@@ -2032,19 +2034,19 @@ var JQD = (function($, window, undefined) {
 				close: function(event, ui) {$('#icondialog').hide();},
 			    buttons: {
 			        "Ajouter un lien partag\u00e9": function() {
-						JQD.utils.dispIcnForm({title:'Ajouter un lien partag\u00e9'}) 
+						JQD.utils.dispIcnForm({title:'Ajouter un lien partag\u00e9'})
 					},
 			 		"Fermer": function() {
 						$(this).dialog("close");
 			 		}
 				}
 			});
-			return bdialog;	
+			return bdialog;
 		},
 		/*
 		* JQD.bTable : tableeaux
 		*@type: Function
-		*@param: opts - 
+		*@param: opts -
 		*/
 		bTable: function( opts ) {
 			var esc=opts.tb.esc,
@@ -2071,7 +2073,7 @@ var JQD = (function($, window, undefined) {
 		},
 		bTd: function( optd ,td ) {
 			var tdCtn={
-				img:'<img src='+optd+' style="width:24px;height:24px;" alt="'+optd+'"/>', 
+				img:'<img src='+optd+' style="width:24px;height:24px;" alt="'+optd+'"/>',
 				color:'<span style="display:block;width:24px;height:24px;background:'+optd+'" title="'+optd+'"></span>'};
 			t= typeof tdCtn[td] != 'undefined' && optd!=td ? tdCtn[td] : optd;
 			var btd=$('<td>'+t+'</td>' ).addClass( td ).css({padding:'5px',border:'1px solid #acf','border-width':'0 1px','line-height':'24px'});
@@ -2080,14 +2082,14 @@ var JQD = (function($, window, undefined) {
 		/*
 		* JQD.bTrInit : init des ligne du tableau ressources
 		*@type: Function
-		*@param: tr - 
+		*@param: tr -
 		*/
 		bTrInit: function( tr ) {
 			var bGroups= tr.find('td:last-child').text().split(',');
 			tr.find('td:eq(0) img').click(function(){
 				tr.addClass('mod');
 				JQD.utils.dispIcnForm({title:'Modifier un lien partag\u00e9'}) ;
-				$('#icnForm').addClass('mod').append( 
+				$('#icnForm').addClass('mod').append(
 					$('<input type="hidden"/>').attr({id:'trId',value:tr.attr('id') }) );
 				$('#icnttl').attr('value',tr.find('td.txt').text());
 				$('#icnurl').attr('value',tr.find('td.url').text());
@@ -2097,7 +2099,7 @@ var JQD = (function($, window, undefined) {
 				});
 				$.each(bGroups, function(bG) {
 					$('input[type="checkbox"][value="'+bGroups[bG]+'"]').attr('checked','checked')
-				});	
+				});
 			});
 			tr.find('td:eq(1) img').each(function(){
 				var tdClose=$(this).parent('td');
@@ -2127,19 +2129,19 @@ var JQD = (function($, window, undefined) {
 			var tBd = optTable.ctn.find('tbody');
 			optTable.ctn.find('tbody tr').each(function(i){
 				var trEdit=$(this),trId=$(this).attr('id');
-				$(this).prepend( 
+				$(this).prepend(
 					$('<td/>').css({'line-height':'30px','font-size':'28px'})
-					.append( $('<img src="core/images/gui/delete.gif"/>') ) 
-				).prepend( 
+					.append( $('<img src="core/images/gui/delete.gif"/>') )
+				).prepend(
 					$('<td/>').css({'line-height':'36px'})
-					.append(  $('<img src="core/images/gui/link_edit.png"/>') ) 
+					.append(  $('<img src="core/images/gui/link_edit.png"/>') )
 				);
 				//
 				JQD.bTrInit( $(this) );
 			});
 			JQD.bDialog(optTable);
-			
-		},			
+
+		},
 		/*
 		* JQD.save_prefs_dev : sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].json
 		*@type: Function
@@ -2150,7 +2152,7 @@ var JQD = (function($, window, undefined) {
 		*/
 		save_prefs_dev: function(koa, ki, ou) {
 			var optionIcons = [];
-			$('#desktop a.icon').not('.group').each(function() { 
+			$('#desktop a.icon').not('.group').each(function() {
 				var el_a=$(this);
 				optionIcons.push({
 					txt 	: el_a.text(),
@@ -2163,7 +2165,7 @@ var JQD = (function($, window, undefined) {
 					color : el_a.find('img').css('backgroundColor'),
 					img 	: el_a.find('img').attr('src'),
 					pcLeft 	: ( (el_a.position().left * 100)/$('#desktop').width() ).toFixed(2)
-				}) 
+				})
 			});
 			$.ajax({
 				type: "POST",
@@ -2195,7 +2197,7 @@ var JQD = (function($, window, undefined) {
 				dataType: "json",
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					alert("XMLHttpRequest="+XMLHttpRequest.responseText+"\ntextStatus="+textStatus+"\nerrorThrown="+errorThrown);
-						return; 
+						return;
 				},
 				complete : function(data, status) {
 					if( status.match('error') ){
@@ -2203,7 +2205,7 @@ var JQD = (function($, window, undefined) {
 					//var r = JSON.parse( data.responseText );
 					JQD.utils.message(' Vos pr&eacute;f&eacute;rences ont &eacute;t&eacute; enregistr&eacute;es');
 				}
-			});	
+			});
 		},
 		/*
 		* JQD.save_icon : sauvegarde des prefs - fichier /home/[user]/Profile/PREFS_[user].json
@@ -2229,7 +2231,7 @@ var JQD = (function($, window, undefined) {
                             // on inserre dans le tableau d'options
                             // si on est en mode modification, on recupere l'id de la ligne du tableau
                             opts.icon['name']= typeof opts.trId ? opts.trId : JQD.tmpfile;
-                            
+
                            	var bTrNew = JQD.bTr( opts.icon, 'rev iconsize left top name' ).prepend($('<td/>').css({'line-height':'24px'}).append(  $('<img src="core/images/gui/delete.gif"/>') ) ).prepend($('<td/>').append(  $('<img src="core/images/gui/link_edit.png"/>') ) );
                             if( typeof opts.mode && typeof $('#trId') && opts.mode=='mod') {
                             	 $('#tabDialog table tbody').find('tr.mod').animate({opacity:0},1000,function(){
@@ -2248,7 +2250,7 @@ var JQD = (function($, window, undefined) {
 				},
 				complete : function(data, status) {
 				}
-			});	
+			});
 		},
 
 		/*
@@ -2260,12 +2262,12 @@ var JQD = (function($, window, undefined) {
 		*@TODO: A optimiser
 		*/
 		buildwin: function(url, text, title, imgsrc) {
-			
+
 			var win = 'win-'+Math.random().toString().substring(2);
 			var nb_win = $('.window:visible').length;
 			p_left = p_top = nb_win*25;
 			if(!imgsrc || imgsrc=="") imgsrc='core/images/icons/desktop_24.png';
-		
+
 			// Construction de la fenetre
 			var self      = this;
 			this.img      = $('<img />');
@@ -2280,16 +2282,16 @@ var JQD = (function($, window, undefined) {
 			this.prevnav    = $('<a href=\"#\"/>');
 			this.barnav     = $('<span class=\"float_left window_barnav\"/>');
 			this.top      = $('<div/>');
-		
+
 			this.ctnt     = $('<div/>');
 			this.main     = $('<div/>');
 			this.iframe   = $('<iframe src="" name="ifr_lcs_'+win+'" src=\"" id="iframe_lcs_'+win+'"/>');
 			this.spinn    = $('<div class="lcspinner" id="lcspinner"/>');
-		
+
 			this.bttm     = $('<div class=\"abs window_bottom\"/>');
-		
+
 			this.inner    = $('<div/>');
-		
+
 			this.icondock =  $('<li id="icon_dock_lcs_'+win+'">') //onglet de la barre des taches
 			.append(
 				$('<a/>').attr('href', '#window_lcs_'+win)
@@ -2313,17 +2315,17 @@ var JQD = (function($, window, undefined) {
 				}).mouseout( function() {
 					$(this).find('span.close').hide();
 				});
-			
+
 			this.navigate =  $('<div/>').addClass('float_left').css({position: 'relative'})
 				.append($('<input type="text"/>').attr({id: 'wp_url', name: 'wp_url'}))
 				.append(
 					$('<img/>').attr('src', 'core/images/gui/arrow-right-blue_16.png')
 					.css({position:'absolute',top:'3px',right:'-2px',display:'none'})
 				);
-			// on inhibe les menus ouverts ?? 
+			// on inhibe les menus ouverts ??
 			// Utilite a controler
 			JQD.utils.clear_active();
-			
+
 			// la fenetre
 			this.win = $('<div id="window_lcs_'+win+'"/>').addClass('abs window') // la fenetre
 				.append(this.inner.addClass('abs window_inner')
@@ -2348,9 +2350,9 @@ var JQD = (function($, window, undefined) {
 								.dblclick(function() {
 									// Traverse to the close button, and hide its taskbar button.
 									$($(this).closest('div.window_top')
-										.find('a.window_close').attr('href')).hide('fast');					
+										.find('a.window_close').attr('href')).hide('fast');
 									// Close the window itself.
-									$(this).closest('div.window').hide().find('iframe').attr('src',' ');		
+									$(this).closest('div.window').hide().find('iframe').attr('src',' ');
 									// Stop propagation to window's top bar.
 									return false;
 								})
@@ -2382,10 +2384,10 @@ var JQD = (function($, window, undefined) {
 				})
 				.addClass('window_stack')
 				.appendTo('#desktop').removeAttr('style').show().animate({'top': '+='+p_top, 'left' : '+='+p_left},100);
-				
+
 				// insertion de l'onglet dans la barre des taches
-				this.icondock.appendTo('#dock').show(); 
-		
+				this.icondock.appendTo('#dock').show();
+
 				// passage des onglets en icones si trop d'onglets
 				var x_d = ($('#desktop').width() -200);
 				var lastli=$('ul#dock li:last-child').position().left+$('ul#dock li:last-child').width();
@@ -2400,12 +2402,12 @@ var JQD = (function($, window, undefined) {
 							t = $(this).attr('title');
 							var offset = $(this).closest('ul').offset();
 							var lft = parseInt($(this).parent('li').position().left);
-							$("#desktop").append("<p id='screenshot' class='abs'></p>").find('#screenshot').html(t);  
+							$("#desktop").append("<p id='screenshot' class='abs'></p>").find('#screenshot').html(t);
 							var wtip = $("#screenshot").width()/2;
 							$("#screenshot")
 								.css("bottom","5px")
 								.css("left",(lft  - wtip+12) + "px")
-								.fadeIn("fast");                                              
+								.fadeIn("fast");
 						},
 						function(){
 							$("#screenshot").remove();
@@ -2415,9 +2417,9 @@ var JQD = (function($, window, undefined) {
 				}else {
 					$(this).removeAttr('style').removeClass('bar-bottom-icon').find('a').removeAttr('style');
 				}
-				
+
 			// barre de navigation
-			//JQD.insertBarNav(this.iframe,  win );		
+			//JQD.insertBarNav(this.iframe,  win );
 			this.barnav.append(
 				$('<button/>').addClass( 'button' )
 				.append(
@@ -2487,14 +2489,14 @@ var JQD = (function($, window, undefined) {
 			// traitement du iframe
 			self.count_load = 0 ;
 			this.iframe.attr('src', url).load(function()  {
-				
+
 				if ( url.match(/squirrelmail/g) ) {
 					//alert('squirrelmail');
 					$(this).show();
 					$('#lcspinner').remove();
 					return false;
 				}
-					
+
 				// on ne fait rien si gepi ou si on est sur un autre serveur
 				if ( url.match(/^http/) && !url.match(document.location.host)) {
 					$('#lcspinner').remove();
@@ -2508,14 +2510,14 @@ var JQD = (function($, window, undefined) {
 				// cas du choix "largeur de l'appli contenue"
 				if( JQD.options.opts.winsize == 'content' && self.count_load == 0 && !url.match(/^http/) )
 				{
-					var tcw = $(this).closest('.window').css('min-width', '650px').width( el.width() + 25 ), 
+					var tcw = $(this).closest('.window').css('min-width', '650px').width( el.width() + 25 ),
 					ww = tcw.width(), dw = $(document).width(), wr = tcw.offset().left+ww,
 					wh = tcw.height(), dh = $('#desktop').height(), wb = tcw.offset().top+wh;
-					ww > dw ? tcw.css({left:0,width:'100%'}) : wr>dw ? tcw.css({left:0}) : ''; 
-					wh > dh ? tcw.css({top:0,height:'100%'}) : wb>dh ? tcw.css({top:0}) : ''; 
+					ww > dw ? tcw.css({left:0,width:'100%'}) : wr>dw ? tcw.css({left:0}) : '';
+					wh > dh ? tcw.css({top:0,height:'100%'}) : wb>dh ? tcw.css({top:0}) : '';
 				}
 				// cas du choix perso
-				if( JQD.options.opts.winsize == 'perso' && self.count_load == 0 ) 
+				if( JQD.options.opts.winsize == 'perso' && self.count_load == 0 )
 				{
 					var tcw = $(this).closest('.window').width( (JQD.options.win_w || '66')+'%' ).height( (JQD.options.win_h || '66')+'%' )
 				}
@@ -2525,10 +2527,10 @@ var JQD = (function($, window, undefined) {
 				// et on affiche
 				$(this).show();
 				self.count_load++;
-					
+
 				// on essaie de fixer le bug en cas de clic sur une ancre dans une page iframe
 				//el.find('body').localScroll();
-				
+
 				// actions sur les liens contenus
 				el.find('a').each(function(){
 					if ($(this).attr('target')=='_blank') {// ouverture des target=_blank ds une fenetre du bureau
@@ -2544,7 +2546,7 @@ var JQD = (function($, window, undefined) {
 							'href':cible.replace('mailto:',document.location.href.replace('desktop/','')+JQD.options.apps.webmail.smn.compose.to),
 							'rel':JQD.options.apps.webmail.rev
 						}).addClass('open_win ext_link');
-					} 
+					}
 				});
 				el.find('a.open_win').each(function(){
 					$(this).click(function(){
@@ -2558,11 +2560,11 @@ var JQD = (function($, window, undefined) {
 		/*
 		* JQD.init_link_open_win : controle - modif des liens ouvrant une fenetre
 		*@type: Function
-		*@param: el 
+		*@param: el
 		*@TODO: A optimiser
 		*/
 		init_link_open_win: function(el){
-			if (el.url  ) 
+			if (el.url  )
 			{
 				var url = el.url.replace('desktop\/',''), title=el.title;
 			}
@@ -2577,7 +2579,7 @@ var JQD = (function($, window, undefined) {
 					title = text;
 				}
 			}
-			if( url.match(/gepi/g) || url.match(/Claroline/g) ) {
+			if( url.match(/gepi/g) || url.match(/Claroline/g) || url.match(/claro/g) || url.match(/sacoche/g) ) {
 				window.open(url);
 				return false;
 			}
@@ -2610,7 +2612,7 @@ var JQD = (function($, window, undefined) {
 		/*
 		* JQD.pgaccueil :appel de la page d'accueil
 		*@type: Function
-		*@param: opts 
+		*@param: opts
 		*@TODO: A optimiser
 		*/
 		pgaccueil: function(opts) {
@@ -2650,10 +2652,10 @@ var JQD = (function($, window, undefined) {
 		*@TODO:  A REVOIR ENTIEREMENT
 		*/
 		desktop_space: function(){
-			// gestion des bureaux secondaires 
+			// gestion des bureaux secondaires
 			var left_o = $('#desktop').width(),
 			inettuts = $('<div id="inettuts"/>').addClass('abs').append(
-				$('<iframe/>').attr({name: 'ifr_iLcs'}).css({width:'100%', height:'100%'}) 
+				$('<iframe/>').attr({name: 'ifr_iLcs'}).css({width:'100%', height:'100%'})
 			).prependTo('body'),
 			monlcs = $('<div id="monLcs"/>').addClass('abs').append(
 				$('<iframe/>').attr({name: 'ifr_lcs_monlcs'}).css({width:'100%', height:'100%'})
@@ -2719,9 +2721,9 @@ var JQD = (function($, window, undefined) {
 					return;
 				}
 			});
-			
+
 		},
-		 
+
 		/*
 		* JQD.init_docks : Quicklaunch (Dock MacOs)
 		*@type: function
@@ -2730,10 +2732,10 @@ var JQD = (function($, window, undefined) {
 			var x_d = ($('#desktop').width() - $('#quicklaunch').width())/2;
 			$('#quicklaunch').css("left", x_d+"px").each(function() {
 				$.each($(this).find('li a'), function() {
-					
+
 					var x = parseInt($(this).width());
 					var y = parseInt($(this).height());
-							
+
 					$(this).data("init_w", x);
 					$(this).data("init_h", y);
 					$(this).data("new_w", x * 2);
@@ -2742,12 +2744,12 @@ var JQD = (function($, window, undefined) {
 				$(this).find('a').hover( function(e){
 					var offset = $(this).closest('ul').offset();
 					var nel = parseInt($(this).parent('li').index());
-					$("#desktop").append("<p id='screenshot' class='abs'>"+ this.title +"</p>");  
+					$("#desktop").append("<p id='screenshot' class='abs'>"+ this.title +"</p>");
 					var wtip = $("#screenshot").width()/2;
 					$("#screenshot")
 						.css("bottom","54px")
 						.css("left",(parseInt(offset.left) + (26*nel) - wtip+12) + "px")
-						.fadeIn("fast");                                              
+						.fadeIn("fast");
 				},
 				function(){
 					$("#screenshot").remove();
@@ -2793,7 +2795,7 @@ var JQD = (function($, window, undefined) {
 		*@param: args
 		*/
 		_:function(str, args){
-     	   return $.i18n('jqd', str, args); 
+     	   return $.i18n('jqd', str, args);
 		},
 		/*
 		* JQD.connect : Affichage du formulaire de login
@@ -2816,7 +2818,7 @@ var JQD = (function($, window, undefined) {
 				JQD.mk(  opts  );
 				setTimeout(function(){
 						JQD.notify_forum();
-				},20000);	
+				},20000);
 			}
 		},
 		/*
