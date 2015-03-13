@@ -61,8 +61,8 @@ if ($_SESSION['cequi']!="prof")
 <?php
 //recherche des groupes cours
 $ind=count($classe);
-include ("/var/www/lcs/includes/user_lcs.inc.php");
-include ("/var/www/lcs/includes/functions.inc.php");
+include ("/var/www/lcs/includes/headerauth.inc.php");
+include ("/var/www/Annu/includes/ldap.inc.php");
 list($user, $groups)=people_get_variables($_SESSION['login'], true);
 if ( count($groups) )
     {

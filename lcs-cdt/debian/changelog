@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~12) Lcs; urgency=low
+
+  * delete include file user_lcs.inc.php  
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 13 Mar 2015 15:32:17 +0100
+
 lcs-cdt (2.4.10.~11) Lcs; urgency=low
 
   * fix rights on tree

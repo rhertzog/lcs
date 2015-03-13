@@ -14,8 +14,8 @@ session_name("Lcs");
 if (isset($_SESSION['saclasse']))
     unset($_SESSION['saclasse']);
 // Inclusion des fonctions de l'API-LCS
-include ("/var/www/lcs/includes/user_lcs.inc.php");
-include ("/var/www/lcs/includes/functions.inc.php");
+include ("/var/www/lcs/includes/headerauth.inc.php");
+include ("/var/www/Annu/includes/ldap.inc.php");
 include ("./Includes/functions2.inc.php");
 
 //logout si perte session
