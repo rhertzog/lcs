@@ -96,7 +96,6 @@ if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
 #
 # Determination du groupe principal de l'utilisateur connecte
 #
-#list ($idpers, $login)= isauth();
 $group=people_get_group ($login);
 #
 # TimeStamp

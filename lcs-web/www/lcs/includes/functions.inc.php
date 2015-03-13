@@ -60,50 +60,6 @@ include ("/var/www/lcs/includes/xoft.php");
         return $result[0];
     }
 
-    function dispstats($idpers)
-    {
-       global $authlink, $DBAUTH;
-
-        if ($idpers):
-            /* Renvoie le nombre de connexions */
-            //$result=mysql_db_query("$DBAUTH","SELECT stat FROM personne WHERE id=$idpers", $authlink);
-	    	if (!@mysql_select_db($DBAUTH, $authlink))
-    			die ("S&#233;lection de base de donn&#233;es impossible.");
-			$idpers=mysql_real_escape_string($idpers);
-	    	$query="SELECT stat FROM personne WHERE id=$idpers";
-	    	$result=@mysql_query($query,$authlink);
-            if ($result && @mysql_num_rows($result)):
-                $stat=@mysql_result($result,0,0);
-                @mysql_free_result($result);
-            else:
-                $stat="0";
-            endif;
-            return $stat;
-        endif;
-     }
-
-     function displogin ($idpers)
-     {
-       global $authlink, $DBAUTH;
-
-        if ($idpers):
-            /* Renvoie le timestamp du dernier login */
-            //$result=mysql_db_query("$DBAUTH","SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers", $authlink);
-	    if (!@mysql_select_db($DBAUTH, $authlink))
-    		die ("S&#233;lection de base de donn&#233;es impossible.");
-		$idpers=mysql_real_escape_string($idpers);
-	    $query="SELECT DATE_FORMAT(last_log,'%d/%m/%Y &agrave; %T' ) FROM personne WHERE id=$idpers";
-        $result=@mysql_query($query,$authlink);
-        if ($result && @mysql_num_rows($result)):
-        	$der_log=@mysql_result($result,0,0);
-            @mysql_free_result($result);
-         else:
-			$der_log="";
-		endif;
-            return $der_log;
-        endif;
-     }
-
      function set_act_login ($idpers)
      {
        global $authlink, $DBAUTH;
