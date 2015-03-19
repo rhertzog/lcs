@@ -1,4 +1,12 @@
 <?php
+session_name("Lcs");
+session_start();
+if (! isset($_SESSION['login']))  {
+echo "<script type='text/javascript'>";
+echo 'alert("Suite \340 une p\351riode d\'inactivit\351 trop longue, votre session a expir\351 .\n\n Vous devez vous r\351authentifier");';
+echo 'location.href ="../../lcs/logout.php"</script>';
+exit;
+}
 /**
  * index.php
  * Ce script fait partie de l'application GRR
@@ -283,8 +291,13 @@ else if (getSettingValue('sso_statut') == 'lcs')
 {
   include LCS_PAGE_AUTH_INC_PHP;
   include LCS_PAGE_LDAP_INC_PHP;
-  list ($idpers,$login) = isauth();
-  if ($idpers) {
+  //modif suppr isauth()
+  session_name("Lcs");
+  @session_start();
+  $login="";
+  if (isset($_SESSION['login'])) $login=$_SESSION['login'];
+  session_write_close();
+  if ($login!="") {
       list($user, $groups)=people_get_variables($login, true);
       $lcs_tab_login["nom"] = $user["nom"];
       $lcs_tab_login["email"] = $user["email"];

@@ -655,6 +655,8 @@ function grr_opensession($_login, $_password, $_user_ext_authentifie = '', $tab_
     // Session starts now
     session_name(SESSION_NAME);
     @session_start();
+   //modif suppr isauth() 
+   session_regenerate_id(); 
     // Is this user already connected ?
     $sql = "select SESSION_ID from ".TABLE_PREFIX."_log where SESSION_ID = '" . session_id() . "' and LOGIN = '" . protect_data_sql($_login) . "' and now() between START and END";
     $res = grr_sql_query($sql);

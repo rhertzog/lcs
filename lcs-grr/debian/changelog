@@ -1,3 +1,9 @@
+lcs-grr (2.4.10~3) Lcs; urgency=low
+
+  * delete function isauth() 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 19 Mar 2015 10:59:32 +0100
+
 lcs-grr (2.4.10~2) Lcs; urgency=low
 
   * fix rights on tree
