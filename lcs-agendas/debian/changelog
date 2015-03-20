@@ -1,3 +1,9 @@
+lcs-agendas (2.4.10~3) Lcs; urgency=low
+
+  * delete function isauth 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Mar 2015 10:23:14 +0100
+
 lcs-agendas (2.4.10~2) Lcs; urgency=low
 
   * fix security rules

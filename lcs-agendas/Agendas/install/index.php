@@ -1,7 +1,11 @@
 <?php
+session_name("Lcs");
+  @session_start();
+  $login="";
+  if (isset($_SESSION['login'])) $login=$_SESSION['login'];
+  session_write_close();
 include ("/var/www/lcs/includes/headerauth.inc.php");
 include ("/var/www/Annu/includes/ldap.inc.php");
-list ($idpers, $login)= isauth();
 
 if (ldap_get_right("lcs_is_admin",$login)!="Y") {
   die (gettext("<BR>Cette application n&eacute;cessite une op&eacute;ration de maintenance. Pour l'effectuer, un administrateur LCS doit acc&eacute;der &agrave; l'application Agendas "));
