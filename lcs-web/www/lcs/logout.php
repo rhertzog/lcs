@@ -1,5 +1,5 @@
 <?php
-/* lcs/logout.php version du : 30/01/2015*/
+/* lcs/logout.php version du : 19/03/2015*/
 require ("./includes/headerauth.inc.php");
 // Liste des applis installees
 $spip=$squirrelmail=$roundcube="";
@@ -10,16 +10,8 @@ if ($result)
 else
 	die ("param&#232;tres absents de la base de donn&#233;es");
 mysql_free_result($result);
-// Logout LCS session
-list ($idpers,$login)= isauth();
-close_session($idpers);
-//Destruction session
-session_name("Lcs");
-@session_start();
-// On detruit toutes les variables de session
-$_SESSION = array();
-// On detruit la session sur le serveur.
-session_destroy();
+// Close session LCS
+close_session();
 // HTML Header
 $html = "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n";
 $html .= "<html>\n";

@@ -3,7 +3,7 @@
    Projet LcSE3
    Equipe Tice academie de Caen
    Distribue selon les termes de la licence GPL
-   Derniere modification : 15/05/2014
+   Derniere modification : 19/03/2015
    ============================================= */
 include ("./includes/headerauth.inc.php");
 include ("../Annu/includes/ldap.inc.php");
@@ -19,11 +19,7 @@ if ( isset($_SESSION['login']) && isset($_COOKIE['LCSuser'])) {
 $_SESSION = array();
 // On detruit la session sur le serveur.
 session_destroy();
-
-if ( is_dir ("/usr/share/lcs/swekey"))
-    include_once '/usr/share/lcs/swekey/my_login_verify.php';
-
- //init variables
+//init variables
 $error=$login=0;
 // Purifier
 if (count($_POST)>0 || count($_GET)>0 ) {
@@ -49,11 +45,7 @@ if ($login) {
     $ip_src = $tmp[1];
     $timestamp = $tmp[2];
     $timewait = $tmp[3];
-    $timetotal= $timewait+$timestamp+$MaxLifeTime;
-    //verification swekey
-    if (file_exists ("/usr/share/lcs/swekey/my_login_verify.php"))
-         $test_swekey= SwekeyLoginVerify($login);
-    else $test_swekey=true;
+    $timetotal= $timewait+$timestamp+$MaxLifeTime;    
     // Verification de la validite de la source IP et du du TimeStamp
     if ( $ip_src != remote_ip() && time() < $timetotal ) {
          $error = 1;
@@ -61,8 +53,6 @@ if ($login) {
          $error = 2;
     }  elseif ( $ip_src != remote_ip() && time() > $timetotal ) {
          $error = 3;
-    } elseif ($test_swekey == false) {
-         $error = 5;
     } elseif ( !open_session( mb_strtolower($login), $pass, $string_auth) ) {
          $error = 4;
     }
@@ -77,12 +67,7 @@ if ($login) {
          // Redirection vers la page d'authentification
          header("Location:auth.php?error=$error");
          exit;
-    } else {
-        // demarrage session
-        session_name("Lcs");
-        @session_start();
-        $_SESSION['login'] = $login;
-        $_SESSION['token'] = rand();
+    } else {        
         // Log en cas de succes
         $fp=fopen($logpath."/acces.log","a");
         if($fp) {
@@ -124,7 +109,7 @@ header_crypto_html("...::: Authentification LCS :::...");
                 <table border='0'>
                         <tr>
                                 <td>Identifiant :&nbsp;</td>
-                                <td><input type="text" name="login" size="20" maxlength="30" autocomplete="off" /><br /></td><td id="swekey" ></td>
+                                <td><input type="text" name="login" size="20" maxlength="30" autocomplete="off" /><br /></td>
                         </tr>
                         <tr>
                                 <td>Mot de passe :&nbsp;</td>
@@ -158,9 +143,6 @@ switch ($error) {
                 break;
         case "4" :
                 echo "<div class='alert_msg'>Erreur d'authentification !</div> ";
-                break;
-        case "5" :
-                echo "<div class='alert_msg'>Ce compte n&#233;cessite une swekey  !</div> ";
                 break;
         default :
 }

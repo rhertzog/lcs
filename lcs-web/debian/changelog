@@ -10,6 +10,8 @@ lcs-web (2.4.10~10) Lcs; urgency=low
   * Fix ntpdate cron task with -u option
   * Remove idpers from LcSe.pm, function acces_btn_admin...
   * Remove functions dispstats and displogin from functions.inc.php
+  * Modify open_session and close_session functions in functions.inc.php
+  * Remove swekey
 
   [ Philippe Leclerc ]
   * Fix notices php in /var/www 
@@ -65,7 +67,7 @@ lcs-web (2.4.10~10) Lcs; urgency=low
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Mar 2015 15:19:46 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Mar 2015 12:56:48 +0200
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
