@@ -1,3 +1,9 @@
+lcs-desktop (2.4.10~2) Lcs; urgency=low
+
+  * open agendas in new tab because of mixed content 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 20 Mar 2015 09:47:06 +0100
+
 lcs-desktop (2.4.10~1) Lcs; urgency=low
 
   * delete idpers and isauth()

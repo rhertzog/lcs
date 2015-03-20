@@ -2579,7 +2579,7 @@ var JQD = (function($, window, undefined) {
 					title = text;
 				}
 			}
-			if( url.match(/gepi/g) || url.match(/Claroline/g) || url.match(/claro/g) || url.match(/sacoche/g) ) {
+			if( url.match(/gepi/g) || url.match(/Claroline/g) || url.match(/claro/g) || url.match(/sacoche/g)  || url.match(/agendas/g) ) {
 				window.open(url);
 				return false;
 			}
