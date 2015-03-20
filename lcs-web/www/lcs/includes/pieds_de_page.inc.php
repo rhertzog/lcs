@@ -4,11 +4,5 @@
   Copyleft &copy; 2001-2009 <?php echo "$Nom_Appli"; ?> Version : <?php echo $VER ; ?>
 </div>
 <script language='Javascript' type='text/javascript' src='../lcs/includes/wz_tooltip.js'></script>
-<?
-if ( is_dir ("/usr/share/lcs/swekey")) {
-include "/usr/share/lcs/swekey/my_integration.php";
-echo SwekeyIntegrationScript();
-}
-?>
 </body>
 </html>
