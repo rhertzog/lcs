@@ -88,6 +88,7 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
 					/usr/share/lcs/scripts/mkSlapdConf.sh
             fi
             # End update for 2.4.9.6 version
+            # End update for 2.4.10 version
             # End updates package
 				rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
             # 	   
