@@ -182,11 +182,12 @@ if($is_lcs_plugin=='yes') {
   include LCS_PAGE_LDAP_INC_PHP;
 	$login="";
         if (! empty($_COOKIE["Lcs"])) {
-           require_once ("/var/www/lcs/includes/functions.inc.php");
            # Search login
            $file="/var/lib/php5/sess_".$_COOKIE['Lcs'];
-           $ch= mb_split('"',file_get_contents ($file));
-           $login=$ch[1];
+           if (is_readable($file)) {
+	   	$ch= mb_split('"',file_get_contents ($file));
+           	$login=$ch[1];
+	   }
         }
 }
 
