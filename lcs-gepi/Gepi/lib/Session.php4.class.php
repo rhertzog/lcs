@@ -648,9 +648,8 @@ class Session {
 		global $DBAUTH,$HTTP_COOKIE_VARS,$authlink,$dbHost,$dbUser,$dbPass,$db_nopersist,$dbDb;
 		include LCS_PAGE_AUTH_INC_PHP;
 		include LCS_PAGE_LDAP_INC_PHP;
-		list ($idpers,$login) = isauth();
 		*/
-		global $login, $idpers;
+		global $login;
 
 		$DBAUTH = $GLOBALS['DBAUTH'];
 		$HTTP_COOKIE_VARS = $GLOBALS['HTTP_COOKIE_VARS'];
@@ -661,7 +660,7 @@ class Session {
 		$db_nopersist = $GLOBALS['db_nopersist'];
 		$dbDb = $GLOBALS['dbDb'];
 
-		if ($idpers) {
+		if ($login!="") {
 			list($user, $groups)=people_get_variables($login, false);
 			#TODO: Utiliser les infos des lignes ci-dessous pour mettre à jour
 			# les informations de l'utilisateur dans la base.
