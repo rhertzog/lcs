@@ -87,13 +87,13 @@ if ($ret_val== 0)
 $url=explode('/',$urlmajmod);
 switch ($url[count($url)-2])
     {
-    case "modulesLcsqueeze":
+    case "modulesLcswheezy":
         $urlmaj = 'stable';
         break;
-    case "modulesLcsqueezeTesting":
+    case "modulesLcswheezyTesting":
         $urlmaj = 'testing';
         break;
-    case "modulesLcsqueezeXP":
+    case "modulesLcswheezyXP":
         $urlmaj = 'exp&#233;rimentale';
         break;
     }
