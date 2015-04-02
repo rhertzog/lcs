@@ -127,41 +127,6 @@ INSERT INTO `params` (`id`, `name`, `value`, `srv_id`, `descr`, `cat`) VALUES
 (83, 'ldap_master_server', '@@LDAP_MASTER_SERVER@@', 0, 'Adresse du serveur LDAP maitre', 10),
 (84, 'ldaprid', '@@LDAP_RID@@', 0, 'Identificateur de replica', 10);
 -- --------------------------------------------------------
-
---
--- Structure de la table `personne`
---
-
-CREATE TABLE IF NOT EXISTS `personne` (
-  `id` smallint(5) NOT NULL auto_increment,
-  `last_log` varchar(14) default NULL,
-  `act_log` varchar(14) default NULL,
-  `login` varchar(60) NOT NULL default '',
-  `stat` smallint(6) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 ;
-
-
--- --------------------------------------------------------
-
---
--- Structure de la table `sessions`
---
-
-CREATE TABLE IF NOT EXISTS `sessions` (
-  `id` smallint(5) unsigned NOT NULL auto_increment,
-  `sess` varchar(20) NOT NULL default '',
-  `mdp` varchar(20) NOT NULL default '0',
-  `idpers` smallint(5) unsigned NOT NULL default '0',
-  `remote_ip` varchar(32) default NULL,
-  PRIMARY KEY  (`id`),
-  UNIQUE KEY `id_2` (`id`,`sess`),
-  KEY `id` (`id`,`sess`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 ;
-
-
--- --------------------------------------------------------
-
 --
 -- Structure de la table `statusages`
 --
@@ -191,15 +156,3 @@ CREATE TABLE IF NOT EXISTS `redirmail` (
   `remote_ip` text NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1  ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `swekey`
---
-
-CREATE TABLE IF NOT EXISTS `swekey` (
-`login` varchar(32) NOT NULL,
-`id_swekey` varchar(32) NOT NULL,
-KEY `id_swekey` (`id_swekey`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
