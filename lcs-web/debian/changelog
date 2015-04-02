@@ -18,6 +18,7 @@ lcs-web (2.4.10~10) Lcs; urgency=low
   * Remove functions dispstats and displogin from functions.inc.php
   * Modify open_session and close_session functions in functions.inc.php
   * Remove swekey
+  * Remove tables sessions and personne
 
   [ Philippe Leclerc ]
   * Fix notices php in /var/www 
@@ -73,7 +74,7 @@ lcs-web (2.4.10~10) Lcs; urgency=low
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 20 Mar 2015 12:56:48 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Mar 2015 16:14:58 +0200
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
