@@ -1,3 +1,9 @@
+lcs-web (2.4.10~12) Lcs; urgency=low
+
+  * destruction cookies complies with prescription in close session
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 03 Apr 2015 14:17:47 +0200
+
 lcs-web (2.4.10~11) Lcs; urgency=low
 
     * change test of urlmajmod 

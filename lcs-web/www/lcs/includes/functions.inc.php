@@ -3,7 +3,7 @@
    Projet LcSE3
    Equipe Tice academie de Caen
    Distribue selon les termes de la licence GPL
-   Derniere modification : 19/03/2015
+   Derniere modification : 03/02/2015
    ============================================= */
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
@@ -174,19 +174,20 @@ include ("/var/www/lcs/includes/xoft.php");
 		$_SESSION = array();
 		// On detruit la session sur le serveur.
 		session_destroy();
-			
+		// Destruction du cookie de session
+		setcookie("Lcs","", time() - 3600,"/","",0);			
 		// Destruction des cookies LCSuser
-		setcookie("LCSuser","", 0,"/","",0);
+		setcookie("LCSuser","", time() - 3600,"/","",0);
 		// Destruction du cookie smbwebclient
-		setcookie("SmbWebClientID","", 0,"/","",0);
+		setcookie("SmbWebClientID","", time() - 3600,"/","",0);
 		// Destruction cookie tgt service CAS
 		$t=$_COOKIE['tgt'];
 		if ( isset($t) ) {
 			$t= mysql_real_escape_string($t);
 			$query="DELETE from casserver.casserver_tgt where ticket='$t'";
 			$result=@mysql_query($query) or die($query);
-			setcookie("lt","", 0,"/","",0);
-			setcookie("tgt","", 0,"/","",0);
+			setcookie("lt","", time() - 3600,"/","",0);
+			setcookie("tgt","", time() - 3600,"/","",0);
 		}
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
