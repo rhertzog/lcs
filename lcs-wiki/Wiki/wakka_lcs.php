@@ -15,10 +15,17 @@ Class WikiniLCS
 	function GetUserName() { 
                 
 		#Utilisation de l'authentification du LCS
-		#La fonction isauth() teste si une session est en cours. Si oui, retourne $idpers!=0 et $login, si non retourne $idpers=0
-		list($idpers,$login) = isauth();
-		if ($idpers != 0) {
-	                
+		$login="";
+                if (! empty($_COOKIE["Lcs"])) {
+                    # Search login
+                    $file="/var/lib/php5/sess_".$_COOKIE['Lcs'];
+                    if (is_readable($file)) {
+                        $ch= mb_split('"',file_get_contents ($file));
+                        $login=$ch[1];
+                    }
+                }
+                                   
+		if ($login != "") {	                
 			$name = $login;
 
 			#si l'utilisateur s'est authentifié, on récupère ses paramètres (email, groupes, etc...) à partir de la fonction people_get_variables

@@ -1,3 +1,9 @@
+lcs-wiki (2.4.10.2~1) Lcs; urgency=low
+
+  * delete isauth() function
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 03 Apr 2015 11:11:44 +0200
+
 lcs-wiki (2.4.10.1) Lcs; urgency=low
 
   * release for wheezy
