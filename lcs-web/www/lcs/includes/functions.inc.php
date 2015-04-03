@@ -3,7 +3,7 @@
    Projet LcSE3
    Equipe Tice academie de Caen
    Distribue selon les termes de la licence GPL
-   Derniere modification : 03/02/2015
+   Derniere modification : 03/04/2015
    ============================================= */
 // Cle privee pour cryptage du cookie LCSuser dans fonction open_session()
 include ("/var/www/lcs/includes/private_key.inc.php");
