@@ -1,3 +1,9 @@
+lcs-wiki (2.4.10.2~2) Lcs; urgency=low
+
+  * fix charset in install_mysql
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 09 Apr 2015 12:13:41 +0200
+
 lcs-wiki (2.4.10.2~1) Lcs; urgency=low
 
   * delete isauth() function
