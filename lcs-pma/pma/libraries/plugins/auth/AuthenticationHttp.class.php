@@ -23,7 +23,7 @@ require_once 'libraries/plugins/auth/auth_lcs.php';
 class AuthenticationHttp extends AuthenticationPlugin
 {
     /**
-     * Displays authentication form
+     * Displays authentication form and redirect as necessary
      *
      * @global  string    the font face to use in case of failure
      * @global  string    the default font size to use in case of failure
@@ -45,6 +45,16 @@ class AuthenticationHttp extends AuthenticationPlugin
             }
         }
 
+        return $this->authForm();
+    }
+
+    /**
+     * Displays authentication form
+     *
+     * @return boolean
+     */
+    public function authForm()
+    {
         /* Perform logout to custom URL */
         if (! empty($_REQUEST['old_usr'])
             && ! empty($GLOBALS['cfg']['Server']['LogoutURL'])
@@ -262,7 +272,7 @@ class AuthenticationHttp extends AuthenticationPlugin
         if ($error && $GLOBALS['errno'] != 1045) {
             PMA_fatalError($error);
         } else {
-            $this->auth();
+            $this->authForm();
             return true;
         }
     }
@@ -272,10 +282,9 @@ class AuthenticationHttp extends AuthenticationPlugin
      *
      * @param string $password New password to set
      *
-     * @return array Additional URL parameters.
+     * @return void 
      */
     public function handlePasswordChange($password)
     {
-        return array('old_usr' => 'relog');
     }
 }

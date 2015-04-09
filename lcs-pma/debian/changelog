@@ -1,3 +1,9 @@
+lcs-pma (2.4.10~14) Lcs; urgency=low
+
+  * update to 4.4.1.1
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 09 Apr 2015 13:13:33 +0200
+
 lcs-pma (2.4.10~13) Lcs; urgency=low
 
   * fix warnig in constant declaration 
