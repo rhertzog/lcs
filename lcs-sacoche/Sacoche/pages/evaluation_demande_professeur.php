@@ -62,7 +62,7 @@ Layout::add( 'js_inline_before' , 'var input_autoeval = "'.$date_autoeval.'";' )
 
 <ul class="puce">
   <li><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__demandes_evaluations">DOC : Demandes d'évaluations.</a></span></li>
-  <li><span class="astuce">Tenez-vous au courant des demandes grace à <a target="_blank" href="<?php echo RSS::url_prof($_SESSION['USER_ID']); ?>"><span class="rss">un flux RSS dédié</span></a> !</span></li>
+  <li><span class="astuce">Tenez-vous au courant des demandes <a href="index.php?page=compte_email">en vous abonnant aux notifications</a> ou grace à <a target="_blank" href="<?php echo RSS::url_prof($_SESSION['USER_ID']); ?>"><span class="rss">un flux RSS dédié</span></a> !</span></li>
   <li><span class="astuce"><a title="<?php echo $infobulle ?>" href="#">Nombre de demandes autorisées par matière.</a></span></li>
 </ul>
 
@@ -136,7 +136,7 @@ $select_groupe  = HtmlForm::afficher_select($tab_groupes  , 'f_groupe'  /*select
       <label class="tab" for="f_date">Date du devoir :</label><input id="f_date" name="f_date" size="8" type="text" value="<?php echo TODAY_FR ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q><br />
       <label class="tab" for="f_date_visible">Date de visibilité :</label><input id="box_date" type="checkbox" checked /> <span>identique</span><span class="hide"><input id="f_date_visible" name="f_date_visible" size="8" type="text" value="<?php echo TODAY_FR ?>" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q></span><br />
       <label class="tab" for="f_date_autoeval">Fin auto-évaluation :</label><input id="box_autoeval" type="checkbox" checked /> <span>sans objet</span><span class="hide"><input id="f_date_autoeval" name="f_date_autoeval" size="8" type="text" value="00/00/0000" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q></span><br />
-      <label class="tab" for="f_prof_nombre">Partage collègues :</label><input id="f_prof_nombre" name="f_prof_nombre" size="10" type="text" value="non" readonly /><q id="choisir_prof" class="choisir_prof" title="Voir ou choisir les collègues."></q><input id="f_prof_liste" name="f_prof_liste" type="hidden" value="" /><br />
+      <label class="tab" for="f_prof_nombre">Partage collègues :</label><input id="f_prof_nombre" name="f_prof_nombre" size="10" type="text" value="non" readonly /><input id="f_prof_liste" name="f_prof_liste" type="text" value="" class="invisible" /><q id="choisir_prof" class="choisir_prof" title="Voir ou choisir les collègues."></q><br />
       <label class="tab" for="f_description">Description :</label><input id="f_description" name="f_description" size="30" type="text" value="" />
     </fieldset>
     <fieldset id="step_completer" class="p hide">

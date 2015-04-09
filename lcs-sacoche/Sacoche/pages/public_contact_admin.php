@@ -26,7 +26,7 @@
  */
 
 if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');}
-$TITRE = "Contacter un administrateur"; // Pas de traduction car pas de choix de langue à ce niveau.
+$TITRE = "Contacter les administrateurs d'un établissement scolaire"; // Pas de traduction car pas de choix de langue à ce niveau.
 
 // Récupération du numéro de base
 $BASE = (isset($_GET['base'])) ? Clean::entier($_GET['base']) : 0 ;
@@ -65,7 +65,7 @@ $message = '';
 if($courriel)
 {
   $message .= 'Bonjour,'."\r\n";
-  $message .= 'J\'ai reçu un e-mail à mon adresse '.$courriel.' en provenance de votre instance SACoche alors que je ne n\'ai pas de compte sur ce logiciel.'."\r\n";
+  $message .= 'J\'ai reçu à mon adresse '.$courriel.' un courriel en provenance de votre instance SACoche alors que je ne n\'ai pas de compte sur ce logiciel.'."\r\n";
   $message .= 'Sans doute la conséquence une adresse erronée dans votre base d\'utilisateurs ?'."\r\n";
   $message .= 'Merci d\'y regarder et me tenir au courant.'."\r\n";
   $message .= 'Cordialement.'."\r\n";
@@ -75,18 +75,23 @@ if($courriel)
 list($html_imgs,$captcha_soluce) = captcha();
 $_SESSION['TMP']['CAPTCHA'] = array(
   'TIME'   => $_SERVER['REQUEST_TIME'] ,
-  'DELAI'  => 7, // en secondes, est ensuite incrémenté en cas d'erreur
+  'DELAI'  => 5, // en secondes, est ensuite incrémenté en cas d'erreur
   'SOLUCE' => $captcha_soluce,
 );
+
+$is_etablissement_virtuel = IS_HEBERGEMENT_SESAMATH && ( ($BASE==ID_DEMO) || ($BASE>=CONVENTION_ENT_ID_ETABL_MAXI) || (substr($structure_denomination,0,5)=='Voir ') ) ? TRUE : FALSE ;
 ?>
+
+<?php if(!$is_etablissement_virtuel): ?>
+
 <form id="form_contact" action="#" method="post">
   <div id="step1">
     <h2>Étape 1/2 - Saisie des informations</h2>
-    <label class="tab">Établissement :</label><input id="f_base" name="f_base" type="hidden" value="<?php echo $BASE ?>" /><em><?php echo html($structure_denomination) ?></em><br />
+    <label class="tab">Établissement :</label><input id="f_base" name="f_base" type="hidden" value="<?php echo $BASE ?>" /><input id="f_denomination" name="f_denomination" size="40" type="text" value="<?php echo html($structure_denomination) ?>" readonly /><br />
     <label class="tab" for="f_nom">Nom :</label><input id="f_nom" name="f_nom" type="text" value="" size="30" maxlength="25" /><br />
     <label class="tab" for="f_prenom">Prénom :</label><input id="f_prenom" name="f_prenom" type="text" value="" size="30" maxlength="25" /><br />
     <label class="tab" for="f_courriel"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Un code de confirmation y sera envoyé.<br />Vérifiez bien votre saisie !" /> Courriel :</label><input id="f_courriel" name="f_courriel" type="text" value="<?php echo html($courriel) ?>" size="30" maxlength="63" /><br />
-    <label class="tab">Anti-robot :</label><span id="captcha_game">Cliquer du plus petit au plus grand <?php echo $html_imgs ?></span><span id="captcha_init" class="hide">Ordre enregistré. <button type="button" class="actualiser">Recommencer.</button></span><input id="f_captcha" name="f_captcha" type="text" value="" /><br />
+    <label class="tab">Anti-robot :</label><span id="captcha_game">Cliquer du plus petit au plus grand <?php echo $html_imgs ?></span><span id="captcha_init" class="hide">Ordre enregistré. <button type="button" class="actualiser">Recommencer.</button></span><input id="f_captcha" name="f_captcha" type="text" value="" class="invisible" /><br />
     <label for="f_message" class="tab">Message :</label><textarea name="f_message" id="f_message" rows="9" cols="55"><?php echo html($message) ?></textarea><br />
     <span class="tab"></span><label id="f_message_reste"></label><br />
     <span class="tab"></span><button id="f_bouton_envoyer" type="submit" class="mail_envoyer">Enregistrer.</button><label id="ajax_msg_envoyer" class="astuce">Un code de confirmation vous sera alors envoyé.</label>
@@ -101,6 +106,16 @@ $_SESSION['TMP']['CAPTCHA'] = array(
     <p><label class="valide">Votre message a été transmis <span id="span_admin_nb"></span> (établissement <em><?php echo html($structure_denomination) ?></em>).</label></p>
   </div>
 </form>
+
+<?php else: ?>
+
+<p class="danger">Vous vous êtes visiblement égaré&nbsp;!</p>
+<p class="astuce">Il n'y a aucune raison de contacter les administrateurs de l'établissement <em>"<?php echo html($structure_denomination) ?>"</em> car il s'agit d'une structure virtuelle&hellip;</p>
+<ul class="puce">
+  <li class="p">Consulter <a class="b" href="<?php echo SERVEUR_PROJET ?>" target="_blank">le site officiel du projet <em>SACoche</em></a> pour tout renseignement ou besoin de contact.</li>
+</ul>
+
+<?php endif; ?>
 
 <hr />
 

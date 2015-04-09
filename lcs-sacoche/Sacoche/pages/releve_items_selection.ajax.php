@@ -49,6 +49,7 @@ $aff_pourcentage_acquis   = (isset($_POST['f_pourcentage_acquis'])) ? 1         
 $conversion_sur_20        = (isset($_POST['f_conversion_sur_20']))  ? 1                                                : 0;
 $tableau_synthese_format  = (isset($_POST['f_synthese_format']))    ? Clean::texte($_POST['f_synthese_format'])        : '';
 $tableau_tri_mode         = (isset($_POST['f_tri_mode']))           ? Clean::texte($_POST['f_tri_mode'])               : '';
+$repeter_entete           = (isset($_POST['f_repeter_entete']))     ? 1                                                : 0;
 $with_coef                = (isset($_POST['f_with_coef']))          ? 1                                                : 0;
 $groupe_id                = (isset($_POST['f_groupe']))             ? Clean::entier($_POST['f_groupe'])                : 0;
 $groupe_nom               = (isset($_POST['f_groupe_nom']))         ? Clean::texte($_POST['f_groupe_nom'])             : '';
@@ -162,9 +163,13 @@ else
   }
   if($type_bulletin)
   {
+    echo'<h2>Moyenne sur 20 - Élément d\'appréciation</h2>'.NL;
+    echo'<ul class="puce">'.NL;
+    echo  '<li><a target="_blank" href="'.URL_DIR_EXPORT.str_replace('<REPLACE>','bulletin',$fichier_nom).'.pdf"><span class="file file_pdf">Archiver / Imprimer (format <em>pdf</em>).</span></a></li>'.NL;
+    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
+    echo'</ul>'.NL;
     echo'<h2>Bulletin SACoche</h2>'.NL;
     echo'<ul class="puce">'.NL;
-    echo  '<li><a target="_blank" href="./releve_html.php?fichier='.str_replace('<REPLACE>','bulletin',$fichier_nom).'"><span class="file file_htm">Explorer / Manipuler (format <em>html</em>).</span></a></li>'.NL;
     echo $bulletin_form;
     echo'</ul>'.NL;
     echo $bulletin_alerte;

@@ -71,13 +71,13 @@ if( ($action=='ajouter') && $niveau && $groupe_nom && $nb_eleves )
   // Affecter les élèves et les profs au groupe
   DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_user_groupe_par_prof( $groupe_id , $tab_eleves , $tab_profs , 'creer' /*mode*/ , 0 /*devoir_id*/ );
   // Remettre le prof responsable (si partagé avec d'autres collègues)
-  if($indice)
+  if($indice!==FALSE)
   {
     $tab_profs[$indice] = $_SESSION['USER_ID'];
   }
   // Afficher le retour
   $eleves_texte  = ($nb_eleves>1) ? $nb_eleves.' élèves' : '1 élève' ;
-  $profs_texte   = ($nb_profs>1)  ? $nb_profs.' collègues'   : 'moi seul' ;
+  $profs_texte   = ($nb_profs>1)  ? $nb_profs .' profs'  : 'moi seul' ;
   echo'<tr id="id_'.$groupe_id.'" class="new">';
   echo  '<td>{{NIVEAU_NOM}}</td>';
   echo  '<td>'.html($groupe_nom).'</td>';
@@ -110,13 +110,13 @@ if( ($action=='modifier') && $groupe_id && $niveau && $groupe_nom && $nb_eleves 
   // Mettre les affectations des élèves et des profs au groupe
   DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_user_groupe_par_prof( $groupe_id , $tab_eleves , $tab_profs , 'substituer' /*mode*/ , 0 /*devoir_id*/ );
   // Remettre le prof responsable (si partagé avec d'autres collègues)
-  if($indice)
+  if($indice!==FALSE)
   {
     $tab_profs[$indice] = $_SESSION['USER_ID'];
   }
   // Afficher le retour
   $eleves_texte  = ($nb_eleves>1) ? $nb_eleves.' élèves' : '1 élève' ;
-  $profs_texte   = ($nb_profs>1)  ? $nb_profs.' collègues'   : 'moi seul' ;
+  $profs_texte   = ($nb_profs>1)  ? $nb_profs .' profs'  : 'moi seul' ;
   echo'<td>{{NIVEAU_NOM}}</td>';
   echo'<td>'.html($groupe_nom).'</td>';
   echo'<td>'.$eleves_texte.'</td>';
@@ -135,12 +135,15 @@ if( ($action=='modifier') && $groupe_id && $niveau && $groupe_nom && $nb_eleves 
 // Supprimer un groupe de besoin existant
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-if( ($action=='supprimer') && $groupe_id )
+if( ($action=='supprimer') && $groupe_id && $groupe_nom )
 {
   // Effacer l'enregistrement
   DB_STRUCTURE_PROFESSEUR::DB_supprimer_groupe_par_prof( $groupe_id , 'besoin' , TRUE /*with_devoir*/ );
   // Log de l'action
-  SACocheLog::ajouter('Suppression d\'un regroupement (besoin '.$groupe_id.'), avec les devoirs associés.');
+  SACocheLog::ajouter('Suppression du regroupement "'.$groupe_nom.'" (besoin n°'.$groupe_id.'), et donc des devoirs associés.');
+  // Notifications (rendues visibles ultérieurement)
+  $notification_contenu = date('d-m-Y H:i:s').' '.$_SESSION['USER_PRENOM'].' '.$_SESSION['USER_NOM'].' a supprimé son regroupement "'.$groupe_nom.'" (besoin n°'.$groupe_id.'), et donc les devoirs associés.'."\r\n";
+  DB_STRUCTURE_NOTIFICATION::enregistrer_action_sensible($notification_contenu);
   // Afficher le retour
   exit('<td>ok</td>');
 }

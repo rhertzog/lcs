@@ -380,6 +380,7 @@ function SACoche_autoload($class_name)
 
     'Browser'                     => '_inc'.DS.'class.Browser.php' ,
     'Clean'                       => '_inc'.DS.'class.Clean.php' ,
+    'Cookie'                      => '_inc'.DS.'class.Cookie.php' ,
     'cssmin'                      => '_inc'.DS.'class.CssMinified.php' ,
     'cURL'                        => '_inc'.DS.'class.cURL.php' ,
     'Erreur500'                   => '_inc'.DS.'class.Erreur500.php' ,
@@ -526,6 +527,7 @@ if(DEBUG>3)
 // ============================================================================
 
 $host = getServerUrl();
+define('HOST'    ,$host);
 define('URL_BASE',getServerProtocole().$host.getServerPort($host));
 
 // ============================================================================
@@ -608,7 +610,7 @@ define('SERVEUR_LPC_SIGNATURE'  ,SERVEUR_SSL   .'/appel_externe.php');   // URL 
 define('SERVEUR_TELECHARGEMENT' ,SERVEUR_PROJET.'/telechargement.php');  // URL du fichier renvoyant le ZIP de la dernière archive de SACoche disponible
 define('SERVEUR_VERSION'        ,SERVEUR_PROJET.'/sacoche/VERSION.txt'); // URL du fichier chargé de renvoyer le numéro de la dernière version disponible
 define('SERVEUR_CNIL'           ,SERVEUR_PROJET.'/?page=cnil');          // URL de la page "CNIL (données personnelles)"
-define('SERVEUR_CONTACT'        ,SERVEUR_PROJET.'/?page=contact');       // URL de la page "Où échanger autour de SACoche ?"
+define('SERVEUR_ECHANGER'       ,SERVEUR_PROJET.'/?page=echanger');      // URL de la page "Où échanger autour de SACoche ?"
 define('SERVEUR_GUIDE_ENT'      ,SERVEUR_PROJET.'/?page=ent');           // URL de la page "Mode d'identification & Guide d'intégration aux ENT"
 define('SERVEUR_GUIDE_ADMIN'    ,SERVEUR_PROJET.'/?page=guide_admin');   // URL de la page "Guide de démarrage (administrateur de SACoche)"
 define('SERVEUR_GUIDE_RENTREE'  ,SERVEUR_PROJET.'/?page=guide_rentree'); // URL de la page "Guide de changement d'année (administrateur de SACoche)"
@@ -643,6 +645,7 @@ define('COOKIE_STRUCTURE' ,'SACoche-etablissement' ); // nom du cookie servant �
 define('COOKIE_AUTHMODE'  ,'SACoche-mode-connexion'); // nom du cookie servant à retenir le dernier mode de connexion utilisé par un user connecté, afin de pouvoir le retrouver si perte d'une session et tentative de reconnexion SSO.
 define('COOKIE_PARTENAIRE','SACoche-partenaire'    ); // nom du cookie servant à retenir le partenaire sélectionné, afin de ne pas à avoir à le sélectionner de nouveau (convention ENT sur serveur Sésamath uniquement).
 define('COOKIE_MEMOGET'   ,'SACoche-memoget'       ); // nom du cookie servant à retenir des paramètres multiples transmis en GET dans le cas où le service d'authentification externe en perd...
+define('COOKIE_TEST'      ,'SACoche-test-cookie'   ); // nom du cookie servant à tester si les cookies s'enregistrent bien, pour éviter une boucle SSO...
 
 // session
 define('SESSION_NOM','SACoche-session'); // Est aussi défini dans /_lib/SimpleSAMLphp/config/config.php
@@ -833,6 +836,12 @@ function exit_error( $titre , $contenu , $lien='accueil' )
     echo    '</div>'.NL;
     echo  '</body>'.NL;
     echo'</html>'.NL;
+  }
+  // Suppression du cookie provisoire ayant servi à mémoriser des paramètres multiples transmis en GET dans le cas où le service d'authentification externe en perd.
+  // C'est le cas lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...
+  if(isset($_COOKIE[COOKIE_MEMOGET]))
+  {
+    Cookie::effacer(COOKIE_MEMOGET);
   }
   exit();
 }

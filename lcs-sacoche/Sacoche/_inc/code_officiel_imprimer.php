@@ -31,7 +31,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
 // Récupération des valeurs transmises
 // ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-$objet       = (isset($_POST['f_objet']))       ? Clean::texte($_POST['f_objet'])       : '';
+$OBJET       = (isset($_POST['f_objet']))       ? Clean::texte($_POST['f_objet'])       : '';
 $ACTION      = (isset($_POST['f_action']))      ? Clean::texte($_POST['f_action'])      : '';
 $BILAN_TYPE  = (isset($_POST['f_bilan_type']))  ? Clean::texte($_POST['f_bilan_type'])  : '';
 $periode_id  = (isset($_POST['f_periode']))     ? Clean::entier($_POST['f_periode'])    : 0;
@@ -63,7 +63,7 @@ $tab_types = array
 
 // On vérifie les paramètres principaux
 
-if( (!in_array($ACTION,$tab_action)) || (!isset($tab_types[$BILAN_TYPE])) || (!in_array($objet,$tab_objet)) || !$periode_id || !$classe_id || ( (!$liste_eleve_id)&&($ACTION!='initialiser') ) )
+if( (!in_array($ACTION,$tab_action)) || (!isset($tab_types[$BILAN_TYPE])) || (!in_array($OBJET,$tab_objet)) || !$periode_id || !$classe_id || ( (!$liste_eleve_id)&&($ACTION!='initialiser') ) )
 {
   exit('Erreur avec les données transmises !');
 }
@@ -84,7 +84,7 @@ if(!$BILAN_ETAT)
 {
   exit('Bilan introuvable !');
 }
-if( ($BILAN_ETAT!='4complet') && empty($is_test_impression) )
+if( ($BILAN_ETAT!='5complet') && empty($is_test_impression) )
 {
   exit('Bilan interdit d\'accès pour cette action !');
 }
@@ -112,7 +112,7 @@ if($ACTION=='initialiser')
     $tab_eleve_td[$DB_ROW['user_id']] = html($DB_ROW['user_nom'].' '.$DB_ROW['user_prenom']);
   }
   // (re)calculer les moyennes des élèves (matières et générales), ainsi que les moyennes de classe (matières et générales).
-  if( ($objet=='imprimer') && ($BILAN_TYPE=='bulletin') && $_SESSION['OFFICIEL']['BULLETIN_MOYENNE_SCORES'] )
+  if( ($OBJET=='imprimer') && ($BILAN_TYPE=='bulletin') && $_SESSION['OFFICIEL']['BULLETIN_MOYENNE_SCORES'] )
   {
     // Attention ! On doit calculer des moyennes de classe, pas de groupe !
     if(!$is_sous_groupe)
@@ -136,7 +136,7 @@ if($ACTION=='initialiser')
   $_SESSION['tmp_droit_voir_archive'] = array(); // marqueur mis en session pour vérifier que c'est bien cet utilisateur qui veut voir (et à donc le droit de voir) le fichier, car il n'y a pas d'autre vérification de droit ensuite
   foreach($tab_eleve_id as $eleve_id)
   {
-    if($objet=='imprimer')
+    if($OBJET=='imprimer')
     {
       $checked            = (isset($DB_TAB[$eleve_id])) ? '' : ' checked' ;
       $td_date_generation = (isset($DB_TAB[$eleve_id])) ? 'Oui, le '.convert_date_mysql_to_french($DB_TAB[$eleve_id][0]['fichier_date_generation']) : 'Non' ;
@@ -146,7 +146,7 @@ if($ACTION=='initialiser')
       echo'<td class="label hc">'.$td_date_generation.'</td>';
       echo'</tr>';
     }
-    elseif($objet=='voir_archive')
+    elseif($OBJET=='voir_archive')
     {
       if(!isset($DB_TAB[$eleve_id]))
       {
@@ -187,12 +187,14 @@ if( ($ACTION=='imprimer') && ($etape==2) )
   Erreur500::prevention_et_gestion_erreurs_fatales( FALSE /*memory*/ , TRUE /*time*/ );
   // Récupérer les bilans déjà existants pour savoir s'il faut faire un INSERT ou un UPDATE (sinon, un REPLACE efface les dates de consultation)
   $DB_TAB = DB_STRUCTURE_OFFICIEL::DB_lister_bilan_officiel_fichiers( $BILAN_TYPE , $periode_id , array_keys($_SESSION['tmp']['tab_pages_decoupe_pdf']) );
+  $tab_notif = array();
   foreach($_SESSION['tmp']['tab_pages_decoupe_pdf'] as $eleve_id => $tab_tirages)
   {
     list( $eleve_identite , $page_plage ) = $tab_tirages[0];
     if(!isset($DB_TAB[$eleve_id]))
     {
       DB_STRUCTURE_OFFICIEL::DB_ajouter_bilan_officiel_fichier( $eleve_id , $BILAN_TYPE , $periode_id );
+      $tab_notif[$eleve_id] = $eleve_id;
     }
     else
     {
@@ -203,6 +205,37 @@ if( ($ACTION=='imprimer') && ($etape==2) )
     $releve_pdf = new PDFMerger;
     $pdf_string = $releve_pdf -> addPDF( CHEMIN_DOSSIER_EXPORT.$_SESSION['tmp']['fichier_nom'].'.pdf' , $page_plage ) -> merge( 'file' , $fichier_extraction_chemin );
   }
+  // Notifications (rendues visibles ultérieurement parce que plus simple comme cela)
+  if(!empty($tab_notif))
+  {
+    $abonnement_ref = 'bilan_officiel_visible';
+    $is_acces_parent = in_array( 'TUT' , explode(',',$_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_VOIR_ARCHIVE']) ) ? TRUE : FALSE ;
+    $is_acces_enfant = in_array( 'ELV' , explode(',',$_SESSION['DROIT_OFFICIEL_'.$tab_types[$BILAN_TYPE]['droit'].'_VOIR_ARCHIVE']) ) ? TRUE : FALSE ;
+    if( $is_acces_parent || $is_acces_enfant )
+    {
+      $listing_eleves = implode(',',$tab_notif);
+      $listing_parents = DB_STRUCTURE_NOTIFICATION::DB_lister_parents_listing_id($listing_eleves);
+      $listing_users = ($listing_parents) ? $listing_eleves.','.$listing_parents : $listing_eleves ;
+      $listing_abonnes = DB_STRUCTURE_NOTIFICATION::DB_lister_destinataires_listing_id( $abonnement_ref , $listing_users );
+      if($listing_abonnes)
+      {
+        $notification_contenu = 'Bilan officiel disponible : ['.$classe_nom.'] ['.$tab_types[$BILAN_TYPE]['titre'].'] ['.$periode_nom.'].'."\r\n\r\n";
+        $notification_contenu.= 'Y accéder :'."\r\n".Sesamail::adresse_lien_profond('page=officiel_voir_archive');
+        $tab_abonnes = DB_STRUCTURE_NOTIFICATION::DB_lister_detail_abonnes_envois( $listing_abonnes , $listing_eleves , $listing_parents );
+        foreach($tab_abonnes as $abonne_id => $tab_abonne)
+        {
+          foreach($tab_abonne as $eleve_id => $notification_intro_eleve)
+          {
+            if( ( $is_acces_parent && $notification_intro_eleve ) || ( $is_acces_enfant && !$notification_intro_eleve ) )
+            {
+              DB_STRUCTURE_NOTIFICATION::DB_ajouter_log_attente( $abonne_id , $abonnement_ref , 0 , NULL , $notification_contenu );
+            }
+          }
+        }
+      }
+    }
+  }
+  // Retour
   exit('ok');
 }
 

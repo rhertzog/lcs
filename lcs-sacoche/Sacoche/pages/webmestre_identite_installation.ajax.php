@@ -58,7 +58,7 @@ if($action=='select_logo')
       $options_logo .= '<option value="'.html($file).'"'.$selected.'>'.html($file).'</option>';
     }
   }
-  $options_logo = ($options_logo) ? '<option value=""></option>'.$options_logo : '<option value="" disabled>Aucun fichier image trouvé !</option>';
+  $options_logo = ($options_logo) ? '<option value="">&nbsp;</option>'.$options_logo : '<option value="" disabled>Aucun fichier image trouvé !</option>';
   exit($options_logo);
 }
 
@@ -132,7 +132,7 @@ if( ($action=='delete_logo') && $logo )
 
 if( ($action=='enregistrer') && $denomination && $nom && $prenom && $courriel )
 {
-  // On ne vérifie le domaine du serveur mail qu'en mode multi-structures car ce peut être sinon une installation sur un serveur local non ouvert sur l'extérieur.
+  // Vérifier le domaine du serveur mail seulement en mode multi-structures car ce peut être sinon une installation sur un serveur local non ouvert sur l'extérieur.
   if(HEBERGEUR_INSTALLATION=='multi-structures')
   {
     $mail_domaine = tester_domaine_courriel_valide($courriel);

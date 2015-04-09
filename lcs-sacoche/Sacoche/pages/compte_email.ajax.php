@@ -42,27 +42,18 @@ if( ($action=='courriel') && ($courriel!==NULL) )
   {
     exit_json( FALSE , 'Erreur : droit insuffisant, contactez un administrateur !' );
   }
-  // Vérifier que l'adresse e-mail est disponible (parmi tous les utilisateurs de l'établissement)
+  // Vérifier le domaine du serveur mail seulement en mode multi-structures car ce peut être sinon une installation sur un serveur local non ouvert sur l'extérieur.
   if($courriel)
   {
-    $find_courriel = DB_STRUCTURE_ADMINISTRATEUR::DB_tester_utilisateur_identifiant('email',$courriel,$_SESSION['USER_ID']);
-    if( $find_courriel )
+    if(HEBERGEUR_INSTALLATION=='multi-structures')
     {
-      exit_json( FALSE , 'Erreur : adresse e-mail déjà utilisée !' );
-    }
-    if( $find_courriel === NULL )
-    {
-      // On ne vérifie le domaine du serveur mail qu'en mode multi-structures car ce peut être sinon une installation sur un serveur local non ouvert sur l'extérieur.
-      if(HEBERGEUR_INSTALLATION=='multi-structures')
+      $mail_domaine = tester_domaine_courriel_valide($courriel);
+      if($mail_domaine!==TRUE)
       {
-        $mail_domaine = tester_domaine_courriel_valide($courriel);
-        if($mail_domaine!==TRUE)
-        {
-          exit_json( FALSE , 'Erreur avec le domaine "'.$mail_domaine.'" !' );
-        }
+        exit_json( FALSE , 'Erreur avec le domaine "'.$mail_domaine.'" !' );
       }
-      $email_origine = 'user';
     }
+    $email_origine = 'user';
   }
   else
   {
@@ -97,7 +88,7 @@ if( ($action=='courriel') && ($courriel!==NULL) )
   }
   else
   {
-    $info_origine = '<span class="astuce">Il n\y a pas d\'adresse actuellement enregistrée.</span>';
+    $info_origine = '<span class="astuce">Il n\'y a pas d\'adresse actuellement enregistrée.</span>';
   }
   if(COURRIEL_NOTIFICATION=='non')
   {
@@ -105,7 +96,7 @@ if( ($action=='courriel') && ($courriel!==NULL) )
   }
   elseif(!$_SESSION['USER_EMAIL'])
   {
-    $info_envoi_notifications = '<label class="alerte">Les envois par courriel seront remplacés par une indication en page d\'accueil tant que l\'adresse n\'est pas renseignée.</label>' ;
+    $info_envoi_notifications = '<label class="alerte">Les envois par courriel seront remplacés par des indications en page d\'accueil tant que votre adresse de courriel ne sera pas renseignée.</label>' ;
   }
   else
   {
@@ -124,10 +115,11 @@ if($action=='enregistrer_abonnements')
   $tab_update = array();
   $tab_delete = array();
   $tab_choix = array( 'non' , 'accueil' , 'courriel' );
-  $DB_TAB = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_profil( $_SESSION['USER_PROFIL_TYPE'] , $_SESSION['USER_ID'] );
+  $DB_TAB  = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_profil( $_SESSION['USER_PROFIL_TYPE'] , $_SESSION['USER_ID'] );
+  $DB_JOIN = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_user( $_SESSION['USER_ID'] );
   foreach($DB_TAB as $DB_ROW)
   {
-    $DB_ROW['jointure_mode'] = is_null($DB_ROW['jointure_mode']) ? 'non' : $DB_ROW['jointure_mode'] ;
+    $DB_ROW['jointure_mode'] = isset($DB_JOIN[$DB_ROW['abonnement_ref']]) ? $DB_JOIN[$DB_ROW['abonnement_ref']]['jointure_mode'] : 'non' ;
     if( !isset($_POST[$DB_ROW['abonnement_ref']]) || !in_array($_POST[$DB_ROW['abonnement_ref']],$tab_choix) )
     {
       exit_json( FALSE , 'Donnée transmise manquante ou incorrecte !' );

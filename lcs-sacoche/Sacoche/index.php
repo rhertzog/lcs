@@ -31,26 +31,33 @@
 // Constantes / Configuration serveur / Autoload classes / Fonction de sortie
 require('./_inc/_loader.php');
 
+// En théorie, si l'utilisateur refuse les cookies de SACoche mais accepte ceux de l'ENT, une demande de connexion SSO peut entraîner des boucles de redirections (la session n'étant pas retrouvée).
+if(empty($_COOKIE[COOKIE_TEST]))
+{
+  Cookie::definir( COOKIE_TEST , TRUE );
+  if(isset($_GET['sso']))
+  {
+    if(!isset($_GET['cookie']))
+    {
+      exit_redirection(URL_BASE.$_SERVER['REQUEST_URI'].'&cookie');
+    }
+    else
+    {
+      exit_error( 'Risque de redirections en boucle' /*titre*/ , 'Pour utiliser <em>SACoche</em> vous devez configurer l\'acceptation des cookies par votre navigateur.' /*contenu*/ );
+    }
+  }
+}
+
 // Mémorisation de paramètres multiples transmis en GET pour les retrouver par la suite dans le cas où le service d'authentification externe en perd
 // C'est le cas lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...
 if(isset($_GET['memoget']))
 {
-  $memoget = urldecode($_GET['memoget']);
-  setcookie( COOKIE_MEMOGET /*name*/ , $memoget /*value*/ , $_SERVER['REQUEST_TIME']+300 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ ); /* 5*60 */
-  $is_param_redir = mb_strpos($memoget,'&url_redirection');
-  $param_length = ($is_param_redir) ? $is_param_redir : NULL ;
-  $param_sans_redir = mb_substr( $memoget , 0 , $param_length ) ; // J'ai déjà eu un msg d'erreur car il n'aime pas les chaines trop longues + Pas la peine d'encombrer avec le paramètre de redirection qui sera retrouvé dans le cookie de toutes façons
-  exit_redirection(URL_BASE.$_SERVER['SCRIPT_NAME'].'?'.$param_sans_redir);
+  Cookie::save_get_and_exit_reload( urldecode($_GET['memoget']) );
 }
 // Récupération de paramètres multiples transmis en GET et mémorisés temporairement dans un cookie (pour le cas où le service d'authentification externe en perd).
 if(isset($_COOKIE[COOKIE_MEMOGET]))
 {
-  $tab_get = explode('&',$_COOKIE[COOKIE_MEMOGET]);
-  foreach($tab_get as $get)
-  {
-    list($get_name,$get_value) = explode('=',$get);
-    $_GET[$get_name] = ($get_value) ? $get_value : TRUE ;
-  }
+  Cookie::load_get();
 }
 
 // Page et section appelées ; normalement transmis en $_GET mais $_POST possibles depuis GEPI
@@ -166,8 +173,9 @@ if(Session::$_sso_redirect)
 // C'est le cas lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...
 if(isset($_COOKIE[COOKIE_MEMOGET]))
 {
-  setcookie( COOKIE_MEMOGET /*name*/ , '' /*value*/ , $_SERVER['REQUEST_TIME']-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
+  Cookie::effacer(COOKIE_MEMOGET);
 }
+
 // Authentification pour le compte d'une application tierce
 if(isset($_GET['url_redirection']))
 {

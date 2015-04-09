@@ -357,18 +357,22 @@ span.retrecir_largeur     {background-position: 0 -100px}
 /* Images relatives aux états des bilans officiels                                                     */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-.off_etat {background:transparent url(../_img/sprite_officiel_1.png) 0 20px no-repeat;padding-left:19px;padding-top:1px}
+#cadre_statut div {margin:2px auto}
+
+.off_etat {background:transparent url(../_img/sprite_officiel_2.png) 0 20px no-repeat;padding-left:19px;padding-top:1px}
 .absence  {background-position: 0    0px}
 .vide     {background-position: 0  -20px}
 .rubrique {background-position: 0  -40px}
-.synthese {background-position: 0  -60px}
-.complet  {background-position: 0  -80px}
+.mixte    {background-position: 0  -60px}
+.synthese {background-position: 0  -80px}
+.complet  {background-position: 0 -100px}
 
-.absence  span{color:#666}
-.vide     span{color:#000;background-color:#FAA}
-.rubrique span{color:#000;background-color:#FC9}
-.synthese span{color:#000;background-color:#FF9}
-.complet  span{color:#000;background-color:#CEA}
+.absence  span{padding:0 2px;color:#666}
+.vide     span{padding:0 2px;color:#000;background-color:#FAA}
+.rubrique span{padding:0 2px;color:#000;background-color:#FC9}
+.mixte    span{padding:0 2px;color:#000;background-color:#FF9}
+.synthese span{padding:0 2px;color:#000;background-color:#CEA}
+.complet  span{padding:0 2px;color:#000;background-color:#8C8}
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 /* Images pour les pages de validation du socle                                                        */
@@ -594,7 +598,7 @@ span.select_multiple label {display:block;white-space:nowrap;padding-left:1px;pa
 span.select_multiple label.check {color:#FFF;background-color:#88F}
 span.check_multiple {display:inline-block;vertical-align:middle;line-height:20px}
 
-#f_captcha{width:1px;height:0;border:none} /* astuce pour avoir un champ invisible sans être caché ou avoir une longueur nulle, sinon jquery.validate.js l'ignore */
+input.invisible{width:1px;height:0;border:none} /* astuce pour avoir un champ invisible sans être de type hidden ou caché ou avoir une longueur nulle, sinon jquery.validate.js l'ignore */
 img.captcha{width:20px;height:20px;background-color:#66F;margin:auto 5px 1px 5px}
 img.captcha:hover{cursor:pointer;background-color:#D41}
 

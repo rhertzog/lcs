@@ -996,7 +996,7 @@ public static function DB_tester_periode_nom($periode_nom,$periode_id=FALSE)
 /**
  * Recherche si un identifiant d'utilisateur est déjà pris (sauf éventuellement l'utilisateur concerné)
  *
- * @param string $champ_nom      sans le préfixe 'user_' : login | sconet_id | sconet_elenoet | reference | id_ent | id_gepi | email
+ * @param string $champ_nom      sans le préfixe 'user_' : login | sconet_id | sconet_elenoet | reference | id_ent | id_gepi
  * @param string $champ_valeur   la valeur testée
  * @param int    $user_id        inutile si recherche pour un ajout, mais id à éviter si recherche pour une modification
  * @param string $profil_type    si transmis alors recherche parmi les utilisateurs de même type de profil (sconet_id|sconet_elenoet|reference), sinon alors parmi tous les utilisateurs de l'établissement (login|id_ent|id_gepi)
@@ -1234,7 +1234,7 @@ public static function DB_modifier_adresse_parent($parent_id,$tab_adresse)
  * On peut envisager une modification de "profil_sigle" entre personnels.
  *
  * @param int     $user_id
- * @param array   array(':sconet_id'=>$val, ':sconet_num'=>$val, ':reference'=>$val , ':profil_sigle'=>$val , ':genre'=>$val , ':nom'=>$val , ':prenom'=>$val , ':birth_date'=>$val , ':email'=>$val , ':email_origine'=>$val , ':login'=>$val , ':password'=>$val , ':daltonisme'=>$val , ':sortie_date'=>$val , ':classe'=>$val , ':id_ent'=>$val , ':id_gepi'=>$val );
+ * @param array   array(':sconet_id'=>$val, ':sconet_num'=>$val, ':reference'=>$val , ':profil_sigle'=>$val , ':genre'=>$val , ':nom'=>$val , ':prenom'=>$val , ':birth_date'=>$val , ':courriel'=>$val , ':email_origine'=>$val , ':login'=>$val , ':password'=>$val , ':daltonisme'=>$val , ':sortie_date'=>$val , ':classe'=>$val , ':id_ent'=>$val , ':id_gepi'=>$val );
  * @return void
  */
 public static function DB_modifier_user($user_id,$DB_VAR)
@@ -1252,7 +1252,7 @@ public static function DB_modifier_user($user_id,$DB_VAR)
       case ':nom'          : $tab_set[] = 'user_nom='           .$key; break;
       case ':prenom'       : $tab_set[] = 'user_prenom='        .$key; break;
       case ':birth_date'   : $tab_set[] = 'user_naissance_date='.$key; break;
-      case ':email'        : $tab_set[] = 'user_email='         .$key; break;
+      case ':courriel'     : $tab_set[] = 'user_email='         .$key; break;
       case ':email_origine': $tab_set[] = 'user_email_origine=' .$key; break;
       case ':login'        : $tab_set[] = 'user_login='         .$key; break;
       case ':password'     : $tab_set[] = 'user_password='      .$key; break;
@@ -1664,7 +1664,7 @@ public static function DB_modifier_liaison_groupe_periode($groupe_id,$periode_id
  * @param int      $periode_id   id de la période
  * @param string   $champ        officiel_releve | officiel_bulletin | officiel_palier1 | officiel_palier2 | officiel_palier3
  * @param string   $etat         nouvel état
- * @return void
+ * @return int     0 ou 1 si modifié
  */
 public static function DB_modifier_bilan_officiel($groupe_id,$periode_id,$champ,$etat)
 {
@@ -1677,6 +1677,7 @@ public static function DB_modifier_bilan_officiel($groupe_id,$periode_id,$champ,
     ':etat'       => $etat,
   );
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  return DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
 }
 
 /**

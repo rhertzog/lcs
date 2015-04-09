@@ -44,7 +44,7 @@ $fichier_nom = ($make_action!='imprimer') ? 'releve_synthese_'.$synthese_modele.
 
 $tab_item        = array();  // [item_id] => array(item_ref,item_nom,item_coef,item_cart,item_socle,item_lien,matiere_id,calcul_methode,calcul_limite,calcul_retroactif,synthese_ref);
 $tab_liste_item  = array();  // [i] => item_id
-$tab_eleve_infos = array();  // [eleve_id] => array(eleve_nom,eleve_prenom,date_naissance)
+$tab_eleve_infos = array();  // [eleve_id] => array(eleve_INE,eleve_nom,eleve_prenom,date_naissance)
 $tab_matiere     = array();  // [matiere_id] => array(matiere_nom,matiere_nb_demandes)
 $tab_synthese    = array();  // [synthese_ref] => synthese_nom
 $tab_eval        = array();  // [eleve_id][item_id][devoir] => array(note,date,info) On utilise un tableau multidimensionnel vu qu'on ne sait pas à l'avance combien il y a d'évaluations pour un élève et un item donnés.
@@ -165,6 +165,7 @@ else
     'eleve_prenom'   => '',
     'eleve_genre'    => 'I',
     'date_naissance' => NULL,
+    'eleve_INE'      => NULL,
   );
 }
 $eleve_nb = count( $tab_eleve_infos , COUNT_NORMAL );
@@ -235,7 +236,9 @@ $nb_syntheses_total = 0 ;
 // Pour chaque élève...
 if(empty($is_appreciation_groupe))
 {
-  $afficher_score = test_user_droit_specifique( $_SESSION['DROIT_VOIR_SCORE_BILAN'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ , $make_officiel /*forcer_parent*/ );
+  $forcer_profil_sigle = ($make_officiel) ? 'TUT'    : NULL ;
+  $forcer_profil_type  = ($make_officiel) ? 'parent' : NULL ;
+  $afficher_score = test_user_droit_specifique( $_SESSION['DROIT_VOIR_SCORE_BILAN'] , NULL /*matiere_coord_or_groupe_pp_connu*/ , 0 /*matiere_id_or_groupe_id_a_tester*/ , $forcer_profil_sigle , $forcer_profil_type );
   foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
   {
     // Si cet élève a été évalué...
@@ -391,9 +394,9 @@ $tab_graph_data = array();
 // Préparatifs
 if( ($make_html) || ($make_graph) )
 {
-  $bouton_print_appr = ((!$make_graph)&&($make_officiel))   ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
-  $bouton_print_test = (!empty($is_bouton_test_impression)) ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
-  $bouton_import_csv = ($make_action=='saisir')             ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
+  $bouton_print_appr = ((!$make_graph)&&($make_officiel))                   ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
+  $bouton_print_test = (!empty($is_bouton_test_impression))                 ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
+  $bouton_import_csv = in_array($make_action,array('modifier','tamponner')) ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
   $releve_HTML  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>'.NL;
   $releve_HTML .= $affichage_direct ? '' : '<h1>Synthèse '.$tab_titre[$synthese_modele].'</h1>'.NL;
   $releve_HTML .= $affichage_direct ? '' : '<h2>'.html($texte_periode).'<br />'.html($texte_precision).'</h2>'.NL;
@@ -412,7 +415,7 @@ if($make_pdf)
 // Pour chaque élève...
 foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
 {
-  extract($tab_eleve);  // $eleve_nom $eleve_prenom $eleve_genre $date_naissance
+  extract($tab_eleve);  // $eleve_INE $eleve_nom $eleve_prenom $eleve_genre $date_naissance
   $date_naissance = ($date_naissance) ? convert_date_mysql_to_french($date_naissance) : '' ;
   if($make_officiel)
   {
@@ -440,13 +443,13 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
         }
         $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_prof_principal + $nb_lignes_supplementaires;
         $tab_infos_entete = (!$make_officiel) ? array( $tab_titre[$synthese_modele] , $texte_periode , $texte_precision , $groupe_nom ) : array($tab_etabl_coords,$tab_etabl_logo,$etabl_coords__bloc_hauteur,$tab_bloc_titres,$tab_adresse,$tag_date_heure_initiales,$eleve_genre,$date_naissance) ;
-        $releve_PDF->entete( $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_nb_lignes );
+        $releve_PDF->entete( $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_INE , $eleve_nb_lignes );
       }
       // On passe en revue les matières...
       foreach($tab_infos_acquis_eleve[$eleve_id] as $matiere_id => $tab_infos_matiere)
       {
         $matiere_nom = $tab_matiere[$matiere_id]['matiere_nom'];
-        if( (!$make_officiel) || (($make_action=='saisir')&&($BILAN_ETAT=='3synthese')) || (($make_action=='saisir')&&($BILAN_ETAT=='2rubrique')&&(in_array($matiere_id,$tab_matiere_id))) || (($make_action=='examiner')&&(in_array($matiere_id,$tab_matiere_id))) || ($make_action=='consulter') || ($make_action=='imprimer') )
+        if( (!$make_officiel) || ($make_action=='tamponner') || (($make_action=='modifier')&&(in_array($matiere_id,$tab_matiere_id))) || (($make_action=='examiner')&&(in_array($matiere_id,$tab_matiere_id))) || ($make_action=='consulter') || ($make_action=='imprimer') )
         {
           // Bulletin - Interface graphique
           if($make_graph)
@@ -565,7 +568,7 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
               $bouton_supprimer = ($note!==NULL)      ? ' <button type="button" class="supprimer">Supprimer sans recalculer</button>' : '' ;
               $note = ($note!==NULL) ? ( ($_SESSION['OFFICIEL']['BULLETIN_CONVERSION_SUR_20']) ? $note : ($note*5).'&nbsp;%' ) : '-' ;
               $appreciation = ($appreciation!='') ? $appreciation : ( ($eleve_id) ? 'Moyenne calculée / reportée / actualisée automatiquement.' : 'Moyenne de classe (calculée / actualisée automatiquement).' ) ;
-              $action = ( ($BILAN_ETAT=='2rubrique') && ($make_action=='saisir') && ($eleve_id) ) ? ' <button type="button" class="modifier">Modifier</button>'.$bouton_nettoyer.$bouton_supprimer : '' ;
+              $action = ( ($make_action=='modifier') && ($eleve_id) ) ? ' <button type="button" class="modifier">Modifier</button>'.$bouton_nettoyer.$bouton_supprimer : '' ;
               $moyenne_classe = '';
               if( ($make_action=='consulter') && ($_SESSION['OFFICIEL']['BULLETIN_MOYENNE_CLASSE']) && ($eleve_id) )
               {
@@ -586,11 +589,11 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
                   {
                     extract($tab);  // $prof_info $appreciation $note
                     $actions = '';
-                    if( ($BILAN_ETAT=='2rubrique') && ($make_action=='saisir') && ($prof_id==$_SESSION['USER_ID']) )
+                    if( ($make_action=='modifier') && ($prof_id==$_SESSION['USER_ID']) )
                     {
                       $actions .= ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
                     }
-                    elseif(in_array($BILAN_ETAT,array('2rubrique','3synthese')))
+                    elseif(in_array($BILAN_ETAT,array('2rubrique','3mixte','4synthese')))
                     {
                       if($prof_id!=$_SESSION['USER_ID']) { $actions .= ' <button type="button" class="signaler">Signaler une faute</button>'; }
                       if($droit_corriger_appreciation)   { $actions .= ' <button type="button" class="corriger">Corriger une faute</button>'; }
@@ -599,7 +602,7 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
                   }
                 }
               }
-              if( ($BILAN_ETAT=='2rubrique') && ($make_action=='saisir') )
+              if($make_action=='modifier')
               {
                 if(!isset($tab_saisie[$eleve_id][$matiere_id][$_SESSION['USER_ID']]))
                 {
@@ -627,7 +630,7 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
         }
       }
       // Bulletin - Appréciation générale + Moyenne générale
-      if( ($make_officiel) && ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE_LONGUEUR']) && ( ($BILAN_ETAT=='3synthese') || ($make_action=='consulter') ) )
+      if( ($make_officiel) && ($_SESSION['OFFICIEL']['BULLETIN_APPRECIATION_GENERALE_LONGUEUR']) && ( ($make_action=='tamponner') || ($make_action=='consulter') ) )
       {
         if( ($make_html) || ($make_graph) )
         {
@@ -679,18 +682,18 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
           {
             extract($tab_appreciation_generale);  // $prof_info $appreciation $note
             $actions = '';
-            if( ($BILAN_ETAT=='3synthese') && ($make_action=='saisir') ) // Pas de test ($prof_id_appreciation_generale==$_SESSION['USER_ID']) car l'appréciation générale est unique avec saisie partagée.
+            if($make_action=='tamponner') // Pas de test ($prof_id_appreciation_generale==$_SESSION['USER_ID']) car l'appréciation générale est unique avec saisie partagée.
             {
               $actions .= ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
             }
-            elseif(in_array($BILAN_ETAT,array('2rubrique','3synthese')))
+            elseif(in_array($BILAN_ETAT,array('2rubrique','3mixte','4synthese')))
             {
               if($prof_id_appreciation_generale!=$_SESSION['USER_ID']) { $actions .= ' <button type="button" class="signaler">Signaler une faute</button>'; }
               if($droit_corriger_appreciation)                         { $actions .= ' <button type="button" class="corriger">Corriger une faute</button>'; }
             }
             $releve_HTML .= '<tr id="appr_0_'.$prof_id_appreciation_generale.'"><td colspan="2" class="now"><div class="notnow">'.html($prof_info).$actions.'</div><div class="appreciation">'.html($appreciation).'</div></td></tr>'.NL;
           }
-          elseif( ($BILAN_ETAT=='3synthese') && ($make_action=='saisir') )
+          elseif($make_action=='tamponner')
           {
             $releve_HTML .= '<tr id="appr_0_'.$_SESSION['USER_ID'].'"><td colspan="2" class="now"><div class="hc"><button type="button" class="ajouter">Ajouter l\'appréciation générale.</button></div></td></tr>'.NL;
           }
@@ -749,7 +752,7 @@ foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
       // Bulletin - Professeurs principaux
       if( ($make_officiel) && ($affichage_prof_principal) )
       {
-        if($make_html)
+        if( ($make_html) || ($make_graph) )
         {
           $releve_HTML .= '<div class="i">'.$texte_prof_principal.'</div>'.NL;
         }

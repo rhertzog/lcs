@@ -76,17 +76,25 @@ $_SESSION['FORCEBRUTE'][$PAGE] = array(
   'DELAI'   => 5, // en secondes, est ensuite incrémenté en cas d'erreur
   'CAPTCHA' => $captcha_soluce,
 );
+
+$is_etablissement_virtuel = IS_HEBERGEMENT_SESAMATH && ( ($BASE==ID_DEMO) || ($BASE>=CONVENTION_ENT_ID_ETABL_MAXI) || (substr($structure_denomination,0,5)=='Voir ') ) ? TRUE : FALSE ;
 ?>
 
-
-<?php if($PROFIL=='structure'): ?>
+<?php if( ($PROFIL=='structure') && (!$is_etablissement_virtuel) ): ?>
 <form id="form_lost" action="#" method="post">
   <h2>Cas n°1 : une adresse de courriel est associée à votre compte</h2>
-  <p>Alors utilisez ce formulaire afin d'obtenir de nouveaux identifiants :</p>
-  <p><label class="tab">Établissement :</label><input id="f_base" name="f_base" type="hidden" value="<?php echo $BASE ?>" /><em><?php echo html($structure_denomination) ?></em></p>
-  <p><label class="tab" for="f_courriel">Courriel :</label><input id="f_courriel" name="f_courriel" type="text" value="" size="30" maxlength="63" /></p>
-  <p><label class="tab">Anti-robot :</label><span id="captcha_game">Cliquer du plus petit au plus grand <?php echo $html_imgs ?></span><span id="captcha_init" class="hide">Ordre enregistré. <button type="button" class="actualiser">Recommencer.</button></span><input id="f_captcha" name="f_captcha" type="text" value="" /></p>
-  <p><span class="tab"></span><button id="f_bouton_envoyer" type="submit" class="mail_envoyer">Envoyer.</button><label id="ajax_msg_envoyer"></label></p>
+  <div id="step1">
+    <p>Alors utilisez ce formulaire afin d'obtenir de nouveaux identifiants :</p>
+    <div><label class="tab">Établissement :</label><input id="f_base" name="f_base" type="hidden" value="<?php echo $BASE ?>" /><em><?php echo html($structure_denomination) ?></em></div>
+    <div><label class="tab" for="f_courriel">Courriel :</label><input id="f_courriel" name="f_courriel" type="text" value="" size="30" maxlength="63" /></div>
+    <div><label class="tab">Anti-robot :</label><span id="captcha_game">Cliquer du plus petit au plus grand <?php echo $html_imgs ?></span><span id="captcha_init" class="hide">Ordre enregistré. <button type="button" class="actualiser">Recommencer.</button></span><input id="f_captcha" name="f_captcha" type="text" value="" class="invisible" /></div>
+    <p><span class="tab"></span><button id="f_bouton_rechercher" type="submit" class="rechercher">Rechercher.</button><label id="ajax_msg_rechercher"></label></p>
+  </div>
+  <div id="step2" class="hide">
+    <p>Confirmez ou sélectionnez le compte concerné :</p>
+    <label class="tab" for="f_user">Utilisateur :</label><select id="f_user" name="f_user"><option value="-1"></option></select>
+    <p><span class="tab"></span><button id="f_bouton_envoyer" type="submit" class="mail_envoyer">Envoyer.</button><label id="ajax_msg_envoyer"></label></p>
+  </div>
   <hr />
   <h2>Cas n°2 : vous n'aviez pas d'adresse de courriel renseignée</h2>
   <p>
@@ -98,6 +106,16 @@ $_SESSION['FORCEBRUTE'][$PAGE] = array(
 </p>
 <?php endif; ?>
 
+<?php if( ($PROFIL=='structure') && ($is_etablissement_virtuel) ): ?>
+
+<p class="danger">Vous vous êtes visiblement égaré&nbsp;!</p>
+<p class="astuce">Il n'y a aucune raison de demander un nouveau mot de passe pour un utilisateur de l'établissement <em>"<?php echo html($structure_denomination) ?>"</em> car il s'agit d'une structure virtuelle&hellip;</p>
+<ul class="puce">
+  <li class="p">Consulter <a class="b" href="<?php echo SERVEUR_PROJET ?>/index.php?page=utilisation__serveur_sesamath__demo" target="_blank">le site officiel du projet <em>SACoche</em></a> pour tout renseignement concernant l'établissement de démonstration.</li>
+</ul>
+
+<?php endif; ?>
+
 <?php if($PROFIL=='webmestre'): ?>
 <p class="astuce">Le webmestre est la personne qui a installé le logiciel sur ce serveur.</p>
 <p class="danger">Ne mélangez pas le compte "webmestre du serveur" avec les comptes administrateurs des établissements !</p>
@@ -106,7 +124,7 @@ $_SESSION['FORCEBRUTE'][$PAGE] = array(
 
 <?php if($PROFIL=='partenaire'): ?>
 <p class="astuce">Un "partenaire" est ici une collectivité qui a signé une convention avec <em>Sésamath</em> pour l'usage d'un connecteur ENT sur cet hébergement.</p>
-<p>Si vraiment vous êtes dans cette situation, alors prenez contact avec Sésamath...</p><?php /* Les personnes concernées se comptent sur le doigt de la main et sauront nous trouver si besoin ! */ ?>
+<p>Si vraiment vous êtes dans cette situation, alors prenez contact avec <em>Sésamath</em>...</p><?php /* Les personnes concernées se comptent sur le doigt de la main et sauront nous trouver si besoin ! */ ?>
 <?php endif; ?>
 
 <hr />

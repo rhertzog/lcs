@@ -378,68 +378,6 @@ function fabriquer_nom_fichier_bilan_officiel( $eleve_id , $bilan_type , $period
 }
 
 /**
- * Insère dans un courriel un texte donnant des informations sur la connexion internet utilisée.
- * 
- * @param array   $tab_elements   peut contenir les valeurs 'excuses_derangement' , 'info_connexion' , 'no_reply' ,  'notif_individuelle' , 'signature'
- * @param string  $courriel       facultatif, seulement requis pour 'excuses_derangement' & 'notif_individuelle' 
- * @return string
- */
-function fabriquer_texte_courriel( $tab_elements , $courriel=NULL )
-{
-  $texte = '';
-  // texte s'excusant en cas de réception d'un courriel non sollicité
-  if(in_array( 'excuses_derangement' , $tab_elements ))
-  {
-    $texte .= "\r\n";
-    $texte .= 'Si vous n\'êtes pas à l\'origine de cette demande, alors quelqu\'un a saisi votre adresse ('.$courriel.') par erreur !'."\r\n";
-    $texte .= 'Dans ce cas, désolé pour le dérangement, veuillez ignorer ce message.'."\r\n";
-  }
-  // texte donnant des informations sur la connexion internet utilisée
-  if(in_array( 'info_connexion' , $tab_elements ))
-  {
-    $AdresseIP = Session::get_IP();
-    $HostName  = gethostbyaddr($AdresseIP);
-    $UserAgent = Session::get_UserAgent();
-    $texte .= "\r\n";
-    $texte .= 'Voici, pour information, les informations relatives à la connexion internet utilisée :'."\r\n";
-    $texte .= 'Adresse IP --> '.$AdresseIP."\r\n";
-    $texte .= 'Nom d\'hôte --> '.$HostName."\r\n";
-    $texte .= 'Navigateur --> '.$UserAgent."\r\n";
-  }
-  // texte indiquant qu'il ne faut pas répondre à l'envoyeur
-  if(in_array( 'no_reply' , $tab_elements ))
-  {
-    $texte .= "\r\n";
-    $texte .= '______________________________________________________________________'."\r\n";
-    $texte .= "\r\n";
-    $texte .= 'L\'expéditeur de ce courriel est une machine, merci de NE PAS lui répondre.'."\r\n";
-  }
-  // texte avec l'indication pour modifier ses abonnements et un lien pour signaler une réception anormale
-  if(in_array( 'notif_individuelle' , $tab_elements ))
-  {
-    if($_SESSION['CONNEXION_MODE']!='normal')
-    {
-      $get_base = ($_SESSION['BASE']) ? '='.$_SESSION['BASE'] : '' ;
-      $texte .= 'Pour modifier vos abonnements : '.URL_DIR_SACOCHE.'?page=compte_email&sso'.$get_base."\r\n";
-    }
-    else
-    {
-      $texte .= 'Pour modifier vos abonnements : '.URL_DIR_SACOCHE.' menu [Adresse e-mail & Notifications]'."\r\n";
-    }
-    $texte .= 'Pour signaler un envoi anormal : '.URL_DIR_SACOCHE.'?page=public_contact_admin&base='.$_SESSION['BASE'].'&courriel='.$courriel."\r\n";
-  }
-  // texte avec la signature "SACoche"
-  if(in_array( 'signature' , $tab_elements ))
-  {
-    $texte .= "\r\n";
-    $texte .= '--'."\r\n";
-    $texte .= 'SACoche - '.HEBERGEUR_DENOMINATION."\r\n";
-  }
-  // retour du contenu
-  return $texte;
-}
-
-/**
  * Mettre à jour automatiquement la base si besoin ; à effectuer avant toute récupération des données sinon ça peut poser pb...
  * 
  * @param int   $BASE
@@ -847,13 +785,14 @@ function test_droit_specifique_restreint($listing_droits_sigles,$restriction)
  * @param string $listing_droits_sigles
  * @param int    $matiere_coord_or_groupe_pp_connu   si le droit comporte une restriction aux coordonnateurs matières | professeurs principaux, on peut déja connaitre et transmettre l'info (soit pour au moins une matière | classe, soit pour une matière | classe donnée)
  * @param int    $matiere_id_or_groupe_id_a_tester   si le droit comporte une restriction aux coordonnateurs matières | professeurs principaux, et si $matiere_coord_or_groupe_pp_connu n'est pas transmis, on peut chercher si le droit est bon soit pour une matière | classe donnée, soit pour au moins une matière | classe
- * @param bool   $forcer_parent                TRUE pour forcer à tester un profil parent au lieu du profil de l'utilisateur
+ * @param string $forcer_profil_sigle                pour forcer à tester un profil donné au lieu du profil de l'utilisateur
+ * @param string $forcer_profil_type                pour forcer à tester un profil donné au lieu du profil de l'utilisateur
  * @return bool
  */
-function test_user_droit_specifique($listing_droits_sigles,$matiere_coord_or_groupe_pp_connu=NULL,$matiere_id_or_groupe_id_a_tester=0,$forcer_parent=FALSE)
+function test_user_droit_specifique( $listing_droits_sigles , $matiere_coord_or_groupe_pp_connu=NULL , $matiere_id_or_groupe_id_a_tester=0 , $forcer_profil_sigle=NULL , $forcer_profil_type=NULL )
 {
-  $user_profil_sigle = (!$forcer_parent) ? $_SESSION['USER_PROFIL_SIGLE'] : 'TUT'    ;
-  $user_profil_type  = (!$forcer_parent) ? $_SESSION['USER_PROFIL_TYPE']  : 'parent' ;
+  $user_profil_sigle = (!$forcer_profil_sigle) ? $_SESSION['USER_PROFIL_SIGLE'] : $forcer_profil_sigle ;
+  $user_profil_type  = (!$forcer_profil_type)  ? $_SESSION['USER_PROFIL_TYPE']  : $forcer_profil_type  ;
   $tableau_droits_sigles = explode(',',$listing_droits_sigles);
   $test_droit = in_array($user_profil_sigle,$tableau_droits_sigles);
   if( $test_droit && ($user_profil_type=='professeur') && ($_SESSION['USER_JOIN_GROUPES']=='config') && test_droit_specifique_restreint($listing_droits_sigles,'ONLY_PP') )
@@ -943,6 +882,24 @@ function afficher_texte_tronque( $texte , $longueur_max )
     return mb_substr( $texte , 0 , $pos_espace ).$chaine_de_fin;
   }
   return mb_substr( $texte , 0 , $longueur_max-5 ).$chaine_de_fin;
+}
+
+/**
+ * Formater les liens selon un code perso
+ *
+ * En attendant un éventuel textarea enrichi pour la saisie des messages (mais est-ce que ça ne risquerait pas de faire une page d'accueil folklorique ?), une petite fonction pour fabriquer des liens...
+ * Format attendu : [desciptif|adresse|target]
+ *
+ * @param string $texte
+ * @param int    $longueur_max
+ * @param string $contexte   html | mail
+ * @return string
+ */
+function make_lien($texte,$contexte)
+{
+  $masque_recherche = '#\[([^\|]+)\|([^\|]+)\|([^\|]*)\]#' ;
+  $masque_remplacement = ($contexte=='html') ? '<a href="$2" target="$3">$1</a>' : '$1 [$2]' ;
+  return str_replace( 'target=""' , '' , preg_replace( $masque_recherche , $masque_remplacement , $texte ) );
 }
 
 ?>

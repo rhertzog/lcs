@@ -76,7 +76,7 @@ Layout::add( 'js_inline_before' , 'var ID_MATIERE_PARTAGEE_MAX = '.ID_MATIERE_PA
       }
       else
       {
-        echo'<tr><td class="nu" colspan="3"></td></tr>'.NL;
+        echo'<tr class="vide"><td class="nu" colspan="2"></td><td class="nu"></td></tr>'.NL;
       }
       ?>
     </tbody>
@@ -115,7 +115,7 @@ Layout::add( 'js_inline_before' , 'var ID_MATIERE_PARTAGEE_MAX = '.ID_MATIERE_PA
       }
       else
       {
-        echo'<tr><td class="nu" colspan="3"></td></tr>'.NL;
+        echo'<tr class="vide"><td class="nu" colspan="2"></td><td class="nu"></td></tr>'.NL;
       }
       ?>
     </tbody>
@@ -139,7 +139,7 @@ Layout::add( 'js_inline_before' , 'var ID_MATIERE_PARTAGEE_MAX = '.ID_MATIERE_PA
     <p>Confirmez-vous la suppression de la matière &laquo;&nbsp;<b id="gestion_delete_identite_perso"></b>&nbsp;&raquo; ?</p>
   </div>
   <p>
-    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
+    <span class="tab"></span><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
   </p>
 </form>
 

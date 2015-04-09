@@ -312,24 +312,23 @@ $(document).ready
       {
         rules :
         {
-          f_niveau       : { required:true },
-          f_nom          : { required:true , maxlength:20 },
-          f_eleve_nombre : { isWord:'élève' },
-          f_prof_nombre  : { required:false }
+          f_niveau      : { required:true },
+          f_nom         : { required:true , maxlength:20 },
+          f_eleve_liste : { required:true },
+          f_prof_liste  : { required:false }
         },
         messages :
         {
-          f_niveau       : { required:"niveau manquant" },
-          f_nom          : { required:"nom manquant" , maxlength:"20 caractères maximum" },
-          f_eleve_nombre : { isWord:"élève(s) manquant(s)" },
-          f_prof_nombre  : { }
+          f_niveau      : { required:"niveau manquant" },
+          f_nom         : { required:"nom manquant" , maxlength:"20 caractères maximum" },
+          f_eleve_liste : { required:"élève(s) manquant(s)" },
+          f_prof_liste  : { }
         },
         errorElement : "label",
         errorClass : "erreur",
         errorPlacement : function(error,element)
         {
-          if( (element.attr("id")=='f_eleve_nombre') || (element.attr("id")=='f_prof_nombre') ) { element.next().next().after(error); }
-          else {element.after(error);}
+          element.after(error);
         }
       }
     );
@@ -403,7 +402,7 @@ $(document).ready
         switch (mode)
         {
           case 'ajouter':
-            $('#table_action tbody tr td[colspan=5]').parent().remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML ; IE8 bugue si on n'indique que [colspan]
+            $('#table_action tbody tr.vide').remove(); // En cas de tableau avec une ligne vide pour la conformité XHTML
             var position_script = responseHTML.lastIndexOf('<SCRIPT>');
             var niveau_nom = $('#f_niveau option:selected').text();
             var new_tr = responseHTML.substring(0,position_script).replace('<td>{{NIVEAU_NOM}}</td>','<td>'+'<i>'+tab_niveau_ordre[niveau_nom]+'</i>'+niveau_nom+'</td>');

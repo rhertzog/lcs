@@ -54,7 +54,7 @@ if( $_SESSION['USER_EMAIL'] && $_SESSION['USER_EMAIL_ORIGINE'] )
 }
 else
 {
-  $info_origine = '<span class="astuce">Il n\y a pas d\'adresse actuellement enregistrée.</span>';
+  $info_origine = '<span class="astuce">Il n\'y a pas d\'adresse actuellement enregistrée.</span>';
 }
 
 if(COURRIEL_NOTIFICATION=='non')
@@ -63,7 +63,7 @@ if(COURRIEL_NOTIFICATION=='non')
 }
 elseif(!$_SESSION['USER_EMAIL'])
 {
-  $info_envoi_notifications = '<label class="alerte">Les envois par courriel seront remplacés par une indication en page d\'accueil tant que l\'adresse n\'est pas renseignée.</label>' ;
+  $info_envoi_notifications = '<label class="alerte">Les envois par courriel seront remplacés par des indications en page d\'accueil tant que votre adresse de courriel ne sera pas renseignée.</label>' ;
 }
 else
 {
@@ -72,10 +72,9 @@ else
 
 ?>
 
-<p>
-  <span class="astuce">Les adresses e-mail ne sont utilisées que par l'application et ne sont pas visibles des autres utilisateurs à l'exception des administrateurs.</span><br />
-  <span class="astuce">Si vous avez plusieurs comptes <em>SACoche</em> (profils d'accès multiples...), ils ne peuvent pas être associés à la même adresse de courriel.</span>
-</p>
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__email_notifications">DOC : Adresse e-mail / Abonnements / Notifications</a></span></p>
+
+<p class="astuce">Les adresses e-mail ne sont utilisées que par l'application et ne sont pas visibles des autres utilisateurs à l'exception des administrateurs.</p>
 
 <hr />
 
@@ -98,10 +97,6 @@ else
   <?php echo $info_envoi_notifications ?>
 </p>
 
-<div class="travaux">Fonctionnalité encore en développement ; finalisation et documentation à venir prochainement&hellip;</div>
-
-<?php if(FALSE): ?>
-
 <form id="form_abonnements" action="#" method="post">
   <table id="table_abonnements" class="form">
     <thead>
@@ -115,10 +110,11 @@ else
     <tbody>
       <?php
       $tab_choix = array( 'non' , 'accueil' , 'courriel' );
-      $DB_TAB = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_profil( $_SESSION['USER_PROFIL_TYPE'] , $_SESSION['USER_ID'] );
+      $DB_TAB  = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_profil( $_SESSION['USER_PROFIL_TYPE'] , $_SESSION['USER_ID'] );
+      $DB_JOIN = DB_STRUCTURE_NOTIFICATION::DB_lister_abonnements_user( $_SESSION['USER_ID'] );
       foreach($DB_TAB as $DB_ROW)
       {
-        $DB_ROW['jointure_mode'] = is_null($DB_ROW['jointure_mode']) ? 'non' : $DB_ROW['jointure_mode'] ;
+        $DB_ROW['jointure_mode'] = isset($DB_JOIN[$DB_ROW['abonnement_ref']]) ? $DB_JOIN[$DB_ROW['abonnement_ref']]['jointure_mode'] : 'non' ;
         echo'<tr><td>'.$DB_ROW['abonnement_descriptif'].'</td>';
         foreach($tab_choix as $radio_key)
         {
@@ -146,8 +142,6 @@ else
     <span class="tab"></span><button id="bouton_abonner" type="button" class="parametre">Valider.</button><label id="ajax_msg_abonnements">&nbsp;</label>
   </p>
 </form>
-
-<?php endif; ?>
 
 <hr />
 

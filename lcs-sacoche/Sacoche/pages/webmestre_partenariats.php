@@ -74,7 +74,7 @@ if( (HEBERGEUR_INSTALLATION=='mono-structure') || (!IS_HEBERGEMENT_SESAMATH) )
     }
     else
     {
-      echo'<tr><td class="nu" colspan="7"></td></tr>'.NL;
+      echo'<tr class="vide"><td class="nu" colspan="6"></td><td class="nu"></td></tr>'.NL;
     }
     ?>
   </tbody>
@@ -102,6 +102,6 @@ if( (HEBERGEUR_INSTALLATION=='mono-structure') || (!IS_HEBERGEMENT_SESAMATH) )
     Confirmez-vous la génération et l'envoi d'un nouveau mot de passe pour &laquo;&nbsp;<b id="gestion_initialiser_mdp_identite"></b>&nbsp;&raquo; ?
   </p>
   <p>
-    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
+    <span class="tab"></span><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
   </p>
 </form>

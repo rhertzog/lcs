@@ -31,6 +31,8 @@ $TITRE = html(Lang::_("Notifications reçues"));
 $menu = ($_SESSION['USER_PROFIL_TYPE']!='administrateur') ? '[Paramétrages]' : '[Paramétrages personnels]' ;
 ?>
 
+<p><span class="manuel"><a class="pop_up" href="<?php echo SERVEUR_DOCUMENTAIRE ?>?fichier=environnement_generalites__email_notifications">DOC : Adresse e-mail / Abonnements / Notifications</a></span></p>
+
 <p>
   <span class="astuce">Pour gérer ses abonnements aux notifications, utiliser le menu <a href="./index.php?page=compte_email"><?php echo $menu ?> [Adresse e-mail &amp; Abonnements]</a>.</span><br />
   <span class="astuce">Les notifications sont automatiquement retirées passé un délai de 2 mois.</span>
@@ -66,7 +68,7 @@ $menu = ($_SESSION['USER_PROFIL_TYPE']!='administrateur') ? '[Paramétrages]' : 
         echo  '<td>'.$datetime_affich.'</td>';
         echo  '<td>'.$DB_ROW['notification_statut'].'</td>';
         echo  '<td>'.$DB_ROW['abonnement_objet'].'</td>';
-        echo  '<td class="i">'.html(mb_substr($DB_ROW['notification_contenu'],0,50)).' [...]</td>';
+        echo  '<td class="i">'.html(afficher_texte_tronque($DB_ROW['notification_contenu'],60)).'</td>';
         echo  '<td class="nu">';
         echo    '<q class="voir" title="Consulter la notification complète."></q>';
         echo  '</td>';
@@ -87,6 +89,6 @@ $menu = ($_SESSION['USER_PROFIL_TYPE']!='administrateur') ? '[Paramétrages]' : 
 
 <div id="div_notification" class="hide">
   <h3>Notification du <span id="report_date"></span></h3>
-  <textarea id="textarea_notification" rows="20" cols="80"></textarea><br />
+  <textarea id="textarea_notification" rows="25" cols="100"></textarea><br />
   <label id="ajax_save">&nbsp;</label>
 </form>

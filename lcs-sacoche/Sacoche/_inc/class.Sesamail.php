@@ -659,6 +659,131 @@ class Sesamail
   }
   // addDefaultHeaders
 
+
+
+
+  /**
+   * Renvoie une URL pour un lien profond vers un espace identifié.
+   * 
+   * @param string   $query_string   sans "?" initial ni de param de base ou de sso
+   * @return string
+   */
+  public static function adresse_lien_profond($get_param)
+  {
+    // GET à ajouter pour le type de connexion et le numéro de la base (si besoin)
+    if(HEBERGEUR_INSTALLATION=='multi-structures')
+    {
+      $get_connexion = ($_SESSION['CONNEXION_MODE']!='normal') ? 'sso='.$_SESSION['BASE'].'&' : 'base='.$_SESSION['BASE'].'&' ;
+    }
+    else if($_SESSION['CONNEXION_MODE']!='normal')
+    {
+      $get_connexion = 'sso&' ;
+    }
+    else if($_SESSION['CONNEXION_MODE']!='normal')
+    {
+      $get_connexion = '' ;
+    }
+    // assemblage selon le mode de connexion
+    if($_SESSION['CONNEXION_MODE']!='shibboleth')
+    {
+       // SACoche gère la mémorisation de la page demandée en utilisant $_SESSION['MEMO_GET'].
+      $query_string = '?'.$get_connexion.$get_param;
+    }
+    else
+    {
+       // Le "maquillage" dans un memoget est obligatoire sur le serveur de Bordeaux,
+       // sinon (transmission du param "sso") le serveur shibbolisé redirige vers l'authentification
+       // avant que PHP ne prenne la main pour enregistrer les valeurs GET que le service d'authentification externe perd
+       // (bug lors de l'appel d'un IdP de type RSA FIM, application nationale du ministère...)
+       // Dans ce cas, SACoche utilise un ccokie : @see Cookie::save_get_and_exit_reload() + Cookie::load_get()
+      $query_string = '?memoget='.urlencode($get_connexion.$get_param);
+    }
+    // retour
+    return URL_DIR_SACOCHE.$query_string;
+  }
+
+  /**
+   * Renvoie un texte comportant divers éléments pour la fin du courriel.
+   * 
+   * @param array   $tab_elements   peut contenir les valeurs 'excuses_derangement' , 'info_connexion' , 'no_reply' ,  'notif_individuelle' , 'signature'
+   * @param string  $courriel       facultatif, seulement requis pour 'excuses_derangement' & 'notif_individuelle' 
+   * @return string
+   */
+  public static function texte_pied_courriel( $tab_elements , $courriel=NULL )
+  {
+    $texte = '';
+    // texte s'excusant en cas de réception d'un courriel non sollicité
+    if(in_array( 'excuses_derangement' , $tab_elements ))
+    {
+      $texte .= "\r\n";
+      $texte .= 'Si vous n\'êtes pas à l\'origine de cette demande, alors quelqu\'un a saisi votre adresse ('.$courriel.') par erreur !'."\r\n";
+      $texte .= 'Dans ce cas, désolé pour le dérangement, veuillez ignorer ce message.'."\r\n";
+    }
+    // texte donnant des informations sur la connexion internet utilisée
+    if(in_array( 'info_connexion' , $tab_elements ))
+    {
+      $AdresseIP = Session::get_IP();
+      $HostName  = gethostbyaddr($AdresseIP);
+      $UserAgent = Session::get_UserAgent();
+      $texte .= "\r\n";
+      $texte .= 'Voici, pour information, les informations relatives à la connexion internet utilisée :'."\r\n";
+      $texte .= 'Adresse IP --> '.$AdresseIP."\r\n";
+      $texte .= 'Nom d\'hôte --> '.$HostName."\r\n";
+      $texte .= 'Navigateur --> '.$UserAgent."\r\n";
+    }
+    // texte indiquant qu'il ne faut pas répondre à l'envoyeur
+    if(in_array( 'no_reply' , $tab_elements ))
+    {
+      $texte .= "\r\n";
+      $texte .= '______________________________________________________________________'."\r\n";
+      $texte .= "\r\n";
+      $texte .= 'L\'expéditeur de ce courriel est une machine, merci de NE PAS répondre au message.'."\r\n";
+    }
+    // texte avec l'indication pour modifier ses abonnements et un lien pour signaler une réception anormale
+    if(in_array( 'notif_individuelle' , $tab_elements ))
+    {
+      $texte .= "\r\n";
+      $texte .= 'Modifier vos abonnements :'   ."\r\n".Sesamail::adresse_lien_profond('page=compte_email')."\r\n";
+      $texte .= 'Consulter vos notifications :'."\r\n".Sesamail::adresse_lien_profond('page=consultation_notifications')."\r\n";
+      $texte .= 'Signaler un courriel erroné :'."\r\n".URL_DIR_SACOCHE.'?'.'base=' .$_SESSION['BASE'].'&page=public_contact_admin&courriel='.$courriel."\r\n";
+    }
+    // texte avec la signature "SACoche"
+    if(in_array( 'signature' , $tab_elements ))
+    {
+      $texte .= "\r\n";
+      $texte .= '--'."\r\n";
+      $texte .= 'SACoche - '.HEBERGEUR_DENOMINATION."\r\n";
+    }
+    // retour du contenu
+    return $texte;
+  }
+
+  /**
+   * Envoyer ou rendre disponibles les notifications en attente.
+   * 
+   * @param void
+   * @return void
+   */
+  public static function envoyer_notifications()
+  {
+    $DB_TAB = DB_STRUCTURE_NOTIFICATION::DB_lister_notifications_a_publier();
+    if(!empty($DB_TAB))
+    {
+      foreach($DB_TAB as $DB_ROW)
+      {
+        $notification_statut = ( (COURRIEL_NOTIFICATION=='oui') && ($DB_ROW['jointure_mode']=='courriel') && $DB_ROW['user_email'] ) ? 'envoyée' : 'consultable' ;
+        DB_STRUCTURE_NOTIFICATION::DB_modifier_statut( $DB_ROW['notification_id'] , $DB_ROW['user_id'] , $notification_statut );
+        if($notification_statut=='envoyée')
+        {
+          $mail_user    = $DB_ROW['user_prenom'].' '.$DB_ROW['user_nom'].' <'.$DB_ROW['user_email'].'>';
+          $mail_objet   = 'Notification - '.$DB_ROW['abonnement_objet'];
+          $mail_contenu = $DB_ROW['notification_contenu'].Sesamail::texte_pied_courriel( array('no_reply','notif_individuelle','signature') , $DB_ROW['user_email'] );
+          $courriel_bilan = Sesamail::mail( $mail_user , $mail_objet , $mail_contenu , $mail_user );
+        }
+      }
+    }
+  }
+
 }
 // Class
 

@@ -37,7 +37,7 @@ if( (isset($_COOKIE[COOKIE_STRUCTURE])) && (isset($_COOKIE[COOKIE_AUTHMODE])) &&
 // Supprimer le cookie avec le mode d'identification, servant à une reconnexion SSO, devenu inutile puisque déconnecté à présent.
 if(isset($_COOKIE[COOKIE_AUTHMODE]))
 {
-  setcookie( COOKIE_AUTHMODE /*name*/ , '' /*value*/, $_SERVER['REQUEST_TIME']-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
+  Cookie::effacer(COOKIE_AUTHMODE);
 }
 
 // En cas de multi-structures, il faut savoir dans quelle base récupérer les informations.
@@ -113,6 +113,6 @@ $_SESSION['FORCEBRUTE'][$PAGE] = array(
 <h1 class="informations">Informations</h1>
 <ul class="puce">
   <li><em>SACoche</em> est un logiciel <span class="b">gratuit</span>, <span class="b">libre</span>, développé avec le soutien de <a target="_blank" href="<?php echo SERVEUR_ASSO ?>"><em>Sésamath</em></a>.</li>
-  <li class="b">Consulter <a href="<?php echo SERVEUR_PROJET ?>" target="_blank">le site officiel de <em>SACoche</em></a> pour tout renseignement.</li>
+  <li class="b">Consulter <a href="<?php echo SERVEUR_PROJET ?>" target="_blank">le site officiel du projet <em>SACoche</em></a> pour tout renseignement.</li>
   <li>Version installée <em><?php echo VERSION_PROG ?></em>.<label id="ajax_version"></label></li>
 </ul>

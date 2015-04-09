@@ -67,9 +67,9 @@ HtmlForm::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_per
     <label class="tab" for="f_periode_import">Période :</label><select id="f_periode_import" name="f_periode_import"><?php echo $select_periode ?></select><br />
     <label class="tab" for="f_choix_principal">Origine :</label>
     <select id="f_choix_principal" name="f_choix_principal">
-      <option value=""></option>
-      <option value="import_sconet">Sconet Absences</option>
+      <option value="">&nbsp;</option>
       <option value="import_siecle">Siècle Vie Scolaire</option>
+      <option value="import_sconet">Sconet Absences</option>
       <option value="import_gepi">GEPI Absences 2</option>
       <option value="import_pronote">Pronote</option>
     </select>
@@ -79,7 +79,8 @@ HtmlForm::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_per
     <li>Indiquer le fichier <em>SIECLE_exportAbsence.xml</em> : <button type="button" id="import_sconet" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_sconet">&nbsp;</label></li>
   </ul>
   <ul class="puce hide" id="puce_import_siecle">
-    <li><span class="danger"><em>Siècle Vie Scolaire</em> ne dispose pas de fonctionnalité d'export&nbsp;! Une demande d'évolution a été déposée auprès de l'équipe nationale&hellip;<button type="button" id="import_siecle" class="hide">Parcourir...</button></span></li>
+    <li><span class="astuce"><em>Siècle Vie Scolaire</em> permet un export des absences et des retards à compter de sa version 15.1 de février 2015.</span></li>
+    <li>Indiquer le fichier <em>eleves_JJMMAAAA_HHhMM.xml</em> : <button type="button" id="import_siecle" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_siecle">&nbsp;</label></li>
   </ul>
   <ul class="puce hide" id="puce_import_gepi">
     <li>Indiquer le fichier <em>extraction_abs_plus_*.csv</em> : <button type="button" id="import_gepi" class="fichier_import">Parcourir...</button><label id="ajax_msg_import_gepi">&nbsp;</label></li>
@@ -113,7 +114,7 @@ HtmlForm::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_per
     <p class="astuce">Ce fichier comporte les données de <b id="gepi_eleves_nb"></b> élève(s).</p>
   </div>
   <div class="hide" id="comfirm_import_pronote">
-    <p class="astuce">Ce fichier comporte les <b id="pronote_objet"></b> de <b id="pronote_eleves_nb"></b> élève(s) entre le <b id="pronote_date_debut"></b> et le <b id="pronote_date_fin"</p>
+    <p class="astuce">Ce fichier comporte les <b id="pronote_objet"></b> de <b id="pronote_eleves_nb"></b> élève(s) entre le <b id="pronote_date_debut"></b> et le <b id="pronote_date_fin"></b></p>
   </div>
   <p>Confirmez-vous vouloir importer ces données dans <em>SACoche</em> pour la période <b id="periode_import"></b> ?</p>
   <form action="#" method="post">

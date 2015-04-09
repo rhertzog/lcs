@@ -31,7 +31,7 @@ $TITRE = html(Lang::_("Messages d'accueil"));
 // Fabrication des éléments select du formulaire
 $tab_groupes = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_groupes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_regroupements_etabl(FALSE/*sans*/) ;
 $select_groupe = HtmlForm::afficher_select($tab_groupes , 'f_groupe' /*select_nom*/ , '' /*option_first*/ , FALSE /*selection*/ , 'regroupements' /*optgroup*/ );
-$select_profil = '<option value=""></option>';
+$select_profil = '<option value="">&nbsp;</option>';
 $select_profil.= ($_SESSION['USER_PROFIL_TYPE']=='administrateur') ? '<option value="administrateur">Administrateurs</option>' : '' ;
 $select_profil.= (in_array($_SESSION['USER_PROFIL_TYPE'],array('administrateur','directeur'))) ? '<option value="directeur">Directeurs</option>' : '' ;
 $select_profil.= '<option value="professeur">Professeurs</option>' ;
@@ -80,7 +80,7 @@ Layout::add( 'js_inline_before' , 'var tab_msg_contenus  = new Array();' );
         echo  '<td>'.$date_debut_affich.'</td>';
         echo  '<td>'.$date_fin_affich.'</td>';
         echo  '<td>'.$destinataires_nombre.'</td>';
-        echo  '<td>'.html(mb_substr($DB_ROW['message_contenu'],0,50)).'</td>';
+        echo  '<td>'.html(afficher_texte_tronque($DB_ROW['message_contenu'],60)).'</td>';
         echo  '<td class="nu">';
         echo    '<q class="modifier" title="Modifier ce message."></q>';
         echo    '<q class="supprimer" title="Supprimer ce message."></q>';
@@ -94,7 +94,7 @@ Layout::add( 'js_inline_before' , 'var tab_msg_contenus  = new Array();' );
     }
     else
     {
-      echo'<tr><td class="nu" colspan="5"></td></tr>'.NL;
+      echo'<tr class="vide"><td class="nu" colspan="4"></td><td class="nu"></td></tr>'.NL;
     }
     ?>
   </tbody>
@@ -108,17 +108,20 @@ Layout::add( 'js_inline_before' , 'var tab_msg_contenus  = new Array();' );
       <label class="tab" for="f_fin_date">Date de fin :</label><input id="f_fin_date" name="f_fin_date" size="8" type="text" value="" /><q class="date_calendrier" title="Cliquer sur cette image pour importer une date depuis un calendrier !"></q>
     </p>
     <p>
-      <label class="tab" for="f_destinataires_nombre">Destinataires :</label><input id="f_destinataires_nombre" name="f_destinataires_nombre" size="13" type="text" value="" readonly /><q class="choisir_eleve" title="Voir ou choisir les destinataires."></q><input id="f_destinataires_liste" name="f_destinataires_liste" type="hidden" value="" />
+      <label class="tab" for="f_destinataires_nombre">Destinataires :</label><input id="f_destinataires_nombre" name="f_destinataires_nombre" size="13" type="text" value="" readonly /><input id="f_destinataires_liste" name="f_destinataires_liste" type="text" value="" class="invisible" /><q class="choisir_eleve" title="Voir ou choisir les destinataires."></q>
     </p>
     <p>
-      <label class="tab" for="f_message_info">Contenu :</label><input id="f_message_info" name="f_message_info" size="45" type="text" value="aucun" readonly /><q class="texte_editer" title="Voir ou modifier le contenu du message."></q><textarea id="f_message_contenu" name="f_message_contenu" class="hide" ></textarea>
+      <label class="tab" for="f_message_info">Contenu :</label><input id="f_message_info" name="f_message_info" size="45" type="text" value="aucun" readonly /><input id="f_message_longueur" name="f_message_longueur" type="text" value="" class="invisible" /><q class="texte_editer" title="Voir ou modifier le contenu du message."></q><textarea id="f_message_contenu" name="f_message_contenu" class="hide" ></textarea>
+    </p>
+    <p>
+      <label class="tab" for="f_mode_discret">Mode discret :</label><label for="f_mode_discret"><input id="f_mode_discret" name="f_mode_discret" type="checkbox" value="1" /> Cocher pour éviter l'envoi de notifications aux abonnés.</label>
     </p>
   </div>
   <div id="gestion_delete">
     <p>Confirmez-vous la suppression du message &laquo;&nbsp;<b id="gestion_delete_identite"></b>&hellip;&nbsp;&raquo; ?</p>
   </div>
   <p>
-    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
+    <span class="tab"></span><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
   </p>
 </form>
 

@@ -219,13 +219,13 @@ class Session
       else
       {
         // accès direct à une page réservée, onglets incompatibles ouverts, inactivité, disque plein, chemin invalide, ...
-        Session::$tab_message_erreur[] = $message.' Veuillez vous (re)-connecter.';
+        Session::$tab_message_erreur[] = $message.' Veuillez vous (re)connecter.';
       }
     }
     // si ajax
     else
     {
-      $conseil = ( $test_get || $test_cookie ) ? ' Veuillez actualiser la page.' : ' Veuillez vous (re)-connecter.' ;
+      $conseil = ( $test_get || $test_cookie ) ? ' Veuillez actualiser la page.' : ' Veuillez vous (re)connecter.' ;
       exit_error( 'Session perdue / expirée' /*titre*/ , $message.$conseil /*contenu*/ );
     }
   }
@@ -301,7 +301,7 @@ class Session
     // Pas besoin de session_start() car la session a déjà été ouverte avant appel à cette fonction.
     $_SESSION = array();
     session_unset();
-    setcookie( session_name() /*name*/ , '' /*value*/ , $_SERVER['REQUEST_TIME']-42000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
+    Cookie::effacer(session_name());
     if($is_initialized)
     {
       session_destroy();
@@ -325,6 +325,7 @@ class Session
       if(!Session::$tab_droits_page['public'])
       {
         // 1.1. Demande d'accès à une page réservée (donc besoin d'identification) : session perdue / expirée, ou demande d'accès direct (lien profond) -> redirection pour une nouvelle identification
+        $_SESSION['MEMO_GET'] = $_GET ; // On mémorise $_GET pour un lien profond hors SSO, mais pas d'initialisation de session sinon la redirection avec le SSO tourne en boucle.
         Session::exit_sauf_SSO('Session absente / perdue / expirée / incompatible.'); // Si SSO au prochain coup on ne passera plus par là.
       }
       else
@@ -363,7 +364,8 @@ class Session
         if(!Session::$tab_droits_page['public'])
         {
           // 2.3.1. Espace non identifié => Espace identifié : redirection pour identification
-          Session::exit_sauf_SSO('Authentification manquante ou perdue (onglets incompatibles ouverts ?).'); // Pas d'initialisation de session sinon la redirection avec le SSO tourne en boucle.
+          $_SESSION['MEMO_GET'] = $_GET ; // On mémorise $_GET pour un lien profond hors SSO, mais pas d'initialisation de session sinon la redirection avec le SSO tourne en boucle.
+          Session::exit_sauf_SSO('Authentification manquante ou perdue (onglets incompatibles ouverts ?).');
         }
         else
         {

@@ -28,10 +28,6 @@
 class SessionUser
 {
 
-  // //////////////////////////////////////////////////
-  // Méthodes publiques
-  // //////////////////////////////////////////////////
-
   /**
    * Tester si mdp du webmestre transmis convient.
    * 
@@ -80,7 +76,7 @@ class SessionUser
       return array( 'Mot de passe incorrect ! Nouvelle tentative autorisée dans '.$_SESSION['FORCEBRUTE'][$PAGE]['DELAI'].'s.' , array() );
     }
     // Enregistrement d'un cookie sur le poste client servant à retenir le partenariat sélectionné si identification avec succès
-    setcookie( COOKIE_PARTENAIRE /*name*/ , $DB_ROW['partenaire_id'] /*value*/ , $_SERVER['REQUEST_TIME']+31536000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ ); /* 60*60*24*365 */
+    Cookie::definir( COOKIE_PARTENAIRE , $DB_ROW['partenaire_id'] , 31536000 /* 60*60*24*365 = 1 an */ );
     // Si on arrive ici c'est que l'identification s'est bien effectuée !
     return array( 'ok' , $DB_ROW );
   }
@@ -143,9 +139,9 @@ class SessionUser
       DB_STRUCTURE_PUBLIC::DB_enregistrer_date_connexion($DB_ROW['user_id']);
     }
     // Enregistrement d'un cookie sur le poste client servant à retenir le dernier établissement sélectionné si identification avec succès
-    setcookie( COOKIE_STRUCTURE /*name*/ , $BASE /*value*/ , $_SERVER['REQUEST_TIME']+31536000 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ ); /* 60*60*24*365 */
+    Cookie::definir( COOKIE_STRUCTURE , $BASE , 31536000 /* 60*60*24*365 = 1 an */ );
     // Enregistrement d'un cookie sur le poste client servant à retenir le dernier mode de connexion utilisé si identification avec succès
-    setcookie( COOKIE_AUTHMODE /*name*/ , $mode_connection /*value*/ , 0 /*expire*/ , '/' /*path*/ , getServerUrl() /*domain*/ );
+    Cookie::definir( COOKIE_AUTHMODE , $mode_connection );
     // Si on arrive ici c'est que l'identification s'est bien effectuée !
     return array( 'ok' , $DB_ROW );
   }
@@ -159,8 +155,6 @@ class SessionUser
    */
   public static function initialiser_utilisateur($BASE,$DB_ROW)
   {
-    // On en profite pour effacer les fichiers inutiles
-    FileSystem::nettoyer_fichiers_temporaires($BASE);
     // Récupérer et Enregistrer en session les données associées à l'établissement (indices du tableau de session en majuscules).
     $DB_TAB_PARAM = DB_STRUCTURE_PUBLIC::DB_lister_parametres();
     $tab_type_entier  = array(
@@ -348,6 +342,8 @@ class SessionUser
     SessionUser::memoriser_menu();
     // Juste pour davantage de lisibilité si besoin de debug...
     ksort($_SESSION);
+    // Enfin, on profite de cet événement pour faire du ménage ou simuler une tâche planifiée
+    SessionUser::cron();
   }
 
   /**
@@ -545,6 +541,38 @@ class SessionUser
       $numero_menu++;
     }
     $_SESSION['MENU'] .= '</ul></li></ul>'.NL;
+  }
+
+  /**
+   * Tâches pseudo-planifiées exécutées lors de la connexion d'un utilisateur d'un établissement
+   * 
+   * @param void
+   * @return void
+   */
+  public static function cron()
+  {
+    // On essaye de faire en sorte que plusieurs connexions ne lancent pas ces procédures simultanément
+    $fichier_lock = CHEMIN_DOSSIER_TMP.'lock.txt';
+    if(!file_exists($fichier_lock))
+    {
+      // On écrit un marqueur
+      FileSystem::ecrire_fichier($fichier_lock,'');
+      // On efface les fichiers temporaires obsolètes
+      FileSystem::nettoyer_fichiers_temporaires($_SESSION['BASE']);
+      // On rend visibles les notifications en attente et on supprime les notifications obsolètes
+      Sesamail::envoyer_notifications();
+      DB_STRUCTURE_NOTIFICATION::DB_supprimer_log_anciens();
+      // On efface le marqueur
+      FileSystem::supprimer_fichier($fichier_lock);
+    }
+    // Si le fichier témoin du nettoyage existe, on vérifie que sa présence n'est pas anormale (cela s'est déjà produit...)
+    else
+    {
+      if( $_SERVER['REQUEST_TIME'] - filemtime($fichier_lock) > 30 )
+      {
+        FileSystem::supprimer_fichier($fichier_lock);
+      }
+    }
   }
 
 }

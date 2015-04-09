@@ -44,6 +44,8 @@ $type_individuel | $type_synthese | $type_bulletin
 $releve_modele [ matiere | selection | multimatiere | professeur ]
 */
 
+$matiere_et_groupe = ($releve_modele=='matiere') ? $matiere_nom.' - '.$groupe_nom : $groupe_nom ;
+
 // Chemins d'enregistrement
 
 $fichier_nom = ($make_action!='imprimer') ? 'releve_item_'.$releve_modele.'_'.Clean::fichier($groupe_nom).'_<REPLACE>_'.fabriquer_fin_nom_fichier__date_et_alea() : 'officiel_'.$BILAN_TYPE.'_'.Clean::fichier($groupe_nom).'_'.fabriquer_fin_nom_fichier__date_et_alea() ;
@@ -55,7 +57,7 @@ $calcul_acquisitions = ( $type_synthese || $type_bulletin || $aff_etat_acquisiti
 
 $tab_item_infos       = array();  // [item_id] => array(item_ref,item_nom,item_coef,item_cart,item_socle,item_lien,calcul_methode,calcul_limite,calcul_retroactif);
 $tab_matiere_item     = array();  // [matiere_id][item_id] => item_nom
-$tab_eleve_infos      = array();  // [eleve_id] => array(eleve_nom,eleve_prenom,date_naissance,eleve_id_gepi)
+$tab_eleve_infos      = array();  // [eleve_id] => array(eleve_INE,eleve_nom,eleve_prenom,date_naissance,eleve_id_gepi)
 $tab_matiere          = array();  // [matiere_id] => array(matiere_nom,matiere_nb_demandes)
 $tab_eval             = array();  // [eleve_id][matiere_id][item_id][devoir] OU [matiere_id][item_id][eleve_id][devoir] => array(note,date,info)
 
@@ -202,7 +204,13 @@ $liste_item = implode( ',' , array_keys($tab_item_infos) );
 
 if($_SESSION['USER_PROFIL_TYPE']=='eleve')
 {
-  $tab_eleve_infos[$_SESSION['USER_ID']] = array('eleve_nom'=>$_SESSION['USER_NOM'],'eleve_prenom'=>$_SESSION['USER_PRENOM'],'date_naissance'=>NULL,'eleve_id_gepi'=>$_SESSION['USER_ID_GEPI']);
+  $tab_eleve_infos[$_SESSION['USER_ID']] = array(
+    'eleve_nom'      => $_SESSION['USER_NOM'],
+    'eleve_prenom'   => $_SESSION['USER_PRENOM'],
+    'date_naissance' => NULL,
+    'eleve_id_gepi'  => $_SESSION['USER_ID_GEPI'],
+    'eleve_INE'      => NULL,
+  );
 }
 else
 {
@@ -554,9 +562,9 @@ if($type_individuel)
   $jour_debut_annee_scolaire = jour_debut_annee_scolaire('mysql'); // Date de fin de l'année scolaire précédente
   if($make_html)
   {
-    $bouton_print_appr = ($make_officiel)                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
-    $bouton_print_test = (!empty($is_bouton_test_impression)) ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
-    $bouton_import_csv = ($make_action=='saisir')             ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
+    $bouton_print_appr = ($make_officiel)                                     ? ' <button id="archiver_imprimer" type="button" class="imprimer">Archiver / Imprimer des données</button>'           : '' ;
+    $bouton_print_test = (!empty($is_bouton_test_impression))                 ? ' <button id="simuler_impression" type="button" class="imprimer">Simuler l\'impression finale de ce bilan</button>' : '' ;
+    $bouton_import_csv = in_array($make_action,array('modifier','tamponner')) ? ' <button id="saisir_deport" type="button" class="fichier_export">Saisie déportée</button>'                         : '' ;
     $releve_HTML_individuel  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>'.NL;
     $releve_HTML_individuel .= $affichage_direct ? '' : '<h1>Bilan '.$tab_titre[$releve_modele].'</h1>'.NL;
     $releve_HTML_individuel .= $affichage_direct ? '' : '<h2>'.html($texte_periode).'</h2>'.NL;
@@ -602,7 +610,7 @@ if($type_individuel)
     // Pour chaque élève...
     foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
     {
-      extract($tab_eleve);  // $eleve_nom $eleve_prenom $date_naissance $eleve_genre $eleve_id_gepi
+      extract($tab_eleve);  // $eleve_INE $eleve_nom $eleve_prenom $date_naissance $eleve_genre $eleve_id_gepi
       $date_naissance = ($date_naissance) ? convert_date_mysql_to_french($date_naissance) : '' ;
       if($make_officiel)
       {
@@ -629,13 +637,13 @@ if($type_individuel)
             }
             $eleve_nb_lignes  = $tab_nb_lignes_total_eleve[$eleve_id] + $nb_lignes_appreciation_generale_avec_intitule + $nb_lignes_assiduite + $nb_lignes_prof_principal + $nb_lignes_supplementaires;
             $tab_infos_entete = (!$make_officiel) ? array( $tab_titre[$releve_modele] , $texte_periode , $groupe_nom ) : array($tab_etabl_coords,$tab_etabl_logo,$etabl_coords__bloc_hauteur,$tab_bloc_titres,$tab_adresse,$tag_date_heure_initiales,$eleve_genre,$date_naissance) ;
-            $releve_PDF->entete_format_eleve( $pages_nb , $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_nb_lignes );
+            $releve_PDF->entete_format_eleve( $pages_nb , $tab_infos_entete , $eleve_nom , $eleve_prenom , $eleve_INE , $eleve_nb_lignes );
           }
           // Pour chaque matiere...
           foreach($tab_matiere as $matiere_id => $tab)
           {
             extract($tab); // $matiere_nom $matiere_nb_demandes
-            if( (!$make_officiel) || (($make_action=='saisir')&&($BILAN_ETAT=='2rubrique')&&(in_array($matiere_id,$tab_matiere_id))) || (($make_action=='saisir')&&($BILAN_ETAT=='3synthese')) || (($make_action=='examiner')&&(in_array($matiere_id,$tab_matiere_id))) || ($make_action=='consulter') || ($make_action=='imprimer') )
+            if( (!$make_officiel) || (($make_action=='modifier')&&(in_array($matiere_id,$tab_matiere_id))) || ($make_action=='tamponner') || (($make_action=='examiner')&&(in_array($matiere_id,$tab_matiere_id))) || ($make_action=='consulter') || ($make_action=='imprimer') )
             {
               // Si cet élève a été évalué dans cette matière...
               if(isset($tab_eval[$eleve_id][$matiere_id]))
@@ -853,11 +861,11 @@ if($type_individuel)
                       {
                         extract($tab);  // $prof_info $appreciation $note
                         $actions = '';
-                        if( ($BILAN_ETAT=='2rubrique') && ($make_action=='saisir') && ($prof_id==$_SESSION['USER_ID']) )
+                        if( ($make_action=='modifier') && ($prof_id==$_SESSION['USER_ID']) )
                         {
                           $actions .= ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
                         }
-                        elseif(in_array($BILAN_ETAT,array('2rubrique','3synthese')))
+                        elseif(in_array($BILAN_ETAT,array('2rubrique','3mixte','4synthese')))
                         {
                           if($prof_id!=$_SESSION['USER_ID']) { $actions .= ' <button type="button" class="signaler">Signaler une faute</button>'; }
                           if($droit_corriger_appreciation)   { $actions .= ' <button type="button" class="corriger">Corriger une faute</button>'; }
@@ -865,7 +873,7 @@ if($type_individuel)
                         $appreciations .= '<tr id="appr_'.$matiere_id.'_'.$prof_id.'"><td class="now"><div class="notnow">'.html($prof_info).$actions.'</div><div class="appreciation">'.html($appreciation).'</div></td></tr>'.NL;
                       }
                     }
-                    if( ($BILAN_ETAT=='2rubrique') && ($make_action=='saisir') )
+                    if($make_action=='modifier')
                     {
                       if(!isset($tab_saisie[$eleve_id][$matiere_id][$_SESSION['USER_ID']]))
                       {
@@ -889,7 +897,7 @@ if($type_individuel)
             }
           }
           // Relevé de notes - Synthèse générale
-          if( ($make_officiel) && ($_SESSION['OFFICIEL']['RELEVE_APPRECIATION_GENERALE_LONGUEUR']) && ( ($BILAN_ETAT=='3synthese') || ($make_action=='consulter') ) )
+          if( ($make_officiel) && ($_SESSION['OFFICIEL']['RELEVE_APPRECIATION_GENERALE_LONGUEUR']) && ( ($make_action=='tamponner') || ($make_action=='consulter') ) )
           {
             if($make_html)
             {
@@ -917,18 +925,18 @@ if($type_individuel)
               {
                 extract($tab_appreciation_generale);  // $prof_info $appreciation $note
                 $actions = '';
-                if( ($BILAN_ETAT=='3synthese') && ($make_action=='saisir') ) // Pas de test ($prof_id_appreciation_generale==$_SESSION['USER_ID']) car l'appréciation générale est unique avec saisie partagée.
+                if($make_action=='tamponner') // Pas de test ($prof_id_appreciation_generale==$_SESSION['USER_ID']) car l'appréciation générale est unique avec saisie partagée.
                 {
                   $actions .= ' <button type="button" class="modifier">Modifier</button> <button type="button" class="supprimer">Supprimer</button>';
                 }
-                elseif(in_array($BILAN_ETAT,array('2rubrique','3synthese')))
+                elseif(in_array($BILAN_ETAT,array('2rubrique','3mixte','4synthese')))
                 {
                   if($prof_id_appreciation_generale!=$_SESSION['USER_ID']) { $actions .= ' <button type="button" class="signaler">Signaler une faute</button>'; }
                   if($droit_corriger_appreciation)                         { $actions .= ' <button type="button" class="corriger">Corriger une faute</button>'; }
                 }
                 $releve_HTML_individuel .= '<tr id="appr_0_'.$prof_id_appreciation_generale.'"><td class="now"><div class="notnow">'.html($prof_info).$actions.'</div><div class="appreciation">'.html($appreciation).'</div></td></tr>'.NL;
               }
-              elseif( ($BILAN_ETAT=='3synthese') && ($make_action=='saisir') )
+              elseif($make_action=='tamponner')
               {
                 $releve_HTML_individuel .= '<tr id="appr_0_'.$_SESSION['USER_ID'].'"><td class="now"><div class="hc"><button type="button" class="ajouter">Ajouter l\'appréciation générale.</button></div></td></tr>'.NL;
               }
@@ -1247,7 +1255,6 @@ if($type_individuel)
 
 if($type_synthese)
 {
-  $matiere_et_groupe = ($releve_modele=='matiere') ? $matiere_nom.' - '.$groupe_nom : $groupe_nom ;
   $releve_HTML_synthese  = $affichage_direct ? '' : '<style type="text/css">'.$_SESSION['CSS'].'</style>'.NL;
   $releve_HTML_synthese .= $affichage_direct ? '' : '<h1>Bilan '.$tab_titre[$releve_modele].'</h1>'.NL;
   $releve_HTML_synthese .= '<h2>'.html($matiere_et_groupe).'</h2>'.NL;
@@ -1257,8 +1264,8 @@ if($type_synthese)
   }
   // Appel de la classe et redéfinition de qqs variables supplémentaires pour la mise en page PDF
   // On définit l'orientation la plus adaptée
-  $orientation = ( ( ($eleve_nb>$item_nb) && ($tableau_synthese_format=='eleve') ) || ( ($item_nb>$eleve_nb) && ($tableau_synthese_format=='item') ) ) ? 'portrait' : 'landscape' ;
-  $releve_PDF = new PDF_item_tableau( $make_officiel , $orientation , $marge_gauche , $marge_droite , $marge_haut , $marge_bas , $couleur , $fond , 'oui' /*legende*/ );
+  $orientation_auto = ( ( ($eleve_nb>$item_nb) && ($tableau_synthese_format=='eleve') ) || ( ($item_nb>$eleve_nb) && ($tableau_synthese_format=='item') ) ) ? 'portrait' : 'landscape' ;
+  $releve_PDF = new PDF_item_tableau( $make_officiel , $orientation_auto , $marge_gauche , $marge_droite , $marge_haut , $marge_bas , $couleur , $fond , 'oui' /*legende*/ );
   $releve_PDF->initialiser($eleve_nb,$item_nb,$tableau_synthese_format);
   $releve_PDF->entete($tab_titre[$releve_modele],$matiere_et_groupe,$texte_periode);
   // 1ère ligne
@@ -1286,8 +1293,9 @@ if($type_synthese)
     }
   }
   $releve_PDF->ligne_tete_cellules_fin();
+  $entete_vide   = ($repeter_entete)     ? '<th class="nu">&nbsp;</th>' : '' ;
   $checkbox_vide = ($affichage_checkbox) ? '<th class="nu">&nbsp;</th>' : '' ;
-  $releve_HTML_table_head .= '<th class="nu">&nbsp;</th><th>[ * ]</th><th>[ ** ]</th>'.$checkbox_vide.'</tr></thead>'.NL;
+  $releve_HTML_table_head .= '<th class="nu">&nbsp;</th><th>[ * ]</th><th>[ ** ]</th>'.$entete_vide.$checkbox_vide.'</tr></thead>'.NL;
   // lignes suivantes
   $releve_HTML_table_body = '';
   if($tableau_synthese_format=='eleve')
@@ -1296,7 +1304,8 @@ if($type_synthese)
     {
       extract($tab_eleve);  // $eleve_nom $eleve_prenom $eleve_id_gepi
       $releve_PDF->ligne_corps_cellule_debut( $eleve_nom.' '.$eleve_prenom );
-      $releve_HTML_table_body .= '<tr><td>'.html($eleve_nom.' '.$eleve_prenom).'</td>';
+      $entete = '<td>'.html($eleve_nom.' '.$eleve_prenom).'</td>';
+      $releve_HTML_table_body .= '<tr>'.$entete;
       foreach($tab_matiere_item as $matiere_id=>$tab_item)  // Pour chaque item...
       {
         foreach($tab_item as $item_id=>$item_nom)
@@ -1314,8 +1323,9 @@ if($type_synthese)
       $valeur1 = (isset($tab_moyenne_scores_eleve[$matiere_id][$eleve_id])) ? $tab_moyenne_scores_eleve[$matiere_id][$eleve_id] : FALSE ;
       $valeur2 = (isset($tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id])) ? $tab_pourcentage_acquis_eleve[$matiere_id][$eleve_id] : FALSE ;
       $releve_PDF->ligne_corps_cellules_fin($valeur1,$valeur2,FALSE,TRUE);
-      $checkbox = ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_user[]" value="'.$eleve_id.'" /></td>' : '' ;
-      $releve_HTML_table_body .= '<td class="nu">&nbsp;</td>'.Html::td_score($valeur1,$tableau_tri_mode,'%').Html::td_score($valeur2,$tableau_tri_mode,'%').$checkbox.'</tr>'.NL;
+      $col_entete   = ($repeter_entete) ? $entete : '' ;
+      $col_checkbox = ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_user[]" value="'.$eleve_id.'" /></td>' : '' ;
+      $releve_HTML_table_body .= '<td class="nu">&nbsp;</td>'.Html::td_score($valeur1,$tableau_tri_mode,'%').Html::td_score($valeur2,$tableau_tri_mode,'%').$col_entete.$col_checkbox.'</tr>'.NL;
     }
   }
   else
@@ -1325,7 +1335,8 @@ if($type_synthese)
       foreach($tab_item as $item_id=>$item_nom)
       {
         $releve_PDF->ligne_corps_cellule_debut( $tab_item_infos[$item_id][0]['item_ref'] );
-        $releve_HTML_table_body .= '<tr><td title="'.html(html($tab_item_infos[$item_id][0]['item_nom'])).'">'.html($tab_item_infos[$item_id][0]['item_ref']).'</td>'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
+        $entete = '<td title="'.html(html($tab_item_infos[$item_id][0]['item_nom'])).'">'.html($tab_item_infos[$item_id][0]['item_ref']).'</td>'; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
+        $releve_HTML_table_body .= '<tr>'.$entete;
         foreach($tab_eleve_infos as $eleve_id => $tab_eleve)  // Pour chaque élève...
         {
           $score = (isset($tab_score_eleve_item[$eleve_id][$matiere_id][$item_id])) ? $tab_score_eleve_item[$eleve_id][$matiere_id][$item_id] : FALSE ;
@@ -1336,8 +1347,9 @@ if($type_synthese)
         $valeur1 = $tab_moyenne_scores_item[$item_id];
         $valeur2 = $tab_pourcentage_acquis_item[$item_id];
         $releve_PDF->ligne_corps_cellules_fin($valeur1,$valeur2,FALSE,TRUE);
-        $checkbox = ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_item[]" value="'.$item_id.'" /></td>' : '' ;
-        $releve_HTML_table_body .= '<td class="nu">&nbsp;</td>'.Html::td_score($valeur1,$tableau_tri_mode,'%').Html::td_score($valeur2,$tableau_tri_mode,'%').$checkbox.'</tr>'.NL;
+        $col_entete   = ($repeter_entete) ? $entete : '' ;
+        $col_checkbox = ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_item[]" value="'.$item_id.'" /></td>' : '' ;
+        $releve_HTML_table_body .= '<td class="nu">&nbsp;</td>'.Html::td_score($valeur1,$tableau_tri_mode,'%').Html::td_score($valeur2,$tableau_tri_mode,'%').$col_entete.$col_checkbox.'</tr>'.NL;
       }
     }
   }
@@ -1346,7 +1358,8 @@ if($type_synthese)
   $releve_PDF->lignes_pied_cellules_debut( $info_ponderation_courte );
   $releve_HTML_table_foot1 = '<tr><th>moy. scores '.$info_ponderation_courte.' [*]</th>';
   $releve_HTML_table_foot2 = '<tr><th>% items acquis [**]</th>';
-  $checkbox = ($affichage_checkbox) ? '<tr><th class="nu">&nbsp;</th>' : '' ;
+  $row_entete   = ($repeter_entete)     ? '<tr><th class="nu">&nbsp;</th>' : '' ;
+  $row_checkbox = ($affichage_checkbox) ? '<tr><th class="nu">&nbsp;</th>' : '' ;
   if($tableau_synthese_format=='eleve')
   {
     foreach($tab_matiere_item as $matiere_id=>$tab_item)  // Pour chaque item...
@@ -1358,7 +1371,8 @@ if($type_synthese)
         $releve_PDF->ligne_corps_cellules_fin($valeur1,$valeur2,TRUE,FALSE);
         $releve_HTML_table_foot1 .= Html::td_score($valeur1,'score','%');
         $releve_HTML_table_foot2 .= Html::td_score($valeur2,'score','%');
-        $checkbox .= ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_item[]" value="'.$item_id.'" /></td>' : '' ;
+        $row_entete   .= ($repeter_entete) ? '<th class="hc" title="'.html(html($tab_item_infos[$item_id][0]['item_nom'])).'"><img alt="'.html($tab_item_infos[$item_id][0]['item_ref']).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($tab_item_infos[$item_id][0]['item_ref']).'&amp;size=8" /></th>' : '' ; // Volontairement 2 html() pour le title sinon &lt;* est pris comme une balise html par l'infobulle.
+        $row_checkbox .= ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_item[]" value="'.$item_id.'" /></td>' : '' ;
       }
     }
   }
@@ -1371,25 +1385,27 @@ if($type_synthese)
       $releve_PDF->ligne_corps_cellules_fin($valeur1,$valeur2,TRUE,FALSE);
       $releve_HTML_table_foot1 .= Html::td_score($valeur1,'score','%');
       $releve_HTML_table_foot2 .= Html::td_score($valeur2,'score','%');
-      $checkbox .= ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_user[]" value="'.$eleve_id.'" /></td>' : '' ;
+      $row_entete   .= ($repeter_entete) ? '<th class="hc"><img alt="'.html($eleve_nom.' '.$eleve_prenom).'" src="./_img/php/etiquette.php?dossier='.$_SESSION['BASE'].'&amp;nom='.urlencode($eleve_nom).'&amp;prenom='.urlencode($eleve_prenom).'&amp;size=8" /></th>' : '' ;
+      $row_checkbox .= ($affichage_checkbox) ? '<td class="nu"><input type="checkbox" name="id_user[]" value="'.$eleve_id.'" /></td>' : '' ;
     }
   }
   // les deux dernières cases (moyenne des moyennes)
   $colspan  = ($tableau_synthese_format=='eleve') ? $item_nb : $eleve_nb ;
-  $last_col = ($affichage_checkbox) ? '<td class="nu"></td>' : '' ;
   $releve_PDF->ligne_corps_cellules_fin($moyenne_moyenne_scores,$moyenne_pourcentage_acquis,TRUE,TRUE);
-  $releve_HTML_table_foot1 .= '<th class="nu">&nbsp;</th>'.Html::td_score($moyenne_moyenne_scores,'score','%').'<th class="nu">&nbsp;</th>'.$checkbox_vide.'</tr>'.NL;
-  $releve_HTML_table_foot2 .= '<th class="nu">&nbsp;</th><th class="nu">&nbsp;</th>'.Html::td_score($moyenne_pourcentage_acquis,'score','%').$checkbox_vide.'</tr>'.NL;
-  $checkbox .= ($affichage_checkbox) ? '<th class="nu">&nbsp;</th><th class="nu">&nbsp;</th><th class="nu">&nbsp;</th>'.$checkbox_vide.'</tr>'.NL : '' ;
-  $releve_HTML_table_foot = '<tfoot>'.NL.'<tr class="vide"><td class="nu" colspan="'.$colspan.'">&nbsp;</td><td class="nu"></td><td class="nu" colspan="2"></td>'.$last_col.'</tr>'.NL.$releve_HTML_table_foot1.$releve_HTML_table_foot2.$checkbox.'</tfoot>'.NL;
+  $releve_HTML_table_foot1 .= '<th class="nu">&nbsp;</th>'.Html::td_score($moyenne_moyenne_scores,'score','%').'<th class="nu">&nbsp;</th>'.$entete_vide.$checkbox_vide.'</tr>'.NL;
+  $releve_HTML_table_foot2 .= '<th class="nu">&nbsp;</th><th class="nu">&nbsp;</th>'.Html::td_score($moyenne_pourcentage_acquis,'score','%').$entete_vide.$checkbox_vide.'</tr>'.NL;
+  $row_entete   .= ($repeter_entete)     ? '<th class="nu">&nbsp;</th><th class="nu">&nbsp;</th><th class="nu">&nbsp;</th>'.$entete_vide.$checkbox_vide.'</tr>'.NL : '' ;
+  $row_checkbox .= ($affichage_checkbox) ? '<th class="nu">&nbsp;</th><th class="nu">&nbsp;</th><th class="nu">&nbsp;</th>'.$entete_vide.$checkbox_vide.'</tr>'.NL : '' ;
+  $releve_HTML_table_foot = '<tfoot>'.NL.'<tr class="vide"><td class="nu" colspan="'.$colspan.'">&nbsp;</td><td class="nu"></td><td class="nu" colspan="2"></td>'.$entete_vide.$checkbox_vide.'</tr>'.NL.$releve_HTML_table_foot1.$releve_HTML_table_foot2.$row_entete.$row_checkbox.'</tfoot>'.NL;
   // pour la sortie HTML, on peut placer les tableaux de synthèse au début
   $num_hide = ($tableau_synthese_format=='eleve') ? $item_nb+1 : $eleve_nb+1 ;
-  $num_hide_add = ($affichage_checkbox) ? ','.($num_hide+3).':{sorter:false}' : '' ;
+  $num_hide_add1 = ($affichage_checkbox || $repeter_entete) ? ','.($num_hide+3).':{sorter:false}' : '' ;
+  $num_hide_add2 = ($affichage_checkbox && $repeter_entete) ? ','.($num_hide+4).':{sorter:false}' : '' ;
   $releve_HTML_synthese .= '<hr />'.NL.'<h2>SYNTHESE (selon l\'objet et le mode de tri choisis)</h2>'.NL;
   $releve_HTML_synthese .= ($affichage_checkbox) ? '<form id="form_synthese" action="#" method="post">'.NL : '' ;
   $releve_HTML_synthese .= '<table id="table_s" class="bilan_synthese vsort">'.NL.$releve_HTML_table_head.$releve_HTML_table_foot.$releve_HTML_table_body.'</table>'.NL;
   $releve_HTML_synthese .= ($affichage_checkbox) ? HtmlForm::afficher_synthese_exploitation('eleves + eleves-items + items').'</form>'.NL : '';
-  $releve_HTML_synthese .= '<script type="text/javascript">$("#table_s").tablesorter({ headers:{'.$num_hide.':{sorter:false}'.$num_hide_add.'} });</script>'.NL; // Non placé dans le fichier js car mettre une variable à la place d'une valeur pour $num_hide ne fonctionne pas
+  $releve_HTML_synthese .= '<script type="text/javascript">$("#table_s").tablesorter({ headers:{'.$num_hide.':{sorter:false}'.$num_hide_add1.$num_hide_add2.'} });</script>'.NL; // Non placé dans le fichier js car mettre une variable à la place d'une valeur pour $num_hide ne fonctionne pas
   // On enregistre les sorties HTML et PDF
   FileSystem::ecrire_fichier(    CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.html' , $releve_HTML_synthese );
   FileSystem::ecrire_sortie_PDF( CHEMIN_DOSSIER_EXPORT.str_replace('<REPLACE>','synthese',$fichier_nom).'.pdf'  , $releve_PDF );
@@ -1436,13 +1452,13 @@ if( $type_bulletin && $make_html )
   }
   $bulletin_body = '';
   $bulletin_PDF = new PDF_item_bulletin( $make_officiel , $orientation , $marge_gauche , $marge_droite , $marge_haut , $marge_bas , $couleur , $fond );
-  $bulletin_PDF->initialiser_et_entete( $eleve_nb , $matiere_nom.' - '.$groupe_nom , $texte_periode , $info_ponderation_complete );
+  $bulletin_PDF->initialiser_et_entete( $tab_titre[$releve_modele] , $eleve_nb , $matiere_et_groupe , $texte_periode , $info_ponderation_complete );
   $bulletin_csv_entete = 'GEPI_IDENTIFIANT;NOTE;APPRECIATION'."\r\n";  // Ajout du préfixe 'GEPI_' pour éviter un bug avec M$ Excel « SYLK : Format de fichier non valide » (http://support.microsoft.com/kb/323626/fr)
   $tab_bulletin_csv_gepi = array_fill_keys( array('note_appreciation','note','appreciation_PA','appreciation_MS') , $bulletin_csv_entete );
   // Pour chaque élève...
   foreach($tab_eleve_infos as $eleve_id => $tab_eleve)
   {
-    extract($tab_eleve);  // $eleve_nom $eleve_prenom $eleve_id_gepi
+    extract($tab_eleve);  // $eleve_INE $eleve_nom $eleve_prenom $eleve_id_gepi
     // Si cet élève a été évalué...
     if(isset($tab_eval[$eleve_id]))
     {
@@ -1487,8 +1503,8 @@ if( $type_bulletin && $make_html )
   $bulletin_head  = '<thead><tr><th>Élève</th><th>Moyenne '.$info_ponderation_complete.' sur 20<br />(des scores d\'acquisitions)</th><th>Élément d\'appréciation<br />(pourcentage d\'items acquis)</th></tr></thead>'.NL;
   $bulletin_body  = '<tbody>'.NL.$bulletin_body.'</tbody>'.NL;
   $bulletin_foot  = '<tfoot><tr><th>Moyenne '.$info_ponderation_complete.' sur 20</th><th>'.$moyenne_affichee.'</th><th>'.$moyenne_pourcentage_acquis.'% d\'items acquis</th></tr></tfoot>'.NL;
-  $bulletin_html  = '<h1>Bilan disciplinaire</h1>';
-  $bulletin_html .= '<h2>'.html($matiere_nom.' - '.$groupe_nom).'</h2>';
+  $bulletin_html  = '<h1>Bilan '.$tab_titre[$releve_modele].'</h1>';
+  $bulletin_html .= '<h2>'.html($matiere_et_groupe).'</h2>';
   $bulletin_html .= '<h2>'.$texte_periode.'</h2>';
   $bulletin_html .= '<h2>Moyenne sur 20 / Élément d\'appréciation</h2>';
   $bulletin_html .= '<table id="export20" class="hsort">'.NL.$bulletin_head.$bulletin_foot.$bulletin_body.'</table>'.NL;

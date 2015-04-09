@@ -64,6 +64,7 @@ $check_aff_socle          = (Form::$tab_choix['aff_socle'])              ? ' che
 $check_aff_lien           = (Form::$tab_choix['aff_lien'])               ? ' checked' : '' ;
 $check_aff_domaine        = (Form::$tab_choix['aff_domaine'])            ? ' checked' : '' ;
 $check_aff_theme          = (Form::$tab_choix['aff_theme'])              ? ' checked' : '' ;
+$check_repeter_entete     = (Form::$tab_choix['repeter_entete'])         ? ' checked' : '' ;
 $tab_groupes   = ($_SESSION['USER_JOIN_GROUPES']=='config') ? DB_STRUCTURE_COMMUN::DB_OPT_groupes_professeur($_SESSION['USER_ID']) : DB_STRUCTURE_COMMUN::DB_OPT_classes_groupes_etabl() ;
 $tab_periodes  = DB_STRUCTURE_COMMUN::DB_OPT_periodes_etabl();
 
@@ -101,12 +102,13 @@ HtmlForm::fabriquer_tab_js_jointure_groupe( $tab_groupes , TRUE /*tab_groupe_per
   </span>
   <span id="options_synthese" class="<?php echo $class_form_synthese ?>">
     <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Paramétrage du tableau de synthèse." /> Opt. synthèse :</label><?php echo $select_synthese_format ?> <?php echo $select_tri_mode ?><br />
+    <span class="tab"></span><label for="f_repeter_entete"><input type="checkbox" id="f_repeter_entete" name="f_repeter_entete" value="1"<?php echo $check_repeter_entete ?> /> Répéter les entêtes de lignes et de colonnes (grand tableau, format <em>html</em>)</label><br />
   </span>
   <span id="option_with_coef" class="<?php echo $class_form_with_coef ?>">
     <label class="tab"><img alt="" src="./_img/bulle_aide.png" width="16" height="16" title="Concerne le relevé individuel avec moyenne des scores, la synthèse collective, la moyenne d'un bulletin.<br />La question se pose notamment dans le cas d'items issus de référentiels de plusieurs matières." /> Coefficients :</label><label for="f_with_coef"><input type="checkbox" id="f_with_coef" name="f_with_coef" value="1"<?php echo $check_with_coef ?> /> Prise en compte des coefficients</label><br />
   </span>
   <p>
-    <label class="tab">Items :</label><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="aucun" readonly /><input id="f_compet_liste" name="f_compet_liste" type="hidden" value="" /><q class="choisir_compet" title="Voir ou choisir les items."></q>
+    <label class="tab">Items :</label><input id="f_compet_nombre" name="f_compet_nombre" size="10" type="text" value="aucun" readonly /><input id="f_compet_liste" name="f_compet_liste" type="text" value="" class="invisible" /><q class="choisir_compet" title="Voir ou choisir les items."></q>
   </p>
   <label class="tab" for="f_groupe">Classe / groupe :</label><?php echo $select_groupe ?><input type="hidden" id="f_groupe_type" name="f_groupe_type" value="" /><input type="hidden" id="f_groupe_nom" name="f_groupe_nom" value="" /> <span id="bloc_ordre" class="hide"><?php echo $select_eleves_ordre ?></span><label id="ajax_maj">&nbsp;</label><br />
   <span id="bloc_eleve" class="hide"><label class="tab" for="f_eleve">Élève(s) :</label><span id="f_eleve" class="select_multiple"></span><span class="check_multiple"><q class="cocher_tout" title="Tout cocher."></q><br /><q class="cocher_rien" title="Tout décocher."></q></span></span>

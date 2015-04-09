@@ -143,7 +143,7 @@ elseif($levenshtein) // (forcément)
     }
     else
     {
-      echo'<tr><td class="nu" colspan="7"></td></tr>'.NL;
+      echo'<tr class="vide"><td class="nu" colspan="6"></td><td class="nu"></td></tr>'.NL;
     }
     ?>
   </tbody>
@@ -172,7 +172,7 @@ if( $levenshtein && !empty($DB_TAB) )
     <label class="tab" for="f_pays">Pays :</label><input id="f_pays" name="f_pays" type="text" value="" size="35" maxlength="35" />
   </p>
   <p>
-    <label class="tab"></label><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
+    <span class="tab"></span><input id="f_action" name="f_action" type="hidden" value="" /><input id="f_id" name="f_id" type="hidden" value="" /><button id="bouton_valider" type="button" class="valider">Valider.</button> <button id="bouton_annuler" type="button" class="annuler">Annuler.</button><label id="ajax_msg_gestion">&nbsp;</label>
   </p>
 </form>
 
