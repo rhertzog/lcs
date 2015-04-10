@@ -118,7 +118,7 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
             #
             if lcs-test-mysql; then
             	mysql -e "GRANT SHOW DATABASES ON *.* TO 'lcsmgr'@'localhost';"
-            if
+            fi
             #
             # Update sudoers
             # 
