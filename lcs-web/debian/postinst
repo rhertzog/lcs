@@ -116,7 +116,9 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
             #
             # GRANT mysql rights select for lcsmgr
             #
-            mysql -e "GRANT SHOW DATABASES ON *.* TO 'lcsmgr'@'localhost';"
+            if lcs-test-mysql; then
+            	mysql -e "GRANT SHOW DATABASES ON *.* TO 'lcsmgr'@'localhost';"
+            if
             #
             # Update sudoers
             # 

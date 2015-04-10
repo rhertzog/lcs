@@ -1,16 +1,6 @@
+
 lcs-web (2.4.10~12) Lcs; urgency=low
 
-  * destruction cookies complies with prescription in close session
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 03 Apr 2015 14:17:47 +0200
-
-lcs-web (2.4.10~11) Lcs; urgency=low
-
-    * change test of urlmajmod 
-
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 02 Apr 2015 11:54:53 +0200
-
-lcs-web (2.4.10~10) Lcs; urgency=low
 
   * Modify for Debian Wheezy
   * Synchronization with 2.4.9 tree
@@ -79,9 +69,16 @@ lcs-web (2.4.10~10) Lcs; urgency=low
   * Execute mkSlapdConf.sh if version lt 2.4.9.5
   * Fix php.ini cli after upgrade to Squeeze
   * Fix bug for CAS session cookie in log2cas_ajax.php
+  
+  [ Philippe Leclerc ]
+  * change test of urlmajmod 
+  * destruction cookies complies with prescription in close session
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 27 Mar 2015 16:14:58 +0200
+  [ Jean-Luc Chretien ]
+  * test if mysql is up for GRANTing lcsmgr on tables
 
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Apr 2015 14:45:37 +0300
+ 
 lcs-web (2.4.9.4) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
