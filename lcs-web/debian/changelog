@@ -1,6 +1,4 @@
-
 lcs-web (2.4.10~12) Lcs; urgency=low
-
 
   * Modify for Debian Wheezy
   * Synchronization with 2.4.9 tree
@@ -77,8 +75,8 @@ lcs-web (2.4.10~12) Lcs; urgency=low
   [ Jean-Luc Chretien ]
   * test if mysql is up for GRANTing lcsmgr on tables
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Apr 2015 14:45:37 +0300
- 
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Apr 2015 14:55:26 +0300
+
 lcs-web (2.4.9.4) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
