@@ -40,7 +40,7 @@ ssl_key: /etc/rubycas-server/server.key
 
 # Bind the server to a specific address. Use 0.0.0.0 to listen on all
 # available interfaces.
-#bind_address: 0.0.0.0
+bind_address: 0.0.0.0
 
 ### mongrel example (since mongrel doesn't support SSL on its own, you will have
 ###  to run this behind an https reverse proxy)

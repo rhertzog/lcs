@@ -16,11 +16,15 @@
 
 
 # get ruby version
-if grep -q ^7 /etc/debian_version && [ -d /var/lib/gems/1.9.1 ]; then
-	RUBYVER="1.9.1"
-else
-	RUBYVER="1.8"
-fi
+#if grep -q ^7 /etc/debian_version && [ -d /var/lib/gems/1.9.1 ]; then
+#	RUBYVER="1.9.1"
+#else
+#	RUBYVER="1.8"
+#fi
+
+# Fix ruby version
+RUBYVER="1.8"
+
 # get rubycas-server version
 RUBYCASVER=`gem list rubycas-server | grep rubycas-server | cut -d '(' -f 2 | cut -d ')' -f 1`
 

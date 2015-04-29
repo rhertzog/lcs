@@ -72,7 +72,7 @@ case "$1" in
 	    	
 	    	# Si Debian Wheezy
 	    	if  ! egrep -q "^5.0" /etc/debian_version;  then
-	    		mkdir /usr/share/php/smarty
+	    		mkdir -p /usr/share/php/smarty
 	    		ln -s /usr/share/php/smarty3 /usr/share/php/smarty/libs
 	    	fi
 	    	
