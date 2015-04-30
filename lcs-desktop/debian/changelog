@@ -1,3 +1,9 @@
+lcs-desktop (2.4.10~3) Lcs; urgency=low
+
+  *delete default json files 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 30 Apr 2015 10:24:24 +0200
+
 lcs-desktop (2.4.10~2) Lcs; urgency=low
 
   * open agendas in new tab because of mixed content 
