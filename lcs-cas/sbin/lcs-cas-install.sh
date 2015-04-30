@@ -103,6 +103,16 @@ gem install rubycas-server --version $RUBYCASVERSION --no-ri --no-rdoc -f
 # Install : daemons
 gem install daemons --version $DAEMONSVERSION --no-ri --no-rdoc -f
 #
+# Create symb link if necessary
+#
+if [ ! -d /var/lib/gems/1.8/gems/rubycas-server-1.1.2 ]; then
+	echo "Repertoire rubycas absent"
+	if [ -d /usr/lib/ruby/gems/1.8/gems/rubycas-server-1.1.2 ]; then
+		echo "Creation lien symbolique Rubycas"
+		ln -s /usr/lib/ruby/gems/1.8/gems/rubycas-server-1.1.2 /var/lib/gems/1.8/gems/rubycas-server-1.1.2
+	fi
+fi
+#
 #
 #
 if [ `getent passwd $USERRUN | wc -l` = "0" ]; then

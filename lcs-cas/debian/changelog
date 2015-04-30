@@ -1,5 +1,7 @@
-lcs-cas (2.4.10~10) Lcs; urgency=low
+lcs-cas (2.4.10~11) Lcs; urgency=low
   [ Jean-Luc Chretien ]
+  2.4.10~11
+  * Fix problem install rubycas-server in /usr/lib/ruby/gems
   2.4.10~10
   * Fix bind 0.0.0.0 in config.yml
   * Fix ruby version to 1.8 in rubycas-lcs
@@ -15,7 +17,7 @@ lcs-cas (2.4.10~10) Lcs; urgency=low
   2.4.9.2~4
   * Update rubycas-server to 1.1.2 version
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Nov 2013 11:02:47 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 30 Apr 2015 11:28:57 +0300
 
 lcs-cas (2.4.9.1) Lcs; urgency=low
 
