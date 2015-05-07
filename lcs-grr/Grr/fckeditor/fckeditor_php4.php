@@ -109,7 +109,7 @@ class FCKeditor
 	 */
 	function CreateHtml()
 	{
-		$HtmlValue = htmlspecialchars( $this->Value ) ;
+		$HtmlValue = grr_htmlSpecialChars( $this->Value ) ;
 
 		$Html = '' ;
 

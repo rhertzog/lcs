@@ -88,6 +88,6 @@ function SendError( $number, $text )
 
 function SendErrorNode(  $number, $text )
 {
-	echo '<Error number="' . $number . '" text="' . htmlspecialchars( $text ) . '" />' ;
+	echo '<Error number="' . $number . '" text="' . grr_htmlSpecialChars( $text ) . '" />' ;
 }
 ?>

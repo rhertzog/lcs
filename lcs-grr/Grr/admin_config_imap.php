@@ -70,7 +70,7 @@ if (isset($_POST['imap_statut'])) {
 }
 
 $back = '';
-if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+if (isset($_SERVER['HTTP_REFERER'])) $back = grr_htmlSpecialChars($_SERVER['HTTP_REFERER']);
 if ((isset($sso_restrictions)) and ($sso_restrictions==true)) {
     $day   = date("d");
     $month = date("m");

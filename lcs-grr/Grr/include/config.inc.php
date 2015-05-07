@@ -120,7 +120,7 @@ $sso_super_admin = false;
  $sso_restrictions : false|true
  Mettre la valeur du paramètre $sso_restrictions à "true" permet de cacher dans l'interface de GRR l'affichage de la rubrique "Authentification et ldap"
 */
-$sso_restrictions = false;
+$sso_restrictions = true;
 
 // Le paramètre $Url_CAS_setFixedServiceURL est le paramètre utilisé dans la méthode phpCAS::setFixedServiceURL(), dans le fichier cas.inc.php
 // Si ce paramètre est non vide, il sera utilisé par le service CAS

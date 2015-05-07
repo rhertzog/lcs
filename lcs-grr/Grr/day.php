@@ -149,7 +149,7 @@ else
 
 
 $back = '';
-if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+if (isset($_SERVER['HTTP_REFERER'])) $back = grr_htmlSpecialChars($_SERVER['HTTP_REFERER']);
 
 if ((getSettingValue("authentification_obli")==0) and (getUserName()=='')) {
     $type_session = "no_session";
@@ -335,7 +335,7 @@ for ($i = 0; ($row = grr_sql_row($res, $i)); $i++) {
     # Note: int casts on database rows for max may be needed for PHP3.
     # Adjust the starting and ending times so that bookings which don't
     # start or end at a recognized time still appear.
-
+//echo $row[3];exit;
     $start_t = max(round_t_down($row[1], $resolution, $am7), $am7);
     $end_t = min(round_t_up($row[2], $resolution, $am7) - $resolution, $pm7);
 
@@ -429,10 +429,10 @@ else
         echo "<th style=\"width:$room_column_width%;\" ";
         // Si la ressource est temporairement indisponible, on le signale
         if ($statut_room[$id_room[$i]] == "0") echo " class='avertissement' ";
-        echo ">" . htmlspecialchars($row[0])."\n";
-        if (htmlspecialchars($row[3]. $temp != '')) {
-            if (htmlspecialchars($row[3] != '')) $saut = "<br />"; else $saut = "";
-            echo $saut.htmlspecialchars($row[3]) . $temp."\n";
+        echo ">" . grr_htmlSpecialChars($row[0])."\n";
+        if (grr_htmlSpecialChars($row[3]. $temp != '')) {
+            if (grr_htmlSpecialChars($row[3] != '')) $saut = "<br />"; else $saut = "";
+            echo $saut.grr_htmlSpecialChars($row[3]) . $temp."\n";
         }
 
         echo "<br />";
@@ -446,10 +446,10 @@ else
 
         echo "</th>";
         // stockage de la première ligne :
-        $tab[1][$i+1] = htmlspecialchars($row[0]);
-        if (htmlspecialchars($row[3]. $temp != '')) {
-            if (htmlspecialchars($row[3] != '')) $saut = "<br />"; else $saut = "";
-            $tab[1][$i+1] .="<br />-".$saut."<i><span class =\"small\">". htmlspecialchars($row[3]) . $temp."\n</span></i>";
+        $tab[1][$i+1] = grr_htmlSpecialChars($row[0]);
+        if (grr_htmlSpecialChars($row[3]. $temp != '')) {
+            if (grr_htmlSpecialChars($row[3] != '')) $saut = "<br />"; else $saut = "";
+            $tab[1][$i+1] .="<br />-".$saut."<i><span class =\"small\">". grr_htmlSpecialChars($row[3]) . $temp."\n</span></i>";
         }
         $tab[1][$i+1] .= "<br />";
         if (verif_display_fiche_ressource(getUserName(), $id_room[$i]))
@@ -493,9 +493,9 @@ else
         // Si la ressource est temporairement indisponible, on le signale, sinon, couleur normale
         if ($statut_room[$id_room[$i]] == "0") tdcell("avertissement"); else tdcell("cell_hours");
         if ($_GET['pview'] != 1)
-           echo "<a title=\"".htmlspecialchars(get_vocab("see_week_for_this_room"))."\"  href=\"week.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("week")."</a><br /><a title=\"".htmlspecialchars(get_vocab("see_month_for_this_room"))."\" href=\"month.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("month")."</a>";
+           echo "<a title=\"".grr_htmlSpecialChars(get_vocab("see_week_for_this_room"))."\"  href=\"week.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("week")."</a><br /><a title=\"".grr_htmlSpecialChars(get_vocab("see_month_for_this_room"))."\" href=\"month.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("month")."</a>";
         if ($_GET['pview'] != 1)
-           $tab[2][] = "<a title=\"".htmlspecialchars(get_vocab("see_week_for_this_room"))."\"  href=\"week.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("week")."</a><br /><a title=\"".htmlspecialchars(get_vocab("see_month_for_this_room"))."\" href=\"month.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("month")."</a>";
+           $tab[2][] = "<a title=\"".grr_htmlSpecialChars(get_vocab("see_week_for_this_room"))."\"  href=\"week.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("week")."</a><br /><a title=\"".grr_htmlSpecialChars(get_vocab("see_month_for_this_room"))."\" href=\"month.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$id_room[$i]\">".get_vocab("month")."</a>";
         else
            $tab[2][] = "";
 
@@ -634,8 +634,8 @@ else
                 if (($statut_room[$room] == "1") or
                 (($statut_room[$room] == "0") and (authGetUserLevel(getUserName(),$room) > 2) )) {
                     if ($acces_fiche_reservation) {
-                        echo " <a title=\"".htmlspecialchars($today[$room][$t]["who"])."\" href=\"view_entry.php?id=$id&amp;day=$day&amp;month=$month&amp;year=$year&amp;page=day\">$descr</a>";
-                       $tab[$tab_ligne][] = " <a title=\"".htmlspecialchars($today[$room][$t]["who"])."\" href=\"view_entry.php?id=$id&amp;day=$day&amp;month=$month&amp;year=$year&amp;page=day\">$descr</a>";
+                        echo " <a title=\"".grr_htmlSpecialChars($today[$room][$t]["who"])."\" href=\"view_entry.php?id=$id&amp;day=$day&amp;month=$month&amp;year=$year&amp;page=day\">$descr</a>";
+                       $tab[$tab_ligne][] = " <a title=\"".grr_htmlSpecialChars($today[$room][$t]["who"])."\" href=\"view_entry.php?id=$id&amp;day=$day&amp;month=$month&amp;year=$year&amp;page=day\">$descr</a>";
                     } else {
                         echo " $descr";
                         $tab[$tab_ligne][] = " $descr";
@@ -680,7 +680,7 @@ else
         if (verif_acces_ressource(getUserName(), $id_room[$i])) {
           echo "<th";
           if ($statut_room[$id_room[$i]] == "0") echo " class='avertissement' ";
-          echo ">" . htmlspecialchars($room_name[$i])."</th>";
+          echo ">" . grr_htmlSpecialChars($room_name[$i])."</th>";
         }
     }
     echo "<th>&nbsp;</th></tr>\n";

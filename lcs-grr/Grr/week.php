@@ -167,7 +167,7 @@ if ($area == -1) {
 }
 
 $back = '';
-if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+if (isset($_SERVER['HTTP_REFERER'])) $back = grr_htmlSpecialChars($_SERVER['HTTP_REFERER']);
 // calcul de l'accès à la ressource en fonction du niveau de l'utilisateur
 $verif_acces_ressource = verif_acces_ressource(getUserName(), $room);
 // Calcul du niveau d'accès aux fiche de réservation détaillées des ressources
@@ -545,7 +545,7 @@ for ($t = $week_start; $t <= $week_end; $t += 86400)// Pour le calcul des jours 
     $year_actuel  = date("Y",$t);
     if ($_GET['pview'] != 1)
     {
-        echo "<a title=\"".htmlspecialchars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"day.php?year=$year_actuel&amp;month=$month_actuel&amp;day=$num_day&amp;area=$area\">".get_vocab("allday")."</a>";
+        echo "<a title=\"".grr_htmlSpecialChars(get_vocab("see_all_the_rooms_for_the_day"))."\" href=\"day.php?year=$year_actuel&amp;month=$month_actuel&amp;day=$num_day&amp;area=$area\">".get_vocab("allday")."</a>";
     }
     echo "</td>\n";
     }
@@ -724,7 +724,7 @@ for ($slot = $first_slot; $slot <= $last_slot; $slot++)
 
                 {
                     if ($acces_fiche_reservation)
-                      echo " <a title=\"".htmlspecialchars($d[$weekday][$slot-$decale_slot*$nb_case]["who"])."\"  href=\"view_entry.php?id=" . $d[$weekday][$slot-$decale_slot*$nb_case]["id"]
+                      echo " <a title=\"".grr_htmlSpecialChars($d[$weekday][$slot-$decale_slot*$nb_case]["who"])."\"  href=\"view_entry.php?id=" . $d[$weekday][$slot-$decale_slot*$nb_case]["id"]
                       . "&amp;day=$wday&amp;month=$wmonth&amp;year=$wyear&amp;page=week\">"
                       . $d[$weekday][$slot-$decale_slot*$nb_case]["data"] . "</a>";
                     else

@@ -983,14 +983,14 @@ if (!(isset($desactive_bandeau_sup) and ($desactive_bandeau_sup==1) and ($type_s
 					    echo "<br />&nbsp;<a href='login.php'>".get_vocab("connect")."</a>";
             }
           } else {
-            echo "<br />&nbsp;<b>".get_vocab("welcome_to").htmlspecialchars($_SESSION['prenom'])." ".htmlspecialchars($_SESSION['nom'])."</b>";           
+            echo "<br />&nbsp;<b>".get_vocab("welcome_to").grr_htmlSpecialChars($_SESSION['prenom'])." ".grr_htmlSpecialChars($_SESSION['nom'])."</b>";
             echo "<br />&nbsp;<a href=\"my_account.php?day=".$day."&amp;year=".$year."&amp;month=".$month."\">".get_vocab("manage_my_account")."</a>";
             //if ($type_session == "with_session") {
             $parametres_url = '';
                  $_SESSION['chemin_retour'] = '';
                  if (isset($_SERVER['QUERY_STRING']) and ($_SERVER['QUERY_STRING'] != '')) {
                      // Il y a des paramètres à passer
-                     $parametres_url = htmlspecialchars($_SERVER['QUERY_STRING'])."&amp;";
+                     $parametres_url = grr_htmlSpecialChars($_SERVER['QUERY_STRING'])."&amp;";
                      $_SESSION['chemin_retour'] = traite_grr_url($grr_script_name)."?". $_SERVER['QUERY_STRING'];
                  }
                  echo " - <a href=\"".traite_grr_url($grr_script_name)."?".$parametres_url."default_language=fr\"><img src=\"img_grr/fr_dp.png\" alt=\"France\" title=\"france\" width=\"20\" height=\"13\" class=\"image\" /></a>\n";
@@ -1872,7 +1872,7 @@ function round_t_up($t, $resolution, $am7)
          $nb_sites_a_afficher++;
          $selected = ($row[0] == $current_site) ? 'selected="selected"' : '';
          $link2 = $link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;area='.$default_area;
-         $out_html.="\n".'           <option '.$selected.' value="'.$link2.'">'.htmlspecialchars($row[1]).'</option>';
+         $out_html.="\n".'           <option '.$selected.' value="'.$link2.'">'.grr_htmlSpecialChars($row[1]).'</option>';
        }
      }
    }
@@ -1935,7 +1935,7 @@ function make_area_select_html( $link, $current_site, $current_area, $year, $mon
         $selected = ($row[0] == $current_area) ? "selected=\"selected\"" : "";
         $link2 = "$link?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]";
         if (authUserAccesArea($user,$row[0])==1) {
-            $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1])."</option>\n";
+            $out_html .= "<option $selected value=\"$link2\">" . grr_htmlSpecialChars($row[1])."</option>\n";
         }
        }
     $out_html .= "</select></div>
@@ -1970,10 +1970,10 @@ function make_room_select_html( $link, $current_area, $current_room, $year, $mon
        if ($res) for ($i = 0; ($row = grr_sql_row($res, $i)); $i++)
        {
         if (verif_acces_ressource(getUserName(),$row[0])) {
-          if ($row[2]) {$temp = " (".htmlspecialchars($row[2]).")";} else {$temp="";}
+          if ($row[2]) {$temp = " (".grr_htmlSpecialChars($row[2]).")";} else {$temp="";}
           $selected = ($row[0] == $current_room) ? "selected=\"selected\"" : "";
           $link2 = "$link.php?year=$year&amp;month=$month&amp;day=$day&amp;room=$row[0]";
-          $out_html .= "<option $selected value=\"$link2\">" . htmlspecialchars($row[1].$temp)."</option>";
+          $out_html .= "<option $selected value=\"$link2\">" . grr_htmlSpecialChars($row[1].$temp)."</option>";
         }
        }
     $out_html .= "</select></div>
@@ -2049,11 +2049,11 @@ function make_room_select_html( $link, $current_area, $current_room, $year, $mon
          if ($row[0] == $current_site)
          {
            $out_html .= '
-       <b><span class="week">&gt;&nbsp;<a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.htmlspecialchars($row[1]).'</a></span></b>
+       <b><span class="week">&gt;&nbsp;<a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.grr_htmlSpecialChars($row[1]).'</a></span></b>
        <br />'."\n";
          } else {
            $out_html .= '
-      <a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.htmlspecialchars($row[1]).'</a>
+      <a href="'.$link.'?year='.$year.'&amp;month='.$month.'&amp;day='.$day.'&amp;id_site='.$row[0].'" title="'.$row[1].'">'.grr_htmlSpecialChars($row[1]).'</a>
       <br />'."\n";
          }
        }
@@ -2096,9 +2096,9 @@ function make_area_list_html($link, $current_site, $current_area, $year, $month,
     if (authUserAccesArea($user,$row[0])==1) {
        if ($row[0] == $current_area)
           {
-             echo "<b><span class=\"week\">&gt;&nbsp;<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]\">".htmlspecialchars($row[1])."</a></span></b><br />\n";
+             echo "<b><span class=\"week\">&gt;&nbsp;<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]\">".grr_htmlSpecialChars($row[1])."</a></span></b><br />\n";
           } else {
-             echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]\">".htmlspecialchars($row[1])."</a><br />\n";
+             echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;area=$row[0]\">".grr_htmlSpecialChars($row[1])."</a><br />\n";
           }
        }
    }
@@ -2115,9 +2115,9 @@ function make_room_list_html($link,$current_area, $current_room, $year, $month, 
      if (verif_acces_ressource(getUserName(), $row[0])) {
       if ($row[0] == $current_room)
       {
-        echo "<b><span class=\"week\">&gt;&nbsp;".htmlspecialchars($row[1])."</span></b><br />\n";
+        echo "<b><span class=\"week\">&gt;&nbsp;".grr_htmlSpecialChars($row[1])."</span></b><br />\n";
       } else {
-        echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;&amp;room=$row[0]\">".htmlspecialchars($row[1]). "</a><br />\n";
+        echo "<a href=\"".$link."?year=$year&amp;month=$month&amp;day=$day&amp;&amp;room=$row[0]\">".grr_htmlSpecialChars($row[1]). "</a><br />\n";
       }
      }
    }
@@ -2199,11 +2199,11 @@ $twentyfourhour_format
 
     get_planning_area_values($row[12]);
 
-    $breve_description        = bbcode(removeMailUnicode(htmlspecialchars($row[0])),'nobbcode');
-    $description  = bbcode(removeMailUnicode(htmlspecialchars($row[1])),'nobbcode');
-    $beneficiaire    = htmlspecialchars($row[2]);
-    $room_name    = removeMailUnicode(htmlspecialchars($row[3]));
-    $area_name    = removeMailUnicode(htmlspecialchars($row[4]));
+    $breve_description        = bbcode(removeMailUnicode(grr_htmlSpecialChars($row[0])),'nobbcode');
+    $description  = bbcode(removeMailUnicode(grr_htmlSpecialChars($row[1])),'nobbcode');
+    $beneficiaire    = grr_htmlSpecialChars($row[2]);
+    $room_name    = removeMailUnicode(grr_htmlSpecialChars($row[3]));
+    $area_name    = removeMailUnicode(grr_htmlSpecialChars($row[4]));
     $type         = $row[5];
     $room_id      = $row[6];
     $repeat_id    = $row[7];
@@ -2212,8 +2212,8 @@ $twentyfourhour_format
     $delais_option_reservation = $row[13];
     $option_reservation = $row[14];
     $moderate = $row[15];
-    $beneficiaire_ext = htmlspecialchars($row[16]);
-    $jours_cycle = htmlspecialchars($row[17]);
+    $beneficiaire_ext = grr_htmlSpecialChars($row[16]);
+    $jours_cycle = grr_htmlSpecialChars($row[17]);
     $duration     = $row[9];
     if($enable_periods=='y')
         list( $start_period, $start_date) =  period_date_string($row[10]);
@@ -4057,7 +4057,7 @@ function affichage_lien_resa_planning($breve_description, $id_resa) {
     else {
         $affichage = get_vocab("entryid").$id_resa;
     }
-    return bbCode(htmlspecialchars($affichage,ENT_NOQUOTES),'titre');
+    return bbCode(grr_htmlSpecialChars($affichage,ENT_NOQUOTES),'titre');
 }
 
 /*
@@ -4066,13 +4066,13 @@ Construit les informations à afficher sur les plannings
 function affichage_resa_planning($_description, $id_resa) {
     $affichage = "";
     if (getSettingValue("display_full_description")==1)
-        $affichage = bbCode(htmlspecialchars($_description,ENT_NOQUOTES),'');
+        $affichage = bbCode(grr_htmlSpecialChars($_description,ENT_NOQUOTES),'');
     // Les champs add :
     $overload_data = mrbsEntryGetOverloadDesc($id_resa);
     foreach ($overload_data as $fieldname=>$field) {
         if (($field["affichage"] == 'y') and ($field["valeur"]!="")) {
             if ($affichage != "") $affichage .= "<br />";
-            $affichage .= bbCode(htmlspecialchars($fieldname,ENT_NOQUOTES).get_vocab("deux_points").htmlspecialchars($field["valeur"],ENT_NOQUOTES),'');
+            $affichage .= bbCode(grr_htmlSpecialChars($fieldname,ENT_NOQUOTES).get_vocab("deux_points").grr_htmlSpecialChars($field["valeur"],ENT_NOQUOTES),'');
         }
     }
     return $affichage;
@@ -4087,7 +4087,7 @@ function affichage_champ_add_mails($id_resa) {
     $overload_data = mrbsEntryGetOverloadDesc($id_resa);
     foreach ($overload_data as $fieldname=>$field) {
         if (($field["overload_mail"] == 'y') and ($field["valeur"]!="")) {
-            $affichage .= bbcode(htmlspecialchars($fieldname).get_vocab("deux_points").htmlspecialchars($field["valeur"]),'nobbcode')."\n";;
+            $affichage .= bbcode(grr_htmlSpecialChars($fieldname).get_vocab("deux_points").grr_htmlSpecialChars($field["valeur"]),'nobbcode')."\n";;
         }
     }
     return $affichage;
@@ -4562,5 +4562,9 @@ if (isset($_GET["year"])) {
     settype($year,"integer");
     if ($year < 1900) $year = 1900;
     if ($year > 2100) $year = 2100;
+}
+
+function grr_htmlSpecialChars ($strin,$f,$enc) {
+    return htmlspecialchars ($strin,$fl,'ISO-8859-1');
 }
 ?>

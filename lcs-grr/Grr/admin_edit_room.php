@@ -126,7 +126,7 @@ else $moderate = 0;
 settype($type_affichage_reser,"integer");
 
 $back = '';
-if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+if (isset($_SERVER['HTTP_REFERER'])) $back = grr_htmlSpecialChars($_SERVER['HTTP_REFERER']);
 
 if (isset($_POST["change_room_and_back"])) {
     $change_room = "yes";
@@ -411,14 +411,14 @@ if ((!empty($room)) or (isset($area_id))) {
     echo "<tr><td>".get_vocab("name").get_vocab("deux_points")."</td><td style=\"width:30%;\">\n";
     // seul l'administrateur peut modifier le nom de la ressource
     if ((authGetUserLevel(getUserName(),$area_id,"area") >=4) or (authGetUserLevel(getUserName(),$room) >=4)) {
-        echo "<input type=\"text\" name=\"room_name\" size=\"40\" value=\"".htmlspecialchars($row["room_name"])."\" />\n";
+        echo "<input type=\"text\" name=\"room_name\" size=\"40\" value=\"".grr_htmlSpecialChars($row["room_name"])."\" />\n";
     } else {
-        echo "<input type=\"hidden\" name=\"room_name\" value=\"".htmlspecialchars($row["room_name"])."\" />\n";
-        echo "<b>".htmlspecialchars($row["room_name"])."</b>\n";
+        echo "<input type=\"hidden\" name=\"room_name\" value=\"".grr_htmlSpecialChars($row["room_name"])."\" />\n";
+        echo "<b>".grr_htmlSpecialChars($row["room_name"])."</b>\n";
     }
     echo "</td></tr>\n";
     // Description
-    echo "<tr><td>".get_vocab("description")."</td><td><input type=\"text\" name=\"description\"  size=\"40\" value=\"".htmlspecialchars($row["description"])."\" /></td></tr>\n";
+    echo "<tr><td>".get_vocab("description")."</td><td><input type=\"text\" name=\"description\"  size=\"40\" value=\"".grr_htmlSpecialChars($row["description"])."\" /></td></tr>\n";
     // Domaine
 
     $enable_periods = grr_sql_query1("select enable_periods from ".TABLE_PREFIX."_area where id='".$area_id."'");
@@ -449,7 +449,7 @@ if ((!empty($room)) or (isset($area_id))) {
             echo "<option value=\"".$row1[0]."\"";
             if ($area_id == $row1[0])
               echo ' selected="selected"';
-            echo '>'.htmlspecialchars($row1[1]);
+            echo '>'.grr_htmlSpecialChars($row1[1]);
             echo '</option>'."\n";
           }
           grr_sql_free($res);
@@ -464,7 +464,7 @@ if ((!empty($room)) or (isset($area_id))) {
 
     // Ordre d'affichage du domaine
     echo "<tr><td>".get_vocab("order_display").get_vocab("deux_points")."</td>\n";
-    echo "<td><input type=\"text\" name=\"area_order\" size=\"1\" value=\"".htmlspecialchars($row["order_display"])."\" /></td>\n";
+    echo "<td><input type=\"text\" name=\"area_order\" size=\"1\" value=\"".grr_htmlSpecialChars($row["order_display"])."\" /></td>\n";
     echo "</tr>\n";
     // Qui peut voir cette ressource
     echo "<tr><td colspan=\"2\">".get_vocab("qui_peut_voir_ressource")."<br />\n";
@@ -582,7 +582,7 @@ if ((!empty($room)) or (isset($area_id))) {
     } else if ($row["max_booking"] != "-1") {
         echo "<tr><td>".get_vocab("msg_max_booking").get_vocab("deux_points")."</td><td>
         <input type=\"hidden\" name=\"max_booking\" value=\"".$row["max_booking"]."\" />
-        <b>".htmlspecialchars($row["max_booking"])."</b>
+        <b>".grr_htmlSpecialChars($row["max_booking"])."</b>
         </td></tr>";
     }
     // L'utilisateur ne peut pas réserver au-delà d'un certain temps
@@ -917,11 +917,11 @@ if ((!empty($id_area)) or (isset($add_area)))
     echo "<table border=\"1\" cellspacing=\"1\" cellpadding=\"6\"><tr>";
     // Nom du domaine
     echo "<td>".get_vocab("name").get_vocab("deux_points")."</td>\n";
-    echo "<td style=\"width:30%;\"><input type=\"text\" name=\"area_name\" size=\"40\" value=\"".htmlspecialchars($row["area_name"])."\" /></td>\n";
+    echo "<td style=\"width:30%;\"><input type=\"text\" name=\"area_name\" size=\"40\" value=\"".grr_htmlSpecialChars($row["area_name"])."\" /></td>\n";
     echo "</tr><tr>\n";
     // Ordre d'affichage du domaine
     echo "<td>".get_vocab("order_display").get_vocab("deux_points")."</td>\n";
-    echo "<td><input type=\"text\" name=\"area_order\" size=\"1\" value=\"".htmlspecialchars($row["order_display"])."\" /></td>\n";
+    echo "<td><input type=\"text\" name=\"area_order\" size=\"1\" value=\"".grr_htmlSpecialChars($row["order_display"])."\" /></td>\n";
     echo "</tr><tr>\n";
     // Accès restreint ou non ?
     echo "<td>".get_vocab("access").get_vocab("deux_points")."</td>\n";
@@ -952,7 +952,7 @@ if ((!empty($id_area)) or (isset($add_area)))
           echo "<option value=\"".$row1[0]."\"";
           if ($id_site == $row1[0])
             echo ' selected="selected"';
-          echo '>'.htmlspecialchars($row1[2]);
+          echo '>'.grr_htmlSpecialChars($row1[2]);
           echo '</option>'."\n";
         }
         grr_sql_free($res);
@@ -968,7 +968,7 @@ if ((!empty($id_area)) or (isset($add_area)))
     if (OPTION_IP_ADR==1) {
         echo "<tr>\n";
         echo "<td>".get_vocab("ip_adr").get_vocab("deux_points")."</td>";
-        echo "<td><input type=\"text\" name=\"ip_adr\" value=\"".htmlspecialchars($row["ip_adr"])."\" /></td>\n";
+        echo "<td><input type=\"text\" name=\"ip_adr\" value=\"".grr_htmlSpecialChars($row["ip_adr"])."\" /></td>\n";
         echo "</tr>\n";
         echo "<tr>\n";
         echo "<td colspan=\"2\">".get_vocab("ip_adr_explain")."</td>\n";
@@ -1091,19 +1091,19 @@ if ((!empty($id_area)) or (isset($add_area)))
     // Minutes à ajouter à l'heure $eveningends pour avoir la fin réelle d'une journée.
     echo "<tr>\n";
     echo "<td>".get_vocab("eveningends_minutes_area").get_vocab("deux_points")."</td>\n";
-    echo "<td><input type=\"text\" name=\"eveningends_minutes_area\" size=\"5\" value=\"".htmlspecialchars($row["eveningends_minutes_area"])."\" /></td>\n";
+    echo "<td><input type=\"text\" name=\"eveningends_minutes_area\" size=\"5\" value=\"".grr_htmlSpecialChars($row["eveningends_minutes_area"])."\" /></td>\n";
     echo "</tr>";
 
     // Resolution - quel bloc peut être réservé, en secondes
     echo "<tr>\n";
     echo "<td>".get_vocab("resolution_area").get_vocab("deux_points")."</td>\n";
-    echo "<td><input type=\"text\" name=\"resolution_area\" size=\"5\" value=\"".htmlspecialchars($row["resolution_area"])."\" /></td>\n";
+    echo "<td><input type=\"text\" name=\"resolution_area\" size=\"5\" value=\"".grr_htmlSpecialChars($row["resolution_area"])."\" /></td>\n";
     echo "</tr>";
 
     // Valeur par défaut de la durée d'une réservation
     echo "<tr>\n";
     echo "<td>".get_vocab("duree_par_defaut_reservation_area").get_vocab("deux_points")."</td>\n";
-    echo "<td><input type=\"text\" name=\"duree_par_defaut_reservation_area\" size=\"5\" value=\"".htmlspecialchars($row["duree_par_defaut_reservation_area"])."\" /></td>\n";
+    echo "<td><input type=\"text\" name=\"duree_par_defaut_reservation_area\" size=\"5\" value=\"".grr_htmlSpecialChars($row["duree_par_defaut_reservation_area"])."\" /></td>\n";
     echo "</tr>";
 
 

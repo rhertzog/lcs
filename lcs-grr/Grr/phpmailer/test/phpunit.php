@@ -79,8 +79,8 @@ class Assert {
     // Private function for reporting failure to match.
     $str = $message ? ($message . ' ') : '';
     $str .= "($expected_label/actual)<br>";
-    $htmlExpected = htmlspecialchars($expected);
-    $htmlActual = htmlspecialchars($actual);
+    $htmlExpected = grr_htmlSpecialChars($expected);
+    $htmlActual = grr_htmlSpecialChars($actual);
     $str .= sprintf("<pre>%s\n--------\n%s</pre>",
 		    $htmlExpected, $htmlActual);
     $this->fail($str);

@@ -53,7 +53,7 @@ $grr_script_name = "admin_calend_ignore.php";
 
 
 $back = '';
-if (isset($_SERVER['HTTP_REFERER'])) $back = htmlspecialchars($_SERVER['HTTP_REFERER']);
+if (isset($_SERVER['HTTP_REFERER'])) $back = grr_htmlSpecialChars($_SERVER['HTTP_REFERER']);
 
 $day   = date("d");
 $month = date("m");
