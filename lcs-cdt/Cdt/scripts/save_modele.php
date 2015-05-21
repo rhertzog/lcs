@@ -53,19 +53,19 @@ if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl']) 
         $purifier = new HTMLPurifier($config);
         //$Cours = addSlashes($Cours);
         $cont1 = $purifier->purify($Contenucours);
-        $cont1 = utf8_decode(mysql_real_escape_string($cont1,$dbc));
+        $cont1 = utf8_decode(mysqli_real_escape_string($dbc, $cont1));
         $cont2 = $purifier->purify($Contenuaf);
-        $cont2 = utf8_decode(mysql_real_escape_string($cont2,$dbc));
+        $cont2 = utf8_decode(mysqli_real_escape_string($dbc, $cont2));
         $cible= $purifier->purify($Cib);
         }
     $rq = "UPDATE  onglets SET mod_cours='$cont1', mod_afaire='$cont2' WHERE id_prof='$cible'";
     // lancer la requete
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {
-        mysql_close();
+        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
         echo "<p>Votre mod&#232; n'a pas pu &#234;tre enregistr&#233; !".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         //sortir
         exit();
         }

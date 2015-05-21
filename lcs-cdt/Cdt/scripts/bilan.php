@@ -58,14 +58,14 @@ function affiche_abs($potache) {
     foreach ( $horaire as $cle => $val)
         {
         $rq4= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'  AND  $val='A'  AND uideleve='$potache' AND date >='$dtajadebut' AND date<='$dtajafin' ";
-        $result4 = mysql_query($rq4,$dbc) or die (mysql_error($dbc)); 
-        while ($nb = mysql_fetch_array($result4, MYSQL_NUM)) 
+        $result4 = mysqli_query($dbc, $rq4) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))); 
+        while ($nb = mysqli_fetch_array($result4,  MYSQLI_NUM)) 
             {
              $nbabs+=$nb[0];
             }
         $rq5= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'  AND  $val='R'  AND uideleve='$potache' AND date >='$dtajadebut' AND date<='$dtajafin' ";
-        $result5 = @mysql_query($rq5) or die (mysql_error($dbc)); 
-        while ($nb = mysql_fetch_array($result5, MYSQL_NUM)) 
+        $result5 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq5) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))); 
+        while ($nb = mysqli_fetch_array($result5,  MYSQLI_NUM)) 
             {
              $nbrtd+=$nb[0];
             }	
@@ -86,10 +86,10 @@ function affiche_abs($potache) {
     S1,motifS1,S2,motifS2,S3,motifS3,S4,motifS4,S5,motifS5,date FROM absences WHERE  uidprof='{$_SESSION['login']}' 
     AND uideleve='$potache' AND date >='$dtajadebut' AND date<='$dtajafin' ORDER BY date ASC";
     // lancer la requete
-    $result = mysql_query($rq) or die (mysql_error($dbc));
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ? 
-    $nb2 = mysql_num_rows($result); 
-    while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
+    $nb2 = mysqli_num_rows($result); 
+    while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM)) 
         { 
         $typmat ="";
         foreach ( $horaire as $cle => $val)

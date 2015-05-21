@@ -38,9 +38,9 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         else setlocale("LC_TIME","french");
         $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off FROM cahiertxt
         WHERE id_auteur=$cible AND date>=$dat AND datevisibi<=$dat_now ORDER BY date desc";
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         // Combien y a-t-il d'enregistrements ?
-        $nb2 = mysql_num_rows($result);
+        $nb2 = mysqli_num_rows($result);
         include_once  ('./contenu.php');
         if (stripos($_SERVER['HTTP_USER_AGENT'], "msie"))  include ('../Includes/pied.inc');
         }

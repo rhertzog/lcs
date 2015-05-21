@@ -28,7 +28,7 @@ include_once("../Includes/basedir.inc.php");
 include_once "$BASEDIR/lcs/includes/headerauth.inc.php";
 include_once "$BASEDIR/Annu/includes/ldap.inc.php";
 include_once "$BASEDIR/Annu/includes/ihm.inc.php";
-mysql_close();
+((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
 $cren_off=array();
 include "../Includes/data.inc.php";
 include "../Includes/functions2.inc.php";
@@ -78,7 +78,7 @@ if (isset($_POST['enregistrer']) )
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $purifier = new HTMLPurifier($config);
             $Sujet = $purifier->purify($Sujet);
-            $Sujet=mysql_real_escape_string($Sujet,$dbc);
+            $Sujet=mysqli_real_escape_string($dbc, $Sujet);
             $Sujet= utf8_decode($Sujet);
 	    }
         }
@@ -101,8 +101,8 @@ if (isset($_POST['enregistrer']) )
             for ($loop = $_POST['creneau']; $loop <= $_POST['creneau'] + $duree -1; $loop++)
             {//test s'i les 2 creneaux sont occupes pour la classe active
             $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '{$_POST['classe']}' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'";
-            $res = mysql_query($rq);
-            while ($row = mysql_fetch_array($res, MYSQL_NUM))
+            $res = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+            while ($row = mysqli_fetch_array($res,  MYSQLI_NUM))
                 {
                 if ($row[0] == 2)
                     {
@@ -117,8 +117,8 @@ if (isset($_POST['enregistrer']) )
                     {
                     $groupe=$_SESSION['sel_cl'][$a];
                     $rq ="SELECT count(*)  FROM devoir WHERE date = '{$_POST['data']}' AND classe= '$groupe' AND creneau+ dur\351e-1 >= '$loop' AND `creneau` <='$loop'";
-                    $res = mysql_query($rq);
-                    while ($row = mysql_fetch_array($res, MYSQL_NUM))
+                    $res = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+                    while ($row = mysqli_fetch_array($res,  MYSQLI_NUM))
                         {
                         if ($row[0] == 2)
                             {
@@ -149,14 +149,14 @@ if (isset($_POST['enregistrer']) )
         '{$_POST['classe']}', '$duree')";
 
         // lancer la requete
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
         // Si l'enregistrement est incorrect
         if (!$result)
             {
             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-            "<p></p>" . mysql_error($dbc) . "<p></p>";
+            "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
             // refermer la connexion avec la base de donnees
-            mysql_close();
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
             exit();
             }
         else
@@ -171,7 +171,7 @@ if (isset($_POST['enregistrer']) )
                 if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest);
 
                 //on ferme la connexion lcs_db et on se reconnecte sur la bdd Cdt
-                mysql_close();
+                ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                 include("../Includes/config.inc.php");
 
                 //mise en forme de la date du devoir
@@ -202,13 +202,13 @@ if (isset($_POST['enregistrer']) )
             $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire )
             VALUES ( '{$_POST['numrubri']}','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
             // lancer la requete
-            $result = mysql_query($rq);
+            $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
             if (!$result)
                 {
                 echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                "<p></p>" . mysql_error($dbc) . "<p></p>";
+                "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
                 // refermer la connexion avec la base de donnees
-                mysql_close();
+                ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                 exit();
                 }
             }
@@ -226,14 +226,14 @@ if (isset($_POST['enregistrer']) )
                 '$Sujet', '$groupe', '$duree')";
 
                 // lancer la requete
-                $result = mysql_query($rq);
+                $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
                 // Si l'enregistrement est incorrect
                 if (!$result)
                     {
                     echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                    "<p></p>" . mysql_error($dbc) . "<p></p>";
+                    "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
                     // refermer la connexion avec la base de donnees
-                    mysql_close();
+                    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                     exit();
                     }
                 else
@@ -246,13 +246,13 @@ if (isset($_POST['enregistrer']) )
                         $rq = "INSERT INTO cahiertxt (id_auteur,login,date,afaire,datafaire )
                         VALUES ( '$idr','{$_SESSION['login']}', '$date_c',  '$Dev', '{$_POST['data']}')";
                         // lancer la requete
-                        $result = mysql_query($rq);
+                        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
                         if (!$result)
                             {
                             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                            "<p></p>" . mysql_error($dbc) . "<p></p>";
+                            "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
                             // refermer la connexion avec la base de donnees
-                            mysql_close();
+                            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                             exit();
                             }
                         }
@@ -268,7 +268,7 @@ if (isset($_POST['enregistrer']) )
                         $grp_cl=search_groups("cn=".$groupe);
                         if (count($grp_cl[0]==0)) $grp_cl=search_groups("cn=Classe_*".$classe_dest);
                         //on ferme la connexion lcs_db et on se reconnecte sur la bdd Cdt
-                        mysql_close();
+                        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                         include("../Includes/config.inc.php");
 
                         //mise en forme de la date du devoir
@@ -307,9 +307,9 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
     //le devoir existe-t-il ?
     $rq = "SELECT id_ds,login,date,matiere,creneau,sujet,dur\351e,classe FROM devoir WHERE id_ds='$cible' and login='$login' ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);
-    while ($row = mysql_fetch_array($result, MYSQL_NUM))
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);
+    while ($row = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $dat_supp=$row[2];
         $mat_supp=$row[3];
@@ -327,7 +327,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
             $rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and
             sujet='$suj_supp' and dur\351e= '$dur_supp'";
 
-            $result2 = @mysql_query($rq) or die (mysql_error($dbc));
+            $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
             //envoi d'un mail
             if ($_SESSION['liste']==1)
                 {
@@ -339,7 +339,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
                 //include "$BASEDIR/Annu/includes/ldap.inc.php";
                 $grp_cl=search_groups("cn=Classe_*".$classe_dest);
                 $dest=$grp_cl[0]["cn"];
-                mysql_close();
+                ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
                 include("../Includes/config.inc.php");
                 //mise en forme de la date du devoir
                 if ($_SESSION['version']==">=432") setlocale(LC_TIME,"french");
@@ -361,7 +361,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
             $suj_dev= "Pr&#233;parer le Devoir surveill&#233; : ".$suj_supp;
             $rq = "DELETE  FROM cahiertxt WHERE id_auteur='{$_GET['numrubr']};' and  login='{$_SESSION['login']}' and afaire='$suj_dev'
             and datafaire ='$dat_supp' LIMIT 1";
-            $result2 = @mysql_query($rq) or die (mysql_error($dbc));
+            $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
             }
     }
 //fin de suppression d'un devoir
@@ -377,11 +377,11 @@ if (isset($_GET['rubrique']))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='{$_GET['rubrique']}'  ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result);
+    $nb = mysqli_num_rows($result);
     //on recupere les donnees
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {$clas=$enrg[0];//classe
         $mati=utf8_encode($enrg[1]);//matiere
         }
@@ -529,14 +529,14 @@ $datfin=date('Ymd',$Samedi);
 //Recherche des devoirs programmes pour la semaine courante
 $rq = "SELECT id_ds, DATE_FORMAT(date,'%d'),DATE_FORMAT(date,'%m'),DATE_FORMAT(date,'%Y'), creneau, matiere, sujet,  login, dur\351e FROM devoir
 WHERE date>='$datdebut' AND date<='$datfin'  AND classe= '$clas' ORDER BY date asc, creneau asc";
-$res = mysql_query($rq);
-$nb = mysql_num_rows($res);
+$res = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+$nb = mysqli_num_rows($res);
 $num=$plan=$mat=$suj=$log=$dur=array();
 //si des devoirs ont ete programmes
 if ($nb>0)
     {
     //pour chaque devoir programme
-    while ($row = mysql_fetch_array($res, MYSQL_NUM))
+    while ($row = mysqli_fetch_array($res,  MYSQLI_NUM))
         {
         //determination du timestamp du jour du devoir
         $tsmp=mkTime(8,0,0,$row[2],$row[1],$row[3]);

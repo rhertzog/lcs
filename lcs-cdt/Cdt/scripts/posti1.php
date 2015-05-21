@@ -52,18 +52,18 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
-        $cont = mysql_real_escape_string($cont,$dbc);
+        $cont = mysqli_real_escape_string($dbc, $cont);
         }
 
     $cible= $_POST['cibl'];
     $rq = "UPDATE  onglets SET postit='$cont' WHERE id_prof='$cible'";
     // lancer la requete
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {  // refermer la connexion avec la base de donnees
-        mysql_close();
+        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
         echo "<p>Votre postit n'a pas pu etre enregistre !".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         //sortir
         exit();
         }

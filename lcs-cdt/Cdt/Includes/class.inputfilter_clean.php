@@ -169,8 +169,8 @@ class InputFilter {
 		return $source;
 	}
 	function escapeString($string, &$connection) {
-		if (version_compare(phpversion(),"4.3.0", "<")) mysql_real_escape_string($string,$dbc);
-		else mysql_real_escape_string($string,$dbc);
+		if (version_compare(phpversion(),"4.3.0", "<")) mysqli_real_escape_string($dbc, $string);
+		else mysqli_real_escape_string($dbc, $string);
 		return $string;
 	}
 }

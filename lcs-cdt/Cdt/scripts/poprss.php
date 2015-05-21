@@ -42,14 +42,14 @@ $rq = "SELECT afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_auteur FROM cahiertxt
 WHERE id_rubrique=$idret[0]";
 
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // Combien y a-t-il d'enregistrements ?
-$nb2 = mysql_num_rows($result);
+$nb2 = mysqli_num_rows($result);
 if ($nb2>0)
     {
     //on fait un tableau de donnees
-    while ($ligne = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM)) 
         { 
         $texttaf=$ligne[0];
         $dattaf=$ligne[1];
@@ -57,11 +57,11 @@ if ($nb2>0)
         }
     $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
     WHERE id_prof='$idproftaf' ";
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM)) 
         {
         $proftaf=$enrg[0];//nom du prof
         $mattaf=utf8_encode($enrg[1]);//matiere

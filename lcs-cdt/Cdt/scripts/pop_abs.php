@@ -109,13 +109,13 @@ $dtdfin= date('Y',$datf['0'])."/".date('m',$datf['0'])."/".date('d',$datf['0']);
 $rq = "SELECT M1,M2,M3,M4,M5,S1,S2,S3,S4,S5,DATE_FORMAT(date,'%d'),DATE_FORMAT(date,'%m'),DATE_FORMAT(date,'%Y'),
 motifM1,motifM2,motifM3,motifM4,motifM5,motifS1,motifS2,motifS3,motifS4,motifS5 FROM absences WHERE
  uideleve='$potache' AND date >='$dtdebut' AND date<='$dtdfin' ORDER BY date ASC";
-$res = mysql_query($rq);
-$nb = mysql_num_rows($res);
+$res = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+$nb = mysqli_num_rows($res);
 //si des absences/retards ont ete programmes
 if ($nb>0)
     {
     //pour chaque absence/retard programme
-    while ($row = mysql_fetch_array($res, MYSQL_NUM))
+    while ($row = mysqli_fetch_array($res,  MYSQLI_NUM))
         {
         //determination du timestamp
         $tsmp=mkTime(8,0,0,$row[11],$row[10],$row[12]);

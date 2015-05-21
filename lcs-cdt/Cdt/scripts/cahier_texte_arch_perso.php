@@ -92,10 +92,10 @@ DEFINE ('DBP_HOST', 'localhost');
 DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbcp = @mysql_connect(DBP_HOST, DBP_USER, DBP_PASSWORD)
-OR die ('Connexion a MySQL impossible : '.mysql_error($dbcp).'<br />');
-mysql_select_db(DBP_NAME,$dbcp)
-OR die ('Selection de la base de donnees impossible : '.mysql_error($dbcp).'<br />');
+$dbcp = @($GLOBALS["___mysqli_ston"] = mysqli_connect(DBP_HOST,  DBP_USER,  DBP_PASSWORD))
+OR die ('Connexion a MySQL impossible : '.((is_object($dbcp)) ? mysqli_error($dbcp) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)).'<br />');
+((bool)mysqli_query($dbcp, "USE " . constant('DBP_NAME')))
+OR die ('Selection de la base de donnees impossible : '.((is_object($dbcp)) ? mysqli_error($dbcp) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)).'<br />');
 
 echo '<div id="entete">';
 echo '<div id="navcontainer">';
@@ -105,9 +105,9 @@ echo ("<ul id='arch-navlist'>");
    ================================*/
 
 //recherche du  nom des archives
-$TablesExist= mysql_query("show tables");
+$TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
 $x=0;
-while ($table=mysql_fetch_row($TablesExist))
+while ($table=mysqli_fetch_row($TablesExist))
 if (mb_ereg("^onglets",$table[0]))
     {
     $archive=explode('s',$table[0]);
@@ -129,13 +129,13 @@ echo "</ul>";
 
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch WHERE 1 ORDER BY classe ASC ";
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // si pas de rubrique
-if (mysql_num_rows($result)==0)
+if (mysqli_num_rows($result)==0)
     {
     echo("<br /> L'archive ".$arch."de votre cahier de textes ne comporte  aucune rubrique. ");exit;
-    mysql_close();
+    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     exit;
     }
 
@@ -154,12 +154,12 @@ $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
  WHERE 1 ORDER BY id_prof ASC ";
 
  // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
     {
     $clas[$loop]=$enrg[0];
     $mat[$loop]=utf8_encode($enrg[1]);
@@ -201,13 +201,13 @@ $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,
  WHERE (id_auteur=$cible)  ORDER BY date desc ,id_rubrique desc";
 
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // Combien y a-t-il d'enregistrements ?
-$nb2 = mysql_num_rows($result);
+$nb2 = mysqli_num_rows($result);
 echo '<div id="boite5">';
 echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
-while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
     {
     $textcours=stripslashes($ligne[1]);
     $textafaire=stripslashes($ligne[2]);

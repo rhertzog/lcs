@@ -105,11 +105,11 @@ elseif (is_dir("../../Agendas"))
     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
     // lancer la requete
-    $result = @mysql_query($rq);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if ($result)
         {
         //on recupere les donnees
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $mati= explode(":",$enrg[1]);
             $mati[1]=preg_replace ( "/[\r\n]+/", "", $mati[1] );
@@ -122,7 +122,7 @@ elseif (is_dir("../../Agendas"))
                 }
             }
         }
-    mysql_close();
+    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     }
 
 // Connexion a la base de donnees Cdt
@@ -188,13 +188,13 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
     // lancer la requete
     if ($rq!="")
         {
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
         if (!$result)  // Si l'enregistrement est incorrect
             {
             echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
-                  "<p></p>" . mysql_error($dbc) . "<p></p>";
+                  "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
             // refermer la connexion avec la base de donnees
-            mysql_close();
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
             //sortir
             exit();
             }
@@ -215,13 +215,13 @@ if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['
     //la rubrique existe elle ?
     $rq = "SELECT login FROM onglets WHERE id_prof='$cible'  ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);
     //si la rubrique existe, on l'efface
     if (($nb==1) &&($action==1245))
         {
         $rq = "DELETE  FROM onglets WHERE id_prof='$cible' LIMIT 1";
-        $result2 = @mysql_query($rq) or die (mysql_error($dbc));
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         }
     }
 $action ="";
@@ -237,13 +237,13 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
     $rq = "SELECT login,classe, matiere, prefix,edt,cologin FROM onglets WHERE id_prof='$cible'  ";
 
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);
 
     //si elle existe, on recupere les datas pour les afficher dans les champs
     if (($nb==1) &&($action=='erg45er5ze'))
         {
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $val_classe=$enrg[1];
             $val_matiere=utf8_encode($enrg[2]);
@@ -260,14 +260,14 @@ $rq = "SELECT classe,matiere,id_prof,prof,prefix,edt FROM onglets
  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // Combien y a-t-il d'enregistrements ?
-$nb = mysql_num_rows($result);
+$nb = mysqli_num_rows($result);
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
     {
     $clas[$loop]=$enrg[0]; //classe
     $mat[$loop]=utf8_encode($enrg[1]); // matiere

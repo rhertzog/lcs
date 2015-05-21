@@ -60,16 +60,16 @@ if ( isset($_POST['cibl']))
         $cible= $purifier->purify($Cib);
         }
     $rq = "SELECT   mod_cours,mod_afaire from onglets  WHERE id_prof='$cible' AND login='{$_SESSION['login']}'";
-    $result = mysql_query($rq);
-    if (mysql_num_rows($result)>0)
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+    if (mysqli_num_rows($result)>0)
         {
-        $row = mysql_fetch_array($result, MYSQL_NUM);
+        $row = mysqli_fetch_array($result,  MYSQLI_NUM);
         echo "<span id='mod_c'>" .  utf8_encode($row[0]) . "</span>\n";
         echo "<span id='mod_af'>" . utf8_encode($row[1]) . "</span>\n";
         }
     if (!$result)  // Si l'enregistrement est incorrect
         {
-        mysql_close();
+        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
         echo "NOK";
         exit();
         }

@@ -86,14 +86,14 @@ $datfin=date('Ymd',$Samedi);
 //Recherche des devoirs programmes pour la semaine courante
 $rq = "SELECT id_ds, DATE_FORMAT(date,'%d'),DATE_FORMAT(date,'%m'),DATE_FORMAT(date,'%Y'),
 creneau, matiere, sujet,  login, dur\351e FROM devoir WHERE date>='$datdebut' AND date<='$datfin'  AND classe= '$clas' ORDER BY date asc , creneau asc";
-$res = mysql_query($rq);
-$nb = mysql_num_rows($res);
+$res = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
+$nb = mysqli_num_rows($res);
 //si des devoirs ont ete programmes
 
 if ($nb>0)
     {
     //pour chaque devoir programme
-    while ($row = mysql_fetch_array($res, MYSQL_NUM))
+    while ($row = mysqli_fetch_array($res,  MYSQLI_NUM))
         {
         //determination du timestamp du jour du devoir
         $tsmp=mkTime(8,0,0,$row[2],$row[1],$row[3]);

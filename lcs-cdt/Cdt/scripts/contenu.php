@@ -33,24 +33,24 @@ $cib=$cible; $i=$j=$k=0;$list_art=$list_seq=$Sekance=array();
 include ('../Includes/config.inc.php');
 $rq = "SELECT id_seq  FROM sequences WHERE id_ong='$cib' order by ordre asc ";
  // recuperer les sequences dans l'ordre d affichage
- $result = @mysql_query($rq) or die (mysql_error($dbc));
-if (mysql_num_rows($result) >0)
+ $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+if (mysqli_num_rows($result) >0)
     {
-    while ($idr = mysql_fetch_object($result))
+    while ($idr = mysqli_fetch_object($result))
         {
         $Sek[$i]= $idr ->id_seq ;
         $i++;
         }
-    mysql_free_result($result);
+    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
     }
  //dates debut&fin des sequences non vides et comprises ente les dates limites
  for ($index = 0; $index < count($Sek); $index++)
     {
     $rq = "SELECT MAX(date),MIN(date) from cahiertxt  WHERE seq_id='$Sek[$index]'".$dlm1.$dlm2;
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        $r = mysql_fetch_array($result);
+        $r = mysqli_fetch_array($result);
         if ($r[0]!=null)
             {
             $der_seq[$k] = $r[0] ;
@@ -61,16 +61,16 @@ if (mysql_num_rows($result) >0)
         }
     }
 ////fin for
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 //recherche articles + recents que n et -recents que n-1
 for ($index2 = 0; $index2 < count($der_seq); $index2++)
     {
     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$prem_seq[$index2]."'".$dlm1.$dlm2." order by date desc";
     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND date >= '".$prem_seq[$index2]."' AND date < '".$prem_seq[$index2-1]."'".$dlm1.$dlm2." order by date desc";
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array($result))
             {
             if ( ! in_array($row[0], $list_art))
                 {
@@ -88,10 +88,10 @@ for ($index2 = 0; $index2 < count($der_seq); $index2++)
 if (isset($prem_seq[$index2-1]))
  $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib' AND  date < '".$prem_seq[$index2-1]."'".$dlm1.$dlm2." order by date desc";
 else  $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'".$dlm1.$dlm2."  order by date desc";
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-if (mysql_num_rows($result) >0)
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+if (mysqli_num_rows($result) >0)
     {
-    while ($row = mysql_fetch_array($result))
+    while ($row = mysqli_fetch_array($result))
         {
         if ( ! in_array($row[0], $list_art))
             {

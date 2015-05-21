@@ -38,11 +38,11 @@ if (isset($_GET['rubrique']))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='$ru'";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result); 
+    $nb = mysqli_num_rows($result); 
     //on recupere les donnees
-    $enrg = mysql_fetch_array($result, MYSQL_NUM); 
+    $enrg = mysqli_fetch_array($result,  MYSQLI_NUM); 
     //classe active 
     $clas_act=$enrg[0];
     //matiere de la classe active
@@ -54,9 +54,9 @@ if (isset($_GET['rubrique']))
 $rq = "SELECT classe,id_prof FROM onglets WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat_iso' ORDER BY classe ASC ";
  
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc)); 
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))); 
 $loop=0;
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object($result))
     {
     $data1[$loop]=$row->classe;
     $data2[$loop]=$row->id_prof;
@@ -106,7 +106,7 @@ if (isset($_POST['Valider']))
 if (!isset($_POST['Valider']))
     {
     //si pas de classe de meme niveau dans la matiere
-    if (mysql_num_rows($result)==0) 
+    if (mysqli_num_rows($result)==0) 
     echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&eacute;rifiez que la mati&egrave;re n\'est
     pas orthographi&eacute;e diff&eacute;remment pour les autres classes .<br /><br /></h4><div><input type="submit" name="Valider"
     value="OK " /></div>';

@@ -107,13 +107,13 @@ if ($_SESSION['cequi']=="eleve") $uid_actif=$_SESSION['login'];
 // Creer la requete (Recuperer les rubriques de la classe)
 $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $prof[$loop]=$enrg[0];//nom du prof
         $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -132,12 +132,12 @@ if ($uid_actif!="")
             {
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
             WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
-            $result = @mysql_query($rq) or die (mysql_error($dbc));
-            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+            $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
                 //on recupere les donnees
-                while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+                while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                     {
                     $prof[$loop]=$enrg[0];//nom du prof
                     $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -186,12 +186,12 @@ else
             {
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
             WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
-            $result = @mysql_query($rq) or die (mysql_error($dbc));
-            $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+            $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
                 //on recupere les donnees
-                while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+                while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                     {
                     $prof[$loop]=$enrg[0];//nom du prof
                     $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -217,11 +217,11 @@ if (count($numero)>0)
         $rq = "SELECT afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,datafaire FROM cahiertxt
         WHERE (id_auteur='$numero[$loop]') AND (datafaire<='$dat') AND (datafaire>='$dat2') AND (afaire!='') AND datevisibi<='$dat2'";
         // lancer la requete
-        $result = mysql_query($rq) or die (mysql_error($dbc));
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         // Combien y a-t-il d'enregistrements ?
-        $nb2 = mysql_num_rows($result);
+        $nb2 = mysqli_num_rows($result);
         //on fait un tableau de donnees
-        while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+        while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $idtaf[$ind]=$ligne[2];
             $mattaf[$ind]=$mat[$loop];

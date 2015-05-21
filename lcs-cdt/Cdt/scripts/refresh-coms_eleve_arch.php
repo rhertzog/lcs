@@ -39,12 +39,12 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         WHERE id_auteur=$cible  ORDER BY date asc";
 
         // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
         // Combien y a-t-il d'enregistrements ?
-        $nb2 = mysql_num_rows($result);
+        $nb2 = mysqli_num_rows($result);
         echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
-        while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+        while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $textcours=utf8_encode(stripslashes($ligne[1]));
             //$textcours=$ligne[1];

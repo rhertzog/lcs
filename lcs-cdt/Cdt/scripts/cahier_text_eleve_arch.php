@@ -43,17 +43,17 @@ if (isset($_POST['an_archive']))
     //liste des classes
     $rq="SELECT DISTINCT `classe` FROM `onglets".$an_arch."` WHERE `classe` IS NOT NULL";
     //echo $rq;exit;
-    $result = @mysql_query($rq);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if ($result)
         {
         $n=0;
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $list_classe[$n]=$enrg[0];
             $n++;
             }
         }
-        mysql_free_result($result);
+        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
      }
 //initialisation
 $tsmp=mktime(1, 2, 3, 4, 5, 2000);
@@ -98,13 +98,13 @@ if ((isset($_POST['klasse']) && ($_POST['an_archive']==$_POST['an_activ'])))
         WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
         // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
-        $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
         if ($nb>0)
             {
             //on recupere les donnees
             $loop=0;
-            while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+            while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                 {
                 $num_ero[$loop]=$enrg[0];//numero de l'onglet
                 $loop++;
@@ -123,9 +123,9 @@ echo '
 ';
 //si on ne  connait pas l'a classe 'annee, on affiche un menu deroulant
 //recherche du  nom des archives
-$TablesExist= mysql_query("show tables");
+$TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
 $x=0;
-while ($table=mysql_fetch_row($TablesExist))
+while ($table=mysqli_fetch_row($TablesExist))
 if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
     {
     $archive=explode('s',$table[0]);
@@ -165,13 +165,13 @@ if (isset($_POST['an_archive']))
         WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
         // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
-        $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
         if ($nb>0)
             {
             //on recupere les donnees
             $loop=0;
-            while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+            while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                 {
                 $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
                 $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -234,13 +234,13 @@ if (isset($_POST['an_archive']))
             WHERE id_auteur=$cible  ORDER BY date asc";
 
             // lancer la requete
-            $result = @mysql_query($rq) or die (mysql_error($dbc));
+            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
             // Combien y a-t-il d'enregistrements ?
-            $nb2 = mysql_num_rows($result);
+            $nb2 = mysqli_num_rows($result);
             echo '<div id="boite5elv">';
             echo '<table id="tb-cdt" cellpadding="1" cellspacing="2">';
-            while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+            while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
                 {
                 //$textcours=stripslashes($ligne[1]);
                 $textc=utf8_encode(stripslashes($ligne[1]));

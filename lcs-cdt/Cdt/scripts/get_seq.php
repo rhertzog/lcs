@@ -36,11 +36,11 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $rq = "SELECT titrecourt,titre,contenu FROM sequences
         WHERE id_seq='$ru'";
         // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         // Combien y a-t-il d'enregistrements ?
-        if (mysql_num_rows($result)>0)
+        if (mysqli_num_rows($result)>0)
             {
-            $row = mysql_fetch_array($result, MYSQL_NUM);//)
+            $row = mysqli_fetch_array($result,  MYSQLI_NUM);//)
             /*echo "<?xml version=\"1.0\"?>\n";
             echo "<sequence>\n";*/
             echo "<span id='sht'>" .   utf8_encode($row[0]) . "</span>\n";
@@ -58,11 +58,11 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $ru=$_POST['num_seq'];
         $ord=$_POST['posission'];
         $rq = "UPDATE  sequences SET ordre='$ord' WHERE id_seq='$ru'";
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
         if (!$result)  // Si l'enregistrement est incorrect
             {
-            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-            mysql_close();     // refermer la connexion avec la base de donnees
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
         exit;
@@ -74,11 +74,11 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $ru=$_POST['num_seq'];
         $dest=$_POST['ong_dest'];
         $rq = "UPDATE sequences SET id_ong = '$dest' WHERE id_seq='$ru';";
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
          if (!$result)  // Si l'enregistrement est incorrect
             {
-            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-            mysql_close();     // refermer la connexion avec la base de donnees
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
         exit;
@@ -91,22 +91,22 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
         $ru=$_POST['num_seq'];
         $rq = "SELECT titrecourt,titre,contenu FROM sequences WHERE id_seq='$ru'";
         // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         // Combien y a-t-il d'enregistrements ?
-        if (mysql_num_rows($result)>0)
+        if (mysqli_num_rows($result)>0)
             {
-            $row = mysql_fetch_array($result, MYSQL_NUM);
-            $d0=mysql_real_escape_string($row[0],$dbc);
-            $d1=mysql_real_escape_string($row[1],$dbc);
-            $d2=mysql_real_escape_string($row[2],$dbc);
+            $row = mysqli_fetch_array($result,  MYSQLI_NUM);
+            $d0=mysqli_real_escape_string($dbc, $row[0]);
+            $d1=mysqli_real_escape_string($dbc, $row[1]);
+            $d2=mysqli_real_escape_string($dbc, $row[2]);
             }
         $rq = "INSERT INTO sequences (id_ong,titrecourt,titre,contenu)
         VALUES ( '$dest','$d0','$d1' ,'$d2')";
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
        if (!$result)  // Si l'enregistrement est incorrect
             {
-            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-            mysql_close();     // refermer la connexion avec la base de donnees
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
             }
         else echo "OK";
         exit;
@@ -118,11 +118,11 @@ if (isset($_POST['num_seq']) && (isset($_POST['action'])))
          $ru=$_POST['num_seq'];
          $rq = "SELECT count(*) FROM cahiertxt WHERE seq_id='$ru'";
          // lancer la requete
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         // Combien y a-t-il d'enregistrements ?
-        if (mysql_num_rows($result)>0)
+        if (mysqli_num_rows($result)>0)
             {
-            $rowt = mysql_fetch_array($result, MYSQL_NUM);
+            $rowt = mysqli_fetch_array($result,  MYSQLI_NUM);
             echo $rowt[0];
             }
          else echo "NOK";
@@ -135,11 +135,11 @@ if ($_POST['action'] == "delete")
     {
     $ru=$_POST['num_seq'];
     $rq= "DELETE FROM sequences WHERE id_seq ='$ru' ";
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {
-        echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-        mysql_close();     // refermer la connexion avec la base de donnees
+        echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
         }
     else echo "OK";
     exit;
@@ -170,13 +170,13 @@ if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descr
         $purifier = new HTMLPurifier($config);
         //$Cours = addSlashes($Cours);
         $cont1 = $purifier->purify($Title1);
-        $cont1 = mysql_real_escape_string($cont1,$dbc);
+        $cont1 = mysqli_real_escape_string($dbc, $cont1);
         $cont1= utf8_decode($cont1);
 	$cont2 = $purifier->purify($Title2);
-        $cont2 = mysql_real_escape_string($cont2,$dbc);
+        $cont2 = mysqli_real_escape_string($dbc, $cont2);
 	$cont2= utf8_decode($cont2);
         $cont3= $purifier->purify($Desc);
-        $cont3 = mysql_real_escape_string($cont3,$dbc);
+        $cont3 = mysqli_real_escape_string($dbc, $cont3);
 	$cont3= utf8_decode($cont3);
         }
 
@@ -191,11 +191,11 @@ if (isset($_POST['titre1']) && (isset($_POST['titre2'])) && (isset($_POST['descr
         $cible=$_POST["num_rub"];
         $rq = "UPDATE  sequences SET titrecourt='$cont1', titre='$cont2', contenu='$cont3' WHERE id_seq='$cible'";
         }
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {
-        echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-        mysql_close();     // refermer la connexion avec la base de donnees
+        echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
         }
     else echo "OK";
     exit;

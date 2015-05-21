@@ -23,10 +23,10 @@ $rq = "SELECT classe,matiere,id_prof FROM onglets
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY classe ASC ";
 
 // lancer la requ&egrave;ete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // si pas de rubrique, on redirige vers config_ctxt.php
-if (mysql_num_rows($result)==0)
+if (mysqli_num_rows($result)==0)
     {
     echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html  xmlns="http://www.w3.org/1999/xhtml" >
@@ -43,7 +43,7 @@ if (mysql_num_rows($result)==0)
     </div></div>
     </body>
     </html>';
-    mysql_close();
+    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     exit;
     }
 include_once("/usr/share/lcs/Plugins/Cdt/Includes/fonctions.inc.php");
@@ -86,20 +86,20 @@ if ( isset($_POST['viser']))
      $rq = "UPDATE  onglets SET visa='$numvisa', datevisa='$dat_vis'  WHERE id_prof='$cible'";
 
     // lancer la requete
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {
          echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         }
      $dat_la=date('Y-m-d');
      $rq = "UPDATE cahiertxt SET on_off='$numvisa' WHERE id_auteur='$cible' AND date<'$dat_la' AND datevisibi<='$dat_la' AND on_off='0' ";
      // lancer la requête
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  //
         {
          echo "<p>L'apposition du visa n'a pu\352tre r\351alis\351e \340 cause d'une erreur syst\350me".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         }
     }
 
@@ -114,12 +114,12 @@ $rq = "SELECT classe,matiere,id_prof,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM 
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
     {
     $clas[$loop]=$enrg[0];
     $mat[$loop]=utf8_encode($enrg[1]);

@@ -36,11 +36,11 @@ if (isset($_GET['rubrique']))
     $ru=$_GET['rubrique'];
     $rq = "SELECT classe,matiere FROM onglets WHERE id_prof='$ru'";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result); 
+    $nb = mysqli_num_rows($result); 
     //on recupere les donnees
-    $enrg = mysql_fetch_array($result, MYSQL_NUM); 
+    $enrg = mysqli_fetch_array($result,  MYSQLI_NUM); 
 //    if (mb_ereg("^(Classe)",$enrg[0]))
 //        {
 //        //recherche du niveau de la classe pour le format long
@@ -74,9 +74,9 @@ $rq = "SELECT classe,id_prof FROM onglets
  WHERE login='{$_SESSION['login']}'  AND classe != '$clas_act' AND  matiere = '$mat_iso' ORDER BY classe ASC ";
  
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc)); 
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))); 
 $loop=0;
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object($result))
     {
     $data1[$loop]=$row->classe;
     $data2[$loop]=$row->id_prof;
@@ -161,7 +161,7 @@ $dtajavi_dif="idem Cours";
 if (!isset($_POST['Valider']))
     {
     //si pas de classe de meme niveau dans la matiere
-    if (mysql_num_rows($result)==0) 
+    if (mysqli_num_rows($result)==0) 
         {
         echo '<h4> Apparemment, vous n\'avez pas d\'autre classe  en <b>'.$mat.'</b> !<br /> V&#233;rifiez que la mati&#232;re n\'est
         pas orthographi&#233;e diff&#233;remment pour les autres classes .</h4>';
@@ -185,16 +185,16 @@ if (!isset($_POST['Valider']))
             $rq = "SELECT id_seq,titrecourt FROM sequences
             WHERE id_ong='$data2[$loop]' order by ordre ASC";
             // lancer la requete
-            $resulta = @mysql_query($rq) or die (mysql_error($dbc));
+            $resulta = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
             // Combien y a-t-il d'enregistrements ?
-            $nbs = mysql_num_rows($resulta);
+            $nbs = mysqli_num_rows($resulta);
             //on recupere les donnees
             echo "<select name='sequence_dif[".$data2[$loop]."]' style='background-color:#E6E6FA' >";
             echo '<option value="0">-----------------</option>';
             //foreach ($TitreCourSeq as $cle => $valeur)
             if ($nbs>0)
                 {
-                while ($rows = mysql_fetch_object($resulta))
+                while ($rows = mysqli_fetch_object($resulta))
                     {
                     echo '<option value="'.$rows->id_seq.'"';
                     echo ">".utf8_encode($rows->titrecourt)."</option>";

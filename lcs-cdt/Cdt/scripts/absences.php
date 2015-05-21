@@ -50,9 +50,9 @@ require_once ('../Includes/config.inc.php');
 
 function is_present($kan,$logprof,$logelev) {
     $Sql= "SELECT id_abs FROM absences WHERE  uidprof='$logprof' AND  uideleve='$logelev' AND date='$kan'";
-    $res = @mysql_query($Sql) or die (mysql_error($dbc));
-    $tst=mysql_fetch_array($res, MYSQL_NUM);
-    if (mysql_num_rows($res)>0) return $tst[0] ;
+    $res = @mysqli_query($GLOBALS["___mysqli_ston"], $Sql) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $tst=mysqli_fetch_array($res,  MYSQLI_NUM);
+    if (mysqli_num_rows($res)>0) return $tst[0] ;
 }
 
 // Recherche des classes du prof
@@ -60,9 +60,9 @@ $rq = "SELECT classe,id_prof FROM onglets
  WHERE login='{$_SESSION['login']}'  OR  cologin='{$_SESSION['login']}' GROUP BY classe ORDER BY classe ASC ";
 
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 $loop=0;
-while ($row = mysql_fetch_object($result))
+while ($row = mysqli_fetch_object($result))
     {
     $data1[$loop]=$row->classe;
     $data2[$loop]=$row->id_prof;
@@ -120,8 +120,8 @@ if (isset($_POST['cren']))
         $tab_cren=$_POST['cren'];
         $cr=$_POST['cren'][$i];
         $rq= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'   AND classe='$ch' AND date ='$dtajac' AND $cr!='' ";
-        $result = @mysql_query($rq) or die (mysql_error($dbc));
-        $nb = mysql_fetch_array($result, MYSQL_NUM);
+        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $nb = mysqli_fetch_array($result,  MYSQLI_NUM);
         if ($nb[0]!=0)
             {
             $cren_y[$y]=$cr;$y++;// creneau existant (des donnees existent pour ce creneau)
@@ -174,7 +174,7 @@ if (isset($_POST['Valider']))
                         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $mot_x = $purifier->purify($mot_x);
-                        $mot_x=mysql_real_escape_string($mot_x,$dbc);
+                        $mot_x=mysqli_real_escape_string($dbc, $mot_x);
                         $mot_x=utf8_decode($mot_x);
 			}
                     }
@@ -195,7 +195,7 @@ if (isset($_POST['Valider']))
                         $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                         $purifier = new HTMLPurifier($config);
                         $mot_x = $purifier->purify($mot_x);
-                        $mot_x=mysql_real_escape_string($mot_x,$dbc);
+                        $mot_x=mysqli_real_escape_string($dbc, $mot_x);
                         $mot_x=utf8_decode($mot_x);
 			}
                     }
@@ -215,11 +215,11 @@ if (isset($_POST['Valider']))
                                             if (($id_absence != ""))
                                                 {
                                                  $rq6 = "UPDATE  absences SET  ".$valeur."='$typ' , motif".$valeur."='$mot_x'  WHERE id_abs='$id_absence' ";
-                                                 $result6  =  mysql_query($rq6);
+                                                 $result6  =  mysqli_query($GLOBALS["___mysqli_ston"], $rq6);
                                                  if (!$result)
                                                      {
-                                                      echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error($dbc) . "<p></p>";
-                                                      mysql_close();     // refermer la connexion avec la base de donnees
+                                                      echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                                      ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                                       exit();
                                                       }
                                                  else $crd="Okey";
@@ -228,11 +228,11 @@ if (isset($_POST['Valider']))
                                                 {
                                                 $rq6 ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur.",motif".$valeur." )
                                                 VALUES ( '$dtajac','{$_SESSION['login']}', '$uidpot', '$ch', '$typ', '$mot_x')";
-                                                $result6  =  mysql_query($rq6);
+                                                $result6  =  mysqli_query($GLOBALS["___mysqli_ston"], $rq6);
                                                 if (!$result)  // Si l'enregistrement est incorrect
                                                     {
-                                                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                                                    mysql_close();     // refermer la connexion avec la base de donnees
+                                                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                                    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                                     exit();
                                                     }
                                                 else $crd="Okey";
@@ -267,7 +267,7 @@ if (isset($_POST['Valider']))
                           $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                           $purifier = new HTMLPurifier($config);
                           $motiph = $purifier->purify($motiph);
-                          $motiph=mysql_real_escape_string($motiph,$dbc);
+                          $motiph=mysqli_real_escape_string($dbc, $motiph);
                         $motiph=utf8_decode($motiph);
 			}
                       }
@@ -288,7 +288,7 @@ if (isset($_POST['Valider']))
                             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
                             $purifier = new HTMLPurifier($config);
                             $motiph = $purifier->purify($motiph);
-                            $motiph=mysql_real_escape_string($motiph,$dbc);
+                            $motiph=mysqli_real_escape_string($dbc, $motiph);
 			    $motiph=utf8_decode($motiph);
                             }
                           }
@@ -302,11 +302,11 @@ if (isset($_POST['Valider']))
     if (($id_absence != ""))
                 {
                 $rq6 = "UPDATE  absences SET  ".$valeur."='$type' , motif".$valeur."='$motiph'  WHERE id_abs='$id_absence' ";
-                $result6  =  mysql_query($rq6);
+                $result6  =  mysqli_query($GLOBALS["___mysqli_ston"], $rq6);
                 if (!$result)
                     {
-                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . mysql_error($dbc) . "<p></p>";
-                    mysql_close();     // refermer la connexion avec la base de donnees
+                    echo "<p>Votre commentaire n'a pas pu &#234;tre enregistre &#224; cause d'une erreur syst&#232;me". "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                     exit();
                     }
       else $crd="Okey";
@@ -314,11 +314,11 @@ if (isset($_POST['Valider']))
     elseif ($type!="")
         {
         $rq6 ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur.",motif".$valeur." )  VALUES ( '$dtajac','{$_SESSION['login']}', '$uidpot', '$ch', '$type', '$motiph')";
-        $result6  =  mysql_query($rq6);
+        $result6  =  mysqli_query($GLOBALS["___mysqli_ston"], $rq6);
         if (!$result)  // Si l'enregistrement est incorrect
             {
-             echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-             mysql_close();     // refermer la connexion avec la base de donnees
+             echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+             ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
              exit();
              }
         else $crd="Okey";
@@ -331,8 +331,8 @@ if (isset($_POST['Valider']))
     //suppression de l'enregistrement si aucun retard	et aucune absence (suite e une modification)
 
             $rq61="SELECT * FROM absences WHERE id_abs='$id_absence' ";
-            $result61=  mysql_query($rq61);
-            while ($row = mysql_fetch_object($result61))
+            $result61=  mysqli_query($GLOBALS["___mysqli_ston"], $rq61);
+            while ($row = mysqli_fetch_object($result61))
                     {
                      $m1=$row->M1;$m2=$row->M2;$m3=$row->M3;$m4=$row->M4;$m5=$row->M5;
                      $s1=$row->S1;$s2=$row->S2;$s3=$row->S3;$s4=$row->S4;$s5=$row->S5;
@@ -340,11 +340,11 @@ if (isset($_POST['Valider']))
             if ($m1=="" && $m2=="" && $m3=="" && $m4=="" && $m5=="" && $s1=="" && $s2=="" && $s3=="" && $s4=="" && $s5=="" )
                         {
                         $rq7 = "DELETE  FROM absences WHERE id_abs='$id_absence'  LIMIT 1";
-                        $result7 = @mysql_query($rq7) or die (mysql_error($dbc));
+                        $result7 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq7) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
                         if (!$result7)  // Si l'enregistrement est incorrect
                             {
-                            echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                            mysql_close();     // refermer la connexion avec la base de donnees
+                            echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                             exit();
                             }
                             else $crd="Okey";
@@ -359,17 +359,17 @@ if (isset($_POST['Valider']))
                     foreach ( $cren_n as $cle => $valeur)
                             {
                             $rq= "SELECT count(*) FROM absences WHERE classe='$ch' AND date ='$dtajac' AND $valeur!='' ";
-                            $result = @mysql_query($rq) or die (mysql_error($dbc));
-                            $nb_enrg = mysql_fetch_array($result, MYSQL_NUM);
+                            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                            $nb_enrg = mysqli_fetch_array($result,  MYSQLI_NUM);
                             //si tous presents
                             if ($nb_enrg[0]==0)
                                     {
                                     $rqq ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur." ) VALUES ( '$dtajac','{$_SESSION['login']}', 'touspresents', '$ch', '-')";
-                                    $resultt =  mysql_query($rqq);
+                                    $resultt =  mysqli_query($GLOBALS["___mysqli_ston"], $rqq);
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {
-                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de donnees
+                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                         exit();
                                         }
                                     else $crd="Okey";
@@ -378,11 +378,11 @@ if (isset($_POST['Valider']))
                                     {
                                     //effacer touspresents
                                     $rqq = "DELETE  FROM absences WHERE uideleve='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur='-' LIMIT 1";
-                                    $resultt = @mysql_query($rqq) or die (mysql_error($dbc));
+                                    $resultt = @mysqli_query($GLOBALS["___mysqli_ston"], $rqq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {
-                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de donnees
+                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&#233; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                         exit();
                                         }
                                    else $crd="Okey";
@@ -395,23 +395,23 @@ if (isset($_POST['Valider']))
                     foreach ( $cren_y as $cle => $valeur)
                             {
                             $rq= "SELECT count(*) FROM absences WHERE uideleve!='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur!='' ";
-                            $result = @mysql_query($rq) or die (mysql_error($dbc));
-                            $nb_enrg = mysql_fetch_array($result, MYSQL_NUM);
+                            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                            $nb_enrg = mysqli_fetch_array($result,  MYSQLI_NUM);
                             //si tous presents
                             if ($nb_enrg[0]==0)
                                     {
                                     $rqt= "SELECT count(*) FROM absences WHERE uideleve='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur='-' ";
-                                    $resultat = @mysql_query($rqt) or die (mysql_error($dbc));
-                                    $nb_ = mysql_fetch_array($resultat, MYSQL_NUM);
+                                    $resultat = @mysqli_query($GLOBALS["___mysqli_ston"], $rqt) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                                    $nb_ = mysqli_fetch_array($resultat,  MYSQLI_NUM);
                                     //si tous presents n'est pas enregistre
                                     if ($nb_[0]==0)
                                             {
                                             $rqq ="INSERT INTO absences (date,uidprof, uideleve,classe,".$valeur." ) VALUES ( '$dtajac','{$_SESSION['login']}', 'touspresents', '$ch', '-')";
-                                            $resultt =  mysql_query($rqq);
+                                            $resultt =  mysqli_query($GLOBALS["___mysqli_ston"], $rqq);
                                             if (!$resultt)  // Si l'enregistrement est incorrect
                                                 {
-                                                echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                                                mysql_close();     // refermer la connexion avec la base de donnees
+                                                echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                                ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                                 exit();
                                                 }
                                             else $crd="Okey";
@@ -421,11 +421,11 @@ if (isset($_POST['Valider']))
                                     {
                                     // si une abseences ou retard sont ajouT, effacer touspresents
                                     $rqq = "DELETE  FROM absences WHERE uideleve='touspresents' AND classe='$ch' AND date ='$dtajac' AND $valeur='-' LIMIT 1";
-                                    $resultt = @mysql_query($rqq) or die (mysql_error($dbc));
+                                    $resultt = @mysqli_query($GLOBALS["___mysqli_ston"], $rqq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
                                     if (!$resultt)  // Si l'enregistrement est incorrect
                                         {
-                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . mysql_error($dbc) . "<p></p>";
-                                        mysql_close();     // refermer la connexion avec la base de donnees
+                                        echo "<p>Votre commentaire n'a pas pu &#234;tre enregistr&eacute; &#224; cause d'une erreur syst&#232;me"."<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
+                                        ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                                         exit();
                                         }
                                     else $crd="Okey";
@@ -446,8 +446,8 @@ if (isset($_POST['cren']))
                         $tab_cren=$_POST['cren'];
                         $cr=$_POST['cren'][$i];
                         $rq= "SELECT count(*) FROM absences WHERE uidprof='{$_SESSION['login']}'   AND classe='$ch' AND date ='$dtajac' AND $cr!='' ";
-                        $result = @mysql_query($rq) or die (mysql_error($dbc));
-                        $nb = mysql_fetch_array($result, MYSQL_NUM);
+                        $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                        $nb = mysqli_fetch_array($result,  MYSQLI_NUM);
                         if ($nb[0]!=0)
                             {
                             $cren_y[$y]=$cr;$y++;
@@ -462,18 +462,18 @@ if (isset($_POST['cren']))
 //existe-il deja un enregistrement ?
 $rq2 = "SELECT id_abs FROM absences WHERE uidprof='{$_SESSION['login']}'  AND classe='$ch' AND date ='$dtajac' ";
  // lancer la requete
-$result2 = @mysql_query($rq2) or die (mysql_error($dbc));
-$test=mysql_fetch_object($result2);
-if (mysql_num_rows($result2)==0) $exist="false"; else $exist="true";
+$result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq2) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$test=mysqli_fetch_object($result2);
+if (mysqli_num_rows($result2)==0) $exist="false"; else $exist="true";
 
 //on recupere les donnees
 if ($exist=="true")
 	{
 	$rq3= "SELECT uideleve, M1, motifM1, M2, motifM2, M3, motifM3, M4, motifM4,M5, motifM5 , S1,motifS1, S2, motifS2, S3 ,motifS3 ,S4 ,motifS4 ,S5,motifS5
 	FROM absences WHERE uidprof='{$_SESSION['login']}'  AND classe='$ch' AND date ='$dtajac' ";
-	$result3 = @mysql_query($rq3) or die (mysql_error($dbc));
+	$result3 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq3) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 	$loop=0;
-	while ($retour = mysql_fetch_object($result3))
+	while ($retour = mysqli_fetch_object($result3))
                         {
                          $uid_eleve[$loop]=$retour->uideleve;
                         $_m1[$loop]=$retour->M1;
@@ -532,7 +532,7 @@ if ($exist=="true")
 //affichage du formulaire
 echo '<div id="abs-contenu">';
 //si pas de classe de meme niveau dans la matiere
-if (!mysql_num_rows($result)==0)
+if (!mysqli_num_rows($result)==0)
         {
         echo '<p>Ce carnet vous permet de consigner les <b>A</b>bsences/<b>R</b>etards de vos &eacute;l&egrave;ves, de sortir un bilan pour une p&eacute;riode donn&eacute;e et de consulter par semaine, les absences/retards dans toutes les mati&egrave;res.</p>';
         echo '<div id="crenos">';
@@ -628,14 +628,14 @@ if (!mysql_num_rows($result)==0)
                 foreach ( $horaire as $cle => $val)
                         {
                         $rq4= "SELECT count(*) FROM absences WHERE  uidprof='{$_SESSION['login']}'  AND $val='A'  AND uideleve='$potache' AND date<='$dtajac' ";
-                        $result4 = @mysql_query($rq4) or die (mysql_error($dbc));
-                        while ($nb = mysql_fetch_array($result4, MYSQL_NUM))
+                        $result4 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq4) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                        while ($nb = mysqli_fetch_array($result4,  MYSQLI_NUM))
                                 {
                                  $nbabs+=$nb[0];
                                 }
                         $rq5= "SELECT count(*) FROM absences WHERE  uidprof='{$_SESSION['login']}'  AND $val='R'  AND uideleve='$potache' AND date<='$dtajac' ";
-                        $result5 = @mysql_query($rq5) or die (mysql_error($dbc));
-                        while ($nb = mysql_fetch_array($result5, MYSQL_NUM))
+                        $result5 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq5) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                        while ($nb = mysqli_fetch_array($result5,  MYSQLI_NUM))
                                 {
                                  $nbrtd+=$nb[0];
                                 }
@@ -708,8 +708,8 @@ if (!mysql_num_rows($result)==0)
                         if ($creno_prec!="")
                             {
                             $rq= "SELECT count(*) FROM absences WHERE uideleve='$uid_e'   AND date ='$dtajac' AND $horaire[$h]='A'";
-                            $result = @mysql_query($rq) or die (mysql_error($dbc));
-                            $nb = mysql_fetch_array($result, MYSQL_NUM);
+                            $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                            $nb = mysqli_fetch_array($result,  MYSQLI_NUM);
                              if ($nb[0]!=0) echo $horaire[$h].' ';
                             }
                 }

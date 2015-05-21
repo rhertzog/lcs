@@ -28,11 +28,11 @@ require_once ('../Includes/config.inc.php');
 // Creer la requete (Recuperer les rubriques de l'utilisateur// doit etre identique  a la requete du cdt prof)
 $rq = "SELECT classe,matiere,id_prof FROM onglets  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 // lancer la requ&egrave;ete
-$result = mysql_query($rq) or die (mysql_error($dbc));
-if ( mysql_num_rows($result)>0)
+$result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+if ( mysqli_num_rows($result)>0)
     {
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $clas[$loop]=$enrg[0];
         $mat[$loop]=utf8_encode($enrg[1]);
@@ -135,13 +135,13 @@ for ($loop=0; $loop < count ($clas); $loop++)
     $rq = "SELECT id_seq,titre,titrecourt,contenu,ordre FROM sequences
     WHERE id_ong='$numero[$loop]' order by ordre ASC";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result);
+    $nb = mysqli_num_rows($result);
     //on recupere les donnees
     $j=0;
     $TitreSeq=array();
-    while ($row = mysql_fetch_object($result))
+    while ($row = mysqli_fetch_object($result))
         {
         $IdSeq[$j]=$row->id_seq;
         $TitreSeq[$j]=utf8_encode($row->titre);

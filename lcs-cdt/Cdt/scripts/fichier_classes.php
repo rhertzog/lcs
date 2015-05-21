@@ -257,8 +257,8 @@ if (isset($_POST['Archiver']))
         }
     //Verification d'une archive existante
     $exist=0;
-    $TablesExist= mysql_query("show tables");
-    while ($table=mysql_fetch_row($TablesExist))
+    $TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
+    while ($table=mysqli_fetch_row($TablesExist))
     if (mb_ereg("$name_arch$",$table[0])) $exist=1;
     if ($exist==0)
         {
@@ -266,8 +266,8 @@ if (isset($_POST['Archiver']))
         $rq1 = "create table onglets$name_arch as select * from onglets";
         $rq2= "create table cahiertxt$name_arch as select * from cahiertxt";
         // lancer la requete
-        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
-        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
+        $result1 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq1) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq2) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         if (!($result1&&$result2)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
         }
     else
@@ -293,10 +293,10 @@ if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_S
         $rq3 = "create table onglets$name_arch as select * from onglets";
         $rq4 = "create table cahiertxt$name_arch as select * from cahiertxt";
         // lancer la requete
-        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
-        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
-        $result3 = @mysql_query($rq3) or die (mysql_error($dbc));
-        $result4= @mysql_query($rq4) or die (mysql_error($dbc));
+        $result1 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq1) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq2) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result3 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq3) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result4= @mysqli_query($GLOBALS["___mysqli_ston"], $rq4) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
         }
     }
@@ -325,12 +325,12 @@ if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SE
         $rq5 = "TRUNCATE TABLE postit_eleve";
         $rq6 = "TRUNCATE TABLE sequences";
         // lancer la requete
-        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
-        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
-        $result3 = @mysql_query($rq3) or die (mysql_error($dbc));
-        $result4 = @mysql_query($rq4) or die (mysql_error($dbc));
-        $result5 = @mysql_query($rq5) or die (mysql_error($dbc));
-        $result6 = @mysql_query($rq6) or die (mysql_error($dbc));
+        $result1 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq1) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq2) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result3 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq3) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result4 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq4) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result5 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq5) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        $result6 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq6) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) $mess2="<span class='cok'> les tables  ont &#233;t&#233; vid&#233;es </span>";
         else $mess2="<span class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es <br /></span>";
         }
@@ -527,8 +527,8 @@ echo '
 <input type="submit" name="Archiver" value="Cr&#233;er une archive nomm&#233;e" />&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" name="name_arch" value="'.date("Y",mktime()-31536000)."_".date("Y").'" size="9" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 En d&#233;but d\'ann&#233;e, &nbsp; <input type="submit" name="Vider" value="Vider les tables" />&nbsp;  de donn&#233;es du cahier de texte.<br /><br />
 Archives existantes : ';
-$TablesExist= mysql_query("show tables");
-while ($table=mysql_fetch_row($TablesExist))
+$TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
+while ($table=mysqli_fetch_row($TablesExist))
 if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
     {
     $archive=explode('s',$table[0]);

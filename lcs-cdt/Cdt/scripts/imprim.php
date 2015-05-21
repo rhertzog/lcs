@@ -27,10 +27,10 @@ function Imprime_seance($param) {
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
     WHERE (id_rubrique=$param) ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+        while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
           {
           $textcours=utf8_encode(stripslashes($ligne[1]));
           $textafaire=utf8_encode(stripslashes($ligne[2]));
@@ -75,17 +75,17 @@ function Imprime_seq($param) {
     //affiche une sequence et son contenu dans le cdt
     $rqs = "SELECT titrecourt,titre,contenu FROM sequences WHERE id_seq='$param'";
     // lancer la requete
-    $results = @mysql_query($rqs) or die (mysql_error($dbc));
+    $results = @mysqli_query($GLOBALS["___mysqli_ston"], $rqs) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    if (mysql_num_rows($results)>0)
+    if (mysqli_num_rows($results)>0)
         {
-        $rows = mysql_fetch_array($results, MYSQL_NUM);
+        $rows = mysqli_fetch_array($results,  MYSQLI_NUM);
         echo '<tbody><tr><th  >'.utf8_encode($rows[1])."</th></tr></tbody>";
         echo '<tbody><tr><td class="description"  colspan="2" >'.utf8_encode($rows[2]);
         echo ' </td></tr></tbody>';
         $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1." order by date asc ";
-        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
-        while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq2) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        while ($ligne = mysqli_fetch_array($result2,  MYSQLI_NUM))
             {
             Imprime_seance_seq ($ligne[0]);
             }
@@ -99,10 +99,10 @@ function Imprime_seance_seq ($param) {
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
     WHERE (id_rubrique=$param) ";
 
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
+        while ($ligne = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $textcours=utf8_encode(stripslashes($ligne[1]));
             $textafaire=utf8_encode(stripslashes($ligne[2]));
@@ -239,11 +239,11 @@ if (isset($cible))
     $rq = "SELECT classe,matiere,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets$arch
     WHERE id_prof='$cible'  ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result);
+    $nb = mysqli_num_rows($result);
     //on recupere les donnees
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {$classe_active=$enrg[0];//classe
         $mati_active=utf8_encode($enrg[1]);//matiere
         $tampon=$enrg[2];
@@ -282,23 +282,23 @@ if (isset($_POST['valider']))
     $senseq=($sens=="asc") ? "desc" :"asc";
     // recuperer les sequences dans l'ordre d affichage
     $rq = "SELECT id_seq  FROM sequences WHERE id_ong='$cib' order by ordre ".$senseq;
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($idr = mysql_fetch_object($result))
+        while ($idr = mysqli_fetch_object($result))
             {
             $Sek[$i]= $idr ->id_seq ;
             $i++;
             }
-        mysql_free_result($result);
+        ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
         }
     //dates debut&fin des sequences non vides et comprises ente les dates limites
     for ($index = 0; $index < count($Sek); $index++) {
     $rq = "SELECT MAX(date),MIN(date) from cahiertxt  WHERE seq_id='$Sek[$index]'".$dlm1;
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        $r = mysql_fetch_array($result);
+        $r = mysqli_fetch_array($result);
         if ($r[0]!=null)
             {
             $der_seq[$k] = $r[0] ;
@@ -308,7 +308,7 @@ if (isset($_POST['valider']))
             }
         }
     }
-    mysql_free_result($result);
+    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
     for ($index2 = 0; $index2 < count($der_seq); $index2++) {
     if ($sens=="desc")
@@ -327,10 +327,10 @@ if (isset($_POST['valider']))
         }
     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere1;
     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere2;
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array($result))
             {
             if ( ! in_array($row[0], $list_art))
                 {
@@ -365,10 +365,10 @@ if (isset($_POST['valider']))
             $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'".$dlm1."  order by date asc";
             }
         }
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($row = mysql_fetch_array($result))
+        while ($row = mysqli_fetch_array($result))
             {
             if ( ! in_array($row[0], $list_art))
                 {

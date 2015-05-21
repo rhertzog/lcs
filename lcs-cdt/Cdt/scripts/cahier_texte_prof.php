@@ -40,10 +40,10 @@ include ('../Includes/config.inc.php');
 $rq = "SELECT classe,matiere,id_prof FROM onglets WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY classe ASC ";
 
 // lancer la requ&egrave;ete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 
 // si pas de rubrique, on redirige vers config_ctxt.php
-if (mysql_num_rows($result)==0)
+if (mysqli_num_rows($result)==0)
     {
     echo '
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -64,7 +64,7 @@ if (mysql_num_rows($result)==0)
             </div></div>
     </body>
     </html>';
-    mysql_close();
+    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     exit;
     }
 
@@ -200,13 +200,13 @@ elseif (is_dir("../../Agendas"))
     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
     // lancer la requete
-    $result = @mysql_query($rq);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if ($result)
         {
         //on recupere les donnees
         $tab=array();
         $loop=0;
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             //calcul heure de fin
             $s=substr($enrg[0],-2,2);
@@ -231,10 +231,10 @@ elseif (is_dir("../../Agendas"))
                     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT'))
                     ORDER BY cal_date ASC limit 1";
                     //echo $rq;exit;
-                    $result = @mysql_query($rq);
+                    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq);
                     if ($result)
                         {
-                        $row = mysql_fetch_object($result);
+                        $row = mysqli_fetch_object($result);
                         $tsmp2=mkTime(0,0,1,substr($row->cal_date,4,2),substr($row->cal_date,-2,2),substr($row->cal_date,0,4));
                         }
                     break;
@@ -242,7 +242,7 @@ elseif (is_dir("../../Agendas"))
                 }
         }
         }
-    mysql_close();
+    ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     }
 else $cible="";
 include ('../Includes/config.inc.php');
@@ -252,10 +252,10 @@ if ($match!="")
 
     $rq = "SELECT id_prof FROM onglets
      WHERE (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') AND edt='".$match."'";
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result) >0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result) >0)
         {
-        while ($idr = mysql_fetch_array($result, MYSQL_NUM))
+        while ($idr = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $cible=$idr[0];
             $onglet_match=true;
@@ -275,12 +275,12 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION
     $rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' )";
 
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);
     if ($nb==1)
         {
         $rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' ) LIMIT 1";
-        $result2 = @mysql_query($rq) or die (mysql_error($dbc));
+        $result2 = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
         }
     }
 //fin de suppression d'un commentaire
@@ -309,7 +309,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config->set('Filter.MyLcs', true);
             $purifier = new HTMLPurifier($config);
             $Cours = $purifier->purify($Cours);
-            $Cours=mysql_real_escape_string($Cours,$dbc);
+            $Cours=mysqli_real_escape_string($dbc, $Cours);
             $Cours = utf8_decode($Cours);
 	    }
         }
@@ -339,7 +339,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config->set('Filter.MyLcs', true);
             $purifier = new HTMLPurifier($config);
             $Afaire = $purifier->purify($Afaire);
-            $Afaire = mysql_real_escape_string($Afaire,$dbc);
+            $Afaire = mysqli_real_escape_string($dbc, $Afaire);
             $Afaire= utf8_decode($Afaire);
 	    }
         }
@@ -388,11 +388,11 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
         WHERE id_rubrique='$artic'";
         }
     // lancer la requete
-        $result = mysql_query($rq);
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
         if (!$result)  // Si l'enregistrement est incorrect
             {
-            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-            mysql_close();     // refermer la connexion avec la base de donnees
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+            ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
             exit();
             }
 
@@ -426,11 +426,11 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $rq = "INSERT INTO cahiertxt (id_auteur,login,date,contenu,afaire,datafaire,datevisibi,seq_id )
             VALUES ( '$cibledif','{$_SESSION['login']}', '$date_c_dif', '$Cours', '$Afaire', '$date_af_dif','$date_v_dif',$seqdif )";
             // lancer la requete
-            $result = mysql_query($rq);
+            $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
             if (!$result)  // Si l'enregistrement est incorrect
                 {
-                echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
-                mysql_close();     // refermer la connexion avec la base de donnees
+                echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ;
+                ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);     // refermer la connexion avec la base de donnees
                 exit();
                 }
             }
@@ -455,12 +455,12 @@ $rq = "SELECT classe,matiere,id_prof,postit,visa,DATE_FORMAT(datevisa,'%d/%m/%Y'
  WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
 $loop=0;
-while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
     {
     $clas[$loop]=$enrg[0];
     $mat[$loop]=utf8_encode($enrg[1]);
@@ -534,12 +534,12 @@ if (isset($_POST['modif'])&& isset($_POST['number']))
     DATE_FORMAT(datevisibi,'%d'),DATE_FORMAT(datevisibi,'%m'),DATE_FORMAT(datevisibi,'%Y'),seq_id FROM cahiertxt
     WHERE id_rubrique=$article ";
 // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    $nb = mysql_num_rows($result);
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    $nb = mysqli_num_rows($result);
     //s'il existe, on recupere les datas pour les afficher dans les champs
     if (($nb==1) &&($action=='erg45er5ze'))
         {
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
             {
             $val_jour=$enrg[0];
             $val_mois=$enrg[1];
@@ -568,11 +568,11 @@ if (isset($cible))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='$cible'  ";
     // lancer la requ&egrave;ete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     // Combien y a-t-il d'enregistrements ?
-    $nb = mysql_num_rows($result);
+    $nb = mysqli_num_rows($result);
     //on recupere les donnees
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $classe_active=$enrg[0];//classe
         $mati_active=$enrg[1];//mati&egrave;ere
@@ -633,16 +633,16 @@ else $dtajav="idem Cours";
  <?php
 $rq = "SELECT id_seq,titrecourt FROM sequences	WHERE id_ong='$cible' order by ordre ASC";
 // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 // Combien y a-t-il d'enregistrements ?
-$nb = mysql_num_rows($result);
+$nb = mysqli_num_rows($result);
 //on recupere les donnees
 echo '<select name="sequence" style="background-color:#E6E6FA" >';
 echo '<option value="0">-----------------</option>';
 //foreach ($TitreCourSeq as $cle => $valeur)
 if ($nb>0)
     {
-    while ($row = mysql_fetch_object($result))
+    while ($row = mysqli_fetch_object($result))
         {
         echo "<option value=\"$row->id_seq\"";
         if ($row->id_seq==$Seq) {echo ' selected';}
@@ -731,9 +731,9 @@ else
 /* Affichage des archives */
 echo (' <hr /><p class="archive">Vos anciens cahiers de textes :</p> ');
 //recherche du  nom des archives
-$TablesExist= mysql_query("show tables");
+$TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
 $x=0;
-while ($table=mysql_fetch_row($TablesExist))
+while ($table=mysqli_fetch_row($TablesExist))
 if (mb_ereg("^onglets[[:alnum:]]",$table[0]))
     {
     $archive=explode('s',$table[0]);
@@ -746,7 +746,7 @@ if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
 else echo '<hr /><p class="archive">Anciens cahiers de textes &#233;l&#232;ves</p>
 <a href="#" class="open_wi" onclick="open_new_win(\'cahier_text_eleve_arch.php\')"> -  Ils sont ici </a>';
 echo '<hr />';
-mysql_close();
+((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
 //archives perso
 echo ' <p class="archive"> Cahiers de textes import&#233;s :</p> ';
 //recherche du  nom des archives
@@ -759,17 +759,17 @@ DEFINE ('DBP_HOST', 'localhost');
 DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbcp = @mysql_connect(DBP_HOST, DBP_USER, DBP_PASSWORD);
+$dbcp = @($GLOBALS["___mysqli_ston"] = mysqli_connect(DBP_HOST,  DBP_USER,  DBP_PASSWORD));
 //OR die ('Connexion a MySQL impossible : '.mysql_error($dbc).'<br />');
 if ($dbcp)
     {
-    $db_selected = mysql_select_db(DBP_NAME,$dbcp);
+    $db_selected = ((bool)mysqli_query($dbcp, "USE " . constant('DBP_NAME')));
     //OR die ('Selection de la base de donnees impossible : '.mysql_error($dbc).'<br />');
     if ($db_selected)
         {
-        $TablesExist= mysql_query("show tables");
+        $TablesExist= mysqli_query($GLOBALS["___mysqli_ston"], "show tables");
         $x=0;
-        while ($table=mysql_fetch_row($TablesExist))
+        while ($table=mysqli_fetch_row($TablesExist))
         if (mb_ereg("^onglets",$table[0]))
             {
             $archive=explode('s',$table[0]);
@@ -780,11 +780,11 @@ if ($dbcp)
         //s'il n'esiste pas d'archive
         if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
          }
-    else { echo 'Erreur : '.mysql_error($dbc);}
+    else { echo 'Erreur : '.((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));}
     }
-else  echo 'Erreur : '.mysql_error($dbc);
+else  echo 'Erreur : '.((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
 echo '<hr />';
-mysql_close();
+((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
 
 ?>
     </div><!--fin du div deroulant_2-->

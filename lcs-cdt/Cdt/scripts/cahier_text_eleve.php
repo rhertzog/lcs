@@ -121,10 +121,10 @@ if ($_SESSION['cequi']=="eleve" )
     {
     $rq = "SELECT texte FROM postit_eleve WHERE login='{$_SESSION['login']}'  ";
     // lancer la requete
-    $result = @mysql_query($rq) or die (mysql_error($dbc));
-    if (mysql_num_rows($result)>0)
+    $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+    if (mysqli_num_rows($result)>0)
         {
-        $enrg = mysql_fetch_array($result, MYSQL_NUM);
+        $enrg = mysqli_fetch_array($result,  MYSQLI_NUM);
         $contenu_aide_memoire=$enrg[0];
         }
     else  $contenu_aide_memoire="";
@@ -176,20 +176,20 @@ if ( isset($_POST['viser']))
     $rq = "UPDATE  onglets SET visa='1', datevisa='$dat_vis'  WHERE id_prof='$rub_vis'";
 
     // lancer la requete
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  // Si l'enregistrement est incorrect
         {
          echo "<p>Votre rubrique n'a pas pu etre enregistree a cause d'une erreur systeme".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         }
     $dat_la=date('Y-m-d');
     $rq = "UPDATE cahiertxt SET on_off='1' WHERE id_auteur='$rub_vis' AND date<'$dat_la' AND datevisibi<='$dat_la'";
     // lancer la requete
-    $result = mysql_query($rq);
+    $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq);
     if (!$result)  //
         {
          echo "<p>L'apposition du visa n'a pu etre realisee a cause d'une erreur systeme".
-        "<p></p>" . mysql_error($dbc) . "<p></p>";
+        "<p></p>" . ((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . "<p></p>";
         }
     }
 
@@ -207,13 +207,13 @@ if ((isset($_POST['rub_activ'])) &&  (isset($_POST['viser']))) $cible=$_POST['ru
 $rq = "SELECT id_prof FROM onglets WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
  // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $num_ero[$loop]=$enrg[0];//numero de l'onglet
         $loop++;
@@ -336,13 +336,13 @@ $prof=$mat=$numero=$pref=$restr=$visa=$datvisa=array();
 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
  // lancer la requete
-$result = @mysql_query($rq) or die (mysql_error($dbc));
-$nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+$result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
     //on recupere les donnees
     $loop=0;
-    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
         {
         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
         $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -363,12 +363,12 @@ if ($nb>0)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
                 WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
-                $result = @mysql_query($rq) or die (mysql_error($dbc));
-                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+                $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {
                     //on recupere les donnees
-                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+                    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                         {
                         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
                         $mat[$loop]=utf8_encode($enrg[1]);//matiere
@@ -424,12 +424,12 @@ if ($nb>0)
             for($n=0; $n<count($liste_cours); $n++)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
-                $result = @mysql_query($rq) or die (mysql_error($dbc));
-                $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
+                $result = @mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                $nb = mysqli_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {
                     //on recupere les donnees
-                    while ($enrg = mysql_fetch_array($result, MYSQL_NUM))
+                    while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM))
                         {
                         $prof[$loop]=utf8_encode($enrg[0]);//nom du prof
                         $mat[$loop]=utf8_encode($enrg[1]);//matiere

@@ -106,7 +106,7 @@ elseif (isset($_GET['cl1'])) {
                 #
                 #$result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')", $authlink);
                 $query="INSERT INTO statusages VALUES ('Parent', 'Cdt', '$date', 'wan', '$Kl')";
-                $result=@mysql_query($query, $authlink);
+                $result=@mysqli_query( $authlink, $query);
                 #
             }
             }
@@ -123,7 +123,7 @@ elseif (isset($_GET['cl1'])) {
                 #
                 #$result = mysql_query("$DBAUTH", "INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')", $authlink);
                 $query="INSERT INTO statusages VALUES ('Eleve', 'Cdt', '$date', 'wan', '$gugus[0]')";
-                 $result=@mysql_query($query, $authlink);
+                 $result=@mysqli_query( $authlink, $query);
                 break;
                 #
             }

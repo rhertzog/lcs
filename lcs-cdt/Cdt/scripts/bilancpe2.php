@@ -75,14 +75,14 @@ if (isset($_GET['dkr']))
         //recherche des classes avec absents ou retardataires
         $rq = "SELECT DISTINCT classe FROM absences WHERE date='$datsql' AND ".$valcren."!='' ORDER BY date ASC";
         // lancer la requete
-        $result = mysql_query($rq) or die (mysql_error($dbc));
-        if (mysql_num_rows($result)>0)
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+        if (mysqli_num_rows($result)>0)
         {
         $aucun="false";
         echo "<h2>".$valcren."</h2>";
         echo "<ul>";
         $loop=0;
-        while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM)) 
                 {
                 $tab_cla[$loop]= $enrg[0];$loop++;
                 }
@@ -93,11 +93,11 @@ if (isset($_GET['dkr']))
                         //recherche des absents de la classe
                         $rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='A' AND classe='$valcla' ORDER BY id_abs ASC";
                         // lancer la requete
-                        $result = mysql_query($rq) or die (mysql_error($dbc));
-                        $nb = mysql_num_rows($result);
+                        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                        $nb = mysqli_num_rows($result);
                         if ($nb==0) echo "aucun";
                         else  
-                        while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM)) 
                                 {
                                 list($user, $groups)=people_get_variables($enrg[0], false);
                                 echo $user["fullname"];
@@ -109,11 +109,11 @@ if (isset($_GET['dkr']))
                         //recherche des retardataires//
                         $rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='R' AND classe='$valcla' ORDER BY id_abs ASC";
                         // lancer la requete
-                        $result = mysql_query($rq) or die (mysql_error($dbc));
-                        $nb = mysql_num_rows($result);
+                        $result = mysqli_query($GLOBALS["___mysqli_ston"], $rq) or die (((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+                        $nb = mysqli_num_rows($result);
                         if ($nb==0) echo "aucun";
                         else  
-                        while ($enrg = mysql_fetch_array($result, MYSQL_NUM)) 
+                        while ($enrg = mysqli_fetch_array($result,  MYSQLI_NUM)) 
                                 {
                                 list($user, $groups)=people_get_variables($enrg[0], false);
                                 echo $user["fullname"]."; ";
