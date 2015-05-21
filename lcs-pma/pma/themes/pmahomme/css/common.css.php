@@ -531,23 +531,6 @@ fieldset .formelement {
     white-space: nowrap;
 }
 
-@media all and (min-width: 1600px) {
-    fieldset .formelement {
-        clear: none;
-    }
-    #foreign_keys.relationalTable td:first-child + td {
-        width: 25%;
-    }
-    #foreign_keys.relationalTable td:first-child + td select {
-        width: auto;
-        margin-right: 1%;
-    }
-    #foreign_keys.relationalTable {
-        width: 100%;
-    }
-
-}
-
 /* revert for Gecko */
 fieldset div[class=formelement] {
     white-space: normal;
@@ -1167,7 +1150,7 @@ div#tablestatistics table {
     position: fixed;
     padding: .25em .25em .2em;
     top: 0;
-    z-index: 900;
+    z-index: 99;
     background: #888;
 }
 
@@ -2861,6 +2844,7 @@ fieldset .disabled-field td {
 .cEdit .edit_box {
     overflow: hidden;
     padding: 0;
+    margin: 0;
 }
 
 .cEdit .edit_box_posting {

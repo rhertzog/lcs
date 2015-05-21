@@ -92,9 +92,6 @@ AJAX.registerOnload('tbl_structure.js', function () {
     indexes = [];
     fulltext_indexes = [];
 
-    //by default select the last option to add new column (adds at end of the table)
-    $("select[name=after_field] option:last").attr("selected","selected");
-
     /**
      *Ajax action for submitting the "Column Change" and "Add Column" form
      */
@@ -193,6 +190,8 @@ AJAX.registerOnload('tbl_structure.js', function () {
                     }
                     $after_field_item.remove();
                     $curr_row.hide("medium").remove();
+                    //by default select the last option to add new column (in case last column is dropped)
+                    $("select[name=after_field] option:last").attr("selected","selected");
                     //refresh table stats
                     if (data.tableStat) {
                         $('#tablestatistics').html(data.tableStat);
@@ -234,6 +233,7 @@ AJAX.registerOnload('tbl_structure.js', function () {
 
         $(this).PMA_confirm(question, $(this).attr('href'), function (url) {
             PMA_ajaxShowMessage();
+            AJAX.source = $this;
             $.get(url, {'ajax_request' : true, 'ajax_page_request' : true}, AJAX.responseHandler);
         }); // end $.PMA_confirm()
     }); //end Add key
@@ -373,6 +373,7 @@ AJAX.registerOnload('tbl_structure.js', function () {
         var $form = $button.parent('form');
         var submitData = $form.serialize() + '&ajax_request=true&ajax_page_request=true&submit_mult=' + $button.val();
         PMA_ajaxShowMessage();
+        AJAX.source = $form;
         $.post($form.attr('action'), submitData, AJAX.responseHandler);
     });
 });

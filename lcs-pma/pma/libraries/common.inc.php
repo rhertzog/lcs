@@ -332,7 +332,7 @@ if (isset($_COOKIE)
  * check HTTPS connection
  */
 if ($GLOBALS['PMA_Config']->get('ForceSSL')
-    && ! $GLOBALS['PMA_Config']->get('is_https')
+    && ! $GLOBALS['PMA_Config']->detectHttps()
 ) {
     // grab SSL URL
     $url = $GLOBALS['PMA_Config']->getSSLUri();
@@ -496,7 +496,9 @@ if ($token_mismatch) {
         /* Permit redirection with token-mismatch in url.php */
         'url',
         /* Permit session expiry flag */
-        'session_expired'
+        'session_expired',
+        /* JS loading */
+        'scripts', 'call_done'
     );
     /**
      * Allow changing themes in test/theme.php
@@ -1083,6 +1085,10 @@ if (! defined('PMA_MINIMUM_COMMON')) {
         // the checkbox was unchecked
         unset($_SESSION['profiling']);
     }
+
+    // load user preferences
+    $GLOBALS['PMA_Config']->loadUserPreferences();
+
     /**
      * Inclusion of profiling scripts is needed on various
      * pages like sql, tbl_sql, db_sql, tbl_select
@@ -1112,10 +1118,10 @@ if (! defined('PMA_MINIMUM_COMMON')) {
         );
         exit;
     }
-} // end if !defined('PMA_MINIMUM_COMMON')
-
-// load user preferences
-$GLOBALS['PMA_Config']->loadUserPreferences();
+} else { // end if !defined('PMA_MINIMUM_COMMON')
+    // load user preferences
+    $GLOBALS['PMA_Config']->loadUserPreferences();
+}
 
 // remove sensitive values from session
 $GLOBALS['PMA_Config']->set('blowfish_secret', '');
@@ -1176,6 +1182,7 @@ if (!empty($__redirect) && in_array($__redirect, $goto_whitelist)) {
 
 // If Zero configuration mode enabled, check PMA tables in current db.
 if (! defined('PMA_MINIMUM_COMMON')
+    && ! empty($GLOBALS['server'])
     && isset($GLOBALS['cfg']['ZeroConf'])
     && $GLOBALS['cfg']['ZeroConf'] == true
 ) {

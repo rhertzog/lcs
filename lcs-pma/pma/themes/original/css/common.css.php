@@ -181,6 +181,10 @@ button {
     margin-<?php echo $right; ?>: 1em;
 }
 
+.floatright {
+    float: <?php echo $right; ?>;
+}
+
 table.nospacing {
     border-spacing: 0;
 }
@@ -245,23 +249,6 @@ fieldset .formelement {
     margin-<?php echo $right; ?>:       0.5em;
     /* IE */
     white-space:        nowrap;
-}
-
-@media all and (min-width: 1600px) {
-    fieldset .formelement {
-        clear: none;
-    }
-    #foreign_keys.relationalTable td:first-child + td {
-        width: 25%;
-    }
-    #foreign_keys.relationalTable td:first-child + td select {
-        width: auto;
-        margin-right: 1%;
-    }
-    #foreign_keys.relationalTable {
-        width: 100%;
-    }
-
 }
 
 /* revert for Gecko */
@@ -837,7 +824,7 @@ div#tablestatistics table {
     position: fixed;
     padding: .1em .3em;
     top: 0;
-    z-index: 900;
+    z-index: 99;
     background: white;
 }
 
