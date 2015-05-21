@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~14) Lcs; urgency=low
+
+  * convert connect file for mysqli
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 21 May 2015 19:47:05 +0200
+
 lcs-cdt (2.4.10.~13) Lcs; urgency=low
 
   * pepare to mysqli converter 

@@ -20,8 +20,8 @@ DEFINE ('DB_HOST', 'localhost');
 DEFINE ('DB_NAME', 'cdt_plug');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbc = @mysql_connect(DB_HOST, DB_USER, DB_PASSWORD)
-       OR die ('Connexion a MySQL impossible : '.mysql_error($dbc).'<br>');
-mysql_select_db(DB_NAME,$dbc)
-       OR die ('Selection de la base de donnees impossible : '.mysql_error($dbc).'<br>');
+$dbc = @($GLOBALS["___mysqli_ston"] = mysqli_connect(DB_HOST,  DB_USER,  DB_PASSWORD))
+       OR die ('Connexion a MySQL impossible : '.((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)).'<br>');
+((bool)mysqli_query($dbc, "USE " . constant('DB_NAME')))
+       OR die ('Selection de la base de donnees impossible : '.((is_object($dbc)) ? mysqli_error($dbc) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)).'<br>');
 ?>
