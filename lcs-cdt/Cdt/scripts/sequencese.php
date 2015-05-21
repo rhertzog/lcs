@@ -28,7 +28,7 @@ require_once ('../Includes/config.inc.php');
 // Creer la requete (Recuperer les rubriques de l'utilisateur// doit etre identique  a la requete du cdt prof)
 $rq = "SELECT classe,matiere,id_prof FROM onglets  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 // lancer la requ&egrave;ete
-$result = mysql_query ($rq) or die (mysql_error());
+$result = mysql_query($rq) or die (mysql_error($dbc));
 if ( mysql_num_rows($result)>0)
     {
     $loop=0;
@@ -135,7 +135,7 @@ for ($loop=0; $loop < count ($clas); $loop++)
     $rq = "SELECT id_seq,titre,titrecourt,contenu,ordre FROM sequences
     WHERE id_ong='$numero[$loop]' order by ordre ASC";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result);
     //on recupere les donnees

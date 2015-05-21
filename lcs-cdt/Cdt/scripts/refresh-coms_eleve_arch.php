@@ -39,7 +39,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         WHERE id_auteur=$cible  ORDER BY date asc";
 
         // lancer la requete
-        $result = @mysql_query ($rq) or die (mysql_error());
+        $result = @mysql_query($rq) or die (mysql_error($dbc));
 
         // Combien y a-t-il d'enregistrements ?
         $nb2 = mysql_num_rows($result);

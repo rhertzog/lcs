@@ -45,7 +45,7 @@ $list_classe=array();
 
 //liste des classes
 $rq="SELECT DISTINCT `classe` FROM `onglets` WHERE `classe` IS NOT NULL";
-$result = @mysql_query ($rq);
+$result = @mysql_query($rq);
 if ($result)
     {
     $n=0;	
@@ -110,7 +110,7 @@ for ($loop=0; $loop < count ($list_classe)  ; $loop++)
 
     //liste des dates
     $rq="SELECT date,DATE_FORMAT(date,'%d/%m/%Y') from cahiertxt WHERE id_auteur IN ( SELECT id_prof from onglets WHERE classe='$list_classe[$loop]') GROUP BY date ORDER BY date asc";
-    $result = @mysql_query ($rq);
+    $result = @mysql_query($rq);
     if ($result)
         {
         $list_dates=array();
@@ -133,7 +133,7 @@ for ($loop=0; $loop < count ($list_classe)  ; $loop++)
             $rq="SELECT id_auteur,contenu,afaire from cahiertxt WHERE date='$list_dates[$loop1]' AND 
              id_auteur IN ( SELECT id_prof from onglets WHERE classe='$list_classe[$loop]') ORDER BY id_auteur asc";
             //if ($list_classe[$loop]=='ATI1') {echo $rq;exit;}
-            $result = @mysql_query ($rq);
+            $result = @mysql_query($rq);
             if ($result)
                 {
                 $id=array();$cours=array();$afR=array();
@@ -157,7 +157,7 @@ for ($loop=0; $loop < count ($list_classe)  ; $loop++)
                 //recherche donnes auteur
                 $rq="SELECT prefix,prof,matiere from onglets WHERE id_prof='$id[$loop2]'";
                 //echo $rq;exit;
-                $result = @mysql_query ($rq);
+                $result = @mysql_query($rq);
                 if ($result)
                     {
                     while ($enrg = mysql_fetch_array($result, MYSQL_NUM))

@@ -82,7 +82,7 @@ $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
  // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 if ($nb>0)
@@ -108,7 +108,7 @@ if ($uid_actif!="")
         for ($loopo=0; $loopo < count ($groups) ; $loopo++)
             {
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets  WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
-            $result = @mysql_query ($rq) or die (mysql_error());
+            $result = @mysql_query($rq) or die (mysql_error($dbc));
             $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
@@ -164,7 +164,7 @@ else
             {
             $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
             WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
-            $result = @mysql_query ($rq) or die (mysql_error());
+            $result = @mysql_query($rq) or die (mysql_error($dbc));
             $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
             if ($nb>0)
                 {
@@ -195,7 +195,7 @@ if (count($numero)>0)
         WHERE (id_auteur='$numero[$loop]') AND (datafaire<='$dat') AND (datafaire>='$dat2') AND (afaire!='') AND datevisibi<='$dat2'";
 
         // lancer la requete
-        $result = @mysql_query ($rq) or die (mysql_error());
+        $result = @mysql_query($rq) or die (mysql_error($dbc));
 
         // Combien y a-t-il d'enregistrements ?
         $nb2 = mysql_num_rows($result);

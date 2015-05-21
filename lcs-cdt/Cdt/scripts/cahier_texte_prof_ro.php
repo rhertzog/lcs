@@ -23,7 +23,7 @@ $rq = "SELECT classe,matiere,id_prof FROM onglets
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY classe ASC ";
 
 // lancer la requ&egrave;ete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // si pas de rubrique, on redirige vers config_ctxt.php
 if (mysql_num_rows($result)==0)
@@ -90,7 +90,7 @@ if ( isset($_POST['viser']))
     if (!$result)  // Si l'enregistrement est incorrect
         {
          echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         }
      $dat_la=date('Y-m-d');
      $rq = "UPDATE cahiertxt SET on_off='$numvisa' WHERE id_auteur='$cible' AND date<'$dat_la' AND datevisibi<='$dat_la' AND on_off='0' ";
@@ -99,7 +99,7 @@ if ( isset($_POST['viser']))
     if (!$result)  //
         {
          echo "<p>L'apposition du visa n'a pu\352tre r\351alis\351e \340 cause d'une erreur syst\350me".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         }
     }
 
@@ -114,7 +114,7 @@ $rq = "SELECT classe,matiere,id_prof,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM 
  WHERE login='{$_SESSION['aliasprof']}' OR cologin='{$_SESSION['aliasprof']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees

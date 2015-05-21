@@ -53,13 +53,13 @@ function affiche_abs($potache) {
     foreach ( $horaire as $cle => $val)
         {
         $rq4= "SELECT count(*) FROM absences WHERE  $val='A'  AND uideleve='$potache' AND date >='$dtajadebut' AND date<='$dtajafin' ";
-        $result4 = @mysql_query ($rq4) or die (mysql_error());
+        $result4 = @mysql_query($rq4) or die (mysql_error($dbc));
         while ($nb = mysql_fetch_array($result4, MYSQL_NUM))
             {
              $nbabs+=$nb[0];
             }
         $rq5= "SELECT count(*) FROM absences WHERE   $val='R'  AND uideleve='$potache' AND date >='$dtajadebut' AND date<='$dtajafin' ";
-        $result5 = @mysql_query ($rq5) or die (mysql_error());
+        $result5 = @mysql_query($rq5) or die (mysql_error($dbc));
         while ($nb = mysql_fetch_array($result5, MYSQL_NUM))
             {
              $nbrtd+=$nb[0];
@@ -82,7 +82,7 @@ function affiche_abs($potache) {
     date >='$dtajadebut' AND date<='$dtajafin' ORDER BY date ASC";
 
     // lancer la requete
-    $result = mysql_query ($rq) or die (mysql_error());
+    $result = mysql_query($rq) or die (mysql_error($dbc));
 
     // Combien y a-t-il d'enregistrements ?
     $nb2 = mysql_num_rows($result);

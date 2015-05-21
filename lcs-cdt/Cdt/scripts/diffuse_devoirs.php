@@ -38,7 +38,7 @@ if (isset($_GET['rubrique']))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='$ru'";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result); 
     //on recupere les donnees
@@ -54,7 +54,7 @@ if (isset($_GET['rubrique']))
 $rq = "SELECT classe,id_prof FROM onglets WHERE login='{$_SESSION['login']}' AND classe != '$clas_act' and matiere = '$mat_iso' ORDER BY classe ASC ";
  
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error()); 
+$result = @mysql_query($rq) or die (mysql_error($dbc)); 
 $loop=0;
 while ($row = mysql_fetch_object($result))
     {

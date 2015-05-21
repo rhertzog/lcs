@@ -266,8 +266,8 @@ if (isset($_POST['Archiver']))
         $rq1 = "create table onglets$name_arch as select * from onglets";
         $rq2= "create table cahiertxt$name_arch as select * from cahiertxt";
         // lancer la requete
-        $result1 = @mysql_query ($rq1) or die (mysql_error());
-        $result2 = @mysql_query ($rq2) or die (mysql_error());
+        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
+        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
         if (!($result1&&$result2)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
         }
     else
@@ -293,10 +293,10 @@ if (isset($_GET['delarch']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_S
         $rq3 = "create table onglets$name_arch as select * from onglets";
         $rq4 = "create table cahiertxt$name_arch as select * from cahiertxt";
         // lancer la requete
-        $result1 = @mysql_query ($rq1) or die (mysql_error());
-        $result2 = @mysql_query ($rq2) or die (mysql_error());
-        $result3 = @mysql_query ($rq3) or die (mysql_error());
-        $result4= @mysql_query ($rq4) or die (mysql_error());
+        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
+        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
+        $result3 = @mysql_query($rq3) or die (mysql_error($dbc));
+        $result4= @mysql_query($rq4) or die (mysql_error($dbc));
         if (!($result1&&$result2&&$result3&&$result4)) $mess2="<h3 class='nook'>  l'achive n'a pu &#234;tre cr&#233;&#233;e";
         }
     }
@@ -325,12 +325,12 @@ if (isset($_GET['vidtab']) && $_GET['TA']==md5($_SESSION['RT'].htmlentities($_SE
         $rq5 = "TRUNCATE TABLE postit_eleve";
         $rq6 = "TRUNCATE TABLE sequences";
         // lancer la requete
-        $result1 = @mysql_query ($rq1) or die (mysql_error());
-        $result2 = @mysql_query ($rq2) or die (mysql_error());
-        $result3 = @mysql_query ($rq3) or die (mysql_error());
-        $result4 = @mysql_query ($rq4) or die (mysql_error());
-        $result5 = @mysql_query ($rq5) or die (mysql_error());
-        $result6 = @mysql_query ($rq6) or die (mysql_error());
+        $result1 = @mysql_query($rq1) or die (mysql_error($dbc));
+        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
+        $result3 = @mysql_query($rq3) or die (mysql_error($dbc));
+        $result4 = @mysql_query($rq4) or die (mysql_error($dbc));
+        $result5 = @mysql_query($rq5) or die (mysql_error($dbc));
+        $result6 = @mysql_query($rq6) or die (mysql_error($dbc));
         if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) $mess2="<span class='cok'> les tables  ont &#233;t&#233; vid&#233;es </span>";
         else $mess2="<span class='nook'> Une erreur s'est produite lors de l'effacement des donn&#233;es <br /></span>";
         }

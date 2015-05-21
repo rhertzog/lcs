@@ -78,7 +78,7 @@ if (isset($_POST['enregistrer']) )
             $config->set('HTML.Doctype', 'XHTML 1.0 Strict');
             $purifier = new HTMLPurifier($config);
             $Sujet = $purifier->purify($Sujet);
-            $Sujet=mysql_real_escape_string($Sujet);
+            $Sujet=mysql_real_escape_string($Sujet,$dbc);
             $Sujet= utf8_decode($Sujet);
 	    }
         }
@@ -154,7 +154,7 @@ if (isset($_POST['enregistrer']) )
         if (!$result)
             {
             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-            "<p></p>" . mysql_error() . "<p></p>";
+            "<p></p>" . mysql_error($dbc) . "<p></p>";
             // refermer la connexion avec la base de donnees
             mysql_close();
             exit();
@@ -206,7 +206,7 @@ if (isset($_POST['enregistrer']) )
             if (!$result)
                 {
                 echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                "<p></p>" . mysql_error() . "<p></p>";
+                "<p></p>" . mysql_error($dbc) . "<p></p>";
                 // refermer la connexion avec la base de donnees
                 mysql_close();
                 exit();
@@ -231,7 +231,7 @@ if (isset($_POST['enregistrer']) )
                 if (!$result)
                     {
                     echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                    "<p></p>" . mysql_error() . "<p></p>";
+                    "<p></p>" . mysql_error($dbc) . "<p></p>";
                     // refermer la connexion avec la base de donnees
                     mysql_close();
                     exit();
@@ -250,7 +250,7 @@ if (isset($_POST['enregistrer']) )
                         if (!$result)
                             {
                             echo "<p>Votre devoir n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me".
-                            "<p></p>" . mysql_error() . "<p></p>";
+                            "<p></p>" . mysql_error($dbc) . "<p></p>";
                             // refermer la connexion avec la base de donnees
                             mysql_close();
                             exit();
@@ -307,7 +307,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
     //le devoir existe-t-il ?
     $rq = "SELECT id_ds,login,date,matiere,creneau,sujet,dur\351e,classe FROM devoir WHERE id_ds='$cible' and login='$login' ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);
     while ($row = mysql_fetch_array($result, MYSQL_NUM))
         {
@@ -327,7 +327,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
             $rq = "DELETE  FROM devoir WHERE  login='$login' and date='$dat_supp' and matiere='$mat_supp' and creneau='$cren_supp' and
             sujet='$suj_supp' and dur\351e= '$dur_supp'";
 
-            $result2 = @mysql_query ($rq) or die (mysql_error());
+            $result2 = @mysql_query($rq) or die (mysql_error($dbc));
             //envoi d'un mail
             if ($_SESSION['liste']==1)
                 {
@@ -361,7 +361,7 @@ if (isset($_GET['delrub']) && isset($_GET['numd'])  && $_GET['TA']==md5($_SESSIO
             $suj_dev= "Pr&#233;parer le Devoir surveill&#233; : ".$suj_supp;
             $rq = "DELETE  FROM cahiertxt WHERE id_auteur='{$_GET['numrubr']};' and  login='{$_SESSION['login']}' and afaire='$suj_dev'
             and datafaire ='$dat_supp' LIMIT 1";
-            $result2 = @mysql_query ($rq) or die (mysql_error());
+            $result2 = @mysql_query($rq) or die (mysql_error($dbc));
             }
     }
 //fin de suppression d'un devoir
@@ -377,7 +377,7 @@ if (isset($_GET['rubrique']))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='{$_GET['rubrique']}'  ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result);
     //on recupere les donnees

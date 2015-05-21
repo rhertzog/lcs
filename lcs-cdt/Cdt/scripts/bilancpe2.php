@@ -75,7 +75,7 @@ if (isset($_GET['dkr']))
         //recherche des classes avec absents ou retardataires
         $rq = "SELECT DISTINCT classe FROM absences WHERE date='$datsql' AND ".$valcren."!='' ORDER BY date ASC";
         // lancer la requete
-        $result = mysql_query ($rq) or die (mysql_error());
+        $result = mysql_query($rq) or die (mysql_error($dbc));
         if (mysql_num_rows($result)>0)
         {
         $aucun="false";
@@ -93,7 +93,7 @@ if (isset($_GET['dkr']))
                         //recherche des absents de la classe
                         $rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='A' AND classe='$valcla' ORDER BY id_abs ASC";
                         // lancer la requete
-                        $result = mysql_query ($rq) or die (mysql_error());
+                        $result = mysql_query($rq) or die (mysql_error($dbc));
                         $nb = mysql_num_rows($result);
                         if ($nb==0) echo "aucun";
                         else  
@@ -109,7 +109,7 @@ if (isset($_GET['dkr']))
                         //recherche des retardataires//
                         $rq = "SELECT uideleve FROM absences WHERE date='$datsql' AND ".$valcren."='R' AND classe='$valcla' ORDER BY id_abs ASC";
                         // lancer la requete
-                        $result = mysql_query ($rq) or die (mysql_error());
+                        $result = mysql_query($rq) or die (mysql_error($dbc));
                         $nb = mysql_num_rows($result);
                         if ($nb==0) echo "aucun";
                         else  

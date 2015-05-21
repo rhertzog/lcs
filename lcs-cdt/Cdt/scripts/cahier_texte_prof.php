@@ -40,7 +40,7 @@ include ('../Includes/config.inc.php');
 $rq = "SELECT classe,matiere,id_prof FROM onglets WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY classe ASC ";
 
 // lancer la requ&egrave;ete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // si pas de rubrique, on redirige vers config_ctxt.php
 if (mysql_num_rows($result)==0)
@@ -200,7 +200,7 @@ elseif (is_dir("../../Agendas"))
     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
     // lancer la requete
-    $result = @mysql_query ($rq);
+    $result = @mysql_query($rq);
     if ($result)
         {
         //on recupere les donnees
@@ -231,7 +231,7 @@ elseif (is_dir("../../Agendas"))
                     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT'))
                     ORDER BY cal_date ASC limit 1";
                     //echo $rq;exit;
-                    $result = @mysql_query ($rq);
+                    $result = @mysql_query($rq);
                     if ($result)
                         {
                         $row = mysql_fetch_object($result);
@@ -252,7 +252,7 @@ if ($match!="")
 
     $rq = "SELECT id_prof FROM onglets
      WHERE (login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}') AND edt='".$match."'";
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($idr = mysql_fetch_array($result, MYSQL_NUM))
@@ -275,12 +275,12 @@ if (isset($_GET['com'])&& isset($_GET['rubrique']) && $_GET['TA']==md5($_SESSION
     $rq = "SELECT login  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' )";
 
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);
     if ($nb==1)
         {
         $rq = "DELETE  FROM cahiertxt WHERE id_rubrique='{$_GET['com']}' AND  (login='{$_SESSION['login']}' ) LIMIT 1";
-        $result2 = @mysql_query ($rq) or die (mysql_error());
+        $result2 = @mysql_query($rq) or die (mysql_error($dbc));
         }
     }
 //fin de suppression d'un commentaire
@@ -309,7 +309,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config->set('Filter.MyLcs', true);
             $purifier = new HTMLPurifier($config);
             $Cours = $purifier->purify($Cours);
-            $Cours=mysql_real_escape_string($Cours);
+            $Cours=mysql_real_escape_string($Cours,$dbc);
             $Cours = utf8_decode($Cours);
 	    }
         }
@@ -339,7 +339,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $config->set('Filter.MyLcs', true);
             $purifier = new HTMLPurifier($config);
             $Afaire = $purifier->purify($Afaire);
-            $Afaire = mysql_real_escape_string($Afaire);
+            $Afaire = mysql_real_escape_string($Afaire,$dbc);
             $Afaire= utf8_decode($Afaire);
 	    }
         }
@@ -391,7 +391,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
         $result = mysql_query($rq);
         if (!$result)  // Si l'enregistrement est incorrect
             {
-            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
+            echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
             mysql_close();     // refermer la connexion avec la base de donnees
             exit();
             }
@@ -429,7 +429,7 @@ if ((isset($_POST['enregistrer']) || isset($_POST['modifier'])) && $_POST['TA']=
             $result = mysql_query($rq);
             if (!$result)  // Si l'enregistrement est incorrect
                 {
-                echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error() ;
+                echo "Votre commentaire n'a pas pu \352tre enregistr\351 \340 cause d'une erreur syst\350me"."\n\n" . mysql_error($dbc) ;
                 mysql_close();     // refermer la connexion avec la base de donnees
                 exit();
                 }
@@ -455,7 +455,7 @@ $rq = "SELECT classe,matiere,id_prof,postit,visa,DATE_FORMAT(datevisa,'%d/%m/%Y'
  WHERE login='{$_SESSION['login']}' OR cologin='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
  // lancer la requ&egrave;ete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
@@ -534,7 +534,7 @@ if (isset($_POST['modif'])&& isset($_POST['number']))
     DATE_FORMAT(datevisibi,'%d'),DATE_FORMAT(datevisibi,'%m'),DATE_FORMAT(datevisibi,'%Y'),seq_id FROM cahiertxt
     WHERE id_rubrique=$article ";
 // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);
     //s'il existe, on recupere les datas pour les afficher dans les champs
     if (($nb==1) &&($action=='erg45er5ze'))
@@ -568,7 +568,7 @@ if (isset($cible))
     $rq = "SELECT classe,matiere FROM onglets
     WHERE id_prof='$cible'  ";
     // lancer la requ&egrave;ete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result);
     //on recupere les donnees
@@ -633,7 +633,7 @@ else $dtajav="idem Cours";
  <?php
 $rq = "SELECT id_seq,titrecourt FROM sequences	WHERE id_ong='$cible' order by ordre ASC";
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 // Combien y a-t-il d'enregistrements ?
 $nb = mysql_num_rows($result);
 //on recupere les donnees
@@ -685,7 +685,7 @@ else
             <li><a href="#" title="Gestion des s&#233;quences" onclick="sequence_popup('.$cible.'); return false" class="submit-seq"></a></li>
             <li><input type="submit" name="planning" value="" title="Planifier un devoir en '.$classe_active.'" class="submit-plan" /></li>
             <li><a class="a-imprime open_wi" title="Imprimer" href="#" onclick="open_new_win(\'imprim.php?rubrique='.$cible.'\')"></a></li>
-            <li><input type="button" dest="'.$cible.'" key="'.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'" 
+            <li><input type="button" dest="'.$cible.'" key="'.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/load_modele.php'))).'"
 	class="load-model" title="Appliquer le mod&#232;le" /></li>
 	    <li><input type="button" value="" onclick="modeleSave('. $cible.',\''.md5($_SESSION['RT'].htmlentities(htmlentities('/Plugins/Cdt/scripts/save_modele.php'))).'\')" class="save-model" title="Enregistrer comme mod&#232;le" /></li>
             <li><a href="#" title="Enregistrements multiples" onclick="diffuse_popup('.$cible.'); return false" class="a-saveplus"></a></li>
@@ -759,12 +759,12 @@ DEFINE ('DBP_HOST', 'localhost');
 DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD);
-//OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
+$dbcp = @mysql_connect(DBP_HOST, DBP_USER, DBP_PASSWORD);
+//OR die ('Connexion a MySQL impossible : '.mysql_error($dbc).'<br />');
 if ($dbcp)
     {
-    $db_selected = mysql_select_db (DBP_NAME);
-    //OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
+    $db_selected = mysql_select_db(DBP_NAME,$dbcp);
+    //OR die ('Selection de la base de donnees impossible : '.mysql_error($dbc).'<br />');
     if ($db_selected)
         {
         $TablesExist= mysql_query("show tables");
@@ -780,9 +780,9 @@ if ($dbcp)
         //s'il n'esiste pas d'archive
         if ($x==0) echo '<p class="archive_nok"> Aucun </p>';
          }
-    else { echo 'Erreur : '.mysql_error();}
+    else { echo 'Erreur : '.mysql_error($dbc);}
     }
-else  echo 'Erreur : '.mysql_error();
+else  echo 'Erreur : '.mysql_error($dbc);
 echo '<hr />';
 mysql_close();
 

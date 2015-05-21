@@ -53,9 +53,9 @@ if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl']) 
         $purifier = new HTMLPurifier($config);
         //$Cours = addSlashes($Cours);
         $cont1 = $purifier->purify($Contenucours);
-        $cont1 = utf8_decode(mysql_real_escape_string($cont1));
+        $cont1 = utf8_decode(mysql_real_escape_string($cont1,$dbc));
         $cont2 = $purifier->purify($Contenuaf);
-        $cont2 = utf8_decode(mysql_real_escape_string($cont2));
+        $cont2 = utf8_decode(mysql_real_escape_string($cont2,$dbc));
         $cible= $purifier->purify($Cib);
         }
     $rq = "UPDATE  onglets SET mod_cours='$cont1', mod_afaire='$cont2' WHERE id_prof='$cible'";
@@ -65,7 +65,7 @@ if(isset($_POST['coursmod']) && isset($_POST['afmod']) && isset($_POST['cibl']) 
         {
         mysql_close();
         echo "<p>Votre mod&#232; n'a pas pu &#234;tre enregistr&#233; !".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         //sortir
         exit();
         }

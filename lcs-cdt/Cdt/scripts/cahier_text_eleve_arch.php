@@ -43,7 +43,7 @@ if (isset($_POST['an_archive']))
     //liste des classes
     $rq="SELECT DISTINCT `classe` FROM `onglets".$an_arch."` WHERE `classe` IS NOT NULL";
     //echo $rq;exit;
-    $result = @mysql_query ($rq);
+    $result = @mysql_query($rq);
     if ($result)
         {
         $n=0;
@@ -98,7 +98,7 @@ if ((isset($_POST['klasse']) && ($_POST['an_archive']==$_POST['an_activ'])))
         WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
         // lancer la requete
-        $result = @mysql_query ($rq) or die (mysql_error());
+        $result = @mysql_query($rq) or die (mysql_error($dbc));
         $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
         if ($nb>0)
             {
@@ -165,7 +165,7 @@ if (isset($_POST['an_archive']))
         WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
         // lancer la requete
-        $result = @mysql_query ($rq) or die (mysql_error());
+        $result = @mysql_query($rq) or die (mysql_error($dbc));
         $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
         if ($nb>0)
             {
@@ -234,7 +234,7 @@ if (isset($_POST['an_archive']))
             WHERE id_auteur=$cible  ORDER BY date asc";
 
             // lancer la requete
-            $result = @mysql_query ($rq) or die (mysql_error());
+            $result = @mysql_query($rq) or die (mysql_error($dbc));
 
             // Combien y a-t-il d'enregistrements ?
             $nb2 = mysql_num_rows($result);

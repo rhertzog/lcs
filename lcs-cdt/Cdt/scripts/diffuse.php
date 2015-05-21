@@ -36,7 +36,7 @@ if (isset($_GET['rubrique']))
     $ru=$_GET['rubrique'];
     $rq = "SELECT classe,matiere FROM onglets WHERE id_prof='$ru'";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result); 
     //on recupere les donnees
@@ -74,7 +74,7 @@ $rq = "SELECT classe,id_prof FROM onglets
  WHERE login='{$_SESSION['login']}'  AND classe != '$clas_act' AND  matiere = '$mat_iso' ORDER BY classe ASC ";
  
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error()); 
+$result = @mysql_query($rq) or die (mysql_error($dbc)); 
 $loop=0;
 while ($row = mysql_fetch_object($result))
     {
@@ -185,7 +185,7 @@ if (!isset($_POST['Valider']))
             $rq = "SELECT id_seq,titrecourt FROM sequences
             WHERE id_ong='$data2[$loop]' order by ordre ASC";
             // lancer la requete
-            $resulta = @mysql_query ($rq) or die (mysql_error());
+            $resulta = @mysql_query($rq) or die (mysql_error($dbc));
             // Combien y a-t-il d'enregistrements ?
             $nbs = mysql_num_rows($resulta);
             //on recupere les donnees

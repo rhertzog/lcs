@@ -42,7 +42,7 @@ $rq = "SELECT afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_auteur FROM cahiertxt
 WHERE id_rubrique=$idret[0]";
 
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // Combien y a-t-il d'enregistrements ?
 $nb2 = mysql_num_rows($result);
@@ -57,7 +57,7 @@ if ($nb2>0)
         }
     $rq = "SELECT prof,matiere,id_prof,prefix FROM onglets
     WHERE id_prof='$idproftaf' ";
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
     //on recupere les donnees
     $loop=0;

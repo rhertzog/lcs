@@ -92,10 +92,10 @@ DEFINE ('DBP_HOST', 'localhost');
 DEFINE ('DBP_NAME', $nom_bdd.'_db');
 
 // Ouvrir la connexion et selectionner la base de donnees
-$dbcp = @mysql_connect (DBP_HOST, DBP_USER, DBP_PASSWORD)
-OR die ('Connexion a MySQL impossible : '.mysql_error().'<br />');
-mysql_select_db (DBP_NAME)
-OR die ('Selection de la base de donnees impossible : '.mysql_error().'<br />');
+$dbcp = @mysql_connect(DBP_HOST, DBP_USER, DBP_PASSWORD)
+OR die ('Connexion a MySQL impossible : '.mysql_error($dbcp).'<br />');
+mysql_select_db(DBP_NAME,$dbcp)
+OR die ('Selection de la base de donnees impossible : '.mysql_error($dbcp).'<br />');
 
 echo '<div id="entete">';
 echo '<div id="navcontainer">';
@@ -129,7 +129,7 @@ echo "</ul>";
 
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch WHERE 1 ORDER BY classe ASC ";
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // si pas de rubrique
 if (mysql_num_rows($result)==0)
@@ -154,7 +154,7 @@ $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
  WHERE 1 ORDER BY id_prof ASC ";
 
  // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
@@ -201,7 +201,7 @@ $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,
  WHERE (id_auteur=$cible)  ORDER BY date desc ,id_rubrique desc";
 
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // Combien y a-t-il d'enregistrements ?
 $nb2 = mysql_num_rows($result);

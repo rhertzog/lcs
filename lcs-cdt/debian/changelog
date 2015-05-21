@@ -1,3 +1,9 @@
+lcs-cdt (2.4.10.~13) Lcs; urgency=low
+
+  * pepare to mysqli converter 
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 21 May 2015 16:05:20 +0200
+
 lcs-cdt (2.4.10.~12) Lcs; urgency=low
 
   * delete include file user_lcs.inc.php  

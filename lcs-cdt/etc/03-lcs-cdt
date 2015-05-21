@@ -1,0 +1,2 @@
+Cmnd_Alias CDT = /usr/share/lcs/scripts/chaccess_cdt.sh
+www-data ALL=NOPASSWD:CDT

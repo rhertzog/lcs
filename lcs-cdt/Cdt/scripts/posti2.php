@@ -52,15 +52,15 @@ if(isset($_POST['blibli']) && isset($_POST['cibl']))
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
-        $cont = mysql_real_escape_string($cont);
-	$cible= mysql_real_escape_string($cible);
+        $cont = mysql_real_escape_string($cont,$dbc);
+	$cible= mysql_real_escape_string($cible,$dbc);
         }
     $cible= $_REQUEST['cibl'];
     // Creer la requete.
     $rq = "SELECT id FROM postit_eleve
     WHERE login='{$_SESSION['login']}'  ";
     // lancer la requ&egrave;ete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result)==0)
     $rq= "INSERT INTO postit_eleve (login,texte) VALUES ('$cible','$cont')";
     else
@@ -71,7 +71,7 @@ if(isset($_POST['blibli']) && isset($_POST['cibl']))
         {  // refermer la connexion avec la base de donnees
         mysql_close();
         echo "<p>Votre postit n'a pas pu etre enregistre !".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         //sortir
         exit();
         }

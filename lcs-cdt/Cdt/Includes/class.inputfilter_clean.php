@@ -17,7 +17,7 @@ class InputFilter {
 	var $xssAuto;
 	var $tagBlacklist = array('applet', 'body', 'bgsound', 'base', 'basefont', 'embed', 'frame', 'frameset', 'head', 'html', 'id', 'iframe', 'ilayer', 'layer', 'link', 'meta', 'name', 'object', 'script', 'style', 'title', 'xml');
 	var $attrBlacklist = array('action', 'background', 'codebase', 'dynsrc', 'lowsrc');
-	function inputFilter($tagsArray = array(), $attrArray = array(), $tagsMethod = 0, $attrMethod = 0, $xssAuto = 1) {		
+	function inputFilter($tagsArray = array(), $attrArray = array(), $tagsMethod = 0, $attrMethod = 0, $xssAuto = 1) {
 		for ($i = 0; $i < count($tagsArray); $i++) $tagsArray[$i] = strtolower($tagsArray[$i]);
 		for ($i = 0; $i < count($attrArray); $i++) $attrArray[$i] = strtolower($attrArray[$i]);
 		$this->tagsArray = (array) $tagsArray;
@@ -33,7 +33,7 @@ class InputFilter {
 			return $source;
 		} else if (is_string($source)) {
 			return $this->remove($this->decode($source));
-		} else return $source;	
+		} else return $source;
 	}
 	function remove($source) {
 		$loopCounter=0;
@@ -42,7 +42,7 @@ class InputFilter {
 			$loopCounter++;
 		}
 		return $source;
-	}	
+	}
 	function filterTags($source) {
 		$preTag = NULL;
 		$postTag = $source;
@@ -59,13 +59,13 @@ class InputFilter {
 				$postTag = substr($postTag, ($tagOpen_nested+1));
 				$tagOpen_start = strpos($postTag, '<');
 				continue;
-			} 
+			}
 			$tagOpen_nested = (strpos($fromTagOpen, '<') + $tagOpen_start + 1);
 			$currentTag = substr($fromTagOpen, 0, $tagOpen_end);
 			$tagLength = strlen($currentTag);
 			if (!$tagOpen_end) {
 				$preTag .= $postTag;
-				$tagOpen_start = strpos($postTag, '<');			
+				$tagOpen_start = strpos($postTag, '<');
 			}
 			$tagLeft = $currentTag;
 			$attrSet = array();
@@ -77,8 +77,8 @@ class InputFilter {
 			} else {
 				$isCloseTag = FALSE;
 				list($tagName) = explode(' ', $currentTag);
-			}		
-			if ((!preg_match("/^[a-z][a-z0-9]*$/i",$tagName)) || (!$tagName) || ((in_array(strtolower($tagName), $this->tagBlacklist)) && ($this->xssAuto))) { 				
+			}
+			if ((!preg_match("/^[a-z][a-z0-9]*$/i",$tagName)) || (!$tagName) || ((in_array(strtolower($tagName), $this->tagBlacklist)) && ($this->xssAuto))) {
 				$postTag = substr($postTag, ($tagLength + 2));
 				$tagOpen_start = strpos($postTag, '<');
 				continue;
@@ -110,19 +110,19 @@ class InputFilter {
 			    } else $preTag .= '</' . $tagName . '>';
 			}
 			$postTag = substr($postTag, ($tagLength + 2));
-			$tagOpen_start = strpos($postTag, '<');			
+			$tagOpen_start = strpos($postTag, '<');
 		}
 		$preTag .= $postTag;
 		return $preTag;
 	}
-	function filterAttr($attrSet) {	
+	function filterAttr($attrSet) {
 		$newSet = array();
 		for ($i = 0; $i <count($attrSet); $i++) {
 			if (!$attrSet[$i]) continue;
 			//$attrSubSet = explode('=', trim($attrSet[$i]));
 			$attrSubSet = explode('=', trim($attrSet[$i]), 2);
 			list($attrSubSet[0]) = explode(' ', $attrSubSet[0]);
-			if ((!mb_eregi("^[a-z]*$",$attrSubSet[0])) || (($this->xssAuto) && ((in_array(strtolower($attrSubSet[0]), $this->attrBlacklist)) || (substr($attrSubSet[0], 0, 2) == 'on')))) 
+			if ((!mb_eregi("^[a-z]*$",$attrSubSet[0])) || (($this->xssAuto) && ((in_array(strtolower($attrSubSet[0]), $this->attrBlacklist)) || (substr($attrSubSet[0], 0, 2) == 'on'))))
 				continue;
 			if ($attrSubSet[1]) {
 				$attrSubSet[1] = str_replace('&#', '', $attrSubSet[1]);
@@ -137,14 +137,14 @@ class InputFilter {
 					(strpos(strtolower($attrSubSet[1]), 'behaviour:') !== false) ||
 					(strpos(strtolower($attrSubSet[1]), 'vbscript:') !== false) ||
 					(strpos(strtolower($attrSubSet[1]), 'mocha:') !== false) ||
-					(strpos(strtolower($attrSubSet[1]), 'livescript:') !== false) 
+					(strpos(strtolower($attrSubSet[1]), 'livescript:') !== false)
 			) continue;
 			$attrFound = in_array(strtolower($attrSubSet[0]), $this->attrArray);
 			if ((!$attrFound && $this->attrMethod) || ($attrFound && !$this->attrMethod)) {
 				if ($attrSubSet[1]) $newSet[] = $attrSubSet[0] . '="' . $attrSubSet[1] . '"';
 				else if ($attrSubSet[1] == "0") $newSet[] = $attrSubSet[0] . '="0"';
 				else $newSet[] = $attrSubSet[0] . '="' . $attrSubSet[0] . '"';
-			}	
+			}
 		}
 		return $newSet;
 	}
@@ -161,7 +161,7 @@ class InputFilter {
 			return $source;
 		} else if (is_string($source)) {
 			if (is_string($source)) return $this->quoteSmart($this->decode($source), $connection);
-		} else return $source;	
+		} else return $source;
 	}
 	function quoteSmart($source, &$connection) {
 		if (get_magic_quotes_gpc()) $source = stripslashes($source);
@@ -169,25 +169,25 @@ class InputFilter {
 		return $source;
 	}
 	function escapeString($string, &$connection) {
-		if (version_compare(phpversion(),"4.3.0", "<")) mysql_escape_string($string);
-		else mysql_real_escape_string($string);
+		if (version_compare(phpversion(),"4.3.0", "<")) mysql_real_escape_string($string,$dbc);
+		else mysql_real_escape_string($string,$dbc);
 		return $string;
 	}
 }
 
 # if you add a new allowed tag to the TinyMCE config, you have to add it here too.
-$aAllowedTags = array("a", "b", "blink", "blockquote", "br", "caption", "center", "col", "colgroup", "comment", 
+$aAllowedTags = array("a", "b", "blink", "blockquote", "br", "caption", "center", "col", "colgroup", "comment",
                       "em", "font", "h1", "h2", "h3", "h4", "h5", "h6", "hr", "img", "li", "marquee", "ol", "p", "pre", "s",
-                      "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th", 
+                      "small", "span", "strike", "strong", "sub", "sup", "table", "tbody", "td", "tfoot", "th",
                       "thead", "tr", "tt", "u", "ul", "color");
 
 
 # of you add a new allowed attribute to the TinyMCE config, you must add it here too.
-$aAllowedAttr = array("abbr", "align", "alt", "axis", "background", "behavior", "bgcolor", "border", "bordercolor", 
-                      "bordercolordark", "bordercolorlight", "bottompadding", "cellpadding", "cellspacing", "char", 
-                      "charoff", "cite", "clear", "color", "cols", "direction", "face", "font-weight", "headers", 
-                      "height", "href", "hspace", "leftpadding", "loop", "noshade", "nowrap", "point-size", "rel", 
-                      "rev", "rightpadding", "rowspan", "rules", "scope", "scrollamount", "scrolldelay", "size", 
-                      "span", "src", "start", "summary", "target", "title", "toppadding", "type", "valign", 
+$aAllowedAttr = array("abbr", "align", "alt", "axis", "background", "behavior", "bgcolor", "border", "bordercolor",
+                      "bordercolordark", "bordercolorlight", "bottompadding", "cellpadding", "cellspacing", "char",
+                      "charoff", "cite", "clear", "color", "cols", "direction", "face", "font-weight", "headers",
+                      "height", "href", "hspace", "leftpadding", "loop", "noshade", "nowrap", "point-size", "rel",
+                      "rev", "rightpadding", "rowspan", "rules", "scope", "scrollamount", "scrolldelay", "size",
+                      "span", "src", "start", "summary", "target", "title", "toppadding", "type", "valign",
                       "value", "vspace", "width", "wrap", "style");
 ?>

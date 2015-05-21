@@ -121,7 +121,7 @@ if ($_SESSION['cequi']=="eleve" )
     {
     $rq = "SELECT texte FROM postit_eleve WHERE login='{$_SESSION['login']}'  ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result)>0)
         {
         $enrg = mysql_fetch_array($result, MYSQL_NUM);
@@ -180,7 +180,7 @@ if ( isset($_POST['viser']))
     if (!$result)  // Si l'enregistrement est incorrect
         {
          echo "<p>Votre rubrique n'a pas pu etre enregistree a cause d'une erreur systeme".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         }
     $dat_la=date('Y-m-d');
     $rq = "UPDATE cahiertxt SET on_off='1' WHERE id_auteur='$rub_vis' AND date<'$dat_la' AND datevisibi<='$dat_la'";
@@ -189,7 +189,7 @@ if ( isset($_POST['viser']))
     if (!$result)  //
         {
          echo "<p>L'apposition du visa n'a pu etre realisee a cause d'une erreur systeme".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         }
     }
 
@@ -207,7 +207,7 @@ if ((isset($_POST['rub_activ'])) &&  (isset($_POST['viser']))) $cible=$_POST['ru
 $rq = "SELECT id_prof FROM onglets WHERE classe='$ch' ORDER BY 'id_prof' asc ";
 
  // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
@@ -336,7 +336,7 @@ $prof=$mat=$numero=$pref=$restr=$visa=$datvisa=array();
 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
  WHERE classe='$ch' ORDER BY 'id_prof' asc ";
  // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 if ($nb>0)
     {
@@ -363,7 +363,7 @@ if ($nb>0)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets
                 WHERE classe='{$groups[$loopo]["cn"]}' ORDER BY 'id_prof' asc ";
-                $result = @mysql_query ($rq) or die (mysql_error());
+                $result = @mysql_query($rq) or die (mysql_error($dbc));
                 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {
@@ -424,7 +424,7 @@ if ($nb>0)
             for($n=0; $n<count($liste_cours); $n++)
                 {
                 $rq = "SELECT prof,matiere,id_prof,prefix,visa,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets WHERE classe='{$liste_cours[$n]}' ORDER BY 'id_prof' asc ";
-                $result = @mysql_query ($rq) or die (mysql_error());
+                $result = @mysql_query($rq) or die (mysql_error($dbc));
                 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
                 if ($nb>0)
                     {

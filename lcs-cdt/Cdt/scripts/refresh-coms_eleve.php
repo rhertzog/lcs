@@ -38,7 +38,7 @@ if(isset($_POST['blabla']) && isset($_POST['kan']))
         else setlocale("LC_TIME","french");
         $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off FROM cahiertxt
         WHERE id_auteur=$cible AND date>=$dat AND datevisibi<=$dat_now ORDER BY date desc";
-        $result = @mysql_query ($rq) or die (mysql_error());
+        $result = @mysql_query($rq) or die (mysql_error($dbc));
         // Combien y a-t-il d'enregistrements ?
         $nb2 = mysql_num_rows($result);
         include_once  ('./contenu.php');

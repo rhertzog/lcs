@@ -27,7 +27,7 @@ function Imprime_seance($param) {
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
     WHERE (id_rubrique=$param) ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
@@ -75,7 +75,7 @@ function Imprime_seq($param) {
     //affiche une sequence et son contenu dans le cdt
     $rqs = "SELECT titrecourt,titre,contenu FROM sequences WHERE id_seq='$param'";
     // lancer la requete
-    $results = @mysql_query ($rqs) or die (mysql_error());
+    $results = @mysql_query($rqs) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     if (mysql_num_rows($results)>0)
         {
@@ -84,7 +84,7 @@ function Imprime_seq($param) {
         echo '<tbody><tr><td class="description"  colspan="2" >'.utf8_encode($rows[2]);
         echo ' </td></tr></tbody>';
         $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1." order by date asc ";
-        $result2 = @mysql_query ($rq2) or die (mysql_error());
+        $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
         while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
             {
             Imprime_seance_seq ($ligne[0]);
@@ -99,7 +99,7 @@ function Imprime_seance_seq ($param) {
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
     WHERE (id_rubrique=$param) ";
 
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
@@ -239,7 +239,7 @@ if (isset($cible))
     $rq = "SELECT classe,matiere,visa,DATE_FORMAT(datevisa,'%d/%m/%Y') FROM onglets$arch
     WHERE id_prof='$cible'  ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     $nb = mysql_num_rows($result);
     //on recupere les donnees
@@ -282,7 +282,7 @@ if (isset($_POST['valider']))
     $senseq=($sens=="asc") ? "desc" :"asc";
     // recuperer les sequences dans l'ordre d affichage
     $rq = "SELECT id_seq  FROM sequences WHERE id_ong='$cib' order by ordre ".$senseq;
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($idr = mysql_fetch_object($result))
@@ -295,7 +295,7 @@ if (isset($_POST['valider']))
     //dates debut&fin des sequences non vides et comprises ente les dates limites
     for ($index = 0; $index < count($Sek); $index++) {
     $rq = "SELECT MAX(date),MIN(date) from cahiertxt  WHERE seq_id='$Sek[$index]'".$dlm1;
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         $r = mysql_fetch_array($result);
@@ -327,7 +327,7 @@ if (isset($_POST['valider']))
         }
     if ($index2==0) $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere1;
     else $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'" .$Critere2;
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($row = mysql_fetch_array($result))
@@ -365,7 +365,7 @@ if (isset($_POST['valider']))
             $rq="SELECT id_rubrique from cahiertxt where seq_id='0' AND id_auteur='$cib'".$dlm1."  order by date asc";
             }
         }
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     if (mysql_num_rows($result) >0)
         {
         while ($row = mysql_fetch_array($result))

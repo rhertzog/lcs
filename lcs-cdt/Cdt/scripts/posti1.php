@@ -52,7 +52,7 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
         $purifier = new HTMLPurifier($config);
         $cont = $purifier->purify($Contenu);
         $cible= $purifier->purify($Cib);
-        $cont = mysql_real_escape_string($cont);
+        $cont = mysql_real_escape_string($cont,$dbc);
         }
 
     $cible= $_POST['cibl'];
@@ -63,7 +63,7 @@ if(isset($_POST['blabla']) && isset($_POST['cibl']))
         {  // refermer la connexion avec la base de donnees
         mysql_close();
         echo "<p>Votre postit n'a pas pu etre enregistre !".
-        "<p></p>" . mysql_error() . "<p></p>";
+        "<p></p>" . mysql_error($dbc) . "<p></p>";
         //sortir
         exit();
         }

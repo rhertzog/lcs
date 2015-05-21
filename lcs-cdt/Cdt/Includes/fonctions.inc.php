@@ -58,7 +58,7 @@ function Affiche_seance($param) {
     $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
  WHERE (id_rubrique=$param) ";
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 if (mysql_num_rows($result) >0) {
     while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  {
@@ -150,7 +150,7 @@ function Affiche_seq($param) {
     //affiche une sequence et son contenu dans le cdt
     $rqs = "SELECT titrecourt,titre,contenu FROM sequences WHERE id_seq='$param'";
     // lancer la requête
-    $results = @mysql_query ($rqs) or die (mysql_error());
+    $results = @mysql_query($rqs) or die (mysql_error($dbc));
     // Combien y a-t-il d'enregistrements ?
     if (mysql_num_rows($results)>0)
            {
@@ -172,7 +172,7 @@ function Affiche_seq($param) {
             echo ' </td></tr></tbody>';
             echo '<tbody id="c_ord'.$param.'" class="field11">';
             $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id='$param'".$dlm1.$dlm2." order by date desc ";
-            $result2 = @mysql_query ($rq2) or die (mysql_error());
+            $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
             while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
               {
                 Affiche_seance_seq ($ligne[0],$buton);
@@ -188,7 +188,7 @@ function Affiche_seance_seq ($param,$boutons=FALSE,$tick="") {
      if ($cible =="")
          {
          $my_rq="SELECT `id_auteur` FROM `cahiertxt` WHERE `id_rubrique` =".$param;
-         $r = @mysql_query ($my_rq) or die (mysql_error());
+         $r = @mysql_query($my_rq) or die (mysql_error($dbc));
          $ret=mysql_fetch_array($r, MYSQL_NUM);
          $cible=$ret[0];
          }
@@ -200,7 +200,7 @@ function Affiche_seance_seq ($param,$boutons=FALSE,$tick="") {
    $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,'%d/%m/%Y'),id_rubrique,date,on_off,DATE_FORMAT(datevisibi,'%d/%m/%Y') FROM cahiertxt
  WHERE (id_rubrique=$param) ";
 
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 if (mysql_num_rows($result) >0) {
     while ($ligne = mysql_fetch_array($result, MYSQL_NUM))
 	  {

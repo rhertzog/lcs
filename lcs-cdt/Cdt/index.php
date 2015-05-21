@@ -37,9 +37,7 @@ else
     $_SESSION['version'] = "<432";
 
 // recuperation des donnees de l'utilisateur
-
-$login = $_SESSION['login'];
-
+$login = strtolower($_SESSION['login']);
 // Si $login, on recupere les datas de l'utilisateur
 if ($login) {
     list($user, $groups) = people_get_variables($login, true);

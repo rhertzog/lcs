@@ -111,7 +111,7 @@ echo "</ul>";
 if ($arch=="") exit;
 $rq = "SELECT classe,matiere,id_prof FROM onglets$arch WHERE login='{$_SESSION['login']}' ORDER BY classe ASC ";
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // si pas de rubrique
 if (mysql_num_rows($result)==0)
@@ -139,7 +139,7 @@ $rq = "SELECT classe,matiere,id_prof FROM onglets$arch
  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
  // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 $nb = mysql_num_rows($result);  // Combien y a-t-il d'enregistrements ?
 
 //on recupere les donnees
@@ -193,7 +193,7 @@ $rq = "SELECT DATE_FORMAT(date,'%d/%m/%Y'),contenu,afaire,DATE_FORMAT(datafaire,
  WHERE (id_auteur=$cible) AND (login='{$_SESSION['login']}') ORDER BY date desc ,id_rubrique desc";
 
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // Combien y a-t-il d'enregistrements ?
 $nb2 = mysql_num_rows($result);

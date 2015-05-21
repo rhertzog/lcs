@@ -27,7 +27,7 @@ if (isset($_POST['rqt']) && isset($_POST['sens']) && isset($_POST['sens']))
     include_once("../Includes/fonctions.inc.php");
     require_once ('../Includes/config.inc.php');		
     $rq2 = "SELECT id_rubrique FROM cahiertxt  WHERE seq_id=".stripslashes($_POST['rqt'])." order by date " .stripslashes($_POST['sens']) ;
-    $result2 = @mysql_query ($rq2) or die (mysql_error());
+    $result2 = @mysql_query($rq2) or die (mysql_error($dbc));
     while ($ligne = mysql_fetch_array($result2, MYSQL_NUM))
       {
         Affiche_seance_seq ($ligne[0],$buton,$_POST['tiket']);

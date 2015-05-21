@@ -105,7 +105,7 @@ elseif (is_dir("../../Agendas"))
     (SELECT cat_id FROM webcal_categories WHERE cat_owner='".$_SESSION['login']."' AND cat_name='EDT')) ";
 
     // lancer la requete
-    $result = @mysql_query ($rq);
+    $result = @mysql_query($rq);
     if ($result)
         {
         //on recupere les donnees
@@ -192,7 +192,7 @@ if (isset($_POST['enregistrer']) || isset($_POST['modifier']))
         if (!$result)  // Si l'enregistrement est incorrect
             {
             echo "<p>Votre rubrique n'a pas pu \352tre enregistr\351e \340 cause d'une erreur syst\350me".
-                  "<p></p>" . mysql_error() . "<p></p>";
+                  "<p></p>" . mysql_error($dbc) . "<p></p>";
             // refermer la connexion avec la base de donnees
             mysql_close();
             //sortir
@@ -215,13 +215,13 @@ if (isset($_GET['delrub'])&& isset($_GET['num']) && $_GET['TA']==md5($_SESSION['
     //la rubrique existe elle ?
     $rq = "SELECT login FROM onglets WHERE id_prof='$cible'  ";
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);
     //si la rubrique existe, on l'efface
     if (($nb==1) &&($action==1245))
         {
         $rq = "DELETE  FROM onglets WHERE id_prof='$cible' LIMIT 1";
-        $result2 = @mysql_query ($rq) or die (mysql_error());
+        $result2 = @mysql_query($rq) or die (mysql_error($dbc));
         }
     }
 $action ="";
@@ -237,7 +237,7 @@ if (isset($_GET['modrub'])&& isset($_GET['num']))
     $rq = "SELECT login,classe, matiere, prefix,edt,cologin FROM onglets WHERE id_prof='$cible'  ";
 
     // lancer la requete
-    $result = @mysql_query ($rq) or die (mysql_error());
+    $result = @mysql_query($rq) or die (mysql_error($dbc));
     $nb = mysql_num_rows($result);
 
     //si elle existe, on recupere les datas pour les afficher dans les champs
@@ -260,7 +260,7 @@ $rq = "SELECT classe,matiere,id_prof,prof,prefix,edt FROM onglets
  WHERE login='{$_SESSION['login']}' ORDER BY id_prof ASC ";
 
 // lancer la requete
-$result = @mysql_query ($rq) or die (mysql_error());
+$result = @mysql_query($rq) or die (mysql_error($dbc));
 
 // Combien y a-t-il d'enregistrements ?
 $nb = mysql_num_rows($result);
