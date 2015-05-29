@@ -1,3 +1,9 @@
+lcs-gepi (2.4.10.1) Lcs; urgency=low
+
+  * stable release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 12:47:50 +0200
+
 lcs-gepi (2.4.10~5) Lcs; urgency=low
 
   * delete idpers and isauth() function
