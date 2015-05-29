@@ -1,7 +1,7 @@
-lcs-web (2.4.10~13) Lcs; urgency=low
+lcs-web (2.4.10) Lcs; urgency=low
 
   * Modify for Debian Wheezy
-  * Synchronization with 2.4.9 tree
+  * Fix edit_params.php for spip and rubycas-server
 
   * Fix create/delete user mysql db in Annu/people.php
   * Fix create admin folder for first acces
@@ -75,7 +75,7 @@ lcs-web (2.4.10~13) Lcs; urgency=low
   [ Jean-Luc Chretien ]
   * test if mysql is up for GRANTing lcsmgr on tables
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 10 Apr 2015 15:28:15 +0300
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 29 May 2015 15:12:54 +0300
 
 lcs-web (2.4.9.4) Lcs; urgency=low
 

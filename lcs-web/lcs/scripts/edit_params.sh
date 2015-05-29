@@ -1,5 +1,5 @@
 #!/bin/bash
-# edit_params.sh version du 20/03/2009
+# edit_params.sh version du 29/05/2015
 
 # Fichiers de configuration
 PATH2SLAPD="/etc/ldap/slapd.conf"
@@ -7,25 +7,25 @@ PATH2LDAP="/etc/ldap/ldap.conf"
 PATH2PAM_LDAP="/etc/pam_ldap.conf"
 PATH2LIBNSS_LDAP="/etc/libnss-ldap.conf"
 PATH2IMAP_LDAP="/etc/courier/authldaprc"
-PATH2SPIP_LDAP="/usr/share/lcs/spip/config/connect.php"
+PATH2SPIP_LDAP="/usr/share/lcs/spip/config/ldap.php"
 PATH2MAIN="/etc/postfix/main.cf"
 PATH2LDAPALIASES="/etc/postfix/ldap-aliases.cf"
 PATH2MAILINGLIST="/etc/postfix/mailing_list.cf"
 PATH2LMHOSTS="/etc/samba/lmhosts"
 PATH2SQUIDCONF="/etc/squid/squid.conf"
-PATH2CASCONF="/etc/rubycas-lcs/config.yml"
+PATH2CASCONF="/etc/rubycas-server/config.yml"
 # Fichiers de configuration temporaires
 PATH2SLAPD_TMP="/etc/ldap/slapd.conf.tmp"
 PATH2LDAP_TMP="/etc/ldap/ldap.conf.tmp"
 PATH2PAM_LDAP_TMP="/etc/pam_ldap.conf.tmp"
 PATH2LIBNSS_LDAP_TMP="/etc/libnss-ldap.conf.tmp"
 PATH2IMAP_LDAP_TMP="/etc/courier/authldaprc.tmp"
-PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/config/connect.php.tmp"
+PATH2SPIP_LDAP_TMP="/usr/share/lcs/spip/config/ldap.php.tmp"
 PATH2MAIN_TMP="/etc/postfix/main.cf.tmp"
 PATH2LDAPALIASES_TMP="/etc/postfix/ldap-aliases.tmp"
 PATH2MAILINGLIST_TMP="/etc/postfix/mailing_list.tmp"
 PATH2SQUIDCONF_TMP="/etc/squid/squid.conf.tmp"
-PATH2CASCONF_TMP="/etc/rubycas-lcs/config.yml.tmp"
+PATH2CASCONF_TMP="/etc/rubycas-server/config.yml.tmp"
 
 while read TYPE OLD NEW; do
   # Modification du mdp admin ldap
