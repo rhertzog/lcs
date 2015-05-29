@@ -1,8 +1,14 @@
 <?php
-session_name("Lcs");
-@session_start();
-if (isset($_SESSION['login'])) $loggin=$_SESSION['login'];
-else    {
+$loggin="";
+if (! empty($_COOKIE["Lcs"])) {
+           require_once ("/var/www/lcs/includes/functions.inc.php");
+           # Search login
+           $file="/var/lib/php5/sess_".$_COOKIE['Lcs'];
+           $ch= mb_split('"',file_get_contents ($file));
+           $loggin=$ch[1];
+        }
+
+if ($loggin=="") {
         echo "<script type='text/javascript'>";
             echo 'alert("Suite \340 une p\351riode d\'inactivit\351 trop longue, votre session a expir\351 .\n\n Vous devez vous r\351authentifier");';
             echo 'location.href ="../../lcs/logout.php"</script>';
