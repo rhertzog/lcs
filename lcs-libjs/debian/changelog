@@ -1,3 +1,9 @@
+lcs-libjs (2.4.10) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 13:29:34 +0200
+
 lcs-libjs (2.4.10~1) Lcs; urgency=low
 
   * Make a 2.4.10 reelease for Wheezy repository
