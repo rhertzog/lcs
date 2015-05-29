@@ -1,3 +1,9 @@
+lcs-sacoche (2.4.10.1) Lcs; urgency=low
+
+  * remove tide
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 12:51:07 +0200
+
 lcs-sacoche (2.4.10.1~6) Lcs; urgency=low
 
   * update to version 2015_04_07  
