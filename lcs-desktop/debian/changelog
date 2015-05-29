@@ -1,3 +1,9 @@
+lcs-desktop (2.4.10.1) Lcs; urgency=low
+
+  * remove tilde
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 12:54:19 +0200
+
 lcs-desktop (2.4.10~3) Lcs; urgency=low
 
   *delete default json files 
