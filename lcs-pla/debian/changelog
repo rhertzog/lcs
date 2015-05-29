@@ -1,3 +1,9 @@
+lcs-pla (2.4.10.1) Lcs; urgency=low
+
+  * stable release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 12:39:21 +0200
+
 lcs-pla (2.4.10~3) Lcs; urgency=low
 
   * fix authentification
