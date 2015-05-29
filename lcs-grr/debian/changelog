@@ -1,3 +1,9 @@
+lcs-grr (2.4.10.1) Lcs; urgency=low
+
+  * stable release
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 29 May 2015 12:43:29 +0200
+
 lcs-grr (2.4.10~4) Lcs; urgency=low
 
   * add encoding param for htmlspecialchars function
