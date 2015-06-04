@@ -1,10 +1,11 @@
-lcs-apache2ssl (2.4.10~6) Lcs; urgency=low
+lcs-apache2ssl (2.4.10) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
+  * make a 2.4.10 stable release for Wheezy
   * Update for wheezy and lcs-certmanager
   * Add SSLCertificateChainFile directive in lcs-ssl
 
- -- root <jean-luc.chretien@tice.ac-caen.fr>  Thu, 07 Nov 2013 16:40:05 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 14:10:54 +0300
 
 lcs-apache2ssl (2.4.9) Lcs; urgency=low
 
