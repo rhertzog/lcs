@@ -1,8 +1,8 @@
-debian-lcs-keyring (1.3) Lcs; urgency=low
+debian-lcs-keyring (1.4) Lcs; urgency=low
 
   * Make release for wheezy 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 21 Nov 2013 16:37:14 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 14:05:33 +0300
 
 debian-lcs-keyring (1.2) stable; urgency=low
 
