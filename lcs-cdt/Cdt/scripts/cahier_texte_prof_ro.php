@@ -2,12 +2,13 @@
 /* ===================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 04/06/2015
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script de consultationd'un  cahier de textes PROF -
 			_-=-_
    =================================================== */
+header("X-XSS-Protection: 0");
 session_name("Lcs");
 @session_start();
 include "../Includes/basedir.inc.php";

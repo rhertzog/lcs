@@ -7,7 +7,7 @@ class HTMLPurifier_Filter_MyTube extends HTMLPurifier_Filter
 
     public function preFilter($html, $config, $context) {
         $pre_regex = '#<iframe[^>].+?'.
-            'http://www.youtube.com/embed/([A-Za-z0-9\-_=]+).+?</iframe>#s';
+            '://www.youtube.com/embed/([A-Za-z0-9\-_=]+).+?</iframe>#s';
         $pre_replace = '<span class="mytube-embed">\1</span>';
         return preg_replace($pre_regex, $pre_replace, $html);
     }
@@ -23,7 +23,8 @@ class HTMLPurifier_Filter_MyTube extends HTMLPurifier_Filter
 
     protected function postFilterCallback($matches) {
         $url = $this->armorUrl($matches[1]);
-        return '<iframe width="420" height="315" src="http://www.youtube.com/embed/'.$url.'?rel=0" frameborder="0" allowfullscreen></iframe>';
+        $ht=($_SERVER['HTTPS']=='on') ? 'https' :'http';
+	return '<iframe width="420" height="315" src="'.$ht.'://www.youtube.com/embed/'.$url.'?rel=0" frameborder="0" allowfullscreen></iframe>';
 
     }
 }

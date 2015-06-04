@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.4 du 15/03/2012
+   VERSION 2.4 du 04/06/2015
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - script d'insertion de video -
@@ -14,7 +14,7 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Expires: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-cache, must-revalidate");
 header("Pragma: no-cache");
-
+header("X-XSS-Protection: 0");
 session_name("Lcs");
 @session_start();
 include "../Includes/check.php";

@@ -2,13 +2,14 @@
 /* =============================================
    Projet LCS : Linux Communication Server
    Plugin "cahier de textes"
-   VERSION 2.5 du 10/04/2014
+   VERSION 2.5 du 04/06/2015
    par philippe LECLERC
    philippe.leclerc1@ac-caen.fr
    - Archives du cahier de textes ELEVE -
    			_-=-_
     "Valid XHTML 1.0 Strict"
    ============================================= */
+header("X-XSS-Protection: 0");
 session_name("Lcs");
 @session_start();
 //si la page est appelee par un utilisateur non identifiee
