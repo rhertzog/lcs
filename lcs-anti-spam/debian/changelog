@@ -1,8 +1,8 @@
-lcs-anti-spam (2.4.10~1) Lcs; urgency=low
+lcs-anti-spam (2.4.10) Lcs; urgency=low
 
-  * Build 2?4.10 release for Wheezy
+  * Build 2.4.10 Stable release for Wheezy
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 22 Nov 2013 12:04:30 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 14:08:10 +0300
 
 lcs-anti-spam (2.4.9) lucid; urgency=low
 
