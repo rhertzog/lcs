@@ -1,8 +1,8 @@
-lcs-smbwebclient (2.4.10~1) Lcs; urgency=low
+lcs-smbwebclient (2.4.10) Lcs; urgency=low
 
   * Remove isauth and idpers 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 12 Dec 2014 17:01:21 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 12:41:50 +0300
 
 lcs-smbwebclient (2.4.9) Lcs; urgency=low
 

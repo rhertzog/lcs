@@ -1689,7 +1689,7 @@ function _DirectoryName ($path='')
 
 if (! isset($SMBWEBCLIENT_CLASS)) {
 	require_once "/var/www/Annu/includes/check-token.php";
-	if (!check_acces()) exit;
+	if (!check_acces(1)) exit;
 	$login=$_SESSION['login'];
 	if ( !$login ) {
 		$swc = new smbwebclient;
