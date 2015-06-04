@@ -1,9 +1,11 @@
-lcs-dns (2.4.10~7) Lcs; urgency=low
-
+lcs-dns (2.4.10) Lcs; urgency=low
+  [ Jean-Luc Chretien]
+  * make a stable release for Wheezy	
+  [ Philippe Leclerc ]
   * modif error message
   * add automatic delete feedback
 
- -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 23 Jan 2015 09:37:45 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 14:30:37 +0300
 
 lcs-dns (2.4.10~6) Lcs; urgency=low
 
