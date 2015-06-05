@@ -1,11 +1,11 @@
-lcs-spip (2.4.10~3) Lcs; urgency=low
+lcs-spip (2.4.10) Lcs; urgency=low
 
-  * Make a Wheezy 2.4.10 release
+  * Make a Wheezy 2.4.10 stable release
   * remove isauth and idpers from spip
   * Update ecran secu
   * Remove include lcs_user.inc.php in spip_session_lcs.php and plugins/auto/tispip_skelet_lcs/exec/creer_zones_groupes_lcs.php
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 13 Mar 2015 14:33:48 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 12:42:08 +0300
 
 lcs-spip (2.4.9.7) Lcs; urgency=low
 
