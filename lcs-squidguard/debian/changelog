@@ -1,9 +1,9 @@
-lcs-squidguard (2.4.10~2) Lcs; urgency=low
+lcs-squidguard (2.4.10) Lcs; urgency=low
 
-  * Make a 2.4.10 release for Wheezy
+  * Make a 2.4.10 stable release for Wheezy
   * Resynchro with 249 (purifier, ...)
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 Nov 2013 14:18:33 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:23:20 +0300
 
 lcs-squidguard (2.4.9.2) stable; urgency=low
 
