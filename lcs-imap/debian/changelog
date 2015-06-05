@@ -1,12 +1,12 @@
-lcs-imap (2.4.10~2) Lcs; urgency=low
+lcs-imap (2.4.10) Lcs; urgency=low
 
-  * Make a 2.4.10 release
+  * Make a 2.4.10 stable release for Wheezy
   * Synchronize lcs-imap 2.4.10 with 2.4.9 :
   	* new function check_acces() in listesdiff.php
   	* fix in listesdiff.php
   	* Add escapshellarg in exec lisesdiff.php 
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Sat, 05 Jul 2014 13:24:55 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:06:49 +0300
 
 lcs-imap (2.4.9.1) Lcs; urgency=low
 
