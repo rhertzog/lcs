@@ -1,8 +1,8 @@
-lcs-ftpproxy (2.4.10~1) Lcs; urgency=low
+lcs-ftpproxy (2.4.10) Lcs; urgency=low
 
-  * Make a 2.4.10 release
+  * Make a 2.4.10 stable release for Wheezy
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 28 Nov 2013 15:04:04 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 12:20:58 +0300
 
 lcs-ftpproxy (2.4.9) Lcs; urgency=low
 
