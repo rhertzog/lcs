@@ -1,5 +1,5 @@
-lcs-openvpn (2.4.10~10) Lcs; urgency=low
-
+lcs-openvpn (2.4.10) Lcs; urgency=low
+  * make a stable release for Wheezy
   * Remove .htaccess
   * Add purifier and escapeshellarg in index.php, newclient.php, config.php
   * Fix lcs-openvpn-revoke and lcs-openvpn-list-genered
@@ -10,7 +10,7 @@ lcs-openvpn (2.4.10~10) Lcs; urgency=low
   * Fix desinstall package (remove params in lcs_db.params)
   * Fix create smarty folder in postinst
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 26 Sep 2014 13:34:56 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:07:59 +0300
 
 lcs-openvpn (2.4.9.1) Lcs; urgency=low
 
