@@ -1,12 +1,13 @@
-lcs-roundcube (2.4.10~12) Lcs; urgency=low
+lcs-roundcube (2.4.10) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
+  * Stable release for Wheezy
   * Update Roundcube to 1.0.1
   * Add .htaccess in some folders
   * Add desktop notify 
   * Remove idpers from desktop notify and lcs authentication
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 06 Mar 2015 17:07:18 +0200
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:20:59 +0300
 
 lcs-roundcube (2.4.9.2) Lcs; urgency=low
 
