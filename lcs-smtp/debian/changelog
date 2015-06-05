@@ -1,9 +1,10 @@
-lcs-smtp (2.4.10~2) Lcs; urgency=low
+lcs-smtp (2.4.10) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
+  * Stable release for Wheezy
   * Modify main_lcslis.cf for wheezy
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 14 Nov 2013 14:49:18 +0100
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:22:10 +0300
 
 lcs-smtp (2.4.9) lcs; urgency=low
 
