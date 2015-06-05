@@ -1,12 +1,12 @@
-lcs-preinstall (2.4.10~3) Lcs; urgency=low
+lcs-preinstall (2.4.10) Lcs; urgency=low
 
   [ Jean-Luc Chretien ]
-  * Initial release for Debian Wheezy :
+  * Stable release for Debian Wheezy :
 	* Modify in sql TYPE by ENGINE
 	* Modify mysql request for create lcsmgr 
         * remove swekey, sessions and personnes mysql tables
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 02 Apr 2015 14:52:38 +0300
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 05 Jun 2015 11:20:16 +0300
 
 lcs-preinstall (2.4.9.1) Lcs; urgency=low
 
