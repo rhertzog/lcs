@@ -22,7 +22,8 @@ if (count($_POST)>0) {
 include "../Includes/config.inc.php";
 // connexion à la base de données
     try {
-        $bdd = new PDO('mysql:host=localhost;dbname=maint_plug', $USERAUTH,$PASSAUTH);
+        $bdd = new PDO('mysql:host=localhost;dbname=maint_plug', $USERAUTH,$PASSAUTH, array(
+           PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"));
     } catch(Exception $e) {
         exit('Impossible de se connecter à la base de données.');
     }
@@ -33,7 +34,7 @@ if($idbat!="" && $idetage=="") {
     $requete = "SELECT etage from topologie WHERE batiment='$idbat' GROUP BY etage ASC ";
     $resultat = $bdd->query($requete) or die(print_r($bdd->errorInfo()));
     while($donnees = $resultat->fetch(PDO::FETCH_ASSOC)) {
-       $json[$donnees['etage']][] = utf8_encode($donnees['etage']);
+       $json[$donnees['etage']][] = $donnees['etage'];
     }
     echo json_encode($json);
     exit;
@@ -45,7 +46,7 @@ if($idbat!="" && $idetage!="") {
     $requete = "SELECT salle from topologie WHERE batiment='$idbat'  AND etage='$idetage' ORDER BY salle ASC ";
     $resultat = $bdd->query($requete) or die(print_r($bdd->errorInfo()));
     while($donnees = $resultat->fetch(PDO::FETCH_ASSOC)) {
-        $json[$donnees['salle']][] = utf8_encode($donnees['salle']);
+        $json[$donnees['salle']][] = $donnees['salle'];
     }
      echo json_encode($json);
      exit;
