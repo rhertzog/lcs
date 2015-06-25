@@ -1230,8 +1230,9 @@ public static function DB_modifier_adresse_parent($parent_id,$tab_adresse)
 /**
  * Modifier un ou plusieurs paramètres d'un utilisateur
  *
- * Le champ "connexion_date" est traité avec DB_STRUCTURE_PUBLIC::DB_enregistrer_date_connexion().
- * On peut envisager une modification de "profil_sigle" entre personnels.
+ * - Le champ "connexion_date" est traité avec DB_STRUCTURE_PUBLIC::DB_enregistrer_date_connexion().
+ * - On peut envisager une modification de "profil_sigle" entre personnels.
+ * - La mise à jour de la table [sacoche_user_switch] s'effectue lors de l'initialisation annuelle.
  *
  * @param int     $user_id
  * @param array   array(':sconet_id'=>$val, ':sconet_num'=>$val, ':reference'=>$val , ':profil_sigle'=>$val , ':genre'=>$val , ':nom'=>$val , ':prenom'=>$val , ':birth_date'=>$val , ':courriel'=>$val , ':email_origine'=>$val , ':login'=>$val , ':password'=>$val , ':daltonisme'=>$val , ':sortie_date'=>$val , ':classe'=>$val , ':id_ent'=>$val , ':id_gepi'=>$val );
@@ -1272,6 +1273,8 @@ public static function DB_modifier_user($user_id,$DB_VAR)
 
 /**
  * Rendre une liste de comptes actifs ou inactifs en changeant la date de sortie
+ *
+ * La mise à jour de la table [sacoche_user_switch] s'effectue lors de l'initialisation annuelle.
  *
  * @param array   $tab_user_id
  * @param bool    $statut
@@ -1977,6 +1980,8 @@ public static function DB_supprimer_jointures_parents_for_eleves($listing_eleve_
 /**
  * Supprimer un utilisateur avec tout ce qui en dépend
  *
+ * La mise à jour de la table [sacoche_user_switch] s'effectue lors de l'initialisation annuelle.
+ *
  * @param int    $user_id
  * @param string $user_profil_sigle
  * @return void
@@ -2070,7 +2075,10 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil_sigle)
     $DB_SQL.= 'WHERE prof_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
     $DB_SQL = 'DELETE FROM sacoche_selection_item ';
-    $DB_SQL.= 'WHERE user_id=:user_id';
+    $DB_SQL.= 'WHERE proprio_id=:user_id';
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+    $DB_SQL = 'DELETE FROM sacoche_jointure_selection_prof ';
+    $DB_SQL.= 'WHERE prof_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
     $DB_SQL = 'UPDATE sacoche_demande ';
     $DB_SQL.= 'SET prof_id=0 ';
@@ -2317,13 +2325,6 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_groupe.groupe_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Évaluations' );
-  // Recherche d'anomalies : sélections d'items associées à un professeur supprimé...
-  $DB_SQL = 'DELETE sacoche_selection_item ';
-  $DB_SQL.= 'FROM sacoche_selection_item ';
-  $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
-  $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
-  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
-  $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Sélections d\'items' );
   // Recherche d'anomalies : messages associés à un utilisateur supprimé...
   $DB_SQL = 'DELETE sacoche_message ';
   $DB_SQL.= 'FROM sacoche_message ';
@@ -2331,6 +2332,19 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Messages d\'accueil' );
+  // Recherche d'anomalies : bascules vers un compte désactivé ou supprimé...
+  $tab_bilan[] = compte_rendu( DB_STRUCTURE_SWITCH::DB_supprimer_liaisons_obsoletes() , 'Bascules entre comptes' );
+  // Recherche d'anomalies : sélections d'items associées à un professeur supprimé...
+  $DB_SQL = 'DELETE sacoche_selection_item ';
+  $DB_SQL.= 'FROM sacoche_selection_item ';
+  $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_selection_item.proprio_id=sacoche_user.user_id ';
+  $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+  $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Sélections d\'items sans propriétaire' );
+  // Recherche d'anomalies : jointures sélection/item à un item supprimé...
+  $tab_bilan[] = compte_rendu( DB_STRUCTURE_SELECTION_ITEM::DB_supprimer_jointures_items_obsoletes() , 'Jointures sélection/item' );
+  // Recherche d'anomalies : sélections d'items associées à aucun item...
+  $tab_bilan[] = compte_rendu( DB_STRUCTURE_SELECTION_ITEM::DB_supprimer_selections_items_obsoletes() , 'Sélections d\'items sans item' );
   // Recherche d'anomalies : jointures période/groupe associées à une période ou un groupe supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_groupe_periode ';
   $DB_SQL.= 'FROM sacoche_jointure_groupe_periode ';

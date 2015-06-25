@@ -68,6 +68,7 @@ class cURL
     curl_setopt($this->handle, CURLOPT_FAILONERROR, TRUE);       // TRUE pour que PHP traite silencieusement les codes HTTP supérieurs ou égaux à 400. Le comportement par défaut est de retourner la page normalement, en ignorant ce code.
     curl_setopt($this->handle, CURLOPT_TIMEOUT, $this->timeout); // Le temps maximum d'exécution de la fonction cURL (en s) ; éviter de monter cette valeur pour libérer des ressources plus rapidement : 'classiquement', le serveur doit répondre en qq ms, donc si au bout de 5s il a pas répondu c'est qu'il ne répondra plus, alors pas la peine de bloquer une connexion et de la RAM pendant plus longtemps.
     curl_setopt($this->handle, CURLOPT_RETURNTRANSFER, TRUE);    // TRUE retourne directement le transfert sous forme de chaîne de la valeur retournée par curl_exec() au lieu de l'afficher directement.
+    curl_setopt($this->handle, CURLOPT_USERAGENT , CURL_AGENT);  // Envoyer un User-Agent (défini dans le loader) car il est arrivé qu'un prestataire ENT bloque les requêtes sans User-Agent (ce qui est idiot car cette valeur n'est pas fiable, n'importe qui peut présenter n'importe quel User-Agent !).
   }
 
   /**
@@ -90,6 +91,21 @@ class cURL
         curl_setopt($this->handle, CURLOPT_PROXYAUTH,    constant(SERVEUR_PROXY_AUTH_METHOD));                 // La méthode d'identification HTTP à utiliser pour la connexion à un proxy. Utilisez la même méthode que celle décrite dans CURLOPT_HTTPAUTH. Pour une identification avec un proxy, seuls CURLAUTH_BASIC et CURLAUTH_NTLM sont actuellement supportés.
         curl_setopt($this->handle, CURLOPT_PROXYUSERPWD, SERVEUR_PROXY_AUTH_USER.':'.SERVEUR_PROXY_AUTH_PASS); // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion avec le proxy.
       }
+    }
+  }
+
+  /**
+   * Options cURL de configuration d'une identification HTTP à utiliser
+   *
+   * @param void
+   * @return void
+   */
+  private function setopt_auth()
+  {
+    if( defined('HTTP_AUTH_METHOD') && defined('HTTP_AUTH_PASS') )
+    {
+      curl_setopt($this->handle, CURLOPT_HTTPAUTH, HTTP_AUTH_METHOD); // La méthode d'identification HTTP à utiliser. Valeurs possibles : CURLAUTH_BASIC, CURLAUTH_DIGEST, CURLAUTH_GSSNEGOTIATE, CURLAUTH_NTLM, CURLAUTH_ANY et CURLAUTH_ANYSAFE.
+      curl_setopt($this->handle, CURLOPT_USERPWD , HTTP_AUTH_PASS );  // Un nom d'utilisateur et un mot de passe formatés sous la forme "[username]:[password]" à utiliser pour la connexion.
     }
   }
 
@@ -232,6 +248,7 @@ class cURL
     $cURL->url = $cURL->setopt_redirection();
     $cURL->setopt_commun();
     $cURL->setopt_proxy();
+    $cURL->setopt_auth();
     $cURL->setopt_post();
     $requete_reponse = $cURL->exec();
     if($requete_reponse === FALSE)

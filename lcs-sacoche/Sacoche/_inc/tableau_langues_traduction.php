@@ -37,7 +37,7 @@ $tab_langues_traduction = array(
     ),
   ),
   array(
-    'statut'     => 70, // en attente
+    'statut'     => 94, // en attente
     'langue'     => array( 'code' => 'en'  , 'nom' => 'Anglais' ),
     'pays'       => array( 'code' => '150' , 'nom' => 'Europe' ),
     'traducteur' => array(
@@ -46,15 +46,7 @@ $tab_langues_traduction = array(
     ),
   ),
   array(
-    'statut'     => 98, // complète (% effectué)
-    'langue'     => array( 'code' => 'rcf' , 'nom' => 'Créole réunionnais' ),
-    'pays'       => array( 'code' => 'RE'  , 'nom' => 'La Réunion' ),
-    'traducteur' => array(
-      array( 'nom' => 'Joël Macé' , 'mail' => 'joel.mace@ac-versailles.fr' ),
-    ),
-  ),
-  array(
-    'statut'     => 100, // complète (% effectué)
+    'statut'     => 99, // complète (% effectué)
     'langue'     => array( 'code' => 'es' , 'nom' => 'Espagnol' ),
     'pays'       => array( 'code' => 'CO' , 'nom' => 'Colombie' ),
     'traducteur' => array(
@@ -62,7 +54,7 @@ $tab_langues_traduction = array(
     ),
   ),
   array(
-    'statut'     => 98, // complète (% effectué)
+    'statut'     => 97, // complète (% effectué)
     'langue'     => array( 'code' => 'es' , 'nom' => 'Espagnol' ),
     'pays'       => array( 'code' => 'ES' , 'nom' => 'Espagne' ),
     'traducteur' => array(
@@ -70,7 +62,7 @@ $tab_langues_traduction = array(
     ),
   ),
   array(
-    'statut'     => 98, // complète (% effectué)
+    'statut'     => 97, // complète (% effectué)
     'langue'     => array( 'code' => 'es' , 'nom' => 'Espagnol' ),
     'pays'       => array( 'code' => 'MX' , 'nom' => 'Mexique' ),
     'traducteur' => array(
@@ -96,6 +88,14 @@ $tab_langues_traduction = array(
     'pays'       => array( 'code' => 'BR' , 'nom' => 'Brésil' ),
     'traducteur' => array(
       array( 'nom' => 'Olivier Dagnat' , 'mail' => 'olivier.dagnat@hotmail.fr' ),
+    ),
+  ),
+  array(
+    'statut'     => 99, // complète (% effectué)
+    'langue'     => array( 'code' => 'rcf' , 'nom' => 'Créole réunionnais' ),
+    'pays'       => array( 'code' => 'RE'  , 'nom' => 'La Réunion' ),
+    'traducteur' => array(
+      array( 'nom' => 'Joël Macé' , 'mail' => 'joel.mace@ac-versailles.fr' ),
     ),
   ),
   array(

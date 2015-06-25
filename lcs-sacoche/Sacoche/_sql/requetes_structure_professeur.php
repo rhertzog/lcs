@@ -577,10 +577,7 @@ public static function DB_lister_devoirs_prof($prof_id,$groupe_id,$date_debut_my
   $DB_SQL.= 'AND devoir_date>="'.$date_debut_mysql.'" AND devoir_date<="'.$date_fin_mysql.'" ' ;
   $DB_SQL.= 'GROUP BY sacoche_devoir.devoir_id ';
   $DB_SQL.= 'ORDER BY devoir_date DESC, groupe_nom ASC';
-  $DB_VAR = array(
-    ':proprio_id' => $prof_id,
-    ':type4'      => 'eval',
-  );
+  $DB_VAR = array( ':type4' => 'eval' );
   return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
@@ -714,22 +711,6 @@ public static function DB_lister_nb_saisies_par_evaluation($listing_devoir_id)
 }
 
 /**
- * lister_selection_items
- * Retourner les sélections d'items mémorisés d'un prof
- *
- * @param int   $user_id
- * @return array
- */
-public static function DB_lister_selection_items($prof_id)
-{
-  $DB_SQL = 'SELECT selection_item_id, selection_item_nom, selection_item_liste ';
-  $DB_SQL.= 'FROM sacoche_selection_item ';
-  $DB_SQL.= 'WHERE user_id=:user_id ';
-  $DB_VAR = array(':user_id'=>$prof_id);
-  return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-}
-
-/**
  * lister_jointure_groupe_periode ; le rangement par ordre de période permet, si les périodes se chevauchent, que javascript choisisse la 1ère par défaut
  *
  * @param string   $listing_user_id   id des élèves séparés par des virgules
@@ -835,29 +816,6 @@ public static function DB_tester_groupe_nom($groupe_nom,$groupe_id=FALSE)
 }
 
 /**
- * tester_selection_items_nom
- *
- * @param int    $user_id
- * @param string $selection_item_nom
- * @param int    $selection_item_id    inutile si recherche pour un ajout, mais id à éviter si recherche pour une modification
- * @return int
- */
-public static function DB_tester_selection_items_nom($prof_id,$selection_item_nom,$selection_item_id=FALSE)
-{
-  $DB_SQL = 'SELECT selection_item_id ';
-  $DB_SQL.= 'FROM sacoche_selection_item ';
-  $DB_SQL.= 'WHERE user_id=:user_id AND selection_item_nom=:selection_item_nom ';
-  $DB_SQL.= ($selection_item_id) ? 'AND selection_item_id!=:selection_item_id ' : '' ;
-  $DB_SQL.= 'LIMIT 1'; // utile
-  $DB_VAR = array(
-    ':user_id'            => $prof_id,
-    ':selection_item_nom' => $selection_item_nom,
-    ':selection_item_id'  => $selection_item_id,
-  );
-  return (int)DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-}
-
-/**
  * ajouter_groupe_par_prof
  *
  * @param string $groupe_type   'besoin' | 'eval'
@@ -919,28 +877,6 @@ public static function DB_ajouter_devoir($prof_id,$groupe_id,$date_mysql,$info,$
     ':devoir_doc_corrige'  => $doc_corrige,
     ':devoir_fini'         => 0,
     ':devoir_eleves_ordre' => $eleves_ordre,
-  );
-  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-  return DB::getLastOid(SACOCHE_STRUCTURE_BD_NAME);
-}
-
-/**
- * ajouter_selection_items
- *
- * @param int    $user_id
- * @param string $selection_item_nom
- * @param string $tab_id_items   tableau des id des items
- * @return int
- */
-public static function DB_ajouter_selection_items($prof_id,$selection_item_nom,$tab_id_items)
-{
-  $listing_id_items = ','.implode(',',$tab_id_items).',' ;
-  $DB_SQL = 'INSERT INTO sacoche_selection_item( user_id, selection_item_nom, selection_item_liste) ';
-  $DB_SQL.= 'VALUES                            (:user_id,:selection_item_nom,:selection_item_liste)';
-  $DB_VAR = array(
-    ':user_id'              => $prof_id,
-    ':selection_item_nom'   => $selection_item_nom,
-    ':selection_item_liste' => $listing_id_items,
   );
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
   return DB::getLastOid(SACOCHE_STRUCTURE_BD_NAME);
@@ -1047,28 +983,6 @@ public static function DB_modifier_saisie($prof_id,$eleve_id,$devoir_id,$item_id
     ':prof_id'     => $prof_id,
     ':saisie_note' => $saisie_note,
     ':saisie_info' => $saisie_info,
-  );
-  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-}
-
-/**
- * modifier_selection_items
- *
- * @param int    $selection_item_id
- * @param string $selection_item_nom
- * @param array  $tab_id_items
- * @return void
- */
-public static function DB_modifier_selection_items($selection_item_id,$selection_item_nom,$tab_id_items)
-{
-  $listing_id_items = ','.implode(',',$tab_id_items).',' ;
-  $DB_SQL = 'UPDATE sacoche_selection_item ';
-  $DB_SQL.= 'SET selection_item_nom=:selection_item_nom,selection_item_liste=:selection_item_liste ';
-  $DB_SQL.= 'WHERE selection_item_id=:selection_item_id ';
-  $DB_VAR = array(
-    ':selection_item_id'    => $selection_item_id,
-    ':selection_item_nom'   => $selection_item_nom,
-    ':selection_item_liste' => $listing_id_items,
   );
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
@@ -1511,7 +1425,7 @@ public static function DB_supprimer_groupe_par_prof($groupe_id,$groupe_type,$wit
  */
 public static function DB_supprimer_devoir_et_saisies($devoir_id)
 {
-  // Il faut aussi supprimer les jointures du devoir avec les items
+  // Il faut aussi supprimer les jointures du devoir avec les items, les profs, les élèves
   $DB_SQL = 'DELETE sacoche_devoir, sacoche_saisie, sacoche_jointure_devoir_item, sacoche_jointure_devoir_prof, sacoche_jointure_devoir_eleve ';
   $DB_SQL.= 'FROM sacoche_devoir ';
   $DB_SQL.= 'LEFT JOIN sacoche_saisie USING (devoir_id) ';
@@ -1554,20 +1468,6 @@ public static function DB_supprimer_liaison_devoir_prof($devoir_id)
   $DB_SQL = 'DELETE FROM sacoche_jointure_devoir_prof ';
   $DB_SQL.= 'WHERE devoir_id=:devoir_id ';
   $DB_VAR = array(':devoir_id'=>$devoir_id);
-  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-}
-
-/**
- * supprimer_selection_items
- *
- * @param int   $selection_item_id
- * @return void
- */
-public static function DB_supprimer_selection_items($selection_item_id)
-{
-  $DB_SQL = 'DELETE FROM sacoche_selection_item ';
-  $DB_SQL.= 'WHERE selection_item_id=:selection_item_id ';
-  $DB_VAR = array(':selection_item_id'=>$selection_item_id);
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
 }
 
