@@ -90,7 +90,7 @@ $idp=$purifier->purify($_POST['id']);
 $del_ids=mb_split(",",$idp);
 for ($i=0;$i<count($del_ids);$i++) {
 $SQL = "DELETE from `ent_lcs` where `id`=".$del_ids[$i];
-$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error());
+$result = mysqli_query($GLOBALS["___mysqli_ston"],  $SQL ) or die("Couldn t execute query.".((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
 }
 }else {
 //affichage
@@ -100,13 +100,13 @@ $sidx = $purifier->purify($_GET['sidx']);
 $sord =$purifier->purify( $_GET['sord']);
 if(!$sidx) $sidx =1;
 $query= "SELECT COUNT(*) AS count FROM `ent_lcs` where id_ent!=''";
-$result=mysql_query($query);
-$row = mysql_fetch_array($result,MYSQL_ASSOC);
+$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
+$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 $count = $row['count'];
 if( $count >0 ) { $total_pages = ceil($count/$limit); } else { $total_pages = 0; }
 if ($page > $total_pages) $page=$total_pages; $start = $limit*$page - $limit;
 $SQL = "select * from ent_lcs where id_ent!='' ".$wh." ORDER BY $sidx $sord LIMIT $start , $limit";
-$result = mysql_query( $SQL ) or die("Couldn t execute query.".mysql_error().$SQL);
+$result = mysqli_query($GLOBALS["___mysqli_ston"],  $SQL ) or die("Couldn t execute query.".((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)).$SQL);
 if ( stristr($_SERVER["HTTP_ACCEPT"],"application/xhtml+xml") ) {
  header("Content-type: application/xhtml+xml;charset=utf-8"); }
  else { header("Content-type: text/xml;charset=utf-8"); }
@@ -116,7 +116,7 @@ if ( stristr($_SERVER["HTTP_ACCEPT"],"application/xhtml+xml") ) {
  echo "<page>".$page."</page>";
  echo "<total>".$total_pages."</total>";
  echo "<records>".$count."</records>";
- while($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+ while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
  echo "<row id='". $row[id]."'>";
  echo "<cell>". $row[id]."</cell>";
  list($user, $groups)=people_get_variables($row[login_lcs], true);

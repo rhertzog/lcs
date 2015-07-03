@@ -26,11 +26,11 @@ if (count($_POST)>0) {
 
 @//test si un webmail est installe pour mailto vers les groupes
   $query="SELECT value from applis where name='squirrelmail' or name='roundcube'";
-  $result=mysql_query($query);
+  $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
   if ($result)
 	{
-          if ( mysql_num_rows($result) !=0 ) {
-          $r=mysql_fetch_object($result);
+          if ( mysqli_num_rows($result) !=0 ) {
+          $r=mysqli_fetch_object($result);
           $test_squir=$r->value;
           }
           else $test_squir="0";

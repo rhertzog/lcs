@@ -28,13 +28,13 @@ if ($login)  {
 		$service = "http://".$hostname.".".$domain."/lcs/index.php?url_redirect=accueil.php";
 		//on casse le cookie
 		setcookie('lt',"$lt",0,"/","",0);
-		if (!@mysql_select_db("casserver", $authlink))
+		if (!@((bool)mysqli_query( $authlink, "USE " . casserver)))
     		die ("S&#233;lection de base de donn&#233;es impossible.");
                                     $clientIP = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-                                    $clientIP_escp=  mysql_real_escape_string($clientIP);
+                                    $clientIP_escp=  ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $clientIP) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 		$query="SELECT * FROM `casserver`.`casserver_lt` where consumed = NULL and client_hostname='$clientIP_escp' ORDER By id DESC;";
-		$result=@mysql_query($query, $authlink);
-		if (@mysql_num_rows($result) > 0 )
+		$result=@mysqli_query( $authlink, $query);
+		if (@mysqli_num_rows($result) > 0 )
                                     $lt = (mysql_result($result,0,"ticket"));
 		else {
                                     // Generate Login Ticket
@@ -47,7 +47,7 @@ if ($login)  {
 
             $date = date("Y-m-d H:i:s");
             $query2 = "DELETE FROM `casserver`.`casserver_lt` where ticket='$lt';";
-            $r2 = @mysql_query($query2) or die("Erreur suppression LT");
+            $r2 = @mysqli_query($GLOBALS["___mysqli_ston"], $query2) or die("Erreur suppression LT");
             $query = "INSERT INTO `casserver`.`casserver_lt` ("
                  ."`id` ,"
                  ."`ticket` ,"
@@ -58,7 +58,7 @@ if ($login)  {
                  ."VALUES ("
                  ."NULL , '$lt', '$date', NULL , '$clientIP_escp'"
                  .");";
-            $r = @mysql_query($query) or die("Erreur LT sql");
+            $r = @mysqli_query($GLOBALS["___mysqli_ston"], $query) or die("Erreur LT sql");
 
             define('POSTURL', 'https://'.$hostname.'.'.$domain.':8443/login');
             define('POSTVARS', "username=$login&password=$password&lt=$lt&service=".$_POST['service']);

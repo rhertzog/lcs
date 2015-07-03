@@ -246,14 +246,14 @@ if ( ! isset($_SESSION['login'])) {
 			{
 			  global $Modules;
  			  reset($Modules);
-                                                        $pname=mysql_real_escape_string($pname);
+                                                        $pname=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $pname) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 			  $query="SELECT * from applis WHERE name='$pname'";
-			  $result=mysql_query($query);
+			  $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
 			  if ($result)
 			          {
-				    $row = mysql_fetch_object($result);
+				    $row = mysqli_fetch_object($result);
 				    $version = $row->version;
-				    mysql_free_result($result);
+				    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 				  }
 			  if (isset($Modules[$pname])) // le Module est present dans le fichier xml

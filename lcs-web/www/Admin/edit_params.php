@@ -22,7 +22,7 @@ if ($_SERVER['SCRIPT_NAME'] != "/setup/index.php") {
 	// mode sans echec
 	include ("../lcs/includes/headerauth.inc.php");
 	$msgIntro = "<h1>Param&#233;trage g&#233;n&#233;ral LCS (mode sans &#233;chec)</h1>\n";
-	@mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
+	@((bool)mysqli_query($GLOBALS["___mysqli_ston"], "USE " . $DBAUTH)) or die("Impossible de se connecter &#224; la base $DBAUTH.");
 }
 
 
@@ -57,10 +57,10 @@ function aff_param_form($cat)
         if ( $cat==0 || $cat==11 )
             $texte_form = "<p><a href='../openvpn/config.php' title='Configuration Open VPN'>Configuration Open VPN</a></p>";
 	$texte_form .= "<table border=\"1\">\n";
-	$cat=mysql_real_escape_string($cat);
-	$result=mysql_query("SELECT * from params WHERE cat=$cat ORDER BY `id`");
+	$cat=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $cat) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+	$result=mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * from params WHERE cat=$cat ORDER BY `id`");
 	if ($result) {
-                    while ($r=mysql_fetch_array($result)) {
+                    while ($r=mysqli_fetch_array($result)) {
                     $texte_form .= "<tr><td colspan=\"2\">".utf8_encode($r["descr"])." (<em><font color=\"red\">".$r["name"]."</font></em>)</td>";
                             if ( $r["name"] == "ldap_port" || $cat == 3 || $cat == 11 || $cat == 5 ) {
                                     $texte_form .= "<td>".$r["value"]."</td></tr>\n";
@@ -109,16 +109,16 @@ if (isset($submit)) {
 		die (gettext("Cr&#233;ation du fichier de passage des parametres impossible. Recommencez plus tard et assurez-vous qu'aucun fichier params_lcs n'est pr&#233;sent dans ")."/tmp.");
 	$query="SELECT * from params";
 	if ($submit != 0) $query .= " WHERE cat=$submit";
-	$result=mysql_query($query);
+	$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
 	if ($result) {
 		$i=0;
-		while ($r=mysql_fetch_array($result)) {
+		while ($r=mysqli_fetch_array($result)) {
                                             $formname="form_".$r["name"];
                                             $formnamepurif=$purifier->purify($_POST[$formname]);
                                             if ($formnamepurif!=$r["value"] ) {
                                             // Mise a jour de la base de donneees
                                             $queri="UPDATE params SET value=\"".$formnamepurif."\" WHERE name=\"".$r["name"]."\"";
-                                            $result1=mysql_query($queri);
+                                            $result1=mysqli_query($GLOBALS["___mysqli_ston"], $queri);
                                             if ($result1)
                                                     print gettext("Modification du param&#232;tre ").
                                                     "<em><font color=\"red\">".$r["name"].
@@ -177,7 +177,7 @@ if (isset($submit)) {
                                 }
 		}
                     if ($i == 0) print gettext("Aucun param&#232;tre n'a &#233;t&#233; modifi&#233;\n");
-                    mysql_free_result($result);
+                    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
                     } else print gettext ("Oops: Erreur inattendue de lecture des anciens param&#232;tres\n");
                     fclose($fp);
                     // Effacement du fichier si rien n'y a ete inscrit

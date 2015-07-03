@@ -141,13 +141,13 @@ include ("/var/www/lcs/includes/xoft.php");
 			} else {
 				// Verification acces bdd et reinitialisation le cas echeant
                 #system ("echo \"DBG >> Verif. acces mysql $login $passwd\" >> /tmp/log.lcs");
-                @mysql_close();
-                @mysql_connect("localhost", $login, $passwd );
-                if ( mysql_error() ) {
+                @((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
+                @($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",  $login,  $passwd ));
+                if ( ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) ) {
 					exec ( escapeshellarg("$scriptsbinpath/mysqlPasswInit.pl")." ". escapeshellarg($login) ." ". escapeshellarg($passwd) );
                     #system ("echo \"DBG >> Reinit mdp mysql $login $passwd\" >> /tmp/log.lcs");
 				}
-				@mysql_close();
+				@((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
             }
             return true;
 		} 
@@ -163,7 +163,7 @@ include ("/var/www/lcs/includes/xoft.php");
 		
 		global $authlink, $DBAUTH,$Nom_Appli, $VER;
 				
-		if (!@mysql_select_db($DBAUTH, $authlink))
+		if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
 			die ("S&#233;lection de base de donn&#233;es impossible.");
 			
 
@@ -183,17 +183,17 @@ include ("/var/www/lcs/includes/xoft.php");
 		// Destruction cookie tgt service CAS
 		$t=$_COOKIE['tgt'];
 		if ( isset($t) ) {
-			$t= mysql_real_escape_string($t);
+			$t= ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $t) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 			$query="DELETE from casserver.casserver_tgt where ticket='$t'";
-			$result=@mysql_query($query) or die($query);
+			$result=@mysqli_query($GLOBALS["___mysqli_ston"], $query) or die($query);
 			setcookie("lt","", time() - 3600,"/","",0);
 			setcookie("tgt","", time() - 3600,"/","",0);
 		}
 		// Destruction des cookies Plugins LCS
 		$query="SELECT chemin from applis where ( type='P' OR type='N' ) and value='1'";
-		$result=@mysql_query($query);
+		$result=@mysqli_query($GLOBALS["___mysqli_ston"], $query);
 		if ($result) {
-			while ($r=@mysql_fetch_object($result)) {
+			while ($r=@mysqli_fetch_object($result)) {
 				$close_session_require = "/usr/share/lcs/Plugins/".$r->chemin."/Includes/close_session_plugin.php";
 				if ( file_exists($close_session_require) )  {
 					require ($close_session_require);

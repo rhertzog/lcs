@@ -302,16 +302,16 @@ function get_infos_admin_ldap(){
 	// Etablir la connexion au serveur et la selection de la base?
 
 	$sql="SELECT value FROM params WHERE name='adminRdn'";
-	$res1=mysql_query($sql);
-	if(mysql_num_rows($res1)==1){
-		$lig_tmp=mysql_fetch_object($res1);
+	$res1=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+	if(mysqli_num_rows($res1)==1){
+		$lig_tmp=mysqli_fetch_object($res1);
 		$adminLdap["adminDn"]=$lig_tmp->value.",".$ldap_base_dn;
 	}
 
 	$sql="SELECT value FROM params WHERE name='adminPw'";
-	$res2=mysql_query($sql);
-	if(mysql_num_rows($res2)==1){
-		$lig_tmp=mysql_fetch_object($res2);
+	$res2=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+	if(mysqli_num_rows($res2)==1){
+		$lig_tmp=mysqli_fetch_object($res2);
 		$adminLdap["adminPw"]=$lig_tmp->value;
 	}
 

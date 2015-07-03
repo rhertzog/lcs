@@ -45,7 +45,7 @@ if ($login) {
     $ip_src = $tmp[1];
     $timestamp = $tmp[2];
     $timewait = $tmp[3];
-    $timetotal= $timewait+$timestamp+$MaxLifeTime;    
+    $timetotal= $timewait+$timestamp+$MaxLifeTime;
     // Verification de la validite de la source IP et du du TimeStamp
     if ( $ip_src != remote_ip() && time() < $timetotal ) {
          $error = 1;
@@ -67,7 +67,7 @@ if ($login) {
          // Redirection vers la page d'authentification
          header("Location:auth.php?error=$error");
          exit;
-    } else {        
+    } else {
         // Log en cas de succes
         $fp=fopen($logpath."/acces.log","a");
         if($fp) {
@@ -83,9 +83,10 @@ if ($login) {
         if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
         #
         $date=date("YmdHis");
-        if (!@mysql_select_db($DBAUTH, $authlink)) die ("S&#233;lection de base de donn&#233;es impossible.");
+        $authlink=($GLOBALS["___mysqli_ston"] = mysqli_connect("$HOSTAUTH",  "$USERAUTH",  "$PASSAUTH"));
+        if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH))) die ("S&#233;lection de base de donn&#233;es impossible.");
         $query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login')";
-        $result=@mysql_query($query,$authlink);
+        $result=@mysqli_query($authlink, $query);
         // Run post_auth hook
         lcs_web_run_hook('post_auth',array(mb_strtolower($login), $pass));
 

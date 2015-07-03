@@ -1,0 +1,23 @@
+18,26c18,29
+< $authlink = mysql_connect($HOSTAUTH,$USERAUTH,$PASSAUTH);
+< @mysql_select_db($DBAUTH) or die("Impossible de se connecter &#224; la base $DBAUTH.");
+< $result=mysql_query("SELECT * from params where srv_id=0");
+< if ($result)
+< while ($r=mysql_fetch_array($result))
+< $$r["name"]=$r["value"];
+< else
+< die ("param&#232;tres absents de la base de donn&#233;e");
+< mysql_free_result($result);
+---
+> // is_mysqli_converted
+> $authlink = ($GLOBALS["___mysqli_ston"] = mysqli_connect($HOSTAUTH, $USERAUTH, $PASSAUTH));
+> ((bool)  mysqli_query($GLOBALS["___mysqli_ston"], "USE " . $DBAUTH)) or die("Impossible de se connecter &#224; la base $DBAUTH.");
+> $result=  mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * from params where srv_id=0");
+> if ($result) {
+>     while ($r = mysqli_fetch_array($result)) {
+>         $$r["name"] = $r["value"];
+>     }
+> } else {
+>     die("param&#232;tres absents de la base de donn&#233;e");
+> }
+> ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);

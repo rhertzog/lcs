@@ -25,14 +25,14 @@ if (isset($_REQUEST['logout'])) {
 }
 
 // If authenticate
-if (!mysql_select_db($DBAUTH, $authlink)) 
+if (!((bool)mysqli_query( $authlink, "USE " . $DBAUTH))) 
 	die ("S&#233;lection de base de donn&#233;es impossible.");
-$user_escp=mysql_real_escape_string(phpCAS::getUser());	
+$user_escp=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], phpCAS::getUser()) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));	
 $query="select login_lcs from ent_lcs where id_ent='$user_escp'";
-$result=mysql_query($query,$authlink);
+$result=mysqli_query($authlink, $query);
 
 if ($result) {
-    if (mysql_num_rows($result)==0)
+    if (mysqli_num_rows($result)==0)
         {
        // Link form account ENT LCS 
        echo "<script type='text/javascript'>
@@ -43,34 +43,34 @@ if ($result) {
                //]]>
         </script>\n";
         }
-elseif (mysql_num_rows($result)==1)
+elseif (mysqli_num_rows($result)==1)
 {
 	//Open LCS session
-	$retour= mysql_fetch_array($result);
+	$retour= mysqli_fetch_array($result);
 	$login=$retour[0];
-	$login_escp=mysql_real_escape_string($login);
+	$login_escp=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $login) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 	$new_password = decodekey($_POST['string_new_mdp']);
 	// Open session and write in sessions table of lcs_db
 	$query="SELECT id, stat FROM personne WHERE login='$login_escp'";
-	$result=@mysql_query($query,$authlink);
-	if ($result && mysql_num_rows($result)) 
+	$result=@mysqli_query($authlink, $query);
+	if ($result && mysqli_num_rows($result)) 
 		{
 		$idpers=mysql_result($result,0,0);
 		$stat=mysql_result($result,0,1)+1;
-		mysql_free_result($result);
+		((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 		} 
 	else 
 		{
 		// The login is not in the base... Create entry
 		$query="INSERT INTO personne  VALUES ('', '', '', '$login_escp', '')";
-		$result=@mysql_query($query,$authlink);		
+		$result=@mysqli_query($authlink, $query);		
 		$query="SELECT id, stat FROM personne WHERE login='$login_escp'";
-		$result=@mysql_query($query,$authlink);
-		if ($result && mysql_num_rows($result))
+		$result=@mysqli_query($authlink, $query);
+		if ($result && mysqli_num_rows($result))
 			{
 			$idpers=mysql_result($result,0,0);
 			$stat=mysql_result($result,0,1)+1;
-			mysql_free_result($result);
+			((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
          }
 		}
 	$sessid=mksessid();
@@ -79,16 +79,16 @@ elseif (mysql_num_rows($result)==1)
 	// Read client IP
 	$ip = remote_ip();
 	// Write session and release table personne with stats
-	$ip_escp=mysql_real_escape_string($ip);
-	$idpers_escp=mysql_real_escape_string($idpers);
+	$ip_escp=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $ip) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+	$idpers_escp=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $idpers) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 	$query="INSERT INTO sessions  VALUES ('', '$sessid', '','$idpers_escp','$ip_escp')";
-	$result=@mysql_query($query,$authlink);
+	$result=@mysqli_query($authlink, $query);
 	$query="UPDATE personne SET stat=$stat WHERE id=$idpers_escp";
-	$result=@mysql_query($query,$authlink);
+	$result=@mysqli_query($authlink, $query);
 	// Generate token for local CAS service 
 	$token = substr(sha1(uniqid('', TRUE)),0,30);
 	$query="UPDATE ent_lcs SET token='$token' WHERE login_lcs='$login_escp'";
-	$result=@mysql_query($query,$authlink);
+	$result=@mysqli_query($authlink, $query);
 	// Log acces authentication in /var/log/lcs/acces.log
 	set_act_login($idpers);
     $fp=fopen($logpath."/acces.log","a");
@@ -104,10 +104,10 @@ elseif (mysql_num_rows($result)==1)
    if ( $ip_client_prefix == $ip_serv_prefix) $source="lan"; else $source="wan";
 	$date=date("YmdHis");
 	// record in statusage table
-	if (!@mysql_select_db($DBAUTH, $authlink)) 
+	if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH))) 
 		die ("S&#233;lection de base de donn&#233;es impossible.");
 	$query="INSERT INTO statusages VALUES ('Nogroup', 'auth_ok', '$date', '$source','$login_escp')";
-	$result=@mysql_query($query,$authlink);
+	$result=@mysqli_query($authlink, $query);
 	// Open Spip session if spip is install
 	if ( file_exists ("/usr/share/lcs/spip/spip_session_lcs.php") )
 		header("Location:../spip/spip_session_lcs.php?action=login");
@@ -122,7 +122,7 @@ elseif (mysql_num_rows($result)==1)
   }
 else echo 'ERREUR';
 }
-@mysql_free_result($result);                        
+@((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);                        
 
 
 ?>

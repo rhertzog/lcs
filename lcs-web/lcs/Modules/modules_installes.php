@@ -61,8 +61,8 @@ if (isset($_GET['np'])) {
 //activation/desactivation
 if (isset($_GET['a']) && isset($_GET['pid']))
     {
-    $pid=mysql_real_escape_string($pid);
-    mysql_query("UPDATE applis SET value='$a' WHERE id='$pid';") or die("Erreur lors de l'activation/d&#233;sactivation du plugin...");
+    $pid=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $pid) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+    mysqli_query($GLOBALS["___mysqli_ston"], "UPDATE applis SET value='$a' WHERE id='$pid';") or die("Erreur lors de l'activation/d&#233;sactivation du plugin...");
     }
 //recherche de la branche du sourceslist
 $branch="";
@@ -104,10 +104,10 @@ $cmd='dpkg --get-selections | grep hold | cut  -f1 | cut -d"-" -f2';
 exec($cmd,$pack_hold,$ret_val);
 
 $query="SELECT * from applis where type='M' OR type='N' OR type='S'";
-$result=mysql_query($query);
+$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
 if ($result)
     {
-          if ( mysql_num_rows($result) !=0 ) {
+          if ( mysqli_num_rows($result) !=0 ) {
             // Affichage des Modules installes
             echo "<H3>Modules install&#233;s </H3>\n";
             //Affichage des infos
@@ -125,7 +125,7 @@ if ($result)
             <table cellpadding="0" cellspacing="0"  class="sortable" id="sorter">';
             echo '<th>Nom</th><Th>Description</Th><Th class="nosort">Version</Th><Th class="nosort">Aide</Th><Th class="nosort">Activation</Th><Th class="nosort">Autorisation_Maj</Th>
             <Th class="nosort">Maj_dispo</Th><Th class="nosort">Action</Th></TR>';
-            while ($r=mysql_fetch_object($result))
+            while ($r=mysqli_fetch_object($result))
                 {
                 list ($v,$plug) = maj_dispo($r->name);
                 echo "<TR>\n";
@@ -166,7 +166,7 @@ if ($result)
                }
 }
 
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 if (isset($_GET['dpid']))
     {
     $jeton="&jeton=".md5($_SESSION['token'].htmlentities("/Modules/modules_desinstall.php"));

@@ -136,7 +136,7 @@ if (!check_acces()) exit;
 			// Deverrouillage si un import etait annonce deja en cours:
 			if($deverrouiller=='y'){
 				$sql="UPDATE params SET value='n' WHERE name='imprt_cmpts_en_cours'";
-				$res0=mysql_query($sql);
+				$res0=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
 
 				if($res0){
 					echo "<p>D&#233;verrouillage r&#233;ussi!</p>\n";
@@ -148,12 +148,12 @@ if (!check_acces()) exit;
 
 			// Un import est-il deja en cours?
 			$sql="SELECT value FROM params WHERE name='imprt_cmpts_en_cours'";
-			$res1=mysql_query($sql);
-			if(mysql_num_rows($res1)==0){
+			$res1=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+			if(mysqli_num_rows($res1)==0){
 				$imprt_cmpts_en_cours="n";
 			}
 			else{
-				$ligtmp=mysql_fetch_object($res1);
+				$ligtmp=mysqli_fetch_object($res1);
 				$imprt_cmpts_en_cours=$ligtmp->value;
 			}
 
@@ -161,9 +161,9 @@ if (!check_acces()) exit;
 				echo "<p><b>ATTENTION:</b> Il semble qu'un import soit d&#233;j&#224; en cours";
 
 				$sql="SELECT value FROM params WHERE name='dernier_import'";
-				$res2=mysql_query($sql);
-				if(mysql_num_rows($res1)>0){
-					$ligtmp=mysql_fetch_object($res2);
+				$res2=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+				if(mysqli_num_rows($res1)>0){
+					$ligtmp=mysqli_fetch_object($res2);
 					echo ":<br />\n<a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 				}
 
@@ -398,12 +398,12 @@ if (!check_acces()) exit;
 
 			// Un import est-il deja en cours?
 			$sql="SELECT value FROM params WHERE name='imprt_cmpts_en_cours'";
-			$res1=mysql_query($sql);
-			if(mysql_num_rows($res1)==0){
+			$res1=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+			if(mysqli_num_rows($res1)==0){
 				$imprt_cmpts_en_cours="n";
 			}
 			else{
-				$ligtmp=mysql_fetch_object($res1);
+				$ligtmp=mysqli_fetch_object($res1);
 				$imprt_cmpts_en_cours=$ligtmp->value;
 			}
 
@@ -411,9 +411,9 @@ if (!check_acces()) exit;
 				echo "<p><b>ATTENTION:</b> Il semble qu'un import soit d&#233;j&#224; en cours";
 
 				$sql="SELECT value FROM params WHERE name='dernier_import'";
-				$res2=mysql_query($sql);
-				if(mysql_num_rows($res1)>0){
-					$ligtmp=mysql_fetch_object($res2);
+				$res2=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+				if(mysqli_num_rows($res1)>0){
+					$ligtmp=mysqli_fetch_object($res2);
 					echo ":<br />\n<a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 				}
 
@@ -435,21 +435,21 @@ if (!check_acces()) exit;
 
 			// Creation d'un temoin de mise a jour en cours.
 			$sql="SELECT value FROM params WHERE name='imprt_cmpts_en_cours'";
-			$res1=mysql_query($sql);
-			if(mysql_num_rows($res1)==0){
+			$res1=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+			if(mysqli_num_rows($res1)==0){
 				$sql="INSERT INTO params SET name='imprt_cmpts_en_cours',value='y'";
-				$res0=mysql_query($sql);
+				$res0=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
 			}
 			else{
 				// Si la valeur est deja a y, c'est qu'on a fait F5... un import est deja en cours.
-				$ligtmp=mysql_fetch_object($res1);
+				$ligtmp=mysqli_fetch_object($res1);
 				if($ligtmp->value=="y"){
 					echo("<p>Un import est d&#233;j en cours");
 
 					$sql="SELECT value FROM params WHERE name='dernier_import'";
-					$res2=mysql_query($sql);
-					if(mysql_num_rows($res1)>0){
-						$ligtmp=mysql_fetch_object($res2);
+					$res2=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+					if(mysqli_num_rows($res1)>0){
+						$ligtmp=mysqli_fetch_object($res2);
 						echo ": <a href='$urlse3/import/result.".$ligtmp->value.".html' target='_blank'>$urlse3/import/result.".$ligtmp->value.".html</a>";
 					}
 					else{
@@ -463,20 +463,20 @@ if (!check_acces()) exit;
 				}
 
 				$sql="UPDATE params SET value='y' WHERE name='imprt_cmpts_en_cours'";
-				$res0=mysql_query($sql);
+				$res0=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
 			}
 
 			$timestamp=ereg_replace(" ","_",microtime());
 
 			$sql="SELECT value FROM params WHERE name='dernier_import'";
-			$res1=mysql_query($sql);
-			if(mysql_num_rows($res1)==0){
+			$res1=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
+			if(mysqli_num_rows($res1)==0){
 				$sql="INSERT INTO params SET name='dernier_import',value='$timestamp'";
-				$res0=mysql_query($sql);
+				$res0=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
 			}
 			else{
 				$sql="UPDATE params SET value='$timestamp' WHERE name='dernier_import'";
-				$res0=mysql_query($sql);
+				$res0=mysqli_query($GLOBALS["___mysqli_ston"], $sql);
 			}
 
 

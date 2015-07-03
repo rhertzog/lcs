@@ -21,13 +21,13 @@ $login=$_SESSION['login'];
 if ($login)
 	{
 	// Get user token
-                if (!@mysql_select_db($DBAUTH, $authlink)) die ("S&#233;lection de base de donn&#233;es impossible.");
-                $login_escp=  mysql_real_escape_string($login);
+                if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH))) die ("S&#233;lection de base de donn&#233;es impossible.");
+                $login_escp=  ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $login) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
                 $query="SELECT token FROM ent_lcs WHERE login_lcs='$login_escp'";
-                $result=@mysql_query($query, $authlink);
-                if ($result && mysql_num_rows($result)) {
+                $result=@mysqli_query( $authlink, $query);
+                if ($result && mysqli_num_rows($result)) {
                     $password=mysql_result($result,0,0);
-                    mysql_free_result($result);
+                    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
                     }
                 #system ("echo 'token : $password' >> /var/log/lcs/debugent.log");
                 if($_SERVER['REQUEST_METHOD']==='POST')
@@ -39,12 +39,12 @@ if ($login)
         //on casse le cookie
         setcookie('lt',"$lt",0,"/","",0);
 
-        if (!@mysql_select_db("casserver", $authlink))
+        if (!@((bool)mysqli_query( $authlink, "USE " . casserver)))
         die ("S&#233;lection de base de donn&#233;es impossible.");
-        $clientIP=  mysql_real_escape_string($clientIP);
+        $clientIP=  ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $clientIP) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
         $query="SELECT * FROM `casserver`.`casserver_lt` where consumed = NULL and client_hostname='$clientIP_escp' ORDER By id DESC;";
-        $result=@mysql_query($query, $authlink);
-      if (@mysql_num_rows($result) > 0 )
+        $result=@mysqli_query( $authlink, $query);
+      if (@mysqli_num_rows($result) > 0 )
             $lt = (mysql_result($result,0,"ticket"));
             else {
             // Generate Login Ticket
@@ -56,9 +56,9 @@ if ($login)
             $lt='LT-'.time()."r".$str;
             $date = date("Y-m-d H:i:s");
             $clientIP = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-            $clientIP_escp=  mysql_real_escape_string($clientIP);
+            $clientIP_escp=  ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $clientIP) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
             $query2 = "DELETE FROM `casserver`.`casserver_lt` where ticket='$lt';";
-            $r2 = @mysql_query($query2) or die("Erreur suppression LT");
+            $r2 = @mysqli_query($GLOBALS["___mysqli_ston"], $query2) or die("Erreur suppression LT");
             $query = "INSERT INTO `casserver`.`casserver_lt` ("
                  ."`id` ,"
                  ."`ticket` ,"
@@ -69,7 +69,7 @@ if ($login)
                  ."VALUES ("
                  ."NULL , '$lt', '$date', NULL , '$clientIP_escp'"
                  .");";
-            $r = @mysql_query($query) or die("Erreur LT sql");
+            $r = @mysqli_query($GLOBALS["___mysqli_ston"], $query) or die("Erreur LT sql");
 
             define('POSTURL', 'https://'.$hostname.'.'.$domain.':8443/login');
             define('POSTVARS', "username=$login&password=$password&lt=$lt&service=".$_POST['service']);

@@ -42,9 +42,9 @@ echo $msgIntro;
 parsage_du_fichier_xml();
 
 // recherche des Modules installes
-$result = mysql_query("SELECT name,version FROM applis WHERE type='M' OR type='N' OR type='S'");
-while($row = mysql_fetch_object($result)) $Modules_installes[$row->name] = $row->version;
-mysql_free_result($result);
+$result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT name,version FROM applis WHERE type='M' OR type='N' OR type='S'");
+while($row = mysqli_fetch_object($result)) $Modules_installes[$row->name] = $row->version;
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 reset($Modules);
 $mod_dispo=false;

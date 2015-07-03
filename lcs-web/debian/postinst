@@ -88,9 +88,27 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
 					/usr/share/lcs/scripts/mkSlapdConf.sh
             fi
             # End update for 2.4.9.6 version
-            # End update for 2.4.10 version
-            # End updates package
-				rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
+            #Update for 2.4.10
+            #mysqli convertion
+            verif=`grep -c 'mysqli_converted' /var/www/lcs/includes/config.inc.php`
+	    if [ "$verif" = "0" ]; then
+            	patch /var/www/lcs/includes/config.inc.php < /var/lib/lcs/web/mysqli/patch_mysqli
+	    fi
+            #delete statsusage menu
+	    if [  -e /var/www/lcs/includes/mnu.d/50stats/60statsusages.inc ]; then
+		rm -rf /var/www/lcs/includes/mnu.d/50stats/60statsusages.inc
+	    fi
+	    if [  -e /var/www/Usingstats ]; then
+	  	rm -rf /var/www/Usingstats
+	    fi
+	    #delete obsoletes params
+	    if lcs-test-mysql; then
+            	mysql -e "DELETE FROM lcs_db.params where name='urlmajplug';"
+            fi
+	    # End update for 2.4.10 version
+            
+	    # End updates package
+		rm -f /var/www/lcs/includes/config.inc.php_before_2.4.9
             # 	   
             # Restore .htpasswd if exist
             #

@@ -55,21 +55,21 @@ if (isset($_POST['string_mdp']) && (isset($_POST['string_login']))&& (isset($_PO
 			{
             //If password account is different than date of birth
 			// Insert data in ent_lcs table
-			if (!@mysql_select_db($DBAUTH, $authlink))
+			if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
     				die ("S&#233;lection de base de donn&#233;es impossible.");
 			// Verification si une entree login existe dans la table ent_lcs.login_lcs
-			$login=mysql_real_escape_string($login);
-			$string_lilie=mysql_real_escape_string($tring_lilie);
+			$login=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $login) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+			$string_lilie=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $tring_lilie) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 			$query="SELECT id FROM ent_lcs WHERE login_lcs='$login_escp'";
-			$result=@mysql_query($query,$authlink);
-			if ( mysql_num_rows($result) == "0" ) {
+			$result=@mysqli_query($authlink, $query);
+			if ( mysqli_num_rows($result) == "0" ) {
 				// Creation
 				$query="INSERT INTO ent_lcs (id_ent, login_lcs, token) VALUES ('".$string_lilie."', '".$login."', '$token')";
 			} else {
 				// Update
 				$query="UPDATE ent_lcs SET id_ent='".$string_lilie."', token='$token' WHERE login_lcs='".$login."'";
 			}
-        	$result=mysql_query($query,$authlink);
+        	$result=mysqli_query($authlink, $query);
 
 			// And return string OK
 			$cr='OK';
@@ -98,11 +98,11 @@ if (isset($_POST['string_mdp']) && (isset($_POST['string_login']))&& (isset($_PO
 			{
 			$cr1='OK';
 			// verify if password data base of the user must change
-			@mysql_close();
-            @mysql_connect("localhost", $login, $new_password );
-            if ( mysql_error() )
+			@((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
+            @($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",  $login,  $new_password ));
+            if ( ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) )
             	exec ( escapeshellarg("$scriptsbinpath/mysqlPasswInit.pl")." ". escapeshellarg($login) ." ". escapeshellarg($passwd) );
-			@mysql_close();
+			@((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
 			}
     	else $cr1='NOK';
 		}

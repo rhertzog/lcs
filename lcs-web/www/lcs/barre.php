@@ -12,19 +12,19 @@ require "../Annu/includes/ihm.inc.php";
 session_name("Lcs");
 @session_start();
 $login=(isset($_SESSION['login'])) ? $_SESSION['login']: 0;
-if (!@mysql_select_db($DBAUTH, $authlink))
+if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
     die ("S&#233;lection de base de donn&#233;es impossible.");
 $query="SELECT * from applis";
-$result = @mysql_query($query, $authlink);
+$result = @mysqli_query( $authlink, $query);
 if ($result)
-    while ($r=mysql_fetch_array($result))
+    while ($r=mysqli_fetch_array($result))
         if ($r["type"]!='')
             $$r["name"]=$r["type"];
         else
             $$r["name"]=$r["value"];
 else
     die ("Param&#232;tres absents de la base de donn&#233;es.");
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 $path ="barre1";
 

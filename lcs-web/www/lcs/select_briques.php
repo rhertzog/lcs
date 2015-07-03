@@ -35,13 +35,13 @@ $html .= "<div align='center'><h2>Configuration des liens LCS</h2></div>\n";
 
 if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
 	// Lecture des parametres dans la table briques
-	if (!@mysql_select_db($DBAUTH, $authlink))
+	if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
     		die ("S&#233;lection de base de donn&#233;es impossible.");
 	$query="SELECT * from applis";
-	$result=@mysql_query($query, $authlink);
+	$result=@mysqli_query( $authlink, $query);
 	if (!isset($submit)) {
         	if ($result)
-                	while ($r=mysql_fetch_array($result))
+                	while ($r=mysqli_fetch_array($result))
                         	$$r["name"]=$r["value"];
         	else
                 	die ("param&egrave;tres absents de la base de donn&eacute;es !");
@@ -60,13 +60,13 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
 	} else {
         	// Mise a jour des parametres dans la table applis
         	$query="SELECT * from applis where  name = 'url_logo' or name ='url_accueil'";
-        	$result=mysql_query($query);
+        	$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
         	if ($result) {
-                    while ($r=mysql_fetch_array($result)) {
+                    while ($r=mysqli_fetch_array($result)) {
 		                if ($r["value"]!=$$r["name"] && $r["type"]!="P") {
 	                 	    // Mise a jour de la base de donnees
 	                   	    $query1="UPDATE applis SET value=\"".$$r["name"]."\" WHERE name=\"".$r["name"]."\"";
-	                   	    $result1=mysql_query($query1);
+	                   	    $result1=mysqli_query($GLOBALS["___mysqli_ston"], $query1);
 	                   	    $modif=true;
 	                	}
                     }
@@ -79,7 +79,7 @@ if ($is_admin = is_admin("Lcs_is_admin",$login)=="Y") {
         	else
         		print "<div class=error_msg>".gettext("Oops: la requete ") . "<STRONG>$query1</STRONG>" . gettext(" a provoqu&eacute; une erreur !!!")."</div>";
 	}
-	mysql_free_result($result);
+	((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 } else
 	echo "$html<div class=alert_msg>".gettext("Cette fonctionnalit&eacute;, n&eacute;cessite les droits d'administrateur du serveur LCS !")."</div>";
 require ("./includes/pieds_de_page.inc.php");

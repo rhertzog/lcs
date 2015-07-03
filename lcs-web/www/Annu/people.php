@@ -29,10 +29,10 @@ include "includes/ihm.inc.php";
 
   //test si webmail est installe pour redirection mails
   $query="SELECT value from applis where name='squirrelmail' or name='roundcube'";
-  $result=mysql_query($query);
+  $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
   if ($result)  {
-  	if ( mysql_num_rows($result) !=0 ) {
-          $r=mysql_fetch_object($result);
+  	if ( mysqli_num_rows($result) !=0 ) {
+          $r=mysqli_fetch_object($result);
           $test_squir=$r->value;
      } else $test_squir="0";
    } else $test_squir="0";
@@ -44,10 +44,10 @@ include "includes/ihm.inc.php";
    if ( count($AllOutPut) >= 1) $listediff = 1;
    // test si desktop et install et actif
    $query="SELECT value from applis where name='desktop';";
-   $result=mysql_query($query);
+   $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
    if ($result)  {
-   	if ( mysql_num_rows($result) !=0 ) {
-          $r=mysql_fetch_object($result);
+   	if ( mysqli_num_rows($result) !=0 ) {
+          $r=mysqli_fetch_object($result);
           $test_desktop=$r->value;
      } else $test_desktop="0";
 	} else $test_desktop="0";
@@ -142,8 +142,8 @@ include "includes/ihm.inc.php";
       $userDb = mb_ereg_replace("_","",$userDb);
       $userDb = $userDb."_db";
  
- 	   $res = mysql_query("SHOW DATABASES");
-	   while ($row = mysql_fetch_assoc($res)) 
+ 	   $res = mysqli_query($GLOBALS["___mysqli_ston"], "SHOW DATABASES");
+	   while ($row = mysqli_fetch_assoc($res)) 
      		if ($row['Database'] == $userDb) { $userdb=1; break;} else $userdb=0;
 	
       if ( $userdb == 0 ) {     

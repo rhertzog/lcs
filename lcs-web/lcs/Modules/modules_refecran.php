@@ -66,11 +66,11 @@ if (isset($p)) { // il s'agit d'une installation
         $MSG = "Installation";
         }
 if (isset($dpid))   { // il s'agit d'une desinstallation
-$dpid=mysql_real_escape_string($dpid);
+$dpid=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $dpid) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 if (!isset($_SESSION['nommod'])) {
-        $result = mysql_query("SELECT * FROM applis WHERE id='$dpid'");
+        $result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM applis WHERE id='$dpid'");
         if (!$result) die("Erreur lors de la requ&#234;te MySQL");
-        $row = mysql_fetch_object($result);
+        $row = mysqli_fetch_object($result);
         $_SESSION['nommod']= $row->name;
         }
 

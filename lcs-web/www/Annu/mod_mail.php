@@ -34,17 +34,17 @@ $message=$adr_locale="";
 
 //test la validite du webmail
 $query="SELECT value from applis where name='squirrelmail' or name='roundcube' ";
-$result=mysql_query($query);
+$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
 if ($result)
     {
-    if ( mysql_num_rows($result) !=0 ) {
-        $r=mysql_fetch_object($result);
+    if ( mysqli_num_rows($result) !=0 ) {
+        $r=mysqli_fetch_object($result);
         $test_squir=$r->value;
         }
     else $test_squir="0";
     }
     else $test_squir="0";
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 //redirection si non droit
 if ( (ldap_get_right("Mail_can_redir",$login)=="N") || $test_squir=="0") {
@@ -86,7 +86,7 @@ if ((isset($_POST['Valider']))&& ($adr_destination != "")   && $choix !="" && ( 
                             }
                     $cmd = "INSERT INTO redirmail (faitpar,pour,vers,copie,date,remote_ip) VALUES ('$login','$log2','$adr_destination', '$choix','$datte', '{$_SERVER['REMOTE_ADDR']}');";
 
-                    if(!mysql_query($cmd))  $message.="Erreur insertion base de donn&#233;es  ";
+                    if(!mysqli_query($GLOBALS["___mysqli_ston"], $cmd))  $message.="Erreur insertion base de donn&#233;es  ";
 
                     //envoi mail de confirmation
                     //destinataire
@@ -185,6 +185,6 @@ function test_emb_send_mail (my_email) {
       </form>
 <?
   if ($message!="") echo $message;
-  mysql_close();
+  ((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
   include ("../lcs/includes/pieds_de_page.inc.php");
 ?>

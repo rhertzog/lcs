@@ -1,3 +1,12 @@
+lcs-web (2.4.10.1~1) Lcs; urgency=low
+
+  [ Philippe Leclerc ]
+  * mysqli convert
+  * delete statsusage viewer
+  * delete param urlmajplug
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Sat, 27 Jun 2015 10:11:06 +0200
+
 lcs-web (2.4.10) Lcs; urgency=low
 
   * Modify for Debian Wheezy

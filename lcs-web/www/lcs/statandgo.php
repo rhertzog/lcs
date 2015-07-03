@@ -24,18 +24,18 @@ if (count($_GET)>0) {
 # Determination de url_accueil et version du LCS
 #
 $query="SELECT value from applis where name='url_accueil'";
-$result=@mysql_query($query);
+$result=@mysqli_query($GLOBALS["___mysqli_ston"], $query);
 if ($result) {
-    while ($r=@mysql_fetch_array($result))
+    while ($r=@mysqli_fetch_array($result))
                $url_accueil=$r["value"];
 }
 $query="SELECT value from params where name='VER'";
-$result=@mysql_query($query);
+$result=@mysqli_query($GLOBALS["___mysqli_ston"], $query);
 if ($result) {
-    while ($r=@mysql_fetch_array($result))
+    while ($r=@mysqli_fetch_array($result))
                $VER=$r["value"];
 }
-@mysql_free_result($result);
+@((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 #
 # Traitement des applis non referencees dans la table params
 # comme module ou plugin
@@ -57,9 +57,9 @@ elseif ($use=="Aide") $urluse=$urldoc;
 elseif ( ! isset($urluse) ) {
     # Cas des paquets modules
     $query="SELECT  name, value from applis where type='M' or type='S' order by name";
-    $result=mysql_query($query);
+    $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
     if ($result) {
-        while ( $r=mysql_fetch_object($result) ) {
+        while ( $r=mysqli_fetch_object($result) ) {
 	    if ( ($r->name == $use) ) {
                 # en attendant de rectifier les paquets modules
                 if ( $r->name=="smbwebclient" )
@@ -71,20 +71,20 @@ elseif ( ! isset($urluse) ) {
             }
         }
     }
-    mysql_free_result($result);
+    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 }
 if (  ! isset ($module) && ! isset($urluse) ) {
     # Cas des plugins
     $query="SELECT chemin, name, value from applis where type='P' OR type='N' order by name";
-    $result=mysql_query($query);
+    $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
     if ($result) {
-        while ( $r=mysql_fetch_object($result) ) {
+        while ( $r=mysqli_fetch_object($result) ) {
 	    if ( ($r->name == $use) ) {
 	        $urluse = "../Plugins/".$r->chemin."/";
             }
         }
     }
-    mysql_free_result($result);
+    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 }
 if ( ! isset ($urluse) ) $urluse=$url_accueil;
 #
@@ -104,9 +104,9 @@ $date=date("YmdHis");
 #
 # Enregistrement dans la table statusages
 #
-$use=mysql_real_escape_string($use);
+$use=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $use) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 $query="INSERT INTO statusages VALUES ('$group', '$use', '$date', '$source','$login')";
-$result=@mysql_query($query, $authlink);
+$result=@mysqli_query( $authlink, $query);
 #
 # Redirection
 #

@@ -1,7 +1,7 @@
 <?
-        /* Réalise la connexion à la base d'authentification */
+        /* Rï¿½alise la connexion ï¿½ la base d'authentification */
         /* et charge les fonctions d'authentification */
         require ("/var/www/lcs/includes/config.inc.php");
         require_once ("/var/www/lcs/includes/functions.inc.php");
-        $authlink=mysql_connect("$HOSTAUTH", "$USERAUTH", "$PASSAUTH");
+        if (!$authlink) $authlink=($GLOBALS["___mysqli_ston"] = mysqli_connect("$HOSTAUTH",  "$USERAUTH",  "$PASSAUTH"));
 ?>

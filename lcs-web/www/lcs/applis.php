@@ -16,16 +16,16 @@ include ("./includes/jlcipher.inc.php");
 define('NB_COLONNES',3);
 
 // Lecture de la table applis
-if (!@mysql_select_db($DBAUTH, $authlink))
+if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
     die ("S&#233;lection de base de donn&#233;es impossible.");
 $query="SELECT * from applis";
-$result=@mysql_query($query, $authlink);
+$result=@mysqli_query( $authlink, $query);
 if ($result)
-    while ($r=@mysql_fetch_array($result))
+    while ($r=@mysqli_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
     die ("param&#232;tres absents de la base de donn&#233;es");
-@mysql_free_result($result);
+@((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 if ( pwdMustChange($login) ) {
     header("Location:../Annu/must_change_default_pwd.php");
@@ -58,16 +58,16 @@ $liste['Titres'][] = "Annuaire des utilisateurs";
 $clientftp = $elfinder = $pma = $smbwebclient = false;
   // lecture lcs_applis
   $query="SELECT  name, value from applis where type='M' order by name";
-  $result=mysql_query($query);
+  $result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
   if ($result) {
-        while ( $r=mysql_fetch_object($result) ) {
+        while ( $r=mysqli_fetch_object($result) ) {
             if ( $r->name == "clientftp" ) $clientftp = true;
             if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;
         }
     }
-    mysql_free_result($result);
+    ((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 if ( $clientftp ) {
   $liste['Images'][] = "images/bt-V1-2.jpg";
@@ -92,9 +92,9 @@ if ( $se3netbios != "" && $se3domain != "" && $smbwebclient ) {
 
 // Liens dynamiques vers les plugins installes
 $query="SELECT * from applis where type='P' OR type='N' order by name";
-$result=mysql_query($query);
+$result=mysqli_query($GLOBALS["___mysqli_ston"], $query);
 if ($result) {
-        while ($r=mysql_fetch_object($result)) {
+        while ($r=mysqli_fetch_object($result)) {
           if (( $r->value == "1" ) and ! ( file_exists("/usr/share/lcs/Plugins/".$r->chemin."/.applihide"))) {
             $liste['Images'][] = "../Plugins/".$r->chemin."/Images/plugin_icon.png";
             $liste['Liens'][] = "statandgo.php?use=".$r->name."&jeton=".md5($_SESSION['token'].htmlentities("/lcs/statandgo.php"));
@@ -102,7 +102,7 @@ if ($result) {
             }
         }
 }
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 if (NB_COLONNES == 0)
     $nbCol = 1;

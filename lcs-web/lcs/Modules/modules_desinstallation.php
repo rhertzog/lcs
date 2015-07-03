@@ -35,14 +35,14 @@ if (count($_GET)>0) {
 }
 
 include("modules_commun.php");
-$dpid=mysql_real_escape_string($dpid);
-$result = mysql_query("SELECT * FROM applis WHERE id='$dpid'");
+$dpid=((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $dpid) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+$result = mysqli_query($GLOBALS["___mysqli_ston"], "SELECT * FROM applis WHERE id='$dpid'");
 if (!$result) die("Erreur lors de la requ&#232;te MySQL");
-$row = mysql_fetch_object($result);
+$row = mysqli_fetch_object($result);
 $version = $row->version;
 $nommodule= $row->name;
 $descrip=$row->descr;
-mysql_free_result($result);
+((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 //on supprime eventuellement les residus d'un processus interrompu
 $net=" rm -f /tmp/ecran_install*";
 exec($net);

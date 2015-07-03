@@ -16,13 +16,13 @@ require  "../lcs/includes/headerauth.inc.php";
 //init variables
 $desktop=$monlcs=0;
 $query = "SELECT * from applis";
-$result=@mysql_query($query, $authlink);
+$result=@mysqli_query( $authlink, $query);
 if ($result)
-    while ($r=@mysql_fetch_array($result))
+    while ($r=@mysqli_fetch_array($result))
                 $$r["name"]=$r["value"];
 else
     die ("parametres absents de la base de donnees");
-@mysql_free_result($result);
+@((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 // Redirects IE5 and IE6 users.
 $ua = $_SERVER['HTTP_USER_AGENT'];

@@ -31,16 +31,16 @@ list($user, $groups)=people_get_variables ($login, false);
 $is_admin = is_admin("Lcs_is_admin",$login);
 
 // Recherche si monlcs est present
-if (!@mysql_select_db($DBAUTH, $authlink))
+if (!@((bool)mysqli_query( $authlink, "USE " . $DBAUTH)))
     die ("S&#233;lection de base de donn&#233;es impossible.");
 $query="SELECT value from applis where name='monlcs'";
-$result = @mysql_query($query, $authlink);
+$result = @mysqli_query( $authlink, $query);
 if ($result)
-    while ($r=@mysql_fetch_array($result))
+    while ($r=@mysqli_fetch_array($result))
                $monlcs=$r["value"];
 else
     die ("Param&#232;tres absents de la base de donn&#233;es.");
-@mysql_free_result($result);
+@((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
 
 $html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
@@ -74,16 +74,16 @@ echo $html;
  $clientftp = $elfinder = $pma = $smbwebclient = false;
   // lecture lcs_applis
   $query="SELECT  name, value from applis where type='M' order by name";
-  $result=@mysql_query($query);
+  $result=@mysqli_query($GLOBALS["___mysqli_ston"], $query);
   if ($result) {
-        while ( $r=@mysql_fetch_object($result) ) {
+        while ( $r=@mysqli_fetch_object($result) ) {
             if ( $r->name == "clientftp" ) $clientftp = true;
             if ( $r->name == "elfinder" ) $elfinder = true;
             if ( $r->name == "pma" ) $pma = true;
             if ( $r->name == "smbwebclient" ) $smbwebclient = true;
         }
     }
-    @mysql_free_result($result);
+    @((mysqli_free_result($result) || (is_object($result) && (get_class($result) == "mysqli_result"))) ? true : false);
 
   echo "<blockquote>\n";
   // Affichage du menu espace web si l'espace perso existe
