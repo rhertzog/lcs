@@ -90,8 +90,7 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
             # End update for 2.4.9.6 version
             #Update for 2.4.10
             #mysqli convertion
-            verif=`grep -c 'mysqli_converted' /var/www/lcs/includes/config.inc.php`
-	    if [ "$verif" = "0" ]; then
+	    if ! grep -c 'mysqli_converted' /var/www/lcs/includes/config.inc.php >/dev/null; then
             	patch /var/www/lcs/includes/config.inc.php < /var/lib/lcs/web/mysqli/patch_mysqli
 	    fi
             #delete statsusage menu
