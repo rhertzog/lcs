@@ -103,7 +103,9 @@ member: cn=Profs,ou=Groups,$ldap_base_dn
 	    #delete obsoletes params
 	    if lcs-test-mysql; then
             	mysql -e "DELETE FROM lcs_db.params where name='urlmajplug';"
-            fi
+            	mysql -e "DELETE FROM lcs_db.params where name='urlmajtgz';"
+		mysql -e "DELETE FROM lcs_db.params where name='urlmajmd5';"
+	    fi
 	    # End update for 2.4.10 version
             
 	    # End updates package
