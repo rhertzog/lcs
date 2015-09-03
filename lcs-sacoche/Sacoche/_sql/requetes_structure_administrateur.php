@@ -194,24 +194,45 @@ public static function DB_lister_niveaux_famille($niveau_famille_id)
   // Ajouter, si pertinent, les niveaux spécifiques qui sinon ne sont pas trouvés car à part...
   // Attention en cas de modification : ce tableau est dans 3 fichiers différents (dépôt SACoche x2 + dépôt portail x1).
   $tab_sql = array(
-    1 => '',
-    2 => 'OR niveau_id IN(5,1,2,201) ',
-    3 => 'OR niveau_id IN(3,202,203) ',
-    4 => 'OR niveau_id IN(6,202,203) ',
-    5 => 'OR niveau_id IN(4,204,205,206) ',
-    6 => 'OR niveau_id IN(4,204,205,206) ',
-    7 => 'OR niveau_id IN(4,204,205,206) ',
-    8 => 'OR niveau_id IN(4,204,205,206) ',
-    9 => '',
-   10 => '',
-   11 => 'OR niveau_id IN(4,204,205,206) ',
+      1 => '',
+      2 => '',
+      3 => '',
+     60 => 'OR niveau_id IN(1,2,3,201) ',
+    100 => 'OR niveau_id IN(3,4,10,202,203) ',
+    160 => 'OR niveau_id IN(16,202,203) ',
+    200 => 'OR niveau_id IN(20,204,205,206) ',
+    210 => 'OR niveau_id IN(20,204,205,206) ',
+    220 => 'OR niveau_id = 23 ',
+    240 => 'OR niveau_id = 24 ',
+    241 => 'OR niveau_id = 24 ',
+    242 => 'OR niveau_id = 24 ',
+    243 => 'OR niveau_id = 25 ',
+    247 => 'OR niveau_id = 26 ',
+    250 => 'OR niveau_id = 27 ',
+    251 => 'OR niveau_id = 27 ',
+    253 => '',
+    254 => 'OR niveau_id = 28 ',
+    271 => 'OR niveau_id = 29 ',
+    276 => 'OR niveau_id = 30 ',
+    290 => '',
+    301 => 'OR niveau_id = 31 ',
+    310 => 'OR niveau_id = 32 ',
+    311 => 'OR niveau_id = 32 ',
+    312 => 'OR niveau_id = 32 ',
+    313 => '',
+    315 => 'OR niveau_id = 33 ',
+    316 => 'OR niveau_id = 33 ',
+    350 => 'OR niveau_id = 35 ',
+    370 => 'OR niveau_id = 37 ',
+    371 => 'OR niveau_id = 37 ',
+    390 => '',
+    740 => '',
   );
   $DB_SQL = 'SELECT niveau_id, niveau_ref, niveau_nom, niveau_actif ';
   $DB_SQL.= 'FROM sacoche_niveau ';
-  $DB_SQL.= 'WHERE niveau_famille_id=:niveau_famille_id '.$tab_sql[$niveau_famille_id];
-  $DB_SQL.= 'ORDER BY niveau_ordre ASC';
-  $DB_VAR = array(':niveau_famille_id'=>$niveau_famille_id);
-  return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  $DB_SQL.= ($niveau_famille_id==ID_FAMILLE_NIVEAU_USUEL) ? 'WHERE niveau_usuel=1 ' : 'WHERE niveau_famille_id='.$niveau_famille_id.' '.$tab_sql[$niveau_famille_id] ;
+  $DB_SQL.= 'ORDER BY niveau_ordre ASC, niveau_nom ASC';
+  return DB::queryTab(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
 }
 
 /**
@@ -833,7 +854,7 @@ public static function compter_niveaux_etabl($with_specifiques)
   $DB_SQL.= 'FROM sacoche_niveau ';
   $DB_SQL.= ($with_specifiques) ? '' : 'LEFT JOIN sacoche_niveau_famille USING (niveau_famille_id) ';
   $DB_SQL.= 'WHERE niveau_actif=1 ';
-  $DB_SQL.= ($with_specifiques) ? '' : 'AND niveau_famille_categorie=1 ';
+  $DB_SQL.= ($with_specifiques) ? '' : 'AND niveau_famille_categorie=3 ';
   return DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
 }
 
@@ -1092,7 +1113,7 @@ public static function DB_ajouter_niveau_specifique($niveau_ref,$niveau_nom)
   $DB_VAR = array(
     ':niveau_actif'      => 1,
     ':niveau_famille_id' => 0,
-    ':niveau_ordre'      => 255,
+    ':niveau_ordre'      => 999,
     ':niveau_ref'        => $niveau_ref,
     ':code_mef'          => "",
     ':niveau_nom'        => $niveau_nom,
@@ -1753,7 +1774,9 @@ public static function DB_supprimer_matiere_specifique($matiere_id)
  */
 public static function DB_supprimer_niveau_specifique($niveau_id)
 {
-  $DB_SQL = 'DELETE FROM sacoche_niveau ';
+  $DB_SQL = 'DELETE sacoche_niveau, sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'FROM sacoche_niveau ';
+  $DB_SQL.= 'LEFT JOIN sacoche_jointure_message_destinataire ON sacoche_niveau.niveau_id=sacoche_jointure_message_destinataire.destinataire_id AND destinataire_type="niveau" ';
   $DB_SQL.= 'WHERE niveau_id=:niveau_id ';
   $DB_VAR = array(':niveau_id'=>$niveau_id);
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
@@ -1822,13 +1845,16 @@ public static function DB_supprimer_groupe_par_admin($groupe_id,$groupe_type,$wi
   $jointure_periode_delete = ( ($groupe_type=='classe') || ($groupe_type=='groupe') ) ? ', sacoche_jointure_groupe_periode ' : '' ;
   $jointure_periode_join   = ( ($groupe_type=='classe') || ($groupe_type=='groupe') ) ? 'LEFT JOIN sacoche_jointure_groupe_periode USING (groupe_id) ' : '' ;
   // Il faut aussi supprimer les évaluations portant sur le groupe
-  $jointure_devoir_delete = ($with_devoir) ? ', sacoche_devoir, sacoche_jointure_devoir_item, sacoche_jointure_devoir_prof, sacoche_jointure_devoir_eleve ' : '' ;
+  $jointure_devoir_delete = ($with_devoir) ? ', sacoche_devoir , sacoche_jointure_devoir_item , sacoche_jointure_devoir_prof , sacoche_jointure_devoir_eleve ' : '' ;
   $jointure_devoir_join   = ($with_devoir) ? 'LEFT JOIN sacoche_devoir USING (groupe_id) LEFT JOIN sacoche_jointure_devoir_item USING (devoir_id) LEFT JOIN sacoche_jointure_devoir_prof USING (devoir_id) LEFT JOIN sacoche_jointure_devoir_eleve USING (devoir_id) ' : '' ;
+  // Il faut aussi supprimer les destinataires de messages portant sur le groupe
+  $jointure_message_delete = ($groupe_type!='eval') ? ', sacoche_jointure_message_destinataire ' : '' ;
+  $jointure_message_join   = ($groupe_type!='eval') ? 'LEFT JOIN sacoche_jointure_message_destinataire ON sacoche_groupe.groupe_id=sacoche_jointure_message_destinataire.destinataire_id AND destinataire_type="'.$groupe_type.'" ' : '' ;
   // Let's go
-  $DB_SQL = 'DELETE sacoche_groupe , sacoche_jointure_user_groupe '.$jointure_periode_delete.$jointure_devoir_delete;
+  $DB_SQL = 'DELETE sacoche_groupe , sacoche_jointure_user_groupe '.$jointure_periode_delete.$jointure_devoir_delete.$jointure_message_delete;
   $DB_SQL.= 'FROM sacoche_groupe ';
   $DB_SQL.= 'LEFT JOIN sacoche_jointure_user_groupe USING (groupe_id) ';
-  $DB_SQL.= $jointure_periode_join.$jointure_devoir_join;
+  $DB_SQL.= $jointure_periode_join.$jointure_devoir_join.$jointure_message_join;
   $DB_SQL.= 'WHERE groupe_id=:groupe_id ';
   $DB_VAR = array(':groupe_id'=>$groupe_id);
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
@@ -1996,18 +2022,10 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil_sigle)
   $DB_SQL = 'DELETE FROM sacoche_jointure_user_abonnement ';
   $DB_SQL.= 'WHERE user_id=:user_id';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-  if( ($user_profil_type=='eleve') || ($user_profil_type=='professeur') )
-  {
-    $DB_SQL = 'DELETE FROM sacoche_jointure_user_groupe ';
-    $DB_SQL.= 'WHERE user_id=:user_id';
-    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-  }
-  if( ($user_profil_type!='eleve') && ($user_profil_type!='parent') )
-  {
-    $DB_SQL = 'DELETE FROM sacoche_message ';
-    $DB_SQL.= 'WHERE user_id=:user_id';
-    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-  }
+  // Concernant sacoche_jointure_message_destinataire, pour les groupes cela est traité plus loin
+  $DB_SQL = 'DELETE FROM sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'WHERE destinataire_type="user" AND destinataire_id=:user_id';
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
   if($user_profil_type=='eleve')
   {
     $DB_SQL = 'DELETE FROM sacoche_jointure_parent_eleve ';
@@ -2057,13 +2075,23 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil_sigle)
     $DB_SQL.= 'LEFT JOIN sacoche_devoir USING (devoir_id) ';
     $DB_SQL.= 'WHERE proprio_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
-    // Groupes type "eval" et "besoin", avec jointures users associées
-    $DB_SQL = 'DELETE sacoche_groupe, sacoche_jointure_user_groupe ';
-    $DB_SQL.= 'FROM sacoche_devoir ';
+    // Groupes type "eval" et "besoin", avec jointures devoirs + jointures users + jointures destinataires messages
+    $DB_SQL = 'SELECT CONVERT( GROUP_CONCAT(groupe_id SEPARATOR ",") , CHAR) AS listing_groupe_id ';
+    $DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
     $DB_SQL.= 'LEFT JOIN sacoche_groupe USING (groupe_id) ';
-    $DB_SQL.= 'LEFT JOIN sacoche_jointure_user_groupe USING (groupe_id) ';
-    $DB_SQL.= 'WHERE proprio_id=:user_id AND groupe_type IN("besoin","eval") ';
-    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+    $DB_SQL.= 'WHERE user_id=:user_id AND jointure_pp=1 AND groupe_type IN("besoin","eval") ';
+    $listing_groupe_id = DB::queryOne(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+    if($listing_groupe_id)
+    {
+      $DB_SQL = 'DELETE sacoche_groupe, sacoche_devoir, sacoche_jointure_user_groupe, sacoche_jointure_message_destinataire ';
+      $DB_SQL.= 'FROM sacoche_groupe ';
+      $DB_SQL.= 'LEFT JOIN sacoche_devoir USING (groupe_id) ';
+      $DB_SQL.= 'LEFT JOIN sacoche_jointure_user_groupe USING (groupe_id) ';
+      $DB_SQL.= 'LEFT JOIN sacoche_jointure_message_destinataire ON sacoche_groupe.groupe_id=sacoche_jointure_message_destinataire.destinataire_id AND sacoche_groupe.groupe_type=sacoche_jointure_message_destinataire.destinataire_type ';
+      $DB_SQL.= 'WHERE proprio_id=:user_id AND groupe_type IN("besoin","eval") ';
+      DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+    }
+    // A priori les devoirs concernés ont été supprimés par la requête précédente, mais au cas où...
     $DB_SQL = 'DELETE FROM sacoche_devoir ';
     $DB_SQL.= 'WHERE proprio_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
@@ -2085,6 +2113,12 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil_sigle)
     $DB_SQL.= 'WHERE prof_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
   }
+  if( ($user_profil_type=='eleve') || ($user_profil_type=='professeur') )
+  {
+    $DB_SQL = 'DELETE FROM sacoche_jointure_user_groupe ';
+    $DB_SQL.= 'WHERE user_id=:user_id';
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  }
   if( ($user_profil_type=='professeur') || ($user_profil_type=='directeur') )
   {
     $DB_SQL = 'DELETE FROM sacoche_officiel_saisie ';
@@ -2098,6 +2132,14 @@ public static function DB_supprimer_utilisateur($user_id,$user_profil_sigle)
   {
     // photo si élève ; signature si professeur ou directeur
     $DB_SQL = 'DELETE FROM sacoche_image ';
+    $DB_SQL.= 'WHERE user_id=:user_id';
+    DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
+  }
+  if( ($user_profil_type!='eleve') && ($user_profil_type!='parent') )
+  {
+    $DB_SQL = 'DELETE sacoche_message, sacoche_jointure_message_destinataire ';
+    $DB_SQL.= 'FROM sacoche_message ';
+    $DB_SQL.= 'LEFT JOIN sacoche_jointure_message_destinataire USING (message_id) ';
     $DB_SQL.= 'WHERE user_id=:user_id';
     DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , $DB_VAR);
   }
@@ -2243,7 +2285,7 @@ public static function DB_corriger_anomalies()
     $classe  = (!$nb_modifs) ? 'valide' : 'alerte' ;
     return '<label class="'.$classe.'">'.$sujet.' : '.$message.'.</label>';
   }
-  // Recherche d'anomalies : référentiels associés à une matière supprimée
+  // Référentiels associés à une matière supprimée
   $DB_SQL = 'DELETE sacoche_referentiel,sacoche_referentiel_domaine, sacoche_referentiel_theme, sacoche_referentiel_item, sacoche_jointure_devoir_item, sacoche_saisie, sacoche_demande ';
   $DB_SQL.= 'FROM sacoche_referentiel ';
   $DB_SQL.= 'LEFT JOIN sacoche_matiere USING (matiere_id) ';
@@ -2256,7 +2298,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE sacoche_matiere.matiere_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Référentiels' );
-  // Recherche d'anomalies : domaines associés à une matière supprimée...
+  // Domaines associés à une matière supprimée...
   $DB_SQL = 'DELETE sacoche_referentiel_domaine, sacoche_referentiel_theme, sacoche_referentiel_item, sacoche_jointure_devoir_item, sacoche_saisie, sacoche_demande ';
   $DB_SQL.= 'FROM sacoche_referentiel_domaine ';
   $DB_SQL.= 'LEFT JOIN sacoche_matiere USING (matiere_id) ';
@@ -2268,7 +2310,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE sacoche_matiere.matiere_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Domaines (arborescence)' );
-  // Recherche d'anomalies : thèmes associés à un domaine supprimé...
+  // Thèmes associés à un domaine supprimé...
   $DB_SQL = 'DELETE sacoche_referentiel_theme, sacoche_referentiel_item, sacoche_jointure_devoir_item, sacoche_saisie, sacoche_demande ';
   $DB_SQL.= 'FROM sacoche_referentiel_theme ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_domaine USING (domaine_id) ';
@@ -2279,7 +2321,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE sacoche_referentiel_domaine.domaine_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Thèmes (arborescence)' );
-  // Recherche d'anomalies : items associés à un thème supprimé...
+  // Items associés à un thème supprimé...
   $DB_SQL = 'DELETE sacoche_referentiel_item, sacoche_jointure_devoir_item, sacoche_saisie, sacoche_demande ';
   $DB_SQL.= 'FROM sacoche_referentiel_item ';
   $DB_SQL.= 'LEFT JOIN sacoche_referentiel_theme USING (theme_id) ';
@@ -2289,7 +2331,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE sacoche_referentiel_theme.theme_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Items (arborescence)' );
-  // Recherche d'anomalies : demandes d'évaluations associées à un user ou une matière ou un item supprimé...
+  // Demandes d'évaluations associées à un user ou une matière ou un item supprimé...
   $DB_SQL = 'DELETE sacoche_demande ';
   $DB_SQL.= 'FROM sacoche_demande ';
   $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_demande.eleve_id=sacoche_user.user_id ';
@@ -2301,11 +2343,11 @@ public static function DB_corriger_anomalies()
   $DB_SQL = 'UPDATE sacoche_demande ';
   $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_demande.prof_id=sacoche_user.user_id ';
   $DB_SQL.= 'SET prof_id=0 ';
-  $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
+  $DB_SQL.= 'WHERE sacoche_user.user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $nb_modifs += DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
   $tab_bilan[] = compte_rendu( $nb_modifs , 'Demandes d\'évaluations' );
-  // Recherche d'anomalies : saisies de scores associées à un élève ou un item supprimé...
+  // Saisies de scores associées à un élève ou un item supprimé...
   // Attention, on ne teste pas le professeur ou le devoir, car les saisies sont conservées au delà
   $DB_SQL = 'DELETE sacoche_saisie ';
   $DB_SQL.= 'FROM sacoche_saisie ';
@@ -2314,7 +2356,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_referentiel_item.item_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Scores' );
-  // Recherche d'anomalies : devoirs associés à un prof ou un groupe supprimé...
+  // Devoirs associés à un prof ou un groupe supprimé...
   $DB_SQL = 'DELETE sacoche_devoir, sacoche_jointure_devoir_item , sacoche_jointure_devoir_prof , sacoche_jointure_devoir_eleve ';
   $DB_SQL.= 'FROM sacoche_devoir ';
   $DB_SQL.= 'LEFT JOIN sacoche_jointure_devoir_item  USING (devoir_id) ';
@@ -2325,27 +2367,48 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_groupe.groupe_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Évaluations' );
-  // Recherche d'anomalies : messages associés à un utilisateur supprimé...
-  $DB_SQL = 'DELETE sacoche_message ';
+  // Messages associés à un utilisateur supprimé...
+  $DB_SQL = 'DELETE sacoche_message, sacoche_jointure_message_destinataire ';
   $DB_SQL.= 'FROM sacoche_message ';
+  $DB_SQL.= 'LEFT JOIN sacoche_jointure_message_destinataire USING (message_id) ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
-  $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
+  $DB_SQL.= 'WHERE sacoche_user.user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Messages d\'accueil' );
-  // Recherche d'anomalies : bascules vers un compte désactivé ou supprimé...
+  // Destinataires de messages associés à un utilisateur ou un regroupement supprimé...
+  $DB_SQL = 'DELETE sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'FROM sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'LEFT JOIN sacoche_groupe ON sacoche_jointure_message_destinataire.destinataire_id=sacoche_groupe.groupe_id AND sacoche_jointure_message_destinataire.destinataire_type=sacoche_groupe.groupe_type ';
+  $DB_SQL.= 'WHERE destinataire_type IN ("classe","groupe","besoin") AND (sacoche_groupe.groupe_id IS NULL) ';
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+  $nb_modifs = DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
+  $DB_SQL = 'DELETE sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'FROM sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'LEFT JOIN sacoche_niveau ON sacoche_jointure_message_destinataire.destinataire_id=sacoche_niveau.niveau_id ';
+  $DB_SQL.= 'WHERE destinataire_type="niveau" AND (sacoche_niveau.niveau_id IS NULL) ';
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+  $nb_modifs += DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
+  $DB_SQL = 'DELETE sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'FROM sacoche_jointure_message_destinataire ';
+  $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_jointure_message_destinataire.destinataire_id=sacoche_user.user_id ';
+  $DB_SQL.= 'WHERE destinataire_type="user" AND (sacoche_user.user_id IS NULL) ';
+  DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
+  $nb_modifs += DB::rowCount(SACOCHE_STRUCTURE_BD_NAME);
+  $tab_bilan[] = compte_rendu( $nb_modifs , 'Jointures message/destinataire' );
+  // Bascules vers un compte désactivé ou supprimé...
   $tab_bilan[] = compte_rendu( DB_STRUCTURE_SWITCH::DB_supprimer_liaisons_obsoletes() , 'Bascules entre comptes' );
-  // Recherche d'anomalies : sélections d'items associées à un professeur supprimé...
+  // Sélections d'items associées à un professeur supprimé...
   $DB_SQL = 'DELETE sacoche_selection_item ';
   $DB_SQL.= 'FROM sacoche_selection_item ';
   $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_selection_item.proprio_id=sacoche_user.user_id ';
-  $DB_SQL.= 'WHERE (sacoche_user.user_id IS NULL) ';
+  $DB_SQL.= 'WHERE sacoche_user.user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Sélections d\'items sans propriétaire' );
-  // Recherche d'anomalies : jointures sélection/item à un item supprimé...
+  // Jointures sélection/item à un item supprimé...
   $tab_bilan[] = compte_rendu( DB_STRUCTURE_SELECTION_ITEM::DB_supprimer_jointures_items_obsoletes() , 'Jointures sélection/item' );
-  // Recherche d'anomalies : sélections d'items associées à aucun item...
+  // Sélections d'items associées à aucun item...
   $tab_bilan[] = compte_rendu( DB_STRUCTURE_SELECTION_ITEM::DB_supprimer_selections_items_obsoletes() , 'Sélections d\'items sans item' );
-  // Recherche d'anomalies : jointures période/groupe associées à une période ou un groupe supprimé...
+  // Jointures période/groupe associées à une période ou un groupe supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_groupe_periode ';
   $DB_SQL.= 'FROM sacoche_jointure_groupe_periode ';
   $DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
@@ -2353,14 +2416,14 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_periode.periode_id IS NULL) OR (sacoche_groupe.groupe_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures période/groupe' );
-  // Recherche d'anomalies : jointures période/saisie bilan officiel associées à une période supprimée... (on ne s'occupe volontairement pas de vérifier la jointure période/groupe) (on ne vérifie pas non plus les jointures élève / prof / rubrique ... de toutes façon cette table est vidée annuellement)
+  // Jointures période/saisie bilan officiel associées à une période supprimée... (on ne s'occupe volontairement pas de vérifier la jointure période/groupe) (on ne vérifie pas non plus les jointures élève / prof / rubrique ... de toutes façon cette table est vidée annuellement)
   $DB_SQL = 'DELETE sacoche_officiel_saisie ';
   $DB_SQL.= 'FROM sacoche_officiel_saisie ';
   $DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
-  $DB_SQL.= 'WHERE (sacoche_periode.periode_id IS NULL) ';
+  $DB_SQL.= 'WHERE sacoche_periode.periode_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures période/saisie bilan officiel' );
-  // Recherche d'anomalies : jointures période/fichier bilan officiel associées à un user ou une période supprimé...
+  // Jointures période/fichier bilan officiel associées à un user ou une période supprimé...
   $DB_SQL = 'DELETE sacoche_officiel_fichier ';
   $DB_SQL.= 'FROM sacoche_officiel_fichier ';
   $DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
@@ -2368,7 +2431,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_periode.periode_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures période/fichier bilan officiel' );
-  // Recherche d'anomalies : jointures période/assiduité bilan officiel associées à un user ou une période supprimée...
+  // Jointures période/assiduité bilan officiel associées à un user ou une période supprimée...
   $DB_SQL = 'DELETE sacoche_officiel_assiduite ';
   $DB_SQL.= 'FROM sacoche_officiel_assiduite ';
   $DB_SQL.= 'LEFT JOIN sacoche_periode USING (periode_id) ';
@@ -2376,14 +2439,14 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_periode.periode_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures période/assiduité bilan officiel' );
-  // Recherche d'anomalies : fiche brevet associée à un user supprimé...
+  // Fiche brevet associée à un user supprimé...
   $DB_SQL = 'DELETE sacoche_brevet_fichier ';
   $DB_SQL.= 'FROM sacoche_brevet_fichier ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
   $DB_SQL.= 'WHERE user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures élève/fichier fiche brevet' );
-  // Recherche d'anomalies : jointures user/groupe associées à un user ou un groupe supprimé...
+  // Jointures user/groupe associées à un user ou un groupe supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_user_groupe ';
   $DB_SQL.= 'FROM sacoche_jointure_user_groupe ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
@@ -2391,7 +2454,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_groupe.groupe_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures utilisateur/groupe' );
-  // Recherche d'anomalies : jointures user/matière associées à un user ou une matière supprimée...
+  // Jointures user/matière associées à un user ou une matière supprimée...
   $DB_SQL = 'DELETE sacoche_jointure_user_matiere ';
   $DB_SQL.= 'FROM sacoche_jointure_user_matiere ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
@@ -2399,14 +2462,14 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.user_id IS NULL) OR (sacoche_matiere.matiere_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures utilisateur/matière' );
-  // Recherche d'anomalies : abonnement notifications associée à un user supprimé...
+  // Abonnement notifications associée à un user supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_user_abonnement ';
   $DB_SQL.= 'FROM sacoche_jointure_user_abonnement ';
   $DB_SQL.= 'LEFT JOIN sacoche_user USING (user_id) ';
   $DB_SQL.= 'WHERE user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures utilisateur/abonnement notifications' );
-  // Recherche d'anomalies : jointures devoir/item associées à un devoir ou un item supprimé...
+  // Jointures devoir/item associées à un devoir ou un item supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_devoir_item ';
   $DB_SQL.= 'FROM sacoche_jointure_devoir_item ';
   $DB_SQL.= 'LEFT JOIN sacoche_devoir USING (devoir_id) ';
@@ -2414,7 +2477,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_devoir.devoir_id IS NULL) OR (sacoche_referentiel_item.item_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures évaluation/item' );
-  // Recherche d'anomalies : jointures devoir/droit associées à un devoir ou un user supprimé...
+  // Jointures devoir/droit associées à un devoir ou un user supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_devoir_prof ';
   $DB_SQL.= 'FROM sacoche_jointure_devoir_prof ';
   $DB_SQL.= 'LEFT JOIN sacoche_devoir USING (devoir_id) ';
@@ -2422,7 +2485,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_devoir.devoir_id IS NULL) OR (sacoche_user.user_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures évaluation/prof' );
-  // Recherche d'anomalies : jointures devoir/audio associées à un devoir ou un user supprimé...
+  // Jointures devoir/audio associées à un devoir ou un user supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_devoir_eleve ';
   $DB_SQL.= 'FROM sacoche_jointure_devoir_eleve ';
   $DB_SQL.= 'LEFT JOIN sacoche_devoir USING (devoir_id) ';
@@ -2430,14 +2493,14 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_devoir.devoir_id IS NULL) OR (sacoche_user.user_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures évaluation/audio' );
-  // Recherche d'anomalies : adresse associée à un parent supprimé...
+  // Adresse associée à un parent supprimé...
   $DB_SQL = 'DELETE sacoche_parent_adresse ';
   $DB_SQL.= 'FROM sacoche_parent_adresse ';
   $DB_SQL.= 'LEFT JOIN sacoche_user ON sacoche_parent_adresse.parent_id=sacoche_user.user_id ';
   $DB_SQL.= 'WHERE user_id IS NULL ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures parent/adresse' );
-  // Recherche d'anomalies : jointures parent/élève associées à un parent ou un élève supprimé...
+  // Jointures parent/élève associées à un parent ou un élève supprimé...
   $DB_SQL = 'DELETE sacoche_jointure_parent_eleve ';
   $DB_SQL.= 'FROM sacoche_jointure_parent_eleve ';
   $DB_SQL.= 'LEFT JOIN sacoche_user AS parent ON sacoche_jointure_parent_eleve.parent_id=parent.user_id ';
@@ -2445,7 +2508,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (parent.user_id IS NULL) OR (eleve.user_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures parent/enfant' );
-  // Recherche d'anomalies : élèves associés à une classe supprimée...
+  // Élèves associés à une classe supprimée...
   // Attention, l'id de classe à 0 est normal pour un élève non affecté ou un autre statut
   $DB_SQL = 'UPDATE sacoche_user ';
   $DB_SQL.= 'LEFT JOIN sacoche_groupe ON sacoche_user.eleve_classe_id=sacoche_groupe.groupe_id ';
@@ -2453,7 +2516,7 @@ public static function DB_corriger_anomalies()
   $DB_SQL.= 'WHERE ( (sacoche_user.eleve_classe_id!=0) AND (sacoche_groupe.groupe_id IS NULL) ) ';
   DB::query(SACOCHE_STRUCTURE_BD_NAME , $DB_SQL , NULL);
   $tab_bilan[] = compte_rendu( DB::rowCount(SACOCHE_STRUCTURE_BD_NAME) , 'Jointures élève/classe' );
-  // Recherche d'anomalies : signature associée à un user supprimé...
+  // Signature associée à un user supprimé...
   // Attention, l'id de user à 0 est normal pour le tampon et le logo de l'établissement
   $DB_SQL = 'DELETE sacoche_image ';
   $DB_SQL.= 'FROM sacoche_image ';

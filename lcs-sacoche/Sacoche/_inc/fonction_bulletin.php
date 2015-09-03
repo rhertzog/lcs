@@ -40,7 +40,7 @@ if(!defined('SACoche')) {exit('Ce fichier ne peut être appelé directement !');
  * @param bool   $memo_moyennes_generale
  * @return void
  */
-function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id,$liste_eleve_id,$liste_matiere_id,$retroactif,$memo_moyennes_classe,$memo_moyennes_generale)
+function calculer_et_enregistrer_moyennes_eleves_bulletin( $periode_id , $classe_id , $liste_eleve_id , $liste_matiere_id , $only_socle , $retroactif , $memo_moyennes_classe , $memo_moyennes_generale )
 {
   if(!$liste_eleve_id) return FALSE;
   // Dates période
@@ -49,7 +49,7 @@ function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id
   // Récupération de la liste des items travaillés et affiner la liste des matières concernées
   $date_mysql_debut = $DB_ROW['jointure_date_debut'];
   $date_mysql_fin   = $DB_ROW['jointure_date_fin'];
-  list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles($liste_eleve_id,$liste_matiere_id,$date_mysql_debut,$date_mysql_fin);
+  list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles( $liste_eleve_id , $liste_matiere_id , $only_socle , $date_mysql_debut , $date_mysql_fin , 'matiere' );
   $item_nb = count($tab_item);
   if(!$item_nb) return FALSE;
   $tab_liste_item = array_keys($tab_item);
@@ -66,7 +66,7 @@ function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id
       if($retroactif=='non')    { $date_mysql_start = $date_mysql_debut; }
   elseif($retroactif=='annuel') { $date_mysql_start = $date_mysql_debut_annee_scolaire; }
   else                          { $date_mysql_start = FALSE; } // 'oui' | 'auto' ; en 'auto' il faut faire le tri après
-  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ );
+  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($liste_eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ , FALSE /*onlynote*/ );
   foreach($DB_TAB as $DB_ROW)
   {
     if($tab_score_a_garder[$DB_ROW['eleve_id']][$DB_ROW['item_id']])
@@ -242,7 +242,7 @@ function calculer_et_enregistrer_moyennes_eleves_bulletin($periode_id,$classe_id
  * @param string $retroactif   oui|non|auto
  * @return float   la moyenne en question (FALSE si pb)
  */
-function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id,$eleve_id,$matiere_id,$retroactif)
+function calculer_et_enregistrer_moyenne_precise_bulletin( $periode_id , $classe_id , $eleve_id , $matiere_id , $only_socle , $retroactif )
 {
   // Dates période
   $DB_ROW = DB_STRUCTURE_COMMUN::DB_recuperer_dates_periode($classe_id,$periode_id);
@@ -250,7 +250,7 @@ function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id
   // Récupération de la liste des items travaillés
   $date_mysql_debut = $DB_ROW['jointure_date_debut'];
   $date_mysql_fin   = $DB_ROW['jointure_date_fin'];
-  list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles($eleve_id,$matiere_id,$date_mysql_debut,$date_mysql_fin);
+  list($tab_item,$tab_matiere) = DB_STRUCTURE_BILAN::DB_recuperer_items_travailles( $eleve_id , $matiere_id , $only_socle , $date_mysql_debut , $date_mysql_fin , 'matiere' );
   $item_nb = count($tab_item);
   if(!$item_nb) return FALSE;
   $tab_liste_item = array_keys($tab_item);
@@ -260,7 +260,7 @@ function calculer_et_enregistrer_moyenne_precise_bulletin($periode_id,$classe_id
       if($retroactif=='non')    { $date_mysql_start = $date_mysql_debut; }
   elseif($retroactif=='annuel') { $date_mysql_start = $date_mysql_debut_annee_scolaire; }
   else                          { $date_mysql_start = FALSE; } // 'oui' | 'auto' ; en 'auto' il faut faire le tri après
-  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ );
+  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items($eleve_id , $liste_item_id , -1 /*matiere_id*/ , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ , FALSE /*onlynote*/ );
   if(empty($DB_TAB)) return FALSE;
   foreach($DB_TAB as $DB_ROW)
   {

@@ -65,15 +65,33 @@ $tab_type     = (isset($_POST['f_type']))  ? ( (is_array($_POST['f_type']))  ? $
 $tab_eleve_id = array_filter( Clean::map_entier($tab_eleve_id) , 'positif' );
 $tab_type     = Clean::map_texte($tab_type);
 
-// En cas de manipulation du formulaire (avec Firebug par exemple) ; on pourrait aussi vérifier pour un parent que c'est bien un de ses enfants...
-if($_SESSION['USER_PROFIL_TYPE']=='eleve')
-{
-  $groupe_id    = $_SESSION['ELEVE_CLASSE_ID'];
-  $tab_eleve_id = array($_SESSION['USER_ID']);
-}
+// En cas de manipulation du formulaire (avec les outils de développements intégrés au navigateur ou un module complémentaire)...
 if(in_array($_SESSION['USER_PROFIL_TYPE'],array('parent','eleve')))
 {
-  $tab_type     = array('individuel');
+  $tab_type = array('individuel');
+  // Pour un élève on surcharge avec les données de session
+  if($_SESSION['USER_PROFIL_TYPE']=='eleve')
+  {
+    $groupe_id    = $_SESSION['ELEVE_CLASSE_ID'];
+    $tab_eleve_id = array($_SESSION['USER_ID']);
+  }
+  // Pour un parent on vérifie que c'est bien un de ses enfants
+  if($_SESSION['USER_PROFIL_TYPE']=='parent')
+  {
+    $is_enfant_legitime = FALSE;
+    foreach($_SESSION['OPT_PARENT_ENFANTS'] as $DB_ROW)
+    {
+      if($DB_ROW['valeur']==$tab_eleve_id[0])
+      {
+        $is_enfant_legitime = TRUE;
+        break;
+      }
+    }
+    if(!$is_enfant_legitime)
+    {
+      exit('Enfant non rattaché à votre compte parent !');
+    }
+  }
 }
 
 $type_generique  = (in_array('generique',$tab_type))  ? 1 : 0 ;
@@ -266,7 +284,7 @@ if($besoin_notes)
       if($retroactif=='non')    { $date_mysql_start = $date_mysql_debut; }
   elseif($retroactif=='annuel') { $date_mysql_start = $date_mysql_debut_annee_scolaire; }
   else                          { $date_mysql_start = FALSE; } // forcément 'oui' puisque le cas 'auto' a déjà été écarté (possible car un unique référentiel est considéré ici)
-  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items( $liste_eleve , $liste_item , $matiere_id , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ ) ;
+  $DB_TAB = DB_STRUCTURE_BILAN::DB_lister_result_eleves_items( $liste_eleve , $liste_item , $matiere_id , $date_mysql_start , $date_mysql_fin , $_SESSION['USER_PROFIL_TYPE'] , FALSE /*onlyprof*/ , FALSE /*onlynote*/ ) ;
   if(!empty($DB_TAB))
   {
     foreach($DB_TAB as $DB_ROW)

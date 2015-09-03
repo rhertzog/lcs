@@ -330,6 +330,13 @@ if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $type && $
   {
     exit('Date fin auto-éval. avant date visible !');
   }
+  // Récupérer l'effectif de la classe ou du groupe
+  $effectif_eleve = ($type=='groupe') ? DB_STRUCTURE_PROFESSEUR::DB_lister_effectifs_groupes($groupe_id) : $nb_eleves ;
+  // Dans le cas d'une évaluation sur un regroupement, on vérifie qu'il n'est pas vide
+  if(!$effectif_eleve)
+  {
+    exit('Regroupement sans élève !');
+  }
   // Ordre des élèves
   if($groupe_type=='classe')
   {
@@ -402,8 +409,6 @@ if( (($action=='ajouter')||(($action=='dupliquer')&&($devoir_id))) && $type && $
     }
     unset($_SESSION['TMP']['req_user_item']);
   }
-  // Récupérer l'effectif de la classe ou du groupe
-  $effectif_eleve = ($type=='groupe') ? DB_STRUCTURE_PROFESSEUR::DB_lister_effectifs_groupes($groupe_id) : $nb_eleves ;
   // Notifications (rendues visibles ultérieurement)
   if(!$mode_discret)
   {
@@ -503,6 +508,13 @@ if( ($action=='modifier') && $devoir_id && $groupe_type && $groupe_id && $date &
   if( ($date_autoeval!='00/00/0000') && ($date_autoeval_mysql<$date_visible_mysql) )
   {
     exit('Date fin auto-éval. avant date visible !');
+  }
+  // Récupérer l'effectif de la classe ou du groupe
+  $effectif_eleve = ($type=='groupe') ? DB_STRUCTURE_PROFESSEUR::DB_lister_effectifs_groupes($groupe_id) : $nb_eleves ;
+  // Dans le cas d'une évaluation sur un regroupement, on vérifie qu'il n'est pas vide
+  if(!$effectif_eleve)
+  {
+    exit('Regroupement sans élève !');
   }
   // Tester les droits
   $proprio_id = DB_STRUCTURE_PROFESSEUR::DB_recuperer_devoir_prorietaire_id( $devoir_id );
@@ -610,8 +622,6 @@ if( ($action=='modifier') && $devoir_id && $groupe_type && $groupe_id && $date &
   DB_STRUCTURE_PROFESSEUR::DB_modifier_liaison_devoir_item( $devoir_id , $tab_items , 'substituer' );
   // Récupérer le nb de saisies déjà effectuées pour l'évaluation
   $nb_saisies_effectuees = DB_STRUCTURE_PROFESSEUR::DB_lister_nb_saisies_par_evaluation($devoir_id);
-  // Récupérer l'effectif de la classe ou du groupe
-  $effectif_eleve = ($type=='groupe') ? DB_STRUCTURE_PROFESSEUR::DB_lister_effectifs_groupes($groupe_id) : $nb_eleves ;
   // Notifications : il peut falloir adapter les dates de toutes celles qui sont dépendantes de la date de visibilité du devoir.
   $notification_date = ( TODAY_MYSQL < $date_visible_mysql ) ? $date_visible_mysql : NULL ;
   DB_STRUCTURE_NOTIFICATION::DB_modifier_attente_date_devoir( $devoir_id , $notification_date );
@@ -768,7 +778,7 @@ if( in_array($action,array('saisir','voir')) && $devoir_id && $groupe_id && $dat
   // liste des items
   $DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_devoir_items( $devoir_id , $with_lien , TRUE /*with_coef*/ );
   // liste des élèves
-  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
+  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil_type*/ , 1 /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
   // liste des commentaires audio ou texte
   $DB_TAB_MSG = DB_STRUCTURE_COMMENTAIRE::DB_lister_devoir_commentaires($devoir_id);
   // Let's go
@@ -1096,7 +1106,7 @@ if( in_array($action,array('generer_tableau_scores_vierge_csv','generer_tableau_
   // liste des items
   $DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_devoir_items( $devoir_id , FALSE /*with_lien*/ , TRUE /*with_coef*/ );
   // liste des élèves
-  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
+  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil_type*/ , 1 /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
   // Let's go
   $item_nb = count($DB_TAB_COMP);
   if(!$item_nb)
@@ -1238,7 +1248,7 @@ if( in_array($action,array('voir_repart','archiver_repart')) && $devoir_id && $g
   // liste des items
   $DB_TAB_ITEM = DB_STRUCTURE_PROFESSEUR::DB_lister_devoir_items( $devoir_id , TRUE /*with_lien*/ , TRUE /*with_coef*/ );
   // liste des élèves
-  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $groupe_type , $groupe_id , 'alpha' /*eleves_ordre*/ );
+  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil_type*/ , 1 /*statut*/ , $groupe_type , $groupe_id , 'alpha' /*eleves_ordre*/ );
   // Let's go
   $item_nb = count($DB_TAB_ITEM);
   if(!$item_nb)
@@ -1503,7 +1513,7 @@ if( ($action=='imprimer_cartouche') && $devoir_id && $groupe_id && $date_fr && $
   // liste des items
   $DB_TAB_COMP = DB_STRUCTURE_PROFESSEUR::DB_lister_devoir_items( $devoir_id , FALSE /*with_lien*/ , TRUE /*with_coef*/ );
   // liste des élèves
-  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil*/ , TRUE /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
+  $DB_TAB_USER = DB_STRUCTURE_COMMUN::DB_lister_users_regroupement( 'eleve' /*profil_type*/ , 1 /*statut*/ , $groupe_type , $groupe_id , $eleves_ordre );
   // Let's go
   if(empty($DB_TAB_COMP))
   {
