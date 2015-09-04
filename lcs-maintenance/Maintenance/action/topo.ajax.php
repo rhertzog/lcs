@@ -4,6 +4,7 @@
  * Affichage du formulaire de localisation
  * la partie php doit etre mise en fonctions
  * et deplacee dans le fichier /Includes/func_maint.inc.php
+04/09/2015
 */
 include "../Includes/checking.php";
  if (! check_acces()) {echo $_POST['jeton'];exit;}
@@ -56,7 +57,7 @@ if (isset( $Rid) &&  $Rid!=0) {
             <tr id="topoTr">
                 <td class="tableau">
                     <input type="hidden" name="addTopo" id="addTopo" value="N"/>
-                    <label for="secteur">Secteur d'enseignement :</label>&nbsp;
+                    <label for="secteur">Secteur d'enseignement *</label>&nbsp;
                     <select name="secteur" id="secteur" >
                     <?php
                     // lecture de la table secteur
@@ -84,7 +85,7 @@ if (isset( $Rid) &&  $Rid!=0) {
         ?>
 <!-- Batiment -->
         <td class="tableau">
-        <label for="bat">B&acirc;timent :<?echo $bat?></label>&nbsp;
+        <label for="bat">&nbsp;B&acirc;timent *<?echo $bat?></label>&nbsp;
         <select name="bat" id="bat" >
         <?php
         // lecture de la table topologie pour affichage de la liste des batiments
@@ -109,7 +110,7 @@ if (isset( $Rid) &&  $Rid!=0) {
         </td>
           <!-- Etage -->
         <td class="tableau">
-        <label for="etage">Etage : </label>&nbsp;&nbsp;&nbsp;
+        <label for="etage">&nbsp;Etage *</label>&nbsp;
         <select name="etage" id="etage" >
         <?php
         // lecture de la table topologie pour affichage de la liste des etages
@@ -138,7 +139,7 @@ if (isset( $Rid) &&  $Rid!=0) {
         </td>
           <!-- Salle -->
         <td class="tableau">
-        <label for="salle">Salle :</label>&nbsp;
+        <label for="salle">&nbsp;Salle *</label>&nbsp;
         <select name="salle"  id="salle" ><!-- onChange="location = this.options[this.selectedIndex].value;" :: Inutile -->
         <?php
         // lecture de la table topologie pour affichage de la liste des salles

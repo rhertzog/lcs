@@ -1,3 +1,9 @@
+lcs-maintenance (2.4.10.3) Lcs; urgency=low
+
+  * add headers in mail
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Thu, 03 Sep 2015 21:00:19 +0200
+
 lcs-maintenance (2.4.10.2) Lcs; urgency=low
 
   * remove tilde

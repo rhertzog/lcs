@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Module lcs-maintenance
-   06/02/2015
+   04/09/2015
    =================================================== */
 include "../Includes/checking.php";
  if (! check_acces()) exit;
@@ -86,22 +86,29 @@ if (count($_POST)>0) {
         	//require "Includes/config.inc.php";
 			$ladate=strtotime (date("Y-m-d H:i:s"));
 			//enregistrement de la demande
+		if (getenv("HTTP_CLIENT_IP")) $REMOTE_ADDR = getenv("HTTP_CLIENT_IP");
+               else if (getenv("HTTP_X_FORWARDED_FOR")) $REMOTE_ADDR = getenv("HTTP_X_FORWARDED_FOR");
+               else if (getenv("REMOTE_ADDR")) $REMOTE_ADDR = getenv("REMOTE_ADDR");
+               else $REMOTE_ADDR = "UNKNOWN";
         	$result=mysql_query("INSERT INTO maint_task (Host,Owner,OwnerMail,Sector,Building,Room,NumComp,Mark,Os,Cat,Content,OpenTimeStamp)
 		      VALUES ('$REMOTE_ADDR','$nom','$mail','$secteur','$bat','$salle','$poste','$marque','$se','$typpb','$texte','$ladate')");
         		mysql_close();
 			//et on envoie le mail
 			mail(
-				"$MAILMAINT,$mail",
-				"[MaintInfo]".$typpb."_".date("d-m-Y H:i:s"),
-				"$nom a laiss&#233; une requ&#232;te info le ".date("d-m-Y H:i:s")."\n
-					Secteur d'enseignement : $secteur\n
-					Salle: $bat $salle\n
-					Ordinateur: Marque $marque Poste $poste SE $se\n
-					Probl&#232;me: $typpb\n
-					\nDescription :\n
- 						stripslashes($texte)\n
-					IP poste source : $REMOTE_ADDR",
-				"From:$mail"
+			"$MAILMAINT,$mail",
+			"[MaintInfo]".$typpb."_".date("d-m-Y H:i:s"),
+			"$nom a laissé une requête info le ".date("d-m-Y H:i:s")."\r\n
+				Secteur d'enseignement :".$secteur."\r\n
+				Salle: $bat $salle\r\n
+				Ordinateur: Marque $marque Poste $poste SE $se\r\n
+				Problème: $typpb\r\n
+				\r\nDescription :\r\n
+ 				".stripslashes($texte)."\r\n
+				IP poste source : $REMOTE_ADDR",
+			"From:$mail". "\r\n" .
+               		"MIME-Version: 1.0" . "\r\n" . 
+               		"Content-type: text/plain; charset=UTF-8" . "\r\n".
+			"X-Mailer: PHP/".phpversion()
 			) or die("Votre message n'a pu parvenir au technicien charg&#233; de la machine concern&#233;e.");
 			// on Reaffiche la demande
 			echo "  	<div  id=\"tabInfo\" style=\"font-size:.75em\" title=\"Merci  ",utf8_encode(ucwords($prenom))," ",utf8_encode(strtoupper($nom)),"\">
