@@ -4234,7 +4234,7 @@ class PMA_Util
      *
      * @return resource curl_handle with updated options
      */
-    public static function configureCurl(resource $curl_handle)
+    public static function configureCurl($curl_handle)
     {
         if (/*overload*/mb_strlen($GLOBALS['cfg']['ProxyUrl'])) {
             curl_setopt($curl_handle, CURLOPT_PROXY, $GLOBALS['cfg']['ProxyUrl']);
@@ -4270,7 +4270,7 @@ class PMA_Util
             $response = $_SESSION['cache']['version_check']['response'];
         } else {
             $save = true;
-            $file = 'http://www.phpmyadmin.net/home_page/version.json';
+            $file = 'https://www.phpmyadmin.net/home_page/version.json';
             if (ini_get('allow_url_fopen')) {
                 $context = array(
                     'http' => array(
