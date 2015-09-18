@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Module lcs-maintenance
-   04/09/2015
+   18/09/2015
    =================================================== */
 include "../Includes/checking.php";
  if (! check_acces()) exit;
@@ -103,10 +103,10 @@ if (count($_POST)>0) {
 				Ordinateur: Marque $marque Poste $poste SE $se\r\n
 				Problème: $typpb\r\n
 				\r\nDescription :\r\n
- 				".stripslashes($texte)."\r\n
+ 				".stripslashes(html_entity_decode ($texte))."\r\n
 				IP poste source : $REMOTE_ADDR",
 			"From:$mail". "\r\n" .
-               		"MIME-Version: 1.0" . "\r\n" . 
+               		"MIME-Version: 1.0" . "\r\n" .
                		"Content-type: text/plain; charset=UTF-8" . "\r\n".
 			"X-Mailer: PHP/".phpversion()
 			) or die("Votre message n'a pu parvenir au technicien charg&#233; de la machine concern&#233;e.");

@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Module lcs-maintenance
-   06/02/2015
+   18/09/2015
    =================================================== */
 header ('Content-type" => "text/html; charset=utf-8');
 
@@ -831,8 +831,11 @@ function read_cr_task ($Rid) {
 function mail_to ($to, $Cc, $Subject, $Body, $From) {
     global $DEBUG;
     if ($DEBUG)  echo "DEBUG mail_to >> to : $to Cc : $Cc Subject : $Subject Body :$Body From: $From<br>";
-    $mailHeaders = "From: $From\nCc: $Cc\n";
-    mail ($to, $Subject, $Body, $mailHeaders);
+    $mailHeaders = "From: $From\r\nCc: $Cc". "\r\n".
+               		"MIME-Version: 1.0" . "\r\n" .
+               		"Content-type: text/plain; charset=UTF-8" . "\r\n".
+			"X-Mailer: PHP/".phpversion();
+    mail ($to, html_entity_decode($Subject), html_entity_decode($Body), $mailHeaders);
 }
 
 function del_task ($Rid, $by) {
