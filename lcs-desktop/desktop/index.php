@@ -4,7 +4,7 @@
 * auteur Dominique Lepaisant (DomZ0) - dlepaisant@ac-caen.fr
 * Equipe Tice academie de Caen
 * version  Lcs-2.4.10
-* Derniere mise a jour " => mrfi =>" 14/03/2015
+* Derniere mise a jour " => mrfi =>" 25/09/2015
 * Licence GNU-GPL -  Copyleft 2010
 *__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/__/*/
 session_name("Lcs");
@@ -101,11 +101,6 @@ $(document).ready(function(){
 
 </script>
 <?php
-// sweekey by Misterphi
-	if ( is_dir ("/usr/share/lcs/swekey")) {
-	include "/usr/share/lcs/swekey/my_integration.php";
-	echo SwekeyIntegrationScript();
-}
 
 // Cas service
 	// Select PATH request with mod_auth params (LCS or ENT)
