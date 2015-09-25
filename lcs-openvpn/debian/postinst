@@ -71,11 +71,11 @@ case "$1" in
 	    	echo "1" /proc/sys/net/ipv4/ip_forward
 	    	
 	    	# Si Debian Wheezy
-	    	if  ! egrep -q "^5.0" /etc/debian_version;  then
-	    		mkdir -p /usr/share/php/smarty
-	    		ln -s /usr/share/php/smarty3 /usr/share/php/smarty/libs
+	    	if  ! egrep -q "^6.0" /etc/debian_version;  then
+	    		if [ ! -d /usr/share/php/smarty ]; then
+	    			mkdir -p /usr/share/php/smarty
+	    			ln -s /usr/share/php/smarty3 /usr/share/php/smarty/libs
 	    	fi
-	    	
 	      # si pas de fichier config, recreation 
 	      if [ ! -e /usr/share/lcs/openvpn/config_openvpn.inc.php ]; then
 	      	HOSTNAME=`hostname`

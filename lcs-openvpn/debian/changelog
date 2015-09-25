@@ -1,3 +1,9 @@
+lcs-openvpn (2.4.10.1~1) Lcs; urgency=low
+
+  * Fix smarty symlink in postinst
+
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Sep 2015 14:23:14 +0300
+
 lcs-openvpn (2.4.10) Lcs; urgency=low
   * make a stable release for Wheezy
   * Remove .htaccess
