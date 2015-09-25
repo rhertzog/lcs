@@ -26,3 +26,5 @@ if (empty($version)) {
         )
     );
 }
+
+?>
