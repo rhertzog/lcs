@@ -2,7 +2,7 @@
 /* ==================================================
    Projet LCS : Linux Communication Server
    Module lcs-maintenance
-   18/09/2015
+   25/09/2015
    =================================================== */
 header ('Content-type" => "text/html; charset=utf-8');
 
@@ -852,7 +852,7 @@ function del_task ($Rid, $by) {
     $Body = "Bonjour,\n
                     Votre demande : \n
                     $Content\n
-                    A &eacute;t&eacute; effac&eacute;e par $by\n";
+                    a été effacée  par $by\n";
     // Poste du message d'effacement
     mail_to ($MAILMAINT, $OwnerMail, $Subject, $Body, $by);
 }
@@ -877,7 +877,7 @@ function take_task ($Rid, $Author, $AuthorMail) {
     $Body = "Bonjour,\n
                     Votre demande : \n
                     $Content\n
-                    A &eacute;t&eacute; prise en compte par $Author\n";
+                    a été prise en compte par $Author\n";
     // Poste d'un message d'avis de prise en compte de la demande
     mail_to ($MAILMAINT, $OwnerMail, $Subject, $Body, $AuthorMail);
 }
@@ -895,7 +895,7 @@ function boost_task ($Rid) {
     $Body = "Bonjour,\n
                     Le ".date("d-m-Y H:i:s")." la demande : \n
                     $Content\n
-                    &#233; &eacute;t&eacute; relanc&eacute;e !";
+                    a été relancée !";
     // Poste d'un message d'avis de prise en compte de la demande
     mail_to ($MAILMAINT, $OwnerMail, $Subject, $Body, $OwnerMail);
 }
