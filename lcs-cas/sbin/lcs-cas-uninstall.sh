@@ -6,8 +6,17 @@
 #
 # Stop service
 #
-kill -9 `cat /var/run/rubycas-server/casserver.pid`
-rm -f /var/run/rubycas-server/casserver.pid
+
+if [ -e /var/run/rubycas-server/casserver.pid ]; then
+	kill -9 `cat /var/run/rubycas-server/casserver.pid`
+	rm -f /var/run/rubycas-server/casserver.pid
+elif [ -e /var/lib/gems/1.8/gems/rubycas-server-1.1.2/bin/rubycas-server.pid ]; then
+	kill -9 `cat /var/lib/gems/1.8/gems/rubycas-server-1.1.2/bin/rubycas-server.pid`
+	rm -f /var/lib/gems/1.8/gems/rubycas-server-1.1.2/bin/rubycas-server.pid
+	
+	
+fi
+
 #
 # Uninstall gem rubycas-server
 #

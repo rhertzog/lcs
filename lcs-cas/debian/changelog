@@ -1,6 +1,7 @@
-lcs-cas (2.4.10) Lcs; urgency=low
+lcs-cas (2.4.10.1~1) Lcs; urgency=low
   [ Jean-Luc Chretien ]
-  * make a stable release for Wheezy
+  2.4.10.1~1
+  * Fix uninstall script
   2.4.10~11
   * Fix problem install rubycas-server in /usr/lib/ruby/gems
   2.4.10~10
@@ -18,7 +19,7 @@ lcs-cas (2.4.10) Lcs; urgency=low
   2.4.9.2~4
   * Update rubycas-server to 1.1.2 version
 
- -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Thu, 04 Jun 2015 14:19:24 +0300
+ -- Jean-Luc Chrétien <jean-luc.chretien@tice.ac-caen.fr>  Fri, 25 Sep 2015 14:11:41 +0300
 
 lcs-cas (2.4.9.1) Lcs; urgency=low
 
