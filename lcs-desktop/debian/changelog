@@ -1,3 +1,9 @@
+lcs-desktop (2.4.10.3~1) Lcs; urgency=low
+
+  * remove sweekey section
+
+ -- Philippe Leclerc <philippe.leclerc1@ac-caen.fr>  Fri, 25 Sep 2015 11:04:10 +0200
+
 lcs-desktop (2.4.10.2) Lcs; urgency=low
 
   * delete default json files
