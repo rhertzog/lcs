@@ -218,8 +218,8 @@ if($action=='import_loginmdp')
       list($login,$mdp,$nom,$prenom) = $tab_elements;
       if( ($nom!='') && ($prenom!='') )
       {
-        $tab_users_fichier['login'][]  = mb_substr(Clean::login($login),0,20);
-        $tab_users_fichier['mdp'][]    = ($mdp!='inchangé') ? mb_substr(Clean::password($mdp),0,20) : '';
+        $tab_users_fichier['login'][]  = mb_substr(Clean::login($login),0,LOGIN_LONGUEUR_MAX);
+        $tab_users_fichier['mdp'][]    = ($mdp!='inchangé') ? mb_substr(Clean::password($mdp),0,PASSWORD_LONGUEUR_MAX) : '';
         $tab_users_fichier['nom'][]    = Clean::nom($nom);
         $tab_users_fichier['prenom'][] = Clean::prenom($prenom);
       }
@@ -601,7 +601,7 @@ if($action=='import_ent')
       if(substr($_SESSION['CONNEXION_NOM'],0,12)=='itslearning_')
       {
         // Pour ItsLearning l'intitulé des entêtes est complété par le profil correspondant au fichier exporté.
-        $element = str_replace( array(' eleve',' enseignant',' parent','  personnel Educatif',' personnel Educatif') , '' , $element);
+        $element = trim(str_replace( array(' eleve',' enseignant',' parent',' personnel Educatif') , '' , $element));
       }
       switch($element)
       {
