@@ -75,6 +75,7 @@ case "$1" in
 	    		if [ ! -d /usr/share/php/smarty ]; then
 	    			mkdir -p /usr/share/php/smarty
 	    			ln -s /usr/share/php/smarty3 /usr/share/php/smarty/libs
+	    		fi	
 	    	fi
 	      # si pas de fichier config, recreation 
 	      if [ ! -e /usr/share/lcs/openvpn/config_openvpn.inc.php ]; then
