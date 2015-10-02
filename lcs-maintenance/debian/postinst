@@ -150,7 +150,11 @@ else
 	
   fi
   # fin de la maj par les scripts mysql,ldap,bash
-	
+
+	#suppression fichiers obsoletes
+	if [ -e $PATHPLUG/Scripts/import_topo.sh ]; then
+	rm -f $PATHPLUG/Scripts/import_topo.sh
+	fi	
 	#---------------------------------
 	# Mise a jour du Numero de version
 	#---------------------------------

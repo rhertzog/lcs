@@ -4,7 +4,7 @@
  * Affichage du formulaire de localisation
  * la partie php doit etre mise en fonctions
  * et deplacee dans le fichier /Includes/func_maint.inc.php
-04/09/2015
+ *  01/10/2015
 */
 include "../Includes/checking.php";
  if (! check_acces()) {echo $_POST['jeton'];exit;}
@@ -58,7 +58,7 @@ if (isset( $Rid) &&  $Rid!=0) {
                 <td class="tableau">
                     <input type="hidden" name="addTopo" id="addTopo" value="N"/>
                     <label for="secteur">Secteur d'enseignement *</label>&nbsp;
-                    <select name="secteur" id="secteur" >
+                    <select name="secteur" id="secteur" class="required">
                     <?php
                     // lecture de la table secteur
                     $result = @mysql_query("SELECT * from secteur ORDER BY id ASC");
@@ -85,8 +85,8 @@ if (isset( $Rid) &&  $Rid!=0) {
         ?>
 <!-- Batiment -->
         <td class="tableau">
-        <label for="bat">&nbsp;B&acirc;timent *<?echo $bat?></label>&nbsp;
-        <select name="bat" id="bat" >
+        <label for="bat">B&acirc;timent *<?echo $bat?></label>&nbsp;
+        <select name="bat" id="bat"  class="required">
         <?php
         // lecture de la table topologie pour affichage de la liste des batiments
         $loop=0;
@@ -110,8 +110,8 @@ if (isset( $Rid) &&  $Rid!=0) {
         </td>
           <!-- Etage -->
         <td class="tableau">
-        <label for="etage">&nbsp;Etage *</label>&nbsp;
-        <select name="etage" id="etage" >
+        <label for="etage">Etage * </label>&nbsp;
+        <select name="etage" id="etage" class="required">
         <?php
         // lecture de la table topologie pour affichage de la liste des etages
         $loop=0;
@@ -139,8 +139,8 @@ if (isset( $Rid) &&  $Rid!=0) {
         </td>
           <!-- Salle -->
         <td class="tableau">
-        <label for="salle">&nbsp;Salle *</label>&nbsp;
-        <select name="salle"  id="salle" ><!-- onChange="location = this.options[this.selectedIndex].value;" :: Inutile -->
+        <label for="salle">Salle *</label>&nbsp;
+        <select name="salle"  id="salle" class="required"><!-- onChange="location = this.options[this.selectedIndex].value;" :: Inutile -->
         <?php
         // lecture de la table topologie pour affichage de la liste des salles
         $loop=0;
