@@ -1,6 +1,6 @@
 lcs-preinstall (2.4.10.1) UNRELEASED; urgency=medium
 
-  * 
+  * Switch to debhelper compat level 9 and use “dh” helper.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:53 +0200
 
