@@ -1,0 +1,3 @@
+# The LCS uses /var/www/ and we know it's bad but it would be too much
+# work for little gain to change it now, so ignore it
+dir-or-file-in-var-www var/www/*
