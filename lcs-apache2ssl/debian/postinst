@@ -18,12 +18,12 @@ case "$1" in
             #
             # registration module type S in applis.lcs_db
             #
-            APACHE2SSL=`/usr/bin/mysql -e "SELECT id from lcs_db.applis WHERE name='apache2ssl';"`
+            APACHE2SSL=`mysql -e "SELECT id from lcs_db.applis WHERE name='apache2ssl';"`
             VER=$(dpkg-query -f '${Version}' -W lcs-apache2ssl)
             if [ -z "$APACHE2SSL" ]; then
-                /usr/bin/mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces au service web via https  ', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
+                mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces au service web via https  ', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
             else
-               /usr/bin/mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
+		mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
             fi
             #
             # Enable mode ssl
@@ -71,7 +71,7 @@ EOF
             #
             # Add sudoers section
             #
-				/usr/sbin/lcs-make-sudoers
+	    lcs-make-sudoers
             #
             #  Apache2 differed restarting for web interface install module
             #

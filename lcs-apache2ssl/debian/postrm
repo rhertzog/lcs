@@ -8,7 +8,7 @@ APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 case "$1" in
 	purge|remove)
         #
-        # D�sincription du module
+        # Desincription du module
         #
         mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
         #
@@ -32,7 +32,7 @@ case "$1" in
         #
         # Desactivation sudoers APACHESSLCERT
         #
-	/usr/sbin/lcs-make-sudoers
+	lcs-make-sudoers
         #
         # Effacement des certificats
         #

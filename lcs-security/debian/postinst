@@ -47,20 +47,16 @@ EOP
 		chmod 640 /var/log/lcs/check.log
 		chown www-data:www-data /var/log/lcs/check.log
 	fi
-   # Restart fail2ban
-	if [ -x /usr/sbin/invoke-rc.d ]; then
-		invoke-rc.d fail2ban restart
-	else
-		/etc/init.d/fail2ban restart
-	fi
+	# Restart fail2ban
+	invoke-rc.d fail2ban restart || true
 	# Update sudoers lt 2.4.9.1
 	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then	
 				echo "update lcs-security and disable mod_apache_security"
 		    	# Activation des logs sudo
-		    	/usr/sbin/lcs-make-sudoers
+		    	lcs-make-sudoers
 		    	# Desactivation du mod security d'apache
 		    	echo "le mod security d'apache est disponible."
-		    	/usr/sbin/lcs-disable-apache-security 
+		    	lcs-disable-apache-security 
 	fi
 
 

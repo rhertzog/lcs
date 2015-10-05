@@ -21,12 +21,9 @@ set -e
 
 case "$1" in
     purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
- 	if [ -x /usr/sbin/invoke-rc.d ]; then
-                invoke-rc.d fail2ban restart
-        else
-                /etc/init.d/fail2ban restart
-        fi
-        /usr/sbin/lcs-make-sudoers
+	invoke-rc.d fail2ban restart
+	/etc/init.d/fail2ban restart
+        lcs-make-sudoers
     ;;
 
     *)
