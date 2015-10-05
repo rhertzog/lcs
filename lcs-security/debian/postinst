@@ -25,16 +25,21 @@ INDICEMAJNBR="0"
 
 case "$1" in
     configure)
-    	if [ `grep -c rssh /etc/passwd` = 0 ]; then
-    	### installation du compte rssh
-    	useradd -K UID_MIN=100 -K UID_MAX=999 -K GID_MIN=100 -K GID_MAX=999 rssh
-    	chown -R rssh\:rssh /home/rssh
-    	chmod -R 700 /home/rssh/.ssh
-    	cat >> /etc/inittab <<EOP
+	# installation du compte rssh
+	if ! getent passwd rssh >/dev/null ; then
+		useradd --system rssh
+		cp -a /usr/share/lcs-security/rssh /home/
+		chown -R rssh:rssh /home/rssh
+		chmod -R u=rwX,g=,o= /home/rssh/.ssh
+		cat >> /etc/inittab <<EOP
 # Action on special keypress SSH inverse de secours XenEdu (ALT-UpArrow).
 kb::kbrequest:/sbin/lcs-secours-ssh
 EOP
-		init q
+		telinit q
+	fi
+	# Installation de /root/.bashrc à l'installation initiale
+	if [ -z "$2" ]; then
+		cp -a /usr/share/lcs-security/.bashrc /root/.bashrc
 	fi
 	# Create check.log
 	if [ ! -e /var/log/lcs/check.log ]; then
