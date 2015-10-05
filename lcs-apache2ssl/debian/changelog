@@ -5,6 +5,7 @@ lcs-apache2ssl (2.4.10.1) UNRELEASED; urgency=medium
   * Switch source format to 3.0 (native).
   * Fix maintainer scripts to not call programs with absolute path.
   * Add ${misc:Depends} to Depends field.
+  * Use “service apache2“ instead of calling /etc/init.d/apache2.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:16:25 +0200
 

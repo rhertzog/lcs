@@ -77,7 +77,7 @@ EOF
             #
           echo "Rechargement configuration Apache2 dans 1mn"
           at now+1minutes <<END
-/etc/init.d/apache2 restart
+service apache2 restart
 sleep 2
 END
     	;;
