@@ -13,6 +13,7 @@ lcs-security (2.4.10.1) UNRELEASED; urgency=medium
     files.
   * Cleanup maintainer scripts (postinst, postrm).
   * Ignore binary-without-manpage lintian warning.
+  * Bump Standards-Version to 3.9.4.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:33 +0200
 

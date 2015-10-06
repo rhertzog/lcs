@@ -10,6 +10,7 @@ lcs-apache2ssl (2.4.10.1) UNRELEASED; urgency=medium
   * Cleanup postrm script to split actions between remove and purge
     steps.
   * Cleanup postinst script.
+  * Bump Standards-Version to 3.9.4.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:16:25 +0200
 
