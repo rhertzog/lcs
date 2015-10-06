@@ -12,6 +12,8 @@ lcs-preinstall (2.4.10.1) UNRELEASED; urgency=medium
   * Synchronize lcs-sftp init script with wheezy's ssh init script.
   * Provide /etc/ssh/sshd_config_sftp as a configuration file.
   * Cleanup prerm script with respect to possible parameters.
+  * Cleanup postrm script to split actions between remove and purge
+    steps.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:53 +0200
 

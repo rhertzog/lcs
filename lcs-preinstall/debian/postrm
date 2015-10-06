@@ -17,46 +17,37 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-
 case "$1" in
-       purge|remove)
-        #echo "Debug | Var_1 : $1"
-        #
+    remove)
         # Suppression de la base de données lcs_db
-        #
-        mysql -e "DROP DATABASE IF EXISTS lcs_db;" > /dev/null 2>&1
-        #
+        mysql -e "DROP DATABASE IF EXISTS lcs_db;" >/dev/null 2>&1 || true
         # Suppression des entrées dans mysql db
-        #
-        mysql -e "DELETE FROM mysql.db WHERE Db = 'lcs_db';" > /dev/null 2>&1
-        #
+        mysql -e "DELETE FROM mysql.db WHERE Db = 'lcs_db';" >/dev/null 2>&1 || true
         # Suppression des entrées dans mysql user
-        #        
-        mysql -e "DELETE FROM mysql.user WHERE user = 'lcsmgr'"  > /dev/null 2>&1
-        mysqladmin reload > /dev/null 2>&1
-        if [ "$1" = "purge" ]; then
-            rm -R /etc/lcs
-            echo "Avant de réinstaller lcs-preinstall, vous devrez remettre en place le fichier de configuration LCS (/etc/lcs/lcs.conf)"
-        fi
-	#
-	# Suppression de la configuration SSH LCS
-	#
-	# /usr/sbin/lcs-openssh-config
+        mysql -e "DELETE FROM mysql.user WHERE user = 'lcsmgr'" >/dev/null 2>&1 || true
+        mysqladmin reload >/dev/null 2>&1 || true
+	# Suppression de la configuration SSH LCS faite par
+	# lcs-sshd-config
 	if [ -e /etc/ssh/sshd_config.no-lcs ] ; then 
-    		mv /etc/ssh/sshd_config.no-lcs /etc/ssh/sshd_config
+	    mv /etc/ssh/sshd_config.no-lcs /etc/ssh/sshd_config
 	fi
 	if [ -e /etc/issue.net.no-lcs ] ; then
-    		mv /etc/issue.net.no-lcs /etc/issue.net
+	    mv /etc/issue.net.no-lcs /etc/issue.net
 	fi
-        ;;
+    ;;
 
-        upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-        ;;
+    purge)
+        rm -R /etc/lcs
+        echo "Avant de réinstaller lcs-preinstall, vous devrez remettre en place le fichier de configuration LCS (/etc/lcs/lcs.conf)"
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
 
     *)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 1
-
+    ;;
 esac
 
 # dh_installdeb will replace this with shell code automatically
