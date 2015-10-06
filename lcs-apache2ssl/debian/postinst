@@ -7,7 +7,6 @@ set -e
 # After the package was installed:
 #       <postinst> configure <old-version>
 #
-#
 # If prerm fails during upgrade or fails on failed upgrade:
 #       <old-postinst> abort-upgrade <new-version>
 #
@@ -24,76 +23,41 @@ set -e
 MODULE="apache2ssl"
 APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 
-# lecture d'un parametre lcs dans lcs_db.params
-get_lcsdb_params() {
-  PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
-  echo "$PARAMS"
-}
-
 case "$1" in
     configure)
-            #
-            # registration module type S in applis.lcs_db
-            #
-            APACHE2SSL=`mysql -e "SELECT id from lcs_db.applis WHERE name='apache2ssl';"`
-            VER=$(dpkg-query -f '${Version}' -W lcs-apache2ssl)
-            if [ -z "$APACHE2SSL" ]; then
-                mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces au service web via https  ', '$INDICEMAJNBR', '$VER', '$PATHMOD', 'S');"
-            else
-		mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
-            fi
-            #
-            # Enable mode ssl
-            #
-            echo "Enable mode ssl"
-            a2enmod ssl
-            #
-            # Generate certificat
-            # !!!! NOW in lcs-certmanager !!!!
-            #if [ ! -e /etc/apache2/ssl/server.crt -o ! -e /etc/apache2/ssl/server.key ]; then
-            #  echo "Generation certificat SSL"
-            #  FQN=`hostname -f`
-            #  DOMAIN=$(get_lcsdb_params domain)
-            #  COUNTRYNAME=$(get_lcsdb_params country)
-            #  PROVINCENAME=$(get_lcsdb_params province)
-            #  LOCALITYNAME=$(get_lcsdb_params locality)
-            #  ORGANIZATIONNAME=$(get_lcsdb_params organization)
-            #  ORGANIZATIONALUNITNAME=$(get_lcsdb_params organizationalunit)
-              # apache2-ssl-cert.sh <FQN> <DOMAIN> <COUNTRYNAME> <PROVINCENAME> <LOCALITYNAME> <ORGANIZATIONNAME> <ORGANIZATIONALUNITNAME>
-            # /usr/share/lcs/scripts/apache2-ssl-cert.sh $FQN $DOMAIN $COUNTRYNAME $PROVINCENAME $LOCALITYNAME $ORGANIZATIONNAME $ORGANIZATIONALUNITNAME
-            #fi
-            rm -f /etc/apache2/ssl/server*
-            ln -s /etc/ssl/lcs/server.crt /etc/apache2/ssl/server.crt
-            ln -s /etc/ssl/lcs/server.key /etc/apache2/ssl/server.key
-            ln -s /etc/ssl/lcs/server.pem /etc/apache2/ssl/server.pem
-            #
-            # Add directive Listen
-            #
-            if ! grep -q "Listen 443" /etc/apache2/ports.conf; then
-              echo "Ajout Directive Listen"
-              echo "Listen 443" >> /etc/apache2/ports.conf
-            fi
-            #
-            # Enable lcs-ssl
-            #
-            a2ensite lcs-ssl
-            #
-            # Enable redirect rule
-            #
-            cat >$APACHE2CONF <<EOF
+        # registration module type S in applis.lcs_db
+        APACHE2SSL=`mysql -e "SELECT id from lcs_db.applis WHERE name='apache2ssl';"`
+        VER=$(dpkg-query -f '${Version}' -W lcs-apache2ssl)
+        if [ -z "$APACHE2SSL" ]; then
+            mysql -e "INSERT INTO lcs_db.applis (id, name, value, descr, num_maj, version, chemin, type) VALUES ('', '$MODULE', '1', 'Acces au service web via https', '', '$VER', '', 'S');"
+        else
+	    mysql -e "UPDATE lcs_db.applis SET version='$VER' WHERE name='$MODULE';" 
+        fi
+        # Enable mode ssl
+	echo "Enable mod_ssl"
+	a2enmod ssl
+	rm -f /etc/apache2/ssl/server*
+	ln -s /etc/ssl/lcs/server.crt /etc/apache2/ssl/server.crt
+	ln -s /etc/ssl/lcs/server.key /etc/apache2/ssl/server.key
+	ln -s /etc/ssl/lcs/server.pem /etc/apache2/ssl/server.pem
+	# Add directive Listen
+	if ! grep -q "Listen 443" /etc/apache2/ports.conf; then
+	    echo "Ajout Directive Listen"
+	    echo "Listen 443" >> /etc/apache2/ports.conf
+	fi
+	# Enable lcs-ssl
+	a2ensite lcs-ssl
+	# Enable redirect rule
+        cat >$APACHE2CONF <<EOF
                 RewriteEngine        on
                 RewriteCond          %{HTTPS} !=on
                 RewriteRule ^(.*)?$ https://%{HTTP_HOST}%{REQUEST_URI}
 EOF
-            #
-            # Add sudoers section
-            #
-	    lcs-make-sudoers
-            #
-            #  Apache2 differed restarting for web interface install module
-            #
-          echo "Rechargement configuration Apache2 dans 1mn"
-          at now+1minutes <<END
+	# Add sudoers section
+	lcs-make-sudoers
+	#  Apache2 differed restarting for web interface install module
+	echo "Rechargement configuration Apache2 dans 1mn"
+	at now+1minutes <<END
 service apache2 restart
 sleep 2
 END

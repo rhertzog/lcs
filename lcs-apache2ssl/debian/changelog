@@ -9,6 +9,7 @@ lcs-apache2ssl (2.4.10.1) UNRELEASED; urgency=medium
   * Fix postinst script with respect to possible parameters.
   * Cleanup postrm script to split actions between remove and purge
     steps.
+  * Cleanup postinst script.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:16:25 +0200
 
