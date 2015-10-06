@@ -2,19 +2,36 @@
 # postinst script for LCS apache2ssl
 set -e
 
+# This script can be called in the following ways:
+#
+# After the package was installed:
+#       <postinst> configure <old-version>
+#
+#
+# If prerm fails during upgrade or fails on failed upgrade:
+#       <old-postinst> abort-upgrade <new-version>
+#
+# If prerm fails during removal:
+#       <old-postinst> abort-remove
+#
+# If prerm fails during deconfiguration of a package:
+#       <postinst> abort-deconfigure in-favour <new-package> <version>
+#                  removing <old-package> <version>
+#
+# If prerm fails during replacement due to conflict:
+#       <postinst> abort-remove in-favour <new-package> <version>
 
 MODULE="apache2ssl"
 APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 
 # lecture d'un parametre lcs dans lcs_db.params
-
 get_lcsdb_params() {
   PARAMS=`echo  "SELECT value FROM params WHERE name='$1'"| mysql lcs_db -N`
   echo "$PARAMS"
 }
 
 case "$1" in
-	install|configure)
+    configure)
             #
             # registration module type S in applis.lcs_db
             #
@@ -80,15 +97,15 @@ EOF
 service apache2 restart
 sleep 2
 END
-    	;;
+    ;;
 
-    	abort-upgrade|abort-remove|abort-deconfigure)
-    	;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
 
-    	*)
+    *)
         echo "postinst called with unknown argument \`$1'" >&2
         exit 1
-    	;;
+    ;;
 esac
 
 #DEBHELPER#
