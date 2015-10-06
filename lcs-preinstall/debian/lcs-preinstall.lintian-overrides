@@ -1,7 +1,3 @@
-# The LCS uses /var/www/ and we know it's bad but it would be too much
-# work for little gain to change it now, so ignore it
-dir-or-file-in-var-www var/www/*
-
 # The LCS adds scripts that do not have manual pages. Since none of those
 # programs are for general use but are only used by other LCS components,
 # it's not a big deal. Ignore this warning.

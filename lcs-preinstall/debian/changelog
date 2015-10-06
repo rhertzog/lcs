@@ -6,6 +6,7 @@ lcs-preinstall (2.4.10.1) UNRELEASED; urgency=medium
   * Drop useless debian/dirs.
   * Fix maintainer scripts to not call programs with absolute path.
   * Add ${misc:Depends} to Depends field.
+  * Ignore binary-without-manpage lintian warning.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:53 +0200
 
