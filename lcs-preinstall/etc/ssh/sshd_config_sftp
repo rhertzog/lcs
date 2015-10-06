@@ -1,40 +1,13 @@
-#!/bin/bash
-# Simon CAVEY - CRDP de Basse-Normandie
-# Projet LCS - Equipe TICE Académie de Caen
-# Script de mise en place de la configuration ssh.
-# /usr/sbin/lcs-openssh-config
-if [ ! -e /etc/ssh/sshd_config.no-lcs ] ; then 
-    mv /etc/ssh/sshd_config /etc/ssh/sshd_config.no-lcs
-fi
-if [ ! -e /etc/issue.net.no-lcs ] ; then
-    mv /etc/issue.net /etc/issue.net.no-lcs
-fi
-
-
-cat >/etc/issue.net <<EOFISSUE
-Bienvenue sur :
- _     ____ ____
-| |   / ___/ ___|
-| |  | |   \___ \\
-| |__| |___ ___) |
-|_____\____|____/
-
-Linux Communication Server
-http://lcs.crdp.ac-caen.fr
-
-EOFISSUE
-
-## fichier de config de SSH
-cat >/etc/ssh/sshd_config <<EOF
 # Package generated configuration file
 # See the sshd(8) manpage for details
 
 # What ports, IPs and protocols we listen for
-Port 22
+Port 2222
 # Use these options to restrict which interfaces/protocols sshd will bind to
 #ListenAddress ::
 #ListenAddress 0.0.0.0
 Protocol 2
+PidFile /var/run/lcs-sftp.pid
 # HostKeys for protocol version 2
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_dsa_key
@@ -51,7 +24,7 @@ LogLevel INFO
 
 # Authentication:
 LoginGraceTime 120
-PermitRootLogin yes
+PermitRootLogin no
 StrictModes yes
 
 RSAAuthentication yes
@@ -108,22 +81,19 @@ Subsystem       sftp     internal-sftp
 
 UsePAM yes
 
-Match user root
-	AllowTcpForwarding yes
-
 Match user spip.manager
           ChrootDirectory /usr/share/lcs/spip
           ForceCommand internal-sftp
 
 Match user assist
-	ChrootDirectory /home/%u
-	AllowTcpForwarding yes
-	ForceCommand internal-sftp
+        ChrootDirectory /home/%u
+        AllowTcpForwarding yes
+        ForceCommand internal-sftp
 
 Match group admins
-	ChrootDirectory /home/%u
+        ChrootDirectory /home/%u
         ForceCommand internal-sftp
-	AllowTcpForwarding yes
+        AllowTcpForwarding yes
 
 Match group sftp-allowed
           ChrootDirectory /home/%u
@@ -132,10 +102,3 @@ Match group sftp-allowed
 Match group lcs-users
           ForceCommand /bin/false
 
-EOF
-
-if [ -x /usr/sbin/invoke-rc.d ]; then
-	invoke-rc.d ssh restart
-else
-	/etc/init.d/ssh restart
-fi

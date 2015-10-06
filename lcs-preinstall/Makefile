@@ -9,9 +9,9 @@ install:
 	install -d $(DESTDIR)/var/lib/lcs/preinstall
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/preinstall
 
-# install lcs etc conf sudo.d
-	install -d $(DESTDIR)/etc/lcs
-	install -d $(DESTDIR)/etc/lcs/sudo.d
+# install generic config files
+	install -d $(DESTDIR)/etc
+	cp -a etc/* $(DESTDIR)/etc/
 	
 # install sbin
 	install -d $(DESTDIR)/usr/sbin
