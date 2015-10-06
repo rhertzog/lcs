@@ -1,11 +1,11 @@
-#!/bin/bash/
+#!/bin/sh
 #
 # suppressions des entrees lcs dans sudoers
 # Projet LCS
 # Simon Cavey - simon.cavey@crdp.ac-caen.fr
 # 26/10/2009
 
-chmod 700  /etc/sudoers
+chmod 700 /etc/sudoers
 sed -i'' '/www-data/d' /etc/sudoers
 sed -i'' '/lcs/d' /etc/sudoers
 chmod 440  /etc/sudoers
