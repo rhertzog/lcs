@@ -2,3 +2,8 @@
 
 %:
 	dh $@
+
+override_dh_installinit:
+	# Install the lcs-sftp init script and restart the service
+	# only after upgrade
+	dh_installinit --name=lcs-sftp -R

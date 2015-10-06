@@ -8,6 +8,7 @@ lcs-preinstall (2.4.10.1) UNRELEASED; urgency=medium
   * Add ${misc:Depends} to Depends field.
   * Ignore binary-without-manpage lintian warning.
   * Fix shebang of lcs-remove-sudoers.
+  * Keep a single init script and install it with dh_installinit.
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:53 +0200
 

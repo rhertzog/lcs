@@ -9,14 +9,6 @@ install:
 	install -d $(DESTDIR)/var/lib/lcs/preinstall
 	cp -a conf/* $(DESTDIR)/var/lib/lcs/preinstall
 
-# install lcs etc conf default
-	install -d $(DESTDIR)/etc/default
-	install -m 644 etc/default/* $(DESTDIR)/etc/default/
-
-# install lcs etc conf init.d
-	install -d $(DESTDIR)/etc/init.d
-	install -m 755 etc/init.d/* $(DESTDIR)/etc/init.d/
-
 # install lcs etc conf sudo.d
 	install -d $(DESTDIR)/etc/lcs
 	install -d $(DESTDIR)/etc/lcs/sudo.d
