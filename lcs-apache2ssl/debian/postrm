@@ -6,58 +6,40 @@ MODULE="apache2ssl"
 APACHE2CONF="/etc/apache2/lcs-main/01_redirect.conf"
 
 case "$1" in
-	purge|remove)
-        #
+    remove)
         # Desincription du module
-        #
-        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" > /dev/null 2>&1
-        #
+        mysql -e "DELETE FROM lcs_db.applis WHERE name = '$MODULE';" >/dev/null 2>&1 || true
         # Remove redirect rule
-        #
         rm -f $APACHE2CONF
-        #
         # Desactivation mod ssl
-        #
-        a2dismod  ssl >/dev/null
-        #
+        a2dismod ssl >/dev/null || true
         # Disable lcs-ssl
-        #
-        if [ -e  /etc/apache2/sites-enabled/lcs-ssl ];then
-          a2dissite lcs-ssl >/dev/null
+        if [ -e /etc/apache2/sites-enabled/lcs-ssl ]; then
+	    a2dissite lcs-ssl >/dev/null
         fi
-        #
         # Desactivation Listen
-        #
-         sed -i "/Listen 443/d" /etc/apache2/ports.conf
-        #
+        sed -i "/Listen 443/d" /etc/apache2/ports.conf
         # Desactivation sudoers APACHESSLCERT
-        #
 	lcs-make-sudoers
-        #
         # Effacement des certificats
-        #
         rm -f /etc/apache2/ssl/server.*
-        #
         # Apache2 differed restarting for web interface install module
-        #
         if which at >/dev/null; then
-          echo "Rechargement configuration Apache2 dans 1mn"
-          at now+1minutes <<END
+	    echo "Rechargement configuration Apache2 dans 1mn"
+	    at now+1minutes <<END
 service apache2 restart
 sleep 2
 END
         fi
+    ;;
 
-        ;;
-
-	upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-
-        ;;
+    purge|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
 
     *)
         echo "postrm called with unknown argument \`$1'" >&2
         exit 1
-
+    ;;
 esac
 
 #DEBHELPER#
