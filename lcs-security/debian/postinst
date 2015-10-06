@@ -5,11 +5,6 @@
 
 set -e
 
-preversion=$2
-MODULE="security"
-VER=$(dpkg-query -f '${Version}' -W lcs-$MODULE)
-INDICEMAJNBR="0"
-
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
 #        * <old-postinst> `abort-upgrade' <new version>
@@ -21,7 +16,6 @@ INDICEMAJNBR="0"
 #          <conflicting-package> <version>
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
-
 
 case "$1" in
     configure)
@@ -63,8 +57,6 @@ EOP
 		    	echo "le mod security d'apache est disponible."
 		    	lcs-disable-apache-security 
 	fi
-
-
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

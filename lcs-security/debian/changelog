@@ -11,6 +11,7 @@ lcs-security (2.4.10.1) UNRELEASED; urgency=medium
   * Add lintian overrides to ignore dir-or-file-in-var-www.
   * Setup /home/rssh and /root/.bashrc in postinst and not via packaged
     files.
+  * Cleanup maintainer scripts (postinst, postrm).
 
  -- Raphaël Hertzog <hertzog@debian.org>  Mon, 05 Oct 2015 15:17:33 +0200
 

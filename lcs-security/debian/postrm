@@ -20,10 +20,12 @@ set -e
 
 
 case "$1" in
-    purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
-	invoke-rc.d fail2ban restart
-	/etc/init.d/fail2ban restart
-        lcs-make-sudoers
+    purge)
+	invoke-rc.d fail2ban restart || true
+        lcs-make-sudoers || true
+    ;;
+
+    remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
     ;;
 
     *)
