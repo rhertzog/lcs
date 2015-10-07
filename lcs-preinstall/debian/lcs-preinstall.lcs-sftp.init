@@ -60,9 +60,9 @@ check_dev_null() {
 
 check_privsep_dir() {
     # Create the PrivSep empty dir if necessary
-    if [ ! -d /var/run/lcs-sftp ]; then
-	mkdir /var/run/lcs-sftp
-	chmod 0755 /var/run/lcs-sftp
+    if [ ! -d /var/run/sshd ]; then
+	mkdir /var/run/sshd
+	chmod 0755 /var/run/sshd
     fi
 }
 
