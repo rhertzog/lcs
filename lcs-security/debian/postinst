@@ -40,7 +40,7 @@ EOP
 		if [ ! -d /var/log/lcs ]; then
 			mkdir -p /var/log/lcs
 			chown www-data:www-data /var/log/lcs
-			chmod 750 /var/log/lcs 
+			chmod 750 /var/log/lcs
 		fi
 		touch /var/log/lcs/check.log
 		chmod 640 /var/log/lcs/check.log
@@ -49,13 +49,13 @@ EOP
 	# Restart fail2ban
 	invoke-rc.d fail2ban restart || true
 	# Update sudoers lt 2.4.9.1
-	if [ -n "$2" ] && dpkg --compare-versions "$2" lt 2.4.9.1; then	
-				echo "update lcs-security and disable mod_apache_security"
-		    	# Activation des logs sudo
-		    	lcs-make-sudoers
-		    	# Desactivation du mod security d'apache
-		    	echo "le mod security d'apache est disponible."
-		    	lcs-disable-apache-security 
+	if dpkg --compare-versions "$2" lt-nl 2.4.9.1; then	
+		echo "update lcs-security and disable mod_apache_security"
+		# Activation des logs sudo
+		lcs-make-sudoers
+		# Desactivation du mod security d'apache
+		echo "le mod security d'apache est disponible."
+		lcs-disable-apache-security
 	fi
     ;;
 
